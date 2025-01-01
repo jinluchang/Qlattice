@@ -1477,18 +1477,23 @@ class CExprCodeGenPy:
             return f"{x}", "V_a"
         elif isinstance(x, (ea.Expr, ea.Factor)):
             return f"({ea.compile_py(x, self.var_dict_for_factors)})", "V_a"
-        elif isinstance(x, tuple) and len(x) == 2 and x[1].otype == "BS":
-            name, bs, = x
-            factor_list = get_bs_factor_variable_list(bs)
-            chain_list = []
-            for ch in bs.chain_list:
-                assert ch.otype == "Var"
-                assert ch.name.startswith("V_chain_")
-                if ch.name not in chain_list:
-                    chain_list.append(ch.name)
+        elif isinstance(x, tuple) and len(x) == 2 and isinstance(x[1], list) and len(x[1]) > 0 and isinstance(x[1][0], BS):
+            name_list, value_list, = x
+            for name in name_list:
+                assert isinstance(name, str)
+            for value in value_list:
+                assert isinstance(value, BS)
+            bs_list = value_list
+            factor_list = get_bs_factor_variable_list(bs_list)
+            chain_list = [ ch.name for ch in bs_list[0].chain_list ]
+            for bs in bs_list:
+                assert chain_list == [ ch.name for ch in bs.chain_list ]
+            chain_list_uniq = sorted(set(chain_list))
             arg_list_cy = []
             arg_list_py = []
-            for c in chain_list:
+            for name in name_list:
+                arg_list_cy.append(f"&{name}")
+            for c in chain_list_uniq:
                 arg_list_cy.append(f"&{c}")
                 arg_list_py.append(f"{c}")
             for f in factor_list:
@@ -1496,12 +1501,12 @@ class CExprCodeGenPy:
                 arg_list_py.append(f"{f}")
             arg_str_cy = ", ".join(arg_list_cy)
             arg_str_py = ", ".join(arg_list_py)
-            c_cy = f"cexpr_function_bs_eval_{name}({arg_str_cy})"
-            c_py = f"cexpr_function_bs_eval_{name}({arg_str_py})"
+            c_cy = f"cexpr_function_bs_eval_{name_list[0]}({arg_str_cy})"
+            c_py = f"cexpr_function_bs_eval_{name_list[0]}({arg_str_py})"
             if self.is_cython:
-                return c_cy, "V_a"
+                return c_cy, "None"
             else:
-                return c_py, "V_a"
+                return c_py, "list[V_a]"
         assert isinstance(x, Op)
         if x.otype == "S":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
@@ -1848,52 +1853,55 @@ class CExprCodeGenPy:
         append_py = self.append_py
         cexpr = self.cexpr
         for name_list, value_list in cexpr.variables_baryon_prop:
-            for name, value in zip(name_list, value_list):
-                bs = value
-                assert isinstance(bs, BS)
-                bs.otype == "BS"
-                factor_list = get_bs_factor_variable_list(bs)
-                chain_list = []
-                for ch in bs.chain_list:
-                    assert ch.otype == "Var"
-                    assert ch.name.startswith("V_chain_")
-                    if ch.name not in chain_list:
-                        chain_list.append(ch.name)
-                arg_list_cy = []
-                arg_list_py = []
-                for c in chain_list:
-                    arg_list_cy.append(f"cc.WilsonMatrix* {c}")
-                    arg_list_py.append(f"{c}")
-                for f in factor_list:
-                    arg_list_cy.append(f"cc.PyComplexD {f}")
-                    arg_list_py.append(f"{f}")
-                arg_str_cy = ", ".join(arg_list_cy)
-                arg_str_py = ", ".join(arg_list_py)
-                append_py(f"@timer")
-                append_cy(f"@cython.boundscheck(False)")
-                append_cy(f"@cython.wraparound(False)")
-                append_cy(f"cdef cc.PyComplexD cexpr_function_bs_eval_{name}({arg_str_cy}):")
-                append_py(f"def cexpr_function_bs_eval_{name}({arg_str_py}):")
-                self.indent += 4
+            for name in name_list:
+                assert isinstance(name, str)
+            for value in value_list:
+                assert isinstance(value, BS)
+            bs_list = value_list
+            factor_list = get_bs_factor_variable_list(bs_list)
+            chain_list = [ ch.name for ch in bs_list[0].chain_list ]
+            for bs in bs_list:
+                assert chain_list == [ ch.name for ch in bs.chain_list ]
+            chain_list_uniq = sorted(set(chain_list))
+            arg_list_cy = []
+            arg_list_py = []
+            for name in name_list:
+                arg_list_cy.append(f"cc.PyComplexD* {name}")
+            for c in chain_list_uniq:
+                arg_list_cy.append(f"cc.WilsonMatrix* {c}")
+                arg_list_py.append(f"{c}")
+            for f in factor_list:
+                arg_list_cy.append(f"cc.PyComplexD {f}")
+                arg_list_py.append(f"{f}")
+            arg_str_cy = ", ".join(arg_list_cy)
+            arg_str_py = ", ".join(arg_list_py)
+            append_py(f"@timer")
+            append_cy(f"@cython.boundscheck(False)")
+            append_cy(f"@cython.wraparound(False)")
+            append_cy(f"cdef void cexpr_function_bs_eval_{name_list[0]}({arg_str_cy}):")
+            append_py(f"def cexpr_function_bs_eval_{name_list[0]}({arg_str_py}):")
+            self.indent += 4
+            append_cy(f"cdef cc.PyComplexD v")
+            for name in name_list:
+                append_cy(f"cdef cc.PyComplexD {name}_v = 0")
+                append_py(f"{name} = 0")
+            ch1, ch2, ch3, = chain_list
+            for name, bs in zip(name_list, bs_list):
                 elem_list = bs.get_spin_spin_tensor_elem_list_code()
-                append_cy(f"cdef cc.PyComplexD v")
-                append_cy(f"cdef cc.PyComplexD s = 0")
-                append_py(f"s = 0")
                 for ss, coef, in elem_list:
                     c, t, = self.gen_expr(coef)
                     assert t == "V_a"
-                    append(f"v = {c}")
                     v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = ss
-                    ch1, ch2, ch3, = bs.chain_list
-                    ch1 = ch1.name
-                    ch2 = ch2.name
-                    ch3 = ch3.name
-                    append_cy(f"v *= cc.pycc_d(cc.epsilon_contraction({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}[0], {ch2}[0], {ch3}[0]))")
-                    append_py(f"v *= mat_epsilon_contraction_wm_wm_wm({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}, {ch2}, {ch3})")
-                    append(f"s += v")
-                append(f"return s")
-                self.indent -= 4
-                append(f"")
+                    append_cy(f"v = cc.pycc_d(cc.epsilon_contraction({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}[0], {ch2}[0], {ch3}[0]))")
+                    append_py(f"v = mat_epsilon_contraction_wm_wm_wm({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}, {ch2}, {ch3})")
+                    append_cy(f"{name}_v += ({c}) * v")
+                    append_py(f"{name} += ({c}) * v")
+            for name in name_list:
+                append_cy(f"{name}[0] = {name}_v")
+            name_list_str = ", ".join(name_list)
+            append_py(f"return {name_list_str}")
+            self.indent -= 4
+            append(f"")
 
     def cexpr_function_eval_with_props(self):
         append = self.append
@@ -1965,14 +1973,19 @@ class CExprCodeGenPy:
             append_py(f"{name} = {c}")
         append(f"# compute baryon_props")
         for name_list, value_list in cexpr.variables_baryon_prop:
-            for name, value in zip(name_list, value_list):
-                x = value
+            for x in value_list:
                 assert isinstance(x, Op)
                 assert x.otype == "BS"
-                c, t = self.gen_expr((name, x))
-                assert t == "V_a"
-                append_cy(f"cdef cc.PyComplexD {name} = {c}")
-                append_py(f"{name} = {c}")
+            c, t = self.gen_expr((name_list, value_list))
+            if self.is_cython:
+                assert t == "None"
+            else:
+                assert t == "list[V_a]"
+            for name in name_list:
+                append_cy(f"cdef cc.PyComplexD {name} = 0")
+            append_cy(c)
+            name_list_str = ", ".join(name_list)
+            append_py(f"{name_list_str} = {c}")
         append(f"# set terms")
         term_type_dict = dict()
         for name, term in cexpr.named_terms:
@@ -2091,13 +2104,14 @@ class CExprCodeGenPy:
 
 #### ----
 
-def get_bs_factor_variable_list(bs:BS) -> list[str]:
+def get_bs_factor_variable_list(bs_list:list[BS]) -> list[str]:
     """
-    Get the factor variable names used in `bs`.
+    Get the factor variable names used in `bs_list`.
     """
     variables_set = set()
-    for v, c in bs.elem_list:
-        variables_set |= ea.mk_fac(c).get_variable_set()
+    for bs in bs_list:
+        for v, c in bs.elem_list:
+            variables_set |= ea.mk_fac(c).get_variable_set()
     return sorted(variables_set)
 
 #### ----
