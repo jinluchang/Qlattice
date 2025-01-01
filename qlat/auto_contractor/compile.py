@@ -618,14 +618,18 @@ def collect_baryon_prop_in_cexpr(named_terms):
     """
     collect common baryon_prop
     modify named_terms in-place and return definitions as variables_baryon_prop
-    variables_baryon_prop = [ (name, value,), ... ]
+    variables_baryon_prop = [ (name_list, value_list,), ... ]
+    len(name_list) == len(value_list)
+    name_list = [ name, ... ]
+    value_list = [ value, ... ]
     possible (name, value,) includes
     ("V_bs_0", op,) where op.otype == "BS"
     """
     var_nameset = set()
-    variables = []
     var_counter = 0
     var_dataset = {} # var_dataset[op_repr] = op_var
+    variable_dict = {} # variable_dict[name] = op
+    var_chain_list_dataset = {} # var_dataset[op_chain_list_repr] = [ name, ... ]
     def add_varibles(x):
         nonlocal var_counter
         if isinstance(x, Term):
@@ -645,13 +649,21 @@ def collect_baryon_prop_in_cexpr(named_terms):
                             if name not in var_nameset:
                                 break
                         var_nameset.add(name)
-                        variables.append((name, op,))
                         var = Var(name)
                         x[i] = var
                         var_dataset[op_repr] = var
+                        variable_dict[name] = op
+                        op_chain_list_repr = repr(op.chain_list)
+                        if op_chain_list_repr not in var_chain_list_dataset:
+                            var_chain_list_dataset[op_chain_list_repr] = []
+                        var_chain_list_dataset[op_chain_list_repr].append(name)
     for name, term in named_terms:
         add_varibles(term)
         term.sort()
+    variables = []
+    for name_list in var_chain_list_dataset.values():
+        value_list = [ variable_dict[name] for name in name_list ]
+        variables.append((name_list, value_list,))
     return variables
 
 @q.timer
@@ -1337,8 +1349,9 @@ def display_cexpr(cexpr:CExpr):
         lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.variables_baryon_prop:
         lines.append(f"# Variables baryon_prop:")
-    for name, value in cexpr.variables_baryon_prop:
-        lines.append(f"{name:<30} = {show_variable_value(value)}")
+    for name_list, value_list in cexpr.variables_baryon_prop:
+        for name, value in zip(name_list, value_list):
+            lines.append(f"{name:<30} = {show_variable_value(value)}")
     if cexpr.diagram_types:
         lines.append(f"# Diagram type coef:")
     for name, diagram_type in cexpr.diagram_types:
@@ -1834,52 +1847,53 @@ class CExprCodeGenPy:
         append_cy = self.append_cy
         append_py = self.append_py
         cexpr = self.cexpr
-        for name, value in cexpr.variables_baryon_prop:
-            bs = value
-            assert isinstance(bs, BS)
-            bs.otype == "BS"
-            factor_list = get_bs_factor_variable_list(bs)
-            chain_list = []
-            for ch in bs.chain_list:
-                assert ch.otype == "Var"
-                assert ch.name.startswith("V_chain_")
-                if ch.name not in chain_list:
-                    chain_list.append(ch.name)
-            arg_list_cy = []
-            arg_list_py = []
-            for c in chain_list:
-                arg_list_cy.append(f"cc.WilsonMatrix* {c}")
-                arg_list_py.append(f"{c}")
-            for f in factor_list:
-                arg_list_cy.append(f"cc.PyComplexD {f}")
-                arg_list_py.append(f"{f}")
-            arg_str_cy = ", ".join(arg_list_cy)
-            arg_str_py = ", ".join(arg_list_py)
-            append_py(f"@timer")
-            append_cy(f"@cython.boundscheck(False)")
-            append_cy(f"@cython.wraparound(False)")
-            append_cy(f"cdef cc.PyComplexD cexpr_function_bs_eval_{name}({arg_str_cy}):")
-            append_py(f"def cexpr_function_bs_eval_{name}({arg_str_py}):")
-            self.indent += 4
-            elem_list = bs.get_spin_spin_tensor_elem_list_code()
-            append_cy(f"cdef cc.PyComplexD v")
-            append_cy(f"cdef cc.PyComplexD s = 0")
-            append_py(f"s = 0")
-            for ss, coef, in elem_list:
-                c, t, = self.gen_expr(coef)
-                assert t == "V_a"
-                append(f"v = {c}")
-                v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = ss
-                ch1, ch2, ch3, = bs.chain_list
-                ch1 = ch1.name
-                ch2 = ch2.name
-                ch3 = ch3.name
-                append_cy(f"v *= cc.pycc_d(cc.epsilon_contraction({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}[0], {ch2}[0], {ch3}[0]))")
-                append_py(f"v *= mat_epsilon_contraction_wm_wm_wm({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}, {ch2}, {ch3})")
-                append(f"s += v")
-            append(f"return s")
-            self.indent -= 4
-            append(f"")
+        for name_list, value_list in cexpr.variables_baryon_prop:
+            for name, value in zip(name_list, value_list):
+                bs = value
+                assert isinstance(bs, BS)
+                bs.otype == "BS"
+                factor_list = get_bs_factor_variable_list(bs)
+                chain_list = []
+                for ch in bs.chain_list:
+                    assert ch.otype == "Var"
+                    assert ch.name.startswith("V_chain_")
+                    if ch.name not in chain_list:
+                        chain_list.append(ch.name)
+                arg_list_cy = []
+                arg_list_py = []
+                for c in chain_list:
+                    arg_list_cy.append(f"cc.WilsonMatrix* {c}")
+                    arg_list_py.append(f"{c}")
+                for f in factor_list:
+                    arg_list_cy.append(f"cc.PyComplexD {f}")
+                    arg_list_py.append(f"{f}")
+                arg_str_cy = ", ".join(arg_list_cy)
+                arg_str_py = ", ".join(arg_list_py)
+                append_py(f"@timer")
+                append_cy(f"@cython.boundscheck(False)")
+                append_cy(f"@cython.wraparound(False)")
+                append_cy(f"cdef cc.PyComplexD cexpr_function_bs_eval_{name}({arg_str_cy}):")
+                append_py(f"def cexpr_function_bs_eval_{name}({arg_str_py}):")
+                self.indent += 4
+                elem_list = bs.get_spin_spin_tensor_elem_list_code()
+                append_cy(f"cdef cc.PyComplexD v")
+                append_cy(f"cdef cc.PyComplexD s = 0")
+                append_py(f"s = 0")
+                for ss, coef, in elem_list:
+                    c, t, = self.gen_expr(coef)
+                    assert t == "V_a"
+                    append(f"v = {c}")
+                    v_s1, b_s1, v_s2, b_s2, v_s3, b_s3, = ss
+                    ch1, ch2, ch3, = bs.chain_list
+                    ch1 = ch1.name
+                    ch2 = ch2.name
+                    ch3 = ch3.name
+                    append_cy(f"v *= cc.pycc_d(cc.epsilon_contraction({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}[0], {ch2}[0], {ch3}[0]))")
+                    append_py(f"v *= mat_epsilon_contraction_wm_wm_wm({v_s1}, {b_s1}, {v_s2}, {b_s2}, {v_s3}, {b_s3}, {ch1}, {ch2}, {ch3})")
+                    append(f"s += v")
+                append(f"return s")
+                self.indent -= 4
+                append(f"")
 
     def cexpr_function_eval_with_props(self):
         append = self.append
@@ -1950,14 +1964,15 @@ class CExprCodeGenPy:
             append_cy(f"cdef cc.PyComplexD {name} = cc.pycc_d({c})")
             append_py(f"{name} = {c}")
         append(f"# compute baryon_props")
-        for name, value in cexpr.variables_baryon_prop:
-            x = value
-            assert isinstance(x, Op)
-            assert x.otype == "BS"
-            c, t = self.gen_expr((name, x))
-            assert t == "V_a"
-            append_cy(f"cdef cc.PyComplexD {name} = {c}")
-            append_py(f"{name} = {c}")
+        for name_list, value_list in cexpr.variables_baryon_prop:
+            for name, value in zip(name_list, value_list):
+                x = value
+                assert isinstance(x, Op)
+                assert x.otype == "BS"
+                c, t = self.gen_expr((name, x))
+                assert t == "V_a"
+                append_cy(f"cdef cc.PyComplexD {name} = {c}")
+                append_py(f"{name} = {c}")
         append(f"# set terms")
         term_type_dict = dict()
         for name, term in cexpr.named_terms:
