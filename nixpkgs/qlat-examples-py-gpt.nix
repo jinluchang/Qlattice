@@ -73,10 +73,10 @@ buildPythonPackage rec {
       cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
       patchShebangs --build "$PWD/NVCC.py"
       #
-      cp -pv "${../qcore/bin/bind-gpu.sh}" "$PWD/bind-gpu.sh"
-      patchShebangs --build "$PWD/bind-gpu.sh"
+      cp -pv "${../qcore/bin/bind-gpu-qlat.sh}" "$PWD/bind-gpu-qlat.sh"
+      patchShebangs --build "$PWD/bind-gpu-qlat.sh"
       export NGPU=${ngpu}
-      export mpi_options="$mpi_options $PWD/bind-gpu.sh"
+      export mpi_options="$mpi_options $PWD/bind-gpu-qlat.sh"
       #
       export NVCC_OPTIONS="-w -std=c++14 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
       export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"

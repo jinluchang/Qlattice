@@ -551,7 +551,7 @@ void initialize_qlat_comm()
                (int)get_comm_list().size()));
   // Do not set cuda device
   // Rely on the environment variable
-  // Can use the bind-gpu.sh scripts
+  // Can use the bind-gpu-qlat.sh scripts
   // set_cuda_device();
   qset_line_buf(stdout);
   displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-if which nvidia-smi >/dev/null 2>&1 ; then
-    NGPU="$(nvidia-smi -L | wc -l)"
-fi
-
 if [ -z "$NGPU" ] ; then
-    NGPU=1
+    if which nvidia-smi >/dev/null 2>&1 ; then
+        NGPU="$(nvidia-smi -L | wc -l)"
+    else
+        NGPU=1
+    fi
 fi
 
 if [ -n "$OMPI_COMM_WORLD_LOCAL_RANK" ] ; then

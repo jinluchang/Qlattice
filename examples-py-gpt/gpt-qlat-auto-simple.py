@@ -177,7 +177,7 @@ def run_job(job_tag, traj):
             (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             ]
     #
-    # NOTE: If using existing data, should move some entires from `fns_produce` to `fns_need`.
+    # NOTE: If using existing data, should move some entrees from `fns_produce` to `fns_need`.
     #
     is_generating_props = job_tag[:5] == "test-"
     #
