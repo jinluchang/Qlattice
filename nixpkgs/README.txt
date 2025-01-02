@@ -23,3 +23,7 @@ $ time nix-shell shell.nix
 To start a shell with cuda
 
 $ time nix-shell shell-cuda.nix
+
+To start a shell with many other packages
+
+$ time nix-shell shell-jhub.nix

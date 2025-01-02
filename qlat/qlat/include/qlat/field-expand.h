@@ -102,11 +102,20 @@ API inline Cache<std::string, CommPlan>& get_comm_plan_cache()
   return cache;
 }
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdangling-reference"
+#endif
+
 const CommPlan& get_comm_plan(const CommPlanKey& cpk);
 
 const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
                               const std::string& tag, const Geometry& geo,
                               const Int multiplicity);
+
+#if defined(__GNUC__)
+# pragma GCC diagnostic pop
+#endif
 
 template <class M>
 void refresh_expanded(Field<M>& f, const CommPlan& plan)
