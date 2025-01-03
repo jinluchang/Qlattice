@@ -8,6 +8,7 @@ namespace qlat
 bool check_fft_plan_key(const Geometry& geo, const int mc, const int dir,
                         const bool is_forward)
 {
+  (void)mc;
   bool b = true;
   b = b && geo.eo == 0;
   b = b && geo.is_only_local;

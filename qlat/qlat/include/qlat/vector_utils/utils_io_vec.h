@@ -948,6 +948,7 @@ template<typename Ty>
 void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int n1,
   bool check=true, bool read=true, bool read_single=true)
 {
+  (void)check;
   if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
   if(resp.size() < size_t(n1-n0)){abort_r("Final point size wrong!\n");}
   if(sizeof(Ty) != sizeof(double) and sizeof(Ty) != sizeof(float)){abort_r("Need double or float pointer! \n");}

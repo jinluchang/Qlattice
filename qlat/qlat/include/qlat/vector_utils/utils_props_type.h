@@ -370,7 +370,9 @@ void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*1
     s1 = &st[(d0*12+d0)*Ncopy + 0];
     cpy_data_thread(s1, s0, Ncopy , GPU, QFALSE);
   }
-  if(dummy)qacc_barrier(dummy);
+  if (dummy) {
+    qacc_barrier(dummy);
+  }
 }
 
 template <typename Ty >

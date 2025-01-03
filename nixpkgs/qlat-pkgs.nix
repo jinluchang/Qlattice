@@ -169,6 +169,12 @@ let
       packages = [ pkgs.qlat-env ];
       inputsFrom = packages;
     };
+    qlat-fhs = (pkgs.buildFHSEnv {
+      name = "qlat-fhs${pkgs.qlat-name}";
+      targetPkgs = pkgs: [ pkgs.qlat-env ];
+      runScript = "bash";
+      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+    }).env;
     #
     qlat-jhub-py = pkgs.python3.withPackages (ps: with ps; [
       ipykernel
@@ -264,6 +270,12 @@ let
       packages = [ pkgs.qlat-jhub-env ];
       inputsFrom = packages;
     };
+    qlat-jhub-fhs = (pkgs.buildFHSEnv {
+      name = "qlat-jhub-fhs${pkgs.qlat-name}";
+      targetPkgs = pkgs: [ pkgs.qlat-jhub-env ];
+      runScript = "bash";
+      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+    }).env;
     #
   };
 
@@ -320,10 +332,12 @@ let
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
     "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
+    "qlat-fhs${pkgs.qlat-name}" = pkgs.qlat-fhs;
     "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-jhub-py${pkgs.qlat-name}" = pkgs.qlat-jhub-py;
     "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
     "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
+    "qlat-jhub-fhs${pkgs.qlat-name}" = pkgs.qlat-jhub-fhs;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
     "pkgs${pkgs.qlat-name}" = pkgs;
   };
@@ -371,5 +385,47 @@ in {
   inherit many-qlat-pkgs-core-w-cuda;
   inherit many-qlat-pkgs-core-w-cuda-pypi;
   inherit many-qlat-pkgs-all;
+  #
+  inherit (many-qlat-pkgs-all) qlat-tests;
+  inherit (many-qlat-pkgs-all) qlat-tests-std;
+  inherit (many-qlat-pkgs-all) qlat-tests-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-tests-cuda;
+  inherit (many-qlat-pkgs-all) qlat-tests-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-tests-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat-env;
+  inherit (many-qlat-pkgs-all) qlat-env-std;
+  inherit (many-qlat-pkgs-all) qlat-env-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-env-cuda;
+  inherit (many-qlat-pkgs-all) qlat-env-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-env-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat-jhub-env;
+  inherit (many-qlat-pkgs-all) qlat-jhub-env-std;
+  inherit (many-qlat-pkgs-all) qlat-jhub-env-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-jhub-env-cuda;
+  inherit (many-qlat-pkgs-all) qlat-jhub-env-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-jhub-env-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat-sh;
+  inherit (many-qlat-pkgs-all) qlat-sh-std;
+  inherit (many-qlat-pkgs-all) qlat-sh-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-sh-cuda;
+  inherit (many-qlat-pkgs-all) qlat-sh-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-sh-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh;
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh-std;
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh-cuda;
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs;
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std;
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs-cuda;
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs-clang; # not working
   #
 }

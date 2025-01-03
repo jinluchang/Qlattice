@@ -79,6 +79,7 @@ header_files = files(
   'types.h',
   'vector.h',
   'version.h',
+  'warning.h',
   'qacc-translator.h',
   'utils-ldouble.h',
   )

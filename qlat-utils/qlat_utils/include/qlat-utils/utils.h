@@ -182,25 +182,25 @@ qacc Vector<N> get_data_as(const T& xx)
   return v1;
 }
 
-template <class T,
-          QLAT_ENABLE_IF(is_get_data_type<T>() and
-                         is_composed_of_real_d<typename IsGetDataType<T>::DataType>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>() and
+                                  is_composed_of_real_d<
+                                      typename IsGetDataType<T>::DataType>())>
 qacc Vector<RealD> get_data_real_d(const T& xx)
 {
   return get_data_as<RealD>(xx);
 }
 
-template <class T, QLAT_ENABLE_IF(
-                       is_get_data_type<T>() and
-                       is_composed_of_complex_d<typename IsGetDataType<T>::DataType>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>() and
+                                  is_composed_of_complex_d<
+                                      typename IsGetDataType<T>::DataType>())>
 qacc Vector<ComplexD> get_data_complex_d(const T& xx)
 {
   return get_data_as<ComplexD>(xx);
 }
 
-template <class T,
-          QLAT_ENABLE_IF(is_get_data_type<T>() and
-                         is_composed_of_long<typename IsGetDataType<T>::DataType>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>() and
+                                  is_composed_of_long<
+                                      typename IsGetDataType<T>::DataType>())>
 qacc Vector<Long> get_data_long(const T& xx)
 {
   return get_data_as<Long>(xx);
