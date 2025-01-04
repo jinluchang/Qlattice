@@ -17,7 +17,9 @@ let
 
   overlay = final: prev: let
     pkgs = final;
-  in rec {
+    call-pkg = pkgs.callPackage;
+    py-call-pkg = pkgs.python3Packages.callPackage;
+  in {
     qlat-name = "";
     #
     is-pypi-src = false;
@@ -26,10 +28,9 @@ let
     qlat-nvcc-arch = nvcc-arch;
     qlat-eigen = pkgs.grid-lehner;
     qlat-stdenv = pkgs.stdenv;
+    qlat-cc = pkgs.gcc;
     mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
     grid-lehner-c-lime = pkgs.qio;
-    call-pkg = pkgs.callPackage;
-    py-call-pkg = pkgs.python3Packages.callPackage;
     #
     qlat-nixgl = if pkgs.qlat-cudaSupport then nixgl.auto.nixGLDefault else "";
     #
@@ -174,6 +175,9 @@ let
       targetPkgs = pkgs: [ pkgs.qlat-env ];
       runScript = "bash";
       extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      profile=''
+        PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
+      '';
     }).env;
     #
     qlat-jhub-py = pkgs.python3.withPackages (ps: with ps; [
@@ -238,7 +242,8 @@ let
         openssh
         linux-pam
         findutils
-        gcc
+        qlat-cc
+        openmp
         clang-tools
         git
         gnumake
@@ -247,6 +252,7 @@ let
         mpi
         killall
         wget
+        which
         rsync
         automake
         autoconf
@@ -275,6 +281,9 @@ let
       targetPkgs = pkgs: [ pkgs.qlat-jhub-env ];
       runScript = "bash";
       extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      profile=''
+        PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
+      '';
     }).env;
     #
   };
@@ -309,6 +318,7 @@ let
   in rec {
     qlat-name = "${prev.qlat-name}-clang";
     qlat-stdenv = pkgs.clangStdenv;
+    qlat-cc = pkgs.clang;
     openmp = pkgs.llvmPackages.openmp;
   };
 
@@ -334,10 +344,10 @@ let
     "qlat_grid${pkgs.qlat-name}" = pkgs.qlat_grid;
     "qlat_cps${pkgs.qlat-name}" = pkgs.qlat_cps;
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
+    "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
     "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
     "qlat-fhs${pkgs.qlat-name}" = pkgs.qlat-fhs;
-    "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-jhub-py${pkgs.qlat-name}" = pkgs.qlat-jhub-py;
     "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
     "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
@@ -452,6 +462,13 @@ in {
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-cuda;
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-std-cuda;
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat-fhs;
+  inherit (many-qlat-pkgs-all) qlat-fhs-std;
+  inherit (many-qlat-pkgs-all) qlat-fhs-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-fhs-cuda;
+  inherit (many-qlat-pkgs-all) qlat-fhs-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-fhs-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs;
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std;

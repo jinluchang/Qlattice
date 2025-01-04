@@ -40,15 +40,15 @@ cdef class LatData{{type_ext}}:
 {{endif}}
         if isinstance(v, LatData{{type_ext}}):
             v1 = v
-            self.xx = v1.xx
+            cc.assign_direct(self.xx, v1.xx)
 {{if type_ext == ''}}
         elif isinstance(v, LatDataRealF):
             v2 = v
-            self.xx = v2.xx
+            cc.assign_direct(self.xx, v2.xx)
 {{elif type_ext == 'RealF'}}
         elif isinstance(v, LatData):
             v2 = v
-            self.xx = v2.xx
+            cc.assign_direct(self.xx, v2.xx)
 {{endif}}
         else:
             raise Exception(f"{type(v)}")
