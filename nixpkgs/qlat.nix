@@ -25,17 +25,8 @@
 }:
 
 let
+
   orig-stdenv = stdenv;
-in
-
-buildPythonPackage rec {
-
-  pname = "qlat${qlat-name}";
-  version = if is-pypi-src then version-pypi else version-local;
-
-  pyproject = true;
-
-  src = if is-pypi-src then src-pypi else src-local;
 
   version-pypi = "0.75";
   src-pypi = fetchPypi {
@@ -48,40 +39,51 @@ buildPythonPackage rec {
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat;
 
-  enableParallelBuilding = true;
+in
 
-  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
+  buildPythonPackage rec {
 
-  build-system = [
-    qlat_utils
-  ];
+    pname = "qlat${qlat-name}";
+    version = if is-pypi-src then version-pypi else version-local;
 
-  nativeBuildInputs = [
-    git
-    mpi
-    which
-  ]
-  ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
-  ++ lib.optionals cudaSupport [ nixgl ]
-  ;
+    pyproject = true;
 
-  propagatedBuildInputs = [
-    mpi
-    fftw
-    fftwFloat
-    gsl
-    cuba
-    qlat_utils
-  ];
+    src = if is-pypi-src then src-pypi else src-local;
 
-  dependencies = [
-    qlat_utils
-    mpi4py
-    sympy
-    scipy
-    jax
-    jaxlib
-  ];
+    enableParallelBuilding = true;
+
+    stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
+
+    build-system = [
+      qlat_utils
+    ];
+
+    nativeBuildInputs = [
+      git
+      mpi
+      which
+    ]
+    ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+    ++ lib.optionals cudaSupport [ nixgl ]
+    ;
+
+    propagatedBuildInputs = [
+      mpi
+      fftw
+      fftwFloat
+      gsl
+      cuba
+      qlat_utils
+    ];
+
+    dependencies = [
+      qlat_utils
+      mpi4py
+      sympy
+      scipy
+      jax
+      jaxlib
+    ];
 
   # requiredSystemFeatures = [ "require-cuda" ];
 
