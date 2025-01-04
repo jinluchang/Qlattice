@@ -1,6 +1,6 @@
 {
   nixpkgs ? import ./nixpkgs.nix,
-  name ? "qlat-fhs",
+  name ? "qlat-jhub-fhs",
 }:
 
 let
