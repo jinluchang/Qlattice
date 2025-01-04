@@ -1244,15 +1244,12 @@ using PselProp = SelectedPoints<WilsonMatrix>;
 
 // --------------------
 
-template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+template <class M,
+          QLAT_ENABLE_IF(is_data_value_type<M>() and is_composed_of_real<M>())>
 void set_u_rand(Field<M>& f, const RngState& rs, const RealD upper = 1.0,
                 const RealD lower = -1.0)
 {
   TIMER("set_u_rand(f,rs,upper,lower)");
-  if (not is_composed_of_real<M>()) {
-    qassert(is_composed_of_real<M>());
-    return;
-  }
   using Real = typename IsDataValueType<M>::ElementaryType;
   qthread_for(index, f.geo().local_volume(), {
     const Geometry& geo = f.geo();
@@ -1268,7 +1265,17 @@ void set_u_rand(Field<M>& f, const RngState& rs, const RealD upper = 1.0,
   });
 }
 
-template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>() and
+                                  (not is_composed_of_real<M>()))>
+void set_u_rand(Field<M>& f, const RngState& rs, const RealD upper = 1.0,
+                const RealD lower = -1.0)
+{
+  TIMER("set_u_rand(f,rs,upper,lower)(zero)");
+  set_zero(f);
+}
+
+template <class M,
+          QLAT_ENABLE_IF(is_data_value_type<M>() and is_composed_of_real<M>())>
 void set_g_rand(Field<M>& f, const RngState& rs, const RealD center = 0.0,
                 const RealD sigma = 1.0)
 {
@@ -1290,6 +1297,15 @@ void set_g_rand(Field<M>& f, const RngState& rs, const RealD center = 0.0,
       dv[m] = g_rand_gen(rsi, center, sigma);
     }
   });
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>() and
+                                  (not is_composed_of_real<M>()))>
+void set_g_rand(Field<M>& f, const RngState& rs, const RealD center = 0.0,
+                const RealD sigma = 1.0)
+{
+  TIMER("set_g_rand(f,rs,center,sigma)(zero)");
+  set_zero(f);
 }
 
 // --------------------
