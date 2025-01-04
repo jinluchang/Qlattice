@@ -812,6 +812,7 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
 }
 
 
+//seed to be -1 for all 1 wall src
 template <class Td>
 void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, int mix_spin = 0, int tini = -1)
 {
@@ -838,50 +839,59 @@ void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, i
     Coordinate p    = geo.coordinate_g_from_l(xl);
     if(tini == -1 or p[3] == tini)
     {
-      if(mix_color == 0 and mix_spin == 0)
-      {
-        ////double r = (2 * PI /3.0 ) * int(3 * qlat::u_rand_gen(rs));
-        double r = 2 * PI * qlat::u_rand_gen(rs);
+      if(seed == -1) 
+      {   
         for(int dc=0;dc<12;dc++)
-        {
-          srcP[(isp*12+dc)*12 + dc] = qlat::ComplexT<Td >(std::cos(r), std::sin(r));
-        }
-      }
+        {   
+          srcP[(isp*12+dc)*12 + dc] = qlat::ComplexT<Td >(1.0, 0.0);
+        }   
+      }else{   
 
-      if(mix_color == 1 and mix_spin == 0)
-      {
-        for(int c0=0;c0<3;c0++)
-        for(int c1=0;c1<3;c1++)
+        if(mix_color == 0 and mix_spin == 0)
         {
           ////double r = (2 * PI /3.0 ) * int(3 * qlat::u_rand_gen(rs));
           double r = 2 * PI * qlat::u_rand_gen(rs);
-          for(int d =0;d<4;d++)
+          for(int dc=0;dc<12;dc++)
           {
-            srcP[(isp*12+d*3 + c0)*12 + d*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r)) / qlat::ComplexT<Td >(3.0, 0.0);
+            srcP[(isp*12+dc)*12 + dc] = qlat::ComplexT<Td >(std::cos(r), std::sin(r));
           }
         }
-      }
 
-      if(mix_color == 1 and mix_spin == 1)
-      {
-        for(int d0 =0;d0<2;d0++)
-        for(int d1 =0;d1<2;d1++)
-        for(int c0=0;c0<3;c0++)
-        for(int c1=0;c1<3;c1++)
+        if(mix_color == 1 and mix_spin == 0)
         {
-          double r = 2 * PI * qlat::u_rand_gen(rs);
-          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / qlat::ComplexT<Td >(6.0, 0.0);
+          for(int c0=0;c0<3;c0++)
+          for(int c1=0;c1<3;c1++)
+          {
+            ////double r = (2 * PI /3.0 ) * int(3 * qlat::u_rand_gen(rs));
+            double r = 2 * PI * qlat::u_rand_gen(rs);
+            for(int d =0;d<4;d++)
+            {
+              srcP[(isp*12+d*3 + c0)*12 + d*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r)) / qlat::ComplexT<Td >(3.0, 0.0);
+            }
+          }
         }
 
-        for(int d0 =2;d0<4;d0++)
-        for(int d1 =2;d1<4;d1++)
-        for(int c0=0;c0<3;c0++)
-        for(int c1=0;c1<3;c1++)
+        if(mix_color == 1 and mix_spin == 1)
         {
-          double r = 2 * PI * qlat::u_rand_gen(rs);
-          srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / qlat::ComplexT<Td >(6.0, 0.0);
-        }
+          for(int d0 =0;d0<2;d0++)
+          for(int d1 =0;d1<2;d1++)
+          for(int c0=0;c0<3;c0++)
+          for(int c1=0;c1<3;c1++)
+          {
+            double r = 2 * PI * qlat::u_rand_gen(rs);
+            srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / qlat::ComplexT<Td >(6.0, 0.0);
+          }
 
+          for(int d0 =2;d0<4;d0++)
+          for(int d1 =2;d1<4;d1++)
+          for(int c0=0;c0<3;c0++)
+          for(int c1=0;c1<3;c1++)
+          {
+            double r = 2 * PI * qlat::u_rand_gen(rs);
+            srcP[(isp*12+d0*3 + c0)*12 + d1*3+c1] = qlat::ComplexT<Td >(std::cos(r), std::sin(r))  / qlat::ComplexT<Td >(6.0, 0.0);
+          }
+
+        }
       }
     }
   }); 

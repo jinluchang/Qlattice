@@ -384,9 +384,9 @@ inline void set_GPU(){
   }
 
   {
-  qacc_GetDeviceCount(&num_gpus);
+  //qacc_GetDeviceCount(&num_gpus);
   if(gpu_verbos){
-    printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
+    printf("CPU node %d (of %d) uses CUDA device %d (of %d) \n", id_node, num_node, gpu_id, num_gpus);
   }
   }
 

@@ -162,9 +162,8 @@ template<typename Ty>
 void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_acc<Ty >& Eres, 
   fft_desc_basic& fd, qlat::vector_gpu<Ty >& resTa, int clear = 1)
 {
-  (void)clear;
   prop_to_vec(Eprop, resTa, fd);  
-  vec_corrE(resTa, Eres, fd, 0);
+  vec_corrE(resTa, Eres, fd, 0, clear);
 }
 
 template<typename Td>

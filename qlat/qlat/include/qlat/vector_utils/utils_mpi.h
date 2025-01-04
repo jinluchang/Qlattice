@@ -258,7 +258,7 @@ void bcast_all_size(Ty *src, Long size, int root, int GPU=0, MPI_Comm* commp=NUL
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
-  //TIMER("global sum sum_all_size");
+  TIMERB("global sum sum_all_size");
   if(size == 0){return ;}
   if(qlat::get_num_node() == 1){
     if(src == sav){return;}
@@ -273,10 +273,10 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
   #ifndef QLAT_USE_ACC
   GPU_set = 0;
   #endif
-  VectorGPUKey gkey(size_t(size)*sizeof(Ty), ssprintf("sum_all_size_buf_%d", iomp), GPU_set); ////read buffers for global sum
+  VectorGPUKey gkey(size_t(size)*sizeof(Ty)/sizeof(int8_t), ssprintf("sum_all_size_buf_%d", iomp), GPU_set); ////read buffers for global sum
   if(src == sav){
     const vector_gpu<int8_t >& tmp = get_vector_gpu_plan<int8_t >(gkey);
-    buf_res = (Ty*) tmp.p;
+    buf_res = (Ty*) tmp.data();
   }else{buf_res = sav;}////small modify for pointers
 
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
@@ -284,20 +284,25 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
 
   Qassert(sizeof(Ty)%M_size == 0);
   const int M_fac = sizeof(Ty)/M_size;
-  //print0("mpi size %5d, M_fac %5d, Ty %5d \n", int(size), M_fac, int(sizeof(Ty)) );
+  //print0("mpi size %5d, M_fac %5d, Ty %5d, int8_t %5d \n", int(size), M_fac, int(sizeof(Ty)), int(sizeof(int8_t)) );
 
   //bool do_copy = false;
   const bool do_copy = true   ; // always copy for global sum, AMD machine has some issue
-  bool copy_sum_cpu  = GPU_set;
+  //H100 need to avoid direct gpu collective communications 
+  //collective communications directly between GPUs need NCCL for this if necessary...
+  //bool copy_sum_gpu  = GPU_set;
+  bool copy_sum_gpu  = false;
 
   #ifdef __NO_GPU_DIRECT__
   #ifdef QLAT_USE_ACC
-  if(GPU == 1){copy_sum_cpu = false;}
+  if(GPU == 1){copy_sum_gpu = false;}
   #endif
   #endif
 
-  VectorGPUKey gkey0(0, ssprintf("sum_all_size_buf0_%d", iomp), copy_sum_cpu);
-  VectorGPUKey gkey1(0, ssprintf("sum_all_size_buf1_%d", iomp), copy_sum_cpu);
+  //copy_sum_gpu = false;
+
+  VectorGPUKey gkey0(0, ssprintf("sum_all_size_buf0_%d", iomp), copy_sum_gpu);
+  VectorGPUKey gkey1(0, ssprintf("sum_all_size_buf1_%d", iomp), copy_sum_gpu);
   qlat::vector_gpu<int8_t >& tem_sHIP = get_vector_gpu_plan<int8_t >(gkey0);
   qlat::vector_gpu<int8_t >& tem_rHIP = get_vector_gpu_plan<int8_t >(gkey1);
 
@@ -318,10 +323,11 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
 
   if(do_copy == false){tem_src = src;tem_res = buf_res;}
   if(do_copy == true ){
-    tem_sHIP.resizeL(size * sizeof(Ty));tem_rHIP.resizeL(size * sizeof(Ty));
-    cpy_GPU((Ty*) &tem_sHIP[0], src, size, copy_sum_cpu, GPU_set);
-    //cpy_data_thread(&tem_sHIP[0], src, size, 3);
-    tem_src = (Ty*) &tem_sHIP[0];tem_res = (Ty*) &tem_rHIP[0];
+    tem_sHIP.resizeL(size * sizeof(Ty)/sizeof(int8_t));
+    tem_rHIP.resizeL(size * sizeof(Ty)/sizeof(int8_t));
+    cpy_GPU((Ty*) tem_sHIP.data(), src, size, copy_sum_gpu, GPU_set);
+    //cpy_data_thread(tem_sHIP.data(), src, size, 3);
+    tem_src = (Ty*) tem_sHIP.data();tem_res = (Ty*) tem_rHIP.data();
   }
   
   if(commp == NULL){MPI_Allreduce(tem_src,tem_res, size * M_fac, curr, MPI_SUM, get_comm());}
@@ -333,12 +339,14 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
   //MPI_Wait(&request, MPI_STATUS_IGNORE);
 
   if(do_copy == true){
-    cpy_GPU(sav, (Ty*) &tem_rHIP[0], size, GPU_set, copy_sum_cpu);
-    //cpy_data_thread(buf_res, &tem_rHIP[0], size, 2);
+    cpy_GPU(sav, (Ty*) tem_rHIP.data(), size, GPU_set, copy_sum_gpu);
+    //cpy_data_thread(buf_res, tem_rHIP.data(), size, 2);
   }
+  //print0("===check iomp %d, GPU_set %d, do_copy %d, cpu %d \n", iomp, GPU_set, int(do_copy), int(copy_sum_gpu));
   if(src == sav and do_copy == false)
   {
-    cpy_data_thread(sav, buf_res, size, GPU);
+    cpy_GPU(sav, buf_res, size, GPU, GPU_set);
+    //cpy_data_thread(sav, buf_res, size, GPU);
   }
 
   if(src != sav){
@@ -412,7 +420,9 @@ void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int
   Ty* src = NULL;Ty* res = NULL;
 
   std::vector<Ty > tem_src,tem_res;
-  bool do_copy = false;
+  //bool do_copy = false;
+  //collactive behavior need to be done on CPU ...
+  bool do_copy = true;
   #ifdef __NO_GPU_DIRECT__
   #ifdef QLAT_USE_ACC
   if(GPU == 1){do_copy = true;}
@@ -965,4 +975,3 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 }
 
 #endif
-

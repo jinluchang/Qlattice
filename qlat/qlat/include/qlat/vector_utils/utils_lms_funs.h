@@ -319,8 +319,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   std::string POS_LIST, POS_CUR;
   if(saveFFT){
-    std::string key_T = ssprintf("%d  %d  %d %d %d %d", int(massL.size()), fd.nt, mc, mc, mc, 2);
-    std::string dimN  = ssprintf("masses nt pz py px complex");
+    key_T = ssprintf("%d  %d  %d %d %d %d", int(massL.size()), fd.nt, mc, mc, mc, 2);
+    dimN  = ssprintf("masses nt pz py px complex");
   }
   std::string ktem(key_T);
   std::string dtem(dimN);

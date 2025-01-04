@@ -904,7 +904,7 @@ void apply_phases(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>* res, vecto
   const int   Nt = Nv[3];
 
   qacc_for(xi, Long(vol),{
-    for(int momi = 0;momi < (int)Nmom; momi++)
+    for(unsigned int momi = 0;momi < Nmom; momi++)
     {
       const Ty& ph   = Pphase[momi][xi];
       for(int ti=0;ti<Nt;ti++)
