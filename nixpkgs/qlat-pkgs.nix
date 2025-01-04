@@ -133,8 +133,8 @@ let
     qlat-py-pkgs = with pkgs; [
       qlat_utils
       qlat
-      qlat_cps
       qlat_grid
+      qlat_cps
       gpt-lehner
       qlat-docs
       qlat-pypi
@@ -329,6 +329,10 @@ let
       ] ++ overlays;
     };
   in {
+    "qlat_utils${pkgs.qlat-name}" = pkgs.qlat_utils;
+    "qlat${pkgs.qlat-name}" = pkgs.qlat;
+    "qlat_grid${pkgs.qlat-name}" = pkgs.qlat_grid;
+    "qlat_cps${pkgs.qlat-name}" = pkgs.qlat_cps;
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
     "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
@@ -385,6 +389,34 @@ in {
   inherit many-qlat-pkgs-core-w-cuda;
   inherit many-qlat-pkgs-core-w-cuda-pypi;
   inherit many-qlat-pkgs-all;
+  #
+  inherit (many-qlat-pkgs-all) qlat_utils;
+  inherit (many-qlat-pkgs-all) qlat_utils-std;
+  inherit (many-qlat-pkgs-all) qlat_utils-std-clang;
+  inherit (many-qlat-pkgs-all) qlat_utils-cuda;
+  inherit (many-qlat-pkgs-all) qlat_utils-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat_utils-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat;
+  inherit (many-qlat-pkgs-all) qlat-std;
+  inherit (many-qlat-pkgs-all) qlat-std-clang;
+  inherit (many-qlat-pkgs-all) qlat-cuda;
+  inherit (many-qlat-pkgs-all) qlat-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat_grid;
+  inherit (many-qlat-pkgs-all) qlat_grid-std;
+  inherit (many-qlat-pkgs-all) qlat_grid-std-clang;
+  inherit (many-qlat-pkgs-all) qlat_grid-cuda;
+  inherit (many-qlat-pkgs-all) qlat_grid-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat_grid-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) qlat_cps;
+  inherit (many-qlat-pkgs-all) qlat_cps-std;
+  inherit (many-qlat-pkgs-all) qlat_cps-std-clang;
+  inherit (many-qlat-pkgs-all) qlat_cps-cuda;
+  inherit (many-qlat-pkgs-all) qlat_cps-std-cuda;
+  inherit (many-qlat-pkgs-all) qlat_cps-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-tests;
   inherit (many-qlat-pkgs-all) qlat-tests-std;
