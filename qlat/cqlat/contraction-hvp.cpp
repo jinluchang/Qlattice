@@ -12,7 +12,9 @@ EXPORT(contract_chvp3_sfield, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   const SelProp& prop1 = py_convert_type<SelProp>(p_prop1);
   const SelProp& prop2 = py_convert_type<SelProp>(p_prop2);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop1, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   qassert(&fsel == &(py_convert_type<FieldSelection>(p_prop2, "fsel")));
   ld = contract_chvp3(prop1, prop2, tslice_src, fsel);
   Py_RETURN_NONE;

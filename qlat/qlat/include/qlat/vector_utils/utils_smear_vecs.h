@@ -254,7 +254,9 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //}
   //print0("rank %3d, Nneed %ld, total %ld \n", qlat::get_id_node(), Nneed - Nvol, Nvol_ext - Nvol );
 
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
+  QLAT_DIAGNOSTIC_POP;
 
   std::vector<qlat::vector_acc<Long > > mapvq_send;
   std::vector<qlat::vector_acc<Long > > mapvq_recv;
@@ -893,7 +895,9 @@ struct smear_fun{
     if(!smear_in_time_dir){geo1.resize(Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));}
     if( smear_in_time_dir){geo1.resize(Coordinate(1, 1, 1, 1), Coordinate(1, 1, 1, 1));}
     geo_ext = geo1;
+    QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
     const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
+    QLAT_DIAGNOSTIC_POP;
     //bfac  = bfac_a;
     ////Tsize = Tsize_a;
 
@@ -1057,7 +1061,9 @@ struct smear_fun{
     (void)GPU;
     check_setup();
     if(redistribution_copy == 1){return ;}
+    QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
     const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
+    QLAT_DIAGNOSTIC_POP;
     const Long total_bytes =
         (plan.total_recv_size + plan.total_send_size) * bfac * sizeof(Ty);
     if (0 == total_bytes) {return;}

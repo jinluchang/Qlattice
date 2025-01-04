@@ -87,7 +87,9 @@ EXPORT(set_rand_u1_src_fsel, {
   prop.init();
   FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   fu1.init();
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  QLAT_DIAGNOSTIC_POP;
   const RngState& rs = py_convert_type<RngState>(p_rs);
   set_rand_u1_src_fsel(prop, fu1, fsel, rs);
   Py_RETURN_NONE;
@@ -107,7 +109,9 @@ EXPORT(set_rand_u1_sol_fsel, {
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   qassert(fu1.multiplicity == 1);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  QLAT_DIAGNOSTIC_POP;
   set_rand_u1_sol_fsel(sf_prop, prop, fu1, fsel);
   Py_RETURN_NONE;
 })
@@ -240,9 +244,11 @@ EXPORT(flip_tpbc_with_tslice_sp_prop, {
   }
   SelectedPoints<WilsonMatrix>& sp_prop =
       py_convert_type_spoints<WilsonMatrix>(p_sp_prop);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const PointsSelection& psel =
       py_convert_type<PointsSelection>(p_sp_prop, "psel");
   const Geometry& geo = py_convert_type<Geometry>(p_sp_prop, "psel", "geo");
+  QLAT_DIAGNOSTIC_POP;
   const int t_size = geo.total_site()[3];
   flip_tpbc_with_tslice(sp_prop, psel, tslice_flip_tpbc, t_size);
   Py_RETURN_NONE;
@@ -257,8 +263,10 @@ EXPORT(flip_tpbc_with_tslice_s_prop, {
   }
   SelectedField<WilsonMatrix>& s_prop =
       py_convert_type_sfield<WilsonMatrix>(p_s_prop);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel =
       py_convert_type<FieldSelection>(p_s_prop, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   flip_tpbc_with_tslice(s_prop, fsel, tslice_flip_tpbc);
   Py_RETURN_NONE;
 })

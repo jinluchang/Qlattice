@@ -615,9 +615,11 @@ inline void refresh_expanded_gf_flow_plaq_mask_mu(GaugeField& gf_ext,
                                                   const int flow_size)
 {
   TIMER("refresh_expanded_gf_flow_plaq_mask_mu");
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const CommPlan& plan = get_comm_plan(
       set_marks_flow_plaq_mask_mu, ssprintf("%d %d %d", mask, mu, flow_size),
       gf_ext.geo(), gf_ext.multiplicity);
+  QLAT_DIAGNOSTIC_POP;
   refresh_expanded(gf_ext, plan);
 }
 

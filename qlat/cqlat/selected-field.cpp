@@ -125,9 +125,11 @@ template <class M>
 PyObject* field_shift_sfield_ctype(PyObject* p_sfield_new, PyObject* p_sfield,
                                    const Coordinate& shift, const bool is_reflect)
 {
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   FieldSelection& fsel_new = py_convert_type<FieldSelection>(p_sfield_new, "fsel");
-  SelectedField<M>& sf_new = py_convert_type_sfield<M>(p_sfield_new);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
+  QLAT_DIAGNOSTIC_POP;
+  SelectedField<M>& sf_new = py_convert_type_sfield<M>(p_sfield_new);
   const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
   field_shift(sf_new, fsel_new, sf, fsel, shift, is_reflect);
   Py_RETURN_NONE;
@@ -366,7 +368,9 @@ EXPORT(acc_field_sfield, {
   }
   const std::string ctype = py_get_ctype(p_sfield);
   qassert(py_get_ctype(p_sfield) == ctype);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, p_sfield, fsel);
   return p_ret;
@@ -556,7 +560,9 @@ EXPORT(glb_sum_tslice_double_sfield, {
   }
   const std::string ctype = py_get_ctype(p_field);
   qassert(py_get_ctype(p_spfield) == ctype);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_double_sfield_ctype, ctype, p_spfield,
                  p_field, fsel, t_dir);
@@ -573,7 +579,9 @@ EXPORT(glb_sum_tslice_long_sfield, {
   }
   const std::string ctype = py_get_ctype(p_field);
   qassert(py_get_ctype(p_spfield) == ctype);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_long_sfield_ctype, ctype, p_spfield,
                  p_field, fsel, t_dir);
@@ -588,7 +596,9 @@ EXPORT(save_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   const std::string path = py_convert_data<std::string>(p_path);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, save_sfield_ctype, ctype, p_field, path, fsel);
@@ -603,7 +613,9 @@ EXPORT(load_sfield, {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   const std::string path = py_convert_data<std::string>(p_path);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, load_sfield_ctype, ctype, p_field, path, fsel);

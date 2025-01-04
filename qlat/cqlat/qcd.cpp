@@ -228,7 +228,9 @@ EXPORT(apply_gt_sprop, {
   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const SelectedField<WilsonMatrix>& prop0 =
       py_convert_type<SelectedField<WilsonMatrix> >(p_prop0);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop0, "fsel");
+  QLAT_DIAGNOSTIC_POP;
   prop_apply_gauge_transformation(prop, prop0, gt, fsel);
   Py_RETURN_NONE;
 })
@@ -247,7 +249,9 @@ EXPORT(apply_gt_psprop, {
   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const SelectedPoints<WilsonMatrix>& prop0 =
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop0);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const PointsSelection& psel = py_convert_type<PointsSelection>(p_prop0, "psel");
+  QLAT_DIAGNOSTIC_POP;
   prop_apply_gauge_transformation(prop, prop0, gt, psel);
   Py_RETURN_NONE;
 })

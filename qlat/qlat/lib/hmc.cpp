@@ -203,8 +203,10 @@ double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
   gf_ext.init(geo_ext);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const CommPlan& plan = get_comm_plan(set_marks_field_gf_hamilton, tag_comm,
                                        gf_ext.geo(), gf_ext.multiplicity);
+  QLAT_DIAGNOSTIC_POP;
   refresh_expanded(gf_ext, plan);
   return gf_hamilton_node_no_comm(gf_ext, ga);
 }
@@ -344,8 +346,10 @@ void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
   qassert(gf_ext.multiplicity == 4);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const CommPlan& plan = get_comm_plan(set_marks_field_gm_force, tag_comm,
                                        gf_ext.geo(), gf_ext.multiplicity);
+  QLAT_DIAGNOSTIC_POP;
   refresh_expanded(gf_ext, plan);
   set_gm_force_no_comm(gm_force, gf_ext, ga);
   qassert(gm_force.multiplicity == 4);

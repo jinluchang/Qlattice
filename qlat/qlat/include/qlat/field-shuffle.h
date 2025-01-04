@@ -826,7 +826,9 @@ void shuffle_field(std::vector<Field<M>>& fs, const Field<M>& f,
   const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity;
   clear(fs);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
+  QLAT_DIAGNOSTIC_POP;
   shuffle_field(fs, f, sp);
   const Long total_bytes =
       sp.scp.global_comm_size * multiplicity * sizeof(M);
@@ -840,7 +842,9 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M>>& fs,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const ShufflePlan& sp = get_shuffle_plan(f.geo().total_site(), new_size_node);
+  QLAT_DIAGNOSTIC_POP;
   shuffle_field_back(f, fs, sp);
   const Long total_bytes =
       sp.scp.global_comm_size * f.multiplicity * sizeof(M);
