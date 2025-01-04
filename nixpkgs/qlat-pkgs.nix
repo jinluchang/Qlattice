@@ -28,7 +28,7 @@ let
     qlat-nvcc-arch = nvcc-arch;
     qlat-eigen = pkgs.grid-lehner;
     qlat-stdenv = pkgs.stdenv;
-    qlat-cc = pkgs.gcc;
+    qlat-cc = [ pkgs.gcc ];
     mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
     grid-lehner-c-lime = pkgs.qio;
     #
@@ -170,7 +170,7 @@ let
       packages = [ pkgs.qlat-env ];
       inputsFrom = packages;
     };
-    qlat-fhs = (pkgs.buildFHSEnv {
+    qlat-fhs = pkgs.buildFHSEnv {
       name = "qlat-fhs${pkgs.qlat-name}";
       targetPkgs = pkgs: [ pkgs.qlat-env ];
       runScript = "bash";
@@ -178,7 +178,7 @@ let
       profile=''
         PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
-    }).env;
+    };
     #
     qlat-jhub-py = pkgs.python3.withPackages (ps: with ps; [
       ipykernel
@@ -242,8 +242,6 @@ let
         openssh
         linux-pam
         findutils
-        qlat-cc
-        openmp
         clang-tools
         git
         gnumake
@@ -268,7 +266,7 @@ let
         file
         zip
         unzip
-      ] ++ pkgs.qlat-dep-pkgs ++ pkgs.qlat-dep-pkgs-extra;
+      ] ++ pkgs.qlat-cc ++ pkgs.qlat-dep-pkgs ++ pkgs.qlat-dep-pkgs-extra;
       extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
     };
     qlat-jhub-sh = pkgs.mkShell rec {
@@ -276,7 +274,7 @@ let
       packages = [ pkgs.qlat-jhub-env ];
       inputsFrom = packages;
     };
-    qlat-jhub-fhs = (pkgs.buildFHSEnv {
+    qlat-jhub-fhs = pkgs.buildFHSEnv {
       name = "qlat-jhub-fhs${pkgs.qlat-name}";
       targetPkgs = pkgs: [ pkgs.qlat-jhub-env ];
       runScript = "bash";
@@ -284,7 +282,7 @@ let
       profile=''
         PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
-    }).env;
+    };
     #
   };
 
@@ -318,7 +316,7 @@ let
   in rec {
     qlat-name = "${prev.qlat-name}-clang";
     qlat-stdenv = pkgs.clangStdenv;
-    qlat-cc = pkgs.clang;
+    qlat-cc = [ pkgs.clang openmp ];
     openmp = pkgs.llvmPackages.openmp;
   };
 

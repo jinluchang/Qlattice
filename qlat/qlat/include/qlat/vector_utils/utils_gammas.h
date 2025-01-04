@@ -85,6 +85,8 @@ struct ga_M
   //  vp.ind.is_copy = true;
   //}
 
+  ga_M(const ga_M& vp) { *this = vp; }
+
   const ga_M& operator=(const ga_M& vp)
   {
     g.resize(4);ind.resize(4);
