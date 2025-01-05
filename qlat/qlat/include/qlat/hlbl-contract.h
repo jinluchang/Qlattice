@@ -223,8 +223,10 @@ inline ChooseReferenceLabel choose_reference_label(const std::string& label)
     return choose_reference_label_ref_center;
   } else {
     qassert(false);
+    return choose_reference_label_ref_far;
   }
   qassert(false);
+  return choose_reference_label_ref_far;
 }
 
 qacc CoordinateD choose_reference(const Coordinate& xg_x,

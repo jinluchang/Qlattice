@@ -1271,6 +1271,9 @@ void set_u_rand(Field<M>& f, const RngState& rs, const RealD upper = 1.0,
                 const RealD lower = -1.0)
 {
   TIMER("set_u_rand(f,rs,upper,lower)(zero)");
+  (void)rs;
+  (void)upper;
+  (void)lower;
   set_zero(f);
 }
 
@@ -1305,6 +1308,9 @@ void set_g_rand(Field<M>& f, const RngState& rs, const RealD center = 0.0,
                 const RealD sigma = 1.0)
 {
   TIMER("set_g_rand(f,rs,center,sigma)(zero)");
+  (void)rs;
+  (void)center;
+  (void)sigma;
   set_zero(f);
 }
 

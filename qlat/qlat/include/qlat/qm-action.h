@@ -331,7 +331,7 @@ struct QMAction {
     TIMER("QMAction.hmc_set_sm_force_no_comm");
     const Geometry geo = f.geo();
     QMAction& qma = *this;
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> force_v = force.get_elems(xl);
