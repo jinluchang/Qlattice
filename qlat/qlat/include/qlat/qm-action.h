@@ -222,7 +222,7 @@ struct QMAction {
     return rtn;
   }
 
-  qacc double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)
+  inline double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
@@ -250,7 +250,7 @@ struct QMAction {
     fd.init(geo_r);
     // Loops over every lattice point in the current node
     QMAction& qma = *this;
-    qacc_for(index, geo_r.local_volume(), {
+    qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       fd.get_elem(index) = qma.action_point(qma, f, geo, xl);
@@ -306,7 +306,7 @@ struct QMAction {
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
-    qacc_for(index, geo_r.local_volume(), {
+    qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo_r = fd.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
@@ -368,7 +368,7 @@ struct QMAction {
   {
     TIMER("QMAction.hmc_field_evolve");
     const Geometry& geo = f.geo();
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> f_v = f.get_elems(xl);

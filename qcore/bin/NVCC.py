@@ -231,6 +231,7 @@ class NvccCmdLine:
             "-Wextra",
             "-Wpedantic",
             "-Xcompiler",
+            "-Xcudafe",
             "-MD",
             ])
         opt1_pool = set([
