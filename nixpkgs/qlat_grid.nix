@@ -86,7 +86,7 @@ in
         GXX+=" -Xcudafe '--diag_suppress=550'"
         # GXX="-w"
         #
-        export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing GXX" # -D__DEBUG_VECUTILS__
+        export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing $GXX" # -D__DEBUG_VECUTILS__
         export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
         export QLAT_MPICXX="$PWD/NVCC.py -ccbin mpic++ $NVCC_OPTIONS"
         export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
