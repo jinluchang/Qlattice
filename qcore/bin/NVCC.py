@@ -105,7 +105,7 @@ class NvccCmdLine:
 
     def parse_cc_only_flags(self):
         """
-        If there is such flags, call cc intead of nvcc
+        If there is such flags, call cc instead of nvcc
         """
         opt_pool = set([
             "--version",
@@ -175,12 +175,22 @@ class NvccCmdLine:
             "--expt-extended-lambda",
             "--expt-relaxed-constexpr",
             ])
+        opt1_pool = set([
+            "-Xcudafe",
+            ])
         argv_new = []
+        n_arg = 0
         for arg in self.argv:
-            if arg in opt_pool:
+            if n_arg > 0:
+                self.nv_flags.append(arg)
+                n_arg -= 1
+            elif arg in opt_pool:
                 self.nv_flags.append(arg)
             elif arg.startswith("-arch=sm_"):
                 self.nv_flags.append(arg)
+            elif arg in opt1_pool:
+                self.nv_flags.append(arg)
+                n_arg = 1
             else:
                 argv_new.append(arg)
         self.argv = argv_new
@@ -231,7 +241,6 @@ class NvccCmdLine:
             "-Wextra",
             "-Wpedantic",
             "-Xcompiler",
-            "-Xcudafe",
             "-MD",
             ])
         opt1_pool = set([
@@ -310,54 +319,15 @@ class NvccCmdLine:
                 argv_new.append(quote_comma(arg))
         return argv_new
 
-    def need_dlink(self):
-        return False
-        if self.cc_only_flags:
-            return False
-        if self.is_compile:
-            return False
-        if not self.is_link:
-            return False
-        if self.output is None:
-            return False
-        return True
-
     def make_cc_argv(self):
         if not self.cc_only_flags:
             return None
         argv_new = [ self.ccbin, ] + self.cc_only_flags + self.common_flags + self.cc_flags + self.argv
         return argv_new
 
-    def make_dlink_argv(self):
-        if not self.need_dlink():
-            return None
-        argv_new = [ "nvcc", "-dlink", ]
-        argv_new += self.nv_flags
-        argv_new += filter(lambda x: x != "-shared", self.common_flags)
-        argv_new += self.prepare_cc_flags()
-        argv_new += self.argv
-        argv_new += self.prepare_wl_group_flags()
-        argv_new += [ "-o", self.output + ".device.o", ]
-        return argv_new
-
-    def make_link_argv(self):
-        if not self.need_dlink():
-            return None
-        argv_new = []
-        argv_new += [ self.ccbin, ]
-        argv_new += self.common_flags
-        argv_new += self.cc_flags
-        argv_new += [ self.output + ".device.o", ]
-        argv_new += self.argv
-        argv_new += self.wl_group_flags
-        argv_new += [ "-lcudart", "-lcufft", ]
-        argv_new += [ "-o", self.output, ]
-        return argv_new
-
     def make_argv(self):
         argv_new = []
         assert not self.cc_only_flags
-        assert not self.need_dlink()
         argv_new += [ "nvcc", "-ccbin", self.ccbin, ]
         if self.is_compile:
             argv_new += [ "-x", "cu", ]
@@ -425,11 +395,6 @@ class NvccCmdLine:
     def run(self):
         if self.cc_only_flags:
             argv = self.make_cc_argv()
-            self.call_and_exit(argv)
-        elif self.need_dlink():
-            argv = self.make_dlink_argv()
-            call(argv)
-            argv = self.make_link_argv()
             self.call_and_exit(argv)
         else:
             argv = self.make_argv()

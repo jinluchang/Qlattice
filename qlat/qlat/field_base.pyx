@@ -140,12 +140,12 @@ cdef class FieldBase:
             if isinstance(f1, SelectedFieldBase):
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
-                f1n *= -1
+                f1n *= -1.0
                 c.acc_field_sfield(self, f1n)
             elif isinstance(f1, SelectedPointsBase):
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
-                f1n *= -1
+                f1n *= -1.0
                 c.acc_field_spfield(self, f1n)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")

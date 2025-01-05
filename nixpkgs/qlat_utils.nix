@@ -99,7 +99,12 @@ in
         #
         GXX=""
         GXX+=" -Xcudafe '--diag_suppress=20014'"
-        GXX="-w"
+        GXX+=" -Xcudafe '--diag_suppress=20236'"
+        GXX+=" -Xcudafe '--diag_suppress=20012'"
+        GXX+=" -Xcudafe '--diag_suppress=20011'"
+        GXX+=" -Xcudafe '--diag_suppress=177'"
+        GXX+=" -Xcudafe '--diag_suppress=550'"
+        # GXX="-w"
         #
         export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing $GXX" # -D__DEBUG_VECUTILS__
         export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"

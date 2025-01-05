@@ -76,7 +76,16 @@ in
         cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
         patchShebangs --build "$PWD/NVCC.py"
         #
-        export NVCC_OPTIONS="-w -std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
+        GXX=""
+        GXX+=" -Xcudafe '--diag_suppress=20014'"
+        GXX+=" -Xcudafe '--diag_suppress=20236'"
+        GXX+=" -Xcudafe '--diag_suppress=20012'"
+        GXX+=" -Xcudafe '--diag_suppress=20011'"
+        GXX+=" -Xcudafe '--diag_suppress=177'"
+        GXX+=" -Xcudafe '--diag_suppress=550'"
+        # GXX="-w"
+        #
+        export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing $GXX" # -D__DEBUG_VECUTILS__
         export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
         export QLAT_MPICXX="$PWD/NVCC.py -ccbin mpic++ $NVCC_OPTIONS"
         export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
