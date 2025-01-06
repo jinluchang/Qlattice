@@ -308,10 +308,36 @@ size_node_list = [
         [1, 1, 1, 8],
         ]
 
+set_param("test-4nt8", "trajs")([ 1000, ])
+
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
-set_param("test-4nt8", "trajs")([ 1000, ])
+set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param("test-4nt8", "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 0, 0, "nbasis")(100)
+set_param("test-4nt8", "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
+set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param("test-4nt8", "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+set_param("test-4nt8", "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 1, 0)(get_param("test-4nt8", "clanc_params", 0, 0).copy())
+set_param("test-4nt8", "lanc_params", 1, 0)(get_param("test-4nt8", "lanc_params", 0, 0).copy())
+set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params")(get_param("test-4nt8", "fermion_params", 1, 0).copy())
+set_param("test-4nt8", "cg_params-0-0", "maxiter")(5)
+set_param("test-4nt8", "cg_params-0-1", "maxiter")(5)
+set_param("test-4nt8", "cg_params-0-2", "maxiter")(5)
+set_param("test-4nt8", "cg_params-1-0", "maxiter")(5)
+set_param("test-4nt8", "cg_params-1-1", "maxiter")(5)
+set_param("test-4nt8", "cg_params-1-2", "maxiter")(5)
+set_param("test-4nt8", "cg_params-0-0", "maxcycle")(1)
+set_param("test-4nt8", "cg_params-0-1", "maxcycle")(2)
+set_param("test-4nt8", "cg_params-0-2", "maxcycle")(3)
+set_param("test-4nt8", "cg_params-1-0", "maxcycle")(1)
+set_param("test-4nt8", "cg_params-1-1", "maxcycle")(2)
+set_param("test-4nt8", "cg_params-1-2", "maxcycle")(3)
+set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
+set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
+set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
 if __name__ == "__main__":
 
