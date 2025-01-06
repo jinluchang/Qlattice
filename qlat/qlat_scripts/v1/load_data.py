@@ -399,7 +399,7 @@ def check_cache_assign(cache, key, val):
     cache[key] = val
 
 @q.timer
-def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
+def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
     """
     cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
     cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
@@ -423,11 +423,19 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
         return None
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
-    for idx, tslice, inv_type, inv_acc in wi:
-        if inv_type != flavor_inv_type:
-            continue
-        q.displayln_info(0, f"load_prop_wsrc_psel: idx={idx} tslice={tslice} inv_type={inv_type} path_sp={path_sp}")
+    inv_type = flavor_inv_type
+    wi_list = []
+    for inv_acc in [ 2, 1, 0, ]:
+        for tslice in range(total_site[3]):
+            wi = (tslice, inv_acc,)
+            wi_list.append(wi)
+    idx = 0
+    for tslice, inv_acc in wi_list:
         tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+        if get_load_path(f"{path_sp}/{tag}.lat") is None:
+            continue
+        q.displayln_info(0, f"load_prop_wsrc_psel: idx={idx} ; tslice={tslice} ; inv_type={inv_type} ; path_sp='{path_sp}'")
+        idx += 1
         # load psel psnk prop
         fn_sp = os.path.join(path_sp, f"{tag}.lat")
         sp_prop = q.PselProp(psel)
@@ -451,13 +459,13 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
         # increase count
         count[inv_acc] += 1
     assert count[1] == total_site[3]
-    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
-    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
+    check_cache_assign(cache_prob, f"type={inv_type} ; accuracy=1 ; wsrc ; prob", 1)
+    check_cache_assign(cache_prob, f"type={inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
     populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
 
 @q.timer
-def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
+def load_prop_wsrc_fsel(job_tag, traj, flavor, *, psel, fsel, gt):
     """
     need to load psel first
     cache_fsel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; fsel"]
@@ -485,11 +493,18 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
     sfr = q.open_fields(get_load_path(path_s + "/geon-info.txt"), "r")
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
-    for idx, tslice, inv_type, inv_acc in wi:
-        if inv_type != flavor_inv_type:
-            continue
-        q.displayln_info(0, f"load_prop_wsrc_fsel: idx={idx} tslice={tslice} inv_type={inv_type} path_s={path_s}")
+    inv_type = flavor_inv_type
+    wi_list = []
+    for inv_acc in [ 2, 1, 0, ]:
+        for tslice in range(total_site[3]):
+            wi = (tslice, inv_acc,)
+            wi_list.append(wi)
+    idx = 0
+    for tslice, inv_acc in wi_list:
         tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+        if tag not in sfr:
+            continue
+        q.displayln_info(0, f"load_prop_wsrc_fsel: idx={idx} ; tslice={tslice} ; inv_type={inv_type} ; path_s='{path_s}'")
         # load fsel psnk prop
         sc_prop = q.SelProp(fsel)
         sc_prop.load_double_from_float(sfr, tag)
@@ -514,8 +529,8 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, gt):
         count[inv_acc] += 1
     sfr.close()
     assert count[1] == total_site[3]
-    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
-    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
+    check_cache_assign(cache_prob, f"type={inv_type} ; accuracy=1 ; wsrc ; prob", 1)
+    check_cache_assign(cache_prob, f"type={inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
     populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
 
@@ -607,7 +622,7 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
     for xg, inv_acc in [ (xg, inv_acc) for xg in psel for inv_acc in (0, 1, 2,) ]:
         xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
         tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
-        if not sfr.has(tag):
+        if tag not in sfr:
             continue
         q.displayln_info(0, f"load_prop_psrc_fsel: idx={idx} ; {tag} ; path_s={path_s}")
         idx += 1
@@ -755,7 +770,6 @@ def run_get_prop(job_tag, traj, *,
                  get_gt=None,
                  get_psel,
                  get_fsel,
-                 get_wi=None,
                  get_psel_smear=None,
                  prop_types=None):
     if get_gf is None:
@@ -766,8 +780,6 @@ def run_get_prop(job_tag, traj, *,
         get_gf_hyp = lambda: None
     if get_psel_smear is None:
         get_psel_smear = lambda: None
-    if get_wi is None:
-        get_wi = lambda: None
     if prop_types is None:
         # load psel data before fsel data if possible
         # load strange quark before light quark if possible
@@ -793,7 +805,6 @@ def run_get_prop(job_tag, traj, *,
         gf = get_gf()
         gf_hyp = get_gf_hyp()
         gt = get_gt()
-        wi = get_wi()
         psel = get_psel()
         psel_smear = get_psel_smear()
         fsel = get_fsel()
@@ -806,10 +817,10 @@ def run_get_prop(job_tag, traj, *,
             prop_cache["geo_pos_dict"] = dict([ (tuple(pos), i,) for i, pos in enumerate(geo.xg_arr()) ])
         #
         prop_load_dict = dict()
-        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi=wi, psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", wi=wi, psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", wi=wi, psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", wi=wi, psel=psel, fsel=fsel, gt=gt)
+        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel, gt=gt)
+        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=gt)
+        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel, gt=gt)
+        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=gt)
         prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel)
         prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel)
         prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)

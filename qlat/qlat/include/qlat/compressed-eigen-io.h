@@ -1562,7 +1562,7 @@ inline bool check_compressed_eigen_vectors(const std::string& path)
         is_failed += 1;
         displayln(
             fname +
-            ssprintf(": WARNING mismatch idx=%d computed=%08X previous=%08X",
+            ssprintf(": WARNING: mismatch idx=%d computed=%08X previous=%08X",
                      idx, crc, cesi.crcs[idx]));
         qrename(path + "/metadata.txt", path + "/metadata.txt.wrong_crc");
       }

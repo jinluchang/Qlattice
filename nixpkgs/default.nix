@@ -1,6 +1,6 @@
 {
   nixpkgs ? import ./nixpkgs.nix,
-  name ? "many-qlat-pkgs-core",
+  name ? "many-qlat-pkgs",
 }:
 
 let

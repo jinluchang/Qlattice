@@ -2108,7 +2108,6 @@ def run_job_contract(job_tag, traj):
             get_psel=get_psel,
             get_fsel=get_fsel,
             get_psel_smear=get_psel_smear,
-            get_wi=get_wi,
             prop_types=[
                 "wsrc psel s",
                 "wsrc psel l",

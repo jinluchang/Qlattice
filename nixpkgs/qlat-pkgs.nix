@@ -357,8 +357,11 @@ let
   mk-qlat-pkgs = mk-qlat-pkgs-gen {};
   mk-qlat-pkgs-cuda = mk-qlat-pkgs-gen { cudaSupport = false; }; # cudaSupport does not compile yet.
 
-  many-qlat-pkgs-core = {}
+  many-qlat-pkgs = {}
   // mk-qlat-pkgs []
+  ;
+
+  many-qlat-pkgs-core = many-qlat-pkgs
   // mk-qlat-pkgs [ overlay-std overlay-clang ]
   ;
 
@@ -393,6 +396,7 @@ in {
   inherit overlay-clang;
   inherit overlay-cuda;
   #
+  inherit many-qlat-pkgs;
   inherit many-qlat-pkgs-core;
   inherit many-qlat-pkgs-core-w-cuda;
   inherit many-qlat-pkgs-core-w-cuda-pypi;

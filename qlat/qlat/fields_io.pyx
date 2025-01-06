@@ -53,7 +53,11 @@ cdef class ShuffledFieldsWriter:
     def list(self):
         return cc.list_fields(self.xx)
 
-    def has(self, cc.std_string& fn):
+    def has(self, str fn):
+        q.displayln_info("WARNING: `ShuffledFieldsWriter.has` deprecated.")
+        return fn in self
+
+    def __contains__(self, cc.std_string fn):
         return cc.does_file_exist_sync_node(self.xx, fn)
 
     def flush(self):
@@ -114,21 +118,25 @@ cdef class ShuffledFieldsReader:
     def has_duplicates(self):
         return cc.has_duplicates(self.xx)
 
-    def has(self, cc.std_string& fn):
+    def has(self, str fn):
+        q.displayln_info("WARNING: `ShuffledFieldsReader.has` deprecated.")
+        return fn in self
+
+    def __contains__(self, cc.std_string fn):
         return cc.does_file_exist_sync_node(self.xx, fn)
 
     def is_sparse_field(self, cc.std_string& fn):
         """
-        return True if `self.has(fn)` and is sparse field.
+        return True if `fn in self` and is sparse field.
         """
         return cc.is_sparse_field_sync_node(self.xx, fn)
 
     def read_as_char(self, str fn):
         """
         return SelectedFieldChar or FieldChar.
-        return None if `not self.has(fn)`.
+        return None if `fn not in self`.
         """
-        has_field = self.has(fn)
+        has_field = fn in self
         if not has_field:
             return None
         is_sparse = self.is_sparse_field(fn)

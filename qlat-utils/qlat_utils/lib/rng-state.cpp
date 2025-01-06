@@ -261,7 +261,7 @@ double g_rand_gen(RngState& rs, const double center, const double sigma)
       v1 = u_rand_gen(rs, 1.0, -1.0);
       v2 = u_rand_gen(rs, 1.0, -1.0);
       if ((num_try % 1000) == 0) {
-        printf("g_rand_gen : WARNING num_try=%d v1=%e v2=%e\n", num_try, v1,
+        printf("WARNING: g_rand_gen: num_try=%d v1=%e v2=%e\n", num_try, v1,
                v2);
       }
       rsq = v1 * v1 + v2 * v2;
@@ -269,7 +269,7 @@ double g_rand_gen(RngState& rs, const double center, const double sigma)
     } while ((num_try < 10000) && (rsq >= 1.0 || rsq == 0));
     if (num_try > 9999) {
       printf(
-          "g_rand_gen : WARNING failed after 10000 tries (corrupted RNG?), "
+          "WARNING: g_rand_gen: failed after 10000 tries (corrupted RNG?), "
           "returning ridiculous numbers (1e+10)\n");
       return 1e+10;
     }

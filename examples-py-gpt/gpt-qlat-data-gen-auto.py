@@ -2039,7 +2039,6 @@ def run_job_contract(job_tag, traj):
             get_psel = get_psel,
             get_fsel = get_fsel,
             get_psel_smear = get_psel_smear,
-            get_wi = get_wi,
             prop_types = [
                 "wsrc psel s",
                 "wsrc psel l",
@@ -2244,9 +2243,9 @@ if __name__ == "__main__":
 
     job_tags = q.get_arg("--job_tags", default="").split(",")
 
-    is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
+    is_performing_inversion = not q.get_option("--no-inversion")
 
-    is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+    is_performing_contraction = not q.get_option("--no-contract")
 
     #######################################################
 
