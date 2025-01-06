@@ -141,10 +141,10 @@
   "['x_1', 'x_2']"
  ],
  [
-  "[('V_factor_coef_8', ea.Expr([ea.Term([],1/4)])), ('V_factor_coef_9', ea.Expr([ea.Term([],1/2)])), ('V_factor_coef_10', ea.Expr([ea.Term([],2)])), ('V_factor_coef_11', ea.Expr([ea.Term([],2/3)])), ('V_factor_coef_12', ea.Expr([ea.Term([],-1)])), ('V_factor"
+  "[('V_factor_coef_0', ea.Expr([ea.Term([],1/4)])), ('V_factor_coef_1', ea.Expr([ea.Term([],1/2)])), ('V_factor_coef_2', ea.Expr([ea.Term([],2)])), ('V_factor_coef_3', ea.Expr([ea.Term([],2/3)])), ('V_factor_coef_4', ea.Expr([ea.Term([],-2)])), ('V_factor_co"
  ],
  [
-  "[('V_factor_coef_0', ea.Expr([ea.Term([],1)])), ('V_factor_coef_1', ea.Expr([ea.Term([ea.Factor(V_factor_coef_8,[],Var)],1)])), ('V_factor_coef_2', ea.Expr([ea.Term([ea.Factor(V_factor_coef_9,[],Var)],1)])), ('V_factor_coef_3', ea.Expr([ea.Term([ea.Factor("
+  "[('V_factor_final_0', ea.Expr([ea.Term([],1)])), ('V_factor_final_1', ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ('V_factor_final_2', ea.Expr([ea.Term([ea.Factor(V_factor_coef_1,[],Var)],1)])), ('V_factor_final_3', ea.Expr([ea.Term([ea.Fac"
  ],
  [
   "[('V_S_0', S('l','x_2','x_1')), ('V_S_1', S('s','x_2','x_1'))]"
@@ -162,13 +162,13 @@
   "[]"
  ],
  [
-  "[(['V_bs_0', 'V_bs_1'], [BS([((1, 0, 0, 1, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 0, 3, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)])), ((1, 0, 1, 1, 0, 1), ea.Expr([ea.Term([ea.Factor(V_factor_coef_5,"
+  "[(['V_bs_0', 'V_bs_1'], [BS([((1, 0, 0, 1, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_final_0,[],Var)],1)])), ((1, 0, 0, 3, 1, 1), ea.Expr([ea.Term([ea.Factor(V_factor_final_0,[],Var)],1)])), ((1, 0, 1, 1, 0, 1), ea.Expr([ea.Term([ea.Factor(V_factor_final"
  ],
  [
   "[('term_ADT0_0', Term([],[],1)), ('term_ADT1_0', Term([Var('V_bs_0')],[],1)), ('term_ADT1_1', Term([Var('V_bs_1')],[],1)), ('term_ADT1_2', Term([Var('V_bs_2')],[],1)), ('term_ADT1_3', Term([Var('V_bs_3')],[],1)), ('term_ADT1_4', Term([Var('V_bs_4')],[],1))"
  ],
  [
-  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)]), 'term_ADT0_0')]), ('< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_1,[],Var)],1)]), 'term_ADT1_0')]), ('< Bv_std(u,u,"
+  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_final_0,[],Var)],1)]), 'term_ADT0_0')]), ('< Bv_std(u,u,d,u)(x_2) * Bb_std(u,u,d,u)(x_1) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_final_1,[],Var)],1)]), 'term_ADT1_0')]), ('< Bv_std(u,"
  ],
  [
   "diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)"

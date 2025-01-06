@@ -108,10 +108,10 @@
   "['rel_mod_sym', 'size', 't_1', 't_2', 'x_1', 'x_2']"
  ],
  [
-  "[('V_factor_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],1)])), ('V_factor_1', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]),['rel_mod_sym', 'size', 'x_1'"
+  "[('V_factor_fac_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],1)])), ('V_factor_fac_1', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]),['rel_mod_sym', 'size"
  ],
  [
-  "[('V_factor_coef_0', ea.Expr([ea.Term([],1)])), ('V_factor_coef_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_0,[],Var)],1)])), ('V_factor_coef_2', ea.Expr([ea.Term([ea.Factor(V_factor_prod_1,[],Var)],1)])), ('V_factor_coef_3', ea.Expr([ea.Term([ea.Factor("
+  "[('V_factor_final_0', ea.Expr([ea.Term([],1)])), ('V_factor_final_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_0,[],Var)],1)])), ('V_factor_final_2', ea.Expr([ea.Term([ea.Factor(V_factor_prod_1,[],Var)],1)])), ('V_factor_final_3', ea.Expr([ea.Term([ea.Fac"
  ],
  [
   "[('V_S_0', S('l','x_1','t_1')), ('V_S_1', S('l','t_1','x_2')), ('V_S_2', S('l','x_2','x_1')), ('V_S_3', S('l','x_2','t_1')), ('V_S_4', S('l','t_1','x_1')), ('V_S_5', S('l','x_1','x_2')), ('V_S_6', S('l','x_1','t_2')), ('V_S_7', S('l','t_2','x_2')), ('V_S_8"
@@ -135,7 +135,7 @@
   "[('term_1_0', Term([],[],1)), ('term_TypeC_0', Term([Var('V_tr_0')],[],1)), ('term_TypeC_1', Term([Var('V_tr_1')],[],1)), ('term_TypeC_10', Term([Var('V_tr_2')],[],1)), ('term_TypeC_11', Term([Var('V_tr_3')],[],1)), ('term_TypeC_12', Term([Var('V_tr_4')],["
  ],
  [
-  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_0,[],Var)],1)]), 'term_1_0')]), ('< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_coef_1,[],Var)],1)]), 'term_TypeD_0'), (ea.Expr([ea.Ter"
+  "[('< 1 >  exprs[0]', [(ea.Expr([ea.Term([ea.Factor(V_factor_final_0,[],Var)],1)]), 'term_1_0')]), ('< e(i,j,k) * x[i] * j_j(x) * j_k(0) * pi0(-tsep) >  exprs[1]', [(ea.Expr([ea.Term([ea.Factor(V_factor_final_1,[],Var)],1)]), 'term_TypeD_0'), (ea.Expr([ea.T"
  ],
  [
   "diagram_type_dict = qac.get_diagram_type_dict(cexpr_opt)"

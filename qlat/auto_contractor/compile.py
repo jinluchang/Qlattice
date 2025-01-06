@@ -299,15 +299,10 @@ def collect_common_sum_in_factors(variables_factor, common_pair, var):
         ea_coef.terms = x_new
 
 @q.timer
-def collect_factor_in_cexpr(named_exprs, named_terms):
+def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_terms):
     """
-    collect the factors in all ea_coef
-    collect common sub-expressions in ea_coef
+    Make variables to all coefs of all the terms
     """
-    variables_factor_intermediate = []
-    variables_factor = []
-    var_nameset = set()
-    # Make variables to all coefs of all the terms
     var_counter = 0
     var_dataset = {}
     def add_variables(ea_coef):
@@ -323,7 +318,7 @@ def collect_factor_in_cexpr(named_exprs, named_terms):
                 var_dataset[key] = var
             else:
                 while True:
-                    name = f"V_factor_coef_{var_counter}"
+                    name = f"V_factor_final_{var_counter}"
                     var_counter += 1
                     if name not in var_nameset:
                         break
@@ -344,6 +339,18 @@ def collect_factor_in_cexpr(named_exprs, named_terms):
                 for i, (val, ea_coef,) in enumerate(op.elem_list):
                     ea_var = add_variables(ea_coef)
                     op.elem_list[i] = (val, ea_var)
+
+@q.timer
+def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
+    """
+    collect the factors in all ea_coef
+    collect common sub-expressions in ea_coef
+    """
+    variables_factor_intermediate = []
+    variables_factor = []
+    var_nameset = set()
+    #
+    collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_terms)
     # Add ea.Factor with otype "Expr" to variables_factor_intermediate
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
@@ -358,7 +365,7 @@ def collect_factor_in_cexpr(named_exprs, named_terms):
                         x[i] = var_dataset[f.code]
                     else:
                         while True:
-                            name = f"V_factor_{var_counter}"
+                            name = f"V_factor_fac_{var_counter}"
                             var_counter += 1
                             if name not in var_nameset:
                                 break
@@ -945,7 +952,7 @@ class CExpr:
             # likely collect_op is already performed
             return
         # collect ea_coef factors into variables
-        self.variables_factor_intermediate, self.variables_factor = collect_factor_in_cexpr(self.named_exprs, self.named_terms)
+        self.variables_factor_intermediate, self.variables_factor = collect_and_optimize_factor_in_cexpr(self.named_exprs, self.named_terms)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect color matrix expr into variables
