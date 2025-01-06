@@ -185,7 +185,7 @@ def find_common_prod_in_factors(variables_factor):
         assert isinstance(ea_coef, ea.Expr)
         for t in ea_coef.terms:
             x = t.factors
-            if len(x) < 1:
+            if len(x) <= 1:
                 continue
             for i, f in enumerate(x[:-1]):
                 assert f.otype == "Var"
@@ -374,7 +374,7 @@ def collect_factor_in_cexpr(named_exprs, named_terms):
         assert isinstance(ea_coef, ea.Expr)
         for t in ea_coef.terms:
             x = t.coef
-            if x == 1:
+            if x == 1 or x == -1:
                 continue
             code = ea.compile_py_complex(x)
             if code in var_dataset:
