@@ -413,17 +413,11 @@ in {
   inherit (many-qlat-pkgs-all) qlat-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat_grid;
-  inherit (many-qlat-pkgs-all) qlat_grid-std;
-  inherit (many-qlat-pkgs-all) qlat_grid-std-clang;
   inherit (many-qlat-pkgs-all) qlat_grid-cuda;
-  inherit (many-qlat-pkgs-all) qlat_grid-std-cuda;
   inherit (many-qlat-pkgs-all) qlat_grid-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat_cps;
-  inherit (many-qlat-pkgs-all) qlat_cps-std;
-  inherit (many-qlat-pkgs-all) qlat_cps-std-clang;
   inherit (many-qlat-pkgs-all) qlat_cps-cuda;
-  inherit (many-qlat-pkgs-all) qlat_cps-std-cuda;
   inherit (many-qlat-pkgs-all) qlat_cps-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-tests;
