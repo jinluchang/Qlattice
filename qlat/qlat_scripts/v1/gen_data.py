@@ -161,7 +161,6 @@ def make_psel_from_weight(f_weight, f_rand_01, rate):
 @q.timer_verbose
 def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
         fn_f_weight,
-        wi,
         inv_type_list,
         inv_type_name_list,
         path_f_list,
@@ -172,24 +171,24 @@ def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     prop_nf_dict = dict()
+    idx = 0
+    inv_acc = 1
     for inv_type in inv_type_list:
         path_f = path_f_list[inv_type]
         sfr = q.open_fields(get_load_path(path_f), "r")
         available_tags = sfr.list()
         q.displayln_info(0, f"available_tags={available_tags}")
-        for idx, tslice, inv_type_wi, inv_acc in wi:
-            if inv_type_wi != inv_type:
-                continue
-            if inv_acc != 1:
-                continue
+        for tslice in range(total_site[3]):
             tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-            q.displayln_info(0, f"{fname}: idx={idx} tag='{tag}'")
             if not sfr.has(tag):
-                raise Exception(f"{tag} not in {sfr.list()}")
+                continue
+            q.displayln_info(0, f"{fname}: idx={idx} tag='{tag}'")
+            idx += 1
             prop_nf = q.FieldRealD(geo, 1)
             q.set_zero(prop_nf)
             prop_nf.load_double(sfr, tag + " ; qnorm_field")
             prop_nf_dict[(inv_type, tslice,)] = prop_nf, prop_nf.glb_sum_tslice()
+    assert idx >= 1
     f_weight_avg, f_weight_final = avg_weight_from_prop_full(geo, prop_nf_dict)
     for inv_type in [ 0, 1, ]:
         inv_type_name = inv_type_name_list[inv_type]
@@ -199,14 +198,14 @@ def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
     q.displayln_info(-1, fname, "field-selection-weight final", f_weight_final.glb_sum_tslice()[:].ravel())
 
 @q.timer
-def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
+def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     """
     return get_f_weight
         f_weight = get_f_weight()
     Or if wsrc_prop_full is not available
     return None
     #
-    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     """
     fname = q.get_fname()
     fn_f_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
@@ -220,9 +219,6 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
     ret = get_f_weight
     if get_load_path(fn_f_weight) is not None:
         return ret
-    if get_wi is None:
-        q.displayln_info(-1, f"{fname}: skip. (get_wi is None)")
-        return None
     inv_type_list = [ 0, 1, ]
     inv_type_name_list = [ "light", "strange", ]
     path_f_list = [
@@ -240,11 +236,9 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj, *, get_wi=None):
             return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    wi = get_wi()
     compute_f_weight_from_wsrc_prop_full(
             job_tag, traj,
             fn_f_weight=fn_f_weight,
-            wi=wi,
             inv_type_list=inv_type_list,
             inv_type_name_list=inv_type_name_list,
             path_f_list=path_f_list,

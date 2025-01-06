@@ -406,7 +406,7 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
         hvp_average.set_zero()
         for traj in trajs_hvp_avg:
             get_wi = run_wi(job_tag, traj)
-            get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+            get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
             get_f_rand_01 = run_f_rand_01(job_tag, traj)
             get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
             get_hvp_average = run_hvp_average(
@@ -1886,7 +1886,7 @@ def run_job(job_tag, traj):
     #
     run_wsrc_full()
     #
-    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
@@ -2036,7 +2036,7 @@ def run_job_contract(job_tag, traj):
     #
     get_wi = run_wi(job_tag, traj)
     #
-    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)
+    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
