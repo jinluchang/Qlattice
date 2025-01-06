@@ -320,6 +320,7 @@ def collect_factor_in_cexpr(named_exprs, named_terms):
             key2 = repr(s_ea_coef)
             if key2 in var_dataset:
                 var = var_dataset[key2]
+                var_dataset[key] = var
             else:
                 while True:
                     name = f"V_factor_coef_{var_counter}"
