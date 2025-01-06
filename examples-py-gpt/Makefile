@@ -1,5 +1,7 @@
 SHELL=/usr/bin/env bash
 
+mpi_options ?= --oversubscribe --bind-to none
+
 tests_gpt = \
 			hlbl-muon-line.log \
 			gq-auto-checker.log \

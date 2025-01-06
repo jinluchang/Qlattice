@@ -1,5 +1,7 @@
 SHELL=/usr/bin/env bash
 
+mpi_options ?= --oversubscribe --bind-to none
+
 tests = qlat-vector-utils \
 		qlat-fft-tests \
 		qlat-smear-tests \

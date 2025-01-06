@@ -1,5 +1,7 @@
 SHELL=/usr/bin/env bash
 
+mpi_options ?= --oversubscribe --bind-to none
+
 tests = \
 		auto-cexprs.log \
 		auto-cexprs-more.log \

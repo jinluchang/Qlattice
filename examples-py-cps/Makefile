@@ -1,5 +1,7 @@
 SHELL=/usr/bin/env bash
 
+mpi_options ?= --oversubscribe --bind-to none
+
 tests_cps = \
 			cps-qlat-io-test.log \
 			sparse-from-cps/log.txt

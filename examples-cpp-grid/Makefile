@@ -1,5 +1,7 @@
 SHELL=/usr/bin/env bash
 
+mpi_options ?= --oversubscribe --bind-to none
+
 tests_grid = grid-with-qlat
 
 all: run-grid
