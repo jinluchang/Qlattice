@@ -171,8 +171,8 @@ in
       #
       rm -rfv ./*.p/results
       #
-      mkdir -p "$out/share/qlat-examples-py-gpt"
-      rsync -a --delete . "$out/share/qlat-examples-py-gpt"
+      mkdir -p "$out/share/qlat/examples-py-gpt"
+      rsync -a --delete . "$out/share/qlat/examples-py-gpt"
     '';
 
     dontBuild = true;

@@ -32,7 +32,7 @@ def compute_prop_full_1(inv, src, *, tag, sfw):
 def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
                            idx, sfw, eig):
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    if sfw.has(tag):
+    if tag in sfw:
         return None
     q.check_stop()
     q.check_time_limit()
@@ -180,7 +180,7 @@ def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
         q.displayln_info(0, f"available_tags={available_tags}")
         for tslice in range(total_site[3]):
             tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-            if not sfr.has(tag):
+            if tag not in sfr:
                 continue
             q.displayln_info(0, f"{fname}: idx={idx} tag='{tag}'")
             idx += 1
@@ -429,7 +429,7 @@ def save_prop_wsrc_sparse(job_tag, traj, *, load_prop, tslice, inv_type, inv_acc
     """
     fname = q.get_fname()
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    if sfw.has(tag):
+    if tag in sfw:
         assert qar_sp.has_regular_file(f"{tag}.lat")
         assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
         q.displayln_info(0, f"{fname}: tag='{tag}' of '{job_tag}/{traj}' already saved. Skipping.")
@@ -484,7 +484,7 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
             def load_prop():
                 tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
                 prop = q.Prop(geo)
-                if not sfr.has(tag):
+                if tag not in sfr:
                     raise Exception(f"{tag} not in {sfr.list()}")
                 prop.load_double(sfr, tag)
                 return prop
@@ -609,8 +609,8 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
         eig):
     assert isinstance(xg_src, q.Coordinate)
     tag = mk_psrc_tag(xg_src, inv_type, inv_acc)
-    if sfw.has(tag) and (sfw_hvp is None or sfw_hvp.has(tag)):
-        assert sfw.has(f"{tag} ; fsel-prob-psrc-prop")
+    if (tag in sfw) and (sfw_hvp is None or (tag in sfw_hvp)):
+        assert f"{tag} ; fsel-prob-psrc-prop" in sfw
         assert qar_sp.has_regular_file(f"{tag}.lat")
         assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
         assert qar_hvp_ts.has_regular_file(f"{tag}.lat")
@@ -791,7 +791,7 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
     same rand source for different inv_type
     """
     tag = f"idx_rand_u1={idx_rand_u1} ; type={inv_type} ; accuracy={inv_acc}"
-    if sfw.has(tag):
+    if tag in sfw:
         return
     q.check_stop()
     q.check_time_limit()
@@ -889,10 +889,10 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"smear ; xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
-    if sfw.has(tag):
-        assert qar_sp.has(f"{tag}.lat")
-        assert qar_sp.has(f"{tag} ; wsnk.lat")
-        assert qar_sp.has(f"{tag} ; smear-snk.lat")
+    if tag in sfw:
+        assert f"{tag}.lat" in qar_sp
+        assert f"{tag} ; wsnk.lat" in qar_sp
+        assert f"{tag} ; smear-snk.lat" in qar_sp
         return None
     q.check_stop()
     q.check_time_limit()

@@ -30,7 +30,7 @@ for path in path_list:
         sfw = q.open_fields(new_path, "w", sfr.new_size_node())
         tags = sfr.list()
         for tag in tags:
-            if sfw.has(tag):
+            if tag in sfw:
                 q.displayln_info(-1, f"INFO: Skip duplicated '{tag}' of '{sfr.path()}'.")
                 continue
             q.displayln_info(-1, f"INFO: Read '{tag}' of '{sfr.path()}'.")

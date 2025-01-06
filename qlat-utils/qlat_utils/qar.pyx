@@ -251,6 +251,9 @@ cdef class QarFile:
     def has(self, const cc.std_string& fn):
         return cc.has(self.xx, fn)
 
+    def __contains__(self, str fn):
+        return self.has(fn)
+
     def read(self, const cc.std_string& fn):
         """
         return qfile
@@ -274,7 +277,7 @@ cdef class QarFile:
     def write(self, const cc.std_string& fn, const cc.std_string& info, object data, *, cc.Bool skip_if_exist=False):
         cdef QFile qfile
         if skip_if_exist:
-            if self.has_regular_file(fn):
+            if self.has(fn):
                 return 0
         if isinstance(data, QFile):
             qfile = data

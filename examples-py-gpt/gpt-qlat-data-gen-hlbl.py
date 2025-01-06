@@ -510,7 +510,7 @@ def show_lslt(labels, lslt, *, label=None):
 @q.timer
 def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
     tag = mk_psrc_tag(xg, inv_type, inv_acc)
-    if not sfr.has(tag):
+    if tag not in sfr:
         return None
     s_prop = q.SelProp(fsel)
     s_prop.load_double_from_float(sfr, tag)

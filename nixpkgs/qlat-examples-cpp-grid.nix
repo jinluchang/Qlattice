@@ -174,8 +174,8 @@ in
       #
       rm -rfv ./*/build/results
       #
-      mkdir -p "$out/share/qlat-examples-cpp-grid"
-      rsync -a --delete . "$out/share/qlat-examples-cpp-grid"
+      mkdir -p "$out/share/qlat/examples-cpp-grid"
+      rsync -a --delete . "$out/share/qlat/examples-cpp-grid"
     '';
 
     dontBuild = true;

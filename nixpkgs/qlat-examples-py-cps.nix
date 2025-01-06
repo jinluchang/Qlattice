@@ -175,8 +175,8 @@ in
       rm -rfv ./*.p/results
       rm -rfv ./sparse-from-cps/results*
       #
-      mkdir -p "$out/share/qlat-examples-py-cps"
-      rsync -a --delete . "$out/share/qlat-examples-py-cps"
+      mkdir -p "$out/share/qlat/examples-py-cps"
+      rsync -a --delete . "$out/share/qlat/examples-py-cps"
     '';
 
     dontBuild = true;
