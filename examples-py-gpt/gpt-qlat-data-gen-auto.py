@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 
 json_results = []
+check_eps = 5e-5
+
+def json_results_append(*args):
+    q.displayln_info(r"//------------------------------------------------------------\\")
+    q.displayln_info(-1, *args)
+    q.displayln_info(r"\\------------------------------------------------------------//")
+    json_results.append(args)
 
 from auto_contractor.operators import *
 
@@ -121,9 +128,9 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -185,9 +192,9 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -252,9 +259,9 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -333,9 +340,9 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 # ----
 
@@ -438,9 +445,9 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
 
 # ----
 
@@ -535,9 +542,9 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
 
 # ----
 
@@ -873,9 +880,9 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
 
 # ----
 
@@ -1168,9 +1175,9 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -1426,9 +1433,9 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
 
 ### ------
 
@@ -1630,9 +1637,9 @@ def auto_contract_tadpole_current(job_tag, traj, get_get_prop, get_psel_prob, ge
     q.timer_display()
     q.timer_merge()
     sf_tadpole_current.save_double(get_save_path(fn))
-    json_results.append((f"{fname}: sf_tadpole_current sig", q.get_data_sig(sf_tadpole_current, q.RngState()),))
+    json_results_append(f"{fname}: sf_tadpole_current sig", q.get_data_sig(sf_tadpole_current, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: sf_tadpole_current '{en}' sig", q.glb_sum(q.get_data_sig(sf_tadpole_current[:, i], q.RngState())),))
+        json_results_append(f"{fname}: sf_tadpole_current '{en}' sig", q.glb_sum(q.get_data_sig(sf_tadpole_current[:, i], q.RngState())))
 
 @q.timer_verbose
 def auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -1709,11 +1716,11 @@ def auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     sig_arr = np.zeros((t_size, len(expr_names),), dtype=np.complex128)
     for t_src in range(t_size):
         sf = sf_pi0_current_list[t_src]
-        json_results.append((f"{fname}: sf_pi0_current t_src={t_src} sig", q.get_data_sig(sf, q.RngState()),))
+        json_results_append(f"{fname}: sf_pi0_current t_src={t_src} sig", q.get_data_sig(sf, q.RngState()))
         for i, en in enumerate(expr_names):
             sig_arr[t_src, i] = q.glb_sum(q.get_data_sig(sf[:, i], q.RngState(f"t_src={t_src}")))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum(),))
+        json_results_append(f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum())
 
 @q.timer_verbose
 def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -1871,9 +1878,9 @@ def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()),))
+        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
 
 ### ------
 
@@ -2093,28 +2100,54 @@ def get_all_cexpr():
 
 ### ------
 
+set_param("test-4nt8", "trajs")(list(range(1000, 1001)))
+set_param("test-4nt8", "meson_tensor_tsep")(1)
+set_param("test-4nt8", "meson_jwjj_threshold")(0.1)
+set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
+
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
-set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
+set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param("test-4nt8", "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 0, 0, "nbasis")(100)
+set_param("test-4nt8", "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
+set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+set_param("test-4nt8", "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+set_param("test-4nt8", "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param("test-4nt8", "clanc_params", 1, 0)(get_param("test-4nt8", "clanc_params", 0, 0).copy())
+set_param("test-4nt8", "lanc_params", 1, 0)(get_param("test-4nt8", "lanc_params", 0, 0).copy())
+set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params")(get_param("test-4nt8", "fermion_params", 1, 0).copy())
+set_param("test-4nt8", "cg_params-0-0", "maxiter")(5)
+set_param("test-4nt8", "cg_params-0-1", "maxiter")(5)
+set_param("test-4nt8", "cg_params-0-2", "maxiter")(5)
+set_param("test-4nt8", "cg_params-1-0", "maxiter")(5)
+set_param("test-4nt8", "cg_params-1-1", "maxiter")(5)
+set_param("test-4nt8", "cg_params-1-2", "maxiter")(5)
+set_param("test-4nt8", "cg_params-0-0", "maxcycle")(1)
+set_param("test-4nt8", "cg_params-0-1", "maxcycle")(2)
+set_param("test-4nt8", "cg_params-0-2", "maxcycle")(3)
+set_param("test-4nt8", "cg_params-1-0", "maxcycle")(1)
+set_param("test-4nt8", "cg_params-1-1", "maxcycle")(2)
+set_param("test-4nt8", "cg_params-1-2", "maxcycle")(3)
+set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
+set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
+set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
-tag = "trajs"
-set_param("test-4nt8", tag)([ 1000, ])
-set_param("24D", tag)([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
-set_param("48I", tag)(list(range(1000, 2000, 20)))
-set_param("64I", tag)(list(range(1200, 3000, 40)))
+set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
+set_param("24D", "meson_tensor_tsep")(8)
+set_param("24D", "meson_jwjj_threshold")(0.02)
+set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
-tag = "meson_tensor_tsep"
-set_param("test-4nt8", tag)(1)
-set_param("24D", tag)(8)
-set_param("48I", tag)(12)
-set_param("64I", tag)(18)
+set_param("48I", "trajs")(list(range(1000, 2000, 20)))
+set_param("48I", "meson_tensor_tsep")(12)
+set_param("48I", "meson_jwjj_threshold")(0.01)
+set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
 
-tag = "meson_jwjj_threshold"
-set_param("test-4nt8", tag)(0.1)
-set_param("24D", tag)(0.02)
-set_param("48I", tag)(0.01)
-set_param("64I", tag)(0.0005)
+set_param("64I", "trajs")(list(range(1200, 3000, 40)))
+set_param("64I", "meson_tensor_tsep")(18)
+set_param("64I", "meson_jwjj_threshold")(0.0005)
+set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
 
@@ -2237,7 +2270,7 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job(job_tag, traj)
                 if q.obtained_lock_history_list:
-                    q.displayln_info(f"CHECK: q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                    json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
                         gracefully_finish()
         for traj in get_param(job_tag, "trajs"):
@@ -2245,11 +2278,11 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
                 if q.obtained_lock_history_list:
-                    q.displayln_info(f"CHECK: q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                    json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
                         gracefully_finish()
 
-    q.check_log_json(__file__, json_results, check_eps=5e-5)
+    q.check_log_json(__file__, json_results, check_eps=check_eps)
 
     gracefully_finish()
 
