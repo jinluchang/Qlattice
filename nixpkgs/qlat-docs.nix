@@ -27,9 +27,7 @@
 
 let
   orig-stdenv = stdenv;
-in
-
-buildPythonPackage rec {
+in buildPythonPackage rec {
 
   pname = "qlat-docs${qlat-name}";
   version = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
@@ -115,5 +113,10 @@ buildPythonPackage rec {
 
   dontBuild = true;
   dontInstall = true;
+
+  postFixup = ''
+    mkdir -pv "$out"/share/version
+    echo ${version} >"$out"/share/version/${pname}
+  '';
 
 }

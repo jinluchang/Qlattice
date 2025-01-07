@@ -115,14 +115,19 @@ buildPythonPackage rec {
     cd "$NIX_BUILD_TOP/source"
     pwd
     mkdir -pv "$out"/${python.sitePackages}
-    mkdir -pv "$out"/src
     rsync -a --delete lib/gpt "$out"/${python.sitePackages}/
     rsync -a --delete lib/cgpt/build/cgpt.so "$out"/${python.sitePackages}/
-    rsync -a --delete tests "$out"/src/
-    rsync -a --delete applications "$out"/src/
-    rsync -a --delete benchmarks "$out"/src/
-    rsync -a --delete documentation "$out"/src/
-    rsync -a --delete docker "$out"/src/
+    mkdir -pv "$out"/share/${pname}
+    rsync -a --delete tests "$out"/share/${pname}/
+    rsync -a --delete applications "$out"/share/${pname}/
+    rsync -a --delete benchmarks "$out"/share/${pname}/
+    rsync -a --delete documentation "$out"/share/${pname}/
+    rsync -a --delete docker "$out"/share/${pname}/
+  '';
+
+  postFixup = ''
+    mkdir -pv "$out"/share/version
+    echo ${version} >"$out"/share/version/${pname}
   '';
 
 }

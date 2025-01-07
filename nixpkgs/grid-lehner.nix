@@ -68,7 +68,7 @@ in grid-stdenv.mkDerivation rec {
   ++ lib.optionals cudaSupport (with cudaPackages; [
     cuda_cccl
     cuda_cudart
-	cuda_profiler_api
+    cuda_profiler_api
   ])
   ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;
@@ -88,47 +88,47 @@ in grid-stdenv.mkDerivation rec {
     cxx = if cudaSupport then gpu_cxx else cpu_cxx;
     cflags = if cudaSupport then gpu_cflags else cpu_cflags;
     ldflags = if cudaSupport then gpu_ldflags else cpu_ldflags;
-	cpu_extra = ''
-	'';
-	gpu_extra = ''
-      which nvcc
-      nvcc --version
-	'';
-	extra = if cudaSupport then gpu_extra else cpu_extra;
+    cpu_extra = ''
+    '';
+    gpu_extra = ''
+        which nvcc
+        nvcc --version
+    '';
+    extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''
-    echo "-- deploying Eigen source..."
-    cp -pv '${eigen-src}' '${eigen-file-name}'
-    bash ./scripts/update_eigen.sh '${eigen-file-name}'
-    rm '${eigen-file-name}'
+      echo "-- deploying Eigen source..."
+      cp -pv '${eigen-src}' '${eigen-file-name}'
+      bash ./scripts/update_eigen.sh '${eigen-file-name}'
+      rm '${eigen-file-name}'
     # patch Eigen/unsupported/Eigen/CXX11/Tensor scripts/eigen-3.3.5.Tensor.patch
     #
-    echo '-- generating Make.inc files...'
-    bash ./scripts/filelist
-    echo '-- generating configure script...'
-    autoreconf -fvi
+      echo '-- generating Make.inc files...'
+      bash ./scripts/filelist
+      echo '-- generating configure script...'
+      autoreconf -fvi
     #
-    echo '-- set FLAGS ...'
-    export CXX=${cxx}
-    export CFLAGS="${cflags}"
-    export CXXFLAGS="${cflags}"
-    export LDFLAGS="${ldflags}"
-    echo CXX="$CXX"
-    echo CFLAGS="$CFLAGS"
-    echo CXXFLAGS="$CXXFLAGS"
-    echo LDFLAGS="$LDFLAGS"
+      echo '-- set FLAGS ...'
+      export CXX=${cxx}
+      export CFLAGS="${cflags}"
+      export CXXFLAGS="${cflags}"
+      export LDFLAGS="${ldflags}"
+      echo CXX="$CXX"
+      echo CFLAGS="$CFLAGS"
+      echo CXXFLAGS="$CXXFLAGS"
+      echo LDFLAGS="$LDFLAGS"
     #
-	export OMPI_CXX=c++
-	export OMPI_CC=cc
+      export OMPI_CXX=c++
+      export OMPI_CC=cc
     #
-    which mpic++
-    mpic++ --version
-	#
-    which c++
-    c++ --version
-	#
-	echo
-	echo 'grid-stdenv=${grid-stdenv.cc}'
-	echo
+      which mpic++
+      mpic++ --version
+    #
+      which c++
+      c++ --version
+    #
+      echo
+      echo 'grid-stdenv=${grid-stdenv.cc}'
+      echo
   '' + extra;
 
   configureFlags = let
@@ -160,8 +160,13 @@ in grid-stdenv.mkDerivation rec {
       # "--with-openssl"
       # "--with-fftw"
       # "--with-hdf5"
-      ];
-      flags = if cudaSupport then gpu_flags else cpu_flags;
-      in flags;
+    ];
+    flags = if cudaSupport then gpu_flags else cpu_flags;
+  in flags;
 
-    }
+  postFixup = ''
+    mkdir -pv "$out"/share/version
+    echo ${version} >"$out"/share/version/${pname}
+  '';
+
+}
