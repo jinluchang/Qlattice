@@ -39,11 +39,9 @@ def benchmark_function_1(f, arg, benchmark_size = 1000, benchmark_num = 10, tota
             f(arg)
             f(arg)
             f(arg)
-    q.timer_fork(0)
-    for i in range(benchmark_num):
-        benchmark_run_10()
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        for i in range(benchmark_num):
+            benchmark_run_10()
 
 @q.timer
 def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
@@ -61,11 +59,9 @@ def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 1
             f(arg1, arg2)
             f(arg1, arg2)
             f(arg1, arg2)
-    q.timer_fork(0)
-    for i in range(benchmark_num):
-        benchmark_run_10()
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        for i in range(benchmark_num):
+            benchmark_run_10()
 
 @q.timer
 def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
@@ -83,11 +79,9 @@ def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_n
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
-    q.timer_fork(0)
-    for i in range(benchmark_num):
-        benchmark_run_10()
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        for i in range(benchmark_num):
+            benchmark_run_10()
 
 if __name__ == "__main__":
     rng_state = q.RngState("seed")

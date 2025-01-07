@@ -126,12 +126,10 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
         return values.transpose(2, 0, 1)
-    q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
-    q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.glb_sum(
+                q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
+        q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
     res_sum *= 1.0 / (total_volume**2 / total_site[3])
     q.displayln_info(res_sum[0].sum(1))
     ld = q.mk_lat_data([
@@ -284,14 +282,12 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             get_prop = get_get_prop()
             if get_prop is not None:
-                q.timer_fork()
-                # ADJUST ME
-                auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                #
-                q.qtouch_info(get_save_path(fn_checkpoint))
-                q.displayln_info("timer_display for runjob")
-                q.timer_display()
-                q.timer_merge()
+                with q.TimerFork():
+                    # ADJUST ME
+                    auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                    #
+                    q.qtouch_info(get_save_path(fn_checkpoint))
+                    q.displayln_info("timer_display for run_job")
             q.release_lock()
             q.clean_cache()
 

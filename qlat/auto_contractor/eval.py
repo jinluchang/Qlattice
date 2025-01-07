@@ -86,7 +86,7 @@ class CCExpr:
 
 # -----
 
-@q.timer
+@q.timer_verbose
 def cache_compiled_cexpr(
         calc_cexpr, path,
         *,
@@ -108,60 +108,61 @@ def cache_compiled_cexpr(
     else:
         path = path + "_py"
     fn_pickle = path + "/cexpr_all.pickle"
-    @q.timer
+    #
+    @q.timer_fname("compile_cexpr_meson_setup")
     def compile_cexpr_meson_setup():
         subprocess.run(["meson", "setup", "build"], cwd=path)
-    @q.timer
+    #
+    @q.timer_fname("compile_cexpr_meson_compile")
     def compile_cexpr_meson_compile():
         subprocess.run(["meson", "compile", "-C", "build"], cwd=path)
         objs = glob.glob(f"{path}/build/cexpr_code.*.so")
         if len(objs) != 1:
             raise Exception(f"WARNING: compile_cexpr_meson_compile: {objs}")
-    @q.timer
+    #
+    @q.timer_fname("calc_compile_cexpr")
     def calc_compile_cexpr():
-        q.timer_fork()
-        def compile_cexpr():
-            cexpr_original = calc_cexpr()
-            content_original = display_cexpr(cexpr_original)
-            q.qtouch_info(path + "/cexpr_original.txt", content_original)
-            return cexpr_original
-        cexpr_original = q.pickle_cache_call(
-                compile_cexpr, path + "/cexpr_original.pickle", is_sync_node=False)
-        def optimize():
-            cexpr_optimized = cexpr_original.copy()
-            cexpr_optimized.optimize()
-            content_optimized = display_cexpr(cexpr_optimized)
-            q.qtouch_info(path + "/cexpr_optimized.txt", content_optimized)
-            return cexpr_optimized
-        cexpr_optimized = q.pickle_cache_call(
-                optimize, path + "/cexpr_optimized.pickle", is_sync_node=False)
-        def gen_code():
-            code_py = cexpr_code_gen_py(
-                    cexpr_optimized,
-                    is_cython=is_cython,
-                    is_distillation=is_distillation)
+        with q.TimerFork():
+            def compile_cexpr():
+                cexpr_original = calc_cexpr()
+                content_original = display_cexpr(cexpr_original)
+                q.qtouch_info(path + "/cexpr_original.txt", content_original)
+                return cexpr_original
+            cexpr_original = q.pickle_cache_call(
+                    compile_cexpr, path + "/cexpr_original.pickle", is_sync_node=False)
+            def optimize():
+                cexpr_optimized = cexpr_original.copy()
+                cexpr_optimized.optimize()
+                content_optimized = display_cexpr(cexpr_optimized)
+                q.qtouch_info(path + "/cexpr_optimized.txt", content_optimized)
+                return cexpr_optimized
+            cexpr_optimized = q.pickle_cache_call(
+                    optimize, path + "/cexpr_optimized.pickle", is_sync_node=False)
+            def gen_code():
+                code_py = cexpr_code_gen_py(
+                        cexpr_optimized,
+                        is_cython=is_cython,
+                        is_distillation=is_distillation)
+                if is_cython:
+                    fn_py = path + "/cexpr_code.pyx"
+                else:
+                    fn_py = path + "/cexpr_code.py"
+                q.qtouch_info(fn_py, code_py)
+                subprocess.run(["touch", "-d", "1 day ago", fn_py])
+                return code_py
+            code_py = q.pickle_cache_call(
+                    gen_code, path + f"/cexpr_code.pickle", is_sync_node=False)
             if is_cython:
-                fn_py = path + "/cexpr_code.pyx"
-            else:
-                fn_py = path + "/cexpr_code.py"
-            q.qtouch_info(fn_py, code_py)
-            subprocess.run(["touch", "-d", "1 day ago", fn_py])
-            return code_py
-        code_py = q.pickle_cache_call(
-                gen_code, path + f"/cexpr_code.pickle", is_sync_node=False)
-        if is_cython:
-            meson_build_fn = path + "/meson.build"
-            q.qtouch_info(meson_build_fn, meson_build_content)
-            subprocess.run(["touch", "-d", "1 day ago", meson_build_fn])
-            compile_cexpr_meson_setup()
-            compile_cexpr_meson_compile()
-        cexpr_all = dict()
-        cexpr_all["cexpr_original"] = cexpr_original
-        cexpr_all["cexpr_optimized"] = cexpr_optimized
-        cexpr_all["code_py"] = code_py
-        q.save_pickle_obj(cexpr_all, fn_pickle)
-        q.timer_display()
-        q.timer_merge()
+                meson_build_fn = path + "/meson.build"
+                q.qtouch_info(meson_build_fn, meson_build_content)
+                subprocess.run(["touch", "-d", "1 day ago", meson_build_fn])
+                compile_cexpr_meson_setup()
+                compile_cexpr_meson_compile()
+            cexpr_all = dict()
+            cexpr_all["cexpr_original"] = cexpr_original
+            cexpr_all["cexpr_optimized"] = cexpr_optimized
+            cexpr_all["code_py"] = code_py
+            q.save_pickle_obj(cexpr_all, fn_pickle)
         return cexpr_optimized
     if q.get_id_node() == 0 and not q.does_file_exist(fn_pickle):
         calc_compile_cexpr()
@@ -289,20 +290,8 @@ def benchmark_eval_cexpr(
         p_tag, p_val = p
         return p_tag, tuple(p_val.to_list())
     #
-    @q.timer
-    def get_prop(ptype, *args):
-        if ptype == "U":
-            tag, p, mu = args
-            p = convert_pos(p)
-            return mk_prop_uu(tag, p, mu)
-        else:
-            flavor = ptype
-            pos_snk, pos_src = args
-            pos_snk = convert_pos(pos_snk)
-            pos_src = convert_pos(pos_src)
-            return ama_extract(mk_prop(flavor, pos_snk, pos_src), is_sloppy=True)
-    @q.timer
-    def get_prop_ama(ptype, *args):
+    @q.timer_fname("benchmark_eval_cexpr_get_prop_ama")
+    def benchmark_eval_cexpr_get_prop_ama(ptype, *args):
         if ptype == "U":
             tag, p, mu = args
             p = convert_pos(p)
@@ -314,22 +303,26 @@ def benchmark_eval_cexpr(
             pos_src = convert_pos(pos_src)
             return mk_prop(flavor, pos_snk, pos_src)
     #
-    @q.timer_verbose
+    @q.timer_fname("benchmark_eval_cexpr_get_prop")
+    def benchmark_eval_cexpr_get_prop(ptype, *args):
+        return ama_extract(benchmark_eval_cexpr_get_prop_ama(ptype, *args), is_sloppy=True)
+    #
+    @q.timer_verbose_fname("benchmark_eval_cexpr_run")
     def benchmark_eval_cexpr_run():
         res_list = []
         for k in range(benchmark_size):
-            res = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop)
+            res = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop)
             res_list.append(res)
         res = np.array(res_list)
         assert res.shape == (benchmark_size, n_expr,)
         return res
-    @q.timer_verbose
+    @q.timer_verbose_fname("benchmark_eval_cexpr_run_with_ama")
     def benchmark_eval_cexpr_run_with_ama():
         res_list = []
         for k in range(benchmark_size):
-            res1 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop_ama)
-            res2 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop)
-            res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=get_prop_ama, is_ama_and_sloppy=True)
+            res1 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop_ama)
+            res2 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop)
+            res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop_ama, is_ama_and_sloppy=True)
             assert np.all(res1 == res_ama)
             assert np.all(res2 == res_sloppy)
             res_list.append(res_ama)
@@ -352,25 +345,23 @@ def benchmark_eval_cexpr(
             res = resc
         return [ np.tensordot(res, cv).item() for cv in check_vector_list ]
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size}")
-    q.timer_fork(0)
-    check = None
-    for i in range(benchmark_num):
-        res = benchmark_eval_cexpr_run()
-        new_check = check_res(res)
-        if check is None:
-            check = new_check
-        else:
-            assert check == new_check
-    check_ama = None
-    for i in range(benchmark_num_ama):
-        res_ama = benchmark_eval_cexpr_run_with_ama()
-        new_check_ama = check_res(res_ama)
-        if check_ama is None:
-            check_ama = new_check_ama
-        else:
-            assert check_ama == new_check_ama
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        check = None
+        for i in range(benchmark_num):
+            res = benchmark_eval_cexpr_run()
+            new_check = check_res(res)
+            if check is None:
+                check = new_check
+            else:
+                assert check == new_check
+        check_ama = None
+        for i in range(benchmark_num_ama):
+            res_ama = benchmark_eval_cexpr_run_with_ama()
+            new_check_ama = check_res(res_ama)
+            if check_ama is None:
+                check_ama = new_check_ama
+            else:
+                assert check_ama == new_check_ama
     q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)} {benchmark_show_check(check_ama)}")
     return check, check_ama
 

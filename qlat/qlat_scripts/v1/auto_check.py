@@ -243,42 +243,39 @@ def run_get_prop_checker(job_tag, traj, *,
             return None
     @q.timer_verbose
     def mk_get_prop():
-        q.timer_fork()
-        total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        gf = get_gf()
-        gt = get_gt()
-        #
-        load_prop_psrc(job_tag, traj, inv_type=0)
-        load_prop_psrc(job_tag, traj, inv_type=1)
-        load_prop_wsrc(job_tag, traj, inv_type=0)
-        load_prop_wsrc(job_tag, traj, inv_type=1)
-        #
-        prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
-        def get_prop(flavor, p_snk, p_src):
-            cache = prop_cache[flavor]
-            p_snk_tag, p_snk_xg = p_snk
-            p_src_tag, p_src_xg = p_src
-            if p_snk_tag == "point" and p_src_tag == "point":
-                prop_list = cache["psnk-psrc"]
-                p_src_idx = p_src_xg.to_index(total_site)
-                p_snk_idx = p_snk_xg.to_index(total_site)
-                return prop_list[p_src_idx].get_elem_wm(p_snk_idx)
-            elif p_snk_tag == "point" and p_src_tag == "wall":
-                prop_list = cache["psnk-wsrc"]
-                p_snk_idx = p_snk_xg.to_index(total_site)
-                return prop_list[p_src_xg].get_elem_wm(p_snk_idx)
-            elif p_snk_tag == "wall" and p_src_tag == "point":
-                prop_list = cache["psnk-wsrc"]
-                p_src_idx = p_src_xg.to_index(total_site)
-                return q.wilson_matrix_g5_herm(prop_list[p_snk_xg].get_elem_wm(p_src_idx))
-            elif p_snk_tag == "wall" and p_src_tag == "wall":
-                prop_list = cache["wsnk-wsrc"]
-                return prop_list[p_src_xg].get_elem_wm(p_snk_xg)
-            else:
-                raise Exception(f"get_prop: f={flavor} snk={p_snk} src={p_src}")
-        #
-        q.timer_display()
-        q.timer_merge()
+        with q.TimerFork():
+            total_site = q.Coordinate(get_param(job_tag, "total_site"))
+            gf = get_gf()
+            gt = get_gt()
+            #
+            load_prop_psrc(job_tag, traj, inv_type=0)
+            load_prop_psrc(job_tag, traj, inv_type=1)
+            load_prop_wsrc(job_tag, traj, inv_type=0)
+            load_prop_wsrc(job_tag, traj, inv_type=1)
+            #
+            prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
+            def get_prop(flavor, p_snk, p_src):
+                cache = prop_cache[flavor]
+                p_snk_tag, p_snk_xg = p_snk
+                p_src_tag, p_src_xg = p_src
+                if p_snk_tag == "point" and p_src_tag == "point":
+                    prop_list = cache["psnk-psrc"]
+                    p_src_idx = p_src_xg.to_index(total_site)
+                    p_snk_idx = p_snk_xg.to_index(total_site)
+                    return prop_list[p_src_idx].get_elem_wm(p_snk_idx)
+                elif p_snk_tag == "point" and p_src_tag == "wall":
+                    prop_list = cache["psnk-wsrc"]
+                    p_snk_idx = p_snk_xg.to_index(total_site)
+                    return prop_list[p_src_xg].get_elem_wm(p_snk_idx)
+                elif p_snk_tag == "wall" and p_src_tag == "point":
+                    prop_list = cache["psnk-wsrc"]
+                    p_src_idx = p_src_xg.to_index(total_site)
+                    return q.wilson_matrix_g5_herm(prop_list[p_snk_xg].get_elem_wm(p_src_idx))
+                elif p_snk_tag == "wall" and p_src_tag == "wall":
+                    prop_list = cache["wsnk-wsrc"]
+                    return prop_list[p_src_xg].get_elem_wm(p_snk_xg)
+                else:
+                    raise Exception(f"get_prop: f={flavor} snk={p_snk} src={p_src}")
         return get_prop
     return q.lazy_call(mk_get_prop)
 

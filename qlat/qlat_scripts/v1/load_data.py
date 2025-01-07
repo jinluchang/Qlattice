@@ -799,48 +799,46 @@ def run_get_prop(job_tag, traj, *,
                 ]
     @q.timer_verbose
     def mk_get_prop():
-        q.timer_fork()
-        total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        geo = q.Geometry(total_site)
-        gf = get_gf()
-        gf_hyp = get_gf_hyp()
-        gt = get_gt()
-        psel = get_psel()
-        psel_smear = get_psel_smear()
-        fsel = get_fsel()
-        #
-        prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
-        prop_cache["psel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel) ])
-        psel_local = fsel.to_psel_local()
-        prop_cache["fsel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel_local) ])
-        if "gf hyp" in prop_types:
-            prop_cache["geo_pos_dict"] = dict([ (tuple(pos), i,) for i, pos in enumerate(geo.xg_arr()) ])
-        #
-        prop_load_dict = dict()
-        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=gt)
-        prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel)
-        prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel)
-        prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)
-        prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel=psel, fsel=fsel)
-        prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel=psel, fsel=fsel)
-        prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)
-        prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel=psel, fsel=fsel)
-        prop_load_dict["gf hyp"] = lambda: load_gauge_hyp(job_tag, traj, gf_hyp=gf_hyp)
-        for pt in prop_types:
-            v = prop_load_dict[pt]()
-            if v is None:
-                q.displayln_info(f"mk_get_prop: {pt} not available. return None.")
-                return None
-        #
-        # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
-        # where get_prop_pos_snk(pos_snk) ==> ama_prop
-        prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
-        prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
-        q.timer_display()
-        q.timer_merge()
+        with q.TimerFork():
+            total_site = q.Coordinate(get_param(job_tag, "total_site"))
+            geo = q.Geometry(total_site)
+            gf = get_gf()
+            gf_hyp = get_gf_hyp()
+            gt = get_gt()
+            psel = get_psel()
+            psel_smear = get_psel_smear()
+            fsel = get_fsel()
+            #
+            prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
+            prop_cache["psel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel) ])
+            psel_local = fsel.to_psel_local()
+            prop_cache["fsel_pos_dict"] = dict([ (pos.to_tuple(), i,) for i, pos in enumerate(psel_local) ])
+            if "gf hyp" in prop_types:
+                prop_cache["geo_pos_dict"] = dict([ (tuple(pos), i,) for i, pos in enumerate(geo.xg_arr()) ])
+            #
+            prop_load_dict = dict()
+            prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel, gt=gt)
+            prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=gt)
+            prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel, gt=gt)
+            prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=gt)
+            prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel=psel, fsel=fsel)
+            prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel)
+            prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)
+            prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel=psel, fsel=fsel)
+            prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel=psel, fsel=fsel)
+            prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel=psel, fsel=fsel)
+            prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel=psel, fsel=fsel)
+            prop_load_dict["gf hyp"] = lambda: load_gauge_hyp(job_tag, traj, gf_hyp=gf_hyp)
+            for pt in prop_types:
+                v = prop_load_dict[pt]()
+                if v is None:
+                    q.displayln_info(f"mk_get_prop: {pt} not available. return None.")
+                    return None
+            #
+            # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
+            # where get_prop_pos_snk(pos_snk) ==> ama_prop
+            prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+            prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         def get_prop(flavor, *args, is_norm_sqrt=False):
             if is_norm_sqrt:
                 p_snk, p_src, = args
