@@ -341,17 +341,10 @@ def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_te
                     op.elem_list[i] = (val, ea_var)
 
 @q.timer
-def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
+def collect_factor_fac_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
     """
-    collect the factors in all ea_coef
-    collect common sub-expressions in ea_coef
+    Add ea.Factor with `otype` "Expr" to `variables_factor_intermediate`
     """
-    variables_factor_intermediate = []
-    variables_factor = []
-    var_nameset = set()
-    #
-    collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_terms)
-    # Add ea.Factor with otype "Expr" to variables_factor_intermediate
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
     for _, ea_coef in variables_factor:
@@ -374,7 +367,12 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
                         var = ea.Factor(name, f.variables)
                         x[i] = var
                         var_dataset[f.code] = var
-    # Add numerical coef to variables_factor_intermediate
+
+@q.timer
+def collect_factor_coef_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
+    """
+    Add numerical coef to variables_factor_intermediate
+    """
     var_counter = 0
     var_dataset = {} # var_dataset[factor_code] = factor_var
     for _, ea_coef in variables_factor:
@@ -399,7 +397,12 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
                 var = ea.Factor(name, variables=[], otype="Var")
                 t.factors.append(var)
                 var_dataset[code] = var
-    # Common product elimination
+
+@q.timer
+def collect_factor_prod_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
+    """
+    Common product elimination
+    """
     var_counter = 0
     var_dataset = {} # var_dataset[(code1, code2,)] = factor_var
     while True:
@@ -420,7 +423,12 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
         var = ea.Factor(name, variables=[], otype="Var")
         var_dataset[prod] = var
         collect_common_prod_in_factors(variables_factor, prod, var)
-    # Common summation elimination
+
+@q.timer
+def collect_factor_sum_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
+    """
+    Common summation elimination
+    """
     var_counter = 0
     var_dataset = {} # var_dataset[(code1, code2,)] = factor_var
     while True:
@@ -441,6 +449,21 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
         var = ea.Factor(name, variables=[], otype="Var")
         var_dataset[pair] = var
         collect_common_sum_in_factors(variables_factor, pair, var)
+
+@q.timer
+def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
+    """
+    collect the factors in all ea_coef
+    collect common sub-expressions in ea_coef
+    """
+    variables_factor_intermediate = []
+    variables_factor = []
+    var_nameset = set()
+    collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_terms)
+    collect_factor_coef_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
+    collect_factor_fac_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
+    collect_factor_prod_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
+    collect_factor_sum_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
     return variables_factor_intermediate, variables_factor
 
 @q.timer
