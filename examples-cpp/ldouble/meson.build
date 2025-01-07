@@ -36,6 +36,6 @@ qlat_x = executable('qlat.x',
   )
 
 run_target('run',
-  command: 'run.sh',
+  command: [ 'bash', files('run.sh'), ],
   depends: [ qlat_x, ],
   )
