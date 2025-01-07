@@ -108,7 +108,7 @@
   "['rel_mod_sym', 'size', 't_1', 't_2', 'x_1', 'x_2']"
  ],
  [
-  "[('V_factor_fac_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],1)])), ('V_factor_fac_1', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]),['rel_mod_sym', 'size"
+  "[('V_factor_coef_0', ea.Expr([ea.Term([],-sqrt(2)*I/6)])), ('V_factor_coef_1', ea.Expr([ea.Term([],sqrt(2)*I/6)])), ('V_factor_fac_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],1)])"
  ],
  [
   "[('V_factor_final_0', ea.Expr([ea.Term([],1)])), ('V_factor_final_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_0,[],Var)],1)])), ('V_factor_final_2', ea.Expr([ea.Term([ea.Factor(V_factor_prod_1,[],Var)],1)])), ('V_factor_final_3', ea.Expr([ea.Term([ea.Fac"
