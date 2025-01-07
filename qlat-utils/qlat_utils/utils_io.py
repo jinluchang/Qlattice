@@ -109,7 +109,7 @@ def pickle_cache(path, is_sync_node=True):
     def dec(func):
         @functools.wraps(func)
         def f(*args, **kwargs):
-            func_args = (func.__name__, args, kwargs)
+            func_args = (func.__qualname__, args, kwargs)
             func_args_str = pickle.dumps(func_args)
             key = hash_sha256(func_args_str)
             fn = f"{path}/{key}.pickle"
@@ -141,7 +141,7 @@ def cache_call(
     if is_hash_args:
         Pickle all the keys and use hash as the key (default)
     else:
-        Use `(func.__name__, args, state)` directly as `key`.
+        Use `(func.__qualname__, args, state)` directly as `key`.
         Note that `kwargs` has to be empty in this case.
     if path is None:
         Only cache using LRUCache (default)
@@ -180,13 +180,13 @@ def cache_call(
                 state = None
             else:
                 state = get_state()
-            func_args = (func.__name__, args, kwargs, state)
+            func_args = (func.__qualname__, args, kwargs, state)
             if is_hash_args:
                 func_args_str = pickle.dumps(func_args)
                 key = hash_sha256(func_args_str)
             else:
                 assert kwargs == dict()
-                key = (func.__name__, args, state)
+                key = (func.__qualname__, args, state)
             if key in cache:
                 c_res = cache[key]
                 c_func_args, c_ret = c_res

@@ -278,7 +278,7 @@ class TimerFork:
 ### -------------------------------------------------------------------
 
 def timer_builder(object func, cc.Bool is_verbose, cc.Bool is_flops) -> object:
-    cdef cc.std_string fname = "py:" + func.__name__
+    cdef cc.std_string fname = "py:" + func.__qualname__
     cdef cc.Timer qtimer = cc.Timer(fname)
     if not is_flops:
         @functools.wraps(func)
