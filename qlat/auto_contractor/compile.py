@@ -178,7 +178,7 @@ def collect_position_in_cexpr(named_terms, named_exprs):
 @q.timer
 def find_common_prod_in_factors(variables_factor):
     """
-    return None or (var_name_1, var_name_2,)
+    return [ (var_name_1, var_name_2,), ... ]
     """
     subexpr_count = {}
     for _, ea_coef in variables_factor:
@@ -195,31 +195,54 @@ def find_common_prod_in_factors(variables_factor):
                 count = subexpr_count.get(prod, 0)
                 subexpr_count[prod] = count + 1
     max_num_repeat = 0
-    best_match = None
+    best_match_list = []
     for prod, num_repeat in subexpr_count.items():
         if num_repeat > max_num_repeat:
             max_num_repeat = num_repeat
-            best_match = prod
-    return best_match
+            best_match_list = [ prod, ]
+        elif num_repeat == max_num_repeat:
+            best_match_list.append(prod)
+    return best_match_list
 
 @q.timer
-def collect_common_prod_in_factors(variables_factor, common_prod, var):
+def collect_common_prod_in_factors(variables_factor_intermediate, variables_factor, var_nameset, var_counter, common_prod_list, var_dataset):
     """
-    common_prod = find_common_prod_in_factors(variables_factor)
+    common_prod_list = find_common_prod_in_factors(variables_factor)
+    var = var_dataset[prod]
     var = ea.Factor(name, variables=[], otype="Var")
     """
+    common_prod_set = set(common_prod_list)
     for _, ea_coef in variables_factor:
         assert isinstance(ea_coef, ea.Expr)
         for t in ea_coef.terms:
             x = t.factors
-            if len(x) < 1:
+            if len(x) <= 1:
                 continue
-            for i, f in enumerate(x[:-1]):
+            for i in range(len(x) - 1):
+                f = x[i]
+                if f is None:
+                    continue
                 assert f.otype == "Var"
                 f1 = x[i+1]
                 assert f1.otype == "Var"
                 prod = (f.code, f1.code,)
-                if prod == common_prod:
+                if prod in common_prod_set:
+                    if prod in var_dataset:
+                        var = var_dataset[prod]
+                    else:
+                        code1, code2 = prod
+                        var1 = ea.Factor(code1, variables=[], otype="Var")
+                        var2 = ea.Factor(code2, variables=[], otype="Var")
+                        prod_expr = ea.mk_expr(var1) * ea.mk_expr(var2)
+                        while True:
+                            name = f"V_factor_prod_{var_counter}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables_factor_intermediate.append((name, prod_expr,))
+                        var = ea.Factor(name, variables=[], otype="Var")
+                        var_dataset[prod] = var
                     x[i] = var
                     x[i+1] = None
     for _, ea_coef in variables_factor:
@@ -231,6 +254,7 @@ def collect_common_prod_in_factors(variables_factor, common_prod, var):
                 if v is not None:
                     x_new.append(v)
             t.factors = x_new
+    return var_counter
 
 @q.timer
 def find_common_sum_in_factors(variables_factor):
@@ -436,23 +460,10 @@ def collect_factor_prod_in_cexpr(variables_factor_intermediate, var_nameset, var
     var_counter = 0
     var_dataset = {} # var_dataset[(code1, code2,)] = factor_var
     while True:
-        prod = find_common_prod_in_factors(variables_factor)
-        if prod is None:
+        prod_list = find_common_prod_in_factors(variables_factor)
+        if len(prod_list) == 0:
             break
-        code1, code2 = prod
-        var1 = ea.Factor(code1, variables=[], otype="Var")
-        var2 = ea.Factor(code2, variables=[], otype="Var")
-        prod_expr = ea.mk_expr(var1) * ea.mk_expr(var2)
-        while True:
-            name = f"V_factor_prod_{var_counter}"
-            var_counter += 1
-            if name not in var_nameset:
-                break
-        var_nameset.add(name)
-        variables_factor_intermediate.append((name, prod_expr,))
-        var = ea.Factor(name, variables=[], otype="Var")
-        var_dataset[prod] = var
-        collect_common_prod_in_factors(variables_factor, prod, var)
+        var_counter = collect_common_prod_in_factors(variables_factor_intermediate, variables_factor, var_nameset, var_counter, prod_list, var_dataset)
 
 @q.timer
 def collect_factor_sum_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
