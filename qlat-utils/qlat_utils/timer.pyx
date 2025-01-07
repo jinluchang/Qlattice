@@ -277,9 +277,13 @@ class TimerFork:
 
 ### -------------------------------------------------------------------
 
-def timer_builder(object func, cc.Bool is_verbose, cc.Bool is_flops) -> object:
-    cdef cc.std_string fname = "py:" + func.__qualname__
-    cdef cc.Timer qtimer = cc.Timer(fname)
+def timer_builder(object func, cc.Bool is_verbose, cc.Bool is_flops, *, str fname=None) -> object:
+    cdef cc.std_string fname_str
+    if fname is None:
+        fname_str = "py:" + func.__qualname__
+    else:
+        fname_str = fname
+    cdef cc.Timer qtimer = cc.Timer(fname_str)
     if not is_flops:
         @functools.wraps(func)
         def qtimer_func(*args, **kwargs):
@@ -307,7 +311,19 @@ def timer(object func) -> object:
     """
     return timer_builder(func, False, False)
 
-def timer_verbose(func):
+def timer_fname(str fname) -> object:
+    """
+    Timing functions.\n
+    Usage::\n
+        @q.timer_fname("fname")
+        def function(args):
+            ...
+    """
+    def f(object func):
+        return timer_builder(func, False, False, fname=fname)
+    return f
+
+def timer_verbose(object func):
     """
     Timing functions. Always show output if ``get_verbose_level() > 0``\n
     Usage::\n
@@ -317,7 +333,19 @@ def timer_verbose(func):
     """
     return timer_builder(func, True, False)
 
-def timer_flops(func):
+def timer_verbose_fname(str fname):
+    """
+    Timing functions. Always show output if ``get_verbose_level() > 0``\n
+    Usage::\n
+        @q.timer_verbose_fname("fname")
+        def function(args):
+            ...
+    """
+    def f(object func):
+        return timer_builder(func, True, False, fname=fname)
+    return f
+
+def timer_flops(object func):
     """
     Timing functions with flops.\n
     Usage::\n
@@ -329,7 +357,21 @@ def timer_flops(func):
     """
     return timer_builder(func, False, True)
 
-def timer_verbose_flops(func):
+def timer_flops_fname(str fname):
+    """
+    Timing functions with flops.\n
+    Usage::\n
+        @q.timer_flops_fname("fname")
+        def function(args):
+            ...
+            return flops, ret
+    Modified function will only return ``ret`` in above example.
+    """
+    def f(object func):
+        return timer_builder(func, False, True, fname=fname)
+    return f
+
+def timer_verbose_flops(object func):
     """
     Timing functions with flops. Always show output if ``get_verbose_level() > 0``\n
     Usage::\n
@@ -340,3 +382,17 @@ def timer_verbose_flops(func):
     Modified function will only return ``ret`` in above example.
     """
     return timer_builder(func, True, True)
+
+def timer_verbose_flops_fname(str fname):
+    """
+    Timing functions with flops. Always show output if ``get_verbose_level() > 0``\n
+    Usage::\n
+        @q.timer_verbose_flops_fname("fname")
+        def function(args):
+            ...
+            return flops, ret
+    Modified function will only return ``ret`` in above example.
+    """
+    def f(object func):
+        return timer_builder(func, True, True, fname=fname)
+    return f
