@@ -410,6 +410,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat_utils-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat;
+  inherit (many-qlat-pkgs-all) qlat-pypi;
   inherit (many-qlat-pkgs-all) qlat-std;
   inherit (many-qlat-pkgs-all) qlat-std-clang;
   inherit (many-qlat-pkgs-all) qlat-cuda;
@@ -417,14 +418,17 @@ in {
   inherit (many-qlat-pkgs-all) qlat-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat_grid;
+  inherit (many-qlat-pkgs-all) qlat_grid-pypi;
   inherit (many-qlat-pkgs-all) qlat_grid-cuda;
   inherit (many-qlat-pkgs-all) qlat_grid-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat_cps;
+  inherit (many-qlat-pkgs-all) qlat_cps-pypi;
   inherit (many-qlat-pkgs-all) qlat_cps-cuda;
   inherit (many-qlat-pkgs-all) qlat_cps-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-tests;
+  inherit (many-qlat-pkgs-all) qlat-tests-pypi;
   inherit (many-qlat-pkgs-all) qlat-tests-std;
   inherit (many-qlat-pkgs-all) qlat-tests-std-clang;
   inherit (many-qlat-pkgs-all) qlat-tests-cuda;
@@ -432,6 +436,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat-tests-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-env;
+  inherit (many-qlat-pkgs-all) qlat-env-pypi;
   inherit (many-qlat-pkgs-all) qlat-env-std;
   inherit (many-qlat-pkgs-all) qlat-env-std-clang;
   inherit (many-qlat-pkgs-all) qlat-env-cuda;
@@ -439,6 +444,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat-env-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-jhub-env;
+  inherit (many-qlat-pkgs-all) qlat-jhub-env-pypi;
   inherit (many-qlat-pkgs-all) qlat-jhub-env-std;
   inherit (many-qlat-pkgs-all) qlat-jhub-env-std-clang;
   inherit (many-qlat-pkgs-all) qlat-jhub-env-cuda;
@@ -446,6 +452,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat-jhub-env-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-sh;
+  inherit (many-qlat-pkgs-all) qlat-sh-pypi;
   inherit (many-qlat-pkgs-all) qlat-sh-std;
   inherit (many-qlat-pkgs-all) qlat-sh-std-clang;
   inherit (many-qlat-pkgs-all) qlat-sh-cuda;
@@ -453,6 +460,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat-sh-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-jhub-sh;
+  inherit (many-qlat-pkgs-all) qlat-jhub-sh-pypi;
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-std;
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-std-clang;
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-cuda;
@@ -460,6 +468,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat-jhub-sh-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-fhs;
+  inherit (many-qlat-pkgs-all) qlat-fhs-pypi;
   inherit (many-qlat-pkgs-all) qlat-fhs-std;
   inherit (many-qlat-pkgs-all) qlat-fhs-std-clang;
   inherit (many-qlat-pkgs-all) qlat-fhs-cuda;
@@ -467,6 +476,7 @@ in {
   inherit (many-qlat-pkgs-all) qlat-fhs-clang; # not working
   #
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs;
+  inherit (many-qlat-pkgs-all) qlat-jhub-fhs-pypi;
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std;
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std-clang;
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-cuda;

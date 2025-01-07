@@ -19,12 +19,12 @@ let
 
   orig-stdenv = stdenv;
 
-  version-pypi = "0.75";
+  version-pypi = "0.76";
   src-pypi = fetchPypi {
     pname = "qlat_cps";
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-CmBaFU8M0hukrnn2eiAdD2cYLrN8J57wrVAFsrXfNPg=";
+    hash = "sha256-ieAl3fLL3d3GYWu8HSGFIOTSCpEkZ34HmfNUhaYytvI=";
   };
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";

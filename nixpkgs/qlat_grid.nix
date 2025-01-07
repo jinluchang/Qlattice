@@ -19,12 +19,12 @@ let
 
   orig-stdenv = stdenv;
 
-  version-pypi = "0.75";
+  version-pypi = "0.76";
   src-pypi = fetchPypi {
     pname = "qlat_grid";
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-yKnpPkVfAn+9660XJ9FLJFu+3/mO47L9e2fPx1e6lBk=";
+    hash = "sha256-QdihqYcV0hGO6IHScCV4vcRseSA2cCYTOR4/uId1bmA=";
   };
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";

@@ -28,12 +28,12 @@ let
 
   orig-stdenv = stdenv;
 
-  version-pypi = "0.75";
+  version-pypi = "0.76";
   src-pypi = fetchPypi {
     pname = "qlat";
     version = version-pypi;
     extension = "tar.gz";
-    hash = "sha256-jQ6T5jMa/7iZJmF9YwZ9y6VOx+SCMxlrbZiHU2oDElQ=";
+    hash = "sha256-5ZTZOGN6M8O/UdRVqO/cVhecuQmHBexTLtbPrSOb+qE=";
   };
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";

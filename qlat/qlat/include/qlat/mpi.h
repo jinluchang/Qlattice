@@ -515,6 +515,7 @@ int glb_sum_vec(Vector<M> x)
   } else {
     qerr(ssprintf("glb_sum_vec get_type_name(M)='%s'",
                   get_type_name<M>().c_str()));
+    return 0;
   }
 }
 
