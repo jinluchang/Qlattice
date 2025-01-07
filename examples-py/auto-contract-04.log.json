@@ -111,7 +111,7 @@
   "[('V_factor_coef_0', ea.Expr([ea.Term([],-sqrt(2)*I/6)])), ('V_factor_coef_1', ea.Expr([ea.Term([],sqrt(2)*I/6)])), ('V_factor_fac_0', ea.Expr([ea.Term([ea.Factor(rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]),['rel_mod_sym', 'size', 'x_1', 'x_2'],Expr)],1)])"
  ],
  [
-  "[('V_factor_final_0', ea.Expr([ea.Term([],1)])), ('V_factor_final_1', ea.Expr([ea.Term([ea.Factor(V_factor_prod_0,[],Var)],1)])), ('V_factor_final_2', ea.Expr([ea.Term([ea.Factor(V_factor_prod_1,[],Var)],1)])), ('V_factor_final_3', ea.Expr([ea.Term([ea.Fac"
+  "[('V_factor_final_0', ea.Expr([ea.Term([],1)])), ('V_factor_final_1', ea.Expr([ea.Term([ea.Factor(V_factor_facs_0,[],Var)],1)])), ('V_factor_final_2', ea.Expr([ea.Term([ea.Factor(V_factor_facs_1,[],Var)],1)])), ('V_factor_final_3', ea.Expr([ea.Term([ea.Fac"
  ],
  [
   "[('V_S_0', S('l','x_1','t_1')), ('V_S_1', S('l','t_1','x_2')), ('V_S_2', S('l','x_2','x_1')), ('V_S_3', S('l','x_2','t_1')), ('V_S_4', S('l','t_1','x_1')), ('V_S_5', S('l','x_1','x_2')), ('V_S_6', S('l','x_1','t_2')), ('V_S_7', S('l','t_2','x_2')), ('V_S_8"

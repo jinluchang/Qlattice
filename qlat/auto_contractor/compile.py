@@ -341,34 +341,6 @@ def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_te
                     op.elem_list[i] = (val, ea_var)
 
 @q.timer
-def collect_factor_fac_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
-    """
-    Add ea.Factor with `otype` "Expr" to `variables_factor_intermediate`
-    """
-    var_counter = 0
-    var_dataset = {} # var_dataset[factor_code] = factor_var
-    for _, ea_coef in variables_factor:
-        assert isinstance(ea_coef, ea.Expr)
-        for t in ea_coef.terms:
-            x = t.factors
-            for i, f in enumerate(x):
-                if f.otype != "Var":
-                    assert f.otype == "Expr"
-                    if f.code in var_dataset:
-                        x[i] = var_dataset[f.code]
-                    else:
-                        while True:
-                            name = f"V_factor_fac_{var_counter}"
-                            var_counter += 1
-                            if name not in var_nameset:
-                                break
-                        var_nameset.add(name)
-                        variables_factor_intermediate.append((name, ea.mk_expr(f),))
-                        var = ea.Factor(name, f.variables)
-                        x[i] = var
-                        var_dataset[f.code] = var
-
-@q.timer
 def collect_factor_coef_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
     """
     Add numerical coef to variables_factor_intermediate
@@ -397,6 +369,64 @@ def collect_factor_coef_in_cexpr(variables_factor_intermediate, var_nameset, var
                 var = ea.Factor(name, variables=[], otype="Var")
                 t.factors.append(var)
                 var_dataset[code] = var
+
+@q.timer
+def collect_factor_fac_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
+    """
+    Add ea.Factor with `otype` "Expr" to `variables_factor_intermediate`
+    """
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.factors
+            for i, f in enumerate(x):
+                if f.otype != "Var":
+                    assert f.otype == "Expr"
+                    if f.code in var_dataset:
+                        x[i] = var_dataset[f.code]
+                    else:
+                        while True:
+                            name = f"V_factor_fac_{var_counter}"
+                            var_counter += 1
+                            if name not in var_nameset:
+                                break
+                        var_nameset.add(name)
+                        variables_factor_intermediate.append((name, ea.mk_expr(f),))
+                        var = ea.Factor(name, f.variables)
+                        x[i] = var
+                        var_dataset[f.code] = var
+
+@q.timer
+def collect_factor_facs_in_cexpr(variables_factors, var_nameset, variables_factor):
+    """
+    Add ea.Factor with `otype` "Expr" to `variables_factors`
+    """
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    for _, ea_coef in variables_factor:
+        assert isinstance(ea_coef, ea.Expr)
+        for t in ea_coef.terms:
+            x = t.factors
+            if len(x) <= 1:
+                continue
+            key = repr(x)
+            if key in var_dataset:
+                var = var_dataset[key]
+                t.factors = [ var, ]
+            else:
+                while True:
+                    name = f"V_factor_facs_{var_counter}"
+                    var_counter += 1
+                    if name not in var_nameset:
+                        break
+                var_nameset.add(name)
+                expr = ea.mk_expr(ea.Term(x))
+                variables_factors.append((name, expr,))
+                var = ea.Factor(name, variables=[], otype="Var")
+                t.factors = [ var, ]
+                var_dataset[key] = var
 
 @q.timer
 def collect_factor_prod_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor):
@@ -455,6 +485,9 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
     """
     collect the factors in all ea_coef
     collect common sub-expressions in ea_coef
+    #
+    variables_factor = [ (name, ea.expr,), ... ]
+    variables_factor_intermediate = [ (name, ea.expr,), ... ]
     """
     variables_factor_intermediate = []
     variables_factor = []
@@ -462,7 +495,10 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
     collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_terms)
     collect_factor_coef_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
     collect_factor_fac_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
-    collect_factor_prod_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
+    variables_factors = []
+    collect_factor_facs_in_cexpr(variables_factors, var_nameset, variables_factor)
+    collect_factor_prod_in_cexpr(variables_factor_intermediate, var_nameset, variables_factors)
+    variables_factor_intermediate += variables_factors
     collect_factor_sum_in_cexpr(variables_factor_intermediate, var_nameset, variables_factor)
     return variables_factor_intermediate, variables_factor
 

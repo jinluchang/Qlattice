@@ -88,7 +88,7 @@ class Term:
     coef should be a number or a sympy expression
     """
 
-    def __init__(self, factors, coef=1):
+    def __init__(self, factors:list, coef=1):
         self.coef = coef
         self.factors = factors
 
