@@ -130,7 +130,6 @@ class Expr:
     def __init__(self, terms):
         self.terms = terms
 
-    @q.timer
     def copy(self):
         """
         return a deep copy of this object.
@@ -184,19 +183,17 @@ class Expr:
     def drop_zeros(self) -> None:
         self.terms = drop_zero_terms(self).terms
 
-    @q.timer
     def simplify_coef(self) -> None:
         """
-        call `coef_simplified` instead
+        call `simplified_coef_ea` instead
         """
         for t in self.terms:
             t.simplify_coef()
         self.drop_zeros()
 
-    @q.timer
     def simplify(self) -> None:
         """
-        call `simplified` instead
+        call `simplified_ea` instead
         """
         self.sort()
         self.combine_terms()
@@ -220,7 +217,8 @@ class Expr:
 
 ### ------
 
-def simplified(x) -> Expr|int:
+@q.timer
+def simplified_ea(x) -> Expr|int:
     """
     interface function
     Only perform structure simplification.
@@ -234,14 +232,15 @@ def simplified(x) -> Expr|int:
             x = x.terms[0].coef
     return x
 
-def coef_simplified(x) -> Expr|int:
+@q.timer
+def simplified_coef_ea(x) -> Expr|int:
     """
     interface function
     Only perform sympy simplification.
     """
     x = mk_expr(x).copy()
     x.simplify_coef()
-    return simplified(x)
+    return simplified_ea(x)
 
 def compile_py(x, var_dict=None) -> str:
     """

@@ -311,7 +311,7 @@ def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_te
         if key in var_dataset:
             var = var_dataset[key]
         else:
-            s_ea_coef = ea.mk_expr(ea.simplified(ea_coef))
+            s_ea_coef = ea.mk_expr(ea.simplified_ea(ea_coef))
             key2 = repr(s_ea_coef)
             if key2 in var_dataset:
                 var = var_dataset[key2]

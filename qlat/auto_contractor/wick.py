@@ -880,11 +880,11 @@ def simplify_bs_elem_list(elem_list:list) -> list:
         if v == value:
             coef += c
         else:
-            coef = ea.simplified(coef)
+            coef = ea.simplified_ea(coef)
             if coef != 0:
                 s_elem_list.append((value, coef,))
             value, coef, = v, c,
-    coef = ea.simplified(coef)
+    coef = ea.simplified_ea(coef)
     if coef != 0:
         s_elem_list.append((value, coef,))
     return s_elem_list
@@ -1248,10 +1248,10 @@ class Term:
         self.c_ops.sort(key=repr)
 
     def simplify_coef(self) -> None:
-        self.coef = ea.coef_simplified(self.coef)
+        self.coef = ea.simplified_coef_ea(self.coef)
 
     def simplify_ea(self) -> None:
-        self.coef = ea.simplified(self.coef)
+        self.coef = ea.simplified_ea(self.coef)
 
     def collect_traces(self) -> None:
         """
@@ -1424,6 +1424,7 @@ class Expr:
 
 ### ------
 
+@q.timer
 def mk_fac(x) -> Expr:
     """
     interface function
@@ -1437,13 +1438,14 @@ def mk_fac(x) -> Expr:
     """
     return mk_expr(ea.mk_fac(x))
 
+@q.timer
 def simplified(expr:Expr, *, is_isospin_symmetric_limit:bool=True) -> Expr:
     """
     interface function
     does not change expr
     """
     sexpr = expr.copy()
-    sexpr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+    sexpr.simplify(is_isospin_symmetric_limit=is_isospin_symmetric_limit)
     return sexpr
 
 def mk_expr(x) -> Expr:
@@ -1572,7 +1574,7 @@ def rescale_bs_term(term:Term) -> Term:
         over_all_coef = 0
         for _, coef, in sst_el:
             if isinstance(coef, ea.Expr):
-                coef = ea.simplified(coef)
+                coef = ea.simplified_ea(coef)
             if ea.is_zero(coef):
                 continue
             if isinstance(coef, ea.Expr):
