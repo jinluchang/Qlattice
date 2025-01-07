@@ -65,10 +65,10 @@ in
       gpu_extra = ''
         pwd
         cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
-        patchShebangs --build "$PWD/NVCC.py"
+        # patchShebangs --build "$PWD/NVCC.py"
         #
         cp -pv "${../qcore/bin/bind-gpu-qlat.sh}" "$PWD/bind-gpu-qlat.sh"
-        patchShebangs --build "$PWD/bind-gpu-qlat.sh"
+        # patchShebangs --build "$PWD/bind-gpu-qlat.sh"
         export NGPU=${ngpu}
         export mpi_options="$mpi_options $PWD/bind-gpu-qlat.sh"
         #
@@ -137,8 +137,8 @@ in
       #
       echo num_proc=$num_proc
       #
-      patchShebangs --build */run.py
-      echo
+      # patchShebangs --build */run.py
+      # echo
       #
       make update-sources SHELL=$SHELL
       echo

@@ -1253,6 +1253,7 @@ class Term:
     def simplify_ea(self) -> None:
         self.coef = ea.simplified_ea(self.coef)
 
+    @q.timer
     def collect_traces(self) -> None:
         """
         Collect `Chain`s, `Tr`s, `BS`s.
@@ -1377,8 +1378,17 @@ class Expr:
         self.terms = terms
 
     @q.timer
-    def combine_terms(self) -> None:
-        self.terms = combine_terms_expr(self).terms
+    def combine_terms(self) -> bool:
+        """
+        Combine similar terms.
+        Return if there are terms be combined.
+        """
+        expr = combine_terms_expr(self)
+        if expr is None:
+            return False
+        else:
+            self.terms = expr.terms
+            return True
 
     @q.timer
     def drop_zeros(self) -> None:
@@ -1412,15 +1422,14 @@ class Expr:
         """
         if is_isospin_symmetric_limit:
             self.isospin_symmetric_limit()
-        self.sort()
-        self.combine_terms()
+        # self.sort()
+        # self.combine_terms()
         self.collect_traces()
         self.sort()
         self.combine_terms()
         self.rescale_bs_term()
-        self.sort()
         self.simplify_ea()
-        self.sort()
+        # self.sort()
 
 ### ------
 
@@ -1529,15 +1538,18 @@ def combine_two_terms(t1:Term, t2:Term, t1_sig:str, t2_sig:str) -> Term|None:
         return None
 
 @q.timer
-def combine_terms_expr(expr:Expr) -> Expr:
+def combine_terms_expr(expr:Expr) -> Expr|None:
     """
-    combine terms with the same signatures.
+    Combine terms with the same signatures.
+    Return `None` if not terms are combined.
     """
     if not expr.terms:
-        return expr
+        return None
+    signatures = [ get_term_signature(t) for t in expr.terms ]
+    if len(signatures) == len(set(signatures)):
+        return None
     zero_term = Term([], [], 0)
     zero_term_sig = get_term_signature(zero_term)
-    signatures = [ get_term_signature(t) for t in expr.terms ]
     s_pairs = sorted(list(zip(expr.terms, signatures)), key=lambda x: x[1])
     s_terms, s_signatures, = list(zip(*s_pairs))
     terms = []
