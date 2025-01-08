@@ -912,7 +912,7 @@ template <class M>
 Long read(ShuffledFieldsReader& sfr, const std::string& fn,
           const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
-// sbs must match the actual data
+// sbs must match (can be subset of) the actual data
 // (code will verify & will fail if not match)
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sbs,sf)");
@@ -1052,10 +1052,21 @@ Long read_field(Field<M>& field, const std::string& path, const std::string& fn)
 }
 
 template <class M>
+Long read(SelectedField<M>& sf, FieldSelection& fsel, const std::string& path,
+          const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE("read_field(sf,fsel,path,fn)");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return read(sfr, fn, sf, fsel);
+}
+
+template <class M>
 Long read_field(SelectedField<M>& sf, const std::string& path,
                 const std::string& fn, const ShuffledBitSet& sbs)
 // interface function
-// sbs must match the actual data
+// sbs must match (can be subset of) the actual data
+// (code will verify & will fail if not match)
 {
   TIMER_VERBOSE("read_field(sf,path,fn,sbs)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);

@@ -1607,7 +1607,8 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
   if (get_shuffled_fields_writer_cache().has(path)) {
     // warn if there is a writer in cache
     qwarn(fname + ssprintf(": path='%s' is in writer cache.", path.c_str()));
-  } else if (sfr.path == "") {
+  }
+  if (sfr.path == "") {
     sfr.init(path, new_size_node);
   }
   return sfr;

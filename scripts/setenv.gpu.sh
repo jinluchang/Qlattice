@@ -16,6 +16,13 @@ source qcore/set-prefix.sh
             NVCC_ARCH="sm_$compute_cap"
         fi
     fi
+    if [ -z "$CUDA_ROOT" ] ; then
+        NVCC_PATH="$(which nvcc)"
+        CUDA_ROOT="${NVCC_PATH%/bin/nvcc}"
+    fi
+    if [ -z "$CUDA_LIBDIR" ] ; then
+        CUDA_LIBDIR="/usr/lib/x86_64-linux-gnu/stubs"
+    fi
 #
 cat >"$prefix/setenv.sh" <<EOF
 if [ -z "\$num_proc" ] ; then
@@ -29,6 +36,8 @@ export QLAT_CXX="NVCC.py -ccbin CXX.sh \$NVCC_OPTIONS"
 export QLAT_MPICXX="NVCC.py -ccbin MPICXX.sh \$NVCC_OPTIONS"
 export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
 export QLAT_LDFLAGS="--NVCC-link" # --shared
+export CUDA_ROOT="$CUDA_ROOT"
+export CUDA_LIBDIR="$CUDA_LIBDIR"
 EOF
 
     #
