@@ -91,7 +91,7 @@ fi
 if [ -e Grid-tblum/configure ] ; then
     echo "Grid-tblum bootstrapped."
 else
-    ( cd Grid-tblum ; git clean -f ; ./bootstrap.sh || true ; ls -l Eigen || true )
+    ( cd Grid-tblum ; git clean -f ; sed -i 's/gsha256sum/sha256sum/g' bootstrap.sh ; ./bootstrap.sh || true ; ls -l Eigen || true ; git checkout bootstrap.sh )
 fi
 
 if [ -d Hadrons-tblum ] ; then
