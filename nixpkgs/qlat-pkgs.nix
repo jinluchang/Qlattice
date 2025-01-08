@@ -29,6 +29,7 @@ let
     qlat-eigen = pkgs.grid-lehner;
     qlat-stdenv = pkgs.stdenv;
     qlat-cc = [ pkgs.gcc ];
+    ucx = prev.ucx.override { enableCuda = pkgs.qlat-cudaSupport; };
     mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
     grid-lehner-c-lime = pkgs.qio;
     #

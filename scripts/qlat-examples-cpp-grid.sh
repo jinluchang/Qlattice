@@ -8,7 +8,7 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    time-run rsync -a --delete "$wd"/examples-cpp "$prefix"/
+    time-run rsync -a --delete "$wd"/examples-cpp-grid "$prefix"/
 
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"

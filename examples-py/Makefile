@@ -67,7 +67,7 @@ update-sources:
 %.log: %.py
 	-rm -rfv "$<".p
 	-mkdir -p "$<".p
-	-time ( cd "$<".p ; fn_py="$<" ; fn_json="$${fn_py%.py}.log.json" ; cp -v ../"$$fn_py" ../"$$fn_json" . ; q_verbose=1 timeout -s KILL 60m mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./"$$fn_py" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep "^CHECK: \|^INFO: \|WARNING" log.full.txt >log.txt ; grep "^CHECK: " log.txt >log.check.txt.new ; grep "^CHECK: " ../"$@" >log.check.txt )
+	-time ( cd "$<".p ; fn_py="$<" ; fn_json="$${fn_py%.py}.log.json" ; cp -v ../"$$fn_py" ../"$$fn_json" . ; q_verbose=1 timeout -s KILL 60m mpiexec -n 2 $(mpi_options) python3 -m mpi4py ./"$$fn_py" -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >log.full.txt 2>&1 ; grep -a "^CHECK: \|^INFO: \|WARNING" log.full.txt >log.txt ; grep -a "^CHECK: " log.txt >log.check.txt.new ; grep -a "^CHECK: " ../"$@" >log.check.txt )
 	-if diff "$<".p/log.check.txt "$<".p/log.check.txt.new ; then echo passed ; else tail -n 100 "$<".p/log.full.txt ; echo failed ; fi
 	-rm -rfv "$@"
 	-touch "$@"
@@ -81,7 +81,7 @@ qlat-ext.log: qlat-ext/meson.build
 	-time meson setup qlat-ext.p/qlat-ext-build qlat-ext --prefix="$$PWD"/qlat-ext.p/qlat-ext-install -Dpython.platlibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages
 	-time meson compile -C qlat-ext.p/qlat-ext-build -j$(num_proc)
 	-time meson install -C qlat-ext.p/qlat-ext-build
-	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" python3 qlat-ext-install/bin/run.py >log.full.txt 2>&1 ; grep "CHECK: " log.full.txt >log.check.txt.new ; grep "^CHECK: " ../"$@" >log.check.txt )
+	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" python3 qlat-ext-install/bin/run.py >log.full.txt 2>&1 ; grep -a "CHECK: " log.full.txt >log.check.txt.new ; grep -a "^CHECK: " ../"$@" >log.check.txt )
 	-if diff qlat-ext.p/log.check.txt qlat-ext.p/log.check.txt.new ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
 	-rm -rfv "$@"
 	-touch "$@"
