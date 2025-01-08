@@ -40,7 +40,7 @@ aget "https://ftp.gnu.org/gnu/gsl/gsl-2.7.1.tar.gz"
 
 aget "https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3.tar.gz"
 
-# aget "https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.3.tar.bz2"
+# aget "https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.6.tar.bz2"
 aget "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.6.tar.bz2"
 
 aget "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.5/llvm-project-18.1.5.src.tar.xz"
