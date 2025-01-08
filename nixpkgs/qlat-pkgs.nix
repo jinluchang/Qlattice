@@ -18,7 +18,7 @@ let
   overlay = final: prev: let
     pkgs = final;
     call-pkg = pkgs.callPackage;
-    py-call-pkg = pkgs.python3Packages.callPackage;
+    py-call-pkg = pkgs.python3.pkgs.callPackage;
   in {
     qlat-name = "";
     #
@@ -30,7 +30,42 @@ let
     qlat-stdenv = pkgs.stdenv;
     qlat-cc = [ pkgs.gcc ];
     ucx = prev.ucx.override { enableCuda = pkgs.qlat-cudaSupport; };
-    mpi = prev.mpi.override { cudaSupport = pkgs.qlat-cudaSupport; };
+    ucx-dev = pkgs.buildEnv {
+      name = "ucx-dev";
+      paths = [ pkgs.ucx ];
+      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+    };
+    mpi = (prev.mpi.overrideAttrs (final: prev: {
+      configureFlags = prev.configureFlags ++ [
+        # "--with-ucx=${pkgs.lib.getDev pkgs.ucx-dev}"
+        (pkgs.lib.withFeatureAs pkgs.qlat-cudaSupport "cuda-libdir" "${pkgs.cudaPackages.cuda_cudart.stubs}/lib")
+      ];
+    })).override { cudaSupport = pkgs.qlat-cudaSupport; };
+    python3 = prev.python3.override {
+      packageOverrides = final: prev: {
+        mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
+          doCheck = true;
+          nativeBuildInputs = pkgs.lib.optionals pkgs.qlat-cudaSupport [
+            pkgs.qlat-nixgl
+            pkgs.which
+          ];
+          preInstallCheck = pkgs.lib.optionalString pkgs.qlat-cudaSupport ''
+            which nixGL
+            echo
+            echo "run with nixGL"
+            echo
+            cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+            echo
+            echo cat nix-gl.sh
+            cat nix-gl.sh
+            source nix-gl.sh
+            echo
+            echo $LD_LIBRARY_PATH
+          '';
+        });
+      };
+    };
+    #
     grid-lehner-c-lime = pkgs.qio;
     #
     qlat-nixgl = if pkgs.qlat-cudaSupport then nixgl.auto.nixGLDefault else "";
@@ -483,5 +518,13 @@ in {
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-cuda;
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-std-cuda;
   inherit (many-qlat-pkgs-all) qlat-jhub-fhs-clang; # not working
+  #
+  inherit (many-qlat-pkgs-all) pkgs;
+  inherit (many-qlat-pkgs-all) pkgs-pypi;
+  inherit (many-qlat-pkgs-all) pkgs-std;
+  inherit (many-qlat-pkgs-all) pkgs-std-clang;
+  inherit (many-qlat-pkgs-all) pkgs-cuda;
+  inherit (many-qlat-pkgs-all) pkgs-std-cuda;
+  inherit (many-qlat-pkgs-all) pkgs-clang;
   #
 }
