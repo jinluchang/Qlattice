@@ -91,44 +91,44 @@ in grid-stdenv.mkDerivation rec {
     cpu_extra = ''
     '';
     gpu_extra = ''
-        which nvcc
-        nvcc --version
+      which nvcc
+      nvcc --version
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''
-      echo "-- deploying Eigen source..."
-      cp -pv '${eigen-src}' '${eigen-file-name}'
-      bash ./scripts/update_eigen.sh '${eigen-file-name}'
-      rm '${eigen-file-name}'
+    echo "-- deploying Eigen source..."
+    cp -pv '${eigen-src}' '${eigen-file-name}'
+    bash ./scripts/update_eigen.sh '${eigen-file-name}'
+    rm '${eigen-file-name}'
     # patch Eigen/unsupported/Eigen/CXX11/Tensor scripts/eigen-3.3.5.Tensor.patch
     #
-      echo '-- generating Make.inc files...'
-      bash ./scripts/filelist
-      echo '-- generating configure script...'
-      autoreconf -fvi
+    echo '-- generating Make.inc files...'
+    bash ./scripts/filelist
+    echo '-- generating configure script...'
+    autoreconf -fvi
     #
-      echo '-- set FLAGS ...'
-      export CXX=${cxx}
-      export CFLAGS="${cflags}"
-      export CXXFLAGS="${cflags}"
-      export LDFLAGS="${ldflags}"
-      echo CXX="$CXX"
-      echo CFLAGS="$CFLAGS"
-      echo CXXFLAGS="$CXXFLAGS"
-      echo LDFLAGS="$LDFLAGS"
+    echo '-- set FLAGS ...'
+    export CXX=${cxx}
+    export CFLAGS="${cflags}"
+    export CXXFLAGS="${cflags}"
+    export LDFLAGS="${ldflags}"
+    echo CXX="$CXX"
+    echo CFLAGS="$CFLAGS"
+    echo CXXFLAGS="$CXXFLAGS"
+    echo LDFLAGS="$LDFLAGS"
     #
-      export OMPI_CXX=c++
-      export OMPI_CC=cc
+    export OMPI_CXX=c++
+    export OMPI_CC=cc
     #
-      which mpic++
-      mpic++ --version
+    which mpic++
+    mpic++ --version
     #
-      which c++
-      c++ --version
+    which c++
+    c++ --version
     #
-      echo
-      echo 'grid-stdenv=${grid-stdenv.cc}'
-      echo
+    echo
+    echo 'grid-stdenv=${grid-stdenv.cc}'
+    echo
   '' + extra;
 
   configureFlags = let
