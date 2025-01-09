@@ -12,6 +12,9 @@ if [ "$(uname)" == "Darwin" ]; then
         if [ -e "$(brew --prefix)/opt/coreutils/libexec/gnubin" ]; then
             export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin":"$PATH"
         fi
+        if [ -e "$(brew --prefix)/opt/gnu-sed/libexec/gnubin" ]; then
+            export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin":"$PATH"
+        fi
         if [ -e "$(brew --prefix)/opt/llvm/bin" ]; then
             export PATH="$(brew --prefix)/opt/llvm/bin":"$PATH"
         fi
