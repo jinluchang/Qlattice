@@ -36,16 +36,23 @@ let
       extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
     };
     mpi = (prev.mpi.overrideAttrs (final: prev: {
-      configureFlags = prev.configureFlags ++ [
-        # "--with-ucx=${pkgs.lib.getDev pkgs.ucx-dev}"
-        (pkgs.lib.withFeatureAs pkgs.qlat-cudaSupport "cuda-libdir" "${pkgs.cudaPackages.cuda_cudart.stubs}/lib")
-      ];
+      configureFlags = prev.configureFlags ++ (
+        let
+          cudaSupport = pkgs.qlat-cudaSupport;
+          lib = pkgs.lib;
+          cudaPackages = pkgs.cudaPackages;
+          ucx-dev = pkgs.ucx-dev;
+        in [
+          # "--with-ucx=${lib.getDev ucx-dev}"
+          (lib.withFeatureAs cudaSupport "cuda-libdir" "${cudaPackages.cuda_cudart.stubs}/lib")
+        ]);
     })).override { cudaSupport = pkgs.qlat-cudaSupport; };
     python3 = prev.python3.override {
       packageOverrides = final: prev: {
         mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
           doCheck = true;
-          nativeBuildInputs = pkgs.lib.optionals pkgs.qlat-cudaSupport [
+          nativeBuildInputs = (prev.nativeBuildInputs or [])
+          ++ pkgs.lib.optionals pkgs.qlat-cudaSupport [
             pkgs.qlat-nixgl
             pkgs.which
           ];
