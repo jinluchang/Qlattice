@@ -43,7 +43,7 @@ let
           cudaPackages = pkgs.cudaPackages;
           ucx-dev = pkgs.ucx-dev;
         in [
-          # "--with-ucx=${lib.getDev ucx-dev}"
+          "--with-ucx=${lib.getDev ucx-dev}"
           (lib.withFeatureAs cudaSupport "cuda-libdir" "${cudaPackages.cuda_cudart.stubs}/lib")
         ]);
     })).override { cudaSupport = pkgs.qlat-cudaSupport; };
