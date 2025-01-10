@@ -44,7 +44,7 @@ let
     + lib.optionalString (! opts.use-grid-gpt) "-std"
     + lib.optionalString opts.use-cuda "-cuda"
     + lib.optionalString opts.use-cudasupport (assert opts.use-cuda ; "support")
-    + lib.optionalString (! opts.use-cubaquad) "-cubaquadless"
+    + lib.optionalString (! opts.use-cubaquad) (assert (! opts.use-grid-gpt) "-cubaquadless")
     + lib.optionalString opts.use-clang "-clang"
     + lib.optionalString (! opts.use-ucx) "-ucxless"
     + lib.optionalString opts.use-pypi "-pypi"
@@ -439,6 +439,7 @@ let
   // mk-qlat-pkgs { use-pypi = true; }
   // mk-qlat-pkgs { use-ucx = false; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; use-pypi = true; }
+  // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; use-pypi = true; }
   // mk-qlat-pkgs { use-cuda = true; use-pypi = true; }
   // mk-qlat-pkgs { use-cuda = true; use-ucx = false; use-pypi = true; }
   ;
@@ -451,10 +452,10 @@ let
   // mk-qlat-pkgs { use-grid-gpt = false; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
-  // mk-qlat-pkgs { use-cubaquad = false; }
   // mk-qlat-pkgs { use-clang = true; }
   // mk-qlat-pkgs { use-clang = true; use-pypi = true; }
   // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; }
+  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; use-pypi = true; }
   ;
 
 in {
