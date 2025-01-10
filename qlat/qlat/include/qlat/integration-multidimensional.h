@@ -73,6 +73,35 @@ void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
 #else
+  (void)integral;
+  (void)error;
+  (void)prob;
+  (void)nregions;
+  (void)neval;
+  (void)fail;
+  (void)ndim;
+  (void)ncomp;
+  (void)f;
+  (void)epsabs;
+  (void)epsrel;
+  (void)flags;
+  (void)seed;
+  (void)mineval;
+  (void)maxeval;
+  (void)key1;
+  (void)key2;
+  (void)key3;
+  (void)maxpass;
+  (void)border;
+  (void)maxchisq;
+  (void)mindeviation;
+  (void)ngiven;
+  (void)ldxgiven;
+  (void)xgiven;
+  (void)nextra;
+  (void)peakfinder;
+  (void)statefile;
+  (void)spin;
   qerr("integrateDivonne: QLAT_NO_CUBA defined. (Cuba library not found)");
 #endif
 }
@@ -101,6 +130,23 @@ void integrateCuhre(std::vector<double>& integral, std::vector<double>& error,
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
 #else
+  (void)integral;
+  (void)error;
+  (void)prob;
+  (void)nregions;
+  (void)neval;
+  (void)fail;
+  (void)ndim;
+  (void)ncomp;
+  (void)f;
+  (void)epsabs;
+  (void)epsrel;
+  (void)flags;
+  (void)mineval;
+  (void)maxeval;
+  (void)key;
+  (void)statefile;
+  (void)spin;
   qerr("integrateDivonne: QLAT_NO_CUBA defined. (Cuba library not found)");
 #endif
 }
