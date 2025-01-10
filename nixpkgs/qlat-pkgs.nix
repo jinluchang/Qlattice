@@ -35,16 +35,16 @@ let
     opts = options-default // options;
     #
     pkgs = prev;
+    lib = pkgs.lib;
+    #
     call-pkg = final.callPackage;
     py-call-pkg = final.python3.pkgs.callPackage;
     #
-    qlat-name = let
-      lib = pkgs.lib;
-    in opts.qlat-name
+    qlat-name = opts.qlat-name
     + lib.optionalString (! opts.use-grid-gpt) "-std"
     + lib.optionalString opts.use-cuda "-cuda"
-    + lib.optionalString opts.use-cudasupport (assert opts.use-cuda ; "support")
-    + lib.optionalString (! opts.use-cubaquad) (assert (! opts.use-grid-gpt) "-cubaquadless")
+    + lib.optionalString opts.use-cudasupport (assert opts.use-cuda; "support")
+    + lib.optionalString (! opts.use-cubaquad) (assert (! opts.use-grid-gpt); "-cubaquadless")
     + lib.optionalString opts.use-clang "-clang"
     + lib.optionalString (! opts.use-ucx) "-ucxless"
     + lib.optionalString opts.use-pypi "-pypi"
@@ -78,7 +78,6 @@ let
       configureFlags = prev.configureFlags ++ (
         let
           cudaSupport = opts.use-cuda;
-          lib = pkgs.lib;
           cudaPackages = pkgs.cudaPackages;
         in [
           (lib.withFeatureAs opts.use-ucx "with-ucx" "${lib.getDev ucx-dev}")
@@ -90,11 +89,11 @@ let
         mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
           doCheck = true;
           nativeBuildInputs = (prev.nativeBuildInputs or [])
-          ++ pkgs.lib.optionals opts.use-cuda [
+          ++ lib.optionals opts.use-cuda [
             qlat-nixgl
             pkgs.which
           ];
-          preInstallCheck = pkgs.lib.optionalString opts.use-cuda ''
+          preInstallCheck = lib.optionalString opts.use-cuda ''
             which nixGL
             echo
             echo "run with nixGL"
@@ -318,7 +317,6 @@ let
       sphinx
       linkify-it-py
       myst-parser
-      pycuda
       pytools
       lz4
       torchvision
@@ -327,7 +325,11 @@ let
       jupyterlab
       jupyterhub
       jupyterhub-systemdspawner
-    ] ++ qlat-py-pkgs);
+    ]
+    ++ qlat-py-pkgs
+    ++ lib.optionals opts.use-cuda [
+      pycuda
+    ]);
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = with pkgs; [
@@ -395,7 +397,7 @@ let
     opts = options-default // options;
     pkgs = nixpkgs {
       config = {
-        allowUnfree = true;
+        allowUnfree = opts.use-cuda;
         cudaSupport = opts.use-cudasupport;
       };
       overlays = [
@@ -423,18 +425,15 @@ let
   many-qlat-pkgs = {}
   // mk-qlat-pkgs {}
   ;
-
   many-qlat-pkgs-core = many-qlat-pkgs
   // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; }
   // mk-qlat-pkgs { use-ucx = false; }
   ;
-
   many-qlat-pkgs-core-w-cuda = many-qlat-pkgs-core
   // mk-qlat-pkgs { use-cuda = true; }
   // mk-qlat-pkgs { use-cuda = true; use-ucx = false; }
   ;
-
   many-qlat-pkgs-core-w-cuda-pypi = {}
   // mk-qlat-pkgs { use-pypi = true; }
   // mk-qlat-pkgs { use-ucx = false; use-pypi = true; }
@@ -443,7 +442,6 @@ let
   // mk-qlat-pkgs { use-cuda = true; use-pypi = true; }
   // mk-qlat-pkgs { use-cuda = true; use-ucx = false; use-pypi = true; }
   ;
-
   many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
   // many-qlat-pkgs-core-w-cuda-pypi
   // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; }
@@ -470,6 +468,7 @@ in {
   inherit many-qlat-pkgs-all;
   #
   inherit (many-qlat-pkgs-all) qlat_utils;
+  inherit (many-qlat-pkgs-all) qlat_utils-pypi;
   inherit (many-qlat-pkgs-all) qlat_utils-std;
   inherit (many-qlat-pkgs-all) qlat_utils-std-clang;
   inherit (many-qlat-pkgs-all) qlat_utils-cuda;
