@@ -43,7 +43,7 @@ let
     in opts.qlat-name
     + lib.optionalString (! opts.use-grid-gpt) "-std"
     + lib.optionalString opts.use-cuda "-cuda"
-    + lib.optionalString opts.use-cudasupport "-cudasupport"
+    + lib.optionalString opts.use-cudasupport (assert opts.use-cuda ; "support")
     + lib.optionalString (! opts.use-cubaquad) "-cubaquadless"
     + lib.optionalString opts.use-clang "-clang"
     + lib.optionalString (! opts.use-ucx) "-ucxless"
@@ -395,7 +395,7 @@ let
     opts = options-default // options;
     pkgs = nixpkgs {
       config = {
-        allowUnfree = opts.use-cuda;
+        allowUnfree = true;
         cudaSupport = opts.use-cudasupport;
       };
       overlays = [
@@ -426,6 +426,7 @@ let
 
   many-qlat-pkgs-core = many-qlat-pkgs
   // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; }
+  // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; }
   // mk-qlat-pkgs { use-ucx = false; }
   ;
 
@@ -446,14 +447,14 @@ let
   // many-qlat-pkgs-core-w-cuda-pypi
   // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; }
-  // mk-qlat-pkgs { use-cubaquad = false; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; }
-  // mk-qlat-pkgs { use-clang = true; }
-  // mk-qlat-pkgs { use-clang = true; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
+  // mk-qlat-pkgs { use-cubaquad = false; }
+  // mk-qlat-pkgs { use-clang = true; }
+  // mk-qlat-pkgs { use-clang = true; use-pypi = true; }
+  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; }
   ;
 
 in {
@@ -555,5 +556,6 @@ in {
   inherit (many-qlat-pkgs-all) pkgs-cuda;
   inherit (many-qlat-pkgs-all) pkgs-std-cuda;
   inherit (many-qlat-pkgs-all) pkgs-clang;
+  inherit (many-qlat-pkgs-all) pkgs-cudasupport;
   #
 }
