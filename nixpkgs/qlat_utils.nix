@@ -14,7 +14,7 @@
 , which
 , autoAddDriverRunpath
 , openmp ? null
-, is-pypi-src ? true
+, use-pypi ? true
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
@@ -39,11 +39,11 @@ let
 in buildPythonPackage rec {
 
   pname = "qlat_utils${qlat-name}";
-  version = if is-pypi-src then version-pypi else version-local;
+  version = if use-pypi then version-pypi else version-local;
 
   pyproject = true;
 
-  src = if is-pypi-src then src-pypi else src-local;
+  src = if use-pypi then src-pypi else src-local;
 
   enableParallelBuilding = true;
 
