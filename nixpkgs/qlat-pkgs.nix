@@ -31,6 +31,20 @@ let
     nvcc-arch = nvcc-arch;
   };
 
+  mk-qlat-name = options:
+  let
+    opts = options;
+    lib = (nixpkgs {}).lib;
+  in opts.qlat-name
+  + lib.optionalString (! opts.use-grid-gpt) "-std"
+  + lib.optionalString opts.use-cuda "-cuda"
+  + lib.optionalString opts.use-cudasupport (assert opts.use-cuda; "support")
+  + lib.optionalString (! opts.use-cubaquad) (assert (! opts.use-grid-gpt); "-cubaquadless")
+  + lib.optionalString opts.use-clang "-clang"
+  + lib.optionalString (! opts.use-ucx) "-ucxless"
+  + lib.optionalString opts.use-pypi "-pypi"
+  ;
+
   mk-overlay = options: final: prev: let
     opts = options-default // options;
     #
@@ -40,15 +54,7 @@ let
     call-pkg = final.callPackage;
     py-call-pkg = final.python3.pkgs.callPackage;
     #
-    qlat-name = opts.qlat-name
-    + lib.optionalString (! opts.use-grid-gpt) "-std"
-    + lib.optionalString opts.use-cuda "-cuda"
-    + lib.optionalString opts.use-cudasupport (assert opts.use-cuda; "support")
-    + lib.optionalString (! opts.use-cubaquad) (assert (! opts.use-grid-gpt); "-cubaquadless")
-    + lib.optionalString opts.use-clang "-clang"
-    + lib.optionalString (! opts.use-ucx) "-ucxless"
-    + lib.optionalString opts.use-pypi "-pypi"
-    ;
+    qlat-name = mk-qlat-name opts;
     #
     qlat-stdenv = if ! opts.use-clang
     then pkgs.stdenv
@@ -381,6 +387,9 @@ let
       '';
     };
     #
+    qlat-jhub-tests = {
+      inherit qlat-tests qlat-jhub-env;
+    };
   in {
     inherit qlat-name;
     inherit python3 mpi openmp ucx;
@@ -391,6 +400,7 @@ let
     inherit qlat_docs qlat_pypipkgs;
     inherit qlat-py qlat-pkgs qlat-tests qlat-env qlat-sh qlat-fhs;
     inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
+    inherit qlat-jhub-tests;
   };
 
   mk-qlat-pkgs = options: let
@@ -419,41 +429,50 @@ let
     "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
     "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
     "qlat-jhub-fhs${pkgs.qlat-name}" = pkgs.qlat-jhub-fhs;
+    "qlat-jhub-tests${pkgs.qlat-name}" = pkgs.qlat-jhub-tests;
     "pkgs${pkgs.qlat-name}" = pkgs;
   };
 
-  many-qlat-pkgs = {}
-  // mk-qlat-pkgs {}
+  many-qlat-pkgs = mk-qlat-pkgs {}
   ;
-  many-qlat-pkgs-core = many-qlat-pkgs
+  many-qlat-pkgs-pypi = mk-qlat-pkgs { use-pypi = true; }
+  ;
+  many-qlat-pkgs-more = many-qlat-pkgs
+  // mk-qlat-pkgs { use-ucx = false; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; }
-  // mk-qlat-pkgs { use-ucx = false; }
   ;
-  many-qlat-pkgs-core-w-cuda = many-qlat-pkgs-core
-  // mk-qlat-pkgs { use-cuda = true; }
-  // mk-qlat-pkgs { use-cuda = true; use-ucx = false; }
-  ;
-  many-qlat-pkgs-core-w-cuda-pypi = {}
-  // mk-qlat-pkgs { use-pypi = true; }
+  many-qlat-pkgs-more-pypi = many-qlat-pkgs-pypi
   // mk-qlat-pkgs { use-ucx = false; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; use-pypi = true; }
+  ;
+  many-qlat-pkgs-more-w-cuda = many-qlat-pkgs-more
+  // mk-qlat-pkgs { use-cuda = true; }
+  // mk-qlat-pkgs { use-cuda = true; use-ucx = false; }
+  ;
+  many-qlat-pkgs-more-w-cuda-pypi = many-qlat-pkgs-more-pypi
   // mk-qlat-pkgs { use-cuda = true; use-pypi = true; }
   // mk-qlat-pkgs { use-cuda = true; use-ucx = false; use-pypi = true; }
   ;
-  many-qlat-pkgs-all = many-qlat-pkgs-core-w-cuda
-  // many-qlat-pkgs-core-w-cuda-pypi
-  // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; }
+  many-qlat-pkgs-extra = many-qlat-pkgs-more-w-cuda
   // mk-qlat-pkgs { use-grid-gpt = false; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-pypi = true; }
+  // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; }
+  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; }
+  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; }
+  ;
+  many-qlat-pkgs-extra-pypi = many-qlat-pkgs-more-w-cuda-pypi
+  // mk-qlat-pkgs { use-grid-gpt = false; use-pypi = true; }
+  // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; use-pypi = true; }
   // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
+  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; use-pypi = true; }
+  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; use-pypi = true; }
+  ;
+  many-qlat-pkgs-all = many-qlat-pkgs-extra
+  // many-qlat-pkgs-extra-pypi
   // mk-qlat-pkgs { use-clang = true; }
   // mk-qlat-pkgs { use-clang = true; use-pypi = true; }
-  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; }
-  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; use-pypi = true; }
   ;
 
 in many-qlat-pkgs-all // {
@@ -462,8 +481,12 @@ in many-qlat-pkgs-all // {
   inherit mk-overlay;
   #
   inherit many-qlat-pkgs;
-  inherit many-qlat-pkgs-core;
-  inherit many-qlat-pkgs-core-w-cuda;
-  inherit many-qlat-pkgs-core-w-cuda-pypi;
+  inherit many-qlat-pkgs-pypi;
+  inherit many-qlat-pkgs-more;
+  inherit many-qlat-pkgs-more-pypi;
+  inherit many-qlat-pkgs-more-w-cuda;
+  inherit many-qlat-pkgs-more-w-cuda-pypi;
+  inherit many-qlat-pkgs-extra;
+  inherit many-qlat-pkgs-extra-pypi;
   inherit many-qlat-pkgs-all;
 }
