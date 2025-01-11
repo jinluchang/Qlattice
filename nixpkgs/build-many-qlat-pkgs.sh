@@ -13,6 +13,7 @@ src="$script_path"
 dst="$HOME/qlat-build"
 mkdir -p "$dst"
 cd "$dst"
+time (
 for name in
     ""
     "-ucxless"
@@ -22,5 +23,7 @@ for name in
     "-cuda-ucxless"
     "-pypi"
     ; do
-    time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-tests"$name" -o result"$name" "$@"
+    time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-11"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.11/nixexprs.tar.xz")' "$@"
+    time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-05"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.05/nixexprs.tar.xz")' "$@"
 done
+)
