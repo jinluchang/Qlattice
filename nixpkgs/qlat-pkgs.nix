@@ -2,6 +2,8 @@
   nixpkgs ? import ./nixpkgs.nix,
   ngpu ? "2", # adjust with actual number of GPUs
   nvcc-arch ? "sm_86", # adjust with actual arch of Nvidia GPU
+  cudaCapability ? "8.6",
+  cudaForwardCompat ? false,
 }:
 
 let
@@ -26,9 +28,13 @@ let
     use-clang = false;
     use-ucx = true;
     use-pypi = false;
+    cudaCapabilities = [ "8.6" ];
+    cudaForwardCompat = false;
   } // {
     ngpu = ngpu;
     nvcc-arch = nvcc-arch;
+    cudaCapabilities = [ cudaCapability ];
+    cudaForwardCompat = cudaForwardCompat;
   };
 
   mk-qlat-name = options:
@@ -409,6 +415,8 @@ let
       config = {
         allowUnfree = opts.use-cuda;
         cudaSupport = opts.use-cudasupport;
+        ${if opts.use-cudasupport then "cudaCapabilities" else null} = opts.cudaCapabilities;
+        ${if opts.use-cudasupport then "cudaForwardCompat" else null} = opts.cudaForwardCompat;
       };
       overlays = [
         (mk-overlay options)
