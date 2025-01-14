@@ -111,7 +111,7 @@ __global__ void move_index_global(Ty* src, Ty* res, Long sizeF, int civ, int inn
       i0 = off%inner;
 
       off1 = (si*civ + ci)*inner + i0 - z0;
-      if(off1 >= 0)
+      if(ci < civ and off1 >= 0)
       if((off1 < Threads*Biva) and (off1 < (Total - z0)) )
       {
         if( flag){res[(ci*sizeF+s0+si)*inner + i0] = buf[off1];}
@@ -203,7 +203,7 @@ struct move_index
   int8_t* tmp_buf = NULL;
 
   if(src == res){
-    VectorGPUKey gkey(Off*sizeof(Ty), std::string("move_index_buf"), GPU);
+    VectorGPUKey gkey(Off*sizeof(Ty) / sizeof(int8_t), std::string("move_index_buf"), GPU);
     const vector_gpu<int8_t >& buf = get_vector_gpu_plan<int8_t >(gkey);
     tmp_buf = buf.p;
     ////buf.resize(Off*sizeof(Ty), GPU);
@@ -227,7 +227,7 @@ struct move_index
       Long Nb = (sizeF + Threads -1)/Threads;
       dim3 dimBlock(    Threads,    1, 1);
       dim3 dimGrid(     Nb,    1, 1);
-      //print0("sizeF %d, civ %d, size_inner %d, Biva %d, Nb %d \n", int(sizeF), int(civ), int(size_inner), Biva, int(Nb));
+      //print0("sizeF %d, civ %d, size_inner %d, Biva %d, Nb %d , char %d \n", int(sizeF), int(civ), int(size_inner), Biva, int(Nb), int(sizeof(int8_t)));
       if(flag==0)move_index_global<Ty, false , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
       if(flag==1)move_index_global<Ty, true  , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
       qacc_barrier(dummy);
