@@ -254,10 +254,7 @@ let
       qlat-examples-py
     ];
     #
-    qlat-py = python3.withPackages (ps: [
-      ps.build
-      ps.wheel
-    ] ++ qlat-py-pkgs);
+    qlat-py = python3.withPackages (ps: qlat-py-pkgs);
     qlat-pkgs = with pkgs; [
       qlat-py
     ] ++ qlat-dep-pkgs ++ qlat-dep-pkgs-extra;
@@ -275,6 +272,7 @@ let
       name = "qlat-sh${qlat-name}";
       packages = [ qlat-env ];
       inputsFrom = packages;
+      buildInputs = [ pkgs.pkg-config ];
     };
     qlat-fhs = pkgs.buildFHSEnv {
       name = "qlat-fhs${qlat-name}";
@@ -382,6 +380,7 @@ let
       name = "qlat-jhub-sh${qlat-name}";
       packages = [ qlat-jhub-env ];
       inputsFrom = packages;
+      buildInputs = [ pkgs.pkg-config ];
     };
     qlat-jhub-fhs = pkgs.buildFHSEnv {
       name = "qlat-jhub-fhs${qlat-name}";

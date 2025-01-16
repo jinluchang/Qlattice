@@ -64,12 +64,12 @@ inline void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf)
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
   hgeo = geo_resize(hgeo, expansion_left, expansion_right);
-  hgf.init(hgeo, geo.multiplicity);
+  hgf.init(hgeo, gf.multiplicity);
 #pragma omp parallel for
   for (Long hindex = 0; hindex < hgeo.local_volume(); ++hindex) {
     const Coordinate hxl = hgeo.coordinate_from_index(hindex);
     const Coordinate xl = coordinate_shifts(hxl * 2, 0);
-    for (int m = 0; m < hgeo.multiplicity; ++m) {
+    for (int m = 0; m < gf.multiplicity; ++m) {
       hgf.get_elem(hxl, m) =
           gf.get_elem(xl, m) * gf.get_elem(coordinate_shifts(xl, m), m);
     }
@@ -108,7 +108,7 @@ struct InverterDomainWallMixedSize : InverterDomainWall {
   //
   bool check_local_volume()
   {
-    return geo.node_site % 4 == Coordinate();
+    return geo().node_site % 4 == Coordinate();
   }
   //
   void update_hf()
@@ -139,14 +139,14 @@ inline void reduce_half_fermion_field(FermionField5d& hff,
   Geometry hgeo;
   hgeo.init(geo.geon, geo.node_site / 2);
   hgeo.eo = geo.eo;
-  hff.init(hgeo, geo.multiplicity);
+  hff.init(hgeo, ff.multiplicity);
 #pragma omp parallel for
   for (Long hindex = 0; hindex < hgeo.local_volume(); ++hindex) {
     const Coordinate hxl = hgeo.coordinate_from_index(hindex);
     const Coordinate xl = coordinate_shifts(hxl * 2, 0);
     Vector<WilsonVector> hv = hff.get_elems(hxl);
     const Vector<WilsonVector> v = ff.get_elems_const(xl);
-    for (int m = 0; m < hgeo.multiplicity; ++m) {
+    for (int m = 0; m < ff.multiplicity; ++m) {
       hv[m] = v[m];
     }
   }
@@ -161,7 +161,7 @@ inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& 
   Geometry geo;
   geo.init(hgeo.geon, hgeo.node_site * 2);
   geo.eo = hgeo.eo;
-  ff.init(geo, hgeo.multiplicity);
+  ff.init(geo, hff.multiplicity);
   set_zero(ff);
 #pragma omp parallel for
   for (Long hindex = 0; hindex < hgeo.local_volume(); ++hindex) {
@@ -169,7 +169,7 @@ inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& 
     const Coordinate xl = coordinate_shifts(hxl * 2, 0);
     const Vector<WilsonVector> hv = hff.get_elems_const(hxl);
     Vector<WilsonVector> v = ff.get_elems(xl);
-    for (int m = 0; m < hgeo.multiplicity; ++m) {
+    for (int m = 0; m < ff.multiplicity; ++m) {
       v[m] += (WilsonVector)((ComplexD)16.0 * hv[m]);
     }
   }
@@ -231,7 +231,7 @@ Long invert_with_cg_with_guess_half(
   if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
-    dm_in.init(geo_resize(in.geo()));
+    dm_in.init(geo_resize(in.geo()), in.multiplicity);
     dm_in = in;
   }
   const double qnorm_dm_in = qnorm(dm_in);
@@ -270,7 +270,7 @@ inline Long invert_mix_prec(FermionField5d& out, const FermionField5d& in,
   if (inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
-    dm_in.init(geo_resize(in.geo()));
+    dm_in.init(geo_resize(in.geo()), in.multiplicity);
     dm_in = in;
   }
   total_iter += invert_with_cg(out, dm_in, inv, cg_with_herm_sym_2,

@@ -9,6 +9,7 @@ tests = qlat-vector-utils \
 		lbl-muon-part \
 		rng-state-tests \
 		field-rng-tests \
+		mixed-size-cg \
 		benchmark \
 		dist-io \
 		selected-field \
