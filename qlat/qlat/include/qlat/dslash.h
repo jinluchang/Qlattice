@@ -222,6 +222,7 @@ inline Long save_low_modes_decompress(LowModes& lm, const std::string& path)
 }
 
 inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
+// hv_out can be the same as hv_in
 {
   force_low_modes(lm);
   if (not lm.initialized) {
@@ -328,6 +329,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
 }
 
 inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
+// out can be the same as in
 {
   force_low_modes(lm);
   if (not lm.initialized) {
@@ -511,6 +513,7 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
                                    const InverterDomainWall& inv)
 {
   TIMER("multiply_m_dwf_no_comm(5d,5d,Inv)");
+  qassert(&out != &in);
   const Geometry geo = geo_resize(in.geo());
   qassert(is_matching_geo(inv.geo(), geo));
   out.init(geo, in.multiplicity);
@@ -587,6 +590,7 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
 // refresh_expanded_1(in);
 {
   TIMER("multiply_wilson_d_no_comm(5d,5d,gf,mass)");
+  qassert(&out != &in);
   const Geometry geo = geo_resize(in.geo());
   qassert(is_matching_geo(gf.geo(), geo));
   out.init(geo, in.multiplicity);
@@ -629,6 +633,7 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
 
 inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
                              const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 {
   TIMER("multiply_d_minus(5d,5d,gf,fa)");
   const Geometry geo = geo_resize(in.geo());
@@ -662,6 +667,7 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
                              const InverterDomainWall& inv)
+// out can be the same object as in
 {
   TIMER("multiply_d_minus(5d,5d,Inv)");
   multiply_d_minus(out, in, inv.gf, inv.fa);
@@ -669,9 +675,9 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
                             const InverterDomainWall& inv)
-// out can be the same object as in
 {
   TIMER("multiply_m_full(5d,5d,Inv)");
+  qassert(&out != &in);
   const Geometry geo = geo_resize(in.geo());
   out.init(geo, in.multiplicity);
   set_zero(out);
@@ -724,6 +730,7 @@ inline void get_half_fermion(FermionField5d& half, const FermionField5d& ff,
 // 2:even 1:odd
 {
   TIMER("get_half_fermion");
+  qassert(&half != &ff);
   Geometry geoh = geo_resize(ff.geo());
   geoh.eo = eo;
   half.init(geoh, ff.multiplicity);
@@ -742,6 +749,7 @@ inline void set_half_fermion(FermionField5d& ff, const FermionField5d& half,
 // 2:even 1:odd
 {
   TIMER("set_half_fermion");
+  qassert(&half != &ff);
   const Geometry geoh = half.geo();
   Geometry geo = geo_resize(geoh);
   geo.eo = 0;
@@ -768,6 +776,7 @@ inline void project_eo(FermionField5d& ff, const int eo)
 
 inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
                            const FermionAction& fa)
+// out can be the same object as in
 // works for _o_o as well
 {
   TIMER("multiply_m_e_e");
@@ -817,6 +826,7 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
                               const FermionAction& fa)
+// out can be the same object as in
 // works for _o_o as well
 {
   TIMER("multiply_mdag_e_e");
@@ -870,6 +880,7 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
                                const FermionAction& fa)
+// out can be the same object as in
 // works for _o_o as well
 {
   TIMER("multiply_m_e_e_inv");
@@ -915,7 +926,9 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
-    std::memcpy(v.data(), iv.data(), iv.data_size());
+    if (v.data() != iv.data()) {
+      std::memcpy(v.data(), iv.data(), iv.data_size());
+    }
     WilsonVector tmp;
     // {L^m_{ee}}^{-1}
     set_zero(tmp);
@@ -944,6 +957,7 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
                                   const FermionAction& fa)
+// out can be the same object as in
 // works for _o_o as well
 {
   TIMER("multiply_mdag_e_e_inv");
@@ -1000,7 +1014,9 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
-    std::memcpy(v.data(), iv.data(), iv.data_size());
+    if (v.data() != iv.data()) {
+      std::memcpy(v.data(), iv.data(), iv.data_size());
+    }
     WilsonVector tmp;
     // {U^m_{ee}}^\dagger^{-1}
     set_zero(tmp);
@@ -1036,6 +1052,7 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out,
 // refresh_expanded_1(in);
 {
   TIMER("multiply_wilson_d_e_o_no_comm(5d,5d,gf)");
+  qassert(&out != &in);
   qassert(is_matching_geo(gf.geo(), in.geo()));
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   Geometry geo = geo_resize(in.geo());
@@ -1087,6 +1104,7 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
 // refresh_expanded_1(in);
 {
   TIMER("multiply_wilson_ddag_e_o_no_comm(5d,5d,gf)");
+  qassert(&out != &in);
   qassert(is_matching_geo(gf.geo(), in.geo()));
   qassert(in.geo().eo == 1 or in.geo().eo == 2);
   Geometry geo = geo_resize(in.geo());
@@ -1131,6 +1149,7 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
 
 inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
                            const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 // works for _o_e as well
 {
   TIMER("multiply_m_e_o(5d,5d,gf,fa)");
@@ -1174,6 +1193,7 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
                               const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 // works for _o_e as well
 {
   TIMER("multiply_mdag_e_o(5d,5d,gf,fa)");
@@ -1231,6 +1251,7 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_m(FermionField5d& out, const FermionField5d& in,
                        const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 {
   TIMER("multiply_m");
   FermionField5d in_e, in_o;
@@ -1250,6 +1271,7 @@ inline void multiply_m(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mdag(FermionField5d& out, const FermionField5d& in,
                           const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 {
   TIMER("multiply_mdag");
   FermionField5d in_e, in_o;
@@ -1269,6 +1291,7 @@ inline void multiply_mdag(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in,
                               const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 // odd <- odd (works for even <- even as well)
 {
   TIMER("multiply_mpc_sym2");
@@ -1287,6 +1310,7 @@ inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in,
                                  const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 // odd <- odd (works for even <- even as well)
 {
   TIMER("multiply_mpcdag_sym2");
@@ -1305,6 +1329,7 @@ inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in,
                                  const GaugeField& gf, const FermionAction& fa)
+// out can be the same object as in
 // odd <- odd (works for even <- even as well)
 {
   TIMER_FLOPS("multiply_hermop_sym2");
@@ -1315,36 +1340,42 @@ inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
                            const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_m_e_e(out, in, inv.fa);
 }
 
 inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
                               const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_mdag_e_e(out, in, inv.fa);
 }
 
 inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
                                const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_m_e_e_inv(out, in, inv.fa);
 }
 
 inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
                                   const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_mdag_e_e_inv(out, in, inv.fa);
 }
 
 inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
                            const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_m_e_o(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
                               const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_mdag_e_o(out, in, inv.gf, inv.fa);
 }
@@ -1352,6 +1383,7 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
 inline void multiply_m_eo_eo(FermionField5d& out, const FermionField5d& in,
                              const InverterDomainWall& inv, const int eo_out,
                              const int eo_in)
+// out can be the same object as in
 // out need to be initialized with correct geo and eo
 {
   TIMER("multiply_m_eo_eo");
@@ -1371,6 +1403,7 @@ inline void multiply_m_eo_eo(FermionField5d& out, const FermionField5d& in,
 inline void multiply_mdag_eo_eo(FermionField5d& out, const FermionField5d& in,
                                 const InverterDomainWall& inv, const int eo_out,
                                 const int eo_in)
+// out can be the same object as in
 // out need to be initialized with correct geo and eo
 {
   TIMER("multiply_mdag_eo_eo");
@@ -1389,18 +1422,21 @@ inline void multiply_mdag_eo_eo(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_m(FermionField5d& out, const FermionField5d& in,
                        const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_m(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_mdag(FermionField5d& out, const FermionField5d& in,
                           const InverterDomainWall& inv)
+// out can be the same object as in
 {
   multiply_mdag(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in,
                               const InverterDomainWall& inv)
+// out can be the same object as in
 // odd <- odd (works for even <- even as well)
 {
   multiply_mpc_sym2(out, in, inv.gf, inv.fa);
@@ -1408,6 +1444,7 @@ inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in,
                                  const InverterDomainWall& inv)
+// out can be the same object as in
 // odd <- odd (works for even <- even as well)
 {
   multiply_mpcdag_sym2(out, in, inv.gf, inv.fa);
@@ -1415,6 +1452,7 @@ inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in,
 
 inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in,
                                  const InverterDomainWall& inv)
+// out can be the same object as in
 // odd <- odd (works for even <- even as well)
 {
   multiply_hermop_sym2(out, in, inv.gf, inv.fa);
@@ -1423,6 +1461,7 @@ inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in,
 inline void multiply_m_with_prec_sym2(FermionField5d& out,
                                       const FermionField5d& in,
                                       const InverterDomainWall& inv)
+// out can be the same object as in
 {
   TIMER("multiply_m_with_prec_sym2");
   FermionField5d in_e, in_o;
@@ -1480,6 +1519,7 @@ inline Long cg_with_f(
 // f(out, in, inv);
 {
   TIMER("cg_with_f");
+  qassert(&out != &in);
   const Geometry geo = geo_resize(in.geo());
   if (not is_initialized(out)) {
     out.init(geo, in.multiplicity);
@@ -1547,6 +1587,9 @@ void set_odd_prec_field_sym2(FermionField5d& in_o_p, FermionField5d& out_e_p,
                              const FermionField5d& in, const Inv& inv)
 {
   TIMER_VERBOSE("set_odd_prec_field_sym2");
+  qassert(&in_o_p != &out_e_p);
+  qassert(&in_o_p != &in);
+  qassert(&out_e_p != &in);
   FermionField5d in_e;
   get_half_fermion(in_e, in, 2);
   get_half_fermion(in_o_p, in, 1);
@@ -1564,6 +1607,8 @@ void restore_field_from_odd_prec_sym2(FermionField5d& out,
                                       const Inv& inv)
 {
   TIMER_VERBOSE("restore_field_from_odd_prec_sym2");
+  qassert(&out != &out_o_p);
+  qassert(&out != &out_e_p);
   FermionField5d out_e, out_o;
   out_e = out_e_p;
   out_o = out_o_p;
@@ -1584,8 +1629,10 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
                     double stop_rsd = -1, Long max_num_iter = -1,
                     Long max_mixed_precision_cycle = -1,
                     bool dminus_multiplied_already = false)
+// cg(out, in, inv, stop_rsd, max_iter)
 {
   TIMER_VERBOSE_FLOPS("invert_with_cg(5d,5d,inv,cg)");
+  qassert(&out != &in);
   if (stop_rsd < 0) {
     stop_rsd = inv.stop_rsd();
   }
@@ -1674,8 +1721,10 @@ Long invert_with_cg_with_guess(FermionField5d& out, const FermionField5d& in,
                                double stop_rsd = -1, Long max_num_iter = -1,
                                Long max_mixed_precision_cycle = -1,
                                bool dminus_multiplied_already = false)
+// cg(out, in, inv, stop_rsd, max_iter)
 {
   TIMER_VERBOSE("invert_with_cg_with_guess");
+  qassert(&out != &in);
   if (stop_rsd < 0) {
     stop_rsd = inv.stop_rsd();
   }
@@ -1713,6 +1762,7 @@ inline Long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
                                const Long max_num_iter = 50000)
 {
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,inv)");
+  qassert(&sol != &src);
   const Long iter =
       cg_with_f(sol, src, inv, multiply_hermop_sym2, stop_rsd, max_num_iter);
   timer.flops += 5500 * iter * inv.fa.ls * inv.geo().local_volume();
@@ -1722,12 +1772,14 @@ inline Long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
 inline Long invert(FermionField5d& out, const FermionField5d& in,
                    const InverterDomainWall& inv)
 {
+  qassert(&out != &in);
   return invert_with_cg(out, in, inv, cg_with_herm_sym_2);
 }
 
 inline Long invert(FermionField4d& out, const FermionField4d& in,
                    const InverterDomainWall& inv)
 {
+  qassert(&out != &in);
   return invert_dwf(out, in, inv);
 }
 

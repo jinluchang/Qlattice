@@ -145,6 +145,7 @@ inline Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
 // invert(sol5d, src5d, inv) perform the inversion
 {
   TIMER_VERBOSE("invert_dwf(4d,4d,inv)");
+  qassert(&sol != &src);
   const Geometry& geo = src.geo();
   qassert(check_matching_geo(geo, inv.geo()));
   sol.init(geo, src.multiplicity);
@@ -168,6 +169,7 @@ void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 // invert(4d, 4d, inv) perform the inversion
 {
   TIMER_VERBOSE("invert(p4d,p4d,inv)");
+  qassert(&sol != &src);
   const Geometry geo = geo_resize(src.geo());
   sol.init(geo);
   FermionField4dT<T> ff_sol, ff_src;
