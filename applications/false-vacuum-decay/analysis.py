@@ -24,9 +24,6 @@ class Analysis:
                            for i in range(len(Ms)-1)]
         delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ls)-1)]
-        if(der):
-            assert(Ls[0] == 0.0)
-            delta_actions_L[0] = jk.get_jackknife_blocks(np.multiply(self.data.delta_actions_t_FV[sfs_L[0]][f"{int(self.data.params[sfs_L[0]]["tFV"])+1}"][self.data.cutoff:],np.exp(self.data.delta_actions_L[sfs_L[0]][str(Ls[1])][self.data.cutoff:])), self.data.block_size)
         return delta_actions_M + delta_actions_L
     
     def calc_ratio(self, delta_actions, N_Ms):
@@ -41,6 +38,25 @@ class Analysis:
     def get_R_blocks(self, Ms, Ls, params, der = False):
         ml_blocks = self.get_M_L_blocks(Ms, Ls, params, der)
         return jk.super_jackknife_combine_blocks(ml_blocks, lambda x: self.calc_ratio(x, len(Ms)-1))
+
+    def get_P_blocks(self, Ps, params, der=False):
+        sf_P = self.data.get_indices(params)[0]
+        sfs_P = self.data.replace_params(sf_P, ["P"], [[P] for P in Ps])
+        delta_actions_P = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions_P[sfs_P[i]][str(Ps[i+1])][self.data.cutoff:]), self.data.block_size)
+                           for i in range(len(Ps)-1)]
+        return delta_actions_P
+    
+    def calc_P_ratio(self, delta_actions):
+        ratio = 1.0
+        for i in range(len(delta_actions)):
+            ratio *= np.mean(delta_actions[i])
+        return ratio
+        
+    def get_ddR_blocks(self, Ms, Ls, Ps, params):
+        R_blocks = self.get_R_blocks(Ms, Ls, params)
+        P_blocks = self.get_P_blocks(Ps, params)
+        ddR_over_R_blocks = jk.super_jackknife_combine_blocks(P_blocks, lambda x: self.calc_P_ratio(x))
+        return jk.super_jackknife_combine_blocks([R_blocks, ddR_over_R_blocks], lambda x: x[0]*x[1])
     
     # Calculating fit ----------------------
     
@@ -65,7 +81,7 @@ class Analysis:
         for sf in sfs:
             t = int(self.data.params[sf]["tTV"])*dt
             if(t>start):
-                dS_blocks.append(self.get_exp_Ebar_blocks(sf))
+                dS_blocks.append(self.get_R_div_R_blocks(sf))
                 errs.append(jk.get_errors_from_blocks(np.mean(dS_blocks[-1]),dS_blocks[-1])[1])
                 t_TVs.append(t)
         
@@ -96,23 +112,6 @@ class Analysis:
         gamma_mean, gamma_blocks = self.calc_gamma_blocks(Ms, Ls, fit_start, fit_stop, params)
         return jk.get_errors_from_blocks(gamma_mean, gamma_blocks)
     
-    # Calculating subtracted decay rate (should only work for 1D)-----
-    def calc_gamma_sub(self, gamma1, t_full1, gamma2, t_full2):
-        return (gamma2**0.5*t_full2-gamma1**0.5*t_full1)**2/(t_full2-t_full1)**2
-    
-    def calc_gamma_sub_blocks(self, gamma1_blocks, t_full1, gamma2_blocks, t_full2):
-        return jk.super_jackknife_combine_blocks([gamma1_blocks, gamma2_blocks], lambda x: self.calc_gamma_sub(x[0], t_full1, x[1], t_full2))
-    
-    def calc_gamma_sub_w_errors(self, gamma1_blocks, t_full1, gamma2_blocks, t_full2):
-        gamma_blocks = self.calc_gamma_sub_blocks(gamma1_blocks, t_full1, gamma2_blocks, t_full2)
-        return jk.get_errors_from_blocks(np.mean(gamma_blocks), gamma_blocks)
-    
-    def calc_gamma_div(self, gamma1, gamma_der, t_full, dt):
-        return (gamma_der*t_full*dt/gamma1**0.5)**2
-    
-    def calc_gamma_div_blocks(self, gamma1_blocks, gamma2_blocks, t_full, dt):
-        return jk.super_jackknife_combine_blocks([gamma1_blocks, gamma2_blocks], lambda x: self.calc_gamma_div(x[0], x[1], t_full, dt))
-    
     # Estimating systematic errors----------
     
     def calc_gamma_M_L_errors(self, Ms, Ls, fit_start, fit_stop, params):
@@ -129,13 +128,13 @@ class Analysis:
     
     # Retrieving data ============================================
     
-    def get_exp_Ebar_blocks(self, sf, delta_t=1):
+    def get_R_div_R_blocks(self, sf, delta_t=1):
         t_TV = int(self.data.params[sf]["tTV"])
         t_FV = int(self.data.params[sf]["tFV"])
         blocks_TV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.data.cutoff:]), self.data.block_size)
         blocks_FV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.data.cutoff:]), self.data.block_size)
         return np.divide(blocks_FV,blocks_TV)
-    
+
     # Functions for plotting data ================================
     
     def plot_exp_Ebar_blocks(self, param, delta_t=1, params={}, get_x=None, filter_x=lambda x: False, sort=None, label=None):
@@ -151,7 +150,7 @@ class Analysis:
         for sf in sfs:
             x=get_x(sf)
             if(filter_x(x)): continue
-            blocks = self.get_exp_Ebar_blocks(sf, delta_t)
+            blocks = self.get_R_div_R_blocks(sf, delta_t)
             dS, err = jk.get_errors_from_blocks(np.mean(blocks), blocks)
             expS.append(dS)
             expS_errs.append(err)
@@ -201,6 +200,10 @@ class Analysis:
     def plot_expS_vs_L(self):
         sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.delta_actions_L)))
         self.plot_expS_extend(self.data.delta_actions_L, sfs, "L")
+    
+    def plot_expS_vs_P(self):
+        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0", list(self.data.delta_actions_P)))
+        self.plot_expS_extend(self.data.delta_actions_P, sfs, "P")
     
     def plot_expS_vs_t_TV(self, t_limit=[-100,100], sf=""):
         if(sf==""):

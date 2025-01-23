@@ -22,21 +22,17 @@ class Data:
         self.psq_list={}
         # Stores the average values of each phi_i for each trajectory
         self.phi_list={}
-        #
         self.timeslices={}
         #
-        self.fields={}
-        self.momentums={}
-        self.forces={}
-        #
         self.delta_actions_M = {}
-        self.actions_M = {}
         self.delta_actions_L = {}
-        self.actions_L = {}
+        self.delta_actions_P = {}
         self.delta_actions_t_FV = {}
-        self.actions_t_FV = {}
+        self.delta_actions_t_FV2 = {}
+        self.delta_actions_t_FV3 = {}
         self.delta_actions_t_TV = {}
-        self.actions_t_TV = {}
+        self.delta_actions_t_TV2 = {}
+        self.delta_actions_t_TV3 = {}
     
     def load(self, save_file):
         files = glob.glob(save_file)
@@ -55,13 +51,15 @@ class Data:
                     self.psq_list[sf] = data["psq_list"]
                     self.phi_list[sf] = data["phi_list"]
                     self.timeslices[sf] = data["timeslices"]
-                    self.fields[sf] = data["fields"]
-                    self.momentums[sf] = data["momentums"]
-                    self.forces[sf] = data["forces"]
                     self.delta_actions_M[sf] = data["delta_actions_M"]
                     self.delta_actions_L[sf] = data["delta_actions_L"]
+                    self.delta_actions_P[sf] = data["delta_actions_P"]
                     self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
+                    self.delta_actions_t_FV2[sf] = data["delta_actions_t_FV2"]
+                    self.delta_actions_t_FV3[sf] = data["delta_actions_t_FV3"]
                     self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
+                    self.delta_actions_t_TV2[sf] = data["delta_actions_t_TV2"]
+                    self.delta_actions_t_TV3[sf] = data["delta_actions_t_TV3"]
         
     # Functions for working with file names ======================
 
@@ -120,7 +118,7 @@ class Data:
     def plot_mean_path(self, params={}, label="tTV"):
         sfs = self.get_indices(params)
         for sf in sfs:
-            plt.plot(np.mean(self.timeslices[sf][self.cutoff:],axis=0), label=f"{label} = {self.params[sf][label]}")
+            plt.plot(np.mean(self.timeslices[sf][int(self.cutoff/100):],axis=0), label=f"{label} = {self.params[sf][label]}")
     
     def plot_paths(self, params={}, sampling_freq=100, new_plot=10000):
         sfs = self.get_indices(params)
@@ -132,9 +130,9 @@ class Data:
                 i+=1
 
     def check_data(self, n_traj = 50000):
-        self.plot_mean_path()
+        #self.plot_mean_path()
         for i in self.accept_rates:
             if(np.mean(self.accept_rates[i]) < 0.7 or len(self.trajs[i])<n_traj):
                 print(i)
                 print(len(self.trajs[i]))
-                print(np.mean(self.accept_rates[i]))
+                print(np.mean(self.accept_rates[i][self.cutoff:]))
