@@ -11,18 +11,19 @@ EXPORT(mk_qm_action, {
   double L = 0.0;
   double P = 0.0;
   double epsilon = 0.0;
-  double C = 1.0;
   long t_TV_start = 0;
   long t_full1 = 10;
   long t_full2 = 10;
   long t_FV_out = 10;
   long t_FV_mid = 5;
   double dt = 1.0;
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|d|d|l|l|l|l|l|d", &alpha, &beta, &FV_offset, &TV_offset,
-      &barrier_strength, &M, &L, &P, &epsilon, &C, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt)) {
+  bool derivative1 = true;
+  bool derivative2 = false;
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|d|l|l|l|l|l|d|b|b", &alpha, &beta, &FV_offset, &TV_offset,
+      &barrier_strength, &M, &L, &P, &epsilon, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt, &derivative1, &derivative2)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, C, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt);
+  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt, derivative1, derivative2);
   return py_convert((void*)pqma);
 })
 
