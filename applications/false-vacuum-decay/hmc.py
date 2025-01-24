@@ -494,11 +494,11 @@ def main():
     
     q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-int(n_traj/2):])}")
     for da in measurements.delta_actions["M"]:
-        q.displayln_info(f"e^(Delta S) for M={da}: {np.mean(np.exp(measurements.delta_actions["M"][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions["M"][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+        q.displayln_info(f"e^(Delta S) for M={da}: {np.mean(np.exp(measurements.delta_actions['M'][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions['M'][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
     for da in measurements.delta_actions["L"]:
-        q.displayln_info(f"e^(Delta S) for L={da}: {np.mean(np.exp(measurements.delta_actions["L"][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions["L"][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+        q.displayln_info(f"e^(Delta S) for L={da}: {np.mean(np.exp(measurements.delta_actions['L'][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions['L'][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
     for da in measurements.delta_actions["P"]:
-        q.displayln_info(f"e^(Delta S) for P={da}: {np.mean(np.exp(measurements.delta_actions["P"][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions["P"][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+        q.displayln_info(f"e^(Delta S) for P={da}: {np.mean(np.exp(measurements.delta_actions['P'][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions['P'][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
     
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")
