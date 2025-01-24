@@ -6,7 +6,7 @@ import pickle
 import datetime
 import glob
 import fnmatch
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import qlat as q
 
@@ -242,7 +242,7 @@ class HMC:
         return flag, accept_prob
 
 class Measurements:
-    def __init__(self, total_site, actions, actions_M, actions_L, actions_P, actions_t_FV, actions_t_TV, save_file):
+    def __init__(self, total_site, actions, save_file):
         self.save_file = save_file
         # Stores the trajectory number for debugging purposes
         self.trajs = []
@@ -257,37 +257,11 @@ class Measurements:
         self.delta_actions = {}
         self.actions = {}
         for k in actions:
+            self.actions[k] = {}
             self.delta_actions[k] = {}
             for a in actions[k]:
                 self.actions[k][a] = actions[k][a]
                 self.delta_actions[k][a] = []
-        #
-        self.delta_actions_M = {}
-        self.actions_M = {}
-        for a in actions_M:
-            self.actions_M[f"{a.M()}"] = a
-            self.delta_actions_M[f"{a.M()}"] = []
-        self.delta_actions_L = {}
-        self.actions_L = {}
-        for a in actions_L:
-            self.actions_L[f"{a.L()}"] = a
-            self.delta_actions_L[f"{a.L()}"] = []
-        self.delta_actions_P = {}
-        self.actions_P = {}
-        for a in actions_P:
-            self.actions_P[f"{a.P()}"] = a
-            self.delta_actions_P[f"{a.P()}"] = []
-        self.delta_actions_t_FV = {}
-        self.actions_t_FV = {}
-        for a in actions_t_FV:
-            self.actions_t_FV[f"{a.t_FV()}"] = a
-            self.delta_actions_t_FV[f"{a.t_FV()}"] = []
-        self.delta_actions_t_TV = {}
-        self.actions_t_TV = {}
-        for a in actions_t_TV:
-            t_TV = total_site[3] - a.t_full1() - a.t_full2() - a.t_FV()
-            self.actions_t_TV[f"{t_TV}"] = a
-            self.delta_actions_t_TV[f"{t_TV}"] = []
     
     def measure(self, hmc, timeslices=False):
         self.trajs.append(hmc.traj)
@@ -379,7 +353,7 @@ def main():
     der1 = True
     der2 = False
     #
-    version = "8-4"
+    version = "9-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -468,7 +442,7 @@ def main():
     t_FV_mid = Nt - t_full1 - t_full2 - t_TV - 2*t_FV_out
     
     action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, der1, der2)
-    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_P_{P}_eps_{epsilon}_tfull1_{t_full1}_tfull2_{t_full2}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
+    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_P_{P}_eps_{epsilon}_tfull1_{t_full1}_tfull2_{t_full2}_der1_{der1}_der2_{der2}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     steps = np.array([0.001, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) #np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
     measure_Ms = steps[steps>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
@@ -503,11 +477,11 @@ def main():
         #if hmc.traj%10 == 0:
         #    measurements.plot_measurements()
         
-        x = np.arange(-5,5,0.1)
-        for t in [0,t_full1,t_full1+t_FV_out,t_full1+t_FV_out+t_FV_mid,t_full1+t_FV_out*2+t_FV_mid]: #,t_full1+t_full2+t_FV_out*2+t_FV_mid]:
-            plt.plot([min((action.V(i,t) - action.V(0,t))*Nt/20.0, 10.0) + t for i in x],x)
-        plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
-        plt.show()
+        #x = np.arange(-5,5,0.1)
+        #for t in [0,t_full1,t_full1+t_FV_out,t_full1+t_FV_out+t_FV_mid,t_full1+t_FV_out*2+t_FV_mid]: #,t_full1+t_full2+t_FV_out*2+t_FV_mid]:
+        #    plt.plot([min((action.V(i,t) - action.V(0,t))*Nt/20.0, 10.0) + t for i in x],x)
+        #plt.plot(range(Nt), np.mean(measurements.timeslices,axis=0))
+        #plt.show()
         
         if hmc.traj%save_frequency == 0:
             hmc.save_field()
@@ -519,16 +493,12 @@ def main():
     measurements.save()
     
     q.displayln_info(f"Acceptance rate: {np.mean(measurements.accept_rates[-int(n_traj/2):])}")
-    for da in measurements.delta_actions_M:
-        q.displayln_info(f"e^(Delta S) for M={da}: {np.mean(np.exp(measurements.delta_actions_M[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_M[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
-    for da in measurements.delta_actions_L:
-        q.displayln_info(f"e^(Delta S) for L={da}: {np.mean(np.exp(measurements.delta_actions_L[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_L[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
-    for da in measurements.delta_actions_P:
-        q.displayln_info(f"e^(Delta S) for P={da}: {np.mean(np.exp(measurements.delta_actions_P[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_P[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
-    for da in measurements.delta_actions_t_FV:
-        q.displayln_info(f"e^(Delta S) for t_FV={da}: {np.mean(np.exp(measurements.delta_actions_t_FV[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_t_FV[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
-    for da in measurements.delta_actions_t_TV:
-        q.displayln_info(f"e^(Delta S) for t_TV={da}: {np.mean(np.exp(measurements.delta_actions_t_TV[da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions_t_TV[da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+    for da in measurements.delta_actions["M"]:
+        q.displayln_info(f"e^(Delta S) for M={da}: {np.mean(np.exp(measurements.delta_actions["M"][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions["M"][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+    for da in measurements.delta_actions["L"]:
+        q.displayln_info(f"e^(Delta S) for L={da}: {np.mean(np.exp(measurements.delta_actions["L"][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions["L"][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
+    for da in measurements.delta_actions["P"]:
+        q.displayln_info(f"e^(Delta S) for P={da}: {np.mean(np.exp(measurements.delta_actions["P"][da][-int(n_traj/2):]))}+-{np.std(np.exp(measurements.delta_actions["P"][da][-int(n_traj/2):]))/(n_traj/2)**0.5}")
     
     q.displayln_info(f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj/2):], axis=0)[0],2)}.")
     q.displayln_info(f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj/2):]),2)}.")

@@ -20,9 +20,9 @@ class Analysis:
         sf_ML = self.data.get_indices(params)[0]
         sfs_M = self.data.replace_params(sf_ML, ["M", "L"], [[M, 1.0] for M in Ms])
         sfs_L = self.data.replace_params(sf_ML, ["M", "L"], [[1.0, L] for L in Ls])
-        delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions_M[sfs_M[i]][str(Ms[i+1])][self.data.cutoff:]), self.data.block_size)
+        delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_M[i]]["M"][str(Ms[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ms)-1)]
-        delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions_L[sfs_L[i]][str(Ls[i+1])][self.data.cutoff:]), self.data.block_size)
+        delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_L[i]]["L"][str(Ls[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ls)-1)]
         return delta_actions_M + delta_actions_L
     
@@ -42,7 +42,7 @@ class Analysis:
     def get_P_blocks(self, Ps, params, der=False):
         sf_P = self.data.get_indices(params)[0]
         sfs_P = self.data.replace_params(sf_P, ["P"], [[P] for P in Ps])
-        delta_actions_P = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions_P[sfs_P[i]][str(Ps[i+1])][self.data.cutoff:]), self.data.block_size)
+        delta_actions_P = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_P[i]]["P"][str(Ps[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ps)-1)]
         return delta_actions_P
     
@@ -69,6 +69,7 @@ class Analysis:
         params_tTV = params.copy()
         params_tTV["M"] = 1.0
         params_tTV["L"] = 0.0
+        params_tTV["P"] = 1.0
         del params_tTV["tTV"]
         #
         sfs = self.data.get_indices(params_tTV)
@@ -81,7 +82,7 @@ class Analysis:
         for sf in sfs:
             t = int(self.data.params[sf]["tTV"])*dt
             if(t>start):
-                dS_blocks.append(self.get_R_div_R_blocks(sf))
+                dS_blocks.append(self.get_ddR_div_ddR_blocks(sf))
                 errs.append(jk.get_errors_from_blocks(np.mean(dS_blocks[-1]),dS_blocks[-1])[1])
                 t_TVs.append(t)
         
@@ -128,16 +129,26 @@ class Analysis:
     
     # Retrieving data ============================================
     
-    def get_R_div_R_blocks(self, sf, delta_t=1):
+    #def get_R_div_R_blocks(self, sf, delta_t=1):
+        #t_TV = int(self.data.params[sf]["tTV"])
+        #t_FV = int(self.data.params[sf]["tFV"])
+        #blocks_TV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.data.cutoff:]), self.data.block_size)
+        #blocks_FV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.data.cutoff:]), self.data.block_size)
+        #return np.divide(blocks_FV,blocks_TV)
+
+    def get_ddR_div_ddR_blocks(self, sf):
         t_TV = int(self.data.params[sf]["tTV"])
         t_FV = int(self.data.params[sf]["tFV"])
-        blocks_TV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.data.cutoff:]), self.data.block_size)
-        blocks_FV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.data.cutoff:]), self.data.block_size)
-        return np.divide(blocks_FV,blocks_TV)
+        t_full2 = int(self.data.params[sf]["tfull2"])
+        blocks_A = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["A"][self.data.cutoff:]), self.data.block_size)
+        blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["B"][self.data.cutoff:]), self.data.block_size)
+        sf2 = self.data.replace_params(sf, ["tfull2", "tTV", "der1", "der2"], [[t_full2-1, t_TV+1, True, False]])[0]
+        blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["C"][self.data.cutoff:]), self.data.block_size)
+        return np.divide(blocks_B, np.multiply(blocks_A, blocks_C))
 
     # Functions for plotting data ================================
     
-    def plot_exp_Ebar_blocks(self, param, delta_t=1, params={}, get_x=None, filter_x=lambda x: False, sort=None, label=None):
+    def plot_exp_Ebar_blocks(self, param, params={}, get_x=None, filter_x=lambda x: False, sort=None, label=None):
         sfs = self.data.get_indices(params)
         if(sort==None):
             sort = lambda x: float(self.data.params[x][param])
@@ -150,7 +161,7 @@ class Analysis:
         for sf in sfs:
             x=get_x(sf)
             if(filter_x(x)): continue
-            blocks = self.get_R_div_R_blocks(sf, delta_t)
+            blocks = self.get_ddR_div_ddR_blocks(sf)
             dS, err = jk.get_errors_from_blocks(np.mean(blocks), blocks)
             expS.append(dS)
             expS_errs.append(err)
@@ -177,7 +188,7 @@ class Analysis:
         print(expS_errs)
         return x, expS, expS_errs
     
-    def plot_expS_extend(self, delta_actions, sfs, param, get_x=float, filter_x=lambda x,y: False, sort=None):
+    def plot_expS_extend(self, delta_actions, key, sfs, param, get_x=float, filter_x=lambda x,y: False, sort=None):
         fact = 1.0
         last_params = []
         last_expS = []
@@ -191,30 +202,30 @@ class Analysis:
                 fact = last_expS[last_params.index(p)]
             else:
                 print(f"No previous factor found for {param}={p}")
-            last_params, last_expS, errs = self.plot_expS(delta_actions[sf], get_x, fact, f"{param}={p}", lambda x: filter_x(x,p))
+            last_params, last_expS, errs = self.plot_expS(delta_actions[sf][key], get_x, fact, f"{param}={p}", lambda x: filter_x(x,p))
     
     def plot_expS_vs_M(self):
-        sfs = list(filter(lambda x: self.data.params[x]["M"]!="1.0", list(self.data.delta_actions_M)))
-        self.plot_expS_extend(self.data.delta_actions_M, sfs, "M")
+        sfs = list(filter(lambda x: self.data.params[x]["M"]!="1.0", list(self.data.delta_actions)))
+        self.plot_expS_extend(self.data.delta_actions, "M", sfs, "M")
     
     def plot_expS_vs_L(self):
-        sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.delta_actions_L)))
-        self.plot_expS_extend(self.data.delta_actions_L, sfs, "L")
+        sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.delta_actions)))
+        self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L")
     
     def plot_expS_vs_P(self):
-        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0", list(self.data.delta_actions_P)))
-        self.plot_expS_extend(self.data.delta_actions_P, sfs, "P")
+        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0", list(self.data.delta_actions)))
+        self.plot_expS_extend(self.data.delta_actions, "P", sfs, "P")
     
-    def plot_expS_vs_t_TV(self, t_limit=[-100,100], sf=""):
-        if(sf==""):
-            sfs = list(self.data.delta_actions_t_TV)
-        else:
-            sfs = [sf]
-        self.plot_expS_extend(self.data.delta_actions_t_TV, sfs, "tTV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
+    #def plot_expS_vs_t_TV(self, t_limit=[-100,100], sf=""):
+        #if(sf==""):
+        #    sfs = list(self.data.delta_actions_t_TV)
+        #else:
+        #    sfs = [sf]
+        #self.plot_expS_extend(self.data.delta_actions_t_TV, sfs, "tTV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
     
-    def plot_expS_vs_t_FV(self, t_limit=[-100,100], sf=""):
-        if(sf==""):
-            sfs = list(self.data.delta_actions_t_FV)
-        else:
-            sfs = [sf]
-        self.plot_expS_extend(self.data.delta_actions_t_FV, sfs, "tFV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
+    #def plot_expS_vs_t_FV(self, t_limit=[-100,100], sf=""):
+        #if(sf==""):
+        #    sfs = list(self.data.delta_actions_t_FV)
+        #else:
+        #    sfs = [sf]
+        #self.plot_expS_extend(self.data.delta_actions_t_FV, sfs, "tFV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])

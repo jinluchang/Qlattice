@@ -24,15 +24,7 @@ class Data:
         self.phi_list={}
         self.timeslices={}
         #
-        self.delta_actions_M = {}
-        self.delta_actions_L = {}
-        self.delta_actions_P = {}
-        self.delta_actions_t_FV = {}
-        self.delta_actions_t_FV2 = {}
-        self.delta_actions_t_FV3 = {}
-        self.delta_actions_t_TV = {}
-        self.delta_actions_t_TV2 = {}
-        self.delta_actions_t_TV3 = {}
+        self.delta_actions = {}
     
     def load(self, save_file):
         files = glob.glob(save_file)
@@ -51,15 +43,7 @@ class Data:
                     self.psq_list[sf] = data["psq_list"]
                     self.phi_list[sf] = data["phi_list"]
                     self.timeslices[sf] = data["timeslices"]
-                    self.delta_actions_M[sf] = data["delta_actions_M"]
-                    self.delta_actions_L[sf] = data["delta_actions_L"]
-                    self.delta_actions_P[sf] = data["delta_actions_P"]
-                    self.delta_actions_t_FV[sf] = data["delta_actions_t_FV"]
-                    self.delta_actions_t_FV2[sf] = data["delta_actions_t_FV2"]
-                    self.delta_actions_t_FV3[sf] = data["delta_actions_t_FV3"]
-                    self.delta_actions_t_TV[sf] = data["delta_actions_t_TV"]
-                    self.delta_actions_t_TV2[sf] = data["delta_actions_t_TV2"]
-                    self.delta_actions_t_TV3[sf] = data["delta_actions_t_TV3"]
+                    self.delta_actions[sf] = data["delta_actions"]
         
     # Functions for working with file names ======================
 
