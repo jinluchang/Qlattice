@@ -15,10 +15,10 @@ if [ -z "\$num_proc" ] ; then
 fi
 # module purge
 module load PrgEnv-amd
+module load rocm
 module load craype-x86-trento
 module load xpmem
 module load perftools-base
-module load perl
 module load openblas
 module load craype-accel-amd-gfx90a
 module list
