@@ -13,10 +13,10 @@ source qcore/set-prefix.sh $name
 
     opts="--verbose --upgrade --no-index --no-build-isolation --no-cache-dir -f $distfiles/python-packages"
 
-    time-run pip3 install $opts mpi4py || true
     time-run pip3 install $opts psutil || true
     time-run pip3 install $opts sympy || true
     time-run pip3 install $opts cython || true
+    time-run pip3 install $opts mpi4py || true
     time-run pip3 install $opts pybind11 || true
     time-run pip3 install $opts numpy || true
     time-run pip3 install $opts pythran || true
