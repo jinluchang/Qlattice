@@ -6,6 +6,8 @@ set -e
     ./scripts/setenv.frontier.sh
     ./scripts/qcore.sh
 
+    export PRG_ENV=GNU
+
     ./scripts/gsl.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
@@ -34,6 +36,8 @@ set -e
     ./scripts/qmp.sh
     ./scripts/qio.sh
     ./scripts/cps.sh
+
+    unset PRG_ENV
 
     ./scripts/grid-clehner.frontier.sh
     ./scripts/gpt.sh
