@@ -1134,22 +1134,21 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     pairs_data_n_pairs = 0
     pairs_data_lslt_sum = 0
     pairs_data_lslt_sloppy_sum = 0
-    q.sync_node()
     for fn_chunk in fn_chunk_list:
         path_chunk = get_load_path(fn_chunk)
         assert path_chunk is not None
-        q.sync_node()
         if q.get_id_node() == 0:
             pairs_data_chunk = q.load_pickle_obj(path_chunk, is_sync_node=False)
             pairs_data_n_pairs += len(pairs_data_chunk)
             pairs_data_lslt_sum += sum([ d["lslt"] for d in pairs_data_chunk ])
             pairs_data_lslt_sloppy_sum += sum([ d["lslt_sloppy"] for d in pairs_data_chunk ])
-        q.sync_node()
-    q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name} load all chunk done.")
     q.sync_node()
+    q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name} load all chunk done.")
+    pairs_data_n_pairs_ref = len(get_point_pairs())
     if q.get_id_node() == 0:
-        if pairs_data_n_pairs != len(get_point_pairs()):
-            raise Exception(f"pairs_data_n_pairs={pairs_data_n_pairs} len(get_point_pairs())={len(get_point_pairs())}")
+        if pairs_data_n_pairs != pairs_data_n_pairs_ref:
+            q.displayln_info(-1, f"ERROR: {fname}: pairs_data_n_pairs={pairs_data_n_pairs} len(get_point_pairs())={pairs_data_n_pairs_ref}")
+            raise Exception(f"pairs_data_n_pairs={pairs_data_n_pairs} len(get_point_pairs())={pairs_data_n_pairs_ref}")
     q.sync_node()
     if q.get_id_node() == 0:
         results = dict()
