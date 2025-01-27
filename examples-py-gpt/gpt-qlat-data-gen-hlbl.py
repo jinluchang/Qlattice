@@ -1150,6 +1150,8 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     if q.get_id_node() == 0:
         if pairs_data_n_pairs != len(get_point_pairs()):
             raise Exception(f"pairs_data_n_pairs={pairs_data_n_pairs} len(get_point_pairs())={len(get_point_pairs())}")
+    q.sync_node()
+    if q.get_id_node() == 0:
         results = dict()
         results["labels"] = labels
         results["lslt_sum"] = pairs_data_lslt_sum
