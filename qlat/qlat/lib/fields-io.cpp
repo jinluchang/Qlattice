@@ -736,17 +736,23 @@ void ShuffledFieldsWriter::init(const std::string& path_,
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
       new_size_node = shuffled_fields_reader_size_node_info(path);
       if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
-        qwarn(fname +
+        if (get_id_node() == 0) {
+          qwarn(
+              fname +
               ssprintf(
                   ": WARNING: new_size_node do not match. file=%s argument=%s "
                   ". Will use the new_size_node from the existing file.",
                   show(new_size_node).c_str(), show(new_size_node_).c_str()));
+        }
       }
     } else {
       if (does_file_exist_sync_node(path)) {
-        qwarn(fname + ssprintf(": WARNING: path='%s' exists but "
-                               "'geon-info.txt' is not present in the folder.",
-                               path.c_str()));
+        if (get_id_node() == 0) {
+          qwarn(fname +
+                ssprintf(": WARNING: path='%s' exists but "
+                         "'geon-info.txt' is not present in the folder.",
+                         path.c_str()));
+        }
       }
     }
     properly_truncate_fields_sync_node(fn_list, offsets_list, path, false,
@@ -757,7 +763,10 @@ void ShuffledFieldsWriter::init(const std::string& path_,
   } else {
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
       if (is_removing_old) {
-        qwarn(fname + ssprintf(": 'geon-info.txt' exist. Removing '%s'.", path.c_str()));
+        if (get_id_node() == 0) {
+          qwarn(fname + ssprintf(": 'geon-info.txt' exist. Removing '%s'.",
+                                 path.c_str()));
+        }
         qremove_all_sync_node(path);
       } else {
         qerr(fname +
@@ -767,7 +776,10 @@ void ShuffledFieldsWriter::init(const std::string& path_,
     }
     if (does_file_exist_sync_node(path)) {
       if (is_removing_old) {
-        qwarn(fname + ssprintf(": directory exist. Removing '%s'."));
+        if (get_id_node() == 0) {
+          qwarn(fname +
+                ssprintf(": directory exist. Removing '%s'.", path.c_str()));
+        }
         qremove_all_sync_node(path);
       } else {
         qerr(fname +
