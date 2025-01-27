@@ -757,7 +757,7 @@ void ShuffledFieldsWriter::init(const std::string& path_,
   } else {
     if (does_file_exist_sync_node(path + "/geon-info.txt")) {
       if (is_removing_old) {
-        qwarn(fname + ssprintf(": 'geon-info.txt' exist. Removing '%s'."));
+        qwarn(fname + ssprintf(": 'geon-info.txt' exist. Removing '%s'.", path.c_str()));
         qremove_all_sync_node(path);
       } else {
         qerr(fname +
