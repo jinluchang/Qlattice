@@ -1618,7 +1618,9 @@ ShuffledFieldsReader& get_shuffled_fields_reader(
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader_cache()[path];
   if (get_shuffled_fields_writer_cache().has(path)) {
     // warn if there is a writer in cache
-    qwarn(fname + ssprintf(": path='%s' is in writer cache.", path.c_str()));
+    if (get_id_node() == 0) {
+      qwarn(fname + ssprintf(": path='%s' is in writer cache.", path.c_str()));
+    }
   }
   if (sfr.path == "") {
     sfr.init(path, new_size_node);
@@ -1633,9 +1635,12 @@ ShuffledFieldsWriter& get_shuffled_fields_writer(
   TIMER("get_shuffled_fields_writer");
   ShuffledFieldsWriter& sfw = get_shuffled_fields_writer_cache()[path];
   if (get_shuffled_fields_reader_cache().has(path)) {
-    qwarn(fname +
+    if (get_id_node() == 0) {
+      qwarn(
+          fname +
           ssprintf(": path='%s' is in reader cache. Remove this cached reader.",
                    path.c_str()));
+    }
     close_shuffled_fields_reader(path);
   }
   if (sfw.path == "") {
