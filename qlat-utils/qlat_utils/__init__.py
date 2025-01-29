@@ -31,6 +31,8 @@ from .lru_cache import *
 
 from . import q_fit_corr
 
+from . import q_fit_corr_2
+
 set_verbose_level()
 
 set_display_method_obj = SetDisplayMethod()

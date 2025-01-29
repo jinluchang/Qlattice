@@ -4,6 +4,69 @@ from .c import *
 from .utils import *
 from .data import *
 
+@timer
+def build_corr_from_param_arr(
+        param_arr,
+        *,
+        n_ops,
+        t_arr,
+        t_start_arr=None,
+        t_size=None,
+        atw_factor_arr=None,
+        is_energy=True,
+        ):
+    """
+    param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
+    es.shape == (n_energies,)
+    cs.shape == (n_energies, n_ops,)
+    #
+    corr_data.shape == (n_ops, n_ops, n_tslice,)
+    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_arr[t] - t_start_arr[ei]))
+    #
+    if t_size is not None:
+        corr_data[i, j, t] += (
+            atw_factor_arr[i] * atw_factor_arr[j] *
+            \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - t_arr[t] - t_start_arr[ei]))
+            )
+    #
+    return corr_data
+    """
+    assert len(t_arr.shape) == 1
+    assert len(t_arr) >= 1
+    assert len(param_arr.shape) == 1
+    n_params = len(param_arr)
+    assert n_params % (n_ops + 1) == 0
+    n_energies = n_params // (n_ops + 1)
+    param_arr = np.array(param_arr, dtype=np.float64)
+    es = param_arr[:n_energies]
+    if is_energy:
+        ets = np.exp(-es)
+    else:
+        ets = es.copy()
+    cs = param_arr[n_energies:].reshape(n_energies, n_ops)
+    if t_start_arr is None:
+        t_start_arr = np.zeros(n_energies, dtype=np.int32)
+    else:
+        t_start_arr = np.array(t_start_arr, dtype=np.int32)
+        assert t_start_arr.shape == (n_energies,)
+    # corr_data[op1_idx, op2_idx, t_idx]
+    corr_data = (cs[:, :, None, None] * cs[:, None, :, None]
+            * ets[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
+            ).sum(0)
+    if t_size is not None:
+        if atw_factor_arr is None:
+            atw_factor_arr = np.ones(n_ops, dtype=np.complex128)
+        else:
+            atw_factor_arr = np.array(atw_factor_arr, dtype=np.complex128)
+        corr_data = corr_data + (
+                cs[:, :, None, None] * cs[:, None, :, None]
+                * atw_factor_arr[:, None, None]
+                * atw_factor_arr[None, :, None]
+                * ets[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
+                ).sum(0)
+    return corr_data
+
+@timer
 def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
     r"""
     return param_arr, jk_corr_data, corr_data_sigma
@@ -31,51 +94,6 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     #
     param_arr = np.concatenate([ energies, coefs.ravel(), ], dtype=np.float64)
     return param_arr, jk_corr_data, corr_data_sigma
-
-@timer
-def build_corr_from_param_arr(
-        param_arr,
-        *,
-        n_ops,
-        t_arr,
-        t_start_arr=None,
-        is_atw=False,
-        atw_t_start_arr=None,
-        atw_factor_arr=None
-        ):
-    assert len(t_arr.shape) == 1
-    assert len(t_arr) >= 1
-    t_size = t_arr[-1] + 1
-    assert len(param_arr.shape) == 1
-    n_params = len(param_arr)
-    assert n_params % (n_ops + 1) == 0
-    n_energies = n_params // (n_ops + 1)
-    param_arr = np.array(param_arr, dtype=np.float64)
-    es = param_arr[:n_energies]
-    cs = param_arr[n_energies:].reshape(n_energies, n_ops)
-    if t_start_arr is None:
-        t_start_arr = np.zeros(n_energies, dtype=np.float64)
-    else:
-        t_start_arr = np.array(t_start_arr, dtype=np.float64)
-    # corr[op1_idx, op2_idx, t_idx]
-    corr = (cs[:, :, None, None] * cs[:, None, :, None]
-            * np.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
-            ).sum(0)
-    if is_atw:
-        if atw_t_start_arr is None:
-            atw_t_start_arr = t_start_arr
-        else:
-            atw_t_start_arr = np.array(atw_t_start_arr, dtype=np.float64)
-        if atw_factor_arr is None:
-            atw_factor_arr = np.ones(n_ops, dtype=np.float64)
-        else:
-            atw_factor_arr = np.array(atw_factor_arr, dtype=np.float64)
-        corr = corr + (cs[:, :, None, None] * cs[:, None, :, None]
-                       * atw_factor_arr[:, None, None]
-                       * atw_factor_arr[None, :, None]
-                       * np.exp(-es[:, None, None, None] * (t_size - 1 - t_arr + atw_t_start_arr[:, None, None, None]))
-                       ).sum(0)
-    return corr
 
 @timer
 def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
@@ -121,16 +139,21 @@ def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr
 def mk_fcn(
         corr_data, corr_data_sigma, t_start_arr,
         *,
+        t_arr=None,
+        t_size=None,
         is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
         energy_minimum_arr=None, free_energy_idx_arr=None,
         ):
     r"""
     Shape of inputs and parameters are like:
-    corr_data.shape == (n_ops, n_ops, t_size,)
-    corr_data_sigma.shape == (n_ops, n_ops, t_size,)
-    t_start_arr is the start tslice of the corr_data (energy dependent array, t_start_arr for negative_energy ~ -t_size)
-    atw_t_start_arr is the start tslice of the ATW (around the world effects) corr_data (be default atw_t_start_arr = t_start_arr)
-    atw_factor_arr is the additional factor needs to be multiplied to the ATW term (by default `atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)`)
+    `corr_data.shape == (n_ops, n_ops, t_len,)`
+    `corr_data_sigma.shape == (n_ops, n_ops, t_len,)`
+    By default
+    `t_arr = jnp.arange(t_len, dtype=jnp.int32)`
+    `t_size = t_arr[-1] + 1` and `t_size == t_len`
+    `t_start_arr` is the start tslice of the corr_data (energy dependent array, t_start_arr for negative_energy ~ -t_size).
+    `atw_t_start_arr` is the start tslice of the ATW (around the world effects) corr_data, counting from the last data tslice (by default atw_t_start_arr = t_start_arr).
+    `atw_factor_arr` is the additional factor needs to be multiplied to the ATW term (be default `atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)`)
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
     e.g.
@@ -141,12 +164,12 @@ def mk_fcn(
     if energy_minimum_arr is not None:
         free_energies = energy_minimum_arr + abs(free_energies - energy_minimum_arr)
     #
-    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t + t_start_arr[ei]))
+    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_arr[t] + t_start_arr[ei]))
     #
     if is_atw:
         corr_data[i, j, t] += (
             atw_factor_arr[i] * atw_factor_arr[j] *
-            \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - 1 - t + atw_t_start_arr[ei]))
+            \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - 1 - t_arr[t] + atw_t_start_arr[ei]))
             )
     #
     """
@@ -159,18 +182,25 @@ def mk_fcn(
     assert len(shape) == 3
     n_ops = shape[0]
     assert shape[1] == n_ops
-    t_size = shape[2]
+    t_len = shape[2]
+    if t_arr is None:
+        t_arr = jnp.arange(1, t_len + 1, dtype=jnp.int32)
+    else:
+        assert len(t_arr) == t_len
+        t_arr = jnp.arange(t_arr, dtype=jnp.int32)
+    if t_size is None:
+        t_size = t_arr[-1] + 1
     n_energies = len(t_start_arr)
-    t_start_arr = jnp.array(t_start_arr, dtype=jnp.float64)
+    t_start_arr = jnp.array(t_start_arr, dtype=jnp.int32)
     if is_atw:
         if atw_t_start_arr is None:
             atw_t_start_arr = t_start_arr
         else:
-            atw_t_start_arr = jnp.array(atw_t_start_arr, dtype=jnp.float64)
+            atw_t_start_arr = jnp.array(atw_t_start_arr, dtype=jnp.int32)
         if atw_factor_arr is None:
-            atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
+            atw_factor_arr = jnp.ones(n_ops, dtype=jnp.complex128)
         else:
-            atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.float64)
+            atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.complex128)
     if energy_minimum_arr is not None:
         assert free_energy_idx_arr is not None
         energy_minimum_arr = jnp.array(energy_minimum_arr, dtype=jnp.float64)
@@ -178,7 +208,6 @@ def mk_fcn(
         assert energy_minimum_arr.shape == free_energy_idx_arr.shape
     corr_avg = jnp.array(corr_data, dtype=jnp.float64)
     corr_sigma = jnp.array(corr_data_sigma, dtype=jnp.float64)
-    t_arr = jnp.arange(t_size, dtype=jnp.float64)
     def fcn_f(param_arr):
         assert len(param_arr.shape) == 1
         n_params = len(param_arr)
@@ -193,14 +222,14 @@ def mk_fcn(
                     )
         # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
-                * jnp.exp(-es[:, None, None, None] * (t_arr + t_start_arr[:, None, None, None]))
+                * jnp.exp(-es[:, None, None, None] * (t_arr - 1 + t_start_arr[:, None, None, None]))
                 ).sum(0)
         if is_atw:
             corr = corr + (cs[:, :, None, None] * cs[:, None, :, None]
                            * atw_factor_arr[:, None, None]
                            * atw_factor_arr[None, :, None]
                            * jnp.exp(-es[:, None, None, None]
-                                     * (t_size - 1 - t_arr + atw_t_start_arr[:, None, None, None]))
+                                     * (t_size - t_arr + atw_t_start_arr[:, None, None, None]))
                            ).sum(0)
         corr = (corr - corr_avg) / corr_sigma
         chisqs = corr * corr
@@ -512,7 +541,7 @@ def fit_energy_amplitude(jk_corr_data,
         atw_t_start_fcn_arr[:] = atw_t_start_fcn
     else:
         atw_t_start_fcn_arr[:] = t_start_fcn_arr
-    atw_factor_arr = np.ones(n_ops, dtype=np.float64)
+    atw_factor_arr = np.ones(n_ops, dtype=np.complex128)
     if atw_factor is not None:
         atw_factor_arr[:] = atw_factor
     #
@@ -678,157 +707,3 @@ def fit_energy_amplitude(jk_corr_data,
     #
     displayln_info(0, f"{fname} finished")
     return res
-
-### -------------------
-
-@timer
-def param_evolve(param_arr, mom_arr, hmc_mass_arr, dt):
-    param_arr += mom_arr / hmc_mass_arr * dt
-
-@timer
-def mom_evolve(mom_arr, param_arr, fcn, dt):
-    """
-    evolve mom_arr and return force
-    """
-    chisq, param_grad_arr = fcn(param_arr)
-    mom_arr -= param_grad_arr * dt
-    return param_grad_arr
-
-@timer
-def hmc_energy(param_arr, mom_arr, hmc_mass_arr, fcn):
-    return np.sum(mom_arr * mom_arr / hmc_mass_arr) / 2 + fcn(param_arr)[0]
-
-class HmcParams:
-
-    def __init__(
-            self,
-            *,
-            traj=0,
-            tau=1.0,
-            n_step=32,
-            n_params=None,
-            param_arr=None,
-            hmc_mass_arr=None,
-            hmc_mass_adaptive_rate=1/8,
-            force_sqr_avg=None,
-            delta_hh_history=None,
-            temperature=1.0,
-            rng=None,
-            ):
-        """
-        Need at least n_params or param_arr
-        #
-        tau is the MD time
-        n_params=len(param_arr)
-        Ideally:
-        omega = np.pi / 2
-        <p^2> == hmc_mass_arr
-        omega^2 <p^2> == <F^2> === force_sqr_avg
-        Therefore:
-        hmc_mass_arr == (4/np.pi**2) * force_sqr_avg
-        In case of roughly constant force:
-        t = 1
-        m = 4/pi^2 * <F^2>
-        m ~ 4/pi^2 * F^2
-        <p^2> = m
-        <v^2> = <p^2> / m^2 = 1 / m ~ pi^2/4 / F^2
-        F v t ~ F / sqrt(m) = pi/2
-        F a t^2/2 = F^2 / m / 2 ~ pi^2/8
-        """
-        if rng is None:
-            rng = RngState(f"seed-hmc-core-{traj}")
-        if param_arr is None:
-            assert n_params is not None
-            n_params = n_energies * (n_ops + 1)
-            param_arr = np.zeros(n_params, dtype=float)
-        else:
-            if n_params is None:
-                n_params = len(param_arr)
-            else:
-                assert n_params == len(param_arr)
-            param_arr = np.array(param_arr, dtype=float)
-        if hmc_mass_arr is None:
-            hmc_mass_arr = np.ones(n_params, dtype=float)
-        elif isinstance(hmc_mass_arr, (int, float)):
-            hmc_mass_arr = hmc_mass_arr * np.ones(n_params, dtype=float)
-        else:
-            hmc_mass_arr = np.array(hmc_mass_arr, dtype=float)
-            assert hmc_mass_arr.shape == param_arr.shape
-        if delta_hh_history is None:
-            delta_hh_history = []
-        self.traj = traj
-        self.tau = tau
-        self.n_step = n_step
-        self.n_params = n_params
-        self.param_arr = param_arr
-        self.hmc_mass_arr = hmc_mass_arr
-        self.hmc_mass_adaptive_rate = hmc_mass_adaptive_rate
-        self.force_sqr_avg = force_sqr_avg
-        self.delta_hh_history = delta_hh_history
-        self.temperature = temperature
-        self.rng = rng
-
-    def copy(self):
-        import copy
-        return copy.deepcopy(self)
-
-### -----------------
-
-@timer
-def hmc_traj(fcn, hmc_params):
-    """
-    fcn(param_arr) => chisq, param_grad_arr
-    hmc_params is instance of HmcParams
-    hmc_params will be modified
-    include traj, param_arr, hmc_mass_arr, force_sqr_avg, delta_hh_history
-    #
-    hmc_mass_adaptive_rate:
-    hmc_mass_arr = (1-adaptive_rate) * hmc_mass_arr + hmc_mass_adaptive_rate * (4/np.pi**2) * force_sqr_avg
-    """
-    fname = get_fname()
-    traj = hmc_params.traj
-    param_arr = hmc_params.param_arr.copy()
-    hmc_mass_arr = hmc_params.hmc_mass_arr
-    force_sqr_avg = 0
-    delta_hh_history = hmc_params.delta_hh_history
-    mom_arr = hmc_params.rng.g_rand_arr(hmc_params.n_params) * np.sqrt(hmc_mass_arr) * np.sqrt(hmc_params.temperature)
-    dt = hmc_params.tau / hmc_params.n_step
-    hmc_energy_initial = hmc_energy(param_arr, mom_arr, hmc_mass_arr, fcn)
-    param_evolve(param_arr, mom_arr, hmc_mass_arr, dt / 2)
-    for i in range(hmc_params.n_step):
-        force = mom_evolve(mom_arr, param_arr, fcn, dt)
-        force_sqr = force * force
-        force_sqr_avg = force_sqr_avg + force_sqr
-        if i != hmc_params.n_step - 1:
-            param_evolve(param_arr, mom_arr, hmc_mass_arr, dt)
-        else:
-            param_evolve(param_arr, mom_arr, hmc_mass_arr, dt / 2)
-        if np.any(np.isnan(param_arr)):
-            displayln_info(-1, f"WARNING: {fname} traj={traj} nan encountered. Abort current evolution. Keep hmc_params.param_arr unchanged. (only change traj and delta_hh_history)")
-            hmc_params.traj = traj + 1
-            delta_hh = np.inf
-            delta_hh_history.append(delta_hh)
-            return
-    force_sqr_avg = force_sqr_avg / hmc_params.n_step
-    hmc_energy_final = hmc_energy(param_arr, mom_arr, hmc_mass_arr, fcn)
-    delta_hh = hmc_energy_final - hmc_energy_initial
-    delta_hh_history.append(delta_hh)
-    if hmc_params.hmc_mass_adaptive_rate != 0:
-        # Adaptive update hmc_mass_arr
-        hmc_mass_arr = (
-                (1 - hmc_params.hmc_mass_adaptive_rate) * hmc_mass_arr
-                + hmc_params.hmc_mass_adaptive_rate * (4/np.pi**2) * force_sqr_avg)
-    displayln_info(0, f"{fname}: Delta H = {delta_hh} ; H_final={hmc_energy_final} ; H_initial={hmc_energy_initial}")
-    if delta_hh > 1e4 * hmc_params.temperature:
-        displayln_info(-1, f"WARNING: {fname}: traj={traj} Delta H = {delta_hh} too large. Keep hmc_params.param_arr unchanged. (only change traj and delta_hh_history)")
-        hmc_params.traj = traj + 1
-        delta_hh_history.append(delta_hh)
-        return
-    elif delta_hh > 10 * hmc_params.temperature:
-        displayln_info(-1, f"WARNING: {fname}: traj={traj} Delta H = {delta_hh} too large.")
-    hmc_params.traj = traj + 1
-    hmc_params.param_arr = param_arr
-    hmc_params.hmc_mass_arr = hmc_mass_arr
-    hmc_params.force_sqr_avg = force_sqr_avg
-    hmc_params.delta_hh_history = delta_hh_history
-

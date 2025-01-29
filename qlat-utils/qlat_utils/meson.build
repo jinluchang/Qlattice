@@ -23,6 +23,7 @@ py_files = files(
   'utils.py',
   'json.py',
   'q_fit_corr.py',
+  'q_fit_corr_2.py',
   'q_hlt_reconstruction.py',
   )
 
