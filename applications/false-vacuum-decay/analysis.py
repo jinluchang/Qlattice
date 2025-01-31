@@ -144,7 +144,9 @@ class Analysis:
         blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["B"][self.data.cutoff:]), self.data.block_size)
         sf2 = self.data.replace_params(sf, ["tfull2", "tTV", "der1", "der2"], [[t_full2-1, t_TV+1, True, False]])[0]
         blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["C"][self.data.cutoff:]), self.data.block_size)
-        return np.divide(blocks_B, np.multiply(blocks_A, blocks_C))
+        #return blocks_C
+        #return np.divide(blocks_A,blocks_B)
+        return blocks_C, np.divide(blocks_B,blocks_A), jk.super_jackknife_combine_blocks([np.divide(blocks_A,blocks_B), blocks_C], lambda x: np.multiply(x[0], x[1]))
 
     # Functions for plotting data ================================
     
@@ -155,21 +157,37 @@ class Analysis:
         if(get_x==None):
             get_x=sort
         sfs.sort(key=sort)
-        expS = []
-        expS_errs = []
-        xs = []
+        expS1 = []
+        expS_errs1 = []
+        xs1 = []
+        expS2 = []
+        expS_errs2 = []
+        xs2 = []
+        expS3 = []
+        expS_errs3 = []
+        xs3 = []
         for sf in sfs:
             x=get_x(sf)
             if(filter_x(x)): continue
-            blocks = self.get_ddR_div_ddR_blocks(sf)
-            dS, err = jk.get_errors_from_blocks(np.mean(blocks), blocks)
-            expS.append(dS)
-            expS_errs.append(err)
-            xs.append(x)
-        plt.errorbar(xs, expS, yerr=expS_errs, label=label)
+            blocks1, blocks2, blocks3 = self.get_ddR_div_ddR_blocks(sf)
+            dS1, err1 = jk.get_errors_from_blocks(np.mean(blocks1), blocks1)
+            dS2, err2 = jk.get_errors_from_blocks(np.mean(blocks2), blocks2)
+            dS3, err3 = jk.get_errors_from_blocks(np.mean(blocks3), blocks3)
+            expS1.append(dS1)
+            expS_errs1.append(err1)
+            xs1.append(x)
+            expS2.append(dS2)
+            expS_errs2.append(err2)
+            xs2.append(x)
+            expS3.append(dS3)
+            expS_errs3.append(err3)
+            xs3.append(x)
+        plt.errorbar(xs1, expS1, yerr=expS_errs1, label=label)
+        plt.errorbar(xs2, expS2, yerr=expS_errs2, label=label)
+        plt.errorbar(xs3, expS3, yerr=expS_errs3, label=label)
         plt.title("exp(-$\\Delta S_{t_\\text{FV}\\to t_{\\text{FV}+1}})$")
         plt.xlabel(param)
-        return xs, expS, expS_errs
+        return xs1, expS1, expS_errs1
     
     def plot_expS(self, delta_action, get_x=float, fact=1.0, label="p", filter_x=lambda x: False):
         expS = []
