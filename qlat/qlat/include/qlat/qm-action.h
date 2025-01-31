@@ -22,8 +22,8 @@ struct QMAction {
   Long t_FV_out;
   Long t_FV_mid;
   double dt;
-  bool derivative1;
-  bool derivative2;
+  bool double_proj;
+  bool insert_H_full;
   //
   qacc void init()
   {
@@ -45,8 +45,8 @@ struct QMAction {
     t_FV_out = 10;
     t_FV_mid = 5;
     dt = 1.0;
-    derivative1 = true;
-    derivative2 = false;
+    double_proj = false;
+    insert_H_full = false;
   }
   //
   qacc QMAction() { init(); }
@@ -55,7 +55,7 @@ struct QMAction {
                 const double L_, const double P_, const double epsilon_, 
                 const Long t_full1_, const Long t_full2_, const Long t_FV_out_, 
                 const Long t_FV_mid_, const Long t_TV_start_, const double dt_,
-                const bool derivative1_, const bool derivative2_)
+                const bool double_proj_, const bool insert_H_full_)
   {
     init();
     initialized = true;
@@ -76,45 +76,50 @@ struct QMAction {
     t_FV_out = t_FV_out_;
     t_FV_mid = t_FV_mid_;
     dt = dt_;
-    derivative1 = derivative1_;
-    derivative2 = derivative2_;
+    double_proj = double_proj_;
+    insert_H_full = insert_H_full_;
   }
 
   inline double V(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
-    // Until t_TV_start has past, use H_TV
     if(t<t_TV_start)
       return V_TV(x);
     // Until t_full1 has past, use H_full
-    else if(t<t_TV_start+t_full1)
+    else if(t<t_TV_start+t_full1-2)
       return V_full(x);
     // Right after t_full1 has past, use H_proj
-    else if(t==t_TV_start+t_full1)
-      return V_full(x) + V_proj(x);
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<t_TV_start+t_full1+t_FV_out+1)
-      return V_FV_out(x);
-    // Until t_FV_mid has past, use H_FV_mid
-    else if(t<t_TV_start+t_full1+t_FV_out+1+t_FV_mid)
-      return V_FV_mid(x);
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<t_TV_start+t_full1+2*t_FV_out+1+t_FV_mid)
-      return V_FV_out(x);
-    // Right after t_FV_out has past, use either H_proj or H_full
-    else if(t==t_TV_start+t_full1+2*t_FV_out+1+t_FV_mid)
-      if(derivative1)
+    else if(t==t_TV_start+t_full1-2)
+      if(double_proj)
         return V_full(x) + V_proj(x);
       else
         return V_full(x);
+    // Right after t_full1 has past, use H_proj
+    else if(t==t_TV_start+t_full1-1)
+      return V_full(x) + V_proj(x);
+    // Until t_FV_out has past, use H_FV_out
+    else if(t<t_TV_start+t_full1+t_FV_out)
+      return V_FV_out(x);
+    // Until t_FV_mid has past, use H_FV_mid
+    else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
+      return V_FV_mid(x);
+    // Until t_FV_out has past, use H_FV_out
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
+      return V_FV_out(x);
+    // Right after t_FV_out has past, use either H_proj or H_full
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
+      if(insert_H_full)
+        return V_full(x);
+      else
+        return V_full(x) + V_proj(x);
     // Then use either H_proj or H_full
-    else if(t==t_TV_start+t_full1+2*t_FV_out+2+t_FV_mid)
-      if(derivative2)
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
+      if(double_proj)
         return V_full(x) + V_proj(x);
       else
         return V_full(x);
     // Until t_full2 has past, use H_full
-    else if(t<t_TV_start+t_full1+2*t_FV_out+3+t_FV_mid+t_full2)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
     // For the rest of the time, use H_TV
     else {
@@ -131,34 +136,40 @@ struct QMAction {
     if(t<t_TV_start)
       return dV_TV(x);
     // Until t_full1 has past, use H_full
-    else if(t<t_TV_start+t_full1)
+    else if(t<t_TV_start+t_full1-2)
       return dV_full(x);
     // Right after t_full1 has past, use H_proj
-    else if(t==t_TV_start+t_full1)
-      return dV_full(x) + dV_proj(x);
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<t_TV_start+t_full1+t_FV_out+1)
-      return dV_FV_out(x);
-    // Until t_FV_mid has past, use H_FV_mid
-    else if(t<t_TV_start+t_full1+t_FV_out+1+t_FV_mid)
-      return dV_FV_mid(x);
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<t_TV_start+t_full1+2*t_FV_out+1+t_FV_mid)
-      return dV_FV_out(x);
-    // Right after t_FV_out has past, use either H_proj or H_full
-    else if(t==t_TV_start+t_full1+2*t_FV_out+1+t_FV_mid)
-      if(derivative1)
+    else if(t==t_TV_start+t_full1-2)
+      if(double_proj)
         return dV_full(x) + dV_proj(x);
       else
         return dV_full(x);
+    // Right after t_full1 has past, use H_proj
+    else if(t==t_TV_start+t_full1-1)
+      return dV_full(x) + dV_proj(x);
+    // Until t_FV_out has past, use H_FV_out
+    else if(t<t_TV_start+t_full1+t_FV_out)
+      return dV_FV_out(x);
+    // Until t_FV_mid has past, use H_FV_mid
+    else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
+      return dV_FV_mid(x);
+    // Until t_FV_out has past, use H_FV_out
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
+      return dV_FV_out(x);
+    // Right after t_FV_out has past, use either H_proj or H_full
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
+      if(insert_H_full)
+        return dV_full(x);
+      else
+        return dV_full(x) + dV_proj(x);
     // Then use either H_proj or H_full
-    else if(t==t_TV_start+t_full1+2*t_FV_out+2+t_FV_mid)
-      if(derivative2)
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
+      if(double_proj)
         return dV_full(x) + dV_proj(x);
       else
         return dV_full(x);
     // Until t_full2 has past, use H_full
-    else if(t<t_TV_start+t_full1+2*t_FV_out+3+t_FV_mid+t_full2)
+    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
     // For the rest of the time, use H_TV
     else {
