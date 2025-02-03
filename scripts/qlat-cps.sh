@@ -8,15 +8,15 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
-    build="$prefix/build"
-    mkdir -p "$build"
-
-    cd "$build"
-
     if [ -z "$(find-library.sh libcps.a)" ] ; then
         echo "qlat-cps: Cannot find 'libcps.a'. Stop."
         exit 1
     fi
+
+    build="$prefix/build"
+    mkdir -p "$build"
+
+    cd "$build"
 
     if [ -n "$QLAT_MPICXX" ] ; then
         export MPICXX="$QLAT_MPICXX"

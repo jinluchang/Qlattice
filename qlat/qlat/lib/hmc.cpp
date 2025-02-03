@@ -181,6 +181,21 @@ double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
 }
 
 double gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
+// number of plaq: 6 * number of site
+// number of rect: 12 * number of site
+/*
+  \ba
+  S_\text{gauge}
+  =&
+  \frac{ \beta }{ 3 }
+  \Big[
+  (1-8 c_1) \sum_P \mathrm{Re}\mathrm{Tr} (1 - U_P)
+  +
+  c_1 \sum_R \mathrm{Re}\mathrm{Tr} (1 - U_R)
+  \Big]
+  \\
+  \ea
+*/
 {
   TIMER("gf_hamilton_node_no_comm");
   const double beta = ga.beta;

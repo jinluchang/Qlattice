@@ -1,3 +1,22 @@
+add-to-colon-list() {
+    local name="$1"
+    local new_value="$2"
+    local value="${!name}"
+    local v
+    if [ -z "$value" ] ; then
+        export "$name"="$new_value"
+    else
+        IFS=':' read -a vs <<< "$value"
+        local value=''
+        for v in "${vs[@]}" ; do
+            if [ "$new_value" != "$v" ] ; then
+                value+=:"$v"
+            fi
+        done
+        export "$name"="$new_value""$value"
+    fi
+}
+
 if [ "$(uname)" == "Darwin" ]; then
     echo "Setting for Mac OS X"
     export q_num_mp_processes=0
@@ -62,8 +81,37 @@ if [ "$(uname)" == "Darwin" ]; then
         export USE_COMPILER=clang
     fi
     export CGPT_EXTRA_LDFLAGS="-undefined dynamic_lookup"
-elif [ ! "$(uname)" == "Linux" ]; then
-    echo "Setting for $(uname) as if it is a Linux"
+else
+    if [ "$(uname)" == "Linux" ]; then
+        echo "Setting for Linux"
+    else
+        echo "Setting for $(uname) as if it is a Linux"
+    fi
+    if [ -n "$LIBRARY_PATH" ] ; then
+        export LIBRARY_PATH="$LIBRARY_PATH":/usr/lib:/lib
+    else
+        export LIBRARY_PATH=/usr/lib:/lib
+    fi
+    if [ -n "$NIX_CFLAGS_COMPILE" ] ; then
+        value="$NIX_CFLAGS_COMPILE"
+        IFS=' ' read -a vs <<< "$value"
+        local value=''
+        for v in "${vs[@]}" ; do
+            if [[ "$v" =~ .*"/include" ]] ; then
+                add-to-colon-list CPATH "$v"
+            fi
+        done
+    fi
+    if [ -n "$NIX_LDFLAGS" ] ; then
+        value="$NIX_LDFLAGS"
+        IFS=' ' read -a vs <<< "$value"
+        local value=''
+        for v in "${vs[@]}" ; do
+            if [[ "$v" =~ "-L/".*"/lib" ]] ; then
+                add-to-colon-list LIBRARY_PATH "${v#-L}"
+            fi
+        done
+    fi
 fi
 
 if [ -n "$NVCC_ARCH" ] ; then

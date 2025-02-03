@@ -13,20 +13,19 @@ def build_corr_from_param_arr(
         t_start_arr=None,
         t_size=None,
         atw_factor_arr=None,
-        is_energy=True,
         ):
     """
     param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
-    es.shape == (n_energies,)
-    cs.shape == (n_energies, n_ops,)
+    es.shape == (n_eigs,)
+    cs.shape == (n_eigs, n_ops,)
     #
     corr_data.shape == (n_ops, n_ops, n_tslice,)
-    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_arr[t] - t_start_arr[ei]))
+    corr_data[i, j, t] = \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_arr[t] - t_start_arr[ei])
     #
     if t_size is not None:
         corr_data[i, j, t] += (
             atw_factor_arr[i] * atw_factor_arr[j] *
-            \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - t_arr[t] - t_start_arr[ei]))
+            \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_size - t_arr[t] - t_start_arr[ei])
             )
     #
     return corr_data
@@ -36,142 +35,144 @@ def build_corr_from_param_arr(
     assert len(param_arr.shape) == 1
     n_params = len(param_arr)
     assert n_params % (n_ops + 1) == 0
-    n_energies = n_params // (n_ops + 1)
+    n_eigs = n_params // (n_ops + 1)
     param_arr = np.array(param_arr, dtype=np.float64)
-    es = param_arr[:n_energies]
-    if is_energy:
-        ets = np.exp(-es)
-    else:
-        ets = es.copy()
-    cs = param_arr[n_energies:].reshape(n_energies, n_ops)
-    if t_start_arr is None:
-        t_start_arr = np.zeros(n_energies, dtype=np.int32)
-    else:
-        t_start_arr = np.array(t_start_arr, dtype=np.int32)
-        assert t_start_arr.shape == (n_energies,)
+    es_ini = param_arr[:n_eigs]
+    es = np.zeros(n_eigs, dtype=np.float64)
+    es[:] = es_ini
+    cs = param_arr[n_eigs:].reshape(n_eigs, n_ops)
+    t_start_arr_ini = t_start_arr
+    t_start_arr = np.zeros(n_eigs, dtype=np.int32)
+    if t_start_arr_ini is not None:
+        t_start_arr[:] = t_start_arr_ini
     # corr_data[op1_idx, op2_idx, t_idx]
     corr_data = (cs[:, :, None, None] * cs[:, None, :, None]
-            * ets[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
+            * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
             ).sum(0)
     if t_size is not None:
-        if atw_factor_arr is None:
-            atw_factor_arr = np.ones(n_ops, dtype=np.complex128)
-        else:
-            atw_factor_arr = np.array(atw_factor_arr, dtype=np.complex128)
+        atw_factor_arr_ini = atw_factor_arr
+        atw_factor_arr = np.ones(n_ops, dtype=np.float64)
+        if atw_factor_arr_ini is not None:
+            atw_factor_arr[:] = atw_factor_arr_ini
         corr_data = corr_data + (
                 cs[:, :, None, None] * cs[:, None, :, None]
                 * atw_factor_arr[:, None, None]
                 * atw_factor_arr[None, :, None]
-                * ets[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
+                * es[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
                 ).sum(0)
     return corr_data
 
 @timer
-def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
+def mk_data_set(
+        *, n_jk=10, n_ops=4, n_eigs=4,
+        t_arr=None,
+        t_size=None,
+        t_start_arr=None, atw_factor_arr=None,
+        sigma=0.1, rng=None,
+        ):
     r"""
     return param_arr, jk_corr_data, corr_data_sigma
     #
-    energies[ei] is float
-    coefs[ei, i] is float
-    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * t)
+    es[ei] is float (eig with index ei)
+    cs[ei, i] is float (coef with eig index ei and state index i)
+    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * es[ei]**t
     jk_corr_data[jk, i, j, t] = corr_data[i, j, t] + corr_data_sigma[i, j, t] * N(0,1)
+    #
+    `t_arr`, `t_size`, `t_start_arr`, `atw_factor_arr`: see `build_corr_from_param_arr`
     """
     if rng is None:
         rng = RngState("mk_data_set-seed")
     #
-    energies = rng.u_rand_arr((n_energies,)) * 2.0 + 0.1
+    es = rng.u_rand_arr((n_eigs,)) * 1.2 - 0.3
+    cs = rng.u_rand_arr((n_eigs, n_ops)) * 2.0 - 1.0
+    param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
     #
-    coefs = rng.u_rand_arr((n_energies, n_ops)) * 2.0 - 1.0
+    if t_arr is None:
+        t_arr = np.arange(4)
     #
-    t_arr = np.arange(t_size)
-    corr_data = (coefs[:, :, None, None] * coefs[:, None, :, None]
-                 * np.exp(-energies[:, None, None, None] * t_arr)
-                 ).sum(0)
-    corr_data_sigma = np.zeros((n_ops, n_ops, t_size,), dtype=np.float64) + sigma
+    n_tslice = len(t_arr)
     #
-    jk_corr_data = np.empty((n_jk, n_ops, n_ops, t_size,), dtype=np.float64)
-    jk_corr_data = corr_data + rng.g_rand_arr((n_jk, n_ops, n_ops, t_size,)) * corr_data_sigma
+    corr_data = build_corr_from_param_arr(
+            param_arr, n_ops=n_ops, t_arr=t_arr,
+            t_start_arr=t_start_arr, t_size=t_size, atw_factor_arr=atw_factor_arr,
+            )
+    shape = (n_ops, n_ops, n_tslice,)
+    corr_data_sigma = np.zeros(shape, dtype=np.float64) + sigma
     #
-    param_arr = np.concatenate([ energies, coefs.ravel(), ], dtype=np.float64)
-    return param_arr, jk_corr_data, corr_data_sigma
+    jk_corr_data = np.empty((n_jk,) + shape, dtype=np.float64)
+    jk_corr_data = corr_data + rng.g_rand_arr((n_jk,) + shape) * corr_data_sigma
+    #
+    return param_arr, jk_corr_data, corr_data_sigma, t_arr
 
 @timer
-def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
+def sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr):
     """
-    Adjust order of states with free energy parameter
+    Adjust order of states with free eig parameter
     """
-    if len(free_energy_idx_arr) == 0:
+    if len(free_eig_idx_arr) == 0:
         return param_arr
-    n_energies = len(param_arr) // (n_ops + 1)
-    assert len(param_arr) == n_energies * (n_ops + 1)
-    e_arr = param_arr[:n_energies].copy()
-    c_arr = param_arr[n_energies:].reshape(n_energies, n_ops).copy()
-    free_e_arr = e_arr[free_energy_idx_arr]
-    free_c_arr = c_arr[free_energy_idx_arr]
-    free_e_arr, free_c_arr = zip(*sorted(zip(free_e_arr, free_c_arr), key=lambda p: p[0]))
-    e_arr[free_energy_idx_arr] = free_e_arr
-    c_arr[free_energy_idx_arr] = free_c_arr
+    n_eigs = len(param_arr) // (n_ops + 1)
+    assert len(param_arr) == n_eigs* (n_ops + 1)
+    e_arr = param_arr[:n_eigs].copy()
+    c_arr = param_arr[n_eigs:].reshape(n_eigs, n_ops).copy()
+    free_e_arr = e_arr[free_eig_idx_arr]
+    free_c_arr = c_arr[free_eig_idx_arr]
+    free_e_arr, free_c_arr = zip(*sorted(zip(free_e_arr, free_c_arr), key=lambda p: -abs(p[0])))
+    e_arr[free_eig_idx_arr] = free_e_arr
+    c_arr[free_eig_idx_arr] = free_c_arr
     new_param_arr = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     return new_param_arr
 
 @timer
-def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None):
+def apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None):
     """
     return new param_arr (does not change original param_arr)
     param_arr has to be np.array
     should work for jk_param_arr as well
     #
-    if energy_minimum_arr is None:
+    if eig_maximum_arr is None:
         return param_arr
     ...
-    new_energies = energy_minimum_arr + abs(energies - energy_minimum_arr)
+    sel = abs(es) > eig_maximum_arr
+    new_es[sel] = eig_maximum_arr[sel]**2 / es[sel]
     ...
     return new_param_arr
     """
-    if energy_minimum_arr is None:
+    if eig_maximum_arr is None:
         return param_arr
-    assert free_energy_idx_arr is not None
+    assert free_eig_idx_arr is not None
     new_param_arr = param_arr.copy()
-    new_param_arr[..., free_energy_idx_arr] = energy_minimum_arr + np.abs(new_param_arr[..., free_energy_idx_arr] - energy_minimum_arr)
+    es = new_param_arr[..., free_eig_idx_arr]
+    new_es = es.copy()
+    max_es = es.copy()
+    max_es[:] = eig_maximum_arr
+    sel = abs(es) > max_es
+    new_es[sel] = max_es[sel]**2 / es[sel]
+    new_param_arr[..., free_eig_idx_arr] = new_es
     return new_param_arr
 
 @timer
 def mk_fcn(
-        corr_data, corr_data_sigma, t_start_arr,
+        corr_data,
+        corr_data_sigma,
+        t_arr,
+        t_start_arr,
         *,
-        t_arr=None,
         t_size=None,
-        is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
-        energy_minimum_arr=None, free_energy_idx_arr=None,
+        atw_factor_arr=None,
+        eig_maximum_arr=None,
+        free_eig_idx_arr=None,
         ):
     r"""
     Shape of inputs and parameters are like:
     `corr_data.shape == (n_ops, n_ops, t_len,)`
     `corr_data_sigma.shape == (n_ops, n_ops, t_len,)`
-    By default
-    `t_arr = jnp.arange(t_len, dtype=jnp.int32)`
-    `t_size = t_arr[-1] + 1` and `t_size == t_len`
-    `t_start_arr` is the start tslice of the corr_data (energy dependent array, t_start_arr for negative_energy ~ -t_size).
-    `atw_t_start_arr` is the start tslice of the ATW (around the world effects) corr_data, counting from the last data tslice (by default atw_t_start_arr = t_start_arr).
-    `atw_factor_arr` is the additional factor needs to be multiplied to the ATW term (be default `atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)`)
+    `t_arr`, `t_size`, `t_start_arr`, `atw_factor_arr`: see `build_corr_from_param_arr`
+    `eig_maximum_arr`, `free_eig_idx_arr`: see `apply_eig_maximum`
+    `corr_data`: see `build_corr_from_param_arr`
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
-    e.g.
-    param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
-    es.shape == (n_energies,)
-    cs.shape == (n_energies, n_ops,)
-    #
-    if energy_minimum_arr is not None:
-        free_energies = energy_minimum_arr + abs(free_energies - energy_minimum_arr)
-    #
-    corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_arr[t] + t_start_arr[ei]))
-    #
-    if is_atw:
-        corr_data[i, j, t] += (
-            atw_factor_arr[i] * atw_factor_arr[j] *
-            \sum_{ei} coefs[ei, i] * coefs[ei, j] * \exp(-energies[ei] * (t_size - 1 - t_arr[t] + atw_t_start_arr[ei]))
-            )
-    #
+    `param_arr`: see `build_corr_from_param_arr`
     """
     import jax
     import jax.numpy as jnp
@@ -183,54 +184,48 @@ def mk_fcn(
     n_ops = shape[0]
     assert shape[1] == n_ops
     t_len = shape[2]
-    if t_arr is None:
-        t_arr = jnp.arange(1, t_len + 1, dtype=jnp.int32)
-    else:
-        assert len(t_arr) == t_len
-        t_arr = jnp.arange(t_arr, dtype=jnp.int32)
-    if t_size is None:
-        t_size = t_arr[-1] + 1
-    n_energies = len(t_start_arr)
+    assert len(t_arr) == t_len
+    t_arr = jnp.array(t_arr, dtype=jnp.int32)
+    n_eigs = len(t_start_arr)
     t_start_arr = jnp.array(t_start_arr, dtype=jnp.int32)
-    if is_atw:
-        if atw_t_start_arr is None:
-            atw_t_start_arr = t_start_arr
-        else:
-            atw_t_start_arr = jnp.array(atw_t_start_arr, dtype=jnp.int32)
-        if atw_factor_arr is None:
-            atw_factor_arr = jnp.ones(n_ops, dtype=jnp.complex128)
-        else:
-            atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.complex128)
-    if energy_minimum_arr is not None:
-        assert free_energy_idx_arr is not None
-        energy_minimum_arr = jnp.array(energy_minimum_arr, dtype=jnp.float64)
-        free_energy_idx_arr = jnp.array(free_energy_idx_arr, dtype=jnp.int64)
-        assert energy_minimum_arr.shape == free_energy_idx_arr.shape
+    if atw_factor_arr is None:
+        atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
+    else:
+        atw_factor_arr = jnp.array(atw_factor_arr, dtype=jnp.float64)
+    if eig_maximum_arr is not None:
+        assert free_eig_idx_arr is not None
+        eig_maximum_arr = jnp.array(eig_maximum_arr, dtype=jnp.float64)
+        free_eig_idx_arr = jnp.array(free_eig_idx_arr, dtype=jnp.int32)
+        assert eig_maximum_arr.shape == free_eig_idx_arr.shape
     corr_avg = jnp.array(corr_data, dtype=jnp.float64)
     corr_sigma = jnp.array(corr_data_sigma, dtype=jnp.float64)
     def fcn_f(param_arr):
         assert len(param_arr.shape) == 1
         n_params = len(param_arr)
         assert n_params % (n_ops + 1) == 0
-        n_energies = n_params // (n_ops + 1)
-        param_arr = jnp.array(param_arr, dtype=jnp.float64)
-        es = param_arr[:n_energies]
-        cs = param_arr[n_energies:].reshape(n_energies, n_ops)
-        if energy_minimum_arr is not None:
-            es = es.at[free_energy_idx_arr].set(
-                    energy_minimum_arr + jnp.abs(es[free_energy_idx_arr] - energy_minimum_arr)
+        n_eigs = n_params // (n_ops + 1)
+        es = param_arr[:n_eigs]
+        cs = param_arr[n_eigs:].reshape(n_eigs, n_ops)
+        if eig_maximum_arr is not None:
+            fes = es[free_eig_idx_arr]
+            es = es.at[free_eig_idx_arr].set(
+                    jnp.where(
+                        abs(fes) > eig_maximum_arr,
+                        eig_maximum_arr**2 / fes,
+                        fes,
+                        )
                     )
         # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
-                * jnp.exp(-es[:, None, None, None] * (t_arr - 1 + t_start_arr[:, None, None, None]))
+                * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
                 ).sum(0)
-        if is_atw:
-            corr = corr + (cs[:, :, None, None] * cs[:, None, :, None]
-                           * atw_factor_arr[:, None, None]
-                           * atw_factor_arr[None, :, None]
-                           * jnp.exp(-es[:, None, None, None]
-                                     * (t_size - t_arr + atw_t_start_arr[:, None, None, None]))
-                           ).sum(0)
+        if t_size is not None:
+            corr = corr + (
+                    cs[:, :, None, None] * cs[:, None, :, None]
+                    * atw_factor_arr[:, None, None]
+                    * atw_factor_arr[None, :, None]
+                    * es[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
+                    ).sum(0)
         corr = (corr - corr_avg) / corr_sigma
         chisqs = corr * corr
         chisq = chisqs.sum()
@@ -239,6 +234,7 @@ def mk_fcn(
     fcn_fg_jit = jax.jit(jax.value_and_grad(fcn_f))
     @timer
     def fcn(param_arr, requires_grad=True):
+        param_arr = jnp.array(param_arr, dtype=jnp.float64)
         if requires_grad:
             chisq, grad = fcn_fg_jit(param_arr)
             return chisq.item(), np.array(grad, dtype=np.float64)
@@ -338,27 +334,27 @@ def mp_initializer():
     import qlat_utils as q
     q.set_verbose_level(-1)
 
-def jk_mini_task_in_fit_energy_amplitude(kwargs):
+def jk_mini_task_in_fit_eig_coef(kwargs):
     fname = get_fname()
     def f(*,
           jk_idx,
           corr_data,
           corr_data_err,
-          t_start_fcn_arr,
-          is_atw,
-          atw_t_start_fcn_arr,
+          t_arr,
+          t_start_arr,
+          t_size,
           atw_factor_arr,
-          energy_minimum_arr,
-          free_energy_idx_arr,
+          eig_maximum_arr,
+          free_eig_idx_arr,
           param_arr_mini,
           n_step_mini_jk,
           r_amp,
-          all_energies_mask,
-          fixed_energies_mask,
-          free_energies_mask,
-          fixed_coef_energy_mask,
+          all_eig_mask,
+          fixed_eig_mask,
+          free_eig_mask,
+          fixed_coef_eig_mask,
           minimize_kwargs,
-          is_sorting_energy_state,
+          is_sorting_eig_state,
           rng_seed,
           verbose_level,
           ):
@@ -366,13 +362,12 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         rng = RngState(rng_seed)
         n_params = len(param_arr_mini)
         n_ops = corr_data.shape[0]
-        fcn = mk_fcn(corr_data, corr_data_err, t_start_fcn_arr,
-                     is_atw=is_atw,
-                     atw_t_start_arr=atw_t_start_fcn_arr,
+        fcn = mk_fcn(corr_data, corr_data_err, t_arr, t_start_arr,
+                     t_size=t_size,
                      atw_factor_arr=atw_factor_arr,
-                     energy_minimum_arr=energy_minimum_arr,
-                     free_energy_idx_arr=free_energy_idx_arr)
-        rand_update_mask = (~all_energies_mask) & (~fixed_coef_energy_mask)
+                     eig_maximum_arr=eig_maximum_arr,
+                     free_eig_idx_arr=free_eig_idx_arr)
+        rand_update_mask = (~all_eig_mask) & (~fixed_coef_eig_mask)
         def display_param_arr(param_arr, mask=None, verbose_level=0):
             fcn_v, grad = fcn(param_arr)
             grad_norm = np.linalg.norm(grad)
@@ -382,12 +377,12 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                 grad_masked = grad
             grad_norm_masked = np.linalg.norm(grad_masked)
             displayln_info(verbose_level, f"{fname}: fcn={fcn_v:.5E} grad_norm={grad_norm:.5E} grad_norm_masked={grad_norm_masked:.5E}")
-            energies = param_arr[all_energies_mask]
-            grad_energies = grad[all_energies_mask]
-            grad_energies_norm = np.linalg.norm(grad_energies)
-            eg_arr = np.stack([ energies, grad_energies, ]).T
-            important_eg_arr = eg_arr[abs(grad_energies) > grad_energies_norm / 10]
-            displayln_info(verbose_level, f"{fname}: energies and grad arr=\n{important_eg_arr}")
+            eigs = param_arr[all_eig_mask]
+            grad_eigs = grad[all_eig_mask]
+            grad_eigs_norm = np.linalg.norm(grad_eigs)
+            eg_arr = np.stack([ eigs, grad_eigs, ]).T
+            important_eg_arr = eg_arr[abs(grad_eigs) > grad_eigs_norm / 10]
+            displayln_info(verbose_level, f"{fname}: eigs and grad arr=\n{important_eg_arr}")
         def rand_update(param_arr):
             param_arr = param_arr.copy()
             param_arr[rand_update_mask] = (
@@ -395,62 +390,59 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
                     + (rng.u_rand_arr(n_params)[rand_update_mask] - 0.5) * r_amp)
             return param_arr
         param_arr = param_arr_mini.copy()
-        display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=0)
-        displayln_info(0, f"{fname}: mini fcn (fixed all energies)")
+        display_param_arr(param_arr, mask=fixed_eig_mask, verbose_level=0)
+        displayln_info(0, f"{fname}: mini fcn (fixed all eigs)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
-                                       fixed_param_mask=all_energies_mask | fixed_coef_energy_mask,
+                                       fixed_param_mask=all_eig_mask | fixed_coef_eig_mask,
                                        minimize_kwargs=minimize_kwargs)
             vl = 1
             if i == n_step_mini_jk - 1:
                 vl = 0
-            display_param_arr(param_arr, mask=all_energies_mask, verbose_level=vl)
-        displayln_info(0, f"{fname}: initial free_energy_arr={param_arr[free_energies_mask].tolist()}")
-        displayln_info(0, f"{fname}: mini fcn (free energies selected by free_energy_idx_arr)")
+            display_param_arr(param_arr, mask=all_eig_mask, verbose_level=vl)
+        displayln_info(0, f"{fname}: initial free_eig_arr={param_arr[free_eig_mask].tolist()}")
+        displayln_info(0, f"{fname}: mini fcn (free eigs selected by free_eig_idx_arr)")
         for i in range(n_step_mini_jk):
             param_arr = rand_update(param_arr)
             param_arr = minimize_scipy(fcn, param_arr=param_arr,
-                                       fixed_param_mask=fixed_energies_mask | fixed_coef_energy_mask,
+                                       fixed_param_mask=fixed_eig_mask | fixed_coef_eig_mask,
                                        minimize_kwargs=minimize_kwargs)
-            if is_sorting_energy_state:
-                param_arr = sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr)
-            param_arr = apply_energy_minimum(param_arr, energy_minimum_arr, free_energy_idx_arr)
-            displayln_info(0, f"{fname}: iter={i} free_energy_arr={param_arr[free_energies_mask].tolist()}")
+            if is_sorting_eig_state:
+                param_arr = sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
+            param_arr = apply_eig_maximum(param_arr, eig_maximum_arr, free_eig_idx_arr)
+            displayln_info(0, f"{fname}: iter={i} free_eig_arr={param_arr[free_eig_mask].tolist()}")
             vl = 1
             if i == n_step_mini_jk - 1:
                 vl = 0
-            display_param_arr(param_arr, mask=fixed_energies_mask, verbose_level=vl)
+            display_param_arr(param_arr, mask=fixed_eig_mask, verbose_level=vl)
         chisq, chisq_grad = fcn(param_arr)
         set_verbose_level(-1)
         return chisq, chisq_grad, param_arr
     return f(**kwargs)
 
 @timer_verbose
-def fit_energy_amplitude(jk_corr_data,
-                         *,
-                         t_start_data=0,
-                         t_start_fit=4,
-                         t_stop_fit=None,
-                         t_start_param=0,
-                         t_start_fcn=0,
-                         is_atw=False,
-                         atw_t_start_fcn=None,
-                         atw_factor=None,
-                         energy_minimum_arr=None,
-                         e_arr=None,
-                         c_arr=None,
-                         free_energy_idx_arr=None,
-                         fixed_coef_energy_idx_arr=None,
-                         n_step_mini_avg=10,
-                         n_step_mini_jk=5,
-                         minimize_kwargs=None,
-                         r_amp=1e-6,
-                         diag_err_scale_factor=1.0,
-                         off_diag_err_scale_factor=1.0,
-                         rng_seed_list=None,
-                         mp_pool=None,
-                         ):
+def fit_eig_coef(jk_corr_data,
+                 *,
+                 t_arr,
+                 e_arr,
+                 t_start_arr=None,
+                 t_size=None,
+                 atw_factor_arr=None,
+                 eig_maximum_arr=None,
+                 c_arr=None,
+                 op_norm_fac_arr=None,
+                 free_eig_idx_arr=None,
+                 fixed_coef_eig_idx_arr=None,
+                 n_step_mini_avg=10,
+                 n_step_mini_jk=5,
+                 minimize_kwargs=None,
+                 r_amp=1e-3,
+                 diag_err_scale_factor=1.0,
+                 off_diag_err_scale_factor=1.0,
+                 rng_seed_list=None,
+                 mp_pool=None,
+                 ):
     r"""
     return res
     #
@@ -459,98 +451,94 @@ def fit_energy_amplitude(jk_corr_data,
     res['jk_param_arr_for_scaled_corr'] = jk_param_arr_for_scaled_corr
     res['jk_param_arr'] = jk_param_arr
     #
-    C^{(jk_idx)}_{i,j}(t + t_start_data) == jk_corr_data[jk_idx, i, j, t]
+    C^{(jk_idx)}_{i,j}(t_arr[t]) == jk_corr_data[jk_idx, i, j, t]
     #
-    jk_corr_data.shape == (n_jk, n_ops, n_ops, t_size,)
+    jk_corr_data.shape == (n_jk, n_ops, n_ops, n_tslice,)
     jk_corr_data.dtype == np.float64
     #
-    free_energy_arr = e_arr[free_energy_idx_arr]
-    # by default, all energy are fixed
+    free_eig_arr = e_arr[free_eig_idx_arr]
+    # by default, all eigs are fixed
     #
-    e_arr.shape == (n_energies,)
-    c_arr.shape == (n_energies, n_ops,)
+    e_arr.shape == (n_eigs,)
+    c_arr.shape == (n_eigs, n_ops,)
     #
-    C^{(jk_idx)}_{i,j}(t) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * exp(- e_arr[n] * (t + t_start_param_arr[n]))
+    C^{(jk_idx)}_{i,j}(t_arr[t]) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * e_arr[n]**(t_arr[t] - t_start_arr[n])
     #
     jk_param_arr_mini.shape == (n_jk, n_params)
     param_arr == np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     #
     diag_err_scale_factor should be 1.0
-    off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized
+    off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized.
     #
-    fit data from t_start to t_stop as jk_corr_data = jk_corr_data[:, :, :, t_start:t_stop].copy() where
-    t_start = t_start_fit - t_start_data
-    t_stop = t_stop_fit - t_start_data
-    #
-    `energy_minimum_arr` should be of same shape as `free_energy_idx_arr` will constrain all the free energies to be larger than this energy (None means no constraint)
+    `eig_maximum_arr` should be of same shape as `free_eig_idx_arr` will constrain all the free eigs to be smaller than this eig value (None means no constraint)
     """
     fname = get_fname()
     #
     verbose_level = get_verbose_level()
     #
     assert len(jk_corr_data.shape) == 4
-    #
-    if t_stop_fit is None:
-        t_stop_fit = t_start_data + jk_corr_data.shape[3]
-    #
-    t_start = t_start_fit - t_start_data
-    t_stop = t_stop_fit - t_start_data
-    #
-    jk_corr_data = jk_corr_data[:, :, :, t_start:t_stop].copy()
-    #
-    n_jk = len(jk_corr_data)
-    #
-    n_ops = jk_corr_data.shape[1]
-    assert n_ops == jk_corr_data.shape[2]
-    #
+    t_arr = np.array(t_arr, dtype=np.int32)
     e_arr = np.array(e_arr, dtype=np.float64)
+    assert len(t_arr.shape) == 1
+    assert len(e_arr.shape) == 1
     #
-    n_energies = len(e_arr)
-    assert e_arr.shape == (n_energies,)
+    jk_corr_data = jk_corr_data.copy()
     #
-    if free_energy_idx_arr is None:
-        free_energy_idx_arr = np.array([], dtype=np.int64)
+    n_jk = jk_corr_data.shape[0]
+    n_ops = jk_corr_data.shape[1]
+    n_tslice = t_arr.shape[0]
+    n_eigs = e_arr.shape[0]
+    #
+    assert jk_corr_data.shape == (n_jk, n_ops, n_ops, n_tslice,)
+    assert t_arr.shape == (n_tslice,)
+    assert e_arr.shape == (n_eigs,)
+    #
+    if free_eig_idx_arr is None:
+        free_eig_idx_arr = np.array([], dtype=np.int32)
     else:
-        free_energy_idx_arr = np.array(free_energy_idx_arr, dtype=np.int64)
+        free_eig_idx_arr = np.array(free_eig_idx_arr, dtype=np.int32)
     #
-    if energy_minimum_arr is not None:
-        energy_minimum_arr = np.array(energy_minimum_arr, dtype=np.float64)
-        assert energy_minimum_arr.shape == free_energy_idx_arr.shape
+    if eig_maximum_arr is not None:
+        eig_maximum_arr = np.array(eig_maximum_arr, dtype=np.float64)
+        assert eig_maximum_arr.shape == free_eig_idx_arr.shape
     #
-    if fixed_coef_energy_idx_arr is None:
-        fixed_coef_energy_idx_arr = np.array([], dtype=np.int64)
+    if fixed_coef_eig_idx_arr is None:
+        fixed_coef_eig_idx_arr = np.array([], dtype=np.int32)
     else:
-        fixed_coef_energy_idx_arr = np.array(fixed_coef_energy_idx_arr, dtype=np.int64)
+        fixed_coef_eig_idx_arr = np.array(fixed_coef_eig_idx_arr, dtype=np.int32)
     #
-    n_free_energies = len(free_energy_idx_arr)
-    n_fixed_energies = n_energies - n_free_energies
+    n_free_eigs = free_eig_idx_arr.shape[0]
+    n_fixed_eigs = n_eigs - n_free_eigs
+    n_fixed_coef_eigs = fixed_coef_eig_idx_arr.shape[0]
+    #
+    assert free_eig_idx_arr.shape == (n_free_eigs,)
+    assert fixed_coef_eig_idx_arr.shape == (n_fixed_coef_eigs,)
     #
     if c_arr is None:
-        c_arr = np.zeros((n_energies, n_ops,), dtype=np.float64)
+        c_arr = np.zeros((n_eigs, n_ops,), dtype=np.float64)
     else:
-        assert c_arr.shape == (n_energies, n_ops,)
+        assert c_arr.shape == (n_eigs, n_ops,)
     #
-    t_start_param_arr = np.zeros(n_energies, dtype=np.float64)
-    t_start_param_arr[:] = t_start_param
+    t_start_arr_ini = t_start_arr
+    t_start_arr = np.zeros(n_eigs, dtype=np.int32)
+    if t_start_arr_ini is not None:
+        t_start_arr[:] = t_start_arr_ini
     #
-    t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
-    t_start_fcn_arr[:] = t_start_fcn
-    #
-    atw_t_start_fcn_arr = np.zeros(n_energies, dtype=np.float64)
-    if atw_t_start_fcn is not None:
-        atw_t_start_fcn_arr[:] = atw_t_start_fcn
-    else:
-        atw_t_start_fcn_arr[:] = t_start_fcn_arr
-    atw_factor_arr = np.ones(n_ops, dtype=np.complex128)
-    if atw_factor is not None:
-        atw_factor_arr[:] = atw_factor
+    atw_factor_arr_ini = atw_factor_arr
+    atw_factor_arr = np.ones(n_ops, dtype=np.float64)
+    if atw_factor_arr_ini is not None:
+        atw_factor_arr[:] = atw_factor_arr_ini
     #
     op_idx_arr = np.arange(n_ops)
-    op_norm_fac = 1 / np.sqrt(jk_corr_data[0, op_idx_arr, op_idx_arr, 0])
-    jk_corr_data = op_norm_fac[:, None, None] * op_norm_fac[None, :, None] * jk_corr_data
+    op_norm_fac_arr_ini = op_norm_fac_arr
+    op_norm_fac_arr = 1 / np.sqrt(abs(jk_corr_data[0, op_idx_arr, op_idx_arr, 0]))
+    if op_norm_fac_arr_ini is not None:
+        op_norm_fac_arr[:] = op_norm_fac_arr_ini
+    #
+    jk_corr_data = op_norm_fac_arr[:, None, None] * op_norm_fac_arr[None, :, None] * jk_corr_data
     #
     if rng_seed_list is None:
-        rng_seed_list = [ "fit_energy_amplitude-seed-param", ]
+        rng_seed_list = [ "fit_eig_coef-seed-param", ]
     elif isinstance(rng_seed_list, str):
         rng_seed_list = [ rng_seed_list, ]
     else:
@@ -576,10 +564,10 @@ def fit_energy_amplitude(jk_corr_data,
     #
     corr_data, corr_data_err = g_jk_avg_err(jk_corr_data)
     #
-    isfinite_sel = np.isfinite(corr_data)
-    jk_corr_data[:, ~isfinite_sel] = 0.0
-    corr_data[~isfinite_sel] = 0.0
-    corr_data_err[~isfinite_sel] = np.inf
+    is_finite_sel = np.isfinite(corr_data)
+    jk_corr_data[:, ~is_finite_sel] = 0.0
+    corr_data[~is_finite_sel] = 0.0
+    corr_data_err[~is_finite_sel] = np.inf
     #
     is_zero_err_sel = corr_data_err == 0.0
     corr_data_err[is_zero_err_sel] = 1.0
@@ -590,55 +578,55 @@ def fit_energy_amplitude(jk_corr_data,
     corr_data_err[op_op_diag_sel] *= diag_err_scale_factor
     corr_data_err[~op_op_diag_sel] *= off_diag_err_scale_factor
     #
-    c_arr = c_arr * op_norm_fac * np.exp(-e_arr[:, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[:, None]) / 2)
+    c_arr = c_arr * op_norm_fac_arr
     #
     param_arr_initial = np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
     chisq_initial = np.inf
     #
     n_params = len(param_arr_initial)
     #
-    all_energies_mask = np.arange(n_params) < n_energies
-    fixed_energies_mask = all_energies_mask.copy()
-    fixed_energies_mask[free_energy_idx_arr] = False
+    all_eig_mask = np.arange(n_params) < n_eigs
+    fixed_eig_mask = all_eig_mask.copy()
+    fixed_eig_mask[free_eig_idx_arr] = False
     #
-    c_mask = np.full((n_energies, n_ops,), False, dtype=bool)
-    c_mask[fixed_coef_energy_idx_arr] = True
-    fixed_coef_energy_mask = np.full(n_params, False, dtype=bool)
-    fixed_coef_energy_mask[n_energies:] = c_mask.ravel()
-    free_energies_mask = (~fixed_energies_mask) & all_energies_mask
+    c_mask = np.full((n_eigs, n_ops,), False, dtype=bool)
+    c_mask[fixed_coef_eig_idx_arr] = True
+    fixed_coef_eig_mask = np.full(n_params, False, dtype=bool)
+    fixed_coef_eig_mask[n_eigs:] = c_mask.ravel()
+    free_eig_mask = (~fixed_eig_mask) & all_eig_mask
     #
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
     #
-    def mk_kwargs(jk_idx, is_sorting_energy_state, rng_seed, verbose_level):
+    def mk_kwargs(jk_idx, is_sorting_eig_state, rng_seed, verbose_level):
         kwargs = dict(
                 jk_idx=jk_idx,
                 corr_data=jk_corr_data[jk_idx],
                 corr_data_err=corr_data_err,
-                t_start_fcn_arr=t_start_fcn_arr,
-                is_atw=is_atw,
-                atw_t_start_fcn_arr=atw_t_start_fcn_arr,
+                t_arr=t_arr,
+                t_start_arr=t_start_arr,
+                t_size=t_size,
                 atw_factor_arr=atw_factor_arr,
-                energy_minimum_arr=energy_minimum_arr,
-                free_energy_idx_arr=free_energy_idx_arr,
+                eig_maximum_arr=eig_maximum_arr,
+                free_eig_idx_arr=free_eig_idx_arr,
                 param_arr_mini=param_arr_mini,
                 n_step_mini_jk=n_step_mini_jk,
                 r_amp=r_amp,
-                all_energies_mask=all_energies_mask,
-                fixed_energies_mask=fixed_energies_mask,
-                free_energies_mask=free_energies_mask,
-                fixed_coef_energy_mask=fixed_coef_energy_mask,
+                all_eig_mask=all_eig_mask,
+                fixed_eig_mask=fixed_eig_mask,
+                free_eig_mask=free_eig_mask,
+                fixed_coef_eig_mask=fixed_coef_eig_mask,
                 minimize_kwargs=minimize_kwargs,
-                is_sorting_energy_state=is_sorting_energy_state,
+                is_sorting_eig_state=is_sorting_eig_state,
                 rng_seed=rng_seed,
                 verbose_level=verbose_level,
                 )
         return kwargs
     #
-    displayln_info(0, f"{fname}: initial free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
+    displayln_info(0, f"{fname}: initial free_eig_arr={param_arr_mini[free_eig_mask].tolist()}")
     displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
     v_list = []
-    for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
+    for idx, v in enumerate(mp_map(jk_mini_task_in_fit_eig_coef,
                                    [ mk_kwargs(0,
                                        True,
                                        rng_seed,
@@ -648,9 +636,9 @@ def fit_energy_amplitude(jk_corr_data,
         set_verbose_level(verbose_level)
         v_list.append(v)
         chisq, chisq_grad, param_arr = v
-        displayln_info(0, f"{fname}: map: rs_idx={idx} ; chisq={chisq} ; free_energy_arr={param_arr[free_energies_mask].tolist()} ; rng_seed='{rng_seed_list[idx]}'")
-        if energy_minimum_arr is not None:
-            displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr[free_energy_idx_arr]-energy_minimum_arr).tolist()}")
+        displayln_info(0, f"{fname}: map: rs_idx={idx} ; chisq={chisq} ; free_eig_arr={param_arr[free_eig_mask].tolist()} ; rng_seed='{rng_seed_list[idx]}'")
+        if eig_maximum_arr is not None:
+            displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr[free_eig_idx_arr]/eig_maximum_arr).tolist()}")
     #
     rng_seed_mini = rng_seed_list[0]
     for idx, v in enumerate(v_list):
@@ -661,15 +649,15 @@ def fit_energy_amplitude(jk_corr_data,
             param_arr_mini = param_arr
     #
     displayln_info(0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini='{rng_seed_mini}'")
-    displayln_info(0, f"{fname}: avg mini free_energy_arr={param_arr_mini[free_energies_mask].tolist()}")
-    if energy_minimum_arr is not None:
-        displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr_mini[free_energy_idx_arr]-energy_minimum_arr).tolist()}")
+    displayln_info(0, f"{fname}: avg mini free_eig_arr={param_arr_mini[free_eig_mask].tolist()}")
+    if eig_maximum_arr is not None:
+        displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_eig_arr-eig_maximum_arr={(param_arr_mini[free_eig_idx_arr]-eig_maximum_arr).tolist()}")
     #
     displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
     jk_chisq_grad = []
     jk_param_arr = []
-    for idx, v in enumerate(mp_map(jk_mini_task_in_fit_energy_amplitude,
+    for idx, v in enumerate(mp_map(jk_mini_task_in_fit_eig_coef,
                                    [ mk_kwargs(jk_idx,
                                        False,
                                        f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}",
@@ -682,9 +670,9 @@ def fit_energy_amplitude(jk_corr_data,
         jk_chisq_grad.append(chisq_grad)
         jk_param_arr.append(param_arr)
         if n_step_mini_jk != 0:
-            displayln_info(0, f"{fname}: map: jk_idx={idx} ; chisq={chisq} ; free_energy_arr={param_arr[free_energies_mask].tolist()}")
-            if energy_minimum_arr is not None:
-                displayln_info(0, f"{fname}: map: jk_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr[free_energy_idx_arr]-energy_minimum_arr).tolist()}")
+            displayln_info(0, f"{fname}: map: jk_idx={idx} ; chisq={chisq} ; free_eig_arr={param_arr[free_eig_mask].tolist()}")
+            if eig_maximum_arr is not None:
+                displayln_info(0, f"{fname}: map: jk_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr[free_eig_idx_arr]/eig_maximum_arr).tolist()}")
     if is_close_pool:
         mp_pool.close()
     #
@@ -693,11 +681,11 @@ def fit_energy_amplitude(jk_corr_data,
     jk_param_arr = np.array(jk_param_arr, dtype=np.float64)
     #
     jk_param_arr_for_scaled_corr = jk_param_arr.copy()
-    jk_e_arr = jk_param_arr[:, :n_energies].copy()
-    jk_c_arr = jk_param_arr[:, n_energies:].reshape(n_jk, n_energies, n_ops,).copy()
-    jk_c_arr = jk_c_arr / op_norm_fac / np.exp(-jk_e_arr[:, :, None] * (t_start_fit - (t_start_fcn_arr - t_start_param_arr)[None, :, None]) / 2)
-    jk_param_arr[:, :n_energies] = jk_e_arr
-    jk_param_arr[:, n_energies:] = jk_c_arr.reshape(n_jk, n_energies * n_ops)
+    jk_e_arr = jk_param_arr[:, :n_eigs].copy()
+    jk_c_arr = jk_param_arr[:, n_eigs:].reshape(n_jk, n_eigs, n_ops,).copy()
+    jk_c_arr = jk_c_arr / op_norm_fac_arr
+    jk_param_arr[:, :n_eigs] = jk_e_arr
+    jk_param_arr[:, n_eigs:] = jk_c_arr.reshape(n_jk, n_eigs* n_ops)
     #
     res = dict()
     res['jk_chisq'] = jk_chisq

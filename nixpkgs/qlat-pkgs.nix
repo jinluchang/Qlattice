@@ -84,7 +84,7 @@ let
     ucx-dev = pkgs.buildEnv {
       name = "ucx-dev";
       paths = [ ucx ];
-      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     mpi = (pkgs.mpi.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++ (
@@ -261,12 +261,12 @@ let
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${qlat-name}";
       paths = qlat-tests-pkgs;
-      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     qlat-env = pkgs.buildEnv {
       name = "qlat-env${qlat-name}";
       paths = qlat-pkgs;
-      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${qlat-name}";
@@ -276,14 +276,20 @@ let
     };
     qlat-fhs = pkgs.buildFHSEnv {
       name = "qlat-fhs${qlat-name}";
-      targetPkgs = pkgs: [ qlat-env ];
+      targetPkgs = pkgs: [
+        qlat-env
+        pkgs.pkg-config
+      ] ++ qlat-cc;
+      multiPkgs = pkgs: [
+        qlat-env
+        pkgs.pkg-config
+      ] ++ qlat-cc;
       runScript = "bash";
-      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
       profile=''
-        PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
+        # PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
     };
-    #
     qlat-jhub-py = python3.withPackages (ps: with ps; [
       ipykernel
       pip
@@ -374,7 +380,7 @@ let
         zip
         unzip
       ] ++ qlat-cc ++ qlat-dep-pkgs ++ qlat-dep-pkgs-extra;
-      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${qlat-name}";
@@ -384,11 +390,18 @@ let
     };
     qlat-jhub-fhs = pkgs.buildFHSEnv {
       name = "qlat-jhub-fhs${qlat-name}";
-      targetPkgs = pkgs: [ qlat-jhub-env ];
+      targetPkgs = pkgs: [
+        qlat-jhub-env
+        pkgs.pkg-config
+      ] ++ qlat-cc;
+      multiPkgs = pkgs: [
+        qlat-jhub-env
+        pkgs.pkg-config
+      ] ++ qlat-cc;
       runScript = "bash";
-      extraOutputsToInstall = [ "bin" "dev" "out" "doc" ];
+      extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
       profile=''
-        PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
+        # PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
     };
     #
