@@ -22,6 +22,7 @@ struct QMAction {
   Long t_FV_out;
   Long t_FV_mid;
   double dt;
+  double dt_proj;
   bool double_proj;
   bool insert_H_full;
   //
@@ -45,6 +46,7 @@ struct QMAction {
     t_FV_out = 10;
     t_FV_mid = 5;
     dt = 1.0;
+    dt_proj = 1.0;
     double_proj = false;
     insert_H_full = false;
   }
@@ -76,6 +78,10 @@ struct QMAction {
     t_FV_out = t_FV_out_;
     t_FV_mid = t_FV_mid_;
     dt = dt_;
+    if(double_proj_)
+        dt_proj = 2*dt;
+    else
+        dt_proj = dt;
     double_proj = double_proj_;
     insert_H_full = insert_H_full_;
   }
@@ -224,13 +230,13 @@ struct QMAction {
   
   inline double V_proj(const double x)
   {
-    return -P*log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
+    return -P*log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt_proj)) / dt_proj) / dt_proj;
   }
   
   inline double dV_proj(const double x)
   {
     double Vbar = V_FV_out(x) - V_full(x);
-    return -P*((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
+    return -P*((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt_proj))/(1-exp(-(Vbar + epsilon)*dt_proj));
   }
 
   inline double V_FV_mid(const double x)
