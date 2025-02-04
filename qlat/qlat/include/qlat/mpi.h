@@ -323,7 +323,7 @@ void display_qlat_banner();
 
 void initialize_qlat_comm();
 
-Long& mpi_level_count();
+API Long& mpi_level_count();
 
 void begin_comm(const MPI_Comm comm, const Coordinate& size_node);
 
@@ -336,6 +336,16 @@ void begin(
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>());
 
 void end(const bool is_preserving_cache = false);
+
+inline void begin_once(const int id_node, const Coordinate& size_node,
+                       const int color = 0)
+// Only actually call begin if we haven't call it before.
+// Can be called any times.
+{
+  if (mpi_level_count() == 0) {
+    begin(id_node, size_node, color);
+  }
+}
 
 // ----------------------------------
 
