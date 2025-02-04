@@ -350,7 +350,7 @@ def main():
     dt = 0.2
     # The number of trajectories to calculate
     n_traj = 50000
-    double_proj = True
+    double_proj = False
     insert_H_full = False
     #
     version = "10-0"
