@@ -714,6 +714,11 @@ def fit_eig_coef(jk_corr_data,
     res['jk_chisq_grad'] = jk_chisq_grad
     res['jk_param_arr_for_scaled_corr'] = jk_param_arr_for_scaled_corr
     res['jk_param_arr'] = jk_param_arr
+    res['n_ops'] = n_ops
+    res['t_arr'] = t_arr
+    res['t_start_arr'] = t_start_arr
+    res['t_size'] = t_size
+    res['atw_factor_arr'] = atw_factor_arr
     #
     displayln_info(0, f"{fname} finished")
     return res
