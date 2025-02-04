@@ -673,7 +673,7 @@ def fit_eig_coef(jk_corr_data,
     displayln_info(0, f"{fname}: chisq_mini={chisq_mini} ; rng_seed_mini='{rng_seed_mini}'")
     displayln_info(0, f"{fname}: avg mini free_eig_arr={param_arr_mini[free_eig_mask].tolist()}")
     if eig_maximum_arr is not None:
-        displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_eig_arr-eig_maximum_arr={(param_arr_mini[free_eig_idx_arr]-eig_maximum_arr).tolist()}")
+        displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr_mini[free_eig_idx_arr]/eig_maximum_arr).tolist()}")
     #
     displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
