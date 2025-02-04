@@ -19,6 +19,8 @@ def build_corr_from_param_arr(
     es.shape == (n_eigs,)
     cs.shape == (n_eigs, n_ops,)
     #
+    Also work if `jk_param_arr` is input in place of `param_arr`.
+    #
     corr_data.shape == (n_ops, n_ops, n_tslice,)
     corr_data[i, j, t] = \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_arr[t] - t_start_arr[ei])
     #
@@ -30,10 +32,28 @@ def build_corr_from_param_arr(
     #
     return corr_data
     """
+    if len(param_arr.shape) == 2:
+        jk_param_arr = param_arr
+        n_jk = jk_param_arr.shape[0]
+        n_params = jk_param_arr.shape[1]
+        assert n_params % (n_ops + 1) == 0
+        n_eigs = n_params // (n_ops + 1)
+        n_tslice = t_arr.shape[0]
+        assert jk_param_arr.shape == (n_jk, n_params,)
+        assert t_arr.shape == (n_tslice,)
+        jk_corr_data = np.zeros((n_jk, n_ops, n_ops, n_tslice,), dtype=np.float64)
+        for jk_idx, param_arr in enumerate(jk_param_arr):
+            jk_corr_data[jk_idx] = build_corr_from_param_arr(
+                    param_arr, n_ops=n_ops, t_arr=t_arr,
+                    t_start_arr=t_start_arr,
+                    t_size=t_size,
+                    atw_factor_arr=atw_factor_arr,
+                    )
+        return jk_corr_data
     assert len(t_arr.shape) == 1
     assert len(t_arr) >= 1
     assert len(param_arr.shape) == 1
-    n_params = len(param_arr)
+    n_params = param_arr.shape[0]
     assert n_params % (n_ops + 1) == 0
     n_eigs = n_params // (n_ops + 1)
     param_arr = np.array(param_arr, dtype=np.float64)
@@ -46,7 +66,8 @@ def build_corr_from_param_arr(
     if t_start_arr_ini is not None:
         t_start_arr[:] = t_start_arr_ini
     # corr_data[op1_idx, op2_idx, t_idx]
-    corr_data = (cs[:, :, None, None] * cs[:, None, :, None]
+    corr_data = (
+            cs[:, :, None, None] * cs[:, None, :, None]
             * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
             ).sum(0)
     if t_size is not None:
@@ -90,7 +111,8 @@ def mk_data_set(
     if t_arr is None:
         t_arr = np.arange(4)
     #
-    n_tslice = len(t_arr)
+    n_tslice = t_arr.shape[0]
+    assert t_arr.shape == (n_tslice,)
     #
     corr_data = build_corr_from_param_arr(
             param_arr, n_ops=n_ops, t_arr=t_arr,
