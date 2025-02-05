@@ -8,12 +8,14 @@ from .data import *
 def build_corr_from_param_arr(
         param_arr,
         *,
-        n_ops,
         t_arr,
+        n_ops,
+        n_eigs=None,
         t_start_arr=None,
         t_size=None,
         atw_factor_arr=None,
-        is_t_start_sign_corr=True,
+        extra_state_sign_arr=None,
+        extra_state_sign_t_start_arr=None,
         ):
     """
     param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
@@ -22,19 +24,22 @@ def build_corr_from_param_arr(
     #
     Also work if `jk_param_arr` is input in place of `param_arr`.
     #
-    t_start_sign_corr[ei] = (es[ei] / abs(es[ei]))**(t_start_arr[ei] % 2)
+    extra_state_sign_arr[ei] = extra_state_sign_arr[ei]
+    state_sign_arr[ei] = (extra_state_sign_arr[ei]
+                         * (es[ei] / abs(es[ei]))**((t_start_arr[ei] + extra_state_sign_t_start_arr) % 2)
+                         )
     #
     corr_data.shape == (n_ops, n_ops, n_tslice,)
     corr_data[i, j, t] = (
         \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_arr[t] - t_start_arr[ei])
-        * t_start_sign_corr[ei]
+        * state_sign_arr[ei]
         )
     #
     if t_size is not None:
         corr_data[i, j, t] += (
             atw_factor_arr[i] * atw_factor_arr[j] *
             \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_size - t_arr[t] - t_start_arr[ei])
-            * t_start_sign_corr[ei]
+            * state_sign_arr[ei]
             )
     #
     return corr_data
@@ -43,8 +48,11 @@ def build_corr_from_param_arr(
         jk_param_arr = param_arr
         n_jk = jk_param_arr.shape[0]
         n_params = jk_param_arr.shape[1]
-        assert n_params % (n_ops + 1) == 0
-        n_eigs = n_params // (n_ops + 1)
+        if n_eigs is None:
+            assert n_params % (n_ops + 1) == 0
+            n_eigs = n_params // (n_ops + 1)
+        else:
+            assert n_params == n_eigs + n_eigs * n_ops
         n_tslice = t_arr.shape[0]
         assert jk_param_arr.shape == (n_jk, n_params,)
         assert t_arr.shape == (n_tslice,)
@@ -53,9 +61,10 @@ def build_corr_from_param_arr(
             jk_corr_data[jk_idx] = build_corr_from_param_arr(
                     param_arr, n_ops=n_ops, t_arr=t_arr,
                     t_start_arr=t_start_arr,
-                    is_t_start_sign_corr=is_t_start_sign_corr,
                     t_size=t_size,
                     atw_factor_arr=atw_factor_arr,
+                    extra_state_sign_arr=extra_state_sign_arr,
+                    extra_state_sign_t_start_arr=extra_state_sign_t_start_arr,
                     )
         return jk_corr_data
     assert len(t_arr.shape) == 1
@@ -73,15 +82,20 @@ def build_corr_from_param_arr(
     t_start_arr = np.zeros(n_eigs, dtype=np.int32)
     if t_start_arr_ini is not None:
         t_start_arr[:] = t_start_arr_ini
+    extra_state_sign_arr_ini = extra_state_sign_arr
+    extra_state_sign_arr = np.ones(n_eigs, dtype=np.float64)
+    if extra_state_sign_arr_ini is not None:
+        extra_state_sign_arr[:] = extra_state_sign_arr_ini
+    extra_state_sign_t_start_arr_ini = extra_state_sign_t_start_arr
+    extra_state_sign_t_start_arr = np.zeros(n_eigs, dtype=np.int32)
+    if extra_state_sign_t_start_arr_ini is not None:
+        extra_state_sign_t_start_arr[:] = extra_state_sign_t_start_arr_ini
+    state_sign_arr = extra_state_sign_arr * (es / abs(es))**((t_start_arr + extra_state_sign_t_start_arr) % 2)
     # corr_data[op1_idx, op2_idx, t_idx]
-    if is_t_start_sign_corr:
-        t_start_sign_corr = (es / abs(es))**(t_start_arr % 2)
-    else:
-        t_start_sign_corr = np.ones(len(es), dtype=np.float64)
     corr_data = (
             cs[:, :, None, None] * cs[:, None, :, None]
             * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
-            * t_start_sign_corr[:, None, None, None]
+            * state_sign_arr[:, None, None, None]
             ).sum(0)
     if t_size is not None:
         atw_factor_arr_ini = atw_factor_arr
@@ -93,7 +107,7 @@ def build_corr_from_param_arr(
                 * atw_factor_arr[:, None, None]
                 * atw_factor_arr[None, :, None]
                 * es[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
-                * t_start_sign_corr[:, None, None, None]
+                * state_sign_arr[:, None, None, None]
                 ).sum(0)
     return corr_data
 
@@ -102,7 +116,8 @@ def mk_data_set(
         *, n_jk=10, n_ops=4, n_eigs=4,
         t_arr=None,
         t_start_arr=None,
-        is_t_start_sign_corr=True,
+        extra_state_sign_arr=None,
+        extra_state_sign_t_start_arr=None,
         t_size=None,
         atw_factor_arr=None,
         sigma=0.1,
@@ -134,7 +149,8 @@ def mk_data_set(
     corr_data = build_corr_from_param_arr(
             param_arr, n_ops=n_ops, t_arr=t_arr,
             t_start_arr=t_start_arr,
-            is_t_start_sign_corr=is_t_start_sign_corr,
+            extra_state_sign_arr=extra_state_sign_arr,
+            extra_state_sign_t_start_arr=extra_state_sign_t_start_arr,
             t_size=t_size,
             atw_factor_arr=atw_factor_arr,
             )
@@ -200,7 +216,8 @@ def mk_fcn(
         t_arr,
         t_start_arr,
         *,
-        is_t_start_sign_corr=True,
+        extra_state_sign_arr=None,
+        extra_state_sign_t_start_arr=None,
         t_size=None,
         atw_factor_arr=None,
         eig_maximum_arr=None,
@@ -227,10 +244,18 @@ def mk_fcn(
     n_ops = shape[0]
     assert shape[1] == n_ops
     t_len = shape[2]
-    assert len(t_arr) == t_len
     t_arr = jnp.array(t_arr, dtype=jnp.int32)
-    n_eigs = len(t_start_arr)
+    assert len(t_arr) == t_len
     t_start_arr = jnp.array(t_start_arr, dtype=jnp.int32)
+    n_eigs = len(t_start_arr)
+    extra_state_sign_arr_ini = extra_state_sign_arr
+    extra_state_sign_arr = jnp.ones(n_eigs, dtype=jnp.float64)
+    if extra_state_sign_arr_ini is not None:
+        extra_state_sign_arr[:] = extra_state_sign_arr_ini
+    extra_state_sign_t_start_arr_ini = extra_state_sign_t_start_arr
+    extra_state_sign_t_start_arr = jnp.zeros(n_eigs, dtype=jnp.int32)
+    if extra_state_sign_t_start_arr_ini is not None:
+        extra_state_sign_t_start_arr[:] = extra_state_sign_t_start_arr_ini
     if atw_factor_arr is None:
         atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
     else:
@@ -258,14 +283,12 @@ def mk_fcn(
                         fes,
                         )
                     )
+
+        state_sign_arr = extra_state_sign_arr * (es / abs(es))**((t_start_arr + extra_state_sign_t_start_arr) % 2)
         # corr[op1_idx, op2_idx, t_idx]
-        if is_t_start_sign_corr:
-            t_start_sign_corr = (es / abs(es))**(t_start_arr % 2)
-        else:
-            t_start_sign_corr = jnp.ones(len(es), dtype=jnp.float64)
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
                 * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
-                * t_start_sign_corr[:, None, None, None]
+                * state_sign_arr[:, None, None, None]
                 ).sum(0)
         if t_size is not None:
             corr = corr + (
@@ -273,7 +296,7 @@ def mk_fcn(
                     * atw_factor_arr[:, None, None]
                     * atw_factor_arr[None, :, None]
                     * es[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
-                    * t_start_sign_corr[:, None, None, None]
+                    * state_sign_arr[:, None, None, None]
                     ).sum(0)
         corr = (corr - corr_avg) / corr_sigma
         chisqs = corr * corr
@@ -391,7 +414,8 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
           corr_data_err,
           t_arr,
           t_start_arr,
-          is_t_start_sign_corr,
+          extra_state_sign_arr,
+          extra_state_sign_t_start_arr,
           t_size,
           atw_factor_arr,
           eig_maximum_arr,
@@ -413,7 +437,8 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
         n_params = len(param_arr_mini)
         n_ops = corr_data.shape[0]
         fcn = mk_fcn(corr_data, corr_data_err, t_arr, t_start_arr,
-                     is_t_start_sign_corr=is_t_start_sign_corr,
+                     extra_state_sign_arr=extra_state_sign_arr,
+                     extra_state_sign_t_start_arr=extra_state_sign_t_start_arr,
                      t_size=t_size,
                      atw_factor_arr=atw_factor_arr,
                      eig_maximum_arr=eig_maximum_arr,
@@ -463,14 +488,17 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
             if is_sorting_eig_state:
                 param_arr = sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
             param_arr = apply_eig_maximum(param_arr, eig_maximum_arr, free_eig_idx_arr)
+            if is_sorting_eig_state:
+                # Assuming `eig_maximum_arr` is sorted.
+                param_arr = sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
             displayln_info(0, f"{fname}: iter={i} free_eig_arr={param_arr[free_eig_mask].tolist()}")
             vl = 1
             if i == n_step_mini_jk - 1:
                 vl = 0
             display_param_arr(param_arr, mask=fixed_eig_mask, verbose_level=vl)
-        chisq, chisq_grad = fcn(param_arr)
+        chisq, param_grad = fcn(param_arr)
         set_verbose_level(-1)
-        return chisq, chisq_grad, param_arr
+        return chisq, param_arr, param_grad
     return f(**kwargs)
 
 @timer_verbose
@@ -479,7 +507,8 @@ def fit_eig_coef(jk_corr_data,
                  t_arr,
                  e_arr,
                  t_start_arr=None,
-                 is_t_start_sign_corr=True,
+                 extra_state_sign_arr=None,
+                 extra_state_sign_t_start_arr=None,
                  t_size=None,
                  atw_factor_arr=None,
                  eig_maximum_arr=None,
@@ -500,9 +529,10 @@ def fit_eig_coef(jk_corr_data,
     return res
     #
     res['jk_chisq'] = jk_chisq
-    res['jk_chisq_grad'] = jk_chisq_grad # chisq_grad with respect to param_arr (for the scaled jk_corr_data)
-    res['jk_param_arr_for_scaled_corr'] = jk_param_arr_for_scaled_corr
     res['jk_param_arr'] = jk_param_arr
+    res['jk_param_grad_arr'] = jk_param_grad_arr # chisq grad with respect to param_arr
+    res['jk_param_for_scaled_corr_arr'] = jk_param_for_scaled_corr_arr
+    res['jk_param_grad_for_scaled_corr_arr'] = jk_param_for_scaled_corr_arr
     #
     C^{(jk_idx)}_{i,j}(t_arr[t]) == jk_corr_data[jk_idx, i, j, t]
     #
@@ -515,8 +545,8 @@ def fit_eig_coef(jk_corr_data,
     e_arr.shape == (n_eigs,)
     c_arr.shape == (n_eigs, n_ops,)
     #
-    C^{(jk_idx)}_{i,j}(t_arr[t]) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * e_arr[n]**(t_arr[t] - t_start_arr[n]) * t_start_sign_corr[n]
-    t_start_sign_corr[n] = (es[n] / abs(es[n]))**(t_start_arr[n] % 2)
+    C^{(jk_idx)}_{i,j}(t_arr[t]) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * e_arr[n]**(t_arr[t] - t_start_arr[n]) * state_sign_arr[n]
+    state_sign_arr = extra_state_sign_arr * (es / abs(es))**((t_start_arr + extra_state_sign_t_start_arr) % 2)
     #
     jk_param_arr_mini.shape == (n_jk, n_params)
     param_arr == np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
@@ -659,7 +689,8 @@ def fit_eig_coef(jk_corr_data,
                 corr_data_err=corr_data_err,
                 t_arr=t_arr,
                 t_start_arr=t_start_arr,
-                is_t_start_sign_corr=is_t_start_sign_corr,
+                extra_state_sign_arr=extra_state_sign_arr,
+                extra_state_sign_t_start_arr=extra_state_sign_t_start_arr,
                 t_size=t_size,
                 atw_factor_arr=atw_factor_arr,
                 eig_maximum_arr=eig_maximum_arr,
@@ -682,22 +713,24 @@ def fit_eig_coef(jk_corr_data,
     displayln_info(0, f"{fname}: mini avg with all rng_seed_list")
     v_list = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_eig_coef,
-                                   [ mk_kwargs(0,
-                                       True,
-                                       rng_seed,
-                                       verbose_level if idx == 0 else -1)
-                                       for idx, rng_seed in enumerate(rng_seed_list) ]
-                                   )):
+                                   [ mk_kwargs(
+                                       jk_idx=0,
+                                       is_sorting_eig_state=True,
+                                       rng_seed=rng_seed,
+                                       verbose_level=verbose_level if idx == 0 else -1,
+                                       )
+                                    for idx, rng_seed in enumerate(rng_seed_list)
+                                    ])):
         set_verbose_level(verbose_level)
         v_list.append(v)
-        chisq, chisq_grad, param_arr = v
+        chisq, param_arr, param_grad_arr, = v
         displayln_info(0, f"{fname}: map: rs_idx={idx} ; chisq={chisq} ; free_eig_arr={param_arr[free_eig_mask].tolist()} ; rng_seed='{rng_seed_list[idx]}'")
         if eig_maximum_arr is not None:
             displayln_info(0, f"{fname}: map: rs_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr[free_eig_idx_arr]/eig_maximum_arr).tolist()}")
     #
     rng_seed_mini = rng_seed_list[0]
     for idx, v in enumerate(v_list):
-        chisq, chisq_grad, param_arr = v
+        chisq, param_arr, param_grad_arr, = v
         if chisq < chisq_mini:
             chisq_mini = chisq
             rng_seed_mini = rng_seed_list[idx]
@@ -710,19 +743,21 @@ def fit_eig_coef(jk_corr_data,
     #
     displayln_info(0, f"{fname}: mini all jk samples")
     jk_chisq = []
-    jk_chisq_grad = []
     jk_param_arr = []
+    jk_param_grad_arr = []
     for idx, v in enumerate(mp_map(jk_mini_task_in_fit_eig_coef,
-                                   [ mk_kwargs(jk_idx,
-                                       False,
-                                       f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}",
-                                       verbose_level if jk_idx == 0 else -1)
-                                       for jk_idx in range(n_jk) ]
-                                   )):
+                                   [ mk_kwargs(
+                                       jk_idx=jk_idx,
+                                       is_sorting_eig_state=False,
+                                       rng_seed=f"{rng_seed_list[0]}/jk_mini_task/{jk_idx}",
+                                       verbose_level=verbose_level if jk_idx == 0 else -1,
+                                       )
+                                    for jk_idx in range(n_jk)
+                                    ])):
         set_verbose_level(verbose_level)
-        chisq, chisq_grad, param_arr = v
+        chisq, param_arr, param_grad_arr, = v
         jk_chisq.append(chisq)
-        jk_chisq_grad.append(chisq_grad)
+        jk_param_grad_arr.append(param_grad_arr)
         jk_param_arr.append(param_arr)
         if n_step_mini_jk != 0:
             displayln_info(0, f"{fname}: map: jk_idx={idx} ; chisq={chisq} ; free_eig_arr={param_arr[free_eig_mask].tolist()}")
@@ -732,11 +767,11 @@ def fit_eig_coef(jk_corr_data,
         mp_pool.close()
     #
     jk_chisq = np.array(jk_chisq, dtype=np.float64)
-    jk_chisq_grad = np.array(jk_chisq_grad, dtype=np.float64)
     jk_param_arr = np.array(jk_param_arr, dtype=np.float64)
+    jk_param_grad_arr = np.array(jk_param_grad_arr, dtype=np.float64)
     #
-    jk_chisq_grad_for_scaled_corr = jk_chisq_grad.copy()
-    jk_param_arr_for_scaled_corr = jk_param_arr.copy()
+    jk_param_grad_for_scaled_corr_arr = jk_param_grad_arr.copy()
+    jk_param_for_scaled_corr_arr = jk_param_arr.copy()
     #
     jk_e_arr = jk_param_arr[:, :n_eigs].copy()
     jk_c_arr = jk_param_arr[:, n_eigs:].reshape(n_jk, n_eigs, n_ops,).copy()
@@ -744,29 +779,32 @@ def fit_eig_coef(jk_corr_data,
     jk_param_arr[:, :n_eigs] = jk_e_arr
     jk_param_arr[:, n_eigs:] = jk_c_arr.reshape(n_jk, n_eigs * n_ops)
     #
-    jk_e_grad_arr = jk_chisq_grad[:, :n_eigs].copy()
-    jk_c_grad_arr = jk_chisq_grad[:, n_eigs:].reshape(n_jk, n_eigs, n_ops,).copy()
+    jk_e_grad_arr = jk_param_grad_arr[:, :n_eigs].copy()
+    jk_c_grad_arr = jk_param_grad_arr[:, n_eigs:].reshape(n_jk, n_eigs, n_ops,).copy()
     jk_c_grad_arr = jk_c_grad_arr / op_norm_fac_arr
-    jk_chisq_grad[:, :n_eigs] = jk_e_grad_arr
-    jk_chisq_grad[:, n_eigs:] = jk_c_grad_arr.reshape(n_jk, n_eigs * n_ops)
+    jk_param_grad_arr[:, :n_eigs] = jk_e_grad_arr
+    jk_param_grad_arr[:, n_eigs:] = jk_c_grad_arr.reshape(n_jk, n_eigs * n_ops)
     #
     res = dict()
     res['jk_chisq'] = jk_chisq
-    res['jk_chisq_grad'] = jk_chisq_grad
     res['jk_param_arr'] = jk_param_arr
-    res['jk_chisq_grad_for_scaled_corr'] = jk_chisq_grad_for_scaled_corr
-    res['jk_param_arr_for_scaled_corr'] = jk_param_arr_for_scaled_corr
+    res['jk_param_grad_arr'] = jk_param_grad_arr
+    res['jk_param_for_scaled_corr_arr'] = jk_param_for_scaled_corr_arr
+    res['jk_param_grad_for_scaled_corr_arr'] = jk_param_grad_for_scaled_corr_arr
     res['jk_e_arr'] = jk_e_arr
     res['jk_c_arr'] = jk_c_arr
     res['jk_e_grad_arr'] = jk_e_arr
     res['jk_c_grad_arr'] = jk_c_arr
-    res['n_ops'] = n_ops
-    res['n_eigs'] = n_eigs
-    res['t_arr'] = t_arr
-    res['t_start_arr'] = t_start_arr
-    res['is_t_start_sign_corr'] = is_t_start_sign_corr
-    res['t_size'] = t_size
-    res['atw_factor_arr'] = atw_factor_arr
+    res['options'] = dict(
+            t_arr=t_arr,
+            n_ops=n_ops,
+            n_eigs=n_eigs,
+            t_start_arr=t_start_arr,
+            t_size=t_size,
+            atw_factor_arr=atw_factor_arr,
+            extra_state_sign_arr=extra_state_sign_arr,
+            extra_state_sign_t_start_arr=extra_state_sign_t_start_arr,
+            )
     #
     displayln_info(0, f"{fname} finished")
     return res

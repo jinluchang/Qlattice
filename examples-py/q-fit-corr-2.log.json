@@ -48,12 +48,12 @@
   0.0001
  ],
  [
-  "jk_chisq_grad sig6",
-  -20.71397109413708,
+  "jk_param_grad_arr sig6",
+  -20.71396538621576,
   0.0001
  ],
  [
-  "jk_param_arr_for_scaled_corr sig7",
+  "jk_param_for_scaled_corr_arr sig7",
   9.711223043798812,
   0.0001
  ],
@@ -68,12 +68,12 @@
   0.0001
  ],
  [
-  "jk_chisq_grad sig6",
-  -20.71397109413708,
+  "jk_param_grad_arr sig6",
+  -20.71396538621576,
   0.0001
  ],
  [
-  "jk_param_arr_for_scaled_corr sig7",
+  "jk_param_for_scaled_corr_arr sig7",
   9.711223043798812,
   0.0001
  ],
