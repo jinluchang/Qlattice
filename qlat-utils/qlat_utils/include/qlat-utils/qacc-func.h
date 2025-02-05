@@ -18,15 +18,15 @@ API inline int& qacc_num_threads()
 
 #define qfor(iter1, num, ...)                    \
   {                                              \
-    for (Long iter1 = 0; iter1 < num; ++iter1) { \
+    for (qlat::Long iter1 = 0; iter1 < num; ++iter1) { \
       {__VA_ARGS__};                             \
     }                                            \
   }
 
 #define qfor2d(iter1, num1, iter2, num2, ...)       \
   {                                                 \
-    for (Long iter1 = 0; iter1 < num1; ++iter1) {   \
-      for (Long iter2 = 0; iter2 < num2; ++iter2) { \
+    for (qlat::Long iter1 = 0; iter1 < num1; ++iter1) {   \
+      for (qlat::Long iter2 = 0; iter2 < num2; ++iter2) { \
         {__VA_ARGS__};                              \
       }                                             \
     }                                               \
@@ -37,7 +37,7 @@ API inline int& qacc_num_threads()
 #define qthread_for(iter1, num, ...)             \
   {                                              \
   q_do_pragma(omp parallel for schedule(static)) \
-  for (Long iter1 = 0; iter1 < num; ++iter1)     \
+  for (qlat::Long iter1 = 0; iter1 < num; ++iter1)     \
     {                                            \
       {__VA_ARGS__};                             \
     }                                            \
@@ -46,9 +46,9 @@ API inline int& qacc_num_threads()
 #define qthread_for2d(iter1, num1, iter2, num2, ...) \
   {                                                  \
   q_do_pragma(omp parallel for collapse(2))           \
-  for (Long iter1 = 0; iter1 < num1; ++iter1)        \
+  for (qlat::Long iter1 = 0; iter1 < num1; ++iter1)        \
     {                                                \
-      for (Long iter2 = 0; iter2 < num2; ++iter2) {  \
+      for (qlat::Long iter2 = 0; iter2 < num2; ++iter2) {  \
         {__VA_ARGS__};                               \
       }                                              \
     }                                                \
@@ -65,7 +65,7 @@ API inline int& qacc_num_threads()
 #define qacc_for2dNB(iter1, num1, iter2, num2, ...)                           \
   {                                                                           \
     if ((num1 != 0) and (num2 != 0)) {                                        \
-      typedef Long QACC_FOR_LOOP_ITERATOR;                                    \
+      typedef qlat::Long QACC_FOR_LOOP_ITERATOR;                                    \
       auto QACC_FOR_LOOP_LAMBDA = [=] __host__ __device__(                    \
                                       QACC_FOR_LOOP_ITERATOR iter1,           \
                                       QACC_FOR_LOOP_ITERATOR iter2) mutable { \
