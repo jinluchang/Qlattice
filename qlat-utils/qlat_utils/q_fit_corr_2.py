@@ -13,6 +13,7 @@ def build_corr_from_param_arr(
         t_start_arr=None,
         t_size=None,
         atw_factor_arr=None,
+        is_t_start_sign_corr=True,
         ):
     """
     param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
@@ -21,13 +22,19 @@ def build_corr_from_param_arr(
     #
     Also work if `jk_param_arr` is input in place of `param_arr`.
     #
+    t_start_sign_corr[ei] = (es[ei] / abs(es[ei]))**(t_start_arr[ei] % 2)
+    #
     corr_data.shape == (n_ops, n_ops, n_tslice,)
-    corr_data[i, j, t] = \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_arr[t] - t_start_arr[ei])
+    corr_data[i, j, t] = (
+        \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_arr[t] - t_start_arr[ei])
+        * t_start_sign_corr[ei]
+        )
     #
     if t_size is not None:
         corr_data[i, j, t] += (
             atw_factor_arr[i] * atw_factor_arr[j] *
             \sum_{ei} cs[ei, i] * cs[ei, j] * es[ei]**(t_size - t_arr[t] - t_start_arr[ei])
+            * t_start_sign_corr[ei]
             )
     #
     return corr_data
@@ -46,6 +53,7 @@ def build_corr_from_param_arr(
             jk_corr_data[jk_idx] = build_corr_from_param_arr(
                     param_arr, n_ops=n_ops, t_arr=t_arr,
                     t_start_arr=t_start_arr,
+                    is_t_start_sign_corr=is_t_start_sign_corr,
                     t_size=t_size,
                     atw_factor_arr=atw_factor_arr,
                     )
@@ -66,9 +74,14 @@ def build_corr_from_param_arr(
     if t_start_arr_ini is not None:
         t_start_arr[:] = t_start_arr_ini
     # corr_data[op1_idx, op2_idx, t_idx]
+    if is_t_start_sign_corr:
+        t_start_sign_corr = (es / abs(es))**(t_start_arr % 2)
+    else:
+        t_start_sign_corr = np.ones(len(es), dtype=np.float64)
     corr_data = (
             cs[:, :, None, None] * cs[:, None, :, None]
             * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
+            * t_start_sign_corr[:, None, None, None]
             ).sum(0)
     if t_size is not None:
         atw_factor_arr_ini = atw_factor_arr
@@ -80,6 +93,7 @@ def build_corr_from_param_arr(
                 * atw_factor_arr[:, None, None]
                 * atw_factor_arr[None, :, None]
                 * es[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
+                * t_start_sign_corr[:, None, None, None]
                 ).sum(0)
     return corr_data
 
@@ -87,9 +101,12 @@ def build_corr_from_param_arr(
 def mk_data_set(
         *, n_jk=10, n_ops=4, n_eigs=4,
         t_arr=None,
+        t_start_arr=None,
+        is_t_start_sign_corr=True,
         t_size=None,
-        t_start_arr=None, atw_factor_arr=None,
-        sigma=0.1, rng=None,
+        atw_factor_arr=None,
+        sigma=0.1,
+        rng=None,
         ):
     r"""
     return param_arr, jk_corr_data, corr_data_sigma
@@ -116,7 +133,10 @@ def mk_data_set(
     #
     corr_data = build_corr_from_param_arr(
             param_arr, n_ops=n_ops, t_arr=t_arr,
-            t_start_arr=t_start_arr, t_size=t_size, atw_factor_arr=atw_factor_arr,
+            t_start_arr=t_start_arr,
+            is_t_start_sign_corr=is_t_start_sign_corr,
+            t_size=t_size,
+            atw_factor_arr=atw_factor_arr,
             )
     shape = (n_ops, n_ops, n_tslice,)
     corr_data_sigma = np.zeros(shape, dtype=np.float64) + sigma
@@ -180,6 +200,7 @@ def mk_fcn(
         t_arr,
         t_start_arr,
         *,
+        is_t_start_sign_corr=True,
         t_size=None,
         atw_factor_arr=None,
         eig_maximum_arr=None,
@@ -238,8 +259,13 @@ def mk_fcn(
                         )
                     )
         # corr[op1_idx, op2_idx, t_idx]
+        if is_t_start_sign_corr:
+            t_start_sign_corr = (es / abs(es))**(t_start_arr % 2)
+        else:
+            t_start_sign_corr = jnp.ones(len(es), dtype=jnp.float64)
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
                 * es[:, None, None, None]**(t_arr - t_start_arr[:, None, None, None])
+                * t_start_sign_corr[:, None, None, None]
                 ).sum(0)
         if t_size is not None:
             corr = corr + (
@@ -247,6 +273,7 @@ def mk_fcn(
                     * atw_factor_arr[:, None, None]
                     * atw_factor_arr[None, :, None]
                     * es[:, None, None, None]**(t_size - t_arr - t_start_arr[:, None, None, None])
+                    * t_start_sign_corr[:, None, None, None]
                     ).sum(0)
         corr = (corr - corr_avg) / corr_sigma
         chisqs = corr * corr
@@ -364,6 +391,7 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
           corr_data_err,
           t_arr,
           t_start_arr,
+          is_t_start_sign_corr,
           t_size,
           atw_factor_arr,
           eig_maximum_arr,
@@ -385,10 +413,12 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
         n_params = len(param_arr_mini)
         n_ops = corr_data.shape[0]
         fcn = mk_fcn(corr_data, corr_data_err, t_arr, t_start_arr,
+                     is_t_start_sign_corr=is_t_start_sign_corr,
                      t_size=t_size,
                      atw_factor_arr=atw_factor_arr,
                      eig_maximum_arr=eig_maximum_arr,
-                     free_eig_idx_arr=free_eig_idx_arr)
+                     free_eig_idx_arr=free_eig_idx_arr,
+                     )
         rand_update_mask = (~all_eig_mask) & (~fixed_coef_eig_mask)
         def display_param_arr(param_arr, mask=None, verbose_level=0):
             fcn_v, grad = fcn(param_arr)
@@ -449,6 +479,7 @@ def fit_eig_coef(jk_corr_data,
                  t_arr,
                  e_arr,
                  t_start_arr=None,
+                 is_t_start_sign_corr=True,
                  t_size=None,
                  atw_factor_arr=None,
                  eig_maximum_arr=None,
@@ -484,7 +515,8 @@ def fit_eig_coef(jk_corr_data,
     e_arr.shape == (n_eigs,)
     c_arr.shape == (n_eigs, n_ops,)
     #
-    C^{(jk_idx)}_{i,j}(t_arr[t]) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * e_arr[n]**(t_arr[t] - t_start_arr[n])
+    C^{(jk_idx)}_{i,j}(t_arr[t]) ~ \sum_{n} c_arr[n, i] * c_arr[n, j] * e_arr[n]**(t_arr[t] - t_start_arr[n]) * t_start_sign_corr[n]
+    t_start_sign_corr[n] = (es[n] / abs(es[n]))**(t_start_arr[n] % 2)
     #
     jk_param_arr_mini.shape == (n_jk, n_params)
     param_arr == np.concatenate([ e_arr, c_arr.ravel(), ], dtype=np.float64)
@@ -627,6 +659,7 @@ def fit_eig_coef(jk_corr_data,
                 corr_data_err=corr_data_err,
                 t_arr=t_arr,
                 t_start_arr=t_start_arr,
+                is_t_start_sign_corr=is_t_start_sign_corr,
                 t_size=t_size,
                 atw_factor_arr=atw_factor_arr,
                 eig_maximum_arr=eig_maximum_arr,
@@ -702,21 +735,36 @@ def fit_eig_coef(jk_corr_data,
     jk_chisq_grad = np.array(jk_chisq_grad, dtype=np.float64)
     jk_param_arr = np.array(jk_param_arr, dtype=np.float64)
     #
+    jk_chisq_grad_for_scaled_corr = jk_chisq_grad.copy()
     jk_param_arr_for_scaled_corr = jk_param_arr.copy()
+    #
     jk_e_arr = jk_param_arr[:, :n_eigs].copy()
     jk_c_arr = jk_param_arr[:, n_eigs:].reshape(n_jk, n_eigs, n_ops,).copy()
     jk_c_arr = jk_c_arr / op_norm_fac_arr
     jk_param_arr[:, :n_eigs] = jk_e_arr
-    jk_param_arr[:, n_eigs:] = jk_c_arr.reshape(n_jk, n_eigs* n_ops)
+    jk_param_arr[:, n_eigs:] = jk_c_arr.reshape(n_jk, n_eigs * n_ops)
+    #
+    jk_e_grad_arr = jk_chisq_grad[:, :n_eigs].copy()
+    jk_c_grad_arr = jk_chisq_grad[:, n_eigs:].reshape(n_jk, n_eigs, n_ops,).copy()
+    jk_c_grad_arr = jk_c_grad_arr / op_norm_fac_arr
+    jk_chisq_grad[:, :n_eigs] = jk_e_grad_arr
+    jk_chisq_grad[:, n_eigs:] = jk_c_grad_arr.reshape(n_jk, n_eigs * n_ops)
     #
     res = dict()
     res['jk_chisq'] = jk_chisq
     res['jk_chisq_grad'] = jk_chisq_grad
-    res['jk_param_arr_for_scaled_corr'] = jk_param_arr_for_scaled_corr
     res['jk_param_arr'] = jk_param_arr
+    res['jk_chisq_grad_for_scaled_corr'] = jk_chisq_grad_for_scaled_corr
+    res['jk_param_arr_for_scaled_corr'] = jk_param_arr_for_scaled_corr
+    res['jk_e_arr'] = jk_e_arr
+    res['jk_c_arr'] = jk_c_arr
+    res['jk_e_grad_arr'] = jk_e_arr
+    res['jk_c_grad_arr'] = jk_c_arr
     res['n_ops'] = n_ops
+    res['n_eigs'] = n_eigs
     res['t_arr'] = t_arr
     res['t_start_arr'] = t_start_arr
+    res['is_t_start_sign_corr'] = is_t_start_sign_corr
     res['t_size'] = t_size
     res['atw_factor_arr'] = atw_factor_arr
     #
