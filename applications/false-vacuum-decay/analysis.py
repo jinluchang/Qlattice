@@ -1,10 +1,13 @@
 import glob
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 import jackknife as jk
 from scipy.integrate import quad_vec
 from scipy.optimize import curve_fit
+
+import qlat as q
 
 import ratios_fit
 
@@ -183,7 +186,7 @@ class Analysis:
             xs3.append(x)
         plt.errorbar(xs1, expS1, yerr=expS_errs1, label=label)
         plt.errorbar(xs2, expS2, yerr=expS_errs2, label=label)
-        plt.errorbar(xs3, expS3, yerr=expS_errs3, label=label)
+        #plt.errorbar(xs3, expS3, yerr=expS_errs3, label=label)
         plt.title("exp(-$\\Delta S_{t_\\text{FV}\\to t_{\\text{FV}+1}})$")
         plt.xlabel(param)
         return xs1, expS1, expS_errs1
@@ -246,3 +249,43 @@ class Analysis:
         #else:
         #    sfs = [sf]
         #self.plot_expS_extend(self.data.delta_actions_t_FV, sfs, "tFV", get_x=int, filter_x=lambda x,x0: (int(x)-x0)<t_limit[0] or (int(x)-x0)>t_limit[1])
+    
+    # Functions for plotting data ================================
+    def plot_mean_path(self, params={}, label="tTV", ax=None, color="blue"):
+        sfs = self.data.get_indices(params)
+        for sf in sfs:
+            if(ax==None):
+                plt.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:],axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
+            else:
+                ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:],axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
+    
+    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, ax=None, alpha=0.7, color="red"):
+        sfs = self.data.get_indices(params)
+        for sf in sfs:
+            i=0
+            for ts in self.data.timeslices[sf][cutoff:]:
+                if(ax==None):
+                    if (i+1)%sampling_freq==0: plt.plot(ts, alpha=alpha, color=color)
+                    if (i+1)%new_plot==0: plt.show()
+                else:
+                    if (i+1)%sampling_freq==0: ax.plot(ts, alpha=alpha, color=color)
+                i+=1
+
+    def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
+        sf = self.data.get_indices(params)[0]
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), bool(self.data.params[sf]["proj2"]), bool(self.data.params[sf]["ins"]))
+        xs = np.arange(xmin,xmax,0.01)
+        ts = np.arange(0, params["Nt"], 1)
+        V_data = np.array([[action.V(x,t)-action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
+        if(fig==None or ax==None):
+            fig, ax = plt.subplots()
+        pcm = ax.pcolormesh(ts, xs, V_data, cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
+        fig.colorbar(pcm, ax=ax)
+
+    def check_data(self, n_traj = 50000):
+        #self.plot_mean_path()
+        for i in self.data.accept_rates:
+            if(np.mean(self.data.accept_rates[i]) < 0.7 or len(self.data.trajs[i])<n_traj):
+                print(i)
+                print(len(self.data.trajs[i]))
+                print(np.mean(self.data.accept_rates[i][self.data.cutoff:]))
