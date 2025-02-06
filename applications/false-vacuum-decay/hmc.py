@@ -353,7 +353,7 @@ def main():
     double_proj = False
     insert_H_full = False
     #
-    version = "10-1"
+    version = "10-2"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10

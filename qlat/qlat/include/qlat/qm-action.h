@@ -117,18 +117,13 @@ struct QMAction {
     // Right after t_FV_out has past, use either H_proj or H_full
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       if(insert_H_full) 
-        return V_low(x);
+        return V_full(x);
       else
         return V_full(x) + V_proj(x);
     // Then use either H_proj or H_full
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
       if(double_proj)
         return V_full(x) + V_proj(x);
-      else
-        return V_full(x);
-    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+2)
-      if(insert_H_full)
-        return V_low(x);
       else
         return V_full(x);
     // Until t_full2 has past, use H_full
@@ -172,18 +167,13 @@ struct QMAction {
     // Right after t_FV_out has past, use either H_proj or H_full
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       if(insert_H_full) 
-        return dV_low(x);
+        return dV_full(x);
       else
         return dV_full(x) + dV_proj(x);
     // Then use either H_proj or H_full
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
       if(double_proj)
         return dV_full(x) + dV_proj(x);
-      else
-        return dV_full(x);
-    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+2)
-      if(insert_H_full)
-        return dV_low(x);
       else
         return dV_full(x);
     // Until t_full2 has past, use H_full
@@ -242,30 +232,13 @@ struct QMAction {
   
   inline double V_proj(const double x)
   {
-    return -P*log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt_proj)) / dt_proj) / dt_proj;
+    return -P*log(1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt_proj)) / dt_proj;
   }
   
   inline double dV_proj(const double x)
   {
     double Vbar = V_FV_out(x) - V_full(x);
     return -P*((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt_proj))/(1-exp(-(Vbar + epsilon)*dt_proj));
-  }
-
-  inline double V_low(const double x)
-  {
-    temp = V_proj(x);
-    if(temp<0)
-      return temp + V_full(x);
-    else
-      return V_full(x);
-  }
-
-  inline double dV_low(const double x)
-  {
-    if(V_proj(x)<0)
-      return dV_proj(x) + dV_full(x);
-    else
-      return dV_full(x);
   }
 
   inline double V_FV_mid(const double x)
