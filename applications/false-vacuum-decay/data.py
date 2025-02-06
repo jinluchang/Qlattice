@@ -1,10 +1,12 @@
 import glob
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 import jackknife as jk
 from scipy.integrate import quad_vec
 from scipy.optimize import curve_fit
+import qlat as q
 
 import ratios_fit
 
@@ -99,19 +101,36 @@ class Data:
     
     # Functions for plotting data ================================
     
-    def plot_mean_path(self, params={}, label="tTV"):
+    def plot_mean_path(self, params={}, label="tTV", ax=None):
         sfs = self.get_indices(params)
         for sf in sfs:
-            plt.plot(np.mean(self.timeslices[sf][int(self.cutoff/100):],axis=0), label=f"{label} = {self.params[sf][label]}")
+            if(ax==None):
+                plt.plot(np.mean(self.timeslices[sf][int(self.cutoff/100):],axis=0), label=f"{label} = {self.params[sf][label]}")
+            else:
+                ax.plot(np.mean(self.timeslices[sf][int(self.cutoff/100):],axis=0), label=f"{label} = {self.params[sf][label]}")
     
-    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000):
+    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, ax=None):
         sfs = self.get_indices(params)
         for sf in sfs:
             i=0
-            for ts in self.timeslices[sf][:]:
-                if (i+1)%sampling_freq==0: plt.plot(ts)
-                if (i+1)%new_plot==0: plt.show()
+            for ts in self.timeslices[sf][cutoff:]:
+                if(ax==None):
+                    if (i+1)%sampling_freq==0: plt.plot(ts)
+                    if (i+1)%new_plot==0: plt.show()
+                else:
+                    if (i+1)%sampling_freq==0: ax.plot(ts)
                 i+=1
+
+    def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None):
+        sf = self.get_indices(params)[0]
+        action = q.QMAction(float(self.params[sf]["alpha"]), float(self.params[sf]["beta"]), float(self.params[sf]["FVoff"]), float(self.params[sf]["TVoff"]), float(self.params[sf]["bar"]), float(self.params[sf]["M"]), float(self.params[sf]["L"]), float(self.params[sf]["P"]), float(self.params[sf]["eps"]), int(self.params[sf]["tfull1"]), int(self.params[sf]["tfull2"]), int(self.params[sf]["tFVout"]), int(self.params[sf]["tFVmid"]), 0, float(self.params[sf]["dt"]), bool(self.params[sf]["proj2"]), bool(self.params[sf]["ins"]))
+        xs = np.arange(xmin,xmax,0.01)
+        ts = np.arange(0, params["Nt"], 1)
+        V_data = np.array([[action.V(x,t)-action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
+        if(fig==None or ax==None):
+            fig, ax = plt.subplots()
+        pcm = ax.pcolormesh(ts, xs, V_data, cmap=mpl.colormaps['grey'], vmin=0, vmax=2)
+        fig.colorbar(pcm, ax=ax)
 
     def check_data(self, n_traj = 50000):
         #self.plot_mean_path()

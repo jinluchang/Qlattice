@@ -40,7 +40,11 @@ class Analysis:
         return jk.super_jackknife_combine_blocks(ml_blocks, lambda x: self.calc_ratio(x, len(Ms)-1))
 
     def get_P_blocks(self, Ps, params, der=False):
-        sf_P = self.data.get_indices(params)[0]
+        try:
+            sf_P = self.data.get_indices(params)[0]
+        except IndexError as e:
+            print(params)
+            raise(e)
         sfs_P = self.data.replace_params(sf_P, ["P"], [[P] for P in Ps])
         delta_actions_P = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_P[i]]["P"][str(Ps[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ps)-1)]
@@ -139,14 +143,9 @@ class Analysis:
     def get_ddR_div_ddR_blocks(self, sf):
         t_TV = int(self.data.params[sf]["tTV"])
         t_FV = int(self.data.params[sf]["tFV"])
-        t_full2 = int(self.data.params[sf]["tfull2"])
-        blocks_A = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["A"][self.data.cutoff:]), self.data.block_size)
-        blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["B"][self.data.cutoff:]), self.data.block_size)
-        sf2 = self.data.replace_params(sf, ["tfull2", "tTV", "der1", "der2"], [[t_full2-1, t_TV+1, True, False]])[0]
-        blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["C"][self.data.cutoff:]), self.data.block_size)
-        #return blocks_C
-        #return np.divide(blocks_A,blocks_B)
-        return blocks_C, np.divide(blocks_B,blocks_A), jk.super_jackknife_combine_blocks([np.divide(blocks_A,blocks_B), blocks_C], lambda x: np.multiply(x[0], x[1]))
+        blocks_N = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["N"][self.data.cutoff:]), self.data.block_size)
+        blocks_D = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["D"][self.data.cutoff:]), self.data.block_size)
+        return blocks_D, blocks_N, np.divide(blocks_D,blocks_N)
 
     # Functions for plotting data ================================
     
