@@ -17,13 +17,12 @@ EXPORT(mk_qm_action, {
   long t_FV_out = 10;
   long t_FV_mid = 5;
   double dt = 1.0;
-  bool double_proj = true;
-  bool insert_H_full = false;
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|d|l|l|l|l|l|d|b|b", &alpha, &beta, &FV_offset, &TV_offset,
-      &barrier_strength, &M, &L, &P, &epsilon, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt, &double_proj, &insert_H_full)) {
+  bool proj_sq = false;
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|d|l|l|l|l|l|d|b", &alpha, &beta, &FV_offset, &TV_offset,
+      &barrier_strength, &M, &L, &P, &epsilon, &t_full1, &t_full2, &t_FV_out, &t_FV_mid, &t_TV_start, &dt, &proj_sq)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt, double_proj, insert_H_full);
+  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, t_TV_start, dt, proj_sq);
   return py_convert((void*)pqma);
 })
 

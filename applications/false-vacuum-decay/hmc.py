@@ -350,10 +350,9 @@ def main():
     dt = 0.2
     # The number of trajectories to calculate
     n_traj = 50000
-    double_proj = False
-    insert_H_full = False
+    proj_sq = False
     #
-    version = "10-2"
+    version = "11-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -395,9 +394,7 @@ def main():
             elif(sys.argv[i]=="-e"):
                 epsilon = float(sys.argv[i+1])
             elif(sys.argv[i]=="-p"):
-                double_proj=True
-            elif(sys.argv[i]=="-I"):
-                insert_H_full=True
+                proj_sq=True
             elif(sys.argv[i]=="-D"):
                 a = sys.argv[i+1].split("x")
                 total_site = q.Coordinate([int(a[j]) for j in range(4)])
@@ -430,8 +427,7 @@ def main():
                             -L to set the right barrier for H_TV, \
                             -P to set the projection strength, \
                             -e to set epsilon (for V_proj), \
-                            -p spread H_proj over two timeslices, \
-                            -I insert H before the second H_proj, \
+                            -p use V_bar^2 instead of V_bar in V_proj, \
                             -D for lattice dimensions, \
                             -d for the lattice spacing, \
                             -T for number of trajectories, \
@@ -443,25 +439,24 @@ def main():
     t_FV_out = int((Nt - t_full1 - t_full2 - t_TV - t_FV_mid)/2)
     t_FV_mid = Nt - t_full1 - t_full2 - t_TV - 2*t_FV_out
     
-    action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, double_proj, insert_H_full)
-    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_P_{P}_eps_{epsilon}_tfull1_{t_full1}_tfull2_{t_full2}_proj2_{double_proj}_ins_{insert_H_full}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
+    action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, proj_sq)
+    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_P_{P}_eps_{epsilon}_tfull1_{t_full1}_tfull2_{t_full2}_proj2_{proj_sq}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     steps = np.array([0.001, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) #np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
     measure_Ms = steps[steps>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = steps[steps>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ps = steps[steps>P] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
     
-    actions = {"M": {}, "L": {}, "P": {}, "DD": {}}
-    for Mi in measure_Ms:
-        actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, double_proj, insert_H_full)
-    for Li in measure_Ls:
-        actions["L"][f"{Li}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, Li, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, double_proj, insert_H_full)
-    for Pi in measure_Ps:
-        actions["P"][f"{Pi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, Pi, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, double_proj, insert_H_full)
-    if(t_full2>0):
-        actions["DD"] = {}
-        actions["DD"]["N"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid-1, 0, dt, True, False)
-        actions["DD"]["D"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid, 0, dt, True, False)
+    actions = {"M": {}, "L": {}, "P": {}}
+    if(L==1.0):
+        for Mi in measure_Ms:
+            actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, proj_sq)
+    if(M==1.0):
+        for Li in measure_Ls:
+            actions["L"][f"{Li}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, Li, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, proj_sq)
+    if(M==1.0 and L==0.0):
+        for Pi in measure_Ps:
+            actions["P"][f"{Pi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, Pi, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, proj_sq)
     
     measurements = Measurements(total_site, actions, f"output_data/measurements_{hmc.fileid}.bin")
     
