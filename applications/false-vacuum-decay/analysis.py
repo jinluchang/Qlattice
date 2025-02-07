@@ -184,9 +184,9 @@ class Analysis:
             expS3.append(dS3)
             expS_errs3.append(err3)
             xs3.append(x)
-        plt.errorbar(xs1, expS1, yerr=expS_errs1, label=label)
-        plt.errorbar(xs2, expS2, yerr=expS_errs2, label=label)
-        #plt.errorbar(xs3, expS3, yerr=expS_errs3, label=label)
+        #plt.errorbar(xs1, expS1, yerr=expS_errs1, label=label)
+        #plt.errorbar(xs2, expS2, yerr=expS_errs2, label=label)
+        plt.errorbar(xs3, expS3, yerr=expS_errs3, label=label)
         plt.title("exp(-$\\Delta S_{t_\\text{FV}\\to t_{\\text{FV}+1}})$")
         plt.xlabel(param)
         return xs1, expS1, expS_errs1
