@@ -232,8 +232,8 @@ class Analysis:
         sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.delta_actions)))
         self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L")
     
-    def plot_expS_vs_P(self):
-        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0", list(self.data.delta_actions)))
+    def plot_expS_vs_P(self, params={"proj2": False}):
+        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0" and self.data.params[x]["M"]=="1.0" and self.data.params[x]["L"]=="0.0", list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "P", sfs, "P")
     
     #def plot_expS_vs_t_TV(self, t_limit=[-100,100], sf=""):
@@ -273,7 +273,7 @@ class Analysis:
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), bool(self.data.params[sf]["proj2"]), bool(self.data.params[sf]["ins"]))
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), bool(self.data.params[sf]["proj2"]))
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
         V_data = np.array([[action.V(x,t)-action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
