@@ -532,7 +532,7 @@ def fit_eig_coef(jk_corr_data,
     res['jk_param_arr'] = jk_param_arr
     res['jk_param_grad_arr'] = jk_param_grad_arr # chisq grad with respect to param_arr
     res['jk_param_for_scaled_corr_arr'] = jk_param_for_scaled_corr_arr
-    res['jk_param_grad_for_scaled_corr_arr'] = jk_param_for_scaled_corr_arr
+    res['jk_param_grad_for_scaled_corr_arr'] = jk_param_grad_for_scaled_corr_arr
     #
     C^{(jk_idx)}_{i,j}(t_arr[t]) == jk_corr_data[jk_idx, i, j, t]
     #
@@ -793,8 +793,8 @@ def fit_eig_coef(jk_corr_data,
     res['jk_param_grad_for_scaled_corr_arr'] = jk_param_grad_for_scaled_corr_arr
     res['jk_e_arr'] = jk_e_arr
     res['jk_c_arr'] = jk_c_arr
-    res['jk_e_grad_arr'] = jk_e_arr
-    res['jk_c_grad_arr'] = jk_c_arr
+    res['jk_e_grad_arr'] = jk_e_grad_arr
+    res['jk_c_grad_arr'] = jk_c_grad_arr
     res['options'] = dict(
             t_arr=t_arr,
             n_ops=n_ops,
