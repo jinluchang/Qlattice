@@ -23,8 +23,7 @@ struct QMAction {
   Long t_FV_out;
   Long t_FV_mid;
   double dt;
-  bool double_proj;
-  bool insert_H_full;
+  bool proj_sq;
   //
   qacc void init()
   {
@@ -132,15 +131,12 @@ struct QMAction {
     // Until t_full1 has past, use H_full
     else if(t<t_TV_start+t_full1-2)
       return dV_full(x);
-    // Right after t_full1 has past, use H_proj
-    else if(t==t_TV_start+t_full1-2)
-      if(double_proj)
-        return dV_full(x) + dV_proj(x);
-      else
-        return dV_full(x);
-    // Right after t_full1 has past, use H_proj
+    // Right after t_full1 has past, use H_proj or H_proj_sq
     else if(t==t_TV_start+t_full1-1)
-      return dV_full(x) + dV_proj(x);
+      if(proj_sq) 
+        return dV_full(x) + dV_proj_sq(x);
+      else
+        return dV_full(x) + dV_proj(x);
     // Until t_FV_out has past, use H_FV_out
     else if(t<t_TV_start+t_full1+t_FV_out)
       return dV_FV_out(x);
@@ -150,18 +146,12 @@ struct QMAction {
     // Until t_FV_out has past, use H_FV_out
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       return dV_FV_out(x);
-    // Right after t_FV_out has past, use either H_proj or H_full
+    // Right after t_FV_out has past, use either H_proj or H_proj_sq
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
-      if(insert_H_full) 
-        return dV_full(x);
+      if(proj_sq) 
+        return dV_full(x) + dV_proj_sq(x);
       else
         return dV_full(x) + dV_proj(x);
-    // Then use either H_proj or H_full
-    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
-      if(double_proj)
-        return dV_full(x) + dV_proj(x);
-      else
-        return dV_full(x);
     // Until t_full2 has past, use H_full
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
