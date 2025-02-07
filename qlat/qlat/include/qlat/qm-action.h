@@ -120,7 +120,7 @@ struct QMAction {
   }
   
   inline double V_zeroed(const double x, const Long t) {
-    return V(x,t) - P*log(dt) / dt;
+    return V(x,t) - log(dt) / dt;
   }
 
   inline double dV(const double x, const Long t)
