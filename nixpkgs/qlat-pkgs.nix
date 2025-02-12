@@ -330,6 +330,7 @@ let
       numba
       transformers
       ipywidgets
+      accelerate
       torch
       sphinx
       linkify-it-py

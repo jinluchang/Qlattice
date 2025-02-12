@@ -9,13 +9,13 @@ else
     exit 1
 fi
 
-name=py-local
+name=py-local-cuda
 
 src="$script_path"
 dst="$HOME/.local/share/jupyter/kernels/nix-build-$name"
 mkdir -p "$dst"
 cd "$dst"
-time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-env "$@"
+time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-env-cuda "$@"
 ls -l
 ./result/bin/python3 -m ipykernel \
     install --user \
