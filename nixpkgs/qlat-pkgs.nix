@@ -329,6 +329,7 @@ let
       jupyter-server-mathjax
       numba
       transformers
+      ipywidgets
       torch
       sphinx
       linkify-it-py
