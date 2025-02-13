@@ -331,6 +331,7 @@ let
       transformers
       ipywidgets
       accelerate
+      ollama
       torch
       sphinx
       linkify-it-py
@@ -381,6 +382,7 @@ let
         file
         zip
         unzip
+        ollama
       ] ++ qlat-cc ++ qlat-dep-pkgs ++ qlat-dep-pkgs-extra;
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
