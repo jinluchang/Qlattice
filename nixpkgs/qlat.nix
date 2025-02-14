@@ -118,6 +118,10 @@ in buildPythonPackage rec {
       export CXXFLAGS="$QLAT_CXXFLAGS"
       export LDFLAGS="$QLAT_LDFLAGS"
       #
+      which nvcc
+      echo
+      nvcc --version
+      echo
       which nixGL
       echo
       echo "run with nixGL"
