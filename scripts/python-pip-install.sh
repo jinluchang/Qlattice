@@ -8,6 +8,9 @@ source qcore/set-prefix.sh $name
     echo "!!!! build $name !!!!"
     source qcore/conf.sh ..
 
+    find ~/.cache/pip/wheels -type f || true
+    # rm -rfv ~/.cache/pip/wheels || true
+
     time-run pip3 install -vU meson
 
     ( :
