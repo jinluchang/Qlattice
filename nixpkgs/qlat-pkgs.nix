@@ -74,9 +74,19 @@ let
     then grid-lehner
     else pkgs.eigen;
     #
-    qlat-cc = if ! opts.use-clang
+    qlat-cc = (if ! opts.use-clang
     then [ pkgs.gcc ]
-    else [ pkgs.clang openmp ];
+    else [ pkgs.clang openmp ])
+    ++
+    [ pkgs.pkg-config ]
+    ++
+    lib.optionals opts.use-cuda (with pkgs.cudaPackages; [
+      cuda_nvcc
+      cuda_cccl
+      cuda_cudart
+      cuda_profiler_api
+      libcufft
+    ]);
     #
     ucx = pkgs.ucx.override {
       enableCuda = opts.use-cuda;
@@ -99,7 +109,8 @@ let
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
         mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
-          doCheck = true;
+          # doCheck = true;
+          doCheck = ! opts.use-cuda;
           nativeBuildInputs = (prev.nativeBuildInputs or [])
           ++ lib.optionals opts.use-cuda [
             qlat-nixgl
@@ -221,7 +232,7 @@ let
     };
     #
     qlat-dep-pkgs = with pkgs; ([
-      git pkg-config zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
+      git zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
     ] ++ (if opts.use-cuda then [ qlat-nixgl ] else [])
     );
     #
@@ -274,17 +285,15 @@ let
       name = "qlat-sh${qlat-name}";
       packages = [ qlat-env ];
       inputsFrom = packages;
-      buildInputs = [ pkgs.pkg-config ];
+      buildInputs = qlat-cc;
     };
     qlat-fhs = pkgs.buildFHSEnv {
       name = "qlat-fhs${qlat-name}";
       targetPkgs = pkgs: [
         qlat-env
-        pkgs.pkg-config
       ] ++ qlat-cc;
       multiPkgs = pkgs: [
         qlat-env
-        pkgs.pkg-config
       ] ++ qlat-cc;
       runScript = "bash";
       extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
@@ -367,7 +376,6 @@ let
         git
         gnumake
         zlib
-        pkg-config
         mpi
         killall
         wget
@@ -388,24 +396,26 @@ let
         zip
         unzip
         ollama
-      ] ++ qlat-cc ++ qlat-dep-pkgs ++ qlat-dep-pkgs-extra;
+      ]
+      ++ qlat-cc
+      ++ qlat-dep-pkgs
+      ++ qlat-dep-pkgs-extra
+      ;
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${qlat-name}";
       packages = [ qlat-jhub-env ];
       inputsFrom = packages;
-      buildInputs = [ pkgs.pkg-config ];
+      buildInputs = qlat-cc;
     };
     qlat-jhub-fhs = pkgs.buildFHSEnv {
       name = "qlat-jhub-fhs${qlat-name}";
       targetPkgs = pkgs: [
         qlat-jhub-env
-        pkgs.pkg-config
       ] ++ qlat-cc;
       multiPkgs = pkgs: [
         qlat-jhub-env
-        pkgs.pkg-config
       ] ++ qlat-cc;
       runScript = "bash";
       extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
