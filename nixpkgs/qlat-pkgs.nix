@@ -57,8 +57,8 @@ let
     pkgs = prev;
     lib = pkgs.lib;
     #
-    call-pkg = final.callPackage;
-    py-call-pkg = final.python3.pkgs.callPackage;
+    call-pkg = prev.callPackage;
+    py-call-pkg = python3.pkgs.callPackage;
     #
     qlat-name = mk-qlat-name opts;
     #
@@ -97,7 +97,7 @@ let
         ]);
     })).override { cudaSupport = opts.use-cuda; };
     python3 = pkgs.python3.override {
-      packageOverrides = final: prev: {
+      packageOverrides = final: prev: rec {
         mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
           doCheck = true;
           nativeBuildInputs = (prev.nativeBuildInputs or [])
@@ -119,6 +119,8 @@ let
             echo $LD_LIBRARY_PATH
           '';
         });
+        gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
+        vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
       };
     };
     #
@@ -134,6 +136,12 @@ let
     qmp = call-pkg ./qmp.nix { stdenv = qlat-stdenv; };
     qio = call-pkg ./qio.nix { stdenv = qlat-stdenv; };
     cps = call-pkg ./cps.nix { stdenv = qlat-stdenv; };
+    grid-lehner = call-pkg ./grid-lehner.nix {
+      stdenv = qlat-stdenv;
+      c-lime = grid-lehner-c-lime;
+      cudaSupport = opts.use-cuda;
+      nvcc-arch = opts.nvcc-arch;
+    };
     #
     qlat_utils = py-call-pkg ./qlat_utils.nix {
       stdenv = qlat-stdenv;
@@ -158,12 +166,6 @@ let
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
       nixgl = qlat-nixgl;
-    };
-    grid-lehner = call-pkg ./grid-lehner.nix {
-      stdenv = qlat-stdenv;
-      c-lime = grid-lehner-c-lime;
-      cudaSupport = opts.use-cuda;
-      nvcc-arch = opts.nvcc-arch;
     };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix {
       stdenv = qlat-stdenv;
@@ -298,6 +300,8 @@ let
       sympy
       jax
       jaxlib
+      gvar
+      vegas
       meson
       ninja
       mpi4py
