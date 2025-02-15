@@ -358,6 +358,7 @@ let
       paths = with pkgs; [
         qlat-jhub-py
         bashInteractive
+        bash-completion
         coreutils
         openssh
         linux-pam
