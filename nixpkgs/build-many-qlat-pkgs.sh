@@ -2,10 +2,10 @@
 
 script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-if [ -f "$script_path"/qlat-pkgs.nix ]; then
+if [ -f "$script_path"/q-pkgs.nix ]; then
     :
 else
-    echo "Need to run the script inside its original directory, which also have the file qlat-pkgs.nix and other files."
+    echo "Need to run the script inside its original directory, which also have the file q-pkgs.nix and other files."
     exit 1
 fi
 
@@ -28,7 +28,7 @@ for name in \
     "-std-cuda-ucxless" \
     "-pypi" \
     ; do
-    time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-11"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.11/nixexprs.tar.xz")' "$@"
+    time nix-build "$src"/q-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-11"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.11/nixexprs.tar.xz")' "$@"
 done
 for name in \
     "-std" \
@@ -43,6 +43,6 @@ for name in \
     "-std-cuda-ucxless" \
     "-pypi" \
     ; do
-    time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-05"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.05/nixexprs.tar.xz")' "$@"
+    time nix-build "$src"/q-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-05"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.05/nixexprs.tar.xz")' "$@"
 done
 )

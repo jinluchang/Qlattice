@@ -1,9 +1,9 @@
 {
   nixpkgs ? import ./nixpkgs.nix,
-  name ? "many-qlat-pkgs",
+  name ? "many-q-pkgs",
 }:
 
 let
-  qlat-pkgs = import ./qlat-pkgs.nix { inherit nixpkgs; };
+  q-pkgs = import ./q-pkgs.nix { inherit nixpkgs; };
 in
-  qlat-pkgs."${name}"
+  q-pkgs."${name}"

@@ -10,7 +10,7 @@ $ time nix-build -j8 --cores 24 default.nix
 
 To build with cuda
 
-$ time nix-build -j8 --cores 24 default.nix --argstr name "many-qlat-pkgs-core-w-cuda"
+$ time nix-build -j8 --cores 24 default-cuda.nix
 
 To start a shell without cuda
 

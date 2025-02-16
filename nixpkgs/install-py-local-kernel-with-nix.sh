@@ -2,10 +2,10 @@
 
 script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-if [ -f "$script_path"/qlat-pkgs.nix ]; then
+if [ -f "$script_path"/q-pkgs.nix ]; then
     :
 else
-    echo "Need to run the script inside its original directory, which also have the file qlat-pkgs.nix and other files."
+    echo "Need to run the script inside its original directory, which also have the file q-pkgs.nix and other files."
     exit 1
 fi
 
@@ -15,7 +15,7 @@ src="$script_path"
 dst="$HOME/.local/share/jupyter/kernels/nix-build-$name"
 mkdir -p "$dst"
 cd "$dst"
-time nix-build "$src"/qlat-pkgs.nix -A qlat-jhub-env "$@"
+time nix-build "$src"/q-pkgs.nix -A qlat-jhub-env "$@"
 ls -l
 ./result/bin/python3 -m ipykernel \
     install --user \

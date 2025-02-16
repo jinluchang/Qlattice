@@ -1,26 +1,83 @@
 {
   nixpkgs ? import ./nixpkgs.nix,
-  ngpu ? "2", # adjust with actual number of GPUs
-  nvcc-arch ? "sm_86", # adjust with actual arch of Nvidia GPU
-  cudaCapability ? "8.6",
-  cudaForwardCompat ? false,
+  ngpu ? null, # adjust with desired number of GPUs. E.g. "2"
+  cudaCapability ? null, # adjust with desired cudaCapability. E.g. "8.6"
+  cudaForwardCompat ? null, # adjust with desired cudaForwardCompat. E.g. false
 }:
 
 let
 
-  nixgl-src = (nixpkgs {}).fetchFromGitHub {
+  o-pkgs = nixpkgs {
+    allowUnfree = true;
+  };
+
+  runCommand = o-pkgs.runCommand;
+
+  nixgl-src = o-pkgs.fetchFromGitHub {
     owner = "jinluchang";
     repo = "nixGL";
     rev = "08e12d9b8bc8b6ea615f8393887d03643ad80def";
     hash = "sha256-FaUn4bYtH8kZrNEQwNctvjGLjrxet5ZftLD1OR+bUnA=";
   };
 
-  nixgl = import nixgl-src {};
+  nixgl = (import nixgl-src {}).auto.nixGLDefault;
 
-  options-default = {
+  ngpu-sys = builtins.head (builtins.match
+  "(.*)\n"
+  (builtins.readFile (runCommand
+  "impure-ngpu-file"
+  {
+    time = builtins.currentTime;
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  }
+  ''
+    mkdir tmp
+    cd tmp
+    ls /dev/nvidia{?,??} 2>/dev/null | wc -l >$out 2>/dev/null || echo "0" >$out
+    echo "ngpu=$(cat $out)"
+  ''
+  )));
+
+  cudaCapability-sys = if ngpu-sys == "0"
+  then null
+  else let
+    nvidia_x11 = o-pkgs.linuxPackages.nvidia_x11;
+  in builtins.head (builtins.match
+  "(.*)\n"
+  (builtins.readFile (runCommand
+  "impure-cuda-capability-file"
+  {
+    time = builtins.currentTime;
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  }
+  ''
+    ${nixgl}/bin/nixGL ${nvidia_x11.bin}/bin/nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null \
+      | head -n 1 >$out 2>/dev/null \
+      || echo >$out
+    echo "cudaCapability=$(cat $out)"
+  ''
+  )));
+
+  cudaCapabilities-sys = if cudaCapability-sys == null
+  then []
+  else [ cudaCapability-sys ];
+
+  get-nvcc-arch-from-cudaCapability = cudaCapability:
+  "sm_" + builtins.replaceStrings [ "." ] [ "" ] cudaCapability;
+
+  nvcc-arch-sys = if cudaCapability-sys == null
+  then null
+  else get-nvcc-arch-from-cudaCapability cudaCapability-sys;
+
+  options-default = rec {
     qlat-name = "";
-    ngpu = "1";
-    nvcc-arch = "sm_86";
+    ngpu = ngpu-sys;
+    nvcc-arch = nvcc-arch-sys;
+    cudaCapabilities = cudaCapabilities-sys;
+    cudaForwardCompat = false;
+    use-cuda-software = ngpu != "0";
     use-grid-gpt = true;
     use-cuda = false;
     use-cudasupport = false;
@@ -28,31 +85,53 @@ let
     use-clang = false;
     use-ucx = true;
     use-pypi = false;
-    cudaCapabilities = [ "8.6" ];
-    cudaForwardCompat = false;
   } // {
-    ngpu = ngpu;
-    nvcc-arch = nvcc-arch;
-    cudaCapabilities = [ cudaCapability ];
-    cudaForwardCompat = cudaForwardCompat;
+    ${if ngpu != null then "ngpu" else null} = ngpu;
+    ${if cudaCapability != null then "nvcc-arch" else null} = get-nvcc-arch-from-cudaCapability cudaCapability;
+    ${if cudaCapability != null then "cudaCapabilities" else null} = [ cudaCapability ];
+    ${if cudaForwardCompat != null then "cudaForwardCompat" else null} = cudaForwardCompat;
   };
+
+  mk-options = options:
+  # Order the precedence:
+  # options from arguments of this function.
+  # options from arguments of this entire `q-pkgs.nix` file.
+  # options-default from system parameters.
+  let
+    opts-0 = options-default // options;
+    corrections = {
+      ${if opts-0.ngpu == "0" then "use-cuda-software" else null} = false;
+      ${if opts-0.ngpu == "0" then "use-cuda" else null} = false;
+      ${if opts-0.ngpu == "0" then "use-cudasupport" else null} = false;
+      ${if opts-0.ngpu == "0" then "nvcc-arch" else null} = null;
+      ${if opts-0.ngpu == "0" then "cudaCapabilities" else null} = [];
+    };
+    opts = opts-0 // corrections;
+    opts-1 =
+      assert (opts.use-cuda -> opts.use-cuda-software);
+      assert (opts.use-cudasupport -> opts.use-cuda);
+      assert (opts.use-grid-gpt -> opts.use-cubaquad);
+      assert (opts.use-cuda -> opts.nvcc-arch != null);
+      assert (opts.use-cuda -> opts.cudaCapabilities != []);
+      opts;
+  in opts-1;
 
   mk-qlat-name = options:
   let
     opts = options;
-    lib = (nixpkgs {}).lib;
+    lib = o-pkgs.lib;
   in opts.qlat-name
   + lib.optionalString (! opts.use-grid-gpt) "-std"
   + lib.optionalString opts.use-cuda "-cuda"
-  + lib.optionalString opts.use-cudasupport (assert opts.use-cuda; "support")
-  + lib.optionalString (! opts.use-cubaquad) (assert (! opts.use-grid-gpt); "-cubaquadless")
+  + lib.optionalString opts.use-cudasupport "support"
+  + lib.optionalString (! opts.use-cubaquad) "-cubaquadless"
   + lib.optionalString opts.use-clang "-clang"
   + lib.optionalString (! opts.use-ucx) "-ucxless"
   + lib.optionalString opts.use-pypi "-pypi"
   ;
 
   mk-overlay = options: final: prev: let
-    opts = options-default // options;
+    opts = mk-options options;
     #
     pkgs = prev;
     lib = pkgs.lib;
@@ -80,7 +159,7 @@ let
     ++
     [ pkgs.pkg-config ]
     ++
-    lib.optionals opts.use-cuda (with pkgs.cudaPackages; [
+    lib.optionals opts.use-cuda-software (with pkgs.cudaPackages; [
       cuda_nvcc
       cuda_cccl
       cuda_cudart
@@ -90,7 +169,7 @@ let
     ]);
     #
     ucx = pkgs.ucx.override {
-      enableCuda = opts.use-cuda;
+      enableCuda = opts.use-cuda-software;
     };
     ucx-dev = pkgs.buildEnv {
       name = "ucx-dev";
@@ -98,26 +177,24 @@ let
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     mpi = (pkgs.mpi.overrideAttrs (final: prev: {
-      configureFlags = prev.configureFlags ++ (
-        let
-          cudaSupport = opts.use-cuda;
-          cudaPackages = pkgs.cudaPackages;
-        in [
-          (lib.withFeatureAs opts.use-ucx "with-ucx" "${lib.getDev ucx-dev}")
-          (lib.withFeatureAs cudaSupport "cuda-libdir" "${cudaPackages.cuda_cudart.stubs}/lib")
-        ]);
-    })).override { cudaSupport = opts.use-cuda; };
+      configureFlags = prev.configureFlags ++
+      (let
+        cudaPackages = pkgs.cudaPackages;
+      in [
+        (lib.withFeatureAs opts.use-ucx "with-ucx" "${lib.getDev ucx-dev}")
+        (lib.withFeatureAs opts.use-cuda-software "cuda-libdir" "${cudaPackages.cuda_cudart.stubs}/lib")
+      ]);
+    })).override { cudaSupport = opts.use-cuda-software; };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
         mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
           doCheck = true;
-          # doCheck = ! opts.use-cuda;
           nativeBuildInputs = (prev.nativeBuildInputs or [])
-          ++ lib.optionals opts.use-cuda [
+          ++ lib.optionals opts.use-cuda-software [
             qlat-nixgl
             pkgs.which
           ];
-          preInstallCheck = lib.optionalString opts.use-cuda ''
+          preInstallCheck = lib.optionalString opts.use-cuda-software ''
             which nixGL
             echo
             echo "run with nixGL"
@@ -138,7 +215,7 @@ let
     #
     grid-lehner-c-lime = qio;
     #
-    qlat-nixgl = if opts.use-cuda then nixgl.auto.nixGLDefault else null;
+    qlat-nixgl = if opts.use-cuda-software then nixgl else null;
     #
     cubaquad = if opts.use-cubaquad
     then call-pkg ./cubaquad.nix { stdenv = qlat-stdenv; }
@@ -234,7 +311,7 @@ let
     #
     qlat-dep-pkgs = with pkgs; ([
       git zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
-    ] ++ (if opts.use-cuda then [ qlat-nixgl ] else [])
+    ] ++ (if opts.use-cuda-software then [ qlat-nixgl ] else [])
     );
     #
     qlat-dep-pkgs-extra = with pkgs;
@@ -360,7 +437,7 @@ let
       jupyterhub-systemdspawner
     ]
     ++ qlat-py-pkgs
-    ++ lib.optionals opts.use-cuda [
+    ++ lib.optionals opts.use-cuda-software [
       pycuda
     ]);
     qlat-jhub-env = pkgs.buildEnv {
@@ -442,11 +519,11 @@ let
     inherit qlat-jhub-tests;
   };
 
-  mk-qlat-pkgs = options: let
-    opts = options-default // options;
+  mk-q-pkgs = options: let
+    opts = mk-options options;
     pkgs = nixpkgs {
       config = {
-        allowUnfree = opts.use-cuda;
+        allowUnfree = opts.use-cuda-software;
         cudaSupport = opts.use-cudasupport;
         ${if opts.use-cudasupport then "cudaCapabilities" else null} = opts.cudaCapabilities;
         ${if opts.use-cudasupport then "cudaForwardCompat" else null} = opts.cudaForwardCompat;
@@ -474,60 +551,68 @@ let
     "pkgs${pkgs.qlat-name}" = pkgs;
   };
 
-  many-qlat-pkgs = mk-qlat-pkgs {}
+  many-q-pkgs = mk-q-pkgs {}
   ;
-  many-qlat-pkgs-pypi = mk-qlat-pkgs { use-pypi = true; }
+  many-q-pkgs-pypi = mk-q-pkgs { use-pypi = true; }
   ;
-  many-qlat-pkgs-more = many-qlat-pkgs
-  // mk-qlat-pkgs { use-ucx = false; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; }
+  many-q-pkgs-more = {}
+  // mk-q-pkgs { use-grid-gpt = false; use-cubaquad = false; }
+  // mk-q-pkgs { use-grid-gpt = false; use-clang = true; }
+  // mk-q-pkgs { use-ucx = false; }
+  // many-q-pkgs
   ;
-  many-qlat-pkgs-more-pypi = many-qlat-pkgs-pypi
-  // mk-qlat-pkgs { use-ucx = false; use-pypi = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-clang = true; use-pypi = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cubaquad = false; use-pypi = true; }
+  many-q-pkgs-more-pypi = {}
+  // mk-q-pkgs { use-grid-gpt = false; use-cubaquad = false; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-clang = true; use-pypi = true; }
+  // mk-q-pkgs { use-ucx = false; use-pypi = true; }
+  // many-q-pkgs-pypi
   ;
-  many-qlat-pkgs-more-w-cuda = many-qlat-pkgs-more
-  // mk-qlat-pkgs { use-cuda = true; }
-  // mk-qlat-pkgs { use-cuda = true; use-ucx = false; }
+  many-q-pkgs-more-w-cuda = {}
+  // mk-q-pkgs { use-cuda = true; use-ucx = false; }
+  // mk-q-pkgs { use-cuda = true; }
+  // many-q-pkgs-more
   ;
-  many-qlat-pkgs-more-w-cuda-pypi = many-qlat-pkgs-more-pypi
-  // mk-qlat-pkgs { use-cuda = true; use-pypi = true; }
-  // mk-qlat-pkgs { use-cuda = true; use-ucx = false; use-pypi = true; }
+  many-q-pkgs-more-w-cuda-pypi = {}
+  // mk-q-pkgs { use-cuda = true; use-ucx = false; use-pypi = true; }
+  // mk-q-pkgs { use-cuda = true; use-pypi = true; }
+  // many-q-pkgs-more-pypi
   ;
-  many-qlat-pkgs-extra = many-qlat-pkgs-more-w-cuda
-  // mk-qlat-pkgs { use-grid-gpt = false; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; }
-  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; }
+  many-q-pkgs-extra = {}
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-ucx = false; }
+  // mk-q-pkgs { use-grid-gpt = false; }
+  // mk-q-pkgs { use-cuda = true; use-cudasupport = true; }
+  // many-q-pkgs-more-w-cuda
   ;
-  many-qlat-pkgs-extra-pypi = many-qlat-pkgs-more-w-cuda-pypi
-  // mk-qlat-pkgs { use-grid-gpt = false; use-pypi = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-ucx = false; use-pypi = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
-  // mk-qlat-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; use-pypi = true; }
-  // mk-qlat-pkgs { use-cuda = true; use-cudasupport = true; use-pypi = true; }
+  many-q-pkgs-extra-pypi = {}
+  // mk-q-pkgs { use-grid-gpt = false; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-ucx = false; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; use-pypi = true; }
+  // mk-q-pkgs { use-cuda = true; use-cudasupport = true; use-pypi = true; }
+  // many-q-pkgs-more-w-cuda-pypi
   ;
-  many-qlat-pkgs-all = many-qlat-pkgs-extra
-  // many-qlat-pkgs-extra-pypi
-  // mk-qlat-pkgs { use-clang = true; }
-  // mk-qlat-pkgs { use-clang = true; use-pypi = true; }
+  many-q-pkgs-all = {}
+  // mk-q-pkgs { use-clang = true; use-pypi = true; }
+  // mk-q-pkgs { use-clang = true; }
+  // many-q-pkgs-extra-pypi
+  // many-q-pkgs-extra
   ;
 
-in many-qlat-pkgs-all // {
-  #
-  inherit mk-qlat-pkgs;
-  inherit mk-overlay;
-  #
-  inherit many-qlat-pkgs;
-  inherit many-qlat-pkgs-pypi;
-  inherit many-qlat-pkgs-more;
-  inherit many-qlat-pkgs-more-pypi;
-  inherit many-qlat-pkgs-more-w-cuda;
-  inherit many-qlat-pkgs-more-w-cuda-pypi;
-  inherit many-qlat-pkgs-extra;
-  inherit many-qlat-pkgs-extra-pypi;
-  inherit many-qlat-pkgs-all;
-}
+  q-pkgs = many-q-pkgs-all // {
+    inherit mk-q-pkgs;
+    inherit mk-overlay;
+    #
+    inherit many-q-pkgs;
+    inherit many-q-pkgs-pypi;
+    inherit many-q-pkgs-more;
+    inherit many-q-pkgs-more-pypi;
+    inherit many-q-pkgs-more-w-cuda;
+    inherit many-q-pkgs-more-w-cuda-pypi;
+    inherit many-q-pkgs-extra;
+    inherit many-q-pkgs-extra-pypi;
+    inherit many-q-pkgs-all;
+  };
+
+in q-pkgs
