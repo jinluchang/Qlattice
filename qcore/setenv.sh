@@ -23,58 +23,58 @@ if [ "$(uname)" == "Darwin" ]; then
     if which brew >/dev/null 2>&1 ; then
         echo "Setting for brew in Mac OS X with prefix: $(brew --prefix)"
         if [ -e "$(brew --prefix)/opt/openssl@3/bin" ]; then
-            export PATH="$(brew --prefix)/opt/openssl@3/bin":"$PATH"
+            export PATH="$(brew --prefix)/opt/openssl@3/bin""${PATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/findutils/libexec/gnubin" ]; then
-            export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin":"$PATH"
+            export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin""${PATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/coreutils/libexec/gnubin" ]; then
-            export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin":"$PATH"
+            export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin""${PATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/gnu-sed/libexec/gnubin" ]; then
-            export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin":"$PATH"
+            export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin""${PATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/bin" ]; then
-            export PATH="$(brew --prefix)/opt/llvm/bin":"$PATH"
+            export PATH="$(brew --prefix)/opt/llvm/bin""${PATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/lib/c++" ]; then
-            export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LD_RUN_PATH"
+            export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++""${LD_RUN_PATH:+:$LD_RUN_PATH}"
         fi
         if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/lib":"$LIBRARY_PATH"
+            export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/openssl@3/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib":"$LIBRARY_PATH"
+            export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/lib/c++" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++":"$LIBRARY_PATH"
+            export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib/c++""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib":"$LIBRARY_PATH"
+            export LIBRARY_PATH="$(brew --prefix)/opt/llvm/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/zlib/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/opt/zlib/lib":"$LIBRARY_PATH"
+            export LIBRARY_PATH="$(brew --prefix)/opt/zlib/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/opt/lib":"$LIBRARY_PATH"
+            export LIBRARY_PATH="$(brew --prefix)/opt/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/openssl@3/include" ]; then
-            export CPATH="$(brew --prefix)/opt/openssl@3/include":"$CPATH"
+            export CPATH="$(brew --prefix)/opt/openssl@3/include""${CPATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/include" ]; then
-            export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include":"$CPATH"
+            export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include""${CPATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/include" ]; then
-            export CPATH="$(brew --prefix)/opt/llvm/include":"$CPATH"
+            export CPATH="$(brew --prefix)/opt/llvm/include""${CPATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/zlib/include" ]; then
-            export CPATH="$(brew --prefix)/opt/zlib/include":"$CPATH"
+            export CPATH="$(brew --prefix)/opt/zlib/include""${CPATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/include" ]; then
-            export CPATH="$(brew --prefix)/opt/include":"$CPATH"
+            export CPATH="$(brew --prefix)/opt/include""${CPATH:+:$PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/zlib/lib/pkgconfig" ]; then
-            export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig":"$PKG_CONFIG_PATH"
+            export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig""${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
         fi
     fi
     if [ -z ${USE_COMPILER+x} ] ; then
@@ -87,10 +87,11 @@ else
     else
         echo "Setting for $(uname) as if it is a Linux"
     fi
-    if [ -n "$LIBRARY_PATH" ] ; then
-        export LIBRARY_PATH="$LIBRARY_PATH":/usr/lib:/lib
-    else
-        export LIBRARY_PATH=/usr/lib:/lib
+    if [ -d /usr/lib ] ; then
+        export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/usr/lib
+    fi
+    if [ -d /lib ] ; then
+        export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/lib
     fi
     if [ -n "$NIX_CFLAGS_COMPILE" ] ; then
         value="$NIX_CFLAGS_COMPILE"

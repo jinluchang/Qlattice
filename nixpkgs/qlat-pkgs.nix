@@ -86,6 +86,7 @@ let
       cuda_cudart
       cuda_profiler_api
       libcufft
+      cudatoolkit
     ]);
     #
     ucx = pkgs.ucx.override {
@@ -109,8 +110,8 @@ let
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
         mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
-          # doCheck = true;
-          doCheck = ! opts.use-cuda;
+          doCheck = true;
+          # doCheck = ! opts.use-cuda;
           nativeBuildInputs = (prev.nativeBuildInputs or [])
           ++ lib.optionals opts.use-cuda [
             qlat-nixgl
@@ -127,6 +128,9 @@ let
             cat nix-gl.sh
             source nix-gl.sh
             echo
+            if [ -d /run/opengl-driver/lib ] ; then
+              export LD_LIBRARY_PATH=/run/opengl-driver/lib"''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+            fi
             echo $LD_LIBRARY_PATH
           '';
         });
@@ -377,6 +381,7 @@ let
         gnumake
         zlib
         mpi
+        hwloc
         killall
         wget
         which
