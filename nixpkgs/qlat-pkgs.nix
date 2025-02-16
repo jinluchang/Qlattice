@@ -128,9 +128,6 @@ let
             cat nix-gl.sh
             source nix-gl.sh
             echo
-            if [ -d /run/opengl-driver/lib ] ; then
-              export LD_LIBRARY_PATH=/run/opengl-driver/lib"''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-            fi
             echo $LD_LIBRARY_PATH
           '';
         });
