@@ -9,10 +9,10 @@
 let
 
   nixgl-src = (nixpkgs {}).fetchFromGitHub {
-    owner = "nix-community";
+    owner = "jinluchang";
     repo = "nixGL";
-    rev = "310f8e49a149e4c9ea52f1adf70cdc768ec53f8a";
-    hash = "sha256-lnzZQYG0+EXl/6NkGpyIz+FEOc/DSEG57AP1VsdeNrM=";
+    rev = "08e12d9b8bc8b6ea615f8393887d03643ad80def";
+    hash = "sha256-FaUn4bYtH8kZrNEQwNctvjGLjrxet5ZftLD1OR+bUnA=";
   };
 
   nixgl = import nixgl-src {};
