@@ -59,19 +59,19 @@ if [ "$(uname)" == "Darwin" ]; then
             export LIBRARY_PATH="$(brew --prefix)/opt/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/openssl@3/include" ]; then
-            export CPATH="$(brew --prefix)/opt/openssl@3/include""${CPATH:+:$PATH}"
+            export CPATH="$(brew --prefix)/opt/openssl@3/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/include" ]; then
-            export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include""${CPATH:+:$PATH}"
+            export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/include" ]; then
-            export CPATH="$(brew --prefix)/opt/llvm/include""${CPATH:+:$PATH}"
+            export CPATH="$(brew --prefix)/opt/llvm/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/opt/zlib/include" ]; then
-            export CPATH="$(brew --prefix)/opt/zlib/include""${CPATH:+:$PATH}"
+            export CPATH="$(brew --prefix)/opt/zlib/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/opt/include" ]; then
-            export CPATH="$(brew --prefix)/opt/include""${CPATH:+:$PATH}"
+            export CPATH="$(brew --prefix)/opt/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/opt/zlib/lib/pkgconfig" ]; then
             export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig""${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
