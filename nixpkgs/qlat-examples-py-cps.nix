@@ -19,7 +19,7 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, nixgl ? ""
+, nixgl ? null
 , ngpu ? "1"
 }:
 
@@ -55,7 +55,7 @@ in buildPythonPackage rec {
     rsync
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
-  ++ lib.optionals cudaSupport [ nixgl ]
+  ++ lib.optionals (nixgl != null) [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -102,6 +102,13 @@ in buildPythonPackage rec {
       export CXXFLAGS="$QLAT_CXXFLAGS"
       export LDFLAGS="$QLAT_LDFLAGS"
       #
+      export q_num_mp_processes=0
+      export num_proc=$((NIX_BUILD_CORES / 16 + 1))
+    '';
+    cpu_extra = ''
+      export num_proc=$((NIX_BUILD_CORES / 4 + 1))
+    '';
+    nixgl_extra = if nixgl == null then "" else ''
       which nixGL
       echo
       echo "run with nixGL"
@@ -114,17 +121,10 @@ in buildPythonPackage rec {
       cat nix-gl.sh
       source nix-gl.sh
       echo
-      echo
       echo $LD_LIBRARY_PATH
-      echo
-      export q_num_mp_processes=0
-      export num_proc=$((NIX_BUILD_CORES / 16 + 1))
-    '';
-    cpu_extra = ''
-      export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
-  in extra + ''
+  in extra + nixgl_extra + ''
     export OMP_NUM_THREADS=2
     export
     echo
