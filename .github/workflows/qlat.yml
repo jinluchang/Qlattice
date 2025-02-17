@@ -8,6 +8,52 @@ on:
 
 jobs:
 
+  build_nix_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v30
+    - name: Build qlat
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std.qlat-env
+    - name: Test qlat
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std.qlat-tests
+    - name: Build qlat with GPT and CPS
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-env
+    - name: Test qlat with GPT and CPS
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests
+    - name: Build qlat with jhub-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-jhub-env
+    - uses: actions/upload-artifact@v4
+      with:
+        name: qlat-docs
+        path: result/share/doc/qlat/html
+    - uses: actions/configure-pages@v4
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: result/share/doc/qlat/html
+    - uses: actions/upload-artifact@v4
+      with:
+        name: qlat-packages
+        path: result/share/qlat-pypi/*.tar.gz
+
+  deploy_docs:
+    # Add a dependency to the build job
+    needs: build_nix_ubuntu
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
   build_qlat_ubuntu:
     runs-on: ubuntu-latest
     steps:
@@ -71,32 +117,6 @@ jobs:
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: '
-    - uses: actions/upload-artifact@v4
-      with:
-        name: qlat-docs
-        path: /home/runner/qlat-build/default/qlat-docs/share/doc
-    - uses: actions/configure-pages@v4
-    - uses: actions/upload-pages-artifact@v3
-      with:
-        path: /home/runner/qlat-build/default/qlat-docs/share/doc/qlat/html
-
-  deploy_docs:
-    # Add a dependency to the build job
-    needs: build_qlat_ubuntu
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    # Specify runner + deployment step
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
 
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
@@ -311,10 +331,22 @@ jobs:
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
-    - uses: actions/upload-artifact@v4
-      with:
-        name: qlat-packages
-        path: /home/runner/qlat-build/default/qlat-packages/packages/*.tar.gz
+
+  build_nix_mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cachix/install-nix-action@v30
+    - name: Build qlat
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std.qlat-env
+    - name: Test qlat
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std.qlat-tests
+    - name: Build qlat with GPT and CPS
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-env
+    - name: Test qlat with GPT and CPS
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests
+    - name: Build qlat with jhub-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-jhub-env
 
   build_qlat_mac:
     runs-on: macos-latest
