@@ -8,7 +8,7 @@
 let
 
   o-pkgs = nixpkgs {
-    allowUnfree = true;
+    config.allowUnfree = true;
   };
 
   runCommand = o-pkgs.runCommand;
