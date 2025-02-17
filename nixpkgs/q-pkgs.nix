@@ -200,9 +200,9 @@ let
     })).override { cudaSupport = opts.use-cuda-software; };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
-        mpi4py = prev.mpi4py.overridePythonAttrs (prev: {
+        mpi4py = prev.mpi4py.overridePythonAttrs (py-prev: {
           doCheck = true;
-          nativeBuildInputs = (prev.nativeBuildInputs or [])
+          nativeBuildInputs = (py-prev.nativeBuildInputs or [])
           ++ lib.optionals opts.use-cuda-software [
             qlat-nixgl
             pkgs.which
@@ -220,6 +220,16 @@ let
             echo
             echo $LD_LIBRARY_PATH
           '';
+        });
+        jax = prev.jax.overridePythonAttrs (py-prev: {
+          doCheck = ! opts.use-cudasupport;
+          nativeBuildInputs = (py-prev.nativeBuildInputs or [])
+          ++ lib.optionals opts.use-cudasupport [
+            prev.jaxlib
+          ];
+        });
+        accelerate = prev.accelerate.overridePythonAttrs (py-prev: {
+          doCheck = ! opts.use-cudasupport;
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
