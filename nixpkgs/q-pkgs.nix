@@ -71,13 +71,13 @@ let
   then null
   else get-nvcc-arch-from-cudaCapability cudaCapability-sys;
 
-  options-default = rec {
+  options-default = {
     qlat-name = "";
     ngpu = ngpu-sys;
     nvcc-arch = nvcc-arch-sys;
     cudaCapabilities = cudaCapabilities-sys;
     cudaForwardCompat = false;
-    use-cuda-software = ngpu != "0";
+    use-cuda-software = false;
     use-grid-gpt = true;
     use-cuda = false;
     use-cudasupport = false;
@@ -99,20 +99,32 @@ let
   # options-default from system parameters.
   let
     opts-0 = options-default // options;
-    corrections = {
-      ${if opts-0.ngpu == "0" then "use-cuda-software" else null} = false;
-      ${if opts-0.ngpu == "0" then "use-cuda" else null} = false;
-      ${if opts-0.ngpu == "0" then "use-cudasupport" else null} = false;
-      ${if opts-0.ngpu == "0" then "nvcc-arch" else null} = null;
-      ${if opts-0.ngpu == "0" then "cudaCapabilities" else null} = [];
+    corrections-1 = opts: opts // {
+      ${if opts.use-grid-gpt then "use-cubaquad" else null} = true;
     };
-    opts = opts-0 // corrections;
+    corrections-2 = opts: opts // {
+      ${if opts.use-cudasupport then "use-cuda" else null} = true;
+    };
+    corrections-3 = opts: opts // {
+      ${if opts.use-cuda then "use-cuda-software" else null} = true;
+    };
+    corrections-4 = opts: opts // {
+      ${if ! opts.use-cuda-software then "ngpu" else null} = 0;
+      ${if ! opts.use-cuda-software then "nvcc-arch" else null} = null;
+      ${if ! opts.use-cuda-software then "cudaCapabilities" else null} = [];
+    };
+    corrections-5 = opts: opts // {
+      ${if opts.ngpu == "0" then "use-cuda-software" else null} = false;
+      ${if opts.ngpu == "0" then "use-cuda" else null} = false;
+      ${if opts.ngpu == "0" then "use-cudasupport" else null} = false;
+    };
+    opts = corrections-5 (corrections-4 (corrections-3 (corrections-2 (corrections-1 opts-0))));
     opts-1 =
-      assert (opts.use-cuda -> opts.use-cuda-software);
       assert (opts.use-cudasupport -> opts.use-cuda);
+      assert (opts.use-cuda -> opts.use-cuda-software);
+      assert (opts.use-cuda-software -> opts.nvcc-arch != null);
+      assert (opts.nvcc-arch != null -> opts.cudaCapabilities != []);
       assert (opts.use-grid-gpt -> opts.use-cubaquad);
-      assert (opts.use-cuda -> opts.nvcc-arch != null);
-      assert (opts.use-cuda -> opts.cudaCapabilities != []);
       opts;
   in opts-1;
 
@@ -122,7 +134,8 @@ let
     lib = o-pkgs.lib;
   in opts.qlat-name
   + lib.optionalString (! opts.use-grid-gpt) "-std"
-  + lib.optionalString opts.use-cuda "-cuda"
+  + lib.optionalString opts.use-cuda-software "-cu"
+  + lib.optionalString opts.use-cuda "da"
   + lib.optionalString opts.use-cudasupport "support"
   + lib.optionalString (! opts.use-cubaquad) "-cubaquadless"
   + lib.optionalString opts.use-clang "-clang"
@@ -551,68 +564,76 @@ let
     "pkgs${pkgs.qlat-name}" = pkgs;
   };
 
-  many-q-pkgs = mk-q-pkgs {}
+  q-pkgs = mk-q-pkgs {}
   ;
-  many-q-pkgs-pypi = mk-q-pkgs { use-pypi = true; }
+  q-pkgs-pypi = mk-q-pkgs { use-pypi = true; }
   ;
-  many-q-pkgs-more = {}
+  q-pkgs-more = {}
   // mk-q-pkgs { use-grid-gpt = false; use-cubaquad = false; }
   // mk-q-pkgs { use-grid-gpt = false; use-clang = true; }
   // mk-q-pkgs { use-ucx = false; }
-  // many-q-pkgs
+  // q-pkgs
   ;
-  many-q-pkgs-more-pypi = {}
+  q-pkgs-more-pypi = {}
   // mk-q-pkgs { use-grid-gpt = false; use-cubaquad = false; use-pypi = true; }
   // mk-q-pkgs { use-grid-gpt = false; use-clang = true; use-pypi = true; }
   // mk-q-pkgs { use-ucx = false; use-pypi = true; }
-  // many-q-pkgs-pypi
+  // q-pkgs-pypi
   ;
-  many-q-pkgs-more-w-cuda = {}
+  q-pkgs-more-w-cuda = {}
   // mk-q-pkgs { use-cuda = true; use-ucx = false; }
   // mk-q-pkgs { use-cuda = true; }
-  // many-q-pkgs-more
+  // mk-q-pkgs { use-cuda-software = true; use-ucx = false; }
+  // mk-q-pkgs { use-cuda-software = true; }
+  // q-pkgs-more
   ;
-  many-q-pkgs-more-w-cuda-pypi = {}
+  q-pkgs-more-w-cuda-pypi = {}
   // mk-q-pkgs { use-cuda = true; use-ucx = false; use-pypi = true; }
   // mk-q-pkgs { use-cuda = true; use-pypi = true; }
-  // many-q-pkgs-more-pypi
+  // mk-q-pkgs { use-cuda-software = true; use-ucx = false; use-pypi = true; }
+  // mk-q-pkgs { use-cuda-software = true; use-pypi = true; }
+  // q-pkgs-more-pypi
   ;
-  many-q-pkgs-extra = {}
+  q-pkgs-extra = {}
   // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; }
   // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda-software = true; use-ucx = false; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda-software = true; }
   // mk-q-pkgs { use-grid-gpt = false; use-ucx = false; }
   // mk-q-pkgs { use-grid-gpt = false; }
-  // mk-q-pkgs { use-cuda = true; use-cudasupport = true; }
-  // many-q-pkgs-more-w-cuda
+  // mk-q-pkgs { use-cudasupport = true; }
+  // q-pkgs-more-w-cuda
   ;
-  many-q-pkgs-extra-pypi = {}
-  // mk-q-pkgs { use-grid-gpt = false; use-pypi = true; }
-  // mk-q-pkgs { use-grid-gpt = false; use-ucx = false; use-pypi = true; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
+  q-pkgs-extra-pypi = {}
   // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-ucx = false; use-pypi = true; }
-  // mk-q-pkgs { use-cuda = true; use-cudasupport = true; use-pypi = true; }
-  // many-q-pkgs-more-w-cuda-pypi
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda = true; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda-software = true; use-ucx = false; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-cuda-software = true; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-ucx = false; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-pypi = true; }
+  // mk-q-pkgs { use-cudasupport = true; use-pypi = true; }
+  // q-pkgs-more-w-cuda-pypi
   ;
-  many-q-pkgs-all = {}
+  q-pkgs-all = {}
   // mk-q-pkgs { use-clang = true; use-pypi = true; }
   // mk-q-pkgs { use-clang = true; }
-  // many-q-pkgs-extra-pypi
-  // many-q-pkgs-extra
+  // q-pkgs-extra-pypi
+  // q-pkgs-extra
   ;
 
-  q-pkgs = many-q-pkgs-all // {
+  all-q-pkgs = q-pkgs-all // {
     inherit mk-q-pkgs;
     inherit mk-overlay;
     #
-    inherit many-q-pkgs;
-    inherit many-q-pkgs-pypi;
-    inherit many-q-pkgs-more;
-    inherit many-q-pkgs-more-pypi;
-    inherit many-q-pkgs-more-w-cuda;
-    inherit many-q-pkgs-more-w-cuda-pypi;
-    inherit many-q-pkgs-extra;
-    inherit many-q-pkgs-extra-pypi;
-    inherit many-q-pkgs-all;
+    inherit q-pkgs;
+    inherit q-pkgs-pypi;
+    inherit q-pkgs-more;
+    inherit q-pkgs-more-pypi;
+    inherit q-pkgs-more-w-cuda;
+    inherit q-pkgs-more-w-cuda-pypi;
+    inherit q-pkgs-extra;
+    inherit q-pkgs-extra-pypi;
+    inherit q-pkgs-all;
   };
 
-in q-pkgs
+in all-q-pkgs

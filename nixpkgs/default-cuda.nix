@@ -1,6 +1,6 @@
 {
   nixpkgs ? import ./nixpkgs.nix,
-  name ? "many-q-pkgs-more-w-cuda",
+  name ? "q-pkgs-more-w-cuda",
 }:
 
 let
