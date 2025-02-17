@@ -16,39 +16,48 @@ cd "$dst"
 time (
 for name in \
     "" \
-    "-cuda" \
     "-cu" \
+    "-cuda" \
+    "-cudasupport" \
     "-std" \
+    "-gridless" \
+    "-cpsless" \
+    "-gridless-cubaquadless" \
     "-std-clang" \
     "-ucxless" \
-    "-cuda-ucxless" \
-    "-cu-ucxless" \
-    "-cudasupport" \
-    "-std-cubaquadless" \
+    "-pypi" \
     "-std-ucxless" \
-    "-std-cuda" \
+    "-std-clang-ucxless" \
+    "-cu-ucxless" \
+    "-cuda-ucxless" \
     "-std-cu" \
-    "-std-cuda-ucxless" \
+    "-std-cuda" \
     "-std-cu-ucxless" \
+    "-std-cuda-ucxless" \
     "-pypi" \
     ; do
     time nix-build "$src"/q-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-11"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.11/nixexprs.tar.xz")' "$@"
 done
 for name in \
     "" \
-    "-cuda" \
     "-cu" \
+    "-cuda" \
+    "-cudasupport" \
     "-std" \
+    "-gridless" \
+    "-cpsless" \
+    "-gridless-cubaquadless" \
     "-std-clang" \
     "-ucxless" \
-    "-cuda-ucxless" \
-    "-cu-ucxless" \
-    "-std-cubaquadless" \
+    "-pypi" \
     "-std-ucxless" \
-    "-std-cuda" \
+    "-std-clang-ucxless" \
+    "-cu-ucxless" \
+    "-cuda-ucxless" \
     "-std-cu" \
-    "-std-cuda-ucxless" \
+    "-std-cuda" \
     "-std-cu-ucxless" \
+    "-std-cuda-ucxless" \
     "-pypi" \
     ; do
     time nix-build "$src"/q-pkgs.nix -A qlat-jhub-tests"$name" -o result-24-05"$name" --arg nixpkgs 'import (fetchTarball "https://channels.nixos.org/nixos-24.05/nixexprs.tar.xz")' "$@"
