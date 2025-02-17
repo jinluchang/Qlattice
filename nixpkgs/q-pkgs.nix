@@ -193,10 +193,9 @@ let
       configureFlags = prev.configureFlags ++
       (let
         cudaPackages = pkgs.cudaPackages;
-      in [
-        (lib.withFeatureAs opts.use-ucx "with-ucx" "${lib.getDev ucx-dev}")
-        (lib.withFeatureAs opts.use-cuda-software "cuda-libdir" "${cudaPackages.cuda_cudart.stubs}/lib")
-      ]);
+      in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-dev}" ]
+      ++ lib.optionals opts.use-cuda-software [ "--cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
+      );
     })).override { cudaSupport = opts.use-cuda-software; };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
