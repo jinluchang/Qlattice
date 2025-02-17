@@ -103,6 +103,9 @@ in buildPythonPackage rec {
       export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
+      if [ "$(uname)" == "Darwin" ]; then
+        export q_num_mp_processes=0
+      fi
       export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     '';
     nixgl_extra = if nixgl == null then "" else ''
