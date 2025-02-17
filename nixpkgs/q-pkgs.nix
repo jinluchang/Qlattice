@@ -519,6 +519,7 @@ let
       ++ qlat-dep-pkgs-extra
       ;
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
+      ignoreCollisions = true;
     };
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${qlat-name}";
