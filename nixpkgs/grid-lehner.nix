@@ -22,11 +22,14 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
+, cpuinfo ? "flags : avx2"
 }:
 
 let
 
   grid-stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv;
+
+  cpuinfo-has-avx2 = (builtins.match ".*flags.*:.*avx2.*" cpuinfo) != null;
 
 in grid-stdenv.mkDerivation rec {
 
@@ -132,18 +135,20 @@ in grid-stdenv.mkDerivation rec {
   '' + extra;
 
   configureFlags = let
-    cpu_flags = [
+    cpu_avx2_flags = [
       "--enable-simd=AVX2"
       "--enable-alloc-align=4k"
       "--enable-comms=mpi-auto"
       "--enable-gparity=no"
-      # "--with-gmp"
-      # "--with-mpfr"
-      # "--with-lime"
-      # "--with-openssl"
-      # "--with-fftw"
-      # "--with-hdf5"
     ];
+    cpu_gen16_flags = [
+      "--enable-simd=GEN"
+      "--enable-gen-simd-width=16"
+      "--enable-alloc-align=4k"
+      "--enable-comms=mpi-auto"
+      "--enable-gparity=no"
+    ];
+    cpu_flags = if cpuinfo-has-avx2 then cpu_avx2_flags else cpu_gen16_flags;
     gpu_flags = [
       "--enable-simd=GPU"
       "--enable-gen-simd-width=32"
@@ -154,12 +159,6 @@ in grid-stdenv.mkDerivation rec {
       "--enable-unified=no"
       "--enable-accelerator=cuda"
       "--enable-accelerator-cshift"
-      # "--with-gmp"
-      # "--with-mpfr"
-      # "--with-lime"
-      # "--with-openssl"
-      # "--with-fftw"
-      # "--with-hdf5"
     ];
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;

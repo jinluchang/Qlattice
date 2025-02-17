@@ -22,6 +22,21 @@ let
 
   nixgl = (import nixgl-src {}).auto.nixGLDefault;
 
+  cpuinfo-sys = builtins.readFile (runCommand
+  "impure-cpuinfo-file"
+  {
+    time = builtins.currentTime;
+    preferLocalBuild = true;
+    allowSubstitutes = false;
+  }
+  ''
+    cat /proc/cpuinfo >$out 2>/dev/null || echo >$out
+    echo "cpuinfo="
+    echo "$(head -n 30 $out)"
+    echo "--------"
+  ''
+  );
+
   ngpu-sys = builtins.head (builtins.match
   "(.*)\n"
   (builtins.readFile (runCommand
@@ -194,7 +209,7 @@ let
       (let
         cudaPackages = pkgs.cudaPackages;
       in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-dev}" ]
-      ++ lib.optionals opts.use-cuda-software [ "--cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
+      ++ lib.optionals opts.use-cuda-software [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
       );
     })).override { cudaSupport = opts.use-cuda-software; };
     python3 = pkgs.python3.override {
@@ -252,6 +267,7 @@ let
       c-lime = grid-lehner-c-lime;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      cpuinfo = cpuinfo-sys;
     };
     #
     qlat_utils = py-call-pkg ./qlat_utils.nix {
