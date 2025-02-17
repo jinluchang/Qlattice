@@ -579,12 +579,14 @@ let
   ;
   q-pkgs-more = {}
   // mk-q-pkgs { use-grid-gpt = false; use-cubaquad = false; }
+  // mk-q-pkgs { use-grid-gpt = false; use-clang = true; use-ucx = false; }
   // mk-q-pkgs { use-grid-gpt = false; use-clang = true; }
   // mk-q-pkgs { use-ucx = false; }
   // q-pkgs
   ;
   q-pkgs-more-pypi = {}
   // mk-q-pkgs { use-grid-gpt = false; use-cubaquad = false; use-pypi = true; }
+  // mk-q-pkgs { use-grid-gpt = false; use-clang = true; use-ucx = false; use-pypi = true; }
   // mk-q-pkgs { use-grid-gpt = false; use-clang = true; use-pypi = true; }
   // mk-q-pkgs { use-ucx = false; use-pypi = true; }
   // q-pkgs-pypi
@@ -624,7 +626,9 @@ let
   // q-pkgs-more-w-cuda-pypi
   ;
   q-pkgs-all = {}
+  // mk-q-pkgs { use-clang = true; use-ucx = false; use-pypi = true; }
   // mk-q-pkgs { use-clang = true; use-pypi = true; }
+  // mk-q-pkgs { use-clang = true; use-ucx = false; }
   // mk-q-pkgs { use-clang = true; }
   // q-pkgs-extra-pypi
   // q-pkgs-extra
