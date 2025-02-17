@@ -14,15 +14,15 @@ jobs:
     - uses: actions/checkout@v4
     - uses: cachix/install-nix-action@v30
     - name: Build qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env -j 1 --cores 4
     - name: Test qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-tests
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-tests -j 1 --cores 4
     - name: Build qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-env -j 1 --cores 4
     - name: Test qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-tests
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-tests -j 1 --cores 4
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-jhub-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-jhub-env -j 1 --cores 4
     - uses: actions/upload-artifact@v4
       with:
         name: qlat-docs
@@ -338,15 +338,15 @@ jobs:
     - uses: actions/checkout@v4
     - uses: cachix/install-nix-action@v30
     - name: Build qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3
     - name: Build qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-tests
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-tests -j 1 --cores 3
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-jhub-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-jhub-env -j 1 --cores 3
 
   build_qlat_mac:
     runs-on: macos-latest
