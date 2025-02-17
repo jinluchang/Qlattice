@@ -338,15 +338,15 @@ jobs:
     - uses: actions/checkout@v4
     - uses: cachix/install-nix-action@v30
     - name: Build qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std.qlat-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env
     - name: Test qlat
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std.qlat-tests
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-tests
     - name: Build qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-env
     - name: Test qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-tests
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-jhub-env
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-jhub-env
 
   build_qlat_mac:
     runs-on: macos-latest
