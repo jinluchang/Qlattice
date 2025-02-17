@@ -17,7 +17,7 @@ def build_corr_from_param_arr(
         extra_state_sign_arr=None,
         extra_state_sign_t_start_arr=None,
         ):
-    """
+    r"""
     param_arr = np.concatenate([ es.ravel(), cs.ravel() ], dtype=np.float64)
     es.shape == (n_eigs,)
     cs.shape == (n_eigs, n_ops,)
