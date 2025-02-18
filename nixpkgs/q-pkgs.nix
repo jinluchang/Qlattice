@@ -246,6 +246,7 @@ let
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
+        lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
       };
     };
     #
@@ -425,6 +426,7 @@ let
       jaxlib
       gvar
       vegas
+      lsqfit
       meson
       ninja
       mpi4py
@@ -490,7 +492,7 @@ let
         bash-completion
         coreutils
         openssh
-        linux-pam
+        # linux-pam
         findutils
         clang-tools
         git
