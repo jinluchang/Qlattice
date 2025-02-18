@@ -20,18 +20,27 @@
 , nvcc-arch ? "sm_86"
 , nixgl ? null
 , ngpu ? "1"
+, use-pypi ? null
 }:
 
 let
+
   orig-stdenv = stdenv;
+
+  version-pypi = use-pypi;
+  qlat-src-pypi = builtins.fetchTarball "https://github.com/jinluchang/Qlattice/archive/refs/tags/v${version-pypi}.tar.gz";
+
+  version = if use-pypi != null then version-pypi else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
+
+  src = if use-pypi != null then "${qlat-src-pypi}/examples-cpp-grid" else ../examples-cpp-grid;
+
 in buildPythonPackage rec {
 
+  inherit version src;
+
   pname = "qlat-examples-cpp-grid${qlat-name}";
-  version = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
 
   pyproject = false;
-
-  src = ../examples-cpp-grid;
 
   enableParallelBuilding = true;
 

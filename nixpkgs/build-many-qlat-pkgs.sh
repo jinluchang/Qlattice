@@ -19,7 +19,7 @@ time (
 for nix_version in "24.11" "24.05" ; do
     time nix-build "$src"/q-pkgs.nix -A qlat-name-list-file -o result-qlat-name-"$nix_version" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
     for name in $(cat result-qlat-name-"$nix_version") ; do
-        time nix-build "$src"/q-pkgs.nix -A qlat-jhub-tests"$name" -o result-"$nix_version$name" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
+        time nix-build "$src"/q-pkgs.nix -A q-pkgs"$name" -o result-"$nix_version$name" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
     done
 done
 

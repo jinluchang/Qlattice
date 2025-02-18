@@ -14,7 +14,7 @@
 , which
 , autoAddDriverRunpath
 , openmp ? null
-, use-pypi ? true
+, use-pypi ? null
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
@@ -25,13 +25,9 @@ let
 
   orig-stdenv = stdenv;
 
-  version-pypi = "0.76";
-  src-pypi = fetchPypi {
-    pname = "qlat_utils";
-    version = version-pypi;
-    extension = "tar.gz";
-    hash = "sha256-qIBYeA6yAXz6o3s1hq6iTnmn8QigPUIm0T1WDfDQZTg=";
-  };
+  version-pypi = use-pypi;
+
+  src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz";
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat-utils;
@@ -39,11 +35,11 @@ let
 in buildPythonPackage rec {
 
   pname = "qlat_utils${qlat-name}";
-  version = if use-pypi then version-pypi else version-local;
+  version = if use-pypi != null then version-pypi else version-local;
 
   pyproject = true;
 
-  src = if use-pypi then src-pypi else src-local;
+  src = if use-pypi != null then src-pypi else src-local;
 
   enableParallelBuilding = true;
 

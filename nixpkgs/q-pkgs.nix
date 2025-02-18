@@ -17,12 +17,9 @@ let
 
   runCommand = o-pkgs.runCommand;
 
-  nixgl-src = o-pkgs.fetchFromGitHub {
-    owner = "jinluchang";
-    repo = "nixGL";
-    rev = "0666d975fb80a7e8bedb4caafff8f113c5b14072";
-    hash = "sha256-6uwDh6sGa/bH2Ol+8rVcowP98IpxIW6gIeJLFFeX7cM=";
-  };
+  version-pypi = "0.76";
+
+  nixgl-src = builtins.fetchTarball "https://github.com/jinluchang/nixGL/archive/0666d975fb80a7e8bedb4caafff8f113c5b14072.tar.gz";
 
   nixgl = (import nixgl-src {}).auto.nixGLDefault;
 
@@ -97,7 +94,7 @@ let
     use-cubaquad = true;
     use-clang = false;
     use-ucx = true;
-    use-pypi = false;
+    use-pypi = null;
   } // {
     ${if ngpu != null then "ngpu" else null} = ngpu;
     ${if cudaCapability != null then "nvcc-arch" else null} = get-nvcc-arch-from-cudaCapability cudaCapability;
@@ -154,7 +151,7 @@ let
   + lib.optionalString (! opts.use-cubaquad) "-cubaquadless"
   + lib.optionalString opts.use-clang "-clang"
   + lib.optionalString (! opts.use-ucx) "-ucxless"
-  + lib.optionalString opts.use-pypi "-pypi"
+  + lib.optionalString (opts.use-pypi != null) "-pypi"
   ;
 
   mk-overlay = options: final: prev: let
@@ -551,8 +548,10 @@ let
       '';
     };
     #
-    qlat-jhub-tests = {
-      inherit qlat-tests qlat-jhub-env;
+    q-pkgs = {
+      inherit qlat-py qlat-env qlat-sh qlat-fhs;
+      inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
+      inherit qlat-tests;
     };
     #
   in {
@@ -563,9 +562,9 @@ let
     inherit qlat_utils qlat qlat_grid qlat_cps;
     inherit qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt qlat-examples-py-cps;
     inherit qlat_docs qlat_pypipkgs;
-    inherit qlat-py qlat-pkgs qlat-tests qlat-env qlat-sh qlat-fhs;
+    inherit qlat-py qlat-tests qlat-env qlat-sh qlat-fhs;
     inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
-    inherit qlat-jhub-tests;
+    inherit qlat-pkgs q-pkgs;
   };
 
   mk-q-pkgs = options: let
@@ -583,18 +582,20 @@ let
     };
   in {
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
+    "q-pkgs${pkgs.qlat-name}" = pkgs.q-pkgs;
     "pkgs${pkgs.qlat-name}" = pkgs;
-    "qlat-jhub-tests${pkgs.qlat-name}" = pkgs.qlat-jhub-tests;
     #
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
-    "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
     "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
     "qlat-fhs${pkgs.qlat-name}" = pkgs.qlat-fhs;
+    #
     "qlat-jhub-py${pkgs.qlat-name}" = pkgs.qlat-jhub-py;
     "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
     "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
     "qlat-jhub-fhs${pkgs.qlat-name}" = pkgs.qlat-jhub-fhs;
+    #
+    "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
   };
 
   options-list = [
@@ -608,7 +609,7 @@ let
     { use-grid-gpt = false; use-cubaquad = false; }
     { use-grid-gpt = false; use-clang = true; }
     { use-ucx = false; }
-    { use-pypi = true; }
+    { use-pypi = version-pypi; }
     #
     { use-grid-gpt = false; use-cps = false; use-ucx = false; }
     { use-grid-gpt = false; use-cps = false; use-clang = true; use-ucx = false; }

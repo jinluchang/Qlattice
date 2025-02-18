@@ -7,7 +7,7 @@
 , grid-lehner
 , git
 , which
-, use-pypi ? true
+, use-pypi ? null
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
@@ -19,13 +19,8 @@ let
 
   orig-stdenv = stdenv;
 
-  version-pypi = "0.76";
-  src-pypi = fetchPypi {
-    pname = "qlat_grid";
-    version = version-pypi;
-    extension = "tar.gz";
-    hash = "sha256-QdihqYcV0hGO6IHScCV4vcRseSA2cCYTOR4/uId1bmA=";
-  };
+  version-pypi = use-pypi;
+  src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_grid/qlat_grid-${version-pypi}.tar.gz";
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat-grid;
@@ -33,11 +28,11 @@ let
 in buildPythonPackage rec {
 
   pname = "qlat_grid${qlat-name}";
-  version = if use-pypi then version-pypi else version-local;
+  version = if use-pypi != null then version-pypi else version-local;
 
   pyproject = true;
 
-  src = if use-pypi then src-pypi else src-local;
+  src = if use-pypi != null then src-pypi else src-local;
 
   enableParallelBuilding = true;
 

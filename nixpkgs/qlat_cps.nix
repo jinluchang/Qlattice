@@ -7,7 +7,7 @@
 , cps
 , git
 , which
-, use-pypi ? true
+, use-pypi ? null
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
@@ -19,13 +19,8 @@ let
 
   orig-stdenv = stdenv;
 
-  version-pypi = "0.76";
-  src-pypi = fetchPypi {
-    pname = "qlat_cps";
-    version = version-pypi;
-    extension = "tar.gz";
-    hash = "sha256-ieAl3fLL3d3GYWu8HSGFIOTSCpEkZ34HmfNUhaYytvI=";
-  };
+  version-pypi = use-pypi;
+  src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_cps/qlat_cps-${version-pypi}.tar.gz";
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat-cps;
@@ -33,11 +28,11 @@ let
 in buildPythonPackage rec {
 
   pname = "qlat_cps${qlat-name}";
-  version = if use-pypi then version-pypi else version-local;
+  version = if use-pypi != null then version-pypi else version-local;
 
   pyproject = true;
 
-  src = if use-pypi then src-pypi else src-local;
+  src = if use-pypi != null then src-pypi else src-local;
 
   enableParallelBuilding = true;
 
