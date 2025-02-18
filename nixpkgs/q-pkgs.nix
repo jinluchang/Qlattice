@@ -30,8 +30,7 @@ let
   ''
     cat /proc/cpuinfo >$out 2>/dev/null || echo >$out
     echo "cpuinfo="
-    echo "$(head -n 30 $out)"
-    echo "--------"
+    echo "$(grep '^flags' $out 2>/dev/null | head -n 1)"
   ''
   );
 
@@ -179,19 +178,23 @@ let
     else pkgs.eigen;
     #
     qlat-cc = (if ! opts.use-clang
-    then [ pkgs.gcc ]
-    else [ pkgs.clang openmp ])
-    ++
-    [ pkgs.pkg-config ]
-    ++
-    lib.optionals opts.use-cuda-software (with pkgs.cudaPackages; [
+    then { inherit (pkgs) gcc; }
+    else { inherit (pkgs) clang; inherit openmp; }
+    )
+    //
+    { inherit (pkgs) pkg-config; }
+    //
+    (if opts.use-cuda-software then {
+      inherit (pkgs.cudaPackages)
       cuda_nvcc
       cuda_cccl
       cuda_cudart
       cuda_profiler_api
       libcufft
       cudatoolkit
-    ]);
+      ;
+    } else {}
+    );
     #
     ucx = pkgs.ucx.override {
       enableCuda = opts.use-cuda-software;
@@ -344,61 +347,57 @@ let
       nixgl = qlat-nixgl;
     };
     #
-    qlat-dep-pkgs = with pkgs; ([
-      git zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr
-    ] ++ (if opts.use-cuda-software then [ qlat-nixgl ] else [])
-    );
+    qlat-dep-pkgs = {
+      inherit (pkgs) git zlib gsl fftw fftwFloat hdf5-cpp openssl gmp mpfr;
+    } // (if opts.use-cuda-software then { inherit qlat-nixgl; } else {});
     #
-    qlat-dep-pkgs-extra = with pkgs;
-    if ! opts.use-grid-gpt && ! opts.use-cps then [
-      mpi cubaquad qlat-eigen
-    ] else if opts.use-grid-gpt && ! opts.use-cps then [
-      mpi cubaquad qlat-eigen grid-lehner c-lime
-    ] else if ! opts.use-grid-gpt && opts.use-cps then [
-      mpi cubaquad qlat-eigen cps qmp qio
-    ] else [
-      mpi cubaquad qlat-eigen cps qmp qio grid-lehner
-    ];
-    qlat-py-pkgs = with pkgs;
-    if ! opts.use-grid-gpt && ! opts.use-cps then [
-      qlat_utils qlat
-    ] else if opts.use-grid-gpt && ! opts.use-cps then [
-      qlat_utils qlat qlat_grid gpt-lehner
-    ] else if ! opts.use-grid-gpt && opts.use-cps then [
-      qlat_utils qlat qlat_cps
-    ] else [
-      qlat_utils qlat qlat_grid qlat_cps gpt-lehner qlat_docs qlat_pypipkgs
-    ];
-    qlat-tests-pkgs = with pkgs;
-    if ! opts.use-grid-gpt && ! opts.use-cps then [
-      qlat-examples-cpp qlat-examples-py
-    ] else if opts.use-grid-gpt && ! opts.use-cps then [
-      qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt
-    ] else if ! opts.use-grid-gpt && opts.use-cps then [
-      qlat-examples-cpp qlat-examples-py qlat-examples-py-cps
-    ] else [
-      qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt qlat-examples-py-cps
-    ];
+    qlat-dep-pkgs-extra = if ! opts.use-grid-gpt && ! opts.use-cps then {
+      inherit mpi cubaquad qlat-eigen;
+    } else if opts.use-grid-gpt && ! opts.use-cps then {
+      inherit mpi cubaquad qlat-eigen grid-lehner c-lime;
+    } else if ! opts.use-grid-gpt && opts.use-cps then {
+      inherit mpi cubaquad qlat-eigen cps qmp qio;
+    } else {
+      inherit mpi cubaquad qlat-eigen cps qmp qio grid-lehner;
+    };
+    qlat-py-pkgs = if ! opts.use-grid-gpt && ! opts.use-cps then {
+      inherit qlat_utils qlat;
+    } else if opts.use-grid-gpt && ! opts.use-cps then {
+      inherit qlat_utils qlat qlat_grid gpt-lehner;
+    } else if ! opts.use-grid-gpt && opts.use-cps then {
+      inherit qlat_utils qlat qlat_cps;
+    } else {
+      inherit qlat_utils qlat qlat_grid qlat_cps gpt-lehner qlat_docs qlat_pypipkgs;
+    };
+    qlat-tests-pkgs = if ! opts.use-grid-gpt && ! opts.use-cps then {
+      inherit qlat-examples-cpp qlat-examples-py;
+    } else if opts.use-grid-gpt && ! opts.use-cps then {
+      inherit qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt;
+    } else if ! opts.use-grid-gpt && opts.use-cps then {
+      inherit qlat-examples-cpp qlat-examples-py qlat-examples-py-cps;
+    } else {
+      inherit qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt qlat-examples-py-cps;
+    };
     #
-    qlat-py = python3.withPackages (ps: qlat-py-pkgs);
-    qlat-pkgs = with pkgs; [
-      qlat-py
-    ] ++ qlat-dep-pkgs ++ qlat-dep-pkgs-extra;
+    qlat-py = python3.withPackages (ps: builtins.attrValues qlat-py-pkgs);
+    qlat-pkgs = {
+      inherit qlat-py;
+    } // qlat-dep-pkgs // qlat-dep-pkgs-extra;
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${qlat-name}";
-      paths = qlat-tests-pkgs;
+      paths = builtins.attrValues qlat-tests-pkgs;
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     qlat-env = pkgs.buildEnv {
       name = "qlat-env${qlat-name}";
-      paths = qlat-pkgs;
+      paths = builtins.attrValues qlat-pkgs;
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${qlat-name}";
       packages = [ qlat-env ];
       inputsFrom = packages;
-      buildInputs = qlat-cc;
+      buildInputs = builtins.attrValues qlat-cc;
       shellHook = ''
       '';
     };
@@ -406,17 +405,18 @@ let
       name = "qlat-fhs${qlat-name}";
       targetPkgs = pkgs: [
         qlat-env
-      ] ++ qlat-cc;
+      ] ++ builtins.attrValues qlat-cc;
       multiPkgs = pkgs: [
         qlat-env
-      ] ++ qlat-cc;
+      ] ++ builtins.attrValues qlat-cc;
       runScript = "bash";
       extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
       profile=''
         # PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
     };
-    qlat-jhub-py = python3.withPackages (ps: with ps; [
+    qlat-jhub-py = python3.withPackages (ps: builtins.attrValues ({
+      inherit (ps)
       ipykernel
       pip
       numpy
@@ -472,15 +472,21 @@ let
       jupyterlab
       jupyterhub
       jupyterhub-systemdspawner
-    ]
-    ++ qlat-py-pkgs
-    ++ lib.optionals opts.use-cuda-software [
-      pycuda
-    ]);
+      ;
+    }
+    //
+    qlat-py-pkgs
+    //
+    (if opts.use-cuda-software then {
+      inherit (ps) pycuda;
+    } else {}
+    )
+    ));
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
-      paths = with pkgs; [
-        qlat-jhub-py
+      paths = builtins.attrValues ({
+        inherit qlat-jhub-py mpi;
+        inherit (pkgs)
         bashInteractive
         bash-completion
         coreutils
@@ -491,7 +497,6 @@ let
         git
         gnumake
         zlib
-        mpi
         hwloc
         killall
         wget
@@ -512,11 +517,12 @@ let
         zip
         unzip
         ollama
-      ]
-      ++ qlat-cc
-      ++ qlat-dep-pkgs
-      ++ qlat-dep-pkgs-extra
-      ;
+        ;
+      }
+      // qlat-cc
+      // qlat-dep-pkgs
+      // qlat-dep-pkgs-extra
+      );
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
     };
@@ -524,7 +530,7 @@ let
       name = "qlat-jhub-sh${qlat-name}";
       packages = [ qlat-jhub-env ];
       inputsFrom = packages;
-      buildInputs = qlat-cc;
+      buildInputs = builtins.attrValues qlat-cc;
       shellHook = ''
       '';
     };
@@ -532,10 +538,10 @@ let
       name = "qlat-jhub-fhs${qlat-name}";
       targetPkgs = pkgs: [
         qlat-jhub-env
-      ] ++ qlat-cc;
+      ] ++ builtins.attrValues qlat-cc;
       multiPkgs = pkgs: [
         qlat-jhub-env
-      ] ++ qlat-cc;
+      ] ++ builtins.attrValues qlat-cc;
       runScript = "bash";
       extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
       profile=''
@@ -573,11 +579,10 @@ let
       ];
     };
   in {
-    "qlat_utils${pkgs.qlat-name}" = pkgs.qlat_utils;
-    "qlat${pkgs.qlat-name}" = pkgs.qlat;
-    "qlat_grid${pkgs.qlat-name}" = pkgs.qlat_grid;
-    "qlat_cps${pkgs.qlat-name}" = pkgs.qlat_cps;
     "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
+    "pkgs${pkgs.qlat-name}" = pkgs;
+    "qlat-jhub-tests${pkgs.qlat-name}" = pkgs.qlat-jhub-tests;
+    #
     "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
@@ -587,62 +592,34 @@ let
     "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
     "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
     "qlat-jhub-fhs${pkgs.qlat-name}" = pkgs.qlat-jhub-fhs;
-    "qlat-jhub-tests${pkgs.qlat-name}" = pkgs.qlat-jhub-tests;
-    "pkgs${pkgs.qlat-name}" = pkgs;
   };
 
-  q-pkgs = mk-q-pkgs {}
-  ;
-  q-pkgs-pypi = mk-q-pkgs { use-pypi = true; }
-  ;
-  q-pkgs-more = {}
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-cubaquad = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-clang = true; use-ucx = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-clang = true; use-ucx = false; }
-  // mk-q-pkgs { use-cps = false; use-clang = true; use-ucx = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-clang = true; }
-  // mk-q-pkgs { use-grid-gpt = false; use-clang = true; }
-  // mk-q-pkgs { use-cps = false; use-clang = true; }
-  // mk-q-pkgs { use-ucx = false; }
-  // q-pkgs-pypi
-  // q-pkgs
-  ;
-  q-pkgs-more-w-cuda = {}
-  // mk-q-pkgs { use-cuda = true; use-ucx = false; }
-  // mk-q-pkgs { use-cuda = true; }
-  // mk-q-pkgs { use-cuda-software = true; use-ucx = false; }
-  // mk-q-pkgs { use-cuda-software = true; }
-  // q-pkgs-more
-  ;
-  q-pkgs-extra = {}
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-cuda = true; use-ucx = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-cuda = true; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-cuda-software = true; use-ucx = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-cuda-software = true; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; use-ucx = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-ucx = false; }
-  // mk-q-pkgs { use-cps = false; use-ucx = false; }
-  // mk-q-pkgs { use-grid-gpt = false; use-cps = false; }
-  // mk-q-pkgs { use-grid-gpt = false; }
-  // mk-q-pkgs { use-cps = false; }
-  // mk-q-pkgs { use-cudasupport = true; }
-  // q-pkgs-more-w-cuda
-  ;
-  q-pkgs-all = {}
-  // mk-q-pkgs { use-clang = true; use-ucx = false; }
-  // mk-q-pkgs { use-clang = true; }
-  // q-pkgs-extra
-  ;
+  options-list = [
+    {}
+    { use-grid-gpt = false; use-cps = false; }
+    { use-grid-gpt = false; }
+    { use-cps = false; }
+    { use-cuda-software = true; }
+    { use-cuda = true; }
+    { use-cudasupport = true; }
+    { use-grid-gpt = false; use-cubaquad = false; }
+    { use-grid-gpt = false; use-clang = true; }
+    { use-ucx = false; }
+    { use-pypi = true; }
+    #
+    { use-grid-gpt = false; use-cps = false; use-ucx = false; }
+    { use-grid-gpt = false; use-cps = false; use-clang = true; use-ucx = false; }
+    #
+    { use-grid-gpt = false; use-cps = false; use-cuda-software = true; }
+    { use-grid-gpt = false; use-cps = false; use-cuda = true; }
+    { use-grid-gpt = false; use-cps = false; use-cudasupport = true; }
+  ];
 
-  all-q-pkgs = q-pkgs-all // {
+  q-pkgs = (builtins.foldl' (s: v: s // v) {}
+  (builtins.map mk-q-pkgs options-list))
+  // {
     inherit mk-q-pkgs;
     inherit mk-overlay;
-    #
-    inherit q-pkgs;
-    inherit q-pkgs-more;
-    inherit q-pkgs-more-w-cuda;
-    inherit q-pkgs-extra;
-    inherit q-pkgs-all;
   };
 
-in all-q-pkgs
+in q-pkgs
