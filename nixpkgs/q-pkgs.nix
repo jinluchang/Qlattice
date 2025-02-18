@@ -11,7 +11,11 @@ let
     config.allowUnfree = true;
   };
 
+  lib = o-pkgs.lib;
+
   runCommandLocal = o-pkgs.runCommandLocal;
+
+  runCommand = o-pkgs.runCommand;
 
   nixgl-src = o-pkgs.fetchFromGitHub {
     owner = "jinluchang";
@@ -140,7 +144,6 @@ let
   mk-qlat-name = options:
   let
     opts = options;
-    lib = o-pkgs.lib;
   in opts.qlat-name
   + lib.optionalString (! opts.use-grid-gpt && ! opts.use-cps) "-std"
   + lib.optionalString (opts.use-grid-gpt && ! opts.use-cps) "-cpsless"
@@ -158,7 +161,6 @@ let
     opts = mk-options options;
     #
     pkgs = prev;
-    lib = pkgs.lib;
     #
     call-pkg = prev.callPackage;
     py-call-pkg = python3.pkgs.callPackage;
@@ -552,6 +554,7 @@ let
     qlat-jhub-tests = {
       inherit qlat-tests qlat-jhub-env;
     };
+    #
   in {
     inherit qlat-name;
     inherit python3 mpi openmp ucx;
@@ -610,16 +613,35 @@ let
     { use-grid-gpt = false; use-cps = false; use-ucx = false; }
     { use-grid-gpt = false; use-cps = false; use-clang = true; use-ucx = false; }
     #
+    # { use-clang = true; } # not working yet
+    # { use-clang = true; use-ucx = false; } # not working yet
+    # { use-cps = false; use-clang = true; use-ucx = false; } # not working yet
+    # { use-cps = false; use-clang = true; } # not working yet
+    #
     { use-grid-gpt = false; use-cps = false; use-cuda-software = true; }
     { use-grid-gpt = false; use-cps = false; use-cuda = true; }
     { use-grid-gpt = false; use-cps = false; use-cudasupport = true; }
   ];
+
+  qlat-name-list = lib.lists.unique (map mk-qlat-name (map mk-options options-list));
+
+  qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
+  (builtins.foldl' (s: v: s + "\"${v}\"\n") "" qlat-name-list);
+
+  qlat-name-list-file = runCommand
+  "qlat-name-list"
+  {}
+  ''
+    cp -v ${qlat-name-list-file-from-str} $out
+  '';
 
   q-pkgs = (builtins.foldl' (s: v: s // v) {}
   (builtins.map mk-q-pkgs options-list))
   // {
     inherit mk-q-pkgs;
     inherit mk-overlay;
+    inherit options-list qlat-name-list qlat-name-list-file-from-str;
+    inherit qlat-name-list-file;
   };
 
 in q-pkgs
