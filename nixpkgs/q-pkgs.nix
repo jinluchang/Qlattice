@@ -492,7 +492,7 @@ let
         bash-completion
         coreutils
         openssh
-        # linux-pam
+        linux-pam
         findutils
         clang-tools
         git
