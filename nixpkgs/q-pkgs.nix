@@ -604,6 +604,7 @@ let
   // mk-q-pkgs { use-grid-gpt = false; use-clang = true; }
   // mk-q-pkgs { use-cps = false; use-clang = true; }
   // mk-q-pkgs { use-ucx = false; }
+  // q-pkgs-pypi
   // q-pkgs
   ;
   q-pkgs-more-w-cuda = {}
