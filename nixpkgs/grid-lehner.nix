@@ -72,6 +72,7 @@ in grid-stdenv.mkDerivation rec {
     cuda_cccl
     cuda_cudart
     cuda_profiler_api
+    libcublas
   ])
   ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;

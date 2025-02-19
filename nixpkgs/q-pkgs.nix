@@ -190,6 +190,9 @@ let
       cuda_cudart
       cuda_profiler_api
       libcufft
+      libcublas
+      cudnn
+      libnpp
       cudatoolkit
       ;
     } else {}
