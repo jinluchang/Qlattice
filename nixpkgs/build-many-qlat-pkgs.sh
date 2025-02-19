@@ -10,7 +10,7 @@ else
 fi
 
 src="$script_path"
-dst="$HOME/qlat-build"
+dst="$HOME/qlat-build/nix"
 mkdir -p "$dst"
 cd "$dst"
 

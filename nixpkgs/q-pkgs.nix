@@ -640,7 +640,7 @@ let
   qlat-name-list = lib.lists.unique (map mk-qlat-name (map mk-options options-list));
 
   qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
-  (builtins.foldl' (s: v: s + "\"${v}\"\n") "" qlat-name-list);
+  (builtins.foldl' (s: v: s + "${v}\n") "" qlat-name-list);
 
   qlat-name-list-file = runCommand
   "qlat-name-list"
