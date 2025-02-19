@@ -23,7 +23,7 @@ in
 buildPythonPackage rec {
 
   pname = "gpt-lehenr";
-  version = "88d563c5bdd8460c842d0b82828b710ebdaa45b2";
+  version = "b1faeb58184620702b05764497c65c8d2b20b04a";
 
   pyproject = false;
 
@@ -31,7 +31,7 @@ buildPythonPackage rec {
     owner = "lehner";
     repo = "gpt";
     rev = version;
-    hash = "sha256-Lo1fzEH+MsJ1s2OUYQQdpi7lh5WHSHqOCHEiMAmIGjc=";
+    hash = "sha256-axilpf/DmyoHbc3EB4/FyL84DiHCPeYCeNMVNUVoXms=";
   };
 
   enableParallelBuilding = true;
