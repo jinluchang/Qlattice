@@ -174,9 +174,11 @@ class NvccCmdLine:
             # "-w",
             "--expt-extended-lambda",
             "--expt-relaxed-constexpr",
+            "-lcublas",
             ])
         opt1_pool = set([
             "-Xcudafe",
+            "-cudart",
             ])
         argv_new = []
         n_arg = 0
