@@ -159,7 +159,6 @@ in grid-stdenv.mkDerivation rec {
       "--disable-fermion-reps"
       "--enable-unified=no"
       "--enable-accelerator=cuda"
-      "--enable-accelerator-cshift"
     ];
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;
