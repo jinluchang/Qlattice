@@ -465,6 +465,8 @@ let
       jupyter-server-mathjax
       numba
       transformers
+      diffusers
+      bitsandbytes
       ipywidgets
       accelerate
       ollama
