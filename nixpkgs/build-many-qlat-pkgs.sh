@@ -22,12 +22,13 @@ for nix_version in "24.11" "24.05" ; do
     echo result-qlat-name-"$nix_version"
     echo
     cat result-qlat-name-"$nix_version"
+    yes q-pkgs | head -n "$(cat result-qlat-name-"$nix_version" | wc -l)" | paste -d '' - result-qlat-name-"$nix_version" >q-pkgs-list-"$nix_version".txt
     echo
-    for name in $(cat result-qlat-name-"$nix_version") ; do
+    for name in $(cat q-pkgs-list-"$nix_version".txt) ; do
         echo
         echo "Building $nix_version $name"
         echo
-        time nix-build "$src"/q-pkgs.nix -A q-pkgs"$name" -o result-"$nix_version$name" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
+        time nix-build "$src"/q-pkgs.nix -A "$name" -o result-"$nix_version-$name" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
     done
 done
 
