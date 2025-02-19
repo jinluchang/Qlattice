@@ -195,9 +195,11 @@ let
     } else {}
     );
     #
-    ucx = pkgs.ucx.override {
-      enableCuda = opts.use-cuda-software;
-    };
+    ucx = (pkgs.ucx.overrideAttrs (final: prev: {
+      configureFlags = prev.configureFlags ++ [
+        "--enable-mt"
+      ];
+    })).override { enableCuda = opts.use-cuda-software; };
     ucx-dev = pkgs.buildEnv {
       name = "ucx-dev";
       paths = [ ucx ];
@@ -247,6 +249,7 @@ let
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
+        corrfitter = pkgs.python3.pkgs.callPackage ./corrfitter.nix { lsqfit = lsqfit; gvar = gvar; };
       };
     };
     #
@@ -427,6 +430,7 @@ let
       gvar
       vegas
       lsqfit
+      corrfitter
       meson
       ninja
       mpi4py
@@ -621,6 +625,7 @@ let
     # { use-cps = false; use-clang = true; use-ucx = false; } # not working yet
     # { use-cps = false; use-clang = true; } # not working yet
     #
+    { use-cuda = true; use-ucx = false; }
     { use-grid-gpt = false; use-cps = false; use-cuda-software = true; }
     { use-grid-gpt = false; use-cps = false; use-cuda = true; }
     { use-grid-gpt = false; use-cps = false; use-cudasupport = true; }
