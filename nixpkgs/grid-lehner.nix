@@ -86,9 +86,9 @@ in grid-stdenv.mkDerivation rec {
     cpu_cxx = "c++";
     gpu_cxx = "nvcc";
     cpu_cflags = "-fPIC -w -Wno-psabi";
-    gpu_cflags = "-Xcompiler -fPIC -ccbin mpic++ -arch=${nvcc-arch} -w";
+    gpu_cflags = "-Xcompiler -fPIC -ccbin mpic++ -arch=${nvcc-arch} -w -cudart shared";
     cpu_ldflags = "";
-    gpu_ldflags = "-Xcompiler -fopenmp -ccbin mpic++";
+    gpu_ldflags = "-Xcompiler -fopenmp -ccbin mpic++ -cudart shared -lcublas";
     cxx = if cudaSupport then gpu_cxx else cpu_cxx;
     cflags = if cudaSupport then gpu_cflags else cpu_cflags;
     ldflags = if cudaSupport then gpu_ldflags else cpu_ldflags;
@@ -155,10 +155,11 @@ in grid-stdenv.mkDerivation rec {
       "--enable-gen-simd-width=32"
       "--enable-alloc-align=4k"
       "--enable-comms=mpi-auto"
+      "--enable-shm=nvlink"
       "--enable-gparity=no"
-      "--disable-fermion-reps"
       "--enable-unified=no"
       "--enable-accelerator=cuda"
+      "--disable-fermion-reps"
     ];
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;

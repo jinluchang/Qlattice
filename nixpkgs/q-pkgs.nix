@@ -191,8 +191,8 @@ let
       cuda_profiler_api
       libcufft
       libcublas
-      cudnn
       libnpp
+      cudnn
       cudatoolkit
       ;
     } else {}
