@@ -506,6 +506,7 @@ let
         killall
         wget
         which
+        gnugrep
         rsync
         automake
         autoconf

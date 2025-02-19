@@ -19,7 +19,7 @@ time nix-build "$src"/q-pkgs.nix -A qlat-jhub-env-cuda "$@"
 ls -l
 ./result/bin/python3 -m ipykernel \
     install --user \
-    --env "PATH" "$dst/result/bin" \
+    --env "PATH" "$dst/result/bin:/run/current-system/sw/bin" \
     --env "PYTHONPATH" "" \
     --env "LD_LIBRARY_PATH" "$dst/result/lib" \
     --env "LIBRARY_PATH" "$dst/result/lib" \
