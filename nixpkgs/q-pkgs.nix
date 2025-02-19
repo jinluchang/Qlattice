@@ -257,8 +257,8 @@ let
     #
     qlat-nixgl = if opts.use-cuda-software then nixgl else null;
     #
-    cubaquad = if opts.use-cubaquad
-    then call-pkg ./cubaquad.nix { stdenv = qlat-stdenv; }
+    cuba-quad = if opts.use-cubaquad
+    then call-pkg ./cuba-quad.nix { stdenv = qlat-stdenv; }
     else null;
     #
     c-lime = call-pkg ./c-lime.nix { stdenv = qlat-stdenv; };
@@ -355,13 +355,13 @@ let
     } // (if opts.use-cuda-software then { inherit qlat-nixgl; } else {});
     #
     qlat-dep-pkgs-extra = if ! opts.use-grid-gpt && ! opts.use-cps then {
-      inherit mpi cubaquad qlat-eigen;
+      inherit mpi cuba-quad qlat-eigen;
     } else if opts.use-grid-gpt && ! opts.use-cps then {
-      inherit mpi cubaquad qlat-eigen grid-lehner c-lime;
+      inherit mpi cuba-quad qlat-eigen grid-lehner c-lime;
     } else if ! opts.use-grid-gpt && opts.use-cps then {
-      inherit mpi cubaquad qlat-eigen cps qmp qio;
+      inherit mpi cuba-quad qlat-eigen cps qmp qio;
     } else {
-      inherit mpi cubaquad qlat-eigen cps qmp qio grid-lehner;
+      inherit mpi cuba-quad qlat-eigen cps qmp qio grid-lehner;
     };
     qlat-py-pkgs = if ! opts.use-grid-gpt && ! opts.use-cps then {
       inherit qlat_utils qlat;
@@ -563,14 +563,16 @@ let
   in {
     inherit qlat-name;
     inherit python3 mpi openmp ucx;
-    inherit c-lime qmp qio cps cubaquad grid-lehner gpt-lehner;
-    inherit (opts) use-pypi;
+    inherit c-lime qmp qio cps cuba-quad grid-lehner gpt-lehner;
     inherit qlat_utils qlat qlat_grid qlat_cps;
     inherit qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt qlat-examples-py-cps;
     inherit qlat_docs qlat_pypipkgs;
     inherit qlat-py qlat-tests qlat-env qlat-sh qlat-fhs;
     inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
     inherit qlat-pkgs q-pkgs;
+    inherit qlat-nixgl;
+    qlat-options = opts;
+    qlat-use-pypi = opts.use-pypi;
   };
 
   mk-q-pkgs = options: let

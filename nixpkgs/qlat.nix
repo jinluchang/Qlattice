@@ -15,7 +15,7 @@
 , fftw
 , fftwFloat
 , gsl
-, cubaquad
+, cuba-quad
 , use-pypi ? null
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
@@ -65,7 +65,7 @@ in buildPythonPackage rec {
     fftw
     fftwFloat
     gsl
-    cubaquad
+    cuba-quad
     qlat_utils
   ];
 
