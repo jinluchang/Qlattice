@@ -465,8 +465,6 @@ let
       jupyter-server-mathjax
       numba
       transformers
-      diffusers
-      bitsandbytes
       ipywidgets
       accelerate
       ollama
@@ -488,7 +486,11 @@ let
     qlat-py-pkgs
     //
     (if opts.use-cuda-software then {
-      inherit (ps) pycuda;
+      inherit (ps)
+      pycuda
+      diffusers
+      bitsandbytes
+      ;
     } else {}
     )
     ));
