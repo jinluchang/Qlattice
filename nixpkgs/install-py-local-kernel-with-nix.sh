@@ -9,15 +9,25 @@ else
     exit 1
 fi
 
-name=py-local
+if [ -z "$name" ] ; then
+    name=""
+    echo "You can export name=-cuda to enable CUDA support."
+else
+    echo "name='$name'"
+    echo "Trying to build 'pkgs$name.qlat-jhub-env'."
+fi
+
+py_kernel_name=py-local$name
 
 src="$script_path"
-dst="$HOME/.local/share/jupyter/kernels/nix-build-$name"
+dst="$HOME/.local/share/jupyter/kernels/nix-build-$py_kernel_name"
 mkdir -p "$dst"
-cd "$dst"
-time nix-build "$src"/q-pkgs.nix -A qlat-jhub-env "$@"
-ls -l
-./result/bin/python3 -m ipykernel \
+time nix-build "$src"/q-pkgs.nix -A pkgs$name.qlat-jhub-env -o "$dst/result" "$@"
+if [ ! -e "$dst"/result/bin/python3 ] ; then
+    rmdir "$dst"
+fi
+ls -l "$dst"
+"$dst"/result/bin/python3 -m ipykernel \
     install --user \
     --env "PATH" "$dst/result/bin:/run/current-system/sw/bin" \
     --env "PYTHONPATH" "" \
@@ -27,4 +37,4 @@ ls -l
     --env "PKG_CONFIG_PATH" "$dst/result/lib/pkgconfig" \
     --env "CUBACORES" "0" \
     --env "OMP_NUM_THREADS" "2" \
-    --name=$name
+    --name=$py_kernel_name
