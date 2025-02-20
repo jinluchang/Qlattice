@@ -1,5 +1,5 @@
 {
-  nixpkgs ? import ./nixpkgs.nix,
+  nixpkgs ? import ./nixpkgs.nix {},
   name ? "q-pkgs",
 }:
 

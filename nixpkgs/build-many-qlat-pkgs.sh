@@ -28,7 +28,7 @@ for nix_version in "24.11" "24.05" ; do
         echo
         echo "Building $nix_version $name"
         echo
-        time nix-build "$src"/q-pkgs.nix -A "$name" -o result-"$nix_version-$name" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
+        time nix-build "$src"/q-pkgs.nix -A "$name".qlat-tests -A "$name".qlat-env -o result-"$nix_version-$name" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
     done
 done
 

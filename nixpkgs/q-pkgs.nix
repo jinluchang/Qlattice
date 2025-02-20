@@ -1,5 +1,5 @@
 {
-  nixpkgs ? import ./nixpkgs.nix,
+  nixpkgs ? import ./nixpkgs.nix {},
   ngpu ? null, # adjust with desired number of GPUs. E.g. "2"
   cudaCapability ? null, # adjust with desired cudaCapability. E.g. "8.6"
   cudaForwardCompat ? null, # adjust with desired cudaForwardCompat. E.g. false
@@ -482,10 +482,7 @@ let
       jupyterhub-systemdspawner
       ;
     }
-    //
-    qlat-py-pkgs
-    //
-    (if opts.use-cuda-software then {
+    // (if opts.use-cuda-software then {
       inherit (ps)
       pycuda
       diffusers
@@ -493,6 +490,7 @@ let
       ;
     } else {}
     )
+    // qlat-py-pkgs
     ));
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
@@ -570,6 +568,7 @@ let
     #
   in {
     inherit qlat-name;
+    inherit qlat-nixgl;
     inherit python3 mpi openmp ucx;
     inherit c-lime qmp qio cps cuba-quad grid-lehner gpt-lehner;
     inherit qlat_utils qlat qlat_grid qlat_cps;
@@ -578,13 +577,13 @@ let
     inherit qlat-py qlat-tests qlat-env qlat-sh qlat-fhs;
     inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
     inherit qlat-pkgs q-pkgs;
-    inherit qlat-nixgl;
     qlat-options = opts;
     qlat-use-pypi = opts.use-pypi;
   };
 
   mk-q-pkgs = options: let
     opts = mk-options options;
+    qlat-name = mk-qlat-name opts;
     pkgs = nixpkgs {
       config = {
         allowUnfree = opts.use-cuda-software;
@@ -593,7 +592,7 @@ let
         ${if opts.use-cudasupport then "cudaForwardCompat" else null} = opts.cudaForwardCompat;
       };
       overlays = [
-        (mk-overlay options)
+        (mk-overlay opts)
       ];
     };
   in {
@@ -601,16 +600,7 @@ let
     "q-pkgs${pkgs.qlat-name}" = pkgs.q-pkgs;
     "pkgs${pkgs.qlat-name}" = pkgs;
     #
-    "qlat-py${pkgs.qlat-name}" = pkgs.qlat-py;
     "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
-    "qlat-sh${pkgs.qlat-name}" = pkgs.qlat-sh;
-    "qlat-fhs${pkgs.qlat-name}" = pkgs.qlat-fhs;
-    #
-    "qlat-jhub-py${pkgs.qlat-name}" = pkgs.qlat-jhub-py;
-    "qlat-jhub-env${pkgs.qlat-name}" = pkgs.qlat-jhub-env;
-    "qlat-jhub-sh${pkgs.qlat-name}" = pkgs.qlat-jhub-sh;
-    "qlat-jhub-fhs${pkgs.qlat-name}" = pkgs.qlat-jhub-fhs;
-    #
     "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
   };
 

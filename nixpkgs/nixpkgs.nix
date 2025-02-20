@@ -1,1 +1,5 @@
-import (fetchTarball "https://channels.nixos.org/nixos-24.11/nixexprs.tar.xz")
+{
+  version ? "24.11",
+}:
+
+import (fetchTarball "https://channels.nixos.org/nixos-${version}/nixexprs.tar.xz")

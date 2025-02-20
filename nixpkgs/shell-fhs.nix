@@ -1,9 +1,9 @@
 {
-  nixpkgs ? import ./nixpkgs.nix,
-  name ? "qlat-jhub-fhs",
+  nixpkgs ? import ./nixpkgs.nix {},
+  name ? "q-pkgs",
 }:
 
 let
   q-pkgs = import ./q-pkgs.nix { inherit nixpkgs; };
 in
-  q-pkgs."${name}".env
+  q-pkgs."${name}".qlat-jhub-fhs.env
