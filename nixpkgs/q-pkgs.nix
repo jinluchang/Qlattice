@@ -13,6 +13,8 @@ let
 
   lib = o-pkgs.lib;
 
+  nixpkgs-release = lib.trivial.release;
+
   runCommandLocal = o-pkgs.runCommandLocal;
 
   runCommand = o-pkgs.runCommand;
@@ -128,7 +130,10 @@ let
       ${if opts.ngpu == "0" then "use-cuda" else null} = false;
       ${if opts.ngpu == "0" then "use-cudasupport" else null} = false;
     };
-    opts = corrections-5 (corrections-4 (corrections-3 (corrections-2 (corrections-1 opts-0))));
+    corrections-6 = opts: opts // {
+      ${if nixpkgs-release == "24.05" then "use-cudasupport" else null} = false;
+    };
+    opts = corrections-6 (corrections-5 (corrections-4 (corrections-3 (corrections-2 (corrections-1 opts-0)))));
     opts-1 =
       assert (opts.use-cudasupport -> opts.use-cuda);
       assert (opts.use-cuda -> opts.use-cuda-software);
