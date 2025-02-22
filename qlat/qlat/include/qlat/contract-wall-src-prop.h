@@ -13,7 +13,7 @@ inline double get_fsel_prob(const FieldSelection& fsel)
   const Long total_volume = geo.total_volume();
   Long n_elems = fsel.n_elems;
   glb_sum(n_elems);
-  return n_elems / total_volume;
+  return static_cast<double>(n_elems) / total_volume;
 }
 
 struct WallSrcProps {
