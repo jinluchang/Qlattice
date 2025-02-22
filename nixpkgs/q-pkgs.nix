@@ -11,6 +11,12 @@ let
     config.allowUnfree = true;
   };
 
+  n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
+
+  n-pkgs = import n-pkgs-src {
+    config.allowUnfree = true;
+  };
+
   lib = o-pkgs.lib;
 
   nixpkgs-release = lib.trivial.release;
@@ -258,6 +264,13 @@ let
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
         corrfitter = pkgs.python3.pkgs.callPackage ./corrfitter.nix { lsqfit = lsqfit; gvar = gvar; };
+        diffusers = pkgs.python3.pkgs.callPackage
+        (import "${n-pkgs-src}/pkgs/development/python-modules/diffusers/default.nix") {
+          jax = jax; diffusers = diffusers;
+        };
+        ollama = pkgs.python3.pkgs.callPackage
+        (import "${n-pkgs-src}/pkgs/development/python-modules/ollama/default.nix") {
+        };
       };
     };
     #
@@ -470,9 +483,9 @@ let
       jupyter-server-mathjax
       numba
       transformers
+      sentencepiece
       ipywidgets
       accelerate
-      ollama
       torch
       sphinx
       linkify-it-py
@@ -485,13 +498,14 @@ let
       jupyterlab
       jupyterhub
       jupyterhub-systemdspawner
+      ollama
       ;
     }
     // (if opts.use-cuda-software then {
       inherit (ps)
       pycuda
-      diffusers
       bitsandbytes
+      diffusers
       ;
     } else {}
     )
@@ -532,8 +546,8 @@ let
         file
         zip
         unzip
-        ollama
         ;
+        ollama = n-pkgs.ollama;
       }
       // qlat-cc
       // qlat-dep-pkgs

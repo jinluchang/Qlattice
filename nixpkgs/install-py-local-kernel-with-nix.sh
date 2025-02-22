@@ -27,12 +27,12 @@ else
 fi
 
 if [ -z "${name+x}" ] ; then
-    name=""
-    echo "You can use 'export name=-cuda' to compile Qlattice with CUDA."
+    echo "name is not set."
+    echo "name='' (use default)."
 else
-    echo "name='$name'"
-    echo "Trying to build 'pkgs$name.qlat-jhub-env'."
+    echo "name='$name'."
 fi
+echo "Trying to build 'pkgs$name.qlat-jhub-env'."
 
 py_kernel_name=py-local$name
 
