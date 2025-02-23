@@ -11,7 +11,7 @@ let
     config.allowUnfree = true;
   };
 
-  n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
+  n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable-small/nixexprs.tar.xz";
 
   n-pkgs = import n-pkgs-src {
     config.allowUnfree = true;
