@@ -453,11 +453,11 @@ def main():
     
     actions = {"M": {}, "L": {}, "P": {}, "D": {}}
     if(use_H_low and displace_proj):
-        actions["D"]["A"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid+1, 0, dt, False, False)
-        actions["D"]["B"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid, 0, dt, False, True)
+        actions["D"]["A"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid+1, 0, dt, False, False)
+        actions["D"]["B"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid, 0, dt, False, True)
     if(use_H_low and not displace_proj):
-        actions["D"]["C"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, True)
-        actions["D"]["D"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, False)
+        actions["D"]["C"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, True)
+        actions["D"]["D"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, False)
     elif(not displace_proj):
         if(L==1.0):
             for Mi in measure_Ms:
