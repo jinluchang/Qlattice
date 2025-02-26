@@ -131,7 +131,7 @@ struct QMAction {
     return V(x,t) - log(dt) / dt;
   }
 
-  inline double V(const double x, const Long t)
+  inline double dV(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     if(t<t_TV_start)
