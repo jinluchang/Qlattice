@@ -21,8 +21,8 @@ class Analysis:
     
     def get_M_L_blocks(self, Ms, Ls, params, der=False):
         sf_ML = self.data.get_indices(params)[0]
-        sfs_M = self.data.replace_params(sf_ML, ["M", "L"], [[M, 1.0] for M in Ms])
-        sfs_L = self.data.replace_params(sf_ML, ["M", "L"], [[1.0, L] for L in Ls])
+        sfs_M = self.data.replace_params(sf_ML, ["M", "L", "proj2"], [[M, 1.0, False] for M in Ms])
+        sfs_L = self.data.replace_params(sf_ML, ["M", "L", "proj2"], [[1.0, L, False] for L in Ls])
         delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_M[i]]["M"][str(Ms[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ms)-1)]
         delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_L[i]]["L"][str(Ls[i+1])][self.data.cutoff:]), self.data.block_size)
