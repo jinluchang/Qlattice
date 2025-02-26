@@ -23,7 +23,8 @@ struct QMAction {
   Long t_FV_out;
   Long t_FV_mid;
   double dt;
-  bool proj_sq;
+  bool use_H_low;
+  bool displace_proj;
   //
   qacc void init()
   {
@@ -45,7 +46,8 @@ struct QMAction {
     t_FV_out = 10;
     t_FV_mid = 5;
     dt = 1.0;
-    proj_sq = false;
+    use_H_low = false;
+    displace_proj = false;
   }
   //
   qacc QMAction() { init(); }
@@ -54,7 +56,7 @@ struct QMAction {
                 const double L_, const double P_, const double epsilon_, 
                 const Long t_full1_, const Long t_full2_, const Long t_FV_out_, 
                 const Long t_FV_mid_, const Long t_TV_start_, const double dt_,
-                const bool proj_sq_)
+                const bool use_H_low_, const bool displace_proj_)
   {
     init();
     initialized = true;
@@ -75,7 +77,8 @@ struct QMAction {
     t_FV_out = t_FV_out_;
     t_FV_mid = t_FV_mid_;
     dt = dt_;
-    proj_sq = proj_sq_;
+    use_H_low = use_H_low_;
+    displace_proj = displace_proj_;
   }
 
   inline double V(const double x, const Long t)
@@ -84,14 +87,11 @@ struct QMAction {
     if(t<t_TV_start)
       return V_TV(x);
     // Until t_full1 has past, use H_full
-    else if(t<t_TV_start+t_full1-2)
+    else if(t<t_TV_start+t_full1-1)
       return V_full(x);
-    // Right after t_full1 has past, use H_proj or H_proj_sq
+    // Right after t_full1 has past, use H_proj
     else if(t==t_TV_start+t_full1-1)
-      if(proj_sq) 
-        return V_full(x) + V_proj_sq(x);
-      else
-        return V_full(x) + V_proj(x);
+      return V_full(x) + V_proj(x);
     // Until t_FV_out has past, use H_FV_out
     else if(t<t_TV_start+t_full1+t_FV_out)
       return V_FV_out(x);
@@ -101,12 +101,20 @@ struct QMAction {
     // Until t_FV_out has past, use H_FV_out
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       return V_FV_out(x);
-    // Right after t_FV_out has past, use either H_proj or H_proj_sq
+    // Right after t_FV_out has past, use either H_proj or H_low
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
-      if(proj_sq) 
-        return V_full(x) + V_proj_sq(x);
+      if(displace_proj and use_H_low)
+          return V_low(x);
       else
         return V_full(x) + V_proj(x);
+    // One timeslice after t_FV_out has past, use either H_proj or H_proj_sq
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
+      if(displace_proj) 
+        return V_full(x) + V_proj(x);
+      else if(use_H_low)
+        return V_low(x);
+      else
+        return V_full(x);
     // Until t_full2 has past, use H_full
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return V_full(x);
@@ -123,20 +131,17 @@ struct QMAction {
     return V(x,t) - log(dt) / dt;
   }
 
-  inline double dV(const double x, const Long t)
+  inline double V(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     if(t<t_TV_start)
       return dV_TV(x);
     // Until t_full1 has past, use H_full
-    else if(t<t_TV_start+t_full1-2)
+    else if(t<t_TV_start+t_full1-1)
       return dV_full(x);
-    // Right after t_full1 has past, use H_proj or H_proj_sq
+    // Right after t_full1 has past, use H_proj
     else if(t==t_TV_start+t_full1-1)
-      if(proj_sq) 
-        return dV_full(x) + dV_proj_sq(x);
-      else
-        return dV_full(x) + dV_proj(x);
+      return dV_full(x) + dV_proj(x);
     // Until t_FV_out has past, use H_FV_out
     else if(t<t_TV_start+t_full1+t_FV_out)
       return dV_FV_out(x);
@@ -146,12 +151,20 @@ struct QMAction {
     // Until t_FV_out has past, use H_FV_out
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
       return dV_FV_out(x);
-    // Right after t_FV_out has past, use either H_proj or H_proj_sq
+    // Right after t_FV_out has past, use either H_proj or H_low
     else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
-      if(proj_sq) 
-        return dV_full(x) + dV_proj_sq(x);
+      if(displace_proj and use_H_low)
+          return dV_low(x);
       else
         return dV_full(x) + dV_proj(x);
+    // One timeslice after t_FV_out has past, use either H_proj or H_proj_sq
+    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
+      if(displace_proj) 
+        return dV_full(x) + dV_proj(x);
+      else if(use_H_low)
+        return dV_low(x);
+      else
+        return dV_full(x);
     // Until t_full2 has past, use H_full
     else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
       return dV_full(x);
@@ -217,16 +230,21 @@ struct QMAction {
     return -P*((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
   }
   
-  inline double V_proj_sq(const double x)
+  inline double V_low(const double x)
   {
-    temp = V_FV_out(x) - V_full(x);
-    return -P*log((1-exp(-(temp*temp + epsilon)*dt)) / dt) / dt;
+    temp = V_proj(x);
+    if(temp<0)
+      return temp + V_full(x);
+    else
+      return V_full(x);
   }
   
-  inline double dV_proj_sq(const double x)
+  inline double dV_low(const double x)
   {
-    temp = V_FV_out(x) - V_full(x);
-    return -P*(2.0*temp*(dV_FV_out(x) - dV_full(x))*exp(-(temp*temp + epsilon)*dt))/(1-exp(-(temp*temp + epsilon)*dt));
+    if(V_proj(x)<0)
+      return dV_proj(x) + dV_full(x);
+    else
+      return dV_full(x);
   }
 
   inline double V_FV_mid(const double x)
