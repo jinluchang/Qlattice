@@ -146,9 +146,13 @@ class Analysis:
     def get_ddR_div_ddR_blocks(self, sf):
         t_TV = int(self.data.params[sf]["tTV"])
         t_FV = int(self.data.params[sf]["tFV"])
-        blocks_N = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["N"][self.data.cutoff:]), self.data.block_size)
-        blocks_D = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["D"][self.data.cutoff:]), self.data.block_size)
-        return blocks_D, blocks_N, np.divide(blocks_D,blocks_N)
+        t_full2 = int(self.data.params[sf]["tfull2"])
+        blocks_A = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["A"][self.data.cutoff:]), self.data.block_size)
+        blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["B"][self.data.cutoff:]), self.data.block_size)
+        sf2 = self.data.replace_params(sf, ["disp", "tfull2", "tTV"], [["False", t_full2-1, t_TV+1]])[0]
+        blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["C"][self.data.cutoff:]), self.data.block_size)
+        blocks_D = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["D"][self.data.cutoff:]), self.data.block_size)
+        return np.multiply(blocks_A, blocks_C), np.multiply(blocks_B*blocks_D), np.multiply(blocks_A, blocks_C) / np.multiply(blocks_B*blocks_D)
 
     # Functions for plotting data ================================
     
@@ -273,7 +277,7 @@ class Analysis:
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), bool(self.data.params[sf]["proj2"]))
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), bool(self.data.params[sf]["Hlow"]), bool(self.data.params[sf]["disp"]))
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
         V_data = np.array([[action.V(x,t)-action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
