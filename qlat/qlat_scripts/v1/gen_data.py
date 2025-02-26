@@ -205,6 +205,8 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     Or if wsrc_prop_full is not available
     return None
     #
+    `f_weight` is of type `q.FieldRealD(geo, 1)`.
+    #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     """
     fname = q.get_fname()
@@ -253,6 +255,8 @@ def run_f_rand_01(job_tag, traj):
     return get_f_rand_01
         f_rand_01 = get_f_rand_01()
     #
+    `f_rand_01` is of type `q.FieldRealD(geo, 1)`.
+    #
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
     """
     fname = q.get_fname()
@@ -282,11 +286,19 @@ def run_f_rand_01(job_tag, traj):
 def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     """
     return get_fsel_prob
+    #
         fsel_prob = get_fsel_prob()
         fsel = fsel_prob.fsel
     #
+    One can set `get_f_rand_01=None` and `get_f_weight=None` if one intend to load existing data on `fsel_prob` instead of generating new `fsel_prob`.
+    #
+    `get_f_weight` is of type `lambda : q.FieldRealD(geo, 1)`.
+    `get_f_rand_01` is of type `lambda : q.FieldRealD(geo, 1)`.
+    #
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel = lambda : get_fsel_prob().fsel
+    #
+    For old data format, in which case the `fsel-prob.sfield` data is absent, we assume uniform probability AND will combine the `fsel` with `psel` obtained from `run_psel_prob` function.
     """
     fname = q.get_fname()
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
@@ -306,13 +318,16 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         if get_load_path(fn_fsel_prob) is not None:
             return ret
         else:
-            q.displayln_info(f"{fname}: field-selection exist but prob is not available. Assuming loading load old data format.")
+            q.displayln_info(f"{fname}: WARNING: field-selection exist but prob is not available. Assuming loading load old data format.")
+            get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
             @q.lazy_call
             @q.timer_verbose
             def get_fsel_prob_old():
                 fsel = q.FieldSelection()
                 total_size = fsel.load(get_load_path(fn_fsel))
                 assert total_size > 0
+                psel = get_psel_prob().psel
+                fsel.add_psel(psel)
                 total_volume = fsel.total_site.volume()
                 fsel_prob = q.SelectedFieldRealD(fsel, 1)
                 fsel_prob[:] = q.glb_sum(len(fsel)) / total_volume
@@ -346,8 +361,14 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
 def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     """
     return get_psel_prob
+    #
         psel_prob = get_psel_prob()
         psel = psel_prob.psel
+    #
+    One can set `get_f_rand_01=None` and `get_f_weight=None` if one intend to load existing data on `psel_prob` instead of generating new `psel_prob`.
+    #
+    `get_f_weight` is of type `lambda : q.FieldRealD(geo, 1)`.
+    `get_f_rand_01` is of type `lambda : q.FieldRealD(geo, 1)`.
     #
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel = lambda : get_psel_prob().psel
@@ -370,7 +391,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         if get_load_path(fn_psel_prob) is not None:
             return ret
         else:
-            q.displayln_info(f"{fname}: point-selection exist but prob is not available. Assuming loading load old data format.")
+            q.displayln_info(f"{fname}: WARNING: point-selection exist but prob is not available. Assuming loading load old data format.")
             total_volume = total_site.volume()
             @q.lazy_call
             @q.timer_verbose
