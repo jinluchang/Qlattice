@@ -47,24 +47,16 @@ def get_cexpr_meson_corr():
         exprs = [
                 mk_fac(1) + f"1",
                 mk_pi_p("x_2", True)    * mk_pi_p("x_1")             + f"pi+^dag(0) * pi+(-tsep)",
+                mk_j5pi_mu("x_2", 3)    * mk_pi_p("x_1")             + f"j5pi_t(0) * pi+(-tsep)",
+                mk_pi_p("x_2", True)    * mk_j5pi_mu("x_1", 3, True) + f"pi+^dag(0) * j5pi_t^dag(-tsep)",
+                mk_j5pi_mu("x_2", 3)    * mk_j5pi_mu("x_1", 3, True) + f"j5pi_t(0) * j5pi_t^dag(-tsep)",
                 mk_k_p("x_2", True)     * mk_k_p("x_1")              + f"K+^dag(0) * K+(-tsep)",
-                mk_sw5("x_2")           * mk_pi_p("x_1")             + f"sw5(0) * pi+(-tsep)",
-                mk_sw5("x_2")           * mk_k_p("x_1")              + f"sw5(0) * K+(-tsep)",
-                mk_sw5("x_2")           * mk_j5pi_mu("x_1", 3, True) + f"sw5(0) * j5pi_t^dag(-tsep)",
-                mk_sw5("x_2")           * mk_j5k_mu("x_1", 3, True)  + f"sw5(0) * j5k_t^dag(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_pi_p("x_1")             + f"jw_a_t(0) * pi+(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_k_p("x_1")              + f"jw_a_t(0) * K+(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_j5pi_mu("x_1", 3, True) + f"jw_a_t(0) * j5pi_t^dag(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_j5k_mu("x_1", 3, True)  + f"jw_a_t(0) * j5k_t^dag(-tsep)",
+                mk_j5k_mu("x_2", 3)     * mk_k_p("x_1")              + f"j5k_t(0) * K+(-tsep)",
+                mk_k_p("x_2", True)     * mk_j5k_mu("x_1", 3, True)  + f"K+^dag(0) * j5k_t^dag(-tsep)",
+                mk_j5k_mu("x_2", 3)     * mk_j5k_mu("x_1", 3, True)  + f"j5k_t(0) * j5k_t^dag(-tsep)",
+                #
                 mk_a0_p("x_2", True)    * mk_a0_p("x_1")             + f"a0+^dag(0) * a0+(-tsep)",
                 mk_kappa_p("x_2", True) * mk_kappa_p("x_1")          + f"kappa+^dag(0) * kappa+(-tsep)",
-                mk_j_mu("x_2", 3)       * mk_j_mu("x_1", 3)          + f"j_t(0) * j_t(-tsep)",
-                sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
-                + f"j_mu(0) * j_mu(-tsep)",
-                sum([ mk_jw_a_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(4) ])
-                + f"jw_a_mu(0) * j5pi_mu^dag(-tsep)",
-                sum([ mk_jw_a_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4) ])
-                + f"jw_a_mu(0) * j5k_mu^dag(-tsep)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
@@ -96,7 +88,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     def load_data():
         t_t_list = q.get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
-                rng_state = None)
+                rng_state=None)
         for t_src, t_snk in t_t_list:
             yield t_src, t_snk
     @q.timer
@@ -136,6 +128,92 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
 # ----
 
 @q.timer
+def get_cexpr_pipi_corr():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_pipi_corr"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        exprs = [
+                mk_fac(1) + f"1",
+                mk_pipi_i22("y_1", "y_2", True) * mk_pipi_i22("x_1", "x_2") + f"pipi_i22+^dag(0) * pipi_i22(-tsep)",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer_verbose
+def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/pipi_corr.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    get_prop = get_get_prop()
+    psel_prob = get_psel_prob()
+    fsel_prob = get_fsel_prob()
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    fsel_n_elems = fsel.n_elems
+    fsel_prob_arr = fsel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_fsel_arr = fsel.to_psel_local()[:]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    pipi_op_t_sep = get_param(job_tag, "measurement", "pipi_op_t_sep")
+    pipi_corr_t_sep_list = get_param(job_tag, "measurement", "pipi_corr_t_sep_list")
+    def load_data():
+        t_t_list = q.get_mpi_chunk(
+                [ (t_src, t_sep_idx,)
+                 for t_src in range(total_site[3])
+                 for t_sep_idx in range(len(pipi_corr_t_sep_list))
+                 ],
+                rng_state=None)
+        for t_src, t_sep_idx in t_t_list:
+            t_sep = pipi_corr_t_sep_list[t_sep_idx]
+            t_snk = (t_src + t_sep) % t_size
+            yield t_snk, t_src, t_sep_idx
+    @q.timer
+    def feval(args):
+        t_snk, t_src, t_sep_idx, = args
+        pd = {
+                "y_1" : ("wall", t_snk,),
+                "y_2" : ("wall", (t_snk + pipi_op_t_sep) % t_size,),
+                "x_1" : ("wall", t_src,),
+                "x_2" : ("wall", (t_src - pipi_op_t_sep) % t_size,),
+                "size" : total_site,
+                }
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val, t_sep_idx
+    def sum_function(val_list):
+        values = np.zeros((len(pipi_corr_t_sep_list), len(expr_names),), dtype=complex)
+        for val, t_sep_idx in val_list:
+            values[t_sep_idx] += val
+        return q.glb_sum(values.transpose(1, 0))
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / t_size
+    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", len(pipi_corr_t_sep_list), pipi_corr_t_sep_list, ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
+    for i, en in enumerate(expr_names):
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
+
+# ----
+
+@q.timer
 def get_cexpr_meson_jj():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jj"
     def calc_cexpr():
@@ -146,10 +224,6 @@ def get_cexpr_meson_jj():
         diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeD1'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeD2'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = None
         jj_list = [
                 sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
                 + "j_mu(x) * j_mu(0)",
@@ -237,146 +311,9 @@ def get_cexpr_meson_jj():
         exprs_ope = [ op * mm for mm in mm_l_ope_list for op in op_l_ope_list ] + [ op * mm for mm in mm_s_ope_list for op in op_s_ope_list ]
         assert len(exprs_ope) == 4
         #
-        jwj_list = [
-                mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", 3)
-                + "jw_a_t(0) * j_t(x)",
-                #
-                mk_sw5("x_1") * mk_j_mu("x_2", 3)
-                + "sw5(0) * j_t(x)",
-                #
-                sum([
-                    mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", mu)
-                    for mu in range(3) ])
-                + "jw_a_i(0) * j_i(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", mu)
-                    for mu in range(3) ])
-                + "x[i] * jw_a_t(0) * j_i(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_sw5("x_1") * mk_j_mu("x_2", mu)
-                    for mu in range(3) ])
-                + "x[i] * sw5(0) * j_i(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", 3)
-                    for mu in range(3) ])
-                + "x[i] * jw_a_i(0) * j_t(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_2[1][{nu}] - x_1[1][{nu}], size[{nu}])")
-                    * mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", nu)
-                    for mu in range(3) for nu in range(3) ])
-                + "x[i] * x[j] * jw_a_i(0) * j_j(x)",
-                #
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_jw_v_mu("x_1", nu) * mk_j_mu("x_2", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * x[i] * jw_v_j(0) * j_k(x)",
-                ]
-        assert len(jwj_list) == 8
-        jjw_list = [
-                mk_jw_a_mu("x_2", 3) * mk_j_mu("x_1", 3)
-                + "jw_a_t(0) * j_t(-x)",
-                #
-                mk_sw5("x_2") * mk_j_mu("x_1", 3)
-                + "sw5(0) * j_t(-x)",
-                #
-                sum([
-                    mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", mu)
-                    for mu in range(3) ])
-                + "jw_a_i(0) * j_i(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_2", 3) * mk_j_mu("x_1", mu)
-                    for mu in range(3) ])
-                + "-x[i] * jw_a_t(0) * j_i(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_sw5("x_2") * mk_j_mu("x_1", mu)
-                    for mu in range(3) ])
-                + "-x[i] * sw5(0) * j_i(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", 3)
-                    for mu in range(3) ])
-                + "-x[i] * jw_a_i(0) * j_t(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_1[1][{nu}] - x_2[1][{nu}], size[{nu}])")
-                    * mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", nu)
-                    for mu in range(3) for nu in range(3) ])
-                + "-x[i] * -x[j] * jw_a_i(0) * j_j(-x)",
-                #
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_jw_v_mu("x_2", nu) * mk_j_mu("x_1", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * -x[i] * jw_v_j(0) * j_k(-x)",
-                ]
-        assert len(jjw_list) == 8
-        md_list = [
-                mk_pi_p("t_1") + "pi+(-tsep)",
-                mk_k_p("t_1") + "K+(-tsep)",
-                mk_pi_p("t_2") + "pi+(x[t]+tsep)",
-                mk_k_p("t_2") + "K+(x[t]+tsep)",
-                ]
-        assert len(md_list) == 4
-        exprs_decay1 = [ jwj * md for md in md_list for jwj in jwj_list ]
-        assert len(exprs_decay1) == 32
-        exprs_decay2 = [ jjw * md for md in md_list for jjw in jjw_list ]
-        assert len(exprs_decay2) == 32
-        #
-        jwm_list = [
-                mk_jw_a_mu("x_1", 3) * mk_m("u", "x_2") + "jw_a_t(0) ubar_u(x)",
-                mk_jw_a_mu("x_1", 3) * mk_m("d", "x_2") + "jw_a_t(0) dbar_d(x)",
-                mk_jw_a_mu("x_1", 3) * mk_m("s", "x_2") + "jw_a_t(0) sbar_s(x)",
-                mk_jw_a_mu("x_2", 3) * mk_m("u", "x_1") + "jw_a_t(0) ubar_u(-x)",
-                mk_jw_a_mu("x_2", 3) * mk_m("d", "x_1") + "jw_a_t(0) dbar_d(-x)",
-                mk_jw_a_mu("x_2", 3) * mk_m("s", "x_1") + "jw_a_t(0) sbar_s(-x)",
-                mk_sw5("x_1") * mk_m("u", "x_2") + "sw5(0) ubar_u(x)",
-                mk_sw5("x_1") * mk_m("d", "x_2") + "sw5(0) dbar_d(x)",
-                mk_sw5("x_1") * mk_m("s", "x_2") + "sw5(0) sbar_s(x)",
-                mk_sw5("x_2") * mk_m("u", "x_1") + "sw5(0) ubar_u(-x)",
-                mk_sw5("x_2") * mk_m("d", "x_1") + "sw5(0) dbar_d(-x)",
-                mk_sw5("x_2") * mk_m("s", "x_1") + "sw5(0) sbar_s(-x)",
-                ]
-        assert len(jwm_list) == 12
-        exprs_decay_m = [ jwm * md for md in md_list for jwm in jwm_list ]
-        assert len(exprs_decay_m) == 48
-        #
-        jj_d_list = [
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
-                ]
-        assert len(jj_d_list) == 1
-        pi0d_list = [
-                mk_pi_0("t_1") + "pi0(-tsep)",
-                mk_pi_0("t_2") + "pi0(x[t]+tsep)",
-                ]
-        assert len(pi0d_list) == 2
-        exprs_pi0_decay = [ jj_d * pi0d for pi0d in pi0d_list for jj_d in jj_d_list ]
-        assert len(exprs_pi0_decay) == 2
-        #
         exprs = [ mk_expr(1) + f"1", ]
-        exprs += exprs_self_energy + exprs_ope + exprs_decay1 + exprs_decay2 + exprs_decay_m + exprs_pi0_decay
-        assert len(exprs) == 179
+        exprs += exprs_self_energy + exprs_ope
+        assert len(exprs) == 65
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit=True,
@@ -406,7 +343,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    tsep = get_param(job_tag, "meson_tensor_tsep")
+    tsep = get_param(job_tag, "measurement", "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
@@ -634,8 +571,9 @@ def run_job_contract(job_tag, traj):
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
-                auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 #
                 q.qtouch_info(get_save_path(fn_checkpoint))
                 q.displayln_info("timer_display for runjob")
@@ -651,12 +589,12 @@ def run_job_contract(job_tag, traj):
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
+    benchmark_eval_cexpr(get_cexpr_pipi_corr())
 
 ### ------
 
 set_param("test-4nt8", "trajs")(list(range(1000, 1001)))
-set_param("test-4nt8", "meson_tensor_tsep")(1)
-set_param("test-4nt8", "meson_jwjj_threshold")(0.1)
+set_param("test-4nt8", "measurement", "meson_tensor_tsep")(1)
 set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
 
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
@@ -689,18 +627,15 @@ set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
 set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
-set_param("24D", "meson_tensor_tsep")(8)
-set_param("24D", "meson_jwjj_threshold")(0.02)
+set_param("24D", "measurement", "meson_tensor_tsep")(8)
 set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
 set_param("48I", "trajs")(list(range(1000, 2000, 20)))
-set_param("48I", "meson_tensor_tsep")(12)
-set_param("48I", "meson_jwjj_threshold")(0.01)
+set_param("48I", "measurement", "meson_tensor_tsep")(12)
 set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
 
 set_param("64I", "trajs")(list(range(1200, 3000, 40)))
-set_param("64I", "meson_tensor_tsep")(18)
-set_param("64I", "meson_jwjj_threshold")(0.0005)
+set_param("64I", "measurement", "meson_tensor_tsep")(18)
 set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
@@ -756,7 +691,10 @@ set_param(job_tag, "prob_exact_wsrc")(0.20)
 set_param(job_tag, "prob_acc_1_psrc")(0.25)
 set_param(job_tag, "prob_acc_2_psrc")(0.10)
 
-set_param(job_tag, "meson_tensor_tsep")(1)
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
+set_param(job_tag, "measurement", "meson_tensor_tsep")(1)
+set_param(job_tag, "measurement", "pipi_op_t_sep")(1)
+set_param(job_tag, "measurement", "pipi_corr_t_sep_list")([ 1, 2, 3, 4, ])
 
 # ----
 
