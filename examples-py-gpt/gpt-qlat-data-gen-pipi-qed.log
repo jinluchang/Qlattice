@@ -20,5 +20,5 @@ CHECK: ('field-selection-fsel-psrc-prop-norm-threshold', 0.05)
 CHECK: ('prob_exact_wsrc', 0.2)
 CHECK: ('prob_acc_1_psrc', 0.25)
 CHECK: ('prob_acc_2_psrc', 0.1)
-CHECK: ('measurement', {'auto_contractor_chunk_size': 2, 'meson_tensor_tsep': 1, 'pipi_op_t_sep': 1, 'pipi_corr_t_sep_list': [1, 2, 3, 4]})
+CHECK: ('measurement', {'auto_contractor_chunk_size': 2, 'meson_tensor_t_sep': 1, 'pipi_op_t_sep': 1, 'pipi_corr_t_sep_list': [1, 2, 3, 4], 'pipi_tensor_t_sep_list': [1, 2, 3], 'pipi_tensor_t_max': 3, 'pipi_tensor_r_max': 4})
 CHECK: finished successfully.
