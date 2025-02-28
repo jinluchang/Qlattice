@@ -786,6 +786,7 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
     benchmark_eval_cexpr(get_cexpr_pipi_corr())
+    benchmark_eval_cexpr(get_cexpr_pipi_jj())
 
 ### ------
 
@@ -821,6 +822,15 @@ set_param("test-4nt8", "cg_params-1-2", "maxcycle")(3)
 set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
+
+set_param("16IH2", "trajs")(list(range(1000, 4020, 10)))
+set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
+set_param("16IH2", "measurement", "meson_tensor_t_sep")(4)
+set_param("16IH2", "measurement", "pipi_op_t_sep")(2)
+set_param("16IH2", "measurement", "pipi_corr_t_sep_list")(list(range(1, 10)))
+set_param("16IH2", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, 3, 4, ])
+set_param("16IH2", "measurement", "pipi_tensor_t_max")(6)
+set_param("16IH2", "measurement", "pipi_tensor_r_max")(16)
 
 set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
 set_param("24D", "measurement", "meson_tensor_t_sep")(8)
@@ -913,7 +923,7 @@ if __name__ == "__main__":
 
     is_performing_inversion = not q.get_option("--no-inversion")
 
-    is_performing_contraction = not q.get_option("--no-contract")
+    is_performing_contraction = not q.get_option("--no-contraction")
 
     #######################################################
 
