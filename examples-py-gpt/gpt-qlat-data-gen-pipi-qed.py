@@ -693,7 +693,7 @@ def run_job_inversion(job_tag, traj):
         q.timer_display()
 
 @q.timer_verbose
-def run_job_contract(job_tag, traj):
+def run_job_contraction(job_tag, traj):
     #
     traj_gf = traj
     if job_tag[:5] == "test-":
@@ -728,12 +728,8 @@ def run_job_contract(job_tag, traj):
     get_gf = None
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     #
-    get_wi = run_wi(job_tag, traj)
-    #
-    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
-    get_f_rand_01 = run_f_rand_01(job_tag, traj)
-    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
-    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=None, get_f_weight=None)
+    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=None, get_f_weight=None)
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
@@ -825,10 +821,10 @@ set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
 set_param("16IH2", "trajs")(list(range(1000, 4020, 10)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
-set_param("16IH2", "measurement", "meson_tensor_t_sep")(4)
+set_param("16IH2", "measurement", "meson_tensor_t_sep")(2)
 set_param("16IH2", "measurement", "pipi_op_t_sep")(2)
 set_param("16IH2", "measurement", "pipi_corr_t_sep_list")(list(range(1, 10)))
-set_param("16IH2", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, 3, 4, ])
+set_param("16IH2", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, ])
 set_param("16IH2", "measurement", "pipi_tensor_t_max")(6)
 set_param("16IH2", "measurement", "pipi_tensor_r_max")(16)
 
@@ -953,7 +949,7 @@ if __name__ == "__main__":
         for traj in get_param(job_tag, "trajs"):
             if is_performing_contraction:
                 q.check_time_limit()
-                run_job_contract(job_tag, traj)
+                run_job_contraction(job_tag, traj)
                 if q.obtained_lock_history_list:
                     json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
