@@ -213,6 +213,7 @@ let
     } else {}
     );
     #
+    ollama = n-pkgs.ollama;
     ucx = (pkgs.ucx.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++ [
         "--enable-mt"
@@ -518,7 +519,7 @@ let
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues ({
-        inherit qlat-jhub-py mpi;
+        inherit qlat-jhub-py mpi ollama;
         inherit (pkgs)
         bashInteractive
         bash-completion
@@ -551,7 +552,6 @@ let
         zip
         unzip
         ;
-        ollama = n-pkgs.ollama;
       }
       // qlat-cc
       // qlat-dep-pkgs
