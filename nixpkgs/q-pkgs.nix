@@ -27,7 +27,11 @@ let
 
   version-pypi = "0.76";
 
-  nixgl-src = builtins.fetchTarball "https://github.com/jinluchang/nixGL/archive/0666d975fb80a7e8bedb4caafff8f113c5b14072.tar.gz";
+  nixgl-src = builtins.fetchGit {
+    url = "https://github.com/jinluchang/nixGL";
+    ref = "main";
+    rev = "0666d975fb80a7e8bedb4caafff8f113c5b14072";
+  };
 
   nixgl = (import nixgl-src {}).auto.nixGLDefault;
 

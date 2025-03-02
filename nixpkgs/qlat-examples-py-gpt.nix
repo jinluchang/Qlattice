@@ -28,7 +28,10 @@ let
   orig-stdenv = stdenv;
 
   version-pypi = use-pypi;
-  qlat-src-pypi = builtins.fetchTarball "https://github.com/jinluchang/Qlattice/archive/refs/tags/v${version-pypi}.tar.gz";
+  qlat-src-pypi = builtins.fetchGit {
+    url = "https://github.com/jinluchang/Qlattice";
+    ref = "refs/tags/v${version-pypi}";
+  };
 
   version = if use-pypi != null then version-pypi else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
 
