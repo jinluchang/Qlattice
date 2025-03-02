@@ -49,6 +49,7 @@ fcf78dd9656c10eb8cf9fbd5f59a0b6b01386205fe1934b3b287a0a1898145c0  isl-0.24.tar.b
 3b77d6d970a6cf5b448facc7d4f6229c3e73909ac27ea2480c843afdadbad0fb  python-packages/pythran-0.17.0.tar.gz
 42dea1b65771cba93b7a515d65a65d8246e560768a66b9106a592c8e7f26c8a7  python-packages/setuptools_scm-8.1.0.tar.gz
 465ef92c69fa5c5da2d1cf8ac40559a8c940886afcef87dcf14b9470862f1d85  python-packages/wheel-0.43.0.tar.gz
+4880473a969e5f23f2a2be3646b2dfd84af9028716d398e46192f84bc36900d2  python-packages/setuptools-75.8.2.tar.gz
 4b37730834edbd6bd37f26ece6b44802fb1c1ee2ece0e54ddff8bfc06db86965  python-packages/pyproject_hooks-1.1.0.tar.gz
 526263f4870c26f26c433545579475377b2b7588b6f1eac76a001e873ae3e19d  python-packages/build-1.2.1.tar.gz
 7146dd2af8682b4ca61331851e6aebce9fe5158e75300343f80c07ca80b1faff  python-packages/cython-3.0.11.tar.gz
@@ -61,7 +62,6 @@ a0258537e65e7e14ec33a86802f865a667f949bb6c73646d55e42f7c45a052ae  python-package
 b27fd2c6530e0ab39e275fc9b683895367e51d5da91baa8d3d64db2565fec4d9  python-packages/sympy-1.13.3.tar.gz
 b882297964e8b07a0c7c5f34a80874d5f906a1fa4ec8f0b930ffa4d040b967a6  python-packages/ninja-10.0.tar.gz
 ba6af10348c12b24e92fa086b39cfba0eff619b61ac77c406167d813b096d39a  python-packages/pybind11-2.13.6.tar.gz
-bd63e505105011b25c3c11f753f7e3b8465ea739efddaccef8f0efac2137bac1  python-packages/setuptools-70.2.0.tar.gz
 de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f  python-packages/tomli-2.0.1.tar.gz
 deb4163ef11f75b520d822d9505c1f462761b4309b1bb713d08689759ea8b899  python-packages/pkgconfig-1.5.5.tar.gz
 ea171f5529e6e0b5b666193433831af61a28d7edf973b33884ec8c782a15ee38  python-packages/scikit_build-0.18.0-py3-none-any.whl
@@ -73,9 +73,9 @@ f3174b245775d556f4fddb32519a2066ef0592edc810c5b5a59238f9a0a40c89  python-package
 fa7a4001eae8aa572ee84f35feb510b321bd652e5cf9293249d62853e1f935a2  python-packages/poetry_core-1.9.0.tar.gz
 
 CPS: d3c8dd5e8a3ea6a315fd2fba963bf32585ed6331
-Grid-clehner: 64c227cdbc12ea2206425f46b1fc02c2f080a66e
-Grid-tblum: 7710611d9e992eee8a8694166e2bc7f6af22231a
-Grid: 3f3661a86f77330cae4580b4f1d73a5835a5afb4
-Hadrons-tblum: ee1485f221f882d962f3c4fb6172ed0cba7fda42
+Grid-clehner: 059b6e67f0be0a7fb1595bb2e6df4d67747564e0
+Grid-tblum: cf802231c2b8a26940f95fe3f2e994c7c74cb5dd
+Grid: c4d9aa1a21c942a5910b32240470d7ab9e4ba6bc
+Hadrons-tblum: ecaff530d47a86646d0b3098634d89600c2cb04a
 Hadrons: 34780708afc23f9114742b38f7c9b080882c74e3
-gpt: 961ef9e45fb5adc237838378a8de32226917c46e
+gpt: c60a32aa8283a1d7532cf640d0d4cec8b1623c46
