@@ -27,11 +27,10 @@ buildPythonPackage rec {
 
   pyproject = false;
 
-  src = fetchFromGitHub {
-    owner = "lehner";
-    repo = "gpt";
+  src = builtins.fetchGit {
+    url = "https://github.com/lehner/gpt";
+    ref = "main";
     rev = version;
-    hash = "sha256-axilpf/DmyoHbc3EB4/FyL84DiHCPeYCeNMVNUVoXms=";
   };
 
   enableParallelBuilding = true;

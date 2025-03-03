@@ -36,11 +36,10 @@ in grid-stdenv.mkDerivation rec {
   pname = "Grid-lehner";
   version = "e138258129faed5cb12fc0e5bbf829f69c6a2a3d";
 
-  src = fetchFromGitHub {
-    owner = "lehner";
-    repo = "Grid";
+  src = builtins.fetchGit {
+    url = "https://github.com/lehner/Grid";
+    ref = "main";
     rev = version;
-    hash = "sha256-m1wpTWgoRFeZJbidy7ckD1iobFnaNOUjEnhYuJkxe4s=";
   };
 
   enableParallelBuilding = true;
