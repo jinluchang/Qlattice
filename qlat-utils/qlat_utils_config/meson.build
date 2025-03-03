@@ -12,6 +12,7 @@ init_files = files(
 
 py_files = files(
   'get_info.py',
+  '__main__.py',
   ) + config
 
 py3.install_sources(init_files + py_files, subdir: 'qlat_utils_config')

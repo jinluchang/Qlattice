@@ -13,7 +13,7 @@ action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
 if action == "qlat-grid-config":
-    from .scripts import qlat_grid_config
+    import qlat_grid_config.__main__
 else:
     print(usage_message)
     exit()
