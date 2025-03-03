@@ -23,8 +23,6 @@ from .qplot import *
 
 from .parallel import *
 
-from .get_include_dir import *
-
 from .json import *
 
 from .lru_cache import *

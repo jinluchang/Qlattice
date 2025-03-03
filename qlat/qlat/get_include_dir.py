@@ -1,5 +1,5 @@
 import os
-from qlat_utils import qls, qls_all, get_dir_list as qu_get_dir_list
+from qlat_utils_config import qls, qls_all, get_eigen_type, get_dir_list as qu_get_dir_list
 
 def get_qlat_dir():
     return os.path.dirname(__file__)
