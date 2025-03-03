@@ -47,6 +47,7 @@ deps = [ qlat_utils, mpic, fftw_all, cuba, gsl, ]
 
 py3.install_sources('qlat_gpt.py')
 
+subdir('qlat_config')
 subdir('qlat')
 subdir('cqlat')
 subdir('auto_contractor')
