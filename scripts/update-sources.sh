@@ -46,6 +46,19 @@ done
 
 (
 
+echo "Update 'depend-grid/meson.build'."
+
+for dir in $(find qlat* examples-* -type d -name depend-grid) ; do
+    fn="$dir/meson.build"
+    if [ -f "$fn" ] ; then
+        cp -pv qlat-grid/depend-grid/meson.build "$fn"
+    fi
+done
+
+) || echo "Update 'depend-grid/meson.build' not successful"
+
+(
+
 find . -name "__pycache__" -exec rm -rfv '{}' \;
 
 ) || echo "Clean '__pycache__' not successful."
