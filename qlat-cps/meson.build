@@ -33,4 +33,5 @@ subdir('depend-cps')
 
 deps = [ mpic, qlat, cps, ]
 
+subdir('qlat_cps_config')
 subdir('qlat_cps')

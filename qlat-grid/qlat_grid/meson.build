@@ -4,7 +4,6 @@ subdir('lib')
 
 py_files = files(
   'c.py',
-  'get_include_dir.py',
   '__init__.py',
   'init.py',
   '__main__.py',
