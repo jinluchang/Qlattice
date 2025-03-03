@@ -16,7 +16,6 @@ py_files = files(
   'field_double.py',
   'field_type_dict.py',
   'fthmc.py',
-  'get_include_dir.py',
   'hmc_stats.py',
   'inverter.py',
   '__main__.py',

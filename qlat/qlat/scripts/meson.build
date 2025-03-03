@@ -7,7 +7,6 @@ py_fns = [
   'fields_properly_truncate.py',
   'fields_rewrite.py',
   'gauge_fix_coulomb.py',
-  'qlat_config.py',
   'topo_measure.py',
   'topo_measure_gpt.py',
   'topo_measure_wilson_flow.py',

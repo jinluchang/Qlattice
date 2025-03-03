@@ -27,8 +27,6 @@ from .contract_field import *
 
 from .inverter import *
 
-from .get_include_dir import *
-
 from .field_analysis import *
 
 from .mat_mpi import *

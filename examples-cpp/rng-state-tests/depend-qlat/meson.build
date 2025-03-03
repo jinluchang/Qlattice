@@ -29,7 +29,7 @@ qlat_numpy = declare_dependency(
   dependencies: [ qlat_py3.dependency(), ],
   ).as_system()
 
-qlat_eigen_type = run_command(qlat_py3, '-c', 'import qlat as q ; print(q.get_eigen_type())',
+qlat_eigen_type = run_command(qlat_py3, '-c', 'import qlat_config as q ; print(q.get_eigen_type())',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip()
 message('qlat_eigen_type', qlat_eigen_type)
@@ -45,26 +45,26 @@ else
   qlat_eigen = dependency('eigen3').as_system()
 endif
 
-qlat_include = run_command(qlat_py3, '-c', 'import qlat as q ; print("\\n".join(q.get_include_list()))',
+qlat_include = run_command(qlat_py3, '-c', 'import qlat_config as q ; print("\\n".join(q.get_include_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
 message('qlat include', qlat_include)
 
-qlat_lib = run_command(qlat_py3, '-c', 'import qlat as q ; print("\\n".join(q.get_lib_list()))',
+qlat_lib = run_command(qlat_py3, '-c', 'import qlat_config as q ; print("\\n".join(q.get_lib_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
 message('qlat lib', qlat_lib)
 
-qlat_pxd = run_command(qlat_py3, '-c', 'import qlat as q ; print("\\n".join(q.get_pxd_list()))',
+qlat_pxd = run_command(qlat_py3, '-c', 'import qlat_config as q ; print("\\n".join(q.get_pxd_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
-# message('qlat pxd', qlat_pxd)
+message('qlat pxd', qlat_pxd[0], '...')
 qlat_pxd = files(qlat_pxd)
 
-qlat_header = run_command(qlat_py3, '-c', 'import qlat as q ; print("\\n".join(q.get_header_list()))',
+qlat_header = run_command(qlat_py3, '-c', 'import qlat_config as q ; print("\\n".join(q.get_header_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
-# message('qlat header', qlat_header)
+message('qlat header', qlat_header[0], '...')
 qlat_header = files(qlat_header)
 
 qlat = declare_dependency(

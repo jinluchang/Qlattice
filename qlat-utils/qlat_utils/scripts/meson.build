@@ -5,7 +5,6 @@ py_files = files(
   'pickle_glimpse.py',
   'qar.py',
   'qar_glimpse.py',
-  'qlat_utils_config.py',
   )
 
 py3.install_sources(py_files, subdir: 'qlat_utils/scripts')

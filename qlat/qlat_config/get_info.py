@@ -2,7 +2,7 @@ import os
 from qlat_utils_config import qls, qls_all, get_eigen_type, get_dir_list as qu_get_dir_list
 
 def get_qlat_dir():
-    return os.path.dirname(__file__)
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'qlat')
 
 def get_qlat_include():
     return os.path.join(get_qlat_dir(), 'include')
