@@ -2,7 +2,6 @@ import sys
 
 usage_message = """
 Usage:
-    python3 -m qlat qlat-config ...
     python3 -m qlat eigen-system-checksum ...
     python3 -m qlat eigen-system-repartition ...
     python3 -m qlat fields-checksum ...
@@ -23,9 +22,7 @@ if len(sys.argv) < 2:
 action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
-if action == "qlat-config":
-    from .scripts import qlat_config
-elif action == "eigen-system-checksum":
+if action == "eigen-system-checksum":
     from .scripts import eigen_system_checksum
 elif action == "eigen-system-repartition":
     from .scripts import eigen_system_repartition
