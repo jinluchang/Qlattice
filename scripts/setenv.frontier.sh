@@ -23,6 +23,7 @@ fi
 #
 module load craype-accel-amd-gfx90a
 module load rocm
+#
 export MPICH_GPU_SUPPORT_ENABLED=1
 export CFLAGS="-I\${ROCM_PATH}/include"
 export CXXFLAGS="-I\${ROCM_PATH}/include"
@@ -32,16 +33,19 @@ module load craype-x86-trento
 module load xpmem
 module load perftools-base
 module load openblas
+#
 module list
+#
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
+#
 export CC=cc
 export CXX=CC
 export MPICC=cc
 export MPICXX=CC
-export QLAT_CXX=amdclang++
-export QLAT_MPICXX=mpic++
+export QLAT_CXX=CC
+export QLAT_MPICXX=CC
 EOF
 
     #

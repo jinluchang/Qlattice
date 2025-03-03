@@ -48,7 +48,7 @@ source qcore/set-prefix.sh $name
     export CFLAGS=
     export CXXFLAGS="-fPIC --offload-arch=gfx90a -I${ROCM_PATH}/include -I${MPICH_DIR}/include"
     export HIPFLAGS="--amdgpu-target=gfx90a"
-    export LDFLAGS="-L${ROCM_PATH}/lib -lamdhip64 -L${MPICH_DIR}/lib -lmpi ${CRAY_XPMEM_POST_LINK_OPTS} -lxpmem ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}"
+    export LDFLAGS="-L${ROCM_PATH}/lib -lamdhip64 -L${MPICH_DIR}/lib -lmpi ${CRAY_XPMEM_POST_LINK_OPTS} -lxpmem ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a} -lhipblas"
     export MPICC=
     export MPICXX=CC
 
@@ -89,7 +89,6 @@ source qcore/set-prefix.sh $name
         --enable-unified=no \
         --enable-shm=nvlink \
         --enable-accelerator=hip \
-        --enable-accelerator-cshift \
         --disable-gparity \
         --disable-fermion-reps \
         $opts \
