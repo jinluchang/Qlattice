@@ -31,7 +31,6 @@ from qlat_utils.ama import *
 from qlat_utils.c import \
         as_wilson_matrix, as_wilson_matrix_g5_herm
 
-
 import numpy as np
 import qlat as q
 import copy
