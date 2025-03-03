@@ -52,5 +52,6 @@ endif
 
 deps = [ py3.dependency().as_system(), numpy, eigen, omp, zlib, math, quadmath, ]
 
+subdir('qlat_utils_config')
 subdir('qlat_utils')
 subdir('bin')

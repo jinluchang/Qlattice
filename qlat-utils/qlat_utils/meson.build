@@ -6,7 +6,7 @@ tempita = files('tempita.py')
 
 init_files = files(
   '__init__.py',
-)
+  )
 
 py_files = files(
   'ama.py',
