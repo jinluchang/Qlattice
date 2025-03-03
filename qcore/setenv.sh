@@ -87,11 +87,11 @@ else
     else
         echo "Setting for $(uname) as if it is a Linux"
     fi
-    if [ -d /usr/lib ] ; then
-        export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/usr/lib
+    if [ -d /usr/lib64 ] ; then
+        export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/usr/lib64
     fi
-    if [ -d /lib ] ; then
-        export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/lib
+    if [ -d /lib64 ] ; then
+        export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/lib64
     fi
     if [ -n "$NIX_CFLAGS_COMPILE" ] ; then
         value="$NIX_CFLAGS_COMPILE"

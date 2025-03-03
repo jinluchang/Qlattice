@@ -18,7 +18,7 @@ qlat_utils_numpy = declare_dependency(
   dependencies: [ qlat_utils_py3.dependency(), ],
   ).as_system()
 
-qlat_utils_eigen_type = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print(q.get_eigen_type())',
+qlat_utils_eigen_type = run_command(qlat_utils_py3, '-c', 'import qlat_utils_config as q ; print(q.get_eigen_type())',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip()
 message('qlat_utils_eigen_type', qlat_utils_eigen_type)
@@ -36,23 +36,23 @@ endif
 
 qlat_utils_quadmath = qlat_utils_cpp.find_library('quadmath', has_headers: 'quadmath.h', required: false)
 
-qlat_utils_include = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_include_list()))',
+qlat_utils_include = run_command(qlat_utils_py3, '-c', 'import qlat_utils_config as q ; print("\\n".join(q.get_include_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
 message('qlat_utils include', qlat_utils_include)
 
-qlat_utils_lib = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_lib_list()))',
+qlat_utils_lib = run_command(qlat_utils_py3, '-c', 'import qlat_utils_config as q ; print("\\n".join(q.get_lib_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
 message('qlat_utils lib', qlat_utils_lib)
 
-qlat_utils_pxd = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_pxd_list()))',
+qlat_utils_pxd = run_command(qlat_utils_py3, '-c', 'import qlat_utils_config as q ; print("\\n".join(q.get_pxd_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
 # message('qlat_utils pxd', qlat_utils_pxd)
 qlat_utils_pxd = files(qlat_utils_pxd)
 
-qlat_utils_header = run_command(qlat_utils_py3, '-c', 'import qlat_utils as q ; print("\\n".join(q.get_header_list()))',
+qlat_utils_header = run_command(qlat_utils_py3, '-c', 'import qlat_utils_config as q ; print("\\n".join(q.get_header_list()))',
   env: environment({'q_verbose': '-1'}),
   check: true).stdout().strip().split('\n')
 # message('qlat_utils header', qlat_utils_header)
