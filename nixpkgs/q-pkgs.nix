@@ -7,6 +7,8 @@
 
 let
 
+  version-pypi = "0.76";
+
   o-pkgs = nixpkgs {
     config.allowUnfree = true;
   };
@@ -24,8 +26,6 @@ let
   runCommandLocal = o-pkgs.runCommandLocal;
 
   runCommand = o-pkgs.runCommand;
-
-  version-pypi = "0.76";
 
   nixgl-src = builtins.fetchGit {
     url = "https://github.com/jinluchang/nixGL";
