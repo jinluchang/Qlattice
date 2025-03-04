@@ -37,15 +37,14 @@ set -e
     ./scripts/qio.sh
     ./scripts/cps.sh
 
-    ./scripts/qlat-utils.sh
-    ./scripts/qlat.sh
-    ./scripts/qlat-cps.sh
-
     unset PRG_ENV
 
     ./scripts/grid-clehner.frontier.sh
     ./scripts/gpt.sh
 
+    ./scripts/qlat-utils.sh
+    ./scripts/qlat.sh
+    ./scripts/qlat-cps.sh
     # ./scripts/qlat-grid.sh
 
     date

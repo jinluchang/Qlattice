@@ -44,8 +44,8 @@ export CC=cc
 export CXX=CC
 export MPICC=cc
 export MPICXX=CC
-export QLAT_CXX=CC
-export QLAT_MPICXX=CC
+export QLAT_CXX=amdclang++
+export QLAT_MPICXX=mpic++
 EOF
 
     #
