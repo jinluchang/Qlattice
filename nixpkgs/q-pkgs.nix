@@ -7,7 +7,7 @@
 
 let
 
-  version-pypi = "0.76";
+  version-pypi = "0.77";
 
   o-pkgs = nixpkgs {
     config.allowUnfree = true;
