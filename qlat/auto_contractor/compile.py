@@ -1823,7 +1823,7 @@ class CExprCodeGenPy:
         append(f"# eval")
         append(f"ama_val = cexpr_function_eval(positions_dict, props, cms, factors)")
         append(f"# extract sloppy val")
-        append(f"val_sloppy = ama_extract(ama_val, is_sloppy = True)")
+        append(f"val_sloppy = ama_extract(ama_val, is_sloppy=True)")
         append(f"# extract AMA val")
         append(f"val_ama = ama_extract(ama_val)")
         append(f"# return")

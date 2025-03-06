@@ -210,12 +210,21 @@ class S(Op):
         """
         can also use these fictitious quark field to remove some unwanted disconnected diagrams
         """
-        if self.f in [ "u", "d", "u'", "d'", "u''", "d''", "u'''", "d'''", ]:
+        if self.f in [ "u", "d", "u'", "d'", "u''", "d''", "u'''", "d'''", "u''''", "d''''", ]:
             self.f = "l"
-        elif self.f in [ "s", "s'", "s''", "s'''", ]:
+        elif self.f in [ "l", "l'", "l''", "l'''", "l''''", ]:
+            self.f = "l"
+        elif self.f in [ "s", "s'", "s''", "s'''", "s''''", ]:
             self.f = "s"
-        elif self.f in [ "c", "c'", "c''", "c'''", ]:
+        elif self.f in [ "c", "c'", "c''", "c'''", "c''''", ]:
             self.f = "c"
+        elif self.f in [ "b", "b'", "b''", "b'''", "b''''", ]:
+            self.f = "b"
+        elif self.f in [ "t", "t'", "t''", "t'''", "t''''", ]:
+            self.f = "t"
+        else:
+            fname = q.get_fname()
+            raise Exception(f"{fname}: self.f=\"{self.f}\"")
 
 ### ------
 
