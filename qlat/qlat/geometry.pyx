@@ -126,13 +126,21 @@ cdef class Geometry:
         cc.assign_direct(xl.xx, self.xx.coordinate_l_from_g(xg.xx))
         return xl
 
-    def index_from_coordinate(self, Coordinate xg not None):
-        return self.xx.index_from_coordinate(xg.xx)
+    def index_from_coordinate(self, Coordinate xl not None):
+        return self.xx.index_from_coordinate(xl.xx)
 
     def coordinate_from_index(self, cc.Long index):
         cdef Coordinate xl = Coordinate()
         cc.assign_direct(xl.xx, self.xx.coordinate_from_index(index))
         return xl
+
+    def index_from_g_coordinate(self, Coordinate xg not None):
+        return self.xx.index_from_g_coordinate(xg.xx)
+
+    def g_coordinate_from_index(self, cc.Long index):
+        cdef Coordinate xg = Coordinate()
+        cc.assign_direct(xg.xx, self.xx.g_coordinate_from_index(index))
+        return xg
 
     def is_local(self, Coordinate xl not None):
         return self.xx.is_local(xl.xx)

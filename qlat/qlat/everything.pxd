@@ -54,10 +54,12 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         Long local_volume()
         Long total_volume()
         bool is_local(const Coordinate& x)
-        Long index_from_coordinate(const Coordinate& xl)
-        Coordinate coordinate_from_index(const Long index)
         Coordinate coordinate_g_from_l(const Coordinate& xl)
         Coordinate coordinate_l_from_g(const Coordinate& xg)
+        Long index_from_coordinate(const Coordinate& xl)
+        Coordinate coordinate_from_index(const Long index)
+        Long index_from_g_coordinate(const Coordinate& xg)
+        Coordinate g_coordinate_from_index(const Long index)
     std_string show(const Geometry& geo) except +
     Geometry geo_resize(const Geometry& geo, Int thick) except +
     Geometry geo_resize(const Geometry& geo, const Coordinate& expansion_left, const Coordinate& expansion_right) except +

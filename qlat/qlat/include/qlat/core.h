@@ -297,6 +297,21 @@ struct API Geometry {
     const Coordinate xl = xg - geon.coor_node * node_site;
     return xl;
   }
+	//
+  qacc Long index_from_g_coordinate(const Coordinate& xg) const
+  // 0 <= index < local_volume()
+  {
+		const Coordinate xl = coordinate_l_from_g(xg);
+		return index_from_coordinate(xl);
+  }
+  //
+  qacc Coordinate g_coordinate_from_index(const Long index) const
+  // get global coordinate from index
+  // 0 <= index < local_volume()
+	{
+		const Coordinate xl = coordinate_from_index(index);
+		return coordinate_g_from_l(xl);
+	}
 };
 
 std::string show(const qlat::Geometry& geo);
