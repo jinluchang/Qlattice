@@ -3,11 +3,10 @@ import gc
 import os
 import pprint
 
-from . import rbc_ukqcd_params as rup
 from .rbc_ukqcd_params import get_param
 
-def get_fermion_params(job_tag, inv_type, inv_acc):
-    return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]
+def get_param_fermion(job_tag, inv_type, inv_acc):
+    return get_param(job_tag, "fermion_params", inv_type, inv_acc)
 
 def get_ls_from_fermion_params(fermion_params):
     if "omega" in fermion_params:
@@ -15,21 +14,24 @@ def get_ls_from_fermion_params(fermion_params):
     else:
         return fermion_params["Ls"]
 
-def get_lanc_params(job_tag, inv_type, inv_acc=0):
-    return rup.dict_params[job_tag]["lanc_params"][inv_type][inv_acc]
+def get_param_lanc(job_tag, inv_type, inv_acc=0):
+    return get_param(job_tag, "lanc_params", inv_type, inv_acc)
 
-def get_clanc_params(job_tag, inv_type, inv_acc=0):
-    return rup.dict_params[job_tag]["clanc_params"][inv_type][inv_acc]
+def get_param_clanc(job_tag, inv_type, inv_acc=0):
+    return get_param(job_tag, "clanc_params", inv_type, inv_acc)
 
 @q.timer_verbose
 def mk_eig(gf, job_tag, inv_type, inv_acc=0):
+    """
+    Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
+    """
     import qlat_gpt as qg
     import gpt as g
     qtimer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
     qtimer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
-    params = get_lanc_params(job_tag, inv_type, inv_acc)
+    params = get_param_lanc(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_eig: params=\n{pprint.pformat(params)}")
     fermion_params = params["fermion_params"]
@@ -59,14 +61,18 @@ def mk_eig(gf, job_tag, inv_type, inv_acc=0):
 
 @q.timer_verbose
 def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
+    """
+    Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
+    Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
+    """
     import qlat_gpt as qg
     import gpt as g
     qtimer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
     qtimer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
-    params = get_lanc_params(job_tag, inv_type, inv_acc)
-    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    params = get_param_lanc(job_tag, inv_type, inv_acc)
+    cparams = get_param_clanc(job_tag, inv_type, inv_acc)
     assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
     fermion_params = params["fermion_params"]
     q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
@@ -131,12 +137,16 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
 
 @q.timer_verbose
 def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0):
+    """
+    Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
+    Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
+    """
     import qlat_gpt as qg
     import gpt as g
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
-    params = get_lanc_params(job_tag, inv_type, inv_acc)
-    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    params = get_param_lanc(job_tag, inv_type, inv_acc)
+    cparams = get_param_clanc(job_tag, inv_type, inv_acc)
     assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
     fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
@@ -160,10 +170,13 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0):
 
 @q.timer_verbose
 def save_ceig(path, eig, job_tag, inv_type=0, inv_acc=0):
+    """
+    Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
+    """
     import gpt as g
     if path is None:
         return
-    save_params = get_clanc_params(job_tag, inv_type, inv_acc)["save_params"]
+    save_params = get_param_clanc(job_tag, inv_type, inv_acc)["save_params"]
     nsingle = save_params["nsingle"]
     mpi = save_params["mpi"]
     fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
@@ -175,6 +188,9 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
     """
     return ``None'' or a function ``load_eig''
     ``load_eig()'' return the ``eig''
+    #
+    Need get_param(job_tag, "total_site")
+    Need get_param(job_tag, "fermion_params", inv_type, inv_acc)
     """
     import qlat_gpt as qg
     import gpt as g
@@ -195,7 +211,7 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
     def load_eig():
         g.mem_report()
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
+        fermion_params = get_param_fermion(job_tag, inv_type, inv_acc)
         grids = qg.get_fgrid(total_site, fermion_params)
         eig = g.load(path, grids=grids)
         g.mem_report()
@@ -203,7 +219,7 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
     #
     return q.lazy_call(load_eig)
 
-def get_cg_mp_maxiter(job_tag, inv_type, inv_acc):
+def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
     maxiter = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")
     if maxiter is not None:
         return maxiter
@@ -217,7 +233,7 @@ def get_cg_mp_maxiter(job_tag, inv_type, inv_acc):
         maxiter = 300
     else:
         maxiter = 100
-        raise Exception("get_cg_mp_maxiter")
+        raise Exception("get_param_cg_mp_maxiter")
     return maxiter
 
 @q.timer_verbose
@@ -228,6 +244,13 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         eig=None,
         eps=1e-8,
         qtimer=True):
+    """
+    Need get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")
+    Need get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")
+    Need get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150) if is_madwf
+    Need get_param(job_tag, "fermion_params", inv_type, inv_acc)
+    Need get_param(job_tag, "fermion_params", inv_type, inv_acc=0) if eig is not None
+    """
     import qlat_gpt as qg
     import gpt as g
     if mpi_split is None:
@@ -238,10 +261,10 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type in [ 0, 1, 2, ]:
-        params = get_fermion_params(job_tag, inv_type, inv_acc)
+        params = get_param_fermion(job_tag, inv_type, inv_acc)
         if eig is not None:
             # may need madwf
-            params0 = get_fermion_params(job_tag, inv_type, inv_acc=0)
+            params0 = get_param_fermion(job_tag, inv_type, inv_acc=0)
             is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
             if is_madwf and inv_type == 1:
                 # do not use madwf for strange even when eig is available (do not use eig for exact solve)
@@ -255,7 +278,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         else:
             qm = g.qcd.fermion.mobius(gpt_gf, params)
         inv = g.algorithms.inverter
-        cg_mp = inv.cg({"eps": eps, "maxiter": get_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
+        cg_mp = inv.cg({"eps": eps, "maxiter": get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
         cg_pv_f = inv.cg({"eps": eps, "maxiter": get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150)})
         if mpi_split is None or mpi_split == False:
             cg_split = cg_mp

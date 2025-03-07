@@ -696,6 +696,14 @@ class BfieldCoef:
 
     """
     self.spin_tensor
+    #
+    baryon_operator =
+    ( spin_tensor[spin_idx1, spin_idx2, spin_idx3]
+    * epsilon[color_idx1, color_idx2, color_idx3]
+    * quark_field_1[spin_idx1, color_idx1]
+    * quark_field_2[spin_idx2, color_idx2]
+    * quark_field_3[spin_idx3, color_idx3]
+    )
     """
 
     def __init__(self, st_list_code:list|None=None):

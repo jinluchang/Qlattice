@@ -33,7 +33,7 @@ def prod(l):
 @q.timer_verbose
 def load_eig(path, job_tag, inv_type = 0, inv_acc = 0):
     total_site = ru.get_total_site(job_tag)
-    fermion_params = ru.get_fermion_params(job_tag, inv_type, inv_acc)
+    fermion_params = ru.get_param_fermion(job_tag, inv_type, inv_acc)
     grids = qg.get_fgrid(total_site, fermion_params)
     eig = cevec_io_meta.load(path, grids = grids)
     return eig
