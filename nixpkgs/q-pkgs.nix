@@ -13,12 +13,6 @@ let
     config.allowUnfree = true;
   };
 
-  n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable-small/nixexprs.tar.xz";
-
-  n-pkgs = import n-pkgs-src {
-    config.allowUnfree = true;
-  };
-
   lib = o-pkgs.lib;
 
   nixpkgs-release = lib.trivial.release;
@@ -26,6 +20,12 @@ let
   runCommandLocal = o-pkgs.runCommandLocal;
 
   runCommand = o-pkgs.runCommand;
+
+  n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable-small/nixexprs.tar.xz";
+
+  n-pkgs = import n-pkgs-src {
+    config.allowUnfree = true;
+  };
 
   nixgl-src = builtins.fetchGit {
     url = "https://github.com/jinluchang/nixGL";
@@ -140,10 +140,7 @@ let
       ${if opts.ngpu == "0" then "use-cuda" else null} = false;
       ${if opts.ngpu == "0" then "use-cudasupport" else null} = false;
     };
-    corrections-6 = opts: opts // {
-      ${if nixpkgs-release == "24.05" then "use-cudasupport" else null} = false;
-    };
-    opts = corrections-6 (corrections-5 (corrections-4 (corrections-3 (corrections-2 (corrections-1 opts-0)))));
+    opts = corrections-5 (corrections-4 (corrections-3 (corrections-2 (corrections-1 opts-0))));
     opts-1 =
       assert (opts.use-cudasupport -> opts.use-cuda);
       assert (opts.use-cuda -> opts.use-cuda-software);
