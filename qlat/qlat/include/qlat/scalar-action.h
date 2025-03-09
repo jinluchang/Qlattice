@@ -71,7 +71,7 @@ struct ScalarAction {
     // Loops over every lattice point in the current node
     const int multiplicity = sf.multiplicity;
     ScalarAction& sa = *this;
-    qacc_for(index, geo_r.local_volume(), {
+    qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = sf.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       fd.get_elem(index) = sa.action_point(sf, multiplicity, xl);
@@ -121,7 +121,7 @@ struct ScalarAction {
     const Geometry geo = field_ft.geo();
     const Int multiplicity = field_ft.multiplicity;
     //masses.init(geo);
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = field_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -145,7 +145,7 @@ struct ScalarAction {
   {
     TIMER("ScalarAction.to_mass_factor");
     const Geometry geo = sin_domega.geo();
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sin_domega.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> v = sin_domega.get_elems(xl);
@@ -178,7 +178,7 @@ struct ScalarAction {
     FieldM<double, 1> fd;
     fd.init(geo_r);
     // Long V = geo.total_volume();
-    qacc_for(index, geo_r.local_volume(), {
+    qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = sm_complex.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       double s=0;
@@ -205,7 +205,7 @@ struct ScalarAction {
     const Int multiplicity = sf.multiplicity;
     //sm_force.init(geo);
     ScalarAction& sa = *this;
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> sm_force_v = sm_force.get_elems(xl);
@@ -260,7 +260,7 @@ struct ScalarAction {
     //sf_complex*=1/rt_V;
     //fft_complex_field(sm_complex,true);
     //sm_complex*=1/rt_V;
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf_complex.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<ComplexD> sf_v = sf_complex.get_elems(xl);
@@ -282,7 +282,7 @@ struct ScalarAction {
     const Int multiplicity = sf.multiplicity;
     // const Geometry geo_r = geo_resize(geo);
     // axial_current.init(geo_r, sf.multiplicity-1);
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> ac_v = axial_current.get_elems(xl);
@@ -314,7 +314,7 @@ struct ScalarAction {
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
-    qacc_for(index, geo_r.local_volume(), {
+    qthread_for(index, geo_r.local_volume(), {
       // const Geometry& geo = f.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
@@ -374,7 +374,7 @@ struct ScalarAction {
     TIMER("hmc_predict_field");
     const Geometry& geo = momentum_ft.geo();
     const Int multiplicity = momentum_ft.multiplicity;
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = momentum_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -405,7 +405,7 @@ struct ScalarAction {
     const Geometry geo = sf.geo();
     const Int multiplicity = sf.multiplicity;
     qassert(multiplicity == 4);
-    qacc_for(index, geo.local_volume(), {
+    qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<double> sf_v = sf.get_elems_const(xl);
