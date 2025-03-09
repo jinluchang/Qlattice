@@ -3,6 +3,10 @@ from . import c
 
 class Cache(dict):
 
+    """
+    self.cache_keys
+    """
+
     def __init__(self, *keys):
         super().__init__()
         self.cache_keys = keys
@@ -17,8 +21,6 @@ def list_cache(ca=cache):
     for key, val in ca.items():
         if isinstance(val, Cache):
             l[key] = list_cache(val)
-        else:
-            l[key] = None
     return l
 
 def show_cache_keys(keys):
@@ -79,4 +81,5 @@ def clear_all_caches():
     clean python level cache and then C++ level cache
     """
     clean_cache()
+    cache.clear()
     c.clear_all_caches()

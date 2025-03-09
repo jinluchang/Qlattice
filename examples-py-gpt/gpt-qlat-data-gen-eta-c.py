@@ -65,6 +65,31 @@ def get_cexpr_eta_c_corr():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
+def mk_get_prop(prop_dict):
+    """
+    return get_prop
+    #
+    key = (flavor, pos_src, type_src, type_snk,)
+    prop_dict[key](pos_snk) => wm or AmaVal(wm)
+    #
+    e.g. prop_dict = q.mk_cache("prop-dict")
+    """
+    def get_prop(flavor, p_snk, p_src):
+        assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
+        type_snk, pos_snk = p_snk
+        type_src, pos_src = p_src
+        key = (flavor, pos_src, type_src, type_snk,)
+        get = prop_dict.get(key)
+        if get is not None:
+            return get(pos_snk)
+        key = (flavor, pos_snk, type_snk, type_src,)
+        get = prop_dict.get(key)
+        if get is not None:
+            return ("g5_herm", get(pos_src),)
+        fname = q.get_fname()
+        raise Exception(f"{fname}: {flavor} {p_snk} {p_src}")
+    return get_prop
+
 def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice_list):
     """
     return get_prop
@@ -81,16 +106,6 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
     set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(charm_mass)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     prop_dict = dict()
-    def get_prop(flavor, p_snk, p_src):
-        assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
-        type_snk, pos_snk = p_snk
-        type_src, pos_src = p_src
-        key = (flavor, pos_src, type_src, type_snk,)
-        prop = prop_dict.get(key)
-        if prop is not None:
-            return prop.get_elem_wm(pos_snk)
-        key = (flavor, pos_snk, type_snk, type_src,)
-        return ("g5_herm", get(pos_src),)
     for tslice in tslice_list:
         src = q.mk_wall_src(geo, tslice)
         sol = inv * src
@@ -114,6 +129,7 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
         prop_dict[key] = get_prop_wall_snk
     q.clean_cache(q.cache_inv)
     set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(mass_initial)
+    return mk_get_prop(prop_dict)
 
 @q.timer_verbose
 def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
