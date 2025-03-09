@@ -5,6 +5,7 @@ import functools
 
 from .c import *
 from .lru_cache import *
+from .json import json_dumps, json_loads
 
 @timer
 def qmkdirs(path):
@@ -43,6 +44,37 @@ def mk_file_dirs_info(path):
     if get_id_node() == 0:
         displayln(f"mk_file_dirs_info: '{path}'.")
         mk_file_dirs(path)
+
+@timer
+def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
+    """
+    only save from node 0 when is_sync_node
+    mk_file_dirs_info(path)
+    """
+    if not is_sync_node or get_id_node() == 0:
+        qtouch(path, json_dumps(obj, indent=indent))
+
+@timer
+def load_json_obj(path, default_value=None, *, is_sync_node=True):
+    """
+    all the nodes read the same data
+    if is_sync_node:
+        one node read and broadcast to other nodes
+    else:
+        all nodes individually read the data
+    """
+    if is_sync_node:
+        b = does_file_exist_qar_sync_node(path)
+    else:
+        b = does_file_exist_qar(path)
+    if b:
+        if is_sync_node:
+            obj = json_loads(qcat_bytes_sync_node(path))
+        else:
+            obj = json_loads(qcat_bytes(path))
+        return obj
+    else:
+        return default_value
 
 @timer
 def save_pickle_obj(obj, path, *, is_sync_node=True):

@@ -1,11 +1,12 @@
 import json
-
-# Mathspp Blog
-# https://mathspp.com/blog/custom-json-encoder-and-decoder
-
-# With modifications to add np.ndarray support
-
 import numpy as np
+
+"""
+Mathspp Blog
+https://mathspp.com/blog/custom-json-encoder-and-decoder
+#
+With modifications to add np.ndarray support
+"""
 
 class ExtendedEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -71,6 +72,8 @@ class QlatDecoder(ExtendedDecoder):
 def json_dumps(obj, *, indent=None):
     """
     return str dumped from `obj`
+    #
+    indent (int | str | None)
     """
     return json.dumps(obj, indent=indent, cls=QlatEncoder)
 

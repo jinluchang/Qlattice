@@ -24,7 +24,7 @@ from qlat_scripts.v1 import *
 
 is_cython = False
 
-# ----
+### ------
 
 load_path_list[:] = [
         "results",
@@ -36,7 +36,7 @@ load_path_list[:] = [
         "/data2/qcddata3-prop",
         ]
 
-# ----
+### ------
 
 def mk_eta_c(p:str, is_dagger=False):
     """
@@ -64,6 +64,73 @@ def get_cexpr_eta_c_corr():
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+### ------
+
+@q.timer_verbose
+def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c/charm_mass_idx-{charm_mass_idx}.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_eta_c_corr()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    get_prop = get_get_prop()
+    psel_prob = get_psel_prob()
+    fsel_prob = get_fsel_prob()
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    fsel_n_elems = fsel.n_elems
+    fsel_prob_arr = fsel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_fsel_arr = fsel.to_psel_local()[:]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    def load_data():
+        t_t_list = q.get_mpi_chunk(
+                [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
+                rng_state=None)
+        for t_src, t_snk in t_t_list:
+            yield t_src, t_snk
+    @q.timer
+    def feval(args):
+        t_src, t_snk = args
+        t = (t_snk - t_src) % total_site[3]
+        pd = {
+                "x_2" : ("wall", t_snk,),
+                "x_1" : ("wall", t_src,),
+                "size" : total_site,
+                }
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val, t
+    def sum_function(val_list):
+        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
+        for val, t in val_list:
+            values[t] += val
+        return q.glb_sum(values.transpose(1, 0))
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    res_sum *= 1.0 / total_site[3]
+    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
+    for i, en in enumerate(expr_names):
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
+
+### ------
 
 def mk_get_prop(prop_dict):
     """
@@ -129,70 +196,44 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
         prop_dict[key] = get_prop_wall_snk
     q.clean_cache(q.cache_inv)
     set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(mass_initial)
+    prop_cache = q.mk_cache("prop_cache", f"{job_tag}", f"{traj}")
+    prop_cache["prop-dict"] = prop_dict
     return mk_get_prop(prop_dict)
 
+### ------
+
+def get_param_charm_mass_list(job_tag):
+    charm_quark_mass_list = get_param(job_tag, "measurement", "charm_quark_mass_list")
+    return charm_quark_mass_list
+
+@q.cache_call()
 @q.timer_verbose
-def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
-    fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c.lat"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_eta_c_corr()
-    expr_names = get_expr_names(cexpr)
+def get_param_charm_wall_src_tslice_list(job_tag, traj):
+    num_charm_wall_src = get_param(job_tag, "measurement", "num_charm_wall_src")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    get_prop = get_get_prop()
-    psel_prob = get_psel_prob()
-    fsel_prob = get_fsel_prob()
-    psel = psel_prob.psel
-    fsel = fsel_prob.fsel
-    if not fsel.is_containing(psel):
-        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems
-    fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob_arr = psel_prob[:].ravel()
-    xg_fsel_arr = fsel.to_psel_local()[:]
-    geo = q.Geometry(total_site)
-    total_volume = geo.total_volume
-    def load_data():
-        t_t_list = q.get_mpi_chunk(
-                [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
-                rng_state=None)
-        for t_src, t_snk in t_t_list:
-            yield t_src, t_snk
-    @q.timer
-    def feval(args):
-        t_src, t_snk = args
-        t = (t_snk - t_src) % total_site[3]
-        pd = {
-                "x_2" : ("wall", t_snk,),
-                "x_1" : ("wall", t_src,),
-                "size" : total_site,
-                }
-        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-        return val, t
-    def sum_function(val_list):
-        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
-        for val, t in val_list:
-            values[t] += val
-        return q.glb_sum(values.transpose(1, 0))
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
-    res_sum *= 1.0 / total_site[3]
-    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
-    ld = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
-        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        ])
-    ld.from_numpy(res_sum)
-    ld.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
-    for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
+    rs = q.RngState(f"{job_tag}-{traj}-get_param_charm_wall_src_tslice_list")
+    t_start = rs.u_rand_gen() * t_size
+    t_sep = t_size / num_charm_wall_src
+    tslice_list = [ round(t_start + i * t_sep) % t_size for i in range(num_charm_wall_src) ]
+    return tslice_list
+
+@q.timer_verbose
+def run_charm_wall_src_prop_params(job_tag, traj):
+    charm_wall_src_tslice_list = get_param_charm_wall_src_tslice_list(job_tag, traj)
+    charm_quark_mass_list = get_param_charm_mass_list(job_tag)
+    obj = dict()
+    obj["charm_wall_src_tslice_list"] = charm_wall_src_tslice_list
+    obj["charm_quark_mass_list"] = charm_quark_mass_list
+    fn = f"{job_tag}/traj-{traj}/params/charm_wall_src_prop.json"
+    path = get_load_path(fn)
+    if path is None:
+        path = get_save_path(fn)
+        q.save_json_obj(obj, path)
+    else:
+        obj_load = q.load_json_obj(path)
+        assert obj_load is not None
+        assert obj_load == obj
 
 ### ------
 
@@ -224,87 +265,7 @@ def run_job(job_tag, traj):
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     #
-    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-            get_prop = get_get_prop()
-            if get_prop is not None:
-                q.timer_fork()
-                # ADJUST ME
-                auto_contract_eta_c_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                #
-                q.qtouch_info(get_save_path(fn_checkpoint))
-                q.displayln_info("timer_display for runjob")
-                q.timer_display()
-                q.timer_merge()
-            q.release_lock()
-    #
-    q.clean_cache()
-    if q.obtained_lock_history_list:
-        q.timer_display()
-
-@q.timer_verbose
-def run_job_contraction(job_tag, traj):
-    #
-    traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
-        traj_gf = 1000
-        #
-    #
-    fns_produce = [
-            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
-            #
-            ]
-    fns_need = [
-            (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-psrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",),
-            #
-            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
-            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-            f"{job_tag}/point-selection/traj-{traj}.txt",
-            f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-            ]
-    if not check_job(job_tag, traj, fns_produce, fns_need):
-        return
-    #
-    get_gf = None
-    get_gt = run_gt(job_tag, traj_gf, get_gf)
-    #
-    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=None, get_f_weight=None)
-    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=None, get_f_weight=None)
-    get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
-    get_psel = run_psel_from_psel_prob(get_psel_prob)
-    #
-    get_get_prop = run_get_prop(job_tag, traj,
-            get_gf = get_gf,
-            get_gt = get_gt,
-            get_psel = get_psel,
-            get_fsel = get_fsel,
-            prop_types = [
-                "wsrc psel s",
-                "wsrc psel l",
-                "wsrc fsel s",
-                "wsrc fsel l",
-                "psrc psel s",
-                "psrc psel l",
-                "psrc fsel s",
-                "psrc fsel l",
-                # "rand_u1 fsel c",
-                # "rand_u1 fsel s",
-                # "rand_u1 fsel l",
-                ],
-            )
-    #
-    run_r_list(job_tag)
+    run_charm_wall_src_prop_params(job_tag, traj)
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
@@ -313,13 +274,14 @@ def run_job_contraction(job_tag, traj):
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
-                auto_contract_eta_c_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_eta_c_corr(job_tag, traj, get_get_prop)
                 #
                 q.qtouch_info(get_save_path(fn_checkpoint))
                 q.displayln_info("timer_display for runjob")
                 q.timer_display()
                 q.timer_merge()
             q.release_lock()
+    #
     q.clean_cache()
     if q.obtained_lock_history_list:
         q.timer_display()
@@ -398,12 +360,12 @@ set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 
-set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'c': 0.5, })
+set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
 for inv_type in [ 1, 2, ]:
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
 set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
 set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
-set_param(job_tag, "fermion_params", 2, 0, "mass")(0.04)
+set_param(job_tag, "fermion_params", 2, 0, "mass")(0.10)
 for inv_type in [ 0, 1, 2, ]:
     for inv_acc in [ 1, 2, ]:
         set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
@@ -445,6 +407,9 @@ set_param(job_tag, "measurement", "pipi_corr_t_sep_list")([ 1, 2, 3, 4, ])
 set_param(job_tag, "measurement", "pipi_tensor_t_sep_list")([ 1, 2, 3, ])
 set_param(job_tag, "measurement", "pipi_tensor_t_max")(3)
 set_param(job_tag, "measurement", "pipi_tensor_r_max")(4)
+
+set_param(job_tag, "measurement", "charm_quark_mass_list")([])
+set_param(job_tag, "measurement", "num_charm_wall_src")([])
 
 # ----
 
