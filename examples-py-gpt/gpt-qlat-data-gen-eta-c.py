@@ -276,22 +276,21 @@ def run_charm_wall_src_prop_params(job_tag, traj):
 def run_job(job_tag, traj):
     #
     traj_gf = traj
+    #
     if job_tag[:5] == "test-":
-        # ADJUST ME
         traj_gf = 1000
-        #
     #
     fns_produce = [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             ]
     fns_need = [
-            # f"{job_tag}/gauge-transform/traj-{traj}.field",
-            # f"{job_tag}/point-selection/traj-{traj}.txt",
-            # f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
+            (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             ]
+    #
+    if job_tag[:5] == "test-":
+        fns_need = []
+    #
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
