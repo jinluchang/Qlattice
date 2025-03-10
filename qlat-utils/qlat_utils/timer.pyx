@@ -271,45 +271,106 @@ class TimerFork:
         assert exc_value is None
         assert traceback is None
         set_verbose_level(self.orig_verbose_level)
-        if self.show_display:
+        if self.show_display == True:
             timer_display("TimerFork")
+        elif isinstance(self.show_display, (int, float,)) and get_total_time() >= self.show_display:
+            timer_display("TimerForkAuto")
         timer_merge()
 
 ### -------------------------------------------------------------------
 
-def timer_builder(object func, cc.Bool is_verbose, cc.Bool is_flops, *, str fname=None) -> object:
-    cdef cc.std_string fname_str
-    if fname is None:
-        fname_str = "py:" + func.__qualname__
-    else:
-        fname_str = fname
-    cdef cc.Timer qtimer = cc.Timer(fname_str)
-    if not is_flops:
-        @functools.wraps(func)
-        def qtimer_func(*args, **kwargs):
-            qtimer.start(is_verbose)
-            ret = func(*args, **kwargs)
-            qtimer.stop(is_verbose)
-            return ret
-    else:
-        @functools.wraps(func)
-        def qtimer_func(*args, **kwargs):
-            qtimer.start(is_verbose)
-            flops, ret = func(*args, **kwargs)
-            qtimer.flops += flops
-            qtimer.stop(is_verbose)
-            return ret
-    return qtimer_func
+default_timer_kwargs = dict(
+        fname=None,
+        is_verbose=False,
+        is_flops=False,
+        is_timer_fork=False,
+        timer_fork_verbose=None,
+        timer_fork_max_call_times_for_always_show_info=-1,
+        timer_fork_show_display=10,
+        )
 
-def timer(object func) -> object:
+def timer(object func=None, **kwargs) -> object:
     """
     Timing functions.\n
     Usage::\n
         @q.timer
         def function(args):
-            ...
+            ...\n
+        @q.timer(is_verbose=True)
+        def function(args):
+            ...\n
+        @q.timer(is_timer_fork=True)
+        def function(args):
+            ...\n
+    if is_flops:
+        The function `func` need to return `(flops, ret,)`
     """
-    return timer_builder(func, False, False)
+    if func is not None:
+        assert kwargs == dict()
+        return timer()(func)
+    kwargs = dict(default_timer_kwargs, **kwargs)
+    fname = kwargs["fname"]
+    is_verbose = kwargs["is_verbose"]
+    is_flops = kwargs["is_flops"]
+    is_timer_fork = kwargs["is_timer_fork"]
+    timer_fork_verbose = kwargs["timer_fork_verbose"]
+    timer_fork_max_call_times_for_always_show_info = kwargs["timer_fork_max_call_times_for_always_show_info"]
+    timer_fork_show_display = kwargs["timer_fork_show_display"]
+    #
+    if is_timer_fork:
+        is_verbose = True
+    #
+    def f(object func):
+        cdef cc.std_string fname_str
+        if fname is None:
+            fname_str = "py:" + func.__qualname__
+        else:
+            fname_str = fname
+        cdef cc.Timer qtimer = cc.Timer(fname_str)
+        if not is_timer_fork:
+            if not is_flops:
+                @functools.wraps(func)
+                def qtimer_func(*args, **kwargs):
+                    qtimer.start(is_verbose)
+                    ret = func(*args, **kwargs)
+                    qtimer.stop(is_verbose)
+                    return ret
+            else:
+                @functools.wraps(func)
+                def qtimer_func(*args, **kwargs):
+                    qtimer.start(is_verbose)
+                    flops, ret = func(*args, **kwargs)
+                    qtimer.flops += flops
+                    qtimer.stop(is_verbose)
+                    return ret
+        else:
+            if not is_flops:
+                @functools.wraps(func)
+                def qtimer_func(*args, **kwargs):
+                    with TimerFork(
+                            verbose=timer_fork_verbose,
+                            max_call_times_for_always_show_info=timer_fork_max_call_times_for_always_show_info,
+                            show_display=timer_fork_show_display,
+                            ):
+                        qtimer.start(is_verbose)
+                        ret = func(*args, **kwargs)
+                        qtimer.stop(is_verbose)
+                    return ret
+            else:
+                @functools.wraps(func)
+                def qtimer_func(*args, **kwargs):
+                    with TimerFork(
+                            verbose=timer_fork_verbose,
+                            max_call_times_for_always_show_info=timer_fork_max_call_times_for_always_show_info,
+                            show_display=timer_fork_show_display,
+                            ):
+                        qtimer.start(is_verbose)
+                        flops, ret = func(*args, **kwargs)
+                        qtimer.flops += flops
+                        qtimer.stop(is_verbose)
+                    return ret
+        return qtimer_func
+    return f
 
 def timer_fname(str fname) -> object:
     """
@@ -319,9 +380,7 @@ def timer_fname(str fname) -> object:
         def function(args):
             ...
     """
-    def f(object func):
-        return timer_builder(func, False, False, fname=fname)
-    return f
+    return timer(fname=fname)
 
 def timer_verbose(object func):
     """
@@ -331,7 +390,7 @@ def timer_verbose(object func):
         def function(args):
             ...
     """
-    return timer_builder(func, True, False)
+    return timer(is_verbose=True)(func)
 
 def timer_verbose_fname(str fname):
     """
@@ -341,9 +400,7 @@ def timer_verbose_fname(str fname):
         def function(args):
             ...
     """
-    def f(object func):
-        return timer_builder(func, True, False, fname=fname)
-    return f
+    return timer(fname=fname, is_verbose=True)
 
 def timer_flops(object func):
     """
@@ -355,7 +412,7 @@ def timer_flops(object func):
             return flops, ret
     Modified function will only return ``ret`` in above example.
     """
-    return timer_builder(func, False, True)
+    return timer(is_flops=True)(func)
 
 def timer_flops_fname(str fname):
     """
@@ -367,9 +424,7 @@ def timer_flops_fname(str fname):
             return flops, ret
     Modified function will only return ``ret`` in above example.
     """
-    def f(object func):
-        return timer_builder(func, False, True, fname=fname)
-    return f
+    return timer(fname=fname, is_flops=True)
 
 def timer_verbose_flops(object func):
     """
@@ -381,7 +436,7 @@ def timer_verbose_flops(object func):
             return flops, ret
     Modified function will only return ``ret`` in above example.
     """
-    return timer_builder(func, True, True)
+    return timer(is_verbose=True, is_flops=True)(func)
 
 def timer_verbose_flops_fname(str fname):
     """
@@ -393,6 +448,4 @@ def timer_verbose_flops_fname(str fname):
             return flops, ret
     Modified function will only return ``ret`` in above example.
     """
-    def f(object func):
-        return timer_builder(func, True, True, fname=fname)
-    return f
+    return timer(fname=fname, is_verbose=True, is_flops=True)

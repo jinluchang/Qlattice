@@ -107,6 +107,11 @@ cdef void set_field_sp_f_{{name}}(SelectedPoints{{name}} self, Field{{name}} oth
 
 cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
+    """
+    self.cdata
+    self.psel
+    """
+
     ctype = ElemType{{name}}
 
     def __cinit__(self):

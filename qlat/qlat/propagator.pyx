@@ -47,6 +47,12 @@ cdef class Prop(FieldWilsonMatrix):
         """
         super().__setstate__(state)
 
+    def glb_sum_tslice(self, *, cc.Int t_dir=3):
+        cdef SelectedPointsWilsonMatrix sp = super().glb_sum_tslice(t_dir=t_dir)
+        cdef PselProp sp_prop = PselProp(sp.psel)
+        sp_prop @= sp
+        return sp_prop
+
 ###
 
 cdef class SelProp(SelectedFieldWilsonMatrix):

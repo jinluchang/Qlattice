@@ -1,0 +1,101 @@
+[
+ [
+  "auto_contract_eta_c_corr: ld sig",
+  {
+   "real": -21420.216230715716,
+   "imag": -6416.726644666026,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< 1 >  exprs[0]' sig",
+  {
+   "real": -1.635940411607483,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * eta_c(-tsep) >  exprs[1]' sig",
+  {
+   "real": -13637.271511380004,
+   "imag": 339.4605079558329,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * eta_c(-tsep) >  exprs[2]' sig",
+  {
+   "real": -27.05464683201262,
+   "imag": 11112.007399502463,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * j5_eta_c_t^dag(-tsep) >  exprs[3]' sig",
+  {
+   "real": -27.054646832012615,
+   "imag": -11337.094882792391,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * j5_eta_c_t^dag(-tsep) >  exprs[4]' sig",
+  {
+   "real": -12794.510307537184,
+   "imag": 472.87148310600645,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld sig",
+  {
+   "real": -20161.277521476426,
+   "imag": -9542.581436309703,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< 1 >  exprs[0]' sig",
+  {
+   "real": -1.635940411607483,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * eta_c(-tsep) >  exprs[1]' sig",
+  {
+   "real": -10861.879211414804,
+   "imag": 168.76621146769656,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * eta_c(-tsep) >  exprs[2]' sig",
+  {
+   "real": -29.343752034825105,
+   "imag": 17025.710385473063,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * j5_eta_c_t^dag(-tsep) >  exprs[3]' sig",
+  {
+   "real": -29.343752034825044,
+   "imag": -17307.48340365365,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * j5_eta_c_t^dag(-tsep) >  exprs[4]' sig",
+  {
+   "real": -10574.216119340224,
+   "imag": 261.06627945399526,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-gauge_fix_coulomb', 'locks/test-4nt8-checker-1000-auto-contract']"
+ ]
+]
