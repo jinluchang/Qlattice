@@ -10,6 +10,7 @@ tests_gpt = \
 			gpt-qlat-data-gen-auto.log \
 			gpt-qlat-data-gen-hlbl.log \
 			gpt-qlat-data-gen-pipi-qed.log \
+			gpt-qlat-data-gen-eta-c.log \
 			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \
 			gpt-qlat-smear.log \
