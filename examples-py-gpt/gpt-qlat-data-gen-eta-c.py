@@ -9,7 +9,29 @@ def json_results_append(*args):
     q.displayln_info(r"\\------------------------------------------------------------//")
     json_results.append(args)
 
-from auto_contractor.operators import *
+from auto_contractor import (
+        mk_meson,
+        mk_fac,
+        mk_vec5_mu,
+        show_dagger,
+        contract_simplify_compile,
+        cache_compiled_cexpr,
+        benchmark_eval_cexpr,
+        get_expr_names,
+        eval_cexpr,
+        )
+
+from qlat_scripts.v1 import (
+        load_path_list,
+        get_param,
+        set_param,
+        run_params,
+        check_job,
+        run_gf,
+        run_gt,
+        get_load_path,
+        get_save_path,
+        )
 
 import functools
 import math
@@ -18,9 +40,10 @@ import time
 import importlib
 import sys
 
+import qlat as q
 import qlat_gpt as qg
-
-from qlat_scripts.v1 import *
+import qlat_scripts.v1 as qs
+import numpy as np
 
 is_cython = False
 
@@ -166,7 +189,7 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
         eig = None
         mass_initial = get_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")
         set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(charm_mass)
-        inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
+        inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
         prop_dict = dict()
         for tslice in tslice_list:
             src = q.mk_wall_src(geo, tslice)
@@ -292,73 +315,32 @@ def get_all_cexpr():
 
 ### ------
 
-set_param("test-4nt8", "trajs")(list(range(1000, 1001)))
-set_param("test-4nt8", "measurement", "meson_tensor_t_sep")(1)
-set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
-
-set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
-set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
-set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
-set_param("test-4nt8", "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
-set_param("test-4nt8", "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param("test-4nt8", "clanc_params", 0, 0, "nbasis")(100)
-set_param("test-4nt8", "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
-set_param("test-4nt8", "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
-set_param("test-4nt8", "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
-set_param("test-4nt8", "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param("test-4nt8", "clanc_params", 1, 0)(get_param("test-4nt8", "clanc_params", 0, 0).copy())
-set_param("test-4nt8", "lanc_params", 1, 0)(get_param("test-4nt8", "lanc_params", 0, 0).copy())
-set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params")(get_param("test-4nt8", "fermion_params", 1, 0).copy())
-set_param("test-4nt8", "cg_params-0-0", "maxiter")(5)
-set_param("test-4nt8", "cg_params-0-1", "maxiter")(5)
-set_param("test-4nt8", "cg_params-0-2", "maxiter")(5)
-set_param("test-4nt8", "cg_params-1-0", "maxiter")(5)
-set_param("test-4nt8", "cg_params-1-1", "maxiter")(5)
-set_param("test-4nt8", "cg_params-1-2", "maxiter")(5)
-set_param("test-4nt8", "cg_params-0-0", "maxcycle")(1)
-set_param("test-4nt8", "cg_params-0-1", "maxcycle")(2)
-set_param("test-4nt8", "cg_params-0-2", "maxcycle")(3)
-set_param("test-4nt8", "cg_params-1-0", "maxcycle")(1)
-set_param("test-4nt8", "cg_params-1-1", "maxcycle")(2)
-set_param("test-4nt8", "cg_params-1-2", "maxcycle")(3)
-set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
-set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
-set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
-
 set_param("16IH2", "trajs")(list(range(1000, 4020, 10)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
-set_param("16IH2", "measurement", "meson_tensor_t_sep")(2)
-set_param("16IH2", "measurement", "pipi_op_t_sep")(2)
-set_param("16IH2", "measurement", "pipi_corr_t_sep_list")(list(range(1, 10)))
-set_param("16IH2", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, ])
-set_param("16IH2", "measurement", "pipi_tensor_t_max")(6)
-set_param("16IH2", "measurement", "pipi_tensor_r_max")(16)
+set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.1, 0.2, ])
+set_param("16IH2", "measurement", "num_charm_wall_src")(2)
 
-set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
-set_param("24D", "measurement", "meson_tensor_t_sep")(8)
-set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
+set_param("24D", "trajs")(list(range(1000, 4000, 10)))
+set_param("24D", "measurement", "charm_quark_mass_list")([ 0.05, 0.1, 0.15, 0.2, ])
+set_param("24D", "measurement", "num_charm_wall_src")(2)
 
-set_param("48I", "trajs")(list(range(1000, 2000, 20)))
-set_param("48I", "measurement", "meson_tensor_t_sep")(12)
-set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
-
-set_param("64I", "trajs")(list(range(1200, 3000, 40)))
-set_param("64I", "measurement", "meson_tensor_t_sep")(18)
-set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
+set_param("32Dfine", "trajs")(list(range(1000, 4000, 10)))
+set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.05, 0.1, 0.15, 0.2, ])
+set_param("32Dfine", "measurement", "num_charm_wall_src")(2)
 
 # ----
 
 job_tag = "test-4nt8-checker"
-
+#
 set_param(job_tag, "trajs")([ 1000, ])
-
+#
 set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
-
+#
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
-
+#
 set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
 for inv_type in [ 1, 2, ]:
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
@@ -368,15 +350,15 @@ set_param(job_tag, "fermion_params", 2, 0, "mass")(0.10)
 for inv_type in [ 0, 1, 2, ]:
     for inv_acc in [ 1, 2, ]:
         set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
-
+#
 set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
 set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
 set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
-
+#
 for inv_type in [ 0, 1, ]:
     set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
-
+#
 set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
 set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
 set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
@@ -384,29 +366,22 @@ set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi":
 set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
 set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
-
+#
 for inv_type in [ 0, 1, 2, ]:
     for inv_acc in [ 0, 1, 2, ]:
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(inv_acc)
-
+#
 set_param(job_tag, "field-selection-fsel-rate")(0.1)
 set_param(job_tag, "field-selection-psel-rate")(0.01)
 set_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")(0.05)
-
+#
 set_param(job_tag, "prob_exact_wsrc")(0.20)
-
+#
 set_param(job_tag, "prob_acc_1_psrc")(0.25)
 set_param(job_tag, "prob_acc_2_psrc")(0.10)
-
+#
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
-set_param(job_tag, "measurement", "meson_tensor_t_sep")(1)
-set_param(job_tag, "measurement", "pipi_op_t_sep")(1)
-set_param(job_tag, "measurement", "pipi_corr_t_sep_list")([ 1, 2, 3, 4, ])
-set_param(job_tag, "measurement", "pipi_tensor_t_sep_list")([ 1, 2, 3, ])
-set_param(job_tag, "measurement", "pipi_tensor_t_max")(3)
-set_param(job_tag, "measurement", "pipi_tensor_r_max")(4)
-
 set_param(job_tag, "measurement", "charm_quark_mass_list")([ 0.1, 0.2, ])
 set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 
