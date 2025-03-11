@@ -275,7 +275,7 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
         prop_cache = q.mk_cache("prop_cache", f"{job_tag}", f"{traj}")
         prop_cache["prop-dict"] = prop_dict
         return mk_get_prop(prop_dict)
-    return get_get_prop
+    return q.lazy_call(get_get_prop)
 
 ### ------
 
