@@ -28,7 +28,7 @@ source qcore/set-prefix.sh $name
         ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
     fi
 
-    export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi"
+    export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi -mfma"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
