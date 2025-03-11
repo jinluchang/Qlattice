@@ -102,7 +102,6 @@ def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx, tslice
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site)
-    total_volume = geo.total_volume
     get_prop = get_get_prop()
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -131,6 +130,63 @@ def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx, tslice
         res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
         q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     res_sum *= 1.0 / len(tslice_list)
+    assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
+    for i, en in enumerate(expr_names):
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
+
+@q.timer_verbose
+def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c-psnk/charm_mass_idx-{charm_mass_idx}.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_eta_c_corr()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    geo = q.Geometry(total_site)
+    xg_arr = geo.xg_arr()
+    xg_arr_list = [ xg_arr[xg_arr[:, 3] == t] for t in range(t_size) ]
+    spatial_volume = geo.total_volume / t_size
+    get_prop = get_get_prop()
+    def load_data():
+        t_t_list = q.get_mpi_chunk(
+                [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in tslice_list ],
+                rng_state=None)
+        for t_src, t_snk in t_t_list:
+            yield t_src, t_snk
+    @q.timer
+    def feval(args):
+        t_src, t_snk = args
+        t = (t_snk - t_src) % total_site[3]
+        xg_arr_t_snk = xg_arr_list[t_snk]
+        val = 0
+        for xg_snk in xg_arr_t_snk:
+            xg_snk = tuple(xg_snk)
+            pd = {
+                    "x_2" : ("point-snk", xg_snk,),
+                    "x_1" : ("wall", t_src,),
+                    "size" : total_site,
+                    }
+            val += eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val, t
+    def sum_function(val_list):
+        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
+        for val, t in val_list:
+            values[t] += val
+        return q.glb_sum(values.transpose(1, 0))
+    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    res_sum *= 1.0 / len(tslice_list) / spatial_volume
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -201,7 +257,8 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
             def get_prop_point_snk(p_snk):
                 type_snk, pos_snk = p_snk
                 assert type_snk == "point-snk"
-                assert isinstance(pos_snk, q.Coordinate)
+                assert isinstance(pos_snk, tuple)
+                pos_snk = q.Coordinate(pos_snk)
                 index = geo.index_from_g_coordinate(pos_snk)
                 return prop_ps.get_elem_wm(index)
             def get_prop_wall_snk(p_snk):
@@ -235,6 +292,7 @@ def run_eta_c_corr(job_tag, traj, get_gf, get_gt):
                 tslice_list=tslice_list,
                 )
         auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list)
+        auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list)
 
 ### ------
 
@@ -306,6 +364,7 @@ def run_job(job_tag, traj):
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
         return
     run_eta_c_corr(job_tag, traj, get_gf, get_gt)
+    q.qtouch_info(fn_checkpoint)
     q.release_lock()
 
 ### ------
