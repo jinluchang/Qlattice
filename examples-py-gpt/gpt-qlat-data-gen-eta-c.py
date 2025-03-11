@@ -364,7 +364,7 @@ def run_job(job_tag, traj):
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
         return
     run_eta_c_corr(job_tag, traj, get_gf, get_gt)
-    q.qtouch_info(fn_checkpoint)
+    q.qtouch_info(get_save_path(fn_checkpoint))
     q.release_lock()
 
 ### ------
