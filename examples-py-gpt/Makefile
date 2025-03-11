@@ -4,13 +4,13 @@ mpi_options ?= --oversubscribe --bind-to none
 
 tests_gpt = \
 			hlbl-muon-line.log \
-			gq-auto-checker.log \
 			grid-qlat-io-test.log \
 			gpt-qlat-auto-simple.log \
 			gpt-qlat-data-gen-auto.log \
 			gpt-qlat-data-gen-hlbl.log \
 			gpt-qlat-data-gen-pipi-qed.log \
 			gpt-qlat-data-gen-eta-c.log \
+			gq-auto-checker.log \
 			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \
 			gpt-qlat-smear.log \
