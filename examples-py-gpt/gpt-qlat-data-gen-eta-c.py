@@ -57,6 +57,7 @@ load_path_list[:] = [
         "/lustre20/volatile/pqpdf/ljin/qcddata",
         "/data1/qcddata3",
         "/data2/qcddata3-prop",
+        "/data1/qcddata4",
         ]
 
 ### ------
