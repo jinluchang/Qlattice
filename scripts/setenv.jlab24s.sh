@@ -34,6 +34,8 @@ mkdir -p "\$TMPDIR"
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
+#
+export mpi_options="--bind-to none"
 EOF
 
     #
