@@ -76,7 +76,7 @@ struct API Geometry {
   GeometryNode geon;
   //
   Int eo;  // 0:full; 1:odd ; 2:even
-  //
+           //
   Coordinate node_site;  // size of the coordinate on local node.
   Coordinate expansion_left;
   Coordinate expansion_right;
@@ -92,7 +92,7 @@ struct API Geometry {
     is_only_local = true;
     for (int i = 0; i < DIMN; ++i) {
       node_site_expanded[i] =
-          expansion_left[i] + node_site[i] + expansion_right[i];
+        expansion_left[i] + node_site[i] + expansion_right[i];
       if (expansion_left[i] != 0 or expansion_right[i] != 0) {
         is_only_local = false;
       }
@@ -113,7 +113,7 @@ struct API Geometry {
   void init(const Coordinate& total_site);
   //
   qacc void resize(const Coordinate& expansion_left_,
-                   const Coordinate& expansion_right_)
+      const Coordinate& expansion_right_)
   {
     expansion_left = expansion_left_;
     expansion_right = expansion_right_;
@@ -140,7 +140,7 @@ struct API Geometry {
   }
   //
   qacc Coordinate mirror(const Coordinate& xl) const
-  // avoid communicate in direction mu when geon.size_node[mu] == 1
+    // avoid communicate in direction mu when geon.size_node[mu] == 1
   {
     Coordinate ret = xl;
     for (int mu = 0; mu < DIMN; ++mu) {
@@ -163,27 +163,27 @@ struct API Geometry {
       qassert(eo_from_coordinate(xl) == eo);
       xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded) / 2 *
-             multiplicity;
+        multiplicity;
     }
   }
   //
   qacc Coordinate coordinate_from_offset(const Long offset, const Int multiplicity) const
-  // 0 <= offset < local_volume_expanded() * multiplicity
+    // 0 <= offset < local_volume_expanded() * multiplicity
   {
     Coordinate xl;
     if (eo == 0) {
       xl = qlat::coordinate_from_index(offset / multiplicity,
-                                      node_site_expanded);
+          node_site_expanded);
       xl = xl - expansion_left;
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
       xl = qlat::coordinate_from_index(offset / multiplicity * 2,
-                                      node_site_expanded);
+          node_site_expanded);
       xl = xl - expansion_left;
       if (eo_from_coordinate(xl) != eo) {
         xl = qlat::coordinate_from_index(offset / multiplicity * 2 + 1,
-                                        node_site_expanded);
+            node_site_expanded);
         xl = xl - expansion_left;
       }
     }
@@ -191,7 +191,7 @@ struct API Geometry {
   }
   //
   qacc Long index_from_coordinate(const Coordinate& xl) const
-  // 0 <= index < local_volume()
+    // 0 <= index < local_volume()
   {
     const Coordinate xm = mirror(xl);
     if (eo == 0) {
@@ -205,8 +205,8 @@ struct API Geometry {
   }
   //
   qacc Coordinate coordinate_from_index(const Long index) const
-  // get local coordinate from index
-  // 0 <= index < local_volume()
+    // get local coordinate from index
+    // 0 <= index < local_volume()
   {
     if (eo == 0) {
       return qlat::coordinate_from_index(index, node_site);
@@ -236,8 +236,8 @@ struct API Geometry {
   {
     for (int mu = 0; mu < DIMN; mu++) {
       if (not((-expansion_left[mu] <= xl[mu] and
-               xl[mu] < node_site[mu] + expansion_right[mu]) or
-              geon.size_node[mu] == 1)) {
+              xl[mu] < node_site[mu] + expansion_right[mu]) or
+            geon.size_node[mu] == 1)) {
         return false;
       }
     }
@@ -248,7 +248,7 @@ struct API Geometry {
   {
     for (int mu = 0; mu < DIMN; mu++) {
       if (not((0 <= xl[mu] and xl[mu] < node_site[mu]) or
-              geon.size_node[mu] == 1)) {
+            geon.size_node[mu] == 1)) {
         return false;
       }
     }
@@ -272,13 +272,13 @@ struct API Geometry {
   {
     if (eo == 0) {
       return node_site_expanded[0] * node_site_expanded[1] *
-             node_site_expanded[2] * node_site_expanded[3];
+        node_site_expanded[2] * node_site_expanded[3];
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site[0] % 2 == 0);
       qassert(node_site_expanded[0] % 2 == 0);
       return node_site_expanded[0] * node_site_expanded[1] *
-             node_site_expanded[2] * node_site_expanded[3] / 2;
+        node_site_expanded[2] * node_site_expanded[3] / 2;
     }
   }
   //
@@ -297,21 +297,21 @@ struct API Geometry {
     const Coordinate xl = xg - geon.coor_node * node_site;
     return xl;
   }
-	//
+  //
   qacc Long index_from_g_coordinate(const Coordinate& xg) const
-  // 0 <= index < local_volume()
+    // 0 <= index < local_volume()
   {
-		const Coordinate xl = coordinate_l_from_g(xg);
-		return index_from_coordinate(xl);
+    const Coordinate xl = coordinate_l_from_g(xg);
+    return index_from_coordinate(xl);
   }
   //
   qacc Coordinate g_coordinate_from_index(const Long index) const
-  // get global coordinate from index
-  // 0 <= index < local_volume()
-	{
-		const Coordinate xl = coordinate_from_index(index);
-		return coordinate_g_from_l(xl);
-	}
+    // get global coordinate from index
+    // 0 <= index < local_volume()
+  {
+    const Coordinate xl = coordinate_from_index(index);
+    return coordinate_g_from_l(xl);
+  }
 };
 
 std::string show(const qlat::Geometry& geo);
