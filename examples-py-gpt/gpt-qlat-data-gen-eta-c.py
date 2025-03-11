@@ -319,7 +319,7 @@ def run_charm_wall_src_prop_params(job_tag, traj):
     obj = dict()
     obj["charm_wall_src_tslice_list"] = charm_wall_src_tslice_list
     obj["charm_quark_mass_list"] = charm_quark_mass_list
-    fn = f"{job_tag}/traj-{traj}/params/charm_wall_src_prop.json"
+    fn = f"{job_tag}/params/traj-{traj}/charm_wall_src_prop.json"
     path = get_load_path(fn)
     if path is None:
         path = get_save_path(fn)
