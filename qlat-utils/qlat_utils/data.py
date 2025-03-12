@@ -686,6 +686,9 @@ def jk_blocking_func_default(
         ):
     """
     block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+    #
+    use default_g_jk_kwargs for
+    block_size, block_size_dict, all_jk_idx_set
     """
     block_size = default_g_jk_kwargs["block_size"]
     block_size_dict = default_g_jk_kwargs["block_size_dict"]
