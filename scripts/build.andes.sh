@@ -6,6 +6,14 @@ set -e
     ./scripts/setenv.andes.sh
     ./scripts/qcore.sh
 
+    ./scripts/gmp.sh
+    ./scripts/mpfr.sh
+    ./scripts/mpc.sh
+    ./scripts/isl.sh
+    ./scripts/gcc.sh
+    ./scripts/bison.sh
+    ./scripts/binutils.sh
+
     ./scripts/gsl.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
@@ -25,8 +33,6 @@ set -e
 
     ./scripts/autoconf.sh
     ./scripts/automake.sh
-    ./scripts/gmp.sh
-    ./scripts/mpfr.sh
     ./scripts/fftw.sh
     ./scripts/c-lime.sh
 
