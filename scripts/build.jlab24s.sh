@@ -51,11 +51,11 @@ set -e
     # ./scripts/qlat-packages.sh
     ./scripts/qlat-all.sh
 
-    ./scripts/qlat-examples-py.sh
-    ./scripts/qlat-examples-cpp.sh
-    ./scripts/qlat-examples-py-gpt.sh
-    ./scripts/qlat-examples-py-cps.sh
-    ./scripts/qlat-examples-cpp-grid.sh
+    # ./scripts/qlat-examples-py.sh
+    # ./scripts/qlat-examples-cpp.sh
+    # ./scripts/qlat-examples-py-gpt.sh
+    # ./scripts/qlat-examples-py-cps.sh
+    # ./scripts/qlat-examples-cpp-grid.sh
 
     # ./scripts/hadrons.sh
 
