@@ -18,7 +18,7 @@ EXPORT(diff_gauge, {
   ///py_convert(path, p_path);
   ///ld.load(path);
   ///Py_RETURN_NONE;
-});
+})
 
 EXPORT(load_gwu_link, {
   using namespace qlat;
@@ -32,7 +32,7 @@ EXPORT(load_gwu_link, {
   py_convert(path, p_path);
   load_gwu_link(path,g0);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(save_gwu_prop, {
   using namespace qlat;
@@ -46,7 +46,7 @@ EXPORT(save_gwu_prop, {
   py_convert(path, p_path);
   save_gwu_prop(path, prop);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(load_gwu_prop, {
   using namespace qlat;
@@ -60,7 +60,7 @@ EXPORT(load_gwu_prop, {
   py_convert(path, p_path);
   load_gwu_prop(path, prop);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(save_gwu_noiP, {
   using namespace qlat;
@@ -74,7 +74,7 @@ EXPORT(save_gwu_noiP, {
   py_convert(path, p_path);
   save_gwu_noiP(path, prop);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(diff_prop, {
   using namespace qlat;
@@ -88,7 +88,7 @@ EXPORT(diff_prop, {
   diff_prop(p0,p1);
   Py_RETURN_NONE;
 
-});
+})
 
 EXPORT(random_point_src, {
   using namespace qlat;
@@ -104,8 +104,7 @@ EXPORT(random_point_src, {
   random_point_src(prop, seed);
 
   Py_RETURN_NONE;
-});
-
+})
 
 EXPORT(load_gwu_noiP, {
   using namespace qlat;
@@ -119,8 +118,7 @@ EXPORT(load_gwu_noiP, {
   py_convert(path, p_path);
   load_gwu_noiP(path, prop);
   Py_RETURN_NONE;
-});
-
+})
 
 EXPORT(mk_output, {
   using namespace qlat;
@@ -154,7 +152,7 @@ EXPORT(mk_output, {
   //double* write = new double[size];
   //return py_convert((void*)write);
 
-});
+})
 
 EXPORT(free_output, {
   using namespace qlat;
@@ -165,7 +163,7 @@ EXPORT(free_output, {
   std::vector<double >* write = (std::vector<double >*) PyLong_AsVoidPtr(p_0);
   delete write;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(clear_output, {
   using namespace qlat;
@@ -179,7 +177,7 @@ EXPORT(clear_output, {
   for(unsigned int i=0;i<write.size();i++){write[i] = 0;}
 
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(write_output, {
   using namespace qlat;
@@ -199,103 +197,7 @@ EXPORT(write_output, {
 
   Py_RETURN_NONE;
 
-});
-
-//EXPORT(meson_corr, {
-//  using namespace qlat;
-//  PyObject* p_0 = NULL;
-//  PyObject* p_1 = NULL;
-//  PyObject* p_2 = NULL;
-//  PyObject* p_3 = NULL;
-//  PyObject* p_4 = NULL;
-//  PyObject* p_geo = NULL;
-//  PyObject* p_a = NULL;
-//  PyObject* p_b = NULL;
-//  PyObject* p_c = NULL;
-//  PyObject* p_d = NULL;
-//  int a,b,c,d, pos, offw;
-//  if (!PyArg_ParseTuple(args, "OOOOOOOOOO", &p_0, &p_1, &p_2, &p_3, &p_4, &p_geo, &p_a, &p_b, &p_c, &p_d)) {
-//    return NULL;
-//  }
-//  const Geometry& geo = py_convert_type<Geometry>(p_geo);
-//  Propagator4d& p0 = py_convert_type<Propagator4d>(p_0);
-//  Propagator4d& p1 = py_convert_type<Propagator4d>(p_1);
-//  py_convert(pos, p_2);
-//
-//  std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_3));
-//  ////std::vector<double >& write = py_convert_type<std::vector<double > >(p_3);
-//  py_convert(offw, p_4);
-//
-//  py_convert(a , p_a);
-//  py_convert(b , p_b);
-//  py_convert(c , p_c);
-//  py_convert(d , p_d);
-//
-//  print0("size of write %d \n", int(write.size()));
-//  meson_corr_write(p0, p1, pos, write, offw, geo, a,b,c,d);
-//
-//  Py_RETURN_NONE;
-//});
-//
-//
-//EXPORT(meson_corr_write, {
-//  using namespace qlat;
-//  PyObject* p_0 = NULL;
-//  PyObject* p_1 = NULL;
-//  PyObject* p_2 = NULL;
-//  PyObject* p_3 = NULL;
-//  PyObject* p_geo = NULL;
-//  PyObject* p_a = NULL;
-//  PyObject* p_b = NULL;
-//  PyObject* p_c = NULL;
-//  PyObject* p_d = NULL;
-//  int a,b,c,d;
-//  //if (!PyArg_ParseTuple(args, "OOOO|i|i|i|i", &p_0, &p_1, &p_2, &p_geo, &a, &b, &c, &d)) {
-//  //  return NULL;
-//  //}
-//  if (!PyArg_ParseTuple(args, "OOOOOOOOO", &p_0, &p_1, &p_2, &p_3, &p_geo, &p_a, &p_b, &p_c, &p_d)) {
-//    return NULL;
-//  }
-//  const Geometry& geo = py_convert_type<Geometry>(p_geo);
-//  //////Propagator4d& prop = py_convert_type<Propagator4d>(p_ld);
-//  std::string prop_na,prop_nb, src_n, out_n;
-//  //int a,b,c,d;
-//  py_convert(prop_na, p_0);
-//  py_convert(prop_nb, p_1);
-//  py_convert(src_n  , p_2);
-//  py_convert(out_n  , p_3);
-//
-//  py_convert(a , p_a);
-//  py_convert(b , p_b);
-//  py_convert(c , p_c);
-//  py_convert(d , p_d);
-//
-//  ///#if(a != NULL){meson_corr_write(prop_n, src_n, out_n, geo, a, b, c, d);}
-//  ///#else{meson_corr_write(prop_n, src_n, out_n, geo);}
-//  meson_corr_write(prop_na, prop_nb, src_n, out_n, geo, a,b,c,d);
-//
-//
-//  Py_RETURN_NONE;
-//});
-
-//EXPORT(get_src_pos, {
-//  using namespace qlat;
-//  PyObject* p_0 = NULL;
-//  PyObject* p_geo = NULL;
-//  Coordinate pos;
-//  //if (!PyArg_ParseTuple(args, "OOOO|i|i|i|i", &p_0, &p_1, &p_2, &p_geo, &a, &b, &c, &d)) {
-//  //  return NULL;
-//  //}
-//  if (!PyArg_ParseTuple(args, "OO", &p_0, &p_geo)) {
-//    return NULL;
-//  }
-//  const Geometry& geo = py_convert_type<Geometry>(p_geo);
-//  std::string src_n; qlat::Coordinate off_L;
-//  py_convert(src_n, p_0);
-//  pos = get_src_pos(src_n, off_L, geo);
-//
-//  return py_convert(pos);
-//});
+})
 
 EXPORT(make_point_prop, {
   using namespace qlat;
@@ -310,7 +212,7 @@ EXPORT(make_point_prop, {
   Propagator4d& prop = py_convert_type<Propagator4d>(p_v0);
   make_point_prop(prop, sp);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(make_volume_src, {
   using namespace qlat;
@@ -334,7 +236,7 @@ EXPORT(make_volume_src, {
   Propagator4d& prop = py_convert_type<Propagator4d>(p_v0);
   make_volume_src(prop, seed, mix_color, mix_spin, tini);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(local_sequential_source, {
   using namespace qlat;
@@ -356,7 +258,7 @@ EXPORT(local_sequential_source, {
 
   local_sequential_source(res, src, tseq, gammai);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(meson_corr, {
   using namespace qlat;
@@ -387,7 +289,7 @@ EXPORT(meson_corr, {
 
   meson_corrE(p0, p1, g0, g1, filename, mom, invmode, tini, info, shift_end);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(prop_corr, {
   using namespace qlat;
@@ -413,7 +315,7 @@ EXPORT(prop_corr, {
 
   prop_corrE(p0, filename, mom, tini, info, shift_end);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(corr_dat_create, {
   using namespace qlat;
@@ -438,7 +340,7 @@ EXPORT(corr_dat_create, {
 
   corr_dat_create(filename, key_T, dimN, info);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(corr_dat_info, {
   using namespace qlat;
@@ -457,7 +359,7 @@ EXPORT(corr_dat_info, {
 
   corr_dat_info(filename, info);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(prop4d_conj, {
   using namespace qlat;
@@ -469,7 +371,7 @@ EXPORT(prop4d_conj, {
   Propagator4d& src = py_convert_type<Propagator4d>(p_v0);
   prop4d_conj(src, rotate);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(prop4d_src_gamma, {
   using namespace qlat;
@@ -492,7 +394,7 @@ EXPORT(prop4d_src_gamma, {
 
   prop4d_src_gamma(src, gL[g0], Conj);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(prop4d_sink_gamma, {
   using namespace qlat;
@@ -515,5 +417,5 @@ EXPORT(prop4d_sink_gamma, {
 
   prop4d_sink_gamma(src, gL[g0], Conj);
   Py_RETURN_NONE;
-});
+})
 

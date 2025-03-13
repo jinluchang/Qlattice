@@ -810,7 +810,7 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
                                                                           \
   QLAT_EXTERN template void set_g_rand<TYPENAME>(                         \
       SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,         \
-      const RngState& rs, const RealD center, const RealD sigma);
+      const RngState& rs, const RealD center, const RealD sigma)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

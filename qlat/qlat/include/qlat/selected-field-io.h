@@ -505,7 +505,7 @@ Long read_selected_field_double_from_float(
                                                                         \
   QLAT_EXTERN template void set_g_rand<TYPENAME>(                       \
       SelectedField<TYPENAME> & sf, const FieldSelection& fsel,         \
-      const RngState& rs, const RealD center, const RealD sigma);
+      const RngState& rs, const RealD center, const RealD sigma)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

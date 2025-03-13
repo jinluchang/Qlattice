@@ -180,8 +180,7 @@ void set_GAM(GAM &GA)
     GA.ga[i][j].g[k]=ga0[i]->g[k]*ga0[j]->g[ga0[i]->ind[k]];
     GA.ga[i][j].ind[k]=ga0[j]->ind[ga0[i]->ind[k]];
   }
-};
-
+}
 
 class ga_matrices_PS
 {
