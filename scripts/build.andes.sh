@@ -21,6 +21,7 @@ set -e
     ./scripts/openssl.sh
     ./scripts/libffi.sh
     ./scripts/ncurses.sh
+    ./scripts/openblas.sh
     ./scripts/hdf5.sh
 
     ./scripts/python.sh
