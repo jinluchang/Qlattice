@@ -161,9 +161,7 @@ def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, charm_mass_idx, t
     spatial_volume = geo.total_volume / t_size
     get_prop = get_get_prop()
     def load_data():
-        t_t_list = q.get_mpi_chunk(
-                [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in tslice_list ],
-                rng_state=None)
+        t_t_list = [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in tslice_list ]
         for t_src, t_snk in t_t_list:
             yield t_src, t_snk
     @q.timer
@@ -186,9 +184,8 @@ def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, charm_mass_idx, t
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
     with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
         q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     res_sum *= 1.0 / len(tslice_list) / spatial_volume
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
@@ -230,6 +227,24 @@ def mk_get_prop(prop_dict):
         raise Exception(f"{fname}: {flavor} {p_snk} {p_src}")
     return get_prop
 
+def mk_get_prop_point_snk(prop_ps, geo):
+    def get(p_snk):
+        type_snk, pos_snk = p_snk
+        assert type_snk == "point-snk"
+        assert isinstance(pos_snk, tuple)
+        pos_snk = q.Coordinate(pos_snk)
+        index = geo.index_from_g_coordinate(pos_snk)
+        return prop_ps.get_elem_wm(index)
+    return get
+
+def mk_get_prop_wall_snk(ps_prop_ws):
+    def get(p_snk):
+        type_snk, pos_snk = p_snk
+        assert type_snk == "wall"
+        assert isinstance(pos_snk, int)
+        return ps_prop_ws.get_elem_wm(pos_snk)
+    return get
+
 @q.timer_verbose
 def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice_list):
     """
@@ -258,22 +273,10 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
             prop = sol
             ps_prop_ws = prop.glb_sum_tslice()
             prop_ps = gt_inv * prop
-            def get_prop_point_snk(p_snk):
-                type_snk, pos_snk = p_snk
-                assert type_snk == "point-snk"
-                assert isinstance(pos_snk, tuple)
-                pos_snk = q.Coordinate(pos_snk)
-                index = geo.index_from_g_coordinate(pos_snk)
-                return prop_ps.get_elem_wm(index)
-            def get_prop_wall_snk(p_snk):
-                type_snk, pos_snk = p_snk
-                assert type_snk == "wall"
-                assert isinstance(pos_snk, int)
-                return ps_prop_ws.get_elem_wm(pos_snk)
             key = ("c", tslice, "wall", "point-snk")
-            prop_dict[key] = get_prop_point_snk
+            prop_dict[key] = mk_get_prop_point_snk(prop_ps, geo)
             key = ("c", tslice, "wall", "wall")
-            prop_dict[key] = get_prop_wall_snk
+            prop_dict[key] = mk_get_prop_wall_snk(ps_prop_ws)
         q.clean_cache(q.cache_inv)
         set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(mass_initial)
         prop_cache = q.mk_cache("prop_cache", f"{job_tag}", f"{traj}")
