@@ -20,6 +20,7 @@ set -e
     ./scripts/eigen.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
+    ./scripts/ncurses.sh
     ./scripts/hdf5.sh
 
     ./scripts/python.sh
