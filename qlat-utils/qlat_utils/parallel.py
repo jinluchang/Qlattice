@@ -35,26 +35,26 @@ def process_initialization():
     # clear_all_caches()
 
 def get_q_num_mp_processes():
-    global get_q_num_mp_processes
+    import qlat_utils
     s = getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default="2")
     v = int(s)
-    get_q_num_mp_processes = lambda : v
+    qlat_utils.get_q_num_mp_processes = lambda : v
     return v
 
 def set_q_num_mp_processes(v):
-    global get_q_num_mp_processes
-    get_q_num_mp_processes = lambda : v
+    import qlat_utils
+    qlat_utils.get_q_num_mp_processes = lambda : v
 
 def get_q_verbose_parallel_map():
-    global get_q_verbose_parallel_map
+    import qlat_utils
     s = getenv("q_verbose_parallel_map", default="2")
     v = int(s)
-    get_q_verbose_parallel_map = lambda : v
+    qlat_utils.get_q_verbose_parallel_map = lambda : v
     return v
 
 def set_q_verbose_parallel_map(v):
-    global get_q_verbose_parallel_map
-    get_q_verbose_parallel_map = lambda : v
+    import qlat_utils
+    qlat_utils.get_q_verbose_parallel_map = lambda : v
 
 @timer
 def parallel_map(func, iterable,
