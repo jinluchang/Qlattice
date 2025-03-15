@@ -47,12 +47,15 @@ fi
 ls -l "$dst"
 "$dst"/result/bin/python3 -m ipykernel \
     install --user \
+    --env "SHELL" "$dst/result/bin/bash" \
+    --env "LOCALE_ARCHIVE" "/run/current-system/sw/lib/locale/locale-archive" \
     --env "PATH" "$dst/result/bin:/run/current-system/sw/bin" \
-    --env "PYTHONPATH" "" \
-    --env "LD_LIBRARY_PATH" "$dst/result/lib" \
+    --env "PKG_CONFIG_PATH" "$dst/result/lib/pkgconfig" \
+    --env "LD_LIBRARY_PATH" "/run/opengl-driver/lib:$dst/result/lib" \
     --env "LIBRARY_PATH" "$dst/result/lib" \
     --env "CPATH" "$dst/result/include" \
-    --env "PKG_CONFIG_PATH" "$dst/result/lib/pkgconfig" \
+    --env "PYTHONPATH" "" \
     --env "CUBACORES" "0" \
     --env "OMP_NUM_THREADS" "2" \
+    --env "JAX_ENABLE_X64" "True" \
     --name=$py_kernel_name
