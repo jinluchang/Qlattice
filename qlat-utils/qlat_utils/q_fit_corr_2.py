@@ -283,7 +283,6 @@ def mk_fcn(
                         fes,
                         )
                     )
-
         state_sign_arr = extra_state_sign_arr * (es / abs(es))**((t_start_arr + extra_state_sign_t_start_arr) % 2)
         # corr[op1_idx, op2_idx, t_idx]
         corr = (cs[:, :, None, None] * cs[:, None, :, None]
@@ -381,6 +380,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
         chisq, grad_all = fcn(p_all, requires_grad=True)
         return grad_all[free_param_mask]
     p_free = param_arr[free_param_mask]
+    fcn_initial = c_fcn(p_free)
     if minimize_kwargs is None:
         minimize_kwargs = dict()
     if "options" not in minimize_kwargs:
@@ -394,11 +394,16 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
             **minimize_kwargs,
             )
     p_free_mini = res.x
-    param_arr_mini = param_arr.copy()
-    param_arr_mini[free_param_mask] = p_free_mini
+    fcn_final = c_fcn(p_free_mini)
     displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
     displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
-    return param_arr_mini
+    if fcn_final > fcn_initial:
+        displayln_info(0, f"{fname}: return initial parameter instead due to: fcn_initial={fcn_initial} < fcn_final={fcn_final} .")
+        return param_arr
+    else:
+        param_arr_mini = param_arr.copy()
+        param_arr_mini[free_param_mask] = p_free_mini
+        return param_arr_mini
 
 ### -----------------
 
