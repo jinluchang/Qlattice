@@ -190,6 +190,8 @@ def cache_call(
     else:
         The input `cache` will be used. This cache may be shared for other purpose
     #
+    f.cache = cache
+    #
     # Usage example:
     #
     @cache_call(maxsize=128, get_state=q.get_jk_state)
@@ -236,6 +238,7 @@ def cache_call(
             if path is not None:
                 save_pickle_obj(res, fn, is_sync_node=is_sync_node)
             return ret
+        f.cache = cache
         return f
     return dec
 
