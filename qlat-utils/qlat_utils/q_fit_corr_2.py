@@ -410,12 +410,13 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
 
 def mp_initializer():
     import qlat_utils as q
-    import jax
     q.set_verbose_level(-1)
+    import jax
     def f(x):
-        return x
-    gf = jax.jit(f)
-    gf(1.0)
+        return x*x
+    gf = jax.jit(jax.value_and_grad(f))
+    v1, v2, = gf(1.0)
+    assert (v1.item(), v2.item()) == (1.0, 2.0,)
 
 def jk_mini_task_in_fit_eig_coef(kwargs):
     fname = get_fname()
