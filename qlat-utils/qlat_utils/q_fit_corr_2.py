@@ -3,6 +3,7 @@ import numpy as np
 from .c import *
 from .utils import *
 from .data import *
+from .parallel import *
 
 @timer
 def build_corr_from_param_arr(
@@ -409,7 +410,12 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
 
 def mp_initializer():
     import qlat_utils as q
+    import jax
     q.set_verbose_level(-1)
+    def f(x):
+        return x
+    gf = jax.jit(f)
+    gf(1.0)
 
 def jk_mini_task_in_fit_eig_coef(kwargs):
     fname = get_fname()
@@ -507,6 +513,26 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
     return f(**kwargs)
 
 @timer_verbose
+def mk_mp_pool(n_proc=None):
+    """
+    return `mp_pool`
+    #
+    Usage of `mp_pool`
+    mp_map = mp_pool.imap
+    """
+    if n_proc is None:
+        n_proc = get_q_num_mp_processes()
+    assert isinstance(n_proc, int)
+    mp_pool_n_proc = n_proc
+    import multiprocessing
+    mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+    return mp_pool
+
+@timer_verbose
+def close_mp_pool(mp_pool):
+    mp_pool.close()
+
+@timer_verbose
 def fit_eig_coef(jk_corr_data,
                  *,
                  t_arr,
@@ -560,6 +586,9 @@ def fit_eig_coef(jk_corr_data,
     off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized.
     #
     `eig_maximum_arr` should be of same shape as `free_eig_idx_arr` will constrain all the free eigs to be smaller than this eig value (None means no constraint)
+    #
+    rng_seed_list=[ f"fit-eig-coef-seed-{i}" for i in range(32) ]
+    mp_pool = mk_mp_pool(n_proc)
     """
     fname = get_fname()
     #
@@ -644,8 +673,7 @@ def fit_eig_coef(jk_corr_data,
         mp_pool_n_proc = 1
     elif isinstance(mp_pool, int):
         mp_pool_n_proc = mp_pool
-        import multiprocessing
-        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+        mp_pool = mk_mp_pool(mp_pool_n_proc)
         is_close_pool = True
         mp_map = mp_pool.imap
     else:
