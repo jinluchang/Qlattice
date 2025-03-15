@@ -23,13 +23,13 @@ in
 buildPythonPackage rec {
 
   pname = "gpt-lehenr";
-  version = "c60a32aa8283a1d7532cf640d0d4cec8b1623c46";
+  version = "35852cc9b6eae7d2b28237d30cf33fa264581086";
 
   pyproject = false;
 
   src = builtins.fetchGit {
     url = "https://github.com/lehner/gpt";
-    ref = "main";
+    ref = "feature/gpt";
     rev = version;
   };
 
