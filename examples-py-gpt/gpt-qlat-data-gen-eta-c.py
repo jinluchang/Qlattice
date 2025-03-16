@@ -381,7 +381,7 @@ def get_all_cexpr():
 
 ### ------
 
-set_param("16IH2", "trajs")(list(range(1000, 4020, 10)))
+set_param("16IH2", "trajs")(list(range(1000, 4020, 100)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
 set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05358, 0.07945, 0.10852, ])
 set_param("16IH2", "measurement", "num_charm_wall_src")(2)
