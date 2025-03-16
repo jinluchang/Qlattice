@@ -382,12 +382,15 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
         return grad_all[free_param_mask]
     p_free = param_arr[free_param_mask]
     fcn_initial = c_fcn(p_free)
+    minimize_kwargs_default = dict(
+            options=dict(maxiter=1e3),
+            method="BFGS",
+            )
     if minimize_kwargs is None:
-        minimize_kwargs = dict()
-    if "options" not in minimize_kwargs:
-        minimize_kwargs["options"] = dict(maxiter=1e3)
-    if "method" not in minimize_kwargs:
-        minimize_kwargs["method"] = 'BFGS'
+        minimize_kwargs = minimize_kwargs_default
+    else:
+        assert isinstance(minimize_kwargs, dict)
+        minimize_kwargs = minimize_kwargs_default | minimize_kwargs
     res = scipy.optimize.minimize(
             c_fcn,
             p_free,
