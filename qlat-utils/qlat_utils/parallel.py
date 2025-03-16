@@ -1,6 +1,6 @@
-from qlat_utils.cache import *
-from qlat_utils.rng_state import *
-from qlat_utils.utils import *
+from .cache import *
+from .rng_state import *
+from .utils import *
 
 import sys
 import os
@@ -34,27 +34,35 @@ def process_initialization():
     # gc_freeze()
     # clear_all_caches()
 
+q_num_mp_processes = None
+
 def get_q_num_mp_processes():
-    import qlat_utils
+    global q_num_mp_processes
+    if q_num_mp_processes is not None:
+        return q_num_mp_processes
     s = getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default="2")
     v = int(s)
-    qlat_utils.get_q_num_mp_processes = lambda : v
+    q_num_mp_processes = v
     return v
 
 def set_q_num_mp_processes(v):
-    import qlat_utils
-    qlat_utils.get_q_num_mp_processes = lambda : v
+    global q_num_mp_processes
+    q_num_mp_processes = v
+
+q_verbose_parallel_map = None
 
 def get_q_verbose_parallel_map():
-    import qlat_utils
+    global q_verbose_parallel_map
+    if q_verbose_parallel_map is not None:
+        return q_verbose_parallel_map
     s = getenv("q_verbose_parallel_map", default="2")
     v = int(s)
-    qlat_utils.get_q_verbose_parallel_map = lambda : v
+    q_verbose_parallel_map = v
     return v
 
 def set_q_verbose_parallel_map(v):
-    import qlat_utils
-    qlat_utils.get_q_verbose_parallel_map = lambda : v
+    global q_verbose_parallel_map
+    q_verbose_parallel_map = v
 
 @timer
 def parallel_map(func, iterable,
