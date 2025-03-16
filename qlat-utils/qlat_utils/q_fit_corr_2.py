@@ -398,13 +398,13 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
     fcn_final = c_fcn(p_free_mini)
     displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
     displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
-    if fcn_final > fcn_initial:
-        displayln_info(0, f"{fname}: return initial parameter instead due to: fcn_initial={fcn_initial} < fcn_final={fcn_final} .")
-        return param_arr
-    else:
+    if fcn_final <= fcn_initial:
         param_arr_mini = param_arr.copy()
         param_arr_mini[free_param_mask] = p_free_mini
         return param_arr_mini
+    else:
+        displayln_info(0, f"{fname}: return initial parameter instead due to: fcn_initial={fcn_initial} < fcn_final={fcn_final} .")
+        return param_arr
 
 ### -----------------
 
