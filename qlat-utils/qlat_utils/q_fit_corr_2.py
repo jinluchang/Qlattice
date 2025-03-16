@@ -527,6 +527,8 @@ def mk_mp_pool(n_proc=None):
     mp_pool_n_proc = n_proc
     import multiprocessing
     mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+    mp_map = mp_pool.imap
+    assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
     return mp_pool
 
 @timer_verbose
