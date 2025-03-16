@@ -389,7 +389,7 @@ set_param("16IH2", f"cg_params-2-2", "maxiter")(200)
 set_param("16IH2", f"cg_params-2-2", "maxcycle")(50)
 
 set_param("24D", "trajs")(list(range(1000, 5100, 80)))
-set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, ])
+set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, 0.25, 0.30, ])
 set_param("24D", "measurement", "num_charm_wall_src")(2)
 set_param("24D", f"cg_params-2-2", "maxiter")(200)
 set_param("24D", f"cg_params-2-2", "maxcycle")(50)
