@@ -12,7 +12,7 @@ from sparse_prop_selection import *
 def get_fn_gauge_transform_avail_from_cps(job_tag, traj):
     """
     Check a Coulumb gauge transformation matrix is available.
-    Return `fn` is the gauge transformation matrix is available.
+    Return `fn` if the gauge transformation matrix is available.
     Otherwise, return `None`.
     #
     TODO: add actual CPS data location.
@@ -24,7 +24,7 @@ def get_fn_gauge_transform_avail_from_cps(job_tag, traj):
     #
     # TODO: add code here to return actual CPS data filename (full path) or `None`.
     #
-    return False
+    return None
 
 @q.cache_call()
 @q.timer_verbose
