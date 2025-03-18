@@ -211,21 +211,21 @@ let
     );
     #
     ollama = n-pkgs.ollama;
-    ucx = (pkgs.ucx.overrideAttrs (final: prev: {
+    ucx-mt = (pkgs.ucx.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++ [
         "--enable-mt"
       ];
     })).override { enableCuda = opts.use-cuda-software; };
-    ucx-dev = pkgs.buildEnv {
-      name = "ucx-dev";
-      paths = [ ucx ];
+    ucx-mt-dev = pkgs.buildEnv {
+      name = "ucx-mt-dev";
+      paths = [ ucx-mt ];
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
     mpi = (pkgs.mpi.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++
       (let
         cudaPackages = pkgs.cudaPackages;
-      in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-dev}" ]
+      in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
       ++ lib.optionals opts.use-cuda-software [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
       );
     })).override { cudaSupport = opts.use-cuda-software; };
@@ -589,7 +589,7 @@ let
   in {
     inherit qlat-name;
     inherit qlat-nixgl;
-    inherit python3 mpi openmp ucx;
+    inherit python3 mpi openmp ucx-mt ucx-mt-dev;
     inherit c-lime qmp qio cps cuba-quad grid-lehner gpt-lehner;
     inherit qlat_utils qlat qlat_grid qlat_cps;
     inherit qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt qlat-examples-py-cps;
