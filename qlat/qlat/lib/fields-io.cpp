@@ -1211,16 +1211,19 @@ int truncate_fields_sync_node(const std::string& path,
       displayln_info(
           0,
           fname +
-              ssprintf(
-                  ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
-                  path_file.c_str(), final_offset, file_size));
+          ssprintf(
+            ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+            path_file.c_str(), final_offset, file_size));
       if (file_size < 0) {
         mkfile(fr);
       }
       const int b = qtruncate(path_file, final_offset);
       qassert(b == 0);
+      fr.fn_list = fns_keep;
+      fr.max_offset = final_offset;
     }
   }
+  fields_build_index(sfr);
   return 0;
 }
 
