@@ -543,7 +543,7 @@ def run_psel_prob_sub_sampling(
     `sub_sampling_rate == 1` implies complete sub-sampling.
     Approximately `sub_sampling_rate` portion of the original selection get selected.
     #
-    If `get_f_weight is None` then use `fsel_prob * sub_sampling_rate` as prob to select.
+    If `get_f_weight is None` then use `psel_prob * sub_sampling_rate` as prob to select.
     This is not exactly the same as use `f_weight`!
     """
     assert 1.0 >= sub_sampling_rate >= 0.0
@@ -586,7 +586,7 @@ def run_psel_prob_sub_sampling(
         expect_num = original_num * sub_sampling_rate
         actual_num = psel_sub.n_points
         q.displayln_info(-1, f"{fname}: sub_sampling_rate = {sub_sampling_rate} ; expect_num = {expect_num} ; actual_num = {actual_num}")
-        psel_prob_sub = q.SelectedFieldRealD(psel_sub, 1)
+        psel_prob_sub = q.SelectedPointsRealD(psel_sub, 1)
         psel_prob_sub @= sp_prob
         return psel_prob_sub
     return get_psel_prob_sub
