@@ -553,8 +553,20 @@ def run_psel_prob_sub_sampling(
         fname = q.get_fname()
         psel_prob = get_psel_prob()
         psel = psel_prob.psel
-        f_rand_01 = get_f_rand_01()
+        original_num = psel.n_points
         total_site = psel.total_site
+        use_simple_psel_sub_sampling = get_param(job_tag, "use_simple_psel_sub_sampling", default=False)
+        if use_simple_psel_sub_sampling:
+            prob_arr = psel_prob[:]
+            avg = np.average(prob_arr)
+            assert np.linalg.norm(prob_arr - avg) <= 1e-8
+            expect_num = round(sub_sampling_rate * original_num)
+            xg_arr_sub = psel.xg_arr[:actual_num]
+            psel_sub = q.PointsSelection(total_site, xg_arr_sub)
+            psel_prob_sub = q.SelectedFieldRealD(psel_sub, 1)
+            psel_prob_sub[:] = avg * (expect_num / original_num)
+            return psel_prob_sub
+        f_rand_01 = get_f_rand_01()
         sp_rand_01 = q.SelectedPointsRealD(psel, 1)
         sp_rand_01 @= f_rand_01
         sp_prob = q.SelectedPointsRealD(psel, 1)
@@ -571,7 +583,6 @@ def run_psel_prob_sub_sampling(
         xg_arr = psel.xg_arr
         xg_arr_sub = xg_arr[sel_sub]
         psel_sub = q.PointsSelection(total_site, xg_arr_sub)
-        original_num = psel.n_points
         expect_num = original_num * sub_sampling_rate
         actual_num = psel_sub.n_points
         q.displayln_info(-1, f"{fname}: sub_sampling_rate = {sub_sampling_rate} ; expect_num = {expect_num} ; actual_num = {actual_num}")
