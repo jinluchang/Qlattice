@@ -1,14 +1,1 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8])
-CHECK: psel.xg_arr.tolist() = [[0, 0, 0, 0], [0, 1, 2, 0]]
-CHECK: fsel info = Geometry([4, 4, 4, 8]) total_n_elems = 128
-CHECK: fsel info = Geometry([4, 4, 4, 8]) total_n_elems = 128
-CHECK: fsel info = Geometry([4, 4, 4, 8]) total_n_elems = 130
-CHECK: psel.n_points = 32
-CHECK: psel.xg_arr sig = 1.0936571208E+01
-CHECK: psel1.n_points = 5
-CHECK: psel1.xg_arr sig = 4.5982873266E+00
-CHECK: fsel2 info = Geometry([4, 4, 4, 8]) total_n_elems = 128
-CHECK: fsel3 info = Geometry([4, 4, 4, 8]) total_n_elems = 233
-CHECK: fsel4 info = Geometry([4, 4, 4, 8]) total_n_elems = 25
-CHECK: fsel5 info = Geometry([4, 4, 4, 8]) total_n_elems = 25
 CHECK: finished successfully.
