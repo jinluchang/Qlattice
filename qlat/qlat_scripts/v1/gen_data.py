@@ -141,6 +141,9 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
 
 @q.timer
 def make_fsel_from_weight(f_weight, f_rand_01, rate):
+    """
+    f_weight is expected to be averaged around 1.
+    """
     fname = q.get_fname()
     geo = f_weight.geo
     fsel = q.FieldSelection(geo)
@@ -149,11 +152,14 @@ def make_fsel_from_weight(f_weight, f_rand_01, rate):
     assert np.all(val >= 0)
     fsel[sel] = val
     fsel.update()
-    q.displayln_info(-1, f"{fname} rate = {rate} ; expect_num = {geo.total_volume * rate} ; actual_num = {q.glb_sum(fsel.n_elems)}")
+    q.displayln_info(-1, f"{fname}: rate = {rate} ; expect_num = {geo.total_volume * rate} ; actual_num = {q.glb_sum(fsel.n_elems)}")
     return fsel
 
 @q.timer
 def make_psel_from_weight(f_weight, f_rand_01, rate):
+    """
+    f_weight is expected to be averaged around 1.
+    """
     fsel = make_fsel_from_weight(f_weight, f_rand_01, rate)
     psel = fsel.to_psel()
     return psel
@@ -197,7 +203,7 @@ def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
     f_weight_final.save_double(get_save_path(fn_f_weight))
     q.displayln_info(-1, fname, "field-selection-weight final", f_weight_final.glb_sum_tslice()[:].ravel())
 
-@q.timer
+@q.timer_verbose
 def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     """
     return get_f_weight
@@ -249,7 +255,41 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     q.release_lock()
     return ret
 
-@q.timer
+@q.timer_verbose
+def run_f_weight_unifrom(job_tag, traj):
+    """
+    return get_f_weight
+        f_weight = get_f_weight()
+    #
+    `f_weight` is of type `q.FieldRealD(geo, 1)`.
+    #
+    get_f_weight = run_f_weight_unifrom(job_tag, traj)
+    #
+    Another option to obtain `get_f_weight` is using `run_f_weight_from_wsrc_prop_full(job_tag, traj)`.
+    """
+    fname = q.get_fname()
+    fn_f_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_f_weight():
+        f_weight = q.FieldRealD()
+        total_bytes = f_weight.load_double(get_load_path(fn_f_weight))
+        assert total_bytes > 0
+        return f_weight
+    ret = get_f_weight
+    if get_load_path(fn_f_weight) is not None:
+        return ret
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        return None
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site)
+    f_weight = q.FieldRealD(geo, 1)
+    f_weight.set_unit()
+    f_weight.save_double(get_save_path(fn_f_weight))
+    q.release_lock()
+    return ret
+
+@q.timer_verbose
 def run_f_rand_01(job_tag, traj):
     """
     return get_f_rand_01
@@ -282,7 +322,7 @@ def run_f_rand_01(job_tag, traj):
     q.release_lock()
     return ret
 
-@q.timer
+@q.timer_verbose
 def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     """
     return get_fsel_prob
@@ -357,7 +397,7 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     q.release_lock()
     return ret
 
-@q.timer
+@q.timer_verbose
 def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     """
     return get_psel_prob
@@ -437,6 +477,108 @@ def run_psel_from_psel_prob(get_psel_prob):
     if get_psel_prob is None:
         return None
     return lambda : get_psel_prob().psel
+
+# -----------------------------------------------------------------------------
+
+@q.timer_verbose
+def run_fsel_prob_sub_sampling(
+        job_tag, traj,
+        *,
+        sub_sampling_rate,
+        get_fsel_prob,
+        get_f_rand_01,
+        get_f_weight,
+        ):
+    """
+    `sub_sampling_rate == 1` implies complete sub-sampling.
+    Approximately `sub_sampling_rate` portion of the original selection get selected.
+    #
+    If `get_f_weight is None` then use `fsel_prob * sub_sampling_rate` as prob to select.
+    This is not exactly the same as use `f_weight`!
+    """
+    assert 1.0 >= sub_sampling_rate >= 0.0
+    @q.lazy_call
+    @q.timer_verbose
+    def get_fsel_prob_sub():
+        fname = q.get_fname()
+        fsel_prob = get_fsel_prob()
+        fsel = fsel_prob.fsel
+        f_rand_01 = get_f_rand_01()
+        geo = f_rand_01.geo
+        sel = fsel[:] >= 0
+        f_prob = q.FieldRealD(geo, 1)
+        f_prob.set_zero()
+        if get_f_weight is not None:
+            fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+            f_weight = get_f_weight()
+            f_prob @= f_weight
+            f_prob *= fsel_rate * sub_sampling_rate
+        else:
+            f_prob @= fsel_prob
+            f_prob *= sub_sampling_rate
+        sel_sub = f_prob[:].ravel() >= f_rand_01[:].ravel()
+        assert sel_sub == sel_sub & (fsel[:] >= 0)
+        fsel_sub = q.FieldSelection(geo)
+        fsel_sub[sel_sub] = fsel[sel_sub]
+        fsel_sub.update()
+        original_num = q.glb_sum(fsel.n_elems)
+        expect_num = original_num * sub_sampling_rate
+        actual_num = q.glb_sum(fsel_sub.n_elems)
+        q.displayln_info(-1, f"{fname}: sub_sampling_rate = {sub_sampling_rate} ; expect_num = {expect_num} ; actual_num = {actual_num}")
+        fsel_prob_sub = q.SelectedFieldRealD(fsel_sub, 1)
+        fsel_prob_sub @= f_prob
+        return fsel_prob_sub
+    return get_fsel_prob_sub
+
+@q.timer_verbose
+def run_psel_prob_sub_sampling(
+        job_tag, traj,
+        *,
+        sub_sampling_rate,
+        get_psel_prob,
+        get_f_rand_01,
+        get_f_weight,
+        ):
+    """
+    `sub_sampling_rate == 1` implies complete sub-sampling.
+    Approximately `sub_sampling_rate` portion of the original selection get selected.
+    #
+    If `get_f_weight is None` then use `fsel_prob * sub_sampling_rate` as prob to select.
+    This is not exactly the same as use `f_weight`!
+    """
+    assert 1.0 >= sub_sampling_rate >= 0.0
+    @q.lazy_call
+    @q.timer_verbose
+    def get_psel_prob_sub():
+        fname = q.get_fname()
+        psel_prob = get_psel_prob()
+        psel = psel_prob.psel
+        f_rand_01 = get_f_rand_01()
+        total_site = psel.total_site
+        sp_rand_01 = q.SelectedPointsRealD(psel, 1)
+        sp_rand_01 @= f_rand_01
+        sp_prob = q.SelectedPointsRealD(psel, 1)
+        sp_prob.set_zero()
+        if get_f_weight is not None:
+            psel_rate = get_param(job_tag, "field-selection-psel-rate")
+            f_weight = get_f_weight()
+            sp_prob @= f_weight
+            sp_prob *= psel_rate * sub_sampling_rate
+        else:
+            sp_prob @= psel_prob
+            sp_prob *= sub_sampling_rate
+        sel_sub = sp_prob[:].ravel() >= sp_rand_01[:].ravel()
+        xg_arr = psel.xg_arr
+        xg_arr_sub = xg_arr[sel_sub]
+        psel_sub = q.PointsSelection(total_site, xg_arr_sub)
+        original_num = psel.n_points
+        expect_num = original_num * sub_sampling_rate
+        actual_num = psel_sub.n_points
+        q.displayln_info(-1, f"{fname}: sub_sampling_rate = {sub_sampling_rate} ; expect_num = {expect_num} ; actual_num = {actual_num}")
+        psel_prob_sub = q.SelectedFieldRealD(psel_sub, 1)
+        psel_prob_sub @= sp_prob
+        return psel_prob_sub
+    return get_psel_prob_sub
 
 # -----------------------------------------------------------------------------
 

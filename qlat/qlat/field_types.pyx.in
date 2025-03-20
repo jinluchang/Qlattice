@@ -96,6 +96,8 @@ cdef class Field{{name}}(FieldBase):
         """
         other can be Field, SelectedField, SelectedPoints
         field geo does not change if already initialized
+        #
+        Preserve original data if not assigned.
         """
         if isinstance(other, Field{{name}}):
             set_field_f_f_{{name}}(self, <Field{{name}}>other)

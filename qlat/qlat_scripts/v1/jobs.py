@@ -299,7 +299,9 @@ def get_n_points_pi(job_tag, traj, inv_type, inv_acc):
 
 @q.timer
 def mk_rand_point_src_info(job_tag, traj, psel):
-    # pi is a list of [ idx xg inv_type inv_acc ]
+    """
+    pi is a list of [ idx xg inv_type inv_acc ]
+    """
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_point_src_info")
     xg_list = psel.xg_arr().tolist()
     assert len(xg_list) == get_n_points_pi(job_tag, traj, 0, 0)
@@ -317,7 +319,9 @@ def mk_rand_point_src_info(job_tag, traj, psel):
 
 @q.timer
 def save_point_src_info(pi, path):
-    # pi is a list of [ idx xg inv_type inv_acc ]
+    """
+    pi is a list of [ idx xg inv_type inv_acc ]
+    """
     if 0 != q.get_id_node():
         return None
     def mk_line(l):
@@ -329,7 +333,9 @@ def save_point_src_info(pi, path):
 
 @q.timer
 def load_point_src_info(path):
-    # pi is a list of [ idx xg inv_type inv_acc ]
+    """
+    pi is a list of [ idx xg inv_type inv_acc ]
+    """
     dt = q.qload_datatable_sync_node(path, True)
     t = [ list(map(int, l)) for l in dt ][1:]
     pi = [ [ l[0], l[1:5], l[5], l[6], ] for l in t ]

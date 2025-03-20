@@ -202,14 +202,14 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
     def __imatmul__(self, other):
         """
         won't change self.psel
+        #
+        two psel may or may NOT be the same object
+        #
+        only assign available points
         """
         if isinstance(other, SelectedPoints{{name}}):
-            """
-            two psel may or may NOT be the same object
-            """
             set_field_sp_sp_{{name}}(self, other)
         elif isinstance(other, SelectedField{{name}}):
-            # only assign available points
             set_field_sp_sf_{{name}}(self, other)
         elif isinstance(other, Field{{name}}):
             set_field_sp_f_{{name}}(self, other)

@@ -245,9 +245,10 @@ cdef class FieldSelection:
     def __init__(self, *args):
         """
         FieldSelection()
-        FieldSelection(geo) # no points being selected
         FieldSelection(geo, 0) # selecting all points
-        FieldSelection(psel) # psel.points_dist_type == "g"
+        FieldSelection(geo, -1) # no points being selected
+        FieldSelection(geo) # same as `FieldSelection(geo, -1)`, no points being selected
+        FieldSelection(psel) # require `psel.points_dist_type == "g"`
         """
         cdef cc.Int len_args = len(args)
         cdef Geometry geo
