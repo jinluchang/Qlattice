@@ -517,7 +517,7 @@ def run_fsel_prob_sub_sampling(
             f_prob @= fsel_prob
             f_prob *= sub_sampling_rate
         sel_sub = f_prob[:].ravel() >= f_rand_01[:].ravel()
-        assert sel_sub == sel_sub & (fsel[:] >= 0)
+        assert np.all(sel_sub == sel_sub & (fsel[:] >= 0))
         fsel_sub = q.FieldSelection(geo)
         fsel_sub[sel_sub] = fsel[sel_sub]
         fsel_sub.update()
