@@ -1,0 +1,194 @@
+[
+ [
+  "run_check_psel(get_psel)"
+ ],
+ [
+  "run_check_psel"
+ ],
+ [
+  "len(psel) = 9"
+ ],
+ [
+  "psel.xg_arr [[0 0 2 2]\n [3 2 3 2]\n [0 2 1 3]\n [3 2 1 3]\n [2 3 3 3]\n [1 1 0 4]\n [0 0 2 4]\n [0 2 0 5]\n [1 2 2 6]]"
+ ],
+ [
+  "run_check_psel(get_psel_sub)"
+ ],
+ [
+  "run_check_psel"
+ ],
+ [
+  "len(psel) = 3"
+ ],
+ [
+  "psel.xg_arr [[0 0 2 2]\n [3 2 1 3]\n [1 1 0 4]]"
+ ],
+ [
+  "run_check_fsel(get_fsel)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "len(fsel) = 31"
+ ],
+ [
+  "fsel.to_psel().xg_arr sig",
+  -12.782259693128431,
+  1e-14
+ ],
+ [
+  "run_check_fsel(get_fsel_sub)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "len(fsel) = 19"
+ ],
+ [
+  "fsel.to_psel().xg_arr sig",
+  -4.468005779096746,
+  1e-14
+ ],
+ [
+  "run_check_psel_prob(get_psel_prob)"
+ ],
+ [
+  "run_check_psel_prob"
+ ],
+ [
+  "psel_prob sig",
+  -0.018436024336789508,
+  1e-14
+ ],
+ [
+  "run_check_psel_prob(get_psel_prob_sub)"
+ ],
+ [
+  "run_check_psel_prob"
+ ],
+ [
+  "psel_prob sig",
+  -0.004409722786726471,
+  1e-14
+ ],
+ [
+  "run_check_fsel_prob(get_fsel_prob)"
+ ],
+ [
+  "run_check_fsel_prob"
+ ],
+ [
+  "psel_prob from fsel_prob sig",
+  0.2876362218400358,
+  1e-14
+ ],
+ [
+  "run_check_fsel_prob(get_fsel_prob_sub)"
+ ],
+ [
+  "run_check_fsel_prob"
+ ],
+ [
+  "psel_prob from fsel_prob sig",
+  -0.08807364859753247,
+  1e-14
+ ],
+ [
+  "run_check_psel(get_psel)"
+ ],
+ [
+  "run_check_psel"
+ ],
+ [
+  "len(psel) = 5"
+ ],
+ [
+  "psel.xg_arr [[0 0 0 1]\n [3 2 2 1]\n [3 0 2 2]\n [2 2 0 4]\n [1 2 1 5]]"
+ ],
+ [
+  "run_check_psel(get_psel_sub)"
+ ],
+ [
+  "run_check_psel"
+ ],
+ [
+  "len(psel) = 2"
+ ],
+ [
+  "psel.xg_arr [[3 0 2 2]\n [2 2 0 4]]"
+ ],
+ [
+  "run_check_fsel(get_fsel)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "len(fsel) = 26"
+ ],
+ [
+  "fsel.to_psel().xg_arr sig",
+  -6.684919549088475,
+  1e-14
+ ],
+ [
+  "run_check_fsel(get_fsel_sub)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "len(fsel) = 11"
+ ],
+ [
+  "fsel.to_psel().xg_arr sig",
+  8.860120616475243,
+  1e-14
+ ],
+ [
+  "run_check_psel_prob(get_psel_prob)"
+ ],
+ [
+  "run_check_psel_prob"
+ ],
+ [
+  "psel_prob sig",
+  0.0013641876785176546,
+  1e-14
+ ],
+ [
+  "run_check_psel_prob(get_psel_prob_sub)"
+ ],
+ [
+  "run_check_psel_prob"
+ ],
+ [
+  "psel_prob sig",
+  -0.0008910576960429922,
+  1e-14
+ ],
+ [
+  "run_check_fsel_prob(get_fsel_prob)"
+ ],
+ [
+  "run_check_fsel_prob"
+ ],
+ [
+  "psel_prob from fsel_prob sig",
+  0.27761464330696484,
+  1e-14
+ ],
+ [
+  "run_check_fsel_prob(get_fsel_prob_sub)"
+ ],
+ [
+  "run_check_fsel_prob"
+ ],
+ [
+  "psel_prob from fsel_prob sig",
+  -0.0788925480895597,
+  1e-14
+ ]
+]

@@ -40,6 +40,7 @@ tests = \
 		field-analysis.log \
 		field-multi-size.log \
 		field-selection.log \
+		qs-fsel-psel.log \
 		selected-field.log \
 		fields-io.log \
 		hmc-pure-gauge.log \
