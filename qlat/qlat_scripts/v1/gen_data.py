@@ -256,14 +256,14 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     return ret
 
 @q.timer_verbose
-def run_f_weight_unifrom(job_tag, traj):
+def run_f_weight_uniform(job_tag, traj):
     """
     return get_f_weight
         f_weight = get_f_weight()
     #
     `f_weight` is of type `q.FieldRealD(geo, 1)`.
     #
-    get_f_weight = run_f_weight_unifrom(job_tag, traj)
+    get_f_weight = run_f_weight_uniform(job_tag, traj)
     #
     Another option to obtain `get_f_weight` is using `run_f_weight_from_wsrc_prop_full(job_tag, traj)`.
     """
