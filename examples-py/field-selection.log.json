@@ -1,0 +1,43 @@
+[
+ [
+  "geo.show() = Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "psel.xg_arr.tolist() = [[0, 0, 0, 0], [0, 1, 2, 0]]"
+ ],
+ [
+  "fsel info = Geometry([4, 4, 4, 8]) total_n_elems = 128"
+ ],
+ [
+  "fsel info = Geometry([4, 4, 4, 8]) total_n_elems = 128"
+ ],
+ [
+  "fsel info = Geometry([4, 4, 4, 8]) total_n_elems = 130"
+ ],
+ [
+  "psel.n_points = 32"
+ ],
+ [
+  "psel.xg_arr sig",
+  10.936571208225077
+ ],
+ [
+  "psel1.n_points = 5"
+ ],
+ [
+  "psel1.xg_arr sig",
+  4.598287326593537
+ ],
+ [
+  "fsel2 info = Geometry([4, 4, 4, 8]) total_n_elems = 128"
+ ],
+ [
+  "fsel3 info = Geometry([4, 4, 4, 8]) total_n_elems = 233"
+ ],
+ [
+  "fsel4 info = Geometry([4, 4, 4, 8]) total_n_elems = 25"
+ ],
+ [
+  "fsel5 info = Geometry([4, 4, 4, 8]) total_n_elems = 25"
+ ]
+]
