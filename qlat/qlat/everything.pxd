@@ -308,10 +308,15 @@ cdef extern from "qlat/gauge-action.h" namespace "qlat":
 
 cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 
-    void set_wall_src(Prop& prop, const Geometry& geo_input,
-                      const Int tslice, const CoordinateD& lmom) except +
-    void set_point_src(Prop& prop, const Geometry& geo_input,
-                       const Coordinate& xg, const ComplexD& value) except +
+    void set_wall_src(
+            Prop& prop, const Geometry& geo_input,
+            const Int tslice, const CoordinateD& lmom) except +
+    void set_point_src(
+            Prop& prop, const Geometry& geo_input,
+            const Coordinate& xg, const ComplexD& value) except +
+    void set_rand_vol_u1_src(
+            Prop& prop, Field[ComplexD]& fu1,
+            const Geometry& geo_input, const RngState& rs) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 

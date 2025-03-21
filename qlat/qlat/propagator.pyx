@@ -131,6 +131,17 @@ def set_wall_src(Prop prop_src not None, Geometry geo not None, int tslice, Coor
         lmom = CoordinateD()
     cc.set_wall_src(prop_src.xxx().p[0], geo.xx, tslice, lmom.xx)
 
+def set_rand_vol_u1_src(
+        Prop prop_src not None,
+        FieldComplexD fu1 not None,
+        Geometry geo not None,
+        RngState rs not None,
+        ):
+    """
+    prop_src ~ fu1
+    """
+    cc.set_rand_vol_u1_src(prop_src.xxx().p[0], fu1.xx, geo.xx, rs.xx)
+
 def mk_point_src(Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
     cdef Prop prop_src = Prop(geo)
     set_point_src(prop_src, geo, xg, value)
@@ -140,6 +151,19 @@ def mk_wall_src(Geometry geo not None, int tslice, CoordinateD lmom=None):
     cdef Prop prop_src = Prop(geo)
     set_wall_src(prop_src, geo, tslice, lmom)
     return prop_src
+
+def mk_rand_vol_u1_src(
+        Geometry geo not None,
+        RngState rs not None,
+        ):
+    """
+    return prop_src, fu1
+    prop_src ~ fu1
+    """
+    cdef Prop prop_src = Prop()
+    cdef FieldComplexD fu1 = FieldComplexD()
+    set_rand_vol_u1_src(prop_src, fu1, geo, rs)
+    return prop_src, fu1
 
 @q.timer
 def mk_rand_u1_src(sel, rs):

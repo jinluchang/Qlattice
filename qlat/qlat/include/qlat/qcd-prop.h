@@ -9,7 +9,7 @@ namespace qlat
 
 template <class T>
 WilsonMatrixT<T> make_wilson_matrix_from_vectors(
-    const array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR>& cols)
+    const array<ConstHandle<WilsonVectorT<T>>, 4 * NUM_COLOR>& cols)
 {
   WilsonMatrixT<T> ret;
   for (int i = 0; i < 4 * NUM_COLOR; ++i) {
@@ -34,7 +34,7 @@ void set_propagator_from_fermion_fields(
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR> cols;
+    array<ConstHandle<WilsonVectorT<T>>, 4 * NUM_COLOR> cols;
     for (int k = 0; k < 4 * NUM_COLOR; ++k) {
       cols[k].init(ffs[k].get_elem(xl));
     }
@@ -314,7 +314,7 @@ inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
                                  const PointsSelection& psel)
 // calculate self loop at psel locations
 {
-  TIMER_VERBOSE("set_rand_u1_sol_psel")
+  TIMER_VERBOSE("set_rand_u1_sol_psel");
   SelectedPoints<ComplexD> sp_fu1;
   set_selected_points(sp_prop, prop, psel);
   set_selected_points(sp_fu1, fu1, psel);
@@ -355,7 +355,7 @@ inline void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
                                  const FieldSelection& fsel)
 // calculate self loop at fsel locations
 {
-  TIMER_VERBOSE("set_rand_u1_sol_fsel")
+  TIMER_VERBOSE("set_rand_u1_sol_fsel");
   SelectedField<ComplexD> sf_fu1;
   set_selected_field(sf_prop, prop, fsel);
   set_selected_field(sf_fu1, fu1, fsel);
@@ -363,6 +363,30 @@ inline void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
     const ComplexD& u1 = sf_fu1.get_elem(idx);
     WilsonMatrix& wm = sf_prop.get_elem(idx);
     wm *= qlat::qconj(u1);
+  });
+}
+
+inline void set_rand_vol_u1_src(Propagator4d& prop, Field<ComplexD>& fu1,
+    const Geometry& geo_input, const RngState& rs)
+  // fu1.multiplicity == 1
+{
+  TIMER_VERBOSE("set_rand_vol_u1_src");
+  const Geometry geo = geo_resize(geo_input);
+  const Coordinate total_site = geo.total_site();
+  prop.init(geo);
+  fu1.init(geo, 1);
+  set_zero(prop);
+  set_zero(fu1);
+  qthread_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    qassert(geo.is_local(xl));
+    const Long gindex = index_from_coordinate(xg, total_site);
+    RngState rst = rs.newtype(gindex);
+    const RealD phase = u_rand_gen(rst, PI, -PI);
+    const ComplexD u1 = qpolar(1.0, phase);
+    set_unit(prop.get_elem(xl), u1);
+    fu1.get_elem(xl) = u1;
   });
 }
 
@@ -488,7 +512,8 @@ void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   sol *= 1.0 / geo.total_volume();
 }
 
-inline void convert_wm_from_mspincolor(Propagator4d& prop_wm, const Propagator4d& prop_msc)
+inline void convert_wm_from_mspincolor(Propagator4d& prop_wm,
+                                       const Propagator4d& prop_msc)
 {
   TIMER("convert_wm_from_mspincolor");
   const Geometry& geo = prop_msc.geo();
@@ -502,7 +527,8 @@ inline void convert_wm_from_mspincolor(Propagator4d& prop_wm, const Propagator4d
   });
 }
 
-inline void convert_mspincolor_from_wm(Propagator4d& prop_msc, const Propagator4d& prop_wm)
+inline void convert_mspincolor_from_wm(Propagator4d& prop_msc,
+                                       const Propagator4d& prop_wm)
 {
   TIMER("convert_mspincolor_from_wm");
   const Geometry& geo = prop_wm.geo();
@@ -516,7 +542,9 @@ inline void convert_mspincolor_from_wm(Propagator4d& prop_msc, const Propagator4
   });
 }
 
-inline void convert_wm_from_mspincolor(SelectedField<WilsonMatrix>& prop_wm, const SelectedField<WilsonMatrix>& prop_msc)
+inline void convert_wm_from_mspincolor(
+    SelectedField<WilsonMatrix>& prop_wm,
+    const SelectedField<WilsonMatrix>& prop_msc)
 {
   TIMER("convert_wm_from_mspincolor(s_prop)");
   qassert(prop_msc.multiplicity == 1);
@@ -528,7 +556,9 @@ inline void convert_wm_from_mspincolor(SelectedField<WilsonMatrix>& prop_wm, con
   });
 }
 
-inline void convert_mspincolor_from_wm(SelectedField<WilsonMatrix>& prop_msc, const SelectedField<WilsonMatrix>& prop_wm)
+inline void convert_mspincolor_from_wm(
+    SelectedField<WilsonMatrix>& prop_msc,
+    const SelectedField<WilsonMatrix>& prop_wm)
 {
   TIMER("convert_mspincolor_from_wm(s_prop)");
   qassert(prop_wm.multiplicity == 1);
@@ -540,7 +570,9 @@ inline void convert_mspincolor_from_wm(SelectedField<WilsonMatrix>& prop_msc, co
   });
 }
 
-inline void convert_wm_from_mspincolor(SelectedPoints<WilsonMatrix>& prop_wm, const SelectedPoints<WilsonMatrix>& prop_msc)
+inline void convert_wm_from_mspincolor(
+    SelectedPoints<WilsonMatrix>& prop_wm,
+    const SelectedPoints<WilsonMatrix>& prop_msc)
 {
   TIMER("convert_wm_from_mspincolor(sp_prop)");
   qassert(prop_msc.multiplicity == 1);
@@ -552,7 +584,9 @@ inline void convert_wm_from_mspincolor(SelectedPoints<WilsonMatrix>& prop_wm, co
   });
 }
 
-inline void convert_mspincolor_from_wm(SelectedPoints<WilsonMatrix>& prop_msc, const SelectedPoints<WilsonMatrix>& prop_wm)
+inline void convert_mspincolor_from_wm(
+    SelectedPoints<WilsonMatrix>& prop_msc,
+    const SelectedPoints<WilsonMatrix>& prop_wm)
 {
   TIMER("convert_mspincolor_from_wm(sp_prop)");
   qassert(prop_wm.multiplicity == 1);
