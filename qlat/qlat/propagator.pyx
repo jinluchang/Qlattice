@@ -160,8 +160,8 @@ def mk_rand_vol_u1_src(
     return prop_src, fu1
     prop_src ~ fu1
     """
-    cdef Prop prop_src = Prop()
-    cdef FieldComplexD fu1 = FieldComplexD()
+    cdef Prop prop_src = Prop(geo)
+    cdef FieldComplexD fu1 = FieldComplexD(geo, 1)
     set_rand_vol_u1_src(prop_src, fu1, geo, rs)
     return prop_src, fu1
 

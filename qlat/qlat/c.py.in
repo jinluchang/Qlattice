@@ -135,6 +135,7 @@ __all__ += [
         'set_wall_src',
         'mk_point_src',
         'mk_wall_src',
+        'mk_rand_vol_u1_src',
         'mk_rand_u1_src',
         'get_rand_u1_sol',
         'mk_rand_u1_prop',
