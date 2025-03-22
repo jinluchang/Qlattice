@@ -383,19 +383,19 @@ def get_all_cexpr():
 
 set_param("16IH2", "trajs")(list(range(1000, 4020, 100)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
-set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05358, 0.07945, 0.10852, 0.15, 0.20, 0.25, 0.30, ])
+set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05358, 0.07945, 0.10852, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, ])
 set_param("16IH2", "measurement", "num_charm_wall_src")(2)
 set_param("16IH2", f"cg_params-2-2", "maxiter")(200)
 set_param("16IH2", f"cg_params-2-2", "maxcycle")(50)
 
 set_param("24D", "trajs")(list(range(1000, 5100, 80)))
-set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, 0.25, 0.30, ])
+set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, ])
 set_param("24D", "measurement", "num_charm_wall_src")(2)
 set_param("24D", f"cg_params-2-2", "maxiter")(200)
 set_param("24D", f"cg_params-2-2", "maxcycle")(50)
 
 set_param("32Dfine", "trajs")(list(range(520, 2600, 40)))
-set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.045, 0.04635, 0.07794, 0.11333, 0.15327, 0.2, 0.25, 0.30, ])
+set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.045, 0.04635, 0.07794, 0.11333, 0.15327, 0.2, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, ])
 set_param("32Dfine", "measurement", "num_charm_wall_src")(2)
 set_param("32Dfine", f"cg_params-2-2", "maxiter")(200)
 set_param("32Dfine", f"cg_params-2-2", "maxcycle")(50)
