@@ -525,6 +525,7 @@ let
         linux-pam
         findutils
         clang-tools
+        m4
         git
         gnumake
         zlib
