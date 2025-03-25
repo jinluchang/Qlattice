@@ -104,18 +104,184 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val, t
     def sum_function(val_list):
-        values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
         for val, t in val_list:
             values[t] += val
         return q.glb_sum(values.transpose(1, 0))
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     res_sum *= 1.0 / total_site[3]
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
+    for i, en in enumerate(expr_names):
+        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
+
+# ----
+
+def wave_function_mode_0(c12, size):
+    return 1.0
+
+def wave_function_mode_1(c12, size):
+    x, y, z, t, = c12.to_tuple()
+    xs, ys, zs, ts, = size.to_tuple()
+    w1 = np.cos(2.0 * np.pi * x / xs)
+    w2 = np.cos(2.0 * np.pi * y / ys)
+    w3 = np.cos(2.0 * np.pi * z / zs)
+    w = (w1 + w2 + w3) / 3.0
+    return w
+
+wave_function_mode_dict = dict()
+wave_function_mode_dict[0] = wave_function_mode_0
+wave_function_mode_dict[1] = wave_function_mode_1
+
+def wave_function(p1, p2, mode, size):
+    p1_tag, c1 = p1
+    p2_tag, c2 = p2
+    c1 = q.Coordinate(c1)
+    c2 = q.Coordinate(c2)
+    c12 = q.smod_coordinate(c1 - c2, size)
+    if mode not in wave_function_mode_dict:
+        fname = q.get_fname()
+        raise Exception(f"{fname}: {p1} {p2} {mode} {size}")
+    wf = wave_function_mode_dict[mode]
+    return wf(c12, size)
+
+@q.timer
+def get_cexpr_meson_corr_psnk_psrc():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_psnk_psrc"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type1'
+        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+        exprs = [
+                mk_fac(1) + f"1",
+                ]
+        for mode in [ 0, 1, ]:
+            exprs += [
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_pi_p("x_2", True)    * mk_pi_p("x_1")
+                    + f"wf({mode}) * pi+^dag(0) * pi+(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_j5pi_mu("x_2", 3)    * mk_pi_p("x_1")
+                    + f"wf({mode}) * j5pi_t(0) * pi+(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_pi_p("x_2", True)    * mk_j5pi_mu("x_1", 3, True)
+                    + f"wf({mode}) * pi+^dag(0) * j5pi_t^dag(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_j5pi_mu("x_2", 3)    * mk_j5pi_mu("x_1", 3, True)
+                    + f"wf({mode}) * j5pi_t(0) * j5pi_t^dag(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_k_p("x_2", True)     * mk_k_p("x_1")
+                    + f"wf({mode}) * K+^dag(0) * K+(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_j5k_mu("x_2", 3)     * mk_k_p("x_1")
+                    + f"wf({mode}) * j5k_t(0) * K+(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_k_p("x_2", True)     * mk_j5k_mu("x_1", 3, True)
+                    + f"wf({mode}) * K+^dag(0) * j5k_t^dag(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_j5k_mu("x_2", 3)     * mk_j5k_mu("x_1", 3, True)
+                    + f"wf({mode}) * j5k_t(0) * j5k_t^dag(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_a0_p("x_2", True)    * mk_a0_p("x_1")
+                    + f"wf({mode}) * a0+^dag(0) * a0+(-tsep)",
+                    #
+                    mk_fac(f"wave_function(x_1, x_2, {mode}, size)")
+                    * mk_kappa_p("x_2", True) * mk_kappa_p("x_1")
+                    + f"wf({mode}) * kappa+^dag(0) * kappa+(-tsep)",
+                    #
+                    ]
+        cexpr = contract_simplify_compile(
+                *exprs,
+                is_isospin_symmetric_limit=True,
+                diagram_type_dict=diagram_type_dict,
+                )
+        return cexpr
+    base_positions_dict = dict()
+    base_positions_dict["wave_function"] = wave_function
+    return cache_compiled_cexpr(
+            calc_cexpr,
+            fn_base,
+            is_cython=is_cython,
+            base_positions_dict=base_positions_dict,
+            )
+
+@q.timer_verbose
+def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr_psnk_psrc()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    get_prop = get_get_prop()
+    psel_prob = get_psel_prob()
+    fsel_prob = get_fsel_prob()
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    fsel_n_elems = fsel.n_elems
+    fsel_prob_arr = fsel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_psel_arr = psel[:]
+    xg_fsel_arr = fsel.to_psel_local()[:]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    def load_data():
+        for pidx in range(len(xg_psel_arr)):
+            yield pidx
+    @q.timer
+    def feval(args):
+        pidx = args
+        xg_src = q.Coordinate(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
+        values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
+        for idx in range(len(xg_fsel_arr)):
+            xg_snk = q.Coordinate(xg_fsel_arr[idx])
+            if xg_snk == xg_src:
+                prob_snk = 1.0
+            else:
+                prob_snk = fsel_prob_arr[idx]
+            prob = prob_src * prob_snk
+            x_rel = q.smod_coordinate(xg_snk - xg_src, total_site)
+            x_rel_t = x_rel[3]
+            pd = {
+                    "x_2" : ("point", xg_src.to_tuple(),),
+                    "x_1" : ("point-snk", xg_snk.to_tuple(),),
+                    "size" : total_site,
+                    }
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            values[x_rel_t] += val / prob
+        return values
+    def sum_function(val_list):
+        values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
+        for val in val_list:
+            values += val
+        return q.glb_sum(values.transpose(1, 0))
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    res_sum *= 1.0 / total_volume
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
         [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
@@ -190,16 +356,14 @@ def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel
         val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
         return val, t_sep_idx
     def sum_function(val_list):
-        values = np.zeros((len(pipi_corr_t_sep_list), len(expr_names),), dtype=complex)
+        values = np.zeros((len(pipi_corr_t_sep_list), len(expr_names),), dtype=np.complex128)
         for val, t_sep_idx in val_list:
             values[t_sep_idx] += val
         return q.glb_sum(values.transpose(1, 0))
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     res_sum *= 1.0 / t_size
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
@@ -385,18 +549,16 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             res_list.append((val / prob, t, r_idx_low, r_idx_high, coef_low, coef_high,))
         return res_list
     def sum_function(val_list):
-        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=complex)
+        values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=np.complex128)
         for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
         return q.glb_sum(values.transpose(2, 0, 1))
-    q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     res_sum *= 1.0 / total_volume
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -552,7 +714,7 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
             x_2_t = xg_src[3]
             x_1_t = x_2_t + x_rel_t
-            val = np.zeros((len(pipi_tensor_t_sep_list), len(pipi_tensor_t_sep_list), len(expr_names),), dtype=complex)
+            val = np.zeros((len(pipi_tensor_t_sep_list), len(pipi_tensor_t_sep_list), len(expr_names),), dtype=np.complex128)
             for t_sep_1_idx, t_sep_1 in enumerate(pipi_tensor_t_sep_list):
                 for t_sep_2_idx, t_sep_2 in enumerate(pipi_tensor_t_sep_list):
                     t_snk = (max(x_1_t, x_2_t) + t_sep_2) % total_site[3]
@@ -577,18 +739,16 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
             len(pipi_tensor_t_sep_list),
             len(pipi_tensor_t_sep_list),
             len(expr_names),
-            ), dtype=complex)
+            ), dtype=np.complex128)
         for idx, res_list in enumerate(val_list):
             for val, t, r_idx_low, r_idx_high, coef_low, coef_high in res_list:
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
         return q.glb_sum(values.transpose(4, 2, 3, 0, 1))
-    q.timer_fork(0)
-    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
+    with q.TimerFork(max_call_times_for_always_show_info=0):
+        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     res_sum *= 1.0 / total_volume
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -607,7 +767,7 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
 
 ### ------
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
     #
     traj_gf = traj
@@ -692,7 +852,7 @@ def run_job_inversion(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_contraction(job_tag, traj):
     #
     traj_gf = traj
@@ -728,8 +888,10 @@ def run_job_contraction(job_tag, traj):
     get_gf = None
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     #
-    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=None, get_f_weight=None)
-    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=None, get_f_weight=None)
+    get_f_weight = run_f_weight_uniform(job_tag, traj)
+    get_f_rand_01 = run_f_rand_01(job_tag, traj)
+    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
@@ -756,22 +918,28 @@ def run_job_contraction(job_tag, traj):
     run_r_list(job_tag)
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-            get_prop = get_get_prop()
-            if get_prop is not None:
-                q.timer_fork()
-                # ADJUST ME
-                auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                #
-                q.qtouch_info(get_save_path(fn_checkpoint))
-                q.displayln_info("timer_display for runjob")
-                q.timer_display()
-                q.timer_merge()
-            q.release_lock()
+    if get_load_path(fn_checkpoint) is not None:
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
+        return
+    get_prop = get_get_prop()
+    if get_prop is None:
+        q.release_lock()
+        q.clean_cache()
+        if q.obtained_lock_history_list:
+            q.timer_display()
+        return
+    with q.TimerFork():
+        # ADJUST ME
+        auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        #
+        q.qtouch_info(get_save_path(fn_checkpoint))
+        q.displayln_info("timer_display for runjob")
+    q.release_lock()
     q.clean_cache()
     if q.obtained_lock_history_list:
         q.timer_display()
@@ -783,6 +951,7 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_jj())
     benchmark_eval_cexpr(get_cexpr_pipi_corr())
     benchmark_eval_cexpr(get_cexpr_pipi_jj())
+    benchmark_eval_cexpr(get_cexpr_meson_corr_psnk_psrc())
 
 ### ------
 
