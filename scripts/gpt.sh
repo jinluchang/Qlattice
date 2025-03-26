@@ -14,6 +14,8 @@ source qcore/set-prefix.sh $name
 
     cd lib/cgpt
 
+    sed -i 's/#!\/bin\/bash/#!\/usr\/bin\/env bash/' clean update
+
     echo "BASIS_SIZE(4)" > lib/basis_size.h
     echo "BASIS_SIZE(10)" >> lib/basis_size.h
     echo "BASIS_SIZE(25)" >> lib/basis_size.h
@@ -26,9 +28,9 @@ source qcore/set-prefix.sh $name
     echo "SPIN_COLOR(4,2)" >> lib/spin_color.h
     echo "SPIN_COLOR(4,1)" >> lib/spin_color.h
 
-    time-run ./clean
+    time-run bash ./clean
 
-    time-run ./make %grid-config "$num_proc"
+    time-run bash ./make %grid-config "$num_proc"
 
     rm -rfv "$prefix"/lib
     rm -rfv "$prefix"/src
