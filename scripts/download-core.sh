@@ -37,8 +37,8 @@ aget "https://fftw.org/pub/fftw/fftw-3.3.10.tar.gz"
 # aget "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz"
 aget "https://github.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/Cuba-4.2.2.tar.gz"
 
-# aget "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.bz2"
-aget "https://github.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/hdf5-1.14.3.tar.bz2"
+# aget "https://support.hdfgroup.org/releases/hdf5/v1_14/v1_14_5/downloads/hdf5-1.14.5.tar.gz"
+aget "https://github.com/jinluchang/Qlattice-distfiles/raw/refs/heads/main/distfiles/hdf5-1.14.5.tar.gz"
 
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )
