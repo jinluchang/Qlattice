@@ -22,4 +22,5 @@ message(py3.get_install_dir())
 
 deps = [ qlat, grid, ]
 
+subdir('qlat_grid_config')
 subdir('qlat_grid')
