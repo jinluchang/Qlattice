@@ -70,18 +70,15 @@ if os.path.isdir(bin_dir):
     l.append("")
 
 if os.path.isdir(include_dir):
-    l.append(set_env("C_INCLUDE_PATH", "include"))
-    l.append(set_env("CPLUS_INCLUDE_PATH", "include"))
+    l.append(set_env("CPATH", "include"))
     l.append("")
 
 if os.path.isdir(include_ncurses_dir):
-    l.append(set_env("C_INCLUDE_PATH", "include/ncurses"))
-    l.append(set_env("CPLUS_INCLUDE_PATH", "include/ncurses"))
+    l.append(set_env("CPATH", "include/ncurses"))
     l.append("")
 
 if os.path.isdir(include_ncursesw_dir):
-    l.append(set_env("C_INCLUDE_PATH", "include/ncursesw"))
-    l.append(set_env("CPLUS_INCLUDE_PATH", "include/ncursesw"))
+    l.append(set_env("CPATH", "include/ncursesw"))
     l.append("")
 
 if glob.glob(f"{lib_dir}/*.a") + glob.glob(f"{lib_dir}/*.la") + glob.glob(f"{lib_dir}/*.so*"):

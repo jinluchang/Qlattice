@@ -61,8 +61,7 @@ for v in \
     "\$setenv_prefix/include/ncursesw" \
     ; do
     if [ -d "\$v" ] ; then
-        export C_INCLUDE_PATH="\$v":"\$C_INCLUDE_PATH"
-        export CPLUS_INCLUDE_PATH="\$v":"\$CPLUS_INCLUDE_PATH"
+        export CPATH="\$v":"\$CPATH"
     fi
 done
 for v in \
