@@ -301,7 +301,7 @@ set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0
 for inv_type in [ 0, 1, 2, ]:
     for inv_acc in [ 0, 1, 2, ]:
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
-        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(inv_acc)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
 set_param(job_tag, "field-selection-fsel-rate")(0.1)
 set_param(job_tag, "field-selection-psel-rate")(0.01)
