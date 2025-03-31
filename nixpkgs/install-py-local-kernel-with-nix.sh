@@ -9,7 +9,7 @@ Usage:
     name='-cu' ./install-py-local-kernel-with-nix.sh
     # Install a local kernel with some CUDA utilities. Qlattice and Grid/GPT are NOT compiled with CUDA.
 
-    name='-cuda' ./install-py-local-kernel-with-nix.s
+    name='-cuda' ./install-py-local-kernel-with-nix.sh
     # Install a local kernel with some CUDA utilities. Qlattice and Grid/GPT are compiled with CUDA.
 
     name='-cudasupport' ./install-py-local-kernel-with-nix.sh
