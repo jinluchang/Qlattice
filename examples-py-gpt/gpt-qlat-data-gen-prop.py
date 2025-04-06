@@ -31,6 +31,7 @@ from qlat_scripts.v1 import (
         run_params,
         run_gf,
         run_gt,
+        run_eig,
         run_f_weight_uniform,
         run_f_rand_01,
         run_fsel_prob,
@@ -73,40 +74,42 @@ load_path_list[:] = [
 ### ------
 
 @q.timer_verbose
-def run_prop_rand_vol_u1_src_charm(
+def run_prop_rand_vol_u1_src(
         job_tag, traj,
         *,
+        inv_type,
         get_gf,
         get_psel,
         get_fsel,
-        charm_mass_idx,
+        get_eig=None,
         ):
     """
     fsel should contain psel
     likely strange quark mass is included as well.
     """
     fname = q.get_fname()
-    path_s = f"{job_tag}/prop-rand-vol-u1-charm-{charm_mass_idx}/traj-{traj}"
-    path_sp = f"{job_tag}/psel-prop-rand-vol-u1-charm-{charm_mass_idx}/traj-{traj}"
+    inv_type_name_list = [ "light", "strange", ] + [ f"charm-{idx}" for idx in range(8) ]
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
+    quark_flavor = quark_flavor_list[inv_type]
+    path_s = f"{job_tag}/prop-rand-vol-u1-{quark_flavor}/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-rand-vol-u1-{quark_flavor}/traj-{traj}"
     if get_load_path(path_s + "/geon-info.txt") is not None:
         assert get_load_path(path_sp + "/checkpoint.txt") is not None
         return
-    charm_quark_mass_list = get_param_charm_mass_list(job_tag)
-    charm_mass = charm_quark_mass_list[charm_mass_idx]
     gf = get_gf()
     geo = gf.geo
     fsel = get_fsel()
     psel = get_psel()
     total_site = geo.total_site
-    inv_type = 2
     inv_acc = 2
+    if get_eig is None:
+        eig = None
+    else:
+        eig = get_eig()
     gt = None
-    eig = None
     num_prop_rand_vol_u1 = get_param(job_tag, "num_prop_rand_vol_u1")
     prob_acc_1_rand_vol_u1 = get_param(job_tag, "prob_acc_1_rand_vol_u1")
     prob_acc_2_rand_vol_u1 = get_param(job_tag, "prob_acc_2_rand_vol_u1")
-    mass_initial = get_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")
-    set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(charm_mass)
     inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
@@ -114,7 +117,7 @@ def run_prop_rand_vol_u1_src_charm(
     rs_ama = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
     @q.timer
     def compute_and_save(idx_rand_vol_u1, inv_acc):
-        tag = f"idx_rand_vol_u1={idx_rand_vol_u1} ; inv_type=charm ; charm_mass_idx={charm_mass_idx} ; accuracy={inv_acc}"
+        tag = f"idx_rand_vol_u1={idx_rand_vol_u1} ; type={inv_type} ; accuracy={inv_acc}"
         if tag in sfw:
             assert f"{tag} ; fu1" in sfw
             if q.get_id_node() == 0:
@@ -153,22 +156,23 @@ def run_prop_rand_vol_u1_src_charm(
     qar_sp.flush()
     qar_sp.close()
     q.clean_cache(q.cache_inv)
-    set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(mass_initial)
 
 ### ------
 
-def get_param_charm_mass_list(job_tag):
-    charm_quark_mass_list = get_param(job_tag, "measurement", "charm_quark_mass_list")
-    return charm_quark_mass_list
+def get_param_quark_mass_list(job_tag):
+    quark_mass_list = get_param(job_tag, "quark_mass_list")
+    return quark_mass_list
 
 @q.timer_verbose
-def run_charm_quark_mass_list(job_tag, traj):
+def run_quark_mass_list(job_tag, traj):
     """
-    return charm_quark_mass_list
+    return quark_mass_list
     """
-    charm_quark_mass_list = get_param_charm_mass_list(job_tag)
-    obj = charm_quark_mass_list
-    fn = f"{job_tag}/params/traj-{traj}/charm_quark_mass_list.json"
+    quark_mass_list = get_param_quark_mass_list(job_tag)
+    for inv_type, quark_mass in enumerate(quark_mass_list):
+        assert quark_mass == get_param(job_tag, "fermion_params", inv_type, 0, "mass")
+    obj = quark_mass_list
+    fn = f"{job_tag}/params/traj-{traj}/quark_mass_list.json"
     path = get_load_path(fn)
     if path is None:
         path = get_save_path(fn)
@@ -194,6 +198,7 @@ def run_job(job_tag, traj):
             ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/point-selection/traj-{traj}.txt",
             f"{job_tag}/field-selection/traj-{traj}.field",
@@ -207,6 +212,7 @@ def run_job(job_tag, traj):
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
+    get_eig_light = run_eig(job_tag, traj_gf, get_gf)
     #
     get_f_weight = run_f_weight_uniform(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
@@ -215,20 +221,25 @@ def run_job(job_tag, traj):
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
-    charm_quark_mass_list = run_charm_quark_mass_list(job_tag, traj)
+    quark_mass_list = run_quark_mass_list(job_tag, traj)
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is not None:
         return
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
         return
-    for charm_mass_idx, charm_mass in enumerate(charm_quark_mass_list):
-        run_prop_rand_vol_u1_src_charm(
+    for inv_type, quark_mass in enumerate(quark_mass_list):
+        if inv_type == 0:
+            get_eig = get_eig_light
+        else:
+            get_eig = None
+        run_prop_rand_vol_u1_src(
                 job_tag, traj,
+                inv_type=inv_type,
                 get_gf=get_gf,
                 get_psel=get_psel,
                 get_fsel=get_fsel,
-                charm_mass_idx=charm_mass_idx,
+                get_eig=get_eig,
                 )
     q.qtouch_info(get_save_path(fn_checkpoint))
     q.release_lock()
@@ -243,19 +254,16 @@ def get_all_cexpr():
 set_param("16IH2", "trajs")(list(range(1000, 4020, 100)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
 set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05358, 0.07945, 0.10852, ])
-set_param("16IH2", "measurement", "num_charm_wall_src")(2)
 set_param("16IH2", f"cg_params-2-2", "maxiter")(200)
 set_param("16IH2", f"cg_params-2-2", "maxcycle")(50)
 
 set_param("24D", "trajs")(list(range(1000, 5100, 80)))
 set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, ])
-set_param("24D", "measurement", "num_charm_wall_src")(2)
 set_param("24D", f"cg_params-2-2", "maxiter")(200)
 set_param("24D", f"cg_params-2-2", "maxcycle")(50)
 
 set_param("32Dfine", "trajs")(list(range(520, 2600, 40)))
 set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.045, 0.04635, 0.07794, 0.11333, 0.15327, ])
-set_param("32Dfine", "measurement", "num_charm_wall_src")(2)
 set_param("32Dfine", f"cg_params-2-2", "maxiter")(200)
 set_param("32Dfine", f"cg_params-2-2", "maxcycle")(50)
 
@@ -272,23 +280,21 @@ set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 #
+set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.1, 0.2, ])
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", ])
 set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
-for inv_type in [ 1, 2, ]:
+for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
-set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
-set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
-set_param(job_tag, "fermion_params", 2, 0, "mass")(0.10)
-for inv_type in [ 0, 1, 2, ]:
-    for inv_acc in [ 1, 2, ]:
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
+    for inv_acc in [ 0, 1, 2, ]:
         set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
 set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
 set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
-set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
-#
-for inv_type in [ 0, 1, ]:
-    set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
 #
 set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
 set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
@@ -296,12 +302,6 @@ set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5
 set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
 set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
-set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
-#
-for inv_type in [ 0, 1, 2, ]:
-    for inv_acc in [ 0, 1, 2, ]:
-        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
-        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
 set_param(job_tag, "field-selection-fsel-rate")(0.1)
 set_param(job_tag, "field-selection-psel-rate")(0.01)
@@ -317,7 +317,6 @@ set_param(job_tag, "prob_acc_1_rand_vol_u1")(0.25)
 set_param(job_tag, "prob_acc_2_rand_vol_u1")(0.10)
 #
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
-set_param(job_tag, "measurement", "charm_quark_mass_list")([ 0.1, 0.2, ])
 
 # ----
 

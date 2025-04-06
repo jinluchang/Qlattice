@@ -232,8 +232,7 @@ def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
     elif inv_type in [ 1, 2, ]:
         maxiter = 300
     else:
-        maxiter = 100
-        raise Exception("get_param_cg_mp_maxiter")
+        maxiter = 200
     return maxiter
 
 @q.timer_verbose
@@ -260,83 +259,78 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     q.displayln_info(f"mk_gpt_inverter: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc} mpi_split={mpi_split} n_grouped={n_grouped}")
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
-    if inv_type in [ 0, 1, 2, ]:
-        params = get_param_fermion(job_tag, inv_type, inv_acc)
-        if eig is not None:
-            # may need madwf
-            params0 = get_param_fermion(job_tag, inv_type, inv_acc=0)
-            is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
-            if is_madwf and inv_type == 1:
-                # do not use madwf for strange even when eig is available (do not use eig for exact solve)
-                is_madwf = False
-                eig = None
-        else:
+    params = get_param_fermion(job_tag, inv_type, inv_acc)
+    assert params is not None
+    if eig is not None:
+        # may need madwf
+        params0 = get_param_fermion(job_tag, inv_type, inv_acc=0)
+        is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
+        if is_madwf and inv_type == 1:
+            # do not use madwf for strange even when eig is available (do not use eig for exact solve)
             is_madwf = False
-        q.displayln_info(f"mk_gpt_inverter: set qm params={params}")
-        if "omega" in params:
-            qm = g.qcd.fermion.zmobius(gpt_gf, params)
+            eig = None
+    else:
+        is_madwf = False
+    q.displayln_info(f"mk_gpt_inverter: set qm params={params}")
+    if "omega" in params:
+        qm = g.qcd.fermion.zmobius(gpt_gf, params)
+    else:
+        qm = g.qcd.fermion.mobius(gpt_gf, params)
+    inv = g.algorithms.inverter
+    cg_mp = inv.cg({"eps": eps, "maxiter": get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
+    cg_pv_f = inv.cg({"eps": eps, "maxiter": get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150)})
+    if mpi_split is None or mpi_split == False:
+        cg_split = cg_mp
+        n_grouped = 1
+        mpi_split = None
+    else:
+        cg_split = inv.split(cg_mp, mpi_split=mpi_split)
+        cg_pv_f = inv.split(cg_pv_f, mpi_split=mpi_split)
+    q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
+    if eig is not None:
+        cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
+        cg = inv.sequence(cg_defl, cg_split)
+    else:
+        cg = cg_split
+    if "omega" in params and eig is None:
+        pc_ne = pc.eo2_kappa_ne()
+        q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
+        cg = cg_mp
+    elif job_tag in "64I":
+        pc_ne = pc.eo1_ne(parity=g.odd)
+    else:
+        pc_ne = pc.eo2_ne()
+    slv_5d = inv.preconditioned(pc_ne, cg)
+    q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
+    if is_madwf:
+        gpt_gf_f = g.convert(gpt_gf, g.single)
+        if "omega" in params0:
+            qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
         else:
-            qm = g.qcd.fermion.mobius(gpt_gf, params)
-        inv = g.algorithms.inverter
-        cg_mp = inv.cg({"eps": eps, "maxiter": get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
-        cg_pv_f = inv.cg({"eps": eps, "maxiter": get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150)})
-        if mpi_split is None or mpi_split == False:
-            cg_split = cg_mp
-            n_grouped = 1
-            mpi_split = None
-        else:
-            cg_split = inv.split(cg_mp, mpi_split=mpi_split)
-            cg_pv_f = inv.split(cg_pv_f, mpi_split=mpi_split)
-        q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
-        if eig is not None:
-            cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
-            cg = inv.sequence(cg_defl, cg_split)
-        else:
-            cg = cg_split
-        if "omega" in params and eig is None:
-            pc_ne = pc.eo2_kappa_ne()
-            q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
-            cg = cg_mp
-        elif job_tag in "64I":
-            pc_ne = pc.eo1_ne(parity=g.odd)
-        else:
-            pc_ne = pc.eo2_ne()
-        if inv_type in [ 0, 1, 2, ]:
-            slv_5d = inv.preconditioned(pc_ne, cg)
-        else:
-            raise Exception("mk_gpt_inverter")
-        q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
-        if is_madwf:
-            gpt_gf_f = g.convert(gpt_gf, g.single)
-            if "omega" in params0:
-                qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
-            else:
-                qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
-            slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
-            slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
-        if inv_acc == 0:
-            maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=1)
-        elif inv_acc == 1:
-            maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=2)
-        elif inv_acc == 2:
-            maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=200)
-        else:
-            raise Exception("mk_gpt_inverter")
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: eps={eps} maxcycle={maxcycle}")
-        slv_qm = qm.propagator(
-                inv.defect_correcting(
-                    inv.mixed_precision(
-                        slv_5d, g.single, g.double),
-                    eps=eps, maxiter=maxcycle)).grouped(n_grouped)
-        q.displayln_info(f"mk_gpt_inverter: make inv_qm")
-        if qtimer is True:
-            qtimer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
-        elif qtimer is False:
-            qtimer = q.TimerNone()
-        inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=qtimer)
+            qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
+        slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
+        slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
+    if inv_acc == 0:
+        maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=1)
+    elif inv_acc == 1:
+        maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=2)
+    elif inv_acc == 2:
+        maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=200)
     else:
         raise Exception("mk_gpt_inverter")
+    q.sync_node()
+    q.displayln_info(f"mk_gpt_inverter: eps={eps} maxcycle={maxcycle}")
+    slv_qm = qm.propagator(
+            inv.defect_correcting(
+                inv.mixed_precision(
+                    slv_5d, g.single, g.double),
+                eps=eps, maxiter=maxcycle)).grouped(n_grouped)
+    q.displayln_info(f"mk_gpt_inverter: make inv_qm")
+    if qtimer is True:
+        qtimer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
+    elif qtimer is False:
+        qtimer = q.TimerNone()
+    inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=qtimer)
     if gt is None:
         return inv_qm
     else:
