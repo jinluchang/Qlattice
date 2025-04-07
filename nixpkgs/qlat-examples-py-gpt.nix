@@ -7,6 +7,7 @@
 , qlat_grid
 , gpt-lehner
 , git
+, zip
 , which
 , rsync
 , bash
@@ -62,6 +63,7 @@ in buildPythonPackage rec {
     mpiCheckPhaseHook
     openssh
     which
+    zip
     rsync
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
