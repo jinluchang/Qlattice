@@ -10,6 +10,7 @@ from qlat_scripts.v1 import *
 
 import pprint
 import os
+import subprocess
 
 @q.timer
 def test_eig(gf, eig, job_tag, inv_type):
@@ -65,6 +66,14 @@ def run_job(job_tag, traj):
     path_new = path
     q.eigen_system_repartition(new_size_node, path, path_new)
     q.check_compressed_eigen_vectors(path)
+    #
+    get_eig = run_eig(job_tag, traj_gf, get_gf)
+    test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
+    #
+    # test zip folder
+    for i in range(16):
+        subprocess.run([ "zip", "-Z", "store", f"{i:02}.zip", f"{i:02}/" ], cwd=path)
+        subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
     test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
