@@ -38,8 +38,8 @@ source qcore/set-prefix.sh $name
         export CFLAGS
     fi
 
-    export CC=MPICC.sh
-    export CXX=MPICXX.sh
+    export CC=$MPICC
+    export CXX=$MPICXX
 
     prefix_actual="$(readlink -m "$prefix")"
 
