@@ -17,13 +17,13 @@ def test_eig(gf, eig, job_tag, inv_type):
     src = q.FermionField4d(geo)
     src.set_rand(q.RngState("test_eig:src.set_rand"))
     q.displayln_info(f"CHECK: src norm {src.qnorm():.10E}")
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, qtimer = False) * src
+    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-10, mpi_split=False, qtimer=False) * src
     q.displayln_info(f"CHECK: sol_ref norm {sol_ref.qnorm():.10E} with eig")
     for inv_acc in [0, 1, 2]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, qtimer = False) * src
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, qtimer=False) * src
         sol -= sol_ref
         q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.1E} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, qtimer = False) * src
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, qtimer=False) * src
         sol -= sol_ref
         q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.1E} inv_acc={inv_acc} without eig")
 
@@ -43,7 +43,7 @@ def run_job(job_tag, traj):
         # ADJUST ME
         traj_gf = 1000
         #
-
+    #
     q.check_stop()
     q.check_time_limit()
     #
@@ -55,7 +55,7 @@ def run_job(job_tag, traj):
     get_gf().show_info()
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
-    test_eig(get_gf(), get_eig(), job_tag, inv_type = 0)
+    test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
     #
     # test repartition
     path = get_load_path(f"{job_tag}/eig/traj-{traj}")
@@ -67,12 +67,12 @@ def run_job(job_tag, traj):
     q.check_compressed_eigen_vectors(path)
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
-    test_eig(get_gf(), get_eig(), job_tag, inv_type = 0)
+    test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
 
-set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step", value = 2)
-set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step", value = 8)
-set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj", value = 1)
-set_param("test-4nt8", "trajs", value = [ 1000, ])
+set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
+set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
+set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
+set_param("test-4nt8", "trajs")([ 1000, ])
 
 qg.begin_with_gpt()
 
