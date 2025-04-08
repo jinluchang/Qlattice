@@ -17,7 +17,7 @@ Usage:
 
 EOF
 
-script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+script_path="$( cd -- "$(dirname -- "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 if [ -f "$script_path"/q-pkgs.nix ]; then
     :
