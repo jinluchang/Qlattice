@@ -14,7 +14,7 @@ class ExtendedEncoder(json.JSONEncoder):
         try:
             encoder = getattr(self, f"encode_{name}")
         except AttributeError:
-            super().default(obj)
+            return super().default(obj)
         else:
             encoded = encoder(obj)
             encoded["__extended_json_type__"] = name

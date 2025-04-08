@@ -154,7 +154,7 @@ def get_data_sig(x, RngState rs):
     """
     Return a signature (a floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
     Result only depends on the value of the data, not the structure.
-    ``x`` can be an instance of ``LatData`` or ``np.ndarray``.
+    ``x`` can be an instance of ``LatData``, ``np.ndarray``, etc.
     """
     if isinstance(x, np.ndarray):
         arr = x.ravel()

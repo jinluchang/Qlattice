@@ -337,6 +337,23 @@ def mk_r_sq_interp_idx_coef_list(r_list):
     return r_sq_interp_idx_coef_list
 
 @timer
+def get_data_sig_arr(x, rs, sig_len):
+    """
+    Return a signature (an array of floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
+    Call `get_data_sig` several times internally.
+    Result only depends on the value of the data, not the structure.
+    ``x`` can be an instance of ``LatData``, ``np.ndarray``, etc.
+    """
+    assert isinstance(rs, RngState)
+    assert isinstance(sig_len, int)
+    sig_list = []
+    for i in range(sig_len):
+        sig = get_data_sig(x, rs.split(f"{i}"))
+        sig_list.append(sig)
+    sig_arr = np.array(sig_list)
+    return sig_arr
+
+@timer
 def check_log_json(script_file, json_results, *, check_eps=1e-5):
     """
     json_results = [ (name, value, check_eps,), (name, value,), (name,), ... ]
@@ -380,8 +397,11 @@ def check_log_json(script_file, json_results, *, check_eps=1e-5):
                     displayln(-1, f"CHECK: ERROR: JSON results eps does not match.")
                     continue
                 actual_eps = 0.0
-                if (abs(v) + abs(vl)) > 0:
-                    actual_eps = 2 * abs(v - vl) / (abs(v) + abs(vl))
+                v_norm = np.linalg.norm(v)
+                vl_norm = np.linalg.norm(vl)
+                diff_norm = np.linalg.norm(v - vl)
+                if (v_norm + vl_norm) > 0:
+                    actual_eps = 2 * diff_norm / (v_norm + vl_norm)
                 if actual_eps > eps:
                     displayln(-1, f"CHECK: {i} '{n}' actual: {v} ; load: {vl} .")
                     displayln(-1, f"CHECK: target eps: {eps} ; actual eps: {actual_eps} .")
