@@ -37,7 +37,7 @@ API inline int& get_incorrect_field_read_sizeof_M()
   return sizeof_M;
 }
 
-API inline bool& is_checksum_missmatch()
+API inline bool& is_checksum_mismatch()
 // qlat parameter
 // if initially false, then will be set to true when checksum check fail
 // if initially true, then the program will crash when checksum fail
@@ -418,8 +418,8 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
   }
   std::vector<crc32_t> crcs = dist_crc32s(dds, num_node);
   crc32_t crc = dist_crc32(crcs);
-  const bool is_checking = is_checksum_missmatch();
-  is_checksum_missmatch() = false;
+  const bool is_checking = is_checksum_mismatch();
+  is_checksum_mismatch() = false;
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
     if (not does_file_exist(fn)) {
@@ -434,7 +434,7 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
                   ": WARNING: checksums of file ; i=%d ; checksum.txt=%08X ; "
                   "computed=%08X ; path=%s",
                   i, read_crc32(lines[i + 2]), crcs[i], path.c_str()));
-          is_checksum_missmatch() = true;
+          is_checksum_mismatch() = true;
         }
       }
       if (read_crc32(lines[0]) != crc) {
@@ -443,12 +443,12 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
             ssprintf(": WARNING: checksums of files ; checksum.txt=%08X ; "
                      "computed=%08X ; path=%s",
                      read_crc32(lines[0]), crc, path.c_str()));
-        is_checksum_missmatch() = true;
+        is_checksum_mismatch() = true;
       }
     }
   }
   if (is_checking) {
-    qassert(is_checksum_missmatch() == false);
+    qassert(is_checksum_mismatch() == false);
   }
   timer.flops += total_bytes;
   return total_bytes;
