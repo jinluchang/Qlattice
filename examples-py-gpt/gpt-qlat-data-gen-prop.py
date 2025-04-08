@@ -101,7 +101,6 @@ def run_prop_rand_vol_u1_src(
     fsel = get_fsel()
     psel = get_psel()
     total_site = geo.total_site
-    inv_acc = 2
     if get_eig is None:
         eig = None
     else:
@@ -110,7 +109,6 @@ def run_prop_rand_vol_u1_src(
     num_prop_rand_vol_u1 = get_param(job_tag, "num_prop_rand_vol_u1")
     prob_acc_1_rand_vol_u1 = get_param(job_tag, "prob_acc_1_rand_vol_u1")
     prob_acc_2_rand_vol_u1 = get_param(job_tag, "prob_acc_2_rand_vol_u1")
-    inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_vol_u1_src(rand_u1)")
@@ -130,6 +128,7 @@ def run_prop_rand_vol_u1_src(
             q.displayln_info(-1, f"WARNING: {fname}: '{tag} ; fu1' already exist in {sfw.path()}")
         rsi = rs_rand_u1.split(str(idx_rand_vol_u1))
         prop_src, fu1 = q.mk_rand_vol_u1_src(geo, rsi)
+        inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
         prop_sol = inv * prop_src
         s_prop = q.SelProp(fsel)
         ps_prop = q.PselProp(psel)

@@ -198,14 +198,16 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
         q.displayln_info(f"load_eig_lazy: path is '{path}'")
         return None
     if not q.does_file_exist_qar_sync_node(os.path.join(path, "metadata.txt")):
-        q.displayln_info(f"load_eig_lazy: '{path}' has not metadata.")
+        q.displayln_info(f"load_eig_lazy: '{path}' does not have file 'metadata.txt'.")
         return None
     if not q.does_file_exist_qar_sync_node(os.path.join(path, "eigen-values.txt")):
-        q.displayln_info(f"load_eig_lazy: '{path}' has not eigen-values.")
+        q.displayln_info(f"load_eig_lazy: '{path}' does not have file 'eigen-values.txt'.")
         return None
     if not q.does_file_exist_qar_sync_node(os.path.join(path, "00/0000000000.compressed")):
-        q.displayln_info(f"load_eig_lazy: '{path}' has not data file '00/0000000000.compressed'.")
-        return None
+        if not q.does_file_exist_qar_sync_node(os.path.join(path, "00.zip")):
+            q.displayln_info(f"load_eig_lazy: '{path}' does not have data file '00/0000000000.compressed'.")
+            q.displayln_info(f"load_eig_lazy: '{path}' does not have data file '00.zip'.")
+            return None
     #
     @q.timer_verbose
     def load_eig():

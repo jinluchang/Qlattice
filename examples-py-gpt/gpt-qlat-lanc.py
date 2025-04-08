@@ -71,9 +71,13 @@ def run_job(job_tag, traj):
     test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
     #
     # test zip folder
+    q.sync_node()
     for i in range(16):
-        subprocess.run([ "zip", "-Z", "store", f"{i:02}.zip", f"{i:02}/" ], cwd=path)
-        subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
+        if i % q.get_num_node() == q.get_id_node():
+            subprocess.run([ "zip", "-r", "-Z", "store", f"{i:02}.zip", f"{i:02}" ], cwd=path)
+            # subprocess.run([ "zip", "-r", "-Z", "store", f"../{i:02}.zip", f"{i:010}.compressed" ], cwd=f"{path}/{i:02}")
+            subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
+    q.sync_node()
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
     test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
