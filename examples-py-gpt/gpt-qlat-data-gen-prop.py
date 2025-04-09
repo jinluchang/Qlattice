@@ -256,10 +256,38 @@ set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05
 set_param("16IH2", f"cg_params-2-2", "maxiter")(200)
 set_param("16IH2", f"cg_params-2-2", "maxcycle")(50)
 
-set_param("24D", "trajs")(list(range(1000, 5100, 80)))
-set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, ])
-set_param("24D", f"cg_params-2-2", "maxiter")(200)
-set_param("24D", f"cg_params-2-2", "maxcycle")(50)
+set_param("24D", "trajs")(list(range(1000, 5100, 10)))
+set_param("24D", "quark_mass_list")([ 0.00107, 0.085, 0.07819, 0.13207, 0.19829, ])
+for inv_type in range(1, len(get_param("24D", "quark_mass_list"))):
+    mass = get_param("24D", "quark_mass_list")[inv_type]
+    for inv_acc in [ 0, 1, 2, ]:
+        set_param("24D", 'fermion_params', inv_type, inv_acc)(
+            {
+                'M5': 1.8,
+                'boundary_phases': [1.0, 1.0, 1.0, 1.0],
+                'b': 2.5,
+                'c': 1.5,
+                'mass': mass,
+                'Ls': 24,
+            }
+        )
+        set_param("24D", f"cg_params-{inv_type}-{inv_acc}", "maxiter")(300)
+    set_param("24D", f"cg_params-{inv_type}-0", "maxcycle")(1)
+    set_param("24D", f"cg_params-{inv_type}-1", "maxcycle")(2)
+    set_param("24D", f"cg_params-{inv_type}-2", "maxcycle")(50)
+set_param("24D", f"cg_params-0-0", "maxiter")(200)
+set_param("24D", f"cg_params-0-0", "maxcycle")(1)
+set_param("24D", f"cg_params-0-1", "maxiter")(200)
+set_param("24D", f"cg_params-0-1", "maxcycle")(2)
+set_param("24D", f"cg_params-0-2", "maxiter")(300)
+set_param("24D", f"cg_params-0-2", "maxcycle")(50)
+if 1 in get_param("24D", 'lanc_params'):
+    get_param("24D", 'lanc_params').pop(1)
+if 1 in get_param("24D", 'clanc_params'):
+    get_param("24D", 'clanc_params').pop(1)
+set_param("24D", "num_prop_rand_vol_u1")(256)
+set_param("24D", "prob_acc_1_rand_vol_u1")(1 / 32)
+set_param("24D", "prob_acc_2_rand_vol_u1")(1 / 128)
 
 set_param("32Dfine", "trajs")(list(range(520, 2600, 40)))
 set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.045, 0.04635, 0.07794, 0.11333, 0.15327, ])
