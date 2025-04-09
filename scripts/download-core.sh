@@ -106,6 +106,19 @@ else
     ( cd Hadrons-tblum ; git clean -f ; ./bootstrap.sh || true )
 fi
 
+if [ -d Hadrons-vaishakhiN ] ; then
+    ( cd Hadrons-vaishakhiN ; git pull )
+else
+    git clone https://github.com/vaishakhi123/Hadrons-tblum.git Hadrons-vaishakhiN
+fi
+
+if [ -e Hadrons-vaishakhiN/configure ] ; then
+    echo "Hadrons-vaishakhiN bootstrapped."
+else
+    ( cd Hadrons-vaishakhiN ; git clean -f ; ./bootstrap.sh || true )
+fi
+
+
 if [ -d CPS ] ; then
     ( cd CPS ; git pull )
 else
