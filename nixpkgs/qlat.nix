@@ -158,6 +158,8 @@ in buildPythonPackage rec {
     # echo readelf -d $out
     # readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
     # echo
+    patchShebangs --build "$out"/bin/bind-gpu-qlat.sh
+    #
     mkdir -pv "$out"/share/version
     echo ${version} >"$out"/share/version/${pname}
   '';
