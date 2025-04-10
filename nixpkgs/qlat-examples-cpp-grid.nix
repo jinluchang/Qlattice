@@ -82,8 +82,6 @@ in buildPythonPackage rec {
       cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
       patchShebangs --build "$PWD/NVCC.py"
       #
-      cp -pv "${../qcore/bin/bind-gpu-qlat.sh}" "$PWD/bind-gpu-qlat.sh"
-      patchShebangs --build "$PWD/bind-gpu-qlat.sh"
       export NGPU=${ngpu}
       export mpi_options="$mpi_options bind-gpu-qlat.sh"
       #
