@@ -250,11 +250,39 @@ def get_all_cexpr():
 
 ### ------
 
-set_param("16IH2", "trajs")(list(range(1000, 4020, 100)))
+set_param("16IH2", "trajs")(list(range(1000, 4200, 100)))
+set_param("16IH2", "quark_mass_list")([ 0.01, 0.04, 0.02963, 0.05358, 0.07945, 0.10852, ])
+for inv_type in range(1, len(get_param("16IH2", "quark_mass_list"))):
+    mass = get_param("16IH2", "quark_mass_list")[inv_type]
+    for inv_acc in [ 0, 1, 2, ]:
+        set_param("16IH2", 'fermion_params', inv_type, inv_acc)(
+            {
+                'M5': 1.8,
+                'boundary_phases': [1.0, 1.0, 1.0, 1.0],
+                'b': 1.0,
+                'c': 0.0,
+                'Ls': 16,
+                'mass': mass,
+            }
+        )
+        set_param("16IH2", f"cg_params-{inv_type}-{inv_acc}", "maxiter")(300)
+    set_param("16IH2", f"cg_params-{inv_type}-0", "maxcycle")(1)
+    set_param("16IH2", f"cg_params-{inv_type}-1", "maxcycle")(2)
+    set_param("16IH2", f"cg_params-{inv_type}-2", "maxcycle")(50)
+set_param("16IH2", f"cg_params-0-0", "maxiter")(200)
+set_param("16IH2", f"cg_params-0-0", "maxcycle")(1)
+set_param("16IH2", f"cg_params-0-1", "maxiter")(200)
+set_param("16IH2", f"cg_params-0-1", "maxcycle")(2)
+set_param("16IH2", f"cg_params-0-2", "maxiter")(300)
+set_param("16IH2", f"cg_params-0-2", "maxcycle")(50)
+if 1 in get_param("16IH2", 'lanc_params'):
+    get_param("16IH2", 'lanc_params').pop(1)
+if 1 in get_param("16IH2", 'clanc_params'):
+    get_param("16IH2", 'clanc_params').pop(1)
+set_param("16IH2", "num_prop_rand_vol_u1")(256)
+set_param("16IH2", "prob_acc_1_rand_vol_u1")(1 / 32)
+set_param("16IH2", "prob_acc_2_rand_vol_u1")(1 / 128)
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
-set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05358, 0.07945, 0.10852, ])
-set_param("16IH2", f"cg_params-2-2", "maxiter")(200)
-set_param("16IH2", f"cg_params-2-2", "maxcycle")(50)
 
 set_param("24D", "trajs")(list(range(1000, 5100, 10)))
 set_param("24D", "quark_mass_list")([ 0.00107, 0.085, 0.07819, 0.13207, 0.19829, ])
@@ -288,11 +316,41 @@ if 1 in get_param("24D", 'clanc_params'):
 set_param("24D", "num_prop_rand_vol_u1")(256)
 set_param("24D", "prob_acc_1_rand_vol_u1")(1 / 32)
 set_param("24D", "prob_acc_2_rand_vol_u1")(1 / 128)
+set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("32Dfine", "trajs")(list(range(520, 2600, 40)))
-set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.045, 0.04635, 0.07794, 0.11333, 0.15327, ])
-set_param("32Dfine", f"cg_params-2-2", "maxiter")(200)
-set_param("32Dfine", f"cg_params-2-2", "maxcycle")(50)
+set_param("32Dfine", "trajs")(list(range(1000, 5100, 10)))
+set_param("32Dfine", "quark_mass_list")([ 0.0001, 0.045, 0.04635, 0.07794, 0.11333, 0.15327, ])
+for inv_type in range(1, len(get_param("32Dfine", "quark_mass_list"))):
+    mass = get_param("32Dfine", "quark_mass_list")[inv_type]
+    for inv_acc in [ 0, 1, 2, ]:
+        set_param("32Dfine", 'fermion_params', inv_type, inv_acc)(
+            {
+                'M5': 1.8,
+                'boundary_phases': [1.0, 1.0, 1.0, 1.0],
+                'b': 1.8333333333333333,
+                'c': 0.8333333333333333,
+                'mass': mass,
+                'Ls': 12,
+            }
+        )
+        set_param("32Dfine", f"cg_params-{inv_type}-{inv_acc}", "maxiter")(300)
+    set_param("32Dfine", f"cg_params-{inv_type}-0", "maxcycle")(1)
+    set_param("32Dfine", f"cg_params-{inv_type}-1", "maxcycle")(2)
+    set_param("32Dfine", f"cg_params-{inv_type}-2", "maxcycle")(50)
+set_param("32Dfine", f"cg_params-0-0", "maxiter")(200)
+set_param("32Dfine", f"cg_params-0-0", "maxcycle")(1)
+set_param("32Dfine", f"cg_params-0-1", "maxiter")(200)
+set_param("32Dfine", f"cg_params-0-1", "maxcycle")(2)
+set_param("32Dfine", f"cg_params-0-2", "maxiter")(300)
+set_param("32Dfine", f"cg_params-0-2", "maxcycle")(50)
+if 1 in get_param("32Dfine", 'lanc_params'):
+    get_param("32Dfine", 'lanc_params').pop(1)
+if 1 in get_param("32Dfine", 'clanc_params'):
+    get_param("32Dfine", 'clanc_params').pop(1)
+set_param("32Dfine", "num_prop_rand_vol_u1")(256)
+set_param("32Dfine", "prob_acc_1_rand_vol_u1")(1 / 32)
+set_param("32Dfine", "prob_acc_2_rand_vol_u1")(1 / 128)
+set_param("32Dfine", "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
 
