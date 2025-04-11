@@ -88,7 +88,6 @@ def run_prop_rand_vol_u1_src(
     likely strange quark mass is included as well.
     """
     fname = q.get_fname()
-    inv_type_name_list = [ "light", "strange", ] + [ f"charm-{idx}" for idx in range(8) ]
     quark_flavor_list = get_param(job_tag, "quark_flavor_list")
     quark_flavor = quark_flavor_list[inv_type]
     path_s = f"{job_tag}/prop-rand-vol-u1-{quark_flavor}/traj-{traj}"
@@ -212,8 +211,6 @@ def run_job(job_tag, traj):
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
-    has_eig = q.get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
-    #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
     get_eig_light = run_eig(job_tag, traj_gf, get_gf, is_only_load=is_only_load_eig)
@@ -260,6 +257,7 @@ def get_all_cexpr():
 
 set_param("16IH2", "trajs")(list(range(1000, 4200, 100)))
 set_param("16IH2", "quark_mass_list")([ 0.01, 0.04, 0.02963, 0.05358, 0.07945, 0.10852, ])
+set_param("16IH2", "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", "charm-3", "charm-4", ])
 for inv_type in range(1, len(get_param("16IH2", "quark_mass_list"))):
     mass = get_param("16IH2", "quark_mass_list")[inv_type]
     for inv_acc in [ 0, 1, 2, ]:
@@ -287,13 +285,14 @@ if 1 in get_param("16IH2", 'lanc_params'):
     get_param("16IH2", 'lanc_params').pop(1)
 if 1 in get_param("16IH2", 'clanc_params'):
     get_param("16IH2", 'clanc_params').pop(1)
-set_param("16IH2", "num_prop_rand_vol_u1")(256)
+set_param("16IH2", "num_prop_rand_vol_u1")(64)
 set_param("16IH2", "prob_acc_1_rand_vol_u1")(1 / 32)
 set_param("16IH2", "prob_acc_2_rand_vol_u1")(1 / 128)
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
 
 set_param("24D", "trajs")(list(range(1000, 5100, 10)))
 set_param("24D", "quark_mass_list")([ 0.00107, 0.085, 0.07819, 0.13207, 0.19829, ])
+set_param("24D", "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", "charm-3", ])
 for inv_type in range(1, len(get_param("24D", "quark_mass_list"))):
     mass = get_param("24D", "quark_mass_list")[inv_type]
     for inv_acc in [ 0, 1, 2, ]:
@@ -328,6 +327,7 @@ set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
 set_param("32Dfine", "trajs")(list(range(1000, 5100, 10)))
 set_param("32Dfine", "quark_mass_list")([ 0.0001, 0.045, 0.04635, 0.07794, 0.11333, 0.15327, ])
+set_param("32Dfine", "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", "charm-3", "charm-4", ])
 for inv_type in range(1, len(get_param("32Dfine", "quark_mass_list"))):
     mass = get_param("32Dfine", "quark_mass_list")[inv_type]
     for inv_acc in [ 0, 1, 2, ]:
