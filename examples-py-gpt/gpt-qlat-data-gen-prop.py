@@ -125,6 +125,8 @@ def run_prop_rand_vol_u1_src(
                 q.displayln_info(-1, f"WARNING: {fname}: '{tag}.lat' already exist in {qar_sp.path()}")
         if f"{tag} ; fu1" in sfw:
             q.displayln_info(-1, f"WARNING: {fname}: '{tag} ; fu1' already exist in {sfw.path()}")
+        q.check_stop()
+        q.check_time_limit()
         rsi = rs_rand_u1.split(str(idx_rand_vol_u1))
         prop_src, fu1 = q.mk_rand_vol_u1_src(geo, rsi)
         inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
