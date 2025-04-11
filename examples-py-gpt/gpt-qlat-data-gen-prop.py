@@ -154,6 +154,7 @@ def run_prop_rand_vol_u1_src(
     qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
     qar_sp.flush()
     qar_sp.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.clean_cache(q.cache_inv)
 
 ### ------
@@ -188,16 +189,18 @@ def run_quark_mass_list(job_tag, traj):
 def run_job(job_tag, traj):
     #
     traj_gf = traj
+    is_only_load_eig = True
     #
     if job_tag[:5] == "test-":
         traj_gf = 1000
+        is_only_load_eig = False
     #
     fns_produce = [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
-            f"{job_tag}/eig/traj-{traj}/metadata.txt",
+            # f"{job_tag}/eig/traj-{traj}/metadata.txt",
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/point-selection/traj-{traj}.txt",
             f"{job_tag}/field-selection/traj-{traj}.field",
@@ -209,9 +212,11 @@ def run_job(job_tag, traj):
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
+    has_eig = q.get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
+    #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
-    get_eig_light = run_eig(job_tag, traj_gf, get_gf)
+    get_eig_light = run_eig(job_tag, traj_gf, get_gf, is_only_load=is_only_load_eig)
     #
     get_f_weight = run_f_weight_uniform(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
@@ -230,6 +235,9 @@ def run_job(job_tag, traj):
     for inv_type, quark_mass in enumerate(quark_mass_list):
         if inv_type == 0:
             get_eig = get_eig_light
+            if get_eig is None:
+                # Skip light quark calculation if do not have eig.
+                continue
         else:
             get_eig = None
         run_prop_rand_vol_u1_src(

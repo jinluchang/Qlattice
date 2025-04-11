@@ -589,11 +589,13 @@ def test_eig(gf, eig, job_tag, inv_type):
             q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
 @q.timer_verbose
-def run_eig(job_tag, traj, get_gf):
+def run_eig(job_tag, traj, get_gf, *, is_only_load=False):
     if None in [ get_gf, ]:
         return None
     from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
+    if is_only_load:
+        return get_eig
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
             get_eig = compute_eig(get_gf(), job_tag, inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
@@ -605,7 +607,7 @@ def run_eig(job_tag, traj, get_gf):
         return get_eig
 
 @q.timer_verbose
-def run_eig_strange(job_tag, traj, get_gf):
+def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
     """
     if failed, return None
     if no parameter, return lambda : None
@@ -619,6 +621,8 @@ def run_eig_strange(job_tag, traj, get_gf):
         return lambda : None
     from . import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag)
+    if is_only_load:
+        return get_eig
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
             get_eig = compute_eig(get_gf(), job_tag, inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
