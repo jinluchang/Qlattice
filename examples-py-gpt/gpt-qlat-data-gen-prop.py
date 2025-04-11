@@ -235,7 +235,7 @@ def run_job(job_tag, traj):
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
     if is_test:
-        run_prop_psrc(job_tag, traj, *, inv_type=1, get_gf, get_eig=None, get_gt, get_psel, get_fsel, get_f_rand_01)
+        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=None, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
     #
     quark_mass_list = run_quark_mass_list(job_tag, traj)
     #
