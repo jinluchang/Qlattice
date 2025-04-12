@@ -545,6 +545,10 @@ def run_psel_prob_sub_sampling(
     #
     If `get_f_weight is None` then use `psel_prob * sub_sampling_rate` as prob to select.
     This is not exactly the same as use `f_weight`!
+    This is due to `psel_prob` is always less or equal to 1, `f_weight` does not have any upper limit.
+    #
+    if get_param(job_tag, "use_simple_psel_sub_sampling", default=False):
+        Will simply use the first `sub_sampling_rate * original_num` of the original points.
     """
     assert 1.0 >= sub_sampling_rate >= 0.0
     @q.lazy_call
@@ -728,11 +732,14 @@ def compute_prop_psrc_hvp_contract(
     # (2) hvp field is simply the trace of the products of gamma matrix and propagators.
     #     It does not include the any minus sign (e.g. The minus sign due to the loop).
     """
+    if (sfw_hvp is None) and (qar_hvp_ts is None):
+        return
     assert isinstance(xg_src, q.Coordinate)
     chvp_16 = q.contract_chvp_16(prop, prop)
     ld_hvp_ts = calc_hvp_sum_tslice(chvp_16)
-    qar_hvp_ts.write(f"{tag}.lat", "", ld_hvp_ts.save_str(), skip_if_exist=True)
-    qar_hvp_ts.flush()
+    if qar_hvp_ts is not None:
+        qar_hvp_ts.write(f"{tag}.lat", "", ld_hvp_ts.save_str(), skip_if_exist=True)
+        qar_hvp_ts.flush()
     if sfw_hvp is not None:
         chvp_16.save_float_from_double(sfw_hvp, tag, skip_if_exist=True)
         sfw_hvp.flush()
@@ -787,7 +794,8 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
         assert f"{tag} ; fsel-prob-psrc-prop" in sfw
         assert qar_sp.has_regular_file(f"{tag}.lat")
         assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
-        assert qar_hvp_ts.has_regular_file(f"{tag}.lat")
+        if qar_hvp_ts is not None:
+            assert qar_hvp_ts.has_regular_file(f"{tag}.lat")
         return None
     q.check_stop()
     q.check_time_limit()
@@ -818,12 +826,16 @@ def compute_prop_psrc_all(job_tag, traj, *,
     path_sp = f"{job_tag}/psel-prop-psrc-{inv_type_name}/traj-{traj}"
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     is_saving_hvp = get_param(job_tag, "run_prop_psrc", "is_saving_hvp", default=True)
+    is_saving_hvp_ts = get_param(job_tag, "run_prop_psrc", "is_saving_hvp_ts", default=True)
     if is_saving_hvp:
         sfw_hvp = q.open_fields(get_save_path(path_s_hvp + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     else:
         sfw_hvp = None
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
-    qar_hvp_ts = q.open_qar_info(get_save_path(path_hvp_ts + ".qar"), "a")
+    if is_saving_hvp_ts:
+        qar_hvp_ts = q.open_qar_info(get_save_path(path_hvp_ts + ".qar"), "a")
+    else:
+        qar_hvp_ts = None
     def comp(idx, xg_src, inv_acc):
         compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
@@ -845,11 +857,12 @@ def compute_prop_psrc_all(job_tag, traj, *,
     if sfw_hvp is not None:
         sfw_hvp.close()
     qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
-    qar_hvp_ts.write("checkpoint.txt", "", "", skip_if_exist=True)
     qar_sp.flush()
-    qar_hvp_ts.flush()
     qar_sp.close()
-    qar_hvp_ts.close()
+    if qar_hvp_ts is not None:
+        qar_hvp_ts.write("checkpoint.txt", "", "", skip_if_exist=True)
+        qar_hvp_ts.flush()
+        qar_hvp_ts.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     if sfw_hvp is not None:
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))

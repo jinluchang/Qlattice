@@ -39,6 +39,8 @@ from qlat_scripts.v1 import (
         run_fsel_from_fsel_prob,
         run_psel_from_psel_prob,
         run_prop_psrc,
+        compute_prop_psrc,
+        mk_psrc_tag,
         )
 
 import functools
@@ -74,7 +76,7 @@ load_path_list[:] = [
 
 ### ------
 
-@q.timer_verbose
+@q.timer
 def run_prop_rand_vol_u1_src(
         job_tag, traj,
         *,
@@ -161,6 +163,81 @@ def run_prop_rand_vol_u1_src(
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.clean_cache(q.cache_inv)
     q.release_lock()
+    return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
+
+### ------
+
+@q.timer_verbose
+def compute_prop_psrc_ref(
+        job_tag, traj, *,
+        inv_type, inv_type_ref, gf, gt, psel, fsel, f_rand_01, eig
+        ):
+    """
+    Compute the same set of point source propagators as the existing `inv_type_ref`.
+    """
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
+    quark_flavor = quark_flavor_list[inv_type]
+    quark_flavor_ref = quark_flavor_list[inv_type_ref]
+    path_s = f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}"
+    path_sp_ref = f"{job_tag}/psel-prop-psrc-{quark_flavor_ref}/traj-{traj}"
+    assert get_load_path(f"{path_sp_ref}/checkpoint.txt") is not None
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
+    def comp(idx, xg_src, inv_acc):
+        compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc,
+                idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
+                psel=psel, fsel=fsel, f_rand_01=f_rand_01,
+                sfw_hvp=None, qar_hvp_ts=None,
+                eig=eig)
+    prob1 = get_param(job_tag, "prob_acc_1_psrc")
+    prob2 = get_param(job_tag, "prob_acc_2_psrc")
+    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
+    for idx, xg_src in enumerate(psel):
+        for inv_acc in [ 0, 1, 2, ]:
+            tag = mk_psrc_tag(xg_src, inv_type, inv_acc)
+            if get_load_path(f"{path_sp_ref}/{tag}.lat") is None:
+                continue
+            comp(idx, xg_src, inv_acc=inv_acc)
+    sfw.close()
+    qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_sp.flush()
+    qar_sp.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+
+@q.timer
+def run_prop_psrc_ref(job_tag, traj, *, inv_type, inv_type_ref, get_gf, get_eig, get_gt, get_psel, get_fsel, get_f_rand_01):
+    fname = q.get_fname()
+    if None in [ get_gf, get_gt, get_psel, get_fsel, get_f_rand_01, ]:
+        return
+    if get_eig is None:
+        if inv_type == 0:
+            return
+        get_eig = lambda: None
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
+    quark_flavor = quark_flavor_list[inv_type]
+    if get_load_path(f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt") is not None:
+        assert get_load_path(f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt") is not None
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{quark_flavor}"):
+        return
+    gf = get_gf()
+    gt = get_gt()
+    eig = get_eig()
+    psel = get_psel()
+    fsel = get_fsel()
+    f_rand_01 = get_f_rand_01()
+    assert fsel.is_containing(psel)
+    compute_prop_psrc_ref(job_tag, traj,
+                          inv_type=inv_type,
+                          inv_type_ref=inv_type_ref,
+                          gf=gf, gt=gt,
+                          psel=psel, fsel=fsel,
+                          f_rand_01=f_rand_01,
+                          eig=eig)
+    q.clean_cache(q.cache_inv)
+    q.release_lock()
+    return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 ### ------
 
@@ -255,6 +332,10 @@ def run_job(job_tag, traj):
                 get_fsel=get_fsel,
                 get_eig=get_eig,
                 )
+    inv_type_ref = 1
+    for inv_type, quark_mass in enumerate(quark_mass_list):
+        if inv_type > inv_type_ref:
+            run_prop_psrc_ref(job_tag, traj, inv_type=inv_type, inv_type_ref=inv_type_ref, get_gf=get_gf, get_eig=None, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
 
 ### ------
 
