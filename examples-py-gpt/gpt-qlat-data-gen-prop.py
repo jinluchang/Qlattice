@@ -195,7 +195,7 @@ def compute_prop_psrc_ref(
     rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
     for idx, xg_src in enumerate(psel):
         for inv_acc in [ 0, 1, 2, ]:
-            tag = mk_psrc_tag(xg_src, inv_type, inv_acc)
+            tag = mk_psrc_tag(xg_src, inv_type_ref, inv_acc)
             if get_load_path(f"{path_sp_ref}/{tag}.lat") is None:
                 continue
             comp(idx, xg_src, inv_acc=inv_acc)
