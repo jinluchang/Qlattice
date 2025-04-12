@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 # prefix=~/qlat-build/v0.78-avx512-2 num_proc=64 srun -A qcdqedta24s -p 24s -t 600 --pty bash ./build.sh jlab24s
+#
+# prefix=~/qlat-build/v0.78-avx512-2 ./scripts/qlat-clean-build.sh
+# prefix=~/qlat-build/v0.78-avx512-2 num_proc=64 srun -A qcdqedta24s -p 24s -t 600 --pty bash ./scripts/qlat-all.sh
 
 set -e
 
