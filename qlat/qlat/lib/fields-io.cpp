@@ -631,7 +631,9 @@ Long read_skip(FieldsReader& fr, const std::string& fn)
   qfseek(fr.qfile, fr.offsets_map[fn].offset_start, SEEK_SET);
   std::string fn_r;
   const Long offset_final = read_skip_next(fr, fn_r);
-  qassert(fn == fn_r);
+  if (fn != fn_r) {
+    return -1;
+  }
   return offset_final;
 }
 
