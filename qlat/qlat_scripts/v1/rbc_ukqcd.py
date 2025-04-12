@@ -258,6 +258,8 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
         if mpi_split is not None:
             n_grouped = g.default.get_int("--grouped", 4)
+        else:
+            n_grouped = g.default.get_int("--grouped", 1)
     q.displayln_info(f"mk_gpt_inverter: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc} mpi_split={mpi_split} n_grouped={n_grouped}")
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
@@ -283,7 +285,6 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     cg_pv_f = inv.cg({"eps": eps, "maxiter": get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150)})
     if mpi_split is None or mpi_split == False:
         cg_split = cg_mp
-        n_grouped = 1
         mpi_split = None
     else:
         cg_split = inv.split(cg_mp, mpi_split=mpi_split)
