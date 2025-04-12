@@ -279,18 +279,28 @@ def run_job(job_tag, traj):
         traj_gf = 1000
         is_only_load_eig = False
     #
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
+    #
+    inv_type_ref = 1
+    quark_flavor_ref = quark_flavor_list[inv_type_ref]
+    #
     fns_produce = []
-    for quark_flavor in get_param(job_tag, "quark_flavor_list"):
+    for inv_type, quark_flavor in enumerate(quark_flavor_list):
         fns_produce += [
             f"{job_tag}/prop-rand-vol-u1-{quark_flavor}/traj-{traj}/geon-info.txt",
             f"{job_tag}/psel-prop-rand-vol-u1-{quark_flavor}/traj-{traj}/checkpoint.txt",
             ]
+        if inv_type > inv_type_ref:
+            fns_produce += [
+                f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt",
+                f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
+                ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/point-selection/traj-{traj}.txt",
             f"{job_tag}/field-selection/traj-{traj}.field",
-            f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt", # needed to determine the selection of point source propagators
+            f"{job_tag}/psel-prop-psrc-{quark_flavor_ref}/traj-{traj}/checkpoint.txt", # needed to determine the selection of point source propagators
             # f"{job_tag}/eig/traj-{traj}/metadata.txt",
             ]
     #
@@ -312,7 +322,7 @@ def run_job(job_tag, traj):
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
     if is_test:
-        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=None, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
+        run_prop_psrc(job_tag, traj, inv_type=inv_type_ref, get_gf=get_gf, get_eig=None, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
     #
     quark_mass_list = run_quark_mass_list(job_tag, traj)
     #
@@ -332,7 +342,6 @@ def run_job(job_tag, traj):
                 get_fsel=get_fsel,
                 get_eig=get_eig,
                 )
-    inv_type_ref = 1
     for inv_type, quark_mass in enumerate(quark_mass_list):
         if inv_type > inv_type_ref:
             run_prop_psrc_ref(job_tag, traj, inv_type=inv_type, inv_type_ref=inv_type_ref, get_gf=get_gf, get_eig=None, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
