@@ -62,9 +62,8 @@ is_cython = False
 load_path_list[:] = [
         "results",
         "qcddata",
-        "/w/22/decay0n2b/qcddata/qcddata1",
-        "/w/22/decay0n2b/qcddata/qcddata4",
-        "/lustre20/volatile/qcdqedta/qcddata",
+        "/w/22/pqpdf/luchang/qcddata/qcddata1",
+        "/w/22/pqpdf/luchang/qcddata/qcddata4",
         "/lustre20/volatile/pqpdf/ljin/qcddata",
         "/data1/qcddata1",
         "/data1/qcddata4",
