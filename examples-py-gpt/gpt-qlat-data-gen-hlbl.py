@@ -2072,42 +2072,43 @@ def run_job_contract(job_tag, traj):
         else:
             raise Exception(f"{fname}: inv_type={inv_type} wrong.")
     #
-    if job_tag[:5] == "test-":
-        force_load_muon_line_interpolation()
-    #
-    for inv_type in [ 0, 1, ]:
-        get_point_pairs = run_hlbl_four_point_pairs_info(
-                job_tag,
-                traj,
-                inv_type=inv_type,
-                get_psel_prob=get_psel_prob,
-                )
-        v = run_hlbl_four(
-                job_tag,
-                traj,
-                inv_type=inv_type,
-                get_psel_prob=get_psel_prob,
-                get_fsel_prob=get_fsel_prob,
-                get_point_pairs=get_point_pairs,
-                )
-        add_to_run_ret_list(v)
-    #
-    #
-    for inv_type in [ 0, 1, ]:
-        for inv_type_e in [ 0, 1, ]:
-            v = run_hlbl_two_plus_two(
+    if is_performing_hlbl_contraction:
+        #
+        if job_tag[:5] == "test-":
+            force_load_muon_line_interpolation()
+        #
+        for inv_type in [ 0, 1, ]:
+            get_point_pairs = run_hlbl_four_point_pairs_info(
                     job_tag,
                     traj,
                     inv_type=inv_type,
-                    inv_type_e=inv_type_e,
                     get_psel_prob=get_psel_prob,
-                    get_edl_light=get_edl_light,
-                    get_edl_strange=get_edl_strange,
-                    get_glb_hvp_avg_for_sub_light=get_glb_hvp_avg_for_sub_light,
-                    get_glb_hvp_avg_for_sub_strange=get_glb_hvp_avg_for_sub_strange,
-                    get_f_rand_01=get_f_rand_01,
+                    )
+            v = run_hlbl_four(
+                    job_tag,
+                    traj,
+                    inv_type=inv_type,
+                    get_psel_prob=get_psel_prob,
+                    get_fsel_prob=get_fsel_prob,
+                    get_point_pairs=get_point_pairs,
                     )
             add_to_run_ret_list(v)
+        #
+        for inv_type in [ 0, 1, ]:
+            for inv_type_e in [ 0, 1, ]:
+                v = run_hlbl_two_plus_two(
+                        job_tag,
+                        traj,
+                        inv_type=inv_type,
+                        inv_type_e=inv_type_e,
+                        get_psel_prob=get_psel_prob,
+                        get_edl_light=get_edl_light,
+                        get_edl_strange=get_edl_strange,
+                        get_glb_hvp_avg_for_sub_light=get_glb_hvp_avg_for_sub_light,
+                        get_glb_hvp_avg_for_sub_strange=get_glb_hvp_avg_for_sub_strange,
+                        get_f_rand_01=get_f_rand_01,
+                        )
+                add_to_run_ret_list(v)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
@@ -2160,7 +2161,6 @@ def run_job_contract(job_tag, traj):
     if job_tag[:5] != "test-":
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
-
 
 # ----
 
@@ -2249,6 +2249,8 @@ if __name__ == "__main__":
     is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
     is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+
+    is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) is None
 
     is_performing_auto_contraction = q.get_arg("--no-auto-contract", default=None) is None
 
