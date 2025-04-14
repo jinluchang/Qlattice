@@ -64,6 +64,7 @@ load_path_list[:] = [
         "qcddata",
         "/w/22/pqpdf/luchang/qcddata/qcddata1",
         "/w/22/pqpdf/luchang/qcddata/qcddata4",
+        "/lustre20/volatile/qcdqedta/qcddata",
         "/lustre20/volatile/pqpdf/ljin/qcddata",
         "/data1/qcddata1",
         "/data1/qcddata4",
@@ -298,7 +299,7 @@ def run_job(job_tag, traj):
             f"{job_tag}/point-selection/traj-{traj}.txt",
             f"{job_tag}/field-selection/traj-{traj}.field",
             f"{job_tag}/psel-prop-psrc-{quark_flavor_ref}/traj-{traj}/checkpoint.txt", # needed to determine the selection of point source propagators
-            # f"{job_tag}/eig/traj-{traj}/metadata.txt",
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
             ]
     #
     if is_test:
