@@ -23,19 +23,21 @@ bool obtain_lock(const std::string& path)
     Long ret = 0;
     if (0 == get_id_node()) {
       double time;
-      reads(time, qcat(path_time));
-      if (get_time() - time > 0.0 && 0 == qremove(path_time)) {
-        ret = 1;
-        qtouch(path_time, show(expiration_time) + "\n");
+      QFile qfile = qfopen(path_time, QFileMode::Read);
+      if (not qfile.null()) {
+        reads(time, qcat(qfile));
+        qfclose(qfile);
+        if (get_time() - time > 0.0) {
+          ret = 1;
+        }
       }
     }
     glb_sum(ret);
     if (ret > 0) {
-      get_lock_location() = path;
       displayln_info(
           fname +
-          ssprintf(": Lock obtained '%s' (old lock expired).", path.c_str()));
-      return true;
+          ssprintf(": Lock expired '%s'.", path.c_str()));
+      return obtain_lock(path + "-");
     } else {
       displayln_info(fname +
                      ssprintf(": Failed to obtain '%s'.", path.c_str()));
@@ -161,17 +163,19 @@ bool obtain_lock_all_node(const std::string& path)
   } else if (does_file_exist(path_time)) {
     Long ret = 0;
     double time;
-    reads(time, qcat(path_time));
-    if (get_time() - time > 0.0 && 0 == qremove(path_time)) {
-      ret = 1;
-      qtouch(path_time, show(expiration_time) + "\n");
+    QFile qfile = qfopen(path_time, QFileMode::Read);
+    if (not qfile.null()) {
+      reads(time, qcat(qfile));
+      qfclose(qfile);
+      if (get_time() - time > 0.0) {
+        ret = 1;
+      }
     }
     if (ret > 0) {
-      get_lock_location() = path;
       displayln_info(
           fname +
-          ssprintf(": Lock obtained '%s' (old lock expired).", path.c_str()));
-      return true;
+          ssprintf(": Lock expired '%s'.", path.c_str()));
+      return obtain_lock_all_node(path + "-");
     } else {
       displayln_info(fname +
                      ssprintf(": Failed to obtain '%s'.", path.c_str()));
