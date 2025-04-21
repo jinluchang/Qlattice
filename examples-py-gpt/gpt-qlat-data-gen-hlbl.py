@@ -1812,7 +1812,7 @@ def run_job(job_tag, traj):
         #
     #
     fns_produce = [
-            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            # f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             #
             # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
