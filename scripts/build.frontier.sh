@@ -10,6 +10,7 @@ set -e
 
     ./scripts/gsl.sh
     ./scripts/cuba.sh
+    # ./scripts/zlib.sh
     ./scripts/eigen.sh
     # ./scripts/perl.sh
     # ./scripts/openssl.sh

@@ -8,9 +8,10 @@ set -e
 
     ./scripts/gsl.sh
     ./scripts/cuba.sh
-    ./scripts/zlib.sh
+    # ./scripts/zlib.sh
     ./scripts/eigen.sh
-    ./scripts/openssl.sh
+    # ./scripts/perl.sh
+    # ./scripts/openssl.sh
     ./scripts/libffi.sh
     ./scripts/hdf5.sh
 
@@ -39,8 +40,8 @@ set -e
 
     ./scripts/qlat-utils.sh
     ./scripts/qlat.sh
-    ./scripts/qlat-grid.sh
     ./scripts/qlat-cps.sh
+    ./scripts/qlat-grid.sh
 
     date
 } 2>&1 | tee $prefix/log.build.txt
