@@ -15,15 +15,18 @@ if [ -z "\$num_proc" ] ; then
 fi
 # module purge
 module load PrgEnv-gnu
+#
 module load craype-x86-trento
 module load xpmem
 module load perftools-base
-module load perl
 module load openblas
+#
 module list
+#
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
+#
 export CC=cc
 export CXX=CC
 export MPICC=cc
