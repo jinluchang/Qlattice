@@ -14,6 +14,7 @@ import ratios_fit
 class Analysis:
     def __init__(self, data):
         self.data = data
+        self.data.end = 1000000
     
     # Functions for calculating decay rate =======================
     
@@ -21,8 +22,8 @@ class Analysis:
     
     def get_M_L_blocks(self, Ms, Ls, params, der=False):
         sf_ML = self.data.get_indices(params)[0]
-        sfs_M = self.data.replace_params(sf_ML, ["M", "L", "proj2"], [[M, 1.0, False] for M in Ms])
-        sfs_L = self.data.replace_params(sf_ML, ["M", "L", "proj2"], [[1.0, L, False] for L in Ls])
+        sfs_M = self.data.replace_params(sf_ML, ["M", "L", "Hlow"], [[M, 1.0, False] for M in Ms])
+        sfs_L = self.data.replace_params(sf_ML, ["M", "L", "Hlow"], [[1.0, L, False] for L in Ls])
         delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_M[i]]["M"][str(Ms[i+1])][self.data.cutoff:]), self.data.block_size)
                            for i in range(len(Ms)-1)]
         delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_L[i]]["L"][str(Ls[i+1])][self.data.cutoff:]), self.data.block_size)
@@ -100,20 +101,20 @@ class Analysis:
     
     # Calculating decay rate using fit------
     
-    def calc_gamma(self, R, correction_factor, t_full, dt):
-        return 2*np.pi*R*correction_factor/(t_full*dt)**2
+    def calc_gamma(self, ddR, correction_factor, t_full, dt):
+        return 2*np.pi*ddR*correction_factor #/(t_full*dt)**2
     
-    def calc_gamma_blocks(self, Ms, Ls, fit_start, fit_stop, params, der=False, fitobject=ratios_fit.GaussianFit):
-        R_blocks = self.get_R_blocks(Ms, Ls, params, der)
+    def calc_gamma_blocks(self, Ms, Ls, Ps, fit_start, fit_stop, params, fitobject=ratios_fit.GaussianFit):
+        ddR_blocks = self.get_ddR_blocks(Ms, Ls, Ps, params)
         fit_from_mean, fit_blocks = self.get_fit_ratios_blocks(params, start=fit_start, stop=fit_stop, fitobject=fitobject)
         #
         print(f"Correction factor estimated: {fit_from_mean}")
-        print(f"R ratio estimated: {np.mean(R_blocks)}")
+        print(f"ddR ratio estimated: {np.mean(ddR_blocks)}")
         #
-        t_full = int(params["tfull"])
+        t_full = int(params["tfull1"])
         dt = float(params["dt"])
-        gamma_blocks = jk.super_jackknife_combine_blocks([R_blocks, fit_blocks], lambda x: self.calc_gamma(x[0], x[1], t_full, dt))
-        gamma_mean = self.calc_gamma(np.mean(R_blocks), fit_from_mean, t_full, dt)
+        gamma_blocks = jk.super_jackknife_combine_blocks([ddR_blocks, fit_blocks], lambda x: self.calc_gamma(x[0], x[1], t_full, dt))
+        gamma_mean = self.calc_gamma(np.mean(ddR_blocks), fit_from_mean, t_full, dt)
         return gamma_mean, gamma_blocks
     
     def calc_gamma_w_errors(self, Ms, Ls, fit_start, fit_stop, params):
@@ -144,15 +145,16 @@ class Analysis:
         #return np.divide(blocks_FV,blocks_TV)
 
     def get_ddR_div_ddR_blocks(self, sf):
+        sf = self.data.replace_params(sf, ["Hlow", "disp"], [["True", "False"]])[0]
         t_TV = int(self.data.params[sf]["tTV"])
         t_FV = int(self.data.params[sf]["tFV"])
         t_full2 = int(self.data.params[sf]["tfull2"])
-        blocks_A = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["A"][self.data.cutoff:]), self.data.block_size)
-        blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["DD"]["B"][self.data.cutoff:]), self.data.block_size)
-        sf2 = self.data.replace_params(sf, ["disp", "tfull2", "tTV"], [["False", t_full2-1, t_TV+1]])[0]
-        blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["C"][self.data.cutoff:]), self.data.block_size)
-        blocks_D = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["DD"]["D"][self.data.cutoff:]), self.data.block_size)
-        return np.multiply(blocks_A, blocks_C), np.multiply(blocks_B*blocks_D), np.multiply(blocks_A, blocks_C) / np.multiply(blocks_B*blocks_D)
+        blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["D"]["C"][self.data.cutoff:self.data.end]), self.data.block_size)
+        blocks_D = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["D"]["D"][self.data.cutoff:self.data.end]), self.data.block_size)
+        sf2 = self.data.replace_params(sf, ["disp", "tfull2", "tTV"], [["True", t_full2+1, t_TV-1]])[0]
+        blocks_A = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["D"]["A"][self.data.cutoff:self.data.end]), self.data.block_size)
+        blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["D"]["B"][self.data.cutoff:self.data.end]), self.data.block_size)
+        return jk.super_jackknife_combine_blocks([np.divide(blocks_A, blocks_B), np.divide(blocks_C, blocks_D)], lambda x: x[0]*x[1])
 
     # Functions for plotting data ================================
     
@@ -163,37 +165,22 @@ class Analysis:
         if(get_x==None):
             get_x=sort
         sfs.sort(key=sort)
-        expS1 = []
-        expS_errs1 = []
-        xs1 = []
-        expS2 = []
-        expS_errs2 = []
-        xs2 = []
-        expS3 = []
-        expS_errs3 = []
-        xs3 = []
+        expS = []
+        expS_errs = []
+        xs = []
         for sf in sfs:
             x=get_x(sf)
             if(filter_x(x)): continue
-            blocks1, blocks2, blocks3 = self.get_ddR_div_ddR_blocks(sf)
-            dS1, err1 = jk.get_errors_from_blocks(np.mean(blocks1), blocks1)
-            dS2, err2 = jk.get_errors_from_blocks(np.mean(blocks2), blocks2)
-            dS3, err3 = jk.get_errors_from_blocks(np.mean(blocks3), blocks3)
-            expS1.append(dS1)
-            expS_errs1.append(err1)
-            xs1.append(x)
-            expS2.append(dS2)
-            expS_errs2.append(err2)
-            xs2.append(x)
-            expS3.append(dS3)
-            expS_errs3.append(err3)
-            xs3.append(x)
-        #plt.errorbar(xs1, expS1, yerr=expS_errs1, label=label)
-        #plt.errorbar(xs2, expS2, yerr=expS_errs2, label=label)
-        plt.errorbar(xs3, expS3, yerr=expS_errs3, label=label)
-        plt.title("exp(-$\\Delta S_{t_\\text{FV}\\to t_{\\text{FV}+1}})$")
+            blocks = self.get_ddR_div_ddR_blocks(sf)
+            #blocks = np.log(self.get_ddR_div_ddR_blocks(sf)) / float(self.data.params[sf]["dt"])
+            dS, err_dS = jk.get_errors_from_blocks(np.mean(blocks), blocks)
+            expS.append(dS)
+            expS_errs.append(err_dS)
+            xs.append(x)
+        plt.errorbar(xs, expS, yerr=expS_errs, label=label)
+        plt.title("$Q(t_\\text{TV}-a)/Q(t_\\text{TV})$")
         plt.xlabel(param)
-        return xs1, expS1, expS_errs1
+        return xs, expS, expS_errs
     
     def plot_expS(self, delta_action, get_x=float, fact=1.0, label="p", filter_x=lambda x: False):
         expS = []
@@ -236,8 +223,8 @@ class Analysis:
         sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.delta_actions)))
         self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L")
     
-    def plot_expS_vs_P(self, params={"proj2": False}):
-        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0" and self.data.params[x]["M"]=="1.0" and self.data.params[x]["L"]=="0.0", list(self.data.get_indices(params))))
+    def plot_expS_vs_P(self, params={"Hlow": False}):
+        sfs = list(filter(lambda x: self.data.params[x]["P"]!="1.0", list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "P", sfs, "P")
     
     #def plot_expS_vs_t_TV(self, t_limit=[-100,100], sf=""):
@@ -263,24 +250,38 @@ class Analysis:
             else:
                 ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:],axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
     
-    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, ax=None, alpha=0.7, color="red"):
+    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False):
         sfs = self.data.get_indices(params)
         for sf in sfs:
-            i=0
-            for ts in self.data.timeslices[sf][cutoff:]:
+            count = 0
+            x = np.arange(t_offset, len(self.data.timeslices[sf][0])+t_offset)
+            for i in range(len(self.data.timeslices[sf][cutoff:end])):
                 if(ax==None):
-                    if (i+1)%sampling_freq==0: plt.plot(ts, alpha=alpha, color=color)
+                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): plt.plot(x, self.data.timeslices[sf][i], alpha=alpha, color=color); count+=1;
                     if (i+1)%new_plot==0: plt.show()
                 else:
-                    if (i+1)%sampling_freq==0: ax.plot(ts, alpha=alpha, color=color)
-                i+=1
+                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, self.data.timeslices[sf][i], alpha=alpha, color=color); count+=1;
+        print(count)
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), bool(self.data.params[sf]["Hlow"]), bool(self.data.params[sf]["disp"]))
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), self.data.params[sf]["Hlow"]=="True", self.data.params[sf]["disp"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
-        V_data = np.array([[action.V(x,t)-action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
+        V_data = np.array([[action.V(x,t) - action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
+        if(fig==None or ax==None):
+            fig, ax = plt.subplots()
+        pcm = ax.pcolormesh(ts, xs, V_data, cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
+        fig.colorbar(pcm, ax=ax)
+    
+    def plot_potential_diff(self, params, params2, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
+        sf = self.data.get_indices(params)[0]
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), self.data.params[sf]["Hlow"]=="True", self.data.params[sf]["disp"]=="True")
+        sf = self.data.get_indices(params2)[0]
+        action2 = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), self.data.params[sf]["Hlow"]=="True", self.data.params[sf]["disp"]=="True")
+        xs = np.arange(xmin,xmax,0.01)
+        ts = np.arange(0, params["Nt"], 1)
+        V_data = np.array([[action.V(x,t)-action2.V(x,t) for t in ts[:-1]] for x in xs[:-1]])
         if(fig==None or ax==None):
             fig, ax = plt.subplots()
         pcm = ax.pcolormesh(ts, xs, V_data, cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
@@ -293,3 +294,13 @@ class Analysis:
                 print(i)
                 print(len(self.data.trajs[i]))
                 print(np.mean(self.data.accept_rates[i][self.data.cutoff:]))
+    
+    def autocorr(self, data):
+        N = len(data)
+        mean = np.mean(data)
+        variance = np.var(data)
+        data = np.subtract(data,mean)
+        r = np.correlate(data, data, mode = 'full')[-N:]
+        assert np.allclose(r, np.array([np.sum(np.multiply(data[:N-k],data[-(N-k):])) for k in range(N)]))
+        result = r/(variance*(np.arange(N, 0, -1)))
+        return result

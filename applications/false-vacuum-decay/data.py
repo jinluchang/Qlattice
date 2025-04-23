@@ -30,14 +30,22 @@ class Data:
                     sf = self.remove_date(sf)
                     if(sf in list(self.trajs)):
                         print(f"Already loaded ensemble with same parameters as {sf}")
-                        continue
-                    self.params[sf] = self.parse(sf)
-                    self.trajs[sf] = data["trajs"]
-                    self.accept_rates[sf] = data["accept_rates"]
-                    self.psq_list[sf] = data["psq_list"]
-                    self.phi_list[sf] = data["phi_list"]
-                    self.timeslices[sf] = data["timeslices"]
-                    self.delta_actions[sf] = data["delta_actions"]
+                        #self.trajs[sf].extend(data["trajs"])
+                        #self.accept_rates[sf].extend(data["accept_rates"])
+                        #self.psq_list[sf].extend(data["psq_list"])
+                        #self.phi_list[sf].extend(data["phi_list"])
+                        #self.timeslices[sf].extend(data["timeslices"])
+                        #for key1 in self.delta_actions[sf]:
+                        #    for key2 in self.delta_actions[sf][key1]:
+                        #        self.delta_actions[sf][key1][key2].extend(data["delta_actions"][key1][key2])
+                    else:
+                        self.params[sf] = self.parse(sf)
+                        self.trajs[sf] = data["trajs"]
+                        self.accept_rates[sf] = data["accept_rates"]
+                        self.psq_list[sf] = data["psq_list"]
+                        self.phi_list[sf] = data["phi_list"]
+                        self.timeslices[sf] = data["timeslices"]
+                        self.delta_actions[sf] = data["delta_actions"]
         
     # Functions for working with file names ======================
 
