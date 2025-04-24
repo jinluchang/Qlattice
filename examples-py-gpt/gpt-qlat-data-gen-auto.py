@@ -181,7 +181,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
-    q.displayln_info("{fname}: timer_display for parallel_map_sum")
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / total_volume
@@ -248,7 +248,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
-    q.displayln_info("{fname}: timer_display for parallel_map_sum")
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / total_volume
@@ -328,7 +328,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
-    q.displayln_info("{fname}: timer_display for parallel_map_sum")
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / (total_volume**2 / total_site[3])
@@ -435,7 +435,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
-    q.displayln_info("{fname}: timer_display for parallel_map_sum")
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / total_volume
@@ -531,7 +531,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
-    q.displayln_info("{fname}: timer_display for parallel_map_sum")
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
     total_volume = geo.total_volume
@@ -1163,7 +1163,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     q.timer_fork(0)
     res_sum = q.glb_sum(
             q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
-    q.displayln_info("{fname}: timer_display")
+    q.displayln_info(f"{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
     res_sum *= 2.0 / (total_volume / t_size) # factor of 2 account for only calculating half of the pairs
@@ -1422,7 +1422,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     q.timer_fork(0)
     res_sum = q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 1)
     res_sum = q.glb_sum(res_sum)
-    q.displayln_info("{fname}: timer_display")
+    q.displayln_info(f"{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
     res_sum *= 1.0 / (total_volume / t_size)
