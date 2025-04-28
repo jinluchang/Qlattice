@@ -2,7 +2,7 @@
 
 json_results = []
 
-from auto_contractor.operators import *
+from auto_contractor import *
 
 import functools
 import math
@@ -572,7 +572,7 @@ def force_load_muon_line_interpolation():
 # ----
 
 def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
-    if job_tag == "48I" and inv_type == 0:
+    if job_tag in [ "48I", "48I-pq", ] and inv_type == 0:
         if r_sq > r_sq_limit:
             prob = 0.0
         elif r_sq == 0:
@@ -581,7 +581,7 @@ def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
             prob = 1.0
         else:
             prob = (8.0 / np.sqrt(r_sq))**3
-    elif job_tag == "64I" and inv_type == 0:
+    elif job_tag in [ "64I", "64I-pq", ] and inv_type == 0:
         if r_sq > r_sq_limit:
             prob = 0.0
         elif r_sq == 0:
@@ -1802,7 +1802,7 @@ def run_hlbl_two_plus_two(
 # ----
 
 @q.timer_verbose
-def run_job(job_tag, traj):
+def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
     #
     traj_gf = traj
@@ -2197,25 +2197,29 @@ set_param("test-4nt8", "trajs", value=[ 1000, 2000, ])
 set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
 set_param("24D", "trajs", value=list(range(2000, 3000, 10)))
 set_param("48I", "trajs", value=list(range(975, 2185, 10)) + list(range(1102, 1502, 10)))
-set_param("64I", "trajs", value=list(range(1200, 3680, 40)))
+set_param("64I", "trajs", value=list(range(1200, 3680, 20)))
+set_param("64I-pq", "trajs", value=list(range(1200, 3680, 200)))
 
 set_param("test-4nt8", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("test-8nt16", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("24D", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("48I", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("64I", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("64I-pq", "hlbl_four_prob_scaling_factor", value=1.0)
 
 set_param("test-4nt8", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("test-8nt16", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("24D", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("48I", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("64I", "hlbl_four_prob_scaling_factor_strange", value=1.0)
+set_param("64I-pq", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 
 set_param("test-4nt8", "hlbl_four_num_chunk", value=3)
 set_param("test-8nt16", "hlbl_four_num_chunk", value=6)
 set_param("24D", "hlbl_four_num_chunk", value=512)
 set_param("48I", "hlbl_four_num_chunk", value=1024)
 set_param("64I", "hlbl_four_num_chunk", value=2048)
+set_param("64I-pq", "hlbl_four_num_chunk", value=2048)
 
 # larger value means less computation
 set_param("test-4nt8", "hlbl_four_contract_sparse_ratio", value=2.0)
@@ -2223,18 +2227,21 @@ set_param("test-8nt16", "hlbl_four_contract_sparse_ratio", value=2.0)
 set_param("24D", "hlbl_four_contract_sparse_ratio", value=10.0)
 set_param("48I", "hlbl_four_contract_sparse_ratio", value=20.0)
 set_param("64I", "hlbl_four_contract_sparse_ratio", value=20.0)
+set_param("64I-pq", "hlbl_four_contract_sparse_ratio", value=20.0)
 
 set_param("test-4nt8", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
 set_param("test-8nt16", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
 set_param("24D", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-4)
 set_param("48I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
 set_param("64I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
+set_param("64I-pq", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
 
 set_param("test-4nt8", "hlbl_two_plus_two_num_chunk", value=3)
 set_param("test-8nt16", "hlbl_two_plus_two_num_chunk", value=6)
 set_param("24D", "hlbl_two_plus_two_num_chunk", value=4)
 set_param("48I", "hlbl_two_plus_two_num_chunk", value=8)
 set_param("64I", "hlbl_two_plus_two_num_chunk", value=8)
+set_param("64I-pq", "hlbl_two_plus_two_num_chunk", value=8)
 
 # ----
 
@@ -2277,7 +2284,7 @@ if __name__ == "__main__":
         for traj in get_param(job_tag, "trajs"):
             if is_performing_inversion:
                 q.check_time_limit()
-                run_job(job_tag, traj)
+                run_job_inversion(job_tag, traj)
         if is_performing_contraction:
             for inv_type in [ 0, 1, ]:
                 q.check_time_limit()

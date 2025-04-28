@@ -32,6 +32,7 @@ from . import p_48I
 from . import p_64I
 from . import p_96I
 
+from . import p_64I_pq
 from . import p_64I_b2p13
 
 from . import p_24IH01

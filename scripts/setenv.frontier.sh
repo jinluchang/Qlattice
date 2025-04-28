@@ -2,6 +2,8 @@
 
 name=setenv-frontier
 
+# https://github.com/paboyle/Grid/blob/develop/systems/Frontier/benchmarks/bench2.slurm
+
 source qcore/set-prefix.sh
 
 { time {

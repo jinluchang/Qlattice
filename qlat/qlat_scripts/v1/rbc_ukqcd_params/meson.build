@@ -24,6 +24,7 @@ pysources = files(
   'p_32IH3.py',
   'p_48I.py',
   'p_64I.py',
+  'p_64I_pq.py',
   'p_64I_b2p13.py',
   'p_96I.py',
   'p_test.py',
