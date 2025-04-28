@@ -2187,6 +2187,13 @@ set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "a_inv_gev")(1.73)
 set_param("test-4nt8", "zz_vv")(0.71)
 
+set_param("64I-pq", f"cg_params-0-0", "maxiter")(100)
+set_param("64I-pq", f"cg_params-0-1", "maxiter")(100)
+set_param("64I-pq", f"cg_params-0-2", "maxiter")(100)
+set_param("64I-pq", f"cg_params-0-0", "maxcycle")(4)
+set_param("64I-pq", f"cg_params-0-1", "maxcycle")(8)
+set_param("64I-pq", f"cg_params-0-2", "maxcycle")(150)
+
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)
 set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
