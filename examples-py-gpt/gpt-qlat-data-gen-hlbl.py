@@ -1806,8 +1806,8 @@ def run_auto_contraction(
         job_tag, traj,
         *,
         get_get_prop,
-        get_psel_prob
-        get_fsel_prob
+        get_psel_prob,
+        get_fsel_prob,
         ):
     fname = q.get_fname()
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
@@ -2189,7 +2189,10 @@ def run_job_contract(job_tag, traj):
             )
     #
     if is_performing_auto_contraction:
-        v = run_auto_contraction(job_tag, traj)
+        v = run_auto_contraction(
+                job_tag, traj,
+                get_get_prop=get_get_prop, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob,
+                )
         add_to_run_ret_list(v)
     #
     if is_performing_auto_contraction:
