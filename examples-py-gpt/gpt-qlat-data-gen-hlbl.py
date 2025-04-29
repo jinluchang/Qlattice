@@ -1961,7 +1961,7 @@ def run_job_inversion(job_tag, traj):
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if is_test:
+    if not is_test:
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
@@ -2177,7 +2177,7 @@ def run_job_contract(job_tag, traj):
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if is_test:
+    if not is_test:
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
