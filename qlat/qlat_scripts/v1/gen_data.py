@@ -21,27 +21,47 @@ def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=No
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_full_1(inv, src, *, tag, sfw):
-    sol = inv * src
-    q.qnorm_field(sol).save_double(sfw, tag + " ; qnorm_field")
-    sol.save_double(sfw, tag, skip_if_exist=True)
-    sfw.flush()
-    return sol
-
-@q.timer
-def compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
-                           idx, sfw, eig):
-    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    if tag in sfw:
-        return None
+def compute_prop_wsrc_1(
+        job_tag, traj,
+        *,
+        gf, gt, eig,
+        idx, tslice,
+        inv_type, inv_acc,
+        ):
     q.check_stop()
     q.check_time_limit()
-    q.displayln_info(0, f"compute_prop_wsrc_full: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
+    fname = q.get_fname()
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+    q.displayln_info(0, f"{fname}: {job_tag}/{traj} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     src = q.mk_wall_src(geo, tslice)
-    prop = compute_prop_full_1(inv, src, tag=tag, sfw=sfw)
+    sol = inv * src
+    return sol
+
+@q.timer
+def compute_prop_wsrc_full(
+        job_tag, traj,
+        *,
+        gf, gt, eig,
+        idx, tslice,
+        inv_type, inv_acc,
+        sfw,
+        ):
+    fname = q.get_fname()
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+    if tag in sfw:
+        return None
+    prop = compute_prop_wsrc_1(
+            job_tag, traj,
+            gf=gf, gt=gt, eig=eig,
+            idx=idx, tslice=tslice,
+            inv_type=inv_type, inv_acc=inv_acc,
+            )
+    q.qnorm_field(prop).save_double(sfw, tag + " ; qnorm_field")
+    prop.save_double(sfw, tag, skip_if_exist=True)
+    sfw.flush()
 
 @q.timer_verbose
 def compute_prop_wsrc_full_all(job_tag, traj, *,
@@ -54,8 +74,12 @@ def compute_prop_wsrc_full_all(job_tag, traj, *,
         for p in wi:
             idx, tslice, inv_type_p, inv_acc_p=p
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
-                compute_prop_wsrc_full(gf, gt, tslice, job_tag, inv_type, inv_acc,
-                                       idx=idx, sfw=sfw, eig=eig)
+                compute_prop_wsrc_full(
+                        job_tag, traj,
+                        gf=gf, gt=gt, eig=eig,
+                        idx=idx, tslice=tslice, inv_type=inv_type, inv_acc=inv_acc,
+                        sfw=sfw,
+                        )
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
@@ -630,7 +654,12 @@ def save_prop_wsrc_sparse(job_tag, traj, *, load_prop, tslice, inv_type, inv_acc
     sfw.flush()
 
 @q.timer_verbose
-def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel, get_wi):
+def run_prop_wsrc_sparse(
+        job_tag, traj,
+        *,
+        inv_type, get_gt, get_psel, get_fsel, get_wi,
+        is_performing_inversion_if_no_full_prop_available=False,
+        ):
     fname = q.get_fname()
     if None in [ get_gt, get_psel, get_fsel, ]:
         return
@@ -640,46 +669,61 @@ def run_prop_wsrc_sparse(job_tag, traj, *, inv_type, get_gt, get_psel, get_fsel,
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
     if get_load_path(path_f) is None:
-        q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
-        return
+        if not is_performing_inversion_if_no_full_prop_available:
+            q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
+            return
     if get_load_path(path_s + "/geon-info.txt") is not None:
+        assert get_load_path(path_sp + "/checkpoint.txt") is not None
         return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
-        total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        geo = q.Geometry(total_site)
-        gt = get_gt()
-        fsel = get_fsel()
-        psel = get_psel()
-        wi = get_wi()
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
+        return
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site)
+    gt = get_gt()
+    fsel = get_fsel()
+    psel = get_psel()
+    wi = get_wi()
+    if get_load_path(path_f) is not None:
         sfr = q.open_fields(get_load_path(path_f), "r")
-        available_tags = sfr.list()
-        q.displayln_info(0, f"available_tags={available_tags}")
-        sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
-        qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
-        for idx, tslice, inv_type_wi, inv_acc in wi:
-            if inv_type_wi != inv_type:
-                continue
-            def load_prop():
-                tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-                prop = q.Prop(geo)
+    else:
+        assert is_performing_inversion_if_no_full_prop_available
+        sfr = None
+    available_tags = sfr.list()
+    q.displayln_info(0, f"available_tags={available_tags}")
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
+    for idx, tslice, inv_type_wi, inv_acc in wi:
+        if inv_type_wi != inv_type:
+            continue
+        def load_prop():
+            tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+            prop = q.Prop(geo)
+            if sfr is not None:
                 if tag not in sfr:
                     raise Exception(f"{tag} not in {sfr.list()}")
                 prop.load_double(sfr, tag)
-                return prop
-            save_prop_wsrc_sparse(
-                    job_tag, traj,
-                    load_prop=load_prop,
-                    tslice=tslice, inv_type=inv_type, inv_acc=inv_acc,
-                    sfw=sfw, qar_sp=qar_sp,
-                    psel=psel, fsel=fsel,
-                    )
-        sfw.close()
-        qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
-        qar_sp.flush()
-        qar_sp.close()
-        q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-        q.release_lock()
-        return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
+            else:
+                prop = compute_prop_wsrc_1(
+                        job_tag, traj,
+                        gf=gf, gt=gt, eig=eig,
+                        idx=idx, tslice=tslice,
+                        inv_type=inv_type, inv_acc=inv_acc,
+                        )
+            return prop
+        save_prop_wsrc_sparse(
+                job_tag, traj,
+                load_prop=load_prop,
+                tslice=tslice, inv_type=inv_type, inv_acc=inv_acc,
+                sfw=sfw, qar_sp=qar_sp,
+                psel=psel, fsel=fsel,
+                )
+    sfw.close()
+    qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_sp.flush()
+    qar_sp.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.release_lock()
+    return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
 # -----------------------------------------------------------------------------
 
