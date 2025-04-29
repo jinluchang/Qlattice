@@ -338,7 +338,7 @@ def get_all_cexpr():
 
 # ----
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_job_global_hvp_average(job_tag, *, inv_type):
     """
     get_glb_hvp_avg_light = run_job_global_hvp_average(job_tag, inv_type=0)
@@ -1089,7 +1089,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     q.timer_display()
     q.timer_merge()
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
@@ -1686,7 +1686,7 @@ def run_hlbl_two_plus_two_chunk(
     q.timer_display()
     q.timer_merge()
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_hlbl_two_plus_two(
         job_tag,
         traj,
@@ -1801,6 +1801,36 @@ def run_hlbl_two_plus_two(
 
 # ----
 
+@q.timer(is_timer_fork=True)
+def run_auto_contraction(
+        job_tag, traj,
+        *,
+        get_get_prop,
+        get_psel_prob
+        get_fsel_prob
+        ):
+    fname = q.get_fname()
+    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
+    if get_load_path(fn_checkpoint) is not None:
+        q.displayln_info(0, f"{fname}: '{fn_checkpoint}' exists.")
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        return
+    get_prop = get_get_prop()
+    assert get_prop is not None
+    # ADJUST ME
+    auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    #
+    q.qtouch_info(get_save_path(fn_checkpoint))
+    q.release_lock()
+    v = [ f"{fname} {job_tag} {traj} done", ]
+    return v
+
+# ----
+
 @q.timer_verbose
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
@@ -1812,7 +1842,14 @@ def run_job_inversion(job_tag, traj):
         #
     #
     fns_produce = [
-            # f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            #
+            f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
+            f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
             #
             # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
@@ -1967,17 +2004,36 @@ def run_job_contract(job_tag, traj):
         traj_gf = 1000
         #
     #
+    is_performing_auto_contraction = get_param(job_tag, "is-performing-auto-contraction", default=True)
+    #
     fn_checkpoint_auto_contract = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     #
     fns_produce = [
-            fn_checkpoint_auto_contract,
-            f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
-            f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
-            f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results-brief.pickle",
-            f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results-brief.pickle",
-            f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
-            f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
             ]
+    if is_performing_contraction:
+        fns_produce += [
+                f"{job_tag}/hlbl/edl/traj-{traj}/edl-light.lat",
+                f"{job_tag}/hlbl/edl/traj-{traj}/edl-strange.lat",
+                f"{job_tag}/hlbl/sub-hvp-light/traj-{traj}/geon-info.txt",
+                f"{job_tag}/hlbl/sub-hvp-strange/traj-{traj}/geon-info.txt",
+                f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_light.field",
+                f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_strange.field",
+                f"{job_tag}/hlbl/check-hvp-avg-light/traj-{traj}.txt",
+                f"{job_tag}/hlbl/check-hvp-avg-strange/traj-{traj}.txt",
+                ]
+    if is_performing_auto_contraction:
+        fns_produce += [
+                f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+                ]
+    if is_performing_hlbl_contraction:
+        fns_produce += [
+                f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
+                ]
     fns_need = [
             #
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
@@ -2043,7 +2099,7 @@ def run_job_contract(job_tag, traj):
     #
     get_wi = run_wi(job_tag, traj)
     #
-    get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
+    get_f_weight = run_f_weight_load(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
@@ -2110,6 +2166,7 @@ def run_job_contract(job_tag, traj):
                         )
                 add_to_run_ret_list(v)
     #
+    #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
             get_gt=get_gt,
@@ -2131,28 +2188,15 @@ def run_job_contract(job_tag, traj):
                 ],
             )
     #
-    if is_performing_auto_contraction and q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
-        q.timer_fork()
-        get_prop = get_get_prop()
-        if get_prop is not None:
-            # ADJUST ME
-            auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-            #
-            json_results.append((f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
-            json_results.append((f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
-            json_results.append((f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()),))
-            json_results.append((f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()),))
-            #
-            q.qtouch_info(get_save_path(fn_checkpoint_auto_contract))
-            q.displayln_info("timer_display for runjob")
-        q.release_lock()
-        q.timer_display()
-        q.timer_merge()
-        v = [ f"{fname} {job_tag} {traj} done", ]
+    if is_performing_auto_contraction:
+        v = run_auto_contraction(job_tag, traj)
         add_to_run_ret_list(v)
+    #
+    if is_performing_auto_contraction:
+        json_results.append((f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
+        json_results.append((f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
+        json_results.append((f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()),))
+        json_results.append((f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()),))
     #
     q.clean_cache()
     #
@@ -2187,6 +2231,12 @@ set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "a_inv_gev")(1.73)
 set_param("test-4nt8", "zz_vv")(0.71)
 
+set_param("24D", "lanc_params", 1, value=None)
+set_param("24D", "clanc_params", 1, value=None)
+set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
+set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+
 set_param("64I-pq", f"cg_params-0-0", "maxiter")(100)
 set_param("64I-pq", f"cg_params-0-1", "maxiter")(100)
 set_param("64I-pq", f"cg_params-0-2", "maxiter")(100)
@@ -2194,11 +2244,10 @@ set_param("64I-pq", f"cg_params-0-0", "maxcycle")(4)
 set_param("64I-pq", f"cg_params-0-1", "maxcycle")(8)
 set_param("64I-pq", f"cg_params-0-2", "maxcycle")(150)
 
-set_param("24D", "lanc_params", 1, value=None)
-set_param("24D", "clanc_params", 1, value=None)
-set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
-set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
-set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("64I-pq", "is-performing-inversion-if-no-full-prop-available")(True)
+
+set_param("64I", "is-performing-auto-contraction")(False)
+set_param("64I-pq", "is-performing-auto-contraction")(False)
 
 set_param("test-4nt8", "trajs", value=[ 1000, 2000, ])
 set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
@@ -2252,23 +2301,23 @@ set_param("64I-pq", "hlbl_two_plus_two_num_chunk", value=8)
 
 # ----
 
+##################### CMD options #####################
+
+job_tags = q.get_arg("--job_tags", default="").split(",")
+
+is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
+
+is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+
+is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) is None
+
+#######################################################
+
+# ----
+
 if __name__ == "__main__":
 
     qg.begin_with_gpt()
-
-    ##################### CMD options #####################
-
-    job_tags = q.get_arg("--job_tags", default="").split(",")
-
-    is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
-
-    is_performing_contraction = q.get_arg("--no-contract", default=None) is None
-
-    is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) is None
-
-    is_performing_auto_contraction = q.get_arg("--no-auto-contract", default=None) is None
-
-    #######################################################
 
     job_tags_default = [
             "test-4nt8",

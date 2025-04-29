@@ -314,6 +314,32 @@ def run_f_weight_uniform(job_tag, traj):
     return ret
 
 @q.timer_verbose
+def run_f_weight_load(job_tag, traj):
+    """
+    return get_f_weight
+        f_weight = get_f_weight()
+    #
+    `f_weight` is of type `q.FieldRealD(geo, 1)`.
+    #
+    get_f_weight = run_f_weight_load(job_tag, traj)
+    #
+    Just perform loading. Fail is data does not exist.
+    """
+    fname = q.get_fname()
+    fn_f_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_f_weight():
+        f_weight = q.FieldRealD()
+        total_bytes = f_weight.load_double(get_load_path(fn_f_weight))
+        assert total_bytes > 0
+        return f_weight
+    ret = get_f_weight
+    if get_load_path(fn_f_weight) is not None:
+        return ret
+    raise Exception(f"{fname}: 'fn_f_weight' does not exist.")
+
+@q.timer_verbose
 def run_f_rand_01(job_tag, traj):
     """
     return get_f_rand_01
@@ -658,7 +684,6 @@ def run_prop_wsrc_sparse(
         job_tag, traj,
         *,
         inv_type, get_gt, get_psel, get_fsel, get_wi,
-        is_performing_inversion_if_no_full_prop_available=False,
         ):
     fname = q.get_fname()
     if None in [ get_gt, get_psel, get_fsel, ]:
@@ -668,8 +693,9 @@ def run_prop_wsrc_sparse(
     path_f = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
+    is_performing_inversion = get_param(job_tag, "is-performing-inversion-if-no-full-prop-available", default=False)
     if get_load_path(path_f) is None:
-        if not is_performing_inversion_if_no_full_prop_available:
+        if not is_performing_inversion:
             q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
             return
     if get_load_path(path_s + "/geon-info.txt") is not None:
@@ -686,7 +712,7 @@ def run_prop_wsrc_sparse(
     if get_load_path(path_f) is not None:
         sfr = q.open_fields(get_load_path(path_f), "r")
     else:
-        assert is_performing_inversion_if_no_full_prop_available
+        assert is_performing_inversion
         sfr = None
     available_tags = sfr.list()
     q.displayln_info(0, f"available_tags={available_tags}")

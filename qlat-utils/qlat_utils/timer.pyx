@@ -273,8 +273,11 @@ class TimerFork:
         set_verbose_level(self.orig_verbose_level)
         if self.show_display == True:
             timer_display("TimerFork")
-        elif isinstance(self.show_display, (int, float,)) and get_total_time() >= self.show_display:
-            timer_display("TimerForkAuto")
+        elif isinstance(self.show_display, (int, float,)):
+            if get_total_time() >= self.show_display:
+                timer_display("TimerForkAuto")
+        else:
+            raise Exception(f"TimerFork: show_display={self.show_display}.")
         timer_merge()
 
 ### -------------------------------------------------------------------
