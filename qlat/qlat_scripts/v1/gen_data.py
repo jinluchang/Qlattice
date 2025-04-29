@@ -83,7 +83,7 @@ def compute_prop_wsrc_full_all(job_tag, traj, *,
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_wi):
     fname = q.get_fname()
     if None in [ get_gf, get_gt, ]:
@@ -227,7 +227,7 @@ def compute_f_weight_from_wsrc_prop_full(job_tag, traj, *,
     f_weight_final.save_double(get_save_path(fn_f_weight))
     q.displayln_info(-1, fname, "field-selection-weight final", f_weight_final.glb_sum_tslice()[:].ravel())
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     """
     return get_f_weight
@@ -679,7 +679,7 @@ def save_prop_wsrc_sparse(job_tag, traj, *, load_prop, tslice, inv_type, inv_acc
     qar_sp.flush()
     sfw.flush()
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_prop_wsrc_sparse(
         job_tag, traj,
         *,
@@ -937,7 +937,7 @@ def compute_prop_psrc_all(job_tag, traj, *,
     if sfw_hvp is not None:
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_f_rand_01):
     fname = q.get_fname()
     if None in [ get_gf, get_gt, get_psel, get_fsel, get_f_rand_01, ]:
@@ -1000,7 +1000,7 @@ def compute_hvp_average(job_tag, traj, *, inv_type, psel_prob, data_path, geo):
     hvp_average *= 1 / geo.total_volume
     return hvp_average
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
     """
     return get_hvp_average()
@@ -1090,7 +1090,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None):
     fname = q.get_fname()
     if None in [ get_gf, get_fsel, ]:
@@ -1199,7 +1199,7 @@ def compute_prop_smear_all(job_tag, traj, *,
     qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
     fname = q.get_fname()
     if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, ]:
