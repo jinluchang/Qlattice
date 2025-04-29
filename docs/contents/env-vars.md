@@ -82,7 +82,7 @@
 
   Maximum number of times to always show function start or stop.
 
-  Default is `10`.
+  Default is `2`.
 
 - `q_timer_max_func_name_len`
 

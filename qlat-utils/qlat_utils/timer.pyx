@@ -252,7 +252,8 @@ class TimerFork:
 
     def __init__(self,
                  *,
-                 show_display=True,
+                 show_display=10,
+                 display_tag="TimerFork",
                  verbose=None,
                  max_call_times_for_always_show_info=-1,
                  ):
@@ -260,6 +261,7 @@ class TimerFork:
         self.show_display = show_display
         self.orig_verbose_level = get_verbose_level()
         self.verbose_level = verbose
+        self.display_tag = display_tag
 
     def __enter__(self):
         timer_fork(self.max_call_times_for_always_show_info)
@@ -271,13 +273,15 @@ class TimerFork:
         assert exc_value is None
         assert traceback is None
         set_verbose_level(self.orig_verbose_level)
-        if self.show_display == True:
-            timer_display("TimerFork")
+        assert isinstance(self.display_tag, str)
+        if isinstance(self.show_display, bool):
+            if self.show_display:
+                timer_display(self.display_tag)
         elif isinstance(self.show_display, (int, float,)):
             if get_total_time() >= self.show_display:
-                timer_display("TimerForkAuto")
+                timer_display(self.display_tag + "(auto)")
         else:
-            raise Exception(f"TimerFork: show_display={self.show_display}.")
+            raise Exception(f"TimerFork: show_display='{self.show_display}'.")
         timer_merge()
 
 ### -------------------------------------------------------------------

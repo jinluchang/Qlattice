@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 
 json_results = []
+check_eps = 5e-5
+
+def json_results_append(*args):
+    q.displayln_info(r"//------------------------------------------------------------\\")
+    q.displayln_info(-1, *args)
+    q.displayln_info(r"\\------------------------------------------------------------//")
+    json_results.append(args)
 
 from auto_contractor import *
 
@@ -64,7 +71,7 @@ def get_cexpr_meson_corr():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
@@ -108,13 +115,10 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         values = np.zeros((total_site[3], len(expr_names),), dtype=complex)
         for val, t in val_list:
             values[t] += val
-        return q.glb_sum(values.transpose(1, 0))
+        return values.transpose(1, 0)
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
     res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / total_site[3]
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
@@ -125,7 +129,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     ld.save(get_save_path(fn))
     json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
@@ -171,12 +175,8 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
             values[t] += val
         return values.transpose(1, 0)
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
-    q.displayln_info("timer_display for auto_contract_meson_corr_psnk")
-    q.timer_display()
-    q.timer_merge()
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / total_volume
     q.displayln_info(0, res_sum[0])
     ld = q.mk_lat_data([
@@ -187,7 +187,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     ld.save(get_save_path(fn))
     json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
@@ -236,12 +236,8 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
             values[t] += val
         return values.transpose(1, 0)
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size))
-    q.displayln_info("timer_display for auto_contract_meson_corr_psrc")
-    q.timer_display()
-    q.timer_merge()
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / total_volume
     q.displayln_info(0, res_sum[0])
     ld = q.mk_lat_data([
@@ -252,7 +248,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     ld.save(get_save_path(fn))
     json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
@@ -314,12 +310,8 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
         return values.transpose(2, 0, 1)
-    q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
-    q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
-    q.timer_display()
-    q.timer_merge()
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / (total_volume**2 / total_site[3])
     q.displayln_info(res_sum[0].sum(1))
     ld = q.mk_lat_data([
@@ -372,7 +364,6 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{fname}-{inv_type_name}"):
         return None
-    q.timer_fork()
     #
     @q.timer_verbose
     def compute_glb_hvp_average():
@@ -424,11 +415,9 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     #
     q.release_lock()
     q.clean_cache()
-    q.timer_display()
-    q.timer_merge()
     return ret
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_hvp_avg, get_hvp_average):
     """
     get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, inv_type=inv_type, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
@@ -459,7 +448,6 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
-    q.timer_fork()
     glb_hvp_avg_trajs, glb_hvp_avg = get_glb_hvp_avg()
     glb_hvp_avg_for_sub = glb_hvp_avg.copy()
     if traj not in glb_hvp_avg_trajs:
@@ -476,8 +464,6 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
             glb_hvp_avg_for_sub *= 1.0 / (num_trajs - 1.0)
     glb_hvp_avg_for_sub.save_float_from_double(get_save_path(fn))
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
     return ret
 
 # ----
@@ -518,7 +504,7 @@ def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
 
 # ----
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def load_or_compute_muon_line_interpolation():
     """
     Actually load (compute if data does not exist) muon_line_interpolation.
@@ -712,7 +698,7 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     q.displayln_info(f"mk_hlbl_four_point_pairs: {job_tag} {traj} {inv_type_name} len(point_pairs)={len(point_pairs)}")
     return point_pairs
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
     """
     return get_point_pairs
@@ -731,7 +717,6 @@ def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
         return ret
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return None
-    q.timer_fork()
     point_pairs = mk_hlbl_four_point_pairs(
             job_tag, traj,
             inv_type=inv_type,
@@ -739,8 +724,6 @@ def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
             )
     q.save_pickle_obj(point_pairs, get_save_path(fn))
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
     return ret
 
 def get_hlbl_clbl_info_ref_tags(job_tag):
@@ -803,7 +786,7 @@ def contract_hlbl_four_ama(
     ama_val = ama_apply(f, ama_sc_xy, ama_sc_yx, ama_cm_xy, ama_cm_yx)
     return (ama_extract(ama_val, is_sloppy=False), ama_extract(ama_val, is_sloppy=True),)
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, prop_cache, id_chunk_list, num_chunk):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
@@ -825,8 +808,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     assert len(id_chunk_list) > 0
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{id_chunk_list[0]}-{num_chunk}"):
         return
-    q.timer_fork()
     #
+    q.sync_node()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
@@ -1084,10 +1067,9 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                     show_lslt(labels, sum([ d["lslt"] for d in pairs_data ]) / len(point_pairs_chunk) * len(point_pairs)))
         q.save_pickle_obj(pairs_data, get_save_path(mk_fn(id_chunk)))
     sfr.close()
+    q.sync_node()
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
 
 @q.timer(is_timer_fork=True)
 def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs):
@@ -1129,7 +1111,6 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
     q.sync_node()
-    q.timer_fork()
     labels = contract_hlbl_four_labels(job_tag)
     pairs_data_n_pairs = 0
     pairs_data_lslt_sum = 0
@@ -1181,8 +1162,6 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
     q.sync_node()
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
     return [ f"{fname}: {job_tag} {traj} {inv_type_name} done.", ]
 
 # ----
@@ -1272,6 +1251,7 @@ def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_
         return hvp_sum_tslice
     return get_hvp_sum_tslice
 
+@q.timer
 def get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice):
     """
     edl[k, nu] is complex
@@ -1302,7 +1282,7 @@ def get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice):
     edl = (-1 * 0.5j * -1j) * edl
     return edl
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     """
     edl stand for external (photon) disconnected loop
@@ -1338,7 +1318,6 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return None
-    q.timer_fork()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     psel = get_psel()
     hvp_sum_tslice = get_hvp_sum_tslice()
@@ -1359,11 +1338,9 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
         1e-3,
         ))
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
     return ret
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tslice, get_hvp_average):
     fname = q.get_fname()
     inv_type_name_list = [ "light", "strange", ]
@@ -1424,7 +1401,7 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
         ))
     q.qtouch_info(get_save_path(fn))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_hlbl_sub_hvp_sfield(
         job_tag,
         traj,
@@ -1453,7 +1430,6 @@ def run_hlbl_sub_hvp_sfield(
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
-    q.timer_fork()
     #
     sfw = q.open_fields(get_save_path(fn + ".acc"), "w", q.Coordinate([ 1, 2, 2, 2, ]))
     # qar_sp = q.open_qar_info(get_save_path(fn), "a")
@@ -1522,10 +1498,8 @@ def run_hlbl_sub_hvp_sfield(
     q.qrename_info(get_save_path(fn + ".acc"), get_save_path(fn))
     #
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_hlbl_two_plus_two_chunk(
         job_tag,
         traj,
@@ -1555,7 +1529,6 @@ def run_hlbl_two_plus_two_chunk(
     q.check_time_limit()
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}-{id_chunk}_{num_chunk}"):
         return
-    q.timer_fork()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
@@ -1683,8 +1656,6 @@ def run_hlbl_two_plus_two_chunk(
                 f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
 
 @q.timer(is_timer_fork=True)
 def run_hlbl_two_plus_two(
@@ -1758,7 +1729,6 @@ def run_hlbl_two_plus_two(
         return
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-{inv_type_e_name}"):
         return
-    q.timer_fork()
     labels = q.contract_two_plus_two_pair_labels()
     points_data = []
     for fn_chunk in fn_chunk_list:
@@ -1795,8 +1765,6 @@ def run_hlbl_two_plus_two(
     q.sync_node()
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
-    q.timer_display()
-    q.timer_merge()
     return [ f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} done.", ]
 
 # ----
@@ -1831,15 +1799,18 @@ def run_auto_contraction(
 
 # ----
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
     #
+    is_test = job_tag[:5] == "test-"
+    #
     traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
+    is_only_load_eig = True
+    #
+    if is_test:
         traj_gf = 1000
-        #
+        is_only_load_eig = False
     #
     fns_produce = [
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
@@ -1876,20 +1847,20 @@ def run_job_inversion(job_tag, traj):
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             ]
-    if job_tag[:5] == "test-":
+    has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
+    fns_need = [
+            (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+            # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
+            # f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
+            # f"{job_tag}/point-selection/traj-{traj}.txt",
+            # f"{job_tag}/field-selection/traj-{traj}.field",
+            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+            ]
+    #
+    if is_test:
         has_eig = True
         fns_need = []
-    else:
-        has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
-        fns_need = [
-                (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
-                # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
-                # f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-                # f"{job_tag}/point-selection/traj-{traj}.txt",
-                # f"{job_tag}/field-selection/traj-{traj}.field",
-                # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-                # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-                ]
     #
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -1990,19 +1961,20 @@ def run_job_inversion(job_tag, traj):
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if job_tag[:5] != "test-":
+    if is_test:
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_contract(job_tag, traj):
     fname = q.get_fname()
     #
+    is_test = job_tag[:5] == "test-"
+    #
     traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
+    #
+    if is_test:
         traj_gf = 1000
-        #
     #
     is_performing_auto_contraction = get_param(job_tag, "is-performing-auto-contraction", default=True)
     #
@@ -2130,7 +2102,7 @@ def run_job_contract(job_tag, traj):
     #
     if is_performing_hlbl_contraction:
         #
-        if job_tag[:5] == "test-":
+        if is_test:
             force_load_muon_line_interpolation()
         #
         for inv_type in [ 0, 1, ]:
@@ -2205,7 +2177,7 @@ def run_job_contract(job_tag, traj):
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if job_tag[:5] != "test-":
+    if is_test:
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 

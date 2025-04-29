@@ -368,7 +368,7 @@ struct API Timer {
   // qlat parameter
   {
     static Long max_call_times =
-        get_env_long_default("q_timer_max_always_show", 10);
+      get_env_long_default("q_timer_max_always_show", 2);
     return max_call_times;
   }
   //
