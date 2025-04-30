@@ -1803,6 +1803,8 @@ def run_auto_contraction(
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
     #
+    is_performing_saving_full_prop = get_param(job_tag, "is-performing-saving-full-prop", default=True)
+    #
     is_test = job_tag[:5] == "test-"
     #
     traj_gf = traj
@@ -1847,7 +1849,6 @@ def run_job_inversion(job_tag, traj):
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             ]
-    has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
@@ -1857,6 +1858,17 @@ def run_job_inversion(job_tag, traj):
             # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
             # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
             ]
+    if not is_performing_saving_full_prop:
+        fns_need += [
+                f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
+                f"{job_tag}/point-selection/traj-{traj}.txt",
+                f"{job_tag}/field-selection/traj-{traj}.field",
+                f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
+                f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
+                f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
+                f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
+                ]
+    has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
     #
     if is_test:
         has_eig = True
@@ -1899,7 +1911,8 @@ def run_job_inversion(job_tag, traj):
         add_to_run_ret_list(v)
         q.clean_cache(q.cache_inv)
     #
-    run_wsrc_full()
+    if is_performing_saving_full_prop:
+        run_wsrc_full()
     #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
@@ -1969,16 +1982,14 @@ def run_job_inversion(job_tag, traj):
 def run_job_contract(job_tag, traj):
     fname = q.get_fname()
     #
+    is_performing_auto_contraction = get_param(job_tag, "is-performing-auto-contraction", default=True)
+    #
     is_test = job_tag[:5] == "test-"
     #
     traj_gf = traj
     #
     if is_test:
         traj_gf = 1000
-    #
-    is_performing_auto_contraction = get_param(job_tag, "is-performing-auto-contraction", default=True)
-    #
-    fn_checkpoint_auto_contract = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     #
     fns_produce = [
             ]
@@ -2220,6 +2231,7 @@ set_param("64I-pq", f"cg_params-0-1", "maxcycle")(8)
 set_param("64I-pq", f"cg_params-0-2", "maxcycle")(150)
 
 set_param("64I-pq", "is-performing-inversion-if-no-full-prop-available")(True)
+set_param("64I-pq", "is-performing-saving-full-prop")(False)
 
 set_param("64I", "is-performing-auto-contraction")(False)
 set_param("64I-pq", "is-performing-auto-contraction")(False)
