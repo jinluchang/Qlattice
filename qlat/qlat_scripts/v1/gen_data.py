@@ -683,7 +683,7 @@ def save_prop_wsrc_sparse(job_tag, traj, *, load_prop, tslice, inv_type, inv_acc
 def run_prop_wsrc_sparse(
         job_tag, traj,
         *,
-        inv_type, get_gt, get_psel, get_fsel, get_wi,
+        inv_type, get_gf, get_gt, get_psel, get_fsel, get_wi,
         ):
     fname = q.get_fname()
     if None in [ get_gt, get_psel, get_fsel, ]:
@@ -716,6 +716,7 @@ def run_prop_wsrc_sparse(
     else:
         assert is_performing_inversion
         sfr = None
+        gf = get_gf()
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     for idx, tslice, inv_type_wi, inv_acc in wi:
