@@ -711,11 +711,11 @@ def run_prop_wsrc_sparse(
     wi = get_wi()
     if get_load_path(path_f) is not None:
         sfr = q.open_fields(get_load_path(path_f), "r")
+        available_tags = sfr.list()
+        q.displayln_info(0, f"available_tags={available_tags}")
     else:
         assert is_performing_inversion
         sfr = None
-    available_tags = sfr.list()
-    q.displayln_info(0, f"available_tags={available_tags}")
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     for idx, tslice, inv_type_wi, inv_acc in wi:
