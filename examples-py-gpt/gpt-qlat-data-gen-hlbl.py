@@ -1927,9 +1927,12 @@ def run_job_inversion(job_tag, traj):
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
-    v = run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gf=get_gf, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
-    add_to_run_ret_list(v)
-    v = run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gf=get_gf, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+    if has_eig:
+        get_eig = get_eig_light
+        v = run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
+        add_to_run_ret_list(v)
+    get_eig = get_eig_strange
+    v = run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
     add_to_run_ret_list(v)
     #
     get_psel_smear = run_psel_smear(job_tag, traj)
