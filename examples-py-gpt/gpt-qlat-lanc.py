@@ -38,20 +38,23 @@ def test_eig(gf, eig, job_tag, inv_type):
 
 @q.timer
 def run_job(job_tag, traj):
-    fns_produce = [
-            f"{job_tag}/eig/traj-{traj}/metadata.txt",
-            ]
-    fns_need = [
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
-            ]
-    if not qs.check_job(job_tag, traj, fns_produce, fns_need):
-        return
+    is_test = job_tag[:5] == "test-"
     #
     traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
+    #
+    fns_produce = [
+            f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
+            ]
+    fns_need = [
+            (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+            ]
+    #
+    if is_test:
         traj_gf = 1000
-        #
+        fns_need = []
+    #
+    if not qs.check_job(job_tag, traj, fns_produce, fns_need):
+        return
     #
     q.check_stop()
     q.check_time_limit()
@@ -67,7 +70,7 @@ def run_job(job_tag, traj):
     test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
     #
     # test repartition
-    path = get_load_path(f"{job_tag}/eig/traj-{traj}")
+    path = get_load_path(f"{job_tag}/eig/traj-{traj_gf}")
     q.check_compressed_eigen_vectors(path)
     #
     new_size_node = q.Coordinate([ 2, 2, 2, 2, ])
@@ -80,11 +83,11 @@ def run_job(job_tag, traj):
     #
     # test zip folder
     q.sync_node()
-    for i in range(16):
+    for i in range(32):
         if i % q.get_num_node() == q.get_id_node():
-            subprocess.run([ "zip", "-r", "-Z", "store", f"{i:02}.zip", f"{i:02}" ], cwd=path)
-            # subprocess.run([ "zip", "-r", "-Z", "store", f"../{i:02}.zip", f"{i:010}.compressed" ], cwd=f"{path}/{i:02}")
-            subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
+            if q.is_directory(f"{path}/{i:02}"):
+                subprocess.run([ "zip", "-r", "-Z", "store", f"{i:02}.zip", f"{i:02}" ], cwd=path)
+                subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
     q.sync_node()
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
