@@ -2000,12 +2000,15 @@ def run_job_contract(job_tag, traj):
         fns_produce += [
                 f"{job_tag}/hlbl/edl/traj-{traj}/edl-light.lat",
                 f"{job_tag}/hlbl/edl/traj-{traj}/edl-strange.lat",
+                f"{job_tag}/hlbl/check-hvp-avg-light/traj-{traj}.txt",
+                f"{job_tag}/hlbl/check-hvp-avg-strange/traj-{traj}.txt",
+                ]
+    if is_performing_global_hvp_average:
+        fns_produce += [
                 f"{job_tag}/hlbl/sub-hvp-light/traj-{traj}/geon-info.txt",
                 f"{job_tag}/hlbl/sub-hvp-strange/traj-{traj}/geon-info.txt",
                 f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_light.field",
                 f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_strange.field",
-                f"{job_tag}/hlbl/check-hvp-avg-light/traj-{traj}.txt",
-                f"{job_tag}/hlbl/check-hvp-avg-strange/traj-{traj}.txt",
                 ]
     if is_performing_auto_contraction:
         fns_produce += [
@@ -2013,12 +2016,15 @@ def run_job_contract(job_tag, traj):
                 ]
     if is_performing_hlbl_contraction:
         fns_produce += [
+                f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
+                ]
+    if is_performing_hlbl_contraction and is_performing_global_hvp_average:
+        fns_produce += [
                 f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
                 f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
                 f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results-brief.pickle",
                 f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results-brief.pickle",
-                f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
-                f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
                 ]
     fns_need = [
             #
@@ -2095,24 +2101,25 @@ def run_job_contract(job_tag, traj):
     get_psel_smear = run_psel_smear(job_tag, traj)
     #
     for inv_type in [ 0, 1, ]:
-        get_glb_hvp_avg = run_job_global_hvp_average(job_tag, inv_type=inv_type)
         get_hvp_average = run_hvp_average(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob)
-        get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, inv_type=inv_type, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
         get_hvp_sum_tslice_accs = run_hvp_sum_tslice_accs(job_tag, traj, inv_type=inv_type, get_psel=get_psel)
         get_hvp_sum_tslice = run_hvp_sum_tslice(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice_accs=get_hvp_sum_tslice_accs)
         get_edl = run_edl(job_tag, traj, inv_type=inv_type, get_psel=get_psel, get_hvp_sum_tslice=get_hvp_sum_tslice)
         run_check_hvp_avg(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob, get_hvp_sum_tslice=get_hvp_sum_tslice, get_hvp_average=get_hvp_average)
-        run_hlbl_sub_hvp_sfield(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob, get_glb_hvp_avg_for_sub=get_glb_hvp_avg_for_sub, get_f_rand_01=get_f_rand_01)
-        if inv_type == 0:
-            get_edl_light = get_edl
-            get_hvp_average_light = get_hvp_average
-            get_glb_hvp_avg_for_sub_light = get_glb_hvp_avg_for_sub
-        elif inv_type == 1:
-            get_edl_strange = get_edl
-            get_hvp_average_strange = get_hvp_average
-            get_glb_hvp_avg_for_sub_strange = get_glb_hvp_avg_for_sub
-        else:
-            raise Exception(f"{fname}: inv_type={inv_type} wrong.")
+        if is_performing_global_hvp_average:
+            get_glb_hvp_avg = run_job_global_hvp_average(job_tag, inv_type=inv_type)
+            get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(job_tag, traj, inv_type=inv_type, get_glb_hvp_avg=get_glb_hvp_avg, get_hvp_average=get_hvp_average)
+            run_hlbl_sub_hvp_sfield(job_tag, traj, inv_type=inv_type, get_psel_prob=get_psel_prob, get_glb_hvp_avg_for_sub=get_glb_hvp_avg_for_sub, get_f_rand_01=get_f_rand_01)
+            if inv_type == 0:
+                get_edl_light = get_edl
+                get_hvp_average_light = get_hvp_average
+                get_glb_hvp_avg_for_sub_light = get_glb_hvp_avg_for_sub
+            elif inv_type == 1:
+                get_edl_strange = get_edl
+                get_hvp_average_strange = get_hvp_average
+                get_glb_hvp_avg_for_sub_strange = get_glb_hvp_avg_for_sub
+            else:
+                raise Exception(f"{fname}: inv_type={inv_type} wrong.")
     #
     if is_performing_hlbl_contraction:
         #
@@ -2136,22 +2143,22 @@ def run_job_contract(job_tag, traj):
                     )
             add_to_run_ret_list(v)
         #
-        for inv_type in [ 0, 1, ]:
-            for inv_type_e in [ 0, 1, ]:
-                v = run_hlbl_two_plus_two(
-                        job_tag,
-                        traj,
-                        inv_type=inv_type,
-                        inv_type_e=inv_type_e,
-                        get_psel_prob=get_psel_prob,
-                        get_edl_light=get_edl_light,
-                        get_edl_strange=get_edl_strange,
-                        get_glb_hvp_avg_for_sub_light=get_glb_hvp_avg_for_sub_light,
-                        get_glb_hvp_avg_for_sub_strange=get_glb_hvp_avg_for_sub_strange,
-                        get_f_rand_01=get_f_rand_01,
-                        )
-                add_to_run_ret_list(v)
-    #
+        if is_performing_global_hvp_average:
+            for inv_type in [ 0, 1, ]:
+                for inv_type_e in [ 0, 1, ]:
+                    v = run_hlbl_two_plus_two(
+                            job_tag,
+                            traj,
+                            inv_type=inv_type,
+                            inv_type_e=inv_type_e,
+                            get_psel_prob=get_psel_prob,
+                            get_edl_light=get_edl_light,
+                            get_edl_strange=get_edl_strange,
+                            get_glb_hvp_avg_for_sub_light=get_glb_hvp_avg_for_sub_light,
+                            get_glb_hvp_avg_for_sub_strange=get_glb_hvp_avg_for_sub_strange,
+                            get_f_rand_01=get_f_rand_01,
+                            )
+                    add_to_run_ret_list(v)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf=get_gf,
@@ -2299,6 +2306,8 @@ is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
 is_performing_contraction = q.get_arg("--no-contract", default=None) is None
 
+is_performing_global_hvp_average = q.get_arg("--no-global-hvp-average", default=None) is None
+
 is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) is None
 
 #######################################################
@@ -2331,7 +2340,7 @@ if __name__ == "__main__":
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job_inversion(job_tag, traj)
-        if is_performing_contraction:
+        if is_performing_global_hvp_average:
             for inv_type in [ 0, 1, ]:
                 q.check_time_limit()
                 run_job_global_hvp_average(job_tag, inv_type=inv_type)
