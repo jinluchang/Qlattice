@@ -6,7 +6,15 @@ import qlat as q
 import gpt as g
 import qlat_gpt as qg
 
-from qlat_scripts.v1 import *
+from qlat_scripts.v1 import (
+        get_load_path,
+        set_param,
+        get_param,
+        run_gf,
+        run_eig,
+        get_inv,
+        )
+import qlat_scripts.v1 as qs
 
 import pprint
 import os
@@ -18,13 +26,13 @@ def test_eig(gf, eig, job_tag, inv_type):
     src = q.FermionField4d(geo)
     src.set_rand(q.RngState("test_eig:src.set_rand"))
     q.displayln_info(f"CHECK: src norm {src.qnorm():.10E}")
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-10, mpi_split=False, qtimer=False) * src
+    sol_ref = get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-10, mpi_split=False, qtimer=False) * src
     q.displayln_info(f"CHECK: sol_ref norm {sol_ref.qnorm():.10E} with eig")
     for inv_acc in [0, 1, 2]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, qtimer=False) * src
+        sol = get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, qtimer=False) * src
         sol -= sol_ref
         q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.1E} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, qtimer=False) * src
+        sol = get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, qtimer=False) * src
         sol -= sol_ref
         q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.1E} inv_acc={inv_acc} without eig")
 
@@ -36,7 +44,7 @@ def run_job(job_tag, traj):
     fns_need = [
             # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
-    if not check_job(job_tag, traj, fns_produce, fns_need):
+    if not qs.check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
     traj_gf = traj
