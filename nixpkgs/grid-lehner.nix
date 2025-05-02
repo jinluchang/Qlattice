@@ -2,7 +2,6 @@
 , config
 , lib
 , fetchurl
-, fetchFromGitHub
 , mpi
 , c-lime
 , zlib

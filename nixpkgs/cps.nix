@@ -1,5 +1,4 @@
 { stdenv
-, fetchFromGitHub
 , mpi
 , qmp
 , qio
@@ -18,11 +17,10 @@ stdenv.mkDerivation rec {
   pname = "cps";
   version = "d3c8dd5e8a3ea6a315fd2fba963bf32585ed6331";
 
-  src = fetchFromGitHub {
-    owner = "RBC-UKQCD";
-    repo = "CPS_public";
+  src = builtins.fetchGit {
+    url = "https://github.com/RBC-UKQCD/CPS_public";
+    ref = "master";
     rev = version;
-    hash = "sha256-8+11yToZRcexNuGQHXf5qcl6cs1/Ru9xQGt1MoKzna4=";
   };
 
   enableParallelBuilding = true;

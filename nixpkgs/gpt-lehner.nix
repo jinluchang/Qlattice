@@ -1,7 +1,6 @@
 { stdenv
 , config
 , lib
-, fetchFromGitHub
 , python
 , buildPythonPackage
 , mpi
