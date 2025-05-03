@@ -68,15 +68,47 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 
 @q.timer_verbose
 def run_params(job_tag):
-    q.displayln_info(pformat(get_param(job_tag)))
-    for v in get_param(job_tag).items():
-        q.displayln_info(f"CHECK: {v}")
-    fn_pickle = get_save_path(f"{job_tag}/params.pickle")
-    fn_txt = get_save_path(f"{job_tag}/params.txt")
-    if not q.does_file_exist_qar_sync_node(fn_pickle):
-        q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
-    if not q.does_file_exist_qar_sync_node(fn_txt):
-        q.qtouch_info(fn_txt, pformat(get_param(job_tag)))
+    fname = q.get_fname()
+    param = get_param(job_tag)
+    param_str = q.json_dumps(param, indent=2)
+    param_lines = param_str.split("\n")
+    for v in param_lines:
+        q.displayln_info(f"CHECK: params: {job_tag}: {v}")
+    path_dir = get_save_path(f"{job_tag}/params/")
+    def mk_fn(version):
+        path = f"{path_dir}/version-{version:010}.json"
+        return path
+    fn_list = q.qls(path_dir)
+    assert isinstance(fn_list, list)
+    if len(fn_list) == 0:
+        version = 1
+    else:
+        fn_prefix = path_dir + "version-"
+        fn_suffix= ".json"
+        version_list = []
+        for fn in fn_list:
+            assert fn.startswith(fn_prefix)
+            assert fn.endswith(fn_suffix)
+            tag = fn
+            tag = tag.removeprefix(fn_prefix)
+            tag = tag.removesuffix(fn_suffix)
+            assert len(tag) == 10
+            v = int(tag)
+            assert fn == mk_fn(v)
+            version_list.append(v)
+        version_list.sort()
+        if len(version_list) == 0:
+            version = 1
+        else:
+            version = version_list[-1]
+            param_str_load = q.qcat_sync_node(mk_fn(version))
+            if param_str_load == param_str:
+                assert param == q.load_json_obj(mk_fn(version), is_sync_node=True)
+                q.displayln_info(0, f"{fname}: loaded '{mk_fn(version)}' matches param exactly.")
+                return
+            version += 1
+    fn = mk_fn(version)
+    q.save_json_obj(get_param(job_tag), fn, indent=2, is_sync_node=True)
 
 # ----------
 
@@ -548,7 +580,7 @@ def run_gf_hyp(job_tag, get_gf):
 # ----------
 
 @q.timer
-def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None):
+def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
     """
     return a function ``get_eig''
     ``get_eig()'' return the ``eig''
@@ -560,7 +592,7 @@ def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None):
     import gpt as g
     g.mem_report()
     # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
-    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
+    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc, pc_ne=pc_ne)
     eig = [ basis, cevec, smoothed_evals, ]
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
@@ -571,22 +603,25 @@ def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None):
     return get_eig
 
 @q.timer
-def test_eig(gf, eig, job_tag, inv_type):
-    from . import rbc_ukqcd as ru
+def test_eig(gf, eig, job_tag, inv_type, *, pc_ne=None):
+    from .rbc_ukqcd import get_inv
     geo = gf.geo
     src = q.FermionField4d(geo)
     src.set_rand(q.RngState("test_eig:src.set_rand"))
-    q.displayln_info(f"src norm {src.qnorm():.10E}")
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-10, mpi_split=False, qtimer=False) * src
-    q.displayln_info(f"sol_ref norm {sol_ref.qnorm():.10E} with eig")
-    for inv_acc in [ 0, 1, 2, ]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, qtimer=False) * src
+    q.json_results_append(f"src norm", src.qnorm(), 1e-10)
+    q.json_results_append(f"src get_data_sig", q.get_data_sig(src, q.RngState()), 1e-10)
+    sol_ref = get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-14, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
+    q.json_results_append(f"sol_ref norm", sol_ref.qnorm(), 1e-10)
+    q.json_results_append(f"sol_ref get_data_sig", q.get_data_sig(sol_ref, q.RngState()), 1e-10)
+    for inv_acc in [ 0, 1, ]:
+        sol = get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
         sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
-        if inv_acc in [ 0, 1, ]:
-            sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, qtimer=False) * src
-            sol -= sol_ref
-            q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
+        q.json_results_append(f"sol diff norm inv_acc={inv_acc} with eig", sol.qnorm(), 1e-2)
+        q.json_results_append(f"sol diff get_data_sig inv_acc={inv_acc} with eig", q.get_data_sig(sol, q.RngState()), 1e-2)
+        sol = get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
+        sol -= sol_ref
+        q.json_results_append(f"sol diff norm inv_acc={inv_acc} without eig", sol.qnorm(), 1e-2)
+        q.json_results_append(f"sol diff get_data_sig inv_acc={inv_acc} without eig", q.get_data_sig(sol, q.RngState()), 1e-2)
 
 @q.timer_verbose
 def run_eig(job_tag, traj, get_gf, *, is_only_load=False):

@@ -353,12 +353,31 @@ def get_data_sig_arr(x, rs, sig_len):
     sig_arr = np.array(sig_list)
     return sig_arr
 
-@timer
-def check_log_json(script_file, json_results, *, check_eps=1e-5):
+global_json_results = [] # Default value for param `json_results` in functions `check_log_json` and `json_results_append`
+
+def json_results_append(*args, json_results=None):
+    if json_results is None:
+        json_results = global_json_results
+    displayln_info(0, r"//------------------------------------------------------------\\")
+    displayln_info(0, *args)
+    displayln_info(0, r"\\------------------------------------------------------------//")
+    json_results.append(args)
+
+@timer_verbose
+def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
     """
+    q.check_log_json(__file__, json_results=json_results, check_eps=check_eps)
+    #
     json_results = [ (name, value, check_eps,), (name, value,), (name,), ... ]
+    #
+    default:
+    check_eps=1e-5
+    json_results=q.global_json_results
+    #
     """
     fname = get_fname()
+    if json_results is None:
+        json_results = global_json_results
     if 0 == get_id_node():
         json_fn_name = os.path.splitext(script_file)[0] + ".log.json"
         qtouch(json_fn_name + ".new", json_dumps(json_results, indent=1))

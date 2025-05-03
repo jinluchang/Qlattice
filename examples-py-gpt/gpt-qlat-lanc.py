@@ -2,15 +2,6 @@
 
 # Need --mpi X.X.X.X runtime option
 
-json_results = []
-check_eps = 5e-5
-
-def json_results_append(*args):
-    q.displayln_info(r"//------------------------------------------------------------\\")
-    q.displayln_info(-1, *args)
-    q.displayln_info(r"\\------------------------------------------------------------//")
-    json_results.append(args)
-
 import qlat as q
 import gpt as g
 import qlat_gpt as qg
@@ -22,32 +13,13 @@ from qlat_scripts.v1 import (
         check_job,
         run_gf,
         run_eig,
-        get_inv,
+        run_params,
+        test_eig,
         )
 
 import pprint
 import os
 import subprocess
-
-@q.timer
-def test_eig(gf, eig, job_tag, inv_type):
-    geo = gf.geo
-    src = q.FermionField4d(geo)
-    src.set_rand(q.RngState("test_eig:src.set_rand"))
-    q.displayln_info(f"CHECK: src norm {src.qnorm():.10E}")
-    json_results_append(f"src norm", src.qnorm(), 1e-10)
-    sol_ref = get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-10, mpi_split=False, qtimer=False) * src
-    q.displayln_info(f"CHECK: sol_ref norm {sol_ref.qnorm():.10E} with eig")
-    json_results_append(f"sol_ref norm", sol_ref.qnorm(), 1e-10)
-    for inv_acc in [0, 1, 2]:
-        sol = get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, qtimer=False) * src
-        sol -= sol_ref
-        q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.1E} inv_acc={inv_acc} with eig")
-        json_results_append(f"sol diff norm inv_acc={inv_acc} with eig", sol.qnorm(), 1e-3)
-        sol = get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, qtimer=False) * src
-        sol -= sol_ref
-        q.displayln_info(f"CHECK: sol diff norm {sol.qnorm():.1E} inv_acc={inv_acc} without eig")
-        json_results_append(f"sol diff norm inv_acc={inv_acc} without eig", sol.qnorm(), 1e-3)
 
 @q.timer
 def run_job(job_tag, traj):
@@ -74,8 +46,7 @@ def run_job(job_tag, traj):
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
-    q.displayln_info("CHECK: geo.show() =", geo.show())
-    json_results_append(f"geo.show() = {geo.show()}")
+    q.json_results_append(f"geo.show() = {geo.show()}")
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gf().show_info()
@@ -118,6 +89,8 @@ for inv_type in [ 0, 1, 2, ]:
         set_param("test-4nt8", "fermion_params", inv_type, inv_acc, "Ls")(8)
         set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
+        if inv_acc == 2:
+            set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(500)
 
 # ----
 
@@ -144,20 +117,17 @@ if __name__ == "__main__":
     q.check_time_limit()
 
     for job_tag in job_tags:
-        q.displayln_info(pprint.pformat(get_param(job_tag)))
-        for v in get_param(job_tag).items():
-            q.displayln_info(f"CHECK: {v}")
-            json_results_append(f"{job_tag}: {v}")
+        run_params(job_tag)
         for traj in get_param(job_tag, "trajs"):
             q.check_time_limit()
             run_job(job_tag, traj)
             q.clean_cache()
             if q.obtained_lock_history_list:
-                json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                 if job_tag[:5] != "test-":
                     gracefully_finish()
 
-    q.check_log_json(__file__, json_results, check_eps=check_eps)
+    q.check_log_json(__file__, check_eps=1e-5)
 
     gracefully_finish()
 

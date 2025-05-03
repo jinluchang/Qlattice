@@ -21,7 +21,7 @@ def get_param_clanc(job_tag, inv_type, inv_acc=0):
     return get_param(job_tag, "clanc_params", inv_type, inv_acc)
 
 @q.timer_verbose
-def mk_eig(gf, job_tag, inv_type, inv_acc=0):
+def mk_eig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     """
@@ -29,8 +29,11 @@ def mk_eig(gf, job_tag, inv_type, inv_acc=0):
     import gpt as g
     qtimer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
     qtimer.start()
-    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
+    #
     parity = g.odd
+    if pc_ne is None:
+        pc_ne = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)
+    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_eig: params=\n{pprint.pformat(params)}")
@@ -39,7 +42,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc=0):
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
     else:
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
-    w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
+    w = pc_ne(qm)
     def make_src(rng):
         src = g.vspincolor(qm.F_grid_eo)
         # src[:] = g.vspincolor([[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]])
@@ -60,7 +63,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc=0):
     return evec, evals
 
 @q.timer_verbose
-def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
+def mk_ceig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
@@ -69,8 +72,11 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
     import gpt as g
     qtimer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
     qtimer.start()
-    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
+    #
     parity = g.odd
+    if pc_ne is None:
+        pc_ne = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)
+    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
     assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
@@ -81,7 +87,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
     else:
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
-    w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
+    w = pc_ne(qm)
     def make_src(rng):
         src = g.vspincolor(qm.F_grid_eo)
         # src[:] = g.vspincolor([[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]])
@@ -130,21 +136,24 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc=0):
             w.Mpc, [tmpf], calculate_eps2=False, real=True
         )
         smoothed_evals = smoothed_evals + evals
+    #
     g.mem_report()
     #
     qtimer.stop()
     return basis, cevec, smoothed_evals
 
 @q.timer_verbose
-def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0):
+def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
     """
     import qlat_gpt as qg
     import gpt as g
-    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
+    if pc_ne is None:
+        pc_ne = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)
+    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
     assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
@@ -153,7 +162,7 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0):
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
     else:
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
-    w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
+    w = pc_ne(qm)
     inv = g.algorithms.inverter
     grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
     b = g.block.map(grid_coarse, basis)
@@ -238,13 +247,17 @@ def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
     return maxiter
 
 @q.timer_verbose
-def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
+def mk_gpt_inverter(
+        gf, job_tag, inv_type, inv_acc,
+        *,
         gt=None,
         mpi_split=None,
-        n_grouped=1,
+        n_grouped=None,
         eig=None,
         eps=1e-8,
-        qtimer=True):
+        pc_ne=None,
+        qtimer=True,
+        ):
     """
     Need get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")
     Need get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")
@@ -256,10 +269,13 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     import gpt as g
     if mpi_split is None:
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
-        if mpi_split is not None:
-            n_grouped = g.default.get_int("--grouped", 4)
-        else:
-            n_grouped = g.default.get_int("--grouped", 1)
+        if n_grouped is None:
+            if mpi_split is not None:
+                n_grouped = g.default.get_int("--grouped", 4)
+            else:
+                n_grouped = g.default.get_int("--grouped", 1)
+    if n_grouped is None:
+        n_grouped = 12
     q.displayln_info(f"mk_gpt_inverter: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc} mpi_split={mpi_split} n_grouped={n_grouped}")
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
@@ -295,14 +311,15 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         cg = inv.sequence(cg_defl, cg_split)
     else:
         cg = cg_split
-    if "omega" in params and eig is None:
-        pc_ne = pc.eo2_kappa_ne()
-        q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
-        cg = cg_mp
-    elif job_tag in [ "64I", "64I-pq", ]:
-        pc_ne = pc.eo1_ne(parity=g.odd)
-    else:
-        pc_ne = pc.eo2_ne()
+    if pc_ne is None:
+        if "omega" in params and eig is None:
+            pc_ne = pc.eo2_kappa_ne()
+            q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
+            cg = cg_mp
+        elif job_tag in [ "64I", "64I-pq", ]:
+            pc_ne = pc.eo1_ne(parity=g.odd)
+        else:
+            pc_ne = pc.eo2_ne(parity=g.odd)
     slv_5d = inv.preconditioned(pc_ne, cg)
     q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
     if is_madwf:
@@ -311,7 +328,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
         else:
             qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
-        slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
+        slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(parity=g.odd), cg_pv_f)
         slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
     if inv_acc == 0:
         maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=1)
@@ -384,22 +401,35 @@ def mk_inverter(*args, **kwargs):
     return mk_gpt_inverter(*args, **kwargs)
 
 @q.timer
-def get_inv(gf, job_tag, inv_type, inv_acc, *, gt=None, mpi_split=None, n_grouped=1, eig=None, eps=1e-8, qtimer=True):
-    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} inv_type={inv_type} inv_acc={inv_acc} gt={id(gt)} mpi_split={mpi_split} n_grouped={n_grouped} eig={id(eig)} eps={eps} qtimer={id(qtimer)}"
+def get_inv(
+        gf, job_tag, inv_type, inv_acc, *,
+        gt=None,
+        mpi_split=None,
+        n_grouped=None,
+        eig=None,
+        eps=1e-8,
+        pc_ne=None,
+        qtimer=True,
+        ):
+    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} inv_type={inv_type} inv_acc={inv_acc} gt={id(gt)} mpi_split={mpi_split} n_grouped={n_grouped} eig={id(eig)} pc_ne={id(pc_ne)} eps={eps} qtimer={id(qtimer)}"
     if tag in q.cache_inv:
         return q.cache_inv[tag]["inv"]
-    inv = mk_inverter(gf, job_tag, inv_type, inv_acc,
+    inv = mk_inverter(
+            gf, job_tag, inv_type, inv_acc,
             gt=gt,
             mpi_split=mpi_split,
             n_grouped=n_grouped,
             eig=eig,
             eps=eps,
-            qtimer=qtimer)
+            pc_ne=pc_ne,
+            qtimer=qtimer,
+            )
     q.cache_inv[tag] = {
             "inv": inv,
             "gf": gf,
             "gt": gt,
             "eig": eig,
+            "pc_ne": pc_ne,
             "qtimer": qtimer,
             }
     return inv
