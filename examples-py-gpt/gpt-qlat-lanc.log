@@ -1,7 +1,7 @@
 CHECK: ('job_tag', 'test-4nt8')
 CHECK: ('total_site', [4, 4, 4, 8])
 CHECK: ('load_config_params', {'twist_boundary_at_boundary': [0.0, 0.0, 0.0, -0.5]})
-CHECK: ('fermion_params', {0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 10, 'mass': 0.01}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 10, 'mass': 0.04}}, 2: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 10, 'mass': 0.2}}})
+CHECK: ('fermion_params', {0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}}, 2: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.2}}})
 CHECK: ('lanc_params', {0: {0: {'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.1, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 20, 'Nk': 25, 'Nm': 30, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}}}})
 CHECK: ('clanc_params', {0: {0: {'block': [2, 2, 2, 2], 'nbasis': 20, 'cheby_params': {'low': 0.2, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 30, 'Nk': 35, 'Nm': 40, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}, 'smoother_params': {'eps': 1e-08, 'maxiter': 10}, 'save_params': {'nsingle': 10, 'mpi': [1, 1, 1, 4]}}}})
 CHECK: ('gf_ape_smear_coef', 0.5)
@@ -28,29 +28,38 @@ CHECK: ('meson_tsep_list', [1, 2, 3, 4, 5, 6, 7])
 CHECK: ('m_l', 0.01)
 CHECK: ('m_h', 0.04)
 CHECK: ('mk_sample_gauge_field', {'rand_n_step': 2, 'flow_n_step': 8, 'hmc_n_traj': 1})
+CHECK: ('cg_params-0-0', {'maxiter': 10, 'maxcycle': 1})
+CHECK: ('cg_params-0-1', {'maxiter': 10, 'maxcycle': 2})
+CHECK: ('cg_params-0-2', {'maxiter': 10, 'maxcycle': 3})
+CHECK: ('cg_params-1-0', {'maxiter': 10, 'maxcycle': 1})
+CHECK: ('cg_params-1-1', {'maxiter': 10, 'maxcycle': 2})
+CHECK: ('cg_params-1-2', {'maxiter': 10, 'maxcycle': 3})
+CHECK: ('cg_params-2-0', {'maxiter': 10, 'maxcycle': 1})
+CHECK: ('cg_params-2-1', {'maxiter': 10, 'maxcycle': 2})
+CHECK: ('cg_params-2-2', {'maxiter': 10, 'maxcycle': 3})
 CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: src norm 4.0912250193E+03
-CHECK: sol_ref norm 1.1316216041E+04 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=0 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=0 without eig
-CHECK: sol diff norm 1.6E+02 inv_acc=1 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=1 without eig
-CHECK: sol diff norm 2.1E-13 inv_acc=2 with eig
-CHECK: sol diff norm 5.0E-15 inv_acc=2 without eig
+CHECK: sol_ref norm 1.0718281822E+04 with eig
+CHECK: sol diff norm 2.3E+00 inv_acc=0 with eig
+CHECK: sol diff norm 3.9E+03 inv_acc=0 without eig
+CHECK: sol diff norm 9.9E-03 inv_acc=1 with eig
+CHECK: sol diff norm 1.3E+03 inv_acc=1 without eig
+CHECK: sol diff norm 0.0E+00 inv_acc=2 with eig
+CHECK: sol diff norm 6.1E+02 inv_acc=2 without eig
 CHECK: src norm 4.0912250193E+03
-CHECK: sol_ref norm 1.1316216041E+04 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=0 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=0 without eig
-CHECK: sol diff norm 1.6E+02 inv_acc=1 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=1 without eig
-CHECK: sol diff norm 2.1E-13 inv_acc=2 with eig
-CHECK: sol diff norm 5.0E-15 inv_acc=2 without eig
+CHECK: sol_ref norm 1.0718281840E+04 with eig
+CHECK: sol diff norm 2.3E+00 inv_acc=0 with eig
+CHECK: sol diff norm 3.9E+03 inv_acc=0 without eig
+CHECK: sol diff norm 9.9E-03 inv_acc=1 with eig
+CHECK: sol diff norm 1.3E+03 inv_acc=1 without eig
+CHECK: sol diff norm 0.0E+00 inv_acc=2 with eig
+CHECK: sol diff norm 6.1E+02 inv_acc=2 without eig
 CHECK: src norm 4.0912250193E+03
-CHECK: sol_ref norm 1.1316216041E+04 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=0 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=0 without eig
-CHECK: sol diff norm 1.6E+02 inv_acc=1 with eig
-CHECK: sol diff norm 1.6E+02 inv_acc=1 without eig
-CHECK: sol diff norm 2.1E-13 inv_acc=2 with eig
-CHECK: sol diff norm 5.0E-15 inv_acc=2 without eig
+CHECK: sol_ref norm 1.0718281840E+04 with eig
+CHECK: sol diff norm 2.3E+00 inv_acc=0 with eig
+CHECK: sol diff norm 3.9E+03 inv_acc=0 without eig
+CHECK: sol diff norm 9.9E-03 inv_acc=1 with eig
+CHECK: sol diff norm 1.3E+03 inv_acc=1 without eig
+CHECK: sol diff norm 0.0E+00 inv_acc=2 with eig
+CHECK: sol diff norm 6.1E+02 inv_acc=2 without eig
 CHECK: finished successfully.
