@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-check_eps = 5e-5
-
-def json_results_append(*args):
-    q.displayln_info(r"//------------------------------------------------------------\\")
-    q.displayln_info(-1, *args)
-    q.displayln_info(r"\\------------------------------------------------------------//")
-    json_results.append(args)
-
 from auto_contractor import *
 
 import functools
@@ -127,7 +118,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -185,7 +176,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -246,7 +237,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -321,7 +312,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 # ----
 
@@ -1050,16 +1041,16 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                     show_lslt(labels, lslt * len(point_pairs), label="ref-far proj-all"),
                     "\nsloppy:\n",
                     show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
-            json_results.append((
+            q.json_results_append(
                 f"{fname}: {info_str} lslt",
                 q.get_data_sig(lslt, q.RngState()),
                 15e-2,
-                ))
-            json_results.append((
+                )
+            q.json_results_append(
                 f"{fname}: {info_str} lslt_sloppy",
                 q.get_data_sig(lslt_sloppy, q.RngState()),
                 15e-2,
-                ))
+                )
         if len(point_pairs_chunk) != len(pairs_data):
             raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
         if len(pairs_data) > 0:
@@ -1139,26 +1130,26 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         results["n_pairs"] = pairs_data_n_pairs
         q.save_pickle_obj(results, get_save_path(fn_s))
         q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
-        json_results.append((
+        q.json_results_append(
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
             q.get_data_sig(results["lslt_sum"], q.RngState()),
             1e-2,
-            ))
-        json_results.append((
+            )
+        q.json_results_append(
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
             q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
             1e-2,
-            ))
-        json_results.append((
+            )
+        q.json_results_append(
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
             results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
             3e-2,
-            ))
-        json_results.append((
+            )
+        q.json_results_append(
             f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
             results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
             3e-2,
-            ))
+            )
     q.sync_node()
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
     q.release_lock()
@@ -1332,11 +1323,11 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
                 * get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice[idx])
                 )
     hvp_edl.save(get_save_path(fn))
-    json_results.append((
+    q.json_results_append(
         f"{fname}: {job_tag} {traj} {inv_type_name} edl",
         q.get_data_sig(hvp_edl[:], q.RngState()),
         1e-3,
-        ))
+        )
     q.release_lock()
     return ret
 
@@ -1379,26 +1370,26 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
             )
     q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name} {norm_diff_ratio}")
     assert norm_diff_ratio < 1e-6
-    json_results.append((
+    q.json_results_append(
         f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice",
         q.get_data_sig(hvp_sum_tslice, q.RngState()),
         1e-4,
-        ))
-    json_results.append((
+        )
+    q.json_results_append(
         f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg1",
         q.get_data_sig(hvp_sum_tslice_avg1, q.RngState()),
         1e-4,
-        ))
-    json_results.append((
+        )
+    q.json_results_append(
         f"{fname}: {job_tag} {traj} {inv_type_name} hvp_average",
         q.get_data_sig(hvp_average, q.RngState()),
         1e-4,
-        ))
-    json_results.append((
+        )
+    q.json_results_append(
         f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg2",
         q.get_data_sig(hvp_sum_tslice_avg2, q.RngState()),
         1e-4,
-        ))
+        )
     q.qtouch_info(get_save_path(fn))
 
 @q.timer(is_timer_fork=True)
@@ -1639,11 +1630,11 @@ def run_hlbl_two_plus_two_chunk(
         d["lslt"] = q.glb_sum(d["lslt"])
         d["n_points_selected"] = q.glb_sum(d["n_points_selected"])
         d["n_points_computed"] = q.glb_sum(d["n_points_computed"])
-        json_results.append((
+        q.json_results_append(
             f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
             q.get_data_sig(d["lslt"], q.RngState()),
             20e-2,
-            ))
+            )
     q.save_pickle_obj(points_data, get_save_path(fn))
     if len(points_data) > 0:
         labels = q.contract_two_plus_two_pair_labels()
@@ -1752,16 +1743,16 @@ def run_hlbl_two_plus_two(
             n_points_computed = results["n_points_computed"]
             q.displayln_info(-1,
                     f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
-        json_results.append((
+        q.json_results_append(
             f"{info_str} lslt_sum",
             q.get_data_sig(results["lslt_sum"], q.RngState()),
             3e-2,
-            ))
-        json_results.append((
+            )
+        q.json_results_append(
             f"{info_str} lslt_sum[labels.index('sub proj-all'), -1, -1]",
             results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
             3e-2,
-            ))
+            )
     q.sync_node()
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
@@ -2189,10 +2180,10 @@ def run_job_contract(job_tag, traj):
         add_to_run_ret_list(v)
     #
     if is_performing_auto_contraction:
-        json_results.append((f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()),))
-        json_results.append((f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()),))
-        json_results.append((f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()),))
-        json_results.append((f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()),))
+        q.json_results_append(f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()))
+        q.json_results_append(f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()))
+        q.json_results_append(f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()))
+        q.json_results_append(f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()))
     #
     q.clean_cache()
     #
@@ -2349,7 +2340,7 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
 
-    q.check_log_json(__file__, json_results)
+    q.check_log_json(__file__)
 
     q.timer_display()
 
