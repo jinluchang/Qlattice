@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-check_eps = 1e-5
-
 import qlat as q
 import numpy as np
 
@@ -104,17 +101,17 @@ if True:
     weights = q.get_muon_line_m_extra_weights()
     for idx, ws in enumerate(weights):
         q.displayln_info(f"{fname}: initial weights {idx} {ws}")
-        q.json_results_append((f"{fname}: initial weights {idx}", q.get_data_sig(np.array(ws), q.RngState()), check_eps_interp)
+        q.json_results_append(f"{fname}: initial weights {idx}", q.get_data_sig(np.array(ws), q.RngState()), check_eps_interp)
     q.set_muon_line_m_extra_weights([ [ 4/3, -1/3, ], [ 1.0, ], ])
     weights = q.get_muon_line_m_extra_weights()
     for idx, ws in enumerate(weights):
         q.displayln_info(f"{fname}: set weights {idx} {ws}")
-        q.json_results_append((f"{fname}: set weights {idx}", q.get_data_sig(np.array(ws), q.RngState()), check_eps_interp)
+        q.json_results_append(f"{fname}: set weights {idx}", q.get_data_sig(np.array(ws), q.RngState()), check_eps_interp)
     q.set_muon_line_m_extra_weights()
     weights = q.get_muon_line_m_extra_weights()
     for idx, ws in enumerate(weights):
         q.displayln_info(f"{fname}: default weights {idx} {ws}")
-        q.json_results_append((f"{fname}: default weights {idx}", q.get_data_sig(np.array(ws), q.RngState()), check_eps_interp)
+        q.json_results_append(f"{fname}: default weights {idx}", q.get_data_sig(np.array(ws), q.RngState()), check_eps_interp)
     load_or_compute_muon_line_interpolation()
     q.set_muon_line_m_extra_weights([ [ 4/3, -1/3, ], [ 1.0, ], ])
     for tag in [ 0, 1, ]:
