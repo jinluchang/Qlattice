@@ -931,7 +931,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld_snk_op.from_numpy(res_sum_snk_op)
     ld_snk_op.save(get_save_path(fn_snk_op))
-    q.json_results_append((f"{fname}: ld_snk_op sig", q.get_data_sig(ld_snk_op, q.RngState()),))
+    q.json_results_append(f"{fname}: ld_snk_op sig", q.get_data_sig(ld_snk_op, q.RngState()))
     for i, en in enumerate(expr_names[idx_arr_of_snk_op_only]):
         q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld_snk_op[i], q.RngState()))
 

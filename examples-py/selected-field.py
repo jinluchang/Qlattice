@@ -96,8 +96,8 @@ q.displayln_info(f"CHECK: sp_prop.psel[:].tolist() = {sp_prop.psel[:].tolist()}"
 sig1 = q.get_data_sig(sp_prop[:], q.RngState(f"{q.get_id_node()}"))
 sig2 = q.glb_sum(sig1)
 
-q.json_results_append((f"sp_prop from shuffle_selected_field sig1", sig1, check_eps))
-q.json_results_append((f"sp_prop from shuffle_selected_field sig2", sig2, check_eps))
+q.json_results_append(f"sp_prop from shuffle_selected_field sig1", sig1, check_eps)
+q.json_results_append(f"sp_prop from shuffle_selected_field sig2", sig2, check_eps)
 
 sp_prop = q.PselProp(psel)
 sp_prop @= prop
