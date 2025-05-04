@@ -1,5 +1,176 @@
 [
  [
+  "{\n  \"job_tag\": \"test-4nt8\",\n  \"total_site\": [\n    4,\n    4,\n    4,\n    8\n  ],\n  \"load_config_params\": {\n    \"twist_boundary_at_boundary\": [\n      0.0,\n      0.0,\n      0.0,\n      -0.5\n    ]\n  },\n  \"fermion_params\": {\n    \"0\": {\n      \"0\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.01\n      },\n      \"1\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.01\n      },\n      \"2\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.01\n      }\n    },\n    \"1\": {\n      \"0\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.04\n      },\n      \"1\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.04\n      },\n      \"2\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.04\n      }\n    },\n    \"2\": {\n      \"0\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.2\n      },\n      \"1\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.2\n      },\n      \"2\": {\n        \"M5\": 1.8,\n        \"boundary_phases\": [\n          1.0,\n          1.0,\n          1.0,\n          1.0\n        ],\n        \"b\": 1.5,\n        \"c\": 0.5,\n        \"Ls\": 8,\n        \"mass\": 0.2\n      }\n    }\n  },\n  \"lanc_params\": {\n    \"0\": {\n      \"0\": {\n        \"fermion_params\": {\n          \"M5\": 1.8,\n          \"boundary_phases\": [\n            1.0,\n            1.0,\n            1.0,\n            1.0\n          ],\n          \"b\": 1.5,\n          \"c\": 0.5,\n          \"Ls\": 8,\n          \"mass\": 0.01\n        },\n        \"pit_params\": {\n          \"eps\": 0.01,\n          \"maxiter\": 500,\n          \"real\": true\n        },\n        \"cheby_params\": {\n          \"low\": 0.5,\n          \"high\": 5.5,\n          \"order\": 40\n        },\n        \"irl_params\": {\n          \"Nstop\": 100,\n          \"Nk\": 150,\n          \"Nm\": 200,\n          \"resid\": 1e-08,\n          \"betastp\": 0.0,\n          \"maxiter\": 20,\n          \"Nminres\": 0\n        }\n      }\n    },\n    \"1\": {\n      \"0\": {\n        \"fermion_params\": {\n          \"M5\": 1.8,\n          \"boundary_phases\": [\n            1.0,\n            1.0,\n            1.0,\n            1.0\n          ],\n          \"b\": 1.5,\n          \"c\": 0.5,\n          \"Ls\": 8,\n          \"mass\": 0.04\n        },\n        \"pit_params\": {\n          \"eps\": 0.01,\n          \"maxiter\": 500,\n          \"real\": true\n        },\n        \"cheby_params\": {\n          \"low\": 0.5,\n          \"high\": 5.5,\n          \"order\": 40\n        },\n        \"irl_params\": {\n          \"Nstop\": 100,\n          \"Nk\": 150,\n          \"Nm\": 200,\n          \"resid\": 1e-08,\n          \"betastp\": 0.0,\n          \"maxiter\": 20,\n          \"Nminres\": 0\n        }\n      }\n    }\n  },\n  \"clanc_params\": {\n    \"0\": {\n      \"0\": {\n        \"block\": [\n          4,\n          4,\n          2,\n          2\n        ],\n        \"nbasis\": 100,\n        \"cheby_params\": {\n          \"low\": 0.5,\n          \"high\": 5.5,\n          \"order\": 40\n        },\n        \"irl_params\": {\n          \"Nstop\": 100,\n          \"Nk\": 150,\n          \"Nm\": 200,\n          \"resid\": 1e-08,\n          \"betastp\": 0.0,\n          \"maxiter\": 20,\n          \"Nminres\": 0\n        },\n        \"smoother_params\": {\n          \"eps\": 1e-08,\n          \"maxiter\": 10\n        },\n        \"save_params\": {\n          \"nsingle\": 100,\n          \"mpi\": [\n            1,\n            1,\n            1,\n            4\n          ]\n        }\n      }\n    },\n    \"1\": {\n      \"0\": {\n        \"block\": [\n          4,\n          4,\n          2,\n          2\n        ],\n        \"nbasis\": 100,\n        \"cheby_params\": {\n          \"low\": 0.5,\n          \"high\": 5.5,\n          \"order\": 40\n        },\n        \"irl_params\": {\n          \"Nstop\": 100,\n          \"Nk\": 150,\n          \"Nm\": 200,\n          \"resid\": 1e-08,\n          \"betastp\": 0.0,\n          \"maxiter\": 20,\n          \"Nminres\": 0\n        },\n        \"smoother_params\": {\n          \"eps\": 1e-08,\n          \"maxiter\": 10\n        },\n        \"save_params\": {\n          \"nsingle\": 100,\n          \"mpi\": [\n            1,\n            1,\n            1,\n            4\n          ]\n        }\n      }\n    }\n  },\n  \"gf_ape_smear_coef\": 0.5,\n  \"gf_ape_smear_step\": 30,\n  \"prop_smear_coef\": 0.9375,\n  \"prop_smear_step\": 10,\n  \"trajs\": [\n    1000\n  ],\n  \"field-selection-fsel-rate\": 0.0625,\n  \"field-selection-psel-rate\": 0.03125,\n  \"field-selection-fsel-psrc-prop-norm-threshold\": 0.001,\n  \"n_points_psel\": 6,\n  \"n_exact_wsrc\": 2,\n  \"n_per_tslice_smear\": 2,\n  \"prob_acc_1_smear\": 0.25,\n  \"prob_acc_2_smear\": 0.0625,\n  \"prob_acc_1_psrc\": 0.25,\n  \"prob_acc_2_psrc\": 0.0625,\n  \"n_rand_u1_fsel\": 4,\n  \"prob_acc_1_rand_u1\": 0.25,\n  \"prob_acc_2_rand_u1\": 0.0625,\n  \"meson_tensor_tsep\": 1,\n  \"meson_jwjj_threshold\": 0.1,\n  \"meson_tsep_list\": [\n    1,\n    2,\n    3,\n    4,\n    5,\n    6,\n    7\n  ],\n  \"m_l\": 0.01,\n  \"m_h\": 0.04,\n  \"measurement\": {\n    \"auto_contractor_chunk_size\": 2\n  },\n  \"mk_sample_gauge_field\": {\n    \"rand_n_step\": 2,\n    \"flow_n_step\": 8,\n    \"hmc_n_traj\": 1\n  },\n  \"cg_params-0-0\": {\n    \"maxiter\": 5,\n    \"maxcycle\": 1\n  },\n  \"cg_params-0-1\": {\n    \"maxiter\": 5,\n    \"maxcycle\": 2\n  },\n  \"cg_params-0-2\": {\n    \"maxiter\": 5,\n    \"maxcycle\": 3\n  },\n  \"cg_params-1-0\": {\n    \"maxiter\": 5,\n    \"maxcycle\": 1\n  },\n  \"cg_params-1-1\": {\n    \"maxiter\": 5,\n    \"maxcycle\": 2\n  },\n  \"cg_params-1-2\": {\n    \"maxiter\": 5,\n    \"maxcycle\": 3\n  }\n}"
+ ],
+ [
+  "src norm",
+  4091.225019304942,
+  1e-10
+ ],
+ [
+  "src get_data_sig",
+  {
+   "real": 39.37797352855642,
+   "imag": 31.81191171826329,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol_ref norm",
+  10715.943126455808,
+  1e-10
+ ],
+ [
+  "sol_ref get_data_sig",
+  {
+   "real": 11.973018523482473,
+   "imag": -0.27276770273591344,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol diff norm inv_acc=0 with eig",
+  26.927922744843276,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 with eig",
+  {
+   "real": -1.338589575038244,
+   "imag": -0.5113368921344068,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=0 without eig",
+  7006.972925391361,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 without eig",
+  {
+   "real": -3.8798939379308273,
+   "imag": 6.668760213449433,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 with eig",
+  0.4135206717859531,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 with eig",
+  {
+   "real": 0.0695027247221939,
+   "imag": 0.05001096641252462,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 without eig",
+  4343.994877577751,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 without eig",
+  {
+   "real": -7.439636797422381,
+   "imag": 3.2477398846501346,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "src norm",
+  4091.225019304942,
+  1e-10
+ ],
+ [
+  "src get_data_sig",
+  {
+   "real": 39.37797352855642,
+   "imag": 31.81191171826329,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol_ref norm",
+  10135.931187389935,
+  1e-10
+ ],
+ [
+  "sol_ref get_data_sig",
+  {
+   "real": 15.555515175692548,
+   "imag": -3.2318586532228233,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol diff norm inv_acc=0 with eig",
+  27.365697301146987,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 with eig",
+  {
+   "real": -1.711148338821352,
+   "imag": -0.32903015261180546,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=0 without eig",
+  6438.338130436972,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 without eig",
+  {
+   "real": -5.929176104688242,
+   "imag": 9.3294454524797,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 with eig",
+  0.40677380572008953,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 with eig",
+  {
+   "real": 0.025042314587057704,
+   "imag": 0.08134920948819405,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 without eig",
+  3865.6007443449726,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 without eig",
+  {
+   "real": -8.815509078422576,
+   "imag": 5.591786883489596,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
   "q.obtained_lock_history_list=['locks/test-4nt8-1000-gauge_field', 'locks/test-4nt8-1000-gauge_fix_coulomb', 'locks/test-4nt8-1000-wi', 'locks/test-4nt8-1000-wi', 'locks/test-4nt8-1000-run-eig', 'locks/test-4nt8-1000-run-eig-strange', 'locks/test-4nt8-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-1000-run_f_rand_01', 'locks/test-4nt8-1000-run_fsel_prob', 'locks/test-4nt8-1000-run_psel_prob', 'locks/test-4nt8-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-1000-psel-smear', 'locks/test-4nt8-1000-run_prop_rand_u1-light', 'locks/test-4nt8-1000-run_prop_psrc-light', 'locks/test-4nt8-1000-run_prop_smear-light', 'locks/test-4nt8-1000-run_prop_rand_u1-strange', 'locks/test-4nt8-1000-run_prop_psrc-strange', 'locks/test-4nt8-1000-run_prop_smear-strange', 'locks/test-4nt8-1000-run_prop_rand_u1-charm']"
  ],
  [
@@ -2733,15 +2904,15 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum sig",
   {
-   "real": 29.090176193268285,
-   "imag": 4.82235073706661e-05,
+   "real": 29.090176193268288,
+   "imag": 4.822350737066609e-05,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc x] [con 0] >' sig",
   {
-   "real": 14.722915976369785,
+   "real": 14.72291597636979,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
@@ -2749,7 +2920,7 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc 0] [con x] >' sig",
   {
-   "real": 14.311485171073185,
+   "real": 14.311485171073187,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
@@ -2758,7 +2929,7 @@
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ls)' sig",
   {
    "real": 3.3575084476449723e-05,
-   "imag": -3.5115922586704012e-06,
+   "imag": -3.511592258670396e-06,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -2766,14 +2937,14 @@
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ls)' sig",
   {
    "real": -2.034392725636106e-05,
-   "imag": 3.878190686120727e-06,
+   "imag": 3.878190686120735e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ls)' sig",
   {
-   "real": 2.285158416242744e-05,
+   "real": 2.2851584162427447e-05,
    "imag": -2.3959842237352857e-05,
    "__extended_json_type__": "complex128"
   }
@@ -2782,7 +2953,7 @@
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ls)' sig",
   {
    "real": 5.355979142031823e-05,
-   "imag": -2.940650641650594e-05,
+   "imag": -2.9406506416505934e-05,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -2790,15 +2961,15 @@
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole sl)' sig",
   {
    "real": -3.3575084476449656e-05,
-   "imag": -3.511592258670459e-06,
+   "imag": -3.511592258670457e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole sl)' sig",
   {
-   "real": 2.0343927256361054e-05,
-   "imag": 3.8781906861207105e-06,
+   "real": 2.034392725636104e-05,
+   "imag": 3.878190686120714e-06,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -2813,31 +2984,31 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole sl)' sig",
   {
-   "real": -5.355979142031822e-05,
-   "imag": -2.9406506416505948e-05,
+   "real": -5.355979142031823e-05,
+   "imag": -2.9406506416505958e-05,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ll)' sig",
   {
-   "real": 1.0481580008552403e-20,
-   "imag": -4.42943976477819e-06,
+   "real": 8.446227105336163e-21,
+   "imag": -4.429439764778188e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ll)' sig",
   {
-   "real": 4.208559427196573e-21,
-   "imag": 4.502103393888355e-06,
+   "real": 2.6696503024059496e-21,
+   "imag": 4.502103393888357e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ll)' sig",
   {
-   "real": 3.890020480768429e-21,
+   "real": 5.928663929638099e-21,
    "imag": -2.330832909678244e-05,
    "__extended_json_type__": "complex128"
   }
@@ -2845,31 +3016,31 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ll)' sig",
   {
-   "real": 3.027203699815156e-21,
-   "imag": -2.9498581764809007e-05,
+   "real": 4.991418329103391e-21,
+   "imag": -2.9498581764809017e-05,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ss)' sig",
   {
-   "real": 7.093970841600571e-21,
-   "imag": -2.296502189836944e-06,
+   "real": 5.8836441526602916e-21,
+   "imag": -2.2965021898369526e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ss)' sig",
   {
-   "real": -1.854858865244409e-21,
-   "imag": 3.2646915520207033e-06,
+   "real": -3.666816065535243e-21,
+   "imag": 3.264691552020705e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ss)' sig",
   {
-   "real": -1.403159992876363e-21,
+   "real": 2.98013986174708e-22,
    "imag": -2.447912398791893e-05,
    "__extended_json_type__": "complex128"
   }
@@ -2877,8 +3048,8 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ss)' sig",
   {
-   "real": -2.645691756354597e-21,
-   "imag": -2.8989166058383722e-05,
+   "real": -4.583716868434779e-21,
+   "imag": -2.898916605838372e-05,
    "__extended_json_type__": "complex128"
   }
  ],
