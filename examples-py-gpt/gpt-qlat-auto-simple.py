@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-
-from auto_contractor.operators import *
 
 import functools
 import math
@@ -14,6 +11,7 @@ import sys
 import qlat_gpt as qg
 
 from qlat_scripts.v1 import *
+from auto_contractor.operators import *
 
 is_cython = False
 
@@ -139,7 +137,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
 
 ### ------
 
@@ -366,7 +364,7 @@ if __name__ == "__main__":
         for traj in get_param(job_tag, "trajs"):
             run_job(job_tag, traj)
 
-    q.check_log_json(__file__, json_results)
+    q.check_log_json(__file__)
 
     q.timer_display()
 

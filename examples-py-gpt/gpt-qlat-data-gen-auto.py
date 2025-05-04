@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 
-json_results = []
 check_eps = 5e-5
-
-def json_results_append(*args):
-    q.displayln_info(r"//------------------------------------------------------------\\")
-    q.displayln_info(-1, *args)
-    q.displayln_info(r"\\------------------------------------------------------------//")
-    json_results.append(args)
 
 from auto_contractor.operators import *
 
@@ -2287,7 +2280,7 @@ if __name__ == "__main__":
                     if job_tag[:5] != "test-":
                         gracefully_finish()
 
-    q.check_log_json(__file__, json_results, check_eps=check_eps)
+    q.check_log_json(__file__, check_eps=check_eps)
 
     gracefully_finish()
 

@@ -71,6 +71,7 @@ def run_params(job_tag):
     fname = q.get_fname()
     param = get_param(job_tag)
     param_str = q.json_dumps(param, indent=2)
+    q.json_results_append(param_str)
     param_lines = param_str.split("\n")
     for v in param_lines:
         q.displayln_info(f"CHECK: params: {job_tag}: {v}")
