@@ -5,15 +5,6 @@ import os
 os.environ['JAX_ENABLE_X64'] = 'True'
 os.environ['JAX_PLATFORMS'] = 'cpu'
 
-json_results = []
-check_eps = 5e-5
-
-def json_results_append(*args):
-    q.displayln_info(r"//------------------------------------------------------------\\")
-    q.displayln_info(-1, *args)
-    q.displayln_info(r"\\------------------------------------------------------------//")
-    json_results.append(args)
-
 import qlat as q
 import numpy as np
 
@@ -49,22 +40,22 @@ param_arr_setup, jk_corr_data, corr_data_sigma, t_arr = q.q_fit_corr_2.mk_data_s
 
 param_arr_setup = q.q_fit_corr_2.sort_param_arr_free_eig(param_arr_setup, n_ops, free_eig_idx_arr=np.arange(n_eigs))
 
-json_results_append(f"n_eigs = {n_eigs}")
+q.json_results_append(f"n_eigs = {n_eigs}")
 
 for i in range(n_eigs):
-    json_results_append(f"param_arr_setup[{i}]", param_arr_setup[i], 1e-7)
+    q.json_results_append(f"param_arr_setup[{i}]", param_arr_setup[i], 1e-7)
 
 sig1 = q.get_data_sig(param_arr_setup, q.RngState())
 
-json_results_append(f"param_arr_setup sig1", sig1, 1e-7)
+q.json_results_append(f"param_arr_setup sig1", sig1, 1e-7)
 
 sig2 = q.get_data_sig(jk_corr_data, q.RngState())
 
-json_results_append(f"jk_corr_data sig2", sig2, 1e-7)
+q.json_results_append(f"jk_corr_data sig2", sig2, 1e-7)
 
 sig3 = q.get_data_sig(corr_data_sigma, q.RngState())
 
-json_results_append(f"corr_data_sigma sig3", sig3, 1e-7)
+q.json_results_append(f"corr_data_sigma sig3", sig3, 1e-7)
 
 e_arr = param_arr_setup[:n_eigs]
 
@@ -80,19 +71,19 @@ res = q.q_fit_corr_2.fit_eig_coef(
 
 sig4 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
-json_results_append(f"jk_chisq sig4", sig4, 1e-4)
+q.json_results_append(f"jk_chisq sig4", sig4, 1e-4)
 
 sig5 = q.get_data_sig(abs(res['jk_param_arr']), q.RngState())
 
-json_results_append(f"jk_param_arr sig5", sig5, 1e-4)
+q.json_results_append(f"jk_param_arr sig5", sig5, 1e-4)
 
 sig6 = q.get_data_sig(abs(res['jk_param_grad_arr']), q.RngState())
 
-json_results_append(f"jk_param_grad_arr sig6", sig6, 1e-4)
+q.json_results_append(f"jk_param_grad_arr sig6", sig6, 1e-4)
 
 sig7 = q.get_data_sig(abs(res['jk_param_for_scaled_corr_arr']), q.RngState())
 
-json_results_append(f"jk_param_for_scaled_corr_arr sig7", sig7, 1e-4)
+q.json_results_append(f"jk_param_for_scaled_corr_arr sig7", sig7, 1e-4)
 
 param_compare = np.stack((param_arr_setup,) + q.g_jk_avg_err(res['jk_param_arr'])).T
 
@@ -111,19 +102,19 @@ res = q.q_fit_corr_2.fit_eig_coef(
 
 sig4 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
-json_results_append(f"jk_chisq sig4", sig4, 1e-4)
+q.json_results_append(f"jk_chisq sig4", sig4, 1e-4)
 
 sig5 = q.get_data_sig(abs(res['jk_param_arr']), q.RngState())
 
-json_results_append(f"jk_param_arr sig5", sig5, 1e-4)
+q.json_results_append(f"jk_param_arr sig5", sig5, 1e-4)
 
 sig6 = q.get_data_sig(abs(res['jk_param_grad_arr']), q.RngState())
 
-json_results_append(f"jk_param_grad_arr sig6", sig6, 1e-4)
+q.json_results_append(f"jk_param_grad_arr sig6", sig6, 1e-4)
 
 sig7 = q.get_data_sig(abs(res['jk_param_for_scaled_corr_arr']), q.RngState())
 
-json_results_append(f"jk_param_for_scaled_corr_arr sig7", sig7, 1e-4)
+q.json_results_append(f"jk_param_for_scaled_corr_arr sig7", sig7, 1e-4)
 
 res = q.q_fit_corr_2.fit_eig_coef(
         jk_corr_data[:, :, :, 1:10],
@@ -139,13 +130,13 @@ res = q.q_fit_corr_2.fit_eig_coef(
 
 sig8 = q.get_data_sig(res['jk_chisq'], q.RngState())
 
-json_results_append(f"jk_chisq sig8", sig8, 1e-2)
+q.json_results_append(f"jk_chisq sig8", sig8, 1e-2)
 
 sig9 = q.get_data_sig(abs(res['jk_param_arr']), q.RngState())
 
-json_results_append(f"jk_param_arr sig9", sig9, 1e-4)
+q.json_results_append(f"jk_param_arr sig9", sig9, 1e-4)
 
-q.check_log_json(__file__, json_results)
+q.check_log_json(__file__)
 
 q.timer_display()
 

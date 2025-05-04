@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-check_eps = 5e-5
-
-def json_results_append(*args):
-    q.displayln_info(r"//------------------------------------------------------------\\")
-    q.displayln_info(-1, *args)
-    q.displayln_info(r"\\------------------------------------------------------------//")
-    json_results.append(args)
-
 from auto_contractor import (
         mk_meson,
         mk_fac,
@@ -549,11 +540,11 @@ if __name__ == "__main__":
             run_job(job_tag, traj)
             q.clean_cache()
             if q.obtained_lock_history_list:
-                json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                 if job_tag[:5] != "test-":
                     gracefully_finish()
 
-    q.check_log_json(__file__, json_results, check_eps=check_eps)
+    q.check_log_json(__file__, check_eps=5e-5)
 
     gracefully_finish()
 

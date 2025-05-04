@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
 check_eps = 1e-12
 
 import qlat as q
@@ -48,105 +47,105 @@ f2.set_zero()
 f3.set_zero()
 f4.set_zero()
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 sf1.set_zero()
 sf2.set_zero()
 sf3.set_zero()
 sf4.set_zero()
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
 sp1.set_zero()
 sp2.set_zero()
 sp3.set_zero()
 sp4.set_zero()
 
-json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
 f1.set_rand(rs)
 f2.set_rand(rs)
 f3.set_rand(rs)
 f4.set_rand(rs)
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
-json_results.append((f"q.glb_sum(q.get_data_sig(f1[:], rs))", q.glb_sum(q.get_data_sig(f1[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(f2[:], rs))", q.glb_sum(q.get_data_sig(f2[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(f3[:], rs))", q.glb_sum(q.get_data_sig(f3[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(f4[:], rs))", q.glb_sum(q.get_data_sig(f4[:], rsi)), check_eps))
+q.json_results_append(f"q.glb_sum(q.get_data_sig(f1[:], rs))", q.glb_sum(q.get_data_sig(f1[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(f2[:], rs))", q.glb_sum(q.get_data_sig(f2[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(f3[:], rs))", q.glb_sum(q.get_data_sig(f3[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(f4[:], rs))", q.glb_sum(q.get_data_sig(f4[:], rsi)), check_eps)
 
 sf1.set_rand(rs)
 sf2.set_rand(rs)
 sf3.set_rand(rs)
 sf4.set_rand(rs)
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
-json_results.append((f"q.glb_sum(q.get_data_sig(sf1[:], rs))", q.glb_sum(q.get_data_sig(sf1[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(sf2[:], rs))", q.glb_sum(q.get_data_sig(sf2[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(sf3[:], rs))", q.glb_sum(q.get_data_sig(sf3[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(sf4[:], rs))", q.glb_sum(q.get_data_sig(sf4[:], rsi)), check_eps))
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sf1[:], rs))", q.glb_sum(q.get_data_sig(sf1[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sf2[:], rs))", q.glb_sum(q.get_data_sig(sf2[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sf3[:], rs))", q.glb_sum(q.get_data_sig(sf3[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sf4[:], rs))", q.glb_sum(q.get_data_sig(sf4[:], rsi)), check_eps)
 
 sp1.set_rand(rs)
 sp2.set_rand(rs)
 sp3.set_rand(rs)
 sp4.set_rand(rs)
 
-json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
-json_results.append((f"q.glb_sum(q.get_data_sig(sp1[:], rs))", q.glb_sum(q.get_data_sig(sp1[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(sp2[:], rs))", q.glb_sum(q.get_data_sig(sp2[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(sp3[:], rs))", q.glb_sum(q.get_data_sig(sp3[:], rsi)), check_eps))
-json_results.append((f"q.glb_sum(q.get_data_sig(sp4[:], rs))", q.glb_sum(q.get_data_sig(sp4[:], rsi)), check_eps))
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sp1[:], rs))", q.glb_sum(q.get_data_sig(sp1[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sp2[:], rs))", q.glb_sum(q.get_data_sig(sp2[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sp3[:], rs))", q.glb_sum(q.get_data_sig(sp3[:], rsi)), check_eps)
+q.json_results_append(f"q.glb_sum(q.get_data_sig(sp4[:], rs))", q.glb_sum(q.get_data_sig(sp4[:], rsi)), check_eps)
 
 f1.set_rand_g(rs)
 f2.set_rand_g(rs)
 f3.set_rand_g(rs)
 f4.set_rand_g(rs)
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 sf1.set_rand_g(rs)
 sf2.set_rand_g(rs)
 sf3.set_rand_g(rs)
 sf4.set_rand_g(rs)
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
 sp1.set_rand_g(rs)
 sp2.set_rand_g(rs)
 sp3.set_rand_g(rs)
 sp4.set_rand_g(rs)
 
-json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
 q.displayln_info(f"CHECK: f1[:].shape={f1[:].shape}")
 q.displayln_info(f"CHECK: f1[:].dtype={f1[:].dtype}")
@@ -188,89 +187,89 @@ f1.save_double("results/f1.field")
 f1r = q.FieldComplexD()
 f1r.load_double("results/f1.field")
 f1r -= f1
-json_results.append((f"f1r.qnorm()", f1r.qnorm(), check_eps))
+q.json_results_append(f"f1r.qnorm()", f1r.qnorm(), check_eps)
 
 f3.save_double("results/f3.field")
 f3r = q.FieldRealD()
 f3r.load_double("results/f3.field")
 f3r -= f3
-json_results.append((f"f3r.qnorm()", f3r.qnorm(), check_eps))
+q.json_results_append(f"f3r.qnorm()", f3r.qnorm(), check_eps)
 
 sf1.save_double("results/sf1.sfield")
 sf1r = q.SelectedFieldComplexD(fsel)
 sf1r.load_double("results/sf1.sfield")
 sf1r -= sf1
-json_results.append((f"sf1r.qnorm()", sf1r.qnorm(), check_eps))
+q.json_results_append(f"sf1r.qnorm()", sf1r.qnorm(), check_eps)
 
 sf3.save_double("results/sf3.sfield")
 sf3r = q.SelectedFieldRealD(fsel)
 sf3r.load_double("results/sf3.sfield")
 sf3r -= sf3
-json_results.append((f"sf3r.qnorm()", sf3r.qnorm(), check_eps))
+q.json_results_append(f"sf3r.qnorm()", sf3r.qnorm(), check_eps)
 
 sp1.save("results/sp1.lat")
 sp1r = q.SelectedPointsComplexD(psel)
 sp1r.load("results/sp1.lat")
 sp1r -= sp1
-json_results.append((f"sp1r.qnorm()", sp1r.qnorm(), check_eps))
+q.json_results_append(f"sp1r.qnorm()", sp1r.qnorm(), check_eps)
 
 sp2.save("results/sp2.latf")
 sp2r = q.SelectedPointsComplexF(psel)
 sp2r.load("results/sp2.latf")
 sp2r -= sp2
-json_results.append((f"sp2r.qnorm()", sp2r.qnorm(), check_eps))
+q.json_results_append(f"sp2r.qnorm()", sp2r.qnorm(), check_eps)
 
 sp3.save("results/sp3.lat")
 sp3r = q.SelectedPointsRealD(psel)
 sp3r.load("results/sp3.lat")
 sp3r -= sp3
-json_results.append((f"sp3r.qnorm()", sp3r.qnorm(), check_eps))
+q.json_results_append(f"sp3r.qnorm()", sp3r.qnorm(), check_eps)
 
 sp4.save("results/sp4.latf")
 sp4r = q.SelectedPointsRealF(psel)
 sp4r.load("results/sp4.latf")
 sp4r -= sp4
-json_results.append((f"sp4r.qnorm()", sp4r.qnorm(), check_eps))
+q.json_results_append(f"sp4r.qnorm()", sp4r.qnorm(), check_eps)
 
 sf1 @= f1
 sf2 @= f2
 sf3 @= f3
 sf4 @= f4
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
 sp1 @= f1
 sp2 @= f2
 sp3 @= f3
 sp4 @= f4
 
-json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
 sp1.set_zero()
 sp2.set_zero()
 sp3.set_zero()
 sp4.set_zero()
 
-json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
 sp1 @= sf1
 sp2 @= sf2
 sp3 @= sf3
 sp4 @= sf4
 
-json_results.append((f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sp1, rs)", q.get_data_sig(sp1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
 # Keep other values in field unchanged
 
@@ -279,10 +278,10 @@ f2 @= sf2
 f3 @= sf3
 f4 @= sf4
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 # Keep other values in field unchanged
 
@@ -291,10 +290,10 @@ f2 @= sp2
 f3 @= sp3
 f4 @= sp4
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 # Keep other values in selected field unchanged
 
@@ -303,73 +302,73 @@ sf2 @= sp2
 sf3 @= sp3
 sf4 @= sp4
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
 f1.set_zero()
 f2.set_zero()
 f3.set_zero()
 f4.set_zero()
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 f1 @= sf1
 f2 @= sf2
 f3 @= sf3
 f4 @= sf4
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 f1.set_zero()
 f2.set_zero()
 f3.set_zero()
 f4.set_zero()
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 f1 @= sp1
 f2 @= sp2
 f3 @= sp3
 f4 @= sp4
 
-json_results.append((f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps))
-json_results.append((f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps))
-json_results.append((f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps))
-json_results.append((f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(f1, rs)", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f2, rs)", q.get_data_sig(f2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f3, rs)", q.get_data_sig(f3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(f4, rs)", q.get_data_sig(f4, rs), check_eps)
 
 sf1.set_zero()
 sf2.set_zero()
 sf3.set_zero()
 sf4.set_zero()
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
 sf1 @= sp1
 sf2 @= sp2
 sf3 @= sp3
 sf4 @= sp4
 
-json_results.append((f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps))
-json_results.append((f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps))
+q.json_results_append(f"q.get_data_sig(sf1, rs)", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf2, rs)", q.get_data_sig(sf2, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf3, rs)", q.get_data_sig(sf3, rs), check_eps)
+q.json_results_append(f"q.get_data_sig(sf4, rs)", q.get_data_sig(sf4, rs), check_eps)
 
 q.check_all_files_crc32_info("results")
-q.check_log_json(__file__, json_results)
+q.check_log_json(__file__)
 q.timer_display()
 
 q.end_with_mpi()

@@ -29,15 +29,12 @@ avg, err = q.g_jk_avg_err(jk_arr)
 q.displayln_info(f"CHECK: {avg}")
 q.displayln_info(f"CHECK: {err}")
 
-json_results = []
-check_eps = 1e-10
-
 for i in range(len(avg)):
-    json_results.append((f"avg[{i}]", avg[i],))
+    q.json_results_append(f"avg[{i}]", avg[i])
 for i in range(len(avg)):
-    json_results.append((f"err[{i}]", err[i],))
+    q.json_results_append(f"err[{i}]", err[i])
 
-q.check_log_json(__file__, json_results)
+q.check_log_json(__file__, check_eps=1e-10)
 
 q.end_with_mpi()
 

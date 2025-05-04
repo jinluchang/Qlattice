@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-
 import sys
 import math as m
 import numpy as np
@@ -168,7 +166,7 @@ def run_hmc(job_tag):
         info["flag"] = flag
         info["delta_h"] = delta_h
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
-        json_results.append((f"{fname}: {traj} plaq", plaq,))
+        q.json_results_append(f"{fname}: {traj} plaq", plaq)
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
@@ -289,7 +287,7 @@ if __name__ == "__main__":
         run_params(job_tag)
         run_hmc(job_tag)
 
-    q.check_log_json(__file__, json_results)
+    q.check_log_json(__file__)
 
     q.timer_display()
 

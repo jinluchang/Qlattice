@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
 check_eps = 1e-10
 
 import sys
@@ -30,26 +29,26 @@ f2 = q.FieldComplexD(geo, 5)
 f1.set_rand(rs.split("f1"))
 f2.set_rand(rs.split("f2"))
 
-json_results.append(("f1 data sig", q.get_data_sig(f1, rs), check_eps,))
-json_results.append(("f2 data sig", q.get_data_sig(f2, rs), check_eps,))
+q.json_results_append("f1 data sig", q.get_data_sig(f1, rs), check_eps)
+q.json_results_append("f2 data sig", q.get_data_sig(f2, rs), check_eps)
 
 radius = 2.0
 sf1 = q.smear_field(f1, radius)
 sf2 = q.smear_field(f2, radius, is_only_spatial=True)
 
-json_results.append(("sf1 data sig", q.get_data_sig(sf1, rs), check_eps,))
-json_results.append(("sf2 data sig", q.get_data_sig(sf2, rs), check_eps,))
+q.json_results_append("sf1 data sig", q.get_data_sig(sf1, rs), check_eps)
+q.json_results_append("sf2 data sig", q.get_data_sig(sf2, rs), check_eps)
 
 idx1 = np.array([ 0, 1, ], dtype=np.int32)
 idx2 = np.array([ 0, 2, ], dtype=np.int32)
 
 ff = q.field_convolution(f1, f2, idx1, idx2)
 
-json_results.append(("ff data sig", q.get_data_sig(ff, rs), check_eps,))
+q.json_results_append("ff data sig", q.get_data_sig(ff, rs), check_eps)
 
 ff3d = q.field_convolution(f1, f2, idx1, idx2, is_only_spatial=True)
 
-json_results.append(("ff3d data sig", q.get_data_sig(ff3d, rs), check_eps,))
+q.json_results_append("ff3d data sig", q.get_data_sig(ff3d, rs), check_eps)
 
 def check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel):
     fsel = q.FieldSelection(geo, 0)
@@ -92,7 +91,7 @@ for i in range(4):
     check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel)
     check_convolution_3d(f1, f2, idx1, idx2, ff3d, xg_rel)
 
-q.check_log_json(__file__, json_results)
+q.check_log_json(__file__)
 
 q.timer_display()
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-
 from auto_contractor.operators import *
 
 import functools
@@ -117,9 +115,9 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
@@ -170,9 +168,9 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
@@ -233,9 +231,9 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
@@ -303,9 +301,9 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 # ----
 
@@ -673,9 +671,9 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 # ----
 
@@ -915,27 +913,27 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()),))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
     ld_src_op = q.mk_lat_data([
         [ "expr_name", len(expr_names[idx_arr_of_src_op_only]), list(expr_names[idx_arr_of_src_op_only]), ],
         [ "t_op", t_size, [ str(t) for t in range(t_size) ], ],
         ])
     ld_src_op.from_numpy(res_sum_src_op)
     ld_src_op.save(get_save_path(fn_src_op))
-    json_results.append((f"{fname}: ld_src_op sig", q.get_data_sig(ld_src_op, q.RngState()),))
+    q.json_results_append(f"{fname}: ld_src_op sig", q.get_data_sig(ld_src_op, q.RngState()))
     for i, en in enumerate(expr_names[idx_arr_of_src_op_only]):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld_src_op[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld_src_op[i], q.RngState()))
     ld_snk_op = q.mk_lat_data([
         [ "expr_name", len(expr_names[idx_arr_of_snk_op_only]), list(expr_names[idx_arr_of_snk_op_only]), ],
         [ "t_op", t_size, [ str(t) for t in range(t_size) ], ],
         ])
     ld_snk_op.from_numpy(res_sum_snk_op)
     ld_snk_op.save(get_save_path(fn_snk_op))
-    json_results.append((f"{fname}: ld_snk_op sig", q.get_data_sig(ld_snk_op, q.RngState()),))
+    q.json_results_append((f"{fname}: ld_snk_op sig", q.get_data_sig(ld_snk_op, q.RngState()),))
     for i, en in enumerate(expr_names[idx_arr_of_snk_op_only]):
-        json_results.append((f"{fname}: ld '{en}' sig", q.get_data_sig(ld_snk_op[i], q.RngState()),))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld_snk_op[i], q.RngState()))
 
 # ----
 
@@ -1052,9 +1050,9 @@ def auto_contract_pi0_gg(job_tag, traj, get_get_prop):
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results.append((f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()),))
+    q.json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
     for i, en in enumerate(expr_names):
-        json_results.append((f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()), 20e-5))
+        q.json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()), 20e-5)
 
 # ----
 
@@ -1370,7 +1368,7 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
 
-    q.check_log_json(__file__, json_results, check_eps=5e-5)
+    q.check_log_json(__file__, check_eps=5e-5)
 
     gracefully_finish()
 

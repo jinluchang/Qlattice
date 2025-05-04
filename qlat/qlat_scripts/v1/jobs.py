@@ -70,21 +70,21 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 def run_params(job_tag):
     fname = q.get_fname()
     param = get_param(job_tag)
+    q.json_results_append(q.json_dumps(param))
     param_str = q.json_dumps(param, indent=2)
-    q.json_results_append(param_str)
     param_lines = param_str.split("\n")
     for v in param_lines:
         q.displayln_info(f"CHECK: params: {job_tag}: {v}")
-    path_dir = get_save_path(f"{job_tag}/params/")
+    path_dir = get_save_path(f"{job_tag}/params")
     def mk_fn(version):
         path = f"{path_dir}/version-{version:010}.json"
         return path
-    fn_list = q.qls(path_dir)
+    fn_list = q.qls_sync_node(path_dir)
     assert isinstance(fn_list, list)
     if len(fn_list) == 0:
         version = 1
     else:
-        fn_prefix = path_dir + "version-"
+        fn_prefix = f"{path_dir}/version-"
         fn_suffix= ".json"
         version_list = []
         for fn in fn_list:
@@ -102,10 +102,12 @@ def run_params(job_tag):
             version = 1
         else:
             version = version_list[-1]
-            param_str_load = q.qcat_sync_node(mk_fn(version))
+            fn = mk_fn(version)
+            assert fn in fn_list
+            param_str_load = q.qcat_sync_node(fn)
             if param_str_load == param_str:
-                assert param == q.load_json_obj(mk_fn(version), is_sync_node=True)
-                q.displayln_info(0, f"{fname}: loaded '{mk_fn(version)}' matches param exactly.")
+                assert param == q.load_json_obj(fn, is_sync_node=True)
+                q.displayln_info(0, f"{fname}: loaded '{fn}' matches param exactly.")
                 return
             version += 1
     fn = mk_fn(version)

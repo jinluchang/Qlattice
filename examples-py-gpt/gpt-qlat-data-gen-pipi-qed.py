@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-check_eps = 5e-5
-
 def json_results_append(*args):
     q.displayln_info(r"//------------------------------------------------------------\\")
     q.displayln_info(-1, *args)
@@ -120,9 +117,9 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
     for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
 
 # ----
 
@@ -288,9 +285,9 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
     for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
 
 # ----
 
@@ -374,9 +371,9 @@ def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
     for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
 
 # ----
 
@@ -575,9 +572,9 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
     for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
 
 # ----
 
@@ -770,9 +767,9 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig_arr(ld_sum, q.RngState(), 4))
+    q.json_results_append(f"{fname}: ld_sum sig", q.get_data_sig_arr(ld_sum, q.RngState(), 4))
     for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig_arr(ld_sum[i], q.RngState(), 4))
+        q.json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig_arr(ld_sum[i], q.RngState(), 4))
 
 # ----
 
@@ -962,9 +959,9 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
         ])
     ld_sum.from_numpy(res_sum)
     ld_sum.save(get_save_path(fn))
-    json_results_append(f"{fname}: ld_sum sig", q.get_data_sig_arr(ld_sum, q.RngState(), 4))
+    q.json_results_append(f"{fname}: ld_sum sig", q.get_data_sig_arr(ld_sum, q.RngState(), 4))
     for i, en in enumerate(expr_names):
-        json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig_arr(ld_sum[i], q.RngState(), 4))
+        q.json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig_arr(ld_sum[i], q.RngState(), 4))
 
 # ----
 
@@ -1324,7 +1321,7 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_inversion(job_tag, traj)
                 if q.obtained_lock_history_list:
-                    json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                    q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
                         gracefully_finish()
         for traj in get_param(job_tag, "trajs"):
@@ -1332,11 +1329,11 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_contraction(job_tag, traj)
                 if q.obtained_lock_history_list:
-                    json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
+                    q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
                         gracefully_finish()
 
-    q.check_log_json(__file__, json_results, check_eps=check_eps)
+    q.check_log_json(__file__, check_eps=5e-5)
 
     gracefully_finish()
 

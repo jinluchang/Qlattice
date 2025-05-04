@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-check_eps = 5e-5
-
 from auto_contractor.operators import *
 
 import functools
@@ -2280,7 +2278,7 @@ if __name__ == "__main__":
                     if job_tag[:5] != "test-":
                         gracefully_finish()
 
-    q.check_log_json(__file__, check_eps=check_eps)
+    q.check_log_json(__file__, check_eps=5e-5)
 
     gracefully_finish()
 
