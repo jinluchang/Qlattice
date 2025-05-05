@@ -2248,7 +2248,7 @@ set_param("test-8nt16", "trajs", value=[ 1000, 2000, ])
 set_param("24D", "trajs", value=list(range(2000, 3000, 10)))
 set_param("48I", "trajs", value=list(range(975, 2185, 10)) + list(range(1102, 1502, 10)))
 set_param("64I", "trajs", value=list(range(1200, 3680, 20)))
-set_param("64I-pq", "trajs", value=list(range(1200, 3680, 160)))
+set_param("64I-pq", "trajs", value=list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
 
 set_param("test-4nt8", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("test-8nt16", "hlbl_four_prob_scaling_factor", value=1.0)
