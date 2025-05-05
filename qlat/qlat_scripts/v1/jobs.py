@@ -76,7 +76,8 @@ def run_params(job_tag):
         q.displayln_info(f"CHECK: params: {job_tag}: {v}")
     path_dir = get_save_path(f"{job_tag}/params")
     fn_prefix = f"{path_dir}/version-"
-    fn_suffix= ".json"
+    fn_suffix = ".json"
+    fn_suffix2 = ".pickle"
     def mk_fn(version):
         path = f"{fn_prefix}{version:010}{fn_suffix}"
         return path
@@ -88,21 +89,22 @@ def run_params(job_tag):
         version_list = []
         for fn in fn_list:
             assert fn.startswith(fn_prefix)
-            assert fn.endswith(fn_suffix) or fn.endswith(".pickle")
-            tag = fn
-            tag = tag.removeprefix(fn_prefix)
-            tag = tag.removesuffix(fn_suffix)
-            assert len(tag) == 10
-            v = int(tag)
-            assert fn == mk_fn(v)
-            version_list.append(v)
+            assert fn.endswith(fn_suffix) or fn.endswith(fn_suffix2)
+            if fn.endswith(fn_suffix):
+                tag = fn
+                tag = tag.removeprefix(fn_prefix)
+                tag = tag.removesuffix(fn_suffix)
+                assert len(tag) == 10
+                v = int(tag)
+                assert fn == mk_fn(v)
+                version_list.append(v)
         version_list.sort()
         if len(version_list) == 0:
             version = 1
         else:
             version = version_list[-1]
             fn = mk_fn(version)
-            fn_pickle = fn.removesuffix(fn_suffix) + ".pickle"
+            fn_pickle = fn.removesuffix(fn_suffix) + fn_suffix2
             assert fn in fn_list
             assert fn_pickle in fn_list
             if param == q.load_pickle_obj(fn_pickle, is_sync_node=True):
@@ -112,7 +114,7 @@ def run_params(job_tag):
                 return
             version += 1
     fn = mk_fn(version)
-    fn_pickle = fn.removesuffix(fn_suffix) + ".pickle"
+    fn_pickle = fn.removesuffix(fn_suffix) + fn_suffix2
     q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
     q.save_json_obj(get_param(job_tag), fn, indent=2, is_sync_node=True)
 
