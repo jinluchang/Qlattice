@@ -1987,36 +1987,6 @@ def run_job_contract(job_tag, traj):
     #
     fns_produce = [
             ]
-    if is_performing_contraction:
-        fns_produce += [
-                f"{job_tag}/hlbl/edl/traj-{traj}/edl-light.lat",
-                f"{job_tag}/hlbl/edl/traj-{traj}/edl-strange.lat",
-                f"{job_tag}/hlbl/check-hvp-avg-light/traj-{traj}.txt",
-                f"{job_tag}/hlbl/check-hvp-avg-strange/traj-{traj}.txt",
-                ]
-    if is_performing_global_hvp_average:
-        fns_produce += [
-                f"{job_tag}/hlbl/sub-hvp-light/traj-{traj}/geon-info.txt",
-                f"{job_tag}/hlbl/sub-hvp-strange/traj-{traj}/geon-info.txt",
-                f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_light.field",
-                f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_strange.field",
-                ]
-    if is_performing_auto_contraction:
-        fns_produce += [
-                f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
-                ]
-    if is_performing_hlbl_contraction:
-        fns_produce += [
-                f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
-                f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
-                ]
-    if is_performing_hlbl_contraction and is_performing_global_hvp_average:
-        fns_produce += [
-                f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
-                f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
-                f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results-brief.pickle",
-                f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results-brief.pickle",
-                ]
     fns_need = [
             #
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
@@ -2060,6 +2030,42 @@ def run_job_contract(job_tag, traj):
             # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
             # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
             ]
+    if is_performing_contraction:
+        fns_produce += [
+                f"{job_tag}/hlbl/edl/traj-{traj}/edl-light.lat",
+                f"{job_tag}/hlbl/edl/traj-{traj}/edl-strange.lat",
+                f"{job_tag}/hlbl/check-hvp-avg-light/traj-{traj}.txt",
+                f"{job_tag}/hlbl/check-hvp-avg-strange/traj-{traj}.txt",
+                ]
+    if is_performing_global_hvp_average:
+        fns_produce += [
+                f"{job_tag}/hlbl/sub-hvp-light/traj-{traj}/geon-info.txt",
+                f"{job_tag}/hlbl/sub-hvp-strange/traj-{traj}/geon-info.txt",
+                f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_light.field",
+                f"{job_tag}/hlbl/glb-hvp-avg-for-sub/traj-{traj}/hvp_average_strange.field",
+                ]
+        fns_need += [
+                f"{job_tag}/hvp-average/hvp_average_light.field",
+                f"{job_tag}/hvp-average/hvp_average_light.trajs.txt",
+                f"{job_tag}/hvp-average/hvp_average_strange.field",
+                f"{job_tag}/hvp-average/hvp_average_strange.trajs.txt",
+                ]
+    if is_performing_auto_contraction:
+        fns_produce += [
+                f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+                ]
+    if is_performing_hlbl_contraction:
+        fns_produce += [
+                f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
+                ]
+    if is_performing_hlbl_contraction and is_performing_global_hvp_average:
+        fns_produce += [
+                f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/dlbl-strange-light/traj-{traj}/results-brief.pickle",
+                f"{job_tag}/hlbl/dlbl-strange-strange/traj-{traj}/results-brief.pickle",
+                ]
     #
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
