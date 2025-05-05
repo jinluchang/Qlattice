@@ -18,70 +18,70 @@
  ],
  [
   "sol_ref norm",
-  3559.133347631925,
+  3559.131354265457,
   1e-10
  ],
  [
   "sol_ref get_data_sig",
   {
-   "real": 32.19357338811459,
-   "imag": -23.705625568060206,
+   "real": 32.193735624391195,
+   "imag": -23.7058659407165,
    "__extended_json_type__": "complex"
   },
   1e-10
  ],
  [
   "sol diff norm inv_acc=0 with eig",
-  0.12549695255891063,
+  0.12563657268658895,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 with eig",
   {
-   "real": -0.21550500704520492,
-   "imag": 0.3908146974911799,
+   "real": -0.2156672433218149,
+   "imag": 0.3910550701474773,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=0 without eig",
-  1582.5796894943787,
+  1582.5787765366956,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 without eig",
   {
-   "real": -20.2581055851823,
-   "imag": 16.41219615307799,
+   "real": -20.258267821458915,
+   "imag": 16.412436525734286,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 with eig",
-  5.9981132763090825e-05,
+  6.037510729804875e-05,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 with eig",
   {
-   "real": -0.002003790029302229,
-   "imag": 8.616277320839518e-05,
+   "real": -0.0021660263059121313,
+   "imag": 0.0003265354295057957,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 without eig",
-  847.8174329978148,
+  847.8169990369965,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 without eig",
   {
-   "real": -9.501114470156221,
-   "imag": 8.938796653792608,
+   "real": -9.50127670643283,
+   "imag": 8.939037026448908,
    "__extended_json_type__": "complex"
   },
   0.01
@@ -102,70 +102,70 @@
  ],
  [
   "sol_ref norm",
-  3321.100603964075,
+  3321.098764101664,
   1e-10
  ],
  [
   "sol_ref get_data_sig",
   {
-   "real": 37.15931952206785,
-   "imag": -17.53760706657424,
+   "real": 37.15948513456993,
+   "imag": -17.537869356534806,
    "__extended_json_type__": "complex"
   },
   1e-10
  ],
  [
   "sol diff norm inv_acc=0 with eig",
-  0.12322926871065815,
+  0.12336316288272443,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 with eig",
   {
-   "real": -0.21228023912052083,
-   "imag": 0.3994260905676336,
+   "real": -0.21244585162259816,
+   "imag": 0.399688380528198,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=0 without eig",
-  1356.1858584888214,
+  1356.1850316655732,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 without eig",
   {
-   "real": -23.068779586035916,
-   "imag": 10.963959532490325,
+   "real": -23.068945198537996,
+   "imag": 10.964221822450885,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 with eig",
-  5.8857046208800704e-05,
+  5.920144183557792e-05,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 with eig",
   {
-   "real": -0.002182830568954399,
-   "imag": 0.0006346866812131551,
+   "real": -0.0023484430710317278,
+   "imag": 0.0008969766417775147,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 without eig",
-  652.3485836961966,
+  652.3482453163241,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 without eig",
   {
-   "real": -11.353902179505292,
-   "imag": 4.267210449417144,
+   "real": -11.354067792007372,
+   "imag": 4.267472739377708,
    "__extended_json_type__": "complex"
   },
   0.01

@@ -1,6 +1,6 @@
 [
  [
-  "{\"job_tag\": \"test-4nt8\", \"total_site\": [4, 4, 4, 8], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"fermion_params\": {\"0\": {\"0\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}, \"1\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}, \"2\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}}, \"1\": {\"0\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.04}, \"1\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.04}, \"2\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.04}}, \"2\": {\"0\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.2}, \"1\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.2}, \"2\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.2}}}, \"lanc_params\": {\"0\": {\"0\": {\"fermion_params\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}, \"pit_params\": {\"eps\": 0.01, \"maxiter\": 500, \"real\": true}, \"cheby_params\": {\"low\": 0.1, \"high\": 5.5, \"order\": 50}, \"irl_params\": {\"Nstop\": 20, \"Nk\": 25, \"Nm\": 30, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}}}}, \"clanc_params\": {\"0\": {\"0\": {\"block\": [2, 2, 2, 2], \"nbasis\": 20, \"cheby_params\": {\"low\": 0.2, \"high\": 5.5, \"order\": 50}, \"irl_params\": {\"Nstop\": 30, \"Nk\": 35, \"Nm\": 40, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}, \"smoother_params\": {\"eps\": 1e-08, \"maxiter\": 10}, \"save_params\": {\"nsingle\": 10, \"mpi\": [1, 1, 1, 4]}}}}, \"gf_ape_smear_coef\": 0.5, \"gf_ape_smear_step\": 30, \"prop_smear_coef\": 0.9375, \"prop_smear_step\": 10, \"trajs\": [1000], \"field-selection-fsel-rate\": 0.0625, \"field-selection-psel-rate\": 0.03125, \"field-selection-fsel-psrc-prop-norm-threshold\": 0.001, \"n_points_psel\": 6, \"n_exact_wsrc\": 2, \"n_per_tslice_smear\": 2, \"prob_acc_1_smear\": 0.25, \"prob_acc_2_smear\": 0.0625, \"prob_acc_1_psrc\": 0.25, \"prob_acc_2_psrc\": 0.0625, \"n_rand_u1_fsel\": 4, \"prob_acc_1_rand_u1\": 0.25, \"prob_acc_2_rand_u1\": 0.0625, \"meson_tensor_tsep\": 1, \"meson_jwjj_threshold\": 0.1, \"meson_tsep_list\": [1, 2, 3, 4, 5, 6, 7], \"m_l\": 0.01, \"m_h\": 0.04, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 500}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 500}, \"cg_params-2-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-2-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-2-2\": {\"maxiter\": 10, \"maxcycle\": 500}}"
+  "{\"job_tag\": \"test-4nt8\", \"total_site\": [4, 4, 4, 8], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"fermion_params\": {\"0\": {\"0\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}, \"1\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}, \"2\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}}, \"1\": {\"0\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.04}, \"1\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.04}, \"2\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.04}}, \"2\": {\"0\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.2}, \"1\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.2}, \"2\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.2}}}, \"lanc_params\": {\"0\": {\"0\": {\"fermion_params\": {\"M5\": 1.8, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"b\": 1.5, \"c\": 0.5, \"Ls\": 8, \"mass\": 0.01}, \"pit_params\": {\"eps\": 0.01, \"maxiter\": 500, \"real\": true}, \"cheby_params\": {\"low\": 0.1, \"high\": 5.5, \"order\": 50}, \"irl_params\": {\"Nstop\": 20, \"Nk\": 25, \"Nm\": 30, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}}}}, \"clanc_params\": {\"0\": {\"0\": {\"block\": [2, 2, 2, 2], \"nbasis\": 20, \"cheby_params\": {\"low\": 0.2, \"high\": 5.5, \"order\": 50}, \"irl_params\": {\"Nstop\": 30, \"Nk\": 35, \"Nm\": 40, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}, \"smoother_params\": {\"eps\": 1e-08, \"maxiter\": 10}, \"save_params\": {\"nsingle\": 10, \"mpi\": [1, 1, 1, 4]}}}}, \"gf_ape_smear_coef\": 0.5, \"gf_ape_smear_step\": 30, \"prop_smear_coef\": 0.9375, \"prop_smear_step\": 10, \"trajs\": [1000], \"field-selection-fsel-rate\": 0.0625, \"field-selection-psel-rate\": 0.03125, \"field-selection-fsel-psrc-prop-norm-threshold\": 0.001, \"n_points_psel\": 6, \"n_exact_wsrc\": 2, \"n_per_tslice_smear\": 2, \"prob_acc_1_smear\": 0.25, \"prob_acc_2_smear\": 0.0625, \"prob_acc_1_psrc\": 0.25, \"prob_acc_2_psrc\": 0.0625, \"n_rand_u1_fsel\": 4, \"prob_acc_1_rand_u1\": 0.25, \"prob_acc_2_rand_u1\": 0.0625, \"meson_tensor_tsep\": 1, \"meson_jwjj_threshold\": 0.1, \"meson_tsep_list\": [1, 2, 3, 4, 5, 6, 7], \"m_l\": 0.01, \"m_h\": 0.04, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-2-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-2-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-2-2\": {\"maxiter\": 10, \"maxcycle\": 3}}"
  ],
  [
   "geo.show() = Geometry([4, 4, 4, 8])"
@@ -27,50 +27,50 @@
  [
   "sol_ref get_data_sig",
   {
-   "real": 11.943744158624984,
-   "imag": -0.27502989510661635,
+   "real": 11.943744158624991,
+   "imag": -0.27502989510656484,
    "__extended_json_type__": "complex"
   },
   1e-10
  ],
  [
   "sol diff norm inv_acc=0 with eig",
-  2.337839845703002,
+  2.3378398457030602,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 with eig",
   {
-   "real": 0.34764244149905527,
-   "imag": 0.027922190070689093,
+   "real": 0.3476424414990526,
+   "imag": 0.027922190070637815,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=0 without eig",
-  3903.9892156728247,
+  3903.9892156728256,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 without eig",
   {
-   "real": -6.689851965274938,
-   "imag": 2.7241555103162995,
+   "real": -6.689851965274943,
+   "imag": 2.724155510316248,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 with eig",
-  0.009888937580432968,
+  0.0098889375804616,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 with eig",
   {
-   "real": -0.01829529707425859,
-   "imag": 0.028008624808986624,
+   "real": -0.018295297074261314,
+   "imag": 0.028008624808935303,
    "__extended_json_type__": "complex"
   },
   0.01
@@ -83,8 +83,8 @@
  [
   "sol diff get_data_sig inv_acc=1 without eig",
   {
-   "real": -2.951473761311119,
-   "imag": -1.0284833451154545,
+   "real": -2.951473761311121,
+   "imag": -1.0284833451155118,
    "__extended_json_type__": "complex"
   },
   0.01
@@ -111,50 +111,50 @@
  [
   "sol_ref get_data_sig",
   {
-   "real": 11.943744158624984,
-   "imag": -0.27502989510661635,
+   "real": 11.943744158624991,
+   "imag": -0.27502989510656484,
    "__extended_json_type__": "complex"
   },
   1e-10
  ],
  [
   "sol diff norm inv_acc=0 with eig",
-  2.337839845703002,
+  2.3378398457030602,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 with eig",
   {
-   "real": 0.34764244149905527,
-   "imag": 0.027922190070689093,
+   "real": 0.3476424414990526,
+   "imag": 0.027922190070637815,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=0 without eig",
-  3903.9892156728247,
+  3903.9892156728256,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 without eig",
   {
-   "real": -6.689851965274938,
-   "imag": 2.7241555103162995,
+   "real": -6.689851965274943,
+   "imag": 2.724155510316248,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 with eig",
-  0.009888937580432968,
+  0.0098889375804616,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 with eig",
   {
-   "real": -0.01829529707425859,
-   "imag": 0.028008624808986624,
+   "real": -0.018295297074261314,
+   "imag": 0.028008624808935303,
    "__extended_json_type__": "complex"
   },
   0.01
@@ -167,8 +167,8 @@
  [
   "sol diff get_data_sig inv_acc=1 without eig",
   {
-   "real": -2.951473761311119,
-   "imag": -1.0284833451154545,
+   "real": -2.951473761311121,
+   "imag": -1.0284833451155118,
    "__extended_json_type__": "complex"
   },
   0.01
@@ -189,154 +189,154 @@
  ],
  [
   "sol_ref norm",
-  10718.125167880307,
-  1e-10
- ],
- [
-  "sol_ref get_data_sig",
-  {
-   "real": 11.943744158625009,
-   "imag": -0.27502989510660214,
-   "__extended_json_type__": "complex"
-  },
-  1e-10
- ],
- [
-  "sol diff norm inv_acc=0 with eig",
-  2.3378965084942833,
-  0.01
- ],
- [
-  "sol diff get_data_sig inv_acc=0 with eig",
-  {
-   "real": 0.34774777317814387,
-   "imag": 0.027908548442625705,
-   "__extended_json_type__": "complex"
-  },
-  0.01
- ],
- [
-  "sol diff norm inv_acc=0 without eig",
-  3903.9892156728242,
-  0.01
- ],
- [
-  "sol diff get_data_sig inv_acc=0 without eig",
-  {
-   "real": -6.689851965274949,
-   "imag": 2.724155510316297,
-   "__extended_json_type__": "complex"
-  },
-  0.01
- ],
- [
-  "sol diff norm inv_acc=1 with eig",
-  0.00988888609314718,
-  0.01
- ],
- [
-  "sol diff get_data_sig inv_acc=1 with eig",
-  {
-   "real": -0.01829223484791761,
-   "imag": 0.028012062038705085,
-   "__extended_json_type__": "complex"
-  },
-  0.01
- ],
- [
-  "sol diff norm inv_acc=1 without eig",
-  1328.396357282344,
-  0.01
- ],
- [
-  "sol diff get_data_sig inv_acc=1 without eig",
-  {
-   "real": -2.951473761311119,
-   "imag": -1.0284833451154625,
-   "__extended_json_type__": "complex"
-  },
-  0.01
- ],
- [
-  "src norm",
-  4091.225019304942,
-  1e-10
- ],
- [
-  "src get_data_sig",
-  {
-   "real": 39.37797352855642,
-   "imag": 31.81191171826329,
-   "__extended_json_type__": "complex"
-  },
-  1e-10
- ],
- [
-  "sol_ref norm",
-  10718.125167880307,
+  10718.125167880306,
   1e-10
  ],
  [
   "sol_ref get_data_sig",
   {
    "real": 11.943744158625009,
-   "imag": -0.27502989510660214,
+   "imag": -0.2750298951065666,
    "__extended_json_type__": "complex"
   },
   1e-10
  ],
  [
   "sol diff norm inv_acc=0 with eig",
-  2.3378965084942833,
+  2.3378965084943406,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 with eig",
   {
-   "real": 0.34774777317814387,
-   "imag": 0.027908548442625705,
+   "real": 0.34774777317814176,
+   "imag": 0.027908548442582906,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=0 without eig",
-  3903.9892156728242,
+  3903.9892156728256,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=0 without eig",
   {
-   "real": -6.689851965274949,
-   "imag": 2.724155510316297,
+   "real": -6.689851965274946,
+   "imag": 2.7241555103162534,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 with eig",
-  0.00988888609314718,
+  0.00988888609317581,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 with eig",
   {
-   "real": -0.01829223484791761,
-   "imag": 0.028012062038705085,
+   "real": -0.018292234847919874,
+   "imag": 0.028012062038662317,
    "__extended_json_type__": "complex"
   },
   0.01
  ],
  [
   "sol diff norm inv_acc=1 without eig",
-  1328.396357282344,
+  1328.3963572823443,
   0.01
  ],
  [
   "sol diff get_data_sig inv_acc=1 without eig",
   {
-   "real": -2.951473761311119,
-   "imag": -1.0284833451154625,
+   "real": -2.9514737613111235,
+   "imag": -1.0284833451155015,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "src norm",
+  4091.225019304942,
+  1e-10
+ ],
+ [
+  "src get_data_sig",
+  {
+   "real": 39.37797352855642,
+   "imag": 31.81191171826329,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol_ref norm",
+  10718.125167880306,
+  1e-10
+ ],
+ [
+  "sol_ref get_data_sig",
+  {
+   "real": 11.943744158625009,
+   "imag": -0.2750298951065666,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol diff norm inv_acc=0 with eig",
+  2.3378965084943406,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 with eig",
+  {
+   "real": 0.34774777317814176,
+   "imag": 0.027908548442582906,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=0 without eig",
+  3903.9892156728256,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 without eig",
+  {
+   "real": -6.689851965274946,
+   "imag": 2.7241555103162534,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 with eig",
+  0.00988888609317581,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 with eig",
+  {
+   "real": -0.018292234847919874,
+   "imag": 0.028012062038662317,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 without eig",
+  1328.3963572823443,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 without eig",
+  {
+   "real": -2.9514737613111235,
+   "imag": -1.0284833451155015,
    "__extended_json_type__": "complex"
   },
   0.01

@@ -265,7 +265,7 @@ CHECK: params: test-4nt8:     "maxcycle": 2
 CHECK: params: test-4nt8:   },
 CHECK: params: test-4nt8:   "cg_params-0-2": {
 CHECK: params: test-4nt8:     "maxiter": 10,
-CHECK: params: test-4nt8:     "maxcycle": 500
+CHECK: params: test-4nt8:     "maxcycle": 3
 CHECK: params: test-4nt8:   },
 CHECK: params: test-4nt8:   "cg_params-1-0": {
 CHECK: params: test-4nt8:     "maxiter": 10,
@@ -277,7 +277,7 @@ CHECK: params: test-4nt8:     "maxcycle": 2
 CHECK: params: test-4nt8:   },
 CHECK: params: test-4nt8:   "cg_params-1-2": {
 CHECK: params: test-4nt8:     "maxiter": 10,
-CHECK: params: test-4nt8:     "maxcycle": 500
+CHECK: params: test-4nt8:     "maxcycle": 3
 CHECK: params: test-4nt8:   },
 CHECK: params: test-4nt8:   "cg_params-2-0": {
 CHECK: params: test-4nt8:     "maxiter": 10,
@@ -289,7 +289,7 @@ CHECK: params: test-4nt8:     "maxcycle": 2
 CHECK: params: test-4nt8:   },
 CHECK: params: test-4nt8:   "cg_params-2-2": {
 CHECK: params: test-4nt8:     "maxiter": 10,
-CHECK: params: test-4nt8:     "maxcycle": 500
+CHECK: params: test-4nt8:     "maxcycle": 3
 CHECK: params: test-4nt8:   }
 CHECK: params: test-4nt8: }
 CHECK: finished successfully.

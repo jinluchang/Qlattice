@@ -1203,13 +1203,11 @@ set_param("test-4nt8", "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk":
 set_param("test-4nt8", "clanc_params", 1, 0)(get_param("test-4nt8", "clanc_params", 0, 0).copy())
 set_param("test-4nt8", "lanc_params", 1, 0)(get_param("test-4nt8", "lanc_params", 0, 0).copy())
 set_param("test-4nt8", "lanc_params", 1, 0, "fermion_params")(get_param("test-4nt8", "fermion_params", 1, 0).copy())
-set_param("test-4nt8", "cg_params-0-2", "maxiter")(5)
-set_param("test-4nt8", "cg_params-0-2", "maxcycle")(1)
-set_param("test-4nt8", "cg_params-1-2", "maxiter")(5)
-set_param("test-4nt8", "cg_params-1-2", "maxcycle")(1)
-set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
-set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
-set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
+for inv_type in [ 0, 1, 2, ]:
+    for inv_acc in [ 0, 1, 2, ]:
+        set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxiter")(5)
+        set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1)
+        set_param("test-4nt8", "fermion_params", inv_type, inv_acc, "Ls")(8)
 
 set_param("test-4nt16", "trajs")(list(range(1000, 1010)))
 set_param("test-4nt16", "mk_sample_gauge_field", "rand_n_step")(2)
