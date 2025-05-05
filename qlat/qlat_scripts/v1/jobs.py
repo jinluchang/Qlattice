@@ -71,25 +71,24 @@ def run_params(job_tag):
     fname = q.get_fname()
     param = get_param(job_tag)
     q.json_results_append(q.json_dumps(param))
-    param_str = q.json_dumps(param, indent=2)
-    param_lines = param_str.split("\n")
+    param_lines = q.json_dumps(param, indent=2).split("\n")
     for v in param_lines:
         q.displayln_info(f"CHECK: params: {job_tag}: {v}")
     path_dir = get_save_path(f"{job_tag}/params")
+    fn_prefix = f"{path_dir}/version-"
+    fn_suffix= ".json"
     def mk_fn(version):
-        path = f"{path_dir}/version-{version:010}.json"
+        path = f"{fn_prefix}{version:010}{fn_suffix}"
         return path
     fn_list = q.qls_sync_node(path_dir)
     assert isinstance(fn_list, list)
     if len(fn_list) == 0:
         version = 1
     else:
-        fn_prefix = f"{path_dir}/version-"
-        fn_suffix= ".json"
         version_list = []
         for fn in fn_list:
             assert fn.startswith(fn_prefix)
-            assert fn.endswith(fn_suffix)
+            assert fn.endswith(fn_suffix) or fn.endswith(".pickle")
             tag = fn
             tag = tag.removeprefix(fn_prefix)
             tag = tag.removesuffix(fn_suffix)
@@ -103,14 +102,18 @@ def run_params(job_tag):
         else:
             version = version_list[-1]
             fn = mk_fn(version)
+            fn_pickle = fn.removesuffix(fn_suffix) + ".pickle"
             assert fn in fn_list
-            param_str_load = q.qcat_sync_node(fn)
-            if param_str_load == param_str:
-                assert param == q.load_json_obj(fn, is_sync_node=True)
+            assert fn_pickle in fn_list
+            if param == q.load_pickle_obj(fn_pickle, is_sync_node=True):
+                # assert param == q.load_json_obj(fn, is_sync_node=True) # not always true due to json format not very complete (dict keys cannot be integer).
+                assert q.qcat_sync_node(fn) == q.json_dumps(param, indent=2)
                 q.displayln_info(0, f"{fname}: loaded '{fn}' matches param exactly.")
                 return
             version += 1
     fn = mk_fn(version)
+    fn_pickle = fn.removesuffix(fn_suffix) + ".pickle"
+    q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
     q.save_json_obj(get_param(job_tag), fn, indent=2, is_sync_node=True)
 
 # ----------
