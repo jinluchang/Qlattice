@@ -6,7 +6,15 @@ import pprint
 from .rbc_ukqcd_params import get_param
 
 def get_param_fermion(job_tag, inv_type, inv_acc):
-    return get_param(job_tag, "fermion_params", inv_type, inv_acc)
+    """
+    Use param with lowewr `inv_acc` if the corresponding param does not exist.
+    """
+    while inv_acc >= 0:
+        param = get_param(job_tag, "fermion_params", inv_type, inv_acc)
+        if param is not None:
+            return param
+        inv_acc -= 1
+    return None
 
 def get_ls_from_fermion_params(fermion_params):
     if "omega" in fermion_params:
@@ -15,10 +23,26 @@ def get_ls_from_fermion_params(fermion_params):
         return fermion_params["Ls"]
 
 def get_param_lanc(job_tag, inv_type, inv_acc=0):
-    return get_param(job_tag, "lanc_params", inv_type, inv_acc)
+    """
+    Use param with lowewr `inv_acc` if the corresponding param does not exist.
+    """
+    while inv_acc >= 0:
+        param = get_param(job_tag, "lanc_params", inv_type, inv_acc)
+        if param is not None:
+            return param
+        inv_acc -= 1
+    return None
 
 def get_param_clanc(job_tag, inv_type, inv_acc=0):
-    return get_param(job_tag, "clanc_params", inv_type, inv_acc)
+    """
+    Use param with lowewr `inv_acc` if the corresponding param does not exist.
+    """
+    while inv_acc >= 0:
+        param = get_param(job_tag, "clanc_params", inv_type, inv_acc)
+        if param is not None:
+            return param
+        inv_acc -= 1
+    return None
 
 @q.timer_verbose
 def mk_eig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
@@ -236,11 +260,11 @@ def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
         return maxiter
     if job_tag[:5] == "test-":
         maxiter = 50
-    elif inv_acc == 2:
+    elif inv_acc >= 2:
         maxiter = 500
     elif inv_type == 0:
         maxiter = 200
-    elif inv_type in [ 1, 2, ]:
+    elif inv_type >= 1:
         maxiter = 300
     else:
         maxiter = 200
@@ -335,6 +359,8 @@ def mk_gpt_inverter(
     elif inv_acc == 1:
         maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=2)
     elif inv_acc == 2:
+        maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=200)
+    elif inv_acc == 3:
         maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=200)
     else:
         raise Exception("mk_gpt_inverter")

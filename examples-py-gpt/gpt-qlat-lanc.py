@@ -89,8 +89,6 @@ for inv_type in [ 0, 1, 2, ]:
         set_param("test-4nt8", "fermion_params", inv_type, inv_acc, "Ls")(8)
         set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
-        if inv_acc == 2:
-            set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(500)
 
 # ----
 

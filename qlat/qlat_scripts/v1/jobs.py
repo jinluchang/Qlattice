@@ -613,7 +613,7 @@ def test_eig(gf, eig, job_tag, inv_type, *, pc_ne=None):
     src.set_rand(q.RngState("test_eig:src.set_rand"))
     q.json_results_append(f"src norm", src.qnorm(), 1e-10)
     q.json_results_append(f"src get_data_sig", q.get_data_sig(src, q.RngState()), 1e-10)
-    sol_ref = get_inv(gf, job_tag, inv_type, inv_acc=2, eig=eig, eps=1e-14, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
+    sol_ref = get_inv(gf, job_tag, inv_type, inv_acc=3, eig=eig, eps=1e-14, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
     q.json_results_append(f"sol_ref norm", sol_ref.qnorm(), 1e-10)
     q.json_results_append(f"sol_ref get_data_sig", q.get_data_sig(sol_ref, q.RngState()), 1e-10)
     for inv_acc in [ 0, 1, ]:
