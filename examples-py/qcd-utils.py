@@ -54,6 +54,7 @@ for i, gf_ape in enumerate(gf_ape_list):
     plaq_density = q.gf_plaq_action_density(gf_ape)
     spatial_plaq_density = q.gf_spatial_plaq_action_density(gf_ape)
     topo = q.gf_topology(gf_ape)
+    check_eps=1e-5
     q.json_results_append(f"gf_ape_list[{i}] plaq", plaq, check_eps)
     q.json_results_append(f"gf_ape_list[{i}] plaq2", 1 - plaq_density / 6, check_eps)
     q.json_results_append(f"gf_ape_list[{i}] spatial_plaq", spatial_plaq, check_eps)

@@ -1,5 +1,8 @@
 [
  [
+  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"is_project_gauge_transform\": true}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+ ],
+ [
   "run_hmc: 1 plaq",
   0.7450943920367528
  ],
@@ -30,6 +33,9 @@
  [
   "run_hmc: 8 plaq",
   0.5881418797220908
+ ],
+ [
+  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"random\", \"interval_list\": [1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
  ],
  [
   "run_hmc: 1 plaq",
@@ -64,6 +70,9 @@
   0.5978031451858512
  ],
  [
+  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": false, \"mass_type\": \"random\", \"interval_list\": [1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+ ],
+ [
   "run_hmc: 1 plaq",
   0.7553940083686734
  ],
@@ -96,6 +105,9 @@
   0.5905986666701075
  ],
  [
+  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"grid-2\", \"mass_list\": [1.0, 1.25, 1.5, 4.0], \"interval_list\": [1, 1, 1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+ ],
+ [
   "run_hmc: 1 plaq",
   0.7481205279773053
  ],
@@ -126,6 +138,9 @@
  [
   "run_hmc: 8 plaq",
   0.5904677295132285
+ ],
+ [
+  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"grid-2-eo\", \"mass_list\": [1.0, 1.25, 1.5, 4.0, Infinity, Infinity, Infinity, Infinity], \"interval_list\": [1, 1, 1, 2, 1, 1, 1, 1]}}}"
  ],
  [
   "run_hmc: 1 plaq",

@@ -1,15 +1,171 @@
-CHECK: ('total_site', (4, 4, 4, 8))
-CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'max_traj_reverse_test': 2, 'md_time': 1.0, 'n_step': 10, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 4, 'is_saving_topo_info': True, 'fa': {'is_project_gauge_transform': True}})
-CHECK: ('analysis', {'md_time_factor': 1.4142135623730951})
-CHECK: ('total_site', (4, 4, 4, 8))
-CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'max_traj_reverse_test': 2, 'md_time': 1.0, 'n_step': 10, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 4, 'is_saving_topo_info': True, 'fa': {'complete_refresh_interval': 2, 'is_project_gauge_transform': True, 'mass_type': 'random', 'interval_list': [1, 2]}})
-CHECK: ('analysis', {'md_time_factor': 1.4142135623730951})
-CHECK: ('total_site', (4, 4, 4, 8))
-CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'max_traj_reverse_test': 2, 'md_time': 1.0, 'n_step': 10, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 4, 'is_saving_topo_info': True, 'fa': {'complete_refresh_interval': 2, 'is_project_gauge_transform': False, 'mass_type': 'random', 'interval_list': [1, 2]}})
-CHECK: ('analysis', {'md_time_factor': 1.4142135623730951})
-CHECK: ('total_site', (4, 4, 4, 8))
-CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'max_traj_reverse_test': 2, 'md_time': 1.0, 'n_step': 10, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 4, 'is_saving_topo_info': True, 'fa': {'complete_refresh_interval': 2, 'is_project_gauge_transform': True, 'mass_type': 'grid-2', 'mass_list': [1.0, 1.25, 1.5, 4.0], 'interval_list': [1, 1, 1, 2]}})
-CHECK: ('analysis', {'md_time_factor': 1.4142135623730951})
-CHECK: ('total_site', (4, 4, 4, 8))
-CHECK: ('hmc', {'max_traj': 8, 'max_traj_always_accept': 4, 'max_traj_reverse_test': 2, 'md_time': 1.0, 'n_step': 10, 'beta': 2.13, 'c1': -0.331, 'save_traj_interval': 4, 'is_saving_topo_info': True, 'fa': {'complete_refresh_interval': 2, 'is_project_gauge_transform': True, 'mass_type': 'grid-2-eo', 'mass_list': [1.0, 1.25, 1.5, 4.0, inf, inf, inf, inf], 'interval_list': [1, 1, 1, 2, 1, 1, 1, 1]}})
+CHECK: params: test0-4nt8: {
+CHECK: params: test0-4nt8:   "total_site": [
+CHECK: params: test0-4nt8:     4,
+CHECK: params: test0-4nt8:     4,
+CHECK: params: test0-4nt8:     4,
+CHECK: params: test0-4nt8:     8
+CHECK: params: test0-4nt8:   ],
+CHECK: params: test0-4nt8:   "hmc": {
+CHECK: params: test0-4nt8:     "max_traj": 8,
+CHECK: params: test0-4nt8:     "max_traj_always_accept": 4,
+CHECK: params: test0-4nt8:     "max_traj_reverse_test": 2,
+CHECK: params: test0-4nt8:     "md_time": 1.0,
+CHECK: params: test0-4nt8:     "n_step": 10,
+CHECK: params: test0-4nt8:     "beta": 2.13,
+CHECK: params: test0-4nt8:     "c1": -0.331,
+CHECK: params: test0-4nt8:     "save_traj_interval": 4,
+CHECK: params: test0-4nt8:     "is_saving_topo_info": true,
+CHECK: params: test0-4nt8:     "fa": {
+CHECK: params: test0-4nt8:       "is_project_gauge_transform": true
+CHECK: params: test0-4nt8:     }
+CHECK: params: test0-4nt8:   },
+CHECK: params: test0-4nt8:   "analysis": {
+CHECK: params: test0-4nt8:     "md_time_factor": 1.4142135623730951
+CHECK: params: test0-4nt8:   }
+CHECK: params: test0-4nt8: }
+CHECK: params: test1-4nt8: {
+CHECK: params: test1-4nt8:   "total_site": [
+CHECK: params: test1-4nt8:     4,
+CHECK: params: test1-4nt8:     4,
+CHECK: params: test1-4nt8:     4,
+CHECK: params: test1-4nt8:     8
+CHECK: params: test1-4nt8:   ],
+CHECK: params: test1-4nt8:   "hmc": {
+CHECK: params: test1-4nt8:     "max_traj": 8,
+CHECK: params: test1-4nt8:     "max_traj_always_accept": 4,
+CHECK: params: test1-4nt8:     "max_traj_reverse_test": 2,
+CHECK: params: test1-4nt8:     "md_time": 1.0,
+CHECK: params: test1-4nt8:     "n_step": 10,
+CHECK: params: test1-4nt8:     "beta": 2.13,
+CHECK: params: test1-4nt8:     "c1": -0.331,
+CHECK: params: test1-4nt8:     "save_traj_interval": 4,
+CHECK: params: test1-4nt8:     "is_saving_topo_info": true,
+CHECK: params: test1-4nt8:     "fa": {
+CHECK: params: test1-4nt8:       "complete_refresh_interval": 2,
+CHECK: params: test1-4nt8:       "is_project_gauge_transform": true,
+CHECK: params: test1-4nt8:       "mass_type": "random",
+CHECK: params: test1-4nt8:       "interval_list": [
+CHECK: params: test1-4nt8:         1,
+CHECK: params: test1-4nt8:         2
+CHECK: params: test1-4nt8:       ]
+CHECK: params: test1-4nt8:     }
+CHECK: params: test1-4nt8:   },
+CHECK: params: test1-4nt8:   "analysis": {
+CHECK: params: test1-4nt8:     "md_time_factor": 1.4142135623730951
+CHECK: params: test1-4nt8:   }
+CHECK: params: test1-4nt8: }
+CHECK: params: test2-4nt8: {
+CHECK: params: test2-4nt8:   "total_site": [
+CHECK: params: test2-4nt8:     4,
+CHECK: params: test2-4nt8:     4,
+CHECK: params: test2-4nt8:     4,
+CHECK: params: test2-4nt8:     8
+CHECK: params: test2-4nt8:   ],
+CHECK: params: test2-4nt8:   "hmc": {
+CHECK: params: test2-4nt8:     "max_traj": 8,
+CHECK: params: test2-4nt8:     "max_traj_always_accept": 4,
+CHECK: params: test2-4nt8:     "max_traj_reverse_test": 2,
+CHECK: params: test2-4nt8:     "md_time": 1.0,
+CHECK: params: test2-4nt8:     "n_step": 10,
+CHECK: params: test2-4nt8:     "beta": 2.13,
+CHECK: params: test2-4nt8:     "c1": -0.331,
+CHECK: params: test2-4nt8:     "save_traj_interval": 4,
+CHECK: params: test2-4nt8:     "is_saving_topo_info": true,
+CHECK: params: test2-4nt8:     "fa": {
+CHECK: params: test2-4nt8:       "complete_refresh_interval": 2,
+CHECK: params: test2-4nt8:       "is_project_gauge_transform": false,
+CHECK: params: test2-4nt8:       "mass_type": "random",
+CHECK: params: test2-4nt8:       "interval_list": [
+CHECK: params: test2-4nt8:         1,
+CHECK: params: test2-4nt8:         2
+CHECK: params: test2-4nt8:       ]
+CHECK: params: test2-4nt8:     }
+CHECK: params: test2-4nt8:   },
+CHECK: params: test2-4nt8:   "analysis": {
+CHECK: params: test2-4nt8:     "md_time_factor": 1.4142135623730951
+CHECK: params: test2-4nt8:   }
+CHECK: params: test2-4nt8: }
+CHECK: params: test3-4nt8: {
+CHECK: params: test3-4nt8:   "total_site": [
+CHECK: params: test3-4nt8:     4,
+CHECK: params: test3-4nt8:     4,
+CHECK: params: test3-4nt8:     4,
+CHECK: params: test3-4nt8:     8
+CHECK: params: test3-4nt8:   ],
+CHECK: params: test3-4nt8:   "hmc": {
+CHECK: params: test3-4nt8:     "max_traj": 8,
+CHECK: params: test3-4nt8:     "max_traj_always_accept": 4,
+CHECK: params: test3-4nt8:     "max_traj_reverse_test": 2,
+CHECK: params: test3-4nt8:     "md_time": 1.0,
+CHECK: params: test3-4nt8:     "n_step": 10,
+CHECK: params: test3-4nt8:     "beta": 2.13,
+CHECK: params: test3-4nt8:     "c1": -0.331,
+CHECK: params: test3-4nt8:     "save_traj_interval": 4,
+CHECK: params: test3-4nt8:     "is_saving_topo_info": true,
+CHECK: params: test3-4nt8:     "fa": {
+CHECK: params: test3-4nt8:       "complete_refresh_interval": 2,
+CHECK: params: test3-4nt8:       "is_project_gauge_transform": true,
+CHECK: params: test3-4nt8:       "mass_type": "grid-2",
+CHECK: params: test3-4nt8:       "mass_list": [
+CHECK: params: test3-4nt8:         1.0,
+CHECK: params: test3-4nt8:         1.25,
+CHECK: params: test3-4nt8:         1.5,
+CHECK: params: test3-4nt8:         4.0
+CHECK: params: test3-4nt8:       ],
+CHECK: params: test3-4nt8:       "interval_list": [
+CHECK: params: test3-4nt8:         1,
+CHECK: params: test3-4nt8:         1,
+CHECK: params: test3-4nt8:         1,
+CHECK: params: test3-4nt8:         2
+CHECK: params: test3-4nt8:       ]
+CHECK: params: test3-4nt8:     }
+CHECK: params: test3-4nt8:   },
+CHECK: params: test3-4nt8:   "analysis": {
+CHECK: params: test3-4nt8:     "md_time_factor": 1.4142135623730951
+CHECK: params: test3-4nt8:   }
+CHECK: params: test3-4nt8: }
+CHECK: params: test4-4nt8: {
+CHECK: params: test4-4nt8:   "total_site": [
+CHECK: params: test4-4nt8:     4,
+CHECK: params: test4-4nt8:     4,
+CHECK: params: test4-4nt8:     4,
+CHECK: params: test4-4nt8:     8
+CHECK: params: test4-4nt8:   ],
+CHECK: params: test4-4nt8:   "hmc": {
+CHECK: params: test4-4nt8:     "max_traj": 8,
+CHECK: params: test4-4nt8:     "max_traj_always_accept": 4,
+CHECK: params: test4-4nt8:     "max_traj_reverse_test": 2,
+CHECK: params: test4-4nt8:     "md_time": 1.0,
+CHECK: params: test4-4nt8:     "n_step": 10,
+CHECK: params: test4-4nt8:     "beta": 2.13,
+CHECK: params: test4-4nt8:     "c1": -0.331,
+CHECK: params: test4-4nt8:     "save_traj_interval": 4,
+CHECK: params: test4-4nt8:     "is_saving_topo_info": true,
+CHECK: params: test4-4nt8:     "fa": {
+CHECK: params: test4-4nt8:       "complete_refresh_interval": 2,
+CHECK: params: test4-4nt8:       "is_project_gauge_transform": true,
+CHECK: params: test4-4nt8:       "mass_type": "grid-2-eo",
+CHECK: params: test4-4nt8:       "mass_list": [
+CHECK: params: test4-4nt8:         1.0,
+CHECK: params: test4-4nt8:         1.25,
+CHECK: params: test4-4nt8:         1.5,
+CHECK: params: test4-4nt8:         4.0,
+CHECK: params: test4-4nt8:         Infinity,
+CHECK: params: test4-4nt8:         Infinity,
+CHECK: params: test4-4nt8:         Infinity,
+CHECK: params: test4-4nt8:         Infinity
+CHECK: params: test4-4nt8:       ],
+CHECK: params: test4-4nt8:       "interval_list": [
+CHECK: params: test4-4nt8:         1,
+CHECK: params: test4-4nt8:         1,
+CHECK: params: test4-4nt8:         1,
+CHECK: params: test4-4nt8:         2,
+CHECK: params: test4-4nt8:         1,
+CHECK: params: test4-4nt8:         1,
+CHECK: params: test4-4nt8:         1,
+CHECK: params: test4-4nt8:         1
+CHECK: params: test4-4nt8:       ]
+CHECK: params: test4-4nt8:     }
+CHECK: params: test4-4nt8:   }
+CHECK: params: test4-4nt8: }
 CHECK: finished successfully.
