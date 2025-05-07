@@ -626,7 +626,7 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
                 dtype=np.complex128,
                 )
         for val, t_sep_idx, data_list_idx, data_list_size in val_list:
-            if data_list_idx % (data_list_size // 128 + 4) == 0:
+            if data_list_idx % (data_list_size // 1024 + 4) == 0:
                 q.displayln_info(0, f"{fname}: {data_list_idx}/{data_list_size}")
             values[t_sep_idx] += val
         return values.transpose(3, 0, 1, 2,)
@@ -1301,7 +1301,7 @@ set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 set_param("48I", "trajs")(list(range(905, 2000, 10)) + list(range(902, 2000, 10)))
 set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
 set_param("48I", "measurement", "meson_tensor_t_sep")(12)
-set_param("48I", "measurement", "pipi_op_t_sep")(4)
+set_param("48I", "measurement", "pipi_op_t_sep")(2)
 set_param("48I", "measurement", "pipi_op_dis_4d_sqr_limit")(6.0)
 set_param("48I", "measurement", "pipi_corr_t_sep_list")(list(range(1, 16)))
 set_param("48I", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, ])
