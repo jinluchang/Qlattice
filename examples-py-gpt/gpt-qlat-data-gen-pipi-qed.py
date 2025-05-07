@@ -563,11 +563,12 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
                     continue
                 data_list.append((pidx_snk, pidx_src, t_sep_idx,))
     def load_data():
-        for pidx_snk, pidx_src, t_sep_idx in q.get_mpi_chunk(data_list):
-            yield pidx_snk, pidx_src, t_sep_idx
+        data_list_chunk = q.get_mpi_chunk(data_list)
+        for data_list_idx, pidx_snk, pidx_src, t_sep_idx in enumerate(data_list_chunk):
+            yield data_list_idx, len(data_list_chunk), pidx_snk, pidx_src, t_sep_idx
     @q.timer
     def feval(args):
-        pidx_snk, pidx_src, t_sep_idx = args
+        data_list_idx, data_list_size, pidx_snk, pidx_src, t_sep_idx = args
         assert pidx_src != pidx_snk
         xg_snk = q.Coordinate(xg_psel_arr[pidx_snk])
         xg_src = q.Coordinate(xg_psel_arr[pidx_src])
@@ -613,7 +614,7 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
                     }
             val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             values[pipi_op_t_sep_snk, pipi_op_t_sep_src] += val / prob
-        return values, t_sep_idx
+        return values, t_sep_idx, data_list_idx, data_list_size
     def sum_function(val_list):
         values = np.zeros(
                 (len(pipi_corr_t_sep_list),
@@ -623,7 +624,9 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
                  ),
                 dtype=np.complex128,
                 )
-        for val, t_sep_idx in val_list:
+        for val, t_sep_idx, data_list_idx, data_list_size in val_list:
+            if data_list_idx % (data_list_size // 128 + 4) == 0:
+                q.displayln_info(0, f"{fname}: {data_list_idx}/{data_list_size}")
             values[t_sep_idx] += val
         return values.transpose(3, 0, 1, 2,)
     res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
