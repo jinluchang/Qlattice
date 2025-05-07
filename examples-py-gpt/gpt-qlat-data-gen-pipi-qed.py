@@ -61,7 +61,7 @@ def get_cexpr_meson_corr():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
@@ -105,11 +105,10 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
         for val, t in val_list:
             values[t] += val
-        return q.glb_sum(values.transpose(1, 0))
+        return values.transpose(1, 0)
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / total_site[3]
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
@@ -221,7 +220,7 @@ def get_cexpr_meson_corr_psnk_psrc():
             base_positions_dict=base_positions_dict,
             )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
@@ -275,10 +274,77 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
         for val in val_list:
             values += val
-        return q.glb_sum(values.transpose(1, 0))
-    with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
-        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+        return values.transpose(1, 0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.glb_sum(res_sum)
+    res_sum *= 1.0 / (t_size * (total_volume / t_size))
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
+        ])
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig_arr(ld, q.RngState(), 4))
+    for i, en in enumerate(expr_names):
+        q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4))
+
+@q.timer(is_timer_fork=True)
+def auto_contract_meson_corr_psnk_psrc_psel(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    fname = q.get_fname()
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc_psel.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr_psnk_psrc()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    get_prop = get_get_prop()
+    psel_prob = get_psel_prob()
+    fsel_prob = get_fsel_prob()
+    psel = psel_prob.psel
+    fsel = fsel_prob.fsel
+    if not fsel.is_containing(psel):
+        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
+    fsel_n_elems = fsel.n_elems
+    fsel_prob_arr = fsel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_psel_arr = psel[:]
+    xg_fsel_arr = fsel.to_psel_local()[:]
+    geo = q.Geometry(total_site)
+    total_volume = geo.total_volume
+    def load_data():
+        for pidx in q.get_mpi_chunk(list(range(len(xg_psel_arr)))):
+            yield pidx
+    @q.timer
+    def feval(args):
+        pidx = args
+        xg_src = q.Coordinate(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
+        values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
+        for idx in range(len(xg_psel_arr)):
+            xg_snk = q.Coordinate(xg_psel_arr[idx])
+            if xg_snk == xg_src:
+                prob_snk = 1.0
+            else:
+                prob_snk = psel_prob_arr[idx]
+            prob = prob_src * prob_snk
+            x_rel = q.smod_coordinate(xg_snk - xg_src, total_site)
+            x_rel_t = x_rel[3]
+            pd = {
+                    "x_2" : ("point", xg_src.to_tuple(),),
+                    "x_1" : ("point", xg_snk.to_tuple(),),
+                    "size" : total_site,
+                    }
+            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+            values[x_rel_t] += val / prob
+        return values
+    def sum_function(val_list):
+        values = np.zeros((total_site[3], len(expr_names),), dtype=np.complex128)
+        for val in val_list:
+            values += val
+        return values.transpose(1, 0)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / (t_size * (total_volume / t_size))
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -307,7 +373,7 @@ def get_cexpr_pipi_corr():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/pipi_corr.lat"
@@ -359,11 +425,10 @@ def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel
         values = np.zeros((len(pipi_corr_t_sep_list), len(expr_names),), dtype=np.complex128)
         for val, t_sep_idx in val_list:
             values[t_sep_idx] += val
-        return q.glb_sum(values.transpose(1, 0))
+        return values.transpose(1, 0)
     auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / t_size
     assert q.qnorm(res_sum[0] - 1.0) < 1e-10
     ld = q.mk_lat_data([
@@ -449,7 +514,7 @@ def get_cexpr_pipi_corr_psnk_psrc():
             base_positions_dict=base_positions_dict,
             )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/pipi_corr_psnk_psrc.lat"
@@ -560,10 +625,9 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
                 )
         for val, t_sep_idx in val_list:
             values[t_sep_idx] += val
-        return q.glb_sum(values.transpose(3, 0, 1, 2,))
-    with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
-        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+        return values.transpose(3, 0, 1, 2,)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / (t_size * (total_volume / t_size) * (total_volume / t_size))
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -687,7 +751,7 @@ def get_cexpr_meson_jj():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jj.lat"
@@ -756,10 +820,9 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
-        return q.glb_sum(values.transpose(2, 0, 1))
-    with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
-        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+        return values.transpose(2, 0, 1)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / total_volume
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -857,7 +920,7 @@ def get_cexpr_pipi_jj():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
     fn = f"{job_tag}/auto-contract/traj-{traj}/pipi_jj.lat"
@@ -946,10 +1009,9 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx+1}/{len(xg_psel_arr)}")
-        return q.glb_sum(values.transpose(4, 2, 3, 0, 1))
-    with q.TimerFork(max_call_times_for_always_show_info=0):
-        res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
-        q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+        return values.transpose(4, 2, 3, 0, 1)
+    res_sum = q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.glb_sum(res_sum)
     res_sum *= 1.0 / total_volume
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -986,12 +1048,15 @@ def run_auto_contraction(
     use_fsel_prop = get_param(job_tag, "measurement", "use_fsel_prop", default=True)
     # ADJUST ME
     auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-    auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-    auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
     if use_fsel_prop:
         auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    if use_fsel_prop:
         auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    if use_fsel_prop:
         auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_meson_corr_psnk_psrc_psel(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
     #
     q.qtouch_info(get_save_path(fn_checkpoint))
     q.release_lock()
