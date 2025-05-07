@@ -57,7 +57,7 @@ def display(level, *args):
     """
     if isinstance(level, int):
         if level <= cc.get_verbose_level():
-            print(f"Qlat {q.get_total_time():15.3f}:", *args, end='', flush=True)
+            print(f"Qlat {get_actual_total_time():15.3f}:", *args, end='', flush=True)
     else:
         print(level, *args, end='', flush=True)
 
@@ -77,7 +77,7 @@ def displayln(level, *args):
     """
     if isinstance(level, int):
         if level <= cc.get_verbose_level():
-            print(f"Qlat {q.get_total_time():15.3f}:", *args, flush=True)
+            print(f"Qlat {get_actual_total_time():15.3f}:", *args, flush=True)
     else:
         print(level, *args, flush=True)
 
