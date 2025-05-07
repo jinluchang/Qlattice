@@ -564,8 +564,9 @@ def auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob
                 data_list.append((pidx_snk, pidx_src, t_sep_idx,))
     def load_data():
         data_list_chunk = q.get_mpi_chunk(data_list)
-        for data_list_idx, pidx_snk, pidx_src, t_sep_idx in enumerate(data_list_chunk):
-            yield data_list_idx, len(data_list_chunk), pidx_snk, pidx_src, t_sep_idx
+        data_list_size = len(data_list_chunk)
+        for data_list_idx, (pidx_snk, pidx_src, t_sep_idx,) in enumerate(data_list_chunk):
+            yield data_list_idx, data_list_size, pidx_snk, pidx_src, t_sep_idx
     @q.timer
     def feval(args):
         data_list_idx, data_list_size, pidx_snk, pidx_src, t_sep_idx = args
