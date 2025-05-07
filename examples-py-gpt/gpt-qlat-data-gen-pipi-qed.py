@@ -29,6 +29,7 @@ load_path_list[:] = [
         "/lustre20/volatile/qcdqedta/qcddata",
         "/lustre20/volatile/decay0n2b/qcddata",
         "/lustre20/volatile/pqpdf/ljin/qcddata",
+        "/data1/qcddata2",
         "/data1/qcddata3",
         "/data2/qcddata3-prop",
         ]
@@ -965,6 +966,38 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
 
 # ----
 
+@q.timer(is_timer_fork=True)
+def run_auto_contraction(
+        job_tag, traj,
+        *,
+        get_get_prop,
+        get_psel_prob,
+        get_fsel_prob,
+        ):
+    fname = q.get_fname()
+    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
+    if get_load_path(fn_checkpoint) is not None:
+        q.displayln_info(0, f"{fname}: '{fn_checkpoint}' exists.")
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        return
+    get_prop = get_get_prop()
+    assert get_prop is not None
+    use_fsel_prop = get_param(job_tag, "measurement", "use_fsel_prop", default=True)
+    # ADJUST ME
+    auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    if use_fsel_prop:
+        auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+        auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+    #
+    q.qtouch_info(get_save_path(fn_checkpoint))
+    q.release_lock()
+    v = [ f"{fname} {job_tag} {traj} done", ]
+    return v
+
 ### ------
 
 @q.timer(is_timer_fork=True)
@@ -1060,6 +1093,8 @@ def run_job_inversion(job_tag, traj):
 @q.timer(is_timer_fork=True)
 def run_job_contraction(job_tag, traj):
     #
+    use_fsel_prop = get_param(job_tag, "measurement", "use_fsel_prop", default=True)
+    #
     traj_gf = traj
     if job_tag[:5] == "test-":
         # ADJUST ME
@@ -1071,14 +1106,9 @@ def run_job_contraction(job_tag, traj):
             #
             ]
     fns_need = [
-            (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-psrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",),
-            #
-            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
             (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/point-selection/traj-{traj}.txt",
@@ -1087,6 +1117,13 @@ def run_job_contraction(job_tag, traj):
             # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
             # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
+    if use_fsel_prop:
+        fns_need += [
+                (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
+                ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
@@ -1100,52 +1137,35 @@ def run_job_contraction(job_tag, traj):
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
-    get_get_prop = run_get_prop(job_tag, traj,
+    prop_types = [
+            "wsrc psel s",
+            "wsrc psel l",
+            "psrc psel s",
+            "psrc psel l",
+            # "rand_u1 fsel c",
+            # "rand_u1 fsel s",
+            # "rand_u1 fsel l",
+            ]
+    if use_fsel_prop:
+        prop_types += [
+                "wsrc fsel s",
+                "wsrc fsel l",
+                "psrc fsel s",
+                "psrc fsel l",
+                ]
+    #
+    get_get_prop = run_get_prop(
+            job_tag, traj,
             get_gf = get_gf,
             get_gt = get_gt,
             get_psel = get_psel,
             get_fsel = get_fsel,
-            prop_types = [
-                "wsrc psel s",
-                "wsrc psel l",
-                "wsrc fsel s",
-                "wsrc fsel l",
-                "psrc psel s",
-                "psrc psel l",
-                "psrc fsel s",
-                "psrc fsel l",
-                # "rand_u1 fsel c",
-                # "rand_u1 fsel s",
-                # "rand_u1 fsel l",
-                ],
+            prop_types = prop_types,
             )
     #
     run_r_list(job_tag)
+    run_auto_contraction(job_tag, traj, get_get_prop=get_get_prop, get_psel_prob=get_psel_prob, get_fsel_prob=get_fsel_prob)
     #
-    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is not None:
-        return
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-        return
-    get_prop = get_get_prop()
-    if get_prop is None:
-        q.release_lock()
-        q.clean_cache()
-        if q.obtained_lock_history_list:
-            q.timer_display()
-        return
-    with q.TimerFork():
-        # ADJUST ME
-        auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-        auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-        auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-        auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-        auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-        auto_contract_pipi_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-        #
-        q.qtouch_info(get_save_path(fn_checkpoint))
-        q.displayln_info("timer_display for runjob")
-    q.release_lock()
     q.clean_cache()
     if q.obtained_lock_history_list:
         q.timer_display()
@@ -1209,9 +1229,16 @@ set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
 set_param("24D", "measurement", "meson_tensor_t_sep")(8)
 set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("48I", "trajs")(list(range(1000, 2000, 20)))
-set_param("48I", "measurement", "meson_tensor_t_sep")(12)
+set_param("48I", "trajs")(list(range(905, 2000, 10)) + list(range(902, 2000, 10)))
 set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
+set_param("48I", "measurement", "meson_tensor_t_sep")(12)
+set_param("48I", "measurement", "pipi_op_t_sep")(4)
+set_param("48I", "measurement", "pipi_op_dis_4d_sqr_limit")(6.0)
+set_param("48I", "measurement", "pipi_corr_t_sep_list")(list(range(1, 16)))
+set_param("48I", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, ])
+set_param("48I", "measurement", "pipi_tensor_t_max")(20)
+set_param("48I", "measurement", "pipi_tensor_r_max")(24)
+set_param("48I", "measurement", "use_fsel_prop")(False)
 
 set_param("64I", "trajs")(list(range(1200, 3000, 40)))
 set_param("64I", "measurement", "meson_tensor_t_sep")(18)
