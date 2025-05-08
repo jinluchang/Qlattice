@@ -659,9 +659,11 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     # total_prob = get_total_prob(total_site, get_prob)
     #
     point_pairs = []
+    #
     job_tag_rs = job_tag
     if job_tag == "64I-pq":
         job_tag_rs = "64I"
+    #
     rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"mk_hlbl_four_point_pairs")
     for i in range(n_xg_arr):
         xg_x = q.Coordinate(xg_arr[i])
@@ -818,6 +820,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     job_tag_rs = job_tag
     if job_tag == "64I-pq":
         job_tag_rs = "64I"
+    #
     ssp = q.SelectedShufflePlan(q.PointsSelection(fsel), q.RngState(f"{job_tag_rs}-{traj}-hlbl-four-fsel-permute"))
     psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
     #
