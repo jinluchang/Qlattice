@@ -659,7 +659,10 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     # total_prob = get_total_prob(total_site, get_prob)
     #
     point_pairs = []
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"mk_hlbl_four_point_pairs")
+    job_tag_rs = job_tag
+    if job_tag == "64I-pq":
+        job_tag_rs = "64I"
+    rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"mk_hlbl_four_point_pairs")
     for i in range(n_xg_arr):
         xg_x = q.Coordinate(xg_arr[i])
         for j in range(i + 1):
@@ -685,7 +688,7 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
                     # NOTE: need to account for contribution for j > i which is not included in the loop.
                     dict_val["weight_pair"] = 2.0 / prob_accept
                 point_pairs.append(dict_val)
-    point_pairs = q.random_permute(point_pairs, q.RngState(f"mk_hlbl_four_point_pairs {job_tag} {traj} {inv_type}"))
+    point_pairs = q.random_permute(point_pairs, q.RngState(f"mk_hlbl_four_point_pairs {job_tag_rs} {traj} {inv_type}"))
     q.displayln_info(f"mk_hlbl_four_point_pairs: {job_tag} {traj} {inv_type_name} len(point_pairs)={len(point_pairs)}")
     return point_pairs
 
@@ -812,7 +815,10 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     fsel_prob = get_fsel_prob()
     fsel = fsel_prob.fsel
     #
-    ssp = q.SelectedShufflePlan(q.PointsSelection(fsel), q.RngState(f"{job_tag}-{traj}-hlbl-four-fsel-permute"))
+    job_tag_rs = job_tag
+    if job_tag == "64I-pq":
+        job_tag_rs = "64I"
+    ssp = q.SelectedShufflePlan(q.PointsSelection(fsel), q.RngState(f"{job_tag_rs}-{traj}-hlbl-four-fsel-permute"))
     psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
     #
     point_pairs = get_point_pairs()
@@ -944,7 +950,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             @q.timer_verbose
             def hlbl_four_contract_sparse():
                 sf_pair_f_rand_01 = q.SelectedFieldRealD(fsel, 1)
-                sf_pair_f_rand_01.set_rand(q.RngState(f"{job_tag} {traj} {inv_type} {xg_x.to_tuple()} {xg_y.to_tuple()}"), 1.0, 0.0)
+                sf_pair_f_rand_01.set_rand(q.RngState(f"{job_tag_rs} {traj} {inv_type} {xg_x.to_tuple()} {xg_y.to_tuple()}"), 1.0, 0.0)
                 sp_pair_f_rand_01 = q.SelectedPointsRealD(sf_pair_f_rand_01, ssp)
                 assert len(sp_pair_f_rand_01) == len(psel_d_prob_xy)
                 psel_d = psel_d_prob_xy.psel
