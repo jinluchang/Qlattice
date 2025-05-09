@@ -2009,11 +2009,6 @@ def run_job_contract(job_tag, traj):
             f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
             f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
             #
-            f"{job_tag}/hvp-average/hvp_average_light.field",
-            f"{job_tag}/hvp-average/hvp_average_light.trajs.txt",
-            f"{job_tag}/hvp-average/hvp_average_strange.field",
-            f"{job_tag}/hvp-average/hvp_average_strange.trajs.txt",
-            #
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             #
