@@ -20,6 +20,8 @@ is_cython = False
 load_path_list[:] = [
         "results",
         "qcddata",
+        "qcddata1",
+        "qcddata2",
         "/lustre20/volatile/qcdqedta/qcddata",
         "/lustre20/volatile/decay0n2b/qcddata",
         "/lustre20/volatile/pqpdf/ljin/qcddata",
@@ -2152,6 +2154,11 @@ set_param("64I", "trajs")(list(range(1200, 3680, 20)))
 set_param("64I", "meson_tensor_tsep")(18)
 set_param("64I", "meson_jwjj_threshold")(0.0005)
 set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
+
+set_param("64I-pq", "trajs")(list(range(1200, 3680, 80)))
+set_param("64I-pq", "meson_tensor_tsep")(18)
+set_param("64I-pq", "meson_jwjj_threshold")(0.0005)
+set_param("64I-pq", "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
 
