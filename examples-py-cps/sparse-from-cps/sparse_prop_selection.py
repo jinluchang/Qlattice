@@ -18,20 +18,20 @@ def set_param_field_selection_rate(job_tag, f_rate, n_points):
     n_points_fsel = round(total_volume * f_rate)
     fsel_prob = 1 - (1 - 1 / total_volume)**n_points_fsel
     psel_prob = 1 - (1 - 1 / total_volume)**n_points
-    set_param(job_tag, "field-selection-fsel-rate")(fsel_prob)
-    set_param(job_tag, "field-selection-psel-rate")(psel_prob)
+    set_param(job_tag, "field_selection_fsel_rate")(fsel_prob)
+    set_param(job_tag, "field_selection_psel_rate")(psel_prob)
 
 def get_num_points_fsel_sampling(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
-    fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+    fsel_rate = get_param(job_tag, "field_selection_fsel_rate")
     num_points_fsel_sampling = round(np.log(1 - fsel_rate) / np.log(1 - 1 / total_volume))
     return num_points_fsel_sampling
 
 def get_num_points_psel_sampling(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
-    psel_rate = get_param(job_tag, "field-selection-psel-rate")
+    psel_rate = get_param(job_tag, "field_selection_psel_rate")
     num_points_psel_sampling = round(np.log(1 - psel_rate) / np.log(1 - 1 / total_volume))
     return num_points_psel_sampling
 
@@ -109,7 +109,7 @@ def run_fsel_prob_uniform(job_tag, traj):
             return ret
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+    fsel_rate = get_param(job_tag, "field_selection_fsel_rate")
     q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
     assert fsel_rate is not None
     assert get_load_path(fn_fsel) is None
@@ -154,7 +154,7 @@ def run_psel_prob_uniform(job_tag, traj):
             return ret
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    psel_rate = get_param(job_tag, "field-selection-psel-rate")
+    psel_rate = get_param(job_tag, "field_selection_psel_rate")
     q.displayln_info(-1, fname, f"psel_rate = {psel_rate}")
     assert psel_rate is not None
     assert get_load_path(fn_psel) is None

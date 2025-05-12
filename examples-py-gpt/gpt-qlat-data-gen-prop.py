@@ -375,7 +375,7 @@ if 1 in get_param("16IH2", 'clanc_params'):
 set_param("16IH2", "num_prop_rand_vol_u1")(64)
 set_param("16IH2", "prob_acc_1_rand_vol_u1")(1 / 32)
 set_param("16IH2", "prob_acc_2_rand_vol_u1")(1 / 128)
-set_param("16IH2", "field-selection-fsel-psrc-prop-norm-threshold")(5e-5)
+set_param("16IH2", "field_selection_fsel_psrc_prop_norm_threshold")(5e-5)
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
 
 set_param("24D", "trajs")([ 1010, 1030, 1040, 1050, 1070, 1080, 1090, 1110, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1190, 1200, 1210, 1220, 1230, 1240, 1250, 1260, 1270, 1280, 1290, 1300, 1310, 1320, 1330, 1350, 1360, 1370, 1380, 1390, 1400, 1410, 1420, 1430, 1440, 1450, 1460, 1470, 1480, 1490, 1500, 1510, 1520, 1530, 1540, 1550, 1560, 1570, 1580, 1590, 1600, 1610, 1620, 1630, 1640, 1650, 1660, 1670, 1680, 1690, 1700, 1710, 1720, 1730, 1740, 1750, 1760, 1770, 1780, 1790, 1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890, 1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100, 2110, 2120, 2130, 2140, 2150, 2160, 2170, 2180, 2190, 2200, 2210, 2220, 2230, 2240, 2250, 2260, 2270, 2280, 2290, 2300, 2310, 2320, 2330, 2340, 2350, 2370, 2380, 2390, 2400, 2410, 2430, 2440, 2450, 2460, 2470, 2480, 2490, 2500, 2510, 2530, 2550, 2560, 2570, 2590, 2600, 2610, 2620, 2630, 2640, ])
@@ -411,7 +411,7 @@ if 1 in get_param("24D", 'clanc_params'):
 set_param("24D", "num_prop_rand_vol_u1")(256)
 set_param("24D", "prob_acc_1_rand_vol_u1")(1 / 32)
 set_param("24D", "prob_acc_2_rand_vol_u1")(1 / 128)
-set_param("24D", "field-selection-fsel-psrc-prop-norm-threshold")(1e-4)
+set_param("24D", "field_selection_fsel_psrc_prop_norm_threshold")(1e-4)
 set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
 set_param("32Dfine", "trajs")([ 1000, 1010, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1090, 1100, 1110, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1190, 1200, 1210, 1220, 1230, 1240, 1250, 1260, 1270, 1280, 1290, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 660, 740, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, ])
@@ -447,7 +447,7 @@ if 1 in get_param("32Dfine", 'clanc_params'):
 set_param("32Dfine", "num_prop_rand_vol_u1")(256)
 set_param("32Dfine", "prob_acc_1_rand_vol_u1")(1 / 32)
 set_param("32Dfine", "prob_acc_2_rand_vol_u1")(1 / 128)
-set_param("32Dfine", "field-selection-fsel-psrc-prop-norm-threshold")(1e-4)
+set_param("32Dfine", "field_selection_fsel_psrc_prop_norm_threshold")(1e-4)
 set_param("32Dfine", "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
@@ -486,9 +486,9 @@ set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi":
 set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
 #
-set_param(job_tag, "field-selection-fsel-rate")(0.1)
-set_param(job_tag, "field-selection-psel-rate")(0.01)
-set_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")(0.05)
+set_param(job_tag, "field_selection_fsel_rate")(0.1)
+set_param(job_tag, "field_selection_psel_rate")(0.01)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
 #
 set_param(job_tag, "prob_exact_wsrc")(0.20)
 #

@@ -435,9 +435,9 @@ for inv_type in [ 0, 1, 2, ]:
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
-set_param(job_tag, "field-selection-fsel-rate")(0.1)
-set_param(job_tag, "field-selection-psel-rate")(0.01)
-set_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")(0.05)
+set_param(job_tag, "field_selection_fsel_rate")(0.1)
+set_param(job_tag, "field_selection_psel_rate")(0.01)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
 #
 set_param(job_tag, "prob_exact_wsrc")(0.20)
 #

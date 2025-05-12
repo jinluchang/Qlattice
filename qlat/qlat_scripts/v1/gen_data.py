@@ -431,7 +431,7 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+    fsel_rate = get_param(job_tag, "field_selection_fsel_rate")
     q.displayln_info(-1, fname, f"fsel_rate = {fsel_rate}")
     assert fsel_rate is not None
     assert get_load_path(fn_fsel) is None
@@ -500,7 +500,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    psel_rate = get_param(job_tag, "field-selection-psel-rate")
+    psel_rate = get_param(job_tag, "field_selection_psel_rate")
     q.displayln_info(-1, fname, f"psel_rate = {psel_rate}")
     assert psel_rate is not None
     assert get_load_path(fn_psel) is None
@@ -559,7 +559,7 @@ def run_fsel_prob_sub_sampling(
         f_prob = q.FieldRealD(geo, 1)
         f_prob.set_zero()
         if get_f_weight is not None:
-            fsel_rate = get_param(job_tag, "field-selection-fsel-rate")
+            fsel_rate = get_param(job_tag, "field_selection_fsel_rate")
             f_weight = get_f_weight()
             f_prob @= f_weight
             f_prob *= fsel_rate * sub_sampling_rate
@@ -626,7 +626,7 @@ def run_psel_prob_sub_sampling(
         sp_prob = q.SelectedPointsRealD(psel, 1)
         sp_prob.set_zero()
         if get_f_weight is not None:
-            psel_rate = get_param(job_tag, "field-selection-psel-rate")
+            psel_rate = get_param(job_tag, "field_selection_psel_rate")
             f_weight = get_f_weight()
             sp_prob @= f_weight
             sp_prob *= psel_rate * sub_sampling_rate
@@ -693,7 +693,7 @@ def run_prop_wsrc_sparse(
     path_f = f"{job_tag}/prop-wsrc-full-{inv_type_name}/traj-{traj}/geon-info.txt"
     path_s = f"{job_tag}/prop-wsrc-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-wsrc-{inv_type_name}/traj-{traj}"
-    is_performing_inversion = get_param(job_tag, "is-performing-inversion-if-no-full-prop-available", default=False)
+    is_performing_inversion = get_param(job_tag, "is_performing_inversion_if_no_full_prop_available", default=False)
     if get_load_path(path_f) is None:
         if not is_performing_inversion:
             q.displayln_info(f"WARNING: {fname}: {job_tag} {traj} {inv_type_name} full prop is not available yet.")
@@ -876,7 +876,7 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
     q.displayln_info(f"compute_prop_psrc: {job_tag} idx={idx} tag='{tag}'")
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    fsel_psrc_prop_norm_threshold = get_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")
+    fsel_psrc_prop_norm_threshold = get_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")
     geo = q.Geometry(total_site)
     src = q.mk_point_src(geo, xg_src)
     prop = compute_prop_2(

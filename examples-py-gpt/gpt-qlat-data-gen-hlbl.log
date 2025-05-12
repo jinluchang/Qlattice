@@ -225,9 +225,9 @@ CHECK: params: test-4nt8:   "trajs": [
 CHECK: params: test-4nt8:     1000,
 CHECK: params: test-4nt8:     2000
 CHECK: params: test-4nt8:   ],
-CHECK: params: test-4nt8:   "field-selection-fsel-rate": 0.0625,
-CHECK: params: test-4nt8:   "field-selection-psel-rate": 0.03125,
-CHECK: params: test-4nt8:   "field-selection-fsel-psrc-prop-norm-threshold": 0.001,
+CHECK: params: test-4nt8:   "field_selection_fsel_rate": 0.0625,
+CHECK: params: test-4nt8:   "field_selection_psel_rate": 0.03125,
+CHECK: params: test-4nt8:   "field_selection_fsel_psrc_prop_norm_threshold": 0.001,
 CHECK: params: test-4nt8:   "n_points_psel": 6,
 CHECK: params: test-4nt8:   "n_exact_wsrc": 2,
 CHECK: params: test-4nt8:   "n_per_tslice_smear": 2,

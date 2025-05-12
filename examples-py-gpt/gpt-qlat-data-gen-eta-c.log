@@ -334,9 +334,9 @@ CHECK: params: test-4nt8-checker:   "cg_params-2-2": {
 CHECK: params: test-4nt8-checker:     "maxiter": 10,
 CHECK: params: test-4nt8-checker:     "maxcycle": 3
 CHECK: params: test-4nt8-checker:   },
-CHECK: params: test-4nt8-checker:   "field-selection-fsel-rate": 0.1,
-CHECK: params: test-4nt8-checker:   "field-selection-psel-rate": 0.01,
-CHECK: params: test-4nt8-checker:   "field-selection-fsel-psrc-prop-norm-threshold": 0.05,
+CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.1,
+CHECK: params: test-4nt8-checker:   "field_selection_psel_rate": 0.01,
+CHECK: params: test-4nt8-checker:   "field_selection_fsel_psrc_prop_norm_threshold": 0.05,
 CHECK: params: test-4nt8-checker:   "prob_exact_wsrc": 0.2,
 CHECK: params: test-4nt8-checker:   "prob_acc_1_psrc": 0.25,
 CHECK: params: test-4nt8-checker:   "prob_acc_2_psrc": 0.1,

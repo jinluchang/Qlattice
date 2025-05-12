@@ -290,7 +290,7 @@ def get_n_points_psel(job_tag):
     assert job_tag in rup.dict_params
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
-    psel_rate = get_param(job_tag, "field-selection-psel-rate")
+    psel_rate = get_param(job_tag, "field_selection_psel_rate")
     if psel_rate is not None:
         n_points = round(total_volume * psel_rate)
         return n_points
@@ -473,7 +473,7 @@ def run_fsel(job_tag, traj):
     tfn = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(tfn)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    fsel_rate = get_param(job_tag, "field-selection-fsel-rate", default=1/16)
+    fsel_rate = get_param(job_tag, "field_selection_fsel_rate", default=1/16)
     n_per_tslice = round(total_site[0] * total_site[1] * total_site[2] * fsel_rate)
     if path_fsel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-fsel"):

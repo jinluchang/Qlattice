@@ -2241,7 +2241,7 @@ set_param("64I-pq", f"cg_params-0-0", "maxcycle")(4)
 set_param("64I-pq", f"cg_params-0-1", "maxcycle")(8)
 set_param("64I-pq", f"cg_params-0-2", "maxcycle")(150)
 
-set_param("64I-pq", "is-performing-inversion-if-no-full-prop-available")(True)
+set_param("64I-pq", "is_performing_inversion_if_no_full_prop_available")(True)
 set_param("64I-pq", "is-performing-saving-full-prop")(False)
 
 set_param("64I", "is-performing-auto-contraction")(False)

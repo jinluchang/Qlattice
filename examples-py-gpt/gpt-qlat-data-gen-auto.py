@@ -2218,9 +2218,9 @@ set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sa
 set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size")(2)
 set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range")(6)
 
-set_param(job_tag, "field-selection-fsel-rate")(20.0)
-set_param(job_tag, "field-selection-psel-rate")(10.0)
-set_param(job_tag, "field-selection-fsel-psrc-prop-norm-threshold")(0.05)
+set_param(job_tag, "field_selection_fsel_rate")(20.0)
+set_param(job_tag, "field_selection_psel_rate")(10.0)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
 
 set_param(job_tag, "prob_exact_wsrc")(0.20)
 

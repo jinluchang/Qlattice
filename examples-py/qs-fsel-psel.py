@@ -15,8 +15,8 @@ job_tag = "test-4nt8-checker"
 
 set_param(job_tag, "trajs")([ 1000, 1100, ])
 set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
-set_param(job_tag, "field-selection-fsel-rate")(0.1)
-set_param(job_tag, "field-selection-psel-rate")(0.01)
+set_param(job_tag, "field_selection_fsel_rate")(0.1)
+set_param(job_tag, "field_selection_psel_rate")(0.01)
 
 @q.timer_verbose
 def run_check_psel(get_psel):
