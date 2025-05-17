@@ -2,18 +2,18 @@ subdir('include')
 subdir('lib')
 
 py_files = files(
-  'c.py',
   '__init__.py',
-  'init.py',
   '__main__.py',
+  'c.py',
+  'init.py',
   'prop.py',
   )
 
 pxd_files = files(
   '__init__.pxd',
+  'everything.pxd',
   'all.pxd',
   'cp.pxd',
-  'everything.pxd',
   )
 
 py3.install_sources(py_files + pxd_files, subdir: 'qlat_cps')

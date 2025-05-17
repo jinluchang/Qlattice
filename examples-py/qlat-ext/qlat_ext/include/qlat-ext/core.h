@@ -3,10 +3,6 @@
 namespace qlat
 {
 
-int hello()
-{
-  displayln_info("hello!");
-  return 0;
-}
+  int hello();
 
 }  // namespace qlat

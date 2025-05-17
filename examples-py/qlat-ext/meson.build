@@ -3,7 +3,7 @@ project('qlat-ext', 'cpp', 'cython',
   license: 'GPL-3.0-or-later',
   default_options: [
     'warning_level=3',
-    'cpp_std=c++14',
+    'cpp_std=c++17',
     'libdir=lib',
     'optimization=2',
     'debug=false',
@@ -12,12 +12,16 @@ project('qlat-ext', 'cpp', 'cython',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
+subdir('depend-qlat')
+
 cpp = meson.get_compiler('cpp')
 
 py_mod = import('python')
-py3 = py_mod.find_installation('python3')
+py3 = py_mod.find_installation('python3', pure: false)
 message(py3.full_path())
 message(py3.get_install_dir())
+
+fs = import('fs')
 
 cxx = run_command('bash', '-c', 'echo "$CXX"', check: true).stdout().strip()
 mpicxx = run_command('bash', '-c', 'echo "$MPICXX"', check: true).stdout().strip()
@@ -29,8 +33,6 @@ else
   message(f'cxx=\'@cxx@\' mpicxx=\'@mpicxx@\' (use meson\'s automatic MPI detection.)')
   mpic = dependency('mpi', language: 'cpp').as_system()
 endif
-
-subdir('depend-qlat')
 
 deps = [ mpic, qlat, ]
 

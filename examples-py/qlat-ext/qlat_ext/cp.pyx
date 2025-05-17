@@ -1,3 +1,6 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+from qlat.all cimport *
 from . cimport everything as cc
 
 cdef void hello_world_c():
