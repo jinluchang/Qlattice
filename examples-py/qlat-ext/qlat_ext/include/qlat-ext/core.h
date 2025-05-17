@@ -3,6 +3,6 @@
 namespace qlat
 {
 
-  int hello();
+int hello();
 
 }  // namespace qlat
