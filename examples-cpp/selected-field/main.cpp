@@ -321,9 +321,9 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
   PointsSelection psel(total_site, psel_std_vec);
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
-  save_points_selection_info(psel, "huge-data/" + tag + "/point-selection.lati");
+  save_points_selection_info(psel, "huge-data/" + tag + "/points-selection.lati");
   const PointsSelection psel_load =
-      load_points_selection_info("huge-data/" + tag + "/point-selection.lati");
+      load_points_selection_info("huge-data/" + tag + "/points-selection.lati");
   if (psel != psel_load) {
     qerr(ssprintf("ERR: psel!=psel_load: %ld %ld", (long)psel.size(),
                   (long)psel_load.size()));

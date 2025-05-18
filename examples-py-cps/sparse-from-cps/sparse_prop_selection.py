@@ -136,7 +136,7 @@ def run_psel_prob_uniform(job_tag, traj):
     get_psel = lambda : get_psel_prob().psel
     """
     fname = q.get_fname()
-    fn_psel = f"{job_tag}/point-selection/traj-{traj}.lati"
+    fn_psel = f"{job_tag}/points-selection/traj-{traj}.lati"
     fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)

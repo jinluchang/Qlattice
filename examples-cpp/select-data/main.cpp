@@ -48,17 +48,17 @@ inline void collect_pcs(const std::string& job_tag)
 {
   const std::string old_job_tag = get_old_job_tag(job_tag);
   const std::string checkpoint =
-      ssprintf("data/point-selection/%s/checkpoint.txt", job_tag.c_str());
+      ssprintf("data/points-selection/%s/checkpoint.txt", job_tag.c_str());
   if (does_file_exist_sync_node(checkpoint)) {
     return;
   }
-  if (not obtain_lock(ssprintf("lock-point-selection-%s", job_tag.c_str()))) {
+  if (not obtain_lock(ssprintf("lock-points-selection-%s", job_tag.c_str()))) {
     return;
   }
   {
     TIMER_VERBOSE("collect_pcs");
-    qmkdir_info(ssprintf("data/point-selection"));
-    qmkdir_info(ssprintf("data/point-selection/%s", job_tag.c_str()));
+    qmkdir_info(ssprintf("data/points-selection"));
+    qmkdir_info(ssprintf("data/points-selection/%s", job_tag.c_str()));
     const std::vector<int> trajs = get_todo_trajs(old_job_tag);
     for (int i = 0; i < (int)trajs.size(); ++i) {
       const int traj = trajs[i];

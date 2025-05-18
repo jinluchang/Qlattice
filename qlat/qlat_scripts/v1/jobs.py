@@ -309,7 +309,7 @@ def mk_rand_psel(job_tag, traj):
 
 @q.timer_verbose
 def run_psel(job_tag, traj):
-    tfn = f"{job_tag}/point-selection/traj-{traj}.lati"
+    tfn = f"{job_tag}/points-selection/traj-{traj}.lati"
     path_psel = get_load_path(tfn)
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel"):
@@ -532,7 +532,7 @@ def run_psel_smear(job_tag, traj):
     return lambda : psel_smear
     psel_smear should randomly select same number of point on each tslice
     """
-    tfn = f"{job_tag}/point-selection-smear/traj-{traj}.lati"
+    tfn = f"{job_tag}/points-selection-smear/traj-{traj}.lati"
     path_psel = get_load_path(tfn)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     if path_psel is None:

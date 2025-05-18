@@ -1091,7 +1091,7 @@ def run_job_inversion(job_tag, traj):
             ]
     fns_need = [
             # f"{job_tag}/gauge-transform/traj-{traj}.field",
-            # f"{job_tag}/point-selection/traj-{traj}.lati",
+            # f"{job_tag}/points-selection/traj-{traj}.lati",
             # f"{job_tag}/field-selection/traj-{traj}.field",
             # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
             # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
@@ -1180,7 +1180,7 @@ def run_job_contraction(job_tag, traj):
             (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
             (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-            f"{job_tag}/point-selection/traj-{traj}.lati",
+            f"{job_tag}/points-selection/traj-{traj}.lati",
             f"{job_tag}/field-selection/traj-{traj}.field",
             # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
             # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",

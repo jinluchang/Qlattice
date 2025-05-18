@@ -12,7 +12,7 @@ inline std::string get_point_src_info_path(const std::string& job_tag, const int
 
 inline std::string get_points_selection_path(const std::string& job_tag, const int traj)
 {
-  return ssprintf("data/point-selection/%s/traj=%d.txt", job_tag.c_str(), traj);
+  return ssprintf("data/points-selection/%s/traj=%d.txt", job_tag.c_str(), traj);
 }
 
 inline std::string get_point_src_info_simulated_path(const std::string& job_tag, const int traj)

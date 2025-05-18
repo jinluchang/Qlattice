@@ -464,7 +464,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     get_psel = lambda : get_psel_prob().psel
     """
     fname = q.get_fname()
-    fn_psel = f"{job_tag}/point-selection/traj-{traj}.lati"
+    fn_psel = f"{job_tag}/points-selection/traj-{traj}.lati"
     fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
@@ -481,7 +481,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         if get_load_path(fn_psel_prob) is not None:
             return ret
         else:
-            q.displayln_info(f"{fname}: WARNING: point-selection exist but prob is not available. Assuming loading load old data format.")
+            q.displayln_info(f"{fname}: WARNING: points-selection exist but prob is not available. Assuming loading load old data format.")
             total_volume = total_site.volume()
             @q.lazy_call
             @q.timer_verbose

@@ -287,7 +287,7 @@ def run_job(job_tag, traj):
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-            f"{job_tag}/point-selection/traj-{traj}.lati",
+            f"{job_tag}/points-selection/traj-{traj}.lati",
             f"{job_tag}/field-selection/traj-{traj}.field",
             f"{job_tag}/psel-prop-psrc-{quark_flavor_ref}/traj-{traj}/checkpoint.txt", # needed to determine the selection of point source propagators
             f"{job_tag}/eig/traj-{traj}/metadata.txt",

@@ -149,7 +149,7 @@ def run_job(job_tag, traj):
     fns_need = []
     fns_props = [
             f"{job_tag}/gauge-transform/traj-{traj}.field",
-            f"{job_tag}/point-selection/traj-{traj}.lati",
+            f"{job_tag}/points-selection/traj-{traj}.lati",
             f"{job_tag}/field-selection/traj-{traj}.field",
             # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             #
