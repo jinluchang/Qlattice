@@ -321,9 +321,9 @@ inline void test_selected_points(const std::string& tag, const Long n_points)
   PointsSelection psel(total_site, psel_std_vec);
   qmkdir_info("huge-data");
   qmkdir_info("huge-data/" + tag);
-  save_point_selection_info(psel, "huge-data/" + tag + "/point-selection.lati");
+  save_points_selection_info(psel, "huge-data/" + tag + "/point-selection.lati");
   const PointsSelection psel_load =
-      load_point_selection_info("huge-data/" + tag + "/point-selection.lati");
+      load_points_selection_info("huge-data/" + tag + "/point-selection.lati");
   if (psel != psel_load) {
     qerr(ssprintf("ERR: psel!=psel_load: %ld %ld", (long)psel.size(),
                   (long)psel_load.size()));
@@ -391,7 +391,7 @@ inline void test_shift(const std::string& tag, const Long n_per_tslice, const Lo
   displayln_info(fname + ssprintf(": f crc32 = %08X", field_crc32(f)));
   SelectedField<ComplexD> sf;
   const PointsSelection psel =
-      mk_random_point_selection(total_site, n_points, rs.split("psel"));
+      mk_random_points_selection(total_site, n_points, rs.split("psel"));
   FieldSelection fsel;
   set_field_selection(fsel, total_site, n_per_tslice, rs.split("fsel"), psel);
   set_selected_field(sf, f, fsel);

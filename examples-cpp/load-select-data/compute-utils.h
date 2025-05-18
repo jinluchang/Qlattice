@@ -136,7 +136,7 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
     if (is_check_prop_consistency()) {
       TIMER_VERBOSE("check_prop_consistency_ama");
       const PselProp& ps_prop = get_psel_prop_psrc_ama(job_tag, traj, xg, type);
-      const PointsSelection& psel = get_point_selection(job_tag, traj);
+      const PointsSelection& psel = get_points_selection(job_tag, traj);
       const FieldSelection& fsel = get_field_selection(job_tag, traj);
       for (int acc = 0; acc < num_acc; ++acc) {
         if (not is_consistent(get_psel_prop_psrc(job_tag, traj, xg, type, acc),

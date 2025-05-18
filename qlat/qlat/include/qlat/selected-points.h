@@ -5,21 +5,21 @@
 namespace qlat
 {  //
 
-PointsSelection mk_tslice_point_selection(const Coordinate& total_site,
+PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
                                           const int t_dir = 3);
 
-PointsSelection mk_random_point_selection(const Coordinate& total_site,
+PointsSelection mk_random_points_selection(const Coordinate& total_site,
                                          const Long num, const RngState& rs,
                                          const Long pool_factor = 2);
 
-void save_point_selection(const PointsSelection& psel, const std::string& path);
+void save_points_selection(const PointsSelection& psel, const std::string& path);
 
-void save_point_selection_info(const PointsSelection& psel,
+void save_points_selection_info(const PointsSelection& psel,
                                const std::string& path);
 
-PointsSelection load_point_selection(const std::string& path);
+PointsSelection load_points_selection(const std::string& path);
 
-PointsSelection load_point_selection_info(const std::string& path);
+PointsSelection load_points_selection_info(const std::string& path);
 
 crc32_t crc32_par(const PointsSelection& psel);
 

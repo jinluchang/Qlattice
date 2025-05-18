@@ -83,7 +83,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
     }
   }
   TIMER_VERBOSE("compute_meson_chvp_type");
-  const PointsSelection& psel = get_point_selection(job_tag, traj);
+  const PointsSelection& psel = get_points_selection(job_tag, traj);
   const Long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const Geometry& geo = fsel.f_rank.geo();

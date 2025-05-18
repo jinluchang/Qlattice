@@ -12,7 +12,7 @@ inline void show_pion_corr(const PselProp& ps_prop, const SelProp& s_prop,
   TIMER_VERBOSE("show_pion_corr");
   qassert(is_initialized(ps_prop));
   qassert(is_initialized(s_prop));
-  const PointsSelection& psel = get_point_selection(job_tag, traj);
+  const PointsSelection& psel = get_points_selection(job_tag, traj);
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const Geometry& geo = fsel.f_rank.geo();
   const LatData ld_ps = contract_pion(ps_prop, tslice_src, geo, psel);

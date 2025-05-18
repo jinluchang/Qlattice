@@ -167,15 +167,15 @@ cdef class PointsSelection:
     def set_rand(self, Coordinate total_site not None, cc.Long n_points, RngState rs not None):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        cc.assign_direct(self.xx, cc.mk_random_point_selection(total_site.xx, n_points, rs.xx))
+        cc.assign_direct(self.xx, cc.mk_random_points_selection(total_site.xx, n_points, rs.xx))
 
     def save(self, const cc.std_string& path):
-        cc.save_point_selection_info(self.xx, path)
+        cc.save_points_selection_info(self.xx, path)
 
     def load(self, const cc.std_string& path, Geometry geo=None):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        cc.assign_direct(self.xx, cc.load_point_selection_info(path))
+        cc.assign_direct(self.xx, cc.load_points_selection_info(path))
         cdef Coordinate total_site
         if self.xx.total_site == cc.Coordinate():
             assert geo is not None
@@ -495,7 +495,7 @@ cdef class FieldSelection:
 
 ### -------------------------------------------------------------------
 
-cache_point_selection = q.mk_cache("point_selection")
+cache_points_selection = q.mk_cache("points_selection")
 
 @q.timer
 def mk_xg_field(Geometry geo):
@@ -511,10 +511,10 @@ def get_psel_single(Coordinate total_site, Coordinate xg=None):
     if xg is None:
         xg = Coordinate([ -1, -1, -1, -1, ])
     param_tuple = (total_site[0], total_site[1], total_site[2], total_site[3], xg[0], xg[1], xg[2], xg[3],)
-    if param_tuple not in cache_point_selection:
+    if param_tuple not in cache_points_selection:
         psel = PointsSelection(total_site, xg,)
-        cache_point_selection[param_tuple] = psel
-    return cache_point_selection[param_tuple]
+        cache_points_selection[param_tuple] = psel
+    return cache_points_selection[param_tuple]
 
 def get_psel_tslice(Coordinate total_site, *, int t_dir=3):
     """
@@ -524,11 +524,11 @@ def get_psel_tslice(Coordinate total_site, *, int t_dir=3):
     cdef PointsSelection psel
     assert 0 <= t_dir and t_dir < 4
     param_tuple = (total_site[0], total_site[1], total_site[2], total_site[3], t_dir,)
-    if param_tuple not in cache_point_selection:
+    if param_tuple not in cache_points_selection:
         psel = PointsSelection(total_site)
-        cc.assign_direct(psel.xx, cc.mk_tslice_point_selection(total_site.xx, t_dir))
-        cache_point_selection[param_tuple] = psel
-    return cache_point_selection[param_tuple]
+        cc.assign_direct(psel.xx, cc.mk_tslice_points_selection(total_site.xx, t_dir))
+        cache_points_selection[param_tuple] = psel
+    return cache_points_selection[param_tuple]
 
 def is_matching_fsel(FieldSelection fsel1, FieldSelection fsel2):
     return cc.is_matching_fsel(fsel1.xx, fsel2.xx)

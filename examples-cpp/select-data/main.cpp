@@ -63,7 +63,7 @@ inline void collect_pcs(const std::string& job_tag)
     for (int i = 0; i < (int)trajs.size(); ++i) {
       const int traj = trajs[i];
       check_sigint();
-      const std::string fn = get_point_selection_path(job_tag, traj);
+      const std::string fn = get_points_selection_path(job_tag, traj);
       const std::string fn_old = get_pis_path(old_job_tag, traj);
       if (fn_old != "") {
         const std::vector<PointInfo> pis = load_lbl_pis_info(fn_old);
@@ -248,13 +248,13 @@ inline void set_sparse_parameters(std::vector<Coordinate>& psel,
                                   const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("set_sparse_parameters");
-  const std::string fn_point_selection =
-      get_point_selection_path(job_tag, traj);
+  const std::string fn_points_selection =
+      get_points_selection_path(job_tag, traj);
   const std::string fn_field_selection =
       get_field_selection_path(job_tag, traj);
-  qassert(fn_point_selection != "");
+  qassert(fn_points_selection != "");
   qassert(fn_field_selection != "");
-  psel = load_lbl_pcs_info(fn_point_selection);
+  psel = load_lbl_pcs_info(fn_points_selection);
   const Coordinate total_site = get_total_site(job_tag);
   const Long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   const Long n_per_tslice = spatial_vol / 16;

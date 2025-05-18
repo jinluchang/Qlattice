@@ -54,7 +54,7 @@ typedef std::map<std::string, std::vector<PointInfo> > PointInfoMap;
 
 typedef Cache<std::string, PointInfoMap> PointInfoMapCache;
 
-inline PointsSelectionCache& get_point_selection_cache()
+inline PointsSelectionCache& get_points_selection_cache()
 {
   static PointsSelectionCache cache("PointsSelectionCache", 8, 2);
   return cache;
@@ -120,17 +120,17 @@ inline PointInfoMapCache& get_point_info_map_cache()
   return cache;
 }
 
-inline const PointsSelection& get_point_selection(const std::string& job_tag,
+inline const PointsSelection& get_points_selection(const std::string& job_tag,
                                                  const int traj)
 {
   const std::string key = ssprintf("%s,%d,psel", job_tag.c_str(), traj);
-  PointsSelectionCache& cache = get_point_selection_cache();
+  PointsSelectionCache& cache = get_points_selection_cache();
   if (not cache.has(key)) {
-    TIMER_VERBOSE("get_point_selection");
-    const std::string fn_point_selection =
-        get_point_selection_path(job_tag, traj);
-    qassert(get_does_file_exist(fn_point_selection));
-    cache[key] = load_point_selection_info(fn_point_selection);
+    TIMER_VERBOSE("get_points_selection");
+    const std::string fn_points_selection =
+        get_points_selection_path(job_tag, traj);
+    qassert(get_does_file_exist(fn_points_selection));
+    cache[key] = load_points_selection_info(fn_points_selection);
   }
   return cache[key];
 }
@@ -163,7 +163,7 @@ inline const ShuffledBitSet& get_shuffled_bit_set(const std::string& job_tag,
   if (not cache.has(key)) {
     TIMER_VERBOSE("get_shuffled_bit_set");
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
-    const PointsSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_points_selection(job_tag, traj);
     FieldSelection fselc;
     fselc.f_rank = fsel.f_rank;
     add_field_selection(fselc.f_rank, psel);
@@ -380,7 +380,7 @@ inline const SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
     SelProp& s_prop = s_cache[key];
     const std::string path = get_prop_psrc_path(job_tag, traj, type);
     const std::string fn = get_psrc_tag(xg, type, accuracy);
-    const PointsSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_points_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
     load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);
@@ -434,7 +434,7 @@ inline const SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
     SelProp& s_prop = s_cache[key];
     const std::string path = get_prop_wsrc_path(job_tag, traj, type);
     const std::string fn = get_wsrc_tag(tslice, type, accuracy);
-    const PointsSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_points_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
     load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);
@@ -491,7 +491,7 @@ inline const SelProp& get_prop_psrc_exact(const std::string& job_tag,
     SelProp& s_prop = s_cache[key];
     const std::string path = get_prop_psrc_exact_path(job_tag, traj);
     const std::string fn = get_psrc_tag(xg, type, accuracy);
-    const PointsSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_points_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
     load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);
@@ -620,11 +620,11 @@ inline bool get_does_prop_psrc_exact_exist(const std::string& job_tag,
 inline bool check_sparse_parameters(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("check_sparse_parameters");
-  const std::string fn_point_selection =
-      get_point_selection_path(job_tag, traj);
+  const std::string fn_points_selection =
+      get_points_selection_path(job_tag, traj);
   const std::string fn_field_selection =
       get_field_selection_path(job_tag, traj);
-  return get_does_file_exist(fn_point_selection) and
+  return get_does_file_exist(fn_points_selection) and
          get_does_file_exist(fn_field_selection);
 }
 

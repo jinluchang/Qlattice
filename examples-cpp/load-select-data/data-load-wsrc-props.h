@@ -48,7 +48,7 @@ inline const WallSrcProps& get_wall_src_props(const std::string& job_tag,
     }
     const int num_exact = 2;
     const GaugeTransform& gt = get_gauge_transform(job_tag, traj);
-    const PointsSelection& psel = get_point_selection(job_tag, traj);
+    const PointsSelection& psel = get_points_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     refresh_wsp(wsp, num_exact, gt, psel, fsel);
   }

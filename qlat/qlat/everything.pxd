@@ -192,10 +192,10 @@ cdef extern from "qlat/field-io.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
-    void save_point_selection_info(const PointsSelection& psel, const std_string& path) except +
-    PointsSelection load_point_selection_info(const std_string& path) except +
+    void save_points_selection_info(const PointsSelection& psel, const std_string& path) except +
+    PointsSelection load_points_selection_info(const std_string& path) except +
     #
-    PointsSelection mk_random_point_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
+    PointsSelection mk_random_points_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
     #
     Long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
     Long read_field_selection(FieldSelection& fsel, const std_string& path) except +
@@ -253,7 +253,7 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& fn) except +
     std_string save_selected_points_str[M](const SelectedPoints[M]& sp) except +
     void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content) except +
-    PointsSelection mk_tslice_point_selection(const Coordinate& total_site, const Int t_dir) except +
+    PointsSelection mk_tslice_points_selection(const Coordinate& total_site, const Int t_dir) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const Int t_dir) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +
