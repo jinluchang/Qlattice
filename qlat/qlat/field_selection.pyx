@@ -176,12 +176,14 @@ cdef class PointsSelection:
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         cc.assign_direct(self.xx, cc.load_point_selection_info(path))
+        cdef Coordinate total_site
         if self.xx.total_site == cc.Coordinate():
             assert geo is not None
-            cdef Coordinate total_site = geo.total_site
+            total_site = geo.total_site
             self.xx.total_site = total_site.xx
         elif geo is not None:
-            assert self.xx.total_site == geo.total_site.xx
+            total_site = geo.total_site
+            assert self.xx.total_site == total_site.xx
 
     def __setitem__(self, idx, val):
         """

@@ -471,6 +471,22 @@ inline bool ends_with(const std::string& str, const std::string& suffix) {
   return (str.substr(str.size() - suffix.size()) == suffix);
 }
 
+inline std::string remove_prefix(const std::string& str, const std::string& prefix) {
+  if (str.size() >= prefix.size() &&
+      str.compare(0, prefix.size(), prefix) == 0) {
+    return str.substr(prefix.size());
+  }
+  return str;
+}
+
+inline std::string remove_suffix(const std::string& str, const std::string& suffix) {
+  if (str.size() >= suffix.size() &&
+      str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0) {
+    return str.substr(0, str.size() - suffix.size());
+  }
+  return str;
+}
+
 inline void display_c_stdout(const std::string& str)
 {
   fwrite(str.c_str(), 1, str.size(), stdout);

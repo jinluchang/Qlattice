@@ -368,7 +368,7 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
                     f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{inv_type_name}.field",
                     f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
                     f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-                    f"{job_tag}/point-selection/traj-{traj}.txt",
+                    f"{job_tag}/point-selection/traj-{traj}.lati",
                     f"{job_tag}/field-selection/traj-{traj}.field",
                     f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
                     f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
@@ -1816,7 +1816,7 @@ def run_job_inversion(job_tag, traj):
     #
     fns_produce = [
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/point-selection/traj-{traj}.lati",
             f"{job_tag}/field-selection/traj-{traj}.field",
             #
             f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
@@ -1853,7 +1853,7 @@ def run_job_inversion(job_tag, traj):
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
             # f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-            # f"{job_tag}/point-selection/traj-{traj}.txt",
+            # f"{job_tag}/point-selection/traj-{traj}.lati",
             # f"{job_tag}/field-selection/traj-{traj}.field",
             # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
             # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
@@ -1861,7 +1861,7 @@ def run_job_inversion(job_tag, traj):
     if not is_performing_saving_full_prop:
         fns_need += [
                 f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-                f"{job_tag}/point-selection/traj-{traj}.txt",
+                f"{job_tag}/point-selection/traj-{traj}.lati",
                 f"{job_tag}/field-selection/traj-{traj}.field",
                 f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
                 f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
@@ -2002,7 +2002,7 @@ def run_job_contract(job_tag, traj):
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
             f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
             f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/point-selection/traj-{traj}.lati",
             f"{job_tag}/field-selection/traj-{traj}.field",
             f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
             f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
