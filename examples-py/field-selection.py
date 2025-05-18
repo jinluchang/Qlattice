@@ -16,10 +16,10 @@ q.json_results_append(f"geo.show() = {geo.show()}")
 
 psel = q.PointsSelection(total_site, [ [0,0,0,0], [0,1,2,0], ])
 
-psel.save("results/psel.txt")
+psel.save("results/psel.lati")
 
 psel = q.PointsSelection()
-psel.load("results/psel.txt", geo)
+psel.load("results/psel.lati", geo)
 
 q.json_results_append(f"psel.xg_arr.tolist() = {psel.xg_arr.tolist()}")
 
