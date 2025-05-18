@@ -319,7 +319,7 @@ bool is_matching(const LatDataT<T>& ld1, const LatDataT<T>& ld2)
 }
 
 template <class T, class VecS>
-Vector<RealD> lat_data_get(LatDataT<T>& ld, const VecS& idx)
+Vector<T> lat_data_get(LatDataT<T>& ld, const VecS& idx)
 {
   const Long offset = lat_data_offset(ld, idx);
   const Long size = lat_data_size(ld, idx.size());
@@ -329,7 +329,7 @@ Vector<RealD> lat_data_get(LatDataT<T>& ld, const VecS& idx)
 }
 
 template <class T, class VecS>
-Vector<RealD> lat_data_get_const(const LatDataT<T>& ld, const VecS& idx)
+Vector<T> lat_data_get_const(const LatDataT<T>& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {

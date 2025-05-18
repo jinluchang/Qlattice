@@ -459,6 +459,18 @@ inline std::string info_get_prop(const std::vector<std::string>& lines,
   }
 }
 
+inline bool starts_with(const std::string& str, const std::string& prefix) {
+  return str.size() >= prefix.size() &&
+    str.compare(0, prefix.size(), prefix) == 0;
+}
+
+inline bool ends_with(const std::string& str, const std::string& suffix) {
+  if (str.size() < suffix.size()) {
+    return false;
+  }
+  return (str.substr(str.size() - suffix.size()) == suffix);
+}
+
 inline void display_c_stdout(const std::string& str)
 {
   fwrite(str.c_str(), 1, str.size(), stdout);

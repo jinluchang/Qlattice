@@ -14,8 +14,13 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
 
 void save_point_selection(const PointsSelection& psel, const std::string& path);
 
+void save_point_selection_txt(const PointsSelection& psel, const std::string& path);
+
 void save_point_selection_info(const PointsSelection& psel,
                                const std::string& path);
+
+void save_point_selection_txt_info(const PointsSelection& psel,
+                                   const std::string& path);
 
 PointsSelection load_point_selection(const std::string& path);
 

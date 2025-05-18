@@ -73,8 +73,43 @@ PointsSelection mk_random_point_selection(const Coordinate& total_site,
 }
 
 void save_point_selection(const PointsSelection& psel, const std::string& path)
+// IMPORTANT: first point saved in lati is the total_site
+// path has to end with ".lati"
 {
   TIMER_VERBOSE("save_point_selection");
+  qassert(ends_with(path, ".lati"));
+  qassert(psel.points_dist_type == PointsDistType::Global);
+  Long n_points = psel.size();
+  LatDim dim;
+  dim.name = "idx";
+  dim.size = n_points + 1;
+  dim.indices.resize = dim.size;
+  dim.indices[0] = "total_site";
+  for (Long idx = 0; idx < n_points; ++idx) {
+    dim.indices[idx + 1] = show(idx);
+  }
+  LatDataInt ld;
+  ld.info.push_back(dim);
+  ld.info.push_back(lat_dim_number("mu", 0, 3));
+  lat_data_alloc(ld);
+  Vector<Int> v = lat_data_get(ld, make_array<Int>(0));
+  for (Int mu = 0; mu < 4; ++mu) {
+    v[mu] = total_site[mu];
+  }
+  for (Long idx = 0; idx < (Long)psel.size(); ++idx) {
+    const Coordinate& c = psel[idx];
+    Vector<Int> v = lat_data_get(ld, make_array<Int>(idx + 1));
+    for (Int mu = 0; mu < 4; ++mu) {
+      v[mu] = c[mu];
+    }
+  }
+  ld.save(path);
+}
+
+void save_point_selection_txt(const PointsSelection& psel, const std::string& path)
+{
+  TIMER_VERBOSE("save_point_selection_txt");
+  qassert(ends_with(path, ".txt"));
   qassert(psel.points_dist_type == PointsDistType::Global);
   QFile qfile = qfopen(path + ".partial", "w");
   qfprintf(qfile, "%ld\n", (Long)psel.size());
@@ -96,29 +131,65 @@ void save_point_selection_info(const PointsSelection& psel,
   }
 }
 
+void save_point_selection_txt_info(const PointsSelection& psel,
+    const std::string& path)
+{
+  TIMER_VERBOSE("save_point_selection_info");
+  qassert(psel.points_dist_type == PointsDistType::Global);
+  if (0 == get_id_node()) {
+    save_point_selection_txt(psel, path);
+  }
+}
+
 PointsSelection load_point_selection(const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection");
-  qwarn(
-      fname +
-      ssprintf(": path='%s' with old format. Need to set total_site manually.",
-               path.c_str()));
-  const std::vector<std::string> lines = qgetlines(path);
-  qassert(lines.size() > 0);
-  const Long len = read_long(lines[0]);
-  qassert(len + 1 <= (Long)lines.size());
-  PointsSelection psel(Coordinate(), len);
-  for (Long idx = 0; idx < len; ++idx) {
-    const Long k = idx + 1;
-    const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
-    if (strs.size() >= 5) {
-      qassert(idx == read_long(strs[0]));
-      const Coordinate xg(read_long(strs[1]), read_long(strs[2]),
-                          read_long(strs[3]), read_long(strs[4]));
-      psel[idx] = xg;
-    } else {
-      displayln(fname + ssprintf(": line is '%s'.", lines[k].c_str()));
-      qassert(false);
+  if (ends_with(path, ".txt")) {
+    qwarn(
+        fname +
+        ssprintf(": path='%s' with old format. Need to set total_site manually.",
+          path.c_str()));
+    const std::vector<std::string> lines = qgetlines(path);
+    qassert(lines.size() > 0);
+    const Long len = read_long(lines[0]);
+    qassert(len + 1 <= (Long)lines.size());
+    PointsSelection psel(Coordinate(), len);
+    for (Long idx = 0; idx < len; ++idx) {
+      const Long k = idx + 1;
+      const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
+      if (strs.size() >= 5) {
+        qassert(idx == read_long(strs[0]));
+        const Coordinate xg(read_long(strs[1]), read_long(strs[2]),
+            read_long(strs[3]), read_long(strs[4]));
+        psel[idx] = xg;
+      } else {
+        displayln(fname + ssprintf(": line is '%s'.", lines[k].c_str()));
+        qassert(false);
+      }
+    }
+    return psel;
+  }
+  qassert(ends_with(path, ".lati"));
+  LatDataInt ld;
+  ld.load(path);
+  qassert(ld.info.size() == 2);
+  qassert(ld.info[0].name == "idx");
+  qassert(ld.info[1].name == "mu");
+  qassert(ld.info[0].size >= 1);
+  qassert(ld.info[1].size == 4);
+  qassert(ld.info[0].indices[0] == "total_site");
+  const Long n_points = ld.info[0].size - 1;
+  Coordinate total_site;
+  const Vector<Int> v = lat_data_get_const(ld, make_array<Int>(0));
+  for (Int mu = 0; mu < 4; ++mu) {
+    total_site[mu] = v[mu];
+  }
+  PointsSelection psel(total_site, n_points);
+  for (Long idx = 0; idx < psel.size(); ++idx) {
+    Coordinate& c = psel[idx];
+    const Vector<Int> v = lat_data_get_const(ld, make_array<Int>(idx + 1));
+    for (Int mu = 0; mu < 4; ++mu) {
+      c[mu] = v[mu];
     }
   }
   return psel;
