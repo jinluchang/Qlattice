@@ -24,7 +24,7 @@ usage = f"""
 """
 
 def parse_coordinate(x_str):
-    x_str_list = ".".split(x_str)
+    x_str_list = x_str.split(".")
     x_list = [ int(s) for s in x_str_list ]
     x = q.Coordinate(x_list)
     return x
