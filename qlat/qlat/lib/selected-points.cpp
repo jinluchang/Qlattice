@@ -6,7 +6,7 @@ namespace qlat
 {  //
 
 PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
-                                          const int t_dir)
+                                           const int t_dir)
 {
   qassert(0 <= t_dir and t_dir < 4);
   const int t_size = total_site[t_dir];
@@ -21,8 +21,8 @@ PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
 }
 
 PointsSelection mk_random_points_selection(const Coordinate& total_site,
-                                         const Long num, const RngState& rs,
-                                         const Long pool_factor)
+                                           const Long num, const RngState& rs,
+                                           const Long pool_factor)
 // same rs for all node for uniform result
 {
   TIMER_VERBOSE("mk_random_points_selection");
@@ -72,7 +72,8 @@ PointsSelection mk_random_points_selection(const Coordinate& total_site,
   }
 }
 
-static void save_points_selection_txt(const PointsSelection& psel, const std::string& path)
+static void save_points_selection_txt(const PointsSelection& psel,
+                                      const std::string& path)
 {
   TIMER_VERBOSE("save_points_selection_txt");
   qassert(ends_with(path, ".txt"));
@@ -93,15 +94,14 @@ void save_points_selection(const PointsSelection& psel, const std::string& path)
 {
   TIMER_VERBOSE("save_points_selection");
   if (ends_with(path, ".txt")) {
-    qwarn(
-        fname +
-        ssprintf(": path='%s' with old format. Need to set total_site manually when reading.",
-          path.c_str()));
+    qwarn(fname + ssprintf(": path='%s' with old format. Need to set "
+                           "total_site manually when reading.",
+                           path.c_str()));
     save_points_selection_txt(psel, path);
     return;
   }
   qassert(ends_with(path, ".lati"));
-  save_points_selection_txt(psel, remove_suffix(path, ".lati") + ".txt");
+  // save_points_selection_txt(psel, remove_suffix(path, ".lati") + ".txt");
   qassert(psel.points_dist_type == PointsDistType::Global);
   Long n_points = psel.size();
   LatDim dim;
@@ -131,7 +131,7 @@ void save_points_selection(const PointsSelection& psel, const std::string& path)
 }
 
 void save_points_selection_info(const PointsSelection& psel,
-                               const std::string& path)
+                                const std::string& path)
 {
   TIMER_VERBOSE("save_points_selection_info");
   qassert(psel.points_dist_type == PointsDistType::Global);
@@ -147,7 +147,7 @@ static PointsSelection load_points_selection_txt(const std::string& path)
   qwarn(
       fname +
       ssprintf(": path='%s' with old format. Need to set total_site manually.",
-        path.c_str()));
+               path.c_str()));
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
   const Long len = read_long(lines[0]);
@@ -159,7 +159,7 @@ static PointsSelection load_points_selection_txt(const std::string& path)
     if (strs.size() >= 5) {
       qassert(idx == read_long(strs[0]));
       const Coordinate xg(read_long(strs[1]), read_long(strs[2]),
-          read_long(strs[3]), read_long(strs[4]));
+                          read_long(strs[3]), read_long(strs[4]));
       psel[idx] = xg;
     } else {
       displayln(fname + ssprintf(": line is '%s'.", lines[k].c_str()));
