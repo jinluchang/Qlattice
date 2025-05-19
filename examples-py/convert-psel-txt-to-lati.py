@@ -70,8 +70,9 @@ def run_conversion(total_site, path_dst, path_src):
             assert pickle.dumps(psel_load) == pickle.dumps(psel)
             q.json_results_append(f"fn_src={fn_src}")
             q.json_results_append(f"fn_dst={fn_dst}")
-            q.json_results_append(f"hash(psel)={q.hash_sha256(pickle.dumps(psel_load))}")
-            q.displayln_info(f"psel: {psel[:].tolist()}")
+            psel_str = f"{psel.total_site} {psel[:].tolist()}"
+            q.json_results_append(f"hash(psel)={q.hash_sha256(psel_str)}")
+            q.displayln_info(f"psel: {psel_str}")
 
 def is_test():
     return q.get_arg("--src") is None

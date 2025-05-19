@@ -6,7 +6,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1000.lati"
  ],
  [
-  "hash(psel)=f7b934b4a6c044bb9c95c7337db29b34acc7a6cd321404db8516dec574378a8a"
+  "hash(psel)=321fbcbe09266092bee1053d9fa78aeb6ec5952de6466d7bfa7a70a5bd8fc986"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1100.txt"
@@ -15,7 +15,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1100.lati"
  ],
  [
-  "hash(psel)=7782ed95e7363f6d32cae0af040fb589c5938cf7144d31be15ca1a6123d138b6"
+  "hash(psel)=a921a593828c1d48e1a6ca78d720b387b7f9dd9135b80857cb58c16a49030b85"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1200.txt"
@@ -24,7 +24,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1200.lati"
  ],
  [
-  "hash(psel)=f4fcaa1dd7858a49507329bb6a869dbe1a993a3fc3b6c93ab515c23a6c655f86"
+  "hash(psel)=317a0c607477b69ff01f94ecb23936a2237501b83152242b2e832b30a317ff15"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1300.txt"
@@ -33,7 +33,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1300.lati"
  ],
  [
-  "hash(psel)=a1e4bf66b8b193a0abbd9a46a4e59bc54464c2d015b026b41a3867fa94da0961"
+  "hash(psel)=c52ac18f7d9819a2a60777dcbc6c9c42be19ff487c25ee4b3ba1286a8b6791f1"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1400.txt"
@@ -42,7 +42,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1400.lati"
  ],
  [
-  "hash(psel)=d5aef66286e820f4791ab8d250614fe6080f60d0c06c086904ab33da02d0c841"
+  "hash(psel)=2a93457136bf8cace9719f555ff8a667b52be4787dbe4b977b15e60b27530ded"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1500.txt"
@@ -51,7 +51,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1500.lati"
  ],
  [
-  "hash(psel)=e4256d0cd3c1eb072e73e27c8f1870bd8b22dbc80f1c1cc07a7520badccb9526"
+  "hash(psel)=2a64b1fa8d4021e34e569674e88de5f094666e8becc192d88a7b5cb1b3b77acf"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1600.txt"
@@ -60,7 +60,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1600.lati"
  ],
  [
-  "hash(psel)=f1db7c0d240b1ce1b3e6fd971fec302038d2d41b2b85d2c07c336d23ee887a48"
+  "hash(psel)=90dfb8dd865341396addd750471348be24ee9e445a3fa28e2d4e7d18b0ad8203"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1700.txt"
@@ -69,7 +69,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1700.lati"
  ],
  [
-  "hash(psel)=325a075409eb48fb88a8e334622b5381ff5692fecb9e683ecc95b2f24b154c17"
+  "hash(psel)=2a8ded9a74c4d86802b7c4395feddce44c9f37feb348c8483c90be5bf86c95e9"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1800.txt"
@@ -78,7 +78,7 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1800.lati"
  ],
  [
-  "hash(psel)=1b1a7f48946eb91051b78ae5cd82605256cfa6072d374d1d7123aad590e3b93c"
+  "hash(psel)=5a656b2232c3cfd3b18141b40a8ab7617ac986174d7e15af097167b774cdd2c0"
  ],
  [
   "fn_src=results/test-4nt8/point-selection/traj-1900.txt"
@@ -87,6 +87,6 @@
   "fn_dst=results/test-4nt8/points-selection/traj-1900.lati"
  ],
  [
-  "hash(psel)=6071809acc97619e6fbff0f4b2e95dcd0b623c8c8a6618b0136ea316dcf4c1c4"
+  "hash(psel)=032072ad063df9e89d1151ececaba63ad8885cb38ca45e6a57661d0cac9e2ae2"
  ]
 ]
