@@ -71,6 +71,7 @@ def run_conversion(total_site, path_dst, path_src):
             q.json_results_append(f"fn_src={fn_src}")
             q.json_results_append(f"fn_dst={fn_dst}")
             q.json_results_append(f"hash(psel)={q.hash_sha256(pickle.dumps(psel_load))}")
+            q.displayln_info(f"psel: {psel[:].tolist()}")
 
 def is_test():
     return q.get_arg("--src") is None
