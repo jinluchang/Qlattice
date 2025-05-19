@@ -169,13 +169,19 @@ cdef class PointsSelection:
             raise ValueError("can't re-init while being viewed")
         cc.assign_direct(self.xx, cc.mk_random_points_selection(total_site.xx, n_points, rs.xx))
 
-    def save(self, const cc.std_string& path):
-        cc.save_points_selection_info(self.xx, path)
+    def save(self, const cc.std_string& path, *, is_sync_node=True):
+        if is_sync_node:
+            cc.save_points_selection_info(self.xx, path)
+        else:
+            cc.save_points_selection(self.xx, path)
 
-    def load(self, const cc.std_string& path, Geometry geo=None):
+    def load(self, const cc.std_string& path, Geometry geo=None, *, is_sync_node=True):
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        cc.assign_direct(self.xx, cc.load_points_selection_info(path))
+        if is_sync_node:
+            cc.assign_direct(self.xx, cc.load_points_selection_info(path))
+        else:
+            cc.assign_direct(self.xx, cc.load_points_selection(path))
         cdef Coordinate total_site
         if path.endswith(".lati"):
             if geo is not None:

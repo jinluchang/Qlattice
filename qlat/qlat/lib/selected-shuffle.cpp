@@ -206,14 +206,21 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
     assign(v1, v);
   });
   // Perform shuffle with `MPI_Alltoallv`.
-  MPI_Datatype mpi_dtype;
-  const Int mpi_ret = MPI_Type_contiguous(multiplicity, MPI_BYTE, &mpi_dtype);
-  qassert(mpi_ret == 0);
-  MPI_Type_commit(&mpi_dtype);
-  MPI_Alltoallv(sp0.points.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
-                mpi_dtype, sp.points.data(), ssp.recvcounts.data(),
-                ssp.rdispls.data(), mpi_dtype, get_comm());
-  MPI_Type_free(&mpi_dtype);
+  {
+    TIMER("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
+    MPI_Datatype mpi_dtype;
+    const Int mpi_ret = MPI_Type_contiguous(multiplicity, MPI_BYTE, &mpi_dtype);
+    qassert(mpi_ret == 0);
+    MPI_Type_commit(&mpi_dtype);
+    {
+      TIMER("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
+      MPI_Alltoallv(sp0.points.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
+          mpi_dtype, sp.points.data(), ssp.recvcounts.data(),
+          ssp.rdispls.data(), mpi_dtype, get_comm());
+    }
+    MPI_Type_free(&mpi_dtype);
+    mpi_dtype = MPI_DATATYPE_NULL;
+  }
   // In case `ssp.shuffle_idx_points_recv` is defined, perform final reordering.
   if (spi_r.initialized) {
     qthread_for(idx, sp.n_points, {

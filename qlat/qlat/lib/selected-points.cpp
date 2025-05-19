@@ -138,6 +138,7 @@ void save_points_selection_info(const PointsSelection& psel,
   if (0 == get_id_node()) {
     save_points_selection(psel, path);
   }
+  sync_node();
 }
 
 static PointsSelection load_points_selection_txt(const std::string& path)

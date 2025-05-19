@@ -77,23 +77,22 @@ def is_test():
 
 @q.timer(is_timer_fork=True)
 def run():
-    if q.get_id_node() == 0:
-        total_site_str = q.get_arg("--grid")
-        path_src = q.get_arg("--src")
-        path_dst = q.get_arg("--dst")
-        if is_test():
-            assert total_site_str is None
-            assert path_src is None
-            assert path_dst is None
-            q.displayln_info(f"Usage:{usage}")
-            q.displayln_info(f"Will now generate test data and run conversion.")
-            total_site, path_src, path_dst = gen_test_data()
-        else:
-            assert isinstance(total_site_str, str)
-            assert path_src is not None
-            assert path_dst is not None
-            total_site = parse_coordinate(total_site_str)
-        run_conversion(total_site, path_dst, path_src)
+    total_site_str = q.get_arg("--grid")
+    path_src = q.get_arg("--src")
+    path_dst = q.get_arg("--dst")
+    if is_test():
+        assert total_site_str is None
+        assert path_src is None
+        assert path_dst is None
+        q.displayln_info(f"Usage:{usage}")
+        q.displayln_info(f"Will now generate test data and run conversion.")
+        total_site, path_src, path_dst = gen_test_data()
+    else:
+        assert isinstance(total_site_str, str)
+        assert path_src is not None
+        assert path_dst is not None
+        total_site = parse_coordinate(total_site_str)
+    run_conversion(total_site, path_dst, path_src)
 
 if __name__ == "__main__":
     q.begin_with_mpi()
