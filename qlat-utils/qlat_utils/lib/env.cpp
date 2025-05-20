@@ -66,9 +66,6 @@ Long get_verbose_level_default()
   } else {
     x = read_long(val);
   }
-  if (x >= 0) {
-    displayln_info(ssprintf("QLAT: get_env: %s=%ld", var_name.c_str(), x));
-  }
   return x;
 }
 

@@ -95,7 +95,22 @@ int mpi_waitall(std::vector<MPI_Request>& requests)
     int ret = MPI_Waitall(requests.size(), requests.data(), MPI_STATUS_IGNORE);
     qassert(ret == MPI_SUCCESS);
   }
+  requests.resize(0);
   return MPI_SUCCESS;
+}
+
+static const std::vector<Int>& get_random_rank_order(const Int size)
+{
+  static std::vector<Int> order;
+  if ((Int)order.size() == size) {
+    return order;
+  }
+  order.resize(size);
+  for (Int i = 0; i < size; ++i) {
+    order[i] = i;
+  }
+  random_permute(order, RngState("get_random_rank_order"));
+  return order;
 }
 
 static void mpi_alltoallv_custom(
@@ -104,7 +119,21 @@ static void mpi_alltoallv_custom(
     MPI_Comm comm)
 {
   TIMER("mpi_alltoallv_custom");
-  const Int size = get_num_node();
+  Int rank, size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
+  //
+  const std::vector<Int>& order = get_random_rank_order(size);
+  Int rank_idx = -1;
+  for (Int i = 0; i < size; ++i) {
+    if (order[i] == rank) {
+      rank_idx = i;
+      break;
+    }
+  }
+  qassert(rank_idx >= 0);
+  //
+  const Int q_mpi_alltoallv_max_parallel_transfer = get_env_long_default("q_mpi_alltoallv_max_parallel_transfer", 8);
   //
   const Int mpi_tag = 13;
   // 计算数据类型大小
@@ -113,18 +142,32 @@ static void mpi_alltoallv_custom(
   MPI_Type_size(recvtype, &recvtype_size);
   //
   std::vector<MPI_Request> requests;
-  // 非阻塞接收阶段
-  for (Int i = 0; i < size; i++) {
-    char* recv_ptr = (char*)recvbuf + (Long)rdispls[i] * (Long)recvtype_size;
-    mpi_irecv(recv_ptr, recvcounts[i], recvtype, i, mpi_tag, comm, requests);
+  for (Int i = 0; i < size; i += q_mpi_alltoallv_max_parallel_transfer) {
+    // 非阻塞接收阶段
+    for (Int j = 0; j < q_mpi_alltoallv_max_parallel_transfer; j++) {
+      if (i + j >= size) {
+        continue;
+      }
+      const Int rank_from = order[(rank_idx + size - i - j) % size];
+      if (recvcounts[rank_from] > 0) {
+        char* recv_ptr = (char*)recvbuf + (Long)rdispls[rank_from] * (Long)recvtype_size;
+        mpi_irecv(recv_ptr, recvcounts[rank_from], recvtype, rank_from, mpi_tag, comm, requests);
+      }
+    }
+    // 非阻塞发送阶段
+    for (Int j = 0; j < q_mpi_alltoallv_max_parallel_transfer; j++) {
+      if (i + j >= size) {
+        continue;
+      }
+      const Int rank_to = order[(rank_idx + i + j) % size];
+      if (sendcounts[rank_to] > 0) {
+        const char* send_ptr = (const char*)sendbuf + (Long)sdispls[rank_to] * (Long)sendtype_size;
+        mpi_isend(send_ptr, sendcounts[rank_to], sendtype, rank_to, mpi_tag, comm, requests);
+      }
+    }
+    // 等待所有通信完成
+    mpi_waitall(requests);
   }
-  // 非阻塞发送阶段
-  for (Int i = 0; i < size; i++) {
-    char* send_ptr = (char*)sendbuf + (Long)sdispls[i] * (Long)sendtype_size;
-    mpi_isend(send_ptr, sendcounts[i], sendtype, i, mpi_tag, comm, requests);
-  }
-  // 等待所有通信完成
-  mpi_waitall(requests);
 }
 
 static void mpi_alltoallv_native(
