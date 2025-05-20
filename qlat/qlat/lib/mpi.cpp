@@ -99,8 +99,8 @@ int mpi_waitall(std::vector<MPI_Request>& requests)
 }
 
 static void mpi_alltoallv_custom(
-    void* sendbuf, Int* sendcounts, Int* sdispls, MPI_Datatype sendtype,
-    void* recvbuf, Int* recvcounts, Int* rdispls, MPI_Datatype recvtype,
+    const void* sendbuf, const Int* sendcounts, const Int* sdispls, MPI_Datatype sendtype,
+    void* recvbuf, const Int* recvcounts, const Int* rdispls, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
   TIMER("mpi_alltoallv_custom");
@@ -128,8 +128,8 @@ static void mpi_alltoallv_custom(
 }
 
 static void mpi_alltoallv_native(
-    void* sendbuf, Int* sendcounts, Int* sdispls, MPI_Datatype sendtype,
-    void* recvbuf, Int* recvcounts, Int* rdispls, MPI_Datatype recvtype,
+    const void* sendbuf, const Int* sendcounts, const Int* sdispls, MPI_Datatype sendtype,
+    void* recvbuf, const Int* recvcounts, const Int* rdispls, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
   TIMER("mpi_alltoallv_native");
@@ -137,8 +137,8 @@ static void mpi_alltoallv_native(
 }
 
 void mpi_alltoallv(
-    void* sendbuf, Int* sendcounts, Int* sdispls, MPI_Datatype sendtype,
-    void* recvbuf, Int* recvcounts, Int* rdispls, MPI_Datatype recvtype,
+    const void* sendbuf, const Int* sendcounts, const Int* sdispls, MPI_Datatype sendtype,
+    void* recvbuf, const Int* recvcounts, const Int* rdispls, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
   static const std::string q_mpi_alltoallv_type = get_env_default("q_mpi_alltoallv_type", "custom");
