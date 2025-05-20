@@ -98,6 +98,59 @@ int mpi_waitall(std::vector<MPI_Request>& requests)
   return MPI_SUCCESS;
 }
 
+static void mpi_alltoallv_custom(
+    void* sendbuf, Int* sendcounts, Int* sdispls, MPI_Datatype sendtype,
+    void* recvbuf, Int* recvcounts, Int* rdispls, MPI_Datatype recvtype,
+    MPI_Comm comm)
+{
+  TIMER("mpi_alltoallv_custom");
+  const Int size = get_num_node();
+  //
+  const Int mpi_tag = 13;
+  // 计算数据类型大小
+  int sendtype_size, recvtype_size;
+  MPI_Type_size(sendtype, &sendtype_size);
+  MPI_Type_size(recvtype, &recvtype_size);
+  //
+  std::vector<MPI_Request> requests;
+  // 非阻塞接收阶段
+  for (Int i = 0; i < size; i++) {
+    char* recv_ptr = (char*)recvbuf + (Long)rdispls[i] * (Long)recvtype_size;
+    mpi_irecv(recv_ptr, recvcounts[i], recvtype, i, mpi_tag, comm, requests);
+  }
+  // 非阻塞发送阶段
+  for (Int i = 0; i < size; i++) {
+    char* send_ptr = (char*)sendbuf + (Long)sdispls[i] * (Long)sendtype_size;
+    mpi_isend(send_ptr, sendcounts[i], sendtype, i, mpi_tag, comm, requests);
+  }
+  // 等待所有通信完成
+  mpi_waitall(requests);
+}
+
+static void mpi_alltoallv_native(
+    void* sendbuf, Int* sendcounts, Int* sdispls, MPI_Datatype sendtype,
+    void* recvbuf, Int* recvcounts, Int* rdispls, MPI_Datatype recvtype,
+    MPI_Comm comm)
+{
+  TIMER("mpi_alltoallv_native");
+  MPI_Alltoallv(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+}
+
+void mpi_alltoallv(
+    void* sendbuf, Int* sendcounts, Int* sdispls, MPI_Datatype sendtype,
+    void* recvbuf, Int* recvcounts, Int* rdispls, MPI_Datatype recvtype,
+    MPI_Comm comm)
+{
+  static const std::string q_mpi_alltoallv_type = get_env_default("q_mpi_alltoallv_type", "custom");
+  if (q_mpi_alltoallv_type == "custom") {
+    mpi_alltoallv_custom(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+  } else if (q_mpi_alltoallv_type == "native") {
+    mpi_alltoallv_native(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
+  } else {
+    qerr(ssprintf("mpi_alltoallv: q_mpi_alltoallv_type='%s'.", q_mpi_alltoallv_type.c_str()));
+  }
+}
+
 int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
 {
   qassert(recv.size() == send.size());

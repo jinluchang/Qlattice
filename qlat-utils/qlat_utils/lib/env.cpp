@@ -19,10 +19,10 @@ std::string get_env_default(const std::string& var_name, const std::string& x0)
   const std::string val = get_env(var_name);
   if (val == "") {
     displayln_info(0,
-                   ssprintf("%s='%s' (default)", var_name.c_str(), x0.c_str()));
+                   ssprintf("QLAT: get_env_default: %s='%s' (default)", var_name.c_str(), x0.c_str()));
     return x0;
   } else {
-    displayln_info(0, ssprintf("%s='%s'", var_name.c_str(), val.c_str()));
+    displayln_info(0, ssprintf("QLAT: get_env_default: %s='%s'", var_name.c_str(), val.c_str()));
     return val;
   }
 }
@@ -33,10 +33,10 @@ double get_env_double_default(const std::string& var_name, const double x0)
   double x;
   if (val == "") {
     x = x0;
-    displayln_info(0, ssprintf("%s=%lG (default)", var_name.c_str(), x));
+    displayln_info(0, ssprintf("QLAT: get_env_double_default: %s=%lG (default)", var_name.c_str(), x));
   } else {
     x = read_double(val);
-    displayln_info(0, ssprintf("%s=%lG", var_name.c_str(), x));
+    displayln_info(0, ssprintf("QLAT: get_env_double_default: %s=%lG", var_name.c_str(), x));
   }
   return x;
 }
@@ -47,10 +47,10 @@ Long get_env_long_default(const std::string& var_name, const Long x0)
   Long x;
   if (val == "") {
     x = x0;
-    displayln_info(0, ssprintf("%s=%ld (default)", var_name.c_str(), x));
+    displayln_info(0, ssprintf("QLAT: get_env_long_default: %s=%ld (default)", var_name.c_str(), x));
   } else {
     x = read_long(val);
-    displayln_info(0, ssprintf("%s=%ld", var_name.c_str(), x));
+    displayln_info(0, ssprintf("QLAT: get_env_long_default: %s=%ld", var_name.c_str(), x));
   }
   return x;
 }
@@ -65,6 +65,9 @@ Long get_verbose_level_default()
     x = x0;
   } else {
     x = read_long(val);
+  }
+  if (x >= 0) {
+    displayln_info(ssprintf("QLAT: get_env: %s=%ld", var_name.c_str(), x));
   }
   return x;
 }

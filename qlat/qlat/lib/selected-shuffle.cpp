@@ -211,7 +211,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
     {
       TIMER("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
-      MPI_Alltoallv(sp0.points.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
+      mpi_alltoallv(sp0.points.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
           mpi_dtype.mpi_dtype, sp.points.data(), ssp.recvcounts.data(),
           ssp.rdispls.data(), mpi_dtype.mpi_dtype, get_comm());
     }
