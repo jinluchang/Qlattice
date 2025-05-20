@@ -879,6 +879,16 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             return cm.glb_sum()
         return ama_apply1(f, ama_cm)
     #
+    @q.timer(is_timer_fork=True)
+    def cache_all_prop():
+        q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
+        for idx, xg in enumerate(psel):
+            q.displayln_info(f"{fname}: load prop ; idx={idx} ; xg={xg}")
+            get_prop(xg)
+        q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
+    #
+    cache_all_prop()
+    #
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     labels = contract_hlbl_four_labels(job_tag)
     for id_chunk, point_pairs_chunk in zip(id_chunk_list, point_pairs_chunk_list):
