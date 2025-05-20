@@ -119,6 +119,9 @@ static void mpi_alltoallv_custom(
     MPI_Comm comm)
 {
   TIMER("mpi_alltoallv_custom");
+  //
+  static const Int q_mpi_alltoallv_max_parallel_transfer = get_env_long_default("q_mpi_alltoallv_max_parallel_transfer", 8);
+  //
   Int rank, size;
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &size);
@@ -132,8 +135,7 @@ static void mpi_alltoallv_custom(
     }
   }
   qassert(rank_idx >= 0);
-  //
-  const Int q_mpi_alltoallv_max_parallel_transfer = get_env_long_default("q_mpi_alltoallv_max_parallel_transfer", 8);
+  qassert(order[rank_idx] == rank);
   //
   const Int mpi_tag = 13;
   // 计算数据类型大小
