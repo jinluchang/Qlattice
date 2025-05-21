@@ -117,6 +117,7 @@ static void mpi_alltoallv_custom(
     const void* sendbuf, const Int* sendcounts, const Int* sdispls, MPI_Datatype sendtype,
     void* recvbuf, const Int* recvcounts, const Int* rdispls, MPI_Datatype recvtype,
     MPI_Comm comm)
+  // Send and Recv data as MPI_BYTE of corresponding type size.
 {
   TIMER("mpi_alltoallv_custom");
   //
@@ -139,7 +140,7 @@ static void mpi_alltoallv_custom(
   //
   const Int mpi_tag = 13;
   // 计算数据类型大小
-  int sendtype_size, recvtype_size;
+  Int sendtype_size, recvtype_size;
   MPI_Type_size(sendtype, &sendtype_size);
   MPI_Type_size(recvtype, &recvtype_size);
   //
@@ -153,7 +154,7 @@ static void mpi_alltoallv_custom(
       const Int rank_from = order[(rank_idx + size - i - j) % size];
       if (recvcounts[rank_from] > 0) {
         char* recv_ptr = (char*)recvbuf + (Long)rdispls[rank_from] * (Long)recvtype_size;
-        mpi_irecv(recv_ptr, recvcounts[rank_from], recvtype, rank_from, mpi_tag, comm, requests);
+        mpi_irecv(recv_ptr, (Long)recvcounts[rank_from] * (Long)recvtype_size, MPI_BYTE, rank_from, mpi_tag, comm, requests);
       }
     }
     // 非阻塞发送阶段
@@ -164,7 +165,7 @@ static void mpi_alltoallv_custom(
       const Int rank_to = order[(rank_idx + i + j) % size];
       if (sendcounts[rank_to] > 0) {
         const char* send_ptr = (const char*)sendbuf + (Long)sdispls[rank_to] * (Long)sendtype_size;
-        mpi_isend(send_ptr, sendcounts[rank_to], sendtype, rank_to, mpi_tag, comm, requests);
+        mpi_isend(send_ptr, (Long)sendcounts[rank_to] * (Long)sendtype_size, MPI_BYTE, rank_to, mpi_tag, comm, requests);
       }
     }
     // 等待所有通信完成
