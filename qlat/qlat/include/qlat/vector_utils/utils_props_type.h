@@ -97,6 +97,33 @@ void qprop_to_prop4d(Propagator4dT<Td>& res, qpropT& src){
   prop4d_to_qprop(src, res, 0);
 }
 
+// Field res Nvol --> 12 x 12
+// Field src 12 x 12 --> Nvol
+template<typename Td, typename Ty>
+void prop_gpu_to_qprop(qlat::Field<Td>& res, qlat::vector_gpu<Ty >& src, int dir = 1){
+  const Long Ndc = 12 * 12;
+  Qassert(res.initialized and res.multiplicity == Ndc);
+  if(dir == 1){Qassert(Long(src.size()) == res.geo().local_volume() * Ndc);}
+  if(dir == 0){src.resize(res.geo().local_volume() * Ndc);}
+  const Long Ncopy = src.size();
+  Td* rP = (Td*) qlat::get_data(res).data();
+  Ty* sP = (Ty*) qlat::get_data(src).data();
+  move_index mv_civ;
+  if(dir == 1){
+    cpy_GPU(rP, sP, Ncopy, 1, 1);
+    mv_civ.move_civ_in(rP, rP, 1, Ndc, Ncopy/Ndc, 1, true);
+  }
+  if(dir == 0){
+    cpy_GPU(sP, rP, Ncopy, 1, 1);
+    mv_civ.move_civ_out(sP, sP, 1, Ncopy/Ndc, Ndc, 1, true);
+  }
+}
+
+template<typename Td, typename Ty>
+void qprop_to_prop_gpu(qlat::vector_gpu<Ty >& res, qlat::Field<Td>& src){
+  prop_gpu_to_qprop(src, res, 0);
+}
+
 ////assumed civ == n*12 with n the source indices, 12 the sink indices 
 template <typename Ty, int civ >
 void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)

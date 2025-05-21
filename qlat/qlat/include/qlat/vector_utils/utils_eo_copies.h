@@ -48,6 +48,17 @@ void apply_eo_signT(Ty* sP, Ty* rP, qlat::FieldM<int8_t, 1>& eo, const int8_t di
   });
 }
 
+template <class Ty, int civ>
+void apply_eo_signT(qlat::vector_acc<Ty* >& sP, qlat::vector_acc<Ty* >& rP, qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1)
+{
+  Qassert(sP.size() == rP.size());
+  for(unsigned int si=0;si<sP.size();si++)
+  {
+    apply_eo_signT<Ty, civ>(sP[si], rP[si], eo, dir);
+  }
+}
+
+
 /////src and res can be tthe same pointer
 template <class Ty, int civ>
 void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1)

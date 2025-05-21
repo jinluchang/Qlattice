@@ -91,7 +91,7 @@ struct quda_clover_inverter {
   quda::ColorSpinorField *gtmp1D, *gtmp2D, *gtmp3D, *gtmp4D, *gtmp5D;
   quda::ColorSpinorField *gtmp1F, *gtmp2F;
   quda::ColorSpinorField *gadd; ////for low mode addition
-  quda::ColorSpinorField *gtmp_invG0;
+  //quda::ColorSpinorField *gtmp_invG0;
 
   quda::ColorSpinorField *ctmp0, *ctmp1, *ctmp2;
   quda::ColorSpinorField *gtmp0, *gtmp1, *gtmp2;
@@ -236,7 +236,7 @@ quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t
   gtmp4D = NULL;gtmp5D = NULL;
   gtmp1F = NULL;gtmp2F = NULL;
   gadd = NULL;
-  gtmp_invG0 = NULL;
+  //gtmp_invG0 = NULL;
 
   ctmp0 = NULL; ctmp1 = NULL; ctmp2 = NULL;
   gtmp0 = NULL; gtmp1 = NULL; gtmp2 = NULL;
@@ -345,7 +345,7 @@ inline void quda_clover_inverter::free_csfield(const int mode)
   if(gtmp1F!= NULL){delete gtmp1F;gtmp1F=NULL;}
   if(gtmp2F!= NULL){delete gtmp2F;gtmp2F=NULL;}}
 
-  if(gtmp_invG0!= NULL){delete gtmp_invG0;gtmp_invG0=NULL;}
+  //if(gtmp_invG0!= NULL){delete gtmp_invG0;gtmp_invG0=NULL;}
 }
 
 inline void quda_clover_inverter::alloc_csfield_gpu()

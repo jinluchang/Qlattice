@@ -11,18 +11,31 @@
 
 namespace qlat{
 
-template <class T1, int civ >
-void clear_fields(qlat::FieldM<T1, civ>& pr, int GPU = 1)
+template <class T1 >
+Long get_expanded_data_size(const qlat::Field<T1>& src){
+  const Long Nd    = qlat::get_data_size(src);
+  const Long Ndata = Nd * src.geo().local_volume_expanded() / src.geo().local_volume();
+  return Ndata;
+}
+
+template <class T1 >
+void clear_fields(qlat::Field<T1>& pr, int GPU = 1)
 {
   TIMER("clear_fields");
   Qassert(pr.initialized);
-  Qassert(qlat::get_data_size(pr)%sizeof(double) == 0);
-  const Long Ndata = qlat::get_data_size(pr) / sizeof(double);
-  double* r0 = (double*) qlat::get_data(pr).data();
+  Qassert(qlat::get_data_size(pr) % sizeof(double) == 0);
+  const Long Ndata = get_expanded_data_size(pr) / sizeof(double);
+  double* r0 = (double*) get_data(pr).data();
   qGPU_for(isp, Ndata, GPU, {
     r0[isp] = 0.0;
   });
 }
+
+//template <class T1, int civ >
+//void clear_fields(qlat::FieldM<T1, civ>& pr, int GPU = 1)
+//{
+//  clear_fields(pr, GPU);
+//}
 
 // can be expanded ones, but only double and float
 template <class T1, class T2 >
@@ -98,7 +111,7 @@ double fields_quick_checksum(qlat::FieldM<Ty, civ>& fs, const Long block = 128)
 {
   TIMER("fields_quick_checksum");
   using D = typename IsBasicDataType<Ty>::ElementaryType;
-  const Long Ndata = qlat::get_data_size(fs) / ( 2 * sizeof(D));//complex checksum
+  const Long Ndata = get_expanded_data_size(fs) / ( 2 * sizeof(D));//complex checksum
   //if(!get_data_type_is_double<Ty >()){Ndata = Ndata * 2;}
   Qassert(Ndata % block == 0);
   qlat::ComplexT<D >  res = 0.0;
@@ -124,7 +137,6 @@ void fields_operations(qlat::FieldM<T1, civ>& pr, qlat::FieldM<T2, civ>& p0, qla
   const Geometry& geo = p0.geo();
   if(!pr.initialized){pr.init(geo);}
 
-  //const long Ndata = qlat::get_data_size(pr)/ sizeof(T1);
   //T1* r0 = (T1*) qlat::get_data(pr).data();
   //T2* s0 = (T2*) qlat::get_data(p0).data();
   //T3* s1 = (T3*) qlat::get_data(p1).data();
@@ -176,6 +188,53 @@ void fields_equal(std::vector<qlat::FieldM<T1, civ> >& pr, std::vector<qlat::Fie
 {
   fields_operations(pr, ps, ps, qlat::ComplexT<double>( 0.0, 0.0), qlat::ComplexT<double>( 1.0, 0.0), qlat::ComplexT<double>( 0.0, 0.0));
 }
+
+template <class T1 >
+void fields_conj(T1** src, const int nvec, const int civ, const Geometry& geo)
+{
+  TIMER("fields_conj");
+  Qassert(IsBasicDataType<T1>::value);
+
+  using M1 = typename IsBasicDataType<T1>::ElementaryType;
+  int Ndata = sizeof(T1) / sizeof(M1);
+
+  Ndata = Ndata * civ;// multiplicity
+
+  for(int iv=0;iv<nvec;iv++){
+    M1* res = (M1*) src[iv];
+    qacc_for(isp, geo.local_volume(), {
+      M1* p = &res[isp*Ndata + 0];
+      for(int d=0;d<Ndata;d++)
+      {
+        p[d] = qlat::qconj(p[d]);
+      }
+    });
+  }
+}
+
+template <class T1, int civ >
+void fields_conj(qlat::FieldM<T1, civ>& pr)
+{
+  Qassert(pr.initialized);
+  qlat::vector_acc<T1* > src;src.resize(1);
+  src[0] = (T1*) qlat::get_data(pr).data();
+  fields_conj(src.data(), 1, civ, pr.geo());
+}
+
+template <class T1, int civ >
+void fields_conj(std::vector<qlat::FieldM<T1, civ> >& pr)
+{
+  const int nvec = pr.size();
+  if(nvec == 0){return ;}
+  qlat::vector_acc<T1* > src;src.resize(nvec);
+  for(int si=0;si<nvec;si++)
+  {
+    Qassert(pr[si].initialized);
+    src[si] = (T1*) qlat::get_data(pr[si]).data();
+  }
+  fields_conj(src.data(), nvec, civ, pr[0].geo());
+}
+
 
 }
 

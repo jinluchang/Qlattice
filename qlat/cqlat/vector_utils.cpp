@@ -14,10 +14,6 @@ EXPORT(diff_gauge, {
   GaugeField &g1 = py_convert_type<GaugeField>(p1);
   diff_gauge(g0,g1);
   Py_RETURN_NONE;
-  ///std::string path;
-  ///py_convert(path, p_path);
-  ///ld.load(path);
-  ///Py_RETURN_NONE;
 })
 
 EXPORT(load_gwu_link, {
@@ -106,6 +102,7 @@ EXPORT(random_point_src, {
   Py_RETURN_NONE;
 })
 
+
 EXPORT(load_gwu_noiP, {
   using namespace qlat;
   PyObject* p_ld = NULL;
@@ -119,6 +116,7 @@ EXPORT(load_gwu_noiP, {
   load_gwu_noiP(path, prop);
   Py_RETURN_NONE;
 })
+
 
 EXPORT(mk_output, {
   using namespace qlat;
@@ -137,21 +135,8 @@ EXPORT(mk_output, {
     size = size * li;
   }
 
-  //PyObject* ret = PyList_New(size);
-  //return ret;
-
-  //std::vector<double >& write = set_obj<std::vector<double > >();
-  //write.resize(size);
-
-  ///std::vector<double > write;
-  ///write.resize(size);
   std::vector<double >* write = new std::vector<double >(size);
   return py_convert((void*)write);
-  //print0("size of write %d \n", int(size));
-
-  //double* write = new double[size];
-  //return py_convert((void*)write);
-
 })
 
 EXPORT(free_output, {
@@ -188,7 +173,6 @@ EXPORT(write_output, {
   }
 
   std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_0));
-  /////std::vector<double >& write = py_convert_type<std::vector<double > >(p_0);
 
   std::string output;
   py_convert(output , p_1);
@@ -217,10 +201,6 @@ EXPORT(make_point_prop, {
 EXPORT(make_volume_src, {
   using namespace qlat;
   PyObject* p_v0 = NULL;
-  ///PyObject* p_v1 = NULL;
-  //PyObject* p_v2 = NULL;
-  //PyObject* p_v3 = NULL;
-
   int seed      =  0;
   int mix_color =  0;
   int mix_spin  =  0;
@@ -228,10 +208,6 @@ EXPORT(make_volume_src, {
   if (!PyArg_ParseTuple(args, "Oi|iii", &p_v0, &seed, &mix_color, &mix_spin, &tini)) {
     return NULL;
   }
-
-  //py_convert(seed, p_v1);
-  //if(p_v2 != NULL){py_convert(mix_color, p_v2);}
-  //if(p_v3 != NULL){py_convert(mix_spin , p_v3);}
 
   Propagator4d& prop = py_convert_type<Propagator4d>(p_v0);
   make_volume_src(prop, seed, mix_color, mix_spin, tini);
@@ -243,12 +219,10 @@ EXPORT(local_sequential_source, {
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
   PyObject* p_v2 = NULL;
-  //PyObject* p_v3 = NULL;
   int gammai = -1;
   if (!PyArg_ParseTuple(args, "OOO|i", &p_v0, &p_v1, &p_v2, &gammai)) {
     return NULL;
   }
-  //if(p_v3 != NULL){py_convert(gammai, p_v3);}
   Propagator4d& res = py_convert_type<Propagator4d>(p_v0);
   Propagator4d& src = py_convert_type<Propagator4d>(p_v1);
 
@@ -416,6 +390,34 @@ EXPORT(prop4d_sink_gamma, {
   for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
   prop4d_sink_gamma(src, gL[g0], Conj);
+  Py_RETURN_NONE;
+})
+
+EXPORT(load_qlat_link, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_path)) {
+    return NULL;
+  }
+  GaugeField &g0 = py_convert_type<GaugeField>(p_ld);
+  std::string path;
+  py_convert(path, p_path);
+  load_qlat_link(path,g0);
+  Py_RETURN_NONE;
+})
+
+EXPORT(save_qlat_prop, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_path)) {
+    return NULL;
+  }
+  GaugeField &g0 = py_convert_type<GaugeField>(p_ld);
+  std::string path;
+  py_convert(path, p_path);
+  save_qlat_link(path,g0);
   Py_RETURN_NONE;
 })
 

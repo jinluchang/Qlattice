@@ -148,6 +148,94 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
 }
 
 template <typename Ty>
+void get_noise_pos(qlat::FieldM<Ty, 1>& noise, std::vector<PointsSelection >& grids, Coordinate& pos, int printS=0)
+{
+  qlat::Geometry& geo = noise.geo();
+  qlat::vector_acc<int > nv,Nv,mv;
+  geo_to_nv(geo, nv, Nv, mv);
+  //int nx,ny,nz,nt;
+  //nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
+  LInt Nsite = Nv[0]*Nv[1]*Nv[2]*Nv[3];
+
+  int t_ini = -1;
+  std::vector<int > pos_list;
+  for(LInt isp=0; isp< Nsite; isp++)
+  {
+    Coordinate xl0 = geo.coordinate_from_index(isp);
+    Coordinate xg0 = geo.coordinate_g_from_l(xl0);
+    {
+      auto tem_source =  noise.get_elem_offset(isp);
+      if(qnorm(tem_source)>0.01)
+      {
+        for(int i=0;i<4;i++){ 
+          pos_list.push_back(xg0[i]);
+        }
+        if(t_ini == -1){
+          t_ini = xg0[3];
+        }
+        if(t_ini != -1){Qassert(t_ini == xg0[3]);}
+      }
+    }
+  }
+  const int Nmpi  = qlat::get_num_node();
+  const int rank  = qlat::get_id_node();
+  std::vector<int > tL;tL.resize(Nmpi);
+  std::vector<int > gL;gL.resize(Nmpi);
+  for(int i=0;i<Nmpi;i++){tL[i] = 0;gL[i] = 0;}
+  tL[rank] = t_ini;gL[rank] = pos_list.size() / 4;
+
+  sum_all_size(gL.data(), gL.size());
+  sum_all_size(tL.data(), tL.size());
+  Long total_pos = 0;
+  Long curr_off   = 0;
+  for(int i=0;i<Nmpi;i++){
+    if(t_ini >= 0 and gL[i] != 0){Qassert(tL[i] == t_ini);}
+    total_pos += gL[i];
+    if(i < rank){curr_off += gL[i];}
+  }
+  std::vector<int > pos_mpi;pos_mpi.resize(total_pos * 4);
+  for(Long i=0;i<total_pos*4;i++){pos_mpi[i] = 0;}
+
+  for(int i=0;i<gL[rank]*4;i++){
+    pos_mpi[curr_off*4 + i] = pos_list[i];
+  }
+  sum_all_size(pos_mpi.data(), pos_mpi.size());
+  grids.resize(total_pos);
+  for(Long i=0;i<total_pos;i++)
+  {
+    grids[i].resize(1);
+    for(int j=0;j<4;j++){
+      grids[i][0][j] = pos_mpi[i*4 + j];
+    }
+    if(t_ini >= 0){Qassert(grids[i][0][3] == t_ini);}
+    if(printS >= 1)
+    {
+      Coordinate p = grids[i][0];
+      print0("Check P %5d %5d %5d %5d  !\n",p[0],p[1],p[2],p[3]);
+    }
+  }
+  pos = grids[0][0];
+
+  if(printS >= 2)
+  {
+    for(unsigned int isp=0; isp< Nsite; isp++)
+    {
+      Coordinate xl0 = geo.coordinate_from_index(isp);
+      Coordinate p = geo.coordinate_g_from_l(xl0);
+      {
+        auto tem_source =  noise.get_elem_offset(isp);
+        if(qnorm(tem_source)>0.01)
+        {
+          printf("Check K %5d %5d %5d %5d node %5d %13.5f %13.5f !\n",p[0],p[1],p[2],p[3],qlat::get_id_node()
+            , tem_source.real(), tem_source.imag());
+        }
+      }
+    }
+    fflush_MPI();
+  }
+}
+
+template <typename Ty>
 void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, double& factor)
 {
   const qlat::Geometry& geo = noise.geo();
@@ -732,6 +820,38 @@ void get_point_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL,
     }
   }
 
+}
+
+template <class Tr, int civ>
+void get_wall_color_src(std::vector<qlat::FieldM<Tr , civ> >& srcL, const Coordinate& ps, const int src_eo = -1)
+{
+  TIMER("get_wall_color_src");
+  Qassert(srcL.size() == civ);
+  Qassert(srcL[0].initialized);
+  const qlat::Geometry& geo = srcL[0].geo();
+  const Long V_local = geo.local_volume();
+  const int tini = ps[3];
+
+  std::vector<Tr* > srcP;srcP.resize(srcL.size());
+  for(int ic=0;ic<srcL.size();ic++){
+    Qassert(srcL[ic].initialized);
+    srcP[ic] = (Tr*) qlat::get_data(srcL[ic]).data();
+    zero_Ty(srcP[ic], V_local*civ, 0);
+  }
+
+  qthread_for(isp, geo.local_volume(), {
+    Coordinate xl   = geo.coordinate_from_index(isp);
+    Coordinate p    = geo.coordinate_g_from_l(xl);
+    //int site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    int site_eo = ( (xl[2]%2) * 2 + xl[1]%2 ) * 2 + xl[0]%2;
+    if(src_eo == -1){site_eo = src_eo;}
+    if(p[3] == tini and site_eo == src_eo)
+    {
+      for(int c=0;c<civ;c++){
+        srcP[c][isp*civ + c] = Tr(1.0, 0.0);
+      }
+    }
+  });
 }
 
 template <class T>

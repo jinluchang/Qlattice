@@ -6,6 +6,7 @@
 #include "utils_check_fun.h"
 #include "utils_smear_vecs.h"
 #include "utils_lms_funs.h"
+#include "utils_Smear_vecs_2link.h"
 
 int main(int argc, char* argv[])
 {
@@ -24,12 +25,23 @@ int main(int argc, char* argv[])
 
   int prop_type = 1;
   int mass_split = -1;
+  int sparse_src = 0;
+  int n_per_time_slice = 128;
+  // save the pure low mode fft data
+  int save_low_fft = 0;
   in.find_para(std::string("prop_type"), prop_type);
   std::string out_vec_sink  = std::string("NONE");
   std::string out_vec_mom   = std::string("NONE");
+  std::string out_vec_sparse = std::string("NONE"); 
+  std::string sparse_fsel = std::string("NONE"); 
   in.find_para(std::string("out_vec_sink"), out_vec_sink);
   in.find_para(std::string("out_vec_mom"), out_vec_mom);
+  in.find_para(std::string("out_vec_sparse"), out_vec_sparse);
+  in.find_para(std::string("sparse_fsel"), sparse_fsel);
   in.find_para(std::string("mass_split"), mass_split);
+  in.find_para(std::string("save_low_fft"), save_low_fft);
+  in.find_para(std::string("sparse_src"), sparse_src);
+  in.find_para(std::string("n_per_time_slice"), n_per_time_slice);
 
   int check_prop_norm = 0;
   in.find_para(std::string("check_prop_norm"), check_prop_norm);
@@ -44,6 +56,9 @@ int main(int argc, char* argv[])
 
   int do_point_sink   = 1;
   in.find_para(std::string("do_point_sink"), do_point_sink);
+
+  int smear_2link = 0;
+  in.find_para(std::string("smear_2link"), smear_2link);
 
   std::string mom_shift_ = std::string("0 0 0 0");
   in.find_para(std::string("mom_shift"), mom_shift_);
@@ -104,6 +119,13 @@ int main(int argc, char* argv[])
   }
   std::vector<Long > mass_jobA = job_create(in.nmass, nmass_group);
 
+  // new smearings
+  std::vector< qlat::GaugeFieldT<Ftype > > gfL;
+  std::vector<qlat::vector_gpu<qlat::ComplexT<Ftype > > > propS;
+  if(smear_2link == 1){
+    qlat::prepare_gauge_buffer(gfL, gf);
+  }
+
   ////qprop tmpa;tmpa.init(geo);
   ////print0("vol %ld %ld \n", geo.local_volume(), Long(qlat::get_data_size(tmpa)));
 
@@ -141,12 +163,12 @@ int main(int argc, char* argv[])
     ei.load_eivals(std::string(enamev), rho_tem, eigenerror, nini);
 
     if(src_step == sink_step){
-    ei.load_eigen_Mvec_smear(std::string(ename), gf, nini, checknorm,
-      src_width , src_step , 0.0, 0);}
+    ei.load_eigen_Mvec_smear(std::string(ename), gf, gfL, propS, nini, checknorm,
+      src_width , src_step , 0.0, 0, mom_smear, mom_smear);}
 
     if(src_step != sink_step){
-    ei.load_eigen_Mvec_smear(std::string(ename), gf, nini, checknorm,
-      src_width , src_step , sink_width, sink_step);}
+    ei.load_eigen_Mvec_smear(std::string(ename), gf, gfL, propS, nini, checknorm,
+      src_width , src_step , sink_width, sink_step, mom_smear, mom_smear);}
 
     if(src_step != 0){
       mode_sm = 2;
@@ -171,6 +193,7 @@ int main(int argc, char* argv[])
     std::string outputG = in.output;
     std::string out_vec_sinkG = out_vec_sink;
     std::string out_vec_momG  = out_vec_mom ;
+    std::string out_vec_sparseG = out_vec_sparse;
 
     if(nmass_group != in.nmass){
       if(outputG != std::string("NONE")){
@@ -183,6 +206,10 @@ int main(int argc, char* argv[])
 
       if(out_vec_momG != std::string("NONE")){
         out_vec_momG = ssprintf("%s.mgroup%02d", out_vec_momG.c_str(), jobi);
+      }
+
+      if(out_vec_sparseG != std::string("NONE")){
+        out_vec_sparseG = ssprintf("%s.mgroup%02d", out_vec_sparseG.c_str(), jobi);
       }
     }
 
@@ -216,7 +243,7 @@ int main(int argc, char* argv[])
     }
     
     /////===load noise and prop
-    char names[450],namep[500], names_vec[450], names_mom[450];
+    char names[450],namep[500], names_vec[450], names_mom[450], names_sparse[450];
     std::vector<qprop > FpropV;FpropV.resize(0);FpropV.resize(bcut);
     lms_para<Complexq > srcI;/////buffers and parameters for lms
     print_time();
@@ -288,6 +315,7 @@ int main(int argc, char* argv[])
 
       bool save_vecs_vec = false;
       bool save_vecs_mom = false;
+      bool save_sparse_prop = false;
       if(out_vec_sinkG != std::string("NONE")){
         sprintf(names_vec, out_vec_sinkG.c_str(), icfg, si);
         save_vecs_vec = true;
@@ -295,6 +323,11 @@ int main(int argc, char* argv[])
       if(out_vec_momG != std::string("NONE")){
         sprintf(names_mom, out_vec_momG.c_str(), icfg, si);
         save_vecs_mom = true;
+      }
+
+      if(out_vec_sparseG != std::string("NONE")){
+        sprintf(names_sparse, out_vec_sparseG.c_str(), icfg, si);
+        save_sparse_prop = true;
       }
 
       srcI.init();
@@ -308,6 +341,8 @@ int main(int argc, char* argv[])
       srcI.ckpoint = ckpoint;
       srcI.save_full_vec = save_full_vec;
       srcI.check_prop_norm = check_prop_norm;
+      srcI.sparse_src = sparse_src;
+      srcI.save_low_fft = save_low_fft;
       if(save_vecs_vec){
         sprintf(namep, "%s.pt.zero.vec", names_vec);
         srcI.name_zero_vecs = std::string(namep);
@@ -316,6 +351,20 @@ int main(int argc, char* argv[])
       if(save_vecs_mom){
         sprintf(namep, "%s.pt", names_mom);
         srcI.name_mom_vecs = std::string(namep);
+      }
+
+      if(save_sparse_prop){
+        srcI.name_sparse_prop = ssprintf("%s.pt.sparse", names_sparse);
+        std::string namew = ssprintf(sparse_fsel.c_str(), icfg);
+        if(get_file_size_MPI(namew.c_str()) == 0){
+          qlat::RngState rs(in.seed + in.icfg + 8);
+          set_field_selection(srcI.fsel, total_site, n_per_time_slice, rs);
+          if(sparse_fsel!= std::string("NONE")){
+            write_field_selection(srcI.fsel, namew);
+          }
+        }else{
+          read_field_selection(srcI.fsel, namew);
+        }
       }
 
       if(outputG == std::string("NONE")){
@@ -339,7 +388,11 @@ int main(int argc, char* argv[])
         }
 
         for(int im=0;im<bcut;im++){
-        smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step, mom_smear);
+        if(smear_2link == 0){
+          smear_propagator_gwu_convension(FpropV[im], gf, sink_width, sink_step, mom_smear);
+        }else{
+          smear_propagator_gwu_convension_2shift(FpropV[im], gfL, sink_width, sink_step, propS, -1, mom_smear);
+        }
         //copy_noise_to_prop(FpropV[im], prop4d, 1);
 
         //smear_propagator_gwu_convension(prop4d, gf, width, step);
@@ -357,6 +410,10 @@ int main(int argc, char* argv[])
         if(save_vecs_mom){
           sprintf(namep, "%s.sm", names_mom);
           srcI.name_mom_vecs = std::string(namep);
+        }
+
+        if(save_sparse_prop){
+          srcI.name_sparse_prop = ssprintf("%s.sm.sparse", names_sparse);
         }
 
         point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);

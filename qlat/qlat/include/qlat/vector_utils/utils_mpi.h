@@ -387,7 +387,7 @@ void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* re
   std::vector<MPI_Request> send_reqs(num_node);
   std::vector<MPI_Request> recv_reqs(num_node);
   //int mpi_tag = id_node;
-  const int mpi_tag = 10240 + 777;
+  const int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
 
   /////===get proper M_size
   MPI_Datatype curr = MPI_BYTE;unsigned int M_size = 1;unsigned int M_tem = 1;

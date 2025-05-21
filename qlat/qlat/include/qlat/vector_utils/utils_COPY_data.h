@@ -15,55 +15,88 @@ namespace qlat{
 
 #ifdef QLAT_USE_ACC
 template <typename T, typename TInt, typename TI0, typename TI1>
-__global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI1 bfac)
+__global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI1 bfac, const int Ngap = 1, const LInt Lgap0 = 0, const LInt Lgap1 = 0)
 {
-  TI0  index =  blockIdx.y*gridDim.x + blockIdx.x;
-  unsigned int  tid    =  threadIdx.x;
-  unsigned int   nt    = blockDim.x;
+  //blockDim, gridDim
+  //TI0  index =  blockIdx.y*gridDim.x + blockIdx.x;
+  const TI0  index =  blockIdx.x;
+  const unsigned int  tid    =  threadIdx.x;
+  const unsigned int   nt    = blockDim.x;
 
-  float* r = (float*) &Pres[map_res[index]*bfac];
-  float* s = (float*) &Psrc[map_src[index]*bfac];
-  TI0 Mend = (bfac*sizeof(T))/sizeof(float);
-  TI0 off = tid;
-  while(off < Mend){r[off] = s[off];off += nt;}
+  ////TI0 Ngap  = gridDim.z;
+  const TI0 bi    = blockIdx.y;
+  //TI0 b1    = gridDim.z ;
+  const TI0 bL  = (bfac + gridDim.y - 1) / gridDim.y;
+  TI0 bcur = bL;
+  if((bi+1)*bL > bfac){
+    bcur = bfac - bi*bL;
+  }
+
+  //const TI0 Ngi   = blockIdx.z;
+  const TInt m0 = map_res[index] * bfac + bi*bL;
+  const TInt m1 = map_src[index] * bfac + bi*bL;
+  const TI0 Mend = (bcur*sizeof(T))/sizeof(float);
+
+  for(int Ngi=0;Ngi<Ngap;Ngi++)
+  {
+    float* r = (float*) &Pres[Ngi*Lgap0 + m0 ];
+    float* s = (float*) &Psrc[Ngi*Lgap1 + m1 ];
+    TI0 off = tid;
+    while(off < Mend){r[off] = s[off];off += nt;}
+  }
 }
 
 #endif
 
 //////Faster when T* is GPU memory without unified
 template <typename T, typename TInt, typename TI0, typename TI1>
-void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, int GPU=1, QBOOL dummy=QTRUE)
+void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, int GPU=1, QBOOL dummy=QTRUE, const int Ngap = 1, const LInt Lgap0 = 0, const LInt Lgap1 = 0)
 {
   TIMERB("copy data form index");
   (void)dummy;
   (void)GPU;
+  Qassert(long(Nvol) > 0 and long(bfac) > 0);
+  //print0("===vol %d, b %d, N %d %d %d \n", int(Nvol), int(bfac), int(Ngap), int(Lgap0), int(Lgap1));
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
-  Long Mend = (bfac*sizeof(T));
-  Qassert(Mend%sizeof(float) == 0);
-  Long nt = 32;if(Mend < 12){nt = 12;}
-  dim3 dimBlock(   nt,   1, 1);
-  dim3 dimGrid(  Nvol,  1, 1);
-  cpy_data_from_index_global<T,TInt,TI0,TI1  ><<< dimGrid, dimBlock >>>(Pres, Psrc, &map_res[0], &map_src[0], bfac);
-  if(dummy==QTRUE){qacc_barrier(dummy);}
-  /////qacc_for(iv, Nvol, {for(int bi=0;bi<bfac;bi++)Pres[map_res[iv]*bfac+bi] = Psrc[map_src[iv]*bfac+bi];});
-  return ;}
+    TI1 b1 =   1;
+    if(bfac >= 512){
+      b1 = (bfac + 512 - 1) / 512;
+    }
+    Long Mend = (bfac*sizeof(T));
+    Qassert(Mend%sizeof(float) == 0);
+    Long nt = 32;if(Mend < 12){nt = 12;}
+    dim3 dimBlock(   nt,    1, 1);
+    dim3 dimGrid(  Nvol,   b1, 1);
+    cpy_data_from_index_global<T,TInt,TI0,TI1  ><<< dimGrid, dimBlock >>>(Pres, Psrc, &map_res[0], &map_src[0], bfac, Ngap, Lgap0, Lgap1);
+    //qacc_for2dNB(iv, Nvol, Ngi, Ngap, {
+    //  T* r = &Pres[Ngi*Lgap0 + map_res[iv]*bfac];
+    //  T* s = &Psrc[Ngi*Lgap1 + map_src[iv]*bfac];
+    //  for(int bi=0;bi<bfac;bi++){
+    //    r[bi] = Psrc[bi];
+    //  }
+    //});
+    if(dummy==QTRUE){qacc_barrier(dummy);}
+  return ;
+  }
   #endif
 
   size_t Off = bfac*sizeof(T);
-  #pragma omp parallel for
-  for(TI0 iv=0;iv<Nvol;iv++)
+  for(int Ngi=0;Ngi<Ngap;Ngi++)
   {
-    //memcpy(&Pres[map_res[iv]*bfac], &Psrc[map_src[iv]*bfac], Off);
-    T* res = &Pres[map_res[iv]*bfac];
-    T* src = &Psrc[map_src[iv]*bfac];
-    memcpy(res, src, Off);
-    //for(TI1 j=0;j<bfac;j++){res[j] = src[j];}
+    #pragma omp parallel for
+    for(TI0 iv=0;iv<Nvol;iv++)
+    {
+      //memcpy(&Pres[map_res[iv]*bfac], &Psrc[map_src[iv]*bfac], Off);
+      T* res = &Pres[Ngi*Lgap0 + map_res[iv]*bfac];
+      T* src = &Psrc[Ngi*Lgap1 + map_src[iv]*bfac];
+      memcpy(res, src, Off);
+      //for(TI1 j=0;j<bfac;j++){res[j] = src[j];}
+    }
   }
 
 }
-
 
 template <typename T>
 void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const Long bfac, int GPU=1, QBOOL dummy=QTRUE)

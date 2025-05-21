@@ -13,6 +13,7 @@
 #include "utils_check_fun.h"
 #include "utils_smear_vecs.h"
 #include "utils_props_type.h"
+#include "utils_Smear_vecs_2link.h"
 
 ///#define SUMMIT 0
 
@@ -110,7 +111,10 @@ struct eigen_ov {
 
   template <typename Tg >
   void load_eigen_Mvec_smear(const std::string& ename, 
-    const GaugeFieldT<Tg >& gf, int nini = 0, int checknorm = 0,  
+    const GaugeFieldT<Tg >& gf,
+    std::vector< qlat::GaugeFieldT<Ftype > >& gfL,
+    std::vector<qlat::vector_gpu<qlat::ComplexT<Ftype > > >& propS,
+    int nini = 0, int checknorm = 0,  
     const double src_width  = 0.0, const int src_step  = 0,
     const double sink_width = 0.0, const int sink_step = 0,
     const CoordinateD& src_mom  = CoordinateD(),
@@ -682,7 +686,10 @@ void eigen_ov::print_norm_Mvec()
 
 template <typename Tg >
 void eigen_ov::load_eigen_Mvec_smear(const std::string& ename, 
-    const GaugeFieldT<Tg >& gf, int nini, int checknorm, 
+    const GaugeFieldT<Tg >& gf,
+    std::vector< qlat::GaugeFieldT<Ftype > >& gfL,
+    std::vector<qlat::vector_gpu<qlat::ComplexT<Ftype > > >& propS,
+    int nini, int checknorm, 
     const double src_width , const int src_step ,
     const double sink_width, const int sink_step,
     const CoordinateD& src_mom ,
@@ -774,9 +781,15 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
 
       Complexq* bufP = bufL[sm].data();
       flag = 0;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
-      smear_propagator_gwu_convension_inner<Complexq, 4, each_sm  , Tg>(bufP, gf, 
-        widthL[sm], stepL[sm], momL[sm], smear_in_time_dirL[sm]);
 
+      if(gfL.size() == 0){
+        smear_propagator_gwu_convension_inner<Complexq, 4, each_sm  , Tg>(bufP, gf, 
+          widthL[sm], stepL[sm], momL[sm], smear_in_time_dirL[sm]);
+      }else{
+        Qassert(smear_in_time_dirL[sm] == 0);//not transferred to 2link smearings and may not work
+        smear_propagator_gwu_convension_2shift_modi<Complexq, Ftype, 4, each_sm>(bufP, geo, gfL, 
+          widthL[sm], stepL[sm], propS, -1, 0, momL[sm]);
+      }
       flag = 1;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
     }
     for(int sm = 0 ; sm < 2; sm++)

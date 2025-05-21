@@ -141,6 +141,33 @@ inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("N
   return sp;
 }
 
+inline void write_pos_to_string(std::string& POS_LIST, Coordinate& pos){
+  std::string buf;
+  std::string pnum = ssprintf(" ");
+  for(int i=0;i<4;i++){
+    pnum = ssprintf("%d ", pos[i]);
+    buf += pnum;
+  }
+  buf += std::string(" ; ");
+  POS_LIST += buf;
+}
+
+inline std::vector<Coordinate > string_to_Coordinates(std::string& INFO){
+  std::vector<Coordinate > posL ;
+  std::vector<std::string > a = stringtolist(INFO);
+  Qassert(a.size() % 5 == 0);
+  int Npos = a.size()/5;
+  for(int i=0;i< Npos;i++)
+  {
+    Qassert(a[i*5+4] == std::string(";"));
+    Coordinate c;
+    for(int j = 0;j<4;j++){c[j] = stringtonum(a[i*5 + j]);}
+    posL.push_back(c);
+  }
+  return posL;
+}
+
+
 inline std::string mass_to_string(std::vector<double>& massL)
 {
   std::string mL, mnum;//char mnum[500];
@@ -703,7 +730,7 @@ struct inputpara{
     if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 2;
     if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;
     if(find_para(std::string("ndouble"),ndouble)==0)ndouble  = 200;
-    if(find_para(std::string("fermion_type"),fermion_type)==0)fermion_type  = 0;
+    if(find_para(std::string("fermion_type"),fermion_type)==1)fermion_type  = 1;
     if(find_para(std::string("gridtem"),gridtem)==0)gridtem  = 1;
     if(find_para(std::string("sparsefactor"),sparsefactor)==0)sparsefactor  = 16;
     if(find_para(std::string("lms"),lms)==0)lms  = 0;
@@ -874,6 +901,31 @@ inline void print_time()
   tm_info = localtime(&timer);
   strftime(buf, 26, "%Y-%m-%d %H:%M:%S", tm_info);
   print0("%s ", buf);
+}
+
+inline void readuce_input_Coordinate_info(std::string& a0, std::vector<std::string>& a1, const int max_pos = 8){
+  if(a0.length() < int(LINE_LIMIT / 2)){return ;}
+  std::vector<Coordinate > posL = string_to_Coordinates(a0);
+  std::string tmp = " Positions ";
+  std::string POS_CUR = "";
+  int count = 0;
+  for(unsigned long pi=0;pi<posL.size();pi++)
+  {
+    POS_CUR = "";
+    write_pos_to_string(POS_CUR, posL[pi]);
+    tmp += POS_CUR;
+    count += 1;
+    if(count == max_pos){
+      ////print0("test %s \n", tmp.c_str());
+      a1.push_back(tmp);
+      tmp   = " Positions ";
+      count = 0;
+    }
+  }
+  if(count != 0){
+    a1.push_back(tmp);
+  }
+  a0 = " DO_INFO_LIST";
 }
 
 inline size_t vec_head_write(inputpara &in, const char* filename, int type=-1, bool clear=true){

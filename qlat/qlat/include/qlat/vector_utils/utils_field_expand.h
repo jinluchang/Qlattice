@@ -148,7 +148,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   M* rP = (M*) &rbuf[0];
 
   ////setup reciev
-  const int mpi_tag = 10240 + 777;
+  const int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
   for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
     const CommMsgInfo& cmi = plan.recv_msg_infos[i]; 
     mpi_irecv(&rP[cmi.buffer_idx * MULTI], cmi.size * mpi_size, MPI_DOUBLE,

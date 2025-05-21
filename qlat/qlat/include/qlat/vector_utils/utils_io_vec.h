@@ -186,6 +186,7 @@ struct io_vec
   TIMERA("Create io_vec");
   /////x,y,z,t
   geop = geo;
+  //const fft_desc_basic& fd = get_fft_desc_basic_plan(geop);
   threadio = threadio_set;
   MPI_size_c = 0;////tmp = NULL;
   do_checksum = do_checksum_set;
@@ -453,6 +454,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool Rendian=false, int dsize=8, bool single_file=false,  int gN=1, bool read = true)
 {
   TIMER("IO VECS");
+
   timeval tm0,tm1,tm2,tm3;
   gettimeofday(&tm0, NULL);
   double mpi_t = 0.0;
@@ -491,17 +493,17 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
     /////From res to buf
     if(read==false)
     {
-    TIMERA("IO copy mem time");
-    for(int iou=0;iou<ionum;iou++)
-    for(int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
-      int offv = curr_v + iou*gN + gi;
-      //memcpy(&res[(iou*gN+gi)*noden*dsize + 0],&props[(offv)*noden*dsize + 0],noden*dsize);
+      TIMERA("IO copy mem time");
+      for(int iou=0;iou<ionum;iou++)
+      for(int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
+        int offv = curr_v + iou*gN + gi;
+        //memcpy(&res[(iou*gN+gi)*noden*dsize + 0],&props[(offv)*noden*dsize + 0],noden*dsize);
 
-      char* pres=&res[(iou*gN+gi)*noden*dsize + 0];
-      char* psrc=&props[(offv)*noden*dsize + 0];
-      #pragma omp parallel for
-      for(size_t isp=0;isp<size_t(noden*dsize);isp++){pres[isp] = psrc[isp];}
-    }
+        char* pres=&res[(iou*gN+gi)*noden*dsize + 0];
+        char* psrc=&props[(offv)*noden*dsize + 0];
+        #pragma omp parallel for
+        for(size_t isp=0;isp<size_t(noden*dsize);isp++){pres[isp] = psrc[isp];}
+      }
       gettimeofday(&tm2, NULL);
       send_vec_kentucky((char*) &buf[0],(char*) &res[0], dsize,gN, io, read);
       gettimeofday(&tm3, NULL);
@@ -1999,7 +2001,6 @@ void save_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &n
   load_qlat_eigen(filename, noises, false, single_file, INFO_LIST, 0, -1, info);
 }
 
-
 ////===Check eigen system type
 inline int check_eigen_qlat(const char *filename, int n1, inputpara& in)
 {
@@ -2193,8 +2194,18 @@ void load_qlat_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true ,
 }
 
 template <typename Td>
+void load_qlat_link(const std::string& filename,GaugeFieldT<Td> &gf, bool read = true , bool single_file=false){
+  load_qlat_link(filename.c_str(), gf, read, single_file);
+}
+
+template <typename Td>
 void save_qlat_link(const char *filename,GaugeFieldT<Td> &gf, bool single_file = false){
   load_qlat_link(filename, gf, false, single_file);
+}
+
+template <typename Td>
+void save_qlat_link(const std::string& filename,GaugeFieldT<Td> &gf, bool single_file = false){
+  load_qlat_link(filename.c_str(), gf, false, single_file);
 }
 
 /////nvec needed for checksum

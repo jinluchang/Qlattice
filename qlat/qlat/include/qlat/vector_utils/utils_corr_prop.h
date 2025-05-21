@@ -503,32 +503,6 @@ void vec_corrE(qlat::vector_acc<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft
   vec_corrE(r0, res, fd, nvec, clear, mom, src_phase, t0);
 }
 
-void write_pos_to_string(std::string& POS_LIST, Coordinate& pos){
-  std::string buf;
-  std::string pnum = ssprintf(" ");
-  for(int i=0;i<4;i++){
-    pnum = ssprintf("%d ", pos[i]);
-    buf += pnum;
-  }
-  buf += std::string(" ; ");
-  POS_LIST += buf;
-}
-
-inline std::vector<Coordinate > string_to_coord(std::string& INFO){
-  std::vector<Coordinate > posL ;
-  std::vector<std::string > a = stringtolist(INFO);
-  Qassert(a.size() % 5 == 0);
-  int Npos = a.size()/5;
-  for(int i=0;i< Npos;i++)
-  {
-    Qassert(a[i*5+4] == std::string(";"));
-    Coordinate c;
-    for(int j = 0;j<4;j++){c[j] = stringtonum(a[i*5 + j]);}
-    posL.push_back(c);
-  }
-  return posL;
-}
-
 template<typename Ty>
 void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
   if(tini == 0){return ;}

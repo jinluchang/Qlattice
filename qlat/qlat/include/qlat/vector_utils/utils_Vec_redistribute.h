@@ -337,7 +337,7 @@ void Vec_redistribute::call_MPI(int flag)
     std::vector<MPI_Request> send_reqs(Nmpi/mt);
     std::vector<MPI_Request> recv_reqs(Nmpi/mt);
     //int mpi_tag = omp_get_thread_num()*Nmpi + map_mpi_vec[fd->rank];
-    int mpi_tag = 10240 + 777; // AMD machine MPI have tag issues....
+    int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG; // AMD machine MPI have tag issues....
     int c1 = 0;
     int c2 = 0;
     for(int n = 0; n < Nmpi/mt; n++){

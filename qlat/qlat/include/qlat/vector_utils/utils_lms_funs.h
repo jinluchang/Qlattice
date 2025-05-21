@@ -45,8 +45,19 @@ struct lms_para{
   int mom_cut;
   int save_zero_corr;
   int save_full_vec;
-  int check_prop_norm;
+  int save_low_fft;
 
+  FieldSelection fsel;
+  ShuffledBitSet sbs ;
+
+  qlat::SelectedField<Ty > sf;
+  qlat::SelectedField<Ty > sf_single;
+  Coordinate new_size_node;
+
+  int check_prop_norm;
+  int sparse_src;
+
+  std::string name_sparse_prop;
   std::string name_mom_vecs;
   std::string name_zero_vecs;
   std::string name_zero;
@@ -63,6 +74,7 @@ struct lms_para{
   qlat::vector_gpu<Ty > resZero;
   std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
   std::vector<qlat::vector_gpu<Ty > > Eprop;
+  qlat::Field<Ty > tmp_prop;
 
   /////initial with src noise
 
@@ -95,16 +107,33 @@ struct lms_para{
     src_smear_kappa  = 0.0;
     sink_smear_kappa = 0.0;
     do_all_low       = 1;
+    sparse_src       = 0;
+    save_low_fft     = 0;
 
     mom_cut          = 4;
     ckpoint          = 1;
 
+    name_sparse_prop = std::string("NONE");
     name_mom_vecs    = std::string("NONE");
     name_zero_vecs   = std::string("NONE");
     name_zero        = std::string("NONE");
     save_zero_corr   = 1;
     save_full_vec    = 0;////1 if all grid source vec need to be saved
 
+    int ionum = 16;
+    std::string val = get_env(std::string("q_io_sparse_vec_ionum"));
+    if(val == ""){ionum = 16;}else{
+      int tem = stringtonum(val);
+      if(tem <= 8){ionum = 8;}
+      if(tem > 8  and tem <= 16){ionum = 16;}
+      if(tem > 16){ionum = 32;}
+    }
+    Qassert(ionum == 8 or ionum == 16 or ionum == 32);
+  
+    if(ionum == 8){new_size_node = Coordinate(1, 2, 2, 2);}
+    if(ionum ==16){new_size_node = Coordinate(1, 2, 2, 4);}
+    if(ionum ==32){new_size_node = Coordinate(2, 2, 2, 4);}
+    
     INFO = std::string("NONE");
     INFOA.resize(0);
   }
@@ -183,6 +212,82 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
 //  sum_all_size(res.data(), res.size(), 1);
 //}
 
+
+template<typename Ty>
+void save_sink_vecs(qlat::vector_gpu<Ty >& src, const Geometry& geo, const int nmass, lms_para<Ty >& srcI, 
+  const std::string& GRID_INFO, const std::string tag = "")
+{
+  TIMER("lms savezero");
+  std::vector<qlat::FieldM<Ty, 1> >& Vzero_data = srcI.Vzero_data;
+  const size_t Vol = geo.local_volume();
+  Qassert(src.size() == 32*nmass*Vol);
+  const Long nvec = src.size()/Vol;
+  //print0("=====vec %d \n", int(nvec));
+  if(Long(Vzero_data.size() ) != nvec){
+    Vzero_data.resize(0);Vzero_data.resize(nvec);
+    for(Long iv=0;iv<nvec;iv++){
+      if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
+    }
+  }
+  for(Long iv=0;iv<nvec;iv++){
+    Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
+    cpy_data_thread(resP, &src[iv*Vol], geo.local_volume(), 1, QTRUE);
+  }
+
+  std::string namew = srcI.name_zero_vecs;
+  if(tag != std::string("")){
+    namew = ssprintf("%s.%s", srcI.name_zero_vecs.c_str(), tag.c_str());
+  }
+  save_qlat_noises(namew.c_str(), Vzero_data, true, GRID_INFO);
+}
+
+template<typename Ty>
+void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& srcI, const std::string& tag, const int clean = false)
+{
+  if(srcI.name_sparse_prop == std::string("NONE")){return ;};
+  TIMER("Save_sparse_prop");
+  Qassert(srcI.fsel.n_elems > 0);
+  const int Nmass = src.size();
+
+  const std::string nameQ = srcI.name_sparse_prop;
+  bool append = true;if(tag == "-1" or clean == true){append = false;}
+  if(append == false)
+  {
+    if(0 == qlat::get_id_node()){
+      qlat::qremove_all(nameQ);
+    }
+  }
+  const Long Ndc = 12 * 12;
+  Qassert(srcI.sf.multiplicity == Nmass * Ndc);
+  Qassert(srcI.sf_single.field.size() % Ndc == 0);
+  const Long Ndata = srcI.sf_single.field.size() / (Ndc);
+  Qassert(srcI.sf.field.size() == Nmass * Ndc * Ndata);
+  //Ty* p0 = (Ty*) qlat::get_data(srcI.sf_single.field).data();
+  //Ty* pr = (Ty*) qlat::get_data(srcI.sf.field).data();
+
+  for(int mi=0;mi<Nmass;mi++)
+  {
+    ////if(mi != 0){append = true;}
+    prop_gpu_to_qprop(srcI.tmp_prop, src[mi]);
+    Qassert(srcI.tmp_prop.multiplicity == Ndc);
+    set_selected_field(srcI.sf_single, srcI.tmp_prop, srcI.fsel);
+    copy_sparse_fields(srcI.sf, srcI.sf_single, Ndc, mi, 0);
+
+    //copy back to src to test results ...
+    //clear_fields(srcI.tmp_prop);
+    //set_field_selected(srcI.tmp_prop, srcI.sf_single, srcI.fsel, true);
+    //qprop_to_prop_gpu(src[mi], srcI.tmp_prop);
+  }
+
+  ShuffledFieldsWriter sfw(nameQ, srcI.new_size_node, append);
+  //std::string tag_ = ssprintf("%s.mass%02d", tag.c_str(), mi);
+  const std::string tag_ = tag;
+
+  //  default single precision files
+  qlat::write(sfw, tag_, srcI.sbs, srcI.sf);
+  sfw.close();
+}
+
 /////propH , pi --> 12*12 --> Nt*Nxyz
 ////input propH with or without sink smear
 ////      src without smear, mode_sm = 2 smtopt, mode_sm = 3  smtosm
@@ -201,13 +306,38 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   const int GPU = 1;const bool rotate = false;
   const int nmass = massL.size();
   const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
-  const size_t Vol = geo.local_volume();
+  //const size_t Vol = geo.local_volume();
 
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
   std::vector<PointsSelection > Ngrid;
-  check_noise_pos(src, pos, off_L);
-  grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
+  if(srcI.sparse_src == 0){
+    check_noise_pos(src, pos, off_L);
+    grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
+  }else{
+    // sparse src, no grid off at all
+    for(int i=0;i<4;i++){off_L[i] = 0;pos[i] = 0;}
+
+    // only one time slice supportted right now
+    get_noise_pos(src, Ngrid, pos);
+  }
+  // grid info
+  std::string GRID_INFO, tmp;
+  {
+    tmp = "";
+    write_pos_to_string(tmp, Lat);
+    GRID_INFO += ssprintf(" Lat %s", tmp.c_str());
+
+    tmp = "";
+    write_pos_to_string(tmp, pos);
+    GRID_INFO += ssprintf(" pos %s", tmp.c_str());
+
+    tmp = "";
+    write_pos_to_string(tmp, off_L);
+    GRID_INFO += ssprintf(" grid %s", tmp.c_str());
+
+    GRID_INFO += ssprintf(" combineT %1d ", srcI.combineT);
+  }
   for(unsigned int ic=0;ic<Ngrid.size();ic++)
   {
     for(unsigned int id=0;id<Ngrid[ic].size();id++){
@@ -216,6 +346,17 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     print0(" \n");
   }
   const int tini = pos[3];
+
+  // initialize sparse parameters
+  if(srcI.name_sparse_prop != std::string("NONE")){
+    Qassert(srcI.fsel.n_elems > 0);
+    if(!srcI.sf.initialized){
+      srcI.sf.init(srcI.fsel, nmass*12*12);
+      srcI.sf_single.init(srcI.fsel, 12*12);
+      srcI.sbs = mk_shuffled_bitset(srcI.fsel, srcI.new_size_node);
+      srcI.tmp_prop.init(geo, 12 * 12);
+    }
+  }
 
   srcI.off_L   = off_L;
   srcI.ini_pos = pos;
@@ -242,7 +383,6 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   qlat::vector_gpu<Ty >& resTa = srcI.resTa;
   qlat::vector_gpu<Ty >& resZero = srcI.resZero;
 
-  std::vector<qlat::FieldM<Ty, 1> >& Vzero_data = srcI.Vzero_data;
   std::vector<qlat::vector_gpu<Ty > >& Eprop = srcI.Eprop;
 
   ////FFT_data do not need clean 
@@ -255,7 +395,6 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   /////need modification of positions
   //qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
   //qlat::vector_gpu<Ty > resTa;
-  //qlat::vector_gpu<Ty > resZero;
 
   if(save_zero_corr){
     EresH.resize(32 * nmass * fd.nt); 
@@ -272,6 +411,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   /////copy src vectors
   stmp.resize(Size_prop);
 
+  //clean sparse prop
   copy_eigen_src_to_FieldM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
   low_prop.resize(high_prop.size());
   if(srcI.check_prop_norm){print0("===high norm 0 %ld , ", long(high_prop.size()));high_prop.print_norm2();}
@@ -310,8 +450,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
   }
 
-  Long nZero = 1;////number of saved zeros
-  if(srcI.save_full_vec == 1){nZero = 1 + Nlms;}
+  //const Long nZero = 1;////number of saved zeros
+  //if(srcI.save_full_vec == 1){nZero = 1 + Nlms;}
 
   //char key_T[1000], dimN[1000];
   std::string key_T = ssprintf("%d", 1);
@@ -345,12 +485,14 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(srcI.check_prop_norm){print0("===low  norm 0 %ld , ", long(low_prop.size())); low_prop.print_norm2();}
     high_prop -= low_prop;
   }
+
   if(srcI.check_prop_norm){print0("===high norm 1 %ld , ", long(high_prop.size())); high_prop.print_norm2();}
   //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
   /////reduce the high prop
 
   print0("Do high %s \n", POS_CUR.c_str());
   copy_eigen_prop_to_EigenG(Eprop, high_prop.data(), ei.b_size, nmass, fd, GPU);
+  Save_sparse_prop(Eprop, srcI, std::string("High"), true);
   prop_to_vec(Eprop, resTa, fd); 
   if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
 
@@ -358,12 +500,13 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
   if(savezero){
-    resZero.resize(resTa.size() * nZero);resZero.set_zero();
+    resZero.resize(resTa.size());resZero.set_zero();
     if(srcI.save_full_vec == 0){
-      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, -1.0*Nlms);
+      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE, -1.0*Nlms);
     }
     if(srcI.save_full_vec == 1){
-      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, +1.0);
+      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE);
+      save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO);
     }
   }
   if(saveFFT){
@@ -404,8 +547,18 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     ////low mode corr contractions
     if(srcI.do_all_low == 1){
       copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
+      Save_sparse_prop(Eprop, srcI, ssprintf("Low%04d", gi), false);
       prop_to_vec(Eprop, resTa, fd);  
       if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
+      if(saveFFT and srcI.save_low_fft == 1){
+        TIMER("saveFFT");
+        check_nan_GPU(resTa);
+        fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+        mdat.pick_mom_from_vecs(FFT_data[1], resTa);
+        name_mom_tmp = ssprintf("Low%09d", gi + 1);
+        mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+      }
+
       //Ty norm0 = low_prop.norm();
       //Ty norm1 = resTa.norm();
       //print0("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
@@ -419,6 +572,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
     //////format suitable for contractions
     copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
+    Save_sparse_prop(Eprop, srcI, ssprintf("LH%04d", gi), false);
     prop_to_vec(Eprop, resTa, fd);
     if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
 
@@ -426,10 +580,12 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
     if(savezero){
     if(srcI.save_full_vec == 0){
-      cpy_data_thread(&resZero[0*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, +1.0);
+      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE, +1.0);
     }
     if(srcI.save_full_vec == 1){
-      cpy_data_thread(&resZero[(gi+1)*resTa.size()], resTa.data(), resTa.size(), 1, QTRUE, +1.0);
+      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE);
+      std::string tag = ssprintf("LH%04d", gi + 1);
+      save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO, tag);
     }
     }
     if(saveFFT){
@@ -447,26 +603,31 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     TIMER("saveFFT");
     name_mom = ssprintf("%s.GInfo", srcI.name_mom_vecs.c_str());
     mom_res.INFO_LIST = POS_LIST;
+    mom_res.INFOA.push_back( GRID_INFO );
+    readuce_input_Coordinate_info(mom_res.INFO_LIST, mom_res.INFOA);
     mom_res.write_dat(name_mom);
   }
 
-  if(savezero){
-    TIMER("lms savezero");
-    ////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
-    Qassert(resZero.size() == nZero*32*nmass*Vol);
-    const Long nvec = resZero.size()/Vol;
-    print0("=====vec %d \n", int(nvec));
-    if(Long(Vzero_data.size() ) != nvec){
-      Vzero_data.resize(0);Vzero_data.resize(nvec);
-      for(Long iv=0;iv<nvec;iv++){
-        if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
-      }
-    }
-    for(Long iv=0;iv<nvec;iv++){
-      Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
-      cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, QTRUE);
-    }
-    save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
+  if(savezero and srcI.save_full_vec == 0){
+    save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO);
+    //TIMER("lms savezero");
+    //////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
+    //Qassert(resZero0.size() == 32*nmass*Vol);
+    //const Long nvec = resZero0.size()/Vol;
+    //print0("=====vec %d \n", int(nvec));
+    //if(Long(Vzero_data.size() ) != nvec){
+    //  Vzero_data.resize(0);Vzero_data.resize(nvec);
+    //  for(Long iv=0;iv<nvec;iv++){
+    //    if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
+    //  }
+    //}
+    //for(Long iv=0;iv<nvec;iv++){
+    //  Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
+    //  cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, QTRUE);
+    //}
+
+    ////save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
+    //save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, GRID_INFO);
   }
 
   if(save_zero_corr){

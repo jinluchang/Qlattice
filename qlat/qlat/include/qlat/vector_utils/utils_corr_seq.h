@@ -422,8 +422,7 @@ void local_sequential_source(qlat::FieldM<Ty, civ>& src, const qlat::vector_acc<
   Qassert(src.initialized);
   const Geometry& geo = src.geo();
   const long V = geo.local_volume();
-  const long Ndata = qlat::get_data_size(src) / sizeof(Ty);
-  const int Dim = Ndata / V;
+  const int Dim = qlat::get_data_size(src) / ( sizeof(Ty) * V );
 
   qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
   long  Nvol = Nv[0]*Nv[1]*Nv[2];
@@ -472,8 +471,8 @@ void local_sequential_source(Propagator4dT<Td >& res, Propagator4dT<Td >& src, c
   Qassert(src.initialized);
   const Geometry& geo = src.geo();
   const long V = geo.local_volume();
-  const long Ndata = qlat::get_data_size(src) / sizeof(qlat::ComplexT<Td>);
-  const int Dim = Ndata / V;
+  //const int Dim = src.multiplicity;
+  const int Dim = qlat::get_data_size(src) / (sizeof(qlat::ComplexT<Td >) * V) ;
 
   if(!res.initialized){res.init(geo);}
   qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);

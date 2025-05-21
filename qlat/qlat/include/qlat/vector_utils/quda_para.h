@@ -178,7 +178,7 @@ static int mpi_rank_from_coords_t(const int* coords, void* fdata)
   return rank;
 }
 //
-inline void quda_begin(int mpi_layout[4], int quda_rankx = 1)
+inline void quda_begin_internal(int mpi_layout[4], int quda_rankx = 1)
 {
   using namespace quda;
   // The following sets the MPI comm stuff.
@@ -229,6 +229,7 @@ inline void quda_begin(int mpi_layout[4], int quda_rankx = 1)
   qacc_DeviceSetCacheConfig(qacc_FuncCachePreferNone );
 }
 
+// need to begin quda before any GPU memory allocation
 inline void begin_quda_with_qlat()
 {
   using namespace quda;
@@ -262,7 +263,7 @@ inline void begin_quda_with_qlat()
   qlat::sum_all_size(&quda_rankx, 1);
   //print0("Rank X %d \n", quda_rankx);
 
-  qlat::quda_begin(mpi_layout, quda_rankx);
+  qlat::quda_begin_internal(mpi_layout, quda_rankx);
 
 }
 

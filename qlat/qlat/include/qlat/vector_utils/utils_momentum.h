@@ -463,7 +463,7 @@ struct momentum_dat{
     });
 
     int ionum = 16;
-    std::string val = get_env(std::string("q_io_vec_ionum"));
+    std::string val = get_env(std::string("q_io_sparse_vec_ionum"));
     if(val == ""){ionum = 16;}else{
       int tem = stringtonum(val);
       if(tem <= 8){ionum = 8;}
@@ -600,7 +600,33 @@ void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, m
   sum_all_size(FG.data(), FG.size(), FG.GPU);
 }
 
+template<typename Ty, typename Ta>
+void copy_sparse_fields(qlat::SelectedField<Ty >& res, qlat::SelectedField<Ta >& src, const int Ndc, int nr=0, const int ns=0)
+{
+  Qassert(src.initialized and res.initialized);
+  Qassert(src.field.size() % Ndc == 0);
+  Qassert(res.field.size() % Ndc == 0);
+  Qassert(src.multiplicity % Ndc == 0);
+  Qassert(res.multiplicity % Ndc == 0);
 
+  const Long Ndata = src.field.size() / src.multiplicity;
+  ///// printf("=== %8d %8d \n", int(src.field.size() / src.multiplicity), int(res.field.size() / res.multiplicity));
+  Qassert(Ndata == (res.field.size() / res.multiplicity));
+
+  const int Nr = res.field.size() / (Ndata * Ndc);
+  const int Ns = src.field.size() / (Ndata * Ndc);
+  Qassert(Nr > nr and Ns > ns);
+
+  Ty* pr = (Ty*) qlat::get_data(res.field).data();
+  Ta* ps = (Ta*) qlat::get_data(src.field).data();
+
+  qacc_for(idx, Ndata, {
+    for(int i=0;i<Ndc;i++)
+    {
+      pr[(idx*Nr + nr)*Ndc+i] = ps[(idx*Ns + ns)*Ndc + i];
+    }
+  })
+}
 
 }
 

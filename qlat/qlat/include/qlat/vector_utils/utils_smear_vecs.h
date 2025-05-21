@@ -1131,7 +1131,7 @@ struct smear_fun{
           (plan.total_recv_size + plan.total_send_size) * bfac * sizeof(Ty) / 2;
       {
         ////TIMER("refresh_expanded-comm-init");
-        const int mpi_tag = 10;
+        const int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
@@ -1201,14 +1201,16 @@ struct smear_fun{
     if(use_gauge_mapping != use_gauge_mapping_){update = true;}
 
     ////for_update == -1; do not check gauge sum
+
+    const Long gf_data_size = get_expanded_data_size(gf) / sizeof(Td);
     if(force_update == 0){
-      crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td) );
+      crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), gf_data_size );
       if(gauge_checksum != tmp_gauge_checksum ){update = true;}
     }
 
     if(update){
       TIMERA("gauge setup");
-      crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Td));
+      crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), gf_data_size );
       ////print0("==Gauge checksum %X", &tmp_gauge_checksum);
 
       ///clear previous cache

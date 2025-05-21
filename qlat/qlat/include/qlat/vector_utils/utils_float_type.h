@@ -34,6 +34,9 @@ namespace qlat{
 #define MAX_VECTOR_GPU_BUF 100
 #define QLAT_FILE_IO_SIZE  30
 
+// AMD machine MPI have tag issues....
+#define QLAT_VECTOR_UTILS_MPI_TAG 8712
+
 ////q_io_vec_ionum
 ////q_file_io_each_size
 
@@ -412,6 +415,7 @@ inline unsigned int get_node_rank_funs0()
   return rank;
 }
 
+////printf("calling rank %d Nmpi %d \n", qlat::get_id_node(), qlat::get_num_node());MPI_Barrier(get_comm());fflush(stdout);
 #define QLAT_VEC_CKPOINT qlat::abort_r("QLAT CHECK POINT \n");
 
 

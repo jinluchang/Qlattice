@@ -181,7 +181,7 @@ struct move_index
     dojob(src, res, biva, civ, sizeF, 0, size_inner, GPU);
   }
 
-  ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
+  ////flag == 1 : biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
   template <typename Ty >
   void dojob(Ty* src,Ty* res,int biva,int civ,Long sizeF,int flag, int size_inner, bool GPU = false)
   {
@@ -322,19 +322,22 @@ inline void clear_move_index_mem(){
   safe_free_vector_gpu_plan<int8_t >(qkey1, true );
 }
 
-#ifdef QLAT_USE_ACC
-#define MAX_CUDA_STEAM 100
-static qacc_Stream_t Qstream[MAX_CUDA_STEAM];
-#endif
+//#ifdef QLAT_USE_ACC
+//#define MAX_CUDA_STEAM 100
+//static qacc_Stream_t Qstream[MAX_CUDA_STEAM];
+//#endif
 
-inline void set_GPU(){
+inline void set_GPU(int set_gpu_id = 1){
   #ifdef QLAT_USE_ACC
+  TIMER("setup GPU");
   int num_node;MPI_Comm_size(get_comm(), &num_node);
   int id_node;MPI_Comm_rank(get_comm(), &id_node);
 
+  //cuInit(0);
   int num_gpus = 0;
-  qacc_GetDeviceCount(&num_gpus);
-  ////qacc_DeviceReset();
+  gpuErrchk(qacc_GetDeviceCount(&num_gpus));
+  //print0("numG %5d \n", num_gpus);fflush(stdout);fflush_MPI();
+  Qassert(num_gpus != 0);
 
   // get local rank
   int localRank  = -1;
@@ -355,11 +358,20 @@ inline void set_GPU(){
 
   }
 
-  //Qassert(localSize == num_gpus and localRank >= 0);//same number of GPUs
+  int qlat_set_device = 1;
+  //get environment variable to set gpu device
+  {
+    std::string val = qlat::get_env(std::string("qlat_set_GPU_device"));
+    if(val != ""){qlat_set_device = stringtonum(val);}
+  }
 
-  qacc_SetDevice(localRank % num_gpus);
+  //Qassert(localSize == num_gpus and localRank >= 0);//same number of GPUs
+  if(set_gpu_id == 1 and qlat_set_device == 1)
+  {
+    gpuErrchk(qacc_SetDevice(localRank % num_gpus));
+  }
   int gpu_id = -1; 
-  qacc_GetDevice(&gpu_id);
+  gpuErrchk(qacc_GetDevice(&gpu_id));
 
   int gpu_verbos = 0;
   std::string val = qlat::get_env(std::string("qlat_GPU_verbos"));
@@ -392,7 +404,9 @@ inline void set_GPU(){
 
   fflush(stdout);
   MPI_Barrier(get_comm());
-  for (int i = 0; i < MAX_CUDA_STEAM; ++i)qacc_StreamCreate(&Qstream[i]) ;
+  //for (int i = 0; i < MAX_CUDA_STEAM; ++i){
+  //  gpuErrchk(qacc_StreamCreate(&Qstream[i]) );
+  //}
   #endif
 
 }
@@ -746,6 +760,7 @@ inline std::vector<unsigned int > get_num_power(const size_t x,const std::vector
   std::vector<unsigned int > re; re.resize(a.size());
   for(unsigned int ai=0;ai<a.size();ai++)
   {
+    re[ai] = 0;
     unsigned int    fac   = a[ai];
     unsigned int    count = 0;
     size_t use   = x;
@@ -977,9 +992,9 @@ inline int end_Lat(int with_mpi = 0, int with_timer = 1)
   fflush_MPI();
   qlat::end();
   if(with_mpi == 1 and qlat::is_MPI_initialized()){MPI_Finalize();}
-  #ifdef QLAT_USE_ACC
-  for (int i = 0; i < MAX_CUDA_STEAM; ++i){qacc_StreamDestroy(Qstream[i]);}
-  #endif
+  //#ifdef QLAT_USE_ACC
+  //for (int i = 0; i < MAX_CUDA_STEAM; ++i){qacc_StreamDestroy(Qstream[i]);}
+  //#endif
   return 0;
 }
 

@@ -36,5 +36,7 @@ vector_utils_header_files = files(
   'utils_props_type.h',
   'utils_field_expand.h',
   'utils_gauge_box.h',
+  'utils_Smear_vecs_2link.h',
+  'utils_grid_multi.h',
   )
 py3.install_sources(vector_utils_header_files, subdir: 'qlat/include/qlat/vector_utils')

@@ -8,6 +8,7 @@
 
 #include "general_funs.h"
 #include "utils_fft_desc.h"
+#include "utils_grid_multi.h"
 
 //////TODO
 //////GPU support, Td template, shift of fieldM
@@ -15,9 +16,43 @@
 namespace qlat
 {
 
+template<class Ta>
+inline void free_vector_acc_8(std::vector<Ta* >& RES)
+{
+  for(unsigned int i=0;i<RES.size();i++)
+  {
+    if(RES[i] != NULL){
+      RES[i]->resize(0);
+      delete RES[i];
+      RES[i] = NULL;
+    }
+  }
+  RES.resize(0);
+}
+
+template<class Ta>
+inline void init_vector_acc_8(std::vector<Ta* >& RES, const int size = 8)
+{
+  if(int(RES.size()) != size){
+    free_vector_acc_8(RES);
+    RES.resize(size);
+    for(int i=0;i<size;i++)
+    {
+      if(RES[i] == NULL){
+        RES[i] = new Ta(0);
+      }
+    }
+  }
+}
+
 struct shift_vec{
+  bool initialized;
+  bool flag_shift_set;
+  bool GPU;
+
   int rank;int Nmpi;
   int nx,ny,nz,nt;
+  Coordinate total_site;
   LInt noden;
   LInt vol;
   LInt Nvol;
@@ -26,7 +61,7 @@ struct shift_vec{
   int N0,N1,N2,Nt;
   qlat::vector_acc<int> Nv,nv;
 
-  fft_desc_basic fd;
+  //fft_desc_basic fd;
 
   //////Shift under periodic condition
   int periodic;
@@ -36,53 +71,53 @@ struct shift_vec{
 
   int civ,biva;
   LInt Length;
-  bool flag_shift_set;
-  bool GPU;
 
   int dir_cur;
   std::vector<std::vector<int > > rank_sr;
 
-  std::vector<qlat::vector_acc<LInt > > sendoffa;
-  std::vector<qlat::vector_acc<LInt > > sendoffb;
-  std::vector<qlat::vector_acc<LInt > > sendoffx;
-  std::vector<qlat::vector_acc<LInt > > buffoffa;
-  std::vector<qlat::vector_acc<LInt > > buffoffb;
+  std::vector<qlat::vector_acc<LInt >* > buffoffa;
+  std::vector<qlat::vector_acc<LInt >* > buffoffb;
+  std::vector<qlat::vector_acc<LInt >* > sendoffa;
+  std::vector<qlat::vector_acc<LInt >* > sendoffb;
+  std::vector<qlat::vector_acc<LInt >* > sendoffx;
+
+  std::vector<qlat::vector_gpu<char >* > sendbufP;
+  std::vector<qlat::vector_gpu<char >* > recvbufP;
+
+  qlat::vector_gpu<char >* zeroP;
+  qlat::vector_gpu<char >* bufsP;
+  qlat::vector_gpu<char >* bufrP;
 
   std::vector<size_t > MPI_size;
   unsigned int MPI_off;
   MPI_Datatype MPI_curr;
 
-
-  //void* srcP;
-  //void* resP;
   unsigned int bsize;
-
   move_index mv_civ;
-
-  qlat::vector_gpu<char > zeroP;
-  qlat::vector_gpu<char > bufsP;
-  qlat::vector_gpu<char > bufrP;
-  std::vector<qlat::vector_gpu<char > > sendbufP;
-  std::vector<qlat::vector_gpu<char > > recvbufP;
 
   void* gauge;
   int gauge_is_double;
   int gbfac;int gd0;
   bool Conj;bool src_gauge;
 
-
   inline void init(fft_desc_basic &fds, bool GPU_set = true);
+  inline void init(const Geometry& geo, bool GPU_set);
+  inline void init(const Coordinate& site, bool GPU_set);
 
   shift_vec(){
+    initialized = false;
+    flag_shift_set = false;
     civ = 0;
+    GPU = true;
+    gauge = NULL;
   }
-  shift_vec(fft_desc_basic &fds, bool GPU_set = true)
-  {init(fds, GPU_set);}
-
+  shift_vec(fft_desc_basic &fds, bool GPU_set = true){   init(fds, GPU_set);}
+  shift_vec(const Geometry& geo, bool GPU_set = true){   init(geo, GPU_set);}
+  shift_vec(const Coordinate& site, bool GPU_set = true){init(site, GPU_set);}
 
   inline void print_info();
-  ////~shift_vec();
   ~shift_vec(){
+    initialized = false;
     flag_shift_set = false;bsize = 0;
     dir_cur = 0;civ = -1;biva = -1;
     periodic = 1;
@@ -90,18 +125,23 @@ struct shift_vec{
     for(int dir=0;dir<8;dir++){clear_mem_dir(dir);}
     MPI_size.resize(0);
 
-    zeroP.resize(0);
-    bufsP.resize(0);
-    bufrP.resize(0);
+    zeroP->resize(0);
+    bufsP->resize(0);
+    bufrP->resize(0);
+    delete zeroP;zeroP = NULL;
+    delete bufsP;bufsP = NULL;
+    delete bufrP;bufrP = NULL;
 
     rank_sr.resize(0);
-    buffoffa.resize(0);
-    buffoffb.resize(0);
-    sendoffa.resize(0);
-    sendoffb.resize(0);
-    sendoffx.resize(0);
-  }
+    free_vector_acc_8(buffoffa);
+    free_vector_acc_8(buffoffb);
+    free_vector_acc_8(sendoffa);
+    free_vector_acc_8(sendoffb);
+    free_vector_acc_8(sendoffx);
 
+    free_vector_acc_8(sendbufP);
+    free_vector_acc_8(recvbufP);
+  }
 
   inline void shift_set();
 
@@ -157,23 +197,24 @@ struct shift_vec{
   void mult_gauge(void* pt, int dir_or);
 
   inline void clear_mem_dir(int dir){
-    sendbufP[dir].resize(0);
-    recvbufP[dir].resize(0);
+    sendbufP[dir]->resize(0);
+    recvbufP[dir]->resize(0);
   }
 
   inline void clear_mem()
   {
     dir_cur = 0;biva = -1;civ = -1;
     for(int i=0;i<8;i++){MPI_size[i] = 0;}
-    zeroP.resize(0);
-    bufsP.resize(0);
-    bufrP.resize(0);
+    zeroP->resize(0);
+    bufsP->resize(0);
+    bufrP->resize(0);
+
     for(int dir=0;dir<8;dir++)
     {
       clear_mem_dir(dir);
       MPI_size[dir] = 0;
-      sendbufP[dir].resize(0);
-      recvbufP[dir].resize(0);
+      sendbufP[dir]->resize(0);
+      recvbufP[dir]->resize(0);
     }
   }
 
@@ -189,14 +230,12 @@ inline void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
   GPU = GPU_set;
   #endif
 
-  copy_fft_desc(fd, fds);
-  ////fd = &fds;
-
   noden = fds.noden;
   rank  = fds.rank;
   Nmpi  = fds.Nmpi;
   nx=fds.nx;ny=fds.ny;nz=fds.nz;nt=fds.nt;
   vol  = fds.vol;Nvol = fds.Nvol;
+  total_site = Coordinate(nx, ny, nz, nt);
 
   Nx=fds.Nx;Ny=fds.Ny;Nz=fds.Nz;
   Nv = fds.Nv;nv = fds.nv;
@@ -204,7 +243,13 @@ inline void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
   N0 = fds.Nv[fds.orderN[0]];N1 = fds.Nv[fds.orderN[1]];N2 = fds.Nv[fds.orderN[2]];
   Nt = fds.Nt;
 
-  sendbufP.resize(8);recvbufP.resize(8);
+  zeroP = new qlat::vector_gpu<char >(0);
+  bufsP = new qlat::vector_gpu<char >(0);
+  bufrP = new qlat::vector_gpu<char >(0);
+
+  init_vector_acc_8(sendbufP, 8);
+  init_vector_acc_8(recvbufP, 8);
+
   MPI_size.resize(8);
   for(int i=0;i<8;i++){MPI_size[i] = 0;}
 
@@ -219,7 +264,20 @@ inline void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
   gauge = NULL;
   gauge_is_double = -1;
   gbfac = 1; gd0 = 1;Conj = false;src_gauge = false;
+  initialized = true;
+}
 
+inline void shift_vec::init(const Geometry& geo, bool GPU_set)
+{
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  init(fd, GPU_set);
+}
+
+inline void shift_vec::init(const Coordinate& site, bool GPU_set)
+{
+  Geometry geo;geo.init(site);
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  init(fd, GPU_set);
 }
 
 inline void shift_vec::shift_set()
@@ -227,12 +285,15 @@ inline void shift_vec::shift_set()
   TIMERB("shift_vec::shift_set");
   if(flag_shift_set){return ;}
 
+  Geometry geo;geo.init(total_site);
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
   rank_sr.resize(8);
-  buffoffa.resize(8);
-  buffoffb.resize(8);
-  sendoffa.resize(8);
-  sendoffb.resize(8);
-  sendoffx.resize(8);
+  init_vector_acc_8(buffoffa, 8);
+  init_vector_acc_8(buffoffb, 8);
+  init_vector_acc_8(sendoffa, 8);
+  init_vector_acc_8(sendoffb, 8);
+  init_vector_acc_8(sendoffx, 8);
 
   for(int diru=0;diru<8;diru++)
   {
@@ -269,11 +330,11 @@ inline void shift_vec::shift_set()
 
     Length = Nt*Nx*Ny*Nz;
 
-    sendoffa[diru].resize(0);
-    sendoffb[diru].resize(0);
-    sendoffx[diru].resize(0);
-    buffoffa[diru].resize(0);
-    buffoffb[diru].resize(0);
+    buffoffa[diru]->resize(0);
+    buffoffb[diru]->resize(0);
+    sendoffa[diru]->resize(0);
+    sendoffb[diru]->resize(0);
+    sendoffx[diru]->resize(0);
 
     std::vector<LInt > sendoffVa;sendoffVa.resize(0);
     std::vector<LInt > sendoffVb;sendoffVb.resize(0);
@@ -311,22 +372,22 @@ inline void shift_vec::shift_set()
 
     /////May check cotinious
 
-    sendoffa[diru].resize(sendoffVa.size());
-    sendoffb[diru].resize(sendoffVa.size());
-    sendoffx[diru].resize(sendoffVa.size());
+    sendoffa[diru]->resize(sendoffVa.size());
+    sendoffb[diru]->resize(sendoffVa.size());
+    sendoffx[diru]->resize(sendoffVa.size());
     #pragma omp parallel for
     for(LInt ix=0;ix<sendoffVa.size();ix++){
-      sendoffa[diru][ix] = sendoffVa[ix];
-      sendoffb[diru][ix] = sendoffVb[ix];
-      sendoffx[diru][ix] = ix;
+      (*sendoffa[diru])[ix] = sendoffVa[ix];
+      (*sendoffb[diru])[ix] = sendoffVb[ix];
+      (*sendoffx[diru])[ix] = ix;
     }
 
-    buffoffa[diru].resize(buffoffVa.size());
-    buffoffb[diru].resize(buffoffVa.size());
+    buffoffa[diru]->resize(buffoffVa.size());
+    buffoffb[diru]->resize(buffoffVa.size());
     #pragma omp parallel for
     for(LInt ix=0;ix<buffoffVa.size();ix++){
-      buffoffa[diru][ix] = buffoffVa[ix];
-      buffoffb[diru][ix] = buffoffVb[ix];
+      (*buffoffa[diru])[ix] = buffoffVa[ix];
+      (*buffoffb[diru])[ix] = buffoffVb[ix];
     }
 
   }
@@ -336,24 +397,38 @@ inline void shift_vec::shift_set()
 template<typename Ty>
 void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
 {
+  TIMER("shift_vec::set_MPI_size");
+  Qassert(initialized == true and flag_shift_set == true);
   if(flag_shift_set == false){shift_set();}
+  Qassert(biva_or > 0 and civ_or > 0);
 
   /////zeroP = NULL;bufsP = NULL;bufrP = NULL;
   /////====set up bufs for shift
-  LInt Ng = Nt*N0*N1*N2;
-  zeroP.resize(size_t(Ng) * sizeof(Ty), GPU);
-  ////zeroP.set_zero();
+  //fflush_MPI();
+  Qassert(Nt > 0 and N0 > 0 and N1 > 0 and N2 > 0);
 
-  bufsP.resize(size_t(Ng)*biva_or*civ_or * sizeof(Ty), GPU);
-  bufrP.resize(size_t(Ng)*biva_or*civ_or * sizeof(Ty), GPU);
+  LInt Ng = Nt*N0*N1*N2;
+  Qassert(zeroP != NULL and bufsP != NULL and bufrP != NULL);
+
+  zeroP->resize(size_t(Ng) * sizeof(Ty), GPU);
+  bufsP->resize(size_t(Ng)*biva_or*civ_or * sizeof(Ty), GPU);
+  bufrP->resize(size_t(Ng)*biva_or*civ_or * sizeof(Ty), GPU);
+  //fflush_MPI();
+  //print0("check point1 !\n");
+  //fflush_MPI();
   /////====set up bufs for shift
 
   ////==assign current direction
   dir_cur = dir_or;
   ////==assign current direction
   if(biva_or == biva and civ_or == civ and bsize == sizeof(Ty)){
-    if(sendoffa[dir_cur].size() == 0){return ;}else
-    {if(sendbufP[dir_cur].size()/sizeof(Ty) == (LInt) biva_or*civ_or*(sendoffa[dir_cur].size())){return  ;}}
+    if(sendoffa[dir_cur]->size() == 0){
+      return ;
+    }else{
+      if(sendbufP[dir_cur]->size()/sizeof(Ty) == (LInt) biva_or*civ_or*(sendoffa[dir_cur]->size())){
+        return  ;
+      }
+    }
   }
 
   if(sizeof(Ty) != bsize){
@@ -368,9 +443,9 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   civ  = civ_or;
   ////===assign biva and civ
 
-  MPI_size[dir_cur] = biva*civ*(sendoffa[dir_cur].size());
-  sendbufP[dir_cur].resize(MPI_size[dir_cur] * sizeof(Ty), GPU);
-  recvbufP[dir_cur].resize(MPI_size[dir_cur] * sizeof(Ty), GPU);
+  MPI_size[dir_cur] = biva*civ*(sendoffa[dir_cur]->size());
+  sendbufP[dir_cur]->resize(MPI_size[dir_cur] * sizeof(Ty), GPU);
+  recvbufP[dir_cur]->resize(MPI_size[dir_cur] * sizeof(Ty), GPU);
 }
 
 template<typename Ty>
@@ -391,8 +466,8 @@ inline void shift_vec::print_info()
   for(int di=0;di<8;di++)
   {
     print0("dir %d, bufsize %ld, MPI_size %ld, sendsize %ld, copysize %ld \n",
-           di, (long)(sendbufP[di].size() / bsize), (long)(MPI_size[di]),
-           (long)sendoffa[di].size(), (long)buffoffa[di].size());
+           di, (long)(sendbufP[di]->size() / bsize), (long)(MPI_size[di]),
+           (long)sendoffa[di]->size(), (long)buffoffa[di]->size());
   }
   fflush_MPI();
 
@@ -402,48 +477,53 @@ template<typename Ty, int flag>
 void shift_vec::write_send_recv(Ty* src, Ty* res)
 {
   TIMERA("shift_vec::write_send_recv");
-  if(sendoffa[dir_cur].size() != 0 and sendbufP[dir_cur].size() == 0){print0("Memeory not set for dir %d", dir_cur);abort_r();}
-  Ty* s_tem = (Ty*) (sendbufP[dir_cur].data());
-  Ty* r_tem = (Ty*) (recvbufP[dir_cur].data());
-  LInt writeN = sendoffa[dir_cur].size();
+  if(sendoffa[dir_cur]->size() != 0 and sendbufP[dir_cur]->size() == 0){
+    print0("Memeory not set for dir %d", dir_cur);
+    abort_r();
+  }
+  Ty* s_tem = (Ty*) (sendbufP[dir_cur]->data());
+  Ty* r_tem = (Ty*) (recvbufP[dir_cur]->data());
+  const LInt writeN = sendoffa[dir_cur]->size();
   if(src == NULL){abort_r("buf not defined");}
   ////print_info();
   /////Write Send buf
   /////TODO need update for GPU
-  if(flag == 0)
+  if(flag == 0 and sendoffa[dir_cur]->size() != 0)
   {
-  for(int bi=0;bi<biva;bi++){
-  LInt* s0 = (LInt*) qlat::get_data(sendoffa[dir_cur]).data();
-  LInt* s1 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
-  cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*Length*civ], 
-       s1, s0, sendoffa[dir_cur].size(), civ, GPU, QFALSE);
-  }
-  qacc_barrier(dummy);
+  LInt* s0 = (LInt*) qlat::get_data(*sendoffa[dir_cur]).data();
+  LInt* s1 = (LInt*) qlat::get_data(*sendoffx[dir_cur]).data();
 
+  //for(int bi=0;bi<biva;bi++){
+  //cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*Length*civ], 
+  //     s1, s0, sendoffa[dir_cur].size(), civ, GPU, QFALSE);
+  //}
+  cpy_data_from_index( &s_tem[0], &src[0], 
+       s1, s0, sendoffa[dir_cur]->size(), civ, GPU, QTRUE, biva, writeN*civ, Length*civ);
   }
 
   ////Write Result
-  if(flag == 1)
+  if(flag == 1 and sendoffb[dir_cur]->size() != 0)
   {
-  for(int bi=0;bi<biva;bi++){
-  LInt* s1 = (LInt*) qlat::get_data(sendoffb[dir_cur]).data();
-  LInt* s0 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
-  cpy_data_from_index( &res[bi*Length*civ], &r_tem[bi*writeN*civ], 
-        s1, s0, sendoffb[dir_cur].size(), civ, GPU, QFALSE);
+  LInt* s1 = (LInt*) qlat::get_data(*sendoffb[dir_cur]).data();
+  LInt* s0 = (LInt*) qlat::get_data(*sendoffx[dir_cur]).data();
+  //for(int bi=0;bi<biva;bi++){
+  //cpy_data_from_index( &res[bi*Length*civ], &r_tem[bi*writeN*civ], 
+  //      s1, s0, sendoffb[dir_cur].size(), civ, GPU, QFALSE);
+  //}
+  cpy_data_from_index( &res[0], &r_tem[0], 
+        s1, s0, sendoffb[dir_cur]->size(), civ, GPU, QTRUE, biva, Length*civ, writeN*civ);
   }
-  qacc_barrier(dummy);
 
-  }
-
-  if(flag == 2)
+  if(flag == 2 and buffoffa[dir_cur]->size() != 0)
   {
-  for(int bi=0;bi<biva;bi++){
-  LInt* s1 = (LInt*) qlat::get_data(buffoffb[dir_cur]).data();
-  LInt* s0 = (LInt*) qlat::get_data(buffoffa[dir_cur]).data();
-  cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
-       s1, s0, buffoffa[dir_cur].size(), civ, GPU, QFALSE);
-  }
-  qacc_barrier(dummy);
+  LInt* s1 = (LInt*) qlat::get_data(*buffoffb[dir_cur]).data();
+  LInt* s0 = (LInt*) qlat::get_data(*buffoffa[dir_cur]).data();
+  //for(int bi=0;bi<biva;bi++){
+  //cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
+  //     s1, s0, buffoffa[dir_cur].size(), civ, GPU, QFALSE);
+  //}
+  cpy_data_from_index( &res[0], &src[0], 
+       s1, s0, buffoffa[dir_cur]->size(), civ, GPU, QTRUE, biva, Length*civ, Length*civ);
   }
 
   s_tem = NULL; r_tem = NULL;
@@ -472,7 +552,7 @@ __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const i
   for(int bi=0;bi<biva;bi++)
   for(int g1=0;g1<gbfac;g1++)
   {
-    Ty* offB = &b[((bi*blockDim.x + index)*gbfac + g1)*3*gs];
+    Ty* offB = &b[((bi*gridDim.x + index)*gbfac + g1)*3*gs];
 
     unsigned int off = tid;
     while(off < 3*gs){ds[off] = offB[off]; off += nt;}
@@ -638,8 +718,8 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   if(!Conj)mult_gauge<Ty, false >((void*) src, dir_gauge);
   if( Conj)mult_gauge<Ty, true  >((void*) src, dir_gauge);}
 
-  Ty* s_tem= (Ty*) sendbufP[dir_cur].data();
-  Ty* r_tem= (Ty*) recvbufP[dir_cur].data();
+  Ty* s_tem= (Ty*) sendbufP[dir_cur]->data();
+  Ty* r_tem= (Ty*) recvbufP[dir_cur]->data();
 
   MPI_Request send_req;
   MPI_Request recv_req;
@@ -695,7 +775,8 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
 {
   /////TODO change the use of biva, civa 
   /////dividable or change inner loop to 1
-  LInt Ng = Nt*N0*N1*N2;
+  const LInt Ng = Nt*N0*N1*N2;
+  Qassert(Ng == Length);
   //#if PRINT_TIMER>4
   TIMER_FLOPS("shift_Evec");
   {
@@ -734,7 +815,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
     qlat::vector_gpu<char >& tem = get_vector_gpu_plan<char >(gkey);
     for(LInt vi=0;vi<(LInt) biva_or;vi++)
     {
-      ///in case of a simple memory shift
+      ///in case of a simple memory vi shift
       if(src[vi] != res[vi]){
         cpy_data_thread((Ty*) tem.data(), &src[vi][0], Nsize, GPU, QTRUE);
         cpy_data_thread(&res[vi][0], (Ty*) tem.data(), Nsize, GPU, QTRUE);
@@ -744,22 +825,28 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
   }
 
   int size_vec = biva_or*civ_or;
-  Ty* zero = (Ty*) zeroP.data();
+  Ty* zero = (Ty*) zeroP->data();
 
   //print0("Flag %d, civ %d %d , biva %d \n",int(flag_shift_set),civ_or,civ, biva);
   //if(flag_shift_set == false){if(civ_or==1)set_MPI_size<Ty >(1,12);if(civ_or != 1)set_MPI_size<Ty >(1, civ_or);}
-  if(civ == -1 or biva == -1){if(civ_or==1){set_MPI_size<Ty >(1,12);}if(civ_or != 1){set_MPI_size<Ty >(1, civ_or);}}
+  if(civ == -1 or biva == -1){
+    if(civ_or == 1){  set_MPI_size<Ty >(1,     12);}
+    if(civ_or != 1){set_MPI_size<Ty >(1  , civ_or);}
+  }
   if(civ_or != 1){if(civ_or != civ ){
     print0("civor %3d, civ %3d \n", civ_or, civ);abort_r("Configuration not equal \n");
   }}
+
+  //Qassert(biva_or == biva); // code can be grouped with internal biva, biva_or is the outter loops
+  Qassert(biva_or >= biva);
 
   std::vector<Ty *> ptem0;ptem0.resize(civ );
 
   int count = 0;
   int flagend = 0;
 
-  Ty* vec_s = (Ty*) bufsP.data();
-  Ty* vec_r = (Ty*) bufrP.data();
+  Ty* vec_s = (Ty*) bufsP->data();
+  Ty* vec_r = (Ty*) bufrP->data();
 
   for(int fftn=0;fftn< (size_vec+biva*civ-1)/(biva*civ);fftn++)
   {
@@ -800,8 +887,8 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
       qacc_barrier(dummy);
 
     }
-    ////if(civ_or == 1)reorder_civ((char*) &vec_s[0],(char*) &vec_s[0], civ ,biva,Ng,0, sizeof(Ty));
-    if(civ_or == 1)mv_civ.dojob(&vec_s[0], &vec_s[0],civ, biva, Ng, 0, 1, GPU);
+    // move from biva * civ * Ng --> biva * Ng * civ
+    if(civ_or == 1 and civ != 1)mv_civ.move_civ_in(&vec_s[0], &vec_s[0], biva, civ, Ng, 1, GPU);
 
     /////Shift direction kernal
     for(LInt di=0;di<dir_curl.size();di++)
@@ -815,8 +902,8 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
     }
     /////Shift direction kernal
 
-    ///if(civ_or == 1)reorder_civ((char*) &vec_s[0],(char*) &vec_s[0],civ ,biva,Ng,1, sizeof(Ty));
-    if(civ_or == 1)mv_civ.dojob(&vec_s[0], &vec_s[0],civ, biva, Ng,1, 1, GPU);
+    // move from biva * Ng * civ --> biva * civ * Ng
+    if(civ_or == 1 and civ != 1)mv_civ.move_civ_out(&vec_s[0], &vec_s[0], biva, Ng, civ, 1, GPU);
 
     //TIMER("Reorder heavy data.");
     for(int li=0;li< biva ;li++)
@@ -931,6 +1018,47 @@ void shift_vec::shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::
   shift_vecs(Psrc, Pres, iDir, civ_);
 }
 
+/////  ===shift_vec buffers related
+struct ShiftVecsKey {
+  Coordinate total_site;
+  int GPU;
+  ShiftVecsKey(const Coordinate& total_site_, int GPU_ = 1)
+  {
+    total_site = total_site_;
+    GPU = GPU_;
+  }
+};
+
+inline bool operator<(const ShiftVecsKey& x, const ShiftVecsKey& y)
+{
+  if(x.total_site < y.total_site ){  return true;}
+  if(y.total_site < x.total_site ){  return false;}
+  if(x.GPU < y.GPU ){  return true;}
+  if(y.GPU < x.GPU ){  return false;}
+  return false;
+}
+
+inline Cache<ShiftVecsKey, shift_vec >& get_shift_vec_cache()
+{
+  static Cache<ShiftVecsKey, shift_vec > cache("ShiftVecsKey", 16);
+  return cache;
+}
+
+inline shift_vec& get_shift_vec_plan(const ShiftVecsKey& fkey)
+{
+  if (!get_shift_vec_cache().has(fkey)) {
+    get_shift_vec_cache()[fkey].init(fkey.total_site, fkey.GPU);
+  }
+  shift_vec& buf = get_shift_vec_cache()[fkey];
+  return buf;
+}
+
+inline shift_vec& get_shift_vec_plan(const Coordinate& total_site)
+{
+  ShiftVecsKey fkey(total_site);
+  return get_shift_vec_plan(fkey);
+}
+// ========
 
 template <class Ty, int civ>
 void shift_fieldM(shift_vec& svec, std::vector<qlat::FieldM<Ty, civ> >& src, std::vector<qlat::FieldM<Ty, civ> >& res, std::vector<int >& iDir)
@@ -945,6 +1073,20 @@ void shift_fieldM(shift_vec& svec, std::vector<qlat::FieldM<Ty, civ> >& src, std
     resP[bi] = (Ty*) qlat::get_data(res[bi]).data();
   }
 
+  svec.shift_vecs(srcP, resP, iDir , civ);
+}
+
+
+template <class Ty>
+void shift_fields(shift_vec& svec, Ty* src, Ty* res, std::vector<int >& iDir, const int biva, const int civ)
+{
+  const LInt V = svec.Nvol;
+  std::vector<Ty* > srcP;std::vector<Ty* > resP;
+  srcP.resize(biva);resP.resize(biva);
+  for(long bi=0;bi<long(biva);bi++){
+    srcP[bi] = (Ty*) &src[bi * V * civ];
+    resP[bi] = (Ty*) &res[bi * V * civ];
+  }
   svec.shift_vecs(srcP, resP, iDir , civ);
 }
 
@@ -1048,6 +1190,134 @@ void symmetric_shift(shift_vec& svec, std::vector<Propagator4dT<Td > >& src, std
 //    qprop_move_dc_out(src[i]);
 //  }
 //}
+
+template <class Ty, class Ta>
+void shift_fields_qlat(Ty* src, Ta* res, const std::vector<int >& iDir, const int Nvec, const qlat::Geometry &geo, const int move_in = 1)
+{
+  TIMER("shift_fields_qlat");
+  //Qassert(Nvec <= Ngroup);
+  const LInt V = geo.local_volume();
+  Coordinate shift;
+  for(int i=0;i<4;i++){shift[i] = 1.0 * iDir[i];}
+
+  Field<MvectorT<1, Ty>> f0;
+  Field<MvectorT<1, Ty>> f1;
+  f0.init(geo, Nvec);
+  f1.init(geo, Nvec);
+  move_index mv_civ;
+
+  Ty* p0 = (Ty* ) qlat::get_data(f0).data();
+  Ty* p1 = (Ty* ) qlat::get_data(f1).data();
+
+  cpy_GPU(p0, src, V * Nvec);
+  if(move_in == 1){mv_civ.move_civ_in(p0, p0, 1, Nvec, V, 1, true);}
+
+  field_shift_direct(f1, f0, shift);
+
+  if(move_in == 1){mv_civ.move_civ_out(p1, p1, 1, V, Nvec, 1, true);}
+  cpy_GPU(res, p1, V * Nvec);
+}
+
+template <class Ty>
+void shift_fields_grid(Ty* src, Ty* res, const std::vector<int >& iDir, const int biva, const int civ, const Geometry& geo)
+{
+  TIMER("shift_fields_grid");
+  const Coordinate  total_site = geo.total_site();
+  const LInt V = geo.local_volume();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  const Coordinate  local_site(fd.Nx, fd.Ny, fd.Nz, fd.Nt);
+  //// Geometry geo;geo.init(total_site);
+
+  if(res != src){
+    cpy_GPU(res, src, biva * V * civ);
+  }
+
+  qlat::vector_acc<Ty* > sP;sP.resize(biva);
+  for(int bi=0;bi<biva;bi++){
+    sP[bi] = &res[bi * V * civ];
+  }
+
+  // three step scale
+  std::vector<Coordinate > total_siteL;
+  total_siteL.resize(3);
+
+  // 0 to be full block small lattice
+  // 1 3/4 Nx shifts
+  // 2 max volume
+  for(int s=0;s<3;s++){
+    for(int i=0;i<4;i++){
+      if(s == 0 ){total_siteL[s][i] = total_site[i] / local_site[i];}
+      if(s == 1 ){
+        total_siteL[s][i] = total_site[i];
+        if(local_site[i] % 2 == 0){total_siteL[s][i] = total_site[i] / 2;}
+        if(local_site[i] % 3 == 0){total_siteL[s][i] = total_site[i] / 3;}
+        if(local_site[i] % 4 == 0){total_siteL[s][i] = total_site[i] / 4;}
+      }
+      if(s == 2 ){total_siteL[s][i] = total_site[i];}
+    }
+  }
+
+  //for(unsigned int s=0;s<total_siteL.size();s++){
+  //  print0("s %d : ", s);
+  //  for(int i=0;i<4;i++){print0(" %d ", int(total_siteL[s][i]));}
+  //  print0("\n");
+  //}
+
+  std::vector<int > d0(4);
+  std::vector<int > d1(4);
+  d0 = iDir;d1 = iDir;
+
+  // from coase to finner
+  Coordinate lat0 = total_site ;
+  Coordinate lat1 = total_site ;
+
+  // lat0 current geo; lat1 shift geo
+  for(unsigned int s=0;s<total_siteL.size();s++)
+  {
+    lat1 = total_siteL[s];
+    LInt small_vol = 1;
+    for(int i=0;i<4;i++){
+      int fac =  total_site[i] / lat1[i] ;
+      Qassert(fac >= 1);
+      d0[i] = d1[i] % fac;
+      d1[i] = d1[i] / fac;
+      small_vol *= fac;
+    }
+
+    bool shift=false;
+    for(int i=0;i<4;i++){
+      if(d1[i] != 0){
+        shift = true;
+        break;
+      }
+    }
+    // no shift, move to next without reshape
+    if(shift == false){
+      d1 = d0;
+      continue;
+    }
+    //print0("biva %d small vol %d, civ %d, shift %3d %3d %3d %3d \n", 
+    //  int(biva), int(small_vol), int(civ), d0[0], d0[1], d0[2], d0[3]);
+
+    grid_memory_reshape(sP, sP, civ, lat1, lat0, total_site);
+
+    shift_vec& svec_m = get_shift_vec_plan(lat1);
+    svec_m.set_MPI_size<Ty >(biva, small_vol * civ);
+
+    shift_fields(svec_m, res, res, d1, biva, small_vol * civ);
+
+    d1 = d0;
+    lat0 = lat1;
+  }
+  for(int i=0;i<4;i++){Qassert(d1[i] == 0);}
+
+  // reorder to ori layout if needed
+  if(lat0 != total_site){
+    lat1 = total_site;
+    grid_memory_reshape(sP, sP, civ, lat1, lat0, total_site);
+  }
+
+}
 
 
 }
