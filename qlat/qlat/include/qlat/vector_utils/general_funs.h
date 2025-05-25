@@ -328,6 +328,7 @@ inline void clear_move_index_mem(){
 //#endif
 
 inline void set_GPU(int set_gpu_id = 1){
+  (void)set_gpu_id;
   #ifdef QLAT_USE_ACC
   TIMER("setup GPU");
   int num_node;MPI_Comm_size(get_comm(), &num_node);
