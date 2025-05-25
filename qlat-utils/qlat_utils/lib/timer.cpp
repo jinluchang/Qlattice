@@ -25,7 +25,7 @@ void TimerInfo::merge(const TimerInfo& x)
 
 static std::string get_fname_cut(const std::string& fname, const int fname_len)
 {
-  if (fname_len >= fname.length()) {
+  if (fname_len >= (int)fname.length()) {
     return fname;
   }
   return fname.substr(fname.length() - fname_len);
