@@ -31,6 +31,8 @@ from .field_analysis import *
 
 from .mat_mpi import *
 
+from .psel_split import *
+
 from . import field_double
 
 set_verbose_level()

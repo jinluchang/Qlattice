@@ -24,6 +24,7 @@ py_files = files(
   'scalar_action.py',
   'field_analysis.py',
   'mat_mpi.py',
+  'psel_split.py',
   )
 
 pxd_files = files(
