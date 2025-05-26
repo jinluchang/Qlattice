@@ -664,17 +664,20 @@ def run_psel_split(
     fname = q.get_fname()
     path_psel_list = f"{job_tag}/points-selection-split/traj-{traj}/num-piece-{num_piece}"
     @q.lazy_call
-    @q.timer_verbose
+    @q.timer(is_timer_fork=True)
     def get_psel_list():
         psel_list = [ q.PointsSelection() for idx in range(num_piece) ]
-        if get_id_node() == 0:
-            qar = q.open_qar(get_load_path(path_psel_list + ".qar"), "r")
+        data_list = [ bytes() for idx in range(num_piece) ]
+        load_path = get_load_path(path_psel_list + ".qar")
+        assert load_path is not None
+        if q.get_id_node() == 0:
+            qar = q.open_qar(load_path, "r")
             for idx in range(num_piece):
                 fn = f"idx-piece-{idx}.lati"
-                data = qar.read_data_bytes(fn)
-                psel_list[idx].read_str(data)
+                data_list[idx] = qar.read_data_bytes(fn)
+            qar.close()
         for idx in range(num_piece):
-            psel_list[idx].bcast()
+            psel_list[idx].load_str(data_list[idx])
         return psel_list
     ret = get_psel_list
     if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
@@ -682,14 +685,66 @@ def run_psel_split(
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
     rs = q.RngState(f"{job_tag}-{traj}-{fname}")
-    psel_list = psel_split_n_that_increase_separation(psel, num_piece, rs=rs)
+    psel = get_psel()
+    psel_list = q.psel_split_n_that_increase_separation(psel, num_piece, rs=rs)
     assert len(psel_list) == num_piece
     if 0 == q.get_id_node():
         qar = q.open_qar(get_save_path(path_psel_list + ".qar"), "w")
         for idx in range(num_piece):
             fn = f"idx-piece-{idx}.lati"
-            qar_sp.write(fn, "", psel_list[idx].save_str(), skip_if_exist=True)
-        qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+            qar.write(fn, "", psel_list[idx].save_str(), skip_if_exist=True)
+        qar.write("checkpoint.txt", "", "", skip_if_exist=True)
+    q.sync_node()
+    q.release_lock()
+    return ret
+
+@q.timer(is_timer_fork=True)
+def run_fsel_split(
+        job_tag, traj,
+        *,
+        get_fsel,
+        num_piece,
+        ):
+    """
+    Should set `num_piece` be in the form as 2^n.
+    return psel_list
+    #
+    len(psel_list) == num_piece
+    """
+    assert num_piece >= 1
+    fname = q.get_fname()
+    path_psel_list = f"{job_tag}/field-selection-split/traj-{traj}/num-piece-{num_piece}"
+    @q.lazy_call
+    @q.timer(is_timer_fork=True)
+    def get_psel_list():
+        psel_list = [ q.PointsSelection() for idx in range(num_piece) ]
+        data_list = [ bytes() for idx in range(num_piece) ]
+        load_path = get_load_path(path_psel_list + ".qar")
+        assert load_path is not None
+        if q.get_id_node() == 0:
+            qar = q.open_qar(load_path, "r")
+            for idx in range(num_piece):
+                fn = f"idx-piece-{idx}.lati"
+                data_list[idx] = qar.read_data_bytes(fn)
+            qar.close()
+        for idx in range(num_piece):
+            psel_list[idx].load_str(data_list[idx])
+        return psel_list
+    ret = get_psel_list
+    if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
+        return ret
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        return None
+    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    psel = get_fsel().to_psel()
+    psel_list = q.psel_split_n_that_increase_separation(psel, num_piece, rs=rs)
+    assert len(psel_list) == num_piece
+    if 0 == q.get_id_node():
+        qar = q.open_qar(get_save_path(path_psel_list + ".qar"), "w")
+        for idx in range(num_piece):
+            fn = f"idx-piece-{idx}.lati"
+            qar.write(fn, "", psel_list[idx].save_str(), skip_if_exist=True)
+        qar.write("checkpoint.txt", "", "", skip_if_exist=True)
     q.sync_node()
     q.release_lock()
     return ret

@@ -177,6 +177,19 @@ cdef class PointsSelection:
     def from_lat_data(self, LatDataInt ld not None):
         cc.points_selection_from_lat_data(self.xx, ld.xx)
 
+    @q.timer
+    def bcast(self, cc.Int root=0):
+        cdef LatDataInt ld
+        if cc.get_num_node() != 1:
+            if cc.get_id_node() == root:
+                ld = self.to_lat_data()
+            else:
+                ld = LatDataInt()
+            ld.bcast(root)
+            if cc.get_id_node() != root:
+                self.from_lat_data(ld)
+        return self
+
     def save_str(self):
         """
         only return str at node 0

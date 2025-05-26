@@ -308,6 +308,7 @@ cdef class QarFile:
 
 ### ----------------------------------------------------------
 
+@timer
 def open_qar(const cc.std_string& path, const cc.std_string& mode):
     """
     Call QarFile(path, mode) with kwargs

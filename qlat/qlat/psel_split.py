@@ -1,4 +1,7 @@
+import numpy as np
 import qlat_utils as q
+
+from .field_selection import PointsSelection
 
 def point_dis_sqr(x, y, total_site):
     return q.smod_coordinate(x - y, total_site).sqr()
@@ -375,7 +378,7 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
     split `psel` into `psel1` and `psel2`.
     return psel1, psel2
     """
-    assert isinstance(psel, q.PointsSelection)
+    assert isinstance(psel, PointsSelection)
     fname = q.get_fname()
     if rs is None:
         rs = q.RngState(f"{fname}")
@@ -411,8 +414,8 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
                 assert False
     xg_list1 = list(xg_set1)
     xg_list2 = list(xg_set2)
-    psel1 = q.PointsSelection(total_site, xg_list1)
-    psel2 = q.PointsSelection(total_site, xg_list2)
+    psel1 = PointsSelection(total_site, xg_list1)
+    psel2 = PointsSelection(total_site, xg_list2)
     return psel1, psel2
 
 @q.timer
@@ -423,7 +426,7 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     #
     n is the number of closest points to be considered for ranking.
     """
-    assert isinstance(psel, q.PointsSelection)
+    assert isinstance(psel, PointsSelection)
     assert isinstance(n, int)
     fname = q.get_fname()
     if ranking_func is None:
@@ -464,8 +467,8 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
                 assert False
     xg_list1 = list(xg_set1)
     xg_list2 = list(xg_set2)
-    psel1 = q.PointsSelection(total_site, xg_list1)
-    psel2 = q.PointsSelection(total_site, xg_list2)
+    psel1 = PointsSelection(total_site, xg_list1)
+    psel2 = PointsSelection(total_site, xg_list2)
     return psel1, psel2
 
 @q.timer
@@ -491,7 +494,7 @@ def psel_split_n_that_increase_separation(psel, n, rs=None):
     return psel_list
     where `len(psel_list) == n`
     """ 
-    assert isinstance(psel, q.PointsSelection)
+    assert isinstance(psel, PointsSelection)
     assert n >= 1
     fname = q.get_fname()
     if rs is None:
