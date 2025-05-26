@@ -192,6 +192,10 @@ cdef extern from "qlat/field-io.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
+    void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel) except +
+    void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld) except +
+    void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type) except +
+    #
     void save_points_selection(const PointsSelection& psel, const std_string& path) except +
     void save_points_selection_info(const PointsSelection& psel, const std_string& path) except +
     PointsSelection load_points_selection(const std_string& path) except +

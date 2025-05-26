@@ -472,7 +472,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     @q.timer_verbose
     def get_psel_prob():
         psel = q.PointsSelection()
-        psel.load(get_load_path(fn_psel), geo)
+        psel.load(get_load_path(fn_psel))
         psel_prob = q.SelectedPointsRealD(psel, 1)
         psel_prob.load(get_load_path(fn_psel_prob))
         return psel_prob
@@ -487,7 +487,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
             @q.timer_verbose
             def get_psel_prob_old():
                 psel = q.PointsSelection()
-                psel.load(get_load_path(fn_psel), geo)
+                psel.load(get_load_path(fn_psel))
                 psel_prob = q.SelectedPointsRealD(psel, 1)
                 psel_prob[:] = len(psel) / total_volume
                 return psel_prob
@@ -644,6 +644,55 @@ def run_psel_prob_sub_sampling(
         psel_prob_sub @= sp_prob
         return psel_prob_sub
     return get_psel_prob_sub
+
+# -----------------------------------------------------------------------------
+
+@q.timer(is_timer_fork=True)
+def run_psel_split(
+        job_tag, traj,
+        *,
+        get_psel,
+        num_piece,
+        ):
+    """
+    Should set `num_piece` be in the form as 2^n.
+    return psel_list
+    #
+    len(psel_list) == num_piece
+    """
+    assert num_piece >= 1
+    fname = q.get_fname()
+    path_psel_list = f"{job_tag}/points-selection-split/traj-{traj}/num-piece-{num_piece}"
+    @q.lazy_call
+    @q.timer_verbose
+    def get_psel_list():
+        psel_list = [ q.PointsSelection() for idx in range(num_piece) ]
+        if get_id_node() == 0:
+            qar = q.open_qar(get_load_path(path_psel_list + ".qar"), "r")
+            for idx in range(num_piece):
+                fn = f"idx-piece-{idx}.lati"
+                data = qar.read_data_bytes(fn)
+                psel_list[idx].read_str(data)
+        for idx in range(num_piece):
+            psel_list[idx].bcast()
+        return psel_list
+    ret = get_psel_list
+    if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
+        return ret
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        return None
+    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    psel_list = psel_split_n_that_increase_separation(psel, num_piece, rs=rs)
+    assert len(psel_list) == num_piece
+    if 0 == q.get_id_node():
+        qar = q.open_qar(get_save_path(path_psel_list + ".qar"), "w")
+        for idx in range(num_piece):
+            fn = f"idx-piece-{idx}.lati"
+            qar_sp.write(fn, "", psel_list[idx].save_str(), skip_if_exist=True)
+        qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+    q.sync_node()
+    q.release_lock()
+    return ret
 
 # -----------------------------------------------------------------------------
 

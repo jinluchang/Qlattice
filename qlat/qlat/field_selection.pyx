@@ -169,6 +169,35 @@ cdef class PointsSelection:
             raise ValueError("can't re-init while being viewed")
         cc.assign_direct(self.xx, cc.mk_random_points_selection(total_site.xx, n_points, rs.xx))
 
+    def to_lat_data(self):
+        cdef LatDataInt ld = LatDataInt()
+        cc.lat_data_from_points_selection(ld.xx, self.xx)
+        return ld
+
+    def from_lat_data(self, LatDataInt ld not None):
+        cc.points_selection_from_lat_data(self.xx, ld.xx)
+
+    def save_str(self):
+        """
+        only return str at node 0
+        """
+        cdef LatDataInt ld
+        if q.get_id_node() == 0:
+            ld = self.to_lat_data()
+            return ld.save_str()
+        else:
+            return bytes()
+
+    def load_str(self, cc.std_string& content):
+        """
+        only need str at node 0
+        """
+        cdef LatDataInt ld = LatDataInt()
+        if q.get_id_node() == 0:
+            ld.load_str(content)
+        ld.bcast()
+        self.from_lat_data(ld)
+
     def save(self, const cc.std_string& path, *, is_sync_node=True):
         if is_sync_node:
             cc.save_points_selection_info(self.xx, path)

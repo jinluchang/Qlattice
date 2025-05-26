@@ -72,6 +72,61 @@ PointsSelection mk_random_points_selection(const Coordinate& total_site,
   }
 }
 
+void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel)
+{
+  TIMER("lat_data_from_points_selection");
+  Long n_points = psel.size();
+  LatDim dim;
+  dim.name = "idx";
+  dim.size = n_points + 1;
+  dim.indices.resize(dim.size);
+  dim.indices[0] = "total_site";
+  for (Long idx = 0; idx < n_points; ++idx) {
+    dim.indices[idx + 1] = show(idx);
+  }
+  ld.init();
+  ld.info.push_back(dim);
+  ld.info.push_back(lat_dim_number("mu", 0, 3));
+  lat_data_alloc(ld);
+  Vector<Int> v = lat_data_get(ld, make_array<Int>(0));
+  for (Int mu = 0; mu < 4; ++mu) {
+    v[mu] = psel.total_site[mu];
+  }
+  for (Long idx = 0; idx < (Long)psel.size(); ++idx) {
+    const Coordinate& c = psel[idx];
+    Vector<Int> v = lat_data_get(ld, make_array<Int>(idx + 1));
+    for (Int mu = 0; mu < 4; ++mu) {
+      v[mu] = c[mu];
+    }
+  }
+}
+
+void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type)
+{
+  TIMER("points_selection_from_lat_data");
+  qassert(ld.info.size() == 2);
+  qassert(ld.info[0].name == "idx");
+  qassert(ld.info[1].name == "mu");
+  qassert(ld.info[0].size >= 1);
+  qassert(ld.info[1].size == 4);
+  qassert(ld.info[0].indices[0] == "total_site");
+  const Long n_points = ld.info[0].size - 1;
+  Coordinate total_site;
+  const Vector<Int> v = lat_data_get_const(ld, make_array<Int>(0));
+  for (Int mu = 0; mu < 4; ++mu) {
+    total_site[mu] = v[mu];
+  }
+  psel.init();
+  psel.init(total_site, n_points, points_dist_type);
+  for (Long idx = 0; idx < psel.size(); ++idx) {
+    Coordinate& c = psel[idx];
+    const Vector<Int> v = lat_data_get_const(ld, make_array<Int>(idx + 1));
+    for (Int mu = 0; mu < 4; ++mu) {
+      c[mu] = v[mu];
+    }
+  }
+}
+
 static void save_points_selection_txt(const PointsSelection& psel,
                                       const std::string& path)
 {
@@ -93,40 +148,18 @@ void save_points_selection(const PointsSelection& psel, const std::string& path)
 // path has to end with ".lati"
 {
   TIMER_VERBOSE("save_points_selection");
+  qassert(psel.points_dist_type == PointsDistType::Global);
   if (ends_with(path, ".txt")) {
     qwarn(fname + ssprintf(": path='%s' with old format. Need to set "
-                           "total_site manually when reading.",
-                           path.c_str()));
+          "total_site manually when reading.",
+          path.c_str()));
     save_points_selection_txt(psel, path);
     return;
   }
   qassert(ends_with(path, ".lati"));
   // save_points_selection_txt(psel, remove_suffix(path, ".lati") + ".txt");
-  qassert(psel.points_dist_type == PointsDistType::Global);
-  Long n_points = psel.size();
-  LatDim dim;
-  dim.name = "idx";
-  dim.size = n_points + 1;
-  dim.indices.resize(dim.size);
-  dim.indices[0] = "total_site";
-  for (Long idx = 0; idx < n_points; ++idx) {
-    dim.indices[idx + 1] = show(idx);
-  }
   LatDataInt ld;
-  ld.info.push_back(dim);
-  ld.info.push_back(lat_dim_number("mu", 0, 3));
-  lat_data_alloc(ld);
-  Vector<Int> v = lat_data_get(ld, make_array<Int>(0));
-  for (Int mu = 0; mu < 4; ++mu) {
-    v[mu] = psel.total_site[mu];
-  }
-  for (Long idx = 0; idx < (Long)psel.size(); ++idx) {
-    const Coordinate& c = psel[idx];
-    Vector<Int> v = lat_data_get(ld, make_array<Int>(idx + 1));
-    for (Int mu = 0; mu < 4; ++mu) {
-      v[mu] = c[mu];
-    }
-  }
+  lat_data_from_points_selection(ld, psel);
   ld.save(path);
 }
 
@@ -179,26 +212,8 @@ PointsSelection load_points_selection(const std::string& path)
   qassert(ends_with(path, ".lati"));
   LatDataInt ld;
   ld.load(path);
-  qassert(ld.info.size() == 2);
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "mu");
-  qassert(ld.info[0].size >= 1);
-  qassert(ld.info[1].size == 4);
-  qassert(ld.info[0].indices[0] == "total_site");
-  const Long n_points = ld.info[0].size - 1;
-  Coordinate total_site;
-  const Vector<Int> v = lat_data_get_const(ld, make_array<Int>(0));
-  for (Int mu = 0; mu < 4; ++mu) {
-    total_site[mu] = v[mu];
-  }
-  PointsSelection psel(total_site, n_points);
-  for (Long idx = 0; idx < psel.size(); ++idx) {
-    Coordinate& c = psel[idx];
-    const Vector<Int> v = lat_data_get_const(ld, make_array<Int>(idx + 1));
-    for (Int mu = 0; mu < 4; ++mu) {
-      c[mu] = v[mu];
-    }
-  }
+  PointsSelection psel;
+  points_selection_from_lat_data(psel, ld);
   return psel;
 }
 

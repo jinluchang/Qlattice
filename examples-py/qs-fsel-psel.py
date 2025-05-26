@@ -11,13 +11,6 @@ from qlat_scripts.v1 import (
     get_param,
 )
 
-job_tag = "test-4nt8-checker"
-
-set_param(job_tag, "traj_list")([ 1000, 1100, ])
-set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
-set_param(job_tag, "field_selection_fsel_rate")(0.1)
-set_param(job_tag, "field_selection_psel_rate")(0.01)
-
 @q.timer(is_timer_fork=True)
 def run_check_psel(get_psel):
     q.json_results_append(q.get_fname())
@@ -90,6 +83,17 @@ def run_job(job_tag, traj):
     run_check_fsel_prob(get_fsel_prob)
     q.json_results_append("run_check_fsel_prob(get_fsel_prob_sub)")
     run_check_fsel_prob(get_fsel_prob_sub)
+
+# --------------------------------------------
+
+job_tag = "test-4nt8-checker"
+
+set_param(job_tag, "traj_list")([ 1000, 1100, ])
+set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
+set_param(job_tag, "field_selection_fsel_rate")(0.1)
+set_param(job_tag, "field_selection_psel_rate")(0.01)
+
+# --------------------------------------------
 
 q.begin_with_mpi()
 

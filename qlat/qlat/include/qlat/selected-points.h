@@ -12,6 +12,10 @@ PointsSelection mk_random_points_selection(const Coordinate& total_site,
                                          const Long num, const RngState& rs,
                                          const Long pool_factor = 2);
 
+void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel);
+
+void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type = PointsDistType::Global);
+
 void save_points_selection(const PointsSelection& psel, const std::string& path);
 
 void save_points_selection_info(const PointsSelection& psel,
