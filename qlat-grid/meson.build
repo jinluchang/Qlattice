@@ -2,7 +2,7 @@ project('qlat-grid', 'cpp', 'cython',
   version: '0.79',
   license: 'GPL-3.0-or-later',
   default_options: [
-    'warning_level=3',
+    # 'warning_level=0',
     'cpp_std=c++17',
     'libdir=lib',
     'optimization=2',
@@ -10,7 +10,7 @@ project('qlat-grid', 'cpp', 'cython',
     'cython_language=cpp',
     ])
 
-add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
+add_project_arguments([ '-fno-strict-aliasing', '-w', ], language: ['c', 'cpp'])
 
 subdir('depend-qlat')
 subdir('depend-grid')
