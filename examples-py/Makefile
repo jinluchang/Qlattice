@@ -41,6 +41,7 @@ tests = \
 		field-multi-size.log \
 		field-selection.log \
 		qs-fsel-psel.log \
+		qs-psel-split.log \
 		convert-psel-txt-to-lati.log \
 		selected-field.log \
 		fields-io.log \
