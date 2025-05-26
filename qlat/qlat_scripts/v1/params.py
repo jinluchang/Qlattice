@@ -1,7 +1,7 @@
 from .rbc_ukqcd_params import dict_params
 from .rbc_ukqcd_params import set_param, get_param
 
-tag = "trajs"
+tag = "traj_list"
 dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
 dict_params["test-8nt16"][tag] = list(range(1000, 1400, 100))

@@ -1189,7 +1189,7 @@ def run_job_contract(job_tag, traj):
 
 # ----
 
-set_param("test-4nt8", "trajs")(list(range(1000, 1002)))
+set_param("test-4nt8", "traj_list")(list(range(1000, 1002)))
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
@@ -1209,7 +1209,7 @@ for inv_type in [ 0, 1, 2, ]:
         set_param("test-4nt8", f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1)
         set_param("test-4nt8", "fermion_params", inv_type, inv_acc, "Ls")(8)
 
-set_param("test-4nt16", "trajs")(list(range(1000, 1010)))
+set_param("test-4nt16", "traj_list")(list(range(1000, 1010)))
 set_param("test-4nt16", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt16", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt16", "mk_sample_gauge_field", "hmc_n_traj")(1)
@@ -1224,7 +1224,7 @@ set_param("test-4nt16", "clanc_params", 1, 0)(get_param("test-4nt16", "clanc_par
 set_param("test-4nt16", "lanc_params", 1, 0)(get_param("test-4nt16", "lanc_params", 0, 0).copy())
 set_param("test-4nt16", "lanc_params", 1, 0, "fermion_params")(get_param("test-4nt16", "fermion_params", 1, 0).copy())
 
-set_param("test-4nt64", "trajs")(list(range(1000, 10000)))
+set_param("test-4nt64", "traj_list")(list(range(1000, 10000)))
 set_param("test-4nt64", "lanc_params", 0, 0, "cheby_params")({ "low": 0.22, "high": 5.5, "order": 30, })
 set_param("test-4nt64", "lanc_params", 0, 0, "irl_params")({ "Nstop": 1000, "Nk": 1100, "Nm": 1300, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param("test-4nt64", "clanc_params", 0, 0, "nbasis")(1000)
@@ -1266,7 +1266,7 @@ set_param("test-4nt64", tag)(8)
 
 job_tag = "test-4nt16-checker"
 
-set_param(job_tag, "trajs")(list(range(1000, 1010)))
+set_param(job_tag, "traj_list")(list(range(1000, 1010)))
 
 set_param(job_tag, "total_site")([ 4, 4, 4, 16, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
@@ -1357,11 +1357,11 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job(job_tag, traj)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)

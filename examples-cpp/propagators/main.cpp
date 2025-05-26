@@ -128,9 +128,9 @@ inline bool compute(const std::string& job_tag)
 {
   TIMER_VERBOSE("compute");
   bool is_failed = false;
-  const std::vector<int> trajs = get_trajs(job_tag);
-  for (int i = 0; i < (int)trajs.size(); ++i) {
-    const int traj = trajs[i];
+  const std::vector<int> traj_list = get_traj_list(job_tag);
+  for (int i = 0; i < (int)traj_list.size(); ++i) {
+    const int traj = traj_list[i];
     is_failed = compute_traj(job_tag, traj) or is_failed;
   }
   return is_failed;

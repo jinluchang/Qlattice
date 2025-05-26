@@ -1251,7 +1251,7 @@ def get_all_cexpr():
 
 ### ------
 
-set_param("test-4nt8", "trajs")(list(range(1000, 1001)))
+set_param("test-4nt8", "traj_list")(list(range(1000, 1001)))
 set_param("test-4nt8", "measurement", "meson_tensor_t_sep")(1)
 set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
 
@@ -1284,7 +1284,7 @@ set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
-set_param("16IH2", "trajs")(list(range(1000, 4020, 10)))
+set_param("16IH2", "traj_list")(list(range(1000, 4020, 10)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
 set_param("16IH2", "measurement", "meson_tensor_t_sep")(2)
 set_param("16IH2", "measurement", "pipi_op_t_sep")(2)
@@ -1294,11 +1294,11 @@ set_param("16IH2", "measurement", "pipi_tensor_t_sep_list")([ 1, 2, ])
 set_param("16IH2", "measurement", "pipi_tensor_t_max")(6)
 set_param("16IH2", "measurement", "pipi_tensor_r_max")(16)
 
-set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
+set_param("24D", "traj_list")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
 set_param("24D", "measurement", "meson_tensor_t_sep")(8)
 set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("48I", "trajs")(list(range(905, 2000, 10)) + list(range(902, 2000, 10)))
+set_param("48I", "traj_list")(list(range(905, 2000, 10)) + list(range(902, 2000, 10)))
 set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
 set_param("48I", "measurement", "meson_tensor_t_sep")(12)
 set_param("48I", "measurement", "pipi_op_t_sep")(2)
@@ -1309,7 +1309,7 @@ set_param("48I", "measurement", "pipi_tensor_t_max")(20)
 set_param("48I", "measurement", "pipi_tensor_r_max")(24)
 set_param("48I", "measurement", "use_fsel_prop")(False)
 
-set_param("64I", "trajs")(list(range(1200, 3000, 40)))
+set_param("64I", "traj_list")(list(range(1200, 3000, 40)))
 set_param("64I", "measurement", "meson_tensor_t_sep")(18)
 set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
 
@@ -1317,7 +1317,7 @@ set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "test-4nt8-checker"
 
-set_param(job_tag, "trajs")([ 1000, ])
+set_param(job_tag, "traj_list")([ 1000, ])
 
 set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
@@ -1412,7 +1412,7 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job_inversion(job_tag, traj)
@@ -1420,7 +1420,7 @@ if __name__ == "__main__":
                     q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
                         gracefully_finish()
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contraction(job_tag, traj)

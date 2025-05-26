@@ -372,20 +372,20 @@ def get_all_cexpr():
 
 ### ------
 
-set_param("16IH2", "trajs")(list(range(1000, 4020, 100)))
+set_param("16IH2", "traj_list")(list(range(1000, 4020, 100)))
 set_param("16IH2", "measurement", "auto_contractor_chunk_size")(128)
 set_param("16IH2", "measurement", "charm_quark_mass_list")([ 0.04, 0.02963, 0.05358, 0.07945, 0.10852, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 set_param("16IH2", "measurement", "num_charm_wall_src")(2)
 set_param("16IH2", f"cg_params-2-2", "maxiter")(200)
 set_param("16IH2", f"cg_params-2-2", "maxcycle")(50)
 
-set_param("24D", "trajs")(list(range(1000, 5100, 80)))
+set_param("24D", "traj_list")(list(range(1000, 5100, 80)))
 set_param("24D", "measurement", "charm_quark_mass_list")([ 0.0850, 0.07819, 0.13207, 0.19829, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 set_param("24D", "measurement", "num_charm_wall_src")(2)
 set_param("24D", f"cg_params-2-2", "maxiter")(200)
 set_param("24D", f"cg_params-2-2", "maxcycle")(50)
 
-set_param("32Dfine", "trajs")(list(range(520, 2600, 40)))
+set_param("32Dfine", "traj_list")(list(range(520, 2600, 40)))
 set_param("32Dfine", "measurement", "charm_quark_mass_list")([ 0.045, 0.04635, 0.07794, 0.11333, 0.15327, 0.2, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 set_param("32Dfine", "measurement", "num_charm_wall_src")(2)
 set_param("32Dfine", f"cg_params-2-2", "maxiter")(200)
@@ -395,7 +395,7 @@ set_param("32Dfine", f"cg_params-2-2", "maxcycle")(50)
 
 job_tag = "test-4nt8-checker"
 #
-set_param(job_tag, "trajs")([ 1000, ])
+set_param(job_tag, "traj_list")([ 1000, ])
 #
 set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
@@ -482,7 +482,7 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             q.check_time_limit()
             run_job(job_tag, traj)
             q.clean_cache()

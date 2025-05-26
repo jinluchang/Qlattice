@@ -80,7 +80,7 @@ def gen_all_data_cps_fake(job_tag):
         num_traj = 2
         rs = q.RngState(f"{fname}-traj-sel/{job_tag}")
         for i in range(num_traj):
-            traj = rs.select(get_param(job_tag, "trajs"))
+            traj = rs.select(get_param(job_tag, "traj_list"))
             gen_gauge_transform_cps_fake(job_tag, traj)
             for inv_type in [ 0, 1, ]:
                 gen_prop_wsrc_cps_fake(job_tag, traj, inv_type)

@@ -116,9 +116,9 @@ inline LatData get_wall_src_prop_norm_ratio_compute(const std::string& job_tag,
   TIMER_VERBOSE("get_wall_src_prop_norm_ratio_compute");
   const std::string type_tag = type == 0 ? "light" : "strange";
   LatData ld_acc_e, ld_acc_s;
-  const std::vector<int> trajs = get_data_trajs(job_tag);
-  for (int i = 0; i < (int)trajs.size(); ++i) {
-    const int traj = trajs[i];
+  const std::vector<int> traj_list = get_data_traj_list(job_tag);
+  for (int i = 0; i < (int)traj_list.size(); ++i) {
+    const int traj = traj_list[i];
     const std::string rpath = get_wall_src_prop_norm_ratio_path(job_tag, traj);
     const std::string rpath_e =
         rpath + ssprintf("/norm-exact-%s.lat", type_tag.c_str());

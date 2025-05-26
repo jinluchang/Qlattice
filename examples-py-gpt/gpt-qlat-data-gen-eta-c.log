@@ -1,5 +1,5 @@
 CHECK: params: test-4nt8-checker: {
-CHECK: params: test-4nt8-checker:   "trajs": [
+CHECK: params: test-4nt8-checker:   "traj_list": [
 CHECK: params: test-4nt8-checker:     1000
 CHECK: params: test-4nt8-checker:   ],
 CHECK: params: test-4nt8-checker:   "total_site": [

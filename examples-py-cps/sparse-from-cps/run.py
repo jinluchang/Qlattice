@@ -22,7 +22,7 @@ qgc.begin_with_gpt_cps(total_site)
 
 gen_all_data_cps_fake(job_tag)
 
-for traj in get_param(job_tag, "trajs"):
+for traj in get_param(job_tag, "traj_list"):
     run_job(job_tag, traj)
 
 q.timer_display()

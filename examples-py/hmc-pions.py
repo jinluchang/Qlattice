@@ -523,7 +523,7 @@ class Measurements:
     def __init__(self, total_site, field_geo, multiplicity, save_file):
         self.save_file = save_file
         # Stores the trajectory number for debugging purposes
-        self.trajs = []
+        self.traj_list = []
         # Save the acceptance rates
         self.accept_rates=[]
         # Stores the average phi^2 for each trajectory
@@ -592,7 +592,7 @@ class Measurements:
             self.mom_factors.append(q.mk_phase_field(geo_m, m))
     
     def measure(self, hmc):
-        self.trajs.append(hmc.traj)
+        self.traj_list.append(hmc.traj)
         self.accept_rates.append(hmc.accept_prob)
         
         # Calculate the expectation values of phi^2
@@ -699,7 +699,7 @@ class Measurements:
     
     def save(self):
         with open(self.save_file, "wb") as output:
-            pickle.dump({"trajs": self.trajs,
+            pickle.dump({"traj_list": self.traj_list,
                         "accept_rates": self.accept_rates,
                         "psq_list": self.psq_list,
                         "phi_list": self.phi_list,
@@ -729,7 +729,7 @@ class Measurements:
                 data = pickle.load(input)
                 if(data["kinematic_ms"]!=self.kinematic_ms):
                     raise Exception("Combining data with different kinematic factors")
-                self.trajs.extend(data["trajs"])
+                self.traj_list.extend(data["traj_list"])
                 self.accept_rates.extend(data["accept_rates"])
                 self.psq_list.extend(data["psq_list"])
                 self.phi_list.extend(data["phi_list"])

@@ -306,7 +306,7 @@ size_node_list = [
         [1, 1, 1, 8],
         ]
 
-set_param("test-4nt8", "trajs")([ 1000, ])
+set_param("test-4nt8", "traj_list")([ 1000, ])
 
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
@@ -361,7 +361,7 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             run_job(job_tag, traj)
 
     q.check_log_json(__file__)

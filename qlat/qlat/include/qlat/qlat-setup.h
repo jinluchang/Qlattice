@@ -74,9 +74,9 @@ inline void setup(const std::string& job_tag, const int traj)
 
 // -----------------------------------------------------------------------------------
 
-inline std::vector<int> get_trajs(const std::string& job_tag)
+inline std::vector<int> get_traj_list(const std::string& job_tag)
 {
-  TIMER_VERBOSE("get_trajs");
+  TIMER_VERBOSE("get_traj_list");
   std::vector<int> ret;
   if (job_tag.substr(0, 5) == "free-") {
     for (int traj = 1000; traj < 1020; traj += 10) {

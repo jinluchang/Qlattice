@@ -5,7 +5,7 @@
 namespace qlat
 {  //
 
-inline std::vector<int> get_todo_trajs(const std::string& job_tag)
+inline std::vector<int> get_todo_traj_list(const std::string& job_tag)
 {
   std::vector<int> ret;
   if (job_tag == "64I-0.000678") {

@@ -23,9 +23,9 @@ inline void collect_pis(const std::string& job_tag)
     TIMER_VERBOSE("collect_pis");
     qmkdir_info(ssprintf("data/point-src-info"));
     qmkdir_info(ssprintf("data/point-src-info/%s", job_tag.c_str()));
-    const std::vector<int> trajs = get_todo_trajs(old_job_tag);
-    for (int i = 0; i < (int)trajs.size(); ++i) {
-      const int traj = trajs[i];
+    const std::vector<int> traj_list = get_todo_traj_list(old_job_tag);
+    for (int i = 0; i < (int)traj_list.size(); ++i) {
+      const int traj = traj_list[i];
       check_sigint();
       const std::string fn = get_point_src_info_path(job_tag, traj);
       const std::string fn_old = get_pis_path(old_job_tag, traj);
@@ -59,9 +59,9 @@ inline void collect_pcs(const std::string& job_tag)
     TIMER_VERBOSE("collect_pcs");
     qmkdir_info(ssprintf("data/points-selection"));
     qmkdir_info(ssprintf("data/points-selection/%s", job_tag.c_str()));
-    const std::vector<int> trajs = get_todo_trajs(old_job_tag);
-    for (int i = 0; i < (int)trajs.size(); ++i) {
-      const int traj = trajs[i];
+    const std::vector<int> traj_list = get_todo_traj_list(old_job_tag);
+    for (int i = 0; i < (int)traj_list.size(); ++i) {
+      const int traj = traj_list[i];
       check_sigint();
       const std::string fn = get_points_selection_path(job_tag, traj);
       const std::string fn_old = get_pis_path(old_job_tag, traj);
@@ -996,9 +996,9 @@ inline void compute(const std::string& job_tag)
     Timer::reset();
   }
   const std::string old_job_tag = get_old_job_tag(job_tag);
-  const std::vector<int> trajs = get_todo_trajs(old_job_tag);
-  for (int i = 0; i < (int)trajs.size(); ++i) {
-    const int traj = trajs[i];
+  const std::vector<int> traj_list = get_todo_traj_list(old_job_tag);
+  for (int i = 0; i < (int)traj_list.size(); ++i) {
+    const int traj = traj_list[i];
     compute_traj(job_tag, traj);
   }
 }

@@ -221,7 +221,7 @@ CHECK: params: test-4nt8:   "gf_ape_smear_coef": 0.5,
 CHECK: params: test-4nt8:   "gf_ape_smear_step": 30,
 CHECK: params: test-4nt8:   "prop_smear_coef": 0.9375,
 CHECK: params: test-4nt8:   "prop_smear_step": 10,
-CHECK: params: test-4nt8:   "trajs": [
+CHECK: params: test-4nt8:   "traj_list": [
 CHECK: params: test-4nt8:     1000,
 CHECK: params: test-4nt8:     2000
 CHECK: params: test-4nt8:   ],

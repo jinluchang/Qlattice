@@ -2106,7 +2106,7 @@ def get_all_cexpr():
 
 ### ------
 
-set_param("test-4nt8", "trajs")(list(range(1000, 1001)))
+set_param("test-4nt8", "traj_list")(list(range(1000, 1001)))
 set_param("test-4nt8", "meson_tensor_tsep")(1)
 set_param("test-4nt8", "meson_jwjj_threshold")(0.1)
 set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
@@ -2140,22 +2140,22 @@ set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
-set_param("24D", "trajs")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
+set_param("24D", "traj_list")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
 set_param("24D", "meson_tensor_tsep")(8)
 set_param("24D", "meson_jwjj_threshold")(0.02)
 set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("48I", "trajs")(list(range(1000, 2000, 20)))
+set_param("48I", "traj_list")(list(range(1000, 2000, 20)))
 set_param("48I", "meson_tensor_tsep")(12)
 set_param("48I", "meson_jwjj_threshold")(0.01)
 set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("64I", "trajs")(list(range(1200, 3680, 20)))
+set_param("64I", "traj_list")(list(range(1200, 3680, 20)))
 set_param("64I", "meson_tensor_tsep")(18)
 set_param("64I", "meson_jwjj_threshold")(0.0005)
 set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("64I-pq", "trajs")(list(range(1200, 3680, 80)))
+set_param("64I-pq", "traj_list")(list(range(1200, 3680, 80)))
 set_param("64I-pq", "meson_tensor_tsep")(18)
 set_param("64I-pq", "meson_jwjj_threshold")(0.0005)
 set_param("64I-pq", "measurement", "auto_contractor_chunk_size")(128)
@@ -2164,7 +2164,7 @@ set_param("64I-pq", "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "test-4nt16-checker"
 
-set_param(job_tag, "trajs")(list(range(1000, 1032)))
+set_param(job_tag, "traj_list")(list(range(1000, 1032)))
 
 set_param(job_tag, "total_site")([ 4, 4, 4, 16, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
@@ -2276,7 +2276,7 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job(job_tag, traj)
@@ -2284,7 +2284,7 @@ if __name__ == "__main__":
                     q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
                         gracefully_finish()
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)

@@ -80,7 +80,7 @@ def run_job(job_tag, traj):
 
 # ----
 
-set_param("test-4nt8", "trajs")([ 1000, ])
+set_param("test-4nt8", "traj_list")([ 1000, ])
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "trajs"):
+        for traj in get_param(job_tag, "traj_list"):
             q.check_time_limit()
             run_job(job_tag, traj)
             q.clean_cache()

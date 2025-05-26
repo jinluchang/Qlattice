@@ -15,14 +15,14 @@ def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
     q.default_g_jk_kwargs["jk_blocking_func"] = None
     q.default_g_jk_kwargs["is_normalizing_rand_sample"] = is_normalizing_rand_sample
     @functools.lru_cache
-    def get_trajs(job_tag):
+    def get_traj_list(job_tag):
         return list(range(n_data_sample))
     rs = q.RngState("seed")
     job_tag = "test1"
-    trajs = get_trajs(job_tag)
-    data_arr = rs.g_rand_arr((len(trajs), 16,)) # can be list or np.array
+    traj_list = get_traj_list(job_tag)
+    data_arr = rs.g_rand_arr((len(traj_list), 16,)) # can be list or np.array
     jk_arr = q.g_jk(data_arr)
-    jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in trajs ]
+    jk_idx_list = [ "avg", ] + [ (job_tag, traj) for traj in traj_list ]
     jk_arr = q.g_rejk(jk_arr, jk_idx_list)
     avg, err = q.g_jk_avg_err(jk_arr)
     q.displayln_info(f"CHECK: n_data_sample={n_data_sample}")
