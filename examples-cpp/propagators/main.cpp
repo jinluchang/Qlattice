@@ -143,9 +143,9 @@ inline bool compute(const std::string& job_tag)
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  std::vector<std::string> job_tags;
-  job_tags.push_back("test-4nt8");
-  job_tags.push_back("free-4nt8");
+  std::vector<std::string> job_tag_list;
+  job_tag_list.push_back("test-4nt8");
+  job_tag_list.push_back("free-4nt8");
   std::vector<Coordinate> size_node_list;
   size_node_list.push_back(Coordinate(2,2,2,4));
   size_node_list.push_back(Coordinate(1,2,2,2));
@@ -154,8 +154,8 @@ int main(int argc, char* argv[])
   display_geometry_node();
   setup_log_idx();
   setup();
-  for (int k = 0; k < (int)job_tags.size(); ++k) {
-    const std::string& job_tag = job_tags[k];
+  for (int k = 0; k < (int)job_tag_list.size(); ++k) {
+    const std::string& job_tag = job_tag_list[k];
     if (not compute(job_tag)) {
       Timer::display();
       displayln_info(ssprintf("program finished successfully for '%s'.", job_tag.c_str()));

@@ -1389,7 +1389,7 @@ if __name__ == "__main__":
 
     ##################### CMD options #####################
 
-    job_tags = q.get_arg("--job_tags", default="").split(",")
+    job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
 
     is_performing_inversion = not q.get_option("--no-inversion")
 
@@ -1397,12 +1397,12 @@ if __name__ == "__main__":
 
     #######################################################
 
-    job_tags_default = [
+    job_tag_list_default = [
             "test-4nt8-checker",
             ]
 
-    if job_tags == [ "", ]:
-        job_tags = job_tags_default
+    if job_tag_list == [ "", ]:
+        job_tag_list = job_tag_list_default
     else:
         is_cython = True
 
@@ -1410,7 +1410,7 @@ if __name__ == "__main__":
 
     get_all_cexpr()
 
-    for job_tag in job_tags:
+    for job_tag in job_tag_list:
         run_params(job_tag)
         for traj in get_param(job_tag, "trajs"):
             if is_performing_inversion:

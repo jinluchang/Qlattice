@@ -1021,17 +1021,17 @@ int main(int argc, char* argv[])
   setup_log_idx();
   setup();
   qmkdir_info(ssprintf("data"));
-  std::vector<std::string> job_tags;
+  std::vector<std::string> job_tag_list;
   // SADJUST ME
-  job_tags.push_back("24D");
-  job_tags.push_back("24DH");
-  job_tags.push_back("32Dfine");
-  job_tags.push_back("32D");
-  job_tags.push_back("48I");
-  job_tags.push_back("64I");
+  job_tag_list.push_back("24D");
+  job_tag_list.push_back("24DH");
+  job_tag_list.push_back("32Dfine");
+  job_tag_list.push_back("32D");
+  job_tag_list.push_back("48I");
+  job_tag_list.push_back("64I");
   //
-  for (int k = 0; k < (int)job_tags.size(); ++k) {
-    const std::string& job_tag = job_tags[k];
+  for (int k = 0; k < (int)job_tag_list.size(); ++k) {
+    const std::string& job_tag = job_tag_list[k];
     compute(job_tag);
   }
   end();
