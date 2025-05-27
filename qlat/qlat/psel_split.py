@@ -424,7 +424,7 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     split `psel` into `psel1` and `psel2`.
     return psel1, psel2
     #
-    n is the number of closest points to be considered for ranking.
+    `n` is the number of closest points to be considered for ranking.
     """
     assert isinstance(psel, PointsSelection)
     assert isinstance(n, int)
@@ -489,13 +489,13 @@ def psel_split_that_increase_separation(psel, mode=None, rs=None):
         assert False
 
 @q.timer
-def psel_split_n_that_increase_separation(psel, n, rs=None):
+def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     """
     return psel_list
-    where `len(psel_list) == n`
+    where `len(psel_list) == num_piece`
     """
     assert isinstance(psel, PointsSelection)
-    assert n >= 1
+    assert num_piece >= 1
     fname = q.get_fname()
     if rs is None:
         rs = q.RngState(f"{fname}")
@@ -503,8 +503,8 @@ def psel_split_n_that_increase_separation(psel, n, rs=None):
     pending_list = []
     idx = 0
     while True:
-        if len(current_list) + len(pending_list) >= n:
-            assert len(current_list) + len(pending_list) == n
+        if len(current_list) + len(pending_list) >= num_piece:
+            assert len(current_list) + len(pending_list) == num_piece
             return current_list + pending_list
         if len(current_list) == 0:
             current_list = pending_list

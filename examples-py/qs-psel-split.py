@@ -60,8 +60,8 @@ job_tag = "test-8nt16-checker"
 
 set_param(job_tag, "traj_list")([ 1000, 1100, ])
 set_param(job_tag, "total_site")([ 8, 8, 8, 16, ])
-set_param(job_tag, "field_selection_fsel_rate")(0.01)
-set_param(job_tag, "field_selection_psel_rate")(0.001)
+set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
+set_param(job_tag, "field_selection_psel_rate")(2048 / (8**3 * 16))
 
 # --------------------------------------------
 
