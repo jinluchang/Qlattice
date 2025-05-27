@@ -346,7 +346,7 @@ def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
     else:
         return 1 / s**(1/6)
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
     """
     return all_closest_point_list
@@ -471,7 +471,7 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     psel2 = PointsSelection(total_site, xg_list2)
     return psel1, psel2
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def psel_split_that_increase_separation(psel, mode=None, rs=None):
     """
     split `psel` into `psel1` and `psel2`.
@@ -488,7 +488,7 @@ def psel_split_that_increase_separation(psel, mode=None, rs=None):
     else:
         assert False
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     """
     return psel_list
