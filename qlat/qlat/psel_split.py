@@ -26,7 +26,7 @@ class PointsDistanceSet:
         self.tree = PointsDistanceTree()
         for xg in psel:
             self.add(xg)
-    
+
     def add(self, xg):
         self.tree = self.tree.add(xg, self.total_site)
 
@@ -93,7 +93,7 @@ class PointsDistanceTree:
             t.range_sqr = t0.range_sqr * 4
         t.tree_list = [ t0, ]
         return t
-    
+
     @classmethod
     def mk_with_point(cls, xg, range_sqr=None):
         """
@@ -133,7 +133,7 @@ class PointsDistanceTree:
         t = cls.mk_with_point(xg, self.range_sqr // 4)
         self.tree_list.append(t)
         return True
-    
+
     def add(self, xg, total_site):
         """
         return new tree with the point `xg` added.
@@ -180,7 +180,7 @@ class PointsDistanceTree:
         if self.tree_list is None:
             return 0
         return sum([ t.count() for t in self.tree_list ])
-    
+
     def list(self):
         l = []
         if self.point is None:
@@ -493,7 +493,7 @@ def psel_split_n_that_increase_separation(psel, n, rs=None):
     """
     return psel_list
     where `len(psel_list) == n`
-    """ 
+    """
     assert isinstance(psel, PointsSelection)
     assert n >= 1
     fname = q.get_fname()
