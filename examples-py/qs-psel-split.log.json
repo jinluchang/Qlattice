@@ -6,10 +6,34 @@
   "run_check_psel"
  ],
  [
-  "len(psel) = 9"
+  "Coordinate([4, 4, 4, 8]) len(psel) = 128"
  ],
  [
-  "hash(psel)=1ce3e7809cb4c78267bbfd37cc73b2e186ffdeb13005ff289ed09f651220effb"
+  "hash(psel)=f9abce978f0d9eee0548965db0a3791b6033ed6cf496d85ec0a359758144bc16"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 2]), [(1, Coordinate([1, 3, 2, 3])), (1, Coordinate([1, 3, 1, 2])), (1, Coordinate([1, 2, 2, 2])), (1, Coordinate([1, 3, 2, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 0, 0]), [(1, Coordinate([0, 1, 0, 0])), (1, Coordinate([0, 3, 0, 0])), (1, Coordinate([0, 0, 1, 0])), (1, Coordinate([0, 0, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 0]), [(1, Coordinate([1, 0, 2, 0])), (1, Coordinate([1, 2, 2, 0])), (1, Coordinate([1, 1, 2, 1])), (1, Coordinate([2, 1, 2, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 0, 0, 6]), [(1, Coordinate([1, 3, 0, 6])), (1, Coordinate([1, 0, 1, 6])), (1, Coordinate([0, 0, 0, 6])), (1, Coordinate([1, 0, 0, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 1, 0]), [(2, Coordinate([0, 2, 0, 7])), (2, Coordinate([1, 2, 2, 0])), (2, Coordinate([1, 3, 1, 0])), (2, Coordinate([0, 1, 0, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 5]), [(2, Coordinate([0, 0, 0, 5])), (2, Coordinate([3, 3, 0, 5])), (2, Coordinate([0, 1, 1, 5])), (2, Coordinate([3, 0, 0, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 4]), [(2, Coordinate([1, 1, 0, 4])), (2, Coordinate([1, 3, 0, 4])), (2, Coordinate([3, 3, 0, 4])), (2, Coordinate([2, 3, 1, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 3, 3]), [(2, Coordinate([2, 0, 3, 2])), (2, Coordinate([1, 3, 2, 3])), (2, Coordinate([2, 2, 3, 2])), (3, Coordinate([2, 0, 0, 4]))])"
  ],
  [
   "run_check_psel_list(get_psel_list)"
@@ -18,199 +42,331 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 0"
+  "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=0 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=0 ; hash(psel)=e080d6756c28484e0913878201290f811b32b22139faa03ec34179ef9e931d77"
  ],
  [
-  "idx=1 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 2, 5]), [(3, Coordinate([3, 1, 1, 6])), (8, Coordinate([0, 1, 0, 3])), (9, Coordinate([2, 3, 3, 5])), (10, Coordinate([2, 3, 1, 4]))])"
  ],
  [
-  "idx=1 ; hash(psel)=684cac4a2369c3d8981d7f05010b1fafb5a718174359a01b93ced42da7618b32"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 1, 6]), [(3, Coordinate([0, 1, 2, 5])), (9, Coordinate([2, 3, 1, 4])), (9, Coordinate([1, 3, 1, 7])), (10, Coordinate([2, 3, 3, 5]))])"
  ],
  [
-  "idx=2 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 1]), [(6, Coordinate([1, 3, 1, 1])), (10, Coordinate([1, 3, 1, 7])), (10, Coordinate([0, 1, 0, 3])), (11, Coordinate([3, 1, 1, 6]))])"
  ],
  [
-  "idx=2 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 0, 3]), [(8, Coordinate([0, 1, 2, 5])), (10, Coordinate([1, 3, 1, 1])), (10, Coordinate([3, 2, 2, 1])), (10, Coordinate([2, 3, 1, 4]))])"
  ],
  [
-  "idx=3 ; len(psel) = 0"
+  "idx=1 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=3 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=1 ; hash(psel)=e6bea41305ab70e674962d5d1adb8c401f3270cbeee39cac2ccf45ac54f89c87"
  ],
  [
-  "idx=4 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 5]), [(3, Coordinate([1, 0, 1, 5])), (7, Coordinate([3, 3, 3, 6])), (7, Coordinate([3, 0, 1, 7])), (7, Coordinate([0, 2, 3, 4]))])"
  ],
  [
-  "idx=4 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 1, 5]), [(3, Coordinate([2, 1, 0, 5])), (8, Coordinate([3, 0, 1, 7])), (10, Coordinate([3, 3, 3, 6])), (10, Coordinate([0, 2, 3, 4]))])"
  ],
  [
-  "idx=5 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 6]), [(6, Coordinate([3, 0, 1, 7])), (6, Coordinate([0, 2, 3, 4])), (6, Coordinate([0, 3, 0, 0])), (7, Coordinate([2, 1, 0, 5]))])"
  ],
  [
-  "idx=5 ; hash(psel)=77397c81b7bdde957a087db8ec90f3f0c7070d9c75fc22a4089db1be7077cc71"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 4]), [(6, Coordinate([3, 3, 3, 6])), (6, Coordinate([1, 2, 2, 2])), (7, Coordinate([2, 1, 0, 5])), (10, Coordinate([1, 0, 1, 5]))])"
  ],
  [
-  "idx=6 ; len(psel) = 0"
+  "idx=2 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=6 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=2 ; hash(psel)=a4dada9d78180a9e459de36841e3249e3d7d02a4c501ea680ff94ed1c1c7e8e3"
  ],
  [
-  "idx=7 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 0, 6]), [(5, Coordinate([2, 1, 3, 6])), (5, Coordinate([3, 1, 0, 0])), (6, Coordinate([3, 3, 0, 5])), (8, Coordinate([0, 3, 2, 6]))])"
  ],
  [
-  "idx=7 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 6]), [(5, Coordinate([0, 1, 0, 6])), (6, Coordinate([3, 1, 0, 0])), (7, Coordinate([3, 3, 0, 5])), (9, Coordinate([0, 3, 2, 6]))])"
  ],
  [
-  "idx=8 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 1, 2]), [(6, Coordinate([0, 3, 0, 2])), (9, Coordinate([3, 1, 0, 0])), (10, Coordinate([2, 3, 2, 0])), (10, Coordinate([2, 3, 3, 3]))])"
  ],
  [
-  "idx=8 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 2, 0]), [(8, Coordinate([0, 3, 2, 6])), (9, Coordinate([2, 1, 3, 6])), (9, Coordinate([3, 1, 0, 0])), (10, Coordinate([2, 3, 3, 3]))])"
  ],
  [
-  "idx=9 ; len(psel) = 1"
+  "idx=3 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 7"
  ],
  [
-  "idx=9 ; hash(psel)=6456ceddef21b0d1cf39dfcdbfac6a6bbb2e107ca42225b49357f2ca9b3996f8"
+  "idx=3 ; hash(psel)=fe28b478b5d8dac616bbc1258356eb16b21dc48b4a0089b9e736c540bbfb66a3"
  ],
  [
-  "idx=10 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 0, 5]), [(4, Coordinate([1, 2, 2, 5])), (5, Coordinate([1, 0, 0, 6])), (7, Coordinate([0, 0, 3, 4])), (9, Coordinate([3, 0, 1, 5]))])"
  ],
  [
-  "idx=10 ; hash(psel)=b9de87a8d07325238a963307328df47f11330e9d801deef3a780da7c81db5bfe"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 0, 6]), [(5, Coordinate([1, 2, 0, 5])), (6, Coordinate([0, 0, 1, 0])), (6, Coordinate([0, 0, 3, 4])), (6, Coordinate([3, 0, 1, 5]))])"
  ],
  [
-  "idx=11 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 0]), [(6, Coordinate([1, 0, 0, 6])), (6, Coordinate([2, 1, 2, 0])), (10, Coordinate([3, 0, 1, 5])), (15, Coordinate([1, 2, 0, 5]))])"
  ],
  [
-  "idx=11 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 0]), [(6, Coordinate([0, 0, 1, 0])), (10, Coordinate([1, 0, 0, 6])), (11, Coordinate([1, 2, 2, 5])), (12, Coordinate([3, 0, 1, 5]))])"
  ],
  [
-  "idx=12 ; len(psel) = 0"
+  "idx=4 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=12 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=4 ; hash(psel)=3293456a8e2a012f0cecf88fa35c800e2374b73e946eafaf328d11da28fe2135"
  ],
  [
-  "idx=13 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 1, 1]), [(5, Coordinate([2, 2, 3, 0])), (5, Coordinate([0, 2, 1, 0])), (8, Coordinate([0, 2, 1, 3])), (9, Coordinate([0, 0, 1, 2]))])"
  ],
  [
-  "idx=13 ; hash(psel)=444eebe976df786a710ef6dfa0960d1137a78e6e9959d974fcd19022c999b91d"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 3, 7]), [(6, Coordinate([2, 2, 3, 0])), (6, Coordinate([1, 0, 3, 5])), (6, Coordinate([3, 2, 3, 5])), (6, Coordinate([0, 2, 1, 0]))])"
  ],
  [
-  "idx=14 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 2]), [(5, Coordinate([0, 2, 1, 3])), (8, Coordinate([0, 2, 1, 0])), (9, Coordinate([2, 2, 1, 1])), (11, Coordinate([1, 1, 1, 5]))])"
  ],
  [
-  "idx=14 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 5]), [(6, Coordinate([0, 3, 3, 7])), (8, Coordinate([1, 0, 3, 5])), (9, Coordinate([0, 2, 1, 3])), (9, Coordinate([1, 1, 1, 5]))])"
  ],
  [
-  "idx=15 ; len(psel) = 0"
+  "idx=5 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=15 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=5 ; hash(psel)=345586cadb0167dca6660906b61750f20f8fa599f9c37a880b3e73a1b06b5b95"
  ],
  [
-  "idx=16 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 0, 6]), [(4, Coordinate([1, 3, 0, 6])), (6, Coordinate([2, 0, 0, 4])), (9, Coordinate([3, 0, 2, 0])), (10, Coordinate([3, 0, 0, 1]))])"
  ],
  [
-  "idx=16 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 0, 6]), [(4, Coordinate([3, 3, 0, 6])), (6, Coordinate([2, 0, 0, 4])), (12, Coordinate([1, 1, 2, 0])), (13, Coordinate([3, 0, 2, 0]))])"
  ],
  [
-  "idx=17 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 0]), [(5, Coordinate([3, 0, 2, 0])), (10, Coordinate([3, 2, 3, 2])), (10, Coordinate([3, 0, 0, 1])), (12, Coordinate([1, 3, 0, 6]))])"
  ],
  [
-  "idx=17 ; hash(psel)=7491f676368dd705ab829f7fbb37d74b05a8197336ef5785f0d987babab8619c"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 2, 4]), [(6, Coordinate([3, 2, 3, 2])), (6, Coordinate([2, 0, 0, 4])), (12, Coordinate([3, 3, 0, 6])), (14, Coordinate([3, 0, 0, 1]))])"
  ],
  [
-  "idx=18 ; len(psel) = 0"
+  "idx=6 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 7"
  ],
  [
-  "idx=18 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=6 ; hash(psel)=17df0120270c9764b1ba3fc2aca59f7bad68cd3758be79db81c0989ba894b4b7"
  ],
  [
-  "idx=19 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 7]), [(5, Coordinate([0, 2, 0, 7])), (7, Coordinate([2, 0, 1, 6])), (7, Coordinate([2, 0, 3, 0])), (11, Coordinate([0, 1, 2, 2]))])"
  ],
  [
-  "idx=19 ; hash(psel)=2ca32d892c02e235a3fb5a064383375b5af489a97d7206da8604e15a35ef745a"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 0, 7]), [(5, Coordinate([3, 2, 2, 7])), (10, Coordinate([2, 0, 1, 6])), (10, Coordinate([2, 0, 3, 0])), (11, Coordinate([1, 1, 0, 4]))])"
  ],
  [
-  "idx=20 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 3, 0]), [(7, Coordinate([3, 2, 2, 7])), (8, Coordinate([2, 0, 1, 6])), (10, Coordinate([0, 2, 0, 7])), (10, Coordinate([0, 1, 2, 2]))])"
  ],
  [
-  "idx=20 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 0, 4]), [(7, Coordinate([2, 0, 1, 6])), (9, Coordinate([1, 3, 2, 3])), (9, Coordinate([0, 1, 2, 2])), (11, Coordinate([0, 2, 0, 7]))])"
  ],
  [
-  "idx=21 ; len(psel) = 0"
+  "idx=7 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=21 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=7 ; hash(psel)=d6e122a9d88b29cf0df6b5c80028e58e267840075473ee26d9199ae5f3d5c25a"
  ],
  [
-  "idx=22 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 1, 5]), [(4, Coordinate([1, 1, 2, 6])), (5, Coordinate([0, 0, 0, 5])), (6, Coordinate([2, 2, 0, 6])), (9, Coordinate([2, 1, 1, 3]))])"
  ],
  [
-  "idx=22 ; hash(psel)=cfc981feffa413f1b9aa211eda1a6dd0b31c06e5c124040be076ef3b914f89b8"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 6]), [(4, Coordinate([0, 2, 1, 5])), (6, Coordinate([2, 2, 0, 6])), (7, Coordinate([0, 0, 0, 5])), (10, Coordinate([0, 0, 0, 0]))])"
  ],
  [
-  "idx=23 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 1, 3]), [(5, Coordinate([2, 1, 2, 1])), (9, Coordinate([0, 2, 1, 5])), (10, Coordinate([0, 0, 0, 5])), (10, Coordinate([1, 3, 2, 1]))])"
  ],
  [
-  "idx=23 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 0, 0]), [(7, Coordinate([1, 3, 2, 1])), (9, Coordinate([0, 0, 0, 5])), (10, Coordinate([1, 1, 2, 6])), (10, Coordinate([2, 1, 2, 1]))])"
  ],
  [
-  "idx=24 ; len(psel) = 0"
+  "idx=8 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=24 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=8 ; hash(psel)=363c30ada3e92b096febb5b63e1ca03e8316b80dbba5192c5082971fa1ff245e"
  ],
  [
-  "idx=25 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 7]), [(5, Coordinate([3, 0, 1, 0])), (5, Coordinate([0, 2, 3, 7])), (10, Coordinate([1, 3, 2, 5])), (10, Coordinate([1, 1, 2, 1]))])"
  ],
  [
-  "idx=25 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 0, 3]), [(5, Coordinate([0, 2, 0, 3])), (6, Coordinate([3, 0, 3, 4])), (9, Coordinate([1, 3, 2, 5])), (9, Coordinate([1, 1, 2, 1]))])"
  ],
  [
-  "idx=26 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 5]), [(7, Coordinate([0, 2, 3, 7])), (7, Coordinate([3, 0, 3, 4])), (9, Coordinate([1, 0, 0, 3])), (10, Coordinate([3, 2, 1, 7]))])"
  ],
  [
-  "idx=26 ; hash(psel)=9c70aa517649d5325dd454b6609abfbb8c7ddb5413e1bb04bd708ee9ad7090ab"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 1]), [(7, Coordinate([3, 0, 1, 0])), (7, Coordinate([0, 2, 3, 7])), (9, Coordinate([1, 0, 0, 3])), (10, Coordinate([3, 2, 1, 7]))])"
  ],
  [
-  "idx=27 ; len(psel) = 0"
+  "idx=9 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 6"
  ],
  [
-  "idx=27 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=9 ; hash(psel)=c4a7e18f60e808cf19a4ba95ce0019f3e4a0c1368fb7fd30165b463493a22509"
  ],
  [
-  "idx=28 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 3, 0]), [(6, Coordinate([1, 3, 1, 0])), (7, Coordinate([3, 3, 2, 6])), (10, Coordinate([3, 2, 2, 2])), (11, Coordinate([1, 0, 2, 3]))])"
  ],
  [
-  "idx=28 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 0]), [(6, Coordinate([0, 0, 3, 0])), (9, Coordinate([3, 3, 2, 6])), (10, Coordinate([3, 2, 2, 2])), (11, Coordinate([1, 0, 2, 3]))])"
  ],
  [
-  "idx=29 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 2]), [(9, Coordinate([1, 0, 2, 3])), (10, Coordinate([0, 0, 3, 0])), (10, Coordinate([1, 3, 1, 0])), (14, Coordinate([0, 2, 0, 5]))])"
  ],
  [
-  "idx=29 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 2, 3]), [(9, Coordinate([3, 2, 2, 2])), (11, Coordinate([0, 0, 3, 0])), (11, Coordinate([1, 3, 1, 0])), (13, Coordinate([0, 2, 0, 5]))])"
  ],
  [
-  "idx=30 ; len(psel) = 0"
+  "idx=10 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=30 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=10 ; hash(psel)=9e80f8cf3a3fe8c8df55047db410c81877e9406705d3ac4edebd8c7c4e2c014c"
  ],
  [
-  "idx=31 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 2, 0]), [(5, Coordinate([1, 3, 2, 2])), (5, Coordinate([2, 2, 2, 0])), (5, Coordinate([1, 0, 0, 7])), (11, Coordinate([1, 1, 1, 3]))])"
  ],
  [
-  "idx=31 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 2]), [(5, Coordinate([1, 0, 2, 0])), (6, Coordinate([2, 2, 2, 0])), (6, Coordinate([1, 1, 1, 3])), (6, Coordinate([1, 2, 3, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 1, 3]), [(6, Coordinate([1, 3, 2, 2])), (6, Coordinate([1, 2, 3, 4])), (9, Coordinate([3, 1, 2, 5])), (11, Coordinate([1, 0, 2, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 1, 2, 5]), [(6, Coordinate([3, 0, 0, 6])), (7, Coordinate([1, 2, 3, 4])), (9, Coordinate([1, 1, 1, 3])), (11, Coordinate([2, 2, 2, 0]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
+ ],
+ [
+  "idx=11 ; hash(psel)=361b64a26935b8b5106b16fb7807cfeedaeef11e7efa8fda7e9f3a64bb518bf5"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 1, 5]), [(4, Coordinate([1, 2, 2, 6])), (6, Coordinate([1, 1, 0, 5])), (7, Coordinate([0, 0, 2, 4])), (14, Coordinate([2, 0, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 2, 2, 6]), [(4, Coordinate([2, 3, 1, 5])), (6, Coordinate([1, 1, 0, 5])), (9, Coordinate([0, 0, 2, 4])), (10, Coordinate([2, 1, 0, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 0, 5]), [(6, Coordinate([1, 2, 2, 6])), (6, Coordinate([2, 3, 1, 5])), (7, Coordinate([0, 0, 2, 4])), (10, Coordinate([2, 1, 0, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 2, 4]), [(7, Coordinate([1, 1, 0, 5])), (7, Coordinate([2, 3, 1, 5])), (9, Coordinate([1, 2, 2, 6])), (9, Coordinate([2, 0, 3, 2]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
+ ],
+ [
+  "idx=12 ; hash(psel)=798db73573ff4c7fed107020726d90a710508224aadb4e086d9654177106c5db"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 0, 7]), [(5, Coordinate([2, 3, 1, 7])), (6, Coordinate([0, 1, 3, 6])), (7, Coordinate([1, 2, 1, 5])), (7, Coordinate([3, 0, 3, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 1, 7]), [(5, Coordinate([0, 3, 0, 7])), (6, Coordinate([1, 2, 1, 5])), (10, Coordinate([3, 0, 3, 1])), (13, Coordinate([0, 1, 3, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 2]), [(6, Coordinate([3, 0, 3, 1])), (7, Coordinate([0, 1, 2, 3])), (9, Coordinate([2, 0, 1, 3])), (14, Coordinate([1, 2, 1, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 1, 3]), [(6, Coordinate([0, 1, 2, 3])), (9, Coordinate([1, 2, 1, 5])), (9, Coordinate([2, 2, 3, 2])), (9, Coordinate([3, 0, 3, 1]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
+ ],
+ [
+  "idx=13 ; hash(psel)=bc1cd312f49e4de70a0c3c1c9bc470e7dd300d6c498b034f19d240b86e4e5496"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 2, 7]), [(4, Coordinate([1, 0, 1, 6])), (6, Coordinate([2, 2, 3, 7])), (9, Coordinate([0, 1, 0, 0])), (10, Coordinate([0, 3, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 3, 2]), [(5, Coordinate([1, 3, 1, 2])), (6, Coordinate([3, 3, 0, 4])), (6, Coordinate([1, 0, 3, 4])), (6, Coordinate([1, 1, 2, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 7]), [(6, Coordinate([0, 3, 2, 7])), (7, Coordinate([0, 1, 0, 0])), (10, Coordinate([1, 0, 1, 6])), (12, Coordinate([3, 3, 0, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 0, 0]), [(7, Coordinate([2, 2, 3, 7])), (7, Coordinate([1, 0, 1, 6])), (9, Coordinate([0, 3, 2, 7])), (9, Coordinate([0, 3, 3, 2]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
+ ],
+ [
+  "idx=14 ; hash(psel)=3e4b1afd4dcf5e2dfccfe5af5788d3f433e36d1c576d94c09829d6021ca5a352"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 3]), [(5, Coordinate([2, 1, 3, 5])), (5, Coordinate([3, 1, 2, 1])), (6, Coordinate([1, 3, 2, 4])), (7, Coordinate([1, 0, 1, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 6]), [(5, Coordinate([0, 0, 0, 6])), (6, Coordinate([2, 1, 3, 5])), (6, Coordinate([2, 1, 1, 7])), (9, Coordinate([1, 3, 2, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 0, 1, 1]), [(6, Coordinate([3, 1, 2, 1])), (6, Coordinate([2, 1, 1, 7])), (7, Coordinate([2, 1, 2, 3])), (11, Coordinate([1, 3, 2, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 4]), [(6, Coordinate([2, 1, 2, 3])), (7, Coordinate([2, 1, 3, 5])), (9, Coordinate([2, 3, 0, 6])), (10, Coordinate([0, 0, 0, 6]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
+ ],
+ [
+  "idx=15 ; hash(psel)=034a4bc6f6693b66ee91cbdc24e8778b847fdf9e9578d1a13cef68b6721273a8"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 1, 5]), [(4, Coordinate([0, 1, 1, 5])), (6, Coordinate([3, 2, 1, 3])), (7, Coordinate([1, 3, 0, 4])), (9, Coordinate([3, 3, 3, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 5]), [(4, Coordinate([2, 1, 1, 5])), (6, Coordinate([3, 2, 1, 3])), (7, Coordinate([1, 3, 0, 4])), (9, Coordinate([3, 3, 3, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 2, 2]), [(6, Coordinate([1, 0, 3, 0])), (7, Coordinate([3, 2, 1, 3])), (9, Coordinate([1, 2, 2, 0])), (10, Coordinate([1, 3, 0, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 5]), [(6, Coordinate([1, 3, 0, 4])), (9, Coordinate([3, 2, 1, 3])), (9, Coordinate([2, 1, 1, 5])), (9, Coordinate([0, 1, 1, 5]))])"
+ ],
+ [
+  "run_check_fsel(get_fsel)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "Coordinate([4, 4, 4, 8]) len(psel) = 512"
+ ],
+ [
+  "hash(psel)=11821f68bd60e5f534c1e01a6855ce554d77200472ed4d3852d762abf0bcbe9b"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 2]), [(1, Coordinate([3, 2, 2, 3])), (1, Coordinate([3, 2, 1, 2])), (1, Coordinate([2, 2, 2, 2])), (1, Coordinate([3, 2, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 5]), [(1, Coordinate([3, 0, 1, 4])), (1, Coordinate([3, 3, 1, 5])), (1, Coordinate([3, 0, 2, 5])), (1, Coordinate([3, 0, 1, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 0, 7]), [(1, Coordinate([0, 0, 0, 0])), (1, Coordinate([0, 0, 0, 6])), (1, Coordinate([1, 0, 0, 7])), (1, Coordinate([3, 0, 0, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 2, 7]), [(1, Coordinate([2, 2, 2, 0])), (1, Coordinate([2, 3, 2, 7])), (1, Coordinate([2, 1, 2, 7])), (1, Coordinate([2, 2, 1, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 7]), [(1, Coordinate([2, 1, 0, 7])), (1, Coordinate([2, 0, 1, 7])), (1, Coordinate([2, 0, 3, 7])), (1, Coordinate([2, 3, 0, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 3]), [(1, Coordinate([3, 3, 1, 4])), (1, Coordinate([2, 3, 1, 3])), (1, Coordinate([3, 3, 2, 3])), (1, Coordinate([3, 3, 0, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 1, 3, 0]), [(1, Coordinate([2, 1, 3, 0])), (1, Coordinate([3, 2, 3, 0])), (1, Coordinate([3, 1, 0, 0])), (1, Coordinate([3, 0, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 5]), [(1, Coordinate([1, 3, 1, 4])), (1, Coordinate([1, 2, 1, 5])), (1, Coordinate([1, 3, 2, 5])), (1, Coordinate([1, 3, 1, 6]))])"
  ],
  [
   "run_check_psel_list(get_fsel_psel_list)"
@@ -219,199 +375,295 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 2"
+  "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 34"
  ],
  [
-  "idx=0 ; hash(psel)=66c3dda42eb5f9be849b60d8195eeb23c244ed09595b6ba5da806f8dd9717b6b"
+  "idx=0 ; hash(psel)=00fd24b103c05c515ce89aaae2e25041bdcde7db4e791f3639c4b4ae8dd22444"
  ],
  [
-  "idx=1 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 2, 7]), [(2, Coordinate([1, 2, 2, 6])), (2, Coordinate([3, 2, 2, 0])), (3, Coordinate([1, 3, 1, 7])), (3, Coordinate([3, 1, 3, 7]))])"
  ],
  [
-  "idx=1 ; hash(psel)=9c70aa517649d5325dd454b6609abfbb8c7ddb5413e1bb04bd708ee9ad7090ab"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 0, 4]), [(2, Coordinate([0, 2, 1, 4])), (2, Coordinate([3, 3, 0, 3])), (3, Coordinate([3, 1, 1, 3])), (3, Coordinate([2, 2, 3, 5]))])"
  ],
  [
-  "idx=2 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 1]), [(3, Coordinate([0, 2, 0, 0])), (4, Coordinate([1, 0, 2, 0])), (4, Coordinate([3, 0, 2, 0])), (4, Coordinate([3, 2, 2, 0]))])"
  ],
  [
-  "idx=2 ; hash(psel)=e8f0028e32c76e523733585b994a564bec0d919c0c9babba6f8b83484d1f13b9"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 0, 3]), [(4, Coordinate([0, 0, 3, 2])), (4, Coordinate([0, 2, 1, 4])), (5, Coordinate([3, 1, 1, 3])), (5, Coordinate([2, 1, 2, 3]))])"
  ],
  [
-  "idx=3 ; len(psel) = 2"
+  "idx=1 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
  ],
  [
-  "idx=3 ; hash(psel)=c06480517415f7e63c3b3f3aaf1de1ae0203908f3b792b5dd9c16b34a17e578f"
+  "idx=1 ; hash(psel)=7b51de4835a6cbf6df8d93f9ac97c3eb1d7f08bed3293e1b50be55846e790331"
  ],
  [
-  "idx=4 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 2, 2]), [(2, Coordinate([2, 0, 3, 3])), (2, Coordinate([2, 1, 2, 1])), (2, Coordinate([3, 0, 1, 2])), (5, Coordinate([0, 1, 2, 2]))])"
  ],
  [
-  "idx=4 ; hash(psel)=e591dae8e5a3a732fcd92d077b36a0c4929686ba60a708ce4be5bce3a6f24dad"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 2, 7]), [(2, Coordinate([2, 3, 3, 7])), (2, Coordinate([1, 0, 2, 6])), (3, Coordinate([2, 1, 3, 6])), (3, Coordinate([2, 3, 1, 0]))])"
  ],
  [
-  "idx=5 ; len(psel) = 3"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 6]), [(3, Coordinate([2, 1, 3, 6])), (3, Coordinate([3, 1, 1, 5])), (4, Coordinate([2, 3, 3, 7])), (4, Coordinate([1, 0, 0, 6]))])"
  ],
  [
-  "idx=5 ; hash(psel)=74baf08e237dc6ef5e67eff7f5fc02e1867c2bb0d03f957ef209cde8c3e10762"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 2, 0]), [(3, Coordinate([1, 2, 3, 0])), (5, Coordinate([0, 3, 0, 1])), (5, Coordinate([0, 0, 0, 0])), (5, Coordinate([2, 3, 1, 0]))])"
  ],
  [
-  "idx=6 ; len(psel) = 1"
+  "idx=2 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
  ],
  [
-  "idx=6 ; hash(psel)=e37adc8edc52b92075554f2c6c329467543a9c777814c536b05975ffd57f2fb4"
+  "idx=2 ; hash(psel)=78b494051e0b552346e4aea21902b0d3258f0499d808468c3750bcdcab15d86a"
  ],
  [
-  "idx=7 ; len(psel) = 3"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 3, 0]), [(2, Coordinate([3, 3, 3, 0])), (2, Coordinate([0, 1, 3, 1])), (2, Coordinate([0, 0, 2, 7])), (3, Coordinate([0, 3, 2, 1]))])"
  ],
  [
-  "idx=7 ; hash(psel)=4326360f16f683661e3af472b98a6b0e7c2ab6b455863948e6c696b25fc0f3de"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 0]), [(2, Coordinate([3, 2, 3, 7])), (2, Coordinate([0, 0, 3, 0])), (3, Coordinate([0, 3, 2, 1])), (3, Coordinate([2, 3, 2, 1]))])"
  ],
  [
-  "idx=8 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 5]), [(3, Coordinate([3, 2, 2, 4])), (4, Coordinate([3, 0, 3, 4])), (4, Coordinate([3, 0, 1, 6])), (5, Coordinate([3, 1, 0, 5]))])"
  ],
  [
-  "idx=8 ; hash(psel)=c5da8cb4691a1ae647ec17995142f21d1e0ec7f802326b72d739ab6df57e4f90"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 0, 7]), [(4, Coordinate([1, 1, 2, 7])), (4, Coordinate([0, 0, 3, 0])), (5, Coordinate([1, 2, 0, 1])), (6, Coordinate([3, 1, 1, 0]))])"
  ],
  [
-  "idx=9 ; len(psel) = 2"
+  "idx=3 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 29"
  ],
  [
-  "idx=9 ; hash(psel)=25beb7b9f4c4193dbfe3189bcdbf901b79e27843ce91d44de09baf93d33abd95"
+  "idx=3 ; hash(psel)=3aeffa8a459067fe96b6a843233c4445bd2783037e4e6d9a8b685150de5d10a1"
  ],
  [
-  "idx=10 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 2, 5]), [(2, Coordinate([3, 2, 3, 5])), (2, Coordinate([3, 3, 1, 4])), (4, Coordinate([3, 3, 2, 7])), (4, Coordinate([0, 0, 3, 6]))])"
  ],
  [
-  "idx=10 ; hash(psel)=e2bf6b42037e42a9e7239f298ae1b198b41824ba02173d449ad8e0c5c50e21c6"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 4]), [(2, Coordinate([0, 3, 1, 3])), (2, Coordinate([3, 3, 2, 5])), (4, Coordinate([2, 2, 0, 3])), (5, Coordinate([2, 1, 1, 4]))])"
  ],
  [
-  "idx=11 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 6]), [(3, Coordinate([1, 2, 1, 5])), (4, Coordinate([2, 1, 1, 6])), (5, Coordinate([0, 0, 3, 6])), (5, Coordinate([1, 1, 3, 6]))])"
  ],
  [
-  "idx=11 ; hash(psel)=2bb8718f81d62c8b685d088be875ebfce39a57f3cc487f2af6a353dbf1351341"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 2, 1]), [(5, Coordinate([3, 3, 2, 7])), (5, Coordinate([1, 0, 2, 2])), (6, Coordinate([0, 2, 1, 1])), (6, Coordinate([2, 0, 1, 7]))])"
  ],
  [
-  "idx=12 ; len(psel) = 2"
+  "idx=4 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 31"
  ],
  [
-  "idx=12 ; hash(psel)=99106b74d79956550b0c4d7fea1e72a907e26cabcf20f5499d1cbd4a2044e8b8"
+  "idx=4 ; hash(psel)=4a484a40a2d18a7ff9106f4b2089bdd0303d32d4998a936a6e6af8509e708489"
  ],
  [
-  "idx=13 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 7]), [(2, Coordinate([0, 3, 1, 0])), (2, Coordinate([1, 0, 1, 6])), (3, Coordinate([3, 1, 0, 7])), (3, Coordinate([0, 1, 0, 6]))])"
  ],
  [
-  "idx=13 ; hash(psel)=348b0ee94ead4750c4cb3be263d883bd94af9955326756017cad0f854827c1a9"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 2, 1]), [(2, Coordinate([0, 2, 2, 2])), (2, Coordinate([2, 2, 2, 2])), (3, Coordinate([2, 1, 2, 0])), (3, Coordinate([0, 1, 2, 0]))])"
  ],
  [
-  "idx=14 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 1, 4]), [(3, Coordinate([3, 3, 1, 3])), (5, Coordinate([2, 2, 0, 2])), (5, Coordinate([3, 2, 3, 4])), (5, Coordinate([2, 0, 2, 4]))])"
  ],
  [
-  "idx=14 ; hash(psel)=f9c4a67f0b35484f5c2d80f5215b00c31780b721a785a11d3ee699a98a483161"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 3, 0]), [(4, Coordinate([0, 3, 1, 0])), (4, Coordinate([1, 2, 2, 1])), (5, Coordinate([2, 3, 2, 0])), (5, Coordinate([0, 1, 2, 0]))])"
  ],
  [
-  "idx=15 ; len(psel) = 3"
+  "idx=5 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 32"
  ],
  [
-  "idx=15 ; hash(psel)=b4e9183fef1d15256ec5e6badb465e1eca01578b21a5d2fed6877814b4f8aa67"
+  "idx=5 ; hash(psel)=acf77b8c9184f4f440f9aae999b465db16ae19cd890c2538bf84f9d26a058465"
  ],
  [
-  "idx=16 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 0, 5]), [(2, Coordinate([0, 1, 0, 4])), (2, Coordinate([1, 0, 3, 5])), (2, Coordinate([2, 1, 0, 6])), (3, Coordinate([2, 1, 3, 4]))])"
  ],
  [
-  "idx=16 ; hash(psel)=4eee0f52b1404cead4457724012d94be209c35ef7af3c88a7856ccd51a15d565"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 0, 0]), [(2, Coordinate([3, 2, 0, 0])), (2, Coordinate([1, 2, 0, 0])), (3, Coordinate([3, 0, 1, 0])), (3, Coordinate([1, 1, 1, 7]))])"
  ],
  [
-  "idx=17 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 6]), [(4, Coordinate([0, 2, 1, 6])), (4, Coordinate([1, 3, 2, 7])), (4, Coordinate([1, 1, 0, 5])), (5, Coordinate([2, 2, 3, 7]))])"
  ],
  [
-  "idx=17 ; hash(psel)=e47857cfee1c1d47738a5be8cdff1812fb06b3c1c4a0097636094b70e5af5487"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 2]), [(5, Coordinate([3, 1, 1, 4])), (5, Coordinate([3, 2, 0, 0])), (5, Coordinate([2, 0, 1, 2])), (5, Coordinate([0, 0, 1, 2]))])"
  ],
  [
-  "idx=18 ; len(psel) = 2"
+  "idx=6 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 30"
  ],
  [
-  "idx=18 ; hash(psel)=ea2c1558c135c3f0422ac7573f1b0e46ef285f329f9a9ace9aa5fef1bad8d2a0"
+  "idx=6 ; hash(psel)=fdef4fd9f552873e926da40b668cfb63885ba51c4e8aa1251ae4ae1f4d7c38e9"
  ],
  [
-  "idx=19 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 1, 2]), [(2, Coordinate([1, 2, 2, 3])), (2, Coordinate([0, 3, 1, 2])), (3, Coordinate([0, 2, 0, 3])), (3, Coordinate([1, 1, 2, 1]))])"
  ],
  [
-  "idx=19 ; hash(psel)=a86a43edbc2d80d63c47ca7ee978d96fd57923622ab02db1388e00796709d20b"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 1]), [(2, Coordinate([2, 0, 1, 1])), (2, Coordinate([3, 3, 3, 1])), (4, Coordinate([1, 2, 1, 2])), (5, Coordinate([2, 1, 0, 0]))])"
  ],
  [
-  "idx=20 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 2, 2]), [(4, Coordinate([2, 0, 1, 1])), (4, Coordinate([3, 1, 0, 2])), (5, Coordinate([1, 1, 2, 1])), (6, Coordinate([1, 2, 2, 3]))])"
  ],
  [
-  "idx=20 ; hash(psel)=3d4b3af73ca767f067ab781c72ebef10c34811cd962173a3c83349c0765b355c"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 5]), [(4, Coordinate([1, 3, 2, 5])), (5, Coordinate([1, 2, 2, 3])), (5, Coordinate([1, 1, 0, 4])), (5, Coordinate([3, 1, 3, 5]))])"
  ],
  [
-  "idx=21 ; len(psel) = 2"
+  "idx=7 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 32"
  ],
  [
-  "idx=21 ; hash(psel)=4726e2308e1b3b660543a5caf39ab8fa72de24b95105399343ac9e14f7a4335e"
+  "idx=7 ; hash(psel)=c758c2fb6efe12d71a5ea4181d7e8f61bd5184a5e9ed06a8933c7de76143c426"
  ],
  [
-  "idx=22 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 1]), [(2, Coordinate([2, 2, 1, 1])), (2, Coordinate([0, 2, 3, 1])), (3, Coordinate([3, 1, 3, 0])), (4, Coordinate([2, 1, 3, 2]))])"
  ],
  [
-  "idx=22 ; hash(psel)=553cf09c5b45f48d14e6e4386b713facd81ecfda3693209c6e8ba6c154ae7721"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 3]), [(2, Coordinate([1, 0, 0, 2])), (3, Coordinate([2, 1, 3, 2])), (3, Coordinate([1, 0, 1, 4])), (4, Coordinate([2, 0, 0, 5]))])"
  ],
  [
-  "idx=23 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 1]), [(3, Coordinate([3, 1, 3, 0])), (4, Coordinate([2, 1, 3, 2])), (5, Coordinate([0, 0, 2, 1])), (5, Coordinate([2, 0, 0, 3]))])"
  ],
  [
-  "idx=23 ; hash(psel)=4ca67ae7eca29b3ff17909b96723039c02cf3c1b3f52798befac13ff706d7f73"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 1, 0]), [(3, Coordinate([0, 0, 2, 1])), (5, Coordinate([1, 0, 0, 2])), (6, Coordinate([2, 0, 2, 6])), (6, Coordinate([0, 0, 0, 6]))])"
  ],
  [
-  "idx=24 ; len(psel) = 3"
+  "idx=8 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 31"
  ],
  [
-  "idx=24 ; hash(psel)=650d65dc9e0b545dbd0d553a22753d974159bcdc4ec5b95875cd588ee2754884"
+  "idx=8 ; hash(psel)=4fa41e5d0562e70b4bf29f3d49949f830fb131a3f0076b20dea01e8a561b1336"
  ],
  [
-  "idx=25 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 1, 7]), [(2, Coordinate([3, 0, 1, 7])), (3, Coordinate([3, 2, 1, 0])), (3, Coordinate([3, 2, 1, 6])), (3, Coordinate([1, 2, 1, 0]))])"
  ],
  [
-  "idx=25 ; hash(psel)=747908b1e6b86534e81ed9c3236994d8b1617fd6a25e4d71157d7905ade5f89f"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 1, 5]), [(2, Coordinate([1, 0, 1, 5])), (3, Coordinate([3, 0, 1, 4])), (3, Coordinate([1, 2, 0, 5])), (3, Coordinate([1, 2, 2, 5]))])"
  ],
  [
-  "idx=26 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 0, 7]), [(3, Coordinate([3, 0, 1, 7])), (4, Coordinate([3, 2, 1, 0])), (4, Coordinate([3, 2, 3, 0])), (4, Coordinate([3, 2, 1, 6]))])"
  ],
  [
-  "idx=26 ; hash(psel)=b13df33cb20361ef7929730e55f409763769a02e45f845121775ab095f824d75"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 3, 6]), [(5, Coordinate([3, 2, 3, 6])), (5, Coordinate([1, 0, 3, 0])), (6, Coordinate([1, 0, 1, 5])), (6, Coordinate([2, 1, 1, 5]))])"
  ],
  [
-  "idx=27 ; len(psel) = 2"
+  "idx=9 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 28"
  ],
  [
-  "idx=27 ; hash(psel)=93f358a54512ad5db71df288912d6406186cfa8075913e1ebb9e8baa1fcd8a0c"
+  "idx=9 ; hash(psel)=21a69e5a39da7e08d6b9ad49016b505557755f82528ce7dda98b22b25fe16bd4"
  ],
  [
-  "idx=28 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 0, 4]), [(2, Coordinate([2, 3, 0, 5])), (2, Coordinate([2, 2, 1, 3])), (5, Coordinate([2, 0, 3, 4])), (5, Coordinate([1, 2, 0, 2]))])"
  ],
  [
-  "idx=28 ; hash(psel)=bc49a128d0f7d22a4728d05c0252d7a39671fb0afd6a8f931b06547553fa38e6"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 0, 2]), [(2, Coordinate([3, 3, 0, 2])), (3, Coordinate([3, 1, 3, 2])), (3, Coordinate([0, 3, 3, 1])), (4, Coordinate([0, 0, 2, 2]))])"
  ],
  [
-  "idx=29 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 3, 6]), [(4, Coordinate([3, 0, 2, 5])), (4, Coordinate([3, 2, 2, 5])), (5, Coordinate([0, 3, 3, 7])), (5, Coordinate([2, 1, 3, 7]))])"
  ],
  [
-  "idx=29 ; hash(psel)=3895074d01fd9de3d9f271a7a2a8ea6d41597f4facfafe240e2d6f7e28b3156e"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 0]), [(5, Coordinate([0, 2, 2, 0])), (5, Coordinate([0, 0, 0, 2])), (5, Coordinate([3, 0, 3, 0])), (5, Coordinate([0, 0, 2, 2]))])"
  ],
  [
-  "idx=30 ; len(psel) = 2"
+  "idx=10 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
  ],
  [
-  "idx=30 ; hash(psel)=04b72eb4dd9755698a1d81a52e89e3bafd1b6838888fa24d1df248097d91530b"
+  "idx=10 ; hash(psel)=c504a80db4c57fb3aea9c3eb778557321add4679d31e4855251ff65ac79f612d"
  ],
  [
-  "idx=31 ; len(psel) = 3"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 3, 0]), [(2, Coordinate([3, 3, 0, 0])), (2, Coordinate([3, 3, 2, 0])), (2, Coordinate([1, 3, 2, 0])), (3, Coordinate([1, 0, 0, 0]))])"
  ],
  [
-  "idx=31 ; hash(psel)=704f0167a4ce352d4fea2ccefc99e81d7359fae378a9634a698ba64abf2f5b4b"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 0]), [(2, Coordinate([1, 0, 2, 1])), (2, Coordinate([2, 3, 3, 0])), (3, Coordinate([1, 2, 1, 1])), (4, Coordinate([1, 3, 2, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 2, 3]), [(4, Coordinate([3, 3, 1, 2])), (4, Coordinate([1, 3, 1, 2])), (4, Coordinate([1, 1, 1, 4])), (5, Coordinate([0, 0, 1, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 3, 3]), [(4, Coordinate([0, 0, 1, 3])), (4, Coordinate([0, 0, 3, 5])), (5, Coordinate([0, 2, 2, 3])), (5, Coordinate([0, 0, 0, 1]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 37"
+ ],
+ [
+  "idx=11 ; hash(psel)=59679e577dea73a378d5ad0b27f028af9a5d147b0922421ebb62dfb117ab7bec"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 2, 6]), [(2, Coordinate([1, 1, 2, 6])), (2, Coordinate([3, 3, 2, 6])), (3, Coordinate([1, 0, 1, 7])), (3, Coordinate([3, 1, 2, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 3]), [(2, Coordinate([1, 1, 1, 2])), (2, Coordinate([1, 1, 3, 4])), (3, Coordinate([2, 0, 1, 3])), (3, Coordinate([1, 0, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 2, 1]), [(4, Coordinate([1, 1, 1, 2])), (4, Coordinate([3, 1, 1, 2])), (4, Coordinate([2, 2, 0, 1])), (5, Coordinate([2, 0, 2, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 0, 4]), [(4, Coordinate([0, 2, 1, 5])), (4, Coordinate([2, 0, 1, 3])), (4, Coordinate([3, 3, 0, 6])), (5, Coordinate([1, 3, 1, 4]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 31"
+ ],
+ [
+  "idx=12 ; hash(psel)=1019e5c95b3e0ed7da81b2effb306e61b64533254e0c7341d04b908be4357087"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 3]), [(2, Coordinate([2, 3, 1, 4])), (2, Coordinate([1, 0, 2, 3])), (3, Coordinate([2, 2, 1, 2])), (4, Coordinate([0, 2, 0, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 3, 4]), [(2, Coordinate([3, 1, 2, 4])), (2, Coordinate([1, 1, 3, 5])), (3, Coordinate([1, 2, 3, 3])), (4, Coordinate([1, 0, 2, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 2, 1]), [(4, Coordinate([1, 3, 1, 0])), (4, Coordinate([1, 3, 3, 0])), (4, Coordinate([3, 3, 3, 2])), (5, Coordinate([0, 0, 2, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 2, 1]), [(4, Coordinate([1, 3, 1, 0])), (4, Coordinate([1, 3, 3, 0])), (4, Coordinate([3, 3, 3, 2])), (5, Coordinate([0, 0, 2, 0]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 30"
+ ],
+ [
+  "idx=13 ; hash(psel)=caa5bf3d93d7c71f5de79208b2c04a18b6d11f0ce53b53b4ffb0d9298c300432"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 1, 1]), [(2, Coordinate([0, 1, 0, 1])), (2, Coordinate([2, 1, 1, 0])), (5, Coordinate([2, 1, 3, 1])), (5, Coordinate([0, 1, 1, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 0, 0, 3]), [(2, Coordinate([0, 1, 0, 3])), (3, Coordinate([1, 3, 3, 2])), (3, Coordinate([2, 3, 0, 2])), (3, Coordinate([2, 1, 1, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 0]), [(4, Coordinate([0, 3, 0, 0])), (4, Coordinate([2, 3, 0, 2])), (5, Coordinate([2, 1, 1, 0])), (6, Coordinate([3, 3, 2, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 1]), [(4, Coordinate([3, 0, 2, 2])), (5, Coordinate([0, 1, 0, 1])), (5, Coordinate([1, 1, 1, 1])), (5, Coordinate([2, 1, 1, 0]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
+ ],
+ [
+  "idx=14 ; hash(psel)=339fa29933a770cf293ef3e611c72b762976968bdd98784bb65ae5d2fbc10042"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 0, 3]), [(2, Coordinate([3, 1, 0, 4])), (2, Coordinate([2, 3, 0, 3])), (3, Coordinate([2, 2, 3, 4])), (3, Coordinate([0, 3, 3, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 4]), [(2, Coordinate([1, 2, 2, 4])), (3, Coordinate([1, 3, 3, 5])), (3, Coordinate([3, 3, 3, 5])), (3, Coordinate([3, 1, 0, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 2, 7]), [(4, Coordinate([2, 3, 2, 7])), (5, Coordinate([1, 3, 2, 1])), (5, Coordinate([1, 3, 0, 7])), (6, Coordinate([1, 3, 3, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 6]), [(5, Coordinate([0, 1, 2, 5])), (5, Coordinate([2, 2, 0, 6])), (5, Coordinate([2, 0, 0, 6])), (5, Coordinate([2, 3, 2, 7]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 35"
+ ],
+ [
+  "idx=15 ; hash(psel)=79efff6f39baf81aee4d5eb5aced26189f140f3160bdbfcfb350d44a2490a431"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 2]), [(2, Coordinate([2, 2, 2, 3])), (2, Coordinate([1, 2, 3, 1])), (2, Coordinate([3, 2, 3, 1])), (3, Coordinate([2, 1, 0, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 7]), [(2, Coordinate([0, 0, 3, 7])), (2, Coordinate([3, 2, 0, 7])), (3, Coordinate([3, 2, 2, 6])), (3, Coordinate([2, 0, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 0]), [(4, Coordinate([3, 2, 0, 7])), (4, Coordinate([0, 1, 1, 2])), (5, Coordinate([3, 3, 1, 0])), (5, Coordinate([3, 1, 1, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 2, 3, 7]), [(4, Coordinate([1, 2, 3, 1])), (5, Coordinate([0, 2, 3, 5])), (5, Coordinate([0, 0, 3, 7])), (5, Coordinate([3, 3, 3, 7]))])"
  ],
  [
   "run_check_psel(get_psel)"
@@ -420,10 +672,34 @@
   "run_check_psel"
  ],
  [
-  "len(psel) = 5"
+  "Coordinate([4, 4, 4, 8]) len(psel) = 144"
  ],
  [
-  "hash(psel)=7dead46dfb100f1babd2a11daf074a5755a8c3372f72a9109e56d852d0b2c896"
+  "hash(psel)=32caecf810bb00e0b89285a286c7edad157e4d20f923891ecdf1ad56ae908aec"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 0]), [(1, Coordinate([3, 0, 1, 0])), (1, Coordinate([3, 0, 0, 1])), (1, Coordinate([3, 0, 0, 7])), (1, Coordinate([2, 0, 0, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 2, 2, 6]), [(1, Coordinate([1, 2, 2, 5])), (1, Coordinate([2, 2, 2, 6])), (1, Coordinate([0, 2, 2, 6])), (1, Coordinate([1, 2, 2, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 3]), [(1, Coordinate([2, 1, 0, 4])), (1, Coordinate([2, 1, 0, 2])), (1, Coordinate([2, 0, 0, 3])), (1, Coordinate([2, 1, 3, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 2, 5]), [(1, Coordinate([1, 2, 2, 5])), (1, Coordinate([3, 2, 2, 5])), (1, Coordinate([2, 2, 2, 6])), (1, Coordinate([2, 1, 2, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 7]), [(2, Coordinate([2, 2, 3, 7])), (2, Coordinate([0, 2, 3, 7])), (2, Coordinate([3, 0, 0, 7])), (2, Coordinate([2, 3, 2, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 1]), [(2, Coordinate([3, 2, 2, 1])), (2, Coordinate([1, 2, 3, 2])), (2, Coordinate([2, 1, 3, 2])), (2, Coordinate([2, 3, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 2, 2]), [(2, Coordinate([0, 2, 2, 3])), (2, Coordinate([1, 3, 1, 2])), (2, Coordinate([1, 0, 2, 2])), (2, Coordinate([1, 3, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 4]), [(2, Coordinate([1, 2, 2, 5])), (2, Coordinate([1, 2, 2, 3])), (2, Coordinate([2, 3, 2, 3])), (2, Coordinate([1, 3, 1, 5]))])"
  ],
  [
   "run_check_psel_list(get_psel_list)"
@@ -432,199 +708,331 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 0"
+  "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=0 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=0 ; hash(psel)=3c6353e54b60ee99e0887929325588545b607c2e13f6bbdf1c44cfc31dfe22cf"
  ],
  [
-  "idx=1 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 7]), [(4, Coordinate([2, 1, 0, 6])), (5, Coordinate([3, 0, 1, 0])), (6, Coordinate([0, 2, 0, 1])), (7, Coordinate([2, 0, 2, 6]))])"
  ],
  [
-  "idx=1 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 6]), [(4, Coordinate([3, 2, 1, 7])), (5, Coordinate([2, 0, 2, 6])), (7, Coordinate([1, 0, 3, 0])), (7, Coordinate([3, 2, 3, 4]))])"
  ],
  [
-  "idx=2 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 1, 2]), [(6, Coordinate([0, 2, 0, 1])), (7, Coordinate([1, 3, 2, 4])), (9, Coordinate([3, 2, 3, 4])), (9, Coordinate([3, 0, 1, 0]))])"
  ],
  [
-  "idx=2 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 4]), [(6, Coordinate([1, 3, 2, 4])), (7, Coordinate([2, 1, 0, 6])), (9, Coordinate([2, 2, 1, 2])), (10, Coordinate([2, 0, 2, 6]))])"
  ],
  [
-  "idx=3 ; len(psel) = 0"
+  "idx=1 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=3 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=1 ; hash(psel)=2fd11a0b760e83ceb6f77821aa5887ffecc433955580a42118b74b9a1ed61016"
  ],
  [
-  "idx=4 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 3, 2]), [(5, Coordinate([2, 0, 1, 2])), (5, Coordinate([3, 1, 3, 2])), (9, Coordinate([0, 3, 1, 3])), (11, Coordinate([1, 3, 0, 7]))])"
  ],
  [
-  "idx=4 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 1, 2]), [(5, Coordinate([2, 3, 3, 2])), (6, Coordinate([0, 3, 1, 3])), (6, Coordinate([3, 1, 3, 2])), (12, Coordinate([1, 3, 0, 7]))])"
  ],
  [
-  "idx=5 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 0, 7]), [(5, Coordinate([3, 3, 0, 6])), (7, Coordinate([2, 2, 2, 6])), (9, Coordinate([0, 1, 2, 7])), (10, Coordinate([0, 1, 1, 5]))])"
  ],
  [
-  "idx=5 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 1, 3]), [(6, Coordinate([2, 0, 1, 2])), (8, Coordinate([0, 1, 1, 5])), (9, Coordinate([2, 3, 3, 2])), (10, Coordinate([3, 1, 3, 2]))])"
  ],
  [
-  "idx=6 ; len(psel) = 1"
+  "idx=2 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 11"
  ],
  [
-  "idx=6 ; hash(psel)=ba9dc2bcef92775fa9038acc3ec7c3e14c4d6f95e313f83784cd0dcc3841ef1f"
+  "idx=2 ; hash(psel)=7ae101d2d89273ab9da5aede679db0a5a8ee739b3ab67324ab32b4a0749e4333"
  ],
  [
-  "idx=7 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 6]), [(5, Coordinate([3, 0, 1, 4])), (5, Coordinate([2, 0, 1, 7])), (6, Coordinate([1, 0, 3, 5])), (7, Coordinate([1, 2, 2, 7]))])"
  ],
  [
-  "idx=7 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 1, 7]), [(5, Coordinate([0, 0, 1, 6])), (6, Coordinate([1, 2, 2, 7])), (6, Coordinate([1, 0, 2, 1])), (6, Coordinate([3, 0, 0, 1]))])"
  ],
  [
-  "idx=8 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 3, 2]), [(6, Coordinate([1, 0, 2, 1])), (6, Coordinate([3, 2, 2, 1])), (10, Coordinate([1, 2, 2, 7])), (10, Coordinate([3, 0, 0, 1]))])"
  ],
  [
-  "idx=8 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 3, 5]), [(6, Coordinate([0, 0, 1, 6])), (9, Coordinate([1, 2, 2, 7])), (9, Coordinate([3, 2, 2, 5])), (9, Coordinate([2, 0, 1, 7]))])"
  ],
  [
-  "idx=9 ; len(psel) = 1"
+  "idx=3 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=9 ; hash(psel)=9e95fcfcd585017c3392a4043038e6a5d0dc2ea87b04f6f976ff0b657e6f41b8"
+  "idx=3 ; hash(psel)=a47f4de9e857b76a2c4cca538d33bebee015ec0ea1a8b0d77712e1f91d96a407"
  ],
  [
-  "idx=10 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 3]), [(4, Coordinate([2, 1, 0, 3])), (4, Coordinate([2, 3, 0, 5])), (5, Coordinate([0, 3, 3, 3])), (10, Coordinate([2, 3, 1, 0]))])"
  ],
  [
-  "idx=10 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 5]), [(4, Coordinate([2, 3, 0, 3])), (6, Coordinate([0, 3, 3, 6])), (6, Coordinate([1, 2, 2, 5])), (8, Coordinate([2, 1, 0, 3]))])"
  ],
  [
-  "idx=11 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 3, 3]), [(5, Coordinate([2, 3, 0, 3])), (7, Coordinate([1, 2, 2, 5])), (9, Coordinate([2, 1, 0, 3])), (9, Coordinate([2, 3, 0, 5]))])"
  ],
  [
-  "idx=11 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 1, 0]), [(6, Coordinate([1, 1, 0, 0])), (7, Coordinate([3, 1, 0, 7])), (10, Coordinate([2, 3, 0, 5])), (10, Coordinate([2, 3, 0, 3]))])"
  ],
  [
-  "idx=12 ; len(psel) = 0"
+  "idx=4 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 10"
  ],
  [
-  "idx=12 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=4 ; hash(psel)=612475d60aa713fc4fd09cc9a7e624f121cec34814cc5d6180ec25a46f9f277a"
  ],
  [
-  "idx=13 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 1, 6]), [(3, Coordinate([0, 2, 2, 6])), (4, Coordinate([0, 0, 0, 7])), (5, Coordinate([3, 1, 2, 0])), (6, Coordinate([1, 1, 0, 5]))])"
  ],
  [
-  "idx=13 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 2, 6]), [(3, Coordinate([3, 1, 1, 6])), (6, Coordinate([3, 1, 2, 0])), (6, Coordinate([1, 0, 2, 7])), (7, Coordinate([1, 1, 0, 5]))])"
  ],
  [
-  "idx=14 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 2]), [(5, Coordinate([1, 0, 3, 2])), (9, Coordinate([3, 1, 2, 0])), (10, Coordinate([0, 2, 2, 3])), (10, Coordinate([0, 0, 0, 7]))])"
  ],
  [
-  "idx=14 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 2, 3]), [(7, Coordinate([1, 0, 3, 2])), (9, Coordinate([0, 2, 2, 6])), (10, Coordinate([3, 0, 0, 2])), (10, Coordinate([1, 1, 0, 5]))])"
  ],
  [
-  "idx=15 ; len(psel) = 0"
+  "idx=5 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=15 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=5 ; hash(psel)=465fafe4e8cdfd46c3a9cc0fe5b8fa6987cb39bf5c5345d5170b73eece08f6ca"
  ],
  [
-  "idx=16 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 1, 0]), [(5, Coordinate([3, 3, 1, 6])), (5, Coordinate([1, 3, 1, 2])), (7, Coordinate([3, 0, 2, 2])), (10, Coordinate([2, 2, 3, 1]))])"
  ],
  [
-  "idx=16 ; hash(psel)=e1e0fd65ea00ac68559a6f198210600bf54a5016adf4c6321d78eb1102476991"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 7]), [(5, Coordinate([2, 1, 2, 5])), (5, Coordinate([2, 2, 3, 1])), (10, Coordinate([3, 3, 1, 6])), (12, Coordinate([3, 0, 2, 2]))])"
  ],
  [
-  "idx=17 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 6]), [(5, Coordinate([0, 3, 1, 0])), (7, Coordinate([2, 1, 2, 5])), (9, Coordinate([0, 1, 1, 4])), (10, Coordinate([2, 1, 3, 7]))])"
  ],
  [
-  "idx=17 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 4]), [(6, Coordinate([2, 1, 2, 5])), (7, Coordinate([3, 0, 2, 2])), (9, Coordinate([3, 3, 1, 6])), (9, Coordinate([1, 3, 1, 2]))])"
  ],
  [
-  "idx=18 ; len(psel) = 0"
+  "idx=6 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=18 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=6 ; hash(psel)=51be7c73e85f59217ad3c3844990678ffa10e46d228bfe957db4139c3297551e"
  ],
  [
-  "idx=19 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 4]), [(5, Coordinate([3, 2, 0, 4])), (5, Coordinate([0, 0, 0, 5])), (6, Coordinate([2, 3, 2, 3])), (10, Coordinate([1, 1, 2, 2]))])"
  ],
  [
-  "idx=19 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 0]), [(5, Coordinate([0, 2, 3, 0])), (6, Coordinate([2, 0, 0, 0])), (6, Coordinate([1, 1, 2, 2])), (10, Coordinate([2, 3, 2, 7]))])"
  ],
  [
-  "idx=20 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 0]), [(6, Coordinate([0, 1, 1, 0])), (6, Coordinate([2, 3, 2, 7])), (9, Coordinate([0, 2, 3, 0])), (10, Coordinate([1, 1, 2, 2]))])"
  ],
  [
-  "idx=20 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 2, 7]), [(6, Coordinate([2, 0, 0, 0])), (7, Coordinate([0, 2, 3, 0])), (10, Coordinate([0, 1, 1, 0])), (13, Coordinate([0, 0, 0, 5]))])"
  ],
  [
-  "idx=21 ; len(psel) = 0"
+  "idx=7 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 7"
  ],
  [
-  "idx=21 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=7 ; hash(psel)=f6c5ad5f8e12c8d67ade35be715eb2b7f1cef9b443dde5e2ee2bd296367f4e71"
  ],
  [
-  "idx=22 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 3, 6]), [(4, Coordinate([3, 2, 3, 6])), (5, Coordinate([1, 3, 1, 6])), (10, Coordinate([3, 0, 2, 5])), (10, Coordinate([1, 3, 3, 1]))])"
  ],
  [
-  "idx=22 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 6]), [(4, Coordinate([1, 2, 3, 6])), (6, Coordinate([3, 0, 2, 5])), (9, Coordinate([3, 0, 1, 7])), (9, Coordinate([1, 3, 1, 6]))])"
  ],
  [
-  "idx=23 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 3]), [(7, Coordinate([3, 0, 2, 5])), (9, Coordinate([1, 3, 3, 1])), (11, Coordinate([3, 2, 3, 6])), (11, Coordinate([1, 2, 3, 6]))])"
  ],
  [
-  "idx=23 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 3, 1]), [(9, Coordinate([2, 1, 3, 3])), (10, Coordinate([1, 2, 3, 6])), (13, Coordinate([3, 0, 1, 7])), (13, Coordinate([1, 3, 1, 6]))])"
  ],
  [
-  "idx=24 ; len(psel) = 1"
+  "idx=8 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=24 ; hash(psel)=acdeb7754303b29e6b046a27b03db10089799918de385f43fb0d0683ab0e2006"
+  "idx=8 ; hash(psel)=67e1c30cb2cb7609d17156b76bb46a9935a818f3c7a55c8cf2aaddcbcb2dcc4f"
  ],
  [
-  "idx=25 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 3, 3]), [(4, Coordinate([2, 2, 0, 4])), (5, Coordinate([3, 1, 2, 5])), (6, Coordinate([0, 2, 3, 1])), (13, Coordinate([1, 0, 1, 1]))])"
  ],
  [
-  "idx=25 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 0, 4]), [(4, Coordinate([3, 1, 3, 3])), (7, Coordinate([3, 1, 2, 5])), (10, Coordinate([2, 1, 0, 7])), (12, Coordinate([3, 3, 1, 7]))])"
  ],
  [
-  "idx=26 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 1]), [(6, Coordinate([3, 1, 3, 3])), (7, Coordinate([1, 1, 2, 7])), (9, Coordinate([1, 0, 1, 1])), (10, Coordinate([3, 3, 1, 7]))])"
  ],
  [
-  "idx=26 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 7]), [(6, Coordinate([2, 1, 0, 7])), (9, Coordinate([1, 0, 1, 1])), (9, Coordinate([1, 1, 2, 7])), (9, Coordinate([3, 1, 2, 5]))])"
  ],
  [
-  "idx=27 ; len(psel) = 0"
+  "idx=9 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
-  "idx=27 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=9 ; hash(psel)=3c107f0b36f2a219f8a5de7ef3da99450b50ecc444822fe168a89e2a0f9506a2"
  ],
  [
-  "idx=28 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 1, 6]), [(4, Coordinate([1, 3, 2, 7])), (5, Coordinate([0, 0, 0, 6])), (6, Coordinate([0, 1, 2, 0])), (10, Coordinate([2, 3, 0, 0]))])"
  ],
  [
-  "idx=28 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 7]), [(4, Coordinate([0, 2, 1, 6])), (6, Coordinate([2, 3, 0, 0])), (6, Coordinate([0, 1, 2, 0])), (7, Coordinate([0, 0, 0, 6]))])"
  ],
  [
-  "idx=29 ; len(psel) = 0"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 2]), [(6, Coordinate([0, 2, 0, 3])), (7, Coordinate([1, 2, 2, 3])), (8, Coordinate([2, 3, 0, 0])), (10, Coordinate([2, 0, 0, 5]))])"
  ],
  [
-  "idx=29 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 0]), [(6, Coordinate([1, 3, 2, 7])), (8, Coordinate([2, 1, 0, 2])), (9, Coordinate([0, 0, 0, 6])), (10, Coordinate([0, 2, 1, 6]))])"
  ],
  [
-  "idx=30 ; len(psel) = 0"
+  "idx=10 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
-  "idx=30 ; hash(psel)=439baad1344c027237e703c928e25488547719a784069b297da8a59c86f6cae6"
+  "idx=10 ; hash(psel)=968b71be8a81259b751bc1477e355c2cf2eaa8c7cfc68464548cce9252925c70"
  ],
  [
-  "idx=31 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 0, 0]), [(4, Coordinate([3, 0, 0, 0])), (4, Coordinate([1, 2, 0, 0])), (9, Coordinate([3, 0, 1, 6])), (10, Coordinate([2, 0, 0, 3]))])"
  ],
  [
-  "idx=31 ; hash(psel)=b3ed339c904d04f04ea2c221995d3c6a9db42fdd42d5db004b0510de034cb34d"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 0]), [(4, Coordinate([1, 0, 0, 0])), (5, Coordinate([3, 0, 1, 6])), (8, Coordinate([1, 2, 0, 0])), (10, Coordinate([2, 0, 0, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 2, 7]), [(6, Coordinate([1, 2, 1, 5])), (6, Coordinate([1, 2, 0, 0])), (7, Coordinate([3, 0, 1, 6])), (10, Coordinate([1, 0, 0, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 3]), [(7, Coordinate([3, 2, 1, 4])), (10, Coordinate([1, 2, 1, 5])), (10, Coordinate([1, 0, 0, 0])), (10, Coordinate([3, 0, 0, 0]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
+ ],
+ [
+  "idx=11 ; hash(psel)=a415077a61e89b5e1597511924f4dffeb4d9697af2720f2c1896eb5cf7da3d5e"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 3, 6]), [(4, Coordinate([1, 1, 3, 4])), (6, Coordinate([2, 3, 2, 6])), (6, Coordinate([2, 1, 2, 0])), (7, Coordinate([0, 3, 0, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 3, 4]), [(4, Coordinate([1, 1, 3, 6])), (6, Coordinate([3, 0, 2, 4])), (8, Coordinate([1, 3, 3, 2])), (10, Coordinate([2, 3, 2, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 1]), [(6, Coordinate([0, 3, 0, 7])), (7, Coordinate([2, 1, 2, 0])), (9, Coordinate([1, 3, 3, 2])), (11, Coordinate([3, 0, 2, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 3, 2]), [(8, Coordinate([1, 1, 3, 4])), (9, Coordinate([3, 3, 1, 1])), (10, Coordinate([3, 0, 2, 4])), (10, Coordinate([2, 1, 2, 0]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 10"
+ ],
+ [
+  "idx=12 ; hash(psel)=d02a934ff5598aee31ecddec675984ec73974a8267aa16af7e493dbfc58e80d7"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 7]), [(4, Coordinate([0, 2, 3, 7])), (5, Coordinate([2, 2, 2, 5])), (7, Coordinate([3, 1, 2, 1])), (9, Coordinate([2, 0, 1, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 7]), [(4, Coordinate([2, 2, 3, 7])), (6, Coordinate([0, 3, 1, 6])), (6, Coordinate([0, 1, 0, 5])), (7, Coordinate([3, 1, 2, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 1, 2, 1]), [(6, Coordinate([0, 0, 0, 1])), (7, Coordinate([2, 2, 3, 7])), (7, Coordinate([0, 2, 3, 7])), (7, Coordinate([2, 0, 1, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 0, 1]), [(6, Coordinate([1, 0, 3, 3])), (6, Coordinate([3, 1, 2, 1])), (9, Coordinate([2, 0, 1, 3])), (9, Coordinate([0, 2, 3, 7]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 11"
+ ],
+ [
+  "idx=13 ; hash(psel)=c611f41b61c5e880e4c121c4d0d8b8d425d7831a5624b154565d13ebf028f07d"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 4]), [(4, Coordinate([3, 2, 3, 5])), (6, Coordinate([0, 0, 1, 4])), (6, Coordinate([2, 3, 3, 3])), (6, Coordinate([1, 2, 0, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 5]), [(4, Coordinate([2, 1, 0, 4])), (6, Coordinate([2, 3, 3, 3])), (6, Coordinate([1, 2, 0, 6])), (7, Coordinate([0, 0, 2, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 3, 3]), [(6, Coordinate([3, 2, 3, 5])), (6, Coordinate([0, 3, 2, 2])), (6, Coordinate([2, 1, 0, 4])), (9, Coordinate([1, 1, 3, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 3, 1]), [(7, Coordinate([3, 2, 0, 0])), (7, Coordinate([0, 3, 2, 2])), (9, Coordinate([1, 3, 1, 0])), (9, Coordinate([2, 3, 3, 3]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 7"
+ ],
+ [
+  "idx=14 ; hash(psel)=da3c6450188d3a9306e589cda747830a21aa997a6cbc288f001c59125b26451d"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 5]), [(3, Coordinate([1, 2, 2, 6])), (4, Coordinate([3, 3, 1, 5])), (13, Coordinate([3, 1, 3, 4])), (14, Coordinate([0, 3, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 2, 2, 6]), [(3, Coordinate([1, 3, 1, 5])), (7, Coordinate([3, 3, 1, 5])), (7, Coordinate([0, 3, 3, 0])), (10, Coordinate([3, 1, 3, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 2]), [(6, Coordinate([2, 1, 3, 2])), (9, Coordinate([3, 1, 3, 4])), (10, Coordinate([0, 3, 3, 0])), (10, Coordinate([3, 3, 1, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 3, 0]), [(7, Coordinate([1, 2, 2, 6])), (10, Coordinate([3, 0, 1, 2])), (12, Coordinate([2, 1, 3, 2])), (14, Coordinate([1, 3, 1, 5]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 10"
+ ],
+ [
+  "idx=15 ; hash(psel)=23f916a18051ff74e4a826d1854694a70f0a9441e94e32d207279575ba4dc370"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 1, 0]), [(5, Coordinate([0, 0, 1, 7])), (6, Coordinate([1, 0, 2, 2])), (6, Coordinate([1, 2, 2, 0])), (6, Coordinate([3, 1, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 2, 2, 0]), [(6, Coordinate([3, 1, 3, 0])), (6, Coordinate([2, 2, 1, 6])), (6, Coordinate([2, 0, 1, 0])), (7, Coordinate([0, 0, 1, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 0, 3]), [(6, Coordinate([1, 0, 2, 2])), (7, Coordinate([3, 2, 1, 2])), (7, Coordinate([0, 0, 3, 5])), (10, Coordinate([2, 0, 2, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 2]), [(7, Coordinate([1, 3, 0, 3])), (9, Coordinate([1, 0, 2, 2])), (9, Coordinate([1, 2, 2, 0])), (9, Coordinate([3, 1, 3, 0]))])"
+ ],
+ [
+  "run_check_fsel(get_fsel)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "Coordinate([4, 4, 4, 8]) len(psel) = 512"
+ ],
+ [
+  "hash(psel)=11821f68bd60e5f534c1e01a6855ce554d77200472ed4d3852d762abf0bcbe9b"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 2]), [(1, Coordinate([3, 2, 2, 3])), (1, Coordinate([3, 2, 1, 2])), (1, Coordinate([2, 2, 2, 2])), (1, Coordinate([3, 2, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 5]), [(1, Coordinate([3, 0, 1, 4])), (1, Coordinate([3, 3, 1, 5])), (1, Coordinate([3, 0, 2, 5])), (1, Coordinate([3, 0, 1, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 0, 7]), [(1, Coordinate([0, 0, 0, 0])), (1, Coordinate([0, 0, 0, 6])), (1, Coordinate([1, 0, 0, 7])), (1, Coordinate([3, 0, 0, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 2, 7]), [(1, Coordinate([2, 2, 2, 0])), (1, Coordinate([2, 3, 2, 7])), (1, Coordinate([2, 1, 2, 7])), (1, Coordinate([2, 2, 1, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 7]), [(1, Coordinate([2, 1, 0, 7])), (1, Coordinate([2, 0, 1, 7])), (1, Coordinate([2, 0, 3, 7])), (1, Coordinate([2, 3, 0, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 3]), [(1, Coordinate([3, 3, 1, 4])), (1, Coordinate([2, 3, 1, 3])), (1, Coordinate([3, 3, 2, 3])), (1, Coordinate([3, 3, 0, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 1, 3, 0]), [(1, Coordinate([2, 1, 3, 0])), (1, Coordinate([3, 2, 3, 0])), (1, Coordinate([3, 1, 0, 0])), (1, Coordinate([3, 0, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 5]), [(1, Coordinate([1, 3, 1, 4])), (1, Coordinate([1, 2, 1, 5])), (1, Coordinate([1, 3, 2, 5])), (1, Coordinate([1, 3, 1, 6]))])"
  ],
  [
   "run_check_psel_list(get_fsel_psel_list)"
@@ -633,199 +1041,295 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 2"
+  "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 29"
  ],
  [
-  "idx=0 ; hash(psel)=fe606f18dee696bc15b608e118297bacb54e2c98216ec429cc576fc29e9e632a"
+  "idx=0 ; hash(psel)=bd00cdf8e5d3c43263522e741939c967fd1400ff9e3cf282631d90a64c7b0ff0"
  ],
  [
-  "idx=1 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 5]), [(2, Coordinate([0, 2, 1, 4])), (2, Coordinate([2, 3, 1, 5])), (3, Coordinate([0, 2, 2, 6])), (3, Coordinate([3, 3, 0, 6]))])"
  ],
  [
-  "idx=1 ; hash(psel)=9cd96a094a6e19c7a6984296c8222132e0b72b2626b7b2dd82620bc407097ea3"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 0, 6]), [(2, Coordinate([1, 1, 3, 6])), (3, Coordinate([0, 1, 0, 7])), (3, Coordinate([1, 3, 3, 5])), (3, Coordinate([2, 1, 1, 6]))])"
  ],
  [
-  "idx=2 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 3, 4]), [(3, Coordinate([1, 3, 3, 5])), (5, Coordinate([0, 1, 3, 4])), (5, Coordinate([2, 2, 1, 3])), (6, Coordinate([1, 0, 0, 4]))])"
  ],
  [
-  "idx=2 ; hash(psel)=bfa5636d21ab743cf5fcdcb7a0028cabc33fac01a161e6568fac64a7ad42212e"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 3]), [(4, Coordinate([2, 3, 2, 2])), (5, Coordinate([2, 2, 1, 3])), (5, Coordinate([3, 0, 2, 5])), (5, Coordinate([0, 0, 1, 5]))])"
  ],
  [
-  "idx=3 ; len(psel) = 1"
+  "idx=1 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
  ],
  [
-  "idx=3 ; hash(psel)=2adf895d58dbc50542bf0d9c45f39a64079abd46282cea362c7c4567903cb749"
+  "idx=1 ; hash(psel)=daa3a21cb71b81a3ce37b3d7ab9562a64b16cf9a5907ba95036f0dc62f462aca"
  ],
  [
-  "idx=4 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 1]), [(2, Coordinate([3, 1, 2, 1])), (2, Coordinate([3, 3, 2, 1])), (2, Coordinate([3, 1, 0, 1])), (3, Coordinate([2, 2, 0, 2]))])"
  ],
  [
-  "idx=4 ; hash(psel)=e5a2dd3b6ca9d6e3fd22154f28f0250842f8b3e8f01ea5c1bc8a024dfd044179"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 3, 3]), [(2, Coordinate([2, 0, 0, 3])), (2, Coordinate([0, 0, 2, 3])), (3, Coordinate([2, 0, 2, 4])), (4, Coordinate([1, 2, 3, 3]))])"
  ],
  [
-  "idx=5 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 0, 5]), [(4, Coordinate([3, 3, 3, 4])), (4, Coordinate([3, 1, 3, 6])), (4, Coordinate([2, 0, 0, 5])), (4, Coordinate([1, 1, 1, 4]))])"
  ],
  [
-  "idx=5 ; hash(psel)=62778db123b895d07a7f577a58177963834ac4b390fd4e3bfd8d98ae9a12132e"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 0, 5]), [(4, Coordinate([2, 0, 0, 3])), (4, Coordinate([3, 3, 3, 4])), (4, Coordinate([3, 1, 3, 6])), (4, Coordinate([2, 2, 0, 5]))])"
  ],
  [
-  "idx=6 ; len(psel) = 1"
+  "idx=2 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 29"
  ],
  [
-  "idx=6 ; hash(psel)=5bf5450cd2790235a68fd8da03dfbc84bfa4db91889cb399e4dcd7c76ac89352"
+  "idx=2 ; hash(psel)=1a4f4d11ebfa6049ac479e62db322848aa88b7fb599e8f6da7b753f63c655e9b"
  ],
  [
-  "idx=7 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 3, 3]), [(2, Coordinate([3, 0, 2, 2])), (2, Coordinate([2, 1, 3, 3])), (3, Coordinate([0, 1, 3, 2])), (3, Coordinate([3, 3, 0, 4]))])"
  ],
  [
-  "idx=7 ; hash(psel)=df2959b3a9580061d71a3208a80edc2ff412e4974921f2c89c58cf49a905d7ca"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 2, 2]), [(2, Coordinate([0, 3, 2, 2])), (2, Coordinate([3, 0, 3, 3])), (3, Coordinate([2, 3, 1, 2])), (3, Coordinate([0, 1, 3, 2]))])"
  ],
  [
-  "idx=8 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 1, 6]), [(4, Coordinate([0, 3, 1, 6])), (5, Coordinate([2, 2, 1, 6])), (5, Coordinate([0, 1, 2, 4])), (6, Coordinate([0, 2, 3, 5]))])"
  ],
  [
-  "idx=8 ; hash(psel)=7c1b0791eae5eeb2224f9fc1156473c872ef3e3fb4d132f2d16bf115c25f78b2"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 1, 6]), [(5, Coordinate([0, 1, 1, 6])), (5, Coordinate([0, 3, 1, 6])), (5, Coordinate([2, 0, 1, 7])), (6, Coordinate([1, 2, 2, 0]))])"
  ],
  [
-  "idx=9 ; len(psel) = 3"
+  "idx=3 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
  ],
  [
-  "idx=9 ; hash(psel)=bd8c786939a3e719e0ea65623c8d93c811a0240a6aa190e910106c0ce3243f79"
+  "idx=3 ; hash(psel)=ed0c29514ad32b0584783e70fdf011b0d286551f90843cc20b3b53e5358182e9"
  ],
  [
-  "idx=10 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 1, 7]), [(2, Coordinate([3, 0, 1, 6])), (2, Coordinate([2, 3, 1, 0])), (5, Coordinate([1, 2, 1, 7])), (5, Coordinate([2, 3, 3, 7]))])"
  ],
  [
-  "idx=10 ; hash(psel)=706b93517b675b41097397d9a9024e55a4dcfe181f7a25e8c86bf5e668096daf"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 3]), [(2, Coordinate([0, 3, 0, 3])), (2, Coordinate([3, 2, 2, 3])), (5, Coordinate([0, 0, 3, 4])), (5, Coordinate([0, 2, 0, 1]))])"
  ],
  [
-  "idx=11 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 1, 6]), [(3, Coordinate([0, 0, 2, 5])), (4, Coordinate([3, 0, 1, 6])), (4, Coordinate([2, 1, 0, 7])), (5, Coordinate([1, 2, 1, 7]))])"
  ],
  [
-  "idx=11 ; hash(psel)=ba9dc2bcef92775fa9038acc3ec7c3e14c4d6f95e313f83784cd0dcc3841ef1f"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 4]), [(3, Coordinate([3, 2, 0, 5])), (4, Coordinate([1, 2, 1, 5])), (5, Coordinate([2, 3, 1, 4])), (6, Coordinate([2, 0, 2, 3]))])"
  ],
  [
-  "idx=12 ; len(psel) = 2"
+  "idx=4 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 31"
  ],
  [
-  "idx=12 ; hash(psel)=652ed673726e392b8e7d99c8e5e0ded75c744846834256c6cf0f2068248eb298"
+  "idx=4 ; hash(psel)=371b5febb10a9128b45d4ff538cdfb709b5608da456fb645b1d5bbc30f17338d"
  ],
  [
-  "idx=13 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 0]), [(2, Coordinate([3, 2, 3, 7])), (2, Coordinate([3, 2, 1, 7])), (2, Coordinate([0, 2, 2, 1])), (2, Coordinate([2, 2, 2, 1]))])"
  ],
  [
-  "idx=13 ; hash(psel)=14d732cf9155f0d6bc76fe74454667b1fedecca11c57e88291456fba64535753"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 2]), [(2, Coordinate([1, 0, 2, 2])), (2, Coordinate([0, 1, 0, 2])), (3, Coordinate([3, 3, 0, 2])), (4, Coordinate([1, 1, 2, 3]))])"
  ],
  [
-  "idx=14 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 4]), [(3, Coordinate([0, 3, 2, 5])), (4, Coordinate([1, 1, 2, 3])), (5, Coordinate([3, 2, 1, 4])), (5, Coordinate([2, 2, 3, 3]))])"
  ],
  [
-  "idx=14 ; hash(psel)=78bff7071a638d352ec0ebe939766685554265830fd8182199a1548073f2b5f4"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 4]), [(4, Coordinate([0, 3, 2, 5])), (4, Coordinate([2, 1, 0, 5])), (4, Coordinate([2, 1, 2, 5])), (5, Coordinate([0, 2, 3, 4]))])"
  ],
  [
-  "idx=15 ; len(psel) = 2"
+  "idx=5 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 34"
  ],
  [
-  "idx=15 ; hash(psel)=16e3f27e2341777097209b137bacc7ae65bad2caeb16e9bb0c149b075d25ab7b"
+  "idx=5 ; hash(psel)=86af07610870f3a0309367205c264fec562e46d49fbd02395162de8aa420e8ca"
  ],
  [
-  "idx=16 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 2]), [(2, Coordinate([3, 1, 3, 2])), (2, Coordinate([0, 2, 1, 2])), (2, Coordinate([2, 2, 1, 2])), (3, Coordinate([3, 3, 3, 3]))])"
  ],
  [
-  "idx=16 ; hash(psel)=14f8889fcf8525c5ecfb23c32dbd031841e2f17b2e7e976c88b997ef0ea3d7a1"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 2, 6]), [(2, Coordinate([2, 2, 3, 6])), (2, Coordinate([2, 0, 2, 7])), (3, Coordinate([1, 2, 2, 5])), (3, Coordinate([1, 3, 1, 7]))])"
  ],
  [
-  "idx=17 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 0, 0]), [(3, Coordinate([1, 1, 1, 1])), (4, Coordinate([3, 0, 1, 1])), (5, Coordinate([2, 0, 0, 6])), (5, Coordinate([2, 3, 3, 0]))])"
  ],
  [
-  "idx=17 ; hash(psel)=41aa526d2f825ed2925917ddec2e0af77014d1e64c11758d8fbace3323d9a679"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 3]), [(3, Coordinate([3, 2, 2, 2])), (5, Coordinate([3, 1, 3, 2])), (6, Coordinate([3, 1, 0, 4])), (6, Coordinate([3, 1, 2, 4]))])"
  ],
  [
-  "idx=18 ; len(psel) = 2"
+  "idx=6 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 29"
  ],
  [
-  "idx=18 ; hash(psel)=d5230be22800c61e33b84382f84475ab1a7ffbfb9bcf4b39f792ca26dc143a17"
+  "idx=6 ; hash(psel)=8138fc668450235d2313e8786be8f8a68acc38eacb351dedf4dba97e5a490da7"
  ],
  [
-  "idx=19 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 1, 2]), [(2, Coordinate([2, 0, 0, 1])), (2, Coordinate([2, 1, 1, 3])), (3, Coordinate([2, 3, 0, 3])), (3, Coordinate([2, 3, 2, 3]))])"
  ],
  [
-  "idx=19 ; hash(psel)=2a3d1593e5a292efd54748034475df5529879d38c6ba1ecf98141d1aabe15696"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 0, 3]), [(2, Coordinate([3, 2, 0, 3])), (3, Coordinate([3, 0, 0, 4])), (3, Coordinate([1, 3, 3, 4])), (3, Coordinate([2, 0, 1, 2]))])"
  ],
  [
-  "idx=20 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 6]), [(3, Coordinate([3, 0, 3, 6])), (5, Coordinate([1, 1, 0, 6])), (5, Coordinate([2, 3, 2, 5])), (6, Coordinate([0, 2, 3, 6]))])"
  ],
  [
-  "idx=20 ; hash(psel)=8d65d65cebd9e1700acf3451de94c96823d01afcd6dca255ba840b3fd735ec66"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 1, 7]), [(4, Coordinate([0, 1, 1, 7])), (4, Coordinate([0, 3, 1, 1])), (5, Coordinate([1, 3, 1, 5])), (5, Coordinate([2, 3, 0, 7]))])"
  ],
  [
-  "idx=21 ; len(psel) = 2"
+  "idx=7 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
  ],
  [
-  "idx=21 ; hash(psel)=40710afd7b16dd500469cb608a193e3c4e1bca70067ce5eff8c22758a6dba7a9"
+  "idx=7 ; hash(psel)=01ecdbb2022e75a0eba95542bf1529d03f75255425ef4f52701aabf3a2ac97ca"
  ],
  [
-  "idx=22 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 4]), [(2, Coordinate([3, 1, 3, 5])), (2, Coordinate([2, 2, 0, 4])), (2, Coordinate([2, 2, 2, 4])), (3, Coordinate([3, 3, 0, 5]))])"
  ],
  [
-  "idx=22 ; hash(psel)=b529351fd739a99682113a242bd6235647074b429eace1efda272b93812e2ff3"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 1, 2]), [(2, Coordinate([0, 1, 2, 2])), (2, Coordinate([2, 1, 2, 2])), (3, Coordinate([0, 2, 1, 3])), (4, Coordinate([3, 1, 1, 0]))])"
  ],
  [
-  "idx=23 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 2, 4]), [(3, Coordinate([1, 1, 1, 5])), (4, Coordinate([3, 0, 2, 4])), (4, Coordinate([1, 0, 2, 6])), (5, Coordinate([2, 2, 2, 4]))])"
  ],
  [
-  "idx=23 ; hash(psel)=e39adff83a822968fc316cd10f621e6675c2f2cd55bbfb35127192b9865ac627"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 0]), [(5, Coordinate([1, 3, 3, 7])), (5, Coordinate([0, 3, 3, 2])), (5, Coordinate([3, 1, 3, 1])), (6, Coordinate([3, 2, 2, 6]))])"
  ],
  [
-  "idx=24 ; len(psel) = 2"
+  "idx=8 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 31"
  ],
  [
-  "idx=24 ; hash(psel)=283a11632833980582f54760027d09228a955ac76321d217c0c848ca63d9829e"
+  "idx=8 ; hash(psel)=d6ca752384f681f003857f01c838d431517382733e54fd4cc777f43b1ab3186d"
  ],
  [
-  "idx=25 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 2, 2]), [(2, Coordinate([2, 1, 3, 2])), (2, Coordinate([2, 0, 1, 3])), (3, Coordinate([3, 3, 3, 2])), (4, Coordinate([0, 0, 2, 2]))])"
  ],
  [
-  "idx=25 ; hash(psel)=10634bae8e396e04bc041d32a067351d5c1630517db782963dc9d0c3959f03d1"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 0, 7]), [(2, Coordinate([0, 1, 0, 0])), (2, Coordinate([0, 3, 0, 0])), (4, Coordinate([3, 3, 1, 6])), (4, Coordinate([1, 1, 1, 6]))])"
  ],
  [
-  "idx=26 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 2, 1]), [(4, Coordinate([2, 1, 3, 2])), (5, Coordinate([0, 2, 2, 3])), (5, Coordinate([2, 2, 2, 3])), (5, Coordinate([1, 3, 2, 7]))])"
  ],
  [
-  "idx=26 ; hash(psel)=6028db060e504ce1da14ae1612b54f96878983478e826c4a2f05b35bccd000ec"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 5]), [(4, Coordinate([0, 0, 2, 4])), (5, Coordinate([3, 3, 1, 6])), (5, Coordinate([1, 2, 3, 5])), (6, Coordinate([0, 2, 1, 5]))])"
  ],
  [
-  "idx=27 ; len(psel) = 2"
+  "idx=9 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 30"
  ],
  [
-  "idx=27 ; hash(psel)=ae2264e69ed8c57d3c6a7f40a8f1e0d2fe8401d3ac6933c26eb4cc547a5015a4"
+  "idx=9 ; hash(psel)=0e1ae75557c8d7a413793622d7f181c5e949ed1394bf8cf91ddb94fbe912fbbb"
  ],
  [
-  "idx=28 ; len(psel) = 2"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 1, 0]), [(2, Coordinate([1, 3, 1, 1])), (2, Coordinate([2, 1, 1, 0])), (4, Coordinate([1, 2, 3, 0])), (5, Coordinate([1, 1, 1, 2]))])"
  ],
  [
-  "idx=28 ; hash(psel)=16fb98288c06c4c5350cec06859d4cabd756230e4b2388230fce3cc4f40f2f47"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 0]), [(2, Coordinate([1, 2, 3, 0])), (3, Coordinate([1, 0, 3, 1])), (3, Coordinate([1, 0, 3, 7])), (3, Coordinate([3, 0, 0, 0]))])"
  ],
  [
-  "idx=29 ; len(psel) = 3"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 2, 2]), [(3, Coordinate([0, 2, 3, 2])), (5, Coordinate([1, 1, 1, 2])), (5, Coordinate([3, 2, 2, 4])), (6, Coordinate([3, 2, 0, 1]))])"
  ],
  [
-  "idx=29 ; hash(psel)=20b72ae6ce0cc8ddc595758ff738178e2d74a1c8f1f44b20d9c9e879a7e8efa1"
+  "all_closest_point_list[...]=(Coordinate([1, 1, 1, 2]), [(5, Coordinate([1, 3, 1, 1])), (5, Coordinate([1, 2, 1, 0])), (5, Coordinate([3, 1, 2, 2])), (5, Coordinate([1, 1, 3, 3]))])"
  ],
  [
-  "idx=30 ; len(psel) = 2"
+  "idx=10 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 35"
  ],
  [
-  "idx=30 ; hash(psel)=672d889d7be72dd4eb395bb78aa9b72f6a8380211e32d2be1a35ca0cc1a2c99b"
+  "idx=10 ; hash(psel)=2c50b3191d3351b719b6158b56729767bbe0feb92bf3875b60098f35db867712"
  ],
  [
-  "idx=31 ; len(psel) = 1"
+  "all_closest_point_list[...]=(Coordinate([0, 0, 3, 7]), [(2, Coordinate([0, 3, 3, 0])), (2, Coordinate([0, 1, 3, 0])), (3, Coordinate([1, 0, 2, 0])), (3, Coordinate([1, 3, 0, 7]))])"
  ],
  [
-  "idx=31 ; hash(psel)=b3ed339c904d04f04ea2c221995d3c6a9db42fdd42d5db004b0510de034cb34d"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 2, 2]), [(2, Coordinate([2, 3, 2, 1])), (2, Coordinate([0, 3, 1, 2])), (3, Coordinate([2, 2, 3, 2])), (3, Coordinate([3, 0, 3, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 4]), [(3, Coordinate([1, 1, 2, 4])), (4, Coordinate([1, 3, 2, 5])), (4, Coordinate([1, 1, 0, 5])), (5, Coordinate([0, 0, 3, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 1, 0]), [(4, Coordinate([2, 3, 2, 1])), (4, Coordinate([2, 3, 2, 7])), (4, Coordinate([2, 1, 2, 1])), (5, Coordinate([3, 0, 1, 7]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 31"
+ ],
+ [
+  "idx=11 ; hash(psel)=c03ab687423efcda1c22f7fce905d3e06fa47cace2e50b6a9353c8426c658684"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 2, 0]), [(2, Coordinate([3, 2, 3, 0])), (2, Coordinate([2, 1, 2, 7])), (5, Coordinate([1, 2, 2, 6])), (5, Coordinate([2, 0, 1, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 2, 6]), [(2, Coordinate([3, 3, 2, 6])), (3, Coordinate([0, 3, 1, 5])), (3, Coordinate([0, 1, 3, 5])), (3, Coordinate([1, 3, 3, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 3, 3]), [(3, Coordinate([2, 1, 0, 3])), (3, Coordinate([2, 1, 2, 3])), (4, Coordinate([3, 2, 3, 5])), (5, Coordinate([3, 0, 2, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 2, 0, 4]), [(3, Coordinate([2, 1, 0, 3])), (4, Coordinate([0, 3, 1, 5])), (4, Coordinate([0, 1, 3, 5])), (5, Coordinate([1, 0, 0, 3]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 34"
+ ],
+ [
+  "idx=12 ; hash(psel)=a0e2b914c0ccc9f693fa20a23ba5b50cc4ea8811e31736b38abe672db4f901ef"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 3, 2]), [(2, Coordinate([2, 2, 3, 1])), (2, Coordinate([1, 3, 2, 2])), (2, Coordinate([3, 0, 3, 2])), (3, Coordinate([3, 3, 2, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 3, 2]), [(2, Coordinate([3, 1, 3, 3])), (2, Coordinate([2, 3, 3, 2])), (3, Coordinate([0, 3, 0, 2])), (3, Coordinate([3, 3, 2, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 0, 1, 7]), [(3, Coordinate([1, 3, 1, 0])), (4, Coordinate([0, 0, 1, 1])), (5, Coordinate([0, 0, 0, 5])), (6, Coordinate([0, 1, 3, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 3, 0]), [(4, Coordinate([3, 0, 3, 2])), (5, Coordinate([3, 2, 0, 0])), (5, Coordinate([1, 3, 3, 0])), (6, Coordinate([0, 0, 1, 7]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 30"
+ ],
+ [
+  "idx=13 ; hash(psel)=19c87f510f8a4502e7077e45d441bc7aa00aa33b58e3aef04d59f5ffed4ab525"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 1]), [(2, Coordinate([0, 0, 3, 1])), (2, Coordinate([3, 1, 1, 1])), (2, Coordinate([2, 3, 0, 1])), (5, Coordinate([3, 2, 0, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 1, 1, 1]), [(2, Coordinate([0, 2, 1, 1])), (2, Coordinate([3, 0, 0, 1])), (3, Coordinate([3, 2, 0, 2])), (4, Coordinate([3, 1, 1, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 1, 7]), [(4, Coordinate([3, 0, 0, 6])), (5, Coordinate([3, 1, 1, 7])), (5, Coordinate([2, 0, 3, 7])), (5, Coordinate([0, 3, 2, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 3, 3]), [(5, Coordinate([0, 3, 3, 3])), (5, Coordinate([2, 3, 1, 3])), (5, Coordinate([3, 0, 3, 5])), (6, Coordinate([1, 2, 2, 3]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 37"
+ ],
+ [
+  "idx=14 ; hash(psel)=14b525035af533eec45729ccda7f28a7f1a603266ac4fb491872f273ff896d68"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 0, 2, 3]), [(2, Coordinate([1, 3, 3, 3])), (2, Coordinate([0, 1, 2, 3])), (3, Coordinate([1, 3, 1, 2])), (3, Coordinate([0, 3, 2, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 2, 1]), [(2, Coordinate([3, 0, 1, 2])), (2, Coordinate([3, 3, 3, 1])), (3, Coordinate([2, 1, 2, 0])), (3, Coordinate([2, 3, 2, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 3, 1]), [(3, Coordinate([1, 2, 0, 0])), (3, Coordinate([2, 3, 2, 0])), (4, Coordinate([2, 0, 0, 2])), (4, Coordinate([3, 3, 3, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 0, 1]), [(3, Coordinate([1, 2, 0, 0])), (4, Coordinate([3, 0, 1, 2])), (5, Coordinate([1, 1, 2, 1])), (5, Coordinate([0, 0, 0, 7]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 33"
+ ],
+ [
+  "idx=15 ; hash(psel)=0162f615351e2fec78854dba22f040e7ca9b2956ac895ff7d96c2b526912c60d"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 0]), [(2, Coordinate([2, 0, 1, 1])), (2, Coordinate([0, 0, 2, 0])), (4, Coordinate([0, 3, 0, 1])), (5, Coordinate([1, 0, 0, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 2, 1]), [(2, Coordinate([0, 2, 2, 0])), (2, Coordinate([2, 2, 1, 1])), (4, Coordinate([0, 1, 1, 2])), (6, Coordinate([3, 1, 3, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 3, 1]), [(3, Coordinate([1, 0, 0, 0])), (3, Coordinate([1, 1, 3, 2])), (4, Coordinate([2, 0, 1, 1])), (5, Coordinate([0, 0, 3, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 0, 1]), [(3, Coordinate([0, 0, 3, 2])), (3, Coordinate([1, 0, 0, 0])), (4, Coordinate([3, 0, 1, 0])), (5, Coordinate([0, 2, 0, 3]))])"
  ],
  [
   "run_check_psel(get_psel)"
@@ -834,10 +1338,34 @@
   "run_check_psel"
  ],
  [
-  "len(psel) = 2026"
+  "Coordinate([8, 8, 8, 16]) len(psel) = 73"
  ],
  [
-  "hash(psel)=a5da869e48bda6122534589d7d14e596770c5c4fc6c326a28a83b059e28579e5"
+  "hash(psel)=693686377097049b83b1631c0855d72ca240309cdeec8ca9139253701579e98f"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 6, 9]), [(1, Coordinate([5, 5, 6, 9])), (1, Coordinate([5, 4, 6, 10])), (2, Coordinate([4, 4, 6, 10])), (5, Coordinate([4, 6, 6, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 6, 10]), [(1, Coordinate([5, 4, 6, 9])), (1, Coordinate([4, 4, 6, 10])), (2, Coordinate([5, 5, 6, 9])), (6, Coordinate([4, 4, 5, 12]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 5, 6, 9]), [(1, Coordinate([5, 4, 6, 9])), (2, Coordinate([5, 4, 6, 10])), (2, Coordinate([4, 6, 6, 9])), (3, Coordinate([4, 4, 6, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 4, 6, 10]), [(1, Coordinate([5, 4, 6, 10])), (2, Coordinate([5, 4, 6, 9])), (3, Coordinate([5, 5, 6, 9])), (4, Coordinate([3, 3, 7, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 7, 3, 13]), [(7, Coordinate([1, 6, 5, 14])), (13, Coordinate([0, 2, 1, 13])), (14, Coordinate([0, 2, 5, 12])), (17, Coordinate([2, 7, 1, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 2, 1, 4]), [(9, Coordinate([3, 4, 0, 4])), (10, Coordinate([4, 2, 1, 7])), (11, Coordinate([4, 1, 1, 1])), (12, Coordinate([0, 3, 2, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 0, 11]), [(9, Coordinate([4, 0, 2, 9])), (10, Coordinate([1, 2, 7, 12])), (13, Coordinate([4, 6, 6, 9])), (13, Coordinate([5, 6, 2, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 3, 6]), [(11, Coordinate([0, 6, 2, 5])), (13, Coordinate([6, 2, 5, 4])), (14, Coordinate([0, 3, 2, 3])), (15, Coordinate([3, 2, 4, 4]))])"
  ],
  [
   "run_check_psel_list(get_psel_list)"
@@ -846,199 +1374,331 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 64"
+  "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 6"
  ],
  [
-  "idx=0 ; hash(psel)=ab63e07dc5862ec9b5ab396e683c2b9d23b70775fdf5d4c6042c7f511971cf9b"
+  "idx=0 ; hash(psel)=3743d1b7489741ba617100181cd2a78b357afca1ba785fbea0e9f671c3ab1b6a"
  ],
  [
-  "idx=1 ; len(psel) = 63"
+  "all_closest_point_list[...]=(Coordinate([5, 5, 0, 8]), [(21, Coordinate([7, 5, 4, 9])), (22, Coordinate([3, 0, 0, 11])), (26, Coordinate([5, 2, 1, 4])), (34, Coordinate([1, 5, 3, 5]))])"
  ],
  [
-  "idx=1 ; hash(psel)=e847c81b0346ea4ecb3e89c219a95c9cb57bebf6d77b5caf7542ee70fc15b2b7"
+  "all_closest_point_list[...]=(Coordinate([7, 5, 4, 9]), [(21, Coordinate([1, 5, 3, 5])), (21, Coordinate([5, 5, 0, 8])), (45, Coordinate([3, 0, 0, 11])), (46, Coordinate([4, 5, 5, 15]))])"
  ],
  [
-  "idx=2 ; len(psel) = 62"
+  "all_closest_point_list[...]=(Coordinate([5, 2, 1, 4]), [(26, Coordinate([5, 5, 0, 8])), (30, Coordinate([1, 5, 3, 5])), (47, Coordinate([7, 5, 4, 9])), (51, Coordinate([4, 5, 5, 15]))])"
  ],
  [
-  "idx=2 ; hash(psel)=a09a68c3baf74a729ed2f77f42efa3151a98a767c1347520378a08480534dfe8"
+  "all_closest_point_list[...]=(Coordinate([4, 5, 5, 15]), [(35, Coordinate([3, 0, 0, 11])), (46, Coordinate([7, 5, 4, 9])), (49, Coordinate([1, 5, 3, 5])), (51, Coordinate([5, 2, 1, 4]))])"
  ],
  [
-  "idx=3 ; len(psel) = 69"
+  "idx=1 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=3 ; hash(psel)=f42e0d1e8dbaf498183fb919541a346655d16dc85630dbdbef3782e394da99b1"
+  "idx=1 ; hash(psel)=c66ac4014af0b556b9146b156a7abf31714833cbce24f7ba3acaba16dcd09998"
  ],
  [
-  "idx=4 ; len(psel) = 64"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 2, 1]), [(20, Coordinate([3, 0, 5, 2])), (35, Coordinate([7, 2, 6, 14])), (70, Coordinate([4, 4, 6, 10])), (85, Coordinate([6, 1, 1, 9]))])"
  ],
  [
-  "idx=4 ; hash(psel)=f948e7ce93f98254c1931379ecd2a26eb2ab4aa7436fd2940998cdd97848ace2"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 5, 2]), [(20, Coordinate([2, 3, 2, 1])), (37, Coordinate([7, 2, 6, 14])), (75, Coordinate([6, 1, 1, 9])), (82, Coordinate([4, 4, 6, 10]))])"
  ],
  [
-  "idx=5 ; len(psel) = 58"
+  "all_closest_point_list[...]=(Coordinate([6, 1, 1, 9]), [(23, Coordinate([4, 4, 6, 10])), (36, Coordinate([7, 2, 6, 14])), (75, Coordinate([3, 0, 5, 2])), (85, Coordinate([2, 3, 2, 1]))])"
  ],
  [
-  "idx=5 ; hash(psel)=5fe61d55c0e7edfeedcbb20842ab84900425f08948acc48e5d257d6e9d05c1be"
+  "all_closest_point_list[...]=(Coordinate([7, 2, 6, 14]), [(29, Coordinate([4, 4, 6, 10])), (35, Coordinate([2, 3, 2, 1])), (36, Coordinate([6, 1, 1, 9])), (37, Coordinate([3, 0, 5, 2]))])"
  ],
  [
-  "idx=6 ; len(psel) = 63"
+  "idx=2 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=6 ; hash(psel)=c085c96e3c2cef34cf79c0b8ca9ec165adfe9225f9b6d05648502f783cfe85bf"
+  "idx=2 ; hash(psel)=0e18f1a05ab1b1114ec5c25393a68ebb0369a581e03d037108c187e2f334d5d5"
  ],
  [
-  "idx=7 ; len(psel) = 60"
+  "all_closest_point_list[...]=(Coordinate([5, 3, 3, 0]), [(29, Coordinate([3, 7, 0, 0])), (49, Coordinate([0, 1, 3, 6])), (68, Coordinate([4, 6, 6, 9]))])"
  ],
  [
-  "idx=7 ; hash(psel)=ba6fe14be028e916b3fddaba266858b8d9c972c3752b25771a831b8304d5e0a0"
+  "all_closest_point_list[...]=(Coordinate([3, 7, 0, 0]), [(29, Coordinate([5, 3, 3, 0])), (55, Coordinate([4, 6, 6, 9])), (58, Coordinate([0, 1, 3, 6]))])"
  ],
  [
-  "idx=8 ; len(psel) = 63"
+  "all_closest_point_list[...]=(Coordinate([0, 1, 3, 6]), [(43, Coordinate([4, 6, 6, 9])), (49, Coordinate([5, 3, 3, 0])), (58, Coordinate([3, 7, 0, 0]))])"
  ],
  [
-  "idx=8 ; hash(psel)=2637f98344b5fc7884e9c0d3977afe772bc73dca86a1d801c1be2eec116660ee"
+  "all_closest_point_list[...]=(Coordinate([4, 6, 6, 9]), [(43, Coordinate([0, 1, 3, 6])), (55, Coordinate([3, 7, 0, 0])), (68, Coordinate([5, 3, 3, 0]))])"
  ],
  [
-  "idx=9 ; len(psel) = 63"
+  "idx=3 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=9 ; hash(psel)=a6ccbadfd49e2db65bfa6dc64c8775a144496dc0a3248c7a383abb2481e2875b"
+  "idx=3 ; hash(psel)=d42ef6beb25adeaa8a945a07a3e9aab19e5c44e68ce269356e86d720ae5e2709"
  ],
  [
-  "idx=10 ; len(psel) = 61"
+  "all_closest_point_list[...]=(Coordinate([5, 6, 5, 5]), [(27, Coordinate([1, 5, 4, 2])), (34, Coordinate([5, 6, 2, 10])), (105, Coordinate([0, 2, 1, 13]))])"
  ],
  [
-  "idx=10 ; hash(psel)=7e40c29584dda69c24aff86a558fbb3cf179a95d9cba392f94b88bdb4e307ad6"
+  "all_closest_point_list[...]=(Coordinate([1, 5, 4, 2]), [(27, Coordinate([5, 6, 5, 5])), (44, Coordinate([0, 2, 1, 13])), (85, Coordinate([5, 6, 2, 10]))])"
  ],
  [
-  "idx=11 ; len(psel) = 63"
+  "all_closest_point_list[...]=(Coordinate([5, 6, 2, 10]), [(34, Coordinate([5, 6, 5, 5])), (35, Coordinate([0, 2, 1, 13])), (85, Coordinate([1, 5, 4, 2]))])"
  ],
  [
-  "idx=11 ; hash(psel)=2d9b6b92d7268d84f442cb49a360a08af1b652619b28de2208729596a755e632"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 1, 13]), [(35, Coordinate([5, 6, 2, 10])), (44, Coordinate([1, 5, 4, 2])), (105, Coordinate([5, 6, 5, 5]))])"
  ],
  [
-  "idx=12 ; len(psel) = 59"
+  "idx=4 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=12 ; hash(psel)=3a6154535c342937570d300e43a7c535040028bd36b10a806dc94e2c815cbb59"
+  "idx=4 ; hash(psel)=d3b97aae248c31ed0772bb64146185ced34442a5c43ae55389ffba793641b850"
  ],
  [
-  "idx=13 ; len(psel) = 61"
+  "all_closest_point_list[...]=(Coordinate([4, 2, 1, 7]), [(23, Coordinate([6, 7, 6, 8])), (34, Coordinate([0, 3, 2, 3])), (38, Coordinate([1, 2, 7, 12])), (59, Coordinate([4, 5, 0, 0]))])"
  ],
  [
-  "idx=13 ; hash(psel)=1f07efa8dac2f6cf0573a51e220481a04cb41217c54077f9b11907cd5ccff939"
+  "all_closest_point_list[...]=(Coordinate([6, 7, 6, 8]), [(23, Coordinate([4, 2, 1, 7])), (35, Coordinate([1, 2, 7, 12])), (61, Coordinate([0, 3, 2, 3])), (76, Coordinate([4, 5, 0, 0]))])"
  ],
  [
-  "idx=14 ; len(psel) = 63"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 2, 3]), [(33, Coordinate([4, 5, 0, 0])), (34, Coordinate([4, 2, 1, 7])), (60, Coordinate([1, 2, 7, 12])), (61, Coordinate([6, 7, 6, 8]))])"
  ],
  [
-  "idx=14 ; hash(psel)=da3c25645fbb1d64a40b77fe4e7c2c689d0992de5c4648571c379cd4991ebca2"
+  "all_closest_point_list[...]=(Coordinate([4, 5, 0, 0]), [(33, Coordinate([0, 3, 2, 3])), (35, Coordinate([1, 2, 7, 12])), (59, Coordinate([4, 2, 1, 7])), (76, Coordinate([6, 7, 6, 8]))])"
  ],
  [
-  "idx=15 ; len(psel) = 63"
+  "idx=5 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=15 ; hash(psel)=412b78785b42159f6eec2703fbe4eab1a1ab8ef012ff28d71667c51b430f52a8"
+  "idx=5 ; hash(psel)=de82e6c8e34f505c3c420b3a5eed73732459f69d7380c263901b43035cf50bac"
  ],
  [
-  "idx=16 ; len(psel) = 68"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 5, 0]), [(20, Coordinate([1, 6, 5, 14])), (29, Coordinate([5, 2, 0, 14])), (69, Coordinate([3, 3, 5, 8])), (77, Coordinate([5, 5, 1, 6]))])"
  ],
  [
-  "idx=16 ; hash(psel)=a832a7488d8cd8c89cf870fb04574f13edb1dbf6347e73a76bcf3f84abf59561"
+  "all_closest_point_list[...]=(Coordinate([1, 6, 5, 14]), [(20, Coordinate([1, 2, 5, 0])), (41, Coordinate([5, 2, 0, 14])), (49, Coordinate([3, 3, 5, 8])), (97, Coordinate([5, 5, 1, 6]))])"
  ],
  [
-  "idx=17 ; len(psel) = 64"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 5, 8]), [(28, Coordinate([5, 5, 1, 6])), (49, Coordinate([1, 6, 5, 14])), (50, Coordinate([5, 2, 0, 14])), (69, Coordinate([1, 2, 5, 0]))])"
  ],
  [
-  "idx=17 ; hash(psel)=10a077e8990e056a27d582da4045d68b171059a93cd65b9023bb67cbcc1d147d"
+  "all_closest_point_list[...]=(Coordinate([5, 5, 1, 6]), [(28, Coordinate([3, 3, 5, 8])), (74, Coordinate([5, 2, 0, 14])), (77, Coordinate([1, 2, 5, 0])), (97, Coordinate([1, 6, 5, 14]))])"
  ],
  [
-  "idx=18 ; len(psel) = 61"
+  "idx=6 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=18 ; hash(psel)=97e29e6f04a57f101cd9b26107788977808715a836d1b73855fbee576eb665c3"
+  "idx=6 ; hash(psel)=e837f00245c2bb229409de6149f1f16c6226657f06a4c67293439d811c02a820"
  ],
  [
-  "idx=19 ; len(psel) = 67"
+  "all_closest_point_list[...]=(Coordinate([6, 2, 5, 4]), [(28, Coordinate([2, 4, 7, 2])), (31, Coordinate([5, 4, 6, 9])), (38, Coordinate([3, 0, 2, 0])), (38, Coordinate([4, 7, 2, 8]))])"
  ],
  [
-  "idx=19 ; hash(psel)=379d7068623a0379c1b1f407c20bb05ee16e17eb682008e01bcf74692b9b5e06"
+  "all_closest_point_list[...]=(Coordinate([2, 4, 7, 2]), [(28, Coordinate([6, 2, 5, 4])), (30, Coordinate([3, 0, 2, 0])), (58, Coordinate([4, 7, 2, 8])), (59, Coordinate([5, 4, 6, 9]))])"
  ],
  [
-  "idx=20 ; len(psel) = 61"
+  "all_closest_point_list[...]=(Coordinate([4, 7, 2, 8]), [(27, Coordinate([5, 4, 6, 9])), (38, Coordinate([6, 2, 5, 4])), (58, Coordinate([2, 4, 7, 2])), (66, Coordinate([3, 0, 2, 0]))])"
  ],
  [
-  "idx=20 ; hash(psel)=5d7d64f5dfab546434477fd93aa37162bbd3785b2dca81dcd6cdef386ce2de17"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 2, 0]), [(30, Coordinate([2, 4, 7, 2])), (38, Coordinate([6, 2, 5, 4])), (66, Coordinate([4, 7, 2, 8])), (85, Coordinate([5, 4, 6, 9]))])"
  ],
  [
-  "idx=21 ; len(psel) = 68"
+  "idx=7 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=21 ; hash(psel)=db73c7262dba3d57d7a5dc7789f4384370c6788058de73d34308b75cee21fc83"
+  "idx=7 ; hash(psel)=34d5fd365b88f1c9fd887d2ea666d47604f7a4cff9adbb7347bc080e2986af0e"
  ],
  [
-  "idx=22 ; len(psel) = 60"
+  "all_closest_point_list[...]=(Coordinate([2, 6, 0, 5]), [(29, Coordinate([6, 6, 3, 3])), (36, Coordinate([0, 2, 0, 9])), (68, Coordinate([3, 3, 3, 14]))])"
  ],
  [
-  "idx=22 ; hash(psel)=29ce0e55c3df86236c5ca328c929ce118598161f7de089b0ff313d1670575b73"
+  "all_closest_point_list[...]=(Coordinate([6, 6, 3, 3]), [(29, Coordinate([2, 6, 0, 5])), (43, Coordinate([3, 3, 3, 14])), (65, Coordinate([0, 2, 0, 9]))])"
  ],
  [
-  "idx=23 ; len(psel) = 69"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 0, 9]), [(36, Coordinate([2, 6, 0, 5])), (44, Coordinate([3, 3, 3, 14])), (65, Coordinate([6, 6, 3, 3]))])"
  ],
  [
-  "idx=23 ; hash(psel)=4695054271513d4b51fd8e50e67a47fd54333b148db884ac445262f87c6a4021"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 3, 14]), [(43, Coordinate([6, 6, 3, 3])), (44, Coordinate([0, 2, 0, 9])), (68, Coordinate([2, 6, 0, 5]))])"
  ],
  [
-  "idx=24 ; len(psel) = 64"
+  "idx=8 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=24 ; hash(psel)=6dcc16ef33e9ed83c863847187c1b820f50f5ac2ae9b4fe5910bb0445ccaf4e6"
+  "idx=8 ; hash(psel)=0b405399d3d45e151fc1d6cd9e48a61bf4846c474b7a232dd85f10cf2b4609ea"
  ],
  [
-  "idx=25 ; len(psel) = 69"
+  "all_closest_point_list[...]=(Coordinate([6, 2, 1, 10]), [(22, Coordinate([4, 7, 1, 7])), (26, Coordinate([0, 7, 3, 13])), (53, Coordinate([3, 4, 7, 0])), (88, Coordinate([2, 4, 3, 2]))])"
  ],
  [
-  "idx=25 ; hash(psel)=fbc9fb29573c037eb04256b078ae8017a3ff60ee233aea1f15757ef4d6ba6a38"
+  "all_closest_point_list[...]=(Coordinate([2, 4, 3, 2]), [(21, Coordinate([3, 4, 7, 0])), (38, Coordinate([0, 7, 3, 13])), (42, Coordinate([4, 7, 1, 7])), (88, Coordinate([6, 2, 1, 10]))])"
  ],
  [
-  "idx=26 ; len(psel) = 61"
+  "all_closest_point_list[...]=(Coordinate([4, 7, 1, 7]), [(22, Coordinate([6, 2, 1, 10])), (42, Coordinate([2, 4, 3, 2])), (56, Coordinate([0, 7, 3, 13])), (63, Coordinate([3, 4, 7, 0]))])"
  ],
  [
-  "idx=26 ; hash(psel)=ffe25629989086096d05a170a23c50c8a788ad824a5e540b1e77e652a3303548"
+  "all_closest_point_list[...]=(Coordinate([0, 7, 3, 13]), [(26, Coordinate([6, 2, 1, 10])), (38, Coordinate([2, 4, 3, 2])), (43, Coordinate([3, 4, 7, 0])), (56, Coordinate([4, 7, 1, 7]))])"
  ],
  [
-  "idx=27 ; len(psel) = 63"
+  "idx=9 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=27 ; hash(psel)=544b36bf04f282ccdc5a4db9c270ae7c17500d45782908da84c7330d410ed89a"
+  "idx=9 ; hash(psel)=4bc83d39f9ce073bf71eb4d77358057f610d7d1bc73e5d318d85c5e0454e40db"
  ],
  [
-  "idx=28 ; len(psel) = 65"
+  "all_closest_point_list[...]=(Coordinate([5, 1, 6, 7]), [(20, Coordinate([5, 5, 6, 9])), (30, Coordinate([7, 6, 5, 3])), (46, Coordinate([0, 1, 7, 13])), (81, Coordinate([4, 1, 2, 15]))])"
  ],
  [
-  "idx=28 ; hash(psel)=ec6eac8ff6e4a2f969fc4b1b62b377a53db7bccadde3957be929f122c828c12d"
+  "all_closest_point_list[...]=(Coordinate([5, 5, 6, 9]), [(20, Coordinate([5, 1, 6, 7])), (42, Coordinate([7, 6, 5, 3])), (42, Coordinate([0, 1, 7, 13])), (69, Coordinate([4, 1, 2, 15]))])"
  ],
  [
-  "idx=29 ; len(psel) = 67"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 5, 3]), [(30, Coordinate([5, 1, 6, 7])), (42, Coordinate([5, 5, 6, 9])), (43, Coordinate([4, 1, 2, 15])), (50, Coordinate([0, 1, 7, 13]))])"
  ],
  [
-  "idx=29 ; hash(psel)=7e9651669a63c017f07a66da227b3535f01e949d4570ed04033c79a89351740f"
+  "all_closest_point_list[...]=(Coordinate([4, 1, 2, 15]), [(29, Coordinate([0, 1, 7, 13])), (43, Coordinate([7, 6, 5, 3])), (69, Coordinate([5, 5, 6, 9])), (81, Coordinate([5, 1, 6, 7]))])"
  ],
  [
-  "idx=30 ; len(psel) = 62"
+  "idx=10 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=30 ; hash(psel)=785d2d0c5da64b27fd9f707ec7cb2e372fe50f72c06a24bebab7e264b27dbbc1"
+  "idx=10 ; hash(psel)=594e0ef8690675a41d5bde6ea29985945e311fb52bef8760637462d2511574c8"
  ],
  [
-  "idx=31 ; len(psel) = 58"
+  "all_closest_point_list[...]=(Coordinate([6, 2, 5, 3]), [(23, Coordinate([3, 4, 0, 4])), (37, Coordinate([2, 1, 7, 15])), (57, Coordinate([4, 4, 5, 12]))])"
  ],
  [
-  "idx=31 ; hash(psel)=84eb50da04b231355afe80c78c86e3dd4579441b703e8921d251afbb70793ffb"
+  "all_closest_point_list[...]=(Coordinate([3, 4, 0, 4]), [(23, Coordinate([6, 2, 5, 3])), (36, Coordinate([2, 1, 7, 15])), (74, Coordinate([4, 4, 5, 12]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 7, 15]), [(26, Coordinate([4, 4, 5, 12])), (36, Coordinate([3, 4, 0, 4])), (37, Coordinate([6, 2, 5, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 4, 5, 12]), [(26, Coordinate([2, 1, 7, 15])), (57, Coordinate([6, 2, 5, 3])), (74, Coordinate([3, 4, 0, 4]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
+ ],
+ [
+  "idx=11 ; hash(psel)=e3f9200966703d1cf6e71a4ea4f4e248bb9f2897e2349f18fd1e734a198bd030"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 2]), [(27, Coordinate([7, 5, 1, 3])), (33, Coordinate([7, 3, 4, 14])), (63, Coordinate([5, 7, 3, 9])), (63, Coordinate([3, 3, 7, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 5, 1, 3]), [(27, Coordinate([2, 1, 2, 2])), (38, Coordinate([7, 3, 4, 14])), (48, Coordinate([5, 7, 3, 9])), (60, Coordinate([3, 3, 7, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 7, 3, 9]), [(36, Coordinate([3, 3, 7, 9])), (46, Coordinate([7, 3, 4, 14])), (48, Coordinate([7, 5, 1, 3])), (63, Coordinate([2, 1, 2, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 3, 7, 9]), [(36, Coordinate([5, 7, 3, 9])), (50, Coordinate([7, 3, 4, 14])), (60, Coordinate([7, 5, 1, 3])), (63, Coordinate([2, 1, 2, 2]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
+ ],
+ [
+  "idx=12 ; hash(psel)=62aac401f9f18906108e3732d67efcc090116769b05595277cb40cccef62ba6c"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 2, 7, 14]), [(33, Coordinate([2, 7, 1, 0])), (39, Coordinate([3, 1, 5, 9])), (42, Coordinate([0, 3, 6, 4])), (44, Coordinate([7, 5, 2, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 3, 6, 4]), [(39, Coordinate([3, 1, 5, 9])), (42, Coordinate([6, 2, 7, 14])), (45, Coordinate([2, 7, 1, 0])), (46, Coordinate([7, 5, 2, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 7, 1, 0]), [(33, Coordinate([6, 2, 7, 14])), (45, Coordinate([0, 3, 6, 4])), (63, Coordinate([7, 5, 2, 9])), (70, Coordinate([3, 1, 5, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 5, 2, 9]), [(41, Coordinate([3, 1, 5, 9])), (44, Coordinate([6, 2, 7, 14])), (46, Coordinate([0, 3, 6, 4])), (63, Coordinate([2, 7, 1, 0]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 3"
+ ],
+ [
+  "idx=13 ; hash(psel)=c054b926ca9e5d73231842a048bc37c795d2b7a72183fe6978fbaa9919652192"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 7, 4, 3]), [(29, Coordinate([1, 3, 1, 1])), (45, Coordinate([5, 5, 7, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 1]), [(29, Coordinate([1, 7, 4, 3])), (60, Coordinate([5, 5, 7, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 3, 1, 1]), [(29, Coordinate([1, 7, 4, 3])), (60, Coordinate([5, 5, 7, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 5, 7, 7]), [(45, Coordinate([1, 7, 4, 3])), (60, Coordinate([1, 3, 1, 1]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
+ ],
+ [
+  "idx=14 ; hash(psel)=62f465fa1eba594532f7ebc55616b34d296648a58322803f6004dfc1e2d53b02"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 5, 3, 2]), [(25, Coordinate([4, 1, 1, 1])), (53, Coordinate([0, 2, 5, 12])), (63, Coordinate([4, 0, 2, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 1, 1, 1]), [(25, Coordinate([6, 5, 3, 2])), (58, Coordinate([0, 2, 5, 12])), (66, Coordinate([4, 0, 2, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 5, 12]), [(38, Coordinate([4, 0, 2, 9])), (53, Coordinate([6, 5, 3, 2])), (58, Coordinate([4, 1, 1, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 0, 2, 9]), [(38, Coordinate([0, 2, 5, 12])), (63, Coordinate([6, 5, 3, 2])), (66, Coordinate([4, 1, 1, 1]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
+ ],
+ [
+  "idx=15 ; hash(psel)=e0f65ee1b67818fc00b812d6de370a09dd6f8c122d788e8c4f5464c97525a0b5"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 6, 10]), [(29, Coordinate([7, 4, 6, 15])), (48, Coordinate([3, 2, 4, 4])), (54, Coordinate([0, 6, 2, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 4, 6, 15]), [(29, Coordinate([5, 4, 6, 10])), (49, Coordinate([3, 2, 4, 4])), (57, Coordinate([0, 6, 2, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 4, 4]), [(30, Coordinate([0, 6, 2, 5])), (48, Coordinate([5, 4, 6, 10])), (49, Coordinate([7, 4, 6, 15]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 6, 2, 5]), [(30, Coordinate([3, 2, 4, 4])), (54, Coordinate([5, 4, 6, 10])), (57, Coordinate([7, 4, 6, 15]))])"
+ ],
+ [
+  "run_check_fsel(get_fsel)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "Coordinate([8, 8, 8, 16]) len(psel) = 261"
+ ],
+ [
+  "hash(psel)=f986c3357e22bd31f6a72e92cbfa9da240b34c5c3af4b399bd955b9e8a08ca6a"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 5, 0, 7]), [(1, Coordinate([5, 5, 0, 8])), (1, Coordinate([5, 5, 7, 7])), (2, Coordinate([4, 5, 0, 6])), (2, Coordinate([5, 5, 1, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 5, 7, 7]), [(1, Coordinate([5, 5, 6, 7])), (1, Coordinate([5, 5, 0, 7])), (2, Coordinate([5, 5, 0, 8])), (2, Coordinate([5, 6, 7, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 1, 2]), [(1, Coordinate([0, 2, 1, 3])), (1, Coordinate([0, 3, 1, 2])), (2, Coordinate([7, 2, 1, 1])), (2, Coordinate([1, 1, 1, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 6, 14]), [(1, Coordinate([7, 2, 6, 14])), (1, Coordinate([1, 2, 6, 14])), (2, Coordinate([0, 1, 6, 15])), (2, Coordinate([1, 2, 7, 14]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 6, 1, 12]), [(6, Coordinate([1, 7, 3, 12])), (6, Coordinate([0, 7, 3, 13])), (6, Coordinate([1, 7, 7, 12])), (6, Coordinate([0, 5, 7, 13]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 6, 2, 3]), [(5, Coordinate([5, 6, 3, 3])), (6, Coordinate([2, 6, 3, 1])), (7, Coordinate([2, 4, 3, 2])), (7, Coordinate([2, 0, 1, 2]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 2, 5, 9]), [(5, Coordinate([6, 2, 4, 11])), (6, Coordinate([5, 4, 6, 9])), (7, Coordinate([5, 1, 6, 7])), (7, Coordinate([7, 3, 7, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 4, 4]), [(6, Coordinate([2, 2, 3, 6])), (6, Coordinate([4, 2, 3, 2])), (6, Coordinate([4, 2, 2, 3])), (8, Coordinate([1, 4, 4, 4]))])"
  ],
  [
   "run_check_psel_list(get_fsel_psel_list)"
@@ -1047,199 +1707,295 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 8"
+  "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=0 ; hash(psel)=93f0eaba54804c9be5d6dff01099c49823382bb1a48488843a5f10adadfc7607"
+  "idx=0 ; hash(psel)=a7dc3b4fdab91f5b0d3f54d9c6fc50408eed79a9583c5d5455e44fb9b4ad8637"
  ],
  [
-  "idx=1 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([0, 6, 4, 10]), [(10, Coordinate([2, 0, 5, 9])), (13, Coordinate([0, 6, 1, 12])), (23, Coordinate([1, 4, 1, 7])), (26, Coordinate([7, 3, 4, 14]))])"
  ],
  [
-  "idx=1 ; hash(psel)=4601c30474a23891b9146c5a6cd24a6dac566987cceeece22163e89d0919c30f"
+  "all_closest_point_list[...]=(Coordinate([5, 1, 1, 14]), [(10, Coordinate([3, 0, 2, 0])), (17, Coordinate([7, 3, 4, 14])), (18, Coordinate([0, 2, 7, 12])), (22, Coordinate([4, 3, 0, 10]))])"
  ],
  [
-  "idx=2 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([4, 3, 0, 10]), [(20, Coordinate([1, 4, 1, 7])), (22, Coordinate([0, 2, 7, 12])), (22, Coordinate([5, 1, 1, 14])), (23, Coordinate([2, 0, 5, 9]))])"
  ],
  [
-  "idx=2 ; hash(psel)=351e3e8c6fd6a4dc8c25167f47d85536ab4fd0a7c8469ada53db1c57275fcab1"
+  "all_closest_point_list[...]=(Coordinate([1, 4, 1, 7]), [(20, Coordinate([4, 3, 0, 10])), (23, Coordinate([0, 6, 4, 10])), (25, Coordinate([5, 6, 7, 6])), (25, Coordinate([1, 4, 6, 3]))])"
  ],
  [
-  "idx=3 ; len(psel) = 8"
+  "idx=1 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 17"
  ],
  [
-  "idx=3 ; hash(psel)=0f5b85c8c6cd4ee21b13a3a5423ef6e4f6915dfb9b7c54d0bfc1f4b705cca34b"
+  "idx=1 ; hash(psel)=5cce67e5cbfb8783a310d8153c29ae45970fc38f4f86e8a911fedf194fb14d1b"
  ],
  [
-  "idx=4 ; len(psel) = 10"
+  "all_closest_point_list[...]=(Coordinate([4, 6, 6, 9]), [(12, Coordinate([3, 3, 5, 8])), (13, Coordinate([6, 0, 5, 11])), (15, Coordinate([7, 7, 0, 8])), (18, Coordinate([5, 0, 4, 6]))])"
  ],
  [
-  "idx=4 ; hash(psel)=5c7e5c33692fd82cf2dc02e46e81ae25b26ddaa9d6261bcfcd1bc85cb0dfc6f5"
+  "all_closest_point_list[...]=(Coordinate([6, 7, 2, 13]), [(11, Coordinate([7, 7, 1, 0])), (14, Coordinate([6, 0, 5, 11])), (18, Coordinate([4, 4, 1, 15])), (20, Coordinate([2, 1, 2, 13]))])"
  ],
  [
-  "idx=5 ; len(psel) = 9"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 1, 2]), [(15, Coordinate([1, 6, 0, 4])), (19, Coordinate([4, 2, 2, 3])), (20, Coordinate([3, 2, 6, 1])), (21, Coordinate([7, 7, 1, 0]))])"
  ],
  [
-  "idx=5 ; hash(psel)=334164cdcc20d2d7f05fcc0a0e4f5b27ffd4bf5a8d5e57ec8fd2771a5ff62da0"
+  "all_closest_point_list[...]=(Coordinate([1, 6, 0, 4]), [(15, Coordinate([0, 3, 1, 2])), (21, Coordinate([7, 7, 0, 8])), (22, Coordinate([7, 7, 1, 0])), (30, Coordinate([4, 2, 2, 3]))])"
  ],
  [
-  "idx=6 ; len(psel) = 10"
+  "idx=2 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=6 ; hash(psel)=2b222d4746a2b7488bb423da505190586d3ed5150af5a5dcc1b3a765b3b10e34"
+  "idx=2 ; hash(psel)=aa736f0e9d64047a7a50c30645ce16dc8526234f1afc0e431e75031193a5d51f"
  ],
  [
-  "idx=7 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([0, 5, 6, 14]), [(11, Coordinate([1, 6, 6, 11])), (15, Coordinate([5, 4, 5, 0])), (18, Coordinate([2, 4, 1, 0])), (18, Coordinate([3, 7, 4, 15]))])"
  ],
  [
-  "idx=7 ; hash(psel)=29ba0ceaee0071d81dc986c3ac610d870538f5e4c8a2c74ea0fe8993a47f55a0"
+  "all_closest_point_list[...]=(Coordinate([3, 1, 7, 15]), [(13, Coordinate([3, 7, 4, 15])), (15, Coordinate([2, 4, 1, 0])), (17, Coordinate([1, 1, 1, 2])), (18, Coordinate([5, 4, 5, 0]))])"
  ],
  [
-  "idx=8 ; len(psel) = 9"
+  "all_closest_point_list[...]=(Coordinate([6, 5, 0, 4]), [(16, Coordinate([0, 7, 6, 6])), (19, Coordinate([1, 5, 3, 5])), (27, Coordinate([5, 4, 5, 0])), (30, Coordinate([1, 1, 1, 2]))])"
  ],
  [
-  "idx=8 ; hash(psel)=e6f235f0b7076dc47c0ac605b2142fbbe98e584d699a3754db1c98e0b33dc5ad"
+  "all_closest_point_list[...]=(Coordinate([4, 0, 2, 9]), [(18, Coordinate([3, 2, 5, 11])), (25, Coordinate([4, 4, 2, 12])), (27, Coordinate([0, 1, 3, 6])), (33, Coordinate([5, 4, 6, 9]))])"
  ],
  [
-  "idx=9 ; len(psel) = 10"
+  "idx=3 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=9 ; hash(psel)=c52f3032c35e6f58e076a5f1908e88fb5443f0dea7516b905543068ddd345970"
+  "idx=3 ; hash(psel)=12044cf8bbdcd5ba7d7d37f5f5969d7b6c5e78b4f50c9f6cab4ca229cb3bf494"
  ],
  [
-  "idx=10 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 7, 0]), [(10, Coordinate([0, 2, 7, 3])), (13, Coordinate([6, 2, 7, 14])), (14, Coordinate([3, 7, 0, 0])), (20, Coordinate([3, 2, 3, 0]))])"
  ],
  [
-  "idx=10 ; hash(psel)=f089e308194210e9e1415b6170b82ac9bfd10a9aebbb96924418945e19b8c677"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 7, 3]), [(10, Coordinate([1, 2, 7, 0])), (12, Coordinate([7, 3, 2, 4])), (18, Coordinate([2, 7, 5, 4])), (22, Coordinate([7, 6, 6, 1]))])"
  ],
  [
-  "idx=11 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 6, 1]), [(20, Coordinate([2, 7, 5, 4])), (22, Coordinate([0, 2, 7, 3])), (22, Coordinate([3, 7, 0, 0])), (22, Coordinate([1, 2, 7, 0]))])"
  ],
  [
-  "idx=11 ; hash(psel)=61a5fa7e2339cf2ebf421b96abf9a96c1700bc2ae5508eedbd6a2ab6407ef8d5"
+  "all_closest_point_list[...]=(Coordinate([5, 1, 6, 7]), [(20, Coordinate([6, 2, 1, 10])), (22, Coordinate([3, 0, 7, 11])), (23, Coordinate([2, 7, 5, 4])), (26, Coordinate([5, 5, 1, 6]))])"
  ],
  [
-  "idx=12 ; len(psel) = 6"
+  "idx=4 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=12 ; hash(psel)=cbda9b9fa110f997db094c27977631c07e088e3bf3e8fc6f52ad6ce010e73eb3"
+  "idx=4 ; hash(psel)=10c775f6e8bbaeaf1f0200c9388692d03d1624af1ec66c33dee211e38a23d683"
  ],
  [
-  "idx=13 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([6, 3, 0, 13]), [(13, Coordinate([6, 1, 0, 10])), (14, Coordinate([1, 4, 6, 13])), (14, Coordinate([1, 1, 0, 14])), (21, Coordinate([6, 2, 4, 11]))])"
  ],
  [
-  "idx=13 ; hash(psel)=0884946bc4c93325221b51df700268138285e023afec4394f103ec121ff911ef"
+  "all_closest_point_list[...]=(Coordinate([4, 7, 1, 7]), [(13, Coordinate([4, 2, 1, 5])), (13, Coordinate([6, 7, 6, 7])), (18, Coordinate([7, 5, 2, 9])), (18, Coordinate([6, 1, 0, 10]))])"
  ],
  [
-  "idx=14 ; len(psel) = 10"
+  "all_closest_point_list[...]=(Coordinate([6, 2, 4, 11]), [(18, Coordinate([7, 5, 2, 9])), (18, Coordinate([6, 1, 0, 10])), (21, Coordinate([1, 4, 6, 13])), (21, Coordinate([6, 3, 0, 13]))])"
  ],
  [
-  "idx=14 ; hash(psel)=1c3d90a65a1b52694a1b498d8a905862f7c94744132cd8782d929c07b2afa682"
+  "all_closest_point_list[...]=(Coordinate([7, 5, 2, 9]), [(18, Coordinate([6, 2, 4, 11])), (18, Coordinate([4, 7, 1, 7])), (22, Coordinate([6, 1, 0, 10])), (25, Coordinate([6, 7, 6, 7]))])"
  ],
  [
-  "idx=15 ; len(psel) = 8"
+  "idx=5 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 15"
  ],
  [
-  "idx=15 ; hash(psel)=77d98190d539c31574ce3cd015ccf6b8ffdcedba0bcd8b7a187a4f8ee1c7b156"
+  "idx=5 ; hash(psel)=dc60bab6c7e73875786d012f079fbccae737df8619b925cd9c44fe32725a1f85"
  ],
  [
-  "idx=16 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([5, 4, 7, 4]), [(11, Coordinate([0, 3, 6, 4])), (13, Coordinate([7, 6, 0, 6])), (17, Coordinate([4, 4, 7, 8])), (17, Coordinate([3, 2, 4, 4]))])"
  ],
  [
-  "idx=16 ; hash(psel)=667ad0cc479ff43017e5153e17037e8ce13ab840228c999e72f12d6397436490"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 6, 4]), [(11, Coordinate([5, 4, 7, 4])), (14, Coordinate([3, 2, 4, 4])), (18, Coordinate([7, 6, 0, 6])), (28, Coordinate([3, 0, 7, 1]))])"
  ],
  [
-  "idx=17 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([4, 4, 7, 8]), [(17, Coordinate([5, 4, 7, 4])), (18, Coordinate([7, 6, 0, 6])), (22, Coordinate([3, 3, 3, 10])), (30, Coordinate([3, 2, 4, 4]))])"
  ],
  [
-  "idx=17 ; hash(psel)=9e8d8ae3fb14b0ee847f8e7f8bb7deedbaf6f492a7857627bbd152587ce19bc1"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 7, 1]), [(19, Coordinate([2, 3, 2, 1])), (22, Coordinate([3, 2, 4, 4])), (23, Coordinate([0, 2, 6, 14])), (27, Coordinate([4, 1, 2, 13]))])"
  ],
  [
-  "idx=18 ; len(psel) = 10"
+  "idx=6 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 18"
  ],
  [
-  "idx=18 ; hash(psel)=4ac87de053aacd5a42649dff0a6e8a5568ff1270e5c37d195cf67e6268942853"
+  "idx=6 ; hash(psel)=769f5e16d7d1c7a4e3aad10b9fd4efce1a6203185105a234ad0b2773e3b1891f"
  ],
  [
-  "idx=19 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 5, 0]), [(10, Coordinate([7, 4, 6, 15])), (11, Coordinate([1, 7, 6, 15])), (11, Coordinate([1, 3, 2, 15])), (17, Coordinate([0, 2, 5, 12]))])"
  ],
  [
-  "idx=19 ; hash(psel)=9e5bf2d150e871463bb0e193fa58cca400f7731cbc49906cafe8d56f9b056ebe"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 2, 15]), [(10, Coordinate([7, 2, 1, 1])), (11, Coordinate([1, 2, 5, 0])), (20, Coordinate([0, 2, 5, 12])), (20, Coordinate([2, 0, 1, 2]))])"
  ],
  [
-  "idx=20 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([6, 2, 5, 3]), [(18, Coordinate([1, 2, 5, 0])), (21, Coordinate([7, 2, 1, 1])), (22, Coordinate([2, 3, 7, 4])), (22, Coordinate([7, 4, 6, 15]))])"
  ],
  [
-  "idx=20 ; hash(psel)=6d8243c0194a72228bd3969041984b99dd4fcefbb87e135a90dc0bd81ae43e20"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 8]), [(18, Coordinate([7, 3, 1, 7])), (21, Coordinate([4, 1, 7, 9])), (23, Coordinate([0, 6, 2, 5])), (23, Coordinate([5, 6, 2, 10]))])"
  ],
  [
-  "idx=21 ; len(psel) = 9"
+  "idx=7 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 15"
  ],
  [
-  "idx=21 ; hash(psel)=0b4bcc8bbe8a0dfd5ca37b9be95ddf3a8666c42b3a30c457c734bcca6be9ef9f"
+  "idx=7 ; hash(psel)=874632eef1a8e0f813257cb6cd405c0b208530cbbb3d06251cc4c9f2f66f536c"
  ],
  [
-  "idx=22 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([1, 3, 0, 1]), [(12, Coordinate([4, 4, 7, 0])), (13, Coordinate([7, 1, 7, 15])), (21, Coordinate([1, 2, 2, 5])), (21, Coordinate([1, 5, 4, 2]))])"
  ],
  [
-  "idx=22 ; hash(psel)=e354af3a12cfdeecf5b8a613a3f1a400449bf022670e0a20556b495976bd0d06"
+  "all_closest_point_list[...]=(Coordinate([1, 5, 4, 2]), [(12, Coordinate([6, 6, 3, 3])), (14, Coordinate([3, 0, 5, 2])), (18, Coordinate([7, 7, 7, 3])), (21, Coordinate([1, 3, 0, 1]))])"
  ],
  [
-  "idx=23 ; len(psel) = 9"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 1, 12]), [(18, Coordinate([4, 4, 6, 10])), (25, Coordinate([4, 4, 7, 0])), (26, Coordinate([7, 1, 7, 15])), (27, Coordinate([1, 3, 0, 1]))])"
  ],
  [
-  "idx=23 ; hash(psel)=599d166a9dd7ddf17a95ee0d0eb15a8d5840aa41c2266d42c9bbf63edd661f9f"
+  "all_closest_point_list[...]=(Coordinate([0, 7, 2, 9]), [(21, Coordinate([5, 5, 0, 7])), (25, Coordinate([6, 0, 4, 13])), (26, Coordinate([1, 2, 2, 5])), (30, Coordinate([2, 3, 1, 12]))])"
  ],
  [
-  "idx=24 ; len(psel) = 8"
+  "idx=8 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 18"
  ],
  [
-  "idx=24 ; hash(psel)=6be989faf923c40e4e40c62bd1716e65fa6bacde87c676e275423c5addc04b0f"
+  "idx=8 ; hash(psel)=85b5681dab33a884ddd7696a141338b5e91d9dd816f8af81ecf15155117d53fc"
  ],
  [
-  "idx=25 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([5, 5, 7, 7]), [(10, Coordinate([5, 4, 2, 7])), (15, Coordinate([2, 6, 0, 5])), (18, Coordinate([7, 0, 1, 8])), (18, Coordinate([6, 2, 5, 9]))])"
  ],
  [
-  "idx=25 ; hash(psel)=7284b4d8133af6599500b2cc5930b14bb4ae5c06fce2d2395733eff680facbe3"
+  "all_closest_point_list[...]=(Coordinate([5, 4, 2, 7]), [(10, Coordinate([5, 5, 7, 7])), (18, Coordinate([6, 2, 5, 9])), (19, Coordinate([2, 3, 2, 10])), (21, Coordinate([2, 6, 0, 5]))])"
  ],
  [
-  "idx=26 ; len(psel) = 9"
+  "all_closest_point_list[...]=(Coordinate([4, 5, 5, 15]), [(18, Coordinate([6, 3, 4, 12])), (19, Coordinate([3, 6, 1, 0])), (24, Coordinate([0, 5, 7, 13])), (26, Coordinate([7, 6, 5, 3]))])"
  ],
  [
-  "idx=26 ; hash(psel)=58f245d7976bdb8933056a2ab4b8bf00cbebd4618a1ce3b70296f547c2ab987b"
+  "all_closest_point_list[...]=(Coordinate([0, 7, 3, 13]), [(20, Coordinate([0, 5, 7, 13])), (20, Coordinate([0, 1, 7, 13])), (22, Coordinate([3, 2, 1, 13])), (22, Coordinate([6, 3, 4, 12]))])"
  ],
  [
-  "idx=27 ; len(psel) = 7"
+  "idx=9 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
  ],
  [
-  "idx=27 ; hash(psel)=a19897c7f0e56af70dc5db25bba5dfa43cf7d91e48fac3de45671b3692609d44"
+  "idx=9 ; hash(psel)=98f2da59877f1bd9e300893d36c5e8adb60431e2743f8fd170558f994ae2a2f2"
  ],
  [
-  "idx=28 ; len(psel) = 10"
+  "all_closest_point_list[...]=(Coordinate([4, 7, 2, 8]), [(11, Coordinate([5, 7, 5, 7])), (14, Coordinate([7, 7, 3, 10])), (20, Coordinate([1, 0, 7, 9])), (22, Coordinate([5, 3, 0, 9]))])"
  ],
  [
-  "idx=28 ; hash(psel)=d2cebdf78c9bc27a91bd2a7f15ca2c9b6e2a72d93f446ad9a4602ff854162b34"
+  "all_closest_point_list[...]=(Coordinate([5, 7, 5, 7]), [(11, Coordinate([4, 7, 2, 8])), (15, Coordinate([3, 4, 6, 6])), (17, Coordinate([7, 7, 3, 10])), (25, Coordinate([1, 0, 7, 9]))])"
  ],
  [
-  "idx=29 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([5, 3, 0, 9]), [(18, Coordinate([3, 4, 6, 6])), (22, Coordinate([4, 7, 2, 8])), (26, Coordinate([1, 0, 7, 9])), (29, Coordinate([5, 7, 5, 7]))])"
  ],
  [
-  "idx=29 ; hash(psel)=a4f36bed14a1bfb23ca1c8ce6d70f51b8bd1775216cbc3e9f5e6e9b5970bcf81"
+  "all_closest_point_list[...]=(Coordinate([7, 3, 5, 3]), [(20, Coordinate([7, 5, 1, 3])), (24, Coordinate([1, 3, 1, 1])), (27, Coordinate([7, 2, 6, 14])), (27, Coordinate([3, 4, 6, 6]))])"
  ],
  [
-  "idx=30 ; len(psel) = 8"
+  "idx=10 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=30 ; hash(psel)=277125aa59adbeb93cad409b7bfb36328612c46a7df7fb7a85871662e391e781"
+  "idx=10 ; hash(psel)=3f401795565008a89dcc4c0ab8d463c99adb2f611a4362bca46893a6e1908c2f"
  ],
  [
-  "idx=31 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 2, 1]), [(13, Coordinate([1, 7, 4, 3])), (14, Coordinate([0, 3, 2, 3])), (14, Coordinate([1, 1, 2, 0])), (18, Coordinate([6, 4, 7, 3]))])"
  ],
  [
-  "idx=31 ; hash(psel)=3335246cab4cdb87b237cbe04cf3975a537550b83936cb5bf5d830ca714f1a51"
+  "all_closest_point_list[...]=(Coordinate([1, 7, 4, 3]), [(13, Coordinate([7, 6, 2, 1])), (14, Coordinate([0, 7, 6, 0])), (15, Coordinate([3, 0, 5, 6])), (17, Coordinate([1, 1, 2, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 3, 7, 11]), [(15, Coordinate([1, 2, 6, 14])), (21, Coordinate([2, 5, 1, 9])), (27, Coordinate([6, 0, 3, 12])), (33, Coordinate([6, 7, 7, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 5, 1, 9]), [(21, Coordinate([7, 3, 7, 11])), (27, Coordinate([6, 6, 2, 6])), (28, Coordinate([6, 7, 7, 7])), (30, Coordinate([3, 7, 4, 13]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 19"
+ ],
+ [
+  "idx=11 ; hash(psel)=81fe76b39d5d4a7162d88aa935d5e42a7e6192f8ec74dc99a2cfb9043699af91"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 7, 0]), [(10, Coordinate([1, 3, 1, 14])), (14, Coordinate([1, 4, 7, 3])), (14, Coordinate([0, 0, 0, 3])), (17, Coordinate([0, 4, 5, 13]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 0, 0, 9]), [(11, Coordinate([3, 1, 5, 9])), (13, Coordinate([6, 2, 2, 10])), (14, Coordinate([5, 5, 6, 9])), (20, Coordinate([1, 7, 7, 12]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 7, 7, 12]), [(15, Coordinate([0, 4, 5, 13])), (18, Coordinate([6, 5, 0, 14])), (20, Coordinate([4, 0, 0, 9])), (21, Coordinate([3, 1, 5, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 5, 2, 6]), [(19, Coordinate([1, 4, 7, 3])), (23, Coordinate([0, 0, 0, 3])), (26, Coordinate([5, 5, 7, 5])), (27, Coordinate([5, 6, 3, 3]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 17"
+ ],
+ [
+  "idx=12 ; hash(psel)=ae3b6dc9f97f2d10c908876f116a7ecea9dac176d774af3a708e620a3669b9f6"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 1, 6, 15]), [(10, Coordinate([2, 7, 5, 0])), (12, Coordinate([6, 3, 6, 13])), (18, Coordinate([2, 7, 1, 0])), (18, Coordinate([6, 3, 3, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 5, 0, 8]), [(10, Coordinate([3, 3, 7, 9])), (14, Coordinate([5, 0, 1, 6])), (17, Coordinate([7, 5, 6, 5])), (18, Coordinate([7, 0, 7, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 0, 7, 10]), [(18, Coordinate([3, 0, 0, 11])), (18, Coordinate([5, 5, 0, 8])), (20, Coordinate([6, 3, 6, 13])), (24, Coordinate([5, 0, 1, 6]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 6, 3, 11]), [(17, Coordinate([3, 0, 0, 11])), (25, Coordinate([7, 0, 7, 10])), (29, Coordinate([5, 1, 3, 13])), (31, Coordinate([6, 3, 6, 13]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 19"
+ ],
+ [
+  "idx=13 ; hash(psel)=fa2ca6f5dc7d04cd54b41b9ccbe61f294b0b97abf9ffecb77818c1af38548fc5"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 1, 1, 9]), [(10, Coordinate([7, 0, 3, 7])), (13, Coordinate([0, 0, 7, 7])), (15, Coordinate([4, 4, 2, 10])), (16, Coordinate([4, 7, 7, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 0, 3, 7]), [(10, Coordinate([6, 1, 1, 9])), (14, Coordinate([7, 5, 4, 9])), (17, Coordinate([0, 0, 7, 7])), (18, Coordinate([0, 2, 5, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 6, 2, 3]), [(14, Coordinate([2, 1, 2, 2])), (21, Coordinate([2, 6, 6, 4])), (22, Coordinate([7, 0, 3, 7])), (26, Coordinate([7, 6, 2, 14]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 0, 4, 11]), [(19, Coordinate([3, 3, 3, 14])), (22, Coordinate([4, 4, 2, 10])), (23, Coordinate([6, 1, 1, 9])), (25, Coordinate([1, 1, 0, 13]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
+ ],
+ [
+  "idx=14 ; hash(psel)=4a9307140f7ed03339f3ebc709c2fd644fd06c256bec64e12cac4b9dbc905837"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 2, 1, 2]), [(13, Coordinate([5, 2, 1, 4])), (14, Coordinate([3, 1, 1, 0])), (15, Coordinate([6, 7, 0, 1])), (15, Coordinate([7, 3, 6, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 3, 6, 4]), [(13, Coordinate([0, 5, 4, 6])), (14, Coordinate([5, 2, 1, 4])), (15, Coordinate([0, 2, 1, 2])), (17, Coordinate([7, 3, 7, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 5, 5, 15]), [(20, Coordinate([2, 5, 1, 15])), (21, Coordinate([6, 7, 0, 1])), (23, Coordinate([1, 2, 7, 12])), (24, Coordinate([6, 1, 5, 13]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 7, 1, 7]), [(19, Coordinate([6, 7, 6, 8])), (22, Coordinate([5, 2, 1, 4])), (23, Coordinate([0, 5, 4, 6])), (26, Coordinate([3, 2, 2, 11]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 15"
+ ],
+ [
+  "idx=15 ; hash(psel)=7ae27eaeeeb2aab6f97f8201d6b6490f7468078686e48baec220d90c1d8dc21e"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 5, 0, 6]), [(11, Coordinate([4, 2, 1, 7])), (12, Coordinate([5, 6, 5, 5])), (12, Coordinate([7, 6, 1, 7])), (18, Coordinate([1, 5, 0, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 6, 1, 7]), [(12, Coordinate([4, 5, 0, 6])), (13, Coordinate([5, 7, 3, 9])), (22, Coordinate([1, 5, 0, 3])), (24, Coordinate([5, 6, 5, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 1, 6, 2]), [(19, Coordinate([2, 1, 7, 15])), (23, Coordinate([5, 6, 5, 5])), (25, Coordinate([1, 5, 0, 3])), (25, Coordinate([5, 2, 0, 14]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 5, 6, 12]), [(19, Coordinate([1, 0, 3, 13])), (21, Coordinate([5, 4, 6, 10])), (27, Coordinate([2, 1, 7, 15])), (28, Coordinate([5, 7, 4, 14]))])"
  ],
  [
   "run_check_psel(get_psel)"
@@ -1248,10 +2004,34 @@
   "run_check_psel"
  ],
  [
-  "len(psel) = 2034"
+  "Coordinate([8, 8, 8, 16]) len(psel) = 70"
  ],
  [
-  "hash(psel)=2201615f487838bc95fdcdc1217202143ea659a063777d9bb6dcd23f5cd7a0bc"
+  "hash(psel)=f473e7c0282ad52edbccfc36026f9d07aac3464af97cc7643a60ba578a66a894"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 5, 0, 8]), [(1, Coordinate([0, 5, 1, 8])), (1, Coordinate([0, 5, 7, 8])), (6, Coordinate([2, 5, 1, 9])), (9, Coordinate([6, 3, 1, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 1, 0, 9]), [(1, Coordinate([6, 1, 0, 9])), (2, Coordinate([5, 1, 1, 10])), (6, Coordinate([5, 2, 2, 8])), (6, Coordinate([5, 7, 1, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 7, 2, 12]), [(1, Coordinate([6, 6, 2, 12])), (3, Coordinate([7, 7, 3, 11])), (6, Coordinate([5, 0, 2, 14])), (6, Coordinate([7, 6, 2, 14]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 1, 0, 9]), [(1, Coordinate([5, 1, 0, 9])), (3, Coordinate([5, 1, 1, 10])), (6, Coordinate([6, 3, 1, 8])), (7, Coordinate([5, 2, 2, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 6, 0, 5]), [(7, Coordinate([4, 7, 1, 6])), (13, Coordinate([4, 5, 6, 7])), (14, Coordinate([0, 5, 0, 8])), (14, Coordinate([7, 6, 1, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 7, 5, 3]), [(10, Coordinate([0, 5, 4, 1])), (11, Coordinate([7, 2, 4, 2])), (11, Coordinate([2, 7, 4, 2])), (13, Coordinate([5, 0, 7, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 0, 7, 1]), [(13, Coordinate([7, 7, 5, 3])), (13, Coordinate([5, 3, 1, 1])), (14, Coordinate([6, 3, 7, 15])), (15, Coordinate([2, 6, 6, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 6, 1, 3]), [(14, Coordinate([2, 6, 0, 5])), (15, Coordinate([0, 5, 4, 1])), (16, Coordinate([5, 0, 7, 1])), (17, Coordinate([5, 3, 1, 1]))])"
  ],
  [
   "run_check_psel_list(get_psel_list)"
@@ -1260,199 +2040,331 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 63"
+  "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=0 ; hash(psel)=5cbc9fff6cf970e731f3e4f7eb3c9fa28593e50d42308ccbca81e5345914802f"
+  "idx=0 ; hash(psel)=73c8100da3e42557a0a26a16041770e442112e41977abe16b826fc8089978e4c"
  ],
  [
-  "idx=1 ; len(psel) = 62"
+  "all_closest_point_list[...]=(Coordinate([6, 3, 1, 8]), [(26, Coordinate([6, 6, 2, 12])), (34, Coordinate([2, 4, 5, 9])), (47, Coordinate([7, 2, 4, 2])), (98, Coordinate([2, 6, 6, 0]))])"
  ],
  [
-  "idx=1 ; hash(psel)=45942b6c13655a1db98f7bf148a444d41994680409729bd1b8aedab9c318d4f5"
+  "all_closest_point_list[...]=(Coordinate([6, 6, 2, 12]), [(26, Coordinate([6, 3, 1, 8])), (38, Coordinate([2, 4, 5, 9])), (48, Coordinate([2, 6, 6, 0])), (57, Coordinate([7, 2, 4, 2]))])"
  ],
  [
-  "idx=2 ; len(psel) = 64"
+  "all_closest_point_list[...]=(Coordinate([7, 2, 4, 2]), [(33, Coordinate([2, 6, 6, 0])), (47, Coordinate([6, 3, 1, 8])), (57, Coordinate([6, 6, 2, 12])), (63, Coordinate([2, 4, 5, 9]))])"
  ],
  [
-  "idx=2 ; hash(psel)=4084711b3b3a419bcbb614600af873fa66571482addd94263080eaf5bfb554d3"
+  "all_closest_point_list[...]=(Coordinate([2, 6, 6, 0]), [(33, Coordinate([7, 2, 4, 2])), (48, Coordinate([6, 6, 2, 12])), (54, Coordinate([2, 4, 5, 9])), (98, Coordinate([6, 3, 1, 8]))])"
  ],
  [
-  "idx=3 ; len(psel) = 63"
+  "idx=1 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=3 ; hash(psel)=81e872a94bf265f45d51c20913267e37c5c06d9059177bf458b9815de4b1b6ed"
+  "idx=1 ; hash(psel)=d996f2a71a341c4f0ae6cbb40ce0ad038a40cd9b2b7710818f2762cd12fb4161"
  ],
  [
-  "idx=4 ; len(psel) = 67"
+  "all_closest_point_list[...]=(Coordinate([6, 3, 7, 15]), [(30, Coordinate([0, 2, 3, 12])), (30, Coordinate([7, 6, 1, 3])), (78, Coordinate([4, 7, 2, 8]))])"
  ],
  [
-  "idx=4 ; hash(psel)=bf78d23492410121a94dcf548f98753b9fa123970835d6d60ab3ccf23dfdc3bf"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 1, 3]), [(30, Coordinate([6, 3, 7, 15])), (36, Coordinate([4, 7, 2, 8])), (70, Coordinate([0, 2, 3, 12]))])"
  ],
  [
-  "idx=5 ; len(psel) = 61"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 3, 12]), [(30, Coordinate([6, 3, 7, 15])), (42, Coordinate([4, 7, 2, 8])), (70, Coordinate([7, 6, 1, 3]))])"
  ],
  [
-  "idx=5 ; hash(psel)=b8555e796ef7f4367cd98e860da76be4853767ef0d9afbc7de9febe4ea533ed7"
+  "all_closest_point_list[...]=(Coordinate([4, 7, 2, 8]), [(36, Coordinate([7, 6, 1, 3])), (42, Coordinate([0, 2, 3, 12])), (78, Coordinate([6, 3, 7, 15]))])"
  ],
  [
-  "idx=6 ; len(psel) = 60"
+  "idx=2 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=6 ; hash(psel)=cc13fa28be8f54273c731e82af55156e9adf31f9b3ad6c2b3e9b797f6b3e2d31"
+  "idx=2 ; hash(psel)=64df60781e279100d8e72aca214bcdbafc6affb6c2bbf0e62180c51286f6d3eb"
  ],
  [
-  "idx=7 ; len(psel) = 62"
+  "all_closest_point_list[...]=(Coordinate([0, 5, 1, 8]), [(18, Coordinate([0, 4, 5, 7])), (29, Coordinate([5, 1, 1, 10])), (57, Coordinate([2, 1, 2, 14])), (77, Coordinate([5, 5, 3, 0]))])"
  ],
  [
-  "idx=7 ; hash(psel)=f047d2c85ab880e04b33e497b2b76aa35dc4ee6722ccd438754103f1b029467c"
+  "all_closest_point_list[...]=(Coordinate([0, 4, 5, 7]), [(18, Coordinate([0, 5, 1, 8])), (43, Coordinate([5, 1, 1, 10])), (63, Coordinate([5, 5, 3, 0])), (71, Coordinate([2, 1, 2, 14]))])"
  ],
  [
-  "idx=8 ; len(psel) = 61"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 2, 14]), [(26, Coordinate([5, 1, 1, 10])), (30, Coordinate([5, 5, 3, 0])), (57, Coordinate([0, 5, 1, 8])), (71, Coordinate([0, 4, 5, 7]))])"
  ],
  [
-  "idx=8 ; hash(psel)=6d1b8ca13996800fd63e4f1731b647419d3574f955e80bac362338348f448b1f"
+  "all_closest_point_list[...]=(Coordinate([5, 5, 3, 0]), [(30, Coordinate([2, 1, 2, 14])), (56, Coordinate([5, 1, 1, 10])), (63, Coordinate([0, 4, 5, 7])), (77, Coordinate([0, 5, 1, 8]))])"
  ],
  [
-  "idx=9 ; len(psel) = 62"
+  "idx=3 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=9 ; hash(psel)=471bf1ea7776bb5630551b8d373826eaf4d7aa6bef2d2cd4736a223916eff289"
+  "idx=3 ; hash(psel)=2b20279cbe7deb8f49f471f3c234933798a0e2dea2d15635f9268486ca1ab99c"
  ],
  [
-  "idx=10 ; len(psel) = 62"
+  "all_closest_point_list[...]=(Coordinate([5, 4, 5, 12]), [(21, Coordinate([7, 0, 6, 12])), (24, Coordinate([3, 4, 3, 8])), (63, Coordinate([2, 3, 3, 3]))])"
  ],
  [
-  "idx=10 ; hash(psel)=3bac91305d789e85803127ea12cdf775c4921a08ff57509d1aebd60368166d55"
+  "all_closest_point_list[...]=(Coordinate([3, 4, 3, 8]), [(24, Coordinate([5, 4, 5, 12])), (27, Coordinate([2, 3, 3, 3])), (57, Coordinate([7, 0, 6, 12]))])"
  ],
  [
-  "idx=11 ; len(psel) = 60"
+  "all_closest_point_list[...]=(Coordinate([7, 0, 6, 12]), [(21, Coordinate([5, 4, 5, 12])), (57, Coordinate([3, 4, 3, 8])), (76, Coordinate([2, 3, 3, 3]))])"
  ],
  [
-  "idx=11 ; hash(psel)=980ea3919d1ac5249a5170383b7339ba447d86a35623f35ab674dfbbc1274a40"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 3, 3]), [(27, Coordinate([3, 4, 3, 8])), (63, Coordinate([5, 4, 5, 12])), (76, Coordinate([7, 0, 6, 12]))])"
  ],
  [
-  "idx=12 ; len(psel) = 63"
+  "idx=4 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
-  "idx=12 ; hash(psel)=ec732dc60b829ab7e9a972d53d228c76ae8f33cec969b0e254ef559bdcdbaa3e"
+  "idx=4 ; hash(psel)=9458ab7994d601c2a93fb449916dae5aab1ae87aa6a0ff7be47ddf57f469ebed"
  ],
  [
-  "idx=13 ; len(psel) = 65"
+  "all_closest_point_list[...]=(Coordinate([5, 1, 4, 11]), [(23, Coordinate([2, 2, 7, 13])), (28, Coordinate([2, 6, 5, 8])), (34, Coordinate([6, 3, 2, 6])), (62, Coordinate([2, 7, 4, 2]))])"
  ],
  [
-  "idx=13 ; hash(psel)=dc2d908705b11644cf21e9b81ff13c90fa775aee5ff398cd1c313e90fd9ea3f5"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 7, 13]), [(23, Coordinate([5, 1, 4, 11])), (43, Coordinate([2, 7, 4, 2])), (45, Coordinate([2, 6, 5, 8])), (75, Coordinate([6, 3, 2, 6]))])"
  ],
  [
-  "idx=14 ; len(psel) = 66"
+  "all_closest_point_list[...]=(Coordinate([6, 3, 2, 6]), [(34, Coordinate([5, 1, 4, 11])), (38, Coordinate([2, 6, 5, 8])), (52, Coordinate([2, 7, 4, 2])), (75, Coordinate([2, 2, 7, 13]))])"
  ],
  [
-  "idx=14 ; hash(psel)=fc2da1828065fd9ca3473663e270a7466bd7f7b441e65158bb52ca194dddaf3a"
+  "all_closest_point_list[...]=(Coordinate([2, 7, 4, 2]), [(38, Coordinate([2, 6, 5, 8])), (43, Coordinate([2, 2, 7, 13])), (52, Coordinate([6, 3, 2, 6])), (62, Coordinate([5, 1, 4, 11]))])"
  ],
  [
-  "idx=15 ; len(psel) = 64"
+  "idx=5 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=15 ; hash(psel)=a071bc3f4367f84a9bf9292a1dd5086ab220a2c153e2cf3b90d88245c2b89dcb"
+  "idx=5 ; hash(psel)=c2884d7a559cbaf25dcff3eb26557c08a78a0098cfb739dcc6d957199a3ccab2"
  ],
  [
-  "idx=16 ; len(psel) = 64"
+  "all_closest_point_list[...]=(Coordinate([2, 5, 1, 9]), [(20, Coordinate([7, 6, 4, 8])), (26, Coordinate([3, 5, 4, 13])), (33, Coordinate([6, 1, 0, 9]))])"
  ],
  [
-  "idx=16 ; hash(psel)=03c274bc6ed47de4beb8eaf01e266950652bb5612294d31088445586910d3c97"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 4, 8]), [(20, Coordinate([2, 5, 1, 9])), (27, Coordinate([6, 1, 0, 9])), (42, Coordinate([3, 5, 4, 13]))])"
  ],
  [
-  "idx=17 ; len(psel) = 60"
+  "all_closest_point_list[...]=(Coordinate([6, 1, 0, 9]), [(27, Coordinate([7, 6, 4, 8])), (33, Coordinate([2, 5, 1, 9])), (57, Coordinate([3, 5, 4, 13]))])"
  ],
  [
-  "idx=17 ; hash(psel)=3e506e1d538fb0645944063cb670efcd11cc980b62869d4308502d16ce72946e"
+  "all_closest_point_list[...]=(Coordinate([3, 5, 4, 13]), [(26, Coordinate([2, 5, 1, 9])), (42, Coordinate([7, 6, 4, 8])), (57, Coordinate([6, 1, 0, 9]))])"
  ],
  [
-  "idx=18 ; len(psel) = 65"
+  "idx=6 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=18 ; hash(psel)=f525fd87ef357b444bb5df1311bd269f0e8049f64e5eb2adf01d23660ee543b0"
+  "idx=6 ; hash(psel)=9e55bc50070c655d6b237cbcd861653a40f6478db3a5132b27eb6dcdbf963ff3"
  ],
  [
-  "idx=19 ; len(psel) = 60"
+  "all_closest_point_list[...]=(Coordinate([0, 5, 7, 8]), [(25, Coordinate([4, 3, 1, 7])), (52, Coordinate([7, 4, 6, 1])), (63, Coordinate([5, 0, 2, 14]))])"
  ],
  [
-  "idx=19 ; hash(psel)=467905362fe7ac8076c5fcb6badba2ef6c009bb9eeeb732ec45c4b0fae2e02f5"
+  "all_closest_point_list[...]=(Coordinate([4, 3, 1, 7]), [(25, Coordinate([0, 5, 7, 8])), (55, Coordinate([7, 4, 6, 1])), (60, Coordinate([5, 0, 2, 14]))])"
  ],
  [
-  "idx=20 ; len(psel) = 69"
+  "all_closest_point_list[...]=(Coordinate([7, 4, 6, 1]), [(45, Coordinate([5, 0, 2, 14])), (52, Coordinate([0, 5, 7, 8])), (55, Coordinate([4, 3, 1, 7]))])"
  ],
  [
-  "idx=20 ; hash(psel)=d4ff9ca20ca2e35eef6ac238e7a3a0398bb8935264cf2e7a812fcc6576df2d72"
+  "all_closest_point_list[...]=(Coordinate([5, 0, 2, 14]), [(45, Coordinate([7, 4, 6, 1])), (60, Coordinate([4, 3, 1, 7])), (63, Coordinate([0, 5, 7, 8]))])"
  ],
  [
-  "idx=21 ; len(psel) = 68"
+  "idx=7 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=21 ; hash(psel)=0b36360a12ad91d21e31edf565799d1d06bcf0b52607bf3342f01dde856d128a"
+  "idx=7 ; hash(psel)=50717ae87fd34a014743e71f90c4d49504a91e5b3cff3d0ca49e0b91c1eae45e"
  ],
  [
-  "idx=22 ; len(psel) = 70"
+  "all_closest_point_list[...]=(Coordinate([4, 5, 0, 11]), [(22, Coordinate([7, 7, 3, 11])), (30, Coordinate([4, 7, 1, 6])), (50, Coordinate([2, 2, 1, 1]))])"
  ],
  [
-  "idx=22 ; hash(psel)=a0347226d2da8ce826cb1a44c82ed838da8663383b76a16d4ec2d037d2e90e5d"
+  "all_closest_point_list[...]=(Coordinate([7, 7, 3, 11]), [(22, Coordinate([4, 5, 0, 11])), (38, Coordinate([4, 7, 1, 6])), (58, Coordinate([2, 2, 1, 1]))])"
  ],
  [
-  "idx=23 ; len(psel) = 62"
+  "all_closest_point_list[...]=(Coordinate([4, 7, 1, 6]), [(30, Coordinate([4, 5, 0, 11])), (38, Coordinate([7, 7, 3, 11])), (38, Coordinate([2, 2, 1, 1]))])"
  ],
  [
-  "idx=23 ; hash(psel)=4a22f0f0a45c6f1418708335de47f1cc0aa33f0de5d0eb9f28d4f01b90a17f87"
+  "all_closest_point_list[...]=(Coordinate([2, 2, 1, 1]), [(38, Coordinate([4, 7, 1, 6])), (50, Coordinate([4, 5, 0, 11])), (58, Coordinate([7, 7, 3, 11]))])"
  ],
  [
-  "idx=24 ; len(psel) = 62"
+  "idx=8 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 6"
  ],
  [
-  "idx=24 ; hash(psel)=b748789eae541907d9d7baf8146450c4b4d3a7cacf1696979b0c26a435d3069f"
+  "idx=8 ; hash(psel)=448afa5f17568e8e9a2c8191f5f4a5363ef39fe39b1e0a1612035f93276c3f53"
  ],
  [
-  "idx=25 ; len(psel) = 65"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 3, 10]), [(25, Coordinate([5, 2, 2, 8])), (28, Coordinate([4, 5, 6, 7])), (30, Coordinate([4, 4, 2, 14])), (38, Coordinate([2, 0, 7, 13]))])"
  ],
  [
-  "idx=25 ; hash(psel)=883a0638abe67449f2380980780733cc028a251cf55aa5e86ab8a546ebc06327"
+  "all_closest_point_list[...]=(Coordinate([5, 2, 2, 8]), [(25, Coordinate([7, 6, 3, 10])), (27, Coordinate([4, 5, 6, 7])), (41, Coordinate([4, 4, 2, 14])), (47, Coordinate([2, 0, 7, 13]))])"
  ],
  [
-  "idx=26 ; len(psel) = 63"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 7, 13]), [(30, Coordinate([4, 4, 2, 14])), (38, Coordinate([7, 6, 3, 10])), (38, Coordinate([0, 5, 4, 1])), (47, Coordinate([5, 2, 2, 8]))])"
  ],
  [
-  "idx=26 ; hash(psel)=f1bbfe95b70ab06280ea9031449f6ca969991312d32b72e0476784741b73acc0"
+  "all_closest_point_list[...]=(Coordinate([0, 5, 4, 1]), [(30, Coordinate([4, 4, 2, 14])), (38, Coordinate([2, 0, 7, 13])), (52, Coordinate([7, 6, 3, 10])), (56, Coordinate([4, 5, 6, 7]))])"
  ],
  [
-  "idx=27 ; len(psel) = 63"
+  "idx=9 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
  ],
  [
-  "idx=27 ; hash(psel)=dad0ed490e1d6286b05bfff22afcfa907bbf88a0b638d013bffb1f46ea5676d4"
+  "idx=9 ; hash(psel)=dfd06ecd670447c975b13069b1d84fb86b90bd8e23f2c4effeb99001b1c68369"
  ],
  [
-  "idx=28 ; len(psel) = 63"
+  "all_closest_point_list[...]=(Coordinate([1, 2, 7, 0]), [(34, Coordinate([2, 1, 3, 4])), (36, Coordinate([7, 2, 3, 12])), (75, Coordinate([0, 5, 0, 8]))])"
  ],
  [
-  "idx=28 ; hash(psel)=46f0715d6de99e6edc1da88268e5381a8204355fb5ea579536d092e0778bd166"
+  "all_closest_point_list[...]=(Coordinate([7, 2, 3, 12]), [(35, Coordinate([0, 5, 0, 8])), (36, Coordinate([1, 2, 7, 0])), (74, Coordinate([2, 1, 3, 4]))])"
  ],
  [
-  "idx=29 ; len(psel) = 65"
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 4]), [(34, Coordinate([1, 2, 7, 0])), (45, Coordinate([0, 5, 0, 8])), (74, Coordinate([7, 2, 3, 12]))])"
  ],
  [
-  "idx=29 ; hash(psel)=73cd30f4f9627fb0fab72960ac7e74b5fa2ee2c4cd175d717fa6bf5d477a3c0e"
+  "all_closest_point_list[...]=(Coordinate([0, 5, 0, 8]), [(35, Coordinate([7, 2, 3, 12])), (45, Coordinate([2, 1, 3, 4])), (75, Coordinate([1, 2, 7, 0]))])"
  ],
  [
-  "idx=30 ; len(psel) = 64"
+  "idx=10 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 3"
  ],
  [
-  "idx=30 ; hash(psel)=56c8fb45c18d40fbd92496093d897cc25b28554f81bf5a77e899bc4ea8b30114"
+  "idx=10 ; hash(psel)=b49bc3e2f113755aec794c0f852436bba9d5adfc04b742453235bd86080d696b"
  ],
  [
-  "idx=31 ; len(psel) = 66"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 2, 14]), [(27, Coordinate([2, 3, 2, 1])), (42, Coordinate([5, 1, 0, 9]))])"
  ],
  [
-  "idx=31 ; hash(psel)=f7aabd983cbd7e9bba85f9bcaf144cb7631a8cb82e93de8e859f0811cd29a6ce"
+  "all_closest_point_list[...]=(Coordinate([2, 3, 2, 1]), [(27, Coordinate([7, 6, 2, 14])), (81, Coordinate([5, 1, 0, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 3, 2, 1]), [(27, Coordinate([7, 6, 2, 14])), (81, Coordinate([5, 1, 0, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 1, 0, 9]), [(42, Coordinate([7, 6, 2, 14])), (81, Coordinate([2, 3, 2, 1]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
+ ],
+ [
+  "idx=11 ; hash(psel)=690bacee7f2fbc66d37479117e85e3d6f292bbd75187cff98244b8e796ced6f3"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 2, 12]), [(23, Coordinate([4, 5, 1, 9])), (25, Coordinate([0, 3, 6, 10])), (26, Coordinate([5, 4, 5, 14])), (47, Coordinate([5, 0, 7, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 5, 14]), [(26, Coordinate([2, 2, 2, 12])), (27, Coordinate([0, 3, 6, 10])), (29, Coordinate([5, 0, 7, 1])), (43, Coordinate([4, 5, 1, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 5, 1, 9]), [(23, Coordinate([2, 2, 2, 12])), (30, Coordinate([0, 3, 6, 10])), (43, Coordinate([5, 4, 5, 14])), (78, Coordinate([5, 0, 7, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 0, 7, 1]), [(29, Coordinate([5, 4, 5, 14])), (47, Coordinate([2, 2, 2, 12])), (68, Coordinate([0, 3, 6, 10])), (78, Coordinate([4, 5, 1, 9]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
+ ],
+ [
+  "idx=12 ; hash(psel)=2bf8d846c96fe34278c022ae7b565574d235ce2c14131313818f75d65a0191b4"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 5, 4, 8]), [(26, Coordinate([5, 4, 4, 11])), (27, Coordinate([2, 6, 0, 5])), (54, Coordinate([5, 4, 5, 2])), (55, Coordinate([2, 2, 1, 14]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 4, 11]), [(26, Coordinate([1, 5, 4, 8])), (31, Coordinate([2, 2, 1, 14])), (50, Coordinate([5, 4, 5, 2])), (65, Coordinate([2, 6, 0, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 5, 2]), [(31, Coordinate([2, 6, 0, 5])), (45, Coordinate([2, 2, 1, 14])), (50, Coordinate([5, 4, 4, 11])), (54, Coordinate([1, 5, 4, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 1, 14]), [(31, Coordinate([5, 4, 4, 11])), (45, Coordinate([5, 4, 5, 2])), (55, Coordinate([1, 5, 4, 8])), (66, Coordinate([2, 6, 0, 5]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
+ ],
+ [
+  "idx=13 ; hash(psel)=f33a619626a0e70e7cc9266d64a7495eaa4675b63feab27008d1b9fc0fe61e04"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 7, 7, 15]), [(19, Coordinate([2, 4, 4, 15])), (22, Coordinate([6, 1, 7, 12])), (40, Coordinate([5, 3, 1, 1])), (105, Coordinate([5, 4, 3, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 4, 4, 15]), [(19, Coordinate([1, 7, 7, 15])), (23, Coordinate([5, 3, 1, 1])), (43, Coordinate([6, 1, 7, 12])), (74, Coordinate([5, 4, 3, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 3, 1, 1]), [(23, Coordinate([2, 4, 4, 15])), (34, Coordinate([6, 1, 7, 12])), (40, Coordinate([1, 7, 7, 15])), (41, Coordinate([5, 4, 3, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 3, 7]), [(41, Coordinate([5, 3, 1, 1])), (51, Coordinate([6, 1, 7, 12])), (74, Coordinate([2, 4, 4, 15])), (105, Coordinate([1, 7, 7, 15]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 3"
+ ],
+ [
+  "idx=14 ; hash(psel)=4f8d55efbf1d9de777b837b16fa1c4c900cb0859d0680c034335551639b92e05"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 4, 2, 10]), [(23, Coordinate([5, 7, 1, 8])), (59, Coordinate([1, 1, 2, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 7, 1, 8]), [(23, Coordinate([0, 4, 2, 10])), (70, Coordinate([1, 1, 2, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 7, 1, 8]), [(23, Coordinate([0, 4, 2, 10])), (70, Coordinate([1, 1, 2, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 1, 2, 1]), [(59, Coordinate([0, 4, 2, 10])), (70, Coordinate([5, 7, 1, 8]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 4"
+ ],
+ [
+  "idx=15 ; hash(psel)=3c43306b220ea2d23b3aae7b529a16d733bb28480ad0ff7bb9f6384788ba3634"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 7, 5, 3]), [(26, Coordinate([2, 4, 7, 1])), (46, Coordinate([6, 2, 5, 9])), (59, Coordinate([6, 7, 2, 12]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 4, 7, 1]), [(26, Coordinate([7, 7, 5, 3])), (59, Coordinate([6, 7, 2, 12])), (88, Coordinate([6, 2, 5, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 2, 5, 9]), [(27, Coordinate([6, 7, 2, 12])), (46, Coordinate([7, 7, 5, 3])), (88, Coordinate([2, 4, 7, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 7, 2, 12]), [(27, Coordinate([6, 2, 5, 9])), (59, Coordinate([2, 4, 7, 1])), (59, Coordinate([7, 7, 5, 3]))])"
+ ],
+ [
+  "run_check_fsel(get_fsel)"
+ ],
+ [
+  "run_check_fsel"
+ ],
+ [
+  "Coordinate([8, 8, 8, 16]) len(psel) = 235"
+ ],
+ [
+  "hash(psel)=04c44d407156f3d7518b39c3bdadea5c4dbf864862b3104ca0d716f550a30630"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 5, 0, 8]), [(1, Coordinate([0, 5, 1, 8])), (1, Coordinate([0, 5, 7, 8])), (1, Coordinate([0, 4, 0, 8])), (4, Coordinate([0, 3, 0, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 4, 0, 8]), [(1, Coordinate([0, 3, 0, 8])), (1, Coordinate([0, 5, 0, 8])), (2, Coordinate([0, 5, 1, 8])), (2, Coordinate([0, 5, 7, 8]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 1, 0, 9]), [(1, Coordinate([6, 1, 0, 9])), (1, Coordinate([5, 2, 0, 9])), (2, Coordinate([5, 1, 1, 10])), (3, Coordinate([5, 2, 7, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 5, 4, 14]), [(1, Coordinate([3, 5, 4, 13])), (1, Coordinate([3, 4, 4, 14])), (3, Coordinate([2, 4, 4, 15])), (6, Coordinate([5, 4, 5, 14]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 1, 6, 9]), [(5, Coordinate([3, 3, 6, 8])), (7, Coordinate([5, 2, 7, 10])), (8, Coordinate([5, 1, 0, 9])), (8, Coordinate([3, 7, 6, 11]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 6, 0, 5]), [(6, Coordinate([1, 6, 6, 4])), (7, Coordinate([4, 7, 1, 6])), (7, Coordinate([1, 5, 6, 4])), (8, Coordinate([2, 0, 0, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 1, 1, 14]), [(6, Coordinate([5, 0, 2, 14])), (7, Coordinate([0, 3, 0, 13])), (9, Coordinate([6, 1, 7, 12])), (9, Coordinate([7, 2, 7, 0]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 0, 7, 5]), [(7, Coordinate([5, 2, 6, 6])), (7, Coordinate([7, 1, 0, 7])), (10, Coordinate([5, 6, 0, 3])), (10, Coordinate([4, 7, 1, 6]))])"
  ],
  [
   "run_check_psel_list(get_fsel_psel_list)"
@@ -1461,198 +2373,294 @@
   "run_check_psel_list"
  ],
  [
-  "len(psel_list) = 32"
+  "len(psel_list) = 16"
  ],
  [
-  "idx=0 ; len(psel) = 6"
+  "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
  ],
  [
-  "idx=0 ; hash(psel)=f9c0546c85bca9a92700e6c76a24180cd3af4572d6aa56fec106464d5cfea079"
+  "idx=0 ; hash(psel)=e372c2edc0b93464e19ca814e09d97e833d3697f3d2455e4a19c66fc3be50e58"
  ],
  [
-  "idx=1 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([6, 4, 2, 6]), [(13, Coordinate([4, 2, 4, 5])), (13, Coordinate([0, 5, 0, 8])), (19, Coordinate([1, 1, 1, 6])), (22, Coordinate([6, 1, 0, 9]))])"
  ],
  [
-  "idx=1 ; hash(psel)=7d57a081458f56511088043a8028a122946e533032d88240b4053668bb9efb3f"
+  "all_closest_point_list[...]=(Coordinate([6, 6, 2, 12]), [(13, Coordinate([4, 0, 4, 11])), (15, Coordinate([5, 7, 7, 14])), (18, Coordinate([7, 2, 3, 12])), (18, Coordinate([4, 4, 7, 11]))])"
  ],
  [
-  "idx=2 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([7, 3, 7, 15]), [(15, Coordinate([1, 4, 0, 2])), (21, Coordinate([5, 7, 7, 14])), (26, Coordinate([7, 2, 3, 12])), (26, Coordinate([4, 4, 7, 11]))])"
  ],
  [
-  "idx=2 ; hash(psel)=2e1398df9277c254073ace48341997236074bedc494fb2516cf12ec15b80c9b2"
+  "all_closest_point_list[...]=(Coordinate([1, 4, 0, 2]), [(15, Coordinate([7, 3, 7, 15])), (26, Coordinate([1, 1, 1, 6])), (29, Coordinate([6, 4, 2, 6])), (36, Coordinate([1, 0, 4, 4]))])"
  ],
  [
-  "idx=3 ; len(psel) = 8"
+  "idx=1 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 15"
  ],
  [
-  "idx=3 ; hash(psel)=3096f0c0356ad3bc5c9dc120c9d91eb3393d84df0b6ee5add31115473532dcec"
+  "idx=1 ; hash(psel)=32bb6a00518a4445addb34bb6f0eb455693ddb77ec17f9cc67d457835b133f2b"
  ],
  [
-  "idx=4 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 4, 10]), [(11, Coordinate([6, 6, 7, 11])), (12, Coordinate([6, 1, 3, 9])), (15, Coordinate([2, 4, 5, 9])), (20, Coordinate([4, 5, 1, 9]))])"
  ],
  [
-  "idx=4 ; hash(psel)=51f981e7322e393f76b85d98394246bdfe4088f46edde6281861ede9ca8f316e"
+  "all_closest_point_list[...]=(Coordinate([6, 6, 7, 11]), [(11, Coordinate([7, 6, 4, 10])), (13, Coordinate([4, 5, 1, 9])), (14, Coordinate([1, 4, 0, 11])), (24, Coordinate([2, 0, 7, 13]))])"
  ],
  [
-  "idx=5 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([3, 3, 7, 5]), [(14, Coordinate([2, 1, 7, 2])), (22, Coordinate([2, 4, 5, 9])), (22, Coordinate([4, 5, 0, 1])), (25, Coordinate([4, 5, 1, 9]))])"
  ],
  [
-  "idx=5 ; hash(psel)=af32bb7475d8bb2f38b705b496a2b0ddea4de6244683e82139842ea662dc12b0"
+  "all_closest_point_list[...]=(Coordinate([2, 0, 7, 13]), [(18, Coordinate([4, 2, 2, 14])), (22, Coordinate([1, 4, 0, 11])), (24, Coordinate([6, 6, 7, 11])), (26, Coordinate([2, 1, 7, 2]))])"
  ],
  [
-  "idx=6 ; len(psel) = 8"
+  "idx=2 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=6 ; hash(psel)=86b4c28cfb8d196cdcb3adcef128fe0b61f6c9cf8121d86ed957616ae92a9702"
+  "idx=2 ; hash(psel)=7ee0a7fb3bf0bc921015944543a66f46f1f808d1a303267bed7243b733a941eb"
  ],
  [
-  "idx=7 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([0, 2, 4, 9]), [(14, Coordinate([1, 4, 4, 12])), (15, Coordinate([3, 4, 3, 8])), (15, Coordinate([7, 3, 1, 11])), (20, Coordinate([1, 7, 7, 10]))])"
  ],
  [
-  "idx=7 ; hash(psel)=f32fb0701f78119c1b69938d589ea5f715ee081c6f401ee6eb38159e92f20b2c"
+  "all_closest_point_list[...]=(Coordinate([1, 4, 4, 12]), [(14, Coordinate([0, 2, 4, 9])), (15, Coordinate([7, 3, 1, 11])), (19, Coordinate([1, 5, 7, 15])), (21, Coordinate([3, 4, 3, 8]))])"
  ],
  [
-  "idx=8 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([6, 6, 3, 6]), [(17, Coordinate([3, 4, 3, 8])), (25, Coordinate([4, 2, 1, 5])), (27, Coordinate([2, 7, 2, 3])), (29, Coordinate([6, 4, 0, 2]))])"
  ],
  [
-  "idx=8 ; hash(psel)=eb4dcd6dc6dba814641a1df08744eae5932826f8e206a601028228e1f3cd1f9d"
+  "all_closest_point_list[...]=(Coordinate([5, 6, 5, 15]), [(21, Coordinate([5, 2, 6, 13])), (21, Coordinate([1, 5, 7, 15])), (23, Coordinate([6, 4, 0, 2])), (26, Coordinate([4, 6, 0, 11]))])"
  ],
  [
-  "idx=9 ; len(psel) = 8"
+  "idx=3 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=9 ; hash(psel)=3074712797d0c7c199cc757e356ee01d4773e7aeaa4fa27d96990e50029a6708"
+  "idx=3 ; hash(psel)=873c7e057b514e917623c14a7c273fb50141e2003713281a2f80ad3763857843"
  ],
  [
-  "idx=10 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([1, 6, 2, 11]), [(11, Coordinate([2, 1, 2, 12])), (14, Coordinate([6, 7, 2, 9])), (24, Coordinate([5, 4, 4, 11])), (25, Coordinate([7, 0, 6, 12]))])"
  ],
  [
-  "idx=10 ; hash(psel)=80bee255fad728d2496dcb4951720666123665cd37d2edb237e79a49b6a3f5cc"
+  "all_closest_point_list[...]=(Coordinate([3, 4, 2, 3]), [(13, Coordinate([2, 6, 0, 5])), (15, Coordinate([1, 3, 5, 4])), (15, Coordinate([5, 7, 3, 2])), (21, Coordinate([5, 4, 1, 15]))])"
  ],
  [
-  "idx=11 ; len(psel) = 10"
+  "all_closest_point_list[...]=(Coordinate([5, 0, 7, 1]), [(18, Coordinate([5, 7, 3, 2])), (23, Coordinate([0, 6, 2, 0])), (24, Coordinate([5, 4, 1, 15])), (30, Coordinate([7, 0, 6, 12]))])"
  ],
  [
-  "idx=11 ; hash(psel)=e52403fa02dd36f527ce3489bd87ff09019a71728aeba2869254eb76fc2638ad"
+  "all_closest_point_list[...]=(Coordinate([7, 0, 6, 12]), [(25, Coordinate([7, 5, 6, 8])), (25, Coordinate([5, 4, 4, 11])), (25, Coordinate([1, 6, 2, 11])), (26, Coordinate([2, 1, 2, 12]))])"
  ],
  [
-  "idx=12 ; len(psel) = 7"
+  "idx=4 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
  ],
  [
-  "idx=12 ; hash(psel)=8a252bdbd5f978979b7c765155460c12c41bd2df4ec49431b42a4853c8b48474"
+  "idx=4 ; hash(psel)=e090b35e10df96a030406c9c91e63e2a8603092cbbb56a6ae17f07f8c8837faf"
  ],
  [
-  "idx=13 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([6, 7, 1, 11]), [(12, Coordinate([7, 6, 2, 14])), (15, Coordinate([5, 2, 0, 9])), (15, Coordinate([3, 6, 0, 13])), (17, Coordinate([0, 2, 3, 11]))])"
  ],
  [
-  "idx=13 ; hash(psel)=2163fea77831199f694313ab33780412a81ece7680513fb6dde1954cd29dc074"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 2, 14]), [(12, Coordinate([6, 7, 1, 11])), (13, Coordinate([7, 0, 2, 1])), (18, Coordinate([5, 0, 5, 13])), (21, Coordinate([3, 5, 2, 0]))])"
  ],
  [
-  "idx=14 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([2, 6, 5, 8]), [(18, Coordinate([2, 5, 1, 9])), (22, Coordinate([1, 0, 6, 4])), (23, Coordinate([5, 3, 4, 6])), (33, Coordinate([0, 2, 3, 11]))])"
  ],
  [
-  "idx=14 ; hash(psel)=f75d195b364be13906df4baddccd793f5c477195ec71506898b77254e5f04ded"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 6, 4]), [(18, Coordinate([2, 1, 2, 4])), (22, Coordinate([2, 6, 5, 8])), (29, Coordinate([7, 0, 2, 1])), (30, Coordinate([5, 3, 5, 2]))])"
  ],
  [
-  "idx=15 ; len(psel) = 8"
+  "idx=5 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
  ],
  [
-  "idx=15 ; hash(psel)=5bfb9a45b84842ae71dc3bb119d0c55301aa44937b1378964bb700eab77c4b28"
+  "idx=5 ; hash(psel)=d8158c85630b460c7fb48560315f71846afe988ce9f7b7551b91f2053aedced9"
  ],
  [
-  "idx=16 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 4, 8]), [(13, Coordinate([0, 4, 6, 10])), (14, Coordinate([5, 7, 1, 8])), (18, Coordinate([1, 0, 1, 9])), (23, Coordinate([0, 3, 2, 5]))])"
  ],
  [
-  "idx=16 ; hash(psel)=b3ee2114e50e821e43d464dd75dec2ac07e251fb9d080ff6ab9838a7445fca38"
+  "all_closest_point_list[...]=(Coordinate([0, 4, 6, 10]), [(13, Coordinate([7, 6, 4, 8])), (14, Coordinate([3, 3, 6, 8])), (20, Coordinate([4, 4, 6, 12])), (27, Coordinate([1, 0, 1, 9]))])"
  ],
  [
-  "idx=17 ; len(psel) = 5"
+  "all_closest_point_list[...]=(Coordinate([1, 0, 1, 9]), [(18, Coordinate([7, 6, 4, 8])), (18, Coordinate([5, 7, 1, 8])), (23, Coordinate([3, 3, 6, 8])), (27, Coordinate([0, 4, 6, 10]))])"
  ],
  [
-  "idx=17 ; hash(psel)=23a5da692c1b402f3b22ea75e645e444bf49888c468fac5ab2e13ed6a7d4be8f"
+  "all_closest_point_list[...]=(Coordinate([6, 1, 6, 0]), [(26, Coordinate([5, 1, 2, 3])), (27, Coordinate([2, 4, 7, 1])), (28, Coordinate([2, 7, 4, 2])), (29, Coordinate([4, 4, 6, 12]))])"
  ],
  [
-  "idx=18 ; len(psel) = 10"
+  "idx=6 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
  ],
  [
-  "idx=18 ; hash(psel)=943ab0ebfa548fbf988dd6c69db27d3433cbb92eca965f2c0810d820840aee01"
+  "idx=6 ; hash(psel)=287d3de5840ba3da8b0f6230cdc8d922e402af5adc125c3666f58dc900bac876"
  ],
  [
-  "idx=19 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([5, 6, 3, 8]), [(10, Coordinate([3, 0, 4, 7])), (14, Coordinate([5, 5, 1, 11])), (18, Coordinate([4, 5, 7, 8])), (27, Coordinate([0, 3, 0, 8]))])"
  ],
  [
-  "idx=19 ; hash(psel)=b76f9c761761d26a4647df22e4150d5f769800997840a1b129bee9954c266acc"
+  "all_closest_point_list[...]=(Coordinate([3, 0, 1, 2]), [(11, Coordinate([3, 1, 0, 5])), (14, Coordinate([5, 3, 1, 1])), (15, Coordinate([2, 3, 3, 3])), (18, Coordinate([1, 7, 7, 15]))])"
  ],
  [
-  "idx=20 ; len(psel) = 6"
+  "all_closest_point_list[...]=(Coordinate([5, 4, 5, 14]), [(17, Coordinate([7, 2, 5, 11])), (26, Coordinate([5, 5, 1, 11])), (26, Coordinate([5, 3, 1, 1])), (27, Coordinate([4, 0, 2, 13]))])"
  ],
  [
-  "idx=20 ; hash(psel)=c9b8eea639f5bd34a922eeb9bd1d75fe76868071439d4b300392e7668d38a999"
+  "all_closest_point_list[...]=(Coordinate([1, 7, 7, 15]), [(18, Coordinate([3, 0, 1, 2])), (23, Coordinate([4, 0, 2, 13])), (30, Coordinate([1, 5, 6, 4])), (30, Coordinate([5, 4, 5, 14]))])"
  ],
  [
-  "idx=21 ; len(psel) = 8"
+  "idx=7 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 11"
  ],
  [
-  "idx=21 ; hash(psel)=dba454fecd159dbab02aabbe00f8ca7906a9b452b2b243c47ddd47ba2e9781e0"
+  "idx=7 ; hash(psel)=b90bf07f8672debbccb87609a11f5f2f26aca5b86b26024b742b857a31d21d75"
  ],
  [
-  "idx=22 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([5, 1, 1, 10]), [(13, Coordinate([7, 7, 3, 11])), (14, Coordinate([4, 3, 4, 10])), (14, Coordinate([4, 3, 1, 7])), (20, Coordinate([7, 1, 1, 14]))])"
  ],
  [
-  "idx=22 ; hash(psel)=30b63b7e2f6e2907b65507fe4bea361047fafcb0ddb46355991c0e23b3a734c4"
+  "all_closest_point_list[...]=(Coordinate([4, 3, 1, 7]), [(14, Coordinate([5, 1, 1, 10])), (18, Coordinate([4, 3, 4, 10])), (21, Coordinate([2, 6, 3, 5])), (21, Coordinate([6, 0, 7, 5]))])"
  ],
  [
-  "idx=23 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([7, 4, 6, 1]), [(17, Coordinate([2, 4, 4, 15])), (27, Coordinate([7, 1, 1, 14])), (29, Coordinate([1, 1, 2, 1])), (34, Coordinate([6, 0, 7, 5]))])"
  ],
  [
-  "idx=23 ; hash(psel)=8852911dfab45d583700ccab55a27d3b645a3734643dc861b7aa038292ce1292"
+  "all_closest_point_list[...]=(Coordinate([6, 0, 7, 5]), [(21, Coordinate([4, 3, 1, 7])), (28, Coordinate([0, 4, 5, 7])), (31, Coordinate([5, 1, 1, 10])), (34, Coordinate([7, 4, 6, 1]))])"
  ],
  [
-  "idx=24 ; len(psel) = 7"
+  "idx=8 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
  ],
  [
-  "idx=24 ; hash(psel)=fe3cbcf4e587ce6e5049e8b3b32a7265e481392cf027b0014f4c6bf4dde1cc98"
+  "idx=8 ; hash(psel)=28e3e0e3217cf343e521fe5f1bdb50deffebb86da166e49609b9507b22936d3a"
  ],
  [
-  "idx=25 ; len(psel) = 9"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 7, 7]), [(12, Coordinate([2, 1, 1, 7])), (13, Coordinate([6, 2, 5, 9])), (20, Coordinate([1, 6, 4, 6])), (29, Coordinate([5, 3, 3, 5]))])"
  ],
  [
-  "idx=25 ; hash(psel)=8a11ad4208c070933ef4c6583e3bb0617fcb5194e221d3e1e94075d8cad0543f"
+  "all_closest_point_list[...]=(Coordinate([5, 7, 3, 11]), [(13, Coordinate([3, 5, 4, 13])), (17, Coordinate([5, 1, 5, 14])), (18, Coordinate([6, 2, 5, 9])), (22, Coordinate([6, 5, 7, 12]))])"
  ],
  [
-  "idx=26 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([6, 5, 7, 12]), [(19, Coordinate([3, 5, 4, 13])), (21, Coordinate([7, 5, 1, 0])), (22, Coordinate([5, 7, 3, 11])), (22, Coordinate([6, 2, 5, 9]))])"
  ],
  [
-  "idx=26 ; hash(psel)=7b07b9013e430c47caa671858e64967bf4d170e3ac323699cd17b80316615ee7"
+  "all_closest_point_list[...]=(Coordinate([5, 3, 3, 5]), [(18, Coordinate([5, 2, 2, 1])), (21, Coordinate([2, 1, 1, 7])), (22, Coordinate([6, 2, 5, 9])), (27, Coordinate([1, 6, 4, 6]))])"
  ],
  [
-  "idx=27 ; len(psel) = 8"
+  "idx=9 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
  ],
  [
-  "idx=27 ; hash(psel)=968e372fa4533561c3768e997661136d4dccd3407ff7df57e2b146201fabb9c6"
+  "idx=9 ; hash(psel)=35dec0cb9881e0d704dab09838c9f2fc032acd9f1057146124ab11093f006c80"
  ],
  [
-  "idx=28 ; len(psel) = 7"
+  "all_closest_point_list[...]=(Coordinate([7, 1, 5, 12]), [(11, Coordinate([0, 6, 5, 11])), (15, Coordinate([0, 3, 0, 13])), (22, Coordinate([4, 1, 2, 14])), (30, Coordinate([5, 6, 4, 8]))])"
  ],
  [
-  "idx=28 ; hash(psel)=bc70e1e5c5707839dc999b439c822b8f1979012bc0bc5dd0b8b816eb121be5fe"
+  "all_closest_point_list[...]=(Coordinate([0, 6, 5, 11]), [(11, Coordinate([7, 1, 5, 12])), (19, Coordinate([5, 6, 4, 8])), (22, Coordinate([0, 3, 0, 13])), (26, Coordinate([3, 3, 3, 9]))])"
  ],
  [
-  "idx=29 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([7, 6, 2, 3]), [(18, Coordinate([3, 6, 1, 2])), (22, Coordinate([2, 3, 2, 1])), (28, Coordinate([0, 5, 1, 8])), (33, Coordinate([5, 3, 6, 5]))])"
  ],
  [
-  "idx=29 ; hash(psel)=3c4c964cd158e131851cf943e0c58f7b46db0c2e86b5dffd7ee05701ff2e16b9"
+  "all_closest_point_list[...]=(Coordinate([5, 3, 6, 5]), [(19, Coordinate([2, 0, 6, 6])), (22, Coordinate([5, 6, 4, 8])), (29, Coordinate([3, 3, 3, 9])), (31, Coordinate([3, 6, 1, 2]))])"
  ],
  [
-  "idx=30 ; len(psel) = 6"
+  "idx=10 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 18"
  ],
  [
-  "idx=30 ; hash(psel)=386ff87c265c72acb255bae2b6ade7bc759f6ec038ca35969244b12777508d02"
+  "idx=10 ; hash(psel)=54d56f18ddfe71d10f0170d9fd3040cf114f786ca186c1c830dfd72d43275884"
  ],
  [
-  "idx=31 ; len(psel) = 8"
+  "all_closest_point_list[...]=(Coordinate([0, 3, 6, 4]), [(13, Coordinate([2, 3, 3, 4])), (15, Coordinate([6, 4, 1, 5])), (15, Coordinate([5, 4, 5, 2])), (18, Coordinate([2, 0, 0, 3]))])"
  ],
  [
-  "idx=31 ; hash(psel)=b39676004a3e3cc9473b6d8d1c4e2fb83bc48e2fe9738c6ef1128edd1f98d5d0"
+  "all_closest_point_list[...]=(Coordinate([5, 4, 5, 12]), [(15, Coordinate([3, 7, 6, 11])), (15, Coordinate([6, 3, 7, 15])), (15, Coordinate([0, 3, 6, 10])), (16, Coordinate([7, 6, 3, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 7, 6, 11]), [(15, Coordinate([5, 4, 5, 12])), (21, Coordinate([3, 5, 2, 10])), (21, Coordinate([4, 5, 6, 7])), (25, Coordinate([5, 1, 2, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 5, 2, 10]), [(18, Coordinate([7, 6, 3, 10])), (18, Coordinate([5, 4, 5, 12])), (20, Coordinate([5, 1, 2, 10])), (21, Coordinate([3, 7, 6, 11]))])"
+ ],
+ [
+  "idx=11 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
+ ],
+ [
+  "idx=11 ; hash(psel)=b8dd018368f408433cd7cb80584ecf65be8389e89fdb74279ea70627c5ccda38"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 4, 3, 7]), [(12, Coordinate([4, 7, 2, 8])), (14, Coordinate([7, 1, 3, 8])), (21, Coordinate([3, 2, 0, 5])), (24, Coordinate([7, 2, 3, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 7, 2, 8]), [(12, Coordinate([5, 4, 3, 7])), (14, Coordinate([7, 1, 3, 8])), (23, Coordinate([5, 2, 7, 10])), (23, Coordinate([3, 2, 0, 5]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 2, 0, 5]), [(21, Coordinate([5, 4, 3, 7])), (23, Coordinate([4, 7, 2, 8])), (24, Coordinate([5, 6, 0, 3])), (25, Coordinate([1, 6, 6, 4]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([7, 2, 3, 3]), [(24, Coordinate([5, 4, 3, 7])), (26, Coordinate([7, 1, 3, 8])), (29, Coordinate([3, 2, 0, 5])), (29, Coordinate([5, 6, 0, 3]))])"
+ ],
+ [
+  "idx=12 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
+ ],
+ [
+  "idx=12 ; hash(psel)=dc189ffb5f81f61b87e061b3f1e391fdf56a65c934dcec32d32faac6334c6954"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 7, 2, 12]), [(13, Coordinate([6, 1, 7, 12])), (14, Coordinate([0, 2, 3, 12])), (14, Coordinate([7, 7, 4, 9])), (14, Coordinate([0, 7, 3, 15]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 1, 7, 12]), [(11, Coordinate([7, 4, 7, 11])), (13, Coordinate([6, 7, 2, 12])), (21, Coordinate([0, 2, 3, 12])), (23, Coordinate([7, 7, 4, 9]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 6, 3, 3]), [(21, Coordinate([6, 5, 3, 5])), (21, Coordinate([0, 7, 3, 15])), (23, Coordinate([1, 3, 0, 5])), (24, Coordinate([4, 4, 7, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 0, 7, 15]), [(21, Coordinate([6, 7, 7, 1])), (21, Coordinate([0, 7, 3, 15])), (26, Coordinate([6, 1, 7, 12])), (33, Coordinate([0, 2, 3, 12]))])"
+ ],
+ [
+  "idx=13 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
+ ],
+ [
+  "idx=13 ; hash(psel)=4da97c4374ee77fca4283f13f2a6c28bc23314c83845b8f8b1512a35e28e2b50"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([4, 6, 3, 9]), [(12, Coordinate([1, 5, 4, 8])), (15, Coordinate([5, 1, 4, 11])), (19, Coordinate([5, 1, 0, 9])), (20, Coordinate([1, 5, 0, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 4, 4, 14]), [(14, Coordinate([2, 1, 2, 14])), (15, Coordinate([4, 5, 2, 1])), (15, Coordinate([4, 6, 7, 13])), (22, Coordinate([5, 1, 4, 11]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([1, 5, 0, 10]), [(20, Coordinate([4, 6, 3, 9])), (20, Coordinate([4, 6, 7, 13])), (20, Coordinate([1, 5, 4, 8])), (31, Coordinate([6, 3, 5, 7]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 1, 3, 4]), [(22, Coordinate([6, 0, 4, 2])), (30, Coordinate([4, 5, 2, 1])), (33, Coordinate([6, 3, 5, 7])), (34, Coordinate([1, 5, 4, 8]))])"
+ ],
+ [
+  "idx=14 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 15"
+ ],
+ [
+  "idx=14 ; hash(psel)=0cfa7b6dd1319f66d40372b262c97f9bdfe35fde89e54570b3af553d77990b85"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 6, 2, 9]), [(10, Coordinate([5, 6, 1, 9])), (13, Coordinate([0, 4, 0, 8])), (14, Coordinate([2, 4, 3, 6])), (20, Coordinate([5, 5, 5, 10]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([5, 6, 1, 9]), [(10, Coordinate([2, 6, 2, 9])), (15, Coordinate([0, 4, 0, 8])), (18, Coordinate([5, 5, 5, 10])), (21, Coordinate([6, 2, 1, 11]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([2, 2, 7, 13]), [(19, Coordinate([3, 1, 6, 9])), (23, Coordinate([5, 0, 2, 14])), (24, Coordinate([6, 2, 1, 11])), (26, Coordinate([5, 3, 7, 1]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([6, 4, 3, 15]), [(19, Coordinate([5, 0, 2, 14])), (22, Coordinate([5, 3, 7, 1])), (24, Coordinate([6, 2, 1, 11])), (31, Coordinate([5, 5, 5, 10]))])"
+ ],
+ [
+  "idx=15 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"
+ ],
+ [
+  "idx=15 ; hash(psel)=c4efba5d06756a83e167f6622a71f1d7894d251b77065c5ee12a9223db2adc16"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 4, 5, 4]), [(11, Coordinate([0, 5, 4, 1])), (18, Coordinate([6, 3, 2, 6])), (19, Coordinate([3, 7, 5, 5])), (20, Coordinate([3, 3, 2, 3]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 5, 4, 1]), [(11, Coordinate([0, 4, 5, 4])), (19, Coordinate([1, 6, 0, 0])), (21, Coordinate([3, 3, 2, 3])), (28, Coordinate([4, 7, 6, 15]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([0, 4, 2, 10]), [(21, Coordinate([6, 3, 2, 6])), (21, Coordinate([6, 0, 2, 9])), (27, Coordinate([7, 0, 5, 11])), (29, Coordinate([3, 4, 6, 12]))])"
+ ],
+ [
+  "all_closest_point_list[...]=(Coordinate([3, 4, 6, 12]), [(19, Coordinate([4, 7, 6, 15])), (25, Coordinate([3, 0, 3, 12])), (27, Coordinate([4, 3, 6, 7])), (28, Coordinate([1, 6, 0, 0]))])"
  ]
 ]

@@ -36,7 +36,10 @@ default_size_node_list = list(map(Coordinate, [
     [ 8, 8, 8, 12, ],
     ]))
 
+comm = None
+
 def begin_with_mpi(size_node_list=None):
+    global comm
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
     num_node = comm.size

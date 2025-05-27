@@ -329,7 +329,7 @@ def find_all_closest_point_list(psel, rs=None):
     assert isinstance(rs, q.RngState)
     pds = PointsDistanceSet(psel)
     all_closest_point_list = []
-    for idx, xg in enumerate(psel):
+    for xg in psel:
         assert isinstance(xg, q.Coordinate)
         mini_dis_sqr, point_list = pds.find_closest_point_list(xg)
         all_closest_point_list.append((mini_dis_sqr, (xg, point_list,)))
@@ -362,12 +362,12 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
         rs = q.RngState(f"{fname}")
     assert isinstance(rs, q.RngState)
     pds = PointsDistanceSet(psel)
-    all_closest_n_point_list = []
-    for idx, xg in enumerate(psel):
+    def find_closest(xg):
         assert isinstance(xg, q.Coordinate)
         point_list = pds.find_closest_n_point_list(xg, n)
         ranking = ranking_func([ p[0] for p in point_list ])
-        all_closest_n_point_list.append((ranking, (xg, point_list,)))
+        return (ranking, (xg, point_list,))
+    all_closest_n_point_list = q.parallel_map(find_closest, psel)
     all_closest_n_point_list = q.random_permute(all_closest_n_point_list, rs.split(f"permute"))
     all_closest_n_point_list.sort(key=lambda x: x[0])
     return all_closest_n_point_list

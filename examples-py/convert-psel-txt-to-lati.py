@@ -25,12 +25,6 @@ usage = f"""
 # Generate some test data and then perform the conversion.
 """
 
-def parse_coordinate(x_str):
-    x_str_list = x_str.split(".")
-    x_list = [ int(s) for s in x_str_list ]
-    x = q.Coordinate(x_list)
-    return x
-
 @q.timer
 def mk_psel(total_site, rate, rs):
     geo = q.Geometry(total_site)
@@ -95,7 +89,7 @@ def run():
         assert isinstance(total_site_str, str)
         assert path_src is not None
         assert path_dst is not None
-        total_site = parse_coordinate(total_site_str)
+        total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
 
 if __name__ == "__main__":

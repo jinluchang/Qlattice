@@ -4,23 +4,40 @@ import math
 
 import textwrap
 
+def parse_grid_coordinate_str(x_str):
+    x_str_list = x_str.split(".")
+    x_list = [ int(s) for s in x_str_list ]
+    x = q.Coordinate(x_list)
+    return x
+
 def mk_grid(geo=None):
     if geo is None:
-        l_size = 32 * 9 * 5
-        t_size = l_size * 2
-        total_site = q.Coordinate([ l_size, l_size, l_size, t_size, ])
+        total_site_str = q.get_arg("--grid")
+        if total_site_str is None:
+            l_size = 32 * 9 * 5
+            t_size = l_size * 2
+            total_site = q.Coordinate([ l_size, l_size, l_size, t_size, ])
+        else:
+            total_site = parse_grid_coordinate_str(total_site_str)
     else:
         total_site = geo.total_site
     return g.grid(total_site.to_list(), g.double)
 
 def begin_with_gpt():
+    assert q.comm is None
+    from mpi4py import MPI
     grid = mk_grid()
     size_node = q.Coordinate(grid.mpi)
     coor_node = q.Coordinate(grid.processor_coor)
     id_node = q.index_from_coordinate(coor_node, size_node)
     q.begin(id_node, q.Coordinate(size_node))
+    comm = MPI.COMM_WORLD
+    q.comm = comm.Split(color=0, key=id_node)
 
 def end_with_gpt():
+    assert q.comm is not None
+    q.comm.Free()
+    q.comm = None
     q.end()
 
 def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
