@@ -1,7 +1,25 @@
 import numpy as np
-import qlat_utils as q
 
-from .field_selection import PointsSelection
+
+class q:
+    from qlat_utils import (
+            timer,
+            Coordinate,
+            smod_coordinate,
+            get_fname,
+            RngState,
+            parallel_map,
+            random_permute,
+            displayln_info,
+            get_num_node,
+            )
+    from .field_selection import (
+            PointsSelection,
+            )
+    from .mpi_utils import (
+            get_mpi_chunk,
+            get_comm,
+            )
 
 def point_dis_sqr(x, y, total_site):
     return q.smod_coordinate(x - y, total_site).sqr()
@@ -368,12 +386,16 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
         point_list = pds.find_closest_n_point_list(xg, n)
         ranking = ranking_func([ p[0] for p in point_list ])
         return (ranking, (xg, point_list,))
+    xg_sub_list = q.get_mpi_chunk(list(psel))
     chunksize = max(16, len(psel) // (q.get_num_node() * 128))
     if len(psel) // q.get_num_node() >= 128:
         n_proc = None
     else:
         n_proc = 0
-    all_closest_n_point_list = q.parallel_map(find_closest, psel, chunksize=chunksize, n_proc=n_proc)
+    all_closest_n_point_sub_list = q.parallel_map(find_closest, xg_sub_list, chunksize=chunksize, n_proc=n_proc)
+    all_closest_n_point_list = []
+    for sub_list in q.get_comm().allgather(all_closest_n_point_sub_list):
+        all_closest_n_point_list += sub_list
     all_closest_n_point_list = q.random_permute(all_closest_n_point_list, rs.split(f"permute"))
     all_closest_n_point_list.sort(key=lambda x: x[0])
     return all_closest_n_point_list
@@ -384,7 +406,7 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
     split `psel` into `psel1` and `psel2`.
     return psel1, psel2
     """
-    assert isinstance(psel, PointsSelection)
+    assert isinstance(psel, q.PointsSelection)
     fname = q.get_fname()
     if rs is None:
         rs = q.RngState(f"{fname}")
@@ -420,8 +442,8 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
                 assert False
     xg_list1 = list(xg_set1)
     xg_list2 = list(xg_set2)
-    psel1 = PointsSelection(total_site, xg_list1)
-    psel2 = PointsSelection(total_site, xg_list2)
+    psel1 = q.PointsSelection(total_site, xg_list1)
+    psel2 = q.PointsSelection(total_site, xg_list2)
     return psel1, psel2
 
 @q.timer
@@ -432,7 +454,7 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     #
     `n` is the number of closest points to be considered for ranking.
     """
-    assert isinstance(psel, PointsSelection)
+    assert isinstance(psel, q.PointsSelection)
     assert isinstance(n, int)
     fname = q.get_fname()
     if ranking_func is None:
@@ -473,8 +495,8 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
                 assert False
     xg_list1 = list(xg_set1)
     xg_list2 = list(xg_set2)
-    psel1 = PointsSelection(total_site, xg_list1)
-    psel2 = PointsSelection(total_site, xg_list2)
+    psel1 = q.PointsSelection(total_site, xg_list1)
+    psel2 = q.PointsSelection(total_site, xg_list2)
     return psel1, psel2
 
 @q.timer(is_timer_fork=True)
@@ -500,7 +522,7 @@ def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     return psel_list
     where `len(psel_list) == num_piece`
     """
-    assert isinstance(psel, PointsSelection)
+    assert isinstance(psel, q.PointsSelection)
     assert num_piece >= 1
     fname = q.get_fname()
     if rs is None:

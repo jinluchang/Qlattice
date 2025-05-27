@@ -24,7 +24,7 @@ def mk_grid(geo=None):
     return g.grid(total_site.to_list(), g.double)
 
 def begin_with_gpt():
-    assert q.comm is None
+    assert q.get_comm() is None
     from mpi4py import MPI
     grid = mk_grid()
     size_node = q.Coordinate(grid.mpi)
@@ -32,12 +32,14 @@ def begin_with_gpt():
     id_node = q.index_from_coordinate(coor_node, size_node)
     q.begin(id_node, q.Coordinate(size_node))
     comm = MPI.COMM_WORLD
-    q.comm = comm.Split(color=0, key=id_node)
+    q.set_comm(comm.Split(color=0, key=id_node))
+    assert q.get_comm() is not None
 
 def end_with_gpt():
-    assert q.comm is not None
-    q.comm.Free()
-    q.comm = None
+    assert q.get_comm() is not None
+    q.get_comm().Free()
+    q.set_comm(None)
+    assert q.get_comm() is None
     q.end()
 
 def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
