@@ -104,11 +104,11 @@ struct vector_cs{
     clean_mem();
   }
 
-  vector_cs<Ty >(){
+  vector_cs(){
     inialize_para();
   }
 
-  vector_cs<Ty >(int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, int b_size_ = -1, int bfac_group_ = -1)
+  vector_cs(int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, int b_size_ = -1, int bfac_group_ = -1)
   {
     resize(nvec_, nsum_, GPU_, b_size_, bfac_group_);
   }

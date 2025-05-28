@@ -828,7 +828,7 @@ struct API FieldM : Field<M> {
     Field<M>::init(f);
   }
   //
-  FieldM<M, multiplicity>() { init(); }
+  FieldM() { init(); }
   FieldM(const FieldM<M, multiplicity>&) = default;
   FieldM(FieldM<M, multiplicity>&&) noexcept = default;
   FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&&) noexcept =

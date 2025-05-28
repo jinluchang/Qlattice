@@ -185,7 +185,7 @@ struct API FieldG : Field<M> {
   }
 
   //
-  FieldG<M>() { init(); }
+  FieldG() { init(); }
   FieldG(const FieldG<M>&) = default;
   FieldG(FieldG<M>&&) noexcept = default;
   FieldG<M>& operator=(FieldG<M>&&) noexcept = default;
@@ -344,7 +344,7 @@ struct API SelectedFieldG : SelectedField<M> {
   }
 
   //
-  SelectedFieldG<M>() { init(); }
+  SelectedFieldG() { init(); }
   SelectedFieldG(const SelectedFieldG<M>&) = default;
   SelectedFieldG(SelectedFieldG<M>&&) noexcept = default;
   SelectedFieldG<M>& operator=(SelectedFieldG<M>&&) noexcept = default;

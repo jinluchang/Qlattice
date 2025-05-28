@@ -11,8 +11,8 @@ template <class M>
 struct API Handle {
   M* p;
   //
-  qacc Handle<M>() { init(); }
-  qacc Handle<M>(M& obj) { init(obj); }
+  qacc Handle() { init(); }
+  qacc Handle(M& obj) { init(obj); }
   //
   qacc void init() { p = NULL; }
   qacc void init(M& obj) { p = (M*)&obj; }
@@ -36,9 +36,9 @@ template <class M>
 struct API ConstHandle {
   const M* p;
   //
-  qacc ConstHandle<M>() { init(); }
-  qacc ConstHandle<M>(const M& obj) { init(obj); }
-  qacc ConstHandle<M>(const Handle<M>& h) { init(h()); }
+  qacc ConstHandle() { init(); }
+  qacc ConstHandle(const M& obj) { init(obj); }
+  qacc ConstHandle(const Handle<M>& h) { init(h()); }
   //
   qacc void init() { p = NULL; }
   qacc void init(const M& obj) { p = (M*)&obj; }
@@ -63,12 +63,12 @@ struct API Vector {
   M* p;
   Long n;
   //
-  qacc Vector<M>()
+  qacc Vector()
   {
     p = NULL;
     n = 0;
   }
-  qacc Vector<M>(const Vector<M>& vec)
+  qacc Vector(const Vector<M>& vec)
   {
     if (vec.p == NULL) {
       qassert(vec.n == 0);
@@ -77,22 +77,22 @@ struct API Vector {
     n = vec.n;
   }
   template <int N>
-  qacc Vector<M>(const array<M, N>& arr)
+  qacc Vector(const array<M, N>& arr)
   {
     p = (M*)arr.data();
     n = arr.size();
   }
-  Vector<M>(const std::vector<M>& vec)
+  Vector(const std::vector<M>& vec)
   {
     p = (M*)vec.data();
     n = vec.size();
   }
-  qacc Vector<M>(const M* p_, const Long n_)
+  qacc Vector(const M* p_, const Long n_)
   {
     p = (M*)p_;
     n = n_;
   }
-  qacc Vector<M>(const M& x)
+  qacc Vector(const M& x)
   {
     p = (M*)&x;
     n = 1;
@@ -174,16 +174,16 @@ template <class M, Long N>
 struct API Array {
   M* p;
   //
-  qacc Array<M, N>() { p = NULL; }
-  qacc Array<M, N>(const Array<M, N>& arr) { p = arr.p; }
-  qacc Array<M, N>(const Vector<M>& vec)
+  qacc Array() { p = NULL; }
+  qacc Array(const Array<M, N>& arr) { p = arr.p; }
+  qacc Array(const Vector<M>& vec)
   {
     qassert(N == vec.size());
     p = vec.p;
   }
-  qacc Array<M, N>(const array<M, N>& arr) { p = (M*)arr.data(); }
-  qacc Array<M, N>(const M* p_) { p = (M*)p_; }
-  qacc Array<M, N>(const M& x)
+  qacc Array(const array<M, N>& arr) { p = (M*)arr.data(); }
+  qacc Array(const M* p_) { p = (M*)p_; }
+  qacc Array(const M& x)
   {
     qassert(N == 1);
     p = (M*)&x;
