@@ -9,6 +9,7 @@
 #include "general_funs.h"
 #include "utils_fft_desc.h"
 #include "utils_field_operations.h"
+#include "utils_field_gpu.h"
 
 ////////dim 12*12 --> Nt --> Nxyz
 ///////only memory size and geo are used, donot use others
@@ -56,9 +57,22 @@ void Fermion_to_prop4d(Propagator4dT<Td>& prop, std::vector<qlat::FermionField4d
 template<class Ty, typename Td>
 void prop4d_to_qprop(qpropT& res, Propagator4dT<Td>& src, int dir = 1){
   TIMERA("prop4d_to_qprop");
-  if(dir == 1){Qassert(src.initialized);res.init();res.init(src.geo());}
-  if(dir == 0){Qassert(res.initialized);src.init();src.init(res.geo());}
+  if(dir == 1){
+    Qassert(src.initialized);
+    if(!res.initialized or res.geo() != src.geo()){
+      res.init();
+      res.init(src.geo());
+    }
+  }
+  if(dir == 0){
+    Qassert(res.initialized);
+    if(!src.initialized or src.geo() != res.geo()){
+      src.init();
+      src.init(res.geo());
+    }
+  }
 
+  Qassert(res.geo().is_only_local and src.geo().is_only_local);
   Long sizeF = src.geo().local_volume();
 
   move_index mv_civ;
@@ -95,6 +109,58 @@ void prop4d_to_qprop(qpropT& res, Propagator4dT<Td>& src, int dir = 1){
 template<typename Td, typename Ty>
 void qprop_to_prop4d(Propagator4dT<Td>& res, qpropT& src){
   prop4d_to_qprop(src, res, 0);
+}
+
+/////V -- 12a x 12b   to   12b x 12a -- V
+template<class Ty, typename Td>
+void prop4d_to_fieldG(FieldG<Ty >& res, Propagator4dT<Td>& src, int dir = 1){
+  TIMERA("prop4d_to_fieldG");
+  Qassert(src.initialized and res.initialized);
+  if(dir == 0){Qassert(res.mem_order == QLAT_OUTTER);}
+
+  qlat::ComplexT<Td>* srcP = (qlat::ComplexT<Td>* ) qlat::get_data(src).data();
+  Ty* resP = (qlat::ComplexT<Td>* ) qlat::get_data(res).data();;
+
+  Long sizeF = src.geo().local_volume();
+  Qassert(res.field_gpu.GPU != QMCPU);
+  Qassert(res.geo().is_only_local and src.geo().is_only_local);
+
+  if(dir == 1){
+    qacc_for(isp, Long(sizeF),{
+      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];
+      for(unsigned int i=0;i<12*12;i++){buf[i] = srcP[isp*12*12 + i];}
+      for(unsigned int d0=0;d0<12;d0++)
+      for(unsigned int d1=0;d1<12;d1++)
+      {
+        resP[(isp*12+d0)*12+d1] = buf[d1*12+d0];
+      }
+    });
+    res.mem_order = QLAT_DEFAULT;
+    switch_orders(res, QLAT_OUTTER);
+    //move_index mv_civ;
+    //mv_civ.move_civ_out(resP, resP, 1, sizeF, 12*12, 1, false);
+    //res.mem_order = QLAT_OUTTER;
+  }
+
+  if(dir == 0){
+    cpy_GPU(srcP, resP, sizeF*12*12, 1, 1);
+    move_index mv_civ;
+    mv_civ.move_civ_in(srcP, srcP, 1, 12*12, sizeF, 1);
+    qacc_for(isp, Long(sizeF),{
+      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];
+      for(unsigned int i=0;i<12*12;i++){buf[i] = srcP[isp*12*12+i];}
+      for(unsigned int d0=0;d0<12;d0++)
+      for(unsigned int d1=0;d1<12;d1++)
+      {
+        srcP[(isp*12+d0)*12+d1] = buf[d1*12+d0];
+      }
+    });
+  }
+}
+
+template<typename Td, typename Ty>
+void fieldG_to_prop4d(Propagator4dT<Td>& res, FieldG<Ty >& src){
+  prop4d_to_fieldG(src, res, 0);
 }
 
 // Field res Nvol --> 12 x 12

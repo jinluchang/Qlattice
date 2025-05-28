@@ -24,12 +24,12 @@ struct vector_gpu{
   int GPU;///1 for GPU, 0 for CPU, -1 for unified
   bool is_copy;
 
-  vector_gpu<Ty >()
+  vector_gpu()
   {
     p = NULL; n = 0;GPU = 1;is_copy = false;
   }
 
-  vector_gpu<Ty >(const size_t n_set, const int GPU_set = 1)
+  vector_gpu(const size_t n_set, const int GPU_set = 1)
   {
     p = NULL; n = 0;GPU = 1;is_copy = false;
     resize(n_set, GPU_set);
@@ -122,6 +122,18 @@ struct vector_gpu{
   void clear(){
     Qassert(not is_copy);
     clean_mem();
+  }
+
+  void clear_copy(){
+    if(is_copy){
+      p = NULL;
+      n = 0   ;
+      GPU = 0;
+      is_copy = false;
+    }
+    else{
+      clear();
+    }
   }
 
   ~vector_gpu(){

@@ -9,7 +9,7 @@
 
 using namespace qlat;
 
-void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& FFT_data, const long off,
+inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& FFT_data, const long off,
     std::vector<bool >& Bsite, std::vector<long >& Zsite)
 {
   ////print0("write data %d \n", int(off));
@@ -41,6 +41,32 @@ void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& FFT_dat
 
 }
 
+inline std::vector<Coordinate > read_positions(corr_dat<Ftype >& mom_info){
+  std::vector<Coordinate > src_pos;
+  const int Ninfo = mom_info.INFOA.size();
+  bool short_info = true;
+  for(int i=0;i<Ninfo;i++)
+  {
+    if(mom_info.INFOA[i].find("Positions") != std::string::npos)
+    {
+      int ini = mom_info.INFOA[i].find("Positions") + std::string("Positions").size();
+      std::string str5 = mom_info.INFOA[i].substr(ini);     // get from "live" to the end
+      //print0("test %s \n", str5.c_str());
+      std::vector<Coordinate > srcs = string_to_Coordinates(str5);
+      for(unsigned int j=0;j<srcs.size();j++)
+      {
+        src_pos.push_back(srcs[j]);
+      }
+      short_info = false;
+    }
+  }
+  if(short_info == true){
+    src_pos = string_to_Coordinates(mom_info.INFO_LIST);
+  }
+
+  return src_pos;
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -69,6 +95,11 @@ int main(int argc, char* argv[])
 
   std::string flag_add = std::string("");
   in.find_para(std::string("flag_add"), flag_add);
+  std::string output_vecs = std::string("NONE");
+  in.find_para(std::string("output_vecs"), output_vecs);
+  if(output_vecs == std::string("NONE")){
+    output_vecs = in.output_vec;
+  }
 
   std::string mom_shift_ = std::string("0 0 0 0");
   in.find_para(std::string("mom_shift"), mom_shift_);
@@ -94,8 +125,9 @@ int main(int argc, char* argv[])
     momentum_dat mdat(geo, in.mom_cut, mom_shiftL);
     char name[450],namecr[500],namesm[500],nameQ[550],name_mom[550], namei[500];
 
-    std::string outputG     = ssprintf("%s%s", in.output.c_str(), flag_add.c_str());
-    std::string output_vecG = ssprintf("%s%s", in.output_vec.c_str(), flag_add.c_str());
+    std::string outputG      = ssprintf("%s%s", in.output.c_str(), flag_add.c_str());
+    std::string output_vecG  = ssprintf("%s%s", in.output_vec.c_str(), flag_add.c_str());
+    std::string output_vecGs = ssprintf("%s%s",   output_vecs.c_str(), flag_add.c_str());
 
     if(mass_group > 1){
       if(outputG != std::string("NONE")){
@@ -103,7 +135,8 @@ int main(int argc, char* argv[])
       }
 
       if(output_vecG != std::string("NONE")){
-        output_vecG = ssprintf("%s.mgroup%02d", output_vecG.c_str(), mg);
+        output_vecG  = ssprintf("%s.mgroup%02d", output_vecG.c_str(), mg);
+        output_vecGs = ssprintf("%s.mgroup%02d", output_vecGs.c_str(), mg);
       }
 
     }
@@ -146,10 +179,10 @@ int main(int argc, char* argv[])
     mdat.get_mom_pos(momT, Bsite, Zsite);
 
     fft_desc_basic fd(geo);
-    for(unsigned int bi=0;bi<Bsite.size();bi++)
-    {
-      if(Bsite[bi]){printf("node %d %3d \n", fd.rank, bi);}
-    }
+    //for(unsigned int bi=0;bi<Bsite.size();bi++)
+    //{
+    //  if(Bsite[bi]){printf("node %d %3d \n", fd.rank, bi);}
+    //}
 
     ////==check setup and scales
 
@@ -179,7 +212,8 @@ int main(int argc, char* argv[])
 
         if(average.dim == 0){
           corr_dat<Ftype > mom_info(name_mom);
-          std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
+          std::vector<Coordinate > src_pos = read_positions(mom_info);
+          //std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
 
           std::string ktem = std::string("32 ")       + mom_info.get_key_T();
           std::string dtem = std::string("operator ") + mom_info.get_dim_name();
@@ -246,7 +280,7 @@ int main(int argc, char* argv[])
     }
     ////===
 
-    qassert(output_vecG != std::string("NONE"));
+    qassert(output_vecG!= std::string("NONE"));
 
     qlat::vector_gpu<Complexq > FFT_data;
     qlat::vector_gpu<Complexq > FFT_data_average;
@@ -279,7 +313,8 @@ int main(int argc, char* argv[])
         print0("  %s \n", nameQ);
 
         corr_dat<Ftype > mom_info(name_mom);
-        std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
+        std::vector<Coordinate > src_pos = read_positions(mom_info);
+        //std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
         mom_info.print_info();
 
         for(int gi = 0; gi < gr_info[2]; gi++)
@@ -319,7 +354,8 @@ int main(int argc, char* argv[])
         sprintf(name_mom, "%s.GInfo", namesm );
 
         corr_dat<Ftype > mom_info(name_mom);
-        std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
+        std::vector<Coordinate > src_pos = read_positions(mom_info);
+        //std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
         mom_info.print_info();
 
         qassert(mom_info.dim == 6);
@@ -348,13 +384,13 @@ int main(int argc, char* argv[])
       }
 
       {
-        sprintf(name, output_vecG.c_str(), icfg, 0);
+        sprintf(name, output_vecGs.c_str(), icfg, 0);
         if(sm == 0)sprintf(namecr, "%s.pt.average", name );
         if(sm == 1)sprintf(namecr, "%s.sm.average", name );
 
         fft_local_to_global(FFT_data_global, FFT_data_average, mdat, mom_shiftp);
 
-        average.set_write_lines(namecr);
+        //average.set_write_lines(namecr);
         average.set_zero();
         average.write_corr(FFT_data_global.data(), FFT_data_global.size(), 3);
 

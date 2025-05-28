@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
   int n_per_time_slice = 128;
   // save the pure low mode fft data
   int save_low_fft = 0;
+  int do_hadron_contra = 1;
   in.find_para(std::string("prop_type"), prop_type);
   std::string out_vec_sink  = std::string("NONE");
   std::string out_vec_mom   = std::string("NONE");
@@ -42,6 +43,7 @@ int main(int argc, char* argv[])
   in.find_para(std::string("save_low_fft"), save_low_fft);
   in.find_para(std::string("sparse_src"), sparse_src);
   in.find_para(std::string("n_per_time_slice"), n_per_time_slice);
+  in.find_para(std::string("do_hadron_contra"), do_hadron_contra);
 
   int check_prop_norm = 0;
   in.find_para(std::string("check_prop_norm"), check_prop_norm);
@@ -56,6 +58,7 @@ int main(int argc, char* argv[])
 
   int do_point_sink   = 1;
   in.find_para(std::string("do_point_sink"), do_point_sink);
+  int do_smear_sink   = 0;
 
   int smear_2link = 0;
   in.find_para(std::string("smear_2link"), smear_2link);
@@ -141,7 +144,10 @@ int main(int argc, char* argv[])
     do_point_sink = 0;
     //Qassert(do_point_sink == 0);// eigen system too large!
   }
-
+  if(sink_step != 0 or do_point_sink == 0)
+  {
+    do_smear_sink = 1;
+  }
   fflush_MPI();
   int mode_sm = 0;
   char ename[500];
@@ -256,25 +262,52 @@ int main(int argc, char* argv[])
       }
       fflush_MPI();
 
-      if(out_vec_sinkG != std::string("NONE") and ckpoint == 1){
+      if(ckpoint == 1){
         const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
-        int flag_do_job = 0;
-        sprintf(names, out_vec_sinkG.c_str(), icfg, si);
-        sprintf(namep, "%s.pt.zero.vec", names);
-        if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
-          flag_do_job += 1;
-        }   
-        sprintf(namep, "%s.sm.zero.vec", names);
-        if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
-          flag_do_job += 1;
-        } 
-
-        int flag_need = 0;
-        if(do_point_sink == 1){flag_need = 2;}
-        if(do_point_sink == 0){flag_need = 1;}
+        int need_vec    = 0;
+        int need_corr   = 0;
+        // check whether need vectors saved
+        int flag_need = do_point_sink + do_smear_sink;
         Qassert(flag_need != 0);
+        std::string namec, namef;
 
-        if(flag_do_job == flag_need){
+        // Check GInfo for pt and sm
+        {
+          int flag_f_job = 0;
+          namec = ssprintf(out_vec_momG.c_str(), icfg, si);
+          namef = ssprintf("%s.pt.GInfo", namec.c_str());
+          //print0("======check %s \n", namef.c_str());
+
+          if(get_file_size_MPI(namef) > 0){flag_f_job += 1;}
+          namef = ssprintf("%s.sm.GInfo", namec.c_str());
+          //print0("======check %s \n", namef.c_str());
+
+          if(get_file_size_MPI(namef) > 0){flag_f_job += 1;}
+          if(flag_f_job != flag_need){
+            need_corr = 1;
+          }
+        }
+
+        if(do_hadron_contra and out_vec_sinkG != std::string("NONE"))
+        {
+          int flag_f_job = 0;
+          sprintf(names, out_vec_sinkG.c_str(), icfg, si);
+          sprintf(namep, "%s.pt.zero.vec", names);
+          if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
+            flag_f_job += 1;
+          }   
+          sprintf(namep, "%s.sm.zero.vec", names);
+          if(get_file_size_MPI(namep) > vol * 32 * bcut * 8){ 
+            flag_f_job += 1;
+          } 
+
+          if(flag_f_job != flag_need){
+            need_vec = 1;
+          }
+        }
+
+        if(need_vec == 0 and need_corr == 0){
+          sprintf(names, in.srcN[si].c_str(),icfg);
           print0("Pass %s \n", names);
           continue ;
         }   
@@ -343,6 +376,7 @@ int main(int argc, char* argv[])
       srcI.check_prop_norm = check_prop_norm;
       srcI.sparse_src = sparse_src;
       srcI.save_low_fft = save_low_fft;
+      srcI.do_hadron_contra = do_hadron_contra;
       if(save_vecs_vec){
         sprintf(namep, "%s.pt.zero.vec", names_vec);
         srcI.name_zero_vecs = std::string(namep);
@@ -376,7 +410,7 @@ int main(int argc, char* argv[])
         point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
       }
 
-      if(sink_step != 0 or do_point_sink == 0)
+      if(do_smear_sink == 1)
       {
         srcI.lms      = in.lms;
         srcI.combineT = in.combineT;

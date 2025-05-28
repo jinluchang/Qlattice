@@ -7,6 +7,7 @@
 
 #include "general_funs.h"
 #include "utils_reduce_vec.h"
+#include "utils_field_operations.h"
 
 namespace qlat
 {
@@ -68,6 +69,27 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
   return double(diff);
 }
 
+template <class Ta, class Tb>
+double diff_fields(Field<Ta>& p0, Field<Tb>& p1)
+{
+  Qassert(p0.geo() == p1.geo());
+  Qassert(p0.multiplicity == p1.multiplicity);
+  //int rank = qlat::get_id_node();
+  const int Dim = p0.multiplicity;
+  const Long V = p0.geo().local_volume();
+  Field<double > fd;fd.init(p0.geo(), 1);
+  qacc_for(index, V, {
+    Ta* r0 = (Ta*) p0.get_elems(index).p;
+    Tb* r1 = (Tb*) p1.get_elems(index).p;
+    double d0 = 0.0;
+    for(int i=0;i<Dim;i++){
+      d0 += qnorm(r0[i] - r1[i]);
+    }
+    fd.get_elem(index) = d0;
+  });
+  double diff = fields_quick_checksum(fd, 8, false);
+  return diff;
+}
 
 template <class Ta, class Tb>
 void diff_prop(Propagator4dT<Ta>& p0, Propagator4dT<Tb>& p1, double err=1e-15)

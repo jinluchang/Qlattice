@@ -474,7 +474,12 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
   #endif
 }
 
-////// c = a b; c dim m x n, a dim m x w, b dim w x n, done it l times
+/* 
+  C = A B; C dim m x n, A dim m x w, B dim w x n, do it l times
+  mem A --> [mi * w + wi] if Conj, a[i] -> a^*[i]
+  mem B --> [ni * w + wi] if tran [wi * n + ni]
+  mem C --> [mi * n + ni]
+*/
 template<typename Ty>
 void matrix_prodPT(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE)
 {

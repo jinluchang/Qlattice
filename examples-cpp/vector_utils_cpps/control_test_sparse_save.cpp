@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 
   ////===save point selection info
   namew = std::string("res/test.psel");
-  save_points_selection_info(pconf, namew);
+  save_point_selection_info(pconf, namew);
   ////===save point selection info
 
   qlat::FieldM<ComplexD, 12*12 > propM;propM.init(geo);

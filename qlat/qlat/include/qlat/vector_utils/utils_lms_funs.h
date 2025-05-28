@@ -50,12 +50,14 @@ struct lms_para{
   FieldSelection fsel;
   ShuffledBitSet sbs ;
 
-  qlat::SelectedField<Ty > sf;
+  std::string sf_tag;
+  std::vector<qlat::SelectedField<Ty > > sfL;
   qlat::SelectedField<Ty > sf_single;
   Coordinate new_size_node;
 
   int check_prop_norm;
   int sparse_src;
+  int do_hadron_contra;
 
   std::string name_sparse_prop;
   std::string name_mom_vecs;
@@ -109,6 +111,9 @@ struct lms_para{
     do_all_low       = 1;
     sparse_src       = 0;
     save_low_fft     = 0;
+
+    // only save sparse prop
+    do_hadron_contra = 1;
 
     mom_cut          = 4;
     ckpoint          = 1;
@@ -242,26 +247,19 @@ void save_sink_vecs(qlat::vector_gpu<Ty >& src, const Geometry& geo, const int n
 }
 
 template<typename Ty>
-void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& srcI, const std::string& tag, const int clean = false)
+void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& srcI, const std::string& tag, const int count, const bool save_files = false)
 {
   if(srcI.name_sparse_prop == std::string("NONE")){return ;};
   TIMER("Save_sparse_prop");
   Qassert(srcI.fsel.n_elems > 0);
   const int Nmass = src.size();
 
-  const std::string nameQ = srcI.name_sparse_prop;
-  bool append = true;if(tag == "-1" or clean == true){append = false;}
-  if(append == false)
-  {
-    if(0 == qlat::get_id_node()){
-      qlat::qremove_all(nameQ);
-    }
-  }
   const Long Ndc = 12 * 12;
-  Qassert(srcI.sf.multiplicity == Nmass * Ndc);
+  Qassert(int(srcI.sfL.size()) == Nmass);
+  Qassert(srcI.sfL[0].multiplicity / Ndc > count );
   Qassert(srcI.sf_single.field.size() % Ndc == 0);
   const Long Ndata = srcI.sf_single.field.size() / (Ndc);
-  Qassert(srcI.sf.field.size() == Nmass * Ndc * Ndata);
+  Qassert(srcI.sfL[0].field.size() % Ndc * Ndata == 0);
   //Ty* p0 = (Ty*) qlat::get_data(srcI.sf_single.field).data();
   //Ty* pr = (Ty*) qlat::get_data(srcI.sf.field).data();
 
@@ -271,21 +269,41 @@ void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& s
     prop_gpu_to_qprop(srcI.tmp_prop, src[mi]);
     Qassert(srcI.tmp_prop.multiplicity == Ndc);
     set_selected_field(srcI.sf_single, srcI.tmp_prop, srcI.fsel);
-    copy_sparse_fields(srcI.sf, srcI.sf_single, Ndc, mi, 0);
+    copy_sparse_fields(srcI.sfL[mi], srcI.sf_single, Ndc, count, 0);
 
     //copy back to src to test results ...
     //clear_fields(srcI.tmp_prop);
     //set_field_selected(srcI.tmp_prop, srcI.sf_single, srcI.fsel, true);
     //qprop_to_prop_gpu(src[mi], srcI.tmp_prop);
   }
+  if(tag.size() > 0){
+    srcI.sf_tag += tag + "_";
+  }
 
-  ShuffledFieldsWriter sfw(nameQ, srcI.new_size_node, append);
-  //std::string tag_ = ssprintf("%s.mass%02d", tag.c_str(), mi);
-  const std::string tag_ = tag;
+  // save each mass of sparse prop 
+  if(save_files){
+    // save files
+    bool append = false;
+    for(int mi=0;mi<Nmass;mi++){
+      const std::string nameQ = ssprintf("%s.mass%02d", srcI.name_sparse_prop.c_str(), mi);
+      //bool append = true;if(tag == "-1" or clean == true){append = false;}
+      if(append == false)
+      {
+        if(0 == qlat::get_id_node()){
+          qlat::qremove_all(nameQ);
+        }
+      }
 
-  //  default single precision files
-  qlat::write(sfw, tag_, srcI.sbs, srcI.sf);
-  sfw.close();
+      ShuffledFieldsWriter sfw(nameQ, srcI.new_size_node, append);
+      //std::string tag_ = ssprintf("%s", tag.c_str());
+      //std::string tag_ = ssprintf("%s.mass%02d", tag.c_str(), mi);
+      const std::string tag_ =  srcI.sf_tag.substr(0, srcI.sf_tag.size() - 1);
+      //  default single precision files
+      qlat::write(sfw, tag_, srcI.sbs, srcI.sfL[mi]);
+      sfw.close();
+    }
+    srcI.sf_tag = "";
+  }
 }
 
 /////propH , pi --> 12*12 --> Nt*Nxyz
@@ -306,6 +324,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   const int GPU = 1;const bool rotate = false;
   const int nmass = massL.size();
   const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
+  const int do_hadron_contra = srcI.do_hadron_contra;
   //const size_t Vol = geo.local_volume();
 
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
@@ -347,16 +366,6 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   }
   const int tini = pos[3];
 
-  // initialize sparse parameters
-  if(srcI.name_sparse_prop != std::string("NONE")){
-    Qassert(srcI.fsel.n_elems > 0);
-    if(!srcI.sf.initialized){
-      srcI.sf.init(srcI.fsel, nmass*12*12);
-      srcI.sf_single.init(srcI.fsel, 12*12);
-      srcI.sbs = mk_shuffled_bitset(srcI.fsel, srcI.new_size_node);
-      srcI.tmp_prop.init(geo, 12 * 12);
-    }
-  }
 
   srcI.off_L   = off_L;
   srcI.ini_pos = pos;
@@ -436,6 +445,33 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //qlat::vector_gpu<Ty > FFT_data_high;
   //qlat::vector_acc<Long > mapA, mapB;
 
+  // initialize sparse parameters
+  if(srcI.name_sparse_prop != std::string("NONE")){
+    Qassert(srcI.fsel.n_elems > 0);
+    bool ini = false;
+    const int Ndc = 12 * 12 ;
+    const int Nsparse = 1 + Nlms * (1 + srcI.do_all_low);
+    if(!srcI.sf_single.initialized){ini = true;}
+    if(srcI.sfL.size() == 0){ini = true;}
+    else{
+      if(long(srcI.sfL.size()) != nmass){ini = true;}
+      for(int mi=0;mi<nmass;mi++){
+        if(srcI.sfL[mi].multiplicity != Nsparse*Ndc){ini = true;}
+      }
+    }
+
+    if(ini){
+      srcI.sfL.resize(0);
+      srcI.sfL.resize(nmass);
+      for(int mi=0;mi<nmass;mi++){
+        srcI.sfL[mi].init(srcI.fsel, Nsparse*Ndc);
+      }
+      srcI.sf_single.init(srcI.fsel, Ndc);
+      srcI.sbs = mk_shuffled_bitset(srcI.fsel, srcI.new_size_node);
+      srcI.tmp_prop.init(geo, Ndc);
+    }
+  }
+
   ///////check production for this source
   ///////low mode ignored if check point enabled
   if(savezero and srcI.ckpoint == 1){
@@ -454,18 +490,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //if(srcI.save_full_vec == 1){nZero = 1 + Nlms;}
 
   //char key_T[1000], dimN[1000];
-  std::string key_T = ssprintf("%d", 1);
-  std::string dimN  = ssprintf("src");
 
   std::string POS_LIST, POS_CUR;
-  if(saveFFT){
-    key_T = ssprintf("%d  %d  %d %d %d %d", int(massL.size()), fd.nt, mc, mc, mc, 2);
-    dimN  = ssprintf("masses nt pz py px complex");
-  }
-  std::string ktem(key_T);
-  std::string dtem(dimN);
-  corr_dat<Ta > mom_res(ktem, dtem);
-  mom_res.INFOA = srcI.INFOA;
   //char  name_mom[500], name_mom_tmp[500];
   // ssprintf(name_mom, "%s.Gsrc", srcI.name_mom_vecs.c_str());
   //////===container for fft vecs
@@ -492,32 +518,33 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   print0("Do high %s \n", POS_CUR.c_str());
   copy_eigen_prop_to_EigenG(Eprop, high_prop.data(), ei.b_size, nmass, fd, GPU);
-  Save_sparse_prop(Eprop, srcI, std::string("High"), true);
-  prop_to_vec(Eprop, resTa, fd); 
-  if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
-
-  if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
-
+  Save_sparse_prop(Eprop, srcI, std::string("High"), 0, false);
+  if(do_hadron_contra){
+    prop_to_vec(Eprop, resTa, fd); 
+    if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
+    if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
+    if(savezero){
+      resZero.resize(resTa.size());resZero.set_zero();
+      if(srcI.save_full_vec == 0){
+        cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE, -1.0*Nlms);
+      }
+      if(srcI.save_full_vec == 1){
+        cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE);
+        save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO);
+      }
+    }
+    if(saveFFT){
+      TIMER("saveFFT");
+      check_nan_GPU(resTa);
+      fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+      mdat.pick_mom_from_vecs(FFT_data[0], resTa);
+      //// ssprintf(name_mom_tmp, "%09d", 0);
+      name_mom_tmp = ssprintf("%09d", 0);
+      //name_mom_tmp = ssprintf("High");
+      mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
+    }
+  }
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
-  if(savezero){
-    resZero.resize(resTa.size());resZero.set_zero();
-    if(srcI.save_full_vec == 0){
-      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE, -1.0*Nlms);
-    }
-    if(srcI.save_full_vec == 1){
-      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE);
-      save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO);
-    }
-  }
-  if(saveFFT){
-    TIMER("saveFFT");
-    check_nan_GPU(resTa);
-    fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
-    mdat.pick_mom_from_vecs(FFT_data[0], resTa);
-    //// ssprintf(name_mom_tmp, "%09d", 0);
-    name_mom_tmp = ssprintf("%09d", 0);
-    mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
-  }
 
   print_mem_info();
 
@@ -547,16 +574,20 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     ////low mode corr contractions
     if(srcI.do_all_low == 1){
       copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
-      Save_sparse_prop(Eprop, srcI, ssprintf("Low%04d", gi), false);
-      prop_to_vec(Eprop, resTa, fd);  
-      if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
-      if(saveFFT and srcI.save_low_fft == 1){
-        TIMER("saveFFT");
-        check_nan_GPU(resTa);
-        fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
-        mdat.pick_mom_from_vecs(FFT_data[1], resTa);
-        name_mom_tmp = ssprintf("Low%09d", gi + 1);
-        mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+      std::string sparse_tag = "";
+      if(gi == Nlms - 1){sparse_tag = ssprintf("Low%04d", Nlms);}
+      Save_sparse_prop(Eprop, srcI, sparse_tag, Nlms + gi + 1, false);
+      if(do_hadron_contra){
+        prop_to_vec(Eprop, resTa, fd);  
+        if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
+        if(saveFFT and srcI.save_low_fft == 1){
+          TIMER("saveFFT");
+          check_nan_GPU(resTa);
+          fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+          mdat.pick_mom_from_vecs(FFT_data[1], resTa);
+          name_mom_tmp = ssprintf("Low%09d", gi + 1);
+          mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+        }
       }
 
       //Ty norm0 = low_prop.norm();
@@ -572,75 +603,98 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
     //////format suitable for contractions
     copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
-    Save_sparse_prop(Eprop, srcI, ssprintf("LH%04d", gi), false);
-    prop_to_vec(Eprop, resTa, fd);
-    if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
+    if(gi != Nlms - 1){
+      Save_sparse_prop(Eprop, srcI, "", gi + 1, false);
+    }else{
+      Save_sparse_prop(Eprop, srcI, ssprintf("LH%04d", Nlms), gi + 1, true );
+    }
 
-    if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
+    if(do_hadron_contra){
+      prop_to_vec(Eprop, resTa, fd);
+      if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
+      if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
 
-    if(savezero){
-    if(srcI.save_full_vec == 0){
-      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE, +1.0);
-    }
-    if(srcI.save_full_vec == 1){
-      cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE);
-      std::string tag = ssprintf("LH%04d", gi + 1);
-      save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO, tag);
-    }
-    }
-    if(saveFFT){
-      TIMER("saveFFT");
-      check_nan_GPU(resTa);
-      fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
-      mdat.pick_mom_from_vecs(FFT_data[1], resTa);
-      FFT_data[1] -= FFT_data[0];
-      name_mom_tmp = ssprintf("%09d", gi + 1);
-      mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+      if(savezero){
+        if(srcI.save_full_vec == 0){
+          cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE, +1.0);
+        }
+        if(srcI.save_full_vec == 1){
+          cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, QTRUE);
+          std::string tag = ssprintf("LH%04d", gi + 1);
+          save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO, tag);
+        }
+      }
+      if(saveFFT){
+        TIMER("saveFFT");
+        check_nan_GPU(resTa);
+        fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+        mdat.pick_mom_from_vecs(FFT_data[1], resTa);
+        FFT_data[1] -= FFT_data[0];
+        name_mom_tmp = ssprintf("%09d", gi + 1);
+        //name_mom_tmp = ssprintf("LH%09d", gi);
+        mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+      }
     }
   }
 
-  if(saveFFT){
-    TIMER("saveFFT");
-    name_mom = ssprintf("%s.GInfo", srcI.name_mom_vecs.c_str());
+  ////  if(saveFFT)
+  // save info
+  {
+    TIMER("save info");
+    //if(saveFFT)
+    std::string key_T = ssprintf("%d", 1);
+    std::string dimN  = ssprintf("src");
+    {
+      key_T = ssprintf("%d  %d  %d %d %d %d", int(massL.size()), fd.nt, mc, mc, mc, 2);
+      dimN  = ssprintf("masses nt pz py px complex");
+    }
+    std::string ktem(key_T);
+    std::string dtem(dimN);
+    corr_dat<Ta > mom_res(ktem, dtem);
+    mom_res.INFOA = srcI.INFOA;
+
+    std::string name_info = ssprintf("%s.GInfo", srcI.name_mom_vecs.c_str());
     mom_res.INFO_LIST = POS_LIST;
     mom_res.INFOA.push_back( GRID_INFO );
     readuce_input_Coordinate_info(mom_res.INFO_LIST, mom_res.INFOA);
-    mom_res.write_dat(name_mom);
+    mom_res.write_dat(name_info);
   }
 
-  if(savezero and srcI.save_full_vec == 0){
-    save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO);
-    //TIMER("lms savezero");
-    //////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
-    //Qassert(resZero0.size() == 32*nmass*Vol);
-    //const Long nvec = resZero0.size()/Vol;
-    //print0("=====vec %d \n", int(nvec));
-    //if(Long(Vzero_data.size() ) != nvec){
-    //  Vzero_data.resize(0);Vzero_data.resize(nvec);
-    //  for(Long iv=0;iv<nvec;iv++){
-    //    if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
-    //  }
-    //}
-    //for(Long iv=0;iv<nvec;iv++){
-    //  Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
-    //  cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, QTRUE);
-    //}
+  if(do_hadron_contra){
+    if(savezero and srcI.save_full_vec == 0){
+      save_sink_vecs(resZero, geo, nmass, srcI, GRID_INFO);
+      //TIMER("lms savezero");
+      //////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
+      //Qassert(resZero0.size() == 32*nmass*Vol);
+      //const Long nvec = resZero0.size()/Vol;
+      //print0("=====vec %d \n", int(nvec));
+      //if(Long(Vzero_data.size() ) != nvec){
+      //  Vzero_data.resize(0);Vzero_data.resize(nvec);
+      //  for(Long iv=0;iv<nvec;iv++){
+      //    if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
+      //  }
+      //}
+      //for(Long iv=0;iv<nvec;iv++){
+      //  Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
+      //  cpy_data_thread(resP, &resZero[iv*Vol], geo.local_volume(), 1, QTRUE);
+      //}
 
-    ////save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
-    //save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, GRID_INFO);
-  }
-
-  if(save_zero_corr){
-    if(shift_t == 1){
-      shift_result_t(EresL, fd.nt, tini);
-      shift_result_t(EresH, fd.nt, tini);
-      shift_result_t(EresA, fd.nt, tini);
+      ////save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
+      //save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, GRID_INFO);
     }
-    ////subtract high mode from EresA
-    cpy_data_thread(EresA.data(), EresH.data(), EresA.size(), 1, QTRUE, -1.0*Nlms);
-    res.write_corr((Ty*) EresL.data(), EresL.size());
-    res.write_corr((Ty*) EresH.data(), EresH.size());
-    res.write_corr((Ty*) EresA.data(), EresA.size());
+
+    if(save_zero_corr){
+      if(shift_t == 1){
+        shift_result_t(EresL, fd.nt, tini);
+        shift_result_t(EresH, fd.nt, tini);
+        shift_result_t(EresA, fd.nt, tini);
+      }
+      ////subtract high mode from EresA
+      cpy_data_thread(EresA.data(), EresH.data(), EresA.size(), 1, QTRUE, -1.0*Nlms);
+      res.write_corr((Ty*) EresL.data(), EresL.size());
+      res.write_corr((Ty*) EresH.data(), EresH.size());
+      res.write_corr((Ty*) EresA.data(), EresA.size());
+    }
   }
 
   print_mem_info("END point_corr");

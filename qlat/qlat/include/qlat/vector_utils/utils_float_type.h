@@ -114,6 +114,11 @@ enum QMEM{
   QMGPU  =  1
 };
 
+enum QMEM_ORDER{
+  QLAT_DEFAULT,// default t,z,y,x : multiplicity
+  QLAT_OUTTER  //  multiplicity : t, z, y, x
+};
+
 inline QMEM get_type_mem(QMEM g){
   return g;
 }

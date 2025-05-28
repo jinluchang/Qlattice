@@ -13,6 +13,8 @@
 #include "utils_reduce_vec.h"
 #include "utils_grid_src.h"
 #include "utils_shift_vecs.h"
+#include "utils_field_operations.h"
+#include "utils_field_gpu.h"
 
 #define QLAT_PI_LOCAL 3.1415926535898
 
@@ -207,6 +209,38 @@ void Gprop_sink_gamma(EigenTy& prop, ga_M& ga, bool conj = false){
     if(!conj)qprop_src_gamma_T<Ty, 1, false>(res, ga, prop[iv].size()/(12*12));
     if( conj)qprop_src_gamma_T<Ty, 1, true >(res, ga, prop[iv].size()/(12*12));
   }
+}
+
+// can be expanded fields and selected fields
+template<class Fieldy>
+void fieldG_src_gamma(Fieldy& prop, ga_M& ga, bool conj = false, const bool srcG = true){
+  Qassert(prop.initialized);
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  using D = typename GetBasicDataType<Fieldy>::ElementaryType;
+  Qassert(IsBasicTypeReal<D>());
+
+  Qassert(prop.multiplicity % (12 * 12) == 0);
+  Qassert(prop.mem_order == QLAT_OUTTER);
+  const int Nvec   = prop.multiplicity / (12 * 12);
+  const Long Nd    = prop.field.size() / Nvec;
+  const Long Nsize = prop.field.size() / (prop.multiplicity);
+  ComplexT<D >* p = (ComplexT<D >*) get_data(prop).data();
+  for(int iv=0;iv<Nvec;iv++){
+    ComplexT<D >* res = &p[iv * Nd];
+    if(srcG){
+      if(!conj)qprop_src_gamma_T<ComplexT<D >, 0, false>(res, ga, Nsize);
+      if( conj)qprop_src_gamma_T<ComplexT<D >, 0, true >(res, ga, Nsize);
+    }else{
+      if(!conj)qprop_src_gamma_T<ComplexT<D >, 1, false>(res, ga, Nsize);
+      if( conj)qprop_src_gamma_T<ComplexT<D >, 1, true >(res, ga, Nsize);
+    }
+
+  }
+}
+
+template<class Fieldy>
+void fieldG_sink_gamma(Fieldy& prop, ga_M& ga, bool conj = false){
+  fieldG_src_gamma(prop, ga, conj, false);
 }
 
 template<typename Ty>

@@ -19,6 +19,7 @@
 #include <iterator>
 #include "utils_read_txt.h"
 #include "utils_vector_GPU.h"
+#include "utils_field_gpu.h"
 
 namespace qlat
 {
@@ -34,6 +35,94 @@ void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
   if(num%(sizeof(std::int32_t )) == 0){curr = MPI_INT32_T ; size=sizeof(std::int32_t );return;}
   if(num%(sizeof(std::int16_t )) == 0){curr = MPI_INT16_T ; size=sizeof(std::int16_t );return;}
   if(num%(sizeof(std::int8_t  )) == 0){curr = MPI_INT8_T  ; size=sizeof(std::int8_t  );return;}
+}
+
+template<typename D>
+bool IsBasicTypeReal(){
+  // RealD, RealF, RealDD
+  using M1 = typename IsBasicDataType<D>::ElementaryType;
+  std::string type = IsBasicDataType<M1>::get_type_name();
+  if(type == std::string("RealF") or type == std::string("RealD") or type == std::string("RealDD")){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+template <class M>
+struct GetBasicDataType {
+  static const std::string get_type_name() { return "unknown_type"; }
+  using ElementaryType = M;
+};
+
+template <typename N >
+struct GetBasicDataType<SelectedField<N > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
+template <typename N >
+struct GetBasicDataType<SelectedFieldG<N > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
+template <typename N >
+struct GetBasicDataType<Field<N > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
+template <typename N >
+struct GetBasicDataType<FieldG<N > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
+
+
+template <typename N, int civ >
+struct GetBasicDataType<FieldM<N, civ > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
+template <typename D>
+struct GetBasicDataType<GaugeFieldT<D> > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<ColorMatrixT<D>>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<ColorMatrixT<D>>::ElementaryType;
+};
+
+template <typename D>
+struct GetBasicDataType<Propagator4dT<D> > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<WilsonMatrixT<D>>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<WilsonMatrixT<D>>::ElementaryType;
+};
+
+template <class M>
+qacc Long GetFieldSize(const Field<M>& f)
+{
+  return f.field.size() * sizeof(M);
+}
+
+template <class M>
+qacc Long GetFieldSize(const SelectedField<M>& f)
+{
+  return f.field.size() * sizeof(M);
 }
 
 // template<class M>
@@ -970,7 +1059,6 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //  //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf0"), GPU);
 //  //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf1"), GPU);
 //}
-
 
 }
 

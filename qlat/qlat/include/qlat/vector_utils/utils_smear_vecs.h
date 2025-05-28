@@ -1202,7 +1202,8 @@ struct smear_fun{
 
     ////for_update == -1; do not check gauge sum
 
-    const Long gf_data_size = get_expanded_data_size(gf) / sizeof(Td);
+    //const Long gf_data_size = get_expanded_data_size(gf) / sizeof(Td);
+    const Long gf_data_size = GetFieldSize(gf) / sizeof(Td);
     if(force_update == 0){
       crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), gf_data_size );
       if(gauge_checksum != tmp_gauge_checksum ){update = true;}
@@ -1929,6 +1930,7 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
 }
 
 ////Td is double or float
+// gassian normalization -1, meson w^{-3 * 2}, baryon w^{-3 * 3}
 template <class Ty, int c0,int d0, class Td>
 void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)

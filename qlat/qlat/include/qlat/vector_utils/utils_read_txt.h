@@ -1084,12 +1084,12 @@ struct corr_dat
   //}
 
   ////write mode
-  corr_dat<Ty >(const std::string& key, const std::string& dimN = "NONE", const std::string& corr="NONE"){
+  corr_dat(const std::string& key, const std::string& dimN = "NONE", const std::string& corr="NONE"){
     create_dat(key, dimN, corr);
   }
 
   /////read mode
-  corr_dat<Ty >(const char* filename, const int node_control_ = 0){
+  corr_dat(const char* filename, const int node_control_ = 0){
     set_node_control(node_control_);
     int tmp = read_dat(filename);
     (void) tmp;
