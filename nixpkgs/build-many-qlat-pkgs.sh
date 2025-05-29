@@ -16,7 +16,7 @@ cd "$dst"
 
 time (
 
-for nix_version in "24.11" ; do
+for nix_version in "25.05" "24.11" ; do
     time nix-build "$src"/q-pkgs.nix -A qlat-name-list-file -o result-qlat-name-"$nix_version" --arg nixpkgs "import (fetchTarball \"https://channels.nixos.org/nixos-$nix_version/nixexprs.tar.xz\")" "$@"
     echo
     echo result-qlat-name-"$nix_version"
