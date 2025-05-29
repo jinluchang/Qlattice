@@ -418,6 +418,7 @@ let
       name = "qlat-env${qlat-name}";
       paths = builtins.attrValues qlat-pkgs;
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
+      ignoreCollisions = true;
     };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${qlat-name}";
