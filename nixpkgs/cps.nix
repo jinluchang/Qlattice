@@ -10,9 +10,16 @@
 , gsl
 , which
 , git
+, lib
 }:
 
 stdenv.mkDerivation rec {
+
+  env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
+    "-Wno-error=int-conversion"
+    "-Wno-error=incompatible-pointer-types"
+    "-Wno-error=implicit-function-declaration"
+    ];
 
   pname = "cps";
   version = "d3c8dd5e8a3ea6a315fd2fba963bf32585ed6331";
