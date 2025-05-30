@@ -215,7 +215,9 @@ let
       configureFlags = prev.configureFlags ++ [
         "--enable-mt"
       ];
-    })).override { enableCuda = opts.use-cuda-software; };
+    })).override {
+      enableCuda = opts.use-cuda-software;
+    };
     ucx-mt-dev = pkgs.buildEnv {
       name = "ucx-mt-dev";
       paths = [ ucx-mt ];
@@ -233,10 +235,14 @@ let
         "-Wno-error=incompatible-pointer-types"
         "-Wno-error=implicit-function-declaration"
       ];
-    })).override { cudaSupport = opts.use-cuda-software; };
+    })).override {
+      cudaSupport = opts.use-cuda-software;
+    };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
-        mpi4py = prev.mpi4py.overridePythonAttrs (py-prev: {
+        mpi4py = (prev.mpi4py.override {
+          mpi = mpi;
+        }).overridePythonAttrs (py-prev: {
           doCheck = true;
           nativeBuildInputs = (py-prev.nativeBuildInputs or [])
           ++ lib.optionals opts.use-cuda-software [

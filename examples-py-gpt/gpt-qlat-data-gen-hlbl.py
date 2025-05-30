@@ -810,6 +810,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     #
+    # larger value means less computation
     hlbl_four_contract_sparse_ratio = get_param(job_tag, "hlbl_four_contract_sparse_ratio")
     #
     psel_prob = get_psel_prob()
@@ -1813,7 +1814,7 @@ def run_auto_contraction(
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
     #
-    is_performing_saving_full_prop = get_param(job_tag, "is-performing-saving-full-prop", default=True)
+    is_performing_saving_full_prop = get_param(job_tag, "is_performing_saving_full_prop", default=True)
     #
     is_test = job_tag[:5] == "test-"
     #
@@ -1931,6 +1932,11 @@ def run_job_inversion(job_tag, traj):
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
+    num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
+    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
+    num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
+    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
+    #
     if get_fsel is None:
         q.clean_cache()
         return
@@ -1995,7 +2001,7 @@ def run_job_inversion(job_tag, traj):
 def run_job_contract(job_tag, traj):
     fname = q.get_fname()
     #
-    is_performing_auto_contraction = get_param(job_tag, "is-performing-auto-contraction", default=True)
+    is_performing_auto_contraction = get_param(job_tag, "is_performing_auto_contraction", default=True)
     #
     is_test = job_tag[:5] == "test-"
     #
@@ -2215,6 +2221,7 @@ def run_job_contract(job_tag, traj):
 
 # ----
 
+set_param("test-4nt8", "traj_list", value=[ 1000, 2000, ])
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
@@ -2237,74 +2244,72 @@ set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
 set_param("test-4nt8", "a_inv_gev")(1.73)
 set_param("test-4nt8", "zz_vv")(0.71)
+set_param("test-4nt8", "measurement", "psel_split_num_piece")(4)
+set_param("test-4nt8", "measurement", "fsel_psel_split_num_piece")(8)
+set_param("test-4nt8", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("test-4nt8", "hlbl_four_prob_scaling_factor_strange", value=1.0)
+set_param("test-4nt8", "hlbl_four_num_chunk", value=3)
+set_param("test-4nt8", "hlbl_four_contract_sparse_ratio", value=2.0) # larger value means less computation
+set_param("test-4nt8", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
+set_param("test-4nt8", "hlbl_two_plus_two_num_chunk", value=3)
 
+set_param("test-8nt16", "traj_list", value=[ 1000, 2000, ])
+set_param("test-8nt16", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("test-8nt16", "hlbl_four_prob_scaling_factor_strange", value=1.0)
+set_param("test-8nt16", "hlbl_four_num_chunk", value=6)
+set_param("test-8nt16", "hlbl_four_contract_sparse_ratio", value=2.0)
+set_param("test-8nt16", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
+set_param("test-8nt16", "hlbl_two_plus_two_num_chunk", value=6)
+
+set_param("24D", "traj_list", value=list(range(2000, 3000, 10)))
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)
 set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
 set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
 set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("24D", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("24D", "hlbl_four_prob_scaling_factor_strange", value=1.0)
+set_param("24D", "hlbl_four_num_chunk", value=512)
+set_param("24D", "hlbl_four_contract_sparse_ratio", value=10.0)
+set_param("24D", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-4)
+set_param("24D", "hlbl_two_plus_two_num_chunk", value=4)
 
+set_param("48I", "traj_list", value=list(range(975, 2185, 10)) + list(range(1102, 1502, 10)))
+set_param("48I", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("48I", "hlbl_four_prob_scaling_factor_strange", value=1.0)
+set_param("48I", "hlbl_four_num_chunk", value=1024)
+set_param("48I", "hlbl_four_contract_sparse_ratio", value=20.0)
+set_param("48I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
+set_param("48I", "hlbl_two_plus_two_num_chunk", value=8)
+
+set_param("64I", "traj_list", value=list(range(1200, 3680, 20)))
+set_param("64I", "is_performing_auto_contraction")(False)
+set_param("64I", "measurement", "psel_split_num_piece")(256)
+set_param("64I", "measurement", "fsel_psel_split_num_piece")(256)
+set_param("64I", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("64I", "hlbl_four_prob_scaling_factor_strange", value=1.0)
+set_param("64I", "hlbl_four_num_chunk", value=2048)
+set_param("64I", "hlbl_four_contract_sparse_ratio", value=20.0)
+set_param("64I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
+set_param("64I", "hlbl_two_plus_two_num_chunk", value=8)
+
+set_param("64I-pq", "traj_list", value=list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
 set_param("64I-pq", f"cg_params-0-0", "maxiter")(100)
 set_param("64I-pq", f"cg_params-0-1", "maxiter")(100)
 set_param("64I-pq", f"cg_params-0-2", "maxiter")(100)
 set_param("64I-pq", f"cg_params-0-0", "maxcycle")(4)
 set_param("64I-pq", f"cg_params-0-1", "maxcycle")(8)
 set_param("64I-pq", f"cg_params-0-2", "maxcycle")(150)
-
 set_param("64I-pq", "is_performing_inversion_if_no_full_prop_available")(True)
-set_param("64I-pq", "is-performing-saving-full-prop")(False)
-
-set_param("64I", "is-performing-auto-contraction")(False)
-set_param("64I-pq", "is-performing-auto-contraction")(False)
-
-set_param("test-4nt8", "traj_list", value=[ 1000, 2000, ])
-set_param("test-8nt16", "traj_list", value=[ 1000, 2000, ])
-set_param("24D", "traj_list", value=list(range(2000, 3000, 10)))
-set_param("48I", "traj_list", value=list(range(975, 2185, 10)) + list(range(1102, 1502, 10)))
-set_param("64I", "traj_list", value=list(range(1200, 3680, 20)))
-set_param("64I-pq", "traj_list", value=list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
-
-set_param("test-4nt8", "hlbl_four_prob_scaling_factor", value=1.0)
-set_param("test-8nt16", "hlbl_four_prob_scaling_factor", value=1.0)
-set_param("24D", "hlbl_four_prob_scaling_factor", value=1.0)
-set_param("48I", "hlbl_four_prob_scaling_factor", value=1.0)
-set_param("64I", "hlbl_four_prob_scaling_factor", value=1.0)
+set_param("64I-pq", "is_performing_saving_full_prop")(False)
+set_param("64I-pq", "is_performing_auto_contraction")(False)
+set_param("64I-pq", "measurement", "psel_split_num_piece")(256)
+set_param("64I-pq", "measurement", "fsel_psel_split_num_piece")(256)
 set_param("64I-pq", "hlbl_four_prob_scaling_factor", value=1.0)
-
-set_param("test-4nt8", "hlbl_four_prob_scaling_factor_strange", value=1.0)
-set_param("test-8nt16", "hlbl_four_prob_scaling_factor_strange", value=1.0)
-set_param("24D", "hlbl_four_prob_scaling_factor_strange", value=1.0)
-set_param("48I", "hlbl_four_prob_scaling_factor_strange", value=1.0)
-set_param("64I", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("64I-pq", "hlbl_four_prob_scaling_factor_strange", value=1.0)
-
-set_param("test-4nt8", "hlbl_four_num_chunk", value=3)
-set_param("test-8nt16", "hlbl_four_num_chunk", value=6)
-set_param("24D", "hlbl_four_num_chunk", value=512)
-set_param("48I", "hlbl_four_num_chunk", value=1024)
-set_param("64I", "hlbl_four_num_chunk", value=2048)
 set_param("64I-pq", "hlbl_four_num_chunk", value=2048)
-
-# larger value means less computation
-set_param("test-4nt8", "hlbl_four_contract_sparse_ratio", value=2.0)
-set_param("test-8nt16", "hlbl_four_contract_sparse_ratio", value=2.0)
-set_param("24D", "hlbl_four_contract_sparse_ratio", value=10.0)
-set_param("48I", "hlbl_four_contract_sparse_ratio", value=20.0)
-set_param("64I", "hlbl_four_contract_sparse_ratio", value=20.0)
 set_param("64I-pq", "hlbl_four_contract_sparse_ratio", value=20.0)
-
-set_param("test-4nt8", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
-set_param("test-8nt16", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
-set_param("24D", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-4)
-set_param("48I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
-set_param("64I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
 set_param("64I-pq", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
-
-set_param("test-4nt8", "hlbl_two_plus_two_num_chunk", value=3)
-set_param("test-8nt16", "hlbl_two_plus_two_num_chunk", value=6)
-set_param("24D", "hlbl_two_plus_two_num_chunk", value=4)
-set_param("48I", "hlbl_two_plus_two_num_chunk", value=8)
-set_param("64I", "hlbl_two_plus_two_num_chunk", value=8)
 set_param("64I-pq", "hlbl_two_plus_two_num_chunk", value=8)
 
 # ----
