@@ -240,9 +240,7 @@ let
     };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
-        mpi4py = (prev.mpi4py.override {
-          mpi = mpi;
-        }).overridePythonAttrs (py-prev: {
+        mpi4py = prev.mpi4py.overridePythonAttrs (py-prev: {
           doCheck = true;
           nativeBuildInputs = (py-prev.nativeBuildInputs or [])
           ++ lib.optionals opts.use-cuda-software [
