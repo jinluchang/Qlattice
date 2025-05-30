@@ -228,6 +228,11 @@ let
       in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
       ++ lib.optionals opts.use-cuda-software [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
       );
+      env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
+        "-Wno-error=int-conversion"
+        "-Wno-error=incompatible-pointer-types"
+        "-Wno-error=implicit-function-declaration"
+      ];
     })).override { cudaSupport = opts.use-cuda-software; };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
