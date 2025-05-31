@@ -164,19 +164,33 @@ in buildPythonPackage rec {
     #
     echo
     for i in * ; do
-    if [ -f "$i"/build/log.check.txt.new ] ; then
-      if diff "$i"/build/log.check.txt "$i"/build/log.check.txt.new ; then
-        echo "$i" passed
-      else
-        echo
-        cat "$i"/build/log.full
-        echo
-        echo "$i" failed
-        echo
-        false
+      if [ -f "$i"/build/log.check.txt.new ] ; then
+        if diff "$i"/build/log.check.txt "$i"/build/log.check.txt.new ; then
+          echo "$i" passed
+        else
+          echo
+          cat "$i"/build/log.full
+          echo
+          echo "$i" failed
+          echo
+        fi
       fi
-    fi
     done
+    echo
+    failed=false
+    for i in * ; do
+      if [ -f "$i"/build/log.check.txt.new ] ; then
+        if diff "$i"/build/log.check.txt "$i"/build/log.check.txt.new >/dev/null 2>&1 ; then
+          echo "$i" passed
+        else
+          echo "$i" failed
+          failed=true
+        fi
+      fi
+    done
+    if $failed ; then
+      false
+    fi
     echo
     #
     pwd

@@ -664,7 +664,7 @@ let
     { use-grid-gpt = false; use-cps = false; use-cudasupport = true; }
   ];
 
-  qlat-name-list = lib.lists.unique (map mk-qlat-name (map mk-options options-list));
+  qlat-name-list = lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list));
 
   qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
   (builtins.foldl' (s: v: s + "${v}\n") "" qlat-name-list);
@@ -676,13 +676,18 @@ let
     cp -v ${qlat-name-list-file-from-str} $out
   '';
 
-  q-pkgs = (builtins.foldl' (s: v: s // v) {}
-  (builtins.map mk-q-pkgs options-list))
-  // {
-    inherit mk-q-pkgs;
-    inherit mk-overlay;
-    inherit options-list qlat-name-list qlat-name-list-file-from-str;
-    inherit qlat-name-list-file;
-  };
+  q-pkgs-list = builtins.map mk-q-pkgs options-list;
 
-in q-pkgs
+  all-q-pkgs = builtins.foldl' (s: v: s // v) {} q-pkgs-list;
+
+  all-qlat-env = builtins.foldl' (s: v: s // { "qlat-env${v}" = all-q-pkgs."qlat-env${v}"; }) {} qlat-name-list;
+
+  all-qlat-tests = builtins.foldl' (s: v: s // { "qlat-tests${v}" = all-q-pkgs."qlat-tests${v}"; }) {} qlat-name-list;
+
+in all-q-pkgs // {
+  inherit mk-q-pkgs;
+  inherit mk-overlay;
+  inherit options-list qlat-name-list qlat-name-list-file-from-str;
+  inherit qlat-name-list-file;
+  inherit all-qlat-env all-qlat-tests;
+}

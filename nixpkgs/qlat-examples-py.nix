@@ -152,22 +152,36 @@ in buildPythonPackage rec {
     make update-sources SHELL=$SHELL
     echo
     make run -j$num_proc SHELL=$SHELL
-    echo
     #
+    echo
     for i in *.p ; do
-    if [ -d "$i" ] ; then
-      if diff "$i"/log.check.txt "$i"/log.check.txt.new ; then
-        echo "$i" passed
-      else
-        echo
-        cat "$i"/log.full.txt
-        echo
-        echo "$i" failed
-        echo
-        false
+      if [ -d "$i" ] ; then
+        if diff "$i"/log.check.txt "$i"/log.check.txt.new ; then
+          echo "$i" passed
+        else
+          echo
+          cat "$i"/log.full.txt
+          echo
+          echo "$i" failed
+          echo
+        fi
       fi
-    fi
     done
+    echo
+    failed=false
+    for i in *.p ; do
+      if [ -d "$i" ] ; then
+        if diff "$i"/log.check.txt "$i"/log.check.txt.new >/dev/null 2>&1 ; then
+          echo "$i" passed
+        else
+          echo "$i" failed
+          failed=true
+        fi
+      fi
+    done
+    if $failed ; then
+      false
+    fi
     echo
     #
     pwd
