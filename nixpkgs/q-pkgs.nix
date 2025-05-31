@@ -21,11 +21,11 @@ let
 
   runCommand = o-pkgs.runCommand;
 
-  n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable-small/nixexprs.tar.xz";
+  # n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable-small/nixexprs.tar.xz";
 
-  n-pkgs = import n-pkgs-src {
-    config.allowUnfree = true;
-  };
+  # n-pkgs = import n-pkgs-src {
+  #   config.allowUnfree = true;
+  # };
 
   nixgl-src = builtins.fetchGit {
     url = "https://github.com/jinluchang/nixGL";
@@ -210,7 +210,9 @@ let
     } else {}
     );
     #
-    ollama = n-pkgs.ollama;
+    # ollama = n-pkgs.ollama;
+    ollama = pkgs.ollama;
+    #
     ucx-mt = (pkgs.ucx.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++ [
         "--enable-mt"
@@ -275,13 +277,13 @@ let
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
         corrfitter = pkgs.python3.pkgs.callPackage ./corrfitter.nix { lsqfit = lsqfit; gvar = gvar; };
-        diffusers = pkgs.python3.pkgs.callPackage
-        (import "${n-pkgs-src}/pkgs/development/python-modules/diffusers/default.nix") {
-          jax = jax; diffusers = diffusers;
-        };
-        ollama = pkgs.python3.pkgs.callPackage
-        (import "${n-pkgs-src}/pkgs/development/python-modules/ollama/default.nix") {
-        };
+        # diffusers = pkgs.python3.pkgs.callPackage
+        # (import "${n-pkgs-src}/pkgs/development/python-modules/diffusers/default.nix") {
+        #   jax = jax; diffusers = diffusers;
+        # };
+        # ollama = pkgs.python3.pkgs.callPackage
+        # (import "${n-pkgs-src}/pkgs/development/python-modules/ollama/default.nix") {
+        # };
       };
     };
     #
