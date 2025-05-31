@@ -81,7 +81,7 @@ void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& sr
   {
     const Long bini = jobA[jobi*2 + 0]; const Long bcut = jobA[jobi*2+1];
 
-    qacc_for(index, Vol, {
+    qacc_for(index, (Long)Vol, {
       const Coordinate xl = geoA.coordinate_from_index(index);
       Coordinate x0;
       Coordinate x1;
