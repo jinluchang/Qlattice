@@ -653,10 +653,10 @@ let
     { use-grid-gpt = false; use-cps = false; use-ucx = false; }
     { use-grid-gpt = false; use-cps = false; use-clang = true; use-ucx = false; }
     #
-    # { use-clang = true; } # not working yet
-    # { use-clang = true; use-ucx = false; } # not working yet
-    # { use-cps = false; use-clang = true; use-ucx = false; } # not working yet
-    # { use-cps = false; use-clang = true; } # not working yet
+    { use-clang = true; }
+    { use-clang = true; use-ucx = false; }
+    { use-cps = false; use-clang = true; use-ucx = false; }
+    { use-cps = false; use-clang = true; }
     #
     { use-cuda = true; use-ucx = false; }
     { use-grid-gpt = false; use-cps = false; use-cuda-software = true; }

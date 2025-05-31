@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
+import gpt as g
 import qlat as q
-
 import qlat_gpt as qg
-from qlat_scripts.v1 import *
+from qlat_scripts.v1 import (
+        get_param,
+        set_param,
+        mk_inverter,
+        )
 import subprocess
 
 qg.begin_with_gpt()

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from auto_contractor.operators import *
-
 import functools
 import math
 import os
@@ -12,6 +10,7 @@ import sys
 import qlat_gpt as qg
 
 from qlat_scripts.v1 import *
+from auto_contractor.operators import *
 
 is_cython = False
 

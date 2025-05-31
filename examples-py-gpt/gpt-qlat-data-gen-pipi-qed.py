@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 
-def json_results_append(*args):
-    q.displayln_info(r"//------------------------------------------------------------\\")
-    q.displayln_info(-1, *args)
-    q.displayln_info(r"\\------------------------------------------------------------//")
-    json_results.append(args)
-
-from auto_contractor.operators import *
-
 import functools
 import math
 import os
@@ -18,6 +10,7 @@ import sys
 import qlat_gpt as qg
 
 from qlat_scripts.v1 import *
+from auto_contractor.operators import *
 
 is_cython = False
 

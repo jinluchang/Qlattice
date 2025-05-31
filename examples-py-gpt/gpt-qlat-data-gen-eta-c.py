@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+import functools
+import math
+import os
+import time
+import importlib
+import sys
+
+import qlat_gpt as qg
+import qlat as q
+import qlat_scripts.v1 as qs
+import numpy as np
+
 from auto_contractor import (
         mk_meson,
         mk_fac,
@@ -23,18 +35,6 @@ from qlat_scripts.v1 import (
         get_load_path,
         get_save_path,
         )
-
-import functools
-import math
-import os
-import time
-import importlib
-import sys
-
-import qlat as q
-import qlat_gpt as qg
-import qlat_scripts.v1 as qs
-import numpy as np
 
 is_cython = False
 
