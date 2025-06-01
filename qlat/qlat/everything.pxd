@@ -320,9 +320,11 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
     void set_point_src(
             Prop& prop, const Geometry& geo_input,
             const Coordinate& xg, const ComplexD& value) except +
-    void set_rand_vol_u1_src(
-            Prop& prop, Field[ComplexD]& fu1,
+    void set_rand_vol_u1(
+            Field[ComplexD]& fu1,
             const Geometry& geo_input, const RngState& rs) except +
+    void set_rand_vol_u1_src(
+            Prop& prop, const Field[ComplexD]& fu1) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 

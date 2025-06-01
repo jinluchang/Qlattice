@@ -1810,6 +1810,118 @@ def run_auto_contraction(
 
 # ----
 
+@q.timer
+def run_prop_sparse_rand_u1_src(
+        job_tag, traj,
+        *,
+        inv_type,
+        get_gf,
+        get_psel_list=None,
+        get_fsel_psel_list=None,
+        get_fsel,
+        get_eig=None,
+        ):
+    """
+    fsel should contain psel
+    Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
+    """
+
+    fname = q.get_fname()
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
+    quark_flavor = quark_flavor_list[inv_type]
+    if get_psel_list is not None:
+        assert get_fsel_psel_list is None
+        psel_list_type = "psel"
+    elif get_fsel_psel_list is not None:
+        psel_list = get_fsel_psel_list()
+        psel_list_type = "fsel"
+    else:
+        assert False
+    path_s = f"{job_tag}/prop-rand-u1-{psel_list_type}-sparse-{quark_flavor}/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-rand-u1-{psel_list_type}-sparse-{quark_flavor}/traj-{traj}"
+    if get_load_path(path_s + "/geon-info.txt") is not None:
+        assert get_load_path(path_sp + "/checkpoint.txt") is not None
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{psel_list_type}-{quark_flavor}"):
+        return
+    gf = get_gf()
+    geo = gf.geo
+    fsel = get_fsel()
+    if psel_list_type == "psel":
+        assert get_psel_list is not None
+        assert get_fsel_psel_list is None
+        psel_list = get_psel_list()
+    elif psel_list_type == "fsel":
+        assert get_psel_list is None
+        assert get_fsel_psel_list is not None
+        psel_list = get_fsel_psel_list()
+    else:
+        assert False
+    total_site = geo.total_site
+    if get_eig is None:
+        eig = None
+    else:
+        eig = get_eig()
+    gt = None
+    prob_acc_1_rand_sparse_u1 = get_param(job_tag, "prob_acc_1_rand_u1_sparse")
+    prob_acc_2_rand_sparse_u1 = get_param(job_tag, "prob_acc_2_rand_u1_sparse")
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
+    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
+    rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
+    rs_ama = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
+    @q.timer
+    def compute_and_save(idx_psel, inv_acc):
+        tag = f"idx_psel={idx_psel} ; type={inv_type} ; accuracy={inv_acc}"
+        if tag in sfw:
+            assert f"{tag} ; fu1" in sfw
+            if q.get_id_node() == 0:
+                assert f"{tag} ; src ; psel.lati" in qar_sp
+                assert f"{tag} ; src ; fu1.lat" in qar_sp
+                assert f"{tag}.lat" in qar_sp
+            return
+        if q.get_id_node() == 0:
+            if f"{tag}.lat" in qar_sp:
+                q.displayln_info(-1, f"WARNING: {fname}: '{tag}.lat' already exist in {qar_sp.path()}")
+        if f"{tag} ; fu1" in sfw:
+            q.displayln_info(-1, f"WARNING: {fname}: '{tag} ; fu1' already exist in {sfw.path()}")
+        q.check_stop()
+        q.check_time_limit()
+        rsi = rs_rand_u1.split(str(idx_rand_vol_u1))
+        fu1 = q.mk_rand_vol_u1(geo, rsi)
+        prop_src = q.mk_rand_vol_u1_src(fu1)
+        inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
+        prop_sol = inv * prop_src
+        s_prop = q.SelProp(fsel)
+        ps_prop = q.PselProp(psel)
+        s_prop @= prop_sol
+        ps_prop @= prop_sol
+        qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
+        fu1.save_float_from_double(sfw, f"{tag} ; fu1", skip_if_exist=True)
+        s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
+        qar_sp.flush()
+        sfw.flush()
+    for idx_rand_vol_u1 in range(num_prop_rand_vol_u1):
+        r = rs_ama.split(str(idx_rand_vol_u1)).u_rand_gen()
+        inv_acc = 0
+        assert 0 <= r and r <= 1
+        compute_and_save(idx_rand_vol_u1, inv_acc)
+        inv_acc = 1
+        if r <= prob_acc_1_rand_vol_u1:
+            compute_and_save(idx_rand_vol_u1, inv_acc)
+        inv_acc = 2
+        if r <= prob_acc_2_rand_vol_u1:
+            compute_and_save(idx_rand_vol_u1, inv_acc)
+    sfw.close()
+    qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_sp.flush()
+    qar_sp.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.clean_cache(q.cache_inv)
+    q.release_lock()
+    return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
+
+# ----
+
 @q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
@@ -2225,6 +2337,8 @@ set_param("test-4nt8", "traj_list", value=[ 1000, 2000, ])
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
+set_param("test-4nt8", "quark_mass_list")([ 0.01, 0.04, 0.2, ])
+set_param("test-4nt8", "quark_flavor_list")([ "light", "strange", "charm-1", ])
 set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
@@ -2240,18 +2354,20 @@ set_param("test-4nt8", "cg_params-0-2", "maxcycle")(3)
 set_param("test-4nt8", "cg_params-1-0", "maxcycle")(1)
 set_param("test-4nt8", "cg_params-1-1", "maxcycle")(2)
 set_param("test-4nt8", "cg_params-1-2", "maxcycle")(3)
-set_param("test-4nt8", "cg_params-0-2", "pv_maxiter", value=5)
-set_param("test-4nt8", "cg_params-1-2", "pv_maxiter", value=5)
+set_param("test-4nt8", "cg_params-0-2", "pv_maxiter")(5)
+set_param("test-4nt8", "cg_params-1-2", "pv_maxiter")(5)
 set_param("test-4nt8", "a_inv_gev")(1.73)
 set_param("test-4nt8", "zz_vv")(0.71)
+set_param("test-4nt8", "prob_acc_1_rand_u1_sparse")(1/4)
+set_param("test-4nt8", "prob_acc_2_rand_u1_sparse")(1/16)
 set_param("test-4nt8", "measurement", "psel_split_num_piece")(4)
 set_param("test-4nt8", "measurement", "fsel_psel_split_num_piece")(8)
-set_param("test-4nt8", "hlbl_four_prob_scaling_factor", value=1.0)
-set_param("test-4nt8", "hlbl_four_prob_scaling_factor_strange", value=1.0)
-set_param("test-4nt8", "hlbl_four_num_chunk", value=3)
-set_param("test-4nt8", "hlbl_four_contract_sparse_ratio", value=2.0) # larger value means less computation
-set_param("test-4nt8", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-3)
-set_param("test-4nt8", "hlbl_two_plus_two_num_chunk", value=3)
+set_param("test-4nt8", "hlbl_four_prob_scaling_factor")(1.0)
+set_param("test-4nt8", "hlbl_four_prob_scaling_factor_strange")(1.0)
+set_param("test-4nt8", "hlbl_four_num_chunk")(3)
+set_param("test-4nt8", "hlbl_four_contract_sparse_ratio")(2.0) # larger value means less computation
+set_param("test-4nt8", "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-3)
+set_param("test-4nt8", "hlbl_two_plus_two_num_chunk")(3)
 
 set_param("test-8nt16", "traj_list", value=[ 1000, 2000, ])
 set_param("test-8nt16", "hlbl_four_prob_scaling_factor", value=1.0)
@@ -2365,12 +2481,9 @@ if __name__ == "__main__":
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
 
-    q.check_log_json(__file__)
-
     q.timer_display()
-
+    q.check_log_json(__file__)
     qg.end_with_gpt()
-
     q.displayln_info("CHECK: finished successfully.")
 
 # ----

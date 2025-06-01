@@ -366,16 +366,15 @@ inline void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
   });
 }
 
-inline void set_rand_vol_u1_src(Propagator4d& prop, Field<ComplexD>& fu1,
+inline void set_rand_vol_u1(
+    Field<ComplexD>& fu1,
     const Geometry& geo_input, const RngState& rs)
   // fu1.multiplicity == 1
 {
-  TIMER_VERBOSE("set_rand_vol_u1_src");
+  TIMER_VERBOSE("set_rand_vol_u1");
   const Geometry geo = geo_resize(geo_input);
   const Coordinate total_site = geo.total_site();
-  prop.init(geo);
   fu1.init(geo, 1);
-  set_zero(prop);
   set_zero(fu1);
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -385,8 +384,23 @@ inline void set_rand_vol_u1_src(Propagator4d& prop, Field<ComplexD>& fu1,
     RngState rst = rs.newtype(gindex);
     const RealD phase = u_rand_gen(rst, PI, -PI);
     const ComplexD u1 = qpolar(1.0, phase);
-    set_unit(prop.get_elem(xl), u1);
     fu1.get_elem(xl) = u1;
+  });
+}
+
+inline void set_rand_vol_u1_src(
+    Propagator4d& prop,
+    const Field<ComplexD>& fu1)
+  // fu1.multiplicity == 1
+{
+  TIMER_VERBOSE("set_rand_vol_u1_src");
+  const Geometry geo = geo_resize(fu1.geo());
+  prop.init(geo);
+  set_zero(prop);
+  qthread_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const ComplexD u1 = fu1.get_elem(xl);
+    set_unit(prop.get_elem(xl), u1);
   });
 }
 
