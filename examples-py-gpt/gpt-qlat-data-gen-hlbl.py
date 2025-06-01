@@ -1810,22 +1810,22 @@ def run_auto_contraction(
 
 # ----
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_prop_sparse_rand_u1_src(
         job_tag, traj,
         *,
         inv_type,
         get_gf,
-        get_psel_list=None,
-        get_fsel_psel_list=None,
+        get_psel,
         get_fsel,
         get_eig=None,
+        get_psel_list=None,
+        get_fsel_psel_list=None,
         ):
     """
     fsel should contain psel
     Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
     """
-
     fname = q.get_fname()
     quark_flavor_list = get_param(job_tag, "quark_flavor_list")
     quark_flavor = quark_flavor_list[inv_type]
@@ -1847,6 +1847,7 @@ def run_prop_sparse_rand_u1_src(
     gf = get_gf()
     geo = gf.geo
     fsel = get_fsel()
+    psel = get_psel()
     if psel_list_type == "psel":
         assert get_psel_list is not None
         assert get_fsel_psel_list is None
@@ -1868,15 +1869,22 @@ def run_prop_sparse_rand_u1_src(
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
+    fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1)
+    fu1_dag = q.FieldComplexD(geo, 1)
+    fu1_dag[:] = fu1[:].conj()
+    fu1_from_sp = q.FieldComplexD(geo, 1)
     rs_ama = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
     @q.timer
-    def compute_and_save(idx_psel, inv_acc):
-        tag = f"idx_psel={idx_psel} ; type={inv_type} ; accuracy={inv_acc}"
+    def compute_and_save(idx_psel, is_dagger, inv_acc):
+        nonlocal fu1_from_sp
+        assert 0 <= idx_psel < len(psel_list)
+        assert is_dagger in [ 0, 1, ]
+        tag = f"idx_psel={idx_psel} ; is_dagger={is_dagger} ; type={inv_type} ; accuracy={inv_acc}"
         if tag in sfw:
-            assert f"{tag} ; fu1" in sfw
             if q.get_id_node() == 0:
-                assert f"{tag} ; src ; psel.lati" in qar_sp
-                assert f"{tag} ; src ; fu1.lat" in qar_sp
+                assert f"{tag} ; psel_rand_src.lati" in qar_sp
+                assert f"{tag} ; psel_rand_src ; fu1.lat" in qar_sp
+                assert f"{tag} ; psel_rand_src ; prop.lat" in qar_sp
                 assert f"{tag}.lat" in qar_sp
             return
         if q.get_id_node() == 0:
@@ -1886,31 +1894,45 @@ def run_prop_sparse_rand_u1_src(
             q.displayln_info(-1, f"WARNING: {fname}: '{tag} ; fu1' already exist in {sfw.path()}")
         q.check_stop()
         q.check_time_limit()
-        rsi = rs_rand_u1.split(str(idx_rand_vol_u1))
-        fu1 = q.mk_rand_vol_u1(geo, rsi)
-        prop_src = q.mk_rand_vol_u1_src(fu1)
-        inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
+        psel_rand_src = psel_list[idx_psel]
+        sp_fu1 = q.SelectedPointsComplexD(psel_rand_src, 1)
+        sp_fu1.set_zero()
+        if is_dagger == 0:
+            sp_fu1 @= fu1
+        elif is_dagger == 1:
+            sp_fu1 @= fu1_dag
+        else:
+            assert False
+        fu1_from_sp.set_zero()
+        fu1_from_sp @= sp_fu1
+        prop_src = q.mk_rand_vol_u1_src(fu1_from_sp)
+        inv = get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
         prop_sol = inv * prop_src
         s_prop = q.SelProp(fsel)
         ps_prop = q.PselProp(psel)
+        ps_prop_prs = q.PselProp(psel_rand_src)
         s_prop @= prop_sol
         ps_prop @= prop_sol
+        ps_prop_prs @= prop_sol
+        qar_sp.write(f"{tag} ; psel_rand_src.lati", "", psel_rand_src.save_str(), skip_if_exist=True)
+        qar_sp.write(f"{tag} ; psel_rand_src ; fu1.lat", "", sp_fu1.save_str(), skip_if_exist=True)
+        qar_sp.write(f"{tag} ; psel_rand_src ; prop.lat", "", ps_prop_prs.save_str(), skip_if_exist=True)
         qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
-        fu1.save_float_from_double(sfw, f"{tag} ; fu1", skip_if_exist=True)
-        s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
         qar_sp.flush()
+        s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
         sfw.flush()
-    for idx_rand_vol_u1 in range(num_prop_rand_vol_u1):
-        r = rs_ama.split(str(idx_rand_vol_u1)).u_rand_gen()
-        inv_acc = 0
+    for idx_psel in range(len(psel_list)):
+        r = rs_ama.split(str(idx_psel)).u_rand_gen()
         assert 0 <= r and r <= 1
-        compute_and_save(idx_rand_vol_u1, inv_acc)
-        inv_acc = 1
-        if r <= prob_acc_1_rand_vol_u1:
-            compute_and_save(idx_rand_vol_u1, inv_acc)
-        inv_acc = 2
-        if r <= prob_acc_2_rand_vol_u1:
-            compute_and_save(idx_rand_vol_u1, inv_acc)
+        for is_dagger in [ 0, 1, ]:
+            inv_acc = 0
+            compute_and_save(idx_psel, is_dagger, inv_acc)
+            if r <= prob_acc_1_rand_sparse_u1:
+                inv_acc = 1
+                compute_and_save(idx_psel, is_dagger, inv_acc)
+            if r <= prob_acc_2_rand_sparse_u1:
+                inv_acc = 2
+                compute_and_save(idx_psel, is_dagger, inv_acc)
     sfw.close()
     qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
     qar_sp.flush()
@@ -2071,6 +2093,8 @@ def run_job_inversion(job_tag, traj):
             # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
             # v = run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
             # add_to_run_ret_list(v)
+            v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=0, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_eig=get_eig, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list)
+            add_to_run_ret_list(v)
             v = run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
             add_to_run_ret_list(v)
             # v = run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
@@ -2082,6 +2106,7 @@ def run_job_inversion(job_tag, traj):
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
         # v = run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
         # add_to_run_ret_list(v)
+        v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=1, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_eig=get_eig, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list)
         v = run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
         add_to_run_ret_list(v)
         # v = run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
@@ -2400,6 +2425,8 @@ set_param("48I", "hlbl_two_plus_two_num_chunk", value=8)
 
 set_param("64I", "traj_list", value=list(range(1200, 3680, 20)))
 set_param("64I", "is_performing_auto_contraction")(False)
+set_param("64I", "prob_acc_1_rand_u1_sparse")(1/32)
+set_param("64I", "prob_acc_2_rand_u1_sparse")(1/128)
 set_param("64I", "measurement", "psel_split_num_piece")(256)
 set_param("64I", "measurement", "fsel_psel_split_num_piece")(256)
 set_param("64I", "hlbl_four_prob_scaling_factor", value=1.0)
@@ -2410,17 +2437,19 @@ set_param("64I", "hlbl_two_plus_two_num_hvp_sel_threshold", value=5e-5)
 set_param("64I", "hlbl_two_plus_two_num_chunk", value=8)
 
 set_param("64I-pq", "traj_list", value=list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
-set_param("64I-pq", f"cg_params-0-0", "maxiter")(100)
-set_param("64I-pq", f"cg_params-0-1", "maxiter")(100)
-set_param("64I-pq", f"cg_params-0-2", "maxiter")(100)
-set_param("64I-pq", f"cg_params-0-0", "maxcycle")(4)
-set_param("64I-pq", f"cg_params-0-1", "maxcycle")(8)
-set_param("64I-pq", f"cg_params-0-2", "maxcycle")(150)
+set_param("64I-pq", "cg_params-0-0", "maxiter")(100)
+set_param("64I-pq", "cg_params-0-1", "maxiter")(100)
+set_param("64I-pq", "cg_params-0-2", "maxiter")(100)
+set_param("64I-pq", "cg_params-0-0", "maxcycle")(4)
+set_param("64I-pq", "cg_params-0-1", "maxcycle")(8)
+set_param("64I-pq", "cg_params-0-2", "maxcycle")(150)
 set_param("64I-pq", "is_performing_inversion_if_no_full_prop_available")(True)
 set_param("64I-pq", "is_performing_saving_full_prop")(False)
 set_param("64I-pq", "is_performing_auto_contraction")(False)
 set_param("64I-pq", "measurement", "psel_split_num_piece")(256)
 set_param("64I-pq", "measurement", "fsel_psel_split_num_piece")(256)
+set_param("64I-pq", "prob_acc_1_rand_u1_sparse")(1/32)
+set_param("64I-pq", "prob_acc_2_rand_u1_sparse")(1/128)
 set_param("64I-pq", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("64I-pq", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("64I-pq", "hlbl_four_num_chunk", value=2048)
