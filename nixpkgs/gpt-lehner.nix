@@ -22,7 +22,7 @@ in
 buildPythonPackage rec {
 
   pname = "gpt-lehenr";
-  version = "51f54d02dfd5c1618928f935f480d96ee8433dcd";
+  version = "861e8ee38beb6c97638cf8fdc1a024b04618961f";
 
   pyproject = false;
 

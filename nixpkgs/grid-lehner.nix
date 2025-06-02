@@ -33,7 +33,7 @@ let
 in grid-stdenv.mkDerivation rec {
 
   pname = "Grid-lehner";
-  version = "cc67283c4f9f0c4a0dccfadb03cb017ce75af997";
+  version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2";
 
   src = builtins.fetchGit {
     url = "https://github.com/lehner/Grid";
