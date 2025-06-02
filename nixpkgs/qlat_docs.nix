@@ -24,15 +24,18 @@
 , nvcc-arch ? "sm_86"
 , nixgl ? ""
 , use-pypi ? null
+, use-gitee ? null
 }:
 
 let
+
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
 
   orig-stdenv = stdenv;
 
   version-pypi = use-pypi;
   qlat-src-pypi = builtins.fetchGit {
-    url = "https://github.com/jinluchang/Qlattice";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
     ref = "refs/tags/v${version-pypi}";
   };
 

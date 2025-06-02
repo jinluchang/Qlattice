@@ -2,15 +2,18 @@
 , fetchzip
 , mpi
 , qmp
+, use-gitee ? null
 }:
 
-stdenv.mkDerivation rec {
+let
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in stdenv.mkDerivation rec {
 
   pname = "qio";
   version = "3.0.0";
 
   src = fetchzip {
-    url = "http://usqcd-software.github.io/downloads/qio/qio-${version}.tar.gz";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/qio-${version}.tar.gz" else "https://github.com/jinluchang/Qlattice-distfiles/raw/main/distfiles/qio-${version}.tar.gz";
     hash = "sha256-IDAna0ffc2SE+2+uCOurGXF9+wqikkK8HggVztZX/xM=";
   };
 

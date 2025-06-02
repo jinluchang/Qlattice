@@ -22,22 +22,20 @@
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
 , cpuinfo ? "flags : avx2"
+, use-gitee ? null
 }:
 
 let
-
   grid-stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv;
-
   cpuinfo-has-avx2 = (builtins.match ".*flags.*:.*avx2.*" cpuinfo) != null;
-
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
 in grid-stdenv.mkDerivation rec {
 
   pname = "Grid-lehner";
   version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2";
 
   src = builtins.fetchGit {
-    url = "https://github.com/lehner/Grid";
-    ref = "main";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/grid" else "https://github.com/lehner/Grid";
     rev = version;
   };
 

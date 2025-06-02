@@ -1,15 +1,26 @@
 {
-  nixpkgs ? import ./nixpkgs.nix {},
+  nixpkgs ? null, # nixpkgs
+  version ? null, # version of the nixpkgs
   ngpu ? null, # adjust with desired number of GPUs. E.g. "2"
   cudaCapability ? null, # adjust with desired cudaCapability. E.g. "8.6"
   cudaForwardCompat ? null, # adjust with desired cudaForwardCompat. E.g. false
+  use-gitee ? null, # true or false (default false)
 }:
 
 let
 
+  version-wd = if version == null then "25.05" else version;
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+  nixpkgs-default = import ./nixpkgs.nix {
+    version = version-wd;
+    use-gitee = use-gitee-wd;
+  };
+  nixpkgs-wd = if nixpkgs == null then nixpkgs-default else nixpkgs;
+  import-nixpkgs-wd = import nixpkgs-wd;
+
   version-pypi = "0.79";
 
-  o-pkgs = nixpkgs {
+  o-pkgs = import-nixpkgs-wd {
     config.allowUnfree = true;
   };
 
@@ -28,7 +39,7 @@ let
   # };
 
   nixgl-src = builtins.fetchGit {
-    url = "https://github.com/jinluchang/nixGL";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/nixGL" else "https://github.com/jinluchang/nixGL";
     ref = "main";
     rev = "0666d975fb80a7e8bedb4caafff8f113c5b14072";
   };
@@ -173,6 +184,8 @@ let
     #
     call-pkg = prev.callPackage;
     py-call-pkg = python3.pkgs.callPackage;
+    #
+    use-gitee = use-gitee-wd;
     #
     qlat-name = mk-qlat-name opts;
     #
@@ -601,6 +614,7 @@ let
     #
   in {
     inherit qlat-name;
+    inherit use-gitee;
     inherit qlat-nixgl;
     inherit python3 mpi openmp ucx-mt ucx-mt-dev;
     inherit c-lime qmp qio cps cuba-quad grid-lehner gpt-lehner;
@@ -617,7 +631,7 @@ let
   mk-q-pkgs = options: let
     opts = mk-options options;
     qlat-name = mk-qlat-name opts;
-    pkgs = nixpkgs {
+    pkgs = import-nixpkgs-wd {
       config = {
         allowUnfree = opts.use-cuda-software;
         cudaSupport = opts.use-cudasupport;

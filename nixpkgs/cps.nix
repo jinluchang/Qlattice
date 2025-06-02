@@ -11,9 +11,12 @@
 , which
 , git
 , lib
+, use-gitee ? null
 }:
 
-stdenv.mkDerivation rec {
+let
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in stdenv.mkDerivation rec {
 
   env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
     "-Wno-error=int-conversion"
@@ -25,8 +28,7 @@ stdenv.mkDerivation rec {
   version = "d3c8dd5e8a3ea6a315fd2fba963bf32585ed6331";
 
   src = builtins.fetchGit {
-    url = "https://github.com/RBC-UKQCD/CPS_public";
-    ref = "master";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/cps" else "https://github.com/RBC-UKQCD/CPS_public";
     rev = version;
   };
 

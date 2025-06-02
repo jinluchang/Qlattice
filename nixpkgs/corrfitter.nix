@@ -10,17 +10,21 @@
 # dependencies
 # tests
 , hypothesis
+#
+, use-gitee ? null
 }:
 
-buildPythonPackage rec {
+let
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in buildPythonPackage rec {
 
   pname = "corrfitter";
   version = "8.2";
   pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
-    hash = "sha256-P5qiqeY3raams0vaAZnMI93rIAV7NWxlfXMB1Se85n4=";
+  src = builtins.fetchGit {
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/${pname}" else "https://github.com/gplepage/${pname}";
+    ref = "refs/tags/v${version}";
   };
 
   build-system = [

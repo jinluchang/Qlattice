@@ -2,16 +2,19 @@
 , lib
 , fetchzip
 , openmp ? null
+, use-gitee ? null
 }:
 
-stdenv.mkDerivation rec {
+let
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in stdenv.mkDerivation rec {
 
   pname = "c-lime";
   version = "1.3.2";
 
-  src = fetchzip {
-    url = "http://usqcd-software.github.io/downloads/c-lime/lime-${version}.tar.gz";
-    hash = "sha256-eOU5fSYRuE0eMLFstqVhfmwzrob0kfd524J+vy0b7ss=";
+  src = builtins.fetchGit {
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/c-lime" else "https://github.com/usqcd-software/c-lime";
+    ref = "refs/tags/c-lime1-3-2";
   };
 
   enableParallelBuilding = true;

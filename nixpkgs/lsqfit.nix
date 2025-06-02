@@ -12,17 +12,21 @@
 , vegas
 # tests
 , hypothesis
+#
+, use-gitee ? null
 }:
 
-buildPythonPackage rec {
+let
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in buildPythonPackage rec {
 
   pname = "lsqfit";
   version = "13.2.2";
   pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
-    hash = "sha256-y1wewo6gwWpjr6ss1UXGU48GS4xaKNaq0IVmFwQfsAo=";
+  src = builtins.fetchGit {
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/${pname}" else "https://github.com/gplepage/${pname}";
+    ref = "refs/tags/v${version}";
   };
 
   build-system = [

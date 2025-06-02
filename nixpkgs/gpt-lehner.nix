@@ -13,10 +13,12 @@
 , rsync
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
+, use-gitee ? null
 }:
 
 let
   orig-stdenv = stdenv;
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
 in
 
 buildPythonPackage rec {
@@ -27,9 +29,8 @@ buildPythonPackage rec {
   pyproject = false;
 
   src = builtins.fetchGit {
-    url = "https://github.com/lehner/gpt";
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/gpt" else "https://github.com/lehner/gpt";
     # url = "https://github.com/jinluchang/gpt";
-    ref = "master";
     rev = version;
   };
 

@@ -3,16 +3,19 @@
 , fetchzip
 , mpi
 , openmp ? null
+, use-gitee ? null
 }:
 
-stdenv.mkDerivation rec {
+let
+  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in stdenv.mkDerivation rec {
 
   pname = "qmp";
   version = "2.5.4";
 
-  src = fetchzip {
-    url = "http://usqcd-software.github.io/downloads/qmp/qmp-${version}.tar.gz";
-    hash = "sha256-bUeOtdH2g36SdGK13WVBJ/AiZnp+p8oF31fIShqGKF8=";
+  src = builtins.fetchGit {
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/qmp" else "https://github.com/usqcd-software/qmp";
+    ref = "refs/tags/qmp2-5-4";
   };
 
   enableParallelBuilding = true;
