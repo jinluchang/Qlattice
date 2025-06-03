@@ -87,6 +87,238 @@
   0.01
  ],
  [
+  "run_field_rand_u1_dict: fsel fu1",
+  {
+   "value": [
+    {
+     "real": -13.823992523788412,
+     "imag": 2.384994091671393,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -10.677699483245368,
+     "imag": -17.773112222146363,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 26.223900881448174,
+     "imag": -9.315033666013512,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -7.431818964240685,
+     "imag": -10.729054583253703,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: fsel fu1_dag",
+  {
+   "value": [
+    {
+     "real": -13.823992523788412,
+     "imag": -2.384994091671393,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -10.677699483245368,
+     "imag": 17.773112222146363,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 26.223900881448174,
+     "imag": 9.315033666013512,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -7.431818964240685,
+     "imag": 10.729054583253703,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: psel fu1",
+  {
+   "value": [
+    {
+     "real": -5.172853209715047,
+     "imag": 14.297845505038051,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.21247404881705,
+     "imag": 5.26955992535783,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -3.153673877767665,
+     "imag": 10.6926178460022,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 9.805257075297323,
+     "imag": 2.2259207227462587,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: psel fu1_dag",
+  {
+   "value": [
+    {
+     "real": -5.172853209715047,
+     "imag": -14.297845505038051,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.21247404881705,
+     "imag": -5.26955992535783,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -3.153673877767665,
+     "imag": -10.6926178460022,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 9.805257075297323,
+     "imag": -2.2259207227462587,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: fsel fu1",
+  {
+   "value": [
+    {
+     "real": -4.520777777287,
+     "imag": -0.1591688571796519,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -12.956841098400755,
+     "imag": -14.8107067345199,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -7.25412150097294,
+     "imag": -14.228754292767533,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 7.127426243291415,
+     "imag": 5.8860712080018,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: fsel fu1_dag",
+  {
+   "value": [
+    {
+     "real": -4.520777777287,
+     "imag": 0.1591688571796519,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -12.956841098400755,
+     "imag": 14.8107067345199,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -7.25412150097294,
+     "imag": 14.228754292767533,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 7.127426243291415,
+     "imag": -5.8860712080018,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: psel fu1",
+  {
+   "value": [
+    {
+     "real": -9.060236142053348,
+     "imag": -0.8891659408122976,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 3.310366931759485,
+     "imag": -2.144235681964353,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 4.249385198526941,
+     "imag": 4.4671643370223775,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.019393839580653,
+     "imag": 4.6114751325325205,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
+  "run_field_rand_u1_dict: psel fu1_dag",
+  {
+   "value": [
+    {
+     "real": -9.060236142053348,
+     "imag": 0.8891659408122976,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 3.310366931759485,
+     "imag": 2.144235681964353,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 4.249385198526941,
+     "imag": -4.4671643370223775,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.019393839580653,
+     "imag": -4.6114751325325205,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-15
+ ],
+ [
   "run_edl: test-4nt8 1000 light edl",
   {
    "real": 0.039271144566262496,

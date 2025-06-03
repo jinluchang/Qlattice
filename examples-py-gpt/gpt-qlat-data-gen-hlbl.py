@@ -1908,8 +1908,8 @@ def run_field_rand_u1_dict(
         fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
         fu1_dag.save_double(get_save_path(f"{path}/{psel_list_type}-src-dag.field"))
         if is_test:
-            q.json_results_append(f"{fname}: {psel_list_type} fu1", q.get_data_sig(fu1), 1e-15)
-            q.json_results_append(f"{fname}: {psel_list_type} fu1_dag", q.get_data_sig(fu1_dag), 1e-15)
+            q.json_results_append(f"{fname}: {psel_list_type} fu1", q.get_data_sig_arr(fu1, q.RngState(), 4), 1e-15)
+            q.json_results_append(f"{fname}: {psel_list_type} fu1_dag", q.get_data_sig_arr(fu1_dag, q.RngState(), 4), 1e-15)
     q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
     return ret
 
