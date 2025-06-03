@@ -160,7 +160,7 @@ def get_data_sig(x, RngState rs):
         arr = x.ravel()
         arr_rand = rs.u_rand_arr(arr.shape) * 2.0 - 1.0
         return np.sum(arr * arr_rand)
-    elif isinstance(x, LatData):
+    elif isinstance(x, (LatData, LatDataInt, LatDataRealF, LatDataLong)):
         return get_data_sig(np.asarray(x), rs)
     elif isinstance(x, (SpinMatrix, ColorMatrix, WilsonMatrix,)):
         return get_data_sig(np.asarray(x), rs)

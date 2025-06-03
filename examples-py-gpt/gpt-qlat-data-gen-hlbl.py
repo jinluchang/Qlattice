@@ -1931,6 +1931,7 @@ def run_prop_sparse_rand_u1_src(
     Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
     """
     fname = q.get_fname()
+    is_test = is_test_job_tag(job_tag)
     if get_psel_list is not None:
         assert get_fsel_psel_list is None
         psel_list_type = "psel"
@@ -2045,6 +2046,31 @@ def run_prop_sparse_rand_u1_src(
     qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.clean_cache(q.cache_inv)
+    if is_test:
+        q.json_results_append(f"{fname} {job_tag} {traj} inv_type={inv_type} psel_list_type={psel_list_type}")
+        sfr = q.open_fields(get_load_path(path_s), "r")
+        sfr_list = sfr.list()
+        q.json_results_append(f"{fname} sfr.list()={sfr_list}")
+        for tag in sfr_list:
+            s_prop = q.SelProp()
+            s_prop.load_double_from_float(sfr, tag)
+            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(s_prop, q.RngState(), 2), 1e-12)
+        sfr.close()
+        qar_sp = q.open_qar_info(get_load_path(path_sp + ".qar"), "r")
+        qar_sp_list = qar_sp.list()
+        qar_sp_list = q.get_comm().bcast(qar_sp_list)
+        q.json_results_append(f"{fname} qar_sp.list()={qar_sp_list}")
+        for tag in qar_sp_list:
+            if tag.endswith(".lati"):
+                ld = q.load_lat_data_int(get_load_path(f"{path_sp}/{tag}"))
+            elif tag.endswith(".lat"):
+                ld = q.load_lat_data(get_load_path(f"{path_sp}/{tag}"))
+            elif tag == "checkpoint.txt":
+                continue
+            else:
+                assert False
+            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(ld, q.RngState(), 2), 1e-12)
+        qar_sp.close()
     q.release_lock()
     return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
@@ -2493,8 +2519,8 @@ set_param("test-4nt8", "a_inv_gev")(1.73)
 set_param("test-4nt8", "zz_vv")(0.71)
 set_param("test-4nt8", "prob_acc_1_rand_u1_sparse")(1/4)
 set_param("test-4nt8", "prob_acc_2_rand_u1_sparse")(1/16)
-set_param("test-4nt8", "measurement", "psel_split_num_piece")(4)
-set_param("test-4nt8", "measurement", "fsel_psel_split_num_piece")(8)
+set_param("test-4nt8", "measurement", "psel_split_num_piece")(2)
+set_param("test-4nt8", "measurement", "fsel_psel_split_num_piece")(4)
 set_param("test-4nt8", "hlbl_four_prob_scaling_factor")(1.0)
 set_param("test-4nt8", "hlbl_four_prob_scaling_factor_strange")(1.0)
 set_param("test-4nt8", "hlbl_four_num_chunk")(3)
@@ -2619,7 +2645,8 @@ if __name__ == "__main__":
                 run_job_contract(job_tag, traj)
 
     q.timer_display()
-    q.check_log_json(__file__)
+    if job_tag_list == job_tag_list_default:
+        q.check_log_json(__file__)
     qg.end_with_gpt()
     q.displayln_info("CHECK: finished successfully.")
 
