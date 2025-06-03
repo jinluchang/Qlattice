@@ -66,6 +66,12 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 
 # ----------
 
+def is_test(job_tag):
+    b = job_tag[:5] == "test-"
+    return b
+
+# ----------
+
 @q.timer_verbose
 def run_params(job_tag):
     fname = q.get_fname()

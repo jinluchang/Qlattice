@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 import functools
 import math
 import os
@@ -8,12 +7,64 @@ import time
 import importlib
 import sys
 import pprint
-from copy import deepcopy
-
+import copy
+import numpy as np
 import qlat_gpt as qg
-
-from qlat_scripts.v1 import *
-from auto_contractor import *
+import qlat as q
+from qlat_scripts.v1 import (
+        get_param,
+        set_param,
+        get_load_path,
+        get_save_path,
+        load_path_list,
+        run_params,
+        run_gf,
+        run_gt,
+        run_wi,
+        run_get_prop,
+        run_fsel_prob,
+        run_psel_prob,
+        run_psel_from_psel_prob,
+        run_fsel_from_fsel_prob,
+        run_psel_smear,
+        run_r_list,
+        run_f_rand_01,
+        run_f_weight_load,
+        run_f_weight_from_wsrc_prop_full,
+        run_hvp_average,
+        run_gf_ape,
+        run_eig,
+        run_eig_strange,
+        run_prop_wsrc_full,
+        run_psel_split,
+        run_fsel_split,
+        run_fselc,
+        run_prop_wsrc_sparse,
+        run_prop_psrc,
+        check_job,
+        get_inv,
+        mk_psrc_tag,
+        calc_hvp_sum_tslice,
+        get_r_list,
+        get_r_sq_interp_idx_coef_list,
+        )
+from auto_contractor import (
+        contract_simplify_compile,
+        cache_compiled_cexpr,
+        benchmark_eval_cexpr,
+        get_expr_names,
+        eval_cexpr,
+        mk_fac,
+        mk_pi_p,
+        mk_k_p,
+        mk_sw5,
+        mk_j5pi_mu,
+        mk_j5k_mu,
+        mk_jw_a_mu,
+        mk_a0_p,
+        mk_j_mu,
+        mk_kappa_p,
+        )
 
 is_cython = False
 
@@ -779,8 +830,8 @@ def contract_hlbl_four_ama(
                 muon_mass,
                 zz_vv,
                 )
-    ama_val = ama_apply(f, ama_sc_xy, ama_sc_yx, ama_cm_xy, ama_cm_yx)
-    return (ama_extract(ama_val, is_sloppy=False), ama_extract(ama_val, is_sloppy=True),)
+    ama_val = q.ama_apply(f, ama_sc_xy, ama_sc_yx, ama_cm_xy, ama_cm_yx)
+    return (q.ama_extract(ama_val, is_sloppy=False), q.ama_extract(ama_val, is_sloppy=True),)
 
 @q.timer(is_timer_fork=True)
 def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs, prop_cache, id_chunk_list, num_chunk):
@@ -855,11 +906,11 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     @q.timer
     def get_prop(xg):
         val_list = [ get_prop_cache(xg, inv_acc) for inv_acc in rel_acc_list ]
-        return mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+        return q.mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
     #
     @q.timer
     def mk_ama_current(ama_sprop1, ama_sprop2):
-        ama_val = ama_apply2(q.mk_local_current_from_props, ama_sprop1, ama_sprop2)
+        ama_val = q.ama_apply2(q.mk_local_current_from_props, ama_sprop1, ama_sprop2)
         return ama_val
     #
     @q.timer
@@ -872,13 +923,13 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
         def f(current):
             cm = q.CurrentMoments(current, psel_d_prob_xy)
             return cm
-        return ama_apply1(f, ama_current)
+        return q.ama_apply1(f, ama_current)
     #
     @q.timer
     def ama_cm_glb_sum(ama_cm):
         def f(cm):
             return cm.glb_sum()
-        return ama_apply1(f, ama_cm)
+        return q.ama_apply1(f, ama_cm)
     #
     @q.timer(is_timer_fork=True)
     def cache_all_prop():
@@ -922,10 +973,10 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
             ama_sprop_y = get_prop(xg_y)
             ama_sc_xy = mk_ama_current(ama_sprop_y, ama_sprop_x)
             ama_cm_xy = mk_ama_cm(ama_sc_xy, psel_d_prob_xy)
-            sp_norm = q.qnorm_field(ama_extract(ama_sc_xy, is_sloppy=False))
+            sp_norm = q.qnorm_field(q.ama_extract(ama_sc_xy, is_sloppy=False))
             ama_sc_yx = mk_ama_current(ama_sprop_x, ama_sprop_y)
             ama_cm_yx = mk_ama_cm(ama_sc_yx, psel_d_prob_xy)
-            sp_norm += q.qnorm_field(ama_extract(ama_sc_yx, is_sloppy=False))
+            sp_norm += q.qnorm_field(q.ama_extract(ama_sc_yx, is_sloppy=False))
             sp_norm = q.sqrt_field(sp_norm)
             int_results = dict()
             int_results['prob_pair'] = prob_pair
@@ -991,8 +1042,8 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                     sc_sel = q.SelectedPointsWilsonMatrix(psel_d_sel, multiplicity)
                     sc_sel @= sc
                     return sc_sel
-                ama_sel_sc_xy = ama_apply1(sel_sc, ama_sc_xy)
-                ama_sel_sc_yx = ama_apply1(sel_sc, ama_sc_yx)
+                ama_sel_sc_xy = q.ama_apply1(sel_sc, ama_sc_xy)
+                ama_sel_sc_yx = q.ama_apply1(sel_sc, ama_sc_yx)
                 int_results['psel_d_prob_xy'] = psel_d_sel_prob_xy
                 int_results['ama_sc_xy'] = ama_sel_sc_xy
                 int_results['ama_sc_yx'] = ama_sel_sc_yx
@@ -1255,8 +1306,8 @@ def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_
         prob_list = [ get_param(job_tag, f"prob_acc_{inv_acc}_psrc") for inv_acc in rel_acc_list ]
         for idx, xg in enumerate(psel):
             val_list = [ hvp_sum_tslice_accs.get(mk_psrc_tag(xg, inv_type, inv_acc)) for inv_acc in rel_acc_list ]
-            ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
-            val = ama_extract(ama_val)
+            ama_val = q.mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+            val = q.ama_extract(ama_val)
             hvp_sum_tslice[idx] = val
         q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type} hvp_sum_tslice.shape={hvp_sum_tslice.shape}")
         return hvp_sum_tslice
@@ -1482,8 +1533,8 @@ def run_hlbl_sub_hvp_sfield(
                 chvp_16.load_double_from_float(sfr, tag)
                 val_list.append(chvp_16)
         assert val_list[0] is not None
-        ama_val = mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
-        hvp = ama_extract(ama_val)
+        ama_val = q.mk_ama_val(val_list[0], xg.to_tuple(), val_list, rel_acc_list, prob_list)
+        hvp = q.ama_extract(ama_val)
         hvp_avg = glb_hvp_avg.copy().shift(xg)
         hvp -= hvp_avg
         hvp_sel_prob = q.sqrt_field(q.qnorm_field(hvp))
@@ -1811,6 +1862,48 @@ def run_auto_contraction(
 # ----
 
 @q.timer(is_timer_fork=True)
+def run_field_rand_u1_dict(
+        job_tag, traj,
+        ):
+    """
+    return get_field_rand_u1_dict
+    #
+    get_field_rand_u1_dict()["fsel-src"] => q.FieldComplexD
+    get_field_rand_u1_dict()["fsel-src-dag"] => q.FieldComplexD
+    get_field_rand_u1_dict()["psel-src"] => q.FieldComplexD
+    get_field_rand_u1_dict()["psel-src-dag"] => q.FieldComplexD
+    """
+    path = f"{job_tag}/field-rand-u1/traj-{traj}"
+    def get_field_rand_u1_dict():
+        d = dict()
+        for psel_list_type in [ "fsel", "psel" ]:
+            fn = get_load_path(f"{path}/{psel_list_type}-src.field")
+            fn_dag = get_load_path(f"{path}/{psel_list_type}-src-dag.field")
+            assert fn is not None
+            assert fn_dag is not None
+            f = q.FieldComplexD()
+            f_dag = q.FieldComplexD()
+            f.load_double(fn)
+            f_dag.load_double(fn_dag)
+            d[f"{psel_list_type}-src"] = f
+            d[f"{psel_list_type}-src-dag"] = f_dag
+        return d
+    ret = get_field_rand_u1_dict
+    if get_load_path(f"{path}/checkpoint.txt"):
+        return ret
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    geo = q.Geometry(total_site)
+    rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
+    for psel_list_type in [ "fsel", "psel" ]:
+        fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1.split(f"{psel_list_type}"))
+        fu1_dag = q.FieldComplexD(geo, 1)
+        fu1_dag[:] = fu1[:].conj()
+        fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
+        fu1_dag.save_double(get_save_path(f"{path}/{psel_list_type}-src-dag.field"))
+    q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
+    return ret
+
+@q.timer(is_timer_fork=True)
 def run_prop_sparse_rand_u1_src(
         job_tag, traj,
         *,
@@ -1818,17 +1911,16 @@ def run_prop_sparse_rand_u1_src(
         get_gf,
         get_psel,
         get_fsel,
-        get_eig=None,
+        get_field_rand_u1_dict,
         get_psel_list=None,
         get_fsel_psel_list=None,
+        get_eig=None,
         ):
     """
     fsel should contain psel
     Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
     """
     fname = q.get_fname()
-    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
-    quark_flavor = quark_flavor_list[inv_type]
     if get_psel_list is not None:
         assert get_fsel_psel_list is None
         psel_list_type = "psel"
@@ -1837,6 +1929,8 @@ def run_prop_sparse_rand_u1_src(
         psel_list_type = "fsel"
     else:
         assert False
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
+    quark_flavor = quark_flavor_list[inv_type]
     path_s = f"{job_tag}/prop-rand-u1-{psel_list_type}-sparse-{quark_flavor}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-rand-u1-{psel_list_type}-sparse-{quark_flavor}/traj-{traj}"
     if get_load_path(path_s + "/geon-info.txt") is not None:
@@ -1848,14 +1942,19 @@ def run_prop_sparse_rand_u1_src(
     geo = gf.geo
     fsel = get_fsel()
     psel = get_psel()
+    field_rand_u1_dict = get_field_rand_u1_dict()
     if psel_list_type == "psel":
         assert get_psel_list is not None
         assert get_fsel_psel_list is None
         psel_list = get_psel_list()
+        fu1 = field_rand_u1_dict["psel-src"]
+        fu1_dag = field_rand_u1_dict["psel-src-dag"]
     elif psel_list_type == "fsel":
         assert get_psel_list is None
         assert get_fsel_psel_list is not None
         psel_list = get_fsel_psel_list()
+        fu1 = field_rand_u1_dict["fsel-src"]
+        fu1_dag = field_rand_u1_dict["fsel-src-dag"]
     else:
         assert False
     total_site = geo.total_site
@@ -1869,9 +1968,6 @@ def run_prop_sparse_rand_u1_src(
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
-    fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1)
-    fu1_dag = q.FieldComplexD(geo, 1)
-    fu1_dag[:] = fu1[:].conj()
     fu1_from_sp = q.FieldComplexD(geo, 1)
     rs_ama = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
     @q.timer
@@ -2071,6 +2167,8 @@ def run_job_inversion(job_tag, traj):
     num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
     get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
     #
+    get_field_rand_u1_dict = run_field_rand_u1_dict(job_tag, traj)
+    #
     if get_fsel is None:
         q.clean_cache()
         return
@@ -2093,7 +2191,7 @@ def run_job_inversion(job_tag, traj):
             # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
             # v = run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
             # add_to_run_ret_list(v)
-            v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=0, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_eig=get_eig, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list)
+            v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=0, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
             add_to_run_ret_list(v)
             v = run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
             add_to_run_ret_list(v)
@@ -2106,7 +2204,7 @@ def run_job_inversion(job_tag, traj):
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
         # v = run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
         # add_to_run_ret_list(v)
-        v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=1, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_eig=get_eig, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list)
+        v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=1, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
         v = run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
         add_to_run_ret_list(v)
         # v = run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
@@ -2405,9 +2503,9 @@ set_param("test-8nt16", "hlbl_two_plus_two_num_chunk", value=6)
 set_param("24D", "traj_list", value=list(range(2000, 3000, 10)))
 set_param("24D", "lanc_params", 1, value=None)
 set_param("24D", "clanc_params", 1, value=None)
-set_param("24D", 'fermion_params', 0, 2, value=deepcopy(get_param("24D", 'fermion_params', 0, 0)))
-set_param("24D", 'fermion_params', 1, 0, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
-set_param("24D", 'fermion_params', 1, 1, value=deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("24D", 'fermion_params', 0, 2, value=copy.deepcopy(get_param("24D", 'fermion_params', 0, 0)))
+set_param("24D", 'fermion_params', 1, 0, value=copy.deepcopy(get_param("24D", 'fermion_params', 1, 2)))
+set_param("24D", 'fermion_params', 1, 1, value=copy.deepcopy(get_param("24D", 'fermion_params', 1, 2)))
 set_param("24D", "hlbl_four_prob_scaling_factor", value=1.0)
 set_param("24D", "hlbl_four_prob_scaling_factor_strange", value=1.0)
 set_param("24D", "hlbl_four_num_chunk", value=512)

@@ -1,9 +1,11 @@
 {
-  nixpkgs ? import ./nixpkgs.nix {},
+  nixpkgs ? null,
+  version ? null,
+  use-gitee ? null,
   name ? "q-pkgs",
 }:
 
 let
-  q-pkgs = import ./q-pkgs.nix { inherit nixpkgs; };
+  all-q-pkgs = import ./q-pkgs.nix { inherit nixpkgs version use-gitee; };
 in
-  q-pkgs."${name}".qlat-jhub-sh
+  all-q-pkgs."${name}".qlat-jhub-sh
