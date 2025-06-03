@@ -66,9 +66,9 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 
 # ----------
 
-def is_test(job_tag):
-    b = job_tag[:5] == "test-"
-    return b
+def is_test_job_tag(job_tag):
+    is_test = job_tag[:5] == "test-"
+    return is_test
 
 # ----------
 
@@ -165,6 +165,7 @@ def run_gt(job_tag, traj, get_gf):
             q.release_lock()
         else:
             return None
+    @q.lazy_call
     @q.timer_verbose
     def load_gt():
         path_gt = get_load_path(tfn)
@@ -176,7 +177,7 @@ def run_gt(job_tag, traj, get_gf):
         # qg.check_gauge_fix_coulomb(get_gf(), gt)
         #
         return gt
-    get_gt = q.lazy_call(load_gt)
+    get_gt = load_gt
     return get_gt
 
 # ----------
@@ -283,12 +284,13 @@ def run_wi(job_tag, traj):
             q.release_lock()
         else:
             return None
+    @q.lazy_call
     @q.timer_verbose
     def load():
         wi_light = load_wall_src_info(get_load_path(tfn_l))
         wi_strange = load_wall_src_info(get_load_path(tfn_s))
         return wi_light + wi_strange
-    return q.lazy_call(load)
+    return load
 
 # ----------
 
@@ -325,6 +327,7 @@ def run_psel(job_tag, traj):
         else:
             return None
     #
+    @q.lazy_call
     @q.timer_verbose
     def load_psel():
         path_psel = get_load_path(tfn)
@@ -334,7 +337,7 @@ def run_psel(job_tag, traj):
         psel.load(path_psel, q.Geometry(total_site))
         assert psel.n_points == get_n_points_psel(job_tag)
         return psel
-    return q.lazy_call(load_psel)
+    return load_psel
 
 # ----------
 
@@ -398,13 +401,14 @@ def run_pi(job_tag, traj, get_psel):
             q.release_lock()
         else:
             return None
+    @q.lazy_call
     @q.timer_verbose
     def load():
         path = get_load_path(tfn)
         assert path is not None
         pi = load_point_src_info(path)
         return pi
-    return q.lazy_call(load)
+    return load
 
 # ----------
 
@@ -489,6 +493,7 @@ def run_fsel(job_tag, traj):
             return lambda : fsel
         else:
             return None
+    @q.lazy_call
     @q.timer_verbose
     def load_fsel():
         path_fsel = get_load_path(tfn)
@@ -497,7 +502,7 @@ def run_fsel(job_tag, traj):
         total_size = fsel.load(path_fsel)
         assert total_size > 0
         return fsel
-    return q.lazy_call(load_fsel)
+    return load_fsel
 
 # ----------
 
@@ -516,11 +521,12 @@ def run_fselc(job_tag, traj, get_fsel, get_psel):
         return None
     if get_psel is None:
         return None
+    @q.lazy_call
     @q.timer_verbose
     def get():
         fselc = mk_fselc(get_fsel(), get_psel())
         return fselc
-    return q.lazy_call(get)
+    return get
 
 # ----------
 
@@ -551,6 +557,7 @@ def run_psel_smear(job_tag, traj):
         else:
             return None
     #
+    @q.lazy_call
     @q.timer_verbose
     def load_psel():
         path_psel = get_load_path(tfn)
@@ -559,7 +566,7 @@ def run_psel_smear(job_tag, traj):
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         return psel
-    return q.lazy_call(load_psel)
+    return load_psel
 
 # ----------
 
@@ -570,26 +577,28 @@ def run_gf_ape(job_tag, get_gf):
     coef = rup.dict_params[job_tag]["gf_ape_smear_coef"]
     step = rup.dict_params[job_tag]["gf_ape_smear_step"]
     #
+    @q.lazy_call
     @q.timer_verbose
     def run():
         gf = get_gf()
         gf_ape = q.gf_spatial_ape_smear(gf, coef, step)
         gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
         return gf_ape
-    return q.lazy_call(run)
+    return run
 
 @q.timer
 def run_gf_hyp(job_tag, get_gf):
     if get_gf is None:
         return None
     step = get_param(job_tag, "gf_hyp_smear_step")
+    @q.lazy_call
     @q.timer_verbose
     def run():
         gf_hyp = get_gf()
         for i in range(step):
             gf_hyp = q.gf_hyp_smear(gf_hyp, 0.75, 0.6, 0.3)
         return gf_hyp
-    return q.lazy_call(run)
+    return run
 
 # ----------
 

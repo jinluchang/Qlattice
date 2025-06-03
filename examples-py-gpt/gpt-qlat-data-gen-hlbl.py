@@ -44,6 +44,7 @@ from qlat_scripts.v1 import (
         check_job,
         get_inv,
         mk_psrc_tag,
+        is_test_job_tag,
         calc_hvp_sum_tslice,
         get_r_list,
         get_r_sq_interp_idx_coef_list,
@@ -475,6 +476,7 @@ def run_job_global_hvp_average_for_subtract(job_tag, traj, *, inv_type, get_glb_
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     @q.lazy_call
+    @q.timer_verbose
     def get_glb_hvp_avg_for_sub():
         glb_hvp_avg_for_sub = q.FieldComplexD(geo, 16)
         glb_hvp_avg_for_sub.load_double_from_float(get_load_path(fn))
@@ -757,6 +759,7 @@ def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
     inv_type_name = inv_type_name_list[inv_type]
     fn = f"{job_tag}/hlbl/clbl-{inv_type_name}/traj-{traj}/point-pairs.pickle"
     @q.lazy_call
+    @q.timer_verbose
     def load_point_pairs():
         return q.load_pickle_obj(get_load_path(fn))
     ret = load_point_pairs
@@ -1296,8 +1299,8 @@ def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_
         return None
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    @q.timer_verbose
     @q.lazy_call
+    @q.timer_verbose
     def get_hvp_sum_tslice():
         psel = get_psel()
         hvp_sum_tslice_accs = get_hvp_sum_tslice_accs()
@@ -1362,8 +1365,8 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
     fn = f"{job_tag}/hlbl/edl/traj-{traj}/edl-{inv_type_name}.lat"
-    @q.timer_verbose
     @q.lazy_call
+    @q.timer_verbose
     def get_edl():
         psel = get_psel()
         hvp_edl = q.SelectedPointsComplexD(psel)
@@ -1873,7 +1876,11 @@ def run_field_rand_u1_dict(
     get_field_rand_u1_dict()["psel-src"] => q.FieldComplexD
     get_field_rand_u1_dict()["psel-src-dag"] => q.FieldComplexD
     """
+    fname = q.get_fname()
+    is_test = is_test_job_tag(job_tag)
     path = f"{job_tag}/field-rand-u1/traj-{traj}"
+    @q.lazy_call
+    @q.timer_verbose
     def get_field_rand_u1_dict():
         d = dict()
         for psel_list_type in [ "fsel", "psel" ]:
@@ -1900,6 +1907,9 @@ def run_field_rand_u1_dict(
         fu1_dag[:] = fu1[:].conj()
         fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
         fu1_dag.save_double(get_save_path(f"{path}/{psel_list_type}-src-dag.field"))
+        if is_test:
+            q.json_results_append(f"{fname}: {psel_list_type} fu1", q.get_data_sig(fu1), 1e-15)
+            q.json_results_append(f"{fname}: {psel_list_type} fu1_dag", q.get_data_sig(fu1_dag), 1e-15)
     q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
     return ret
 
@@ -2046,7 +2056,7 @@ def run_job_inversion(job_tag, traj):
     #
     is_performing_saving_full_prop = get_param(job_tag, "is_performing_saving_full_prop", default=True)
     #
-    is_test = job_tag[:5] == "test-"
+    is_test = is_test_job_tag(job_tag)
     #
     traj_gf = traj
     is_only_load_eig = True
@@ -2238,7 +2248,7 @@ def run_job_contract(job_tag, traj):
     #
     is_performing_auto_contraction = get_param(job_tag, "is_performing_auto_contraction", default=True)
     #
-    is_test = job_tag[:5] == "test-"
+    is_test = is_test_job_tag(job_tag)
     #
     traj_gf = traj
     #

@@ -241,6 +241,7 @@ def run_get_prop_checker(job_tag, traj, *,
     for fn in fns_props:
         if get_load_path(fn) is None:
             return None
+    @q.lazy_call
     @q.timer_verbose
     def mk_get_prop():
         with q.TimerFork():
@@ -277,6 +278,6 @@ def run_get_prop_checker(job_tag, traj, *,
                 else:
                     raise Exception(f"get_prop: f={flavor} snk={p_snk} src={p_src}")
         return get_prop
-    return q.lazy_call(mk_get_prop)
+    return mk_get_prop
 
 # ----

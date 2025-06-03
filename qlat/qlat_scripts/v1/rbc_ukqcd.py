@@ -242,6 +242,7 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
             q.displayln_info(f"load_eig_lazy: '{path}' does not have data file '00.zip'.")
             return None
     #
+    @q.lazy_call
     @q.timer_verbose
     def load_eig():
         g.mem_report()
@@ -252,7 +253,7 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
         g.mem_report()
         return eig
     #
-    return q.lazy_call(load_eig)
+    return load_eig
 
 def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
     maxiter = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")

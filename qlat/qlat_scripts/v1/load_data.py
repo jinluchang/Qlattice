@@ -797,6 +797,7 @@ def run_get_prop(job_tag, traj, *,
                 "rand_u1 fsel l",
                 "gf hyp",
                 ]
+    @q.lazy_call
     @q.timer_verbose
     def mk_get_prop():
         with q.TimerFork():
@@ -850,4 +851,4 @@ def run_get_prop(job_tag, traj, *,
                 p_snk, p_src, = args
                 return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
         return get_prop
-    return q.lazy_call(mk_get_prop)
+    return mk_get_prop
