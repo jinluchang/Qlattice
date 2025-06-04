@@ -171,7 +171,8 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
+    if is_test_job_tag(job_tag):
+        q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -229,7 +230,8 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
+    if is_test_job_tag(job_tag):
+        q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -290,7 +292,8 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
+    if is_test_job_tag(job_tag):
+        q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -365,7 +368,8 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_pro
         ])
     ld.from_numpy(res_sum)
     ld.save(get_save_path(fn))
-    q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
+    if is_test_job_tag(job_tag):
+        q.json_results_append(f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState()))
 
 # ----
 
@@ -1111,16 +1115,17 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
                     show_lslt(labels, lslt * len(point_pairs), label="ref-far proj-all"),
                     "\nsloppy:\n",
                     show_lslt(labels, lslt_sloppy * len(point_pairs), label="ref-far proj-all"))
-            q.json_results_append(
-                f"{fname}: {info_str} lslt",
-                q.get_data_sig(lslt, q.RngState()),
-                15e-2,
-                )
-            q.json_results_append(
-                f"{fname}: {info_str} lslt_sloppy",
-                q.get_data_sig(lslt_sloppy, q.RngState()),
-                15e-2,
-                )
+            if is_test_job_tag(job_tag):
+                q.json_results_append(
+                    f"{fname}: {info_str} lslt",
+                    q.get_data_sig(lslt, q.RngState()),
+                    15e-2,
+                    )
+                q.json_results_append(
+                    f"{fname}: {info_str} lslt_sloppy",
+                    q.get_data_sig(lslt_sloppy, q.RngState()),
+                    15e-2,
+                    )
         if len(point_pairs_chunk) != len(pairs_data):
             raise Exception(f"len(point_pairs_chunk)={len(point_pairs_chunk)} len(pairs_data)={len(pairs_data)}")
         if len(pairs_data) > 0:
@@ -1200,26 +1205,27 @@ def run_hlbl_four(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_
         results["n_pairs"] = pairs_data_n_pairs
         q.save_pickle_obj(results, get_save_path(fn_s))
         q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name}\n", show_lslt(labels, results["lslt_sum"]))
-        q.json_results_append(
-            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
-            q.get_data_sig(results["lslt_sum"], q.RngState()),
-            1e-2,
-            )
-        q.json_results_append(
-            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
-            q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
-            1e-2,
-            )
-        q.json_results_append(
-            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
-            results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
-            3e-2,
-            )
-        q.json_results_append(
-            f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
-            results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
-            3e-2,
-            )
+        if is_test_job_tag(job_tag):
+            q.json_results_append(
+                f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum",
+                q.get_data_sig(results["lslt_sum"], q.RngState()),
+                1e-2,
+                )
+            q.json_results_append(
+                f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum",
+                q.get_data_sig(results["lslt_sloppy_sum"], q.RngState()),
+                1e-2,
+                )
+            q.json_results_append(
+                f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
+                results["lslt_sum"][labels.index('ref-far proj-all'), -1, -1],
+                3e-2,
+                )
+            q.json_results_append(
+                f"{fname}: {job_tag} {traj} {inv_type_name} lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
+                results["lslt_sloppy_sum"][labels.index('ref-far proj-all'), -1, -1],
+                3e-2,
+                )
     q.sync_node()
     q.displayln_info(f"{fname}: {job_tag} {traj} {inv_type_name} done.")
     q.release_lock()
@@ -1393,11 +1399,12 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
                 * get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice[idx])
                 )
     hvp_edl.save(get_save_path(fn))
-    q.json_results_append(
-        f"{fname}: {job_tag} {traj} {inv_type_name} edl",
-        q.get_data_sig(hvp_edl[:], q.RngState()),
-        1e-3,
-        )
+    if is_test_job_tag(job_tag):
+        q.json_results_append(
+            f"{fname}: {job_tag} {traj} {inv_type_name} edl",
+            q.get_data_sig(hvp_edl[:], q.RngState()),
+            1e-3,
+            )
     q.release_lock()
     return ret
 
@@ -1440,26 +1447,27 @@ def run_check_hvp_avg(job_tag, traj, *, inv_type, get_psel_prob, get_hvp_sum_tsl
             )
     q.displayln_info(-1, f"{fname}: {job_tag} {traj} {inv_type_name} {norm_diff_ratio}")
     assert norm_diff_ratio < 1e-6
-    q.json_results_append(
-        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice",
-        q.get_data_sig(hvp_sum_tslice, q.RngState()),
-        1e-4,
-        )
-    q.json_results_append(
-        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg1",
-        q.get_data_sig(hvp_sum_tslice_avg1, q.RngState()),
-        1e-4,
-        )
-    q.json_results_append(
-        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_average",
-        q.get_data_sig(hvp_average, q.RngState()),
-        1e-4,
-        )
-    q.json_results_append(
-        f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg2",
-        q.get_data_sig(hvp_sum_tslice_avg2, q.RngState()),
-        1e-4,
-        )
+    if is_test_job_tag(job_tag):
+        q.json_results_append(
+            f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice",
+            q.get_data_sig(hvp_sum_tslice, q.RngState()),
+            1e-4,
+            )
+        q.json_results_append(
+            f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg1",
+            q.get_data_sig(hvp_sum_tslice_avg1, q.RngState()),
+            1e-4,
+            )
+        q.json_results_append(
+            f"{fname}: {job_tag} {traj} {inv_type_name} hvp_average",
+            q.get_data_sig(hvp_average, q.RngState()),
+            1e-4,
+            )
+        q.json_results_append(
+            f"{fname}: {job_tag} {traj} {inv_type_name} hvp_sum_tslice_avg2",
+            q.get_data_sig(hvp_sum_tslice_avg2, q.RngState()),
+            1e-4,
+            )
     q.qtouch_info(get_save_path(fn))
 
 @q.timer(is_timer_fork=True)
@@ -1700,11 +1708,12 @@ def run_hlbl_two_plus_two_chunk(
         d["lslt"] = q.glb_sum(d["lslt"])
         d["n_points_selected"] = q.glb_sum(d["n_points_selected"])
         d["n_points_computed"] = q.glb_sum(d["n_points_computed"])
-        q.json_results_append(
-            f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
-            q.get_data_sig(d["lslt"], q.RngState()),
-            20e-2,
-            )
+        if is_test_job_tag(job_tag):
+            q.json_results_append(
+                f"{fname}: {info_str} idx_xg_x={d['idx_xg_x']} {d['xg_x']} lslt",
+                q.get_data_sig(d["lslt"], q.RngState()),
+                20e-2,
+                )
     q.save_pickle_obj(points_data, get_save_path(fn))
     if len(points_data) > 0:
         labels = q.contract_two_plus_two_pair_labels()
@@ -1813,16 +1822,17 @@ def run_hlbl_two_plus_two(
             n_points_computed = results["n_points_computed"]
             q.displayln_info(-1,
                     f"{info_str}\n avg n_points_selected={n_points_selected} avg n_points_computed={n_points_computed}")
-        q.json_results_append(
-            f"{info_str} lslt_sum",
-            q.get_data_sig(results["lslt_sum"], q.RngState()),
-            3e-2,
-            )
-        q.json_results_append(
-            f"{info_str} lslt_sum[labels.index('sub proj-all'), -1, -1]",
-            results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
-            3e-2,
-            )
+        if is_test_job_tag(job_tag):
+            q.json_results_append(
+                f"{info_str} lslt_sum",
+                q.get_data_sig(results["lslt_sum"], q.RngState()),
+                3e-2,
+                )
+            q.json_results_append(
+                f"{info_str} lslt_sum[labels.index('sub proj-all'), -1, -1]",
+                results["lslt_sum"][labels.index('sub proj-all'), -1, -1],
+                3e-2,
+                )
     q.sync_node()
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
@@ -1873,7 +1883,6 @@ def run_field_rand_u1_dict(
     get_field_rand_u1_dict()["psel-src-dag"] => q.FieldComplexD
     """
     fname = q.get_fname()
-    is_test = is_test_job_tag(job_tag)
     path = f"{job_tag}/field-rand-u1/traj-{traj}"
     @q.lazy_call
     @q.timer_verbose
@@ -1904,7 +1913,7 @@ def run_field_rand_u1_dict(
         fu1_dag[:] = fu1[:].conj()
         fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
         fu1_dag.save_double(get_save_path(f"{path}/{psel_list_type}-src-dag.field"))
-        if is_test:
+        if is_test_job_tag(job_tag):
             q.json_results_append(f"{fname}: {psel_list_type} fu1", q.get_data_sig_arr(fu1, q.RngState(), 4), 1e-15)
             q.json_results_append(f"{fname}: {psel_list_type} fu1_dag", q.get_data_sig_arr(fu1_dag, q.RngState(), 4), 1e-15)
     q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
@@ -1937,7 +1946,6 @@ def run_prop_sparse_rand_u1_src(
             return None
         else:
             get_eig = lambda: None
-    is_test = is_test_job_tag(job_tag)
     if get_psel_list is not None:
         assert get_fsel_psel_list is None
         psel_list_type = "psel"
@@ -2049,7 +2057,7 @@ def run_prop_sparse_rand_u1_src(
     qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.clean_cache(q.cache_inv)
-    if is_test:
+    if is_test_job_tag(job_tag):
         q.json_results_append(f"{fname} {job_tag} {traj} inv_type={inv_type} psel_list_type={psel_list_type}")
         sfr = q.open_fields(get_load_path(path_s), "r")
         sfr_list = sfr.list()
@@ -2085,12 +2093,10 @@ def run_job_inversion(job_tag, traj):
     #
     is_performing_saving_full_prop = get_param(job_tag, "is_performing_saving_full_prop", default=True)
     #
-    is_test = is_test_job_tag(job_tag)
-    #
     traj_gf = traj
     is_only_load_eig = True
     #
-    if is_test:
+    if is_test_job_tag(job_tag):
         traj_gf = 1000
         is_only_load_eig = False
     #
@@ -2157,7 +2163,7 @@ def run_job_inversion(job_tag, traj):
                 ]
     has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
     #
-    if is_test:
+    if is_test_job_tag(job_tag):
         has_eig = True
         fns_need = []
     #
@@ -2274,7 +2280,7 @@ def run_job_inversion(job_tag, traj):
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if not is_test:
+    if not is_test_job_tag(job_tag):
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
@@ -2284,11 +2290,9 @@ def run_job_contract(job_tag, traj):
     #
     is_performing_auto_contraction = get_param(job_tag, "is_performing_auto_contraction", default=True)
     #
-    is_test = is_test_job_tag(job_tag)
-    #
     traj_gf = traj
     #
-    if is_test:
+    if is_test_job_tag(job_tag):
         traj_gf = 1000
     #
     fns_produce = [
@@ -2421,7 +2425,7 @@ def run_job_contract(job_tag, traj):
     #
     if is_performing_hlbl_contraction:
         #
-        if is_test:
+        if is_test_job_tag(job_tag):
             force_load_muon_line_interpolation()
         #
         for inv_type in [ 0, 1, ]:
@@ -2487,16 +2491,17 @@ def run_job_contract(job_tag, traj):
         add_to_run_ret_list(v)
     #
     if is_performing_auto_contraction:
-        q.json_results_append(f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()))
-        q.json_results_append(f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()))
-        q.json_results_append(f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()))
-        q.json_results_append(f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()))
+        if is_test_job_tag(job_tag):
+            q.json_results_append(f"get_hvp_average_light: {traj}", q.get_data_sig(get_hvp_average_light(), q.RngState()))
+            q.json_results_append(f"get_hvp_average_strange: {traj}:", q.get_data_sig(get_hvp_average_strange(), q.RngState()))
+            q.json_results_append(f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()))
+            q.json_results_append(f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()))
     #
     q.clean_cache()
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
-    if not is_test:
+    if not is_test_job_tag(job_tag):
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
@@ -2643,7 +2648,11 @@ if __name__ == "__main__":
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "traj_list"):
+        traj_list = get_param(job_tag, "traj_list")
+        if not is_test_job_tag(job_tag):
+            traj_list = q.random_permute(traj_list, q.RngState(f"{q.get_time()}"))
+            traj_list = q.get_comm().bcast(traj_list)
+        for traj in traj_list:
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job_inversion(job_tag, traj)
@@ -2651,7 +2660,7 @@ if __name__ == "__main__":
             for inv_type in [ 0, 1, ]:
                 q.check_time_limit()
                 run_job_global_hvp_average(job_tag, inv_type=inv_type)
-        for traj in get_param(job_tag, "traj_list"):
+        for traj in traj_list:
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
