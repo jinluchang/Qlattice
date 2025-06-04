@@ -690,6 +690,9 @@ def run_psel_split(
     ret = get_psel_list
     if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
         return ret
+    if get_psel is None:
+        q.displayln_info(-1, f"{fname}: get_psel is None")
+        return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
     job_tag_rs = get_job_tag_rs(job_tag)
@@ -742,6 +745,9 @@ def run_fsel_split(
     ret = get_psel_list
     if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
         return ret
+    if get_fsel is None:
+        q.displayln_info(-1, f"{fname}: get_fsel is None")
+        return None
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
     job_tag_rs = get_job_tag_rs(job_tag)

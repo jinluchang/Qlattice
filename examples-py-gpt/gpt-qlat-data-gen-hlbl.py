@@ -1928,6 +1928,15 @@ def run_prop_sparse_rand_u1_src(
     Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
     """
     fname = q.get_fname()
+    if None in [ get_gf, get_psel, get_fsel, get_field_rand_u1_dict, ]:
+        return
+    if (get_psel_list is None) and (get_fsel_psel_list is None):
+        return None
+    if get_eig is None:
+        if inv_type == 0:
+            return None
+        else:
+            get_eig = lambda: None
     is_test = is_test_job_tag(job_tag)
     if get_psel_list is not None:
         assert get_fsel_psel_list is None
@@ -1951,6 +1960,7 @@ def run_prop_sparse_rand_u1_src(
     fsel = get_fsel()
     psel = get_psel()
     field_rand_u1_dict = get_field_rand_u1_dict()
+    eig = get_eig()
     if psel_list_type == "psel":
         assert get_psel_list is not None
         assert get_fsel_psel_list is None
@@ -1966,10 +1976,6 @@ def run_prop_sparse_rand_u1_src(
     else:
         assert False
     total_site = geo.total_site
-    if get_eig is None:
-        eig = None
-    else:
-        eig = get_eig()
     gt = None
     prob_acc_1_rand_sparse_u1 = get_param(job_tag, "prob_acc_1_rand_u1_sparse")
     prob_acc_2_rand_sparse_u1 = get_param(job_tag, "prob_acc_2_rand_u1_sparse")
