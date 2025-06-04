@@ -2104,6 +2104,10 @@ def run_job_inversion(job_tag, traj):
             f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
             f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
             #
+            f"{job_tag}/field-rand-u1/traj-{traj}/checkpoint.txt",
+            (f"{job_tag}/prop-rand-u1-fsel-sparse-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/prop-rand-u1-fsel-sparse-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-strange/traj-{traj}/geon-info.txt",),
+            #
             # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
             # (f"{job_tag}/prop-rand-u1-charm/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",),
@@ -2125,6 +2129,9 @@ def run_job_inversion(job_tag, traj):
             #
             # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
             # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
+            #
+            (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-light/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-strange/traj-{traj}/checkpoint.txt",),
             #
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
             f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
