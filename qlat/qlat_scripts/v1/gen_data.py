@@ -675,17 +675,10 @@ def run_psel_split(
     @q.timer(is_timer_fork=True)
     def get_psel_list():
         psel_list = [ q.PointsSelection() for idx in range(num_piece) ]
-        data_list = [ bytes() for idx in range(num_piece) ]
         load_path = get_load_path(path_psel_list + ".qar")
         assert load_path is not None
-        if q.get_id_node() == 0:
-            qar = q.open_qar(load_path, "r")
-            for idx in range(num_piece):
-                fn = f"idx-piece-{idx}.lati"
-                data_list[idx] = qar.read_data_bytes(fn)
-            qar.close()
         for idx in range(num_piece):
-            psel_list[idx].load_str(data_list[idx])
+            psel_list[idx].load(get_load_path(f"{path_psel_list}/idx-piece-{idx}.lati"))
         return psel_list
     ret = get_psel_list
     if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
@@ -730,17 +723,10 @@ def run_fsel_split(
     @q.timer(is_timer_fork=True)
     def get_psel_list():
         psel_list = [ q.PointsSelection() for idx in range(num_piece) ]
-        data_list = [ bytes() for idx in range(num_piece) ]
         load_path = get_load_path(path_psel_list + ".qar")
         assert load_path is not None
-        if q.get_id_node() == 0:
-            qar = q.open_qar(load_path, "r")
-            for idx in range(num_piece):
-                fn = f"idx-piece-{idx}.lati"
-                data_list[idx] = qar.read_data_bytes(fn)
-            qar.close()
         for idx in range(num_piece):
-            psel_list[idx].load_str(data_list[idx])
+            psel_list[idx].load(get_load_path(f"{path_psel_list}/idx-piece-{idx}.lati"))
         return psel_list
     ret = get_psel_list
     if get_load_path(path_psel_list + "/checkpoint.txt") is not None:
