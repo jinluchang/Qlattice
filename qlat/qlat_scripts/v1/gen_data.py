@@ -4,6 +4,13 @@ from .jobs import *
 
 # -----------------------------------------------------------------------------
 
+def get_job_tag_rs(job_tag):
+    if job_tag == "64I-pq":
+        return "64I"
+    return job_tag
+
+# -----------------------------------------------------------------------------
+
 @q.timer
 def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=None):
     if None in [ get_gf, ]:
@@ -365,7 +372,8 @@ def run_f_rand_01(job_tag, traj):
         return None
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
-    rs = q.RngState(f"{job_tag}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"{job_tag_rs}-{traj}").split("run_sel_from_wsrc_prop_full").split("f_rand_01")
     f_rand_01 = q.FieldRealD(geo, 1)
     f_rand_01.set_rand(rs, 1.0, 0.0)
     f_rand_01.save_double(get_save_path(fn_f_rand_01))
@@ -684,7 +692,8 @@ def run_psel_split(
         return ret
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"{job_tag_rs}-{traj}-{fname}")
     psel = get_psel()
     psel_list = q.psel_split_n_that_increase_separation(psel, num_piece, rs=rs)
     assert len(psel_list) == num_piece
@@ -735,7 +744,8 @@ def run_fsel_split(
         return ret
     if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
         return None
-    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"{job_tag_rs}-{traj}-{fname}")
     psel = get_fsel().to_psel()
     psel_list = q.psel_split_n_that_increase_separation(psel, num_piece, rs=rs)
     assert len(psel_list) == num_piece
@@ -1022,7 +1032,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
                 eig=eig)
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"compute_prop_psrc_all(ama)")
     for idx, xg_src in enumerate(psel):
         r = rs.split(f"{xg_src.to_tuple()}").u_rand_gen()
         assert 0 <= r and r <= 1
@@ -1161,7 +1172,8 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
     q.check_stop()
     q.check_time_limit()
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig=eig)
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(rand_u1)").split(str(idx_rand_u1))
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"compute_prop_rand_u1(rand_u1)").split(str(idx_rand_u1))
     s_prop = q.mk_rand_u1_prop(inv, fsel, rs)
     s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
@@ -1169,7 +1181,9 @@ def compute_prop_rand_u1_type_acc(*, sfw, job_tag, traj, gf, eig, fsel, idx_rand
 
 @q.timer_verbose
 def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None):
-    # use fsel instead of fselc
+    """
+    use fsel instead of fselc
+    """
     n_rand_u1_fsel = get_param(job_tag, "n_rand_u1_fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
@@ -1181,7 +1195,8 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
                 gf=gf, eig=eig, fsel=fsel,
                 idx_rand_u1=idx_rand_u1,
                 inv_type=inv_type, inv_acc=inv_acc)
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"compute_prop_rand_u1(ama)")
     prob1 = get_param(job_tag, "prob_acc_1_rand_u1")
     prob2 = get_param(job_tag, "prob_acc_2_rand_u1")
     for idx_rand_u1 in range(n_rand_u1_fsel):
@@ -1292,7 +1307,8 @@ def compute_prop_smear_all(job_tag, traj, *,
                 eig=eig)
     prob1 = get_param(job_tag, "prob_acc_1_smear")
     prob2 = get_param(job_tag, "prob_acc_2_smear")
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_smear_all(ama)")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"compute_prop_smear_all(ama)")
     for idx, xg_src in enumerate(psel_smear):
         r = rs.split(f"{xg_src.to_tuple()}").u_rand_gen()
         assert 0 <= r and r <= 1

@@ -48,6 +48,7 @@ from qlat_scripts.v1 import (
         calc_hvp_sum_tslice,
         get_r_list,
         get_r_sq_interp_idx_coef_list,
+        get_job_tag_rs,
         )
 from auto_contractor import (
         contract_simplify_compile,
@@ -713,10 +714,7 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     #
     point_pairs = []
     #
-    job_tag_rs = job_tag
-    if job_tag == "64I-pq":
-        job_tag_rs = "64I"
-    #
+    job_tag_rs = get_job_tag_rs(job_tag)
     rs = q.RngState(f"seed {job_tag_rs} {traj}").split(f"mk_hlbl_four_point_pairs")
     for i in range(n_xg_arr):
         xg_x = q.Coordinate(xg_arr[i])
@@ -872,9 +870,7 @@ def run_hlbl_four_chunk(job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob
     fsel_prob = get_fsel_prob()
     fsel = fsel_prob.fsel
     #
-    job_tag_rs = job_tag
-    if job_tag == "64I-pq":
-        job_tag_rs = "64I"
+    job_tag_rs = get_job_tag_rs(job_tag)
     #
     ssp = q.SelectedShufflePlan(q.PointsSelection(fsel), q.RngState(f"{job_tag_rs}-{traj}-hlbl-four-fsel-permute"))
     psel_d_prob = q.SelectedPointsRealD(fsel_prob, ssp)
@@ -1900,7 +1896,8 @@ def run_field_rand_u1_dict(
         return ret
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
-    rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs_rand_u1 = q.RngState(f"seed {job_tag_rs} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
     for psel_list_type in [ "fsel", "psel" ]:
         fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1.split(f"{psel_list_type}"))
         fu1_dag = q.FieldComplexD(geo, 1)
@@ -1978,9 +1975,9 @@ def run_prop_sparse_rand_u1_src(
     prob_acc_2_rand_sparse_u1 = get_param(job_tag, "prob_acc_2_rand_u1_sparse")
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
-    rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
     fu1_from_sp = q.FieldComplexD(geo, 1)
-    rs_ama = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
+    job_tag_rs = get_job_tag_rs(job_tag)
+    rs_ama = q.RngState(f"seed {job_tag_rs} {traj}").split(f"compute_prop_rand_u1(ama)")
     @q.timer
     def compute_and_save(idx_psel, is_dagger, inv_acc):
         nonlocal fu1_from_sp
