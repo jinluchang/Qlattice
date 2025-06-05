@@ -796,7 +796,7 @@ cdef class SelectedPointsBase:
     def save_str(self):
         return self.to_lat_data().save_str()
 
-    def load_str(self, cc.std_string& content):
+    def load_str(self, bytes content):
         cdef LatData ld = LatData()
         ld.load_str(content)
         self.from_lat_data(ld)

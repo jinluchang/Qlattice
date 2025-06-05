@@ -1950,7 +1950,6 @@ def run_prop_sparse_rand_u1_src(
         assert get_fsel_psel_list is None
         psel_list_type = "psel"
     elif get_fsel_psel_list is not None:
-        psel_list = get_fsel_psel_list()
         psel_list_type = "fsel"
     else:
         assert False

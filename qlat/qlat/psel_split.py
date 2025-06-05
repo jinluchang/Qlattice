@@ -398,6 +398,7 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
         all_closest_n_point_list += sub_list
     all_closest_n_point_list = q.random_permute(all_closest_n_point_list, rs.split(f"permute"))
     all_closest_n_point_list.sort(key=lambda x: x[0])
+    q.displayln_info(0, f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; n={n} ; {all_closest_n_point_list[:5]} .")
     return all_closest_n_point_list
 
 @q.timer

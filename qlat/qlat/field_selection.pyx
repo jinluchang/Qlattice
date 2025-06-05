@@ -201,7 +201,7 @@ cdef class PointsSelection:
         else:
             return bytes()
 
-    def load_str(self, cc.std_string& content):
+    def load_str(self, bytes content):
         """
         only need str at node 0
         """

@@ -11,7 +11,7 @@ CHECK: open_qar_info fn='f2' data=''hello world!\n''
 CHECK: open_qar_info fn='f3' data=''hello world!\n''
 CHECK: qar_multi_vol_max_size=500000000000
 CHECK: qar_multi_vol_max_size=16384
-CHECK:  ['ld-1000.qar', 'ld-1000.qar.idx', 'ld-1000.qar.v1', 'ld-1000.qar.v10', 'ld-1000.qar.v11', 'ld-1000.qar.v12', 'ld-1000.qar.v13', 'ld-1000.qar.v14', 'ld-1000.qar.v15', 'ld-1000.qar.v16', 'ld-1000.qar.v17', 'ld-1000.qar.v18', 'ld-1000.qar.v19', 'ld-1000.qar.v2', 'ld-1000.qar.v3', 'ld-1000.qar.v4', 'ld-1000.qar.v5', 'ld-1000.qar.v6', 'ld-1000.qar.v7', 'ld-1000.qar.v8', 'ld-1000.qar.v9', 'ld-10000.lat', 'ld.lat']
+CHECK:  ['ld-1000.qar', 'ld-1000.qar.idx', 'ld-1000.qar.v1', 'ld-1000.qar.v10', 'ld-1000.qar.v11', 'ld-1000.qar.v12', 'ld-1000.qar.v13', 'ld-1000.qar.v14', 'ld-1000.qar.v15', 'ld-1000.qar.v16', 'ld-1000.qar.v17', 'ld-1000.qar.v18', 'ld-1000.qar.v19', 'ld-1000.qar.v2', 'ld-1000.qar.v3', 'ld-1000.qar.v4', 'ld-1000.qar.v5', 'ld-1000.qar.v6', 'ld-1000.qar.v7', 'ld-1000.qar.v8', 'ld-1000.qar.v9', 'ld-10000.lat', 'ld-10000.lati', 'ld.lat']
 CHECK:  ['ld-0-1000.lat', 'ld-1-1000.lat', 'ld-10-1000.lat', 'ld-11-1000.lat', 'ld-12-1000.lat', 'ld-13-1000.lat', 'ld-14-1000.lat', 'ld-15-1000.lat', 'ld-16-1000.lat', 'ld-17-1000.lat', 'ld-18-1000.lat', 'ld-19-1000.lat', 'ld-2-1000.lat', 'ld-3-1000.lat', 'ld-4-1000.lat', 'ld-5-1000.lat', 'ld-6-1000.lat', 'ld-7-1000.lat', 'ld-8-1000.lat', 'ld-9-1000.lat']
 CHECK: clean_up_qfile_map num_clean_up_qfiles=0
 CHECK: q.show_all_qfile()
@@ -44,19 +44,20 @@ CHECK: 25 QFileObj(path='results/data4.qar.v20',mode='r',parent=no,number_of_chi
 CHECK: 26 QFileObj(path='results/data4.qar.v20',mode='r',parent=yes,number_of_child=0)
 CHECK: 27 QFileObj(path='results/data4.qar.v21',mode='r',parent=no,number_of_child=0)
 CHECK: 28 QFileObj(path='results/data4.qar.v22',mode='r',parent=no,number_of_child=0)
-CHECK: 29 QFileObj(path='results/data4.qar.v3',mode='r',parent=no,number_of_child=1)
-CHECK: 30 QFileObj(path='results/data4.qar.v3',mode='r',parent=yes,number_of_child=0)
-CHECK: 31 QFileObj(path='results/data4.qar.v4',mode='r',parent=no,number_of_child=1)
-CHECK: 32 QFileObj(path='results/data4.qar.v4',mode='r',parent=yes,number_of_child=0)
-CHECK: 33 QFileObj(path='results/data4.qar.v5',mode='r',parent=no,number_of_child=1)
-CHECK: 34 QFileObj(path='results/data4.qar.v5',mode='r',parent=yes,number_of_child=0)
-CHECK: 35 QFileObj(path='results/data4.qar.v6',mode='r',parent=no,number_of_child=1)
-CHECK: 36 QFileObj(path='results/data4.qar.v6',mode='r',parent=yes,number_of_child=0)
-CHECK: 37 QFileObj(path='results/data4.qar.v7',mode='r',parent=no,number_of_child=1)
-CHECK: 38 QFileObj(path='results/data4.qar.v7',mode='r',parent=yes,number_of_child=0)
-CHECK: 39 QFileObj(path='results/data4.qar.v8',mode='r',parent=no,number_of_child=1)
-CHECK: 40 QFileObj(path='results/data4.qar.v8',mode='r',parent=yes,number_of_child=0)
-CHECK: 41 QFileObj(path='results/data4.qar.v9',mode='r',parent=no,number_of_child=1)
-CHECK: 42 QFileObj(path='results/data4.qar.v9',mode='r',parent=yes,number_of_child=0)
-CHECK: 43 QFileObj(path='results/test-qar.qar',mode='r',parent=no,number_of_child=0)
+CHECK: 29 QFileObj(path='results/data4.qar.v23',mode='r',parent=no,number_of_child=0)
+CHECK: 30 QFileObj(path='results/data4.qar.v3',mode='r',parent=no,number_of_child=1)
+CHECK: 31 QFileObj(path='results/data4.qar.v3',mode='r',parent=yes,number_of_child=0)
+CHECK: 32 QFileObj(path='results/data4.qar.v4',mode='r',parent=no,number_of_child=1)
+CHECK: 33 QFileObj(path='results/data4.qar.v4',mode='r',parent=yes,number_of_child=0)
+CHECK: 34 QFileObj(path='results/data4.qar.v5',mode='r',parent=no,number_of_child=1)
+CHECK: 35 QFileObj(path='results/data4.qar.v5',mode='r',parent=yes,number_of_child=0)
+CHECK: 36 QFileObj(path='results/data4.qar.v6',mode='r',parent=no,number_of_child=1)
+CHECK: 37 QFileObj(path='results/data4.qar.v6',mode='r',parent=yes,number_of_child=0)
+CHECK: 38 QFileObj(path='results/data4.qar.v7',mode='r',parent=no,number_of_child=1)
+CHECK: 39 QFileObj(path='results/data4.qar.v7',mode='r',parent=yes,number_of_child=0)
+CHECK: 40 QFileObj(path='results/data4.qar.v8',mode='r',parent=no,number_of_child=1)
+CHECK: 41 QFileObj(path='results/data4.qar.v8',mode='r',parent=yes,number_of_child=0)
+CHECK: 42 QFileObj(path='results/data4.qar.v9',mode='r',parent=no,number_of_child=1)
+CHECK: 43 QFileObj(path='results/data4.qar.v9',mode='r',parent=yes,number_of_child=0)
+CHECK: 44 QFileObj(path='results/test-qar.qar',mode='r',parent=no,number_of_child=0)
 CHECK: finished successfully.

@@ -47,7 +47,9 @@ test_ld_str_io(f"results/data/ld.lat")
 
 for i in range(20):
     ld = q.LatData()
-    ld.from_numpy(np.arange(1000.0).astype(complex).reshape(2, 5, 10, 10))
+    rs = q.RngState(f"seed {i}")
+    arr = rs.g_rand_arr((2, 5, 10, 10,))
+    ld.from_numpy(arr)
     ld.save(f"results/data/ld-1000/ld-{i}-1000.lat")
     test_ld_str_io(f"results/data/ld-1000/ld-{i}-1000.lat")
 
@@ -55,6 +57,19 @@ ld = q.LatData()
 ld.from_numpy(np.arange(10000.0).astype(complex).reshape(2, 5, 10, 100))
 ld.save(f"results/data/ld-10000.lat")
 test_ld_str_io(f"results/data/ld-10000.lat")
+
+def test_ldi_str_io(path):
+    ld_load = q.load_lat_data_int(path)
+    ld_bytes = ld_load.save_str()
+    assert q.qcat_bytes_sync_node(path) == ld_bytes
+    ld_str = q.LatDataInt()
+    ld_str.load_str(ld_bytes)
+    assert ld_str.save_str() == ld_bytes
+
+ld = q.LatDataInt()
+ld.from_numpy(np.arange(10000).reshape(2, 5, 10, 100))
+ld.save(f"results/data/ld-10000.lati")
+test_ldi_str_io(f"results/data/ld-10000.lati")
 
 if q.get_id_node() == 0:
     qar = q.open_qar("results/test-qar.qar", "w")

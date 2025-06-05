@@ -244,11 +244,12 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         """
         return <bytes>cc.save_selected_points_str(self.xx)
 
-    def load_str(self, cc.std_string& content):
+    def load_str(self, bytes content):
         """
         only need str at node 0
         """
-        return cc.load_selected_points_str(self.xx, content)
+        cdef cc.std_string content_std_str = content
+        return cc.load_selected_points_str(self.xx, content_std_str)
 
 {{if name in real_d_type_name_list}}
     def to_lat_data(self):
