@@ -68,10 +68,6 @@ from auto_contractor import (
         mk_kappa_p,
         )
 
-is_cython = False
-
-# ----
-
 load_path_list[:] = [
         "results",
         "results-props",
@@ -462,7 +458,6 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     compute_glb_hvp_average()
     #
     q.release_lock()
-    q.clean_cache()
     return ret
 
 @q.timer(is_timer_fork=True)
@@ -2221,7 +2216,6 @@ def run_job_inversion(job_tag, traj):
     get_field_rand_u1_dict = run_field_rand_u1_dict(job_tag, traj)
     #
     if get_fsel is None:
-        q.clean_cache()
         return
     #
     get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
@@ -2274,8 +2268,6 @@ def run_job_inversion(job_tag, traj):
     #
     get_hvp_average_light = run_hvp_average(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
     get_hvp_average_strange = run_hvp_average(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
-    #
-    q.clean_cache()
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
@@ -2496,8 +2488,6 @@ def run_job_contract(job_tag, traj):
             q.json_results_append(f"get_glb_hvp_avg_for_sub_light: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_light(), q.RngState()))
             q.json_results_append(f"get_glb_hvp_avg_for_sub_strange: {traj}:", q.get_data_sig(get_glb_hvp_avg_for_sub_strange(), q.RngState()))
     #
-    q.clean_cache()
-    #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")
     if not is_test_job_tag(job_tag):
@@ -2510,8 +2500,8 @@ set_param("test-4nt8", "traj_list")([ 1000, 2000, ])
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
-set_param("test-4nt8", "quark_mass_list")([ 0.01, 0.04, 0.2, ])
 set_param("test-4nt8", "quark_flavor_list")([ "light", "strange", "charm-1", ])
+set_param("test-4nt8", "quark_mass_list")([ 0.01, 0.04, 0.2, ])
 set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
@@ -2572,7 +2562,8 @@ set_param("48I", "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
 set_param("48I", "hlbl_two_plus_two_num_chunk")(8)
 
 set_param("64I", "traj_list")(list(range(1200, 3680, 20)))
-set_param("64I", "quark_flavor_list")([ "light", "strange", "charm-1", ])
+set_param("64I", "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", "charm-3", "charm-4", ])
+set_param("64I", "quark_mass_list")([ 0.000678, 0.02661, 0.08, 0.16, 0.24, 0.32, ])
 set_param("64I", "is_performing_auto_contraction")(False)
 set_param("64I", "prob_acc_1_rand_u1_sparse")(1/32)
 set_param("64I", "prob_acc_2_rand_u1_sparse")(1/128)
@@ -2586,7 +2577,8 @@ set_param("64I", "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
 set_param("64I", "hlbl_two_plus_two_num_chunk")(8)
 
 set_param("64I-pq", "traj_list")(list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
-set_param("64I-pq", "quark_flavor_list")([ "light", "strange", "charm-1", ])
+set_param("64I-pq", "quark_flavor_list")([ "light", "strange", ])
+set_param("64I-pq", "quark_mass_list")([ 0.0006203, 0.02539, ])
 set_param("64I-pq", "cg_params-0-0", "maxiter")(100)
 set_param("64I-pq", "cg_params-0-1", "maxiter")(100)
 set_param("64I-pq", "cg_params-0-2", "maxiter")(100)
@@ -2611,7 +2603,18 @@ set_param("64I-pq", "hlbl_two_plus_two_num_chunk")(8)
 
 ##################### CMD options #####################
 
-job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
+job_tag_list_default = [
+        "test-4nt8",
+        # "test-8nt16",
+        # "24D",
+        # "64I",
+        ]
+job_tag_list_str_default = ",".join(job_tag_list_default)
+job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
+if job_tag_list == job_tag_list_default:
+    is_cython = False
+else:
+    is_cython = True
 
 is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
@@ -2623,26 +2626,29 @@ is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) i
 
 #######################################################
 
-# ----
+def gracefully_finish():
+    is_test = job_tag_list == job_tag_list_default
+    q.displayln_info("Begin to gracefully_finish.")
+    q.timer_display()
+    if is_test:
+        q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
+        q.check_log_json(__file__)
+    qg.end_with_gpt()
+    q.displayln_info("CHECK: finished successfully.")
+    exit()
+
+def try_gracefully_finish():
+    """
+    Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
+    """
+    is_test = job_tag_list == job_tag_list_default
+    if (not is_test) and (len(q.obtained_lock_history_list) > 0):
+        gracefully_finish()
 
 if __name__ == "__main__":
 
     qg.begin_with_gpt()
-
-    job_tag_list_default = [
-            "test-4nt8",
-            # "test-8nt16",
-            # "24D",
-            # "64I",
-            ]
-
-    if job_tag_list == [ "", ]:
-        job_tag_list = job_tag_list_default
-    else:
-        is_cython = True
-
     q.check_time_limit()
-
     get_all_cexpr()
 
     for job_tag in job_tag_list:
@@ -2655,19 +2661,21 @@ if __name__ == "__main__":
             if is_performing_inversion:
                 q.check_time_limit()
                 run_job_inversion(job_tag, traj)
+                q.clean_cache()
+                try_gracefully_finish()
         if is_performing_global_hvp_average:
             for inv_type in [ 0, 1, ]:
                 q.check_time_limit()
                 run_job_global_hvp_average(job_tag, inv_type=inv_type)
+                q.clean_cache()
+                try_gracefully_finish()
         for traj in traj_list:
             if is_performing_contraction:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
+                q.clean_cache()
+                try_gracefully_finish()
 
-    q.timer_display()
-    if job_tag_list == job_tag_list_default:
-        q.check_log_json(__file__)
-    qg.end_with_gpt()
-    q.displayln_info("CHECK: finished successfully.")
+    gracefully_finish()
 
 # ----

@@ -6,7 +6,7 @@
   "auto_contract_eta_c_corr: ld sig",
   {
    "real": -21461.033730388644,
-   "imag": 11468.800321002911,
+   "imag": 11468.800321002913,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -21,15 +21,15 @@
  [
   "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * eta_c(-tsep) >  exprs[1]' sig",
   {
-   "real": -15974.243717942554,
-   "imag": 14.618692413830374,
+   "real": -15974.243717942558,
+   "imag": 14.618692413830388,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * eta_c(-tsep) >  exprs[2]' sig",
   {
-   "real": -10.376522217351537,
+   "real": -10.376522217351603,
    "imag": 5935.452697421076,
    "__extended_json_type__": "complex128"
   }
@@ -37,7 +37,7 @@
  [
   "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * j5_eta_c_t^dag(-tsep) >  exprs[3]' sig",
   {
-   "real": -10.376522217351544,
+   "real": -10.37652221735161,
    "imag": -5901.674775047413,
    "__extended_json_type__": "complex128"
   }
@@ -45,8 +45,8 @@
  [
   "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * j5_eta_c_t^dag(-tsep) >  exprs[4]' sig",
   {
-   "real": -17477.664933644577,
-   "imag": -8.79140772675294,
+   "real": -17477.66493364457,
+   "imag": -8.791407726752958,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -69,7 +69,7 @@
  [
   "auto_contract_eta_c_corr_psnk: ld '< eta_c^dag(0) * eta_c(-tsep) >  exprs[1]' sig",
   {
-   "real": -4.180046145383182,
+   "real": -4.180046145383183,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
@@ -77,15 +77,15 @@
  [
   "auto_contract_eta_c_corr_psnk: ld '< j5_eta_c_t(0) * eta_c(-tsep) >  exprs[2]' sig",
   {
-   "real": 9.637528970695435e-19,
-   "imag": 1.5015633727732256,
+   "real": 2.7694151852419352e-18,
+   "imag": 1.5015633727732254,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr_psnk: ld '< eta_c^dag(0) * j5_eta_c_t^dag(-tsep) >  exprs[3]' sig",
   {
-   "real": 2.9378609564482175e-18,
+   "real": 2.045279885933827e-18,
    "imag": -1.436352079999434,
    "__extended_json_type__": "complex128"
   }
@@ -93,15 +93,15 @@
  [
   "auto_contract_eta_c_corr_psnk: ld '< j5_eta_c_t(0) * j5_eta_c_t^dag(-tsep) >  exprs[4]' sig",
   {
-   "real": -4.485715826344313,
-   "imag": 7.961504840058847e-18,
+   "real": -4.485715826344312,
+   "imag": 8.081902565116862e-18,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr: ld sig",
   {
-   "real": -17857.455102511172,
+   "real": -17857.455102511176,
    "imag": 13348.057665256962,
    "__extended_json_type__": "complex128"
   }
@@ -117,24 +117,24 @@
  [
   "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * eta_c(-tsep) >  exprs[1]' sig",
   {
-   "real": -10547.109100466914,
-   "imag": 2.463087013123964,
+   "real": -10547.10910046691,
+   "imag": 2.4630870131239666,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * eta_c(-tsep) >  exprs[2]' sig",
   {
-   "real": -2.9611160041990106,
-   "imag": 9734.40760251395,
+   "real": -2.961116004199023,
+   "imag": 9734.407602513951,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr: ld '< eta_c^dag(0) * j5_eta_c_t^dag(-tsep) >  exprs[3]' sig",
   {
-   "real": -2.9611160041990163,
-   "imag": -9771.628439951412,
+   "real": -2.961116004199084,
+   "imag": -9771.628439951413,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -142,15 +142,15 @@
   "auto_contract_eta_c_corr: ld '< j5_eta_c_t(0) * j5_eta_c_t^dag(-tsep) >  exprs[4]' sig",
   {
    "real": -13129.230368868313,
-   "imag": 0.9844749335167226,
+   "imag": 0.9844749335167503,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr_psnk: ld sig",
   {
-   "real": -6.439998444938105,
-   "imag": 3.3372584032041646,
+   "real": -6.439998444938104,
+   "imag": 3.3372584032041654,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -173,24 +173,24 @@
  [
   "auto_contract_eta_c_corr_psnk: ld '< j5_eta_c_t(0) * eta_c(-tsep) >  exprs[2]' sig",
   {
-   "real": 6.846407813904989e-19,
-   "imag": 2.468835526584177,
+   "real": 1.217067443887504e-19,
+   "imag": 2.4688355265841766,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr_psnk: ld '< eta_c^dag(0) * j5_eta_c_t^dag(-tsep) >  exprs[3]' sig",
   {
-   "real": 7.649449726482581e-19,
-   "imag": -2.4258714842678986,
+   "real": -4.401678572579804e-19,
+   "imag": -2.425871484267899,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_eta_c_corr_psnk: ld '< j5_eta_c_t(0) * j5_eta_c_t^dag(-tsep) >  exprs[4]' sig",
   {
-   "real": -3.4188068471178865,
-   "imag": 2.140365300867843e-19,
+   "real": -3.418806847117886,
+   "imag": -2.736091676485861e-18,
    "__extended_json_type__": "complex128"
   }
  ],

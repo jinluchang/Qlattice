@@ -34,9 +34,8 @@ from qlat_scripts.v1 import (
         run_gt,
         get_load_path,
         get_save_path,
+        is_test_job_tag,
         )
-
-is_cython = False
 
 ### ------
 
@@ -450,48 +449,56 @@ set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 
 # ----
 
+##################### CMD options #####################
+
+job_tag_list_default = [
+        "test-4nt8-checker",
+        ]
+job_tag_list_str_default = ",".join(job_tag_list_default)
+job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
+if job_tag_list == job_tag_list_default:
+    is_cython = False
+else:
+    is_cython = True
+
+#######################################################
+
 def gracefully_finish():
+    is_test = job_tag_list == job_tag_list_default
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
+    if is_test:
+        q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
+        q.check_log_json(__file__)
     qg.end_with_gpt()
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
+def try_gracefully_finish():
+    """
+    Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
+    """
+    is_test = job_tag_list == job_tag_list_default
+    if (not is_test) and (len(q.obtained_lock_history_list) > 0):
+        gracefully_finish()
+
 if __name__ == "__main__":
 
     qg.begin_with_gpt()
-
-    ##################### CMD options #####################
-
-    job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
-
-    #######################################################
-
-    job_tag_list_default = [
-            "test-4nt8-checker",
-            ]
-
-    if job_tag_list == [ "", ]:
-        job_tag_list = job_tag_list_default
-    else:
-        is_cython = True
-
     q.check_time_limit()
-
     get_all_cexpr()
 
     for job_tag in job_tag_list:
         run_params(job_tag)
-        for traj in get_param(job_tag, "traj_list"):
+        traj_list = get_param(job_tag, "traj_list")
+        if not is_test_job_tag(job_tag):
+            traj_list = q.random_permute(traj_list, q.RngState(f"{q.get_time()}"))
+            traj_list = q.get_comm().bcast(traj_list)
+        for traj in traj_list:
             q.check_time_limit()
             run_job(job_tag, traj)
             q.clean_cache()
-            if q.obtained_lock_history_list:
-                q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
-                if job_tag[:5] != "test-":
-                    gracefully_finish()
-
-    q.check_log_json(__file__, check_eps=5e-5)
+            try_gracefully_finish()
 
     gracefully_finish()
 
