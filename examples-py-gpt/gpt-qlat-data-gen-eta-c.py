@@ -88,7 +88,7 @@ def get_cexpr_eta_c_corr():
 @q.timer_verbose
 def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c/inv_type-{inv_type}.lat"
+    fn = f"{job_tag}/auto-contract-eta-c/traj-{traj}/eta_c/inv_type-{inv_type}.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_eta_c_corr()
@@ -138,7 +138,7 @@ def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list)
 @q.timer_verbose
 def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, inv_type, tslice_list):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c-psnk/inv_type-{inv_type}.lat"
+    fn = f"{job_tag}/auto-contract-eta-c/traj-{traj}/eta_c-psnk/inv_type-{inv_type}.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_eta_c_corr()
@@ -389,7 +389,7 @@ for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]
 job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(1000, 5100, 80)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
-set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(17) ])
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(14) ])
 set_param(job_tag, "quark_mass_list")([ 0.00107, 0.0850, 0.07819, 0.13207, 0.19829, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 2).copy())
@@ -402,8 +402,21 @@ for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(520, 2600, 40)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
-set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(17) ])
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(16) ])
 set_param(job_tag, "quark_mass_list")([ 0.0001, 0.045, 0.04635, 0.07794, 0.11333, 0.15327, 0.2, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
+for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
+    set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 2).copy())
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
+    for inv_acc in [ 0, 1, 2, ]:
+        set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(200)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(50)
+
+job_tag = "64I"
+set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(7) ])
+set_param(job_tag, "quark_mass_list")([ 0.000678, 0.02661, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28, 0.32, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 2).copy())
     set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
