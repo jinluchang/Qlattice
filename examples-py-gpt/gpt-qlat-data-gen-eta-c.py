@@ -86,9 +86,9 @@ def get_cexpr_eta_c_corr():
 ### ------
 
 @q.timer_verbose
-def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list):
+def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c/charm_mass_idx-{charm_mass_idx}.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c/inv_type-{inv_type}.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_eta_c_corr()
@@ -136,9 +136,9 @@ def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx, tslice
         q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
 @q.timer_verbose
-def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list):
+def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, inv_type, tslice_list):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c-psnk/charm_mass_idx-{charm_mass_idx}.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/eta_c-psnk/inv_type-{inv_type}.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_eta_c_corr()
@@ -236,7 +236,7 @@ def mk_get_prop_wall_snk(ps_prop_ws):
     return get
 
 @q.timer_verbose
-def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice_list):
+def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, inv_type, tslice_list):
     """
     return get_get_prop
     """
@@ -250,11 +250,8 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
         gt_inv = gt.inv()
         geo = gf.geo
         total_site = geo.total_site
-        inv_type = 2
         inv_acc = 2
         eig = None
-        mass_initial = get_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")
-        set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(charm_mass)
         inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
         prop_dict = dict()
         for tslice in tslice_list:
@@ -268,7 +265,6 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
             key = ("c", tslice, "wall", "wall")
             prop_dict[key] = mk_get_prop_wall_snk(ps_prop_ws)
         q.clean_cache(q.cache_inv)
-        set_param(job_tag, "fermion_params", inv_type, inv_acc, "mass")(mass_initial)
         prop_cache = q.mk_cache("prop_cache", f"{job_tag}", f"{traj}")
         prop_cache["prop-dict"] = prop_dict
         return mk_get_prop(prop_dict)
@@ -278,23 +274,23 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, charm_mass, tslice
 
 @q.timer(is_timer_fork=True)
 def run_eta_c_corr(job_tag, traj, get_gf, get_gt):
-    charm_quark_mass_list = get_param_charm_mass_list(job_tag)
+    charm_wall_src_prop_params = run_charm_wall_src_prop_params(job_tag, traj)
     tslice_list = get_param_charm_wall_src_tslice_list(job_tag, traj)
-    for charm_mass_idx, charm_mass in enumerate(charm_quark_mass_list):
+    for inv_type in charm_wall_src_prop_params["charm_quark_inv_type_list"]:
         get_get_prop = run_get_prop_wsrc_charm(
                 job_tag, traj,
                 get_gf=get_gf,
                 get_gt=get_gt,
-                charm_mass=charm_mass,
+                inv_type=inv_type,
                 tslice_list=tslice_list,
                 )
-        auto_contract_eta_c_corr(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list)
-        auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, charm_mass_idx, tslice_list)
+        auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list)
+        auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, inv_type, tslice_list)
 
 ### ------
 
 def get_param_charm_mass_list(job_tag):
-    charm_quark_mass_list = get_param(job_tag, "measurement", "charm_quark_mass_list")
+    charm_quark_mass_list = get_param(job_tag, "quark_mass_list")[2:]
     return charm_quark_mass_list
 
 @q.cache_call()
@@ -311,11 +307,16 @@ def get_param_charm_wall_src_tslice_list(job_tag, traj):
 
 @q.timer_verbose
 def run_charm_wall_src_prop_params(job_tag, traj):
+    assert len(get_param(job_tag, "quark_flavor_list")) == len(get_param(job_tag, "quark_mass_list"))
+    inv_type_ref = 1
+    n_flavor = len(get_param(job_tag, "quark_flavor_list"))
+    inv_type_list = list(range(n_flavor))
     charm_wall_src_tslice_list = get_param_charm_wall_src_tslice_list(job_tag, traj)
-    charm_quark_mass_list = get_param_charm_mass_list(job_tag)
     obj = dict()
+    obj["charm_quark_inv_type_list"] = inv_type_list[inv_type_ref + 1:]
+    obj["charm_quark_flavor_list"] = get_param(job_tag, "quark_flavor_list")[inv_type_ref + 1:]
+    obj["charm_quark_mass_list"] = get_param(job_tag, "quark_mass_list")[inv_type_ref + 1:]
     obj["charm_wall_src_tslice_list"] = charm_wall_src_tslice_list
-    obj["charm_quark_mass_list"] = charm_quark_mass_list
     fn = f"{job_tag}/params/traj-{traj}/charm_wall_src_prop.json"
     path = get_load_path(fn)
     if path is None:
@@ -325,6 +326,7 @@ def run_charm_wall_src_prop_params(job_tag, traj):
         obj_load = q.load_json_obj(path)
         assert obj_load is not None
         assert obj_load == obj
+    return obj
 
 ### ------
 
@@ -392,6 +394,62 @@ set_param("32Dfine", f"cg_params-2-2", "maxcycle")(50)
 
 # ----
 
+if False:
+    job_tag = "test-4nt8-checker"
+    #
+    set_param(job_tag, "traj_list")([ 1000, ])
+    #
+    set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
+    set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
+    #
+    set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
+    set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
+    set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
+    #
+    set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
+    for inv_type in [ 1, 2, ]:
+        set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
+    set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
+    set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
+    set_param(job_tag, "fermion_params", 2, 0, "mass")(0.10)
+    for inv_type in [ 0, 1, 2, ]:
+        for inv_acc in [ 1, 2, ]:
+            set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+    #
+    set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+    set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+    set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
+    set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
+    #
+    for inv_type in [ 0, 1, ]:
+        set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+    #
+    set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
+    set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
+    set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+    set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+    set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+    set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
+    set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
+    #
+    for inv_type in [ 0, 1, 2, ]:
+        for inv_acc in [ 0, 1, 2, ]:
+            set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
+            set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
+    #
+    set_param(job_tag, "field_selection_fsel_rate")(0.1)
+    set_param(job_tag, "field_selection_psel_rate")(0.01)
+    set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
+    #
+    set_param(job_tag, "prob_exact_wsrc")(0.20)
+    #
+    set_param(job_tag, "prob_acc_1_psrc")(0.25)
+    set_param(job_tag, "prob_acc_2_psrc")(0.10)
+    #
+    set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
+    set_param(job_tag, "measurement", "charm_quark_mass_list")([ 0.1, 0.2, ])
+    set_param(job_tag, "measurement", "num_charm_wall_src")(2)
+
 job_tag = "test-4nt8-checker"
 #
 set_param(job_tag, "traj_list")([ 1000, ])
@@ -403,23 +461,21 @@ set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 #
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", ])
+set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.1, 0.2, ])
 set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
-for inv_type in [ 1, 2, ]:
+for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
-set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
-set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
-set_param(job_tag, "fermion_params", 2, 0, "mass")(0.10)
-for inv_type in [ 0, 1, 2, ]:
-    for inv_acc in [ 1, 2, ]:
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
+    for inv_acc in [ 0, 1, 2, ]:
         set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
 set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
 set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
-set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
-#
-for inv_type in [ 0, 1, ]:
-    set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
 #
 set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
 set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
@@ -427,24 +483,8 @@ set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5
 set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
 set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
-set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
-#
-for inv_type in [ 0, 1, 2, ]:
-    for inv_acc in [ 0, 1, 2, ]:
-        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
-        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
-#
-set_param(job_tag, "field_selection_fsel_rate")(0.1)
-set_param(job_tag, "field_selection_psel_rate")(0.01)
-set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
-#
-set_param(job_tag, "prob_exact_wsrc")(0.20)
-#
-set_param(job_tag, "prob_acc_1_psrc")(0.25)
-set_param(job_tag, "prob_acc_2_psrc")(0.10)
 #
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
-set_param(job_tag, "measurement", "charm_quark_mass_list")([ 0.1, 0.2, ])
 set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 
 # ----

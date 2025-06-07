@@ -464,8 +464,8 @@ set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 #
-set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.1, 0.2, ])
 set_param(job_tag, "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", ])
+set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.1, 0.2, ])
 set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
 for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
