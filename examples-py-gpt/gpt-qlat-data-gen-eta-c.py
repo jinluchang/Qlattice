@@ -42,6 +42,8 @@ from qlat_scripts.v1 import (
 load_path_list[:] = [
         "results",
         "qcddata",
+        "/lustre/orion/lgt119/proj-shared/ljin/qcddata4",
+        "/lustre/orion/lgt119/proj-shared/ljin/qcddata5",
         "/lustre20/volatile/qcdqedta/qcddata",
         "/lustre20/volatile/decay0n2b/qcddata",
         "/lustre20/volatile/pqpdf/ljin/qcddata",
