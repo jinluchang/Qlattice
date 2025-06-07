@@ -2250,6 +2250,7 @@ def run_job_inversion(job_tag, traj):
         # v = run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
         # add_to_run_ret_list(v)
         v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=1, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
+        add_to_run_ret_list(v)
         v = run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
         add_to_run_ret_list(v)
         # v = run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
