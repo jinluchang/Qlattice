@@ -378,6 +378,7 @@ def get_all_cexpr():
 job_tag = "16IH2"
 set_param(job_tag, "traj_list")(list(range(1000, 4020, 100)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(17) ])
 set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.02963, 0.05358, 0.07945, 0.10852, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
@@ -391,6 +392,7 @@ for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]
 job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(1000, 5100, 80)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(14) ])
 set_param(job_tag, "quark_mass_list")([ 0.00107, 0.0850, 0.07819, 0.13207, 0.19829, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
@@ -404,6 +406,7 @@ for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(520, 2600, 40)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(16) ])
 set_param(job_tag, "quark_mass_list")([ 0.0001, 0.045, 0.04635, 0.07794, 0.11333, 0.15327, 0.2, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.6, 0.7, 0.8, 0.9, 1.0, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
@@ -417,6 +420,7 @@ for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "measurement", "num_charm_wall_src")(2)
 set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(7) ])
 set_param(job_tag, "quark_mass_list")([ 0.000678, 0.02661, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28, 0.32, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
