@@ -319,13 +319,13 @@ def run_charm_wall_src_prop_params(job_tag, traj):
     obj["charm_quark_flavor_list"] = get_param(job_tag, "quark_flavor_list")[inv_type_ref + 1:]
     obj["charm_quark_mass_list"] = get_param(job_tag, "quark_mass_list")[inv_type_ref + 1:]
     obj["charm_wall_src_tslice_list"] = charm_wall_src_tslice_list
-    fn = f"{job_tag}/params/traj-{traj}/charm_wall_src_prop.json"
+    fn = f"{job_tag}/params-eta-c/traj-{traj}/charm_wall_src_prop.json"
     path = get_load_path(fn)
     if path is None:
         path = get_save_path(fn)
-        q.save_json_obj(obj, path)
+        q.save_json_obj(obj, path, indent=2, is_sync_node=True)
     else:
-        obj_load = q.load_json_obj(path)
+        obj_load = q.load_json_obj(path, is_sync_node=True)
         assert obj_load is not None
         assert obj_load == obj
     return obj

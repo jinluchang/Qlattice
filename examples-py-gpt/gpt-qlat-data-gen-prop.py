@@ -248,9 +248,9 @@ def run_quark_mass_list(job_tag, traj):
     path = get_load_path(fn)
     if path is None:
         path = get_save_path(fn)
-        q.save_json_obj(obj, path)
+        q.save_json_obj(obj, path, indent=2, is_sync_node=True)
     else:
-        obj_load = q.load_json_obj(path)
+        obj_load = q.load_json_obj(path, is_sync_node=True)
         assert obj_load is not None
         assert obj_load == obj
     return obj
