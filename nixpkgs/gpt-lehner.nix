@@ -31,6 +31,7 @@ buildPythonPackage rec {
   src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/gpt" else "https://github.com/lehner/gpt";
     # url = "https://github.com/jinluchang/gpt";
+    ref = "master";
     rev = version;
   };
 

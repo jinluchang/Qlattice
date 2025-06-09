@@ -29,6 +29,7 @@ in stdenv.mkDerivation rec {
 
   src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/cps" else "https://github.com/RBC-UKQCD/CPS_public";
+    ref = "master";
     rev = version;
   };
 

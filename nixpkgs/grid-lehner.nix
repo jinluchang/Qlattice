@@ -36,6 +36,7 @@ in grid-stdenv.mkDerivation rec {
 
   src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/grid" else "https://github.com/lehner/Grid";
+    ref = "feature/gpt";
     rev = version;
   };
 
