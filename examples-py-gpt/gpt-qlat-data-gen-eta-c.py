@@ -276,6 +276,12 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, inv_type, tslice_l
 
 @q.timer(is_timer_fork=True)
 def run_eta_c_corr(job_tag, traj, get_gf, get_gt):
+    fname = q.get_fname()
+    fn_checkpoint = f"{job_tag}/auto-contract-eta-c/traj-{traj}/checkpoint.txt"
+    if get_load_path(fn_checkpoint) is not None:
+        return
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+        return
     charm_wall_src_prop_params = run_charm_wall_src_prop_params(job_tag, traj)
     tslice_list = get_param_charm_wall_src_tslice_list(job_tag, traj)
     for inv_type in charm_wall_src_prop_params["charm_quark_inv_type_list"]:
@@ -288,6 +294,8 @@ def run_eta_c_corr(job_tag, traj, get_gf, get_gt):
                 )
         auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list)
         auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, inv_type, tslice_list)
+    q.qtouch_info(get_save_path(fn_checkpoint))
+    q.release_lock()
 
 ### ------
 
@@ -341,7 +349,7 @@ def run_job(job_tag, traj):
         traj_gf = 1000
     #
     fns_produce = [
-            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/auto-contract-eta-c/traj-{traj}/checkpoint.txt",
             ]
     fns_need = [
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
@@ -359,14 +367,7 @@ def run_job(job_tag, traj):
     #
     run_charm_wall_src_prop_params(job_tag, traj)
     #
-    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is not None:
-        return
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
-        return
     run_eta_c_corr(job_tag, traj, get_gf, get_gt)
-    q.qtouch_info(get_save_path(fn_checkpoint))
-    q.release_lock()
 
 ### ------
 
