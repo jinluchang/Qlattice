@@ -21,17 +21,17 @@ CHECK: params: test-4nt8-checker:     "rand_n_step": 2,
 CHECK: params: test-4nt8-checker:     "flow_n_step": 8,
 CHECK: params: test-4nt8-checker:     "hmc_n_traj": 5
 CHECK: params: test-4nt8-checker:   },
-CHECK: params: test-4nt8-checker:   "quark_mass_list": [
-CHECK: params: test-4nt8-checker:     0.01,
-CHECK: params: test-4nt8-checker:     0.04,
-CHECK: params: test-4nt8-checker:     0.1,
-CHECK: params: test-4nt8-checker:     0.2
-CHECK: params: test-4nt8-checker:   ],
 CHECK: params: test-4nt8-checker:   "quark_flavor_list": [
 CHECK: params: test-4nt8-checker:     "light",
 CHECK: params: test-4nt8-checker:     "strange",
 CHECK: params: test-4nt8-checker:     "charm-1",
 CHECK: params: test-4nt8-checker:     "charm-2"
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "quark_mass_list": [
+CHECK: params: test-4nt8-checker:     0.01,
+CHECK: params: test-4nt8-checker:     0.04,
+CHECK: params: test-4nt8-checker:     0.1,
+CHECK: params: test-4nt8-checker:     0.2
 CHECK: params: test-4nt8-checker:   ],
 CHECK: params: test-4nt8-checker:   "fermion_params": {
 CHECK: params: test-4nt8-checker:     "0": {
