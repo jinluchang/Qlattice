@@ -12,8 +12,8 @@ struct QMAction {
   double TV_offset;
   double center_bar;
   double barrier_strength;
-  double M;
   double L;
+  double M;
   double epsilon;
   double temp;
   Long t_FV_out;
@@ -35,8 +35,8 @@ struct QMAction {
     TV_offset = 0.0;
     center_bar = 1.0;
     barrier_strength = 1.0;
-    M = 1.0;
-    L = 0.0;
+    L = 1.0;
+    M = 0.0;
     epsilon = 0.0;
     t_FV_out = 10;
     t_FV_mid = 5;
@@ -46,8 +46,8 @@ struct QMAction {
   }
   //
   qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
-                const double TV_offset_, const double barrier_strength_, const double M_,
-                const double L_, const double epsilon_, const Long t_FV_out_, 
+                const double TV_offset_, const double barrier_strength_, const double L_,
+                const double M_, const double epsilon_, const Long t_FV_out_, 
                 const Long t_FV_mid_, const double dt_,
                 const bool measure_offset_L_, const bool measure_offset_M_)
   {
@@ -60,8 +60,8 @@ struct QMAction {
     TV_offset = TV_offset_;
     center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     barrier_strength = barrier_strength_;
-    M = M_;
     L = L_;
+    M = M_;
     epsilon = epsilon_;
     t_FV_out = t_FV_out_;
     t_FV_mid = t_FV_mid_;
@@ -69,7 +69,7 @@ struct QMAction {
     measure_offset_L = measure_offset_L_;
     measure_offset_M = measure_offset_M_;
     
-    if(L == 0.0) {
+    if(L == 1.0) {
       if(M == 0.0)
         vtype = GET_DTTV;
       else

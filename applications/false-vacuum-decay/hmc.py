@@ -339,21 +339,18 @@ def main():
     FV_offset = 0.3
     TV_offset = 0.0
     barrier_strength = 1000.0
-    M = 1.0
-    L = 0.0
-    P = 0.0
+    M = 0.0
+    L = 1.0
     epsilon = 1e-10
-    t_full1 = 5
-    t_full2 = 5
-    t_TV = 30
+    t_TV = 40
     t_FV_mid = 6
     dt = 0.2
     # The number of trajectories to calculate
     n_traj = 50000
-    use_H_low = False
-    displace_proj = False
+    measure_offset_L = False
+    measure_offset_M = False
     #
-    version = "12-0"
+    version = "13-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -375,13 +372,6 @@ def main():
                 TV_offset = float(sys.argv[i+1])
             elif(sys.argv[i]=="-B"):
                 barrier_strength = float(sys.argv[i+1])
-            elif(sys.argv[i]=="-f"):
-                t_full1 = int(sys.argv[i+1])
-                t_full2 = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-f1"):
-                t_full1 = int(sys.argv[i+1])
-            elif(sys.argv[i]=="-f2"):
-                t_full2 = int(sys.argv[i+1])
             elif(sys.argv[i]=="-t"):
                 t_TV = int(sys.argv[i+1])
             elif(sys.argv[i]=="-m"):
@@ -390,14 +380,12 @@ def main():
                 M = float(sys.argv[i+1])
             elif(sys.argv[i]=="-L"):
                 L = float(sys.argv[i+1])
-            elif(sys.argv[i]=="-P"):
-                P = float(sys.argv[i+1])
             elif(sys.argv[i]=="-e"):
                 epsilon = float(sys.argv[i+1])
             elif(sys.argv[i]=="-l"):
-                use_H_low=True
+                measure_offset_L=True
             elif(sys.argv[i]=="-p"):
-                displace_proj=True
+                measure_offset_M=True
             elif(sys.argv[i]=="-D"):
                 a = sys.argv[i+1].split("x")
                 total_site = q.Coordinate([int(a[j]) for j in range(4)])
@@ -421,17 +409,13 @@ def main():
                             -o to offset the barrier location in V_FV, \n\
                             -O to offset the barrier location in V_TV, \n\
                             -B for the barrier strength used in H_FV and H_TV, \n\
-                            -f for the time to evolve with H_full (both first and second time), \n\
-                            -f1 for the time to evolve with H_full the first time, \n\
-                            -f2 for the time to evolve with H_full the second time, \n\
                             -t for the time to evolve with H_TV, \n\
                             -m for the time to evolve with H_FV_mid, \n\
                             -M to set the left barrier for H_TV, \n\
                             -L to set the right barrier for H_TV, \n\
-                            -P to set the projection strength, \n\
                             -e to set epsilon (for V_proj), \n\
-                            -p displace one V_proj by one timeslice and put either H_low or another V_proj in between, \n\
-                            -l insert H_low either before (if -p is used) or after V_proj, \n\
+                            -p use action for the M observable associated with decreasing t_TV by 1, \n\
+                            -l use action for the L observable associated with decreasing t_TV by 1, \n\
                             -D for lattice dimensions, \n\
                             -d for the lattice spacing, \n\
                             -T for number of trajectories, \n\
@@ -440,34 +424,26 @@ def main():
                             -R to force restarting with blank initial field, \n\
                             -i for the number of trajectories to do at the beginning without a Metropolis step.")
     
-    t_FV_out = int((Nt - t_full1 - t_full2 - t_TV - t_FV_mid)/2)
-    t_FV_mid = Nt - t_full1 - t_full2 - t_TV - 2*t_FV_out
+    t_FV_out = int((Nt - 2 - t_TV - t_FV_mid)/2)
+    t_FV_mid = Nt - 2 - t_TV - 2*t_FV_out
     
-    action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, use_H_low, displace_proj)
-    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_P_{P}_eps_{epsilon}_tfull1_{t_full1}_tfull2_{t_full2}_Hlow_{use_H_low}_disp_{displace_proj}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
+    action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M)
+    hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_eps_{epsilon}_offL_{measure_offset_L}_offM_{measure_offset_M}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     steps = np.array([0.001, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) #np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
     measure_Ms = steps[steps>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
     measure_Ls = steps[steps>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
-    measure_Ps = steps[steps>P] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
-    
-    actions = {"M": {}, "L": {}, "P": {}, "D": {}}
-    if(use_H_low and displace_proj):
-        actions["D"]["A"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid+1, 0, dt, False, False)
-        actions["D"]["B"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2-1, t_FV_out, t_FV_mid, 0, dt, False, True)
-    if(use_H_low and not displace_proj):
-        actions["D"]["C"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, True)
-        actions["D"]["D"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, False)
-    elif(not displace_proj):
-        if(L==1.0):
-            for Mi in measure_Ms:
-                actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Mi, L, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, False)
-        if(M==1.0):
-            for Li in measure_Ls:
-                actions["L"][f"{Li}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, Li, P, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, False)
-        if(M==1.0 and L==0.0):
-            for Pi in measure_Ps:
-                actions["P"][f"{Pi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, M, L, Pi, epsilon, t_full1, t_full2, t_FV_out, t_FV_mid, 0, dt, False, False)
+        
+    actions = {"M": {}, "L": {}, "D": {}}
+    if(L==1.0):
+        if(M==0.0):
+            actions["D"]["L"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, True, False)
+            actions["D"]["M"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, False, True)
+        for Mi in measure_Ms:
+            actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, 1.0, Mi, epsilon, t_FV_out, t_FV_mid, dt, False, False)
+    else:
+        for Li in measure_Ls:
+            actions["L"][f"{Li}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Li, 1.0, epsilon, t_FV_out, t_FV_mid, dt, False, False)
     
     
     measurements = Measurements(total_site, actions, f"output_data/measurements_{hmc.fileid}.bin")
