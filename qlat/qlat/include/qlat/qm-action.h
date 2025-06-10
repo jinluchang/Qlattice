@@ -1,7 +1,7 @@
 #pragma once
 
 namespace qlat
-{  //
+{
 
 struct QMAction {
   bool initialized;
@@ -22,9 +22,9 @@ struct QMAction {
   bool measure_offset_L;
   bool measure_offset_M;
   
-  double (*V)(const double, const Long);
-  double (*dV)(const double, const Long);
-  //
+  enum VType { GET_L, GET_M, GET_DTTV };
+  VType vtype;
+  
   qacc void init()
   {
     initialized = false;
@@ -70,20 +70,33 @@ struct QMAction {
     measure_offset_M = measure_offset_M_;
     
     if(L == 0.0) {
-      if(M == 0.0) {
-        V = V_t_dtTV;
-        dV = dV_t_dtTV;
-      } else {
-        V = V_t_M;
-        dV = dV_t_M;
-      }
-    else {
-      V = V_t_L;
-      dV = dV_t_L;
+      if(M == 0.0)
+        vtype = GET_DTTV;
+      else
+        vtype = GET_M;
+    } else
+      vtype = GET_L;
+  }
+  
+  inline double V(const double x, const Long t)
+  {
+    switch(vtype) {
+      case GET_L: return V_t_L(x,t);
+      case GET_M: return V_t_M(x,t);
+      default: return V_t_dtTV(x,t);
     }
   }
   
-  double V_t_L(const double x, const Long t)
+  inline double dV(const double x, const Long t)
+  {
+    switch(vtype) {
+      case GET_L: return dV_t_L(x,t);
+      case GET_M: return dV_t_M(x,t);
+      default: return dV_t_dtTV(x,t);
+    }
+  }
+  
+  inline double V_t_L(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -107,7 +120,7 @@ struct QMAction {
     }
   }
   
-  double dV_t_L(const double x, const Long t)
+  inline double dV_t_L(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -131,7 +144,7 @@ struct QMAction {
     }
   }
   
-  double V_t_M(const double x, const Long t)
+  inline double V_t_M(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -155,7 +168,7 @@ struct QMAction {
     }
   }
   
-  double dV_t_M(const double x, const Long t)
+  inline double dV_t_M(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -179,7 +192,7 @@ struct QMAction {
     }
   }
   
-  double V_t_dtTV(const double x, const Long t)
+  inline double V_t_dtTV(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -195,22 +208,24 @@ struct QMAction {
     else if(t<=2*t_FV_out+t_FV_mid)
       return V_FV_out(x);
     // Right after t_FV_out has past, use H_proj or V_max
-    else if(t==2*t_FV_out+t_FV_mid+1)
+    else if(t==2*t_FV_out+t_FV_mid+1) {
       if(measure_offset_L) return V_max(V_full(x) + V_proj(x), V_FV_out(x), 1.0);
       if(measure_offset_M) return V_max(V_FV_out(x), V_full(x) + V_proj(x), 1.0);
       else return V_full(x) + V_proj(x);
+    }
     // One timeslice after t_FV_out has past, use H_TV or V_max
-    else if(t==2*t_FV_out+t_FV_mid+2)
+    else if(t==2*t_FV_out+t_FV_mid+2) {
       if(measure_offset_L) return V_max(V_TV(x), V_full(x) + V_proj(x), 1.0);
       if(measure_offset_M) return V_max(V_full(x) + V_proj(x), V_TV(x), 1.0);
       else return V_TV(x);
+    }
     // For the rest of the time, use H_TV
     else {
       return V_TV(x);
     }
   }
   
-  double dV_t_dtTV(const double x, const Long t)
+  inline double dV_t_dtTV(const double x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -226,66 +241,25 @@ struct QMAction {
     else if(t<=2*t_FV_out+t_FV_mid)
       return dV_FV_out(x);
     // Right after t_FV_out has past, use H_proj or V_max
-    else if(t==2*t_FV_out+t_FV_mid+1)
+    else if(t==2*t_FV_out+t_FV_mid+1) {
       if(measure_offset_L) return dV_max(V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), V_FV_out(x), dV_FV_out(x), 1.0);
       if(measure_offset_M) return dV_max(V_FV_out(x), dV_FV_out(x), V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), 1.0);
       else return dV_full(x) + dV_proj(x);
+    }
     // One timeslice after t_FV_out has past, use H_TV or V_max
-    else if(t==2*t_FV_out+t_FV_mid+2)
+    else if(t==2*t_FV_out+t_FV_mid+2) {
       if(measure_offset_L) return dV_max(V_TV(x), dV_TV(x), V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), 1.0);
       if(measure_offset_M) return dV_max(V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), V_TV(x), dV_TV(x), 1.0);
       else return dV_TV(x);
+    }
     // For the rest of the time, use H_TV
     else {
       return dV_TV(x);
     }
   }
   
-  double V_zeroed(const double x, const Long t) {
+  inline double V_zeroed(const double x, const Long t) {
     return V(x,t) - log(dt) / dt;
-  }
-
-  inline double dV(const double x, const Long t)
-  {
-    // Returns the potential evaluated at point x
-    if(t<t_TV_start)
-      return dV_TV(x);
-    // Until t_full1 has past, use H_full
-    else if(t<t_TV_start+t_full1-1)
-      return dV_full(x);
-    // Right after t_full1 has past, use H_proj
-    else if(t==t_TV_start+t_full1-1)
-      return dV_full(x) + dV_proj(x);
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<t_TV_start+t_full1+t_FV_out)
-      return dV_FV_out(x);
-    // Until t_FV_mid has past, use H_FV_mid
-    else if(t<t_TV_start+t_full1+t_FV_out+t_FV_mid)
-      return dV_FV_mid(x);
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
-      return dV_FV_out(x);
-    // Right after t_FV_out has past, use either H_proj or H_low
-    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid)
-      if(displace_proj and use_H_low)
-          return dV_low(x);
-      else
-        return dV_full(x) + dV_proj(x);
-    // One timeslice after t_FV_out has past, use either H_proj or H_proj_sq
-    else if(t==t_TV_start+t_full1+2*t_FV_out+t_FV_mid+1)
-      if(displace_proj) 
-        return dV_full(x) + dV_proj(x);
-      else if(use_H_low)
-        return dV_low(x);
-      else
-        return dV_full(x);
-    // Until t_full2 has past, use H_full
-    else if(t<t_TV_start+t_full1+2*t_FV_out+t_FV_mid+t_full2)
-      return dV_full(x);
-    // For the rest of the time, use H_TV
-    else {
-     return dV_TV(x);
-    }
   }
 
   inline double V_phi4(const double x)
@@ -376,14 +350,14 @@ struct QMAction {
   
   inline double V_max(const double V_D, const double V_N, const double P)
   {
-    if(dV_N < dV_D) return dV_D;
+    if(V_N < V_D) return V_D;
     else return (1-P)*V_D + P*V_N;
   }
   
   inline double dV_max(const double V_D, const double dV_D, const double V_N, const double dV_N, const double P)
   {
-    if(V_N < V_D) return dV_D(x);
-    else return (1-P)*dV_D(x) + P*dV_N;
+    if(V_N < V_D) return dV_D;
+    else return (1-P)*dV_D + P*dV_N;
   }
   
   inline double V_L(const double x, const double V_N)
@@ -401,7 +375,7 @@ struct QMAction {
     return V_max(V_N, V_FV_out(x), M);
   }
   
-  inline double dV_L(const double x, const double V_N, const double dV_N)
+  inline double dV_M(const double x, const double V_N, const double dV_N)
   {
     return dV_max(V_N, dV_N, V_FV_out(x), dV_FV_out(x), M);
   }
