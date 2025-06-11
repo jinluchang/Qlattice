@@ -422,8 +422,8 @@ job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 set_param(job_tag, "measurement", "num_charm_wall_src")(2)
-set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(7) ])
-set_param(job_tag, "quark_mass_list")([ 0.000678, 0.02661, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28, 0.32, ])
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(5) ])
+set_param(job_tag, "quark_mass_list")([ 0.000678, 0.02661, 0.0611417 , 0.08234643, 0.17112621, 0.29854376, 0.33262794, ])
 for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 2).copy())
     set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
