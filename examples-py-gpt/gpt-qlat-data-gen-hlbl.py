@@ -2105,37 +2105,23 @@ def run_job_inversion(job_tag, traj):
             f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
             #
             f"{job_tag}/field-rand-u1/traj-{traj}/checkpoint.txt",
-            (f"{job_tag}/prop-rand-u1-fsel-sparse-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/prop-rand-u1-fsel-sparse-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-strange/traj-{traj}/geon-info.txt",),
-            #
-            # (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
-            # (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
-            # (f"{job_tag}/prop-rand-u1-charm/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",),
-            #
-            (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
-            #
-            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
-            #
-            # (f"{job_tag}/prop-smear-light/traj-{traj}.qar", f"{job_tag}/prop-smear-light/traj-{traj}/geon-info.txt",),
-            # (f"{job_tag}/prop-smear-strange/traj-{traj}.qar", f"{job_tag}/prop-smear-strange/traj-{traj}/geon-info.txt",),
-            #
-            (f"{job_tag}/psel-prop-psrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/psel-prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",),
-            #
-            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
-            #
-            # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
-            # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
-            #
-            (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-light/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-strange/traj-{traj}/checkpoint.txt",),
-            #
-            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_light.field",
-            f"{job_tag}/hvp-average/traj-{traj}/hvp_average_strange.field",
             ]
+    for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[:2]:
+        fns_produce += [
+                (f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                # (f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                # (f"{job_tag}/prop-rand-u1-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                (f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                # (f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{quark_flavor}.field",
+                ]
+    for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list"))):
+        fns_produce += [
+                (f"{job_tag}/prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
@@ -2261,6 +2247,9 @@ def run_job_inversion(job_tag, traj):
         # run_get_inverter(job_tag, traj, inv_type=2, get_gf=get_gf)
         # v = run_prop_rand_u1(job_tag, traj, inv_type=2, get_gf=get_gf, get_fsel=get_fsel)
         # add_to_run_ret_list(v)
+        for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[2:]:
+            v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=inv_type, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
+            add_to_run_ret_list(v)
         q.clean_cache(q.cache_inv)
     #
     run_with_eig()
@@ -2512,14 +2501,18 @@ set_param("test-4nt8", "cg_params-0-2", "maxiter")(5)
 set_param("test-4nt8", "cg_params-1-0", "maxiter")(5)
 set_param("test-4nt8", "cg_params-1-1", "maxiter")(5)
 set_param("test-4nt8", "cg_params-1-2", "maxiter")(5)
+set_param("test-4nt8", "cg_params-2-0", "maxiter")(5)
+set_param("test-4nt8", "cg_params-2-1", "maxiter")(5)
+set_param("test-4nt8", "cg_params-2-2", "maxiter")(5)
 set_param("test-4nt8", "cg_params-0-0", "maxcycle")(1)
 set_param("test-4nt8", "cg_params-0-1", "maxcycle")(2)
 set_param("test-4nt8", "cg_params-0-2", "maxcycle")(3)
 set_param("test-4nt8", "cg_params-1-0", "maxcycle")(1)
 set_param("test-4nt8", "cg_params-1-1", "maxcycle")(2)
 set_param("test-4nt8", "cg_params-1-2", "maxcycle")(3)
-set_param("test-4nt8", "cg_params-0-2", "pv_maxiter")(5)
-set_param("test-4nt8", "cg_params-1-2", "pv_maxiter")(5)
+set_param("test-4nt8", "cg_params-2-0", "maxcycle")(1)
+set_param("test-4nt8", "cg_params-2-1", "maxcycle")(2)
+set_param("test-4nt8", "cg_params-2-2", "maxcycle")(3)
 set_param("test-4nt8", "a_inv_gev")(1.73)
 set_param("test-4nt8", "zz_vv")(0.71)
 set_param("test-4nt8", "prob_acc_1_rand_u1_sparse")(1/4)
@@ -2562,43 +2555,54 @@ set_param("48I", "hlbl_four_contract_sparse_ratio")(20.0)
 set_param("48I", "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
 set_param("48I", "hlbl_two_plus_two_num_chunk")(8)
 
-set_param("64I", "traj_list")(list(range(1200, 3680, 20)))
-set_param("64I", "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", "charm-3", "charm-4", ])
-set_param("64I", "quark_mass_list")([ 0.000678, 0.02661, 0.08, 0.16, 0.24, 0.32, ])
-set_param("64I", "is_performing_auto_contraction")(False)
-set_param("64I", "prob_acc_1_rand_u1_sparse")(1/32)
-set_param("64I", "prob_acc_2_rand_u1_sparse")(1/128)
-set_param("64I", "measurement", "psel_split_num_piece")(256)
-set_param("64I", "measurement", "fsel_psel_split_num_piece")(256)
-set_param("64I", "hlbl_four_prob_scaling_factor")(1.0)
-set_param("64I", "hlbl_four_prob_scaling_factor_strange")(1.0)
-set_param("64I", "hlbl_four_num_chunk")(2048)
-set_param("64I", "hlbl_four_contract_sparse_ratio")(20.0)
-set_param("64I", "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
-set_param("64I", "hlbl_two_plus_two_num_chunk")(8)
+job_tag = "64I"
+set_param(job_tag, "traj_list")(list(range(1200, 3680, 20)))
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", ] + [ f"charm-{idx+1}" for idx in range(5) ])
+set_param(job_tag, "quark_mass_list")([ 0.000678, 0.02661, 0.0611417 , 0.08234643, 0.17112621, 0.29854376, 0.33262794, ])
+for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]:
+    set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 2).copy())
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
+    for inv_acc in [ 0, 1, 2, ]:
+        set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(200)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(inv_acc + 1)
+    inv_acc = 2
+    set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(50)
+set_param(job_tag, "is_performing_auto_contraction")(False)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/32)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/128)
+set_param(job_tag, "measurement", "psel_split_num_piece")(256)
+set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(256)
+set_param(job_tag, "hlbl_four_prob_scaling_factor")(1.0)
+set_param(job_tag, "hlbl_four_prob_scaling_factor_strange")(1.0)
+set_param(job_tag, "hlbl_four_num_chunk")(2048)
+set_param(job_tag, "hlbl_four_contract_sparse_ratio")(20.0)
+set_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
+set_param(job_tag, "hlbl_two_plus_two_num_chunk")(8)
 
-set_param("64I-pq", "traj_list")(list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
-set_param("64I-pq", "quark_flavor_list")([ "light", "strange", ])
-set_param("64I-pq", "quark_mass_list")([ 0.0006203, 0.02539, ])
-set_param("64I-pq", "cg_params-0-0", "maxiter")(100)
-set_param("64I-pq", "cg_params-0-1", "maxiter")(100)
-set_param("64I-pq", "cg_params-0-2", "maxiter")(100)
-set_param("64I-pq", "cg_params-0-0", "maxcycle")(4)
-set_param("64I-pq", "cg_params-0-1", "maxcycle")(8)
-set_param("64I-pq", "cg_params-0-2", "maxcycle")(150)
-set_param("64I-pq", "is_performing_inversion_if_no_full_prop_available")(True)
-set_param("64I-pq", "is_performing_saving_full_prop")(False)
-set_param("64I-pq", "is_performing_auto_contraction")(False)
-set_param("64I-pq", "prob_acc_1_rand_u1_sparse")(1/32)
-set_param("64I-pq", "prob_acc_2_rand_u1_sparse")(1/128)
-set_param("64I-pq", "measurement", "psel_split_num_piece")(256)
-set_param("64I-pq", "measurement", "fsel_psel_split_num_piece")(256)
-set_param("64I-pq", "hlbl_four_prob_scaling_factor")(1.0)
-set_param("64I-pq", "hlbl_four_prob_scaling_factor_strange")(1.0)
-set_param("64I-pq", "hlbl_four_num_chunk")(2048)
-set_param("64I-pq", "hlbl_four_contract_sparse_ratio")(20.0)
-set_param("64I-pq", "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
-set_param("64I-pq", "hlbl_two_plus_two_num_chunk")(8)
+job_tag = "64I-pq"
+set_param(job_tag, "traj_list")(list(range(1200, 3680, 160)) + list(range(1280, 3680, 160)))
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", ])
+set_param(job_tag, "quark_mass_list")([ 0.0006203, 0.02539, ])
+set_param(job_tag, "cg_params-0-0", "maxiter")(100)
+set_param(job_tag, "cg_params-0-1", "maxiter")(100)
+set_param(job_tag, "cg_params-0-2", "maxiter")(100)
+set_param(job_tag, "cg_params-0-0", "maxcycle")(4)
+set_param(job_tag, "cg_params-0-1", "maxcycle")(8)
+set_param(job_tag, "cg_params-0-2", "maxcycle")(150)
+set_param(job_tag, "is_performing_inversion_if_no_full_prop_available")(True)
+set_param(job_tag, "is_performing_saving_full_prop")(False)
+set_param(job_tag, "is_performing_auto_contraction")(False)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/32)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/128)
+set_param(job_tag, "measurement", "psel_split_num_piece")(256)
+set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(256)
+set_param(job_tag, "hlbl_four_prob_scaling_factor")(1.0)
+set_param(job_tag, "hlbl_four_prob_scaling_factor_strange")(1.0)
+set_param(job_tag, "hlbl_four_num_chunk")(2048)
+set_param(job_tag, "hlbl_four_contract_sparse_ratio")(20.0)
+set_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-5)
+set_param(job_tag, "hlbl_two_plus_two_num_chunk")(8)
 
 # ----
 
