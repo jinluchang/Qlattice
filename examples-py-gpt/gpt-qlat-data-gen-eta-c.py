@@ -470,13 +470,14 @@ job_tag_list_str_default = ",".join(job_tag_list_default)
 job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
 if job_tag_list == job_tag_list_default:
     is_cython = False
+    is_test = True
 else:
     is_cython = True
+    is_test = False
 
 #######################################################
 
 def gracefully_finish():
-    is_test = job_tag_list == job_tag_list_default
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
     if is_test:
@@ -490,7 +491,6 @@ def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
-    is_test = job_tag_list == job_tag_list_default
     if (not is_test) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
 
@@ -500,17 +500,20 @@ if __name__ == "__main__":
     q.check_time_limit()
     get_all_cexpr()
 
+    job_tag_traj_list = []
     for job_tag in job_tag_list:
         run_params(job_tag)
         traj_list = get_param(job_tag, "traj_list")
-        if not is_test_job_tag(job_tag):
-            traj_list = q.random_permute(traj_list, q.RngState(f"{q.get_time()}"))
-            traj_list = q.get_comm().bcast(traj_list)
         for traj in traj_list:
-            q.check_time_limit()
-            run_job(job_tag, traj)
-            q.clean_cache()
-            try_gracefully_finish()
+            job_tag_traj_list.append((job_tag, traj,))
+    if not is_test:
+        job_tag_traj_list = q.random_permute(job_tag_traj_list, q.RngState(f"{q.get_time()}"))
+        job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
+    for job_tag, traj in job_tag_traj_list:
+        q.check_time_limit()
+        run_job(job_tag, traj)
+        q.clean_cache()
+        try_gracefully_finish()
 
     gracefully_finish()
 
