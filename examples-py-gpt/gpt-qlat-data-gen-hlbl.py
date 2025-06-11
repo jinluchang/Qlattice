@@ -2122,6 +2122,11 @@ def run_job_inversion(job_tag, traj):
                 (f"{job_tag}/prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",),
                 ]
+    for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[2:]:
+        fns_produce += [
+                (f"{job_tag}/prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/psel-prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
@@ -2249,6 +2254,8 @@ def run_job_inversion(job_tag, traj):
         # add_to_run_ret_list(v)
         for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[2:]:
             v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=inv_type, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
+            add_to_run_ret_list(v)
+            v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=inv_type, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=get_psel_list, get_fsel_psel_list=None, get_eig=get_eig)
             add_to_run_ret_list(v)
         q.clean_cache(q.cache_inv)
     #

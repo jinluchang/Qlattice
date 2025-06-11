@@ -2840,6 +2840,363 @@
   1e-12
  ],
  [
+  "run_prop_sparse_rand_u1_src test-4nt8 1000 inv_type=2 psel_list_type=psel"
+ ],
+ [
+  "run_prop_sparse_rand_u1_src sfr.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0']"
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.09072345951728247,
+     "imag": 0.2640431046520457,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.14018271697582646,
+     "imag": 0.10930260980584303,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.2180354411697893,
+     "imag": -0.253490732295318,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.1068008960259742,
+     "imag": -0.06103034501354371,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.1325730186294401,
+     "imag": 0.0045637584703774325,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.2374728279045001,
+     "imag": 0.030004180237640884,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.02399352657367112,
+     "imag": 0.2143851399320143,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.08865561599521762,
+     "imag": 0.2016551399835737,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'checkpoint.txt']"
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    9.396078370824922,
+    0.6678868889278227
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": -0.37909057421473935,
+     "imag": 0.8076086851224712,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.201352993026034,
+     "imag": -1.1549583729963646,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.07998623731322349,
+     "imag": 0.10358355918510634,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.057292103849238774,
+     "imag": 0.04537875931951025,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": 0.053754871161715984,
+     "imag": 0.16452347244832227,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.060270891152824704,
+     "imag": -0.07206732930284057,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    9.396078370824922,
+    0.6678868889278227
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": -0.37909057421473935,
+     "imag": -0.8076086851224712,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.201352993026034,
+     "imag": 1.1549583729963646,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.03609706883371184,
+     "imag": -0.10892248130096328,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.051562902261973374,
+     "imag": 0.06314209670519083,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": -0.03750379943986321,
+     "imag": -0.19762064527024137,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.056688068023772464,
+     "imag": -0.18606312277464057,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    3.5707772105842857,
+    -9.269216530669134
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": 0.7382475033375128,
+     "imag": -0.9139553353701695,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.9247186361632782,
+     "imag": -0.34751462179834297,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.13159816077810277,
+     "imag": -0.015779601456322817,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.10926982496515106,
+     "imag": 0.010112333308837054,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": 0.3604935815558925,
+     "imag": 0.013353179229893014,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.1795053465699441,
+     "imag": 0.09619412247757772,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    3.5707772105842857,
+    -9.269216530669134
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": 0.7382475033375128,
+     "imag": 0.9139553353701695,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.9247186361632782,
+     "imag": 0.34751462179834297,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.09365855138527987,
+     "imag": -0.04152186921991137,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.02308536683269894,
+     "imag": 0.020456799911438363,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": 0.1853610597355138,
+     "imag": -0.48207129361167966,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.1336882845830099,
+     "imag": -0.07647148124841552,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "run_field_rand_u1_dict: fsel fu1",
   {
    "value": [
@@ -5585,6 +5942,537 @@
     {
      "real": 0.14130390233209333,
      "imag": 0.03943384470831858,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src test-4nt8 2000 inv_type=2 psel_list_type=psel"
+ ],
+ [
+  "run_prop_sparse_rand_u1_src sfr.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0']"
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.32358842560104234,
+     "imag": 0.37769902146722195,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.36036019633555544,
+     "imag": -0.02441876764087278,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1",
+  {
+   "value": [
+    {
+     "real": 0.2598623433338717,
+     "imag": 0.3726081701857057,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.4038375804683383,
+     "imag": -0.009871222071026892,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.15539354959411358,
+     "imag": 0.616300945052295,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.13745760023046055,
+     "imag": 0.13725745427519742,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1",
+  {
+   "value": [
+    {
+     "real": 0.12147173220437782,
+     "imag": 0.6528085457633939,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.14193033243882108,
+     "imag": 0.13501888575699508,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": 0.4053948147273644,
+     "imag": -0.5042824597740521,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.043076696036122575,
+     "imag": -0.006168948687522921,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0",
+  {
+   "value": [
+    {
+     "real": -0.32677535636724697,
+     "imag": -0.46610358251374706,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.08914223903093531,
+     "imag": 0.5375858644125638,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'checkpoint.txt']"
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    25.471546841024633,
+    -2.1613975540077046
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": -1.363579148482573,
+     "imag": 1.1488967918954645,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.00574532123883797,
+     "imag": 0.7450389213231609,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": -0.03457859051855723,
+     "imag": 0.07683130267271288,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.024999036459082816,
+     "imag": -0.08072058956989217,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": 0.35690263392092947,
+     "imag": 0.04769790695290818,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.2020634571991866,
+     "imag": -0.10437739970673243,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
+  {
+   "value": [
+    25.471546841024633,
+    -2.1613975540077046
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": -1.363579148482573,
+     "imag": 1.1488967918954645,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.00574532123883797,
+     "imag": 0.7450389213231609,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": -0.05475449033022112,
+     "imag": 0.07192554846157917,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.04075720685384266,
+     "imag": -0.07555070683298888,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1.lat",
+  {
+   "value": [
+    {
+     "real": 0.37331057422659375,
+     "imag": 0.06611909834464667,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.18295355162171906,
+     "imag": -0.10516157380124326,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    25.471546841024633,
+    -2.1613975540077046
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": -1.363579148482573,
+     "imag": -1.1488967918954645,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.00574532123883797,
+     "imag": -0.7450389213231609,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.23842881607455546,
+     "imag": -0.17481511318756404,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.03532008217853426,
+     "imag": -0.02253442838251523,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": 0.3514469386877691,
+     "imag": 0.30569449277228955,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.34547629748338604,
+     "imag": 0.11945804096542811,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
+  {
+   "value": [
+    25.471546841024633,
+    -2.1613975540077046
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": -1.363579148482573,
+     "imag": -1.1488967918954645,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.00574532123883797,
+     "imag": -0.7450389213231609,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.2736718989234014,
+     "imag": -0.16494039019058648,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.03179331638531116,
+     "imag": 0.014666747264083388,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1.lat",
+  {
+   "value": [
+    {
+     "real": 0.3186780880870139,
+     "imag": 0.2801417656862826,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.37575831828248174,
+     "imag": 0.1261981319401368,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    22.148948223484332,
+    -6.431482828677356
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": 1.0375661841481438,
+     "imag": -1.01605476639766,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.2127191439989215,
+     "imag": 1.2419739266914511,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": 0.03291153697011012,
+     "imag": 0.010811634360803485,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.0665389015081581,
+     "imag": -0.17842920212099558,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": -0.3110793151697462,
+     "imag": -0.24408902087687967,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.02437225834956648,
+     "imag": 0.08330200679840132,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
+  {
+   "value": [
+    22.148948223484332,
+    -6.431482828677356
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
+  {
+   "value": [
+    {
+     "real": 1.0375661841481438,
+     "imag": 1.01605476639766,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.2127191439989215,
+     "imag": -1.2419739266914511,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
+  {
+   "value": [
+    {
+     "real": -0.2576201707240105,
+     "imag": 0.027622397969416655,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.09938414431678366,
+     "imag": 0.07286735820075918,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
+  {
+   "value": [
+    {
+     "real": -0.2949356124056506,
+     "imag": 0.21664537157644836,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.3532704140425397,
+     "imag": -0.3669774658031195,
      "__extended_json_type__": "complex"
     }
    ],
@@ -8601,6 +9489,6 @@
   }
  ],
  [
-  "q.obtained_lock_history_list=['locks/test-4nt8-1000-gauge_field', 'locks/test-4nt8-1000-gauge_fix_coulomb', 'locks/test-4nt8-1000-wi', 'locks/test-4nt8-1000-wi', 'locks/test-4nt8-1000-run-eig', 'locks/test-4nt8-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-1000-run_f_rand_01', 'locks/test-4nt8-1000-run_fsel_prob', 'locks/test-4nt8-1000-run_psel_prob', 'locks/test-4nt8-1000-run_psel_split', 'locks/test-4nt8-1000-run_fsel_split', 'locks/test-4nt8-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-1000-psel-smear', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-fsel-light', 'locks/test-4nt8-1000-run_prop_psrc-light', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-fsel-strange', 'locks/test-4nt8-1000-run_prop_psrc-strange', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-fsel-charm-1', 'locks/test-4nt8-1000-run_hvp_average-light', 'locks/test-4nt8-1000-run_hvp_average-strange', 'locks/test-4nt8-2000-wi', 'locks/test-4nt8-2000-wi', 'locks/test-4nt8-2000-run_prop_wsrc_full-light', 'locks/test-4nt8-2000-run_prop_wsrc_full-strange', 'locks/test-4nt8-2000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-2000-run_f_rand_01', 'locks/test-4nt8-2000-run_fsel_prob', 'locks/test-4nt8-2000-run_psel_prob', 'locks/test-4nt8-2000-run_psel_split', 'locks/test-4nt8-2000-run_fsel_split', 'locks/test-4nt8-2000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-2000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-2000-psel-smear', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-fsel-light', 'locks/test-4nt8-2000-run_prop_psrc-light', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-fsel-strange', 'locks/test-4nt8-2000-run_prop_psrc-strange', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-fsel-charm-1', 'locks/test-4nt8-2000-run_hvp_average-light', 'locks/test-4nt8-2000-run_hvp_average-strange', 'locks/test-4nt8-run_job_global_hvp_average-light', 'locks/test-4nt8-run_job_global_hvp_average-strange', 'locks/test-4nt8-1000-run_edl-light', 'locks/test-4nt8-1000-run_job_global_hvp_average_for_subtract-light', 'locks/test-4nt8-1000-run_hlbl_sub_hvp_sfield-light', 'locks/test-4nt8-1000-run_edl-strange', 'locks/test-4nt8-1000-run_job_global_hvp_average_for_subtract-strange', 'locks/test-4nt8-1000-run_hlbl_sub_hvp_sfield-strange', 'locks/test-4nt8-1000-run_hlbl_four_point_pairs_info-light', 'locks/test-4nt8-1000-run_hlbl_four_chunk-light-0-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-light-1-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-light-2-3', 'locks/test-4nt8-1000-run_hlbl_four-light', 'locks/test-4nt8-1000-run_hlbl_four_point_pairs_info-strange', 'locks/test-4nt8-1000-run_hlbl_four_chunk-strange-0-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-strange-1-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-strange-2-3', 'locks/test-4nt8-1000-run_hlbl_four-strange', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-light-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-light-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-light-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-light-light', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-strange-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-strange-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-strange-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-light-strange', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-light-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-light-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-light-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-strange-light', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-strange-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-strange-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-strange-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-strange-strange', 'locks/test-4nt8-1000-run_auto_contraction', 'locks/test-4nt8-2000-run_edl-light', 'locks/test-4nt8-2000-run_job_global_hvp_average_for_subtract-light', 'locks/test-4nt8-2000-run_hlbl_sub_hvp_sfield-light', 'locks/test-4nt8-2000-run_edl-strange', 'locks/test-4nt8-2000-run_job_global_hvp_average_for_subtract-strange', 'locks/test-4nt8-2000-run_hlbl_sub_hvp_sfield-strange', 'locks/test-4nt8-2000-run_hlbl_four_point_pairs_info-light', 'locks/test-4nt8-2000-run_hlbl_four_chunk-light-0-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-light-1-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-light-2-3', 'locks/test-4nt8-2000-run_hlbl_four-light', 'locks/test-4nt8-2000-run_hlbl_four_point_pairs_info-strange', 'locks/test-4nt8-2000-run_hlbl_four_chunk-strange-0-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-strange-1-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-strange-2-3', 'locks/test-4nt8-2000-run_hlbl_four-strange', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-light-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-light-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-light-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-light-light', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-strange-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-strange-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-strange-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-light-strange', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-light-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-light-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-light-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-strange-light', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-strange-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-strange-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-strange-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-strange-strange', 'locks/test-4nt8-2000-run_auto_contraction']"
+  "q.obtained_lock_history_list=['locks/test-4nt8-1000-gauge_field', 'locks/test-4nt8-1000-gauge_fix_coulomb', 'locks/test-4nt8-1000-wi', 'locks/test-4nt8-1000-wi', 'locks/test-4nt8-1000-run-eig', 'locks/test-4nt8-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-1000-run_f_rand_01', 'locks/test-4nt8-1000-run_fsel_prob', 'locks/test-4nt8-1000-run_psel_prob', 'locks/test-4nt8-1000-run_psel_split', 'locks/test-4nt8-1000-run_fsel_split', 'locks/test-4nt8-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-1000-psel-smear', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-fsel-light', 'locks/test-4nt8-1000-run_prop_psrc-light', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-fsel-strange', 'locks/test-4nt8-1000-run_prop_psrc-strange', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-fsel-charm-1', 'locks/test-4nt8-1000-run_prop_sparse_rand_u1_src-psel-charm-1', 'locks/test-4nt8-1000-run_hvp_average-light', 'locks/test-4nt8-1000-run_hvp_average-strange', 'locks/test-4nt8-2000-wi', 'locks/test-4nt8-2000-wi', 'locks/test-4nt8-2000-run_prop_wsrc_full-light', 'locks/test-4nt8-2000-run_prop_wsrc_full-strange', 'locks/test-4nt8-2000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-2000-run_f_rand_01', 'locks/test-4nt8-2000-run_fsel_prob', 'locks/test-4nt8-2000-run_psel_prob', 'locks/test-4nt8-2000-run_psel_split', 'locks/test-4nt8-2000-run_fsel_split', 'locks/test-4nt8-2000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-2000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-2000-psel-smear', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-fsel-light', 'locks/test-4nt8-2000-run_prop_psrc-light', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-fsel-strange', 'locks/test-4nt8-2000-run_prop_psrc-strange', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-fsel-charm-1', 'locks/test-4nt8-2000-run_prop_sparse_rand_u1_src-psel-charm-1', 'locks/test-4nt8-2000-run_hvp_average-light', 'locks/test-4nt8-2000-run_hvp_average-strange', 'locks/test-4nt8-run_job_global_hvp_average-light', 'locks/test-4nt8-run_job_global_hvp_average-strange', 'locks/test-4nt8-1000-run_edl-light', 'locks/test-4nt8-1000-run_job_global_hvp_average_for_subtract-light', 'locks/test-4nt8-1000-run_hlbl_sub_hvp_sfield-light', 'locks/test-4nt8-1000-run_edl-strange', 'locks/test-4nt8-1000-run_job_global_hvp_average_for_subtract-strange', 'locks/test-4nt8-1000-run_hlbl_sub_hvp_sfield-strange', 'locks/test-4nt8-1000-run_hlbl_four_point_pairs_info-light', 'locks/test-4nt8-1000-run_hlbl_four_chunk-light-0-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-light-1-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-light-2-3', 'locks/test-4nt8-1000-run_hlbl_four-light', 'locks/test-4nt8-1000-run_hlbl_four_point_pairs_info-strange', 'locks/test-4nt8-1000-run_hlbl_four_chunk-strange-0-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-strange-1-3', 'locks/test-4nt8-1000-run_hlbl_four_chunk-strange-2-3', 'locks/test-4nt8-1000-run_hlbl_four-strange', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-light-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-light-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-light-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-light-light', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-strange-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-strange-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-light-strange-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-light-strange', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-light-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-light-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-light-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-strange-light', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-strange-0_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-strange-1_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two_chunk-strange-strange-2_3', 'locks/test-4nt8-1000-run_hlbl_two_plus_two-strange-strange', 'locks/test-4nt8-1000-run_auto_contraction', 'locks/test-4nt8-2000-run_edl-light', 'locks/test-4nt8-2000-run_job_global_hvp_average_for_subtract-light', 'locks/test-4nt8-2000-run_hlbl_sub_hvp_sfield-light', 'locks/test-4nt8-2000-run_edl-strange', 'locks/test-4nt8-2000-run_job_global_hvp_average_for_subtract-strange', 'locks/test-4nt8-2000-run_hlbl_sub_hvp_sfield-strange', 'locks/test-4nt8-2000-run_hlbl_four_point_pairs_info-light', 'locks/test-4nt8-2000-run_hlbl_four_chunk-light-0-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-light-1-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-light-2-3', 'locks/test-4nt8-2000-run_hlbl_four-light', 'locks/test-4nt8-2000-run_hlbl_four_point_pairs_info-strange', 'locks/test-4nt8-2000-run_hlbl_four_chunk-strange-0-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-strange-1-3', 'locks/test-4nt8-2000-run_hlbl_four_chunk-strange-2-3', 'locks/test-4nt8-2000-run_hlbl_four-strange', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-light-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-light-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-light-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-light-light', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-strange-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-strange-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-light-strange-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-light-strange', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-light-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-light-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-light-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-strange-light', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-strange-0_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-strange-1_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two_chunk-strange-strange-2_3', 'locks/test-4nt8-2000-run_hlbl_two_plus_two-strange-strange', 'locks/test-4nt8-2000-run_auto_contraction']"
  ]
 ]
