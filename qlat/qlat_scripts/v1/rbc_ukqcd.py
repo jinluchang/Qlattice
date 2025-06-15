@@ -44,22 +44,28 @@ def get_param_clanc(job_tag, inv_type, inv_acc=0):
         inv_acc -= 1
     return None
 
-def mk_pc_ne(job_tag, inv_type=0, inv_acc=0, *, eig=None):
+def mk_pc_parity(job_tag, inv_type, inv_acc):
+    import gpt as g
+    return g.odd
+
+def mk_pc_ne(job_tag, inv_type, inv_acc, *, eig=None, parity=None):
     import gpt as g
     fname = q.get_fname()
     params = get_param_fermion(job_tag, inv_type, inv_acc)
+    if parity is None:
+        parity = mk_pc_parity(job_tag, inv_type, inv_acc)
     pc = g.qcd.fermion.preconditioner
     if "omega" in params and eig is None:
         q.displayln_info(f"WARNING: {fname}: pc.eo2_kappa_ne() does not support split_cg. Try to avoid (use MDWF) if possible.")
-        pc_ne = pc.eo2_kappa_ne(parity=g.odd)
+        pc_ne = pc.eo2_kappa_ne(parity=parity)
     elif job_tag in [ "64I", "64I-pq", ]:
-        pc_ne = pc.eo1_ne(parity=g.odd)
+        pc_ne = pc.eo1_ne(parity=parity)
     else:
-        pc_ne = pc.eo2_ne(parity=g.odd)
+        pc_ne = pc.eo2_ne(parity=parity)
     return pc_ne
 
 @q.timer_verbose
-def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
+def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     """
@@ -68,9 +74,10 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     qtimer = q.Timer(f"py:mk_eig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
     #
-    parity = g.odd
+    if parity is None:
+        parity = mk_pc_parity(job_tag, inv_type, inv_acc)
     if pc_ne is None:
-        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, parity=parity)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
@@ -102,7 +109,7 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     return eig
 
 @q.timer_verbose
-def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
+def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
@@ -112,9 +119,10 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     qtimer = q.Timer(f"py:mk_ceig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
     #
-    parity = g.odd
+    if parity is None:
+        parity = mk_pc_parity(job_tag, inv_type, inv_acc)
     if pc_ne is None:
-        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, parity=parity)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
@@ -183,16 +191,17 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     return eig
 
 @q.timer_verbose
-def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
+def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
     """
     import qlat_gpt as qg
     import gpt as g
-    parity = g.odd
+    if parity is None:
+        parity = mk_pc_parity(job_tag, inv_type, inv_acc)
     if pc_ne is None:
-        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, parity=parity)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
@@ -296,6 +305,7 @@ def mk_gpt_inverter(
         n_grouped=None,
         eig=None,
         eps=1e-8,
+        parity=None,
         pc_ne=None,
         qtimer=True,
         ):
@@ -353,8 +363,10 @@ def mk_gpt_inverter(
         cg = inv.sequence(cg_defl, cg_split)
     else:
         cg = cg_split
+    if parity is None:
+        parity = mk_pc_parity(job_tag, inv_type, inv_acc)
     if pc_ne is None:
-        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, eig=eig)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, eig=eig, parity=parity)
     slv_5d = inv.preconditioned(pc_ne, cg)
     q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
     if is_madwf:
@@ -363,7 +375,7 @@ def mk_gpt_inverter(
             qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
         else:
             qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
-        slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(parity=g.odd), cg_pv_f)
+        slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(parity=parity), cg_pv_f)
         slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
     if inv_acc == 0:
         maxcycle = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle", default=1)
