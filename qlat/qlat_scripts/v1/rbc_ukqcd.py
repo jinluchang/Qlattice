@@ -44,6 +44,20 @@ def get_param_clanc(job_tag, inv_type, inv_acc=0):
         inv_acc -= 1
     return None
 
+def mk_pc_ne(job_tag, inv_type=0, inv_acc=0, *, eig=None):
+    import gpt as g
+    fname = q.get_fname()
+    params = get_param_fermion(job_tag, inv_type, inv_acc)
+    pc = g.qcd.fermion.preconditioner
+    if "omega" in params and eig is None:
+        q.displayln_info(f"WARNING: {fname}: pc.eo2_kappa_ne() does not support split_cg. Try to avoid (use MDWF) if possible.")
+        pc_ne = pc.eo2_kappa_ne(parity=g.odd)
+    elif job_tag in [ "64I", "64I-pq", ]:
+        pc_ne = pc.eo1_ne(parity=g.odd)
+    else:
+        pc_ne = pc.eo2_ne(parity=g.odd)
+    return pc_ne
+
 @q.timer_verbose
 def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     """
@@ -56,7 +70,7 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     #
     parity = g.odd
     if pc_ne is None:
-        pc_ne = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
@@ -100,7 +114,7 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     #
     parity = g.odd
     if pc_ne is None:
-        pc_ne = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
@@ -178,7 +192,7 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, pc_ne=
     import gpt as g
     parity = g.odd
     if pc_ne is None:
-        pc_ne = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
@@ -273,19 +287,6 @@ def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
         maxiter = 200
     return maxiter
 
-def mk_pc_ne(job_tag, inv_type=0, inv_acc=0, *, eig=None):
-    fname = q.get_fname()
-    params = get_param_fermion(job_tag, inv_type, inv_acc)
-    pc = g.qcd.fermion.preconditioner
-    if "omega" in params and eig is None:
-        q.displayln_info(f"WARNING: {fname}: pc.eo2_kappa_ne() does not support split_cg. Try to avoid (use MDWF) if possible.")
-        pc_ne = pc.eo2_kappa_ne(parity=g.odd)
-    elif job_tag in [ "64I", "64I-pq", ]:
-        pc_ne = pc.eo1_ne(parity=g.odd)
-    else:
-        pc_ne = pc.eo2_ne(parity=g.odd)
-    return pc_nc
-
 @q.timer_verbose
 def mk_gpt_inverter(
         gf, job_tag, inv_type, inv_acc,
@@ -353,7 +354,7 @@ def mk_gpt_inverter(
     else:
         cg = cg_split
     if pc_ne is None:
-        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, eig=eig)
     slv_5d = inv.preconditioned(pc_ne, cg)
     q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
     if is_madwf:
