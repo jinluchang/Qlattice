@@ -603,7 +603,7 @@ def run_gf_hyp(job_tag, get_gf):
 # ----------
 
 @q.timer
-def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
+def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
     """
     return a function ``get_eig''
     ``get_eig()'' return the ``eig''
@@ -614,7 +614,7 @@ def compute_eig(gf, job_tag, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
         return load_eig
     import gpt as g
     g.mem_report()
-    # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
+    # evec, evals = ru.mk_eig(job_tag, gf, inv_type, inv_acc)
     basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc, pc_ne=pc_ne)
     eig = [ basis, cevec, smoothed_evals, ]
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
@@ -656,7 +656,7 @@ def run_eig(job_tag, traj, get_gf, *, is_only_load=False):
         return get_eig
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            get_eig = compute_eig(get_gf(), job_tag, inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
+            get_eig = compute_eig(job_tag, get_gf(), inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
             q.release_lock()
             return get_eig
         else:
@@ -683,7 +683,7 @@ def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
         return get_eig
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
-            get_eig = compute_eig(get_gf(), job_tag, inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
+            get_eig = compute_eig(job_tag, get_gf(), inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
             q.release_lock()
             return get_eig
         else:

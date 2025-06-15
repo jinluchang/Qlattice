@@ -9,7 +9,6 @@ pysources = files(
   'operators.py',
   'runtime_distillation.py',
   'runtime.py',
-  'simulation.py',
   'wick.py',
   )
 py3.install_sources(pysources, subdir: 'auto_contractor')

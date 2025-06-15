@@ -45,13 +45,13 @@ def get_param_clanc(job_tag, inv_type, inv_acc=0):
     return None
 
 @q.timer_verbose
-def mk_eig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
+def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     """
     import qlat_gpt as qg
     import gpt as g
-    qtimer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
+    qtimer = q.Timer(f"py:mk_eig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
     #
     parity = g.odd
@@ -84,17 +84,18 @@ def mk_eig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
     g.mem_report()
     #
     qtimer.stop()
-    return evec, evals
+    eig = (evec, evals,)
+    return eig
 
 @q.timer_verbose
-def mk_ceig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
+def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, pc_ne=None):
     """
     Need get_param(job_tag, "lanc_params", inv_type, inv_acc)
     Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
     """
     import qlat_gpt as qg
     import gpt as g
-    qtimer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
+    qtimer = q.Timer(f"py:mk_ceig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
     #
     parity = g.odd
@@ -164,7 +165,8 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
     g.mem_report()
     #
     qtimer.stop()
-    return basis, cevec, smoothed_evals
+    eig = (basis, cevec, smoothed_evals,)
+    return eig
 
 @q.timer_verbose
 def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, pc_ne=None):
@@ -271,6 +273,19 @@ def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
         maxiter = 200
     return maxiter
 
+def mk_pc_ne(job_tag, inv_type=0, inv_acc=0, *, eig=None):
+    fname = q.get_fname()
+    params = get_param_fermion(job_tag, inv_type, inv_acc)
+    pc = g.qcd.fermion.preconditioner
+    if "omega" in params and eig is None:
+        q.displayln_info(f"WARNING: {fname}: pc.eo2_kappa_ne() does not support split_cg. Try to avoid (use MDWF) if possible.")
+        pc_ne = pc.eo2_kappa_ne(parity=g.odd)
+    elif job_tag in [ "64I", "64I-pq", ]:
+        pc_ne = pc.eo1_ne(parity=g.odd)
+    else:
+        pc_ne = pc.eo2_ne(parity=g.odd)
+    return pc_nc
+
 @q.timer_verbose
 def mk_gpt_inverter(
         gf, job_tag, inv_type, inv_acc,
@@ -332,19 +347,13 @@ def mk_gpt_inverter(
         cg_pv_f = inv.split(cg_pv_f, mpi_split=mpi_split)
     q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
     if eig is not None:
+        # eig = (basis, cevec, smoothed_evals,)
         cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
         cg = inv.sequence(cg_defl, cg_split)
     else:
         cg = cg_split
     if pc_ne is None:
-        if "omega" in params and eig is None:
-            pc_ne = pc.eo2_kappa_ne()
-            q.displayln_info(f"mk_gpt_inverter: pc.eo2_kappa_ne() does not support split_cg")
-            cg = cg_mp
-        elif job_tag in [ "64I", "64I-pq", ]:
-            pc_ne = pc.eo1_ne(parity=g.odd)
-        else:
-            pc_ne = pc.eo2_ne(parity=g.odd)
+        pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc)
     slv_5d = inv.preconditioned(pc_ne, cg)
     q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
     if is_madwf:
