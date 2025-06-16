@@ -37,7 +37,8 @@ def mk_psel(total_site, rate, rs):
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
-    total_site = q.Coordinate([ 4, 4, 4, 8, ])
+    total_site_str = "4.4.4.8"
+    total_site = parse_grid_coordinate_str(total_site_str)
     path_src = "results/test-4nt8/point-selection"
     path_dst = "results/test-4nt8/points-selection"
     rate = 0.2
@@ -46,7 +47,7 @@ def gen_test_data():
         rs = q.RngState(f"test-4nt8-{traj}")
         psel = mk_psel(total_site, rate, rs)
         psel.save(f"{path_src}/traj-{traj}.txt")
-    return total_site, path_src, path_dst
+    return total_site_str, path_src, path_dst
 
 @q.timer(is_timer_fork=True)
 def run_conversion(total_site, path_dst, path_src):
@@ -84,12 +85,12 @@ def run():
         assert path_dst is None
         q.displayln_info(f"Usage:{usage}")
         q.displayln_info(f"Will now generate test data and run conversion.")
-        total_site, path_src, path_dst = gen_test_data()
+        total_site_str, path_src, path_dst = gen_test_data()
     else:
         assert isinstance(total_site_str, str)
         assert path_src is not None
         assert path_dst is not None
-        total_site = q.parse_grid_coordinate_str(total_site_str)
+    total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
 
 if __name__ == "__main__":

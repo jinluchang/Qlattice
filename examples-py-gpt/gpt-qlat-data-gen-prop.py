@@ -175,7 +175,8 @@ def compute_prop_psrc_ref(
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
     def comp(idx, xg_src, inv_acc):
-        compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc,
+        compute_prop_psrc(
+                job_tag, traj, xg_src, inv_type, inv_acc,
                 idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
                 psel=psel, fsel=fsel, f_rand_01=f_rand_01,
                 sfw_hvp=None, qar_hvp_ts=None,
@@ -218,13 +219,14 @@ def run_prop_psrc_ref(job_tag, traj, *, inv_type, inv_type_ref, get_gf, get_eig,
     fsel = get_fsel()
     f_rand_01 = get_f_rand_01()
     assert fsel.is_containing(psel)
-    compute_prop_psrc_ref(job_tag, traj,
-                          inv_type=inv_type,
-                          inv_type_ref=inv_type_ref,
-                          gf=gf, gt=gt,
-                          psel=psel, fsel=fsel,
-                          f_rand_01=f_rand_01,
-                          eig=eig)
+    compute_prop_psrc_ref(
+            job_tag, traj,
+            inv_type=inv_type,
+            inv_type_ref=inv_type_ref,
+            gf=gf, gt=gt,
+            psel=psel, fsel=fsel,
+            f_rand_01=f_rand_01,
+            eig=eig)
     q.clean_cache(q.cache_inv)
     q.release_lock()
     return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
@@ -478,7 +480,7 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
 set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
 set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
 set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
-set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", 0, 0).copy())
 #
 set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
 set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])

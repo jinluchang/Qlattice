@@ -4,12 +4,6 @@ import math
 
 import textwrap
 
-def parse_grid_coordinate_str(x_str):
-    x_str_list = x_str.split(".")
-    x_list = [ int(s) for s in x_str_list ]
-    x = q.Coordinate(x_list)
-    return x
-
 def mk_grid(geo=None):
     if geo is None:
         total_site_str = q.get_arg("--grid")
@@ -18,7 +12,7 @@ def mk_grid(geo=None):
             t_size = l_size * 2
             total_site = q.Coordinate([ l_size, l_size, l_size, t_size, ])
         else:
-            total_site = parse_grid_coordinate_str(total_site_str)
+            total_site = q.parse_grid_coordinate_str(total_site_str)
     else:
         total_site = geo.total_site
     return g.grid(total_site.to_list(), g.double)

@@ -148,6 +148,12 @@ def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=
             chunk_list.append(total_list[start:stop])
     return chunk_list
 
+def parse_grid_coordinate_str(x_str):
+    x_str_list = x_str.split(".")
+    x_list = [ int(s) for s in x_str_list ]
+    x = Coordinate(x_list)
+    return x
+
 def mk_epsilon_array():
     arr = np.zeros((4, 4, 4, 4,), dtype = np.int8)
     def setv(i, j, k, l):
