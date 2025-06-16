@@ -64,6 +64,14 @@ def mk_pc_ne(job_tag, inv_type, inv_acc, *, eig=None, parity=None):
         pc_ne = pc.eo2_ne(parity=parity)
     return pc_ne
 
+def mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc):
+    fermion_params = get_param_fermion(job_tag, inv_type, inv_acc)
+    if "omega" in fermion_params:
+        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
+    else:
+        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    return qm
+
 @q.timer_verbose
 def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     """
@@ -83,10 +91,8 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_eig: params=\n{pprint.pformat(params)}")
     fermion_params = params["fermion_params"]
-    if "omega" in fermion_params:
-        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
-    else:
-        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    assert fermion_params == get_param_fermion(job_tag, inv_type, inv_acc)
+    qm = mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc)
     w = pc_ne(qm)
     def make_src(rng):
         src = g.vspincolor(qm.F_grid_eo)
@@ -130,10 +136,8 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     fermion_params = params["fermion_params"]
     q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_ceig: params=\n{pprint.pformat(params)}")
-    if "omega" in fermion_params:
-        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
-    else:
-        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    assert fermion_params == get_param_fermion(job_tag, inv_type, inv_acc)
+    qm = mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc)
     w = pc_ne(qm)
     def make_src(rng):
         src = g.vspincolor(qm.F_grid_eo)
@@ -207,10 +211,8 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, parity
     cparams = get_param_clanc(job_tag, inv_type, inv_acc)
     assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
     fermion_params = params["fermion_params"]
-    if "omega" in fermion_params:
-        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
-    else:
-        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    assert fermion_params == get_param_fermion(job_tag, inv_type, inv_acc)
+    qm = mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc)
     w = pc_ne(qm)
     inv = g.algorithms.inverter
     grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
@@ -343,10 +345,8 @@ def mk_gpt_inverter(
     else:
         is_madwf = False
     q.displayln_info(f"mk_gpt_inverter: set qm params={params}")
-    if "omega" in params:
-        qm = g.qcd.fermion.zmobius(gpt_gf, params)
-    else:
-        qm = g.qcd.fermion.mobius(gpt_gf, params)
+    assert params == get_param_fermion(job_tag, inv_type, inv_acc)
+    qm = mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc)
     inv = g.algorithms.inverter
     cg_mp = inv.cg({"eps": eps, "maxiter": get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
     cg_pv_f = inv.cg({"eps": eps, "maxiter": get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "pv_maxiter", default=150)})
@@ -371,10 +371,8 @@ def mk_gpt_inverter(
     q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
     if is_madwf:
         gpt_gf_f = g.convert(gpt_gf, g.single)
-        if "omega" in params0:
-            qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
-        else:
-            qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
+        assert params0 == get_param_fermion(job_tag, inv_type, inv_acc=0)
+        qm0 = mk_quark_matrix(job_tag, gpt_gf_f, inv_type, inv_acc=0)
         slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(parity=parity), cg_pv_f)
         slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
     if inv_acc == 0:
