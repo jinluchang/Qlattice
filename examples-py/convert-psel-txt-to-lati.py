@@ -38,7 +38,7 @@ def mk_psel(total_site, rate, rs):
 @q.timer(is_timer_fork=True)
 def gen_test_data():
     total_site_str = "4.4.4.8"
-    total_site = parse_grid_coordinate_str(total_site_str)
+    total_site = q.parse_grid_coordinate_str(total_site_str)
     path_src = "results/test-4nt8/point-selection"
     path_dst = "results/test-4nt8/points-selection"
     rate = 0.2
