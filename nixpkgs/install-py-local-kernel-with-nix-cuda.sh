@@ -9,7 +9,12 @@ else
     exit 1
 fi
 
-time nix-build "$script_path"/q-pkgs.nix -A pkgs{,-cu,-cuda,-cudasupport}.qlat-jhub-env --no-out-link "$@"
+time nix-build "$script_path"/q-pkgs.nix \
+  -A pkgs.qlat-jhub-env \
+  -A pkgs-cu.qlat-jhub-env \
+  -A pkgs-cuda.qlat-jhub-env \
+  -A pkgs-cudasupport.qlat-jhub-env \
+  --no-out-link "$@"
 
 time (
   time name="" "$script_path"/install-py-local-kernel-with-nix.sh "$@"
