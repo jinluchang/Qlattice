@@ -65,6 +65,7 @@ def mk_pc_ne(job_tag, inv_type, inv_acc, *, eig=None, parity=None):
     return pc_ne
 
 def mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc):
+    import gpt as g
     fermion_params = get_param_fermion(job_tag, inv_type, inv_acc)
     if "omega" in fermion_params:
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
