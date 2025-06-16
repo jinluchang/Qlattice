@@ -280,7 +280,7 @@ CHECK: params: test-4nt8-checker:             1.0,
 CHECK: params: test-4nt8-checker:             1.0,
 CHECK: params: test-4nt8-checker:             1.0
 CHECK: params: test-4nt8-checker:           ],
-CHECK: params: test-4nt8-checker:           "mass": 0.2
+CHECK: params: test-4nt8-checker:           "mass": 0.01
 CHECK: params: test-4nt8-checker:         }
 CHECK: params: test-4nt8-checker:       }
 CHECK: params: test-4nt8-checker:     }
