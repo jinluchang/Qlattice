@@ -123,8 +123,8 @@ def load_config(job_tag : str, fn : str):
     gf = q.GaugeField()
     gf.load(fn)
     # gf = qg.load_gauge_field(fn)
-    if (job_tag in dict_params) and ("load_config_params" in dict_params[job_tag]):
-        params = dict_params[job_tag]["load_config_params"]
+    params = get_param(job_tag, "load_config_params")
+    if params is not None:
         twist_boundary_at_boundary = params["twist_boundary_at_boundary"]
         for mu in range(4):
             lmom = twist_boundary_at_boundary[mu]

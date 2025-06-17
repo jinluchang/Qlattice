@@ -22,7 +22,7 @@ import pprint
 import os
 import subprocess
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
     traj_gf = traj
     #
@@ -49,7 +49,6 @@ def run_job(job_tag, traj):
         q.json_results_append(f"geo.show() = {geo.show()}")
     #
     get_gf = run_gf(job_tag, traj_gf)
-    get_gf().show_info()
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
     #
