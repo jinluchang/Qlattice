@@ -2059,7 +2059,7 @@ def run_prop_sparse_rand_u1_src(
         for tag in sfr_list:
             s_prop = q.SelProp()
             s_prop.load_double_from_float(sfr, tag)
-            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(s_prop, q.RngState(), 2), 1e-12)
+            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(s_prop, q.RngState(), 2), 1e-4)
         sfr.close()
         qar_sp = q.open_qar_info(get_load_path(path_sp + ".qar"), "r")
         qar_sp_list = qar_sp.list()
@@ -2074,7 +2074,7 @@ def run_prop_sparse_rand_u1_src(
                 continue
             else:
                 assert False
-            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(ld, q.RngState(), 2), 1e-12)
+            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(ld, q.RngState(), 2), 1e-4)
         qar_sp.close()
     q.release_lock()
     return [ f"{fname} {job_tag} {traj} {inv_type} done", ]

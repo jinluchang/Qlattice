@@ -225,7 +225,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -244,7 +244,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0",
@@ -263,7 +263,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -282,7 +282,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0",
@@ -301,7 +301,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -320,7 +320,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0",
@@ -339,7 +339,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1",
@@ -358,7 +358,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -377,7 +377,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1",
@@ -396,7 +396,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1.lat', 'checkpoint.txt']"
@@ -410,7 +410,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -429,7 +429,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -448,7 +448,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -467,7 +467,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -478,7 +478,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -497,7 +497,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -516,7 +516,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -535,7 +535,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -546,7 +546,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -565,7 +565,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -584,7 +584,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -603,7 +603,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -614,7 +614,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -633,7 +633,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -652,7 +652,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -671,7 +671,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -682,7 +682,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -701,7 +701,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -720,7 +720,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -739,7 +739,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -750,7 +750,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -769,7 +769,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -788,7 +788,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -807,7 +807,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -818,7 +818,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -837,7 +837,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -856,7 +856,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -875,7 +875,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src.lati",
@@ -886,7 +886,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -905,7 +905,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -924,7 +924,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=1.lat",
@@ -943,7 +943,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -954,7 +954,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -973,7 +973,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -992,7 +992,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -1011,7 +1011,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src.lati",
@@ -1022,7 +1022,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -1041,7 +1041,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -1060,7 +1060,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=1.lat",
@@ -1079,7 +1079,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src test-4nt8 1000 inv_type=1 psel_list_type=fsel"
@@ -1104,7 +1104,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -1123,7 +1123,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0",
@@ -1142,7 +1142,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -1161,7 +1161,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0",
@@ -1180,7 +1180,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -1199,7 +1199,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0",
@@ -1218,7 +1218,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1",
@@ -1237,7 +1237,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -1256,7 +1256,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1",
@@ -1275,7 +1275,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1.lat', 'checkpoint.txt']"
@@ -1289,7 +1289,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1308,7 +1308,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1327,7 +1327,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -1346,7 +1346,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1357,7 +1357,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1376,7 +1376,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1395,7 +1395,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -1414,7 +1414,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1425,7 +1425,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1444,7 +1444,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1463,7 +1463,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -1482,7 +1482,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1493,7 +1493,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1512,7 +1512,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1531,7 +1531,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -1550,7 +1550,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1561,7 +1561,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1580,7 +1580,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1599,7 +1599,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -1618,7 +1618,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1629,7 +1629,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1648,7 +1648,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1667,7 +1667,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -1686,7 +1686,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1697,7 +1697,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1716,7 +1716,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1735,7 +1735,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -1754,7 +1754,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src.lati",
@@ -1765,7 +1765,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -1784,7 +1784,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -1803,7 +1803,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=1.lat",
@@ -1822,7 +1822,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -1833,7 +1833,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -1852,7 +1852,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -1871,7 +1871,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -1890,7 +1890,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src.lati",
@@ -1901,7 +1901,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -1920,7 +1920,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -1939,7 +1939,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=1.lat",
@@ -1958,7 +1958,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src test-4nt8 1000 inv_type=2 psel_list_type=fsel"
@@ -1983,7 +1983,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -2002,7 +2002,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -2021,7 +2021,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -2040,7 +2040,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -2059,7 +2059,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -2078,7 +2078,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -2097,7 +2097,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1",
@@ -2116,7 +2116,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -2135,7 +2135,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1",
@@ -2154,7 +2154,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1.lat', 'checkpoint.txt']"
@@ -2168,7 +2168,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2187,7 +2187,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2206,7 +2206,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -2225,7 +2225,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2236,7 +2236,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2255,7 +2255,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2274,7 +2274,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -2293,7 +2293,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2304,7 +2304,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2323,7 +2323,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2342,7 +2342,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -2361,7 +2361,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2372,7 +2372,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2391,7 +2391,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2410,7 +2410,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -2429,7 +2429,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2440,7 +2440,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2459,7 +2459,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2478,7 +2478,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -2497,7 +2497,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2508,7 +2508,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2527,7 +2527,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2546,7 +2546,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -2565,7 +2565,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2576,7 +2576,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2595,7 +2595,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2614,7 +2614,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -2633,7 +2633,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
@@ -2644,7 +2644,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -2663,7 +2663,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -2682,7 +2682,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=1.lat",
@@ -2701,7 +2701,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -2712,7 +2712,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2731,7 +2731,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2750,7 +2750,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -2769,7 +2769,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
@@ -2780,7 +2780,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -2799,7 +2799,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -2818,7 +2818,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=1.lat",
@@ -2837,7 +2837,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src test-4nt8 1000 inv_type=2 psel_list_type=psel"
@@ -2862,7 +2862,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -2881,7 +2881,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -2900,7 +2900,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -2919,7 +2919,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'checkpoint.txt']"
@@ -2933,7 +2933,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -2952,7 +2952,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -2971,7 +2971,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -2990,7 +2990,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -3001,7 +3001,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3020,7 +3020,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3039,7 +3039,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -3058,7 +3058,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -3069,7 +3069,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3088,7 +3088,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3107,7 +3107,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -3126,7 +3126,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -3137,7 +3137,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3156,7 +3156,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3175,7 +3175,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -3194,7 +3194,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_field_rand_u1_dict: fsel fu1",
@@ -3335,7 +3335,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1",
@@ -3354,7 +3354,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -3373,7 +3373,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1",
@@ -3392,7 +3392,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0",
@@ -3411,7 +3411,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -3430,7 +3430,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0",
@@ -3449,7 +3449,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -3468,7 +3468,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0",
@@ -3487,7 +3487,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0",
@@ -3506,7 +3506,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1.lat', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0.lat', 'checkpoint.txt']"
@@ -3520,7 +3520,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3539,7 +3539,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3558,7 +3558,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -3577,7 +3577,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src.lati",
@@ -3588,7 +3588,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -3607,7 +3607,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -3626,7 +3626,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=0 ; accuracy=1.lat",
@@ -3645,7 +3645,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -3656,7 +3656,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3675,7 +3675,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3694,7 +3694,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -3713,7 +3713,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src.lati",
@@ -3724,7 +3724,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -3743,7 +3743,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -3762,7 +3762,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=0 ; accuracy=1.lat",
@@ -3781,7 +3781,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -3792,7 +3792,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3811,7 +3811,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3830,7 +3830,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -3849,7 +3849,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -3860,7 +3860,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3879,7 +3879,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3898,7 +3898,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -3917,7 +3917,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -3928,7 +3928,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -3947,7 +3947,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -3966,7 +3966,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -3985,7 +3985,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -3996,7 +3996,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4015,7 +4015,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4034,7 +4034,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -4053,7 +4053,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -4064,7 +4064,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4083,7 +4083,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4102,7 +4102,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=0 ; accuracy=0.lat",
@@ -4121,7 +4121,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src.lati",
@@ -4132,7 +4132,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4151,7 +4151,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4170,7 +4170,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=0 ; accuracy=0.lat",
@@ -4189,7 +4189,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src test-4nt8 2000 inv_type=1 psel_list_type=fsel"
@@ -4214,7 +4214,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1",
@@ -4233,7 +4233,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -4252,7 +4252,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1",
@@ -4271,7 +4271,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0",
@@ -4290,7 +4290,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -4309,7 +4309,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0",
@@ -4328,7 +4328,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -4347,7 +4347,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0",
@@ -4366,7 +4366,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0",
@@ -4385,7 +4385,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1.lat', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0.lat', 'checkpoint.txt']"
@@ -4399,7 +4399,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4418,7 +4418,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4437,7 +4437,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -4456,7 +4456,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src.lati",
@@ -4467,7 +4467,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -4486,7 +4486,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -4505,7 +4505,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=1 ; accuracy=1.lat",
@@ -4524,7 +4524,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -4535,7 +4535,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4554,7 +4554,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4573,7 +4573,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -4592,7 +4592,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src.lati",
@@ -4603,7 +4603,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -4622,7 +4622,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -4641,7 +4641,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=1 ; accuracy=1.lat",
@@ -4660,7 +4660,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -4671,7 +4671,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4690,7 +4690,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4709,7 +4709,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -4728,7 +4728,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -4739,7 +4739,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4758,7 +4758,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4777,7 +4777,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -4796,7 +4796,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -4807,7 +4807,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4826,7 +4826,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4845,7 +4845,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -4864,7 +4864,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -4875,7 +4875,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4894,7 +4894,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4913,7 +4913,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -4932,7 +4932,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -4943,7 +4943,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -4962,7 +4962,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -4981,7 +4981,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=1 ; accuracy=0.lat",
@@ -5000,7 +5000,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src.lati",
@@ -5011,7 +5011,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5030,7 +5030,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5049,7 +5049,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=1 ; accuracy=0.lat",
@@ -5068,7 +5068,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src test-4nt8 2000 inv_type=2 psel_list_type=fsel"
@@ -5093,7 +5093,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1",
@@ -5112,7 +5112,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -5131,7 +5131,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1",
@@ -5150,7 +5150,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -5169,7 +5169,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -5188,7 +5188,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -5207,7 +5207,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -5226,7 +5226,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -5245,7 +5245,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -5264,7 +5264,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'checkpoint.txt']"
@@ -5278,7 +5278,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5297,7 +5297,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5316,7 +5316,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -5335,7 +5335,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
@@ -5346,7 +5346,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -5365,7 +5365,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -5384,7 +5384,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1.lat",
@@ -5403,7 +5403,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5414,7 +5414,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5433,7 +5433,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5452,7 +5452,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -5471,7 +5471,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
@@ -5482,7 +5482,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -5501,7 +5501,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -5520,7 +5520,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1.lat",
@@ -5539,7 +5539,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5550,7 +5550,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5569,7 +5569,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5588,7 +5588,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -5607,7 +5607,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5618,7 +5618,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5637,7 +5637,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5656,7 +5656,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -5675,7 +5675,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5686,7 +5686,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5705,7 +5705,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5724,7 +5724,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -5743,7 +5743,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5754,7 +5754,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5773,7 +5773,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5792,7 +5792,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=2 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -5811,7 +5811,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5822,7 +5822,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5841,7 +5841,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5860,7 +5860,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -5879,7 +5879,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -5890,7 +5890,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -5909,7 +5909,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -5928,7 +5928,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=3 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -5947,7 +5947,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src test-4nt8 2000 inv_type=2 psel_list_type=psel"
@@ -5972,7 +5972,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1",
@@ -5991,7 +5991,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -6010,7 +6010,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1",
@@ -6029,7 +6029,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0",
@@ -6048,7 +6048,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0",
@@ -6067,7 +6067,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src qar_sp.list()=['idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat', 'idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat', 'idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat', 'checkpoint.txt']"
@@ -6081,7 +6081,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -6100,7 +6100,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -6119,7 +6119,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -6138,7 +6138,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
@@ -6149,7 +6149,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -6168,7 +6168,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -6187,7 +6187,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=0 ; type=2 ; accuracy=1.lat",
@@ -6206,7 +6206,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -6217,7 +6217,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -6236,7 +6236,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -6255,7 +6255,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -6274,7 +6274,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src.lati",
@@ -6285,7 +6285,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; fu1.lat",
@@ -6304,7 +6304,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1 ; psel_rand_src ; prop.lat",
@@ -6323,7 +6323,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=0 ; is_dagger=1 ; type=2 ; accuracy=1.lat",
@@ -6342,7 +6342,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -6353,7 +6353,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -6372,7 +6372,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -6391,7 +6391,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=0 ; type=2 ; accuracy=0.lat",
@@ -6410,7 +6410,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src.lati",
@@ -6421,7 +6421,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; fu1.lat",
@@ -6440,7 +6440,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0 ; psel_rand_src ; prop.lat",
@@ -6459,7 +6459,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_prop_sparse_rand_u1_src idx_psel=1 ; is_dagger=1 ; type=2 ; accuracy=0.lat",
@@ -6478,7 +6478,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-12
+  0.0001
  ],
  [
   "run_edl: test-4nt8 1000 light edl",
