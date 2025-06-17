@@ -438,6 +438,7 @@ job_tag = "test-4nt8-checker"
 #
 set_param(job_tag, "traj_list")([ 1000, ])
 #
+set_param(job_tag, "seed")("test-4nt8-checker")
 set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
 #

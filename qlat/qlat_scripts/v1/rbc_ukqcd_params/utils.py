@@ -42,9 +42,16 @@ def set_param(*keys, value=None, dict_params=None):
 def get_total_site(job_tag : str):
     return get_param(job_tag, "total_site")
 
+def get_job_seed(job_tag):
+    seed = get_param(job_tag, "seed")
+    if seed is None:
+        return job_tag
+    return seed
+
 @q.timer_verbose
 def mk_sample_gauge_field(job_tag, fn):
-    rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
+    seed = get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {fn}").split("mk_sample_gauge_field")
     total_site = get_total_site(job_tag)
     geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)
@@ -83,7 +90,8 @@ def mk_sample_gauge_field_v3(job_tag, fn):
     hmc_n_step = get_param(job_tag, "mk_sample_gauge_field", "hmc_n_step", default = 6)
     hmc_is_always_accept = get_param(job_tag, "mk_sample_gauge_field", "hmc_is_always_accept", default = True)
     """
-    rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
+    seed = get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {fn}").split("mk_sample_gauge_field")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     rand_n_step = get_param(job_tag, "mk_sample_gauge_field", "rand_n_step", default = 16)
     rand_sigma = get_param(job_tag, "mk_sample_gauge_field", "rand_sigma", default = 0.25)

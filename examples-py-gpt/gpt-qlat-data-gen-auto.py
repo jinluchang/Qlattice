@@ -2144,20 +2144,26 @@ set_param("24D", "meson_tensor_tsep")(8)
 set_param("24D", "meson_jwjj_threshold")(0.02)
 set_param("24D", "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("48I", "traj_list")(list(range(1000, 2000, 20)))
-set_param("48I", "meson_tensor_tsep")(12)
-set_param("48I", "meson_jwjj_threshold")(0.01)
-set_param("48I", "measurement", "auto_contractor_chunk_size")(128)
+job_tag = "48I"
+set_param(job_tag, "seed")("48I")
+set_param(job_tag, "traj_list")(list(range(1000, 2000, 20)))
+set_param(job_tag, "meson_tensor_tsep")(12)
+set_param(job_tag, "meson_jwjj_threshold")(0.01)
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("64I", "traj_list")(list(range(1200, 3680, 20)))
-set_param("64I", "meson_tensor_tsep")(18)
-set_param("64I", "meson_jwjj_threshold")(0.0005)
-set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
+job_tag = "64I"
+set_param(job_tag, "seed")("64I")
+set_param(job_tag, "traj_list")(list(range(1200, 3680, 20)))
+set_param(job_tag, "meson_tensor_tsep")(18)
+set_param(job_tag, "meson_jwjj_threshold")(0.0005)
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
-set_param("64I-pq", "traj_list")(list(range(1200, 3680, 80)))
-set_param("64I-pq", "meson_tensor_tsep")(18)
-set_param("64I-pq", "meson_jwjj_threshold")(0.0005)
-set_param("64I-pq", "measurement", "auto_contractor_chunk_size")(128)
+job_tag = "64I-pq"
+set_param(job_tag, "seed")("64I")
+set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
+set_param(job_tag, "meson_tensor_tsep")(18)
+set_param(job_tag, "meson_jwjj_threshold")(0.0005)
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
 
