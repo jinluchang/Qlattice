@@ -4,11 +4,17 @@ import sys, os
 import numpy as np
 import qlat as q
 
-import qlat_scripts.v1 as qs
-
 from qlat_scripts.v1 import (
     set_param,
     get_param,
+    run_f_weight_uniform,
+    run_f_rand_01,
+    run_fsel_prob,
+    run_psel_prob,
+    run_fsel_from_fsel_prob,
+    run_psel_from_psel_prob,
+    run_psel_split,
+    run_fsel_split,
 )
 
 @q.timer(is_timer_fork=True)
@@ -48,15 +54,15 @@ def run_check_psel_list(get_psel_list):
 
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
-    get_f_weight = qs.run_f_weight_uniform(job_tag, traj)
-    get_f_rand_01 = qs.run_f_rand_01(job_tag, traj)
-    get_fsel_prob = qs.run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
-    get_psel_prob = qs.run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
-    get_fsel = qs.run_fsel_from_fsel_prob(get_fsel_prob)
-    get_psel = qs.run_psel_from_psel_prob(get_psel_prob)
+    get_f_weight = run_f_weight_uniform(job_tag, traj)
+    get_f_rand_01 = run_f_rand_01(job_tag, traj)
+    get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
+    get_psel = run_psel_from_psel_prob(get_psel_prob)
     num_piece = 16
-    get_psel_list = qs.run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
-    get_fsel_psel_list = qs.run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
+    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
+    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
     q.json_results_append("run_check_psel(get_psel)")
     run_check_psel(get_psel)
     q.json_results_append("run_check_psel_list(get_psel_list)")
