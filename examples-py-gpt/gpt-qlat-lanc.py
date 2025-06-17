@@ -15,6 +15,7 @@ from qlat_scripts.v1 import (
         run_eig,
         run_params,
         test_eig,
+        is_test_job_tag,
         )
 
 import pprint
@@ -23,8 +24,6 @@ import subprocess
 
 @q.timer
 def run_job(job_tag, traj):
-    is_test = job_tag[:5] == "test-"
-    #
     traj_gf = traj
     #
     fns_produce = [
@@ -34,7 +33,7 @@ def run_job(job_tag, traj):
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             ]
     #
-    if is_test:
+    if is_test_job_tag(job_tag):
         traj_gf = 1000
         fns_need = []
     #
@@ -44,39 +43,40 @@ def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
     #
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site)
-    q.json_results_append(f"geo.show() = {geo.show()}")
+    if is_test_job_tag(job_tag):
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
+        geo = q.Geometry(total_site)
+        q.json_results_append(f"geo.show() = {geo.show()}")
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gf().show_info()
     #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
-    test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
     #
     # test repartition
-    path = get_load_path(f"{job_tag}/eig/traj-{traj_gf}")
-    q.check_compressed_eigen_vectors(path)
-    #
-    new_size_node = q.Coordinate([ 2, 2, 2, 2, ])
-    path_new = path
-    q.eigen_system_repartition(new_size_node, path, path_new)
-    q.check_compressed_eigen_vectors(path)
-    #
-    get_eig = run_eig(job_tag, traj_gf, get_gf)
-    test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
-    #
-    # test zip folder
-    q.sync_node()
-    for i in range(32):
-        if i % q.get_num_node() == q.get_id_node():
-            if q.is_directory(f"{path}/{i:02}"):
-                subprocess.run([ "zip", "-r", "-Z", "store", f"{i:02}.zip", f"{i:02}" ], cwd=path)
-                subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
-    q.sync_node()
-    #
-    get_eig = run_eig(job_tag, traj_gf, get_gf)
-    test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
+    if is_test_job_tag(job_tag):
+        path = get_load_path(f"{job_tag}/eig/traj-{traj_gf}")
+        q.check_compressed_eigen_vectors(path)
+        #
+        new_size_node = q.Coordinate([ 2, 2, 2, 2, ])
+        path_new = path
+        q.eigen_system_repartition(new_size_node, path, path_new)
+        q.check_compressed_eigen_vectors(path)
+        #
+        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
+        #
+        # test zip folder
+        q.sync_node()
+        for i in range(32):
+            if i % q.get_num_node() == q.get_id_node():
+                if q.is_directory(f"{path}/{i:02}"):
+                    subprocess.run([ "zip", "-r", "-Z", "store", f"{i:02}.zip", f"{i:02}" ], cwd=path)
+                    subprocess.run([ "rm", "-rf", f"{i:02}/" ], cwd=path)
+        q.sync_node()
+        #
+        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        test_eig(get_gf(), get_eig(), job_tag, inv_type=0)
 
 # ----
 

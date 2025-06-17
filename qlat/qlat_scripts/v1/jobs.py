@@ -570,7 +570,7 @@ def run_psel_smear(job_tag, traj):
 
 # ----------
 
-@q.timer
+@q.timer_verbose
 def run_gf_ape(job_tag, get_gf):
     if get_gf is None:
         return None
@@ -586,7 +586,7 @@ def run_gf_ape(job_tag, get_gf):
         return gf_ape
     return run
 
-@q.timer
+@q.timer_verbose
 def run_gf_hyp(job_tag, get_gf):
     if get_gf is None:
         return None
@@ -602,7 +602,7 @@ def run_gf_hyp(job_tag, get_gf):
 
 # ----------
 
-@q.timer
+@q.timer_verbose
 def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
     """
     return a function ``get_eig''
@@ -625,7 +625,7 @@ def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
         return eig
     return get_eig
 
-@q.timer
+@q.timer_verbose
 def test_eig(gf, eig, job_tag, inv_type, *, pc_ne=None):
     from .rbc_ukqcd import get_inv
     geo = gf.geo
