@@ -34,7 +34,7 @@ time (
       build_list+=("-A" "$name.qlat-tests")
       build_list+=("-A" "$name.qlat-env")
     done
-    time nix-build "$src"/q-pkgs.nix "${build_list[@]}" --argstr version "$nix_version" "$@"
+    time nix-build "$src"/q-pkgs.nix "${build_list[@]}" --no-out-link --argstr version "$nix_version" "$@"
     for name in "${name_list[@]}" ; do
       echo
       echo "Building $nix_version $name"
