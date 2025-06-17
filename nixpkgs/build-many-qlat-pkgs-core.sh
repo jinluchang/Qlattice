@@ -29,6 +29,12 @@ name_list=(
 time (
 
   for nix_version in "${nix_version_list[@]}" ; do
+    build_list=()
+    for name in "${name_list[@]}" ; do
+      build_list+=("-A" "$name.qlat-tests")
+      build_list+=("-A" "$name.qlat-env")
+    done
+    time nix-build "$src"/q-pkgs.nix "${build_list[@]}" --argstr version "$nix_version" "$@"
     for name in "${name_list[@]}" ; do
       echo
       echo "Building $nix_version $name"
