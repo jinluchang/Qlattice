@@ -1309,7 +1309,7 @@ set_param("64I", "measurement", "auto_contractor_chunk_size")(128)
 # ----
 
 job_tag = "test-4nt8-checker"
-set_param(job_tag, "seed")("test-4nt8-checker")
+set_param(job_tag, "seed")("test-4nt8")
 #
 set_param(job_tag, "traj_list")([ 1000, ])
 #
@@ -1318,41 +1318,33 @@ set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.
 #
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
-set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
+set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(1)
 #
-set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'c': 0.5, })
-for inv_type in [ 1, 2, ]:
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", "charm-1", "charm-2", ])
+set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.1, 0.2, ])
+set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
+for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
-set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
-set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
-set_param(job_tag, "fermion_params", 2, 0, "mass")(0.04)
-for inv_type in [ 0, 1, 2, ]:
-    for inv_acc in [ 1, 2, ]:
-        set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
-#
-set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
-set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
-set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
-#
-for inv_type in [ 0, 1, ]:
-    set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
-#
-set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
-set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
-set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
-set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
-set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
-set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
-#
-for inv_type in [ 0, 1, 2, ]:
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
     for inv_acc in [ 0, 1, 2, ]:
+        set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
+set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({"low": 0.10, "high": 5.5, "order": 50})
+set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 20, "Nk": 25, "Nm": 30, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 1, })
+set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ "eps": 0.01, "maxiter": 500, "real": True })
+set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", 0, 0).copy())
+#
+set_param(job_tag, "clanc_params", 0, 0, "nbasis")(20)
+set_param(job_tag, "clanc_params", 0, 0, "block")([ 2, 2, 2, 2, ])
+set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.20, "high": 5.5, "order": 50, })
+set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 10, "mpi": [ 1, 1, 1, 4, ], })
+set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 30, "Nk": 35, "Nm": 40, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 1, })
+set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 10})
+#
 set_param(job_tag, "field_selection_fsel_rate")(0.1)
-set_param(job_tag, "field_selection_psel_rate")(0.01)
+set_param(job_tag, "field_selection_psel_rate")(0.05)
 set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
 #
 set_param(job_tag, "prob_exact_wsrc")(0.20)
