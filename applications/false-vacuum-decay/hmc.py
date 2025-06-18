@@ -438,7 +438,7 @@ def main():
     if(L==1.0):
         if(M==0.0):
             actions["D"]["L"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, True, False)
-            actions["D"]["M"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, False, True)
+            actions["D"]["M"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid-1, dt, False, True)
         for Mi in measure_Ms:
             actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, 1.0, Mi, epsilon, t_FV_out, t_FV_mid, dt, False, False)
     else:
