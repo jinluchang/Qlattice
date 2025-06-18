@@ -49,7 +49,6 @@ def run_job(job_tag, traj):
         q.json_results_append(f"geo.show() = {geo.show()}")
     #
     get_gf = run_gf(job_tag, traj_gf)
-    #
     get_eig = run_eig(job_tag, traj_gf, get_gf)
     #
     # test repartition

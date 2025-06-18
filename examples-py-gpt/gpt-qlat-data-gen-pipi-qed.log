@@ -1,4 +1,5 @@
 CHECK: params: test-4nt8-checker: {
+CHECK: params: test-4nt8-checker:   "seed": "test-4nt8-checker",
 CHECK: params: test-4nt8-checker:   "traj_list": [
 CHECK: params: test-4nt8-checker:     1000
 CHECK: params: test-4nt8-checker:   ],
