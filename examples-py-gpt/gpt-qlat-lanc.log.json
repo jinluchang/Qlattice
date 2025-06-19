@@ -3,6 +3,9 @@
   "{\"seed\": \"test-4nt8\", \"traj_list\": [1000], \"total_site\": [4, 4, 4, 8], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"quark_flavor_list\": [\"light\", \"strange\", \"charm-1\", \"charm-2\"], \"quark_mass_list\": [0.01, 0.04, 0.1, 0.2], \"fermion_params\": {\"0\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}, \"1\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}}, \"2\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}}, \"3\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}}}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-2-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-2-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-2-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-3-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-3-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-3-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"lanc_params\": {\"0\": {\"0\": {\"cheby_params\": {\"low\": 0.1, \"high\": 5.5, \"order\": 50}, \"irl_params\": {\"Nstop\": 20, \"Nk\": 25, \"Nm\": 30, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}, \"pit_params\": {\"eps\": 0.01, \"maxiter\": 500, \"real\": true}, \"fermion_params\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}}}, \"clanc_params\": {\"0\": {\"0\": {\"nbasis\": 20, \"block\": [2, 2, 2, 2], \"cheby_params\": {\"low\": 0.2, \"high\": 5.5, \"order\": 50}, \"save_params\": {\"nsingle\": 10, \"mpi\": [1, 1, 1, 4]}, \"irl_params\": {\"Nstop\": 30, \"Nk\": 35, \"Nm\": 40, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}, \"smoother_params\": {\"eps\": 1e-08, \"maxiter\": 10}}}}}"
  ],
  [
+  "{\"seed\": \"test-4nt8\", \"traj_list\": [1000], \"total_site\": [4, 4, 4, 8], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"quark_flavor_list\": [\"light\", \"strange\", \"charm-1\", \"charm-2\"], \"quark_mass_list\": [0.01, 0.04, 0.1, 0.2], \"fermion_params\": {\"0\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}, \"1\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}}, \"2\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}}, \"3\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}}}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-2-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-2-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-2-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-3-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-3-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-3-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"lanc_params\": {\"0\": {\"0\": {\"cheby_params\": {\"low\": 0.1, \"high\": 5.5, \"order\": 50}, \"irl_params\": {\"Nstop\": 20, \"Nk\": 25, \"Nm\": 30, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 1}, \"pit_params\": {\"eps\": 0.01, \"maxiter\": 500, \"real\": true}, \"fermion_params\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}}}}"
+ ],
+ [
   "geo.show() = Geometry([4, 4, 4, 8])"
  ],
  [
@@ -258,6 +261,177 @@
   0.01
  ],
  [
-  "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-run-eig']"
+  "geo.show() = Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "src norm",
+  4091.225019304942,
+  1e-10
+ ],
+ [
+  "src get_data_sig",
+  {
+   "real": 39.37797352855642,
+   "imag": 31.81191171826329,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol_ref norm",
+  10718.125167880306,
+  1e-10
+ ],
+ [
+  "sol_ref get_data_sig",
+  {
+   "real": 11.943744158625002,
+   "imag": -0.27502989510655773,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol diff norm inv_acc=0 with eig",
+  52.68207124690277,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 with eig",
+  {
+   "real": 2.128722741935759,
+   "imag": -1.0504008259539344,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=0 without eig",
+  3903.9892156728256,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 without eig",
+  {
+   "real": -6.689851965274951,
+   "imag": 2.724155510316253,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 with eig",
+  0.35507045262825665,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 with eig",
+  {
+   "real": -0.17848250471988897,
+   "imag": -0.3476046342780317,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 without eig",
+  1328.3963572823445,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 without eig",
+  {
+   "real": -2.9514737613111235,
+   "imag": -1.0284833451155047,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "src norm",
+  4091.225019304942,
+  1e-10
+ ],
+ [
+  "src get_data_sig",
+  {
+   "real": 39.37797352855642,
+   "imag": 31.81191171826329,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol_ref norm",
+  10718.125167880306,
+  1e-10
+ ],
+ [
+  "sol_ref get_data_sig",
+  {
+   "real": 11.943744158625002,
+   "imag": -0.27502989510655773,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sol diff norm inv_acc=0 with eig",
+  52.68207124690277,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 with eig",
+  {
+   "real": 2.128722741935759,
+   "imag": -1.0504008259539344,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=0 without eig",
+  3903.9892156728256,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=0 without eig",
+  {
+   "real": -6.689851965274951,
+   "imag": 2.724155510316253,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 with eig",
+  0.35507045262825665,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 with eig",
+  {
+   "real": -0.17848250471988897,
+   "imag": -0.3476046342780317,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "sol diff norm inv_acc=1 without eig",
+  1328.3963572823445,
+  0.01
+ ],
+ [
+  "sol diff get_data_sig inv_acc=1 without eig",
+  {
+   "real": -2.9514737613111235,
+   "imag": -1.0284833451155047,
+   "__extended_json_type__": "complex"
+  },
+  0.01
+ ],
+ [
+  "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-run-eig', 'locks/test-4nt8-checker2-1000-gauge_field', 'locks/test-4nt8-checker2-1000-run-eig']"
  ]
 ]

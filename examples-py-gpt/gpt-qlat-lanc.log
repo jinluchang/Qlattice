@@ -327,4 +327,293 @@ CHECK: params: test-4nt8-checker:       }
 CHECK: params: test-4nt8-checker:     }
 CHECK: params: test-4nt8-checker:   }
 CHECK: params: test-4nt8-checker: }
+CHECK: params: test-4nt8-checker2: {
+CHECK: params: test-4nt8-checker2:   "seed": "test-4nt8",
+CHECK: params: test-4nt8-checker2:   "traj_list": [
+CHECK: params: test-4nt8-checker2:     1000
+CHECK: params: test-4nt8-checker2:   ],
+CHECK: params: test-4nt8-checker2:   "total_site": [
+CHECK: params: test-4nt8-checker2:     4,
+CHECK: params: test-4nt8-checker2:     4,
+CHECK: params: test-4nt8-checker2:     4,
+CHECK: params: test-4nt8-checker2:     8
+CHECK: params: test-4nt8-checker2:   ],
+CHECK: params: test-4nt8-checker2:   "load_config_params": {
+CHECK: params: test-4nt8-checker2:     "twist_boundary_at_boundary": [
+CHECK: params: test-4nt8-checker2:       0.0,
+CHECK: params: test-4nt8-checker2:       0.0,
+CHECK: params: test-4nt8-checker2:       0.0,
+CHECK: params: test-4nt8-checker2:       -0.5
+CHECK: params: test-4nt8-checker2:     ]
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "mk_sample_gauge_field": {
+CHECK: params: test-4nt8-checker2:     "rand_n_step": 2,
+CHECK: params: test-4nt8-checker2:     "flow_n_step": 8,
+CHECK: params: test-4nt8-checker2:     "hmc_n_traj": 1
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "quark_flavor_list": [
+CHECK: params: test-4nt8-checker2:     "light",
+CHECK: params: test-4nt8-checker2:     "strange",
+CHECK: params: test-4nt8-checker2:     "charm-1",
+CHECK: params: test-4nt8-checker2:     "charm-2"
+CHECK: params: test-4nt8-checker2:   ],
+CHECK: params: test-4nt8-checker2:   "quark_mass_list": [
+CHECK: params: test-4nt8-checker2:     0.01,
+CHECK: params: test-4nt8-checker2:     0.04,
+CHECK: params: test-4nt8-checker2:     0.1,
+CHECK: params: test-4nt8-checker2:     0.2
+CHECK: params: test-4nt8-checker2:   ],
+CHECK: params: test-4nt8-checker2:   "fermion_params": {
+CHECK: params: test-4nt8-checker2:     "0": {
+CHECK: params: test-4nt8-checker2:       "0": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.01
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "1": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.01
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "2": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.01
+CHECK: params: test-4nt8-checker2:       }
+CHECK: params: test-4nt8-checker2:     },
+CHECK: params: test-4nt8-checker2:     "1": {
+CHECK: params: test-4nt8-checker2:       "0": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.04
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "1": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.04
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "2": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.04
+CHECK: params: test-4nt8-checker2:       }
+CHECK: params: test-4nt8-checker2:     },
+CHECK: params: test-4nt8-checker2:     "2": {
+CHECK: params: test-4nt8-checker2:       "0": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.1
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "1": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.1
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "2": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.1
+CHECK: params: test-4nt8-checker2:       }
+CHECK: params: test-4nt8-checker2:     },
+CHECK: params: test-4nt8-checker2:     "3": {
+CHECK: params: test-4nt8-checker2:       "0": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.2
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "1": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.2
+CHECK: params: test-4nt8-checker2:       },
+CHECK: params: test-4nt8-checker2:       "2": {
+CHECK: params: test-4nt8-checker2:         "Ls": 8,
+CHECK: params: test-4nt8-checker2:         "M5": 1.8,
+CHECK: params: test-4nt8-checker2:         "b": 1.5,
+CHECK: params: test-4nt8-checker2:         "c": 0.5,
+CHECK: params: test-4nt8-checker2:         "boundary_phases": [
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0,
+CHECK: params: test-4nt8-checker2:           1.0
+CHECK: params: test-4nt8-checker2:         ],
+CHECK: params: test-4nt8-checker2:         "mass": 0.2
+CHECK: params: test-4nt8-checker2:       }
+CHECK: params: test-4nt8-checker2:     }
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-0-0": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 1
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-0-1": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 2
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-0-2": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 3
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-1-0": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 1
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-1-1": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 2
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-1-2": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 3
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-2-0": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 1
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-2-1": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 2
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-2-2": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 3
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-3-0": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 1
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-3-1": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 2
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "cg_params-3-2": {
+CHECK: params: test-4nt8-checker2:     "maxiter": 10,
+CHECK: params: test-4nt8-checker2:     "maxcycle": 3
+CHECK: params: test-4nt8-checker2:   },
+CHECK: params: test-4nt8-checker2:   "lanc_params": {
+CHECK: params: test-4nt8-checker2:     "0": {
+CHECK: params: test-4nt8-checker2:       "0": {
+CHECK: params: test-4nt8-checker2:         "cheby_params": {
+CHECK: params: test-4nt8-checker2:           "low": 0.1,
+CHECK: params: test-4nt8-checker2:           "high": 5.5,
+CHECK: params: test-4nt8-checker2:           "order": 50
+CHECK: params: test-4nt8-checker2:         },
+CHECK: params: test-4nt8-checker2:         "irl_params": {
+CHECK: params: test-4nt8-checker2:           "Nstop": 20,
+CHECK: params: test-4nt8-checker2:           "Nk": 25,
+CHECK: params: test-4nt8-checker2:           "Nm": 30,
+CHECK: params: test-4nt8-checker2:           "resid": 1e-08,
+CHECK: params: test-4nt8-checker2:           "betastp": 0.0,
+CHECK: params: test-4nt8-checker2:           "maxiter": 20,
+CHECK: params: test-4nt8-checker2:           "Nminres": 1
+CHECK: params: test-4nt8-checker2:         },
+CHECK: params: test-4nt8-checker2:         "pit_params": {
+CHECK: params: test-4nt8-checker2:           "eps": 0.01,
+CHECK: params: test-4nt8-checker2:           "maxiter": 500,
+CHECK: params: test-4nt8-checker2:           "real": true
+CHECK: params: test-4nt8-checker2:         },
+CHECK: params: test-4nt8-checker2:         "fermion_params": {
+CHECK: params: test-4nt8-checker2:           "Ls": 8,
+CHECK: params: test-4nt8-checker2:           "M5": 1.8,
+CHECK: params: test-4nt8-checker2:           "b": 1.5,
+CHECK: params: test-4nt8-checker2:           "c": 0.5,
+CHECK: params: test-4nt8-checker2:           "boundary_phases": [
+CHECK: params: test-4nt8-checker2:             1.0,
+CHECK: params: test-4nt8-checker2:             1.0,
+CHECK: params: test-4nt8-checker2:             1.0,
+CHECK: params: test-4nt8-checker2:             1.0
+CHECK: params: test-4nt8-checker2:           ],
+CHECK: params: test-4nt8-checker2:           "mass": 0.01
+CHECK: params: test-4nt8-checker2:         }
+CHECK: params: test-4nt8-checker2:       }
+CHECK: params: test-4nt8-checker2:     }
+CHECK: params: test-4nt8-checker2:   }
+CHECK: params: test-4nt8-checker2: }
 CHECK: finished successfully.

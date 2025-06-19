@@ -614,19 +614,18 @@ def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
         return load_eig
     import gpt as g
     g.mem_report()
-    # evec, evals = ru.mk_eig(job_tag, gf, inv_type, inv_acc)
-    basis, cevec, smoothed_evals = ru.mk_ceig(job_tag, gf, inv_type, inv_acc, pc_ne=pc_ne)
-    eig = (basis, cevec, smoothed_evals,)
+    # eig = ru.mk_eig(job_tag, gf, inv_type, inv_acc)
+    eig = ru.mk_ceig(job_tag, gf, inv_type, inv_acc, pc_ne=pc_ne)
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
-    test_eig(gf, eig, job_tag, inv_type)
+    test_eig(job_tag, gf, eig, inv_type)
     g.mem_report()
     def get_eig():
         return eig
     return get_eig
 
 @q.timer_verbose
-def test_eig(gf, eig, job_tag, inv_type, *, pc_ne=None):
+def test_eig(job_tag, gf, eig, inv_type, *, pc_ne=None):
     from .rbc_ukqcd import get_inv
     geo = gf.geo
     src = q.FermionField4d(geo)

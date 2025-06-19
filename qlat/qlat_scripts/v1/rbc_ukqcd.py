@@ -123,6 +123,9 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     """
     import qlat_gpt as qg
     import gpt as g
+    cparams = get_param_clanc(job_tag, inv_type, inv_acc)
+    if cparams is None:
+        return mk_eig(job_tag, gf, inv_type, inv_acc, parity=parity, pc_ne=pc_ne)
     qtimer = q.Timer(f"py:mk_ceig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
     #
@@ -132,7 +135,6 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
         pc_ne = mk_pc_ne(job_tag, inv_type, inv_acc, parity=parity)
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     params = get_param_lanc(job_tag, inv_type, inv_acc)
-    cparams = get_param_clanc(job_tag, inv_type, inv_acc)
     assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
     fermion_params = params["fermion_params"]
     q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
@@ -237,12 +239,19 @@ def save_ceig(path, eig, job_tag, inv_type=0, inv_acc=0):
     import gpt as g
     if path is None:
         return
-    save_params = get_param_clanc(job_tag, inv_type, inv_acc)["save_params"]
-    nsingle = save_params["nsingle"]
-    mpi = save_params["mpi"]
-    fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
-    q.mk_file_dirs_info(path)
-    g.save(path, eig, fmt);
+    assert isinstance(eig, tuple)
+    if len(eig) == 3:
+        clanc_params = get_param_clanc(job_tag, inv_type, inv_acc)
+        save_params = clanc_params["save_params"]
+        nsingle = save_params["nsingle"]
+        mpi = save_params["mpi"]
+        fmt = g.format.cevec({ "nsingle": nsingle, "mpi": [ 1, ] + mpi, "max_read_blocks": 8, })
+        q.mk_file_dirs_info(path)
+        g.save(path, eig, fmt);
+    elif len(eig) == 2:
+        g.save(path, eig);
+    else:
+        assert False
 
 @q.timer_verbose
 def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
@@ -258,28 +267,39 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
     if path is None:
         q.displayln_info(f"load_eig_lazy: path is '{path}'")
         return None
-    if not q.does_file_exist_qar_sync_node(os.path.join(path, "metadata.txt")):
-        q.displayln_info(f"load_eig_lazy: '{path}' does not have file 'metadata.txt'.")
+    b1 = q.does_file_exist_qar_sync_node(os.path.join(path, "metadata.txt"))
+    b2 = q.does_file_exist_qar_sync_node(os.path.join(path, "eigen-values.txt"))
+    b3 = q.does_file_exist_qar_sync_node(os.path.join(path, "00/0000000000.compressed"))
+    b4 = q.does_file_exist_qar_sync_node(os.path.join(path, "00.zip"))
+    b5 = q.does_file_exist_qar_sync_node(os.path.join(path, "global"))
+    b6 = q.does_file_exist_qar_sync_node(os.path.join(path, "index"))
+    b7 = q.does_file_exist_qar_sync_node(os.path.join(path, "index.crc32"))
+    if b1 and b2 and (b3 or b4):
+        q.displayln_info(0, f"load_eig_lazy: '{path}' compressed eig available.")
+        @q.lazy_call
+        @q.timer_verbose
+        def load_eig():
+            q.displayln_info(0, f"load_eig_lazy: '{path}' load compressed eig.")
+            g.mem_report()
+            total_site = q.Coordinate(get_param(job_tag, "total_site"))
+            fermion_params = get_param_fermion(job_tag, inv_type, inv_acc)
+            grids = qg.get_fgrid(total_site, fermion_params)
+            eig = g.load(path, grids=grids)
+            g.mem_report()
+            return eig
+    elif b5 and b6 and b7:
+        q.displayln_info(0, f"load_eig_lazy: '{path}' eig available.")
+        @q.lazy_call
+        @q.timer_verbose
+        def load_eig():
+            q.displayln_info(0, f"load_eig_lazy: '{path}' load eig.")
+            g.mem_report()
+            eig = g.load(path)
+            g.mem_report()
+            return eig
+    else:
+        q.displayln_info(f"load_eig_lazy: '{path}' {((b1, b2, b3, b4,), (b5, b6, b7,))}.")
         return None
-    if not q.does_file_exist_qar_sync_node(os.path.join(path, "eigen-values.txt")):
-        q.displayln_info(f"load_eig_lazy: '{path}' does not have file 'eigen-values.txt'.")
-        return None
-    if not q.does_file_exist_qar_sync_node(os.path.join(path, "00/0000000000.compressed")):
-        if not q.does_file_exist_qar_sync_node(os.path.join(path, "00.zip")):
-            q.displayln_info(f"load_eig_lazy: '{path}' does not have data file '00/0000000000.compressed'.")
-            q.displayln_info(f"load_eig_lazy: '{path}' does not have data file '00.zip'.")
-            return None
-    #
-    @q.lazy_call
-    @q.timer_verbose
-    def load_eig():
-        g.mem_report()
-        total_site = q.Coordinate(get_param(job_tag, "total_site"))
-        fermion_params = get_param_fermion(job_tag, inv_type, inv_acc)
-        grids = qg.get_fgrid(total_site, fermion_params)
-        eig = g.load(path, grids=grids)
-        g.mem_report()
-        return eig
     #
     return load_eig
 
@@ -359,8 +379,15 @@ def mk_gpt_inverter(
         cg_pv_f = inv.split(cg_pv_f, mpi_split=mpi_split)
     q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
     if eig is not None:
-        # eig = (basis, cevec, smoothed_evals,)
-        cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
+        assert isinstance(eig, tuple)
+        if len(eig) == 3:
+            (basis, cevec, smoothed_evals,) = eig
+            cg_defl = inv.coarse_deflate(cevec, basis, smoothed_evals)
+        elif len(eig) == 2:
+            (evec, evals,) = eig
+            cg_defl = inv.deflate(evec, evals)
+        else:
+            assert False
         cg = inv.sequence(cg_defl, cg_split)
     else:
         cg = cg_split
