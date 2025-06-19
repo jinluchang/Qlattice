@@ -9,14 +9,13 @@ else
     exit 1
 fi
 
-time nix-build "$script_path"/q-pkgs.nix \
-  -A pkgs.qlat-jhub-env \
-  -A pkgs-cu.qlat-jhub-env \
-  -A pkgs-cuda.qlat-jhub-env \
-  -A pkgs-cudasupport.qlat-jhub-env \
-  --no-out-link "$@"
-
 time (
+  time nix-build "$script_path"/q-pkgs.nix \
+    -A pkgs.qlat-jhub-env \
+    -A pkgs-cu.qlat-jhub-env \
+    -A pkgs-cuda.qlat-jhub-env \
+    -A pkgs-cudasupport.qlat-jhub-env \
+    --no-out-link "$@"
   time name="" "$script_path"/install-py-local-kernel-with-nix.sh "$@"
   time name="-cu" "$script_path"/install-py-local-kernel-with-nix.sh "$@"
   time name="-cuda" "$script_path"/install-py-local-kernel-with-nix.sh "$@"
