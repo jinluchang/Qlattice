@@ -457,7 +457,7 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     return ret
 
 @q.timer_verbose
-def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
+def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight, tag=None):
     """
     return get_psel_prob
     #
@@ -469,12 +469,18 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     `get_f_weight` is of type `lambda : q.FieldRealD(geo, 1)`.
     `get_f_rand_01` is of type `lambda : q.FieldRealD(geo, 1)`.
     #
+    tag can be "small", "median", "large", etc
+    #
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel = lambda : get_psel_prob().psel
     """
     fname = q.get_fname()
-    fn_psel = f"{job_tag}/points-selection/traj-{traj}.lati"
-    fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
+    if tag is None:
+        fn_psel = f"{job_tag}/points-selection/traj-{traj}.lati"
+        fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
+    else:
+        fn_psel = f"{job_tag}/psel_{tag}/traj-{traj}/psel.lati"
+        fn_psel_prob = f"{job_tag}/psel_{tag}/traj-{traj}/psel-prob.lat"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
     @q.lazy_call
@@ -507,10 +513,17 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     if get_f_weight is None:
         q.displayln_info(-1, f"{fname}: get_f_weight is None")
         return None
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
-        return None
-    psel_rate = get_param(job_tag, "field_selection_psel_rate")
-    q.displayln_info(-1, fname, f"psel_rate = {psel_rate}")
+    if tag is None:
+        if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+            return None
+    else:
+        if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{tag}"):
+            return None
+    if tag is None:
+        psel_rate = get_param(job_tag, "field_selection_psel_rate")
+    else:
+        psel_rate = get_param(job_tag, "field_selection_psel_rate_{tag}")
+    q.displayln_info(-1, fname, f"tag='{tag}' ; psel_rate={psel_rate} .")
     assert psel_rate is not None
     assert get_load_path(fn_psel) is None
     assert get_load_path(fn_psel_prob) is None
