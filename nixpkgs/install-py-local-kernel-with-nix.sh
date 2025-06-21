@@ -26,6 +26,8 @@ else
     exit 1
 fi
 
+set -ex
+
 if [ -z "${name+x}" ] ; then
     echo "name is not set."
     echo "name='' (use default)."

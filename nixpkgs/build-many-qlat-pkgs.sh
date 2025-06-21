@@ -9,6 +9,8 @@ else
     exit 1
 fi
 
+set -ex
+
 src="$script_path"
 dst="$HOME/qlat-build/nix"
 mkdir -p "$dst"

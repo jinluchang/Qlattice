@@ -9,6 +9,8 @@ else
     exit 1
 fi
 
+set -ex
+
 time (
   time nix-build "$script_path"/q-pkgs.nix \
     -A pkgs.qlat-jhub-env \

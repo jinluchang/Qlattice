@@ -2,7 +2,7 @@
   nixpkgs ? null,
   version ? null,
   use-gitee ? null,
-  name ? "q-pkgs-cuda",
+  name ? "q-pkgs-cudasupport",
 }:
 
 let
