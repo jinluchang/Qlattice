@@ -12,7 +12,7 @@
 
   Total running time of program in seconds.
 
-  Used when `check_time_limit()`, but will be override if `q_end_time` is set.
+  Used when `check_time_limit()`, but will be overrided if `q_end_time` is set.
 
   Default is `43200`.
 
@@ -50,7 +50,7 @@
 
 - `q_num_threads`
 
-  Number of OpenMP threads (will be override by `OMP_NUM_THREADS`). Possible setting can be `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.
+  Number of OpenMP threads (will be overrided by `OMP_NUM_THREADS`). Possible setting can be `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.
 
   Default is `2`.
 
@@ -109,6 +109,14 @@
   Default is `500L * 1000L * 1000L * 1000L` (500 GB). If `q_qar_multi_vol_max_size` is negative, the size is unlimited.
 
   Note, `qar` never splits a single file into multiple `qar` volume. The limit may be exceeded due to the header size or a single file being too large.
+
+- `q_write_par_limit`
+
+  Default is `16`.
+
+- `q_read_par_limit`
+
+  Default is `16`.
 
 ## Useful options
 

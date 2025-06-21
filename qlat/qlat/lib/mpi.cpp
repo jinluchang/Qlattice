@@ -300,6 +300,9 @@ int bcast(PointsSelection& psel, const int root)
 }
 
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
+// return list
+// list[id_node_in_shuffle] = id_node
+// list[0] = 0
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_rs");
   const int num_node = get_num_node();
@@ -319,6 +322,9 @@ std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
 }
 
 std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
+// return list
+// list[id_node_in_shuffle] = id_node
+// list[0] = 0
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_step_size");
   const int num_node = get_num_node();
@@ -337,6 +343,19 @@ std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
 std::vector<Int> mk_id_node_list_for_shuffle_node()
 // return list
 // list[id_node_in_shuffle] = id_node
+// list[0] = 0
+// Assign `id_node_in_shuffle` mainly for IO when one physical node may run multiple MPI processes.
+// Physical node is identified as `id_of_node`.
+// MPI processe is identified as `id_node`.
+// `id_node_in_shuffle` is new id for each MPI processes, such that it iterate through physical nodes first.
+// Illustration:
+// id_of_node & id_node & id_node_in_shuffle
+// 0 & 0 & 0
+// 0 & 1 & 3
+// 1 & 2 & 1
+// 1 & 3 & 4
+// 2 & 4 & 2
+// 2 & 5 & 5
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_node");
   // global id
@@ -419,9 +438,11 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
 }
 
 std::vector<Int> mk_id_node_list_for_shuffle()
-// use env variable "q_mk_id_node_in_shuffle_seed"
-// if env variable start with "seed_", then the rest will be used as seed for
-// random assignment else env variable will be viewed as int for step_size
+// Use env variable "q_mk_id_node_in_shuffle_seed".
+// If the env variable is empty, then assignment based on physical node. (Should be a good idea.)
+// If env variable start with "seed_", then the rest will be used as seed for
+// random assignment.
+// Otherwise, env variable will be viewed as int for step_size.
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle")
   const std::string seed = get_env_default("q_mk_id_node_in_shuffle_seed", "");

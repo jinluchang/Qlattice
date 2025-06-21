@@ -695,8 +695,16 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
   Long total_bytes = 0;
-  for (int i = 0; i < (int)fs.size(); ++i) {
-    total_bytes += write(sfw.fws[i], fn, fs[i]);
+  const int num_node = product(sfw.new_size_node);
+  const int n_cycle = std::max(1, num_node / dist_write_par_limit());
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
+    for (int i = 0; i < (int)fs.size(); ++i) {
+      const int id_node = sfw.fws[i].geon.id_node;
+      qassert(0 <= id_node && id_node < num_node);
+      if (id_node % n_cycle == cycle) {
+        total_bytes += write(sfw.fws[i], fn, fs[i]);
+      }
+    }
   }
   glb_sum(total_bytes);
   save_fields_index(sfw, fn);
@@ -719,8 +727,16 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   qassert(sfs.size() == sfw.fws.size());
   qassert(sbs.vbs.size() == sfw.fws.size());
   Long total_bytes = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
+  const int num_node = product(sfw.new_size_node);
+  const int n_cycle = std::max(1, num_node / dist_write_par_limit());
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
+    for (int i = 0; i < (int)sfs.size(); ++i) {
+      const int id_node = sfw.fws[i].geon.id_node;
+      qassert(0 <= id_node && id_node < num_node);
+      if (id_node % n_cycle == cycle) {
+        total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
+      }
+    }
   }
   glb_sum(total_bytes);
   save_fields_index(sfw, fn);
@@ -835,13 +851,21 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<Field<M>> fs(sfr.frs.size());
   Long zero_size_count = 0;
-  for (int i = 0; i < (int)fs.size(); ++i) {
-    const Long bytes = read(sfr.frs[i], fn, fs[i]);
-    if (0 == bytes) {
-      zero_size_count += 1;
-      qassert(0 == total_bytes);
-    } else {
-      total_bytes += bytes;
+  const int num_node = product(sfr.new_size_node);
+  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
+    for (int i = 0; i < (int)fs.size(); ++i) {
+      const int id_node = sfr.frs[i].geon.id_node;
+      qassert(0 <= id_node && id_node < num_node);
+      if (id_node % n_cycle == cycle) {
+        const Long bytes = read(sfr.frs[i], fn, fs[i]);
+        if (0 == bytes) {
+          zero_size_count += 1;
+          qassert(0 == total_bytes);
+        } else {
+          total_bytes += bytes;
+        }
+      }
     }
   }
   glb_sum(total_bytes);
@@ -876,14 +900,22 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
   std::vector<SelectedField<M>> sfs(sfr.frs.size());
   std::vector<Field<int64_t>> f_rank_s(sfr.frs.size());
   Long zero_size_count = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    FieldRank& f_rank = static_cast<FieldRank&>(f_rank_s[i]);
-    const Long bytes = read(sfr.frs[i], fn, sfs[i], f_rank);
-    if (0 == bytes) {
-      zero_size_count += 1;
-      qassert(0 == total_bytes);
-    } else {
-      total_bytes += bytes;
+  const int num_node = product(sfr.new_size_node);
+  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
+    for (int i = 0; i < (int)sfs.size(); ++i) {
+      const int id_node = sfr.frs[i].geon.id_node;
+      qassert(0 <= id_node && id_node < num_node);
+      if (id_node % n_cycle == cycle) {
+        FieldRank& f_rank = static_cast<FieldRank&>(f_rank_s[i]);
+        const Long bytes = read(sfr.frs[i], fn, sfs[i], f_rank);
+        if (0 == bytes) {
+          zero_size_count += 1;
+          qassert(0 == total_bytes);
+        } else {
+          total_bytes += bytes;
+        }
+      }
     }
   }
   glb_sum(total_bytes);
@@ -923,13 +955,21 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
                           fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M>> sfs(sfr.frs.size());
   Long zero_size_count = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const Long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
-    if (0 == bytes) {
-      zero_size_count += 1;
-      qassert(0 == total_bytes);
-    } else {
-      total_bytes += bytes;
+  const int num_node = product(sfr.new_size_node);
+  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
+    for (int i = 0; i < (int)sfs.size(); ++i) {
+      const int id_node = sfr.frs[i].geon.id_node;
+      qassert(0 <= id_node && id_node < num_node);
+      if (id_node % n_cycle == cycle) {
+        const Long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
+        if (0 == bytes) {
+          zero_size_count += 1;
+          qassert(0 == total_bytes);
+        } else {
+          total_bytes += bytes;
+        }
+      }
     }
   }
   glb_sum(total_bytes);

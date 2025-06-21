@@ -245,13 +245,13 @@ Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
   Long total_ops = 0;
   const int n_cycle = std::max(1, num_node / dist_write_par_limit());
   std::vector<Long> id_counts(num_node, 0);
-  for (int i = 0; i < n_cycle; i++) {
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
     Long bytes = 0;
     Long ops = 0;
     for (size_t k = 0; k < dds.size(); ++k) {
       const int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
-      if (id_node % n_cycle == i) {
+      if (id_node % n_cycle == cycle) {
         if (id_counts[id_node] == 0) {
           QFile fp = dist_open(path, id_node, num_node, "w");
           qassert(not fp.null());
@@ -273,7 +273,7 @@ Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
     total_ops += ops;
     displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d ; total_ops "
                                     "= %10ld ; total_bytes = %15ld",
-                                    i + 1, n_cycle, total_ops, total_bytes));
+                                    cycle + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<Long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -374,13 +374,13 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
   Long total_ops = 0;
   const int n_cycle = std::max(1, num_node / dist_read_par_limit());
   std::vector<Long> id_counts(num_node, 0);
-  for (int i = 0; i < n_cycle; i++) {
+  for (int cycle = 0; cycle < n_cycle; cycle++) {
     Long bytes = 0;
     Long ops = 0;
     for (size_t k = 0; k < dds.size(); ++k) {
       const int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
-      if (id_node % n_cycle == i) {
+      if (id_node % n_cycle == cycle) {
         if (id_counts[id_node] == 0) {
           QFile fp = dist_open(path, id_node, num_node, "r");
           qassert(not fp.null());
@@ -402,7 +402,7 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
     total_ops += ops;
     displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d ; total_ops "
                                     "= %10ld ; total_bytes = %15ld",
-                                    i + 1, n_cycle, total_ops, total_bytes));
+                                    cycle + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<Long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {

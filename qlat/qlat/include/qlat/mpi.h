@@ -301,6 +301,10 @@ std::vector<Int> mk_id_node_list_for_shuffle();
 
 std::vector<Int> mk_id_node_in_shuffle_list();
 
+// `id_node` is the usual ID for MPI processes.
+// `id_node_in_shuffle` is a shuffled ID for MPI processes, which is used for purposes like IO.
+// This is useful for example when one physical node runs multiple MPI processes, but usually IO happens for MPI processes with the first few IDs. To prevent IO only uses the all MPI processes within the first few nodes, we can use `id_node_in_shuffle` for parallel IO.
+
 int get_id_node_in_shuffle(const int id_node, const int new_num_node,
                            const int num_node);
 
