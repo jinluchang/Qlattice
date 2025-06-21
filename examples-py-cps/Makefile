@@ -12,7 +12,6 @@ run-cps: update-sources $(tests_cps)
 
 update-sources:
 	-for i in $(tests_cps) ; do touch "$${i%.log}.py" ; done
-	-touch qlat-ext/meson.build
 	make -C sparse-from-cps update-sources
 
 %.log: %.py

@@ -3533,7 +3533,7 @@
   "auto_contract_meson_corr: ld sig",
   {
    "real": 300766.1302131662,
-   "imag": 3611.760700449617,
+   "imag": 3611.7607004496167,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3548,31 +3548,31 @@
  [
   "auto_contract_meson_corr: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[1]' sig",
   {
-   "real": -22322.577280436777,
-   "imag": -5.059520782555821,
+   "real": -22322.57728043678,
+   "imag": -5.059520782555844,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld '< K+^dag(0) * K+(-tsep) >  exprs[2]' sig",
   {
-   "real": -21573.475340037643,
-   "imag": -20.073234035419702,
+   "real": -21573.47534003765,
+   "imag": -20.073234035419755,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[3]' sig",
   {
-   "real": 4.682689239617695,
-   "imag": -2922.165470042788,
+   "real": 4.682689239617697,
+   "imag": -2922.1654700427875,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld '< K+^dag(0) * j5k_t^dag(-tsep) >  exprs[4]' sig",
   {
-   "real": 10.30272487363155,
+   "real": 10.302724873631528,
    "imag": -3552.0329953978226,
    "__extended_json_type__": "complex128"
   }
@@ -3580,15 +3580,15 @@
  [
   "auto_contract_meson_corr: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[5]' sig",
   {
-   "real": -5.739810682468027,
-   "imag": 2887.131767099152,
+   "real": -5.73981068246798,
+   "imag": 2887.1317670991516,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld '< j5k_t(0) * K+(-tsep) >  exprs[6]' sig",
   {
-   "real": -9.950990734505698,
+   "real": -9.950990734505657,
    "imag": 3510.5751173805106,
    "__extended_json_type__": "complex128"
   }
@@ -3597,7 +3597,7 @@
   "auto_contract_meson_corr: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[7]' sig",
   {
    "real": -19946.4659250381,
-   "imag": 2.6485927256021986,
+   "imag": 2.648592725602192,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3605,7 +3605,7 @@
   "auto_contract_meson_corr: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[8]' sig",
   {
    "real": -19475.91168028461,
-   "imag": -12.186193328567793,
+   "imag": -12.186193328567917,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3613,7 +3613,7 @@
   "auto_contract_meson_corr: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[9]' sig",
   {
    "real": -20740.717837873923,
-   "imag": -6.1579883732218725,
+   "imag": -6.157988373221903,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3621,23 +3621,23 @@
   "auto_contract_meson_corr: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[10]' sig",
   {
    "real": -19870.927702454857,
-   "imag": -20.43142268390579,
+   "imag": -20.431422683905843,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld '< j_t(0) * j_t(-tsep) >  exprs[11]' sig",
   {
-   "real": -12639.93149019435,
-   "imag": 0.7567768761595954,
+   "real": -12639.931490194354,
+   "imag": 0.756776876159597,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_meson_corr: ld '< j_mu(0) * j_mu(-tsep) >  exprs[12]' sig",
   {
-   "real": 29217.866297290027,
-   "imag": 2.0502720470712426,
+   "real": 29217.866297290035,
+   "imag": 2.050272047071311,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3645,7 +3645,7 @@
   "auto_contract_meson_corr: ld '< j5pi_mu(0) * j5pi_mu^dag(-tsep) >  exprs[13]' sig",
   {
    "real": -79681.40181700498,
-   "imag": -5.601562754316774,
+   "imag": -5.60156275431688,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3653,7 +3653,7 @@
   "auto_contract_meson_corr: ld '< j5k_mu(0) * j5k_mu^dag(-tsep) >  exprs[14]' sig",
   {
    "real": -77104.79140670519,
-   "imag": -61.60528693461556,
+   "imag": -61.60528693461607,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3789,7 +3789,7 @@
   "auto_contract_meson_corr_psnk_psrc: ld sig",
   {
    "real": -0.10214600008398618,
-   "imag": -0.0005490302685912141,
+   "imag": -0.0005490302685912186,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3812,8 +3812,8 @@
  [
   "auto_contract_meson_corr_psnk_psrc: ld '< K+^dag(0) * K+(-tsep) >  exprs[2]' sig",
   {
-   "real": -0.000607944351347106,
-   "imag": 1.7896698267438498e-07,
+   "real": -0.0006079443513471062,
+   "imag": 1.7896698267437442e-07,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3828,8 +3828,8 @@
  [
   "auto_contract_meson_corr_psnk_psrc: ld '< K+^dag(0) * j5k_t^dag(-tsep) >  exprs[4]' sig",
   {
-   "real": -3.355148953541356e-08,
-   "imag": -9.237899741973065e-06,
+   "real": -3.355148953469948e-08,
+   "imag": -9.237899741974833e-06,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3844,8 +3844,8 @@
  [
   "auto_contract_meson_corr_psnk_psrc: ld '< j5k_t(0) * K+(-tsep) >  exprs[6]' sig",
   {
-   "real": 4.598239895078581e-09,
-   "imag": 8.919074674871701e-06,
+   "real": 4.598239895484098e-09,
+   "imag": 8.919074674870088e-06,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3861,7 +3861,7 @@
   "auto_contract_meson_corr_psnk_psrc: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[8]' sig",
   {
    "real": 0.0013283284622237356,
-   "imag": 1.9993929004399986e-09,
+   "imag": 1.9993929004289078e-09,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3877,7 +3877,7 @@
   "auto_contract_meson_corr_psnk_psrc: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[10]' sig",
   {
    "real": -0.000607762923140235,
-   "imag": 1.7754022429286279e-07,
+   "imag": 1.7754022429287335e-07,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3885,7 +3885,7 @@
   "auto_contract_meson_corr_psnk_psrc: ld '< j_t(0) * j_t(-tsep) >  exprs[11]' sig",
   {
    "real": 0.0008838883790094533,
-   "imag": -4.39407083580843e-08,
+   "imag": -4.394070835808658e-08,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3893,7 +3893,7 @@
   "auto_contract_meson_corr_psnk_psrc: ld '< j_mu(0) * j_mu(-tsep) >  exprs[12]' sig",
   {
    "real": 0.0008103146175588052,
-   "imag": -3.213370975690433e-08,
+   "imag": -3.2133709756905986e-08,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -3908,8 +3908,8 @@
  [
   "auto_contract_meson_corr_psnk_psrc: ld '< j5k_mu(0) * j5k_mu^dag(-tsep) >  exprs[14]' sig",
   {
-   "real": 0.0014427028668448933,
-   "imag": 1.7118981650793046e-07,
+   "real": 0.0014427028668448935,
+   "imag": 1.7118981650790336e-07,
    "__extended_json_type__": "complex128"
   }
  ],
