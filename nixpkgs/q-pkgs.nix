@@ -73,11 +73,13 @@ let
   ''
   )));
 
+  nvidia_x11_bin = if ngpu-sys == "0"
+  then null
+  else o-pkgs.linuxPackages.nvidia_x11.bin;
+
   cudaCapability-sys = if ngpu-sys == "0"
   then null
-  else let
-    nvidia_x11 = o-pkgs.linuxPackages.nvidia_x11;
-  in builtins.head (builtins.match
+  else builtins.head (builtins.match
   "(.*)\n"
   (builtins.readFile (runCommandLocal
   "impure-cuda-capability-file"
@@ -85,7 +87,7 @@ let
     time = builtins.currentTime;
   }
   ''
-    ${nixgl}/bin/nixGL ${nvidia_x11.bin}/bin/nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null \
+    ${nixgl}/bin/nixGL ${nvidia_x11_bin}/bin/nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null \
       | head -n 1 >$out 2>/dev/null \
       || echo >$out
     echo "cudaCapability=$(cat $out)"
@@ -541,7 +543,7 @@ let
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues ({
-        inherit qlat-jhub-py mpi ollama;
+        inherit qlat-jhub-py mpi ollama qlat-nixgl nvidia_x11_bin;
         inherit (pkgs)
         bashInteractive
         bash-completion
