@@ -522,7 +522,7 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight, tag=None):
     if tag is None:
         psel_rate = get_param(job_tag, "field_selection_psel_rate")
     else:
-        psel_rate = get_param(job_tag, "field_selection_psel_rate_{tag}")
+        psel_rate = get_param(job_tag, f"field_selection_psel_rate_{tag}")
     q.displayln_info(-1, fname, f"tag='{tag}' ; psel_rate={psel_rate} .")
     assert psel_rate is not None
     assert get_load_path(fn_psel) is None
