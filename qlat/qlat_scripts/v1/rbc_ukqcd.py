@@ -375,7 +375,7 @@ def mk_gpt_inverter(
         assert isinstance(eig, q.EigSystem)
         if isinstance(eig, qg.EigSystemCompressedGPT):
             cg_defl = inv.coarse_deflate(eig.cevec, eig.basis, eig.evals)
-        if isinstance(eig, qg.EigSystemGPT):
+        elif isinstance(eig, qg.EigSystemGPT):
             cg_defl = inv.deflate(eig.evec, eig.evals)
         else:
             assert False
