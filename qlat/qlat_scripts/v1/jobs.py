@@ -616,7 +616,7 @@ def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
     g.mem_report()
     # eig = ru.mk_eig(job_tag, gf, inv_type, inv_acc)
     eig = ru.mk_ceig(job_tag, gf, inv_type, inv_acc, pc_ne=pc_ne)
-    ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
+    ru.save_eig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(job_tag, gf, eig, inv_type)
     g.mem_report()

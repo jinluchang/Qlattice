@@ -112,7 +112,7 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     g.mem_report()
     #
     qtimer.stop()
-    eig = (evec, evals,)
+    eig = qg.EigSystemGPT(evec=evec, evals=evals)
     return eig
 
 @q.timer_verbose
@@ -194,7 +194,7 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     g.mem_report()
     #
     qtimer.stop()
-    eig = (basis, cevec, smoothed_evals,)
+    eig = qg.EigSystemCompressedGPT(basis=basis, cevec=cevec, evals=smoothed_evals)
     return eig
 
 @q.timer_verbose
@@ -232,24 +232,22 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, parity
     return smoothed_evals
 
 @q.timer_verbose
-def save_ceig(path, eig, job_tag, inv_type=0, inv_acc=0):
+def save_eig(path, eig, job_tag, inv_type=0, inv_acc=0):
     """
     Need get_param(job_tag, "clanc_params", inv_type, inv_acc)
     """
-    import gpt as g
+    import qlat_gpt as qg
     if path is None:
         return
-    assert isinstance(eig, tuple)
-    if len(eig) == 3:
+    assert isinstance(eig, q.EigSystem)
+    if isinstance(eig, qg.EigSystemCompressedGPT):
         clanc_params = get_param_clanc(job_tag, inv_type, inv_acc)
         save_params = clanc_params["save_params"]
         nsingle = save_params["nsingle"]
         mpi = save_params["mpi"]
-        fmt = g.format.cevec({ "nsingle": nsingle, "mpi": [ 1, ] + mpi, "max_read_blocks": 8, })
-        q.mk_file_dirs_info(path)
-        g.save(path, eig, fmt);
-    elif len(eig) == 2:
-        g.save(path, eig);
+        eig.save(path, nsingle=nsingle, mpi=mpi)
+    elif isinstance(eig, qg.EigSystemGPT):
+        eig.save(path)
     else:
         assert False
 
@@ -279,23 +277,18 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
         @q.lazy_call
         @q.timer_verbose
         def load_eig():
-            q.displayln_info(0, f"load_eig_lazy: '{path}' load compressed eig.")
-            g.mem_report()
+            eig = qg.EigSystemCompressedGPT()
             total_site = q.Coordinate(get_param(job_tag, "total_site"))
             fermion_params = get_param_fermion(job_tag, inv_type, inv_acc)
-            grids = qg.get_fgrid(total_site, fermion_params)
-            eig = g.load(path, grids=grids)
-            g.mem_report()
+            eig.load(path, total_site=total_site, fermion_params=fermion_params)
             return eig
     elif b5 and b6 and b7:
         q.displayln_info(0, f"load_eig_lazy: '{path}' eig available.")
         @q.lazy_call
         @q.timer_verbose
         def load_eig():
-            q.displayln_info(0, f"load_eig_lazy: '{path}' load eig.")
-            g.mem_report()
+            eig = qg.EigSystemGPT()
             eig = g.load(path)
-            g.mem_report()
             return eig
     else:
         q.displayln_info(f"load_eig_lazy: '{path}' {((b1, b2, b3, b4,), (b5, b6, b7,))}.")
@@ -379,13 +372,11 @@ def mk_gpt_inverter(
         cg_pv_f = inv.split(cg_pv_f, mpi_split=mpi_split)
     q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
     if eig is not None:
-        assert isinstance(eig, tuple)
-        if len(eig) == 3:
-            (basis, cevec, smoothed_evals,) = eig
-            cg_defl = inv.coarse_deflate(cevec, basis, smoothed_evals)
-        elif len(eig) == 2:
-            (evec, evals,) = eig
-            cg_defl = inv.deflate(evec, evals)
+        assert isinstance(eig, q.EigSystem)
+        if isinstance(eig, qg.EigSystemCompressedGPT):
+            cg_defl = inv.coarse_deflate(eig.cevec, eig.basis, eig.evals)
+        if isinstance(eig, qg.EigSystemGPT):
+            cg_defl = inv.deflate(eig.evec, eig.evals)
         else:
             assert False
         cg = inv.sequence(cg_defl, cg_split)

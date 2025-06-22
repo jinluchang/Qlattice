@@ -340,9 +340,11 @@ def gpt_invert(src, inverter, qtimer=q.TimerNone()):
 
 class InverterGPT(q.Inverter):
 
-    def __init__(self, *, inverter,
+    def __init__(
+            self, *, inverter,
             qtimer=q.TimerNone(),
-            gpt_qtimer=q.TimerNone()):
+            gpt_qtimer=q.TimerNone(),
+            ):
         self.inverter = inverter
         self.timer = qtimer
         self.gpt_timer = gpt_qtimer
@@ -360,6 +362,62 @@ class InverterGPT(q.Inverter):
 
 ###
 
+class EigSystemGPT(q.EigSystem):
+
+    def __init__(self, *, evec=None, evals=None):
+        self.evec = evec
+        self.evals = evals
+
+    @q.timer(is_verbose=True)
+    def load(self, path):
+        fname = q.get_fname()
+        q.displayln_info(0, f"{fname}: load '{path}'.")
+        g.mem_report()
+        (evec, evals,) = g.load(path)
+        self.evec = evec
+        self.evals = evals
+        g.mem_report()
+
+    @q.timer(is_verbose=True)
+    def save(self, path):
+        if path is None:
+            return
+        eig = (self.evec, self.evals,)
+        g.save(path, eig);
+
+###
+
+class EigSystemCompressedGPT(q.EigSystem):
+
+    def __init__(self, *, basis=None, cevec=None, evals=None):
+        self.basis = basis
+        self.cevec = cevec
+        self.evals = evals
+
+    @q.timer(is_verbose=True)
+    def load(self, path, *, total_site, fermion_params):
+        fname = q.get_fname()
+        q.displayln_info(0, f"{fname}: load '{path}'.")
+        g.mem_report()
+        grids = get_fgrid(total_site, fermion_params)
+        (basis, cevec, evals,) = g.load(path, grids=grids)
+        self.basis = basis
+        self.cevec = cevec
+        self.evals = evals
+        g.mem_report()
+
+    @q.timer(is_verbose=True)
+    def save(self, path, *, nsingle, mpi):
+        if path is None:
+            return
+        fmt = g.format.cevec({ "nsingle": nsingle, "mpi": [ 1, ] + mpi, "max_read_blocks": 8, })
+        eig = (self.basis, self.cevec, self.evals,)
+        q.mk_file_dirs_info(path)
+        g.save(path, eig, fmt);
+
+###
+
+@q.timer
 def get_fgrid(total_site, fermion_params):
     geo = q.Geometry(total_site)
     gf = q.GaugeField(geo)

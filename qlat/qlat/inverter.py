@@ -10,6 +10,8 @@ class Inverter:
 
     pass
 
+## -----
+
 class InverterDwfFreeField(Inverter):
 
     """
@@ -44,6 +46,8 @@ class InverterDwfFreeField(Inverter):
             return [ self * p for p in prop_src ]
         else:
             raise Exception("InverterDwfFreeField")
+
+## -----
 
 class InverterDomainWall(Inverter):
 
@@ -94,6 +98,8 @@ class InverterDomainWall(Inverter):
     def set_max_mixed_precision_cycle(self, max_mixed_precision_cycle):
         return c.set_max_mixed_precision_cycle_inverter_domain_wall(self, max_mixed_precision_cycle)
 
+## -----
+
 class InverterGaugeTransform(Inverter):
 
     """
@@ -103,8 +109,10 @@ class InverterGaugeTransform(Inverter):
     self.timer
     """
 
-    def __init__(self, *, inverter, gt,
-            qtimer=TimerNone()):
+    def __init__(
+            self, *, inverter, gt,
+            qtimer=TimerNone(),
+            ):
         self.inverter = inverter
         self.gt = gt
         self.timer = qtimer
@@ -121,3 +129,11 @@ class InverterGaugeTransform(Inverter):
         prop_sol = self.gt * sol
         self.timer.stop()
         return prop_sol
+
+## -----
+
+class EigSystem:
+
+    pass
+
+## -----
