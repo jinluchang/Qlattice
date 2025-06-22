@@ -109,7 +109,6 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     irl = g.algorithms.eigen.irl(params["irl_params"])
     evec, ev = irl(cheby(w.Mpc), make_src(g.random("lanc")))
     evals, eps2 = g.algorithms.eigen.evals(w.Mpc, evec, real=True)
-    g.mem_report()
     #
     qtimer.stop()
     eig = qg.EigSystemGPT(evec=evec, evals=evals)
@@ -156,7 +155,6 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     irl = g.algorithms.eigen.irl(params["irl_params"])
     evec, ev = irl(cheby(w.Mpc), make_src(g.random("lanc")))
     evals, eps2 = g.algorithms.eigen.evals(w.Mpc, evec, real=True)
-    g.mem_report()
     #
     inv = g.algorithms.inverter
     #
@@ -190,8 +188,6 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
             w.Mpc, [tmpf], calculate_eps2=False, real=True
         )
         smoothed_evals = smoothed_evals + evals
-    #
-    g.mem_report()
     #
     qtimer.stop()
     eig = qg.EigSystemCompressedGPT(basis=basis, cevec=cevec, evals=smoothed_evals)
