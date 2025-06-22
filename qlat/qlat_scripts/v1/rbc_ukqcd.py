@@ -288,7 +288,7 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
         @q.timer_verbose
         def load_eig():
             eig = qg.EigSystemGPT()
-            eig = g.load(path)
+            eig.load(path)
             return eig
     else:
         q.displayln_info(f"load_eig_lazy: '{path}' {((b1, b2, b3, b4,), (b5, b6, b7,))}.")
