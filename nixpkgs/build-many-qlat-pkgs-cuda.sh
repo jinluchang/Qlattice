@@ -42,8 +42,9 @@ time (
       echo
       echo "Building $nix_version $name"
       echo
-      time nix-build "$src"/q-pkgs.nix -A "$name".qlat-tests -A "$name".qlat-env -o result-"$nix_version-$name" --argstr version "$nix_version" "$@"
+      time nix-build "$src"/q-pkgs.nix -A "$name".qlat-tests -A "$name".qlat-env -o result-"$nix_version-$name" --argstr version "$nix_version" "$@" &
     done
+    time wait
   done
 
 )
