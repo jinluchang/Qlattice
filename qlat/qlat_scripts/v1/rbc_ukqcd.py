@@ -82,6 +82,7 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     import gpt as g
     qtimer = q.Timer(f"py:mk_eig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
+    q.show_memory_usage()
     #
     if parity is None:
         parity = mk_pc_parity(job_tag, inv_type, inv_acc)
@@ -110,8 +111,9 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     evec, ev = irl(cheby(w.Mpc), make_src(g.random("lanc")))
     evals, eps2 = g.algorithms.eigen.evals(w.Mpc, evec, real=True)
     #
-    qtimer.stop()
     eig = qg.EigSystemGPT(evec=evec, evals=evals)
+    q.show_memory_usage()
+    qtimer.stop()
     return eig
 
 @q.timer_verbose
@@ -127,6 +129,7 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
         return mk_eig(job_tag, gf, inv_type, inv_acc, parity=parity, pc_ne=pc_ne)
     qtimer = q.Timer(f"py:mk_ceig({job_tag},gf,{inv_type},{inv_acc})", True)
     qtimer.start()
+    q.show_memory_usage()
     #
     if parity is None:
         parity = mk_pc_parity(job_tag, inv_type, inv_acc)
@@ -189,8 +192,9 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
         )
         smoothed_evals = smoothed_evals + evals
     #
-    qtimer.stop()
     eig = qg.EigSystemCompressedGPT(basis=basis, cevec=cevec, evals=smoothed_evals)
+    q.show_memory_usage()
+    qtimer.stop()
     return eig
 
 @q.timer_verbose

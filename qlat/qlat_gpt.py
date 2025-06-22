@@ -372,9 +372,11 @@ class EigSystemGPT(q.EigSystem):
     def load(self, path):
         fname = q.get_fname()
         q.displayln_info(0, f"{fname}: load '{path}'.")
+        q.show_memory_usage()
         (evec, evals,) = g.load(path)
         self.evec = evec
         self.evals = evals
+        q.show_memory_usage()
 
     @q.timer(is_verbose=True)
     def save(self, path):
@@ -396,11 +398,13 @@ class EigSystemCompressedGPT(q.EigSystem):
     def load(self, path, *, total_site, fermion_params):
         fname = q.get_fname()
         q.displayln_info(0, f"{fname}: load '{path}'.")
+        q.show_memory_usage()
         grids = get_fgrid(total_site, fermion_params)
         (basis, cevec, evals,) = g.load(path, grids=grids)
         self.basis = basis
         self.cevec = cevec
         self.evals = evals
+        q.show_memory_usage()
 
     @q.timer(is_verbose=True)
     def save(self, path, *, nsingle, mpi):
