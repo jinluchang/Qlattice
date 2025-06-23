@@ -145,6 +145,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
+  qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   sp.init(psel, f.multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
@@ -169,6 +170,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("set_selected_points(sp,f,psel,m)");
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
+  qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   sp.init(psel, 1);
   set_zero(sp);  // has to set_zero for glb_sum_byte_vec
@@ -199,6 +201,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
     sp = sp0;
     return;
   }
+  qassert(psel.points_dist_type == psel0.points_dist_type);
   const Long n_points = psel.size();
   const Long n_points0 = psel0.size();
   const Int multiplicity = sp0.multiplicity;
