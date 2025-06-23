@@ -199,6 +199,7 @@ void mpi_alltoallv(
 
 int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
 {
+  TIMER("glb_sum(RealD)");
   qassert(recv.size() == send.size());
   return MPI_Allreduce((RealD*)send.data(), recv.data(), recv.size(),
                        MPI_DOUBLE, MPI_SUM, get_comm());
@@ -206,6 +207,7 @@ int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
 
 int glb_sum(Vector<RealF> recv, const Vector<RealF>& send)
 {
+  TIMER("glb_sum(RealF)");
   qassert(recv.size() == send.size());
   return MPI_Allreduce((RealF*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
                        MPI_SUM, get_comm());
@@ -213,6 +215,7 @@ int glb_sum(Vector<RealF> recv, const Vector<RealF>& send)
 
 int glb_sum(Vector<Long> recv, const Vector<Long>& send)
 {
+  TIMER("glb_sum(Long)");
   qassert(recv.size() == send.size());
   return MPI_Allreduce((Long*)send.data(), recv.data(), recv.size(),
                        MPI_INT64_T, MPI_SUM, get_comm());
@@ -220,6 +223,7 @@ int glb_sum(Vector<Long> recv, const Vector<Long>& send)
 
 int glb_sum(Vector<Int> recv, const Vector<Int>& send)
 {
+  TIMER("glb_sum(Int)");
   qassert(recv.size() == send.size());
   return MPI_Allreduce((Int*)send.data(), recv.data(), recv.size(), MPI_INT32_T,
                        MPI_SUM, get_comm());
@@ -228,6 +232,7 @@ int glb_sum(Vector<Int> recv, const Vector<Int>& send)
 int glb_sum(Vector<Char> recv, const Vector<Char>& send)
 // not SUM but BXOR
 {
+  TIMER("glb_sum(Char)");
   qassert(recv.size() == send.size());
   return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
                        MPI_BYTE, MPI_BXOR, get_comm());
@@ -236,6 +241,7 @@ int glb_sum(Vector<Char> recv, const Vector<Char>& send)
 int glb_sum(Vector<char> recv, const Vector<char>& send)
 // not SUM but BXOR
 {
+  TIMER("glb_sum(char)");
   qassert(recv.size() == send.size());
   return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
                        MPI_BYTE, MPI_BXOR, get_comm());

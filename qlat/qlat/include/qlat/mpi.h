@@ -161,11 +161,15 @@ int glb_sum(Vector<char> recv, const Vector<char>& send);
 template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
 int glb_sum(T& xx)
 {
+  TIMER("glb_sum(T&xx)");
   using E = typename IsDataVectorType<T>::ElementaryType;
   Vector<E> vec = get_data_in_elementary_type(xx);
   vector<E> tmp_vec(vec.size());
+  vector<E> tmp2_vec(vec.size());
   assign(tmp_vec, vec);
-  return glb_sum(vec, get_data(tmp_vec));
+  const int ret = glb_sum(get_data(tmp2_vec), get_data(tmp_vec));
+  assign(vec, tmp2_vec);
+  return ret;
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
