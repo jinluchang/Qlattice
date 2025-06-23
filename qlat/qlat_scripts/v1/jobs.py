@@ -186,7 +186,8 @@ def run_gt(job_tag, traj, get_gf):
 def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
     params = rup.dict_params[job_tag]
     n_exact = params["n_exact_wsrc"]
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
+    seed = q.get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
     inv_acc_e = 2
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -209,7 +210,8 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
 def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
     params = rup.dict_params[job_tag]
     prob = params["prob_exact_wsrc"]
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info_prob")
+    seed = q.get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_wall_src_info_prob")
     inv_acc_s = 1
     inv_acc_e = 2
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -308,7 +310,8 @@ def get_n_points_psel(job_tag):
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
+    seed = q.get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_psel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     n_points = get_n_points_psel(job_tag)
     psel = q.PointsSelection()
@@ -351,7 +354,8 @@ def mk_rand_point_src_info(job_tag, traj, psel):
     """
     pi is a list of [ idx xg inv_type inv_acc ]
     """
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_point_src_info")
+    seed = q.get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_point_src_info")
     xg_list = psel.xg_arr().tolist()
     assert len(xg_list) == get_n_points_pi(job_tag, traj, 0, 0)
     g_pi = [ [] for _ in xg_list ]
@@ -472,7 +476,8 @@ def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_p
 
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
+    seed = q.get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()
     fsel.set_rand(total_site, n_per_tslice, rs)
@@ -532,7 +537,8 @@ def run_fselc(job_tag, traj, get_fsel, get_psel):
 
 @q.timer
 def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel_smear")
+    seed = get_job_seed(job_tag)
+    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_fsel_smear")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()
     fsel.set_rand(total_site, n_per_tslice_smear, rs)
@@ -549,7 +555,38 @@ def run_psel_smear(job_tag, traj):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel-smear"):
-            n_per_tslice_smear = rup.dict_params[job_tag]["n_per_tslice_smear"]
+            n_per_tslice_smear = get_param(job_tag, "n_per_tslice_smear")
+            fsel = mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear)
+            psel = fsel.to_psel()
+            psel.save(get_save_path(tfn))
+            q.release_lock()
+        else:
+            return None
+    #
+    @q.lazy_call
+    @q.timer_verbose
+    def load_psel():
+        path_psel = get_load_path(tfn)
+        assert path_psel is not None
+        total_site = q.Coordinate(get_param(job_tag, "total_site"))
+        psel = q.PointsSelection()
+        psel.load(path_psel, q.Geometry(total_site))
+        return psel
+    return load_psel
+
+@q.timer_verbose
+def run_psel_smear_median(job_tag, traj):
+    """
+    return lambda : psel_smear_median
+    psel_smear should randomly select same number of point on each tslice
+    """
+    fname = q.get_fname()
+    tfn = f"{job_tag}/psel_smear_median/traj-{traj}.lati"
+    path_psel = get_load_path(tfn)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    if path_psel is None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+            n_per_tslice_smear = get_param(job_tag, "n_per_tslice_smear_median")
             fsel = mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear)
             psel = fsel.to_psel()
             psel.save(get_save_path(tfn))
