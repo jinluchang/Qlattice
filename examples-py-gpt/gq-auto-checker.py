@@ -253,7 +253,7 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     sample_num = get_param(job_tag, "measurement", "auto_contract_meson_corr_psnk_psrc_rand", "sample_num", default=128)
     sample_size = get_param(job_tag, "measurement", "auto_contract_meson_corr_psnk_psrc_rand", "sample_size", default=128)
-    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    rs = q.RngState(f"{get_job_seed(job_tag)}-{traj}-{fname}")
     mpi_chunk = q.get_mpi_chunk(list(range(sample_num)))
     def load_data():
         for idx in mpi_chunk:
@@ -616,7 +616,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     t_sep_range = get_param(job_tag, "measurement", fname,
                             "t_sep_range", default=17)
     t_sep_range = min(t_size, t_sep_range)
-    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    rs = q.RngState(f"{get_job_seed(job_tag)}-{traj}-{fname}")
     mpi_chunk = q.get_mpi_chunk(list(range(sample_num)))
     def load_data():
         for idx in mpi_chunk:
@@ -814,7 +814,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
                            "sample_num", default=512)
     sample_size = get_param(job_tag, "measurement", fname,
                             "sample_size", default=128)
-    rs = q.RngState(f"{job_tag}-{traj}-{fname}")
+    rs = q.RngState(f"{get_job_seed(job_tag)}-{traj}-{fname}")
     mpi_chunk = q.get_mpi_chunk(list(range(sample_num)))
     t_sep_range = get_param(job_tag, "measurement", fname,
                             "t_sep_range", default=17)

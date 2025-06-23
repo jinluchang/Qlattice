@@ -443,7 +443,7 @@ def run_hmc(job_tag):
     c1 = get_param(job_tag, "hmc", "c1")
     ga = q.GaugeAction(beta, c1)
     geo = q.Geometry(total_site)
-    rs = q.RngState(f"run_hmc-{job_tag}")
+    rs = q.RngState(f"run_hmc-{get_job_seed(job_tag)}")
     gf = q.GaugeField(geo)
     mf = FieldRealD(geo, 4)
     mf_dual = FieldRealD(geo, 4)

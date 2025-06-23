@@ -28,6 +28,7 @@ from qlat_scripts.v1 import (
         load_path_list,
         get_param,
         set_param,
+        get_job_seed,
         run_params,
         check_job,
         run_gf,
@@ -309,7 +310,7 @@ def get_param_charm_wall_src_tslice_list(job_tag, traj):
     num_charm_wall_src = get_param(job_tag, "measurement", "num_charm_wall_src")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    rs = q.RngState(f"{job_tag}-{traj}-get_param_charm_wall_src_tslice_list")
+    rs = q.RngState(f"{get_job_seed(job_tag)}-{traj}-get_param_charm_wall_src_tslice_list")
     t_start = rs.u_rand_gen() * t_size
     t_sep = t_size / num_charm_wall_src
     tslice_list = [ round(t_start + i * t_sep) % t_size for i in range(num_charm_wall_src) ]

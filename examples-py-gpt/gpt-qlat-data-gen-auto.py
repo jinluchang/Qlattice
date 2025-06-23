@@ -958,13 +958,9 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     n_points = len(xg_psel_arr)
     n_pairs = n_points * (n_points - 1) // 2 + n_points
     #
-    job_tag_rs = job_tag
-    if job_tag == "64I-pq":
-        job_tag_rs = "64I"
-    #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
     u_rand_prob = q.SelectedFieldRealD(fsel, 1)
-    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{job_tag_rs},{traj}"), 1.0, 0.0)
+    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{get_job_seed(job_tag)},{traj}"), 1.0, 0.0)
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
@@ -1212,13 +1208,9 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     total_site_arr = np.array(total_site.to_list())
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
-    job_tag_rs = job_tag
-    if job_tag == "64I-pq":
-        job_tag_rs = "64I"
-    #
     threshold = get_param(job_tag, "meson_jwjj_threshold")
     u_rand_prob = q.SelectedFieldRealD(fsel, 1)
-    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj2,{job_tag_rs},{traj}"), 1.0, 0.0)
+    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj2,{get_job_seed(job_tag)},{traj}"), 1.0, 0.0)
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
     fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:

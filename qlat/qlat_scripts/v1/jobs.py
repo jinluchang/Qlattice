@@ -1,6 +1,10 @@
 import qlat as q
 from . import rbc_ukqcd_params as rup
-from .rbc_ukqcd_params import set_param, get_param
+from .rbc_ukqcd_params import (
+        set_param,
+        get_param,
+        get_job_seed,
+        )
 
 import numpy as np
 
@@ -186,7 +190,7 @@ def run_gt(job_tag, traj, get_gf):
 def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
     params = rup.dict_params[job_tag]
     n_exact = params["n_exact_wsrc"]
-    seed = q.get_job_seed(job_tag)
+    seed = get_job_seed(job_tag)
     rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
     inv_acc_e = 2
@@ -210,7 +214,7 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
 def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
     params = rup.dict_params[job_tag]
     prob = params["prob_exact_wsrc"]
-    seed = q.get_job_seed(job_tag)
+    seed = get_job_seed(job_tag)
     rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_wall_src_info_prob")
     inv_acc_s = 1
     inv_acc_e = 2
@@ -310,7 +314,7 @@ def get_n_points_psel(job_tag):
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
-    seed = q.get_job_seed(job_tag)
+    seed = get_job_seed(job_tag)
     rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_psel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     n_points = get_n_points_psel(job_tag)
@@ -354,7 +358,7 @@ def mk_rand_point_src_info(job_tag, traj, psel):
     """
     pi is a list of [ idx xg inv_type inv_acc ]
     """
-    seed = q.get_job_seed(job_tag)
+    seed = get_job_seed(job_tag)
     rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_point_src_info")
     xg_list = psel.xg_arr().tolist()
     assert len(xg_list) == get_n_points_pi(job_tag, traj, 0, 0)
@@ -476,7 +480,7 @@ def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_p
 
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
-    seed = q.get_job_seed(job_tag)
+    seed = get_job_seed(job_tag)
     rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     fsel = q.FieldSelection()

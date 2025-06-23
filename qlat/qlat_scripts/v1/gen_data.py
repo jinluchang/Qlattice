@@ -4,14 +4,6 @@ from .jobs import *
 
 # -----------------------------------------------------------------------------
 
-def get_job_seed(job_tag):
-    seed = get_param(job_tag, "seed")
-    if seed is None:
-        return job_tag
-    return seed
-
-# -----------------------------------------------------------------------------
-
 @q.timer
 def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=None):
     if None in [ get_gf, ]:

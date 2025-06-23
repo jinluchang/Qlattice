@@ -28,6 +28,7 @@ from qlat_scripts.v1 import (
         load_path_list,
         get_param,
         set_param,
+        get_job_seed,
         get_load_path,
         get_save_path,
         check_job,
@@ -104,8 +105,8 @@ def run_prop_rand_vol_u1_src(
     prob_acc_2_rand_vol_u1 = get_param(job_tag, "prob_acc_2_rand_vol_u1")
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
-    rs_rand_u1 = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_vol_u1_src(rand_u1)")
-    rs_ama = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_rand_u1(ama)")
+    rs_rand_u1 = q.RngState(f"seed {get_job_seed(job_tag)} {traj}").split(f"compute_prop_rand_vol_u1_src(rand_u1)")
+    rs_ama = q.RngState(f"seed {get_job_seed(job_tag)} {traj}").split(f"compute_prop_rand_u1(ama)")
     @q.timer
     def compute_and_save(idx_rand_vol_u1, inv_acc):
         tag = f"idx_rand_vol_u1={idx_rand_vol_u1} ; type={inv_type} ; accuracy={inv_acc}"
@@ -183,7 +184,7 @@ def compute_prop_psrc_ref(
                 eig=eig)
     prob1 = get_param(job_tag, "prob_acc_1_psrc")
     prob2 = get_param(job_tag, "prob_acc_2_psrc")
-    rs = q.RngState(f"seed {job_tag} {traj}").split(f"compute_prop_psrc_all(ama)")
+    rs = q.RngState(f"seed {get_job_seed(job_tag)} {traj}").split(f"compute_prop_psrc_all(ama)")
     for idx, xg_src in enumerate(psel):
         for inv_acc in [ 0, 1, 2, ]:
             tag = mk_psrc_tag(xg_src, inv_type_ref, inv_acc)
