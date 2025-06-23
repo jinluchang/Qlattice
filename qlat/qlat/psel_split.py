@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class q:
     from qlat_utils import (
             timer,
