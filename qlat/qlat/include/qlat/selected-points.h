@@ -38,7 +38,7 @@ bool is_initialized(const SelectedPoints<M>& sp)
 template <class M>
 bool is_consistent(const SelectedPoints<M>& sp, const PointsSelection& psel)
 {
-  return sp.initialized and sp.n_points == (Long)psel.size();
+  return sp.initialized and sp.n_points == (Long)psel.size() and sp.points_dist_type == psel.points_dist_type;
 }
 
 template <class M>

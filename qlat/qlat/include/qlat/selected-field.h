@@ -313,6 +313,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   TIMER("set_selected_points(sp,sf,psel,fsel)");
   const Geometry& geo = sf.geo();
   qassert(is_consistent(sf, fsel));
+  qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   SelectedPoints<M> sp_tmp;
   sp_tmp.init(psel, sf.multiplicity);
