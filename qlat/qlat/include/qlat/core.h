@@ -384,9 +384,11 @@ template <class M>
 struct API SelectedPoints;
 
 enum struct PointsDistType {
-  Global,
-  Local,
-  Random, // shuffle based on coordinate
+  Global, // Default
+  Full, // Similar to Field
+  Local, // Similar to SelectedField
+  Random, // Shuffle based on coordinate
+  Other,
 };
 
 std::string show(const PointsDistType points_dist_type);
@@ -694,7 +696,7 @@ struct API Field {
     qassert(geo().is_only_local);
     SelectedPoints<M> f;
     f.initialized = initialized;
-    f.points_dist_type = PointsDistType::Local;
+    f.points_dist_type = PointsDistType::Full;
     f.multiplicity = multiplicity;
     f.n_points = geo().local_volume();
     f.points.set_view(field);

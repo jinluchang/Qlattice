@@ -31,7 +31,7 @@ cdef class PointsSelection:
         PointsSelection(total_site, n_points)
         PointsSelection(total_site, xg_arr, points_dist_type)
         #
-        points_dist_type in [ "g", "l", "r", ]
+        points_dist_type in [ "g", "f", "l", "r", "o", ]
         """
         cdef cc.Int len_args = len(args)
         cdef Coordinate total_site
@@ -93,7 +93,8 @@ cdef class PointsSelection:
     @property
     def points_dist_type(self):
         """
-        points_dist_type in [ "g", "l", "r", ]
+        points_dist_type in [ "g", "f", "l", "r", "o", ]
+        Meaning: Global, Full, Local, Random, Other
         """
         return cc.show(self.xx.points_dist_type)
 

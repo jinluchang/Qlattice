@@ -50,10 +50,14 @@ std::string show(const PointsDistType points_dist_type)
 {
   if (points_dist_type == PointsDistType::Global) {
     return "g";
+  } else if (points_dist_type == PointsDistType::Full) {
+    return "f";
   } else if (points_dist_type == PointsDistType::Local) {
     return "l";
   } else if (points_dist_type == PointsDistType::Random) {
     return "r";
+  } else if (points_dist_type == PointsDistType::Other) {
+    return "o";
   } else {
     qassert(false);
     return "";
@@ -64,10 +68,14 @@ PointsDistType read_points_dist_type(const std::string& points_dist_type_str)
 {
   if (points_dist_type_str == "g") {
     return PointsDistType::Global;
+  } else if (points_dist_type_str == "f") {
+    return PointsDistType::Full;
   } else if (points_dist_type_str == "l") {
     return PointsDistType::Local;
   } else if (points_dist_type_str == "r") {
     return PointsDistType::Random;
+  } else if (points_dist_type_str == "o") {
+    return PointsDistType::Other;
   } else {
     qassert(false);
     return PointsDistType::Global;
