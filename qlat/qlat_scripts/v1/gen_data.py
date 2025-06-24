@@ -1322,7 +1322,7 @@ def compute_prop_smear_all(job_tag, traj, *,
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer(is_timer_fork=True)
-def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
+def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear, get_psel_smear_median):
     fname = q.get_fname()
     if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, ]:
         return

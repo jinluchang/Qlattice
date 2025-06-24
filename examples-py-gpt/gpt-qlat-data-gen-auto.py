@@ -1878,7 +1878,7 @@ def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fs
 ### ------
 
 @q.timer_verbose
-def run_job(job_tag, traj):
+def run_job_inversion(job_tag, traj):
     #
     traj_gf = traj
     if job_tag[:5] == "test-":
@@ -1952,6 +1952,7 @@ def run_job(job_tag, traj):
     run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
     #
     get_psel_smear = run_psel_smear(job_tag, traj)
+    get_psel_smear_median = run_psel_smear_median(job_tag, traj)
     #
     def run_with_eig():
         get_eig = get_eig_light
@@ -1959,7 +1960,7 @@ def run_job(job_tag, traj):
         # run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
         run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
-        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
+        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
@@ -1968,7 +1969,7 @@ def run_job(job_tag, traj):
         # run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
         run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
-        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
+        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
         q.clean_cache(q.cache_inv)
     #
     def run_charm():
@@ -2030,6 +2031,7 @@ def run_job_contract(job_tag, traj):
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
     get_psel_smear = run_psel_smear(job_tag, traj)
+    get_psel_smear_median = run_psel_smear_median(job_tag, traj)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gf = get_gf,
@@ -2101,7 +2103,7 @@ set_param("test-4nt8", "traj_list")(list(range(1000, 1001)))
 set_param("test-4nt8", "meson_tensor_tsep")(1)
 set_param("test-4nt8", "meson_jwjj_threshold")(0.1)
 set_param("test-4nt8", "measurement", "auto_contractor_chunk_size")(2)
-
+set_param("test-4nt8", "n_per_tslice_smear_median")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "rand_n_step")(2)
 set_param("test-4nt8", "mk_sample_gauge_field", "flow_n_step")(8)
 set_param("test-4nt8", "mk_sample_gauge_field", "hmc_n_traj")(1)
@@ -2159,82 +2161,82 @@ set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
 
-job_tag = "test-4nt16-checker"
-
-set_param(job_tag, "traj_list")(list(range(1000, 1032)))
-
-set_param(job_tag, "total_site")([ 4, 4, 4, 16, ])
+job_tag = "test-4nt8-checker"
+#
+set_param(job_tag, "seed")("test-4nt8")
+set_param(job_tag, "traj_list")(list(range(1000, 1001)))
+#
+set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
-
+#
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
-set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
-
-set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'c': 0.5, })
-for inv_type in [ 1, 2, ]:
+set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(1)
+#
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", "charm-1", ])
+set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.2, ])
+set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], })
+for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
-set_param(job_tag, "fermion_params", 0, 0, "mass")(0.01)
-set_param(job_tag, "fermion_params", 1, 0, "mass")(0.04)
-set_param(job_tag, "fermion_params", 2, 0, "mass")(0.2)
-for inv_type in [ 0, 1, 2, ]:
-    for inv_acc in [ 1, 2, ]:
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
+    for inv_acc in [ 0, 1, 2, ]:
         set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
-
-set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(5)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
+#
+set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", 0, 0).copy())
+set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({"low": 0.5, "high": 5.5, "order": 40})
 set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ 'eps': 0.01, 'maxiter': 500, 'real': True, })
-set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
-
-for inv_type in [ 0, 1, ]:
-    set_param(job_tag, "lanc_params", inv_type, 0, "fermion_params")(get_param(job_tag, "fermion_params", inv_type, 0).copy())
-
+set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ "eps": 0.01, "maxiter": 500, "real": True })
+#
 set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
 set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
 set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
 set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
 set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
-set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 20})
+set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 10})
+#
 set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
-
-for inv_type in [ 0, 1, 2, ]:
-    set_param(job_tag, f"cg_params-{inv_type}-2", "maxiter")(500)
-    set_param(job_tag, f"cg_params-{inv_type}-2", "maxcycle")(50)
-
-set_param(job_tag, "m_l")(get_param(job_tag, "fermion_params", 0, 0, "mass"))
-set_param(job_tag, "m_h")(get_param(job_tag, "fermion_params", 1, 0, "mass"))
-
-set_param(job_tag, "meson_tensor_tsep")(3)
-
+set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
+set_param(job_tag, "lanc_params", 1, 0, "fermion_params")(get_param(job_tag, "fermion_params", 1, 0).copy())
+#
+set_param(job_tag, "m_l")(get_param(job_tag, "quark_mass_list")[0])
+set_param(job_tag, "m_h")(get_param(job_tag, "quark_mass_list")[1])
+#
+set_param(job_tag, "meson_tensor_tsep")(1)
+#
+set_param(job_tag, "field_selection_fsel_rate")(1 / 16)
+set_param(job_tag, "field_selection_psel_rate")(1 / 32)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(1e-3)
+#
+# set_param(job_tag, "prob_exact_wsrc")(1 / 8)
+set_param(job_tag, "n_exact_wsrc")(2)
+#
+set_param(job_tag, "prob_acc_1_psrc")(1 / 4)
+set_param(job_tag, "prob_acc_2_psrc")(1 / 16)
+#
+set_param(job_tag, "n_per_tslice_smear")(2)
+set_param(job_tag, "n_per_tslice_smear_median")(8)
 set_param(job_tag, "gf_ape_smear_coef")(0.5)
 set_param(job_tag, "gf_ape_smear_step")(30)
-
+set_param(job_tag, "prop_smear_coef")(0.9375)
+set_param(job_tag, "prop_smear_step")(10)
+set_param(job_tag, "prob_acc_1_smear")(1 / 4)
+set_param(job_tag, "prob_acc_2_smear")(1 / 16)
+#
+set_param(job_tag, "n_rand_u1_fsel")(4)
+set_param(job_tag, "prob_acc_1_rand_u1")(1 / 4)
+set_param(job_tag, "prob_acc_2_rand_u1")(1 / 16)
+#
+set_param(job_tag, "meson_jwjj_threshold")(0.1)
+#
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num")(32)
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size")(2)
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "t_sep_range")(6)
 set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_num")(32)
 set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "sample_size")(2)
 set_param(job_tag, "measurement", "auto_contract_meson_meson_i0_j0_corr_wf", "t_sep_range")(6)
-
-set_param(job_tag, "field_selection_fsel_rate")(20.0)
-set_param(job_tag, "field_selection_psel_rate")(10.0)
-set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(0.05)
-
-set_param(job_tag, "prob_exact_wsrc")(0.20)
-
-set_param(job_tag, "prob_acc_1_psrc")(0.25)
-set_param(job_tag, "prob_acc_2_psrc")(0.10)
-
-set_param(job_tag, "n_per_tslice_smear")(4)
-set_param(job_tag, "prop_smear_coef")(0.9375)
-set_param(job_tag, "prop_smear_step")(10)
-set_param(job_tag, "prob_acc_1_smear")(0.25)
-set_param(job_tag, "prob_acc_2_smear")(0.10)
-
-set_param(job_tag, "n_rand_u1_fsel")(16)
-set_param(job_tag, "prob_acc_1_rand_u1")(0.25)
-set_param(job_tag, "prob_acc_2_rand_u1")(0.10)
-
-set_param(job_tag, "meson_jwjj_threshold")(2.5)
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
 
 # ----
 
@@ -2259,7 +2261,8 @@ if __name__ == "__main__":
     #######################################################
 
     job_tag_list_default = [
-            "test-4nt8",
+            # "test-4nt8",
+            "test-4nt8-checker",
             ]
 
     if job_tag_list == [ "", ]:
@@ -2276,7 +2279,7 @@ if __name__ == "__main__":
         for traj in get_param(job_tag, "traj_list"):
             if is_performing_inversion:
                 q.check_time_limit()
-                run_job(job_tag, traj)
+                run_job_inversion(job_tag, traj)
                 if q.obtained_lock_history_list:
                     q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
                     if job_tag[:5] != "test-":
