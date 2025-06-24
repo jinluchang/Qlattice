@@ -629,7 +629,7 @@ def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
             prob = 1.0
         else:
             prob = (10.0 / np.sqrt(r_sq))**3
-    elif job_tag == "test-4nt8":
+    elif is_test_job_tag(job_tag):
         if r_sq > r_sq_limit:
             prob = 0.0
         elif r_sq == 0:
@@ -2615,10 +2615,83 @@ set_param(job_tag, "hlbl_two_plus_two_num_chunk")(8)
 
 # ----
 
+job_tag = "test-4nt8-checker"
+#
+set_param(job_tag, "seed")("test-4nt8")
+set_param(job_tag, "traj_list")([ 1000, 2000, ])
+#
+set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
+set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")([ 0.0, 0.0, 0.0, -0.5, ])
+#
+set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
+set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
+set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(1)
+#
+set_param(job_tag, "quark_flavor_list")([ "light", "strange", "charm-1", ])
+set_param(job_tag, "quark_mass_list")([ 0.01, 0.04, 0.2, ])
+set_param(job_tag, "fermion_params", 0, 0)({ 'Ls': 8, 'M5': 1.8, 'b': 1.5, 'c': 0.5, 'boundary_phases': [ 1.0, 1.0, 1.0, 1.0, ], })
+for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
+    set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
+    set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
+    for inv_acc in [ 0, 1, 2, ]:
+        # set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
+        set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
+#
+set_param(job_tag, "lanc_params", 0, 0, "fermion_params")(get_param(job_tag, "fermion_params", 0, 0).copy())
+set_param(job_tag, "lanc_params", 0, 0, "cheby_params")({ "low": 0.3, "high": 5.5, "order": 40, })
+set_param(job_tag, "lanc_params", 0, 0, "irl_params")({ "Nstop": 50, "Nk": 80, "Nm": 100, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ "eps": 0.01, "maxiter": 500, "real": True, })
+#
+# set_param(job_tag, "clanc_params", 0, 0, "nbasis")(100)
+# set_param(job_tag, "clanc_params", 0, 0, "block")([ 4, 4, 2, 2, ])
+# set_param(job_tag, "clanc_params", 0, 0, "cheby_params")({ "low": 0.5, "high": 5.5, "order": 40, })
+# set_param(job_tag, "clanc_params", 0, 0, "save_params")({ "nsingle": 100, "mpi": [ 1, 1, 1, 4, ], })
+# set_param(job_tag, "clanc_params", 0, 0, "irl_params")({ "Nstop": 100, "Nk": 150, "Nm": 200, "resid": 1e-8, "betastp": 0.0, "maxiter": 20, "Nminres": 0, })
+# set_param(job_tag, "clanc_params", 0, 0, "smoother_params")({'eps': 1e-08, 'maxiter': 10})
+#
+# set_param(job_tag, "clanc_params", 1, 0)(get_param(job_tag, "clanc_params", 0, 0).copy())
+# set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
+# set_param(job_tag, "lanc_params", 1, 0, "fermion_params")(get_param(job_tag, "fermion_params", 1, 0).copy())
+#
+set_param(job_tag, "field_selection_fsel_rate")(1 / 8)
+set_param(job_tag, "field_selection_psel_rate")(1 / 32)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(1e-3)
+#
+set_param(job_tag, "prob_exact_wsrc")(1 / 4)
+#
+set_param(job_tag, "prob_acc_1_psrc")(1 / 4)
+set_param(job_tag, "prob_acc_2_psrc")(1 / 16)
+#
+set_param(job_tag, "n_per_tslice_smear")(2)
+set_param(job_tag, "n_per_tslice_smear_median")(8)
+set_param(job_tag, "gf_ape_smear_coef")(0.5)
+set_param(job_tag, "gf_ape_smear_step")(30)
+set_param(job_tag, "prop_smear_coef")(0.9375)
+set_param(job_tag, "prop_smear_step")(10)
+set_param(job_tag, "prob_acc_1_smear")(1 / 4)
+set_param(job_tag, "prob_acc_2_smear")(1 / 16)
+#
+set_param(job_tag, "a_inv_gev")(1.73)
+set_param(job_tag, "zz_vv")(0.71)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/4)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/16)
+set_param(job_tag, "measurement", "psel_split_num_piece")(2)
+set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(4)
+set_param(job_tag, "hlbl_four_prob_scaling_factor")(1.0)
+set_param(job_tag, "hlbl_four_prob_scaling_factor_strange")(1.0)
+set_param(job_tag, "hlbl_four_num_chunk")(3)
+set_param(job_tag, "hlbl_four_contract_sparse_ratio")(2.0) # larger value means less computation
+set_param(job_tag, "hlbl_two_plus_two_num_hvp_sel_threshold")(5e-3)
+set_param(job_tag, "hlbl_two_plus_two_num_chunk")(3)
+
+# ----
+
 ##################### CMD options #####################
 
 job_tag_list_default = [
-        "test-4nt8",
+        "test-4nt8-checker",
+        # "test-4nt8",
         # "test-8nt16",
         # "24D",
         # "64I",

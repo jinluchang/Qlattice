@@ -153,9 +153,6 @@ CHECK: params: test-4nt8-checker:         }
 CHECK: params: test-4nt8-checker:       }
 CHECK: params: test-4nt8-checker:     }
 CHECK: params: test-4nt8-checker:   },
-CHECK: params: test-4nt8-checker:   "m_l": 0.01,
-CHECK: params: test-4nt8-checker:   "m_h": 0.04,
-CHECK: params: test-4nt8-checker:   "meson_tensor_tsep": 1,
 CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.125,
 CHECK: params: test-4nt8-checker:   "field_selection_psel_rate": 0.03125,
 CHECK: params: test-4nt8-checker:   "field_selection_fsel_psrc_prop_norm_threshold": 0.001,
@@ -173,6 +170,9 @@ CHECK: params: test-4nt8-checker:   "prob_acc_2_smear": 0.0625,
 CHECK: params: test-4nt8-checker:   "n_rand_u1_fsel": 4,
 CHECK: params: test-4nt8-checker:   "prob_acc_1_rand_u1": 0.25,
 CHECK: params: test-4nt8-checker:   "prob_acc_2_rand_u1": 0.0625,
+CHECK: params: test-4nt8-checker:   "m_l": 0.01,
+CHECK: params: test-4nt8-checker:   "m_h": 0.04,
+CHECK: params: test-4nt8-checker:   "meson_tensor_tsep": 1,
 CHECK: params: test-4nt8-checker:   "meson_jwjj_threshold": 0.1,
 CHECK: params: test-4nt8-checker:   "measurement": {
 CHECK: params: test-4nt8-checker:     "auto_contract_meson_corr_wf": {

@@ -2200,11 +2200,6 @@ set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ "eps": 0.01, "maxiter": 
 # set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
 # set_param(job_tag, "lanc_params", 1, 0, "fermion_params")(get_param(job_tag, "fermion_params", 1, 0).copy())
 #
-set_param(job_tag, "m_l")(get_param(job_tag, "quark_mass_list")[0])
-set_param(job_tag, "m_h")(get_param(job_tag, "quark_mass_list")[1])
-#
-set_param(job_tag, "meson_tensor_tsep")(1)
-#
 set_param(job_tag, "field_selection_fsel_rate")(1 / 8)
 set_param(job_tag, "field_selection_psel_rate")(1 / 32)
 set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(1e-3)
@@ -2226,6 +2221,11 @@ set_param(job_tag, "prob_acc_2_smear")(1 / 16)
 set_param(job_tag, "n_rand_u1_fsel")(4)
 set_param(job_tag, "prob_acc_1_rand_u1")(1 / 4)
 set_param(job_tag, "prob_acc_2_rand_u1")(1 / 16)
+#
+set_param(job_tag, "m_l")(get_param(job_tag, "quark_mass_list")[0])
+set_param(job_tag, "m_h")(get_param(job_tag, "quark_mass_list")[1])
+#
+set_param(job_tag, "meson_tensor_tsep")(1)
 #
 set_param(job_tag, "meson_jwjj_threshold")(0.1)
 #
