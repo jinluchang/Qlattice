@@ -270,6 +270,22 @@ cdef class PointsSelection:
         psel_new.xx = cc.intersect(fsel.xx, self.xx)
         return psel_new
 
+    def is_containing_psel(self, PointsSelection psel_small):
+        cdef cc.Bool x = cc.is_containing(self.xx, psel_small.xx)
+        return x
+
+    def is_containing_fsel(self, FieldSelection fsel_small):
+        cdef cc.Bool x = cc.is_containing(self.xx, fsel_small.xx)
+        return x
+
+    def is_containing(self, sel_small):
+        if isinstance(sel_small, PointsSelection):
+            return self.is_containing_psel(sel_small)
+        elif isinstance(sel_small, FieldSelection):
+            return self.is_containing_fsel(sel_small)
+        else:
+            raise Exception("PointsSelection: 'sel_small' not PointsSelection or FieldSelection sel_small={sel_small}")
+
     def crc32(self):
         return 0
 
@@ -437,8 +453,8 @@ cdef class FieldSelection:
         fsel_new.intersect_with(fsel)
         return fsel_new
 
-    def is_containing_psel(self, PointsSelection psel):
-        cdef cc.Bool x = cc.is_containing(self.xx, psel.xx)
+    def is_containing_psel(self, PointsSelection psel_small):
+        cdef cc.Bool x = cc.is_containing(self.xx, psel_small.xx)
         return x
 
     def is_containing_fsel(self, FieldSelection fsel_small):

@@ -2180,7 +2180,7 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
     set_param(job_tag, "fermion_params", inv_type, 0)(get_param(job_tag, "fermion_params", 0, 0).copy())
     set_param(job_tag, "fermion_params", inv_type, 0, "mass")(mass)
     for inv_acc in [ 0, 1, 2, ]:
-        set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
+        # set_param(job_tag, "fermion_params", inv_type, inv_acc)(get_param(job_tag, "fermion_params", inv_type, 0).copy())
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #

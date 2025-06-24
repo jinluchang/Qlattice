@@ -386,6 +386,85 @@ bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
   return is_same;
 }
 
+bool is_containing(const PointsSelection& psel,
+                   const FieldSelection& fsel_small)
+// local checking
+{
+  TIMER("is_containing(psel,fsel_small)");
+  const Geometry& geo = fsel_small.f_rank.geo();
+  const Long n_points0 = psel.size();
+  Long n_missing_points = 0;
+  Long idx_last = -1;
+  qfor(idx, fsel_small.indices.size(), {
+    const Long index = fsel_small.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    bool is_found = false;
+    for (Long i = 0; i < n_points0; ++i) {
+      idx_last += 1;
+      if (idx_last >= n_points0) {
+        idx_last = idx_last % n_points0;
+      }
+      const Coordinate& xg0 = psel[idx_last];
+      if (xg0 == xg) {
+        is_found = true;
+        break;
+      }
+    }
+    if (not is_found) {
+      n_missing_points += 1;
+      break;
+    }
+  });
+  glb_sum(n_missing_points);
+  if (n_missing_points == 0) {
+    return true;
+  } else {
+    qassert(n_missing_points > 0);
+    return false;
+  }
+}
+
+bool is_containing(const PointsSelection& psel,
+                   const PointsSelection& psel_small)
+// local checking
+{
+  TIMER("is_containing(psel,psel_small)");
+  if (psel.points_dist_type != psel_small.points_dist_type) {
+    return false;
+  }
+  const Long n_points = psel_small.size();
+  const Long n_points0 = psel.size();
+  Long n_missing_points = 0;
+  Long idx_last = -1;
+  qfor(idx, n_points, {
+    const Coordinate& xg = psel_small[idx];
+    bool is_found = false;
+    for (Long i = 0; i < n_points0; ++i) {
+      idx_last += 1;
+      if (idx_last >= n_points0) {
+        idx_last = idx_last % n_points0;
+      }
+      const Coordinate& xg0 = psel[idx_last];
+      if (xg0 == xg) {
+        is_found = true;
+        break;
+      }
+    }
+    if (not is_found) {
+      n_missing_points += 1;
+      break;
+    }
+  });
+  glb_sum(n_missing_points);
+  if (n_missing_points == 0) {
+    return true;
+  } else {
+    qassert(n_missing_points > 0);
+    return false;
+  }
+}
+
 bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small)
 // local checking
 {
@@ -404,15 +483,16 @@ bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small)
   return n_missing_points == 0;
 }
 
-bool is_containing(const FieldSelection& fsel, const PointsSelection& psel)
+bool is_containing(const FieldSelection& fsel,
+                   const PointsSelection& psel_small)
 // local checking
 {
-  TIMER("is_containing(fsel,psel)");
+  TIMER("is_containing(fsel,psel_small)");
   const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local);
   Long n_missing_points = 0;
-  qthread_for(i, (Long)psel.size(), {
-    const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
+  qthread_for(i, (Long)psel_small.size(), {
+    const Coordinate xl = geo.coordinate_l_from_g(psel_small[i]);
     if (geo.is_local(xl)) {
       const int64_t rank = fsel.f_rank.get_elem(xl);
       if (rank < 0) {

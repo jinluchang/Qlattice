@@ -58,10 +58,13 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2);
 
-bool is_containing(const FieldSelection& fsel,
-                   const FieldSelection& fsel_small);
+bool is_containing(const PointsSelection& psel, const FieldSelection& fsel_small);
 
-bool is_containing(const FieldSelection& fsel, const PointsSelection& psel);
+bool is_containing(const PointsSelection& psel, const PointsSelection& psel_small);
+
+bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small);
+
+bool is_containing(const FieldSelection& fsel, const PointsSelection& psel_small);
 
 void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1);
 

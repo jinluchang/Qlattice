@@ -216,7 +216,9 @@ cdef extern from "qlat/selected-field-io.h" namespace "qlat":
     PointsSelection psel_from_fsel_local(const FieldSelection& fsel) except +
     bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2) except +
     bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small) except +
-    bool is_containing(const FieldSelection& fsel, const PointsSelection& psel) except +
+    bool is_containing(const FieldSelection& fsel, const PointsSelection& psel_small) except +
+    bool is_containing(const PointsSelection& psel, const FieldSelection& fsel_small) except +
+    bool is_containing(const PointsSelection& psel, const PointsSelection& psel_small) except +
     void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1) except +
     PointsSelection intersect(const FieldSelection& fsel, const PointsSelection& psel) except +
 

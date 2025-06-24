@@ -1242,7 +1242,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
 # -----------------------------------------------------------------------------
 
 @q.timer_verbose
-def compute_prop_3(inv, src_smear, *, tag, sfw, qar_sp, psel, fsel, gt, psel_smear, smear):
+def compute_prop_3(inv, src_smear, *, tag, sfw, qar_sp, qar_spm, psel, fsel, gt, psel_smear, psel_smear_median, smear):
     sol = inv * src_smear
     sp_sol = q.PselProp(psel)
     sp_sol @= sol
@@ -1251,19 +1251,23 @@ def compute_prop_3(inv, src_smear, *, tag, sfw, qar_sp, psel, fsel, gt, psel_sme
     sol_ws = sol_gt.glb_sum_tslice()
     qar_sp.write(f"{tag} ; wsnk.lat", "", sol_ws.save_str(), skip_if_exist=True)
     sol_smear = smear(sol)
+    sol_smear_pselm = q.PselProp(psel_smear_median)
+    sol_smear_pselm @= sol_smear
     sol_smear_psel = q.PselProp(psel_smear)
     sol_smear_psel @= sol_smear
+    qar_spm.write(f"{tag} ; smear-snk ; psel_smear_median.lat", "", sol_smear_pselm.save_str(), skip_if_exist=True)
     qar_sp.write(f"{tag} ; smear-snk.lat", "", sol_smear_psel.save_str(), skip_if_exist=True)
     s_sol = q.SelProp(fsel)
     s_sol @= sol
-    s_sol.save_float_from_double(sfw, tag, skip_if_exist=True)
+    qar_spm.flush()
     qar_sp.flush()
+    s_sol.save_float_from_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
     return sol
 
 @q.timer
 def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
-        idx, gf, gt, sfw, qar_sp, psel, fsel, psel_smear, gf_ape, eig):
+        idx, gf, gt, sfw, qar_sp, qar_spm, psel, fsel, psel_smear, psel_smear_median, gf_ape, eig):
     xg = xg_src
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"smear ; xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
@@ -1271,6 +1275,7 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
         assert f"{tag}.lat" in qar_sp
         assert f"{tag} ; wsnk.lat" in qar_sp
         assert f"{tag} ; smear-snk.lat" in qar_sp
+        assert f"{tag} ; smear-snk ; psel_smear_median.lat" in qar_spm
         return None
     q.check_stop()
     q.check_time_limit()
@@ -1283,26 +1288,38 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     def smear(src):
         return q.prop_smear(src, gf_ape, coef, step)
     src = smear(q.mk_point_src(geo, xg_src))
-    prop = compute_prop_3(inv, src, tag=tag, sfw=sfw, qar_sp=qar_sp,
-                          psel=psel, fsel=fsel, gt=gt,
-                          psel_smear=psel_smear, smear=smear)
+    prop = compute_prop_3(
+            inv, src, tag=tag,
+            sfw=sfw, qar_sp=qar_sp, qar_spm=qar_spm,
+            psel=psel, fsel=fsel, gt=gt,
+            psel_smear=psel_smear, psel_smear_median=psel_smear_median,
+            smear=smear,
+            )
 
 @q.timer_verbose
-def compute_prop_smear_all(job_tag, traj, *,
-        inv_type, gf, gt, psel, fsel, psel_smear, gf_ape, eig,
+def compute_prop_smear_all(
+        job_tag, traj, *,
+        inv_type, gf, gt, gf_ape, eig,
+        psel, fsel, psel_smear, psel_smear_median,
         ):
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
     path_s = f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}"
     path_sp = f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}"
+    path_spm = f"{job_tag}/psel_smear_median-prop-smear-{inv_type_name}/traj-{traj}"
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
     qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
+    qar_spm = q.open_qar_info(get_save_path(path_spm + ".qar"), "a")
     def comp(idx, xg_src, inv_acc):
-        compute_prop_smear(job_tag, xg_src, inv_type, inv_acc,
-                idx=idx, gf=gf, gt=gt, sfw=sfw, qar_sp=qar_sp,
+        compute_prop_smear(
+                job_tag, xg_src, inv_type, inv_acc,
+                idx=idx,
+                gf=gf, gt=gt, gf_ape=gf_ape, eig=eig,
+                sfw=sfw, qar_sp=qar_sp, qar_spm=qar_spm,
                 psel=psel, fsel=fsel,
-                psel_smear=psel_smear, gf_ape=gf_ape,
-                eig=eig)
+                psel_smear=psel_smear,
+                psel_smear_median=psel_smear_median,
+                )
     prob1 = get_param(job_tag, "prob_acc_1_smear")
     prob2 = get_param(job_tag, "prob_acc_2_smear")
     seed = get_job_seed(job_tag)
@@ -1319,12 +1336,15 @@ def compute_prop_smear_all(job_tag, traj, *,
     qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
     qar_sp.flush()
     qar_sp.close()
+    qar_spm.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_spm.flush()
+    qar_spm.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer(is_timer_fork=True)
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear, get_psel_smear_median):
     fname = q.get_fname()
-    if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, ]:
+    if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, get_psel_smear, get_psel_smear_median, ]:
         return
     if get_eig is None:
         if inv_type == 0:
@@ -1333,6 +1353,8 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
     if get_load_path(f"{job_tag}/prop-smear-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
+        assert get_load_path(f"{job_tag}/psel-prop-smear-{inv_type_name}/traj-{traj}/checkpoint.txt") is not None
+        assert get_load_path(f"{job_tag}/psel_smear_median-prop-smear-{inv_type_name}/traj-{traj}/checkpoint.txt") is not None
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         gf = get_gf()
@@ -1342,10 +1364,14 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
         fsel = get_fsel()
         assert fsel.is_containing(psel)
         psel_smear = get_psel_smear()
+        psel_smear_median = get_psel_smear_median()
+        assert psel_smear_median.is_containing(psel_smear)
         gf_ape = get_gf_ape()
-        compute_prop_smear_all(job_tag, traj,
-                inv_type=inv_type, gf=gf, gf_ape=gf_ape, gt=gt,
-                psel=psel, fsel=fsel, eig=eig, psel_smear=psel_smear)
+        compute_prop_smear_all(
+                job_tag, traj,
+                inv_type=inv_type, gf=gf, gt=gt, gf_ape=gf_ape, eig=eig,
+                psel=psel, fsel=fsel, psel_smear=psel_smear, psel_smear_median=psel_smear_median,
+                )
         q.release_lock()
         return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
 
