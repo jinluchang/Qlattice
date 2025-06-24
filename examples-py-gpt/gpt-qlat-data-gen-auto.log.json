@@ -87,9 +87,6 @@
   0.01
  ],
  [
-  "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-gauge_fix_coulomb', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-run-eig', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-checker-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-checker-1000-run_f_rand_01', 'locks/test-4nt8-checker-1000-run_fsel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-checker-1000-psel-smear', 'locks/test-4nt8-checker-1000-run_psel_smear_median', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-light', 'locks/test-4nt8-checker-1000-run_prop_psrc-light', 'locks/test-4nt8-checker-1000-run_prop_smear-light', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-strange', 'locks/test-4nt8-checker-1000-run_prop_psrc-strange', 'locks/test-4nt8-checker-1000-run_prop_smear-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-charm']"
- ],
- [
   "auto_contract_meson_corr_psnk: ld sig",
   {
    "real": -7.353765869419939,
@@ -2820,15 +2817,15 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum sig",
   {
-   "real": 13.888897504934288,
-   "imag": 8.992823260364158e-06,
+   "real": 13.888897504934286,
+   "imag": 8.99282326036414e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc x] [con 0] >' sig",
   {
-   "real": 11.915775489853658,
+   "real": 11.915775489853655,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
@@ -2836,7 +2833,7 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc 0] [con x] >' sig",
   {
-   "real": 11.838486429077067,
+   "real": 11.838486429077072,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
@@ -2845,127 +2842,127 @@
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ls)' sig",
   {
    "real": 2.094467916256765e-05,
-   "imag": 7.73012833937013e-06,
+   "imag": 7.730128339370129e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ls)' sig",
   {
-   "real": -5.5768398340100765e-05,
-   "imag": 4.303530926106513e-07,
+   "real": -5.576839834010076e-05,
+   "imag": 4.303530926106458e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ls)' sig",
   {
-   "real": 3.4523059262808106e-06,
-   "imag": 8.818282195133305e-07,
+   "real": 3.4523059262808224e-06,
+   "imag": 8.818282195133292e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ls)' sig",
   {
-   "real": 5.9121120179018435e-05,
-   "imag": -2.5621815397656245e-06,
+   "real": 5.9121120179018455e-05,
+   "imag": -2.562181539765628e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole sl)' sig",
   {
-   "real": -2.094467916256771e-05,
-   "imag": 7.730128339370173e-06,
+   "real": -2.0944679162567702e-05,
+   "imag": 7.730128339370166e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole sl)' sig",
   {
-   "real": 5.576839834010072e-05,
-   "imag": 4.3035309261071735e-07,
+   "real": 5.576839834010073e-05,
+   "imag": 4.303530926107144e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole sl)' sig",
   {
-   "real": -3.4523059262808055e-06,
-   "imag": 8.818282195133373e-07,
+   "real": -3.452305926280814e-06,
+   "imag": 8.818282195133445e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole sl)' sig",
   {
-   "real": -5.912112017901845e-05,
-   "imag": -2.5621815397656177e-06,
+   "real": -5.9121120179018455e-05,
+   "imag": -2.5621815397656253e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ll)' sig",
   {
-   "real": -1.6137103969483178e-21,
-   "imag": 2.3861614347799435e-06,
+   "real": 3.0078252746587994e-22,
+   "imag": 2.3861614347799464e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ll)' sig",
   {
-   "real": 2.338948688057557e-21,
-   "imag": 6.746177755688656e-06,
+   "real": 3.559981920277977e-21,
+   "imag": 6.746177755688657e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ll)' sig",
   {
-   "real": -1.2907297773312965e-22,
-   "imag": 4.3893228322898135e-06,
+   "real": -2.2739261017808456e-22,
+   "imag": 4.389322832289811e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ll)' sig",
   {
-   "real": 6.1173291571591586e-21,
-   "imag": -1.0669925275307528e-05,
+   "real": 5.044938753436871e-21,
+   "imag": -1.0669925275307527e-05,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ss)' sig",
   {
-   "real": -4.0940910457093096e-21,
-   "imag": 1.0557051634532869e-05,
+   "real": -3.730279388250003e-21,
+   "imag": 1.0557051634532867e-05,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ss)' sig",
   {
-   "real": -5.2234412173823785e-21,
-   "imag": -6.789539002378783e-06,
+   "real": -5.876179392126525e-21,
+   "imag": -6.78953900237878e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ss)' sig",
   {
-   "real": -4.433236349296828e-22,
-   "imag": -2.478664560850287e-06,
+   "real": 9.05548764937287e-22,
+   "imag": -2.478664560850285e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ss)' sig",
   {
-   "real": -7.173239740869577e-22,
-   "imag": 6.208713516476919e-06,
+   "real": -3.4227706309354273e-22,
+   "imag": 6.2087135164769175e-06,
    "__extended_json_type__": "complex128"
   }
  ],
