@@ -154,8 +154,9 @@ CHECK: params: test-4nt8-checker:         }
 CHECK: params: test-4nt8-checker:       }
 CHECK: params: test-4nt8-checker:     }
 CHECK: params: test-4nt8-checker:   },
-CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.125,
 CHECK: params: test-4nt8-checker:   "field_selection_psel_rate": 0.03125,
+CHECK: params: test-4nt8-checker:   "field_selection_psel_rate_median": 0.0625,
+CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.125,
 CHECK: params: test-4nt8-checker:   "field_selection_fsel_psrc_prop_norm_threshold": 0.001,
 CHECK: params: test-4nt8-checker:   "prob_exact_wsrc": 0.25,
 CHECK: params: test-4nt8-checker:   "prob_acc_1_psrc": 0.25,
@@ -183,5 +184,5 @@ CHECK: params: test-4nt8-checker:   "hlbl_four_contract_sparse_ratio": 2.0,
 CHECK: params: test-4nt8-checker:   "hlbl_two_plus_two_num_hvp_sel_threshold": 0.005,
 CHECK: params: test-4nt8-checker:   "hlbl_two_plus_two_num_chunk": 3
 CHECK: params: test-4nt8-checker: }
-Qlat         100.154: WARNING: load_or_compute_muon_line_interpolation: 'huge-data-muon-line-interpolation-data' does not exist. Create a test sample data instead.
+Qlat          92.350: WARNING: load_or_compute_muon_line_interpolation: 'huge-data-muon-line-interpolation-data' does not exist. Create a test sample data instead.
 CHECK: finished successfully.

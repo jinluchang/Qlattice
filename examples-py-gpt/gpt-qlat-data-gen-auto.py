@@ -1879,12 +1879,15 @@ def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fs
 
 @q.timer_verbose
 def run_job_inversion(job_tag, traj):
+    fname = q.get_fname()
+    #
+    psel_split_num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
+    fsel_psel_split_num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
     #
     traj_gf = traj
-    if job_tag[:5] == "test-":
-        # ADJUST ME
+    #
+    if is_test_job_tag(job_tag):
         traj_gf = 1000
-        #
     #
     fns_produce = [
             f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
@@ -1898,16 +1901,21 @@ def run_job_inversion(job_tag, traj):
             #
             f"{job_tag}/field-rand-u1/traj-{traj}/checkpoint.txt",
             #
+            f"{job_tag}/points-selection-smear/traj-{traj}.lati",
+            f"{job_tag}/psel_smear_median/traj-{traj}.lati",
+            #
+            f"{job_tag}/points-selection-split/traj-{traj}/num-piece-{psel_split_num_piece}/checkpoint.txt",
+            f"{job_tag}/field-selection-split/traj-{traj}/num-piece-{fsel_psel_split_num_piece}/checkpoint.txt",
             ]
     for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[:2]:
         fns_produce += [
                 (f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}/geon-info.txt",),
-                (f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                (f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                (f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/checkpoint.txt",
+                (f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt.txt",),
+                f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
+                f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
+                f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",
                 ]
     for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list"))):
         fns_produce += [
@@ -1946,13 +1954,13 @@ def run_job_inversion(job_tag, traj):
     # fsel should contain in psel (for old format, fsel from file will be combined with psel)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_psel_prob_median = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight, tag="median")
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
+    get_psel_median = run_psel_from_psel_prob(get_psel_prob_median)
     #
-    num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
-    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
-    num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
-    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
+    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece)
+    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=fsel_psel_split_num_piece)
     #
     get_field_rand_u1_dict = run_field_rand_u1_dict(job_tag, traj)
     #
@@ -2209,8 +2217,9 @@ set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ "eps": 0.01, "maxiter": 
 # set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
 # set_param(job_tag, "lanc_params", 1, 0, "fermion_params")(get_param(job_tag, "fermion_params", 1, 0).copy())
 #
-set_param(job_tag, "field_selection_fsel_rate")(1 / 8)
 set_param(job_tag, "field_selection_psel_rate")(1 / 32)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
+set_param(job_tag, "field_selection_fsel_rate")(1 / 8)
 set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(1e-3)
 #
 set_param(job_tag, "prob_exact_wsrc")(1 / 4)

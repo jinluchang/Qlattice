@@ -1907,21 +1907,21 @@ def run_job_inversion(job_tag, traj):
                 (f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}/geon-info.txt",),
-                (f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                (f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                (f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/checkpoint.txt",
+                (f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt.txt",),
+                f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
+                f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
+                f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",
                 f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{quark_flavor}.field",
                 ]
     for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list"))):
         fns_produce += [
                 (f"{job_tag}/prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/geon-info.txt",),
-                (f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                f"{job_tag}/psel-prop-rand-u1-fsel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",
                 ]
     for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[2:]:
         fns_produce += [
                 (f"{job_tag}/prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}/geon-info.txt",),
-                (f"{job_tag}/psel-prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                f"{job_tag}/psel-prop-rand-u1-psel-sparse-{quark_flavor}/traj-{traj}/checkpoint.txt",
                 ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),

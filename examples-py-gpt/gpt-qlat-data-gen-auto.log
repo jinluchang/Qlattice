@@ -153,8 +153,9 @@ CHECK: params: test-4nt8-checker:         }
 CHECK: params: test-4nt8-checker:       }
 CHECK: params: test-4nt8-checker:     }
 CHECK: params: test-4nt8-checker:   },
-CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.125,
 CHECK: params: test-4nt8-checker:   "field_selection_psel_rate": 0.03125,
+CHECK: params: test-4nt8-checker:   "field_selection_psel_rate_median": 0.0625,
+CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.125,
 CHECK: params: test-4nt8-checker:   "field_selection_fsel_psrc_prop_norm_threshold": 0.001,
 CHECK: params: test-4nt8-checker:   "prob_exact_wsrc": 0.25,
 CHECK: params: test-4nt8-checker:   "prob_acc_1_psrc": 0.25,
