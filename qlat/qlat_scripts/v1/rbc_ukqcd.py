@@ -338,7 +338,7 @@ def mk_gpt_inverter(
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
         if n_grouped is None:
             if mpi_split is not None:
-                n_grouped = g.default.get_int("--grouped", 4)
+                n_grouped = g.default.get_int("--grouped", 12)
             else:
                 n_grouped = g.default.get_int("--grouped", 1)
     if n_grouped is None:

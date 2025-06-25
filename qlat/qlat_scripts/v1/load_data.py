@@ -654,19 +654,19 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
     """
     cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    quark_flavor_list = get_param(job_tag, "quark_flavor_list", default=[ "light", "strange", "charm", ])
     if flavor in [ "l", "u", "d", ]:
         flavor_inv_type = 0
-        flavor_tag = "light"
+        flavor_tag = quark_flavor_list[flavor_inv_type]
     elif flavor in [ "s", ]:
         flavor_inv_type = 1
-        flavor_tag = "strange"
+        flavor_tag = quark_flavor_list[flavor_inv_type]
     elif flavor in [ "c", ]:
         flavor_inv_type = 2
-        flavor_tag = "charm"
+        flavor_tag = quark_flavor_list[flavor_inv_type]
     else:
         assert False
     inv_type = flavor_inv_type
-    inv_acc = 2
     s_prop_avg = q.SelProp(fsel)
     q.set_zero(s_prop_avg)
     path_s = f"{job_tag}/prop-rand-u1-{flavor_tag}/traj-{traj}"

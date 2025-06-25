@@ -27,20 +27,24 @@ from qlat_scripts.v1 import (
         run_psel_from_psel_prob,
         run_fsel_from_fsel_prob,
         run_psel_smear,
+        run_psel_smear_median,
         run_r_list,
         run_f_rand_01,
+        run_field_rand_u1_dict,
         run_f_weight_load,
         run_f_weight_from_wsrc_prop_full,
         run_hvp_average,
         run_gf_ape,
         run_eig,
         run_eig_strange,
-        run_prop_wsrc_full,
         run_psel_split,
         run_fsel_split,
         run_fselc,
-        run_prop_wsrc_sparse,
         run_prop_psrc,
+        run_prop_wsrc_full,
+        run_prop_wsrc_sparse,
+        run_prop_sparse_rand_u1_src,
+        run_prop_smear,
         check_job,
         get_inv,
         mk_psrc_tag,
@@ -1866,226 +1870,12 @@ def run_auto_contraction(
 # ----
 
 @q.timer(is_timer_fork=True)
-def run_field_rand_u1_dict(
-        job_tag, traj,
-        ):
-    """
-    return get_field_rand_u1_dict
-    #
-    get_field_rand_u1_dict()["fsel-src"] => q.FieldComplexD
-    get_field_rand_u1_dict()["fsel-src-dag"] => q.FieldComplexD
-    get_field_rand_u1_dict()["psel-src"] => q.FieldComplexD
-    get_field_rand_u1_dict()["psel-src-dag"] => q.FieldComplexD
-    """
-    fname = q.get_fname()
-    path = f"{job_tag}/field-rand-u1/traj-{traj}"
-    @q.lazy_call
-    @q.timer_verbose
-    def get_field_rand_u1_dict():
-        d = dict()
-        for psel_list_type in [ "fsel", "psel" ]:
-            fn = get_load_path(f"{path}/{psel_list_type}-src.field")
-            fn_dag = get_load_path(f"{path}/{psel_list_type}-src-dag.field")
-            assert fn is not None
-            assert fn_dag is not None
-            f = q.FieldComplexD()
-            f_dag = q.FieldComplexD()
-            f.load_double(fn)
-            f_dag.load_double(fn_dag)
-            d[f"{psel_list_type}-src"] = f
-            d[f"{psel_list_type}-src-dag"] = f_dag
-        return d
-    ret = get_field_rand_u1_dict
-    if get_load_path(f"{path}/checkpoint.txt"):
-        return ret
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site)
-    seed = get_job_seed(job_tag)
-    rs_rand_u1 = q.RngState(f"seed {seed} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
-    for psel_list_type in [ "fsel", "psel" ]:
-        fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1.split(f"{psel_list_type}"))
-        fu1_dag = q.FieldComplexD(geo, 1)
-        fu1_dag[:] = fu1[:].conj()
-        fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
-        fu1_dag.save_double(get_save_path(f"{path}/{psel_list_type}-src-dag.field"))
-        if is_test_job_tag(job_tag):
-            q.json_results_append(f"{fname}: {psel_list_type} fu1", q.get_data_sig_arr(fu1, q.RngState(), 4), 1e-15)
-            q.json_results_append(f"{fname}: {psel_list_type} fu1_dag", q.get_data_sig_arr(fu1_dag, q.RngState(), 4), 1e-15)
-    q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
-    return ret
-
-@q.timer(is_timer_fork=True)
-def run_prop_sparse_rand_u1_src(
-        job_tag, traj,
-        *,
-        inv_type,
-        get_gf,
-        get_psel,
-        get_fsel,
-        get_field_rand_u1_dict,
-        get_psel_list=None,
-        get_fsel_psel_list=None,
-        get_eig=None,
-        ):
-    """
-    fsel should contain psel
-    Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
-    """
-    fname = q.get_fname()
-    if None in [ get_gf, get_psel, get_fsel, get_field_rand_u1_dict, ]:
-        return
-    if (get_psel_list is None) and (get_fsel_psel_list is None):
-        return None
-    if get_eig is None:
-        if inv_type == 0:
-            return None
-        else:
-            get_eig = lambda: None
-    if get_psel_list is not None:
-        assert get_fsel_psel_list is None
-        psel_list_type = "psel"
-    elif get_fsel_psel_list is not None:
-        psel_list_type = "fsel"
-    else:
-        assert False
-    quark_flavor_list = get_param(job_tag, "quark_flavor_list")
-    quark_flavor = quark_flavor_list[inv_type]
-    path_s = f"{job_tag}/prop-rand-u1-{psel_list_type}-sparse-{quark_flavor}/traj-{traj}"
-    path_sp = f"{job_tag}/psel-prop-rand-u1-{psel_list_type}-sparse-{quark_flavor}/traj-{traj}"
-    if get_load_path(path_s + "/geon-info.txt") is not None:
-        assert get_load_path(path_sp + "/checkpoint.txt") is not None
-        return
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{psel_list_type}-{quark_flavor}"):
-        return
-    gf = get_gf()
-    geo = gf.geo
-    fsel = get_fsel()
-    psel = get_psel()
-    field_rand_u1_dict = get_field_rand_u1_dict()
-    eig = get_eig()
-    if psel_list_type == "psel":
-        assert get_psel_list is not None
-        assert get_fsel_psel_list is None
-        psel_list = get_psel_list()
-        fu1 = field_rand_u1_dict["psel-src"]
-        fu1_dag = field_rand_u1_dict["psel-src-dag"]
-    elif psel_list_type == "fsel":
-        assert get_psel_list is None
-        assert get_fsel_psel_list is not None
-        psel_list = get_fsel_psel_list()
-        fu1 = field_rand_u1_dict["fsel-src"]
-        fu1_dag = field_rand_u1_dict["fsel-src-dag"]
-    else:
-        assert False
-    total_site = geo.total_site
-    gt = None
-    prob_acc_1_rand_sparse_u1 = get_param(job_tag, "prob_acc_1_rand_u1_sparse")
-    prob_acc_2_rand_sparse_u1 = get_param(job_tag, "prob_acc_2_rand_u1_sparse")
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", q.Coordinate([ 2, 2, 2, 4, ]))
-    qar_sp = q.open_qar_info(get_save_path(path_sp + ".qar"), "a")
-    fu1_from_sp = q.FieldComplexD(geo, 1)
-    seed = get_job_seed(job_tag)
-    rs_ama = q.RngState(f"seed {seed} {traj}").split(f"compute_prop_rand_u1(ama)")
-    @q.timer
-    def compute_and_save(idx_psel, is_dagger, inv_acc):
-        nonlocal fu1_from_sp
-        assert 0 <= idx_psel < len(psel_list)
-        assert is_dagger in [ 0, 1, ]
-        tag = f"idx_psel={idx_psel} ; is_dagger={is_dagger} ; type={inv_type} ; accuracy={inv_acc}"
-        if tag in sfw:
-            if q.get_id_node() == 0:
-                assert f"{tag} ; psel_rand_src.lati" in qar_sp
-                assert f"{tag} ; psel_rand_src ; fu1.lat" in qar_sp
-                assert f"{tag} ; psel_rand_src ; prop.lat" in qar_sp
-                assert f"{tag}.lat" in qar_sp
-            return
-        if q.get_id_node() == 0:
-            if f"{tag}.lat" in qar_sp:
-                q.displayln_info(-1, f"WARNING: {fname}: '{tag}.lat' already exist in {qar_sp.path()}")
-        if f"{tag} ; fu1" in sfw:
-            q.displayln_info(-1, f"WARNING: {fname}: '{tag} ; fu1' already exist in {sfw.path()}")
-        q.check_stop()
-        q.check_time_limit()
-        psel_rand_src = psel_list[idx_psel]
-        sp_fu1 = q.SelectedPointsComplexD(psel_rand_src, 1)
-        sp_fu1.set_zero()
-        if is_dagger == 0:
-            sp_fu1 @= fu1
-        elif is_dagger == 1:
-            sp_fu1 @= fu1_dag
-        else:
-            assert False
-        fu1_from_sp.set_zero()
-        fu1_from_sp @= sp_fu1
-        prop_src = q.mk_rand_vol_u1_src(fu1_from_sp)
-        inv = get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
-        prop_sol = inv * prop_src
-        s_prop = q.SelProp(fsel)
-        ps_prop = q.PselProp(psel)
-        ps_prop_prs = q.PselProp(psel_rand_src)
-        s_prop @= prop_sol
-        ps_prop @= prop_sol
-        ps_prop_prs @= prop_sol
-        qar_sp.write(f"{tag} ; psel_rand_src.lati", "", psel_rand_src.save_str(), skip_if_exist=True)
-        qar_sp.write(f"{tag} ; psel_rand_src ; fu1.lat", "", sp_fu1.save_str(), skip_if_exist=True)
-        qar_sp.write(f"{tag} ; psel_rand_src ; prop.lat", "", ps_prop_prs.save_str(), skip_if_exist=True)
-        qar_sp.write(f"{tag}.lat", "", ps_prop.save_str(), skip_if_exist=True)
-        qar_sp.flush()
-        s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
-        sfw.flush()
-    for idx_psel in range(len(psel_list)):
-        r = rs_ama.split(str(idx_psel)).u_rand_gen()
-        assert 0 <= r and r <= 1
-        for is_dagger in [ 0, 1, ]:
-            inv_acc = 0
-            compute_and_save(idx_psel, is_dagger, inv_acc)
-            if r <= prob_acc_1_rand_sparse_u1:
-                inv_acc = 1
-                compute_and_save(idx_psel, is_dagger, inv_acc)
-            if r <= prob_acc_2_rand_sparse_u1:
-                inv_acc = 2
-                compute_and_save(idx_psel, is_dagger, inv_acc)
-    sfw.close()
-    qar_sp.write("checkpoint.txt", "", "", skip_if_exist=True)
-    qar_sp.flush()
-    qar_sp.close()
-    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-    q.clean_cache(q.cache_inv)
-    if is_test_job_tag(job_tag):
-        q.json_results_append(f"{fname} {job_tag} {traj} inv_type={inv_type} psel_list_type={psel_list_type}")
-        sfr = q.open_fields(get_load_path(path_s), "r")
-        sfr_list = sfr.list()
-        q.json_results_append(f"{fname} sfr.list()={sfr_list}")
-        for tag in sfr_list:
-            s_prop = q.SelProp()
-            s_prop.load_double_from_float(sfr, tag)
-            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(s_prop, q.RngState(), 2), 1e-4)
-        sfr.close()
-        qar_sp = q.open_qar_info(get_load_path(path_sp + ".qar"), "r")
-        qar_sp_list = qar_sp.list()
-        qar_sp_list = q.get_comm().bcast(qar_sp_list)
-        q.json_results_append(f"{fname} qar_sp.list()={qar_sp_list}")
-        for tag in qar_sp_list:
-            if tag.endswith(".lati"):
-                ld = q.load_lat_data_int(get_load_path(f"{path_sp}/{tag}"))
-            elif tag.endswith(".lat"):
-                ld = q.load_lat_data(get_load_path(f"{path_sp}/{tag}"))
-            elif tag == "checkpoint.txt":
-                continue
-            else:
-                assert False
-            q.json_results_append(f"{fname} {tag}", q.get_data_sig_arr(ld, q.RngState(), 2), 1e-4)
-        qar_sp.close()
-    q.release_lock()
-    return [ f"{fname} {job_tag} {traj} {inv_type} done", ]
-
-# ----
-
-@q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
     #
     is_performing_saving_full_prop = get_param(job_tag, "is_performing_saving_full_prop", default=True)
+    psel_split_num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
+    fsel_psel_split_num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
     #
     traj_gf = traj
     is_only_load_eig = True
@@ -2105,16 +1895,22 @@ def run_job_inversion(job_tag, traj):
             f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
             #
             f"{job_tag}/field-rand-u1/traj-{traj}/checkpoint.txt",
+            #
+            f"{job_tag}/points-selection-smear/traj-{traj}.lati",
+            f"{job_tag}/psel_smear_median/traj-{traj}.lati",
+            #
+            f"{job_tag}/points-selection-split/traj-{traj}/num-piece-{psel_split_num_piece}/checkpoint.txt",
+            f"{job_tag}/field-selection-split/traj-{traj}/num-piece-{fsel_psel_split_num_piece}/checkpoint.txt",
             ]
     for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[:2]:
         fns_produce += [
                 (f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
-                # (f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}/geon-info.txt",),
-                # (f"{job_tag}/prop-rand-u1-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}/geon-info.txt",),
                 (f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
                 (f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
-                # (f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                (f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/checkpoint.txt",
                 f"{job_tag}/hvp-average/traj-{traj}/hvp_average_{quark_flavor}.field",
                 ]
     for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list"))):
@@ -2129,12 +1925,6 @@ def run_job_inversion(job_tag, traj):
                 ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
-            # f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
-            # f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
-            # f"{job_tag}/points-selection/traj-{traj}.lati",
-            # f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
             ]
     if not is_performing_saving_full_prop:
         fns_need += [
@@ -2149,8 +1939,8 @@ def run_job_inversion(job_tag, traj):
     has_eig = get_load_path(f"{job_tag}/eig/traj-{traj}/metadata.txt") is not None
     #
     if is_test_job_tag(job_tag):
-        has_eig = True
         fns_need = []
+        has_eig = True
     #
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -2194,22 +1984,22 @@ def run_job_inversion(job_tag, traj):
     #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
+    # fsel should contain in psel (for old format, fsel from file will be combined with psel)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
-    num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
-    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
-    num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
-    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
+    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece)
+    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=fsel_psel_split_num_piece)
     #
     get_field_rand_u1_dict = run_field_rand_u1_dict(job_tag, traj)
     #
+    get_psel_smear = run_psel_smear(job_tag, traj)
+    get_psel_smear_median = run_psel_smear_median(job_tag, traj)
+    #
     if get_fsel is None:
         return
-    #
-    get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
     #
     if has_eig:
         get_eig = get_eig_light
@@ -2219,39 +2009,31 @@ def run_job_inversion(job_tag, traj):
     v = run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
     add_to_run_ret_list(v)
     #
-    get_psel_smear = run_psel_smear(job_tag, traj)
-    #
     def run_with_eig():
         if has_eig:
             get_eig = get_eig_light
             # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
-            # v = run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-            # add_to_run_ret_list(v)
             v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=0, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
             add_to_run_ret_list(v)
-            v = run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
+            v = run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
             add_to_run_ret_list(v)
-            # v = run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
-            # add_to_run_ret_list(v)
+            v = run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
+            add_to_run_ret_list(v)
             q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = get_eig_strange
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
-        # v = run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        # add_to_run_ret_list(v)
         v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=1, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
         add_to_run_ret_list(v)
-        v = run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
+        v = run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
         add_to_run_ret_list(v)
-        # v = run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear)
-        # add_to_run_ret_list(v)
+        v = run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
+        add_to_run_ret_list(v)
         q.clean_cache(q.cache_inv)
     #
     def run_charm():
         # run_get_inverter(job_tag, traj, inv_type=2, get_gf=get_gf)
-        # v = run_prop_rand_u1(job_tag, traj, inv_type=2, get_gf=get_gf, get_fsel=get_fsel)
-        # add_to_run_ret_list(v)
         for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[2:]:
             v = run_prop_sparse_rand_u1_src(job_tag, traj, inv_type=inv_type, get_gf=get_gf, get_psel=get_psel, get_fsel=get_fsel, get_field_rand_u1_dict=get_field_rand_u1_dict, get_psel_list=None, get_fsel_psel_list=get_fsel_psel_list, get_eig=get_eig)
             add_to_run_ret_list(v)
@@ -2672,12 +2454,13 @@ set_param(job_tag, "prop_smear_step")(10)
 set_param(job_tag, "prob_acc_1_smear")(1 / 4)
 set_param(job_tag, "prob_acc_2_smear")(1 / 16)
 #
-set_param(job_tag, "a_inv_gev")(1.73)
-set_param(job_tag, "zz_vv")(0.71)
-set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/4)
-set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/16)
 set_param(job_tag, "measurement", "psel_split_num_piece")(2)
 set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(4)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/4)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/16)
+#
+set_param(job_tag, "a_inv_gev")(1.73)
+set_param(job_tag, "zz_vv")(0.71)
 set_param(job_tag, "hlbl_four_prob_scaling_factor")(1.0)
 set_param(job_tag, "hlbl_four_prob_scaling_factor_strange")(1.0)
 set_param(job_tag, "hlbl_four_num_chunk")(3)

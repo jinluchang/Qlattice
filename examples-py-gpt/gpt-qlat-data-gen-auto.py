@@ -1887,33 +1887,37 @@ def run_job_inversion(job_tag, traj):
         #
     #
     fns_produce = [
-            (f"{job_tag}/prop-rand-u1-light/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/prop-rand-u1-strange/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/prop-rand-u1-charm/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",),
+            f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
+            f"{job_tag}/points-selection/traj-{traj}.lati",
+            f"{job_tag}/field-selection/traj-{traj}.field",
             #
-            (f"{job_tag}/prop-psrc-light/traj-{traj}.qar", f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-psrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-psrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",),
+            f"{job_tag}/field-selection-weight/traj-{traj}/weight.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/f-rand-01.field",
+            f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield",
+            f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat",
             #
-            (f"{job_tag}/prop-smear-light/traj-{traj}.qar", f"{job_tag}/prop-smear-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-smear-strange/traj-{traj}.qar", f"{job_tag}/prop-smear-strange/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
+            f"{job_tag}/field-rand-u1/traj-{traj}/checkpoint.txt",
             #
-            (f"{job_tag}/prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-wsrc-light/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",),
-            (f"{job_tag}/prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",),
-            (f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",),
             ]
+    for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[:2]:
+        fns_produce += [
+                (f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-psrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-wsrc-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-smear-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                (f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                (f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                (f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-{quark_flavor}/traj-{traj}/checkpoint.txt",),
+                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/checkpoint.txt",
+                ]
+    for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list"))):
+        fns_produce += [
+                (f"{job_tag}/prop-rand-u1-{quark_flavor}/traj-{traj}.qar", f"{job_tag}/prop-rand-u1-{quark_flavor}/traj-{traj}/geon-info.txt",),
+                ]
     fns_need = [
-            # f"{job_tag}/gauge-transform/traj-{traj}.field",
-            # f"{job_tag}/points-selection/traj-{traj}.lati",
-            # f"{job_tag}/field-selection/traj-{traj}.field",
-            # f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
-            # f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
-            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
+    if is_test_job_tag(job_tag):
+        fns_need = []
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
@@ -1939,42 +1943,47 @@ def run_job_inversion(job_tag, traj):
     #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
+    # fsel should contain in psel (for old format, fsel from file will be combined with psel)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
-    get_fselc = run_fselc(job_tag, traj, get_fsel, get_psel)
+    num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
+    get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
+    num_piece = get_param(job_tag, "measurement", "fsel_psel_split_num_piece")
+    get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
+    #
+    get_field_rand_u1_dict = run_field_rand_u1_dict(job_tag, traj)
+    #
+    get_psel_smear = run_psel_smear(job_tag, traj)
+    get_psel_smear_median = run_psel_smear_median(job_tag, traj)
     #
     get_eig = get_eig_light
     run_prop_wsrc_sparse(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
     get_eig = get_eig_strange
     run_prop_wsrc_sparse(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_wi=get_wi)
     #
-    get_psel_smear = run_psel_smear(job_tag, traj)
-    get_psel_smear_median = run_psel_smear_median(job_tag, traj)
-    #
     def run_with_eig():
         get_eig = get_eig_light
         # run_get_inverter(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig)
-        # run_prop_wsrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=0, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
-        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
+        run_prop_psrc(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
+        run_prop_smear(job_tag, traj, inv_type=0, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
         q.clean_cache(q.cache_inv)
     #
     def run_with_eig_strange():
         get_eig = get_eig_strange
         # run_get_inverter(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig)
-        # run_prop_wsrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_wi=get_wi)
         run_prop_rand_u1(job_tag, traj, inv_type=1, get_gf=get_gf, get_fsel=get_fsel, get_eig=get_eig)
-        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_f_rand_01=get_f_rand_01)
-        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fselc, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
+        run_prop_psrc(job_tag, traj, inv_type=1, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_f_rand_01=get_f_rand_01)
+        run_prop_smear(job_tag, traj, inv_type=1, get_gf=get_gf, get_gf_ape=get_gf_ape, get_eig=get_eig, get_gt=get_gt, get_psel=get_psel, get_fsel=get_fsel, get_psel_smear=get_psel_smear, get_psel_smear_median=get_psel_smear_median)
         q.clean_cache(q.cache_inv)
     #
     def run_charm():
         # run_get_inverter(job_tag, traj, inv_type=2, get_gf=get_gf)
-        run_prop_rand_u1(job_tag, traj, inv_type=2, get_gf=get_gf, get_fsel=get_fsel)
+        for inv_type, quark_flavor in list(enumerate(get_param(job_tag, "quark_flavor_list")))[2:]:
+            run_prop_rand_u1(job_tag, traj, inv_type=inv_type, get_gf=get_gf, get_fsel=get_fsel)
         q.clean_cache(q.cache_inv)
     #
     run_with_eig()
@@ -2217,6 +2226,11 @@ set_param(job_tag, "prop_smear_coef")(0.9375)
 set_param(job_tag, "prop_smear_step")(10)
 set_param(job_tag, "prob_acc_1_smear")(1 / 4)
 set_param(job_tag, "prob_acc_2_smear")(1 / 16)
+#
+set_param(job_tag, "measurement", "psel_split_num_piece")(2)
+set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(4)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/4)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/16)
 #
 set_param(job_tag, "n_rand_u1_fsel")(4)
 set_param(job_tag, "prob_acc_1_rand_u1")(1 / 4)

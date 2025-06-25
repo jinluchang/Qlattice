@@ -167,14 +167,9 @@ CHECK: params: test-4nt8-checker:   "prop_smear_coef": 0.9375,
 CHECK: params: test-4nt8-checker:   "prop_smear_step": 10,
 CHECK: params: test-4nt8-checker:   "prob_acc_1_smear": 0.25,
 CHECK: params: test-4nt8-checker:   "prob_acc_2_smear": 0.0625,
-CHECK: params: test-4nt8-checker:   "n_rand_u1_fsel": 4,
-CHECK: params: test-4nt8-checker:   "prob_acc_1_rand_u1": 0.25,
-CHECK: params: test-4nt8-checker:   "prob_acc_2_rand_u1": 0.0625,
-CHECK: params: test-4nt8-checker:   "m_l": 0.01,
-CHECK: params: test-4nt8-checker:   "m_h": 0.04,
-CHECK: params: test-4nt8-checker:   "meson_tensor_tsep": 1,
-CHECK: params: test-4nt8-checker:   "meson_jwjj_threshold": 0.1,
 CHECK: params: test-4nt8-checker:   "measurement": {
+CHECK: params: test-4nt8-checker:     "psel_split_num_piece": 2,
+CHECK: params: test-4nt8-checker:     "fsel_psel_split_num_piece": 4,
 CHECK: params: test-4nt8-checker:     "auto_contract_meson_corr_wf": {
 CHECK: params: test-4nt8-checker:       "sample_num": 32,
 CHECK: params: test-4nt8-checker:       "sample_size": 2,
@@ -186,6 +181,15 @@ CHECK: params: test-4nt8-checker:       "sample_size": 2,
 CHECK: params: test-4nt8-checker:       "t_sep_range": 6
 CHECK: params: test-4nt8-checker:     },
 CHECK: params: test-4nt8-checker:     "auto_contractor_chunk_size": 2
-CHECK: params: test-4nt8-checker:   }
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "prob_acc_1_rand_u1_sparse": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_2_rand_u1_sparse": 0.0625,
+CHECK: params: test-4nt8-checker:   "n_rand_u1_fsel": 4,
+CHECK: params: test-4nt8-checker:   "prob_acc_1_rand_u1": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_2_rand_u1": 0.0625,
+CHECK: params: test-4nt8-checker:   "m_l": 0.01,
+CHECK: params: test-4nt8-checker:   "m_h": 0.04,
+CHECK: params: test-4nt8-checker:   "meson_tensor_tsep": 1,
+CHECK: params: test-4nt8-checker:   "meson_jwjj_threshold": 0.1
 CHECK: params: test-4nt8-checker: }
 CHECK: finished successfully.
