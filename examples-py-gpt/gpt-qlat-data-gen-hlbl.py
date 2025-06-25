@@ -1987,8 +1987,10 @@ def run_job_inversion(job_tag, traj):
     # fsel should contain in psel (for old format, fsel from file will be combined with psel)
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_psel_prob = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
+    get_psel_prob_median = run_psel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight, tag="median")
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
+    get_psel_median = run_psel_from_psel_prob(get_psel_prob_median)
     #
     get_psel_list = run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece)
     get_fsel_psel_list = run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=fsel_psel_split_num_piece)
@@ -2358,11 +2360,28 @@ for inv_type, mass in list(enumerate(get_param(job_tag, "quark_mass_list")))[2:]
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(inv_acc + 1)
     inv_acc = 2
     set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(50)
+#
 set_param(job_tag, "is_performing_auto_contraction")(False)
-set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/32)
-set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/128)
+#
+set_param(job_tag, "field_selection_psel_rate")(2048/(64**3*128))
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 512)
+set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(2e-5)
+#
 set_param(job_tag, "measurement", "psel_split_num_piece")(256)
 set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(256)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1 / 32)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1 / 128)
+#
+set_param(job_tag, "n_per_tslice_smear")(16)
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "gf_ape_smear_coef")(0.5)
+set_param(job_tag, "gf_ape_smear_step")(30)
+set_param(job_tag, "prop_smear_coef")(0.9375)
+set_param(job_tag, "prop_smear_step")(54)
+set_param(job_tag, "prob_acc_1_smear")(1 / 32)
+set_param(job_tag, "prob_acc_2_smear")(1 / 128)
+#
 set_param(job_tag, "hlbl_four_prob_scaling_factor")(1.0)
 set_param(job_tag, "hlbl_four_prob_scaling_factor_strange")(1.0)
 set_param(job_tag, "hlbl_four_num_chunk")(2048)
@@ -2381,13 +2400,30 @@ set_param(job_tag, "cg_params-0-2", "maxiter")(100)
 set_param(job_tag, "cg_params-0-0", "maxcycle")(4)
 set_param(job_tag, "cg_params-0-1", "maxcycle")(8)
 set_param(job_tag, "cg_params-0-2", "maxcycle")(150)
+#
+set_param(job_tag, "is_performing_auto_contraction")(False)
 set_param(job_tag, "is_performing_inversion_if_no_full_prop_available")(True)
 set_param(job_tag, "is_performing_saving_full_prop")(False)
-set_param(job_tag, "is_performing_auto_contraction")(False)
-set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/32)
-set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/128)
+#
+set_param(job_tag, "field_selection_psel_rate")(2048/(64**3*128))
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 512)
+set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(2e-5)
+#
 set_param(job_tag, "measurement", "psel_split_num_piece")(256)
 set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(256)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/32)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/128)
+#
+set_param(job_tag, "n_per_tslice_smear")(16)
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "gf_ape_smear_coef")(0.5)
+set_param(job_tag, "gf_ape_smear_step")(30)
+set_param(job_tag, "prop_smear_coef")(0.9375)
+set_param(job_tag, "prop_smear_step")(54)
+set_param(job_tag, "prob_acc_1_smear")(1 / 32)
+set_param(job_tag, "prob_acc_2_smear")(1 / 128)
+#
 set_param(job_tag, "hlbl_four_prob_scaling_factor")(1.0)
 set_param(job_tag, "hlbl_four_prob_scaling_factor_strange")(1.0)
 set_param(job_tag, "hlbl_four_num_chunk")(2048)
@@ -2436,8 +2472,9 @@ set_param(job_tag, "lanc_params", 0, 0, "pit_params")({ "eps": 0.01, "maxiter": 
 # set_param(job_tag, "lanc_params", 1, 0)(get_param(job_tag, "lanc_params", 0, 0).copy())
 # set_param(job_tag, "lanc_params", 1, 0, "fermion_params")(get_param(job_tag, "fermion_params", 1, 0).copy())
 #
-set_param(job_tag, "field_selection_fsel_rate")(1 / 8)
 set_param(job_tag, "field_selection_psel_rate")(1 / 32)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
+set_param(job_tag, "field_selection_fsel_rate")(1 / 8)
 set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(1e-3)
 #
 set_param(job_tag, "prob_exact_wsrc")(1 / 4)

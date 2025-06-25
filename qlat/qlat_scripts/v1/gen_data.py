@@ -798,7 +798,7 @@ def run_prop_wsrc_sparse(
         inv_type, get_gf, get_gt, get_eig, get_psel, get_fsel, get_wi,
         ):
     fname = q.get_fname()
-    if None in [ get_gt, get_psel, get_fsel, ]:
+    if None in [ get_gt, get_psel, get_fsel, get_wi, ]:
         return
     inv_type_name_list = [ "light", "strange", ]
     inv_type_name = inv_type_name_list[inv_type]
