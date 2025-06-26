@@ -24,21 +24,25 @@ struct SelectedShufflePlan {
   void init();
 };
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const PointsSelection& psel, const RngState& rs);
+void set_selected_shuffle_plan(
+    SelectedShufflePlan& ssp,
+    const PointsSelection& psel, const RngState& rs);
 
-void shuffle_selected_points_char(SelectedPoints<Char>& spc,
-                                  const SelectedPoints<Char>& spc0,
-                                  const SelectedShufflePlan& ssp);
+void shuffle_selected_points_char(
+    SelectedPoints<Char>& spc,
+    const SelectedPoints<Char>& spc0,
+    const SelectedShufflePlan& ssp);
 
-void shuffle_points_selection(PointsSelection& psel,
-                              const PointsSelection& psel0,
-                              const SelectedShufflePlan& ssp);
+void shuffle_points_selection(
+    PointsSelection& psel,
+    const PointsSelection& psel0,
+    const SelectedShufflePlan& ssp);
 
 template <class M>
-void shuffle_selected_points(SelectedPoints<M>& sp,
-                             const SelectedPoints<M>& sp0,
-                             const SelectedShufflePlan& ssp)
+void shuffle_selected_points(
+    SelectedPoints<M>& sp,
+    const SelectedPoints<M>& sp0,
+    const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_points(sp,sp0,ssp)");
   const Long n_points = ssp.total_recv_count;
@@ -51,12 +55,14 @@ void shuffle_selected_points(SelectedPoints<M>& sp,
 
 // -------------------
 
-void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0,
-                             const SelectedShufflePlan& ssp);
+void shuffle_field_selection(
+    PointsSelection& psel, const FieldSelection& fsel0,
+    const SelectedShufflePlan& ssp);
 
 template <class M>
-void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf0,
-                            const SelectedShufflePlan& ssp)
+void shuffle_selected_field(
+    SelectedPoints<M>& sp, const SelectedField<M>& sf0,
+    const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_field(sp,sf0,ssp)");
   const Long n_points = ssp.total_recv_count;
