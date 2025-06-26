@@ -26,7 +26,8 @@ struct SelectedShufflePlan {
 
 void set_selected_shuffle_plan(
     SelectedShufflePlan& ssp,
-    const PointsSelection& psel, const RngState& rs);
+    const PointsSelection& psel,
+    const RngState& rs);
 
 void shuffle_selected_points_char(
     SelectedPoints<Char>& spc,
@@ -56,12 +57,14 @@ void shuffle_selected_points(
 // -------------------
 
 void shuffle_field_selection(
-    PointsSelection& psel, const FieldSelection& fsel0,
+    PointsSelection& psel,
+    const FieldSelection& fsel0,
     const SelectedShufflePlan& ssp);
 
 template <class M>
 void shuffle_selected_field(
-    SelectedPoints<M>& sp, const SelectedField<M>& sf0,
+    SelectedPoints<M>& sp,
+    const SelectedField<M>& sf0,
     const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_field(sp,sf0,ssp)");
