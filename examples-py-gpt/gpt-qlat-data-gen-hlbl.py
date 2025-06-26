@@ -2412,8 +2412,8 @@ set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(2e-5)
 #
 set_param(job_tag, "measurement", "psel_split_num_piece")(256)
 set_param(job_tag, "measurement", "fsel_psel_split_num_piece")(256)
-set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1/32)
-set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1/128)
+set_param(job_tag, "prob_acc_1_rand_u1_sparse")(1 / 32)
+set_param(job_tag, "prob_acc_2_rand_u1_sparse")(1 / 128)
 #
 set_param(job_tag, "n_per_tslice_smear")(16)
 set_param(job_tag, "n_per_tslice_smear_median")(512)
