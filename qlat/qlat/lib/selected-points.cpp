@@ -101,7 +101,8 @@ void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel)
   }
 }
 
-void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type)
+void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld,
+                                    const PointsDistType points_dist_type)
 {
   TIMER("points_selection_from_lat_data");
   qassert(ld.info.size() == 2);
@@ -151,8 +152,8 @@ void save_points_selection(const PointsSelection& psel, const std::string& path)
   qassert(psel.points_dist_type == PointsDistType::Global);
   if (ends_with(path, ".txt")) {
     qwarn(fname + ssprintf(": path='%s' with old format. Need to set "
-          "total_site manually when reading.",
-          path.c_str()));
+                           "total_site manually when reading.",
+                           path.c_str()));
     save_points_selection_txt(psel, path);
     return;
   }
