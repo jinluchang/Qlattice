@@ -187,7 +187,7 @@ void mpi_alltoallv(
     void* recvbuf, const Int* recvcounts, const Int* rdispls, MPI_Datatype recvtype,
     MPI_Comm comm)
 {
-  static const std::string q_mpi_alltoallv_type = get_env_default("q_mpi_alltoallv_type", "custom");
+  static const std::string q_mpi_alltoallv_type = get_env_default("q_mpi_alltoallv_type", "native");
   if (q_mpi_alltoallv_type == "custom") {
     mpi_alltoallv_custom(sendbuf, sendcounts, sdispls, sendtype, recvbuf, recvcounts, rdispls, recvtype, comm);
   } else if (q_mpi_alltoallv_type == "native") {
