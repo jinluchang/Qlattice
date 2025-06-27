@@ -125,6 +125,44 @@ API inline const GeometryNodeNeighbor& get_geometry_node_neighbor()
   return geonb;
 }
 
+// -------------------
+
+struct API MpiDataType {
+  MPI_Datatype mpi_dtype;
+  //
+  MpiDataType() { mpi_dtype = MPI_DATATYPE_NULL; }
+  ~MpiDataType()
+  {
+    if (mpi_dtype != MPI_DATATYPE_NULL) {
+      MPI_Type_free(&mpi_dtype);
+      mpi_dtype = MPI_DATATYPE_NULL;
+    }
+  }
+  //
+  void set_contiguous(const Int size)
+  {
+    const Int mpi_ret = MPI_Type_contiguous(size, MPI_BYTE, &mpi_dtype);
+    qassert(mpi_ret == 0);
+    MPI_Type_commit(&mpi_dtype);
+  }
+};
+
+API inline Cache<std::string, MpiDataType>& get_mpi_data_type_cache()
+{
+  static Cache<std::string, MpiDataType> cache("MpiDataTypeCache", 16);
+  return cache;
+}
+
+inline const MpiDataType& get_mpi_data_type_contiguous(const Int& size)
+{
+  const std::string key = ssprintf("set_contiguous: %d", size);
+  if (!get_mpi_data_type_cache().has(key)) {
+    MpiDataType& mpi_dtype = get_mpi_data_type_cache()[key];
+    mpi_dtype.set_contiguous(size);
+  }
+  return get_mpi_data_type_cache()[key];
+}
+
 // ----------------------------------
 
 int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
