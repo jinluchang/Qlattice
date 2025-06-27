@@ -45,6 +45,9 @@
   "len(psel_list) = 16"
  ],
  [
+  "closest_dis_sqr_for_psel_list = [3, 3, 5, 4, 5, 4, 5, 4, 5, 6, 5, 4, 5, 4, 5, 4]"
+ ],
+ [
   "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 8"
  ],
  [
@@ -376,6 +379,9 @@
  ],
  [
   "len(psel_list) = 16"
+ ],
+ [
+  "closest_dis_sqr_for_psel_list = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]"
  ],
  [
   "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 34"
@@ -711,6 +717,9 @@
   "len(psel_list) = 16"
  ],
  [
+  "closest_dis_sqr_for_psel_list = [4, 5, 5, 4, 3, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 5]"
+ ],
+ [
   "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 9"
  ],
  [
@@ -1042,6 +1051,9 @@
  ],
  [
   "len(psel_list) = 16"
+ ],
+ [
+  "closest_dis_sqr_for_psel_list = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]"
  ],
  [
   "idx=0 ; Coordinate([4, 4, 4, 8]) ; len(psel) = 29"
@@ -1377,6 +1389,9 @@
   "len(psel_list) = 16"
  ],
  [
+  "closest_dis_sqr_for_psel_list = [21, 20, 29, 27, 23, 20, 27, 29, 21, 20, 23, 27, 33, 29, 25, 29]"
+ ],
+ [
   "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 6"
  ],
  [
@@ -1708,6 +1723,9 @@
  ],
  [
   "len(psel_list) = 16"
+ ],
+ [
+  "closest_dis_sqr_for_psel_list = [10, 11, 11, 10, 13, 10, 10, 12, 10, 11, 11, 10, 10, 10, 13, 11]"
  ],
  [
   "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 16"
@@ -2043,6 +2061,9 @@
   "len(psel_list) = 16"
  ],
  [
+  "closest_dis_sqr_for_psel_list = [26, 30, 18, 21, 23, 20, 25, 22, 25, 34, 27, 23, 26, 19, 23, 26]"
+ ],
+ [
   "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 5"
  ],
  [
@@ -2374,6 +2395,9 @@
  ],
  [
   "len(psel_list) = 16"
+ ],
+ [
+  "closest_dis_sqr_for_psel_list = [13, 11, 12, 11, 12, 13, 10, 13, 12, 11, 12, 12, 11, 12, 10, 11]"
  ],
  [
   "idx=0 ; Coordinate([8, 8, 8, 16]) ; len(psel) = 14"

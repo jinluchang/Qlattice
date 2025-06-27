@@ -44,6 +44,8 @@ def run_check_psel_list(get_psel_list):
     q.json_results_append(q.get_fname())
     psel_list = get_psel_list()
     q.json_results_append(f"len(psel_list) = {len(psel_list)}")
+    closest_dis_sqr_for_psel_list = q.find_closest_dis_sqr_for_psel_list(psel_list)
+    q.json_results_append(f"closest_dis_sqr_for_psel_list = {closest_dis_sqr_for_psel_list}")
     for idx, psel in enumerate(psel_list):
         q.json_results_append(f"idx={idx} ; {psel.total_site} ; len(psel) = {len(psel)}")
         psel_str = f"{psel.total_site} {psel[:].tolist()}"

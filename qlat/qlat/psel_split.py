@@ -345,13 +345,23 @@ def find_all_closest_point_list(psel, rs=None):
         rs = q.RngState(f"{fname}")
     assert isinstance(rs, q.RngState)
     pds = PointsDistanceSet(psel)
-    all_closest_point_list = []
-    for xg in psel:
+    def find_closest(xg):
         assert isinstance(xg, q.Coordinate)
         mini_dis_sqr, point_list = pds.find_closest_point_list(xg)
-        all_closest_point_list.append((mini_dis_sqr, (xg, point_list,)))
+        return (mini_dis_sqr, (xg, point_list,))
+    xg_sub_list = q.get_mpi_chunk(list(psel))
+    chunksize = max(16, len(psel) // (q.get_num_node() * 128))
+    if len(psel) // q.get_num_node() >= 128:
+        n_proc = None
+    else:
+        n_proc = 0
+    all_closest_point_sub_list = q.parallel_map(find_closest, xg_sub_list, chunksize=chunksize, n_proc=n_proc)
+    all_closest_point_list = []
+    for sub_list in q.get_comm().allgather(all_closest_point_sub_list):
+        all_closest_point_list += sub_list
     all_closest_point_list = q.random_permute(all_closest_point_list, rs.split(f"permute"))
     all_closest_point_list.sort(key=lambda x: x[0])
+    q.displayln_info(0, f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; {all_closest_point_list[:5]} .")
     return all_closest_point_list
 
 def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
@@ -366,9 +376,9 @@ def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
 @q.timer(is_timer_fork=True)
 def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
     """
-    return all_closest_point_list
+    return all_closest_n_point_list
     where
-    all_closest_point_list = [ (ranking, (xg, [ (dis_sqr1, xg1), ..., ],)), ... ]
+    all_closest_n_point_list = [ (ranking, (xg, [ (dis_sqr1, xg1), ..., ],)), ... ]
     #
     ranking_func(dis_sqr_list) => ranking (the smaller the more closer points)
     """
@@ -454,9 +464,9 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     #
     `n` is the number of closest points to be considered for ranking.
     """
+    fname = q.get_fname()
     assert isinstance(psel, q.PointsSelection)
     assert isinstance(n, int)
-    fname = q.get_fname()
     if ranking_func is None:
         ranking_func = find_all_closest_n_point_list_ranking_func_default
     if rs is None:
@@ -517,6 +527,32 @@ def psel_split_that_increase_separation(psel, mode=None, rs=None):
         assert False
 
 @q.timer(is_timer_fork=True)
+def find_closest_dis_sqr_for_psel_list(psel_list):
+    fname = q.get_fname()
+    assert isinstance(psel_list, list)
+    closest_dis_sqr_list = []
+    for psel in psel_list:
+        assert isinstance(psel, q.PointsSelection)
+        if len(psel) == 0:
+            continue
+        all_closest_point_list = find_all_closest_point_list(psel)
+        assert isinstance(all_closest_point_list, list)
+        assert len(all_closest_point_list) > 0
+        closest_point_list = all_closest_point_list[0]
+        assert isinstance(closest_point_list, tuple)
+        assert len(closest_point_list) == 2
+        assert isinstance(closest_point_list[0], int)
+        assert isinstance(closest_point_list[1], tuple)
+        assert len(closest_point_list[1]) == 2
+        assert isinstance(closest_point_list[1][0], q.Coordinate)
+        assert isinstance(closest_point_list[1][1], list)
+        assert len(closest_point_list[1][1]) > 0
+        closest_dis_sqr = closest_point_list[0]
+        closest_dis_sqr_list.append(closest_dis_sqr)
+    q.displayln_info(0, f"{fname}: {sorted(closest_dis_sqr_list, reverse=True)[:5]}.")
+    return closest_dis_sqr_list
+
+@q.timer(is_timer_fork=True)
 def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     """
     return psel_list
@@ -532,8 +568,10 @@ def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     idx = 0
     while True:
         if len(current_list) + len(pending_list) >= num_piece:
-            assert len(current_list) + len(pending_list) == num_piece
-            return current_list + pending_list
+            psel_list = current_list + pending_list
+            assert len(psel_list) == num_piece
+            find_closest_dis_sqr_for_psel_list(psel_list)
+            return psel_list
         if len(current_list) == 0:
             current_list = pending_list
             pending_list = []
