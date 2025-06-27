@@ -770,8 +770,9 @@ def save_prop_wsrc_sparse(job_tag, traj, *, load_prop, tslice, inv_type, inv_acc
     fname = q.get_fname()
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in sfw:
-        assert qar_sp.has_regular_file(f"{tag}.lat")
-        assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
+        if 0 == q.get_id_node():
+            assert f"{tag}.lat" in qar_sp
+            assert f"{tag} ; wsnk.lat" in qar_sp
         q.displayln_info(0, f"{fname}: tag='{tag}' of '{job_tag}/{traj}' already saved. Skipping.")
         return
     prop = load_prop()
@@ -978,8 +979,9 @@ def compute_prop_psrc(job_tag, traj, xg_src, inv_type, inv_acc, *,
     tag = mk_psrc_tag(xg_src, inv_type, inv_acc)
     if (tag in sfw) and (sfw_hvp is None or (tag in sfw_hvp)):
         assert f"{tag} ; fsel-prob-psrc-prop" in sfw
-        assert qar_sp.has_regular_file(f"{tag}.lat")
-        assert qar_sp.has_regular_file(f"{tag} ; wsnk.lat")
+        if 0 == q.get_id_node():
+            assert f"{tag}.lat" in qar_sp
+            assert f"{tag} ; wsnk.lat" in qar_sp
         if qar_hvp_ts is not None:
             assert qar_hvp_ts.has_regular_file(f"{tag}.lat")
         return None
@@ -1488,9 +1490,10 @@ def compute_prop_smear(job_tag, xg_src, inv_type, inv_acc, *,
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"smear ; xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in sfw:
-        assert f"{tag}.lat" in qar_sp
-        assert f"{tag} ; wsnk.lat" in qar_sp
-        assert f"{tag} ; smear-snk.lat" in qar_sp
+        if 0 == q.get_id_node():
+            assert f"{tag}.lat" in qar_sp
+            assert f"{tag} ; wsnk.lat" in qar_sp
+            assert f"{tag} ; smear-snk.lat" in qar_sp
         assert f"{tag} ; smear-snk" in sfw_m
         return None
     q.check_stop()
