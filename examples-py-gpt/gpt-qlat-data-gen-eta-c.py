@@ -35,7 +35,7 @@ from qlat_scripts.v1 import (
         run_gt,
         get_load_path,
         get_save_path,
-        is_test_job_tag,
+        is_test,
         )
 
 ### ------
@@ -56,6 +56,8 @@ load_path_list[:] = [
         "/data2/qcddata3-prop",
         "/data1/qcddata1",
         ]
+
+is_cython = not is_test()
 
 ### ------
 
@@ -470,19 +472,13 @@ job_tag_list_default = [
         ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
 job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
-if job_tag_list == job_tag_list_default:
-    is_cython = False
-    is_test = True
-else:
-    is_cython = True
-    is_test = False
 
 #######################################################
 
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
-    if is_test:
+    if is_test():
         q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
         q.check_log_json(__file__)
     qg.end_with_gpt()
@@ -493,7 +489,7 @@ def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
-    if (not is_test) and (len(q.obtained_lock_history_list) > 0):
+    if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
 
 if __name__ == "__main__":
@@ -508,7 +504,7 @@ if __name__ == "__main__":
         traj_list = get_param(job_tag, "traj_list")
         for traj in traj_list:
             job_tag_traj_list.append((job_tag, traj,))
-    if not is_test:
+    if not is_test():
         job_tag_traj_list = q.random_permute(job_tag_traj_list, q.RngState(f"{q.get_time()}"))
         job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:

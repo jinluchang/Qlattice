@@ -8,7 +8,7 @@ export q_malloc_mmap_threshold=8192
 
 grep -a "^CHECK: " log.txt >log.check.txt
 
-timeout -s KILL 60m time mpiexec --np 4 $mpi_options python3 -m mpi4py ./run.py -qmp-geom 1 1 1 4 --mpi 1.1.1.4 >log.full.txt 2>&1
+timeout -s KILL 60m time mpiexec --np 4 $mpi_options python3 -m mpi4py ./run.py --test -qmp-geom 1 1 1 4 --mpi 1.1.1.4 >log.full.txt 2>&1
 
 name="$(basename "$PWD")"
 

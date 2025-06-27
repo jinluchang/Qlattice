@@ -1204,7 +1204,7 @@ def run_field_rand_u1_dict(
         fu1_dag[:] = fu1[:].conj()
         fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
         fu1_dag.save_double(get_save_path(f"{path}/{psel_list_type}-src-dag.field"))
-        if is_test_job_tag(job_tag):
+        if is_test():
             q.json_results_append(f"{fname}: {psel_list_type} fu1", q.get_data_sig_arr(fu1, q.RngState(), 4), 1e-15)
             q.json_results_append(f"{fname}: {psel_list_type} fu1_dag", q.get_data_sig_arr(fu1_dag, q.RngState(), 4), 1e-15)
     q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
@@ -1347,7 +1347,7 @@ def run_prop_sparse_rand_u1_src(
     qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.clean_cache(q.cache_inv)
-    if is_test_job_tag(job_tag):
+    if is_test():
         q.json_results_append(f"{fname} {job_tag} {traj} inv_type={inv_type} psel_list_type={psel_list_type}")
         sfr = q.open_fields(get_load_path(path_s), "r")
         sfr_list = sfr.list()

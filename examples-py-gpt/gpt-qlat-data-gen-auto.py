@@ -26,6 +26,8 @@ load_path_list[:] = [
         "/lustre20/volatile/pqpdf/ljin/qcddata",
         ]
 
+is_cython = not is_test()
+
 # ----
 
 @q.timer
@@ -1886,7 +1888,7 @@ def run_job_inversion(job_tag, traj):
     #
     traj_gf = traj
     #
-    if is_test_job_tag(job_tag):
+    if is_test():
         traj_gf = 1000
     #
     fns_produce = [
@@ -1924,7 +1926,7 @@ def run_job_inversion(job_tag, traj):
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
-    if is_test_job_tag(job_tag):
+    if is_test():
         fns_need = []
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -2269,12 +2271,6 @@ job_tag_list_default = [
         ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
 job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
-if job_tag_list == job_tag_list_default:
-    is_cython = False
-    is_test = True
-else:
-    is_cython = True
-    is_test = False
 
 is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
@@ -2285,7 +2281,7 @@ is_performing_contraction = q.get_arg("--no-contract", default=None) is None
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
-    if is_test:
+    if is_test():
         q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
         q.check_log_json(__file__, check_eps=5e-5)
     qg.end_with_gpt()
@@ -2296,7 +2292,7 @@ def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
-    if (not is_test) and (len(q.obtained_lock_history_list) > 0):
+    if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
 
 if __name__ == "__main__":
@@ -2311,7 +2307,7 @@ if __name__ == "__main__":
         traj_list = get_param(job_tag, "traj_list")
         for traj in traj_list:
             job_tag_traj_list.append((job_tag, traj,))
-    if not is_test:
+    if not is_test():
         job_tag_traj_list = q.random_permute(job_tag_traj_list, q.RngState(f"{q.get_time()}"))
         job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:

@@ -13,6 +13,8 @@ from qlat_scripts.v1 import (
 )
 
 usage = f"""
+{__file__}
+# Run tests.
 {__file__} --usage
 # Show this message.
 {""}

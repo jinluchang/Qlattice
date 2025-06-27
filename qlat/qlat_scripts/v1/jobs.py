@@ -70,9 +70,8 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 
 # ----------
 
-def is_test_job_tag(job_tag):
-    is_test = job_tag[:5] == "test-"
-    return is_test
+def is_test():
+    return q.get_option("--test")
 
 # ----------
 
