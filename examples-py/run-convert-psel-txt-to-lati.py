@@ -6,11 +6,10 @@ import glob
 import pickle
 import qlat as q
 
-import qlat_scripts.v1 as qs
-
 from qlat_scripts.v1 import (
     set_param,
     get_param,
+    make_psel_from_weight,
 )
 
 usage = f"""
@@ -32,7 +31,7 @@ def mk_psel(total_site, rate, rs):
     f_weight.set_unit()
     f_rand_01 = q.FieldRealD(geo, 1)
     f_rand_01.set_rand(rs, 1.0, 0.0)
-    psel = qs.make_psel_from_weight(f_weight, f_rand_01, rate)
+    psel = make_psel_from_weight(f_weight, f_rand_01, rate)
     return psel
 
 @q.timer(is_timer_fork=True)
@@ -71,9 +70,6 @@ def run_conversion(total_site, path_dst, path_src):
             q.json_results_append(f"hash(psel)={q.hash_sha256(psel_str)}")
             q.displayln_info(f"psel: {psel_str}")
 
-def is_test():
-    return q.get_arg("--src") is None
-
 @q.timer(is_timer_fork=True)
 def run():
     total_site_str = q.get_arg("--grid")
@@ -92,6 +88,9 @@ def run():
         assert path_dst is not None
     total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
+
+def is_test():
+    return q.get_arg("--src") is None
 
 if __name__ == "__main__":
     is_show_usage = q.get_option("--usage")
