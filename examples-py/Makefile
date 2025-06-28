@@ -3,6 +3,7 @@ SHELL=/usr/bin/env bash
 mpi_options ?= --oversubscribe --bind-to none
 
 tests = \
+		qconvert-psel-txt-to-lati.log \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
@@ -23,13 +24,12 @@ tests = \
 		auto-contract-07.log \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
-		qlat-id-node.log \
+		check-id-node.log \
 		set-rand.log \
 		utils.log \
 		benchmark-matrix-functions.log \
 		make-sample-gauge-field.log \
 		selected-convert-io.log \
-		qar.log \
 		lat-io.log \
 		lat-io-test1.log \
 		lat-io-test2.log \
@@ -40,11 +40,11 @@ tests = \
 		field-analysis.log \
 		field-multi-size.log \
 		field-selection.log \
-		qs-fsel-psel.log \
-		qs-psel-split.log \
-		run-convert-psel-txt-to-lati.log \
-		selected-field.log \
 		fields-io.log \
+		fsel-psel.log \
+		psel-split.log \
+		selected-field.log \
+		test-qar.log \
 		hmc-pure-gauge.log \
 		hmc-pure-gauge-flowed.log \
 		hmc-pure-gauge-test.log \
@@ -52,21 +52,21 @@ tests = \
 		hmc-pure-gauge-symmetric.log \
 		hmc-pure-gauge-fa-sym.log \
 		hmc-pions.log \
-		qcd-utils.log \
+		gf-utils.log \
 		free-invert.log \
-		q-fit-corr.log \
-		q-fit-corr-2.log \
-		q-hlt-reconstruction.log \
+		fit-corr.log \
+		fit-corr-2.log \
+		hlt-reconstruction.log \
 		mpi-utils.log \
 		mat-mpi-test.log
 
 all: run
 
-run: update-sources $(tests) qlat-ext.log
+run: update-sources $(tests) py-qlat-ext.log
 
 update-sources:
 	-for i in $(tests) ; do touch "$${i%.log}.py" ; done
-	-touch qlat-ext/meson.build
+	-touch py-qlat-ext/meson.build
 
 %.log: %.py
 	-rm -rfv "$<".p
@@ -78,18 +78,18 @@ update-sources:
 	-cp -v "$<".p/"$@".json.new "$@".json
 	-cp -v "$<".p/log.txt "$@"
 
-qlat-ext.log: qlat-ext/meson.build
-	-touch qlat-ext/meson.build
-	-rm -rfv qlat-ext.p
-	-mkdir -p qlat-ext.p
-	-time meson setup qlat-ext.p/qlat-ext-build qlat-ext --prefix="$$PWD"/qlat-ext.p/qlat-ext-install -Dpython.platlibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/qlat-ext.p/qlat-ext-install/lib/python3/dist-packages
-	-time meson compile -C qlat-ext.p/qlat-ext-build -j$(num_proc)
-	-time meson install -C qlat-ext.p/qlat-ext-build
-	-time ( cd qlat-ext.p ; PYTHONPATH="$$PWD/qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" python3 qlat-ext-install/bin/run.py --test >log.full.txt 2>&1 ; grep -a "CHECK: " log.full.txt >log.check.txt.new ; grep -a "CHECK: " ../"$@" >log.check.txt )
-	-if diff qlat-ext.p/log.check.txt qlat-ext.p/log.check.txt.new ; then echo passed ; else cat qlat-ext.p/log.full.txt ; false ; fi
+py-qlat-ext.log: py-qlat-ext/meson.build
+	-touch py-qlat-ext/meson.build
+	-rm -rfv py-qlat-ext.p
+	-mkdir -p py-qlat-ext.p
+	-time meson setup py-qlat-ext.p/py-qlat-ext-build py-qlat-ext --prefix="$$PWD"/py-qlat-ext.p/py-qlat-ext-install -Dpython.platlibdir="$$PWD"/py-qlat-ext.p/py-qlat-ext-install/lib/python3/dist-packages -Dpython.purelibdir="$$PWD"/py-qlat-ext.p/py-qlat-ext-install/lib/python3/dist-packages
+	-time meson compile -C py-qlat-ext.p/py-qlat-ext-build -j$(num_proc)
+	-time meson install -C py-qlat-ext.p/py-qlat-ext-build
+	-time ( cd py-qlat-ext.p ; PYTHONPATH="$$PWD/py-qlat-ext-install/lib/python3/dist-packages:$$PYTHONPATH" python3 py-qlat-ext-install/bin/run.py --test >log.full.txt 2>&1 ; grep -a "CHECK: " log.full.txt >log.check.txt.new ; grep -a "CHECK: " ../"$@" >log.check.txt )
+	-if diff py-qlat-ext.p/log.check.txt py-qlat-ext.p/log.check.txt.new ; then echo passed ; else cat py-qlat-ext.p/log.full.txt ; false ; fi
 	-rm -rfv "$@"
 	-touch "$@"
-	-cp -v qlat-ext.p/log.check.txt.new "$@"
+	-cp -v py-qlat-ext.p/log.check.txt.new "$@"
 
 clean:
 	-rm -rfv *.p
