@@ -10,10 +10,11 @@ from qlat_scripts.v1 import (
     set_param,
     get_param,
     make_psel_from_weight,
+    is_test,
 )
 
 usage = f"""
-{__file__}
+{__file__} --test
 # Run tests.
 {__file__} --usage
 # Show this message.
@@ -90,9 +91,6 @@ def run():
         assert path_dst is not None
     total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
-
-def is_test():
-    return q.get_arg("--src") is None
 
 if __name__ == "__main__":
     is_show_usage = q.get_option("--usage")
