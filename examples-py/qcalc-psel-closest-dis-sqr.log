@@ -26,4 +26,5 @@ CHECK: params: test-8nt16-checker:   ],
 CHECK: params: test-8nt16-checker:   "field_selection_fsel_rate": 0.03125,
 CHECK: params: test-8nt16-checker:   "field_selection_psel_rate": 0.0078125
 CHECK: params: test-8nt16-checker: }
+INFO: idx closest_dis_sqr_list[idx] len(psel_list[idx]) psel_list[idx].total_site fn_list[idx]
 CHECK: finished successfully.

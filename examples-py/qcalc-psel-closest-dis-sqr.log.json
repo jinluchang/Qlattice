@@ -6,387 +6,387 @@
   "{\"traj_list\": [1000, 1100], \"total_site\": [8, 8, 8, 16], \"field_selection_fsel_rate\": 0.03125, \"field_selection_psel_rate\": 0.0078125}"
  ],
  [
-  "closest_dis_sqr_list[0]=3 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[0]=3 len(psel_list[0])=8 psel_list[0].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[1]=3 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[1]=3 len(psel_list[1])=9 psel_list[1].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[2]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[2]=5 len(psel_list[2])=9 psel_list[2].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[3]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[3]=4 len(psel_list[3])=7 psel_list[3].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[4]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[4]=5 len(psel_list[4])=9 psel_list[4].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[5]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[5]=4 len(psel_list[5])=8 psel_list[5].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[6]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[6]=5 len(psel_list[6])=7 psel_list[6].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[7]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[7]=4 len(psel_list[7])=8 psel_list[7].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[8]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[8]=5 len(psel_list[8])=8 psel_list[8].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[9]=6 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[9]=6 len(psel_list[9])=6 psel_list[9].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[10]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[10]=5 len(psel_list[10])=8 psel_list[10].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[11]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[11]=4 len(psel_list[11])=8 psel_list[11].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[12]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[12]=5 len(psel_list[12])=8 psel_list[12].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[13]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[13]=4 len(psel_list[13])=9 psel_list[13].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[14]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[14]=5 len(psel_list[14])=8 psel_list[14].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[15]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[15]=4 len(psel_list[15])=8 psel_list[15].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[16]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[16]=2 len(psel_list[16])=34 psel_list[16].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[17]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[17]=2 len(psel_list[17])=33 psel_list[17].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[18]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[18]=2 len(psel_list[18])=33 psel_list[18].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[19]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[19]=2 len(psel_list[19])=29 psel_list[19].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[20]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[20]=2 len(psel_list[20])=31 psel_list[20].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[21]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[21]=2 len(psel_list[21])=32 psel_list[21].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[22]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[22]=2 len(psel_list[22])=30 psel_list[22].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[23]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[23]=2 len(psel_list[23])=32 psel_list[23].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[24]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[24]=2 len(psel_list[24])=31 psel_list[24].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[25]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[25]=2 len(psel_list[25])=28 psel_list[25].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[26]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[26]=2 len(psel_list[26])=33 psel_list[26].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[27]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[27]=2 len(psel_list[27])=37 psel_list[27].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[28]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[28]=2 len(psel_list[28])=31 psel_list[28].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[29]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[29]=2 len(psel_list[29])=30 psel_list[29].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[30]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[30]=2 len(psel_list[30])=33 psel_list[30].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[31]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[31]=2 len(psel_list[31])=35 psel_list[31].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[32]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[32]=4 len(psel_list[32])=9 psel_list[32].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[33]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[33]=5 len(psel_list[33])=9 psel_list[33].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[34]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[34]=5 len(psel_list[34])=11 psel_list[34].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[35]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[35]=4 len(psel_list[35])=9 psel_list[35].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[36]=3 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[36]=3 len(psel_list[36])=10 psel_list[36].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[37]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[37]=5 len(psel_list[37])=8 psel_list[37].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[38]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[38]=5 len(psel_list[38])=9 psel_list[38].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[39]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[39]=4 len(psel_list[39])=7 psel_list[39].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[40]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[40]=4 len(psel_list[40])=8 psel_list[40].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[41]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[41]=4 len(psel_list[41])=9 psel_list[41].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[42]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[42]=4 len(psel_list[42])=8 psel_list[42].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[43]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[43]=4 len(psel_list[43])=9 psel_list[43].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[44]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[44]=4 len(psel_list[44])=10 psel_list[44].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[45]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[45]=4 len(psel_list[45])=11 psel_list[45].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[46]=3 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[46]=3 len(psel_list[46])=7 psel_list[46].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[47]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[47]=5 len(psel_list[47])=10 psel_list[47].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[48]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[48]=2 len(psel_list[48])=29 psel_list[48].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[49]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[49]=2 len(psel_list[49])=33 psel_list[49].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[50]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[50]=2 len(psel_list[50])=29 psel_list[50].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[51]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[51]=2 len(psel_list[51])=33 psel_list[51].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[52]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[52]=2 len(psel_list[52])=31 psel_list[52].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[53]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[53]=2 len(psel_list[53])=34 psel_list[53].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[54]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[54]=2 len(psel_list[54])=29 psel_list[54].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[55]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[55]=2 len(psel_list[55])=33 psel_list[55].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[56]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[56]=2 len(psel_list[56])=31 psel_list[56].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[57]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[57]=2 len(psel_list[57])=30 psel_list[57].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[58]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[58]=2 len(psel_list[58])=35 psel_list[58].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[59]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[59]=2 len(psel_list[59])=31 psel_list[59].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[60]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[60]=2 len(psel_list[60])=34 psel_list[60].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[61]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[61]=2 len(psel_list[61])=30 psel_list[61].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[62]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[62]=2 len(psel_list[62])=37 psel_list[62].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[63]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[63]=2 len(psel_list[63])=33 psel_list[63].total_site=Coordinate([4, 4, 4, 8]) fn_list[idx]='results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[64]=21 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[64]=21 len(psel_list[64])=6 psel_list[64].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[65]=20 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[65]=20 len(psel_list[65])=5 psel_list[65].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[66]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[66]=29 len(psel_list[66])=4 psel_list[66].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[67]=27 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[67]=27 len(psel_list[67])=4 psel_list[67].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[68]=23 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[68]=23 len(psel_list[68])=5 psel_list[68].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[69]=20 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[69]=20 len(psel_list[69])=5 psel_list[69].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[70]=27 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[70]=27 len(psel_list[70])=5 psel_list[70].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[71]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[71]=29 len(psel_list[71])=4 psel_list[71].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[72]=21 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[72]=21 len(psel_list[72])=5 psel_list[72].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[73]=20 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[73]=20 len(psel_list[73])=5 psel_list[73].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[74]=23 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[74]=23 len(psel_list[74])=4 psel_list[74].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[75]=27 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[75]=27 len(psel_list[75])=5 psel_list[75].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[76]=33 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[76]=33 len(psel_list[76])=5 psel_list[76].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[77]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[77]=29 len(psel_list[77])=3 psel_list[77].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[78]=25 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[78]=25 len(psel_list[78])=4 psel_list[78].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[79]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[79]=29 len(psel_list[79])=4 psel_list[79].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[80]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[80]=10 len(psel_list[80])=16 psel_list[80].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[81]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[81]=11 len(psel_list[81])=17 psel_list[81].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[82]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[82]=11 len(psel_list[82])=16 psel_list[82].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[83]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[83]=10 len(psel_list[83])=16 psel_list[83].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[84]=13 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[84]=13 len(psel_list[84])=16 psel_list[84].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[85]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[85]=10 len(psel_list[85])=15 psel_list[85].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[86]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[86]=10 len(psel_list[86])=18 psel_list[86].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[87]=12 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[87]=12 len(psel_list[87])=15 psel_list[87].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[88]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[88]=10 len(psel_list[88])=18 psel_list[88].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[89]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[89]=11 len(psel_list[89])=14 psel_list[89].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[90]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[90]=11 len(psel_list[90])=16 psel_list[90].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[91]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[91]=10 len(psel_list[91])=19 psel_list[91].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[92]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[92]=10 len(psel_list[92])=17 psel_list[92].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[93]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[93]=10 len(psel_list[93])=19 psel_list[93].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[94]=13 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[94]=13 len(psel_list[94])=14 psel_list[94].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[95]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[95]=11 len(psel_list[95])=15 psel_list[95].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[96]=26 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[96]=26 len(psel_list[96])=5 psel_list[96].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[97]=30 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[97]=30 len(psel_list[97])=4 psel_list[97].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[98]=18 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[98]=18 len(psel_list[98])=5 psel_list[98].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[99]=21 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[99]=21 len(psel_list[99])=4 psel_list[99].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[100]=23 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[100]=23 len(psel_list[100])=5 psel_list[100].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[101]=20 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[101]=20 len(psel_list[101])=4 psel_list[101].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[102]=25 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[102]=25 len(psel_list[102])=4 psel_list[102].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[103]=22 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[103]=22 len(psel_list[103])=4 psel_list[103].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[104]=25 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[104]=25 len(psel_list[104])=6 psel_list[104].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[105]=34 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[105]=34 len(psel_list[105])=4 psel_list[105].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[106]=27 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[106]=27 len(psel_list[106])=3 psel_list[106].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[107]=23 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[107]=23 len(psel_list[107])=5 psel_list[107].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[108]=26 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[108]=26 len(psel_list[108])=5 psel_list[108].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[109]=19 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[109]=19 len(psel_list[109])=5 psel_list[109].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[110]=23 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[110]=23 len(psel_list[110])=3 psel_list[110].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[111]=26 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[111]=26 len(psel_list[111])=4 psel_list[111].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-15.lati'"
  ],
  [
-  "closest_dis_sqr_list[112]=13 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+  "closest_dis_sqr_list[112]=13 len(psel_list[112])=14 psel_list[112].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-0.lati'"
  ],
  [
-  "closest_dis_sqr_list[113]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+  "closest_dis_sqr_list[113]=11 len(psel_list[113])=15 psel_list[113].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-1.lati'"
  ],
  [
-  "closest_dis_sqr_list[114]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+  "closest_dis_sqr_list[114]=12 len(psel_list[114])=16 psel_list[114].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-2.lati'"
  ],
  [
-  "closest_dis_sqr_list[115]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+  "closest_dis_sqr_list[115]=11 len(psel_list[115])=16 psel_list[115].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-3.lati'"
  ],
  [
-  "closest_dis_sqr_list[116]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+  "closest_dis_sqr_list[116]=12 len(psel_list[116])=14 psel_list[116].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-4.lati'"
  ],
  [
-  "closest_dis_sqr_list[117]=13 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+  "closest_dis_sqr_list[117]=13 len(psel_list[117])=14 psel_list[117].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-5.lati'"
  ],
  [
-  "closest_dis_sqr_list[118]=10 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+  "closest_dis_sqr_list[118]=10 len(psel_list[118])=16 psel_list[118].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-6.lati'"
  ],
  [
-  "closest_dis_sqr_list[119]=13 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+  "closest_dis_sqr_list[119]=13 len(psel_list[119])=11 psel_list[119].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-7.lati'"
  ],
  [
-  "closest_dis_sqr_list[120]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+  "closest_dis_sqr_list[120]=12 len(psel_list[120])=14 psel_list[120].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-8.lati'"
  ],
  [
-  "closest_dis_sqr_list[121]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+  "closest_dis_sqr_list[121]=11 len(psel_list[121])=14 psel_list[121].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-9.lati'"
  ],
  [
-  "closest_dis_sqr_list[122]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+  "closest_dis_sqr_list[122]=12 len(psel_list[122])=18 psel_list[122].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-10.lati'"
  ],
  [
-  "closest_dis_sqr_list[123]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+  "closest_dis_sqr_list[123]=12 len(psel_list[123])=14 psel_list[123].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-11.lati'"
  ],
  [
-  "closest_dis_sqr_list[124]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+  "closest_dis_sqr_list[124]=11 len(psel_list[124])=16 psel_list[124].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-12.lati'"
  ],
  [
-  "closest_dis_sqr_list[125]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+  "closest_dis_sqr_list[125]=12 len(psel_list[125])=14 psel_list[125].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-13.lati'"
  ],
  [
-  "closest_dis_sqr_list[126]=10 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+  "closest_dis_sqr_list[126]=10 len(psel_list[126])=15 psel_list[126].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-14.lati'"
  ],
  [
-  "closest_dis_sqr_list[127]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+  "closest_dis_sqr_list[127]=11 len(psel_list[127])=14 psel_list[127].total_site=Coordinate([8, 8, 8, 16]) fn_list[idx]='results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-15.lati'"
  ]
 ]

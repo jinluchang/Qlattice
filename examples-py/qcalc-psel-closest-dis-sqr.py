@@ -83,11 +83,12 @@ def run_psel_closest_dis_sqr(fn_list):
     assert len(fn_list) == len(psel_list)
     assert len(fn_list) == len(closest_dis_sqr_list)
     ret = (fn_list, psel_list, closest_dis_sqr_list,)
+    q.displayln_info(f"INFO: idx closest_dis_sqr_list[idx] len(psel_list[idx]) psel_list[idx].total_site fn_list[idx]")
     for idx in range(len(fn_list)):
-        info_str = f"RESULTS: {idx:10} {closest_dis_sqr_list[idx]:10} {fn_list[idx]}"
+        info_str = f"RESULT: {idx:10} {closest_dis_sqr_list[idx]:10} {len(psel_list[idx]):10} {str(psel_list[idx].total_site.to_list()):>20} {fn_list[idx]}"
         q.displayln_info(info_str)
         if is_test():
-            check_str = f"closest_dis_sqr_list[{idx}]={closest_dis_sqr_list[idx]} {fn_list[idx]}"
+            check_str = f"closest_dis_sqr_list[{idx}]={closest_dis_sqr_list[idx]} len(psel_list[{idx}])={len(psel_list[idx])} psel_list[{idx}].total_site={psel_list[idx].total_site} fn_list[idx]='{fn_list[idx]}'"
             q.json_results_append(check_str)
     return ret
 
