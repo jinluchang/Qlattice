@@ -2,15 +2,16 @@ SHELL=/usr/bin/env bash
 
 mpi_options ?= --oversubscribe --bind-to none
 
-tests_grid = grid-with-qlat
+tests = \
+						 grid-with-qlat
 
 all: run-grid
 
-compile-grid: $(patsubst %, %.compile, $(tests_grid))
+compile-grid: $(patsubst %, %.compile, $(tests))
 
-run-grid: $(patsubst %, %.run, $(tests_grid))
+run-grid: $(patsubst %, %.run, $(tests))
 
-clean: $(patsubst %, %.clean, $(tests_grid))
+clean: $(patsubst %, %.clean, $(tests))
 
 compile-proj:
 	-mkdir -p build

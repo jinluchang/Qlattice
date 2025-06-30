@@ -3,24 +3,24 @@ SHELL=/usr/bin/env bash
 mpi_options ?= --oversubscribe --bind-to none
 
 tests_gpt = \
-			hlbl-muon-line.log \
-			grid-qlat-io-test.log \
-			gpt-qlat-auto-simple.log \
-			gpt-qlat-data-gen-auto.log \
-			gpt-qlat-data-gen-hlbl.log \
-			gpt-qlat-data-gen-pipi-qed.log \
-			gpt-qlat-data-gen-eta-c.log \
-			gpt-qlat-data-gen-prop.log \
-			gq-auto-checker.log \
-			gpt-qlat-convert.log \
-			gpt-qlat-sample-gauge-field.log \
-			gpt-qlat-smear.log \
-			gpt-qlat-mdwf.log \
-			gpt-qlat-gfix-mdwf.log \
-			gpt-qlat-free-invert.log \
-			gpt-qlat-lanc.log \
-			gpt-qlat-rbc-ukqcd-invert.log \
-			gpt-qlat-madwf.log
+						hlbl-muon-line.log \
+						grid-qlat-io-test.log \
+						gpt-qlat-auto-simple.log \
+						gpt-qlat-data-gen-auto.log \
+						gpt-qlat-data-gen-hlbl.log \
+						gpt-qlat-data-gen-pipi-qed.log \
+						gpt-qlat-data-gen-eta-c.log \
+						gpt-qlat-data-gen-prop.log \
+						gq-auto-checker.log \
+						gpt-qlat-convert.log \
+						gpt-qlat-sample-gauge-field.log \
+						gpt-qlat-smear.log \
+						gpt-qlat-mdwf.log \
+						gpt-qlat-gfix-mdwf.log \
+						gpt-qlat-free-invert.log \
+						gpt-qlat-lanc.log \
+						gpt-qlat-rbc-ukqcd-invert.log \
+						gpt-qlat-madwf.log
 
 all: run-gpt
 
