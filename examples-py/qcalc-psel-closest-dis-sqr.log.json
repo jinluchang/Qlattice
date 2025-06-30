@@ -1,0 +1,8 @@
+[
+ [
+  "{\"traj_list\": [1000, 1100], \"total_site\": [4, 4, 4, 8], \"field_selection_fsel_rate\": 1, \"field_selection_psel_rate\": 0.25}"
+ ],
+ [
+  "{\"traj_list\": [1000, 1100], \"total_site\": [8, 8, 8, 16], \"field_selection_fsel_rate\": 0.03125, \"field_selection_psel_rate\": 0.0078125}"
+ ]
+]

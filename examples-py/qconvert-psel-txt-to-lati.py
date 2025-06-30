@@ -15,16 +15,13 @@ from qlat_scripts.v1 import (
 
 usage = f"""
 {__file__} --test
-# Run tests.
+# Generate some test data and then perform the conversion.
 {__file__} --usage
 # Show this message.
 {""}
 {__file__} --grid XX.XX.XX.XX --src PATH_SRC --dst PATH_DST
 # Convert all "*.txt" point-selection files in ``PATH_SRC'' to "*.lati" files in ``PATH_DST'' with ``total_site'' given by ``--grid''.
 # E.g.: {__file__} --grid 4.4.4.8 --src results/test-4nt8/point-selection --dst results/test-4nt8/points-selection
-{""}
-{__file__}
-# Generate some test data and then perform the conversion.
 """
 
 @q.timer
@@ -99,6 +96,7 @@ if __name__ == "__main__":
         exit()
     q.begin_with_mpi()
     run()
+    q.timer_display()
     if is_test():
         q.check_log_json(__file__, check_eps=1e-10)
     q.end_with_mpi()

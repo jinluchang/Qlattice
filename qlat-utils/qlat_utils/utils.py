@@ -58,6 +58,22 @@ def get_option(option, *, argv=None, is_removing_from_argv=False):
     else:
         return False
 
+def get_all_arg_list(option, default=None, *, argv=None, is_removing_from_argv=False):
+    """
+    Get all the following args as `arg_list` of the option when it first appears.
+    Remove the option and the remaining args if `is_removing_from_argv`.
+    """
+    if argv is None:
+        argv = sys.argv
+    i_max = len(argv) - 1
+    for i in range(len(argv)):
+        if argv[i] == option:
+            arg_list = argv[i + 1:]
+            if is_removing_from_argv:
+                argv[i:] = []
+            return arg_list
+    return default
+
 def show_memory_usage():
     try:
         import psutil
