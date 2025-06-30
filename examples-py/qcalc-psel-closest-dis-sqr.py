@@ -75,6 +75,9 @@ def run_psel_closest_dis_sqr(fn_list):
         if not fn.endswith(".lati"):
             q.displayln_info(-1, f"WARNING: '{fn}' does not endswith '.lati'. Skip this file.")
             continue
+        if not q.does_file_exist_qar_sync_node(fn):
+            q.displayln_info(-1, f"WARNING: '{fn}' does not exist. Skip this file.")
+            continue
         psel = q.PointsSelection()
         psel.load(fn)
         fn_list.append(fn)
