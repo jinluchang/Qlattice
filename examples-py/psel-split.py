@@ -88,6 +88,12 @@ set_param(job_tag, "total_site")([ 8, 8, 8, 16, ])
 set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
 set_param(job_tag, "field_selection_psel_rate")(1 / 128)
 
+job_tag = "test-16nt32-checker"
+set_param(job_tag, "traj_list")([ 1000, 1100, ])
+set_param(job_tag, "total_site")([ 16, 16, 16, 32, ])
+set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
+set_param(job_tag, "field_selection_psel_rate")(1 / 128)
+
 job_tag = "test-48nt96-checker"
 set_param(job_tag, "traj_list")([ 1000, ])
 set_param(job_tag, "total_site")([ 48, 48, 48, 96, ])

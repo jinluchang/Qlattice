@@ -84,7 +84,11 @@ def run_psel_closest_dis_sqr(fn_list):
     assert len(fn_list) == len(closest_dis_sqr_list)
     ret = (fn_list, psel_list, closest_dis_sqr_list,)
     for idx in range(len(fn_list)):
-        q.displayln_info(f"RESULTS: {idx:10} {closest_dis_sqr_list[idx]:10} {fn_list[idx]}")
+        info_str = f"RESULTS: {idx:10} {closest_dis_sqr_list[idx]:10} {fn_list[idx]}"
+        q.displayln_info(info_str)
+        if is_test():
+            check_str = f"closest_dis_sqr_list[{idx}]={closest_dis_sqr_list[idx]} {fn_list[idx]}"
+            q.json_results_append(check_str)
     return ret
 
 @q.timer(is_timer_fork=True)
@@ -111,6 +115,12 @@ set_param(job_tag, "field_selection_psel_rate")(1 / 4)
 job_tag = "test-8nt16-checker"
 set_param(job_tag, "traj_list")([ 1000, 1100, ])
 set_param(job_tag, "total_site")([ 8, 8, 8, 16, ])
+set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
+set_param(job_tag, "field_selection_psel_rate")(1 / 128)
+
+job_tag = "test-16nt32-checker"
+set_param(job_tag, "traj_list")([ 1000, 1100, ])
+set_param(job_tag, "total_site")([ 16, 16, 16, 32, ])
 set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
 set_param(job_tag, "field_selection_psel_rate")(1 / 128)
 

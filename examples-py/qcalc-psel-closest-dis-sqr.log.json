@@ -4,5 +4,389 @@
  ],
  [
   "{\"traj_list\": [1000, 1100], \"total_site\": [8, 8, 8, 16], \"field_selection_fsel_rate\": 0.03125, \"field_selection_psel_rate\": 0.0078125}"
+ ],
+ [
+  "closest_dis_sqr_list[0]=3 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[1]=3 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[2]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[3]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[4]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[5]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[6]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[7]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[8]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[9]=6 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[10]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[11]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[12]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[13]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[14]=5 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[15]=4 results/test-4nt8-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[16]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[17]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[18]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[19]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[20]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[21]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[22]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[23]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[24]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[25]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[26]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[27]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[28]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[29]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[30]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[31]=2 results/test-4nt8-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[32]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[33]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[34]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[35]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[36]=3 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[37]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[38]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[39]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[40]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[41]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[42]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[43]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[44]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[45]=4 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[46]=3 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[47]=5 results/test-4nt8-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[48]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[49]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[50]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[51]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[52]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[53]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[54]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[55]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[56]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[57]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[58]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[59]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[60]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[61]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[62]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[63]=2 results/test-4nt8-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[64]=21 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[65]=20 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[66]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[67]=27 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[68]=23 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[69]=20 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[70]=27 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[71]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[72]=21 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[73]=20 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[74]=23 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[75]=27 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[76]=33 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[77]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[78]=25 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[79]=29 results/test-8nt16-checker/points-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[80]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[81]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[82]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[83]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[84]=13 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[85]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[86]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[87]=12 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[88]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[89]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[90]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[91]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[92]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[93]=10 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[94]=13 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[95]=11 results/test-8nt16-checker/field-selection-split/traj-1000/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[96]=26 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[97]=30 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[98]=18 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[99]=21 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[100]=23 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[101]=20 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[102]=25 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[103]=22 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[104]=25 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[105]=34 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[106]=27 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[107]=23 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[108]=26 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[109]=19 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[110]=23 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[111]=26 results/test-8nt16-checker/points-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
+ ],
+ [
+  "closest_dis_sqr_list[112]=13 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-0.lati"
+ ],
+ [
+  "closest_dis_sqr_list[113]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-1.lati"
+ ],
+ [
+  "closest_dis_sqr_list[114]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-2.lati"
+ ],
+ [
+  "closest_dis_sqr_list[115]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-3.lati"
+ ],
+ [
+  "closest_dis_sqr_list[116]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-4.lati"
+ ],
+ [
+  "closest_dis_sqr_list[117]=13 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-5.lati"
+ ],
+ [
+  "closest_dis_sqr_list[118]=10 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-6.lati"
+ ],
+ [
+  "closest_dis_sqr_list[119]=13 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-7.lati"
+ ],
+ [
+  "closest_dis_sqr_list[120]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-8.lati"
+ ],
+ [
+  "closest_dis_sqr_list[121]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-9.lati"
+ ],
+ [
+  "closest_dis_sqr_list[122]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-10.lati"
+ ],
+ [
+  "closest_dis_sqr_list[123]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-11.lati"
+ ],
+ [
+  "closest_dis_sqr_list[124]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-12.lati"
+ ],
+ [
+  "closest_dis_sqr_list[125]=12 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-13.lati"
+ ],
+ [
+  "closest_dis_sqr_list[126]=10 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-14.lati"
+ ],
+ [
+  "closest_dis_sqr_list[127]=11 results/test-8nt16-checker/field-selection-split/traj-1100/num-piece-16/idx-piece-15.lati"
  ]
 ]
