@@ -17,7 +17,7 @@ save_path_default = "results"
 load_path_list = [ "results", ]
 
 def get_save_path(fn):
-    return os.path.join(save_path_default, fn)
+    return f"{save_path_default}/{fn}"
 
 def get_load_path(*fns):
     def get(fn):
@@ -30,7 +30,7 @@ def get_load_path(*fns):
                     return p
         else:
             for path in load_path_list:
-                p = os.path.join(path, fn)
+                p = f"{path}/{fn}"
                 if q.does_file_exist_qar_sync_node(p):
                     return p
         return None
