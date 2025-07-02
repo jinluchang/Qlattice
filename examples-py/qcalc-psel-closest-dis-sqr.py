@@ -93,6 +93,10 @@ def run_psel_closest_dis_sqr(fn_list):
         if is_test():
             check_str = f"closest_dis_sqr_list[{idx}]={closest_dis_sqr_list[idx]} len(psel_list[{idx}])={len(psel_list[idx])} psel_list[{idx}].total_site={psel_list[idx].total_site} fn_list[idx]='{fn_list[idx]}'"
             q.json_results_append(check_str)
+    if is_test():
+        num_test = 10
+        assert closest_dis_sqr_list[:num_test] == q.find_closest_dis_sqr_for_psel_list(psel_list[:num_test], is_parallel=False)
+        assert closest_dis_sqr_list[:num_test] == q.find_closest_dis_sqr_for_psel_list(psel_list[:num_test], is_parallel=True)
     return ret
 
 @q.timer(is_timer_fork=True)
