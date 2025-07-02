@@ -543,7 +543,14 @@ let
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues ({
-        inherit qlat-jhub-py mpi ollama qlat-nixgl nvidia_x11_bin;
+        inherit
+        qlat-jhub-py
+        qlat-nixgl
+        qlat-stdenv
+        mpi
+        ollama
+        nvidia_x11_bin
+        ;
         inherit (pkgs)
         bashInteractive
         bash-completion
