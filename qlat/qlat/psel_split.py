@@ -334,7 +334,7 @@ class PointsDistanceTree:
 ###
 
 @q.timer
-def find_all_closest_point_list(psel, rs=None):
+def find_all_closest_point_list(psel, rs=None, is_parallel=True):
     """
     return all_closest_point_list
     where
@@ -349,16 +349,24 @@ def find_all_closest_point_list(psel, rs=None):
         assert isinstance(xg, q.Coordinate)
         mini_dis_sqr, point_list = pds.find_closest_point_list(xg)
         return (mini_dis_sqr, (xg, point_list,))
-    xg_sub_list = q.get_mpi_chunk(list(psel))
-    chunksize = max(16, len(psel) // (q.get_num_node() * 128))
-    if len(psel) // q.get_num_node() >= 128:
-        n_proc = None
-    else:
-        n_proc = 0
-    all_closest_point_sub_list = q.parallel_map(find_closest, xg_sub_list, chunksize=chunksize, n_proc=n_proc)
     all_closest_point_list = []
-    for sub_list in q.get_comm().allgather(all_closest_point_sub_list):
-        all_closest_point_list += sub_list
+    if is_parallel:
+        xg_sub_list = q.get_mpi_chunk(list(psel))
+        chunksize = max(16, len(psel) // (q.get_num_node() * 128))
+        if len(psel) // q.get_num_node() >= 128:
+            n_proc = None
+        else:
+            n_proc = 0
+        all_closest_point_sub_list = q.parallel_map(
+                find_closest, xg_sub_list,
+                chunksize=chunksize, n_proc=n_proc,
+                )
+        for sub_list in q.get_comm().allgather(all_closest_point_sub_list):
+            all_closest_point_list += sub_list
+    else:
+        for xg in list(psel):
+            x = find_closest(xg)
+            all_closest_point_list.append(x)
     all_closest_point_list = q.random_permute(all_closest_point_list, rs.split(f"permute"))
     all_closest_point_list.sort(key=lambda x: x[0])
     q.displayln_info(0, f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; {all_closest_point_list[:5]} .")
@@ -401,7 +409,10 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
         n_proc = None
     else:
         n_proc = 0
-    all_closest_n_point_sub_list = q.parallel_map(find_closest, xg_sub_list, chunksize=chunksize, n_proc=n_proc)
+    all_closest_n_point_sub_list = q.parallel_map(
+            find_closest, xg_sub_list,
+            chunksize=chunksize, n_proc=n_proc,
+            )
     all_closest_n_point_list = []
     for sub_list in q.get_comm().allgather(all_closest_n_point_sub_list):
         all_closest_n_point_list += sub_list
@@ -527,15 +538,15 @@ def psel_split_that_increase_separation(psel, mode=None, rs=None):
         assert False
 
 @q.timer(is_timer_fork=True)
-def find_closest_dis_sqr_for_psel_list(psel_list):
+def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
     fname = q.get_fname()
     assert isinstance(psel_list, list)
-    closest_dis_sqr_list = []
-    for psel in psel_list:
+    def find_closest_dis_sqr(psel_idx):
+        psel = psel_list[psel_idx]
         assert isinstance(psel, q.PointsSelection)
         if len(psel) == 0:
-            continue
-        all_closest_point_list = find_all_closest_point_list(psel)
+            return None
+        all_closest_point_list = find_all_closest_point_list(psel, is_parallel=not is_parallel)
         assert isinstance(all_closest_point_list, list)
         assert len(all_closest_point_list) > 0
         closest_point_list = all_closest_point_list[0]
@@ -548,7 +559,26 @@ def find_closest_dis_sqr_for_psel_list(psel_list):
         assert isinstance(closest_point_list[1][1], list)
         assert len(closest_point_list[1][1]) > 0
         closest_dis_sqr = closest_point_list[0]
-        closest_dis_sqr_list.append(closest_dis_sqr)
+        return closest_dis_sqr
+    closest_dis_sqr_list = []
+    if is_parallel:
+        psel_idx_list = list(range(len(psel_list)))
+        psel_idx_sub_list = q.get_mpi_chunk(psel_idx_list)
+        if len(psel_idx_sub_list) >= 2:
+            n_proc = None
+        else:
+            n_proc = 0
+        chunksize = 1
+        closest_dis_sqr_sub_list = q.parallel_map(
+                find_closest_dis_sqr, psel_idx_sub_list,
+                chunksize=chunksize, n_proc=n_proc,
+                )
+        for sub_list in q.get_comm().allgather(closest_dis_sqr_sub_list):
+            closest_dis_sqr_list += sub_list
+    else:
+        for psel_idx in range(len(psel_list)):
+            closest_dis_sqr = find_closest_dis_sqr(psel_idx)
+            closest_dis_sqr_list.append(closest_dis_sqr)
     q.displayln_info(0, f"{fname}: {sorted(closest_dis_sqr_list, reverse=True)[:5]}.")
     return closest_dis_sqr_list
 
