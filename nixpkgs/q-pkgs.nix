@@ -554,6 +554,7 @@ let
         inherit (pkgs)
         bashInteractive
         bash-completion
+        stdenvNoCC
         coreutils
         openssh
         linux-pam
@@ -624,7 +625,7 @@ let
   in {
     inherit qlat-name;
     inherit use-gitee;
-    inherit qlat-nixgl;
+    inherit qlat-nixgl qlat-stdenv;
     inherit python3 mpi openmp ucx-mt ucx-mt-dev;
     inherit c-lime qmp qio cps cuba-quad grid-lehner gpt-lehner;
     inherit qlat_utils qlat qlat_grid qlat_cps;
