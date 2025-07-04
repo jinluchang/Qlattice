@@ -76,6 +76,7 @@ source qcore/set-prefix.sh $name
 
     time-run make -j$num_proc -C Grid
     time-run make install -C Grid
+    time-run install -D -m755 grid-config "$prefix"/bin/grid-config
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"
