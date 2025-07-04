@@ -68,7 +68,7 @@ source qcore/set-prefix.sh $name
         $opts \
         --prefix="$prefix"
 
-    time-run make -j$num_proc
+    time-run make -j$num_proc -C Grid
     time-run make install
 
     mk-setenv.sh

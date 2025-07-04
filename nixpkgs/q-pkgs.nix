@@ -709,29 +709,31 @@ let
 
   options-list = [
     {}
-    { use-grid-gpt = false; use-cps = false; }
-    { use-grid-gpt = false; }
+    { use-cps = false; use-grid-gpt = false; }
     { use-cps = false; }
+    { use-grid-gpt = false; }
     { use-cuda-software = true; }
     { use-cuda = true; }
     { use-cudasupport = true; }
-    { use-grid-gpt = false; use-cubaquad = false; }
-    { use-grid-gpt = false; use-clang = true; }
     { use-ucx = false; }
+    { use-clang = true; }
     { use-pypi = version-pypi; }
     #
-    { use-grid-gpt = false; use-cps = false; use-ucx = false; }
-    { use-grid-gpt = false; use-cps = false; use-clang = true; use-ucx = false; }
-    #
-    { use-clang = true; }
     { use-clang = true; use-ucx = false; }
+    { use-cuda = true; use-ucx = false; }
+    { use-grid-gpt = false; use-cubaquad = false; }
+    { use-grid-gpt = false; use-clang = true; }
+    #
+    { use-cps = false; use-grid-gpt = false; use-ucx = false; }
+    { use-cps = false; use-grid-gpt = false; use-clang = true; use-ucx = false; }
+    #
+    { use-cps = false; use-ucx = false; }
     { use-cps = false; use-clang = true; use-ucx = false; }
     { use-cps = false; use-clang = true; }
     #
-    { use-cuda = true; use-ucx = false; }
-    { use-grid-gpt = false; use-cps = false; use-cuda-software = true; }
-    { use-grid-gpt = false; use-cps = false; use-cuda = true; }
-    { use-grid-gpt = false; use-cps = false; use-cudasupport = true; }
+    { use-cps = false; use-grid-gpt = false; use-cuda-software = true; }
+    { use-cps = false; use-grid-gpt = false; use-cuda = true; }
+    { use-cps = false; use-grid-gpt = false; use-cudasupport = true; }
   ];
 
   qlat-name-list = lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list));
