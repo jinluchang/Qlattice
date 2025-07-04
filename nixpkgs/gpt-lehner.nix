@@ -17,14 +17,15 @@
 }:
 
 let
-  orig-stdenv = stdenv;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
-in
-
-buildPythonPackage rec {
-
   pname = "gpt-lehenr";
   version = "861e8ee38beb6c97638cf8fdc1a024b04618961f";
+in
+
+buildPythonPackage {
+
+  pname = pname;
+  version = version;
 
   pyproject = false;
 
@@ -37,7 +38,7 @@ buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
-  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
+  stdenv = stdenv;
 
   build-system = [
     pkg-config

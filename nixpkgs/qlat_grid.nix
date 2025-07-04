@@ -17,18 +17,19 @@
 
 let
 
-  orig-stdenv = stdenv;
-
   version-pypi = use-pypi;
   src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_grid/qlat_grid-${version-pypi}.tar.gz";
 
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat-grid;
 
-in buildPythonPackage rec {
-
   pname = "qlat_grid${qlat-name}";
   version = if use-pypi != null then version-pypi else version-local;
+
+in buildPythonPackage {
+
+  pname = pname;
+  version = version;
 
   pyproject = true;
 
@@ -36,7 +37,7 @@ in buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
-  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
+  stdenv = stdenv;
 
   build-system = [
     qlat

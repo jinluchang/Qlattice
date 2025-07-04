@@ -191,9 +191,11 @@ let
     #
     qlat-name = mk-qlat-name opts;
     #
-    qlat-stdenv = if ! opts.use-clang
-    then pkgs.stdenv
-    else pkgs.clangStdenv;
+    qlat-stdenv = if opts.use-clang
+    then pkgs.clangStdenv
+    else if opts.use-cuda
+    then pkgs.cudaPackages.backendStdenv
+    else pkgs.stdenv;
     #
     openmp = if ! opts.use-clang
     then null

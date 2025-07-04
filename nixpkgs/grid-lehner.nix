@@ -26,10 +26,9 @@
 }:
 
 let
-  grid-stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv;
   cpuinfo-has-avx2 = (builtins.match ".*flags.*:.*avx2.*" cpuinfo) != null;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
-in grid-stdenv.mkDerivation rec {
+in stdenv.mkDerivation rec {
 
   pname = "Grid-lehner";
   version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2";
@@ -64,7 +63,7 @@ in grid-stdenv.mkDerivation rec {
     gmp
     mpfr
   ]
-  ++ lib.optional grid-stdenv.cc.isClang openmp
+  ++ lib.optional stdenv.cc.isClang openmp
   ++ lib.optionals cudaSupport (with cudaPackages; [
     cuda_cccl
     cuda_cudart
@@ -128,7 +127,7 @@ in grid-stdenv.mkDerivation rec {
     c++ --version
     #
     echo
-    echo 'grid-stdenv=${grid-stdenv.cc}'
+    echo 'stdenv=${stdenv.cc}'
     echo
   '' + extra;
 

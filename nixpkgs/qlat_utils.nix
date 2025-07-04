@@ -23,8 +23,6 @@
 
 let
 
-  orig-stdenv = stdenv;
-
   version-pypi = use-pypi;
 
   src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz";
@@ -32,10 +30,13 @@ let
   version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
   src-local = ../qlat-utils;
 
-in buildPythonPackage rec {
-
   pname = "qlat_utils${qlat-name}";
   version = if use-pypi != null then version-pypi else version-local;
+
+in buildPythonPackage {
+
+  pname = pname;
+  version = version;
 
   pyproject = true;
 
@@ -43,7 +44,7 @@ in buildPythonPackage rec {
 
   enableParallelBuilding = true;
 
-  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
+  stdenv = stdenv;
 
   build-system = [
     meson-python
