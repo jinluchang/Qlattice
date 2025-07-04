@@ -240,12 +240,19 @@ let
       paths = [ ucx-mt ];
       extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
     };
-    mpi = (pkgs.mpi.overrideAttrs (final: prev: {
+    mpi = if ! opts.use-ucx && ! opts.use-cuda-software
+    then pkgs.mpi
+    else if ! opts.use-cuda-software
+    then pkgs.mpi.overrideAttrs (final: prev: {
+      configureFlags = prev.configureFlags ++
+      lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ];
+    })
+    else (pkgs.mpi.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++
       (let
         cudaPackages = pkgs.cudaPackages;
       in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
-      ++ lib.optionals opts.use-cuda-software [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
+      ++ [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
       );
       env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
         "-Wno-error=int-conversion"
