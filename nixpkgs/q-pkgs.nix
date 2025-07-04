@@ -264,14 +264,16 @@ let
     };
     python3 = pkgs.python3.override {
       packageOverrides = final: prev: rec {
-        mpi4py = prev.mpi4py.overridePythonAttrs (py-prev: {
+        mpi4py = if ! opts.use-cuda-software
+        then prev.mpi4py
+        else prev.mpi4py.overridePythonAttrs (py-prev: {
           doCheck = true;
           nativeBuildInputs = (py-prev.nativeBuildInputs or [])
-          ++ lib.optionals opts.use-cuda-software [
+          ++ [
             qlat-nixgl
             pkgs.which
           ];
-          preInstallCheck = lib.optionalString opts.use-cuda-software ''
+          preInstallCheck = ''
             which nixGL
             echo
             echo "run with nixGL"
