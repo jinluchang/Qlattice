@@ -95,6 +95,12 @@ buildPythonPackage {
     pwd
     ls -l
     #
+    which python3-config
+    python3-config --prefix
+    python3-config --includes
+    python3-config --ldflags
+    python3-config --libs
+    #
     patchShebangs --build ./clean ./update
     #
     echo '-- clean source...'
