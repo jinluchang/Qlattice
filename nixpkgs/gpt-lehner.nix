@@ -99,7 +99,9 @@ buildPythonPackage {
     python3-config --prefix
     python3-config --includes
     python3-config --ldflags
-    python3-config --libs
+    echo
+    cat "$(python3-config --prefix)/bin/python3-config"
+    echo
     #
     patchShebangs --build ./clean ./update
     #
