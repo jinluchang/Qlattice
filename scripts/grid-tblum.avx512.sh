@@ -73,7 +73,7 @@ source qcore/set-prefix.sh $name
         --prefix="$prefix"
 
     time-run make -j$num_proc -C Grid
-    time-run make install
+    time-run make install -C Grid
 
     mk-setenv.sh
     echo "!!!! $name build !!!!"

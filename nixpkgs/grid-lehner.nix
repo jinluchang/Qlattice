@@ -160,6 +160,11 @@ in stdenv.mkDerivation rec {
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;
 
+  preBuild = ''
+    cd Grid
+    pwd
+  '';
+
   postFixup = ''
     mkdir -pv "$out"/share/version
     echo ${version} >"$out"/share/version/${pname}
