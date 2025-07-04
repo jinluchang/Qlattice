@@ -244,12 +244,12 @@ let
     then pkgs.mpi
     else if ! opts.use-cuda-software
     then pkgs.mpi.overrideAttrs (final: prev: {
-      configureFlags = prev.configureFlags ++
-      lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ];
+      configureFlags = prev.configureFlags
+      ++ lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ];
     })
     else (pkgs.mpi.overrideAttrs (final: prev: {
-      configureFlags = prev.configureFlags ++
-      (let
+      configureFlags = prev.configureFlags
+      ++ (let
         cudaPackages = pkgs.cudaPackages;
       in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
       ++ [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
@@ -268,8 +268,7 @@ let
         then prev.mpi4py
         else prev.mpi4py.overridePythonAttrs (py-prev: {
           doCheck = true;
-          nativeBuildInputs = (py-prev.nativeBuildInputs or [])
-          ++ [
+          nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
             qlat-nixgl
             pkgs.which
           ];
@@ -287,15 +286,18 @@ let
             echo $LD_LIBRARY_PATH
           '';
         });
-        jax = prev.jax.overridePythonAttrs (py-prev: {
-          doCheck = ! opts.use-cudasupport;
-          nativeBuildInputs = (py-prev.nativeBuildInputs or [])
-          ++ lib.optionals opts.use-cudasupport [
+        jax = if ! opts.use-cudasupport
+        then prev.jax
+        else prev.jax.overridePythonAttrs (py-prev: {
+          doCheck = false;
+          nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
             prev.jaxlib
           ];
         });
-        accelerate = prev.accelerate.overridePythonAttrs (py-prev: {
-          doCheck = ! opts.use-cudasupport;
+        accelerate = if ! opts.use-cudasupport
+        then prev.accelerate
+        else prev.accelerate.overridePythonAttrs (py-prev: {
+          doCheck = false;
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };

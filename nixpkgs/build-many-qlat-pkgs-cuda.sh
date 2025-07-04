@@ -26,6 +26,7 @@ name_list=(
   q-pkgs-clang
   q-pkgs-cu
   q-pkgs-cudasupport
+  q-pkgs-ucxless
   q-pkgs-pypi
 )
 
