@@ -142,6 +142,7 @@ let
     };
     corrections-3 = opts: opts // {
       ${if opts.use-cuda then "use-cuda-software" else null} = true;
+      ${if opts.use-cuda then "use-clang" else null} = false;
     };
     corrections-4 = opts: opts // {
       ${if ! opts.use-cuda-software then "ngpu" else null} = 0;
@@ -197,9 +198,9 @@ let
     then pkgs.cudaPackages.backendStdenv
     else pkgs.stdenv;
     #
-    openmp = if ! opts.use-clang
-    then null
-    else pkgs.llvmPackages.openmp;
+    openmp = if qlat-stdenv.cc.isClang
+    then pkgs.llvmPackages.openmp
+    else null;
     #
     qlat-eigen = if opts.use-grid-gpt
     then grid-lehner
