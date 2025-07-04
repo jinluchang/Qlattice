@@ -1,6 +1,6 @@
 {
-  nixpkgs ? null, # nixpkgs
-  version ? null, # version of the nixpkgs
+  nixpkgs ? null, # nixpkgs. E.g. (fetchTarball "https://channels.nixos.org/nixos-25.05/nixexprs.tar.xz")
+  version ? null, # version of the nixpkgs. E.g. "25.05"
   ngpu ? null, # adjust with desired number of GPUs. E.g. "2"
   cudaCapability ? null, # adjust with desired cudaCapability. E.g. "8.6"
   cudaForwardCompat ? null, # adjust with desired cudaForwardCompat. E.g. false
@@ -292,12 +292,44 @@ let
           doCheck = false;
           nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
             prev.jaxlib
+            qlat-nixgl
+            pkgs.which
           ];
+          preInstallCheck = ''
+            which nixGL
+            echo
+            echo "run with nixGL"
+            echo
+            cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+            echo
+            echo cat nix-gl.sh
+            cat nix-gl.sh
+            source nix-gl.sh
+            echo
+            echo $LD_LIBRARY_PATH
+          '';
         });
         accelerate = if ! opts.use-cudasupport
         then prev.accelerate
         else prev.accelerate.overridePythonAttrs (py-prev: {
           doCheck = false;
+          nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
+            qlat-nixgl
+            pkgs.which
+          ];
+          preInstallCheck = ''
+            which nixGL
+            echo
+            echo "run with nixGL"
+            echo
+            cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
+            echo
+            echo cat nix-gl.sh
+            cat nix-gl.sh
+            source nix-gl.sh
+            echo
+            echo $LD_LIBRARY_PATH
+          '';
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
