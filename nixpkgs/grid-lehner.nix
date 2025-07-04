@@ -165,6 +165,11 @@ in stdenv.mkDerivation rec {
     pwd
   '';
 
+  postInstall= ''
+    cd ..
+    install -D -m755 grid-config "$out"/bin/grid-config
+  '';
+
   postFixup = ''
     mkdir -pv "$out"/share/version
     echo ${version} >"$out"/share/version/${pname}
