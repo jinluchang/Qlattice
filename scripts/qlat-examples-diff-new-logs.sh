@@ -6,8 +6,9 @@ source qcore/set-prefix.sh
 
 prefix_main="$prefix"
 
-for prefix in "$prefix_main/qlat-examples-cpp" "$prefix_main/qlat-examples-cpp-grid" ; do
-    for log in examples-cpp/*/log ; do
+for name in "-cpp" "-cpp-grid" ; do
+    prefix="$prefix_main/qlat-examples$name"
+    for log in examples$name/*/log ; do
         # echo diff "$log" "$prefix/$log"
         if diff "$prefix/$log" "$log" >/dev/null 2>&1 ; then
             :
@@ -22,8 +23,9 @@ for prefix in "$prefix_main/qlat-examples-cpp" "$prefix_main/qlat-examples-cpp-g
     done
 done
 
-for prefix in "$prefix_main/qlat-examples-py" "$prefix_main/qlat-examples-py-gpt" "$prefix_main/qlat-examples-py-cps" ; do
-    for log in examples-py/*.log ; do
+for name in "-py" "-py-gpt" "-py-cps" ; do
+    prefix="$prefix_main/qlat-examples$name"
+    for log in examples$name/*.log ; do
         # echo diff "$log" "$prefix/$log"
         if diff "$prefix/$log" "$log" >/dev/null 2>&1 ; then
             :
