@@ -67,4 +67,12 @@ API inline Long& write_from_qfile_chunk_size()
   return size;
 }
 
+API inline std::string& get_fftw_plan_flag()
+// qlat parameter
+// "estimate" (default), "measure"
+{
+  static std::string flag = get_env_default("q_fftw_plan_flag", "estimate");
+  return flag;
+}
+
 }  // namespace qlat

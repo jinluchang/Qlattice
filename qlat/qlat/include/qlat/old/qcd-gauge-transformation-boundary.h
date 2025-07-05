@@ -295,8 +295,15 @@ inline void fft_convolution(std::vector<ComplexD>& out,
     f_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     f_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
 
-    p_forward = fftw_plan_dft_1d(N, f_in, f_out, FFTW_FORWARD, FFTW_ESTIMATE);
-    p_backward = fftw_plan_dft_1d(N, z_in, z_out, FFTW_BACKWARD, FFTW_ESTIMATE);
+    unsigned fftw_plan_flag = FFTW_ESTIMATE;
+    if (get_fftw_plan_flag() == "measure") {
+      fftw_plan_flag = FFTW_MEASURE;
+    } else {
+      qassert(get_fftw_plan_flag() == "estimate");
+      fftw_plan_flag = FFTW_ESTIMATE;
+    }
+    p_forward = fftw_plan_dft_1d(N, f_in, f_out, FFTW_FORWARD, fftw_plan_flag);
+    p_backward = fftw_plan_dft_1d(N, z_in, z_out, FFTW_BACKWARD, fftw_plan_flag);
 
     initialized = true;
   }

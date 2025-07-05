@@ -51,10 +51,17 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   const Long howmany = nc_size;
   const Long dist = 1;
   const Long stride = nc_size;
+  unsigned fftw_plan_flag = FFTW_ESTIMATE;
+  if (get_fftw_plan_flag() == "measure") {
+    fftw_plan_flag = FFTW_MEASURE;
+  } else {
+    qassert(get_fftw_plan_flag() == "estimate");
+    fftw_plan_flag = FFTW_ESTIMATE;
+  }
   fftplan = fftw_plan_many_dft(rank, n, howmany, (fftw_complex*)fftdatac, n,
                                stride, dist, (fftw_complex*)fftdatac, n, stride,
                                dist, is_forward ? FFTW_FORWARD : FFTW_BACKWARD,
-                               FFTW_ESTIMATE);
+                               fftw_plan_flag);
   fftw_free(fftdatac);
   displayln_info(ssprintf("FftComplexFieldPlan::init: free %ld",
                           nc_size * sizec * sizeof(ComplexD)));

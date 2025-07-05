@@ -118,6 +118,10 @@
 
   Default is `16`.
 
+- `q_fftw_plan_flag`
+
+  Default is `estimate`. Other possible values include `measure`.
+
 ## Useful options
 
 - `OMP_STACKSIZE=8M` OpenMP option for setting per thread stack size.

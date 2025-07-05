@@ -238,8 +238,13 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   #endif
   }else{
 
-  // unsigned flags = FFTW_MEASURE;
-  unsigned flags = FFTW_ESTIMATE;
+  unsigned fftw_plan_flag = FFTW_ESTIMATE;
+  if (get_fftw_plan_flag() == "measure") {
+    fftw_plan_flag = FFTW_MEASURE;
+  } else {
+    qassert(get_fftw_plan_flag() == "estimate");
+    fftw_plan_flag = FFTW_ESTIMATE;
+  }
 
   if(MPI_para.size() == 3)
   {
@@ -251,18 +256,18 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
     alloc_local = fftw_mpi_local_size_many(dim, nrank, howmany, block0, fft_comm, &local_n0, &local_0_start);
     fft_dat = fftw_malloc(alloc_local*bsize);
     plan_cpuD0 = fftw_mpi_plan_many_dft(dim,nrank, howmany, block0, block0, (fftw_complex*) fft_dat, (fftw_complex*) fft_dat,
-              fft_comm, FFTW_FORWARD , flags);
+              fft_comm, FFTW_FORWARD , fftw_plan_flag);
     plan_cpuD1 = fftw_mpi_plan_many_dft(dim,nrank, howmany, block0, block0, (fftw_complex*) fft_dat, (fftw_complex*) fft_dat,
-              fft_comm, FFTW_BACKWARD, flags);
+              fft_comm, FFTW_BACKWARD, fftw_plan_flag);
     }
 
     if(single_type == 1){
     alloc_local = fftwf_mpi_local_size_many(dim, nrank, howmany, block0, fft_comm, &local_n0, &local_0_start);
     fft_dat = fftwf_malloc(alloc_local*bsize);
     plan_cpuF0 = fftwf_mpi_plan_many_dft(dim,nrank, howmany, block0, block0, (fftwf_complex*) fft_dat, (fftwf_complex*) fft_dat,
-              fft_comm, FFTW_FORWARD , flags);
+              fft_comm, FFTW_FORWARD , fftw_plan_flag);
     plan_cpuF1 = fftwf_mpi_plan_many_dft(dim,nrank, howmany, block0, block0, (fftwf_complex*) fft_dat, (fftwf_complex*) fft_dat,
-              fft_comm, FFTW_BACKWARD, flags);
+              fft_comm, FFTW_BACKWARD, fftw_plan_flag);
     }
   
     /////each node has data vol/("Nv[0]")
@@ -282,18 +287,18 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
     if(single_type == 0){
     plan_cpuD0 = fftw_plan_many_dft(dim,&nv[0], howmany,
         (fftw_complex*)  fft_dat,&nv[0],istride,idist,
-        (fftw_complex*)  fft_dat,&nv[0],istride,idist, FFTW_FORWARD, flags);
+        (fftw_complex*)  fft_dat,&nv[0],istride,idist, FFTW_FORWARD, fftw_plan_flag);
     plan_cpuD1 = fftw_plan_many_dft(dim,&nv[0], howmany,
         (fftw_complex*)  fft_dat,&nv[0],istride,idist,
-        (fftw_complex*)  fft_dat,&nv[0],istride,idist,FFTW_BACKWARD, flags);}
+        (fftw_complex*)  fft_dat,&nv[0],istride,idist,FFTW_BACKWARD, fftw_plan_flag);}
 
     if(single_type == 1){
     plan_cpuF0 = fftwf_plan_many_dft(dim,&nv[0], howmany,
         (fftwf_complex*) fft_dat,&nv[0],istride,idist,
-        (fftwf_complex*) fft_dat,&nv[0],istride,idist, FFTW_FORWARD, flags);
+        (fftwf_complex*) fft_dat,&nv[0],istride,idist, FFTW_FORWARD, fftw_plan_flag);
     plan_cpuF1 = fftwf_plan_many_dft(dim,&nv[0], howmany,
         (fftwf_complex*) fft_dat,&nv[0],istride,idist,
-        (fftwf_complex*) fft_dat,&nv[0],istride,idist,FFTW_BACKWARD, flags);}
+        (fftwf_complex*) fft_dat,&nv[0],istride,idist,FFTW_BACKWARD, fftw_plan_flag);}
 
     ////if(rotate_buf == false)
     if(fft_dat!=NULL){
