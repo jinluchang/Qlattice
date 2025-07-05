@@ -46,6 +46,8 @@ let
 
   nixgl = (import nixgl-src {}).auto.nixGLDefault;
 
+  is-linux = lib.lists.elem builtins.currentSystem lib.platforms.linux;
+
   cpuinfo-sys = builtins.readFile (runCommandLocal
   "impure-cpuinfo-file"
   {
@@ -571,11 +573,16 @@ let
       torchaudio
       xformers
       jupyterlab
-      jupyterhub
-      jupyterhub-systemdspawner
       ollama
       ;
     }
+    // (if is-linux then {
+      inherit (ps)
+      jupyterhub
+      jupyterhub-systemdspawner
+      ;
+    } else {}
+    )
     // (if opts.use-cuda-software then {
       inherit (ps)
       pycuda
@@ -586,9 +593,6 @@ let
     )
     // qlat-py-pkgs
     ));
-    linux-pam = if lib.lists.elem builtins.currentSystem lib.platforms.linux
-    then pkgs.linux-pam
-    else null;
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues ({
@@ -599,7 +603,6 @@ let
         mpi
         ollama
         nvidia_x11_bin
-        linux-pam
         ;
         inherit (pkgs)
         bashInteractive
@@ -635,6 +638,12 @@ let
         unzip
         ;
       }
+      // (if is-linux then {
+        inherit (pkgs)
+        linux-pam
+        ;
+      } else {}
+      )
       // qlat-cc
       // qlat-dep-pkgs
       // qlat-dep-pkgs-extra
