@@ -196,7 +196,7 @@ let
     then pkgs.clangStdenv
     else if opts.use-cuda
     then pkgs.cudaPackages.backendStdenv
-    else pkgs.stdenv;
+    else pkgs.gccStdenv;
     #
     openmp = if qlat-stdenv.cc.isClang
     then pkgs.llvmPackages.openmp
