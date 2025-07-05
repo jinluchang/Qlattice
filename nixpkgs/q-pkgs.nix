@@ -586,6 +586,9 @@ let
     )
     // qlat-py-pkgs
     ));
+    linux-pam = if lib.lists.elem builtins.currentSystem lib.platforms.linux
+    then pkgs.linux-pam
+    else null;
     qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues ({
@@ -596,6 +599,7 @@ let
         mpi
         ollama
         nvidia_x11_bin
+        linux-pam
         ;
         inherit (pkgs)
         bashInteractive
@@ -603,7 +607,6 @@ let
         stdenvNoCC
         coreutils
         openssh
-        linux-pam
         findutils
         clang-tools
         m4
