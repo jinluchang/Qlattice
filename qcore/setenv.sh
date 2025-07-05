@@ -40,8 +40,8 @@ if [ "$(uname)" == "Darwin" ]; then
         if [ -e "$(brew --prefix)/opt/llvm/lib/c++" ]; then
             export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++""${LD_RUN_PATH:+:$LD_RUN_PATH}"
         fi
-        if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
+        if [ -e "$(brew --prefix)/Cellar/fftw/"*"/lib" ]; then
+            export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/"*"/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/openssl@3/lib" ]; then
             export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
@@ -61,8 +61,8 @@ if [ "$(uname)" == "Darwin" ]; then
         if [ -e "$(brew --prefix)/opt/openssl@3/include" ]; then
             export CPATH="$(brew --prefix)/opt/openssl@3/include""${CPATH:+:$CPATH}"
         fi
-        if [ -e "$(brew --prefix)/Cellar/fftw/3.3.10_1/include" ]; then
-            export CPATH="$(brew --prefix)/Cellar/fftw/3.3.10_1/include""${CPATH:+:$CPATH}"
+        if [ -e "$(brew --prefix)/Cellar/fftw/"*"/include" ]; then
+            export CPATH="$(brew --prefix)/Cellar/fftw/"*"/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/include" ]; then
             export CPATH="$(brew --prefix)/opt/llvm/include""${CPATH:+:$CPATH}"
