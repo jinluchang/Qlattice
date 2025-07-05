@@ -68,6 +68,7 @@ buildPythonPackage {
   preConfigure = ''
 	export OMPI_CXX=c++
 	export OMPI_CC=cc
+    export CGPT_EXTRA_LDFLAGS="-undefined dynamic_lookup"
     #
     export
     #
@@ -99,8 +100,8 @@ buildPythonPackage {
     python3-config --prefix
     python3-config --includes
     python3-config --ldflags
-    echo
-    cat "$(python3-config --prefix)/bin/python3-config"
+    # echo
+    # cat "$(python3-config --prefix)/bin/python3-config"
     echo
     #
     patchShebangs --build ./clean ./update
