@@ -474,6 +474,7 @@ void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm,
 
 void eigen_ov::copy_evec_to_GPU(int nini)
 {
+  (void) nini;
   #ifndef QLAT_USE_ACC
   return ;
   #else

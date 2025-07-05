@@ -150,7 +150,8 @@ void prop_to_vec(std::vector<qpropT >& Eprop, qlat::vector_gpu<Ty >& resTa, fft_
 {
   const Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   ////Eprop, nmass --> 12 * 12 * Nvol
-  qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
+  //qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
+  qlat::vector_acc<Ty* > propP = FieldM_to_Tpointers(Eprop, Nxyz);
   prop_to_vec(propP, resTa, fd);
 }
 

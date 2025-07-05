@@ -679,7 +679,7 @@ inline void random_FieldG(Fieldy& a,int GPU=0, int seed = 0)
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
   qassert(IsBasicTypeReal<D>());
 
-  const Geometry& geo = a.geo();
+  //const Geometry& geo = a.geo();
   const Long Nd = GetFieldSize(a);
   qassert(Nd % (2 * sizeof(D)) == 0);
   ComplexT<D>* buf = (ComplexT<D>*) qlat::get_data(a).data();

@@ -153,7 +153,7 @@ struct API FieldG : Field<M> {
   }
 
   // only structures
-  void init_size(const FieldG<M>& f, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
+  void init_size(const FieldG<M>& f)
   {
     if(!Field<M>::initialized or Field<M>::geo() != f.geo() or Field<M>::multiplicity != f.multiplicity or field_gpu.GPU != f.field_gpu.GPU or mem_order != f.mem_order)
     {
@@ -430,9 +430,9 @@ qacc QMEM_ORDER get_mem_order(SelectedFieldG<M>& f)
 template <typename M >
 qacc QMEM_ORDER get_mem_order(Field<M>& f)
 {
+  Qassert(f.initialized);
   return QLAT_DEFAULT;
 }
-
 
 
 //// always 12*12 --> civ for vectorization

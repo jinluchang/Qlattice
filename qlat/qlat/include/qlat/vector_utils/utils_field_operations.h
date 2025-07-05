@@ -48,7 +48,7 @@ void init_fieldsG(std::vector<Fieldy >& res, Fieldy& src, const unsigned int siz
 }
 
 template<class Fieldy>
-void init_fieldsG(Fieldy & res, Fieldy& src, const unsigned int size)
+void init_fieldsG(Fieldy & res, Fieldy& src)
 {
   Qassert(src.initialized);
   if(!res.initialized or res.multiplicity == src.multiplicity){

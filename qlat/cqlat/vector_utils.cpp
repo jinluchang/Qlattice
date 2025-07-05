@@ -158,7 +158,7 @@ EXPORT(clear_output, {
   }
 
   std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_0));
-  print0("size of write %d \n", int(write.size()));
+  qmessage("size of write %d \n", int(write.size()));
   for(unsigned int i=0;i<write.size();i++){write[i] = 0;}
 
   Py_RETURN_NONE;
