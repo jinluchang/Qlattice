@@ -353,10 +353,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: cachix/install-nix-action@v30
-    # - name: Build qlat
-    #   run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env -j 1 --cores 3
-    # - name: Test qlat
-    #   run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-tests -j 1 --cores 3
+    - name: Build qlat
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env -j 1 --cores 3
+    - name: Test qlat
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-tests -j 1 --cores 3
     - name: Build qlat with GPT and CPS
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat with GPT and CPS
