@@ -14,9 +14,6 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
-
 total_site = q.Coordinate([ 4, 4, 4, 8, ])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
@@ -33,7 +30,6 @@ q.json_results_append(f"gf", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-12)
 mode_fft = 1
 fft_f = q.mk_fft(True, is_normalizing=True, is_only_spatial=False, mode_fft=mode_fft)
 fft_b = q.mk_fft(False, is_normalizing=True, is_only_spatial=False, mode_fft=mode_fft)
-
 
 gfm = fft_f * gf
 
@@ -232,7 +228,7 @@ sf4 @= f4
 sig = q.glb_sum(q.get_data_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node()}")))
 q.json_results_append(f"sf4 sig", sig, 1e-7)
 
-q.check_log_json(__file__)
 q.timer_display()
+q.check_log_json(__file__)
 q.end_with_mpi()
 q.displayln_info(f"CHECK: finished successfully.")

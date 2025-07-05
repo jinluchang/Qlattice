@@ -157,6 +157,7 @@ def get_data_sig(x, RngState rs):
     ``x`` can be an instance of ``LatData``, ``np.ndarray``, etc.
     """
     if isinstance(x, np.ndarray):
+        rs = rs.copy()
         arr = x.ravel()
         arr_rand = rs.u_rand_arr(arr.shape) * 2.0 - 1.0
         return np.sum(arr * arr_rand)
@@ -164,7 +165,9 @@ def get_data_sig(x, RngState rs):
         return get_data_sig(np.asarray(x), rs)
     elif isinstance(x, (SpinMatrix, ColorMatrix, WilsonMatrix,)):
         return get_data_sig(np.asarray(x), rs)
-    elif isinstance(x, (int, float, complex,)):
+    elif isinstance(x, (int, float,)):
+        return float(x)
+    elif isinstance(x, (complex,)):
         return complex(x)
     elif hasattr(x, "get_data_sig"):
         return x.get_data_sig(rs)
