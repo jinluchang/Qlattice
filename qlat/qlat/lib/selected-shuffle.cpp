@@ -171,7 +171,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
 // SelectedPoints<Char> spc(sp.view_as_char());
 // SelectedPoints<Char> spc0(sp0.view_as_char());
 {
-  TIMER("shuffle_selected_points_char(spc,spc0,ssp)");
+  TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)");
   const SelectedPoints<Long>& spi_s = ssp.shuffle_idx_points_send;
   const SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
   qassert(spi_s.initialized);
@@ -207,18 +207,21 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   });
   // Perform shuffle with `MPI_Alltoallv`.
   {
-    TIMER("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
+    TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
     vector<Char> send_buffer(sp0.points.size());
     vector<Char> recv_buffer(sp.points.size());
     assign(send_buffer, sp0.points);
     {
-      TIMER("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
-      mpi_alltoallv(send_buffer.data(), ssp.sendcounts.data(), ssp.sdispls.data(),
-          mpi_dtype.mpi_dtype, recv_buffer.data(), ssp.recvcounts.data(),
-          ssp.rdispls.data(), mpi_dtype.mpi_dtype, get_comm());
+      TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
+      mpi_alltoallv(send_buffer.data(), ssp.sendcounts.data(),
+                    ssp.sdispls.data(), mpi_dtype.mpi_dtype, recv_buffer.data(),
+                    ssp.recvcounts.data(), ssp.rdispls.data(),
+                    mpi_dtype.mpi_dtype, get_comm());
+      timer.flops += (ssp.total_send_count + ssp.total_recv_count) / 2;
     }
     assign(sp.points, recv_buffer);
+    timer.flops += (ssp.total_send_count + ssp.total_recv_count) / 2;
   }
   // In case `ssp.shuffle_idx_points_recv` is defined, perform final reordering.
   if (spi_r.initialized) {
@@ -231,6 +234,7 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
       assign(v1, v);
     });
   }
+  timer.flops += (ssp.total_send_count + ssp.total_recv_count) / 2;
 }
 
 void shuffle_points_selection(PointsSelection& psel,

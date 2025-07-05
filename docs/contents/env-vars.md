@@ -122,6 +122,10 @@
 
   Default is `estimate`. Other possible values include `measure`.
 
+- `q_mpi_alltoallv_type`
+
+  Default is `native`. Other possible values include `custom`.
+
 ## Useful options
 
 - `OMP_STACKSIZE=8M` OpenMP option for setting per thread stack size.
