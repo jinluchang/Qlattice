@@ -6573,8 +6573,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 0/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt",
   {
-   "real": 0.0322418837441361,
-   "imag": 2.539365065071241e-18,
+   "real": 0.03201317347553695,
+   "imag": 2.5619775922670074e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6582,8 +6582,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 0/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt_sloppy",
   {
-   "real": 0.03180203675773878,
-   "imag": -2.6649024804574837e-19,
+   "real": 0.03158058465195365,
+   "imag": -2.655130265538046e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6591,8 +6591,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt",
   {
-   "real": 0.02463683913154836,
-   "imag": -2.1275177541980094e-18,
+   "real": 0.025815869337982033,
+   "imag": -2.1217936583597397e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6600,8 +6600,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt_sloppy",
   {
-   "real": 0.02463683913154836,
-   "imag": -2.1275177541980094e-18,
+   "real": 0.025815869337982033,
+   "imag": -2.1217936583597397e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6609,8 +6609,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 2/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt",
   {
-   "real": 0.007065536324472639,
-   "imag": -8.718543685252966e-18,
+   "real": 0.007028197006310248,
+   "imag": -8.672468700761151e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6618,8 +6618,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 2/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt_sloppy",
   {
-   "real": 0.007070574103529794,
-   "imag": -3.6844895560464954e-19,
+   "real": 0.007033208162160549,
+   "imag": -3.6650180932330145e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6627,8 +6627,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 3/4 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": 0.11614773673673615,
-   "imag": -1.9809182652574354e-18,
+   "real": 0.11658155976950904,
+   "imag": -1.965168486438898e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6636,8 +6636,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 0/3 3/4 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
   {
-   "real": 0.11614773673673615,
-   "imag": -1.9809182652574354e-18,
+   "real": 0.11658155976950904,
+   "imag": -1.965168486438898e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6645,8 +6645,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt",
   {
-   "real": 0.06822941366787648,
-   "imag": -1.0299541648624754e-16,
+   "real": 0.06819826981315966,
+   "imag": -1.0459163321871186e-16,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6654,8 +6654,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt_sloppy",
   {
-   "real": 0.06668745703343656,
-   "imag": -3.1012190351004546e-19,
+   "real": 0.0666552288804796,
+   "imag": -3.3968905221054773e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6663,8 +6663,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 1/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": 0.10406174461512839,
-   "imag": 1.6678152501641096e-18,
+   "real": 0.1053885834756983,
+   "imag": 1.6728435802767564e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6672,8 +6672,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 1/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
   {
-   "real": 0.10182027683223742,
-   "imag": -6.650155232520917e-18,
+   "real": 0.10317432346985445,
+   "imag": -6.658195941135716e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6681,8 +6681,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 2/4 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": -0.0073811492531084995,
-   "imag": 2.1772617211712282e-18,
+   "real": -0.006929735048590711,
+   "imag": 2.1693440134478726e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6690,8 +6690,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 2/4 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
   {
-   "real": -0.0073811492531084995,
-   "imag": 2.1772617211712282e-18,
+   "real": -0.006929735048590711,
+   "imag": 2.1693440134478726e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6699,8 +6699,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 3/4 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt",
   {
-   "real": 0.008913330736917881,
-   "imag": -4.344319972966624e-19,
+   "real": 0.008946821405133096,
+   "imag": -4.348761480380726e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6708,8 +6708,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 1/3 3/4 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt_sloppy",
   {
-   "real": 0.008913330736917881,
-   "imag": -4.344319972966624e-19,
+   "real": 0.008946821405133096,
+   "imag": -4.348761480380726e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6717,8 +6717,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 2/3 0/3 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt",
   {
-   "real": 0.014612811901722814,
-   "imag": 5.149395629140775e-19,
+   "real": 0.014562993667231523,
+   "imag": 5.1388338140318555e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6726,8 +6726,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 2/3 0/3 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt_sloppy",
   {
-   "real": 0.014612811901722814,
-   "imag": 5.149395629140775e-19,
+   "real": 0.014562993667231523,
+   "imag": 5.1388338140318555e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6735,8 +6735,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 2/3 1/3 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": 0.20345138548524022,
-   "imag": -6.3253000473354875e-18,
+   "real": 0.2036684038612358,
+   "imag": -6.283580950093128e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6744,8 +6744,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 2/3 1/3 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
   {
-   "real": 0.20345138548524022,
-   "imag": -6.3253000473354875e-18,
+   "real": 0.2036684038612358,
+   "imag": -6.283580950093128e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6753,8 +6753,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 2/3 2/3 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt",
   {
-   "real": 0.1392531755831302,
-   "imag": 2.84177066325158e-16,
+   "real": 0.13827457674825944,
+   "imag": 2.8479023111151985e-16,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6762,8 +6762,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 light 2/3 2/3 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt_sloppy",
   {
-   "real": 0.1400613817333405,
-   "imag": -4.6321368045273796e-18,
+   "real": 0.1390912047089162,
+   "imag": -4.753594044048201e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6771,8 +6771,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 light lslt_sum",
   {
-   "real": 0.711232708673801,
-   "imag": 1.6849431968889053e-16,
+   "real": 0.7135487135114651,
+   "imag": 1.6763875851651184e-16,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -6780,8 +6780,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 light lslt_sloppy_sum",
   {
-   "real": 0.7078226811993402,
-   "imag": -2.0403319924211026e-17,
+   "real": 0.7101804628658651,
+   "imag": -2.050568572135035e-17,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -6789,8 +6789,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 light lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.06486455950460066,
-   "imag": -6.253296599135786e-17,
+   "real": -0.06409517251044723,
+   "imag": -6.230143546152365e-17,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -6798,8 +6798,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 light lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.06382172417667299,
-   "imag": -1.0353467201018232e-18,
+   "real": -0.06305133736565859,
+   "imag": -1.0405941191640479e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -6807,8 +6807,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt",
   {
-   "real": 0.004746383974938341,
-   "imag": 8.313803144928117e-18,
+   "real": 0.004740180125745869,
+   "imag": 8.24253290572058e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6816,8 +6816,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 0/4 Coordinate([2, 1, 0, 1]) Coordinate([1, 1, 3, 0]) lslt_sloppy",
   {
-   "real": 0.0015912983320414513,
-   "imag": -2.0043909998942854e-19,
+   "real": 0.001595866624727935,
+   "imag": -1.9892782400379303e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6825,8 +6825,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt",
   {
-   "real": 0.0007835239913399109,
-   "imag": -1.0649740760560058e-20,
+   "real": 0.0007899746529558049,
+   "imag": -1.0627883410457155e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6834,8 +6834,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 1/4 Coordinate([1, 2, 2, 1]) Coordinate([0, 2, 1, 1]) lslt_sloppy",
   {
-   "real": 0.0007835239913399109,
-   "imag": -1.0649740760560058e-20,
+   "real": 0.0007899746529558049,
+   "imag": -1.0627883410457155e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6843,8 +6843,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 2/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": 0.012776604769573558,
-   "imag": 1.5144385927446418e-18,
+   "real": 0.012804817918932154,
+   "imag": 1.5084097012587907e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6852,8 +6852,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 2/4 Coordinate([2, 1, 3, 4]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
   {
-   "real": 0.0012321565549558108,
-   "imag": 1.0189888574934157e-20,
+   "real": 0.001255327565242239,
+   "imag": 1.1050863506980587e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6861,8 +6861,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 3/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt",
   {
-   "real": 0.0007169106772866307,
-   "imag": -5.276275856938357e-20,
+   "real": 0.0007363082621199223,
+   "imag": -5.4090989437643305e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6870,8 +6870,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 0/3 3/4 Coordinate([1, 2, 2, 1]) Coordinate([3, 0, 2, 1]) lslt_sloppy",
   {
-   "real": 0.0007169106772866307,
-   "imag": -5.276275856938357e-20,
+   "real": 0.0007363082621199223,
+   "imag": -5.4090989437643305e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6879,8 +6879,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 0/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt",
   {
-   "real": 8.273842803610619e-05,
-   "imag": 2.1759295189050375e-19,
+   "real": 8.230117934799252e-05,
+   "imag": 2.1644303600479901e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6888,8 +6888,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 0/4 Coordinate([2, 2, 1, 1]) Coordinate([2, 2, 1, 1]) lslt_sloppy",
   {
-   "real": 0.0003220279702037596,
-   "imag": 3.528191468749466e-20,
+   "real": 0.00032032614541871354,
+   "imag": 3.509545996171084e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6897,8 +6897,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 1/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt",
   {
-   "real": 0.001581208745640964,
-   "imag": 2.518908579950413e-20,
+   "real": 0.0015739486985721282,
+   "imag": 2.5465488606988376e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6906,8 +6906,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 1/4 Coordinate([2, 1, 0, 5]) Coordinate([2, 1, 3, 4]) lslt_sloppy",
   {
-   "real": 0.00032131651591307234,
-   "imag": 1.0428739188742853e-20,
+   "real": 0.00032084156152232385,
+   "imag": 1.0333605858250971e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6915,8 +6915,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 2/4 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": 0.003044061404415375,
-   "imag": 2.1153396334640013e-19,
+   "real": 0.003082992464756457,
+   "imag": 2.1082128696381764e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6924,8 +6924,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 2/4 Coordinate([3, 2, 3, 2]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
   {
-   "real": 0.003044061404415375,
-   "imag": 2.1153396334640013e-19,
+   "real": 0.003082992464756457,
+   "imag": 2.1082128696381764e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6933,8 +6933,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 3/4 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt",
   {
-   "real": 0.011027373587124892,
-   "imag": -5.28772621164134e-18,
+   "real": 0.010982148480334913,
+   "imag": -5.323345796660984e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6942,8 +6942,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 1/3 3/4 Coordinate([3, 2, 3, 2]) Coordinate([2, 1, 0, 1]) lslt_sloppy",
   {
-   "real": 0.005797874308127352,
-   "imag": 2.003248112581948e-19,
+   "real": 0.005796610085326621,
+   "imag": 1.9520303931414196e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6951,8 +6951,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 2/3 0/3 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": 0.002142407325214,
-   "imag": 1.6484762943584808e-19,
+   "real": 0.00215542167498733,
+   "imag": 1.60599337566447e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6960,8 +6960,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 2/3 0/3 Coordinate([3, 3, 0, 3]) Coordinate([3, 2, 3, 2]) lslt_sloppy",
   {
-   "real": 0.002142407325214,
-   "imag": 1.6484762943584808e-19,
+   "real": 0.00215542167498733,
+   "imag": 1.60599337566447e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6969,8 +6969,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 2/3 1/3 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": -0.00022656669885483288,
-   "imag": -3.528763046124804e-20,
+   "real": -0.0002263320401988249,
+   "imag": -3.5114035164541605e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6978,8 +6978,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 2/3 1/3 Coordinate([1, 2, 0, 5]) Coordinate([0, 3, 3, 0]) lslt_sloppy",
   {
-   "real": -0.00022656669885483288,
-   "imag": -3.528763046124804e-20,
+   "real": -0.0002263320401988249,
+   "imag": -3.5114035164541605e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6987,8 +6987,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 2/3 2/3 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt",
   {
-   "real": 3.5160663285344084e-05,
-   "imag": -2.7510991628348308e-21,
+   "real": 3.562782943255076e-05,
+   "imag": -2.7496574683358593e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -6996,8 +6996,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 1000 strange 2/3 2/3 Coordinate([1, 2, 0, 5]) Coordinate([2, 1, 0, 5]) lslt_sloppy",
   {
-   "real": 3.5160663285344084e-05,
-   "imag": -2.7510991628348308e-21,
+   "real": 3.562782943255076e-05,
+   "imag": -2.7496574683358593e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7005,8 +7005,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 strange lslt_sum",
   {
-   "real": 0.036709806868000294,
-   "imag": 5.0582279275496486e-18,
+   "real": 0.036757389246986294,
+   "imag": 4.938343393979457e-18,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -7014,8 +7014,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 strange lslt_sloppy_sum",
   {
-   "real": 0.01576017104392787,
-   "imag": 3.307166175481598e-19,
+   "real": 0.01586296482629107,
+   "imag": 3.2159320368657807e-19,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -7023,8 +7023,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 strange lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.0003342124354654647,
-   "imag": 5.592647245903117e-19,
+   "real": -0.0003168978256657296,
+   "imag": 5.581548413431854e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7032,8 +7032,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 1000 strange lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.0012763031146419788,
-   "imag": -6.249764961038594e-20,
+   "real": -0.0012375528552323622,
+   "imag": -6.188454691160248e-20,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7041,8 +7041,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=0/3 idx_xg_x=6 Coordinate([3, 0, 2, 1]) lslt",
   {
-   "real": -0.00016442956165701496,
-   "imag": -1.253528977027749e-19,
+   "real": -0.0001632278575687829,
+   "imag": -1.2630617998926735e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7050,8 +7050,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=0/3 idx_xg_x=3 Coordinate([2, 1, 0, 1]) lslt",
   {
-   "real": -0.00039891198406225166,
-   "imag": 4.49655604064832e-18,
+   "real": -0.0003974663009735709,
+   "imag": 4.4803856726550795e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7059,8 +7059,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": -0.0005775425605024875,
-   "imag": 9.581466204316176e-19,
+   "real": -0.0005776874373243463,
+   "imag": 9.533670722700391e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7068,8 +7068,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([0, 3, 2, 5]) lslt",
   {
-   "real": -0.0008346586250899623,
-   "imag": -3.979431829968836e-19,
+   "real": -0.0008307494278285754,
+   "imag": -3.953269231111214e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7077,8 +7077,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=0/3 idx_xg_x=11 Coordinate([2, 1, 3, 4]) lslt",
   {
-   "real": 0.0002428878575935837,
-   "imag": 1.025373956519928e-18,
+   "real": 0.00024184590046970875,
+   "imag": 1.0238418432390666e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7086,8 +7086,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([1, 1, 3, 0]) lslt",
   {
-   "real": 0.0004211271709139275,
-   "imag": 4.7090788253359516e-20,
+   "real": 0.0004218291632058023,
+   "imag": 4.095700730254887e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7095,8 +7095,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([2, 2, 1, 1]) lslt",
   {
-   "real": 0.0007848011985750947,
-   "imag": 5.055058991073913e-19,
+   "real": 0.000782802548919278,
+   "imag": 5.111358760719724e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7104,8 +7104,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([3, 3, 3, 0]) lslt",
   {
-   "real": 0.00016345002867150003,
-   "imag": 7.278153091406168e-19,
+   "real": 0.00016464894248722405,
+   "imag": 7.235533407355114e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7113,8 +7113,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": 0.0002175904325555274,
-   "imag": 5.202513828372292e-19,
+   "real": 0.0002143945789427109,
+   "imag": 5.212470646085884e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7122,8 +7122,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=1/3 idx_xg_x=7 Coordinate([1, 2, 2, 1]) lslt",
   {
-   "real": 0.0007716444422033315,
-   "imag": 3.7150401603659087e-19,
+   "real": 0.0007652842896421951,
+   "imag": 3.7241511918326288e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7131,8 +7131,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=2/3 idx_xg_x=12 Coordinate([2, 1, 0, 5]) lslt",
   {
-   "real": 0.0006224409042250921,
-   "imag": -3.361120801099362e-20,
+   "real": 0.0006188796235330564,
+   "imag": -3.315165922831491e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7140,8 +7140,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 3, 0, 3]) lslt",
   {
-   "real": 0.0004023249410305199,
-   "imag": 1.56494730470213e-19,
+   "real": 0.0004009036873611532,
+   "imag": 1.571959128605605e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7149,8 +7149,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([1, 2, 0, 5]) lslt",
   {
-   "real": 0.0003446088839422744,
-   "imag": -2.2736356194716394e-19,
+   "real": 0.00034130651796932985,
+   "imag": -2.2765739580588047e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7158,8 +7158,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([0, 0, 1, 3]) lslt",
   {
-   "real": 0.0010508271736850703,
-   "imag": -2.391692756945294e-19,
+   "real": 0.001045476072864543,
+   "imag": -2.369632521012449e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7167,8 +7167,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light light id_chunk/num_chunk=2/3 idx_xg_x=4 Coordinate([0, 2, 1, 1]) lslt",
   {
-   "real": 0.00015198542332509117,
-   "imag": 5.868334657378633e-19,
+   "real": 0.0001486343709907646,
+   "imag": 5.851810800409394e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7176,8 +7176,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 light light lslt_sum",
   {
-   "real": 0.0031981457254092955,
-   "imag": 8.372132082830785e-18,
+   "real": 0.0031768746726904902,
+   "imag": 8.349874578731745e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7185,8 +7185,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 light light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": 1.2880352113177061e-05,
-   "imag": -1.6460761785306527e-18,
+   "real": 1.597921815924817e-05,
+   "imag": -1.6504998043485454e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7194,8 +7194,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=0/3 idx_xg_x=6 Coordinate([3, 0, 2, 1]) lslt",
   {
-   "real": 3.319504729117957e-06,
-   "imag": 2.0022967444104544e-19,
+   "real": 3.412289454445493e-06,
+   "imag": 2.0108819114011696e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7203,8 +7203,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=0/3 idx_xg_x=3 Coordinate([2, 1, 0, 1]) lslt",
   {
-   "real": -4.156915076265283e-05,
-   "imag": 4.119565305294544e-18,
+   "real": -4.196738819132372e-05,
+   "imag": 4.062107578104503e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7212,8 +7212,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": -0.0005358714982661854,
-   "imag": 9.171504097776831e-20,
+   "real": -0.0005328561831533295,
+   "imag": 9.212749732927014e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7221,8 +7221,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([0, 3, 2, 5]) lslt",
   {
-   "real": -9.937950071310501e-05,
-   "imag": 1.908797002252761e-20,
+   "real": -9.892347732667222e-05,
+   "imag": 1.868022398645656e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7230,8 +7230,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=0/3 idx_xg_x=11 Coordinate([2, 1, 3, 4]) lslt",
   {
-   "real": 0.00026047936865665103,
-   "imag": 6.088533672765126e-19,
+   "real": 0.00025935904661890163,
+   "imag": 6.076420610045313e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7239,8 +7239,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([1, 1, 3, 0]) lslt",
   {
-   "real": 0.0004948161172729762,
-   "imag": 5.800128834879615e-20,
+   "real": 0.0004923224577374826,
+   "imag": 5.43601344592801e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7248,8 +7248,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([2, 2, 1, 1]) lslt",
   {
-   "real": 5.2592813650805464e-05,
-   "imag": -3.027584195646194e-19,
+   "real": 5.256159084692599e-05,
+   "imag": -2.8899911946403947e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7257,8 +7257,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([3, 3, 3, 0]) lslt",
   {
-   "real": -0.0002163029908119181,
-   "imag": 6.415018679787485e-19,
+   "real": -0.00021487271887402727,
+   "imag": 6.397369522134393e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7266,8 +7266,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": 3.504605411009159e-05,
-   "imag": -3.550287513949493e-21,
+   "real": 3.389012425438296e-05,
+   "imag": -4.6079889841723626e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7275,8 +7275,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=1/3 idx_xg_x=7 Coordinate([1, 2, 2, 1]) lslt",
   {
-   "real": -4.420046327319311e-05,
-   "imag": -1.3781628516409992e-19,
+   "real": -4.5136978310902906e-05,
+   "imag": -1.3651119873561032e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7284,8 +7284,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=2/3 idx_xg_x=12 Coordinate([2, 1, 0, 5]) lslt",
   {
-   "real": 9.143426827758269e-05,
-   "imag": -6.2270100233661066e-21,
+   "real": 9.039538542483433e-05,
+   "imag": -6.12194879793745e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7293,8 +7293,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 3, 0, 3]) lslt",
   {
-   "real": -0.00016255426819547855,
-   "imag": -1.1648003634007053e-19,
+   "real": -0.00016157682330866812,
+   "imag": -1.1351663131537643e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7302,8 +7302,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([1, 2, 0, 5]) lslt",
   {
-   "real": 4.3277751825292546e-05,
-   "imag": -3.8920525631414e-20,
+   "real": 4.272678916543509e-05,
+   "imag": -3.9636727358868014e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7311,8 +7311,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([0, 0, 1, 3]) lslt",
   {
-   "real": 2.671048964517737e-05,
-   "imag": -3.219695615066376e-20,
+   "real": 2.630123016210946e-05,
+   "imag": -3.124429492184835e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7320,8 +7320,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 light strange id_chunk/num_chunk=2/3 idx_xg_x=4 Coordinate([0, 2, 1, 1]) lslt",
   {
-   "real": -3.154336293192514e-05,
-   "imag": 1.5382306581432914e-19,
+   "real": -3.253603392260997e-05,
+   "imag": 1.5508865765742352e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7329,8 +7329,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 light strange lslt_sum",
   {
-   "real": -0.00012374486678676328,
-   "imag": 5.254828059766087e-18,
+   "real": -0.00012690068942301623,
+   "imag": 5.210193386317168e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7338,8 +7338,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 light strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": 3.172750306746769e-05,
-   "imag": -7.479656151026078e-19,
+   "real": 3.306771144351992e-05,
+   "imag": -7.385366939126146e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7347,8 +7347,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=0/3 idx_xg_x=6 Coordinate([3, 0, 2, 1]) lslt",
   {
-   "real": -0.00016814916810802726,
-   "imag": -8.209261791129366e-20,
+   "real": -0.0001676953269856613,
+   "imag": -8.149186170304689e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7356,8 +7356,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=0/3 idx_xg_x=3 Coordinate([2, 1, 0, 1]) lslt",
   {
-   "real": 0.00021866340570848776,
-   "imag": -5.925126721561078e-19,
+   "real": 0.0002175759256437393,
+   "imag": -5.936659853763051e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7365,8 +7365,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": -1.526169948586657e-05,
-   "imag": -4.9491547141347623e-20,
+   "real": -1.5787897346104808e-05,
+   "imag": -4.954506546551448e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7374,8 +7374,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([0, 3, 2, 5]) lslt",
   {
-   "real": -5.147674079882312e-05,
-   "imag": -9.92134524235227e-21,
+   "real": -5.1342822890677634e-05,
+   "imag": -9.904501369169326e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7383,8 +7383,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=0/3 idx_xg_x=11 Coordinate([2, 1, 3, 4]) lslt",
   {
-   "real": -2.957309888939629e-06,
-   "imag": 2.297723215108012e-19,
+   "real": -3.7084113378770754e-06,
+   "imag": 2.286830233111888e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7392,8 +7392,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([1, 1, 3, 0]) lslt",
   {
-   "real": -1.4723059551346325e-05,
-   "imag": 1.537410627960992e-20,
+   "real": -1.4019656813219216e-05,
+   "imag": 1.5318385658325738e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7401,8 +7401,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([2, 2, 1, 1]) lslt",
   {
-   "real": 0.0002598241181126512,
-   "imag": 2.1279215490550596e-20,
+   "real": 0.0002593857127251403,
+   "imag": 3.646738608495817e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7410,8 +7410,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([3, 3, 3, 0]) lslt",
   {
-   "real": -4.025074473485375e-05,
-   "imag": 1.4735670608447575e-19,
+   "real": -4.029211132204985e-05,
+   "imag": 1.4737913494136573e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7419,8 +7419,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": -2.9123436063925365e-05,
-   "imag": 2.311554308678715e-20,
+   "real": -2.9469105076805643e-05,
+   "imag": 2.3417102241453186e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7428,8 +7428,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=1/3 idx_xg_x=7 Coordinate([1, 2, 2, 1]) lslt",
   {
-   "real": 7.788688608398392e-05,
-   "imag": -7.879410778745241e-23,
+   "real": 7.700794350634014e-05,
+   "imag": 5.910292165521324e-23,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7437,8 +7437,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=2/3 idx_xg_x=12 Coordinate([2, 1, 0, 5]) lslt",
   {
-   "real": 6.515727927427025e-05,
-   "imag": -8.573588343626577e-20,
+   "real": 6.486799416264073e-05,
+   "imag": -8.553671886592005e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7446,8 +7446,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 3, 0, 3]) lslt",
   {
-   "real": 7.455846752859985e-05,
-   "imag": -1.6894475571284684e-19,
+   "real": 7.450961751543172e-05,
+   "imag": -1.6820965042431041e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7455,8 +7455,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([1, 2, 0, 5]) lslt",
   {
-   "real": 5.143965010705369e-05,
-   "imag": -1.0609589012983e-20,
+   "real": 5.09169312451422e-05,
+   "imag": -1.0480788893802665e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7464,8 +7464,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([0, 0, 1, 3]) lslt",
   {
-   "real": 0.00014132454990728826,
-   "imag": -6.871046699091769e-20,
+   "real": 0.00014052757206516585,
+   "imag": -6.822254902755546e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7473,8 +7473,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange light id_chunk/num_chunk=2/3 idx_xg_x=4 Coordinate([0, 2, 1, 1]) lslt",
   {
-   "real": 1.553016583485415e-05,
-   "imag": -1.1819960841011803e-20,
+   "real": 1.4997655122321828e-05,
+   "imag": -1.1933580470141563e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7482,8 +7482,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 strange light lslt_sum",
   {
-   "real": 0.000582442363925407,
-   "imag": -6.430197401006892e-19,
+   "real": 0.0005774740202135265,
+   "imag": -6.276665664368193e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7491,8 +7491,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 strange light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": 2.644102779967423e-05,
-   "imag": 1.9231724330707372e-19,
+   "real": 2.7305555311013505e-05,
+   "imag": 1.8885453538834785e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7500,8 +7500,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=6 Coordinate([3, 0, 2, 1]) lslt",
   {
-   "real": -1.9628167096161783e-05,
-   "imag": 3.394540564531904e-20,
+   "real": -1.9590991110094498e-05,
+   "imag": 3.396957630173373e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7509,8 +7509,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=3 Coordinate([2, 1, 0, 1]) lslt",
   {
-   "real": 8.83058535328851e-05,
-   "imag": -1.3521783077872803e-19,
+   "real": 8.778271145501325e-05,
+   "imag": -1.3264111557368806e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7518,8 +7518,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([3, 2, 3, 2]) lslt",
   {
-   "real": -0.00012645665727203508,
-   "imag": 8.756498667353715e-20,
+   "real": -0.00012574535659559753,
+   "imag": 8.706246326077724e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7527,8 +7527,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([0, 3, 2, 5]) lslt",
   {
-   "real": 2.9931058938142446e-06,
-   "imag": -1.0306723722140183e-20,
+   "real": 2.9417650841139424e-06,
+   "imag": -1.0291520355829074e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7536,8 +7536,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=11 Coordinate([2, 1, 3, 4]) lslt",
   {
-   "real": 1.7274689494557746e-05,
-   "imag": -4.551234522713066e-20,
+   "real": 1.708925906051445e-05,
+   "imag": -4.5587612410029573e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7545,8 +7545,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([1, 1, 3, 0]) lslt",
   {
-   "real": 1.647204435330138e-05,
-   "imag": -3.725411474977678e-20,
+   "real": 1.645829726591485e-05,
+   "imag": -3.699813492321682e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7554,8 +7554,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([2, 2, 1, 1]) lslt",
   {
-   "real": 4.5126936626631195e-05,
-   "imag": 6.772981990519093e-20,
+   "real": 4.497137143166438e-05,
+   "imag": 7.685825725588732e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7563,8 +7563,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([3, 3, 3, 0]) lslt",
   {
-   "real": -3.2143088147042576e-05,
-   "imag": 1.3742581633416408e-20,
+   "real": -3.2085935566729836e-05,
+   "imag": 1.3812365936202295e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7572,8 +7572,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 3, 3, 0]) lslt",
   {
-   "real": -2.1258424970715016e-05,
-   "imag": -1.0260315585287019e-21,
+   "real": -2.1510453039886783e-05,
+   "imag": -1.125212524027602e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7581,8 +7581,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=7 Coordinate([1, 2, 2, 1]) lslt",
   {
-   "real": -9.169812826353074e-06,
-   "imag": 2.0814035075754712e-20,
+   "real": -9.336570323853174e-06,
+   "imag": 2.139692592830155e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7590,8 +7590,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=12 Coordinate([2, 1, 0, 5]) lslt",
   {
-   "real": 1.4566794284687095e-05,
-   "imag": -7.503101628614161e-22,
+   "real": 1.4444379180580553e-05,
+   "imag": -6.741258826399694e-22,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7599,8 +7599,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 3, 0, 3]) lslt",
   {
-   "real": -7.269498098131124e-05,
-   "imag": 3.2386242565188823e-20,
+   "real": -7.219565205370088e-05,
+   "imag": 3.2579900134131725e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7608,8 +7608,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([1, 2, 0, 5]) lslt",
   {
-   "real": 1.875611302739013e-05,
-   "imag": -1.9355816881355127e-20,
+   "real": 1.8610495129914773e-05,
+   "imag": -1.934208465191651e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7617,8 +7617,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([0, 0, 1, 3]) lslt",
   {
-   "real": 4.671466519799913e-06,
-   "imag": 2.769254807306565e-20,
+   "real": 4.512807739512681e-06,
+   "imag": 2.754641518824986e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7626,8 +7626,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 1000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=4 Coordinate([0, 2, 1, 1]) lslt",
   {
-   "real": -1.2988271406251235e-05,
-   "imag": 2.791050856810412e-20,
+   "real": -1.3152247078705e-05,
+   "imag": 2.801166644613164e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -7635,8 +7635,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 strange strange lslt_sum",
   {
-   "real": -8.617239896680324e-05,
-   "imag": 6.236295505905591e-20,
+   "real": -8.680611942133889e-05,
+   "imag": 7.457776413006789e-20,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7644,8 +7644,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 1000 strange strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": -3.481938146716572e-05,
-   "imag": -6.708181636425215e-20,
+   "real": -3.451370891403597e-05,
+   "imag": -6.9725464079583e-20,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -7807,8 +7807,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.0037737770039718843,
-   "imag": 2.0385625950812406e-19,
+   "real": 0.0038063191871471587,
+   "imag": 1.9679823291493195e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7816,8 +7816,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": 0.0037737770039718843,
-   "imag": 2.0385625950812406e-19,
+   "real": 0.0038063191871471587,
+   "imag": 1.9679823291493195e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7825,8 +7825,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 1/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": 0.01987795485246294,
-   "imag": -1.3776833600375332e-17,
+   "real": 0.02006751236286635,
+   "imag": -1.4017060998273114e-17,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7834,8 +7834,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 1/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
   {
-   "real": 0.019704179455805184,
-   "imag": 1.2335414255577908e-18,
+   "real": 0.019893235241838288,
+   "imag": 1.2488479401428917e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7843,8 +7843,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 2/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": 0.03283211537878002,
-   "imag": 4.8724308496738515e-18,
+   "real": 0.03287956620111494,
+   "imag": 4.881288877152102e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7852,8 +7852,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 2/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
   {
-   "real": 0.03516692630564558,
-   "imag": 7.621486442212776e-20,
+   "real": 0.0352245435502044,
+   "imag": 6.351165947963037e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7861,8 +7861,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt",
   {
-   "real": 0.024918507542018124,
-   "imag": -1.6896949025989626e-18,
+   "real": 0.025198107606191157,
+   "imag": -1.7019295894529918e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7870,8 +7870,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt_sloppy",
   {
-   "real": 0.024918507542018124,
-   "imag": -1.6896949025989626e-18,
+   "real": 0.025198107606191157,
+   "imag": -1.7019295894529918e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7879,8 +7879,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 4/7 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt",
   {
-   "real": 0.007157007152109962,
-   "imag": 4.1318763138731336e-19,
+   "real": 0.007408389855063764,
+   "imag": 3.8752334407875814e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7888,8 +7888,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 4/7 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt_sloppy",
   {
-   "real": 0.007157007152109962,
-   "imag": 4.1318763138731336e-19,
+   "real": 0.007408389855063764,
+   "imag": 3.8752334407875814e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7897,8 +7897,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 5/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.07612396278850192,
-   "imag": -7.582899841280368e-19,
+   "real": 0.0757032686317983,
+   "imag": -7.631954564801086e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7906,8 +7906,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 5/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": 0.07612396278850192,
-   "imag": -7.582899841280368e-19,
+   "real": 0.0757032686317983,
+   "imag": -7.631954564801086e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7915,8 +7915,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 6/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": 0.03480026226541907,
-   "imag": -8.878876920233737e-18,
+   "real": 0.03498696919894702,
+   "imag": -9.074922059790413e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7924,8 +7924,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 0/3 6/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
   {
-   "real": 0.03590179612346796,
-   "imag": -1.0392435919415114e-19,
+   "real": 0.03609146894412954,
+   "imag": -9.668678596467561e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7933,8 +7933,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt",
   {
-   "real": 0.037743653872798114,
-   "imag": 4.441473638445325e-19,
+   "real": 0.03758291516911706,
+   "imag": 4.397376152218261e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7942,8 +7942,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt_sloppy",
   {
-   "real": 0.037743653872798114,
-   "imag": 4.441473638445325e-19,
+   "real": 0.03758291516911706,
+   "imag": 4.397376152218261e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7951,8 +7951,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 1/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt",
   {
-   "real": 0.07069621270432001,
-   "imag": 3.1077467449887726e-18,
+   "real": 0.070631280429089,
+   "imag": 3.2533159593178755e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7960,8 +7960,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 1/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt_sloppy",
   {
-   "real": 0.0711241324042677,
-   "imag": -2.6148743104096694e-20,
+   "real": 0.07105866850345663,
+   "imag": -1.80845312251404e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7969,8 +7969,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 2/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": -0.00813211830632398,
-   "imag": 3.4367208803886873e-18,
+   "real": -0.007995600405015887,
+   "imag": 3.515305698752437e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7978,8 +7978,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 2/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
   {
-   "real": -0.00797821268166489,
-   "imag": 4.91499015881649e-19,
+   "real": -0.007827264911798025,
+   "imag": 5.015471402131259e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7987,8 +7987,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 3/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": -0.8500200848247317,
-   "imag": 2.663971121131991e-19,
+   "real": -0.8490751192125495,
+   "imag": 2.498552310282049e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -7996,8 +7996,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 3/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": -0.8500200848247317,
-   "imag": 2.663971121131991e-19,
+   "real": -0.8490751192125495,
+   "imag": 2.498552310282049e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8005,8 +8005,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 4/7 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt",
   {
-   "real": 0.0017017967346972052,
-   "imag": -7.192382242795565e-19,
+   "real": 0.0016928032306224357,
+   "imag": -7.154372580602036e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8014,8 +8014,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 4/7 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt_sloppy",
   {
-   "real": 0.0015882160459948676,
-   "imag": 2.7014684642619217e-20,
+   "real": 0.0015798227830451563,
+   "imag": 2.6871919839127466e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8023,8 +8023,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 5/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 0.025991225144549233,
-   "imag": -1.7486115706393963e-18,
+   "real": 0.0258584886489565,
+   "imag": -1.754718732313537e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8032,8 +8032,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 5/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
   {
-   "real": 0.025991225144549233,
-   "imag": -1.7486115706393963e-18,
+   "real": 0.0258584886489565,
+   "imag": -1.754718732313537e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8041,8 +8041,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 6/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 0.02150410064209341,
-   "imag": 1.247318237890006e-18,
+   "real": 0.021642465073177707,
+   "imag": 1.2547911955729574e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8050,8 +8050,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 1/3 6/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
   {
-   "real": 0.02150410064209341,
-   "imag": 1.247318237890006e-18,
+   "real": 0.021642465073177707,
+   "imag": 1.2547911955729574e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8059,8 +8059,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 0/6 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt",
   {
-   "real": 0.09937932824048358,
-   "imag": 2.173906955166384e-18,
+   "real": 0.09871457173478125,
+   "imag": 2.170286434375304e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8068,8 +8068,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 0/6 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt_sloppy",
   {
-   "real": 0.09937932824048358,
-   "imag": 2.173906955166384e-18,
+   "real": 0.09871457173478125,
+   "imag": 2.170286434375304e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8077,8 +8077,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 1/6 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": 0.03365603542542399,
-   "imag": 3.2412617157566723e-19,
+   "real": 0.03344599359576778,
+   "imag": 3.112762152511657e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8086,8 +8086,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 1/6 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
   {
-   "real": 0.03365603542542399,
-   "imag": 3.2412617157566723e-19,
+   "real": 0.03344599359576778,
+   "imag": 3.112762152511657e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8095,8 +8095,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 2/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": -0.39604559602219724,
-   "imag": 2.5789354805596725e-17,
+   "real": -0.3941748819278158,
+   "imag": 2.595690988923459e-17,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8104,8 +8104,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 2/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
   {
-   "real": -0.39604559602219724,
-   "imag": 2.5789354805596725e-17,
+   "real": -0.3941748819278158,
+   "imag": 2.595690988923459e-17,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8113,8 +8113,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 3/6 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt",
   {
-   "real": 0.01896830548387568,
-   "imag": -6.895963249345494e-19,
+   "real": 0.019628400771174212,
+   "imag": -7.126621967692662e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8122,8 +8122,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 3/6 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt_sloppy",
   {
-   "real": 0.01896830548387568,
-   "imag": -6.895963249345494e-19,
+   "real": 0.019628400771174212,
+   "imag": -7.126621967692662e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8131,8 +8131,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 4/6 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt",
   {
-   "real": 0.03553622062571664,
-   "imag": 2.386193983575597e-18,
+   "real": 0.03622590287623746,
+   "imag": 2.3055327815182977e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8140,8 +8140,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 4/6 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt_sloppy",
   {
-   "real": 0.03553622062571664,
-   "imag": 2.386193983575597e-18,
+   "real": 0.03622590287623746,
+   "imag": 2.3055327815182977e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8149,8 +8149,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 5/6 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.03967575129814576,
-   "imag": 6.265684424629736e-19,
+   "real": 0.03985851890566617,
+   "imag": 6.345088136117729e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8158,8 +8158,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 light 2/3 5/6 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": 0.03918228361867552,
-   "imag": 7.39120905766978e-19,
+   "real": 0.03936560964344324,
+   "imag": 7.403798432581485e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8167,8 +8167,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 light lslt_sum",
   {
-   "real": -0.6698615819978855,
-   "imag": 1.7030813910982276e-17,
+   "real": -0.6659141280676633,
+   "imag": 1.6817203996890586e-17,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -8176,8 +8176,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 light lslt_sloppy_sum",
   {
-   "real": -0.6666242356531942,
-   "imag": 3.07996135323295e-17,
+   "real": -0.6626490942366337,
+   "imag": 3.080659214992327e-17,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -8185,8 +8185,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 light lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.9811536127132378,
-   "imag": 1.0387889507546608e-17,
+   "real": -0.9783997869181912,
+   "imag": 1.0310228237686639e-17,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -8194,8 +8194,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 light lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.980585309107749,
-   "imag": 1.0217188978615684e-18,
+   "real": -0.9778339655154185,
+   "imag": 1.0202231773120951e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -8203,8 +8203,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": -6.815122596501739e-06,
-   "imag": -2.6277297672107427e-21,
+   "real": -5.0762986960794165e-06,
+   "imag": -2.5805434936938433e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8212,8 +8212,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 0/7 Coordinate([3, 1, 3, 3]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
   {
-   "real": -6.815122596501739e-06,
-   "imag": -2.6277297672107427e-21,
+   "real": -5.0762986960794165e-06,
+   "imag": -2.5805434936938433e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8221,8 +8221,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 1/7 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.0027560850708553066,
-   "imag": 5.795079073213654e-19,
+   "real": 0.002768698916266771,
+   "imag": 5.799069405120632e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8230,8 +8230,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 1/7 Coordinate([1, 3, 1, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": 5.597226205539839e-05,
-   "imag": -1.266648786427691e-19,
+   "real": 6.027997908191043e-05,
+   "imag": -1.264150614513537e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8239,8 +8239,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 2/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.0007625669782651999,
-   "imag": -1.417537356802123e-20,
+   "real": 0.0007594771777807013,
+   "imag": -1.3811880848959387e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8248,8 +8248,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 2/7 Coordinate([0, 0, 0, 3]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": 0.0007625669782651999,
-   "imag": -1.417537356802123e-20,
+   "real": 0.0007594771777807013,
+   "imag": -1.3811880848959387e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8257,8 +8257,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 3/7 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt",
   {
-   "real": 0.0013030312868207187,
-   "imag": 3.1806208693761797e-20,
+   "real": 0.001291476095213843,
+   "imag": 3.222526958116074e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8266,8 +8266,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 3/7 Coordinate([2, 3, 0, 5]) Coordinate([2, 3, 3, 4]) lslt_sloppy",
   {
-   "real": 0.0013030312868207187,
-   "imag": 3.1806208693761797e-20,
+   "real": 0.001291476095213843,
+   "imag": 3.222526958116074e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8275,8 +8275,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 4/7 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt",
   {
-   "real": 0.00018852190398743523,
-   "imag": -2.0027572371276535e-19,
+   "real": 0.00019359340271756526,
+   "imag": -2.0102715719780844e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8284,8 +8284,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 4/7 Coordinate([2, 3, 3, 4]) Coordinate([3, 1, 3, 3]) lslt_sloppy",
   {
-   "real": 0.00018852190398743523,
-   "imag": -2.0027572371276535e-19,
+   "real": 0.00019359340271756526,
+   "imag": -2.0102715719780844e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8293,8 +8293,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 5/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt",
   {
-   "real": 0.012088282688100763,
-   "imag": -1.2387835181167564e-18,
+   "real": 0.012068776613236909,
+   "imag": -1.2457921198347302e-18,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8302,8 +8302,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 5/7 Coordinate([2, 0, 2, 4]) Coordinate([1, 3, 1, 3]) lslt_sloppy",
   {
-   "real": 0.0015354837702631276,
-   "imag": -1.359317107578973e-20,
+   "real": 0.001535078273223686,
+   "imag": -1.3639387513521928e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8311,8 +8311,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 6/7 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt",
   {
-   "real": 0.0002514337660135847,
-   "imag": 4.6160778328699495e-20,
+   "real": 0.00025829433067970243,
+   "imag": 4.629673537129928e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8320,8 +8320,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 0/3 6/7 Coordinate([2, 3, 3, 4]) Coordinate([1, 2, 0, 2]) lslt_sloppy",
   {
-   "real": 0.0002514337660135847,
-   "imag": 4.6160778328699495e-20,
+   "real": 0.00025829433067970243,
+   "imag": 4.629673537129928e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8329,8 +8329,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": -3.311844487508842e-05,
-   "imag": 7.530027925389535e-21,
+   "real": -3.4975853588937986e-05,
+   "imag": 7.411164536048485e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8338,8 +8338,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 0/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
   {
-   "real": -3.311844487508842e-05,
-   "imag": 7.530027925389535e-21,
+   "real": -3.4975853588937986e-05,
+   "imag": 7.411164536048485e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8347,8 +8347,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 1/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": -0.004169776562907001,
-   "imag": 1.4250568687191923e-20,
+   "real": -0.004165324968544295,
+   "imag": 1.3910389975219568e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8356,8 +8356,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 1/7 Coordinate([0, 1, 1, 6]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": -0.004169776562907001,
-   "imag": 1.4250568687191923e-20,
+   "real": -0.004165324968544295,
+   "imag": 1.3910389975219568e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8365,8 +8365,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 2/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 0.0007052832518617092,
-   "imag": 6.56122486994796e-21,
+   "real": 0.000703122662641566,
+   "imag": 6.86445221773037e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8374,8 +8374,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 2/7 Coordinate([3, 3, 0, 4]) Coordinate([0, 0, 0, 3]) lslt_sloppy",
   {
-   "real": 0.0007052832518617092,
-   "imag": 6.56122486994796e-21,
+   "real": 0.000703122662641566,
+   "imag": 6.86445221773037e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8383,8 +8383,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt",
   {
-   "real": 0.0007563427855195649,
-   "imag": -2.5231806212908457e-20,
+   "real": 0.000764991525776391,
+   "imag": -2.5543652480471835e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8392,8 +8392,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 3/7 Coordinate([2, 3, 2, 6]) Coordinate([2, 2, 1, 6]) lslt_sloppy",
   {
-   "real": 0.0007563427855195649,
-   "imag": -2.5231806212908457e-20,
+   "real": 0.000764991525776391,
+   "imag": -2.5543652480471835e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8401,8 +8401,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 4/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": 0.0038070485955404593,
-   "imag": 9.573650570573578e-19,
+   "real": 0.003828026541969628,
+   "imag": 9.646828089587795e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8410,8 +8410,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 4/7 Coordinate([2, 3, 3, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
   {
-   "real": 0.0009623249865881123,
-   "imag": -6.770163510318327e-22,
+   "real": 0.0009671947192648829,
+   "imag": -5.422722396455545e-22,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8419,8 +8419,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 5/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": -8.811094198658229e-05,
-   "imag": -2.0843007099541677e-20,
+   "real": -8.772062582346532e-05,
+   "imag": -2.0819304198516573e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8428,8 +8428,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 5/7 Coordinate([3, 0, 2, 2]) Coordinate([0, 1, 1, 2]) lslt_sloppy",
   {
-   "real": -8.811094198658229e-05,
-   "imag": -2.0843007099541677e-20,
+   "real": -8.772062582346532e-05,
+   "imag": -2.0819304198516573e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8437,8 +8437,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 6/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": 0.0013862023345457078,
-   "imag": 2.9931889049503446e-20,
+   "real": 0.0013920313530670768,
+   "imag": 2.8782038711531116e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8446,8 +8446,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 1/3 6/7 Coordinate([2, 2, 1, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
   {
-   "real": 0.0008287141037058155,
-   "imag": 2.7749786791847795e-21,
+   "real": 0.0008323699086176573,
+   "imag": 3.0403791164523955e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8455,8 +8455,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 0/6 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": -0.0010023922754706976,
-   "imag": -1.458547454146761e-19,
+   "real": -0.0009909240549227495,
+   "imag": -1.421367546557289e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8464,8 +8464,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 0/6 Coordinate([2, 3, 3, 6]) Coordinate([2, 1, 0, 6]) lslt_sloppy",
   {
-   "real": -0.0017446201004965751,
-   "imag": 7.653159932981494e-20,
+   "real": -0.0017419930652513016,
+   "imag": 7.486898730140036e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8473,8 +8473,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 1/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": -0.0024095094543438397,
-   "imag": -1.9644122132990384e-19,
+   "real": -0.002397034063882653,
+   "imag": -1.9658239675489897e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8482,8 +8482,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 1/6 Coordinate([2, 3, 2, 6]) Coordinate([0, 3, 2, 1]) lslt_sloppy",
   {
-   "real": -0.0024095094543438397,
-   "imag": -1.9644122132990384e-19,
+   "real": -0.002397034063882653,
+   "imag": -1.9658239675489897e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8491,8 +8491,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 2/6 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt",
   {
-   "real": -0.0003126645481239576,
-   "imag": 2.034921529411364e-20,
+   "real": -0.0003042442087202351,
+   "imag": 2.0340354210958066e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8500,8 +8500,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 2/6 Coordinate([2, 2, 1, 6]) Coordinate([0, 1, 1, 6]) lslt_sloppy",
   {
-   "real": -0.0003126645481239576,
-   "imag": 2.034921529411364e-20,
+   "real": -0.0003042442087202351,
+   "imag": 2.0340354210958066e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8509,8 +8509,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 3/6 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": 0.0014491096150592198,
-   "imag": -4.079429972165474e-19,
+   "real": 0.001464238147827518,
+   "imag": -4.0487666535430056e-19,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8518,8 +8518,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 3/6 Coordinate([2, 2, 1, 6]) Coordinate([2, 2, 0, 6]) lslt_sloppy",
   {
-   "real": 0.0008678775470766266,
-   "imag": 1.1182504271831894e-20,
+   "real": 0.0008764942280138432,
+   "imag": 1.0519904108017858e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8527,8 +8527,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 4/6 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt",
   {
-   "real": 0.0006442846757803158,
-   "imag": 4.0749144865465297e-20,
+   "real": 0.0006428497164128798,
+   "imag": 4.084999179768896e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8536,8 +8536,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 4/6 Coordinate([3, 1, 3, 3]) Coordinate([3, 0, 2, 2]) lslt_sloppy",
   {
-   "real": 0.0006442846757803158,
-   "imag": 4.0749144865465297e-20,
+   "real": 0.0006428497164128798,
+   "imag": 4.084999179768896e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8545,8 +8545,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 5/6 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt",
   {
-   "real": 0.0001613886724113038,
-   "imag": -3.085670667532195e-20,
+   "real": 0.00016053577990460198,
+   "imag": -3.0693637895390427e-20,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8554,8 +8554,8 @@
  [
   "run_hlbl_four_chunk: test-4nt8-checker 2000 strange 2/3 5/6 Coordinate([2, 0, 2, 4]) Coordinate([2, 0, 2, 4]) lslt_sloppy",
   {
-   "real": 5.316059590912101e-05,
-   "imag": 4.587417566196968e-21,
+   "real": 5.287965751843183e-05,
+   "imag": 4.5631743897158395e-21,
    "__extended_json_type__": "complex128"
   },
   0.15
@@ -8563,8 +8563,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 strange lslt_sum",
   {
-   "real": 0.01823719427445762,
-   "imag": -5.488208070208574e-19,
+   "real": 0.018310812189316735,
+   "imag": -5.4259396684202e-19,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -8572,8 +8572,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 strange lslt_sloppy_sum",
   {
-   "real": 0.00015038273851718242,
-   "imag": -3.380462592483437e-19,
+   "real": 0.00020173259243609545,
+   "imag": -3.4007085357317834e-19,
    "__extended_json_type__": "complex128"
   },
   0.01
@@ -8581,8 +8581,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 strange lslt_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.0016437031157776462,
-   "imag": -1.498348674974076e-19,
+   "real": -0.0016149000671666141,
+   "imag": -1.48259555491514e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -8590,8 +8590,8 @@
  [
   "run_hlbl_four: test-4nt8-checker 2000 strange lslt_sloppy_sum[labels.index('ref-far proj-all'), -1, -1]",
   {
-   "real": -0.0035537946465351833,
-   "imag": 3.663056085261645e-20,
+   "real": -0.0035253895270931646,
+   "imag": 3.656131465576038e-20,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -8599,8 +8599,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=18 Coordinate([2, 2, 1, 6]) lslt",
   {
-   "real": 0.00033018869057705087,
-   "imag": -1.3644193829269942e-19,
+   "real": 0.0003277080559200825,
+   "imag": -1.405568955678844e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8608,8 +8608,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=19 Coordinate([2, 3, 2, 6]) lslt",
   {
-   "real": 0.0003246792157880918,
-   "imag": 4.468230968841836e-19,
+   "real": 0.00032330824986151745,
+   "imag": 4.444830234300988e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8617,8 +8617,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=7 Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 0.0013956251236026747,
-   "imag": 2.189845628674534e-19,
+   "real": 0.0013884268228441298,
+   "imag": 2.2071697331403985e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8626,8 +8626,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([1, 3, 1, 3]) lslt",
   {
-   "real": 0.001033922199557512,
-   "imag": 1.9027571921141884e-19,
+   "real": 0.0010289066475753224,
+   "imag": 1.853702891761334e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8635,8 +8635,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([2, 3, 0, 5]) lslt",
   {
-   "real": 0.00011492398764823637,
-   "imag": 4.451540286585323e-19,
+   "real": 0.00011384440517460879,
+   "imag": 4.396130593637524e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8644,8 +8644,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=4 Coordinate([1, 2, 0, 2]) lslt",
   {
-   "real": 0.0001907515001809468,
-   "imag": -1.0099354417975987e-19,
+   "real": 0.00018836896967657884,
+   "imag": -1.0288388187939241e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8653,8 +8653,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=0/3 idx_xg_x=12 Coordinate([1, 1, 3, 4]) lslt",
   {
-   "real": -0.0005550224791849722,
-   "imag": -1.4686265580373301e-18,
+   "real": -0.0005516869259483611,
+   "imag": -1.4592765056924422e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8662,8 +8662,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=6 Coordinate([3, 0, 2, 2]) lslt",
   {
-   "real": 0.0009702104328301728,
-   "imag": -1.1161484735331843e-18,
+   "real": 0.0009635971362474165,
+   "imag": -1.1135526841777623e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8671,8 +8671,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=11 Coordinate([2, 0, 2, 4]) lslt",
   {
-   "real": 0.0003245714767768615,
-   "imag": 3.571028676565413e-18,
+   "real": 0.00032205168151244724,
+   "imag": 3.549734184384582e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8680,8 +8680,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.000613035530147563,
-   "imag": 3.877938449426558e-19,
+   "real": 0.0006106108950590244,
+   "imag": 3.8846724345490744e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8689,8 +8689,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([1, 2, 3, 0]) lslt",
   {
-   "real": 0.00047326800449179593,
-   "imag": -3.756514201230592e-18,
+   "real": 0.000470932052913793,
+   "imag": -3.7523774107057515e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8698,8 +8698,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([0, 2, 1, 0]) lslt",
   {
-   "real": 0.0005778636742136396,
-   "imag": 2.4312809826441834e-19,
+   "real": 0.0005749040481311904,
+   "imag": 2.408937202319712e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8707,8 +8707,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 0, 2, 0]) lslt",
   {
-   "real": -0.0005184278179312813,
-   "imag": -2.999764669811462e-19,
+   "real": -0.000515577752649495,
+   "imag": -2.987487560847222e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8716,8 +8716,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=1/3 idx_xg_x=17 Coordinate([0, 1, 1, 6]) lslt",
   {
-   "real": 0.0005774234837199543,
-   "imag": 1.02772682238897e-18,
+   "real": 0.0005763969806620984,
+   "imag": 1.0213828333611528e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8725,8 +8725,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=3 Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": -0.00013932430748925226,
-   "imag": 3.512856185847438e-19,
+   "real": -0.00013916051503671,
+   "imag": 3.493169706814663e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8734,8 +8734,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 1, 3, 3]) lslt",
   {
-   "real": -0.00030595137037919666,
-   "imag": -1.4809430162617616e-18,
+   "real": -0.00030375767244842354,
+   "imag": -1.4765078430762255e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8743,8 +8743,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([2, 3, 3, 4]) lslt",
   {
-   "real": 0.00037158071038135025,
-   "imag": -1.3705876359652102e-18,
+   "real": 0.0003705711086393772,
+   "imag": -1.3601959463383087e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8752,8 +8752,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=15 Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": 0.00031052665022182104,
-   "imag": 9.855371736336412e-19,
+   "real": 0.0003101904441911357,
+   "imag": 9.804974294489337e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8761,8 +8761,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=20 Coordinate([2, 3, 3, 6]) lslt",
   {
-   "real": -0.0001932880512266471,
-   "imag": 8.416599308379756e-19,
+   "real": -0.00019439922677344317,
+   "imag": 8.341923452539297e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8770,8 +8770,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=16 Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": 0.00011934063536544554,
-   "imag": 3.5314018925705655e-18,
+   "real": 0.00011855730332291988,
+   "imag": 3.510751783550112e-18,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8779,8 +8779,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light light id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([3, 3, 0, 4]) lslt",
   {
-   "real": 0.0002074893337077608,
-   "imag": 5.011234958785787e-19,
+   "real": 0.0002070152544983497,
+   "imag": 4.953001505663066e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8788,8 +8788,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 light light lslt_sum",
   {
-   "real": 0.006223386622999528,
-   "imag": 3.011691126806864e-18,
+   "real": 0.00619080796337356,
+   "imag": 2.9566200826948935e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -8797,8 +8797,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 light light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": -0.0003195363479392752,
-   "imag": 2.3608028375260318e-18,
+   "real": -0.00031504745539494977,
+   "imag": 2.358959451476898e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -8806,8 +8806,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=18 Coordinate([2, 2, 1, 6]) lslt",
   {
-   "real": 8.133132989963162e-05,
-   "imag": 2.1632858909528955e-19,
+   "real": 8.121179054708914e-05,
+   "imag": 2.1511674124253748e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8815,8 +8815,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=19 Coordinate([2, 3, 2, 6]) lslt",
   {
-   "real": 5.739766904877215e-05,
-   "imag": -6.800911602394508e-20,
+   "real": 5.680799202643161e-05,
+   "imag": -6.913563304659471e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8824,8 +8824,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=7 Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 0.00018536030257065384,
-   "imag": 9.353008641306705e-20,
+   "real": 0.00018456835982217355,
+   "imag": 9.291397540856784e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8833,8 +8833,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([1, 3, 1, 3]) lslt",
   {
-   "real": -0.00010153040261174086,
-   "imag": -2.9729494002444594e-20,
+   "real": -0.00010117016256265904,
+   "imag": -2.827677956176952e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8842,8 +8842,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([2, 3, 0, 5]) lslt",
   {
-   "real": 0.00022435349490451805,
-   "imag": 1.4980456065058882e-19,
+   "real": 0.00022314719035167004,
+   "imag": 1.4933538109535523e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8851,8 +8851,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=4 Coordinate([1, 2, 0, 2]) lslt",
   {
-   "real": 9.21798101593462e-05,
-   "imag": -4.7614901320486005e-19,
+   "real": 9.101853653403587e-05,
+   "imag": -4.725478886592276e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8860,8 +8860,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=0/3 idx_xg_x=12 Coordinate([1, 1, 3, 4]) lslt",
   {
-   "real": 0.0001221733269276461,
-   "imag": 2.1295139367734961e-19,
+   "real": 0.0001212215253044178,
+   "imag": 2.1182275367346065e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8869,8 +8869,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=6 Coordinate([3, 0, 2, 2]) lslt",
   {
-   "real": -0.00011863704957940694,
-   "imag": 8.963988375209924e-20,
+   "real": -0.00011805807282245534,
+   "imag": 8.940017160932316e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8878,8 +8878,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=11 Coordinate([2, 0, 2, 4]) lslt",
   {
-   "real": 1.73138844718782e-05,
-   "imag": 2.8849928589914314e-19,
+   "real": 1.7261906907516068e-05,
+   "imag": 2.8796726412931534e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8887,8 +8887,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 0.00019204177217609124,
-   "imag": -1.0550257412970689e-19,
+   "real": 0.00019087985390113082,
+   "imag": -1.0405917134937862e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8896,8 +8896,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([1, 2, 3, 0]) lslt",
   {
-   "real": 0.0001032147053999353,
-   "imag": -5.58283425078982e-19,
+   "real": 0.00010223820503672055,
+   "imag": -5.518022224319717e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8905,8 +8905,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([0, 2, 1, 0]) lslt",
   {
-   "real": 0.0001187403910774013,
-   "imag": -1.4381041197006079e-19,
+   "real": 0.00011830539090521609,
+   "imag": -1.4249079150707002e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8914,8 +8914,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 0, 2, 0]) lslt",
   {
-   "real": -0.00010715246438003577,
-   "imag": -2.3459144390476986e-20,
+   "real": -0.00010726065024147259,
+   "imag": -2.3149925181311103e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8923,8 +8923,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=1/3 idx_xg_x=17 Coordinate([0, 1, 1, 6]) lslt",
   {
-   "real": 0.00012725663793017103,
-   "imag": 1.3598046063405393e-19,
+   "real": 0.00012678834584575017,
+   "imag": 1.352377569530989e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8932,8 +8932,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=3 Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": 0.00012122643551398007,
-   "imag": -1.3980018282962788e-19,
+   "real": 0.0001203471084939829,
+   "imag": -1.3898822148864071e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8941,8 +8941,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 1, 3, 3]) lslt",
   {
-   "real": -2.0700127198012717e-07,
-   "imag": 9.532867111139649e-21,
+   "real": -5.319233587545744e-07,
+   "imag": 9.441507336509887e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8950,8 +8950,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([2, 3, 3, 4]) lslt",
   {
-   "real": 0.00019833434714793137,
-   "imag": 1.9777660126638858e-19,
+   "real": 0.00019700045658027334,
+   "imag": 1.9671244840567374e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8959,8 +8959,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=15 Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": 0.0003853485942369514,
-   "imag": -6.086867896504188e-20,
+   "real": 0.0003837021408601177,
+   "imag": -5.909437317369657e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8968,8 +8968,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=20 Coordinate([2, 3, 3, 6]) lslt",
   {
-   "real": 0.00018687123503696433,
-   "imag": 3.6963116887693332e-19,
+   "real": 0.0001855762704854595,
+   "imag": 3.657156036100249e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8977,8 +8977,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=16 Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": -0.00013588299265317695,
-   "imag": 1.4369622832250687e-19,
+   "real": -0.00013530985573240493,
+   "imag": 1.3885183987846842e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8986,8 +8986,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 light strange id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([3, 3, 0, 4]) lslt",
   {
-   "real": -6.463996049446991e-06,
-   "imag": -8.598673209293489e-20,
+   "real": -6.24803659233279e-06,
+   "imag": -8.636056757080142e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -8995,8 +8995,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 light strange lslt_sum",
   {
-   "real": 0.0017432700299560846,
-   "imag": 2.15772353010479e-19,
+   "real": 0.0017314963722919058,
+   "imag": 2.1660986937187337e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -9004,8 +9004,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 light strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": -0.00019563077873135674,
-   "imag": -3.5495228421332453e-19,
+   "real": -0.00019521609956463153,
+   "imag": -3.591244117391549e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -9013,8 +9013,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=18 Coordinate([2, 2, 1, 6]) lslt",
   {
-   "real": -4.088567288858311e-05,
-   "imag": 1.6789995426035596e-20,
+   "real": -4.079209777233054e-05,
+   "imag": 1.619882121749746e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9022,8 +9022,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=19 Coordinate([2, 3, 2, 6]) lslt",
   {
-   "real": -5.569747362316149e-05,
-   "imag": 1.0869742891779429e-19,
+   "real": -5.479757201285652e-05,
+   "imag": 1.0755668000329182e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9031,8 +9031,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=7 Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 9.435019724344683e-05,
-   "imag": -7.127239570359279e-20,
+   "real": 9.401447086107922e-05,
+   "imag": -7.104350618222172e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9040,8 +9040,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([1, 3, 1, 3]) lslt",
   {
-   "real": 0.00024603404178860096,
-   "imag": 3.019675067803855e-19,
+   "real": 0.0002444609428608866,
+   "imag": 3.0095301379286253e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9049,8 +9049,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([2, 3, 0, 5]) lslt",
   {
-   "real": -8.448790806945754e-05,
-   "imag": 1.6669029642607783e-19,
+   "real": -8.385109447154691e-05,
+   "imag": 1.6578044285431644e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9058,8 +9058,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=4 Coordinate([1, 2, 0, 2]) lslt",
   {
-   "real": 6.180832683883534e-05,
-   "imag": -1.6406665167774056e-19,
+   "real": 6.140063468518893e-05,
+   "imag": -1.6280016740347571e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9067,8 +9067,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=0/3 idx_xg_x=12 Coordinate([1, 1, 3, 4]) lslt",
   {
-   "real": -5.400170845745868e-05,
-   "imag": 2.0215744496052755e-19,
+   "real": -5.383073244950776e-05,
+   "imag": 2.0078491802020768e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9076,8 +9076,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=6 Coordinate([3, 0, 2, 2]) lslt",
   {
-   "real": 0.00010648945351261074,
-   "imag": -4.5086065901705706e-20,
+   "real": 0.00010593422147896999,
+   "imag": -4.3547667376838593e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9085,8 +9085,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=11 Coordinate([2, 0, 2, 4]) lslt",
   {
-   "real": 5.518669817263811e-05,
-   "imag": -9.307416398372053e-21,
+   "real": 5.437927482735554e-05,
+   "imag": -9.599858300346573e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9094,8 +9094,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": 4.726159771644036e-05,
-   "imag": -7.143190143203852e-20,
+   "real": 4.68938988039239e-05,
+   "imag": -7.19360133677022e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9103,8 +9103,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([1, 2, 3, 0]) lslt",
   {
-   "real": 0.00020991429972668088,
-   "imag": 7.204197843211016e-19,
+   "real": 0.00020962303138563276,
+   "imag": 7.19429212148505e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9112,8 +9112,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([0, 2, 1, 0]) lslt",
   {
-   "real": 0.0001018376136025719,
-   "imag": 2.243693596173667e-19,
+   "real": 0.00010144681854406802,
+   "imag": 2.231933401489852e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9121,8 +9121,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 0, 2, 0]) lslt",
   {
-   "real": -0.00010666855288475881,
-   "imag": -4.7255039023950056e-20,
+   "real": -0.00010623658326909943,
+   "imag": -4.703797393788968e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9130,8 +9130,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=1/3 idx_xg_x=17 Coordinate([0, 1, 1, 6]) lslt",
   {
-   "real": 6.997655077551826e-05,
-   "imag": 1.511724608006879e-19,
+   "real": 6.963406037893902e-05,
+   "imag": 1.5028483366370973e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9139,8 +9139,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=3 Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": 3.547181339205507e-05,
-   "imag": 2.1108537323829366e-19,
+   "real": 3.5210524053264945e-05,
+   "imag": 2.1089911768891734e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9148,8 +9148,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 1, 3, 3]) lslt",
   {
-   "real": -4.765212499409489e-05,
-   "imag": -1.8115381992470105e-19,
+   "real": -4.749159362323304e-05,
+   "imag": -1.7968121336837474e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9157,8 +9157,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([2, 3, 3, 4]) lslt",
   {
-   "real": -1.752456094924869e-05,
-   "imag": 3.156160206505117e-20,
+   "real": -1.73041186195889e-05,
+   "imag": 3.150597084290854e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9166,8 +9166,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=15 Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": 9.602009520123808e-05,
-   "imag": 2.247782770230366e-19,
+   "real": 9.499204508002683e-05,
+   "imag": 2.2814620121701805e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9175,8 +9175,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=20 Coordinate([2, 3, 3, 6]) lslt",
   {
-   "real": -0.00011866388861251419,
-   "imag": 1.4558022102660647e-19,
+   "real": -0.00011819186815279818,
+   "imag": 1.445200513437644e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9184,8 +9184,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=16 Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": 0.0006805635263094989,
-   "imag": -3.1223755844064256e-19,
+   "real": 0.0006750452489327994,
+   "imag": -3.04635653514468e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9193,8 +9193,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange light id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([3, 3, 0, 4]) lslt",
   {
-   "real": -2.2407991959540852e-05,
-   "imag": 5.327056153906786e-20,
+   "real": -2.2256966275884547e-05,
+   "imag": 5.2815391333007843e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9202,8 +9202,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 strange light lslt_sum",
   {
-   "real": 0.0012569243318413174,
-   "imag": 1.6567294636392897e-18,
+   "real": 0.0012482825452452893,
+   "imag": 1.6617859408236743e-18,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -9211,8 +9211,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 strange light lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": -0.00015825377171796665,
-   "imag": -2.4304655219002176e-19,
+   "real": -0.00015702087087101125,
+   "imag": -2.4484611832379086e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -9220,8 +9220,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=18 Coordinate([2, 2, 1, 6]) lslt",
   {
-   "real": 4.938599535042169e-05,
-   "imag": -5.713558547373132e-20,
+   "real": 4.909119469477421e-05,
+   "imag": -5.693855777751957e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9229,8 +9229,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=19 Coordinate([2, 3, 2, 6]) lslt",
   {
-   "real": 6.207943265751669e-05,
-   "imag": -6.590122865683215e-20,
+   "real": 6.173415048894488e-05,
+   "imag": -6.529765454452058e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9238,8 +9238,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=7 Coordinate([0, 0, 0, 3]) lslt",
   {
-   "real": 1.0141402995201976e-05,
-   "imag": 2.488299764888214e-20,
+   "real": 1.0122071064395344e-05,
+   "imag": 2.4761437496565936e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9247,8 +9247,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=8 Coordinate([1, 3, 1, 3]) lslt",
   {
-   "real": 3.417274851212503e-05,
-   "imag": 3.6167702246011667e-20,
+   "real": 3.403545815479471e-05,
+   "imag": 3.5798079438383594e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9256,8 +9256,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=14 Coordinate([2, 3, 0, 5]) lslt",
   {
-   "real": 3.763577240425316e-05,
-   "imag": -3.115805583448868e-20,
+   "real": 3.75252038827109e-05,
+   "imag": -3.094943401596377e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9265,8 +9265,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=4 Coordinate([1, 2, 0, 2]) lslt",
   {
-   "real": -6.60311215832835e-05,
-   "imag": 3.4708356709514626e-20,
+   "real": -6.561606007227012e-05,
+   "imag": 3.4547884159550914e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9274,8 +9274,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=0/3 idx_xg_x=12 Coordinate([1, 1, 3, 4]) lslt",
   {
-   "real": -1.66723734008075e-06,
-   "imag": 4.327795832459995e-20,
+   "real": -1.7081894818596472e-06,
+   "imag": 4.282336187316264e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9283,8 +9283,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=6 Coordinate([3, 0, 2, 2]) lslt",
   {
-   "real": -4.4122423671765214e-05,
-   "imag": 3.3779060562004524e-20,
+   "real": -4.387251222571352e-05,
+   "imag": 3.3571308802507756e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9292,8 +9292,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=11 Coordinate([2, 0, 2, 4]) lslt",
   {
-   "real": 1.2237404574490542e-05,
-   "imag": 2.1383650233846212e-20,
+   "real": 1.2133635620876791e-05,
+   "imag": 2.0862473012875653e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9301,8 +9301,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=5 Coordinate([0, 1, 1, 2]) lslt",
   {
-   "real": -1.2096561753244262e-05,
-   "imag": -2.2909804987125973e-20,
+   "real": -1.2139734588696782e-05,
+   "imag": -2.33285872864692e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9310,8 +9310,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=2 Coordinate([1, 2, 3, 0]) lslt",
   {
-   "real": 6.981499282992211e-05,
-   "imag": 3.33028823122864e-19,
+   "real": 6.940608184666697e-05,
+   "imag": 3.318336512596916e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9319,8 +9319,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=0 Coordinate([0, 2, 1, 0]) lslt",
   {
-   "real": 1.584345250967482e-05,
-   "imag": 2.2348126503477954e-21,
+   "real": 1.5778184979814246e-05,
+   "imag": 2.0560739249304713e-21,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9328,8 +9328,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=1 Coordinate([0, 0, 2, 0]) lslt",
   {
-   "real": -2.1982737254828293e-05,
-   "imag": -2.1040278759452023e-20,
+   "real": -2.1972606438822505e-05,
+   "imag": -2.102500815791013e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9337,8 +9337,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=1/3 idx_xg_x=17 Coordinate([0, 1, 1, 6]) lslt",
   {
-   "real": 3.409088941138182e-05,
-   "imag": -1.0794878391494653e-20,
+   "real": 3.3832957329980206e-05,
+   "imag": -1.0717379397318865e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9346,8 +9346,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=3 Coordinate([0, 3, 2, 1]) lslt",
   {
-   "real": 1.1770388524109587e-05,
-   "imag": 3.491988737512594e-20,
+   "real": 1.1761545866205876e-05,
+   "imag": 3.499093385617637e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9355,8 +9355,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=9 Coordinate([3, 1, 3, 3]) lslt",
   {
-   "real": -2.4830306158301986e-05,
-   "imag": 6.732927238595382e-20,
+   "real": -2.4684187763104682e-05,
+   "imag": 6.715366247381726e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9364,8 +9364,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=13 Coordinate([2, 3, 3, 4]) lslt",
   {
-   "real": 1.8653906153719218e-05,
-   "imag": 4.085675017580943e-20,
+   "real": 1.8498073970965588e-05,
+   "imag": 4.063702005136444e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9373,8 +9373,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=15 Coordinate([2, 1, 0, 6]) lslt",
   {
-   "real": 0.00012065574467310451,
-   "imag": -8.156495077655791e-20,
+   "real": 0.00011971622452872372,
+   "imag": -8.075599649799987e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9382,8 +9382,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=20 Coordinate([2, 3, 3, 6]) lslt",
   {
-   "real": 9.88729444650225e-05,
-   "imag": -5.229323997578151e-20,
+   "real": 9.821218709781539e-05,
+   "imag": -5.16886711066785e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9391,8 +9391,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=16 Coordinate([2, 2, 0, 6]) lslt",
   {
-   "real": -6.038023130813009e-05,
-   "imag": 2.4970545445502764e-19,
+   "real": -5.989544145960028e-05,
+   "imag": 2.469164018237927e-19,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9400,8 +9400,8 @@
  [
   "run_hlbl_two_plus_two_chunk: run_hlbl_two_plus_two_chunk: test-4nt8-checker 2000 strange strange id_chunk/num_chunk=2/3 idx_xg_x=10 Coordinate([3, 3, 0, 4]) lslt",
   {
-   "real": 1.1151603594903695e-05,
-   "imag": 3.525050850899254e-20,
+   "real": 1.1097659585839576e-05,
+   "imag": 3.490059133787698e-20,
    "__extended_json_type__": "complex128"
   },
   0.2
@@ -9409,8 +9409,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 strange strange lslt_sum",
   {
-   "real": 0.00035539605958621325,
-   "imag": 6.147272115435161e-19,
+   "real": 0.00035305589708244084,
+   "imag": 6.101515907263159e-19,
    "__extended_json_type__": "complex128"
   },
   0.03
@@ -9418,8 +9418,8 @@
  [
   "run_hlbl_two_plus_two: test-4nt8-checker 2000 strange strange lslt_sum[labels.index('sub proj-all'), -1, -1]",
   {
-   "real": -5.470647803834417e-05,
-   "imag": -8.172966808616778e-20,
+   "real": -5.424525134111853e-05,
+   "imag": -8.121393734927616e-20,
    "__extended_json_type__": "complex128"
   },
   0.03
