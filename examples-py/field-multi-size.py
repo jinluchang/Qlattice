@@ -45,22 +45,24 @@ for total_site in total_site_list:
         q.json_results_append(f"smear {total_site} {seed} prop1", q.get_data_sig_arr(prop1, rs, 2), 1e-12)
         assert q.qnorm(prop0[:] - prop1[:]) < 1e-15
 
-fft0 = q.mk_fft(is_forward=True, mode_fft=0)
-fft1 = q.mk_fft(is_forward=True, mode_fft=1)
-for total_site in total_site_list:
-    for multiplicity in multiplicity_list:
-        for seed in range(2):
-            q.json_results_append(f"fft {total_site} {multiplicity} {seed}")
-            rs = q.RngState(f"{total_site} {multiplicity} {seed}")
-            geo = q.Geometry(total_site)
-            f = q.FieldComplexD(geo, multiplicity)
-            f.set_rand(q.RngState())
-            f0 = fft0 * f
-            f1 = fft1 * f
-            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f", q.get_data_sig_arr(f, rs, 2), 1e-12)
-            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f0", q.get_data_sig_arr(f0, rs, 2), 1e-12)
-            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f1", q.get_data_sig_arr(f1, rs, 2), 1e-12)
-            assert q.qnorm(f1[:] - f0[:]) < 1e-15
+for is_forward in [ True, False, ]:
+    for is_only_spatial in [ False, True, ]:
+        fft0 = q.mk_fft(is_forward=is_forward, is_only_spatial=is_only_spatial, mode_fft=0)
+        fft1 = q.mk_fft(is_forward=is_forward, is_only_spatial=is_only_spatial, mode_fft=1)
+        for total_site in total_site_list:
+            for multiplicity in multiplicity_list:
+                for seed in range(1):
+                    q.json_results_append(f"fft {total_site} {multiplicity} {seed}")
+                    rs = q.RngState(f"{total_site} {multiplicity} {seed}")
+                    geo = q.Geometry(total_site)
+                    f = q.FieldComplexD(geo, multiplicity)
+                    f.set_rand(q.RngState())
+                    f0 = fft0 * f
+                    f1 = fft1 * f
+                    q.json_results_append(f"fft {total_site} {multiplicity} {seed} f", q.get_data_sig(f, rs), 1e-12)
+                    q.json_results_append(f"fft {total_site} {multiplicity} {seed} f0", q.get_data_sig(f0, rs), 1e-12)
+                    q.json_results_append(f"fft {total_site} {multiplicity} {seed} f1", q.get_data_sig(f1, rs), 1e-12)
+                    assert q.qnorm(f1[:] - f0[:]) < 1e-15
 
 q.timer_display()
 q.check_log_json(__file__)
