@@ -3,6 +3,25 @@
   "smear Coordinate([4, 4, 4, 4]) 0"
  ],
  [
+  "smear Coordinate([4, 4, 4, 4]) 0 prop",
+  {
+   "value": [
+    {
+     "real": -135.6510664803802,
+     "imag": -155.38840854868903,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 34.03722114560831,
+     "imag": 59.831629099205486,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "smear Coordinate([4, 4, 4, 4]) 0 prop0",
   {
    "value": [
@@ -19,7 +38,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([4, 4, 4, 4]) 0 prop1",
@@ -38,10 +57,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([4, 4, 4, 4]) 1"
+ ],
+ [
+  "smear Coordinate([4, 4, 4, 4]) 1 prop",
+  {
+   "value": [
+    {
+     "real": 66.73747931998273,
+     "imag": 6.851751181960758,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -26.96184393467082,
+     "imag": -50.75643130585939,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "smear Coordinate([4, 4, 4, 4]) 1 prop0",
@@ -60,7 +98,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([4, 4, 4, 4]) 1 prop1",
@@ -79,10 +117,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([6, 6, 6, 6]) 0"
+ ],
+ [
+  "smear Coordinate([6, 6, 6, 6]) 0 prop",
+  {
+   "value": [
+    {
+     "real": 58.37913849730229,
+     "imag": 141.43874119913372,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 222.46656095768827,
+     "imag": 247.38933347072984,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "smear Coordinate([6, 6, 6, 6]) 0 prop0",
@@ -101,7 +158,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([6, 6, 6, 6]) 0 prop1",
@@ -120,10 +177,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([6, 6, 6, 6]) 1"
+ ],
+ [
+  "smear Coordinate([6, 6, 6, 6]) 1 prop",
+  {
+   "value": [
+    {
+     "real": 77.68637960795914,
+     "imag": 33.264243182207686,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 53.979995673236886,
+     "imag": 48.09052724328883,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "smear Coordinate([6, 6, 6, 6]) 1 prop0",
@@ -142,7 +218,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([6, 6, 6, 6]) 1 prop1",
@@ -161,10 +237,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([8, 8, 8, 8]) 0"
+ ],
+ [
+  "smear Coordinate([8, 8, 8, 8]) 0 prop",
+  {
+   "value": [
+    {
+     "real": 171.03132935911475,
+     "imag": 120.39408016111065,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -510.86230867101136,
+     "imag": -687.1429847499124,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "smear Coordinate([8, 8, 8, 8]) 0 prop0",
@@ -183,7 +278,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([8, 8, 8, 8]) 0 prop1",
@@ -202,10 +297,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([8, 8, 8, 8]) 1"
+ ],
+ [
+  "smear Coordinate([8, 8, 8, 8]) 1 prop",
+  {
+   "value": [
+    {
+     "real": -41.206154083557564,
+     "imag": -38.98809727142321,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 163.280701844315,
+     "imag": 274.11421073658147,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "smear Coordinate([8, 8, 8, 8]) 1 prop0",
@@ -224,7 +338,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "smear Coordinate([8, 8, 8, 8]) 1 prop1",
@@ -243,10 +357,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 1 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 1 0 f",
+  {
+   "value": [
+    {
+     "real": -9.265000082176321,
+     "imag": -11.219090906238147,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.4382711177996654,
+     "imag": 1.1364486712892332,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 1 0 f0",
@@ -265,7 +398,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 1 0 f1",
@@ -284,10 +417,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 1 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 1 1 f",
+  {
+   "value": [
+    {
+     "real": 3.3533099179578194,
+     "imag": 3.7190146487275735,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.3819929237753257,
+     "imag": 4.020410813927105,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 1 1 f0",
@@ -306,7 +458,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 1 1 f1",
@@ -325,10 +477,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 2 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 2 0 f",
+  {
+   "value": [
+    {
+     "real": 0.8687306771694001,
+     "imag": 1.637338597490877,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -9.110342167489307,
+     "imag": -7.29270353908139,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 2 0 f0",
@@ -347,7 +518,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 2 0 f1",
@@ -366,10 +537,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 2 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 2 1 f",
+  {
+   "value": [
+    {
+     "real": 0.43845508377354014,
+     "imag": -4.603335537301206,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -8.316760655774626,
+     "imag": -12.627894739928154,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 2 1 f0",
@@ -388,7 +578,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 2 1 f1",
@@ -407,10 +597,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 3 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 3 0 f",
+  {
+   "value": [
+    {
+     "real": 17.523333260849018,
+     "imag": 16.384736514079073,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -16.786875368212996,
+     "imag": -9.682489635757005,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 3 0 f0",
@@ -429,7 +638,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 3 0 f1",
@@ -448,10 +657,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 3 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 3 1 f",
+  {
+   "value": [
+    {
+     "real": 7.374084555653006,
+     "imag": 5.1096596904028875,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 15.213090740136444,
+     "imag": 11.742890206035014,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 3 1 f0",
@@ -470,7 +698,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 3 1 f1",
@@ -489,10 +717,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 4 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 4 0 f",
+  {
+   "value": [
+    {
+     "real": 2.483623267907989,
+     "imag": 9.74337431884169,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -13.677191296315556,
+     "imag": -7.35928327268262,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 4 0 f0",
@@ -511,7 +758,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 4 0 f1",
@@ -530,10 +777,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 4 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 4 1 f",
+  {
+   "value": [
+    {
+     "real": -24.453606935127713,
+     "imag": -7.687084331102605,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.286919499231578,
+     "imag": -4.922387752828757,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 4 1 f0",
@@ -552,7 +818,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 4 1 f1",
@@ -571,10 +837,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 5 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 5 0 f",
+  {
+   "value": [
+    {
+     "real": 15.387304709389484,
+     "imag": 20.440669548052384,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 7.584723473814247,
+     "imag": 8.051936116412469,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 5 0 f0",
@@ -593,7 +878,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 5 0 f1",
@@ -612,10 +897,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 5 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 5 1 f",
+  {
+   "value": [
+    {
+     "real": -16.173851958714696,
+     "imag": -8.208686673430982,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -8.283972767712196,
+     "imag": -10.747284323592623,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 5 1 f0",
@@ -634,7 +938,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 5 1 f1",
@@ -653,10 +957,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 7 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 7 0 f",
+  {
+   "value": [
+    {
+     "real": -5.714405777815399,
+     "imag": 2.754177196517521,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -4.1674512856162895,
+     "imag": -16.105484949274704,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 7 0 f0",
@@ -675,7 +998,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 7 0 f1",
@@ -694,10 +1017,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 7 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 7 1 f",
+  {
+   "value": [
+    {
+     "real": 0.9489016587502639,
+     "imag": -0.2840225554469775,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -3.212514963111537,
+     "imag": -3.5512879705895735,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 7 1 f0",
@@ -716,7 +1058,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 7 1 f1",
@@ -735,10 +1077,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 9 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 9 0 f",
+  {
+   "value": [
+    {
+     "real": -0.8057466078550579,
+     "imag": -0.9382679308997446,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 23.69803834861929,
+     "imag": 20.070470558751403,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 9 0 f0",
@@ -757,7 +1118,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 9 0 f1",
@@ -776,10 +1137,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 9 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 9 1 f",
+  {
+   "value": [
+    {
+     "real": 2.171874709969999,
+     "imag": 1.2441098003045186,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 14.350950516092546,
+     "imag": 15.905392916281272,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 9 1 f0",
@@ -798,7 +1178,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 9 1 f1",
@@ -817,10 +1197,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 11 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 11 0 f",
+  {
+   "value": [
+    {
+     "real": 4.660153027728316,
+     "imag": 8.317413882090552,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 9.396396698615275,
+     "imag": 5.566912717617285,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 11 0 f0",
@@ -839,7 +1238,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 11 0 f1",
@@ -858,10 +1257,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 11 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 11 1 f",
+  {
+   "value": [
+    {
+     "real": -3.346130134808589,
+     "imag": 0.3989458018243486,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 9.096634402752338,
+     "imag": 13.443020361678832,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 11 1 f0",
@@ -880,7 +1298,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 11 1 f1",
@@ -899,10 +1317,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 13 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 13 0 f",
+  {
+   "value": [
+    {
+     "real": 38.15205466720705,
+     "imag": 44.98466476116006,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -7.561263656217263,
+     "imag": -10.852975414829299,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 13 0 f0",
@@ -921,7 +1358,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 13 0 f1",
@@ -940,10 +1377,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 13 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 13 1 f",
+  {
+   "value": [
+    {
+     "real": 13.33908931178745,
+     "imag": 1.2799657540874492,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 14.760221128882266,
+     "imag": 26.552267188748182,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 13 1 f0",
@@ -962,7 +1418,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 13 1 f1",
@@ -981,10 +1437,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 16 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 16 0 f",
+  {
+   "value": [
+    {
+     "real": -56.82346550339313,
+     "imag": -35.86387698939408,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -60.834920434558015,
+     "imag": -34.7539801046815,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 16 0 f0",
@@ -1003,7 +1478,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 16 0 f1",
@@ -1022,10 +1497,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 16 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 16 1 f",
+  {
+   "value": [
+    {
+     "real": -7.017083128131093,
+     "imag": -18.83620896064261,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 11.514672539838113,
+     "imag": -8.080012330935869,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 16 1 f0",
@@ -1044,7 +1538,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 16 1 f1",
@@ -1063,10 +1557,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 20 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 20 0 f",
+  {
+   "value": [
+    {
+     "real": 3.521501101723789,
+     "imag": 17.05372220689029,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 27.08152610464449,
+     "imag": 18.414181579416052,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 20 0 f0",
@@ -1085,7 +1598,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 20 0 f1",
@@ -1104,10 +1617,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 20 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 20 1 f",
+  {
+   "value": [
+    {
+     "real": 7.744625491134543,
+     "imag": 14.258647912473196,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 5.080258974590947,
+     "imag": -11.266037444173028,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 20 1 f0",
@@ -1126,7 +1658,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 20 1 f1",
@@ -1145,10 +1677,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 40 0"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 40 0 f",
+  {
+   "value": [
+    {
+     "real": 16.933714546636857,
+     "imag": -17.87793641322078,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -50.91901836974658,
+     "imag": -33.50907699949227,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 40 0 f0",
@@ -1167,7 +1718,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 40 0 f1",
@@ -1186,10 +1737,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 40 1"
+ ],
+ [
+  "fft Coordinate([4, 4, 4, 4]) 40 1 f",
+  {
+   "value": [
+    {
+     "real": 4.747358478985134,
+     "imag": -4.079804033027159,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 26.283106716730657,
+     "imag": 53.570715677726355,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 40 1 f0",
@@ -1208,7 +1778,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([4, 4, 4, 4]) 40 1 f1",
@@ -1227,10 +1797,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 1 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 1 0 f",
+  {
+   "value": [
+    {
+     "real": -0.6039036117623784,
+     "imag": 5.798974398646796,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.656761228062182,
+     "imag": 17.94372864996806,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 1 0 f0",
@@ -1249,7 +1838,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 1 0 f1",
@@ -1268,10 +1857,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 1 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 1 1 f",
+  {
+   "value": [
+    {
+     "real": 9.876529694747756,
+     "imag": 12.222620611803592,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 2.1853176768447438,
+     "imag": 6.5260089798121115,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 1 1 f0",
@@ -1290,7 +1898,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 1 1 f1",
@@ -1309,10 +1917,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 2 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 2 0 f",
+  {
+   "value": [
+    {
+     "real": 8.845067712805273,
+     "imag": -3.06140734207883,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 18.33133484240129,
+     "imag": -3.1223517616751195,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 2 0 f0",
@@ -1331,7 +1958,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 2 0 f1",
@@ -1350,10 +1977,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 2 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 2 1 f",
+  {
+   "value": [
+    {
+     "real": -13.276871237591275,
+     "imag": 6.7371739891672915,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 6.285598926805734,
+     "imag": 20.858545688300282,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 2 1 f0",
@@ -1372,7 +2018,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 2 1 f1",
@@ -1391,10 +2037,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 3 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 3 0 f",
+  {
+   "value": [
+    {
+     "real": -18.47464896815106,
+     "imag": -29.299857571256382,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -20.90843579422878,
+     "imag": -30.878167565071294,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 3 0 f0",
@@ -1413,7 +2078,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 3 0 f1",
@@ -1432,10 +2097,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 3 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 3 1 f",
+  {
+   "value": [
+    {
+     "real": -10.578354957795568,
+     "imag": -4.624269169787915,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 44.62732017235574,
+     "imag": 32.848935121908355,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 3 1 f0",
@@ -1454,7 +2138,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 3 1 f1",
@@ -1473,10 +2157,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 4 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 4 0 f",
+  {
+   "value": [
+    {
+     "real": 6.753836750001163,
+     "imag": 15.815277716661711,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -49.737714505461696,
+     "imag": -60.04005868349839,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 4 0 f0",
@@ -1495,7 +2198,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 4 0 f1",
@@ -1514,10 +2217,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 4 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 4 1 f",
+  {
+   "value": [
+    {
+     "real": -32.78226004486567,
+     "imag": -49.526272241562076,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 29.628287828523675,
+     "imag": 25.04362714608054,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 4 1 f0",
@@ -1536,7 +2258,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 4 1 f1",
@@ -1555,10 +2277,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 5 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 5 0 f",
+  {
+   "value": [
+    {
+     "real": 23.560488184635304,
+     "imag": 4.682589416059914,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -78.37777678279832,
+     "imag": -40.869595689726,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 5 0 f0",
@@ -1577,7 +2318,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 5 0 f1",
@@ -1596,10 +2337,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 5 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 5 1 f",
+  {
+   "value": [
+    {
+     "real": -2.6316208019725345,
+     "imag": -3.788728216614495,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -43.51933553170015,
+     "imag": -21.397574341607537,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 5 1 f0",
@@ -1618,7 +2378,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 5 1 f1",
@@ -1637,10 +2397,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 7 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 7 0 f",
+  {
+   "value": [
+    {
+     "real": -15.402508955721547,
+     "imag": 12.408440413692102,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -13.150395013989414,
+     "imag": -22.931898299301775,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 7 0 f0",
@@ -1659,7 +2438,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 7 0 f1",
@@ -1678,10 +2457,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 7 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 7 1 f",
+  {
+   "value": [
+    {
+     "real": -44.37440029715874,
+     "imag": -9.900139689957959,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 48.651664993560345,
+     "imag": 68.82805887808034,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 7 1 f0",
@@ -1700,7 +2498,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 7 1 f1",
@@ -1719,10 +2517,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 9 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 9 0 f",
+  {
+   "value": [
+    {
+     "real": 6.577315762432474,
+     "imag": -4.1702690152682145,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.3266687988501946,
+     "imag": 34.479041413008474,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 9 0 f0",
@@ -1741,7 +2558,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 9 0 f1",
@@ -1760,10 +2577,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 9 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 9 1 f",
+  {
+   "value": [
+    {
+     "real": 70.29669400412689,
+     "imag": 80.5240986648148,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 52.70701159154048,
+     "imag": 91.62159169563377,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 9 1 f0",
@@ -1782,7 +2618,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 9 1 f1",
@@ -1801,10 +2637,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 11 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 11 0 f",
+  {
+   "value": [
+    {
+     "real": -49.335822684771784,
+     "imag": -47.98775145462528,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -33.214484514048266,
+     "imag": 29.520163909890346,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 11 0 f0",
@@ -1823,7 +2678,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 11 0 f1",
@@ -1842,10 +2697,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 11 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 11 1 f",
+  {
+   "value": [
+    {
+     "real": 46.900436772957285,
+     "imag": -3.5753713072356064,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -19.050129179495443,
+     "imag": -45.49400920819052,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 11 1 f0",
@@ -1864,7 +2738,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 11 1 f1",
@@ -1883,10 +2757,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 13 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 13 0 f",
+  {
+   "value": [
+    {
+     "real": 28.472126056741917,
+     "imag": 57.28798250310639,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 41.85095515984751,
+     "imag": 24.5407673767218,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 13 0 f0",
@@ -1905,7 +2798,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 13 0 f1",
@@ -1924,10 +2817,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 13 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 13 1 f",
+  {
+   "value": [
+    {
+     "real": -2.3088155378032083,
+     "imag": -7.283291387738961,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.8791869971398136,
+     "imag": 26.91112926273356,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 13 1 f0",
@@ -1946,7 +2858,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 13 1 f1",
@@ -1965,10 +2877,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 16 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 16 0 f",
+  {
+   "value": [
+    {
+     "real": -8.86534844718774,
+     "imag": -66.61133548039858,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -39.58465176092531,
+     "imag": -17.93027898249374,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 16 0 f0",
@@ -1987,7 +2918,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 16 0 f1",
@@ -2006,10 +2937,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 16 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 16 1 f",
+  {
+   "value": [
+    {
+     "real": -35.93146167451585,
+     "imag": 0.7957503403614758,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -7.3492139944969495,
+     "imag": 18.530417565310746,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 16 1 f0",
@@ -2028,7 +2978,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 16 1 f1",
@@ -2047,10 +2997,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 20 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 20 0 f",
+  {
+   "value": [
+    {
+     "real": -71.27840875815109,
+     "imag": -69.51260261520183,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 15.082946952793847,
+     "imag": 10.75553389453074,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 20 0 f0",
@@ -2069,7 +3038,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 20 0 f1",
@@ -2088,10 +3057,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 20 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 20 1 f",
+  {
+   "value": [
+    {
+     "real": -48.42139710161906,
+     "imag": 3.2405460761330502,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 68.10568905992676,
+     "imag": 108.52643606871148,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 20 1 f0",
@@ -2110,7 +3098,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 20 1 f1",
@@ -2129,10 +3117,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 40 0"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 40 0 f",
+  {
+   "value": [
+    {
+     "real": -145.43882580075473,
+     "imag": -146.4040878732241,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -88.8869976340215,
+     "imag": 16.035342705892152,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 40 0 f0",
@@ -2151,7 +3158,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 40 0 f1",
@@ -2170,10 +3177,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 40 1"
+ ],
+ [
+  "fft Coordinate([6, 6, 6, 6]) 40 1 f",
+  {
+   "value": [
+    {
+     "real": 30.579157381970106,
+     "imag": 45.23467997264356,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 29.68969334201185,
+     "imag": 44.947227401951174,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 40 1 f0",
@@ -2192,7 +3218,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([6, 6, 6, 6]) 40 1 f1",
@@ -2211,10 +3237,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 1 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 1 0 f",
+  {
+   "value": [
+    {
+     "real": -6.501575823148116,
+     "imag": 10.49705861071346,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -14.061032279404309,
+     "imag": -31.938516008102724,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 1 0 f0",
@@ -2233,29 +3278,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 1 0 f1",
   {
    "value": [
     {
-     "real": -575.16700051123,
+     "real": -575.1670005112298,
      "imag": -543.2030521003999,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 266.75442443263915,
-     "imag": 121.53088905385965,
+     "real": 266.754424432639,
+     "imag": 121.5308890538598,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 1 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 1 1 f",
+  {
+   "value": [
+    {
+     "real": -8.626947720728992,
+     "imag": -33.18414633579852,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 47.02375277153259,
+     "imag": 60.0485422617547,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 1 1 f0",
@@ -2274,29 +3338,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 1 1 f1",
   {
    "value": [
     {
-     "real": -256.7027104692128,
-     "imag": -733.4139512394856,
+     "real": -256.70271046921283,
+     "imag": -733.4139512394852,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 1948.3579583923133,
-     "imag": 1639.6222939534161,
+     "real": 1948.3579583923135,
+     "imag": 1639.6222939534157,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 2 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 2 0 f",
+  {
+   "value": [
+    {
+     "real": 4.865008995896927,
+     "imag": 23.451779974288414,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -9.761800853792785,
+     "imag": 4.60026048048282,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 2 0 f0",
@@ -2315,7 +3398,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 2 0 f1",
@@ -2334,10 +3417,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 2 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 2 1 f",
+  {
+   "value": [
+    {
+     "real": -13.321792885435698,
+     "imag": 1.4369923162523186,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -36.2886590195445,
+     "imag": -29.02603755907757,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 2 1 f0",
@@ -2356,7 +3458,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 2 1 f1",
@@ -2375,10 +3477,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 3 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 3 0 f",
+  {
+   "value": [
+    {
+     "real": 22.032032913183023,
+     "imag": 26.635613627498792,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 17.59655535353619,
+     "imag": 23.704961270765857,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 3 0 f0",
@@ -2397,29 +3518,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 3 0 f1",
   {
    "value": [
     {
-     "real": -193.0924672141723,
-     "imag": -1258.1045175426873,
+     "real": -193.09246721417196,
+     "imag": -1258.1045175426866,
      "__extended_json_type__": "complex"
     },
     {
      "real": 2824.256366989722,
-     "imag": 385.75941512382656,
+     "imag": 385.7594151238268,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 3 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 3 1 f",
+  {
+   "value": [
+    {
+     "real": -42.37965224064285,
+     "imag": -41.24977021600213,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 37.22532118923156,
+     "imag": 14.719353643096582,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 3 1 f0",
@@ -2438,29 +3578,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 3 1 f1",
   {
    "value": [
     {
-     "real": 1896.5029638351066,
-     "imag": 3351.3883757706544,
+     "real": 1896.5029638351068,
+     "imag": 3351.388375770654,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -1416.1209564624378,
-     "imag": 289.44832749113493,
+     "real": -1416.1209564624373,
+     "imag": 289.4483274911354,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 4 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 4 0 f",
+  {
+   "value": [
+    {
+     "real": -6.080228083464842,
+     "imag": -0.6517237358505223,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 31.920349925966047,
+     "imag": -2.8887659140991566,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 4 0 f0",
@@ -2472,44 +3631,63 @@
      "__extended_json_type__": "complex"
     },
     {
-     "real": -902.1867007637865,
-     "imag": -858.7748926918839,
+     "real": -902.1867007637859,
+     "imag": -858.7748926918841,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 4 0 f1",
   {
    "value": [
     {
-     "real": -145.54775393327714,
+     "real": -145.5477539332769,
      "imag": -1527.2851028453128,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -902.1867007637862,
-     "imag": -858.7748926918839,
+     "real": -902.1867007637859,
+     "imag": -858.7748926918841,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 4 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 4 1 f",
+  {
+   "value": [
+    {
+     "real": 61.14340069231597,
+     "imag": -2.8115414813181374,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -4.679302978086524,
+     "imag": -41.73549100660662,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 4 1 f0",
   {
    "value": [
     {
-     "real": -2409.221966316602,
-     "imag": -1920.6088641532303,
+     "real": -2409.2219663166024,
+     "imag": -1920.6088641532306,
      "__extended_json_type__": "complex"
     },
     {
@@ -2520,7 +3698,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 4 1 f1",
@@ -2528,21 +3706,40 @@
    "value": [
     {
      "real": -2409.2219663166024,
-     "imag": -1920.608864153231,
+     "imag": -1920.6088641532306,
      "__extended_json_type__": "complex"
     },
     {
      "real": 2938.246801754579,
-     "imag": 1504.869750158783,
+     "imag": 1504.8697501587826,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 5 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 5 0 f",
+  {
+   "value": [
+    {
+     "real": -51.48475391117261,
+     "imag": -9.553847211992673,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -5.110674282842659,
+     "imag": 28.686255845693964,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 5 0 f0",
@@ -2561,7 +3758,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 5 0 f1",
@@ -2573,17 +3770,36 @@
      "__extended_json_type__": "complex"
     },
     {
-     "real": 1324.8627737964855,
+     "real": 1324.8627737964853,
      "imag": 3458.3755876585637,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 5 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 5 1 f",
+  {
+   "value": [
+    {
+     "real": 77.74476300771417,
+     "imag": 71.41225593630597,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 34.592500654861766,
+     "imag": 81.42821747631763,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 5 1 f0",
@@ -2602,29 +3818,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 5 1 f1",
   {
    "value": [
     {
-     "real": -2766.368596954643,
-     "imag": -3349.9849623960954,
+     "real": -2766.3685969546436,
+     "imag": -3349.984962396095,
      "__extended_json_type__": "complex"
     },
     {
      "real": 6111.599748277943,
-     "imag": 6572.073095335109,
+     "imag": 6572.0730953351085,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 7 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 7 0 f",
+  {
+   "value": [
+    {
+     "real": -62.39353931358292,
+     "imag": -62.47663295040199,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 93.12043212388465,
+     "imag": 95.19361412580912,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 7 0 f0",
@@ -2643,7 +3878,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 7 0 f1",
@@ -2651,21 +3886,40 @@
    "value": [
     {
      "real": 1053.0369073283127,
-     "imag": 1205.0917482865752,
+     "imag": 1205.0917482865748,
      "__extended_json_type__": "complex"
     },
     {
      "real": 1517.6949410053244,
-     "imag": 1760.7961507608916,
+     "imag": 1760.7961507608911,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 7 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 7 1 f",
+  {
+   "value": [
+    {
+     "real": -33.174990124501186,
+     "imag": -22.927308984261956,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 28.42350449534313,
+     "imag": 22.095215794667084,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 7 1 f0",
@@ -2684,29 +3938,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 7 1 f1",
   {
    "value": [
     {
-     "real": 896.4021798562012,
-     "imag": -974.0305296988173,
+     "real": 896.4021798562017,
+     "imag": -974.0305296988179,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -4522.379761505399,
-     "imag": 691.0715118839316,
+     "real": -4522.379761505397,
+     "imag": 691.0715118839312,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 9 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 9 0 f",
+  {
+   "value": [
+    {
+     "real": 98.01077659371106,
+     "imag": 89.98383577574067,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 18.64236038455506,
+     "imag": 68.74276636666121,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 9 0 f0",
@@ -2725,29 +3998,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 9 0 f1",
   {
    "value": [
     {
-     "real": -9384.428675967576,
-     "imag": -6294.081189186825,
+     "real": -9384.428675967574,
+     "imag": -6294.081189186827,
      "__extended_json_type__": "complex"
     },
     {
      "real": -3891.946617482332,
-     "imag": -1209.6859240203692,
+     "imag": -1209.6859240203696,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 9 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 9 1 f",
+  {
+   "value": [
+    {
+     "real": -160.97970189453224,
+     "imag": -183.94244147095543,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 12.909937761394428,
+     "imag": 44.89165344852334,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 9 1 f0",
@@ -2766,29 +4058,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 9 1 f1",
   {
    "value": [
     {
-     "real": -320.5294107851415,
-     "imag": 860.5226665529149,
+     "real": -320.52941078514186,
+     "imag": 860.5226665529146,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 2496.833541720182,
-     "imag": 1175.3334681525434,
+     "real": 2496.833541720181,
+     "imag": 1175.3334681525428,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 11 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 11 0 f",
+  {
+   "value": [
+    {
+     "real": -108.41821137563633,
+     "imag": -92.03378898397423,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -36.01357942802031,
+     "imag": -3.9973168826380814,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 11 0 f0",
@@ -2807,15 +4118,15 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 11 0 f1",
   {
    "value": [
     {
-     "real": -4158.347562787452,
-     "imag": -712.3042347737759,
+     "real": -4158.347562787451,
+     "imag": -712.3042347737755,
      "__extended_json_type__": "complex"
     },
     {
@@ -2826,10 +4137,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 11 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 11 1 f",
+  {
+   "value": [
+    {
+     "real": 5.542930648303702,
+     "imag": -7.531803974161349,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 176.1841804452632,
+     "imag": 99.30975642264842,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 11 1 f0",
@@ -2848,29 +4178,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 11 1 f1",
   {
    "value": [
     {
-     "real": 5117.885777283091,
-     "imag": 1817.555303730826,
+     "real": 5117.885777283092,
+     "imag": 1817.555303730825,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 718.9045398437615,
-     "imag": 2518.2601418707127,
+     "real": 718.904539843762,
+     "imag": 2518.260141870711,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 13 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 13 0 f",
+  {
+   "value": [
+    {
+     "real": -2.3228770889337085,
+     "imag": -62.125778912340095,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.420879218723634,
+     "imag": 54.292389116021056,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 13 0 f0",
@@ -2889,29 +4238,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 13 0 f1",
   {
    "value": [
     {
-     "real": -2700.261271956263,
+     "real": -2700.2612719562617,
      "imag": -9039.28441053619,
      "__extended_json_type__": "complex"
     },
     {
      "real": 6539.804635477118,
-     "imag": 5324.395646992379,
+     "imag": 5324.39564699238,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 13 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 13 1 f",
+  {
+   "value": [
+    {
+     "real": 51.79118474801173,
+     "imag": 45.360924930476344,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -15.362990002843866,
+     "imag": 9.3864587277981,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 13 1 f0",
@@ -2930,29 +4298,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 13 1 f1",
   {
    "value": [
     {
-     "real": 1599.3693810616437,
-     "imag": -3549.382536149475,
+     "real": 1599.3693810616442,
+     "imag": -3549.3825361494733,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 2062.4585368802536,
-     "imag": 91.5559928535863,
+     "real": 2062.458536880254,
+     "imag": 91.55599285358733,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 16 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 16 0 f",
+  {
+   "value": [
+    {
+     "real": -103.73233498184683,
+     "imag": -17.195935870280074,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 58.821054190695875,
+     "imag": 53.22944216658013,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 16 0 f0",
@@ -2971,7 +4358,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 16 0 f1",
@@ -2990,10 +4377,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 16 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 16 1 f",
+  {
+   "value": [
+    {
+     "real": 73.01451687968046,
+     "imag": 124.49752946530374,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 35.10729508846687,
+     "imag": -13.362434699708679,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 16 1 f0",
@@ -3012,7 +4418,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 16 1 f1",
@@ -3031,10 +4437,29 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 20 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 20 0 f",
+  {
+   "value": [
+    {
+     "real": 15.927572651658558,
+     "imag": -28.470000113086186,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 141.64086208013836,
+     "imag": -2.5074765776240184,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 20 0 f0",
@@ -3053,29 +4478,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 20 0 f1",
   {
    "value": [
     {
-     "real": -9974.565577202207,
-     "imag": 1197.652483812435,
+     "real": -9974.565577202204,
+     "imag": 1197.6524838124342,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -6086.170898545166,
-     "imag": -3754.9681954785574,
+     "real": -6086.170898545165,
+     "imag": -3754.9681954785565,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 20 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 20 1 f",
+  {
+   "value": [
+    {
+     "real": 37.0100836925193,
+     "imag": 110.57101957325426,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 52.27625495351129,
+     "imag": -110.840675007545,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 20 1 f0",
@@ -3094,29 +4538,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 20 1 f1",
   {
    "value": [
     {
-     "real": 229.5203127289418,
-     "imag": 2185.6500897540186,
+     "real": 229.52031272894095,
+     "imag": 2185.6500897540177,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 2591.2812242191867,
-     "imag": 4419.875034293363,
+     "real": 2591.281224219186,
+     "imag": 4419.875034293362,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 40 0"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 40 0 f",
+  {
+   "value": [
+    {
+     "real": -205.96339784777973,
+     "imag": -133.1303759831971,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -97.95988006672218,
+     "imag": 11.573216319138055,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 40 0 f0",
@@ -3135,29 +4598,48 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 40 0 f1",
   {
    "value": [
     {
-     "real": 8424.73007414999,
+     "real": 8424.730074149991,
      "imag": 1202.5837743930388,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -3217.810975797117,
-     "imag": -64.41486860218401,
+     "real": -3217.810975797118,
+     "imag": -64.41486860218265,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 40 1"
+ ],
+ [
+  "fft Coordinate([8, 8, 8, 8]) 40 1 f",
+  {
+   "value": [
+    {
+     "real": -35.395835722137484,
+     "imag": -276.31891417322294,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -21.712799103130408,
+     "imag": -31.709548478355686,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 40 1 f0",
@@ -3176,7 +4658,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ],
  [
   "fft Coordinate([8, 8, 8, 8]) 40 1 f1",
@@ -3188,13 +4670,13 @@
      "__extended_json_type__": "complex"
     },
     {
-     "real": -3659.503439791057,
-     "imag": -1993.2433658272748,
+     "real": -3659.5034397910613,
+     "imag": -1993.2433658272757,
      "__extended_json_type__": "complex"
     }
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-07
+  1e-12
  ]
 ]

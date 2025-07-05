@@ -40,8 +40,9 @@ for total_site in total_site_list:
         step = 3
         prop0 = q.prop_smear(prop, gf1, coef, step, mode_smear=0)
         prop1 = q.prop_smear(prop, gf1, coef, step)
-        q.json_results_append(f"smear {total_site} {seed} prop0", q.get_data_sig_arr(prop0, rs, 2), 1e-7)
-        q.json_results_append(f"smear {total_site} {seed} prop1", q.get_data_sig_arr(prop1, rs, 2), 1e-7)
+        q.json_results_append(f"smear {total_site} {seed} prop", q.get_data_sig_arr(prop, rs, 2), 1e-12)
+        q.json_results_append(f"smear {total_site} {seed} prop0", q.get_data_sig_arr(prop0, rs, 2), 1e-12)
+        q.json_results_append(f"smear {total_site} {seed} prop1", q.get_data_sig_arr(prop1, rs, 2), 1e-12)
         assert q.qnorm(prop0[:] - prop1[:]) < 1e-15
 
 fft0 = q.mk_fft(is_forward=True, mode_fft=0)
@@ -56,8 +57,9 @@ for total_site in total_site_list:
             f.set_rand(q.RngState())
             f0 = fft0 * f
             f1 = fft1 * f
-            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f0", q.get_data_sig_arr(f0, rs, 2), 1e-7)
-            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f1", q.get_data_sig_arr(f1, rs, 2), 1e-7)
+            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f", q.get_data_sig_arr(f, rs, 2), 1e-12)
+            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f0", q.get_data_sig_arr(f0, rs, 2), 1e-12)
+            q.json_results_append(f"fft {total_site} {multiplicity} {seed} f1", q.get_data_sig_arr(f1, rs, 2), 1e-12)
             assert q.qnorm(f1[:] - f0[:]) < 1e-15
 
 q.timer_display()
