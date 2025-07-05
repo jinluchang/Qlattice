@@ -478,7 +478,7 @@ inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const int apply_s
   freeGaugeQuda();
   //{
   //qlat::ComplexD res =  vec_norm2(quda_gf, quda_gf, geo.local_volume() * 4 * 9, QMGPU, 64);
-  //print0("gauge norm %.8e %.8e \n",  res.real(), res.imag());
+  //qmessage("gauge norm %.8e %.8e \n",  res.real(), res.imag());
   //}
   if(apply_stag_phase == 1 and (gauge_with_phase == false or force_phase == 1)){
     applyGaugeFieldScaling_long((qlat::ComplexD*) quda_gf, V/2, &gauge_param, QUDA_STAGGERED_DSLASH);
@@ -812,7 +812,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  int nsave = nvec;
 //  if(fermion_type == 1){
 //    nsave = nvec/2;
-//    if(nvec%2 != 0){print0("Even Odd savings, nvec  2 not 0, nvec %d \n", nvec);Qassert(false);}
+//    if(nvec%2 != 0){qmessage("Even Odd savings, nvec  2 not 0, nvec %d \n", nvec);Qassert(false);}
 //  }
 //
 //  //bool single_file=true;
@@ -1698,7 +1698,7 @@ inline void quda_inverter::setup_mat_mass(const double mass, const bool force_do
 
   mass_mat = mass;
 
-  /////print0("requested precision %d\n",inv_param.cuda_prec);
+  /////qmessage("requested precision %d\n",inv_param.cuda_prec);
   //createDiracWithEig(dirac, dSloppy, dPre, dEig, inv_param, pc_solve);
   //createDirac(dirac, dSloppy, dPre, inv_param, pc_solve);
 
@@ -2047,7 +2047,7 @@ inline void quda_inverter::random_src(const int seed)
 //  TIMER("check_residualF");
 //  std::vector<quda::Complex  >& vals = evalsZ;
 //  quda::Complex n_unit(-1.0, 0.0);
-//  /////print0("mass check %.8e \n", mass_mat);
+//  /////qmessage("mass check %.8e \n", mass_mat);
 //
 //  for(int n=0;n<nvec*2;n++)
 //  {   
@@ -2139,7 +2139,7 @@ inline void quda_inverter::prepare_low_prop()
 //  setDiracParam(diracParam, &inv_param, false);
 //  quda::Dirac *dirac0;
 //  dirac0    = quda::Dirac::create(diracParam);
-//  ////print0("mass %.8e \n", m);
+//  ////qmessage("mass %.8e \n", m);
 //
 //  quda::Complex n_unit(1.0, 0.0);
 //  if(mode == 0){
@@ -2639,7 +2639,7 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector_acc<void* >& res, qlat:
         src_new[i] = src[bini + i];
         res_new[i] = res[bini + i];
       }
-      //print0("ini %d, cut %d, tot %d \n", int(bini), int(bcut), int(num_src));
+      //qmessage("ini %d, cut %d, tot %d \n", int(bini), int(bcut), int(num_src));
       inv_param.num_src = bcut;
       invertMultiSrcQuda(res_new.data(), src_new.data(), &inv_param);
     }
@@ -2826,7 +2826,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //    nbL[di] = nb;
 //    if(nb == 0.0){errorQuda("Source has zero norm");}
 //
-//    //print0("==normI di %3d, %+.8e \n", di, nb);
+//    //qmessage("==normI di %3d, %+.8e \n", di, nb);
 //
 //    if (getVerbosity() >= QUDA_VERBOSE) {
 //      printfQuda("Source: %g\n", nb);
@@ -2905,14 +2905,14 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //
 //        //double a = quda::blas::norm2(src.Component(di));
 //        //double b = quda::blas::norm2(res.Component(di));
-//        //print0("==normJ di %3d, %+.8e %+.8e \n", di, a, b);
+//        //qmessage("==normJ di %3d, %+.8e %+.8e \n", di, a, b);
 //      }
 //
 //      //for(int di=0;di<num_src_inv;di++)
 //      //{
 //      //  double a = quda::blas::norm2(src.Component(di));
 //      //  double b = quda::blas::norm2(res.Component(di));
-//      //  print0("==normZ di %3d, %+.8e %+.8e \n", di, a, b);
+//      //  qmessage("==normZ di %3d, %+.8e %+.8e \n", di, a, b);
 //      //}
 //
 //    }
@@ -2934,7 +2934,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //    //{
 //    //double a = quda::blas::norm2(src.Component(di));
 //    //double b = quda::blas::norm2(res.Component(di));
-//    //print0("==normM di %3d, %+.8e %+.8e, nb %+.8e \n", di, a, b, nbL[di]);
+//    //qmessage("==normM di %3d, %+.8e %+.8e, nb %+.8e \n", di, a, b, nbL[di]);
 //    //}
 //
 //    quda::ColorSpinorField& x = res.Component(di);
@@ -2957,7 +2957,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //    //{
 //    //double a = quda::blas::norm2(src.Component(di));
 //    //double b = quda::blas::norm2(res.Component(di));
-//    //print0("==normK di %3d, %+.8e %+.8e, nb %+.8e \n", di, a, b, nb);
+//    //qmessage("==normK di %3d, %+.8e %+.8e, nb %+.8e \n", di, a, b, nb);
 //    //}
 //
 //  }
@@ -3068,8 +3068,8 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //        //(*gsrcH).Component(di) = (*gres).Component(di).Odd();
 //        //double a =  quda::blas::norm2((*gsrcH).Component(di));
 //        //double b =  quda::blas::norm2((*gresH).Component(di));
-//        //print0("==srcA %3d, norm2 %+.8e \n", di, a);
-//        //print0("==resA %3d, norm2 %+.8e \n", di, b);
+//        //qmessage("==srcA %3d, norm2 %+.8e \n", di, a);
+//        //qmessage("==resA %3d, norm2 %+.8e \n", di, b);
 //
 //        //invertQuda((void*)(*gres).Component(di).Even().data(), (void*)(*gres).Component(di).Odd().data(), &inv_param);
 //        //invertQuda((void*)(*gresH).Component(di).data(), (void*)(*gsrcH).Component(di).data(), &inv_param);
@@ -3084,9 +3084,9 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //      //  qlat::ComplexD normC = res_tmp.norm2();
 //      //  double na = quda::blas::norm2((*gres).Component(0).Even());
 //      //  double nb = quda::blas::norm2((*gres).Component(0).Odd());
-//      //  print0("check norm ori, %.20f, %.20f, %.20f \n", normC.real(), na, nb);
+//      //  qmessage("check norm ori, %.20f, %.20f, %.20f \n", normC.real(), na, nb);
 //      //  //double nb = quda::blas::norm2(b);
-//      //  //print0("check norm ori, ");
+//      //  //qmessage("check norm ori, ");
 //      //  //res_tmp.print_norm2();
 //      //}
 //
@@ -3099,8 +3099,8 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //
 //      //  //double a =  quda::blas::norm2((*gsrcH).Component(di));
 //      //  //double b =  quda::blas::norm2((*gresH).Component(di));
-//      //  //print0("==srcB %3d, norm2 %+.8e \n", di, a);
-//      //  //print0("==resB %3d, norm2 %+.8e \n", di, b);
+//      //  //qmessage("==srcB %3d, norm2 %+.8e \n", di, a);
+//      //  //qmessage("==resB %3d, norm2 %+.8e \n", di, b);
 //      //}
 //
 //      //{
@@ -3110,8 +3110,8 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //      //  double na = quda::blas::norm2((*gres).Component(0).Even());
 //      //  double nb = quda::blas::norm2((*gres).Component(0).Odd());
 //      //  qlat::ComplexD normC = res_tmp.norm2();
-//      //  print0("check norm ori, %.20f, %.20f, %.20f \n", normC.real(), na, nb);
-//      //  //print0("check norm ori, ");
+//      //  qmessage("check norm ori, %.20f, %.20f, %.20f \n", normC.real(), na, nb);
+//      //  //qmessage("check norm ori, ");
 //      //  //res_tmp.print_norm2();
 //      //}
 //
@@ -3146,8 +3146,8 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //      dirac_pc->reconstruct((*gres), (*gsrc), QUDA_MAT_SOLUTION);
 //      //double a =  quda::blas::norm2((*gsrc).Component(di));
 //      //double b =  quda::blas::norm2((*gres).Component(di));
-//      //print0("==srcC %3d, norm2 %+.8e \n", di, a);
-//      //print0("==resC %3d, norm2 %+.8e \n", di, b);
+//      //qmessage("==srcC %3d, norm2 %+.8e \n", di, a);
+//      //qmessage("==resC %3d, norm2 %+.8e \n", di, b);
 //    }
 //
 //    //*cres = *gres;
@@ -3227,7 +3227,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  //if(val != ""){verbos = stringtonum(val);}
 //  if(quda_verbos >= 0 or quda_verbos == -2)
 //  {
-//    print0("Done: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
+//    qmessage("Done: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
 //          inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs,
 //          inv_param.gflops / (inv_param.secs * qlat::get_num_node()), inv_param.gflops);
 //  }
@@ -3450,7 +3450,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
           //norm_vecs_buf[vi] = std::sqrt( quda::blas::norm2(gsrcV[vi]) );
           //norm_vecs[vi] = std::sqrt( quda::blas::norm2(gsrcV[vi]) );
           norm_vecs[vi] = std::sqrt( quda::blas::norm2(gsrcV[vi]) ) ;
-          //print0("vec %d, norm %.8e \n", vi, norm_vecs[vi]);
+          //qmessage("vec %d, norm %.8e \n", vi, norm_vecs[vi]);
         }
 
         quda::Dirac& xpay = *qinv.dirac_pc;
@@ -3472,7 +3472,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
           if(converge == nsrc){continue ;}
 
           if(count_diverge / nsrc >= 2){
-            print0("Too many inversion diverge %d, nsrc %d!", count_diverge, nsrc);
+            qmessage("Too many inversion diverge %d, nsrc %d!", count_diverge, nsrc);
             break;
           }
           for(int vi=0;vi<nsrc;vi++){
@@ -3518,9 +3518,9 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
 
             double na = std::sqrt( quda::blas::norm2(gsrcV[vi]) ) / norm_vecs[vi];
             double Tmp= std::sqrt( quda::blas::norm2(gsrcV[vi]) );
-            //print0("check res %.8e, self %.8e, res norm %.8e srcnorm %.8e \n", qinv.inv_param.true_res[0], na, Tmp,  norm_vecs[vi]);
+            //qmessage("check res %.8e, self %.8e, res norm %.8e srcnorm %.8e \n", qinv.inv_param.true_res[0], na, Tmp,  norm_vecs[vi]);
             if(na > residual_vecs[vi] * 1.3){
-              print0("residual diverge current %.8e previous %.8e! \n", na, residual_vecs[vi]);
+              qmessage("residual diverge current %.8e previous %.8e! \n", na, residual_vecs[vi]);
               count_diverge += 1;
             }
             residual_vecs[vi] = na;
@@ -3535,7 +3535,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
           //tmp0 = gsrcV[vi];
           quda::blas::caxpy(-1.0*One, tmp1, gsrcV[vi]);
           double na = std::sqrt( quda::blas::norm2(gsrcV[vi]) ) / norm_vecs[vi] ;
-          print0("===check res self %.8e, niter %d \n", na, iter_total);
+          qmessage("===check res self %.8e, niter %d \n", na, iter_total);
         }
 
         //Qvec[nsrc + vi]->Odd()  = (*qinv.gsrcH).Component(0);
@@ -3617,7 +3617,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
     timer.flops += qinv.inv_param.gflops;
     if((qinv.quda_verbos >= 0 or qinv.quda_verbos == -2) and qinv.inv_param.iter > 0)
     {
-      print0("Done: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
+      qmessage("Done: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
             qinv.inv_param.iter, qinv.inv_param.secs, qinv.inv_param.gflops / qinv.inv_param.secs,
             qinv.inv_param.gflops / (qinv.inv_param.secs * qlat::get_num_node()), qinv.inv_param.gflops);
     }
@@ -3680,11 +3680,11 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   ////qlat::vector_gpu<Ty > tmp;tmp.resize(V*3);
   ////tmp.copy_from(src, V*3);
   ////Ty norm = tmp.norm();
-  ////print0("==src norm %.8e \n", norm.real());
+  ////qmessage("==src norm %.8e \n", norm.real());
   ////}
 
   ////Ty norm = norm_FieldM(prop);
-  ////print0("normp %.3e %.3e \n", norm.real(), norm.imag());
+  ////qmessage("normp %.3e %.3e \n", norm.real(), norm.imag());
   //if(low_only == 0){
   //  //qinv.do_inv(qinv.cres->data(), qinv.csrc->data(), mass, err, niter, prec_type);
   //  qinv.do_inv(prop, src, mass, err, niter, prec_type);
@@ -3741,7 +3741,7 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
   get_staggered_prop_group(qinv, sP, rP, mass, err, niter, low_only, prec_type);
 
   //   norm = norm_FieldM(prop);
-  //print0("normp %.3e %.3e \n", norm.real(), norm.imag());
+  //qmessage("normp %.3e %.3e \n", norm.real(), norm.imag());
 }
 
 template<typename Ty>
@@ -3948,7 +3948,7 @@ void get_staggered_multishift(quda_inverter& qinv,
     qlat_cf_to_quda_cf(src_multishift_gpu[0], (Ty*) qlat::get_data(src[srci]).data(), geo, map);
     //{
     //double na = quda::blas::norm2(src_multishift_gpu[0].Even());
-    //print0("src %5d, %+.8e, offset %.8e, err %.3e, iter %8d \n", srci, na, inv_param.offset[0], inv_param.tol, inv_param.maxiter);
+    //qmessage("src %5d, %+.8e, offset %.8e, err %.3e, iter %8d \n", srci, na, inv_param.offset[0], inv_param.tol, inv_param.maxiter);
     //}
 
     if(multishift == 1){
@@ -3968,7 +3968,7 @@ void get_staggered_multishift(quda_inverter& qinv,
   //inv_param = inv_param_copy;
   if(qinv.quda_verbos >= 0 or qinv.quda_verbos == -2)
   {
-    print0("Done multishift: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
+    qmessage("Done multishift: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs,
           inv_param.gflops / (inv_param.secs * qlat::get_num_node()), inv_param.gflops);
   }
@@ -4104,13 +4104,13 @@ void get_staggered_multishift_even(quda_inverter& qinv,
     //{
     //const Geometry& geo = qinv.geo;
     //Ty res =  vec_norm2(src[srci], src[srci], geo.local_volume() * 3 / 2);
-    //print0("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
+    //qmessage("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
     //}
 
     //{
     //const Geometry& geo = qinv.geo;
     //Ty res =  vec_norm2(src[srci], src[srci], geo.local_volume() * 3 / 2);
-    //print0("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
+    //qmessage("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
     //}
 
     if(multishift == 1){
@@ -4124,7 +4124,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   ////restore default inv_param
   if(qinv.quda_verbos >= 0 or qinv.quda_verbos == -2)
   {
-    print0("Done multishift: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
+    qmessage("Done multishift: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs,
           inv_param.gflops / (inv_param.secs * qlat::get_num_node()), inv_param.gflops);
   }

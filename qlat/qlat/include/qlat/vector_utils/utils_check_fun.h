@@ -30,7 +30,7 @@ double diff_gauge( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1, double err=1e-6)
           Coordinate xl0 = geo.coordinate_from_index(index);
           Coordinate xg0 = geo.coordinate_g_from_l(xl0);
 
-          print0("Wrong %3d %3d %3d %3d, dir %1d, ids %3d, %+.8e %+.8e \n", xg0[0], xg0[1], xg0[2], xg0[3], m, pi,p0[pi],p1[pi]);
+          qmessage("Wrong %3d %3d %3d %3d, dir %1d, ids %3d, %+.8e %+.8e \n", xg0[0], xg0[1], xg0[2], xg0[3], m, pi,p0[pi],p1[pi]);
           count_print += 1;
         }
       }
@@ -38,7 +38,7 @@ double diff_gauge( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1, double err=1e-6)
   }
   sum_all_size(&diff, 1);
   diff = diff/(g0.geo().local_volume()*4*9*2.0);
-  print0("==prop diff %.5e \n", diff);
+  qmessage("==prop diff %.5e \n", diff);
   MPI_Barrier(get_comm());fflush(stdout);
   return diff;
 }
@@ -65,7 +65,7 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
 
   double diff = Reduce(dL.data(), dL.size(), true);
   diff = diff/(g0.geo().local_volume()*4*9*2.0);
-  print0("===diff conf %.5e \n",diff);
+  qmessage("===diff conf %.5e \n",diff);
   return double(diff);
 }
 
@@ -131,7 +131,7 @@ void diff_prop(Propagator4dT<Ta>& p0, Propagator4dT<Tb>& p1, double err=1e-15)
   }
   sum_all_size(&diffp,1);
   MPI_Barrier(get_comm());fflush(stdout);
-  print0("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*12*24.0));
+  qmessage("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*12*24.0));
   MPI_Barrier(get_comm());fflush(stdout);
 }
 
@@ -184,7 +184,7 @@ void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double e
   }
   sum_all_size(&diffp, 1, 0);
   MPI_Barrier(get_comm());fflush(stdout);
-  print0("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*qlat::get_num_node()*civ));
+  qmessage("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*qlat::get_num_node()*civ));
   MPI_Barrier(get_comm());fflush(stdout);
 }
 
@@ -214,7 +214,7 @@ template <class T>
 void diff_EigenM(qlat::vector<T >& a, qlat::vector<T >& b, std::string lab)
 {
   double diff = 0.0;
-  if(a.size() != b.size()){print0("%s size not equal %d, %d\n",
+  if(a.size() != b.size()){qmessage("%s size not equal %d, %d\n",
     lab.c_str(), int(a.size()), int(b.size()) );abort_r("");}
 
   for(Long i=0;i < a.size(); i++)
@@ -224,7 +224,7 @@ void diff_EigenM(qlat::vector<T >& a, qlat::vector<T >& b, std::string lab)
   }
 
   sum_all_size(&diff,1);
-  print0("%s diff %.5e, count %d, ava %.5e \n",
+  qmessage("%s diff %.5e, count %d, ava %.5e \n",
     lab.c_str(),diff, int(a.size()), diff/a.size());
 }
 
@@ -320,7 +320,53 @@ template<typename Ty>
 void print_sum(const Ty* a, size_t size, std::string stmp=std::string(""), int GPU = 1)
 {
   Ty sum = Reduce(a, size, GPU);
-  print0("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum) );
+  qmessage("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum) );
+}
+
+template <typename Ty>
+double check_sum_FieldM(qlat::Field<Ty>& p0)
+{
+  const Geometry& geo = p0.geo();
+  double check_sum = 0.0;
+  const int civ = p0.multiplicity;
+  const Ty* src = (Ty*) qlat::get_data(p0).data();
+  const Long Nvol = geo.local_volume();
+  for(Long index = 0; index < Nvol; ++index){
+    Coordinate xl = geo.coordinate_from_index(index);
+    Coordinate xg = geo.coordinate_g_from_l(xl);
+    double cor = xg[0]*0.5 + xg[1]*1.7 + xg[2]*xg[2]*2.5 + xg[3]*xg[3]*0.2;
+    for(Long dc = 0;dc<civ;dc++)
+    {
+      Ty fac = Ty(std::cos(cor + dc) , std::sin(cor*5.7  + dc*dc) );
+      check_sum += qlat::qnorm( src[index*civ + dc] * fac ) ;
+    }
+  }
+  sum_all_size(&check_sum,1);
+  MPI_Barrier(get_comm());fflush(stdout);
+  return check_sum;
+}
+
+template <typename Td>
+double check_sum_prop(Propagator4dT<Td >& p0)
+{
+  ////int rank = qlat::get_id_node();
+  const Geometry& geo = p0.geo();
+  double check_sum = 0.0;
+  const ComplexT<Td>* src = (ComplexT<Td>*) qlat::get_data(p0).data();
+  const Long Nvol = geo.local_volume();
+  for(Long index = 0; index < Nvol; ++index){
+    Coordinate xl = geo.coordinate_from_index(index);
+    Coordinate xg = geo.coordinate_g_from_l(xl);
+    double cor = xg[0]*0.5 + xg[1]*1.7 + xg[2]*xg[2]*2.5 + xg[3]*xg[3]*0.2;
+    for(Long dc = 0;dc<12*12;dc++)
+    {
+      ComplexT<Td> fac = ComplexT<Td>(std::cos(cor + dc) , std::sin(cor*5.7  + dc*dc) );
+      check_sum += qlat::qnorm( src[index*12*12 + dc] * fac ) ;
+    }
+  }
+  sum_all_size(&check_sum,1);
+  MPI_Barrier(get_comm());fflush(stdout);
+  return check_sum;
 }
 
 template <typename Ty>
@@ -343,7 +389,7 @@ double check_sum_prop(qpropT& p0)
   }
   sum_all_size(&check_sum,1);
   MPI_Barrier(get_comm());fflush(stdout);
-  /////print0("==prop check_sum %.8e \n", check_sum);
+  /////qmessage("==prop check_sum %.8e \n", check_sum);
   return check_sum;
 }
 
@@ -386,7 +432,7 @@ double diff_FieldM(qlat::FieldM<T , civ>& prop0, qlat::FieldM<T , civ>& prop1, d
   sum_all_size(&diffp,1);
   MPI_Barrier(get_comm());fflush(stdout);
   double diff = diffp/(prop0.geo().local_volume()*civ*2.0);
-  print0("==prop diff %.5e \n", diff);
+  qmessage("==prop diff %.5e \n", diff);
   MPI_Barrier(get_comm());fflush(stdout);
   return diff;
 }

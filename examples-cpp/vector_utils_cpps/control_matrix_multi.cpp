@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   /////int n_vec = in.nvec;
 
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
   fflush_MPI();
 
   int ncpy = 10;
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
   qlat::vector_gpu<ComplexM > c0;c0.resize(L * m * n);
   qlat::vector_gpu<ComplexM > c1;c1.resize(L * m * n);
 
-  print0("end memory allocation! \n");
+  qmessage("end memory allocation! \n");
   fflush_MPI();
 
   c0.set_zero();c1.set_zero();
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     matrix_prod(a.data(), b.data(), c1.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();
   }
   ComplexM res = c1.norm2();
-  print0("===result %.12e %.12e \n", res.real(), res.imag());
+  qmessage("===result %.12e %.12e \n", res.real(), res.imag());
 
   if(test_pointers >= 1)
   {
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
       matrix_prodP(aP.data(), bP.data(), cP.data(), m,n,w, L, Conj, false, modeGPU);fflush_MPI();
     }
     ComplexM ra = c1.norm2();
-    print0("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
+    qmessage("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
   }
   if(test_pointers >= 2)
   {
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
       matrix_prodP(aP.data(), bP.data(), cP.data(), m,n,w,L, Conj, false, modeGPU);fflush_MPI();
     }
     ComplexM ra = c1.norm2();
-    print0("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
+    qmessage("===result %.12e %.12e, %.12e %.12e \n", ra.real(), ra.imag(), (ra-res).real(), (ra-res).imag());
   }
 
   return end_Lat();

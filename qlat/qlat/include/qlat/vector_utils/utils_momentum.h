@@ -14,9 +14,8 @@
 #include <vector>
 #include <qlat/selected-field-io.h>
 #include <qlat/fields-io.h>
+#include "utils_field_gpu.h"
 ///////#include "../kentucky/utils_lat_exchanger.h"
-
-#define QLAT_PI_LOCAL 3.1415926535898
 
 namespace qlat{
 
@@ -205,6 +204,37 @@ struct momentum_dat{
     });
   }
 
+  template<typename Ty > 
+  void pick_mom_from_vecs(qlat::vector_gpu<Ty >& resF, std::vector<FieldG<Ty> >& resV){
+    TIMER("pick_mom_from_vecs");
+    if(resV.size() == 0){resF.resize(0);return;}
+    Qassert(resV[0].initialized and geo == resV[0].geo());
+
+    vector_acc<Ty*> resVP;resVP.resize(resV.size());
+    for(unsigned int si=0;si<resV.size();si++){
+      Qassert(resV[si].initialized and resV[si].multiplicity == 1);
+      resVP[si] = (Ty*) get_data(resV[si]).data();
+    }
+    const Long Mvol = mapA.size();
+    ////const Long Nvol_ = V;
+    //const Long Nvol = geo.local_volume();
+    int nvec = resV.size();
+    resF.resize(Mvol * nvec);
+    nvec_copy = nvec;
+
+    const Long* A = mapA.data();
+    Ty* resFP = resF.data();
+    ////Ty* resVP = resV.data();
+    if(mapA.size() != 0)
+    qacc_for(isp, mapA.size() ,{
+      const Long i0 = A[isp];
+      for(int iv=0;iv<nvec;iv++){
+        ////resF[isp*nvec + iv] = resV[i0*nvec + iv];
+        resFP[isp*nvec + iv] = resVP[iv][i0];
+      }
+    });
+  }
+
   template<typename Ty, typename Ty1 > 
   int copy_momF_to_sf(qlat::SelectedField<Ty1  >& sf_, qlat::vector_gpu<Ty >& srcF, int dir = 0 ){
     TIMERA("copy_momF_to_sf");
@@ -223,7 +253,7 @@ struct momentum_dat{
       Qassert(Mvol == sf.n_elems);
       nvec = sf_.multiplicity;
       srcF.resize(Mvol * nvec);
-      //print0("nvec %d, Mvol %d, elems %d \n", int(nvec), int(Mvol), int(sf.n_elems));
+      //qmessage("nvec %d, Mvol %d, elems %d \n", int(nvec), int(Mvol), int(sf.n_elems));
     }
     sum_value_mpi(nvec);
     nvec_copy = nvec;
@@ -257,11 +287,15 @@ struct momentum_dat{
     //Qassert(srcF.size() % Mvol == 0);
     if(mapA.size() !=0 ){Qassert(srcF.size() % mapA.size() == 0);}
 
-    //print0("===check norm");srcF.print_norm2();
+    //qmessage("===check norm");srcF.print_norm2();
 
     ////const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
 
     bool append = true;if(tag_ == "-1" or clean == true){append = false;}
+    // clean if not exist
+    if(!does_file_exist_qar_sync_node(nameQ + "/geon-info.txt")){
+      append = false;
+    }
     if(append == false)
     {
       if(0 == qlat::get_id_node()){
@@ -361,7 +395,7 @@ struct momentum_dat{
     TIMERA("Qlat read mdat");
     ShuffledFieldsReader sfr(nameQ);
     if(!check_fn(nameQ, tag)){
-      print0("File %s , tag %s not found! \n", nameQ.c_str(), tag.c_str());MPI_Barrier(MPI_COMM_WORLD);
+      qmessage("File %s , tag %s not found! \n", nameQ.c_str(), tag.c_str());MPI_Barrier(MPI_COMM_WORLD);
       fflush(stdout);qlat::end();abort();};
     Long total_bytes = qlat::read(sfr, tag, sf, fsel);
     sfr.close();
@@ -581,7 +615,7 @@ void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, m
   mdat.update_mapB_mom_off(mom_off);
   const Long* PmapB = (Long*) qlat::get_data(mdat.mapB_buf).data();
   const Long NmapB  = mdat.mapB_buf.size();
-  //print0("===check norm");FL.print_norm2();
+  //qmessage("===check norm");FL.print_norm2();
   ////Qassert(NmapB <= Mvol);
 
   Ty* PFG = FG.data();
@@ -629,7 +663,5 @@ void copy_sparse_fields(qlat::SelectedField<Ty >& res, qlat::SelectedField<Ta >&
 }
 
 }
-
-#undef  QLAT_PI_LOCAL
 
 #endif

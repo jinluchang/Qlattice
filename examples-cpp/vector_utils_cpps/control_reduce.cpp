@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
     }
 
     //for(int it=0;it<Nt;it++){
-    //  print0("it%2d, %.6e %.6e, %.6e %.6e, \n",it,
+    //  qmessage("it%2d, %.6e %.6e, %.6e %.6e, \n",it,
     //      res0[it].real(),res0[it].imag(),res2[it].real(),res2[it].imag());
     //}
 
@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
       sum1 += (res1[it].real())*(res1[it].real()) + (res1[it].imag())*(res1[it].imag());
       sum2 += (res2[it].real())*(res2[it].real()) + (res2[it].imag())*(res1[it].imag());
     }
-    print0("cpu %.6e, gpu %.6e %.6e, diff %.6e %.6e \n",sum0,sum1,sum2,diff,diff2);
+    qmessage("cpu %.6e, gpu %.6e %.6e, diff %.6e %.6e \n",sum0,sum1,sum2,diff,diff2);
   }
 
 
@@ -262,9 +262,9 @@ int main(int argc, char* argv[])
   //  ////{TIMER("Reduce GPU V 10");reduce_gpu(a,Vres0,geo.local_volume());}
 
   //  for(int i=0;i<10;i++){
-  //    print0("i%2d, %.6e %.6e, \n",i,Vres[i].real(),Vres[i].imag());
+  //    qmessage("i%2d, %.6e %.6e, \n",i,Vres[i].real(),Vres[i].imag());
   //  }
-  //  ////print0("cpu %.6e %.6e, gpu %.6e %.6e .\n",Vres0.real(),Vres0.imag(),Vres1.real(),Vres1.imag());
+  //  ////qmessage("cpu %.6e %.6e, gpu %.6e %.6e .\n",Vres0.real(),Vres0.imag(),Vres1.real(),Vres1.imag());
 
   //}
 
@@ -320,8 +320,8 @@ int main(int argc, char* argv[])
   //  }
 
   //  double length = n_vec*sizeof(double)*(geo.local_volume()/(1024*1024*1024.0));
-  //  print0("Data size %.6e GB \n",length);
-  //  print0("gpu %.6e, cpu %.6e, global %.6e %.6e, geoL %8d \n",res0,res1,res2,res3,geo.local_volume());
+  //  qmessage("Data size %.6e GB \n",length);
+  //  qmessage("gpu %.6e, cpu %.6e, global %.6e %.6e, geoL %8d \n",res0,res1,res2,res3,geo.local_volume());
   //}
 
 

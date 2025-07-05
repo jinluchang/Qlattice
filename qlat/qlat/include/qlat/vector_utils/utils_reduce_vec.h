@@ -111,7 +111,7 @@ void reduce_cpu(const Ty *src,Ty &res,const Long n){
     for(Long index=0;index<n;index++){res += src[index];}
   }
   else{
-    ////print0("====Reduce omp \n");
+    ////qmessage("====Reduce omp \n");
     omp_set_num_threads(omp_get_max_threads());
     qlat::vector_acc<Ty > buf;buf.resize(Nv);
     for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
@@ -297,7 +297,7 @@ void reduce_vecs(const Ty* src, Ty* res, const Long n, const int nv, int GPU = 1
   //unsigned long maxthreads = prop.maxThreadsPerMultiProcessor;
   //unsigned long Fullthreads = maxthreads*cores;
   //unsigned long maxblock = 8*(Fullthreads + nv-1)/nv;
-  //print0("====cores %8d, maxthreads %8d, maxblock %8d \n",cores,maxthreads,maxblock);
+  //qmessage("====cores %8d, maxthreads %8d, maxblock %8d \n",cores,maxthreads,maxblock);
   //if(blockS_use > maxblock)blockS_use = maxblock;
   //#endif
   reduce_gpu2d_6<Ty, false>(src, res, n, nv, thread_pow2,divide, fac);

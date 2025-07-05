@@ -47,6 +47,52 @@ struct lms_para{
   int save_full_vec;
   int save_low_fft;
 
+
+  // sequential related parameters and buffers
+  int Ngroup_seq;
+  double sink_hfactor; 
+  //eigen related
+  eigen_ov* eig_P;
+  double eig_mass;
+  int    eig_mode_sm;
+  int    eig_one_minus_halfD;
+  std::vector<FieldG<Ty> > bufV ;
+  std::vector<qlat::FieldG<Ty> > GresP;
+  std::vector< std::vector<qlat::FieldG<Ty> > > shift_srcL;
+  std::vector< std::vector<qlat::FieldG<Ty> > > srcL_pointers;
+  std::vector< std::vector<qlat::FieldG<Ty> > > resL_pointers;
+  std::vector<qlat::FieldG<Ty> > buf_res_props;// buffer for sink to current results, size Ngroup * Nlh
+  std::vector<std::vector<FieldG<Ty > >> buf_shift;//sizes 2, Nsrc, 144 * Vol
+  std::vector< std::vector<qlat::FieldG<Ty > > > curr_sbuf;
+  std::vector< std::vector<qlat::FieldG<Ty > > > curr_s1L_buf;
+
+  std::vector<FieldG<Ty> > buf_src ;// sizes of Ngroup, maybe larger than 4/8
+  std::vector<FieldG<Ty> > buf_res ;// sizes of Ngroup, maybe larger than 4/8
+  vector_gpu<Ty> buf_seq_prop;// buffer for seq_low_vecs
+  //vector_gpu<Ty> buf_vec;// buffer for seq_high_vecs
+  std::vector<vector_gpu<Ty>> sum_d  ;// buffer for seq_high_vecs
+  std::vector<vector_gpu<Ty > > sink_phases;
+  std::vector<std::vector<FieldG<Ty> >> curr_shift_buf;
+
+  /* 
+    will not be cleared once loaded
+    noise and time slice for loaded props
+    name_props   : name of noise and props
+    //tag_props    : whether it's src or sink
+    noise_props  : noises 
+    prop_tposL   : tlist of the noise
+    prop_npointsL : how many points in all time slice
+  */
+  std::vector<std::string > name_props ;
+  std::vector<FieldG<Ty> > noise_props ;
+  std::vector<std::vector<int >    > prop_tposL ;
+  std::vector<Long > prop_npointsL;
+  std::vector<std::vector<Coordinate> > prop_coordL;
+  std::vector<FieldG<Ty> > full_props ;
+  std::vector<FieldG<Ty> > props_bufs ;
+
+  // end
+
   FieldSelection fsel;
   ShuffledBitSet sbs ;
 
@@ -93,6 +139,26 @@ struct lms_para{
     resZero.resize(0);
     Vzero_data.resize(0);
     Eprop.resize(0);
+
+    // sequential related parameters and buffers
+    bufV.resize(0);
+    GresP.resize(0);
+    shift_srcL.resize(0);
+    srcL_pointers.resize(0);
+    resL_pointers.resize(0);
+    buf_res_props.resize(0);// buffer for sink to current results, size Ngroup * Nlh
+    buf_shift.resize(0);//sizes 2, Nsrc, 144 * Vol
+    curr_sbuf.resize(0);
+    curr_s1L_buf.resize(0);
+
+    buf_src.resize(0);
+    buf_res.resize(0);
+    buf_seq_prop.resize(0);// buffer for seq_low_vecs
+    //buf_vec.resize(0);// buffer for seq_high_vecs
+    sum_d.resize(0) ;// buffer for seq_high_vecs
+    sink_phases.resize(0);
+    curr_shift_buf.resize(0);
+    // end
   }
 
   inline void init(){
@@ -111,6 +177,16 @@ struct lms_para{
     do_all_low       = 1;
     sparse_src       = 0;
     save_low_fft     = 0;
+
+    // sequential related parameters and buffers
+    Ngroup_seq       = 8  ;
+    sink_hfactor     = 1.0;
+
+    //eigen related
+    eig_P = NULL;
+    eig_mass = 0.0;
+    eig_mode_sm = 0;
+    eig_one_minus_halfD = 1;
 
     // only save sparse prop
     do_hadron_contra = 1;
@@ -143,18 +219,28 @@ struct lms_para{
     INFOA.resize(0);
   }
 
+  inline void set_eig(eigen_ov* eig, const double mass, const int mode_sm, const int one_minus = 1){
+    Qassert(mass >= 0.0);
+    Qassert(mode_sm >= 0);
+    Qassert(one_minus == 1);
+    eig_P = eig;
+    eig_mass = mass;
+    eig_mode_sm = mode_sm;
+    eig_one_minus_halfD = one_minus;
+  }
+
   inline void print(){
-    print0("===Source Info %s \n", INFO.c_str());
-    print0("  prop with low %3d, lms %3d, combineT %3d \n", SRC_PROP_WITH_LOW, lms, combineT);
-    print0("  init %5d %5d %5d %5d, grid %5d %5d %5d %5d \n", 
+    qmessage("===Source Info %s \n", INFO.c_str());
+    qmessage("  prop with low %3d, lms %3d, combineT %3d \n", SRC_PROP_WITH_LOW, lms, combineT);
+    qmessage("  init %5d %5d %5d %5d, grid %5d %5d %5d %5d \n", 
       ini_pos[0], ini_pos[1], ini_pos[2], ini_pos[3],
       off_L[0], off_L[1], off_L[2], off_L[3] );
 
     int save_vecs = 0; if(name_mom_vecs != std::string("NONE")){save_vecs = 1;}
-    print0("eigen mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n", 
+    qmessage("eigen mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n", 
       mode_eig_sm, src_smear_iter, src_smear_kappa, sink_smear_iter, sink_smear_kappa, do_all_low, mom_cut, save_vecs);
-    //print0("  mom vecs %s \n" ,name_mom_vecs);
-    //print0("  zero vecs %s \n",name_zero_vecs);
+    //qmessage("  mom vecs %s \n" ,name_mom_vecs);
+    //qmessage("  zero vecs %s \n",name_zero_vecs);
   }
 
 };
@@ -227,7 +313,7 @@ void save_sink_vecs(qlat::vector_gpu<Ty >& src, const Geometry& geo, const int n
   const size_t Vol = geo.local_volume();
   Qassert(src.size() == 32*nmass*Vol);
   const Long nvec = src.size()/Vol;
-  //print0("=====vec %d \n", int(nvec));
+  //qmessage("=====vec %d \n", int(nvec));
   if(Long(Vzero_data.size() ) != nvec){
     Vzero_data.resize(0);Vzero_data.resize(nvec);
     for(Long iv=0;iv<nvec;iv++){
@@ -330,6 +416,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
   std::vector<PointsSelection > Ngrid;
+  {
+  TIMER("check noise");
   if(srcI.sparse_src == 0){
     check_noise_pos(src, pos, off_L);
     grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
@@ -337,8 +425,23 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     // sparse src, no grid off at all
     for(int i=0;i<4;i++){off_L[i] = 0;pos[i] = 0;}
 
-    // only one time slice supportted right now
-    get_noise_pos(src, Ngrid, pos);
+    // will not work for combineT
+    std::vector<Coordinate > grids;
+    std::vector<int > Zlist;
+    //get_noise_pos(src, grids, Zlist, 3, 1);
+    get_noise_pos(src, grids, Zlist);
+    pos = grids[0];
+    Ngrid.resize(grids.size());
+    std::vector<int > tlist;
+    for(LInt gi=0;gi<grids.size();gi++){
+      Ngrid[gi].resize(1);
+      Ngrid[gi][0] = grids[gi];
+      const int tini = grids[gi][3];
+      if(std_find(tlist, tini) < 0){tlist.push_back(tini);}
+    }
+    // sparsen one could not do  combineT
+    if(srcI.combineT == 1){Qassert(tlist.size() == 1)}
+  }
   }
   // grid info
   std::string GRID_INFO, tmp;
@@ -357,15 +460,27 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
     GRID_INFO += ssprintf(" combineT %1d ", srcI.combineT);
   }
+
+  // only do eigen props on desire src time slices
+  std::vector<int > tsrcL;tsrcL.resize(0);
   for(unsigned int ic=0;ic<Ngrid.size();ic++)
   {
     for(unsigned int id=0;id<Ngrid[ic].size();id++){
-      print0("%s ", qlat::show(Ngrid[ic][id]).c_str());
+      qmessage("%s ", qlat::show(Ngrid[ic][id]).c_str());
+      const int tcur = Ngrid[ic][id][3];
+      bool add_time = true;
+      for(unsigned int si=0;si<tsrcL.size();si++){
+        if(tsrcL[si] == tcur){add_time = false;}
+      }
+      if(add_time){tsrcL.push_back(tcur);}
     }
-    print0(" \n");
+    qmessage(" \n");
   }
+  //for(int si=0;si<int(tsrcL.size());si++)
+  //{
+  //  qmessage("Low sink time si %3d : %6d \n", si, int(tsrcL[si]));
+  //}
   const int tini = pos[3];
-
 
   srcI.off_L   = off_L;
   srcI.ini_pos = pos;
@@ -421,14 +536,14 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   stmp.resize(Size_prop);
 
   //clean sparse prop
-  copy_eigen_src_to_FieldM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
+  copy_FieldM_to_bsize_prop(high_prop, propH, ei.b_size, fd, GPU, rotate);
   low_prop.resize(high_prop.size());
-  if(srcI.check_prop_norm){print0("===high norm 0 %ld , ", long(high_prop.size()));high_prop.print_norm2();}
+  if(srcI.check_prop_norm){qmessage("===high norm 0 %ld , ", long(high_prop.size()));high_prop.print_norm2();}
 
   //{
-  //print0("===check norm");
+  //qmessage("===check norm");
   //Ty* tmp = (Ty*) qlat::get_data(propH[0]).data();
-  //print0("value %+.8e %.8e ", tmp[0].real(), tmp[1].real());
+  //qmessage("value %+.8e %.8e ", tmp[0].real(), tmp[1].real());
   //high_prop.print_norm2();
   //}
 
@@ -481,7 +596,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       flag_do_job = true;
     }
     if(flag_do_job == false){
-      print0("Pass %s \n", srcI.name_zero_vecs.c_str());
+      qmessage("Pass %s \n", srcI.name_zero_vecs.c_str());
       return ;
     }
   }
@@ -498,31 +613,31 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   std::string name_mom = ssprintf("%s.Gsrc", srcI.name_mom_vecs.c_str());
   std::string name_mom_tmp ;
 
-  //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
+  //qmessage("===check norm");low_prop.print_norm2();high_prop.print_norm2();
   ////===high mode contractions
   /////reduce the high prop
   if(srcI.SRC_PROP_WITH_LOW == 1){
     stmp.set_zero();
     low_prop.set_zero();
     FieldM_src_to_FieldM_prop(src, src_prop[0], GPU);
-    copy_eigen_src_to_FieldM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
-    if(srcI.check_prop_norm){print0("===src  norm 0 %ld , ", long(stmp.size())); stmp.print_norm2();}
-    prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, srcI.mode_eig_sm);
-    if(srcI.check_prop_norm){print0("===low  norm 0 %ld , ", long(low_prop.size())); low_prop.print_norm2();}
+    copy_FieldM_to_bsize_prop(stmp, src_prop, ei.b_size, fd, GPU, rotate);
+    if(srcI.check_prop_norm){qmessage("===src  norm 0 %ld , ", long(stmp.size())); stmp.print_norm2();}
+    prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, srcI.mode_eig_sm, tsrcL);
+    if(srcI.check_prop_norm){qmessage("===low  norm 0 %ld , ", long(low_prop.size())); low_prop.print_norm2();}
     high_prop -= low_prop;
   }
 
-  if(srcI.check_prop_norm){print0("===high norm 1 %ld , ", long(high_prop.size())); high_prop.print_norm2();}
-  //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
+  if(srcI.check_prop_norm){qmessage("===high norm 1 %ld , ", long(high_prop.size())); high_prop.print_norm2();}
+  //qmessage("===check norm");low_prop.print_norm2();high_prop.print_norm2();
   /////reduce the high prop
 
-  print0("Do high %s \n", POS_CUR.c_str());
+  qmessage("Do high %s \n", POS_CUR.c_str());
   copy_eigen_prop_to_EigenG(Eprop, high_prop.data(), ei.b_size, nmass, fd, GPU);
   Save_sparse_prop(Eprop, srcI, std::string("High"), 0, false);
   if(do_hadron_contra){
     prop_to_vec(Eprop, resTa, fd); 
     if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
-    if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
+    if(srcI.check_prop_norm){qmessage("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
     if(savezero){
       resZero.resize(resTa.size());resZero.set_zero();
       if(srcI.save_full_vec == 0){
@@ -550,7 +665,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   for(int gi=0;gi<Nlms;gi++){
     POS_CUR = std::string("");write_pos_to_string(POS_CUR, Ngrid[gi][0]);POS_LIST += POS_CUR;
-    print0("Do, Nlms %5d, gi %5d, %s \n", Nlms, gi, POS_CUR.c_str());
+    qmessage("Do, Nlms %5d, gi %5d, %s \n", Nlms, gi, POS_CUR.c_str());
     fflush_MPI();
 
     stmp.set_zero();
@@ -559,16 +674,16 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(srcI.lms == 0)
     {
       FieldM_src_to_FieldM_prop(src, src_prop[0], GPU);
-      copy_eigen_src_to_FieldM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
+      copy_FieldM_to_bsize_prop(stmp, src_prop, ei.b_size, fd, GPU, rotate);
     }
 
     if(srcI.lms != 0){
-      ////print0("gsize %d \n", int(Ngrid[gi].size()));
+      ////qmessage("gsize %d \n", int(Ngrid[gi].size()));
       write_grid_point_to_src(stmp.data(), src, Ngrid[gi], ei.b_size, fd);
     }
 
     /////get low mode prop
-    prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, srcI.mode_eig_sm);
+    prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, srcI.mode_eig_sm, tsrcL);
 
     //////format suitable for contractions
     ////low mode corr contractions
@@ -592,14 +707,14 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
       //Ty norm0 = low_prop.norm();
       //Ty norm1 = resTa.norm();
-      //print0("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
+      //qmessage("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
       //  norm0.real(), norm0.imag(), norm1.real(), norm1.imag());
     }
-    //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
+    //qmessage("===check norm");low_prop.print_norm2();high_prop.print_norm2();
 
     low_prop += high_prop;
-    //print0("===check norm");low_prop.print_norm2();high_prop.print_norm2();
-    if(srcI.check_prop_norm){print0("===low  norm 1 %ld , ", long(low_prop.size()));low_prop.print_norm2();}
+    //qmessage("===check norm");low_prop.print_norm2();high_prop.print_norm2();
+    if(srcI.check_prop_norm){qmessage("===low  norm 1 %ld , ", long(low_prop.size()));low_prop.print_norm2();}
 
     //////format suitable for contractions
     copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
@@ -612,7 +727,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(do_hadron_contra){
       prop_to_vec(Eprop, resTa, fd);
       if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
-      if(srcI.check_prop_norm){print0("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
+      if(srcI.check_prop_norm){qmessage("===resTa norm 0 %ld , ", long(resTa.size()));resTa.print_norm2();}
 
       if(savezero){
         if(srcI.save_full_vec == 0){
@@ -667,7 +782,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       //////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
       //Qassert(resZero0.size() == 32*nmass*Vol);
       //const Long nvec = resZero0.size()/Vol;
-      //print0("=====vec %d \n", int(nvec));
+      //qmessage("=====vec %d \n", int(nvec));
       //if(Long(Vzero_data.size() ) != nvec){
       //  Vzero_data.resize(0);Vzero_data.resize(nvec);
       //  for(Long iv=0;iv<nvec;iv++){
@@ -729,7 +844,7 @@ void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basi
   for(int yi=0;yi<fd.ny;yi++)
   for(int xi=0;xi<fd.nx;xi++)
   {
-    print0("===pos %d %d %d \n", zi, yi, xi);
+    qmessage("===pos %d %d %d \n", zi, yi, xi);
     stmp.set_zero();
     low_prop.set_zero();
 

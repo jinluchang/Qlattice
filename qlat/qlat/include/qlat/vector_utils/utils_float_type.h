@@ -15,6 +15,7 @@
 #include <qlat-utils/mat-vec.h>
 #include <qlat-utils/eigen.h>
 #include <qlat/qcd.h>
+#include <cstdarg>
 
 #ifndef QLAT_NO_SYSINFO
 #include <sys/sysinfo.h>
@@ -53,23 +54,23 @@ namespace qlat{
 
 #define LInt unsigned long
 
+
 #define large_vuse Elarge_vector
 #if Enablefloat==0
 #define Complexq qlat::ComplexT<double >
 #define Ftype double
 //////needed for contraction change to small power of 2 if shared memory too small
-#define BFACG_SHARED 4
 #endif
 
 #if Enablefloat==1
 #define Complexq qlat::ComplexT<float >
 #define Ftype float
-#define BFACG_SHARED 8
 #endif
 
 #ifdef __QLAT_BARYON_SHARED_SMALL__
-#undef BFACG_SHARED
 #define BFACG_SHARED 1
+#else
+#define BFACG_SHARED 4
 #endif
 
 #define Evector qlat::vector_acc<Complexq >
@@ -96,7 +97,7 @@ namespace qlat{
 /////read input length of each line
 #define LINE_LIMIT 3000
 
-//#define PI 3.1415926535898
+#define QLAT_PI_LOCAL 3.1415926535898
 
 //enum QBOOL{
 //  QFALSE = 0,
@@ -262,11 +263,30 @@ inline void* aligned_alloc_no_acc(const size_t min_size)
 #endif
 }
 
-#define print0 if(qlat::get_id_node() == 0) printf
+
+inline void qmessage(const char* fmt, ...)
+{
+  if(qlat::get_id_node() == 0){
+    va_list args;
+    va_start(args, fmt);
+
+    char* cstr;
+    int ret = vasprintf(&cstr, fmt, args);
+    if (ret < 0) {
+      assert(false);
+    }
+    const std::string str = std::string(cstr);
+    printf("%s", str.c_str());
+    std::free(cstr);
+    va_end(args);
+  }
+}
+
+////#define print0   if(qlat::get_id_node() == 0) printf
 
 inline void abort_r(std::string stmp=std::string(""))
 {
-  if(stmp!=std::string(""))print0("%s\n",stmp.c_str());
+  if(stmp!=std::string(""))qmessage("%s\n",stmp.c_str());
   //MPI_Barrier(get_comm());
   MPI_Barrier(MPI_COMM_WORLD);
   fflush(stdout);
@@ -375,14 +395,15 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
 
   ////#pragma omp parallel for
   ////for(size_t isp=0;isp<size;isp++){  a[isp] = 0;}
-  const unsigned int Nv = omp_get_max_threads();
-  const unsigned int dN = (size + Nv - 1) / Nv;
+  const Long Nv = omp_get_max_threads();
+  const Long dN = (size + Nv - 1) / Nv;
   #pragma omp parallel for
-  for(unsigned int isp=0;isp<Nv;isp++)
+  for(Long isp=0;isp<Nv;isp++)
   {
-    const int step = (isp+1)*dN <= size ? dN : (size - isp*dN); 
-    if(step > 0 and isp * dN < size){
-      Ty* tmp = &a[isp * dN + 0];
+    const Long off  = isp * dN;
+    const Long step = (off + dN) <= Long(size) ? dN : (size - off); 
+    if(step > 0 and off < Long(size)){
+      Ty* tmp = &a[off + 0];
       memset((void*) tmp, 0, sizeof(Ty) * step);
     }
   }

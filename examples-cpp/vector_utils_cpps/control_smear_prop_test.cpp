@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
   nt = in.nt;
 
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
   if(in.paraI != "None"){
     std::vector<std::string > Li = stringtolist(in.paraI);
-    print0("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
+    qmessage("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
     fflush_MPI();
     qassert(Li.size()%3 == 0);
 
@@ -42,13 +42,13 @@ int main(int argc, char* argv[])
       int step     = stringtonum(   Li[si*3+0]);
       double width = stringtodouble(Li[si*3+1]);
       int  Nprop   = stringtodouble(Li[si*3+2]);
-      print0("sn%03dsk%6.4f \n", step, width);
+      qmessage("sn%03dsk%6.4f \n", step, width);
 
       unsigned int NVmpi = fd.mz*fd.my*fd.mx;
       int groupP = (12*Nprop + NVmpi-1)/NVmpi;
       int repeat = 1;
       if(groupP > 12){repeat = (groupP+12-1)/12;groupP=12;}
-      print0("====Vec redistribute setup, repeat %d, NVmpi %d, groupP %d \n", repeat, NVmpi, groupP);
+      qmessage("====Vec redistribute setup, repeat %d, NVmpi %d, groupP %d \n", repeat, NVmpi, groupP);
 
       ////EigenV propT;EigenV propT_buf;
       ////propT.resize(repeat*NVmpi*Nvol*groupP*12);
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
       Tfloat = step*direction*vGb*Fcount;
       mem = (Lat*nsrc*12 + Lat*4*9)*8.0;}
       ////timer.flops += Tfloat;
-      print0("Memory size %.3e GB, %.3e Gflop \n",
+      qmessage("Memory size %.3e GB, %.3e Gflop \n",
         mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
 
       {

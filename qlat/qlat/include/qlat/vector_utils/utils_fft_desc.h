@@ -254,9 +254,9 @@ inline LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set) const
 
 inline void fft_desc_basic::print_info(){
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
-  print0("=Need=====Size of dim,   x %10d  y %10d  z %10d  t %10d nvol %ld \n",nx,ny,nz,nt,vol*nt);
-  print0("=Need=====Size of dim,  Nx %10d Ny %10d Nz %10d Nt %10d Nvol %ld \n",Nx,Ny,Nz,Nt,Nvol);
-  print0("=Order====Size of dim,  M0 %10d M1 %10d M2 %10d, d0 %2d d1 %2d d2 %2d. \n",
+  qmessage("=Need=====Size of dim,   x %10d  y %10d  z %10d  t %10d nvol %ld \n",nx,ny,nz,nt,vol*nt);
+  qmessage("=Need=====Size of dim,  Nx %10d Ny %10d Nz %10d Nt %10d Nvol %ld \n",Nx,Ny,Nz,Nt,Nvol);
+  qmessage("=Order====Size of dim,  M0 %10d M1 %10d M2 %10d, d0 %2d d1 %2d d2 %2d. \n",
           Nv[orderN[0]],Nv[orderN[1]],Nv[orderN[2]],orderN[0],orderN[1],orderN[2]);
 
   fflush_MPI();
@@ -370,10 +370,10 @@ inline void fft_desc_basic::check_mem()
   for(unsigned int i=0;i<4;i++){if(Pos0[rank][i] != ranged[i][0]){flagC = 1;}}
   sum_all_size(&flagC,1);
   if(flagC>0){
-    for(int i=0;i<4;i++)print0("%5d %5d, ", Nv[i], int(ranged[i].size()));
-    print0("\n");
-    for(int i=0;i<4;i++)print0("%5d %5d, ", Pos0[rank][i], int(ranged[i][0]));
-    print0("\n");
+    for(int i=0;i<4;i++)qmessage("%5d %5d, ", Nv[i], int(ranged[i].size()));
+    qmessage("\n");
+    for(int i=0;i<4;i++)qmessage("%5d %5d, ", Pos0[rank][i], int(ranged[i][0]));
+    qmessage("\n");
     abort_r("Layout not continuous in x, A! \n");
   }
 

@@ -56,7 +56,7 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
   (void)dummy;
   (void)GPU;
   Qassert(long(Nvol) > 0 and long(bfac) > 0);
-  //print0("===vol %d, b %d, N %d %d %d \n", int(Nvol), int(bfac), int(Ngap), int(Lgap0), int(Lgap1));
+  //qmessage("===vol %d, b %d, N %d %d %d \n", int(Nvol), int(bfac), int(Ngap), int(Lgap0), int(Lgap1));
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
@@ -203,8 +203,8 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
   (void)dummy;
   if(GPU != 0 and GPU != 1){Qassert(false);}
   bool do_copy = true;
-  if(qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){do_copy = true ;}
-  if(qlat::qnorm(ADD) >= QLAT_COPY_LIMIT){do_copy = false;}
+  if(double(qlat::qnorm(ADD)) <  QLAT_COPY_LIMIT){do_copy = true ;}
+  if(double(qlat::qnorm(ADD)) >= QLAT_COPY_LIMIT){do_copy = false;}
   const T1 tmp = ADD;
 
   #ifdef QLAT_USE_ACC
@@ -232,7 +232,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, Q
       Pres[i] = Psrc[i];
     }
   }else{
-    //////print0("value add %.3e %.3e", ADD.real(), ADD.imag());
+    //////qmessage("value add %.3e %.3e", ADD.real(), ADD.imag());
     #pragma omp parallel for
     for(TInt i=0;i<Nvol;i++)
     {
@@ -252,7 +252,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
 {
   (void)stream;
   if(Nvol <= 0){return ;}
-  if((GPU == 0 or GPU == 1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
+  if((GPU == 0 or GPU == 1) and double(qlat::qnorm(ADD)) <  QLAT_COPY_LIMIT){
     if((void*) Pres == (void*) Psrc)////may need to be careful about comparing pointers of CPU and GPUs
     {
       return ;
@@ -263,7 +263,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
   ////0--> host to host, 1 device to device
   if(GPU == 0 or GPU == 1){
     #ifdef QLAT_USE_ACC
-    if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT)
+    if(sizeof(T0) == sizeof(T1) and double(qlat::qnorm(ADD)) <  QLAT_COPY_LIMIT)
     {
       if(stream == NULL){
         if(GPU == 0){gpuErrchk(qacc_MemcpyAsync((void*) Pres, (void*) Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToHost));}
@@ -287,7 +287,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
   //////===from host to device
   if(GPU ==  2){
   /////Qassert(sizeof(T0) == sizeof(T1));
-  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
+  if(sizeof(T0) == sizeof(T1) and double(qlat::qnorm(ADD)) <  QLAT_COPY_LIMIT){
     if(stream == NULL){
     gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyHostToDevice));}
     else{
@@ -307,7 +307,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL 
   //////===from device to host
   if(GPU ==  3){
   ////Qassert(sizeof(T0) == sizeof(T1));
-  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  QLAT_COPY_LIMIT){
+  if(sizeof(T0) == sizeof(T1) and double(qlat::qnorm(ADD)) <  QLAT_COPY_LIMIT){
     gpuErrchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToHost));
     if(dummy==QTRUE){qacc_barrier(dummy);}
   }else{
@@ -354,7 +354,7 @@ void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, int Gres=1, int Gsrc=1, 
 }
 
 template <typename T0, typename T1,  typename TInt>
-int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, QMEM Gres=QMGPU, QMEM Gsrc=QMGPU, void* stream = NULL)
+int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, const QMEM Gres=QMGPU, const QMEM Gsrc=QMGPU, void* stream = NULL)
 {
   (void)stream;
   int diff_cuda = 0;
@@ -400,7 +400,7 @@ int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, cons
 //0--> host to host, 1 device to device
 //2--> ===from host to device, 3 ===from device to host
 template <typename T0, typename T1,  typename TInt>
-void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, QMEM Gres=QMGPU, QMEM Gsrc=QMGPU, QBOOL dummy=QTRUE, void* stream = NULL)
+void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, const QMEM Gres=QMGPU, const QMEM Gsrc=QMGPU, const QBOOL dummy=QTRUE, void* stream = NULL)
 {
   ////TIMERA("cpy_GPU2D");
   int diff_cuda = 0;
@@ -433,7 +433,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 
   if(sizeof(T0) != sizeof(T1) and diff_cuda == 1)
   {
-    //////print0("Check!\n");return ;
+    //////qmessage("Check!\n");return ;
     size_t Ntotal = NOff * Nvol;
     if(sizeof(T0) < sizeof(T1))
     {

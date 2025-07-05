@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
   ////Eigen::initParallel();
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     int Nt = geo.node_site[3];
     int Nmpi = qlat::get_num_node();
     if(nt/Nt != Nmpi){
-      print0("Number of nodes not sparsed on time. \n");
+      qmessage("Number of nodes not sparsed on time. \n");
       GPUFM = 2;
       ///qassert(false);
     }
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   print_mem_info();
 
   double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
-  print0("Eign system vector size %.3e GB, total %.3e GB; \n", length,n_vec*length);
+  qmessage("Eign system vector size %.3e GB, total %.3e GB; \n", length,n_vec*length);
 
   std::vector<qlat::FieldM<Complexq, 12> > eigen;
 
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
   values.resize(Nmass*n_vec);
   for(int mi=0;mi<Nmass;mi++)
   for(int iv=0;iv<n_vec;iv++){values[iv*Nmass + mi] = inv_self(values_sys[iv], mass[mi], rho,one_minus_halfD);}
-  print0("===num zero %d \n", n_zero);
+  qmessage("===num zero %d \n", n_zero);
   /////====Set up values
   fflush_MPI();
 
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
     //char filename[500];
     //////sprintf(filename,"res/rho_N%06d_%06d.Nmpi%02d.dat",in.nvec,icfg,Nmpi);
     //sprintf(filename, in.output.c_str(),icfg);
-    //print0("%s",filename);
+    //qmessage("%s",filename);
     //write_data(write,filename);
 
 

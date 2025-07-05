@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
   {
     double splaq = gf_avg_spatial_plaq(gf);
     double gplaq = gf_avg_plaq(gf);
-    print0("spatial plaquette %.8e , plaquette %.8e \n", splaq, gplaq);
+    qmessage("spatial plaquette %.8e , plaquette %.8e \n", splaq, gplaq);
   }
 
   quda_begin(mpi_layout);

@@ -11,9 +11,13 @@
 #include "utils_gammas.h"
 #include "utils_momentum.h"
 #include "utils_fft_desc.h"
+#include "utils_field_gpu.h"
 
 namespace qlat{
 
+/*
+  Check grid src positions and offset
+*/
 template <typename Ty>
 void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off_L,int printS=0,int mod=0)
 {
@@ -65,7 +69,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
   //for(int x=0;x<nx;x++){if(grid[0][x]>0.0)off_L[0] += 1;}
   if(int(grid_count) != off_L[0]*off_L[1]*off_L[2]*off_L[3])
   {
-    print0("Source Check Failed grid_count %10d, offx %5d, offy %5d, offz %5d, offt %5d!\n",
+    qmessage("Source Check Failed grid_count %10d, offx %5d, offy %5d, offz %5d, offt %5d!\n",
           int(grid_count),off_L[0],off_L[1],off_L[2],off_L[3]);
     Qassert(false);
     ////shutdown_machine();
@@ -84,7 +88,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
   //for(int z=0;z<nx;z++){if(grid[2][z]>0.0){pos += (z)*1000;break;}}
   //for(int t=0;t<nt;t++){if(grid[3][t]>0.0){pos += (t);t_ini = t;break;}}
 
-  print0("Check T %5d %5d %5d %5d, offx %5d, offy %5d, offz %5d, offt %5d. \n",
+  qmessage("Check T %5d %5d %5d %5d, offx %5d, offy %5d, offz %5d, offt %5d. \n",
     pos[0],pos[1],pos[2],pos[3],
     off_L[0],off_L[1],off_L[2],off_L[3]);
 
@@ -148,73 +152,121 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
 }
 
 template <typename Ty>
-void get_noise_pos(qlat::FieldM<Ty, 1>& noise, std::vector<PointsSelection >& grids, Coordinate& pos, int printS=0)
+qacc int check_zn(const Ty& value, const int Zn = 3){
+  int zk = -1;
+  for(int i=0;i<Zn;i++){
+    double eta = 2 * QLAT_PI_LOCAL * (i) / 3;
+    const Ty tmp = Ty(std::cos(eta), std::sin(eta));
+    if(qnorm(value - tmp) < 1e-8){
+      zk = i;
+      break;
+    }
+  }
+  return zk;
+}
+
+/*
+  Get all noise positions
+*/
+template <class Fieldy>
+void get_noise_pos(Fieldy& noise, std::vector<Coordinate >& grids, std::vector<int >& Zlist,
+ const int Zn = 3, const int printS=0, const bool need_copy = false)
 {
+  Qassert(noise.initialized and noise.multiplicity == 1);
+  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  using D = typename GetBasicDataType<Fieldy>::ElementaryType;
+  qassert(IsBasicTypeReal<D>());
+  using Ty = ComplexT<D>;
+
   qlat::Geometry& geo = noise.geo();
+  Ty* srcP = (Ty*) get_data(noise).data();
+  const Long Nvol = geo.local_volume();
+  FieldM<Ty, 1> tmp;
+  if(need_copy){
+    tmp.init(geo);
+    Ty* resP = (Ty*) get_data(tmp).data();
+    cpy_GPU(resP, srcP, Nvol);
+    srcP = resP;
+  }
+
   qlat::vector_acc<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   //int nx,ny,nz,nt;
   //nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
   LInt Nsite = Nv[0]*Nv[1]*Nv[2]*Nv[3];
 
-  int t_ini = -1;
+
+  //int t_ini = -1;
   std::vector<int > pos_list;
+  std::vector<int > pos_Zn;
   for(LInt isp=0; isp< Nsite; isp++)
   {
     Coordinate xl0 = geo.coordinate_from_index(isp);
     Coordinate xg0 = geo.coordinate_g_from_l(xl0);
     {
-      auto tem_source =  noise.get_elem_offset(isp);
+      auto tem_source =  srcP[isp];
       if(qnorm(tem_source)>0.01)
       {
-        for(int i=0;i<4;i++){ 
-          pos_list.push_back(xg0[i]);
-        }
-        if(t_ini == -1){
-          t_ini = xg0[3];
-        }
-        if(t_ini != -1){Qassert(t_ini == xg0[3]);}
+        for(int i=0;i<4;i++){ pos_list.push_back(xg0[i]);}
+        const int zk = check_zn(tem_source, Zn);
+        pos_Zn.push_back(zk);
+        //if(t_ini == -1){
+        //  t_ini = xg0[3];
+        //}
+        //if(t_ini != -1){Qassert(t_ini == xg0[3]);}
       }
     }
   }
   const int Nmpi  = qlat::get_num_node();
   const int rank  = qlat::get_id_node();
-  std::vector<int > tL;tL.resize(Nmpi);
+  //std::vector<int > tL;tL.resize(Nmpi);
   std::vector<int > gL;gL.resize(Nmpi);
-  for(int i=0;i<Nmpi;i++){tL[i] = 0;gL[i] = 0;}
-  tL[rank] = t_ini;gL[rank] = pos_list.size() / 4;
+  for(int i=0;i<Nmpi;i++){
+    //tL[i] = 0;
+    gL[i] = 0;
+  }
+  //tL[rank] = t_ini;
+  gL[rank] = pos_list.size() / 4;
 
   sum_all_size(gL.data(), gL.size());
-  sum_all_size(tL.data(), tL.size());
+  //sum_all_size(tL.data(), tL.size());
   Long total_pos = 0;
   Long curr_off   = 0;
   for(int i=0;i<Nmpi;i++){
-    if(t_ini >= 0 and gL[i] != 0){Qassert(tL[i] == t_ini);}
+    //if(t_ini >= 0 and gL[i] != 0){Qassert(tL[i] == t_ini);}
     total_pos += gL[i];
     if(i < rank){curr_off += gL[i];}
   }
+  std::vector<int > zk_mpi ;zk_mpi.resize(total_pos);
   std::vector<int > pos_mpi;pos_mpi.resize(total_pos * 4);
   for(Long i=0;i<total_pos*4;i++){pos_mpi[i] = 0;}
+  for(Long i=0;i<total_pos;i++){zk_mpi[i] = 0;}
 
   for(int i=0;i<gL[rank]*4;i++){
     pos_mpi[curr_off*4 + i] = pos_list[i];
   }
+  for(int i=0;i<gL[rank];i++){
+    zk_mpi[curr_off + i] = pos_Zn[i];
+  }
+ 
   sum_all_size(pos_mpi.data(), pos_mpi.size());
+  sum_all_size(zk_mpi.data() , zk_mpi.size() );
   grids.resize(total_pos);
+  Zlist.resize(total_pos);
   for(Long i=0;i<total_pos;i++)
   {
-    grids[i].resize(1);
+    Zlist[i] = zk_mpi[i];
     for(int j=0;j<4;j++){
-      grids[i][0][j] = pos_mpi[i*4 + j];
+      grids[i][j] = pos_mpi[i*4 + j];
     }
-    if(t_ini >= 0){Qassert(grids[i][0][3] == t_ini);}
+    //if(t_ini >= 0){Qassert(grids[i][0][3] == t_ini);}
     if(printS >= 1)
     {
-      Coordinate p = grids[i][0];
-      print0("Check P %5d %5d %5d %5d  !\n",p[0],p[1],p[2],p[3]);
+      const Coordinate p = grids[i];
+      const int zk = Zlist[i];
+      qmessage("Check P %5d %5d %5d %5d, Zn %+3d !\n",p[0],p[1],p[2],p[3], zk);
     }
   }
-  pos = grids[0][0];
 
   if(printS >= 2)
   {
@@ -235,12 +287,35 @@ void get_noise_pos(qlat::FieldM<Ty, 1>& noise, std::vector<PointsSelection >& gr
   }
 }
 
-template <typename Ty>
-void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, double& factor)
+template <class Fieldy>
+void get_noise_posG(Fieldy& noise, std::vector<Coordinate >& grids, std::vector<int >& Zlist,
+ const int Zn = 3, const int printS=0, const bool need_copy = false)
 {
+  get_noise_pos(noise, grids, Zlist, Zn, printS, true);
+}
+
+template <class Fieldy>
+void check_noise_high(Fieldy& noise, std::vector<int >& sinkt, Long& npoints, const bool need_copy = false)
+{
+  Qassert(noise.initialized and noise.multiplicity == 1);
   const qlat::Geometry& geo = noise.geo();
   ////const Long Nvol = geo.local_volume();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  using D = typename GetBasicDataType<Fieldy>::ElementaryType;
+  qassert(IsBasicTypeReal<D>());
+  using Ty = ComplexT<D>;
+
+  Ty* srcP = (Ty*) get_data(noise).data();
+  const Long Nvol = geo.local_volume();
+  FieldM<Ty, 1> tmp;
+  if(need_copy){
+    tmp.init(geo);
+    Ty* resP = (Ty*) get_data(tmp).data();
+    cpy_GPU(resP, srcP, Nvol);
+    srcP = resP;
+  }
 
   const Long Nxyz = fd.Nx*fd.Ny*fd.Nz;
 
@@ -255,7 +330,7 @@ void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, doub
     {
       const Long off = ti * Nxyz + isp;
       {
-        double tem_source =  qlat::qnorm(noise.get_elem_offset(off));
+        double tem_source =  qlat::qnorm(srcP[off]);
         if(qnorm(tem_source)> 1e-3)
         {
           count[tg] += 1;
@@ -266,13 +341,13 @@ void check_noise_high(qlat::FieldM<Ty, 1>& noise, std::vector<int >& sinkt, doub
 
   sum_all_size(count.data(), count.size());
   sinkt.resize(0);
-  factor = -1;
+  npoints = -1;
   for(int t=0;t<fd.nt;t++){
     if(count[t] > 0){
-      if(factor == -1){
-        factor = count[t] / fd.vol;
+      if(npoints == -1){
+        npoints = count[t];
       }else{
-        Qassert(factor == count[t] / fd.vol);
+        Qassert(npoints == count[t]);
       }
       sinkt.push_back(t);
     }
@@ -383,11 +458,43 @@ inline void grid_list_posT(std::vector<PointsSelection >& LMS_points, const Coor
   //if(combineT == int(1)){Qassert(Long(LMS_points.size()) == Long(Nfull.size()         ));}
 }
 
+template<typename Ty>
+void write_grid_point_to_src(FieldG<Ty>& res, const FieldG<Ty>& src, const std::vector<Coordinate >& pos, int b_size, qlat::fft_desc_basic& fd)
+{
+  TIMER("write_grid_point_to_src");
+  Qassert(src.initialized and src.multiplicity == 1);
+  const Geometry& geo = src.geo();
+  const int Ndc = 12 * 12 ;
+  if(!res.initialized){res.init(geo, Ndc, QMGPU, QLAT_OUTTER);}
+  Qassert(res.mem_order == QLAT_OUTTER and res.multiplicity == Ndc);
+  set_zero(res);
+  const Ty* srcP = (Ty*) get_data(src).data();
+        Ty* resP = (Ty*) get_data(res).data();
+  const Long V = geo.local_volume();
+  vector_acc<Long > listP;listP.resize(pos.size());
+  for(Long gi=0;gi<listP.size();gi++){
+    const Coordinate& g = pos[gi];
+    if(fd.coordinate_g_is_local(g)){
+      listP[gi] = fd.index_l_from_g_coordinate(g);
+    }else{
+      listP[gi] = -1;
+    }
+  }
+  const Long Np = listP.size();
+  qacc_for(li, Np, {
+    if(listP[li] >= 0){
+      const Long isp = listP[li];
+      for(int dc=0;dc<12;dc++){
+        resP[(dc*12 + dc) * V + isp] = srcP[isp];
+      }
+    }
+  });
+}
 
 //////assume res have been cleared
 //////asuume res on GPU
 template<typename Ty>
-void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& posL, int b_size, qlat::fft_desc_basic& fd)
+void write_grid_point_to_src(Ty* res, const Ty* srcP, const PointsSelection& posL, int b_size, qlat::fft_desc_basic& fd)
 {
   TIMERA("===write_grid_point_to_src===")
   /////if(pos.size() != 4){abort_r("dimension of positions wrong!\n ");}
@@ -407,7 +514,7 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& p
   const Coordinate& pos = posL[pi];
   if(fd.coordinate_g_is_local(pos)){
     LInt isp = fd.index_l_from_g_coordinate(pos);
-    phase = src.get_elem_offset(isp);
+    phase = srcP[isp];
     ////printf("src pos %d %d %d %d, real %.3f imag %.3f \n", pos[0], pos[1], pos[2], pos[3], phase.real(), phase.imag());
     qacc_forNB(d0, 12, {
       int d1 = d0;
@@ -423,12 +530,15 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& p
   }
   }
   qacc_barrier(dummy);
+}
 
-  //double flag = qlat::qnorm(phase);
-  //sum_all_size(&flag, 1);
-  ///////printf("rank %d, flag %.3f \n", fd.rank, flag);
-  //if(flag < 1e-15){abort_r("src position phase equal zero!\n ");}
 
+
+template<typename Ty>
+void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointsSelection& posL, int b_size, qlat::fft_desc_basic& fd)
+{
+  const Ty* srcP = (Ty*) get_data(src).data();
+  write_grid_point_to_src(res, srcP, posL, b_size, fd);
 }
 
 template<typename Ty>
@@ -443,7 +553,7 @@ void print_psel(PointsSelection& psel)
 {
   for(Long i=0;i<psel.size();i++){
     Coordinate& xg0 = psel[i];
-    print0("x %d, y %d, z %d, t %d\n", xg0[0], xg0[1], xg0[2], xg0[3]);
+    qmessage("x %d, y %d, z %d, t %d\n", xg0[0], xg0[1], xg0[2], xg0[3]);
   }
 }
 
@@ -478,7 +588,7 @@ inline void get_grid_psel(PointsSelection& psel, const Coordinate& nv, const Coo
   // Long total = 1;
   for (int i = 0; i < 4; i++) {
     if (nv[i] < 0 or grid[i] < 0 or nv[i] % grid[i] != 0) {
-      print0("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);
+      qmessage("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);
     }
     // total *= grid[i];
   }
@@ -554,7 +664,7 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointsSelection& ps
   }
 
   std::vector<int > grid_pos_global = sum_local_to_global_vector(grid_pos);
-  /////for(unsigned int i=0;i< grid_pos_global.size();i++){print0("i %d %d \n",i ,grid_pos_global[i]);}
+  /////for(unsigned int i=0;i< grid_pos_global.size();i++){qmessage("i %d %d \n",i ,grid_pos_global[i]);}
 
   Long total = grid_pos_global.size()/DIM;
 
@@ -905,7 +1015,7 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
   qlat::vector_acc<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   for(int i=0;i<4;i++){Qassert(nv[i] % offG[i] == 0);}
-  print0("===grid numbers %8d \n", (nv[0]*nv[1]*nv[2]*nv[3])/(offG[0]*offG[1]*offG[2]*offG[3]) );
+  qmessage("===grid numbers %8d \n", (nv[0]*nv[1]*nv[2]*nv[3])/(offG[0]*offG[1]*offG[2]*offG[3]) );
 
   qthread_for(isp, geo.local_volume(), {
     const Coordinate xl  = geo.coordinate_from_index(isp);
@@ -1015,11 +1125,185 @@ void make_volume_src(Propagator4dT<Td >& src, int seed = 0, int mix_color = 0, i
       }
     }
   }); 
-
 }
 
+inline void split_points_simple(std::vector<std::vector<Coordinate > >& res, std::vector<Coordinate >& grids){
+  const Long Ng = grids.size();
+  res.resize(Ng);
+  for(Long gi=0;gi<Ng;gi++){
+    res[gi].resize(1);
+    res[gi][0] = grids[gi];
+  }
+}
 
+/*
+  sort spatial grid points into sub-grids if necessary
+*/
+inline void sort_grid_points(std::vector<Coordinate >& res, std::vector<Coordinate >& grids, const Coordinate& Lat, const int num_points = 0){
+  const Long Ng = grids.size();
+  const Long max_g = num_points * num_points * num_points;
+  res.resize(Ng);
 
+  // do all points if needed points larger than numbers
+  if(num_points == 0 or max_g >= Ng){
+    for(Long gi=0;gi<Ng;gi++){
+      res[gi] = grids[gi];
+    }
+    return ;
+  }
+
+  // Need points to be a grid
+  Qassert(Ng % max_g == 0);
+  const Long Ngroup = Ng / max_g;
+  std::vector<int > Loff;Loff.resize(3);
+  for(int i=0;i<3;i++){
+    Qassert(Lat[i] % num_points == 0);
+    Loff[i] = Lat[i] / num_points;
+  }
+
+  std::vector<Long > select;select.resize(Ng);
+  for(Long gi=0;gi<Ng;gi++){
+    select[gi] = Coordinate_to_index(grids[gi], Lat);
+  }
+  Long count = 0;
+  for(Long gi=0;gi<Ngroup;gi++){
+    // get the initial points
+    Coordinate cur;bool findc = false;
+    for(Long gj=0;gj<Ng;gj++){
+      if(select[gj] >= 0){
+        cur = grids[gj];
+        findc = true;
+        break;
+      }
+    }
+    Qassert(findc == true);
+    for(int iz=0;iz<num_points;iz++)
+    for(int iy=0;iy<num_points;iy++)
+    for(int ix=0;ix<num_points;ix++)
+    {
+      Coordinate sp = cur;
+      sp[0] = (sp[0] + ix * Loff[0]) % Lat[0];
+      sp[1] = (sp[1] + iy * Loff[1]) % Lat[1];
+      sp[2] = (sp[2] + iz * Loff[2]) % Lat[2];
+      //std::string sm = Coordinate_to_string(sp);
+      //qmessage("count %5d %s\n", count, sm.c_str());
+
+      const Long idx = Coordinate_to_index(sp, Lat);
+      const int find = std_find(select, idx);
+      Qassert(find >= 0 and find < Ng);
+      select[find] = -1;
+      //res[count] = sp;
+      res[count] = grids[find];
+      //for(int m=0;m<4;m++){res[count][m] = grids[find][m];}
+      count += 1;
+    }
+  }
+}
+
+/*
+  sort points with grids
+    64 points with 8 point in grid 
+  num_points : 
+    0   simple loop over points
+    > 1 groups into subgrid
+*/
+inline void split_grid_points(std::vector<std::vector<Coordinate > >& res, std::vector<Coordinate >& grids, const Coordinate& Lat, const int combineT = 0, const int num_points = 0){
+  const Long Ng = grids.size();
+  // get all time slice
+  std::vector<int > tsrc;
+  std::vector<std::vector<Long > > idx_list;
+  std::vector<std::vector<Coordinate > > spx_list;
+  for(Long gi=0;gi<Ng;gi++){
+    const int tcur = grids[gi][3];
+    if(std_find(tsrc, tcur) == -1){tsrc.push_back(tcur);}
+  }
+  std::sort(tsrc.begin(), tsrc.end());
+  const Long Nt = tsrc.size();
+  const Long Ntsrc = combineT == 0 ? 1 : Nt;
+  const Long max_g = num_points * num_points * num_points;
+
+  bool do_simple = false;
+  if(num_points == 0 and Ntsrc == 1){do_simple = true;}
+  if(max_g == Ng and Ntsrc == 1){do_simple = true;}
+  if(do_simple){split_points_simple(res, grids);return ;}
+
+  if(combineT != 0){
+    Qassert(Ng % Nt == 0);
+  }// each time slice much have same number of points
+  idx_list.resize(Nt);
+  spx_list.resize(Nt);
+  for(Long gi=0;gi<Ng;gi++){
+    Coordinate sp = grids[gi];
+    const Long ti = std_find(tsrc, sp[3]);
+    Qassert(ti >= 0 and ti < Nt);
+    sp[3] = 0; // all points to zero to compare
+    idx_list[ti].push_back(Coordinate_to_index(sp, Lat));
+    spx_list[ti].push_back(grids[gi]);
+  }
+
+  for(Long ti=0;ti<Nt;ti++){
+    std::sort(idx_list[ti].begin(), idx_list[ti].end());
+  }
+  const int Nx_grid = idx_list[0].size();
+
+  bool same_points_time = true;
+  for(Long ti=1;ti<Nt;ti++){
+    Qassert(int(idx_list[ti].size()) == Nx_grid);
+    if(same_points_time)
+    for(int i=0;i<Nx_grid;i++){
+      if(idx_list[ti][i] != idx_list[0][i]){
+        same_points_time = false;
+      }
+    }
+  }
+
+  const Long Nr = Ng / Ntsrc;
+  res.resize(Nr);
+
+  std::vector<std::vector<Coordinate > > sort_grids;sort_grids.resize(Nt);
+  for(Long ti=0;ti<Nt;ti++){
+    sort_grid_points( sort_grids[ti], spx_list[ti], Lat, num_points);
+  }
+
+  if(Ntsrc > 1){
+    Qassert(Ntsrc == Nt and Nr == Long(sort_grids[0].size()));
+    for(Long gi=0;gi<Ng;gi++){
+      if(gi >= Nr){continue; }
+
+      res[gi].resize(Nt);
+      for(Long ti=0;ti<Nt;ti++){
+        res[gi][ti] = sort_grids[ti][gi]; // currently not trying to have max distance
+      }
+
+      if(!same_points_time){
+        res[gi].resize(Nt);
+        for(Long ti=0;ti<Nt;ti++){
+          res[gi][ti] = sort_grids[ti][gi]; // currently not trying to have max distance
+        }
+      }
+      if( same_points_time){
+        res[gi].resize(Nt);
+        Coordinate cur = sort_grids[0][gi];
+        for(Long ti=0;ti<Nt;ti++){
+          cur[3] = tsrc[ti];
+          res[gi][ti] = cur;  // only 0 point will be used for shifts
+        }
+      }
+    }
+  }
+
+  if(Ntsrc == 1){
+    const Long goffT = Ng / Nt;
+    for(Long gi=0;gi<Ng;gi++){
+      if(gi > Nr){continue; }
+      const Long ti = gi / goffT;
+      const Long oi = gi % goffT;
+      res[gi].resize(1);
+      res[gi][0] = sort_grids[ti][oi]; // currently not trying to have max distance
+    }
+  }
+
+}
 
 }
 

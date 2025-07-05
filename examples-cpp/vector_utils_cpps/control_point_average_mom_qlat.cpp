@@ -12,7 +12,7 @@ using namespace qlat;
 inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& FFT_data, const long off,
     std::vector<bool >& Bsite, std::vector<long >& Zsite)
 {
-  ////print0("write data %d \n", int(off));
+  ////qmessage("write data %d \n", int(off));
   const int nmass = res.key_T[4];
   const int nt    = res.key_T[5];
   Complexq* Pres = (Complexq*) (&res.dat[off]);
@@ -51,7 +51,7 @@ inline std::vector<Coordinate > read_positions(corr_dat<Ftype >& mom_info){
     {
       int ini = mom_info.INFOA[i].find("Positions") + std::string("Positions").size();
       std::string str5 = mom_info.INFOA[i].substr(ini);     // get from "live" to the end
-      //print0("test %s \n", str5.c_str());
+      //qmessage("test %s \n", str5.c_str());
       std::vector<Coordinate > srcs = string_to_Coordinates(str5);
       for(unsigned int j=0;j<srcs.size();j++)
       {
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
         sprintf(name_mom, "%s.GInfo", namesm );
         if(get_file_size_MPI(name_mom) == 0)
         {
-          print0("File %s not found! \n",name_mom);
+          qmessage("File %s not found! \n",name_mom);
           data_sm[sm] = false;
         }
 
@@ -251,7 +251,7 @@ int main(int argc, char* argv[])
         sprintf(name_mom, "%s.GInfo", namesm );
         if(get_file_size_MPI(name_mom) == 0)
         {
-          print0("File %s not found! \n",name_mom);
+          qmessage("File %s not found! \n",name_mom);
           data_sm[sm] = false;
         }
 
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
     print_mem_info();
     for(int sm = 0; sm < 2;sm ++)
     {
-      if(data_sm[sm] == false){print0("Continue sm %2d \n", sm);continue ;}
+      if(data_sm[sm] == false){qmessage("Continue sm %2d \n", sm);continue ;}
 
       FFT_data_average.set_zero();
 
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
         sprintf(nameQ, "%s.Gsrc", namesm );
         sprintf(name_mom, "%s.GInfo", namesm );
         print_time();
-        print0("  %s \n", nameQ);
+        qmessage("  %s \n", nameQ);
 
         corr_dat<Ftype > mom_info(name_mom);
         std::vector<Coordinate > src_pos = read_positions(mom_info);

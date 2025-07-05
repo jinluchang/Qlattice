@@ -364,7 +364,7 @@ void read_data(std::vector<Ty > dat,const char *filename, bool single_file = fal
 inline size_t read_input(const char *filename,std::vector<std::vector<std::string > > &read_f)
 {
   read_f.resize(0);
-  if(get_file_size_o(filename) == 0){print0("input file size zero %s !\n", filename);return 0;}
+  if(get_file_size_o(filename) == 0){qmessage("input file size zero %s !\n", filename);return 0;}
   FILE* filer = fopen(filename, "r");
   //////Can only be LINE_LIMIT length string
   //char sTemp[LINE_LIMIT+1],tem[LINE_LIMIT+1];
@@ -383,7 +383,7 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
     if(fgets(tem, LINE_LIMIT + 1, filer) == NULL){binary = true;break;};
     ///for(int j=0;j<1000;j++){if(tem[i] < 0){binary = true;break;}}if(binary){break};
     /////If the file is binary
-    /////print0("==%s \n",tem);
+    /////qmessage("==%s \n",tem);
     if(tem[LINE_LIMIT] != 0){binary = true;break;}
     //if(tem[0]    <  0){binary = true;break;}////need to check whether it works or not
     if(std::string(tem).size() >= LINE_LIMIT){binary = true;break;}
@@ -456,6 +456,8 @@ struct inputpara{
   int nt;
   int nini;
   int nvec;
+  int with_mpi;
+  int with_timer;
   int mode_dis;
   std::string layout;
   int ndouble;
@@ -574,7 +576,13 @@ struct inputpara{
   std::string filename;
   ////===private usage, not loaded from file head
 
-
+  // only initialize the lat
+  inputpara(){
+    nx=0;
+    ny=0;
+    nz=0;
+    nt=0;
+  }
   //inputpara(bool printlog_set = false){
   //  printlog = printlog_set;
   //}
@@ -610,6 +618,19 @@ struct inputpara{
     return res;
   }
 
+  inline int find_para(const std::string &str2, bool &res){
+    for(unsigned int is=0;is<read_f.size();is++){
+      int found = find_string(read_f[is][0], str2);
+      if(found == 1 and read_f[is].size() >= 2){
+        res = bool( stringtonum(read_f[is][1]) );
+        if(printlog)if(get_node_rank_funs0() == 0)
+          printf("  %20s %10d \n",str2.c_str(), int(res));
+        return 1;
+      }
+    }
+    return 0;
+  }
+
   //////TODO Check found == 0 correct for all cases
   inline int find_para(const std::string &str2, int &res){
     for(unsigned int is=0;is<read_f.size();is++){
@@ -642,7 +663,6 @@ struct inputpara{
     }
     return 0;
   }
-
 
   inline void read_geo(const Geometry& geo)
   {
@@ -751,6 +771,8 @@ struct inputpara{
     if(find_para(std::string("do_all_low"),do_all_low)==0)do_all_low  = 1;
     if(find_para(std::string("output"),output)==0)output  = std::string("NONE");
     if(find_para(std::string("output_vec"),output_vec)==0)output_vec  = std::string("NONE");
+    if(find_para(std::string("with_mpi"),with_mpi)==0)with_mpi  = 0;
+    if(find_para(std::string("with_timer"),with_timer)==0)with_timer  = 1;
 
     if(find_para(std::string("eig_err"),eig_err)==0)eig_err  = 0;
     if(find_para(std::string("eig_poly_deg"),eig_poly_deg)==0)eig_poly_deg  = 0;
@@ -900,7 +922,7 @@ inline void print_time()
   time_t timer = time(NULL);
   tm_info = localtime(&timer);
   strftime(buf, 26, "%Y-%m-%d %H:%M:%S", tm_info);
-  print0("%s ", buf);
+  qmessage("%s ", buf);
 }
 
 inline void readuce_input_Coordinate_info(std::string& a0, std::vector<std::string>& a1, const int max_pos = 8){
@@ -916,7 +938,7 @@ inline void readuce_input_Coordinate_info(std::string& a0, std::vector<std::stri
     tmp += POS_CUR;
     count += 1;
     if(count == max_pos){
-      ////print0("test %s \n", tmp.c_str());
+      ////qmessage("test %s \n", tmp.c_str());
       a1.push_back(tmp);
       tmp   = " Positions ";
       count = 0;
@@ -1019,7 +1041,7 @@ inline int get_save_type(const std::string save_type){
   if(save_type.c_str() == std::string("single")){return 1;}
   if(save_type.c_str() == std::string("Single")){return 1;}
 
-  print0("Cannot find type. \n");
+  qmessage("Cannot find type. \n");
   Qassert(false);
 
   return -1;
@@ -1226,7 +1248,7 @@ struct corr_dat
     inputpara in;
     in.load_para(filename, false);
     /////if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){return 0;}
-    if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){print0("File %s head wrong!\n", filename);
+    if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){qmessage("File %s head wrong!\n", filename);
       MPI_Barrier(get_comm());
       fflush(stdout);
       /////abort if checksum fail
@@ -1340,7 +1362,7 @@ struct corr_dat
     //in_buf.INFOA     = INFOA;
     //in_buf.corr_name = corr_name;
 
-    //print0("dat off %30zu \n", off_file);
+    //qmessage("dat off %30zu \n", off_file);
 
     Qassert(file_open == NULL);
     if(qlat::get_id_node()==node_control){
@@ -1386,7 +1408,7 @@ struct corr_dat
       }
       ////correct the file if not all total is written
       if(total > total_write){
-        print0("Write additional data \n");
+        qmessage("Write additional data \n");
         shift_off(total_write);
         size_t diff = total - total_write;
         const Long cur = get_off();
@@ -1455,7 +1477,7 @@ struct corr_dat
   ////small_size, only update key_T; others update date and key_T
   inline void add_size(const int n){
     if(key_T.size() < 1){
-      print0("key_T size wrong!\n");MPI_Barrier(get_comm());
+      qmessage("key_T size wrong!\n");MPI_Barrier(get_comm());
       fflush(stdout);Qassert(false);}
 
     const size_t Npre = dat.size();
@@ -1502,7 +1524,7 @@ struct corr_dat
 
     if(Long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
-        print0("key_T size wrong!\n");MPI_Barrier(get_comm());
+        qmessage("key_T size wrong!\n");MPI_Barrier(get_comm());
         fflush(stdout);Qassert(false);}
       Long each = total/key_T[0];Long base = key_T[0];
       size_t n = (double_size + cur + each - 1) / (each) - base;

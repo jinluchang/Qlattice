@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
   sum_all_size(&sum, 1);
   sum_all_size(&sum0, 1);
   sum_all_size(&sum1, 1);
-  print0("diff shift %.3e, diff check %.3e %.3e, sum %.3e %.3e %.3e \n", diff, diff0, diff1, sum, sum0, sum1);
+  qmessage("diff shift %.3e, diff check %.3e %.3e, sum %.3e %.3e %.3e \n", diff, diff0, diff1, sum, sum0, sum1);
   ////===check diff
 
 

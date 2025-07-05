@@ -68,7 +68,7 @@ inline void print_numbers(Ty* src, int size, int GPU)
   cpy_GPU(buf.data(), src, size, 0, GPU);
   for(int i=0;i<size;i++)
   {
-    print0("i %5d, value %+.8e %+.8e \n", i, buf[i].real(), buf[i].imag());
+    qmessage("i %5d, value %+.8e %+.8e \n", i, buf[i].real(), buf[i].imag());
   }
 }
 
@@ -227,7 +227,7 @@ struct move_index
       Long Nb = (sizeF + Threads -1)/Threads;
       dim3 dimBlock(    Threads,    1, 1);
       dim3 dimGrid(     Nb,    1, 1);
-      //print0("sizeF %d, civ %d, size_inner %d, Biva %d, Nb %d , char %d \n", int(sizeF), int(civ), int(size_inner), Biva, int(Nb), int(sizeof(int8_t)));
+      //qmessage("sizeF %d, civ %d, size_inner %d, Biva %d, Nb %d , char %d \n", int(sizeF), int(civ), int(size_inner), Biva, int(Nb), int(sizeof(int8_t)));
       if(flag==0)move_index_global<Ty, false , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
       if(flag==1)move_index_global<Ty, true  , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
       qacc_barrier(dummy);
@@ -337,7 +337,7 @@ inline void set_GPU(int set_gpu_id = 1){
   //cuInit(0);
   int num_gpus = 0;
   gpuErrchk(qacc_GetDeviceCount(&num_gpus));
-  //print0("numG %5d \n", num_gpus);fflush(stdout);fflush_MPI();
+  //qmessage("numG %5d \n", num_gpus);fflush(stdout);fflush_MPI();
   Qassert(num_gpus != 0);
 
   // get local rank
@@ -435,7 +435,7 @@ inline void set_GPU_threads(int mode=0){
   {
     unsigned int cpu_thread_id = omp_get_thread_num();
     unsigned int num_cpu_threads = omp_get_num_threads();
-    if(cpu_thread_id%num_gpus != 0){print0("Wrong mapping of omp !\n");Qassert(false);}
+    if(cpu_thread_id%num_gpus != 0){qmessage("Wrong mapping of omp !\n");Qassert(false);}
     int Nthreads = cpu_thread_id/num_gpus;
 
     qacc_SetDevice(cpu_thread_id / Nthreads);
@@ -518,7 +518,7 @@ inline double get_mem_CPU_info()
 inline void print_mem_info(std::string stmp = "")
 {
   fflush_MPI();
-  print0("%s, ",stmp.c_str());
+  qmessage("%s, ",stmp.c_str());
   #ifdef QLAT_USE_ACC
   double freeD = 0;double totalD=0;
   size_t freeM = 0;size_t totalM = 0;
@@ -529,15 +529,15 @@ inline void print_mem_info(std::string stmp = "")
   struct sysinfo s_info;
   sysinfo(&s_info);
   #ifdef QLAT_USE_ACC
-  print0("===CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
+  qmessage("===CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30),freeD,totalD);
   //Qassert(freeD / totalD > 0.08);//unified memeory expand need more memory
   #else
-  print0("===CPU free %.3e GB, total %.3e GB. \n"
+  qmessage("===CPU free %.3e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30));
   #endif
   #else
-  print0("===MAC free infinity! \n");
+  qmessage("===MAC free infinity! \n");
   #endif
 }
 
@@ -671,6 +671,21 @@ inline void random_FieldM(qlat::FieldM<Ty , civ>& a,int GPU=0, int seed = 0)
   random_Ty(buf, geo.local_volume() * civ, GPU, seed);
 }
 
+template<class Fieldy>
+inline void random_FieldG(Fieldy& a,int GPU=0, int seed = 0)
+{
+  Qassert(a.initialized);
+  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  using D = typename GetBasicDataType<Fieldy>::ElementaryType;
+  qassert(IsBasicTypeReal<D>());
+
+  const Geometry& geo = a.geo();
+  const Long Nd = GetFieldSize(a);
+  qassert(Nd % (2 * sizeof(D)) == 0);
+  ComplexT<D>* buf = (ComplexT<D>*) qlat::get_data(a).data();
+  random_Ty(buf, Nd / (2 * sizeof(D)), GPU, seed);
+}
+
 template<typename Ty, int civ>
 inline void copy_FieldM(qlat::FieldM<Ty , civ>& res, qlat::FieldM<Ty , civ>& src )
 {
@@ -681,6 +696,23 @@ inline void copy_FieldM(qlat::FieldM<Ty , civ>& res, qlat::FieldM<Ty , civ>& src
   Ty* b = (Ty*) qlat::get_data(res).data();
   const Long  V = geo.local_volume() ;
   cpy_GPU(b, a, V*civ, 1, 1);
+}
+
+template<typename Ty>
+inline double norm_FieldG(qlat::FieldG<Ty>& a)
+{
+  Qassert(a.initialized);
+  const Geometry& geo = a.geo();
+  const int civ = a.multiplicity;
+  //Ty* buf = (Ty*) qlat::get_data(a).data();
+  const Long  V = geo.local_volume() ;
+  qlat::vector_gpu<Ty > tmp;tmp.resize(V*civ);
+  Ty* srcP = (Ty* ) qlat::get_data(a).data();
+  Ty* resP = tmp.data();
+  qacc_for(isp,V*civ,{ resP[isp] = srcP[isp];});
+  Ty  norm = tmp.norm2();
+  return norm.real();
+  //qmessage("norm %.3e %.3e \n", norm.real(), norm.imag());
 }
 
 template<typename Ty, int civ>
@@ -696,14 +728,14 @@ inline Ty norm_FieldM(qlat::FieldM<Ty , civ>& a)
   qacc_for(isp,V*civ,{ resP[isp] = srcP[isp];});
   Ty  norm = tmp.norm2();
   return norm;
-  //print0("norm %.3e %.3e \n", norm.real(), norm.imag());
+  //qmessage("norm %.3e %.3e \n", norm.real(), norm.imag());
 }
 
 template <class Td>
 void random_prop(Propagator4dT<Td >& prop, int seed = -1)
 {
   Qassert(prop.initialized);
-  ////print0("print time %.3f\n", tm.tv_sec);
+  ////qmessage("print time %.3f\n", tm.tv_sec);
   int rand_seed = qlat::get_id_node() + 1;
   if(seed == -1){timeval tm;gettimeofday(&tm, NULL);rand_seed += int(tm.tv_sec);}else{rand_seed += seed;}
 
@@ -978,14 +1010,14 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
   set_GPU();
 
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
 
   fflush_MPI();
   print_mem_info();
 
 }
 
-inline int end_Lat(int with_mpi = 0, int with_timer = 1)
+inline int end_Lat(const int with_mpi = 0, const int with_timer = 1)
 {
   if(with_timer == 1){
     qlat::Timer::display();
@@ -1004,7 +1036,7 @@ inline std::vector<Long > job_create(Long total, Long each)
   std::vector<Long > a;a.resize(0);
   if(total == 0){return a;}
   if(total < 1 or each < 1){
-    print0("===Give me valid job types total %ld, each %ld \n", (long)total, (long)each);
+    qmessage("===Give me valid job types total %ld, each %ld \n", (long)total, (long)each);
     abort_r();}
   /////std::vector<Long > a = job_create(total, each);
   Long jobN  = (total + each - 1)/each;
@@ -1063,21 +1095,9 @@ inline Ty inv_self(const Ty& lam, double m, double rho,int one_minus_halfD=1)
 }
 
 template<typename Ty>
-qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qpropT >& src)
+vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, Long Nvol = -1)
 {
-  qlat::vector_acc< Ty* >  res;
-  res.resize(src.size());
-  for(LInt iv=0;iv<src.size();iv++)
-  {
-    res[iv] = (Ty*) qlat::get_data(src[iv]).data();
-  }
-  return res;
-}
-
-template<typename Ty>
-qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, Long Nvol = -1)
-{
-  qlat::vector_acc< Ty* >  res;
+  vector_acc< Ty* >  res;
   const size_t Nvec = src.size();
   if(Nvec == 0){return res;}
 
@@ -1100,8 +1120,57 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& s
   return res;
 }
 
+/*
+  Default each vector into GPU pointers
+  Nvol small : devide each src into chucks
+*/
 template<typename Ty>
-qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qpropT >& src, Long Nvol = -1)
+vector_acc<Ty* > FieldG_to_pointers(std::vector<FieldG<Ty > >& src, Long Nvol = -1)
+{
+  qlat::vector_acc<Ty* >  res;
+  const size_t Nvec = src.size();
+  if(Nvec == 0){return res;}
+
+  Qassert(src.size() > 0 and src[0].initialized);
+  const Geometry& geo = src[0].geo();
+  const Long Nd = geo.local_volume() * src[0].multiplicity;
+
+  if(Nvol != -1){
+    Qassert(Nd % Nvol == 0);
+  }else{
+    Nvol = Nd;
+  }
+    
+  const size_t Nt = Nd / Nvol;
+  res.resize(Nvec * Nt);
+  for(size_t iv=0;iv<Nvec;iv++)
+  {
+    Qassert(src[iv].initialized and src[iv].multiplicity == src[0].multiplicity);
+    Ty* sP = (Ty*) get_data(src[iv]).data();
+    for(size_t it=0;it<Nt;it++)
+    {
+      res[iv*Nt + it] = &sP[it* Nvol];
+    }
+  }
+  return res;
+}
+
+// Each FieldM to gpu pointers
+template<typename Ty>
+qlat::vector_acc<Ty* > FieldM_to_pointers(std::vector<qlat::FieldM<Ty, 12*12> >& src)
+{
+  qlat::vector_acc< Ty* >  res;
+  res.resize(src.size());
+  for(LInt iv=0;iv<src.size();iv++)
+  {
+    res[iv] = (Ty*) qlat::get_data(src[iv]).data();
+  }
+  return res;
+}
+
+// Each src ant NT to gpu pointers
+template<typename Ty>
+qlat::vector_acc<Ty* > FieldM_to_Tpointers(std::vector<qlat::FieldM<Ty, 12*12> >& src, Long Nvol = -1)
 {
   qlat::vector_acc< Ty* >  res;
   const size_t Nvec = src.size();
@@ -1131,7 +1200,6 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qpropT >& src, Long Nvol =
   return res;
 }
 
-
 template<typename Ty>
 qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& src)
 {
@@ -1143,8 +1211,6 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& s
   }
   return res;
 }
-
-
 
 /////Ty should have size(), resize(), and data()
 template<class Ty>
@@ -1297,6 +1363,30 @@ void sort_vectors_by_axis(std::vector<std::vector<Ty > >& src, std::vector<std::
   }
 }
 
+// find position of first elements
+template<typename Ty>
+Long std_find(const std::vector<Ty >& src, const Ty& elem)
+{
+  Long pos = -1;
+  if(src.size() == 0){return pos;}
+  typename std::vector<Ty >::const_iterator it = std::find(src.begin(), src.end(), elem);;
+  //it = std::find(src.begin(), src.end(), elem);
+  if(it !=  src.end()){
+    pos = std::distance(src.begin(), it);;
+  }else{
+    pos = -1;
+  }
+  return pos;
+}
+
+template<typename Ty>
+void std_erase(std::vector<Ty >& src, const Long offset)
+{
+  Qassert(offset < Long(src.size()));
+  src.erase(src.begin() + offset);
+}
+
+
 template<typename Ty>
 qacc void decodeT(Ty& src)
 {
@@ -1322,6 +1412,19 @@ qacc void decodeT(qlat::ComplexT<RealDD>& src)
   decodeT(a);
   decodeT(b);
   src = qlat::ComplexT<RealDD>(a, b);
+}
+
+qacc Long Coordinate_to_index(const Coordinate& sp, const Coordinate& Lat){
+  return ( ( Long(sp[3]) * Lat[2] + sp[2] ) * Lat[1] + sp[1] ) * Lat[0] + sp[0];
+}
+
+qacc Coordinate index_to_Coordinate(const Long& idx, const Coordinate& Lat){
+  Coordinate sp;Long tem = idx;
+  for(int i=0;i<4;i++){
+    sp[i] = tem % Lat[i];
+    tem   = tem / Lat[i];
+  }
+  return sp;
 }
 
 //inline qlat::vector_acc<int > Coordinates_to_list(std::vector<Coordinate >& moms)

@@ -230,7 +230,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
   if(mode_reduce == 1)
   {
     Long Nsum = Nvol/Nt;
-    if(Nsum%32 !=0){print0("Assumed Nsum divide 32 == 0, %8d \n", int(Nsum%32));Qassert(false);}
+    if(Nsum%32 !=0){qmessage("Assumed Nsum divide 32 == 0, %8d \n", int(Nsum%32));Qassert(false);}
     Nsum = Nsum/32;
 
     set_zero(reduce_sum);
@@ -384,7 +384,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
     Long largeB = nt*16;largeB += nmass;
     int sizeB = largeB*sizeof(Complexq);
     /////Sum over time
-    /////if(nt < 16){print0("time too short for production. \n");Qassert(false);}
+    /////if(nt < 16){qmessage("time too short for production. \n");Qassert(false);}
     multiplyNab_global<<< nB, nthreads, sizeB >>>(&Nab[offNab],MresP,&Mvalues[0],nt,nmass,bufN0, GmapM.data());
     /////multiplyNab_global<<< nB, nthreads, sizeB >>>(Nab, 0,&Mres[0],&Mvalues[0],nt,nmass,bufN0, &GmapM[0]);
     qacc_barrier(dummy);
@@ -500,16 +500,16 @@ inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::v
     for(int j=0;j<16;j++){
       gL[j].check_sum(a0,a1);
       if(r0==a0){
-        if(findi != -1){print0("WRONG!!!!\n");}
+        if(findi != -1){qmessage("WRONG!!!!\n");}
         findi = j;
       }
       if(r0==a1){
-        if(findi != -1){print0("WRONG!!!!\n");}
+        if(findi != -1){qmessage("WRONG!!!!\n");}
         findi = j;
         sign  = -1;
       }
     }
-    if(findi == -1){print0("WRONG!!!! %5d \n",findi);}
+    if(findi == -1){qmessage("WRONG!!!! %5d \n",findi);}
     Gmap[i*2+0] = findi;
     Gmap[i*2+1] = sign;
   }
@@ -752,7 +752,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   int meas = 4;int Fcount = 3 + 1;////((complex multi 6 + plus 2)/2)
   double vGb     = vGb_vec*meas*Fcount;
-  print0("==total Eigen %.3e Gb \n", vGb_vec*Nmpi*(sizeof(Complexq)/2.0)*n_vec);
+  qmessage("==total Eigen %.3e Gb \n", vGb_vec*Nmpi*(sizeof(Complexq)/2.0)*n_vec);
 
   ////double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
   int modeCopy = 0;
@@ -773,7 +773,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   //if(mode_nt==1){NabL_size = 16*nt;}
   //if(mode_nt==0){NabL_size = 16*nt*Nmpi;}
 
-  print0("===job start 0 \n");
+  qmessage("===job start 0 \n");
   fflush_MPI();
 
   int Ncutbuf = Ncut;
@@ -814,7 +814,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   ////==propagate setups
   {if(fd.rank != 0){Ncutbuf = 0;Ncut = 0;}
   sum_all_size(&Ncutbuf, 1);sum_all_size(&Ncut   , 1);}
-  print0("==rank %d, n_vec %8d, Ncut %5d/%5d , Fac %.3e , free %.3e GB, total %.3e GB \n",
+  qmessage("==rank %d, n_vec %8d, Ncut %5d/%5d , Fac %.3e , free %.3e GB, total %.3e GB \n",
       qlat::get_id_node(), n_vec,Ncut,Nfull,n_vec*1.0/Ncut,freeD, totalD);
   ////==propagate setups
 
@@ -825,11 +825,11 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   #endif
 
   unsigned long bufi = 0;
-  print0("===rank %d, bufN %lu, mem MresL %.3e, NabL %.3e \n", qlat::get_id_node(), 
+  qmessage("===rank %d, bufN %lu, mem MresL %.3e, NabL %.3e \n", qlat::get_id_node(), 
       bufN, bufN*MresL_size*sizeof(Complexq)*pow(0.5,30), bufN*NabL_size*sizeof(Complexq)*pow(0.5,30));
-  print0("===rank %d, bufE %d, mem %.3e \n", qlat::get_id_node(), Ncutbuf, Ncutbuf*npoints*sizeof(Complexq)*pow(0.5,30));
+  qmessage("===rank %d, bufE %d, mem %.3e \n", qlat::get_id_node(), Ncutbuf, Ncutbuf*npoints*sizeof(Complexq)*pow(0.5,30));
 
-  print0("===job start 1 \n");
+  qmessage("===job start 1 \n");
   fflush_MPI();
 
   std::vector<Complexq* > bufE;
@@ -841,7 +841,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     //for(unsigned long iv=0;iv<bufE.size();iv++){qacc_Malloc(&bufE[iv],  npoints*sizeof(Complexq));}
   }
 
-  print0("===job start 2 \n");
+  qmessage("===job start 2 \n");
   fflush_MPI();
 
   //Mres.resize(nmass*16*nt*nt);set_zero(Mres);
@@ -867,7 +867,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   //qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
   //#endif
 
-  print0("===job start 3 \n");
+  qmessage("===job start 3 \n");
   fflush_MPI();
 
 
@@ -882,7 +882,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     if(bv > av){continue;}totrun +=1;
   }
 
-  print0("===job start 4 \n");
+  qmessage("===job start 4 \n");
   fflush_MPI();
 
 
@@ -893,7 +893,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   std::vector<int > avL_local,bvL_local;
   avL_local.resize(0);bvL_local.resize(0);
 
-  print0("===job start n \n");
+  qmessage("===job start n \n");
   fflush_MPI();
 
   ////Buffer index for av,bv
@@ -1015,7 +1015,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
       double flops_pers = vGb*countrun/(1.0*time0);
       double flops_pers_round = vGb*eachrun/(1.0*time1);eachrun=0;gettimeofday(&tm2, NULL);
-      print0("==jobi %10d, ai %5d , bi %5d , per %.3f, use %.3e sec, %.3f Gflops, %.3f Gflops/r . \n",
+      qmessage("==jobi %10d, ai %5d , bi %5d , per %.3f, use %.3e sec, %.3f Gflops, %.3f Gflops/r . \n",
         int(jobi),av,bv, perc, time0,flops_pers,flops_pers_round);
     }
   }
@@ -1026,7 +1026,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     time0 += (tm1.tv_usec - tm0.tv_usec)/1000000.0;
 
     double flops_pers = vGb*totrun/(1.0*time0);
-    print0("==Total use %.3e sec, average %.3f Gflops . \n", time0,flops_pers);
+    qmessage("==Total use %.3e sec, average %.3f Gflops . \n", time0,flops_pers);
   }
 
   #ifdef QLAT_USE_ACC

@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   nt = in.nt;
 
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
   fflush_MPI();
   print_mem_info();
 
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
   check_sum.print_norm2("%.15e");
 
   sum_all_size(&fftdiff , 1);
-  print0("===fft total diff %.3e \n", fftdiff);
+  qmessage("===fft total diff %.3e \n", fftdiff);
 
   std::vector<TyD >  dat0;
   std::vector<TyD >  dat1;
@@ -218,12 +218,12 @@ int main(int argc, char* argv[])
     diff[0] += qlat::qnorm(dat0[di] - dat1[di]);
     diff[1] += qlat::qnorm(dat0[di] - dat2[di]);
     if(qlat::qnorm(dat0[di] - dat1[di]) > 1e-5 or qlat::qnorm(dat0[di] - dat2[di]) > 1e-5)
-    print0("diff di %5ld, expect %.3e %.3e, new %.3e %.3e, qlat %.3e %.3e \n",
+    qmessage("diff di %5ld, expect %.3e %.3e, new %.3e %.3e, qlat %.3e %.3e \n",
       di, dat0[di].real(), dat0[di].imag(),
           dat1[di].real(), dat1[di].imag(),
           dat2[di].real(), dat2[di].imag() );
   }
-  print0("===diff 0 %.3e , 1 %.3e \n", diff[0], diff[1]);
+  qmessage("===diff 0 %.3e , 1 %.3e \n", diff[0], diff[1]);
   }
 
   //for(unsigned int i=0;i<nvec;i++){

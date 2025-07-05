@@ -82,6 +82,11 @@ namespace qlat
 // *************** FOR ERROR CHECKING *******************
 #endif
 
+/*
+  fftdir :
+    True  FFTW_FORWARD  -> exp(- i p x * 2pi/L)
+    False FFTW_BACKWARD -> exp(+ i p x * 2pi/ L)
+*/
 struct FFT_Vecs{
 
   int dim;
@@ -346,7 +351,7 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   TIMERB("FFT excute");
   (void)dummy;
   if(flag_mem_set != true or sizeof(Ty) != bsize){
-    print0("%d %d \n", int(sizeof(Ty)), int(bsize));
+    qmessage("%d %d \n", int(sizeof(Ty)), int(bsize));
     abort_r("FFT_Vecs memory not set ! \n");
   }
 
@@ -376,8 +381,8 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   }else{
 
   /////copy data from cpu
-  ////print0("civ %d, nt %d, nz %d, ny %d, nx %d, block0 %d \n", civ, nv[0], nv[1], nv[2], nv[3], int(block0));
-  ////print0("alloc_local %d, MPI_datasize %d . \n ", int(alloc_local), int(MPI_datasize/bsize));
+  ////qmessage("civ %d, nt %d, nz %d, ny %d, nx %d, block0 %d \n", civ, nv[0], nv[1], nv[2], nv[3], int(block0));
+  ////qmessage("alloc_local %d, MPI_datasize %d . \n ", int(alloc_local), int(MPI_datasize/bsize));
   ////abort_r("check point. \n");
   if(MPI_para.size() != 0)cpy_data_thread((Ty*) fft_dat, inputD, MPI_datasize/bsize, GPU);
 
@@ -441,7 +446,7 @@ inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1
     //if(N1 != -1){maxN = maxN;}
 
     int Bmax = (total+Ne-1)/Ne;
-    ////print0("N %d, maxN %d, Bmax %d, civ %d \n", Ne, maxN, Bmax, civ);
+    ////qmessage("N %d, maxN %d, Bmax %d, civ %d \n", Ne, maxN, Bmax, civ);
 
     for(int bz = 1;bz <= Bmax ; bz++)
     for(int cz = 1;cz <= maxN; cz++)
@@ -555,7 +560,7 @@ struct fft_schedule{
       }
       if(default_MPI >= -1){if(enable_MPI == 0){job = job0;}if(enable_MPI == 1){job = job1;}}
     }
-    ////print0("job size %d \n", int(job.size()));
+    ////qmessage("job size %d \n", int(job.size()));
     if(enable_MPI == 1 and dim == 3 and fd.my * fd.mx != 1){abort_r("mode not supported ! \n");}
     if(!(enable_MPI == 0 or enable_MPI == 1)){abort_r("enable_MPI not set yes! \n");};
 
@@ -616,10 +621,10 @@ struct fft_schedule{
 
   inline void print_info()
   {
-    print0("==Jobs dim %d, ", dim);
-    for(int di=0;di<dim;di++){print0("%d ", dimN[di]);}
-    print0(", nvec %d, civ %d, bsize %d. \n", nvec, civ, bsize);
-    print0("==N_extra %d, enable_MPI %d, GPU %d, b0 %d, c0 %d, mode_rot %d, need copy %d. \n", 
+    qmessage("==Jobs dim %d, ", dim);
+    for(int di=0;di<dim;di++){qmessage("%d ", dimN[di]);}
+    qmessage(", nvec %d, civ %d, bsize %d. \n", nvec, civ, bsize);
+    qmessage("==N_extra %d, enable_MPI %d, GPU %d, b0 %d, c0 %d, mode_rot %d, need copy %d. \n", 
       N_extra , enable_MPI, int(GPU), b0, c0, rot.mode, NEED_COPY );
     fflush_MPI();
   }
@@ -664,7 +669,7 @@ struct fft_schedule{
     if(civ%c0 != 0){abort_r("civ cannot by divided by c0 ! \n");}
 
     int cN = civ/c0;
-    /////print0("bN %d, cN %d, civ %d, c0 %d, vol %d \n", bN, cN, civ, c0, int(fd.noden));
+    /////qmessage("bN %d, cN %d, civ %d, c0 %d, vol %d \n", bN, cN, civ, c0, int(fd.noden));
     /////rotate civ
     if(civ != c0){
       TIMERB("fft mem reorder");
@@ -678,14 +683,14 @@ struct fft_schedule{
     //////NEED_COPY = 1;
     //////if(GPU)NEED_COPY = 1;
 
-    ////print0("==buf size %zu \n", rot.Bsize);
+    ////qmessage("==buf size %zu \n", rot.Bsize);
     int jobN = (bN*civ + each-1) /each;
     int bm = 0;
     int cm = 0;
     Ty* src;Ty* dp;
     for(int ji=0;ji<jobN;ji++)
     {
-      /////print0("jobN %d, bm %d, cm %d. \n", jobN, bm, cm);
+      /////qmessage("jobN %d, bm %d, cm %d. \n", jobN, bm, cm);
       ////Ty* tsrc = NULL;
       if(bm == bN){break;}
       int bma = bm;int cma = cm;
@@ -862,7 +867,7 @@ struct fft_gpu_copy{
 
     if(prec == "RealD" ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
     else if(prec == "RealF"){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
-    else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
+    else{qmessage("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
     ///fft.fftP->print_info();
     ///fftP->print_info();
 
@@ -920,7 +925,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
 
   if(prec == "RealD" ){     ft.fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
   else if(prec == "RealF"){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
-  else{print0("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
+  else{qmessage("Only ComplexD and ComplexF supported for fft on GPU! \n");Qassert(false);}
   ft.fftP->print_info();
 
   ///int nvec = src.size();
@@ -1140,6 +1145,35 @@ void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >
     cpy_data_thread(r0, s0, volume, 1, QTRUE);
   }
 }
+
+template <class Ty>
+void fft_fieldG(std::vector<qlat::FieldG<Ty> >& src, bool fftdir=true, bool fft4d = false)
+{
+  if(src.size() < 1)return;
+
+  Qassert(src[0].initialized);
+  const int civ = src[0].multiplicity;
+  for(unsigned int si=0;si<src.size();si++){
+    Qassert(src[si].initialized and src[si].multiplicity == civ and src[si].mem_order == QLAT_OUTTER);
+  }
+
+  int nfft = src.size() * civ;
+  const Geometry& geo = src[0].geo();
+  bool use_qlat = check_fft_mode(nfft, geo, fft4d);
+  Qassert(use_qlat == false);
+  const Long V = src[0].geo().local_volume();
+  {
+  std::vector<Ty* > data;data.resize(src.size() * civ);
+  for(unsigned int si=0;si<src.size() * civ;si++){
+    const int sj = si / civ;
+    const int ci = si % civ;
+    Ty* tmp = (Ty*) qlat::get_data(src[sj]).data();
+    data[si] = &tmp[ci * V];
+  }
+  fft_fieldM<Ty >(data, 1, geo, fftdir, fft4d);
+  }
+}
+
 
 
 }

@@ -14,7 +14,7 @@ namespace qlat{
 inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& FFT_data,
     std::vector<bool >& Bsite, std::vector<long >& Zsite, const int nt, const int nread)
 {
-  ////print0("write data %d \n", int(off));
+  ////qmessage("write data %d \n", int(off));
   //const int nmass = res.key_T[4];
   //const int nt    = res.key_T[5];
   //Complexq* Pres = (Complexq*) (&res.dat[off]);
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
       if(DONE == true)
       {
         std::string namew = qlat::ssprintf("%s", nameQ.c_str());
-        print0("Pass %s \n", namew.c_str());
+        qmessage("Pass %s \n", namew.c_str());
         continue ;
       }
     }
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
     name_info = qlat::ssprintf("%s", nameQ.c_str());
     name_info = name_info + std::string(" ");
     name_info.replace(name_info.end()-5 - extra_info_flag, name_info.end(), qlat::ssprintf("GInfo"));
-    //print0("%s \n", name_info.c_str());
+    //qmessage("%s \n", name_info.c_str());
     if(get_file_size_MPI(name_info.c_str()) > 0){
       with_info = 1;
       corr_info.read_dat(name_info.c_str());
@@ -182,19 +182,19 @@ int main(int argc, char* argv[])
     // continue if info not found
     if(corr_with_info == 1 and with_info == 0)
     {
-      print0("Pass %s \n", in.propN[isource].c_str());
+      qmessage("Pass %s \n", in.propN[isource].c_str());
       continue;
     }
 
     mdat.get_fn_list(nameQ);
     //// int nvec = -1;
-    print0("isource %d, current %d \n", isource, int(mdat.fn_list.size()));
+    qmessage("isource %d, current %d \n", isource, int(mdat.fn_list.size()));
 
     if(info_tmp.size() != 0){
       int check = stringtonum(info_tmp[isource]);
       if(long(mdat.fn_list.size()) != long(check)){
         abort_r("Wrong fn list");
-        print0("current %d , expect %d \n", int(mdat.fn_list.size()), check);
+        qmessage("current %d , expect %d \n", int(mdat.fn_list.size()), check);
       }
     }
 
@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
           //corr_zero_off += nread * in.nt * 2;
         }
       }
-      if(fi%20 == 0){print0("  Tag %s END\n", mdat.fn_list[fi].c_str());}
+      if(fi%20 == 0){qmessage("  Tag %s END\n", mdat.fn_list[fi].c_str());}
     }
 
     if(do_fft == 1){

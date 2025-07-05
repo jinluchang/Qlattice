@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   ////int vini  = 0;
 
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     if(stringtonum(Li[1]) == 1){test_gather3D = true;}
     if(stringtonum(Li[2]) == 1){test_gather4D = true;}
     if(stringtonum(Li[3]) == 1){test_original = true;}
-  }else{print0("======Need paraI to set test sets. \n");}
+  }else{qmessage("======Need paraI to set test sets. \n");}
 
   if(test_simple){
 
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
-  print0("Diff rotate 0 %.3e .\n",diff);
+  qmessage("Diff rotate 0 %.3e .\n",diff);
 
   //rot.reorder(false, (qlat::ComplexD*) &sendbuf[0]);
 
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
     diff += qnorm(sendbuf[i] - databuf[i]);
   }
   sum_all_size(&diff, 1);
-  print0("Diff rotate 1 %.3e .\n",diff);
+  qmessage("Diff rotate 1 %.3e .\n",diff);
 
   qlat::vector_gpu<qlat::ComplexD > sendT;sendT.resize(sendbuf.size());
   for(int i=0;i<100;i++){TIMER("=====Rotate 4D");rot.reorder(false, (double*) sendT.data());}
@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
-  print0("Diff rotate 2 %.3e .\n",diff);
+  qmessage("Diff rotate 2 %.3e .\n",diff);
 
   sendbufG.copy_from(sendbuf, 1, 1);
   rot.reorder(false, (double*) sendbufG.data());
@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
     diff += qnorm(sendbuf[i] - databuf[i]);
   }
   sum_all_size(&diff, 1);
-  print0("Diff rotate 3 %.3e .\n",diff);
+  qmessage("Diff rotate 3 %.3e .\n",diff);
 
   qlat::vector_gpu<qlat::ComplexD > sendT;sendT.resize(sendbuf.size());
   for(int i=0;i<100;i++){TIMER("=====Rotate 3D");rot.reorder(false, (double*) sendT.data());}
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
     diff += qnorm(tem);
   }
   sum_all_size(&diff, 1);
-  print0("Diff rotate 4 %.3e .\n",diff);
+  qmessage("Diff rotate 4 %.3e .\n",diff);
 
 
   vec_large.reorder((double*) &sendbuf[0],(double*) &recvbuf[0],b0,c0 ,100);
@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
     diff += qnorm(sendbuf[i] - databuf[i]);
   }
   sum_all_size(&diff, 1);
-  print0("Diff rotate 5 %.3e .\n",diff);
+  qmessage("Diff rotate 5 %.3e .\n",diff);
   }
 
 

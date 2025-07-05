@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   double freeD = freeM*pow(0.5,30);double totalD = totalM*pow(0.5,30); 
   struct sysinfo s_info;
   sysinfo(&s_info);
-  print0("Eign system vector size %.3e GB, Total %.3e GB; CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
+  qmessage("Eign system vector size %.3e GB, Total %.3e GB; CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
           ,length,n_vec*length, s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30),freeD,totalD);
 
   int nmass = in.nmass;
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
   ei.initialize_mass(massL, 12);
   ei.print_info();
 
-  print0("Low eigen done. \n");
+  qmessage("Low eigen done. \n");
 
   size_t Nvol = geo.local_volume();
   
@@ -111,19 +111,19 @@ int main(int argc, char* argv[])
   FieldM_src_to_FieldM_prop(noi, noi_prop, true);
   copy_eigen_src_to_FieldM(stmp, noi_prop, ei.b_size, fd, 1, true, false);
 
-  //print0("===src norm ");stmp.print_norm2();
+  //qmessage("===src norm ");stmp.print_norm2();
   prop_L_device(ei, stmp.data(), ptmp.data(), 12, massL, mode_sm);
-  //print0("===res norm0 ");ptmp.print_norm2();
+  //qmessage("===res norm0 ");ptmp.print_norm2();
 
   std::vector< qlat::FieldM<qlat::ComplexD , 12*12> > FpropV;FpropV.resize(nmass);
 
-  //print0("===res norm ");ptmp.print_norm2();
+  //qmessage("===res norm ");ptmp.print_norm2();
   //copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
   copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
 
   //copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 1, 1, false);
-  //print0("===res norm1 ");ptmp.print_norm2();
-  //print0("===res norm ");ptmp.print_norm2();
+  //qmessage("===res norm1 ");ptmp.print_norm2();
+  //qmessage("===res norm ");ptmp.print_norm2();
 
   std::vector<Propagator4d > propS_new;propS_new.resize(nmass);
   for(unsigned int i=0;i<propS_new.size();i++){
@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
   propS.resize(0);
   propS.resize(nmass);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
 
-  print0("Prop size %5d \n", int(propS.size()));
+  qmessage("Prop size %5d \n", int(propS.size()));
   for(int im=0;im<nmass;im++)
   {
     sprintf(names, in.Pname.c_str(),icfg);

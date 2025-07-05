@@ -91,6 +91,10 @@ struct API FieldG : Field<M> {
     set_ghost_field_pointer();
   }
 
+  int get_memtype(){
+    return field_gpu.GPU;
+  }
+
   Long get_nsites(){
     return Field<M>::geo().local_volume_expanded();
   }
@@ -118,23 +122,25 @@ struct API FieldG : Field<M> {
     set_ghost_field_zero();
     mem_order = QLAT_DEFAULT;
   }
-  void init(const Geometry& geo_, const int multiplicity_, QMEM GPU = QMGPU)
+
+  // QLAT_OUTTER
+  void init(const Geometry& geo_, const int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     clear_copy();
     Field<M>::init(geo_, multiplicity_);
     set_ghost_field(GPU);
-    mem_order = QLAT_DEFAULT;
+    mem_order = mem_order_;
   }
 
   // initialize only not initilized
-  void init_zero(const Geometry& geo_, const int multiplicity_, QMEM GPU = QMGPU)
+  void init_zero(const Geometry& geo_, const int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     bool need_init = false;
     if(Field<M>::initialized){
       qassert(field_gpu.GPU == GPU);
-      if(Field<M>::geo() != geo_ or Field<M>::multiplicity != multiplicity_ or field_gpu.GPU != GPU){
+      if(Field<M>::geo() != geo_ or Field<M>::multiplicity != multiplicity_ or field_gpu.GPU != GPU or mem_order_ != mem_order){
         need_init = true;
-      }else{ 
+      }else{
         // check parameters
         Field<M>::init_zero(geo_, multiplicity_);
       }
@@ -142,17 +148,27 @@ struct API FieldG : Field<M> {
       need_init = true;
     }
     if(need_init){
-      init(geo_, multiplicity_, QMGPU);
+      init(geo_, multiplicity_, QMGPU, mem_order_);
+    }
+  }
+
+  // only structures
+  void init_size(const FieldG<M>& f, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
+  {
+    if(!Field<M>::initialized or Field<M>::geo() != f.geo() or Field<M>::multiplicity != f.multiplicity or field_gpu.GPU != f.field_gpu.GPU or mem_order != f.mem_order)
+    {
+      QMEM Gtype = get_type_mem(f.field_gpu.GPU);
+      init(f.geo(), f.multiplicity, Gtype, f.mem_order);
     }
   }
 
   // copy the content
-  void init(const Field<M>& f, QMEM GPU = QMGPU)
+  void init(const Field<M>& f, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     clear_copy();
     Field<M>::init(f);
     set_ghost_field(GPU, true);
-    mem_order = QLAT_DEFAULT;
+    mem_order = mem_order_;
   }
 
   // construct from vector_gpu
@@ -169,6 +185,41 @@ struct API FieldG : Field<M> {
     field_gpu.GPU = GPU;
     field_gpu.is_copy = true;
     mem_order = order_;
+    set_ghost_field_pointer();
+  }
+
+  void set_pointer(FieldG<M>& src, const Long size = 0, const Long offset = 0)
+  {
+    TIMER("FieldG set_pointer");
+    const Geometry& geo = src.geo();
+    Long Nd = src.field_gpu.n;
+    if(size > 0){Nd = size;}
+    Qassert(offset + Nd <= Long(src.field_gpu.n));
+    clear_copy();
+    Field<M>::geo.set(geo);
+    field_gpu.p = &src.field_gpu.p[offset];
+    field_gpu.n = Nd;
+    field_gpu.GPU = src.field_gpu.GPU;
+    field_gpu.is_copy = true;
+    mem_order = src.mem_order;
+    set_ghost_field_pointer();
+  }
+
+  void set_pointer(Field<M>& src, QMEM_ORDER mem_order_, const Long size = 0, const Long offset = 0)
+  {
+    TIMER("FieldG set_pointer");
+    const Geometry& geo = src.geo();
+    M* p = (M*) get_data(src).data();
+    Long Nd = src.field.size();
+    if(size > 0){Nd = size;}
+    Qassert(offset + Nd <= src.field.size());
+    clear_copy();
+    Field<M>::geo.set(geo);
+    field_gpu.p = &p[offset];
+    field_gpu.n = Nd;
+    field_gpu.GPU = QMGPU;
+    field_gpu.is_copy = true;
+    mem_order = mem_order_;
     set_ghost_field_pointer();
   }
 
@@ -265,39 +316,39 @@ struct API SelectedFieldG : SelectedField<M> {
     mem_order = QLAT_DEFAULT;
   }
 
-  void init(const Geometry& geo_, const Long n_elems_, const Int multiplicity_, QMEM GPU = QMGPU)
+  void init(const Geometry& geo_, const Long n_elems_, const Int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     clear_copy();
     SelectedField<M>::init(geo_, n_elems_, multiplicity_);
     set_ghost_field(GPU);
-    mem_order = QLAT_DEFAULT;
+    mem_order = mem_order_;
   }
 
-  void init(const FieldSelection& fsel, const Int multiplicity_, QMEM GPU = QMGPU)
+  void init(const FieldSelection& fsel, const Int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     clear_copy();
     SelectedField<M>::init(fsel, multiplicity_);
     set_ghost_field(GPU);
-    mem_order = QLAT_DEFAULT;
+    mem_order = mem_order_;
   }
 
   // initialize only not initilized, could change parameters compare to initial ones
-  void init_zero(const Geometry& geo_, const Long n_elems_, const int multiplicity_, QMEM GPU = QMGPU)
+  void init_zero(const Geometry& geo_, const Long n_elems_, const int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     bool need_init = false;
     if(SelectedField<M>::initialized){
       qassert(field_gpu.GPU == GPU);
-      if(SelectedField<M>::geo() != geo_ or SelectedField<M>::n_elems != n_elems_ or SelectedField<M>::multiplicity != multiplicity_ or field_gpu.GPU != GPU){
+      if(SelectedField<M>::geo() != geo_ or SelectedField<M>::n_elems != n_elems_ or SelectedField<M>::multiplicity != multiplicity_ or field_gpu.GPU != GPU or mem_order_ != mem_order){
         need_init = true;
       }else{ 
         // check parameters
-        SelectedField<M>::init_zero(geo_, n_elems_, multiplicity_);
+        SelectedField<M>::init_zero(geo_, n_elems_, multiplicity_, mem_order_);
       }
     }else{
       need_init = true;
     }
     if(need_init){
-      init(geo_, n_elems_, multiplicity_, QMGPU);
+      init(geo_, n_elems_, multiplicity_, QMGPU, mem_order_);
     }
   }
 
@@ -363,6 +414,26 @@ qacc void set_zero(SelectedFieldG<M>& f)
 {
   f.set_zero();
 }
+
+template <typename M >
+qacc QMEM_ORDER get_mem_order(FieldG<M>& f)
+{
+  return f.mem_order;
+}
+
+template <typename M >
+qacc QMEM_ORDER get_mem_order(SelectedFieldG<M>& f)
+{
+  return f.mem_order;
+}
+
+template <typename M >
+qacc QMEM_ORDER get_mem_order(Field<M>& f)
+{
+  return QLAT_DEFAULT;
+}
+
+
 
 //// always 12*12 --> civ for vectorization
 //// could change data orders

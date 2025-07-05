@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
   //int n_vec = in.nvec;
 
   omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
 
   Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
   Geometry geo;
@@ -59,11 +59,11 @@ int main(int argc, char* argv[])
   sprintf(prop_name,in.Pname.c_str(), icfg);
   load_gwu_prop(prop_name, propS);
 
-  print0("%s \n",prop_name);
+  qmessage("%s \n",prop_name);
 
   if(in.paraI != "None"){
     std::vector<std::string > Li = stringtolist(in.paraI);
-    print0("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
+    qmessage("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
     fflush_MPI();
     //qassert(Li.size()%2 == 0);
 
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     {
       int nsmear   = stringtonum(   Li[si*2+0]);
       double width = stringtodouble(Li[si*2+1]);
-      print0("sn%03dsk%6.4f \n", nsmear, width);
+      qmessage("sn%03dsk%6.4f \n", nsmear, width);
 
       smear_propagator_gwu_convension(propS, gf, width, nsmear);
 
@@ -82,11 +82,11 @@ int main(int argc, char* argv[])
 
       //smear_propagator_gpu4(propS, gf1, width, nsmear);
       qlat::WilsonMatrixT<Ftype >& v0 =  propS.get_elem(0);
-      print0("check %.3e %.3e \n", v0(0,0).real(), v0(0,0).imag() );
+      qmessage("check %.3e %.3e \n", v0(0,0).real(), v0(0,0).imag() );
 
 
       sprintf(namep, "%s.sn%03dsk%6.4f", prop_name, nsmear, width);
-      print0("%s \n",namep);
+      qmessage("%s \n",namep);
       load_gwu_prop(namep, prop_s1);
       fflush_MPI();
 

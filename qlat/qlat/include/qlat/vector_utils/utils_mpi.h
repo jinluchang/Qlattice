@@ -49,6 +49,16 @@ bool IsBasicTypeReal(){
   }
 }
 
+template<typename Ty>
+bool IsTypeComplex(){
+  std::string type = IsBasicDataType<Ty>::get_type_name();
+  if(type == std::string("ComplexD") or type == std::string("ComplexF") or type == std::string("ComplexDD")){
+    return true;
+  }else{
+    return false;
+  }
+}
+
 template <class M>
 struct GetBasicDataType {
   static const std::string get_type_name() { return "unknown_type"; }
@@ -86,8 +96,6 @@ struct GetBasicDataType<FieldG<N > > {
   }
   using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
 };
-
-
 
 template <typename N, int civ >
 struct GetBasicDataType<FieldM<N, civ > > {
@@ -373,7 +381,7 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
 
   Qassert(sizeof(Ty)%M_size == 0);
   const int M_fac = sizeof(Ty)/M_size;
-  //print0("mpi size %5d, M_fac %5d, Ty %5d, int8_t %5d \n", int(size), M_fac, int(sizeof(Ty)), int(sizeof(int8_t)) );
+  //qmessage("mpi size %5d, M_fac %5d, Ty %5d, int8_t %5d \n", int(size), M_fac, int(sizeof(Ty)), int(sizeof(int8_t)) );
 
   //bool do_copy = false;
   const bool do_copy = true   ; // always copy for global sum, AMD machine has some issue
@@ -431,7 +439,7 @@ void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NU
     cpy_GPU(sav, (Ty*) tem_rHIP.data(), size, GPU_set, copy_sum_gpu);
     //cpy_data_thread(buf_res, tem_rHIP.data(), size, 2);
   }
-  //print0("===check iomp %d, GPU_set %d, do_copy %d, cpu %d \n", iomp, GPU_set, int(do_copy), int(copy_sum_gpu));
+  //qmessage("===check iomp %d, GPU_set %d, do_copy %d, cpu %d \n", iomp, GPU_set, int(do_copy), int(copy_sum_gpu));
   if(src == sav and do_copy == false)
   {
     cpy_GPU(sav, buf_res, size, GPU, GPU_set);
@@ -577,7 +585,7 @@ void Redistribute_all_Nt(Ty *src,Long size,const qlat::Geometry &geo, int GPU=0)
   const int nt = vg[3];
 
   int mt = nt/Nt;
-  if(mt != Nmpi){print0("Not supported !");Qassert(false);return;}
+  if(mt != Nmpi){qmessage("Not supported !");Qassert(false);return;}
 
   /////int rank  = qlat::get_id_node();
   Long size_c = sizeof(Ty)*size/mt;

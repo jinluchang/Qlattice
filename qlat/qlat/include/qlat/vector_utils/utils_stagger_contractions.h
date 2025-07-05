@@ -86,7 +86,7 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   const Geometry& geo = cf0[0].geo();
 
   EigenV resV;ini_resE(resV, 1, fd);
-  if(resV.size()%NTt !=0 or resV.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+  if(resV.size()%NTt !=0 or resV.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
 
   const int Dim = 3;
   qlat::vector_acc<Ty* > d0;d0.resize(Dim);
@@ -107,7 +107,7 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   for(int ti=0;ti<fd.nt;ti++)
   {
     auto v0 = corr[ti] * factor;
-    print0("ti %5d , cf cf^dagger %+.8e  %+.8e \n", ti, v0.real(), v0.imag());
+    qmessage("ti %5d , cf cf^dagger %+.8e  %+.8e \n", ti, v0.real(), v0.imag());
   }
 
 }

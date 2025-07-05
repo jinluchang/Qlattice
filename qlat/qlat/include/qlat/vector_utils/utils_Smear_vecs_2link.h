@@ -14,7 +14,7 @@
 #include "utils_shift_vecs.h"
 #include "utils_check_fun.h"
 #include "utils_smear_vecs.h"
-#include "utils_construction.h"
+//#include "utils_construction.h"
  
 namespace qlat{
 
@@ -39,7 +39,7 @@ void smear_propagator_gwu_convension_shift(Propagator4dT<Td>& prop, const GaugeF
   qlat::ComplexT<Td > norm = qlat::ComplexT<Td >( (1 - 3.0*width*width/(2*step)), 0.0);
   //qlat::ComplexT<Td > b0 = qlat::ComplexT<Td >(1.0, 0.0) - norm;
   qlat::ComplexT<Td > b1 = norm * bw;
-  ////print0("norm %.8e \n", norm.real());
+  ////qmessage("norm %.8e \n", norm.real());
 
   //qlat::vector_gpu<qlat::ComplexT<Td > > ps;
   //qlat::vector_gpu<qlat::ComplexT<Td > > p0;
@@ -323,12 +323,12 @@ void smear_propagator_gwu_convension_2shift(Propagator4dT<Td>& prop, std::vector
   smear_propagator_wuppertal_convension_2shift(prop, gfL, width, step, propL, even, wuppertal_conv, mom);
 }
 
-// gwu convension with all cs outer prop : 4*3 * V * complex
 template <class Ty, class Td>
-void smear_propagator_gwu_convension_2shift(qpropT& prop, std::vector< GaugeFieldT<Td> >& gfL,
+void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< GaugeFieldT<Td> >& gfL,
          const double width, const int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const int even = -1, const CoordinateD& mom = CoordinateD())
 {
   if (0 == step) {return;}
+  Qassert(prop.initialized and prop.multiplicity == 12 * 12 and prop.mem_order == QLAT_OUTTER);
   const Long Nvol = prop.geo().local_volume();
   Ty* src = (Ty*) qlat::get_data(prop).data();
   move_index mv_civ;int flag = 0;
@@ -359,6 +359,20 @@ void smear_propagator_gwu_convension_2shift(qpropT& prop, std::vector< GaugeFiel
   flag = 1;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);
 }
 
+
+// gwu convension with all cs outer prop : 4*3 * V * complex
+template <class Ty, class Td>
+void smear_propagator_gwu_convension_2shift(qpropT& prop, std::vector< GaugeFieldT<Td> >& gfL,
+         const double width, const int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const int even = -1, const CoordinateD& mom = CoordinateD())
+{
+  if (0 == step) {return;}
+  Qassert(prop.initialized);
+  Ty* src = (Ty*) qlat::get_data(prop).data();
+  FieldG<Ty> tmp_prop;
+  const Long Nd = 12 * 12 * prop.geo().local_volume();
+  tmp_prop.set_pointer(src, Nd, prop.geo(), QMGPU, QLAT_OUTTER);
+  smear_propagator_gwu_convension_2shift(tmp_prop, gfL, width, step, propL, even, mom);
+}
 
 template <typename Ty, typename Td>
 void smear_propagator_gwu_convension_2shift_modi(colorFT& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<Ty > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())

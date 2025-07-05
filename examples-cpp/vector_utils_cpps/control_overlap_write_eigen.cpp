@@ -2,6 +2,21 @@
 #include "utils_io_vec.h"
 #include "utils_smear_vecs.h"
 
+/*
+  write eigensystem into single precision
+  Or copy Hwilson
+  inputs
+    Ename
+    Sname
+    nvec
+    debuga 0 : eigensystem, 1 Hwilson
+    save_type  1 : gwu  single
+    save_type  3 : qlat single
+
+    // if want to smear eigensystem here
+    src_smear_para
+*/
+
 int main(int argc, char* argv[])
 {
   using namespace qlat;
@@ -23,28 +38,27 @@ int main(int argc, char* argv[])
   int nvec  = in0.nvec;
   if(nvec <= nini){abort_r("No vectors for reading!!! \n");}
   int nread = nvec - nini;
-  ////int n0 = nini; int n1 = nvec;
 
-  char ename[450],enamev[500];
-  char Sname[450],Snamev[500], sDescription[500];
-  ////char Ename[500];
+  std::string ename  = ssprintf(in0.Ename.c_str(), icfg);
+  std::string enamev = ssprintf("%s.eigvals"     , ename.c_str());
 
-  sprintf(ename ,in0.Ename.c_str(), icfg);
-  sprintf(enamev,"%s.eigvals"    ,ename);
+  std::string Sname  = ssprintf(in0.Sname.c_str(), icfg);
+  std::string Snamev = ssprintf("%s.eigvals", Sname.c_str());
 
-  sprintf(Sname ,in0.Sname.c_str(), icfg);
-  sprintf(Snamev,"%s.eigvals"    ,Sname);
+  Sname = Sname + ".s";// for Yi-bo's convention
+
   std::vector<double > values, errors;
   std::vector<double > v0, e0;
 
+  char sDescription[500];
   if(in0.debuga == 0)sprintf(sDescription, "Overlap operator: half spectrum");
   if(in0.debuga == 1)sprintf(sDescription, "H_wilson");
-  load_gwu_eigenvalues(values,errors, enamev);
+  load_txt_eigenvalues(values,errors, enamev.c_str());
   v0.resize(nread*2); e0.resize(nread);
   for(int iv=0;iv<nread*2;iv++){v0[iv] = values[nini*2 + iv];}
   for(int iv=0;iv<nread;iv++){  e0[iv] = errors[nini + iv];}
     
-  save_gwu_eigenvalues(v0,e0, Snamev, sDescription);
+  save_txt_eigenvalues(v0,e0, Snamev.c_str(), sDescription);
 
   ///bool save_single = true;
   ///save_single = get_save_type(in0.save_type);
@@ -52,7 +66,7 @@ int main(int argc, char* argv[])
   print_mem_info();
 
   double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
-  print0("Eign system vector size %.3e GB, total %.3e GB; \n", length, nvec*length);
+  qmessage("Eign system vector size %.3e GB, total %.3e GB; \n", length, nvec*length);
 
   int Nv = omp_get_max_threads();
   io_vec io_read( geo, IO_DEFAULT, true, Nv);
@@ -60,7 +74,7 @@ int main(int argc, char* argv[])
 
   int each = io_read.ionum;
   inputpara in_tem;
-  int file_type = check_qlat_eigen_file_type(ename, io_read, nvec, in_tem);
+  const int file_type = check_qlat_eigen_file_type(ename.c_str(), io_read, nvec, in_tem);
 
   std::vector<qlat::FieldM<qlat::ComplexD , 12> > eigenD;
   std::vector<qlat::FieldM<qlat::ComplexF, 12> > eigenF;
@@ -111,8 +125,8 @@ int main(int argc, char* argv[])
     //cpy_data_thread(tem1, tem0, cpy_size, 0);
   }
 
-  FILE* file_read  = open_eigensystem_file(ename, nini, nvec, true , io_read , in_read_eigen , 2);
-  FILE* file_write = open_eigensystem_file(Sname, nini, nvec, false, io_write, in_write_eigen, stringtonum(in0.save_type));
+  FILE* file_read  = open_eigensystem_file(ename.c_str(), nini, nvec, true , io_read , in_read_eigen , file_type);
+  FILE* file_write = open_eigensystem_file(Sname.c_str(), nini, nvec, false, io_write, in_write_eigen, stringtonum(in0.save_type));
 
   std::vector<Long > job =  job_create(nread, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)

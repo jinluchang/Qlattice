@@ -39,5 +39,7 @@ vector_utils_header_files = files(
   'utils_Smear_vecs_2link.h',
   'utils_grid_multi.h',
   'utils_field_gpu.h',
+  'utils_sector_funs.h',
+  'utils_corr_sparse_baryon.h',
   )
 py3.install_sources(vector_utils_header_files, subdir: 'qlat/include/qlat/vector_utils')

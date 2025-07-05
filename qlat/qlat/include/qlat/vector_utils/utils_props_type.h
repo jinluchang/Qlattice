@@ -190,44 +190,69 @@ void qprop_to_prop_gpu(qlat::vector_gpu<Ty >& res, qlat::Field<Td>& src){
   prop_gpu_to_qprop(src, res, 0);
 }
 
-////assumed civ == n*12 with n the source indices, 12 the sink indices 
-template <typename Ty, int civ >
-void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)
+////
+/*
+  assumed civ == n*12 with n the source indices, 12 the sink indices 
+  c_add : 0 clear res, 1 add, -1 subtract
+*/
+template <typename Ty, class Fieldy, int c_add >
+void copy_bsize_prop_to_FieldP(std::vector<Fieldy >& res, Ty* src, const LInt nV, LInt b_size, qlat::fft_desc_basic& fd, int GPU = 1, bool rotate = false, int dir = 0)
 {
-  TIMERA("copy_eigen_src_to_FieldM");
+  TIMERA("copy_bisze_src_to_FieldM");
+  const int civ = 12 * 12;
   if(civ%12 != 0){abort_r("FieldM type not supported!\n");}
-  unsigned int nV = 0;int cfac = civ/12;
+  //unsigned int nV = 0;
+  int cfac = civ/12;
   move_index mv_civ;
 
-  int  NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  LInt sizeF = NTt*Nxyz;
-  LInt total = 6*sizeF;
-  if(total % b_size != 0){abort_r("eigen system configurations wrong! \n");}
+  //Ty --> double float ...
+  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  using Dy = typename GetBasicDataType<Fieldy>::ElementaryType;
+  qassert(IsBasicTypeReal<Dy>());
+  if(c_add != 0){Qassert(rotate == false);}
+
+  const int  NTt  = fd.Nv[3];
+  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  const LInt sizeF = NTt*Nxyz;
+  const LInt total = 6*sizeF;
+  if(total % b_size != 0){abort_r("bsize vec configurations wrong! \n");}
 
   if(dir == 0){
-    Long dsize = src.size();
-    if(dsize%(2*total) != 0){abort_r("src size wrong!\n");};
-    nV  = dsize/(2*total);
+    //Long dsize = src.size();
+    //if(dsize%(2*total) != 0){abort_r("src size wrong!\n");};
+    //nV  = dsize/(2*total);
     if(nV%(cfac) != 0){abort_r("res civ wrong!\n");}
     unsigned int ntem = nV/cfac;
 
-    bool do_ini = true;if(res.size() == ntem)if(res[ntem-1].initialized){do_ini = false;}
+    bool do_ini = false;
+    if(res.size() != ntem){do_ini = true;}
+    if(do_ini == false){
+      for(LInt iv=0;iv<res.size();iv++){
+        if(!res[iv].initialized){
+          do_ini = true;
+        }
+      }
+    }
+    // could not add if need initialization
+    if(do_ini == true){Qassert(c_add == 0);}
+
     if(do_ini){
-      //////print0("initial Fprop. \n");
       Geometry geo;fd.get_geo(geo);
       res.resize(0);res.resize(ntem);
-      for(LInt iv=0;iv<res.size();iv++){res[iv].init(geo);}}
+      for(LInt iv=0;iv<res.size();iv++){res[iv].init(geo, civ);}
+    }
   }
   if(dir == 1){
-    nV = res.size() * cfac;
-    src.resize(nV * 2*total);
+    //nV = res.size() * cfac;
+    //src.resize(nV * 2*total);
+    Qassert(nV == res.size() * cfac )
+    Qassert(res[0].multiplicity == civ);
   }
 
   /////rotate FieldM, from Vol->civ to civ->Vol
   if(dir == 1 and rotate == true){
     for(LInt iv=0;iv<res.size();iv++){
-      Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();
+      ComplexT<Dy >* s0 = (ComplexT<Dy >*) qlat::get_data(res[iv]).data();
       mv_civ.dojob(s0, s0, 1, civ, sizeF, 1, 1, GPU);
     }
   }
@@ -236,10 +261,11 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
         Long each  = Nxyz; if(b_size < Nxyz){each = b_size;}
   const Long group = (2*total)/each;
 
-  Ty* psrc       = src.data();
+  //Ty* psrc       = src.data();
+  Ty* psrc       = src;
 
   ////buffers for result pointers
-  qlat::vector_acc<Ty* > resP;resP.resize(0);resP.resize(res.size());
+  qlat::vector_acc<ComplexT<Dy >* > resP;resP.resize(0);resP.resize(res.size());
   for(unsigned int d0=0;d0<res.size();d0++){
     resP[d0] = (Ty*) qlat::get_data(res[d0]).data();
   }
@@ -265,70 +291,79 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     const Long xi = mi%(total);
     const Long bi = xi/b_size;
     const Long bj = xi%b_size;
-    Ty* s0 = &psrc[(chi*bfac+bi)*nV*b_size  + d0*b_size + bj + offi * Nfac];
-    Ty* s1 = &resP[d0a][((d0b*12 + d1)*NTt+ti)*Nxyz + vi + offi * Nfac];
+    Ty* s0            = &psrc[(chi*bfac+bi)*nV*b_size  + d0*b_size + bj + offi * Nfac];
+    ComplexT<Dy >* s1 = &resP[d0a][((d0b*12 + d1)*NTt+ti)*Nxyz + vi + offi * Nfac];
     if(dir == 0){
       for(Long i=0;i<Nfac;i++){
-        s1[i] = s0[i];
+        if( c_add == 0){s1[i]  = s0[i];}
+        if( c_add ==-1){s1[i] -= s0[i];}
+        if( c_add == 1){s1[i] += s0[i];}
       }
     }
     if(dir == 1){
       for(Long i=0;i<Nfac;i++){
-        s0[i] = s1[i];
+        if( c_add == 0){s0[i]  = s1[i];}
+        if( c_add ==-1){s0[i] -= s1[i];}
+        if( c_add == 1){s0[i] += s1[i];}
       }
     }
   })
-
-  //Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
-  //for(Long d0=0;d0<nV;d0++)
-  //for(Long gi=0;gi<group;gi++)
-  //{
-  //  LInt mi = gi*each;
-
-  //  ////index for res
-  //  LInt d1 =  mi/(NTt*Nxyz);
-  //  LInt ti = (mi/(Nxyz))%NTt;
-  //  LInt vi =  mi%(Nxyz);
-  //  int d0a = d0/cfac;
-  //  int d0b = d0%cfac;
-
-  //  ////index for src
-  //  int chi = mi/(total);
-  //  LInt xi = mi%(total);
-  //  Long bi = xi/b_size;
-  //  Long bj = xi%b_size;
-
-  //  s0 = &psrc[(chi*bfac+bi)*nV*b_size  + d0*b_size + bj];
-  //  st = (Ty*) qlat::get_data(res[d0a]).data();
-  //  s1 = &st[((d0b*12 + d1)*NTt+ti)*Nxyz + vi];
-
-  //  if(dir == 0){cpy_data_thread(s1, s0, each , GPU, QFALSE);}
-  //  if(dir == 1){cpy_data_thread(s0, s1, each , GPU, QFALSE);}
-  //}
-
-  //print0("nV %d, each %d, group %d, bfac %d, b_size %d \n", int(nV), int(each), int(group), int(bfac), int(b_size));
-  //print0("===RES norm ");src.print_norm2();
-  //for(int i=0;i<nV/cfac;i++){
-  //  //Ty* r = (Ty*) qlat::get_data(res[i]).data();
-  //  Ty* r = psrc;
-  //  print0("==value %+.8e %+.8e \n", r[i * 17].real(), r[i * 17].imag());
-  //} 
 
   qacc_barrier(dummy);
 
   if(dir == 0 and rotate == true){
     for(LInt iv=0;iv<res.size();iv++){
-      Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();
+      ComplexT<Dy >* s0 = (ComplexT<Dy >*) qlat::get_data(res[iv]).data();
       mv_civ.dojob(s0, s0, 1, civ, sizeF, 0, 1, GPU);
     }
   }
 }
 
-template <typename Ty, int civ >
-void copy_FieldM_to_eigen_src(std::vector<qlat::FieldM<Ty , civ> >& src, qlat::vector_gpu<Ty >& res, LInt b_size, qlat::fft_desc_basic& fd, int GPU = 1, bool rotate = false)
+//  assumed civ == n*12 with n the source indices, 12 the sink indices 
+template <typename Ty, class Fieldy >
+void copy_bsize_prop_to_FieldM(std::vector<Fieldy >& res, qlat::vector_gpu<Ty >& src, LInt b_size, qlat::fft_desc_basic& fd, int GPU = 1, bool rotate = false, int dir = 0)
 {
-  copy_eigen_src_to_FieldM(res, src, b_size, 1,fd, GPU, rotate);
+  const LInt total = 12 * fd.Nvol ;
+  LInt nV = 0;
+  if(dir == 0){
+    const Long dsize = src.size();
+    if(dsize%(total) != 0){abort_r("src size wrong!\n");};
+    nV  = dsize/(total);
+  }
+  if(dir == 1){
+    const int cfac = 12;
+    nV = res.size() * cfac;
+    src.resize(nV * total);
+  }
+  Ty* srcP = src.data();
+  copy_bsize_prop_to_FieldP<Ty, Fieldy, 0>(res, srcP, nV, b_size, fd, GPU, rotate, dir);
 }
+
+template <typename Ty, class Fieldy >
+void copy_FieldM_to_bsize_prop(qlat::vector_gpu<Ty >& res, std::vector<Fieldy >& src, LInt b_size, qlat::fft_desc_basic& fd, int GPU = 1, bool rotate = false)
+{
+  copy_bsize_prop_to_FieldM(src, res, b_size,fd, GPU, rotate, 1);
+}
+
+//template <typename Ty, class Fieldy >
+//void copy_bsize_prop_to_FieldG(std::vector<Fieldy >& res, qlat::vector_gpu<Ty >& src, LInt b_size, const Geometry& geo, int dir = 0)
+//{
+//  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+//  copy_bsize_prop_to_FieldM(res, src, b_size, fd, dir );
+//  for(LInt iv=0;iv<res.size();iv++){
+//    res[iv].mem_order = QLAT_OUTTER;
+//  }
+//}
+//
+//template <typename Ty, class Fieldy >
+//void copy_FieldG_to_bsize_prop(qlat::vector_gpu<Ty >& res, std::vector<Fieldy >& src, LInt b_size, const Geometry& geo)
+//{
+//  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+//  for(LInt iv=0;iv<res.size();iv++){
+//    Qassert(res[iv].mem_order == QLAT_OUTTER);
+//  }
+//  copy_bsize_prop_to_FieldM(src, res, b_size, fd, 1 );
+//}
 
 template<typename Ty>
 void ini_propG(std::vector<qlat::vector_gpu<Ty > >& prop, const Long nmass, size_t Nsize, bool clear = true){
@@ -435,6 +470,13 @@ void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& resG, T* src
 
 }
 
+template <typename T, typename Ty>
+void copy_EigenG_to_eigen_prop(T* res, std::vector<qlat::vector_gpu<Ty > >& src,
+  LInt b_size, int nmass, qlat::fft_desc_basic& fd, int GPU = 1)
+{
+  copy_eigen_prop_to_EigenG(src, res, b_size, nmass, fd, GPU, 0);
+}
+
 /////res in format src 12 * sink 12 --> Nt * Nxyz, diagonal sources
 template <typename Ty >
 void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*12>& res, int GPU = true, bool dummy = true)
@@ -478,6 +520,33 @@ void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vec
   for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
   qacc_barrier(dummy);
 
+}
+
+template <typename Ty >
+void FieldG_src_to_FieldG_prop(qlat::FieldG<Ty>& src, qlat::FieldG<Ty>& res)
+{
+  Qassert(src.initialized and src.multiplicity == 1);
+  qlat::Geometry& geo = src.geo();
+  const int Ndc = 12 * 12;
+
+  if(!res.initialized){res.init(geo, Ndc, QMGPU, QLAT_OUTTER);}
+  Qassert(res.geo() == geo);
+  clear_fields(res);//set all zero... Bug introduced..., below only diagnal will be set
+
+  Long Ncopy = geo.local_volume();
+
+  Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
+  ///for(int iv=0;iv<nV;iv++)
+  s0 = (Ty*) qlat::get_data(src).data();
+  st = (Ty*) qlat::get_data(res).data();
+  const int GPU = 1;
+  for(unsigned int d0=0;d0<12;d0++)
+  {
+    //  diagonal elements
+    s1 = &st[(d0*12+d0)*Ncopy + 0];
+    cpy_data_thread(s1, s0, Ncopy , GPU, QFALSE);
+  }
+  qacc_barrier(dummy);
 }
 
 template <class Ty>

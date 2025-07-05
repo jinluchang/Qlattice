@@ -14,10 +14,15 @@
 #include "utils_grid_src.h"
 #include "utils_io_vec.h"
 #include "utils_corr_prop.h"
+#include "utils_field_gpu.h"
 
 namespace qlat{
 
-////ga1 sink gammas, ga2 src gammas
+/*
+  ga1 sink gammas, ga2 src gammas
+  invmode 1 : P1_{ab} P2_{ab}^*
+  invmode 0 : P1_{ab} P2_{ab}
+*/
 template <typename Td>
 void meson_vectorE(std::vector<Propagator4dT<Td >* > &pV1, std::vector<Propagator4dT<Td >* > &pV2, ga_M &ga1,ga_M &ga2,
         qlat::ComplexT<Td >* res, qlat::fft_desc_basic &fd, int invmode=1){
@@ -30,7 +35,7 @@ void meson_vectorE(std::vector<Propagator4dT<Td >* > &pV1, std::vector<Propagato
 
   //if(nmass == 0){res.resize(0);return;}
   //if(clear == 1){ini_resE(res,nmass,fd);}
-  //if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+  //if(res.size()%NTt !=0 or res.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
   Qassert(pV1.size() == pV2.size());
 
   for(int mi=0;mi<nmass;mi++)
@@ -88,7 +93,7 @@ void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator
   const int  nmass = pV1.size();
   if(nmass == 0){res.resize(0);return;}
   if(clear == 1){ini_resE(res,nmass,fd);}
-  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+  if(res.size()%NTt !=0 or res.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
 
   meson_vectorE(p1, p2, ga1, ga2, res.data(), fd, invmode);
 }
@@ -127,11 +132,11 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
   int  nmass = prop1.size();  ////(12*12*NTt)
   if(nmass == 0){res.resize(0);return;}
   if(clear == 1){ini_resE(res, nmass, fd);}
-  if(res.size()%NTt != 0 or res.size() == 0){print0("Size of res wrong. \n");Qassert(false);}
+  if(res.size()%NTt != 0 or res.size() == 0){qmessage("Size of res wrong. \n");Qassert(false);}
 
   Qassert(prop1.size() == prop2.size());
-  qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
-  qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
+  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
+  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop2);
 
   for(int d2=0;d2<4;d2++)
   for(int c2=0;c2<3;c2++)
@@ -182,11 +187,11 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 //  int  nmass = prop1.size();  ////(12*12*NTt)
 //  if(nmass == 0){res.resize(0);return;}
 //  if(clear == 1){ini_resE(res, nmass*16, fd);}
-//  if(res.size()%NTt != 0 or res.size() == 0){print0("Size of res wrong. \n");Qassert(false);}
+//  if(res.size()%NTt != 0 or res.size() == 0){qmessage("Size of res wrong. \n");Qassert(false);}
 //
 //  Qassert(prop1.size() == prop2.size());
-//  qlat::vector_acc<Ty* > p1 = EigenM_to_pointers(prop1);
-//  qlat::vector_acc<Ty* > p2 = EigenM_to_pointers(prop2);
+//  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
+//  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop2);
 //
 //  for(int ds=0;ds<4;ds++)
 //  for(int d2=0;d2<4;d2++)
@@ -237,7 +242,7 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 //
 //  if(clear == 1){ini_resE(res,nmass,fd);}
 //
-//  if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");Qassert(false);}
+//  if(res.size()%NTt !=0 or res.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
 //  Qassert(prop1.size() == prop2.size());
 //
 //  for(int d2=0;d2<4;d2++)
@@ -278,9 +283,10 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 
 #ifdef QLAT_USE_ACC
 template <typename Ty, int invmode, int bfac, int Blocks>
-__global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP, 
+__global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty** resP, 
   int8_t** gPP, uint8_t** oPP, const int* ivP,
-  const int nmass, const int NTt, const Long Nxyz, const int Ngv){
+  const int nmass, const int NTt, const Long Nxyz, const int Ngv)
+{
   const unsigned long gi =  blockIdx.x;
   const unsigned int tid = threadIdx.y*blockDim.x+ threadIdx.x;
   const Long Ntotal = nmass * NTt * Nxyz;
@@ -290,8 +296,8 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
 
   if(gi*bfac < Ntotal){
 
-  int bi0= 0;int dc = 0;
-  int ji = 0;int massi = 0;int ti = 0;
+  Long bi0= 0;int dc = 0;
+  int  ji = 0;int massi = 0;int ti = 0;
 
   int jobN = bfac*12*12;
   unsigned int off = tid;
@@ -307,6 +313,7 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
     off += Blocks;
   }
   __syncthreads();
+
 
   int ini = 0;
   int dv = 0;
@@ -324,6 +331,13 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
 
   const int ba = (threadIdx.y/bfacC)*bfacC + 0;
   const int aa = (threadIdx.y%bfacC)*blockDim.x + threadIdx.x;
+
+  ///Long off v = iv*Ntotal + bi*Nbfac + gi;
+  Long idx_res = bi*Nbfac + gi;
+  ji    = idx_res / Nxyz;
+  massi = ji/NTt;
+  ti    = ji%NTt;
+  Long off_res = ti * Nxyz + (idx_res) % Nxyz;
 
   __shared__ Ty buf[bfacC*Blocks];
   __shared__ uint8_t pos[3*GROUP];
@@ -379,8 +393,9 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
     if(Nth >=  8){if(ai <  4){buf[ai*bfac + bi] += buf[(ai+  4)*bfac + bi];}__syncthreads();}
     if(Nth >=  4){if(ai <  2){buf[ai*bfac + bi] += buf[(ai+  2)*bfac + bi];}__syncthreads();}
 
+    //iv ops
     if(ai == 0){
-      resP[iv*Ntotal + bi*Nbfac + gi] += (buf[bi] + buf[bfac+bi]);
+      resP[iv*nmass + massi][off_res] += (buf[bi] + buf[bfac+bi]);
       //if(clear == 0){resP[iv*Ntotal + bi*Nbfac + gi] += (buf[bi] + buf[bfac+bi]);}
       //if(clear == 1){resP[iv*Ntotal + bi*Nbfac + gi]  = (buf[bi] + buf[bfac+bi]);}
     }
@@ -389,14 +404,19 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty* resP,
   }
 
   }
-
 }
 #endif
 
+/*
+  vector_acc pointers
+  p1, p2 [nvec, ti][Nxyz]
+  resP  [nops, nvec ][ti x Nxyz]
+*/
 template <typename Ty, int invmode, int bfac>
-void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP, 
+void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty** resP, 
   int8_t** gPP, uint8_t** oPP, const int* ivP,
-  const int nmass, const int NTt, const Long Nxyz, const int Ngv){
+  const int nmass, const int NTt, const Long Nxyz, const int Ngv)
+{
   Long Ntotal  = nmass*NTt*Nxyz;
   if(Ntotal % bfac != 0){abort_r("Please correct your bfac! \n");}
   Long Nbfac = Ntotal/bfac;
@@ -410,6 +430,7 @@ void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP,
   qacc_barrier(dummy);
   #else
   if((nmass*NTt) % bfac != 0){abort_r("Please correct your bfac! \n");}
+  // could try spatial group 4 vectorizations
   qacc_for(gi, Nbfac ,
   {
     Ty buf[bfac+1];
@@ -420,7 +441,8 @@ void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP,
     int ji    = (gi/Nxyz)*bfac + 0;
     int massi = ji/NTt;
     int ti    = ji%NTt;
-    const Long offR0 = (massi*NTt + ti)*Nxyz + ixyz;
+    //const Long offR0 = (ti)*Nxyz + ixyz;
+    const int j0    = (gi/Nxyz)*bfac + 0;
 
     for(int bi=0;bi<bfac;bi++)
     {
@@ -447,21 +469,24 @@ void meson_vectorEV_kernel(Ty** p1, Ty** p2, Ty* resP,
         }
       }
 
-      Long offR = iv * Ntotal;
-      Ty* r0 = &resP[offR + offR0];
+      //Long offR = iv * Ntotal;
+      // may need more optimization ?
       for(int bi=0;bi<bfac; bi++){
-        r0[bi*Nxyz] += buf[bi];
-        //if(clear == 0){r0[bi*Nxyz] += buf[bi];}
-        //if(clear == 1){r0[bi*Nxyz]  = buf[bi];}
+        const int ji    = j0 + bi;
+        const int massi = ji/NTt;
+        const int ti    = ji%NTt;
+        //const Long offR0 = (ti)*Nxyz + ixyz;
+
+        resP[iv*nmass + massi][ti*Nxyz + ixyz] += buf[bi];
+        //r0[bi*Nxyz] += buf[bi];
       }
     }
   });
   #endif
-
 }
 
 template <typename Ty>
-void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass, 
+void meson_vectorEV(Ty** p1, Ty** p2, Ty** resP,  int nmass, 
     std::vector<ga_M > &ga1V, std::vector<ga_M > &ga2V,
     qlat::fft_desc_basic &fd, int clear=1, int invmode=1){
   TIMER("meson_vectorEV");
@@ -470,7 +495,11 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
   Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   Qassert(ga1V.size() == ga2V.size());
   int Ngv = ga1V.size();
-  if(clear == 1){zero_Ty(resP, Ngv*nmass*NTt*Nxyz , 1);}
+  if(clear == 1){
+    for(Long iv=0;iv<Ngv*nmass;iv++){
+      zero_Ty(resP[iv], NTt*Nxyz , 1);
+    }
+  }
 
   qlat::vector_acc<Ty > gMap;
   qlat::vector_acc<uint8_t > IMap;
@@ -544,7 +573,6 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
   #else
   const int BFACG = 1;
   #endif
-
   if(invmode==0)meson_vectorEV_kernel<Ty,0, BFACG>(p1, p2, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);
   if(invmode==1)meson_vectorEV_kernel<Ty,1, BFACG>(p1, p2, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);
   //if(mode==2)meson_vectorEV_kernel<Ty,1,0, BFACG>(p1, p2, resP, gPP, oPP, ivP, nmass, NTt, Nxyz, Ngv);
@@ -560,7 +588,6 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
     Ty* gC2 = &(gC_P[j2]);
     uint8_t* gI1 = &(gI_P[j1]);
     uint8_t* gI2 = &(gI_P[j2]);
-    Long offR = iv*nmass*NTt * Nxyz;
     for(int d2=0;d2<4;d2++)
     for(int c2=0;c2<3;c2++)
     for(int d1=0;d1<4;d1++)
@@ -569,17 +596,18 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
     #pragma omp parallel for
     for(int ji=0;ji<nmass*NTt;ji++)
     {
-      int massi = ji/NTt;
-      int ti    = ji%NTt;
+      const int massi = ji/NTt;
+      const int ti    = ji%NTt;
+      const Long offv = iv*nmass + massi;
 
-      int off1 = massi*12*12 + (d2*3+c2)*12+gI1[d1]*3+c1;
-      int off2 = massi*12*12 + (gI2[d2]*3+c2)*12+d1*3+c1;
+      const int off1 = massi*12*12 + (d2*3+c2)*12+gI1[d1]*3+c1;
+      const int off2 = massi*12*12 + (gI2[d2]*3+c2)*12+d1*3+c1;
 
       Ty g_tem = gC2[d2]*gC1[d1];
 
       Ty* tp1 = p1[off1*NTt+ti];
       Ty* tp2 = p2[off2*NTt+ti];
-      Ty* tr0 = &(resP[offR + (massi*NTt + ti)*Nxyz]);
+      Ty* tr0 = &(resP[offv][ti*Nxyz]);
 
       #if USEQACC==1
       if(invmode == 1){qacc_forNB(i, Long(Nxyz),{ tr0[i] += (tp1[i]*qlat::qconj(tp2[i]) * g_tem);});}
@@ -610,7 +638,7 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty* resP,  int nmass,
 //  Long resL = Ngv * nmass * fd.Nv[0]*fd.Nv[1]*fd.Nv[2] * fd.Nv[3];
 //  if(clear == 1){if(res.size()!= resL){res.resize(resL);}}
 //
-//  if(res.size() != resL){print0("Size of res wrong. \n");Qassert(false);}
+//  if(res.size() != resL){qmessage("Size of res wrong. \n");Qassert(false);}
 //  Qassert(prop1.size() == prop2.size());
 //
 //  qlat::vector_acc<Ta* > prop1P = EigenM_to_pointers(prop1);
@@ -631,11 +659,11 @@ void meson_vectorEV(EigenTy& prop1, EigenTy& prop2, qlat::vector_gpu<Ty > &res
   int  nmass = prop1.size();
   if(nmass == 0){res.resize(0);return;}
   int Ngv = ga1V.size();
-  const unsigned long resL = Ngv * nmass * fd.Nv[0]*fd.Nv[1]*fd.Nv[2] * fd.Nv[3];
+  const Long resL = Ngv * nmass * fd.Nv[0]*fd.Nv[1]*fd.Nv[2] * fd.Nv[3];
   const Long Nxyz= fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  if(clear == 1){if(res.size()!= resL){res.resize(resL);}}
+  if(clear == 1){if(Long(res.size())!= resL){res.resize(resL);}}
 
-  if(res.size() != resL){print0("Size of res wrong. \n");Qassert(false);}
+  if(Long(res.size()) != resL){qmessage("Size of res wrong. \n");Qassert(false);}
   Qassert(prop1.size() == prop2.size());
   for(int mi=0;mi<nmass;mi++)
   {
@@ -648,10 +676,59 @@ void meson_vectorEV(EigenTy& prop1, EigenTy& prop2, qlat::vector_gpu<Ty > &res
 
   Ty** p1 = prop1P.data();
   Ty** p2 = prop2P.data();
-  Ty* resP = res.data();
-  meson_vectorEV(p1, p2, resP, nmass, ga1V, ga2V, fd, clear, invmode);
+  qlat::vector_acc<Ty* > resvP;resvP.resize(Ngv * nmass);
+  for(int iv = 0;iv<Ngv*nmass;iv++){
+    resvP[iv] = &res[iv* fd.Nv[3] * Nxyz];
+  }
+  //Ty* resP = res.data();
+  meson_vectorEV(p1, p2, resvP.data(), nmass, ga1V, ga2V, fd, clear, invmode);
 }
 
+template <typename Ty >
+void meson_vectorEV(std::vector<qlat::FieldG<Ty > >& prop1, std::vector<qlat::FieldG<Ty > >& prop2,
+  std::vector<qlat::FieldG<Ty > > &res, std::vector<ga_M > &ga1V, std::vector<ga_M > &ga2V, int clear=1, int invmode=1)
+{
+  const int nmass = prop1.size();
+  if(nmass == 0){res.resize(0);return;}
+  Qassert(prop1[0].initialized);
+  const Geometry& geo = prop1[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  const int Ngv = ga1V.size();
+  const Long Nres = Ngv * nmass;
+  const Long Nxyz= fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  if(clear == 1){
+    if(Long(res.size()) != Nres){
+      res.resize(0);res.resize(Nres);
+    }
+    for(Long vi=0;vi<Nres;vi++){
+      //  print_mem_info(ssprintf("vi %5d ", int(vi)));
+      if(!res[vi].initialized){
+        res[vi].init(geo, 1, QMGPU, QLAT_OUTTER);
+      }
+      set_zero(res[vi]);
+    }
+  }
+  if(Long(res.size()) != Nres or !res[0].initialized){
+    qmessage("Size of res wrong. \n");Qassert(false);
+  }
+  Qassert(prop1.size() == prop2.size());
+
+  for(int mi=0;mi<nmass;mi++)
+  {
+    Qassert(prop1[mi].multiplicity == 144 and prop2[mi].multiplicity == 144);
+    Qassert(prop1[mi].mem_order == QLAT_OUTTER and prop2[mi].mem_order == QLAT_OUTTER);
+  }
+
+  qlat::vector_acc<Ty* > prop1P = FieldG_to_pointers(prop1, Nxyz);
+  qlat::vector_acc<Ty* > prop2P = FieldG_to_pointers(prop2, Nxyz);
+  qlat::vector_acc<Ty* > resP   = FieldG_to_pointers(res  , fd.Nv[3] * Nxyz);
+
+  Ty** p1 = prop1P.data();
+  Ty** p2 = prop2P.data();
+  //  Ty* resP = res.data();
+  meson_vectorEV(p1, p2, resP.data(), nmass, ga1V, ga2V, fd, clear, invmode);
+}
 
 template<typename Td, typename Ta>
 void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td >> &pV2,  ga_M &ga1, ga_M &ga2,
@@ -750,8 +827,27 @@ void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4
   for(int t=0;t<fd.nt;t++)
   {
     qlat::ComplexT<Td > v = resC[iv*fd.nt + t] * qlat::ComplexT<Td >(factor, 0.0);
-    print0("%s iv %2d, t %3d, v %.15e %.15e \n", tag.c_str(), iv, t, v.real(), v.imag());
+    qmessage("%s iv %2d, t %3d, v %.15e %.15e \n", tag.c_str(), iv, t, v.real(), v.imag());
   }
+}
+
+template <typename Ty >
+void pion_corr_simple(qlat::FieldG<Ty >& prop1, qlat::FieldG<Ty >& prop2, vector_acc<Ty>& corr, 
+  const Coordinate& mom = Coordinate(), const Ty src_phase = Ty(1.0, 0.0), const int tini = 0)
+{
+  ga_matrices_cps   ga_cps;
+  std::vector<ga_M> gI;gI.resize(1);gI[0] = ga_cps.ga[0][0];
+  std::vector<qlat::FieldG<Ty > > p1;
+  std::vector<qlat::FieldG<Ty > > p2;
+  std::vector<qlat::FieldG<Ty > > res;
+  p1.resize(1);p2.resize(1);
+  p1[0].set_pointer(prop1);
+  p2[0].set_pointer(prop2);
+  meson_vectorEV(p1, p2, res, gI, gI, 1, 1);
+
+  fft_desc_basic& fd = get_fft_desc_basic_plan(prop1.geo());
+  const int clear = 1;
+  vec_corrE(res[0].field_gpu, corr, fd, clear, mom, src_phase, tini);
 }
 
 template<typename Td>
@@ -775,7 +871,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //
 //  ///char output[500];
 //  ///std::string output = ssprintf("%s",   out_n.c_str());
-//  ///print0("output %s \n", output);
+//  ///qmessage("output %s \n", output);
 //
 //  EigenMTa propa,propb;
 //  copy_prop4d_to_propE(propa, propVa, fd);
@@ -821,9 +917,9 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  noi_name = ssprintf("%s",src_n.c_str()  );
 //  std::string output = ssprintf( "%s",out_n.c_str());
 //
-//  print0("Noise %s \n",noi_name);
-//  print0("Prop  %s %s \n",prop_na, prop_nb);
-//  print0("output %s \n", output);
+//  qmessage("Noise %s \n",noi_name);
+//  qmessage("Prop  %s %s \n",prop_na, prop_nb);
+//  qmessage("output %s \n", output);
 //
 //  qlat::set_zero(noi);
 //  load_gwu_noi(noi_name,noi);
@@ -880,7 +976,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  {
 //    double v0 = res[ti].real();
 //    double v1 = res[ti].imag();
-//    print0("%s ti %5d , v  %.8e   %.8e \n", tag.c_str(), ti, v0, v1);
+//    qmessage("%s ti %5d , v  %.8e   %.8e \n", tag.c_str(), ti, v0, v1);
 //  }
 //}
 
@@ -907,7 +1003,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  for(int t=0;t<fd.nt;t++)
 //  {
 //    Ta v = corr[iv*fd.nt + t] * Ta(factor, 0.0);
-//    print0("%s iv %d, t %d, v %.6e %.6e \n", tag.c_str(), iv, t, v.real(), v.imag());
+//    qmessage("%s iv %d, t %d, v %.6e %.6e \n", tag.c_str(), iv, t, v.real(), v.imag());
 //  }
 //}
 

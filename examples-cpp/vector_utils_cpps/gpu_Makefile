@@ -6,7 +6,7 @@ SHELL=/bin/bash
 GXX=nvcc --cudart shared -std=c++14 -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -Xcompiler -fopenmp -x cu -O2 -Xcompiler -fPIC   --expt-extended-lambda --expt-relaxed-constexpr
 CXX=nvcc -O2 --cudart shared -std=c++14 -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -Xcompiler -fopenmp -link
 
-qlat_prefix=/global/homes/g/genwang/project/genwang/Delta_mix/Code/Dec_29_2020/build/
+qlat_prefix="QLAT"
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_VUTILS=$(qlat_prefix)/include/qlat/vector_utils

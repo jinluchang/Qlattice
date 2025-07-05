@@ -850,7 +850,7 @@ inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, c
   inv_param.secs += 1e-25;
   if(quda_verbos >= -1)
   if(quda::comm_rank_global() == 0){
-    print0("Done: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops, %.6f secs \n",
+    qmessage("Done: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops, %.6f secs \n",
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops, time0);
   }
   inv_time   = time0;

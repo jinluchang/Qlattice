@@ -247,6 +247,7 @@ public:
   ga_M ga_4i[3];//equal to sig_5i
   ga_M ga[6][6];
   ////qlat::vector<ga_M > gL;
+  // gamma5 diagonal 1,1,-1,-1
   ga_matrices_cps()
   {
     TIMERA("ga_matrices_cps");
@@ -326,7 +327,7 @@ inline void vecE_gamma(Complexq* src, ga_M& ga, Long noden)
   });
 }
 
-void get_g_pointer(std::vector<ga_M >& gL, qlat::vector_acc<Complexq* >& gP, qlat::vector_acc<int* >& iP)
+inline void get_g_pointer(std::vector<ga_M >& gL, qlat::vector_acc<Complexq* >& gP, qlat::vector_acc<int* >& iP)
 {
   /////qlat::vector_acc<Complexq* > gP; qlat::vector_acc<int* > iP;get_g_pointer(gL, gP, iP);
   gP.resize(gL.size());

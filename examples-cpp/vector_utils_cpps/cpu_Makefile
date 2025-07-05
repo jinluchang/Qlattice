@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 CXX=CC -std=c++0x -qopenmp -march=native -O2 -Wall
 
-qlat_prefix=/global/homes/g/genwang/project/genwang/Delta_mix/Code/Dec_29_2020/cpu_build/
+qlat_prefix="QLAT"
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib

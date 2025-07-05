@@ -118,7 +118,7 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
   secT.resize(fd->Nmpi);
   for(Long i=0;i<secT.size();i++){secT[i] = fd->Nt;}
 
-  //////if(secT_or.size()!=fd->Nmpi){print0("secT wrong %8d ! \n", int(secT_or.size()));Qassert(false);}
+  //////if(secT_or.size()!=fd->Nmpi){qmessage("secT wrong %8d ! \n", int(secT_or.size()));Qassert(false);}
   ////secT = secT_or;
   ////Check same number secT for MPI
   ////Long mvol = mx*my*mz;
@@ -132,7 +132,7 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
     if(fd->Pos0[m][3] == init)
     {
     int ns   = secT[m];
-    if(ins != ns){print0("Not match, n %8d, m %8d, ins %8d, ns %8d \n",n,m,ins,ns);Qassert(false);}
+    if(ins != ns){qmessage("Not match, n %8d, m %8d, ins %8d, ns %8d \n",n,m,ins,ns);Qassert(false);}
     }
     }
   }
@@ -172,7 +172,7 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   b0 = b0_or;civa = civa_or;
 
   if(b0<=0 or civa<=0){
-    print0("Need at least biv = 1, civ %6d !\n",civa);Qassert(false);
+    qmessage("Need at least biv = 1, civ %6d !\n",civa);Qassert(false);
   }
 
   /////set up the map on fd
@@ -291,7 +291,7 @@ void Vec_redistribute::call_MPI(int flag)
   timer.flops  += Total*sizeof(Ty);
   #endif
 
-  if(flag_set_mem==0){print0("Buf not set. \n");Qassert(false);}
+  if(flag_set_mem==0){qmessage("Buf not set. \n");Qassert(false);}
 
   Ty* src = NULL;Ty* res = NULL;
   if(flag == 0){res = (Ty*) recvV; src = (Ty*) sendV;}
@@ -304,7 +304,7 @@ void Vec_redistribute::call_MPI(int flag)
   if(tem_off != int(off) or update_off == true){
     ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
     ///if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off = off/sizeof(double) ;findN=false;}
-    ///////print0("Check int %d, Long %d \n",sizeof(int), sizeof(Long));
+    ///////qmessage("Check int %d, Long %d \n",sizeof(int), sizeof(Long));
     #pragma omp parallel for
     for(int n=0;n<Nmpi/mt;n++)sendM[n] = off*currsend[n];
     #pragma omp parallel for
@@ -450,7 +450,7 @@ struct Rotate_vecs{
 
   void check_Bsize(size_t srcB){
     if(Bsize == 0 or srcB != Bsize){
-    print0("==buf size %zu, input %zu", Bsize, srcB);
+    qmessage("==buf size %zu, input %zu", Bsize, srcB);
     abort_r("Size not match");
     }
   }

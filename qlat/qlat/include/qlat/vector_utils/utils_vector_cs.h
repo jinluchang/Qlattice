@@ -244,7 +244,7 @@ struct vector_cs{
 
   inline Ty** get_pointers(Long ni)
   {
-    ////print0("===%5d %5d \n", int(ni), int(nvec));
+    ////qmessage("===%5d %5d \n", int(ni), int(nvec));
     Qassert(ni < nvec);
     //Ty** res = &pointersL[ni*btotal + 0]; 
     //return res; 
@@ -260,7 +260,7 @@ struct vector_cs{
   ////ni < nvec
   inline Ty* get_pointer_b(Long ni, Long bi)
   {
-    /////print0("rank %5d, %5d %5d, %5d %5d %5d \n", get_id_node(), int(ni), int(nvec), int(bi), int(bfac) );
+    /////qmessage("rank %5d, %5d %5d, %5d %5d %5d \n", get_id_node(), int(ni), int(nvec), int(bi), int(bfac) );
     Qassert(ni < nvec and bi < bfac and ni >=0 and bi >= 0);
     size_t t   = (bi *nvec + ni ) * size_t(b_size);
     size_t ba  = t / Lb;
@@ -314,7 +314,7 @@ struct vector_cs{
 
     btotal = bfac;
     initialized = true;
-    //if(silence_mem == true){print0("nvec %5d, bfac %5d, size %5d %5d \n", int(nvec), int(bfac), int(b_size), int(bfac_group));}
+    //if(silence_mem == true){qmessage("nvec %5d, bfac %5d, size %5d %5d \n", int(nvec), int(bfac), int(b_size), int(bfac_group));}
 
     {
       pointersL.resize(nvec * btotal);
@@ -375,7 +375,7 @@ struct vector_cs{
     double memvec = double(b_size) * sizeof(Ty) / (1024.0 * 1024.0 * 1024.0);
     double total  = nvec * bfac * memvec;
     //#if PRINT_TIMER>5
-    print0("nvec %5ld, nsum %ld, bfac %ld, b_size %ld, bfac_group %ld, %.8e GB, GPU %+1d \n", 
+    qmessage("nvec %5ld, nsum %ld, bfac %ld, b_size %ld, bfac_group %ld, %.8e GB, GPU %+1d \n", 
       nvec, nsum, bfac, b_size, bfac_group, nvec * bfac * memvec, int(GPU));
     //#endif
     return total;
@@ -402,7 +402,7 @@ struct vector_cs{
   {
     TIMER_FLOPS("vector_cs copy from A");
     if(ncur >= nvec){
-      print0("Copy to position %8d larger than n_vec %8d ! \n", int(ncur), int(nvec));
+      qmessage("Copy to position %8d larger than n_vec %8d ! \n", int(ncur), int(nvec));
       abort_r();
     }
 
@@ -430,7 +430,7 @@ struct vector_cs{
       //  if(dir == 0){src[isp] = res[id][jd];}
       //});
 
-      //print0("Check \n");
+      //qmessage("Check \n");
       //print_norm2(ncur);
       //print_numbers(src, 10, data_GPU);
       const Long  Ndata = btotal * b_size;
@@ -445,7 +445,7 @@ struct vector_cs{
       //{
       //print_norm2(ncur);
       //}
-      //print0("Check \n");
+      //qmessage("Check \n");
     }
 
     if(!same_locate){
@@ -530,7 +530,7 @@ struct vector_cs{
       GPU_s = this->GPU;
       soff = size_t(b_size) *     nvec ;
     }
-    /////print0("===roff %8d, n %8d, soff %8d, n %8d \n", int(roff), int(nvec), int(soff), int(src.nvec));
+    /////qmessage("===roff %8d, n %8d, soff %8d, n %8d \n", int(roff), int(nvec), int(soff), int(src.nvec));
 
     for(unsigned int n0=0;n0<nsrc.size(); n0++){
       ////qlat::vector_gpu<Ty* > va = src.get_pointers(nsrc[n0]);
@@ -597,7 +597,7 @@ struct vector_cs{
       {
         ////cpy_GPU(A[id], B[id], nsrc.size()*b_size,  GPU_r, GPU_s, false);
         ////if(sizeof(Ty) != sizeof(Ta)){
-        ////  print0("Check %d %d %d %d!\n", int(sizeof(Ty)), int(sizeof(Ta)), int(GPU_r), int(GPU_s));return ;
+        ////  qmessage("Check %d %d %d %d!\n", int(sizeof(Ty)), int(sizeof(Ta)), int(GPU_r), int(GPU_s));return ;
         ////}
         if(dir == 1){cpy_GPU2D(A[id*bfac_group], B[id*bfac_group], 
           size_t(nsrc.size()*b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);}
@@ -832,7 +832,7 @@ struct vector_cs{
     //if(s1 != NULL)reduce_vecs(r, (Tf*) rsum.data(), 2*size, 1, GPU_set);
     //}
 
-    ////print0("check sum %.8e %.8e \n",  rsum[0].real(), rsum[0].imag() );
+    ////qmessage("check sum %.8e %.8e \n",  rsum[0].real(), rsum[0].imag() );
     //////fflush_MPI();
     //{
     //TIMERA("norm2_vec global sum");
@@ -860,13 +860,13 @@ struct vector_cs{
       Ty t = norm2_vec(ia);
       if(t.real() >  0){
         if(qlat::qnorm(t.real() - 1) < 1e-3){
-          print0("==norm i %5d, v 1.0 + %+.8e %+.8e \n", ia, t.real() - 1, t.imag());
+          qmessage("==norm i %5d, v 1.0 + %+.8e %+.8e \n", ia, t.real() - 1, t.imag());
         }else{
-          print0("==norm i %5d, v %+.8e %+.8e \n", ia, t.real(), t.imag());
+          qmessage("==norm i %5d, v %+.8e %+.8e \n", ia, t.real(), t.imag());
         }
       }else{nzero += 1; }
     }
-    if( nzero >  0)print0("zero norms %8d, nvec %8d \n", nzero, int(nvec));
+    if( nzero >  0)qmessage("zero norms %8d, nvec %8d \n", nzero, int(nvec));
   }
 
   inline void print_prod(double cut = 1e-19, int maxN = -1)
@@ -885,14 +885,14 @@ struct vector_cs{
       }
 
       if(printK){
-        print0("vec i %5d norm 1 %+.1e, ", i, alpha[i*maxN + i].real() - 1.0);
+        qmessage("vec i %5d norm %+.1e, ", i, alpha[i*maxN + i].real() - 1.0);
         for(int j=0;j<maxN;j++)
         {
           if(std::sqrt(qnorm(alpha[i*maxN + j])) > cut and i != j){
-            print0("%d %+.1e %+.1e, ", j, alpha[i*maxN + j].real(), alpha[i*maxN + j].imag());
+            qmessage("%d %+.1e %+.1e, ", j, alpha[i*maxN + j].real(), alpha[i*maxN + j].imag());
           }
         }
-        print0(" \n");
+        qmessage(" \n");
       }
     }
   }
@@ -917,7 +917,7 @@ struct vector_cs{
   vector_cs<Ty>& operator=(const vector_cs<T >& vp)
   {
     (void)vp;
-    print0("NO SUPPORT yet!\n");
+    qmessage("NO SUPPORT yet!\n");
     Qassert(false);
     return *this;
   }
@@ -1028,7 +1028,12 @@ struct vector_cs{
     return aV;
   }
 
-  /////sum the flops of vec_multi, alpha ai --> continus in bi
+  /*
+    sum the flops of vec_multi, alpha ai --> continus in bi
+    nA = aend - amin
+    nB = bend - Bmin
+    nA * nB global size 
+  */
   template<typename Ta>
   inline void vec_multi(vector_cs<Ty >& b, Ta* alpha, bool Conj = true, 
     int aini = 0, int aend = -1, int bini = 0, int bend = -1, bool do_sum = true)
@@ -1041,7 +1046,7 @@ struct vector_cs{
     Qassert(check_GPU_same(a.GPU, b.GPU));
     //if(! (b.nsum == a.nsum and b.b_size == a.b_size and b.bfac_group == a.bfac_group))
     //{
-    //print0("%d %d %d %d %d %d  \n", int(b.nsum), int(a.nsum) , int(b.b_size), int(a.b_size), int(b.bfac_group), int(a.bfac_group));
+    //qmessage("%d %d %d %d %d %d  \n", int(b.nsum), int(a.nsum) , int(b.b_size), int(a.b_size), int(b.bfac_group), int(a.bfac_group));
     //abort_r();}
     Qassert(b.nsum == a.nsum and b.b_size == a.b_size and b.bfac_group == a.bfac_group);
   
@@ -1142,8 +1147,10 @@ struct vector_cs{
     vec_multi(b, alpha.data(), Conj, aini, aend, bini, bend);
   }
 
-  ///////b_i += \sum_j alpha_ij * a_j, alpha i--> j continus
-  /////alpha size nA * nB
+  /*
+    b_i += \sum_j alpha_ij * a_j, alpha i--> j continus
+    alpha size nA * nB
+  */
   template<typename Ta>
   inline void vec_sums(vector_cs<Ty >& b, Ta* alpha, bool Conj = false,
     int aini = 0, int aend = -1, int bini = 0, int bend = -1)
@@ -1387,7 +1394,9 @@ struct vector_cs{
     }
   }
 
-  ////\sum_ni Qts[ni] * this->ni
+  /* 
+    \sum_ni Qts[ni] * this->ni
+  */
   inline void linear_combination(vector_cs<Ty >& vec, Ty* Qts, const int Nsum, int vb = 0)
   {
     TIMERA("vector_cs linear_combination");
@@ -1518,10 +1527,10 @@ void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, int b0, int b1, bool
   const Long bfac_group = A.bfac_group;
   const Long btotal     = A.btotal;
   const Long b_size     = A.b_size;
-  if(NB == 1){print0("=====WARNING! vector_cs_append should be used with group of vectors!" ); }
+  if(NB == 1){qmessage("=====WARNING! vector_cs_append should be used with group of vectors!" ); }
 
   //if(btotal / bfac_group <  8){
-  //  print0("=====WARNING! ROTATION USED A LOT OF MEMORY, REDUCE bfac_group %8d with bfac %8d \n",
+  //  qmessage("=====WARNING! ROTATION USED A LOT OF MEMORY, REDUCE bfac_group %8d with bfac %8d \n",
   //    bfac_group, btotal);}
 
   ////int CPU_buf = 0;

@@ -68,7 +68,7 @@ void apply_eo_sign(qlat::FieldM<Ty , civ>& src, qlat::FieldM<Ty , civ>& res, qla
   if(!eo.initialized){qlat_map_eo_site(eo, geo);}
   Qassert(geo == eo.geo() and src.multiplicity == res.multiplicity);
   Qassert(civ == res.multiplicity);
-  //print0("eo sizes civ %5d, multi %5d \n", civ, res.multiplicity);
+  //qmessage("eo sizes civ %5d, multi %5d \n", civ, res.multiplicity);
   Ty*   sP = (Ty*  ) qlat::get_data(src).data();
   Ty*   rP = (Ty*  ) qlat::get_data(res).data();
   apply_eo_signT<Ty, civ>(sP, rP, eo, dir);

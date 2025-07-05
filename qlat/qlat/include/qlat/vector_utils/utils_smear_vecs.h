@@ -135,9 +135,9 @@ inline void get_mapvq_each(const std::vector<CommPackInfo> &pack_infos, std::vec
       Long bufi = cpi.buffer_idx + j;
       Long fi   = cpi.offset     + j;
       //if(dir == 1){
-      //  print0("transfer ori %8ld, buffer %8ld \n", fi, bufi);
+      //  qmessage("transfer ori %8ld, buffer %8ld \n", fi, bufi);
       //}
-      ////print0("size %d, group %d, bufi %d, fi %d \n", int(i), int(cpi.size), int(bufi), int(fi));
+      ////qmessage("size %d, group %d, bufi %d, fi %d \n", int(i), int(cpi.size), int(bufi), int(fi));
       if(dir == 0){mapv[0].push_back(bufi);mapv[1].push_back(  fi);}
       if(dir == 1){mapv[0].push_back(  fi);mapv[1].push_back(bufi);}
     }
@@ -204,12 +204,12 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     map_index_typeO_0[index_ext] = index    ;
     map_index_typeO_1[index    ] = index_ext;
     //if(index == 0){
-    //  print0("==rank %3d, x y z t, %3d %3d %3d %3d, ext %ld \n", qlat::get_id_node(), xl[0], xl[1], xl[2], xl[3], index_ext);
+    //  qmessage("==rank %3d, x y z t, %3d %3d %3d %3d, ext %ld \n", qlat::get_id_node(), xl[0], xl[1], xl[2], xl[3], index_ext);
     //}
-    //print0("index ext %8ld index %8ld\n", index_ext, index);
+    //qmessage("index ext %8ld index %8ld\n", index_ext, index);
     //map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl, 1);
     //map_bufV[1][index]  = index;
-    //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
+    //////qmessage(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
   }
 
   map_bufD.resize(Nvol*dirL*2);
@@ -232,7 +232,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     //  ////const Coordinate xl = geo_ext.coordinate_from_index(i);///this function is wrong!
     //  if(xl[3] == 0){
     //    xlE[xl1[2]] += 1;
-    //    //print0("rank %3d, x y z t, %3d %3d %3d %3d, ext %3d %3d %3d %3d , index %ld ext %ld\n", qlat::get_id_node(), 
+    //    //qmessage("rank %3d, x y z t, %3d %3d %3d %3d, ext %3d %3d %3d %3d , index %ld ext %ld\n", qlat::get_id_node(), 
     //    //  xl[0], xl[1], xl[2], xl[3],
     //    //  xl1[0], xl1[1], xl1[2], xl1[3],
     //    //  index, index_ext
@@ -243,7 +243,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   }}
   //for(int i=0;i<8;i++)
   //{
-  //  print0("i %3d, count %5d \n", i, xlE[i]);
+  //  qmessage("i %3d, count %5d \n", i, xlE[i]);
   //}
 
   //Qassert(false)
@@ -252,7 +252,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //for(Long i=0;i<Long(need_pos.size());i++){
   //  if(need_pos[i] > 0){Nneed += 1;}
   //}
-  //print0("rank %3d, Nneed %ld, total %ld \n", qlat::get_id_node(), Nneed - Nvol, Nvol_ext - Nvol );
+  //qmessage("rank %3d, Nneed %ld, total %ld \n", qlat::get_id_node(), Nneed - Nvol, Nvol_ext - Nvol );
 
   QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
   const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
@@ -267,7 +267,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   qlat::vector_acc<Long > recv_buffer_index;
 
   ////Qassert(false);
-  ////print0("rank %5d, send %ld, recv %ld \n", qlat::get_id_node(), Long(plan.total_send_size), Long(plan.total_recv_size));
+  ////qmessage("rank %5d, send %ld, recv %ld \n", qlat::get_id_node(), Long(plan.total_send_size), Long(plan.total_recv_size));
 
   //{
   //  std::vector<Long > buf_s;
@@ -292,7 +292,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //      for(Long i=0;i<cmi.size;i++){buf_s[cmi.buffer_idx + i] = 1;}
   //    }
   //  }
-  //  //////print0("Actual send %ld, recv %ld \n", count_send, count_recv);
+  //  //////qmessage("Actual send %ld, recv %ld \n", count_send, count_recv);
   //}
 
 
@@ -323,12 +323,12 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     Long ri = mapvq_recv[1][i];
     Long si = mapvq_recv[0][i];
     //recv_buffer_index[ri] = si;
-    ////print0("%ld %ld, max %ld %ld \n", ri, si, Long(recv_buffer_index.size()), Nvol_ext);
+    ////qmessage("%ld %ld, max %ld %ld \n", ri, si, Long(recv_buffer_index.size()), Nvol_ext);
     Qassert(check_send[si].size() == 0);
     check_recv[si].push_back(ri);
     count_r += 1;
   }
-  //print0("plan write send %ld, recv %ld \n", count_s, count_r);
+  //qmessage("plan write send %ld, recv %ld \n", count_s, count_r);
   ////Qassert(false)
   /////QLAT_VEC_CKPOINT
 
@@ -353,14 +353,14 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //for(Long i=0;i<Nvol_ext;i++)
   //{
   //  if(check_send[i] != -1){
-  //    print0("index ext %8ld, send %8ld \n", i, check_send[i]);
+  //    qmessage("index ext %8ld, send %8ld \n", i, check_send[i]);
   //  }
   //}
 
   //for(Long i=0;i<Nvol_ext;i++)
   //{
   //  if(check_recv[i] != -1){
-  //    print0("index ext %8ld, recv %8ld \n", i, check_recv[i]);
+  //    qmessage("index ext %8ld, recv %8ld \n", i, check_recv[i]);
   //  }
   //}
 
@@ -382,13 +382,13 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
       //  //const Coordinate xl = geo_ext.coordinate_from_index(i);///this function is wrong!
       //  //if(xl[3] == 0){
       //  //  xlC[xl[2]] += 1;
-      //  //  print0("rank %3d, x y z t, %3d %3d %3d %3d \n", qlat::get_id_node(), xl[0] - 1, xl[1] - 1, xl[2], xl[3]);
+      //  //  qmessage("rank %3d, x y z t, %3d %3d %3d %3d \n", qlat::get_id_node(), xl[0] - 1, xl[1] - 1, xl[2], xl[3]);
       //  //}
       //}
       Qassert(not (index == -1 and need_pos[i] > 0));
       if(index == -1){continue ;} ////corners 
       //#if GET_MAPS_DEBUG==1
-      //////print0("index %ld %ld \n", index, i);
+      //////qmessage("index %ld %ld \n", index, i);
       //Qassert(index != -1);
       //#endif
       if(eo_int8_t[index] == 0){
@@ -406,12 +406,12 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   }
   //for(int i=0;i<8;i++)
   //{
-  //  print0("i %3d, count %5d \n", i, xlC[i]);
+  //  qmessage("i %3d, count %5d \n", i, xlC[i]);
   //}
 
   Long Nvol_sum = count_e + count_o + count_s + count_r;
   if(Nvol_sum < Nvol_ext){
-    ////print0("==Check %ld %ld \n", Nvol_ext, Nvol_sum);
+    ////qmessage("==Check %ld %ld \n", Nvol_ext, Nvol_sum);
     Nvol_sum = Nvol_ext;
   }
   local_map_typeA0.resize(Nvol_sum); ////local_map0[count] == original positions
@@ -422,7 +422,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     //local_map_typeA1[i]   = -1;
   }
 
-  //print0("Vol %ld, extra %ld, full %ld \n", Nvol, Nvol_ext, Nvol_sum);
+  //qmessage("Vol %ld, extra %ld, full %ld \n", Nvol, Nvol_ext, Nvol_sum);
 
   const int use_eo = 0;
 
@@ -465,7 +465,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
       count += 1;
     }
   }
-  //print0("total local %8ld, even %8ld, odd %8ld \n", count, count_e, count_o);
+  //qmessage("total local %8ld, even %8ld, odd %8ld \n", count, count_e, count_o);
 
   Long pos_send = 0;
   Long pos_recv = 0;
@@ -540,13 +540,13 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     std::vector<Long >& pos = copy_extra_pos[li];
     copy_extra_index0[si ] = send;
     copy_extra_index1[si ] = counti;
-    //print0("copy %ld, c0 %ld ", send, counti);
+    //qmessage("copy %ld, c0 %ld ", send, counti);
     for(unsigned long j=0;j<pos.size();j++)
     {
       copy_extra_posL[counti] = pos[j];
       counti += 1;
     }
-    //print0(" c1 %ld \n", counti);
+    //qmessage(" c1 %ld \n", counti);
   }
   copy_extra_index1[sortL.size() ] = counti;
   /////Qassert(false);
@@ -561,19 +561,19 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //    copy_extra_index0.push_back(copy_extra[i][0]);///index of the initial value
   //    ////copy_extra_index0.push_back(copy_extra[i].size() - 1);
   //    copy_extra_index0.push_back(counti);////index of initial positions
-  //    print0("copy %ld, c0 %ld ", copy_extra[i][0], counti);
+  //    qmessage("copy %ld, c0 %ld ", copy_extra[i][0], counti);
   //    for(unsigned int j=1;j<copy_extra[i].size();j++)
   //    {
   //      copy_extra_posL0.push_back(copy_extra[i][j]);
   //      counti += 1;
   //    }
   //    copy_extra_index0.push_back(counti);////index of final positions
-  //    print0(" c1 %ld \n", counti);
+  //    qmessage(" c1 %ld \n", counti);
   //  }
   //}
 
   Qassert(max_pos >= count);////some may be empty
-  ////print0("actual send %ld, max send %ld \n", count - pos_send, max_pos - pos_send);
+  ////qmessage("actual send %ld, max send %ld \n", count - pos_send, max_pos - pos_send);
   pos_recv = max_pos;
   //Long count0 = count;
 
@@ -599,7 +599,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   }
 
   Qassert(max_pos >= count);////some may be empty
-  /////print0("actual recv %ld, max recv %ld \n", count - pos_recv, max_pos - pos_recv);
+  /////qmessage("actual recv %ld, max recv %ld \n", count - pos_recv, max_pos - pos_recv);
 
   pos_typeA[0] = pos_send;
   pos_typeA[1] = pos_recv;
@@ -616,10 +616,10 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   //for(Long i=0;i<count_end;i++){
   //  if(local_map_typeA0[i] == -1 or local_map_typeA1[i] == -1)
   //  {
-  //    print0("layout wrong %ld !\n", i);
+  //    qmessage("layout wrong %ld !\n", i);
   //  }
   //}
-  //print0("send_pos %ld %ld recv_pos %ld %ld, final %ld %ld %ld, vol %ld \n", 
+  //qmessage("send_pos %ld %ld recv_pos %ld %ld, final %ld %ld %ld, vol %ld \n", 
   //  pos_send, pos_recv - pos_send, pos_recv, count_end - pos_recv, count0, count, count_end, Nvol_ext);
   ////Qassert(false);
 
@@ -658,7 +658,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
       Qassert(count <= Nvol);
     }
   }
-  //print0("indexed count %8ld, vol %8ld \n", count, Nvol);
+  //qmessage("indexed count %8ld, vol %8ld \n", count, Nvol);
 
   map_index_typeA1.resize(Nvol);////reuse map_index_typeA1
 
@@ -673,7 +673,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   for(Long count = 0;count < Nvol;count++){
     Long index = map_index_typeAL[count];
     map_index_typeA1[count] = map_index_typeA0[index];
-    ////print0("=count %8ld, iwrite %8ld \n", count, map_index_typeA0[index]);
+    ////qmessage("=count %8ld, iwrite %8ld \n", count, map_index_typeA0[index]);
     ////Long index_typeA = map_index_typeA1[index];
     for(int dir=-dirL;dir<dirL; dir++)
     {
@@ -845,14 +845,14 @@ struct smear_fun{
       //  ////factorL.push_back(cpi.size);
       //  Long bufi = cpi.buffer_idx + j;
       //  Long fi   = cpi.offset     + j;
-      //  print0("size %d, group %d, bufi %d, fi %d \n", int(i), int(cpi.size), int(bufi), int(fi));
+      //  qmessage("size %d, group %d, bufi %d, fi %d \n", int(i), int(cpi.size), int(bufi), int(fi));
       //  if(dir == 0){mapv[0].push_back(bufi);mapv[1].push_back(  fi);}
       //  if(dir == 1){mapv[0].push_back(  fi);mapv[1].push_back(bufi);}
       //}
     }
 
     //for(Long j=0;j<mapv[0].size();j++){
-    //  print0("%8ld %8ld %8ld \n", mapv[0][j], mapv[1][j], mapv[2][j]);
+    //  qmessage("%8ld %8ld %8ld \n", mapv[0][j], mapv[1][j], mapv[2][j]);
     //}
 
     //std::vector<Long > index = get_sort_index(&mapv[1][0], mapv[1].size());
@@ -860,9 +860,9 @@ struct smear_fun{
     std::vector<std::vector<Long > > mapv_copy(3);
     sort_vectors_by_axis(mapv, mapv_copy, 1);
 
-    //print0("\n\n\n");
+    //qmessage("\n\n\n");
     //for(Long j=0;j<mapv[0].size();j++){
-    //  print0("%8ld %8ld %8ld \n", mapv_copy[0][j], mapv_copy[1][j], mapv_copy[2][j]);
+    //  qmessage("%8ld %8ld %8ld \n", mapv_copy[0][j], mapv_copy[1][j], mapv_copy[2][j]);
     //}
  
     ////how to check continus
@@ -875,7 +875,7 @@ struct smear_fun{
     //  }
     //  if(wrong == 0){C0 = fi;break;}
     //}
-    //print0("continus %d \n", C0 );
+    //qmessage("continus %d \n", C0 );
     //abort_r();
     //return C0;
 
@@ -935,7 +935,7 @@ struct smear_fun{
     //  const Coordinate xl = geo.coordinate_from_index(index);
     //  map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl, 1);
     //  map_bufV[1][index]  = index;
-    //  //////print0(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
+    //  //////qmessage(" mappings %ld %ld \n",map_bufV[0][index], map_bufV[1][index]);
     //}
 
     //////abort_r();
@@ -966,7 +966,7 @@ struct smear_fun{
 
     check_setup();
     //groupP = (bfac+NVmpi-1)/NVmpi;
-    //print0("====Vec setup, NVmpi %d, groupP %d \n", NVmpi, groupP);
+    //qmessage("====Vec setup, NVmpi %d, groupP %d \n", NVmpi, groupP);
     const int GPU = 1;
     qlat::vector_gpu<Ty >& gauge_buf = get_vector_gpu_plan<Ty >(0, gauge_buf_name, GPU);
 
@@ -1135,7 +1135,7 @@ struct smear_fun{
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
-          //print0("==recv comm %ld\n", count);
+          //qmessage("==recv comm %ld\n", count);
           //MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
           //          cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
 
@@ -1145,7 +1145,7 @@ struct smear_fun{
         for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.send_msg_infos[i];
           Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
-          //print0("==send comm %ld\n", count);
+          //qmessage("==send comm %ld\n", count);
           //MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
           //          cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
 
@@ -1212,7 +1212,7 @@ struct smear_fun{
     if(update){
       TIMERA("gauge setup");
       crc32_t tmp_gauge_checksum = quick_checksum((Td*) qlat::get_data(gf).data(), gf_data_size );
-      ////print0("==Gauge checksum %X", &tmp_gauge_checksum);
+      ////qmessage("==Gauge checksum %X", &tmp_gauge_checksum);
 
       ///clear previous cache
       {
@@ -1242,7 +1242,7 @@ struct smear_fun{
       ///Need to redistribute when copied
       redistribution_copy = 0 ;
     }
-    ////print0("==Gauge buf name %s \n", gauge_buf_name.c_str());
+    ////qmessage("==Gauge buf name %s \n", gauge_buf_name.c_str());
   }
 
   inline void clear_mem(){
@@ -1358,7 +1358,7 @@ struct smear_fun_copy{
     //smear_fun<T > smf;
     //smf.setup(gf, mom, smear_in_time_dir);
     if(smf.smfP == NULL){abort_r("smear fun point NULL!\n");}
-    ////print0("Smear fun copy \n");
+    ////qmessage("Smear fun copy \n");
     //smf.is_copy = true;
     //smfP = smf.smfP;
 
@@ -1370,7 +1370,7 @@ struct smear_fun_copy{
       const smear_fun<ComplexF >* a =   ((const smear_fun<ComplexF >*) smf.smfP);
       smfP = (void*) (new smear_fun<ComplexF >(a->geo, a->smear_in_time_dir));
     }
-    else{print0("Only ComplexD and ComplexF supported for smearing! \n");Qassert(false);}
+    else{qmessage("Only ComplexD and ComplexF supported for smearing! \n");Qassert(false);}
 
     /////swap(*this, smf);
     return *this;
@@ -1399,7 +1399,7 @@ inline smear_fun_copy make_smear_plan(const Geometry& geo, const bool smear_in_t
   smear_fun_copy st;st.prec = prec;
   if(prec == ComplexD_TYPE ){     st.smfP = (void*) (new smear_fun<ComplexD >(geo, smear_in_time_dir));}
   else if(prec == ComplexF_TYPE){st.smfP = (void*) (new smear_fun<ComplexF>(geo, smear_in_time_dir));}
-  else{print0("Only ComplexD and ComplexF supported for smearing! \n");Qassert(false);}
+  else{qmessage("Only ComplexD and ComplexF supported for smearing! \n");Qassert(false);}
   return st;
 }
 
@@ -1426,7 +1426,7 @@ inline const smear_fun_copy& get_smear_plan(const SmearPlanKey& skey)
     get_smear_plan_cache()[skey] = make_smear_plan(skey);
   }
   ////smear_fun_copy& = get_smear_plan_cache()[skey];
-  ////print0("setup %5d %5d \n", skey.civ, skey.bfac);
+  ////qmessage("setup %5d %5d \n", skey.civ, skey.bfac);
   return get_smear_plan_cache()[skey];
 }
 
@@ -1897,9 +1897,9 @@ void smear_kernel(T* src, const double width, const int step, smear_fun<T >& smf
   qacc_barrier(dummy);
   #undef smear_macros
   }
-  if(cfind == false){print0("Case bfac %5d, civ %5d \n", bfac, civ); abort_r("smear kernel not found!\n");}
+  if(cfind == false){qmessage("Case bfac %5d, civ %5d \n", bfac, civ); abort_r("smear kernel not found!\n");}
   ////Qassert(cfind);
-  //print0("==check Case bfac %5d, civ %5d \n", bfac, civ);
+  //qmessage("==check Case bfac %5d, civ %5d \n", bfac, civ);
 }
 
 ////4*3_0   4*3_1 --> 3_0 --> 4*4*3_1
@@ -1929,8 +1929,10 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
   });
 }
 
-////Td is double or float
-// gassian normalization -1, meson w^{-3 * 2}, baryon w^{-3 * 3}
+/*
+  Td is double or float
+  gassian normalization -1, meson w^{-3 * 2}, baryon w^{-3 * 3}
+*/
 template <class Ty, int c0,int d0, class Td>
 void smear_propagator_gwu_convension_inner(
     Ty* prop, const GaugeFieldT<Td >& gf,
@@ -1967,7 +1969,7 @@ void smear_propagator_gwu_convension_inner(
     Tfloat = step*n_avg*vGb*Fcount;
     }else{
     //Tfloat = c0*d0*2*int(qlat::qnorm(width))*vGb*Fcount;
-    /////print0("%3d dir %d vol %d Flops %d \n", int(width), 6, int(vGb), int(Fcount));
+    /////qmessage("%3d dir %d vol %d Flops %d \n", int(width), 6, int(vGb), int(Fcount));
     Tfloat = 4 * 6*int(width) * vGb * Fcount;
     }
   }
@@ -2024,7 +2026,7 @@ void smear_propagator_gwu_convension_inner(
   smf.gauge_setup(gf, mom, force_update, use_gauge_mapping );
 
   if(reorder ){
-    /////print0("====Vec setup, NVmpi %d, groupP %d \n", smf.NVmpi, groupP);
+    /////qmessage("====Vec setup, NVmpi %d, groupP %d \n", smf.NVmpi, groupP);
     smf.init_distribute();
     //smf.prop.resize(    Nvol_pre * Nprop );
     //smf.prop_buf.resize(Nvol_pre * Nprop );
@@ -2044,7 +2046,7 @@ void smear_propagator_gwu_convension_inner(
     src = prop_buf0.data();
   }
 
-  ////print0("===Case %d %d \n", c0, grouP);
+  ////qmessage("===Case %d %d \n", c0, grouP);
   if( reorder)smear_kernel(src, width, step, smf,  c0, groupP);
   if(!reorder)smear_kernel(src, width, step, smf,  c0, d0);
 
@@ -2059,7 +2061,7 @@ void smear_propagator_gwu_convension_inner(
   /////rotate_prop(prop, 1);
 
   //#if PRINT_TIMER>3
-  //print0("====Vec setup, c0 %d, d0 %d, NVmpi %d, groupP %d , reorder %d \n", c0 , d0, smf.NVmpi, groupP, int(reorder));
+  //qmessage("====Vec setup, c0 %d, d0 %d, NVmpi %d, groupP %d , reorder %d \n", c0 , d0, smf.NVmpi, groupP, int(reorder));
   //#endif
 
 }
@@ -2078,7 +2080,7 @@ double source_radius(Propagator4dT<Td >& prop, const int tsrc = 0)
 
   //position p;
   //int tem_x =  (*source.vec[0]).desc->nx;
-  //print0("tem_x---------%3d\n",tem_x);
+  //qmessage("tem_x---------%3d\n",tem_x);
   for(Long isp = 0; isp < Nvol; isp ++)
   {
     double rx2 = 0; 
@@ -2119,14 +2121,15 @@ double source_radius(Propagator4dT<Td >& prop, const int tsrc = 0)
 }
 
 template <class Ty, class Td>
-void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
+void smear_propagator_gwu_convension(FieldG<Ty >& prop, const GaugeFieldT<Td >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)
 {
   if (0 == step) {return;}
+  Qassert(prop.initialized and prop.multiplicity == 12 * 12 and prop.mem_order == QLAT_OUTTER);
   const Long Nvol = prop.geo().local_volume();
   Ty* src = (Ty*) qlat::get_data(prop).data();
   move_index mv_civ;int flag = 0;
-  flag = 0;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);
+  flag = 0;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, true);
 
   qacc_for(isp, Nvol, {
     QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[12*12];
@@ -2149,7 +2152,20 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
       src[isp*12*12 + d0*3 + c0] = buf[c0*12*4 + d0];
     }
   });
-  flag = 1;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);
+  flag = 1;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, true);
+}
+
+template <class Ty, class Td>
+void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Td >& gf,
+                      const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1, const int dup = -1, const int force_update = 0)
+{
+  if (0 == step) {return;}
+  Qassert(prop.initialized);
+  Ty* src = (Ty*) qlat::get_data(prop).data();
+  FieldG<Ty> tmp_prop;
+  const Long Nd = 12 * 12 * prop.geo().local_volume();
+  tmp_prop.set_pointer(src, Nd, prop.geo(), QMGPU, QLAT_OUTTER);
+  smear_propagator_gwu_convension(tmp_prop, gf, width, step, mom, smear_in_time_dir, mode, dup, force_update);
 }
 
 template <class Ty, class Td>

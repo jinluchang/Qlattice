@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 
   int icfg  = in.icfg;
 
-  int n_vec = in.nvec;
+  const int n_vec = in.nvec;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
   geo.init(total_site); 
@@ -130,10 +130,10 @@ int main(int argc, char* argv[])
   }
 
   ////qprop tmpa;tmpa.init(geo);
-  ////print0("vol %ld %ld \n", geo.local_volume(), Long(qlat::get_data_size(tmpa)));
+  ////qmessage("vol %ld %ld \n", geo.local_volume(), Long(qlat::get_data_size(tmpa)));
 
   ////===load eigen
-  print_time();
+  print_time();qmessage(" start job \n");
   fflush_MPI();
   ////fft_desc_basic fd(geo);
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -150,31 +150,31 @@ int main(int argc, char* argv[])
   }
   fflush_MPI();
   int mode_sm = 0;
-  char ename[500];
-  sprintf(ename, in.Ename.c_str(),icfg);
 
   /////ei.load_eigen(std::string(ename));
   {
-    char enamev[600];
-    ////sprintf(ename, "%s", ov_evecname);
-    sprintf(enamev,"%s.eigvals", ename);
-    print0("Vector File name: %s \n", ename );
-    print0("Values File name: %s \n", enamev);
+    std::string ename  = ssprintf(in.Ename.c_str(),icfg);
+    std::string enamev = ssprintf("%s.eigvals", ename.c_str());
+
+    qmessage("Vector File name: %s \n", ename.c_str() );
+    qmessage("Values File name: %s \n", enamev.c_str());
     //////Load eigen values
     const double kappa= 0.2;
     const double rho_tem = 4 - 1.0/(2*kappa);
     const double eigenerror = 1e-11;
     const int nini = 0;
     const int checknorm = 1;
-    ei.load_eivals(std::string(enamev), rho_tem, eigenerror, nini);
+    ei.load_eivals(enamev, rho_tem, eigenerror, nini);
 
     if(src_step == sink_step){
-    ei.load_eigen_Mvec_smear(std::string(ename), gf, gfL, propS, nini, checknorm,
-      src_width , src_step , 0.0, 0, mom_smear, mom_smear);}
+      ei.load_eigen_Mvec_smear(ename, gf, gfL, propS, nini, checknorm,
+        src_width , src_step , 0.0, 0, mom_smear, mom_smear);
+    }
 
     if(src_step != sink_step){
-    ei.load_eigen_Mvec_smear(std::string(ename), gf, gfL, propS, nini, checknorm,
-      src_width , src_step , sink_width, sink_step, mom_smear, mom_smear);}
+      ei.load_eigen_Mvec_smear(ename, gf, gfL, propS, nini, checknorm,
+        src_width , src_step , sink_width, sink_step, mom_smear, mom_smear);
+    }
 
     if(src_step != 0){
       mode_sm = 2;
@@ -228,7 +228,7 @@ int main(int argc, char* argv[])
     }
     ei.initialize_mass(massL, 12);
     ei.print_info();
-    print0("Low eigen done. \n");
+    qmessage("Low eigen done. \n");
     ////===load eigen
 
     ////size_t Nvol = geo.local_volume();
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
     {
       if(jobi == mass_jobA.size()/2 - 1 and si == in.nsource -1 and sleep_for_final == 1)
       {
-        print0("SLEEPPING!!!\n");
+        qmessage("SLEEPPING!!!\n");
         sleep(30);// some weild writting error at final loop
       }
       fflush_MPI();
@@ -276,11 +276,11 @@ int main(int argc, char* argv[])
           int flag_f_job = 0;
           namec = ssprintf(out_vec_momG.c_str(), icfg, si);
           namef = ssprintf("%s.pt.GInfo", namec.c_str());
-          //print0("======check %s \n", namef.c_str());
+          //qmessage("======check %s \n", namef.c_str());
 
           if(get_file_size_MPI(namef) > 0){flag_f_job += 1;}
           namef = ssprintf("%s.sm.GInfo", namec.c_str());
-          //print0("======check %s \n", namef.c_str());
+          //qmessage("======check %s \n", namef.c_str());
 
           if(get_file_size_MPI(namef) > 0){flag_f_job += 1;}
           if(flag_f_job != flag_need){
@@ -308,19 +308,19 @@ int main(int argc, char* argv[])
 
         if(need_vec == 0 and need_corr == 0){
           sprintf(names, in.srcN[si].c_str(),icfg);
-          print0("Pass %s \n", names);
+          qmessage("Pass %s \n", names);
           continue ;
         }   
       }
 
       sprintf(names, in.srcN[si].c_str(),icfg);
       if(get_file_size_MPI(names) == 0){
-        print0("Src pass %s \n", names );
+        qmessage("Src pass %s \n", names );
         continue;
       }
 
       load_gwu_noi(names, noi);
-      print0("%s \n", names);
+      qmessage("%s \n", names);
 
       for(int im=0;im<bcut;im++)
       {
@@ -338,11 +338,11 @@ int main(int argc, char* argv[])
         prop4d_to_qprop(FpropV[im], tmp);
 
         if(check_prop_norm == 1){
-          print0("mgroup %2d, source %3d, mass %3d ", int(jobi), si, im);
+          qmessage("mgroup %2d, source %3d, mass %3d ", int(jobi), si, im);
           print_norm2(FpropV[im]);
         }
         ////double sum = check_sum_prop(FpropV[im]);
-        ////print0("===checksum %s %.8e \n", namep, sum);
+        ////qmessage("===checksum %s %.8e \n", namep, sum);
       }
       /////===load noise and prop
 
@@ -465,7 +465,7 @@ int main(int argc, char* argv[])
   }
 
   if(sleep_for_final == 1){
-    print0("SLEEPPING!!!\n");
+    qmessage("SLEEPPING!!!\n");
     sleep(30);// some weild writting error at final loop
   }
   fflush_MPI();

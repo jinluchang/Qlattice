@@ -15,8 +15,7 @@
 #include "utils_shift_vecs.h"
 #include "utils_field_operations.h"
 #include "utils_field_gpu.h"
-
-#define QLAT_PI_LOCAL 3.1415926535898
+#include "utils_sector_funs.h"
 
 namespace qlat{
 
@@ -214,6 +213,7 @@ void Gprop_sink_gamma(EigenTy& prop, ga_M& ga, bool conj = false){
 // can be expanded fields and selected fields
 template<class Fieldy>
 void fieldG_src_gamma(Fieldy& prop, ga_M& ga, bool conj = false, const bool srcG = true){
+  TIMER("fieldG_src_gamma");
   Qassert(prop.initialized);
   Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
@@ -234,13 +234,26 @@ void fieldG_src_gamma(Fieldy& prop, ga_M& ga, bool conj = false, const bool srcG
       if(!conj)qprop_src_gamma_T<ComplexT<D >, 1, false>(res, ga, Nsize);
       if( conj)qprop_src_gamma_T<ComplexT<D >, 1, true >(res, ga, Nsize);
     }
-
   }
 }
 
 template<class Fieldy>
 void fieldG_sink_gamma(Fieldy& prop, ga_M& ga, bool conj = false){
   fieldG_src_gamma(prop, ga, conj, false);
+}
+
+template<class Ty>
+void fieldG_src_gammaG(std::vector<FieldG<Ty > > & prop, ga_M& ga, bool conj = false){
+  for(unsigned int i=0;i<prop.size();i++){
+    fieldG_src_gamma(prop[i], ga, conj, true);
+  }
+}
+
+template<class Ty>
+void fieldG_sink_gammaG(std::vector<FieldG<Ty > >& prop, ga_M& ga, bool conj = false){
+  for(unsigned int i=0;i<prop.size();i++){
+    fieldG_src_gamma(prop[i], ga, conj, false);
+  }
 }
 
 template<typename Ty>
@@ -316,6 +329,9 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, std::ve
   }
 }
 
+/*
+  covariant shifts to 4 directions
+*/
 template<typename Ty>
 void shift_vecs_cov_qpropT(std::vector< std::vector<qpropT > >& res, std::vector< qpropT >& s0, shift_vec& svec,
   std::vector<std::vector<qpropT >>& buf)
@@ -334,7 +350,6 @@ void shift_vecs_cov_qpropT(std::vector< std::vector<qpropT > >& res, std::vector
     qprop_sub_add(res[1 + nu], buf[0], buf[1], Ty(-1.0,0.0), Ty(1.0/2.0, 0.0) );////equal
   }
 }
-
 
 template<typename Td>
 void prop4d_cps_to_ps(Propagator4dT<Td >& prop, int dir=0){
@@ -460,7 +475,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
     src = bufE.data();
 
     qlat::vector_acc<double > p0;p0.resize(3);
-    for(int i=0;i<3;i++){p0[i] = 2*3.1415926535898/fd.nv[i];}
+    for(int i=0;i<3;i++){p0[i] = 2 * QLAT_PI_LOCAL /fd.nv[i];}
 
     qlat::vector_acc<Ty > phaseEG;phaseEG.resize(Nxyz);
     //Ty* phaseE = (Ty*) qlat::get_data(phaseEG).data();
@@ -498,7 +513,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
   int nt = fd.nt;
   //if(clear == 1){res.resize(0);res.resize(nvecs*nt);qlat::set_zero(res);}
   if(clear == 1){if(res.size() != nvec*nt){res.resize(nvec*nt);} qlat::set_zero(res);}
-  if(clear == 0){if(res.size() != nvec*nt){print0("res size wrong for corr.\n");Qassert(false);}}
+  if(clear == 0){if(res.size() != nvec*nt){qmessage("res size wrong for corr.\n");Qassert(false);}}
 
   qlat::vector_acc<Ty > tmp;tmp.resize(nvec*NTt);qlat::set_zero(tmp);//tmp.set_zero();
   reduce_vecs(src, tmp.data(), Nxyz, nvec*NTt);
@@ -693,14 +708,14 @@ void check_prop_size(EigenTy& prop, fft_desc_basic& fd){
   {
     if(prop[0].size() != size_t(fd.Nvol)*12*12)
     {
-      print0("Size of Prop wrong. \n");
+      qmessage("Size of Prop wrong. \n");
       Qassert(false);
     }
   }
 }
 
 template <typename Ty >
-void copy_qprop_to_propG(EigenTy& res, std::vector<qpropT >& src, const qlat::Geometry &geo, int GPU = 1, int dir = 1)
+void copy_qprop_to_propG(EigenTy& res, std::vector<qlat::FieldM<Ty, 12*12> >& src, const qlat::Geometry &geo, int GPU = 1, int dir = 1)
 {
   int nvec = 0;
   if(dir == 1){
@@ -719,8 +734,8 @@ void copy_qprop_to_propG(EigenTy& res, std::vector<qpropT >& src, const qlat::Ge
   
   for(int ni=0;ni<nvec;ni++)
   {
-    if(dir == 1){res[ni].copy_from((Complexq*) qlat::get_data(src[ni]).data(), 12*12*geo.local_volume(), GPU);}
-    if(dir == 0){res[ni].copy_to((Complexq*) qlat::get_data(src[ni]).data(), GPU);}
+    if(dir == 1){res[ni].copy_from((Ty*) qlat::get_data(src[ni]).data(), 12*12*geo.local_volume(), GPU);}
+    if(dir == 0){res[ni].copy_to((Ty*) qlat::get_data(src[ni]).data(), GPU);}
   }
 }
 
@@ -741,25 +756,6 @@ void ini_resE(qlat::vector_acc<Ty > &res, int nmass, qlat::fft_desc_basic &fd){
     res.resize(0);res.resize(nmass*NTt * Nxyz);
   }
   clear_qv(res);
-}
-
-inline std::vector<int >  get_map_sec(int dT,int nt){
-  std::vector<int > map_sec;map_sec.resize(nt);
-  int secN = 2*nt/dT;double lensec = nt/(1.0*secN);
-  int tcount = 0;
-  int t0 = 0;
-  for(int si=0;si<secN;si++)
-  {
-    for(int t=t0;t < (si+1)*lensec;t++)///boundary with the same sector?
-    {
-      Qassert(t < nt);
-      map_sec[t] = si;
-      tcount = tcount + 1;
-    }
-    t0 = tcount;
-  }
-  return map_sec;
-
 }
 
 template <typename Ty>
@@ -796,10 +792,10 @@ void get_num_time(qlat::FieldM<Ty, 1>& noise,int &number_t, int &t_ini){
 inline Coordinate get_src_pos(std::string src_n, Coordinate& off_L, const Geometry &geo){
   std::string noi_name = ssprintf("%s",src_n.c_str()  );
 
-  qlat::FieldM<Complexq,1> noi;
+  qlat::FieldM<Complexq, 1> noi;
   noi.init(geo);
 
-  print0("Noise %s \n",noi_name.c_str());
+  qmessage("Noise %s \n",noi_name.c_str());
   qlat::set_zero(noi);
   load_gwu_noi(noi_name.c_str(), noi);
   Coordinate pos;////qlat::vector<int > off_L;
@@ -842,7 +838,10 @@ inline int compare_mom(const Coordinate& a, const Coordinate& b){
   return equal;
 }
 
-////phases for small number of momenta apply
+/*
+  phases for small number of momenta apply
+  exp(sign * ( ( x - offset ) * mom) * 2pi/L)
+*/
 template<typename Ty>
 void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordinate >& momL,
             const Geometry& geo, const int8_t sign = 1, const Coordinate& offset = Coordinate() )
@@ -1036,7 +1035,7 @@ void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src,
       }
     }
     double v0 = 0.0;
-    for(int i=0;i<3;i++){v0 += (2.0* QLAT_PI_LOCAL * src[i] * pos[i]/Lat[i]);}
+    for(int i=0;i<3;i++){v0 += (2.0 * QLAT_PI_LOCAL * src[i] * pos[i]/Lat[i]);}
 
     phases[isp] = Ty(std::cos(v0), -1.0* std::sin(v0));
   }
@@ -1091,7 +1090,7 @@ void noise_to_propT(qpropT& prop, qnoiT& noi){
   const Long Nvol = geo.local_volume();
 
   for(int d0=0;d0<12;d0++){
-    cpy_data_thread(&res[(d0*12+d0)*Nvol + 0], src, Nvol, 1, false);
+    cpy_data_thread(&res[(d0*12+d0)*Nvol + 0], src, Nvol, 1, QFALSE);
   }
   qacc_barrier(dummy);
 
@@ -1133,7 +1132,5 @@ void copy_FieldM(std::vector<qlat::FieldM<Ty, civ> >& res, const std::vector<qla
 
 
 }
-
-#undef  QLAT_PI_LOCAL
 
 #endif

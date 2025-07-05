@@ -42,7 +42,7 @@ struct vector_gpu{
     if(n_set == 0){clean_mem(); return ;}
     if((n != n_set) or (GPU != GPU_set))
     {
-      /////print0("Reisze n %d, n_set %d !\n", int(n), int(n_set));
+      /////qmessage("Reisze n %d, n_set %d !\n", int(n), int(n_set));
       clean_mem();
       n = n_set;
       GPU    = GPU_set;
@@ -145,7 +145,7 @@ struct vector_gpu{
   //template <class T >
   //vector_gpu<Ty>& operator=(const vector_gpu<T >& vp)
   //{
-  //  print0("NO SUPPORT yet!\n");
+  //  qmessage("NO SUPPORT yet!\n");
   //  Qassert(false);
   //  ////bool tem_GPU = vp.GPU;
   //  resize(vp.size(), vp.GPU);
@@ -272,7 +272,7 @@ struct vector_gpu{
   {
     Ty normC = norm2();
     std::string ktem = ssprintf( prec.c_str(), normC.real());
-    print0("==norm %s \n", ktem.c_str());
+    qmessage("==norm %s \n", ktem.c_str());
   }
 
   template <class T >

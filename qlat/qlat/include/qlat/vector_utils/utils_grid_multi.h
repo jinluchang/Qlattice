@@ -31,7 +31,7 @@ void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& sr
   const Coordinate NA = geoA.total_site();
   const Coordinate N0 = geo0.total_site();
   const Coordinate N1 = geo1.total_site();
-  const LInt Vol = geoA.local_volume();
+  const Long Vol = geoA.local_volume();
 
   // copy if pointer the same
   if(N0 == N1){
@@ -68,7 +68,7 @@ void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& sr
   Ty* bufP = (Ty*) buf.data();
   const double mem = 1.0 * Ndata / (1024 * 1024 * 1024.0);
   if(mem > 0.5){
-    print0("WARNING! large memeory used for rehape! %.3f GB\n ", mem);
+    qmessage("WARNING! large memeory used for rehape! %.3f GB\n ", mem);
   }
 
   std::vector<Long > jobA = job_create(biva, bL);
@@ -81,7 +81,7 @@ void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& sr
   {
     const Long bini = jobA[jobi*2 + 0]; const Long bcut = jobA[jobi*2+1];
 
-    qacc_for(index, (Long)Vol, {
+    qacc_for(index, Vol, {
       const Coordinate xl = geoA.coordinate_from_index(index);
       Coordinate x0;
       Coordinate x1;

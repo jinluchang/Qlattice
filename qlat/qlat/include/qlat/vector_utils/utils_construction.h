@@ -82,12 +82,12 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
   for(int ind1=0;ind1<4;ind1++)
   {
     int ioff = ind2*4 + ind1;
-    G[ioff*16 + ind2*4 + ind1] = +1.0;
+    G[ioff*16 + ioff] = +1.0;
     mL[ioff*3 + 0] = 0;
     mL[ioff*3 + 1] = 1;
     mL[ioff*3 + 2] = 2;
 
-    G[1*16*16 + ioff*16 + ind2*4 + ind1] = -1.0;
+    G[1*16*16 + ioff*16 + ioff] = -1.0;
     mL[1*16*3 + ioff*3 + 0] = 1;
     mL[1*16*3 + ioff*3 + 1] = 0;
     mL[1*16*3 + ioff*3 + 2] = 2;
@@ -98,7 +98,7 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
 
   Ty** p1 = propP.data();
 
-  ////print0("Call!\n");
+  ////qmessage("Call!\n");
 
   Ty* ra = resTa.data();
   Ty* rb = &(resTa.data()[resTa.size()/2]);
@@ -108,7 +108,13 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
   /////add baryon two contractions
   cpy_data_thread(rb, ra, resTa.size()/2, 1, QTRUE,  1.0);
   
-  meson_vectorEV( p1, p1, ra, nmass, gL, gL, fd, 1);
+  qlat::vector_acc<Ty* > resvP;resvP.resize(16 * nmass);
+  for(int iv = 0;iv<16*nmass;iv++){
+    resvP[iv] = &ra[iv * NTt * Nxyz];
+  }
+  meson_vectorEV( p1, p1, resvP.data(), nmass, gL, gL, fd, 1);
+
+  //meson_vectorEV( p1, p1, ra, nmass, gL, gL, fd, 1);
 
   //cpy_data_thread( (resTa.data()              ), resT0.data(), resT0.size(), 1, true);
   //vec_corrE(resTa, Eres, fd, clear);
@@ -122,6 +128,20 @@ void prop_to_vec(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_gpu<Ty
   const Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   ////Eprop, nmass --> 12 * 12 * Nvol
   qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
+  prop_to_vec(propP, resTa, fd);
+}
+
+template<typename Ty>
+void prop_to_vec(FieldG<Ty >& prop, qlat::vector_gpu<Ty >& resTa)
+{
+  Qassert(prop.initialized and prop.multiplicity == 12 * 12 and prop.mem_order == QLAT_OUTTER);
+  const Geometry& geo = prop.geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  const Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  std::vector<FieldG<Ty>> buf;buf.resize(1);
+  buf[0].set_pointer(prop);
+  ////Eprop, nmass --> 12 * 12 * Nvol
+  qlat::vector_acc<Ty* > propP = FieldG_to_pointers(buf, Nxyz);
   prop_to_vec(propP, resTa, fd);
 }
 

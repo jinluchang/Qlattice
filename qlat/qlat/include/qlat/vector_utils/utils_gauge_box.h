@@ -56,7 +56,7 @@ struct API FieldBoxT {
     if(type == Su3::u6){Qassert(Multiplicity % 6 == 0);}
     if(type == Su3::uA){Qassert(Multiplicity % 6 == 0);}
     //geo().multiplicity = 1;
-    //print0("multi %5d, geoM %5d \n", Multiplicity, geo().multiplicity);
+    //qmessage("multi %5d, geoM %5d \n", Multiplicity, geo().multiplicity);
   }
 
   template <class M, int civ >

@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
   // Compute plaquette as a sanity check from interal GPU gauge
   //double plaq[3];
   //plaqQuda(plaq);
-  //print0("Computed plaquette is %.8e (spatial = %.8e, temporal = %.8e)\n", plaq[0], plaq[1], plaq[2]);
+  //qmessage("Computed plaquette is %.8e (spatial = %.8e, temporal = %.8e)\n", plaq[0], plaq[1], plaq[2]);
 
   ////===END of gauge_param
 
@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
   inv_param.kappa = kappa;
   inv_param.mass = 0.5 / kappa - (1.0 + 3.0 / anisotropy);
 
-  print0("Kappa = %.8f Mass = %.8f\n", inv_param.kappa, inv_param.mass);
+  qmessage("Kappa = %.8f Mass = %.8f\n", inv_param.kappa, inv_param.mass);
 
   // Use 3D or 4D laplace
   //===inv_param.laplace3D = laplace3D;
@@ -430,7 +430,7 @@ int main(int argc, char* argv[])
         //quda_ff_to_Ffield4d(qlat_ff[i], (qlat::Complex*) quda_out[i]->data());
       }
 
-      print0("Done g%03d: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops \n", bi,
+      qmessage("Done g%03d: %8d iter / %.6f secs = %.3f Gflops, Cost %.3f Gflops \n", bi,
             inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs, inv_param.gflops);
 
     }

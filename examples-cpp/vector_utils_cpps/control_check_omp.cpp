@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
     res1 += (p[isp].real()*p[isp].real() + p[isp].imag()*p[isp].imag());
   }
 
-  print0("res0 %.6e, res1 %.6e ,diff %.6e \n",res0,res1,(res0-res1)/res0);
+  qmessage("res0 %.6e, res1 %.6e ,diff %.6e \n",res0,res1,(res0-res1)/res0);
 
 
 

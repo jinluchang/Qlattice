@@ -261,7 +261,7 @@ inline void begin_quda_with_qlat()
     if(rank != rankx and rank != rankt){printf("UNKNOWN rank! \n");}
   }
   qlat::sum_all_size(&quda_rankx, 1);
-  //print0("Rank X %d \n", quda_rankx);
+  //qmessage("Rank X %d \n", quda_rankx);
 
   qlat::quda_begin_internal(mpi_layout, quda_rankx);
 
@@ -277,7 +277,7 @@ inline void check_quda_layout_eo(const Geometry& geo)
   {
     if(geo.node_site[i] % 2 != 0)
     {
-      print0("dir %5d, size %5d wrong! \n", i, geo.node_site[i]);
+      qmessage("dir %5d, size %5d wrong! \n", i, geo.node_site[i]);
       abort_r();
     }
   }
@@ -583,7 +583,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, Long Vh, QudaGaugeParam *param, Quda
 
       Long indexe = ((0 * Vh + i)*4 + d)*9 ;
       for (int j = 0; j < 9; j++) { gauge[indexe + j] *= sign; }
-      //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 1){print0("==even  %d \n", int(sign));}
+      //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 1){qmessage("==even  %d \n", int(sign));}
     }
     // odd
     #pragma omp parallel for
@@ -609,7 +609,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, Long Vh, QudaGaugeParam *param, Quda
       Long indexo = ((1 * Vh + i)*4 + d)*9 ;
       ////for (int j = 0; j < 18; j++) { gauge[d][(Vh + i) * gauge_site_size + j] *= sign; }
       for (int j = 0; j < 9; j++) { gauge[indexo + j] *= sign; }
-      //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 0){print0("==odd  %d \n", int(sign));}
+      //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 0){qmessage("==odd  %d \n", int(sign));}
     }
   }
 
