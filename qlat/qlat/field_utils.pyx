@@ -98,6 +98,7 @@ def mk_phase_field(Geometry geo, lmom):
 class FastFourierTransform:
 
     def __init__(self, fft_infos, *, is_normalizing=False, mode_fft=1):
+        # mode_fft in [ 0, 1, ]
         # fft_infos = [ ( fft_dir, is_forward, ), ... ]
         self.fft_infos = fft_infos
         self.is_normalizing = is_normalizing

@@ -28,14 +28,22 @@ gf.set_rand(rs.split("gf-init"), 0.3, 1)
 
 gf.show_info()
 
-fft_f = q.mk_fft(True, is_normalizing=True, is_only_spatial=False)
-fft_b = q.mk_fft(False, is_normalizing=True, is_only_spatial=False)
+q.json_results_append(f"gf", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-12)
+
+mode_fft = 0
+fft_f = q.mk_fft(True, is_normalizing=True, is_only_spatial=False, mode_fft=mode_fft)
+fft_b = q.mk_fft(False, is_normalizing=True, is_only_spatial=False, mode_fft=mode_fft)
+
 
 gfm = fft_f * gf
+
+q.json_results_append(f"gfm", q.get_data_sig_arr(gfm, q.RngState(), 3), 1e-12)
 
 gf1 = fft_b * gfm
 
 gf1.show_info()
+
+q.json_results_append(f"gf1", q.get_data_sig_arr(gf1, q.RngState(), 3), 1e-12)
 
 f_factor = q.mk_phase_field(gf.geo, [1, 0, 0, 0,])
 
@@ -225,9 +233,6 @@ sig = q.glb_sum(q.get_data_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node(
 q.json_results_append(f"sf4 sig", sig, 1e-7)
 
 q.check_log_json(__file__)
-
 q.timer_display()
-
 q.end_with_mpi()
-
 q.displayln_info(f"CHECK: finished successfully.")

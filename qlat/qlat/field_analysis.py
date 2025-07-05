@@ -219,8 +219,9 @@ def field_convolution(f1, f2, idx1=None, idx2=None, *, is_only_spatial=False):
     assert len(idx1) == len(idx2)
     assert np.all(idx1 < f1.multiplicity)
     assert np.all(idx2 < f2.multiplicity)
-    fft_f = mk_fft(True, is_normalizing=False, is_only_spatial=is_only_spatial)
-    fft_b = mk_fft(False, is_normalizing=False, is_only_spatial=is_only_spatial)
+    mode_fft = 1
+    fft_f = mk_fft(True, is_normalizing=False, is_only_spatial=is_only_spatial, mode_fft=mode_fft)
+    fft_b = mk_fft(False, is_normalizing=False, is_only_spatial=is_only_spatial, mode_fft=mode_fft)
     f_f2 = fft_f * f2
     f_f1 = fft_b * f1
     f_ff = FieldComplexD(geo, len(idx1))
