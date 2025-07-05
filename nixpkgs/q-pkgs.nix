@@ -571,7 +571,6 @@ let
       lz4
       torchvision
       torchaudio
-      xformers
       jupyterlab
       ollama
       ;
@@ -580,6 +579,7 @@ let
       inherit (ps)
       jupyterhub
       jupyterhub-systemdspawner
+      xformers
       ;
     } else {}
     )

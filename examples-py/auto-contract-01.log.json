@@ -164,16 +164,16 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=False",
   {
-   "real": -0.8221798433269569,
-   "imag": 12.522383950798009,
+   "real": -32.600796958901086,
+   "imag": -12.800336256646478,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=False",
   {
-   "real": 3.2178849968989516,
-   "imag": -19.122790847538006,
+   "real": -6.128122384868151,
+   "imag": 1.773401086225253,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -204,16 +204,16 @@
  [
   "get_cexpr_test benchmark_eval_cexpr check get_data_sig is_cython=True",
   {
-   "real": -0.8221798433269569,
-   "imag": 12.522383950798009,
+   "real": -32.600796958901086,
+   "imag": -12.800336256646478,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "get_cexpr_test benchmark_eval_cexpr check_ama get_data_sig is_cython=True",
   {
-   "real": 3.2178849968989516,
-   "imag": -19.122790847538006,
+   "real": -6.128122384868151,
+   "imag": 1.773401086225253,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -243,10 +243,6 @@
  ],
  [
   "eval_cexpr res[2]",
-  {
-   "real": 0.0,
-   "imag": 0.0,
-   "__extended_json_type__": "complex"
-  }
+  0.0
  ]
 ]

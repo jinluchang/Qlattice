@@ -340,7 +340,10 @@ def benchmark_eval_cexpr(
             rs_real = benchmark_rng_state.split(f"get_data_sig-real")
             rs_imag = benchmark_rng_state.split(f"get_data_sig-imag")
             resc = np.zeros_like(res, dtype=np.complex128)
-            resc.ravel()[:] = [ q.get_data_sig(v, rs_real) + 1j * q.get_data_sig(v, rs_imag) for v in res.ravel() ]
+            l = []
+            for idx, v in enumerate(res.ravel()):
+                l.append(q.get_data_sig(v, rs_real.split(str(idx))) + 1j * q.get_data_sig(v, rs_imag.split(str(idx))))
+            resc.ravel()[:] = l
             res = resc
         return [ np.tensordot(res, cv).item() for cv in check_vector_list ]
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size}")
