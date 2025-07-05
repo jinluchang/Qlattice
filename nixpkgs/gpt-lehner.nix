@@ -66,9 +66,11 @@ buildPythonPackage {
   ];
 
   preConfigure = ''
-	export OMPI_CXX=c++
-	export OMPI_CC=cc
-    export CGPT_EXTRA_LDFLAGS="-undefined dynamic_lookup"
+    export OMPI_CXX=c++
+    export OMPI_CC=cc
+    if [ "$(uname)" == "Darwin" ] ; then
+      export CGPT_EXTRA_LDFLAGS="-undefined dynamic_lookup"
+    fi
     #
     export
     #
