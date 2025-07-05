@@ -22,7 +22,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export q_num_mp_processes=0
     if which brew >/dev/null 2>&1 ; then
         echo "Setting for brew in Mac OS X with prefix: $(brew --prefix)"
-        fftw_path="$(brew --prefix)/Cellar/fftw/"*
+        fftw_path="$(brew --prefix fftw)"
         if [ -e "$(brew --prefix)/opt/openssl@3/bin" ]; then
             export PATH="$(brew --prefix)/opt/openssl@3/bin""${PATH:+:$PATH}"
         fi
