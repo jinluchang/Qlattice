@@ -30,7 +30,7 @@ gf.show_info()
 
 q.json_results_append(f"gf", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-12)
 
-mode_fft = 0
+mode_fft = 1
 fft_f = q.mk_fft(True, is_normalizing=True, is_only_spatial=False, mode_fft=mode_fft)
 fft_b = q.mk_fft(False, is_normalizing=True, is_only_spatial=False, mode_fft=mode_fft)
 
