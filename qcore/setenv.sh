@@ -22,6 +22,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export q_num_mp_processes=0
     if which brew >/dev/null 2>&1 ; then
         echo "Setting for brew in Mac OS X with prefix: $(brew --prefix)"
+        fftw_path="$(brew --prefix)/Cellar/fftw/"*
         if [ -e "$(brew --prefix)/opt/openssl@3/bin" ]; then
             export PATH="$(brew --prefix)/opt/openssl@3/bin""${PATH:+:$PATH}"
         fi
@@ -40,8 +41,8 @@ if [ "$(uname)" == "Darwin" ]; then
         if [ -e "$(brew --prefix)/opt/llvm/lib/c++" ]; then
             export LD_RUN_PATH="$(brew --prefix)/opt/llvm/lib/c++""${LD_RUN_PATH:+:$LD_RUN_PATH}"
         fi
-        if [ -e "$(brew --prefix)/Cellar/fftw/"*"/lib" ]; then
-            export LIBRARY_PATH="$(brew --prefix)/Cellar/fftw/"*"/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
+        if [ -e "$fftw_path/lib" ]; then
+            export LIBRARY_PATH="$fftw_path/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
         fi
         if [ -e "$(brew --prefix)/opt/openssl@3/lib" ]; then
             export LIBRARY_PATH="$(brew --prefix)/opt/openssl@3/lib""${LIBRARY_PATH:+:$LIBRARY_PATH}"
@@ -61,8 +62,8 @@ if [ "$(uname)" == "Darwin" ]; then
         if [ -e "$(brew --prefix)/opt/openssl@3/include" ]; then
             export CPATH="$(brew --prefix)/opt/openssl@3/include""${CPATH:+:$CPATH}"
         fi
-        if [ -e "$(brew --prefix)/Cellar/fftw/"*"/include" ]; then
-            export CPATH="$(brew --prefix)/Cellar/fftw/"*"/include""${CPATH:+:$CPATH}"
+        if [ -e "$fftw_path/include" ]; then
+            export CPATH="$fftw_path/include""${CPATH:+:$CPATH}"
         fi
         if [ -e "$(brew --prefix)/opt/llvm/include" ]; then
             export CPATH="$(brew --prefix)/opt/llvm/include""${CPATH:+:$CPATH}"
