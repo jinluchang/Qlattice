@@ -567,10 +567,10 @@ def load_or_compute_muon_line_interpolation():
         q.displayln_info(-1, f"WARNING: {fname}: '{fn}' does not exist. Create a test sample data instead.")
         path = get_save_path(fn)
         epsabs = 1e-8
-        epsrel = 1e-4
+        epsrel = 1e-3
         mineval = 1024 * 1024
         maxeval = 1024 * 1024 * 1024
-        eps0 = (epsabs, epsrel, mineval // 256, maxeval // 256,)
+        eps0 = (epsabs, epsrel, mineval // 64, maxeval // 64,)
         q.compute_save_muonline_interpolation(
                 f"{path}/{0:010d}",
                 [ 3, 2, 2, 2, 2, ],
