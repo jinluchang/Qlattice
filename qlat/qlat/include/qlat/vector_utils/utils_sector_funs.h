@@ -101,7 +101,7 @@ struct sec_list{
   */
   vector_acc<int > map_sec;
   vector_acc<int > has_sec;
-  vector_acc<char > anti_sign;
+  vector_acc<signed char > anti_sign;
   vector_acc<int > src_t;
   vector_acc<int > src_t_order;
   vector_acc<int > src_t_r_order;
@@ -162,10 +162,10 @@ struct sec_list{
       if(antiP){
         // dT/2 not included in forward section
         // if src is first time and time cross boundary
-        if(src_time == tk and t > tk and t >= tk + dT/2){anti_sign[t] = -1;}
+        if(src_time == tk and t > tk and t >= tk + int(dT/2)){anti_sign[t] = -1;}
 
         // if src is last time and time cross boundary
-        if(src_time == tl and t < tl and t <  tl - dT/2){anti_sign[t] = -1;}
+        if(src_time == tl and t < tl and t <  tl - int(dT/2)){anti_sign[t] = -1;}
       }
     }
   }

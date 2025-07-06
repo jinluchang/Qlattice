@@ -552,7 +552,7 @@ void baryon_vectorE_ud_insert(std::vector<qpropT >& prop1, std::vector<qpropT >&
 #ifdef QLAT_USE_ACC
 template<typename Ty, int bfac, int Blocks>
 __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
-  char** gPP, unsigned char** oPP, const int* ivP,
+  signed char** gPP, unsigned char** oPP, const int* ivP,
   const int nmass, const int NTt, const Long Nxyz, const int Ngv)
 {
   //unsigned long gi =  blockIdx.x*blockDim.x + threadIdx.x;
@@ -573,7 +573,7 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
   __shared__ Ty P3[bfac*12*12];
   __shared__ Ty buf[bfacC*Blocks];
   __shared__ unsigned char pos[3*GROUP];
-  __shared__ char g0[2*GROUP];
+  __shared__ signed char g0[2*GROUP];
 
   //  if(gi*bfac < Ntotal)
 
@@ -606,7 +606,7 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
   unsigned int MAX = 0;
 
   unsigned char* s0 = NULL;
-           char* s1 = NULL;
+    signed char* s1 = NULL;
 
   const int bi =  threadIdx.y;
   const int ai =  threadIdx.x;
@@ -676,7 +676,7 @@ __global__ void baryon_vectorEV_global(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 ////USEGLOBAL then use global functions, else use qacc
 template<typename Ty, int bfac>
 void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
-  char** gPP, unsigned char** oPP, const int* ivP,
+  signed char** gPP, unsigned char** oPP, const int* ivP,
   const int nmass, const int NTt, const Long Nxyz, const int Ngv)
 {
   Long Ntotal  = nmass*NTt*Nxyz;
@@ -795,8 +795,8 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
   #if USEKERNEL==1
   ////Long Ntotal  = nmass*NTt*Nxyz;
   /////const int Loff = 3*3*3*3*4*4*4*4;
-  std::vector<std::vector<char > > giEL;giEL.resize(Ngv);//giEL.resize(  Ngv*Loff);
-  std::vector<std::vector<unsigned char   > > oiL ;oiL.resize(Ngv );//oiL.resize(3*Ngv*Loff);
+  std::vector<std::vector<signed   char > > giEL;giEL.resize(Ngv);//giEL.resize(  Ngv*Loff);
+  std::vector<std::vector<unsigned char > > oiL ;oiL.resize(Ngv );//oiL.resize(3*Ngv*Loff);
   int bmL[3];
   int nmL[3];
   int count_flops  = 0;
@@ -845,18 +845,18 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
         oiL[iv].push_back(o1);
         oiL[iv].push_back(o2);
         oiL[iv].push_back(o3);
-        giEL[iv].push_back(char(giE.real()));
-        giEL[iv].push_back(char(giE.imag()));
+        giEL[iv].push_back((signed char)(giE.real()));
+        giEL[iv].push_back((signed char)(giE.imag()));
         //giEL[iv].push_back(giE);
 
       }
     }
   }
 
-  std::vector<qlat::vector_gpu<char > > giEG;giEG.resize(Ngv);
+  std::vector<qlat::vector_gpu<signed char > > giEG;giEG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){giEG[iv].copy_from(giEL[iv]);}
-  qlat::vector_acc<char* > gP = EigenM_to_pointers(giEG);
-  char** gPP = gP.data();
+  qlat::vector_acc<signed char* > gP = EigenM_to_pointers(giEG);
+  signed char** gPP = gP.data();
 
   std::vector<qlat::vector_gpu<unsigned char   > > oiG ; oiG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){oiG[iv].copy_from(oiL[iv]);}

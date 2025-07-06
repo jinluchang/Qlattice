@@ -20,7 +20,7 @@ namespace qlat{
 #ifdef QLAT_USE_ACC
 template<typename Ty, int bfac, int Blocks>
 __global__ void baryon_sparse_global(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
-  char** gPP, unsigned char** oPP, const int* ivP,
+  signed char** gPP, unsigned char** oPP, const int* ivP,
   const int Nsrc, const Long Nvol, const int Ngv)
 {
   //unsigned long gi =  blockIdx.x*blockDim.x + threadIdx.x;
@@ -42,7 +42,7 @@ __global__ void baryon_sparse_global(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
   __shared__ Ty P3[bfac*12*12];
   __shared__ Ty buf[bfacC*Blocks];
   __shared__ unsigned char pos[3*GROUP];
-  __shared__ char g0[2*GROUP];
+  __shared__ signed   char g0[2*GROUP];
 
   // gi * bfac == Ntotal
   const unsigned int jobN = bfac*12*12;
@@ -94,7 +94,7 @@ __global__ void baryon_sparse_global(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
       if(ini + dv >= MAX){dv = MAX - ini;}
       if(dv <= 0){continue;}
       const unsigned char* s0 = &(oPP[iv][ini*3]);
-      const          char* s1 = &(gPP[iv][ini*2]);
+      const   signed char* s1 = &(gPP[iv][ini*2]);
 
       off = tid;
       while(off < dv*3){pos[off] = s0[off];off += Blocks;}
@@ -152,7 +152,7 @@ __global__ void baryon_sparse_global(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
 */
 template<typename Ty, int bfac, int insertion>
 __global__ void baryon_sparse_global_insertion(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
-  char** gPP, unsigned char** oPP, const int* ivP,
+  signed char** gPP, unsigned char** oPP, const int* ivP,
   const int Nsrc, const Long Nvol, const int Ngv)
 {
   //unsigned long gi =  blockIdx.x*blockDim.x + threadIdx.x;
@@ -196,7 +196,7 @@ __global__ void baryon_sparse_global_insertion(Ty** p1, Ty** p2, Ty** p3, Ty** r
 
   const int GROUP = 16;
   unsigned char pos[3*GROUP];
-  char g0[2*GROUP];
+  signed   char g0[2*GROUP];
   int ini, dv;
   const int bsize   = insertion < 0 ? bfac : bfac * 144 * 3;
   //const int Ngv_tot = insertion < 0 ? Ngv  : Ngv  * 3;
@@ -219,7 +219,7 @@ __global__ void baryon_sparse_global_insertion(Ty** p1, Ty** p2, Ty** p3, Ty** r
       if(ini + dv >= MAX){dv = MAX - ini;}
       if(dv <= 0){continue;}
       const unsigned char* s0 = &(oPP[iv][ini*3]);
-      const          char* s1 = &(gPP[iv][ini*2]);
+      const   signed char* s1 = &(gPP[iv][ini*2]);
 
       // load the index
       for(int k=0;k<dv*3;k++){pos[k] = s0[k];}
@@ -317,7 +317,7 @@ __global__ void baryon_sparse_global_insertion(Ty** p1, Ty** p2, Ty** p3, Ty** r
 */
 template<typename Ty, int bfac, int insertion>
 void baryon_sparse_kernel(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
-  char** gPP, unsigned char** oPP, const int* ivP,
+  signed char** gPP, unsigned char** oPP, const int* ivP,
   const int Nsrc, const Long Nvol, const int Ngv)
 {
   //Qassert(bfac < 255);// int8_t limit and cache sizes ?
@@ -475,10 +475,10 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
   /*
     prepare local contraction orders
   */
-  char** gPP = NULL;
+  signed char** gPP = NULL;
   unsigned char** oPP = NULL;
   int*  ivP = NULL;
-  std::vector<qlat::vector_gpu<char > > giEG;
+  std::vector<qlat::vector_gpu<signed char > > giEG;
   std::vector<qlat::vector_gpu<unsigned char   > > oiG;
   qlat::vector_acc<int > iv_size;
 
@@ -511,7 +511,7 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
   int count_flops  = 0;
   {
     TIMER("Baryon color spin local orders");
-    std::vector<std::vector<char > > giEL;giEL.resize(Ngv);//giEL.resize(  Ngv*Loff);
+    std::vector<std::vector<signed char > > giEL;giEL.resize(Ngv);//giEL.resize(  Ngv*Loff);
     std::vector<std::vector<unsigned char   > > oiL ;oiL.resize(Ngv );//oiL.resize(3*Ngv*Loff);
     int bmL[3];
     int nmL[3];
@@ -560,15 +560,15 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
           oiL[iv].push_back(o1);
           oiL[iv].push_back(o2);
           oiL[iv].push_back(o3);
-          giEL[iv].push_back(char(giE.real()));
-          giEL[iv].push_back(char(giE.imag()));
+          giEL[iv].push_back((signed char)(giE.real()));
+          giEL[iv].push_back((signed char)(giE.imag()));
           //giEL[iv].push_back(giE);
         }
       }
     }
 
     for(int iv=0;iv<Ngv;iv++){giEG[iv].copy_from(giEL[iv]);}
-    qlat::vector_acc<char* > gP = EigenM_to_pointers(giEG);
+    qlat::vector_acc<signed char* > gP = EigenM_to_pointers(giEG);
     gPP = gP.data();
 
     for(int iv=0;iv<Ngv;iv++){oiG[iv].copy_from(oiL[iv]);}
