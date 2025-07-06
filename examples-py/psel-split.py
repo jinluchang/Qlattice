@@ -22,8 +22,7 @@ def run_check_psel(get_psel):
     q.json_results_append(q.get_fname())
     psel = get_psel()
     q.json_results_append(f"{psel.total_site} len(psel) = {len(psel)}")
-    psel_str = f"{psel.total_site} {psel[:].tolist()}"
-    q.json_results_append(f"hash(psel)={q.hash_sha256(psel_str)}")
+    q.json_results_append(f"hash(psel)={q.hash_sha256(psel)}")
     all_closest_point_list = q.find_all_closest_n_point_list(psel, n=4)
     for v in all_closest_point_list[:4] + all_closest_point_list[-4:]:
         q.json_results_append(f"all_closest_point_list[...]={v[1]}")
@@ -33,8 +32,7 @@ def run_check_fsel(get_fsel):
     q.json_results_append(q.get_fname())
     psel = get_fsel().to_psel()
     q.json_results_append(f"{psel.total_site} len(psel) = {len(psel)}")
-    psel_str = f"{psel.total_site} {psel[:].tolist()}"
-    q.json_results_append(f"hash(psel)={q.hash_sha256(psel_str)}")
+    q.json_results_append(f"hash(psel)={q.hash_sha256(psel)}")
     all_closest_point_list = q.find_all_closest_n_point_list(psel, n=4)
     for v in all_closest_point_list[:4] + all_closest_point_list[-4:]:
         q.json_results_append(f"all_closest_point_list[...]={v[1]}")
@@ -48,8 +46,7 @@ def run_check_psel_list(get_psel_list):
     q.json_results_append(f"closest_dis_sqr_for_psel_list = {closest_dis_sqr_for_psel_list}")
     for idx, psel in enumerate(psel_list):
         q.json_results_append(f"idx={idx} ; {psel.total_site} ; len(psel) = {len(psel)}")
-        psel_str = f"{psel.total_site} {psel[:].tolist()}"
-        q.json_results_append(f"idx={idx} ; hash(psel)={q.hash_sha256(psel_str)}")
+        q.json_results_append(f"idx={idx} ; hash(psel)={q.hash_sha256(psel)}")
         all_closest_point_list = q.find_all_closest_n_point_list(psel, n=4)
         for v in all_closest_point_list[:2] + all_closest_point_list[-2:]:
             q.json_results_append(f"all_closest_point_list[...]={v[1]}")

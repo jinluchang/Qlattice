@@ -1,0 +1,110 @@
+[
+ [
+  "selected_shuffle_random: Coordinate([4, 4, 4, 4]) 1 0"
+ ],
+ [
+  "n_points=16"
+ ],
+ [
+  "hash(psel)=dbe86bbd5372f9a3c3963f5ee0df719e15003698b9e49bf6d2ef842fd6274537"
+ ],
+ [
+  "hash(psel_s)=928957ecb722ae6b4eeb70cbbb9ed4ef6e85dc0ab3a7694ddb1844f3ba611365"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([4, 4, 4, 4]) 2 0"
+ ],
+ [
+  "n_points=16"
+ ],
+ [
+  "hash(psel)=dbe86bbd5372f9a3c3963f5ee0df719e15003698b9e49bf6d2ef842fd6274537"
+ ],
+ [
+  "hash(psel_s)=928957ecb722ae6b4eeb70cbbb9ed4ef6e85dc0ab3a7694ddb1844f3ba611365"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([4, 4, 4, 4]) 3 0"
+ ],
+ [
+  "n_points=16"
+ ],
+ [
+  "hash(psel)=dbe86bbd5372f9a3c3963f5ee0df719e15003698b9e49bf6d2ef842fd6274537"
+ ],
+ [
+  "hash(psel_s)=928957ecb722ae6b4eeb70cbbb9ed4ef6e85dc0ab3a7694ddb1844f3ba611365"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([6, 6, 6, 6]) 1 0"
+ ],
+ [
+  "n_points=81"
+ ],
+ [
+  "hash(psel)=ec67ad9b98f42af4c8d46856d7125d2f72d6a8ae1e762966983f1223f81adfdd"
+ ],
+ [
+  "hash(psel_s)=f98464f2af2837e7fd6bf4c7e43145320af7fb077f9ca275dbc877ff261be741"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([6, 6, 6, 6]) 2 0"
+ ],
+ [
+  "n_points=81"
+ ],
+ [
+  "hash(psel)=ec67ad9b98f42af4c8d46856d7125d2f72d6a8ae1e762966983f1223f81adfdd"
+ ],
+ [
+  "hash(psel_s)=f98464f2af2837e7fd6bf4c7e43145320af7fb077f9ca275dbc877ff261be741"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([6, 6, 6, 6]) 3 0"
+ ],
+ [
+  "n_points=81"
+ ],
+ [
+  "hash(psel)=ec67ad9b98f42af4c8d46856d7125d2f72d6a8ae1e762966983f1223f81adfdd"
+ ],
+ [
+  "hash(psel_s)=f98464f2af2837e7fd6bf4c7e43145320af7fb077f9ca275dbc877ff261be741"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([8, 8, 8, 8]) 1 0"
+ ],
+ [
+  "n_points=256"
+ ],
+ [
+  "hash(psel)=de40e97d1989d82e3422e599d90b6b5d4a26146034c986c16120963a97dca292"
+ ],
+ [
+  "hash(psel_s)=d444871a433aaa44e77679b562679ac6e11fa0fdfc405dba6b856e0c0a43793b"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([8, 8, 8, 8]) 2 0"
+ ],
+ [
+  "n_points=256"
+ ],
+ [
+  "hash(psel)=de40e97d1989d82e3422e599d90b6b5d4a26146034c986c16120963a97dca292"
+ ],
+ [
+  "hash(psel_s)=d444871a433aaa44e77679b562679ac6e11fa0fdfc405dba6b856e0c0a43793b"
+ ],
+ [
+  "selected_shuffle_random: Coordinate([8, 8, 8, 8]) 3 0"
+ ],
+ [
+  "n_points=256"
+ ],
+ [
+  "hash(psel)=de40e97d1989d82e3422e599d90b6b5d4a26146034c986c16120963a97dca292"
+ ],
+ [
+  "hash(psel_s)=d444871a433aaa44e77679b562679ac6e11fa0fdfc405dba6b856e0c0a43793b"
+ ]
+]
