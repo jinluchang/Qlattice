@@ -18,6 +18,8 @@ class q:
             get_num_node,
             hash_sha256,
             mk_cache,
+            get_fname,
+            displayln_info,
             )
     from .mpi_utils import (
             get_comm,
@@ -32,24 +34,25 @@ cdef class SelectedShufflePlan:
         SelectedShufflePlan()
         SelectedShufflePlan(psel, rs)
         """
-        cdef cc.Int len_args = len(args)
+        self.psel_src = None
+        self.psel_dst = None
         self.xx.init()
-        if len_args == 0:
+        if len(args) == 0:
             return
-        elif len_args == 2:
-            if isinstance(args[0], PointsSelection) and isinstance(args[1], RngState):
-                psel, rs, = args
-                self.init_from_psel_r_from_l(psel, rs)
-            else:
-                raise Exception(f"SelectedShufflePlan {args}")
+        elif isinstance(args[0], PointsSelection):
+            self.init_from_psel_r_from_l(*args)
         else:
-            raise Exception(f"SelectedShufflePlan {args}")
+            raise Exception(f"SelectedShufflePlan.__init__ {args}")
 
     def init_from_psel_r_from_l(self, PointsSelection psel, RngState rs):
         """
         shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
         """
+        self.psel_src = psel
+        self.psel_dst = PointsSelection()
         cc.set_selected_shuffle_plan(self.xx, psel.xx, rs.xx)
+        self.psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
+        cc.shuffle_points_selection(self.psel_dst.xx, psel.xx, self.xx)
 
 ###
 
@@ -118,10 +121,15 @@ cdef class PointsSelection:
         """
         Shuffle according to `ssp`.
         """
+        fname = q.get_fname()
         self.xx.init()
         if ssp is None:
             self @= psel
+        elif ssp.psel_src is psel:
+            self @= ssp.psel_dst
         else:
+            q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")
+            assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
             self.xx.points_dist_type = ssp.xx.points_dist_type_recv
             cc.shuffle_points_selection(self.xx, psel.xx, ssp.xx)
 
@@ -238,15 +246,6 @@ cdef class PointsSelection:
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         cc.assign_direct(self.xx, cc.mk_random_points_selection(total_site.xx, n_points, rs.xx))
-
-    @q.timer
-    def shuffle(self, SelectedShufflePlan ssp):
-        """
-        Shuffle according to `ssp`.
-        """
-        cdef PointsSelection psel = PointsSelection()
-        cc.shuffle_points_selection(psel.xx, self.xx, ssp.xx)
-        return psel
 
     def to_lat_data(self):
         cdef LatDataInt ld = LatDataInt()

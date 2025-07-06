@@ -97,58 +97,43 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         SelectedPoints(psel)
         SelectedPoints(psel, multiplicity)
         SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan(psel, rs)
-        SelectedPoints(sf, rs) # via `shuffle_selected_field`
+        SelectedPoints(sp, ssp) # via `shuffle_selected_points` where ssp = SelectedShufflePlan(psel, rs)
         #
         points_dist_type in [ None, "g", "l", "r", ]
         """
-        cdef cc.Int len_args = len(args)
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
-        if len_args == 0:
-            self.psel = None
-            self.xx.init()
+        self.psel = None
+        self.xx.init()
+        if len(args) == 0:
+            return
         elif isinstance(args[0], int):
             self.init_from_n_points(*args)
         elif isinstance(args[0], PointsSelection):
             self.init_from_psel(*args)
         elif isinstance(args[0], SelectedField{{name}}):
-            if len_args == 2:
-                if isinstance(args[1], RngState):
-                    sf, rs, = args
-                    self.init_from_sf_rs(sf, rs)
-                elif isinstance(args[1], SelectedShufflePlan):
-                    sf, ssp, = args
-                    self.init_from_sf_ssp(sf, ssp)
-                else:
-                    raise Exception(f"SelectedPoints.__init__ {args}")
-            else:
-                raise Exception(f"SelectedPoints.__init__ {args}")
+            self.init_from_sf_ssp(*args)
         else:
             raise Exception(f"SelectedPoints.__init__ {args}")
 
     def init_from_n_points(self, cc.Long n_points, cc.Int multiplicity, str points_dist_type):
-        self.psel = None
         self.xx.init(n_points, multiplicity, cc.read_points_dist_type(points_dist_type))
 
     def init_from_psel(self, PointsSelection psel, cc.Int multiplicity=0):
         self.psel = psel
-        if multiplicity == 0:
-            self.xx.init()
-        else:
+        if multiplicity != 0:
             self.xx.init(psel.xx, multiplicity)
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
-        cdef FieldSelection fsel = sf.fsel
-        cdef PointsSelection psel = PointsSelection()
-        self.psel = psel
-        cc.shuffle_field_selection(psel.xx, fsel.xx, ssp.xx)
+        self.psel = PointsSelection(sf.fsel, ssp)
         cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)
 
-    def init_from_sf_rs(self, SelectedField{{name}} sf, RngState rs):
-        cdef FieldSelection fsel = sf.fsel
-        cdef PointsSelection psel = PointsSelection(fsel)
-        cdef SelectedShufflePlan ssp = SelectedShufflePlan(psel, rs)
-        self.init_from_sf_ssp(sf, ssp)
+    def init_from_sp_ssp(self, SelectedPoints{{name}} sp, SelectedShufflePlan ssp):
+        if sp.psel is ssp.psel_src:
+            self.psel = ssp.psel_dst
+        else:
+            self.psel = PointsSelection(sp.psel, ssp)
+        cc.shuffle_selected_points(self.xx, sp.xx, ssp.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2 + ElemType{{name}}.ndim()

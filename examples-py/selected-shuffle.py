@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import sys
 import qlat as q
 import numpy as np
+import sys
 
 size_node_list = [
         [1, 1, 1, 1],

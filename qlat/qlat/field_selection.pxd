@@ -4,6 +4,8 @@ from .geometry cimport Geometry
 cdef class SelectedShufflePlan:
 
     cdef cqlat.SelectedShufflePlan xx
+    cdef public PointsSelection psel_src
+    cdef public PointsSelection psel_dst
 
 cdef class PointsSelection:
 
