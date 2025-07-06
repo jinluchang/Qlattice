@@ -3,7 +3,7 @@ SHELL=/usr/bin/env bash
 mpi_options ?= --oversubscribe --bind-to none
 
 tests = \
-						 grid-with-qlat
+		grid-with-qlat
 
 all: run-grid
 

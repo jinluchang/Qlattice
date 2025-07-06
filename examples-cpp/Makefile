@@ -3,27 +3,27 @@ SHELL=/usr/bin/env bash
 mpi_options ?= --oversubscribe --bind-to none
 
 tests = \
-				vector-utils \
-				fft-tests \
-				smear-tests \
-				gf-utils-tests \
-				lbl-muon-part \
-				rng-state-tests \
-				field-rng-tests \
-				mixed-size-cg \
-				benchmark \
-				dist-io \
-				selected-field \
-				fields-io \
-				fields-io-simple-demo \
-				simple-1 \
-				hmc \
-				flowed-hmc \
-				heatbath \
-				template \
-				dslash-tests \
-				propagators \
-				ldouble
+		vector-utils \
+		fft-tests \
+		smear-tests \
+		gf-utils-tests \
+		lbl-muon-part \
+		rng-state-tests \
+		field-rng-tests \
+		mixed-size-cg \
+		benchmark \
+		dist-io \
+		selected-field \
+		fields-io \
+		fields-io-simple-demo \
+		simple-1 \
+		hmc \
+		flowed-hmc \
+		heatbath \
+		template \
+		dslash-tests \
+		propagators \
+		ldouble
 
 all: run
 

@@ -9,10 +9,49 @@ from .geometry cimport *
 from .field_types cimport *
 
 import cqlat as c
-import qlat_utils as q
 import numpy as np
 
+class q:
+    from qlat_utils import (
+            timer,
+            get_id_node,
+            get_num_node,
+            hash_sha256,
+            mk_cache,
+            )
+    from .mpi_utils import (
+            get_comm,
+            )
+
 ### -------------------------------------------------------------------
+
+cdef class SelectedShufflePlan:
+
+    def __init__(self, *args):
+        """
+        SelectedShufflePlan()
+        SelectedShufflePlan(psel, rs)
+        """
+        cdef cc.Int len_args = len(args)
+        self.xx.init()
+        if len_args == 0:
+            return
+        elif len_args == 2:
+            if isinstance(args[0], PointsSelection) and isinstance(args[1], RngState):
+                psel, rs, = args
+                self.init_from_psel_r_from_l(psel, rs)
+            else:
+                raise Exception(f"SelectedShufflePlan {args}")
+        else:
+            raise Exception(f"SelectedShufflePlan {args}")
+
+    def init_from_psel_r_from_l(self, PointsSelection psel, RngState rs):
+        """
+        shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
+        """
+        cc.set_selected_shuffle_plan(self.xx, psel.xx, rs.xx)
+
+###
 
 cdef class PointsSelection:
 
@@ -23,39 +62,68 @@ cdef class PointsSelection:
     def __init__(self, *args):
         """
         PointsSelection()
-        PointsSelection(fsel)
         PointsSelection(total_site)
         PointsSelection(total_site, xg_arr)
         PointsSelection(total_site, xg_list)
         PointsSelection(total_site, xg)
         PointsSelection(total_site, n_points)
         PointsSelection(total_site, xg_arr, points_dist_type)
+        PointsSelection(fsel)
+        PointsSelection(fsel, ssp)
+        PointsSelection(psel)
+        PointsSelection(psel, ssp)
         #
         points_dist_type in [ "g", "f", "l", "r", "o", ]
         """
         cdef cc.Int len_args = len(args)
-        cdef Coordinate total_site
-        cdef FieldSelection fsel
-        self.xx.init()
         if len_args == 0:
-            return
+            self.xx.init()
         elif isinstance(args[0], Coordinate):
             total_site = args[0]
-            self.xx.init(total_site.xx, 0)
-            if len_args > 1:
-                xg_arr = args[1]
-                self.xg_arr = xg_arr
-            if len_args > 2:
-                points_dist_type = args[2]
-                self.points_dist_type = points_dist_type
+            self.init_from_total_site(*args)
         elif isinstance(args[0], FieldSelection):
-            """
-            self.points_dist_type == "l" for PointsDistType::Local
-            """
-            fsel = args[0]
-            cc.set_psel_from_fsel(self.xx, fsel.xx)
+            self.init_from_fsel(*args)
+        elif isinstance(args[0], PointsSelection):
+            self.init_from_psel(*args)
         else:
             raise Exception(f"PointsSelection::__init__: {args}")
+
+    def init_from_total_site(self, Coordinate total_site, object xg_arr=None, str points_dist_type=None):
+        """
+        xg_arr can be n_points, xg, xg_arr, xg_list.
+        points_dist_type in [ "g", "f", "l", "r", "o", ]
+        """
+        self.xx.init()
+        self.xx.init(total_site.xx, 0)
+        if xg_arr is None:
+            return
+        self.xg_arr = xg_arr
+        if points_dist_type is None:
+            return
+        self.points_dist_type = points_dist_type
+
+    def init_from_fsel(self, FieldSelection fsel, SelectedShufflePlan ssp=None):
+        """
+        Shuffle according to `ssp`.
+        self.points_dist_type == "l" for PointsDistType::Local (if ssp is None)
+        """
+        self.xx.init()
+        if ssp is None:
+            cc.set_psel_from_fsel(self.xx, fsel.xx)
+        else:
+            self.xx.points_dist_type = ssp.xx.points_dist_type_recv
+            cc.shuffle_field_selection(self.xx, fsel.xx, ssp.xx)
+
+    def init_from_psel(self, PointsSelection psel, SelectedShufflePlan ssp=None):
+        """
+        Shuffle according to `ssp`.
+        """
+        self.xx.init()
+        if ssp is None:
+            self @= psel
+        else:
+            self.xx.points_dist_type = ssp.xx.points_dist_type_recv
+            cc.shuffle_points_selection(self.xx, psel.xx, ssp.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2
@@ -102,6 +170,7 @@ cdef class PointsSelection:
     def points_dist_type(self, str value):
         """
         set the points_dist_type flag
+        value in [ "g", "f", "l", "r", "o", ]
         """
         self.xx.points_dist_type = cc.read_points_dist_type(value)
 
@@ -169,6 +238,15 @@ cdef class PointsSelection:
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
         cc.assign_direct(self.xx, cc.mk_random_points_selection(total_site.xx, n_points, rs.xx))
+
+    @q.timer
+    def shuffle(self, SelectedShufflePlan ssp):
+        """
+        Shuffle according to `ssp`.
+        """
+        cdef PointsSelection psel = PointsSelection()
+        cc.shuffle_points_selection(psel.xx, self.xx, ssp.xx)
+        return psel
 
     def to_lat_data(self):
         cdef LatDataInt ld = LatDataInt()
@@ -286,8 +364,31 @@ cdef class PointsSelection:
         else:
             raise Exception("PointsSelection: 'sel_small' not PointsSelection or FieldSelection sel_small={sel_small}")
 
-    def crc32(self):
-        return 0
+    def __repr__(self):
+        """
+        only show information of this node.
+        """
+        return f"PointsSelection({self.points_dist_type}, {self.total_site}, {self.xg_arr.tolist()})"
+
+    def hash_sha256(self):
+        """
+        Return hash of psel.
+        Always return the same hash from all the node.
+        If points_dist_type == "g", then return the hash for each node, and verify they are all the same.
+        Otherwise, return the hash of the gathered information from all the node.
+        """
+        v = q.hash_sha256((
+            "PointsSelection:",
+            self.xg_arr,
+            self.total_site,
+            self.points_dist_type,
+            ))
+        v_list = q.get_comm().allgather(v)
+        if self.points_dist_type == "g":
+            for v1 in v_list:
+                assert v == v1
+            return v
+        return q.hash_sha256(v_list)
 
     def __getstate__(self):
         """

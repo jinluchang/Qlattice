@@ -236,7 +236,7 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
     void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
     void shuffle_selected_points_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
     void shuffle_points_selection(PointsSelection& psel, const PointsSelection& psel0, const SelectedShufflePlan& ssp) except +
-    void shuffle_selected_points[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sf, const SelectedShufflePlan& ssp) except +
+    void shuffle_selected_points[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sp0, const SelectedShufflePlan& ssp) except +
     #
     void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const SelectedShufflePlan& ssp) except +

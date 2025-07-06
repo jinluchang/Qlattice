@@ -48,7 +48,7 @@ from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 from .geometry cimport Geometry
-from .field_selection cimport FieldSelection, PointsSelection
+from .field_selection cimport FieldSelection, PointsSelection, SelectedShufflePlan
 from .field_types cimport *
 from .selected_field_types cimport *
 
@@ -58,34 +58,6 @@ import numpy as np
 from .field_type_dict import selected_points_type_dict
 
 ### -------------------------------------------------------------------
-
-cdef class SelectedShufflePlan:
-
-    def __init__(self, *args):
-        """
-        SelectedShufflePlan()
-        SelectedShufflePlan(psel, rs)
-        """
-        cdef cc.Int len_args = len(args)
-        self.xx.init()
-        if len_args == 0:
-            return
-        elif len_args == 2:
-            if isinstance(args[0], PointsSelection) and isinstance(args[1], RngState):
-                psel, rs, = args
-                self.init_from_psel(psel, rs)
-            else:
-                raise Exception(f"SelectedShufflePlan {args}")
-        else:
-            raise Exception(f"SelectedShufflePlan {args}")
-
-    def init_from_psel(self, PointsSelection psel, RngState rs):
-        """
-        shuffle from PointsDistType::Local to PointsDistType::Random
-        """
-        cc.set_selected_shuffle_plan(self.xx, psel.xx, rs.xx)
-
-###
 
 {{for name in type_name_list}}
 

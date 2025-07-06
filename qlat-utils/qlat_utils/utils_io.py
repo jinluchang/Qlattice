@@ -2,6 +2,7 @@ import os
 import pickle
 import hashlib
 import functools
+import numpy as np
 
 from .c import *
 from .lru_cache import *
@@ -125,13 +126,40 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
 
 def hash_sha256(s):
     """
-    compute sha256 of str (or bytes) `s`.
+    Compute sha256 of str (or bytes) `s`.
+    Also support:
+    Custom object that has `hash_sha256` attribute.
+    Python `tuple` and `list`.
+    Numpy `ndarray`.
     """
-    m = hashlib.sha256()
-    if isinstance(s, str):
-        s = s.encode('utf8')
-    m.update(s)
-    return m.hexdigest()
+    if isinstance(s, (str, bytes,)):
+        m = hashlib.sha256()
+        if isinstance(s, str):
+            s = s.encode('utf8')
+        m.update(s)
+        return m.hexdigest()
+    elif hasattr(s, "hash_sha256"):
+        return s.hash_sha256()
+    elif isinstance(s, (tuple, list,)):
+        if isinstance(s, tuple):
+            m = hashlib.sha256(b'tuple:')
+        elif isinstance(s, list):
+            m = hashlib.sha256(b'list:')
+        else:
+            assert False
+        for v in s:
+            m.update(hash_sha256(v).encode('utf8'))
+        return m.hexdigest()
+    elif isinstance(s, np.ndarray):
+        m = hashlib.sha256(b'np.ndarray:')
+        m.update(repr(s.tolist()).encode('utf8'))
+        return m.hexdigest()
+    elif hasattr(s, "__repr__"):
+        m = hashlib.sha256(b'repr:')
+        m.update(repr(s).encode('utf8'))
+        return m.hexdigest()
+    else:
+        assert False
 
 def pickle_cache(path, is_sync_node=True):
     """

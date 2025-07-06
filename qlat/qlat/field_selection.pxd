@@ -1,6 +1,10 @@
 from . cimport everything as cqlat
 from .geometry cimport Geometry
 
+cdef class SelectedShufflePlan:
+
+    cdef cqlat.SelectedShufflePlan xx
+
 cdef class PointsSelection:
 
     cdef cqlat.PointsSelection xx
