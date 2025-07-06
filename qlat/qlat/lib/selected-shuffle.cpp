@@ -7,12 +7,19 @@ void SelectedShufflePlan::init()
 {
   points_dist_type_send = PointsDistType::Local;
   points_dist_type_recv = PointsDistType::Random;
+  num_selected_points_send = 0;
+  num_selected_points_recv = 0;
+  n_points_selected_points_send.clear();
+  n_points_selected_points_recv.clear();
   SelectedPoints<Long>& spi_s = shuffle_idx_points_send;
   SelectedPoints<Long>& spi_r = shuffle_idx_points_recv;
+  SelectedPoints<Long>& spi_l = shuffle_idx_points_local;
   spi_s.init();
   spi_r.init();
+  spi_l.init();
   total_send_count = 0;
   total_recv_count = 0;
+  total_local_count = 0;
   sdispls.clear();
   rdispls.clear();
   sendcounts.clear();
@@ -92,13 +99,13 @@ void set_selected_shuffle_plan_no_reorder(
     const Int id_node_send_to = sp_id_node_send_to.get_elem(idx);
     ssp.sendcounts[id_node_send_to] += 1;
   });
-  Int sdispl = 0;
+  Long sdispl = 0;
   qfor(id_node, num_node, {
     ssp.sdispls[id_node] = sdispl;
     sdispl += ssp.sendcounts[id_node];
   });
   qassert(ssp.total_send_count == sdispl);
-  vector<Int> c_idx_vec;
+  vector<Long> c_idx_vec;
   c_idx_vec = ssp.sdispls;
   qfor(idx, n_points, {
     const Int id_node_send_to = sp_id_node_send_to.get_elem(idx);
@@ -107,9 +114,9 @@ void set_selected_shuffle_plan_no_reorder(
   });
   qfor(id_node, num_node - 1,
        { qassert(c_idx_vec[id_node] == ssp.sdispls[id_node + 1]); });
-  MPI_Alltoall(ssp.sendcounts.data(), sizeof(Int), MPI_BYTE,
-               ssp.recvcounts.data(), sizeof(Int), MPI_BYTE, get_comm());
-  Int rdispl = 0;
+  MPI_Alltoall(ssp.sendcounts.data(), sizeof(Long), MPI_BYTE,
+               ssp.recvcounts.data(), sizeof(Long), MPI_BYTE, get_comm());
+  Long rdispl = 0;
   qfor(id_node, num_node, {
     ssp.rdispls[id_node] = rdispl;
     rdispl += ssp.recvcounts[id_node];

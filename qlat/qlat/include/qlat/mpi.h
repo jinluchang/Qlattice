@@ -179,10 +179,10 @@ int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
 
 int mpi_waitall(std::vector<MPI_Request>& requests);
 
-void mpi_alltoallv(
-    const void* sendbuf, const Int* sendcounts, const Int* sdispls, MPI_Datatype sendtype,
-    void* recvbuf, const Int* recvcounts, const Int* rdispls, MPI_Datatype recvtype,
-    MPI_Comm comm);
+void mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
+                   const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
+                   const Long* recvcounts, const Long* rdispls,
+                   MPI_Datatype recvtype, MPI_Comm comm);
 
 int glb_sum(Vector<RealD> recv, const Vector<RealD>& send);
 

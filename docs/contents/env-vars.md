@@ -120,11 +120,15 @@
 
 - `q_fftw_plan_flag`
 
-  Default is `estimate`. Other possible values include `measure`.
+  Default is `estimate`. Possible values include `estimate`, `measure`.
 
 - `q_mpi_alltoallv_type`
 
-  Default is `native`. Other possible values include `custom`.
+  Default is `custom`. Possible values include `native`, `custom`.
+
+- `q_mpi_alltoallv_max_parallel_transfer`
+
+  Default is `8`. Number of maximum parallel transfer in `mpi_alltoallv`.
 
 ## Useful options
 

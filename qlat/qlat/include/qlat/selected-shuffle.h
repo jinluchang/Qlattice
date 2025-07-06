@@ -10,16 +10,32 @@ namespace qlat
 struct SelectedShufflePlan {
   PointsDistType points_dist_type_send;
   PointsDistType points_dist_type_recv;
+  Long num_selected_points_send;
+  Long num_selected_points_recv;
+  // n_points_selected_points_send.size() == num_selected_points_send
+  vector<Long> n_points_selected_points_send;
+  // n_points_selected_points_recv.size() == num_selected_points_recv
+  vector<Long> n_points_selected_points_recv;
+  // Prepare send buffer from selected points according to this idx field. (before sending)
+  // multiplicity = 2 (idx_selected_points_send, idx_within_send_field,)
   SelectedPoints<Long> shuffle_idx_points_send;
-  // Reorder field according to this idx field.before sending
+  // Shuffle recv buffer to fill selected points according to this idx field. (after receiving)
+  // multiplicity = 2 (idx_selected_points_recv, idx_within_recv_field,)
   SelectedPoints<Long> shuffle_idx_points_recv;
-  // Reorder field according to this idx field.after receiving
+  // Local field according to this idx field.after receiving
+  // multiplicity = 4 (idx_selected_points_send, idx_within_send_field, idx_selected_points_recv, idx_within_recv_field,)
+  SelectedPoints<Long> shuffle_idx_points_local;
+  // shuffle_idx_points_send.n_points == total_send_count
   Long total_send_count;
+  // shuffle_idx_points_recv.n_points == total_recv_count
   Long total_recv_count;
-  vector<Int> sendcounts;
-  vector<Int> recvcounts;
-  vector<Int> sdispls;
-  vector<Int> rdispls;
+  // shuffle_idx_points_local.n_points == total_local_count
+  Long total_local_count;
+  // Used in mpi_alltoallv
+  vector<Long> sendcounts;
+  vector<Long> recvcounts;
+  vector<Long> sdispls;
+  vector<Long> rdispls;
   //
   void init();
 };
