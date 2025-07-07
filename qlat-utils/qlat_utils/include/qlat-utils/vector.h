@@ -425,7 +425,7 @@ struct API vector_acc : vector<M> {
   vector_acc(vector_acc<M>&& vp) noexcept
   {
     // TIMER("vector_acc::vector_acc(&&)")
-    // qassert(vp.mem_type == MemType::Uvm);
+    qassert(vp.mem_type == MemType::Uvm);
     is_copy = vp.is_copy;
     mem_type = vp.mem_type;
     v = vp.v;
