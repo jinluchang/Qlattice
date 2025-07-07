@@ -207,26 +207,26 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
   return ret;
 }
 
-enum ChooseReferenceLabel {
-  choose_reference_label_ref_far,
-  choose_reference_label_ref_close,
-  choose_reference_label_ref_center,
+enum struct ChooseReferenceLabel {
+  RefFar,
+  RefClose,
+  RefCenter,
 };
 
 inline ChooseReferenceLabel choose_reference_label(const std::string& label)
 {
   if (does_string_have_tag(label, "ref-far")) {
-    return choose_reference_label_ref_far;
+    return ChooseReferenceLabel::RefFar;
   } else if (does_string_have_tag(label, "ref-close")) {
-    return choose_reference_label_ref_close;
+    return ChooseReferenceLabel::RefClose;
   } else if (does_string_have_tag(label, "ref-center")) {
-    return choose_reference_label_ref_center;
+    return ChooseReferenceLabel::RefCenter;
   } else {
     qassert(false);
-    return choose_reference_label_ref_far;
+    return ChooseReferenceLabel::RefFar;
   }
   qassert(false);
-  return choose_reference_label_ref_far;
+  return ChooseReferenceLabel::RefFar;
 }
 
 qacc CoordinateD choose_reference(const Coordinate& xg_x,
@@ -238,7 +238,7 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
   const long dis2_xy = sqr(smod(xg_x - xg_y, total_site));
   const long dis2_xz = sqr(smod(xg_x - xg_z, total_site));
   const long dis2_yz = sqr(smod(xg_y - xg_z, total_site));
-  if (choose_reference_label_ref_far == label) {
+  if (ChooseReferenceLabel::RefFar == label) {
     if (dis2_xy < dis2_xz and dis2_xy < dis2_yz) {
       return CoordinateD(xg_z);
     } else if (dis2_xz < dis2_xy and dis2_xz < dis2_yz) {
@@ -252,7 +252,7 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
                                               smod(xg_y - xg_z, total_site)),
           total_site);
     }
-  } else if (choose_reference_label_ref_close == label) {
+  } else if (ChooseReferenceLabel::RefClose == label) {
     if (dis2_xy < dis2_xz and dis2_xy < dis2_yz) {
       return middle_mod(CoordinateD(xg_x), CoordinateD(xg_y),
                         CoordinateD(total_site));
@@ -269,7 +269,7 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
                                               smod(xg_y - xg_z, total_site)),
           total_site);
     }
-  } else if (choose_reference_label_ref_center == label) {
+  } else if (ChooseReferenceLabel::RefCenter == label) {
     return mod(
         CoordinateD(xg_z) + 1.0 / 3.0 *
                                 CoordinateD(smod(xg_x - xg_z, total_site) +
