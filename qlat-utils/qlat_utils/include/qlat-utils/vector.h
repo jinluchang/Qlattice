@@ -154,10 +154,9 @@ API inline MemCache& get_mem_cache(const MemType mem_type = MemType::Cpu)
   return cache_vec[static_cast<Int>(mem_type)];
 }
 
-void* alloc_mem(const Long min_size, const MemType mem_type = MemType::Cpu);
+void* alloc_mem(const Long min_size, const MemType mem_type);
 
-void free_mem(void* ptr, const Long min_size,
-              const MemType mem_type = MemType::Cpu);
+void free_mem(void* ptr, const Long min_size, const MemType mem_type);
 
 inline void displayln_malloc_stats()
 {
@@ -645,7 +644,7 @@ struct API box {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, sizeof(M), MemType::Cpu);
+      free_mem(v.p, sizeof(M), mem_type);
     }
     v = Handle<M>();
     qassert(v.p == NULL);
