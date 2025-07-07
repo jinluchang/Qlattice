@@ -456,7 +456,7 @@ struct API SelectedPoints {
   PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
   Int multiplicity;
   Long n_points;
-  vector_acc<M> points;  // global quantity, same on each node
+  vector_acc<M> points;  // global quantity, same on each node if points_dist_type == PointsDistType::Global
   // points.size() == n_points * multiplicity if initialized = true
   //
   void init();

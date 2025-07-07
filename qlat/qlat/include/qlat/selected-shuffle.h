@@ -17,10 +17,10 @@ struct SelectedShufflePlan {
   // n_points_selected_points_recv.size() == num_selected_points_recv
   vector<Long> n_points_selected_points_recv;
   // Prepare send buffer from selected points according to this idx field. (before sending)
-  // multiplicity = 2 (idx_selected_points_send, idx_within_send_field,)
+  // multiplicity = 3 (idx_selected_points_send, idx_within_send_field, idx_send_buffer)
   SelectedPoints<Long> shuffle_idx_points_send;
   // Shuffle recv buffer to fill selected points according to this idx field. (after receiving)
-  // multiplicity = 2 (idx_selected_points_recv, idx_within_recv_field,)
+  // multiplicity = 3 (idx_selected_points_recv, idx_within_recv_field, idx_recv_buffer)
   SelectedPoints<Long> shuffle_idx_points_recv;
   // Local field according to this idx field.after receiving
   // multiplicity = 4 (idx_selected_points_send, idx_within_send_field, idx_selected_points_recv, idx_within_recv_field,)
