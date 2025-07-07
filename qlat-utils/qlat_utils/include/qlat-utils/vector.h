@@ -22,6 +22,18 @@ void clear_all_caches();
 
 // --------------------
 
+enum struct MemType : Int {
+  Cpu,   // CPU main memory
+  Acc,   // Accelerator
+  Comm,  // For communication on CPU
+  Uvm,   // Uniform virtual memory
+  SIZE,
+};
+
+std::string show(const MemType mem_type);
+
+MemType read_mem_type(const std::string& mem_type_str);
+
 API inline Long& get_alignment()
 // qlat parameter
 //
@@ -38,18 +50,33 @@ inline Long get_aligned_mem_size(const Long alignment, const Long min_size)
   return size;
 }
 
-API inline Long& get_mem_cache_max_size(const bool is_acc = false)
+API inline Long& get_mem_cache_max_size(const MemType mem_type = MemType::Cpu)
 // qlat parameter
 // unit in MB
 {
-  static Long max_size =
-      get_env_long_default("q_mem_cache_max_size", 512) * 1024L * 1024L;
-  static Long max_size_acc = get_env_long_default("q_mem_cache_acc_max_size",
-                                                  max_size / (1024L * 1024L)) *
-                             1024L * 1024L;
-  if (is_acc) {
+  static Long max_size = get_env_long_default("q_mem_cache_max_size", 512);
+  static Long max_size_cpu =
+      get_env_long_default("q_mem_cache_cpu_max_size", max_size) * 1024L *
+      1024L;
+  static Long max_size_acc =
+      get_env_long_default("q_mem_cache_acc_max_size", max_size) * 1024L *
+      1024L;
+  static Long max_size_comm =
+      get_env_long_default("q_mem_cache_comm_max_size", max_size) * 1024L *
+      1024L;
+  static Long max_size_uvm =
+      get_env_long_default("q_mem_cache_uvm_max_size", max_size) * 1024L *
+      1024L;
+  if (mem_type == MemType::Cpu) {
+    return max_size_cpu;
+  } else if (mem_type == MemType::Acc) {
     return max_size_acc;
+  } else if (mem_type == MemType::Comm) {
+    return max_size_comm;
+  } else if (mem_type == MemType::Uvm) {
+    return max_size_uvm;
   } else {
+    qassert(false);
     return max_size;
   }
 }
@@ -65,25 +92,27 @@ API inline Long& get_alloc_mem_max_size()
 }
 
 struct MemoryStats {
-  Long alloc;
-  Long alloc_acc;
-  Long cache;
-  Long cache_acc;
+  Long alloc[static_cast<Int>(MemType::SIZE)];
+  Long cache[static_cast<Int>(MemType::SIZE)];
   //
   MemoryStats() { init(); }
   //
   void init()
   {
-    alloc = 0;
-    alloc_acc = 0;
-    cache = 0;
-    cache_acc = 0;
+    for (Int i = 0; i < static_cast<Int>(MemType::SIZE); ++i) {
+      alloc[i] = 0;
+      cache[i] = 0;
+    }
   }
   //
   Long total()
   // total memory include the size of the cache
   {
-    return alloc + alloc_acc;
+    Long total = 0;
+    for (Int i = 0; i < static_cast<Int>(MemType::SIZE); ++i) {
+      total += alloc[i] + cache[i];
+    }
+    return total;
   }
 };
 
@@ -93,216 +122,42 @@ API inline MemoryStats& get_mem_stats()
   return ms;
 }
 
-inline void* alloc_mem_alloc(const Long size)
-{
-  TIMER_FLOPS("alloc_mem_alloc");
-  timer.flops += size;
-  static MemoryStats& ms = get_mem_stats();
-  ms.alloc += size;
-#if defined QLAT_NO_ALIGNED_ALLOC
-  return malloc(size);
-#else
-  const Long alignment = get_alignment();
-  return aligned_alloc(alignment, size);
-#endif
-}
+void* alloc_mem_alloc(const Long size, const MemType mem_type);
 
-inline void* alloc_mem_alloc_acc(const Long size)
-{
-#ifdef QLAT_USE_ACC
-  TIMER_FLOPS("alloc_mem_alloc_acc");
-  timer.flops += size;
-  static MemoryStats& ms = get_mem_stats();
-  ms.alloc_acc += size;
-  void* ptr = NULL;
-  qacc_Error err = qacc_GetLastError();
-  if (qacc_Success != err) {
-    qerr(fname + ssprintf(": Cuda error '%s' before qacc_MallocManaged.",
-                          qacc_GetErrorString(err)));
-  }
-  err = qacc_MallocManaged(&ptr, size);
-  if (qacc_Success != err) {
-    qerr(fname + ssprintf(": Cuda error '%s', size=%ld, ptr=%lX.",
-                          qacc_GetErrorString(err), size, ptr));
-  }
-  return ptr;
-#else
-  return alloc_mem_alloc(size);
-#endif
-}
-
-inline void free_mem_free(void* ptr, const Long size)
-{
-  TIMER_FLOPS("free_mem_free");
-  timer.flops += size;
-  static MemoryStats& ms = get_mem_stats();
-  ms.alloc -= size;
-  free(ptr);
-}
-
-inline void free_mem_free_acc(void* ptr, const Long size)
-{
-#ifdef QLAT_USE_ACC
-  TIMER_FLOPS("free_mem_free_acc");
-  timer.flops += size;
-  static MemoryStats& ms = get_mem_stats();
-  ms.alloc_acc -= size;
-  qacc_Error err = qacc_Free(ptr);
-  if (qacc_Success != err) {
-    if (qacc_ErrorCudartUnloading != err) {
-      qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Free.",
-                            qacc_GetErrorString(err), err));
-    }
-  }
-#else
-  free_mem_free(ptr, size);
-#endif
-}
+void free_mem_free(void* ptr, const Long size, const MemType mem_type);
 
 struct API MemCache {
-  bool is_acc;
-  Long mem_cache_size;
+  MemType mem_type;
   Long mem_cache_max_size;
+  Long mem_cache_size;
   std::unordered_multimap<Long, void*> db;
   //
-  MemCache(const bool is_acc_ = false, const Long mem_cache_max_size_ = -1)
+  MemCache(const MemType mem_type_ = MemType::Cpu,
+           const Long mem_cache_max_size_ = -1)
   {
-    is_acc = is_acc_;
-    mem_cache_max_size = mem_cache_max_size_;
-    if (mem_cache_max_size < 0) {
-      mem_cache_max_size = get_mem_cache_max_size(is_acc);
-    }
-    mem_cache_size = 0;
+    init(mem_type_, mem_cache_max_size_);
   }
   ~MemCache() { gc(); }
   //
-  void add(void* ptr, const Long size)
-  {
-    qassert(size > 0);
-    mem_cache_size += size;
-    static MemoryStats& ms = get_mem_stats();
-    if (is_acc) {
-      ms.cache_acc += size;
-    } else {
-      ms.cache += size;
-    }
-    std::pair<Long, void*> p(size, ptr);
-    db.insert(p);
-    if (mem_cache_size > mem_cache_max_size) {
-      gc();
-    }
-  }
-  //
-  void* del(const Long size)
-  {
-    auto iter = db.find(size);
-    if (iter == db.end()) {
-      return NULL;
-    } else {
-      mem_cache_size -= size;
-      static MemoryStats& ms = get_mem_stats();
-      if (is_acc) {
-        ms.cache_acc -= size;
-      } else {
-        ms.cache -= size;
-      }
-      void* ptr = iter->second;
-      db.erase(iter);
-      return ptr;
-    }
-  }
-  //
-  void gc()
-  {
-    if (mem_cache_size == 0) {
-      return;
-    }
-    TIMER_FLOPS("MemCache::gc()");
-    timer.flops += mem_cache_size;
-    static MemoryStats& ms = get_mem_stats();
-    if (is_acc) {
-      ms.cache_acc -= mem_cache_size;
-    } else {
-      ms.cache -= mem_cache_size;
-    }
-    for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
-      const Long size = iter->first;
-      void* ptr = iter->second;
-      qassert(ptr != NULL);
-      if (is_acc) {
-        free_mem_free_acc(ptr, size);
-      } else {
-        free_mem_free(ptr, size);
-      }
-      mem_cache_size -= size;
-    }
-    qassert(mem_cache_size == 0);
-    db.clear();
-  }
+  void init(const MemType mem_type_ = MemType::Cpu,
+            const Long mem_cache_max_size_ = -1);
+  void add(void* ptr, const Long size);
+  void* del(const Long size);
+  void gc();
 };
 
-API inline MemCache& get_mem_cache(const bool is_acc = false)
+std::vector<MemCache> mk_mem_cache_vec();
+
+API inline MemCache& get_mem_cache(const MemType mem_type = MemType::Cpu)
 {
-  static MemCache cache(false);
-  static MemCache cache_acc(true);
-  if (is_acc) {
-    return cache_acc;
-  } else {
-    return cache;
-  }
+  static std::vector<MemCache> cache_vec = mk_mem_cache_vec();
+  return cache_vec[static_cast<Int>(mem_type)];
 }
 
-inline void* alloc_mem(const Long min_size, const bool is_acc = false)
-{
-  if (min_size <= 0) {
-    return NULL;
-  }
-  TIMER_FLOPS("alloc_mem");
-  timer.flops += min_size;
-  const Long alignment = get_alignment();
-  const Long size = get_aligned_mem_size(alignment, min_size);
-  MemCache& cache = get_mem_cache(is_acc);
-  void* ptr = cache.del(size);
-  if (NULL != ptr) {
-    return ptr;
-  }
-  if (size + cache.mem_cache_size > cache.mem_cache_max_size) {
-    cache.gc();
-  }
-  static MemoryStats& ms = get_mem_stats();
-  if (size + ms.total() > get_alloc_mem_max_size()) {
-    displayln_info(
-        fname + ssprintf(": alloc %.3lf (GB) memory (current total %.3lf (GB))",
-                         (double)min_size / (1024.0 * 1024.0 * 1024.0),
-                         (double)ms.total() / (1024.0 * 1024.0 * 1024.0)));
-    clear_mem_cache();
-    displayln_info(
-        fname + ssprintf(": after clear mem_cache (current total %.3lf (GB))",
-                         (double)ms.total() / (1024.0 * 1024.0 * 1024.0)));
-  }
-  {
-    TIMER_FLOPS("alloc_mem-alloc");
-    timer.flops += min_size;
-    void* ptr = NULL;
-    if (is_acc) {
-      ptr = alloc_mem_alloc_acc(size);
-    } else {
-      ptr = alloc_mem_alloc(size);
-    }
-    memset(ptr, 0, size);
-    return ptr;
-  }
-}
+void* alloc_mem(const Long min_size, const MemType mem_type = MemType::Cpu);
 
-inline void free_mem(void* ptr, const Long min_size, const bool is_acc = false)
-{
-  TIMER_FLOPS("free_mem");
-  timer.flops += min_size;
-  const Long alignment = get_alignment();
-  const Long size = get_aligned_mem_size(alignment, min_size);
-  MemCache& cache = get_mem_cache(is_acc);
-  cache.add(ptr, size);
-}
+void free_mem(void* ptr, const Long min_size,
+              const MemType mem_type = MemType::Cpu);
 
 inline void displayln_malloc_stats()
 {
@@ -319,16 +174,16 @@ struct API vector {
   // (it is likely not what you think it is)
   // Only used in qacc macros, or if it is already a copy.
   //
-  bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc;   // if place data on qacc_MallocManaged memory (default false)
   Vector<M> v;
+  MemType mem_type;  // if place data on accelerator memory
+  bool is_copy;  // do not free memory if is_copy=true
   //
   vector()
   {
     // TIMER("vector::vector()")
+    mem_type = MemType::Cpu;
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = false;
   }
   vector(const vector<M>& vp)
   {
@@ -337,15 +192,15 @@ struct API vector {
     qassert(vp.is_copy);
 #endif
     is_copy = true;
-    qassert(vp.is_acc);
-    is_acc = vp.is_acc;
+    qassert(vp.mem_type == MemType::Uvm);
+    mem_type = vp.mem_type;
     v = vp.v;
   }
   vector(vector<M>&& vp) noexcept
   {
     // TIMER("vector::vector(&&)")
     is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
+    mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -354,7 +209,7 @@ struct API vector {
     // TIMER("vector::vector(size)")
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = false;
+    mem_type = MemType::Cpu;
     resize(size);
   }
   vector(const Long size, const M& x)
@@ -362,14 +217,14 @@ struct API vector {
     // TIMER("vector::vector(size,x)")
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = false;
+    mem_type = MemType::Cpu;
     resize(size, x);
   }
   vector(const std::vector<M>& vp)
   {
     // TIMER("vector::vector(std::vector&)")
     is_copy = false;
-    is_acc = false;
+    mem_type = MemType::Cpu;
     *this = vp;
   }
   //
@@ -382,7 +237,7 @@ struct API vector {
   }
   //
   void init()
-  // does not change is_acc
+  // does not change mem_type
   {
     if (not is_copy) {
       clear();
@@ -394,43 +249,43 @@ struct API vector {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, v.n * sizeof(M), is_acc);
+      free_mem(v.p, v.n * sizeof(M), mem_type);
     }
     v = Vector<M>();
     qassert(v.p == NULL);
   }
   //
-  void set_acc(const bool is_acc_)
+  void set_mem_type(const MemType mem_type_)
   {
     qassert(not is_copy);
-    if (is_acc == is_acc_) {
+    if (mem_type == mem_type_) {
       return;
     }
     if (NULL == v.p) {
-      is_acc = is_acc_;
+      mem_type = mem_type_;
       return;
     }
     vector<M> vec;
-    vec.set_acc(is_acc_);
+    vec.set_mem_type(mem_type_);
     vec = *this;
     swap(vec);
-    qassert(is_acc == is_acc_);
+    qassert(mem_type == mem_type_);
   }
   //
   qacc void swap(vector<M>& x)
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
-    bool tb = x.is_acc;
-    x.is_acc = is_acc;
-    is_acc = tb;
+    const MemType tb = x.mem_type;
+    x.mem_type = mem_type;
+    mem_type = tb;
     Vector<M> t = v;
     v = x.v;
     x.v = t;
   }
   //
   void set_view(const Vector<M>& vec)
-  // does not change is_acc
+  // does not change mem_type
   {
     init();
     is_copy = true;
@@ -440,16 +295,24 @@ struct API vector {
   {
     init();
     is_copy = true;
-    is_acc = vec.is_acc;
+    mem_type = vec.mem_type;
     v = vec.v;
   }
   //
+  template <class N>
+  void set_view_cast(const Vector<N>& vec)
+  // does not change mem_type
+  {
+    init();
+    is_copy = true;
+    v.set_cast(vec.v);
+  }
   template <class N>
   void set_view_cast(const vector<N>& vec)
   {
     init();
     is_copy = true;
-    is_acc = vec.is_acc;
+    mem_type = vec.mem_type;
     v.set_cast(vec.v);
   }
   //
@@ -458,13 +321,13 @@ struct API vector {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
+      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
       v.n = size;
     } else if (v.n != size) {
       vector<M> vp;
-      vp.set_acc(is_acc);
+      vp.set_mem_type(mem_type);
       vp.v = v;
-      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
+      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
       v.n = size;
       if (size <= vp.v.n) {
         std::memcpy((void*)v.p, (void*)vp.v.p, size * sizeof(M));
@@ -478,16 +341,16 @@ struct API vector {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
+      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
       v.n = size;
       for (Long i = 0; i < v.n; ++i) {
         v[i] = x;
       }
     } else if (v.n != size) {
       vector<M> vp;
-      vp.set_acc(is_acc);
+      vp.set_mem_type(mem_type);
       vp.v = v;
-      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
+      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
       v.n = size;
       if (size <= vp.v.n) {
         std::memcpy(v.p, vp.v.p, v.n * sizeof(M));
@@ -515,7 +378,7 @@ struct API vector {
   {
     // TIMER("vector::operator=(&&)");
     is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
+    mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
     return *this;
@@ -549,7 +412,7 @@ struct API vector_acc : vector<M> {
   //
   using vector<M>::v;
   using vector<M>::is_copy;
-  using vector<M>::is_acc;
+  using vector<M>::mem_type;
   using vector<M>::resize;
   //
   vector_acc()
@@ -557,7 +420,7 @@ struct API vector_acc : vector<M> {
     // TIMER("vector_acc::vector_acc()");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = true;
+    mem_type = MemType::Uvm;
   }
   vector_acc(const vector_acc<M>& vp)
   {
@@ -566,16 +429,16 @@ struct API vector_acc : vector<M> {
     qassert(vp.is_copy);
 #endif
     is_copy = true;
-    qassert(vp.is_acc);
-    is_acc = vp.is_acc;
+    qassert(vp.mem_type == MemType::Uvm);
+    mem_type = vp.mem_type;
     v = vp.v;
   }
   vector_acc(vector_acc<M>&& vp) noexcept
   {
     // TIMER("vector_acc::vector_acc(&&)")
-    // qassert(vp.is_acc);
+    // qassert(vp.mem_type == MemType::Uvm);
     is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
+    mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -584,7 +447,7 @@ struct API vector_acc : vector<M> {
     // TIMER("vector_acc::vector_acc(size)");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = true;
+    mem_type = MemType::Uvm;
     resize(size);
   }
   vector_acc(const Long size, const M& x)
@@ -592,14 +455,14 @@ struct API vector_acc : vector<M> {
     // TIMER("vector_acc::vector_acc(size,x)");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = true;
+    mem_type = MemType::Uvm;
     resize(size, x);
   }
   vector_acc(const std::vector<M>& vp)
   {
     // TIMER("vector_acc::vector_acc(std::vector&)");
     is_copy = false;
-    is_acc = true;
+    mem_type = MemType::Uvm;
     *this = vp;
   }
   //
@@ -723,7 +586,7 @@ struct API box {
   // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;  // do not free memory if is_copy=true
-  bool is_acc;   // if place data on qacc_MallocManaged memory (default false)
+  MemType mem_type;  // if place data on accelerator memory
   Handle<M> v;
   //
   box()
@@ -731,7 +594,7 @@ struct API box {
     // TIMER("box::box()");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = false;
+    mem_type = MemType::Cpu;
   }
   box(const box<M>& vp)
   {
@@ -740,15 +603,15 @@ struct API box {
     qassert(vp.is_copy);
 #endif
     is_copy = true;
-    qassert(vp.is_acc);
-    is_acc = vp.is_acc;
+    qassert(vp.mem_type == MemType::Uvm);
+    mem_type = vp.mem_type;
     v = vp.v;
   }
   box(box<M>&& vp) noexcept
   {
     // TIMER("box::box(&&)");
     is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
+    mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -757,7 +620,7 @@ struct API box {
     // TIMER("box::box(x)");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = false;
+    mem_type = MemType::Uvm;
     set(x);
   }
   //
@@ -770,7 +633,7 @@ struct API box {
   }
   //
   void init()
-  // does not change is_acc
+  // does not change mem_type
   {
     if (not is_copy) {
       clear();
@@ -782,50 +645,50 @@ struct API box {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, sizeof(M), is_acc);
+      free_mem(v.p, sizeof(M), MemType::Cpu);
     }
     v = Handle<M>();
     qassert(v.p == NULL);
   }
   //
-  void set_acc(const bool is_acc_)
+  void set_mem_type(const MemType mem_type_)
   {
     qassert(not is_copy);
-    if (is_acc == is_acc_) {
+    if (mem_type == mem_type_) {
       return;
     }
     if (NULL == v.p) {
-      is_acc = is_acc_;
+      mem_type = mem_type_;
       return;
     }
     box<M> b;
-    b.set_acc(is_acc_);
+    b.set_mem_type(mem_type_);
     b = *this;
     swap(b);
-    qassert(is_acc == is_acc_);
+    qassert(mem_type == mem_type_);
   }
   //
   qacc void swap(box<M>& x)
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
-    bool tb = x.is_acc;
-    x.is_acc = is_acc;
-    is_acc = tb;
+    const MemType tb = x.mem_type;
+    x.mem_type = mem_type;
+    mem_type = tb;
     Handle<M> t = v;
     v = x.v;
     x.v = t;
   }
   //
   void set_view(const M& x)
-  // does not change is_acc
+  // does not change mem_type
   {
     init();
     is_copy = true;
     v.p = &x;
   }
   void set_view(const Handle<M> h)
-  // does not change is_acc
+  // does not change mem_type
   {
     init();
     is_copy = true;
@@ -835,7 +698,7 @@ struct API box {
   {
     init();
     is_copy = true;
-    is_acc = b.is_acc;
+    mem_type = b.mem_type;
     v = b.v;
   }
   //
@@ -843,7 +706,7 @@ struct API box {
   {
     qassert(not is_copy);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(sizeof(M), is_acc);
+      v.p = (M*)alloc_mem(sizeof(M), mem_type);
     }
     v() = x;
   }
@@ -859,7 +722,7 @@ struct API box {
   {
     // TIMER("box::operator=(&&)");
     is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
+    mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
     return *this;
@@ -882,7 +745,7 @@ struct API box_acc : box<M> {
   //
   using box<M>::v;
   using box<M>::is_copy;
-  using box<M>::is_acc;
+  using box<M>::mem_type;
   using box<M>::set;
   //
   box_acc()
@@ -890,7 +753,7 @@ struct API box_acc : box<M> {
     // TIMER("box_acc::box_acc()");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = true;
+    mem_type = MemType::Uvm;
   }
   box_acc(const box_acc<M>& vp)
   {
@@ -899,16 +762,16 @@ struct API box_acc : box<M> {
     qassert(vp.is_copy);
 #endif
     is_copy = true;
-    qassert(vp.is_acc);
-    is_acc = vp.is_acc;
+    qassert(vp.mem_type == MemType::Uvm);
+    mem_type = vp.mem_type;
     v = vp.v;
   }
   box_acc(box_acc<M>&& vp) noexcept
   {
     // TIMER("box_acc::box_acc(&&)");
-    // qassert(vp.is_acc);
+    // qassert(vp.mem_type == MemType::Uvm);
     is_copy = vp.is_copy;
-    is_acc = vp.is_acc;
+    mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -917,7 +780,7 @@ struct API box_acc : box<M> {
     // TIMER("box_acc::box_acc(x)");
     qassert(v.p == NULL);
     is_copy = false;
-    is_acc = true;
+    mem_type = MemType::Uvm;
     set(x);
   }
   //

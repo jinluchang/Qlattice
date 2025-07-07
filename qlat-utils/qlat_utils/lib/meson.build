@@ -16,6 +16,7 @@ cppsources = files(
   'utils-io.cpp',
   'utils-vec.cpp',
   'rng-state.cpp',
+  'vector.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat_utils/lib')
 

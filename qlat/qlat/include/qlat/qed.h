@@ -178,7 +178,7 @@ inline void prop_photon_invert(QedGaugeField& egf,
 // egf in coordinate space.
 {
   TIMER_VERBOSE("prop_photon_invert");
-  const Geometry& geo = egf.geo();
+  const Geometry geo = egf.geo();
   fft_complex_field(egf, true);
   prop_mom_photon_invert(egf, momtwist);
   fft_complex_field(egf, false);
@@ -311,7 +311,7 @@ void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
                             const array<double, DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_spin_propagator4d");
-  const Geometry& geo = sp4d.geo();
+  const Geometry geo = sp4d.geo();
   fft_complex_field(sp4d, true);
   prop_mom_spin_propagator4d(sp4d, mass, momtwist);
   fft_complex_field(sp4d, false);
