@@ -431,14 +431,22 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     ts[i].init(total_site);
   }
   // original
-  vector_acc<Complex> sums_sub(n_points, 0.0);
-  vector_acc<Complex> sums_dsub(n_points, 0.0);
+  vector_acc<Complex> sums_sub(n_points);
+  vector_acc<Complex> sums_dsub(n_points);
   // pion projection based on location same as connected diagram
-  vector_acc<Complex> sums_sub_pi(n_points, 0.0);
-  vector_acc<Complex> sums_dsub_pi(n_points, 0.0);
+  vector_acc<Complex> sums_sub_pi(n_points);
+  vector_acc<Complex> sums_dsub_pi(n_points);
   // pion projection based on loop
-  vector_acc<Complex> sums_sub_pi_pisl(n_points, 0.0);
-  vector_acc<Complex> sums_dsub_pi_pisl(n_points, 0.0);
+  vector_acc<Complex> sums_sub_pi_pisl(n_points);
+  vector_acc<Complex> sums_dsub_pi_pisl(n_points);
+  //
+  set_zero(sums_sub);
+  set_zero(sums_dsub);
+  set_zero(sums_sub_pi);
+  set_zero(sums_dsub_pi);
+  set_zero(sums_sub_pi_pisl);
+  set_zero(sums_dsub_pi_pisl);
+  //
   qfor(idx, (Long)psel_lps.size(), {
     const Coordinate xg_y = psel_lps[idx];
     n_points_selected += 1;

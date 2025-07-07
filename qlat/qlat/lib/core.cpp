@@ -125,11 +125,6 @@ void PointsSelection::init(const Coordinate& total_site_, const SelectedPoints<C
 
 void PointsSelection::resize(const Long n_points) { xgs.resize(n_points); }
 
-void PointsSelection::resize(const Long n_points, const Coordinate& xg_init)
-{
-  xgs.resize(n_points, xg_init);
-}
-
 SelectedPoints<Coordinate> PointsSelection::view_sp() const
 {
   TIMER("PointsSelection::view_sp");

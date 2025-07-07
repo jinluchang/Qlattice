@@ -593,7 +593,12 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   // communicate to determine recv msg size from each node
   std::map<Int, Long> recv_id_node_size;
   {
-    vector<Long> send_size(num_node, 0), recv_size(num_node, -1);
+    vector<Long> send_size(num_node);
+    vector<Long> recv_size(num_node);
+    for (Int i = 0; i < num_node; ++i) {
+      send_size[i] = 0;
+      recv_size[i] = -1;
+    }
     for (auto it = send_id_node_size.cbegin(); it != send_id_node_size.cend();
          ++it) {
       const int id_node = it->first;
@@ -669,7 +674,10 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   clear(send_buffer);
   // recv_pack_infos
   {
-    vector<Int> local_geos_idx_from_new_id_node(new_num_node, -1);
+    vector<Int> local_geos_idx_from_new_id_node(new_num_node);
+    for (Int i = 0; i < new_num_node; ++i) {
+      local_geos_idx_from_new_id_node[i] = -1;
+    }
     for (int i = 0; i < (int)fsels.size(); ++i) {
       const int local_geos_idx = i;
       const Geometry& geo_recv = sp.geos_recv[i];
@@ -701,7 +709,8 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       set_field_selection(fsels[i], f_ranks[i]);
     }
     Long last_local_geos_idx = -1;
-    vector<Long> last_field_idx(sp.geos_recv.size(), 0);
+    vector<Long> last_field_idx(sp.geos_recv.size());
+    set_zero(last_field_idx);
     for (Long buffer_idx = 0; buffer_idx < (Long)recv_buffer.size();
          ++buffer_idx) {
       const Long gindex_s = recv_buffer[buffer_idx];

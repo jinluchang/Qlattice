@@ -434,7 +434,6 @@ struct API PointsSelection {
   qacc Coordinate& operator[](const Long i) { return xgs[i]; }
   //
   void resize(const Long size);
-  void resize(const Long size, const Coordinate& xg_init);
   //
   SelectedPoints<Coordinate> view_sp() const;
   //

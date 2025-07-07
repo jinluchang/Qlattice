@@ -137,8 +137,9 @@ CommPlan make_comm_plan(const CommMarks& marks)
     }
   }
   //
-  vector<Long> src_id_node_count(get_num_node(),
-                                 0);  // number of total send pkgs for each node
+  // number of total send pkgs for each node
+  vector<Long> src_id_node_count(get_num_node());
+  set_zero(src_id_node_count);
   {
     Long count = 0;
     for (std::map<int, std::vector<Long> >::const_iterator it =

@@ -175,14 +175,29 @@ struct API vector {
   //
   Vector<M> v;
   MemType mem_type;  // if place data on accelerator memory
-  bool is_copy;  // do not free memory if is_copy=true
+  bool is_copy;      // do not free memory if is_copy=true
   //
-  vector()
+  vector(const MemType mem_type_ = MemType::Cpu)
   {
-    // TIMER("vector::vector()")
-    mem_type = MemType::Cpu;
     qassert(v.p == NULL);
+    mem_type = mem_type_;
     is_copy = false;
+  }
+  vector(const Long size, const MemType mem_type_ = MemType::Cpu)
+  {
+    // TIMER("vector::vector(size)")
+    qassert(v.p == NULL);
+    mem_type = mem_type_;
+    is_copy = false;
+    resize(size);
+  }
+  vector(const std::vector<M>& vp, const MemType mem_type_ = MemType::Cpu)
+  {
+    // TIMER("vector::vector(std::vector&)")
+    qassert(v.p == NULL);
+    mem_type = mem_type_;
+    is_copy = false;
+    *this = vp;
   }
   vector(const vector<M>& vp)
   {
@@ -202,29 +217,6 @@ struct API vector {
     mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
-  }
-  vector(const Long size)
-  {
-    // TIMER("vector::vector(size)")
-    qassert(v.p == NULL);
-    is_copy = false;
-    mem_type = MemType::Cpu;
-    resize(size);
-  }
-  vector(const Long size, const M& x)
-  {
-    // TIMER("vector::vector(size,x)")
-    qassert(v.p == NULL);
-    is_copy = false;
-    mem_type = MemType::Cpu;
-    resize(size, x);
-  }
-  vector(const std::vector<M>& vp)
-  {
-    // TIMER("vector::vector(std::vector&)")
-    is_copy = false;
-    mem_type = MemType::Cpu;
-    *this = vp;
   }
   //
   ~vector()
@@ -264,14 +256,17 @@ struct API vector {
       mem_type = mem_type_;
       return;
     }
-    vector<M> vec;
-    vec.set_mem_type(mem_type_);
-    vec = *this;
-    swap(vec);
-    qassert(mem_type == mem_type_);
+    {
+      TIMER("vector::set_mem_type");
+      vector<M> vec;
+      vec.set_mem_type(mem_type_);
+      vec = *this;
+      swap(vec);
+      qassert(mem_type == mem_type_);
+    }
   }
   //
-  qacc void swap(vector<M>& x)
+  void swap(vector<M>& x)
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
@@ -322,42 +317,22 @@ struct API vector {
     if (v.p == NULL) {
       v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
       v.n = size;
-    } else if (v.n != size) {
-      vector<M> vp;
-      vp.set_mem_type(mem_type);
-      vp.v = v;
-      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
-      v.n = size;
-      if (size <= vp.v.n) {
-        std::memcpy((void*)v.p, (void*)vp.v.p, size * sizeof(M));
-      } else {
-        std::memcpy((void*)v.p, (void*)vp.v.p, vp.v.n * sizeof(M));
-      }
+      return;
     }
-  }
-  void resize(const Long size, const M& x)
-  {
-    qassert(not is_copy);
-    qassert(0 <= size);
-    if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
-      v.n = size;
-      for (Long i = 0; i < v.n; ++i) {
-        v[i] = x;
-      }
-    } else if (v.n != size) {
-      vector<M> vp;
-      vp.set_mem_type(mem_type);
-      vp.v = v;
-      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
-      v.n = size;
-      if (size <= vp.v.n) {
-        std::memcpy(v.p, vp.v.p, v.n * sizeof(M));
-      } else {
-        std::memcpy(v.p, vp.v.p, vp.v.n * sizeof(M));
-        for (Long i = vp.v.n; i < v.n; ++i) {
-          v[i] = x;
-        }
+    if (size == v.n) {
+      return;
+    }
+    if (size == 0) {
+      clear();
+      return;
+    }
+    {
+      TIMER("vector::resize");
+      vector<M> vp(size, mem_type);
+      swap(vp);
+      const Long n_min = std::min(size, vp.v.n);
+      for (Long i = 0; i < n_min; ++i) {
+        v[i] = vp.v[i];
       }
     }
   }
@@ -416,10 +391,25 @@ struct API vector_acc : vector<M> {
   //
   vector_acc()
   {
-    // TIMER("vector_acc::vector_acc()");
     qassert(v.p == NULL);
-    is_copy = false;
     mem_type = MemType::Uvm;
+    is_copy = false;
+  }
+  vector_acc(const Long size)
+  {
+    // TIMER("vector::vector(size)")
+    qassert(v.p == NULL);
+    mem_type = MemType::Uvm;
+    is_copy = false;
+    resize(size);
+  }
+  vector_acc(const std::vector<M>& vp)
+  {
+    // TIMER("vector::vector(std::vector&)")
+    qassert(v.p == NULL);
+    mem_type = MemType::Uvm;
+    is_copy = false;
+    *this = vp;
   }
   vector_acc(const vector_acc<M>& vp)
   {
@@ -440,29 +430,6 @@ struct API vector_acc : vector<M> {
     mem_type = vp.mem_type;
     v = vp.v;
     vp.is_copy = true;
-  }
-  vector_acc(const Long size)
-  {
-    // TIMER("vector_acc::vector_acc(size)");
-    qassert(v.p == NULL);
-    is_copy = false;
-    mem_type = MemType::Uvm;
-    resize(size);
-  }
-  vector_acc(const Long size, const M& x)
-  {
-    // TIMER("vector_acc::vector_acc(size,x)");
-    qassert(v.p == NULL);
-    is_copy = false;
-    mem_type = MemType::Uvm;
-    resize(size, x);
-  }
-  vector_acc(const std::vector<M>& vp)
-  {
-    // TIMER("vector_acc::vector_acc(std::vector&)");
-    is_copy = false;
-    mem_type = MemType::Uvm;
-    *this = vp;
   }
   //
   vector_acc<M>& operator=(const vector_acc<M>& vp)

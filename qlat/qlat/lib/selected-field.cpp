@@ -529,7 +529,8 @@ PointsSelection intersect(const FieldSelection& fsel,
   qassert(geo.is_only_local);
   qassert(geo.total_site() == psel.total_site);
   qassert(psel.points_dist_type == PointsDistType::Global);
-  vector<Int> is_psel_in_fsel(psel.size(), 0);
+  vector<Int> is_psel_in_fsel(psel.size());
+  set_zero(is_psel_in_fsel);
   qthread_for(i, (Long)psel.size(), {
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
     if (geo.is_local(xl)) {
@@ -568,14 +569,16 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
   glb_sum(total_n_elems);
   // const int num_node = geo.geon.num_node;
   const Int id_node = geo.geon.id_node;
-  vector<Long> vec(geo.geon.num_node, 0);
+  vector<Long> vec(geo.geon.num_node);
+  set_zero(vec);
   all_gather(get_data(vec), get_data_one_elem(n_elems));
   Long idx_offset = 0;
   for (Int i = 0; i < id_node; ++i) {
     idx_offset += vec[i];
   }
   qassert(idx_offset <= total_n_elems);
-  vector<Long> vec_gindex(total_n_elems, 0);
+  vector<Long> vec_gindex(total_n_elems);
+  set_zero(vec_gindex);
   qthread_for(idx, n_elems, {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
