@@ -419,7 +419,7 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     }
   });
   qassert(has_same_x_z);
-  vector_acc<ManyMagneticMoments> mmm_0_list(n_points);
+  vector<ManyMagneticMoments> mmm_0_list(n_points);
   qfor(k, n_points, {
     const Coordinate& xg_z = psel[k];
     mmm_0_list[k] = get_muon_line_m_extra_lat(xg_x, xg_x, xg_z, total_site,
@@ -431,14 +431,14 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
     ts[i].init(total_site);
   }
   // original
-  vector_acc<Complex> sums_sub(n_points);
-  vector_acc<Complex> sums_dsub(n_points);
+  vector<Complex> sums_sub(n_points);
+  vector<Complex> sums_dsub(n_points);
   // pion projection based on location same as connected diagram
-  vector_acc<Complex> sums_sub_pi(n_points);
-  vector_acc<Complex> sums_dsub_pi(n_points);
+  vector<Complex> sums_sub_pi(n_points);
+  vector<Complex> sums_dsub_pi(n_points);
   // pion projection based on loop
-  vector_acc<Complex> sums_sub_pi_pisl(n_points);
-  vector_acc<Complex> sums_dsub_pi_pisl(n_points);
+  vector<Complex> sums_sub_pi_pisl(n_points);
+  vector<Complex> sums_dsub_pi_pisl(n_points);
   //
   set_zero(sums_sub);
   set_zero(sums_dsub);

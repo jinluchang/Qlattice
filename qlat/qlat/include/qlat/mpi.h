@@ -279,6 +279,7 @@ int bcast(vector<M>& recv, const int root = 0)
   Long size = recv.size();
   ret += bcast<Long>(size, root);
   recv.resize(size);
+  recv.set_mem_type(MemType::Comm);
   ret += bcast(get_data(recv), root);
   return ret;
 }

@@ -236,14 +236,14 @@ qacc int multiplicity_flow_hmc(const bool is_same_mask_as_flow,
   }
 }
 
-inline const vector_acc<Long>& get_flowed_hmc_indices_mask_flow_size(
+inline const vector<Long>& get_flowed_hmc_indices_mask_flow_size(
     const Geometry& geo, const int mask, const int flow_size)
 {
-  static Cache<std::string, vector_acc<Long>> cache("flowed_hmc_indices_cache",
+  static Cache<std::string, vector<Long>> cache("flowed_hmc_indices_cache",
                                                     8, 2);
   const std::string key =
       ssprintf("%s-%d-%d", show(geo.node_site).c_str(), mask, flow_size);
-  vector_acc<Long>& vec = cache[key];
+  vector<Long>& vec = cache[key];
   if (vec.size() == 0) {
     Long count = 0;
     qfor(index, geo.local_volume(), {
@@ -494,7 +494,7 @@ inline void set_flow_staple_mask_mu_no_comm(FieldM<ColorMatrix, 1>& cf,
   qassert(0 <= mu and mu < 4);
   qassert(flow_size == 1 or flow_size == 2);
   const Geometry geo = geo_resize(gf_ext.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   cf.init(geo);
   qacc_for(idx, flowed_indices.size(), {
@@ -518,7 +518,7 @@ inline void gf_flow_plaq_mask_mu_no_comm(GaugeField& gf,
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
   const Geometry geo = geo_resize(gf0_ext.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   gf.init(geo);
   gf = gf0_ext;
@@ -550,7 +550,7 @@ inline void gf_flow_inv_plaq_mask_mu_no_comm(
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
   const Geometry geo = geo_resize(gf1_ext.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   gf.init(geo);
   gf = gf1_ext;
@@ -589,7 +589,7 @@ inline void set_marks_flow_plaq_mask_mu(CommMarks& marks, const Geometry& geo,
   const int flow_size = read_long(words[2]);
   qassert(mask == 1 or mask == 2);
   qassert(0 <= mu and mu < 4);
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   qacc_for(idx, flowed_indices.size(), {
     const Long index = flowed_indices[idx];
@@ -999,7 +999,7 @@ inline void set_n_mat_plaq_mask_mu_no_comm(FieldM<AdjointColorMatrix, 1>& nf,
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
   const Geometry geo = geo_resize(gf_ext.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   nf.init(geo);
   qacc_for(idx, flowed_indices.size(), {
@@ -1023,7 +1023,7 @@ inline void set_ad_x_and_j_n_x_plaq_mask_mu_no_comm(
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
   const Geometry geo = geo_resize(gf.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   f_ad_x_and_j_n_x.init(geo);
   qacc_for(idx, flowed_indices.size(), {
@@ -1129,7 +1129,7 @@ inline void set_mp_mat_plaq_mask_mu_no_comm(
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
   const Geometry geo = geo_resize(gf.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   mpf.init(geo);
   qacc_for(idx, flowed_indices.size(), {
@@ -1218,7 +1218,7 @@ inline void set_f_det_util_plaq_mask_mu(
   const box<ColorMatrixConstants>& cmcs =
       ColorMatrixConstants::get_instance_box();
   const Geometry geo = geo_resize(gf.geo());
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   f_n_e_mp_inv_j_x.init(geo);
   f_e2_dj_x_n_mp_inv.init(geo);
@@ -1320,7 +1320,7 @@ inline double mf_ln_det_sum(const Field<AdjointColorMatrix>& mpf,
 {
   TIMER("mf_ln_det_sum");
   const Geometry& geo = mpf.geo();
-  const vector_acc<Long>& flowed_indices =
+  const vector<Long>& flowed_indices =
       get_flowed_hmc_indices_mask_flow_size(geo, mask, flow_size);
   FieldM<double, 1> f_ln_det;
   f_ln_det.init(geo);

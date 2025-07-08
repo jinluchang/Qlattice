@@ -118,8 +118,8 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
   }
   TIMER_FLOPS("refresh_expanded");
   timer.flops += total_bytes / 2;
-  vector<M> send_buffer(plan.total_send_size);
-  vector<M> recv_buffer(plan.total_recv_size);
+  vector<M> send_buffer(plan.total_send_size, MemType::Comm);
+  vector<M> recv_buffer(plan.total_recv_size, MemType::Comm);
 #pragma omp parallel for
   for (Long i = 0; i < (Long)plan.send_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.send_pack_infos[i];

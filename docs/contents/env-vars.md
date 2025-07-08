@@ -130,6 +130,10 @@
 
   Default is `8`. Number of maximum parallel transfer in `mpi_alltoallv`.
 
+- `q_default_mem_type`
+
+  Default is `uvm`. Possible values include `cpu`, `acc`, `comm`, `uvm`.
+
 ## Useful options
 
 - `OMP_STACKSIZE=8M` OpenMP option for setting per thread stack size.

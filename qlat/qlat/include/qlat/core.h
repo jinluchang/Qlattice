@@ -399,7 +399,7 @@ struct API PointsSelection {
   bool initialized;
   PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
   Coordinate total_site;
-  vector_acc<Coordinate> xgs;
+  vector<Coordinate> xgs;
   //
   void init();
   void init(const Coordinate& total_site_, const Long n_points_,
@@ -425,6 +425,8 @@ struct API PointsSelection {
   //
   PointsSelection& operator=(const PointsSelection& psel) = default;
   PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
+  //
+  void set_mem_type(const MemType mem_type) { xgs.set_mem_type(mem_type); }
   //
   qacc Long size() const { return xgs.size(); }
   qacc const Coordinate* data() const { return xgs.data(); }
@@ -455,7 +457,7 @@ struct API SelectedPoints {
   PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
   Int multiplicity;
   Long n_points;
-  vector_acc<M> points;  // global quantity, same on each node if points_dist_type == PointsDistType::Global
+  vector<M> points;  // global quantity, same on each node if points_dist_type == PointsDistType::Global
   // points.size() == n_points * multiplicity if initialized = true
   //
   void init();
@@ -473,6 +475,8 @@ struct API SelectedPoints {
   //
   SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
   SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
+  //
+  void set_mem_type(const MemType mem_type) { points.set_mem_type(mem_type); }
   //
   void set_view(const SelectedPoints<M>& sp)
   {
@@ -652,8 +656,8 @@ struct API Field {
   //
   bool initialized;
   Int multiplicity;
-  box_acc<Geometry> geo;
-  vector_acc<M> field;
+  box<Geometry> geo;
+  vector<M> field;
   //
   void init();
   void init(const Geometry& geo_, const int multiplicity_);
@@ -1043,8 +1047,8 @@ struct API FieldSelection {
   //
   FieldIndex f_local_idx;  // idx of points on this node (-1 if not selected)
   //
-  vector_acc<int64_t> ranks;  // rank of the selected points. `ranks.size() == n_elems`
-  vector_acc<Long> indices;   // local indices of selected points. `indices.size() == n_elems`
+  vector<int64_t> ranks;  // rank of the selected points. `ranks.size() == n_elems`
+  vector<Long> indices;   // local indices of selected points. `indices.size() == n_elems`
   //
   void init();
   //
@@ -1065,8 +1069,8 @@ struct API SelectedField {
   bool initialized;
   Long n_elems;
   Int multiplicity;
-  box_acc<Geometry> geo;
-  vector_acc<M> field;  // field.size() == n_elems * multiplicity
+  box<Geometry> geo;
+  vector<M> field;  // field.size() == n_elems * multiplicity
   //
   void init();
   void init(const Geometry& geo_, const Long n_elems_, const Int multiplicity_);

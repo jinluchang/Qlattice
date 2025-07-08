@@ -138,7 +138,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   }
   //
   // number of total send pkgs for each node
-  vector<Long> src_id_node_count(get_num_node());
+  vector<Long> src_id_node_count(get_num_node(), MemType::Comm);
   set_zero(src_id_node_count);
   {
     Long count = 0;

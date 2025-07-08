@@ -374,8 +374,8 @@ bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2)
     return false;
   }
   bool is_same = true;
-  const vector_acc<Long>& indices1 = fsel1.indices;
-  const vector_acc<Long>& indices2 = fsel2.indices;
+  const vector<Long>& indices1 = fsel1.indices;
+  const vector<Long>& indices2 = fsel2.indices;
   qassert(indices1.size() == n_elems);
   qassert(indices2.size() == n_elems);
   qthread_for(idx, n_elems, {

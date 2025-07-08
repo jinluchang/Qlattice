@@ -11,19 +11,28 @@ void SelectedShufflePlan::init()
   num_selected_points_recv = 0;
   n_points_selected_points_send.clear();
   n_points_selected_points_recv.clear();
+  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_recv.set_mem_type(MemType::Cpu);
   SelectedPoints<Long>& spi_s = shuffle_idx_points_send;
   SelectedPoints<Long>& spi_r = shuffle_idx_points_recv;
   SelectedPoints<Long>& spi_l = shuffle_idx_points_local;
   spi_s.init();
   spi_r.init();
   spi_l.init();
+  spi_s.set_mem_type(MemType::Cpu);
+  spi_r.set_mem_type(MemType::Cpu);
+  spi_l.set_mem_type(MemType::Cpu);
   total_send_count = 0;
   total_recv_count = 0;
   total_local_count = 0;
-  sdispls.clear();
-  rdispls.clear();
   sendcounts.clear();
   recvcounts.clear();
+  sdispls.clear();
+  rdispls.clear();
+  sendcounts.set_mem_type(MemType::Cpu);
+  recvcounts.set_mem_type(MemType::Cpu);
+  sdispls.set_mem_type(MemType::Cpu);
+  rdispls.set_mem_type(MemType::Cpu);
 }
 
 void set_selected_shuffle_id_node_send_to(
@@ -88,6 +97,8 @@ void set_selected_shuffle_plan_no_reorder(
   ssp.total_send_count = n_points;
   ssp.sdispls.resize(num_node);
   ssp.rdispls.resize(num_node);
+  ssp.sendcounts.set_mem_type(MemType::Comm);
+  ssp.recvcounts.set_mem_type(MemType::Comm);
   ssp.sendcounts.resize(num_node);
   ssp.recvcounts.resize(num_node);
   set_zero(ssp.sdispls);
@@ -125,6 +136,8 @@ void set_selected_shuffle_plan_no_reorder(
   SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
   spi_r.init(ssp.total_recv_count, 1, ssp.points_dist_type_recv);
   qthread_for(idx, spi_r.n_points, { spi_r.get_elem(idx) = idx; });
+  ssp.sendcounts.set_mem_type(MemType::Cpu);
+  ssp.recvcounts.set_mem_type(MemType::Cpu);
 }
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
@@ -200,9 +213,11 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   qassert(spc.multiplicity == multiplicity);
   // Initialized `sp` to be the target of the shuffle before final shuffle.
   SelectedPoints<Char> sp;
+  sp.set_mem_type(MemType::Comm);
   sp.init(spc.n_points, multiplicity, ssp.points_dist_type_recv);
   // Copy spc0 to sp0. Reordered to be ready to send.
   SelectedPoints<Char> sp0;
+  sp0.set_mem_type(MemType::Comm);
   sp0.init(spc0.n_points, multiplicity, ssp.points_dist_type_send);
   qthread_for(idx, spc0.n_points, {
     const Vector<Char> v = spc0.get_elems_const(idx);
@@ -216,18 +231,14 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   {
     TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
-    vector<Char> send_buffer(sp0.points.size());
-    vector<Char> recv_buffer(sp.points.size());
-    assign(send_buffer, sp0.points);
     {
       TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
-      mpi_alltoallv(send_buffer.data(), ssp.sendcounts.data(),
-                    ssp.sdispls.data(), mpi_dtype.mpi_dtype, recv_buffer.data(),
+      mpi_alltoallv(sp0.points.data(), ssp.sendcounts.data(),
+                    ssp.sdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
                     ssp.recvcounts.data(), ssp.rdispls.data(),
                     mpi_dtype.mpi_dtype, get_comm());
       timer.flops += (ssp.total_send_count + ssp.total_recv_count) / 2;
     }
-    assign(sp.points, recv_buffer);
     timer.flops += (ssp.total_send_count + ssp.total_recv_count) / 2;
   }
   // perform final reordering.

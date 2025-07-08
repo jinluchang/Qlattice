@@ -34,6 +34,13 @@ std::string show(const MemType mem_type);
 
 MemType read_mem_type(const std::string& mem_type_str);
 
+API inline MemType& get_default_mem_type()
+{
+  static MemType mem_type =
+      read_mem_type(get_env_default("q_default_mem_type", "uvm"));
+  return mem_type;
+}
+
 API inline Long& get_alignment()
 // qlat parameter
 //
@@ -50,7 +57,7 @@ inline Long get_aligned_mem_size(const Long alignment, const Long min_size)
   return size;
 }
 
-API inline Long& get_mem_cache_max_size(const MemType mem_type = MemType::Cpu)
+API inline Long& get_mem_cache_max_size(const MemType mem_type)
 // qlat parameter
 // unit in MB
 {
@@ -132,14 +139,14 @@ struct API MemCache {
   Long mem_cache_size;
   std::unordered_multimap<Long, void*> db;
   //
-  MemCache(const MemType mem_type_ = MemType::Cpu,
+  MemCache(const MemType mem_type_ = get_default_mem_type(),
            const Long mem_cache_max_size_ = -1)
   {
     init(mem_type_, mem_cache_max_size_);
   }
   ~MemCache() { gc(); }
   //
-  void init(const MemType mem_type_ = MemType::Cpu,
+  void init(const MemType mem_type_ = get_default_mem_type(),
             const Long mem_cache_max_size_ = -1);
   void add(void* ptr, const Long size);
   void* del(const Long size);
@@ -148,7 +155,8 @@ struct API MemCache {
 
 std::vector<MemCache> mk_mem_cache_vec();
 
-API inline MemCache& get_mem_cache(const MemType mem_type = MemType::Cpu)
+API inline MemCache& get_mem_cache(
+    const MemType mem_type = get_default_mem_type())
 {
   static std::vector<MemCache> cache_vec = mk_mem_cache_vec();
   return cache_vec[static_cast<Int>(mem_type)];
@@ -182,13 +190,13 @@ struct API vector {
   MemType mem_type;  // if place data on accelerator memory
   bool is_copy;      // do not free memory if is_copy=true
   //
-  vector(const MemType mem_type_ = MemType::Cpu)
+  vector(const MemType mem_type_ = get_default_mem_type())
   {
     qassert(v.p == NULL);
     mem_type = mem_type_;
     is_copy = false;
   }
-  vector(const Long size, const MemType mem_type_ = MemType::Cpu)
+  vector(const Long size, const MemType mem_type_ = get_default_mem_type())
   {
     // TIMER("vector::vector(size)")
     qassert(v.p == NULL);
@@ -196,7 +204,7 @@ struct API vector {
     is_copy = false;
     resize(size);
   }
-  vector(const std::vector<M>& vp, const MemType mem_type_ = MemType::Cpu)
+  vector(const std::vector<M>& vp, const MemType mem_type_ = get_default_mem_type())
   {
     // TIMER("vector::vector(std::vector&)")
     qassert(v.p == NULL);
@@ -555,7 +563,7 @@ struct API box {
     // TIMER("box::box()");
     qassert(v.p == NULL);
     is_copy = false;
-    mem_type = MemType::Cpu;
+    mem_type = get_default_mem_type();
   }
   box(const box<M>& vp)
   {
@@ -640,6 +648,7 @@ struct API box {
   void set_view(const M& x)
   // does not change mem_type
   {
+    qassert(mem_type != MemType::Acc);
     init();
     is_copy = true;
     v.p = &x;
