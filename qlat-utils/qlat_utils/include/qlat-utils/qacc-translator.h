@@ -14,6 +14,7 @@
 #define qacc_DeviceSetCacheConfig       cudaDeviceSetCacheConfig
 #define qacc_DeviceSynchronize          cudaDeviceSynchronize
 #define qacc_ErrorCudartUnloading       cudaErrorCudartUnloading
+#define qacc_ErrorUnknown               cudaErrorUnknown
 #define qacc_Error                      cudaError
 #define qacc_Free                       cudaFree
 #define qacc_FuncCachePreferL1          cudaFuncCachePreferL1
@@ -59,6 +60,7 @@
 #define qacc_DeviceSetCacheConfig       hipDeviceSetCacheConfig
 #define qacc_DeviceSynchronize          hipDeviceSynchronize
 #define qacc_ErrorCudartUnloading       hipErrorDeinitialized
+#define qacc_ErrorUnknown               hipErrorUnknown
 #define qacc_Error                      hipError_t
 #define qacc_Free                       hipFree
 #define qacc_FuncCachePreferL1          hipFuncCachePreferL1

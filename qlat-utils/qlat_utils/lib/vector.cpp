@@ -242,22 +242,23 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
   TIMER_FLOPS("copy_mem");
   timer.flops += size;
 #ifdef QLAT_USE_ACC
+  qacc_Error err = qacc_ErrorUnknown;
   if (mem_type_src == MemType::Uvm or mem_type_dst == MemType::Uvm) {
-    qacc_Memcpy(dst, src, size, qacc_MemcpyDefault);
+    err = qacc_Memcpy(dst, src, size, qacc_MemcpyDefault);
   } else if (mem_type_src == MemType::Cpu or mem_type_src == MemType::Comm) {
     if (mem_type_dst == MemType::Cpu or mem_type_dst == MemType::Comm) {
       std::memcpy(dst, src, size);
-      return;
+      err = qacc_Success;
     } else if (mem_type_dst == MemType::Acc) {
-      qacc_Memcpy(dst, src, size, qacc_MemcpyHostToDevice);
+      err = qacc_Memcpy(dst, src, size, qacc_MemcpyHostToDevice);
     } else {
       qassert(false);
     }
   } else if (mem_type_src == MemType::Acc) {
     if (mem_type_dst == MemType::Cpu or mem_type_dst == MemType::Comm) {
-      qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToHost);
+      err = qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToHost);
     } else if (mem_type_dst == MemType::Acc) {
-      qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToDevice);
+      err = qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToDevice);
     } else {
       qassert(false);
     }
