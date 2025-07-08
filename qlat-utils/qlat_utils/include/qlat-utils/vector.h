@@ -158,6 +158,11 @@ void* alloc_mem(const Long min_size, const MemType mem_type);
 
 void free_mem(void* ptr, const Long min_size, const MemType mem_type);
 
+void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
+              const MemType mem_type_src, const Long size);
+
+// --------------------
+
 inline void displayln_malloc_stats()
 {
 #ifdef QLAT_USE_MALLOC_STATS
@@ -259,9 +264,9 @@ struct API vector {
     {
       TIMER("vector::set_mem_type");
       vector<M> vec;
-      vec.set_mem_type(mem_type_);
-      vec = *this;
       swap(vec);
+      mem_type = mem_type_;
+      vec = *this;
       qassert(mem_type == mem_type_);
     }
   }
@@ -270,12 +275,8 @@ struct API vector {
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
-    const MemType tb = x.mem_type;
-    x.mem_type = mem_type;
-    mem_type = tb;
-    Vector<M> t = v;
-    v = x.v;
-    x.v = t;
+    std::swap(mem_type, x.mem_type);
+    std::swap(v, x.v);
   }
   //
   void set_view(const Vector<M>& vec)
@@ -331,9 +332,7 @@ struct API vector {
       vector<M> vp(size, mem_type);
       swap(vp);
       const Long n_min = std::min(size, vp.v.n);
-      for (Long i = 0; i < n_min; ++i) {
-        v[i] = vp.v[i];
-      }
+      copy_mem(v.p, mem_type, vp.v.p, vp.mem_type, n_min * sizeof(M));
     }
   }
   //
@@ -343,9 +342,7 @@ struct API vector {
     qassert(not is_copy);
     clear();
     resize(vp.size());
-    for (Long i = 0; i < v.n; ++i) {
-      v[i] = vp[i];
-    }
+    copy_mem(v.p, mem_type, vp.v.p, vp.mem_type, v.n * sizeof(M));
     return *this;
   }
   vector<M>& operator=(vector<M>&& vp) noexcept
@@ -363,9 +360,7 @@ struct API vector {
     qassert(not is_copy);
     clear();
     resize(vp.size());
-    for (Long i = 0; i < v.n; ++i) {
-      v[i] = vp[i];
-    }
+    copy_mem(v.p, mem_type, vp.data(), MemType::Cpu, v.n * sizeof(M));
     return *this;
   }
   //
@@ -425,7 +420,7 @@ struct API vector_acc : vector<M> {
   vector_acc(vector_acc<M>&& vp) noexcept
   {
     // TIMER("vector_acc::vector_acc(&&)")
-    qassert(vp.mem_type == MemType::Uvm);
+    // qassert(vp.mem_type == MemType::Uvm);
     is_copy = vp.is_copy;
     mem_type = vp.mem_type;
     v = vp.v;
@@ -628,9 +623,9 @@ struct API box {
       return;
     }
     box<M> b;
-    b.set_mem_type(mem_type_);
-    b = *this;
     swap(b);
+    mem_type = mem_type_;
+    *this = b;
     qassert(mem_type == mem_type_);
   }
   //
@@ -638,12 +633,8 @@ struct API box {
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
-    const MemType tb = x.mem_type;
-    x.mem_type = mem_type;
-    mem_type = tb;
-    Handle<M> t = v;
-    v = x.v;
-    x.v = t;
+    std::swap(mem_type, x.mem_type);
+    std::swap(v, x.v);
   }
   //
   void set_view(const M& x)
@@ -668,12 +659,25 @@ struct API box {
     v = b.v;
   }
   //
-  void set(const M& x)
+  void alloc()
   {
     qassert(not is_copy);
     if (v.p == NULL) {
       v.p = (M*)alloc_mem(sizeof(M), mem_type);
     }
+  }
+  //
+  void set(const M& x)
+  {
+    if (mem_type == MemType::Acc) {
+      clear();
+      mem_type = MemType::Cpu;
+      alloc();
+      v() = x;
+      set_mem_type(MemType::Acc);
+      return;
+    }
+    alloc();
     v() = x;
   }
   //
@@ -681,7 +685,8 @@ struct API box {
   {
     // TIMER("box::operator=(&)");
     qassert(not is_copy);
-    set(vp());
+    alloc();
+    copy_mem(v.p, mem_type, vp.v.p, vp.mem_type, sizeof(M));
     return *this;
   }
   box<M>& operator=(box<M>&& vp) noexcept

@@ -236,4 +236,43 @@ void free_mem(void* ptr, const Long min_size, const MemType mem_type)
   cache.add(ptr, size);
 }
 
+void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
+            const MemType mem_type_src, const Long size)
+{
+  TIMER_FLOPS("copy_mem");
+  timer.flops += size;
+#ifdef QLAT_USE_ACC
+  if (mem_type_src == MemType::Uvm or mem_type_dst == MemType::Uvm) {
+    qacc_Memcpy(dst, src, size, qacc_MemcpyDefault);
+  } else if (mem_type_src == MemType::Cpu or mem_type_src == MemType::Comm) {
+    if (mem_type_dst == MemType::Cpu or mem_type_dst == MemType::Comm) {
+      std::memcpy(dst, src, size);
+      return;
+    } else if (mem_type_dst == MemType::Acc) {
+      qacc_Memcpy(dst, src, size, qacc_MemcpyHostToDevice);
+    } else {
+      qassert(false);
+    }
+  } else if (mem_type_src == MemType::Acc) {
+    if (mem_type_dst == MemType::Cpu or mem_type_dst == MemType::Comm) {
+      qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToHost);
+    } else if (mem_type_dst == MemType::Acc) {
+      qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToDevice);
+    } else {
+      qassert(false);
+    }
+  } else {
+    qassert(false);
+  }
+  if (qacc_Success != err) {
+    qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Malloc.",
+                          qacc_GetErrorString(err), err));
+  }
+#else
+  (void)mem_type_dst;
+  (void)mem_type_src;
+  std::memcpy(dst, src, size);
+#endif
+}
+
 }  // namespace qlat
