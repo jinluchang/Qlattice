@@ -330,10 +330,10 @@ struct API ColorMatrixConstants {
     }
   }
   //
-  API static const box_acc<ColorMatrixConstants>& get_instance_box()
+  API static const box<ColorMatrixConstants>& get_instance_box()
   {
-    static box_acc<ColorMatrixConstants> cmcs =
-        box_acc<ColorMatrixConstants>(ColorMatrixConstants());
+    static box<ColorMatrixConstants> cmcs =
+        box<ColorMatrixConstants>(ColorMatrixConstants(), MemType::Uvm);
     return cmcs;
   }
   //

@@ -145,8 +145,6 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
         box()
         void init()
         bool null() except +
-    cdef cppclass box_acc[T](box[T]):
-        box_acc()
 
 cdef extern from "qlat-utils/utils-vec.h" namespace "qlat":
 

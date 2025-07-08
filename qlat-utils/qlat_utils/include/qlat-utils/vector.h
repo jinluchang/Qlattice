@@ -41,6 +41,23 @@ API inline MemType& get_default_mem_type()
   return mem_type;
 }
 
+inline bool is_same_mem_type(const MemType t1, const MemType t2)
+{
+  if (t1 == t2) {
+    return true;
+  } else {
+#ifdef QLAT_USE_ACC
+    return false;
+#else
+    if (t1 == MemType::Comm or t2 == MemType::Comm) {
+      return false;
+    } else {
+      return true;
+    }
+#endif
+  }
+}
+
 API inline Long& get_alignment()
 // qlat parameter
 //
@@ -262,10 +279,11 @@ struct API vector {
   void set_mem_type(const MemType mem_type_)
   {
     qassert(not is_copy);
-    if (mem_type == mem_type_) {
+    if (NULL == v.p) {
+      mem_type = mem_type_;
       return;
     }
-    if (NULL == v.p) {
+    if (is_same_mem_type(mem_type, mem_type_)) {
       mem_type = mem_type_;
       return;
     }
@@ -584,12 +602,12 @@ struct API box {
     v = vp.v;
     vp.is_copy = true;
   }
-  box(const M& x)
+  box(const M& x, MemType mem_type_ = get_default_mem_type())
   {
     // TIMER("box::box(x)");
     qassert(v.p == NULL);
     is_copy = false;
-    mem_type = MemType::Uvm;
+    mem_type = mem_type_;
     set(x);
   }
   //
@@ -623,18 +641,22 @@ struct API box {
   void set_mem_type(const MemType mem_type_)
   {
     qassert(not is_copy);
-    if (mem_type == mem_type_) {
-      return;
-    }
     if (NULL == v.p) {
       mem_type = mem_type_;
       return;
     }
-    box<M> b;
-    swap(b);
-    mem_type = mem_type_;
-    *this = b;
-    qassert(mem_type == mem_type_);
+    if (is_same_mem_type(mem_type, mem_type_)) {
+      mem_type = mem_type_;
+      return;
+    }
+    {
+      TIMER("box::set_mem_type");
+      box<M> b;
+      swap(b);
+      mem_type = mem_type_;
+      *this = b;
+      qassert(mem_type == mem_type_);
+    }
   }
   //
   qacc void swap(box<M>& x)
@@ -715,82 +737,6 @@ struct API box {
 };
 
 template <class M>
-struct API box_acc : box<M> {
-  //
-  // like a one element vector_acc
-  //
-  // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
-  // Only used in qacc macros, or if it is already a copy.
-  //
-  using box<M>::v;
-  using box<M>::is_copy;
-  using box<M>::mem_type;
-  using box<M>::set;
-  //
-  box_acc()
-  {
-    // TIMER("box_acc::box_acc()");
-    qassert(v.p == NULL);
-    is_copy = false;
-    mem_type = MemType::Uvm;
-  }
-  box_acc(const box_acc<M>& vp)
-  {
-    // TIMER("box::box(&)");
-#ifndef QLAT_USE_ACC
-    qassert(vp.is_copy);
-#endif
-    is_copy = true;
-    qassert(vp.mem_type == MemType::Uvm);
-    mem_type = vp.mem_type;
-    v = vp.v;
-  }
-  box_acc(box_acc<M>&& vp) noexcept
-  {
-    // TIMER("box_acc::box_acc(&&)");
-    // qassert(vp.mem_type == MemType::Uvm);
-    is_copy = vp.is_copy;
-    mem_type = vp.mem_type;
-    v = vp.v;
-    vp.is_copy = true;
-  }
-  box_acc(const M& x)
-  {
-    // TIMER("box_acc::box_acc(x)");
-    qassert(v.p == NULL);
-    is_copy = false;
-    mem_type = MemType::Uvm;
-    set(x);
-  }
-  //
-  box_acc<M>& operator=(const box_acc<M>& vp)
-  {
-    // TIMER("box_acc::operator=(&)");
-    box<M>::operator=(vp);
-    return *this;
-  }
-  box_acc<M>& operator=(const box<M>& vp)
-  {
-    // TIMER("box_acc::operator=(&)");
-    box<M>::operator=(vp);
-    return *this;
-  }
-  box_acc<M>& operator=(box_acc<M>&& vp) noexcept
-  {
-    // TIMER("box_acc::operator=(&&)");
-    box<M>::operator=(std::move(vp));
-    return *this;
-  }
-  box_acc<M>& operator=(box<M>&& vp) noexcept
-  {
-    // TIMER("box_acc::operator=(&&)");
-    box<M>::operator=(std::move(vp));
-    return *this;
-  }
-};
-
-template <class M>
 void clear(box<M>& v)
 {
   v.clear();
@@ -813,14 +759,6 @@ struct IsDataVectorType<box<M>> {
 };
 
 template <class M>
-struct IsDataVectorType<box_acc<M>> {
-  using DataType = M;
-  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
-  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
-  static constexpr bool value = is_data_value_type<DataType>();
-};
-
-template <class M>
 qacc Vector<M> get_data(const box<M>& v)
 {
   if (not v.null()) {
@@ -828,12 +766,6 @@ qacc Vector<M> get_data(const box<M>& v)
   } else {
     return Vector<M>();
   }
-}
-
-template <class M>
-qacc Vector<M> get_data(const box_acc<M>& v)
-{
-  return get_data((const box<M>&)v);
 }
 
 }  // namespace qlat

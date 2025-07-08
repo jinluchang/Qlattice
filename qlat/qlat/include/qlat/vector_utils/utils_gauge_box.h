@@ -28,7 +28,7 @@ struct API FieldBoxT {
   //
   //Su3 type;   // 6, anti-hermition, 9 usual
   int Multiplicity;
-  box_acc<Geometry> geo;
+  box<Geometry> geo;
   Handle<Ty > v;//pointers to object
   //
   FieldBoxT()
@@ -140,7 +140,7 @@ struct API FieldBoxT {
     v = x.v;
     x.v = t;
 
-    box_acc<Geometry> g =   geo;
+    box<Geometry> g =   geo;
     geo   = x.geo;
     x.geo = g;
 

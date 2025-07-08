@@ -81,49 +81,7 @@ LatDim lat_dim_string(const std::string& name, const VecS& indices)
   return dim;
 }
 
-inline Long lat_dim_idx(const LatDim& dim, const std::string& idx)
-// return the Long idx_int that dim.indices[idx_int] contains the std::string&
-// idx. Will check if the idx_int is unique.
-//
-// For dim.indices does not cover the entire range, will require exact match or
-// (- read_long(idx) - 1). Default index being -idx-1.
-{
-  if ((Long)dim.indices.size() == 0) {
-    Long i = read_long(idx);
-    if (i >= 0) {
-      qassert(i < dim.size);
-      return i;
-    } else {
-      i = -i - 1;
-      qassert(i < dim.size);
-      return i;
-    }
-  } else if ((Long)dim.indices.size() == dim.size) {
-    for (Long i = 0; i < (Long)dim.indices.size(); ++i) {
-      if (idx == dim.indices[i]) {
-        return i;
-      }
-    }
-    std::vector<Long> possible_i_vec;
-    for (Long i = 0; i < (Long)dim.indices.size(); ++i) {
-      if (dim.indices[i].find(idx) != std::string::npos) {
-        possible_i_vec.push_back(i);
-      }
-    }
-    qassert(possible_i_vec.size() == 1);
-    return possible_i_vec[0];
-  } else {
-    qassert((Long)dim.indices.size() <= dim.size);
-    for (Long i = 0; i < (Long)dim.indices.size(); ++i) {
-      if (idx == dim.indices[i]) {
-        return i;
-      }
-    }
-    const Long i = -read_long(idx) - 1;
-    qassert((Long)dim.indices.size() <= i and i < dim.size);
-    return i;
-  }
-}
+Long lat_dim_idx(const LatDim& dim, const std::string& idx);
 
 inline Long lat_dim_idx(const LatDim& dim, const Long& idx)
 {

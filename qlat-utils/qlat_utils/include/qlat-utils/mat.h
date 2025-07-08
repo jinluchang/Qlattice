@@ -13,7 +13,7 @@ void benchmark_matrix_functions(const Long count = 128);
 
 qacc WilsonMatrix g5_herm(const WilsonMatrix& m)
 {
-  const box_acc<SpinMatrixConstants>& smc = get_spin_matrix_constants();
+  const box<SpinMatrixConstants>& smc = get_spin_matrix_constants();
   const SpinMatrix& gamma5 = smc().gamma5;
   const WilsonMatrix ret = gamma5 * (WilsonMatrix)matrix_adjoint(m) * gamma5;
   return ret;

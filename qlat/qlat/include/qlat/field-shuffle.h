@@ -709,7 +709,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       set_field_selection(fsels[i], f_ranks[i]);
     }
     Long last_local_geos_idx = -1;
-    vector<Long> last_field_idx(sp.geos_recv.size());
+    vector<Long> last_field_idx(sp.geos_recv.size(), MemType::Cpu);
     set_zero(last_field_idx);
     for (Long buffer_idx = 0; buffer_idx < (Long)recv_buffer.size();
          ++buffer_idx) {

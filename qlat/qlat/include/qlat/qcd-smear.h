@@ -111,7 +111,7 @@ void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
   const int dir_limit = smear_in_time_dir ? 4 : 3;
   array<ComplexD, 8> mom_factors_v;
-  box_acc<array<ComplexD, 8>> mom_factors(
+  box<array<ComplexD, 8>> mom_factors(
       mom_factors_v);  // (array<ComplexD, 8>());
   for (int i = 0; i < 8; ++i) {
     const int dir = i - 4;

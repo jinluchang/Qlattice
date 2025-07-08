@@ -462,10 +462,10 @@ struct API SpinMatrixConstantsT {
     }
   }
   //
-  API static const box_acc<SpinMatrixConstantsT<T>>& get_instance_box()
+  API static const box<SpinMatrixConstantsT<T>>& get_instance_box()
   {
-    static box_acc<SpinMatrixConstantsT<T>> smcs =
-        box_acc<SpinMatrixConstantsT<T>>(SpinMatrixConstantsT<T>());
+    static box<SpinMatrixConstantsT<T>> smcs =
+        box<SpinMatrixConstantsT<T>>(SpinMatrixConstantsT<T>(), MemType::Uvm);
     return smcs;
   }
   //
@@ -531,13 +531,14 @@ struct API SpinMatrixConstantsT {
   }
   API static const SpinMatrixT<T> get_cps_sigmas(int i, int j)
   {
-    return (get_instance().cps_gammas[i] * get_instance().cps_gammas[j] -
-            get_instance().cps_gammas[j] * get_instance().cps_gammas[i]) /
+    const SpinMatrixConstantsT<T>& instance = get_instance();
+    return (instance.cps_gammas[i] * instance.cps_gammas[j] -
+            instance.cps_gammas[j] * instance.cps_gammas[i]) /
            2.;
   }
 };
 
-inline const box_acc<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
+inline const box<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
 {
   return SpinMatrixConstantsT<>::get_instance_box();
 }

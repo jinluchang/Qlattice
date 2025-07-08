@@ -410,7 +410,7 @@ inline void load_or_compute_low_modes(LowModesCPS& lm, const std::string& path,
 }
 
 struct InverterDomainWallCPS {
-  box_acc<Geometry> geo;
+  box<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   //

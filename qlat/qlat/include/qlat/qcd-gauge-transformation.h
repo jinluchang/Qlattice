@@ -295,7 +295,7 @@ struct GaugeTransformInverter
 // the result should be the same as invert with gf_fix where
 // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
-  box_acc<Geometry> geo;
+  box<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   //
