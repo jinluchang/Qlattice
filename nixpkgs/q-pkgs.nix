@@ -481,7 +481,13 @@ let
     #
     qlat-py = python3.withPackages (ps: builtins.attrValues qlat-py-pkgs);
     qlat-pkgs = {
-      inherit qlat-py;
+      inherit
+      qlat-py
+      qlat-nixgl
+      qlat-stdenv
+      mpi
+      nvidia_x11_bin
+      ;
     } // qlat-dep-pkgs // qlat-dep-pkgs-extra;
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${qlat-name}";
@@ -601,8 +607,8 @@ let
         qlat-nixgl
         qlat-stdenv
         mpi
-        ollama
         nvidia_x11_bin
+        ollama
         ;
         inherit (pkgs)
         bashInteractive
