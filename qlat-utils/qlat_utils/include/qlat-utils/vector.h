@@ -274,7 +274,7 @@ struct API vector {
       vector<M> vec;
       swap(vec);
       mem_type = mem_type_;
-      vec = *this;
+      *this = vec;
       qassert(mem_type == mem_type_);
     }
   }
