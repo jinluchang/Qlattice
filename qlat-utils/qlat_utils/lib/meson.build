@@ -11,6 +11,7 @@ cppsources = files(
   'timer.cpp',
   'lat-io.cpp',
   'mat.cpp',
+  'matrix-hmc.cpp',
   'mpi-auto.cpp',
   'qar.cpp',
   'utils-io.cpp',
