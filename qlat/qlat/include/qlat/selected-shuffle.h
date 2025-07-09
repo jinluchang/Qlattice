@@ -47,6 +47,11 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
                                   const SelectedShufflePlan& ssp);
 
+void shuffle_selected_points_char(
+    std::vector<SelectedPoints<Char>>& spc_vec,
+    const std::vector<SelectedPoints<Char>>& spc0_vec,
+    const SelectedShufflePlan& ssp);
+
 void shuffle_points_selection(PointsSelection& psel,
                               const PointsSelection& psel0,
                               const SelectedShufflePlan& ssp);
