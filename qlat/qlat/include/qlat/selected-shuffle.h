@@ -17,20 +17,20 @@ struct SelectedShufflePlan {
   // n_points_selected_points_recv.size() == num_selected_points_recv
   vector<Long> n_points_selected_points_recv;
   // Prepare send buffer from selected points according to this idx field. (before sending)
-  // multiplicity = 3 (idx_selected_points_send, idx_within_send_field, idx_send_buffer)
+  // multiplicity = 3 (idx_selected_points_send, idx_within_field_send, idx_buffer_send)
   SelectedPoints<Long> shuffle_idx_points_send;
   // Shuffle recv buffer to fill selected points according to this idx field. (after receiving)
-  // multiplicity = 3 (idx_selected_points_recv, idx_within_recv_field, idx_recv_buffer)
+  // multiplicity = 3 (idx_selected_points_recv, idx_within_field_recv, idx_buffer_recv)
   SelectedPoints<Long> shuffle_idx_points_recv;
   // Local field according to this idx field.after receiving
-  // multiplicity = 4 (idx_selected_points_send, idx_within_send_field, idx_selected_points_recv, idx_within_recv_field,)
+  // multiplicity = 4 (idx_selected_points_send, idx_within_field_send, idx_selected_points_recv, idx_within_field_recv,)
   SelectedPoints<Long> shuffle_idx_points_local;
-  // shuffle_idx_points_send.n_points == total_send_count
-  Long total_send_count;
-  // shuffle_idx_points_recv.n_points == total_recv_count
-  Long total_recv_count;
-  // shuffle_idx_points_local.n_points == total_local_count
-  Long total_local_count;
+  // shuffle_idx_points_send.n_points == total_count_send
+  Long total_count_send;
+  // shuffle_idx_points_recv.n_points == total_count_recv
+  Long total_count_recv;
+  // shuffle_idx_points_local.n_points == total_count_local
+  Long total_count_local;
   // Used in mpi_alltoallv
   vector<Long> sendcounts;
   vector<Long> recvcounts;
@@ -57,7 +57,7 @@ void shuffle_selected_points(SelectedPoints<M>& sp,
                              const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_points(sp,sp0,ssp)");
-  const Long n_points = ssp.total_recv_count;
+  const Long n_points = ssp.total_count_recv + ssp.total_count_local;
   const Int multiplicity = sp0.multiplicity;
   sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());
@@ -75,7 +75,7 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf0,
                             const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_field(sp,sf0,ssp)");
-  const Long n_points = ssp.total_recv_count;
+  const Long n_points = ssp.total_count_recv + ssp.total_count_local;
   const Int multiplicity = sf0.multiplicity;
   sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());
