@@ -57,7 +57,9 @@ void shuffle_selected_points(SelectedPoints<M>& sp,
                              const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_points(sp,sp0,ssp)");
-  const Long n_points = ssp.total_count_recv + ssp.total_count_local;
+  qassert(ssp.num_selected_points_send == 1);
+  qassert(ssp.num_selected_points_recv == 1);
+  const Long n_points = ssp.n_points_selected_points_recv[0];
   const Int multiplicity = sp0.multiplicity;
   sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());
@@ -75,7 +77,9 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf0,
                             const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_field(sp,sf0,ssp)");
-  const Long n_points = ssp.total_count_recv + ssp.total_count_local;
+  qassert(ssp.num_selected_points_send == 1);
+  qassert(ssp.num_selected_points_recv == 1);
+  const Long n_points = ssp.n_points_selected_points_recv[0];
   const Int multiplicity = sf0.multiplicity;
   sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
   SelectedPoints<Char> spc(sp.view_as_char());

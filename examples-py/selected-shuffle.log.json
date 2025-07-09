@@ -12,6 +12,44 @@
   "hash(psel_s)=928957ecb722ae6b4eeb70cbbb9ed4ef6e85dc0ab3a7694ddb1844f3ba611365"
  ],
  [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": -1.2024589383336812,
+     "imag": -2.5219780535757867,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.6904460800645555,
+     "imag": -0.07611231787259505,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": -1.2024589383336812,
+     "imag": -2.5219780535757867,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.6904460800645555,
+     "imag": -0.07611231787259505,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "selected_shuffle_random: Coordinate([4, 4, 4, 4]) 2 0"
  ],
  [
@@ -22,6 +60,44 @@
  ],
  [
   "hash(psel_s)=928957ecb722ae6b4eeb70cbbb9ed4ef6e85dc0ab3a7694ddb1844f3ba611365"
+ ],
+ [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": -0.49691133355355416,
+     "imag": -0.32825816067694036,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.08167785502036395,
+     "imag": -0.3174375720963956,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": -0.49691133355355416,
+     "imag": -0.32825816067694036,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.08167785502036395,
+     "imag": -0.3174375720963956,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "selected_shuffle_random: Coordinate([4, 4, 4, 4]) 3 0"
@@ -36,6 +112,44 @@
   "hash(psel_s)=928957ecb722ae6b4eeb70cbbb9ed4ef6e85dc0ab3a7694ddb1844f3ba611365"
  ],
  [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": -0.5444377292352057,
+     "imag": -2.1934939693912296,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.6316255788683511,
+     "imag": -1.2633458497497971,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": -0.5444377292352057,
+     "imag": -2.1934939693912296,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.6316255788683511,
+     "imag": -1.2633458497497971,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "selected_shuffle_random: Coordinate([6, 6, 6, 6]) 1 0"
  ],
  [
@@ -46,6 +160,44 @@
  ],
  [
   "hash(psel_s)=f98464f2af2837e7fd6bf4c7e43145320af7fb077f9ca275dbc877ff261be741"
+ ],
+ [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": 1.7848773550754649,
+     "imag": 0.8084854729604418,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.623941427421649,
+     "imag": -0.6193690195238549,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": 1.7848773550754649,
+     "imag": 0.8084854729604418,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.623941427421649,
+     "imag": -0.6193690195238549,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "selected_shuffle_random: Coordinate([6, 6, 6, 6]) 2 0"
@@ -60,6 +212,44 @@
   "hash(psel_s)=f98464f2af2837e7fd6bf4c7e43145320af7fb077f9ca275dbc877ff261be741"
  ],
  [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": 1.8488701015596904,
+     "imag": 3.90212616606743,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.396034630505997,
+     "imag": -0.17617742618532584,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": 1.8488701015596904,
+     "imag": 3.90212616606743,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.396034630505997,
+     "imag": -0.17617742618532584,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "selected_shuffle_random: Coordinate([6, 6, 6, 6]) 3 0"
  ],
  [
@@ -70,6 +260,44 @@
  ],
  [
   "hash(psel_s)=f98464f2af2837e7fd6bf4c7e43145320af7fb077f9ca275dbc877ff261be741"
+ ],
+ [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": 3.1964424791910497,
+     "imag": 7.342466109837348,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.8199466311042399,
+     "imag": 0.7349173867417695,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": 3.1964424791910497,
+     "imag": 7.342466109837348,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.8199466311042399,
+     "imag": 0.7349173867417695,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ],
  [
   "selected_shuffle_random: Coordinate([8, 8, 8, 8]) 1 0"
@@ -84,6 +312,44 @@
   "hash(psel_s)=d444871a433aaa44e77679b562679ac6e11fa0fdfc405dba6b856e0c0a43793b"
  ],
  [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": 4.404569061700162,
+     "imag": 3.1576680221283846,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.771287687436688,
+     "imag": -2.323367003491084,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": 4.404569061700162,
+     "imag": 3.1576680221283846,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.771287687436688,
+     "imag": -2.323367003491084,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "selected_shuffle_random: Coordinate([8, 8, 8, 8]) 2 0"
  ],
  [
@@ -96,6 +362,44 @@
   "hash(psel_s)=d444871a433aaa44e77679b562679ac6e11fa0fdfc405dba6b856e0c0a43793b"
  ],
  [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": 7.365800090763552,
+     "imag": -2.1540974319077626,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 6.661572684346464,
+     "imag": -2.5850143039169433,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": 7.365800090763552,
+     "imag": -2.1540974319077626,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 6.661572684346464,
+     "imag": -2.5850143039169433,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
   "selected_shuffle_random: Coordinate([8, 8, 8, 8]) 3 0"
  ],
  [
@@ -106,5 +410,43 @@
  ],
  [
   "hash(psel_s)=d444871a433aaa44e77679b562679ac6e11fa0fdfc405dba6b856e0c0a43793b"
+ ],
+ [
+  "get_data_sig_arr(sp_l,rs,2)",
+  {
+   "value": [
+    {
+     "real": 11.926528471277038,
+     "imag": 0.7334326197997489,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.5872752938652095,
+     "imag": -18.218492930517847,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s,rs,2)",
+  {
+   "value": [
+    {
+     "real": 11.926528471277038,
+     "imag": 0.7334326197997489,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.5872752938652095,
+     "imag": -18.218492930517847,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
  ]
 ]

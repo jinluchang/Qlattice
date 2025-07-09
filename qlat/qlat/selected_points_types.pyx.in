@@ -111,6 +111,8 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
             self.init_from_n_points(*args)
         elif isinstance(args[0], PointsSelection):
             self.init_from_psel(*args)
+        elif isinstance(args[0], SelectedPoints{{name}}):
+            self.init_from_sp_ssp(*args)
         elif isinstance(args[0], SelectedField{{name}}):
             self.init_from_sf_ssp(*args)
         else:
