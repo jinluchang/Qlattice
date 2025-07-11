@@ -10,6 +10,7 @@ namespace qlat
 struct SelectedShufflePlan {
   PointsDistType points_dist_type_send;
   PointsDistType points_dist_type_recv;
+  // num_selected_points_send and num_selected_points_recv do not need to be the same across nodes.
   Long num_selected_points_send;
   Long num_selected_points_recv;
   // n_points_selected_points_send.size() == num_selected_points_send
@@ -67,9 +68,38 @@ void shuffle_selected_points(SelectedPoints<M>& sp,
   const Long n_points = ssp.n_points_selected_points_recv[0];
   const Int multiplicity = sp0.multiplicity;
   sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
-  SelectedPoints<Char> spc(sp.view_as_char());
-  const SelectedPoints<Char> spc0(sp0.view_as_char());
+  SelectedPoints<Char> spc;
+  SelectedPoints<Char> spc0;
+  spc.set_view_cast(sp);
+  spc0.set_view_cast(sp0);
   shuffle_selected_points_char(spc, spc0, ssp);
+}
+
+template <class M>
+void shuffle_selected_points(std::vector<SelectedPoints<M>>& sp_vec,
+                             const std::vector<SelectedPoints<M>>& sp0_vec,
+                             const SelectedShufflePlan& ssp)
+// completely reset sp_vec
+{
+  TIMER("shuffle_selected_points(sp_vec,sp0_vec,ssp)");
+  qassert(ssp.num_selected_points_send == (Long)sp0_vec.size());
+  qassert(sp0_vec.size() > 0);
+  const Int multiplicity = sp0_vec[0].multiplicity;
+  std::vector<SelectedPoints<Char>> spc_vec(sp_vec.size());
+  std::vector<SelectedPoints<Char>> spc0_vec(sp0_vec.size());
+  for (Int i = 0; i < (Int)sp0_vec.size(); ++i) {
+    qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_send[i]);
+    qassert(sp0_vec[i].multiplicity == multiplicity);
+    qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_send);
+    spc0_vec[i].set_view_cast(sp0_vec[i]);
+  }
+  sp_vec.resize(ssp.num_selected_points_recv);
+  for (Int i = 0; i < (Int)sp_vec.size(); ++i) {
+    sp_vec[i].init(ssp.n_points_selected_points_recv[i], multiplicity,
+                   ssp.points_dist_type_recv);
+    spc_vec[i].set_view_cast(sp_vec[i]);
+  }
+  shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
 }
 
 // -------------------

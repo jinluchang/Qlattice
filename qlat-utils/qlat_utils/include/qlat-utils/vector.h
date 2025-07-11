@@ -363,6 +363,7 @@ struct API vector {
   }
   //
   vector<M>& operator=(const vector<M>& vp)
+  // does not change mem_type
   {
     // TIMER("vector::operator=(&)");
     qassert(not is_copy);

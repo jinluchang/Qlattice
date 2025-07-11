@@ -1,5 +1,7 @@
 #include <qlat/selected-shuffle.h>
 
+#include <array>
+
 namespace qlat
 {  //
 
@@ -146,50 +148,84 @@ void shuffle_selected_points_char(
 
 // ------------------------------
 
-
-// ------------------------------
-
-void set_selected_shuffle_id_node_send_to(
-    SelectedPoints<Int>& sp_id_node_send_to, const PointsSelection& psel,
-    const RngState& rs)
+void set_selected_shuffle_instruction_r_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send,
+    const std::vector<PointsSelection>& psel_vec, const RngState& rs)
+// n_points_selected_points_send.size() == psel_vec.size()
+// n_points_selected_points_send[idx_selected_points_send] ==
+// psel_vec[idx_selected_points_send].size()
+//
+// v = sp_instruction.get_elems(idx)
+// v[0] = idx_selected_points_send
+// v[1] = idx_within_field_send
+// v[2] = id_node_send_to
+// v[3] = idx_selected_points_recv
+// v[4] = rank_within_field_recv
 {
-  TIMER("set_selected_shuffle_id_node_send_to(spist,psel,rs)");
-  const Long n_points = psel.size();
+  TIMER("set_selected_shuffle_instruction_r_from_l(sp_inst,vec,pdt,psel_vec,rs)");
+  qassert(psel_vec.size() > 0);
   const Int num_node = get_num_node();
-  sp_id_node_send_to.init(n_points, 1, psel.points_dist_type);
+  n_points_selected_points_send.clear();
+  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.resize(psel_vec.size());
+  points_dist_type_send = psel_vec[0].points_dist_type;
+  Long n_points = 0;
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    n_points_selected_points_send[i] = psel_vec[i].size();
+    n_points += psel_vec[i].size();
+  }
+  sp_instruction.init(n_points, 5, PointsDistType::Local);
   RngState rsl = rs.split(get_id_node());
-  qthread_for(idx, n_points, {
-    const Coordinate& xg = psel[idx];
-    const Long gindex = index_from_coordinate(xg, psel.total_site);
-    RngState rsi = rsl.newtype(gindex);
-    const Int id_node_send_to = rand_gen(rsi) % num_node;
-    qassert(0 <= id_node_send_to);
-    qassert(id_node_send_to < num_node);
-    sp_id_node_send_to.get_elem(idx) = id_node_send_to;
-  });
+  Long n_points_processed = 0;
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    const PointsSelection& psel = psel_vec[i];
+    const Int idx_selected_points_send = i;
+    const Int idx_selected_points_recv = i;
+    qthread_for(idx, psel.size(), {
+      const Long idx_within_send_field = idx;
+      const Coordinate& xg = psel[idx];
+      const Long gindex = index_from_coordinate(xg, psel.total_site);
+      RngState rsi = rsl.newtype(gindex);
+      const Int id_node_send_to = rand_gen(rsi) % num_node;
+      const Long rank_within_field_recv = gindex;
+      qassert(0 <= id_node_send_to);
+      qassert(id_node_send_to < num_node);
+      Vector<Long> v = sp_instruction.get_elems(n_points_processed + idx);
+      v[0] = idx_selected_points_send;
+      v[1] = idx_within_send_field;
+      v[2] = id_node_send_to;
+      v[3] = idx_selected_points_recv;
+      v[4] = rank_within_field_recv;
+    });
+    n_points_processed += psel.size();
+  }
+  qassert(n_points_processed == n_points);
 }
 
 static void set_selected_shuffle_plan_no_reorder(
-    SelectedShufflePlan& ssp, const SelectedPoints<Int>& sp_id_node_send_to)
+    SelectedShufflePlan& ssp, const SelectedPoints<Long>& sp_instruction,
+    const vector<Long>& n_points_selected_points_send,
+    const PointsDistType points_dist_type_send,
+    const PointsDistType points_dist_type_recv)
 // Collective operation.
 // partially set SelectedShufflePlan
-//
-// ssp.points_dist_type_recv = PointsDistType::Random.
-// ssp.shuffle_idx_points_recv is trivially set (no reorder at all).
-//
-// To be set in `set_selected_shuffle_plan(ssp,psel,rs)`.
 {
-  TIMER("set_selected_shuffle_plan_no_reorder(ssp,spinst)");
+  TIMER("set_selected_shuffle_plan_no_reorder(ssp,sp_inst,vec,pdts,pdtr)");
   ssp.init();
   const Int num_node = get_num_node();
   const Int id_node_local = get_id_node();
-  qassert(sp_id_node_send_to.initialized == true);
-  qassert(sp_id_node_send_to.points_dist_type != PointsDistType::Global);
-  qassert(sp_id_node_send_to.multiplicity == 1);
-  ssp.num_selected_points_send = 1;
-  ssp.n_points_selected_points_send.resize(ssp.num_selected_points_send);
-  set_zero(ssp.n_points_selected_points_send);
-  ssp.points_dist_type_send = sp_id_node_send_to.points_dist_type;
+  qassert(sp_instruction.initialized == true);
+  qassert(sp_instruction.points_dist_type == PointsDistType::Local);
+  qassert(sp_instruction.multiplicity == 5);
+  ssp.points_dist_type_send = points_dist_type_send;
+  ssp.points_dist_type_recv = points_dist_type_recv;
+  ssp.num_selected_points_send = n_points_selected_points_send.size();
+  ssp.num_selected_points_recv = 1;
+  ssp.n_points_selected_points_send = n_points_selected_points_send;
+  ssp.n_points_selected_points_recv.resize(1);
+  set_zero(ssp.n_points_selected_points_recv);
   SelectedPoints<Long>& spi_s = ssp.shuffle_idx_points_send;
   SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
   SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
@@ -203,9 +239,13 @@ static void set_selected_shuffle_plan_no_reorder(
   set_zero(ssp.rdispls);
   set_zero(ssp.sendcounts);
   set_zero(ssp.recvcounts);
-  ssp.n_points_selected_points_send[0] = sp_id_node_send_to.n_points;
-  qfor(idx, ssp.n_points_selected_points_send[0], {
-    const Int id_node_send_to = sp_id_node_send_to.get_elem(idx);
+  qfor(idx, sp_instruction.n_points, {
+    const Vector<Long> v = sp_instruction.get_elems_const(idx);
+    // const Int idx_selected_points_send = v[0];
+    // const Long idx_within_send_field = v[1];
+    const Int id_node_send_to = v[2];
+    // const Int idx_selected_points_recv = v[3];
+    // const Long rank_within_field_recv = v[4];
     if (id_node_send_to == id_node_local) {
       ssp.total_count_local += 1;
     } else {
@@ -228,20 +268,25 @@ static void set_selected_shuffle_plan_no_reorder(
   spi_s.init(ssp.total_count_send, 3, PointsDistType::Local);
   set_zero(spi_l);
   set_zero(spi_s);
-  qfor(idx, ssp.n_points_selected_points_send[0], {
-    const Int id_node_send_to = sp_id_node_send_to.get_elem(idx);
+  qfor(idx, sp_instruction.n_points, {
+    const Vector<Long> v = sp_instruction.get_elems_const(idx);
+    const Int idx_selected_points_send = v[0];
+    const Long idx_within_send_field = v[1];
+    const Int id_node_send_to = v[2];
+    const Int idx_selected_points_recv = v[3];
+    // const Long rank_within_field_recv = v[4];
     if (id_node_send_to == id_node_local) {
       Vector<Long> v = spi_l.get_elems(idx_local);
-      v[0] = 0;
-      v[1] = idx;
-      v[2] = 0;
+      v[0] = idx_selected_points_send;
+      v[1] = idx_within_send_field;
+      v[2] = idx_selected_points_recv;
       v[3] = c_idx_local;
       c_idx_local += 1;
       idx_local += 1;
     } else {
       Vector<Long> v = spi_s.get_elems(idx_send);
-      v[0] = 0;
-      v[1] = idx;
+      v[0] = idx_selected_points_send;
+      v[1] = idx_within_send_field;
       v[2] = c_idx_vec[id_node_send_to];
       c_idx_vec[id_node_send_to] += 1;
       idx_send += 1;
@@ -271,12 +316,125 @@ static void set_selected_shuffle_plan_no_reorder(
   });
   ssp.sendcounts.set_mem_type(MemType::Cpu);
   ssp.recvcounts.set_mem_type(MemType::Cpu);
-  ssp.num_selected_points_recv = 1;
-  ssp.n_points_selected_points_recv.resize(ssp.num_selected_points_recv);
-  set_zero(ssp.n_points_selected_points_recv);
   ssp.n_points_selected_points_recv[0] =
       ssp.total_count_local + ssp.total_count_recv;
 }
+
+void set_selected_shuffle_plan(
+    SelectedShufflePlan& ssp, const SelectedPoints<Long>& sp_instruction,
+    const vector<Long>& n_points_selected_points_send,
+    const PointsDistType points_dist_type_send,
+    const PointsDistType points_dist_type_recv)
+// Collective operation.
+// make shuffle plan
+//
+// Internally call `set_selected_shuffle_plan_no_reorder`.
+{
+  TIMER("set_selected_shuffle_plan(ssp,sp_inst,vec,pdts,pdtr)");
+  set_selected_shuffle_plan_no_reorder(
+      ssp, sp_instruction, n_points_selected_points_send, points_dist_type_send,
+      points_dist_type_recv);
+  // Make a sampling send data
+  std::vector<SelectedPoints<Long>> spc0_vec(ssp.num_selected_points_send);
+  for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
+    spc0_vec[i].set_mem_type(MemType::Cpu);
+    spc0_vec[i].init(ssp.n_points_selected_points_send[i], 2,
+                     ssp.points_dist_type_send);
+    set_zero(spc0_vec[i]);
+  }
+  qthread_for(idx, sp_instruction.n_points, {
+    const Vector<Long> v = sp_instruction.get_elems_const(idx);
+    const Int idx_selected_points_send = v[0];
+    const Long idx_within_send_field = v[1];
+    // const Int id_node_send_to = v[2];
+    const Int idx_selected_points_recv = v[3];
+    const Long rank_within_field_recv = v[4];
+    Vector<Long> v_s =
+        spc0_vec[idx_selected_points_send].get_elems(idx_within_send_field);
+    v_s[0] = idx_selected_points_recv;
+    v_s[1] = rank_within_field_recv;
+  });
+  std::vector<SelectedPoints<Long>> spc_vec(ssp.num_selected_points_recv);
+  for (Int i = 0; i < ssp.num_selected_points_recv; ++i) {
+    spc_vec[i].set_mem_type(MemType::Cpu);
+  }
+  shuffle_selected_points(spc_vec, spc0_vec, ssp);
+  qassert(spc_vec.size() == 1);
+  SelectedPoints<Long>& spc = spc_vec[0];
+  std::vector<Long> n_points_selected_points_recv(ssp.num_selected_points_recv,
+                                                  0);
+  std::vector<std::vector<std::array<Long, 2>>> idx_arr_vec_vec(
+      ssp.num_selected_points_recv);
+  qfor(idx, spc.n_points, {
+    const Vector<Long> v = spc.get_elems_const(idx);
+    const Int idx_selected_points_recv = v[0];
+    const Long rank_within_field_recv = v[1];
+    if (idx_selected_points_recv >= ssp.num_selected_points_recv) {
+      ssp.num_selected_points_recv = idx_selected_points_recv + 1;
+      n_points_selected_points_recv.resize(ssp.num_selected_points_recv);
+      idx_arr_vec_vec.resize(ssp.num_selected_points_recv);
+    }
+    n_points_selected_points_recv[idx_selected_points_recv] += 1;
+    std::array<Long, 2> arr;
+    arr[0] = rank_within_field_recv;
+    arr[1] = idx;
+    idx_arr_vec_vec[idx_selected_points_recv].push_back(arr);
+  });
+  ssp.n_points_selected_points_recv = n_points_selected_points_recv;
+  qassert(ssp.n_points_selected_points_recv.size() ==
+          ssp.num_selected_points_recv);
+  Long n_points = 0;
+  qfor(i, ssp.num_selected_points_recv, {
+    qassert((Long)idx_arr_vec_vec[i].size() ==
+            ssp.n_points_selected_points_recv[i]);
+    n_points += ssp.n_points_selected_points_recv[i];
+  });
+  qassert(n_points == spc.n_points);
+  qthread_for(i, ssp.num_selected_points_recv, {
+    std::sort(idx_arr_vec_vec[i].begin(), idx_arr_vec_vec[i].end());
+  });
+  SelectedPoints<Long> sp_idx;
+  sp_idx.set_mem_type(MemType::Cpu);
+  sp_idx.init(spc.n_points, 2, PointsDistType::Local);
+  set_zero(sp_idx);
+  qfor(i, ssp.num_selected_points_recv, {
+    const Int idx_selected_points_recv = i;
+    const std::vector<std::array<Long, 2>>& idx_arr_vec = idx_arr_vec_vec[i];
+    qthread_for(j, (Long)idx_arr_vec.size(), {
+      const Long idx_within_field_recv = j;
+      const std::array<Long, 2>& arr = idx_arr_vec[j];
+      // const Long rank_within_field_recv = arr[0];
+      const Long idx = arr[1];
+      Vector<Long> v = sp_idx.get_elems(idx);
+      v[0] = idx_selected_points_recv;
+      v[1] = idx_within_field_recv;
+    });
+  });
+  SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
+  qthread_for(idx, spi_l.n_points, {
+    Vector<Long> v = spi_l.get_elems(idx);
+    qassert(v[2] == 0);
+    const Long idx_init = v[3];
+    const Vector<Long> v_idx = sp_idx.get_elems_const(idx_init);
+    const Int idx_selected_points_recv = v_idx[0];
+    const Long idx_within_field_recv = v_idx[1];
+    v[2] = idx_selected_points_recv;
+    v[3] = idx_within_field_recv;
+  });
+  SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
+  qthread_for(idx, spi_r.n_points, {
+    Vector<Long> v = spi_r.get_elems(idx);
+    qassert(v[0] == 0);
+    const Long idx_init = v[1];
+    const Vector<Long> v_idx = sp_idx.get_elems_const(idx_init);
+    const Int idx_selected_points_recv = v_idx[0];
+    const Long idx_within_field_recv = v_idx[1];
+    v[0] = idx_selected_points_recv;
+    v[1] = idx_within_field_recv;
+  });
+}
+
+// ------------------------------
 
 void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
                                const PointsSelection& psel, const RngState& rs)
@@ -292,54 +450,17 @@ void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
 // `ssp.shuffle_idx_points_recv`
 {
   TIMER("set_selected_shuffle_plan(ssp,psel,rs)");
-  const Long n_points = psel.size();
-  SelectedPoints<Int> sp_id_node_send_to;
-  set_selected_shuffle_id_node_send_to(sp_id_node_send_to, psel, rs);
-  set_selected_shuffle_plan_no_reorder(ssp, sp_id_node_send_to);
-  ssp.points_dist_type_recv = PointsDistType::Random;
-  SelectedPoints<Long> sp_idx0;
-  sp_idx0.set_mem_type(MemType::Cpu);
-  sp_idx0.init(n_points, 1, ssp.points_dist_type_send);
-  qthread_for(idx, n_points, {
-    const Coordinate& xg = psel[idx];
-    const Long gindex = index_from_coordinate(xg, psel.total_site);
-    sp_idx0.get_elem(idx) = gindex;
-  });
-  SelectedPoints<Long> sp_idx;
-  sp_idx.set_mem_type(MemType::Cpu);
-  shuffle_selected_points(sp_idx, sp_idx0, ssp);
-  std::vector<std::pair<Long, Long>> idx_pair_vec(sp_idx.n_points);
-  // Set the `pair.first` to be the rank that determine the target order.
-  // Let `pair.second` remembers the initial order.
-  qthread_for(idx, sp_idx.n_points, {
-    idx_pair_vec[idx].first = sp_idx.get_elem(idx);
-    idx_pair_vec[idx].second = idx;
-  });
-  // Sort according to rank
-  std::sort(idx_pair_vec.begin(), idx_pair_vec.end());
-  // Set the pair.second to be the target idx
-  qthread_for(idx, sp_idx.n_points, {
-    idx_pair_vec[idx].first = idx_pair_vec[idx].second;
-    idx_pair_vec[idx].second = idx;
-  });
-  // Reorder back to the original order
-  std::sort(idx_pair_vec.begin(), idx_pair_vec.end());
-  SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
-  qthread_for(idx, spi_l.n_points, {
-    Vector<Long> v = spi_l.get_elems(idx);
-    const Long idx_init = v[3];
-    qassert(idx_init == idx_pair_vec[idx_init].first);
-    const Long idx_tgt = idx_pair_vec[idx_init].second;
-    v[3] = idx_tgt;
-  });
-  SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
-  qthread_for(idx, spi_r.n_points, {
-    Vector<Long> v = spi_r.get_elems(idx);
-    const Long idx_init = v[1];
-    qassert(idx_init == idx_pair_vec[idx_init].first);
-    const Long idx_tgt = idx_pair_vec[idx_init].second;
-    v[1] = idx_tgt;
-  });
+  SelectedPoints<Long> sp_instruction;
+  vector<Long> n_points_selected_points_send;
+  PointsDistType points_dist_type_send;
+  std::vector<PointsSelection> psel_vec(1);
+  psel_vec[0] = psel;
+  set_selected_shuffle_instruction_r_from_l(
+      sp_instruction, n_points_selected_points_send, points_dist_type_send,
+      psel_vec, rs);
+  const PointsDistType points_dist_type_recv = PointsDistType::Random;
+  set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
+                            points_dist_type_send, points_dist_type_recv);
 }
 
 // ------------------------------
