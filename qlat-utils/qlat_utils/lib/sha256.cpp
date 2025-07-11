@@ -19,6 +19,7 @@
 // Code within namespace sha256 are originally from Stephan Brumme.
 // see http://create.stephan-brumme.com/disclaimer.html
 
+#include <qlat-utils/config.h>
 #include <qlat-utils/sha256.h>
 
 #ifdef QLAT_USE_MACHINE_ENDIAN_H
