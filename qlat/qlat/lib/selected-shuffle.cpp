@@ -452,9 +452,7 @@ void set_selected_shuffle_instruction_r_from_l(
     n_points += psel_vec[i].size();
   }
   sp_instruction.init(n_points, 5, PointsDistType::Local);
-  // TODO
-  const RngState rs_shuffle = rs.split(get_id_node());
-  // const RngState rs_shuffle = rs.split("shuffle_r_from_l");
+  const RngState rs_shuffle = rs.split("shuffle_r_from_l");
   Long n_points_processed = 0;
   for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
     const PointsSelection& psel = psel_vec[i];
