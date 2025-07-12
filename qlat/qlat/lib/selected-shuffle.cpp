@@ -37,6 +37,8 @@ void SelectedShufflePlan::init()
   rdispls.set_mem_type(MemType::Cpu);
 }
 
+// ------------------------------
+
 void shuffle_selected_points_char(
     std::vector<SelectedPoints<Char>>& spc_vec,
     const std::vector<SelectedPoints<Char>>& spc0_vec,
@@ -144,6 +146,44 @@ void shuffle_selected_points_char(
   });
   timer.flops +=
       (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+}
+
+void shuffle_selected_points_char(SelectedPoints<Char>& spc,
+                                  const SelectedPoints<Char>& spc0,
+                                  const SelectedShufflePlan& ssp)
+// const Long n_points = ssp.total_count_recv;
+// const Int multiplicity = sp0.multiplicity;
+// SelectedPoints<M> sp;
+// sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
+// SelectedPoints<Char> spc(sp.view_as_char());
+// SelectedPoints<Char> spc0(sp0.view_as_char());
+{
+  TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)");
+  qassert(ssp.num_selected_points_send == 1);
+  qassert(ssp.num_selected_points_recv == 1);
+  std::vector<SelectedPoints<Char>> spc_vec(1);
+  std::vector<SelectedPoints<Char>> spc0_vec(1);
+  spc_vec[0].set_view(spc);
+  spc0_vec[0].set_view(spc0);
+  shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
+  timer.flops +=
+      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+}
+
+void shuffle_points_selection(PointsSelection& psel,
+                              const PointsSelection& psel0,
+                              const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_points_selection(sp,psel,psel0,ssp)");
+  qassert(psel0.points_dist_type == ssp.points_dist_type_send);
+  qassert(ssp.num_selected_points_send == 1);
+  qassert(ssp.num_selected_points_recv == 1);
+  const Long n_points = ssp.n_points_selected_points_recv[0];
+  psel.init(psel0.total_site, n_points);
+  psel.points_dist_type = ssp.points_dist_type_recv;
+  SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
+  const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
+  shuffle_selected_points_char(pselc, pselc0, ssp);
 }
 
 // ------------------------------
@@ -385,6 +425,8 @@ void set_selected_shuffle_instruction_r_from_l(
     vector<Long>& n_points_selected_points_send,
     PointsDistType& points_dist_type_send,
     const std::vector<PointsSelection>& psel_vec, const RngState& rs)
+// Shuffle the data randomly based on `gindex` and `rs`.
+//
 // n_points_selected_points_send.size() == psel_vec.size()
 // n_points_selected_points_send[idx_selected_points_send] ==
 // psel_vec[idx_selected_points_send].size()
@@ -405,11 +447,14 @@ void set_selected_shuffle_instruction_r_from_l(
   points_dist_type_send = psel_vec[0].points_dist_type;
   Long n_points = 0;
   for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    qassert(points_dist_type_send == psel_vec[i].points_dist_type);
     n_points_selected_points_send[i] = psel_vec[i].size();
     n_points += psel_vec[i].size();
   }
   sp_instruction.init(n_points, 5, PointsDistType::Local);
-  RngState rsl = rs.split(get_id_node());
+  // TODO
+  const RngState rs_shuffle = rs.split(get_id_node());
+  // const RngState rs_shuffle = rs.split("shuffle_r_from_l");
   Long n_points_processed = 0;
   for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
     const PointsSelection& psel = psel_vec[i];
@@ -419,7 +464,7 @@ void set_selected_shuffle_instruction_r_from_l(
       const Long idx_within_send_field = idx;
       const Coordinate& xg = psel[idx];
       const Long gindex = index_from_coordinate(xg, psel.total_site);
-      RngState rsi = rsl.newtype(gindex);
+      RngState rsi = rs_shuffle.newtype(gindex);
       const Int id_node_send_to = rand_gen(rsi) % num_node;
       const Long rank_within_field_recv = gindex;
       qassert(0 <= id_node_send_to);
@@ -474,42 +519,111 @@ void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
 
 // ------------------------------
 
-void shuffle_selected_points_char(SelectedPoints<Char>& spc,
-                                  const SelectedPoints<Char>& spc0,
-                                  const SelectedShufflePlan& ssp)
-// const Long n_points = ssp.total_count_recv;
-// const Int multiplicity = sp0.multiplicity;
-// SelectedPoints<M> sp;
-// sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
-// SelectedPoints<Char> spc(sp.view_as_char());
-// SelectedPoints<Char> spc0(sp0.view_as_char());
+Long id_node_from_t_slice_id_field(const Int t_slice, const Int t_size,
+                                   const Int id_field, const Int num_field,
+                                   const Int num_node)
 {
-  TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)");
-  qassert(ssp.num_selected_points_send == 1);
-  qassert(ssp.num_selected_points_recv == 1);
-  std::vector<SelectedPoints<Char>> spc_vec(1);
-  std::vector<SelectedPoints<Char>> spc0_vec(1);
-  spc_vec[0].set_view(spc);
-  spc0_vec[0].set_view(spc0);
-  shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
-  timer.flops +=
-      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+  const Int n_t_slice_per_node = (t_size * num_field - 1) / num_node + 1;
+  const Int index = t_slice * num_field + id_field;
+  const Int id_node = index / n_t_slice_per_node;
+  qassert(0 <= id_node);
+  qassert(id_node < num_node);
+  return id_node;
 }
 
-void shuffle_points_selection(PointsSelection& psel,
-                              const PointsSelection& psel0,
-                              const SelectedShufflePlan& ssp)
+Long idx_sp_from_t_slice_id_field(const Int t_slice, const Int t_size,
+                                  const Int id_field, const Int num_field,
+                                  const Int num_node)
 {
-  TIMER("shuffle_points_selection(sp,psel,psel0,ssp)");
-  qassert(psel0.points_dist_type == ssp.points_dist_type_send);
-  qassert(ssp.num_selected_points_send == 1);
-  qassert(ssp.num_selected_points_recv == 1);
-  const Long n_points = ssp.n_points_selected_points_recv[0];
-  psel.init(psel0.total_site, n_points);
-  psel.points_dist_type = ssp.points_dist_type_recv;
-  SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
-  const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
-  shuffle_selected_points_char(pselc, pselc0, ssp);
+  const Int n_t_slice_per_node = (t_size * num_field - 1) / num_node + 1;
+  const Int index = t_slice * num_field + id_field;
+  const Int idx_sp = index % n_t_slice_per_node;
+  qassert(0 <= idx_sp);
+  qassert(idx_sp < n_t_slice_per_node);
+  return idx_sp;
+}
+
+void set_selected_shuffle_instruction_t_slice_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send,
+    const std::vector<PointsSelection>& psel_vec)
+// n_points_selected_points_send.size() == psel_vec.size()
+// n_points_selected_points_send[idx_selected_points_send] ==
+// psel_vec[idx_selected_points_send].size()
+//
+// v = sp_instruction.get_elems(idx)
+// v[0] = idx_selected_points_send
+// v[1] = idx_within_field_send
+// v[2] = id_node_send_to
+// v[3] = idx_selected_points_recv
+// v[4] = rank_within_field_recv
+{
+  TIMER("set_selected_shuffle_instruction_t_slice_from_l(sp_inst,vec,pdt,psel_vec)");
+  qassert(psel_vec.size() > 0);
+  const Int num_field = psel_vec.size();
+  const Int num_node = get_num_node();
+  n_points_selected_points_send.clear();
+  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.resize(psel_vec.size());
+  points_dist_type_send = psel_vec[0].points_dist_type;
+  const Coordinate total_site = psel_vec[0].total_site;
+  const Int t_size = total_site[3];
+  Long n_points = 0;
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    qassert(points_dist_type_send == psel_vec[i].points_dist_type);
+    qassert(total_site == psel_vec[i].total_site);
+    n_points_selected_points_send[i] = psel_vec[i].size();
+    n_points += psel_vec[i].size();
+  }
+  sp_instruction.init(n_points, 5, PointsDistType::Local);
+  Long n_points_processed = 0;
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    const Int id_field = i;
+    const PointsSelection& psel = psel_vec[i];
+    const Int idx_selected_points_send = i;
+    qthread_for(idx, psel.size(), {
+      const Long idx_within_send_field = idx;
+      const Coordinate& xg = psel[idx];
+      const Int t_slice = xg[3];
+      const Long gindex = index_from_coordinate(xg, psel.total_site);
+      const Int id_node_send_to = id_node_from_t_slice_id_field(
+          t_slice, t_size, id_field, num_field, num_node);
+      const Int idx_selected_points_recv = idx_sp_from_t_slice_id_field(
+          t_slice, t_size, id_field, num_field, num_node);
+      const Long rank_within_field_recv = gindex;
+      qassert(0 <= id_node_send_to);
+      qassert(id_node_send_to < num_node);
+      Vector<Long> v = sp_instruction.get_elems(n_points_processed + idx);
+      v[0] = idx_selected_points_send;
+      v[1] = idx_within_send_field;
+      v[2] = id_node_send_to;
+      v[3] = idx_selected_points_recv;
+      v[4] = rank_within_field_recv;
+    });
+    n_points_processed += psel.size();
+  }
+  qassert(n_points_processed == n_points);
+}
+
+void set_selected_shuffle_plan_t_slice_from_l(
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec)
+// Collective operation.
+// make shuffle plan
+// ssp.points_dist_type_recv = PointsDistType::Random
+// psel_vec[i].points_dist_type == PointsDistType::Local
+// Sort the shuffled points by order of the gindex of points.
+{
+  TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel_vec,rs)");
+  SelectedPoints<Long> sp_instruction;
+  vector<Long> n_points_selected_points_send;
+  PointsDistType points_dist_type_send;
+  set_selected_shuffle_instruction_t_slice_from_l(
+      sp_instruction, n_points_selected_points_send, points_dist_type_send,
+      psel_vec);
+  const PointsDistType points_dist_type_recv = PointsDistType::Random;
+  set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
+                            points_dist_type_send, points_dist_type_recv);
 }
 
 // ------------------------------

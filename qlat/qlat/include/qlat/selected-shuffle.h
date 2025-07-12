@@ -127,6 +127,25 @@ void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
 
 // -------------------
 
+Long id_node_from_t_slice_id_field(const Int t_slice, const Int t_size,
+                                   const Int id_field, const Int num_field,
+                                   const Int num_node);
+
+Long idx_sp_from_t_slice_id_field(const Int t_slice, const Int t_size,
+                                  const Int id_field, const Int num_field,
+                                  const Int num_node);
+
+void set_selected_shuffle_instruction_t_slice_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send,
+    const std::vector<PointsSelection>& psel_vec);
+
+void set_selected_shuffle_plan_t_slice_from_l(
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec);
+
+// -------------------
+
 void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0,
                              const SelectedShufflePlan& ssp);
 
