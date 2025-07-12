@@ -50,7 +50,7 @@ cdef class SelectedShufflePlan:
         """
         self.psel_src = psel
         self.psel_dst = PointsSelection()
-        cc.set_selected_shuffle_plan(self.xx, psel.xx, rs.xx)
+        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel.xx, rs.xx)
         self.psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
         cc.shuffle_points_selection(self.psel_dst.xx, psel.xx, self.xx)
 

@@ -233,7 +233,7 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
         Long total_recv_count
         void init() except +
     #
-    void set_selected_shuffle_plan(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
+    void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
     void shuffle_selected_points_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
     void shuffle_points_selection(PointsSelection& psel, const PointsSelection& psel0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_points[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sp0, const SelectedShufflePlan& ssp) except +

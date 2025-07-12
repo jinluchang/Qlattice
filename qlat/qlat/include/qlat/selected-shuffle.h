@@ -41,8 +41,7 @@ struct SelectedShufflePlan {
   void init();
 };
 
-void set_selected_shuffle_plan(SelectedShufflePlan& ssp,
-                               const PointsSelection& psel, const RngState& rs);
+// -------------------
 
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
@@ -101,6 +100,30 @@ void shuffle_selected_points(std::vector<SelectedPoints<M>>& sp_vec,
   }
   shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
 }
+
+// -------------------
+
+void set_selected_shuffle_plan(
+    SelectedShufflePlan& ssp, const SelectedPoints<Long>& sp_instruction,
+    const vector<Long>& n_points_selected_points_send,
+    const PointsDistType points_dist_type_send,
+    const PointsDistType points_dist_type_recv);
+
+// -------------------
+
+void set_selected_shuffle_instruction_r_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send,
+    const std::vector<PointsSelection>& psel_vec, const RngState& rs);
+
+void set_selected_shuffle_plan_r_from_l(
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
+    const RngState& rs);
+
+void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
+                                        const PointsSelection& psel,
+                                        const RngState& rs);
 
 // -------------------
 
