@@ -56,6 +56,10 @@ void shuffle_points_selection(PointsSelection& psel,
                               const PointsSelection& psel0,
                               const SelectedShufflePlan& ssp);
 
+void shuffle_points_selection(std::vector<PointsSelection>& psel_vec,
+                              const std::vector<PointsSelection>& psel0_vec,
+                              const SelectedShufflePlan& ssp);
+
 template <class M>
 void shuffle_selected_points(SelectedPoints<M>& sp,
                              const SelectedPoints<M>& sp0,

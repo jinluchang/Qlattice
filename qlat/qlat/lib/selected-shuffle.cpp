@@ -174,7 +174,7 @@ void shuffle_points_selection(PointsSelection& psel,
                               const PointsSelection& psel0,
                               const SelectedShufflePlan& ssp)
 {
-  TIMER("shuffle_points_selection(sp,psel,psel0,ssp)");
+  TIMER("shuffle_points_selection(psel,psel0,ssp)");
   qassert(psel0.points_dist_type == ssp.points_dist_type_send);
   qassert(ssp.num_selected_points_send == 1);
   qassert(ssp.num_selected_points_recv == 1);
@@ -184,6 +184,31 @@ void shuffle_points_selection(PointsSelection& psel,
   SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
   const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
   shuffle_selected_points_char(pselc, pselc0, ssp);
+}
+
+void shuffle_points_selection(std::vector<PointsSelection>& psel_vec,
+                              const std::vector<PointsSelection>& psel0_vec,
+                              const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_points_selection(psel_vec,psel0_vec,ssp)");
+  qassert(ssp.num_selected_points_send == (Long)psel0_vec.size());
+  qassert(psel0_vec.size() > 0);
+  const Coordinate total_site = psel0_vec[0].total_site;
+  std::vector<SelectedPoints<Char>> spc_vec(psel_vec.size());
+  std::vector<SelectedPoints<Char>> spc0_vec(psel0_vec.size());
+  for (Int i = 0; i < (Int)psel0_vec.size(); ++i) {
+    qassert(psel0_vec[i].size() == ssp.n_points_selected_points_send[i]);
+    qassert(psel0_vec[i].points_dist_type == ssp.points_dist_type_send);
+    qassert(psel0_vec[i].total_site == total_site);
+    spc0_vec[i].set_view_cast(psel0_vec[i].view_sp());
+  }
+  psel_vec.resize(ssp.num_selected_points_recv);
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    psel_vec[i].init(total_site, ssp.n_points_selected_points_recv[i],
+                     ssp.points_dist_type_recv);
+    spc_vec[i].set_view_cast(psel_vec[i].view_sp());
+  }
+  shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
 }
 
 // ------------------------------

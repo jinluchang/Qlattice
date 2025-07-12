@@ -234,9 +234,15 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
         void init() except +
     #
     void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
+    void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const RngState& rs) except +
+    void set_selected_shuffle_plan_t_slice_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec) except +
     void shuffle_selected_points_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
+    void shuffle_selected_points_char(std_vector[SelectedPoints[Char]]& spc_vec, const std_vector[SelectedPoints[Char]]& spc0_vec, const SelectedShufflePlan& ssp) except +
+
     void shuffle_points_selection(PointsSelection& psel, const PointsSelection& psel0, const SelectedShufflePlan& ssp) except +
+    void shuffle_points_selection(std_vector[PointsSelection]& psel_vec, const std_vector[PointsSelection]& psel0_vec, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_points[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sp0, const SelectedShufflePlan& ssp) except +
+    void shuffle_selected_points[M](std_vector[SelectedPoints[M]]& sp_vec, const std_vector[SelectedPoints[M]]& sp0_vec, const SelectedShufflePlan& ssp) except +
     #
     void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const SelectedShufflePlan& ssp) except +
