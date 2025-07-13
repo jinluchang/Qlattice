@@ -790,13 +790,13 @@ inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vec
   for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
-inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qlat::vector_acc<int > &Nv, qlat::vector_acc<int > &mv){
+inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector<int >& nv, qlat::vector<int > &Nv, qlat::vector<int > &mv){
   Nv.resize(4);nv.resize(4);mv.resize(4);
   for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
 
-//inline void setup_expand(const Geometry& geo, qlat::vector_acc<Long >& pack_send, qlat::vector_acc<Long >& pack_recv)
+//inline void setup_expand(const Geometry& geo, qlat::vector<Long >& pack_send, qlat::vector<Long >& pack_recv)
 //{
 //  const CommPlan& plan = get_comm_plan(set_marks_field_all, "", geo);
 //  const Long Nsend = plan.total_send_size;
@@ -834,8 +834,8 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //
 //struct expand_index_buf {
 //  //Geometry geo; //make a copy of geo if needed
-//  qlat::vector_acc<Long >  pack_send;
-//  qlat::vector_acc<Long >  pack_recv;
+//  qlat::vector<Long >  pack_send;
+//  qlat::vector<Long >  pack_recv;
 //  //const long Nindex;
 //  expand_index_buf()
 //  {
@@ -1005,7 +1005,7 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qla
 //              cmi.id_node, mpi_tag, get_comm(), reqs_recv);
 //  }
 //
-//  //qlat::vector_acc<long > pack_infos;
+//  //qlat::vector<long > pack_infos;
 //  Long* pack_send = (Long*) &ebuf.pack_send[0];
 //  Long* pack_recv = (Long*) &ebuf.pack_recv[0];
 //

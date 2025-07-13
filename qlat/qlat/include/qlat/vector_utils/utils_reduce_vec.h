@@ -113,7 +113,7 @@ void reduce_cpu(const Ty *src,Ty &res,const Long n){
   else{
     ////qmessage("====Reduce omp \n");
     omp_set_num_threads(omp_get_max_threads());
-    qlat::vector_acc<Ty > buf;buf.resize(Nv);
+    qlat::vector<Ty > buf;buf.resize(Nv);
     for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
     size_t bsize = (n + Nv-1)/Nv;
     #pragma omp parallel for
@@ -157,7 +157,7 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,Long n, int nv=1,
   Long Ny0 = (n  + ntL - 1)/(ntL);
   Long Ny1 = (Ny0 + ntL - 1)/(ntL);
   Ty *psrc;Ty *pres;Ty *tem;
-  qlat::vector_acc<Ty > buf0,buf1;
+  qlat::vector<Ty > buf0,buf1;
   buf0.resize(nv*Ny0);buf1.resize(nv*Ny1);
   pres = &buf0[0];
 
@@ -247,7 +247,7 @@ inline void reduce_gpu(const Ty *src,Ty *res,const Long n,const int nv=1,
   Ty *psrc;Ty *pres;Ty *tem;
   Long Nres;
 
-  qlat::vector_acc<Ty > buf0,buf1;
+  qlat::vector<Ty > buf0,buf1;
   buf0.resize(nv*Ny);
   pres = &buf0[0];
   Nres = reduce_T(src,pres, n, nv, Ld);

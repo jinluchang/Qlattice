@@ -65,9 +65,9 @@ int main(int argc, char* argv[])
   ////int Nt = fd.Nt;
 
   int nvol = in.nx*in.ny*in.nz;
-  qlat::vector_acc<qlat::ComplexD > sendbuf;////recvbuf;
+  qlat::vector<qlat::ComplexD > sendbuf;////recvbuf;
   qlat::vector_gpu<qlat::ComplexD > sendbufG;////recvbuf;
-  qlat::vector_acc<qlat::ComplexD > databuf;
+  qlat::vector<qlat::ComplexD > databuf;
   /////sendbuf.set_acc(true);databuf.set_acc(true);
   int civ = 1;int Nvec = 3;
   int biva = Nvec * (fd.vol*fd.nt)/(fd.Nvol);
@@ -138,9 +138,9 @@ int main(int argc, char* argv[])
   ////int Nt = fd.Nt;
 
   int nvol = in.nx*in.ny*in.nz;
-  qlat::vector_acc<qlat::ComplexD > sendbuf;////recvbuf;
+  qlat::vector<qlat::ComplexD > sendbuf;////recvbuf;
   qlat::vector_gpu<qlat::ComplexD > sendbufG;////recvbuf;
-  qlat::vector_acc<qlat::ComplexD > databuf;
+  qlat::vector<qlat::ComplexD > databuf;
   ////sendbuf.set_acc(true);databuf.set_acc(true);
   int civ = 6;int Nvec = 6;
   int biva = Nvec * (fd.vol*fd.Nt)/(fd.Nvol);
@@ -216,8 +216,8 @@ int main(int argc, char* argv[])
   ////int Nt = fd.Nt;
 
   int nvol = in.nx*in.ny*in.nz;
-  qlat::vector_acc<qlat::ComplexD > sendbuf,recvbuf;
-  qlat::vector_acc<qlat::ComplexD > databuf;
+  qlat::vector<qlat::ComplexD > sendbuf,recvbuf;
+  qlat::vector<qlat::ComplexD > databuf;
   ////sendbuf.set_acc(true);recvbuf.set_acc(true);databuf.set_acc(true);
   int biva = 2*(fd.vol*fd.Nt)/(fd.Nvol);int civ = 6;
   int Nvec = biva*fd.Nvol/(fd.vol*fd.Nt);

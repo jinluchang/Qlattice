@@ -213,7 +213,7 @@ struct vector_gpu{
 
 
   template <class T >
-  void copy_from(qlat::vector_acc<T >& vp, int GPU_set = -2, int GPU_ori = 0)
+  void copy_from(qlat::vector<T >& vp, int GPU_set = -2, int GPU_ori = 0)
   {
     int GPU_mem = 0;
     if(GPU_set == -2){GPU_mem = GPU;}else{GPU_mem = GPU_set;}
@@ -259,7 +259,7 @@ struct vector_gpu{
     //  qthread_for(isp, Long(n), {res[isp] = qlat::qconj(src[isp]) * src[isp];});
     //}
     qGPU_for(isp, Long(n), GPU, { res[isp] = qlat::qconj(src[isp]) * src[isp]; });
-    qlat::vector_acc<Ty > tmp;tmp.resize(2);tmp[0] = 0;
+    qlat::vector<Ty > tmp;tmp.resize(2);tmp[0] = 0;
     reduce_vecs(res, tmp.data(), n, 1, GPU);
     glb_sum(tmp[0]);
     //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
@@ -307,7 +307,7 @@ struct vector_gpu{
   }
 
   template <class T >
-  void copy_to(qlat::vector_acc<T >& vp, int GPU_ori = 0)
+  void copy_to(qlat::vector<T >& vp, int GPU_ori = 0)
   {
     vp.resize(size());
     T* res = (T*) qlat::get_data(vp).data();

@@ -448,8 +448,8 @@ void baryon_sparse_kernel(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
 */
 template <typename Ty, int ins>
 void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, 
-  qlat::vector_acc<int > &mLV, const Long Nvol, bool clear=true)
+  ga_M &A, ga_M &B, qlat::vector<Ty > &GV, 
+  qlat::vector<int > &mLV, const Long Nvol, bool clear=true)
 {
   TIMER_FLOPS("baryon_sparse");
   // double or single complex for buffers
@@ -480,7 +480,7 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
   int*  ivP = NULL;
   std::vector<qlat::vector_gpu<signed char > > giEG;
   std::vector<qlat::vector_gpu<unsigned char   > > oiG;
-  qlat::vector_acc<int > iv_size;
+  qlat::vector<int > iv_size;
 
   giEG.resize(Ngv);
   oiG.resize(Ngv);
@@ -488,9 +488,9 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
   const Ty* GVP = GV.data();
   const int*  mLP     = mLV.data();
 
-  qlat::vector_acc<Ty > epslV;epslV.resize(9);
-  qlat::vector_acc<Ty > gMap;
-  qlat::vector_acc<int > IMap;
+  qlat::vector<Ty > epslV;epslV.resize(9);
+  qlat::vector<Ty > gMap;
+  qlat::vector<int > IMap;
 
   for(int i=0;i<3;i++){epslV[i*3+i]=0;epslV[i*3 + (i+1)%3]=1;epslV[i*3 + (i+2)%3]=-1;}
   gMap.resize(4*2);IMap.resize(4*2);
@@ -568,11 +568,11 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
     }
 
     for(int iv=0;iv<Ngv;iv++){giEG[iv].copy_from(giEL[iv]);}
-    qlat::vector_acc<signed char* > gP = EigenM_to_pointers(giEG);
+    qlat::vector<signed char* > gP = EigenM_to_pointers(giEG);
     gPP = gP.data();
 
     for(int iv=0;iv<Ngv;iv++){oiG[iv].copy_from(oiL[iv]);}
-    qlat::vector_acc<unsigned char* > oP = EigenM_to_pointers(oiG);
+    qlat::vector<unsigned char* > oP = EigenM_to_pointers(oiG);
     oPP = oP.data();
 
     for(int iv=0;iv<Ngv;iv++){
@@ -613,8 +613,8 @@ void baryon_sparseP(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
 
 template <typename Ty>
 void baryon_sparseI(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, 
-  qlat::vector_acc<int > &mLV, const Long Nvol, const bool clear=1, const int insertion = -1)
+  ga_M &A, ga_M &B, qlat::vector<Ty > &GV, 
+  qlat::vector<int > &mLV, const Long Nvol, const bool clear=1, const int insertion = -1)
 {
   if(insertion == -1)baryon_sparseP<Ty, -1>(p1, p2, p3, resP, Nsrc, A, B, GV, mLV, Nvol, clear);
   if(insertion ==  1)baryon_sparseP<Ty,  1>(p1, p2, p3, resP, Nsrc, A, B, GV, mLV, Nvol, clear);
@@ -622,7 +622,7 @@ void baryon_sparseI(Ty** p1, Ty** p2, Ty** p3, Ty** resP, const int Nsrc,
 
 template <typename Ty>
 void baryon_sparse(std::vector<FieldG<Ty> >& prop1, std::vector<FieldG<Ty> >& prop2, std::vector<FieldG<Ty> >& prop3,
-  std::vector<FieldG<Ty> >& res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, const bool clear=true, const int insertion = -1){
+  std::vector<FieldG<Ty> >& res, ga_M &A, ga_M &B, qlat::vector<Ty > &G, qlat::vector<int > &mL, const bool clear=true, const int insertion = -1){
   const unsigned int Nsrc = prop1.size();
   Qassert(Nsrc != 0);
   Qassert(prop2.size() == Nsrc and prop3.size() == Nsrc);
@@ -653,16 +653,16 @@ void baryon_sparse(std::vector<FieldG<Ty> >& prop1, std::vector<FieldG<Ty> >& pr
     else{             Qassert(res[ri].multiplicity == 144);}
   }
   const Long Nvol = geo.local_volume();
-  vector_acc<Ty* > p1 = FieldG_to_pointers(prop1 );
-  vector_acc<Ty* > p2 = FieldG_to_pointers(prop2 );
-  vector_acc<Ty* > p3 = FieldG_to_pointers(prop3 );
-  vector_acc<Ty* > rP = FieldG_to_pointers(res   );
+  vector<Ty* > p1 = FieldG_to_pointers(prop1 );
+  vector<Ty* > p2 = FieldG_to_pointers(prop2 );
+  vector<Ty* > p3 = FieldG_to_pointers(prop3 );
+  vector<Ty* > rP = FieldG_to_pointers(res   );
   baryon_sparseI(p1.data(), p2.data(), p3.data(), rP.data(), Nsrc, A, B, G, mL, Nvol, clear, insertion);
 }
 
 template <typename Ty>
 void baryon_sparse(FieldG<Ty>& prop1, FieldG<Ty>& prop2, FieldG<Ty>& prop3,
-  std::vector<FieldG<Ty> >& res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, const bool clear=true, const int insertion = -1){
+  std::vector<FieldG<Ty> >& res, ga_M &A, ga_M &B, qlat::vector<Ty > &G, qlat::vector<int > &mL, const bool clear=true, const int insertion = -1){
   const unsigned int Nsrc = 1;
   const int Ngv = G.size()/16;
   const Long Ndc = 12 * 12;
@@ -689,10 +689,10 @@ void baryon_sparse(FieldG<Ty>& prop1, FieldG<Ty>& prop2, FieldG<Ty>& prop3,
   }
 
   const Long Nvol = geo.local_volume();
-  vector_acc<Ty* > p1;p1.resize(1);
-  vector_acc<Ty* > p2;p2.resize(1);
-  vector_acc<Ty* > p3;p3.resize(1);
-  vector_acc<Ty* > rP = FieldG_to_pointers(res   );
+  vector<Ty* > p1;p1.resize(1);
+  vector<Ty* > p2;p2.resize(1);
+  vector<Ty* > p3;p3.resize(1);
+  vector<Ty* > rP = FieldG_to_pointers(res   );
 
   p1[0] = (Ty*) get_data(prop1 ).data();
   p2[0] = (Ty*) get_data(prop2 ).data();
@@ -708,7 +708,7 @@ void baryon_sparse(FieldG<Ty>& prop1, FieldG<Ty>& prop2, FieldG<Ty>& prop3,
 */
 template <typename Ty>
 void baryon_sparse_insertion(std::vector<FieldG<Ty> >& prop1, std::vector<FieldG<Ty> >& prop2, std::vector<FieldG<Ty> >& prop3,
-  std::vector<FieldG<Ty> >& res, const vector_acc<int >& map_sec, std::vector<FieldG<Ty> >& bufV){
+  std::vector<FieldG<Ty> >& res, const vector<int >& map_sec, std::vector<FieldG<Ty> >& bufV){
 
   TIMER("baryon_sparse_insertion");
   const int Nsrc = prop1.size();
@@ -723,7 +723,7 @@ void baryon_sparse_insertion(std::vector<FieldG<Ty> >& prop1, std::vector<FieldG
     // clean results
     set_zero(res[i]);
   }
-  vector_acc<int > maps;maps.resize(map_sec.size());
+  vector<int > maps;maps.resize(map_sec.size());
   for(unsigned int i=0;i<maps.size();i++){
     maps[i] = map_sec[i];
   }
@@ -750,10 +750,10 @@ void baryon_sparse_insertion(std::vector<FieldG<Ty> >& prop1, std::vector<FieldG
 
   const int Ngroup = 2;
   Qassert(16 % Ngroup == 0);
-  vector_acc<Ty > Gp ;Gp.resize(Ngroup*16);
-  vector_acc<Ty > Gm ;Gm.resize(Ngroup*16);
-  vector_acc<int      > mp;mp.resize(Ngroup*3);
-  vector_acc<int      > mm;mm.resize(Ngroup*3);
+  vector<Ty > Gp ;Gp.resize(Ngroup*16);
+  vector<Ty > Gm ;Gm.resize(Ngroup*16);
+  vector<int      > mp;mp.resize(Ngroup*3);
+  vector<int      > mm;mm.resize(Ngroup*3);
   ga_M &ga2 = ga_cps.ga[1][3];
   ga_M &ga1 = ga_cps.ga[1][3];
 

@@ -73,8 +73,8 @@ namespace qlat{
 #define BFACG_SHARED 4
 #endif
 
-#define Evector qlat::vector_acc<Complexq >
-#define EigenV   qlat::vector_acc<Complexq >
+#define Evector qlat::vector<Complexq >
+#define EigenV   qlat::vector<Complexq >
 
 /////May have some errors for python, mem buf, mem leak
 ////#define EigenM qlat::vector<Evector >
@@ -410,7 +410,7 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
 }
 
 template<typename Ty>
-void clear_qv(qlat::vector_acc<Ty > &G, QBOOL dummy=QTRUE)
+void clear_qv(qlat::vector<Ty > &G, QBOOL dummy=QTRUE)
 {
   zero_Ty(G.data(), G.size(), 1 , dummy);
 }

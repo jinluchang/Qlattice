@@ -19,7 +19,7 @@ namespace qlat
   src to res : with civ to original geoA
 */
 template <class Ty>
-void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& src, const int civ, const Geometry& geo1, const Geometry& geo0, const Geometry& geoA )
+void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const int civ, const Geometry& geo1, const Geometry& geo0, const Geometry& geoA )
 {
   TIMERA("grid_memory_reshape");
   Qassert(geoA.node_site != qlat::Coordinate());
@@ -72,7 +72,7 @@ void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& sr
   }
 
   std::vector<Long > jobA = job_create(biva, bL);
-  qlat::vector_acc<Ty* > bP;bP.resize(bL);
+  qlat::vector<Ty* > bP;bP.resize(bL);
   for(int bi=0;bi<bL;bi++){
     bP[bi] = &bufP[bi * Vol * civ];
   }
@@ -123,7 +123,7 @@ void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& sr
 }
 
 template <class Ty>
-void grid_memory_reshape(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& src, const int civ,
+void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const int civ,
   const Coordinate& n1, const Coordinate& n0, const Coordinate& nA)
 {
   Geometry geoA;geoA.init(nA);

@@ -2469,7 +2469,7 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 
 //template<typename Ty, int dir>
 //void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
-//  int e0, int e1, int o0, int o1, qlat::vector_acc<Long >& map, int mode = 0)
+//  int e0, int e1, int o0, int o1, qlat::vector<Long >& map, int mode = 0)
 //{
 //  TIMER_FLOPS("copy_eo_cs_to_fieldM");
 //  Qassert(even.initialized and odd.initialized);
@@ -2494,8 +2494,8 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 //  const int btotal = even.btotal;
 //
 //  Qassert(btotal * b_size == DIM*V/2);
-//  qlat::vector_acc<Ty** > eP;eP.resize(2*ne);
-//  //qlat::vector_acc<Ty** > oP;oP.resize(no);
+//  qlat::vector<Ty** > eP;eP.resize(2*ne);
+//  //qlat::vector<Ty** > oP;oP.resize(no);
 //  ////Ty** eP = even.get_pointers(ni)
 //  for(int ei=0;ei<ne;ei++){eP[ei]      = even.get_pointers(ei + e0);}
 //  for(int oi=0;oi<no;oi++){eP[ne + oi] =  odd.get_pointers(oi + o0);}
@@ -2537,7 +2537,7 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 /////load the even vectors with zero mass
 /////mode_c = 0, default even with vol -> color
 template<typename Ty >
-inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
+inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
   Geometry& geo, const int N0=0, const int N1=-1,
   double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
   std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
@@ -2630,7 +2630,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   std::string infoL = ssprintf("mass %.8f", mass_file);
   std::string INFO_LIST(infoL.c_str());
   const Long V = geo.local_volume();
-  qlat::vector_acc<Long > map;
+  qlat::vector<Long > map;
   std::vector<Ty*  > noises;noises.resize(Ngroup);
   std::vector<qlat::vector_gpu<Ty > > eig;eig.resize(Ngroup);
   for(int iv=0;iv<Ngroup;iv++){
@@ -2706,7 +2706,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 }
 
 template<typename Ty >
-inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
+inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
   Geometry& geo, const int N0=0, const int N1=-1,
   double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
   std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
@@ -2715,7 +2715,7 @@ inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qla
 }
 
 template<typename Ty>
-inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
+inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
   Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
   std::string VECS_TYPE = std::string("EO_Eigensystem"))
 {
@@ -2723,7 +2723,7 @@ inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 }
 
 template<typename Ty>
-inline void save_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector_acc<Ty >& evals, std::vector<double>& err,
+inline void save_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
   Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
   std::string VECS_TYPE = std::string("EO_Eigensystem"))
 {

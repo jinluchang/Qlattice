@@ -23,8 +23,8 @@
 namespace qlat
 {
 
-void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector_acc<Long>& pack_send,
-                  qlat::vector_acc<Long>& pack_recv,
+void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long>& pack_send,
+                  qlat::vector<Long>& pack_recv,
                   const SetMarksField& set_marks_field = set_marks_field_all,
                   const std::string& tag = std::string(""));
 
@@ -33,8 +33,8 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 
 struct expand_index_buf {
   //Geometry geo; //make a copy of geo if needed
-  qlat::vector_acc<Long >  pack_send;
-  qlat::vector_acc<Long >  pack_recv;
+  qlat::vector<Long >  pack_send;
+  qlat::vector<Long >  pack_recv;
   Int Multiplicity;//record numbers
   //const long Nindex;
   expand_index_buf()
@@ -155,7 +155,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
               cmi.id_node, mpi_tag, get_comm(), reqs_recv);
   }
 
-  //qlat::vector_acc<long > pack_infos;
+  //qlat::vector<long > pack_infos;
   Long* pack_send = (Long*) &ebuf.pack_send[0];
   Long* pack_recv = (Long*) &ebuf.pack_recv[0];
 

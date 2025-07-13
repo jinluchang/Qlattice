@@ -64,7 +64,7 @@ inline void reorder_civ(int8_t* src, int8_t* res,int biva,int civ,size_t sizeF,i
 template<typename Ty>
 inline void print_numbers(Ty* src, int size, int GPU)
 {
-  qlat::vector_acc<Ty > buf;buf.resize(size);
+  qlat::vector<Ty > buf;buf.resize(size);
   cpy_GPU(buf.data(), src, size, 0, GPU);
   for(int i=0;i<size;i++)
   {
@@ -636,27 +636,27 @@ inline void random_Ty(Ty* a, Long N0,int GPU=0, int seed = 0, const int mode = 0
 }
 
 template<typename Ty>
-inline void random_EigenM(qlat::vector_acc<Ty >& a,int GPU=0, int seed = 0)
+inline void random_EigenM(qlat::vector<Ty >& a,int GPU=0, int seed = 0)
 {
   Ty* buf = a.data();
   random_Ty(buf, a.size(), GPU, seed);
 }
 
 template<typename Ty>
-inline void random_EigenM(std::vector<qlat::vector_acc<Ty > >& a, int GPU=0, int seed = 0)
+inline void random_EigenM(std::vector<qlat::vector<Ty > >& a, int GPU=0, int seed = 0)
 {
   int N0 = a.size();if(N0 == 0)return ;
   for(size_t i=0;i < size_t(N0);i++){random_EigenM(a[i], GPU,  seed + i);}
 }
 
 template<typename Ty>
-inline void zeroE(qlat::vector_acc<Ty >& a,int GPU=0, QBOOL dummy=QTRUE)
+inline void zeroE(qlat::vector<Ty >& a,int GPU=0, QBOOL dummy=QTRUE)
 {
   zero_Ty(a.data(), a.size(), GPU, dummy);
 }
 
 template<typename Ty>
-inline void zeroE(std::vector<qlat::vector_acc<Ty > >& a,int GPU=0, QBOOL dummy=QTRUE)
+inline void zeroE(std::vector<qlat::vector<Ty > >& a,int GPU=0, QBOOL dummy=QTRUE)
 {
   for(LInt iv=0;iv<a.size();iv++){zeroE(a[iv], GPU, false);}
   if(dummy==QTRUE){qacc_barrier(dummy);}
@@ -1064,7 +1064,7 @@ inline void allocate_buf(std::vector<qlat::vector_gpu<Ty > > & buf, size_t n0, s
 }
 
 template<typename Ty>
-inline void allocate_buf(std::vector<qlat::vector_acc<Ty > > & buf, size_t n0, size_t n1)
+inline void allocate_buf(std::vector<qlat::vector<Ty > > & buf, size_t n0, size_t n1)
 {
   TIMERA("CUDA Buf mem allocation");
   buf.resize(0);
@@ -1095,9 +1095,9 @@ inline Ty inv_self(const Ty& lam, double m, double rho,int one_minus_halfD=1)
 }
 
 template<typename Ty>
-vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, Long Nvol = -1)
+vector<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, Long Nvol = -1)
 {
-  vector_acc< Ty* >  res;
+  vector< Ty* >  res;
   const size_t Nvec = src.size();
   if(Nvec == 0){return res;}
 
@@ -1125,9 +1125,9 @@ vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src, Lo
   Nvol small : devide each src into chucks
 */
 template<typename Ty>
-vector_acc<Ty* > FieldG_to_pointers(std::vector<FieldG<Ty > >& src, Long Nvol = -1)
+vector<Ty* > FieldG_to_pointers(std::vector<FieldG<Ty > >& src, Long Nvol = -1)
 {
-  qlat::vector_acc<Ty* >  res;
+  qlat::vector<Ty* >  res;
   const size_t Nvec = src.size();
   if(Nvec == 0){return res;}
 
@@ -1157,9 +1157,9 @@ vector_acc<Ty* > FieldG_to_pointers(std::vector<FieldG<Ty > >& src, Long Nvol = 
 
 // Each FieldM to gpu pointers
 template<typename Ty>
-qlat::vector_acc<Ty* > FieldM_to_pointers(std::vector<qlat::FieldM<Ty, 12*12> >& src)
+qlat::vector<Ty* > FieldM_to_pointers(std::vector<qlat::FieldM<Ty, 12*12> >& src)
 {
-  qlat::vector_acc< Ty* >  res;
+  qlat::vector< Ty* >  res;
   res.resize(src.size());
   for(LInt iv=0;iv<src.size();iv++)
   {
@@ -1170,9 +1170,9 @@ qlat::vector_acc<Ty* > FieldM_to_pointers(std::vector<qlat::FieldM<Ty, 12*12> >&
 
 // Each src ant NT to gpu pointers
 template<typename Ty>
-qlat::vector_acc<Ty* > FieldM_to_Tpointers(std::vector<qlat::FieldM<Ty, 12*12> >& src, Long Nvol = -1)
+qlat::vector<Ty* > FieldM_to_Tpointers(std::vector<qlat::FieldM<Ty, 12*12> >& src, Long Nvol = -1)
 {
-  qlat::vector_acc< Ty* >  res;
+  qlat::vector< Ty* >  res;
   const size_t Nvec = src.size();
   if(Nvec == 0){return res;}
   for(size_t iv=0;iv<Nvec;iv++){
@@ -1201,9 +1201,9 @@ qlat::vector_acc<Ty* > FieldM_to_Tpointers(std::vector<qlat::FieldM<Ty, 12*12> >
 }
 
 template<typename Ty>
-qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& src)
+qlat::vector<Ty* > EigenM_to_pointers(std::vector<qlat::vector<Ty > >& src)
 {
-  qlat::vector_acc<Ty* >  res;
+  qlat::vector<Ty* >  res;
   res.resize(src.size());
   for(LInt iv=0;iv<src.size();iv++)
   {
@@ -1303,7 +1303,7 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
   });
 
 
-  qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
+  qlat::vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
   reduce_vecs(buf, rsum.data(), Nvol, 1, GPU);
   sum_all_size( (Ty*) rsum.data(), 1, 0 );
   return rsum[0];
@@ -1313,7 +1313,7 @@ template<typename Ty, typename Int>
 inline Ty Reduce(Ty* buf, Int Ndata, int GPU = 1)
 {
   TIMERB("Reduce");
-  qlat::vector_acc<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
+  qlat::vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
   reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
   sum_all_size( (Ty*) rsum.data(), 1, 0 );
   return rsum[0];
@@ -1427,9 +1427,9 @@ qacc Coordinate index_to_Coordinate(const Long& idx, const Coordinate& Lat){
   return sp;
 }
 
-//inline qlat::vector_acc<int > Coordinates_to_list(std::vector<Coordinate >& moms)
+//inline qlat::vector<int > Coordinates_to_list(std::vector<Coordinate >& moms)
 //{
-//  qlat::vector_acc<int > momN;
+//  qlat::vector<int > momN;
 //  momN.resize(moms.size() * 4);
 //  for(unsigned int i=0;i<moms.size;i++){
 //    for(int j=0;j<4;j++){

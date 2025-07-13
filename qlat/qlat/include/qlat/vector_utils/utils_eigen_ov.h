@@ -18,7 +18,7 @@
 
 ///#define SUMMIT 0
 
-////#define Vlocal qlat::vector_acc<Complexq >
+////#define Vlocal qlat::vector<Complexq >
 #define Elocal std::vector<qlat::vector<Complexq > >
 #define Vlocal qlat::vector_gpu<Complexq >
 #define EIGENERROR 1e-11
@@ -79,13 +79,13 @@ struct eigen_ov {
   Vlocal eval_list;
   std::vector<double > massL;
 
-  qlat::vector_acc<Complexq > eval_tem;
+  qlat::vector<Complexq > eval_tem;
   /////int ncut0,ncut1;
 
   // buf for pointers
-  vector_acc<Complexq* > rpL;
-  vector_acc<Complexq* > EpL;
-  vector_acc<Complexq* > spL;
+  vector<Complexq* > rpL;
+  vector<Complexq* > EpL;
+  vector<Complexq* > spL;
 
   int Ns_buf;
   int nprop_buf;
@@ -1067,9 +1067,9 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, int Ns, const st
   Complexq* alpha_bfac  = ei.alpha_bfac.data();
   Complexq* alpha_list  = ei.alpha_list.data();
   Complexq* eval_list   = ei.eval_list.data();
-  vector_acc<Complexq* >& rpL = ei.rpL;
-  vector_acc<Complexq* >& EpL = ei.EpL;
-  vector_acc<Complexq* >& spL = ei.spL;
+  vector<Complexq* >& rpL = ei.rpL;
+  vector<Complexq* >& EpL = ei.EpL;
+  vector<Complexq* >& spL = ei.spL;
 
   const Geometry& geo = ei.geo;
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -1349,12 +1349,12 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
   const int Nbuf_T = (tsrcL.size() >= 2 and sec_info.size() == 2) ? 2 : 1;
   int src_dT  = 0;
   int src_ini = 0;
-  vector_acc<int > src_time;
-  vector_acc<int> src_t_order;
+  vector<int > src_time;
+  vector<int> src_t_order;
   if(Nbuf_T == 2){
     src_dT  = sec_info[0];
     src_ini = sec_info[1];
-    vector_acc<int > map_sec;
+    vector<int > map_sec;
     get_map_sec(map_sec, src_ini, src_dT, fd.nt);
     get_src_times(src_time, src_t_order, map_sec, src_ini, src_dT);
   }

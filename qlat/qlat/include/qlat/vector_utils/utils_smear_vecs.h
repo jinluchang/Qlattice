@@ -121,7 +121,7 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
 }
 #endif
 
-inline void get_mapvq_each(const std::vector<CommPackInfo> &pack_infos, std::vector<qlat::vector_acc<Long > >& mapvq, int dir=0)
+inline void get_mapvq_each(const std::vector<CommPackInfo> &pack_infos, std::vector<qlat::vector<Long > >& mapvq, int dir=0)
 {
   std::vector<std::vector<Long > > mapv(2);//mapv.resize(4*pack_infos.size());
   ////std::vector<Long > factorL;
@@ -158,20 +158,20 @@ inline void get_mapvq_each(const std::vector<CommPackInfo> &pack_infos, std::vec
 }
 
 ////  === output
-////  qlat::vector_acc<Long > local_map_typeA0;  //// i to count, Nvol_ext, original positions to count new positions
-////  qlat::vector_acc<Long > local_map_typeA1;  //// reverse
-////  qlat::vector_acc<Long > map_index_typeA0;  //// index to index_typeA
-////  qlat::vector_acc<Long > map_index_typeA1;  //// from count to writi (new indexings)
-////  qlat::vector_acc<Long > map_index_typeAL;  //// count to index, loop mappings
-////  qlat::vector_acc<Long > map_bufD_typeA  ;  //// Nvol * dirL * 2, count*dirL*2 + (dir+dirL), direction indexings
+////  qlat::vector<Long > local_map_typeA0;  //// i to count, Nvol_ext, original positions to count new positions
+////  qlat::vector<Long > local_map_typeA1;  //// reverse
+////  qlat::vector<Long > map_index_typeA0;  //// index to index_typeA
+////  qlat::vector<Long > map_index_typeA1;  //// from count to writi (new indexings)
+////  qlat::vector<Long > map_index_typeAL;  //// count to index, loop mappings
+////  qlat::vector<Long > map_bufD_typeA  ;  //// Nvol * dirL * 2, count*dirL*2 + (dir+dirL), direction indexings
 inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, const int dirL,
-  qlat::vector_acc<Long >& local_map_typeA0,
-  qlat::vector_acc<Long >& local_map_typeA1,
-  qlat::vector_acc<Long >& map_index_typeA0,
-  qlat::vector_acc<Long >& map_index_typeA1,
-  qlat::vector_acc<Long >& map_index_typeAL,
-  qlat::vector_acc<Long >& map_bufD_typeA  ,
-  std::vector< qlat::vector_acc<Long > >& copy_extra_index,
+  qlat::vector<Long >& local_map_typeA0,
+  qlat::vector<Long >& local_map_typeA1,
+  qlat::vector<Long >& map_index_typeA0,
+  qlat::vector<Long >& map_index_typeA1,
+  qlat::vector<Long >& map_index_typeAL,
+  qlat::vector<Long >& map_bufD_typeA  ,
+  std::vector< qlat::vector<Long > >& copy_extra_index,
   std::vector<Long >& pos_typeA   )
 {
   TIMER("get_maps_hoppings");
@@ -180,18 +180,18 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
 
   Qassert(dirL == 3 or dirL == 4);
 
-  qlat::vector_acc<int> Nv,nv,mv;
+  qlat::vector<int> Nv,nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   const Long Nvol     = geo.local_volume();
   const Long Nvol_ext = geo_ext.local_volume_expanded();
   pos_typeA.resize(2);
 
-  //std::vector<qlat::vector_acc<Long > > map_bufV;
-  qlat::vector_acc<Long > map_bufD;
+  //std::vector<qlat::vector<Long > > map_bufV;
+  qlat::vector<Long > map_bufD;
 
   /////const int dir_max = 4;
-  qlat::vector_acc<Long > map_index_typeO_0;map_index_typeO_0.resize(Nvol_ext);
-  qlat::vector_acc<Long > map_index_typeO_1;map_index_typeO_1.resize(Nvol    );
+  qlat::vector<Long > map_index_typeO_0;map_index_typeO_0.resize(Nvol_ext);
+  qlat::vector<Long > map_index_typeO_1;map_index_typeO_1.resize(Nvol    );
   for(Long i=0;i<Nvol_ext;i++){map_index_typeO_0[i] = -1;}
   for(Long i=0;i<Nvol    ;i++){map_index_typeO_1[i] = -1;}
 
@@ -258,13 +258,13 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   const CommPlan& plan = get_comm_plan(set_marks_field_1, "", geo_ext, 1);
   QLAT_DIAGNOSTIC_POP;
 
-  std::vector<qlat::vector_acc<Long > > mapvq_send;
-  std::vector<qlat::vector_acc<Long > > mapvq_recv;
+  std::vector<qlat::vector<Long > > mapvq_send;
+  std::vector<qlat::vector<Long > > mapvq_recv;
   get_mapvq_each(plan.send_pack_infos, mapvq_send, 0);
   get_mapvq_each(plan.recv_pack_infos, mapvq_recv, 1);
 
-  qlat::vector_acc<Long > send_buffer_index;
-  qlat::vector_acc<Long > recv_buffer_index;
+  qlat::vector<Long > send_buffer_index;
+  qlat::vector<Long > recv_buffer_index;
 
   ////Qassert(false);
   ////qmessage("rank %5d, send %ld, recv %ld \n", qlat::get_id_node(), Long(plan.total_send_size), Long(plan.total_recv_size));
@@ -519,12 +519,12 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
     }
   }
   std::vector<Long > sortL = get_sort_index(copy_extraL.data(), copy_extraL.size());
-  ////std::vector< qlat::vector_acc<Long > > copy_extra_index;
+  ////std::vector< qlat::vector<Long > > copy_extra_index;
   copy_extra_index.resize(3);
 
-  qlat::vector_acc<Long >& copy_extra_index0 = copy_extra_index[0];
-  qlat::vector_acc<Long >& copy_extra_index1 = copy_extra_index[1];
-  qlat::vector_acc<Long >& copy_extra_posL   = copy_extra_index[2];
+  qlat::vector<Long >& copy_extra_index0 = copy_extra_index[0];
+  qlat::vector<Long >& copy_extra_index1 = copy_extra_index[1];
+  qlat::vector<Long >& copy_extra_posL   = copy_extra_index[2];
   copy_extra_index0.resize(sortL.size());
   copy_extra_index1.resize(sortL.size() + 1);
   copy_extra_posL.resize(count_sum);
@@ -624,9 +624,9 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   ////Qassert(false);
 
   ////map to original vol index
-  //qlat::vector_acc<Long > map_index_typeA0;
-  //qlat::vector_acc<Long > map_index_typeA1;
-  //qlat::vector_acc<Long > map_index_typeAL;
+  //qlat::vector<Long > map_index_typeA0;
+  //qlat::vector<Long > map_index_typeA1;
+  //qlat::vector<Long > map_index_typeAL;
   map_index_typeA0.resize(Nvol);
   map_index_typeA1.resize(Nvol_sum);
   map_index_typeAL.resize(Nvol_sum);
@@ -663,7 +663,7 @@ inline void get_maps_hoppings(const Geometry& geo, const Geometry& geo_ext, cons
   map_index_typeA1.resize(Nvol);////reuse map_index_typeA1
 
   //////map_bufD[index*dirL*2 + (dir+dirL)] --> needed Nvol_ext positions
-  //qlat::vector_acc<Long > map_bufD_typeA;
+  //qlat::vector<Long > map_bufD_typeA;
   map_bufD_typeA.resize(Nvol * dirL * 2 );
   #pragma omp parallel for
   for(Long i=0;i<Long(map_bufD_typeA.size());i++){map_bufD_typeA[i] = -1;}
@@ -727,19 +727,19 @@ struct smear_fun{
   Long Nvol;
   Long Nvol_ext;
 
-  //std::vector<qlat::vector_acc<Long > > map_bufV;
-  //qlat::vector_acc<Long > map_bufD;
-  qlat::vector_acc<int> Nv,nv,mv;
+  //std::vector<qlat::vector<Long > > map_bufV;
+  //qlat::vector<Long > map_bufD;
+  qlat::vector<int> Nv,nv,mv;
 
-  qlat::vector_acc<Long > map_index_typeI ;
-  qlat::vector_acc<Long > map_index_typeA0;
-  qlat::vector_acc<Long > map_index_typeA1;
-  qlat::vector_acc<Long > map_index_typeAL;
-  qlat::vector_acc<Long > map_bufD_typeA  ;
+  qlat::vector<Long > map_index_typeI ;
+  qlat::vector<Long > map_index_typeA0;
+  qlat::vector<Long > map_index_typeA1;
+  qlat::vector<Long > map_index_typeAL;
+  qlat::vector<Long > map_bufD_typeA  ;
 
   int use_gauge_mapping;////hack for box smearings, gaussian is 1
 
-  std::vector< qlat::vector_acc<Long > > copy_extra_index;
+  std::vector< qlat::vector<Long > > copy_extra_index;
   std::vector<Long> pos_typeA;
 
   unsigned int NVmpi;
@@ -766,11 +766,11 @@ struct smear_fun{
   /////buffers
 
   bool  mem_setup_flag;
-  qlat::vector_acc<qlat::ComplexD > mom_factors;
+  qlat::vector<qlat::ComplexD > mom_factors;
 
   //template <class Td>
   //void setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom, const bool smear_in_time_dir){
-  //  qlat::vector_acc<qlat::ComplexD > momF(8);
+  //  qlat::vector<qlat::ComplexD > momF(8);
   //  for (int i = 0; i < 8; ++i) {
   //    const int dir = i - 4;
   //    const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
@@ -913,8 +913,8 @@ struct smear_fun{
     //get_mapvq(plan.send_pack_infos, mapvq_send, 0);
     //get_mapvq(plan.recv_pack_infos, mapvq_recv, 1);
 
-    qlat::vector_acc<Long > local_map_typeA0;
-    qlat::vector_acc<Long > local_map_typeA1;
+    qlat::vector<Long > local_map_typeA0;
+    qlat::vector<Long > local_map_typeA1;
     get_maps_hoppings(geo, geo_ext, dirL,
       local_map_typeA0, local_map_typeA1, map_index_typeA0, map_index_typeA1, map_index_typeAL, map_bufD_typeA, copy_extra_index, pos_typeA);
 
@@ -1078,9 +1078,9 @@ struct smear_fun{
 
     ////copy extra send buf
     //copy_extra_index
-    qlat::vector_acc<Long >& copy_extra_index0 = copy_extra_index[0];
-    qlat::vector_acc<Long >& copy_extra_index1 = copy_extra_index[1];
-    qlat::vector_acc<Long >& copy_extra_posL   = copy_extra_index[2];
+    qlat::vector<Long >& copy_extra_index0 = copy_extra_index[0];
+    qlat::vector<Long >& copy_extra_index1 = copy_extra_index[1];
+    qlat::vector<Long >& copy_extra_posL   = copy_extra_index[2];
     //copy_extra_index0.resize(sortL.size());
     //copy_extra_index1.resize(sortL.size());
     //copy_extra_posL.resize(count_sum);
@@ -1176,12 +1176,12 @@ struct smear_fun{
   }
 
   //void gauge_setup(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Tg >& gf,
-  //           const qlat::vector_acc<qlat::ComplexD >& momF = qlat::vector_acc<qlat::ComplexD >(), bool force_update = false);
+  //           const qlat::vector<qlat::ComplexD >& momF = qlat::vector<qlat::ComplexD >(), bool force_update = false);
   template <class Td>
   void gauge_setup(const GaugeFieldT<Td >& gf, const CoordinateD& mom_, const int force_update = 0, const int use_gauge_mapping_ = 1)
   {
     Qassert(mem_setup_flag == true);
-    qlat::vector_acc<qlat::ComplexD > momF(8);
+    qlat::vector<qlat::ComplexD > momF(8);
     for (int i = 0; i < 8; ++i) {
       const int dir = i - 4;
       const double phase = dir >= 0 ? mom_[dir] : -mom_[-dir - 1];
@@ -1447,7 +1447,7 @@ inline SmearPlanKey get_smear_plan_key(const Geometry& geo, const bool smear_in_
 
 ////TODO need to change other parts for c0, c1
 template <class T, class Td>
-void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::ComplexD >(), const qlat::vector_acc<Long >& index_map = qlat::vector_acc<Long >(0)){
+void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vector<qlat::ComplexD >& mom_factors=qlat::vector<qlat::ComplexD >(), const qlat::vector<Long >& index_map = qlat::vector<Long >(0)){
   TIMERB("extend_links_to_vecs");
   const Geometry& geo = gf.geo();
   GaugeFieldT<Td > gf1;
@@ -1466,7 +1466,7 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
   const int dir_limit = 4;
   ////set up mom factors
   qlat::ComplexD* momF = NULL;
-  qlat::vector_acc<qlat::ComplexD > buf_mom;buf_mom.resize(8);
+  qlat::vector<qlat::ComplexD > buf_mom;buf_mom.resize(8);
   for(int i=0;i<buf_mom.size();i++){buf_mom[i] = 1;}
   if(mom_factors.size() == 0){momF = (qlat::ComplexD*) qlat::get_data(buf_mom).data();}
   if(mom_factors.size() != 0){
@@ -1475,7 +1475,7 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
   }
 
   const Long* index_mapT = (Long*) index_map.data();
-  qlat::vector_acc<Long > index_mapR;
+  qlat::vector<Long > index_mapR;
   const Long Nvol = geo.local_volume();
   if(index_map.size() == 0){
     index_mapR.resize(Nvol);
@@ -1504,7 +1504,7 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
 }
 
 template <class T, class Td>
-void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Td >& gf, const qlat::vector_acc<qlat::ComplexD >& mom_factors=qlat::vector_acc<qlat::ComplexD >()){
+void extend_links_to_vecs(qlat::vector_gpu<T >& gfE, const GaugeFieldT<Td >& gf, const qlat::vector<qlat::ComplexD >& mom_factors=qlat::vector<qlat::ComplexD >()){
   gfE.resize(2*4* gf.geo().local_volume() * 9);
   extend_links_to_vecs(gfE.data(), gf, mom_factors);
 }

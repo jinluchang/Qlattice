@@ -54,7 +54,7 @@ namespace qlat
 */
 template <class M>
 struct API FieldG : Field<M> {
-  // vector_acc<M > field; need to be copy
+  // vector<M > field; need to be copy
   vector_gpu<M> field_gpu;
   QMEM_ORDER mem_order;
 
@@ -249,7 +249,7 @@ struct API FieldG : Field<M> {
 */
 template <class M>
 struct API SelectedFieldG : SelectedField<M> {
-  // vector_acc<M > field; need to be copy
+  // vector<M > field; need to be copy
   vector_gpu<M> field_gpu;
   QMEM_ORDER mem_order;
 

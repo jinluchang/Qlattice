@@ -217,7 +217,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
   }
 }
 
-inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
+inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
 {
   /////const qlat::Geometry &geo = a0.geo();
   ////const Coordinate vg = geo.total_site();
@@ -225,7 +225,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
 
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
-  qlat::vector_acc<Complexq > reduce_sum;reduce_sum.resize((nvec*Nt)*16);
+  qlat::vector<Complexq > reduce_sum;reduce_sum.resize((nvec*Nt)*16);
 
   if(mode_reduce == 1)
   {
@@ -247,7 +247,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
   
 
   ///TODO correct the reduce_gamma to GPU
-  //qlat::vector_acc<Complexq > NabL_tem;NabL_tem.resize(nvec*Nt*16);
+  //qlat::vector<Complexq > NabL_tem;NabL_tem.resize(nvec*Nt*16);
   //qthread_for(op0, nvec*Nt*16, {
   //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
   //  int it = op/16; int gi = op%16;
@@ -260,7 +260,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
   //  NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += NabL_tem[ivec*Nt*16 + it*16 + gi];
   //});
 
-  qlat::vector_acc<Complexq* > gP; qlat::vector_acc<int* > iP;get_g_pointer(gL, gP, iP);
+  qlat::vector<Complexq* > gP; qlat::vector<int* > iP;get_g_pointer(gL, gP, iP);
   /////qacc_for(i0, 1,{
   /////  NabL[0] = gP[0][0];
   /////});
@@ -319,7 +319,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, Long bufN, 
 
 }
 
-inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector_acc<Complexq > &values, qlat::vector_acc<int8_t> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
+inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector<Complexq > &values, qlat::vector<int8_t> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
 {
   unsigned long bufN = avL.size();
   if(bufN == 0)return;
@@ -328,7 +328,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mr
   /////int nt = Nab.size()/(Aoper);
 
   /////Set up Mvalues
-  qlat::vector_acc<Ftype > MvaluesV;MvaluesV.resize(bufN*nmass*2);
+  qlat::vector<Ftype > MvaluesV;MvaluesV.resize(bufN*nmass*2);
   Ftype* Mvalues = MvaluesV.data();
   Ftype* MresP   = Mres.data();
   #pragma omp parallel for
@@ -489,7 +489,7 @@ inline std::vector<unsigned long > get_loop_cut(int Nx,int Ny, int Nycut, int Nx
   return jobL;
 }
 
-inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::vector_acc<int8_t > &Gmap){
+inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::vector<int8_t > &Gmap){
   Gmap.resize(32);
   for(int i=0;i<16;i++){
     unsigned long r0;unsigned long r1;
@@ -647,7 +647,7 @@ struct Nab_distribute{
 //
 //}
 
-inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector_acc<Complexq > &values,const int &nzero,qlat::vector_acc<Ftype > &Mres,const qlat::Geometry &geo, int GPUFM=1)
+inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector<Complexq > &values,const int &nzero,qlat::vector<Ftype > &Mres,const qlat::Geometry &geo, int GPUFM=1)
 {
   ////Input must be chiral vectors, eigen_chi, n_vec --> chi --> d/2 --> t,y,z,x --> c --> complex
   ////values --> n_vec --> massi
@@ -677,7 +677,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   unsigned short Nt = geo.node_site[3];
 
   std::vector<ga_M > gL;gL.resize(Aoper);
-  qlat::vector_acc<int8_t> GmapM;GmapM.resize(32*4);
+  qlat::vector<int8_t> GmapM;GmapM.resize(32*4);
 
   {
   TIMER("Copy gammas");
@@ -718,10 +718,10 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   ///std::vector<std::vector<int > > Gmap;Gmap.resize(4);
   ///for(int gi=0;gi<4;gi++){Gmap[gi].resize(32);}
   //qlat::vector<int8_t> Gmap;///g0
-  qlat::vector_acc<int8_t> Gmap0;///g0
-  qlat::vector_acc<int8_t> Gmap1;///g05
-  qlat::vector_acc<int8_t> Gmap2;///g1
-  qlat::vector_acc<int8_t> Gmap3;///g15
+  qlat::vector<int8_t> Gmap0;///g0
+  qlat::vector<int8_t> Gmap1;///g05
+  qlat::vector<int8_t> Gmap2;///g1
+  qlat::vector<int8_t> Gmap3;///g15
   get_map_gammaL(g0 ,gL, Gmap0);for(int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
   get_map_gammaL(g05,gL, Gmap1);for(int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
   get_map_gammaL(g1 ,gL, Gmap2);for(int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
@@ -761,7 +761,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   ///Ncut = n_vec;
   Complexq* a0p;Complexq* b0p;
 
-  qlat::vector_acc<Complexq > prodFMV;
+  qlat::vector<Complexq > prodFMV;
   if(mode_reduce == 0)prodFMV.resize(Nmpi*Nt*16);
   if(mode_reduce == 1)prodFMV.resize(Nmpi*geo.local_volume()*16/32);
   Complexq* prodFM = prodFMV.data();
@@ -845,7 +845,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   fflush_MPI();
 
   //Mres.resize(nmass*16*nt*nt);set_zero(Mres);
-  qlat::vector_acc<Ftype > MresL;
+  qlat::vector<Ftype > MresL;
   {TIMER("CUDA mem allocate");MresL.resize(bufN*MresL_size);set_zero(MresL);}
   //qlat::vector<Complexq > Nab;Nab.resize(16*nt);
   //set_zero(Nab);

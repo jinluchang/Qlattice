@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 
   ///svec.set_MPI_size(2*civ, biva);
    
-  //std::vector<qlat::vector_acc<TyF > > srcE;std::vector<qlat::vector_acc<TyF > > resE;
+  //std::vector<qlat::vector<TyF > > srcE;std::vector<qlat::vector<TyF > > resE;
   //srcE.resize(biva);resE.resize(biva);
 
   //for(int iv=0;iv<biva;iv++){
@@ -146,8 +146,8 @@ int main(int argc, char* argv[])
 
   double diff = 0.0;double sum = 0.0;double sum0 = 0.0;double sum1 = 0.0;
   double diff0 = 0.0;double diff1 = 0.0;
-  qlat::vector_acc<int > iDir_acc;iDir_acc.resize(4);for(int i=0;i<4;i++){iDir_acc[i] = iDir[i]*in.nvec;}
-  qlat::vector_acc<int > nv_acc;nv_acc.resize(4);for(int i=0;i<4;i++){nv_acc[i] = fd.nv[i];}
+  qlat::vector<int > iDir_acc;iDir_acc.resize(4);for(int i=0;i<4;i++){iDir_acc[i] = iDir[i]*in.nvec;}
+  qlat::vector<int > nv_acc;nv_acc.resize(4);for(int i=0;i<4;i++){nv_acc[i] = fd.nv[i];}
   for(LInt iv=0;iv<src.size();iv++){
     PF0 = (TyF*) qlat::get_data(resF[iv]).data();
     PD1 = (TyD*) qlat::get_data(src[ iv]).data();

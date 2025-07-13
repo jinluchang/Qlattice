@@ -19,11 +19,11 @@ inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& 
   qassert(int(Bsite.size()) == nt);
   qassert(int(Zsite.size()) == nt);
   const int nvec = 32*nmass;
-  qlat::vector_acc<Complexq > buf_gpu;buf_gpu.resize(nvec * nt);
+  qlat::vector<Complexq > buf_gpu;buf_gpu.resize(nvec * nt);
   qlat::set_zero(buf_gpu);
   Complexq* Pbuf = (Complexq*) (qlat::get_data(buf_gpu).data());
   Complexq* PFFT = (Complexq*) (qlat::get_data(FFT_data).data());
-  qlat::vector_acc<long> PZsite;PZsite.resize(Zsite.size());
+  qlat::vector<long> PZsite;PZsite.resize(Zsite.size());
   for(Long t=0;t<PZsite.size();t++){PZsite[t] = Zsite[t];}
 
   ////sprintf(key_T, "%d   %d    %d   %d  %d  %d %d", nsource, 2, 3, 32, int(massL.size()), in.nt, 2);

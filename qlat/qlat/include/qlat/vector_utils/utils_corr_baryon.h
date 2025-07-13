@@ -29,7 +29,7 @@ namespace qlat{
 */
 template <typename Ty>
 void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
-  qlat::vector_acc<Ty > &res, const ga_M &ga2,const int ind2, const ga_M &ga1, const int ind1, int clear=1){
+  qlat::vector<Ty > &res, const ga_M &ga2,const int ind2, const ga_M &ga1, const int ind1, int clear=1){
   TIMER("Proton_vectorE");
   if(prop1.size() == 0){res.resize(0); return ;}
   const qlat::Geometry &geo = prop1[0].geo();
@@ -51,10 +51,10 @@ void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2
   //  Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenVTa<Nxyz>
   if(res.size()%NTt !=0 or res.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
 
-  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
+  qlat::vector<Ty* > p1 = FieldM_to_pointers(prop1);
   // swap definitions to match qlat, usually p2 = p3
-  qlat::vector_acc<Ty* > p3 = FieldM_to_pointers(prop2); // up  quark
-  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop3); //down quark
+  qlat::vector<Ty* > p3 = FieldM_to_pointers(prop2); // up  quark
+  qlat::vector<Ty* > p2 = FieldM_to_pointers(prop3); //down quark
 
   Ty epsl[3][3];
   for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
@@ -118,7 +118,7 @@ void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2
 ///proton sector corr with prop gwu convention
 template <typename Ty>
 void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
-        qlat::vector_acc<Ty > &res, const ga_M &ga1,int t0,int dT,int clear=1,int oppo=0){
+        qlat::vector<Ty > &res, const ga_M &ga1,int t0,int dT,int clear=1,int oppo=0){
   TIMER("Proton_vectorE");
   if(prop1.size() == 0){res.resize(0); return;}
 
@@ -136,8 +136,8 @@ void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2
   if(clear == 1){ini_resE(res,nmass,fd);}
 
   //int nv = res.size();int Nsize = res[0].size();
-  qlat::vector_acc<Ty >  resE0;resE0.resize(res.size());
-  qlat::vector_acc<Ty >  resE1;resE1.resize(res.size());
+  qlat::vector<Ty >  resE0;resE0.resize(res.size());
+  qlat::vector<Ty >  resE1;resE1.resize(res.size());
   ////qlat::set_zero(resE0);qlat::set_zero(resE1);
 
   proton_vectorE_gwu(prop1,prop2,prop3,resE0,ga1,0,ga1,0,1);
@@ -198,8 +198,8 @@ void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2
 template <typename Ty>
 void proton_corrE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
   const ga_M &ga2,const int ind2, const ga_M &ga1,const int ind1,
-  qlat::vector_acc<Ty > &res, int clear=1,const Coordinate& mom = Coordinate()){
-  qlat::vector_acc<Ty > resE;
+  qlat::vector<Ty > &res, int clear=1,const Coordinate& mom = Coordinate()){
+  qlat::vector<Ty > resE;
   proton_vectorE_gwu(prop1,prop2,prop3,ga2,ind2,ga1,ind1,resE,1);
   vec_corrE(resE,res,clear,mom);
 }
@@ -207,8 +207,8 @@ void proton_corrE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std:
 //  container
 template <typename Ty>
 void proton_corrE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
- qlat::vector_acc<Ty > &res, const ga_M &ga1,const int t0,const int dT,int clear=1,const Coordinate& mom = Coordinate()){
-  qlat::vector_acc<Ty >  resE;
+ qlat::vector<Ty > &res, const ga_M &ga1,const int t0,const int dT,int clear=1,const Coordinate& mom = Coordinate()){
+  qlat::vector<Ty >  resE;
   proton_vectorE_gwu(prop1,prop2,prop3,resE, ga1, t0,dT,1);
 
   vec_corrE(resE,res,clear,mom);
@@ -222,7 +222,7 @@ void proton_corrE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std:
 */
 template <typename Ty>
 void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
-  qlat::vector_acc<Ty > &res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, int clear=1){
+  qlat::vector<Ty > &res, ga_M &A, ga_M &B, qlat::vector<Ty > &G, qlat::vector<int > &mL, int clear=1){
   TIMER("Proton_vectorE");
   if(prop1.size() == 0){res.resize(0); return ;}
   ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
@@ -242,9 +242,9 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   ////if(res.size()%NTt !=0 or res.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
   if(res.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
 
-  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
-  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop2);
-  qlat::vector_acc<Ty* > p3 = FieldM_to_pointers(prop3);
+  qlat::vector<Ty* > p1 = FieldM_to_pointers(prop1);
+  qlat::vector<Ty* > p2 = FieldM_to_pointers(prop2);
+  qlat::vector<Ty* > p3 = FieldM_to_pointers(prop3);
 
   Ty epsl[3][3];
   for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
@@ -326,7 +326,7 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
 */
 template <typename Ty>
 void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, std::vector<qpropT >& prop3,
-  std::vector<qpropT >& resP, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &G, qlat::vector_acc<int > &mL, int insertion,int clear=1)
+  std::vector<qpropT >& resP, ga_M &A, ga_M &B, qlat::vector<Ty > &G, qlat::vector<int > &mL, int insertion,int clear=1)
 {
   TIMER("Baryon_vectorE_insertion");
   if(prop1.size() == 0){resP.resize(0); return ;}
@@ -356,10 +356,10 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
 
   /////check_prop_size(resP);
 
-  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
-  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop2);
-  qlat::vector_acc<Ty* > p3 = FieldM_to_pointers(prop3);
-  qlat::vector_acc<Ty* > rP = FieldM_to_pointers(resP);
+  qlat::vector<Ty* > p1 = FieldM_to_pointers(prop1);
+  qlat::vector<Ty* > p2 = FieldM_to_pointers(prop2);
+  qlat::vector<Ty* > p3 = FieldM_to_pointers(prop3);
+  qlat::vector<Ty* > rP = FieldM_to_pointers(resP);
 
   Ty epsl[3][3];
   for(int i=0;i<3;i++)for(int j=0;j<3;j++){epsl[i][j] = 0;}
@@ -480,8 +480,8 @@ void baryon_vectorE_ud_insert(std::vector<qpropT >& prop1, std::vector<qpropT >&
 
   std::vector<int > udL = {0,0,  1};
 
-  qlat::vector_acc<Ty > G;G.resize(16);
-  qlat::vector_acc<int > mL;mL.resize(3);
+  qlat::vector<Ty > G;G.resize(16);
+  qlat::vector<int > mL;mL.resize(3);
 
   //std::vector<int > inL = {0,0,  1,1,  2,2,  3,3,  0,2,  1,3,  2,0,  3,1 };
   //for(int ind=0;ind<8;ind++)
@@ -508,8 +508,8 @@ void baryon_vectorE_ud_insert(std::vector<qpropT >& prop1, std::vector<qpropT >&
     {   
       int ind1 = ind/4;
       int ind2 = ind%4;
-      qlat::vector_acc<Ty > G;G.resize(16);
-      qlat::vector_acc<int > mL;mL.resize(3);
+      qlat::vector<Ty > G;G.resize(16);
+      qlat::vector<int > mL;mL.resize(3);
       clear_qv(G);G[ind2*4 + ind1] = +1.0/1.0; //// (1+r4)/2, could be non-zero for all elements...
       mL[0] = 0;mL[1] = 1;mL[2] = 2;
       baryon_vectorE(prop1, prop2, prop3, buf[ind], A, B, G, mL, insertion, 0); 
@@ -757,8 +757,8 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 /////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
 template <typename Ty>
 void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
-  ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, 
-  qlat::vector_acc<int > &mLV, fft_desc_basic &fd, int clear=1)
+  ga_M &A, ga_M &B, qlat::vector<Ty > &GV, 
+  qlat::vector<int > &mLV, fft_desc_basic &fd, int clear=1)
 {
   TIMER("Proton_vectorEV");
   Qassert(sizeof(Ty) == 16 or sizeof(Ty) == 8);
@@ -770,10 +770,10 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 
   if(clear == 1){zero_Ty(resP, Ngv*nmass*NTt*Nxyz , 1);}
 
-  qlat::vector_acc<Ty > epslV;epslV.resize(9);
+  qlat::vector<Ty > epslV;epslV.resize(9);
   for(int i=0;i<3;i++){epslV[i*3+i]=0;epslV[i*3 + (i+1)%3]=1;epslV[i*3 + (i+2)%3]=-1;}
-  qlat::vector_acc<Ty > gMap;
-  qlat::vector_acc<int > IMap;
+  qlat::vector<Ty > gMap;
+  qlat::vector<int > IMap;
   gMap.resize(4*2);IMap.resize(4*2);
   for(int i=0;i<4;i++){
     /////int j = + i;
@@ -855,15 +855,15 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 
   std::vector<qlat::vector_gpu<signed char > > giEG;giEG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){giEG[iv].copy_from(giEL[iv]);}
-  qlat::vector_acc<signed char* > gP = EigenM_to_pointers(giEG);
+  qlat::vector<signed char* > gP = EigenM_to_pointers(giEG);
   signed char** gPP = gP.data();
 
   std::vector<qlat::vector_gpu<unsigned char   > > oiG ; oiG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){oiG[iv].copy_from(oiL[iv]);}
-  qlat::vector_acc<unsigned char* > oP = EigenM_to_pointers(oiG);
+  qlat::vector<unsigned char* > oP = EigenM_to_pointers(oiG);
   unsigned char** oPP = oP.data();
 
-  qlat::vector_acc<int > iv_size;iv_size.resize(Ngv);
+  qlat::vector<int > iv_size;iv_size.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){
     iv_size[iv] = giEL[iv].size()/2;
     count_flops += (3 * 6 + 2) * iv_size[iv];
@@ -984,7 +984,7 @@ void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, int nmass,
 ////container 
 template <typename Ty>
 void baryon_vectorEV(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
-  qlat::vector_gpu<Ty > &res, ga_M &A, ga_M &B, qlat::vector_acc<Ty > &GV, qlat::vector_acc<int > &mLV,
+  qlat::vector_gpu<Ty > &res, ga_M &A, ga_M &B, qlat::vector<Ty > &GV, qlat::vector<int > &mLV,
   fft_desc_basic& fd, int clear=1){
 
   if(prop1.size() == 0){res.resize(0); return ;}
@@ -1001,9 +1001,9 @@ void baryon_vectorEV(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   if(clear == 1){if(res.size()!= resL){res.resize(resL); } }
   if(res.size() != resL){qmessage("Size of res wrong. \n");Qassert(false);}
 
-  qlat::vector_acc<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
-  qlat::vector_acc<Ty* > prop2P = EigenM_to_pointers(prop2, Nxyz);
-  qlat::vector_acc<Ty* > prop3P = EigenM_to_pointers(prop3, Nxyz);
+  qlat::vector<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
+  qlat::vector<Ty* > prop2P = EigenM_to_pointers(prop2, Nxyz);
+  qlat::vector<Ty* > prop3P = EigenM_to_pointers(prop3, Nxyz);
   Ty** p1 = prop1P.data();
   Ty** p2 = prop2P.data();
   Ty** p3 = prop3P.data();
@@ -1025,11 +1025,11 @@ void baryon_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   int nmass = prop1.size();
   ////int nt = fd.nt;
 
-  qlat::vector_acc<Ty > resE;
+  qlat::vector<Ty > resE;
   ini_resE(resE, nmass,fd);
 
-  qlat::vector_acc<Ty > G;G.resize(16);
-  qlat::vector_acc<int > mL;mL.resize(3);
+  qlat::vector<Ty > G;G.resize(16);
+  qlat::vector<int > mL;mL.resize(3);
 
   clear_qv(G);G[ind2*4 + ind1] = +1.0;
   mL[0] = 0;mL[1] = 1;mL[2] = 2;
@@ -1054,11 +1054,11 @@ void Omega_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   int nmass = prop1.size();
   ///int nt = fd.nt;
 
-  qlat::vector_acc<Ty > resE;
+  qlat::vector<Ty > resE;
   ini_resE(resE,nmass,fd);
 
-  qlat::vector_acc<Ty > G;G.resize(16);
-  qlat::vector_acc<int > mL;mL.resize(3);
+  qlat::vector<Ty > G;G.resize(16);
+  qlat::vector<int > mL;mL.resize(3);
 
   std::vector<int > dia;dia.resize(6);
   std::vector<int > sn ;sn.resize(6);

@@ -114,7 +114,7 @@ struct lms_para{
   std::vector<std::string > INFOA;
 
   ////buffers
-  qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
+  qlat::vector<Ty > EresH;qlat::vector<Ty > EresL;qlat::vector<Ty > EresA;
   qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
   std::vector<qlat::FieldM<Ty , 12*12> > src_prop;
   std::vector<qlat::vector_gpu<Ty > > FFT_data;
@@ -254,7 +254,7 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
   const Ty* s   = resTa.data();
   const Long Bfac  = 64;
   const Long Neach = (V + Bfac - 1 ) / Bfac;
-  qlat::vector_acc<double > buf;buf.resize(Neach);
+  qlat::vector<double > buf;buf.resize(Neach);
   qGPU_for(ieach, Neach, GPU, {
     buf[ieach] = 0;
     for(Long bi=0;bi<Bfac;bi++)
@@ -280,7 +280,7 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
 
 //template<typename Ty>
 //void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
-//  const int nvec, qlat::vector_acc<Long >& mapA, qlat::vector_acc<Long >& mapB, const Geometry& geo)
+//  const int nvec, qlat::vector<Long >& mapA, qlat::vector<Long >& mapB, const Geometry& geo)
 //{
 //  TIMER("save FFT");
 //  ////false to match to gwu code convention
@@ -494,9 +494,9 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(srcI.save_zero_corr == 1){save_zero_corr = true;}
   ////save fft vecs (all of them, no need to shrink mem now)
 
-  qlat::vector_acc<Ty >& EresH = srcI.EresH;
-  qlat::vector_acc<Ty >& EresL = srcI.EresL;
-  qlat::vector_acc<Ty >& EresA = srcI.EresA;
+  qlat::vector<Ty >& EresH = srcI.EresH;
+  qlat::vector<Ty >& EresL = srcI.EresL;
+  qlat::vector<Ty >& EresA = srcI.EresA;
 
   qlat::vector_gpu<Ty >& stmp = srcI.stmp;
   qlat::vector_gpu<Ty >& low_prop = srcI.low_prop;
@@ -517,7 +517,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   ///std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + 1);
 
   /////need modification of positions
-  //qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
+  //qlat::vector<Ty > EresH;qlat::vector<Ty > EresL;qlat::vector<Ty > EresA;
   //qlat::vector_gpu<Ty > resTa;
 
   if(save_zero_corr){
@@ -558,7 +558,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + Nlms);
   //qlat::vector_gpu<Ty > FFT_data;Long Nfdata = Long(32)*massL.size()*fd.nt*mc*mc*mc ;
   //qlat::vector_gpu<Ty > FFT_data_high;
-  //qlat::vector_acc<Long > mapA, mapB;
+  //qlat::vector<Long > mapA, mapB;
 
   // initialize sparse parameters
   if(srcI.name_sparse_prop != std::string("NONE")){
@@ -829,7 +829,7 @@ void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basi
   EigenV Eres;Eres.resize(nmass*32*fd.nt);
   qlat::set_zero(Eres);
 
-  ///std::vector<int > pos;pos.resize(src.size());qlat::vector_acc<int > off_L;
+  ///std::vector<int > pos;pos.resize(src.size());qlat::vector<int > off_L;
   ///check_noise_pos(src[0], pos[0], off_L);
   ///int tini = pos[0]%1000;
   qlat::vector_gpu<Ty > stmp, low_prop;

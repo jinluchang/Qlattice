@@ -265,7 +265,7 @@ void copy_bsize_prop_to_FieldP(std::vector<Fieldy >& res, Ty* src, const LInt nV
   Ty* psrc       = src;
 
   ////buffers for result pointers
-  qlat::vector_acc<ComplexT<Dy >* > resP;resP.resize(0);resP.resize(res.size());
+  qlat::vector<ComplexT<Dy >* > resP;resP.resize(0);resP.resize(res.size());
   for(unsigned int d0=0;d0<res.size();d0++){
     resP[d0] = (Ty*) qlat::get_data(res[d0]).data();
   }
@@ -402,7 +402,7 @@ void copy_eigen_prop_to_EigenG(std::vector<qlat::vector_gpu<Ty > >& resG, T* src
   LInt group = (2*total)/each;
 
   ////buffers for result pointers
-  qlat::vector_acc<Ty* > resP;resP.resize(0);resP.resize(resG.size());
+  qlat::vector<Ty* > resP;resP.resize(0);resP.resize(resG.size());
   for(unsigned int d0=0;d0<resG.size();d0++){
     resP[d0] = &resG[d0][0];
   }
@@ -553,7 +553,7 @@ template <class Ty>
 void copy_color_prop(qlat::vector_gpu<Ty >& res, std::vector<colorFT >& src, int dir = 1)
 {
   Qassert(src.size() == 3);
-  qlat::vector_acc<Ty* > srcP;srcP.resize(3);
+  qlat::vector<Ty* > srcP;srcP.resize(3);
   for(int ic=0;ic<3;ic++){
     Qassert(src[ic].initialized);
     srcP[ic] = (Ty*) qlat::get_data(src[ic]).data();

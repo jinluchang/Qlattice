@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
   std::vector<double > eval_self,errors;
   load_gwu_eigenvalues(eval_self,errors,enamev);
 
-  qlat::vector_acc<Ftype > Mres;
+  qlat::vector<Ftype > Mres;
 
   ////====Set up eigen_chi
   //if(ordermem == 1)
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 
   std::vector<double > mass;mass = in.masses;
   /////====Set up values
-  qlat::vector_acc<Complexq > values_sys,values;
+  qlat::vector<Complexq > values_sys,values;
   values_sys.resize(n_vec);values.resize(n_vec);
   for(int i=0;i<n_vec;i++){
     values_sys[i] = Complexq(eval_self[i*2+0],eval_self[i*2+1]);

@@ -719,7 +719,7 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
 //void copy_color_prop(qlat::vector_gpu<Ty >& res, std::vector<colorFT >& src, int dir = 1)
 //{
 //  Qassert(src.size() == 3);
-//  qlat::vector_acc<Ty* > srcP;srcP.resize(3);
+//  qlat::vector<Ty* > srcP;srcP.resize(3);
 //  for(int ic=0;ic<3;ic++){
 //    Qassert(src[ic].initialized);
 //    srcP[ic] = (Ty*) qlat::get_data(src[ic]).data();
@@ -756,7 +756,7 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
 //}
 
 
-//inline void get_index_mappings(qlat::vector_acc<Long >& map, const Geometry& geo)
+//inline void get_index_mappings(qlat::vector<Long >& map, const Geometry& geo)
 //{
 //  const Long V = geo.local_volume();
 //  const Long Vh = V / 2;
@@ -773,13 +773,13 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
 
 ///////GPU order with color to be outside even odd
 //template <class T1, class Ty, int dir>
-//void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map_)
+//void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector<Long >& map_)
 //{
 //  TIMER("qlat_cf_to_quda_cf");
 //  const Long V = geo.local_volume();
 //  Long Vh = V / 2;
 //  if(map_.size() != V){get_index_mappings(map_, geo);}
-//  qlat::vector_acc<Long >& map = map_;
+//  qlat::vector<Long >& map = map_;
 //  qacc_for(qlat_idx_4d, V, {
 //    const Long quda_idx = map[qlat_idx_4d];
 //    const Long eo = quda_idx / Vh;
@@ -795,19 +795,19 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
 //}
 
 //template <class T1, class Ty>
-//void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map)
+//void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector<Long >& map)
 //{
 //  qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
 //}
 //
 //template <class T1, class Ty>
-//void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector_acc<Long >& map)
+//void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector<Long >& map)
 //{
 //  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
 //}
 
 template <class Ty, int dir>
-void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<Long >& map)
+void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector<Long >& map)
 {
   //quda::ColorSpinorParam cs_tmp(x);
   /////ColorSpinorField& x
@@ -861,13 +861,13 @@ void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo
 }
 
 template <class Ty>
-void qlat_cf_to_quda_cf(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector_acc<Long >& map)
+void qlat_cf_to_quda_cf(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector<Long >& map)
 {
   qlat_cf_to_quda_cfT<Ty, 1>(x, src, geo, map);
 }
 
 template <class Ty>
-void quda_cf_to_qlat_cf(Ty* src, quda::ColorSpinorField& x, const Geometry& geo, qlat::vector_acc<Long >& map)
+void quda_cf_to_qlat_cf(Ty* src, quda::ColorSpinorField& x, const Geometry& geo, qlat::vector<Long >& map)
 {
   qlat_cf_to_quda_cfT<Ty, 0>(x, src, geo, map);
 }

@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
   //qlat::vector<double > va;
   //va.resize(100);
 
-  //qlat::vector_acc<double > vb;
+  //qlat::vector<double > vb;
   //vb.resize(100);
   fflush_MPI();
   qlat::Timer::display();

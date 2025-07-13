@@ -198,9 +198,9 @@ void fields_operationsGT(std::vector<FieldG<T1> >& pr, std::vector<FieldG<T2> >&
   const Geometry& geor = pr[0].geo(); 
   const Geometry& geo0 = p0[0].geo(); 
   const Geometry& geo1 = p1[0].geo(); 
-  vector_acc<T1* > Pr;
-  vector_acc<T2* > P0;
-  vector_acc<T3* > P1;
+  vector<T1* > Pr;
+  vector<T2* > P0;
+  vector<T3* > P1;
   Pr.resize(nvec);
   P0.resize(nvec);
   P1.resize(nvec);
@@ -417,7 +417,7 @@ template <class T1>
 void fields_conj(qlat::FieldG<T1>& pr)
 {
   qassert(pr.initialized);
-  qlat::vector_acc<T1* > src;src.resize(1);
+  qlat::vector<T1* > src;src.resize(1);
   src[0] = (T1*) qlat::get_data(pr).data();
   const int civ = pr.multiplicity;
   fields_conj(src.data(), 1, civ, pr.geo());
@@ -428,7 +428,7 @@ template <class T1>
 void fields_conj(qlat::Field<T1>& pr)
 {
   qassert(pr.initialized);
-  qlat::vector_acc<T1* > src;src.resize(1);
+  qlat::vector<T1* > src;src.resize(1);
   src[0] = (T1*) qlat::get_data(pr).data();
   const int civ = pr.multiplicity;
   fields_conj(src.data(), 1, civ, pr.geo());
@@ -439,7 +439,7 @@ void fields_conj(std::vector<qlat::FieldM<T1, civ> >& pr)
 {
   const int nvec = pr.size();
   if(nvec == 0){return ;}
-  qlat::vector_acc<T1* > src;src.resize(nvec);
+  qlat::vector<T1* > src;src.resize(nvec);
   for(int si=0;si<nvec;si++)
   {
     qassert(pr[si].initialized);
@@ -476,8 +476,8 @@ void fields_operations_localG(std::vector<qlat::FieldG<T1> >& pr, std::vector<ql
   TIMER("fields_operations_localG");
   Qassert(pr.size() == ps.size());
   const Long Nsrc = ps.size();
-  vector_acc<T1* > rP;rP.resize(Nsrc);
-  vector_acc<T2* > sP;sP.resize(Nsrc);
+  vector<T1* > rP;rP.resize(Nsrc);
+  vector<T2* > sP;sP.resize(Nsrc);
   for(Long i=0;i<Nsrc;i++){
     Qassert(pr[i].initialized and ps[i].initialized);
     Qassert(pr[i].multiplicity == ps[i].multiplicity);

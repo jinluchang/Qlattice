@@ -49,7 +49,7 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
   TIMER("diff_gauge");
   const Geometry& geo = g0.geo();
   const Long V = geo.local_volume();
-  qlat::vector_acc<Ta > dL;dL.resize(V);
+  qlat::vector<Ta > dL;dL.resize(V);
   qacc_for(index, V, {
     dL[index] = 0.0;
     const Coordinate xl = geo.coordinate_from_index(index);

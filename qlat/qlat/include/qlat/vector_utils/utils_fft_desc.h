@@ -23,7 +23,7 @@ struct fft_desc_basic
   int Nx,Ny,Nz,Nt;
   int mx,my,mz,mt;
 
-  qlat::vector_acc<int> iniv,Nv,nv,mv;     ///4 
+  qlat::vector<int> iniv,Nv,nv,mv;     ///4 
 
   std::vector<std::vector<int> > Pos0;     ////size Nmpi * 4
   std::vector<std::vector<int>  > mi_list; ////mt , mx*my*mz
@@ -31,7 +31,7 @@ struct fft_desc_basic
   int variable_set;
 
   int order_ch;
-  qlat::vector_acc<int > orderN;   ////4
+  qlat::vector<int > orderN;   ////4
 
   fft_desc_basic(int order_ch_or=0)
   {
@@ -405,7 +405,7 @@ inline void fft_desc_basic::check_mem()
 
 ///mode 0, mxyz ->  Nt ; mode 1, Nt -> mxyz
 inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 1){
-  qlat::vector_acc<int> Nv,nv,mv;
+  qlat::vector<int> Nv,nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   /////dim of lat
   fd.nv[0] = nv[0];

@@ -7,7 +7,7 @@
 namespace qlat
 {
 
-void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector_acc<Long >& pack_send, qlat::vector_acc<Long >& pack_recv, const SetMarksField& set_marks_field, const std::string& tag)
+void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long >& pack_send, qlat::vector<Long >& pack_recv, const SetMarksField& set_marks_field, const std::string& tag)
 {
   const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, multiplicity);
   const Long Nsend = plan.total_send_size;
@@ -220,7 +220,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 //              cmi.id_node, mpi_tag, get_comm(), reqs_recv);
 //  }
 //
-//  //qlat::vector_acc<long > pack_infos;
+//  //qlat::vector<long > pack_infos;
 //  Long* pack_send = (Long*) &ebuf.pack_send[0];
 //  Long* pack_recv = (Long*) &ebuf.pack_recv[0];
 //

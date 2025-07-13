@@ -39,8 +39,8 @@ struct stag_inv_buf{
   std::vector<qlat::vector_gpu<Ty > > propS_smear;
   std::vector<int > prop_load;
   std::vector<int > prop_load_smear;
-  std::vector<qlat::vector_acc<Ty > > resCA;
-  std::vector<qlat::vector_acc<Ty > > resCB;
+  std::vector<qlat::vector<Ty > > resCA;
+  std::vector<qlat::vector<Ty > > resCB;
 
   inline void free_buf(){
 
@@ -89,8 +89,8 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   if(resV.size()%NTt !=0 or resV.size()==0){qmessage("Size of res wrong. \n");Qassert(false);}
 
   const int Dim = 3;
-  qlat::vector_acc<Ty* > d0;d0.resize(Dim);
-  qlat::vector_acc<Ty* > d1;d1.resize(Dim);
+  qlat::vector<Ty* > d0;d0.resize(Dim);
+  qlat::vector<Ty* > d1;d1.resize(Dim);
   for(int c=0;c<Dim;c++){d0[c] = (Ty*) qlat::get_data(cf0[c]).data();d1[c] = (Ty*) qlat::get_data(cf1[c]).data();}
 
   qacc_for(isp, geo.local_volume(), {

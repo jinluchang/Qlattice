@@ -22,7 +22,7 @@ namespace qlat{
 
 ////simple sequential sources
 template <class Ty, int civ>
-void local_sequential_source(qlat::FieldM<Ty, civ>& src, const qlat::vector_acc<int >& tseq, const int order_data = 0)
+void local_sequential_source(qlat::FieldM<Ty, civ>& src, const qlat::vector<int >& tseq, const int order_data = 0)
 {
   TIMERA("local_sequential_source");
   Qassert(src.initialized);
@@ -30,7 +30,7 @@ void local_sequential_source(qlat::FieldM<Ty, civ>& src, const qlat::vector_acc<
   const long V = geo.local_volume();
   const int Dim = qlat::get_data_size(src) / ( sizeof(Ty) * V );
 
-  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+  qlat::vector<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
   long  Nvol = Nv[0]*Nv[1]*Nv[2];
   Qassert(tseq.size() > 0);
   for(long i=0;i<tseq.size();i++){
@@ -75,7 +75,7 @@ void local_sequential_source(qlat::FieldM<Ty, civ>& src, const int tseq, const i
 }
 
 template <class Td>
-void local_sequential_source(Propagator4dT<Td >& res, Propagator4dT<Td >& src, const qlat::vector_acc<int >& tseq, const int gammai = -1)
+void local_sequential_source(Propagator4dT<Td >& res, Propagator4dT<Td >& src, const qlat::vector<int >& tseq, const int gammai = -1)
 {
   TIMERA("local_sequential_source");
   Qassert(src.initialized);
@@ -85,7 +85,7 @@ void local_sequential_source(Propagator4dT<Td >& res, Propagator4dT<Td >& src, c
   const int Dim = qlat::get_data_size(src) / (sizeof(qlat::ComplexT<Td >) * V) ;
 
   if(!res.initialized){res.init(geo);}
-  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+  qlat::vector<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
   long  Nvol = Nv[0]*Nv[1]*Nv[2];
   ///const long Ndata = geo.local_volume() * Dim;
   Qassert(tseq.size() > 0);

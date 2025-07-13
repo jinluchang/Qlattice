@@ -68,12 +68,12 @@ struct vector_cs{
   //qlat::vector_gpu<Ty > a;
 
   ////std::vector<qlat::vector<Ty > > a;
-  //std::vector<qlat::vector_acc<Ty > > buf_a;
+  //std::vector<qlat::vector<Ty > > buf_a;
 
   std::vector<qlat::vector_gpu<Ty > > buf_g;
-  qlat::vector_acc<Ty* > pL; //// pointers to data
+  qlat::vector<Ty* > pL; //// pointers to data
   qlat::vector_gpu<Ty > alpha_buf;
-  qlat::vector_acc<Ty* > pointersL; ////grouped with ni -> btotal 
+  qlat::vector<Ty* > pointersL; ////grouped with ni -> btotal 
   //qlat::vector_gpu<Ty > buf_V;
 
   qlat::vector_gpu<Ty > alphaG;
@@ -820,7 +820,7 @@ struct vector_cs{
     }
 
     ////Ty rsum = 0;Ty rre = 0;
-    //qlat::vector_acc<Ty > rsum;rsum.resize(2);rsum[0] = 0.0;
+    //qlat::vector<Ty > rsum;rsum.resize(2);rsum[0] = 0.0;
 
     //{
     //print_numbers((Ty*) &r[0], 10, GPU_set);
@@ -874,7 +874,7 @@ struct vector_cs{
     if(nvec <= 0){return ;}
     if(maxN == -1 or maxN > nvec){maxN = nvec;}
     qlat::vector_cs<Ty >& a = *this;
-    qlat::vector_acc<Ty > alpha;alpha.resize(maxN*maxN);
+    qlat::vector<Ty > alpha;alpha.resize(maxN*maxN);
     a.vec_multi(a, alpha.data(), true, 0, maxN, 0, maxN);
     for(int i=0;i< maxN;i++)
     {
@@ -1202,7 +1202,7 @@ struct vector_cs{
 
   /////////alpha_ij = a_i^* x b_j
   //////alpha_i = v^dagger * b_i,  res = v - \sum alpha_i b_i, --> res, alpha
-  //inline void vec_projections(vector_cs<Ty >& b, qlat::vector_acc<Ty >& alpha, int Nv = -1, bool Conj = true)
+  //inline void vec_projections(vector_cs<Ty >& b, qlat::vector<Ty >& alpha, int Nv = -1, bool Conj = true)
   //{
   //  vector_cs<Ty >& a = *this;
   //  ////dup only for Nt, chi=2 of a within nvec
@@ -1246,7 +1246,7 @@ struct vector_cs{
   ////return the projection coefficient
   ////remove_last donot remove a1-1 to vec if add_self == 1
   template<typename Ta>
-  inline void Projections(qlat::vector_acc<Ta >& alpha, vector_cs<Ty >& vec, int a0, int a1, int b0, int b1, int add_self = 0){
+  inline void Projections(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, int a0, int a1, int b0, int b1, int add_self = 0){
     TIMERA("vector_cs projections");
     if(nvec == 0 or a1 - a0 <= 0){alpha.resize(0);return ;}
     Qassert(a1 > a0 and b1 > b0 and a1 <= nvec and b1 <= vec.nvec);
@@ -1305,25 +1305,25 @@ struct vector_cs{
   }
 
   template<typename Ta>
-  inline void Projections_all(qlat::vector_acc<Ta >& alpha, vector_cs<Ty >& vec, int Nm = -1, int bi = 0){
+  inline void Projections_all(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, int Nm = -1, int bi = 0){
     if(Nm == -1){Nm = nvec;}
     Projections(alpha, vec, 0, Nm, bi, bi+1);
   }
 
   inline void projections(vector_cs<Ty >& vec, int a0, int a1, int b0, int b1, int add_self = 0){
-    qlat::vector_acc<Ty > alpha;
+    qlat::vector<Ty > alpha;
     Projections(alpha, vec, a0, a1, b0, b1, add_self );
   }
 
   inline void projections_all(vector_cs<Ty >& vec, int Nm = -1, int bi = 0){
-    qlat::vector_acc<Ty > alpha;
+    qlat::vector<Ty > alpha;
     Projections_all(alpha, vec, Nm, bi);
   }
 
   ////Nv, end vector of basis, m start vector of basis
   ////return the projection coefficient
-  //qlat::vector_acc<Ty > projections(vector_cs<Ty >& vec, int Nv = -1, int vb = 0, int vini = 0, int add_self = 0){
-  //  qlat::vector_acc<Ty > alpha;
+  //qlat::vector<Ty > projections(vector_cs<Ty >& vec, int Nv = -1, int vb = 0, int vini = 0, int add_self = 0){
+  //  qlat::vector<Ty > alpha;
   //  TIMERA("vector_cs projections");
   //  if(nvec == 0 or Nv == 0){alpha.resize(0);return alpha;}
   //  if(Nv < 0){Nv = nvec; }
@@ -1587,9 +1587,9 @@ void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, int b0, int b1, bool
 
 template <typename Ty>
 struct vector_cs_mat{
-  qlat::vector_acc<Ty > mat;
-  std::vector< qlat::vector_acc<Ty > > bufs;
-  qlat::vector_acc<Ty* > mat_src;
+  qlat::vector<Ty > mat;
+  std::vector< qlat::vector<Ty > > bufs;
+  qlat::vector<Ty* > mat_src;
   Long vsize;
   int ncount;
   double mass2_neg;
@@ -1622,8 +1622,8 @@ struct vector_cs_mat{
   //  const Long Nd = btotal * b_size;
   //  Qassert(Nd*Nd == Long(mat.size()) );
   //  vr.set_zero(ir);
-  //  qlat::vector_acc<Ty > buf;buf.resize(b_size);
-  //  qlat::vector_acc<Ty > res;res.resize(b_size);
+  //  qlat::vector<Ty > buf;buf.resize(b_size);
+  //  qlat::vector<Ty > res;res.resize(b_size);
 
   //  for(Long bi=0;bi< btotal;bi++){
   //    qlat::set_zero(res);
@@ -1661,7 +1661,7 @@ struct vector_cs_mat{
     }
   }
 
-  //inline void get_src(qlat::vector_acc<Ty* >& mat_src_)
+  //inline void get_src(qlat::vector<Ty* >& mat_src_)
   //{
   //  mat_src_.resize(5);
   //  if(bufs.size() == 0){init_Ndata(std::sqrt( mat.size() ));}

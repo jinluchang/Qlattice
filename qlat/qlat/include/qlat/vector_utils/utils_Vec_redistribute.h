@@ -20,9 +20,9 @@ struct Vec_redistribute
   int mx,my,mz,mt;
   bool GPU;
 
-  qlat::vector_acc<int> Nv,nv,mv;
+  qlat::vector<int> Nv,nv,mv;
 
-  qlat::vector_acc<int > orderN;
+  qlat::vector<int > orderN;
   fft_desc_basic *fd;
 
 
@@ -42,8 +42,8 @@ struct Vec_redistribute
   qlat::vector<int > recvM;
   qlat::vector<int > rplsM;
 
-  qlat::vector_acc<LInt > map_order;
-  qlat::vector_acc<LInt > map_Dorder;
+  qlat::vector<LInt > map_order;
+  qlat::vector<LInt > map_Dorder;
 
   /////May need to change?
   qlat::vector<int > secT;

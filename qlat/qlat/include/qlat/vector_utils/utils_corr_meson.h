@@ -76,7 +76,7 @@ void meson_vectorE(std::vector<Propagator4dT<Td >* > &pV1, std::vector<Propagato
 
 template <typename Td>
 void meson_vectorE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td > > &pV2, ga_M &ga1,ga_M &ga2,
-        qlat::vector_acc<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1){
+        qlat::vector<qlat::ComplexT<Td > > &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1){
   std::vector<Propagator4dT<Td >* > p1;
   std::vector<Propagator4dT<Td >* > p2;
   Qassert(pV1.size() == pV2.size());
@@ -122,7 +122,7 @@ void meson_vectorE(Propagator4dT<Td > &pV1, Propagator4dT<Td > &pV2, ga_M &ga1,g
 
 template <typename Ty >
 void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_M &ga1,ga_M &ga2,
-        qlat::vector_acc<Ty > &res, int clear=1, int invmode=1, const Ty factor = Ty(1.0, 0.0)){
+        qlat::vector<Ty > &res, int clear=1, int invmode=1, const Ty factor = Ty(1.0, 0.0)){
   TIMER("Meson_vectorE");
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -135,8 +135,8 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
   if(res.size()%NTt != 0 or res.size() == 0){qmessage("Size of res wrong. \n");Qassert(false);}
 
   Qassert(prop1.size() == prop2.size());
-  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
-  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop2);
+  qlat::vector<Ty* > p1 = FieldM_to_pointers(prop1);
+  qlat::vector<Ty* > p2 = FieldM_to_pointers(prop2);
 
   for(int d2=0;d2<4;d2++)
   for(int c2=0;c2<3;c2++)
@@ -177,7 +177,7 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 /////merge to each gamma with sortted cases
 //template <typename Ty >
 //void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2,
-//        qlat::vector_acc<Ty > &res, int clear=1, int invmode=1){
+//        qlat::vector<Ty > &res, int clear=1, int invmode=1){
 //  TIMER("Meson_vectorE");
 //  const qlat::Geometry &geo = prop1[0].geo();
 //  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -190,8 +190,8 @@ void meson_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, ga_
 //  if(res.size()%NTt != 0 or res.size() == 0){qmessage("Size of res wrong. \n");Qassert(false);}
 //
 //  Qassert(prop1.size() == prop2.size());
-//  qlat::vector_acc<Ty* > p1 = FieldM_to_pointers(prop1);
-//  qlat::vector_acc<Ty* > p2 = FieldM_to_pointers(prop2);
+//  qlat::vector<Ty* > p1 = FieldM_to_pointers(prop1);
+//  qlat::vector<Ty* > p2 = FieldM_to_pointers(prop2);
 //
 //  for(int ds=0;ds<4;ds++)
 //  for(int d2=0;d2<4;d2++)
@@ -408,7 +408,7 @@ __global__ void meson_vectorEV_global(Ty** p1, Ty** p2, Ty** resP,
 #endif
 
 /*
-  vector_acc pointers
+  vector pointers
   p1, p2 [nvec, ti][Nxyz]
   resP  [nops, nvec ][ti x Nxyz]
 */
@@ -501,8 +501,8 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty** resP,  int nmass,
     }
   }
 
-  qlat::vector_acc<Ty > gMap;
-  qlat::vector_acc<uint8_t > IMap;
+  qlat::vector<Ty > gMap;
+  qlat::vector<uint8_t > IMap;
   gMap.resize(Ngv*4*2);IMap.resize(Ngv*4*2);
   for(int iv=0;iv<Ngv;iv++){
     for(int i=0;i<4;i++){
@@ -551,15 +551,15 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty** resP,  int nmass,
 
   std::vector<qlat::vector_gpu<int8_t > > giEG;giEG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){giEG[iv].copy_from(giEL[iv]);}
-  qlat::vector_acc<int8_t* > gP = EigenM_to_pointers(giEG);
+  qlat::vector<int8_t* > gP = EigenM_to_pointers(giEG);
   int8_t** gPP = gP.data();
 
   std::vector<qlat::vector_gpu<uint8_t   > > oiG ; oiG.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){oiG[iv].copy_from(oiL[iv]);}
-  qlat::vector_acc<uint8_t* > oP = EigenM_to_pointers(oiG);
+  qlat::vector<uint8_t* > oP = EigenM_to_pointers(oiG);
   uint8_t** oPP = oP.data();
 
-  qlat::vector_acc<int > iv_size;iv_size.resize(Ngv);
+  qlat::vector<int > iv_size;iv_size.resize(Ngv);
   for(int iv=0;iv<Ngv;iv++){iv_size[iv] = giEL[iv].size()/2;}
   int*  ivP = iv_size.data();
 
@@ -641,8 +641,8 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty** resP,  int nmass,
 //  if(res.size() != resL){qmessage("Size of res wrong. \n");Qassert(false);}
 //  Qassert(prop1.size() == prop2.size());
 //
-//  qlat::vector_acc<Ta* > prop1P = EigenM_to_pointers(prop1);
-//  qlat::vector_acc<Ta* > prop2P = EigenM_to_pointers(prop2);
+//  qlat::vector<Ta* > prop1P = EigenM_to_pointers(prop1);
+//  qlat::vector<Ta* > prop2P = EigenM_to_pointers(prop2);
 //
 //  Ta** p1 = prop1P.data();
 //  Ta** p2 = prop2P.data();
@@ -671,12 +671,12 @@ void meson_vectorEV(EigenTy& prop1, EigenTy& prop2, qlat::vector_gpu<Ty > &res
     Qassert(prop2[mi].size() == 12 * 12 * fd.Nvol);
   }
 
-  qlat::vector_acc<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
-  qlat::vector_acc<Ty* > prop2P = EigenM_to_pointers(prop2, Nxyz);
+  qlat::vector<Ty* > prop1P = EigenM_to_pointers(prop1, Nxyz);
+  qlat::vector<Ty* > prop2P = EigenM_to_pointers(prop2, Nxyz);
 
   Ty** p1 = prop1P.data();
   Ty** p2 = prop2P.data();
-  qlat::vector_acc<Ty* > resvP;resvP.resize(Ngv * nmass);
+  qlat::vector<Ty* > resvP;resvP.resize(Ngv * nmass);
   for(int iv = 0;iv<Ngv*nmass;iv++){
     resvP[iv] = &res[iv* fd.Nv[3] * Nxyz];
   }
@@ -720,9 +720,9 @@ void meson_vectorEV(std::vector<qlat::FieldG<Ty > >& prop1, std::vector<qlat::Fi
     Qassert(prop1[mi].mem_order == QLAT_OUTTER and prop2[mi].mem_order == QLAT_OUTTER);
   }
 
-  qlat::vector_acc<Ty* > prop1P = FieldG_to_pointers(prop1, Nxyz);
-  qlat::vector_acc<Ty* > prop2P = FieldG_to_pointers(prop2, Nxyz);
-  qlat::vector_acc<Ty* > resP   = FieldG_to_pointers(res  , fd.Nv[3] * Nxyz);
+  qlat::vector<Ty* > prop1P = FieldG_to_pointers(prop1, Nxyz);
+  qlat::vector<Ty* > prop2P = FieldG_to_pointers(prop2, Nxyz);
+  qlat::vector<Ty* > resP   = FieldG_to_pointers(res  , fd.Nv[3] * Nxyz);
 
   Ty** p1 = prop1P.data();
   Ty** p2 = prop2P.data();
@@ -732,13 +732,13 @@ void meson_vectorEV(std::vector<qlat::FieldG<Ty > >& prop1, std::vector<qlat::Fi
 
 template<typename Td, typename Ta>
 void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4dT<Td >> &pV2,  ga_M &ga1, ga_M &ga2,
-  qlat::vector_acc<Ta > &res, qlat::fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate(), const int invmode=1, const int tini = 0){
+  qlat::vector<Ta > &res, qlat::fft_desc_basic &fd,int clear=1,const Coordinate& mom = Coordinate(), const int invmode=1, const int tini = 0){
   ///int NTt  = fd.Nv[3];
   ///LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = pV1.size();
   ///int nt = fd.nt;
 
-  qlat::vector_acc<Ta > resE;
+  qlat::vector<Ta > resE;
   ini_resE(resE,nmass,fd);
 
   meson_vectorE(pV1,pV2,ga1,ga2,resE,fd, 1, invmode);
@@ -748,7 +748,7 @@ void meson_corrE(std::vector<Propagator4dT<Td > > &pV1, std::vector<Propagator4d
 
 template<typename Td, typename Ta>
 void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2,  ga_M &ga1, ga_M &ga2,
-  qlat::vector_acc<Ta > &res, int clear=1,const Coordinate& mom = Coordinate(), int invmode=1, const int tini = 0){
+  qlat::vector<Ta > &res, int clear=1,const Coordinate& mom = Coordinate(), int invmode=1, const int tini = 0){
   const qlat::Geometry &geo = p1.geo();
 
   std::vector<Propagator4dT<Td > > P1;
@@ -776,7 +776,7 @@ void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2, const int ga, c
   for(int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
   for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
-  qlat::vector_acc<qlat::ComplexT<double > > Res;
+  qlat::vector<qlat::ComplexT<double > > Res;
   meson_corrE(p1, p2, gL[ga], gL[gb], Res, 1, mom, invmode, tini);
   const size_t sizen = get_file_size_MPI(filename, true);
   corr_dat<double > corr(std::string(""));
@@ -802,8 +802,8 @@ void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2, const int ga, c
 
 template<typename Ty>
 void meson_corrE(std::vector<qpropT > &prop1, std::vector<qpropT > &prop2,  ga_M &ga1, ga_M &ga2,
-  qlat::vector_acc<Ty >& res, int clear=1,const Coordinate& mom = Coordinate(), int invmode=1){
-  qlat::vector_acc<Ty > resE;
+  qlat::vector<Ty >& res, int clear=1,const Coordinate& mom = Coordinate(), int invmode=1){
+  qlat::vector<Ty > resE;
 
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -818,7 +818,7 @@ void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4
   const qlat::Geometry &geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  qlat::vector_acc<qlat::ComplexT<Td > > resC;
+  qlat::vector<qlat::ComplexT<Td > > resC;
 
   meson_corrE(prop1, prop2, ga_cps.ga[0][0], ga_cps.ga[0][0], resC, fd);
 
@@ -832,7 +832,7 @@ void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4
 }
 
 template <typename Ty >
-void pion_corr_simple(qlat::FieldG<Ty >& prop1, qlat::FieldG<Ty >& prop2, vector_acc<Ty>& corr, 
+void pion_corr_simple(qlat::FieldG<Ty >& prop1, qlat::FieldG<Ty >& prop2, vector<Ty>& corr, 
   const Coordinate& mom = Coordinate(), const Ty src_phase = Ty(1.0, 0.0), const int tini = 0)
 {
   ga_matrices_cps   ga_cps;
@@ -900,7 +900,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //inline void meson_corr_write(std::string prop_a, std::string prop_b, std::string src_n, std::string out_n, const Geometry &geo, int a=0, int b=0, int c=0 , int d=0){
 //  print_mem_info();
 //
-//  qlat::vector_acc<int > nv, Nv, mv;
+//  qlat::vector<int > nv, Nv, mv;
 //  geo_to_nv(geo, nv, Nv, mv);
 //  int nt = nv[3];
 //
@@ -927,7 +927,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  if(prop_a == prop_b){propVb = propVa;}
 //  else{load_gwu_prop(prop_nb, propVb);}
 //  
-//  ////std::vector<qlat::vector_acc<Complexq > > propa,propb;
+//  ////std::vector<qlat::vector<Complexq > > propa,propb;
 //  std::vector<qprop > propa, propb;
 //  propa.resize(1);propa[0].init(geo);
 //  propb.resize(1);propb[0].init(geo);
@@ -940,7 +940,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  ////Coordinate xg1;
 //  ////xg1[0] = pos/10000000;xg1[1] = (pos%10000000)/100000;xg1[2] = (pos%100000)/1000;xg1[3] = pos%1000;
 //
-//  qlat::vector_acc<qlat::ComplexD > res;ga_matrices_cps   ga_cps;
+//  qlat::vector<qlat::ComplexD > res;ga_matrices_cps   ga_cps;
 //  meson_corrE(propa, propb, ga_cps.ga[a][b],ga_cps.ga[c][d],  res);
 //  std::vector<double > write;write.resize(2*nt);
 //  for(unsigned int ti=0;ti<write.size()/2;ti++){
@@ -970,7 +970,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  ////copy_propE(propVa, propa, fd );
 //  ////copy_propE(propVb, propb, fd );
 //
-//  qlat::vector_acc<qlat::ComplexD > res;ga_matrices_cps   ga_cps;
+//  qlat::vector<qlat::ComplexD > res;ga_matrices_cps   ga_cps;
 //  meson_corrE(propa, propb, ga_cps.ga[a][b],ga_cps.ga[c][d],  res);
 //  for(int ti=0;ti<nt;ti++)
 //  {
@@ -986,7 +986,7 @@ void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string
 //  fft_desc_basic fd(geo);
 //
 //  Propagator4dT<Ta > prop4d;prop4d.init(geo);
-//  std::vector<qlat::vector_acc<Ta > > propE;
+//  std::vector<qlat::vector<Ta > > propE;
 //
 //  copy_noise_to_prop(propM, prop4d, 1);
 //  copy_prop4d_to_propE(propE, prop4d, fd);

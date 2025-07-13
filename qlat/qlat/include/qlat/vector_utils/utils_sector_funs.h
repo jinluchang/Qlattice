@@ -34,7 +34,7 @@ inline std::vector<int >  get_map_sec(int dT,int nt){
   return map_sec;
 }
 
-inline void get_map_sec(vector_acc<int >& map_sec, int tini, int dT,int nt, bool message = false){
+inline void get_map_sec(vector<int >& map_sec, int tini, int dT,int nt, bool message = false){
   std::vector<int > map_sec_0 = get_map_sec(dT, nt);
   map_sec.resize(map_sec_0.size());
   std::string m0 = "t ";
@@ -49,7 +49,7 @@ inline void get_map_sec(vector_acc<int >& map_sec, int tini, int dT,int nt, bool
   if(message){qmessage("%s\n%s\n", m0.c_str(), m1.c_str());}
 }
 
-inline void get_src_times(vector_acc<int>& src_t, vector_acc<int>& src_t_order, vector_acc<int >& map_sec, const int tini, const int dT){
+inline void get_src_times(vector<int>& src_t, vector<int>& src_t_order, vector<int >& map_sec, const int tini, const int dT){
   Qassert(map_sec.size() != 0);
   const int nt = map_sec.size();
   if(src_t.size() != nt){src_t.resize(nt);}
@@ -99,12 +99,12 @@ struct sec_list{
     src_t_order : order the sources
     map to sections
   */
-  vector_acc<int > map_sec;
-  vector_acc<int > has_sec;
-  vector_acc<signed char > anti_sign;
-  vector_acc<int > src_t;
-  vector_acc<int > src_t_order;
-  vector_acc<int > src_t_r_order;
+  vector<int > map_sec;
+  vector<int > has_sec;
+  vector<signed char > anti_sign;
+  vector<int > src_t;
+  vector<int > src_t_order;
+  vector<int > src_t_r_order;
 
   ////communicater with the same init
   ////for spatial global sum

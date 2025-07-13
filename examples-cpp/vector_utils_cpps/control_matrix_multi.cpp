@@ -70,9 +70,9 @@ int main(int argc, char* argv[])
   if(test_pointers >= 1)
   {
     c1.set_zero();
-    qlat::vector_acc<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
-    qlat::vector_acc<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
-    qlat::vector_acc<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
+    qlat::vector<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
+    qlat::vector<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
+    qlat::vector<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
     for(size_t i=0;i < L;i++){
       aP[i] = &A[i* m*w];
       bP[i] = &B[i* w*n];
@@ -87,9 +87,9 @@ int main(int argc, char* argv[])
   if(test_pointers >= 2)
   {
     c1.set_zero();
-    qlat::vector_acc<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
-    qlat::vector_acc<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
-    qlat::vector_acc<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
+    qlat::vector<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
+    qlat::vector<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
+    qlat::vector<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
     qGPU_for(i, Long(L), true, {
       aP[i] = &A[i* m*w];
       bP[i] = &B[i* w*n];

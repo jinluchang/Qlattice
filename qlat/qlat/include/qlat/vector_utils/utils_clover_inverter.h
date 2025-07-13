@@ -31,7 +31,7 @@ struct quda_clover_inverter {
   //bool CG_reset;
 
   Geometry geo;
-  qlat::vector_acc<Long > map_index;
+  qlat::vector<Long > map_index;
   int solve_mode ;
   /////QudaInvertParam df_param;
 

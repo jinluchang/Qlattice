@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 
   double ini = qlat::u_rand_gen(rs);
   {
-  qlat::vector_acc<Cy > va;va.resize((MAX)*9);
+  qlat::vector<Cy > va;va.resize((MAX)*9);
 
   qacc_for(isp, MAX, {
     for(int ic=0;ic<9;ic++){va[isp*9+ic] = Cy(std::cos((ini+isp + ic)*0.5) , (5.0/(isp + ic+1))*ini*0.1);}

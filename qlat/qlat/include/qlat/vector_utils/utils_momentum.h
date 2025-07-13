@@ -19,14 +19,14 @@
 
 namespace qlat{
 
-inline void get_mom_single_nodeA(qlat::vector_acc<Long >& mapA,
+inline void get_mom_single_nodeA(qlat::vector<Long >& mapA,
     const Geometry& geo, const int mom_cut, const std::vector< Coordinate>& mom_off = std::vector< Coordinate>(0))
 {
   TIMERA("get_mom_single_nodeA");
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
 
-  qlat::vector_acc<Long > mapB;
+  qlat::vector<Long > mapB;
   mapB.resize(geo.local_volume());Long* Bi = mapB.data();
   ///const int mc = mom_cut*2 + 1;
 
@@ -36,7 +36,7 @@ inline void get_mom_single_nodeA(qlat::vector_acc<Long >& mapA,
       Qassert(mom_off[momG][i] >= 0 and mom_off[momG][i] < nv[i]);
     }
   }
-  qlat::vector_acc<long> momL;momL.resize(mom_off.size() * 4);
+  qlat::vector<long> momL;momL.resize(mom_off.size() * 4);
   for(unsigned long momG=0;momG<mom_off.size();momG++){
     for(int i=0;i<4;i++){
       momL[momG*4 + i] = mom_off[momG][i];
@@ -97,11 +97,11 @@ inline void get_mom_single_nodeA(qlat::vector_acc<Long >& mapA,
   });
 }
 
-inline void get_mom_single_nodeB(qlat::vector_acc<Long >& mapA, qlat::vector_acc<Long >& mapB,
+inline void get_mom_single_nodeB(qlat::vector<Long >& mapA, qlat::vector<Long >& mapB,
     const Geometry& geo, const int mom_cut, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
 {
   TIMERA("get_mom_single_nodeB");
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
 
   const Long* A   = mapA.data();
@@ -161,12 +161,12 @@ struct momentum_dat{
   FieldSelection fsel;
   FieldSelection fsel_1;
   ////write_float_from_double(sfw, tag, sf, sbs);
-  qlat::vector_acc<Long > mapA;
-  qlat::vector_acc<Long > fsel_map;
+  qlat::vector<Long > mapA;
+  qlat::vector<Long > fsel_map;
   ShuffledBitSet sbs ;
   Coordinate new_size_node;
 
-  qlat::vector_acc<int > nv;
+  qlat::vector<int > nv;
   Coordinate  cur_pos;
   qlat::vector_gpu<Complexq > phases;
   Coordinate cur_shift;
@@ -175,7 +175,7 @@ struct momentum_dat{
 
   ////save default mom_off
   long mapB_size ;
-  qlat::vector_acc<Long > mapB_buf;
+  qlat::vector<Long > mapB_buf;
   Coordinate mom_off_buf;
 
   int nvec_copy;
@@ -210,7 +210,7 @@ struct momentum_dat{
     if(resV.size() == 0){resF.resize(0);return;}
     Qassert(resV[0].initialized and geo == resV[0].geo());
 
-    vector_acc<Ty*> resVP;resVP.resize(resV.size());
+    vector<Ty*> resVP;resVP.resize(resV.size());
     for(unsigned int si=0;si<resV.size();si++){
       Qassert(resV[si].initialized and resV[si].multiplicity == 1);
       resVP[si] = (Ty*) get_data(resV[si]).data();
@@ -428,7 +428,7 @@ struct momentum_dat{
     geo = geo_;
     mom_cut = mom_cut_;
 
-    qlat::vector_acc<int > Nv, mv;
+    qlat::vector<int > Nv, mv;
     geo_to_nv(geo, nv, Nv, mv);
     ////nt = nv[3];
     ////Nvol = geo.local_volume();
@@ -551,7 +551,7 @@ struct momentum_dat{
     if(cur_pos == src and Long(phases.size()) == Mvol * fac and cur_shift == shift){return ;}
     cur_shift = shift;
     phases.resize(Mvol * fac);Ty* resP = (Ty*) phases.data();
-    qlat::vector_acc<int >& Lat = nv;
+    qlat::vector<int >& Lat = nv;
     Long* A = mapA.data();
     const Geometry& geo_ = geo;
     if(Mvol != 0)

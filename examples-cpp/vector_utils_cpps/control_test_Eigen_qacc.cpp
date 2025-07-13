@@ -43,11 +43,11 @@ int main(int argc, char* argv[])
   const Long MAX = 100;
 
   double ini = qlat::u_rand_gen(rs);
-  //qlat::vector_acc<Cy > qva;qva.resize((MAX)*9);
-  //qlat::vector_acc<Cy > qvb;qvb.resize((MAX)*D*3);
-  //qlat::vector_acc<Cy > qvc;qvc.resize((MAX)*D*3);
-  //qlat::vector_acc<Cy > qvd;qvd.resize((MAX)*D*3);
-  //qlat::vector_acc<Cy > qve;qve.resize((MAX)*D*3);
+  //qlat::vector<Cy > qva;qva.resize((MAX)*9);
+  //qlat::vector<Cy > qvb;qvb.resize((MAX)*D*3);
+  //qlat::vector<Cy > qvc;qvc.resize((MAX)*D*3);
+  //qlat::vector<Cy > qvd;qvd.resize((MAX)*D*3);
+  //qlat::vector<Cy > qve;qve.resize((MAX)*D*3);
   //Cy* va = (Cy*) qlat::get_data(qva).data();
   //Cy* vb = (Cy*) qlat::get_data(qvb).data();
   //Cy* vc = (Cy*) qlat::get_data(qvc).data();
@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
   Cy* vdH = NULL;vdH = (Cy *)malloc(MAX*3*D*sizeof(Cy));
   Cy* veH = NULL;veH = (Cy *)malloc(MAX*3*D*sizeof(Cy));
 
-  //qlat::vector_acc<Cy > va;va.resize((MAX)*9);
-  //qlat::vector_acc<Cy > vb;vb.resize((MAX)*D*3);
-  //qlat::vector_acc<Cy > vc;vc.resize((MAX)*D*3);
+  //qlat::vector<Cy > va;va.resize((MAX)*9);
+  //qlat::vector<Cy > vb;vb.resize((MAX)*D*3);
+  //qlat::vector<Cy > vc;vc.resize((MAX)*D*3);
 
   qacc_for(isp, MAX, {
     for(int ic=0;ic<9;ic++){va[isp*9+ic] = Cy(std::cos((ini+isp + ic)*0.5) , (5.0/(isp + ic+1))*ini*0.1);}

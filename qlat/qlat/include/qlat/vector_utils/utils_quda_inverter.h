@@ -36,14 +36,14 @@ struct quda_inverter {
   int X[4];
   QudaGaugeParam  gauge_param;
   ////void* quda_gf_default;
-  qlat::vector_acc<qlat::ComplexD > quda_gf_default;
+  qlat::vector<qlat::ComplexD > quda_gf_default;
   QudaInvertParam inv_param;
   //quda::SolverParam solverParam;
   //quda::Solver *solve_cg;
   //bool CG_reset;
 
   Geometry geo;
-  qlat::vector_acc<Long > map_index;
+  qlat::vector<Long > map_index;
   qlat::FieldM<int8_t, 1> eo;//buffer for eo signs
   int solve_mode ;
   /////QudaInvertParam df_param;
@@ -179,16 +179,16 @@ struct quda_inverter {
   // even-even eigensystem, could be used with dslash to get full prop
   // mode == 0, deflate, mode == 1 get low prop
   // buf_prec = 0 : input doubleC, buf_prec = 1 : input singleC
-  inline void deflate_Ty(qlat::vector_acc<void* >& Pres, qlat::vector_acc<void* >& Psrc, double mass, int buf_prec, int mode = 0, int clear = 1);
+  inline void deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec, int mode = 0, int clear = 1);
 
   // src need to be unchanged if res != src
   // res could be the same as src
   // use gtmp0
   template<typename Ty, typename Tk>
-  inline void get_low_prop(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& src, qlat::vector_acc<Tk* >& buf, int qlat_format = 1);
+  inline void get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, int qlat_format = 1);
 
   template<typename Ty>
-  inline void get_inversion_bufs(qlat::vector_acc<Ty* >& res, const int nvecs, const int halfV = 0){
+  inline void get_inversion_bufs(qlat::vector<Ty* >& res, const int nvecs, const int halfV = 0){
     LInt Vd = geo.local_volume() * 3 * sizeof(Ty) / sizeof(qlat::ComplexT<double>);
     if(halfV == 1){Vd = Vd / 2;}
     Qassert(Vd / (geo.local_volume() * 3) <= 64);//at most 64 vectors in buf
@@ -221,7 +221,7 @@ struct quda_inverter {
   //inline void deflate(std::vector<quda::ColorSpinorField* > &sol, const std::vector<quda::ColorSpinorField* > &src,
   //    std::vector<quda::ColorSpinorField> &evecs, const std::vector<quda::Complex > &evals, bool accumulate = false);
 
-  inline void callMultiSrcQuda(qlat::vector_acc<void* >& res, qlat::vector_acc<void* >& src, int max_src = -1);
+  inline void callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, int max_src = -1);
 
   void print_plaq();
 
@@ -2105,9 +2105,9 @@ inline void quda_inverter::random_src(const int seed)
 inline void quda_inverter::prepare_low_prop()
 {
   if(inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){
-    qlat::vector_acc<qlat::ComplexT<double>* > src;
-    qlat::vector_acc<qlat::ComplexT<double>* > res;
-    qlat::vector_acc<qlat::ComplexT<double>* > buf;
+    qlat::vector<qlat::ComplexT<double>* > src;
+    qlat::vector<qlat::ComplexT<double>* > res;
+    qlat::vector<qlat::ComplexT<double>* > buf;
     src.resize(1);
     res.resize(1);
     buf.resize(1);
@@ -2117,9 +2117,9 @@ inline void quda_inverter::prepare_low_prop()
     get_low_prop(res, src, buf, 0);
   }
   if(inv_param.cuda_prec == QUDA_SINGLE_PRECISION){
-    qlat::vector_acc<qlat::ComplexT<float>* > src;
-    qlat::vector_acc<qlat::ComplexT<float>* > res;
-    qlat::vector_acc<qlat::ComplexT<float>* > buf;
+    qlat::vector<qlat::ComplexT<float>* > src;
+    qlat::vector<qlat::ComplexT<float>* > res;
+    qlat::vector<qlat::ComplexT<float>* > buf;
     src.resize(1);
     res.resize(1);
     buf.resize(1);
@@ -2354,7 +2354,7 @@ inline void quda_inverter::prepare_low_prop()
 //  quda::blas::copy(sol, *sol_tmp); // no-op if these alias
 //}
 
-inline void quda_inverter::deflate_Ty(qlat::vector_acc<void* >& Pres, qlat::vector_acc<void* >& Psrc, double mass, int buf_prec , int mode, int clear)
+inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec , int mode, int clear)
 {
   //Qassert(get_data_type<Ty>() == ComplexD_TYPE or get_data_type<Ty>() == ComplexF_TYPE);
   Qassert(buf_prec == 0 or buf_prec == 1);
@@ -2413,7 +2413,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector_acc<void* >& Pres, qlat::vect
   rotate res if needed
 */
 template<typename Ty, typename Tk>
-inline void quda_inverter::get_low_prop(qlat::vector_acc<Ty* >& res, qlat::vector_acc<Ty* >& src, qlat::vector_acc<Tk* >& buf, int qlat_format)
+inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, int qlat_format)
 {
   // double input, single buf
   if(get_data_type_is_double<Ty >() == 1 and get_data_type_is_double<Tk >() == 0){
@@ -2422,7 +2422,7 @@ inline void quda_inverter::get_low_prop(qlat::vector_acc<Ty* >& res, qlat::vecto
 
   const int nsrc = src.size();
   Qassert(nsrc == res.size() and nsrc == buf.size());
-  qlat::vector_acc<Ty* > cbuf;cbuf.resize(nsrc);
+  qlat::vector<Ty* > cbuf;cbuf.resize(nsrc);
   for(int iv=0;iv<nsrc;iv++){
     cbuf[iv] = (Ty*) buf[iv];
   }
@@ -2491,8 +2491,8 @@ inline void quda_inverter::get_low_prop(qlat::vector_acc<Ty* >& res, qlat::vecto
   }
 
   // copy pointers
-  qlat::vector_acc<void* > Psrc;
-  qlat::vector_acc<void* > Pres;
+  qlat::vector<void* > Psrc;
+  qlat::vector<void* > Pres;
   Psrc.resize(2*nsrc);
   Pres.resize(2*nsrc);
   for(int vi=0;vi<nsrc;vi++)
@@ -2609,7 +2609,7 @@ inline void quda_inverter::get_low_prop(qlat::vector_acc<Ty* >& res, qlat::vecto
 //  //CG_reset = false;
 //}
 
-inline void quda_inverter::callMultiSrcQuda(qlat::vector_acc<void* >& res, qlat::vector_acc<void* >& src, int max_src)
+inline void quda_inverter::callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, int max_src)
 {
   TIMER_FLOPS("invertQuda Multi");
   Qassert(src.size() == res.size());
@@ -2664,8 +2664,8 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
   Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
   inv_param.cpu_prec = src.Precision();
   //Qassert(src.Precision() == inv_param.cpu_prec);
-  qlat::vector_acc<void* > sI;
-  qlat::vector_acc<void* > rI;
+  qlat::vector<void* > sI;
+  qlat::vector<void* > rI;
   sI.resize(1);
   rI.resize(1);
   sI[0] = src.data();
@@ -3222,7 +3222,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  Qassert((void*) (*gres).data() != (void*) res);
 //  //*ctmp0 = *gres;
 //  //const size_t Nd = (*gsrc).Component(0).Volume() * spinor_site_size * sizeof(quda::Complex);
-//  //qlat::vector_acc<qlat::ComplexD > buf;buf.resize(Nd/sizeof(quda::Complex));
+//  //qlat::vector<qlat::ComplexD > buf;buf.resize(Nd/sizeof(quda::Complex));
 //  //for(int di=0;di<num_src_inv;di++){
 //  //  quda_cf_to_qlat_cf((qlat::ComplexD*) buf.data(), (qlat::ComplexD*) ctmp0->Component(di).data(), geo, 3);
 //  //  qudaMemcpy(&res[di*Nd/sizeof(quda::Complex)], (void*) buf.data(), Nd, qudaMemcpyDeviceToDevice);
@@ -3266,7 +3266,7 @@ quda_inverter::~quda_inverter()
     may not need this, odd source will be only a mass rescale
 */
 template<typename Ty>
-void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, qlat::vector_acc<Ty* >& prop,
+void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat::vector<Ty* >& prop,
     const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0, 
     const bool inv_even_even = true)
 {
@@ -3276,13 +3276,13 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
   const int nsrc = src.size();
   Qassert( nsrc == Long(prop.size()) );
   if(nsrc == 0){return ;}
-  qlat::vector_acc<Long >& map = qinv.map_index;
+  qlat::vector<Long >& map = qinv.map_index;
   const Geometry& geo = qinv.geo;
   Qassert(low_only == 0 or low_only == 1 or low_only == -1);///0 for full, 1 for low only, -1 other ways to solve
   const int restart_cg = 0;
 
 
-  qlat::vector_acc<Ty* > buf;
+  qlat::vector<Ty* > buf;
   qinv.get_inversion_bufs(buf, nsrc, 0);
 
   //auto& Ebuf = eigen.Ebuf;
@@ -3325,8 +3325,8 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
     //param.setPrecision(QUDA_DOUBLE_PRECISION, qinv.inv_param.cuda_prec, true);
     param.create = QUDA_REFERENCE_FIELD_CREATE;
 
-    //qlat::vector_acc<qlat::ComplexT<double >* > Abuf;Abuf.resize(nsrc*2);
-    //qlat::vector_acc<qlat::ComplexT<float  >* > Bbuf;Bbuf.resize(nsrc*2);
+    //qlat::vector<qlat::ComplexT<double >* > Abuf;Abuf.resize(nsrc*2);
+    //qlat::vector<qlat::ComplexT<float  >* > Bbuf;Bbuf.resize(nsrc*2);
     int buf_prec = 0;
     if(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
     if(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
@@ -3378,9 +3378,9 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
     //  qinv.gtmp_invG0 = new quda::ColorSpinorField(param);
     //}
 
-    qlat::vector_acc<void* > Psrc;
-    qlat::vector_acc<void* > Pres;
-    qlat::vector_acc<void* > Pbuf;///even of (*Qvec[vi]) which is not needed later
+    qlat::vector<void* > Psrc;
+    qlat::vector<void* > Pres;
+    qlat::vector<void* > Pbuf;///even of (*Qvec[vi]) which is not needed later
     //qlat::ComplexT<double> rD;
     //qlat::ComplexT<float > rF;
 
@@ -3412,8 +3412,8 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
         //}
         qinv.inv_param.solution_type = QUDA_MATPC_SOLUTION;
 
-        qlat::vector_acc<void* > srcI;srcI.resize(nsrc);
-        qlat::vector_acc<void* > resI;resI.resize(nsrc);
+        qlat::vector<void* > srcI;srcI.resize(nsrc);
+        qlat::vector<void* > resI;resI.resize(nsrc);
         for(int vi=0;vi<nsrc;vi++)
         {
           if(inv_even_even){
@@ -3513,8 +3513,8 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
 
           qinv.deflate_Ty(Pres, Psrc, mass, buf_prec, 0);
 
-          //qlat::vector_acc<void* > srcI;srcI.resize(nsrc);
-          //qlat::vector_acc<void* > resI;resI.resize(nsrc);
+          //qlat::vector<void* > srcI;srcI.resize(nsrc);
+          //qlat::vector<void* > resI;resI.resize(nsrc);
           //for(int vi=0;vi<nsrc;vi++)
           //{
           //  srcI[vi] = Qvec[nsrc + vi]->Odd().data();
@@ -3672,8 +3672,8 @@ template<typename Ty>
 void get_staggered_prop_group(quda_inverter& qinv, std::vector<colorFT >& src, std::vector<colorFT >& prop,
     const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
-  qlat::vector_acc<Ty* > s0;
-  qlat::vector_acc<Ty* > r0;
+  qlat::vector<Ty* > s0;
+  qlat::vector<Ty* > r0;
   const int nsrc = src.size();
   Qassert(nsrc == Long(prop.size()));
   s0.resize(nsrc);
@@ -3693,8 +3693,8 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
     const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
   qinv.setup_mat_mass(mass);
-  qlat::vector_acc<Ty* > sP;
-  qlat::vector_acc<Ty* > rP;
+  qlat::vector<Ty* > sP;
+  qlat::vector<Ty* > rP;
   sP.resize(1);
   rP.resize(1);
   sP[0] = src ;
@@ -3762,8 +3762,8 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
 
   //get_staggered_prop(qinv, srcP, propP, mass, err, niter, low_only, prec_type);
 
-  qlat::vector_acc<Ty* > sP;
-  qlat::vector_acc<Ty* > rP;
+  qlat::vector<Ty* > sP;
+  qlat::vector<Ty* > rP;
   sP.resize(1);
   rP.resize(1);
   for(int iv=0;iv<1;iv++){
@@ -3784,8 +3784,8 @@ void get_staggered_prop(quda_inverter& qinv, std::vector<qlat::FieldM<Ty, 3> >& 
   const int Ninv = srcL.size();
   if(Ninv <= 0){propL.resize(0);return ;}
 
-  qlat::vector_acc<Ty* > sP;
-  qlat::vector_acc<Ty* > rP;
+  qlat::vector<Ty* > sP;
+  qlat::vector<Ty* > rP;
   sP.resize(Ninv);
   rP.resize(Ninv);
   for(int iv=0;iv<Ninv;iv++){
@@ -3820,8 +3820,8 @@ void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::v
   move_index mv_civ;
   mv_civ.move_civ_out(srcP, resP, 1, Vl, 3, 1, true);
 
-  qlat::vector_acc<Ty* > sP;
-  qlat::vector_acc<Ty* > rP;
+  qlat::vector<Ty* > sP;
+  qlat::vector<Ty* > rP;
   sP.resize(Ninv);
   rP.resize(Ninv);
   for(int iv=0;iv<Ninv;iv++){
@@ -3876,7 +3876,7 @@ void get_staggered_multishift(quda_inverter& qinv,
 
   //const int DIM = 3;
   const Geometry& geo = qinv.geo;
-  qlat::vector_acc<Long >& map = qinv.map_index;
+  qlat::vector<Long >& map = qinv.map_index;
 
   const int Nsrc = src.size();
   const int Nres = res.size();
@@ -4128,8 +4128,8 @@ void get_staggered_multishift_even(quda_inverter& qinv,
 
   if(multishift == 1)
   {
-    qlat::vector_acc<void *> srcP;srcP.resize(Nsrc);
-    qlat::vector_acc<void *> resP;resP.resize(Nsrc);
+    qlat::vector<void *> srcP;srcP.resize(Nsrc);
+    qlat::vector<void *> resP;resP.resize(Nsrc);
     for(int srci=0;srci<Nsrc;srci++)
     {
       srcP[srci] = src[srci];

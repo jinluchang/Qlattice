@@ -18,7 +18,7 @@ namespace qlat{
 template <typename Ty>
 void get_num_time(qlat::FieldM<Ty, 1>& noise,int &number_t, int &t_ini){
   qlat::Geometry& geo = noise.geo();
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   //int nx,ny,nz,nt;
   //nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
@@ -53,7 +53,7 @@ template <typename Ty>
 void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off_L,int printS=0,int mod=0)
 {
   qlat::Geometry& geo = noise.geo();
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   int nx,ny,nz,nt;
   nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
@@ -220,7 +220,7 @@ void get_noise_pos(Fieldy& noise, std::vector<Coordinate >& grids, std::vector<i
     srcP = resP;
   }
 
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   //int nx,ny,nz,nt;
   //nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
@@ -387,7 +387,7 @@ void check_noise_high(Fieldy& noise, std::vector<int >& sinkt, Long& npoints, co
 }
 
 /////get positions by spatial setups
-inline void grid_list_pos(const Coordinate& off_L, qlat::vector_acc<Long >& Ngrid)
+inline void grid_list_pos(const Coordinate& off_L, qlat::vector<Long >& Ngrid)
 {
   TIMERA("===grid_list_pos===")
   if(off_L.size() != 4){abort_r("dimention of positions wrong!\n ");}
@@ -455,7 +455,7 @@ inline Coordinate get_grid_off(Long j0, const Coordinate& off_L, const Coordinat
 inline void grid_list_posT(std::vector<PointsSelection >& LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
 {
   TIMERA("===grid_list_posT===")
-  qlat::vector_acc<Long > Nfull;
+  qlat::vector<Long > Nfull;
   /////get positions by spatial setups
   grid_list_pos(off_L, Nfull);
   LMS_points.resize(0);
@@ -502,7 +502,7 @@ void write_grid_point_to_src(FieldG<Ty>& res, const FieldG<Ty>& src, const std::
   const Ty* srcP = (Ty*) get_data(src).data();
         Ty* resP = (Ty*) get_data(res).data();
   const Long V = geo.local_volume();
-  vector_acc<Long > listP;listP.resize(pos.size());
+  vector<Long > listP;listP.resize(pos.size());
   for(Long gi=0;gi<listP.size();gi++){
     const Coordinate& g = pos[gi];
     if(fd.coordinate_g_is_local(g)){
@@ -598,7 +598,7 @@ void add_psel(PointsSelection& p0, const PointsSelection& p1)
   }
 }
 
-void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir = 1)
+void vector_to_Coordinate(qlat::vector<int >& nv, Coordinate& pos, int dir = 1)
 {
   if(dir == 1){Qassert(nv.size() != 4);}
   if(dir == 1){for(int i=0;i<4;i++){pos[i] = nv[i] ;}}
@@ -671,7 +671,7 @@ template <typename Ty>
 void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointsSelection& psel, int printv = 0)
 {
   const qlat::Geometry& geo = noise.geo();
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   //int nx,ny,nz,nt;
   LInt Nsite = Nv[0]*Nv[1]*Nv[2]*Nv[3];
@@ -721,7 +721,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
   Ty* srcP = (Ty*) qlat::get_data(src).data();
   zero_Ty(srcP, V_local*civ, 0);
 
-  qlat::vector_acc<Ty > color_phases(phases.size());
+  qlat::vector<Ty > color_phases(phases.size());
   Qassert(color_phases.size() >= civ);
   const int tsrc = sp[3];
   for(unsigned int c=0;c<color_phases.size();c++){
@@ -847,7 +847,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
       rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
     }
 
-    qlat::vector_acc<int > nv,Nv,mv;
+    qlat::vector<int > nv,Nv,mv;
     geo_to_nv(geo, nv, Nv, mv);
     for(int i=0;i<4;i++){Qassert(nv[i] % offG[i] == 0);}
 
@@ -904,7 +904,7 @@ void vec_apply_cut(qlat::vector_gpu<Ty >& res, const Coordinate& sp, const doubl
   //const Long V_local = geo.local_volume();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  qlat::vector_acc<int > nv, mv, Nv;
+  qlat::vector<int > nv, mv, Nv;
   geo_to_nv(geo, nv, Nv, mv);
 
   const int Nxyz = fd.Nx * fd.Ny * fd.Nz;
@@ -1043,7 +1043,7 @@ void make_grid_src(Propagator4dT<Td >& src, const Coordinate& sp, const Coordina
     rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
   }
 
-  qlat::vector_acc<int > nv,Nv,mv;
+  qlat::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   for(int i=0;i<4;i++){Qassert(nv[i] % offG[i] == 0);}
   qmessage("===grid numbers %8d \n", (nv[0]*nv[1]*nv[2]*nv[3])/(offG[0]*offG[1]*offG[2]*offG[3]) );

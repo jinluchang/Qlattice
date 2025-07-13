@@ -30,8 +30,8 @@
 
 #define EigenTy std::vector<qlat::vector_gpu<Ty > >
 
-///#define EigenMTa std::vector<qlat::vector_acc<Ta > >
-//#define EigenVTa qlat::vector_acc<Ta >
+///#define EigenMTa std::vector<qlat::vector<Ta > >
+//#define EigenVTa qlat::vector<Ta >
 #define EAy   Eigen::Map<Eigen::Array<Ty ,Eigen::Dynamic,1 > >
 //#define EAa   Eigen::Map<Eigen::Array<Ta ,Eigen::Dynamic,1 > >
 
@@ -44,7 +44,7 @@ namespace qlat{
 
 
 template<typename Ty>
-void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, fft_desc_basic& fd)
+void prop_to_vec(qlat::vector<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, fft_desc_basic& fd)
 {
   TIMERB("Get corr vec");
   //check_prop_size(Eprop, fd);
@@ -72,8 +72,8 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
   resTa.resize(32 * nmass * NTt * Nxyz);//qlat::set_zero(resTa);////resTa.set_zero();
 
   ////gamma matrix follow current prec
-  qlat::vector_acc<Ty > G ;G.resize( 2*16*16);
-  qlat::vector_acc<int      > mL;mL.resize(2*16*3);
+  qlat::vector<Ty > G ;G.resize( 2*16*16);
+  qlat::vector<int      > mL;mL.resize(2*16*3);
   ga_M &ga2 = ga_cps.ga[1][3];
   ga_M &ga1 = ga_cps.ga[1][3];
 
@@ -93,7 +93,7 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
     mL[1*16*3 + ioff*3 + 2] = 2;
   }
 
-  ////qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
+  ////qlat::vector<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
   ////cps to PS
 
   Ty** p1 = propP.data();
@@ -108,7 +108,7 @@ void prop_to_vec(qlat::vector_acc<Ty* >& propP, qlat::vector_gpu<Ty >& resTa, ff
   /////add baryon two contractions
   cpy_data_thread(rb, ra, resTa.size()/2, 1, QTRUE,  1.0);
   
-  qlat::vector_acc<Ty* > resvP;resvP.resize(16 * nmass);
+  qlat::vector<Ty* > resvP;resvP.resize(16 * nmass);
   for(int iv = 0;iv<16*nmass;iv++){
     resvP[iv] = &ra[iv * NTt * Nxyz];
   }
@@ -127,7 +127,7 @@ void prop_to_vec(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_gpu<Ty
 
   const Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   ////Eprop, nmass --> 12 * 12 * Nvol
-  qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
+  qlat::vector<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
   prop_to_vec(propP, resTa, fd);
 }
 
@@ -141,7 +141,7 @@ void prop_to_vec(FieldG<Ty >& prop, qlat::vector_gpu<Ty >& resTa)
   std::vector<FieldG<Ty>> buf;buf.resize(1);
   buf[0].set_pointer(prop);
   ////Eprop, nmass --> 12 * 12 * Nvol
-  qlat::vector_acc<Ty* > propP = FieldG_to_pointers(buf, Nxyz);
+  qlat::vector<Ty* > propP = FieldG_to_pointers(buf, Nxyz);
   prop_to_vec(propP, resTa, fd);
 }
 
@@ -150,8 +150,8 @@ void prop_to_vec(std::vector<qpropT >& Eprop, qlat::vector_gpu<Ty >& resTa, fft_
 {
   const Long Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   ////Eprop, nmass --> 12 * 12 * Nvol
-  //qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
-  qlat::vector_acc<Ty* > propP = FieldM_to_Tpointers(Eprop, Nxyz);
+  //qlat::vector<Ty* > propP = EigenM_to_pointers(Eprop, Nxyz);
+  qlat::vector<Ty* > propP = FieldM_to_Tpointers(Eprop, Nxyz);
   prop_to_vec(propP, resTa, fd);
 }
 
@@ -180,7 +180,7 @@ void prop_to_vec(std::vector<qlat::Propagator4dT<Td > >& prop4d, qlat::vector_gp
 }
 
 template<typename Ty>
-void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_acc<Ty >& Eres, 
+void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector<Ty >& Eres, 
   fft_desc_basic& fd, qlat::vector_gpu<Ty >& resTa, int clear = 1)
 {
   prop_to_vec(Eprop, resTa, fd);  
@@ -189,7 +189,7 @@ void prop_to_corr_mom0(std::vector<qlat::vector_gpu<Ty > >& Eprop, qlat::vector_
 
 template<typename Td>
 void prop_corrE(Propagator4dT<Td > &p1,
-  qlat::vector_acc<qlat::ComplexT<Td > >& Eres, const Coordinate& mom = Coordinate(), const int tini = 0)
+  qlat::vector<qlat::ComplexT<Td > >& Eres, const Coordinate& mom = Coordinate(), const int tini = 0)
 {
   const Geometry& geo = p1.geo();
   std::vector<Propagator4dT<Td >* > pL;pL.resize(1);
@@ -214,7 +214,7 @@ void prop_corrE(Propagator4dT<Td > &p1,
   pL[0] = &p1;
 
   qlat::vector_gpu<qlat::ComplexT<Td > > resTa;
-  qlat::vector_acc<qlat::ComplexT<Td > > Eres;
+  qlat::vector<qlat::ComplexT<Td > > Eres;
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   prop_to_vec(pL, resTa, fd);
   vec_corrE(resTa, Eres, fd, 1, mom);

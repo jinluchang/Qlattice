@@ -17,7 +17,7 @@ namespace qlat
 {
 
 template<class Ta>
-inline void free_vector_acc_8(std::vector<Ta* >& RES)
+inline void free_vector_8(std::vector<Ta* >& RES)
 {
   for(unsigned int i=0;i<RES.size();i++)
   {
@@ -31,10 +31,10 @@ inline void free_vector_acc_8(std::vector<Ta* >& RES)
 }
 
 template<class Ta>
-inline void init_vector_acc_8(std::vector<Ta* >& RES, const int size = 8)
+inline void init_vector_8(std::vector<Ta* >& RES, const int size = 8)
 {
   if(int(RES.size()) != size){
-    free_vector_acc_8(RES);
+    free_vector_8(RES);
     RES.resize(size);
     for(int i=0;i<size;i++)
     {
@@ -59,7 +59,7 @@ struct shift_vec{
   int Nx,Ny,Nz;
 
   int N0,N1,N2,Nt;
-  qlat::vector_acc<int> Nv,nv;
+  qlat::vector<int> Nv,nv;
 
   //fft_desc_basic fd;
 
@@ -75,11 +75,11 @@ struct shift_vec{
   int dir_cur;
   std::vector<std::vector<int > > rank_sr;
 
-  std::vector<qlat::vector_acc<LInt >* > buffoffa;
-  std::vector<qlat::vector_acc<LInt >* > buffoffb;
-  std::vector<qlat::vector_acc<LInt >* > sendoffa;
-  std::vector<qlat::vector_acc<LInt >* > sendoffb;
-  std::vector<qlat::vector_acc<LInt >* > sendoffx;
+  std::vector<qlat::vector<LInt >* > buffoffa;
+  std::vector<qlat::vector<LInt >* > buffoffb;
+  std::vector<qlat::vector<LInt >* > sendoffa;
+  std::vector<qlat::vector<LInt >* > sendoffb;
+  std::vector<qlat::vector<LInt >* > sendoffx;
 
   std::vector<qlat::vector_gpu<char >* > sendbufP;
   std::vector<qlat::vector_gpu<char >* > recvbufP;
@@ -133,14 +133,14 @@ struct shift_vec{
     delete bufrP;bufrP = NULL;
 
     rank_sr.resize(0);
-    free_vector_acc_8(buffoffa);
-    free_vector_acc_8(buffoffb);
-    free_vector_acc_8(sendoffa);
-    free_vector_acc_8(sendoffb);
-    free_vector_acc_8(sendoffx);
+    free_vector_8(buffoffa);
+    free_vector_8(buffoffb);
+    free_vector_8(sendoffa);
+    free_vector_8(sendoffb);
+    free_vector_8(sendoffx);
 
-    free_vector_acc_8(sendbufP);
-    free_vector_acc_8(recvbufP);
+    free_vector_8(sendbufP);
+    free_vector_8(recvbufP);
   }
 
   inline void shift_set();
@@ -157,7 +157,7 @@ struct shift_vec{
   void call_MPI(Ty *src, Ty *res,int dir_or);
 
   template<typename Ty>
-  void shift_Evec(std::vector<qlat::vector_acc<Ty > > &srcE,std::vector<qlat::vector_acc<Ty > > &srcEf,std::vector<int >& iDir,int civ_or);
+  void shift_Evec(std::vector<qlat::vector<Ty > > &srcE,std::vector<qlat::vector<Ty > > &srcEf,std::vector<int >& iDir,int civ_or);
 
   template<typename Ty>
   void shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::vector<int >& iDir ,int civ_or);
@@ -249,8 +249,8 @@ inline void shift_vec::init(fft_desc_basic &fds, bool GPU_set)
   bufsP = new qlat::vector_gpu<char >(0);
   bufrP = new qlat::vector_gpu<char >(0);
 
-  init_vector_acc_8(sendbufP, 8);
-  init_vector_acc_8(recvbufP, 8);
+  init_vector_8(sendbufP, 8);
+  init_vector_8(recvbufP, 8);
 
   MPI_size.resize(8);
   for(int i=0;i<8;i++){MPI_size[i] = 0;}
@@ -291,11 +291,11 @@ inline void shift_vec::shift_set()
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   rank_sr.resize(8);
-  init_vector_acc_8(buffoffa, 8);
-  init_vector_acc_8(buffoffb, 8);
-  init_vector_acc_8(sendoffa, 8);
-  init_vector_acc_8(sendoffb, 8);
-  init_vector_acc_8(sendoffx, 8);
+  init_vector_8(buffoffa, 8);
+  init_vector_8(buffoffb, 8);
+  init_vector_8(sendoffa, 8);
+  init_vector_8(sendoffb, 8);
+  init_vector_8(sendoffx, 8);
 
   for(int diru=0;diru<8;diru++)
   {
@@ -955,7 +955,7 @@ void shift_vec::shift_vecP(Ty* src, Ty* res, std::vector<int >& iDir, int civ_or
 }
 
 template<typename Ty>
-void shift_vec::shift_Evec(std::vector<qlat::vector_acc<Ty > > &srcE,std::vector<qlat::vector_acc<Ty > > &srcEf,std::vector<int >& iDir,int civ_or)
+void shift_vec::shift_Evec(std::vector<qlat::vector<Ty > > &srcE,std::vector<qlat::vector<Ty > > &srcEf,std::vector<int >& iDir,int civ_or)
 {
   int flag_abort=0;
   if(srcE.size()==0){qmessage("Cannot do it with srcE.size()==0");flag_abort=1;}
@@ -1164,9 +1164,9 @@ void symmetric_shift(shift_vec& svec, std::vector<Propagator4dT<Td > >& src, std
 
   if(res.size() != src.size()){res.resize(src.size());}
   if(buf.size() != src.size()){buf.resize(src.size());}
-  qlat::vector_acc<qlat::ComplexT<Td>* > srcP;srcP.resize(src.size());
-  qlat::vector_acc<qlat::ComplexT<Td>* > resP;resP.resize(src.size());
-  qlat::vector_acc<qlat::ComplexT<Td>* > bufP;bufP.resize(src.size());
+  qlat::vector<qlat::ComplexT<Td>* > srcP;srcP.resize(src.size());
+  qlat::vector<qlat::ComplexT<Td>* > resP;resP.resize(src.size());
+  qlat::vector<qlat::ComplexT<Td>* > bufP;bufP.resize(src.size());
   for(unsigned int i=0;i<res.size();i++){
     if(!res[i].initialized){res[i].init(src[0].geo());}
     if(!buf[i].initialized){buf[i].init(src[0].geo());}
@@ -1315,7 +1315,7 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<int >& iDir, cons
     }
   }
 
-  qlat::vector_acc<Ty* > sP;sP.resize(biva);
+  qlat::vector<Ty* > sP;sP.resize(biva);
   std::vector<Ty* > sPd;sPd.resize(biva);
   for(int bi=0;bi<biva;bi++){
     sP[bi]  = res[bi];
@@ -1424,8 +1424,8 @@ void shift_fields_gridP(Ty** src, Ty** res, const std::vector<int >& iDir, const
 template <class Ty>
 void shift_fields_grid(Ty* src, Ty* res, const std::vector<int >& iDir, const int biva, const int civ, const Geometry& geo, const int max_group = -1)
 {
-  vector_acc<Ty* > sP;
-  vector_acc<Ty* > rP;
+  vector<Ty* > sP;
+  vector<Ty* > rP;
   sP.resize(biva);
   rP.resize(biva);
   const LInt V = geo.local_volume();
@@ -1454,8 +1454,8 @@ void shift_fields_grid(std::vector<FieldG<Ty > >& src, std::vector<FieldG<Ty > >
   const Long V = geo.local_volume();
   int biva = 0;
   int civ  = 0;
-  vector_acc<Ty* > sP;
-  vector_acc<Ty* > rP;
+  vector<Ty* > sP;
+  vector<Ty* > rP;
 
   for(Long si=0;si<Nsrc;si++){
     Qassert(src[si].initialized);

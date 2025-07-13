@@ -22,8 +22,8 @@ struct ga_M
   ////ComplexT<double> g[4];
   ////int ind[4];
   
-  qlat::vector_acc<Complexq > g;
-  qlat::vector_acc<int > ind;
+  qlat::vector<Complexq > g;
+  qlat::vector<int > ind;
 
   ga_M(){g.resize(4);ind.resize(4);for(int i=0;i<4;i++){g[i]=0.0;ind[i]=0;}};
 
@@ -59,7 +59,7 @@ struct ga_M
 
   //ga_M(const ga_M& vp)
   //{
-  //  /////g.v = qlat::vector_acc<Complexq >(vec.g);
+  //  /////g.v = qlat::vector<Complexq >(vec.g);
   //  //g.resize(4);ind.resize(4);
   //  //for(int i=0;i<4;i++){g[i]=vp.g[i];ind[i]=vp.ind[i];}
   //  clear();
@@ -327,9 +327,9 @@ inline void vecE_gamma(Complexq* src, ga_M& ga, Long noden)
   });
 }
 
-inline void get_g_pointer(std::vector<ga_M >& gL, qlat::vector_acc<Complexq* >& gP, qlat::vector_acc<int* >& iP)
+inline void get_g_pointer(std::vector<ga_M >& gL, qlat::vector<Complexq* >& gP, qlat::vector<int* >& iP)
 {
-  /////qlat::vector_acc<Complexq* > gP; qlat::vector_acc<int* > iP;get_g_pointer(gL, gP, iP);
+  /////qlat::vector<Complexq* > gP; qlat::vector<int* > iP;get_g_pointer(gL, gP, iP);
   gP.resize(gL.size());
   iP.resize(gL.size());
   for(unsigned int i=0;i<gL.size();i++)

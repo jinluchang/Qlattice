@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
   quda_begin(mpi_layout);
 
   Long V = geo.local_volume();
-  qlat::vector_acc<qlat::ComplexD > quda_gf;quda_gf.resize(V * 4 * 3*3);
+  qlat::vector<qlat::ComplexD > quda_gf;quda_gf.resize(V * 4 * 3*3);
   quda_convert_gauge(quda_gf, gf);
 
   const int Nsrc = 12;

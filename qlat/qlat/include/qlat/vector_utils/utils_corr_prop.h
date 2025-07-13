@@ -412,7 +412,7 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Td > > &prop,const Coordina
   ///Long Nsum = Nvol/Nt;
   int tini = x_ini[3];
 
-  qlat::vector_acc<qlat::ComplexT<Td> > res;res.resize(Nvol);
+  qlat::vector<qlat::ComplexT<Td> > res;res.resize(Nvol);
 
   qacc_for(isp, Long(Nvol),{
     qlat::ComplexT<Td> buf(0.0,0.0);
@@ -448,7 +448,7 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Td > > &prop,const Coordina
 }
 
 template<typename Ty>
-void get_src_phase(Ty& phase, const qlat::vector_acc<int >& nv,
+void get_src_phase(Ty& phase, const qlat::vector<int >& nv,
   const Coordinate& pos = Coordinate(), const Coordinate& mom = Coordinate()){
     double p0[3]={2 * QLAT_PI_LOCAL /nv[0],
                   2 * QLAT_PI_LOCAL /nv[1],
@@ -458,7 +458,7 @@ void get_src_phase(Ty& phase, const qlat::vector_acc<int >& nv,
 }
 
 template<typename Ty>
-void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int nvec,const int clear=0,const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, const int t0 = 0){
+void vec_corrE(Ty* srcE, qlat::vector<Ty >& res,qlat::fft_desc_basic &fd,const int nvec,const int clear=0,const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, const int t0 = 0){
   TIMER("Reduce vec_corrE");
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -474,14 +474,14 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
     cpy_data_thread(bufE.data(), srcE, bufE.size(), 1, QTRUE);
     src = bufE.data();
 
-    qlat::vector_acc<double > p0;p0.resize(3);
+    qlat::vector<double > p0;p0.resize(3);
     for(int i=0;i<3;i++){p0[i] = 2 * QLAT_PI_LOCAL /fd.nv[i];}
 
-    qlat::vector_acc<Ty > phaseEG;phaseEG.resize(Nxyz);
+    qlat::vector<Ty > phaseEG;phaseEG.resize(Nxyz);
     //Ty* phaseE = (Ty*) qlat::get_data(phaseEG).data();
 
-    //const qlat::vector_acc<int >& orderN = fd.orderN;
-    //const qlat::vector_acc<int >& Nv = fd.Nv;
+    //const qlat::vector<int >& orderN = fd.orderN;
+    //const qlat::vector<int >& Nv = fd.Nv;
 
     ////qlat::vector_gpu<int > pos_tem;pos_tem.copy_from(fd.Pos0[fd.rank]);int* posP = pos_tem.data();
     /////===may not be consistent for fd definiations under qacc
@@ -515,7 +515,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
   if(clear == 1){if(res.size() != nvec*nt){res.resize(nvec*nt);} qlat::set_zero(res);}
   if(clear == 0){if(res.size() != nvec*nt){qmessage("res size wrong for corr.\n");Qassert(false);}}
 
-  qlat::vector_acc<Ty > tmp;tmp.resize(nvec*NTt);qlat::set_zero(tmp);//tmp.set_zero();
+  qlat::vector<Ty > tmp;tmp.resize(nvec*NTt);qlat::set_zero(tmp);//tmp.set_zero();
   reduce_vecs(src, tmp.data(), Nxyz, nvec*NTt);
 
   qlat::vector_gpu<Ty > RES;RES.resize(nvec*nt );RES.set_zero();
@@ -533,7 +533,7 @@ void vec_corrE(Ty* srcE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,con
 }
 
 template<typename Ty>
-void vec_corrE(qlat::vector_gpu<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int clear=0,
+void vec_corrE(qlat::vector_gpu<Ty >& resE, qlat::vector<Ty >& res,qlat::fft_desc_basic &fd,const int clear=0,
   const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, int t0=0){
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -542,7 +542,7 @@ void vec_corrE(qlat::vector_gpu<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft
 }
 
 template<typename Ty>
-void vec_corrE(qlat::vector_acc<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft_desc_basic &fd,const int clear=0,
+void vec_corrE(qlat::vector<Ty >& resE, qlat::vector<Ty >& res,qlat::fft_desc_basic &fd,const int clear=0,
   const Coordinate& mom = Coordinate(), const Ty& src_phase = 1.0, int t0 = 0){
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -553,11 +553,11 @@ void vec_corrE(qlat::vector_acc<Ty >& resE, qlat::vector_acc<Ty >& res,qlat::fft
 }
 
 template<typename Ty>
-void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
+void shift_result_t(qlat::vector<Ty >& Esrc, int nt, int tini){
   if(tini == 0){return ;}
   Long Ntotal = Esrc.size();
   if(Ntotal %(nt) != 0){abort_r("Correlation function size wrong!\n");}
-  qlat::vector_acc<Ty > tmp;tmp.resize(Ntotal);
+  qlat::vector<Ty > tmp;tmp.resize(Ntotal);
   qacc_for(i, Ntotal, {
     const int iv = i/nt;
     const int t  = i%nt;
@@ -608,7 +608,7 @@ void shift_result_t(qlat::vector_acc<Ty >& Esrc, int nt, int tini){
 //  {
 //    Ty* pv = pV1[mi];
 //    /////Propagator4dT<Ty >& pv = pV1[mi];
-//    qlat::vector_acc<Ta* > ps = EigenM_to_pointers(prop);
+//    qlat::vector<Ta* > ps = EigenM_to_pointers(prop);
 //    qacc_for(isp, Long(NTt*Nxyz),{
 //      int ti = isp/Nxyz;
 //      int xi = isp%Nxyz;
@@ -746,7 +746,7 @@ void copy_propG_to_qprop(std::vector<qpropT >& res, EigenTy& src, const qlat::Ge
 }
 
 template <typename Ty >
-void ini_resE(qlat::vector_acc<Ty > &res, int nmass, qlat::fft_desc_basic &fd){
+void ini_resE(qlat::vector<Ty > &res, int nmass, qlat::fft_desc_basic &fd){
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int do_resize = 0;
@@ -818,16 +818,16 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
   TIMER("get_phases");
   int Nmom = momL.size();
   phases.resize(Nmom);if(Nmom == 0){return ;}
-  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+  qlat::vector<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
   Long vol = Nv[0]*Nv[1]*Nv[2];
   for(int momi=0;momi<Nmom;momi++){phases[momi].resize(vol);}
-  qlat::vector_acc<Ty* > Pres = EigenM_to_pointers(phases);
+  qlat::vector<Ty* > Pres = EigenM_to_pointers(phases);
 
-  qlat::vector_acc<double > p0;p0.resize(3);
+  qlat::vector<double > p0;p0.resize(3);
   for(int i=0;i<3;i++){p0[i] = 2 * QLAT_PI_LOCAL /nv[i];}
 
   ////copy momentum to gpu memery
-  qlat::vector_acc<int > momLV;momLV.resize(momL.size() * 3);
+  qlat::vector<int > momLV;momLV.resize(momL.size() * 3);
   for(int momi = 0;momi < Nmom; momi++)
   for(int i=0;i<3;i++){momLV[momi*3 + i] = momL[momi][i];}
   int* momLP = momLV.data();
@@ -862,20 +862,20 @@ void apply_phases(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>* res, vecto
   const Geometry& geo = src.geo();
   //const unsigned int Nmom = phases.size();
 
-  //qlat::vector_acc<Ty* > Pphase = EigenM_to_pointers(phases);
-  qlat::vector_acc<Ty* > Pphase;Pphase.resize(Nmom);
+  //qlat::vector<Ty* > Pphase = EigenM_to_pointers(phases);
+  qlat::vector<Ty* > Pphase;Pphase.resize(Nmom);
   for(unsigned int mi=0;mi<Nmom;mi++){Pphase[mi] = (Ty*) qlat::get_data(phases[mi]).data();}
   ////= EigenM_to_pointers(phases);
   Ty* psrc = (Ty*) qlat::get_data(src).data();
 
-  qlat::vector_acc<Ty* > pres;pres.resize(Nmom);
+  qlat::vector<Ty* > pres;pres.resize(Nmom);
   /////if(res.size() != Nmom){res.resize(Nmom);}
   for(unsigned int mi=0;mi<Nmom;mi++){
     if(!res[mi].initialized){res[mi].init(geo);}
     pres[mi] = (Ty*) qlat::get_data(res[mi]).data();
   }
 
-  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+  qlat::vector<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
   const Long vol = Nv[0]*Nv[1]*Nv[2];
   const int   Nt = Nv[3];
 
@@ -923,7 +923,7 @@ void apply_phases(Propagator4dT<Td>& src, Propagator4dT<Td>& res, qlat::vector_g
   Ty* psrc = (Ty*) qlat::get_data(src).data();
   Ty* pres = (Ty*) qlat::get_data(res).data();
 
-  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+  qlat::vector<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
   const Long vol = Nv[0]*Nv[1]*Nv[2];
   const int   Nt = Nv[3];
   const int civ = 12 * 12;
@@ -946,17 +946,17 @@ void apply_phases(Propagator4dT<Td>& src, Propagator4dT<Td>& res, qlat::vector_g
 //  const Geometry& geo = src.geo();
 //  const unsigned int Nmom = phases.size();
 //
-//  qlat::vector_acc<Ty* > Pphase = EigenM_to_pointers(phases);
+//  qlat::vector<Ty* > Pphase = EigenM_to_pointers(phases);
 //  Ty* psrc = (Ty*) qlat::get_data(src).data();
 //
-//  qlat::vector_acc<Ty* > pres;pres.resize(Nmom);
+//  qlat::vector<Ty* > pres;pres.resize(Nmom);
 //  if(res.size() != Nmom){res.resize(Nmom);}
 //  for(unsigned int mi=0;mi<Nmom;mi++){
 //    if(!res[mi].initialized){res[mi].init(geo);}
 //    pres[mi] = (Ty*) qlat::get_data(res[mi]).data();
 //  }
 //
-//  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
+//  qlat::vector<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
 //  const Long vol = Nv[0]*Nv[1]*Nv[2];
 //  const int   Nt = Nv[3];
 //
@@ -1012,7 +1012,7 @@ void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src,
 
 /////V -- 12a x 12b   to   12b x 12a -- V
 template<typename Ty>
-void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector<qpropT >& src, int dir = 1){
+void copy_qprop_to_propE(std::vector<qlat::vector<Ty > >& Eprop, std::vector<qpropT >& src, int dir = 1){
   TIMERA("copy_qprop_to_propE");
   const int nmass = src.size();
   std::vector<Ty* > ps;ps.resize(nmass);
@@ -1042,7 +1042,7 @@ void copy_qprop_to_propE(std::vector<qlat::vector_acc<Ty > >& Eprop, std::vector
 }
 
 template<typename Ty>
-void copy_propE_to_qprop(std::vector<qpropT >& src, std::vector<qlat::vector_acc<Ty > >& Eprop){
+void copy_propE_to_qprop(std::vector<qpropT >& src, std::vector<qlat::vector<Ty > >& Eprop){
   copy_qprop_to_propE(Eprop, src, 0);
 }
 
