@@ -15,6 +15,37 @@
 
 namespace qlat{
 
+template <typename Ty>
+void get_num_time(qlat::FieldM<Ty, 1>& noise,int &number_t, int &t_ini){
+  qlat::Geometry& geo = noise.geo();
+  qlat::vector_acc<int > nv,Nv,mv;
+  geo_to_nv(geo, nv, Nv, mv);
+  //int nx,ny,nz,nt;
+  //nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
+  int nt = nv[3];
+  LInt Nsite = Nv[0]*Nv[1]*Nv[2]*Nv[3];
+
+  std::vector<double > fullt(nt);for(int ti=0;ti<nt;ti++){fullt[ti]=0.0;}
+  for(unsigned int isp=0; isp< Nsite; isp++)
+  {
+    ////position p = noise.desc->get_position(isp,get_node_rank());
+    Coordinate xl0 = geo.coordinate_from_index(isp);
+    Coordinate xg0 = geo.coordinate_g_from_l(xl0);
+    {
+      ///auto tem_source = noise.data[isp];
+      auto tem_source =  noise.get_elem_offset(isp);
+      if(qnorm(tem_source)>0.01)
+      {
+        fullt[xg0[3]] = 1.0;
+      }
+    }
+  }
+  sum_all_size((double* ) &fullt[0],nt);
+  number_t = 0;
+  for(int ti=0;ti<nt;ti++){if(fullt[ti]>0.0)number_t += 1;}
+  for(int ti=0;ti<nt;ti++){if(fullt[ti]>0.0){t_ini = ti;break;}}
+}
+
 /*
   Check grid src positions and offset
 */
@@ -1304,6 +1335,22 @@ inline void split_grid_points(std::vector<std::vector<Coordinate > >& res, std::
   }
 
 }
+
+template <typename Td>
+void check_prop_noise_positions(qlat::Propagator4dT<Td >& prop, Coordinate& pos, Coordinate&off_L,int printS=0,int mod=0)
+{
+  qlat::Geometry& geo = prop.geo();
+  using Ty = ComplexT<Td>;
+  qlat::FieldM<Ty, 1> noise;noise.init(geo);
+  const Long Nvol = geo.local_volume();
+  Ty* pD = (Ty*) get_data(prop ).data();
+  Ty* nD = (Ty*) get_data(noise).data();
+  qacc_for(isp, Nvol,{
+    nD[isp] = pD[isp*12*12 + 0];
+  });
+  check_noise_pos(noise, pos, off_L, printS, mod);
+}
+
 
 }
 

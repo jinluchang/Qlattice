@@ -44,6 +44,7 @@ struct quda_inverter {
 
   Geometry geo;
   qlat::vector_acc<Long > map_index;
+  qlat::FieldM<int8_t, 1> eo;//buffer for eo signs
   int solve_mode ;
   /////QudaInvertParam df_param;
 
@@ -84,6 +85,7 @@ struct quda_inverter {
   ////eigen related
   quda::Dirac *dirac;
   quda::Dirac *dirac_pc;
+  quda::Dirac *dirac_pc_odd;
 
   //quda::Dirac *dirac_cg;
   //quda::Dirac *dSloppy;
@@ -325,7 +327,8 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   //solve_cg = NULL;
   dirac = NULL;
   //dirac_cg = NULL;
-  dirac_pc = NULL;
+  dirac_pc     = NULL;
+  dirac_pc_odd = NULL;
   //dSloppy = NULL;
   //dPre    = NULL;
   //dEig    = NULL;
@@ -1576,6 +1579,7 @@ inline void quda_inverter::clear_mat()
   if(dirac != NULL){delete dirac;dirac=NULL;}
   //if(dirac_cg != NULL){delete dirac_cg;dirac_cg=NULL;}
   if(dirac_pc != NULL){delete dirac_pc;dirac_pc=NULL;}
+  if(dirac_pc_odd != NULL){delete dirac_pc_odd;dirac_pc_odd=NULL;}
   //if(dSloppy != NULL){delete dSloppy;dSloppy=NULL;}
   //if(dPre != NULL){delete dPre;dPre=NULL;}
   //if(dEig != NULL){delete dEig;dEig=NULL;}
@@ -1717,6 +1721,11 @@ inline void quda_inverter::setup_mat_mass(const double mass, const bool force_do
 
   dirac    = quda::Dirac::create(diracParam);
 
+  inv_param.matpc_type = QUDA_MATPC_ODD_ODD;
+  setDiracParam(diracParam, &inv_param, true);
+  dirac_pc_odd = quda::Dirac::create(diracParam);
+
+  inv_param.matpc_type = QUDA_MATPC_EVEN_EVEN;
   setDiracParam(diracParam, &inv_param, true);
   dirac_pc = quda::Dirac::create(diracParam);
 
@@ -2602,6 +2611,7 @@ inline void quda_inverter::get_low_prop(qlat::vector_acc<Ty* >& res, qlat::vecto
 
 inline void quda_inverter::callMultiSrcQuda(qlat::vector_acc<void* >& res, qlat::vector_acc<void* >& src, int max_src)
 {
+  TIMER_FLOPS("invertQuda Multi");
   Qassert(src.size() == res.size());
   int max_src_inv = -1;
   if(max_src_qinv != -1){
@@ -2644,6 +2654,8 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector_acc<void* >& res, qlat:
       invertMultiSrcQuda(res_new.data(), src_new.data(), &inv_param);
     }
   }
+
+  timer.flops += inv_param.gflops * 1024 * 1024 * 1024 / qlat::get_num_node();
 }
 
 inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src)
@@ -3244,13 +3256,19 @@ quda_inverter::~quda_inverter()
   free_mem();
 }
 
-//buf will be overwritten 
-//prop will be ignored, the precondtioning with eigensystem is used
-//buf should be double for QUDA ?
-//buf could be high precision but use only Ty
+/*
+  buf will be overwritten 
+  prop will be ignored, the precondtioning with eigensystem is used
+  buf should be double for QUDA ?
+  buf could be high precision but use only Ty
+  low_only : 0, do full props, 1, only low mode prop, -1 use test inverter
+  inv_even_even : flag to do even-even / odd-odd inversions, odd-odd have no eigen support
+    may not need this, odd source will be only a mass rescale
+*/
 template<typename Ty>
 void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, qlat::vector_acc<Ty* >& prop,
-    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0, 
+    const bool inv_even_even = true)
 {
   TIMER("get_staggered_prop_group");
   //timeval tm0,tm1;gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);
@@ -3261,6 +3279,8 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
   qlat::vector_acc<Long >& map = qinv.map_index;
   const Geometry& geo = qinv.geo;
   Qassert(low_only == 0 or low_only == 1 or low_only == -1);///0 for full, 1 for low only, -1 other ways to solve
+  const int restart_cg = 0;
+
 
   qlat::vector_acc<Ty* > buf;
   qinv.get_inversion_bufs(buf, nsrc, 0);
@@ -3285,9 +3305,17 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
 
   qinv.setup_mat_mass(mass);
 
+  quda::Dirac *dirac_pc = qinv.dirac_pc;
+  if(!inv_even_even)
+  {
+    Qassert(low_only == 0 and qinv.eigen_with_nvec == false and restart_cg == 0);
+    qinv.inv_param.matpc_type = QUDA_MATPC_ODD_ODD;
+    dirac_pc = qinv.dirac_pc_odd;
+  }
+
   if(low_only == 0 or low_only == -1)
   {
-    TIMER_FLOPS("get_staggered_prop_group_inv");
+    //TIMER_FLOPS("get_staggered_prop_group_inv");
     //qinv.setup_CG();
     quda::ColorSpinorParam param = qinv.cs_gpu;
     param.is_composite  = false;
@@ -3365,46 +3393,50 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
       {
         quda::ColorSpinorField srcP;
         quda::ColorSpinorField sol1;
-        qinv.dirac_pc->prepare(srcP, sol1, (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+        dirac_pc->prepare(    srcP, sol1, (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
         Psrc[vi] = Qvec[nsrc + vi]->Odd().data();
         Pres[vi] = Qvec[nsrc + vi]->Even().data();
         Pbuf[vi] = Qvec[       vi]->Even().data();
       }
       qinv.inv_param.cpu_prec = Qvec[0]->Precision();
 
-      const int restart_cg = 0;
       if(restart_cg == 0)
       {
-        qinv.deflate_Ty(Pres, Psrc, mass, buf_prec, 0);
+        if(inv_even_even){
+          qinv.deflate_Ty(Pres, Psrc, mass, buf_prec, 0);
+        }
+        //else{
+        //  for(int vi=0;vi<nsrc;vi++){
+        //    quda::blas::zero(Qvec[nsrc + vi]->Odd());
+        //  }
+        //}
         qinv.inv_param.solution_type = QUDA_MATPC_SOLUTION;
 
         qlat::vector_acc<void* > srcI;srcI.resize(nsrc);
         qlat::vector_acc<void* > resI;resI.resize(nsrc);
         for(int vi=0;vi<nsrc;vi++)
         {
-          srcI[vi] = Qvec[nsrc + vi]->Odd().data();
-          resI[vi] = Qvec[nsrc + vi]->Even().data();
+          if(inv_even_even){
+            srcI[vi] = Qvec[nsrc + vi]->Odd().data();
+            resI[vi] = Qvec[nsrc + vi]->Even().data();
+          }else{
+            srcI[vi] = Qvec[nsrc + vi]->Even().data();
+            resI[vi] = Qvec[nsrc + vi]->Odd().data();
+          }
         }
 
         {
-          TIMER("invertQuda group");
-          //qinv.inv_param.num_src = nsrc;
           qinv.callMultiSrcQuda(resI, srcI);
-          //invertMultiSrcQuda(resI.data(), srcI.data(), &qinv.inv_param);
-          //invertQuda(Qvec[nsrc + vi]->Even().data(), Qvec[nsrc + vi]->Odd().data(), &qinv.inv_param);
         }
 
         for(int vi=0;vi<nsrc;vi++)
         {
-          // why do we have to copy to double fields
-          //(*qinv.gresH).Component(0) = Qvec[nsrc + vi]->Even();
-          //(*qinv.gsrcH).Component(0) = Qvec[nsrc + vi]->Odd();
-
-          //invertQuda(Qvec[nsrc + vi]->Even().data(), Qvec[nsrc + vi]->Odd().data(), &qinv.inv_param);
-
-          //Qvec[nsrc + vi]->Even() = (*qinv.gresH).Component(0);
-          //Qvec[nsrc + vi]->Odd()  = (*qinv.gsrcH).Component(0);
-          qinv.dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+          dirac_pc->reconstruct(    (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+          //if(inv_even_even){
+          //  qinv.dirac_pc->reconstruct(    (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+          //}else{
+          //  qinv.dirac_pc_odd->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+          //}
         }
         qinv.inv_param.solution_type = QUDA_MAT_SOLUTION;
       }else{
@@ -3453,7 +3485,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
           //qmessage("vec %d, norm %.8e \n", vi, norm_vecs[vi]);
         }
 
-        quda::Dirac& xpay = *qinv.dirac_pc;
+        quda::Dirac& xpay = *dirac_pc;
         double mass2 = 4 * xpay.Mass() * xpay.Mass();
         quda::Complex One = quda::Complex(1.0, 0.0);
         int iter_total    = 0;
@@ -3542,7 +3574,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
 
         for(int vi=0;vi<nsrc;vi++){
           Qvec[nsrc + vi]->Even() = gsumV[vi];
-          qinv.dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+          dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
           //delete res;delete src;
         }
         qinv.inv_param.solution_type = QUDA_MAT_SOLUTION;
@@ -3561,7 +3593,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
       {
         quda::ColorSpinorField srcP;
         quda::ColorSpinorField sol1;
-        qinv.dirac_pc->prepare(srcP, sol1, (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+        dirac_pc->prepare(srcP, sol1, (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
         Psrc[vi] = Qvec[nsrc + vi]->Odd().data();
         Pres[vi] = Qvec[nsrc + vi]->Even().data();
         Pbuf[vi] = Qvec[       vi]->Even().data();
@@ -3595,7 +3627,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
       //}
 
       for(int vi=0;vi<nsrc;vi++){
-        qinv.dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
+        dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
       }
       qinv.inv_param.solution_type = QUDA_MAT_SOLUTION;
     }
@@ -3614,7 +3646,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
     }
     //gettimeofday(&tm1, NULL);double time0 = tm1.tv_sec - tm0.tv_sec;time0 += (tm1.tv_usec - tm0.tv_usec)/1000000.0;
     qinv.inv_param.secs += 1e-25;
-    timer.flops += qinv.inv_param.gflops;
+    //timer.flops += qinv.inv_param.gflops;
     if((qinv.quda_verbos >= 0 or qinv.quda_verbos == -2) and qinv.inv_param.iter > 0)
     {
       qmessage("Done: %8d iter / %.6f secs = %.3f Gflops %.3f Gflops/GPU, Cost %.3f Gflops \n",
@@ -3629,10 +3661,11 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector_acc<Ty* >& src, 
     qinv.get_low_prop(prop, src, buf);
   }
 
-  ////copy results to prop for low_only -1 and 0
-  //int verbos = 0;
-  //std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
-  //if(val != ""){verbos = stringtonum(val);}
+  if(!inv_even_even)
+  {
+    qinv.inv_param.matpc_type = QUDA_MATPC_EVEN_EVEN;
+  }
+
 }
 
 template<typename Ty>
@@ -3986,7 +4019,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   const std::vector<double >& masses2,
   const double err, const int niter)
 {
-  TIMER("get_staggered_multishift_even");
+  TIMER_FLOPS("get_staggered_multishift_even");
   Qassert(src.size() != 0);
   if(qinv.quda_verbos >= 0){print_mem_info();}
 
@@ -4093,30 +4126,24 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   //const Geometry& geo = qinv.geo;
   //const long Ndata = geo.local_volume() * 3 / 2;
 
-  for(int srci=0;srci<Nsrc;srci++)
+  if(multishift == 1)
   {
-    for(int mi=0;mi<multishift;mi++)
+    qlat::vector_acc<void *> srcP;srcP.resize(Nsrc);
+    qlat::vector_acc<void *> resP;resP.resize(Nsrc);
+    for(int srci=0;srci<Nsrc;srci++)
     {
-      _hp_multi_x[mi] = res[mi*Nsrc + srci];
-      //zero_Ty((Ty*) _hp_multi_x[mi], Ndata, 1, QFALSE); // no need to clean results
+      srcP[srci] = src[srci];
+      resP[srci] = res[srci];
     }
-    //qacc_barrier(dummy);
-    //{
-    //const Geometry& geo = qinv.geo;
-    //Ty res =  vec_norm2(src[srci], src[srci], geo.local_volume() * 3 / 2);
-    //qmessage("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
-    //}
-
-    //{
-    //const Geometry& geo = qinv.geo;
-    //Ty res =  vec_norm2(src[srci], src[srci], geo.local_volume() * 3 / 2);
-    //qmessage("src %5d, norm %.8e %.8e \n", srci, res.real(), res.imag());
-    //}
-
-    if(multishift == 1){
-      invertQuda(_hp_multi_x[0],               src[srci], &inv_param);
-    }
-    else{
+    qinv.callMultiSrcQuda(resP, srcP);
+  }
+  else{
+    for(int srci=0;srci<Nsrc;srci++)
+    {
+      for(int mi=0;mi<multishift;mi++)
+      {
+        _hp_multi_x[mi] = res[mi*Nsrc + srci];
+      }
       invertMultiShiftQuda(_hp_multi_x.data(), src[srci], &inv_param);
     }
   }
@@ -4131,6 +4158,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   qinv.inv_param.secs   = inv_param.secs;
   qinv.inv_param.gflops = inv_param.gflops;
   qinv.inv_param.iter   = inv_param.iter;
+  timer.flops += inv_param.gflops * 1024 * 1024 * 1024 / qlat::get_num_node();
 }
 
 // int gf_gauge_dir 3=Coulomb, 4=Landau
