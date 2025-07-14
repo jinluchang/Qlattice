@@ -454,7 +454,7 @@ struct API box {
   // like a one element vector
   //
   // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
+  // (it is likely not what you think it is)
   // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;  // do not free memory if is_copy=true

@@ -64,13 +64,13 @@ struct QFileBase {
   //
   virtual Long remaining_size();
   //
-  virtual Long read_data(Vector<char> v);
+  virtual Long read_data(Vector<Char> v);
   virtual std::string read_all();
   virtual std::string cat();
   virtual std::string getline();
   virtual std::vector<std::string> getlines();
   //
-  virtual Long write_data(Vector<char> v);
+  virtual Long write_data(Vector<Char> v);
   virtual Long write_data(const std::string& v);
   virtual Long write_data(const std::vector<std::string>& v);
   virtual int append(const std::string& content);
@@ -340,7 +340,7 @@ Long qwrite_data(const Vector<M>& v, QFile& qfile)
   return qwrite_data(get_data_char(v), qfile);
 }
 
-Long qwrite_data(const Vector<char>& v, QFile& qfile);
+Long qwrite_data(const Vector<Char>& v, QFile& qfile);
 
 Long qwrite_data(const std::string& v, QFile& qfile);
 
@@ -353,7 +353,7 @@ Long qread_data(const Vector<M>& v, QFile& qfile)
   return qread_data(get_data_char(v), qfile);
 }
 
-Long qread_data(const Vector<char>& v, QFile& qfile);
+Long qread_data(const Vector<Char>& v, QFile& qfile);
 
 template <class M>
 Long qread_data_all(std::vector<M>& v, QFile& qfile)
@@ -525,7 +525,7 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
                       const std::string& info, const QFile& qfile_in);
 
 Long write_from_data(const QarFileVol& qar, const std::string& fn,
-                     const std::string& info, const Vector<char> data);
+                     const std::string& info, const Vector<Char> data);
 
 // -------------------
 
@@ -630,7 +630,7 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
                       const std::string& info, QFile& qfile_in);
 
 Long write_from_data(QarFile& qar, const std::string& fn,
-                     const std::string& info, const Vector<char> data);
+                     const std::string& info, const Vector<Char> data);
 
 Long write_from_data(QarFile& qar, const std::string& fn,
                      const std::string& info, const std::string& data);

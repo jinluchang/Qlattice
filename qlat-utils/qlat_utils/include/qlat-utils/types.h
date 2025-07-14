@@ -93,8 +93,8 @@ template <>
 struct IsBasicDataType<char> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
-  static const std::string get_type_name() { return "char"; }
-  using ElementaryType = char;
+  static const std::string get_type_name() { return "Char"; }
+  using ElementaryType = Char;
 };
 
 template <>
@@ -382,7 +382,7 @@ struct IsBasicDataType<RngState> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "RngState"; }
-  using ElementaryType = char;
+  using ElementaryType = Char;
 };
 
 // -------------------------------------------------------------------------
@@ -480,7 +480,7 @@ template <class M>
 qacc constexpr bool is_char()
 {
   bool ret = false;
-  if (is_same<M, char>()) {
+  if (is_same<M, Char>()) {
     ret = true;
   }
   return ret;

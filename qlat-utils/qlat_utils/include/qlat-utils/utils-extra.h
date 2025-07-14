@@ -106,7 +106,7 @@ bool is_equal_vec(const Vec& v1, const Vec& v2)
 }
 
 template <class M>
-bool operator==(const std::vector<M>& v1, const std::vector<M>& v2)
+qacc bool operator==(const std::vector<M>& v1, const std::vector<M>& v2)
 {
   return is_equal_vec(v1, v2);
 }

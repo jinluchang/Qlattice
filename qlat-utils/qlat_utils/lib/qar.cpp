@@ -118,12 +118,12 @@ Long QFileBase::remaining_size()
   return size() - tell();
 }
 
-Long QFileBase::read_data(Vector<char> v)
+Long QFileBase::read_data(Vector<Char> v)
 {
   TIMER_FLOPS("QFileBase::read_data(v)");
   qassert(not null());
   qassert(mode() == QFileMode::Read);
-  const Long total_bytes = read((void*)v.data(), sizeof(char), v.size());
+  const Long total_bytes = read((void*)v.data(), sizeof(Char), v.size());
   if (total_bytes > v.size()) {
     qerr(
         fname +
@@ -215,12 +215,12 @@ std::vector<std::string> QFileBase::getlines()
   return ret;
 }
 
-Long QFileBase::write_data(Vector<char> v)
+Long QFileBase::write_data(Vector<Char> v)
 {
   TIMER_FLOPS("QFileBase::write_data()");
   qassert(not null());
   qassert(mode() == QFileMode::Write or mode() == QFileMode::Append);
-  const Long total_bytes = write((void*)v.data(), sizeof(char), v.size());
+  const Long total_bytes = write((void*)v.data(), sizeof(Char), v.size());
   if (total_bytes != v.size()) {
     qwarn(fname +
           ssprintf(": qwrite_data data_size=%ld total_bytes=%ld path()='%s'",
@@ -295,7 +295,7 @@ Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in)
 {
   TIMER_FLOPS("write_from_qfile(qfile_out,qfile_in)");
   const Long chunk_size = write_from_qfile_chunk_size();
-  std::vector<char> buf(chunk_size);
+  std::vector<Char> buf(chunk_size);
   Long total_bytes = 0;
   while (not qfile_in.eof()) {
     const Long size = qfile_in.read_data(get_data(buf));
@@ -601,7 +601,7 @@ Long QFileObjString::write(const void* ptr, const Long size, const Long nmemb)
   const Long pos_new = pos + size * nmemb;
   qassert(pos_new >= pos);
   if (pos_new > (Long)content_v.size()) {
-    content_v.resize(pos_new, (char)0);
+    content_v.resize(pos_new, (Char)0);
   }
   std::memcpy(&content_v[pos], ptr, size * nmemb);
   pos = pos_new;
@@ -1428,7 +1428,7 @@ Long qfile_remaining_size(QFile& qfile)
   return qfile.remaining_size();
 }
 
-Long qwrite_data(const Vector<char>& v, QFile& qfile)
+Long qwrite_data(const Vector<Char>& v, QFile& qfile)
 // interface function
 {
   return qfile.write_data(v);
@@ -1446,7 +1446,7 @@ Long qwrite_data(const std::vector<std::string>& v, QFile& qfile)
   return qfile.write_data(v);
 }
 
-Long qread_data(const Vector<char>& v, QFile& qfile)
+Long qread_data(const Vector<Char>& v, QFile& qfile)
 // interface function
 {
   return qfile.read_data(v);
@@ -1540,11 +1540,12 @@ void QarFileVolObj::init(const QFile& qfile_)
     qassert(max_offset == (Long)qar_header.size());
     directories.insert("");
   } else if (mode() == QFileMode::Read) {
-    std::vector<char> check_line(qar_header.size(), 0);
+    std::vector<Char> check_line(qar_header.size(), 0);
     const Long qfread_check_len =
         qfread(check_line.data(), qar_header.size(), 1, qfile);
     if (not(qfread_check_len == 1 and
-            std::string(check_line.data(), check_line.size()) == qar_header)) {
+            std::string((char*)check_line.data(), check_line.size()) ==
+                qar_header)) {
       qfclose(qfile);
       qwarn(fname +
             ssprintf(": '%s' format does not match.", qfile.path().c_str()));
@@ -1785,14 +1786,14 @@ std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
   TIMER("read_fn(qar_v,qsinfo)");
   qassert(not qar.null());
   qassert(qar.mode() == QFileMode::Read);
-  std::vector<char> data(qsinfo.fn_len);
+  std::vector<Char> data(qsinfo.fn_len);
   const int code = qfseek(qar.qfile(), qsinfo.offset_fn, SEEK_SET);
   qassert(code == 0);
   if (1 != qfread(data.data(), qsinfo.fn_len, 1, qar.qfile())) {
     qassert(false);
   }
   std::string fn;
-  fn = std::string(data.data(), qsinfo.fn_len);
+  fn = std::string((char*)data.data(), qsinfo.fn_len);
   return fn;
 }
 
@@ -1801,14 +1802,14 @@ std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
   TIMER("read_info(qar_v,qsinfo)");
   qassert(not qar.null());
   qassert(qar.mode() == QFileMode::Read);
-  std::vector<char> data(qsinfo.info_len);
+  std::vector<Char> data(qsinfo.info_len);
   const int code = qfseek(qar.qfile(), qsinfo.offset_info, SEEK_SET);
   qassert(code == 0);
   if (1 != qfread(data.data(), qsinfo.info_len, 1, qar.qfile())) {
     qassert(false);
   }
   std::string info;
-  info = std::string(data.data(), qsinfo.info_len);
+  info = std::string((char*)data.data(), qsinfo.info_len);
   return info;
 }
 
@@ -2129,7 +2130,7 @@ Long write_from_qfile(const QarFileVol& qar, const std::string& fn,
 }
 
 Long write_from_data(const QarFileVol& qar, const std::string& fn,
-                     const std::string& info, const Vector<char> data)
+                     const std::string& info, const Vector<Char> data)
 // interface function
 // Write content data to qar.
 // NOTE: write_start and write_end can be used for more general usage
@@ -2625,7 +2626,7 @@ Long write_from_qfile(QarFile& qar, const std::string& fn,
 }
 
 Long write_from_data(QarFile& qar, const std::string& fn,
-                     const std::string& info, const Vector<char> data)
+                     const std::string& info, const Vector<Char> data)
 // interface function
 // Write content data to qar.
 {
@@ -3579,7 +3580,7 @@ crc32_t compute_crc32(QFile& qfile)
   qassert(qfile.mode() == QFileMode::Read);
   qfseek(qfile, 0, SEEK_SET);
   const size_t chunk_size = 16 * 1024 * 1024;
-  std::vector<char> data(chunk_size);
+  std::vector<Char> data(chunk_size);
   crc32_t crc = 0;
   while (true) {
     const Long size = qread_data(get_data(data), qfile);
@@ -3587,7 +3588,7 @@ crc32_t compute_crc32(QFile& qfile)
     if (size == 0) {
       break;
     }
-    crc = crc32_par(crc, Vector<char>(data.data(), size));
+    crc = crc32_par(crc, Vector<Char>(data.data(), size));
   }
   return crc;
 }

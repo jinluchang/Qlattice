@@ -14,6 +14,7 @@ cppsources = files(
   'matrix-hmc.cpp',
   'mpi-auto.cpp',
   'qar.cpp',
+  'utils.cpp',
   'utils-io.cpp',
   'utils-vec.cpp',
   'rng-state.cpp',

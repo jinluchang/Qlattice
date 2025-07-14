@@ -151,28 +151,36 @@ qacc Vector<M> get_data(Vector<M> vec, const Long size)
   return Vector<M>(vec.data(), size);
 }
 
-inline Vector<char> get_data(const std::string& str)
+Vector<char> get_data(const std::string& str);
+
+// -------------------
+
+template <class M>
+qacc Long get_data_size(const M& x)
 {
-  return Vector<char>(&str[0], str.length());
+  return get_data(x).data_size();
 }
 
 // -------------------
 
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
-qacc Vector<char> get_data_char(const T& xx)
+qacc Vector<Char> get_data_char(const T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;
   const Vector<M> vec = get_data(xx);
   const Long n = vec.data_size();
-  Vector<char> v1((char*)vec.data(), n);
+  Vector<Char> v1((Char*)vec.data(), n);
   return v1;
 }
 
-template <class N, class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+template <class N, class T,
+          class E1 = typename IsGetDataType<N>::ElementaryType,
+          class E2 = typename IsGetDataType<T>::ElementaryType,
+          QLAT_ENABLE_IF(is_get_data_type<T>())>
 qacc Vector<N> get_data_as(const T& xx)
 {
-  static_assert(is_same<typename IsDataVectorType<T>::ElementaryType,
-                        typename IsDataValueType<N>::ElementaryType>(),
+  static_assert(is_same<typename IsGetDataType<T>::ElementaryType,
+                        typename IsGetDataType<N>::ElementaryType>(),
                 "get_data_as type error");
   using M = typename IsGetDataType<T>::DataType;
   const Vector<M> vec = get_data(xx);
@@ -208,7 +216,49 @@ qacc Vector<Long> get_data_long(const T& xx)
 
 // -------------------
 
-template <class T, class E = typename IsDataVectorType<T>::ElementaryType,
+template <class M>
+qacc Vector<M> get_data_one_elem(const M& x)
+{
+  return Vector<M>(&x, 1);
+}
+
+template <class M>
+qacc Vector<Char> get_data_char(const Vector<M> v)
+{
+  Vector<Char> v1((Char*)v.data(), v.data_size());
+  return v1;
+}
+
+template <class N, class M>
+qacc Vector<N> get_data_as(const Vector<M> v)
+{
+  const Long n = v.data_size() / sizeof(N);
+  Vector<N> v1((N*)v.data(), n);
+  qassert(v1.data_size() == v.data_size());
+  return v1;
+}
+
+template <class M>
+qacc Vector<RealD> get_data_real_d(const Vector<M> v)
+{
+  return get_data_as<RealD>(v);
+}
+
+template <class M>
+qacc Vector<ComplexD> get_data_complex_d(const Vector<M> v)
+{
+  return get_data_as<ComplexD>(v);
+}
+
+template <class M>
+qacc Vector<Long> get_data_long(const Vector<M> v)
+{
+  return get_data_as<Long>(v);
+}
+
+// -------------------
+
+template <class T, class E = typename IsGetDataType<T>::ElementaryType,
           QLAT_ENABLE_IF(is_get_data_type<T>())>
 qacc Vector<E> get_data_in_elementary_type(const T& xx)
 {
@@ -224,17 +274,31 @@ qacc Vector<E> get_data_in_elementary_type(const T& xx)
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
 qacc void set_zero(T& xx)
 {
-  using M = typename IsGetDataType<T>::DataType;
-  Vector<M> vec = get_data(xx);
-  Long size = vec.size() * sizeof(M);
-  std::memset((void*)vec.data(), 0, size);
+  Vector<Char> vec = get_data_char(xx);
+  std::memset(vec.data(), 0, vec.size());
 }
 
+template <class M>
+qacc void set_zero(Vector<M> xx)
+{
+  Vector<Char> vec = get_data_char(xx);
+  std::memset(vec.data(), 0, vec.size());
+}
+
+template <class M, int N>
+qacc void set_zero(Array<M, N> xx)
+{
+  Vector<Char> vec = get_data_char(xx);
+  std::memset(vec.data(), 0, vec.size());
+}
+
+// -------------------
+
 template <class T1, class T2,
-          class E1 = typename IsDataVectorType<T1>::ElementaryType,
-          class E2 = typename IsDataVectorType<T2>::ElementaryType,
-          QLAT_ENABLE_IF(is_data_vector_type<T1>() and
-                         is_data_vector_type<T2>())>
+          class E1 = typename IsGetDataType<T1>::ElementaryType,
+          class E2 = typename IsGetDataType<T2>::ElementaryType,
+          QLAT_ENABLE_IF(is_get_data_type<T1>() and
+                         is_get_data_type<T2>())>
 qacc void assign(T1& xx, const T2& yy)
 {
   // static_assert(is_same<E1, E2>(), "assign type error");
@@ -244,16 +308,16 @@ qacc void assign(T1& xx, const T2& yy)
                   IsBasicDataType<E1>::get_type_name().c_str(),
                   IsBasicDataType<E2>::get_type_name().c_str()));
   }
-  Vector<E1> vx = get_data_in_elementary_type(xx);
-  const Vector<E2> vy = get_data_in_elementary_type(yy);
+  Vector<Char> vx = get_data_char(xx);
+  const Vector<Char> vy = get_data_char(yy);
   qassert(vx.size() == vy.size());
-  std::memcpy((void*)vx.data(), (void*)vy.data(), vx.size() * sizeof(E1));
+  std::memcpy((void*)vx.data(), (void*)vy.data(), vx.size());
 }
 
 template <
-    class M1, class T2, class E1 = typename IsDataValueType<M1>::ElementaryType,
-    class E2 = typename IsDataVectorType<T2>::ElementaryType,
-    QLAT_ENABLE_IF((is_data_value_type<M1>() and is_data_vector_type<T2>()))>
+    class M1, class T2, class E1 = typename IsGetDataType<M1>::ElementaryType,
+    class E2 = typename IsGetDataType<T2>::ElementaryType,
+    QLAT_ENABLE_IF((is_data_value_type<M1>() and is_get_data_type<T2>()))>
 qacc void assign(Vector<M1> xx, const T2& yy)
 {
   return assign<Vector<M1>, T2>(xx, yy);
@@ -293,11 +357,11 @@ qacc RealD qnorm(const M& x)
   return x * x;
 }
 
-template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>() and
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>() and
                                   not is_basic_data_type<T>())>
-RealD qnorm(const T& xx)
+qacc RealD qnorm(const T& xx)
 {
-  using M = typename IsDataVectorType<T>::DataType;
+  using M = typename IsGetDataType<T>::DataType;
   const Vector<M> vec = get_data(xx);
   RealD sum = 0.0;
   for (Long i = 0; i < vec.size(); ++i) {
@@ -313,6 +377,26 @@ void clear(std::vector<M>& vec)
 {
   std::vector<M> empty;
   std::swap(empty, vec);
+}
+
+// -------------------
+
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+qacc bool operator==(const T& x1, const T& x2)
+{
+  const Vector<Char> v1 = get_data_char(x1);
+  const Vector<Char> v2 = get_data_char(x2);
+  if (v1.size() != v2.size()) {
+    return false;
+  }
+  const int cmp = std::memcmp(v1.data(), v2.data(), v1.size());
+  return cmp == 0;
+}
+
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+qacc bool operator!=(const T& x1, const T& x2)
+{
+  return not(x1 == x2);
 }
 
 // -------------------

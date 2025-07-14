@@ -196,14 +196,14 @@ int glb_sum(Vector<Char> recv, const Vector<Char>& send);
 
 int glb_sum(Vector<char> recv, const Vector<char>& send);
 
-template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
 int glb_sum(T& xx)
 {
   TIMER("glb_sum(T&xx)");
   using E = typename IsDataVectorType<T>::ElementaryType;
   Vector<E> vec = get_data_in_elementary_type(xx);
-  vector<E> tmp_vec(vec.size());
-  vector<E> tmp2_vec(vec.size());
+  vector<E> tmp_vec(vec.size(), MemType::Comm);
+  vector<E> tmp2_vec(vec.size(), MemType::Comm);
   assign(tmp_vec, vec);
   const int ret = glb_sum(get_data(tmp2_vec), get_data(tmp_vec));
   assign(vec, tmp2_vec);
@@ -217,35 +217,17 @@ int glb_sum(Vector<M> xx)
   return glb_sum<Vector<M>>(xx);
 }
 
-inline bool glb_any(const bool b)
-{
-  Long ret = 0;
-  if (b) {
-    ret = 1;
-  }
-  glb_sum(ret);
-  return ret > 0;
-}
+bool glb_any(const bool b);
 
-inline bool glb_all(const bool b)
-{
-  Long ret = 0;
-  if (not b) {
-    ret = 1;
-  }
-  glb_sum(ret);
-  return ret == 0;
-}
+bool glb_all(const bool b);
 
 int bcast(Vector<Char> recv, const int root = 0);
 
-template <class T, QLAT_ENABLE_IF(is_data_vector_type<T>())>
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
 int bcast(T& xx, const int root = 0)
 {
-  using M = typename IsDataVectorType<T>::DataType;
-  Vector<M> vec = get_data(xx);
-  Vector<Char> char_vec((Char*)vec.data(), vec.data_size());
-  return bcast(char_vec, root);
+  Vector<Char> vec = get_data_char(xx);
+  return bcast(vec, root);
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
@@ -323,6 +305,16 @@ int bcast(std::string& recv, const int root = 0);
 int bcast(std::vector<std::string>& recv, const int root = 0);
 
 int bcast(PointsSelection& psel, const int root = 0);
+
+int bcast_any(Vector<Char> xx, const bool b);
+
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+int bcast_any(T& xx, const bool b)
+// bcast to all nodes from any node if `b == true`.
+// `glb_any(b)` should be `true`, otherwise will return `-1`.
+{
+  return bcast(get_data_char(xx), b);
+}
 
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
 
@@ -589,13 +581,32 @@ int glb_sum_byte(M& x)
   return glb_sum(Vector<char>((char*)&x, sizeof(M)));
 }
 
-template <class M>
-void all_gather(Vector<M> recv, const Vector<M>& send)
+int all_gather(Vector<Char> recv, const Vector<Char> send);
+
+template <class T1, class T2,
+          class E1 = typename IsDataVectorType<T1>::ElementaryType,
+          class E2 = typename IsDataVectorType<T2>::ElementaryType,
+          QLAT_ENABLE_IF(is_data_vector_type<T1>() and
+                         is_data_vector_type<T2>() and (is_same<E1, E2>()))>
+int all_gather(T1& recv, const T2& send)
 {
-  qassert(recv.size() == send.size() * get_num_node());
-  MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
-                (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
+  Vector<Char> vec_recv = get_data_char(recv);
+  const Vector<Char> vec_send = get_data_char(send);
+  return all_gather(vec_recv, vec_send);
 }
+
+template <class M1, class T2,
+          class E1 = typename IsDataValueType<M1>::ElementaryType,
+          class E2 = typename IsDataVectorType<T2>::ElementaryType,
+          QLAT_ENABLE_IF(is_data_value_type<M1>() and
+                         is_data_vector_type<T2>() and (is_same<E1, E2>()))>
+int all_gather(Vector<M1> recv, const T2& send)
+{
+  Vector<Char> vec_recv = get_data_char(recv);
+  const Vector<Char> vec_send = get_data_char(send);
+  return all_gather(vec_recv, vec_send);
+}
+
 
 // ----------------------------------
 

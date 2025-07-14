@@ -281,6 +281,26 @@ int glb_sum(Vector<char> recv, const Vector<char>& send)
                        MPI_BYTE, MPI_BXOR, get_comm());
 }
 
+bool glb_any(const bool b)
+{
+  Long ret = 0;
+  if (b) {
+    ret = 1;
+  }
+  glb_sum(ret);
+  return ret > 0;
+}
+
+bool glb_all(const bool b)
+{
+  Long ret = 0;
+  if (not b) {
+    ret = 1;
+  }
+  glb_sum(ret);
+  return ret == 0;
+}
+
 int bcast(Vector<Char> recv, const int root)
 {
   TIMER("bcast(Vector<Char>)");
@@ -337,6 +357,75 @@ int bcast(PointsSelection& psel, const int root)
   ret += bcast(psel.total_site, root);
   ret += bcast(psel.xgs, root);
   return ret;
+}
+
+Int bcast_any(Vector<Char> xx, const bool b)
+// bcast to all nodes from any node if `b == true`.
+// `glb_all(b)` should be `true`.
+// The sizes of `xx` should be the same.
+// The value of `xx` when `b == true`, should be the same.
+// If the condition is not met, this function will return `-1`.
+{
+  Int code = 0;
+  const Int num_node = get_num_node();
+  Char bc = 0;
+  if (b) {
+    bc = 1;
+  }
+  vector<Char> all_b(num_node, MemType::Comm);
+  code = all_gather(all_b, bc);
+  if (code != 0) {
+    return code;
+  }
+  bool b_any = false;
+  for (Int i = 0; i < num_node; ++i) {
+    if (all_b[i] == 1) {
+      b_any = true;
+      break;
+    }
+  }
+  if (not b_any) {
+    return -1;
+  }
+  const Long size = xx.size();
+  vector<Long> all_size(num_node, MemType::Comm);
+  code = all_gather(all_size, size);
+  if (code != 0) {
+    return code;
+  }
+  for (Int i = 0; i < num_node; ++i) {
+    if (all_size[i] != size) {
+      return -1;
+    }
+  }
+  vector<Char> all_v(size * num_node, MemType::Comm);
+  code = all_gather(all_v, xx);
+  if (code != 0) {
+    return code;
+  }
+  b_any = false;
+  for (Int i = 0; i < num_node; ++i) {
+    if (all_b[i] == 1) {
+      const Vector<Char> v(all_v.data() + i * size, size);
+      if (b_any == false) {
+        assign(xx, v);
+        b_any = true;
+      } else {
+        if (xx != v) {
+          return -1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+int all_gather(Vector<Char> recv, const Vector<Char> send)
+{
+  qassert(recv.size() == send.size() * get_num_node());
+  return MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
+                       (void*)recv.data(), send.data_size(), MPI_BYTE,
+                       get_comm());
 }
 
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)

@@ -146,35 +146,16 @@ qacc array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
   return arr;
 }
 
-template <class M>
-qacc void set_zero(Vector<M> vec)
-{
-  std::memset((void*)vec.data(), 0, vec.data_size());
-}
-
-template <class M, int N>
-qacc void set_zero(Array<M, N> arr)
-{
-  Long size = N * sizeof(M);
-  std::memset((void*)arr.data(), 0, size);
-}
-
-template <class M>
-qacc Vector<M> get_data_one_elem(const M& x)
-{
-  return Vector<M>(&x, 1);
-}
-
-template <class T>
-qacc double qnorm(const Vector<T>& mm)
-{
-  double sum = 0.0;
-  const Long size = mm.size();
-  for (Long i = 0; i < size; ++i) {
-    sum += qnorm(mm[i]);
-  }
-  return sum;
-}
+// template <class T>
+// qacc double qnorm(const Vector<T>& mm)
+// {
+//   double sum = 0.0;
+//   const Long size = mm.size();
+//   for (Long i = 0; i < size; ++i) {
+//     sum += qnorm(mm[i]);
+//   }
+//   return sum;
+// }
 
 template <class T>
 qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
@@ -186,45 +167,6 @@ qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
     sum += qnorm(m1[i], m2[i]);
   }
   return sum;
-}
-
-template <class N, class M>
-qacc Vector<N> get_data_as(const Vector<M>& v)
-{
-  const Long n = v.data_size() / sizeof(N);
-  Vector<N> v1((N*)v.data(), n);
-  qassert(v1.data_size() == v.data_size());
-  return v1;
-}
-
-template <class M>
-qacc Vector<char> get_data_char(const Vector<M>& v)
-{
-  return get_data_as<char>(v);
-}
-
-template <class M>
-qacc Vector<RealD> get_data_real_d(const Vector<M>& v)
-{
-  return get_data_as<RealD>(v);
-}
-
-template <class M>
-qacc Vector<ComplexD> get_data_complex_d(const Vector<M>& v)
-{
-  return get_data_as<ComplexD>(v);
-}
-
-template <class M>
-qacc Vector<Long> get_data_long(const Vector<M>& v)
-{
-  return get_data_as<Long>(v);
-}
-
-template <class M>
-qacc Long get_data_size(const M& x)
-{
-  return get_data(x).data_size();
 }
 
 template <class T>

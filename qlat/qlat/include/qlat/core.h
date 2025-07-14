@@ -451,7 +451,7 @@ bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2);
 template <class M>
 struct API SelectedPoints {
   // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
+  // (it is likely not what you think it is)
   //
   bool initialized;
   PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
@@ -649,13 +649,19 @@ void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
 
 // --------------------
 
+enum struct MemOrder {
+  TZYXM,  // default (M stand for multiplicity)
+  MTZYX,
+};
+
 template <class M>
 struct API Field {
   // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
+  // (it is likely not what you think it is)
   //
   bool initialized;
   Int multiplicity;
+  MemOrder mem_order;
   box<Geometry> geo;
   vector<M> field;
   //
@@ -684,6 +690,7 @@ struct API Field {
     initialized = f.initialized;
     geo.set_view(f.geo);
     multiplicity = f.multiplicity;
+    mem_order = f.mem_order;
     field.set_view(f.field);
   }
   //
@@ -691,9 +698,11 @@ struct API Field {
   void set_view_cast(const Field<N>& f)
   {
     TIMER("Field::set_view_cast");
+    qassert(f.mem_order == MemOrder::TZYXM);
     const Int total_size = f.multiplicity * sizeof(N);
     initialized = f.initialized;
     multiplicity = total_size / sizeof(M);
+    mem_order = f.mem_order;
     qassert(multiplicity * (Int)sizeof(M) == total_size);
     geo.set(f.geo());
     field.set_view_cast(f.field);
@@ -703,6 +712,7 @@ struct API Field {
   {
     TIMER("Field::view_sp");
     qassert(geo().is_only_local);
+    qassert(mem_order == MemOrder::TZYXM);
     SelectedPoints<M> f;
     f.initialized = initialized;
     f.points_dist_type = PointsDistType::Full;
@@ -727,6 +737,7 @@ struct API Field {
   //
   qacc M& get_elem(const Coordinate& x, const int m)
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < multiplicity);
@@ -735,6 +746,7 @@ struct API Field {
   }
   qacc const M& get_elem(const Coordinate& x, const int m) const
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < multiplicity);
@@ -744,17 +756,20 @@ struct API Field {
   //
   qacc M& get_elem(const Coordinate& x)
   {
+    qassert(mem_order == MemOrder::TZYXM);
     qassert(1 == multiplicity);
     return get_elem(x, 0);
   }
   qacc const M& get_elem(const Coordinate& x) const
   {
+    qassert(mem_order == MemOrder::TZYXM);
     qassert(1 == multiplicity);
     return get_elem(x, 0);
   }
   //
   qacc Vector<M> get_elems(const Coordinate& x)
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_on_node(x));
     const Long offset = geo_v.offset_from_coordinate(x, multiplicity);
@@ -764,6 +779,7 @@ struct API Field {
   // Be cautious about the const property
   // 改不改靠自觉
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     if (not geo_v.is_on_node(x)) {
 #ifndef QLAT_IN_ACC
@@ -778,6 +794,7 @@ struct API Field {
   //
   qacc M& get_elem(const Long index, const int m)
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     qassert(0 <= m && m < multiplicity);
@@ -785,6 +802,7 @@ struct API Field {
   }
   qacc const M& get_elem(const Long index, const int m) const
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     qassert(0 <= m && m < multiplicity);
@@ -793,6 +811,7 @@ struct API Field {
   //
   qacc M& get_elem(const Long index)
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     if (1 != multiplicity) {
@@ -802,6 +821,7 @@ struct API Field {
   }
   qacc const M& get_elem(const Long index) const
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     qassert(1 == multiplicity);
@@ -810,6 +830,7 @@ struct API Field {
   //
   qacc Vector<M> get_elems(const Long index)
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     return Vector<M>(&field[index * multiplicity], multiplicity);
@@ -818,6 +839,7 @@ struct API Field {
   // Be cautious about the const property
   // 改不改靠自觉
   {
+    qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
     qassert(geo_v.is_only_local);
     return Vector<M>(&field[index * multiplicity], multiplicity);
@@ -857,6 +879,8 @@ template <class M>
 void Field<M>::init()
 {
   initialized = false;
+  multiplicity = 0;
+  mem_order = MemOrder::TZYXM;
   geo.init();
   field.init();
 }
@@ -885,6 +909,7 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
     initialized = true;
     geo.set(geo_);
     multiplicity = multiplicity_;
+    mem_order = MemOrder::TZYXM;
     field.resize(geo().local_volume_expanded() * multiplicity);
     if (1 == get_field_init()) {
       set_zero(*this);
@@ -907,6 +932,7 @@ void Field<M>::init(const Field<M>& f)
     TIMER("Field::init(f)");
     initialized = f.initialized;
     multiplicity = f.multiplicity;
+    mem_order = f.mem_order;
     geo = f.geo;
     field = f.field;
   }
@@ -933,6 +959,7 @@ void Field<M>::init_zero(const Geometry& geo_, const Int multiplicity_)
     init();
     initialized = true;
     multiplicity = multiplicity_;
+    mem_order = MemOrder::TZYXM;
     geo.set(geo_);
     field.resize(geo().local_volume_expanded() * multiplicity);
     set_zero(*this);
@@ -994,6 +1021,7 @@ void qswap(Field<M>& f1, Field<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.multiplicity, f2.multiplicity);
+  std::swap(f1.mem_order, f2.mem_order);
   qswap(f1.geo, f2.geo);
   qswap(f1.field, f2.field);
 }
@@ -1081,7 +1109,7 @@ void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel);
 template <class M>
 struct API SelectedField {
   // Avoid copy constructor when possible
-  // (it is likely not be what you think it is)
+  // (it is likely not what you think it is)
   //
   bool initialized;
   Long n_elems;
