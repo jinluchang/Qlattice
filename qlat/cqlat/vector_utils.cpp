@@ -227,7 +227,7 @@ EXPORT(local_sequential_source, {
   Propagator4d& src = py_convert_type<Propagator4d>(p_v1);
 
   const std::vector<int> tseqL = py_convert_data<std::vector<int> >(p_v2);
-  qlat::vector_acc<int > tseq;tseq.resize(tseqL.size());
+  qlat::vector<int > tseq;tseq.resize(tseqL.size());
   for(long i=0;i<tseq.size();i++){tseq[i] = tseqL[i];}
 
   local_sequential_source(res, src, tseq, gammai);

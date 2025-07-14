@@ -33,7 +33,7 @@ void simple_tests()
   {
     TIMER_VERBOSE("test-move-index");
     move_index mv_idx;
-    qlat::vector_acc<qlat::ComplexD > buf;buf.resize(800);
+    qlat::vector<qlat::ComplexD > buf;buf.resize(800);
     mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
     displayln_info(ssprintf("CHECK: move index: OK") );
   }

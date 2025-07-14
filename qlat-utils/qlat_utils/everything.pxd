@@ -136,8 +136,6 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
         Long size()
         T* data()
         T& operator[](const Long i) except +
-    cdef cppclass vector_acc[T](vector[T]):
-        vector_acc()
     cdef cppclass box[T]:
         bool is_copy
         bool is_acc

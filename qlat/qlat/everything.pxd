@@ -97,14 +97,14 @@ cdef extern from "qlat/core.h" namespace "qlat":
         PointsDistType points_dist_type
         Int multiplicity
         Long n_points
-        vector_acc[T] points
+        vector[T] points
         SelectedPoints()
         void init()
         void init(const Long n_points, const Int multiplicity, const PointsDistType points_dist_type) except +
         void init(const PointsSelection& psel, const Int multiplicity) except +
     cdef cppclass Field[T]:
         Int multiplicity
-        vector_acc[T] field
+        vector[T] field
         Field()
         void init()
         void init(const Geometry& geo) except +
@@ -135,8 +135,8 @@ cdef extern from "qlat/core.h" namespace "qlat":
         Long n_elems
         FieldRank f_rank
         FieldIndex f_local_idx
-        vector_acc[Int64t] ranks
-        vector_acc[Long] indices
+        vector[Int64t] ranks
+        vector[Long] indices
         FieldSelection()
         void init()
         const Geometry& get_geo()
@@ -144,7 +144,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
     cdef cppclass SelectedField[T]:
         Long n_elems;
         Int multiplicity
-        vector_acc[T] field
+        vector[T] field
         SelectedField()
         void init()
         void init(const Geometry& geo, const Long n_elems, const Int multiplicity) except +

@@ -27,7 +27,7 @@ void simple_tests()
     CFloat b128 = b;
     displayln_info(ssprintf("CHECK: a   %+.8e, b %+.8e \n", a, b));
     const int Ncase = 8;
-    qlat::vector_acc<double > ld;ld.resize(4);
+    qlat::vector<double > ld;ld.resize(4);
 
     for(int casei = 0; casei < Ncase; casei++)
     {
@@ -114,7 +114,7 @@ void simple_tests()
       double retx = (double)(z128-(CFloat)rety);
       ld[2] = rety;
       ld[3] = retx;
-      qlat::vector_acc<double >& l = ld;
+      qlat::vector<double >& l = ld;
       if(qlat::get_id_node() == 0){
         printf("%+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n", l[0], l[1], l[2], l[3], l[0]-l[2], l[1]-l[3]);
       }
@@ -144,7 +144,7 @@ void simple_tests()
 
     displayln_info(ssprintf("CHECK: a   %+.8e %+.8e, b %+.8e %+.8e \n", a0, a1, b0, b1));
     const int Ncase = 5;
-    qlat::vector_acc<double > ld;ld.resize(8);
+    qlat::vector<double > ld;ld.resize(8);
 
     for(int casei = 0; casei < Ncase; casei++)
     {
@@ -214,7 +214,7 @@ void simple_tests()
              retx = (double)(zt-(CFloat)rety);
       ld[6] = rety;
       ld[7] = retx;
-      qlat::vector_acc<double >& l = ld;
+      qlat::vector<double >& l = ld;
       if(qlat::get_id_node() == 0){
         printf("%+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n"    , l[0], l[1], l[2], l[3], l[0]-l[4], l[1]-l[5]);
         printf("    %+.8e, %+.8e, float128 %+.8e, %+.8e, diff %+.8e, %+.8e \n", l[4], l[5], l[6], l[7], l[2]-l[6], l[3]-l[7]);

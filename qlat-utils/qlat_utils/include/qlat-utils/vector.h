@@ -401,92 +401,6 @@ struct API vector {
 };
 
 template <class M>
-struct API vector_acc : vector<M> {
-  // Avoid copy constructor when possible
-  // (it is likely not what you think it is)
-  // Only used in qacc macros.
-  //
-  using vector<M>::v;
-  using vector<M>::is_copy;
-  using vector<M>::mem_type;
-  using vector<M>::resize;
-  //
-  vector_acc()
-  {
-    qassert(v.p == NULL);
-    mem_type = MemType::Uvm;
-    is_copy = false;
-  }
-  vector_acc(const Long size)
-  {
-    // TIMER("vector::vector(size)")
-    qassert(v.p == NULL);
-    mem_type = MemType::Uvm;
-    is_copy = false;
-    resize(size);
-  }
-  vector_acc(const std::vector<M>& vp)
-  {
-    // TIMER("vector::vector(std::vector&)")
-    qassert(v.p == NULL);
-    mem_type = MemType::Uvm;
-    is_copy = false;
-    *this = vp;
-  }
-  vector_acc(const vector_acc<M>& vp)
-  {
-    // TIMER("vector_acc::vector_acc(&)");
-#ifndef QLAT_USE_ACC
-    qassert(vp.is_copy);
-#endif
-    is_copy = true;
-    qassert(vp.mem_type == MemType::Uvm);
-    mem_type = vp.mem_type;
-    v = vp.v;
-  }
-  vector_acc(vector_acc<M>&& vp) noexcept
-  {
-    // TIMER("vector_acc::vector_acc(&&)")
-    // qassert(vp.mem_type == MemType::Uvm);
-    is_copy = vp.is_copy;
-    mem_type = vp.mem_type;
-    v = vp.v;
-    vp.is_copy = true;
-  }
-  //
-  vector_acc<M>& operator=(const vector_acc<M>& vp)
-  {
-    // TIMER("vector_acc::operator=(&)");
-    vector<M>::operator=(vp);
-    return *this;
-  }
-  vector_acc<M>& operator=(const vector<M>& vp)
-  {
-    // TIMER("vector_acc::operator=(&)");
-    vector<M>::operator=(vp);
-    return *this;
-  }
-  vector_acc<M>& operator=(vector_acc<M>&& vp) noexcept
-  {
-    // TIMER("vector_acc::operator=(&&)");
-    vector<M>::operator=(std::move(vp));
-    return *this;
-  }
-  vector_acc<M>& operator=(vector<M>&& vp) noexcept
-  {
-    // TIMER("vector_acc::operator=(&&)");
-    vector<M>::operator=(std::move(vp));
-    return *this;
-  }
-  vector_acc<M>& operator=(const std::vector<M>& vp)
-  {
-    // TIMER("vector_acc::operator=(std::vector&)");
-    vector<M>::operator=(vp);
-    return *this;
-  }
-};
-
-template <class M>
 void clear(vector<M>& v)
 {
   v.clear();
@@ -511,23 +425,7 @@ qacc bool operator==(const vector<M>& v1, const vector<M>& v2)
 }
 
 template <class M>
-qacc bool operator==(const vector_acc<M>& v1, const vector_acc<M>& v2)
-{
-  if (v1.size() != v2.size()) {
-    return false;
-  }
-  const int cmp = std::memcmp(v1.data(), v2.data(), v1.size() * sizeof(M));
-  return cmp == 0;
-}
-
-template <class M>
 qacc bool operator!=(const vector<M>& v1, const vector<M>& v2)
-{
-  return not(v1 == v2);
-}
-
-template <class M>
-qacc bool operator!=(const vector_acc<M>& v1, const vector_acc<M>& v2)
 {
   return not(v1 == v2);
 }
@@ -543,23 +441,9 @@ struct IsDataVectorType<vector<M>> {
 };
 
 template <class M>
-struct IsDataVectorType<vector_acc<M>> {
-  using DataType = M;
-  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
-  using ElementaryType = typename IsDataValueType<DataType>::ElementaryType;
-  static constexpr bool value = is_data_value_type<DataType>();
-};
-
-template <class M>
 qacc Vector<M> get_data(const vector<M>& v)
 {
   return v.v;
-}
-
-template <class M>
-qacc Vector<M> get_data(const vector_acc<M>& v)
-{
-  return get_data((const vector<M>&)v);
 }
 
 // --------------------

@@ -27,8 +27,7 @@ void clear_all_caches()
 // (1) Clear all cache using CacheBase (or Cache which internally uses
 // CacheBase).
 //
-// (2) Clear memory cache (for vector and vector_acc memory freed but not
-// cached).
+// (2) Clear memory cache (for vector memory freed but not cached).
 {
   TIMER_VERBOSE("clear_all_caches");
   for (auto it = get_all_caches().cbegin(); it != get_all_caches().cend();
