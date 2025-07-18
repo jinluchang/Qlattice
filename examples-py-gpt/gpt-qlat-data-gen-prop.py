@@ -57,7 +57,9 @@ load_path_list[:] = [
         "qcddata-1",
         "qcddata-2",
         "qcddata-3",
-        "/hpcgpfs01/work/lqcd/qcdqedta/qcddata-eig-cache",
+        "qcddata-4",
+        "qcddata-5",
+        "qcddata-6",
         ]
 
 ### ------
