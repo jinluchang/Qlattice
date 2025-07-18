@@ -245,7 +245,7 @@ def run_quark_mass_list(job_tag, traj):
     for inv_type, quark_mass in enumerate(quark_mass_list):
         assert quark_mass == get_param(job_tag, "fermion_params", inv_type, 0, "mass")
     obj = quark_mass_list
-    fn = f"{job_tag}/params/traj-{traj}/quark_mass_list.json"
+    fn = f"{job_tag}/params-quark-mass/traj-{traj}/quark_mass_list.json"
     path = get_load_path(fn)
     if path is None:
         path = get_save_path(fn)
