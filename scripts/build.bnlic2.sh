@@ -6,7 +6,7 @@ set -e
     ./scripts/setenv.bnlic2.sh
     ./scripts/qcore.sh
 
-    export USE_COMPILER=clang
+    export USE_COMPILER=gcc
 
     ./scripts/tar.sh
     ./scripts/zlib.sh
@@ -33,6 +33,8 @@ set -e
     ./scripts/qmp.sh
     ./scripts/qio.sh
     ./scripts/cps.sh
+
+    export USE_COMPILER=clang
 
     # ./scripts/c-lime.sh
     ./scripts/grid-clehner.avx512.sh
