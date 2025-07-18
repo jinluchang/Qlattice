@@ -18,6 +18,8 @@ module purge
 module add openmpi
 module add llvm
 module list
+unset CC
+unset CXX
 EOF
 
     #
