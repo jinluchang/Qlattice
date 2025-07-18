@@ -54,14 +54,10 @@ is_cython = False
 load_path_list[:] = [
         "results",
         "qcddata",
-        "/w/22/pqpdf/luchang/qcddata/qcddata1",
-        "/w/22/pqpdf/luchang/qcddata/qcddata4",
-        "/lustre20/volatile/qcdqedta/qcddata",
-        "/lustre20/volatile/pqpdf/ljin/qcddata",
-        "/data1/qcddata1",
-        "/data1/qcddata4",
-        "/data1/qcddata3",
-        "/data2/qcddata3-prop",
+        "qcddata-1",
+        "qcddata-2",
+        "qcddata-3",
+        "/hpcgpfs01/work/lqcd/qcdqedta/qcddata-eig-cache",
         ]
 
 ### ------
