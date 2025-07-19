@@ -394,7 +394,8 @@ qacc bool operator==(const T& x1, const T& x2)
   return cmp == 0;
 }
 
-template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+template <class T,
+          QLAT_ENABLE_IF(is_get_data_type<T>() and (not is_number<T>()))>
 qacc bool operator!=(const T& x1, const T& x2)
 {
   return not(x1 == x2);
