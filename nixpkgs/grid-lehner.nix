@@ -174,7 +174,9 @@ in stdenv.mkDerivation rec {
 
   postInstall= ''
     cd ..
+    make -j "$NIX_BUILD_CORES" -C benchmarks Benchmark_dwf_fp32
     install -D -m755 grid-config "$out"/bin/grid-config
+    install -D -m755 benchmarks/Benchmark_dwf_fp32 "$out"/bin/Benchmark_dwf_fp32
   '';
 
   postFixup = ''
