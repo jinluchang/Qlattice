@@ -31,7 +31,7 @@ let
 in stdenv.mkDerivation rec {
 
   pname = "Grid-lehner";
-  version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2";
+  version = "965cee4372db2a61f0f13546fd521670a614495c";
 
   src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/grid" else "https://github.com/lehner/Grid";
@@ -135,8 +135,8 @@ in stdenv.mkDerivation rec {
     cpu_avx2_flags = [
       "--enable-comms=mpi-auto"
       "--enable-unified=yes"
-      "--enable-shm=shmopen"
-      "--enable-shm-fast-path=shmopen"
+      # "--enable-shm=shmopen"
+      # "--enable-shm-fast-path=shmopen"
       "--enable-accelerator=none"
       "--enable-simd=AVX2"
       "--enable-alloc-align=4k"
