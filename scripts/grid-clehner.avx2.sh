@@ -60,10 +60,15 @@ source qcore/set-prefix.sh $name
     mkdir build
     cd build
     time-run ../configure \
+        --enable-comms=mpi-auto \
+        --enable-unified=yes \
+        --enable-shm=shmopen \
+        --enable-shm-fast-path=shmopen \
+        --enable-accelerator=none \
         --enable-simd=AVX2 \
         --enable-alloc-align=4k \
-        --enable-comms=mpi-auto \
-        --enable-gparity=no \
+        --disable-fermion-reps \
+        --disable-gparity \
         $opts \
         --prefix="$prefix"
 

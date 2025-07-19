@@ -133,29 +133,36 @@ in stdenv.mkDerivation rec {
 
   configureFlags = let
     cpu_avx2_flags = [
+      "--enable-comms=mpi-auto"
+      "--enable-unified=yes"
+      "--enable-shm=shmopen"
+      "--enable-shm-fast-path=shmopen"
+      "--enable-accelerator=none"
       "--enable-simd=AVX2"
       "--enable-alloc-align=4k"
-      "--enable-comms=mpi-auto"
-      "--enable-gparity=no"
+      "--disable-fermion-reps"
+      "--disable-gparity"
     ];
     cpu_gen16_flags = [
+      "--enable-comms=mpi-auto"
+      "--enable-unified=yes"
+      "--enable-accelerator=none"
       "--enable-simd=GEN"
       "--enable-gen-simd-width=16"
       "--enable-alloc-align=4k"
-      "--enable-comms=mpi-auto"
-      "--enable-gparity=no"
+      "--disable-fermion-reps"
+      "--disable-gparity"
     ];
     cpu_flags = if cpuinfo-has-avx2 then cpu_avx2_flags else cpu_gen16_flags;
     gpu_flags = [
-      "--enable-simd=GPU"
-      "--enable-gen-simd-width=32"
-      "--enable-alloc-align=4k"
       "--enable-comms=mpi-auto"
-      "--enable-shm=nvlink"
-      "--enable-gparity=no"
       "--enable-unified=no"
+      "--enable-shm=nvlink"
       "--enable-accelerator=cuda"
+      "--enable-simd=GPU"
+      "--enable-alloc-align=4k"
       "--disable-fermion-reps"
+      "--disable-gparity"
     ];
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;

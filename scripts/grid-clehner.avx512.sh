@@ -28,7 +28,8 @@ source qcore/set-prefix.sh $name
         ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
     fi
 
-    export CXXFLAGS="$CXXFLAGS -fPIC -w -Wno-psabi -mfma"
+    # export CXXFLAGS="$CXXFLAGS -fPIC -std=c++17 -w -Wno-psabi -mfma"
+    export CXXFLAGS="$CXXFLAGS -fPIC -std=c++17 -w -Wno-psabi"
 
     opts=""
     if [ -n "$(find-library.sh libgmp.a)" ] ; then
@@ -60,12 +61,18 @@ source qcore/set-prefix.sh $name
     mkdir build
     cd build
     time-run ../configure \
+        --enable-comms=mpi-auto \
+        --enable-unified=yes \
+        --enable-shm=shmopen \
+        --enable-shm-fast-path=shmopen \
+        --enable-accelerator=none \
         --enable-simd=AVX512 \
         --enable-alloc-align=4k \
-        --enable-comms=mpi-auto \
-        --enable-gparity=no \
+        --disable-fermion-reps \
+        --disable-gparity \
         $opts \
         --prefix="$prefix"
+
 
     time-run make -j$num_proc -C Grid
     time-run make install -C Grid
