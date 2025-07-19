@@ -160,6 +160,7 @@ in stdenv.mkDerivation rec {
       "--enable-shm=nvlink"
       "--enable-accelerator=cuda"
       "--enable-simd=GPU"
+      "--enable-gen-simd-width=32"
       "--enable-alloc-align=4k"
       "--disable-fermion-reps"
       "--disable-gparity"
