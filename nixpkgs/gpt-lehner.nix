@@ -19,7 +19,7 @@
 let
   use-gitee-wd = if use-gitee == null then false else use-gitee;
   pname = "gpt-lehenr";
-  version = "f23de9c71d318d0c546aa4a53f1d5e9a070559b2";
+  version = "9bb16fc9fe134623b94116b2a47f7b9288f360df"; # 2025/06/15
 in
 
 buildPythonPackage {
@@ -118,7 +118,7 @@ buildPythonPackage {
     which grid-config
     bash ./make %grid-config "$NIX_BUILD_CORES"
     #
-    cat build/logs/basis.err
+    head -n 100 build/logs/*.err
     #
     cd "$NIX_BUILD_TOP/source"
     pwd
