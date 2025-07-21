@@ -108,14 +108,14 @@ void shuffle_selected_points_char(
   qthread_for(idx, spi_s.n_points, {
     const Vector<Long> v = spi_s.get_elems_const(idx);
     const Long idx_selected_points_send = v[0];
-    const Long idx_within_send_field = v[1];
-    const Long idx_send_buffer = v[2];
+    const Long idx_within_field_send = v[1];
+    const Long idx_buffer_send = v[2];
     qassert(0 <= idx_selected_points_send and
             idx_selected_points_send < ssp.num_selected_points_send);
     const Vector<Char> v_val =
         spc0_vec[idx_selected_points_send].get_elems_const(
-            idx_within_send_field);
-    Vector<Char> v1_val = sp0.get_elems(idx_send_buffer);
+            idx_within_field_send);
+    Vector<Char> v1_val = sp0.get_elems(idx_buffer_send);
     assign(v1_val, v_val);
   });
   // Perform shuffle with `MPI_Alltoallv`.
@@ -169,16 +169,16 @@ void shuffle_selected_points_back_char(
   const bool b_has_send = ssp.num_selected_points_recv > 0;
   const Int multiplicity =
       f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
-  for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
-    qassert(ssp.n_points_selected_points_send[i] == spc0_vec[i].n_points);
+  for (Int i = 0; i < ssp.num_selected_points_recv; ++i) {
+    qassert(ssp.n_points_selected_points_recv[i] == spc0_vec[i].n_points);
     qassert(spc0_vec[i].initialized == true);
-    qassert(spc0_vec[i].points_dist_type == ssp.points_dist_type_send);
+    qassert(spc0_vec[i].points_dist_type == ssp.points_dist_type_recv);
     qassert(spc0_vec[i].multiplicity == multiplicity);
   }
-  for (Int i = 0; i < ssp.num_selected_points_recv; ++i) {
-    qassert(ssp.n_points_selected_points_recv[i] == spc_vec[i].n_points);
+  for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
+    qassert(ssp.n_points_selected_points_send[i] == spc_vec[i].n_points);
     qassert(spc_vec[i].initialized == true);
-    qassert(spc_vec[i].points_dist_type == ssp.points_dist_type_recv);
+    qassert(spc_vec[i].points_dist_type == ssp.points_dist_type_send);
     qassert(spc_vec[i].multiplicity == multiplicity);
   }
   const SelectedPoints<Long>& spi_s = ssp.shuffle_idx_points_send;
@@ -204,31 +204,31 @@ void shuffle_selected_points_back_char(
     qassert(0 <= idx_selected_points_recv and
             idx_selected_points_recv < ssp.num_selected_points_recv);
     const Vector<Char> v_val =
-        spc0_vec[idx_selected_points_send].get_elems_const(
-            idx_within_field_send);
+        spc0_vec[idx_selected_points_recv].get_elems_const(
+            idx_within_field_recv);
     Vector<Char> v1_val =
-        spc_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
+        spc_vec[idx_selected_points_send].get_elems(idx_within_field_send);
     assign(v1_val, v_val);
   });
   // Initialized `sp` to be the target of the shuffle before final shuffle.
   SelectedPoints<Char> sp;
   sp.set_mem_type(MemType::Comm);
-  sp.init(ssp.total_count_recv, multiplicity, PointsDistType::Local);
+  sp.init(ssp.total_count_send, multiplicity, PointsDistType::Local);
   // Copy spc0 to sp0. Reordered to be ready to send.
   SelectedPoints<Char> sp0;
   sp0.set_mem_type(MemType::Comm);
-  sp0.init(ssp.total_count_send, multiplicity, PointsDistType::Local);
-  qthread_for(idx, spi_s.n_points, {
-    const Vector<Long> v = spi_s.get_elems_const(idx);
-    const Long idx_selected_points_send = v[0];
-    const Long idx_within_send_field = v[1];
-    const Long idx_send_buffer = v[2];
-    qassert(0 <= idx_selected_points_send and
-            idx_selected_points_send < ssp.num_selected_points_send);
+  sp0.init(ssp.total_count_recv, multiplicity, PointsDistType::Local);
+  qthread_for(idx, spi_r.n_points, {
+    const Vector<Long> v = spi_r.get_elems_const(idx);
+    const Long idx_selected_points_recv = v[0];
+    const Long idx_within_field_recv = v[1];
+    const Long idx_buffer_recv = v[2];
+    qassert(0 <= idx_selected_points_recv and
+            idx_selected_points_recv < ssp.num_selected_points_recv);
     const Vector<Char> v_val =
-        spc0_vec[idx_selected_points_send].get_elems_const(
-            idx_within_send_field);
-    Vector<Char> v1_val = sp0.get_elems(idx_send_buffer);
+        spc0_vec[idx_selected_points_recv].get_elems_const(
+            idx_within_field_recv);
+    Vector<Char> v1_val = sp0.get_elems(idx_buffer_recv);
     assign(v1_val, v_val);
   });
   // Perform shuffle with `MPI_Alltoallv`.
@@ -237,9 +237,9 @@ void shuffle_selected_points_back_char(
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
     {
       TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
-      mpi_alltoallv(sp0.points.data(), ssp.sendcounts.data(),
-                    ssp.sdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
-                    ssp.recvcounts.data(), ssp.rdispls.data(),
+      mpi_alltoallv(sp0.points.data(), ssp.recvcounts.data(),
+                    ssp.rdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
+                    ssp.sendcounts.data(), ssp.sdispls.data(),
                     mpi_dtype.mpi_dtype, get_comm());
       timer.flops += (ssp.total_count_send + ssp.total_count_recv) / 2;
     }
@@ -247,21 +247,23 @@ void shuffle_selected_points_back_char(
     timer.flops += (ssp.total_count_send + ssp.total_count_recv) / 2;
   }
   // perform final reordering.
-  qthread_for(idx, spi_r.n_points, {
-    const Vector<Long> v = spi_r.get_elems_const(idx);
-    const Long idx_selected_points_recv = v[0];
-    const Long idx_within_field_recv = v[1];
-    const Long idx_buffer_recv = v[2];
-    qassert(0 <= idx_selected_points_recv and
-            idx_selected_points_recv < ssp.num_selected_points_recv);
-    const Vector<Char> v_val = sp.get_elems_const(idx_buffer_recv);
+  qthread_for(idx, spi_s.n_points, {
+    const Vector<Long> v = spi_s.get_elems_const(idx);
+    const Long idx_selected_points_send = v[0];
+    const Long idx_within_field_send = v[1];
+    const Long idx_buffer_send = v[2];
+    qassert(0 <= idx_selected_points_send and
+            idx_selected_points_send < ssp.num_selected_points_send);
+    const Vector<Char> v_val = sp.get_elems_const(idx_buffer_send);
     Vector<Char> v1_val =
-        spc_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
+        spc_vec[idx_selected_points_send].get_elems(idx_within_field_send);
     assign(v1_val, v_val);
   });
   timer.flops +=
       (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
 }
+
+// ------------------------------
 
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
@@ -285,6 +287,83 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
       (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
 }
 
+void shuffle_selected_points_back_char(SelectedPoints<Char>& spc,
+                                       const SelectedPoints<Char>& spc0,
+                                       const SelectedShufflePlan& ssp)
+// const Long n_points = ssp.total_count_send;
+// const Int multiplicity = sp0.multiplicity;
+// SelectedPoints<M> sp;
+// sp.init(n_points, multiplicity, ssp.points_dist_type_send);
+// SelectedPoints<Char> spc(sp.view_as_char());
+// SelectedPoints<Char> spc0(sp0.view_as_char());
+{
+  TIMER_FLOPS("shuffle_selected_points_back_char(spc,spc0,ssp)");
+  qassert(ssp.num_selected_points_send == 1);
+  qassert(ssp.num_selected_points_recv == 1);
+  std::vector<SelectedPoints<Char>> spc_vec(1);
+  std::vector<SelectedPoints<Char>> spc0_vec(1);
+  spc_vec[0].set_view(spc);
+  spc0_vec[0].set_view(spc0);
+  shuffle_selected_points_back_char(spc_vec, spc0_vec, ssp);
+  timer.flops +=
+      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+}
+
+void shuffle_points_selection(std::vector<PointsSelection>& psel_vec,
+                              const std::vector<PointsSelection>& psel0_vec,
+                              const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_points_selection(psel_vec,psel0_vec,ssp)");
+  qassert(ssp.num_selected_points_send == (Long)psel0_vec.size());
+  qassert(f_glb_sum((Long)psel0_vec.size()) > 0);
+  const Coordinate total_site =
+      f_bcast_any(psel0_vec.size() > 0 ? psel0_vec[0].total_site : Coordinate(),
+                  psel0_vec.size() > 0);
+  std::vector<SelectedPoints<Char>> spc_vec(psel_vec.size());
+  std::vector<SelectedPoints<Char>> spc0_vec(psel0_vec.size());
+  for (Int i = 0; i < (Int)psel0_vec.size(); ++i) {
+    qassert(psel0_vec[i].size() == ssp.n_points_selected_points_send[i]);
+    qassert(psel0_vec[i].points_dist_type == ssp.points_dist_type_send);
+    qassert(psel0_vec[i].total_site == total_site);
+    spc0_vec[i].set_view_cast(psel0_vec[i].view_sp());
+  }
+  psel_vec.resize(ssp.num_selected_points_recv);
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    psel_vec[i].init(total_site, ssp.n_points_selected_points_recv[i],
+                     ssp.points_dist_type_recv);
+    spc_vec[i].set_view_cast(psel_vec[i].view_sp());
+  }
+  shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
+}
+
+void shuffle_points_selection_back(
+    std::vector<PointsSelection>& psel_vec,
+    const std::vector<PointsSelection>& psel0_vec,
+    const SelectedShufflePlan& ssp)
+{
+  TIMER("shuffle_points_selection_back(psel_vec,psel0_vec,ssp)");
+  qassert(ssp.num_selected_points_recv == (Long)psel0_vec.size());
+  qassert(f_glb_sum((Long)psel0_vec.size()) > 0);
+  const Coordinate total_site =
+      f_bcast_any(psel0_vec.size() > 0 ? psel0_vec[0].total_site : Coordinate(),
+                  psel0_vec.size() > 0);
+  std::vector<SelectedPoints<Char>> spc_vec(psel_vec.size());
+  std::vector<SelectedPoints<Char>> spc0_vec(psel0_vec.size());
+  for (Int i = 0; i < (Int)psel0_vec.size(); ++i) {
+    qassert(psel0_vec[i].size() == ssp.n_points_selected_points_recv[i]);
+    qassert(psel0_vec[i].points_dist_type == ssp.points_dist_type_recv);
+    qassert(psel0_vec[i].total_site == total_site);
+    spc0_vec[i].set_view_cast(psel0_vec[i].view_sp());
+  }
+  psel_vec.resize(ssp.num_selected_points_send);
+  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
+    psel_vec[i].init(total_site, ssp.n_points_selected_points_send[i],
+                     ssp.points_dist_type_send);
+    spc_vec[i].set_view_cast(psel_vec[i].view_sp());
+  }
+  shuffle_selected_points_back_char(spc_vec, spc0_vec, ssp);
+}
+
 void shuffle_points_selection(PointsSelection& psel,
                               const PointsSelection& psel0,
                               const SelectedShufflePlan& ssp)
@@ -301,29 +380,20 @@ void shuffle_points_selection(PointsSelection& psel,
   shuffle_selected_points_char(pselc, pselc0, ssp);
 }
 
-void shuffle_points_selection(std::vector<PointsSelection>& psel_vec,
-                              const std::vector<PointsSelection>& psel0_vec,
-                              const SelectedShufflePlan& ssp)
+void shuffle_points_selection_back(PointsSelection& psel,
+                                   const PointsSelection& psel0,
+                                   const SelectedShufflePlan& ssp)
 {
-  TIMER("shuffle_points_selection(psel_vec,psel0_vec,ssp)");
-  qassert(ssp.num_selected_points_send == (Long)psel0_vec.size());
-  qassert(psel0_vec.size() > 0);
-  const Coordinate total_site = psel0_vec[0].total_site;
-  std::vector<SelectedPoints<Char>> spc_vec(psel_vec.size());
-  std::vector<SelectedPoints<Char>> spc0_vec(psel0_vec.size());
-  for (Int i = 0; i < (Int)psel0_vec.size(); ++i) {
-    qassert(psel0_vec[i].size() == ssp.n_points_selected_points_send[i]);
-    qassert(psel0_vec[i].points_dist_type == ssp.points_dist_type_send);
-    qassert(psel0_vec[i].total_site == total_site);
-    spc0_vec[i].set_view_cast(psel0_vec[i].view_sp());
-  }
-  psel_vec.resize(ssp.num_selected_points_recv);
-  for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
-    psel_vec[i].init(total_site, ssp.n_points_selected_points_recv[i],
-                     ssp.points_dist_type_recv);
-    spc_vec[i].set_view_cast(psel_vec[i].view_sp());
-  }
-  shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
+  TIMER("shuffle_points_selection_back(psel,psel0,ssp)");
+  qassert(psel0.points_dist_type == ssp.points_dist_type_recv);
+  qassert(ssp.num_selected_points_send == 1);
+  qassert(ssp.num_selected_points_recv == 1);
+  const Long n_points = ssp.n_points_selected_points_send[0];
+  psel.init(psel0.total_site, n_points);
+  psel.points_dist_type = ssp.points_dist_type_send;
+  SelectedPoints<Char> pselc(psel.view_sp().view_as_char());
+  const SelectedPoints<Char> pselc0(psel0.view_sp().view_as_char());
+  shuffle_selected_points_back_char(pselc, pselc0, ssp);
 }
 
 // ------------------------------
