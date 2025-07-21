@@ -17,14 +17,29 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     Int bcast(std_string& recv, const Int root) except +
     Int bcast(Coordinate& x, const Int root) except +
     Int bcast(LatData& ld, const Int root) except +
-    Int glb_sum(Long& ld) except +
-    Int glb_sum(RealD& ld) except +
-    Int glb_sum(RealF& ld) except +
-    Int glb_sum(ComplexD& ld) except +
-    Int glb_sum(ComplexF& ld) except +
+    Int bcast_any(Long& x, const bool b) except +
+    Int bcast_any(RealD& x, const bool b) except +
+    Int bcast_any(RealF& x, const bool b) except +
+    Int bcast_any(ComplexD& x, const bool b) except +
+    Int bcast_any(ComplexF& x, const bool b) except +
+    Long f_bcast_any(const Long& x, const bool b) except +
+    RealD f_bcast_any(const RealD& x, const bool b) except +
+    RealF f_bcast_any(const RealF& x, const bool b) except +
+    ComplexD f_bcast_any(const ComplexD& x, const bool b) except +
+    ComplexF f_bcast_any(const ComplexF& x, const bool b) except +
+    Int glb_sum(Long& x) except +
+    Int glb_sum(RealD& x) except +
+    Int glb_sum(RealF& x) except +
+    Int glb_sum(ComplexD& x) except +
+    Int glb_sum(ComplexF& x) except +
     Int glb_sum(LatData& ld) except +
     bool glb_all(const bool b) except +
     bool glb_any(const bool b) except +
+    Long f_glb_sum(const Long& ld) except +
+    RealD f_glb_sum(const RealD& ld) except +
+    RealF f_glb_sum(const RealF& ld) except +
+    ComplexD f_glb_sum(const ComplexD& ld) except +
+    ComplexF f_glb_sum(const ComplexF& ld) except +
 
 cdef extern from "qlat/geometry.h" namespace "qlat":
 
@@ -92,6 +107,8 @@ cdef extern from "qlat/core.h" namespace "qlat":
         Long size()
         Coordinate* data()
         Coordinate& operator[](Long i) except +
+    bool operator==(const PointsSelection& psel1, const PointsSelection& psel2) except +
+    bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2) except +
     cdef cppclass SelectedPoints[T]:
         bool initialized;
         PointsDistType points_dist_type
@@ -236,13 +253,21 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
     void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
     void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const RngState& rs) except +
     void set_selected_shuffle_plan_t_slice_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec) except +
+    #
     void shuffle_selected_points_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
+    void shuffle_selected_points_back_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_points_char(std_vector[SelectedPoints[Char]]& spc_vec, const std_vector[SelectedPoints[Char]]& spc0_vec, const SelectedShufflePlan& ssp) except +
-
+    void shuffle_selected_points_back_char(std_vector[SelectedPoints[Char]]& spc_vec, const std_vector[SelectedPoints[Char]]& spc0_vec, const SelectedShufflePlan& ssp) except +
+    #
     void shuffle_points_selection(PointsSelection& psel, const PointsSelection& psel0, const SelectedShufflePlan& ssp) except +
+    void shuffle_points_selection_back(PointsSelection& psel, const PointsSelection& psel0, const SelectedShufflePlan& ssp) except +
     void shuffle_points_selection(std_vector[PointsSelection]& psel_vec, const std_vector[PointsSelection]& psel0_vec, const SelectedShufflePlan& ssp) except +
+    void shuffle_points_selection_back(std_vector[PointsSelection]& psel_vec, const std_vector[PointsSelection]& psel0_vec, const SelectedShufflePlan& ssp) except +
+    #
     void shuffle_selected_points[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sp0, const SelectedShufflePlan& ssp) except +
+    void shuffle_selected_points_back[M](SelectedPoints[M]& sp, const SelectedPoints[M]& sp0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_points[M](std_vector[SelectedPoints[M]]& sp_vec, const std_vector[SelectedPoints[M]]& sp0_vec, const SelectedShufflePlan& ssp) except +
+    void shuffle_selected_points_back[M](std_vector[SelectedPoints[M]]& sp_vec, const std_vector[SelectedPoints[M]]& sp0_vec, const SelectedShufflePlan& ssp) except +
     #
     void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_field[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const SelectedShufflePlan& ssp) except +

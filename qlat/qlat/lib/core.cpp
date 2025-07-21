@@ -152,6 +152,9 @@ bool operator==(const PointsSelection& psel1, const PointsSelection& psel2)
   if (psel1.points_dist_type != psel2.points_dist_type) {
     return false;
   }
+  if (psel1.total_site != psel2.total_site) {
+    return false;
+  }
   if (psel1.xgs.size() != psel2.xgs.size()) {
     return false;
   }

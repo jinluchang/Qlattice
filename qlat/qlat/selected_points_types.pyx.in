@@ -96,10 +96,11 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         SelectedPoints(n_points, multiplicity, points_dist_type)
         SelectedPoints(psel)
         SelectedPoints(psel, multiplicity)
-        SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan(psel, rs)
         SelectedPoints(sp, ssp) # via `shuffle_selected_points` where ssp = SelectedShufflePlan(psel, rs)
+        SelectedPoints(sp, ssp, is_reverse) # via `shuffle_selected_points` where ssp = SelectedShufflePlan(psel, rs)
+        SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan(psel, rs)
         #
-        points_dist_type in [ None, "g", "l", "r", ]
+        points_dist_type in [ "g", "f", "l", "r", "o", ]
         """
         if self.view_count > 0:
             raise ValueError("can't re-init while being viewed")
@@ -126,16 +127,32 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         if multiplicity != 0:
             self.xx.init(psel.xx, multiplicity)
 
+    def init_from_sp_ssp(self, SelectedPoints{{name}} sp, SelectedShufflePlan ssp=None, bint is_reverse=False):
+        if ssp is None:
+            self @= sp
+            return
+        elif (sp.psel is ssp.psel_src) and (not is_reverse):
+            self.psel = ssp.psel_dst
+        elif (sp.psel is ssp.psel_dst) and is_reverse:
+            self.psel = ssp.psel_src
+        else:
+            self.psel = PointsSelection(sp.psel, ssp, is_reverse)
+            if is_reverse:
+                if self.psel == ssp.psel_src:
+                    self.psel = ssp.psel_src
+            else:
+                if self.psel == ssp.psel_dst:
+                    self.psel = ssp.psel_dst
+        if is_reverse:
+            cc.shuffle_selected_points_back(self.xx, sp.xx, ssp.xx)
+        else:
+            cc.shuffle_selected_points(self.xx, sp.xx, ssp.xx)
+
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
         self.psel = PointsSelection(sf.fsel, ssp)
-        cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)
-
-    def init_from_sp_ssp(self, SelectedPoints{{name}} sp, SelectedShufflePlan ssp):
-        if sp.psel is ssp.psel_src:
+        if self.psel == ssp.psel_dst:
             self.psel = ssp.psel_dst
-        else:
-            self.psel = PointsSelection(sp.psel, ssp)
-        cc.shuffle_selected_points(self.xx, sp.xx, ssp.xx)
+        cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2 + ElemType{{name}}.ndim()

@@ -75,6 +75,7 @@ cdef class PointsSelection:
         PointsSelection(fsel, ssp)
         PointsSelection(psel)
         PointsSelection(psel, ssp)
+        PointsSelection(psel, ssp, is_reverse)
         #
         points_dist_type in [ "g", "f", "l", "r", "o", ]
         """
@@ -105,6 +106,27 @@ cdef class PointsSelection:
             return
         self.points_dist_type = points_dist_type
 
+    def init_from_psel(self, PointsSelection psel, SelectedShufflePlan ssp=None, bint is_reverse=False):
+        """
+        Shuffle according to `ssp`.
+        """
+        fname = q.get_fname()
+        self.xx.init()
+        if ssp is None:
+            self @= psel
+        elif (ssp.psel_src is psel) and (not is_reverse):
+            self @= ssp.psel_dst
+        elif (ssp.psel_dst is psel) and is_reverse:
+            self @= ssp.psel_src
+        else:
+            q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")
+            assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
+            self.xx.points_dist_type = ssp.xx.points_dist_type_recv
+            if is_reverse:
+                cc.shuffle_points_selection_back(self.xx, psel.xx, ssp.xx)
+            else:
+                cc.shuffle_points_selection(self.xx, psel.xx, ssp.xx)
+
     def init_from_fsel(self, FieldSelection fsel, SelectedShufflePlan ssp=None):
         """
         Shuffle according to `ssp`.
@@ -116,22 +138,6 @@ cdef class PointsSelection:
         else:
             self.xx.points_dist_type = ssp.xx.points_dist_type_recv
             cc.shuffle_field_selection(self.xx, fsel.xx, ssp.xx)
-
-    def init_from_psel(self, PointsSelection psel, SelectedShufflePlan ssp=None):
-        """
-        Shuffle according to `ssp`.
-        """
-        fname = q.get_fname()
-        self.xx.init()
-        if ssp is None:
-            self @= psel
-        elif ssp.psel_src is psel:
-            self @= ssp.psel_dst
-        else:
-            q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")
-            assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
-            self.xx.points_dist_type = ssp.xx.points_dist_type_recv
-            cc.shuffle_points_selection(self.xx, psel.xx, ssp.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         cdef int ndim = 2
@@ -333,6 +339,13 @@ cdef class PointsSelection:
 
     def __len__(self):
         return self.xx.size()
+
+    def __eq__(self, PointsSelection other):
+        if self is other:
+            return True
+        if self.xx == other.xx:
+            return True
+        return False
 
     def coordinate_from_idx(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
