@@ -164,7 +164,7 @@ void shuffle_selected_points_back(SelectedPoints<M>& sp,
   qassert(ssp.num_selected_points_recv == 1);
   const Long n_points = ssp.n_points_selected_points_send[0];
   const Int multiplicity = sp0.multiplicity;
-  sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
+  sp.init(n_points, multiplicity, ssp.points_dist_type_send);
   SelectedPoints<Char> spc;
   SelectedPoints<Char> spc0;
   spc.set_view_cast(sp);
