@@ -217,6 +217,16 @@ int glb_sum(Vector<M> xx)
   return glb_sum<Vector<M>>(xx);
 }
 
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+M f_glb_sum(const M& xx)
+// so that xx don't have to be a reference
+{
+  M v = xx;
+  const int code = glb_sum(v);
+  qassert(code == 0);
+  return v;
+}
+
 bool glb_any(const bool b);
 
 bool glb_all(const bool b);
@@ -306,14 +316,23 @@ int bcast(std::vector<std::string>& recv, const int root = 0);
 
 int bcast(PointsSelection& psel, const int root = 0);
 
-int bcast_any(Vector<Char> xx, const bool b);
+Int bcast_any(Vector<Char> xx, const bool b);
 
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
-int bcast_any(T& xx, const bool b)
+Int bcast_any(T& xx, const bool b)
 // bcast to all nodes from any node if `b == true`.
 // `glb_any(b)` should be `true`, otherwise will return `-1`.
 {
-  return bcast(get_data_char(xx), b);
+  return bcast_any(get_data_char(xx), b);
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+M f_bcast_any(const M& xx, const bool b)
+{
+  M v = xx;
+  const int code = bcast_any(v, b);
+  qassert(code == 0);
+  return v;
 }
 
 std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
@@ -581,14 +600,14 @@ int glb_sum_byte(M& x)
   return glb_sum(Vector<char>((char*)&x, sizeof(M)));
 }
 
-int all_gather(Vector<Char> recv, const Vector<Char> send);
+Int all_gather(Vector<Char> recv, const Vector<Char> send);
 
 template <class T1, class T2,
           class E1 = typename IsDataVectorType<T1>::ElementaryType,
           class E2 = typename IsDataVectorType<T2>::ElementaryType,
           QLAT_ENABLE_IF(is_data_vector_type<T1>() and
                          is_data_vector_type<T2>() and (is_same<E1, E2>()))>
-int all_gather(T1& recv, const T2& send)
+Int all_gather(T1& recv, const T2& send)
 {
   Vector<Char> vec_recv = get_data_char(recv);
   const Vector<Char> vec_send = get_data_char(send);
@@ -600,7 +619,7 @@ template <class M1, class T2,
           class E2 = typename IsDataVectorType<T2>::ElementaryType,
           QLAT_ENABLE_IF(is_data_value_type<M1>() and
                          is_data_vector_type<T2>() and (is_same<E1, E2>()))>
-int all_gather(Vector<M1> recv, const T2& send)
+Int all_gather(Vector<M1> recv, const T2& send)
 {
   Vector<Char> vec_recv = get_data_char(recv);
   const Vector<Char> vec_send = get_data_char(send);

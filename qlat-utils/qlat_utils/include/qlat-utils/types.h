@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <array>
 
 namespace qlat
 {  //
@@ -423,6 +424,15 @@ struct IsDataValueType {
 
 template <class M, size_t N>
 struct IsDataValueType<array<M, N>> {
+  using DataType = M;
+  using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
+  using ElementaryType = typename IsBasicDataType<DataType>::ElementaryType;
+  static constexpr bool value = IsDataValueType<DataType>::value;
+  static constexpr bool is_complex = IsDataValueType<DataType>::is_complex;
+};
+
+template <class M, size_t N>
+struct IsDataValueType<std::array<M, N>> {
   using DataType = M;
   using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
   using ElementaryType = typename IsBasicDataType<DataType>::ElementaryType;

@@ -52,8 +52,10 @@ void shuffle_selected_points_char(
   TIMER_FLOPS("shuffle_selected_points_char(spc_vec,spc0_vec,ssp)");
   qassert(ssp.num_selected_points_send == (Long)spc0_vec.size());
   qassert(ssp.num_selected_points_recv == (Long)spc_vec.size());
-  qassert(ssp.num_selected_points_send > 0);
-  const Int multiplicity = spc0_vec[0].multiplicity;
+  qassert(f_glb_sum(ssp.num_selected_points_send) > 0);
+  const bool b_has_send = ssp.num_selected_points_send > 0;
+  const Int multiplicity =
+      f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
   for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
     qassert(ssp.n_points_selected_points_send[i] == spc0_vec[i].n_points);
     qassert(spc0_vec[i].initialized == true);
@@ -163,8 +165,10 @@ void shuffle_selected_points_back_char(
   TIMER_FLOPS("shuffle_selected_points_back_char(spc_vec,spc0_vec,ssp)");
   qassert(ssp.num_selected_points_send == (Long)spc_vec.size());
   qassert(ssp.num_selected_points_recv == (Long)spc0_vec.size());
-  qassert(ssp.num_selected_points_send > 0);
-  const Int multiplicity = spc0_vec[0].multiplicity;
+  qassert(f_glb_sum(ssp.num_selected_points_recv) > 0);
+  const bool b_has_send = ssp.num_selected_points_recv > 0;
+  const Int multiplicity =
+      f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
   for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
     qassert(ssp.n_points_selected_points_send[i] == spc0_vec[i].n_points);
     qassert(spc0_vec[i].initialized == true);

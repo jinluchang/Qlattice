@@ -362,7 +362,7 @@ int bcast(PointsSelection& psel, const int root)
 Int bcast_any(Vector<Char> xx, const bool b)
 // bcast to all nodes from any node if `b == true`.
 // `glb_all(b)` should be `true`.
-// The sizes of `xx` should be the same.
+// The sizes of `xx` should be the same even when `b == false`.
 // The value of `xx` when `b == true`, should be the same.
 // If the condition is not met, this function will return `-1`.
 {
@@ -395,7 +395,7 @@ Int bcast_any(Vector<Char> xx, const bool b)
   }
   for (Int i = 0; i < num_node; ++i) {
     if (all_size[i] != size) {
-      return -1;
+      return -2;
     }
   }
   vector<Char> all_v(size * num_node, MemType::Comm);
@@ -412,7 +412,7 @@ Int bcast_any(Vector<Char> xx, const bool b)
         b_any = true;
       } else {
         if (xx != v) {
-          return -1;
+          return -3;
         }
       }
     }
@@ -420,7 +420,7 @@ Int bcast_any(Vector<Char> xx, const bool b)
   return 0;
 }
 
-int all_gather(Vector<Char> recv, const Vector<Char> send)
+Int all_gather(Vector<Char> recv, const Vector<Char> send)
 {
   qassert(recv.size() == send.size() * get_num_node());
   return MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
