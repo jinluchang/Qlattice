@@ -26,6 +26,15 @@ void clear_fields(Fieldy& pr, int GPU = 1)
 }
 
 template<class Fieldy>
+inline bool is_field_local(Fieldy& field){
+  Qassert(field.initialized);
+  const Geometry& geo = field.geo();
+  Geometry geo_l;get_local_geo(geo, geo_l);
+  if(geo == geo_l){return true;}
+  return false;
+}
+
+template<class Fieldy>
 void init_fields(std::vector<Fieldy >& res, Fieldy& src, const unsigned int size)
 {
   Qassert(src.initialized);
@@ -497,7 +506,6 @@ void fields_operations_localG(std::vector<qlat::FieldG<T1> >& pr, std::vector<ql
     }
   });
 }
-
 
 }
 

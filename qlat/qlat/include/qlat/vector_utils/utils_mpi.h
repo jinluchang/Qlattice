@@ -783,7 +783,6 @@ inline int get_mpi_id_node_close()
   return id_node_local;
 }
 
-
 inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vector<int > &Nv, std::vector<int > &mv)
 {
   Nv.resize(4);nv.resize(4);mv.resize(4);
@@ -794,6 +793,14 @@ inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector<int >& nv, qlat::v
   Nv.resize(4);nv.resize(4);mv.resize(4);
   for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+}
+
+inline void get_local_geo(const qlat::Geometry& geo, Geometry& geo_l){
+  Coordinate total_site; 
+  for(int i=0;i<4;i++){
+    total_site[i] = geo.node_site[i] * geo.geon.size_node[i];
+  }
+  geo_l.init(total_site);
 }
 
 //inline void setup_expand(const Geometry& geo, qlat::vector<Long >& pack_send, qlat::vector<Long >& pack_recv)

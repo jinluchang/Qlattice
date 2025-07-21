@@ -3860,10 +3860,12 @@ inline double get_stagger_even_flops(const Geometry& geo)
   return flops;
 }
 
-////get even-even solutions
-// still need qinv buffers
-// be carefull to check the inversion with single precision input
-// not used
+/*
+  get even-even solutions
+  still need qinv buffers
+  be carefull to check the inversion with single precision input
+  not used ?
+*/
 template<typename Ty>
 void get_staggered_multishift(quda_inverter& qinv,
   std::vector<qlat::FieldM<Ty, 3> >& res,

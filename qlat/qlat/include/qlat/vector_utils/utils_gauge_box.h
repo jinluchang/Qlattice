@@ -8,6 +8,7 @@
 
 #include "general_funs.h"
 #include "utils_gaugefield.h"
+#include "utils_field_expand.h"
 
 namespace qlat
 {
@@ -36,7 +37,7 @@ struct API FieldBoxT {
     // TIMER("FieldBoxT::FieldBoxT()")
     qassert(v.p == NULL);
     //type = Su3::u9;
-    Multiplicity = 1;
+    Multiplicity = 9;
   }
 
   template <class M, int civ >
@@ -360,7 +361,6 @@ void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
   }
 }
 
-
 //template <class Ty, Su3 ta, class Tf, Su3 tb>
 //void copy_u9_from_u6(FieldBoxT<Ty, Su3::u9 >& f9, FieldBoxT<Ty, Su3::u6 >& f6)
 //{
@@ -422,6 +422,11 @@ void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
 //  });
 //}
 
+template <class Ty, Su3 type>
+void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", int GPU = 1)
+{
+  refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, tag, GPU );
+}
 
 }
 

@@ -258,7 +258,7 @@ qacc void su3_traceless(ComplexT<Tb>* sz)
 }
 
 template <typename Tb>
-qacc void su3_traceless_anti_hermition(ComplexT<Tb>* sz)
+qacc void su3_anti_hermition(ComplexT<Tb>* sz)
 {
   //for(int i=0;i<9;i++){BUF[i] = sz[i] ;}
   for(int a=0;a<3;a++)
@@ -271,8 +271,17 @@ qacc void su3_traceless_anti_hermition(ComplexT<Tb>* sz)
       sz[a*3 + b] =        tmp;
       sz[b*3 + a] = Tb(-1.0) * qconj(tmp);
     }
+    // may not need when need traceless
+    if(a == b){
+      sz[a*3 + b] = ComplexT<Tb>(0.0, sz[a*3 + b].imag());
+    }
   }
+}
 
+template <typename Tb>
+qacc void su3_traceless_anti_hermition(ComplexT<Tb>* sz)
+{
+  su3_anti_hermition(sz);
   su3_traceless(sz);
 }
 

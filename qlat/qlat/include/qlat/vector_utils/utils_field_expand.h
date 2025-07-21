@@ -190,23 +190,42 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
 template <class M>
 void refresh_expanded_GPU(M* res, const Geometry& geo, const int MULTI, const std::string& tag, int GPU = 1)
 {
-  if(tag == ""){
+  std::vector<std::string > tagL = stringtolist(tag);
+
+  if(tagL.size() == 0 or tagL[0] == std::string(""))
+  {
+    // will do corners
     refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_all, std::string(""), GPU);
   }else{
-    refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, tag, GPU);
+    for(unsigned int itag=0;itag<tagL.size();itag++){
+      const std::string& t= tagL[itag];
+      refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, t, GPU);
+    }
   }
+}
+
+inline std::vector<std::string > expand_tags(){
+  std::vector<std::string > tagL = {"dirmt", "dirmz", "dirmy", "dirmx", "dirx", "diry", "dirz", "dirt"};
+  return tagL;
 }
 
 template <class M>
 void refresh_expanded_GPU(M* res, const Geometry& geo, const int MULTI, int dir = -1000, int GPU = 1)
 {
   Qassert(dir == -1000 or (dir >= -3-1 and dir <= 3));
+  // with corner
   if(dir == -1000){
     refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_all, std::string(""), GPU);
   }
+  // without corner
+  if(dir == -100){
+    refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, std::string(""), GPU);
+  }
+
   if(dir >= -3-1 and dir <= 3)
   {
-    std::string tagL[8] = {"dirmt", "dirmz", "dirmy", "dirmx", "dirx", "diry", "dirz", "dirt"};
+    //std::string tagL[8] = {"dirmt", "dirmz", "dirmy", "dirmx", "dirx", "diry", "dirz", "dirt"};
+    std::vector<std::string > tagL = expand_tags();
     refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, tagL[dir + 3 + 1], GPU);
   }
 

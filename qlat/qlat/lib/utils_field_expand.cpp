@@ -133,7 +133,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
     {
       if((set_tag >= -3 - 1 and set_tag < 4) and dir != set_tag){continue ;}
       if(set_tag == 500 and dir >= 0){continue ;}//only do left
-      if(set_tag == 500 and dir <  0){continue ;}//only do right
+      if(set_tag == 501 and dir <  0){continue ;}//only do right
 
       const Coordinate xl1 = coordinate_shifts(xl, dir);
 
