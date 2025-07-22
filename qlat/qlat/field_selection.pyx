@@ -34,8 +34,8 @@ cdef class SelectedShufflePlan:
         SelectedShufflePlan()
         SelectedShufflePlan(psel, rs)
         """
-        self.psel_src = None
-        self.psel_dst = None
+        self.psel_src_list = None
+        self.psel_dst_list = None
         self.xx.init()
         if len(args) == 0:
             return
@@ -44,15 +44,16 @@ cdef class SelectedShufflePlan:
         else:
             raise Exception(f"SelectedShufflePlan.__init__ {args}")
 
-    def init_from_psel_r_from_l(self, PointsSelection psel, RngState rs):
+    def init_from_psel_r_from_l(self, PointsSelection psel_src, RngState rs):
         """
         shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
         """
-        self.psel_src = psel
-        self.psel_dst = PointsSelection()
-        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel.xx, rs.xx)
-        self.psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
-        cc.shuffle_points_selection(self.psel_dst.xx, psel.xx, self.xx)
+        cdef PointsSelection psel_dst = PointsSelection()
+        self.psel_src_list = [ psel_src ]
+        self.psel_dst_list = [ psel_dst ]
+        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src.xx, rs.xx)
+        psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
+        cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
 
 ###
 
@@ -114,10 +115,10 @@ cdef class PointsSelection:
         self.xx.init()
         if ssp is None:
             self @= psel
-        elif (ssp.psel_src is psel) and (not is_reverse):
-            self @= ssp.psel_dst
-        elif (ssp.psel_dst is psel) and is_reverse:
-            self @= ssp.psel_src
+        elif (ssp.psel_src_list[0] is psel) and (not is_reverse):
+            self @= ssp.psel_dst_list[0]
+        elif (ssp.psel_dst_list[0] is psel) and is_reverse:
+            self @= ssp.psel_src_list[0]
         else:
             q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")
             assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
