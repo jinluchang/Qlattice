@@ -290,19 +290,11 @@ struct API vector {
     {
       TIMER("vector::set_mem_type");
       vector<M> vec;
-      swap(vec);
+      qswap(*this, vec);
       mem_type = mem_type_;
       *this = vec;
       qassert(mem_type == mem_type_);
     }
-  }
-  //
-  void swap(vector<M>& x)
-  {
-    qassert(not is_copy);
-    qassert(not x.is_copy);
-    std::swap(mem_type, x.mem_type);
-    std::swap(v, x.v);
   }
   //
   void set_view(const Vector<M>& vec)
@@ -356,7 +348,7 @@ struct API vector {
     {
       TIMER("vector::resize");
       vector<M> vp(size, mem_type);
-      swap(vp);
+      qswap(*this, vp);
       const Long n_min = std::min(size, vp.v.n);
       copy_mem(v.p, mem_type, vp.v.p, vp.mem_type, n_min * sizeof(M));
     }
@@ -409,7 +401,29 @@ void clear(vector<M>& v)
 template <class M>
 qacc void qswap(vector<M>& v1, vector<M>& v2)
 {
-  v1.swap(v2);
+  qassert(not v1.is_copy);
+  qassert(not v2.is_copy);
+  std::swap(v1.mem_type, v2.mem_type);
+  std::swap(v1.v, v2.v);
+}
+
+template <class M, class N>
+qacc void qswap_cast(vector<M>& v1, vector<N>& v2)
+{
+  qassert(not v1.is_copy);
+  qassert(not v2.is_copy);
+  std::swap(v1.mem_type, v2.mem_type);
+  const Long data_size1 = v2.v.data_size();
+  const Long data_size2 = v1.v.data_size();
+  const Long size1 = data_size1 / sizeof(M);
+  const Long size2 = data_size2 / sizeof(N);
+  qassert(size1 * (Long)sizeof(M) == data_size1);
+  qassert(size2 * (Long)sizeof(N) == data_size2);
+  void* p_tmp = (void*)v1.v.p;
+  v1.v.p = (M*)v2.v.p;
+  v2.v.p = (N*)p_tmp;
+  v1.v.n = size1;
+  v2.v.n = size2;
 }
 
 // --------------------
@@ -537,19 +551,11 @@ struct API box {
     {
       TIMER("box::set_mem_type");
       box<M> b;
-      swap(b);
+      qswap(*this, b);
       mem_type = mem_type_;
       *this = b;
       qassert(mem_type == mem_type_);
     }
-  }
-  //
-  qacc void swap(box<M>& x)
-  {
-    qassert(not is_copy);
-    qassert(not x.is_copy);
-    std::swap(mem_type, x.mem_type);
-    std::swap(v, x.v);
   }
   //
   void set_view(const M& x)
@@ -630,7 +636,10 @@ void clear(box<M>& v)
 template <class M>
 qacc void qswap(box<M>& v1, box<M>& v2)
 {
-  v1.swap(v2);
+  qassert(not v1.is_copy);
+  qassert(not v2.is_copy);
+  std::swap(v1.mem_type, v2.mem_type);
+  std::swap(v1.v, v2.v);
 }
 
 // --------------------

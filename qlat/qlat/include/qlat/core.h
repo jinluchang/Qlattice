@@ -647,6 +647,37 @@ void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
   qswap(f1.points, f2.points);
 }
 
+template <class M, class N>
+void qswap_cast(SelectedPoints<M>& f1, SelectedPoints<N>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.points_dist_type, f2.points_dist_type);
+  const Long data_size1 = f2.multiplicity * sizeof(N);
+  const Long data_size2 = f1.multiplicity * sizeof(M);
+  f1.multiplicity = data_size1 / sizeof(M);
+  f2.multiplicity = data_size2 / sizeof(N);
+  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  std::swap(f1.n_points, f2.n_points);
+  qswap_cast(f1.points, f2.points);
+}
+
+template <class M>
+void qswap_cast(PointsSelection& f1, SelectedPoints<M>& f2,
+                Coordinate& total_site2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.points_dist_type, f2.points_dist_type);
+  std::swap(f1.total_site, total_site2);
+  qassert(f2.multiplicity == 0 or
+          (f2.multiplicity * sizeof(M) == sizeof(Coordinate)));
+  if (f2.initialized) {
+    f2.multiplicity = sizeof(Coordinate) / sizeof(M);
+    qassert(f2.multiplicity * sizeof(M) == sizeof(Coordinate));
+  }
+  qswap_cast(f1.xgs, f2.points);
+}
+
 // --------------------
 
 enum struct MemOrder {
@@ -1026,6 +1057,22 @@ void qswap(Field<M>& f1, Field<M>& f2)
   qswap(f1.field, f2.field);
 }
 
+template <class M, class N>
+void qswap_cast(Field<M>& f1, Field<N>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  const Long data_size1 = f2.multiplicity * sizeof(N);
+  const Long data_size2 = f1.multiplicity * sizeof(M);
+  f1.multiplicity = data_size1 / sizeof(M);
+  f2.multiplicity = data_size2 / sizeof(N);
+  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  qassert(f2.multiplicity * (Long)sizeof(N) == data_size1);
+  qassert(f1.mem_order == MemOrder::TZYXM);
+  qassert(f2.mem_order == MemOrder::TZYXM);
+  qswap(f1.geo, f2.geo);
+  qswap_cast(f1.field, f2.field);
+}
+
 // --------------------
 
 template <class T = Real>
@@ -1303,6 +1350,62 @@ void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
   std::swap(f1.multiplicity, f2.multiplicity);
   qswap(f1.geo, f2.geo);
   qswap(f1.field, f2.field);
+}
+
+template <class M, class N>
+void qswap_cast(SelectedField<M>& f1, SelectedField<N>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.n_elems, f2.n_elems);
+  const Long data_size1 = f2.multiplicity * sizeof(N);
+  const Long data_size2 = f1.multiplicity * sizeof(M);
+  f1.multiplicity = data_size1 / sizeof(M);
+  f2.multiplicity = data_size2 / sizeof(N);
+  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  qswap(f1.geo, f2.geo);
+  qswap_cast(f1.field, f2.field);
+}
+
+// --------------------
+
+template <class M, class N>
+void qswap_cast(Field<M>& f1, SelectedPoints<N>& f2, box<Geometry>& geo2)
+{
+  if (f1.initialized) {
+    qassert(f1.mem_order == MemOrder::TZYXM);
+  }
+  if (f2.initialized) {
+    qassert(f2.points_dist_type == PointsDistType::Full);
+  }
+  std::swap(f1.initialized, f2.initialized);
+  const Long data_size1 = f2.multiplicity * sizeof(N);
+  const Long data_size2 = f1.multiplicity * sizeof(M);
+  f1.multiplicity = data_size1 / sizeof(M);
+  f2.multiplicity = data_size2 / sizeof(N);
+  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  qswap(f1.geo, geo2);
+  qswap_cast(f1.field, f2.points);
+}
+
+template <class M, class N>
+void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
+                box<Geometry>& geo2)
+{
+  if (f2.initialized) {
+    qassert(f2.points_dist_type == PointsDistType::Local);
+  }
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.n_points, f2.n_elems);
+  const Long data_size1 = f2.multiplicity * sizeof(N);
+  const Long data_size2 = f1.multiplicity * sizeof(M);
+  f1.multiplicity = data_size1 / sizeof(M);
+  f2.multiplicity = data_size2 / sizeof(N);
+  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  qswap(f1.geo, geo2);
+  qswap_cast(f1.field, f2.points);
 }
 
 // --------------------
