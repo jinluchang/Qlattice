@@ -144,6 +144,14 @@ void PointsSelection::push_back_slow(const Coordinate& xg)
   xgs[n_points] = xg;
 }
 
+void qswap(PointsSelection& f1, PointsSelection& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.points_dist_type, f2.points_dist_type);
+  std::swap(f1.total_site, f2.total_site);
+  qswap(f1.xgs, f2.xgs);
+}
+
 bool operator==(const PointsSelection& psel1, const PointsSelection& psel2)
 {
   if (psel1.initialized != psel2.initialized) {

@@ -117,7 +117,7 @@ void shuffle_selected_points_back(std::vector<SelectedPoints<M>>& sp_vec,
   qassert(f_glb_sum((Long)sp0_vec.size()) > 0);
   const Int multiplicity = f_bcast_any(
       sp0_vec.size() > 0 ? sp0_vec[0].multiplicity : 0, sp0_vec.size() > 0);
-  std::vector<SelectedPoints<Char>> spc_vec(sp_vec.size());
+  std::vector<SelectedPoints<Char>> spc_vec;
   std::vector<SelectedPoints<Char>> spc0_vec(sp0_vec.size());
   for (Int i = 0; i < (Int)sp0_vec.size(); ++i) {
     qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_recv[i]);
@@ -125,13 +125,11 @@ void shuffle_selected_points_back(std::vector<SelectedPoints<M>>& sp_vec,
     qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_recv);
     spc0_vec[i].set_view_cast(sp0_vec[i]);
   }
-  sp_vec.resize(ssp.num_selected_points_send);
-  for (Int i = 0; i < (Int)sp_vec.size(); ++i) {
-    sp_vec[i].init(ssp.n_points_selected_points_send[i], multiplicity,
-                   ssp.points_dist_type_send);
-    spc_vec[i].set_view_cast(sp_vec[i]);
-  }
   shuffle_selected_points_back_char(spc_vec, spc0_vec, ssp);
+  sp_vec.resize(spc_vec.size());
+  for (Int i = 0; i < (Int)sp_vec.size(); ++i) {
+    qswap_cast(sp_vec[i], spc_vec[i]);
+  }
 }
 
 template <class M>
@@ -157,14 +155,11 @@ void shuffle_selected_points_back(SelectedPoints<M>& sp,
   TIMER("shuffle_selected_points_back(sp,sp0,ssp)");
   qassert(ssp.num_selected_points_send == 1);
   qassert(ssp.num_selected_points_recv == 1);
-  const Long n_points = ssp.n_points_selected_points_send[0];
-  const Int multiplicity = sp0.multiplicity;
-  sp.init(n_points, multiplicity, ssp.points_dist_type_send);
   SelectedPoints<Char> spc;
   SelectedPoints<Char> spc0;
-  spc.set_view_cast(sp);
   spc0.set_view_cast(sp0);
   shuffle_selected_points_back_char(spc, spc0, ssp);
+  qswap_cast(sp, spc);
 }
 
 // -------------------
