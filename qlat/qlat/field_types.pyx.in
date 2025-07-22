@@ -121,7 +121,10 @@ cdef class Field{{name}}(FieldBase):
         return cc.set_zero(self.xx)
 
     def swap(self, Field{{name}} f1):
-        return cc.qswap(f1.xx, self.xx)
+        return cc.qswap(self.xx, f1.xx)
+
+    def swap_cast(self, FieldChar f1):
+        return cc.qswap_cast(self.xx, f1.xx)
 
     @property
     def total_site(self):

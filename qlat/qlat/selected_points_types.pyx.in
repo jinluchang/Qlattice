@@ -205,8 +205,16 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         cc.set_zero(self.xx)
 
     def swap(self, SelectedPoints{{name}} f1):
-        assert f1.psel is self.psel
-        cc.qswap(f1.xx, self.xx)
+        cdef PointsSelection psel = self.psel
+        self.psel = f1.psel
+        f1.psel = psel
+        cc.qswap(self.xx, f1.xx)
+
+    def swap_cast(self, SelectedPointsChar f1):
+        cdef PointsSelection psel = self.psel
+        self.psel = f1.psel
+        f1.psel = psel
+        cc.qswap_cast(self.xx, f1.xx)
 
     def save(self, const cc.std_string& path):
         cc.save_selected_points(self.xx, path)

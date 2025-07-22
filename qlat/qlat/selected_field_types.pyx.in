@@ -126,8 +126,16 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.set_zero(self.xx)
 
     def swap(self, SelectedField{{name}} f1):
-        assert f1.fsel is self.fsel
-        cc.qswap(f1.xx, self.xx)
+        cdef FieldSelection fsel = self.psel
+        self.fsel = f1.psel
+        f1.fsel = fsel
+        cc.qswap(self.xx, f1.xx)
+
+    def swap_cast(self, SelectedFieldChar f1):
+        cdef FieldSelection fsel = self.psel
+        self.fsel = f1.psel
+        f1.fsel = fsel
+        cc.qswap_cast(self.xx, f1.xx)
 
     @property
     def n_elems(self):
