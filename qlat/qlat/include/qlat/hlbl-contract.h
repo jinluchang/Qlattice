@@ -207,7 +207,7 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
   return ret;
 }
 
-enum struct ChooseReferenceLabel {
+enum struct ChooseReferenceLabel : Int {
   RefFar,
   RefClose,
   RefCenter,

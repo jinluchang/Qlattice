@@ -20,13 +20,13 @@
 namespace qlat
 {  //
 
-enum struct QFileMode {
+enum struct QFileMode : Int {
   Read,
   Write,
   Append,
 };
 
-enum struct QFileType {
+enum struct QFileType : Int {
   CFile,
   String,
 };

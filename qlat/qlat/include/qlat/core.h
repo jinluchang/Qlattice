@@ -383,7 +383,7 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 template <class M>
 struct API SelectedPoints;
 
-enum struct PointsDistType {
+enum struct PointsDistType : Int {
   Global, // Default
   Full, // Similar to Field
   Local, // Similar to SelectedField
@@ -682,7 +682,7 @@ void qswap_cast(PointsSelection& f1, SelectedPoints<M>& f2,
 
 // --------------------
 
-enum struct MemOrder {
+enum struct MemOrder : Int {
   TZYXM,  // default (M stand for multiplicity)
   MTZYX,
 };

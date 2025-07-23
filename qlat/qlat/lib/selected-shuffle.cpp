@@ -766,14 +766,18 @@ void set_selected_shuffle_instruction_t_slice_from_l(
 // v[4] = rank_within_field_recv
 {
   TIMER("set_selected_shuffle_instruction_t_slice_from_l(sp_inst,vec,pdt,psel_vec)");
-  qassert(psel_vec.size() > 0);
+  qassert(f_glb_sum((Long)psel_vec.size()) > 0);
   const Int num_field = psel_vec.size();
   const Int num_node = get_num_node();
   n_points_selected_points_send.clear();
   n_points_selected_points_send.set_mem_type(MemType::Cpu);
   n_points_selected_points_send.resize(psel_vec.size());
-  points_dist_type_send = psel_vec[0].points_dist_type;
-  const Coordinate total_site = psel_vec[0].total_site;
+  points_dist_type_send = static_cast<PointsDistType>(f_bcast_any(
+      psel_vec.size() > 0 ? static_cast<Int>(psel_vec[0].points_dist_type) : 0,
+      psel_vec.size() > 0));
+  const Coordinate total_site = f_bcast_any(
+      psel_vec[0].size() > 0 ? psel_vec[0].total_site : Coordinate(),
+      psel_vec[0].size() > 0);
   const Int t_size = total_site[3];
   Long n_points = 0;
   for (Int i = 0; i < (Int)psel_vec.size(); ++i) {

@@ -14,7 +14,7 @@ namespace qlat
 {
 
 //u9 usual, u6 reconsturct col 6, uA anti-hermition 6
-enum struct Su3{
+enum struct Su3 : Int {
   u9,
   u6,
   uA
