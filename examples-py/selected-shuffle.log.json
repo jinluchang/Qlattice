@@ -35,13 +35,13 @@
   {
    "value": [
     {
-     "real": -1.2024589383336812,
+     "real": -1.2024589383336814,
      "imag": -2.5219780535757867,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -0.6904460800645555,
-     "imag": -0.07611231787259505,
+     "real": -0.6904460800645557,
+     "imag": -0.076112317872595,
      "__extended_json_type__": "complex"
     }
    ],
@@ -61,6 +61,25 @@
     {
      "real": -0.6904460800645555,
      "imag": -0.07611231787259505,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": -1.2024589383336814,
+     "imag": -2.5219780535757867,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.6904460800645557,
+     "imag": -0.076112317872595,
      "__extended_json_type__": "complex"
     }
    ],
@@ -104,13 +123,13 @@
   {
    "value": [
     {
-     "real": -0.49691133355355416,
-     "imag": -0.32825816067694036,
+     "real": -0.49691133355355394,
+     "imag": -0.3282581606769408,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -0.08167785502036395,
-     "imag": -0.3174375720963956,
+     "real": -0.08167785502036373,
+     "imag": -0.3174375720963953,
      "__extended_json_type__": "complex"
     }
    ],
@@ -130,6 +149,25 @@
     {
      "real": -0.08167785502036395,
      "imag": -0.3174375720963956,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": -0.49691133355355394,
+     "imag": -0.3282581606769408,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.08167785502036373,
+     "imag": -0.3174375720963953,
      "__extended_json_type__": "complex"
     }
    ],
@@ -173,13 +211,13 @@
   {
    "value": [
     {
-     "real": -0.5444377292352057,
+     "real": -0.544437729235206,
      "imag": -2.1934939693912296,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -0.6316255788683511,
-     "imag": -1.2633458497497971,
+     "real": -0.631625578868351,
+     "imag": -1.2633458497497976,
      "__extended_json_type__": "complex"
     }
    ],
@@ -199,6 +237,25 @@
     {
      "real": -0.6316255788683511,
      "imag": -1.2633458497497971,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": -0.544437729235206,
+     "imag": -2.1934939693912296,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.631625578868351,
+     "imag": -1.2633458497497976,
      "__extended_json_type__": "complex"
     }
    ],
@@ -242,13 +299,13 @@
   {
    "value": [
     {
-     "real": 1.7848773550754649,
-     "imag": 0.8084854729604418,
+     "real": 1.7848773550754662,
+     "imag": 0.8084854729604424,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -0.623941427421649,
-     "imag": -0.6193690195238549,
+     "real": -0.6239414274216489,
+     "imag": -0.6193690195238553,
      "__extended_json_type__": "complex"
     }
    ],
@@ -268,6 +325,25 @@
     {
      "real": -0.623941427421649,
      "imag": -0.6193690195238549,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": 1.7848773550754662,
+     "imag": 0.8084854729604424,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.6239414274216489,
+     "imag": -0.6193690195238553,
      "__extended_json_type__": "complex"
     }
    ],
@@ -311,13 +387,13 @@
   {
    "value": [
     {
-     "real": 1.8488701015596904,
-     "imag": 3.90212616606743,
+     "real": 1.848870101559691,
+     "imag": 3.902126166067429,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 1.396034630505997,
-     "imag": -0.17617742618532584,
+     "real": 1.3960346305059974,
+     "imag": -0.17617742618532573,
      "__extended_json_type__": "complex"
     }
    ],
@@ -337,6 +413,25 @@
     {
      "real": 1.396034630505997,
      "imag": -0.17617742618532584,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": 1.848870101559691,
+     "imag": 3.902126166067429,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.3960346305059974,
+     "imag": -0.17617742618532573,
      "__extended_json_type__": "complex"
     }
    ],
@@ -380,12 +475,12 @@
   {
    "value": [
     {
-     "real": 3.1964424791910497,
-     "imag": 7.342466109837348,
+     "real": 3.196442479191047,
+     "imag": 7.342466109837347,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 0.8199466311042399,
+     "real": 0.8199466311042405,
      "imag": 0.7349173867417695,
      "__extended_json_type__": "complex"
     }
@@ -405,6 +500,25 @@
     },
     {
      "real": 0.8199466311042399,
+     "imag": 0.7349173867417695,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": 3.196442479191047,
+     "imag": 7.342466109837347,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.8199466311042405,
      "imag": 0.7349173867417695,
      "__extended_json_type__": "complex"
     }
@@ -449,12 +563,12 @@
   {
    "value": [
     {
-     "real": 4.404569061700162,
-     "imag": 3.1576680221283846,
+     "real": 4.404569061700164,
+     "imag": 3.157668022128381,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 1.771287687436688,
+     "real": 1.7712876874366863,
      "imag": -2.323367003491084,
      "__extended_json_type__": "complex"
     }
@@ -474,6 +588,25 @@
     },
     {
      "real": 1.771287687436688,
+     "imag": -2.323367003491084,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": 4.404569061700164,
+     "imag": 3.157668022128381,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.7712876874366863,
      "imag": -2.323367003491084,
      "__extended_json_type__": "complex"
     }
@@ -518,8 +651,8 @@
   {
    "value": [
     {
-     "real": 7.365800090763552,
-     "imag": -2.1540974319077626,
+     "real": 7.365800090763553,
+     "imag": -2.1540974319077617,
      "__extended_json_type__": "complex"
     },
     {
@@ -539,6 +672,25 @@
     {
      "real": 7.365800090763552,
      "imag": -2.1540974319077626,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 6.661572684346464,
+     "imag": -2.5850143039169433,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": 7.365800090763553,
+     "imag": -2.1540974319077617,
      "__extended_json_type__": "complex"
     },
     {
@@ -587,12 +739,12 @@
   {
    "value": [
     {
-     "real": 11.926528471277038,
-     "imag": 0.7334326197997489,
+     "real": 11.92652847127704,
+     "imag": 0.7334326197997476,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 0.5872752938652095,
+     "real": 0.5872752938652086,
      "imag": -18.218492930517847,
      "__extended_json_type__": "complex"
     }
@@ -612,6 +764,25 @@
     },
     {
      "real": 0.5872752938652095,
+     "imag": -18.218492930517847,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-12
+ ],
+ [
+  "get_data_sig_arr(sp_s1,rs,2)",
+  {
+   "value": [
+    {
+     "real": 11.92652847127704,
+     "imag": 0.7334326197997476,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.5872752938652086,
      "imag": -18.218492930517847,
      "__extended_json_type__": "complex"
     }

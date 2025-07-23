@@ -109,6 +109,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         Coordinate& operator[](Long i) except +
     bool operator==(const PointsSelection& psel1, const PointsSelection& psel2) except +
     bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2) except +
+    void qswap(PointsSelection& x, PointsSelection& y) except +
     cdef cppclass SelectedPoints[T]:
         bool initialized;
         PointsDistType points_dist_type
@@ -250,10 +251,20 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
     cdef cppclass SelectedShufflePlan:
         PointsDistType points_dist_type_send
         PointsDistType points_dist_type_recv
+        Long num_selected_points_send
+        Long num_selected_points_recv
+        vector[Long] n_points_selected_points_send
+        vector[Long] n_points_selected_points_recv
         SelectedPoints[Long] shuffle_idx_points_send
         SelectedPoints[Long] shuffle_idx_points_recv
-        Long total_send_count
-        Long total_recv_count
+        SelectedPoints[Long] shuffle_idx_points_local
+        Long total_count_send
+        Long total_count_recv
+        Long total_count_local
+        vector[Long] sendcounts
+        vector[Long] recvcounts
+        vector[Long] sdispls
+        vector[Long] rdispls
         void init() except +
     #
     void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +

@@ -7,6 +7,9 @@ from cpython.buffer cimport PyBUF_FORMAT
 
 from .geometry cimport *
 from .field_types cimport *
+from .selected_points_types cimport (
+        SelectedPointsChar,
+        )
 
 import cqlat as c
 import numpy as np
@@ -54,6 +57,29 @@ cdef class SelectedShufflePlan:
         cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src.xx, rs.xx)
         psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
         cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
+
+    def init_from_psel_list_r_from_l(self, list psel_src_list, RngState rs):
+        """
+        shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
+        """
+        cdef cc.std_vector[cc.PointsSelection] psel_src_vec
+        psel_src_vec.resize(len(psel_src_list))
+        cdef PointsSelection psel
+        for i in range(psel_src_vec.size()):
+            psel = psel_src_list[i]
+            cc.qswap(psel.xx, psel_src_vec[i])
+        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src_vec, rs.xx)
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
+        cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
+        psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
+        for i in range(psel_src_vec.size()):
+            psel = psel_src_list[i]
+            cc.qswap(psel.xx, psel_src_vec[i])
+        for i in range(psel_dst_vec.size()):
+            psel = psel_dst_list[i]
+            cc.qswap(psel.xx, psel_dst_vec[i])
+        self.psel_src_list = psel_src_list
+        self.psel_dst_list = psel_dst_list
 
 ###
 
@@ -172,6 +198,13 @@ cdef class PointsSelection:
 
     def __deepcopy__(self, memo):
         return self.copy()
+
+    def swap(self, PointsSelection other):
+        cc.qswap(self.xx, other.xx)
+
+    def swap_cast(self, SelectedPointsChar other, Coordinate total_site):
+        assert other.psel is None
+        cc.qswap_cast(self.xx, other.xx, total_site.xx)
 
     @property
     def points_dist_type(self):

@@ -6,6 +6,7 @@ __all__ = [
         'field_ctypes_double',
         'field_ctypes_float',
         'field_ctypes_long',
+        'field_ctypes_char',
         ]
 
 ### -------------------------------------------------------------------
@@ -59,4 +60,9 @@ field_ctypes_double_or_float = field_ctypes_double + field_ctypes_float
 field_ctypes_long = [
         ElemTypeLong,
         ElemTypeInt64t,
+        ]
+
+field_ctypes_char = [
+        ElemTypeChar,
+        ElemTypeInt8t,
         ]
