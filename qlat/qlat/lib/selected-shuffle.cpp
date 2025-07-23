@@ -820,14 +820,14 @@ void set_selected_shuffle_plan_t_slice_from_l(
 // psel_vec[i].points_dist_type == PointsDistType::Local
 // Sort the shuffled points by order of the gindex of points.
 {
-  TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel_vec,rs)");
+  TIMER("set_selected_shuffle_plan_t_slice_from_l(ssp,psel_vec,rs)");
   SelectedPoints<Long> sp_instruction;
   vector<Long> n_points_selected_points_send;
   PointsDistType points_dist_type_send;
   set_selected_shuffle_instruction_t_slice_from_l(
       sp_instruction, n_points_selected_points_send, points_dist_type_send,
       psel_vec);
-  const PointsDistType points_dist_type_recv = PointsDistType::Random;
+  const PointsDistType points_dist_type_recv = PointsDistType::Local;
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);
 }

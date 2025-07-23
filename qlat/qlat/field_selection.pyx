@@ -35,29 +35,40 @@ cdef class SelectedShufflePlan:
     def __init__(self, *args):
         """
         SelectedShufflePlan()
-        SelectedShufflePlan(psel, rs)
+        SelectedShufflePlan("r_from_l", psel_src, rs)
+        SelectedShufflePlan("r_from_l", psel_src_list, rs)
+        SelectedShufflePlan("t_slice_from_l", psel_src_list, rs)
         """
         self.psel_src_list = None
         self.psel_dst_list = None
         self.xx.init()
         if len(args) == 0:
             return
-        elif isinstance(args[0], PointsSelection):
-            self.init_from_psel_r_from_l(*args)
+        elif len(args) == 1:
+            return
+        elif args[0] == "r_from_l" and isinstance(args[1], PointsSelection):
+            self.init_from_psel_r_from_l(*args[1:])
+        elif args[0] == "r_from_l" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
+            self.init_from_psel_list_r_from_l(*args[1:])
+        elif args[0] == "t_slice_from_l" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
+            self.init_from_psel_list_t_slice_from_l(*args[1:])
         else:
             raise Exception(f"SelectedShufflePlan.__init__ {args}")
 
+    @q.timer
     def init_from_psel_r_from_l(self, PointsSelection psel_src, RngState rs):
         """
         shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
         """
         cdef PointsSelection psel_dst = PointsSelection()
-        self.psel_src_list = [ psel_src ]
-        self.psel_dst_list = [ psel_dst ]
+        self.xx.init()
         cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src.xx, rs.xx)
         psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
         cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
+        self.psel_src_list = [ psel_src ]
+        self.psel_dst_list = [ psel_dst ]
 
+    @q.timer
     def init_from_psel_list_r_from_l(self, list psel_src_list, RngState rs):
         """
         shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
@@ -68,7 +79,33 @@ cdef class SelectedShufflePlan:
         for i in range(psel_src_vec.size()):
             psel = psel_src_list[i]
             cc.qswap(psel.xx, psel_src_vec[i])
+        self.xx.init()
         cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src_vec, rs.xx)
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
+        cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
+        psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
+        for i in range(psel_src_vec.size()):
+            psel = psel_src_list[i]
+            cc.qswap(psel.xx, psel_src_vec[i])
+        for i in range(psel_dst_vec.size()):
+            psel = psel_dst_list[i]
+            cc.qswap(psel.xx, psel_dst_vec[i])
+        self.psel_src_list = psel_src_list
+        self.psel_dst_list = psel_dst_list
+
+    @q.timer
+    def init_from_psel_list_t_slice_from_l(self, list psel_src_list):
+        """
+        shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
+        """
+        cdef cc.std_vector[cc.PointsSelection] psel_src_vec
+        psel_src_vec.resize(len(psel_src_list))
+        cdef PointsSelection psel
+        for i in range(psel_src_vec.size()):
+            psel = psel_src_list[i]
+            cc.qswap(psel.xx, psel_src_vec[i])
+        self.xx.init()
+        cc.set_selected_shuffle_plan_t_slice_from_l(self.xx, psel_src_vec)
         cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
         cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
         psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]

@@ -37,7 +37,7 @@ def selected_shuffle_random(total_site, multiplicity, seed):
     q.json_results_append(f"hash(psel)={q.hash_sha256(psel)}")
     fsel = q.FieldSelection(psel)
     psel_l = q.PointsSelection(fsel)
-    ssp = q.SelectedShufflePlan(psel_l, rs.split("ssp"))
+    ssp = q.SelectedShufflePlan("r_from_l", psel_l, rs.split("ssp"))
     assert psel_l is ssp.psel_src_list[0]
     psel_s = ssp.psel_dst_list[0]
     psel_s1 = q.PointsSelection(psel_l, ssp)

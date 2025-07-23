@@ -96,9 +96,9 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         SelectedPoints(n_points, multiplicity, points_dist_type)
         SelectedPoints(psel)
         SelectedPoints(psel, multiplicity)
-        SelectedPoints(sp, ssp) # via `shuffle_selected_points` where ssp = SelectedShufflePlan(psel, rs)
-        SelectedPoints(sp, ssp, is_reverse) # via `shuffle_selected_points` where ssp = SelectedShufflePlan(psel, rs)
-        SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan(psel, rs)
+        SelectedPoints(sp, ssp) # via `shuffle_selected_points` where ssp = SelectedShufflePlan("r_from_l", psel, rs)
+        SelectedPoints(sp, ssp, is_reverse) # via `shuffle_selected_points` where ssp = SelectedShufflePlan("r_from_l", psel, rs)
+        SelectedPoints(sf, ssp) # via `shuffle_selected_field` where ssp = SelectedShufflePlan("r_from_l", psel, rs)
         #
         points_dist_type in [ "g", "f", "l", "r", "o", ]
         """
