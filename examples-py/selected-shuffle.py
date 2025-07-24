@@ -76,18 +76,42 @@ def selected_shuffle_random(total_site, multiplicity, seed):
     assert np.all(sig_s1 == sig_s)
     #
     psel_l_list = [ psel_l.copy() for i in range(3) ]
+    psel_l_list_hash = q.hash_sha256(psel_l_list)
+    q.json_results_append(f"hash(psel_l_list)={psel_l_list_hash}")
     ssp = q.SelectedShufflePlan("r_from_l", psel_l_list, rs.split("ssp"))
     assert ssp.psel_src_list is psel_l_list
-    q.json_results_append(f"hash(ssp.psel_src_list)={q.hash_sha256(ssp.psel_src_list)}")
+    assert psel_l_list_hash == q.hash_sha256(ssp.psel_src_list)
     q.json_results_append(f"hash(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
+    #
+    def get_sp_list_sig(sp_list):
+        sig = 0
+        for idx, sp in enumerate(sp_list):
+            sig += q.get_data_sig_arr(sp[:], rs.split(f"sig {idx}"), 3)
+        sig = q.glb_sum(sig)
+        return sig
+    #
+    sp_l_list = []
+    for idx, psel in enumerate(psel_l_list):
+        sp = q.SelectedPointsComplexD(psel, multiplicity)
+        sp.set_rand(rs.split(f"sp_l {idx}"))
+        sp_l_list.append(sp)
+    q.json_results_append(f"sig sp_l_list", get_sp_list_sig(sp_l_list), 1e-12)
+    #
+    sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
+    q.json_results_append(f"sig sp_s_list", get_sp_list_sig(sp_s_list), 1e-12)
+    sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
+    assert np.all(get_sp_list_sig(sp_ss_list) == get_sp_list_sig(sp_l_list))
     #
     psel_l_list = [ psel_l.copy() for i in range(3) ]
     ssp = q.SelectedShufflePlan("t_slice_from_l", psel_l_list)
     assert ssp.psel_src_list is psel_l_list
-    q.json_results_append(f"hash(ssp.psel_src_list)={q.hash_sha256(ssp.psel_src_list)}")
+    assert psel_l_list_hash == q.hash_sha256(ssp.psel_src_list)
     q.json_results_append(f"hash(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
     #
-
+    sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
+    q.json_results_append(f"sig sp_s_list", get_sp_list_sig(sp_s_list), 1e-12)
+    sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
+    assert np.all(get_sp_list_sig(sp_ss_list) == get_sp_list_sig(sp_l_list))
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
