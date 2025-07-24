@@ -644,6 +644,7 @@ template <class M>
 void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.points_dist_type, f2.points_dist_type);
   std::swap(f1.n_points, f2.n_points);
   std::swap(f1.multiplicity, f2.multiplicity);
   qswap(f1.points, f2.points);

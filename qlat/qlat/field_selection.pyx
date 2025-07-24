@@ -7,6 +7,9 @@ from cpython.buffer cimport PyBUF_FORMAT
 
 from .geometry cimport *
 from .field_types cimport *
+from .field_base cimport (
+        SelectedPointsBase,
+        )
 from .selected_points_types cimport (
         SelectedPointsChar,
         )
@@ -180,6 +183,49 @@ cdef class SelectedShufflePlan:
             sp = sp_dst_list[i]
             assert sp.psel is psel_dst_list[i]
             cc.qswap(sp.xx, sp_dst_vec[i])
+        return sp_dst_list
+
+    @q.timer
+    def shuffle_sp(self, cls, SelectedPointsBase sp_src, *, bint is_reverse=False):
+        """
+        shuffle `sp_src` with this plan
+        return `sp_dst`
+        The type for all `sp` is `cls`
+        """
+        assert isinstance(sp_src, cls)
+        cdef SelectedPointsChar spc_src
+        cdef SelectedPointsChar spc_dst
+        spc_src = SelectedPointsChar()
+        sp_src.swap_cast(spc_src)
+        spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
+        sp_src.swap_cast(spc_src)
+        sp_dst = cls()
+        sp_dst.swap_cast(spc_dst)
+        return sp_dst
+
+    @q.timer
+    def shuffle_sp_list(self, cls, list sp_src_list, *, bint is_reverse=False):
+        """
+        shuffle `sp_src_list` with this plan
+        return `sp_dst_list`
+        The type for all `sp` is `cls`
+        """
+        spc_src_list = []
+        for sp_src in sp_src_list:
+            assert isinstance(sp_src, cls)
+            spc_src = SelectedPointsChar()
+            sp_src.swap_cast(spc_src)
+            spc_src_list.append(spc_src)
+        assert len(spc_src_list) == len(sp_src_list)
+        spc_dst_list = self.shuffle_list(spc_src_list, is_reverse=is_reverse)
+        for sp_src, spc_src in zip(sp_src_list, spc_src_list):
+            sp_src.swap_cast(spc_src)
+        sp_dst_list = []
+        for spc_dst in spc_dst_list:
+            sp_dst = cls()
+            sp_dst.swap_cast(spc_dst)
+            sp_dst_list.append(sp_dst)
+        assert len(spc_dst_list) == len(sp_dst_list)
         return sp_dst_list
 
 ###

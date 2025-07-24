@@ -131,13 +131,8 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         if ssp is None:
             self @= sp
             return
-        cdef SelectedPointsChar sp_src
-        cdef SelectedPointsChar sp_dst
-        sp_src = SelectedPointsChar()
-        sp.swap_cast(sp_src)
-        sp_dst = ssp.shuffle(sp_src, is_reverse=is_reverse)
-        sp.swap_cast(sp_src)
-        self.swap_cast(sp_dst)
+        sp_dst = ssp.shuffle_sp(SelectedPoints{{name}}, sp, is_reverse=is_reverse)
+        self.swap(sp_dst)
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
         assert len(ssp.psel_src_list) == 1
