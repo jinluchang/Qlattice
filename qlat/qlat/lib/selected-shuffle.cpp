@@ -117,7 +117,7 @@ void shuffle_selected_points_char(
     Vector<Char> v1_val = sp0.get_elems(idx_buffer_send);
     assign(v1_val, v_val);
   });
-  // Perform shuffle with `MPI_Alltoallv`.
+  // Perform shuffle with `mpi_alltoallv`.
   {
     TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
@@ -229,7 +229,7 @@ void shuffle_selected_points_back_char(
     Vector<Char> v1_val = sp0.get_elems(idx_buffer_recv);
     assign(v1_val, v_val);
   });
-  // Perform shuffle with `MPI_Alltoallv`.
+  // Perform shuffle with `mpi_alltoallv`.
   {
     TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
@@ -465,13 +465,13 @@ static void set_selected_shuffle_plan_no_reorder(
     const Int idx_selected_points_send = v[0];
     const Long idx_within_send_field = v[1];
     const Int id_node_send_to = v[2];
-    const Int idx_selected_points_recv = v[3];
+    // const Int idx_selected_points_recv = v[3];
     // const Long rank_within_field_recv = v[4];
     if (id_node_send_to == id_node_local) {
       Vector<Long> v = spi_l.get_elems(idx_local);
       v[0] = idx_selected_points_send;
       v[1] = idx_within_send_field;
-      v[2] = idx_selected_points_recv;
+      v[2] = 0;
       v[3] = c_idx_local;
       c_idx_local += 1;
       idx_local += 1;
