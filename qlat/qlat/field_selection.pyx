@@ -99,14 +99,14 @@ cdef class SelectedShufflePlan:
         shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
         """
         cdef cc.std_vector[cc.PointsSelection] psel_src_vec
-        psel_src_vec.resize(len(psel_src_list))
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
         cdef PointsSelection psel
+        psel_src_vec.resize(len(psel_src_list))
         for i in range(psel_src_vec.size()):
             psel = psel_src_list[i]
             cc.qswap(psel.xx, psel_src_vec[i])
         self.xx.init()
         cc.set_selected_shuffle_plan_t_slice_from_l(self.xx, psel_src_vec)
-        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
         cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
         psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
         for i in range(psel_src_vec.size()):
@@ -117,6 +117,70 @@ cdef class SelectedShufflePlan:
             cc.qswap(psel.xx, psel_dst_vec[i])
         self.psel_src_list = psel_src_list
         self.psel_dst_list = psel_dst_list
+
+    @q.timer
+    def shuffle(self, SelectedPointsChar sp_src, *, bint is_reverse=False):
+        """
+        shuffle `sp_src` with this plan
+        return `sp_dst`
+        The type for all `sp` is `SelectedPointsChar`
+        """
+        assert 1 == len(self.psel_src_list)
+        assert 1 == len(self.psel_dst_list)
+        assert isinstance(sp_src, SelectedPointsChar)
+        psel_src = self.psel_src_list[0]
+        psel_dst = self.psel_dst_list[0]
+        psel = sp_src.psel
+        cdef SelectedPointsChar sp_dst
+        if is_reverse:
+            assert (psel is None) or (psel == psel_dst)
+            sp_dst = SelectedPointsChar(psel_src)
+            cc.shuffle_selected_points_back(sp_dst.xx, sp_src.xx, self.xx)
+        else:
+            assert (psel is None) or (psel == psel_src)
+            sp_dst = SelectedPointsChar(psel_dst)
+            cc.shuffle_selected_points(sp_dst.xx, sp_src.xx, self.xx)
+        return sp_dst
+
+    @q.timer
+    def shuffle_list(self, list sp_src_list, *, bint is_reverse=False):
+        """
+        shuffle `sp_src_list` with this plan
+        return `sp_dst_list`
+        The type for all `sp` is `SelectedPointsChar`
+        """
+        if is_reverse:
+            psel_src_list = self.psel_dst_list
+            psel_dst_list = self.psel_src_list
+        else:
+            psel_src_list = self.psel_src_list
+            psel_dst_list = self.psel_dst_list
+        assert len(sp_src_list) == len(psel_src_list)
+        for sp_src, psel_src in zip(sp_src_list, psel_src_list):
+            assert isinstance(sp_src, SelectedPointsChar)
+            psel = sp_src.psel
+            assert (psel is None) or (psel == psel_src)
+        cdef cc.std_vector[cc.SelectedPoints[cc.Char]] sp_src_vec
+        cdef cc.std_vector[cc.SelectedPoints[cc.Char]] sp_dst_vec
+        cdef SelectedPointsChar sp
+        sp_src_vec.resize(len(psel_src_list))
+        for i in range(sp_src_vec.size()):
+            sp = sp_src_list[i]
+            cc.qswap(sp.xx, sp_src_vec[i])
+        if is_reverse:
+            cc.shuffle_selected_points_back(sp_dst_vec, sp_src_vec, self.xx)
+        else:
+            cc.shuffle_selected_points(sp_dst_vec, sp_src_vec, self.xx)
+        assert <cc.Long>sp_dst_vec.size() == len(psel_dst_list)
+        sp_dst_list = [ SelectedPointsChar(psel) for psel in psel_dst_list ]
+        for i in range(sp_src_vec.size()):
+            sp = sp_src_list[i]
+            cc.qswap(sp.xx, sp_src_vec[i])
+        for i in range(sp_dst_vec.size()):
+            sp = sp_dst_list[i]
+            assert sp.psel is psel_dst_list[i]
+            cc.qswap(sp.xx, sp_dst_vec[i])
+        return sp_dst_list
 
 ###
 
@@ -178,9 +242,11 @@ cdef class PointsSelection:
         self.xx.init()
         if ssp is None:
             self @= psel
-        elif (ssp.psel_src_list[0] is psel) and (not is_reverse):
+        elif (len(ssp.psel_src_list) == 1 and ssp.psel_src_list[0] is psel) and (not is_reverse):
+            assert len(ssp.psel_dst_list) == 1
             self @= ssp.psel_dst_list[0]
-        elif (ssp.psel_dst_list[0] is psel) and is_reverse:
+        elif (len(ssp.psel_dst_list) == 1 and ssp.psel_dst_list[0] is psel) and is_reverse:
+            assert len(ssp.psel_src_list) == 1
             self @= ssp.psel_src_list[0]
         else:
             q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")

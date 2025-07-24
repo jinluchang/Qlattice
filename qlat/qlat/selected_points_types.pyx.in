@@ -131,24 +131,17 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         if ssp is None:
             self @= sp
             return
-        elif (sp.psel is ssp.psel_src_list[0]) and (not is_reverse):
-            self.psel = ssp.psel_dst_list[0]
-        elif (sp.psel is ssp.psel_dst_list[0]) and is_reverse:
-            self.psel = ssp.psel_src_list[0]
-        else:
-            self.psel = PointsSelection(sp.psel, ssp, is_reverse)
-            if is_reverse:
-                if self.psel == ssp.psel_src_list[0]:
-                    self.psel = ssp.psel_src_list[0]
-            else:
-                if self.psel == ssp.psel_dst_list[0]:
-                    self.psel = ssp.psel_dst_list[0]
-        if is_reverse:
-            cc.shuffle_selected_points_back(self.xx, sp.xx, ssp.xx)
-        else:
-            cc.shuffle_selected_points(self.xx, sp.xx, ssp.xx)
+        cdef SelectedPointsChar sp_src
+        cdef SelectedPointsChar sp_dst
+        sp_src = SelectedPointsChar()
+        sp.swap_cast(sp_src)
+        sp_dst = ssp.shuffle(sp_src, is_reverse=is_reverse)
+        sp.swap_cast(sp_src)
+        self.swap_cast(sp_dst)
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
+        assert len(ssp.psel_src_list) == 1
+        assert len(ssp.psel_dst_list) == 1
         self.psel = PointsSelection(sf.fsel, ssp)
         if self.psel == ssp.psel_dst_list[0]:
             self.psel = ssp.psel_dst_list[0]
