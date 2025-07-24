@@ -76,6 +76,12 @@ def selected_shuffle_random(total_site, multiplicity, seed):
     assert np.all(sig_s1 == sig_s)
     #
     psel_l_list = [ psel_l.copy() for i in range(3) ]
+    ssp = q.SelectedShufflePlan("r_from_l", psel_l_list, rs.split("ssp"))
+    assert ssp.psel_src_list is psel_l_list
+    q.json_results_append(f"hash(ssp.psel_src_list)={q.hash_sha256(ssp.psel_src_list)}")
+    q.json_results_append(f"hash(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
+    #
+    psel_l_list = [ psel_l.copy() for i in range(3) ]
     ssp = q.SelectedShufflePlan("t_slice_from_l", psel_l_list)
     assert ssp.psel_src_list is psel_l_list
     q.json_results_append(f"hash(ssp.psel_src_list)={q.hash_sha256(ssp.psel_src_list)}")
