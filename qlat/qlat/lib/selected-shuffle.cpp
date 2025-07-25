@@ -659,6 +659,8 @@ void set_selected_shuffle_instruction_r_from_l(
     n_points_selected_points_send[i] = psel_vec[i].size();
     n_points += psel_vec[i].size();
   }
+  sp_instruction.init();
+  sp_instruction.set_mem_type(MemType::Cpu);
   sp_instruction.init(n_points, 5, PointsDistType::Local);
   const RngState rs_shuffle = rs.split("shuffle_r_from_l");
   Long n_points_processed = 0;
@@ -786,6 +788,8 @@ void set_selected_shuffle_instruction_t_slice_from_l(
     n_points_selected_points_send[i] = psel_vec[i].size();
     n_points += psel_vec[i].size();
   }
+  sp_instruction.init();
+  sp_instruction.set_mem_type(MemType::Cpu);
   sp_instruction.init(n_points, 5, PointsDistType::Local);
   Long n_points_processed = 0;
   for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
@@ -820,17 +824,128 @@ void set_selected_shuffle_plan_t_slice_from_l(
     SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec)
 // Collective operation.
 // make shuffle plan
-// ssp.points_dist_type_recv = PointsDistType::Random
+// ssp.points_dist_type_recv = PointsDistType::Local
 // psel_vec[i].points_dist_type == PointsDistType::Local
 // Sort the shuffled points by order of the gindex of points.
 {
-  TIMER("set_selected_shuffle_plan_t_slice_from_l(ssp,psel_vec,rs)");
+  TIMER("set_selected_shuffle_plan_t_slice_from_l(ssp,psel_vec)");
   SelectedPoints<Long> sp_instruction;
   vector<Long> n_points_selected_points_send;
   PointsDistType points_dist_type_send;
   set_selected_shuffle_instruction_t_slice_from_l(
       sp_instruction, n_points_selected_points_send, points_dist_type_send,
       psel_vec);
+  const PointsDistType points_dist_type_recv = PointsDistType::Local;
+  set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
+                            points_dist_type_send, points_dist_type_recv);
+}
+
+// ------------------------------
+
+void set_selected_shuffle_instruction_dist_t_slice_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send, const PointsSelection& psel,
+    const Int num_field)
+// n_points_selected_points_send.size() == 1
+// n_points_selected_points_send[0] == psel.size()
+//
+// v = sp_instruction.get_elems(idx)
+// v[0] = idx_selected_points_send = 0
+// v[1] = idx_within_field_send
+// v[2] = id_node_send_to
+// v[3] = idx_selected_points_recv
+// v[4] = rank_within_field_recv
+{
+  TIMER(
+      "set_selected_shuffle_instruction_dist_t_slice_from_l(sp_inst,vec,pdt,"
+      "psel,num_field)");
+  n_points_selected_points_send.clear();
+  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.resize(1);
+  n_points_selected_points_send[0] = psel.size();
+  points_dist_type_send = psel.points_dist_type;
+  const Coordinate total_site = psel.total_site;
+  const Int t_size = total_site[3];
+  const Int num_node = get_num_node();
+  // id_node_vec_vec[t_slice] =>
+  // vector of (id_node_send_to, idx_selected_points_recv,) that should contain
+  // this t_slice
+  std::vector<std::vector<std::array<Int, 2>>> id_node_vec_vec(t_size);
+  // t_slice_vec_vec[id_node] =>
+  // vector of t_slice that should be contained in this id_node
+  std::vector<std::vector<Int>> t_slice_vec_vec(num_node);
+  for (Int t_slice = 0; t_slice < t_size; ++t_slice) {
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      const Int id_node = id_node_from_t_slice_id_field(
+          t_slice, t_size, id_field, num_field, num_node);
+      std::vector<Int>& t_slice_vec = t_slice_vec_vec[id_node];
+      bool has_t_slice = false;
+      for (Int i = 0; i < (Int)t_slice_vec.size(); ++i) {
+        if (t_slice_vec[i] == t_slice) {
+          has_t_slice = true;
+          break;
+        }
+      }
+      if (not has_t_slice) {
+        std::vector<std::array<Int, 2>>& id_node_vec = id_node_vec_vec[t_slice];
+        std::array<Int, 2> id_node_arr;
+        id_node_arr[0] = id_node;
+        id_node_arr[1] = t_slice_vec.size();
+        t_slice_vec.push_back(t_slice);
+        id_node_vec.push_back(id_node_arr);
+      }
+    }
+  }
+  const Int idx_selected_points_send = 0;
+  std::vector<std::array<Long, 5>> instruction_vec;
+  qfor(idx, psel.size(), {
+    const Long idx_within_send_field = idx;
+    const Coordinate& xg = psel[idx];
+    const Int t_slice = xg[3];
+    const Long gindex = index_from_coordinate(xg, psel.total_site);
+    const std::vector<std::array<Int, 2>>& id_node_vec =
+        id_node_vec_vec[t_slice];
+    for (Int i = 0; i < (Int)id_node_vec.size(); ++i) {
+      const Int id_node_send_to = id_node_vec[i][0];
+      const Int idx_selected_points_recv = id_node_vec[i][1];
+      const Long rank_within_field_recv = gindex;
+      qassert(0 <= id_node_send_to);
+      qassert(id_node_send_to < num_node);
+      std::array<Long, 5> v;
+      v[0] = idx_selected_points_send;
+      v[1] = idx_within_send_field;
+      v[2] = id_node_send_to;
+      v[3] = idx_selected_points_recv;
+      v[4] = rank_within_field_recv;
+      instruction_vec.push_back(v);
+    }
+  });
+  sp_instruction.init();
+  sp_instruction.set_mem_type(MemType::Cpu);
+  sp_instruction.init(instruction_vec.size(), 5, PointsDistType::Local);
+  qthread_for(idx, sp_instruction.n_points, {
+    Vector<Long> v = sp_instruction.get_elems(idx);
+    assign(v, instruction_vec[idx]);
+  });
+}
+
+void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
+                                                   const PointsSelection& psel,
+                                                   const Int num_field)
+// Collective operation.
+// make shuffle plan
+// ssp.points_dist_type_recv = PointsDistType::Local
+// psel_vec[i].points_dist_type == PointsDistType::Local
+// Sort the shuffled points by order of the gindex of points.
+{
+  TIMER("set_selected_shuffle_plan_dist_t_slice_from_l(ssp,psel,num_field)")
+  SelectedPoints<Long> sp_instruction;
+  vector<Long> n_points_selected_points_send;
+  PointsDistType points_dist_type_send;
+  set_selected_shuffle_instruction_dist_t_slice_from_l(
+      sp_instruction, n_points_selected_points_send, points_dist_type_send,
+      psel, num_field);
   const PointsDistType points_dist_type_recv = PointsDistType::Local;
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);

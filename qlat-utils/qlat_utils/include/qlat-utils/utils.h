@@ -112,6 +112,12 @@ qacc Vector<M> get_data(const array<M, N>& arr)
   return Vector<M>(arr.data(), arr.size());
 }
 
+template <class M, size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
+qacc Vector<M> get_data(const std::array<M, N>& arr)
+{
+  return Vector<M>(arr.data(), arr.size());
+}
+
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(Vector<M> vec)
 {
