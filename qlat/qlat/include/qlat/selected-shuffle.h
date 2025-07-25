@@ -213,6 +213,10 @@ void set_selected_shuffle_instruction_dist_t_slice_from_l(
     PointsDistType& points_dist_type_send, const PointsSelection& psel,
     const Int num_field);
 
+void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
+                                                   const PointsSelection& psel,
+                                                   const Int num_field);
+
 // -------------------
 
 void shuffle_field_selection(PointsSelection& psel, const FieldSelection& fsel0,

@@ -41,6 +41,7 @@ cdef class SelectedShufflePlan:
         SelectedShufflePlan("r_from_l", psel_src, rs)
         SelectedShufflePlan("r_from_l", psel_src_list, rs)
         SelectedShufflePlan("t_slice_from_l", psel_src_list, rs)
+        SelectedShufflePlan("dist_t_slice_from_l", psel_src, num_field)
         """
         self.psel_src_list = None
         self.psel_dst_list = None
@@ -55,6 +56,8 @@ cdef class SelectedShufflePlan:
             self.init_from_psel_list_r_from_l(*args[1:])
         elif args[0] == "t_slice_from_l" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
             self.init_from_psel_list_t_slice_from_l(*args[1:])
+        elif args[0] == "dist_t_slice_from_l" and isinstance(args[1], PointsSelection):
+            self.init_from_psel_list_dist_t_slice_from_l(*args[1:])
         else:
             raise Exception(f"SelectedShufflePlan.__init__ {args}")
 
@@ -68,8 +71,8 @@ cdef class SelectedShufflePlan:
         cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src.xx, rs.xx)
         psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
         cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
-        self.psel_src_list = [ psel_src ]
-        self.psel_dst_list = [ psel_dst ]
+        self.psel_src_list = [ psel_src, ]
+        self.psel_dst_list = [ psel_dst, ]
 
     @q.timer
     def init_from_psel_list_r_from_l(self, list psel_src_list, RngState rs):
@@ -119,6 +122,32 @@ cdef class SelectedShufflePlan:
             psel = psel_dst_list[i]
             cc.qswap(psel.xx, psel_dst_vec[i])
         self.psel_src_list = psel_src_list
+        self.psel_dst_list = psel_dst_list
+
+    @q.timer
+    def init_from_psel_list_dist_t_slice_from_l(self, PointsSelection psel_src, int num_field):
+        """
+        shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
+        match `init_from_psel_list_t_slice_from_l`.
+        Example use case:
+            Perform spatial smearing for propagators:
+            (1) shuffle propagators with "t_slice_from_l".
+            (2) shuffle gauge field with "dist_t_slice_from_l".
+        """
+        cdef cc.std_vector[cc.PointsSelection] psel_src_vec
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
+        cdef PointsSelection psel
+        psel_src_vec.resize(1)
+        cc.qswap(psel_src.xx, psel_src_vec[0])
+        self.xx.init()
+        cc.set_selected_shuffle_plan_dist_t_slice_from_l(self.xx, psel_src_vec[0], num_field)
+        cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
+        psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
+        cc.qswap(psel_src.xx, psel_src_vec[0])
+        for i in range(psel_dst_vec.size()):
+            psel = psel_dst_list[i]
+            cc.qswap(psel.xx, psel_dst_vec[i])
+        self.psel_src_list = [ psel_src, ]
         self.psel_dst_list = psel_dst_list
 
     @q.timer
