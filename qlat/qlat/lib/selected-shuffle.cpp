@@ -646,7 +646,8 @@ void set_selected_shuffle_instruction_r_from_l(
 // v[3] = idx_selected_points_recv
 // v[4] = rank_within_field_recv
 {
-  TIMER("set_selected_shuffle_instruction_r_from_l(sp_inst,vec,pdt,psel_vec,rs)");
+  TIMER(
+      "set_selected_shuffle_instruction_r_from_l(sp_inst,vec,pdt,psel_vec,rs)");
   qassert(psel_vec.size() > 0);
   const Int num_node = get_num_node();
   n_points_selected_points_send.clear();
@@ -767,7 +768,9 @@ void set_selected_shuffle_instruction_t_slice_from_l(
 // v[3] = idx_selected_points_recv
 // v[4] = rank_within_field_recv
 {
-  TIMER("set_selected_shuffle_instruction_t_slice_from_l(sp_inst,vec,pdt,psel_vec)");
+  TIMER(
+      "set_selected_shuffle_instruction_t_slice_from_l(sp_inst,vec,pdt,psel_"
+      "vec)");
   qassert(f_glb_sum((Long)psel_vec.size()) > 0);
   const Int num_field = psel_vec.size();
   const Int num_node = get_num_node();
