@@ -132,10 +132,16 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.qswap(self.xx, f1.xx)
 
     def swap_cast(self, SelectedFieldChar f1):
-        cdef FieldSelection fsel = self.psel
-        self.fsel = f1.psel
+        cdef FieldSelection fsel = self.fsel
+        self.fsel = f1.fsel
         f1.fsel = fsel
         cc.qswap_cast(self.xx, f1.xx)
+
+    def swap_sp_cast(self, SelectedPointsChar f1, Geometry geo):
+        """
+        Only swap data. Does NOT affect f1.psel and self.fsel at all.
+        """
+        cc.qswap_cast(self.xx, f1.xx, geo.xx)
 
     @property
     def n_elems(self):

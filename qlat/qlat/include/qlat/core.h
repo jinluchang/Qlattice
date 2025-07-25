@@ -1154,6 +1154,11 @@ struct API FieldSelection {
 
 void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel);
 
+void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel,
+                        const Geometry& geo,
+                        const Long rank_psel = 1024L * 1024L * 1024L * 1024L *
+                                               1024L);
+
 // --------------------
 
 template <class M>
@@ -1393,6 +1398,22 @@ void qswap_cast(Field<M>& f1, SelectedPoints<N>& f2, box<Geometry>& geo2)
 }
 
 template <class M, class N>
+void qswap_cast(Field<M>& f1, SelectedPoints<N>& f2, Geometry& geo2)
+{
+  box<Geometry> bgeo2;
+  bgeo2.set_mem_type(f2.points.mem_type);
+  if (geo2.initialized) {
+    bgeo2.set(geo2);
+  }
+  qswap_cast(f1, f2, bgeo2);
+  if (bgeo2.null()) {
+    geo2.init();
+  } else {
+    geo2 = bgeo2.get();
+  }
+}
+
+template <class M, class N>
 void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
                 box<Geometry>& geo2)
 {
@@ -1400,7 +1421,7 @@ void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
     qassert(f2.points_dist_type == PointsDistType::Local);
   }
   std::swap(f1.initialized, f2.initialized);
-  std::swap(f1.n_points, f2.n_elems);
+  std::swap(f1.n_elems, f2.n_points);
   const Long data_size1 = f2.multiplicity * sizeof(N);
   const Long data_size2 = f1.multiplicity * sizeof(M);
   f1.multiplicity = data_size1 / sizeof(M);
@@ -1409,6 +1430,22 @@ void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
   qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
+}
+
+template <class M, class N>
+void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2, Geometry& geo2)
+{
+  box<Geometry> bgeo2;
+  bgeo2.set_mem_type(f2.points.mem_type);
+  if (geo2.initialized) {
+    bgeo2.set(geo2);
+  }
+  qswap_cast(f1, f2, bgeo2);
+  if (bgeo2.null()) {
+    geo2.init();
+  } else {
+    geo2 = bgeo2.get();
+  }
 }
 
 // --------------------

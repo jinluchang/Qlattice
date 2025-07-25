@@ -646,28 +646,33 @@ cdef class FieldSelection:
         FieldSelection(geo, 0) # selecting all points
         FieldSelection(geo, -1) # no points being selected
         FieldSelection(geo) # same as `FieldSelection(geo, -1)`, no points being selected
-        FieldSelection(psel) # require `psel.points_dist_type == "g"`
+        FieldSelection(psel) # require `psel.points_dist_type in [ "l", "f", "g", ]`
         """
         cdef cc.Int len_args = len(args)
-        cdef Geometry geo
-        cdef PointsSelection psel
-        cdef cc.Long val = -1
-        self.xx.init()
         if len_args == 0:
+            self.xx.init()
             return
         elif isinstance(args[0], Geometry):
-            geo = args[0]
-            if len_args > 1:
-                assert len_args == 2
-                val = args[1]
-            self.set_uniform(geo, val);
+            self.init_from_geo(*args)
         elif isinstance(args[0], PointsSelection):
-            psel = args[0]
-            geo = psel.geo
-            self.set_uniform(geo, -1);
-            self.add_psel(psel)
+            self.init_from_psel(*args)
         else:
             raise Exception("FieldSelection.__init__: {args}")
+
+    def init_from_geo(self, Geometry geo, int rank=-1):
+        """
+        By default `rank=-1` means empty selection.
+        Non-negative `rank` means full selection.
+        """
+        self.set_uniform(geo, rank)
+
+    def init_from_psel(self, PointsSelection psel, Geometry geo=None, int rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
+        """
+        psel.points_dist_type [ "g", "f", "l", ]
+        """
+        if geo is None:
+            geo = psel.geo
+        cc.set_fsel_from_psel(self.xx, psel.xx, geo.xx, rank_psel)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
         """

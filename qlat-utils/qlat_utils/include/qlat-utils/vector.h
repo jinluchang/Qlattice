@@ -591,16 +591,16 @@ struct API box {
   //
   void set(const M& x)
   {
-    if (mem_type == MemType::Acc) {
-      clear();
-      mem_type = MemType::Cpu;
-      alloc();
-      v() = x;
-      set_mem_type(MemType::Acc);
-      return;
-    }
     alloc();
-    v() = x;
+    copy_mem(v.p, mem_type, &x, MemType::Cpu, sizeof(M));
+  }
+  //
+  M get()
+  {
+    qassert(not v.null());
+    M x;
+    copy_mem(&x, MemType::Cpu, v.p, mem_type, sizeof(M));
+    return x;
   }
   //
   box<M>& operator=(const box<M>& vp)

@@ -159,6 +159,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         const Geometry& get_geo()
     void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel) except +
+    void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel, const Geometry& geo, const Long rank_psel) except +
     cdef cppclass SelectedField[T]:
         Long n_elems;
         Int multiplicity
@@ -177,12 +178,12 @@ cdef extern from "qlat/core.h" namespace "qlat":
     Vector[T] get_data[T](const SelectedPoints[T]& x) except +
     void set_zero[T](SelectedPoints[T]& x) except +
     void qswap[T](SelectedPoints[T]& x, SelectedPoints[T]& y) except +
-    void qswap_cast[M,N](SelectedPoints[M]& f1, SelectedPoints[N]& f2) except +
     void qswap_cast[M](PointsSelection& f1, SelectedPoints[M]& f2, Coordinate& total_site2) except +
     void qswap_cast[M,N](Field[M]& f1, Field[N]& f2) except +
     void qswap_cast[M,N](SelectedField[M]& f1, SelectedField[N]& f2) except +
-    void qswap_cast[M,N](Field[M]& f1, SelectedPoints[N]& f2, box[Geometry]& geo2) except +
-    void qswap_cast[M,N](SelectedField[M]& f1, SelectedPoints[N]& f2, box[Geometry]& geo2) except +
+    void qswap_cast[M,N](Field[M]& f1, SelectedPoints[N]& f2, Geometry& geo2) except +
+    void qswap_cast[M,N](SelectedField[M]& f1, SelectedPoints[N]& f2, Geometry& geo2) except +
+    void qswap_cast[M,N](SelectedPoints[M]& f1, SelectedPoints[N]& f2) except +
     cdef cppclass SelProp(SelectedField[WilsonMatrix]):
         pass
     cdef cppclass PselProp(SelectedPoints[WilsonMatrix]):

@@ -1,6 +1,7 @@
 #define QLAT_INSTANTIATE_CORE
 
 #include <qlat/core.h>
+#include <qlat/selected-field.h>
 
 namespace qlat
 {  //
@@ -89,7 +90,8 @@ void PointsSelection::init()
   xgs.init();
 }
 
-void PointsSelection::init(const Coordinate& total_site_, const Long n_points_, const PointsDistType points_dist_type_)
+void PointsSelection::init(const Coordinate& total_site_, const Long n_points_,
+                           const PointsDistType points_dist_type_)
 {
   initialized = true;
   points_dist_type = points_dist_type_;
@@ -98,7 +100,8 @@ void PointsSelection::init(const Coordinate& total_site_, const Long n_points_, 
   xgs.resize(n_points_);
 }
 
-void PointsSelection::init(const Coordinate& total_site_, const std::vector<Coordinate>& xgs_)
+void PointsSelection::init(const Coordinate& total_site_,
+                           const std::vector<Coordinate>& xgs_)
 {
   initialized = true;
   points_dist_type = PointsDistType::Global;
@@ -106,7 +109,8 @@ void PointsSelection::init(const Coordinate& total_site_, const std::vector<Coor
   xgs = xgs_;
 }
 
-void PointsSelection::init(const Coordinate& total_site_, const vector<Coordinate>& xgs_)
+void PointsSelection::init(const Coordinate& total_site_,
+                           const vector<Coordinate>& xgs_)
 {
   initialized = true;
   points_dist_type = PointsDistType::Global;
@@ -114,7 +118,8 @@ void PointsSelection::init(const Coordinate& total_site_, const vector<Coordinat
   xgs = xgs_;
 }
 
-void PointsSelection::init(const Coordinate& total_site_, const SelectedPoints<Coordinate>& spx)
+void PointsSelection::init(const Coordinate& total_site_,
+                           const SelectedPoints<Coordinate>& spx)
 {
   qassert(spx.multiplicity == 1);
   initialized = spx.initialized;
@@ -191,6 +196,7 @@ void FieldSelection::init()
 }
 
 void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel)
+// psel.points_dist_type will be PointsDistType::Local
 {
   TIMER("set_psel_from_fsel(psel,fsel)");
   qassert(fsel.f_rank.initialized);
@@ -205,6 +211,37 @@ void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel)
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     psel[idx] = xg;
   });
+}
+
+void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel,
+                        const Geometry& geo, const Long rank_psel)
+// psel.points_dist_type can be either
+// PointsDistType::Local
+// or PointsDistType::Full
+// or PointsDistType::Global
+{
+  TIMER("set_fsel_from_psel(fsel,psel,geo,rank_psel)");
+  qassert(psel.initialized);
+  qassert((psel.points_dist_type == PointsDistType::Local) or
+          (psel.points_dist_type == PointsDistType::Full) or
+          (psel.points_dist_type == PointsDistType::Global));
+  qassert(psel.total_site == geo.total_site());
+  fsel.init();
+  mk_field_selection(fsel.f_rank, geo, -1);
+  qthread_for(idx, psel.size(), {
+    const Coordinate xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      fsel.f_rank.get_elem(xl) = rank_psel;
+    } else {
+      qassert(psel.points_dist_type == PointsDistType::Global);
+    }
+  });
+  update_field_selection(fsel);
+  if ((psel.points_dist_type == PointsDistType::Local) or
+      (psel.points_dist_type == PointsDistType::Full)) {
+    qassert(fsel.n_elems == psel.size());
+  }
 }
 
 }  // namespace qlat
