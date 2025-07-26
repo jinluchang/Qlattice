@@ -1395,6 +1395,9 @@ void qswap_cast(Field<M>& f1, SelectedPoints<N>& f2, box<Geometry>& geo2)
   qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
+  if (f2.initialized) {
+    f2.points_dist_type = PointsDistType::Full;
+  }
 }
 
 template <class M, class N>
@@ -1430,6 +1433,9 @@ void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
   qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
+  if (f2.initialized) {
+    f2.points_dist_type = PointsDistType::Full;
+  }
 }
 
 template <class M, class N>

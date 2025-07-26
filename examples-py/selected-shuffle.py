@@ -115,10 +115,6 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     rs = q.RngState(f"seed {fname} {seed}")
     geo = q.Geometry(total_site)
     #
-    gf = q.GaugeField(geo)
-    gf.set_rand(rs, 0.5, 2)
-    q.json_results_append(f"gf_sig", q.get_data_sig_arr(gf, rs, 3), 1e-10)
-    #
     n_points = total_site.volume() // 16
     q.json_results_append(f"n_points={n_points}")
     #
@@ -164,11 +160,33 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
     assert np.all(get_sp_list_sig(sp_ss_list, rs, 3) == get_sp_list_sig([ sp_l, ], rs, 3))
 
+@q.timer
+def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
+    fname = q.get_fname()
+    q.json_results_append(f"{fname}: {total_site} {multiplicity} {seed}")
+    rs = q.RngState(f"seed {fname} {seed}")
+    geo = q.Geometry(total_site)
+    #
+    gf = q.GaugeField(geo)
+    gf.set_rand(rs, 0.5, 2)
+    gf_sig = q.get_data_sig_arr(gf, rs, 3)
+    q.json_results_append(f"gf sig", gf_sig, 1e-10)
+    #
+    spc = q.SelectedPointsChar()
+    geo = q.Geometry()
+    gf.swap_sp_cast(spc, geo)
+    #
+    # q.json_results_append(f"spc sig", q.get_data_sig_arr(spc, rs, 3), 1e-10)
+    #
+    gf.swap_sp_cast(spc, geo)
+    assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
+
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
         for seed in range(1):
             selected_shuffle_r_from_l(total_site, multiplicity, seed)
             selected_shuffle_t_slice_from_l(total_site, multiplicity, seed)
+            selected_shuffle_t_slice_from_f(total_site, multiplicity, seed)
 
 q.timer_display()
 q.check_log_json(__file__)

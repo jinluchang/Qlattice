@@ -145,30 +145,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([4, 4, 4, 4]) 1 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": 22.653505065212215,
-     "imag": 1.6870177758718603,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 26.39362436002904,
-     "imag": 1.3275601875968164,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 7.41158773390294,
-     "imag": 2.4988862531232536,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=16"
  ],
  [
@@ -273,6 +249,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([4, 4, 4, 4]) 1 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": 13.629186334186812,
+     "imag": -4.795302744796463,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.32437848813586534,
+     "imag": 8.027129797324772,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -27.52989254524727,
+     "imag": 6.8892797436784114,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 2 0"
@@ -420,30 +423,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([4, 4, 4, 4]) 2 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": 22.653505065212215,
-     "imag": 1.6870177758718603,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 26.39362436002904,
-     "imag": 1.3275601875968164,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 7.41158773390294,
-     "imag": 2.4988862531232536,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=16"
  ],
  [
@@ -548,6 +527,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([4, 4, 4, 4]) 2 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": 13.629186334186812,
+     "imag": -4.795302744796463,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.32437848813586534,
+     "imag": 8.027129797324772,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -27.52989254524727,
+     "imag": 6.8892797436784114,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 3 0"
@@ -695,30 +701,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([4, 4, 4, 4]) 3 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": 22.653505065212215,
-     "imag": 1.6870177758718603,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 26.39362436002904,
-     "imag": 1.3275601875968164,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 7.41158773390294,
-     "imag": 2.4988862531232536,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=16"
  ],
  [
@@ -823,6 +805,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([4, 4, 4, 4]) 3 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": 13.629186334186812,
+     "imag": -4.795302744796463,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.32437848813586534,
+     "imag": 8.027129797324772,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -27.52989254524727,
+     "imag": 6.8892797436784114,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 1 0"
@@ -970,30 +979,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([6, 6, 6, 6]) 1 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": 3.040512338422113,
-     "imag": 5.244644329883677,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -84.85864095187607,
-     "imag": 24.574600472529983,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -21.138005203482056,
-     "imag": -9.139713286573102,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=81"
  ],
  [
@@ -1098,6 +1083,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([6, 6, 6, 6]) 1 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -19.073095061691596,
+     "imag": -52.24190318146264,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -131.5098850732993,
+     "imag": 33.03843805726036,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.023207458073422,
+     "imag": -20.763119981503046,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 2 0"
@@ -1245,30 +1257,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([6, 6, 6, 6]) 2 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": 3.040512338422113,
-     "imag": 5.244644329883677,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -84.85864095187607,
-     "imag": 24.574600472529983,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -21.138005203482056,
-     "imag": -9.139713286573102,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=81"
  ],
  [
@@ -1373,6 +1361,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([6, 6, 6, 6]) 2 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -19.073095061691596,
+     "imag": -52.24190318146264,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -131.5098850732993,
+     "imag": 33.03843805726036,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.023207458073422,
+     "imag": -20.763119981503046,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 3 0"
@@ -1520,30 +1535,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([6, 6, 6, 6]) 3 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": 3.040512338422113,
-     "imag": 5.244644329883677,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -84.85864095187607,
-     "imag": 24.574600472529983,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -21.138005203482056,
-     "imag": -9.139713286573102,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=81"
  ],
  [
@@ -1648,6 +1639,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([6, 6, 6, 6]) 3 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -19.073095061691596,
+     "imag": -52.24190318146264,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -131.5098850732993,
+     "imag": 33.03843805726036,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.023207458073422,
+     "imag": -20.763119981503046,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 1 0"
@@ -1795,30 +1813,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([8, 8, 8, 8]) 1 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": -51.52444741666322,
-     "imag": 113.27872620444165,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -213.6544723126732,
-     "imag": 34.369246244169005,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 36.552768232145205,
-     "imag": -113.48795664493323,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=256"
  ],
  [
@@ -1923,6 +1917,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([8, 8, 8, 8]) 1 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -54.32984819713218,
+     "imag": -92.25112395627505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -111.8704666535534,
+     "imag": 14.29705355302949,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -6.495336274849187,
+     "imag": 56.31823121537714,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 2 0"
@@ -2070,30 +2091,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([8, 8, 8, 8]) 2 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": -51.52444741666322,
-     "imag": 113.27872620444165,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -213.6544723126732,
-     "imag": 34.369246244169005,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 36.552768232145205,
-     "imag": -113.48795664493323,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=256"
  ],
  [
@@ -2198,6 +2195,33 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([8, 8, 8, 8]) 2 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -54.32984819713218,
+     "imag": -92.25112395627505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -111.8704666535534,
+     "imag": 14.29705355302949,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -6.495336274849187,
+     "imag": 56.31823121537714,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 3 0"
@@ -2345,30 +2369,6 @@
   "selected_shuffle_t_slice_from_l: Coordinate([8, 8, 8, 8]) 3 0"
  ],
  [
-  "gf_sig",
-  {
-   "value": [
-    {
-     "real": -51.52444741666322,
-     "imag": 113.27872620444165,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": -213.6544723126732,
-     "imag": 34.369246244169005,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 36.552768232145205,
-     "imag": -113.48795664493323,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-10
- ],
- [
   "n_points=256"
  ],
  [
@@ -2473,5 +2473,32 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "selected_shuffle_t_slice_from_f: Coordinate([8, 8, 8, 8]) 3 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -54.32984819713218,
+     "imag": -92.25112395627505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -111.8704666535534,
+     "imag": 14.29705355302949,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -6.495336274849187,
+     "imag": 56.31823121537714,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ]
 ]
