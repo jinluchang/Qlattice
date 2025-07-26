@@ -217,17 +217,6 @@ cdef extern from "qlat/field-io.h" namespace "qlat":
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
-    void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel) except +
-    void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld) except +
-    void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type) except +
-    #
-    void save_points_selection(const PointsSelection& psel, const std_string& path) except +
-    void save_points_selection_info(const PointsSelection& psel, const std_string& path) except +
-    PointsSelection load_points_selection(const std_string& path) except +
-    PointsSelection load_points_selection_info(const std_string& path) except +
-    #
-    PointsSelection mk_random_points_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
-    #
     Long write_field_selection(const FieldSelection& fsel, const std_string& path) except +
     Long read_field_selection(FieldSelection& fsel, const std_string& path) except +
     #
@@ -293,6 +282,17 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
 
 cdef extern from "qlat/selected-points.h" namespace "qlat":
 
+    PointsSelection mk_tslice_points_selection(const Coordinate& total_site, const Int t_dir) except +
+    PointsSelection mk_random_points_selection(const Coordinate& total_site, const Long num, const RngState& rs) except +
+    void set_psel_full(PointsSelection& psel, const Geometry& geo) except +
+    void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel) except +
+    void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld) except +
+    void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type) except +
+    void save_points_selection(const PointsSelection& psel, const std_string& path) except +
+    void save_points_selection_info(const PointsSelection& psel, const std_string& path) except +
+    PointsSelection load_points_selection(const std_string& path) except +
+    PointsSelection load_points_selection_info(const std_string& path) except +
+    #
     RealD qnorm[M](const SelectedPoints[M]& sp) except +
     void qnorm_field[M](SelectedPoints[RealD]& sp, const SelectedPoints[M]& sp1) except +
     void set_u_rand[M](SelectedPoints[M]& sp, const PointsSelection& psel, const RngState& rs, const RealD upper, const RealD lower) except +
@@ -311,7 +311,6 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void load_selected_points[M](SelectedPoints[M]& sp, const std_string& fn) except +
     std_string save_selected_points_str[M](const SelectedPoints[M]& sp) except +
     void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content) except +
-    PointsSelection mk_tslice_points_selection(const Coordinate& total_site, const Int t_dir) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const Int t_dir) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +

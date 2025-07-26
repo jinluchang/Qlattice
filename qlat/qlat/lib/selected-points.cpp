@@ -7,6 +7,7 @@ namespace qlat
 
 PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
                                            const int t_dir)
+// psel.size() == total_site[t_dir]
 {
   qassert(0 <= t_dir and t_dir < 4);
   const int t_size = total_site[t_dir];
@@ -70,6 +71,19 @@ PointsSelection mk_random_points_selection(const Coordinate& total_site,
                  pool_factor));
     return mk_random_points_selection(total_site, num, rs, pool_factor + 2);
   }
+}
+
+void set_psel_full(PointsSelection& psel, const Geometry& geo)
+{
+  TIMER("set_psel_full");
+  const Coordinate total_site = geo.total_site();
+  const Long n_points = geo.local_volume();
+  psel.init(total_site, n_points, PointsDistType::Full);
+  qacc_for(index, n_points, {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    psel[index] = xg;
+  });
 }
 
 void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel)

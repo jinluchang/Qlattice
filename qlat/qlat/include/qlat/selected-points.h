@@ -9,8 +9,10 @@ PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
                                           const int t_dir = 3);
 
 PointsSelection mk_random_points_selection(const Coordinate& total_site,
-                                         const Long num, const RngState& rs,
-                                         const Long pool_factor = 2);
+                                           const Long num, const RngState& rs,
+                                           const Long pool_factor = 2);
+
+void set_psel_full(PointsSelection& psel, const Geometry& geo);
 
 void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel);
 

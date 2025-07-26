@@ -274,6 +274,7 @@ cdef class PointsSelection:
         PointsSelection(total_site, xg)
         PointsSelection(total_site, n_points)
         PointsSelection(total_site, xg_arr, points_dist_type)
+        PointsSelection(geo) # full selection
         PointsSelection(fsel)
         PointsSelection(fsel, ssp)
         PointsSelection(psel)
@@ -288,6 +289,8 @@ cdef class PointsSelection:
         elif isinstance(args[0], Coordinate):
             total_site = args[0]
             self.init_from_total_site(*args)
+        elif isinstance(args[0], Geometry):
+            self.init_from_geo(*args)
         elif isinstance(args[0], FieldSelection):
             self.init_from_fsel(*args)
         elif isinstance(args[0], PointsSelection):
@@ -308,6 +311,12 @@ cdef class PointsSelection:
         if points_dist_type is None:
             return
         self.points_dist_type = points_dist_type
+
+    def init_from_geo(self, Geometry geo):
+        """
+        points_dist_type in [ "f", ]
+        """
+        cc.set_psel_full(self.xx, geo.xx)
 
     def init_from_psel(self, PointsSelection psel, SelectedShufflePlan ssp=None, bint is_reverse=False):
         """
