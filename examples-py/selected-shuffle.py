@@ -173,9 +173,19 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     num_field = 3
     #
     gf = q.GaugeField(geo)
-    gf.set_rand(rs, 0.5, 2)
+    gf.set_rand(rs.split(f"gf"), 0.5, 2)
     gf_sig = q.get_data_sig_arr(gf, rs, 3)
     q.json_results_append(f"gf sig", gf_sig, 1e-10)
+    #
+    psel_list = []
+    vec_list = []
+    for i in range(num_field):
+        vec = q.FermionField4d(geo)
+        vec.set_rand(rs.split(f"vec {i}"))
+        psel_list.append(psel.copy())
+        vec_list.append(vec)
+    q.json_results_append(f"hash_sha256(psel_list)={q.hash_sha256(psel_list)}")
+    q.json_results_append(f"sig vec_list", get_sp_list_sig(vec_list, rs, 3), 1e-12)
     #
     spc = q.SelectedPointsChar(psel)
     geo = q.Geometry()
@@ -185,16 +195,40 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
     #
-    ssp = q.SelectedShufflePlan("dist_t_slice_from_l", psel, num_field)
-    assert ssp.psel_src_list[0] is psel
-    q.json_results_append(f"hash_sha256(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
+    ssp1 = q.SelectedShufflePlan("dist_t_slice_from_l", psel, num_field)
+    assert ssp1.psel_src_list[0] is psel
+    q.json_results_append(f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}")
+    t_list = [ psel[0][3].item() for psel in ssp1.psel_dst_list ]
+    all_t_list_list = q.get_comm().allgather(t_list)
+    q.json_results_append(f"all_t_list_list={all_t_list_list}")
     #
     gf.swap_sp_cast(spc, geo)
-    spc_list = ssp.shuffle_list([ spc, ])
-    [ spc, ] = ssp.shuffle_list(spc_list, is_reverse=True)
+    spc_list = ssp1.shuffle_list([ spc, ])
+    [ spc, ] = ssp1.shuffle_list(spc_list, is_reverse=True)
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
     #
+    ssp2 = q.SelectedShufflePlan("t_slice_from_l", psel_list)
+    assert ssp2.psel_src_list is psel_list
+    q.json_results_append(f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}")
+    vt_list = [ psel[0][3].item() for psel in ssp2.psel_dst_list ]
+    all_vt_list_list = q.get_comm().allgather(vt_list)
+    q.json_results_append(f"all_vt_list_list={all_vt_list_list}")
+    #
+    vspc_list = []
+    vgeo_list = []
+    for i in range(num_field):
+        vspc = q.SelectedPointsChar(psel)
+        vgeo = q.Geometry()
+        vec_list[i].swap_sp_cast(vspc, vgeo)
+        vspc_list.append(vspc)
+        vgeo_list.append(vgeo)
+    vspc_list = ssp2.shuffle_list(vspc_list)
+    vspc_list = ssp2.shuffle_list(vspc_list, is_reverse=True)
+    assert len(vspc_list) == num_field
+    assert len(vgeo_list) == num_field
+    for i in range(num_field):
+        vec_list[i].swap_sp_cast(vspc_list[i], vgeo_list[i])
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
