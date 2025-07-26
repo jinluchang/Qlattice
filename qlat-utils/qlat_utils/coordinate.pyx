@@ -209,7 +209,7 @@ def middle_mod_coordinate(Coordinate x, Coordinate y, Coordinate size):
 
 def coordinate_from_index(cc.Long index, Coordinate size not None):
     cdef Coordinate x = Coordinate()
-    cc.assign_direct(x.xx, cc.coordinate_from_index(index, (<Coordinate>size).xx))
+    cc.assign_direct(x.xx, cc.coordinate_from_index(index, size.xx))
     return x
 
 def index_from_coordinate(Coordinate x not None, Coordinate size not None):

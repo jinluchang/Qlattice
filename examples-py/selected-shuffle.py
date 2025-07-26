@@ -203,8 +203,8 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     q.json_results_append(f"all_t_list_list={all_t_list_list}")
     #
     gf.swap_sp_cast(spc, geo)
-    spc_list = ssp1.shuffle_list([ spc, ])
-    [ spc, ] = ssp1.shuffle_list(spc_list, is_reverse=True)
+    s_spc_list = ssp1.shuffle_list([ spc, ])
+    [ spc, ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
     #
@@ -223,8 +223,8 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
         vec_list[i].swap_sp_cast(vspc, vgeo)
         vspc_list.append(vspc)
         vgeo_list.append(vgeo)
-    vspc_list = ssp2.shuffle_list(vspc_list)
-    vspc_list = ssp2.shuffle_list(vspc_list, is_reverse=True)
+    s_vspc_list = ssp2.shuffle_list(vspc_list)
+    vspc_list = ssp2.shuffle_list(s_vspc_list, is_reverse=True)
     assert len(vspc_list) == num_field
     assert len(vgeo_list) == num_field
     for i in range(num_field):

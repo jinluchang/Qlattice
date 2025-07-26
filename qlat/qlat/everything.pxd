@@ -63,7 +63,8 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         bool is_only_local
         Geometry()
         void init()
-        void init(Coordinate& total_site) except +
+        void init(const Coordinate& total_site) except +
+        void init(const Int& id_node, const Coordinate& size_node, const Coordinate& node_site) except +
         Coordinate total_site()
         Coordinate local_site()
         Long local_volume()

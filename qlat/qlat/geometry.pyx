@@ -23,6 +23,12 @@ cdef class Geometry:
         if total_site is not None:
             self.xx.init(Coordinate(total_site).xx)
 
+    def init(self, int id_node, Coordinate size_node, Coordinate node_site):
+        """
+        initialize Geometry without call MPI functions.
+        """
+        self.xx.init(id_node, size_node.xx, node_site.xx)
+
     def __imatmul__(self, Geometry v1):
         cc.assign_direct(self.xx, v1.xx)
         return self

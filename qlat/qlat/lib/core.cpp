@@ -6,6 +6,28 @@
 namespace qlat
 {  //
 
+qacc_no_inline GeometryNode::GeometryNode() { init(); }
+
+qacc_no_inline GeometryNode::GeometryNode(const int id_node_, const Coordinate& size_node_)
+{
+  init(id_node_, size_node_);
+}
+
+qacc_no_inline void GeometryNode::init()
+{
+  memset((void*)this, 0, sizeof(GeometryNode));
+}
+
+qacc_no_inline void GeometryNode::init(const Int id_node_,
+                                       const Coordinate& size_node_)
+{
+  initialized = true;
+  num_node = product(size_node_);
+  id_node = id_node_;
+  size_node = size_node_;
+  coor_node = coordinate_from_index(id_node_, size_node_);
+}
+
 std::string show(const qlat::GeometryNode& geon)
 {
   std::string s;
@@ -15,6 +37,55 @@ std::string show(const qlat::GeometryNode& geon)
   s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
   s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
   return s;
+}
+
+qacc_no_inline bool operator==(const GeometryNode& geon1,
+                               const GeometryNode& geon2)
+{
+  return geon1.initialized == geon2.initialized &&
+         geon1.num_node == geon2.num_node && geon1.id_node == geon2.id_node &&
+         geon1.size_node == geon2.size_node &&
+         geon1.coor_node == geon2.coor_node;
+}
+
+qacc_no_inline bool operator!=(const GeometryNode& geon1,
+                               const GeometryNode& geon2)
+{
+  return !(geon1 == geon2);
+}
+
+qacc_no_inline Geometry::Geometry() { init(); }
+
+Geometry::Geometry(const Coordinate& total_site)
+{
+  init();
+  init(total_site);
+}
+
+qacc_no_inline void Geometry::init()
+{
+  memset((void*)this, 0, sizeof(Geometry));
+}
+
+qacc_no_inline void Geometry::init(const GeometryNode& geon_,
+                                   const Coordinate& node_site_)
+{
+  if (!initialized) {
+    init();
+    geon = geon_;
+    node_site = node_site_;
+    reset_node_site_expanded();
+    initialized = true;
+  }
+}
+
+qacc_no_inline void Geometry::init(const Int& id_node_,
+                                   const Coordinate& size_node_,
+                                   const Coordinate& node_site_)
+{
+  GeometryNode geon;
+  geon.init(id_node_, size_node_);
+  init(geon, node_site_);
 }
 
 void Geometry::init(const Coordinate& total_site)
@@ -29,6 +100,38 @@ void Geometry::init(const Coordinate& total_site)
     reset_node_site_expanded();
     initialized = true;
   }
+}
+
+qacc_no_inline void Geometry::reset_node_site_expanded()
+{
+  is_only_local = true;
+  for (int i = 0; i < DIMN; ++i) {
+    node_site_expanded[i] =
+        expansion_left[i] + node_site[i] + expansion_right[i];
+    if (expansion_left[i] != 0 or expansion_right[i] != 0) {
+      is_only_local = false;
+    }
+  }
+}
+
+qacc_no_inline void Geometry::resize(const Coordinate& expansion_left_,
+                                     const Coordinate& expansion_right_)
+{
+  expansion_left = expansion_left_;
+  expansion_right = expansion_right_;
+  for (int i = 0; i < DIMN; ++i) {
+    if (geon.size_node[i] == 1) {
+      expansion_left[i] = 0;
+      expansion_right[i] = 0;
+    }
+  }
+  reset_node_site_expanded();
+}
+
+qacc_no_inline void Geometry::resize(const int thick)
+{
+  const Coordinate expansion(thick, thick, thick, thick);
+  resize(expansion, expansion);
 }
 
 std::string show(const qlat::Geometry& geo)
