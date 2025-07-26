@@ -1395,8 +1395,14 @@ void qswap_cast(Field<M>& f1, SelectedPoints<N>& f2, box<Geometry>& geo2)
   qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
+  if (f1.initialized) {
+    qassert(f1.geo().local_volume_expanded() * f1.multiplicity ==
+            f1.field.size());
+  }
   if (f2.initialized) {
     f2.points_dist_type = PointsDistType::Full;
+    f2.n_points = f2.points.size() / f2.multiplicity;
+    qassert(f2.n_points * f2.multiplicity == f2.points.size());
   }
 }
 
@@ -1433,8 +1439,12 @@ void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
   qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
+  if (f1.initialized) {
+    qassert(f1.n_elems * f1.multiplicity == f1.field.size());
+  }
   if (f2.initialized) {
     f2.points_dist_type = PointsDistType::Full;
+    qassert(f2.n_points * f2.multiplicity == f2.points.size());
   }
 }
 

@@ -254,6 +254,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([4, 4, 4, 4]) 1 0"
  ],
  [
+  "len(psel)=128"
+ ],
+ [
+  "hash_sha256(psel)=4f4a40bd56fbc0a7bd34c5b31a6ba93083d5f805a53e9ed721cd78286e64f77e"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -276,6 +282,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=71f2bdf9cd65be7f094ed40849dd0806c7d51addb302570e5ddcd023200c34b0"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 2 0"
@@ -532,6 +541,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([4, 4, 4, 4]) 2 0"
  ],
  [
+  "len(psel)=128"
+ ],
+ [
+  "hash_sha256(psel)=4f4a40bd56fbc0a7bd34c5b31a6ba93083d5f805a53e9ed721cd78286e64f77e"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -554,6 +569,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=71f2bdf9cd65be7f094ed40849dd0806c7d51addb302570e5ddcd023200c34b0"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 3 0"
@@ -810,6 +828,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([4, 4, 4, 4]) 3 0"
  ],
  [
+  "len(psel)=128"
+ ],
+ [
+  "hash_sha256(psel)=4f4a40bd56fbc0a7bd34c5b31a6ba93083d5f805a53e9ed721cd78286e64f77e"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -832,6 +856,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=71f2bdf9cd65be7f094ed40849dd0806c7d51addb302570e5ddcd023200c34b0"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 1 0"
@@ -1088,6 +1115,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([6, 6, 6, 6]) 1 0"
  ],
  [
+  "len(psel)=648"
+ ],
+ [
+  "hash_sha256(psel)=f641cb05c3aede032adf6583e12350f6eba18f4099e964bcd2cc474118831c77"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -1110,6 +1143,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=56751f2c420d988ddc14636476a950367707d7f8e96bdfd722060a76705defd7"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 2 0"
@@ -1366,6 +1402,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([6, 6, 6, 6]) 2 0"
  ],
  [
+  "len(psel)=648"
+ ],
+ [
+  "hash_sha256(psel)=f641cb05c3aede032adf6583e12350f6eba18f4099e964bcd2cc474118831c77"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -1388,6 +1430,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=56751f2c420d988ddc14636476a950367707d7f8e96bdfd722060a76705defd7"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 3 0"
@@ -1644,6 +1689,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([6, 6, 6, 6]) 3 0"
  ],
  [
+  "len(psel)=648"
+ ],
+ [
+  "hash_sha256(psel)=f641cb05c3aede032adf6583e12350f6eba18f4099e964bcd2cc474118831c77"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -1666,6 +1717,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=56751f2c420d988ddc14636476a950367707d7f8e96bdfd722060a76705defd7"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 1 0"
@@ -1922,6 +1976,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([8, 8, 8, 8]) 1 0"
  ],
  [
+  "len(psel)=2048"
+ ],
+ [
+  "hash_sha256(psel)=5c65df8c09ff599799dc6febac2a210634bd068430bb935c09de601bd7611e3b"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -1944,6 +2004,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=48283d2735e95ce177e65ee45853c69c541e33603fbc369666ae5028737a9909"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 2 0"
@@ -2200,6 +2263,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([8, 8, 8, 8]) 2 0"
  ],
  [
+  "len(psel)=2048"
+ ],
+ [
+  "hash_sha256(psel)=5c65df8c09ff599799dc6febac2a210634bd068430bb935c09de601bd7611e3b"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -2222,6 +2291,9 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=48283d2735e95ce177e65ee45853c69c541e33603fbc369666ae5028737a9909"
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 3 0"
@@ -2478,6 +2550,12 @@
   "selected_shuffle_t_slice_from_f: Coordinate([8, 8, 8, 8]) 3 0"
  ],
  [
+  "len(psel)=2048"
+ ],
+ [
+  "hash_sha256(psel)=5c65df8c09ff599799dc6febac2a210634bd068430bb935c09de601bd7611e3b"
+ ],
+ [
   "gf sig",
   {
    "value": [
@@ -2500,5 +2578,8 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "hash_sha256(ssp.psel_dst_list)=48283d2735e95ce177e65ee45853c69c541e33603fbc369666ae5028737a9909"
  ]
 ]
