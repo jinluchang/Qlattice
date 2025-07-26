@@ -35,12 +35,12 @@ MemType read_mem_type(const std::string& mem_type_str)
   }
 }
 
-void* alloc_mem_aligned(const Long size)
+static void* alloc_mem_aligned(const Long size, const MemType mem_type)
 {
 #if defined QLAT_NO_ALIGNED_ALLOC
   return malloc(size);
 #else
-  const Long alignment = get_alignment();
+  const Long alignment = get_alignment(mem_type);
   return std::aligned_alloc(alignment, size);
 #endif
 }
@@ -52,7 +52,7 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] += size;
   if (mem_type == MemType::Cpu or mem_type == MemType::Comm) {
-    return alloc_mem_aligned(size);
+    return alloc_mem_aligned(size, mem_type);
   } else if (mem_type == MemType::Acc) {
 #ifdef QLAT_USE_ACC
     void* ptr = NULL;
@@ -68,7 +68,7 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
     }
     return ptr;
 #else
-    return alloc_mem_aligned(size);
+    return alloc_mem_aligned(size, mem_type);
 #endif
   } else if (mem_type == MemType::Uvm) {
 #ifdef QLAT_USE_ACC
@@ -85,7 +85,7 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
     }
     return ptr;
 #else
-    return alloc_mem_aligned(size);
+    return alloc_mem_aligned(size, mem_type);
 #endif
   } else {
     qassert(false);
@@ -195,8 +195,8 @@ void* alloc_mem(const Long min_size, const MemType mem_type)
   }
   TIMER_FLOPS("alloc_mem");
   timer.flops += min_size;
-  const Long alignment = get_alignment();
-  const Long size = get_aligned_mem_size(alignment, min_size);
+  const Long chunk_size = get_mem_chunk_size(mem_type);
+  const Long size = get_chunked_mem_size(chunk_size, min_size);
   MemCache& cache = get_mem_cache(mem_type);
   void* ptr = cache.del(size);
   if (NULL != ptr) {
@@ -230,8 +230,8 @@ void free_mem(void* ptr, const Long min_size, const MemType mem_type)
 {
   TIMER_FLOPS("free_mem");
   timer.flops += min_size;
-  const Long alignment = get_alignment();
-  const Long size = get_aligned_mem_size(alignment, min_size);
+  const Long chunk_size = get_mem_chunk_size(mem_type);
+  const Long size = get_chunked_mem_size(chunk_size, min_size);
   MemCache& cache = get_mem_cache(mem_type);
   cache.add(ptr, size);
 }

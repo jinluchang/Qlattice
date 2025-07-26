@@ -36,9 +36,9 @@
 
   Default is `512` MB.
 
-- `q_mem_cache_acc_max_size`
+- `q_mem_cache_max_size_acc`
 
-  Memory cache size in MB (per processes) for `qlat::vector_acc` allocation.
+  Memory cache size in MB (per processes) for `qlat::vector` allocation with `mem_type=MemType::Acc`.
 
   Default is the same as `q_mem_cache_max_size`.
 

@@ -58,50 +58,86 @@ inline bool is_same_mem_type(const MemType t1, const MemType t2)
   }
 }
 
-API inline Long& get_alignment()
+API inline Long& get_alignment(const MemType mem_type)
 // qlat parameter
 //
 // Should NOT change in the middle of the run.
 {
-  static Long alignment = 256;
-  return alignment;
+  static Long v = get_env_long_default("q_alignment", 256);
+  static Long v_cpu = get_env_long_default("q_alignment_cpu", v);
+  static Long v_acc = get_env_long_default("q_alignment_acc", v);
+  static Long v_comm = get_env_long_default("q_alignment_comm", v);
+  static Long v_uvm = get_env_long_default("q_alignment_uvm", v);
+  if (mem_type == MemType::Cpu) {
+    return v_cpu;
+  } else if (mem_type == MemType::Acc) {
+    return v_acc;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else if (mem_type == MemType::Uvm) {
+    return v_uvm;
+  } else {
+    qassert(false);
+    return v;
+  }
 }
 
-inline Long get_aligned_mem_size(const Long alignment, const Long min_size)
+API inline Long& get_mem_chunk_size(const MemType mem_type)
+// qlat parameter
+//
+// Should NOT change in the middle of the run.
 {
-  const Long n_elem = 1 + (min_size - 1) / alignment;
-  const Long size = n_elem * alignment;
+  static Long v = get_env_long_default("q_mem_chunk_size", 512);
+  static Long v_cpu = get_env_long_default("q_mem_chunk_size_cpu", v);
+  static Long v_acc = get_env_long_default("q_mem_chunk_size_acc", 1);
+  static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", v);
+  static Long v_uvm = get_env_long_default("q_mem_chunk_size_uvm", v);
+  if (mem_type == MemType::Cpu) {
+    return v_cpu;
+  } else if (mem_type == MemType::Acc) {
+    return v_acc;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else if (mem_type == MemType::Uvm) {
+    return v_uvm;
+  } else {
+    qassert(false);
+    return v;
+  }
+}
+
+inline Long get_chunked_mem_size(const Long chunk_size, const Long min_size)
+{
+  const Long n_elem = 1 + (min_size - 1) / chunk_size;
+  const Long size = n_elem * chunk_size;
   return size;
 }
 
 API inline Long& get_mem_cache_max_size(const MemType mem_type)
 // qlat parameter
-// unit in MB
+//
+// environment variable in unit in MB
 {
-  static Long max_size = get_env_long_default("q_mem_cache_max_size", 512);
-  static Long max_size_cpu =
-      get_env_long_default("q_mem_cache_cpu_max_size", max_size) * 1024L *
-      1024L;
-  static Long max_size_acc =
-      get_env_long_default("q_mem_cache_acc_max_size", max_size) * 1024L *
-      1024L;
-  static Long max_size_comm =
-      get_env_long_default("q_mem_cache_comm_max_size", max_size) * 1024L *
-      1024L;
-  static Long max_size_uvm =
-      get_env_long_default("q_mem_cache_uvm_max_size", max_size) * 1024L *
-      1024L;
+  static Long v = get_env_long_default("q_mem_cache_max_size", 512);
+  static Long v_cpu =
+      get_env_long_default("q_mem_cache_max_size_cpu", v) * 1024L * 1024L;
+  static Long v_acc =
+      get_env_long_default("q_mem_cache_max_size_acc", v) * 1024L * 1024L;
+  static Long v_comm =
+      get_env_long_default("q_mem_cache_max_size_comm", v) * 1024L * 1024L;
+  static Long v_uvm =
+      get_env_long_default("q_mem_cache_max_size_uvm", v) * 1024L * 1024L;
   if (mem_type == MemType::Cpu) {
-    return max_size_cpu;
+    return v_cpu;
   } else if (mem_type == MemType::Acc) {
-    return max_size_acc;
+    return v_acc;
   } else if (mem_type == MemType::Comm) {
-    return max_size_comm;
+    return v_comm;
   } else if (mem_type == MemType::Uvm) {
-    return max_size_uvm;
+    return v_uvm;
   } else {
     qassert(false);
-    return max_size;
+    return v;
   }
 }
 
