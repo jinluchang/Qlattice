@@ -15,7 +15,11 @@ qacc_no_inline GeometryNode::GeometryNode(const int id_node_, const Coordinate& 
 
 qacc_no_inline void GeometryNode::init()
 {
-  memset((void*)this, 0, sizeof(GeometryNode));
+  initialized = false;
+  num_node = 0;
+  id_node = 0;
+  size_node = Coordinate();
+  coor_node = Coordinate();
 }
 
 qacc_no_inline void GeometryNode::init(const Int id_node_,
@@ -56,27 +60,22 @@ qacc_no_inline bool operator!=(const GeometryNode& geon1,
 
 qacc_no_inline Geometry::Geometry() { init(); }
 
-Geometry::Geometry(const Coordinate& total_site)
-{
-  init();
-  init(total_site);
-}
+Geometry::Geometry(const Coordinate& total_site) { init(total_site); }
 
 qacc_no_inline void Geometry::init()
 {
-  memset((void*)this, 0, sizeof(Geometry));
+  initialized = false;
+  geon.init();
 }
 
 qacc_no_inline void Geometry::init(const GeometryNode& geon_,
                                    const Coordinate& node_site_)
 {
-  if (!initialized) {
-    init();
-    geon = geon_;
-    node_site = node_site_;
-    reset_node_site_expanded();
-    initialized = true;
-  }
+  init();
+  geon = geon_;
+  node_site = node_site_;
+  reset_node_site_expanded();
+  initialized = true;
 }
 
 qacc_no_inline void Geometry::init(const Int& id_node_,
@@ -90,16 +89,13 @@ qacc_no_inline void Geometry::init(const Int& id_node_,
 
 void Geometry::init(const Coordinate& total_site)
 {
-  if (!initialized) {
-    init();
-    geon = get_geometry_node();
-    for (int i = 0; i < DIMN; ++i) {
-      qassert(0 == total_site[i] % geon.size_node[i]);
-      node_site[i] = total_site[i] / geon.size_node[i];
-    }
-    reset_node_site_expanded();
-    initialized = true;
+  GeometryNode& geon_ = get_geometry_node();
+  Coordinate node_site_;
+  for (int i = 0; i < DIMN; ++i) {
+    qassert(0 == total_site[i] % geon_.size_node[i]);
+    node_site_[i] = total_site[i] / geon_.size_node[i];
   }
+  init(geon_, node_site_);
 }
 
 qacc_no_inline void Geometry::reset_node_site_expanded()

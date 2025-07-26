@@ -41,7 +41,7 @@ bool qisnan(const std::vector<M>& arr)
 // --------------------
 
 struct API Coordinate : public array<Int, DIMN> {
-  qacc Coordinate() { array<Int, DIMN>::fill(0); }
+  qacc Coordinate() { init(); }
   qacc Coordinate(Int first, Int second, Int third, Int fourth)
   {
     Int* p = data();
@@ -50,10 +50,11 @@ struct API Coordinate : public array<Int, DIMN> {
     p[2] = third;
     p[3] = fourth;
   }
+  qacc init() { array<Int, DIMN>::fill(0); }
 };
 
 struct API CoordinateD : public array<RealD, DIMN> {
-  qacc CoordinateD() { memset(this, 0, sizeof(CoordinateD)); }
+  qacc CoordinateD() { init(); }
   qacc CoordinateD(const array<RealD, DIMN>& arr)
   {
     CoordinateD& c = *this;
@@ -78,6 +79,7 @@ struct API CoordinateD : public array<RealD, DIMN> {
       c[i] = x[i];
     }
   }
+  qacc init() { array<RealD, DIMN>::fill(0); }
 };
 
 // -------------------------------------------------------------------------

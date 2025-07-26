@@ -23,9 +23,21 @@ cdef class Geometry:
         if total_site is not None:
             self.xx.init(Coordinate(total_site).xx)
 
-    def init(self, int id_node, Coordinate size_node, Coordinate node_site):
+    def init_from_total_site(self, Coordinate total_site):
+        """
+        Use `total_site` to initialize `Geometry`.
+        Will use the global `geon`.
+        """
+        self.xx.init(total_site.xx)
+
+    def init_from_node_site(self, int id_node, Coordinate size_node, Coordinate node_site):
         """
         initialize Geometry without call MPI functions.
+        #
+        corr_node = q.coordinate_from_index(id_node, size_node)
+        id_node = q.index_from_coordinate(corr_node, size_node)
+        #
+        total_site = size_node * node_site
         """
         self.xx.init(id_node, size_node.xx, node_site.xx)
 
