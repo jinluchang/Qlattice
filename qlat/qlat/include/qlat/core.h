@@ -264,67 +264,22 @@ struct API Geometry {
 
 std::string show(const qlat::Geometry& geo);
 
-qacc bool operator==(const Geometry& geo1, const Geometry& geo2)
-{
-  return geo1.initialized == geo2.initialized && geo1.eo == geo2.eo &&
-         geo1.geon == geo2.geon && geo1.node_site == geo2.node_site &&
-         geo1.expansion_left == geo2.expansion_left &&
-         geo1.expansion_right == geo2.expansion_right &&
-         geo1.node_site_expanded == geo2.node_site_expanded &&
-         geo1.is_only_local == geo2.is_only_local;
-}
+qacc_no_inline bool operator==(const Geometry& geo1, const Geometry& geo2);
 
-qacc bool operator!=(const Geometry& geo1, const Geometry& geo2)
-{
-  return !(geo1 == geo2);
-}
+qacc_no_inline bool operator!=(const Geometry& geo1, const Geometry& geo2);
 
-qacc Geometry geo_resize(const Geometry& geo_, const int thick = 0)
-{
-  Geometry geo = geo_;
-  geo.resize(thick);
-  return geo;
-}
+qacc_no_inline Geometry geo_resize(const Geometry& geo_, const int thick = 0);
 
-qacc Geometry geo_resize(const Geometry& geo_,
-                         const Coordinate& expansion_left_,
-                         const Coordinate& expansion_right_)
-{
-  Geometry geo = geo_;
-  geo.resize(expansion_left_, expansion_right_);
-  return geo;
-}
+qacc_no_inline Geometry geo_resize(const Geometry& geo_,
+                                   const Coordinate& expansion_left_,
+                                   const Coordinate& expansion_right_);
 
-qacc Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
-// 0:regular; 1:odd; 2:even
-{
-  Geometry geo = geo_;
-  geo.eo = eo_;
-  return geo;
-}
+qacc_no_inline Geometry geo_eo(const Geometry& geo_, const int eo_ = 0);
 
-qacc bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
-{
-  return geo1.initialized == geo2.initialized && geo1.geon == geo2.geon &&
-         geo1.node_site == geo2.node_site;
-}
+qacc_no_inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2);
 
-qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
-// return if geo1 is included in geo2
-{
-  bool include = is_matching_geo(geo1, geo2);
-  for (int i = 0; i < 4; i++) {
-    if (geo2.expansion_left[i] < geo1.expansion_left[i]) {
-      include = false;
-    }
-  }
-  for (int i = 0; i < 4; i++) {
-    if (geo2.expansion_right[i] < geo1.expansion_right[i]) {
-      include = false;
-    }
-  }
-  return include;
-}
+qacc_no_inline bool is_matching_geo_included(const Geometry& geo1,
+                                             const Geometry& geo2);
 
 // --------------------
 
@@ -1089,15 +1044,9 @@ struct API FieldSelection {
   //
   FieldSelection() { init(); }
   //
-  void set_mem_type(const MemType mem_type)
-  {
-    f_rank.set_mem_type(mem_type);
-    f_local_idx.set_mem_type(mem_type);
-    ranks.set_mem_type(mem_type);
-    indices.set_mem_type(mem_type);
-  }
+  void set_mem_type(const MemType mem_type);
   //
-  qacc const Geometry& get_geo() const { return f_rank.geo(); }
+  qacc_no_inline const Geometry& get_geo() const;
 };
 
 void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel);
