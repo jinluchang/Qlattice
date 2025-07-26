@@ -50,7 +50,7 @@ struct API Coordinate : public array<Int, DIMN> {
     p[2] = third;
     p[3] = fourth;
   }
-  qacc init() { array<Int, DIMN>::fill(0); }
+  qacc void init() { array<Int, DIMN>::fill(0); }
 };
 
 struct API CoordinateD : public array<RealD, DIMN> {
@@ -79,7 +79,7 @@ struct API CoordinateD : public array<RealD, DIMN> {
       c[i] = x[i];
     }
   }
-  qacc init() { array<RealD, DIMN>::fill(0); }
+  qacc void init() { array<RealD, DIMN>::fill(0); }
 };
 
 // -------------------------------------------------------------------------

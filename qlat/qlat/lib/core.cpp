@@ -8,6 +8,12 @@ namespace qlat
 
 qacc_no_inline GeometryNode::GeometryNode() { init(); }
 
+qacc_no_inline GeometryNode::GeometryNode(const Coordinate& coor_node_,
+                                          const Coordinate& size_node_)
+{
+  init(coor_node_, size_node_);
+}
+
 qacc_no_inline GeometryNode::GeometryNode(const int id_node_, const Coordinate& size_node_)
 {
   init(id_node_, size_node_);
@@ -18,18 +24,27 @@ qacc_no_inline void GeometryNode::init()
   initialized = false;
   num_node = 0;
   id_node = 0;
-  size_node = Coordinate();
-  coor_node = Coordinate();
+  size_node.init();
+  coor_node.init();
+}
+
+qacc_no_inline void GeometryNode::init(const Coordinate& coor_node_,
+                                       const Coordinate& size_node_)
+{
+  const int id_node_ = index_from_coordinate(coor_node_, size_node_);
+  const int num_node_ = product(size_node_);
+  initialized = true;
+  num_node = num_node_;
+  id_node = id_node_;
+  size_node = size_node_;
+  coor_node = coor_node_;
 }
 
 qacc_no_inline void GeometryNode::init(const Int id_node_,
                                        const Coordinate& size_node_)
 {
-  initialized = true;
-  num_node = product(size_node_);
-  id_node = id_node_;
-  size_node = size_node_;
-  coor_node = coordinate_from_index(id_node_, size_node_);
+  const Coordinate coor_node_ = coordinate_from_index(id_node_, size_node_);
+  init(coor_node_, size_node_);
 }
 
 std::string show(const qlat::GeometryNode& geon)
@@ -66,6 +81,12 @@ qacc_no_inline void Geometry::init()
 {
   initialized = false;
   geon.init();
+  eo = 0;
+  node_site.init();
+  expansion_left.init();
+  expansion_right.init();
+  node_site_expanded.init();
+  is_only_local = false;
 }
 
 qacc_no_inline void Geometry::init(const GeometryNode& geon_,
@@ -78,7 +99,16 @@ qacc_no_inline void Geometry::init(const GeometryNode& geon_,
   initialized = true;
 }
 
-qacc_no_inline void Geometry::init(const Int& id_node_,
+qacc_no_inline void Geometry::init(const Coordinate& coor_node_,
+                                   const Coordinate& size_node_,
+                                   const Coordinate& node_site_)
+{
+  GeometryNode geon;
+  geon.init(coor_node_, size_node_);
+  init(geon, node_site_);
+}
+
+qacc_no_inline void Geometry::init(const Int id_node_,
                                    const Coordinate& size_node_,
                                    const Coordinate& node_site_)
 {
@@ -89,7 +119,7 @@ qacc_no_inline void Geometry::init(const Int& id_node_,
 
 void Geometry::init(const Coordinate& total_site)
 {
-  GeometryNode& geon_ = get_geometry_node();
+  const GeometryNode& geon_ = get_geometry_node();
   Coordinate node_site_;
   for (int i = 0; i < DIMN; ++i) {
     qassert(0 == total_site[i] % geon_.size_node[i]);

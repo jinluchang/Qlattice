@@ -26,9 +26,13 @@ struct API GeometryNode {
   // 0 <= coor_node[i] < size_node[i]
   //
   qacc_no_inline GeometryNode();
+  qacc_no_inline GeometryNode(const Coordinate& coor_node_,
+                              const Coordinate& size_node_);
   qacc_no_inline GeometryNode(const int id_node_, const Coordinate& size_node_);
   //
   qacc_no_inline void init();
+  qacc_no_inline void init(const Coordinate& coor_node_,
+                           const Coordinate& size_node_);
   qacc_no_inline void init(const Int id_node_, const Coordinate& size_node_);
 };
 
@@ -77,7 +81,10 @@ struct API Geometry {
   qacc_no_inline void init();
   qacc_no_inline void init(const GeometryNode& geon_,
                            const Coordinate& node_site_);
-  qacc_no_inline void init(const Int& id_node_, const Coordinate& size_node_,
+  qacc_no_inline void init(const Coordinate& coor_node_,
+                           const Coordinate& size_node_,
+                           const Coordinate& node_site_);
+  qacc_no_inline void init(const Int id_node_, const Coordinate& size_node_,
                            const Coordinate& node_site_);
   void init(const Coordinate& total_site);
   //
