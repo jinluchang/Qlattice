@@ -1007,6 +1007,7 @@ void set_field_from_pointer(Field<M>& f, Vector<M> field, const Geometry& geo,
   f.geo.set(geo);
   f.field.set_mem_type(mem_type);
   f.field.set_view(field);
+  f.field.is_copy = is_copy;
   qassert(f.geo().local_volume_expanded() * f.multiplicity == f.field.size());
 }
 
