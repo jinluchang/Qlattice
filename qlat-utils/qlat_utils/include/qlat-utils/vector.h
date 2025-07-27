@@ -25,8 +25,8 @@ void clear_all_caches();
 enum struct MemType : Int {
   Cpu,   // CPU main memory
   Acc,   // Accelerator
-  Comm,  // For communication on CPU
   Uvm,   // Uniform virtual memory
+  Comm,  // For communication on CPU
   SIZE,
 };
 
@@ -90,7 +90,7 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
   static Long v = get_env_long_default("q_mem_chunk_size", 512);
   static Long v_cpu = get_env_long_default("q_mem_chunk_size_cpu", v);
   static Long v_acc = get_env_long_default("q_mem_chunk_size_acc", 1);
-  static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", v);
+  static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", 1);
   static Long v_uvm = get_env_long_default("q_mem_chunk_size_uvm", v);
   if (mem_type == MemType::Cpu) {
     return v_cpu;
@@ -104,6 +104,27 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
     qassert(false);
     return v;
   }
+}
+
+API inline bool& get_mem_type_comm_use_acc()
+// qlat parameter
+//
+// Should NOT change in the middle of the run.
+{
+  static bool v = get_env_default("q_mem_type_comm_use_acc", "false") == "true";
+  return v;
+}
+
+inline MemType get_eff_mem_type(const MemType mem_type)
+{
+  if (mem_type == MemType::Comm) {
+    if (get_mem_type_comm_use_acc()) {
+      return MemType::Acc;
+    } else {
+      return MemType::Cpu;
+    }
+  }
+  return mem_type;
 }
 
 inline Long get_chunked_mem_size(const Long chunk_size, const Long min_size)

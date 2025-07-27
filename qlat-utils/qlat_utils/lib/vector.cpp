@@ -51,9 +51,10 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   timer.flops += size;
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] += size;
-  if (mem_type == MemType::Cpu or mem_type == MemType::Comm) {
+  const MemType eff_mem_type = get_eff_mem_type(mem_type);
+  if (eff_mem_type == MemType::Cpu) {
     return alloc_mem_aligned(size, mem_type);
-  } else if (mem_type == MemType::Acc) {
+  } else if (eff_mem_type == MemType::Acc) {
 #ifdef QLAT_USE_ACC
     void* ptr = NULL;
     qacc_Error err = qacc_GetLastError();
@@ -70,7 +71,7 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
 #else
     return alloc_mem_aligned(size, mem_type);
 #endif
-  } else if (mem_type == MemType::Uvm) {
+  } else if (eff_mem_type == MemType::Uvm) {
 #ifdef QLAT_USE_ACC
     void* ptr = NULL;
     qacc_Error err = qacc_GetLastError();
@@ -99,9 +100,10 @@ void free_mem_free(void* ptr, const Long size, const MemType mem_type)
   timer.flops += size;
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] -= size;
-  if (mem_type == MemType::Cpu or mem_type == MemType::Comm) {
+  const MemType eff_mem_type = get_eff_mem_type(mem_type);
+  if (eff_mem_type == MemType::Cpu) {
     free(ptr);
-  } else if (mem_type == MemType::Acc or mem_type == MemType::Uvm) {
+  } else if (eff_mem_type == MemType::Acc or eff_mem_type == MemType::Uvm) {
 #ifdef QLAT_USE_ACC
     qacc_Error err = qacc_Free(ptr);
     if (qacc_Success != err) {

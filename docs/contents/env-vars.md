@@ -48,6 +48,12 @@
 
   Default is `256 * 1024` MB.
 
+- `q_mem_type_comm_use_acc`
+
+  If value is `true`, then the `MemType::Comm` memory will be allocated as the type `MemType::Acc`.
+
+  Default is `false`.
+
 - `q_num_threads`
 
   Number of OpenMP threads (will be overrided by `OMP_NUM_THREADS`). Possible setting can be `export OMP_NUM_THREADS=16` number should be adjusted by number of cores.
