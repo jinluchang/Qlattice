@@ -212,6 +212,14 @@ struct API FieldBoxT {
   qacc Ty* data() { return v.p; }
   qacc const Ty* data() const { return v.p; }
 
+  qacc int nc(){
+    int Nc = 0;
+    if(type == Su3::u9){Nc = Multiplicity / 9;}
+    if(type == Su3::u6){Nc = Multiplicity / 6;}
+    if(type == Su3::uA){Nc = Multiplicity / 6;}
+    return Nc;
+  }
+
   template <class Tb>
   qacc void construct(Tb* r, const Coordinate& xl, const Long mu = 0)
   {
@@ -352,6 +360,34 @@ void copy_ux(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs)
   });
 }
 
+template <class Ty, Su3 ta, class Tf, Su3 tb>
+void copy_uf(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs, int dr, int ds)
+{
+  //Qassert(fs.geo() == fr.geo());
+  Qassert(fs.initialized() and fr.initialized())
+  const Geometry& geo = fs.geo();
+  const Long V = geo.local_volume();
+
+  int Nr = 4;
+  int Nb = 4;
+  if(ta == Su3::u9){Nr = fr.Multiplicity / 9;}
+  if(ta == Su3::u6){Nr = fr.Multiplicity / 6;}
+  if(ta == Su3::uA){Nr = fr.Multiplicity / 6;}
+
+  if(tb == Su3::u9){Nb = fs.Multiplicity / 9;}
+  if(tb == Su3::u6){Nb = fs.Multiplicity / 6;}
+  if(tb == Su3::uA){Nb = fs.Multiplicity / 6;}
+  Qassert(dr < Nr and ds < Nb);
+
+  qacc_for(isp, V, {
+    const Coordinate xl = geo.coordinate_from_index(isp);
+    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty b0[9];
+    fs.construct(b0, xl, ds);
+    fr.copy_from(b0, xl, dr);
+  });
+}
+
+
 template <class Ty, class Tf, Su3 ta>
 void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
 {
@@ -426,6 +462,12 @@ template <class Ty, Su3 type>
 void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", int GPU = 1)
 {
   refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, tag, GPU );
+}
+
+template <class Ty, Su3 type>
+void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const int dir, int GPU = 1)
+{
+  refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, dir, GPU );
 }
 
 }

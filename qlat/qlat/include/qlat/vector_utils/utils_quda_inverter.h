@@ -4067,6 +4067,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   inv_param.secs = 0;
   inv_param.gflops = 0;
   inv_param.iter = 0;
+  inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
 
   inv_param.tol = err; 
   inv_param.maxiter = niter;

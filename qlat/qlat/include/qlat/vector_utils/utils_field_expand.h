@@ -212,7 +212,7 @@ inline std::vector<std::string > expand_tags(){
 template <class M>
 void refresh_expanded_GPU(M* res, const Geometry& geo, const int MULTI, int dir = -1000, int GPU = 1)
 {
-  Qassert(dir == -1000 or (dir >= -3-1 and dir <= 3));
+  Qassert(dir == -1000 or dir == -100 or (dir >= -3-1 and dir <= 3));
   // with corner
   if(dir == -1000){
     refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_all, std::string(""), GPU);

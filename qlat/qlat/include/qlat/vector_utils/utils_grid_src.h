@@ -198,6 +198,7 @@ qacc int check_zn(const Ty& value, const int Zn = 3){
 
 /*
   Get all noise positions
+  need_copy data Fieldy on GPU or not, need change into mem_type checks
 */
 template <class Fieldy>
 void get_noise_pos(Fieldy& noise, std::vector<Coordinate >& grids, std::vector<int >& Zlist,
