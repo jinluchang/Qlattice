@@ -16,22 +16,24 @@ API inline int& qacc_num_threads()
   return nt;
 }
 
-#define qfor(iter, num, ...)                        \
-  {                                                 \
-    for (qlat::Long iter = 0; iter < (num); ++iter) { \
-      {__VA_ARGS__};                                \
-    }                                               \
+#define qfor(iter, num, ...)                                   \
+  {                                                            \
+    const qlat::Long QACC_NUM_VALUE = (num);                   \
+    for (qlat::Long iter = 0; iter < QACC_NUM_VALUE; ++iter) { \
+      {__VA_ARGS__};                                           \
+    }                                                          \
   }
 
 #define q_do_pragma(x) _Pragma(#x)
 
-#define qthread_for(iter, num, ...)               \
-  {                                               \
-  q_do_pragma(omp parallel for schedule(static))  \
-  for (qlat::Long iter = 0; iter < (num); ++iter) \
-    {                                             \
-      {__VA_ARGS__};                              \
-    }                                             \
+#define qthread_for(iter, num, ...)                          \
+  {                                                          \
+    const qlat::Long QACC_NUM_VALUE = (num);                 \
+    q_do_pragma(omp parallel for schedule(static))           \
+    for (qlat::Long iter = 0; iter < QACC_NUM_VALUE; ++iter) \
+    {                                                        \
+      {__VA_ARGS__};                                         \
+    }                                                        \
   }
 
 #ifdef QLAT_USE_ACC
