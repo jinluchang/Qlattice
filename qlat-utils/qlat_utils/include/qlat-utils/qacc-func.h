@@ -16,19 +16,19 @@ API inline int& qacc_num_threads()
   return nt;
 }
 
-#define qfor(iter1, num, ...)                          \
+#define qfor(iter, num, ...)                          \
   {                                                    \
-    for (qlat::Long iter1 = 0; iter1 < num; ++iter1) { \
+    for (qlat::Long iter = 0; iter < num; ++iter) { \
       {__VA_ARGS__};                                   \
     }                                                  \
   }
 
 #define q_do_pragma(x) _Pragma(#x)
 
-#define qthread_for(iter1, num, ...)               \
+#define qthread_for(iter, num, ...)               \
   {                                                \
   q_do_pragma(omp parallel for schedule(static))   \
-  for (qlat::Long iter1 = 0; iter1 < num; ++iter1) \
+  for (qlat::Long iter = 0; iter < num; ++iter) \
     {                                              \
       {__VA_ARGS__};                               \
     }                                              \
@@ -44,7 +44,7 @@ API inline int& qacc_num_threads()
 
 #define qacc_forNB(iter, num, ...)                                             \
   {                                                                            \
-    if (num1 != 0) {                                                           \
+    if (num != 0) {                                                           \
       auto QACC_FOR_LOOP_LAMBDA =                                              \
           [=] __host__ __device__(qlat::Long iter) mutable { {__VA_ARGS__}; }; \
       const int QACC_NUM_THREADS = qlat::qacc_num_threads();                   \
@@ -90,7 +90,7 @@ __global__ void qlambda_apply(Long num, Lambda lam)
 
 #define qacc_continue continue
 
-#define qacc_forNB(iter1, num1, ...) qthread_for(iter1, num1, {__VA_ARGS__})
+#define qacc_forNB(iter, num, ...) qthread_for(iter, num, {__VA_ARGS__})
 
 #define qacc_barrier(dummy)
 
