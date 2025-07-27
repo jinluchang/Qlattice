@@ -41,8 +41,17 @@ static void* alloc_mem_aligned(const Long size, const MemType mem_type)
 #if defined QLAT_NO_ALIGNED_ALLOC
   ptr = malloc(size);
 #else
-  const Long alignment = get_alignment(mem_type);
+  Long alignment = get_alignment(mem_type);
   ptr = std::aligned_alloc(alignment, size);
+  while (ptr == NULL) {
+    alignment /= 2;
+    if (alignment == 0) {
+      ptr = malloc(size);
+      break;
+    } else {
+      ptr = std::aligned_alloc(alignment, size);
+    }
+  }
 #endif
   return ptr;
 }
@@ -224,7 +233,6 @@ void* alloc_mem(const Long min_size, const MemType mem_type)
     timer.flops += min_size;
     void* ptr = NULL;
     ptr = alloc_mem_alloc(size, mem_type);
-    memset(ptr, 0, size);
     return ptr;
   }
 }
