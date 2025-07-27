@@ -281,7 +281,8 @@ struct API vector {
     is_copy = false;
     resize(size);
   }
-  vector(const std::vector<M>& vp, const MemType mem_type_ = get_default_mem_type())
+  vector(const std::vector<M>& vp,
+         const MemType mem_type_ = get_default_mem_type())
   {
     // TIMER("vector::vector(std::vector&)")
     qassert(v.p == NULL);
@@ -538,7 +539,7 @@ struct API box {
   // (it is likely not what you think it is)
   // Only used in qacc macros, or if it is already a copy.
   //
-  bool is_copy;  // do not free memory if is_copy=true
+  bool is_copy;      // do not free memory if is_copy=true
   MemType mem_type;  // if place data on accelerator memory
   Handle<M> v;
   //
