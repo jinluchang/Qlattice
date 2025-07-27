@@ -270,6 +270,7 @@ void prop_full_copy_to_prop_8(std::vector< qlat::vector_gpu<Ty > >& propL, Ty* p
 template <class Ty, class Td, int c0, int d0>
 void smear_propagator_gwu_convension_2shift_modi(std::vector< qlat::vector_gpu<Ty > >& propL, const Geometry& geo, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, const int even = -1, const int force_update = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
+  (void)geo;
   if(width == 0 or step == 0){return ;}
   Qassert(propL.size() == 8);
   Qassert(gfL.size() == 8);

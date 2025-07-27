@@ -322,6 +322,7 @@ template <class Fieldy>
 void get_noise_posG(Fieldy& noise, std::vector<Coordinate >& grids, std::vector<int >& Zlist,
  const int Zn = 3, const int printS=0, const bool need_copy = false)
 {
+  (void)need_copy;
   get_noise_pos(noise, grids, Zlist, Zn, printS, true);
 }
 
@@ -492,6 +493,7 @@ inline void grid_list_posT(std::vector<PointsSelection >& LMS_points, const Coor
 template<typename Ty>
 void write_grid_point_to_src(FieldG<Ty>& res, const FieldG<Ty>& src, const std::vector<Coordinate >& pos, int b_size, qlat::fft_desc_basic& fd)
 {
+  (void)b_size;
   TIMER("write_grid_point_to_src");
   Qassert(src.initialized and src.multiplicity == 1);
   const Geometry& geo = src.geo();
