@@ -56,7 +56,7 @@ API inline int& qacc_num_threads()
           (QACC_NUM_VALUE + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS, 1, 1);   \
       qacc_Error CUDA_LAST_ERROR_OBJECT = qacc_GetLastError();                 \
       if (qacc_Success != CUDA_LAST_ERROR_OBJECT) {                            \
-        qerr(qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",      \
+        qerr(qlat::ssprintf("qacc_for: ACC error %s from '%s' Line %d.",       \
                             qacc_GetErrorString(CUDA_LAST_ERROR_OBJECT),       \
                             __FILE__, __LINE__));                              \
       }                                                                        \
@@ -74,16 +74,16 @@ __global__ void qlambda_apply(Long num, Lambda lam)
   }
 }
 
-#define qacc_barrier(dummy)                                                \
-  {                                                                        \
-    qacc_DeviceSynchronize();                                              \
-    qacc_Error err = qacc_GetLastError();                                  \
-    if (qacc_Success != err) {                                             \
-      qlat::displayln(                                                     \
-          qlat::ssprintf("qacc_barrier: Cuda error %s from '%s' Line %d.", \
-                         qacc_GetErrorString(err), __FILE__, __LINE__));   \
-      qassert(false);                                                      \
-    }                                                                      \
+#define qacc_barrier(dummy)                                               \
+  {                                                                       \
+    qacc_DeviceSynchronize();                                             \
+    qacc_Error err = qacc_GetLastError();                                 \
+    if (qacc_Success != err) {                                            \
+      qlat::displayln(                                                    \
+          qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.", \
+                         qacc_GetErrorString(err), __FILE__, __LINE__));  \
+      qassert(false);                                                     \
+    }                                                                     \
   }
 
 #define qacc_for(iter, num, ...) \

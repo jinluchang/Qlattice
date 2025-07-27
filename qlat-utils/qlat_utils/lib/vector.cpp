@@ -59,12 +59,12 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
     void* ptr = NULL;
     qacc_Error err = qacc_GetLastError();
     if (qacc_Success != err) {
-      qerr(fname + ssprintf(": Cuda error '%s' before qacc_MallocManaged.",
+      qerr(fname + ssprintf(": ACC error '%s' before qacc_MallocManaged.",
                             qacc_GetErrorString(err)));
     }
     err = qacc_Malloc(&ptr, size);
     if (qacc_Success != err) {
-      qerr(fname + ssprintf(": Cuda error '%s', size=%ld, ptr=%lX.",
+      qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
                             qacc_GetErrorString(err), size, ptr));
     }
     return ptr;
@@ -76,12 +76,12 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
     void* ptr = NULL;
     qacc_Error err = qacc_GetLastError();
     if (qacc_Success != err) {
-      qerr(fname + ssprintf(": Cuda error '%s' before qacc_MallocManaged.",
+      qerr(fname + ssprintf(": ACC error '%s' before qacc_MallocManaged.",
                             qacc_GetErrorString(err)));
     }
     err = qacc_MallocManaged(&ptr, size);
     if (qacc_Success != err) {
-      qerr(fname + ssprintf(": Cuda error '%s', size=%ld, ptr=%lX.",
+      qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
                             qacc_GetErrorString(err), size, ptr));
     }
     return ptr;
@@ -107,8 +107,8 @@ void free_mem_free(void* ptr, const Long size, const MemType mem_type)
 #ifdef QLAT_USE_ACC
     qacc_Error err = qacc_Free(ptr);
     if (qacc_Success != err) {
-      if (qacc_ErrorCudartUnloading != err) {
-        qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Free.",
+      if (qacc_ErrorUnloading != err) {
+        qerr(fname + ssprintf(": ACC error '%s' (%d) after qacc_Free.",
                               qacc_GetErrorString(err), err));
       }
     }
@@ -268,7 +268,7 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
     qassert(false);
   }
   if (qacc_Success != err) {
-    qerr(fname + ssprintf(": Cuda error '%s' (%d) after qacc_Malloc.",
+    qerr(fname + ssprintf(": ACC error '%s' (%d) after qacc_Malloc.",
                           qacc_GetErrorString(err), err));
   }
 #else

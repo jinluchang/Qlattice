@@ -13,7 +13,7 @@
 #define qacc_DeviceReset                cudaDeviceReset
 #define qacc_DeviceSetCacheConfig       cudaDeviceSetCacheConfig
 #define qacc_DeviceSynchronize          cudaDeviceSynchronize
-#define qacc_ErrorCudartUnloading       cudaErrorCudartUnloading
+#define qacc_ErrorUnloading             cudaErrorCudartUnloading
 #define qacc_ErrorUnknown               cudaErrorUnknown
 #define qacc_Error                      cudaError
 #define qacc_Free                       cudaFree
@@ -43,6 +43,7 @@
 #define qacc_MemcpyDefault              cudaMemcpyDefault
 #define qacc_MemcpyKind                 cudaMemcpyKind
 #define qacc_MemcpyToSymbol             cudaMemcpyToSymbol
+#define qacc_Memset                     cudaMemset
 #define qacc_MemsetAsync                cudaMemsetAsync
 #define qacc_SetDevice                  cudaSetDevice
 #define qacc_StreamCreate               cudaStreamCreate
@@ -59,7 +60,7 @@
 #define qacc_DeviceReset                hipDeviceReset
 #define qacc_DeviceSetCacheConfig       hipDeviceSetCacheConfig
 #define qacc_DeviceSynchronize          hipDeviceSynchronize
-#define qacc_ErrorCudartUnloading       hipErrorDeinitialized
+#define qacc_ErrorUnloading             hipErrorDeinitialized
 #define qacc_ErrorUnknown               hipErrorUnknown
 #define qacc_Error                      hipError_t
 #define qacc_Free                       hipFree
@@ -89,6 +90,7 @@
 #define qacc_MemcpyDefault              hipMemcpyDefault
 #define qacc_MemcpyKind                 hipMemcpyKind
 #define qacc_MemcpyToSymbol             hipMemcpyToSymbol
+#define qacc_Memset                     hipMemset
 #define qacc_MemsetAsync                hipMemsetAsync
 #define qacc_SetDevice                  hipSetDevice
 #define qacc_StreamCreate               hipStreamCreate

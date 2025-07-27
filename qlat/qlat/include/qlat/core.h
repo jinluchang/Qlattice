@@ -547,7 +547,7 @@ template <class M>
 void set_zero(SelectedPoints<M>& sp)
 {
   TIMER("set_zero(SelectedPoints)");
-  set_zero(get_data(sp));
+  set_zero(sp.points);
 }
 
 template <class M>
@@ -1251,7 +1251,7 @@ template <class M>
 void set_zero(SelectedField<M>& sf)
 {
   TIMER("set_zero(SelectedField)");
-  set_zero(get_data(sf));
+  set_zero(sf.field);
 }
 
 template <class M>
