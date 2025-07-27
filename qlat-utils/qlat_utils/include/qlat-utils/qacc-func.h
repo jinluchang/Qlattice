@@ -16,22 +16,22 @@ API inline int& qacc_num_threads()
   return nt;
 }
 
-#define qfor(iter, num, ...)                          \
-  {                                                    \
-    for (qlat::Long iter = 0; iter < num; ++iter) { \
-      {__VA_ARGS__};                                   \
-    }                                                  \
+#define qfor(iter, num, ...)                        \
+  {                                                 \
+    for (qlat::Long iter = 0; iter < (num); ++iter) { \
+      {__VA_ARGS__};                                \
+    }                                               \
   }
 
 #define q_do_pragma(x) _Pragma(#x)
 
 #define qthread_for(iter, num, ...)               \
-  {                                                \
-  q_do_pragma(omp parallel for schedule(static))   \
-  for (qlat::Long iter = 0; iter < num; ++iter) \
-    {                                              \
-      {__VA_ARGS__};                               \
-    }                                              \
+  {                                               \
+  q_do_pragma(omp parallel for schedule(static))  \
+  for (qlat::Long iter = 0; iter < (num); ++iter) \
+    {                                             \
+      {__VA_ARGS__};                              \
+    }                                             \
   }
 
 #ifdef QLAT_USE_ACC
@@ -44,13 +44,14 @@ API inline int& qacc_num_threads()
 
 #define qacc_forNB(iter, num, ...)                                             \
   {                                                                            \
-    if (num != 0) {                                                           \
+    const qlat::Long QACC_NUM_VALUE = (num);                                   \
+    if (QACC_NUM_VALUE != 0) {                                                 \
       auto QACC_FOR_LOOP_LAMBDA =                                              \
           [=] __host__ __device__(qlat::Long iter) mutable { {__VA_ARGS__}; }; \
       const int QACC_NUM_THREADS = qlat::qacc_num_threads();                   \
       dim3 CUDA_THREADS_DIM3(QACC_NUM_THREADS, 1, 1);                          \
-      dim3 CUDA_BLOCKS_DIM3((num + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS,   \
-                            1, 1);                                             \
+      dim3 CUDA_BLOCKS_DIM3(                                                   \
+          (QACC_NUM_VALUE + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS, 1, 1);   \
       qacc_Error CUDA_LAST_ERROR_OBJECT = qacc_GetLastError();                 \
       if (qacc_Success != CUDA_LAST_ERROR_OBJECT) {                            \
         qerr(qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",      \
@@ -58,7 +59,7 @@ API inline int& qacc_num_threads()
                             __FILE__, __LINE__));                              \
       }                                                                        \
       qlambda_apply<<<CUDA_BLOCKS_DIM3, CUDA_THREADS_DIM3>>>(                  \
-          num, QACC_FOR_LOOP_LAMBDA);                                          \
+          QACC_NUM_VALUE, QACC_FOR_LOOP_LAMBDA);                               \
     }                                                                          \
   }
 
@@ -98,5 +99,15 @@ __global__ void qlambda_apply(Long num, Lambda lam)
   qacc_forNB(iter, num, {__VA_ARGS__}) qacc_barrier(dummy);
 
 #endif
+
+#define qmem_for(iter, num, mem_type, ...)                              \
+  {                                                                     \
+    qlat::MemType QACC_EFF_MEM_TYPE = qlat::get_eff_mem_type(mem_type); \
+    if (QACC_EFF_MEM_TYPE == qlat::MemType::Cpu) {                      \
+      qthread_for(iter, (num), {__VA_ARGS__});                          \
+    } else {                                                            \
+      qacc_for(iter, (num), {__VA_ARGS__});                             \
+    }                                                                   \
+  }
 
 }  // namespace qlat
