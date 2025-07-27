@@ -226,13 +226,13 @@ void prop_spatial_smear(std::vector<FermionField4d>& ff_vec,
   }
   const Int dir_limit = 3;
   array<ComplexD, 6> mom_factors_v;
-  box<array<ComplexD, 6>> mom_factors(
-      mom_factors_v);  // (array<ComplexD, 8>());
   for (int i = 0; i < 6; ++i) {
     const Int dir = i - 3;
     const RealD phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
-    mom_factors()[i] = qpolar(coef / n_avg, -phase);
+    mom_factors_v[i] = qpolar(coef / n_avg, -phase);
   }
+  box<array<ComplexD, 6>> mom_factors(mom_factors_v,
+                                      MemType::Acc);  // (array<ComplexD, 8>());
   const Geometry& geo = gf.geo();
   const Int t_size = geo.total_site()[3];
   qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
@@ -242,50 +242,58 @@ void prop_spatial_smear(std::vector<FermionField4d>& ff_vec,
   if (num_field == 0) {
     return;
   }
-  std::vector<FermionField4d> ff1_vec(num_field);
   vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
-  vector<FermionField4d> ff1v_vec(num_field, MemType::Cpu);
   set_zero(ffv_vec);
-  set_zero(ff1v_vec);
   qfor(id_field, num_field, {
     qassert(ff_vec[id_field].geo() == geo);
     ff_vec[id_field].set_mem_type(MemType::Acc);
-    ff1_vec[id_field].set_mem_type(MemType::Acc);
-    ff1_vec[id_field].init(geo);
     ffv_vec[id_field].set_view(ff_vec[id_field]);
-    ff1v_vec[id_field].set_view(ff1_vec[id_field]);
   });
   ffv_vec.set_mem_type(MemType::Acc);
-  ff1v_vec.set_mem_type(MemType::Acc);
+  FermionField5d ff, ff1;
+  ff.init(geo, num_field);
+  ff1.init(geo, num_field);
+  qacc_for(index, geo.local_volume(), {
+    Vector<WilsonVector> v = ff.get_elems(index);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      v[id_field] = ffv_vec[id_field].get_elem(index);
+    }
+  });
   for (Int iter = 0; iter < step; ++iter) {
-    qswap(ffv_vec, ff1v_vec);
+    qswap(ff, ff1);
     qacc_for(index, geo.local_volume(), {
       const array<ComplexD, 6>& mfv = mom_factors();
       const Geometry& geo = gf.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
+      Vector<WilsonVector> v = ff.get_elems(index);
+      const Vector<WilsonVector> v1 = ff1.get_elems_const(index);
       for (Int id_field = 0; id_field < num_field; ++id_field) {
-        WilsonVector& wv = ffv_vec[id_field].get_elem(index);
-        wv *= 1 - coef;
+        v[id_field] = v1[id_field];
+        v[id_field] *= (1.0 - coef);
       }
       for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
         const Long index1 = geo.index_from_coordinate(xl1);
-        ColorMatrix link =
-            dir >= 0 ? gf.get_elem(index, dir)
-                     : matrix_adjoint(gf.get_elem(index1, -dir - 1));
+        ColorMatrix link = dir >= 0
+                               ? gf.get_elem(index, dir)
+                               : matrix_adjoint(gf.get_elem(index1, -dir - 1));
         link *= mfv[dir + 3];
+        const Vector<WilsonVector> v11 = ff1.get_elems_const(index1);
         for (Int id_field = 0; id_field < num_field; ++id_field) {
-          WilsonVector& wv = ffv_vec[id_field].get_elem(index);
-          wv += link * ff1v_vec[id_field].get_elem(index1);
+          v[id_field] += link * v11[id_field];
         }
       }
     });
   }
-  if (step % 2 == 1) {
-    qfor(id_field, num_field, { qswap(ff_vec[id_field], ff1_vec[id_field]); });
-  }
+  qacc_for(index, geo.local_volume(), {
+    const Vector<WilsonVector> v = ff.get_elems_const(index);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      ffv_vec[id_field].get_elem(index) = v[id_field];
+    }
+  });
   // Can remove this when set_mem_type is used extensively.
-  qfor(id_field, num_field, { ff_vec[id_field].set_mem_type(get_default_mem_type()); });
+  qfor(id_field, num_field,
+       { ff_vec[id_field].set_mem_type(get_default_mem_type()); });
 }
 
 }  // namespace qlat
