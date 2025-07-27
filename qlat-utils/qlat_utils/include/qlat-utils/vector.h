@@ -522,6 +522,13 @@ qacc Vector<M> get_data(const vector<M>& v)
 }
 
 template <class M>
+qacc Vector<Char> get_data_char(const vector<M>& v)
+{
+  Vector<Char> vc((Char*)v.v.p, v.v.data_size());
+  return vc;
+}
+
+template <class M>
 qacc void set_zero(vector<M>& xx)
 {
   Vector<Char> vec = get_data_char(xx);

@@ -211,4 +211,81 @@ void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
   gf_hyp_smear_no_comm(gf, gf1, alpha1, alpha2, alpha3);
 }
 
+void prop_spatial_smear(std::vector<FermionField4d>& ff_vec,
+                        const GaugeField& gf, const RealD coef, const Long step,
+                        const CoordinateD& mom)
+// `gf` and each of `ff_vec` should contain entire time slices.
+// No communication will be performed.
+{
+  TIMER_FLOPS("prop_spatial_smear");
+  const Int n_avg = 6;
+  const Long v_gb = gf.geo().local_volume() * 12 * 4;
+  timer.flops += v_gb * step * n_avg * (3 * (3 * 6 + 2 * 2));
+  if (0 == step) {
+    return;
+  }
+  const Int dir_limit = 3;
+  array<ComplexD, 6> mom_factors_v;
+  box<array<ComplexD, 6>> mom_factors(
+      mom_factors_v);  // (array<ComplexD, 8>());
+  for (int i = 0; i < 6; ++i) {
+    const Int dir = i - 3;
+    const RealD phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
+    mom_factors()[i] = qpolar(coef / n_avg, -phase);
+  }
+  const Geometry& geo = gf.geo();
+  const Int t_size = geo.total_site()[3];
+  qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
+  qassert(geo.is_only_local);
+  const Int num_field = ff_vec.size();
+  qassert(num_field >= 0);
+  if (num_field == 0) {
+    return;
+  }
+  std::vector<FermionField4d> ff1_vec(num_field);
+  vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
+  vector<FermionField4d> ff1v_vec(num_field, MemType::Cpu);
+  set_zero(ffv_vec);
+  set_zero(ff1v_vec);
+  qfor(id_field, num_field, {
+    qassert(ff_vec[id_field].geo() == geo);
+    ff_vec[id_field].set_mem_type(MemType::Acc);
+    ff1_vec[id_field].set_mem_type(MemType::Acc);
+    ff1_vec[id_field].init(geo);
+    ffv_vec[id_field].set_view(ff_vec[id_field]);
+    ff1v_vec[id_field].set_view(ff1_vec[id_field]);
+  });
+  ffv_vec.set_mem_type(MemType::Acc);
+  ff1v_vec.set_mem_type(MemType::Acc);
+  for (Int iter = 0; iter < step; ++iter) {
+    qswap(ffv_vec, ff1v_vec);
+    qacc_for(index, geo.local_volume(), {
+      const array<ComplexD, 6>& mfv = mom_factors();
+      const Geometry& geo = gf.geo();
+      const Coordinate xl = geo.coordinate_from_index(index);
+      for (Int id_field = 0; id_field < num_field; ++id_field) {
+        WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+        wv *= 1 - coef;
+      }
+      for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
+        const Coordinate xl1 = coordinate_shifts(xl, dir);
+        const Long index1 = geo.index_from_coordinate(xl1);
+        ColorMatrix link =
+            dir >= 0 ? gf.get_elem(index, dir)
+                     : matrix_adjoint(gf.get_elem(index1, -dir - 1));
+        link *= mfv[dir + 3];
+        for (Int id_field = 0; id_field < num_field; ++id_field) {
+          WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+          wv += link * ff1v_vec[id_field].get_elem(index1);
+        }
+      }
+    });
+  }
+  if (step % 2 == 1) {
+    qfor(id_field, num_field, { qswap(ff_vec[id_field], ff1_vec[id_field]); });
+  }
+  // Can remove this when set_mem_type is used extensively.
+  qfor(id_field, num_field, { ff_vec[id_field].set_mem_type(get_default_mem_type()); });
+}
+
 }  // namespace qlat

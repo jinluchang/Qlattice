@@ -240,7 +240,6 @@ PointsSelection load_points_selection_info(const std::string& path)
     psel = load_points_selection(path);
   }
   bcast(psel);
-  psel.set_mem_type(get_default_mem_type());
   return psel;
 }
 

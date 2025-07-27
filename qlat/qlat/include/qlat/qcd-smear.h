@@ -99,8 +99,8 @@ void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 {
   TIMER_FLOPS("prop_smear");
   const int n_avg = smear_in_time_dir ? 8 : 6;
-  const Long vGb = prop.geo().local_volume() * 12 * 4;
-  timer.flops += vGb * step * n_avg * (3 * (3 * 6 + 2 * 2));
+  const Long v_gb = prop.geo().local_volume() * 12 * 4;
+  timer.flops += v_gb * step * n_avg * (3 * (3 * 6 + 2 * 2));
   if (0 == step) {
     return;
   }
@@ -139,6 +139,10 @@ void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
     });
   }
 }
+
+void prop_spatial_smear(std::vector<FermionField4d>& ff_vec,
+                        const GaugeField& gf, const RealD coef, const Long step,
+                        const CoordinateD& mom = CoordinateD());
 
 #ifdef QLAT_INSTANTIATE_SMEAR
 #define QLAT_EXTERN
