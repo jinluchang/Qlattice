@@ -266,12 +266,6 @@ void shuffle_selected_points_back_char(
 void shuffle_selected_points_char(SelectedPoints<Char>& spc,
                                   const SelectedPoints<Char>& spc0,
                                   const SelectedShufflePlan& ssp)
-// const Long n_points = ssp.total_count_recv;
-// const Int multiplicity = sp0.multiplicity;
-// SelectedPoints<M> sp;
-// sp.init(n_points, multiplicity, ssp.points_dist_type_recv);
-// SelectedPoints<Char> spc(sp.view_as_char());
-// SelectedPoints<Char> spc0(sp0.view_as_char());
 {
   TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)");
   qassert(ssp.num_selected_points_send == 1);
@@ -288,12 +282,6 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
 void shuffle_selected_points_back_char(SelectedPoints<Char>& spc,
                                        const SelectedPoints<Char>& spc0,
                                        const SelectedShufflePlan& ssp)
-// const Long n_points = ssp.total_count_send;
-// const Int multiplicity = sp0.multiplicity;
-// SelectedPoints<M> sp;
-// sp.init(n_points, multiplicity, ssp.points_dist_type_send);
-// SelectedPoints<Char> spc(sp.view_as_char());
-// SelectedPoints<Char> spc0(sp0.view_as_char());
 {
   TIMER_FLOPS("shuffle_selected_points_back_char(spc,spc0,ssp)");
   qassert(ssp.num_selected_points_send == 1);
@@ -647,12 +635,14 @@ void set_selected_shuffle_instruction_r_from_l(
 {
   TIMER(
       "set_selected_shuffle_instruction_r_from_l(sp_inst,vec,pdt,psel_vec,rs)");
-  qassert(psel_vec.size() > 0);
+  qassert(f_glb_sum((Long)psel_vec.size()) > 0);
   const Int num_node = get_num_node();
   n_points_selected_points_send.clear();
   n_points_selected_points_send.set_mem_type(MemType::Cpu);
   n_points_selected_points_send.resize(psel_vec.size());
-  points_dist_type_send = psel_vec[0].points_dist_type;
+  points_dist_type_send = static_cast<PointsDistType>(f_bcast_any(
+      psel_vec.size() > 0 ? static_cast<Int>(psel_vec[0].points_dist_type) : 0,
+      psel_vec.size() > 0));
   Long n_points = 0;
   for (Int i = 0; i < (Int)psel_vec.size(); ++i) {
     qassert(points_dist_type_send == psel_vec[i].points_dist_type);
@@ -695,7 +685,7 @@ void set_selected_shuffle_plan_r_from_l(
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Random
-// psel_vec[i].points_dist_type == PointsDistType::Local
+// psel_vec[i].points_dist_type == PointsDistType::Local (or other types)
 // Sort the shuffled points by order of the gindex of points.
 {
   TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel_vec,rs)");
@@ -715,8 +705,8 @@ void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
                                         const RngState& rs)
 // Collective operation.
 // make shuffle plan
-// psel.points_dist_type == PointsDistType::Local
 // ssp.points_dist_type_recv = PointsDistType::Random
+// psel.points_dist_type == PointsDistType::Local (or other types)
 // Sort the shuffled points by order of the gindex of points.
 {
   TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel,rs)");
@@ -837,7 +827,10 @@ void set_selected_shuffle_plan_t_slice_from_l(
   set_selected_shuffle_instruction_t_slice_from_l(
       sp_instruction, n_points_selected_points_send, points_dist_type_send,
       psel_vec);
-  const PointsDistType points_dist_type_recv = PointsDistType::Local;
+  PointsDistType points_dist_type_recv = PointsDistType::Local;
+  if (points_dist_type_send == PointsDistType::Full) {
+    points_dist_type_recv = PointsDistType::Full;
+  }
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);
 }
@@ -948,7 +941,10 @@ void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
   set_selected_shuffle_instruction_dist_t_slice_from_l(
       sp_instruction, n_points_selected_points_send, points_dist_type_send,
       psel, num_field);
-  const PointsDistType points_dist_type_recv = PointsDistType::Local;
+  PointsDistType points_dist_type_recv = PointsDistType::Local;
+  if (points_dist_type_send == PointsDistType::Full) {
+    points_dist_type_recv = PointsDistType::Full;
+  }
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);
 }
