@@ -243,7 +243,8 @@ void free_mem(void* ptr, const Long min_size, const MemType mem_type);
 void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
               const MemType mem_type_src, const Long size);
 
-void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type);
+qacc_no_inline void set_mem(void* ptr, const Int v, const Long size,
+                            const MemType mem_type);
 
 // --------------------
 

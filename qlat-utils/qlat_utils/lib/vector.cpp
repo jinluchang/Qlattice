@@ -74,7 +74,6 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
 #endif
   } else if (eff_mem_type == MemType::Uvm) {
 #ifdef QLAT_USE_ACC
-    void* ptr = NULL;
     qacc_Error err = qacc_GetLastError();
     if (qacc_Success != err) {
       qerr(fname + ssprintf(": ACC error '%s' before qacc_MallocManaged.",
@@ -282,9 +281,9 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
 #endif
 }
 
-void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type)
+qacc_no_inline void set_mem(void* ptr, const Int v, const Long size,
+                            const MemType mem_type)
 {
-  TIMER_FLOPS("set_mem");
 #ifdef QLAT_USE_ACC
 #ifdef QLAT_IN_ACC
   (void)mem_type;
