@@ -323,6 +323,8 @@ inline void QAssert(bool s, const char *file, int line){
   if(bool(GPU) == true){qacc_forNB(iter, num, {__VA_ARGS__});} \
   else{qthread_for(iter, num, {__VA_ARGS__});}
 
+/*
+ *
 // #define qGPU_for2d(iter1, num1, iter2, num2, GPU, ...) \
 //   Qassert(int(GPU) != -2); \
 //   if(bool(GPU) == true){qacc_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});} \
@@ -332,6 +334,8 @@ inline void QAssert(bool s, const char *file, int line){
 //   Qassert(int(GPU) != -2); \
 //   if(bool(GPU) == true){qacc_for2dNB(iter1, num1, iter2, num2, {__VA_ARGS__});} \
 //   else{qthread_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});}
+ *
+ */
 
 inline void free_buf(void* buf, const int GPU){
   if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}
