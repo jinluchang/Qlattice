@@ -37,12 +37,14 @@ MemType read_mem_type(const std::string& mem_type_str)
 
 static void* alloc_mem_aligned(const Long size, const MemType mem_type)
 {
+  void* ptr = NULL;
 #if defined QLAT_NO_ALIGNED_ALLOC
-  return malloc(size);
+  ptr = malloc(size);
 #else
   const Long alignment = get_alignment(mem_type);
-  return std::aligned_alloc(alignment, size);
+  ptr = std::aligned_alloc(alignment, size);
 #endif
+  return ptr;
 }
 
 void* alloc_mem_alloc(const Long size, const MemType mem_type)
@@ -52,11 +54,11 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] += size;
   const MemType eff_mem_type = get_eff_mem_type(mem_type);
+  void* ptr = NULL;
   if (eff_mem_type == MemType::Cpu) {
-    return alloc_mem_aligned(size, mem_type);
+    ptr = alloc_mem_aligned(size, mem_type);
   } else if (eff_mem_type == MemType::Acc) {
 #ifdef QLAT_USE_ACC
-    void* ptr = NULL;
     qacc_Error err = qacc_GetLastError();
     if (qacc_Success != err) {
       qerr(fname + ssprintf(": ACC error '%s' before qacc_MallocManaged.",
@@ -67,9 +69,8 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
       qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
                             qacc_GetErrorString(err), size, ptr));
     }
-    return ptr;
 #else
-    return alloc_mem_aligned(size, mem_type);
+    ptr = alloc_mem_aligned(size, mem_type);
 #endif
   } else if (eff_mem_type == MemType::Uvm) {
 #ifdef QLAT_USE_ACC
@@ -84,14 +85,15 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
       qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
                             qacc_GetErrorString(err), size, ptr));
     }
-    return ptr;
 #else
-    return alloc_mem_aligned(size, mem_type);
+    ptr = alloc_mem_aligned(size, mem_type);
 #endif
   } else {
     qassert(false);
-    return NULL;
   }
+  qassert(ptr != NULL);
+  set_mem(ptr, 0, size, mem_type);
+  return ptr;
 }
 
 void free_mem_free(void* ptr, const Long size, const MemType mem_type)
@@ -100,11 +102,11 @@ void free_mem_free(void* ptr, const Long size, const MemType mem_type)
   timer.flops += size;
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] -= size;
+#ifdef QLAT_USE_ACC
   const MemType eff_mem_type = get_eff_mem_type(mem_type);
   if (eff_mem_type == MemType::Cpu) {
     free(ptr);
   } else if (eff_mem_type == MemType::Acc or eff_mem_type == MemType::Uvm) {
-#ifdef QLAT_USE_ACC
     qacc_Error err = qacc_Free(ptr);
     if (qacc_Success != err) {
       if (qacc_ErrorUnloading != err) {
@@ -112,12 +114,12 @@ void free_mem_free(void* ptr, const Long size, const MemType mem_type)
                               qacc_GetErrorString(err), err));
       }
     }
-#else
-    free(ptr);
-#endif
   } else {
     qassert(false);
   }
+#else
+  free(ptr);
+#endif
 }
 
 void MemCache::init(const MemType mem_type_, const Long mem_cache_max_size_)
@@ -239,27 +241,29 @@ void free_mem(void* ptr, const Long min_size, const MemType mem_type)
 }
 
 void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
-            const MemType mem_type_src, const Long size)
+              const MemType mem_type_src, const Long size)
 {
   TIMER_FLOPS("copy_mem");
   timer.flops += size;
 #ifdef QLAT_USE_ACC
+  const MemType eff_mem_type_dst = get_eff_mem_type(mem_type_dst);
+  const MemType eff_mem_type_src = get_eff_mem_type(mem_type_src);
   qacc_Error err = qacc_ErrorUnknown;
-  if (mem_type_src == MemType::Uvm or mem_type_dst == MemType::Uvm) {
+  if (eff_mem_type_src == MemType::Uvm or eff_mem_type_dst == MemType::Uvm) {
     err = qacc_Memcpy(dst, src, size, qacc_MemcpyDefault);
-  } else if (mem_type_src == MemType::Cpu or mem_type_src == MemType::Comm) {
-    if (mem_type_dst == MemType::Cpu or mem_type_dst == MemType::Comm) {
+  } else if (eff_mem_type_src == MemType::Cpu) {
+    if (eff_mem_type_dst == MemType::Cpu) {
       std::memcpy(dst, src, size);
       err = qacc_Success;
-    } else if (mem_type_dst == MemType::Acc) {
+    } else if (eff_mem_type_dst == MemType::Acc) {
       err = qacc_Memcpy(dst, src, size, qacc_MemcpyHostToDevice);
     } else {
       qassert(false);
     }
-  } else if (mem_type_src == MemType::Acc) {
-    if (mem_type_dst == MemType::Cpu or mem_type_dst == MemType::Comm) {
+  } else if (eff_mem_type_src == MemType::Acc) {
+    if (eff_mem_type_dst == MemType::Cpu) {
       err = qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToHost);
-    } else if (mem_type_dst == MemType::Acc) {
+    } else if (eff_mem_type_dst == MemType::Acc) {
       err = qacc_Memcpy(dst, src, size, qacc_MemcpyDeviceToDevice);
     } else {
       qassert(false);
@@ -275,6 +279,32 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
   (void)mem_type_dst;
   (void)mem_type_src;
   std::memcpy(dst, src, size);
+#endif
+}
+
+void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type)
+{
+  TIMER_FLOPS("set_mem");
+#ifdef QLAT_USE_ACC
+#ifdef QLAT_IN_ACC
+  (void)mem_type;
+  std::memset(ptr, v, size);
+#else
+  const MemType eff_mem_type = get_eff_mem_type(mem_type);
+  if (eff_mem_type == MemType::Cpu) {
+    std::memset(ptr, v, size);
+  } else {
+    qacc_Error err = qacc_ErrorUnknown;
+    err = qacc_Memset(ptr, v, size);
+    if (qacc_Success != err) {
+      qerr(ssprintf("set_zero(vector): ACC error '%s' (%d) after qacc_Memset.",
+                    qacc_GetErrorString(err), err));
+    }
+  }
+#endif
+#else
+  (void)mem_type;
+  std::memset(ptr, v, size);
 #endif
 }
 

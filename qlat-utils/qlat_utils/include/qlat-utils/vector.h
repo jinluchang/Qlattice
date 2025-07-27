@@ -243,6 +243,8 @@ void free_mem(void* ptr, const Long min_size, const MemType mem_type);
 void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
               const MemType mem_type_src, const Long size);
 
+void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type);
+
 // --------------------
 
 inline void displayln_malloc_stats()
@@ -521,25 +523,7 @@ template <class M>
 qacc void set_zero(vector<M>& xx)
 {
   Vector<Char> vec = get_data_char(xx);
-#ifdef QLAT_USE_ACC
-#ifdef QLAT_IN_ACC
-  std::memset(vec.data(), 0, vec.size());
-#else
-  const MemType eff_mem_type = get_eff_mem_type(xx.mem_type);
-  if (eff_mem_type == MemType::Cpu) {
-    std::memset(vec.data(), 0, vec.size());
-  } else {
-    qacc_Error err = qacc_ErrorUnknown;
-    err = qacc_Memset(vec.data(), 0, vec.size());
-    if (qacc_Success != err) {
-      qerr(ssprintf("set_zero(vector): ACC error '%s' (%d) after qacc_Memset.",
-                    qacc_GetErrorString(err), err));
-    }
-  }
-#endif
-#else
-  std::memset(vec.data(), 0, vec.size());
-#endif
+  set_mem(vec.data(), 0, vec.size(), xx.mem_type);
 }
 
 // --------------------
