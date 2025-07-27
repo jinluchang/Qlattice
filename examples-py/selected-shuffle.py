@@ -214,12 +214,10 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     for s_spc, s_geo in zip(s_spc_list, s_geo_list):
         s_gf = q.GaugeField()
         s_gf_list.append(s_gf)
-        s_spc.points_dist_type = "f"
         s_gf.swap_sp_cast(s_spc, s_geo)
     q.json_results_append(f"sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
     for s_gf, s_spc, s_geo in zip(s_gf_list, s_spc_list, s_geo_list):
         s_gf.swap_sp_cast(s_spc, s_geo)
-        s_spc.points_dist_type = "l"
     [ spc, ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
