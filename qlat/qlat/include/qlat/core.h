@@ -986,6 +986,30 @@ void qswap_cast(Field<M>& f1, Field<N>& f2)
   qswap_cast(f1.field, f2.field);
 }
 
+template <class M>
+void set_field_from_pointer(Field<M>& f, Vector<M> field, const Geometry& geo,
+                            const Int multiplicity, const MemType mem_type,
+                            const MemOrder mem_order = MemOrder::TZYXM,
+                            const bool is_copy = true)
+// `field.p` is the pointer to the data.
+// `field.n` is number of data elements (with type `M`).
+// By default, `is_copy == true`.
+// In this case, the `Field<M>` value `f` will be a view of the pointer.
+// When `f` is deconstructed, it will NOT free the data.
+// If `is_copy == false`, then `f` will assume ownership of the data.
+// In this case, `f` will free the data when it is deconstructed.
+{
+  f.init();
+  f.initialized = true;
+  f.multiplicity = multiplicity;
+  f.mem_order = mem_order;
+  f.geo.set_mem_type(mem_type);
+  f.geo.set(geo);
+  f.field.set_mem_type(mem_type);
+  f.field.set_view(field);
+  qassert(f.geo().local_volume_expanded() * f.multiplicity == f.field.size());
+}
+
 // --------------------
 
 template <class T = Real>
