@@ -61,7 +61,7 @@ cdef class Geometry:
         """
         self.xx.init(id_node, size_node.xx, node_site.xx)
 
-    def init_from_corr_node_site(self, Coordinate coor_node, Coordinate size_node, Coordinate node_site):
+    def init_from_coor_node_site(self, Coordinate coor_node, Coordinate size_node, Coordinate node_site):
         """
         initialize Geometry without call MPI functions.
         #

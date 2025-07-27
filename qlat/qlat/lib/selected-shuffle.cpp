@@ -498,7 +498,6 @@ static void set_selected_shuffle_plan_no_reorder(
     rdispl += ssp.recvcounts[id_node];
   });
   ssp.total_count_recv = rdispl;
-  ssp.points_dist_type_recv = PointsDistType::Random;
   spi_r.init(ssp.total_count_recv, 3, PointsDistType::Local);
   qthread_for(idx, spi_r.n_points, {
     Vector<Long> v = spi_r.get_elems(idx);

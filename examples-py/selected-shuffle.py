@@ -25,9 +25,9 @@ multiplicity_list = [
         1, 2, 3,
         ]
 
-def get_sp_list_sig(sp_list, rs, n):
+def get_f_list_sig(f_list, rs, n):
     sig = np.zeros(n, dtype=np.complex128)
-    for idx, sp in enumerate(sp_list):
+    for idx, sp in enumerate(f_list):
         sig += q.get_data_sig_arr(sp[:], rs.split(f"sig {idx}"), n)
     sig = q.glb_sum(sig)
     return sig
@@ -101,12 +101,12 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
         sp = q.SelectedPointsComplexD(psel, multiplicity)
         sp.set_rand(rs.split(f"sp_l {idx}"))
         sp_l_list.append(sp)
-    q.json_results_append(f"sig sp_l_list", get_sp_list_sig(sp_l_list, rs, 3), 1e-12)
+    q.json_results_append(f"sig sp_l_list", get_f_list_sig(sp_l_list, rs, 3), 1e-12)
     #
     sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
-    q.json_results_append(f"sig sp_s_list", get_sp_list_sig(sp_s_list, rs, 3), 1e-12)
+    q.json_results_append(f"sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
     sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
-    assert np.all(get_sp_list_sig(sp_ss_list, rs, 3) == get_sp_list_sig(sp_l_list, rs, 3))
+    assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig(sp_l_list, rs, 3))
 
 @q.timer
 def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
@@ -138,12 +138,12 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
         sp = q.SelectedPointsComplexD(psel, multiplicity)
         sp.set_rand(rs.split(f"sp_l {idx}"))
         sp_l_list.append(sp)
-    q.json_results_append(f"sig sp_l_list", get_sp_list_sig(sp_l_list, rs, 3), 1e-12)
+    q.json_results_append(f"sig sp_l_list", get_f_list_sig(sp_l_list, rs, 3), 1e-12)
     #
     sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
-    q.json_results_append(f"sig sp_s_list", get_sp_list_sig(sp_s_list, rs, 3), 1e-12)
+    q.json_results_append(f"sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
     sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
-    assert np.all(get_sp_list_sig(sp_ss_list, rs, 3) == get_sp_list_sig(sp_l_list, rs, 3))
+    assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig(sp_l_list, rs, 3))
     #
     ssp = q.SelectedShufflePlan("dist_t_slice_from_l", psel_l, len(psel_l_list))
     assert psel_l is ssp.psel_src_list[0]
@@ -156,9 +156,9 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     q.json_results_append(f"get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
     #
     sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, [ sp_l, ])
-    q.json_results_append(f"sig sp_s_list", get_sp_list_sig(sp_s_list, rs, 3), 1e-12)
+    q.json_results_append(f"sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
     sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
-    assert np.all(get_sp_list_sig(sp_ss_list, rs, 3) == get_sp_list_sig([ sp_l, ], rs, 3))
+    assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig([ sp_l, ], rs, 3))
 
 @q.timer
 def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
@@ -169,6 +169,10 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     psel = q.PointsSelection(geo)
     q.json_results_append(f"len(psel)={len(psel)}")
     q.json_results_append(f"hash_sha256(psel)={q.hash_sha256(psel)}")
+    #
+    t_slice_node_site = total_site.copy()
+    t_slice_node_site[3] = 1
+    t_slice_size_node = q.Coordinate([ 1, 1, 1, total_site[3], ])
     #
     num_field = 3
     #
@@ -185,7 +189,8 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
         psel_list.append(psel.copy())
         vec_list.append(vec)
     q.json_results_append(f"hash_sha256(psel_list)={q.hash_sha256(psel_list)}")
-    q.json_results_append(f"sig vec_list", get_sp_list_sig(vec_list, rs, 3), 1e-12)
+    vec_sig = get_f_list_sig(vec_list, rs, 3)
+    q.json_results_append(f"sig vec_list", vec_sig, 1e-12)
     #
     spc = q.SelectedPointsChar(psel)
     geo = q.Geometry()
@@ -199,11 +204,22 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     assert ssp1.psel_src_list[0] is psel
     q.json_results_append(f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}")
     t_list = [ psel[0][3].item() for psel in ssp1.psel_dst_list ]
+    s_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in t_list ]
     all_t_list_list = q.get_comm().allgather(t_list)
     q.json_results_append(f"all_t_list_list={all_t_list_list}")
     #
     gf.swap_sp_cast(spc, geo)
     s_spc_list = ssp1.shuffle_list([ spc, ])
+    s_gf_list = []
+    for s_spc, s_geo in zip(s_spc_list, s_geo_list):
+        s_gf = q.GaugeField()
+        s_gf_list.append(s_gf)
+        s_spc.points_dist_type = "f"
+        s_gf.swap_sp_cast(s_spc, s_geo)
+    q.json_results_append(f"sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
+    for s_gf, s_spc, s_geo in zip(s_gf_list, s_spc_list, s_geo_list):
+        s_gf.swap_sp_cast(s_spc, s_geo)
+        s_spc.points_dist_type = "l"
     [ spc, ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
@@ -212,6 +228,7 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     assert ssp2.psel_src_list is psel_list
     q.json_results_append(f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}")
     vt_list = [ psel[0][3].item() for psel in ssp2.psel_dst_list ]
+    vs_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in vt_list ]
     all_vt_list_list = q.get_comm().allgather(vt_list)
     q.json_results_append(f"all_vt_list_list={all_vt_list_list}")
     #
@@ -229,6 +246,7 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     assert len(vgeo_list) == num_field
     for i in range(num_field):
         vec_list[i].swap_sp_cast(vspc_list[i], vgeo_list[i])
+    assert np.all(vec_sig == get_f_list_sig(vec_list, rs, 3))
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
