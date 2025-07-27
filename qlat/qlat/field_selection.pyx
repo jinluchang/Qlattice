@@ -668,14 +668,14 @@ cdef class FieldSelection:
         else:
             raise Exception("FieldSelection.__init__: {args}")
 
-    def init_from_geo(self, Geometry geo, int rank=-1):
+    def init_from_geo(self, Geometry geo, cc.Long rank=-1):
         """
         By default `rank=-1` means empty selection.
         Non-negative `rank` means full selection.
         """
         self.set_uniform(geo, rank)
 
-    def init_from_psel(self, PointsSelection psel, Geometry geo=None, int rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
+    def init_from_psel(self, PointsSelection psel, Geometry geo=None, cc.Long rank_psel=1024 * 1024 * 1024 * 1024 * 1024):
         """
         psel.points_dist_type [ "g", "f", "l", ]
         """

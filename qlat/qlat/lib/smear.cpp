@@ -211,9 +211,9 @@ void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
   gf_hyp_smear_no_comm(gf, gf1, alpha1, alpha2, alpha3);
 }
 
-void prop_spatial_smear(std::vector<FermionField4d>& ff_vec,
-                        const GaugeField& gf, const RealD coef, const Long step,
-                        const CoordinateD& mom)
+void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
+                                const GaugeField& gf, const RealD coef,
+                                const Long step, const CoordinateD& mom)
 // `gf` and each of `ff_vec` should contain entire time slices.
 // No communication will be performed.
 {

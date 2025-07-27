@@ -140,9 +140,10 @@ void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
   }
 }
 
-void prop_spatial_smear(std::vector<FermionField4d>& ff_vec,
-                        const GaugeField& gf, const RealD coef, const Long step,
-                        const CoordinateD& mom = CoordinateD());
+void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
+                                const GaugeField& gf, const RealD coef,
+                                const Long step,
+                                const CoordinateD& mom = CoordinateD());
 
 #ifdef QLAT_INSTANTIATE_SMEAR
 #define QLAT_EXTERN

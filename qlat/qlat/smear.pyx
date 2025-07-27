@@ -4,7 +4,7 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .qcd cimport GaugeField
-from .propagator cimport Prop
+from .propagator cimport Prop, FermionField4d
 
 import cqlat as c
 import qlat_utils as q
@@ -58,3 +58,24 @@ def prop_smear(Prop prop, GaugeField gf1,
     else:
         raise Exception(f"prop_smear(prop1, gf1, coef={coef}, step={step}, mom={mom}, smear_in_time_dir={smear_in_time_dir}, mode_smear={mode_smear})")
     return prop1
+
+@q.timer
+def prop_spatial_smear_no_comm(list ff_list, GaugeField gf, cc.RealD coef, cc.Long step, CoordinateD mom=None):
+    """
+    `gf` and each of `ff_list` should contain entire time slices.
+    No communication will be performed.
+    """
+    if mom is None:
+        mom = q.CoordinateD()
+    cdef cc.Int num_field = len(ff_list)
+    cdef cc.std_vector[cc.FermionField4d] ff_vec
+    cdef FermionField4d ff
+    ff_vec.resize(num_field)
+    for i in range(num_field):
+        ff = ff_list[i]
+        cc.qswap(ff.xxx().p[0], ff_vec[i])
+    cc.prop_spatial_smear_no_comm(ff_vec, gf.xxx().p[0], coef, step, mom.xx)
+    for i in range(num_field):
+        ff = ff_list[i]
+        cc.qswap(ff.xxx().p[0], ff_vec[i])
+
