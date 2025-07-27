@@ -213,8 +213,8 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     s_gf_list = []
     for s_spc, s_geo in zip(s_spc_list, s_geo_list):
         s_gf = q.GaugeField()
-        s_gf_list.append(s_gf)
         s_gf.swap_sp_cast(s_spc, s_geo)
+        s_gf_list.append(s_gf)
     q.json_results_append(f"sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
     for s_gf, s_spc, s_geo in zip(s_gf_list, s_spc_list, s_geo_list):
         s_gf.swap_sp_cast(s_spc, s_geo)
@@ -239,6 +239,14 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
         vspc_list.append(vspc)
         vgeo_list.append(vgeo)
     s_vspc_list = ssp2.shuffle_list(vspc_list)
+    s_vec_list = []
+    for s_vspc, vs_geo in zip(s_vspc_list, vs_geo_list):
+        s_vec = q.FermionField4d()
+        s_vec.swap_sp_cast(s_vspc, vs_geo)
+        s_vec_list.append(s_vec)
+    q.json_results_append(f"sig s_vec_list", get_f_list_sig(s_vec_list, rs, 3), 1e-10)
+    for s_vec, s_vspc, vs_geo in zip(s_vec_list, s_vspc_list, vs_geo_list):
+        s_vec.swap_sp_cast(s_vspc, vs_geo)
     vspc_list = ssp2.shuffle_list(s_vspc_list, is_reverse=True)
     assert len(vspc_list) == num_field
     assert len(vgeo_list) == num_field

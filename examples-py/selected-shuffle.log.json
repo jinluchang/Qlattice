@@ -347,6 +347,30 @@
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1], [2, 2, 2, 3, 3, 3]]"
  ],
  [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": -5.61553645608873,
+     "imag": 9.059802571989561,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -26.085383877377772,
+     "imag": -1.143179324858309,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 24.27126453033741,
+     "imag": 3.7869683461260557,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 2 0"
  ],
  [
@@ -692,6 +716,30 @@
  ],
  [
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1], [2, 2, 2, 3, 3, 3]]"
+ ],
+ [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": -5.61553645608873,
+     "imag": 9.059802571989561,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -26.085383877377772,
+     "imag": -1.143179324858309,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 24.27126453033741,
+     "imag": 3.7869683461260557,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 3 0"
@@ -1041,6 +1089,30 @@
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1], [2, 2, 2, 3, 3, 3]]"
  ],
  [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": -5.61553645608873,
+     "imag": 9.059802571989561,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -26.085383877377772,
+     "imag": -1.143179324858309,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 24.27126453033741,
+     "imag": 3.7869683461260557,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 1 0"
  ],
  [
@@ -1386,6 +1458,30 @@
  ],
  [
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1, 2, 2, 2], [3, 3, 3, 4, 4, 4, 5, 5, 5]]"
+ ],
+ [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": 69.79035994822172,
+     "imag": 8.50049200853416,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -69.15142816615071,
+     "imag": -74.08565586841927,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 91.26874091340582,
+     "imag": 79.2448221543017,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 2 0"
@@ -1735,6 +1831,30 @@
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1, 2, 2, 2], [3, 3, 3, 4, 4, 4, 5, 5, 5]]"
  ],
  [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": 69.79035994822172,
+     "imag": 8.50049200853416,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -69.15142816615071,
+     "imag": -74.08565586841927,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 91.26874091340582,
+     "imag": 79.2448221543017,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 3 0"
  ],
  [
@@ -2080,6 +2200,30 @@
  ],
  [
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1, 2, 2, 2], [3, 3, 3, 4, 4, 4, 5, 5, 5]]"
+ ],
+ [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": 69.79035994822172,
+     "imag": 8.50049200853416,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -69.15142816615071,
+     "imag": -74.08565586841927,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 91.26874091340582,
+     "imag": 79.2448221543017,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 1 0"
@@ -2429,6 +2573,30 @@
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3], [4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7]]"
  ],
  [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": 299.2838434657975,
+     "imag": 357.5892911336018,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -87.22773526697632,
+     "imag": 53.67341190826182,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 171.3082330305348,
+     "imag": 113.37895095688958,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 2 0"
  ],
  [
@@ -2776,6 +2944,30 @@
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3], [4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7]]"
  ],
  [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": 299.2838434657975,
+     "imag": 357.5892911336018,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -87.22773526697632,
+     "imag": 53.67341190826182,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 171.3082330305348,
+     "imag": 113.37895095688958,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 3 0"
  ],
  [
@@ -3121,5 +3313,29 @@
  ],
  [
   "all_vt_list_list=[[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3], [4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7]]"
+ ],
+ [
+  "sig s_vec_list",
+  {
+   "value": [
+    {
+     "real": 299.2838434657975,
+     "imag": 357.5892911336018,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -87.22773526697632,
+     "imag": 53.67341190826182,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 171.3082330305348,
+     "imag": 113.37895095688958,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ]
 ]
