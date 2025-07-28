@@ -110,6 +110,10 @@ cdef class Geometry:
         return self.xx.local_volume()
 
     @property
+    def local_volume_expanded(self):
+        return self.xx.local_volume_expanded()
+
+    @property
     def eo(self):
         return self.xx.eo
 
