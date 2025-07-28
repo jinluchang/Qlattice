@@ -1678,7 +1678,7 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
     int cycle;
     for (cycle = 1; cycle <= max_mixed_precision_cycle; ++cycle) {
       if (not inv.lm.null() and inv.lm().initialized) {
-        deflate(tmp, itmp, inv.lm());
+        deflate(tmp, itmp, inv.lm.cast_const());
       } else {
         set_zero(tmp);
       }

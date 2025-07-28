@@ -264,7 +264,7 @@ struct API vector {
   // Only used in qacc macros, or if it is already a copy.
   //
   Vector<M> v;
-  MemType mem_type;  // if place data on accelerator memory
+  mutable MemType mem_type;  // if place data on accelerator memory
   bool is_copy;      // do not free memory if is_copy=true
   //
   vector(const MemType mem_type_ = get_default_mem_type())
@@ -337,7 +337,7 @@ struct API vector {
     qassert(v.p == NULL);
   }
   //
-  void set_mem_type(const MemType mem_type_)
+  void set_mem_type(const MemType mem_type_) const
   {
     qassert(not is_copy);
     if (NULL == v.p) {
@@ -350,10 +350,10 @@ struct API vector {
     }
     {
       TIMER("vector::set_mem_type");
-      vector<M> vec;
-      qswap(*this, vec);
-      mem_type = mem_type_;
-      *this = vec;
+      vector<M> vec(mem_type_);
+      vec = *this;
+      std::swap(mem_type, vec.mem_type);
+      std::swap(v.p, vec.v.p);
       qassert(mem_type == mem_type_);
     }
   }
@@ -547,7 +547,7 @@ struct API box {
   // Only used in qacc macros, or if it is already a copy.
   //
   bool is_copy;      // do not free memory if is_copy=true
-  MemType mem_type;  // if place data on accelerator memory
+  mutable MemType mem_type;  // if place data on accelerator memory
   Handle<M> v;
   //
   box()
@@ -612,7 +612,7 @@ struct API box {
     qassert(v.p == NULL);
   }
   //
-  void set_mem_type(const MemType mem_type_)
+  void set_mem_type(const MemType mem_type_) const
   {
     qassert(not is_copy);
     if (NULL == v.p) {
@@ -626,9 +626,10 @@ struct API box {
     {
       TIMER("box::set_mem_type");
       box<M> b;
-      qswap(*this, b);
-      mem_type = mem_type_;
-      *this = b;
+      b.mem_type = mem_type_;
+      b = *this;
+      std::swap(mem_type, b.mem_type);
+      std::swap(v.p, b.v.p);
       qassert(mem_type == mem_type_);
     }
   }

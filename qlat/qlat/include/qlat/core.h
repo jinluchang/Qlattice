@@ -336,7 +336,10 @@ struct API PointsSelection {
   PointsSelection& operator=(const PointsSelection& psel) = default;
   PointsSelection& operator=(PointsSelection&& psel) noexcept = default;
   //
-  void set_mem_type(const MemType mem_type) { xgs.set_mem_type(mem_type); }
+  void set_mem_type(const MemType mem_type) const
+  {
+    xgs.set_mem_type(mem_type);
+  }
   //
   qacc Long size() const { return xgs.size(); }
   qacc const Coordinate* data() const { return xgs.data(); }
@@ -346,6 +349,8 @@ struct API PointsSelection {
   qacc Coordinate& operator[](const Long i) { return xgs[i]; }
   //
   void resize(const Long size);
+  //
+  void set_view(const PointsSelection& psel);
   //
   SelectedPoints<Coordinate> view_sp() const;
   //
@@ -388,7 +393,10 @@ struct API SelectedPoints {
   SelectedPoints<M>& operator=(const SelectedPoints<M>&) = default;
   SelectedPoints<M>& operator=(SelectedPoints<M>&&) noexcept = default;
   //
-  void set_mem_type(const MemType mem_type) { points.set_mem_type(mem_type); }
+  void set_mem_type(const MemType mem_type) const
+  {
+    points.set_mem_type(mem_type);
+  }
   //
   void set_view(const SelectedPoints<M>& sp)
   {
@@ -413,9 +421,9 @@ struct API SelectedPoints {
     points.set_view_cast(sp.points);
   }
   //
-  SelectedPoints<M> view() const
+  SelectedPoints<M> view_sp() const
   {
-    TIMER("SelectedPoints::view");
+    TIMER("SelectedPoints::view_sp");
     SelectedPoints<M> sp;
     sp.set_view(*this);
     return sp;
@@ -622,7 +630,7 @@ struct API Field {
   Field<M>& operator=(const Field<M>& f);
   Field<M>& operator=(Field<M>&&) noexcept = default;
   //
-  void set_mem_type(const MemType mem_type)
+  void set_mem_type(const MemType mem_type) const
   {
     geo.set_mem_type(mem_type);
     field.set_mem_type(mem_type);
@@ -1076,9 +1084,11 @@ struct API FieldSelection {
   //
   FieldSelection() { init(); }
   //
-  void set_mem_type(const MemType mem_type);
-  //
   qacc_no_inline const Geometry& get_geo() const;
+  //
+  void set_mem_type(const MemType mem_type) const;
+  //
+  void set_view(const FieldSelection& fsel);
 };
 
 void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel);
@@ -1087,6 +1097,8 @@ void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel,
                         const Geometry& geo,
                         const Long rank_psel = 1024L * 1024L * 1024L * 1024L *
                                                1024L);
+
+void set_geo_from_psel(Geometry& geo, const PointsSelection& psel);
 
 // --------------------
 
@@ -1115,7 +1127,7 @@ struct API SelectedField {
   SelectedField<M>& operator=(const SelectedField<M>&) = default;
   SelectedField<M>& operator=(SelectedField<M>&&) noexcept = default;
   //
-  void set_mem_type(const MemType mem_type)
+  void set_mem_type(const MemType mem_type) const
   {
     geo.set_mem_type(mem_type);
     field.set_mem_type(mem_type);

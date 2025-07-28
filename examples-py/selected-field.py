@@ -77,7 +77,7 @@ n2 = q.glb_sum(n1)
 
 q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")
 
-sp_prop = q.PselProp(s_prop, q.SelectedShufflePlan("r_from_l", q.PointsSelection(s_prop.fsel), rs.split("shuffle_selected_field-1")))
+sp_prop = q.PselProp(s_prop, q.SelectedShufflePlan("r_from_l", q.PointsSelection(s_prop.fsel), s_prop.fsel.geo, rs.split("shuffle_selected_field-1")))
 q.displayln_info(f"CHECK: sp_prop from shuffle_selected_field")
 
 q.save_pickle_obj(sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)

@@ -322,6 +322,15 @@ void PointsSelection::init(const Coordinate& total_site_,
 
 void PointsSelection::resize(const Long n_points) { xgs.resize(n_points); }
 
+void PointsSelection::set_view(const PointsSelection& psel)
+{
+  TIMER("PointsSelection::set_view");
+  initialized = psel.initialized;
+  points_dist_type = psel.points_dist_type;
+  total_site = psel.total_site;
+  xgs.set_view(psel.xgs);
+}
+
 SelectedPoints<Coordinate> PointsSelection::view_sp() const
 {
   TIMER("PointsSelection::view_sp");
@@ -387,7 +396,12 @@ void FieldSelection::init()
   indices.init();
 }
 
-void FieldSelection::set_mem_type(const MemType mem_type)
+qacc_no_inline const Geometry& FieldSelection::get_geo() const
+{
+  return f_rank.geo();
+}
+
+void FieldSelection::set_mem_type(const MemType mem_type) const
 {
   f_rank.set_mem_type(mem_type);
   f_local_idx.set_mem_type(mem_type);
@@ -395,9 +409,13 @@ void FieldSelection::set_mem_type(const MemType mem_type)
   indices.set_mem_type(mem_type);
 }
 
-qacc_no_inline const Geometry& FieldSelection::get_geo() const
+void FieldSelection::set_view(const FieldSelection& fsel)
 {
-  return f_rank.geo();
+  f_rank.set_view(fsel.f_rank);
+  n_elems = fsel.n_elems;
+  f_local_idx.set_view(fsel.f_local_idx);
+  ranks.set_view(fsel.ranks);
+  indices.set_view(fsel.indices);
 }
 
 void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel)
@@ -447,6 +465,41 @@ void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel,
       (psel.points_dist_type == PointsDistType::Full)) {
     qassert(fsel.n_elems == psel.size());
   }
+}
+
+void set_geo_from_psel(Geometry& geo, const PointsSelection& psel)
+{
+  TIMER("set_geo_from_psel");
+  qassert(psel.points_dist_type == PointsDistType::Full);
+  psel.set_mem_type(MemType::Cpu);
+  const Coordinate total_site = psel.total_site;
+  const Long n_points = psel.size();
+  qassert(n_points > 0);
+  Coordinate left = psel.xgs[0];
+  Coordinate right = psel.xgs[n_points - 1];
+  qfor(idx, n_points, {
+    const Coordinate& xg = psel.xgs[idx];
+    for (Int m = 0; m < 4; ++m) {
+      if (xg[m] < left[m]) {
+        left[m] = xg[m];
+      }
+      if (xg[m] > right[m]) {
+        right[m] = xg[m];
+      }
+    }
+  });
+  Coordinate node_site, size_node, coor_node;
+  node_site = right - left;
+  for (Int m = 0; m < 4; ++m) {
+    node_site[m] = right[m] - left[m] + 1;
+    size_node[m] = total_site[m] / node_site[m];
+    coor_node[m] = left[m] / node_site[m];
+    qassert(size_node[m] * node_site[m] == total_site[m]);
+    qassert(coor_node[m] * node_site[m] == left[m]);
+  }
+  geo.init(coor_node, size_node, node_site);
+  qassert(geo.local_volume() == n_points);
+  psel.set_mem_type(get_default_mem_type());
 }
 
 }  // namespace qlat

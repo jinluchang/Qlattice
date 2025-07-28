@@ -9,23 +9,40 @@ namespace qlat
 
 template <class M>
 struct API Handle {
-  M* p;
+  mutable M* p;
   //
   qacc Handle() { init(); }
   qacc Handle(M& obj) { init(obj); }
   //
   qacc void init() { p = NULL; }
-  qacc void init(M& obj) { p = (M*)&obj; }
+  qacc void init(M& obj) { p = &obj; }
+  qacc void init(Handle<M>& h) { p = h.p; }
   //
   qacc bool null() const { return p == NULL; }
   //
-  qacc M& operator()() const
+  qacc const M& operator()() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+  qacc M& operator()()
   {
     qassert(NULL != p);
     return *p;
   }
   //
-  qacc M& val() const
+  qacc const M& val() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+  qacc M& val()
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+  //
+  qacc M& cast_const() const
   {
     qassert(NULL != p);
     return *p;
@@ -34,14 +51,14 @@ struct API Handle {
 
 template <class M>
 struct API ConstHandle {
-  const M* p;
+  mutable const M* p;
   //
   qacc ConstHandle() { init(); }
   qacc ConstHandle(const M& obj) { init(obj); }
   qacc ConstHandle(const Handle<M>& h) { init(h()); }
   //
   qacc void init() { p = NULL; }
-  qacc void init(const M& obj) { p = (M*)&obj; }
+  qacc void init(const M& obj) { p = &obj; }
   //
   qacc bool null() const { return p == NULL; }
   //
@@ -60,7 +77,7 @@ struct API ConstHandle {
 
 template <class M>
 struct API Vector {
-  M* p;
+  mutable M* p;
   Long n;
   //
   qacc Vector()
@@ -172,7 +189,7 @@ struct API Vector {
 
 template <class M, Long N>
 struct API Array {
-  M* p;
+  mutable M* p;
   //
   qacc Array() { p = NULL; }
   qacc Array(const Array<M, N>& arr) { p = arr.p; }

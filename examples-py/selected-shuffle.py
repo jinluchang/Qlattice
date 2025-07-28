@@ -41,13 +41,14 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
     n_points = total_site.volume() // 16
     q.json_results_append(f"n_points={n_points}")
     #
+    geo = q.Geometry(total_site)
     psel = q.PointsSelection()
     psel.set_rand(total_site, n_points, rs.split("psel"))
     q.json_results_append(f"hash(psel)={q.hash_sha256(psel)}")
     fsel = q.FieldSelection(psel)
     psel_l = q.PointsSelection(fsel)
     #
-    ssp = q.SelectedShufflePlan("r_from_l", psel_l, rs.split("ssp"))
+    ssp = q.SelectedShufflePlan("r_from_l", psel_l, geo, rs.split("ssp"))
     assert psel_l is ssp.psel_src_list[0]
     psel_s = ssp.psel_dst_list[0]
     #
@@ -88,10 +89,11 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
     assert np.all(sig_s1 == sig_s)
     #
     psel_l_list = [ psel_l.copy() for i in range(3) ]
+    geo_list = [ geo.copy() for i in range(3) ]
     psel_l_list_hash = q.hash_sha256(psel_l_list)
     q.json_results_append(f"hash(psel_l_list)={psel_l_list_hash}")
     #
-    ssp = q.SelectedShufflePlan("r_from_l", psel_l_list, rs.split("ssp"))
+    ssp = q.SelectedShufflePlan("r_from_l", psel_l_list, geo_list, rs.split("ssp"))
     assert psel_l_list is ssp.psel_src_list
     assert psel_l_list_hash == q.hash_sha256(ssp.psel_src_list)
     q.json_results_append(f"hash(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
@@ -118,6 +120,7 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     n_points = total_site.volume() // 16
     q.json_results_append(f"n_points={n_points}")
     #
+    geo = q.Geometry(total_site)
     psel = q.PointsSelection()
     psel.set_rand(total_site, n_points, rs.split("psel"))
     q.json_results_append(f"hash(psel)={q.hash_sha256(psel)}")
@@ -125,10 +128,11 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     psel_l = q.PointsSelection(fsel)
     #
     psel_l_list = [ psel_l.copy() for i in range(3) ]
+    geo_list = [ geo.copy() for i in range(3) ]
     psel_l_list_hash = q.hash_sha256(psel_l_list)
     #
     q.json_results_append(f"hash(psel_l_list)={psel_l_list_hash}")
-    ssp = q.SelectedShufflePlan("t_slice_from_l", psel_l_list)
+    ssp = q.SelectedShufflePlan("t_slice_from_l", psel_l_list, geo_list)
     assert psel_l_list is ssp.psel_src_list
     assert psel_l_list_hash == q.hash_sha256(ssp.psel_src_list)
     q.json_results_append(f"hash(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
@@ -145,7 +149,7 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
     assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig(sp_l_list, rs, 3))
     #
-    ssp = q.SelectedShufflePlan("dist_t_slice_from_l", psel_l, len(psel_l_list))
+    ssp = q.SelectedShufflePlan("dist_t_slice_from_l", psel_l, geo, len(psel_l_list))
     assert psel_l is ssp.psel_src_list[0]
     q.json_results_append(f"hash(ssp.psel_dst_list)={q.hash_sha256(ssp.psel_dst_list)}")
     #
@@ -182,11 +186,13 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     q.json_results_append(f"gf sig", gf_sig, 1e-10)
     #
     psel_list = []
+    geo_list = []
     vec_list = []
     for i in range(num_field):
         vec = q.FermionField4d(geo)
         vec.set_rand(rs.split(f"vec {i}"))
         psel_list.append(psel.copy())
+        geo_list.append(geo.copy())
         vec_list.append(vec)
     q.json_results_append(f"hash_sha256(psel_list)={q.hash_sha256(psel_list)}")
     vec_sig = get_f_list_sig(vec_list, rs, 3)
@@ -200,7 +206,7 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
     #
-    ssp1 = q.SelectedShufflePlan("dist_t_slice_from_l", psel, num_field)
+    ssp1 = q.SelectedShufflePlan("dist_t_slice_from_l", psel, geo, num_field)
     assert ssp1.psel_src_list[0] is psel
     q.json_results_append(f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}")
     t_list = [ psel[0][3].item() for psel in ssp1.psel_dst_list ]
@@ -222,7 +228,117 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
     #
-    ssp2 = q.SelectedShufflePlan("t_slice_from_l", psel_list)
+    ssp2 = q.SelectedShufflePlan("t_slice_from_l", psel_list, geo_list)
+    assert ssp2.psel_src_list is psel_list
+    q.json_results_append(f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}")
+    vt_list = [ psel[0][3].item() for psel in ssp2.psel_dst_list ]
+    vs_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in vt_list ]
+    all_vt_list_list = q.get_comm().allgather(vt_list)
+    q.json_results_append(f"all_vt_list_list={all_vt_list_list}")
+    #
+    vspc_list = []
+    vgeo_list = []
+    for i in range(num_field):
+        vspc = q.SelectedPointsChar(psel)
+        vgeo = q.Geometry()
+        vec_list[i].swap_sp_cast(vspc, vgeo)
+        vspc_list.append(vspc)
+        vgeo_list.append(vgeo)
+    s_vspc_list = ssp2.shuffle_list(vspc_list)
+    s_vec_list = []
+    for s_vspc, vs_geo in zip(s_vspc_list, vs_geo_list):
+        s_vec = q.FermionField4d()
+        s_vec.swap_sp_cast(s_vspc, vs_geo)
+        s_vec_list.append(s_vec)
+    q.json_results_append(f"sig s_vec_list", get_f_list_sig(s_vec_list, rs, 3), 1e-10)
+    for s_vec, s_vspc, vs_geo in zip(s_vec_list, s_vspc_list, vs_geo_list):
+        s_vec.swap_sp_cast(s_vspc, vs_geo)
+    vspc_list = ssp2.shuffle_list(s_vspc_list, is_reverse=True)
+    assert len(vspc_list) == num_field
+    assert len(vgeo_list) == num_field
+    for i in range(num_field):
+        vec_list[i].swap_sp_cast(vspc_list[i], vgeo_list[i])
+    assert np.all(vec_sig == get_f_list_sig(vec_list, rs, 3))
+
+@q.timer
+def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
+    """
+    Perform spatial smear for `ff_list`, a list of `FermionField4d`.
+    #
+    get_gf_ape = run_gf_ape(job_tag, get_gf)
+    gf = get_gf_ape()
+    #
+    coef = get_param(job_tag, "prop_smear_coef")
+    step = get_param(job_tag, "prop_smear_step")
+    #
+    job_tag = "64I"
+    set_param(job_tag, "gf_ape_smear_coef")(0.5)
+    set_param(job_tag, "gf_ape_smear_step")(30)
+    set_param(job_tag, "prop_smear_coef")(0.9375)
+    set_param(job_tag, "prop_smear_step")(54)
+    """
+    fname = q.get_fname()
+    #
+    assert isinstance(ff_list, list)
+    num_field = len(ff_list)
+    for i in range(num_field):
+        assert isinstance(ff_list[i], q.FermionField4d)
+    assert isinstance(gf, q.GaugeField)
+    assert isinstance(coef, float)
+    assert isinstance(step, int)
+    assert step >= 0
+    if mom is None:
+        mom = q.CoordinateD()
+    assert isinstance(mom, q.CoordinateD)
+    if step == 0:
+        return
+    #
+    gf = gf.copy()
+    geo = gf.geo
+    total_site = geo.total_site
+    psel = q.PointsSelection(geo)
+    #
+    t_slice_node_site = total_site.copy()
+    t_slice_node_site[3] = 1
+    t_slice_size_node = q.Coordinate([ 1, 1, 1, total_site[3], ])
+    #
+    psel_list = []
+    geo_list = []
+    for i in range(num_field):
+        psel_list.append(psel.copy())
+        geo_list.append(geo.copy())
+    #
+    spc = q.SelectedPointsChar(psel)
+    spc_geo = q.Geometry()
+    gf.swap_sp_cast(spc, spc_geo)
+    #
+    gf = q.GaugeField()
+    gf.swap_sp_cast(spc, geo)
+    assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
+    #
+    ssp1 = q.SelectedShufflePlan("dist_t_slice_from_l", psel, geo, num_field)
+    assert ssp1.psel_src_list[0] is psel
+    q.json_results_append(f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}")
+    t_list = [ psel[0][3].item() for psel in ssp1.psel_dst_list ]
+    s_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in t_list ]
+    all_t_list_list = q.get_comm().allgather(t_list)
+    q.json_results_append(f"all_t_list_list={all_t_list_list}")
+    #
+    gf.swap_sp_cast(spc, geo)
+    s_spc_list = ssp1.shuffle_list([ spc, ])
+    s_gf_list = []
+    for s_spc, s_geo in zip(s_spc_list, s_geo_list):
+        s_gf = q.GaugeField()
+        s_gf.swap_sp_cast(s_spc, s_geo)
+        s_gf_list.append(s_gf)
+    q.json_results_append(f"sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
+    for s_gf, s_spc, s_geo in zip(s_gf_list, s_spc_list, s_geo_list):
+        s_gf.swap_sp_cast(s_spc, s_geo)
+    [ spc, ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
+    gf.swap_sp_cast(spc, geo)
+    assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
+    #
+    ssp2 = q.SelectedShufflePlan("t_slice_from_l", psel_list, geo_list)
     assert ssp2.psel_src_list is psel_list
     q.json_results_append(f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}")
     vt_list = [ psel[0][3].item() for psel in ssp2.psel_dst_list ]

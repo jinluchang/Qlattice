@@ -9,6 +9,8 @@ from .geometry cimport *
 from .field_types cimport *
 from .field_base cimport (
         SelectedPointsBase,
+        SelectedFieldBase,
+        FieldBase,
         )
 from .selected_points_types cimport (
         SelectedPointsChar,
@@ -38,10 +40,10 @@ cdef class SelectedShufflePlan:
     def __init__(self, *args):
         """
         SelectedShufflePlan()
-        SelectedShufflePlan("r_from_l", psel_src, rs)
-        SelectedShufflePlan("r_from_l", psel_src_list, rs)
-        SelectedShufflePlan("t_slice_from_l", psel_src_list, rs)
-        SelectedShufflePlan("dist_t_slice_from_l", psel_src, num_field)
+        SelectedShufflePlan("r_from_l", psel_src, geo, rs)
+        SelectedShufflePlan("r_from_l", psel_src_list, geo_src_list, rs)
+        SelectedShufflePlan("t_slice_from_l", psel_src_list, geo_src_list)
+        SelectedShufflePlan("dist_t_slice_from_l", psel_src, geo, num_field)
         """
         self.psel_src_list = None
         self.psel_dst_list = None
@@ -62,31 +64,38 @@ cdef class SelectedShufflePlan:
             raise Exception(f"SelectedShufflePlan.__init__ {args}")
 
     @q.timer
-    def init_from_psel_r_from_l(self, PointsSelection psel_src, RngState rs):
+    def init_from_psel_r_from_l(self, PointsSelection psel_src, Geometry geo_src, RngState rs):
         """
         shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
         """
         cdef PointsSelection psel_dst = PointsSelection()
         self.xx.init()
-        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src.xx, rs.xx)
+        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src.xx, geo_src.xx, rs.xx)
         psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
         cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
         self.psel_src_list = [ psel_src, ]
         self.psel_dst_list = [ psel_dst, ]
 
     @q.timer
-    def init_from_psel_list_r_from_l(self, list psel_src_list, RngState rs):
+    def init_from_psel_list_r_from_l(self, list psel_src_list, list geo_src_list, RngState rs):
         """
         shuffle to PointsDistType::Random ("r") from PointsDistType::Local ("l").
         """
+        assert len(geo_src_list) == len(psel_src_list)
         cdef cc.std_vector[cc.PointsSelection] psel_src_vec
         psel_src_vec.resize(len(psel_src_list))
         cdef PointsSelection psel
         for i in range(psel_src_vec.size()):
             psel = psel_src_list[i]
             cc.qswap(psel.xx, psel_src_vec[i])
+        cdef cc.std_vector[cc.Geometry] geo_src_vec
+        geo_src_vec.resize(len(geo_src_list))
+        cdef Geometry geo
+        for i in range(geo_src_vec.size()):
+            geo = geo_src_list[i]
+            geo_src_vec[i] = geo.xx
         self.xx.init()
-        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src_vec, rs.xx)
+        cc.set_selected_shuffle_plan_r_from_l(self.xx, psel_src_vec, geo_src_vec, rs.xx)
         cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
         cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
         psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
@@ -100,10 +109,11 @@ cdef class SelectedShufflePlan:
         self.psel_dst_list = psel_dst_list
 
     @q.timer
-    def init_from_psel_list_t_slice_from_l(self, list psel_src_list):
+    def init_from_psel_list_t_slice_from_l(self, list psel_src_list, list geo_src_list):
         """
         shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
         """
+        assert len(geo_src_list) == len(psel_src_list)
         cdef cc.std_vector[cc.PointsSelection] psel_src_vec
         cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
         cdef PointsSelection psel
@@ -111,8 +121,14 @@ cdef class SelectedShufflePlan:
         for i in range(psel_src_vec.size()):
             psel = psel_src_list[i]
             cc.qswap(psel.xx, psel_src_vec[i])
+        cdef cc.std_vector[cc.Geometry] geo_src_vec
+        geo_src_vec.resize(len(geo_src_list))
+        cdef Geometry geo
+        for i in range(geo_src_vec.size()):
+            geo = geo_src_list[i]
+            geo_src_vec[i] = geo.xx
         self.xx.init()
-        cc.set_selected_shuffle_plan_t_slice_from_l(self.xx, psel_src_vec)
+        cc.set_selected_shuffle_plan_t_slice_from_l(self.xx, psel_src_vec, geo_src_vec)
         cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
         psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
         for i in range(psel_src_vec.size()):
@@ -125,7 +141,7 @@ cdef class SelectedShufflePlan:
         self.psel_dst_list = psel_dst_list
 
     @q.timer
-    def init_from_psel_list_dist_t_slice_from_l(self, PointsSelection psel_src, int num_field):
+    def init_from_psel_list_dist_t_slice_from_l(self, PointsSelection psel_src, Geometry geo, int num_field):
         """
         shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
         match `init_from_psel_list_t_slice_from_l`.
@@ -140,7 +156,7 @@ cdef class SelectedShufflePlan:
         psel_src_vec.resize(1)
         cc.qswap(psel_src.xx, psel_src_vec[0])
         self.xx.init()
-        cc.set_selected_shuffle_plan_dist_t_slice_from_l(self.xx, psel_src_vec[0], num_field)
+        cc.set_selected_shuffle_plan_dist_t_slice_from_l(self.xx, psel_src_vec[0], geo.xx, num_field)
         cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
         psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
         cc.qswap(psel_src.xx, psel_src_vec[0])
@@ -215,29 +231,42 @@ cdef class SelectedShufflePlan:
         return sp_dst_list
 
     @q.timer
-    def shuffle_sp(self, cls, SelectedPointsBase sp_src, *, bint is_reverse=False):
+    def shuffle_sp(self, cls, object src, *, bint is_reverse=False):
         """
-        shuffle `sp_src` with this plan
+        shuffle `src` with this plan
         return `sp_dst`
-        The type for all `sp` is `cls`
+        The type for the returned object is `cls`
         """
-        assert isinstance(sp_src, cls)
         cdef SelectedPointsChar spc_src
         cdef SelectedPointsChar spc_dst
+        cdef Geometry geo
         spc_src = SelectedPointsChar()
-        sp_src.swap_cast(spc_src)
-        spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
-        sp_src.swap_cast(spc_src)
-        sp_dst = cls()
-        sp_dst.swap_cast(spc_dst)
-        return sp_dst
+        if isinstance(src, SelectedPointsBase):
+            src.swap_cast(spc_src)
+            spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
+            src.swap_cast(spc_src)
+        elif isinstance(src, SelectedFieldBase):
+            geo = Geometry()
+            src.swap_cast(spc_src, geo)
+            spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
+            src.swap_cast(spc_src, geo)
+        elif isinstance(src, FieldBase):
+            geo = Geometry()
+            src.swap_cast(spc_src, geo)
+            spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
+            src.swap_cast(spc_src, geo)
+        else:
+            assert False
+        dst = cls()
+        dst.swap_cast(spc_dst)
+        return dst
 
     @q.timer
     def shuffle_sp_list(self, cls, list sp_src_list, *, bint is_reverse=False):
         """
         shuffle `sp_src_list` with this plan
         return `sp_dst_list`
-        The type for all `sp` is `cls`
+        The type for the returned list of objects are `cls`
         """
         spc_src_list = []
         for sp_src in sp_src_list:
@@ -256,6 +285,23 @@ cdef class SelectedShufflePlan:
             sp_dst_list.append(sp_dst)
         assert len(spc_dst_list) == len(sp_dst_list)
         return sp_dst_list
+
+    @q.timer
+    def shuffle_f(self, cls, FieldBase f_src, *, bint is_reverse=False):
+        """
+        shuffle `f_src` with this plan
+        return `spc_dst`
+        The type for all `f` is `cls`
+        """
+        assert isinstance(f_src, cls)
+        cdef SelectedPointsChar spc_src
+        cdef SelectedPointsChar spc_dst
+        cdef Geometry geo = Geometry()
+        spc_src = SelectedPointsChar()
+        f_src.swap_cast(spc_src, geo)
+        spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
+        f_src.swap_cast(spc_src, geo)
+        return spc_dst
 
 ###
 

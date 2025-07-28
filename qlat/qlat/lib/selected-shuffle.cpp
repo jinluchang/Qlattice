@@ -9,6 +9,11 @@ void SelectedShufflePlan::init()
 {
   points_dist_type_send = PointsDistType::Local;
   points_dist_type_recv = PointsDistType::Random;
+  total_site = Coordinate();
+  size_node_send.clear();
+  coor_node_send.clear();
+  size_node_recv.clear();
+  coor_node_recv.clear();
   num_selected_points_send = 0;
   num_selected_points_recv = 0;
   n_points_selected_points_send.clear();
@@ -391,6 +396,13 @@ static void set_selected_shuffle_plan_no_reorder(
     const PointsDistType points_dist_type_recv)
 // Collective operation.
 // partially set SelectedShufflePlan
+//
+// v = sp_instruction.get_elems(idx)
+// v[0] = idx_selected_points_send
+// v[1] = idx_within_field_send
+// v[2] = id_node_send_to
+// v[3] = idx_selected_points_recv
+// v[4] = rank_within_field_recv
 {
   TIMER("set_selected_shuffle_plan_no_reorder(ssp,sp_inst,vec,pdts,pdtr)");
   ssp.init();
@@ -508,6 +520,20 @@ void set_selected_shuffle_plan(
 // make shuffle plan
 //
 // Internally call `set_selected_shuffle_plan_no_reorder`.
+//
+// v = sp_instruction.get_elems(idx)
+// v[0] = idx_selected_points_send
+// v[1] = idx_within_field_send
+// v[2] = id_node_send_to
+// v[3] = idx_selected_points_recv
+// v[4] = rank_within_field_recv
+//
+// After this function, still need to set:
+// total_site
+// size_node_send
+// coor_node_send
+// size_node_recv
+// coor_node_recv
 {
   TIMER("set_selected_shuffle_plan(ssp,sp_inst,vec,pdts,pdtr)");
   set_selected_shuffle_plan_no_reorder(
@@ -681,14 +707,14 @@ void set_selected_shuffle_instruction_r_from_l(
 
 void set_selected_shuffle_plan_r_from_l(
     SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
-    const RngState& rs)
+    const std::vector<Geometry>& geo_vec, const RngState& rs)
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Random
 // psel_vec[i].points_dist_type == PointsDistType::Local (or other types)
 // Sort the shuffled points by order of the gindex of points.
 {
-  TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel_vec,rs)");
+  TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel_vec,geo_vec,rs)");
   SelectedPoints<Long> sp_instruction;
   vector<Long> n_points_selected_points_send;
   PointsDistType points_dist_type_send;
@@ -698,10 +724,22 @@ void set_selected_shuffle_plan_r_from_l(
   const PointsDistType points_dist_type_recv = PointsDistType::Random;
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);
+  ssp.total_site =
+      f_bcast_any(psel_vec.size() > 0 ? psel_vec[0].total_site : Coordinate(),
+                  psel_vec.size() > 0);
+  ssp.size_node_send.resize(geo_vec.size());
+  ssp.coor_node_send.resize(geo_vec.size());
+  for (Int i = 0; i < (Int)geo_vec.size(); ++i) {
+    const Geometry& geo = geo_vec[i];
+    qassert(ssp.total_site == geo.total_site());
+    ssp.size_node_send[i] = geo.geon.size_node;
+    ssp.coor_node_send[i] = geo.geon.coor_node;
+  }
 }
 
 void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
                                         const PointsSelection& psel,
+                                        const Geometry& geo,
                                         const RngState& rs)
 // Collective operation.
 // make shuffle plan
@@ -709,10 +747,12 @@ void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
 // psel.points_dist_type == PointsDistType::Local (or other types)
 // Sort the shuffled points by order of the gindex of points.
 {
-  TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel,rs)");
+  TIMER("set_selected_shuffle_plan_r_from_l(ssp,psel,geo,rs)");
   std::vector<PointsSelection> psel_vec(1);
+  std::vector<Geometry> geo_vec(1);
   psel_vec[0] = psel;
-  set_selected_shuffle_plan_r_from_l(ssp, psel_vec, rs);
+  geo_vec[0] = geo;
+  set_selected_shuffle_plan_r_from_l(ssp, psel_vec, geo_vec, rs);
 }
 
 // ------------------------------
@@ -813,14 +853,15 @@ void set_selected_shuffle_instruction_t_slice_from_l(
 }
 
 void set_selected_shuffle_plan_t_slice_from_l(
-    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec)
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
+    const std::vector<Geometry>& geo_vec)
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Local
 // psel_vec[i].points_dist_type == PointsDistType::Local
 // Sort the shuffled points by order of the gindex of points.
 {
-  TIMER("set_selected_shuffle_plan_t_slice_from_l(ssp,psel_vec)");
+  TIMER("set_selected_shuffle_plan_t_slice_from_l(ssp,psel_vec,geo_vec)");
   SelectedPoints<Long> sp_instruction;
   vector<Long> n_points_selected_points_send;
   PointsDistType points_dist_type_send;
@@ -833,6 +874,37 @@ void set_selected_shuffle_plan_t_slice_from_l(
   }
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);
+  ssp.total_site =
+      f_bcast_any(psel_vec.size() > 0 ? psel_vec[0].total_site : Coordinate(),
+                  psel_vec.size() > 0);
+  ssp.size_node_send.resize(geo_vec.size());
+  ssp.coor_node_send.resize(geo_vec.size());
+  for (Int i = 0; i < (Int)geo_vec.size(); ++i) {
+    const Geometry& geo = geo_vec[i];
+    qassert(ssp.total_site == geo.total_site());
+    ssp.size_node_send[i] = geo.geon.size_node;
+    ssp.coor_node_send[i] = geo.geon.coor_node;
+  }
+  const Int num_field = psel_vec.size();
+  const Int id_node = get_id_node();
+  const Int num_node = get_num_node();
+  const Int t_size = ssp.total_site[3];
+  const Coordinate size_node = Coordinate(1, 1, 1, t_size);
+  for (Int t_slice = 0; t_slice < t_size; ++t_slice) {
+    const Coordinate coor_node = Coordinate(0, 0, 0, t_slice);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      if (id_node == id_node_from_t_slice_id_field(t_slice, t_size, id_field,
+                                                   num_field, num_node)) {
+        const Int idx_sp = idx_sp_from_t_slice_id_field(
+            t_slice, t_size, id_field, num_field, num_node);
+        const Int num_sp = std::max(idx_sp + 1, (Int)ssp.size_node_recv.size());
+        ssp.size_node_recv.resize(num_sp);
+        ssp.coor_node_recv.resize(num_sp);
+        ssp.size_node_recv[idx_sp] = size_node;
+        ssp.coor_node_recv[idx_sp] = coor_node;
+      }
+    }
+  }
 }
 
 // ------------------------------
@@ -927,6 +999,7 @@ void set_selected_shuffle_instruction_dist_t_slice_from_l(
 
 void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
                                                    const PointsSelection& psel,
+                                                   const Geometry& geo,
                                                    const Int num_field)
 // Collective operation.
 // make shuffle plan
@@ -934,7 +1007,7 @@ void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
 // psel_vec[i].points_dist_type == PointsDistType::Local
 // Sort the shuffled points by order of the gindex of points.
 {
-  TIMER("set_selected_shuffle_plan_dist_t_slice_from_l(ssp,psel,num_field)")
+  TIMER("set_selected_shuffle_plan_dist_t_slice_from_l(ssp,psel,geo,num_field)")
   SelectedPoints<Long> sp_instruction;
   vector<Long> n_points_selected_points_send;
   PointsDistType points_dist_type_send;
@@ -947,6 +1020,34 @@ void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
   }
   set_selected_shuffle_plan(ssp, sp_instruction, n_points_selected_points_send,
                             points_dist_type_send, points_dist_type_recv);
+  ssp.total_site = psel.total_site;
+  ssp.size_node_send.resize(1);
+  ssp.coor_node_send.resize(1);
+  ssp.size_node_send[0] = geo.geon.size_node;
+  ssp.coor_node_send[0] = geo.geon.coor_node;
+  const Int id_node = get_id_node();
+  const Int num_node = get_num_node();
+  const Int t_size = ssp.total_site[3];
+  const Coordinate size_node = Coordinate(1, 1, 1, t_size);
+  std::vector<bool> b_vec(t_size, false);
+  Int num_sp = 0;
+  for (Int t_slice = 0; t_slice < t_size; ++t_slice) {
+    const Coordinate coor_node = Coordinate(0, 0, 0, t_slice);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      if (id_node == id_node_from_t_slice_id_field(t_slice, t_size, id_field,
+                                                   num_field, num_node)) {
+        if (b_vec[t_slice]) {
+          continue;
+        }
+        b_vec[t_slice] = true;
+        num_sp += 1;
+        ssp.size_node_recv.resize(num_sp);
+        ssp.coor_node_recv.resize(num_sp);
+        ssp.size_node_recv[num_sp - 1] = size_node;
+        ssp.coor_node_recv[num_sp - 1] = coor_node;
+      }
+    }
+  }
 }
 
 // ------------------------------

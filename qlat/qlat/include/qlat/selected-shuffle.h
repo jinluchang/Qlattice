@@ -10,6 +10,14 @@ namespace qlat
 struct SelectedShufflePlan {
   PointsDistType points_dist_type_send;
   PointsDistType points_dist_type_recv;
+  // When the coordinate is not relevant, it is set to be Coordinate().
+  Coordinate total_site;
+  // size_node_send and coor_node_send are relevant when points_dist_type_send is one of `Full` or `Local`.
+  vector<Coordinate> size_node_send;
+  vector<Coordinate> coor_node_send;
+  // size_node_recv and coor_node_recv are relevant when points_dist_type_recv is one of `Full` or `Local`.
+  vector<Coordinate> size_node_recv;
+  vector<Coordinate> coor_node_recv;
   // num_selected_points_send and num_selected_points_recv do not need to be the same across nodes.
   Long num_selected_points_send;
   Long num_selected_points_recv;
@@ -180,10 +188,11 @@ void set_selected_shuffle_instruction_r_from_l(
 
 void set_selected_shuffle_plan_r_from_l(
     SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
-    const RngState& rs);
+    const std::vector<Geometry>& geo_vec, const RngState& rs);
 
 void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
                                         const PointsSelection& psel,
+                                        const Geometry& geo,
                                         const RngState& rs);
 
 // -------------------
@@ -203,7 +212,8 @@ void set_selected_shuffle_instruction_t_slice_from_l(
     const std::vector<PointsSelection>& psel_vec);
 
 void set_selected_shuffle_plan_t_slice_from_l(
-    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec);
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
+    const std::vector<Geometry>& geo_vec);
 
 // -------------------
 
@@ -215,6 +225,7 @@ void set_selected_shuffle_instruction_dist_t_slice_from_l(
 
 void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp,
                                                    const PointsSelection& psel,
+                                                   const Geometry& geo,
                                                    const Int num_field);
 
 // -------------------

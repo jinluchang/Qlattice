@@ -162,6 +162,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         const Geometry& get_geo()
     void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel) except +
     void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel, const Geometry& geo, const Long rank_psel) except +
+    void set_geo_from_psel(Geometry& geo, const PointsSelection& psel) except +
     cdef cppclass SelectedField[T]:
         Long n_elems;
         Int multiplicity
@@ -259,10 +260,10 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
         vector[Long] rdispls
         void init() except +
     #
-    void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const RngState& rs) except +
-    void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const RngState& rs) except +
-    void set_selected_shuffle_plan_t_slice_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec) except +
-    void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Int num_field) except +
+    void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo, const RngState& rs) except +
+    void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const std_vector[Geometry]& geo_vec, const RngState& rs) except +
+    void set_selected_shuffle_plan_t_slice_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const std_vector[Geometry]& geo_vec) except +
+    void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo, const Int num_field) except +
     #
     void shuffle_selected_points_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
     void shuffle_selected_points_back_char(SelectedPoints[Char]& spc, const SelectedPoints[Char]& spc0, const SelectedShufflePlan& ssp) except +
