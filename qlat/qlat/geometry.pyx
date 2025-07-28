@@ -89,6 +89,9 @@ cdef class Geometry:
     def __deepcopy__(self, memo):
         return self.copy()
 
+    def __eq__(self, Geometry other):
+        return self.xx == other.xx
+
     @property
     def total_site(self):
         cdef Coordinate x = Coordinate()

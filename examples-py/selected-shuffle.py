@@ -261,6 +261,39 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     assert np.all(vec_sig == get_f_list_sig(vec_list, rs, 3))
 
 @q.timer
+def test_prop_spatial_smear(total_site, multiplicity, seed):
+    fname = q.get_fname()
+    q.json_results_append(f"{fname}: {total_site} {multiplicity} {seed}")
+    rs = q.RngState(f"seed {fname} {seed}")
+    geo = q.Geometry(total_site)
+    #
+    coef = 0.9375
+    step = 20
+    #
+    num_field = multiplicity
+    #
+    gf = q.GaugeField(geo)
+    gf.set_rand(rs.split(f"gf"), 0.5, 2)
+    gf_sig = q.get_data_sig_arr(gf, rs, 3)
+    q.json_results_append(f"gf sig", gf_sig, 1e-10)
+    #
+    ff_list = []
+    for id_field in range(num_field):
+        ff = q.FermionField4d(geo)
+        ff.set_rand(rs.split(f"ff_list[{id_field}]"))
+        ff_list.append(ff)
+    ff_list_sig = get_f_list_sig(ff_list, rs, 3)
+    q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
+    #
+    prop_spatial_smear(ff_list, gf, coef, step)
+    q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
+    #
+    mom = q.CoordinateD([ 0.1, -0.2, 0.3, 0.5, ])
+    #
+    prop_spatial_smear(ff_list, gf, coef, step, mom)
+    q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
+
+@q.timer
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     """
     Perform spatial smear for `ff_list`, a list of `FermionField4d`.
@@ -297,78 +330,15 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     geo = gf.geo
     total_site = geo.total_site
     psel = q.PointsSelection(geo)
-    #
-    t_slice_node_site = total_site.copy()
-    t_slice_node_site[3] = 1
-    t_slice_size_node = q.Coordinate([ 1, 1, 1, total_site[3], ])
-    #
-    psel_list = []
-    geo_list = []
-    for i in range(num_field):
-        psel_list.append(psel.copy())
-        geo_list.append(geo.copy())
-    #
-    spc = q.SelectedPointsChar(psel)
-    spc_geo = q.Geometry()
-    gf.swap_sp_cast(spc, spc_geo)
-    #
-    gf = q.GaugeField()
-    gf.swap_sp_cast(spc, geo)
-    assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
+    psel_list = [ psel.copy() for i in range(num_field) ]
+    geo_list = [ geo.copy() for i in range(num_field) ]
     #
     ssp1 = q.SelectedShufflePlan("dist_t_slice_from_l", psel, geo, num_field)
-    assert ssp1.psel_src_list[0] is psel
-    q.json_results_append(f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}")
-    t_list = [ psel[0][3].item() for psel in ssp1.psel_dst_list ]
-    s_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in t_list ]
-    all_t_list_list = q.get_comm().allgather(t_list)
-    q.json_results_append(f"all_t_list_list={all_t_list_list}")
-    #
-    gf.swap_sp_cast(spc, geo)
-    s_spc_list = ssp1.shuffle_list([ spc, ])
-    s_gf_list = []
-    for s_spc, s_geo in zip(s_spc_list, s_geo_list):
-        s_gf = q.GaugeField()
-        s_gf.swap_sp_cast(s_spc, s_geo)
-        s_gf_list.append(s_gf)
-    q.json_results_append(f"sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
-    for s_gf, s_spc, s_geo in zip(s_gf_list, s_spc_list, s_geo_list):
-        s_gf.swap_sp_cast(s_spc, s_geo)
-    [ spc, ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
-    gf.swap_sp_cast(spc, geo)
-    assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
-    #
     ssp2 = q.SelectedShufflePlan("t_slice_from_l", psel_list, geo_list)
-    assert ssp2.psel_src_list is psel_list
-    q.json_results_append(f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}")
-    vt_list = [ psel[0][3].item() for psel in ssp2.psel_dst_list ]
-    vs_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in vt_list ]
-    all_vt_list_list = q.get_comm().allgather(vt_list)
-    q.json_results_append(f"all_vt_list_list={all_vt_list_list}")
     #
-    vspc_list = []
-    vgeo_list = []
-    for i in range(num_field):
-        vspc = q.SelectedPointsChar(psel)
-        vgeo = q.Geometry()
-        vec_list[i].swap_sp_cast(vspc, vgeo)
-        vspc_list.append(vspc)
-        vgeo_list.append(vgeo)
-    s_vspc_list = ssp2.shuffle_list(vspc_list)
-    s_vec_list = []
-    for s_vspc, vs_geo in zip(s_vspc_list, vs_geo_list):
-        s_vec = q.FermionField4d()
-        s_vec.swap_sp_cast(s_vspc, vs_geo)
-        s_vec_list.append(s_vec)
-    q.json_results_append(f"sig s_vec_list", get_f_list_sig(s_vec_list, rs, 3), 1e-10)
-    for s_vec, s_vspc, vs_geo in zip(s_vec_list, s_vspc_list, vs_geo_list):
-        s_vec.swap_sp_cast(s_vspc, vs_geo)
-    vspc_list = ssp2.shuffle_list(s_vspc_list, is_reverse=True)
-    assert len(vspc_list) == num_field
-    assert len(vgeo_list) == num_field
-    for i in range(num_field):
-        vec_list[i].swap_sp_cast(vspc_list[i], vgeo_list[i])
-    assert np.all(vec_sig == get_f_list_sig(vec_list, rs, 3))
+    s_gf_list = ssp1.shuffle_sp_list(q.GaugeField, [ gf, ])
+    s_ff_list = ssp2.shuffle_sp_list(q.FermionField4d, ff_list)
+    #
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
@@ -376,6 +346,7 @@ for total_site in total_site_list:
             selected_shuffle_r_from_l(total_site, multiplicity, seed)
             selected_shuffle_t_slice_from_l(total_site, multiplicity, seed)
             selected_shuffle_t_slice_from_f(total_site, multiplicity, seed)
+            test_prop_spatial_smear(total_site, multiplicity, seed)
 
 q.timer_display()
 q.check_log_json(__file__)

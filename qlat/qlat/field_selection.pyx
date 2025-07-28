@@ -379,18 +379,18 @@ cdef class SelectedShufflePlan:
             src.swap_cast(spc_src)
         elif isinstance(src, SelectedFieldBase):
             geo = Geometry()
-            src.swap_cast(spc_src, geo)
+            src.swap_sp_cast(spc_src, geo)
             if geo_send is not None:
                 assert geo == geo_send
             spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
-            src.swap_cast(spc_src, geo)
+            src.swap_sp_cast(spc_src, geo)
         elif isinstance(src, FieldBase):
             geo = Geometry()
-            src.swap_cast(spc_src, geo)
+            src.swap_sp_cast(spc_src, geo)
             if geo_send is not None:
                 assert geo == geo_send
             spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
-            src.swap_cast(spc_src, geo)
+            src.swap_sp_cast(spc_src, geo)
         else:
             assert False
         dst = cls()
@@ -406,7 +406,7 @@ cdef class SelectedShufflePlan:
             assert len(psel_list) == 1
             dst.psel = psel_list[0]
         elif isinstance(src, SelectedFieldBase):
-            dst.swap_cast(spc_dst, geo)
+            dst.swap_sp_cast(spc_dst, geo)
             if is_reverse:
                 fsel_list = self.fsel_send_list
             else:
@@ -414,7 +414,7 @@ cdef class SelectedShufflePlan:
             if len(fsel_list) == 1:
                 dst.fsel = fsel_list[0]
         elif isinstance(src, FieldBase):
-            dst.swap_cast(spc_dst, geo)
+            dst.swap_sp_cast(spc_dst, geo)
         else:
             assert False
         return dst
@@ -467,7 +467,7 @@ cdef class SelectedShufflePlan:
                 if src.psel is not None:
                     assert src.psel == psel_send_list[idx]
             elif isinstance(src, SelectedFieldBase):
-                src.swap_cast(spc_src, geo_src)
+                src.swap_sp_cast(spc_src, geo_src)
                 assert geo_send is not None
                 assert geo_src == geo_send
                 if is_reverse:
@@ -479,7 +479,7 @@ cdef class SelectedShufflePlan:
                     if src.fsel is not fsel_list[idx]:
                         assert PointsSelection(src.fsel) == self.psel_send_list[idx]
             elif isinstance(src, FieldBase):
-                src.swap_cast(spc_src, geo_src)
+                src.swap_sp_cast(spc_src, geo_src)
                 assert geo_send is not None
                 assert geo_src == geo_send
                 assert spc_src.n_points == geo_send.local_volume_expanded
@@ -494,9 +494,9 @@ cdef class SelectedShufflePlan:
             if isinstance(src, SelectedPointsBase):
                 src.swap_cast(spc_src)
             elif isinstance(src, SelectedFieldBase):
-                src.swap_cast(spc_src, geo_src)
+                src.swap_sp_cast(spc_src, geo_src)
             elif isinstance(src, FieldBase):
-                src.swap_cast(spc_src, geo_src)
+                src.swap_sp_cast(spc_src, geo_src)
             else:
                 assert False
         dst_list = []
@@ -507,9 +507,9 @@ cdef class SelectedShufflePlan:
                 dst.swap_cast(spc_dst)
                 assert dst.psel is psel_recv_list[idx]
             elif isinstance(src, SelectedFieldBase):
-                assert geo is not None
+                assert geo_recv is not None
                 geo = geo_recv.copy()
-                dst.swap_cast(spc_dst, geo)
+                dst.swap_sp_cast(spc_dst, geo)
                 if is_reverse:
                     fsel_list = self.fsel_send_list
                 else:
@@ -517,10 +517,10 @@ cdef class SelectedShufflePlan:
                 assert len(fsel_list) == num_recv
                 dst.fsel = fsel_list[idx]
             elif isinstance(src, FieldBase):
-                assert geo is not None
-                assert geo.local_volume_expanded == spc_dst.n_points
+                assert geo_recv is not None
                 geo = geo_recv.copy()
-                dst.swap_cast(spc_dst, geo)
+                assert geo.local_volume_expanded == spc_dst.n_points
+                dst.swap_sp_cast(spc_dst, geo)
             else:
                 assert False
             dst_list.append(dst)
@@ -659,7 +659,7 @@ cdef class PointsSelection:
     def swap(self, PointsSelection other):
         cc.qswap(self.xx, other.xx)
 
-    def swap_cast(self, SelectedPointsChar other, Coordinate total_site):
+    def swap_sp_cast(self, SelectedPointsChar other, Coordinate total_site):
         assert other.psel is None
         cc.qswap_cast(self.xx, other.xx, total_site.xx)
 
