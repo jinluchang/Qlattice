@@ -251,6 +251,8 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   });
   ffv_vec.set_mem_type(MemType::Acc);
   FermionField5d ff, ff1;
+  ff.set_mem_type(MemType::Acc);
+  ff1.set_mem_type(MemType::Acc);
   ff.init(geo, num_field);
   ff1.init(geo, num_field);
   qacc_for(index, geo.local_volume(), {

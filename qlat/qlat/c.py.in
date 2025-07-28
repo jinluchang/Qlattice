@@ -153,6 +153,7 @@ __all__ += [
         'gf_spatial_ape_smear',
         'gf_hyp_smear',
         'prop_smear',
+        'prop_spatial_smear_no_comm',
         ]
 
 __all__ += [

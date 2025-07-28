@@ -285,18 +285,22 @@ def test_prop_spatial_smear(total_site, multiplicity, seed):
     ff_list_sig = get_f_list_sig(ff_list, rs, 3)
     q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
     #
-    prop_spatial_smear(ff_list, gf, coef, step)
-    q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
+    s_ff_list = prop_spatial_smear(ff_list, gf, coef, step)
+    s_ff_list_sig = get_f_list_sig(s_ff_list, rs, 3)
+    q.json_results_append(f"sig s_ff_list", s_ff_list_sig, 1e-12)
     #
     mom = q.CoordinateD([ 0.1, -0.2, 0.3, 0.5, ])
     #
-    prop_spatial_smear(ff_list, gf, coef, step, mom)
-    q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
+    ms_ff_list = prop_spatial_smear(ff_list, gf, coef, step, mom)
+    ms_ff_list_sig = get_f_list_sig(ms_ff_list, rs, 3)
+    q.json_results_append(f"sig ms_ff_list", ms_ff_list_sig, 1e-12)
 
 @q.timer
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     """
     Perform spatial smear for `ff_list`, a list of `FermionField4d`.
+    Return new `ff_list` after smearing.
+    Original `ff_list` should not be modified.
     #
     get_gf_ape = run_gf_ape(job_tag, get_gf)
     gf = get_gf_ape()
@@ -339,6 +343,23 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     s_gf_list = ssp1.shuffle_sp_list(q.GaugeField, [ gf, ])
     s_ff_list = ssp2.shuffle_sp_list(q.FermionField4d, ff_list)
     #
+    id_node_set = set()
+    s_ff_mask_arr = np.zeros(len(s_ff_list), dtype=np.bool)
+    for s_gf in s_gf_list:
+        id_node = s_gf.geo.id_node
+        assert id_node not in id_node_set
+        id_node_set.add(id_node)
+        sub_s_ff_list = []
+        for idx, s_ff in enumerate(s_ff_list):
+            if id_node == s_ff.geo.id_node:
+                assert s_ff_mask_arr[idx] == False
+                s_ff_mask_arr[idx] = True
+                sub_s_ff_list.append(s_ff)
+        q.prop_spatial_smear_no_comm(sub_s_ff_list, s_gf, coef, step, mom)
+    assert np.all(s_ff_mask_arr)
+    #
+    ss_ff_list = ssp2.shuffle_sp_list(q.FermionField4d, s_ff_list, is_reverse=True)
+    return ss_ff_list
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
