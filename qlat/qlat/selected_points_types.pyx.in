@@ -135,11 +135,11 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         self.swap(sp_dst)
 
     def init_from_sf_ssp(self, SelectedField{{name}} sf, SelectedShufflePlan ssp):
-        assert len(ssp.psel_src_list) == 1
-        assert len(ssp.psel_dst_list) == 1
+        assert len(ssp.psel_send_list) == 1
+        assert len(ssp.psel_recv_list) == 1
         self.psel = PointsSelection(sf.fsel, ssp)
-        if self.psel == ssp.psel_dst_list[0]:
-            self.psel = ssp.psel_dst_list[0]
+        if self.psel == ssp.psel_recv_list[0]:
+            self.psel = ssp.psel_recv_list[0]
         cc.shuffle_selected_field(self.xx, sf.xx, ssp.xx)
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
