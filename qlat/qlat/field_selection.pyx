@@ -47,6 +47,10 @@ cdef class SelectedShufflePlan:
         """
         self.psel_src_list = None
         self.psel_dst_list = None
+        self.fsel_src_list = None
+        self.fsel_dst_list = None
+        self.geo_src_list = None
+        self.geo_dst_list = None
         self.xx.init()
         if len(args) == 0:
             return
@@ -166,6 +170,116 @@ cdef class SelectedShufflePlan:
         self.psel_src_list = [ psel_src, ]
         self.psel_dst_list = psel_dst_list
 
+    @property
+    def points_dist_type_send(self):
+        return cc.show(self.xx.points_dist_type_send)
+
+    @property
+    def points_dist_type_recv(self):
+        return cc.show(self.xx.points_dist_type_recv)
+
+    @property
+    def num_selected_points_send(self):
+        return self.xx.num_selected_points_send
+
+    @property
+    def num_selected_points_recv(self):
+        return self.xx.num_selected_points_recv
+
+    @property
+    def psel_send_list(self):
+        return self.psel_src_list
+
+    @property
+    def psel_recv_list(self):
+        return self.psel_dst_list
+
+    @property
+    def geo_send_list(self):
+        if self.geo_src_list is not None:
+            return self.geo_src_list
+        self.geo_src_list = []
+        assert self.xx.size_node_send.size() == self.xx.coor_node_send.size()
+        cdef cc.Int num_geo = self.xx.size_node_send.size()
+        cdef Coordinate total_site = Coordinate()
+        total_site.xx = self.xx.total_site
+        cdef Coordinate size_node = Coordinate()
+        cdef Coordinate coor_node = Coordinate()
+        cdef Coordinate node_site = Coordinate()
+        cdef Geometry geo
+        if total_site == Coordinate():
+            return self.geo_src_list
+        cdef list geo_list = []
+        for i in range(num_geo):
+            size_node.xx = self.xx.size_node_send[i]
+            coor_node.xx = self.xx.coor_node_send[i]
+            node_site.xx = total_site.xx / size_node.xx
+            assert node_site * size_node == total_site
+            geo = Geometry(coor_node, size_node, node_site)
+            geo_list.append(geo)
+        self.geo_src_list = geo_list
+        return self.geo_src_list
+
+    @property
+    def geo_recv_list(self):
+        if self.geo_dst_list is not None:
+            return self.geo_dst_list
+        self.geo_dst_list = []
+        assert self.xx.size_node_recv.size() == self.xx.coor_node_recv.size()
+        cdef cc.Int num_geo = self.xx.size_node_recv.size()
+        cdef Coordinate total_site = Coordinate()
+        total_site.xx = self.xx.total_site
+        cdef Coordinate size_node = Coordinate()
+        cdef Coordinate coor_node = Coordinate()
+        cdef Coordinate node_site = Coordinate()
+        cdef Geometry geo
+        if total_site == Coordinate():
+            return self.geo_dst_list
+        cdef list geo_list = []
+        for i in range(num_geo):
+            size_node.xx = self.xx.size_node_recv[i]
+            coor_node.xx = self.xx.coor_node_recv[i]
+            node_site.xx = total_site.xx / size_node.xx
+            assert node_site * size_node == total_site
+            geo = Geometry(coor_node, size_node, node_site)
+            geo_list.append(geo)
+        self.geo_dst_list = geo_list
+        return self.geo_dst_list
+
+    @property
+    def fsel_send_list(self):
+        if self.fsel_src_list is None:
+            return self.fsel_src_list
+        self.fsel_src_list = []
+        if self.points_dist_type_send not in [ "l", "f", ]:
+            return self.fsel_src_list
+        if len(self.psel_send_list) != len(self.geo_send_list):
+            return self.fsel_src_list
+        cdef FieldSelection fsel
+        cdef list fsel_list = []
+        for psel, geo in zip(self.psel_send_list, self.geo_send_list):
+            fsel = FieldSelection(psel, geo)
+            fsel_list.append(fsel)
+        self.fsel_src_list = fsel_list
+        return self.fsel_src_list
+
+    @property
+    def fsel_recv_list(self):
+        if self.fsel_dst_list is None:
+            return self.fsel_dst_list
+        self.fsel_dst_list = []
+        if self.points_dist_type_recv not in [ "l", "f", ]:
+            return self.fsel_dst_list
+        if len(self.psel_recv_list) != len(self.geo_recv_list):
+            return self.fsel_dst_list
+        cdef FieldSelection fsel
+        cdef list fsel_list = []
+        for psel, geo in zip(self.psel_recv_list, self.geo_recv_list):
+            fsel = FieldSelection(psel, geo)
+            fsel_list.append(fsel)
+        self.fsel_dst_list = fsel_list
+        return self.fsel_dst_list
+
     @q.timer
     def shuffle(self, SelectedPointsChar sp_src, *, bint is_reverse=False):
         """
@@ -173,11 +287,11 @@ cdef class SelectedShufflePlan:
         return `sp_dst`
         The type for all `sp` is `SelectedPointsChar`
         """
-        assert 1 == len(self.psel_src_list)
-        assert 1 == len(self.psel_dst_list)
+        assert 1 == len(self.psel_send_list)
+        assert 1 == len(self.psel_recv_list)
         assert isinstance(sp_src, SelectedPointsChar)
-        psel_src = self.psel_src_list[0]
-        psel_dst = self.psel_dst_list[0]
+        psel_src = self.psel_send_list[0]
+        psel_dst = self.psel_recv_list[0]
         psel = sp_src.psel
         cdef SelectedPointsChar sp_dst
         if is_reverse:
@@ -198,11 +312,11 @@ cdef class SelectedShufflePlan:
         The type for all `sp` is `SelectedPointsChar`
         """
         if is_reverse:
-            psel_src_list = self.psel_dst_list
-            psel_dst_list = self.psel_src_list
+            psel_src_list = self.psel_recv_list
+            psel_dst_list = self.psel_send_list
         else:
-            psel_src_list = self.psel_src_list
-            psel_dst_list = self.psel_dst_list
+            psel_src_list = self.psel_send_list
+            psel_dst_list = self.psel_recv_list
         assert len(sp_src_list) == len(psel_src_list)
         for sp_src, psel_src in zip(sp_src_list, psel_src_list):
             assert isinstance(sp_src, SelectedPointsChar)
@@ -237,9 +351,27 @@ cdef class SelectedShufflePlan:
         return `sp_dst`
         The type for the returned object is `cls`
         """
+        assert len(self.psel_send_list) == 1
+        assert len(self.psel_recv_list) == 1
         cdef SelectedPointsChar spc_src
         cdef SelectedPointsChar spc_dst
         cdef Geometry geo
+        cdef list geo_send_list
+        cdef list geo_recv_list
+        if is_reverse:
+            geo_send_list = self.geo_recv_list
+            geo_recv_list = self.geo_send_list
+        else:
+            geo_send_list = self.geo_send_list
+            geo_recv_list = self.geo_recv_list
+        cdef Geometry geo_send = None
+        cdef Geometry geo_recv = None
+        if geo_send_list is not None:
+            if len(geo_send_list) == 1:
+                geo_send = geo_send_list[0]
+        if geo_recv_list is not None:
+            if len(geo_recv_list) == 1:
+                geo_recv = geo_recv_list[0]
         spc_src = SelectedPointsChar()
         if isinstance(src, SelectedPointsBase):
             src.swap_cast(spc_src)
@@ -248,60 +380,134 @@ cdef class SelectedShufflePlan:
         elif isinstance(src, SelectedFieldBase):
             geo = Geometry()
             src.swap_cast(spc_src, geo)
+            if geo_send is not None:
+                assert geo == geo_send
             spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
             src.swap_cast(spc_src, geo)
         elif isinstance(src, FieldBase):
             geo = Geometry()
             src.swap_cast(spc_src, geo)
+            if geo_send is not None:
+                assert geo == geo_send
             spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
             src.swap_cast(spc_src, geo)
         else:
             assert False
         dst = cls()
-        dst.swap_cast(spc_dst)
+        if geo_recv is None:
+            geo_recv = Geometry()
+        geo = geo_recv.copy()
+        if isinstance(src, SelectedPointsBase):
+            dst.swap_cast(spc_dst)
+            if is_reverse:
+                psel_list = self.psel_send_list
+            else:
+                psel_list = self.psel_recv_list
+            assert len(psel_list) == 1
+            dst.psel = psel_list[0]
+        elif isinstance(src, SelectedFieldBase):
+            dst.swap_cast(spc_dst, geo)
+            if is_reverse:
+                fsel_list = self.fsel_send_list
+            else:
+                fsel_list = self.fsel_recv_list
+            if len(fsel_list) == 1:
+                dst.fsel = fsel_list[0]
+        elif isinstance(src, FieldBase):
+            dst.swap_cast(spc_dst, geo)
+        else:
+            assert False
         return dst
 
     @q.timer
-    def shuffle_sp_list(self, cls, list sp_src_list, *, bint is_reverse=False):
+    def shuffle_sp_list(self, cls, list src_list, *, bint is_reverse=False):
         """
-        shuffle `sp_src_list` with this plan
+        shuffle `src_list` with this plan
         return `sp_dst_list`
         The type for the returned list of objects are `cls`
         """
+        cdef list geo_send_list
+        cdef list geo_recv_list
+        if is_reverse:
+            geo_send_list = self.geo_recv_list
+            geo_recv_list = self.geo_send_list
+            num_send = self.num_selected_points_recv
+            num_recv = self.num_selected_points_send
+        else:
+            geo_send_list = self.geo_send_list
+            geo_recv_list = self.geo_recv_list
+            num_send = self.num_selected_points_send
+            num_recv = self.num_selected_points_recv
+        assert len(src_list) == num_send
+        if len(geo_send_list) != 0:
+            assert len(geo_send_list) == num_send
+        else:
+            geo_send_list = [ None for i in range(num_send) ]
+        if len(geo_recv_list) != 0:
+            assert len(geo_recv_list) == num_recv
+        else:
+            geo_recv_list = [ Geometry() for i in range(num_recv) ]
         spc_src_list = []
-        for sp_src in sp_src_list:
-            assert isinstance(sp_src, cls)
+        geo_src_list = []
+        for src, geo_send in zip(src_list, geo_send_list):
             spc_src = SelectedPointsChar()
-            sp_src.swap_cast(spc_src)
+            geo_src = Geometry()
+            if isinstance(src, SelectedPointsBase):
+                src.swap_cast(spc_src)
+            elif isinstance(src, SelectedFieldBase):
+                src.swap_cast(spc_src, geo_src)
+                if geo_send is not None:
+                    assert geo_src == geo_send
+            elif isinstance(src, FieldBase):
+                src.swap_cast(spc_src, geo_src)
+                if geo_send is not None:
+                    assert geo_src == geo_send
+            else:
+                assert False
             spc_src_list.append(spc_src)
-        assert len(spc_src_list) == len(sp_src_list)
+            geo_src_list.append(geo_src)
+        assert len(spc_src_list) == num_send
+        assert len(src_list) == num_send
         spc_dst_list = self.shuffle_list(spc_src_list, is_reverse=is_reverse)
-        for sp_src, spc_src in zip(sp_src_list, spc_src_list):
-            sp_src.swap_cast(spc_src)
-        sp_dst_list = []
-        for spc_dst in spc_dst_list:
-            sp_dst = cls()
-            sp_dst.swap_cast(spc_dst)
-            sp_dst_list.append(sp_dst)
-        assert len(spc_dst_list) == len(sp_dst_list)
-        return sp_dst_list
-
-    @q.timer
-    def shuffle_f(self, cls, FieldBase f_src, *, bint is_reverse=False):
-        """
-        shuffle `f_src` with this plan
-        return `spc_dst`
-        The type for all `f` is `cls`
-        """
-        assert isinstance(f_src, cls)
-        cdef SelectedPointsChar spc_src
-        cdef SelectedPointsChar spc_dst
-        cdef Geometry geo = Geometry()
-        spc_src = SelectedPointsChar()
-        f_src.swap_cast(spc_src, geo)
-        spc_dst = self.shuffle(spc_src, is_reverse=is_reverse)
-        f_src.swap_cast(spc_src, geo)
-        return spc_dst
+        assert len(spc_dst_list) == num_recv
+        for src, spc_src, geo_src in zip(src_list, spc_src_list, geo_src_list):
+            if isinstance(src, SelectedPointsBase):
+                src.swap_cast(spc_src)
+            elif isinstance(src, SelectedFieldBase):
+                src.swap_cast(spc_src, geo_src)
+            elif isinstance(src, FieldBase):
+                src.swap_cast(spc_src, geo_src)
+            else:
+                assert False
+        dst_list = []
+        cdef Geometry geo
+        for idx, (spc_dst, geo_recv,) in enumerate(zip(spc_dst_list, geo_recv_list)):
+            geo = geo_recv.copy()
+            dst = cls()
+            if isinstance(src, SelectedPointsBase):
+                dst.swap_cast(spc_dst)
+                if is_reverse:
+                    psel_list = self.psel_send_list
+                else:
+                    psel_list = self.psel_recv_list
+                assert len(psel_list) == num_recv
+                dst.psel = psel_list[idx]
+            elif isinstance(src, SelectedFieldBase):
+                dst.swap_cast(spc_dst, geo)
+                if is_reverse:
+                    fsel_list = self.fsel_send_list
+                else:
+                    fsel_list = self.fsel_recv_list
+                if len(fsel_list) == num_recv:
+                    dst.fsel = fsel_list[idx]
+            elif isinstance(src, FieldBase):
+                dst.swap_cast(spc_dst, geo)
+            else:
+                assert False
+            dst_list.append(dst)
+        assert len(spc_dst_list) == num_recv
+        assert len(dst_list) == num_recv
+        return dst_list
 
 ###
 
@@ -372,12 +578,12 @@ cdef class PointsSelection:
         self.xx.init()
         if ssp is None:
             self @= psel
-        elif (len(ssp.psel_src_list) == 1 and ssp.psel_src_list[0] is psel) and (not is_reverse):
-            assert len(ssp.psel_dst_list) == 1
-            self @= ssp.psel_dst_list[0]
-        elif (len(ssp.psel_dst_list) == 1 and ssp.psel_dst_list[0] is psel) and is_reverse:
-            assert len(ssp.psel_src_list) == 1
-            self @= ssp.psel_src_list[0]
+        elif (len(ssp.psel_send_list) == 1 and ssp.psel_send_list[0] is psel) and (not is_reverse):
+            assert len(ssp.psel_recv_list) == 1
+            self @= ssp.psel_recv_list[0]
+        elif (len(ssp.psel_recv_list) == 1 and ssp.psel_recv_list[0] is psel) and is_reverse:
+            assert len(ssp.psel_send_list) == 1
+            self @= ssp.psel_send_list[0]
         else:
             q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")
             assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
@@ -702,6 +908,7 @@ cdef class FieldSelection:
         FieldSelection(geo, -1) # no points being selected
         FieldSelection(geo) # same as `FieldSelection(geo, -1)`, no points being selected
         FieldSelection(psel) # require `psel.points_dist_type in [ "l", "f", "g", ]`
+        FieldSelection(psel, geo) # require `psel.points_dist_type in [ "l", "f", "g", ]`
         """
         cdef cc.Int len_args = len(args)
         if len_args == 0:

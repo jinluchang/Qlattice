@@ -6,6 +6,10 @@ cdef class SelectedShufflePlan:
     cdef cqlat.SelectedShufflePlan xx
     cdef public list psel_src_list
     cdef public list psel_dst_list
+    cdef public list fsel_src_list
+    cdef public list fsel_dst_list
+    cdef public list geo_src_list
+    cdef public list geo_dst_list
 
 cdef class PointsSelection:
 

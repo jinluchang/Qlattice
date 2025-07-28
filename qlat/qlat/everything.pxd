@@ -52,6 +52,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         GeometryNode()
         void init()
         void init(const Int id_node, const Coordinate& size_node) except +
+        void init(const Coordinate& coor_node, const Coordinate& size_node) except +
     cdef cppclass Geometry:
         bool initialized
         GeometryNode geon
@@ -77,6 +78,8 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         Coordinate coordinate_from_index(const Long index)
         Long index_from_g_coordinate(const Coordinate& xg)
         Coordinate g_coordinate_from_index(const Long index)
+    bool operator==(const Geometry& geo1, const Geometry& geo2) except +
+    bool operator!=(const Geometry& geo1, const Geometry& geo2) except +
     std_string show(const Geometry& geo) except +
     Geometry geo_resize(const Geometry& geo, Int thick) except +
     Geometry geo_resize(const Geometry& geo, const Coordinate& expansion_left, const Coordinate& expansion_right) except +
@@ -244,6 +247,11 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
     cdef cppclass SelectedShufflePlan:
         PointsDistType points_dist_type_send
         PointsDistType points_dist_type_recv
+        Coordinate total_site
+        vector[Coordinate] size_node_send
+        vector[Coordinate] coor_node_send
+        vector[Coordinate] size_node_recv
+        vector[Coordinate] coor_node_recv
         Long num_selected_points_send
         Long num_selected_points_recv
         vector[Long] n_points_selected_points_send

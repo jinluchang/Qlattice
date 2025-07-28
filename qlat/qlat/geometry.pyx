@@ -21,6 +21,7 @@ cdef class Geometry:
         Geometry()
         Geometry(total_site)
         Geometry(id_node, size_node, node_site)
+        Geometry(coor_node, size_node, node_site)
         """
         n_args = len(args)
         if n_args == 0:

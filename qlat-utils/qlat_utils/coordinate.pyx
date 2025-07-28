@@ -148,6 +148,11 @@ cdef class Coordinate:
         cc.assign_direct(x.xx, cc.mod(c1.xx, c2.xx))
         return x
 
+    def __floordiv__(Coordinate c1, Coordinate c2):
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, c1.xx / c2.xx)
+        return x
+
     def __neg__(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, x.xx - self.xx)
@@ -329,6 +334,11 @@ cdef class CoordinateD:
 
     def __rmul__(c1, c2):
         return c1 * c2
+
+    def __truediv__(CoordinateD c1, CoordinateD c2):
+        cdef CoordinateD x = CoordinateD()
+        cc.assign_direct(x.xx, c1.xx / c2.xx)
+        return x
 
     def __neg__(self):
         cdef CoordinateD x = CoordinateD()

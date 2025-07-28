@@ -352,6 +352,8 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     Coordinate operator*(const Coordinate& x, const Coordinate& y)
     Coordinate operator*(const Coordinate& x, const int y)
     Coordinate operator*(const int x, const Coordinate& y)
+    Coordinate operator/(const Coordinate& x, const Coordinate& y)
+    Coordinate operator/(const Coordinate& x, const int y)
     bool operator==(const Coordinate& x, const Coordinate& y)
     Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
     Long sqr(const Coordinate& xg)
@@ -361,6 +363,9 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     CoordinateD operator*(const CoordinateD& x, const CoordinateD& y)
     CoordinateD operator*(const CoordinateD& x, const double y)
     CoordinateD operator*(const double x, const CoordinateD& y)
+    CoordinateD operator/(const CoordinateD& x, const CoordinateD& y)
+    CoordinateD operator/(const CoordinateD& x, const double y)
+    CoordinateD operator/(const double x, const CoordinateD& y)
     bool operator==(const CoordinateD& x, const CoordinateD& y)
 
 cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
