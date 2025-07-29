@@ -143,6 +143,8 @@ __all__ += [
         'free_invert',
         'convert_mspincolor_from_wm',
         'convert_wm_from_mspincolor',
+        'mk_ff_list_from_prop',
+        'mk_prop_from_ff_list',
         'flip_tpbc_with_tslice',
         'free_scalar_invert_mom_cfield',
         'free_scalar_invert_cfield',

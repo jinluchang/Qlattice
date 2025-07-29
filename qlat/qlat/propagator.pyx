@@ -267,7 +267,7 @@ def convert_wm_from_mspincolor(prop_msc):
     return prop_wm
 
 @q.timer
-def mk_ff_vec_from_prop(Prop prop):
+def mk_ff_list_from_prop(Prop prop):
     """
     return ff_list
     isinstance(ff_list, list)
@@ -286,7 +286,7 @@ def mk_ff_vec_from_prop(Prop prop):
     return ff_list
 
 @q.timer
-def mk_prop_from_ff_vec(list ff_list):
+def mk_prop_from_ff_list(list ff_list):
     """
     return prop
     isinstance(prop, Prop)
@@ -300,7 +300,7 @@ def mk_prop_from_ff_vec(list ff_list):
     for i in range(num_field):
         ff = ff_list[i]
         cc.qswap(ff_vec[i], ff.xx)
-    cc.set_prop_from_ff_vec(prop.xxx().p[0], ff_vec)
+    cc.set_prop_from_ff_vec(<cc.Prop&>prop.xx, ff_vec)
     for i in range(num_field):
         ff = ff_list[i]
         cc.qswap(ff_vec[i], ff.xx)

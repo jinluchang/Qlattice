@@ -217,9 +217,11 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
 // `gf` and each of `ff_vec` should contain entire time slices.
 // No communication will be performed.
 {
-  TIMER_FLOPS("prop_spatial_smear");
+  TIMER_FLOPS("prop_spatial_smear_no_comm(ff_vec,gf,coef,step,mom)");
+  const Geometry geo = gf.geo.get();
+  const Int num_field = ff_vec.size();
   const Int n_avg = 6;
-  const Long v_gb = gf.geo().local_volume() * 12 * 4;
+  const Long v_gb = geo.local_volume() * num_field * 4;
   timer.flops += v_gb * step * n_avg * (3 * (3 * 6 + 2 * 2));
   if (0 == step) {
     return;
@@ -233,11 +235,9 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   }
   box<array<ComplexD, 6>> mom_factors(mom_factors_v,
                                       MemType::Acc);  // (array<ComplexD, 8>());
-  const Geometry geo = gf.geo.get();
   const Int t_size = geo.total_site()[3];
   qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
   qassert(geo.is_only_local);
-  const Int num_field = ff_vec.size();
   qassert(num_field >= 0);
   if (num_field == 0) {
     return;

@@ -294,6 +294,21 @@ def test_prop_spatial_smear(total_site, multiplicity, seed):
     ms_ff_list = prop_spatial_smear(ff_list, gf, coef, step, mom)
     ms_ff_list_sig = get_f_list_sig(ms_ff_list, rs, 3)
     q.json_results_append(f"sig ms_ff_list", ms_ff_list_sig, 1e-12)
+    #
+    if multiplicity == 1:
+        prop = q.Prop(geo)
+        prop.set_rand(rs.split(f"prop"))
+        prop_sig = q.get_data_sig_arr(prop, rs, 3)
+        q.json_results_append(f"prop sig", prop_sig, 1e-10)
+        ss_prop = prop_spatial_smear(prop, gf, coef, step, mom)
+        ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
+        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+        ss_prop = q.prop_smear(prop, gf, coef, step, mom)
+        ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
+        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+        ss_prop = q.prop_smear(prop, gf, coef, step, mom, mode_smear=0)
+        ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
+        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
 
 @q.timer
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
@@ -301,6 +316,9 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     Perform spatial smear for `ff_list`, a list of `FermionField4d`.
     Return new `ff_list` after smearing.
     Original `ff_list` should not be modified.
+    #
+    `ff_list` can also be a `Prop`.
+    In this case, the function will also return a `Prop`.
     #
     get_gf_ape = run_gf_ape(job_tag, get_gf)
     gf = get_gf_ape()
@@ -315,6 +333,13 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     set_param(job_tag, "prop_smear_step")(54)
     """
     fname = q.get_fname()
+    #
+    if isinstance(ff_list, q.Prop):
+        prop = ff_list
+        ff_list = q.mk_ff_list_from_prop(prop)
+        ss_ff_list = prop_spatial_smear(ff_list, gf, coef, step, mom)
+        ss_prop = q.mk_prop_from_ff_list(ss_ff_list)
+        return ss_prop
     #
     assert isinstance(ff_list, list)
     num_field = len(ff_list)

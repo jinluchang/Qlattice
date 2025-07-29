@@ -470,6 +470,102 @@
   1e-12
  ],
  [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": -8.070389360327717,
+     "imag": -9.995809466704692,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 40.64200905324101,
+     "imag": 86.82244524551311,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 68.54398916629336,
+     "imag": 30.797852800271684,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.10786567869209991,
+     "imag": 0.005579790563103079,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.14944968897100175,
+     "imag": 0.05940749107333998,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.03659998113138456,
+     "imag": 0.036943815319270684,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.1078656786921003,
+     "imag": 0.00557979056310319,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.1494496889710023,
+     "imag": 0.05940749107334014,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.03659998113138477,
+     "imag": 0.03694381531927083,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.10786567869209991,
+     "imag": 0.005579790563103079,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.14944968897100175,
+     "imag": 0.05940749107333998,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.03659998113138456,
+     "imag": 0.036943815319270684,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([4, 4, 4, 4]) 2 0"
  ],
  [
@@ -1880,6 +1976,102 @@
   1e-12
  ],
  [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": 267.1427764638335,
+     "imag": 228.98570624818882,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 199.92471289855914,
+     "imag": 176.2936682587032,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 18.51637566437364,
+     "imag": -61.771852436452434,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.4020662112963724,
+     "imag": 0.7512633633999002,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.2118909649237219,
+     "imag": 0.3584729474971917,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.22743434285594558,
+     "imag": -0.2700624764499789,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.40206621129637365,
+     "imag": 0.7512633633999026,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.21189096492372253,
+     "imag": 0.3584729474971928,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.22743434285594621,
+     "imag": -0.2700624764499799,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.4020662112963724,
+     "imag": 0.7512633633999002,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.2118909649237219,
+     "imag": 0.3584729474971917,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.22743434285594558,
+     "imag": -0.2700624764499789,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "selected_shuffle_r_from_l: Coordinate([6, 6, 6, 6]) 2 0"
  ],
  [
@@ -3288,6 +3480,102 @@
    "__extended_json_type__": "ndarray"
   },
   1e-12
+ ],
+ [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": 482.5855875068083,
+     "imag": 419.89925852585884,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 101.8115073458537,
+     "imag": -172.2396689563657,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 104.91411347963613,
+     "imag": -346.7537672240751,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 1.0872364936332168,
+     "imag": 1.7898664481689441,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.18697322724489068,
+     "imag": 0.051167229405720216,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.16609846684680174,
+     "imag": -0.8924335107087726,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 1.0872364936332204,
+     "imag": 1.7898664481689508,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.18697322724489113,
+     "imag": 0.05116722940572027,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.16609846684680252,
+     "imag": -0.8924335107087757,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 1.0872364936332168,
+     "imag": 1.7898664481689441,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.18697322724489068,
+     "imag": 0.051167229405720216,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.16609846684680174,
+     "imag": -0.8924335107087726,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ],
  [
   "selected_shuffle_r_from_l: Coordinate([8, 8, 8, 8]) 2 0"
