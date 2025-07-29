@@ -136,6 +136,12 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
   }
 }
 
+void set_ff_vec_from_prop(std::vector<FermionField4d>& ff_vec,
+                          const Propagator4d& prop);
+
+void set_prop_from_ff_vec(Propagator4d& prop,
+                          const std::vector<FermionField4d>& ff_vec);
+
 template <class Inverter, class T>
 Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
                 const Inverter& inv, const int ls_ = 0)

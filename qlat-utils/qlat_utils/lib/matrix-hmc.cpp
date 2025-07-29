@@ -19,7 +19,7 @@ void ColorMatrixConstants::check() const
   }
   for (int a = 0; a < 8; ++a) {
     for (int b = 0; b < 8; ++b) {
-      ComplexD tr = matrix_trace(ts[a], ts[b]);
+      ComplexD tr(matrix_trace(ts[a], ts[b]));
       if (a == b) {
         tr -= -2;
       }
@@ -36,7 +36,7 @@ void ColorMatrixConstants::check() const
   array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
   for (int a = 0; a < 8; ++a) {
     for (int b = 0; b < 8; ++b) {
-      ComplexD sum = 0.0;
+      ComplexD sum(0.0);
       for (int c = 0; c < 8; ++c) {
         sum += -f[c](a, b) * basis[c];
       }

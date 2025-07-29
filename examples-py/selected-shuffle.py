@@ -344,7 +344,7 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
     s_ff_list = ssp2.shuffle_sp_list(q.FermionField4d, ff_list)
     #
     id_node_set = set()
-    s_ff_mask_arr = np.zeros(len(s_ff_list), dtype=np.bool)
+    s_ff_mask_arr = np.zeros(len(s_ff_list), dtype=np.int8)
     for s_gf in s_gf_list:
         id_node = s_gf.geo.id_node
         assert id_node not in id_node_set
@@ -352,11 +352,11 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None):
         sub_s_ff_list = []
         for idx, s_ff in enumerate(s_ff_list):
             if id_node == s_ff.geo.id_node:
-                assert s_ff_mask_arr[idx] == False
-                s_ff_mask_arr[idx] = True
+                assert s_ff_mask_arr[idx] == 0
+                s_ff_mask_arr[idx] = 1
                 sub_s_ff_list.append(s_ff)
         q.prop_spatial_smear_no_comm(sub_s_ff_list, s_gf, coef, step, mom)
-    assert np.all(s_ff_mask_arr)
+    assert np.all(s_ff_mask_arr == 1)
     #
     ss_ff_list = ssp2.shuffle_sp_list(q.FermionField4d, s_ff_list, is_reverse=True)
     return ss_ff_list

@@ -233,7 +233,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   }
   box<array<ComplexD, 6>> mom_factors(mom_factors_v,
                                       MemType::Acc);  // (array<ComplexD, 8>());
-  const Geometry& geo = gf.geo();
+  const Geometry geo = gf.geo.get();
   const Int t_size = geo.total_site()[3];
   qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
   qassert(geo.is_only_local);
@@ -245,7 +245,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
   set_zero(ffv_vec);
   qfor(id_field, num_field, {
-    qassert(ff_vec[id_field].geo() == geo);
+    qassert(ff_vec[id_field].geo.get() == geo);
     ff_vec[id_field].set_mem_type(MemType::Acc);
     ffv_vec[id_field].set_view(ff_vec[id_field]);
   });

@@ -267,6 +267,46 @@ def convert_wm_from_mspincolor(prop_msc):
     return prop_wm
 
 @q.timer
+def mk_ff_vec_from_prop(Prop prop):
+    """
+    return ff_list
+    isinstance(ff_list, list)
+    len(ff_list) == 12
+    """
+    cdef cc.Int num_field = 12
+    cdef list ff_list = []
+    cdef FermionField4d ff
+    cdef cc.std_vector[cc.FermionField4d] ff_vec
+    cc.set_ff_vec_from_prop(ff_vec, prop.xxx().p[0])
+    assert <cc.Int>ff_vec.size() == num_field
+    for i in range(num_field):
+        ff = FermionField4d()
+        cc.qswap(ff_vec[i], ff.xx)
+        ff_list.append(ff)
+    return ff_list
+
+@q.timer
+def mk_prop_from_ff_vec(list ff_list):
+    """
+    return prop
+    isinstance(prop, Prop)
+    """
+    cdef cc.Int num_field = 12
+    assert len(ff_list) == num_field
+    cdef Prop prop = Prop()
+    cdef FermionField4d ff
+    cdef cc.std_vector[cc.FermionField4d] ff_vec
+    ff_vec.resize(num_field)
+    for i in range(num_field):
+        ff = ff_list[i]
+        cc.qswap(ff_vec[i], ff.xx)
+    cc.set_prop_from_ff_vec(prop.xxx().p[0], ff_vec)
+    for i in range(num_field):
+        ff = ff_list[i]
+        cc.qswap(ff_vec[i], ff.xx)
+    return prop
+
+@q.timer
 def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
     if isinstance(prop, SelProp):
         c.flip_tpbc_with_tslice_s_prop(prop, tslice_flip_tpbc)

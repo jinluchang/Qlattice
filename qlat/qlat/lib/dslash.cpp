@@ -1,5 +1,6 @@
 #define QLAT_INSTANTIATE_SMEAR
 
+#include <qlat/compressed-eigen-io.h>
 #include <qlat/dslash.h>
 
 namespace qlat

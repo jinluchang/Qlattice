@@ -3,6 +3,57 @@
 namespace qlat
 {  //
 
+void set_ff_vec_from_prop(std::vector<FermionField4d>& ff_vec,
+                          const Propagator4d& prop)
+{
+  TIMER("set_ff_vec_from_prop(ff_vec,prop)");
+  const Int num_field = 12;
+  clear(ff_vec);
+  ff_vec.resize(num_field);
+  const Geometry geo = prop.geo.get();
+  qassert(geo.is_only_local);
+  vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
+  set_zero(ffv_vec);
+  qfor(id_field, num_field, {
+    ff_vec[id_field].init(geo);
+    ffv_vec[id_field].set_view(ff_vec[id_field]);
+  });
+  ffv_vec.set_mem_type(MemType::Acc);
+  qacc_for(index, geo.local_volume(), {
+    const WilsonMatrix& wm = prop.get_elem(index);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+      set_wilson_vector_from_matrix_col(wv, wm, id_field);
+    }
+  });
+}
+
+void set_prop_from_ff_vec(Propagator4d& prop,
+                          const std::vector<FermionField4d>& ff_vec)
+{
+  TIMER("set_prop_from_ff_vec(prop,ff_vec)");
+  const Int num_field = 12;
+  qassert(ff_vec.size() == num_field);
+  const Geometry geo = ff_vec[0].geo.get();
+  qassert(geo.is_only_local);
+  prop.init();
+  prop.init(geo);
+  vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
+  set_zero(ffv_vec);
+  qfor(id_field, num_field, {
+    qassert(ff_vec[id_field].geo.get() == geo);
+    ffv_vec[id_field].set_view(ff_vec[id_field]);
+  });
+  ffv_vec.set_mem_type(MemType::Acc);
+  qacc_for(index, geo.local_volume(), {
+    WilsonMatrix& wm = prop.get_elem(index);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      const WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+      set_wilson_matrix_col_from_vector(wm, id_field, wv);
+    }
+  });
+}
+
 void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
                                 const CoordinateD& lmom, const int cs)
 // ff need to be initialized beforehand

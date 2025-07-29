@@ -377,17 +377,12 @@ cdef extern from "qlat/gauge-action.h" namespace "qlat":
 
 cdef extern from "qlat/qcd-prop.h" namespace "qlat":
 
-    void set_wall_src(
-            Prop& prop, const Geometry& geo_input,
-            const Int tslice, const CoordinateD& lmom) except +
-    void set_point_src(
-            Prop& prop, const Geometry& geo_input,
-            const Coordinate& xg, const ComplexD& value) except +
-    void set_rand_vol_u1(
-            Field[ComplexD]& fu1,
-            const Geometry& geo_input, const RngState& rs) except +
-    void set_rand_vol_u1_src(
-            Prop& prop, const Field[ComplexD]& fu1) except +
+    void set_ff_vec_from_prop(std_vector[FermionField4d]& ff_vec, const Prop& prop) except +
+    void set_prop_from_ff_vec(Prop& prop, const std_vector[FermionField4d]& ff_vec) except +
+    void set_wall_src(Prop& prop, const Geometry& geo_input, const Int tslice, const CoordinateD& lmom) except +
+    void set_point_src(Prop& prop, const Geometry& geo_input, const Coordinate& xg, const ComplexD& value) except +
+    void set_rand_vol_u1(Field[ComplexD]& fu1, const Geometry& geo_input, const RngState& rs) except +
+    void set_rand_vol_u1_src(Prop& prop, const Field[ComplexD]& fu1) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
