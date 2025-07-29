@@ -233,7 +233,7 @@ void set_wall_src(Propagator4d& prop, const Geometry& geo_input,
                   const int tslice, const CoordinateD& lmom = CoordinateD());
 
 template <class Inverter>
-inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
+void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
                                     const int tslice,
                                     const CoordinateD& lmom = CoordinateD())
 {
