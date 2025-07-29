@@ -862,7 +862,7 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
     geo.set(geo_);
     multiplicity = multiplicity_;
     mem_order = MemOrder::TZYXM;
-    field.resize(geo().local_volume_expanded() * multiplicity);
+    field.resize(geo_.local_volume_expanded() * multiplicity);
     if (1 == get_field_init()) {
       set_zero(*this);
     } else if (2 == get_field_init()) {
@@ -913,7 +913,7 @@ void Field<M>::init_zero(const Geometry& geo_, const Int multiplicity_)
     multiplicity = multiplicity_;
     mem_order = MemOrder::TZYXM;
     geo.set(geo_);
-    field.resize(geo().local_volume_expanded() * multiplicity);
+    field.resize(geo_.local_volume_expanded() * multiplicity);
     set_zero(*this);
   }
 }
@@ -931,9 +931,9 @@ Field<M>& Field<M>::operator=(const Field<M>& f)
   }
   TIMER_FLOPS("Field::operator=");
   qassert(f.initialized);
-  init(geo_resize(f.geo()), f.multiplicity);
+  init(geo_resize(f.geo.get()), f.multiplicity);
   Field<M>& f0 = *this;
-  qacc_for(index, geo().local_volume(), {
+  qacc_for(index, geo.get().local_volume(), {
     const Geometry& geo_v = f0.geo();
     const Coordinate xl = geo_v.coordinate_from_index(index);
     const Vector<M> v = f.get_elems_const(xl);
@@ -1246,7 +1246,7 @@ void SelectedField<M>::init(const Geometry& geo_, const Long n_elems_,
 template <class M>
 void SelectedField<M>::init(const FieldSelection& fsel, const Int multiplicity_)
 {
-  init(fsel.f_rank.geo(), fsel.n_elems, multiplicity_);
+  init(fsel.f_rank.geo.get(), fsel.n_elems, multiplicity_);
 }
 
 template <class M>
@@ -1275,7 +1275,7 @@ template <class M>
 void SelectedField<M>::init_zero(const FieldSelection& fsel,
                                  const Int multiplicity_)
 {
-  init_zero(fsel.f_rank.geo(), fsel.n_elems, multiplicity_);
+  init_zero(fsel.f_rank.geo.get(), fsel.n_elems, multiplicity_);
 }
 
 template <class M>

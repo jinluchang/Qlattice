@@ -671,7 +671,7 @@ struct API box {
     copy_mem(v.p, mem_type, &x, MemType::Cpu, sizeof(M));
   }
   //
-  M get()
+  M get() const
   {
     qassert(not v.null());
     M x;
