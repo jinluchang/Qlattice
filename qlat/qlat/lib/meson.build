@@ -20,6 +20,7 @@ cppsources = files(
   'utils_field_expand.cpp',
   'hlbl-contract.cpp',
   'commpressed-eigen-io.cpp',
+  'dslash.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat/lib')
 
