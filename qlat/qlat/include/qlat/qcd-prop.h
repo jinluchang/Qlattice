@@ -43,8 +43,8 @@ void set_propagator_from_fermion_fields(
 }
 
 template <class T>
-void set_wilson_matrix_col_from_vector(WilsonMatrixT<T>& wm, const int idx,
-                                       const WilsonVectorT<T>& col)
+qacc void set_wilson_matrix_col_from_vector(WilsonMatrixT<T>& wm, const int idx,
+                                            const WilsonVectorT<T>& col)
 {
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
     wm(j, idx) = col(j);
@@ -67,9 +67,9 @@ void set_propagator_col_from_fermion_field(Propagator4dT<T>& prop,
 }
 
 template <class T>
-void set_wilson_vector_from_matrix_col(WilsonVectorT<T>& col,
-                                       const WilsonMatrixT<T>& wm,
-                                       const int idx)
+qacc void set_wilson_vector_from_matrix_col(WilsonVectorT<T>& col,
+                                            const WilsonMatrixT<T>& wm,
+                                            const int idx)
 {
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
     col(j) = wm(j, idx);

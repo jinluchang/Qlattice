@@ -63,23 +63,40 @@ API inline Long& get_alignment(const MemType mem_type)
 //
 // Should NOT change in the middle of the run.
 {
+#ifdef QLAT_USE_ACC
   static Long v = get_env_long_default("q_alignment", 256);
   static Long v_cpu = get_env_long_default("q_alignment_cpu", v);
   static Long v_acc = get_env_long_default("q_alignment_acc", v);
-  static Long v_comm = get_env_long_default("q_alignment_comm", v);
   static Long v_uvm = get_env_long_default("q_alignment_uvm", v);
+  static Long v_comm = get_env_long_default("q_alignment_comm", v);
   if (mem_type == MemType::Cpu) {
     return v_cpu;
   } else if (mem_type == MemType::Acc) {
     return v_acc;
-  } else if (mem_type == MemType::Comm) {
-    return v_comm;
   } else if (mem_type == MemType::Uvm) {
     return v_uvm;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
   } else {
     qassert(false);
     return v;
   }
+#else
+  static Long v = get_env_long_default("q_alignment", 256);
+  static Long v_comm = get_env_long_default("q_alignment_comm", v);
+  if (mem_type == MemType::Cpu) {
+    return v;
+  } else if (mem_type == MemType::Acc) {
+    return v;
+  } else if (mem_type == MemType::Uvm) {
+    return v;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else {
+    qassert(false);
+    return v;
+  }
+#endif
 }
 
 API inline Long& get_mem_chunk_size(const MemType mem_type)
@@ -87,23 +104,40 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
 //
 // Should NOT change in the middle of the run.
 {
+#ifdef QLAT_USE_ACC
   static Long v = get_env_long_default("q_mem_chunk_size", 512);
   static Long v_cpu = get_env_long_default("q_mem_chunk_size_cpu", v);
   static Long v_acc = get_env_long_default("q_mem_chunk_size_acc", 1);
-  static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", 1);
   static Long v_uvm = get_env_long_default("q_mem_chunk_size_uvm", v);
+  static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", 1);
   if (mem_type == MemType::Cpu) {
     return v_cpu;
   } else if (mem_type == MemType::Acc) {
     return v_acc;
-  } else if (mem_type == MemType::Comm) {
-    return v_comm;
   } else if (mem_type == MemType::Uvm) {
     return v_uvm;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
   } else {
     qassert(false);
     return v;
   }
+#else
+  static Long v = get_env_long_default("q_mem_chunk_size", 512);
+  static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", 1);
+  if (mem_type == MemType::Cpu) {
+    return v;
+  } else if (mem_type == MemType::Acc) {
+    return v;
+  } else if (mem_type == MemType::Uvm) {
+    return v;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else {
+    qassert(false);
+    return v;
+  }
+#endif
 }
 
 API inline bool& get_mem_type_comm_use_acc()
@@ -329,6 +363,7 @@ struct API vector {
   }
   //
   void clear()
+  // does not change mem_type
   {
     qassert(not is_copy);
     if (v.p != NULL) {
