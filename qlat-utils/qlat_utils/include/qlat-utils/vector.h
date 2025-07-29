@@ -297,7 +297,8 @@ struct API vector {
     qassert(vp.is_copy);
 #endif
     is_copy = true;
-    qassert(vp.mem_type == MemType::Uvm);
+    const MemType eff_mem_type = get_eff_mem_type(vp.mem_type);
+    qassert(eff_mem_type == MemType::Uvm or eff_mem_type == MemType::Acc);
     mem_type = vp.mem_type;
     v = vp.v;
   }
@@ -564,7 +565,8 @@ struct API box {
     qassert(vp.is_copy);
 #endif
     is_copy = true;
-    qassert(vp.mem_type == MemType::Uvm);
+    const MemType eff_mem_type = get_eff_mem_type(vp.mem_type);
+    qassert(eff_mem_type == MemType::Uvm or eff_mem_type == MemType::Acc);
     mem_type = vp.mem_type;
     v = vp.v;
   }
