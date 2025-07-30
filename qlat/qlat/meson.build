@@ -25,6 +25,7 @@ py_files = files(
   'field_analysis.py',
   'mat_mpi.py',
   'psel_split.py',
+  'smear_prop.py',
   )
 
 pxd_files = files(

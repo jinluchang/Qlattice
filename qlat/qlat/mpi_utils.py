@@ -17,7 +17,6 @@ class q:
             end,
             )
 
-
 default_size_node_list = list(map(q.Coordinate, [
     [ 1, 1, 1, 1, ],
     [ 1, 1, 1, 2, ],

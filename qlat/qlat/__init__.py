@@ -33,6 +33,8 @@ from .mat_mpi import *
 
 from .psel_split import *
 
+from .smear_prop import *
+
 from . import field_double
 
 set_verbose_level()
