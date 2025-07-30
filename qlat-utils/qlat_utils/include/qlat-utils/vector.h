@@ -711,9 +711,18 @@ struct API box {
   M get() const
   {
     qassert(not v.null());
+#ifdef QLAT_USE_ACC
+#ifdef QLAT_IN_ACC
+    assert(mem_type == MemType::Acc or mem_type == MemType::Uvm);
+    return v();
+#else
     M x;
     copy_mem(&x, MemType::Cpu, v.p, mem_type, sizeof(M));
     return x;
+#endif
+#else
+    return v();
+#endif
   }
   //
   box<M>& operator=(const box<M>& vp)

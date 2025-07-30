@@ -674,7 +674,7 @@ struct API Field {
     return f;
   }
   //
-  qacc const Geometry& get_geo() const { return geo(); }
+  qacc Geometry get_geo() const { return geo.get(); }
   //
   qacc M& get_elem_offset(const Long offset)
   {
@@ -1084,7 +1084,7 @@ struct API FieldSelection {
   //
   FieldSelection() { init(); }
   //
-  qacc_no_inline const Geometry& get_geo() const;
+  qacc_no_inline Geometry get_geo() const;
   //
   void set_mem_type(const MemType mem_type) const;
   //
@@ -1169,7 +1169,7 @@ struct API SelectedField {
     return f;
   }
   //
-  qacc const Geometry& get_geo() const { return geo(); }
+  qacc Geometry get_geo() const { return geo.get(); }
   //
   qacc M& get_elem(const Long idx)
   {

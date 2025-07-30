@@ -396,9 +396,9 @@ void FieldSelection::init()
   indices.init();
 }
 
-qacc_no_inline const Geometry& FieldSelection::get_geo() const
+qacc_no_inline Geometry FieldSelection::get_geo() const
 {
-  return f_rank.geo();
+  return f_rank.geo.get();
 }
 
 void FieldSelection::set_mem_type(const MemType mem_type) const

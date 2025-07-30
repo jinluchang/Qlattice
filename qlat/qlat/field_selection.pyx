@@ -1100,13 +1100,13 @@ cdef class FieldSelection:
     @property
     def geo(self):
         cdef Geometry geo = Geometry()
-        geo.xx = self.xx.f_rank.get_geo()
+        geo.xx = self.xx.get_geo()
         return geo
 
     @property
     def total_site(self):
         cdef Coordinate total_site = Coordinate()
-        cc.assign_direct(total_site.xx, self.xx.f_rank.get_geo().total_site())
+        cc.assign_direct(total_site.xx, self.xx.get_geo().total_site())
         return total_site
 
     @property
@@ -1138,15 +1138,15 @@ cdef class FieldSelection:
         return self.n_elems
 
     def idx_from_coordinate(self, Coordinate xg not None):
-        cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_l_from_g(xg.xx)
+        cdef cc.Coordinate xl_xx = self.xx.get_geo().coordinate_l_from_g(xg.xx)
         cdef cc.Long idx = self.xx.f_local_idx.get_elem(xl_xx)
         return idx
 
     def coordinate_from_idx(self, cc.Long idx):
         cdef Coordinate xg = Coordinate()
         cdef cc.Long index = self.xx.indices[idx]
-        cdef cc.Coordinate xl_xx = self.xx.f_local_idx.get_geo().coordinate_from_index(index)
-        cc.assign_direct(xg.xx, self.xx.f_local_idx.get_geo().coordinate_g_from_l(xl_xx))
+        cdef cc.Coordinate xl_xx = self.xx.get_geo().coordinate_from_index(index)
+        cc.assign_direct(xg.xx, self.xx.get_geo().coordinate_g_from_l(xl_xx))
         return xg
 
     def __getstate__(self):

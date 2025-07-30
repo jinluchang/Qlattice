@@ -134,7 +134,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init(const Geometry& geo) except +
         void init(const Geometry& geo, Int multiplicity) except +
         void init(const Field[T]& field) except +
-        const Geometry& get_geo() except +
+        Geometry get_geo() except +
         T& get_elem(const Coordinate& x) except +
         T& get_elem(const Coordinate& x, const Int m) except +
         T& get_elem(const Long index) except +
@@ -163,7 +163,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         vector[Long] indices
         FieldSelection()
         void init()
-        const Geometry& get_geo()
+        Geometry get_geo() except +
     void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel) except +
     void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel, const Geometry& geo, const Long rank_psel) except +
     void set_geo_from_psel(Geometry& geo, const PointsSelection& psel) except +
@@ -175,7 +175,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         void init(const Geometry& geo, const Long n_elems, const Int multiplicity) except +
         void init(const FieldSelection& fsel, const Int multiplicity) except +
-        const Geometry& get_geo()
+        Geometry get_geo() except +
     Vector[T] get_data[T](const Field[T]& x) except +
     void set_zero[T](Field[T]& x) except +
     void qswap[T](Field[T]& x, Field[T]& y) except +
