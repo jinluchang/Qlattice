@@ -287,13 +287,16 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
                                : matrix_adjoint(gf.get_elem(index1, -dir - 1));
         link *= mfv[dir + 3];
         const Vector<ComplexD> v11 = ff1.get_elems_const(index1);
-        for (Int c1 = 0; c1 < 3; ++c1) {
-          ComplexD* p = &(v.p[c1 * num_color_vec]);
-          for (Int c2 = 0; c2 < 3; ++c2) {
-            const ComplexD* p11 = &(v11.p[c2 * num_color_vec]);
+        for (Int c2 = 0; c2 < 3; ++c2) {
+          alignas(64) const ComplexD* p11 = &(v11.p[c2 * num_color_vec]);
+          for (Int c1 = 0; c1 < 3; ++c1) {
+            alignas(64) ComplexD* p = &(v.p[c1 * num_color_vec]);
             const ComplexD lc = link.p[c1 * 3 + c2];
-            for (Int is = 0; is < num_color_vec; ++is) {
+            for (Int is = 0; is < num_color_vec; is += 4) {
               p[is] += lc * p11[is];
+              p[is + 1] += lc * p11[is + 1];
+              p[is + 2] += lc * p11[is + 2];
+              p[is + 3] += lc * p11[is + 3];
             }
           }
         }
