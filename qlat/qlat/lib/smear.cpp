@@ -255,15 +255,48 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   ff1.set_mem_type(MemType::Acc);
   ff.init(geo, num_field * 12);
   ff1.init(geo, num_field * 12);
+  Field<ColorMatrix> gf_spatial;
+  gf_spatial.set_mem_type(MemType::Acc);
+  gf_spatial.init(geo, 6);
+#ifdef QLAT_USE_ACC
+  constexpr Int order_type = 1;
+#else
+  constexpr Int order_type = 0;
+#endif
   const Int num_color_vec = num_field * 4;
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf_spatial.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const array<ComplexD, 6>& mfv = mom_factors();
     Vector<ComplexD> v = ff.get_elems(index);
     for (Int id_field = 0; id_field < num_field; ++id_field) {
       const WilsonVector& wv = ffv_vec[id_field].get_elem(index);
       for (Int s = 0; s < 4; ++s) {
         for (Int c = 0; c < 3; ++c) {
-          v.p[c * num_color_vec + id_field * 4 + s] = wv.p[s * 3 + c];
+          if (order_type == 0) {
+            v.p[c * num_color_vec + id_field * 4 + s] = wv.p[s * 3 + c];
+          } else if (order_type == 1) {
+            v.p[id_field * 12 + s * 3 + c] = wv.p[s * 3 + c];
+          } else {
+            qassert(false);
+          }
         }
+      }
+    }
+    Vector<ColorMatrix> gfv = gf_spatial.get_elems(index);
+    for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
+      const Coordinate xl1 = coordinate_shifts(xl, dir);
+      const Long index1 = geo.index_from_coordinate(xl1);
+      ColorMatrix link = dir >= 0
+                             ? gf.get_elem(index, dir)
+                             : matrix_adjoint(gf.get_elem(index1, -dir - 1));
+      link *= mfv[dir + 3];
+      if (order_type == 0) {
+        gfv[dir + 3] = link;
+      } else if (order_type == 1) {
+        gfv[dir + 3] = link;
+      } else {
+        qassert(false);
       }
     }
   });
@@ -271,34 +304,46 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   for (Int iter = 0; iter < step; ++iter) {
     qswap(ff, ff1);
     qacc_for(index, geo.local_volume(), {
-      const array<ComplexD, 6>& mfv = mom_factors();
-      const Geometry& geo = gf.geo();
+      const Geometry& geo = gf_spatial.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<ComplexD> v = ff.get_elems(index);
+      const Vector<ColorMatrix> gfv = gf_spatial.get_elems_const(index);
       const Vector<ComplexD> v1 = ff1.get_elems_const(index);
+      Vector<ComplexD> v = ff.get_elems(index);
       qassert(v.size() == v1.size());
       qassert(v.size() == num_color_vec * 3);
       qfor(i, v.size(), { v.p[i] = one_minus_coef * v1.p[i]; });
       for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
         const Long index1 = geo.index_from_coordinate(xl1);
-        ColorMatrix link = dir >= 0
-                               ? gf.get_elem(index, dir)
-                               : matrix_adjoint(gf.get_elem(index1, -dir - 1));
-        link *= mfv[dir + 3];
         const Vector<ComplexD> v11 = ff1.get_elems_const(index1);
-        for (Int c2 = 0; c2 < 3; ++c2) {
-          alignas(64) const ComplexD* p11 = &(v11.p[c2 * num_color_vec]);
-          for (Int c1 = 0; c1 < 3; ++c1) {
-            alignas(64) ComplexD* p = &(v.p[c1 * num_color_vec]);
-            const ComplexD lc = link.p[c1 * 3 + c2];
-            for (Int is = 0; is < num_color_vec; is += 4) {
-              p[is] += lc * p11[is];
-              p[is + 1] += lc * p11[is + 1];
-              p[is + 2] += lc * p11[is + 2];
-              p[is + 3] += lc * p11[is + 3];
+        const ColorMatrix& link = gfv[dir + 3];
+        alignas(16) const ComplexD* pl = link.p;
+        alignas(64) const ComplexD* p11 = v11.p;
+        alignas(64) ComplexD* p = v.p;
+        if (order_type == 0) {
+          for (Int c2 = 0; c2 < 3; ++c2) {
+            alignas(64) const ComplexD* pp11 = &(p11[c2 * num_color_vec]);
+            for (Int c1 = 0; c1 < 3; ++c1) {
+              alignas(64) ComplexD* pp = &(p[c1 * num_color_vec]);
+              const ComplexD lc = pl[c1 * 3 + c2];
+              for (Int is = 0; is < num_color_vec; is += 4) {
+                pp[is + 0] += lc * pp11[is + 0];
+                pp[is + 1] += lc * pp11[is + 1];
+                pp[is + 2] += lc * pp11[is + 2];
+                pp[is + 3] += lc * pp11[is + 3];
+              }
             }
           }
+        } else if (order_type == 1) {
+          for (Int ss = 0; ss < num_color_vec; ++ss) {
+            alignas(16) const ComplexD* pp11 = &(p11[ss * 3]);
+            alignas(16) ComplexD* pp = &(p[ss * 3]);
+            pp[0] += pl[0] * pp11[0] + pl[0 + 1] * pp11[1] + pl[0 + 2] * pp11[2];
+            pp[1] += pl[3] * pp11[0] + pl[3 + 1] * pp11[1] + pl[3 + 2] * pp11[2];
+            pp[2] += pl[6] * pp11[0] + pl[6 + 1] * pp11[1] + pl[6 + 2] * pp11[2];
+          }
+        } else {
+          qassert(false);
         }
       }
     });
@@ -309,7 +354,13 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
       WilsonVector& wv = ffv_vec[id_field].get_elem(index);
       for (Int s = 0; s < 4; ++s) {
         for (Int c = 0; c < 3; ++c) {
-          wv.p[s * 3 + c] = v.p[c * num_color_vec + id_field * 4 + s];
+          if (order_type == 0) {
+            wv.p[s * 3 + c] = v.p[c * num_color_vec + id_field * 4 + s];
+          } else if (order_type == 1) {
+            wv.p[s * 3 + c] = v.p[id_field * 12 + s * 3 + c];
+          } else {
+            qassert(false);
+          }
         }
       }
     }
