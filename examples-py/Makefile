@@ -26,6 +26,7 @@ tests = \
 		mat-op-distillation.log \
 		mat-op-qcd.log \
 		check-id-node.log \
+		prop-smear.log \
 		set-rand.log \
 		utils.log \
 		benchmark-matrix-functions.log \

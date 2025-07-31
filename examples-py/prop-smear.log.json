@@ -1,0 +1,494 @@
+[
+ [
+  "benchmark_prop_spatial_smear: Coordinate([4, 4, 4, 4]) 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": 21.508961598794293,
+     "imag": 19.834980462731195,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 14.135657507642097,
+     "imag": 15.702097170828655,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 15.69934439427655,
+     "imag": 10.967835880287641,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": -125.26315039523485,
+     "imag": -153.27786561893328,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -74.12848906839676,
+     "imag": -70.74141744275524,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 92.21943978088365,
+     "imag": 129.03167959408103,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.0025623719394452793,
+     "imag": 0.0039398435731301945,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.10545810691331466,
+     "imag": -0.23938771273412074,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.2071906412556544,
+     "imag": 0.15483632320223986,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.002562371939445352,
+     "imag": 0.0039398435731301945,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.10545810691331481,
+     "imag": -0.23938771273412152,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.207190641255655,
+     "imag": 0.15483632320224036,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.002562371939445276,
+     "imag": 0.003939843573130167,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.10545810691331459,
+     "imag": -0.23938771273412074,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.20719064125565437,
+     "imag": 0.15483632320223983,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "benchmark_prop_spatial_smear: Coordinate([4, 4, 4, 4]) 1"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": 11.784873362787684,
+     "imag": -1.8190058243820246,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -32.071167069303826,
+     "imag": 30.67893846105758,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 25.13284983067605,
+     "imag": 5.203597783044474,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": -76.19852629342941,
+     "imag": -85.60114772478289,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -19.701816298216997,
+     "imag": -103.46431109955094,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -29.54845940149125,
+     "imag": -32.264642563169666,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.07746705855541886,
+     "imag": -0.19242041528459203,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.022687545646177358,
+     "imag": -0.1368306757850597,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.137103863569501,
+     "imag": -0.09627275491215526,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.0774670585554191,
+     "imag": -0.19242041528459258,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.022687545646177445,
+     "imag": -0.13683067578506014,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.13710386356950136,
+     "imag": -0.09627275491215552,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.07746705855541886,
+     "imag": -0.19242041528459203,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.02268754564617739,
+     "imag": -0.1368306757850597,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.137103863569501,
+     "imag": -0.09627275491215527,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "benchmark_prop_spatial_smear: Coordinate([6, 6, 6, 6]) 0"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -36.40081155913604,
+     "imag": 94.88843766160929,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 13.393157638339872,
+     "imag": 22.727657986765685,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -51.13745465239247,
+     "imag": 68.9468925577402,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": -232.73612432463824,
+     "imag": -176.07705539713146,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -39.7199665168264,
+     "imag": -3.444450089063693,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -112.86012761311234,
+     "imag": -102.51701228101967,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.03622169851229226,
+     "imag": -0.1028255847361372,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.16847130922775777,
+     "imag": -0.09656539444068898,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.40439026723782556,
+     "imag": 0.043337629264125904,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.03622169851229243,
+     "imag": -0.10282558473613765,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.16847130922775827,
+     "imag": -0.09656539444068957,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.4043902672378268,
+     "imag": 0.04333762926412585,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": -0.03622169851229223,
+     "imag": -0.1028255847361372,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.16847130922775777,
+     "imag": -0.09656539444068929,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.40439026723782545,
+     "imag": 0.043337629264125765,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "benchmark_prop_spatial_smear: Coordinate([6, 6, 6, 6]) 1"
+ ],
+ [
+  "gf sig",
+  {
+   "value": [
+    {
+     "real": -18.91683611107385,
+     "imag": -53.98167927794767,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -56.1976291018712,
+     "imag": -5.712385309288486,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 12.805062385360586,
+     "imag": 20.992073017114368,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop sig",
+  {
+   "value": [
+    {
+     "real": -46.066436219125904,
+     "imag": 79.74888787685934,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -96.61795702367937,
+     "imag": -313.19250371899443,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -47.85805667925476,
+     "imag": -157.51630604855734,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.27893704947677356,
+     "imag": 0.18242083166061196,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.218755674128227,
+     "imag": -0.36143131343303087,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.4649329518279627,
+     "imag": 0.023382845343239922,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.2789370494767744,
+     "imag": 0.18242083166061263,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.2187556741282276,
+     "imag": -0.361431313433032,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.46493295182796407,
+     "imag": 0.023382845343239866,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "ss_prop sig",
+  {
+   "value": [
+    {
+     "real": 0.27893704947677334,
+     "imag": 0.1824208316606119,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.2187556741282269,
+     "imag": -0.3614313134330309,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.4649329518279625,
+     "imag": 0.02338284534323995,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ]
+]
