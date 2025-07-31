@@ -255,19 +255,19 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   ff1.set_mem_type(MemType::Acc);
   ff.init(geo, num_field * 12);
   ff1.init(geo, num_field * 12);
+  const Int num_color_vec = num_field * 4;
   qacc_for(index, geo.local_volume(), {
     Vector<ComplexD> v = ff.get_elems(index);
     for (Int id_field = 0; id_field < num_field; ++id_field) {
       const WilsonVector& wv = ffv_vec[id_field].get_elem(index);
       for (Int s = 0; s < 4; ++s) {
         for (Int c = 0; c < 3; ++c) {
-          v.p[id_field * 12 + s * 3 + c] = wv.p[s * 3 + c];
+          v.p[c * num_color_vec + id_field * 4 + s] = wv.p[s * 3 + c];
         }
       }
     }
   });
   const RealD one_minus_coef = 1.0 - coef;
-  const Int num_color_vec = num_field * 4;
   for (Int iter = 0; iter < step; ++iter) {
     qswap(ff, ff1);
     qacc_for(index, geo.local_volume(), {
@@ -288,10 +288,12 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
         link *= mfv[dir + 3];
         const Vector<ComplexD> v11 = ff1.get_elems_const(index1);
         for (Int c1 = 0; c1 < 3; ++c1) {
+          ComplexD* p = &(v.p[c1 * num_color_vec]);
           for (Int c2 = 0; c2 < 3; ++c2) {
-            const ComplexD& lc = link.p[c1 * 3 + c2];
+            const ComplexD* p11 = &(v11.p[c2 * num_color_vec]);
+            const ComplexD lc = link.p[c1 * 3 + c2];
             for (Int is = 0; is < num_color_vec; ++is) {
-              v.p[is * 3 + c1] += lc * v11.p[is * 3 + c2];
+              p[is] += lc * p11[is];
             }
           }
         }
@@ -304,7 +306,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
       WilsonVector& wv = ffv_vec[id_field].get_elem(index);
       for (Int s = 0; s < 4; ++s) {
         for (Int c = 0; c < 3; ++c) {
-          wv.p[s * 3 + c] = v.p[id_field * 12 + s * 3 + c];
+          wv.p[s * 3 + c] = v.p[c * num_color_vec + id_field * 4 + s];
         }
       }
     }
