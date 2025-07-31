@@ -22,6 +22,8 @@ total_site_list = [
         # q.Coordinate([ 12, 12, 12, 12, ]),
         # q.Coordinate([ 16, 16, 16, 16, ]),
         # q.Coordinate([ 20, 20, 20, 20, ]),
+        # q.Coordinate([ 24, 24, 24, 24, ]),
+        # q.Coordinate([ 32, 32, 32, 32, ]),
         ]
 
 def get_f_list_sig(f_list, rs, n):
