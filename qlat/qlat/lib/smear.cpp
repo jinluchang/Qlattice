@@ -250,29 +250,35 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
     ffv_vec[id_field].set_view(ff_vec[id_field]);
   });
   ffv_vec.set_mem_type(MemType::Acc);
-  FermionField5d ff, ff1;
+  Field<ComplexD> ff, ff1;
   ff.set_mem_type(MemType::Acc);
   ff1.set_mem_type(MemType::Acc);
-  ff.init(geo, num_field);
-  ff1.init(geo, num_field);
+  ff.init(geo, num_field * 12);
+  ff1.init(geo, num_field * 12);
   qacc_for(index, geo.local_volume(), {
-    Vector<WilsonVector> v = ff.get_elems(index);
+    Vector<ComplexD> v = ff.get_elems(index);
     for (Int id_field = 0; id_field < num_field; ++id_field) {
-      v[id_field] = ffv_vec[id_field].get_elem(index);
+      const WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+      for (Int s = 0; s < 4; ++s) {
+        for (Int c = 0; c < 3; ++c) {
+          v.p[id_field * 12 + s * 3 + c] = wv.p[s * 3 + c];
+        }
+      }
     }
   });
+  const RealD one_minus_coef = 1.0 - coef;
+  const Int num_color_vec = num_field * 4;
   for (Int iter = 0; iter < step; ++iter) {
     qswap(ff, ff1);
     qacc_for(index, geo.local_volume(), {
       const array<ComplexD, 6>& mfv = mom_factors();
       const Geometry& geo = gf.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<WilsonVector> v = ff.get_elems(index);
-      const Vector<WilsonVector> v1 = ff1.get_elems_const(index);
-      for (Int id_field = 0; id_field < num_field; ++id_field) {
-        v[id_field] = v1[id_field];
-        v[id_field] *= (1.0 - coef);
-      }
+      Vector<ComplexD> v = ff.get_elems(index);
+      const Vector<ComplexD> v1 = ff1.get_elems_const(index);
+      qassert(v.size() == v1.size());
+      qassert(v.size() == num_color_vec * 3);
+      qfor(i, v.size(), { v.p[i] = one_minus_coef * v1.p[i]; });
       for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
         const Long index1 = geo.index_from_coordinate(xl1);
@@ -280,17 +286,27 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
                                ? gf.get_elem(index, dir)
                                : matrix_adjoint(gf.get_elem(index1, -dir - 1));
         link *= mfv[dir + 3];
-        const Vector<WilsonVector> v11 = ff1.get_elems_const(index1);
-        for (Int id_field = 0; id_field < num_field; ++id_field) {
-          v[id_field] += link * v11[id_field];
+        const Vector<ComplexD> v11 = ff1.get_elems_const(index1);
+        for (Int c1 = 0; c1 < 3; ++c1) {
+          for (Int c2 = 0; c2 < 3; ++c2) {
+            const ComplexD& lc = link.p[c1 * 3 + c2];
+            for (Int is = 0; is < num_color_vec; ++is) {
+              v.p[is * 3 + c1] += lc * v11.p[is * 3 + c2];
+            }
+          }
         }
       }
     });
   }
   qacc_for(index, geo.local_volume(), {
-    const Vector<WilsonVector> v = ff.get_elems_const(index);
+    const Vector<ComplexD> v = ff.get_elems_const(index);
     for (Int id_field = 0; id_field < num_field; ++id_field) {
-      ffv_vec[id_field].get_elem(index) = v[id_field];
+      WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+      for (Int s = 0; s < 4; ++s) {
+        for (Int c = 0; c < 3; ++c) {
+          wv.p[s * 3 + c] = v.p[id_field * 12 + s * 3 + c];
+        }
+      }
     }
   });
   // Can remove this when set_mem_type is used extensively.
