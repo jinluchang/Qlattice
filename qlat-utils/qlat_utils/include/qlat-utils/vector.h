@@ -50,8 +50,10 @@ inline bool is_same_mem_type(const MemType t1, const MemType t2)
 #ifdef QLAT_USE_ACC
     return false;
 #else
-    if (t1 == MemType::Comm or t2 == MemType::Comm) {
-      return false;
+    if (t1 == MemType::Comm or t1 == MemType::CommAcc) {
+      return (t2 == MemType::Comm or t2 == MemType::CommAcc);
+    } else if (t2 == MemType::Comm or t2 == MemType::CommAcc) {
+      return (t1 == MemType::Comm or t1 == MemType::CommAcc);
     } else {
       return true;
     }
@@ -63,6 +65,9 @@ API inline Long& get_alignment(const MemType mem_type)
 // qlat parameter
 //
 // Should NOT change in the middle of the run.
+//
+// mem_type identified as same type by `is_same_mem_type` should have the same
+// chunk_size.
 {
 #ifdef QLAT_USE_ACC
   static Long v = get_env_long_default("q_alignment", 256);
@@ -109,6 +114,9 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
 // qlat parameter
 //
 // Should NOT change in the middle of the run.
+//
+// mem_type identified as same type by `is_same_mem_type` should have the same
+// chunk_size.
 {
 #ifdef QLAT_USE_ACC
   static Long v = get_env_long_default("q_mem_chunk_size", 512);
