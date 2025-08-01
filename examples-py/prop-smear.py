@@ -26,6 +26,7 @@ total_site_list = [
         # q.Coordinate([ 20, 20, 20, 20, ]),
         # q.Coordinate([ 24, 24, 24, 24, ]),
         # q.Coordinate([ 32, 32, 32, 32, ]),
+        # q.Coordinate([ 2, 2, 512, 2, ]),
         ]
 
 def get_f_list_sig(f_list, rs, n):
@@ -56,7 +57,7 @@ def benchmark_prop_spatial_smear(total_site, seed):
     prop.set_rand(rs.split(f"prop"))
     prop_sig = q.get_data_sig_arr(prop, rs, 3)
     q.json_results_append(f"prop sig", prop_sig, 1e-10)
-    ss_prop = q.prop_spatial_smear(prop, gf, coef, step, mom)
+    ss_prop = q.prop_spatial_smear(prop, gf, coef, step, mom, chunk_size=12)
     ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
     q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
     ss_prop = q.prop_smear(prop, gf, coef, step, mom)
