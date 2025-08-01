@@ -127,15 +127,17 @@ void shuffle_selected_points_char(
     TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
     {
-      TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
+      TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi_alltoallv");
       mpi_alltoallv(sp0.points.data(), ssp.sendcounts.data(),
                     ssp.sdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
                     ssp.recvcounts.data(), ssp.rdispls.data(),
                     mpi_dtype.mpi_dtype, get_comm());
-      timer.flops += (ssp.total_count_send + ssp.total_count_recv) / 2;
+      timer.flops +=
+          (ssp.total_count_send + ssp.total_count_recv) / 2 * multiplicity;
     }
     sp0.init();
-    timer.flops += (ssp.total_count_send + ssp.total_count_recv) / 2;
+    timer.flops +=
+        (ssp.total_count_send + ssp.total_count_recv) / 2 * multiplicity;
   }
   // perform final reordering.
   qthread_for(idx, spi_r.n_points, {
@@ -150,8 +152,9 @@ void shuffle_selected_points_char(
         spc_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
     assign(v1_val, v_val);
   });
-  timer.flops +=
-      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+  timer.flops += ((ssp.total_count_send + ssp.total_count_recv) / 2 +
+                  ssp.total_count_local) *
+                 multiplicity;
 }
 
 void shuffle_selected_points_back_char(
@@ -244,10 +247,12 @@ void shuffle_selected_points_back_char(
                     ssp.rdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
                     ssp.sendcounts.data(), ssp.sdispls.data(),
                     mpi_dtype.mpi_dtype, get_comm());
-      timer.flops += (ssp.total_count_send + ssp.total_count_recv) / 2;
+      timer.flops +=
+          (ssp.total_count_send + ssp.total_count_recv) / 2 * multiplicity;
     }
     sp0.init();
-    timer.flops += (ssp.total_count_send + ssp.total_count_recv) / 2;
+    timer.flops +=
+        (ssp.total_count_send + ssp.total_count_recv) / 2 * multiplicity;
   }
   // perform final reordering.
   qthread_for(idx, spi_s.n_points, {
@@ -262,8 +267,9 @@ void shuffle_selected_points_back_char(
         spc_vec[idx_selected_points_send].get_elems(idx_within_field_send);
     assign(v1_val, v_val);
   });
-  timer.flops +=
-      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+  timer.flops += ((ssp.total_count_send + ssp.total_count_recv) / 2 +
+                  ssp.total_count_local) *
+                 multiplicity;
 }
 
 // ------------------------------
@@ -280,8 +286,9 @@ void shuffle_selected_points_char(SelectedPoints<Char>& spc,
   shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
   qassert(spc_vec.size() == 1);
   qswap_cast(spc, spc_vec[0]);
-  timer.flops +=
-      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+  timer.flops += ((ssp.total_count_send + ssp.total_count_recv) / 2 +
+                  ssp.total_count_local) *
+                 spc0.multiplicity;
 }
 
 void shuffle_selected_points_back_char(SelectedPoints<Char>& spc,
@@ -297,8 +304,9 @@ void shuffle_selected_points_back_char(SelectedPoints<Char>& spc,
   shuffle_selected_points_back_char(spc_vec, spc0_vec, ssp);
   qassert(spc_vec.size() == 1);
   qswap_cast(spc, spc_vec[0]);
-  timer.flops +=
-      (ssp.total_count_send + ssp.total_count_recv) / 2 + ssp.total_count_local;
+  timer.flops += ((ssp.total_count_send + ssp.total_count_recv) / 2 +
+                  ssp.total_count_local) *
+                 spc0.multiplicity;
 }
 
 void shuffle_points_selection(std::vector<PointsSelection>& psel_vec,
