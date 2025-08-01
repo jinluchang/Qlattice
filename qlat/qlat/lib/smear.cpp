@@ -344,6 +344,8 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
       });
     }
   }
+  ff1.init();
+  gf_spatial.init();
   qacc_for(index, geo.local_volume(), {
     const Vector<ComplexD> v = ff.get_elems_const(index);
     for (Int id_field = 0; id_field < num_field; ++id_field) {
@@ -475,6 +477,8 @@ static void prop_spatial_smear_no_comm_cpu(std::vector<FermionField4d>& ff_vec,
       });
     }
   }
+  ff1.init();
+  gf_spatial.init();
   qacc_for(index, geo.local_volume(), {
     const Vector<ComplexD> v = ff.get_elems_const(index);
     for (Int id_field = 0; id_field < num_field; ++id_field) {
