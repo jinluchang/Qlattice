@@ -262,6 +262,9 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
   gf_spatial.set_mem_type(MemType::Acc);
   gf_spatial.init(geo, 6);
   const Int num_color_vec = num_field * 4;
+  const Int chunk_num_color_vec = 4;
+  const Int num_chunk_color_vec = num_color_vec / chunk_num_color_vec;
+  qassert(num_chunk_color_vec * chunk_num_color_vec == num_color_vec);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gf_spatial.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -288,28 +291,46 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
   });
   const RealD one_minus_coef = 1.0 - coef;
   {
-    TIMER_FLOPS("prop_spatial_smear_no_comm-smear");
+    TIMER_FLOPS("prop_spatial_smear_no_comm_acc-smear");
     timer.flops += flops;
     for (Int iter = 0; iter < step; ++iter) {
       qswap(ff, ff1);
-      qacc_for(index, geo.local_volume(), {
+      qacc_for(idx, geo.local_volume() * num_chunk_color_vec, {
+        const Long index = idx / num_chunk_color_vec;
+        const Int id_chunk_color_vec = idx % num_chunk_color_vec;
         const Geometry& geo = gf_spatial.geo();
         const Coordinate xl = geo.coordinate_from_index(index);
-        const Vector<ColorMatrix> gfv = gf_spatial.get_elems_const(index);
-        const Vector<ComplexD> v1 = ff1.get_elems_const(index);
         Vector<ComplexD> v = ff.get_elems(index);
-        qassert(v.size() == v1.size());
         qassert(v.size() == num_color_vec * 3);
-        qfor(i, v.size(), { v.p[i] = one_minus_coef * v1.p[i]; });
+        {
+          const Vector<ComplexD> v1 = ff1.get_elems_const(index);
+          qassert(v1.size() == v.size());
+          alignas(16) const ComplexD* p1 =
+              &(v1.p[id_chunk_color_vec * chunk_num_color_vec * 3]);
+          alignas(16) ComplexD* p =
+              &(v.p[id_chunk_color_vec * chunk_num_color_vec * 3]);
+          for (Int ss = 0; ss < chunk_num_color_vec; ++ss) {
+            alignas(16) const ComplexD* pp1 = &(p1[ss * 3]);
+            alignas(16) ComplexD* pp = &(p[ss * 3]);
+            pp[0] = one_minus_coef * pp1[0];
+            pp[1] = one_minus_coef * pp1[1];
+            pp[2] = one_minus_coef * pp1[2];
+          }
+        }
+        // qfor(i, v.size(), { v.p[i] = one_minus_coef * v1.p[i]; });
+        const Vector<ColorMatrix> gfv = gf_spatial.get_elems_const(index);
         for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
           const Coordinate xl1 = coordinate_shifts(xl, dir);
           const Long index1 = geo.index_from_coordinate(xl1);
           const Vector<ComplexD> v11 = ff1.get_elems_const(index1);
+          qassert(v11.size() == v.size());
           const ColorMatrix& link = gfv[dir + 3];
           alignas(16) const ComplexD* pl = link.p;
-          alignas(64) const ComplexD* p11 = v11.p;
-          alignas(64) ComplexD* p = v.p;
-          for (Int ss = 0; ss < num_color_vec; ++ss) {
+          alignas(16) const ComplexD* p11 =
+              &(v11.p[id_chunk_color_vec * chunk_num_color_vec * 3]);
+          alignas(16) ComplexD* p =
+              &(v.p[id_chunk_color_vec * chunk_num_color_vec * 3]);
+          for (Int ss = 0; ss < chunk_num_color_vec; ++ss) {
             alignas(16) const ComplexD* pp11 = &(p11[ss * 3]);
             alignas(16) ComplexD* pp = &(p[ss * 3]);
             pp[0] +=
@@ -416,7 +437,7 @@ static void prop_spatial_smear_no_comm_cpu(std::vector<FermionField4d>& ff_vec,
   });
   const RealD one_minus_coef = 1.0 - coef;
   {
-    TIMER_FLOPS("prop_spatial_smear_no_comm-smear");
+    TIMER_FLOPS("prop_spatial_smear_no_comm_cpu-smear");
     timer.flops += flops;
     for (Int iter = 0; iter < step; ++iter) {
       qswap(ff, ff1);
