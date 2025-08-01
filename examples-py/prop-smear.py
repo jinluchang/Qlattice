@@ -26,6 +26,7 @@ total_site_list = [
         # q.Coordinate([ 20, 20, 20, 20, ]),
         # q.Coordinate([ 24, 24, 24, 24, ]),
         # q.Coordinate([ 32, 32, 32, 32, ]),
+        # q.Coordinate([ 64, 64, 64, 2, ]),
         # q.Coordinate([ 2, 2, 512, 2, ]),
         ]
 
@@ -46,27 +47,34 @@ def benchmark_prop_spatial_smear(total_site, seed):
     coef = 0.9375
     step = 20
     #
+    is_show_sig = True
+    #
     gf = q.GaugeField(geo)
     gf.set_rand(rs.split(f"gf"), 0.5, 2)
-    gf_sig = q.get_data_sig_arr(gf, rs, 3)
-    q.json_results_append(f"gf sig", gf_sig, 1e-10)
+    if is_show_sig:
+        gf_sig = q.get_data_sig_arr(gf, rs, 3)
+        q.json_results_append(f"gf sig", gf_sig, 1e-10)
     #
     mom = q.CoordinateD([ 0.0, 0.1, -0.2, 0.2, ])
     #
     prop = q.Prop(geo)
     prop.set_rand(rs.split(f"prop"))
-    prop_sig = q.get_data_sig_arr(prop, rs, 3)
-    q.json_results_append(f"prop sig", prop_sig, 1e-10)
+    if is_show_sig:
+        prop_sig = q.get_data_sig_arr(prop, rs, 3)
+        q.json_results_append(f"prop sig", prop_sig, 1e-10)
     ss_prop = q.prop_spatial_smear(prop, gf, coef, step, mom, chunk_size=12)
-    ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
-    q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+    if is_show_sig:
+        ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
+        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
     ss_prop = q.prop_smear(prop, gf, coef, step, mom)
-    ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
-    q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+    if is_show_sig:
+        ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
+        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
     gf1 = q.mk_left_expanded_gauge_field(gf)
     ss_prop = q.prop_smear(prop, gf1, coef, step, mom, mode_smear=0)
-    ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
-    q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+    if is_show_sig:
+        ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
+        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
 
 for total_site in total_site_list:
     for seed in range(2):

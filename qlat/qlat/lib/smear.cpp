@@ -262,7 +262,8 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
   gf_spatial.set_mem_type(MemType::Acc);
   gf_spatial.init(geo, 6);
   const Int num_color_vec = num_field * 4;
-  const Int chunk_num_color_vec = 4;
+  const Int chunk_num_color_vec = get_env_long_default(
+      "q_prop_spatial_smear_no_comm_chunk_num_color_vec", 1);
   const Int num_chunk_color_vec = num_color_vec / chunk_num_color_vec;
   qassert(num_chunk_color_vec * chunk_num_color_vec == num_color_vec);
   qacc_for(index, geo.local_volume(), {
@@ -317,7 +318,6 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
             pp[2] = one_minus_coef * pp1[2];
           }
         }
-        // qfor(i, v.size(), { v.p[i] = one_minus_coef * v1.p[i]; });
         const Vector<ColorMatrix> gfv = gf_spatial.get_elems_const(index);
         for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
           const Coordinate xl1 = coordinate_shifts(xl, dir);
