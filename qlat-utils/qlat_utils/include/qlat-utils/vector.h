@@ -23,10 +23,11 @@ void clear_all_caches();
 // --------------------
 
 enum struct MemType : Int {
-  Cpu,   // CPU main memory
-  Acc,   // Accelerator
-  Uvm,   // Uniform virtual memory
-  Comm,  // For communication on CPU
+  Cpu,      // CPU main memory
+  Acc,      // Accelerator
+  Uvm,      // Uniform virtual memory
+  Comm,     // For communication on CPU
+  CommAcc,  // For communication on ACC
   SIZE,
 };
 
@@ -69,6 +70,7 @@ API inline Long& get_alignment(const MemType mem_type)
   static Long v_acc = get_env_long_default("q_alignment_acc", v);
   static Long v_uvm = get_env_long_default("q_alignment_uvm", v);
   static Long v_comm = get_env_long_default("q_alignment_comm", v);
+  static Long v_comm_acc = get_env_long_default("q_alignment_comm_acc", v);
   if (mem_type == MemType::Cpu) {
     return v_cpu;
   } else if (mem_type == MemType::Acc) {
@@ -77,6 +79,8 @@ API inline Long& get_alignment(const MemType mem_type)
     return v_uvm;
   } else if (mem_type == MemType::Comm) {
     return v_comm;
+  } else if (mem_type == MemType::CommAcc) {
+    return v_comm_acc;
   } else {
     qassert(false);
     return v;
@@ -91,6 +95,8 @@ API inline Long& get_alignment(const MemType mem_type)
   } else if (mem_type == MemType::Uvm) {
     return v;
   } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else if (mem_type == MemType::CommAcc) {
     return v_comm;
   } else {
     qassert(false);
@@ -110,6 +116,7 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
   static Long v_acc = get_env_long_default("q_mem_chunk_size_acc", 1);
   static Long v_uvm = get_env_long_default("q_mem_chunk_size_uvm", v);
   static Long v_comm = get_env_long_default("q_mem_chunk_size_comm", 1);
+  static Long v_comm_acc = get_env_long_default("q_mem_chunk_size_comm_acc", 1);
   if (mem_type == MemType::Cpu) {
     return v_cpu;
   } else if (mem_type == MemType::Acc) {
@@ -118,6 +125,8 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
     return v_uvm;
   } else if (mem_type == MemType::Comm) {
     return v_comm;
+  } else if (mem_type == MemType::CommAcc) {
+    return v_comm_acc;
   } else {
     qassert(false);
     return v;
@@ -132,6 +141,8 @@ API inline Long& get_mem_chunk_size(const MemType mem_type)
   } else if (mem_type == MemType::Uvm) {
     return v;
   } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else if (mem_type == MemType::CommAcc) {
     return v_comm;
   } else {
     qassert(false);
@@ -150,8 +161,11 @@ API inline bool& get_mem_type_comm_use_acc()
 }
 
 inline MemType get_eff_mem_type(const MemType mem_type)
+// Return only Cpu, Acc, Uvm
 {
   if (mem_type == MemType::Comm) {
+    return MemType::Cpu;
+  } else if (mem_type == MemType::CommAcc) {
     if (get_mem_type_comm_use_acc()) {
       return MemType::Acc;
     } else {
@@ -178,18 +192,22 @@ API inline Long& get_mem_cache_max_size(const MemType mem_type)
       get_env_long_default("q_mem_cache_max_size_cpu", v) * 1024L * 1024L;
   static Long v_acc =
       get_env_long_default("q_mem_cache_max_size_acc", v) * 1024L * 1024L;
-  static Long v_comm =
-      get_env_long_default("q_mem_cache_max_size_comm", v) * 1024L * 1024L;
   static Long v_uvm =
       get_env_long_default("q_mem_cache_max_size_uvm", v) * 1024L * 1024L;
+  static Long v_comm =
+      get_env_long_default("q_mem_cache_max_size_comm", v) * 1024L * 1024L;
+  static Long v_comm_acc =
+      get_env_long_default("q_mem_cache_max_size_comm_acc", v) * 1024L * 1024L;
   if (mem_type == MemType::Cpu) {
     return v_cpu;
   } else if (mem_type == MemType::Acc) {
     return v_acc;
-  } else if (mem_type == MemType::Comm) {
-    return v_comm;
   } else if (mem_type == MemType::Uvm) {
     return v_uvm;
+  } else if (mem_type == MemType::Comm) {
+    return v_comm;
+  } else if (mem_type == MemType::CommAcc) {
+    return v_comm_acc;
   } else {
     qassert(false);
     return v;
@@ -299,7 +317,7 @@ struct API vector {
   //
   Vector<M> v;
   mutable MemType mem_type;  // if place data on accelerator memory
-  bool is_copy;      // do not free memory if is_copy=true
+  bool is_copy;              // do not free memory if is_copy=true
   //
   vector(const MemType mem_type_ = get_default_mem_type())
   {
@@ -582,7 +600,7 @@ struct API box {
   // (it is likely not what you think it is)
   // Only used in qacc macros, or if it is already a copy.
   //
-  bool is_copy;      // do not free memory if is_copy=true
+  bool is_copy;              // do not free memory if is_copy=true
   mutable MemType mem_type;  // if place data on accelerator memory
   Handle<M> v;
   //
