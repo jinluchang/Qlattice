@@ -211,13 +211,15 @@ void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
   gf_hyp_smear_no_comm(gf, gf1, alpha1, alpha2, alpha3);
 }
 
-void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
-                                const GaugeField& gf, const RealD coef,
-                                const Long step, const CoordinateD& mom)
+static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
+                                           const GaugeField& gf,
+                                           const RealD coef, const Long step,
+                                           const CoordinateD& mom)
 // `gf` and each of `ff_vec` should contain entire time slices.
 // No communication will be performed.
+// More suitable for ACC execution, but should also work on CPU.
 {
-  TIMER_FLOPS("prop_spatial_smear_no_comm(ff_vec,gf,coef,step,mom)");
+  TIMER_FLOPS("prop_spatial_smear_no_comm_acc(ff_vec,gf,coef,step,mom)");
   const Geometry geo = gf.geo.get();
   const Int num_field = ff_vec.size();
   const Int n_avg = 6;
@@ -259,11 +261,6 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   Field<ColorMatrix> gf_spatial;
   gf_spatial.set_mem_type(MemType::Acc);
   gf_spatial.init(geo, 6);
-#ifdef QLAT_USE_ACC
-  constexpr Int order_type = 1;
-#else
-  constexpr Int order_type = 0;
-#endif
   const Int num_color_vec = num_field * 4;
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gf_spatial.geo();
@@ -274,13 +271,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
       const WilsonVector& wv = ffv_vec[id_field].get_elem(index);
       for (Int s = 0; s < 4; ++s) {
         for (Int c = 0; c < 3; ++c) {
-          if (order_type == 0) {
-            v.p[c * num_color_vec + id_field * 4 + s] = wv.p[s * 3 + c];
-          } else if (order_type == 1) {
-            v.p[id_field * 12 + s * 3 + c] = wv.p[s * 3 + c];
-          } else {
-            qassert(false);
-          }
+          v.p[id_field * 12 + s * 3 + c] = wv.p[s * 3 + c];
         }
       }
     }
@@ -292,13 +283,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
                              ? gf.get_elem(index, dir)
                              : matrix_adjoint(gf.get_elem(index1, -dir - 1));
       link *= mfv[dir + 3];
-      if (order_type == 0) {
-        gfv[dir + 3] = link;
-      } else if (order_type == 1) {
-        gfv[dir + 3] = link;
-      } else {
-        qassert(false);
-      }
+      gfv[dir + 3] = link;
     }
   });
   const RealD one_minus_coef = 1.0 - coef;
@@ -324,33 +309,15 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
           alignas(16) const ComplexD* pl = link.p;
           alignas(64) const ComplexD* p11 = v11.p;
           alignas(64) ComplexD* p = v.p;
-          if (order_type == 0) {
-            for (Int c2 = 0; c2 < 3; ++c2) {
-              alignas(64) const ComplexD* pp11 = &(p11[c2 * num_color_vec]);
-              for (Int c1 = 0; c1 < 3; ++c1) {
-                alignas(64) ComplexD* pp = &(p[c1 * num_color_vec]);
-                const ComplexD lc = pl[c1 * 3 + c2];
-                for (Int is = 0; is < num_color_vec; is += 4) {
-                  pp[is + 0] += lc * pp11[is + 0];
-                  pp[is + 1] += lc * pp11[is + 1];
-                  pp[is + 2] += lc * pp11[is + 2];
-                  pp[is + 3] += lc * pp11[is + 3];
-                }
-              }
-            }
-          } else if (order_type == 1) {
-            for (Int ss = 0; ss < num_color_vec; ++ss) {
-              alignas(16) const ComplexD* pp11 = &(p11[ss * 3]);
-              alignas(16) ComplexD* pp = &(p[ss * 3]);
-              pp[0] +=
-                  pl[0] * pp11[0] + pl[0 + 1] * pp11[1] + pl[0 + 2] * pp11[2];
-              pp[1] +=
-                  pl[3] * pp11[0] + pl[3 + 1] * pp11[1] + pl[3 + 2] * pp11[2];
-              pp[2] +=
-                  pl[6] * pp11[0] + pl[6 + 1] * pp11[1] + pl[6 + 2] * pp11[2];
-            }
-          } else {
-            qassert(false);
+          for (Int ss = 0; ss < num_color_vec; ++ss) {
+            alignas(16) const ComplexD* pp11 = &(p11[ss * 3]);
+            alignas(16) ComplexD* pp = &(p[ss * 3]);
+            pp[0] +=
+                pl[0] * pp11[0] + pl[0 + 1] * pp11[1] + pl[0 + 2] * pp11[2];
+            pp[1] +=
+                pl[3] * pp11[0] + pl[3 + 1] * pp11[1] + pl[3 + 2] * pp11[2];
+            pp[2] +=
+                pl[6] * pp11[0] + pl[6 + 1] * pp11[1] + pl[6 + 2] * pp11[2];
           }
         }
       });
@@ -362,13 +329,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
       WilsonVector& wv = ffv_vec[id_field].get_elem(index);
       for (Int s = 0; s < 4; ++s) {
         for (Int c = 0; c < 3; ++c) {
-          if (order_type == 0) {
-            wv.p[s * 3 + c] = v.p[c * num_color_vec + id_field * 4 + s];
-          } else if (order_type == 1) {
-            wv.p[s * 3 + c] = v.p[id_field * 12 + s * 3 + c];
-          } else {
-            qassert(false);
-          }
+          wv.p[s * 3 + c] = v.p[id_field * 12 + s * 3 + c];
         }
       }
     }
@@ -376,6 +337,159 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   // Can remove this when set_mem_type is used extensively.
   qfor(id_field, num_field,
        { ff_vec[id_field].set_mem_type(get_default_mem_type()); });
+}
+
+static void prop_spatial_smear_no_comm_cpu(std::vector<FermionField4d>& ff_vec,
+                                           const GaugeField& gf,
+                                           const RealD coef, const Long step,
+                                           const CoordinateD& mom)
+// `gf` and each of `ff_vec` should contain entire time slices.
+// No communication will be performed.
+// More suitable for CPU execution, but should also work on ACC.
+{
+  TIMER_FLOPS("prop_spatial_smear_no_comm_cpu(ff_vec,gf,coef,step,mom)");
+  const Geometry geo = gf.geo.get();
+  const Int num_field = ff_vec.size();
+  const Int n_avg = 6;
+  const Long v_gb = geo.local_volume() * num_field * 4;
+  const Long flops = v_gb * step * n_avg * (3 * (3 * 6 + 2 * 2));
+  timer.flops += flops;
+  if (0 == step) {
+    return;
+  }
+  const Int dir_limit = 3;
+  array<ComplexD, 6> mom_factors_v;
+  for (int i = 0; i < 6; ++i) {
+    const Int dir = i - 3;
+    const RealD phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
+    mom_factors_v[i] = qpolar(coef / n_avg, -phase);
+  }
+  box<array<ComplexD, 6>> mom_factors(mom_factors_v,
+                                      MemType::Acc);  // (array<ComplexD, 8>());
+  const Int t_size = geo.total_site()[3];
+  qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
+  qassert(geo.is_only_local);
+  qassert(num_field >= 0);
+  if (num_field == 0) {
+    return;
+  }
+  vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
+  set_zero(ffv_vec);
+  qfor(id_field, num_field, {
+    qassert(ff_vec[id_field].geo.get() == geo);
+    ff_vec[id_field].set_mem_type(MemType::Acc);
+    ffv_vec[id_field].set_view(ff_vec[id_field]);
+  });
+  ffv_vec.set_mem_type(MemType::Acc);
+  Field<ComplexD> ff, ff1;
+  ff.set_mem_type(MemType::Acc);
+  ff1.set_mem_type(MemType::Acc);
+  ff.init(geo, num_field * 12);
+  ff1.init(geo, num_field * 12);
+  Field<ColorMatrix> gf_spatial;
+  gf_spatial.set_mem_type(MemType::Acc);
+  gf_spatial.init(geo, 6);
+  const Int num_color_vec = num_field * 4;
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf_spatial.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const array<ComplexD, 6>& mfv = mom_factors();
+    Vector<ComplexD> v = ff.get_elems(index);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      const WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+      for (Int s = 0; s < 4; ++s) {
+        for (Int c = 0; c < 3; ++c) {
+          v.p[c * num_color_vec + id_field * 4 + s] = wv.p[s * 3 + c];
+        }
+      }
+    }
+    Vector<ColorMatrix> gfv = gf_spatial.get_elems(index);
+    for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
+      const Coordinate xl1 = coordinate_shifts(xl, dir);
+      const Long index1 = geo.index_from_coordinate(xl1);
+      ColorMatrix link = dir >= 0
+                             ? gf.get_elem(index, dir)
+                             : matrix_adjoint(gf.get_elem(index1, -dir - 1));
+      link *= mfv[dir + 3];
+      gfv[dir + 3] = link;
+    }
+  });
+  const RealD one_minus_coef = 1.0 - coef;
+  {
+    TIMER_FLOPS("prop_spatial_smear_no_comm-smear");
+    timer.flops += flops;
+    for (Int iter = 0; iter < step; ++iter) {
+      qswap(ff, ff1);
+      qacc_for(index, geo.local_volume(), {
+        const Geometry& geo = gf_spatial.geo();
+        const Coordinate xl = geo.coordinate_from_index(index);
+        const Vector<ColorMatrix> gfv = gf_spatial.get_elems_const(index);
+        const Vector<ComplexD> v1 = ff1.get_elems_const(index);
+        Vector<ComplexD> v = ff.get_elems(index);
+        qassert(v.size() == v1.size());
+        qassert(v.size() == num_color_vec * 3);
+        qfor(i, v.size(), { v.p[i] = one_minus_coef * v1.p[i]; });
+        for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
+          const Coordinate xl1 = coordinate_shifts(xl, dir);
+          const Long index1 = geo.index_from_coordinate(xl1);
+          const Vector<ComplexD> v11 = ff1.get_elems_const(index1);
+          const ColorMatrix& link = gfv[dir + 3];
+          alignas(16) const ComplexD* pl = link.p;
+          alignas(64) const ComplexD* p11 = v11.p;
+          alignas(64) ComplexD* p = v.p;
+          for (Int c2 = 0; c2 < 3; ++c2) {
+            alignas(64) const ComplexD* pp11 = &(p11[c2 * num_color_vec]);
+            for (Int c1 = 0; c1 < 3; ++c1) {
+              alignas(64) ComplexD* pp = &(p[c1 * num_color_vec]);
+              const ComplexD lc = pl[c1 * 3 + c2];
+              for (Int is = 0; is < num_color_vec; is += 4) {
+                pp[is + 0] += lc * pp11[is + 0];
+                pp[is + 1] += lc * pp11[is + 1];
+                pp[is + 2] += lc * pp11[is + 2];
+                pp[is + 3] += lc * pp11[is + 3];
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+  qacc_for(index, geo.local_volume(), {
+    const Vector<ComplexD> v = ff.get_elems_const(index);
+    for (Int id_field = 0; id_field < num_field; ++id_field) {
+      WilsonVector& wv = ffv_vec[id_field].get_elem(index);
+      for (Int s = 0; s < 4; ++s) {
+        for (Int c = 0; c < 3; ++c) {
+          wv.p[s * 3 + c] = v.p[c * num_color_vec + id_field * 4 + s];
+        }
+      }
+    }
+  });
+  // Can remove this when set_mem_type is used extensively.
+  qfor(id_field, num_field,
+       { ff_vec[id_field].set_mem_type(get_default_mem_type()); });
+}
+
+void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
+                                const GaugeField& gf, const RealD coef,
+                                const Long step, const CoordinateD& mom)
+// `gf` and each of `ff_vec` should contain entire time slices.
+// No communication will be performed.
+{
+#ifdef QLAT_USE_ACC
+  static const std::string q_prop_spatial_smear_no_comm =
+      get_env_default("q_prop_spatial_smear_no_comm", "acc");
+#else
+  static const std::string q_prop_spatial_smear_no_comm =
+      get_env_default("q_prop_spatial_smear_no_comm", "cpu");
+#endif
+  if (q_prop_spatial_smear_no_comm == "acc") {
+    prop_spatial_smear_no_comm_acc(ff_vec, gf, coef, step, mom);
+  } else if (q_prop_spatial_smear_no_comm == "cpu") {
+    prop_spatial_smear_no_comm_cpu(ff_vec, gf, coef, step, mom);
+  } else {
+    qassert(false);
+  }
 }
 
 }  // namespace qlat

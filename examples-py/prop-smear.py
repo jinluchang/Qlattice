@@ -19,7 +19,9 @@ total_site_list = [
         q.Coordinate([ 4, 4, 4, 4, ]),
         q.Coordinate([ 6, 6, 6, 6, ]),
         # q.Coordinate([ 8, 8, 8, 8, ]),
+        # q.Coordinate([ 12, 12, 12, 2, ]),
         # q.Coordinate([ 12, 12, 12, 12, ]),
+        # q.Coordinate([ 16, 16, 16, 2, ]),
         # q.Coordinate([ 16, 16, 16, 16, ]),
         # q.Coordinate([ 20, 20, 20, 20, ]),
         # q.Coordinate([ 24, 24, 24, 24, ]),
@@ -33,7 +35,7 @@ def get_f_list_sig(f_list, rs, n):
     sig = q.glb_sum(sig)
     return sig
 
-@q.timer(is_timer_fork=True)
+@q.timer(is_timer_fork=True, timer_fork_show_display=True)
 def benchmark_prop_spatial_smear(total_site, seed):
     fname = q.get_fname()
     q.json_results_append(f"{fname}: {total_site} {seed}")
