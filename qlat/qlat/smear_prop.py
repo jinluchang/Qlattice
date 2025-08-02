@@ -9,6 +9,7 @@ class q:
             timer,
             get_chunk_list,
             CoordinateD,
+            mk_cache,
             )
     from .c import (
             GaugeField,
@@ -20,6 +21,8 @@ class q:
             mk_ff_list_from_prop,
             mk_prop_from_ff_list,
             )
+
+cache_spatial_smear_chunk_plan = q.mk_cache("spatial_smear_chunk_plan")
 
 @q.timer(is_flops=True)
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
@@ -98,7 +101,7 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
         else:
             num_field = len(chunk_ff_list)
         if plan.get("num_field") != num_field:
-            plan = prop_spatial_smear_chunk_planner(gf, num_field)
+            plan = get_prop_spatial_smear_chunk_plan(gf, num_field)
         assert plan["num_field"] == num_field
         if is_ff_type_prop:
             chunk_p_list = chunk_ff_list
@@ -126,6 +129,23 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
     return flops, ss_ff_list
 
 @q.timer
+def get_prop_spatial_smear_chunk_plan(gf, num_field):
+    """
+    Only cache one plan.
+    """
+    key = "plan"
+    if key in cache_spatial_smear_chunk_plan:
+        plan = cache_spatial_smear_chunk_plan[key]
+        b = True
+        b = b and (gf is plan["gf"])
+        b = b and (num_field == plan["num_field"])
+        if b:
+            return plan
+    plan = prop_spatial_smear_chunk_planner(gf, num_field)
+    cache_spatial_smear_chunk_plan[key] = plan
+    return plan
+
+@q.timer
 def prop_spatial_smear_chunk_planner(gf, num_field):
     """
     return plan
@@ -147,6 +167,7 @@ def prop_spatial_smear_chunk_planner(gf, num_field):
     flops_per_step = geo.local_volume * num_field * 4 * n_avg * (3 * (3 * 6 + 2 * 2))
     #
     plan = dict(
+            gf=gf,
             num_field=num_field,
             s_gf_list=s_gf_list,
             ssp=ssp,
