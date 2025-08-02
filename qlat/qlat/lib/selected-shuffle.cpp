@@ -487,7 +487,7 @@ static void set_selected_shuffle_plan_no_reorder(
   Long idx_local = 0;
   Long idx_send = 0;
   Long c_idx_local = 0;
-  vector<Long> c_idx_vec(MemType::Cpu);
+  vector<Long> c_idx_vec(MemType::Comm);
   c_idx_vec = ssp.sdispls;
   spi_l.init(ssp.total_count_local, 4, PointsDistType::Local);
   spi_s.init(ssp.total_count_send, 3, PointsDistType::Local);
@@ -700,7 +700,7 @@ void set_selected_shuffle_instruction_r_from_l(
   qassert(f_glb_sum((Long)psel_vec.size()) > 0);
   const Int num_node = get_num_node();
   n_points_selected_points_send.clear();
-  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.set_mem_type(MemType::Comm);
   n_points_selected_points_send.resize(psel_vec.size());
   points_dist_type_send = static_cast<PointsDistType>(f_bcast_any(
       psel_vec.size() > 0 ? static_cast<Int>(psel_vec[0].points_dist_type) : 0,
@@ -840,7 +840,7 @@ void set_selected_shuffle_instruction_t_slice_from_l(
   const Int num_field = psel_vec.size();
   const Int num_node = get_num_node();
   n_points_selected_points_send.clear();
-  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.set_mem_type(MemType::Comm);
   n_points_selected_points_send.resize(psel_vec.size());
   points_dist_type_send = static_cast<PointsDistType>(f_bcast_any(
       psel_vec.size() > 0 ? static_cast<Int>(psel_vec[0].points_dist_type) : 0,
@@ -964,7 +964,7 @@ void set_selected_shuffle_instruction_dist_t_slice_from_l(
       "set_selected_shuffle_instruction_dist_t_slice_from_l(sp_inst,vec,pdt,"
       "psel,num_field)");
   n_points_selected_points_send.clear();
-  n_points_selected_points_send.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.set_mem_type(MemType::Comm);
   n_points_selected_points_send.resize(1);
   n_points_selected_points_send[0] = psel.size();
   points_dist_type_send = psel.points_dist_type;
