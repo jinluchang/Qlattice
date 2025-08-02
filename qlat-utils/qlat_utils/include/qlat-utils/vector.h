@@ -42,25 +42,6 @@ API inline MemType& get_default_mem_type()
   return mem_type;
 }
 
-inline bool is_same_mem_type(const MemType t1, const MemType t2)
-{
-  if (t1 == t2) {
-    return true;
-  } else {
-#ifdef QLAT_USE_ACC
-    return false;
-#else
-    if (t1 == MemType::Comm or t1 == MemType::CommAcc) {
-      return (t2 == MemType::Comm or t2 == MemType::CommAcc);
-    } else if (t2 == MemType::Comm or t2 == MemType::CommAcc) {
-      return (t1 == MemType::Comm or t1 == MemType::CommAcc);
-    } else {
-      return true;
-    }
-#endif
-  }
-}
-
 API inline Long& get_alignment(const MemType mem_type)
 // qlat parameter
 //
@@ -164,8 +145,35 @@ API inline bool& get_mem_type_comm_use_acc()
 //
 // Should NOT change in the middle of the run.
 {
-  static bool v = get_env_default("q_mem_type_comm_use_acc", "false") == "true";
+  static bool v = get_env_default("q_mem_type_comm_use_acc", "true") == "true";
   return v;
+}
+
+inline bool is_same_mem_type(const MemType t1, const MemType t2)
+{
+  if (t1 == t2) {
+    return true;
+  } else {
+#ifdef QLAT_USE_ACC
+    if (get_mem_type_comm_use_acc()) {
+      return false;
+    } else if (t1 == MemType::Comm) {
+      return t2 == MemType::CommAcc;
+    } else if (t1 == MemType::CommAcc) {
+      return t2 == MemType::Comm;
+    } else {
+      return false;
+    }
+#else
+    if (t1 == MemType::Comm or t1 == MemType::CommAcc) {
+      return (t2 == MemType::Comm or t2 == MemType::CommAcc);
+    } else if (t2 == MemType::Comm or t2 == MemType::CommAcc) {
+      return (t1 == MemType::Comm or t1 == MemType::CommAcc);
+    } else {
+      return true;
+    }
+#endif
+  }
 }
 
 inline MemType get_eff_mem_type(const MemType mem_type)

@@ -375,7 +375,7 @@ struct API Timer {
   API static Long& max_function_name_length_shown()
   // qlat parameter
   {
-    static Long max_len = get_env_long_default("q_timer_max_func_name_len", 50);
+    static Long max_len = get_env_long_default("q_timer_max_func_name_len", 75);
     return max_len;
   }
   //

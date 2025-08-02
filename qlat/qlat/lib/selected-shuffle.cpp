@@ -18,17 +18,17 @@ void SelectedShufflePlan::init()
   num_selected_points_recv = 0;
   n_points_selected_points_send.clear();
   n_points_selected_points_recv.clear();
-  n_points_selected_points_send.set_mem_type(MemType::Cpu);
-  n_points_selected_points_recv.set_mem_type(MemType::Cpu);
+  n_points_selected_points_send.set_mem_type(MemType::Comm);
+  n_points_selected_points_recv.set_mem_type(MemType::Comm);
   SelectedPoints<Long>& spi_s = shuffle_idx_points_send;
   SelectedPoints<Long>& spi_r = shuffle_idx_points_recv;
   SelectedPoints<Long>& spi_l = shuffle_idx_points_local;
   spi_s.init();
   spi_r.init();
   spi_l.init();
-  spi_s.set_mem_type(MemType::Cpu);
-  spi_r.set_mem_type(MemType::Cpu);
-  spi_l.set_mem_type(MemType::Cpu);
+  spi_s.set_mem_type(MemType::Comm);
+  spi_r.set_mem_type(MemType::Comm);
+  spi_l.set_mem_type(MemType::Comm);
   total_count_send = 0;
   total_count_recv = 0;
   total_count_local = 0;
@@ -36,10 +36,10 @@ void SelectedShufflePlan::init()
   recvcounts.clear();
   sdispls.clear();
   rdispls.clear();
-  sendcounts.set_mem_type(MemType::Cpu);
-  recvcounts.set_mem_type(MemType::Cpu);
-  sdispls.set_mem_type(MemType::Cpu);
-  rdispls.set_mem_type(MemType::Cpu);
+  sendcounts.set_mem_type(MemType::Comm);
+  recvcounts.set_mem_type(MemType::Comm);
+  sdispls.set_mem_type(MemType::Comm);
+  rdispls.set_mem_type(MemType::Comm);
 }
 
 // ------------------------------
@@ -55,79 +55,94 @@ void shuffle_selected_points_char(
 // All `multiplicity` should be the same.
 {
   TIMER_FLOPS("shuffle_selected_points_char(spc_vec,spc0_vec,ssp)");
-  qassert(ssp.num_selected_points_send == (Long)spc0_vec.size());
-  qassert(f_glb_sum(ssp.num_selected_points_send) > 0);
-  const bool b_has_send = ssp.num_selected_points_send > 0;
+  const Int num_selected_points_send = ssp.num_selected_points_send;
+  const Int num_selected_points_recv = ssp.num_selected_points_recv;
+  qassert(num_selected_points_send == (Long)spc0_vec.size());
+  qassert(f_glb_sum(num_selected_points_send) > 0);
+  const bool b_has_send = num_selected_points_send > 0;
   const Int multiplicity =
       f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
-  for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
+  vector<SelectedPoints<Char>> view0_vec(num_selected_points_send,
+                                         MemType::Comm);
+  vector<SelectedPoints<Char>> view_vec(num_selected_points_recv,
+                                        MemType::Comm);
+  set_zero(view0_vec);
+  set_zero(view_vec);
+  for (Int i = 0; i < num_selected_points_send; ++i) {
     qassert(ssp.n_points_selected_points_send[i] == spc0_vec[i].n_points);
     qassert(spc0_vec[i].initialized == true);
     qassert(spc0_vec[i].points_dist_type == ssp.points_dist_type_send);
     qassert(spc0_vec[i].multiplicity == multiplicity);
+    view0_vec[i].set_view(spc0_vec[i]);
   }
-  clear(spc_vec);
-  spc_vec.resize(ssp.num_selected_points_recv);
-  for (Int i = 0; i < ssp.num_selected_points_recv; ++i) {
+  spc_vec.resize(num_selected_points_recv);
+  for (Int i = 0; i < num_selected_points_recv; ++i) {
     spc_vec[i].init(ssp.n_points_selected_points_recv[i], multiplicity,
                     ssp.points_dist_type_recv);
+    view_vec[i].set_view(spc_vec[i]);
   }
-  const SelectedPoints<Long>& spi_s = ssp.shuffle_idx_points_send;
-  const SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
-  const SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
+  view_vec.set_mem_type(MemType::CommAcc);
+  view0_vec.set_mem_type(MemType::CommAcc);
+  SelectedPoints<Long> spi_s, spi_r, spi_l;
+  spi_s.set_view(ssp.shuffle_idx_points_send);
+  spi_r.set_view(ssp.shuffle_idx_points_recv);
+  spi_l.set_view(ssp.shuffle_idx_points_local);
   qassert(spi_s.initialized);
   qassert(spi_s.multiplicity == 3);
   qassert(spi_s.n_points == ssp.total_count_send);
+  qassert(spi_s.points.mem_type == MemType::CommAcc);
   qassert(spi_r.initialized);
   qassert(spi_r.multiplicity == 3);
   qassert(spi_r.n_points == ssp.total_count_recv);
+  qassert(spi_r.points.mem_type == MemType::CommAcc);
   qassert(spi_l.initialized);
   qassert(spi_l.multiplicity == 4);
   qassert(spi_l.n_points == ssp.total_count_local);
-  qthread_for(idx, spi_l.n_points, {
+  qassert(spi_l.points.mem_type == MemType::CommAcc);
+  qmem_for(idx, spi_l.n_points, MemType::CommAcc, {
     const Vector<Long> v = spi_l.get_elems_const(idx);
     const Long idx_selected_points_send = v[0];
     const Long idx_within_field_send = v[1];
     const Long idx_selected_points_recv = v[2];
     const Long idx_within_field_recv = v[3];
     qassert(0 <= idx_selected_points_send and
-            idx_selected_points_send < ssp.num_selected_points_send);
+            idx_selected_points_send < num_selected_points_send);
     qassert(0 <= idx_selected_points_recv and
-            idx_selected_points_recv < ssp.num_selected_points_recv);
+            idx_selected_points_recv < num_selected_points_recv);
     const Vector<Char> v_val =
-        spc0_vec[idx_selected_points_send].get_elems_const(
+        view0_vec[idx_selected_points_send].get_elems_const(
             idx_within_field_send);
     Vector<Char> v1_val =
-        spc_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
+        view_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
     assign(v1_val, v_val);
   });
   // Initialized `sp` to be the target of the shuffle before final shuffle.
   SelectedPoints<Char> sp;
-  sp.set_mem_type(MemType::Comm);
+  sp.set_mem_type(MemType::CommAcc);
   sp.init(ssp.total_count_recv, multiplicity, PointsDistType::Local);
   // Copy spc0 to sp0. Reordered to be ready to send.
   SelectedPoints<Char> sp0;
-  sp0.set_mem_type(MemType::Comm);
+  sp0.set_mem_type(MemType::CommAcc);
   sp0.init(ssp.total_count_send, multiplicity, PointsDistType::Local);
-  qthread_for(idx, spi_s.n_points, {
+  qmem_for(idx, spi_s.n_points, MemType::CommAcc, {
     const Vector<Long> v = spi_s.get_elems_const(idx);
     const Long idx_selected_points_send = v[0];
     const Long idx_within_field_send = v[1];
     const Long idx_buffer_send = v[2];
     qassert(0 <= idx_selected_points_send and
-            idx_selected_points_send < ssp.num_selected_points_send);
+            idx_selected_points_send < num_selected_points_send);
     const Vector<Char> v_val =
-        spc0_vec[idx_selected_points_send].get_elems_const(
+        view0_vec[idx_selected_points_send].get_elems_const(
             idx_within_field_send);
     Vector<Char> v1_val = sp0.get_elems(idx_buffer_send);
     assign(v1_val, v_val);
   });
   // Perform shuffle with `mpi_alltoallv`.
   {
-    TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
+    TIMER_FLOPS("shuffle_selected_points_char-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
     {
-      TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi_alltoallv");
+      TIMER_FLOPS("shuffle_selected_points_char-mpi_alltoallv");
       mpi_alltoallv(sp0.points.data(), ssp.sendcounts.data(),
                     ssp.sdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
                     ssp.recvcounts.data(), ssp.rdispls.data(),
@@ -140,16 +155,16 @@ void shuffle_selected_points_char(
         (ssp.total_count_send + ssp.total_count_recv) / 2 * multiplicity;
   }
   // perform final reordering.
-  qthread_for(idx, spi_r.n_points, {
+  qmem_for(idx, spi_r.n_points, MemType::CommAcc, {
     const Vector<Long> v = spi_r.get_elems_const(idx);
     const Long idx_selected_points_recv = v[0];
     const Long idx_within_field_recv = v[1];
     const Long idx_buffer_recv = v[2];
     qassert(0 <= idx_selected_points_recv and
-            idx_selected_points_recv < ssp.num_selected_points_recv);
+            idx_selected_points_recv < num_selected_points_recv);
     const Vector<Char> v_val = sp.get_elems_const(idx_buffer_recv);
     Vector<Char> v1_val =
-        spc_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
+        view_vec[idx_selected_points_recv].get_elems(idx_within_field_recv);
     assign(v1_val, v_val);
   });
   timer.flops += ((ssp.total_count_send + ssp.total_count_recv) / 2 +
@@ -170,26 +185,38 @@ void shuffle_selected_points_back_char(
 // direction suggested by `ssp`).
 {
   TIMER_FLOPS("shuffle_selected_points_back_char(spc_vec,spc0_vec,ssp)");
-  qassert(ssp.num_selected_points_recv == (Long)spc0_vec.size());
-  qassert(f_glb_sum(ssp.num_selected_points_recv) > 0);
-  const bool b_has_send = ssp.num_selected_points_recv > 0;
+  const Int num_selected_points_send = ssp.num_selected_points_send;
+  const Int num_selected_points_recv = ssp.num_selected_points_recv;
+  qassert(num_selected_points_recv == (Long)spc0_vec.size());
+  qassert(f_glb_sum(num_selected_points_recv) > 0);
+  const bool b_has_send = num_selected_points_recv > 0;
   const Int multiplicity =
       f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
-  for (Int i = 0; i < ssp.num_selected_points_recv; ++i) {
+  vector<SelectedPoints<Char>> view0_vec(num_selected_points_recv,
+                                         MemType::Comm);
+  vector<SelectedPoints<Char>> view_vec(num_selected_points_send,
+                                        MemType::Comm);
+  set_zero(view0_vec);
+  set_zero(view_vec);
+  for (Int i = 0; i < num_selected_points_recv; ++i) {
     qassert(ssp.n_points_selected_points_recv[i] == spc0_vec[i].n_points);
     qassert(spc0_vec[i].initialized == true);
     qassert(spc0_vec[i].points_dist_type == ssp.points_dist_type_recv);
     qassert(spc0_vec[i].multiplicity == multiplicity);
+    view0_vec[i].set_view(spc0_vec[i]);
   }
-  clear(spc_vec);
-  spc_vec.resize(ssp.num_selected_points_send);
-  for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
+  spc_vec.resize(num_selected_points_send);
+  for (Int i = 0; i < num_selected_points_send; ++i) {
     spc_vec[i].init(ssp.n_points_selected_points_send[i], multiplicity,
                     ssp.points_dist_type_send);
+    view_vec[i].set_view(spc_vec[i]);
   }
-  const SelectedPoints<Long>& spi_s = ssp.shuffle_idx_points_send;
-  const SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
-  const SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
+  view_vec.set_mem_type(MemType::CommAcc);
+  view0_vec.set_mem_type(MemType::CommAcc);
+  SelectedPoints<Long> spi_s, spi_r, spi_l;
+  spi_s.set_view(ssp.shuffle_idx_points_send);
+  spi_r.set_view(ssp.shuffle_idx_points_recv);
+  spi_l.set_view(ssp.shuffle_idx_points_local);
   qassert(spi_s.initialized);
   qassert(spi_s.multiplicity == 3);
   qassert(spi_s.n_points == ssp.total_count_send);
@@ -199,50 +226,50 @@ void shuffle_selected_points_back_char(
   qassert(spi_l.initialized);
   qassert(spi_l.multiplicity == 4);
   qassert(spi_l.n_points == ssp.total_count_local);
-  qthread_for(idx, spi_l.n_points, {
+  qmem_for(idx, spi_l.n_points, MemType::CommAcc, {
     const Vector<Long> v = spi_l.get_elems_const(idx);
     const Long idx_selected_points_send = v[0];
     const Long idx_within_field_send = v[1];
     const Long idx_selected_points_recv = v[2];
     const Long idx_within_field_recv = v[3];
     qassert(0 <= idx_selected_points_send and
-            idx_selected_points_send < ssp.num_selected_points_send);
+            idx_selected_points_send < num_selected_points_send);
     qassert(0 <= idx_selected_points_recv and
-            idx_selected_points_recv < ssp.num_selected_points_recv);
+            idx_selected_points_recv < num_selected_points_recv);
     const Vector<Char> v_val =
-        spc0_vec[idx_selected_points_recv].get_elems_const(
+        view0_vec[idx_selected_points_recv].get_elems_const(
             idx_within_field_recv);
     Vector<Char> v1_val =
-        spc_vec[idx_selected_points_send].get_elems(idx_within_field_send);
+        view_vec[idx_selected_points_send].get_elems(idx_within_field_send);
     assign(v1_val, v_val);
   });
   // Initialized `sp` to be the target of the shuffle before final shuffle.
   SelectedPoints<Char> sp;
-  sp.set_mem_type(MemType::Comm);
+  sp.set_mem_type(MemType::CommAcc);
   sp.init(ssp.total_count_send, multiplicity, PointsDistType::Local);
   // Copy spc0 to sp0. Reordered to be ready to send.
   SelectedPoints<Char> sp0;
-  sp0.set_mem_type(MemType::Comm);
+  sp0.set_mem_type(MemType::CommAcc);
   sp0.init(ssp.total_count_recv, multiplicity, PointsDistType::Local);
-  qthread_for(idx, spi_r.n_points, {
+  qmem_for(idx, spi_r.n_points, MemType::CommAcc, {
     const Vector<Long> v = spi_r.get_elems_const(idx);
     const Long idx_selected_points_recv = v[0];
     const Long idx_within_field_recv = v[1];
     const Long idx_buffer_recv = v[2];
     qassert(0 <= idx_selected_points_recv and
-            idx_selected_points_recv < ssp.num_selected_points_recv);
+            idx_selected_points_recv < num_selected_points_recv);
     const Vector<Char> v_val =
-        spc0_vec[idx_selected_points_recv].get_elems_const(
+        view0_vec[idx_selected_points_recv].get_elems_const(
             idx_within_field_recv);
     Vector<Char> v1_val = sp0.get_elems(idx_buffer_recv);
     assign(v1_val, v_val);
   });
   // Perform shuffle with `mpi_alltoallv`.
   {
-    TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-mpi");
+    TIMER_FLOPS("shuffle_selected_points_back_char-mpi");
     const MpiDataType& mpi_dtype = get_mpi_data_type_contiguous(multiplicity);
     {
-      TIMER_FLOPS("shuffle_selected_points_char(spc,spc0,ssp)-MPI_Alltoallv");
+      TIMER_FLOPS("shuffle_selected_points_back_char-mpi_alltoallv");
       mpi_alltoallv(sp0.points.data(), ssp.recvcounts.data(),
                     ssp.rdispls.data(), mpi_dtype.mpi_dtype, sp.points.data(),
                     ssp.sendcounts.data(), ssp.sdispls.data(),
@@ -255,16 +282,16 @@ void shuffle_selected_points_back_char(
         (ssp.total_count_send + ssp.total_count_recv) / 2 * multiplicity;
   }
   // perform final reordering.
-  qthread_for(idx, spi_s.n_points, {
+  qmem_for(idx, spi_s.n_points, MemType::CommAcc, {
     const Vector<Long> v = spi_s.get_elems_const(idx);
     const Long idx_selected_points_send = v[0];
     const Long idx_within_field_send = v[1];
     const Long idx_buffer_send = v[2];
     qassert(0 <= idx_selected_points_send and
-            idx_selected_points_send < ssp.num_selected_points_send);
+            idx_selected_points_send < num_selected_points_send);
     const Vector<Char> v_val = sp.get_elems_const(idx_buffer_send);
     Vector<Char> v1_val =
-        spc_vec[idx_selected_points_send].get_elems(idx_within_field_send);
+        view_vec[idx_selected_points_send].get_elems(idx_within_field_send);
     assign(v1_val, v_val);
   });
   timer.flops += ((ssp.total_count_send + ssp.total_count_recv) / 2 +
@@ -431,8 +458,6 @@ static void set_selected_shuffle_plan_no_reorder(
   SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
   ssp.sdispls.resize(num_node);
   ssp.rdispls.resize(num_node);
-  ssp.sendcounts.set_mem_type(MemType::Comm);
-  ssp.recvcounts.set_mem_type(MemType::Comm);
   ssp.sendcounts.resize(num_node);
   ssp.recvcounts.resize(num_node);
   set_zero(ssp.sdispls);
@@ -492,6 +517,7 @@ static void set_selected_shuffle_plan_no_reorder(
       idx_send += 1;
     }
   });
+  spi_s.set_mem_type(MemType::CommAcc);
   qassert(idx_local == ssp.total_count_local);
   qassert(idx_send == ssp.total_count_send);
   qassert(c_idx_local == ssp.total_count_local);
@@ -513,8 +539,6 @@ static void set_selected_shuffle_plan_no_reorder(
     v[1] = ssp.total_count_local + idx;
     v[2] = idx;
   });
-  ssp.sendcounts.set_mem_type(MemType::Cpu);
-  ssp.recvcounts.set_mem_type(MemType::Cpu);
   ssp.n_points_selected_points_recv[0] =
       ssp.total_count_local + ssp.total_count_recv;
 }
@@ -547,10 +571,17 @@ void set_selected_shuffle_plan(
   set_selected_shuffle_plan_no_reorder(
       ssp, sp_instruction, n_points_selected_points_send, points_dist_type_send,
       points_dist_type_recv);
+  //
+  SelectedPoints<Long>& spi_s = ssp.shuffle_idx_points_send;
+  SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
+  SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
+  spi_s.set_mem_type(MemType::CommAcc);
+  spi_r.set_mem_type(MemType::CommAcc);
+  spi_l.set_mem_type(MemType::CommAcc);
   // Make a sampling send data
   std::vector<SelectedPoints<Long>> spc0_vec(ssp.num_selected_points_send);
   for (Int i = 0; i < ssp.num_selected_points_send; ++i) {
-    spc0_vec[i].set_mem_type(MemType::Cpu);
+    spc0_vec[i].set_mem_type(MemType::Comm);
     spc0_vec[i].init(ssp.n_points_selected_points_send[i], 2,
                      ssp.points_dist_type_send);
     set_zero(spc0_vec[i]);
@@ -567,10 +598,8 @@ void set_selected_shuffle_plan(
     v_s[0] = idx_selected_points_recv;
     v_s[1] = rank_within_field_recv;
   });
-  std::vector<SelectedPoints<Long>> spc_vec(ssp.num_selected_points_recv);
-  for (Int i = 0; i < ssp.num_selected_points_recv; ++i) {
-    spc_vec[i].set_mem_type(MemType::Cpu);
-  }
+  std::vector<SelectedPoints<Long>> spc_vec(1);
+  spc_vec[0].set_mem_type(MemType::CommAcc);
   shuffle_selected_points(spc_vec, spc0_vec, ssp);
   qassert(spc_vec.size() == 1);
   SelectedPoints<Long>& spc = spc_vec[0];
@@ -607,7 +636,7 @@ void set_selected_shuffle_plan(
     std::sort(idx_arr_vec_vec[i].begin(), idx_arr_vec_vec[i].end());
   });
   SelectedPoints<Long> sp_idx;
-  sp_idx.set_mem_type(MemType::Cpu);
+  sp_idx.set_mem_type(MemType::Comm);
   sp_idx.init(spc.n_points, 2, PointsDistType::Local);
   set_zero(sp_idx);
   qfor(i, ssp.num_selected_points_recv, {
@@ -623,8 +652,8 @@ void set_selected_shuffle_plan(
       v[1] = idx_within_field_recv;
     });
   });
-  SelectedPoints<Long>& spi_l = ssp.shuffle_idx_points_local;
-  qthread_for(idx, spi_l.n_points, {
+  sp_idx.set_mem_type(MemType::CommAcc);
+  qmem_for(idx, spi_l.n_points, MemType::CommAcc, {
     Vector<Long> v = spi_l.get_elems(idx);
     qassert(v[2] == 0);
     const Long idx_init = v[3];
@@ -634,8 +663,7 @@ void set_selected_shuffle_plan(
     v[2] = idx_selected_points_recv;
     v[3] = idx_within_field_recv;
   });
-  SelectedPoints<Long>& spi_r = ssp.shuffle_idx_points_recv;
-  qthread_for(idx, spi_r.n_points, {
+  qmem_for(idx, spi_r.n_points, MemType::CommAcc, {
     Vector<Long> v = spi_r.get_elems(idx);
     qassert(v[0] == 0);
     const Long idx_init = v[1];

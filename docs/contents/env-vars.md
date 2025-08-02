@@ -50,9 +50,9 @@
 
 - `q_mem_type_comm_use_acc`
 
-  If value is `true`, then the `MemType::Comm` memory will be allocated as the type `MemType::Acc`.
+  If value is `true`, then the `MemType::CommAcc` memory will be allocated as the type `MemType::Acc`.
 
-  Default is `false`.
+  Default is `true`.
 
 - `q_num_threads`
 
@@ -94,7 +94,7 @@
 
   Maximum length for a function name before truncation.
 
-  Default is `50`.
+  Default is `75`.
 
 - `q_malloc_mmap_threshold`
 
