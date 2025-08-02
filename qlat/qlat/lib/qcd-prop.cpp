@@ -15,6 +15,8 @@ void set_ff_vec_from_prop(std::vector<FermionField4d>& ff_vec,
   vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
   set_zero(ffv_vec);
   qfor(id_field, num_field, {
+    ff_vec[id_field].init();
+    ff_vec[id_field].set_mem_type(prop.field.mem_type);
     ff_vec[id_field].init(geo);
     ffv_vec[id_field].set_view(ff_vec[id_field]);
   });
@@ -32,12 +34,13 @@ void set_prop_from_ff_vec(Propagator4d& prop,
                           const std::vector<FermionField4d>& ff_vec)
 {
   TIMER_FLOPS("set_prop_from_ff_vec(prop,ff_vec)");
-  timer.flops += get_data(ff_vec[0]).data_size();
   const Int num_field = 12;
   qassert(ff_vec.size() == num_field);
+  timer.flops += get_data(ff_vec[0]).data_size() * num_field;
   const Geometry geo = ff_vec[0].geo.get();
   qassert(geo.is_only_local);
   prop.init();
+  prop.set_mem_type(ff_vec[0].field.mem_type);
   prop.init(geo);
   vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
   set_zero(ffv_vec);

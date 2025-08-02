@@ -21,7 +21,7 @@ class q:
             mk_prop_from_ff_list,
             )
 
-@q.timer
+@q.timer(is_flops=True)
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
     """
     Perform spatial smear for `ff_list`, a list of `FermionField4d`.
@@ -43,17 +43,22 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
     set_param(job_tag, "prop_smear_coef")(0.9375)
     set_param(job_tag, "prop_smear_step")(54)
     """
+    assert isinstance(gf, q.GaugeField)
+    geo = gf.geo
     #
-    if isinstance(ff_list, (q.Prop, q.FermionField4d,)):
+    if isinstance(ff_list, q.FermionField4d):
         ff = ff_list
         [ ff_p, ] = prop_spatial_smear([ ff, ], gf, coef, step, mom, chunk_size=chunk_size)
-        return ff_p
+        return 0, ff_p
+    if isinstance(ff_list, q.Prop):
+        ff = ff_list
+        [ ff_p, ] = prop_spatial_smear([ ff, ], gf, coef, step, mom, chunk_size=chunk_size)
+        return 0, ff_p
     #
     assert isinstance(ff_list, list)
     if len(ff_list) == 0:
-        return []
+        return 0, []
     #
-    assert isinstance(gf, q.GaugeField)
     assert isinstance(coef, float)
     assert isinstance(step, int)
     assert step >= 0
@@ -69,12 +74,11 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
         for ff in ff_list:
             assert isinstance(ff, q.FermionField4d)
     #
-    geo = gf.geo
     for ff in ff_list:
         assert geo == ff.geo
     #
     if step == 0:
-        return [ ff.copy() for ff in ff_list ]
+        return 0, [ ff.copy() for ff in ff_list ]
     #
     if chunk_size is None:
         if is_ff_type_prop:
@@ -112,7 +116,14 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
             ss_chunk_ff_list = ss_chunk_p_list
         ss_ff_list += ss_chunk_ff_list
     #
-    return ss_ff_list
+    n_avg = 6
+    num_field = len(ff_list)
+    flops_per_step = geo.local_volume * num_field * 4 * n_avg * (3 * (3 * 6 + 2 * 2))
+    flops = flops_per_step * step
+    if is_ff_type_prop:
+        flops *= 12
+    #
+    return flops, ss_ff_list
 
 @q.timer
 def prop_spatial_smear_chunk_planner(gf, num_field):
@@ -132,14 +143,18 @@ def prop_spatial_smear_chunk_planner(gf, num_field):
     #
     s_gf_list = ssp_gf.shuffle_sp_list(q.GaugeField, [ gf, ])
     #
+    n_avg = 6
+    flops_per_step = geo.local_volume * num_field * 4 * n_avg * (3 * (3 * 6 + 2 * 2))
+    #
     plan = dict(
             num_field=num_field,
             s_gf_list=s_gf_list,
             ssp=ssp,
+            flops_per_step=flops_per_step,
             )
     return plan
 
-@q.timer
+@q.timer(is_flops=True)
 def prop_spatial_smear_chunk(ff_list, plan, coef, step, mom):
     """
     return ss_ff_list
@@ -148,6 +163,7 @@ def prop_spatial_smear_chunk(ff_list, plan, coef, step, mom):
     num_field = plan['num_field']
     s_gf_list = plan['s_gf_list']
     ssp = plan['ssp']
+    flops_per_step = plan['flops_per_step']
     #
     assert len(ff_list) == num_field
     #
@@ -169,4 +185,7 @@ def prop_spatial_smear_chunk(ff_list, plan, coef, step, mom):
     assert np.all(s_ff_mask_arr == 1)
     #
     ss_ff_list = ssp.shuffle_sp_list(q.FermionField4d, s_ff_list, is_reverse=True)
-    return ss_ff_list
+    #
+    flops = flops_per_step * step
+    #
+    return flops, ss_ff_list
