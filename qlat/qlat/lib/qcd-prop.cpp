@@ -9,7 +9,6 @@ void set_ff_vec_from_prop(std::vector<FermionField4d>& ff_vec,
   TIMER_FLOPS("set_ff_vec_from_prop(ff_vec,prop)");
   timer.flops += get_data(prop).data_size();
   const Int num_field = 12;
-  clear(ff_vec);
   ff_vec.resize(num_field);
   const Geometry geo = prop.geo.get();
   qassert(geo.is_only_local);
