@@ -22,7 +22,7 @@ class q:
             )
 
 @q.timer
-def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=12):
+def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
     """
     Perform spatial smear for `ff_list`, a list of `FermionField4d`.
     Return new `ff_list` after smearing.
@@ -44,12 +44,14 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=12):
     set_param(job_tag, "prop_smear_step")(54)
     """
     #
-    if isinstance(ff_list, q.Prop):
-        prop = ff_list
-        ff_list = q.mk_ff_list_from_prop(prop)
-        ss_ff_list = prop_spatial_smear(ff_list, gf, coef, step, mom, chunk_size=chunk_size)
-        ss_prop = q.mk_prop_from_ff_list(ss_ff_list)
-        return ss_prop
+    if isinstance(ff_list, (q.Prop, q.FermionField4d,)):
+        ff = ff_list
+        [ ff_p, ] = prop_spatial_smear([ ff, ], gf, coef, step, mom, chunk_size=chunk_size)
+        return ff_p
+    #
+    assert isinstance(ff_list, list)
+    if len(ff_list) == 0:
+        return []
     #
     assert isinstance(gf, q.GaugeField)
     assert isinstance(coef, float)
@@ -59,16 +61,26 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=12):
         mom = q.CoordinateD()
     assert isinstance(mom, q.CoordinateD)
     #
-    assert isinstance(ff_list, list)
-    for ff in ff_list:
-        assert isinstance(ff, q.FermionField4d)
+    is_ff_type_prop = isinstance(ff_list[0], q.Prop)
+    if is_ff_type_prop:
+        for ff in ff_list:
+            assert isinstance(ff, q.Prop)
+    else:
+        for ff in ff_list:
+            assert isinstance(ff, q.FermionField4d)
     #
     geo = gf.geo
     for ff in ff_list:
         assert geo == ff.geo
     #
     if step == 0:
-        return
+        return [ ff.copy() for ff in ff_list ]
+    #
+    if chunk_size is None:
+        if is_ff_type_prop:
+            chunk_size = 1
+        else:
+            chunk_size = 12
     #
     chunk_ff_list_list = q.get_chunk_list(ff_list, chunk_size=chunk_size)
     #
@@ -77,11 +89,27 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=12):
     plan = dict()
     #
     for chunk_ff_list in chunk_ff_list_list:
-        num_field = len(chunk_ff_list)
+        if is_ff_type_prop:
+            num_field = len(chunk_ff_list) * 12
+        else:
+            num_field = len(chunk_ff_list)
         if plan.get("num_field") != num_field:
             plan = prop_spatial_smear_chunk_planner(gf, num_field)
-        assert plan["num_field"] == len(chunk_ff_list)
+        assert plan["num_field"] == num_field
+        if is_ff_type_prop:
+            chunk_p_list = chunk_ff_list
+            chunk_ff_list = []
+            for p in chunk_p_list:
+                chunk_ff_list += q.mk_ff_list_from_prop(p)
+        assert len(chunk_ff_list) == num_field
         ss_chunk_ff_list = prop_spatial_smear_chunk(chunk_ff_list, plan, coef, step, mom)
+        assert len(ss_chunk_ff_list) == num_field
+        if is_ff_type_prop:
+            ss_chunk_p_list = []
+            for p_ff_list in q.get_chunk_list(ss_chunk_ff_list, chunk_size=12):
+                assert len(p_ff_list) == 12
+                ss_chunk_p_list.append(q.mk_prop_from_ff_list(p_ff_list))
+            ss_chunk_ff_list = ss_chunk_p_list
         ss_ff_list += ss_chunk_ff_list
     #
     return ss_ff_list
