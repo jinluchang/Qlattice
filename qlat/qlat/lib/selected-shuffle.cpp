@@ -775,8 +775,7 @@ void set_selected_shuffle_plan_r_from_l(
 
 void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
                                         const PointsSelection& psel,
-                                        const Geometry& geo,
-                                        const RngState& rs)
+                                        const Geometry& geo, const RngState& rs)
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Random
