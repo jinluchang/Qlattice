@@ -6,7 +6,8 @@ namespace qlat
 void set_ff_vec_from_prop(std::vector<FermionField4d>& ff_vec,
                           const Propagator4d& prop)
 {
-  TIMER("set_ff_vec_from_prop(ff_vec,prop)");
+  TIMER_FLOPS("set_ff_vec_from_prop(ff_vec,prop)");
+  timer.flops += get_data(prop).data_size();
   const Int num_field = 12;
   clear(ff_vec);
   ff_vec.resize(num_field);
@@ -31,7 +32,8 @@ void set_ff_vec_from_prop(std::vector<FermionField4d>& ff_vec,
 void set_prop_from_ff_vec(Propagator4d& prop,
                           const std::vector<FermionField4d>& ff_vec)
 {
-  TIMER("set_prop_from_ff_vec(prop,ff_vec)");
+  TIMER_FLOPS("set_prop_from_ff_vec(prop,ff_vec)");
+  timer.flops += get_data(ff_vec[0]).data_size();
   const Int num_field = 12;
   qassert(ff_vec.size() == num_field);
   const Geometry geo = ff_vec[0].geo.get();

@@ -68,10 +68,16 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   ms.alloc[static_cast<Int>(mem_type)] += size;
   const MemType eff_mem_type = get_eff_mem_type(mem_type);
   void* ptr = NULL;
-  if (eff_mem_type == MemType::Cpu) {
-    ptr = alloc_mem_aligned(size, mem_type);
-  } else if (eff_mem_type == MemType::Acc) {
 #ifdef QLAT_USE_ACC
+  if (eff_mem_type == MemType::Cpu) {
+    TIMER_FLOPS("alloc_mem_alloc(MemType::Cpu)");
+    timer.flops += size;
+    ptr = alloc_mem_aligned(size, mem_type);
+    qassert(ptr != NULL);
+    set_mem(ptr, 0, size, mem_type);
+  } else if (eff_mem_type == MemType::Acc) {
+    TIMER_FLOPS("alloc_mem_alloc(MemType::Acc)");
+    timer.flops += size;
     qacc_Error err = qacc_GetLastError();
     if (qacc_Success != err) {
       qerr(fname + ssprintf(": ACC error '%s' before qacc_MallocManaged.",
@@ -82,11 +88,11 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
       qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
                             qacc_GetErrorString(err), size, ptr));
     }
-#else
-    ptr = alloc_mem_aligned(size, mem_type);
-#endif
+    qassert(ptr != NULL);
+    set_mem(ptr, 0, size, mem_type);
   } else if (eff_mem_type == MemType::Uvm) {
-#ifdef QLAT_USE_ACC
+    TIMER_FLOPS("alloc_mem_alloc(MemType::Uvm)");
+    timer.flops += size;
     qacc_Error err = qacc_GetLastError();
     if (qacc_Success != err) {
       qerr(fname + ssprintf(": ACC error '%s' before qacc_MallocManaged.",
@@ -97,14 +103,16 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
       qerr(fname + ssprintf(": ACC error '%s', size=%ld, ptr=%lX.",
                             qacc_GetErrorString(err), size, ptr));
     }
-#else
-    ptr = alloc_mem_aligned(size, mem_type);
-#endif
+    qassert(ptr != NULL);
+    set_mem(ptr, 0, size, mem_type);
   } else {
     qassert(false);
   }
+#else
+  ptr = alloc_mem_aligned(size, mem_type);
   qassert(ptr != NULL);
   set_mem(ptr, 0, size, mem_type);
+#endif
   return ptr;
 }
 
@@ -117,8 +125,22 @@ void free_mem_free(void* ptr, const Long size, const MemType mem_type)
 #ifdef QLAT_USE_ACC
   const MemType eff_mem_type = get_eff_mem_type(mem_type);
   if (eff_mem_type == MemType::Cpu) {
+    TIMER_FLOPS("free_mem_free(MemType::Cpu)");
+    timer.flops += size;
     free(ptr);
-  } else if (eff_mem_type == MemType::Acc or eff_mem_type == MemType::Uvm) {
+  } else if (eff_mem_type == MemType::Acc) {
+    TIMER_FLOPS("free_mem_free(MemType::Acc)");
+    timer.flops += size;
+    qacc_Error err = qacc_Free(ptr);
+    if (qacc_Success != err) {
+      if (qacc_ErrorUnloading != err) {
+        qerr(fname + ssprintf(": ACC error '%s' (%d) after qacc_Free.",
+                              qacc_GetErrorString(err), err));
+      }
+    }
+  } else if (eff_mem_type == MemType::Uvm) {
+    TIMER_FLOPS("free_mem_free(MemType::Uvm)");
+    timer.flops += size;
     qacc_Error err = qacc_Free(ptr);
     if (qacc_Success != err) {
       if (qacc_ErrorUnloading != err) {
