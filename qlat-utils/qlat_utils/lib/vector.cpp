@@ -66,9 +66,9 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   timer.flops += size;
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] += size;
-  const MemType eff_mem_type = get_eff_mem_type(mem_type);
   void* ptr = NULL;
 #ifdef QLAT_USE_ACC
+  const MemType eff_mem_type = get_eff_mem_type(mem_type);
   if (eff_mem_type == MemType::Cpu) {
     TIMER_FLOPS("alloc_mem_alloc(MemType::Cpu)");
     timer.flops += size;

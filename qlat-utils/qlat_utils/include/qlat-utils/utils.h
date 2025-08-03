@@ -300,6 +300,31 @@ qacc void set_zero(Array<M, N> xx)
 
 // -------------------
 
+qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
+{
+#ifndef QLAT_IN_ACC
+  qassert(xx.size() == yy.size());
+  std::memcpy((void*)xx.data(), (void*)yy.data(), xx.size());
+#else
+  assert(xx.size() == yy.size());
+  const Long num = xx.size() / sizeof(Long);
+  const Long offset = num * sizeof(Long);
+  const Long rem = xx.size() - offset;
+  Long* px = (Long*)xx.data();
+  const Long* py = (Long*)yy.data();
+  for (Long i = 0; i < num; ++i) {
+    px[i] = py[i];
+  }
+  if (rem > 0) {
+    Char* px = xx.data();
+    const Char* py = yy.data();
+    for (Long i = offset; i < xx.size(); ++i) {
+      px[i] = py[i];
+    }
+  }
+#endif
+}
+
 template <class T1, class T2,
           class E1 = typename IsGetDataType<T1>::ElementaryType,
           class E2 = typename IsGetDataType<T2>::ElementaryType,
@@ -316,8 +341,7 @@ qacc void assign(T1& xx, const T2& yy)
   }
   Vector<Char> vx = get_data_char(xx);
   const Vector<Char> vy = get_data_char(yy);
-  qassert(vx.size() == vy.size());
-  std::memcpy((void*)vx.data(), (void*)vy.data(), vx.size());
+  assign(vx, vy);
 }
 
 template <
