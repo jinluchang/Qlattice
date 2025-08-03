@@ -123,7 +123,7 @@ static void mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
   TIMER("mpi_alltoallv_custom");
   //
   static const Int q_mpi_alltoallv_max_parallel_transfer =
-      get_env_long_default("q_mpi_alltoallv_max_parallel_transfer", 8);
+      get_env_long_default("q_mpi_alltoallv_max_parallel_transfer", 128);
   //
   Int rank, size;
   MPI_Comm_rank(comm, &rank);

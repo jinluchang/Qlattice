@@ -134,7 +134,7 @@
 
 - `q_mpi_alltoallv_max_parallel_transfer`
 
-  Default is `8`. Number of maximum parallel transfer in `mpi_alltoallv`.
+  Default is `128`. Number of maximum parallel transfer in `mpi_alltoallv`.
 
 - `q_default_mem_type`
 
