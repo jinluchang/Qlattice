@@ -24,12 +24,13 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
 }
 
 int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
-             MPI_Comm comm)
+             MPI_Comm comm, MPI_Status* status)
 {
   const Long int_max = INT_MAX;
   if (count <= int_max) {
-    return MPI_Recv(buf, count, datatype, source, tag, comm, MPI_STATUS_IGNORE);
+    return MPI_Recv(buf, count, datatype, source, tag, comm, status);
   } else {
+    qassert(status == MPI_STATUS_IGNORE);
     int type_size = 0;
     MPI_Type_size(datatype, &type_size);
     uint8_t* cbuf = (uint8_t*)buf;
@@ -38,7 +39,8 @@ int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
       cbuf += int_max * type_size;
       count -= int_max;
     }
-    return MPI_Recv(cbuf, count, datatype, source, tag, comm, MPI_STATUS_IGNORE);
+    return MPI_Recv(cbuf, count, datatype, source, tag, comm,
+                    MPI_STATUS_IGNORE);
   }
 }
 
@@ -58,7 +60,7 @@ int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       mpi_isend(cbuf, int_max, datatype, dest, tag, comm, requests);
-      cbuf += (Long)int_max * type_size;
+      cbuf += int_max * type_size;
       count -= int_max;
     }
     return mpi_isend(cbuf, count, datatype, dest, tag, comm, requests);
@@ -81,7 +83,7 @@ int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       mpi_irecv(cbuf, int_max, datatype, source, tag, comm, requests);
-      cbuf += (Long)int_max * type_size;
+      cbuf += int_max * type_size;
       count -= int_max;
     }
     return mpi_irecv(cbuf, count, datatype, source, tag, comm, requests);
@@ -113,14 +115,14 @@ static const std::vector<Int>& get_random_rank_order(const Int size)
   return order;
 }
 
-static void mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
-                                 const Long* sdispls, MPI_Datatype sendtype,
-                                 void* recvbuf, const Long* recvcounts,
-                                 const Long* rdispls, MPI_Datatype recvtype,
-                                 MPI_Comm comm)
+static int mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
+                                const Long* sdispls, MPI_Datatype sendtype,
+                                void* recvbuf, const Long* recvcounts,
+                                const Long* rdispls, MPI_Datatype recvtype,
+                                MPI_Comm comm)
 // Send and Recv data as MPI_BYTE of corresponding type size.
 {
-  TIMER("mpi_alltoallv_custom");
+  TIMER_FLOPS("mpi_alltoallv_custom");
   //
   static const Int q_mpi_alltoallv_max_parallel_transfer =
       get_env_long_default("q_mpi_alltoallv_max_parallel_transfer", 128);
@@ -165,6 +167,7 @@ static void mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
         char* recv_ptr = (char*)recvbuf + rdispls[rank_from] * recvtype_size;
         mpi_irecv(recv_ptr, recvcounts[rank_from] * recvtype_size, MPI_BYTE,
                   rank_from, mpi_tag, comm, requests);
+        timer.flops += recvcounts[rank_from] * recvtype_size / 2;
       }
     }
     // 非阻塞发送阶段
@@ -178,20 +181,27 @@ static void mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
             (const char*)sendbuf + sdispls[rank_to] * sendtype_size;
         mpi_isend(send_ptr, sendcounts[rank_to] * sendtype_size, MPI_BYTE,
                   rank_to, mpi_tag, comm, requests);
+        timer.flops += sendcounts[rank_to] * sendtype_size / 2;
       }
     }
     // 等待所有通信完成
     mpi_waitall(requests);
   }
+  return 0;
 }
 
-static void mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
+static int mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
                                  const Long* sdispls, MPI_Datatype sendtype,
                                  void* recvbuf, const Long* recvcounts,
                                  const Long* rdispls, MPI_Datatype recvtype,
                                  MPI_Comm comm)
 {
-  TIMER("mpi_alltoallv_native");
+  TIMER_FLOPS("mpi_alltoallv_native");
+  Int sendtype_size_i, recvtype_size_i;
+  MPI_Type_size(sendtype, &sendtype_size_i);
+  MPI_Type_size(recvtype, &recvtype_size_i);
+  const Long sendtype_size = sendtype_size_i;
+  const Long recvtype_size = recvtype_size_i;
   Int size;
   MPI_Comm_size(comm, &size);
   vector<Int> sendcounts_i(size);
@@ -207,28 +217,32 @@ static void mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
     sdispls_i[k] = sdispls[k];
     recvcounts_i[k] = recvcounts[k];
     rdispls_i[k] = rdispls[k];
+    timer.flops += sendcounts[k] * sendtype_size / 2;
+    timer.flops += recvcounts[k] * recvtype_size / 2;
   }
-  MPI_Alltoallv(sendbuf, sendcounts_i.data(), sdispls_i.data(), sendtype,
-                recvbuf, recvcounts_i.data(), rdispls_i.data(), recvtype, comm);
+  return MPI_Alltoallv(sendbuf, sendcounts_i.data(), sdispls_i.data(), sendtype,
+                       recvbuf, recvcounts_i.data(), rdispls_i.data(), recvtype,
+                       comm);
 }
 
-void mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
-                   const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
-                   const Long* recvcounts, const Long* rdispls,
-                   MPI_Datatype recvtype, MPI_Comm comm)
+int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
+                  const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
+                  const Long* recvcounts, const Long* rdispls,
+                  MPI_Datatype recvtype, MPI_Comm comm)
 {
-  static const std::string q_mpi_alltoallv_type =
+  static const std::string q_env_type =
       get_env_default("q_mpi_alltoallv_type", "custom");
-  if (q_mpi_alltoallv_type == "custom") {
-    mpi_alltoallv_custom(sendbuf, sendcounts, sdispls, sendtype, recvbuf,
-                         recvcounts, rdispls, recvtype, comm);
-  } else if (q_mpi_alltoallv_type == "native") {
-    mpi_alltoallv_native(sendbuf, sendcounts, sdispls, sendtype, recvbuf,
-                         recvcounts, rdispls, recvtype, comm);
+  if (q_env_type == "custom") {
+    return mpi_alltoallv_custom(sendbuf, sendcounts, sdispls, sendtype, recvbuf,
+                                recvcounts, rdispls, recvtype, comm);
+  } else if (q_env_type == "native") {
+    return mpi_alltoallv_native(sendbuf, sendcounts, sdispls, sendtype, recvbuf,
+                                recvcounts, rdispls, recvtype, comm);
   } else {
     qerr(ssprintf("mpi_alltoallv: q_mpi_alltoallv_type='%s'.",
-                  q_mpi_alltoallv_type.c_str()));
+                  q_env_type.c_str()));
   }
+  return -1;
 }
 
 int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
@@ -301,13 +315,67 @@ bool glb_all(const bool b)
   return ret == 0;
 }
 
+static int mpi_bcast_native(void* buffer, const Long count,
+                            MPI_Datatype datatype, const int root,
+                            MPI_Comm comm)
+{
+  TIMER_FLOPS("mpi_bcast_native");
+  int type_size = 0;
+  MPI_Type_size(datatype, &type_size);
+  timer.flops += count * type_size;
+  qassert(count < INT_MAX);
+  const Int count_i = count;
+  return MPI_Bcast(buffer, count_i, datatype, root, comm);
+}
+
+static int mpi_bcast_custom(void* buffer, const Long count,
+                            MPI_Datatype datatype, const int root,
+                            MPI_Comm comm)
+{
+  TIMER_FLOPS("mpi_bcast_custom");
+  int type_size = 0;
+  MPI_Type_size(datatype, &type_size);
+  timer.flops += count * type_size;
+  Int rank, size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
+  const int mpi_tag = 13;
+  if (rank == root) {
+    // Root process sends to all other processes
+    for (int i = 0; i < size; i++) {
+      if (i != root) {
+        mpi_send(buffer, count, datatype, i, mpi_tag, comm);
+      }
+    }
+  } else {
+    // Other processes receive from root
+    mpi_recv(buffer, count, datatype, root, mpi_tag, comm);
+  }
+  return 0;
+}
+
+int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
+              const int root, MPI_Comm comm)
+{
+  static const std::string q_env_type =
+      get_env_default("q_mpi_bcast", "custom");
+  if (q_env_type == "custom") {
+    return mpi_bcast_custom(buffer, count, datatype, root, comm);
+  } else if (q_env_type == "native") {
+    return mpi_bcast_native(buffer, count, datatype, root, comm);
+  } else {
+    qerr(ssprintf("mpi_bcast: q_mpi_bcast='%s'.", q_env_type.c_str()));
+  }
+  return -1;
+}
+
 int bcast(Vector<Char> recv, const int root)
 {
   TIMER("bcast(Vector<Char>)");
   if (1 == get_num_node()) {
     return 0;
   }
-  return MPI_Bcast((void*)recv.data(), recv.size(), MPI_BYTE, root, get_comm());
+  return mpi_bcast((void*)recv.data(), recv.size(), MPI_BYTE, root, get_comm());
 }
 
 int bcast(std::string& recv, const int root)
@@ -515,10 +583,10 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   MPI_Comm_size(masterComm, &masterSize);
   // calculate number of node
   Long num_of_node = masterSize;
-  MPI_Bcast(&num_of_node, 1, MPI_LONG, 0, nodeComm);
+  mpi_bcast(&num_of_node, 1, MPI_LONG, 0, nodeComm);
   // calculate id of node (master rank of the 0 local rank process)
   Long id_of_node = masterRank;
-  MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
+  mpi_bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
   qassert(id_of_node < num_of_node);
   // calculate number of processes for each node
   std::vector<Long> num_process_for_each_node(num_of_node, 0);

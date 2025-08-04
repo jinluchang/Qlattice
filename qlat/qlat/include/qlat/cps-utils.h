@@ -607,8 +607,7 @@ API inline int getDataDirMu(void* recv, void* send, const Long size, const int d
   const int idt = geonb.dest[1 - dir][mu];
   MPI_Request req;
   MPI_Isend(send, size, MPI_BYTE, idt, 0, QMP_COMM_WORLD, &req);
-  const int ret =
-      MPI_Recv(recv, size, MPI_BYTE, idf, 0, QMP_COMM_WORLD, MPI_STATUS_IGNORE);
+  const int ret = mpi_recv(recv, size, MPI_BYTE, idf, 0, QMP_COMM_WORLD);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 #else

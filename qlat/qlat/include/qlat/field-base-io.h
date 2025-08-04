@@ -157,7 +157,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
             get_data(origin).size() * sizeof(M));
     }
     sync_node();
-    MPI_Bcast((void *)&hash, 4, MPI_BYTE, id_node, get_comm());
+    mpi_bcast((void *)&hash, 4, MPI_BYTE, id_node, get_comm());
   }
   return ssprintf("%08X", hash);
 }

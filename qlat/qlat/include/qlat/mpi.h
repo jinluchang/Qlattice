@@ -169,7 +169,7 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
              int tag, MPI_Comm comm);
 
 int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
-             MPI_Comm comm);
+             MPI_Comm comm, MPI_Status* status = MPI_STATUS_IGNORE);
 
 int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
               int tag, MPI_Comm comm, std::vector<MPI_Request>& requests);
@@ -179,10 +179,13 @@ int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
 
 int mpi_waitall(std::vector<MPI_Request>& requests);
 
-void mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
-                   const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
-                   const Long* recvcounts, const Long* rdispls,
-                   MPI_Datatype recvtype, MPI_Comm comm);
+int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
+                  const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
+                  const Long* recvcounts, const Long* rdispls,
+                  MPI_Datatype recvtype, MPI_Comm comm);
+
+int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
+              const int root, MPI_Comm comm);
 
 int glb_sum(Vector<RealD> recv, const Vector<RealD>& send);
 
@@ -458,7 +461,7 @@ int receive_result(int& source, int64_t& flag, M& result)
   const int count = sizeof(int64_t) + sizeof(M);
   std::vector<char> fdata(count, (char)0);
   MPI_Status status;
-  const int ret = MPI_Recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
+  const int ret = mpi_recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
                            mpi_tag, get_comm(), &status);
   source = status.MPI_SOURCE;
   extract_flag_data(flag, result, fdata);
@@ -480,8 +483,8 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   //
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
-                           get_comm(), MPI_STATUS_IGNORE);
+  const int ret =
+      mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm());
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 }
