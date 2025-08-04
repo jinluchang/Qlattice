@@ -169,7 +169,7 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
              int tag, MPI_Comm comm);
 
 int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
-             MPI_Comm comm, MPI_Status* status);
+             MPI_Comm comm);
 
 int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
               int tag, MPI_Comm comm, std::vector<MPI_Request>& requests);
@@ -346,8 +346,11 @@ std::vector<Int> mk_id_node_list_for_shuffle();
 std::vector<Int> mk_id_node_in_shuffle_list();
 
 // `id_node` is the usual ID for MPI processes.
-// `id_node_in_shuffle` is a shuffled ID for MPI processes, which is used for purposes like IO.
-// This is useful for example when one physical node runs multiple MPI processes, but usually IO happens for MPI processes with the first few IDs. To prevent IO only uses the all MPI processes within the first few nodes, we can use `id_node_in_shuffle` for parallel IO.
+// `id_node_in_shuffle` is a shuffled ID for MPI processes, which is used for
+// purposes like IO. This is useful for example when one physical node runs
+// multiple MPI processes, but usually IO happens for MPI processes with the
+// first few IDs. To prevent IO only uses the all MPI processes within the first
+// few nodes, we can use `id_node_in_shuffle` for parallel IO.
 
 int get_id_node_in_shuffle(const int id_node, const int new_num_node,
                            const int num_node);
@@ -403,7 +406,7 @@ inline void begin_once(const int id_node, const Coordinate& size_node,
 // ----------------------------------
 
 template <class M>
-inline std::vector<char> pad_flag_data(const int64_t flag, const M& data)
+std::vector<char> pad_flag_data(const int64_t flag, const M& data)
 {
   std::vector<char> fdata(8 + sizeof(M), (char)0);
   std::memcpy(&fdata[0], &flag, sizeof(int64_t));
@@ -412,8 +415,7 @@ inline std::vector<char> pad_flag_data(const int64_t flag, const M& data)
 }
 
 template <class M>
-inline void extract_flag_data(int64_t& flag, M& data,
-                              const std::vector<char>& fdata)
+void extract_flag_data(int64_t& flag, M& data, const std::vector<char>& fdata)
 {
   flag = fdata[0];
   std::memcpy(&flag, &fdata[0], sizeof(int64_t));
@@ -421,19 +423,18 @@ inline void extract_flag_data(int64_t& flag, M& data,
 }
 
 template <class N>
-inline int receive_job(int64_t& flag, N& data, const int root = 0)
+int receive_job(int64_t& flag, N& data, const int root = 0)
 {
   const int mpi_tag = 3;
   const int count = sizeof(int64_t) + sizeof(N);
   std::vector<char> fdata(count, (char)0);
-  int ret = mpi_recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm(),
-                     MPI_STATUS_IGNORE);
+  int ret = mpi_recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm());
   extract_flag_data(flag, data, fdata);
   return ret;
 }
 
 template <class M>
-inline int send_result(const int64_t flag, const M& data, const int root = 0)
+int send_result(const int64_t flag, const M& data, const int root = 0)
 {
   const int mpi_tag = 2;
   std::vector<char> fdata = pad_flag_data(flag, data);
@@ -442,7 +443,7 @@ inline int send_result(const int64_t flag, const M& data, const int root = 0)
 }
 
 template <class N>
-inline int send_job(const int64_t flag, const N& data, const int dest)
+int send_job(const int64_t flag, const N& data, const int dest)
 {
   const int mpi_tag = 3;
   std::vector<char> fdata = pad_flag_data(flag, data);
@@ -451,13 +452,13 @@ inline int send_job(const int64_t flag, const N& data, const int dest)
 }
 
 template <class M>
-inline int receive_result(int& source, int64_t& flag, M& result)
+int receive_result(int& source, int64_t& flag, M& result)
 {
   const int mpi_tag = 2;
   const int count = sizeof(int64_t) + sizeof(M);
   std::vector<char> fdata(count, (char)0);
   MPI_Status status;
-  const int ret = mpi_recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
+  const int ret = MPI_Recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
                            mpi_tag, get_comm(), &status);
   source = status.MPI_SOURCE;
   extract_flag_data(flag, result, fdata);
@@ -501,8 +502,8 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir,
   const int idt = geonb.dest[1 - dir][mu];
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret = mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
-                           get_comm(), MPI_STATUS_IGNORE);
+  const int ret =
+      mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm());
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 }
@@ -625,7 +626,6 @@ Int all_gather(Vector<M1> recv, const T2& send)
   const Vector<Char> vec_send = get_data_char(send);
   return all_gather(vec_recv, vec_send);
 }
-
 
 // ----------------------------------
 

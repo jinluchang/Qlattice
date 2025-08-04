@@ -16,7 +16,7 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
       MPI_Send(cbuf, int_max, datatype, dest, tag, comm);
-      cbuf += (Long)int_max * type_size;
+      cbuf += int_max * type_size;
       count -= int_max;
     }
     return MPI_Send(cbuf, count, datatype, dest, tag, comm);
@@ -24,21 +24,21 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
 }
 
 int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
-             MPI_Comm comm, MPI_Status* status)
+             MPI_Comm comm)
 {
   const Long int_max = INT_MAX;
   if (count <= int_max) {
-    return MPI_Recv(buf, count, datatype, source, tag, comm, status);
+    return MPI_Recv(buf, count, datatype, source, tag, comm, MPI_STATUS_IGNORE);
   } else {
     int type_size = 0;
     MPI_Type_size(datatype, &type_size);
     uint8_t* cbuf = (uint8_t*)buf;
     while (count > int_max) {
-      MPI_Recv(cbuf, int_max, datatype, source, tag, comm, status);
-      cbuf += (Long)int_max * type_size;
+      MPI_Recv(cbuf, int_max, datatype, source, tag, comm, MPI_STATUS_IGNORE);
+      cbuf += int_max * type_size;
       count -= int_max;
     }
-    return MPI_Recv(cbuf, count, datatype, source, tag, comm, status);
+    return MPI_Recv(cbuf, count, datatype, source, tag, comm, MPI_STATUS_IGNORE);
   }
 }
 

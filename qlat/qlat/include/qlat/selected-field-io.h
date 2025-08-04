@@ -124,7 +124,7 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
         assign(v, get_data(sfs[new_id_node].field));
       } else {
         mpi_recv(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
-                 get_comm(), MPI_STATUS_IGNORE);
+                 get_comm());
       }
       qwrite_data(v, fp);
     }
