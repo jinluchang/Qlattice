@@ -245,19 +245,6 @@ int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
   return -1;
 }
 
-static int mpi_bcast_native(void* buffer, const Long count,
-                            MPI_Datatype datatype, const int root,
-                            MPI_Comm comm)
-{
-  TIMER_FLOPS("mpi_bcast_native");
-  Int type_size = 0;
-  MPI_Type_size(datatype, &type_size);
-  timer.flops += count * type_size;
-  qassert(count < INT_MAX);
-  const Int count_i = count;
-  return MPI_Bcast(buffer, count_i, datatype, root, comm);
-}
-
 static int mpi_bcast_custom(void* buffer, const Long count,
                             MPI_Datatype datatype, const int root,
                             MPI_Comm comm)
@@ -270,18 +257,36 @@ static int mpi_bcast_custom(void* buffer, const Long count,
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &size);
   const int mpi_tag = 13;
-  if (rank == root) {
-    // Root process sends to all other processes
-    for (int i = 0; i < size; i++) {
-      if (i != root) {
-        mpi_send(buffer, count, datatype, i, mpi_tag, comm);
+  const Int vrank = (rank - root + size) % size;
+  Int mask = 1;
+  while (mask < size) {
+    if (vrank < mask) {
+      const Int vpartner = vrank + mask;
+      if (vpartner < size) {
+        const Int partner = (vpartner + root) % size;
+        mpi_send(buffer, count, datatype, partner, mpi_tag, comm);
       }
+    } else if (vrank < (mask * 2)) {
+      const Int vpartner = vrank - mask;
+      const Int partner = (vpartner + root) % size;
+      mpi_recv(buffer, count, datatype, partner, mpi_tag, comm);
     }
-  } else {
-    // Other processes receive from root
-    mpi_recv(buffer, count, datatype, root, mpi_tag, comm);
+    mask *= 2;
   }
   return 0;
+}
+
+static int mpi_bcast_native(void* buffer, const Long count,
+                            MPI_Datatype datatype, const int root,
+                            MPI_Comm comm)
+{
+  TIMER_FLOPS("mpi_bcast_native");
+  Int type_size = 0;
+  MPI_Type_size(datatype, &type_size);
+  timer.flops += count * type_size;
+  qassert(count < INT_MAX);
+  const Int count_i = count;
+  return MPI_Bcast(buffer, count_i, datatype, root, comm);
 }
 
 int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
@@ -316,9 +321,12 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
   //
   const Int mpi_tag = 14;
   // Tree-based reduction to root (rank 0)
-  int mask = 1;
+  Int mask = 1;
   while (mask < size) {
-    int partner = rank ^ mask;
+    if (rank % mask != 0) {
+      break;
+    }
+    const Int partner = rank + mask;
     if (partner < size) {
       vector<Char> temp_vec(count * type_size, MemType::Comm);
       void* tempbuf = temp_vec.data();
@@ -326,32 +334,32 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
         mpi_recv(tempbuf, count, datatype, partner, mpi_tag, comm);
         // Perform sum operation based on datatype
         if (datatype == MPI_INT32_T and op == MPI_SUM) {
-          int* rbuf = (int*)recvbuf;
-          int* tbuf = (int*)tempbuf;
+          Int* rbuf = (Int*)recvbuf;
+          Int* tbuf = (Int*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] += tbuf[i];
           }
         } else if (datatype == MPI_INT64_T and op == MPI_SUM) {
-          long* rbuf = (long*)recvbuf;
-          long* tbuf = (long*)tempbuf;
+          Long* rbuf = (Long*)recvbuf;
+          Long* tbuf = (Long*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] += tbuf[i];
           }
         } else if (datatype == MPI_FLOAT and op == MPI_SUM) {
-          float* rbuf = (float*)recvbuf;
-          float* tbuf = (float*)tempbuf;
+          RealF* rbuf = (RealF*)recvbuf;
+          RealF* tbuf = (RealF*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] += tbuf[i];
           }
         } else if (datatype == MPI_DOUBLE and op == MPI_SUM) {
-          double* rbuf = (double*)recvbuf;
-          double* tbuf = (double*)tempbuf;
+          RealD* rbuf = (RealD*)recvbuf;
+          RealD* tbuf = (RealD*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] += tbuf[i];
           }
         } else if (datatype == MPI_BYTE and op == MPI_BXOR) {
-          char* rbuf = (char*)recvbuf;
-          char* tbuf = (char*)tempbuf;
+          Char* rbuf = (Char*)recvbuf;
+          Char* tbuf = (Char*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] ^= tbuf[i];
           }
@@ -363,7 +371,7 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
         break;
       }
     }
-    mask <<= 1;
+    mask *= 2;
   }
   // Broadcast the result from root to all processes
   const Int root = 0;
