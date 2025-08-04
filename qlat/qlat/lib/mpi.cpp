@@ -312,8 +312,9 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &size);
   // First copy sendbuf to recvbuf
-  //
   std::memcpy(recvbuf, sendbuf, count * type_size);
+  //
+  const Int mpi_tag = 14;
   // Tree-based reduction to root (rank 0)
   int mask = 1;
   while (mask < size) {
@@ -322,15 +323,15 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
       vector<Char> temp_vec(count * type_size, MemType::Comm);
       void* tempbuf = temp_vec.data();
       if (rank < partner) {
-        mpi_recv(tempbuf, count, datatype, partner, 0, comm);
+        mpi_recv(tempbuf, count, datatype, partner, mpi_tag, comm);
         // Perform sum operation based on datatype
-        if (datatype == MPI_INT and op == MPI_SUM) {
+        if (datatype == MPI_INT32_T and op == MPI_SUM) {
           int* rbuf = (int*)recvbuf;
           int* tbuf = (int*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] += tbuf[i];
           }
-        } else if (datatype == MPI_LONG and op == MPI_SUM) {
+        } else if (datatype == MPI_INT64_T and op == MPI_SUM) {
           long* rbuf = (long*)recvbuf;
           long* tbuf = (long*)tempbuf;
           for (Long i = 0; i < count; i++) {
@@ -348,22 +349,25 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
           for (Long i = 0; i < count; i++) {
             rbuf[i] += tbuf[i];
           }
-        } else if (datatype == MPI_CHAR and op == MPI_BXOR) {
+        } else if (datatype == MPI_BYTE and op == MPI_BXOR) {
           char* rbuf = (char*)recvbuf;
           char* tbuf = (char*)tempbuf;
           for (Long i = 0; i < count; i++) {
             rbuf[i] ^= tbuf[i];
           }
+        } else {
+          qassert(false);
         }
       } else {
-        mpi_send(recvbuf, count, datatype, partner, 0, comm);
+        mpi_send(recvbuf, count, datatype, partner, mpi_tag, comm);
         break;
       }
     }
     mask <<= 1;
   }
   // Broadcast the result from root to all processes
-  return mpi_bcast(recvbuf, count, datatype, 0, comm);
+  const Int root = 0;
+  return mpi_bcast(recvbuf, count, datatype, root, comm);
 }
 
 static int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
