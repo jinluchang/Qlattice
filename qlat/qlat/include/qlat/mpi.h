@@ -187,6 +187,9 @@ int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
 int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
               const int root, MPI_Comm comm);
 
+int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
+                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+
 int glb_sum(Vector<RealD> recv, const Vector<RealD>& send);
 
 int glb_sum(Vector<RealF> recv, const Vector<RealF>& send);

@@ -11,9 +11,9 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
   if (count <= int_max) {
     return MPI_Send(buf, count, datatype, dest, tag, comm);
   } else {
-    int type_size = 0;
+    Int type_size = 0;
     MPI_Type_size(datatype, &type_size);
-    uint8_t* cbuf = (uint8_t*)buf;
+    Char* cbuf = (Char*)buf;
     while (count > int_max) {
       MPI_Send(cbuf, int_max, datatype, dest, tag, comm);
       cbuf += int_max * type_size;
@@ -31,9 +31,9 @@ int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
     return MPI_Recv(buf, count, datatype, source, tag, comm, status);
   } else {
     qassert(status == MPI_STATUS_IGNORE);
-    int type_size = 0;
+    Int type_size = 0;
     MPI_Type_size(datatype, &type_size);
-    uint8_t* cbuf = (uint8_t*)buf;
+    Char* cbuf = (Char*)buf;
     while (count > int_max) {
       MPI_Recv(cbuf, int_max, datatype, source, tag, comm, MPI_STATUS_IGNORE);
       cbuf += int_max * type_size;
@@ -55,9 +55,9 @@ int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
     qassert(ret == MPI_SUCCESS);
     return MPI_SUCCESS;
   } else {
-    int type_size = 0;
+    Int type_size = 0;
     MPI_Type_size(datatype, &type_size);
-    uint8_t* cbuf = (uint8_t*)buf;
+    Char* cbuf = (Char*)buf;
     while (count > int_max) {
       mpi_isend(cbuf, int_max, datatype, dest, tag, comm, requests);
       cbuf += int_max * type_size;
@@ -78,9 +78,9 @@ int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
     qassert(ret == MPI_SUCCESS);
     return MPI_SUCCESS;
   } else {
-    int type_size = 0;
+    Int type_size = 0;
     MPI_Type_size(datatype, &type_size);
-    uint8_t* cbuf = (uint8_t*)buf;
+    Char* cbuf = (Char*)buf;
     while (count > int_max) {
       mpi_irecv(cbuf, int_max, datatype, source, tag, comm, requests);
       cbuf += int_max * type_size;
@@ -245,82 +245,12 @@ int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
   return -1;
 }
 
-int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
-{
-  TIMER("glb_sum(RealD)");
-  qassert(recv.size() == send.size());
-  return MPI_Allreduce((RealD*)send.data(), recv.data(), recv.size(),
-                       MPI_DOUBLE, MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<RealF> recv, const Vector<RealF>& send)
-{
-  TIMER("glb_sum(RealF)");
-  qassert(recv.size() == send.size());
-  return MPI_Allreduce((RealF*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
-                       MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<Long> recv, const Vector<Long>& send)
-{
-  TIMER("glb_sum(Long)");
-  qassert(recv.size() == send.size());
-  return MPI_Allreduce((Long*)send.data(), recv.data(), recv.size(),
-                       MPI_INT64_T, MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<Int> recv, const Vector<Int>& send)
-{
-  TIMER("glb_sum(Int)");
-  qassert(recv.size() == send.size());
-  return MPI_Allreduce((Int*)send.data(), recv.data(), recv.size(), MPI_INT32_T,
-                       MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<Char> recv, const Vector<Char>& send)
-// not SUM but BXOR
-{
-  TIMER("glb_sum(Char)");
-  qassert(recv.size() == send.size());
-  return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
-                       MPI_BYTE, MPI_BXOR, get_comm());
-}
-
-int glb_sum(Vector<char> recv, const Vector<char>& send)
-// not SUM but BXOR
-{
-  TIMER("glb_sum(char)");
-  qassert(recv.size() == send.size());
-  return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
-                       MPI_BYTE, MPI_BXOR, get_comm());
-}
-
-bool glb_any(const bool b)
-{
-  Long ret = 0;
-  if (b) {
-    ret = 1;
-  }
-  glb_sum(ret);
-  return ret > 0;
-}
-
-bool glb_all(const bool b)
-{
-  Long ret = 0;
-  if (not b) {
-    ret = 1;
-  }
-  glb_sum(ret);
-  return ret == 0;
-}
-
 static int mpi_bcast_native(void* buffer, const Long count,
                             MPI_Datatype datatype, const int root,
                             MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_bcast_native");
-  int type_size = 0;
+  Int type_size = 0;
   MPI_Type_size(datatype, &type_size);
   timer.flops += count * type_size;
   qassert(count < INT_MAX);
@@ -333,7 +263,7 @@ static int mpi_bcast_custom(void* buffer, const Long count,
                             MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_bcast_custom");
-  int type_size = 0;
+  Int type_size = 0;
   MPI_Type_size(datatype, &type_size);
   timer.flops += count * type_size;
   Int rank, size;
@@ -367,6 +297,171 @@ int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
     qerr(ssprintf("mpi_bcast: q_mpi_bcast='%s'.", q_env_type.c_str()));
   }
   return -1;
+}
+
+static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
+                                const Long count, MPI_Datatype datatype,
+                                MPI_Op op, MPI_Comm comm)
+{
+  TIMER_FLOPS("mpi_allreduce_custom");
+  Int type_size;
+  MPI_Type_size(datatype, &type_size);
+  timer.flops += count * type_size;
+  //
+  Int rank, size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
+  // First copy sendbuf to recvbuf
+  //
+  std::memcpy(recvbuf, sendbuf, count * type_size);
+  // Tree-based reduction to root (rank 0)
+  int mask = 1;
+  while (mask < size) {
+    int partner = rank ^ mask;
+    if (partner < size) {
+      vector<Char> temp_vec(count * type_size, MemType::Comm);
+      void* tempbuf = temp_vec.data();
+      if (rank < partner) {
+        mpi_recv(tempbuf, count, datatype, partner, 0, comm);
+        // Perform sum operation based on datatype
+        if (datatype == MPI_INT and op == MPI_SUM) {
+          int* rbuf = (int*)recvbuf;
+          int* tbuf = (int*)tempbuf;
+          for (Long i = 0; i < count; i++) {
+            rbuf[i] += tbuf[i];
+          }
+        } else if (datatype == MPI_LONG and op == MPI_SUM) {
+          long* rbuf = (long*)recvbuf;
+          long* tbuf = (long*)tempbuf;
+          for (Long i = 0; i < count; i++) {
+            rbuf[i] += tbuf[i];
+          }
+        } else if (datatype == MPI_FLOAT and op == MPI_SUM) {
+          float* rbuf = (float*)recvbuf;
+          float* tbuf = (float*)tempbuf;
+          for (Long i = 0; i < count; i++) {
+            rbuf[i] += tbuf[i];
+          }
+        } else if (datatype == MPI_DOUBLE and op == MPI_SUM) {
+          double* rbuf = (double*)recvbuf;
+          double* tbuf = (double*)tempbuf;
+          for (Long i = 0; i < count; i++) {
+            rbuf[i] += tbuf[i];
+          }
+        } else if (datatype == MPI_CHAR and op == MPI_BXOR) {
+          char* rbuf = (char*)recvbuf;
+          char* tbuf = (char*)tempbuf;
+          for (Long i = 0; i < count; i++) {
+            rbuf[i] ^= tbuf[i];
+          }
+        }
+      } else {
+        mpi_send(recvbuf, count, datatype, partner, 0, comm);
+        break;
+      }
+    }
+    mask <<= 1;
+  }
+  // Broadcast the result from root to all processes
+  return mpi_bcast(recvbuf, count, datatype, 0, comm);
+}
+
+static int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
+                                MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+{
+  TIMER_FLOPS("mpi_allreduce_native");
+  Int type_size;
+  MPI_Type_size(datatype, &type_size);
+  timer.flops += count * type_size;
+  //
+  const Long int_max = INT_MAX;
+  qassert(count < int_max);
+  return MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+}
+
+int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
+                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+{
+  static const std::string q_env_type =
+      get_env_default("q_mpi_allreduce", "custom");
+  if (q_env_type == "custom") {
+    return mpi_allreduce_custom(sendbuf, recvbuf, count, datatype, op, comm);
+  } else if (q_env_type == "native") {
+    return mpi_allreduce_native(sendbuf, recvbuf, count, datatype, op, comm);
+  } else {
+    qerr(ssprintf("mpi_allreduce: q_mpi_allreduce='%s'.", q_env_type.c_str()));
+  }
+  return -1;
+}
+
+int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
+{
+  TIMER("glb_sum(RealD)");
+  qassert(recv.size() == send.size());
+  return mpi_allreduce((RealD*)send.data(), recv.data(), recv.size(),
+                       MPI_DOUBLE, MPI_SUM, get_comm());
+}
+
+int glb_sum(Vector<RealF> recv, const Vector<RealF>& send)
+{
+  TIMER("glb_sum(RealF)");
+  qassert(recv.size() == send.size());
+  return mpi_allreduce((RealF*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
+                       MPI_SUM, get_comm());
+}
+
+int glb_sum(Vector<Long> recv, const Vector<Long>& send)
+{
+  TIMER("glb_sum(Long)");
+  qassert(recv.size() == send.size());
+  return mpi_allreduce((Long*)send.data(), recv.data(), recv.size(),
+                       MPI_INT64_T, MPI_SUM, get_comm());
+}
+
+int glb_sum(Vector<Int> recv, const Vector<Int>& send)
+{
+  TIMER("glb_sum(Int)");
+  qassert(recv.size() == send.size());
+  return mpi_allreduce((Int*)send.data(), recv.data(), recv.size(), MPI_INT32_T,
+                       MPI_SUM, get_comm());
+}
+
+int glb_sum(Vector<Char> recv, const Vector<Char>& send)
+// not SUM but BXOR
+{
+  TIMER("glb_sum(Char)");
+  qassert(recv.size() == send.size());
+  return mpi_allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
+                       MPI_BYTE, MPI_BXOR, get_comm());
+}
+
+int glb_sum(Vector<char> recv, const Vector<char>& send)
+// not SUM but BXOR
+{
+  TIMER("glb_sum(char)");
+  qassert(recv.size() == send.size());
+  return mpi_allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
+                       MPI_BYTE, MPI_BXOR, get_comm());
+}
+
+bool glb_any(const bool b)
+{
+  Long ret = 0;
+  if (b) {
+    ret = 1;
+  }
+  glb_sum(ret);
+  return ret > 0;
+}
+
+bool glb_all(const bool b)
+{
+  Long ret = 0;
+  if (not b) {
+    ret = 1;
+  }
+  glb_sum(ret);
+  return ret == 0;
 }
 
 int bcast(Vector<Char> recv, const int root)

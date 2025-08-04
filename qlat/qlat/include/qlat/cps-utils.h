@@ -448,7 +448,7 @@ inline void sumDoubleArray(double* vs, const Long n_elem)
 inline int sumArray(Long* recv, const Long* send, const Long n_elem)
 {
 #ifdef USE_QMP
-  return MPI_Allreduce((Long*)send, recv, n_elem, MPI_LONG, MPI_SUM,
+  return mpi_allreduce((Long*)send, recv, n_elem, MPI_LONG, MPI_SUM,
                        QMP_COMM_WORLD);
 #else
   memmove(recv, send, n_elem * sizeof(Long));
@@ -459,7 +459,7 @@ inline int sumArray(Long* recv, const Long* send, const Long n_elem)
 inline int sumArray(double* recv, const double* send, const Long n_elem)
 {
 #ifdef USE_QMP
-  return MPI_Allreduce((double*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM,
+  return mpi_allreduce((double*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM,
                        QMP_COMM_WORLD);
 #else
   memmove(recv, send, n_elem * sizeof(double));
