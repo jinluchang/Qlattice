@@ -18,7 +18,7 @@ cd "$dst"
 
 nix_version_list=(
     "25.05"
-    "24.11"
+    # "24.11"
 )
 
 name_list=(
