@@ -156,7 +156,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
       crc32(hash, (void *)get_data(origin).data(),
             get_data(origin).size() * sizeof(M));
     }
-    sync_node();
+    SYNC_NODE();
     mpi_bcast((void *)&hash, 4, MPI_BYTE, id_node, get_comm());
   }
   return ssprintf("%08X", hash);
@@ -265,7 +265,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
   //
   displayln("Export file CLOSED");
   //
-  sync_node();
+  SYNC_NODE();
 }
 
 // std::string cps_Matrix_header_generator(const qlat::Field<cps::Matrix>
@@ -326,7 +326,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   Long range_low = geo_only_local.local_volume() * get_id_node();
   Long range_high = range_low + geo_only_local.local_volume();
   //
-  sync_node();
+  SYNC_NODE();
   int cycle_limit = 0;
   if (num_of_reading_threads > 0)
     cycle_limit = (int)ceil((double)get_num_node() / num_of_reading_threads);
@@ -345,7 +345,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
                 << std::endl;
       fclose(input);
     }
-    sync_node();
+    SYNC_NODE();
   }
   //
   //	if(get_id_node() == 0){
@@ -374,7 +374,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //                         timer_fread((char*)ptr, size, inputFile);
   //		//	fflush(inputFile);
   //		}
-  //		sync_node();
+  //		SYNC_NODE();
   //		get_data_dir(get_data(field_recv), get_data(field_send), 0);
   //                 qswap(field_recv, field_send);
   //	}
@@ -412,7 +412,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //
   destination = field_send;
   //
-  sync_node();
+  SYNC_NODE();
 //
 #else
   //

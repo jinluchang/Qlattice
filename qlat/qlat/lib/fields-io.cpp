@@ -804,7 +804,7 @@ void ShuffledFieldsWriter::init(const std::string& path_,
       fws[i].init(path, geon, is_append);
     }
   }
-  sync_node();
+  SYNC_NODE();
   for (int i = 0; i < (int)geons.size(); ++i) {
     const GeometryNode& geon = geons[i];
     if (geon.id_node != 0) {
@@ -934,7 +934,7 @@ void close_all_shuffled_fields_writer()
     sfwv[i]().close();
   }
   qassert(sfwm.size() == 0);
-  sync_node();
+  SYNC_NODE();
 }
 
 std::vector<std::string> show_all_shuffled_fields_writer()
@@ -987,7 +987,7 @@ void close_all_shuffled_fields_reader()
     sfrv[i]().close();
   }
   qassert(sfrm.size() == 0);
-  sync_node();
+  SYNC_NODE();
 }
 
 std::vector<std::string> show_all_shuffled_fields_reader()
@@ -1024,7 +1024,7 @@ void read_through_sync_node(ShuffledFieldsReader& sfr)
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     read_through(sfr.frs[i]);
   }
-  sync_node();
+  SYNC_NODE();
 }
 
 bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std::string& fn)
@@ -1322,7 +1322,7 @@ void properly_truncate_fields_sync_node(
   }
   displayln_info(0, fname + ssprintf(": fn_list.size()=%5ld '%s'",
                                      fn_list.size(), path.c_str()));
-  sync_node();
+  SYNC_NODE();
 }
 
 std::vector<std::string> properly_truncate_fields_sync_node(

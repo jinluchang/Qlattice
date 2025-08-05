@@ -313,7 +313,7 @@ void benchmark_deflate(const Geometry& geo, const int ls,
   in.init(geo_eo(geo, 1), ls);
   out.init(geo_eo(geo, 1), ls);
   set_u_rand(in, rs.split("in"));
-  sync_node();
+  SYNC_NODE();
   {
     TIMER_VERBOSE("benchmark_deflate-deflate");
     for (int i = 0; i < 4; ++i) {
@@ -321,7 +321,7 @@ void benchmark_deflate(const Geometry& geo, const int ls,
       deflate(out, in, lm);
     }
   }
-  sync_node();
+  SYNC_NODE();
 }
 
 void multiply_m_dwf_no_comm(FermionField5d& out, const FermionField5d& in,

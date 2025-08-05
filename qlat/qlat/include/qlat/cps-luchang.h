@@ -89,7 +89,7 @@ void cps_begin(int* argc, char** argv[], const Coordinate& total_site)
   cps::LRG.Initialize();
   Coordinate size_node(cps::SizeX(), cps::SizeY(), cps::SizeZ(), cps::SizeT());
   begin(cps::UniqueID(), size_node);
-  sync_node();
+  SYNC_NODE();
   cps::dataWriteParNumber() = 256;
   cps::dataReadParNumber() = 256;
 }

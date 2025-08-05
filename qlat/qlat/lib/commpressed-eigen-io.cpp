@@ -1500,7 +1500,7 @@ bool eigen_system_repartition(const Coordinate& new_size_node,
     qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
     is_failed = resize_compressed_eigen_vectors(
         npath, npath + "-repartition-new.tmp", new_size_node);
-    sync_node();
+    SYNC_NODE();
     if (does_file_exist_sync_node(npath +
                                   "-repartition-new.tmp/metadata.txt")) {
       qrename_info(npath, npath + "-repartition-old.tmp");
@@ -1510,7 +1510,7 @@ bool eigen_system_repartition(const Coordinate& new_size_node,
   } else {
     is_failed =
         resize_compressed_eigen_vectors(npath, new_npath, new_size_node);
-    sync_node();
+    SYNC_NODE();
   }
   return is_failed;
 }

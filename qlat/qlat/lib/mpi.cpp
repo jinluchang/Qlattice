@@ -857,10 +857,10 @@ void display_geometry_node()
                          get_id_node_in_shuffle(), get_hostname().c_str()));
       flush();
     }
-    sync_node();
+    SYNC_NODE();
   }
   flush();
-  sync_node();
+  SYNC_NODE();
 }
 
 Coordinate plan_size_node(const int num_node)
@@ -990,7 +990,7 @@ void initialize_qlat_comm()
   }
 #endif
   flush();
-  sync_node();
+  SYNC_NODE();
 }
 
 Long& mpi_level_count()
@@ -1007,7 +1007,7 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
       Q_Comm(comm, size_node, RngState("sync_node:" + show(size_node))));
   get_comm_internal() = get_comm_list().back().comm;
   set_global_geon(get_comm_list().back().size_node);
-  sync_node();
+  SYNC_NODE();
   if (mpi_level_count() == 1) {
     initialize_qlat_comm();
   }
@@ -1018,7 +1018,7 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   // display_geometry_node();
   // install_qhandle_sig();
   clear_all_caches();
-  sync_node();
+  SYNC_NODE();
 }
 
 void begin(const int id_node, const Coordinate& size_node, const int color)
@@ -1078,7 +1078,7 @@ void end(const bool is_preserving_cache)
       if (not is_preserving_cache) {
         clear_all_caches();
       }
-      sync_node();
+      SYNC_NODE();
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       get_comm_list().pop_back();
       displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
@@ -1091,7 +1091,7 @@ void end(const bool is_preserving_cache)
       if (not is_preserving_cache) {
         clear_all_caches();
       }
-      sync_node();
+      SYNC_NODE();
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       MPI_Comm comm = get_comm();
       get_comm_list().pop_back();
@@ -1107,7 +1107,7 @@ void end(const bool is_preserving_cache)
       }
       displayln_info(ssprintf("qlat::end(): MPI_Comm_free ended comm."));
       MPI_Comm_free(&comm);
-      sync_node();
+      SYNC_NODE();
     }
   }
 }

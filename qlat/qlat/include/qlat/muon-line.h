@@ -837,7 +837,7 @@ inline void saveMuonLineInterpolation(const std::string& path)
     qrename_partial(path + "/data.txt");
     qtouch(path + "/checkpoint");
   }
-  sync_node();
+  SYNC_NODE();
 }
 
 inline bool loadMuonLineInterpolation(const std::string& path,
@@ -1681,7 +1681,7 @@ inline void test_muonline_int()
 
 inline void test_muonLine()
 {
-  sync_node();
+  SYNC_NODE();
   TIMER_VERBOSE("test_muonLine");
   if (IS_USING_MUON_LINE_INTERPOLATION) {
     load_compute_save_muonline_interpolation(

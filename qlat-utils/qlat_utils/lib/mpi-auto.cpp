@@ -3,11 +3,12 @@
 namespace qlat
 {  //
 
-void sync_node()
+void sync_node(const Long tag)
 {
   TIMER("sync_node");
   RngState& rs = get_sync_node_rs();
-  const Long v = rand_gen(rs) % (1024 * 1024);
+  const Long rand_limit = 1024L * 1024L * 1024L;
+  const Long v = rand_gen(rs) % rand_limit + tag;
   Long s = v;
   glb_sum_val(s);
   qassert(s == v * get_num_node());

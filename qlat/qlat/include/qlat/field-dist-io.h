@@ -106,7 +106,7 @@ template <class M>
 std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M>>& dds,
                                  const int num_node)
 {
-  sync_node();
+  SYNC_NODE();
   TIMER_VERBOSE_FLOPS("dist_crc32s");
   Long total_bytes = 0;
   std::vector<crc32_t> ret(num_node, 0);
@@ -239,7 +239,7 @@ Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
                           const int num_node, const std::string& path)
 // interface_function
 {
-  sync_node();
+  SYNC_NODE();
   TIMER_VERBOSE_FLOPS("dist_write_dist_data");
   Long total_bytes = 0;
   Long total_ops = 0;
@@ -326,7 +326,7 @@ Long dist_write_fields(const std::vector<ConstHandle<Field<M>>>& fs,
       break;
     }
   }
-  sync_node();
+  SYNC_NODE();
   std::vector<DistData<M>> dds(fs.size());
   for (size_t i = 0; i < dds.size(); ++i) {
     dds[i].id_node = fs[i]().geo().geon.id_node;
@@ -368,7 +368,7 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
   if (!does_file_exist_sync_node(path + "/checkpoint")) {
     return 0;
   }
-  sync_node();
+  SYNC_NODE();
   TIMER_VERBOSE_FLOPS("dist_read_dist_data");
   Long total_bytes = 0;
   Long total_ops = 0;

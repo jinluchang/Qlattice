@@ -84,7 +84,7 @@ inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site, co
   }
   Coordinate size_node(cps::SizeX(), cps::SizeY(), cps::SizeZ(), cps::SizeT());
   begin(cps::UniqueID(), size_node);
-  sync_node();
+  SYNC_NODE();
 }
 
 inline void cps_end(const bool is_preserving_cache = false)

@@ -19,6 +19,7 @@
 #pragma once
 
 #include <qlat-utils/assert.h>
+#include <qlat-utils/crc32.h>
 #include <qlat-utils/env.h>
 #include <qlat-utils/handle.h>
 #include <qlat-utils/rng-state.h>
@@ -28,7 +29,16 @@
 namespace qlat
 {  //
 
-void sync_node();
+#define SYNC_NODE()                                                      \
+  {                                                                      \
+    static const qlat::Long CRC32_HASH_FOR_FILE_NAME =                   \
+        (qlat::Long)qlat::crc32((void*)__FILE__, std::strlen(__FILE__)); \
+    static const qlat::Long SYNC_NODE_TAG =                              \
+        CRC32_HASH_FOR_FILE_NAME + __LINE__;                             \
+    qlat::sync_node(SYNC_NODE_TAG);                                      \
+  }
+
+void sync_node(const Long tag = 0);
 
 // -------------------
 

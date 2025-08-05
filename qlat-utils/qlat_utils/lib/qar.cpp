@@ -2482,7 +2482,7 @@ void close_all_qar_file()
     qar_vec[i]().close();
   }
   qassert(qar_map.size() == 0);
-  sync_node();
+  SYNC_NODE();
 }
 
 // ----------------------------------------------------

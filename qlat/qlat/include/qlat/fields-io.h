@@ -705,7 +705,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
         total_bytes += write(sfw.fws[i], fn, fs[i]);
       }
     }
-    sync_node();
+    SYNC_NODE();
   }
   glb_sum(total_bytes);
   save_fields_index(sfw, fn);
@@ -738,7 +738,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
         total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
       }
     }
-    sync_node();
+    SYNC_NODE();
   }
   glb_sum(total_bytes);
   save_fields_index(sfw, fn);
@@ -869,7 +869,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
         }
       }
     }
-    sync_node();
+    SYNC_NODE();
   }
   glb_sum(total_bytes);
   if (0 != zero_size_count) {
@@ -920,7 +920,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
         }
       }
     }
-    sync_node();
+    SYNC_NODE();
   }
   glb_sum(total_bytes);
   if (0 != zero_size_count) {
@@ -975,7 +975,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
         }
       }
     }
-    sync_node();
+    SYNC_NODE();
   }
   glb_sum(total_bytes);
   if (0 != zero_size_count) {

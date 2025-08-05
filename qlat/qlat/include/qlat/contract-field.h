@@ -236,7 +236,7 @@ inline void contract_meson_vv_unshifted(
     contract_meson_vv_unshifted_acc_x(vf, 1.0, wsp1, wsp2, wm3_x_y, xg_x,
                                       xg_x_idx, xg_y, xg_y_psel_idx, t_snk);
   }
-  sync_node();
+  SYNC_NODE();
 }
 
 inline void contract_meson_vv_acc(
@@ -454,7 +454,7 @@ inline void contract_meson_vv_meson_unshifted(
                                             xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
                                             t_src, t_snk);
   }
-  sync_node();
+  SYNC_NODE();
 }
 
 inline void contract_meson_vv_meson_acc(

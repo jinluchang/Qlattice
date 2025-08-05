@@ -127,7 +127,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
            cpi.size * sizeof(M));
   }
   {
-    sync_node();
+    SYNC_NODE();
     TIMER_FLOPS("refresh_expanded-comm");
     timer.flops +=
         (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
@@ -147,7 +147,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
       }
     }
     mpi_waitall(reqs);
-    sync_node();
+    SYNC_NODE();
   }
 #pragma omp parallel for
   for (Long i = 0; i < (Long)plan.recv_pack_infos.size(); ++i) {

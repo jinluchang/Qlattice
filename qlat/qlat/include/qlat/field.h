@@ -740,7 +740,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     if (reqs.size() > 0) {
       MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
     }
-    sync_node();
+    SYNC_NODE();
   }
   f.init(geo, f1.multiplicity);
 #pragma omp parallel for
