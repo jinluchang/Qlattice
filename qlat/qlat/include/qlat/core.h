@@ -656,20 +656,21 @@ struct API Field {
     multiplicity = total_size / sizeof(M);
     mem_order = f.mem_order;
     qassert(multiplicity * (Int)sizeof(M) == total_size);
-    geo.set(f.geo());
+    geo.set_view(f.geo);
     field.set_view_cast(f.field);
   }
   //
   SelectedPoints<M> view_sp() const
   {
     TIMER("Field::view_sp");
-    qassert(geo().is_only_local);
+    const Geometry geo_local = geo.get();
+    qassert(geo_local.is_only_local);
     qassert(mem_order == MemOrder::TZYXM);
     SelectedPoints<M> f;
     f.initialized = initialized;
     f.points_dist_type = PointsDistType::Full;
     f.multiplicity = multiplicity;
-    f.n_points = geo().local_volume();
+    f.n_points = geo_local.local_volume();
     f.points.set_view(field);
     return f;
   }
@@ -931,9 +932,10 @@ Field<M>& Field<M>::operator=(const Field<M>& f)
   }
   TIMER_FLOPS("Field::operator=");
   qassert(f.initialized);
-  init(geo_resize(f.geo.get()), f.multiplicity);
+  const Geometry geo_local = geo_resize(f.geo.get());
+  init(geo_local, f.multiplicity);
   Field<M>& f0 = *this;
-  qacc_for(index, geo.get().local_volume(), {
+  qacc_for(index, geo_local.local_volume(), {
     const Geometry& geo_v = f0.geo();
     const Coordinate xl = geo_v.coordinate_from_index(index);
     const Vector<M> v = f.get_elems_const(xl);
@@ -1018,6 +1020,9 @@ void set_field_from_pointer(Field<M>& f, Vector<M> field, const Geometry& geo,
   f.field.is_copy = is_copy;
   qassert(f.geo().local_volume_expanded() * f.multiplicity == f.field.size());
 }
+
+void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
+                 const Int m1, const Int size_of_mm);
 
 // --------------------
 

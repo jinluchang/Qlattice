@@ -505,7 +505,7 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
 }
 
 template <class M>
-void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec, const std::vector<int> m_vec)
+void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec, const std::vector<int>& m_vec)
 // f.get_elem(x, m) = vec[m].get_elem(x, m_vec[m])
 {
   TIMER("merge_fields_ms");
@@ -782,10 +782,10 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
 #define QLAT_EXTERN_TEMPLATE(TYPENAME)                                        \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator+=                      \
-      <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);              \
+      <TYPENAME>(Field<TYPENAME> & f, const Field<TYPENAME>& f1);             \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator-=                      \
-      <TYPENAME>(Field<TYPENAME>& f, const Field<TYPENAME>& f1);              \
+      <TYPENAME>(Field<TYPENAME> & f, const Field<TYPENAME>& f1);             \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
       Field<TYPENAME>& f, const Field<double>& f_factor);                     \
@@ -794,17 +794,17 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       Field<TYPENAME>& f, const Field<ComplexD>& f_factor);                   \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
-      <TYPENAME>(Field<TYPENAME>& f, const double factor);                    \
+      <TYPENAME>(Field<TYPENAME> & f, const double factor);                   \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=                      \
-      <TYPENAME>(Field<TYPENAME>& f, const ComplexD& factor);                 \
+      <TYPENAME>(Field<TYPENAME> & f, const ComplexD& factor);                \
                                                                               \
-  QLAT_EXTERN template RealD qnorm<TYPENAME>(const Field<TYPENAME>& f);      \
+  QLAT_EXTERN template RealD qnorm<TYPENAME>(const Field<TYPENAME>& f);       \
                                                                               \
   QLAT_EXTERN template void qnorm_field<TYPENAME>(Field<RealD> & f,           \
                                                   const Field<TYPENAME>& f1); \
                                                                               \
-  QLAT_EXTERN template RealD qnorm_double<TYPENAME>(                         \
+  QLAT_EXTERN template RealD qnorm_double<TYPENAME>(                          \
       const Field<TYPENAME>& f1, const Field<TYPENAME>& f2);                  \
                                                                               \
   QLAT_EXTERN template std::vector<TYPENAME> field_sum<TYPENAME>(             \
@@ -851,7 +851,7 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
   QLAT_EXTERN template void merge_fields_ms<TYPENAME>(                        \
       Field<TYPENAME> & f,                                                    \
       const std::vector<ConstHandle<Field<TYPENAME>>>& vec,                   \
-      const std::vector<int> m_vec);                                          \
+      const std::vector<int>& m_vec);                                         \
                                                                               \
   QLAT_EXTERN template void field_shift_dir<TYPENAME>(                        \
       Field<TYPENAME> & f, const Field<TYPENAME>& f1, const int dir,          \
