@@ -326,7 +326,7 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
     if (rank % mask != 0) {
       break;
     }
-    const Int partner = rank + mask;
+    const Int partner = rank ^ mask;
     if (partner < size) {
       if (rank < partner) {
         vector<Char> temp_vec(count * type_size, MemType::Comm);
