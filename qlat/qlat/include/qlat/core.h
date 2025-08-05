@@ -1022,7 +1022,7 @@ void set_field_from_pointer(Field<M>& f, Vector<M> field, const Geometry& geo,
 }
 
 void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
-                 const Int m1, const Int size_of_mm);
+                 const Int m1, const Int sizeof_m);
 
 // --------------------
 

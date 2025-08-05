@@ -12,18 +12,21 @@ from .field_selection cimport (
         FieldSelection,
         )
 from .field_types cimport (
+        FieldChar,
         FieldRealD,
         FieldRealF,
         FieldComplexD,
         FieldComplexF,
         )
 from .selected_field_types cimport (
+        SelectedFieldChar,
         SelectedFieldRealD,
         SelectedFieldRealF,
         SelectedFieldComplexD,
         SelectedFieldComplexF,
         )
 from .selected_points_types cimport (
+        SelectedPointsChar,
         SelectedPointsRealD,
         SelectedPointsRealF,
         SelectedPointsComplexD,
@@ -375,6 +378,20 @@ cdef class FieldBase:
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
         """
         self[idx, m] = val
+
+    @q.timer
+    def set_m(self, FieldBase f1, cc.Int m, cc.Int m1):
+        """
+        Set components `m` from `f1`'s components `m1`.
+        """
+        cdef FieldChar fc = FieldChar()
+        cdef FieldChar f1c = FieldChar()
+        self.swap_cast(fc)
+        f1.swap_cast(f1c)
+        cdef cc.Int sizeof_m = self.ctype.size()
+        cc.set_field_m(fc.xx, f1c.xx, m, m1, sizeof_m)
+        self.swap_cast(fc)
+        f1.swap_cast(f1c)
 
     def __getnewargs__(self):
         return ()

@@ -388,10 +388,10 @@ bool operator!=(const PointsSelection& psel1, const PointsSelection& psel2)
 // ----------------
 
 void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
-                 const Int m1, const Int size_of_mm)
-// `m` and `m1` have NOT be multiplied by `size_of_mm` yet.
+                 const Int m1, const Int sizeof_m)
+// `m` and `m1` have NOT be multiplied by `sizeof_m` yet.
 {
-  TIMER_FLOPS("set_field_m(f,f1,m,m1,size_of_mm)");
+  TIMER_FLOPS("set_field_m(f,f1,m,m1,sizeof_m)");
   qassert(f.initialized);
   qassert(f1.initialized);
   const Geometry geo = f.get_geo();
@@ -399,19 +399,19 @@ void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
   qassert(geo == f1.get_geo());
   const Int multiplicity = f.multiplicity;
   const Int multiplicity1 = f1.multiplicity;
-  qassert(multiplicity % size_of_mm == 0);
-  qassert(multiplicity1 % size_of_mm == 0);
-  const Int m_c = m * size_of_mm;
-  const Int m1_c = m1 * size_of_mm;
+  qassert(multiplicity % sizeof_m == 0);
+  qassert(multiplicity1 % sizeof_m == 0);
+  const Int m_c = m * sizeof_m;
+  const Int m1_c = m1 * sizeof_m;
   const Long local_volume = geo.local_volume();
   qacc_for(index, local_volume, {
     const Vector<Char> v1 = f1.get_elems_const(index);
-    const Vector<Char> v1s(v1.p + m1_c, size_of_mm);
+    const Vector<Char> v1s(v1.p + m1_c, sizeof_m);
     Vector<Char> v = f.get_elems(index);
-    Vector<Char> vs(v.p + m_c, size_of_mm);
+    Vector<Char> vs(v.p + m_c, sizeof_m);
     assign(vs, v1s);
   });
-  timer.flops += local_volume * size_of_mm;
+  timer.flops += local_volume * sizeof_m;
 }
 
 // ----------------

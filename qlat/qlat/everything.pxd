@@ -195,6 +195,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         pass
     cdef cppclass PselProp(SelectedPoints[WilsonMatrix]):
         pass
+    void set_field_m(Field[Char]& f, const Field[Char]& f1, const Int m, const Int m1, const Int sizeof_m) except +
 
 cdef extern from "qlat/field.h" namespace "qlat":
 
