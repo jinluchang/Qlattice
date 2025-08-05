@@ -328,9 +328,9 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
     }
     const Int partner = rank + mask;
     if (partner < size) {
-      vector<Char> temp_vec(count * type_size, MemType::Comm);
-      void* tempbuf = temp_vec.data();
       if (rank < partner) {
+        vector<Char> temp_vec(count * type_size, MemType::Comm);
+        void* tempbuf = temp_vec.data();
         mpi_recv(tempbuf, count, datatype, partner, mpi_tag, comm);
         // Perform sum operation based on datatype
         if (datatype == MPI_INT32_T and op == MPI_SUM) {
