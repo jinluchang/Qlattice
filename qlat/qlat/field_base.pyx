@@ -388,7 +388,7 @@ cdef class FieldBase:
         cdef FieldChar f1c = FieldChar()
         self.swap_cast(fc)
         f1.swap_cast(f1c)
-        cdef cc.Int sizeof_m = self.ctype.size()
+        cdef cc.Int sizeof_m = self.ctype.sizeof_m
         cc.set_field_m(fc.xx, f1c.xx, m, m1, sizeof_m)
         self.swap_cast(fc)
         f1.swap_cast(f1c)
