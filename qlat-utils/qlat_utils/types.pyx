@@ -84,6 +84,7 @@ cdef class ElemType:
 
 cdef class ElemTypeColorMatrix(ElemType):
     name = "ColorMatrix"
+    sizeof_m = sizeof(cc.ColorMatrix)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -103,6 +104,7 @@ cdef class ElemTypeColorMatrix(ElemType):
 
 cdef class ElemTypeWilsonMatrix(ElemType):
     name = "WilsonMatrix"
+    sizeof_m = sizeof(cc.WilsonMatrix)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -122,6 +124,7 @@ cdef class ElemTypeWilsonMatrix(ElemType):
 
 cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     name = "NonRelWilsonMatrix"
+    sizeof_m = sizeof(cc.NonRelWilsonMatrix)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -141,6 +144,7 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
 
 cdef class ElemTypeIsospinMatrix(ElemType):
     name = "IsospinMatrix"
+    sizeof_m = sizeof(cc.IsospinMatrix)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -160,6 +164,7 @@ cdef class ElemTypeIsospinMatrix(ElemType):
 
 cdef class ElemTypeSpinMatrix(ElemType):
     name = "SpinMatrix"
+    sizeof_m = sizeof(cc.SpinMatrix)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -179,6 +184,7 @@ cdef class ElemTypeSpinMatrix(ElemType):
 
 cdef class ElemTypeWilsonVector(ElemType):
     name = "WilsonVector"
+    sizeof_m = sizeof(cc.WilsonVector)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -198,6 +204,7 @@ cdef class ElemTypeWilsonVector(ElemType):
 
 cdef class ElemTypeComplexD(ElemType):
     name = "ComplexD"
+    sizeof_m = sizeof(cc.ComplexD)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zd'
@@ -217,6 +224,7 @@ cdef class ElemTypeComplexD(ElemType):
 
 cdef class ElemTypeComplexF(ElemType):
     name = "ComplexF"
+    sizeof_m = sizeof(cc.ComplexF)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'Zf'
@@ -236,6 +244,7 @@ cdef class ElemTypeComplexF(ElemType):
 
 cdef class ElemTypeRealD(ElemType):
     name = "RealD"
+    sizeof_m = sizeof(cc.RealD)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'd'
@@ -255,6 +264,7 @@ cdef class ElemTypeRealD(ElemType):
 
 cdef class ElemTypeRealF(ElemType):
     name = "RealF"
+    sizeof_m = sizeof(cc.RealF)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'f'
@@ -274,6 +284,7 @@ cdef class ElemTypeRealF(ElemType):
 
 cdef class ElemTypeLong(ElemType):
     name = "Long"
+    sizeof_m = sizeof(cc.Long)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'q'
@@ -293,6 +304,7 @@ cdef class ElemTypeLong(ElemType):
 
 cdef class ElemTypeInt(ElemType):
     name = "Int"
+    sizeof_m = sizeof(cc.Int)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'i'
@@ -312,6 +324,7 @@ cdef class ElemTypeInt(ElemType):
 
 cdef class ElemTypeChar(ElemType):
     name = "Char"
+    sizeof_m = sizeof(cc.Char)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'b'
@@ -331,6 +344,7 @@ cdef class ElemTypeChar(ElemType):
 
 cdef class ElemTypeInt64t(ElemType):
     name = "Int64t"
+    sizeof_m = sizeof(cc.Int64t)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'q'
@@ -350,6 +364,7 @@ cdef class ElemTypeInt64t(ElemType):
 
 cdef class ElemTypeInt32t(ElemType):
     name = "Int32t"
+    sizeof_m = sizeof(cc.Int32t)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'i'
@@ -369,6 +384,7 @@ cdef class ElemTypeInt32t(ElemType):
 
 cdef class ElemTypeInt8t(ElemType):
     name = "Int8t"
+    sizeof_m = sizeof(cc.Int8t)
     @staticmethod
     cdef char* format():
         cdef char* fmt = 'b'
