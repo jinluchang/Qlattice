@@ -93,11 +93,8 @@ void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel)
   LatDim dim;
   dim.name = "idx";
   dim.size = n_points + 1;
-  dim.indices.resize(dim.size);
+  dim.indices.resize(1);
   dim.indices[0] = "total_site";
-  for (Long idx = 0; idx < n_points; ++idx) {
-    dim.indices[idx + 1] = show(idx);
-  }
   ld.init();
   ld.info.push_back(dim);
   ld.info.push_back(lat_dim_number("mu", 0, 3));
