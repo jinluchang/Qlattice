@@ -989,7 +989,7 @@ void qswap_cast(Field<M>& f1, Field<N>& f2)
   f1.multiplicity = data_size1 / sizeof(M);
   f2.multiplicity = data_size2 / sizeof(N);
   qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
-  qassert(f2.multiplicity * (Long)sizeof(N) == data_size1);
+  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qassert(f1.mem_order == MemOrder::TZYXM);
   qassert(f2.mem_order == MemOrder::TZYXM);
   qswap(f1.geo, f2.geo);
