@@ -25,9 +25,8 @@ struct API GeometryNode {
   Coordinate coor_node;
   // 0 <= coor_node[i] < size_node[i]
   //
-  qacc GeometryNode::GeometryNode() { init(); }
-  qacc GeometryNode::GeometryNode(const Coordinate& coor_node_,
-                                  const Coordinate& size_node_)
+  qacc GeometryNode() { init(); }
+  qacc GeometryNode(const Coordinate& coor_node_, const Coordinate& size_node_)
   {
     init(coor_node_, size_node_);
   }
@@ -1219,10 +1218,7 @@ struct API FieldSelection {
   //
   FieldSelection() { init(); }
   //
-  qacc Geometry get_geo() const;
-  {
-    return f_rank.geo.get();
-  }
+  qacc Geometry get_geo() const { return f_rank.geo.get(); }
   //
   void set_mem_type(const MemType mem_type) const;
   //

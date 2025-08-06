@@ -592,4 +592,25 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   }
 }
 
+void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf)
+// xl = coordinate_shifts(hxl * 2, 0)
+{
+  TIMER_VERBOSE("reduce_half_gauge_field(hgf,gf)");
+  const Geometry geo = gf.get_geo();
+  Geometry hgeo;
+  hgeo.init(geo.geon, geo.node_site / 2);
+  qassert(geo.node_site == hgeo.node_site * 2);
+  qassert(DIMN == gf.multiplicity);
+  hgf.init(hgeo, DIMN);
+  qacc_for(hindex, hgeo.local_volume(), {
+    const Geometry& hgeo = hgf.geo();
+    const Coordinate hxl = hgeo.coordinate_from_index(hindex);
+    const Coordinate xl = coordinate_shifts(hxl * 2, 0);
+    for (int m = 0; m < DIMN; ++m) {
+      hgf.get_elem(hxl, m) =
+          gf.get_elem(xl, m) * gf.get_elem(coordinate_shifts(xl, m), m);
+    }
+  });
+}
+
 }  // namespace qlat

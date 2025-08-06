@@ -584,7 +584,7 @@ void field_shift_steps(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 template <class M>
 void field_shift_local(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 // node process local shift
-// roughly f[xl + shift % node_site] == f1[xl]
+// roughly f[(xl + shift) % node_site] == f1[xl]
 {
   TIMER("field_shift_no_comm");
   if (shift == Coordinate()) {
@@ -611,6 +611,7 @@ template <class M>
 void field_shift_direct(Field<M>& f, const Field<M>& f1,
                         const Coordinate& shift)
 // shift f1 with 'shift'
+// roughly f[(xg + shift) % total_site] == f1[xg]
 // use the fact that the ordering does not change
 // UNLESS in some direction there is only one node,
 // THEN periodic boundary condition shall mess up the order

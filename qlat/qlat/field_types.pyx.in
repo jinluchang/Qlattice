@@ -243,7 +243,10 @@ cdef class Field{{name}}(FieldBase):
         """
         return new shifted Field
         self is not changed.
+        #
         shift is the coordinate to shift the field (or None, which means no shift)
+        roughly shifted_field[(xg + shift) % total_site] == original_field[xg]
+        #
         is_reflect determine whether to negate coordinate after shift
         """
         cdef Field{{name}} f1 = self.copy(is_copying_data=False)
