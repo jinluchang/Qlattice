@@ -846,9 +846,10 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
 // can have different geo expansion
 {
   if (initialized) {
-    Geometry geo_new = geo_;
-    if (not is_matching_geo_included(geo_new, geo())) {
-      displayln("old geo = " + show(geo()));
+    const Geometry geo_new = geo_;
+    const Geometry geo_old = get_geo();
+    if (not is_matching_geo_included(geo_new, geo_old)) {
+      displayln("old geo = " + show(geo_old));
       displayln("new geo = " + show(geo_new));
       qassert(false);
     }
@@ -900,9 +901,10 @@ void Field<M>::init_zero(const Geometry& geo_, const Int multiplicity_)
 // if check failed, the program crash
 {
   if (initialized) {
-    Geometry geo_new = geo_;
-    if (not is_matching_geo_included(geo_new, geo())) {
-      displayln("old geo = " + show(geo()));
+    const Geometry geo_new = geo_;
+    const Geometry geo_old = get_geo();
+    if (not is_matching_geo_included(geo_new, geo_old)) {
+      displayln("old geo = " + show(geo_old));
       displayln("new geo = " + show(geo_new));
       qassert(false);
     }
