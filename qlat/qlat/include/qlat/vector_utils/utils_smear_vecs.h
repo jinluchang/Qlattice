@@ -2243,19 +2243,5 @@ void prop_smear_qlat_convension(Propagator4dT<T>& prop,
                                   mode, dup, force_update);
 }
 
-#ifdef QLAT_INSTANTIATE_SMEAR
-#define QLAT_EXTERN
-#else
-#define QLAT_EXTERN extern
-#endif
-
-QLAT_EXTERN template void prop_smear_qlat_convension<Real, Real>(
-    Propagator4d&, const GaugeField&, const double, const int,
-    const CoordinateD&, const bool, const int, const int, const int);
-
-#undef QLAT_EXTERN
-
 }
 #endif
-
-
