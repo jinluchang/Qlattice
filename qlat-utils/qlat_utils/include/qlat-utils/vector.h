@@ -602,7 +602,7 @@ qacc void set_zero(vector<M>& xx)
 {
   Vector<Char> vec = get_data_char(xx);
 #ifdef QLAT_IN_ACC
-  std::memset(ptr, v, size);
+  std::memset(vec.data(), 0, vec.size());
 #else
   set_mem(vec.data(), 0, vec.size(), xx.mem_type);
 #endif
