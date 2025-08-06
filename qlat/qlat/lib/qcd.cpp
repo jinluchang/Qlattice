@@ -4,23 +4,6 @@
 namespace qlat
 {  //
 
-qacc_no_inline ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
-                                                  const Coordinate& xl,
-                                                  const int mu, const int nu)
-{
-  ColorMatrix m;
-  set_zero(m);
-  m += gf_wilson_line_no_comm(gf1, xl,
-                              make_array<int>(mu, nu, -mu - 1, -nu - 1));
-  m += gf_wilson_line_no_comm(gf1, xl,
-                              make_array<int>(-mu - 1, -nu - 1, mu, nu));
-  m += gf_wilson_line_no_comm(gf1, xl,
-                              make_array<int>(nu, -mu - 1, -nu - 1, mu));
-  m += gf_wilson_line_no_comm(gf1, xl,
-                              make_array<int>(-nu - 1, mu, nu, -mu - 1));
-  return (ComplexD)0.25 * m;
-}
-
 static qacc ColorMatrix gf_clover_leaf_m_n_no_comm(const GaugeField& gf1,
                                                    const Coordinate& xl,
                                                    const int mu, const int m,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/hmc.h>
+#include <qlat/qcd-topology.h>
 
 namespace qlat
 {  //
