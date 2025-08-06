@@ -25,24 +25,56 @@ struct API GeometryNode {
   Coordinate coor_node;
   // 0 <= coor_node[i] < size_node[i]
   //
-  qacc_no_inline GeometryNode();
-  qacc_no_inline GeometryNode(const Coordinate& coor_node_,
-                              const Coordinate& size_node_);
-  qacc_no_inline GeometryNode(const int id_node_, const Coordinate& size_node_);
+  qacc GeometryNode::GeometryNode() { init(); }
+  qacc GeometryNode::GeometryNode(const Coordinate& coor_node_,
+                                  const Coordinate& size_node_)
+  {
+    init(coor_node_, size_node_);
+  }
+  qacc GeometryNode(const int id_node_, const Coordinate& size_node_)
+  {
+    init(id_node_, size_node_);
+  }
   //
-  qacc_no_inline void init();
-  qacc_no_inline void init(const Coordinate& coor_node_,
-                           const Coordinate& size_node_);
-  qacc_no_inline void init(const Int id_node_, const Coordinate& size_node_);
+  qacc void init()
+  {
+    initialized = false;
+    num_node = 0;
+    id_node = 0;
+    size_node.init();
+    coor_node.init();
+  }
+  qacc void init(const Coordinate& coor_node_, const Coordinate& size_node_)
+  {
+    const int id_node_ = index_from_coordinate(coor_node_, size_node_);
+    const int num_node_ = product(size_node_);
+    initialized = true;
+    num_node = num_node_;
+    id_node = id_node_;
+    size_node = size_node_;
+    coor_node = coor_node_;
+  }
+  qacc void init(const Int id_node_, const Coordinate& size_node_)
+  {
+    const Coordinate coor_node_ = coordinate_from_index(id_node_, size_node_);
+    init(coor_node_, size_node_);
+  }
 };
 
 std::string show(const GeometryNode& geon);
 
-qacc_no_inline bool operator==(const GeometryNode& geon1,
-                               const GeometryNode& geon2);
+qacc bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
+{
+  return geon1.initialized == geon2.initialized &&
+         geon1.num_node == geon2.num_node && geon1.id_node == geon2.id_node &&
+         geon1.size_node == geon2.size_node &&
+         geon1.coor_node == geon2.coor_node;
+}
 
-qacc_no_inline bool operator!=(const GeometryNode& geon1,
-                               const GeometryNode& geon2);
+qacc bool operator!=(const GeometryNode& geon1, const GeometryNode& geon2)
+{
+  return !(geon1 == geon2);
+}
 
 API inline GeometryNode& get_geometry_node_internal()
 {
@@ -74,25 +106,76 @@ struct API Geometry {
   //
   bool is_only_local;
   //
-  qacc_no_inline Geometry();
+  qacc Geometry() { init(); }
   //
   Geometry(const Coordinate& total_site);
   //
-  qacc_no_inline void init();
-  qacc_no_inline void init(const GeometryNode& geon_,
-                           const Coordinate& node_site_);
-  qacc_no_inline void init(const Coordinate& coor_node_,
+  qacc void init()
+  {
+    initialized = false;
+    geon.init();
+    eo = 0;
+    node_site.init();
+    expansion_left.init();
+    expansion_right.init();
+    node_site_expanded.init();
+    is_only_local = false;
+  };
+  qacc void init(const GeometryNode& geon_, const Coordinate& node_site_)
+  {
+    init();
+    geon = geon_;
+    node_site = node_site_;
+    reset_node_site_expanded();
+    initialized = true;
+  }
+  qacc void init(const Coordinate& coor_node_,
                            const Coordinate& size_node_,
-                           const Coordinate& node_site_);
-  qacc_no_inline void init(const Int id_node_, const Coordinate& size_node_,
-                           const Coordinate& node_site_);
+                           const Coordinate& node_site_)
+  {
+    GeometryNode geon;
+    geon.init(coor_node_, size_node_);
+    init(geon, node_site_);
+  }
+  qacc void init(const Int id_node_, const Coordinate& size_node_,
+                 const Coordinate& node_site_)
+  {
+    GeometryNode geon;
+    geon.init(id_node_, size_node_);
+    init(geon, node_site_);
+  }
   void init(const Coordinate& total_site);
   //
-  qacc_no_inline void reset_node_site_expanded();
+  qacc void reset_node_site_expanded()
+  {
+    is_only_local = true;
+    for (int i = 0; i < DIMN; ++i) {
+      node_site_expanded[i] =
+          expansion_left[i] + node_site[i] + expansion_right[i];
+      if (expansion_left[i] != 0 or expansion_right[i] != 0) {
+        is_only_local = false;
+      }
+    }
+  }
   //
-  qacc_no_inline void resize(const Coordinate& expansion_left_,
-                             const Coordinate& expansion_right_);
-  qacc_no_inline void resize(const int thick);
+  qacc void resize(const Coordinate& expansion_left_,
+                             const Coordinate& expansion_right_)
+  {
+    expansion_left = expansion_left_;
+    expansion_right = expansion_right_;
+    for (int i = 0; i < DIMN; ++i) {
+      if (geon.size_node[i] == 1) {
+        expansion_left[i] = 0;
+        expansion_right[i] = 0;
+      }
+    }
+    reset_node_site_expanded();
+  }
+  qacc void resize(const int thick)
+  {
+    const Coordinate expansion(thick, thick, thick, thick);
+    resize(expansion, expansion);
+  }
   //
   qacc Coordinate mirror(const Coordinate& xl) const
     // avoid communicate in direction mu when geon.size_node[mu] == 1
@@ -271,22 +354,67 @@ struct API Geometry {
 
 std::string show(const qlat::Geometry& geo);
 
-qacc_no_inline bool operator==(const Geometry& geo1, const Geometry& geo2);
+qacc bool operator==(const Geometry& geo1, const Geometry& geo2)
+{
+  return geo1.initialized == geo2.initialized && geo1.eo == geo2.eo &&
+         geo1.geon == geo2.geon && geo1.node_site == geo2.node_site &&
+         geo1.expansion_left == geo2.expansion_left &&
+         geo1.expansion_right == geo2.expansion_right &&
+         geo1.node_site_expanded == geo2.node_site_expanded &&
+         geo1.is_only_local == geo2.is_only_local;
+}
 
-qacc_no_inline bool operator!=(const Geometry& geo1, const Geometry& geo2);
+qacc bool operator!=(const Geometry& geo1, const Geometry& geo2)
+{
+  return !(geo1 == geo2);
+}
 
-qacc_no_inline Geometry geo_resize(const Geometry& geo_, const int thick = 0);
+qacc Geometry geo_resize(const Geometry& geo_, const int thick = 0)
+{
+  Geometry geo = geo_;
+  geo.resize(thick);
+  return geo;
+}
 
-qacc_no_inline Geometry geo_resize(const Geometry& geo_,
+qacc Geometry geo_resize(const Geometry& geo_,
                                    const Coordinate& expansion_left_,
-                                   const Coordinate& expansion_right_);
+                                   const Coordinate& expansion_right_)
+{
+  Geometry geo = geo_;
+  geo.resize(expansion_left_, expansion_right_);
+  return geo;
+}
 
-qacc_no_inline Geometry geo_eo(const Geometry& geo_, const int eo_ = 0);
+qacc Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
+// 0:regular; 1:odd; 2:even
+{
+  Geometry geo = geo_;
+  geo.eo = eo_;
+  return geo;
+}
 
-qacc_no_inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2);
+qacc bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
+{
+  return geo1.initialized == geo2.initialized && geo1.geon == geo2.geon &&
+         geo1.node_site == geo2.node_site;
+}
 
-qacc_no_inline bool is_matching_geo_included(const Geometry& geo1,
-                                             const Geometry& geo2);
+qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
+// return if geo1 is included in geo2
+{
+  bool include = is_matching_geo(geo1, geo2);
+  for (int i = 0; i < 4; i++) {
+    if (geo2.expansion_left[i] < geo1.expansion_left[i]) {
+      include = false;
+    }
+  }
+  for (int i = 0; i < 4; i++) {
+    if (geo2.expansion_right[i] < geo1.expansion_right[i]) {
+      include = false;
+    }
+  }
+  return include;
+}
 
 // --------------------
 
@@ -1091,7 +1219,10 @@ struct API FieldSelection {
   //
   FieldSelection() { init(); }
   //
-  qacc_no_inline Geometry get_geo() const;
+  qacc Geometry get_geo() const;
+  {
+    return f_rank.geo.get();
+  }
   //
   void set_mem_type(const MemType mem_type) const;
   //

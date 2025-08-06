@@ -6,8 +6,8 @@
 namespace qlat
 {  //
 
-static qacc_no_inline ColorMatrix color_matrix_sub_invert(const ColorMatrix& x,
-                                                          const int ind)
+static qacc ColorMatrix color_matrix_sub_invert(const ColorMatrix& x,
+                                                const int ind)
 // get su2 submatrix of x and return the su3 matrix that
 // has the inverse of this matrix in the relevant row and column
 {
@@ -40,8 +40,8 @@ static qacc_no_inline ColorMatrix color_matrix_sub_invert(const ColorMatrix& x,
   }
 }
 
-static qacc_no_inline ColorMatrix color_matrix_su_projection(const ColorMatrix& x,
-                                              const double tolerance = 1.0e-8)
+static qacc ColorMatrix color_matrix_su_projection(
+    const ColorMatrix& x, const double tolerance = 1.0e-8)
 {
   // usually takes ~5 hits, so just exit
   // if hits the max, as something is
@@ -79,9 +79,10 @@ static qacc_no_inline ColorMatrix color_matrix_su_projection(const ColorMatrix& 
   return y;
 }
 
-static qacc_no_inline ColorMatrix
-gf_link_ape_smear_no_comm(const GaugeField& gf, const Coordinate& xl,
-                          const int mu, const double alpha)
+static qacc ColorMatrix gf_link_ape_smear_no_comm(const GaugeField& gf,
+                                                  const Coordinate& xl,
+                                                  const int mu,
+                                                  const double alpha)
 {
   return color_matrix_su_projection(
       (ComplexD)(1.0 - alpha) * gf.get_elem(xl, mu) +
@@ -120,9 +121,10 @@ void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
   }
 }
 
-static qacc_no_inline ColorMatrix
-gf_link_spatial_ape_smear_no_comm(const GaugeField& gf, const Coordinate& xl,
-                                  const int mu, const double alpha)
+static qacc ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf,
+                                                          const Coordinate& xl,
+                                                          const int mu,
+                                                          const double alpha)
 {
   const double multi = mu == 3 ? 6.0 : 4.0;
   return color_matrix_su_projection(

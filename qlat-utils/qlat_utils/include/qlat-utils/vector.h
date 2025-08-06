@@ -311,8 +311,7 @@ void free_mem(void* ptr, const Long min_size, const MemType mem_type);
 void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
               const MemType mem_type_src, const Long size);
 
-qacc_no_inline void set_mem(void* ptr, const Int v, const Long size,
-                            const MemType mem_type);
+void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type);
 
 // --------------------
 
@@ -602,7 +601,11 @@ template <class M>
 qacc void set_zero(vector<M>& xx)
 {
   Vector<Char> vec = get_data_char(xx);
+#ifdef QLAT_IN_ACC
+  std::memset(ptr, v, size);
+#else
   set_mem(vec.data(), 0, vec.size(), xx.mem_type);
+#endif
 }
 
 // --------------------

@@ -21,6 +21,9 @@ def gf_plaq_action_density_field(GaugeField gf):
     paf.geo.multiplicity == 1
     \sum_P (1 - 1/3 * Re Tr U_P)
     #
+    6 plaqs in the above sum (for each site).
+    #
+    Action = beta * total_volume * 6 * (1 - avg_plaq)
     Action = beta * total_volume * action_density
     Single instanton action = 8 * sqr(PI) / g^2
     beta = 6/g^2

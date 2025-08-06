@@ -326,14 +326,9 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
 #endif
 }
 
-qacc_no_inline void set_mem(void* ptr, const Int v, const Long size,
-                            const MemType mem_type)
+void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type)
 {
 #ifdef QLAT_USE_ACC
-#ifdef QLAT_IN_ACC
-  (void)mem_type;
-  std::memset(ptr, v, size);
-#else
   const MemType eff_mem_type = get_eff_mem_type(mem_type);
   if (eff_mem_type == MemType::Cpu) {
     std::memset(ptr, v, size);
@@ -345,7 +340,6 @@ qacc_no_inline void set_mem(void* ptr, const Int v, const Long size,
                     qacc_GetErrorString(err), err));
     }
   }
-#endif
 #else
   (void)mem_type;
   std::memset(ptr, v, size);

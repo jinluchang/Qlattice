@@ -17,6 +17,10 @@
 #define QLAT_IN_ACC
 #endif
 
+#ifdef __HIP_DEVICE_COMPILE__
+#define QLAT_IN_ACC
+#endif
+
 #endif
 
 #include <qlat-utils/qacc-translator.h>
