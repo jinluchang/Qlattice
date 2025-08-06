@@ -348,8 +348,8 @@ void prop_smear_qlat_convension(Propagator4dT<RealD>& prop,
                                 const int step, const CoordinateD& mom,
                                 const bool smear_in_time_dir, const int mode)
 {
-  prop_smear_qlat_convension<RealD>(prop, gf, coef, step, mom,
-                                    smear_in_time_dir, mode);
+  prop_smear_qlat_convension<RealD, RealD>(prop, gf, coef, step, mom,
+                                           smear_in_time_dir, mode);
 }
 
 void prop_smear_qlat_convension(Propagator4dT<RealF>& prop,
@@ -357,8 +357,8 @@ void prop_smear_qlat_convension(Propagator4dT<RealF>& prop,
                                 const int step, const CoordinateD& mom,
                                 const bool smear_in_time_dir, const int mode)
 {
-  prop_smear_qlat_convension<RealF>(prop, gf, coef, step, mom,
-                                    smear_in_time_dir, mode);
+  prop_smear_qlat_convension<RealF, RealF>(prop, gf, coef, step, mom,
+                                           smear_in_time_dir, mode);
 }
 
 static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
