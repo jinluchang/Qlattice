@@ -393,6 +393,8 @@ cdef extern from "qlat/qcd-smear.h" namespace "qlat":
     void prop_smear(Prop& prop, const GaugeField& gf1, const RealD coef, const Int step, const CoordinateD& mom, const bool smear_in_time_dir) except +
     void prop_spatial_smear_no_comm(std_vector[FermionField4d]& ff_vec, const GaugeField& gf, const RealD coef, const Long step, const CoordinateD& mom) except +
     void gf_reduce_half(GaugeField& hgf, const GaugeField& gf) except +
+    void prop_smear_qlat_convension(Prop& prop, const GaugeField& gf1, const RealD coef, const Int step, const CoordinateD& mom, const bool smear_in_time_dir, const Int mode_smear) except +
+
 
 cdef extern from "qlat/qcd.h" namespace "qlat":
 
@@ -417,14 +419,6 @@ cdef extern from "qlat/hmc.h" namespace "qlat":
     void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf, const GaugeMomentum& gm_force) except +
     RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual, const Field[RealD]& mf, const Field[RealD]& mf_dual) except +
     void dot_gauge_momentum(Field[RealD]& f, const GaugeMomentum& gm1, const GaugeMomentum& gm2) except +
-
-cdef extern from "qlat/vector_utils/utils_smear_vecs.h" namespace "qlat":
-
-    void prop_smear_qlat_convension(Prop& prop, const GaugeField& gf1,
-                                    const RealD coef, const Int step,
-                                    const CoordinateD& mom,
-                                    const bool smear_in_time_dir,
-                                    const Int mode_smear) except +
 
 cdef extern from "qlat/fields-io.h" namespace "qlat":
 

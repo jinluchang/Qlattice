@@ -185,34 +185,19 @@ void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   }
 }
 
-template <class T>
-void set_point_src_fermion_field(FermionField4dT<T>& ff, const Coordinate& xg,
-                                 const int cs, const ComplexD& value = 1.0)
-// ff need to be initialized
-{
-  TIMER("set_point_src_fermion_field");
-  const Geometry& geo = ff.geo();
-  set_zero(ff);
-  const Coordinate xl = geo.coordinate_l_from_g(xg);
-  if (geo.is_local(xl)) {
-    ff.get_elem(xl)(cs) = value;
-  }
-}
+void set_point_src_fermion_field(FermionField4dT<RealD>& ff,
+                                 const Coordinate& xg, const int cs,
+                                 const ComplexD& value = 1.0);
 
-template <class T>
-void set_point_src(Propagator4dT<T>& prop, const Geometry& geo_input,
-                   const Coordinate& xg, const ComplexD& value = 1.0)
-{
-  TIMER_VERBOSE("set_point_src");
-  const Geometry geo = geo_resize(geo_input);
-  prop.init(geo);
-  FermionField4dT<T> src;
-  src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
-    set_point_src_fermion_field(src, xg, cs, value);
-    set_propagator_col_from_fermion_field(prop, cs, src);
-  }
-}
+void set_point_src_fermion_field(FermionField4dT<RealF>& ff,
+                                 const Coordinate& xg, const int cs,
+                                 const ComplexD& value = 1.0);
+
+void set_point_src(Propagator4dT<RealD>& prop, const Geometry& geo_input,
+                   const Coordinate& xg, const ComplexD& value = 1.0);
+
+void set_point_src(Propagator4dT<RealF>& prop, const Geometry& geo_input,
+                   const Coordinate& xg, const ComplexD& value = 1.0);
 
 template <class Inverter, class T>
 void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
