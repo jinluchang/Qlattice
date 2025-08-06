@@ -124,6 +124,7 @@ __all__ += [
         'set_g_rand_color_matrix_field',
         'gf_twist_boundary_at_boundary',
         'mk_left_expanded_gauge_field',
+        'gf_reduce_half',
         ]
 
 __all__ += [

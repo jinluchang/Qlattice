@@ -73,7 +73,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
                                 const Long step,
                                 const CoordinateD& mom = CoordinateD());
 
-void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf);
+void gf_reduce_half(GaugeField& hgf, const GaugeField& gf);
 
 #ifdef QLAT_INSTANTIATE_SMEAR
 #define QLAT_EXTERN

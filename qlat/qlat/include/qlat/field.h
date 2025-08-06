@@ -536,6 +536,10 @@ template <class M>
 void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
                      const int shift)
 // shift f1 in 'dir' direction for 'shift' steps
+// roughly f[xg + shift * nvec] = f1[xg]
+// where
+// Coordinate nvec;
+// nvec[dir] = 1;
 {
   TIMER("field_shift_dir");
   qassert(0 <= dir and dir < 4);

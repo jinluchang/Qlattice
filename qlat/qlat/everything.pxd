@@ -392,6 +392,7 @@ cdef extern from "qlat/qcd-smear.h" namespace "qlat":
     void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const RealD alpha1, const RealD alpha2, const RealD alpha3) except +
     void prop_smear(Prop& prop, const GaugeField& gf1, const RealD coef, const Int step, const CoordinateD& mom, const bool smear_in_time_dir) except +
     void prop_spatial_smear_no_comm(std_vector[FermionField4d]& ff_vec, const GaugeField& gf, const RealD coef, const Long step, const CoordinateD& mom) except +
+    void gf_reduce_half(GaugeField& hgf, const GaugeField& gf) except +
 
 cdef extern from "qlat/qcd.h" namespace "qlat":
 

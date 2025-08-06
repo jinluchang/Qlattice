@@ -50,10 +50,10 @@ def prop_smear(Prop prop, GaugeField gf1,
     if mom is None:
         mom = CoordinateD()
     if mode_smear == 0:
-        cc.prop_smear(prop1.xxx().p[0], gf1.xxx().p[0],
+        cc.prop_smear(prop1.xxx().val(), gf1.xxx().val(),
                       coef, step, mom.xx, smear_in_time_dir)
     elif mode_smear >= 1:
-        cc.prop_smear_qlat_convension(prop1.xxx().p[0], gf1.xxx().p[0],
+        cc.prop_smear_qlat_convension(prop1.xxx().val(), gf1.xxx().val(),
                                       coef, step, mom.xx, smear_in_time_dir, mode_smear)
     else:
         raise Exception(f"prop_smear(prop1, gf1, coef={coef}, step={step}, mom={mom}, smear_in_time_dir={smear_in_time_dir}, mode_smear={mode_smear})")

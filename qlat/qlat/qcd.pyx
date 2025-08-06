@@ -217,3 +217,13 @@ def mk_left_expanded_gauge_field(GaugeField gf):
     refresh_expanded_1(gf1)
     return gf1
 
+def gf_reduce_half(GaugeField gf):
+    """
+    return hgf with half of the size in all directions
+    Do not modify `gf`.
+    Can perform some shift before call this function, e.g.
+    `gf_reduce_half(gf.shift())`
+    """
+    cdef GaugeField hgf = GaugeField()
+    cc.gf_reduce_half(hgf.xxx().val(), gf.xxx().val())
+    return hgf

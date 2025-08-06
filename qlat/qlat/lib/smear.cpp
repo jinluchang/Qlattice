@@ -592,10 +592,10 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   }
 }
 
-void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf)
+void gf_reduce_half(GaugeField& hgf, const GaugeField& gf)
 // xl = coordinate_shifts(hxl * 2, 0)
 {
-  TIMER_VERBOSE("reduce_half_gauge_field(hgf,gf)");
+  TIMER_VERBOSE("gf_reduce_half(hgf,gf)");
   const Geometry geo = gf.get_geo();
   Geometry hgeo;
   hgeo.init(geo.geon, geo.node_site / 2);

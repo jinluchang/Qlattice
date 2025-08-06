@@ -124,12 +124,12 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
 ###
 
 def set_point_src(Prop prop_src not None, Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
-    cc.set_point_src(prop_src.xxx().p[0], geo.xx, xg.xx, cc.ccpy_d(value))
+    cc.set_point_src(prop_src.xxx().val(), geo.xx, xg.xx, cc.ccpy_d(value))
 
 def set_wall_src(Prop prop_src not None, Geometry geo not None, int tslice, CoordinateD lmom=None):
     if lmom is None:
         lmom = CoordinateD()
-    cc.set_wall_src(prop_src.xxx().p[0], geo.xx, tslice, lmom.xx)
+    cc.set_wall_src(prop_src.xxx().val(), geo.xx, tslice, lmom.xx)
 
 def set_rand_vol_u1(
         FieldComplexD fu1 not None,
@@ -145,7 +145,7 @@ def set_rand_vol_u1_src(
     """
     prop_src ~ fu1
     """
-    cc.set_rand_vol_u1_src(prop_src.xxx().p[0], fu1.xx)
+    cc.set_rand_vol_u1_src(prop_src.xxx().val(), fu1.xx)
 
 @q.timer
 def mk_point_src(Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
@@ -277,7 +277,7 @@ def mk_ff_list_from_prop(Prop prop):
     cdef list ff_list = []
     cdef FermionField4d ff
     cdef cc.std_vector[cc.FermionField4d] ff_vec
-    cc.set_ff_vec_from_prop(ff_vec, prop.xxx().p[0])
+    cc.set_ff_vec_from_prop(ff_vec, prop.xxx().val())
     assert <cc.Int>ff_vec.size() == num_field
     for i in range(num_field):
         ff = FermionField4d()
