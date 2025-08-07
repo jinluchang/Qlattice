@@ -15,9 +15,6 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
-
 rs = q.RngState("seed")
 
 path = "results/ckpoint.topo1.4nt8.lat"
@@ -35,6 +32,11 @@ else:
 q.displayln_info(f"CHECK: total_site = {total_site}")
 q.displayln_info("CHECK: geo.show() =", geo.show())
 gf.show_info()
+
+f_plaq = q.gf_plaq_field(gf)
+f_topo = q.gf_topology_field(gf)
+q.json_results_append(f"f_plaq", q.get_data_sig_arr(f_plaq, q.RngState(), 3))
+q.json_results_append(f"f_topo", q.get_data_sig_arr(f_topo, q.RngState(), 3))
 
 gf_ape_list = []
 
@@ -54,7 +56,7 @@ for i, gf_ape in enumerate(gf_ape_list):
     plaq_density = q.gf_plaq_action_density(gf_ape)
     spatial_plaq_density = q.gf_spatial_plaq_action_density(gf_ape)
     topo = q.gf_topology(gf_ape)
-    check_eps=1e-5
+    check_eps = 1e-5
     q.json_results_append(f"gf_ape_list[{i}] plaq", plaq, check_eps)
     q.json_results_append(f"gf_ape_list[{i}] plaq2", 1 - plaq_density / 6, check_eps)
     q.json_results_append(f"gf_ape_list[{i}] spatial_plaq", spatial_plaq, check_eps)
@@ -185,10 +187,7 @@ q.save_pickle_obj(energy_list, f"{density_field_path}/energy-list.pickle")
 
 check_topo_energy_list("smear_measure_topo wilson-flow", topo_list, energy_list)
 
-q.check_log_json(__file__, check_eps=1e-5)
-
 q.timer_display()
-
+q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
-
 q.displayln_info(f"CHECK: finished successfully.")

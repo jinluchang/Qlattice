@@ -118,6 +118,7 @@ __all__ += [
         'gf_avg_plaq',
         'gf_avg_spatial_plaq',
         'gf_avg_link_trace',
+        'gf_plaq_field',
         'gf_wilson_line_no_comm',
         'gf_wilson_lines_no_comm',
         'gf_avg_wilson_loop_normalized_tr',
