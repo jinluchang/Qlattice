@@ -75,7 +75,7 @@ def prop_spatial_smear_no_comm(list ff_list, GaugeField gf, cc.RealD coef, cc.Lo
         assert isinstance(ff_list[i], FermionField4d)
         ff = ff_list[i]
         cc.qswap(ff.xx, ff_vec[i])
-    cc.prop_spatial_smear_no_comm(ff_vec, gf.xxx().p[0], coef, step, mom.xx)
+    cc.prop_spatial_smear_no_comm(ff_vec, gf.xxx().val(), coef, step, mom.xx)
     for i in range(num_field):
         ff = ff_list[i]
         cc.qswap(ff.xx, ff_vec[i])

@@ -232,5 +232,5 @@ def gf_reduce_half(GaugeField gf):
     `gf_reduce_half(gf.shift())`
     """
     cdef GaugeField hgf = GaugeField()
-    cc.gf_reduce_half(hgf.xxx().val(), gf.xxx().val())
+    cc.gf_reduce_half(<cc.GaugeField&>hgf.xx, gf.xxx().val())
     return hgf
