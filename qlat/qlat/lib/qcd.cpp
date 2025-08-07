@@ -77,6 +77,16 @@ static qacc RealD clf_topology_density(const CloverLeafField& clf,
 // ------------------------------------
 
 template <class T>
+qacc RealD gf_plaq_no_comm(const Vector<ColorMatrixT<T>>& v,
+                           const array<Vector<ColorMatrixT<T>>, DIMN>& vms,
+                           const Int m1, const Int m2)
+{
+  ColorMatrixT<T> cm =
+      v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
+  return matrix_trace(cm).real() / NUM_COLOR;
+}
+
+template <class T>
 static RealD gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
@@ -95,17 +105,16 @@ static RealD gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
       xl[m] -= 1;
     }
     double sum = 0.0;
-    for (int m1 = 1; m1 < DIMN; ++m1) {
-      for (int m2 = 0; m2 < m1; ++m2) {
-        ColorMatrixT<T> cm =
-            v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
-        sum += matrix_trace(cm).real() / NUM_COLOR;
-        if (std::isnan(sum)) {
-          qerr(ssprintf("WARNING: isnan in gf_avg_plaq"));
-        }
-      }
-    }
+    sum += gf_plaq_no_comm(v, vms, 0, 1);
+    sum += gf_plaq_no_comm(v, vms, 0, 2);
+    sum += gf_plaq_no_comm(v, vms, 0, 3);
+    sum += gf_plaq_no_comm(v, vms, 1, 2);
+    sum += gf_plaq_no_comm(v, vms, 1, 3);
+    sum += gf_plaq_no_comm(v, vms, 2, 3);
     sum /= DIMN * (DIMN - 1) / 2;
+    if (std::isnan(sum)) {
+      qerr(ssprintf("WARNING: isnan in gf_avg_plaq"));
+    }
     cf.get_elem(index) = sum;
   });
   const std::vector<double> sum_vec = field_sum(cf);
@@ -121,7 +130,7 @@ static RealD gf_avg_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_plaq");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo(), Coordinate(1, 1, 1, 1), Coordinate(1, 1, 1, 1)));
+  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);
@@ -178,7 +187,7 @@ static RealD gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_spatial_plaq(gf)");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo(), Coordinate(1, 1, 1, 1), Coordinate(1, 1, 1, 1)));
+  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_spatial_plaq_no_comm(gf1);
@@ -210,6 +219,8 @@ static RealD gf_avg_link_trace(const GaugeFieldT<T>& gf)
   return sum;
 }
 
+// ------------------------------------
+
 RealD gf_avg_spatial_plaq(const GaugeField& gf)
 {
   return gf_avg_spatial_plaq<RealD>(gf);
@@ -220,6 +231,53 @@ RealD gf_avg_plaq(const GaugeField& gf) { return gf_avg_plaq<RealD>(gf); }
 RealD gf_avg_link_trace(const GaugeField& gf)
 {
   return gf_avg_link_trace<RealD>(gf);
+}
+
+// ------------------------------------
+
+template <class T>
+static void gf_plaq_field_no_comm(Field<RealD>& f_plaq,
+                                  const GaugeFieldT<T>& gf)
+// assume proper communication is done
+{
+  TIMER("gf_plaq_field_no_comm");
+  const Geometry geo = geo_resize(gf.get_geo());
+  f_plaq.init(geo, 6);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = f_plaq.geo();
+    Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
+    array<Vector<ColorMatrixT<T>>, DIMN> vms;
+    for (int m = 0; m < DIMN; ++m) {
+      xl[m] += 1;
+      vms[m] = gf.get_elems_const(xl);
+      xl[m] -= 1;
+    }
+    Vector<RealD> pv = f_plaq.get_elems(index);
+    pv[0] = gf_plaq_no_comm(v, vms, 0, 1);
+    pv[1] = gf_plaq_no_comm(v, vms, 0, 2);
+    pv[2] = gf_plaq_no_comm(v, vms, 0, 3);
+    pv[3] = gf_plaq_no_comm(v, vms, 1, 2);
+    pv[4] = gf_plaq_no_comm(v, vms, 1, 3);
+    pv[5] = gf_plaq_no_comm(v, vms, 2, 3);
+  });
+}
+
+template <class T>
+static void gf_plaq_field(Field<RealD>& f_plaq, const GaugeFieldT<T>& gf)
+{
+  TIMER("gf_plaq_field");
+  GaugeFieldT<T> gf1;
+  gf1.init(
+      geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
+  gf1 = gf;
+  refresh_expanded(gf1);
+  gf_plaq_field_no_comm(gf1);
+}
+
+void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf)
+{
+  gf_plaq_field(f_plaq, gf);
 }
 
 // ------------------------------------

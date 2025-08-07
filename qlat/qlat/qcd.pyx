@@ -4,6 +4,7 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .field_types cimport (
+        FieldRealD,
         FieldColorMatrix,
         )
 
@@ -163,6 +164,11 @@ def gf_avg_spatial_plaq(GaugeField gf):
 def gf_avg_link_trace(GaugeField gf):
     assert gf is not None
     return cc.gf_avg_link_trace(gf.xxx().val())
+
+def gf_plaq_field(FieldRealD f_plaq, GaugeField gf):
+    assert f_plaq is not None
+    assert gf is not None
+    cc.gf_plaq_field(f_plaq.xx, gf.xxx().val())
 
 def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None):
     """

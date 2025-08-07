@@ -395,12 +395,12 @@ cdef extern from "qlat/qcd-smear.h" namespace "qlat":
     void gf_reduce_half(GaugeField& hgf, const GaugeField& gf) except +
     void prop_smear_qlat_convension(Prop& prop, const GaugeField& gf1, const RealD coef, const Int step, const CoordinateD& mom, const bool smear_in_time_dir, const Int mode_smear) except +
 
-
 cdef extern from "qlat/qcd.h" namespace "qlat":
 
     RealD gf_avg_plaq(const GaugeField& gf) except +
     RealD gf_avg_spatial_plaq(const GaugeField& gf) except +
     RealD gf_avg_link_trace(const GaugeField& gf) except +
+    void gf_plaq_field(Field[RealD]& f_plaq, const GaugeField& gf) except +
 
 cdef extern from "qlat/hmc.h" namespace "qlat":
 
