@@ -272,12 +272,12 @@ static void gf_plaq_field(Field<RealD>& f_plaq, const GaugeFieldT<T>& gf)
       geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
-  gf_plaq_field_no_comm(gf1);
+  gf_plaq_field_no_comm(f_plaq, gf1);
 }
 
 void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf)
 {
-  gf_plaq_field<RealD>(f_plaq, gf);
+  gf_plaq_field<Real>(f_plaq, gf);
 }
 
 // ------------------------------------
