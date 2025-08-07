@@ -277,7 +277,7 @@ static void gf_plaq_field(Field<RealD>& f_plaq, const GaugeFieldT<T>& gf)
 
 void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf)
 {
-  gf_plaq_field(f_plaq, gf);
+  gf_plaq_field<RealD>(f_plaq, gf);
 }
 
 // ------------------------------------
