@@ -4,8 +4,8 @@
 namespace qlat
 {
 
-int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
-             int tag, MPI_Comm comm)
+Int mpi_send(const void* buf, Long count, MPI_Datatype datatype, Int dest,
+             Int tag, MPI_Comm comm)
 {
   const Long int_max = INT_MAX;
   if (count <= int_max) {
@@ -23,7 +23,7 @@ int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
   }
 }
 
-int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
+Int mpi_recv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
              MPI_Comm comm, MPI_Status* status)
 {
   const Long int_max = INT_MAX;
@@ -44,13 +44,13 @@ int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
   }
 }
 
-int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
-              int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
+Int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, Int dest,
+              Int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
 {
   const Long int_max = INT_MAX;
   if (count <= int_max) {
     MPI_Request r;
-    int ret = MPI_Isend(buf, count, datatype, dest, tag, comm, &r);
+    Int ret = MPI_Isend(buf, count, datatype, dest, tag, comm, &r);
     requests.push_back(r);
     qassert(ret == MPI_SUCCESS);
     return MPI_SUCCESS;
@@ -67,13 +67,13 @@ int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
   }
 }
 
-int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
+Int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
               MPI_Comm comm, std::vector<MPI_Request>& requests)
 {
   const Long int_max = INT_MAX;
   if (count <= int_max) {
     MPI_Request r;
-    int ret = MPI_Irecv(buf, count, datatype, source, tag, comm, &r);
+    Int ret = MPI_Irecv(buf, count, datatype, source, tag, comm, &r);
     requests.push_back(r);
     qassert(ret == MPI_SUCCESS);
     return MPI_SUCCESS;
@@ -90,11 +90,11 @@ int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
   }
 }
 
-int mpi_waitall(std::vector<MPI_Request>& requests)
+Int mpi_waitall(std::vector<MPI_Request>& requests)
 {
   TIMER("mpi_waitall");
   if (requests.size() > 0) {
-    int ret = MPI_Waitall(requests.size(), requests.data(), MPI_STATUS_IGNORE);
+    Int ret = MPI_Waitall(requests.size(), requests.data(), MPI_STATUS_IGNORE);
     qassert(ret == MPI_SUCCESS);
   }
   requests.resize(0);
@@ -115,7 +115,7 @@ static const std::vector<Int>& get_random_rank_order(const Int size)
   return order;
 }
 
-static int mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
+static Int mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
                                 const Long* sdispls, MPI_Datatype sendtype,
                                 void* recvbuf, const Long* recvcounts,
                                 const Long* rdispls, MPI_Datatype recvtype,
@@ -190,7 +190,7 @@ static int mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
   return 0;
 }
 
-static int mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
+static Int mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
                                  const Long* sdispls, MPI_Datatype sendtype,
                                  void* recvbuf, const Long* recvcounts,
                                  const Long* rdispls, MPI_Datatype recvtype,
@@ -225,7 +225,7 @@ static int mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
                        comm);
 }
 
-int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
+Int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
                   const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
                   const Long* recvcounts, const Long* rdispls,
                   MPI_Datatype recvtype, MPI_Comm comm)
@@ -245,8 +245,8 @@ int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
   return -1;
 }
 
-static int mpi_bcast_custom(void* buffer, const Long count,
-                            MPI_Datatype datatype, const int root,
+static Int mpi_bcast_custom(void* buffer, const Long count,
+                            MPI_Datatype datatype, const Int root,
                             MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_bcast_custom");
@@ -256,7 +256,7 @@ static int mpi_bcast_custom(void* buffer, const Long count,
   Int rank, size;
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &size);
-  const int mpi_tag = 13;
+  const Int mpi_tag = 13;
   const Int vrank = (rank - root + size) % size;
   Int mask = 1;
   while (mask < size) {
@@ -276,8 +276,8 @@ static int mpi_bcast_custom(void* buffer, const Long count,
   return 0;
 }
 
-static int mpi_bcast_native(void* buffer, const Long count,
-                            MPI_Datatype datatype, const int root,
+static Int mpi_bcast_native(void* buffer, const Long count,
+                            MPI_Datatype datatype, const Int root,
                             MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_bcast_native");
@@ -289,8 +289,8 @@ static int mpi_bcast_native(void* buffer, const Long count,
   return MPI_Bcast(buffer, count_i, datatype, root, comm);
 }
 
-int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
-              const int root, MPI_Comm comm)
+Int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
+              const Int root, MPI_Comm comm)
 {
   static const std::string q_env_type =
       get_env_default("q_mpi_bcast", "custom");
@@ -304,7 +304,7 @@ int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
   return -1;
 }
 
-static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
+static Int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
                                 const Long count, MPI_Datatype datatype,
                                 MPI_Op op, MPI_Comm comm)
 {
@@ -333,35 +333,99 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
         void* tempbuf = temp_vec.data();
         mpi_recv(tempbuf, count, datatype, partner, mpi_tag, comm);
         // Perform sum operation based on datatype
-        if (datatype == MPI_INT32_T and op == MPI_SUM) {
+        if (datatype == MPI_INT32_T) {
           Int* rbuf = (Int*)recvbuf;
           Int* tbuf = (Int*)tempbuf;
-          for (Long i = 0; i < count; i++) {
-            rbuf[i] += tbuf[i];
+          if (op == MPI_SUM) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] += tbuf[i];
+            }
+          } else if (op == MPI_MAX) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::max(rbuf[i], tbuf[i]);
+            }
+          } else if (op == MPI_MIN) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::min(rbuf[i], tbuf[i]);
+            }
+          } else {
+            qassert(false);
           }
-        } else if (datatype == MPI_INT64_T and op == MPI_SUM) {
+        } else if (datatype == MPI_INT64_T) {
           Long* rbuf = (Long*)recvbuf;
           Long* tbuf = (Long*)tempbuf;
-          for (Long i = 0; i < count; i++) {
-            rbuf[i] += tbuf[i];
+          if (op == MPI_SUM) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] += tbuf[i];
+            }
+          } else if (op == MPI_MAX) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::max(rbuf[i], tbuf[i]);
+            }
+          } else if (op == MPI_MIN) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::min(rbuf[i], tbuf[i]);
+            }
+          } else {
+            qassert(false);
           }
-        } else if (datatype == MPI_FLOAT and op == MPI_SUM) {
+        } else if (datatype == MPI_FLOAT) {
           RealF* rbuf = (RealF*)recvbuf;
           RealF* tbuf = (RealF*)tempbuf;
-          for (Long i = 0; i < count; i++) {
-            rbuf[i] += tbuf[i];
+          if (op == MPI_SUM) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] += tbuf[i];
+            }
+          } else if (op == MPI_MAX) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::max(rbuf[i], tbuf[i]);
+            }
+          } else if (op == MPI_MIN) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::min(rbuf[i], tbuf[i]);
+            }
+          } else {
+            qassert(false);
           }
-        } else if (datatype == MPI_DOUBLE and op == MPI_SUM) {
+        } else if (datatype == MPI_DOUBLE) {
           RealD* rbuf = (RealD*)recvbuf;
           RealD* tbuf = (RealD*)tempbuf;
-          for (Long i = 0; i < count; i++) {
-            rbuf[i] += tbuf[i];
+          if (op == MPI_SUM) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] += tbuf[i];
+            }
+          } else if (op == MPI_MAX) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::max(rbuf[i], tbuf[i]);
+            }
+          } else if (op == MPI_MIN) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::min(rbuf[i], tbuf[i]);
+            }
+          } else {
+            qassert(false);
           }
-        } else if (datatype == MPI_BYTE and op == MPI_BXOR) {
+        } else if (datatype == MPI_INT8_T) {
           Char* rbuf = (Char*)recvbuf;
           Char* tbuf = (Char*)tempbuf;
-          for (Long i = 0; i < count; i++) {
-            rbuf[i] ^= tbuf[i];
+          if (op == MPI_SUM) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] += tbuf[i];
+            }
+          } else if (op == MPI_MAX) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::max(rbuf[i], tbuf[i]);
+            }
+          } else if (op == MPI_MIN) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] = std::min(rbuf[i], tbuf[i]);
+            }
+          } else if (op == MPI_BXOR) {
+            for (Long i = 0; i < count; i++) {
+              rbuf[i] ^= tbuf[i];
+            }
+          } else {
+            qassert(false);
           }
         } else {
           qassert(false);
@@ -378,7 +442,7 @@ static int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
   return mpi_bcast(recvbuf, count, datatype, root, comm);
 }
 
-static int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
+static Int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
                                 MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_allreduce_native");
@@ -391,7 +455,7 @@ static int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
   return MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
 }
 
-int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
+Int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   static const std::string q_env_type =
@@ -404,56 +468,6 @@ int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
     qerr(ssprintf("mpi_allreduce: q_mpi_allreduce='%s'.", q_env_type.c_str()));
   }
   return -1;
-}
-
-int glb_sum(Vector<RealD> recv, const Vector<RealD>& send)
-{
-  TIMER("glb_sum(RealD)");
-  qassert(recv.size() == send.size());
-  return mpi_allreduce((RealD*)send.data(), recv.data(), recv.size(),
-                       MPI_DOUBLE, MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<RealF> recv, const Vector<RealF>& send)
-{
-  TIMER("glb_sum(RealF)");
-  qassert(recv.size() == send.size());
-  return mpi_allreduce((RealF*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
-                       MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<Long> recv, const Vector<Long>& send)
-{
-  TIMER("glb_sum(Long)");
-  qassert(recv.size() == send.size());
-  return mpi_allreduce((Long*)send.data(), recv.data(), recv.size(),
-                       MPI_INT64_T, MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<Int> recv, const Vector<Int>& send)
-{
-  TIMER("glb_sum(Int)");
-  qassert(recv.size() == send.size());
-  return mpi_allreduce((Int*)send.data(), recv.data(), recv.size(), MPI_INT32_T,
-                       MPI_SUM, get_comm());
-}
-
-int glb_sum(Vector<Char> recv, const Vector<Char>& send)
-// not SUM but BXOR
-{
-  TIMER("glb_sum(Char)");
-  qassert(recv.size() == send.size());
-  return mpi_allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
-                       MPI_BYTE, MPI_BXOR, get_comm());
-}
-
-int glb_sum(Vector<char> recv, const Vector<char>& send)
-// not SUM but BXOR
-{
-  TIMER("glb_sum(char)");
-  qassert(recv.size() == send.size());
-  return mpi_allreduce((char*)send.data(), (char*)recv.data(), recv.size(),
-                       MPI_BYTE, MPI_BXOR, get_comm());
 }
 
 bool glb_any(const bool b)
@@ -476,22 +490,22 @@ bool glb_all(const bool b)
   return ret == 0;
 }
 
-int bcast(Vector<Char> recv, const int root)
+Int bcast(Vector<Char> recv, const Int root)
 {
   TIMER("bcast(Vector<Char>)");
   if (1 == get_num_node()) {
     return 0;
   }
-  return mpi_bcast((void*)recv.data(), recv.size(), MPI_BYTE, root, get_comm());
+  return mpi_bcast((void*)recv.data(), recv.size(), MPI_INT8_T, root, get_comm());
 }
 
-int bcast(std::string& recv, const int root)
+Int bcast(std::string& recv, const Int root)
 {
   TIMER("bcast(std::string&)");
   if (1 == get_num_node()) {
     return 0;
   }
-  int ret = 0;
+  Int ret = 0;
   Long size = recv.size();
   ret += bcast(get_data(size), root);
   recv.resize(size);
@@ -499,13 +513,13 @@ int bcast(std::string& recv, const int root)
   return ret;
 }
 
-int bcast(std::vector<std::string>& recv, const int root)
+Int bcast(std::vector<std::string>& recv, const Int root)
 {
   TIMER("bcast(std::vector<std::string>&)");
   if (1 == get_num_node()) {
     return 0;
   }
-  int ret = 0;
+  Int ret = 0;
   Long size = recv.size();
   ret += bcast(get_data(size), root);
   recv.resize(size);
@@ -515,7 +529,7 @@ int bcast(std::vector<std::string>& recv, const int root)
   return ret;
 }
 
-int bcast(PointsSelection& psel, const int root)
+Int bcast(PointsSelection& psel, const Int root)
 {
   TIMER("bcast(PointsSelection&)");
   if (1 == get_num_node()) {
@@ -528,7 +542,7 @@ int bcast(PointsSelection& psel, const int root)
     psel.initialized = true;
     psel.points_dist_type = PointsDistType::Global;
   }
-  int ret = 0;
+  Int ret = 0;
   ret += bcast(psel.total_site, root);
   ret += bcast(psel.xgs, root);
   return ret;
@@ -598,8 +612,8 @@ Int bcast_any(Vector<Char> xx, const bool b)
 Int all_gather(Vector<Char> recv, const Vector<Char> send)
 {
   qassert(recv.size() == send.size() * get_num_node());
-  return MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
-                       (void*)recv.data(), send.data_size(), MPI_BYTE,
+  return MPI_Allgather((void*)send.data(), send.data_size(), MPI_INT8_T,
+                       (void*)recv.data(), send.data_size(), MPI_INT8_T,
                        get_comm());
 }
 
@@ -609,13 +623,13 @@ std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
 // list[0] = 0
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_rs");
-  const int num_node = get_num_node();
+  const Int num_node = get_num_node();
   std::vector<Int> list(num_node);
-  for (int i = 0; i < num_node; ++i) {
+  for (Int i = 0; i < num_node; ++i) {
     list[i] = i;
   }
   random_permute(list, rs);
-  for (int i = 0; i < num_node; ++i) {
+  for (Int i = 0; i < num_node; ++i) {
     if (0 == list[i]) {
       list[i] = list[0];
       list[0] = 0;
@@ -625,19 +639,19 @@ std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
   return list;
 }
 
-std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
+std::vector<Int> mk_id_node_list_for_shuffle_step_size(const Int step_size_)
 // return list
 // list[id_node_in_shuffle] = id_node
 // list[0] = 0
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_step_size");
-  const int num_node = get_num_node();
-  const int step_size =
+  const Int num_node = get_num_node();
+  const Int step_size =
       (step_size_ < num_node and num_node % step_size_ == 0) ? step_size_ : 1;
   std::vector<Int> list(num_node);
-  for (int i = 0; i < num_node; ++i) {
-    const int id_node_in_shuffle = i;
-    const int id_node =
+  for (Int i = 0; i < num_node; ++i) {
+    const Int id_node_in_shuffle = i;
+    const Int id_node =
         mod(i * step_size, num_node) + (i * step_size / num_node);
     list[id_node_in_shuffle] = id_node;
   }
@@ -663,7 +677,7 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle_node");
   // global id
-  int globalRank;
+  Int globalRank;
   MPI_Comm_rank(get_comm(), &globalRank);
   qassert(globalRank == get_id_node());
   // node local comm
@@ -671,22 +685,22 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
                       MPI_INFO_NULL, &nodeComm);
   // id within the node
-  int localRank;
+  Int localRank;
   MPI_Comm_rank(nodeComm, &localRank);
   if (0 == get_id_node()) {
     qassert(localRank == 0);
   }
   // number of process in this node
-  int localSize;
+  Int localSize;
   MPI_Comm_size(nodeComm, &localSize);
   // comm across node (each node select one process with the same local rank)
   MPI_Comm masterComm;
   MPI_Comm_split(get_comm(), localRank, globalRank, &masterComm);
   // id across node
-  int masterRank;
+  Int masterRank;
   MPI_Comm_rank(masterComm, &masterRank);
   // size of each master comm
-  int masterSize;
+  Int masterSize;
   MPI_Comm_size(masterComm, &masterSize);
   // calculate number of node
   Long num_of_node = masterSize;
@@ -746,7 +760,7 @@ std::vector<Int> mk_id_node_list_for_shuffle()
 // If the env variable is empty, then assignment based on physical node. (Should
 // be a good idea.) If env variable start with "seed_", then the rest will be
 // used as seed for random assignment. Otherwise, env variable will be viewed as
-// int for step_size.
+// Int for step_size.
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle")
   const std::string seed = get_env_default("q_mk_id_node_in_shuffle_seed", "");
@@ -768,12 +782,12 @@ std::vector<Int> mk_id_node_in_shuffle_list()
 {
   TIMER_VERBOSE("mk_id_node_in_shuffle_list")
   const std::vector<Int>& list = get_id_node_list_for_shuffle();
-  const int num_node = list.size();
+  const Int num_node = list.size();
   qassert(num_node == get_num_node());
   std::vector<Int> list_new(num_node, 0);
-  for (int i = 0; i < num_node; ++i) {
-    const int id_node_in_shuffle = i;
-    const int id_node = list[i];
+  for (Int i = 0; i < num_node; ++i) {
+    const Int id_node_in_shuffle = i;
+    const Int id_node = list[i];
     qassert(0 <= id_node_in_shuffle);
     qassert(id_node_in_shuffle < num_node);
     qassert(0 <= id_node);
@@ -783,8 +797,8 @@ std::vector<Int> mk_id_node_in_shuffle_list()
   return list_new;
 }
 
-int get_id_node_in_shuffle(const int id_node, const int new_num_node,
-                           const int num_node)
+Int get_id_node_in_shuffle(const Int id_node, const Int new_num_node,
+                           const Int num_node)
 // not called very often
 {
   qassert(0 <= id_node);
@@ -799,9 +813,9 @@ int get_id_node_in_shuffle(const int id_node, const int new_num_node,
   }
 }
 
-int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
-                                        const int new_num_node,
-                                        const int num_node)
+Int get_id_node_from_id_node_in_shuffle(const Int id_node_in_shuffle,
+                                        const Int new_num_node,
+                                        const Int num_node)
 {
   qassert(0 <= id_node_in_shuffle);
   qassert(id_node_in_shuffle < num_node);
@@ -815,10 +829,10 @@ int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
   }
 }
 
-void set_node_rank_size(int& localRank, int& localSize)
+void set_node_rank_size(Int& localRank, Int& localSize)
 {
   // global id
-  int globalRank;
+  Int globalRank;
   MPI_Comm_rank(get_comm(), &globalRank);
   qassert(globalRank == get_id_node());
   // node local comm
@@ -826,20 +840,20 @@ void set_node_rank_size(int& localRank, int& localSize)
   MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
                       MPI_INFO_NULL, &nodeComm);
   // id within the node
-  // int localRank;
+  // Int localRank;
   MPI_Comm_rank(nodeComm, &localRank);
   if (0 == get_id_node()) {
     qassert(localRank == 0);
   }
   // number of process in this node
-  // int localSize;
+  // Int localSize;
   MPI_Comm_size(nodeComm, &localSize);
 }
 
 std::string get_hostname()
 {
   char name[MPI_MAX_PROCESSOR_NAME];
-  int len;
+  Int len;
   MPI_Get_processor_name(name, &len);
   return std::string(name, len);
 }
@@ -848,7 +862,7 @@ void display_geometry_node()
 {
   TIMER("display_geometry_node");
   const GeometryNode& geon = get_geometry_node();
-  for (int i = 0; i < geon.num_node; ++i) {
+  for (Int i = 0; i < geon.num_node; ++i) {
     if (i == geon.id_node) {
       displayln(std::string(fname) + " : " +
                 ssprintf("id_node = %5d ; coor_node = %s ; id_node_in_shuffle "
@@ -863,27 +877,27 @@ void display_geometry_node()
   SYNC_NODE();
 }
 
-Coordinate plan_size_node(const int num_node)
+Coordinate plan_size_node(const Int num_node)
 {
   // assuming MPI is initialized ...
-  int dims[] = {0, 0, 0, 0};
+  Int dims[] = {0, 0, 0, 0};
   MPI_Dims_create(num_node, DIMN, dims);
   return Coordinate(dims[3], dims[2], dims[1], dims[0]);
 }
 
 bool is_MPI_initialized()
 {
-  int b;
+  Int b;
   MPI_Initialized(&b);
   return b;
 }
 
-int init_mpi(int* argc, char** argv[])
+Int init_mpi(Int* argc, char** argv[])
 {
   if (!is_MPI_initialized()) MPI_Init(argc, argv);
-  int num_node;
+  Int num_node;
   MPI_Comm_size(MPI_COMM_WORLD, &num_node);
-  int id_node;
+  Int id_node;
   MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
   if (0 == id_node) {
     displayln("qlat::begin(): " +
@@ -894,10 +908,10 @@ int init_mpi(int* argc, char** argv[])
 
 void set_global_geon(const Coordinate& size_node)
 {
-  int num_node;
+  Int num_node;
   MPI_Comm_size(get_comm(), &num_node);
   qassert(num_node == product(size_node));
-  int id_node;
+  Int id_node;
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
   geon.init(id_node, size_node);
@@ -917,10 +931,10 @@ void set_cuda_device()
 {
 #ifdef __NVCC__
   TIMER_VERBOSE("set_cuda_device");
-  int local_rank = 0;
-  int local_size = 0;
+  Int local_rank = 0;
+  Int local_size = 0;
   set_node_rank_size(local_rank, local_size);
-  int num_devices = 0;
+  Int num_devices = 0;
   qacc_GetDeviceCount(&num_devices);
   if (num_devices > 0) {
     displayln_info(fname +
@@ -972,7 +986,7 @@ void initialize_qlat_comm()
       "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
   displayln_info(
       ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d",
-               (int)get_comm_list().size()));
+               (Int)get_comm_list().size()));
   // Do not set cuda device
   // Rely on the environment variable
   // Can use the bind-gpu-qlat.sh scripts
@@ -1021,7 +1035,7 @@ void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   SYNC_NODE();
 }
 
-void begin(const int id_node, const Coordinate& size_node, const int color)
+void begin(const Int id_node, const Coordinate& size_node, const Int color)
 // begin Qlat with existing id_node mapping (assuming MPI already initialized)
 {
   if (get_comm_list().empty()) {
@@ -1031,28 +1045,28 @@ void begin(const int id_node, const Coordinate& size_node, const int color)
   qassert(0 <= id_node and id_node < product(size_node));
   qassert(0 <= color);
   MPI_Comm comm;
-  const int ret =
+  const Int ret =
       MPI_Comm_split(get_comm_list().back().comm, color, id_node, &comm);
   qassert(ret == MPI_SUCCESS);
   begin_comm(comm, size_node);
   qassert(get_id_node() == id_node);
 }
 
-void begin(int* argc, char** argv[], const Coordinate& size_node)
+void begin(Int* argc, char** argv[], const Coordinate& size_node)
 // not recommended
 {
-  const int num_node = init_mpi(argc, argv);
+  const Int num_node = init_mpi(argc, argv);
   qassert(num_node == product(size_node));
   begin_comm(MPI_COMM_WORLD, size_node);
 }
 
-void begin(int* argc, char** argv[],
+void begin(Int* argc, char** argv[],
            const std::vector<Coordinate>& size_node_list)
 // begin Qlat and initialize a new comm
 {
-  const int num_node = init_mpi(argc, argv);
+  const Int num_node = init_mpi(argc, argv);
   Coordinate size_node;
-  for (int i = 0; i < (int)size_node_list.size(); ++i) {
+  for (Int i = 0; i < (Int)size_node_list.size(); ++i) {
     size_node = size_node_list[i];
     if (num_node == product(size_node)) {
       break;
@@ -1062,6 +1076,15 @@ void begin(int* argc, char** argv[],
     size_node = plan_size_node(num_node);
   }
   begin_comm(MPI_COMM_WORLD, size_node);
+}
+
+void begin_once(const Int id_node, const Coordinate& size_node, const Int color)
+// Only actually call begin if we haven't call it before.
+// Can be called any times.
+{
+  if (mpi_level_count() == 0) {
+    begin(id_node, size_node, color);
+  }
 }
 
 void end(const bool is_preserving_cache)
@@ -1082,7 +1105,7 @@ void end(const bool is_preserving_cache)
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       get_comm_list().pop_back();
       displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
-                              (int)get_comm_list().size()));
+                              (Int)get_comm_list().size()));
       qassert(get_comm_list().size() == 0);
       displayln_info("qlat::end(): Finalize MPI.");
       if (is_MPI_initialized()) MPI_Finalize();
@@ -1096,7 +1119,7 @@ void end(const bool is_preserving_cache)
       MPI_Comm comm = get_comm();
       get_comm_list().pop_back();
       displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
-                              (int)get_comm_list().size()));
+                              (Int)get_comm_list().size()));
       get_comm_internal() = get_comm_list().back().comm;
       if (get_comm_list().back().size_node != Coordinate()) {
         displayln_info(

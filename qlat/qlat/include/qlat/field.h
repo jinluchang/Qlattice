@@ -324,7 +324,7 @@ std::vector<M> field_glb_sum(const Field<M>& f)
 {
   TIMER("field_glb_sum");
   std::vector<M> vec = field_sum(f);
-  glb_sum_vec(get_data(vec));
+  glb_sum(vec);
   return vec;
 }
 
@@ -334,7 +334,53 @@ std::vector<M> field_glb_sum_tslice(const Field<M>& f, const int t_dir = 3)
 {
   TIMER("field_glb_sum_tslice");
   std::vector<M> vec = field_sum_tslice(f, t_dir);
-  glb_sum_vec(get_data(vec));
+  glb_sum(get_data(vec));
+  return vec;
+}
+
+template <class M>
+std::vector<M> field_sum(const Field<M>& f)
+// length = multiplicity
+{
+  TIMER("field_sum");
+  const Geometry& geo = f.geo();
+  const int multiplicity = f.multiplicity;
+  std::vector<M> vec(multiplicity);
+  set_zero(vec);
+#pragma omp parallel
+  {
+    std::vector<M> pvec(multiplicity);
+    set_zero(pvec);
+#pragma omp for nowait
+    for (Long index = 0; index < geo.local_volume(); ++index) {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Vector<M> fvec = f.get_elems_const(xl);
+      for (int m = 0; m < multiplicity; ++m) {
+        pvec[m] += fvec[m];
+      }
+    }
+    for (Int i = 0; i < omp_get_num_threads(); ++i) {
+#pragma omp barrier
+      if (omp_get_thread_num() == i) {
+        for (int m = 0; m < multiplicity; ++m) {
+          vec[m] += pvec[m];
+        }
+      }
+    }
+  }
+  return vec;
+}
+
+template <class M>
+std::vector<M> field_glb_max(const Field<M>& f)
+{
+  TIMER("field_glb_max");
+  const Int num_node = get_num_node();
+  const Int multiplicity = f.multiplicity;
+  std::vector<M> vec(MemType::Comm);
+  vec = field_max(f);
+  qassert((Long)vec.size() == (Long)multiplicity);
+  glb_max(vec);
   return vec;
 }
 

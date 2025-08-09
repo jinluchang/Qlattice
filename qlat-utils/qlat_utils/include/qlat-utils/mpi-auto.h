@@ -62,6 +62,8 @@ inline RngState& get_sync_node_rs() { return *get_sync_node_rs_ptr(); }
 
 using MpiSumFuncPtr = Int (*)(void*, const Long);  // size is the data size.
 
+// -------------------
+
 inline Int glb_sum_long_vec_local(void* ptr, const Long size)
 {
   assert(ptr != NULL);
@@ -89,8 +91,6 @@ inline Int glb_sum_vec(Vector<Long> vec)
 inline Int glb_sum_val(Long& x) { return glb_sum_long_vec(&x, sizeof(Long)); }
 
 // -------------------
-
-using MpiSumFuncPtr = Int (*)(void*, const Long);  // size is the data size.
 
 inline Int glb_sum_int_vec_local(void* ptr, const Long size)
 {

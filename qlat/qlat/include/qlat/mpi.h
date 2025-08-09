@@ -14,6 +14,75 @@
 namespace qlat
 {  //
 
+template <class M>
+struct IsMpiDataType {
+  static constexpr bool value = false;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "unknown_type"; }
+  static const MPI_Datatype get_mpi_datatype() { return MPI_BYTE; }
+  using ElementaryType = M;
+};
+
+template <>
+struct IsMpiDataType<int8_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int8t"; }
+  static const MPI_Datatype get_mpi_datatype() { return MPI_INT8_T; }
+  using ElementaryType = int8_t;
+};
+
+template <>
+struct IsMpiDataType<int32_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int32t"; }
+  static const MPI_Datatype get_mpi_datatype() { return MPI_INT32_T; }
+  using ElementaryType = int32_t;
+};
+
+template <>
+struct IsMpiDataType<int64_t> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "Int64t"; }
+  static const MPI_Datatype get_mpi_datatype() { return MPI_INT64_T; }
+  using ElementaryType = int64_t;
+};
+
+template <>
+struct IsMpiDataType<RealF> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "RealF"; }
+  static const MPI_Datatype get_mpi_datatype() { return MPI_FLOAT; }
+  using ElementaryType = RealF;
+};
+
+template <>
+struct IsMpiDataType<RealD> {
+  static constexpr bool value = true;
+  static constexpr bool is_complex = false;
+  static const std::string get_type_name() { return "RealD"; }
+  static const MPI_Datatype get_mpi_datatype() { return MPI_DOUBLE; }
+  using ElementaryType = RealD;
+};
+
+template <class M>
+qacc constexpr bool is_mpi_datatype()
+// Char, Int, Long, RealF, RealD
+{
+  return IsMpiDataType<M>::value;
+}
+
+template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
+MPI_Datatype get_mpi_datatype()
+{
+  return IsMpiDataType<M>::get_mpi_datatype();
+}
+
+// ------------------------------
+
 API inline std::vector<Int>& get_id_node_list_for_shuffle()
 // qlat parameter
 // initialized in begin_comm with mk_id_node_list_for_shuffle()
@@ -67,12 +136,12 @@ qacc bool is_initialized(const GeometryNode& geon) { return geon.initialized; }
 
 qacc void init(GeometryNode& geon) { geon.init(); }
 
-inline int id_node_from_coor_node(const Coordinate& coor_node)
+inline Int id_node_from_coor_node(const Coordinate& coor_node)
 {
   return index_from_coordinate(coor_node, get_geometry_node().size_node);
 }
 
-inline Coordinate coor_node_from_id_node(int id_node)
+inline Coordinate coor_node_from_id_node(Int id_node)
 {
   return coordinate_from_index(id_node, get_geometry_node().size_node);
 }
@@ -88,7 +157,7 @@ inline const Coordinate& get_coor_node()
 }
 
 struct API GeometryNodeNeighbor {
-  int dest[2][DIMN];
+  Int dest[2][DIMN];
   // dest[dir][mu]
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
@@ -97,7 +166,7 @@ struct API GeometryNodeNeighbor {
   {
     const Coordinate& coor_node = get_geometry_node().coor_node;
     const Coordinate& size_node = get_geometry_node().size_node;
-    for (int mu = 0; mu < DIMN; ++mu) {
+    for (Int mu = 0; mu < DIMN; ++mu) {
       Coordinate coor;
       coor = coor_node;
       ++coor[mu];
@@ -165,45 +234,63 @@ inline const MpiDataType& get_mpi_data_type_contiguous(const Int& size)
 
 // ----------------------------------
 
-int mpi_send(const void* buf, Long count, MPI_Datatype datatype, int dest,
-             int tag, MPI_Comm comm);
+Int mpi_send(const void* buf, Long count, MPI_Datatype datatype, Int dest,
+             Int tag, MPI_Comm comm);
 
-int mpi_recv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
+Int mpi_recv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
              MPI_Comm comm, MPI_Status* status = MPI_STATUS_IGNORE);
 
-int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, int dest,
-              int tag, MPI_Comm comm, std::vector<MPI_Request>& requests);
+Int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, Int dest,
+              Int tag, MPI_Comm comm, std::vector<MPI_Request>& requests);
 
-int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, int source, int tag,
+Int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
               MPI_Comm comm, std::vector<MPI_Request>& requests);
 
-int mpi_waitall(std::vector<MPI_Request>& requests);
+Int mpi_waitall(std::vector<MPI_Request>& requests);
 
-int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
+Int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
                   const Long* sdispls, MPI_Datatype sendtype, void* recvbuf,
                   const Long* recvcounts, const Long* rdispls,
                   MPI_Datatype recvtype, MPI_Comm comm);
 
-int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
-              const int root, MPI_Comm comm);
+Int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
+              const Int root, MPI_Comm comm);
 
-int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
+Int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 
-int glb_sum(Vector<RealD> recv, const Vector<RealD>& send);
+template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
+Int mpi_allreduce(Vector<M> sendbuf, const Vector<M>& recvbuf, MPI_Op op,
+                  MPI_Comm comm)
+{
+  qassert(sendbuf.size() == recvbuf.size());
+  MPI_Datatype datatype = get_mpi_datatype<M>();
+  return mpi_allreduce(src.data(), dst.data(), src.size(), datatype, op, comm);
+}
 
-int glb_sum(Vector<RealF> recv, const Vector<RealF>& send);
+template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
+Int glb_sum(Vector<M> sendbuf, const Vector<M>& recvbuf)
+{
+  if (is_same<M, Char>()) {
+    return mpi_allreduce(sendbuf, recvbuf, MPI_BXOR, get_comm());
+  }
+  return mpi_allreduce(sendbuf, recvbuf, MPI_SUM, get_comm());
+}
 
-int glb_sum(Vector<Long> recv, const Vector<Long>& send);
+template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
+Int glb_max(Vector<M> sendbuf, const Vector<M>& recvbuf)
+{
+  return mpi_allreduce(sendbuf, recvbuf, MPI_MAX, get_comm());
+}
 
-int glb_sum(Vector<Int> recv, const Vector<Int>& send);
-
-int glb_sum(Vector<Char> recv, const Vector<Char>& send);
-
-int glb_sum(Vector<char> recv, const Vector<char>& send);
+template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
+Int glb_min(Vector<M> sendbuf, const Vector<M>& recvbuf)
+{
+  return mpi_allreduce(sendbuf, recvbuf, MPI_MIN, get_comm());
+}
 
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
-int glb_sum(T& xx)
+Int glb_sum(T& xx)
 {
   TIMER("glb_sum(T&xx)");
   using E = typename IsDataVectorType<T>::ElementaryType;
@@ -211,13 +298,13 @@ int glb_sum(T& xx)
   vector<E> tmp_vec(vec.size(), MemType::Comm);
   vector<E> tmp2_vec(vec.size(), MemType::Comm);
   assign(tmp_vec, vec);
-  const int ret = glb_sum(get_data(tmp2_vec), get_data(tmp_vec));
+  const Int ret = glb_sum(get_data(tmp2_vec), get_data(tmp_vec));
   assign(vec, tmp2_vec);
   return ret;
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-int glb_sum(Vector<M> xx)
+Int glb_sum(Vector<M> xx)
 // so that xx don't have to be a reference
 {
   return glb_sum<Vector<M>>(xx);
@@ -228,7 +315,71 @@ M f_glb_sum(const M& xx)
 // so that xx don't have to be a reference
 {
   M v = xx;
-  const int code = glb_sum(v);
+  const Int code = glb_sum(v);
+  qassert(code == 0);
+  return v;
+}
+
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+Int glb_max(T& xx)
+// Both send and recv buffer will be copied to and from memory of type
+// MemType::Comm.
+{
+  TIMER("glb_max(T&xx)");
+  using E = typename IsDataVectorType<T>::ElementaryType;
+  Vector<E> vec = get_data_in_elementary_type(xx);
+  vector<E> tmp_vec(vec.size(), MemType::Comm);
+  vector<E> tmp2_vec(vec.size(), MemType::Comm);
+  assign(tmp_vec, vec);
+  const Int ret = glb_max(get_data(tmp2_vec), get_data(tmp_vec));
+  assign(vec, tmp2_vec);
+  return ret;
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+Int glb_max(Vector<M> xx)
+// so that xx don't have to be a reference
+{
+  return glb_max<Vector<M>>(xx);
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+M f_glb_max(const M& xx)
+// so that xx don't have to be a reference
+{
+  M v = xx;
+  const Int code = glb_max(v);
+  qassert(code == 0);
+  return v;
+}
+
+template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
+Int glb_min(T& xx)
+{
+  TIMER("glb_min(T&xx)");
+  using E = typename IsDataVectorType<T>::ElementaryType;
+  Vector<E> vec = get_data_in_elementary_type(xx);
+  vector<E> tmp_vec(vec.size(), MemType::Comm);
+  vector<E> tmp2_vec(vec.size(), MemType::Comm);
+  assign(tmp_vec, vec);
+  const Int ret = glb_min(get_data(tmp2_vec), get_data(tmp_vec));
+  assign(vec, tmp2_vec);
+  return ret;
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+Int glb_min(Vector<M> xx)
+// so that xx don't have to be a reference
+{
+  return glb_min<Vector<M>>(xx);
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+M f_glb_min(const M& xx)
+// so that xx don't have to be a reference
+{
+  M v = xx;
+  const Int code = glb_min(v);
   qassert(code == 0);
   return v;
 }
@@ -237,29 +388,29 @@ bool glb_any(const bool b);
 
 bool glb_all(const bool b);
 
-int bcast(Vector<Char> recv, const int root = 0);
+Int bcast(Vector<Char> recv, const Int root = 0);
 
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
-int bcast(T& xx, const int root = 0)
+Int bcast(T& xx, const Int root = 0)
 {
   Vector<Char> vec = get_data_char(xx);
   return bcast(vec, root);
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-int bcast(Vector<M> xx, const int root = 0)
+Int bcast(Vector<M> xx, const Int root = 0)
 // so that xx don't have to be a reference
 {
   return bcast<Vector<M>>(xx, root);
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-int bcast(std::vector<M>& recv, const int root = 0)
+Int bcast(std::vector<M>& recv, const Int root = 0)
 {
   if (1 == get_num_node()) {
     return 0;
   }
-  int ret = 0;
+  Int ret = 0;
   Long size = recv.size();
   ret += bcast<Long>(size, root);
   recv.resize(size);
@@ -268,12 +419,12 @@ int bcast(std::vector<M>& recv, const int root = 0)
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-int bcast(vector<M>& recv, const int root = 0)
+Int bcast(vector<M>& recv, const Int root = 0)
 {
   if (1 == get_num_node()) {
     return 0;
   }
-  int ret = 0;
+  Int ret = 0;
   Long size = recv.size();
   ret += bcast<Long>(size, root);
   recv.resize(size);
@@ -287,12 +438,12 @@ int bcast(vector<M>& recv, const int root = 0)
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
-int bcast(std::vector<std::vector<M>>& datatable, const int root = 0)
+Int bcast(std::vector<std::vector<M>>& datatable, const Int root = 0)
 {
   if (1 == get_num_node()) {
     return 0;
   }
-  int ret = 0;
+  Int ret = 0;
   Long nrow, total_size;
   vector<Long> row_sizes;
   vector<M> data;
@@ -316,11 +467,11 @@ int bcast(std::vector<std::vector<M>>& datatable, const int root = 0)
   return ret;
 }
 
-int bcast(std::string& recv, const int root = 0);
+Int bcast(std::string& recv, const Int root = 0);
 
-int bcast(std::vector<std::string>& recv, const int root = 0);
+Int bcast(std::vector<std::string>& recv, const Int root = 0);
 
-int bcast(PointsSelection& psel, const int root = 0);
+Int bcast(PointsSelection& psel, const Int root = 0);
 
 Int bcast_any(Vector<Char> xx, const bool b);
 
@@ -336,275 +487,9 @@ template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 M f_bcast_any(const M& xx, const bool b)
 {
   M v = xx;
-  const int code = bcast_any(v, b);
+  const Int code = bcast_any(v, b);
   qassert(code == 0);
   return v;
-}
-
-std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
-
-std::vector<Int> mk_id_node_list_for_shuffle_step_size(const int step_size_);
-
-std::vector<Int> mk_id_node_list_for_shuffle_node();
-
-std::vector<Int> mk_id_node_list_for_shuffle();
-
-std::vector<Int> mk_id_node_in_shuffle_list();
-
-// `id_node` is the usual ID for MPI processes.
-// `id_node_in_shuffle` is a shuffled ID for MPI processes, which is used for
-// purposes like IO. This is useful for example when one physical node runs
-// multiple MPI processes, but usually IO happens for MPI processes with the
-// first few IDs. To prevent IO only uses the all MPI processes within the first
-// few nodes, we can use `id_node_in_shuffle` for parallel IO.
-
-int get_id_node_in_shuffle(const int id_node, const int new_num_node,
-                           const int num_node);
-
-int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
-                                        const int new_num_node,
-                                        const int num_node);
-
-void set_node_rank_size(int& node_rank, int& node_size);
-
-std::string get_hostname();
-
-void display_geometry_node();
-
-Coordinate plan_size_node(const int num_node);
-
-bool is_MPI_initialized();
-
-int init_mpi(int* argc, char** argv[]);
-
-void set_global_geon(const Coordinate& size_node);
-
-void set_cuda_device();
-
-void display_qlat_banner();
-
-void initialize_qlat_comm();
-
-API Long& mpi_level_count();
-
-void begin_comm(const MPI_Comm comm, const Coordinate& size_node);
-
-void begin(const int id_node, const Coordinate& size_node, const int color = 0);
-
-void begin(int* argc, char** argv[], const Coordinate& size_node);
-
-void begin(
-    int* argc, char** argv[],
-    const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>());
-
-void end(const bool is_preserving_cache = false);
-
-inline void begin_once(const int id_node, const Coordinate& size_node,
-                       const int color = 0)
-// Only actually call begin if we haven't call it before.
-// Can be called any times.
-{
-  if (mpi_level_count() == 0) {
-    begin(id_node, size_node, color);
-  }
-}
-
-// ----------------------------------
-
-template <class M>
-std::vector<char> pad_flag_data(const int64_t flag, const M& data)
-{
-  std::vector<char> fdata(8 + sizeof(M), (char)0);
-  std::memcpy(&fdata[0], &flag, sizeof(int64_t));
-  std::memcpy(&fdata[8], &data, sizeof(M));
-  return fdata;
-}
-
-template <class M>
-void extract_flag_data(int64_t& flag, M& data, const std::vector<char>& fdata)
-{
-  flag = fdata[0];
-  std::memcpy(&flag, &fdata[0], sizeof(int64_t));
-  std::memcpy(&data, &fdata[8], sizeof(M));
-}
-
-template <class N>
-int receive_job(int64_t& flag, N& data, const int root = 0)
-{
-  const int mpi_tag = 3;
-  const int count = sizeof(int64_t) + sizeof(N);
-  std::vector<char> fdata(count, (char)0);
-  int ret = mpi_recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm());
-  extract_flag_data(flag, data, fdata);
-  return ret;
-}
-
-template <class M>
-int send_result(const int64_t flag, const M& data, const int root = 0)
-{
-  const int mpi_tag = 2;
-  std::vector<char> fdata = pad_flag_data(flag, data);
-  return mpi_send(fdata.data(), fdata.size(), MPI_BYTE, root, mpi_tag,
-                  get_comm());
-}
-
-template <class N>
-int send_job(const int64_t flag, const N& data, const int dest)
-{
-  const int mpi_tag = 3;
-  std::vector<char> fdata = pad_flag_data(flag, data);
-  return mpi_send(fdata.data(), fdata.size(), MPI_BYTE, dest, mpi_tag,
-                  get_comm());
-}
-
-template <class M>
-int receive_result(int& source, int64_t& flag, M& result)
-{
-  const int mpi_tag = 2;
-  const int count = sizeof(int64_t) + sizeof(M);
-  std::vector<char> fdata(count, (char)0);
-  MPI_Status status;
-  const int ret = mpi_recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
-                           mpi_tag, get_comm(), &status);
-  source = status.MPI_SOURCE;
-  extract_flag_data(flag, result, fdata);
-  return ret;
-}
-
-template <class M>
-int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
-// dir = 0, 1 for Plus dir or Minus dir
-{
-  TIMER_FLOPS("get_data_dir");
-  const int mpi_tag = 0;
-  qassert(recv.size() == send.size());
-  const Long size = recv.size() * sizeof(M);
-  timer.flops += size;
-  const int self_ID = get_id_node();
-  const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
-  const int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();
-  //
-  MPI_Request req;
-  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret =
-      mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm());
-  MPI_Wait(&req, MPI_STATUS_IGNORE);
-  return ret;
-}
-
-template <class M>
-int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir,
-                    const int mu)
-// dir = 0, 1 for Plus dir or Minus dir
-// 0 <= mu < 4 for different directions
-{
-  TIMER_FLOPS("get_data_dir_mu");
-  const int mpi_tag = 1;
-  qassert(recv.size() == send.size());
-  const Long size = recv.size() * sizeof(M);
-  timer.flops += size;
-  const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
-  const int idf = geonb.dest[dir][mu];
-  const int idt = geonb.dest[1 - dir][mu];
-  MPI_Request req;
-  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret =
-      mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm());
-  MPI_Wait(&req, MPI_STATUS_IGNORE);
-  return ret;
-}
-
-template <class M>
-int get_data_plus_mu(Vector<M> recv, const Vector<M>& send, const int mu)
-{
-  return get_data_dir_mu(recv, send, 0, mu);
-}
-
-template <class M>
-int get_data_minus_mu(Vector<M> recv, const Vector<M>& send, const int mu)
-{
-  return get_data_dir_mu(recv, send, 1, mu);
-}
-
-template <class M>
-int glb_sum_double_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<double>((double*)x.data(), x.data_size() / sizeof(double)));
-}
-
-template <class M>
-int glb_sum_float_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<float>((float*)x.data(), x.data_size() / sizeof(float)));
-}
-
-template <class M>
-int glb_sum_long_vec(Vector<M> x)
-{
-  if (sizeof(Long) == sizeof(int64_t)) {
-    return glb_sum_int64_vec(x);
-  } else if (sizeof(Long) == sizeof(int32_t)) {
-    return glb_sum_int32_vec(x);
-  } else {
-    qassert(false);
-    return 0;
-  }
-}
-
-template <class M>
-int glb_sum_int64_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
-}
-
-template <class M>
-int glb_sum_int32_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
-}
-
-template <class M>
-int glb_sum_byte_vec(Vector<M> x)
-{
-  return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
-}
-
-template <class M>
-int glb_sum_vec(Vector<M> x)
-{
-  if (is_composed_of_real_d<M>()) {
-    return glb_sum_double_vec(x);
-  } else if (is_composed_of_long<M>()) {
-    return glb_sum_int64_vec(x);
-  } else if (is_composed_of_real_f<M>()) {
-    return glb_sum_float_vec(x);
-  } else {
-    qerr(ssprintf("glb_sum_vec get_type_name(M)='%s'",
-                  get_type_name<M>().c_str()));
-    return 0;
-  }
-}
-
-template <class M>
-int glb_sum_double(M& x)
-{
-  return glb_sum(Vector<double>((double*)&x, sizeof(M) / sizeof(double)));
-}
-
-template <class M>
-int glb_sum_float(M& x)
-{
-  return glb_sum(Vector<float>((float*)&x, sizeof(M) / sizeof(float)));
-}
-
-template <class M>
-int glb_sum_byte(M& x)
-{
-  return glb_sum(Vector<char>((char*)&x, sizeof(M)));
 }
 
 Int all_gather(Vector<Char> recv, const Vector<Char> send);
@@ -631,6 +516,186 @@ Int all_gather(Vector<M1> recv, const T2& send)
   Vector<Char> vec_recv = get_data_char(recv);
   const Vector<Char> vec_send = get_data_char(send);
   return all_gather(vec_recv, vec_send);
+}
+
+// -----------------------------------
+
+std::vector<Int> mk_id_node_list_for_shuffle_rs(const RngState& rs);
+
+std::vector<Int> mk_id_node_list_for_shuffle_step_size(const Int step_size_);
+
+std::vector<Int> mk_id_node_list_for_shuffle_node();
+
+std::vector<Int> mk_id_node_list_for_shuffle();
+
+std::vector<Int> mk_id_node_in_shuffle_list();
+
+// `id_node` is the usual ID for MPI processes.
+// `id_node_in_shuffle` is a shuffled ID for MPI processes, which is used for
+// purposes like IO. This is useful for example when one physical node runs
+// multiple MPI processes, but usually IO happens for MPI processes with the
+// first few IDs. To prevent IO only uses the all MPI processes within the first
+// few nodes, we can use `id_node_in_shuffle` for parallel IO.
+
+Int get_id_node_in_shuffle(const Int id_node, const Int new_num_node,
+                           const Int num_node);
+
+Int get_id_node_from_id_node_in_shuffle(const Int id_node_in_shuffle,
+                                        const Int new_num_node,
+                                        const Int num_node);
+
+void set_node_rank_size(Int& node_rank, Int& node_size);
+
+std::string get_hostname();
+
+void display_geometry_node();
+
+Coordinate plan_size_node(const Int num_node);
+
+bool is_MPI_initialized();
+
+Int init_mpi(Int* argc, char** argv[]);
+
+void set_global_geon(const Coordinate& size_node);
+
+void set_cuda_device();
+
+void display_qlat_banner();
+
+void initialize_qlat_comm();
+
+API Long& mpi_level_count();
+
+void begin_comm(const MPI_Comm comm, const Coordinate& size_node);
+
+void begin(const Int id_node, const Coordinate& size_node, const Int color = 0);
+
+void begin(Int* argc, char** argv[], const Coordinate& size_node);
+
+void begin(
+    Int* argc, char** argv[],
+    const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>());
+
+void begin_once(const Int id_node, const Coordinate& size_node,
+                const Int color = 0);
+
+void end(const bool is_preserving_cache = false);
+
+// ----------------------------------
+
+template <class M>
+std::vector<char> pad_flag_data(const int64_t flag, const M& data)
+{
+  std::vector<char> fdata(8 + sizeof(M), (char)0);
+  std::memcpy(&fdata[0], &flag, sizeof(int64_t));
+  std::memcpy(&fdata[8], &data, sizeof(M));
+  return fdata;
+}
+
+template <class M>
+void extract_flag_data(int64_t& flag, M& data, const std::vector<char>& fdata)
+{
+  flag = fdata[0];
+  std::memcpy(&flag, &fdata[0], sizeof(int64_t));
+  std::memcpy(&data, &fdata[8], sizeof(M));
+}
+
+template <class N>
+Int receive_job(int64_t& flag, N& data, const Int root = 0)
+{
+  const Int mpi_tag = 3;
+  const Int count = sizeof(int64_t) + sizeof(N);
+  std::vector<char> fdata(count, (char)0);
+  Int ret = mpi_recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm());
+  extract_flag_data(flag, data, fdata);
+  return ret;
+}
+
+template <class M>
+Int send_result(const int64_t flag, const M& data, const Int root = 0)
+{
+  const Int mpi_tag = 2;
+  std::vector<char> fdata = pad_flag_data(flag, data);
+  return mpi_send(fdata.data(), fdata.size(), MPI_BYTE, root, mpi_tag,
+                  get_comm());
+}
+
+template <class N>
+Int send_job(const int64_t flag, const N& data, const Int dest)
+{
+  const Int mpi_tag = 3;
+  std::vector<char> fdata = pad_flag_data(flag, data);
+  return mpi_send(fdata.data(), fdata.size(), MPI_BYTE, dest, mpi_tag,
+                  get_comm());
+}
+
+template <class M>
+Int receive_result(Int& source, int64_t& flag, M& result)
+{
+  const Int mpi_tag = 2;
+  const Int count = sizeof(int64_t) + sizeof(M);
+  std::vector<char> fdata(count, (char)0);
+  MPI_Status status;
+  const Int ret = mpi_recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
+                           mpi_tag, get_comm(), &status);
+  source = status.MPI_SOURCE;
+  extract_flag_data(flag, result, fdata);
+  return ret;
+}
+
+template <class M>
+Int get_data_dir(Vector<M> recv, const Vector<M>& send, const Int dir)
+// dir = 0, 1 for Plus dir or Minus dir
+{
+  TIMER_FLOPS("get_data_dir");
+  const Int mpi_tag = 0;
+  qassert(recv.size() == send.size());
+  const Long size = recv.size() * sizeof(M);
+  timer.flops += size;
+  const Int self_ID = get_id_node();
+  const Int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
+  const Int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();
+  //
+  MPI_Request req;
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
+  const Int ret =
+      mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm());
+  MPI_Wait(&req, MPI_STATUS_IGNORE);
+  return ret;
+}
+
+template <class M>
+Int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const Int dir,
+                    const Int mu)
+// dir = 0, 1 for Plus dir or Minus dir
+// 0 <= mu < 4 for different directions
+{
+  TIMER_FLOPS("get_data_dir_mu");
+  const Int mpi_tag = 1;
+  qassert(recv.size() == send.size());
+  const Long size = recv.size() * sizeof(M);
+  timer.flops += size;
+  const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
+  const Int idf = geonb.dest[dir][mu];
+  const Int idt = geonb.dest[1 - dir][mu];
+  MPI_Request req;
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
+  const Int ret =
+      mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm());
+  MPI_Wait(&req, MPI_STATUS_IGNORE);
+  return ret;
+}
+
+template <class M>
+Int get_data_plus_mu(Vector<M> recv, const Vector<M>& send, const Int mu)
+{
+  return get_data_dir_mu(recv, send, 0, mu);
+}
+
+template <class M>
+Int get_data_minus_mu(Vector<M> recv, const Vector<M>& send, const Int mu)
+{
+  return get_data_dir_mu(recv, send, 1, mu);
 }
 
 // ----------------------------------
@@ -683,5 +748,72 @@ inline Int bcast_byte_vec_mpi(void* ptr, const Long size, const Int root)
   Vector<Char> data((Char*)ptr, size);
   return bcast(data, root);
 }
+
+// ----------------------------------
+
+// template <class M>
+// Int glb_sum_double_vec(Vector<M> x)
+// {
+//   return glb_sum(
+//       Vector<double>((double*)x.data(), x.data_size() / sizeof(double)));
+// }
+// 
+// template <class M>
+// Int glb_sum_float_vec(Vector<M> x)
+// {
+//   return glb_sum(
+//       Vector<float>((float*)x.data(), x.data_size() / sizeof(float)));
+// }
+// 
+// template <class M>
+// Int glb_sum_long_vec(Vector<M> x)
+// {
+//   if (sizeof(Long) == sizeof(int64_t)) {
+//     return glb_sum_int64_vec(x);
+//   } else if (sizeof(Long) == sizeof(int32_t)) {
+//     return glb_sum_int32_vec(x);
+//   } else {
+//     qassert(false);
+//     return 0;
+//   }
+// }
+// 
+// template <class M>
+// Int glb_sum_int64_vec(Vector<M> x)
+// {
+//   return glb_sum(
+//       Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
+// }
+// 
+// template <class M>
+// Int glb_sum_int32_vec(Vector<M> x)
+// {
+//   return glb_sum(
+//       Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
+// }
+// 
+// template <class M>
+// Int glb_sum_byte_vec(Vector<M> x)
+// {
+//   return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
+// }
+// 
+// template <class M>
+// Int glb_sum_double(M& x)
+// {
+//   return glb_sum(Vector<double>((double*)&x, sizeof(M) / sizeof(double)));
+// }
+// 
+// template <class M>
+// Int glb_sum_float(M& x)
+// {
+//   return glb_sum(Vector<float>((float*)&x, sizeof(M) / sizeof(float)));
+// }
+// 
+// template <class M>
+// Int glb_sum_byte(M& x)
+// {
+//   return glb_sum(Vector<char>((char*)&x, sizeof(M)));
+// }
 
 }  // namespace qlat
