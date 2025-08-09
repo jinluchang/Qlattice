@@ -21,6 +21,8 @@ cppsources = files(
   'hlbl-contract.cpp',
   'commpressed-eigen-io.cpp',
   'dslash.cpp',
+  'wilson-flow.cpp',
+  'flowed-hmc.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat/lib')
 

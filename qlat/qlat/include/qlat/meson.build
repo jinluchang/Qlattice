@@ -69,6 +69,7 @@ header_files = files(
   'qcd-smear.h',
   'qcd-topology.h',
   'qcd-utils.h',
+  'qcd-acc.h',
   'qcd.h',
   'qed.h',
   'qlat-analysis.h',

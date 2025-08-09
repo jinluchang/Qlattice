@@ -1,5 +1,6 @@
-#include <qlat/qcd.h>
+#include <qlat/qcd-acc.h>
 #include <qlat/qcd-topology.h>
+#include <qlat/qcd.h>
 
 namespace qlat
 {  //

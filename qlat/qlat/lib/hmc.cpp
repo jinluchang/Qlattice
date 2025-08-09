@@ -1,15 +1,84 @@
 #include <qlat/hmc.h>
+#include <qlat/qcd-acc.h>
 
 namespace qlat
 {  //
 
-bool metropolis_accept(double& accept_prob, const double delta_h,
+static qacc RealD gf_re_tr_plaq_no_comm(const GaugeField& gf,
+                                         const Coordinate& xl, const int mu,
+                                         const int nu)
+{
+  const ColorMatrix m =
+      gf_wilson_line_no_comm(gf, xl, make_array<int>(mu, nu, -mu - 1, -nu - 1));
+  return matrix_trace(m).real();
+}
+
+static qacc RealD gf_re_tr_rect_no_comm(const GaugeField& gf,
+                                         const Coordinate& xl, const int mu,
+                                         const int nu)
+{
+  const ColorMatrix m = gf_wilson_line_no_comm(
+      gf, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
+  return matrix_trace(m).real();
+}
+
+static qacc ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
+                                               const Coordinate& xl,
+                                               const int mu)
+// transpose the same way as gf.get_elem(xl, mu)
+{
+  ColorMatrix acc;
+  set_zero(acc);
+  for (int nu = -4; nu < 4; ++nu) {
+    if (nu == mu or -nu - 1 == mu) {
+      continue;
+    }
+    acc += gf_wilson_line_no_comm(
+        gf, xl, make_array<int>(nu, nu, mu, -nu - 1, -nu - 1));
+    acc += gf_wilson_line_no_comm(
+        gf, xl, make_array<int>(nu, mu, mu, -nu - 1, -mu - 1));
+    acc += gf_wilson_line_no_comm(
+        gf, xl, make_array<int>(-mu - 1, nu, mu, mu, -nu - 1));
+  }
+  return acc;
+}
+
+static qacc ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
+                                              const GaugeAction& ga,
+                                              const Coordinate& xl,
+                                              const int mu)
+// transpose the same way as gf.get_elem(xl, mu)
+{
+  ColorMatrix acc;
+  set_zero(acc);
+  const RealD c1 = ga.c1;
+  acc += (ComplexD)(1.0 - 8.0 * c1) * gf_plaq_staple_no_comm(gf, xl, mu);
+  if (c1 != 0.0) {
+    acc += (ComplexD)c1 * gf_rect_staple_no_comm(gf, xl, mu);
+  }
+  return acc;
+}
+
+static qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
+                                              const GaugeAction& ga,
+                                              const Coordinate& xl,
+                                              const int mu)
+{
+  const RealD beta = ga.beta;
+  const ColorMatrix ad_staple =
+      matrix_adjoint(gf_all_staple_no_comm(gf, ga, xl, mu));
+  const ColorMatrix force =
+      (ComplexD)(-beta / 3.0) * (gf.get_elem(xl, mu) * ad_staple);
+  return make_tr_less_anti_herm_matrix(force);
+}
+
+bool metropolis_accept(RealD& accept_prob, const RealD delta_h,
                        const int traj, const RngState& rs_)
 // only compute at get_id_node() == 0
 // broad_cast the result to all nodes
 {
   TIMER_VERBOSE("metropolis_accept");
-  double flag_d = 0.0;
+  RealD flag_d = 0.0;
   accept_prob = 0;
   if (get_id_node() == 0) {
     if (delta_h <= 0.0) {
@@ -17,7 +86,7 @@ bool metropolis_accept(double& accept_prob, const double delta_h,
       accept_prob = 1.0;
     } else {
       RngState rs = rs_;
-      const double rand_num = u_rand_gen(rs, 0.0, 1.0);
+      const RealD rand_num = u_rand_gen(rs, 0.0, 1.0);
       accept_prob = std::exp(-delta_h);
       if (rand_num <= accept_prob) {
         flag_d = 1.0;
@@ -81,20 +150,20 @@ RealD gm_hamilton_node(const GaugeMomentum& gm)
 {
   TIMER("gm_hamilton_node");
   const Geometry geo = geo_resize(gm.geo());
-  FieldM<double, 1> fd;
+  FieldM<RealD, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = fd.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
-    double s = 0.0;
+    RealD s = 0.0;
     qassert(gm_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
       s += neg_half_tr_square(gm_v[mu]);
     }
     fd.get_elem(index) = s;
   });
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
@@ -108,38 +177,38 @@ RealD gm_hamilton_node(const GaugeMomentum& gm, const Field<RealD>& mf)
   qassert(check_matching_geo(geo, mf.geo()));
   qassert(gm.multiplicity == 4);
   qassert(mf.multiplicity == 4);
-  FieldM<double, 1> fd;
+  FieldM<RealD, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = fd.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
     const Vector<RealD> mf_v = mf.get_elems_const(xl);
-    double s = 0.0;
+    RealD s = 0.0;
     qassert(gm_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
       s += neg_half_tr_square(gm_v[mu]) / mf_v[mu];
     }
     fd.get_elem(index) = s;
   });
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   return sum;
 }
 
-double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
+RealD gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
 // subtract the free field value
 {
   TIMER("gf_sum_re_tr_plaq_node_no_comm");
   const Geometry geo = geo_resize(gf.geo());
-  FieldM<double, 1> fd;
+  FieldM<RealD, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
-    double s = 0.0;
+    RealD s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
       for (int nu = mu + 1; nu < 4; ++nu) {
         s += gf_re_tr_plaq_no_comm(gf, xl, mu, nu) - 3.0;
@@ -147,24 +216,24 @@ double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
     }
     fd.get_elem(index) = s;
   });
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   return sum;
 }
 
-double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
+RealD gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
 // subtract the free field value
 {
   TIMER("gf_sum_re_tr_rect_node_no_comm");
   const Geometry geo = geo_resize(gf.geo());
-  FieldM<double, 1> fd;
+  FieldM<RealD, 1> fd;
   fd.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
-    double s = 0.0;
+    RealD s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
       for (int nu = mu + 1; nu < 4; ++nu) {
         s += gf_re_tr_rect_no_comm(gf, xl, mu, nu) - 3.0;
@@ -173,14 +242,14 @@ double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
     }
     fd.get_elem(index) = s;
   });
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
   }
   return sum;
 }
 
-double gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
+RealD gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
 // number of plaq: 6 * number of site
 // number of rect: 12 * number of site
 /*
@@ -198,14 +267,14 @@ double gf_hamilton_node_no_comm(const GaugeField& gf, const GaugeAction& ga)
 */
 {
   TIMER("gf_hamilton_node_no_comm");
-  const double beta = ga.beta;
-  const double c1 = ga.c1;
-  const double sum_plaq = gf_sum_re_tr_plaq_node_no_comm(gf);
-  const double sum_rect = c1 == 0.0 ? 0.0 : gf_sum_re_tr_rect_node_no_comm(gf);
+  const RealD beta = ga.beta;
+  const RealD c1 = ga.c1;
+  const RealD sum_plaq = gf_sum_re_tr_plaq_node_no_comm(gf);
+  const RealD sum_rect = c1 == 0.0 ? 0.0 : gf_sum_re_tr_rect_node_no_comm(gf);
   return -beta / 3.0 * ((1.0 - 8.0 * c1) * sum_plaq + c1 * sum_rect);
 }
 
-double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
+RealD gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
 {
   TIMER("gf_hamilton_node");
   const Coordinate expand_left(0, 0, 0, 0);
@@ -226,18 +295,18 @@ double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
   return gf_hamilton_node_no_comm(gf_ext, ga);
 }
 
-double gf_hamilton(const GaugeField& gf, const GaugeAction& ga)
+RealD gf_hamilton(const GaugeField& gf, const GaugeAction& ga)
 // beta * ( (1-8*c1) n_plaq (1 - avg_plaq) + c1 n_rect (1 - avg_rect) )
 // n_plaq = total_volume() * 6
 // n_rect = total_volume() * 12
 {
   TIMER("gf_hamilton");
-  double energy = gf_hamilton_node(gf, ga);
+  RealD energy = gf_hamilton_node(gf, ga);
   glb_sum(energy);
   return energy;
 }
 
-void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size)
+void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const RealD step_size)
 //  U(t+dt) = exp(pi * dt) U(t)
 {
   TIMER("gf_evolve");
@@ -257,7 +326,7 @@ void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size)
 }
 
 void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
-                    const double step_size)
+                    const RealD step_size)
 //  U(t+dt) = U(t) exp(-pi_dual * dt)
 {
   TIMER("gf_evolve_dual");
