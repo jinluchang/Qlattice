@@ -7,6 +7,131 @@
 namespace qlat
 {  //
 
+qacc ColorMatrix gf_get_link(const GaugeField& gf, const Coordinate& xl,
+                             const int mu)
+// mu can be negative
+{
+  if (0 <= mu) {
+    return gf.get_elem(xl, mu);
+  } else {
+    const Coordinate xl1 = coordinate_shifts(xl, mu);
+    return matrix_adjoint(gf.get_elem(xl1, -mu - 1));
+  }
+}
+
+template <class Vec>
+qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
+                                        const Coordinate& xl, const Vec& path)
+{
+  ColorMatrix ret;
+  set_unit(ret);
+  Coordinate xl1 = xl;
+  for (int i = 0; i < (int)path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIMN <= dir && dir < DIMN);
+    if (0 <= dir) {
+      ret *= gf.get_elem(xl1, dir);
+      xl1[dir] += 1;
+    } else {
+      xl1[-dir - 1] -= 1;
+      ret *= matrix_adjoint(gf.get_elem(xl1, -dir - 1));
+    }
+  }
+  return ret;
+}
+
+template <class Vec>
+qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
+                                        const Coordinate& xl, const Vec& path,
+                                        const Vec& path_n)
+{
+  qassert((Long)path.size() == (Long)path_n.size());
+  ColorMatrix ret;
+  set_unit(ret);
+  Coordinate xl1 = xl;
+  for (int i = 0; i < (int)path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIMN <= dir && dir < DIMN);
+    for (int j = 0; j < (int)path_n[i]; ++j) {
+      if (0 <= dir) {
+        ret *= gf.get_elem(xl1, dir);
+        xl1[dir] += 1;
+      } else {
+        xl1[-dir - 1] -= 1;
+        ret *= matrix_adjoint(gf.get_elem(xl1, -dir - 1));
+      }
+    }
+  }
+  return ret;
+}
+
+qacc ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
+                                      const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  const Coordinate xl_mu = coordinate_shifts(xl, mu);
+  for (int m = 0; m < DIMN; ++m) {
+    if (mu != m) {
+      ret += gf.get_elem(xl, m) * gf.get_elem(coordinate_shifts(xl, m), mu) *
+             matrix_adjoint(gf.get_elem(xl_mu, m));
+      ret += matrix_adjoint(gf.get_elem(coordinate_shifts(xl, -m - 1), m)) *
+             gf.get_elem(coordinate_shifts(xl, -m - 1), mu) *
+             gf.get_elem(coordinate_shifts(xl_mu, -m - 1), m);
+    }
+  }
+  return ret;
+}
+
+qacc ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf,
+                                      const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  array<int, 3> path;
+  path[1] = mu;
+  for (int m = 0; m < DIMN; ++m) {
+    if (mu != m) {
+      path[0] = m;
+      path[2] = -m - 1;
+      ret += gf_wilson_line_no_comm(gf, xl, path);
+    }
+  }
+  for (int m = 0; m < DIMN; ++m) {
+    if (mu != m) {
+      path[0] = -m - 1;
+      path[2] = m;
+      ret += gf_wilson_line_no_comm(gf, xl, path);
+    }
+  }
+  return ret;
+}
+
+qacc ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                   const int mu)
+{
+  return gf_staple_no_comm_v1(gf, xl, mu);
+  // return gf_staple_no_comm_v2(gf, xl, mu);
+}
+
+qacc ColorMatrix gf_spatial_staple_no_comm(const GaugeField& gf,
+                                           const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  const Coordinate xl_mu = coordinate_shifts(xl, mu);
+  for (int m = 0; m < 3; ++m) {
+    if (mu != m) {
+      ret += gf.get_elem(xl, m) * gf.get_elem(coordinate_shifts(xl, m), mu) *
+             matrix_adjoint(gf.get_elem(xl_mu, m));
+      ret += matrix_adjoint(gf.get_elem(coordinate_shifts(xl, -m - 1), m)) *
+             gf.get_elem(coordinate_shifts(xl, -m - 1), mu) *
+             gf.get_elem(coordinate_shifts(xl_mu, -m - 1), m);
+    }
+  }
+  return ret;
+}
+
 qacc ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
                                         const Coordinate& xl, const int mu,
                                         const int nu)

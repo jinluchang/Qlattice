@@ -8,7 +8,7 @@ from .qcd cimport GaugeField
 from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
-from .hmc import set_gm_force, gf_evolve
+from .hmc import gf_evolve
 import qlat_utils as q
 
 @q.timer
@@ -66,3 +66,15 @@ def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
         energy_density_list.append(energy_density)
         q.displayln_info(f"gf_wilson_flow: t={t} ; E={energy_density} ; t^2 E={t*t*energy_density}")
     return energy_density_list
+
+@q.timer
+def gf_plaq_flow_force(GaugeField gf, FieldRealD plaq_factor):
+    """
+    Compute force with plaq dependent beta factor (relative to standard
+    `set_wilson_flow_z`).
+    `plaq_factor.multiplicity == 6`.
+    Check `gf_plaq_field` for the order of plaq.
+    """
+    cdef GaugeMomentum gm_force = GaugeMomentum()
+    cc.set_plaq_flow_z(gm_force.xxx().val(), gf.xxx().val(), plaq_factor.xx)
+    return gm_force

@@ -24,4 +24,7 @@ std::vector<double> gf_wilson_flow(GaugeField& gf,
                                    const double flow_time, const int steps,
                                    const double c1 = 0.0);
 
+void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
+                     const Field<RealD>& plaq_factor);
+
 }  // namespace qlat

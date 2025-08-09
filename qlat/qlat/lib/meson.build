@@ -10,6 +10,7 @@ cppsources = files(
   'hmc.cpp',
   'mpi.cpp',
   'qcd.cpp',
+  'qcd-utils.cpp',
   'qcd-prop.cpp',
   'selected-field.cpp',
   'selected-points.cpp',

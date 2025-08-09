@@ -1,3 +1,4 @@
+#include <qlat/qcd-acc.h>
 #include <qlat/qcd-smear.h>
 #include <qlat/vector_utils/utils_smear_vecs.h>
 

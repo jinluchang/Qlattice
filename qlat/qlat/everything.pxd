@@ -476,6 +476,7 @@ cdef extern from "qlat/wilson-flow.h" namespace "qlat":
     void gf_wilson_flow_step(GaugeField& gf, const RealD epsilon, const RealD c1) except +
     void gf_energy_density_field(Field[RealD]& fd, const GaugeField& gf) except +
     RealD gf_energy_density(const GaugeField& gf) except +
+    void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf, const Field[RealD]& plaq_factor) except +
 
 cdef extern from "qlat/qcd-topology.h" namespace "qlat":
 
