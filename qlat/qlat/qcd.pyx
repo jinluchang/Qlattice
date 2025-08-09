@@ -27,7 +27,7 @@ cdef class GaugeField(FieldColorMatrix):
         super().__init__(geo, 4)
 
     cdef cc.Handle[cc.GaugeField] xxx(self):
-        assert self.xx.multiplicity == 4
+        assert self.xx.multiplicity == 4 or self.xx.multiplicity == 0
         return cc.Handle[cc.GaugeField](<cc.GaugeField&>self.xx)
 
     @q.timer
@@ -74,7 +74,7 @@ cdef class GaugeTransform(FieldColorMatrix):
         super().__init__(geo, 1)
 
     cdef cc.Handle[cc.GaugeTransform] xxx(self):
-        assert self.xx.multiplicity == 1
+        assert self.xx.multiplicity == 1 or self.xx.multiplicity == 0
         return cc.Handle[cc.GaugeTransform](<cc.GaugeTransform&>self.xx)
 
     @q.timer
@@ -232,5 +232,5 @@ def gf_reduce_half(GaugeField gf):
     `gf_reduce_half(gf.shift())`
     """
     cdef GaugeField hgf = GaugeField()
-    cc.gf_reduce_half(<cc.GaugeField&>hgf.xx, gf.xxx().val())
+    cc.gf_reduce_half(hgf.xxx().val(), gf.xxx().val())
     return hgf

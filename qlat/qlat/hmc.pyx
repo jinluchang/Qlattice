@@ -23,7 +23,7 @@ cdef class GaugeMomentum(FieldColorMatrix):
         super().__init__(geo, 4)
 
     cdef cc.Handle[cc.GaugeMomentum] xxx(self):
-        assert self.xx.multiplicity == 4
+        assert self.xx.multiplicity == 4 or self.xx.multiplicity == 0
         return cc.Handle[cc.GaugeMomentum](<cc.GaugeMomentum&>self.xx)
 
     def set_rand(self, RngState rng, cc.RealD sigma=1.0):
