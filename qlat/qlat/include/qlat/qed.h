@@ -410,7 +410,7 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
       }
     }
   }
-  glb_sum_double(sum);
+  glb_sum(sum);
   return sum;
 }
 
