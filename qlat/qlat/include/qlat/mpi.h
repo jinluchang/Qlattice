@@ -270,7 +270,7 @@ Int mpi_allreduce(const Vector<M>& sendbuf, Vector<M> recvbuf, MPI_Op op,
 }
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int glb_sum(const Vector<M>& sendbuf, Vector<M> recvbuf)
+Int glb_sum(Vector<M> recvbuf, const Vector<M>& sendbuf)
 {
   if (is_same<M, Char>()) {
     return mpi_allreduce(sendbuf, recvbuf, MPI_BXOR, get_comm());
@@ -279,13 +279,13 @@ Int glb_sum(const Vector<M>& sendbuf, Vector<M> recvbuf)
 }
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int glb_max(const Vector<M>& sendbuf, Vector<M> recvbuf)
+Int glb_max(Vector<M> recvbuf, const Vector<M>& sendbuf)
 {
   return mpi_allreduce(sendbuf, recvbuf, MPI_MAX, get_comm());
 }
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int glb_min(const Vector<M>& sendbuf, Vector<M> recvbuf)
+Int glb_min(Vector<M> recvbuf, const Vector<M>& sendbuf)
 {
   return mpi_allreduce(sendbuf, recvbuf, MPI_MIN, get_comm());
 }
