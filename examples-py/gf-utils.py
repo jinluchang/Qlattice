@@ -35,8 +35,12 @@ gf.show_info()
 
 f_plaq = q.gf_plaq_field(gf)
 f_topo = q.gf_topology_field(gf)
-q.json_results_append(f"f_plaq", q.get_data_sig_arr(f_plaq, q.RngState(), 3))
-q.json_results_append(f"f_topo", q.get_data_sig_arr(f_topo, q.RngState(), 3))
+q.json_results_append(f"f_plaq", q.get_data_sig_arr(f_plaq, q.RngState(), 3), 1e-10)
+q.json_results_append(f"f_topo", q.get_data_sig_arr(f_topo, q.RngState(), 3), 1e-10)
+q.json_results_append(f"f_plaq.multiplicity={f_plaq.multiplicity}")
+q.json_results_append(f"f_plaq sum", f_plaq.glb_sum()[:], 1e-10)
+q.json_results_append(f"f_plaq max", f_plaq.glb_max()[:], 1e-10)
+q.json_results_append(f"f_plaq min", f_plaq.glb_min()[:], 1e-10)
 
 gf_ape_list = []
 

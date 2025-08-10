@@ -19,6 +19,14 @@ type_name_list = [
     'Int8t',
     'Char',
     ]
+type_name_for_glb_max_min_list = [
+    'RealD',
+    'RealF',
+    'Long',
+    'Int',
+    'Int64t',
+    'Int32t',
+    ]
 }}
 
 from qlat_utils.all cimport *
@@ -198,6 +206,30 @@ cdef class Field{{name}}(FieldBase):
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
         cc.field_glb_sum_tslice(sp.xx, self.xx, t_dir)
         return sp
+
+{{if (name in type_name_for_glb_max_min_list)}}
+
+    def glb_max(self):
+        """
+        return SelectedPoints with n_points=1
+        """
+        from .c import get_psel_single
+        cdef PointsSelection psel = get_psel_single(self.total_site)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
+        cc.field_glb_max(sp.xx, self.xx)
+        return sp
+
+    def glb_min(self):
+        """
+        return SelectedPoints with n_points=1
+        """
+        from .c import get_psel_single
+        cdef PointsSelection psel = get_psel_single(self.total_site)
+        cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
+        cc.field_glb_min(sp.xx, self.xx)
+        return sp
+
+{{endif}}
 
     def get_elems_xg(self, xg_arr):
         """
