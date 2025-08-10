@@ -19,7 +19,7 @@ struct IsMpiDataType {
   static constexpr bool value = false;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "unknown_type"; }
-  static const MPI_Datatype get_mpi_datatype() { return MPI_BYTE; }
+  static MPI_Datatype get_mpi_datatype() { return MPI_BYTE; }
   using ElementaryType = M;
 };
 
@@ -28,7 +28,7 @@ struct IsMpiDataType<int8_t> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "Int8t"; }
-  static const MPI_Datatype get_mpi_datatype() { return MPI_INT8_T; }
+  static MPI_Datatype get_mpi_datatype() { return MPI_INT8_T; }
   using ElementaryType = int8_t;
 };
 
@@ -37,7 +37,7 @@ struct IsMpiDataType<int32_t> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "Int32t"; }
-  static const MPI_Datatype get_mpi_datatype() { return MPI_INT32_T; }
+  static MPI_Datatype get_mpi_datatype() { return MPI_INT32_T; }
   using ElementaryType = int32_t;
 };
 
@@ -46,7 +46,7 @@ struct IsMpiDataType<int64_t> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "Int64t"; }
-  static const MPI_Datatype get_mpi_datatype() { return MPI_INT64_T; }
+  static MPI_Datatype get_mpi_datatype() { return MPI_INT64_T; }
   using ElementaryType = int64_t;
 };
 
@@ -55,7 +55,7 @@ struct IsMpiDataType<RealF> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "RealF"; }
-  static const MPI_Datatype get_mpi_datatype() { return MPI_FLOAT; }
+  static MPI_Datatype get_mpi_datatype() { return MPI_FLOAT; }
   using ElementaryType = RealF;
 };
 
@@ -64,7 +64,7 @@ struct IsMpiDataType<RealD> {
   static constexpr bool value = true;
   static constexpr bool is_complex = false;
   static const std::string get_type_name() { return "RealD"; }
-  static const MPI_Datatype get_mpi_datatype() { return MPI_DOUBLE; }
+  static MPI_Datatype get_mpi_datatype() { return MPI_DOUBLE; }
   using ElementaryType = RealD;
 };
 
@@ -256,20 +256,21 @@ Int mpi_alltoallv(const void* sendbuf, const Long* sendcounts,
 Int mpi_bcast(void* buffer, const Long count, MPI_Datatype datatype,
               const Int root, MPI_Comm comm);
 
-Int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
+Int mpi_allreduce(const void* sendbuf, void* recvbuf, const Long count,
                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int mpi_allreduce(Vector<M> sendbuf, const Vector<M>& recvbuf, MPI_Op op,
+Int mpi_allreduce(const Vector<M>& sendbuf, Vector<M> recvbuf, MPI_Op op,
                   MPI_Comm comm)
 {
   qassert(sendbuf.size() == recvbuf.size());
   MPI_Datatype datatype = get_mpi_datatype<M>();
-  return mpi_allreduce(src.data(), dst.data(), src.size(), datatype, op, comm);
+  return mpi_allreduce(sendbuf.data(), recvbuf.data(), sendbuf.size(), datatype,
+                       op, comm);
 }
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int glb_sum(Vector<M> sendbuf, const Vector<M>& recvbuf)
+Int glb_sum(const Vector<M>& sendbuf, Vector<M> recvbuf)
 {
   if (is_same<M, Char>()) {
     return mpi_allreduce(sendbuf, recvbuf, MPI_BXOR, get_comm());
@@ -278,13 +279,13 @@ Int glb_sum(Vector<M> sendbuf, const Vector<M>& recvbuf)
 }
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int glb_max(Vector<M> sendbuf, const Vector<M>& recvbuf)
+Int glb_max(const Vector<M>& sendbuf, Vector<M> recvbuf)
 {
   return mpi_allreduce(sendbuf, recvbuf, MPI_MAX, get_comm());
 }
 
 template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
-Int glb_min(Vector<M> sendbuf, const Vector<M>& recvbuf)
+Int glb_min(const Vector<M>& sendbuf, Vector<M> recvbuf)
 {
   return mpi_allreduce(sendbuf, recvbuf, MPI_MIN, get_comm());
 }
@@ -751,69 +752,69 @@ inline Int bcast_byte_vec_mpi(void* ptr, const Long size, const Int root)
 
 // ----------------------------------
 
-// template <class M>
-// Int glb_sum_double_vec(Vector<M> x)
-// {
-//   return glb_sum(
-//       Vector<double>((double*)x.data(), x.data_size() / sizeof(double)));
-// }
-// 
-// template <class M>
-// Int glb_sum_float_vec(Vector<M> x)
-// {
-//   return glb_sum(
-//       Vector<float>((float*)x.data(), x.data_size() / sizeof(float)));
-// }
-// 
-// template <class M>
-// Int glb_sum_long_vec(Vector<M> x)
-// {
-//   if (sizeof(Long) == sizeof(int64_t)) {
-//     return glb_sum_int64_vec(x);
-//   } else if (sizeof(Long) == sizeof(int32_t)) {
-//     return glb_sum_int32_vec(x);
-//   } else {
-//     qassert(false);
-//     return 0;
-//   }
-// }
-// 
-// template <class M>
-// Int glb_sum_int64_vec(Vector<M> x)
-// {
-//   return glb_sum(
-//       Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
-// }
-// 
-// template <class M>
-// Int glb_sum_int32_vec(Vector<M> x)
-// {
-//   return glb_sum(
-//       Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
-// }
-// 
-// template <class M>
-// Int glb_sum_byte_vec(Vector<M> x)
-// {
-//   return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
-// }
-// 
-// template <class M>
-// Int glb_sum_double(M& x)
-// {
-//   return glb_sum(Vector<double>((double*)&x, sizeof(M) / sizeof(double)));
-// }
-// 
-// template <class M>
-// Int glb_sum_float(M& x)
-// {
-//   return glb_sum(Vector<float>((float*)&x, sizeof(M) / sizeof(float)));
-// }
-// 
-// template <class M>
-// Int glb_sum_byte(M& x)
-// {
-//   return glb_sum(Vector<char>((char*)&x, sizeof(M)));
-// }
+template <class M>
+Int glb_sum_double_vec(Vector<M> x)
+{
+  return glb_sum(
+      Vector<double>((double*)x.data(), x.data_size() / sizeof(double)));
+}
+
+template <class M>
+Int glb_sum_float_vec(Vector<M> x)
+{
+  return glb_sum(
+      Vector<float>((float*)x.data(), x.data_size() / sizeof(float)));
+}
+
+template <class M>
+Int glb_sum_long_vec(Vector<M> x)
+{
+  if (sizeof(Long) == sizeof(int64_t)) {
+    return glb_sum_int64_vec(x);
+  } else if (sizeof(Long) == sizeof(int32_t)) {
+    return glb_sum_int32_vec(x);
+  } else {
+    qassert(false);
+    return 0;
+  }
+}
+
+template <class M>
+Int glb_sum_int64_vec(Vector<M> x)
+{
+  return glb_sum(
+      Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
+}
+
+template <class M>
+Int glb_sum_int32_vec(Vector<M> x)
+{
+  return glb_sum(
+      Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
+}
+
+template <class M>
+Int glb_sum_byte_vec(Vector<M> x)
+{
+  return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
+}
+
+template <class M>
+Int glb_sum_double(M& x)
+{
+  return glb_sum(Vector<double>((double*)&x, sizeof(M) / sizeof(double)));
+}
+
+template <class M>
+Int glb_sum_float(M& x)
+{
+  return glb_sum(Vector<float>((float*)&x, sizeof(M) / sizeof(float)));
+}
+
+template <class M>
+Int glb_sum_byte(M& x)
+{
+  return glb_sum(Vector<char>((char*)&x, sizeof(M)));
+}
 
 }  // namespace qlat

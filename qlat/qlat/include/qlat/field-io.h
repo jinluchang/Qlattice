@@ -41,7 +41,7 @@ crc32_t field_crc32_shuffle(const Field<M>& f)
     ret ^= crc32_shift(crc32_par(v),
                        (new_num_node - new_id_node - 1) * v.data_size());
   }
-  glb_sum_byte(ret);
+  glb_sum(get_data_char(ret));
   timer.flops += get_data(f).data_size() * geo.geon.num_node;
   return ret;
 }
@@ -75,7 +75,7 @@ crc32_t field_crc32_sites(const Field<M>& f)
   for (int i = 0; i < v_limit; ++i) {
     ret ^= crcs[i];
   }
-  glb_sum_byte(ret);
+  glb_sum(get_data_char(ret));
   timer.flops += get_data(f).data_size() * geo.geon.num_node;
   return ret;
 }

@@ -342,7 +342,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   });
   glb_sum_byte_vec(get_data(sp_tmp.points));
   if (is_keeping_data) {
-    glb_sum_byte_vec(get_data(sp_count.points));
+    glb_sum(get_data_char(sp_count.points));
     sp.init_zero(psel, sf.multiplicity);
     qthread_for(idx, n_points, {
       if (sp_count.get_elem(idx) > 0) {
@@ -476,7 +476,7 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   const int t_size = geo.total_site()[t_dir];
   const int multiplicity = sf.multiplicity;
   std::vector<M> vec = field_sum_tslice(sf, fsel, t_dir);
-  glb_sum_vec(get_data(vec));
+  glb_sum(vec);
   sp.init(t_size, multiplicity, PointsDistType::Global);
   sp.points = vec;
 }

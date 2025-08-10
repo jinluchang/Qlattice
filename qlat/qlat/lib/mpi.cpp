@@ -442,8 +442,9 @@ static Int mpi_allreduce_custom(const void* sendbuf, void* recvbuf,
   return mpi_bcast(recvbuf, count, datatype, root, comm);
 }
 
-static Int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
-                                MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+static Int mpi_allreduce_native(const void* sendbuf, void* recvbuf,
+                                const Long count, MPI_Datatype datatype,
+                                MPI_Op op, MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_allreduce_native");
   Int type_size;
@@ -452,10 +453,10 @@ static Int mpi_allreduce_native(void* sendbuf, void* recvbuf, const Long count,
   //
   const Long int_max = INT_MAX;
   qassert(count < int_max);
-  return MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+  return MPI_Allreduce((void*)sendbuf, recvbuf, count, datatype, op, comm);
 }
 
-Int mpi_allreduce(void* sendbuf, void* recvbuf, const Long count,
+Int mpi_allreduce(const void* sendbuf, void* recvbuf, const Long count,
                   MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   static const std::string q_env_type =

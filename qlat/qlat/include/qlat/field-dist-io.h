@@ -116,7 +116,7 @@ std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M>>& dds,
     ret[id_node] = crc32_par(ret[id_node], dd.data);
     total_bytes += dd.data.data_size();
   }
-  glb_sum_byte_vec(get_data(ret));
+  glb_sum(get_data_char(ret));
   glb_sum(total_bytes);
   timer.flops += total_bytes;
   return ret;
