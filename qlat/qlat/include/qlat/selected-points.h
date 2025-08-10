@@ -333,7 +333,6 @@ void field_glb_sum(SelectedPoints<M>& sp, const Field<M>& f)
 {
   TIMER("field_glb_sum(sp,f)");
   sp.init();
-  // const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_glb_sum(f);
   sp.init(1, multiplicity, PointsDistType::Global);
@@ -346,11 +345,33 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
 {
   TIMER("field_glb_sum_tslice(sp,f)");
   sp.init();
-  const Geometry& geo = f.geo();
+  const Geometry geo = f.get_geo();
   const Int t_size = geo.total_site()[t_dir];
   const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_glb_sum_tslice(f, t_dir);
   sp.init(t_size, multiplicity, PointsDistType::Global);
+  sp.points = vec;
+}
+
+template <class M>
+void field_glb_max(SelectedPoints<M>& sp, const Field<M>& f)
+{
+  TIMER("field_glb_max(sp,f)");
+  sp.init();
+  const Int multiplicity = f.multiplicity;
+  std::vector<M> vec = field_glb_max(f);
+  sp.init(1, multiplicity, PointsDistType::Global);
+  sp.points = vec;
+}
+
+template <class M>
+void field_glb_min(SelectedPoints<M>& sp, const Field<M>& f)
+{
+  TIMER("field_glb_min(sp,f)");
+  sp.init();
+  const Int multiplicity = f.multiplicity;
+  std::vector<M> vec = field_glb_min(f);
+  sp.init(1, multiplicity, PointsDistType::Global);
   sp.points = vec;
 }
 

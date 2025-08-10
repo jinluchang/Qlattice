@@ -983,6 +983,16 @@ QLAT_EXTERN template std::vector<RealF> field_min(const Field<RealF>& f);
 QLAT_EXTERN template std::vector<Long> field_min(const Field<Long>& f);
 QLAT_EXTERN template std::vector<Int> field_min(const Field<Int>& f);
 
+QLAT_EXTERN template std::vector<RealD> field_glb_max(const Field<RealD>& f);
+QLAT_EXTERN template std::vector<RealF> field_glb_max(const Field<RealF>& f);
+QLAT_EXTERN template std::vector<Long> field_glb_max(const Field<Long>& f);
+QLAT_EXTERN template std::vector<Int> field_glb_max(const Field<Int>& f);
+
+QLAT_EXTERN template std::vector<RealD> field_glb_min(const Field<RealD>& f);
+QLAT_EXTERN template std::vector<RealF> field_glb_min(const Field<RealF>& f);
+QLAT_EXTERN template std::vector<Long> field_glb_min(const Field<Long>& f);
+QLAT_EXTERN template std::vector<Int> field_glb_min(const Field<Int>& f);
+
 #undef QLAT_EXTERN
 
 }  // namespace qlat

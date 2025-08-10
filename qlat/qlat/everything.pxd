@@ -326,6 +326,8 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const Int t_dir) except +
+    void field_glb_max[M](SelectedPoints[M]& sp, const Field[M]& f) except +
+    void field_glb_min[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
