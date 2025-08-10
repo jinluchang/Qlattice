@@ -375,7 +375,6 @@ template <class M>
 std::vector<M> field_glb_max(const Field<M>& f)
 {
   TIMER("field_glb_max");
-  const Int num_node = get_num_node();
   const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_max(f);
   qassert((Long)vec.size() == (Long)multiplicity);
@@ -420,7 +419,6 @@ template <class M>
 std::vector<M> field_glb_min(const Field<M>& f)
 {
   TIMER("field_glb_min");
-  const Int num_node = get_num_node();
   const Int multiplicity = f.multiplicity;
   std::vector<M> vec = field_min(f);
   qassert((Long)vec.size() == (Long)multiplicity);
