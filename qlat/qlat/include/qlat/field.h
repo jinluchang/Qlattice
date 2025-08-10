@@ -83,7 +83,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const Field<double>& f_factor)
+const Field<M>& operator*=(Field<M>& f, const Field<RealD>& f_factor)
 {
   TIMER("field_operator*=(F,FD)");
   qassert(is_matching_geo(f.geo(), f_factor.geo()));
@@ -94,13 +94,13 @@ const Field<M>& operator*=(Field<M>& f, const Field<double>& f_factor)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
     if (multiplicity_f == 1) {
-      const double fac = f_factor.get_elem(xl);
+      const RealD fac = f_factor.get_elem(xl);
       for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac;
       }
     } else {
       qassert(multiplicity_f == f.multiplicity);
-      Vector<double> fac = f_factor.get_elems_const(xl);
+      Vector<RealD> fac = f_factor.get_elems_const(xl);
       for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];
       }
@@ -345,7 +345,7 @@ std::vector<M> field_max(const Field<M>& f)
   TIMER("field_max");
   const Geometry& geo = f.geo();
   const int multiplicity = f.multiplicity;
-  vector<M> vec(multiplicity, MemType::Cpu);
+  std::vector<M> vec(multiplicity);
   assign(vec, f.get_elems_const(0));
 #pragma omp parallel
   {
@@ -377,10 +377,54 @@ std::vector<M> field_glb_max(const Field<M>& f)
   TIMER("field_glb_max");
   const Int num_node = get_num_node();
   const Int multiplicity = f.multiplicity;
-  std::vector<M> vec(MemType::Comm);
-  vec = field_max(f);
+  std::vector<M> vec = field_max(f);
   qassert((Long)vec.size() == (Long)multiplicity);
   glb_max(vec);
+  return vec;
+}
+
+template <class M>
+std::vector<M> field_min(const Field<M>& f)
+// length = multiplicity
+{
+  TIMER("field_min");
+  const Geometry& geo = f.geo();
+  const int multiplicity = f.multiplicity;
+  std::vector<M> vec(multiplicity);
+  assign(vec, f.get_elems_const(0));
+#pragma omp parallel
+  {
+    std::vector<M> pvec(multiplicity);
+    assign(pvec, vec);
+#pragma omp for nowait
+    for (Long index = 0; index < geo.local_volume(); ++index) {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Vector<M> fvec = f.get_elems_const(xl);
+      for (int m = 0; m < multiplicity; ++m) {
+        pvec[m] = std::min(pvec[m], fvec[m]);
+      }
+    }
+    for (Int i = 0; i < omp_get_num_threads(); ++i) {
+#pragma omp barrier
+      if (omp_get_thread_num() == i) {
+        for (int m = 0; m < multiplicity; ++m) {
+          vec[m] = std::min(vec[m], pvec[m]);
+        }
+      }
+    }
+  }
+  return vec;
+}
+
+template <class M>
+std::vector<M> field_glb_min(const Field<M>& f)
+{
+  TIMER("field_glb_min");
+  const Int num_node = get_num_node();
+  const Int multiplicity = f.multiplicity;
+  std::vector<M> vec = field_min(f);
+  qassert((Long)vec.size() == (Long)multiplicity);
+  glb_min(vec);
   return vec;
 }
 
@@ -839,7 +883,7 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       <TYPENAME>(Field<TYPENAME> & f, const Field<TYPENAME>& f1);             \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
-      Field<TYPENAME>& f, const Field<double>& f_factor);                     \
+      Field<TYPENAME>& f, const Field<RealD>& f_factor);                     \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
       Field<TYPENAME>& f, const Field<ComplexD>& f_factor);                   \
@@ -928,6 +972,16 @@ QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 
 QLAT_CALL_WITH_TYPES_2(QLAT_EXTERN_TEMPLATE_2);
 #undef QLAT_EXTERN_TEMPLATE_2
+
+QLAT_EXTERN template std::vector<RealD> field_max(const Field<RealD>& f);
+QLAT_EXTERN template std::vector<RealF> field_max(const Field<RealF>& f);
+QLAT_EXTERN template std::vector<Long> field_max(const Field<Long>& f);
+QLAT_EXTERN template std::vector<Int> field_max(const Field<Int>& f);
+
+QLAT_EXTERN template std::vector<RealD> field_min(const Field<RealD>& f);
+QLAT_EXTERN template std::vector<RealF> field_min(const Field<RealF>& f);
+QLAT_EXTERN template std::vector<Long> field_min(const Field<Long>& f);
+QLAT_EXTERN template std::vector<Int> field_min(const Field<Int>& f);
 
 #undef QLAT_EXTERN
 
