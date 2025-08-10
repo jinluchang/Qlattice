@@ -113,7 +113,7 @@ Long save_low_modes_decompress(LowModes& lm, const std::string& path)
         ssprintf("qlat::%s: cycle / n_cycle = %4d / %4d ; total_bytes = %15ld",
                  fname.c_str(), i + 1, n_cycle, total_bytes));
   }
-  glb_sum_byte_vec(get_data(crcs));
+  glb_sum(get_data_char(crcs));
   const crc32_t crc = dist_crc32(crcs);
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
@@ -207,7 +207,7 @@ void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
       }
     }
     phv.init();
-    glb_sum_double_vec(get_data(phv_sum));
+    glb_sum(phv_sum);
     // scale by eigen values
 #pragma omp parallel for
     for (int i = 0; i < n_vec; ++i) {

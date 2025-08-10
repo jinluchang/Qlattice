@@ -203,7 +203,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
       }
     }
   }
-  glb_sum_double_vec(get_data(m_ts));
+  glb_sum(m_ts);
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
   for (int tsep = 0; tsep < total_site[3]; ++tsep) {
@@ -396,7 +396,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
       wm_ts[t] += gwm_ts[i * total_site[3] + t];
     }
   }
-  glb_sum_double_vec(get_data(wm_ts));
+  glb_sum(wm_ts);
   LatData ld = mk_three_point_table(total_site);
   const int tsep = mod(tb - ta, total_site[3]);
   for (int t = 0; t < total_site[3]; ++t) {

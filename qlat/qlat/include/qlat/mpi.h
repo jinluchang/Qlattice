@@ -701,120 +701,18 @@ Int get_data_minus_mu(Vector<M> recv, const Vector<M>& send, const Int mu)
 
 // ----------------------------------
 
-inline RngState& get_sync_node_rs_mpi()
-{
-  return get_comm_list().back().sync_node_rs;
-}
+RngState& get_sync_node_rs_mpi();
 
-inline Int glb_sum_long_vec_mpi(void* ptr, const Long size)
-{
-  const Long n = size / sizeof(Long);
-  Vector<Long> data((Long*)ptr, n);
-  qassert(data.data_size() == size);
-  return glb_sum(data);
-}
+Int glb_sum_long_vec_mpi(void* ptr, const Long size);
 
-inline Int glb_sum_int_vec_mpi(void* ptr, const Long size)
-{
-  const Long n = size / sizeof(Int);
-  Vector<Int> data((Int*)ptr, n);
-  qassert(data.data_size() == size);
-  return glb_sum(data);
-}
+Int glb_sum_int_vec_mpi(void* ptr, const Long size);
 
-inline Int glb_sum_real_d_vec_mpi(void* ptr, const Long size)
-{
-  const Long n = size / sizeof(RealD);
-  Vector<RealD> data((RealD*)ptr, n);
-  qassert(data.data_size() == size);
-  return glb_sum(data);
-}
+Int glb_sum_real_d_vec_mpi(void* ptr, const Long size);
 
-inline Int glb_sum_real_f_vec_mpi(void* ptr, const Long size)
-{
-  const Long n = size / sizeof(RealF);
-  Vector<RealF> data((RealF*)ptr, n);
-  qassert(data.data_size() == size);
-  return glb_sum(data);
-}
+Int glb_sum_real_f_vec_mpi(void* ptr, const Long size);
 
-inline Int glb_sum_byte_vec_mpi(void* ptr, const Long size)
-{
-  Vector<Char> data((Char*)ptr, size);
-  return glb_sum(data);
-}
+Int glb_sum_byte_vec_mpi(void* ptr, const Long size);
 
-inline Int bcast_byte_vec_mpi(void* ptr, const Long size, const Int root)
-{
-  Vector<Char> data((Char*)ptr, size);
-  return bcast(data, root);
-}
-
-// ----------------------------------
-
-template <class M>
-Int glb_sum_double_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<double>((double*)x.data(), x.data_size() / sizeof(double)));
-}
-
-template <class M>
-Int glb_sum_float_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<float>((float*)x.data(), x.data_size() / sizeof(float)));
-}
-
-template <class M>
-Int glb_sum_long_vec(Vector<M> x)
-{
-  if (sizeof(Long) == sizeof(int64_t)) {
-    return glb_sum_int64_vec(x);
-  } else if (sizeof(Long) == sizeof(int32_t)) {
-    return glb_sum_int32_vec(x);
-  } else {
-    qassert(false);
-    return 0;
-  }
-}
-
-template <class M>
-Int glb_sum_int64_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<int64_t>((int64_t*)x.data(), x.data_size() / sizeof(int64_t)));
-}
-
-template <class M>
-Int glb_sum_int32_vec(Vector<M> x)
-{
-  return glb_sum(
-      Vector<int32_t>((int32_t*)x.data(), x.data_size() / sizeof(int32_t)));
-}
-
-template <class M>
-Int glb_sum_byte_vec(Vector<M> x)
-{
-  return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
-}
-
-template <class M>
-Int glb_sum_double(M& x)
-{
-  return glb_sum(Vector<double>((double*)&x, sizeof(M) / sizeof(double)));
-}
-
-template <class M>
-Int glb_sum_float(M& x)
-{
-  return glb_sum(Vector<float>((float*)&x, sizeof(M) / sizeof(float)));
-}
-
-template <class M>
-Int glb_sum_byte(M& x)
-{
-  return glb_sum(Vector<char>((char*)&x, sizeof(M)));
-}
+Int bcast_byte_vec_mpi(void* ptr, const Long size, const Int root);
 
 }  // namespace qlat

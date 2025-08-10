@@ -167,7 +167,7 @@ void set_current_moments_from_current(
 void glb_sum_current_moments(CurrentMoments<WilsonMatrix>& cm)
 {
   TIMER("glb_sum_current_moments");
-  glb_sum_double_vec(get_data(cm.d));
+  glb_sum(cm.d);
 }
 
 void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,

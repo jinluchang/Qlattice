@@ -1136,4 +1136,52 @@ void end(const bool is_preserving_cache)
   }
 }
 
+// -----------------------------------------
+
+RngState& get_sync_node_rs_mpi() { return get_comm_list().back().sync_node_rs; }
+
+Int glb_sum_long_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(Long);
+  Vector<Long> data((Long*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+Int glb_sum_int_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(Int);
+  Vector<Int> data((Int*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+Int glb_sum_real_d_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(RealD);
+  Vector<RealD> data((RealD*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+Int glb_sum_real_f_vec_mpi(void* ptr, const Long size)
+{
+  const Long n = size / sizeof(RealF);
+  Vector<RealF> data((RealF*)ptr, n);
+  qassert(data.data_size() == size);
+  return glb_sum(data);
+}
+
+Int glb_sum_byte_vec_mpi(void* ptr, const Long size)
+{
+  Vector<Char> data((Char*)ptr, size);
+  return glb_sum(data);
+}
+
+Int bcast_byte_vec_mpi(void* ptr, const Long size, const Int root)
+{
+  Vector<Char> data((Char*)ptr, size);
+  return bcast(data, root);
+}
+
 }  // namespace qlat

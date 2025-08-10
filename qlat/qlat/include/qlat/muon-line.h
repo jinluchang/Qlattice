@@ -914,7 +914,7 @@ inline bool loadMuonLineInterpolation(const std::string& path,
     interp[idx] = mmmc;
   }
   // sync MuonLineInterp data across all nodes
-  glb_sum_long_vec(get_data(interp.data));
+  glb_sum(get_data(interp.data));
   return true;
 }
 

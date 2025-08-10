@@ -340,7 +340,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
       }
     }
   });
-  glb_sum_byte_vec(get_data(sp_tmp.points));
+  glb_sum(get_data_char(sp_tmp.points));
   if (is_keeping_data) {
     glb_sum(get_data_char(sp_count.points));
     sp.init_zero(psel, sf.multiplicity);

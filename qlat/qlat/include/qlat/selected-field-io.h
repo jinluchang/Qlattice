@@ -46,7 +46,7 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
     crc ^= crc32_shift(crc32_par(v),
                        (new_num_node - new_id_node - 1) * v.data_size());
   }
-  glb_sum_byte(crc);
+  glb_sum(get_data_char(crc));
   return crc;
 }
 
@@ -81,7 +81,7 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     n_elems_vec[id_node] = fsels[i].n_elems;
     sfs[i].init(fsels[i], multiplicity);
   }
-  glb_sum_long_vec(get_data(n_elems_vec));
+  glb_sum(n_elems_vec);
   std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   Long total_bytes = 0;
   for (int i = 0; i < new_num_node; ++i) {
@@ -97,7 +97,7 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     crc ^= crc32_shift(crc32_par(v),
                        (total_bytes - data_offset_vec[new_id_node + 1]));
   }
-  glb_sum_byte(crc);
+  glb_sum(get_data_char(crc));
   if (get_force_field_write_sizeof_M() == 0) {
     qtouch_info(path + ".partial",
                 make_selected_field_header(geo, multiplicity, sizeof(M), crc));
@@ -194,7 +194,7 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
     n_elems_vec[id_node] = fsels[i].n_elems;
     sfs[i].init(fsels[i], multiplicity);
   }
-  glb_sum_long_vec(get_data(n_elems_vec));
+  glb_sum(n_elems_vec);
   std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   Long total_bytes = 0;
   for (int i = 0; i < new_num_node; ++i) {
@@ -217,7 +217,7 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
     }
     qfclose(fp);
   }
-  glb_sum_byte(crc);
+  glb_sum(get_data_char(crc));
   if (crc != crc_info) {
     displayln_info(
         fname +

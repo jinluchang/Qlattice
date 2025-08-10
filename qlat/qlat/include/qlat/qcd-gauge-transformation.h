@@ -177,7 +177,7 @@ inline void prop_apply_gauge_transformation(
       tmp[i] = t * prop0[i];
     }
   });
-  glb_sum_double_vec(get_data(tmp));
+  glb_sum(tmp);
   prop = tmp;
 }
 
@@ -206,7 +206,7 @@ inline void prop_apply_gauge_transformation(
       wm = t * wm0;
     }
   });
-  glb_sum_double_vec(get_data(tmp.points));
+  glb_sum(tmp.points);
   prop = tmp;
 }
 

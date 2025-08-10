@@ -1041,7 +1041,7 @@ Long load_compressed_eigen_vectors(vector<double>& eigen_values,
     }
     timer.flops += total_bytes;
   }
-  glb_sum_byte_vec(get_data(crcs));
+  glb_sum(get_data_char(crcs));
   for (int j = 0; j < (int)crcs.size(); ++j) {
     if (crcs[j] != cesi.crcs[j]) {
       qwarn(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j, crcs[j],
@@ -1379,8 +1379,8 @@ bool resize_compressed_eigen_vectors(const std::string& old_path,
       Timer::display();
     }
   }
-  glb_sum_byte_vec(get_data(cesi_new.crcs));
-  glb_sum_byte_vec(get_data(crcs_acc));
+  glb_sum(get_data_char(cesi_new.crcs));
+  glb_sum(get_data_char(crcs_acc));
   qassert(crcs_acc.size() == cesi_old.crcs.size());
   for (int j = 0; j < (int)cesi_old.crcs.size(); ++j) {
     if (crcs_acc[j] != cesi_old.crcs[j]) {
@@ -1451,7 +1451,7 @@ void decompressed_eigen_vectors_check_crc32(const std::string& path)
       num_failure += 1;
     }
   }
-  glb_sum_byte_vec(get_data(crcs));
+  glb_sum(get_data_char(crcs));
   glb_sum(num_failure);
   if (0 == get_id_node() and num_failure == 0) {
     crc32_t crc = dist_crc32(crcs);

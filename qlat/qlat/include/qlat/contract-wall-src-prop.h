@@ -80,7 +80,7 @@ inline PselProp contract_wall_snk_prop(const SelProp& prop,
       ret.get_elem(t) += gwm_ts[i * total_site[3] + t];
     }
   }
-  glb_sum_double_vec(get_data(ret));
+  glb_sum(get_data(ret));
   const double ratio = 1.0 / get_fsel_prob(fsel);
   ret *= ratio;
   return ret;

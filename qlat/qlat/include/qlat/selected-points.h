@@ -150,7 +150,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   sp.init(psel, f.multiplicity);
-  set_zero(sp);  // has to set_zero for glb_sum_byte_vec
+  set_zero(sp);  // has to set_zero for glb_sum
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -162,7 +162,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
       }
     }
   });
-  glb_sum_byte_vec(get_data(sp.points));
+  glb_sum(get_data_char(sp.points));
 }
 
 template <class M>
@@ -175,7 +175,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   sp.init(psel, 1);
-  set_zero(sp);  // has to set_zero for glb_sum_byte_vec
+  set_zero(sp);  // has to set_zero for glb_sum
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -184,7 +184,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
       sp.get_elem(idx) = fv[m];
     }
   });
-  glb_sum_byte_vec(get_data(sp.points));
+  glb_sum(get_data_char(sp.points));
 }
 
 template <class M>
