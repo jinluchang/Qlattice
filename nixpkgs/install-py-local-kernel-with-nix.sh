@@ -15,6 +15,9 @@ Usage:
     name='-cudasupport' ./install-py-local-kernel-with-nix.sh
     # Install a local kernel with full CUDA support when possible.
 
+    name='-clang' ./install-py-local-kernel-with-nix.sh
+    # Install a local kernel with full CUDA support when possible.
+
 EOF
 
 script_path="$( cd -- "$(dirname -- "$0")" >/dev/null 2>&1 ; pwd -P )"
