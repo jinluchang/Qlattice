@@ -372,6 +372,7 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     CoordinateD operator/(const CoordinateD& x, const double y)
     CoordinateD operator/(const double x, const CoordinateD& y)
     bool operator==(const CoordinateD& x, const CoordinateD& y)
+    RealD sqr(const CoordinateD& xg)
 
 cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
 

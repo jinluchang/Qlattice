@@ -152,4 +152,9 @@ qacc CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
   return ret;
 }
 
+qacc RealD sqr(const CoordinateD& xg)
+{
+  return sqr(xg[0]) + sqr(xg[1]) + sqr(xg[2]) + sqr(xg[3]);
+}
+
 }  // namespace qlat

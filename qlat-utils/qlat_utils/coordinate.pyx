@@ -303,6 +303,12 @@ cdef class CoordinateD:
         self.__init__()
         self.from_list(state)
 
+    def sqr(self):
+        """
+        Return the square sum of all the components as ``cc.Long``.
+        """
+        return cc.sqr(self.xx)
+
     def __getitem__(self, int key):
         assert 0 <= key
         assert key < 4
