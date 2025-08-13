@@ -11,6 +11,10 @@ __all__ += [
         'middle_mod_coordinate',
         'coordinate_from_index',
         'index_from_coordinate',
+        'mod_coordinate_d',
+        'smod_coordinate_d',
+        'smod_sym_coordinate_d',
+        'middle_mod_coordinate_d',
         ]
 
 __all__ += [

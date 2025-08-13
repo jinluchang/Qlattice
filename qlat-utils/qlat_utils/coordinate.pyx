@@ -195,6 +195,8 @@ def smod_sym_coordinate(Coordinate c, Coordinate size):
     smod based on ``size``
     return ``x``
     ``-size/2 < x < size/2``
+    if x == size / 2:
+        return 0 for that dimension
     """
     cdef Coordinate x = Coordinate()
     cc.assign_direct(x.xx, cc.smod_sym(c.xx, size.xx))
@@ -335,6 +337,11 @@ cdef class CoordinateD:
     def __rmul__(c1, c2):
         return c1 * c2
 
+    def __mod__(CoordinateD c1, CoordinateD c2):
+        cdef CoordinateD x = CoordinateD()
+        cc.assign_direct(x.xx, cc.mod(c1.xx, c2.xx))
+        return x
+
     def __truediv__(CoordinateD c1, CoordinateD c2):
         cdef CoordinateD x = CoordinateD()
         cc.assign_direct(x.xx, c1.xx / c2.xx)
@@ -350,5 +357,49 @@ cdef class CoordinateD:
 
     def __eq__(self, other):
         return isinstance(other, CoordinateD) and self.xx == (<CoordinateD>other).xx
+
+### ------------------------------------------------
+
+def mod_coordinate_d(CoordinateD c, CoordinateD size):
+    """
+    mod based on ``size``
+    return ``x``
+    ``0 <= x < size``
+    """
+    return c % size
+
+def smod_coordinate_d(CoordinateD c, CoordinateD size):
+    """
+    smod based on ``size``
+    return ``x``
+    ``-size/2 <= x < size/2``
+    """
+    cdef CoordinateD x = CoordinateD()
+    cc.assign_direct(x.xx, cc.smod(c.xx, size.xx))
+    return x
+
+def smod_sym_coordinate_d(CoordinateD c, CoordinateD size):
+    """
+    smod based on ``size``
+    return ``x``
+    ``-size/2 < x < size/2``
+    if x == size / 2:
+        return 0 for that dimension
+    """
+    cdef CoordinateD x = CoordinateD()
+    cc.assign_direct(x.xx, cc.smod_sym(c.xx, size.xx))
+    return x
+
+def middle_mod_coordinate_d(CoordinateD x, CoordinateD y, CoordinateD size):
+    """
+    return middle of x and y
+    xm = mod(x, size)
+    ym = mod(y, size)
+    if xm<=ym: return mod(xm + smod(ym - xm, size), size)
+    else: return mod(ym + smod(xm - ym, size), size)
+    """
+    cdef CoordinateD ret = CoordinateD()
+    cc.assign_direct(ret.xx, cc.middle_mod(x.xx, y.xx, size.xx))
+    return ret
 
 ### ------------------------------------------------
