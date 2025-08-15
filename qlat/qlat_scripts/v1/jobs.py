@@ -145,10 +145,7 @@ def run_gf(job_tag, traj):
             gf.save(path_gf)
             q.release_lock()
         else:
-            @q.timer_verbose
-            def load_gf():
-                assert False
-            return load_gf
+            return None
     get_gf = rup.load_config_lazy(job_tag, path_gf)
     return get_gf
 
