@@ -205,7 +205,7 @@ void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
   plaq_factor_ext.init(geo_pf_ext, 6);
   plaq_factor_ext = plaq_factor;
   refresh_expanded(plaq_factor_ext);
-  set_plaq_flow_z_no_comm(z, gf_ext, plaq_factor);
+  set_plaq_flow_z_no_comm(z, gf_ext, plaq_factor_ext);
   qassert(z.multiplicity == 4);
 }
 
