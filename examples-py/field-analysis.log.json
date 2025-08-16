@@ -54,6 +54,42 @@
   1e-10
  ],
  [
+  "sf1 data sig",
+  {
+   "real": -933.3760252197362,
+   "imag": -898.203046148408,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sf2 data sig",
+  {
+   "real": -281.1274472552302,
+   "imag": -332.17104295091383,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sf1p data sig",
+  {
+   "real": -806.0226219607049,
+   "imag": -749.6692680826696,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sf2p data sig",
+  {
+   "real": -386.5424447851534,
+   "imag": -323.8657680988774,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
   "ff data sig",
   {
    "real": -78.15057528131466,
