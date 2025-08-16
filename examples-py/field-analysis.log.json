@@ -36,6 +36,24 @@
   1e-10
  ],
  [
+  "sf1p data sig",
+  {
+   "real": -11.987288220190976,
+   "imag": -11.568579660355823,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sf2p data sig",
+  {
+   "real": -13.969313251466392,
+   "imag": -12.821904459337595,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
   "ff data sig",
   {
    "real": -78.15057528131466,
