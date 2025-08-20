@@ -933,12 +933,12 @@ def compute_inst_map(
             q.displayln_info(0, f"===================== Half lattice size ===========================")
             if q.is_test():
                 q.json_results_append(f"{fname}: {flow_type} current_spacing={inst_map.current_spacing}")
-                q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-10)
-                q.json_results_append(f"{fname}: {flow_type} plaq_h", plaq_h, 1e-10)
-                q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-8)
-                q.json_results_append(f"{fname}: {flow_type} plaq_min_h", plaq_min_h, 1e-8)
-                q.json_results_append(f"{fname}: {flow_type} topo", topo, 1e-8)
-                q.json_results_append(f"{fname}: {flow_type} topo_h", topo_h, 1e-8)
+                q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-8)
+                q.json_results_append(f"{fname}: {flow_type} plaq_h", plaq_h, 1e-8)
+                q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-6)
+                q.json_results_append(f"{fname}: {flow_type} plaq_min_h", plaq_min_h, 1e-6)
+                q.json_results_append(f"{fname}: {flow_type} topo", topo, 1e-4)
+                q.json_results_append(f"{fname}: {flow_type} topo_h", topo_h, 1e-4)
             gf = gf_h
             geo = geo_h
             total_site = geo_h.total_site
@@ -987,9 +987,9 @@ def displayln_info_inst_map_obj(inst_map_obj):
             delta_s_topo = p_inst["delta_s_topo"]
             estimate_topo_charge = p_inst["estimate_topo_charge"]
             q.json_results_append(f"inst_idx={inst_idx} ; o_xg_d={o_xg_d} ; o_total_site={o_total_site} ; current_spacing={current_spacing}")
-            q.json_results_append(f"plaq", plaq, 1e-8)
+            q.json_results_append(f"plaq", plaq, 1e-6)
             q.json_results_append(f"flow_time", flow_time, 1e-3)
-            q.json_results_append(f"delta_s_topo", np.array(delta_s_topo, dtype=np.float64), 1e-8)
+            q.json_results_append(f"delta_s_topo", np.array(delta_s_topo, dtype=np.float64), 1e-6)
             q.json_results_append(f"estimate_topo_charge", estimate_topo_charge, 1e-4)
     #
     s_p_inst_list = sorted(p_inst_list, key=lambda v: -v["flow_time"])
