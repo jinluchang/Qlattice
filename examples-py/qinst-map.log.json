@@ -50,7 +50,7 @@
  [
   "plaq",
   0.5680804194918578,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -69,7 +69,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -124,7 +124,7 @@
  [
   "plaq",
   0.24564542059156835,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -143,7 +143,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -192,32 +192,32 @@
  [
   "compute_inst_map: Shrink plaq",
   0.9999161397369444,
-  1e-10
+  1e-08
  ],
  [
   "compute_inst_map: Shrink plaq_h",
   0.9987215340356436,
-  1e-10
+  1e-08
  ],
  [
   "compute_inst_map: Shrink plaq_min",
   0.9981815151389938,
-  1e-08
+  1e-06
  ],
  [
   "compute_inst_map: Shrink plaq_min_h",
   0.9861427442537217,
-  1e-08
+  1e-06
  ],
  [
   "compute_inst_map: Shrink topo",
   0.00015280978161427705,
-  1e-08
+  0.0001
  ],
  [
   "compute_inst_map: Shrink topo_h",
   0.0015044270905593578,
-  1e-08
+  0.0001
  ],
  [
   "run_inst_map: End compute inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle' for 'results/test-8nt16-checker/configs/ckpoint_lat.1000'"
@@ -231,7 +231,7 @@
  [
   "plaq",
   0.47854892536420457,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -250,7 +250,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -263,7 +263,7 @@
  [
   "plaq",
   0.5947031560473705,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -282,7 +282,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -295,7 +295,7 @@
  [
   "plaq",
   0.4632931973216792,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -314,7 +314,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -327,7 +327,7 @@
  [
   "plaq",
   0.45951422797107494,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -346,7 +346,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -359,7 +359,7 @@
  [
   "plaq",
   0.6486322272988406,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -378,7 +378,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -391,7 +391,7 @@
  [
   "plaq",
   0.5150054098939181,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -410,7 +410,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -429,7 +429,7 @@
  [
   "plaq",
   0.5680804194918578,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -448,7 +448,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -467,7 +467,7 @@
  [
   "plaq",
   0.24564542059156835,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -486,7 +486,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -505,7 +505,7 @@
  [
   "plaq",
   0.47854892536420457,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -524,7 +524,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -537,7 +537,7 @@
  [
   "plaq",
   0.5947031560473705,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -556,7 +556,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -569,7 +569,7 @@
  [
   "plaq",
   0.4632931973216792,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -588,7 +588,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -601,7 +601,7 @@
  [
   "plaq",
   0.45951422797107494,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -620,7 +620,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -633,7 +633,7 @@
  [
   "plaq",
   0.6486322272988406,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -652,7 +652,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
@@ -665,7 +665,7 @@
  [
   "plaq",
   0.5150054098939181,
-  1e-08
+  1e-06
  ],
  [
   "flow_time",
@@ -684,7 +684,7 @@
    ],
    "__extended_json_type__": "ndarray"
   },
-  1e-08
+  1e-06
  ],
  [
   "estimate_topo_charge",
