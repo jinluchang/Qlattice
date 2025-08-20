@@ -1,0 +1,198 @@
+[
+ [
+  "total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "gf plaq",
+  -0.003987783999661485,
+  1e-10
+ ],
+ [
+  "gf plaq_min",
+  -0.4340411220960796,
+  1e-10
+ ],
+ [
+  "gf_sig",
+  {
+   "value": [
+    {
+     "real": -42.17564480733117,
+     "imag": 57.36752914276112,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.9571597598835506,
+     "imag": -4.833613971262505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 47.74374512276396,
+     "imag": -17.387499076167927,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "plaq_sig",
+  {
+   "value": [
+    -11.302200569362727,
+    -4.7999863151268345,
+    -2.6505206971670945
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "gf_flow_topo ; num_step=5 ; step_size=0.100"
+ ],
+ [
+  "gf plaq",
+  0.6227728266722544,
+  1e-10
+ ],
+ [
+  "gf plaq_min",
+  -0.4363827413401686,
+  1e-10
+ ],
+ [
+  "gf_sig",
+  {
+   "value": [
+    {
+     "real": -19.752387658328608,
+     "imag": 46.78175270319342,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -9.63688696933125,
+     "imag": 3.9357614464222515,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 53.249488768846135,
+     "imag": -19.672659026981346,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "plaq_sig",
+  {
+   "value": [
+    -28.851065969270408,
+    -14.606672399115169,
+    3.6076363419827615
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "gf_flow_topo ; Freeze ; num_step=5 ; step_size=0.100"
+ ],
+ [
+  "gf plaq",
+  0.6983195467285471,
+  1e-10
+ ],
+ [
+  "gf plaq_min",
+  -0.1846266324172274,
+  1e-10
+ ],
+ [
+  "gf_sig",
+  {
+   "value": [
+    {
+     "real": -11.988549006266165,
+     "imag": 38.61595573636006,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -11.946617917315606,
+     "imag": 8.10389600325796,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 53.13156871762267,
+     "imag": -12.147331671503665,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "plaq_sig",
+  {
+   "value": [
+    -33.27418024757431,
+    -10.470063052985921,
+    7.310665393966299
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "gf_flow_topo ; Shrink ; num_step=5 ; step_size=0.100"
+ ],
+ [
+  "gf plaq",
+  0.816573039382514,
+  1e-10
+ ],
+ [
+  "gf plaq_min",
+  -0.21821173558199217,
+  1e-10
+ ],
+ [
+  "gf_sig",
+  {
+   "value": [
+    {
+     "real": 4.256254084806349,
+     "imag": 39.45217441194851,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -29.33989510965252,
+     "imag": 16.62637704562663,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 48.06212718985184,
+     "imag": -2.777850933436266,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "plaq_sig",
+  {
+   "value": [
+    -36.19640378894012,
+    -12.21432640453821,
+    8.275020984740065
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ]
+]

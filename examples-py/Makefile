@@ -57,6 +57,7 @@ tests = \
 		hmc-pure-gauge-fa-sym.log \
 		hmc-pions.log \
 		gf-utils.log \
+		gf-flow-topo.log \
 		free-invert.log \
 		fit-corr.log \
 		fit-corr-2.log \
