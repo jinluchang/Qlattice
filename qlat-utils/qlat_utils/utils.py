@@ -44,6 +44,36 @@ def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
                 return arg
     return default
 
+def get_arg_list(option, *, argv=None, is_removing_from_argv=False):
+    """
+    Get all the `arg` of the option when it appears as `arg_list`, it may appear multiple times.
+    Remove the options and the args if `is_removing_from_argv`.
+    """
+    if argv is None:
+        argv = sys.argv
+    arg_list = []
+    i = 0
+    while i < len(argv):
+        i_max = len(argv) - 1
+        if argv[i] == option:
+            if i == i_max:
+                if is_removing_from_argv:
+                    argv.pop(i)
+                else:
+                    i += 1
+                arg_list.append("")
+            else:
+                arg = argv[i + 1]
+                if is_removing_from_argv:
+                    argv.pop(i)
+                    argv.pop(i)
+                else:
+                    i += 2
+                arg_list.append(arg)
+        else:
+            i += 1
+    return arg_list
+
 def get_option(option, *, argv=None, is_removing_from_argv=False):
     """
     Return if `option` in `argv`.
@@ -73,6 +103,11 @@ def get_all_arg_list(option, default=None, *, argv=None, is_removing_from_argv=F
                 argv[i:] = []
             return arg_list
     return default
+
+is_test_state = get_option("--test")
+
+def is_test():
+    return is_test_state
 
 def show_memory_usage():
     try:

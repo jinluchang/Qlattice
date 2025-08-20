@@ -1,0 +1,38 @@
+CHECK: params: test-4nt8-checker: {
+CHECK: params: test-4nt8-checker:   "traj_list": [
+CHECK: params: test-4nt8-checker:     1000,
+CHECK: params: test-4nt8-checker:     1100
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "total_site": [
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     8
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "mk_sample_gauge_field": {
+CHECK: params: test-4nt8-checker:     "rand_n_step": 20,
+CHECK: params: test-4nt8-checker:     "rand_sigma": 0.25,
+CHECK: params: test-4nt8-checker:     "flow_n_step": 4,
+CHECK: params: test-4nt8-checker:     "hmc_n_traj": 5,
+CHECK: params: test-4nt8-checker:     "hmc_beta": 3.0
+CHECK: params: test-4nt8-checker:   }
+CHECK: params: test-4nt8-checker: }
+CHECK: params: test-8nt16-checker: {
+CHECK: params: test-8nt16-checker:   "traj_list": [
+CHECK: params: test-8nt16-checker:     1000
+CHECK: params: test-8nt16-checker:   ],
+CHECK: params: test-8nt16-checker:   "total_site": [
+CHECK: params: test-8nt16-checker:     8,
+CHECK: params: test-8nt16-checker:     8,
+CHECK: params: test-8nt16-checker:     8,
+CHECK: params: test-8nt16-checker:     16
+CHECK: params: test-8nt16-checker:   ],
+CHECK: params: test-8nt16-checker:   "mk_sample_gauge_field": {
+CHECK: params: test-8nt16-checker:     "rand_n_step": 10,
+CHECK: params: test-8nt16-checker:     "rand_sigma": 0.25,
+CHECK: params: test-8nt16-checker:     "flow_n_step": 8,
+CHECK: params: test-8nt16-checker:     "hmc_n_traj": 5,
+CHECK: params: test-8nt16-checker:     "hmc_beta": 5.0
+CHECK: params: test-8nt16-checker:   }
+CHECK: params: test-8nt16-checker: }
+CHECK: finished successfully.

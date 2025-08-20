@@ -47,6 +47,8 @@ class q:
             random_permute,
             displayln_info,
             get_num_node,
+            is_test,
+            json_results_append,
             )
     from .c import (
             Geometry,
@@ -731,7 +733,7 @@ class InstantonMap:
 ### --------------------------------------
 
 @q.timer(is_timer_fork=True)
-def compute_topo_flow(
+def compute_inst_map(
         gf,
         *,
         dis_sqr_limit=None,
@@ -754,7 +756,7 @@ def compute_topo_flow(
         return
     gf = get_gf()
     #
-    topo_flow_obj = compute_topo_flow(gf) # Note that `gf` should not have boundary be twisted.
+    inst_map_obj = compute_inst_map(gf) # Note that `gf` should not have boundary be twisted.
     #
     obj = dict()
     obj["inst_list"] = inst_map.inst_list
@@ -840,11 +842,15 @@ def compute_topo_flow(
             topo = f_topo.glb_sum()[:].item()
             append_topo_info()
             q.displayln_info(0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
-        q.displayln_info(0, f"{flow_type} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
+        q.displayln_info(0, f"{flow_type} ; {geo.total_site.to_list()} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
         if i != num_step:
             gf_flow_topo(gf, step_size)
             inst_map.acc_time(step_size)
     #
+    if q.is_test():
+        q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-10)
+        q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-8)
+        q.json_results_append(f"{fname}: {flow_type} topo", topo, 1e-8)
     # q.timer_display()
     #
     flow_type = "Freeze"
@@ -861,16 +867,21 @@ def compute_topo_flow(
             topo = f_topo.glb_sum()[:].item()
             append_topo_info()
             q.displayln_info(0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
-        q.displayln_info(0, f"{flow_type} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
+        q.displayln_info(0, f"{flow_type} ; {geo.total_site.to_list()} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
         if plaq_min > 0.995:
             break
         if i != num_step:
             gf_flow_topo(gf, step_size, "Freeze")
             inst_map.acc_time(step_size)
     #
+    topo = q.gf_topology(gf)
     inst_map.flow_time_list.append(inst_map.flow_time)
-    inst_map.tot_topo_list.append(q.gf_topology(gf))
+    inst_map.tot_topo_list.append(topo)
     q.displayln_info(0, f"flow_time_list={inst_map.flow_time_list} ; tot_topo_list={inst_map.tot_topo_list}")
+    if q.is_test():
+        q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-10)
+        q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-8)
+        q.json_results_append(f"{fname}: {flow_type} topo", topo, 1e-8)
     # q.timer_display()
     #
     flow_type = "Shrink"
@@ -889,7 +900,7 @@ def compute_topo_flow(
             q.displayln_info(0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
         else:
             f_topo = None
-        q.displayln_info(0, f"{flow_type} ; {geo.total_site} ; i={i} ; step_counter={inst_map.step_counter} ; time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
+        q.displayln_info(0, f"{flow_type} ; {geo.total_site.to_list()} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
         inst_map.acc_topo_info(f_plaq, f_topo)
         q.displayln_info(0, f"num_inst={len(inst_map.inst_list)} ; num_active_inst={len(inst_map.active_inst_list)}")
         if num_instanton < 0.1:
@@ -903,9 +914,11 @@ def compute_topo_flow(
             # gf.show_info()
             # gf_h.show_info()
             f_plaq = q.gf_plaq_field(gf)
+            plaq_min = np.min(f_plaq.glb_min()[:]).item()
             plaq = f_plaq.glb_sum()[:].sum().item() / geo.total_volume / 6
             num_instanton = ((1 - plaq) * 6 * geo.total_volume) / (8 * np.pi**2 / 6)
             f_plaq_h = q.gf_plaq_field(gf_h)
+            plaq_min_h = np.min(f_plaq_h.glb_min()[:]).item()
             plaq_h = f_plaq_h.glb_sum()[:].sum().item() / geo_h.total_volume / 6
             num_instanton_h = ((1 - plaq_h) * 6 * geo_h.total_volume) / (8 * np.pi**2 / 6)
             f_topo = q.gf_topology_field(gf)
@@ -914,10 +927,18 @@ def compute_topo_flow(
             topo_h = f_topo_h.glb_sum()[:].item()
             q.displayln_info(0, f"===================== Half lattice size ===========================")
             q.displayln_info(0, f"flow_time={inst_map.flow_time}")
-            q.displayln_info(0, f"min_plaq", np.min(f_plaq[:]), np.min(f_plaq_h[:]))
+            q.displayln_info(0, f"min_plaq", plaq_min, plaq_min_h)
             q.displayln_info(0, f"num_instanton", num_instanton, num_instanton_h)
             q.displayln_info(0, f"topo", topo, topo_h)
             q.displayln_info(0, f"===================== Half lattice size ===========================")
+            if q.is_test():
+                q.json_results_append(f"{fname}: {flow_type} current_spacing={inst_map.current_spacing}")
+                q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-10)
+                q.json_results_append(f"{fname}: {flow_type} plaq_h", plaq_h, 1e-10)
+                q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-8)
+                q.json_results_append(f"{fname}: {flow_type} plaq_min_h", plaq_min_h, 1e-8)
+                q.json_results_append(f"{fname}: {flow_type} topo", topo, 1e-8)
+                q.json_results_append(f"{fname}: {flow_type} topo_h", topo_h, 1e-8)
             gf = gf_h
             geo = geo_h
             total_site = geo_h.total_site
@@ -937,15 +958,16 @@ def compute_topo_flow(
     return obj
 
 @q.timer
-def displayln_info_topo_flow_obj(topo_flow_obj):
+def displayln_info_inst_map_obj(inst_map_obj):
     """
     e.g.:
-    topo_flow_obj = compute_topo_flow(gf)
-    displayln_info_topo_flow_obj(topo_flow_obj)
+    inst_map_obj = compute_inst_map(gf)
+    displayln_info_inst_map_obj(inst_map_obj)
     """
-    obj = topo_flow_obj
+    fname = q.get_fname()
+    obj = inst_map_obj
     #
-    q.displayln_info(0, f"{obj.keys()}")
+    q.displayln_info(0, f"{fname}: {obj.keys()}")
     #
     info_list = obj["info_list"]
     inst_list = obj["inst_list"]
@@ -953,6 +975,23 @@ def displayln_info_topo_flow_obj(topo_flow_obj):
     flow_time_list = obj["flow_time_list"]
     #
     p_inst_list = process_inst_list(inst_list)
+    #
+    if q.is_test():
+        for p_inst in p_inst_list:
+            inst_idx = p_inst["inst_idx"]
+            o_xg_d = p_inst["o_xg_d"]
+            o_total_site = p_inst["o_total_site"]
+            current_spacing = p_inst["current_spacing"]
+            plaq = p_inst["plaq"]
+            flow_time = p_inst["flow_time"]
+            delta_s_topo = p_inst["delta_s_topo"]
+            estimate_topo_charge = p_inst["estimate_topo_charge"]
+            q.json_results_append(f"inst_idx={inst_idx} ; o_xg_d={o_xg_d} ; o_total_site={o_total_site} ; current_spacing={current_spacing}")
+            q.json_results_append(f"plaq", plaq, 1e-8)
+            q.json_results_append(f"flow_time", flow_time, 1e-3)
+            q.json_results_append(f"delta_s_topo", np.array(delta_s_topo, dtype=np.float64), 1e-8)
+            q.json_results_append(f"estimate_topo_charge", estimate_topo_charge, 1e-4)
+    #
     s_p_inst_list = sorted(p_inst_list, key=lambda v: -v["flow_time"])
     #
     q.displayln_info(0, f"")
@@ -983,10 +1022,10 @@ def displayln_info_topo_flow_obj(topo_flow_obj):
     tot_topo_count = get_tot_topo_count(p_inst_list, 0)
     tot_inst_count = get_tot_inst_count(p_inst_list, 0)
     #
-    q.displayln_info(0, f"tot_topo_direct={tot_topo_direct} ; tot_topo_count={tot_topo_count}")
+    q.displayln_info(0, f"{fname}: tot_topo_direct={tot_topo_direct} ; tot_topo_count={tot_topo_count}")
     if tot_topo_direct == tot_topo_count:
-        q.displayln_info(0, f"Topological charge matched.")
+        q.displayln_info(0, f"{fname}: Topological charge matched.")
     else:
-        q.displayln_info(0, f"WARNING: Topological charge does not match.")
+        q.displayln_info(-1, f"{fname}: WARNING: Topological charge does not match.")
 
 ### --------------------------------------

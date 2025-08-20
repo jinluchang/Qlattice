@@ -5,6 +5,7 @@ mpi_options ?= --oversubscribe --bind-to none
 tests = \
 		qcalc-psel-closest-dis-sqr.log \
 		qconvert-psel-txt-to-lati.log \
+		qinst-map.log \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \

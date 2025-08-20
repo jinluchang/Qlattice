@@ -1,0 +1,697 @@
+[
+ [
+  "{\"traj_list\": [1000, 1100], \"total_site\": [4, 4, 4, 8], \"mk_sample_gauge_field\": {\"rand_n_step\": 20, \"rand_sigma\": 0.25, \"flow_n_step\": 4, \"hmc_n_traj\": 5, \"hmc_beta\": 3.0}}"
+ ],
+ [
+  "{\"traj_list\": [1000], \"total_site\": [8, 8, 8, 16], \"mk_sample_gauge_field\": {\"rand_n_step\": 10, \"rand_sigma\": 0.25, \"flow_n_step\": 8, \"hmc_n_traj\": 5, \"hmc_beta\": 5.0}}"
+ ],
+ [
+  "run_inst_map: Start compute inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1000.pickle' for 'results/test-4nt8-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "compute_inst_map: Wilson plaq",
+  0.9820243429708677,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Wilson plaq_min",
+  0.44066802176722447,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Wilson topo",
+  -1.1288691276018343,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Freeze plaq",
+  0.9943324063201248,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Freeze plaq_min",
+  0.9771977766224071,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Freeze topo",
+  -0.9994168373028829,
+  1e-08
+ ],
+ [
+  "run_inst_map: End compute inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1000.pickle' for 'results/test-4nt8-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "run_inst_map: Start show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "inst_idx=0 ; o_xg_d=[1.5, 2.5, 2.0, 6.0] ; o_total_site=[4, 4, 4, 8] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.5680804194918578,
+  1e-08
+ ],
+ [
+  "flow_time",
+  41.700000000000315,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.47046639421973124,
+    -0.8168311387281065,
+    -0.897368004743988,
+    -0.9009494528852313,
+    -0.901294511496583
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -0.9850512388338516,
+  0.0001
+ ],
+ [
+  "run_inst_map: End show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "run_inst_map: Start compute inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1100.pickle' for 'results/test-4nt8-checker/configs/ckpoint_lat.1100'"
+ ],
+ [
+  "compute_inst_map: Wilson plaq",
+  0.9849871669721093,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Wilson plaq_min",
+  0.7265149533299384,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Wilson topo",
+  -0.7644701438748254,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Freeze plaq",
+  0.9945858082052013,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Freeze plaq_min",
+  0.9784910531748295,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Freeze topo",
+  -1.0005907745518385,
+  1e-08
+ ],
+ [
+  "run_inst_map: End compute inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1100.pickle' for 'results/test-4nt8-checker/configs/ckpoint_lat.1100'"
+ ],
+ [
+  "run_inst_map: Start show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1100.pickle'"
+ ],
+ [
+  "inst_idx=0 ; o_xg_d=[0.5, 1.0, 3.5, 4.0] ; o_total_site=[4, 4, 4, 8] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.24564542059156835,
+  1e-08
+ ],
+ [
+  "flow_time",
+  42.00000000000032,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.49594235707489165,
+    -0.8232873302739054,
+    -0.9099856537562495,
+    -0.9161379531593075,
+    -0.9160758987274038
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -1.0670100580023538,
+  0.0001
+ ],
+ [
+  "run_inst_map: End show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1100.pickle'"
+ ],
+ [
+  "run_inst_map: Start compute inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle' for 'results/test-8nt16-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "compute_inst_map: Wilson plaq",
+  0.9916605697452314,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Wilson plaq_min",
+  0.5072470979856858,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Wilson topo",
+  -1.9873968936891955,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Freeze plaq",
+  0.9978111641911469,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Freeze plaq_min",
+  0.9923398271073623,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Freeze topo",
+  -2.0038475397801405,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Shrink current_spacing=1"
+ ],
+ [
+  "compute_inst_map: Shrink plaq",
+  0.9999161397369444,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Shrink plaq_h",
+  0.9987215340356436,
+  1e-10
+ ],
+ [
+  "compute_inst_map: Shrink plaq_min",
+  0.9981815151389938,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Shrink plaq_min_h",
+  0.9861427442537217,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Shrink topo",
+  0.00015280978161427705,
+  1e-08
+ ],
+ [
+  "compute_inst_map: Shrink topo_h",
+  0.0015044270905593578,
+  1e-08
+ ],
+ [
+  "run_inst_map: End compute inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle' for 'results/test-8nt16-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "run_inst_map: Start show inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "inst_idx=0 ; o_xg_d=[7.0, 0.5, 1.0, 0.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.47854892536420457,
+  1e-08
+ ],
+ [
+  "flow_time",
+  49.30000000000042,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.44958138593205604,
+    -0.6869218958670337,
+    -0.9049722923958761,
+    -1.1679943799674968,
+    -1.5838656819724657
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -1.01226844002062,
+  0.0001
+ ],
+ [
+  "inst_idx=1 ; o_xg_d=[7.0, 2.0, 4.5, 3.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.5947031560473705,
+  1e-08
+ ],
+ [
+  "flow_time",
+  49.70000000000043,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.4520792619641031,
+    -0.7715137927148354,
+    -1.2476107744880305,
+    -1.6647450703633981,
+    -1.8161607492168663
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -0.9566991561542639,
+  0.0001
+ ],
+ [
+  "inst_idx=2 ; o_xg_d=[1.0, 3.5, 7.0, 15.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.4632931973216792,
+  1e-08
+ ],
+ [
+  "flow_time",
+  57.50000000000054,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.4588770345830949,
+    -0.6889196824704935,
+    -0.8103256881235887,
+    -0.8566288543442377,
+    -0.8592498221258538
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -1.042444676631389,
+  0.0001
+ ],
+ [
+  "inst_idx=3 ; o_xg_d=[5.0, 5.5, 5.0, 8.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.45951422797107494,
+  1e-08
+ ],
+ [
+  "flow_time",
+  62.40000000000061,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    0.41518675428189733,
+    0.6475243675570908,
+    0.801453212116173,
+    0.8475911186087435,
+    0.8864543525134201
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  0.924860626296551,
+  0.0001
+ ],
+ [
+  "inst_idx=4 ; o_xg_d=[3.0, 4.5, 6.5, 2.0] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.6486322272988406,
+  1e-08
+ ],
+ [
+  "flow_time",
+  66.70000000000047,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.4161261408808349,
+    -0.6254772567483329,
+    -0.73260721203704,
+    -0.7594981774751995,
+    -0.7360598990746227
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -0.9447654372844123,
+  0.0001
+ ],
+ [
+  "inst_idx=5 ; o_xg_d=[6.5, 7.0, 2.0, 6.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.5150054098939181,
+  1e-08
+ ],
+ [
+  "flow_time",
+  68.20000000000039,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    0.3910172090870156,
+    0.6422410175239092,
+    0.900071461116205,
+    1.0403564310794298,
+    0.9546964423535588
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  0.8464669873997431,
+  0.0001
+ ],
+ [
+  "run_inst_map: End show inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "run_inst_map: Start show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "inst_idx=0 ; o_xg_d=[1.5, 2.5, 2.0, 6.0] ; o_total_site=[4, 4, 4, 8] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.5680804194918578,
+  1e-08
+ ],
+ [
+  "flow_time",
+  41.700000000000315,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.47046639421973124,
+    -0.8168311387281065,
+    -0.897368004743988,
+    -0.9009494528852313,
+    -0.901294511496583
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -0.9850512388338516,
+  0.0001
+ ],
+ [
+  "run_inst_map: End show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "run_inst_map: Start show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1100.pickle'"
+ ],
+ [
+  "inst_idx=0 ; o_xg_d=[0.5, 1.0, 3.5, 4.0] ; o_total_site=[4, 4, 4, 8] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.24564542059156835,
+  1e-08
+ ],
+ [
+  "flow_time",
+  42.00000000000032,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.49594235707489165,
+    -0.8232873302739054,
+    -0.9099856537562495,
+    -0.9161379531593075,
+    -0.9160758987274038
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -1.0670100580023538,
+  0.0001
+ ],
+ [
+  "run_inst_map: End show inst_map_obj fn='results/test-4nt8-checker/instanton-map/traj-1100.pickle'"
+ ],
+ [
+  "run_inst_map: Start show inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle'"
+ ],
+ [
+  "inst_idx=0 ; o_xg_d=[7.0, 0.5, 1.0, 0.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.47854892536420457,
+  1e-08
+ ],
+ [
+  "flow_time",
+  49.30000000000042,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.44958138593205604,
+    -0.6869218958670337,
+    -0.9049722923958761,
+    -1.1679943799674968,
+    -1.5838656819724657
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -1.01226844002062,
+  0.0001
+ ],
+ [
+  "inst_idx=1 ; o_xg_d=[7.0, 2.0, 4.5, 3.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.5947031560473705,
+  1e-08
+ ],
+ [
+  "flow_time",
+  49.70000000000043,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.4520792619641031,
+    -0.7715137927148354,
+    -1.2476107744880305,
+    -1.6647450703633981,
+    -1.8161607492168663
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -0.9566991561542639,
+  0.0001
+ ],
+ [
+  "inst_idx=2 ; o_xg_d=[1.0, 3.5, 7.0, 15.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.4632931973216792,
+  1e-08
+ ],
+ [
+  "flow_time",
+  57.50000000000054,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.4588770345830949,
+    -0.6889196824704935,
+    -0.8103256881235887,
+    -0.8566288543442377,
+    -0.8592498221258538
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -1.042444676631389,
+  0.0001
+ ],
+ [
+  "inst_idx=3 ; o_xg_d=[5.0, 5.5, 5.0, 8.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.45951422797107494,
+  1e-08
+ ],
+ [
+  "flow_time",
+  62.40000000000061,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    0.41518675428189733,
+    0.6475243675570908,
+    0.801453212116173,
+    0.8475911186087435,
+    0.8864543525134201
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  0.924860626296551,
+  0.0001
+ ],
+ [
+  "inst_idx=4 ; o_xg_d=[3.0, 4.5, 6.5, 2.0] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.6486322272988406,
+  1e-08
+ ],
+ [
+  "flow_time",
+  66.70000000000047,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    -0.4161261408808349,
+    -0.6254772567483329,
+    -0.73260721203704,
+    -0.7594981774751995,
+    -0.7360598990746227
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  -0.9447654372844123,
+  0.0001
+ ],
+ [
+  "inst_idx=5 ; o_xg_d=[6.5, 7.0, 2.0, 6.5] ; o_total_site=[8, 8, 8, 16] ; current_spacing=1"
+ ],
+ [
+  "plaq",
+  0.5150054098939181,
+  1e-08
+ ],
+ [
+  "flow_time",
+  68.20000000000039,
+  0.001
+ ],
+ [
+  "delta_s_topo",
+  {
+   "value": [
+    0.3910172090870156,
+    0.6422410175239092,
+    0.900071461116205,
+    1.0403564310794298,
+    0.9546964423535588
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "estimate_topo_charge",
+  0.8464669873997431,
+  0.0001
+ ],
+ [
+  "run_inst_map: End show inst_map_obj fn='results/test-8nt16-checker/instanton-map/traj-1000.pickle'"
+ ]
+]

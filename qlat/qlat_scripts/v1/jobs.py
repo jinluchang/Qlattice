@@ -6,6 +6,8 @@ from .rbc_ukqcd_params import (
         get_job_seed,
         )
 
+from qlat import is_test
+
 import numpy as np
 
 import functools
@@ -67,11 +69,6 @@ def check_job(job_tag, traj, fns_produce, fns_need):
     assert not is_job_done and is_job_avail
     #
     return True
-
-# ----------
-
-def is_test():
-    return q.get_option("--test")
 
 # ----------
 
