@@ -352,7 +352,6 @@ def process_inst_list(inst_list):
     for p_inst in p_inst_list:
         delta_s_topo = p_inst["delta_s_topo"]
         estimate_topo_charge = 0
-        p_inst["estimate_topo_charge_orig"] = None
         p_inst["estimate_topo_charge"] = estimate_topo_charge
         if delta_s_topo is None:
             continue
@@ -363,39 +362,40 @@ def process_inst_list(inst_list):
             estimate_topo_charge = delta_s_topo[0] / 0.44
         p_inst["estimate_topo_charge"] = estimate_topo_charge
         #
-        # If there is another instanton very close, consider the two instantons together.
-        inst_idx = p_inst["inst_idx"]
-        current_spacing = p_inst["current_spacing"]
-        closest_sim_inst_info = p_inst["closest_sim_inst_info"]
-        if closest_sim_inst_info is None:
-            continue
-        inst_dis_sqr_2 = closest_sim_inst_info["inst_dis_sqr"]
-        pairwise_inst_dis_sqr_max_limit = 4**2
-        pairwise_inst_dis_sqr_min_limit = 5
-        if inst_dis_sqr_2 >= pairwise_inst_dis_sqr_max_limit * current_spacing**2:
-            continue
-        if inst_dis_sqr_2 <= pairwise_inst_dis_sqr_min_limit * current_spacing**2:
-            continue
-        inst_idx_2 = closest_sim_inst_info["inst_idx"]
-        closest_sim_inst_info_2 = p_inst_list[inst_idx_2]["closest_sim_inst_info"]
-        assert closest_sim_inst_info_2 is not None
-        if closest_sim_inst_info_2["inst_idx"] != inst_idx:
-            continue
-        delta_s_topo_2 = closest_sim_inst_info["delta_s_topo"]
-        if delta_s_topo_2 is None:
-            continue
-        delta_s_topo_2 = np.array(delta_s_topo_2, dtype=np.float64)
-        assert len(delta_s_topo_2) == len(delta_s_topo)
-        delta_s_topo_avg = (delta_s_topo + delta_s_topo_2) / 2
-        delta_s_topo_diff = (delta_s_topo - delta_s_topo_2) / 2
-        if len(delta_s_topo) > 1:
-            estimate_topo_charge = round((delta_s_topo_avg[0] - (delta_s_topo_avg[1] - 1.5 * delta_s_topo_avg[0]) / 3) / 0.44)
-            estimate_topo_charge += round((delta_s_topo_diff[0] - (delta_s_topo_diff[1] - 1.5 * delta_s_topo_diff[0]) / 3) / 0.40)
-        elif len(delta_s_topo) > 0:
-            estimate_topo_charge = round(delta_s_topo_avg[0] / 0.44)
-            estimate_topo_charge += round(delta_s_topo_diff[0] / 0.40)
-        p_inst["estimate_topo_charge_orig"] = p_inst["estimate_topo_charge"]
-        p_inst["estimate_topo_charge"] = estimate_topo_charge
+        # # If there is another instanton very close, consider the two instantons together. (Disable now)
+        # p_inst["estimate_topo_charge_orig"] = None
+        # inst_idx = p_inst["inst_idx"]
+        # current_spacing = p_inst["current_spacing"]
+        # closest_sim_inst_info = p_inst["closest_sim_inst_info"]
+        # if closest_sim_inst_info is None:
+        #     continue
+        # inst_dis_sqr_2 = closest_sim_inst_info["inst_dis_sqr"]
+        # pairwise_inst_dis_sqr_max_limit = 4**2
+        # pairwise_inst_dis_sqr_min_limit = 5
+        # if inst_dis_sqr_2 >= pairwise_inst_dis_sqr_max_limit * current_spacing**2:
+        #     continue
+        # if inst_dis_sqr_2 <= pairwise_inst_dis_sqr_min_limit * current_spacing**2:
+        #     continue
+        # inst_idx_2 = closest_sim_inst_info["inst_idx"]
+        # closest_sim_inst_info_2 = p_inst_list[inst_idx_2]["closest_sim_inst_info"]
+        # assert closest_sim_inst_info_2 is not None
+        # if closest_sim_inst_info_2["inst_idx"] != inst_idx:
+        #     continue
+        # delta_s_topo_2 = closest_sim_inst_info["delta_s_topo"]
+        # if delta_s_topo_2 is None:
+        #     continue
+        # delta_s_topo_2 = np.array(delta_s_topo_2, dtype=np.float64)
+        # assert len(delta_s_topo_2) == len(delta_s_topo)
+        # delta_s_topo_avg = (delta_s_topo + delta_s_topo_2) / 2
+        # delta_s_topo_diff = (delta_s_topo - delta_s_topo_2) / 2
+        # if len(delta_s_topo) > 1:
+        #     estimate_topo_charge = round((delta_s_topo_avg[0] - (delta_s_topo_avg[1] - 1.5 * delta_s_topo_avg[0]) / 3) / 0.44)
+        #     estimate_topo_charge += round((delta_s_topo_diff[0] - (delta_s_topo_diff[1] - 1.5 * delta_s_topo_diff[0]) / 3) / 0.40)
+        # elif len(delta_s_topo) > 0:
+        #     estimate_topo_charge = round(delta_s_topo_avg[0] / 0.44)
+        #     estimate_topo_charge += round(delta_s_topo_diff[0] / 0.40)
+        # p_inst["estimate_topo_charge_orig"] = p_inst["estimate_topo_charge"]
+        # p_inst["estimate_topo_charge"] = estimate_topo_charge
     # p_inst_list.sort(key=lambda v: v["flow_time"])
     return p_inst_list
 
@@ -441,7 +441,6 @@ def displayln_info_p_inst(p_inst):
     c_dis_sqr_max = p_inst["c_dis_sqr_max"]
     delta_s_topo = p_inst["delta_s_topo"]
     topo_sphere_sum_radius_list = p_inst["topo_sphere_sum_radius_list"]
-    estimate_topo_charge_orig = p_inst["estimate_topo_charge_orig"]
     estimate_topo_charge = p_inst["estimate_topo_charge"]
     plaq_list = p_inst["plaq_list"]
     s_topo_list = p_inst["s_topo_list"]
@@ -480,9 +479,10 @@ def displayln_info_p_inst(p_inst):
         q.displayln_info(0, f"{idx:3}: delta_s_topo={delta_s_topo}")
     else:
         q.displayln_info(0, f"{idx:3}: delta_s_topo={[ f'{v:.3f}' for v in delta_s_topo ]}")
-    if estimate_topo_charge_orig is not None:
-        q.displayln_info(0, f"{idx:3}: estimate_topo_charge_orig={estimate_topo_charge_orig}")
     q.displayln_info(0, f"{idx:3}: estimate_topo_charge={estimate_topo_charge}")
+    # estimate_topo_charge_orig = p_inst["estimate_topo_charge_orig"]
+    # if estimate_topo_charge_orig is not None:
+    #     q.displayln_info(0, f"{idx:3}: estimate_topo_charge_orig={estimate_topo_charge_orig}")
 
 @q.timer
 def displayln_info_p_inst_list(p_inst_list):
