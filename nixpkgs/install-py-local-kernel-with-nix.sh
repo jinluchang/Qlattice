@@ -16,7 +16,7 @@ Usage:
     # Install a local kernel with full CUDA support when possible.
 
     name='-clang' ./install-py-local-kernel-with-nix.sh
-    # Install a local kernel with full CUDA support when possible.
+    # Install a local kernel with clang.
 
 EOF
 
