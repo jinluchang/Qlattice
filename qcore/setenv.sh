@@ -167,4 +167,6 @@ if [ -z "${PYTHONHOME+x}" ] ; then
     fi
 fi
 
-export PATH="$setenv_prefix/bin":"$PATH"
+if [ -n "$setenv_prefix" ] ; then
+    export PATH="$setenv_prefix/bin":"$PATH"
+fi

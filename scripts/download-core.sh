@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 source qcore/conf.sh
+source qcore/setenv.sh
 
 mkdir -p "$distfiles"
 
