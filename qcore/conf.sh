@@ -2,6 +2,7 @@
 
 # Usage:
 
+# source qcore/setenv.sh
 # source qcore/conf.sh
 
 # source qcore/set-prefix.sh subdir
