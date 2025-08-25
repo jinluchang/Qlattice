@@ -2245,3 +2245,5 @@ void prop_smear_qlat_convension(Propagator4dT<T>& prop,
 
 }
 #endif
+
+

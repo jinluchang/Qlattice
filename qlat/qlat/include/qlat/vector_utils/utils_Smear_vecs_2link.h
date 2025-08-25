@@ -383,5 +383,13 @@ void smear_propagator_gwu_convension_2shift_modi(colorFT& prop, std::vector< Gau
   smear_propagator_gwu_convension_2shift_modi<Ty, Td, 1, 1>(src, prop.geo(), gfL, width, step, propL, even, wuppertal_conv, mom);
 }
 
+template <typename Ty, typename Td>
+void smear_propagator_gwu_convension_2shift_modi(std::vector<colorFT>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<Ty > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
+{
+  for(unsigned int i=0;i<prop.size();i++){
+    smear_propagator_gwu_convension_2shift_modi(prop[i], gfL, width, step, propL, even, wuppertal_conv, mom);
+  }
+}
+
 }
 #endif

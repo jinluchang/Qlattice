@@ -20,6 +20,8 @@
 #include "utils_vector_GPU.h"
 #include "utils_mpi.h"
 
+#define MAX_EXPAND_BUF 64
+
 namespace qlat
 {
 
@@ -88,7 +90,7 @@ bool operator<(const expand_index_Key& x, const expand_index_Key& y);
 
 inline Cache<expand_index_Key, expand_index_buf >& get_expand_index_buf_cache()
 {
-  static Cache<expand_index_Key, expand_index_buf > cache("expand_index_Key", 64);
+  static Cache<expand_index_Key, expand_index_buf > cache("expand_index_Key", MAX_EXPAND_BUF);
   return cache;
 }
 
@@ -107,9 +109,8 @@ inline expand_index_buf& get_expand_index_buf_plan(const Geometry& geo, const In
   return get_expand_index_buf_plan(ekey);
 }
 
-
 template <class M>
-void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI, 
+void refresh_expanded_GPUT_asyn(M* res, const Geometry& geo, const int MULTI, 
   const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), int GPU = 1)
 {
   Qassert(sizeof(M) % sizeof(double) == 0);
@@ -185,6 +186,14 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
 
   //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf0"), GPU);
   //safe_free_vector_gpu_plan<int8_t >(std::string("general_buf1"), GPU);
+}
+
+// TODO split the functions in to asyn form 
+template <class M>
+void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI, 
+  const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), int GPU = 1)
+{
+  refresh_expanded_GPUT_asyn(res, geo, MULTI, set_marks_field, tag, GPU);
 }
 
 template <class M>

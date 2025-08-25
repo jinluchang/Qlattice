@@ -284,7 +284,10 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   //num_src_inv = num_src;
   prec_type_check = -2;
 
-  for (int mu = 0; mu < 4; mu++) {X[mu] = geo.node_site[mu];}
+  for (int mu = 0; mu < 4; mu++) {
+    X[mu] = geo.node_site[mu];
+    Qassert(geo.node_site[mu] % 2 == 0);// needed for eo inverter
+  }
   ////===Start of gauge_param
   gauge_param = newQudaGaugeParam();
   ////quda_gf_default = NULL;

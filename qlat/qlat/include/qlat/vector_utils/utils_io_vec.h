@@ -1430,7 +1430,7 @@ void load_gwu_link(std::string &filename,GaugeFieldT<Td> &gf){
 template<typename Ty>
 void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &noises,bool read=true){
 
-  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
+  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ) and IsTypeComplex<Ty>() == 0){abort_r("Cannot understand the input format! \n");}
   if(noises.size() == 0 and read == false){return ;}
   if(noises.size() == 0 and read == true){abort_r("Initialize your vectors");}
 
@@ -1503,7 +1503,7 @@ void load_gwu_noiP(const char *filename, Fieldy& noi,bool read=true, bool GPU = 
   qassert(IsBasicTypeReal<D>());
   using Ty = ComplexT<D >;
 
-  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
+  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ) and IsTypeComplex<Ty>() == 0){abort_r("Cannot understand the input format! \n");}
 
   Qassert(noi.initialized and noi.multiplicity == 1);
   io_vec& io_use = get_io_vec_plan(noi.geo());
@@ -1960,7 +1960,7 @@ void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises,
 ////initialize the instruct and end of file
 template <class Ty>
 void load_qlat_noisesT_file_ini(const char *filename, const int N_noi, const int bfac, inputpara& in, Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), const bool rotate_bfac = true){
-  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){
+  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ) and IsTypeComplex<Ty>() == 0){
     abort_r("Cannot understand the input format! \n");}
 
   open_file_qlat_noisesT(filename, bfac, in, read, single_file, N_noi, VECS_TYPE, INFO_LIST, rotate_bfac);
