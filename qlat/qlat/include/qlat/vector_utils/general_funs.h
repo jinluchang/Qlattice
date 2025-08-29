@@ -636,8 +636,10 @@ inline void random_Ty(Ty* a, Long N0,int GPU=0, int seed = 0, const int mode = 0
 }
 
 template<typename Ty>
-inline void random_vec(vector<Ty >& buf,int GPU=0, int seed = 0, const int mode = 0)
+inline void random_vec(vector<Ty >& buf, int seed = 0, const int mode = 0)
 {
+  int GPU = 1;
+  if(buf.mem_type == MemType::Cpu){GPU = 0;}
   random_Ty((Ty*) buf.data(), buf.size(), GPU, seed, mode);
 }
 

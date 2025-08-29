@@ -393,6 +393,7 @@ struct API vector {
       clear();
     }
     is_copy = false;
+    v = Vector<M>();
   }
   //
   void clear()
@@ -674,6 +675,7 @@ struct API box {
       clear();
     }
     is_copy = false;
+    v = Handle<M>();
   }
   //
   void clear()

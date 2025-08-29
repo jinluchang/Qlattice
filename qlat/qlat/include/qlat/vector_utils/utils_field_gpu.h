@@ -469,6 +469,40 @@ qacc QMEM_ORDER get_mem_order(Field<M>& f)
 //  }
 //};
 
+template <class M>
+inline void set_field(Field<M >& res, M* src, const Long n, const Geometry& geo,
+  const MemType& type   = MemType::Acc, 
+  const MemOrder& order =MemOrder::TZYXM)
+{
+  if(res.initialized){
+    res.init();
+  }
+  res.initialized = true;
+  //res.geo.set_view(geo);
+  res.geo.set(geo);
+  const Long Nd = geo.local_volume_expanded();
+  Qassert(n % Nd == 0);
+  const Long inner = n / Nd;
+
+  res.multiplicity = inner;
+  res.mem_order    = order;
+  
+  //Vector<M> vec;
+  //vec.p = src;
+  //vec.n =   n;
+
+  //vector<M> field;
+  //field.set_view(vec);
+  //field.mem_type = type;
+
+  res.field.is_copy  = true;
+  res.field.mem_type = type;
+  res.field.v.p = src;
+  res.field.v.n = n;
+
+  //res.field.set_view(field);
+}
+
 }
 
 #endif
