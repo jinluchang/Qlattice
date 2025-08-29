@@ -13,6 +13,33 @@ namespace qlat
 {
 
 template <class Ta, class Tb>
+double diff_gauge_extended( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
+{
+  TIMER("diff_gauge_extended");
+  const Geometry& geo = g0.geo();
+  const Long V = geo.local_volume_expanded();
+
+  const Ta* p0 = (Ta*) get_data(g0).data();
+  const Tb* p1 = (Tb*) get_data(g1).data();
+
+  qlat::vector<Ta > dL;dL.resize(V);
+  const Long Nd = 4*9*2;
+  qacc_for(index, V, {
+    Ta diff = 0.0;
+    for(Long m=0;m<Nd;m++){
+      diff += qfabs(p0[index*Nd + m] - p1[index*Nd + m]);
+    }
+    dL[index] = diff;
+  });
+
+  double diff = Reduce(dL.data(), dL.size(), true);
+  diff = diff/(g0.geo().local_volume()*4*9*2.0);
+  qmessage("===diff conf %.5e \n",diff);
+  return double(diff);
+}
+
+
+template <class Ta, class Tb>
 double diff_gauge( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1, double err=1e-6)
 {
   TIMER("diff_gauge");

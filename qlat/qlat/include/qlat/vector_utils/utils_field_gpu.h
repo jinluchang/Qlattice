@@ -179,7 +179,8 @@ struct API FieldG : Field<M> {
     qassert(Nd % geo_.local_volume_expanded() == 0);
     // clear current field
     clear_copy();
-    Field<M>::geo.set(geo_);
+    //Field<M>::geo.set(geo_);
+    Field<M>::geo.set_view(geo_);
     field_gpu.p = srcp;
     field_gpu.n = Nd;
     field_gpu.GPU = GPU;
@@ -196,7 +197,8 @@ struct API FieldG : Field<M> {
     if(size > 0){Nd = size;}
     Qassert(offset + Nd <= Long(src.field_gpu.n));
     clear_copy();
-    Field<M>::geo.set(geo);
+    //Field<M>::geo.set(geo);
+    Field<M>::geo.set_view(geo);
     field_gpu.p = &src.field_gpu.p[offset];
     field_gpu.n = Nd;
     field_gpu.GPU = src.field_gpu.GPU;
@@ -214,7 +216,8 @@ struct API FieldG : Field<M> {
     if(size > 0){Nd = size;}
     Qassert(offset + Nd <= src.field.size());
     clear_copy();
-    Field<M>::geo.set(geo);
+    //Field<M>::geo.set(geo);
+    Field<M>::geo.set_view(geo);
     field_gpu.p = &p[offset];
     field_gpu.n = Nd;
     field_gpu.GPU = QMGPU;

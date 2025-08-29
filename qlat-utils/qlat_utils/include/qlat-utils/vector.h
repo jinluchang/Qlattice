@@ -714,7 +714,7 @@ struct API box {
     qassert(mem_type != MemType::Acc);
     init();
     is_copy = true;
-    v.p = &x;
+    v.p = const_cast<M*>(&x);// assumes one will never modify the content ?
   }
   void set_view(const Handle<M> h)
   // does not change mem_type

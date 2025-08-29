@@ -50,7 +50,7 @@ struct API FieldBoxT {
     Qassert(sizeof(M) % sizeof(Ty) == 0);
     const int Nd = sizeof(M) / sizeof(Ty);
     v.p  = (Ty*) qlat::get_data(fr).data();
-    geo.set(fr.geo());
+    geo.set_view(fr.geo());
     Multiplicity = fr.multiplicity * Nd;
 
     if(type == Su3::u9){Qassert(Multiplicity % 9 == 0);}
@@ -66,17 +66,17 @@ struct API FieldBoxT {
     init(fr);
   }
 
-  FieldBoxT(Ty* p, const Geometry geo_, int8_t Multiplicity_ = 1)
+  FieldBoxT(Ty* p, const Geometry& geo_, int8_t Multiplicity_ = 1)
   {
     // TIMER("FieldBoxT::FieldBoxT(&)")
     init(p, geo_, Multiplicity_);
   }
 
-  void init(Ty* p, const Geometry geo_, int8_t Multiplicity_ = 1)
+  void init(Ty* p, const Geometry& geo_, int8_t Multiplicity_ = 1)
   {
     Multiplicity = Multiplicity_;
     v.p  = p;
-    geo.set(geo_);
+    geo.set_view(geo_);
     //geo().multiplicity = 1;
 
     if(type == Su3::u9){Qassert(Multiplicity % 9 == 0);}
@@ -89,7 +89,7 @@ struct API FieldBoxT {
     // TIMER("FieldBoxT::FieldBoxT(&)")
     //qassert(x.type == type);
     v    = vp.v;
-    geo.set(vp.geo());
+    geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
   }
 
@@ -99,7 +99,7 @@ struct API FieldBoxT {
     //type = vp.type;
     //qassert(x.type == type);
     v    = vp.v;
-    geo.set(vp.geo());
+    geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
   }
   //FieldBoxT(const FieldBoxT<Ty>& vp)
@@ -141,9 +141,15 @@ struct API FieldBoxT {
     v = x.v;
     x.v = t;
 
-    box<Geometry> g =   geo;
-    geo   = x.geo;
-    x.geo = g;
+    //box<Geometry> g =   geo;
+    //geo   = x.geo;
+    //x.geo = g;
+
+    box<Geometry> g;
+
+    g.set_view(geo);
+    geo.set_view(x.geo);
+    x.geo.set_view(g);
 
     int8_t m = x.Multiplicity;
     Multiplicity = x.Multiplicity;
@@ -158,7 +164,7 @@ struct API FieldBoxT {
     //type = vp.type;
     //qassert(x.type == type);
     v    = vp.v;
-    geo.set(vp.geo());
+    geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
     return *this;
   }
@@ -168,7 +174,7 @@ struct API FieldBoxT {
     //type = vp.type;
     //qassert(x.type == type);
     v    = vp.v;
-    geo.set(vp.geo());
+    geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
     return *this;
   }
@@ -459,15 +465,15 @@ void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
 //}
 
 template <class Ty, Su3 type>
-void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", int GPU = 1)
+void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", const int GPU = 1, const QBOOL dummy = QTRUE)
 {
-  refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, tag, GPU );
+  refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, tag, GPU, dummy );
 }
 
 template <class Ty, Su3 type>
-void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const int dir, int GPU = 1)
+void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const int dir, const int GPU = 1, const QBOOL dummy = QTRUE)
 {
-  refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, dir, GPU );
+  refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, dir, GPU, dummy );
 }
 
 }

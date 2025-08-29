@@ -306,6 +306,16 @@ void reduce_vecs(const Ty* src, Ty* res, const Long n, const int nv, int GPU = 1
 
 }
 
+template<typename Ty>
+Ty reduce_vecs(const vector<Ty>& src)
+{
+  int GPU = 1;
+  if(src.mem_type == MemType::Cpu){GPU = 0;}  
+  vector<Ty> res;res.resize(1);// unified memeory
+  //res.set_mem_type(src.mem_type);
+  reduce_vecs(src.data(), &res[0], src.size(), 1, GPU);
+  return res[0];
+}
 
 }
 

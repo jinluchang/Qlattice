@@ -636,6 +636,44 @@ inline void random_Ty(Ty* a, Long N0,int GPU=0, int seed = 0, const int mode = 0
 }
 
 template<typename Ty>
+inline void random_vec(vector<Ty >& buf,int GPU=0, int seed = 0, const int mode = 0)
+{
+  random_Ty((Ty*) buf.data(), buf.size(), GPU, seed, mode);
+}
+
+template<typename Ty>
+inline double norm_vec(vector<Ty >& buf)
+{
+  if(buf.size() == 0){return 0;}
+
+  const Long  Nd = buf.size();
+  const int off  = 16;
+  const Long  Nf = (Nd + off - 1) / off;
+  int GPU = 1;
+  if(buf.mem_type == MemType::Cpu){GPU = 0;}
+  vector<double > tmp;
+  tmp.set_mem_type(buf.mem_type);
+  tmp.resize(Nf);
+  set_zero(tmp);
+
+  qGPU_for(isp, Nf, GPU, {
+    for(int i=0;i<off;i++)
+    {
+      const Long idx = isp * off + i;
+      if(idx > Nd){continue;}
+      tmp[isp] += qnorm(buf[idx]);
+    }
+  });
+
+  double r = reduce_vecs(tmp);
+  //vector<double > copy;copy.resize(1);
+  //double* res = copy.data();
+  //reduce_vecs(tmp.data(), res, tmp.size(), 1, GPU);
+  //double r = copy[0]; 
+  return r;
+}
+
+template<typename Ty>
 inline void random_EigenM(qlat::vector<Ty >& a,int GPU=0, int seed = 0)
 {
   Ty* buf = a.data();
