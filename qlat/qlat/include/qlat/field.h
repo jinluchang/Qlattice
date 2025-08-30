@@ -719,11 +719,7 @@ void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift
     const Coordinate xl_s = mod(xl + shift, geo.node_site);
     Vector<M> fv = fr.get_elems(xl_s);
     const Vector<M> f0v = f0.get_elems_const(xl);
-    for(int m=0;m<f0.multiplicity;m++)
-    {
-      fv[m] = f0v[m];
-    }
-    //assign(fv, f0v);
+    assign(fv, f0v);
   })
 }
 
@@ -860,11 +856,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
       {
         const Vector<M> fv = fh1[iv].get_elems_const(index);
         Vector<M> to_send(&bufh[iv][off_send + offset], MULTI);
-        for(int m=0;m<MULTI;m++)
-        {
-          to_send[m] = fv[m];
-        }
-        //assign(to_send, fv);
+        assign(to_send, fv);
       }
     });
   }
@@ -926,11 +918,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
       {
         Vector<M> fv = fh0[iv].get_elems(index_s);
         const Vector<M> to_recv(&bufh[Nvec + iv][off_recv + offset], MULTI);
-        for(int m=0;m<MULTI;m++)
-        {
-          fv[m] = to_recv[m];
-        }
-        //assign(fv, to_recv);
+        assign(fv, to_recv);
       }
     });
   }
