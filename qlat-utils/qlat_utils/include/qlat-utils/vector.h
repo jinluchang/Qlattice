@@ -408,7 +408,7 @@ struct API vector {
       qassert(mem_type == mem_type_);
     }
   }
-  MemType get_mem_type()
+  const MemType get_mem_type() const
   {
     return mem_type;
   }

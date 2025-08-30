@@ -764,7 +764,7 @@ struct API Field {
     geo.set_mem_type(mem_type);
     field.set_mem_type(mem_type);
   }
-  MemType get_mem_type()
+  const MemType get_mem_type() const
   {
     return field.mem_type;
   }
@@ -1273,6 +1273,10 @@ struct API SelectedField {
   {
     geo.set_mem_type(mem_type);
     field.set_mem_type(mem_type);
+  }
+  const MemType get_mem_type() const
+  {
+    return field.mem_type;
   }
   //
   void set_view(const SelectedField<M>& sf)
