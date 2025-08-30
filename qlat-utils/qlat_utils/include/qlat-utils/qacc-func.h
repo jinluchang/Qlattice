@@ -16,6 +16,20 @@ API inline int& qacc_num_threads()
   return nt;
 }
 
+#ifdef QLAT_USE_ACC
+
+#ifdef __NVCC__
+
+inline void qacc_DeviceSynchronize() { cudaDeviceSynchronize(); }
+
+#else
+
+inline void qacc_DeviceSynchronize() { hipDeviceSynchronize(); }
+
+#endif
+
+#endif
+
 #define qfor(iter, num, ...)                                   \
   {                                                            \
     const qlat::Long QACC_NUM_VALUE = (num);                   \

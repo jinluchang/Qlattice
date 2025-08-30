@@ -14,7 +14,6 @@
 #define qacc_DeviceProp                 cudaDeviceProp
 #define qacc_DeviceReset                cudaDeviceReset
 #define qacc_DeviceSetCacheConfig       cudaDeviceSetCacheConfig
-#define qacc_DeviceSynchronize          cudaDeviceSynchronize
 #define qacc_ErrorUnloading             cudaErrorCudartUnloading
 #define qacc_ErrorUnknown               cudaErrorUnknown
 #define qacc_Error                      cudaError
@@ -66,7 +65,6 @@
 #define qacc_DeviceProp                 hipDeviceProp_t
 #define qacc_DeviceReset                hipDeviceReset
 #define qacc_DeviceSetCacheConfig       hipDeviceSetCacheConfig
-#define qacc_DeviceSynchronize          hipDeviceSynchronize
 #define qacc_ErrorUnloading             hipErrorDeinitialized
 #define qacc_ErrorUnknown               hipErrorUnknown
 #define qacc_Error                      hipError_t
