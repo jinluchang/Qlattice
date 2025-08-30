@@ -408,6 +408,10 @@ struct API vector {
       qassert(mem_type == mem_type_);
     }
   }
+  MemType get_mem_type()
+  {
+    return mem_type;
+  }
   //
   void set_view(const Vector<M>& vec)
   // does not change mem_type
@@ -470,6 +474,14 @@ struct API vector {
       const Long n_min = std::min(size, vp.v.n);
       copy_mem(v.p, mem_type, vp.v.p, vp.mem_type, n_min * sizeof(M));
     }
+  }
+  //
+  void resize_zero(const Long size, const MemType mem_type_)
+  {
+    resize(0);
+    if(size == 0){return ;}
+    resize(size, mem_type_);
+    set_zero(*this);
   }
   //
   vector<M>& operator=(const vector<M>& vp)

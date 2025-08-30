@@ -693,8 +693,7 @@ void vector_to_acc(vector<Field<M > >& res, const std::vector<Field<M > >& src)
     return ;
   }
   const Long num_field = src.size();
-  res.set_mem_type(MemType::Cpu);
-  res.resize(num_field);
+  res.resize_zero(num_field, MemType::Cpu);
   const Geometry& geo = src[0].geo();
   qfor(id_field, num_field, {
     qassert(src[id_field].geo() == geo);
@@ -706,13 +705,12 @@ void vector_to_acc(vector<Field<M > >& res, const std::vector<Field<M > >& src)
 template <class M>
 void vector_to_acc(vector<vector<M > >& res, const std::vector<vector<M > >& src)
 {
-  res.resize(0);
   if(src.size() == 0){
+    res.resize(0);
     return ;
   }
   const Long num_field = src.size();
-  res.set_mem_type(MemType::Cpu);
-  res.resize(num_field);
+  res.resize_zero(num_field, MemType::Cpu);
   qfor(id_field, num_field, {
     res[id_field].set_view(src[id_field]);
   });
