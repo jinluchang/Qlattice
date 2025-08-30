@@ -880,12 +880,12 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
 
   // comm send to recv
   {
+    TIMER_FLOPS("field_shift_direct-commT");
     std::vector<MPI_Request> reqs_send;
     std::vector<MPI_Request> reqs_recv;
     const int rank  = qlat::get_id_node();
     for(unsigned int iv=0;iv<Nvec;iv++)
     {
-      TIMER_FLOPS("field_shift_direct-commT");
       timer.flops +=
           geo.local_volume() * (Long) MULTI * (Long) sizeof(M);
 
