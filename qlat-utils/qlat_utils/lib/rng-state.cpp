@@ -21,6 +21,7 @@
 #include <qlat-utils/rng-state.h>
 #include <qlat-utils/sha256.h>
 #include <qlat-utils/show.h>
+#include <qlat-utils/timer.h>
 #include <stdint.h>
 
 #include <climits>

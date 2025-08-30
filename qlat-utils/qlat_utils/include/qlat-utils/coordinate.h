@@ -18,17 +18,18 @@
 
 #pragma once
 
-#include <qlat-utils/config.h>
-#include <qlat-utils/qcd-setting.h>
-#include <qlat-utils/qacc.h>
-#include <qlat-utils/assert.h>
 #include <qlat-utils/array.h>
-#include <qlat-utils/rng-state.h>
+#include <qlat-utils/assert.h>
+#include <qlat-utils/config.h>
 #include <qlat-utils/core.h>
+#include <qlat-utils/qacc.h>
+#include <qlat-utils/qcd-setting.h>
+#include <qlat-utils/rng-state.h>
+#include <qlat-utils/timer.h>
 
-#include <vector>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 namespace qlat
 {

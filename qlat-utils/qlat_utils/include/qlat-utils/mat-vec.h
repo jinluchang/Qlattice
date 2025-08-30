@@ -24,6 +24,7 @@
 #include <qlat-utils/handle.h>
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/qcd-setting.h>
+#include <qlat-utils/timer.h>
 
 namespace qlat
 {
