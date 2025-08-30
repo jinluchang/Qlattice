@@ -681,8 +681,7 @@ void vector_to_handle(vector<M* >& res, const std::vector<Field<M > >& src)
   const Long Nv = src.size();
   res.resize(Nv);
   for(Long iv=0;iv<Nv;iv++){
-    res[iv] = (M*) &src[iv].get_elems_const(0)[0];
-    //res[iv] = (M*) get_data(src[iv]).data();
+    res[iv] = (M*) get_data(src[iv]).data();
   }
 }
 
@@ -693,8 +692,7 @@ void vector_to_handle(vector<M* >& res, const std::vector<vector<M > >& src)
   const Long Nv = src.size();
   res.resize(Nv);
   for(Long iv=0;iv<Nv;iv++){
-    res[iv] = (M*) &src[iv][0];
-    //res[iv] = (M*) src[iv].get_elems_const(0)[0];
+    res[iv] = (M*) get_data(src[iv]).data();
   }
 }
 
@@ -705,15 +703,7 @@ void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift
 // roughly fr[(xl + shift) % node_site] == fs[xl]
 {
   TIMER("field_shift_no_comm");
-
   const Geometry& geo = fs.geo();
-  if(fr.initialized){
-    qassert(fr.geo() == fs.geo() and fr.multiplicity == fs.multiplicity);
-    qassert(get_data(fr).data() != get_data(fs).data());
-  }else{
-    fr.init(geo, fs.multiplicity);
-  }
-
   if (shift == Coordinate()) {
     fr = fs;
     return;
@@ -745,7 +735,7 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
 // JUST do NOT shift in such direction
 // shift it afterwards (in the final step of this function)
 {
-  TIMER("field_shift_directT");
+  TIMER("field_shift_direct");
   if(fs.size() == 0){fr.resize(0);return ;}
   const unsigned int Nvec = fs.size();
 
@@ -755,19 +745,12 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
   const MemType QACC_EFF_MEM_TYPE = get_eff_mem_type(mem_type);
   const MemType mem_comm = QACC_EFF_MEM_TYPE == MemType::Cpu ? MemType::Cpu : MemType::Acc;
 
-  if(fr.size() != Nvec){
-    fr.resize(0);
-    fr.resize(Nvec);
-  }
-
+  qassert(fr.size() == Nvec);
   for(unsigned int iv=0;iv<Nvec;iv++){
     qassert(fs[iv].geo() == fs[0].geo() and fs[iv].field.mem_type == fs[0].field.mem_type);
     qassert(fs[iv].multiplicity == fs[0].multiplicity);
-    if(fr[iv].initialized){
-      qassert(fr[iv].geo() == fs[0].geo() and fr[iv].multiplicity == fs[iv].multiplicity);
-    }else{
-      fr[iv].init(geo, fs[iv].multiplicity);
-    }
+    qassert(fr[iv].initialized);// in case a bad reference ?
+    qassert(fr[iv].geo() == fs[0].geo() and fr[iv].multiplicity == fs[iv].multiplicity);
   }
 
   const int num_node = geo.geon.num_node;
@@ -955,8 +938,9 @@ template <class M>
 void field_shift_direct(Field<M>& fr, const Field<M>& fs,
                         const Coordinate& shift)
 {
+  if(!fr.initialized){fr.init(fs.geo(), fs.multiplicity);}
   std::vector<Field<M> > frL;
-  std::vector<Field<M> > fsL ;
+  std::vector<Field<M> > fsL;
   frL.resize(1);
   fsL.resize(1);
   frL[0].set_view(fr);

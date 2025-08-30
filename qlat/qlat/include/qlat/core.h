@@ -528,6 +528,7 @@ struct API SelectedPoints {
   void set_view(const SelectedPoints<M>& sp)
   {
     TIMER("SelectedPoints::set_view");
+    qassert(sp.initialized);
     initialized = sp.initialized;
     points_dist_type = sp.points_dist_type;
     multiplicity = sp.multiplicity;
@@ -539,6 +540,7 @@ struct API SelectedPoints {
   void set_view_cast(const SelectedPoints<N>& sp)
   {
     TIMER("SelectedPoints::set_view_cast");
+    qassert(sp.initialized);
     const Int total_size = sp.multiplicity * sizeof(N);
     initialized = sp.initialized;
     points_dist_type = sp.points_dist_type;
@@ -766,6 +768,7 @@ struct API Field {
   void set_view(const Field<M>& f)
   {
     TIMER("Field::set_view");
+    qassert(f.initialized);
     initialized = f.initialized;
     geo.set_view(f.geo);
     multiplicity = f.multiplicity;
@@ -777,6 +780,7 @@ struct API Field {
   void set_view_cast(const Field<N>& f)
   {
     TIMER("Field::set_view_cast");
+    qassert(f.initialized);
     qassert(f.mem_order == MemOrder::TZYXM);
     const Int total_size = f.multiplicity * sizeof(N);
     initialized = f.initialized;
