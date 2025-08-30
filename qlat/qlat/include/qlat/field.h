@@ -673,27 +673,50 @@ void field_shift_steps(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
   field_shift_dir(f, tmp, 3, shift[3]);
 }
 
-// maybe unsafe to cast the const to Handle ...
-template <class M>
-void vector_to_handle(vector<M* >& res, const std::vector<Field<M > >& src)
+template <typename M1, typename M2>
+void vector_field_cast(std::vector<M1 >& res, const std::vector<M2 >& src)
 {
-  if(src.size() == 0){res.resize(0);}
-  const Long Nv = src.size();
-  res.resize(Nv);
-  for(Long iv=0;iv<Nv;iv++){
-    res[iv] = (M*) get_data(src[iv]).data();
-  }
+  res.resize(0);
+  const Long num_field = src.size();
+  if(num_field == 0){return ;}
+  res.resize(num_field);
+  qfor(id_field, num_field, {
+    res[id_field].set_view_cast(src[id_field]);
+  });
 }
 
 template <class M>
-void vector_to_handle(vector<M* >& res, const std::vector<vector<M > >& src)
+void vector_to_acc(vector<Field<M > >& res, const std::vector<Field<M > >& src)
 {
-  if(src.size() == 0){res.resize(0);}
-  const Long Nv = src.size();
-  res.resize(Nv);
-  for(Long iv=0;iv<Nv;iv++){
-    res[iv] = (M*) get_data(src[iv]).data();
+  res.resize(0);
+  if(src.size() == 0){
+    return ;
   }
+  const Long num_field = src.size();
+  res.set_mem_type(MemType::Cpu);
+  res.resize(num_field);
+  const Geometry& geo = src[0].geo();
+  qfor(id_field, num_field, {
+    qassert(src[id_field].geo() == geo);
+    res[id_field].set_view(src[id_field]);
+  });
+  res.set_mem_type(src[0].field.mem_type);
+}
+
+template <class M>
+void vector_to_acc(vector<vector<M > >& res, const std::vector<vector<M > >& src)
+{
+  res.resize(0);
+  if(src.size() == 0){
+    return ;
+  }
+  const Long num_field = src.size();
+  res.set_mem_type(MemType::Cpu);
+  res.resize(num_field);
+  qfor(id_field, num_field, {
+    res[id_field].set_view(src[id_field]);
+  });
+  res.set_mem_type(src[0].mem_type);
 }
 
 // fr and fs must be different
@@ -708,24 +731,20 @@ void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift
     fr = fs;
     return;
   }
-
   Field<M> f0;f0.set_view(fs);
   const MemType mem = fs.field.mem_type;
-
   qmem_for(index, geo.local_volume(), mem, {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xl_s = mod(xl + shift, geo.node_site);
     Vector<M> fv = fr.get_elems(xl_s);
     const Vector<M> f0v = f0.get_elems_const(xl);
-    for (int m = 0; m < fr.multiplicity; ++m) {
-      fv[m] = f0v[m];
-    }
+    assign(fv, f0v);
   })
 }
 
 // fr and fs can be the same
 template <class M>
-void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
+void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
                         const Coordinate& shift, std::vector<vector<M> >& to_bufL)
 // shift fs with 'shift'
 // roughly f[(xg + shift) % total_site] == fs[xg]
@@ -738,13 +757,13 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
   TIMER("field_shift_direct");
   if(fs.size() == 0){fr.resize(0);return ;}
   const unsigned int Nvec = fs.size();
-
+  //
   const Geometry& geo = fs[0].geo();
   qassert(geo.is_only_local);
   const MemType mem_type = fs[0].field.mem_type;
   const MemType QACC_EFF_MEM_TYPE = get_eff_mem_type(mem_type);
   const MemType mem_comm = QACC_EFF_MEM_TYPE == MemType::Cpu ? MemType::Cpu : MemType::Acc;
-
+  //
   qassert(fr.size() == Nvec);
   for(unsigned int iv=0;iv<Nvec;iv++){
     qassert(fs[iv].geo() == fs[0].geo() and fs[iv].field.mem_type == fs[0].field.mem_type);
@@ -752,7 +771,7 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
     qassert(fr[iv].initialized);// in case a bad reference ?
     qassert(fr[iv].geo() == fs[0].geo() and fr[iv].multiplicity == fs[iv].multiplicity);
   }
-
+  //
   const int num_node = geo.geon.num_node;
   const Coordinate& node_site  = geo.node_site;
   const Coordinate& size_node  = geo.geon.size_node;
@@ -829,24 +848,24 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
       N_recv += size_r;
     }
   }
-
+  //
   const Long MULTI = fs[0].multiplicity;
   if(to_bufL.size() != 2*Nvec){to_bufL.resize(2*Nvec);}
   for(unsigned int iv=0;iv<to_bufL.size();iv++)
   {
-    if(to_bufL[iv].mem_type != mem_comm or to_bufL[iv].size() < N_send * MULTI){
+    const Long Nd = iv < Nvec ? N_send : N_recv;
+    if(to_bufL[iv].mem_type != mem_comm or to_bufL[iv].size() < Nd * MULTI){
       to_bufL[iv].set_mem_type(mem_comm);
-      to_bufL[iv].resize(N_send * MULTI);
+      to_bufL[iv].resize( Nd * MULTI );
     }
   }
-  vector<M* > bufh;
-  vector_to_handle(bufh, to_bufL);
-
+  vector<vector<M > > bufh;
+  vector_to_acc(bufh, to_bufL);
   // copy to send
   {
     TIMER("field_shift_direct copy");
-    vector<M* > fh1;
-    vector_to_handle(fh1, fs);
+    vector<Field<M > > fh1;
+    vector_to_acc(fh1, fs);
     qmem_for(index, geo.local_volume(), mem_comm, {
       const Vector<Long> fsv = f_send_idx.get_elems_const(index);
       const int id_node = fsv[0];
@@ -854,15 +873,16 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
       const Long off_send = to_send_offset[id_node] * MULTI;
       for(unsigned int iv=0;iv<Nvec;iv++)
       {
-        const M* fv = &fh1[iv][index*MULTI + 0];
-        M* to_send = &bufh[iv][off_send + offset];
-        for (int m = 0; m < MULTI; ++m) {
-          to_send[m] = fv[m];
-        }
+        const Vector<M> fv = fh1[iv].get_elems_const(index);
+        Vector<M> to_send(&bufh[iv][off_send + offset], MULTI);
+        //Vector<M> to_send = get_data(bufh[iv]);
+        //for (int m = 0; m < MULTI; ++m) {
+        //  to_send[m] = fv[m];
+        //}
+        assign(to_send, fv);
       }
     });
   }
-
   // comm send to recv
   {
     TIMER_FLOPS("field_shift_direct-commT");
@@ -873,22 +893,19 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
     {
       timer.flops +=
           geo.local_volume() * (Long) MULTI * (Long) sizeof(M);
-
       const int mpi_tag = 11 + iv;
       for (int id_node = 0; id_node < num_node; id_node++) {
         const Long off_send = to_send_offset[id_node] * MULTI;
         const Long off_recv = to_recv_offset[id_node] * MULTI;
-
         if(to_recv_size[id_node] > 0 and id_node != rank)
         mpi_irecv(&to_bufL[Nvec + iv][off_recv], to_recv_size[id_node] * MULTI * sizeof(M), MPI_BYTE,
                   id_node, mpi_tag, get_comm(), reqs_recv);
-
+        //
         if(to_send_size[id_node] > 0 and id_node != rank)
         mpi_isend(&to_bufL[iv][off_send], to_send_size[id_node] * MULTI * sizeof(M), MPI_BYTE,
                   id_node, mpi_tag, get_comm(), reqs_send);
       }
     }
-
     // within node copy
     {
       const int id_node = rank;
@@ -903,17 +920,16 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
         }
       }
     }
-
+    //
     mpi_waitall(reqs_recv);////receive done and write
     mpi_waitall(reqs_send);
   }
-
   // copy to f 
   //for(unsigned int iv=0;iv<Nvec;iv++)
   {
     TIMER("field_shift_direct copy");
-    vector<M* > fh0;
-    vector_to_handle(fh0, fr);
+    vector<Field<M > > fh0;
+    vector_to_acc(fh0, fr);
     qmem_for(index, geo.local_volume(), mem_comm, {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xl_s = mod(xl + shift_remain, total_site);
@@ -924,13 +940,34 @@ void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >
       const Long off_recv = to_recv_offset[id_node] * MULTI;
       for(unsigned int iv=0;iv<Nvec;iv++)
       {
-        M* fv = &fh0[iv][index_s*MULTI + 0];
-        const M* to_recv = &bufh[Nvec + iv][off_recv + offset];
-        for (int m = 0; m < MULTI; ++m) {
-          fv[m] = to_recv[m];
-        }
+        Vector<M> fv = fh0[iv].get_elems(index_s);
+        Vector<M> to_recv(&bufh[Nvec + iv][off_recv + offset], MULTI);
+        assign(fv, to_recv);
       }
     });
+  }
+}
+
+template <class M>
+void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
+                        const Coordinate& shift, std::vector<vector<M> >& to_bufL)
+{
+  if(sizeof(M) % sizeof(Long) == 0){
+    std::vector<Field<Long>  >  f0;
+    std::vector<Field<Long>  >  f1;
+    std::vector<vector<Long> >  tb;
+    vector_field_cast(f0, fr);
+    vector_field_cast(f1, fs);
+    vector_field_cast(tb, to_bufL);
+    field_shift_directT(f0, f1, shift, tb);
+  }else{
+    std::vector<Field< Char>  >  f0;
+    std::vector<Field< Char>  >  f1;
+    std::vector<vector<Char> >   tb;
+    vector_field_cast(f0, fr);
+    vector_field_cast(f1, fs);
+    vector_field_cast(tb, to_bufL);
+    field_shift_directT(f0, f1, shift, tb);
   }
 }
 

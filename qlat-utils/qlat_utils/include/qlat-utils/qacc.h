@@ -65,4 +65,19 @@ API inline MemType& get_default_mem_type()
   return mem_type;
 }
 
+API inline MemType check_mem_type(void* ptr) {
+  MemType mem_type;
+#ifdef QLAT_USE_ACC
+  qacc_PointerAttributes attr;
+  qacc_PointerGetAttributes(&attr, ptr);
+  if(attr.type == qacc_MemoryTypeHost){mem_type = MemType::Cpu;}
+  if(attr.type == qacc_MemoryTypeDevice){mem_type = MemType::Acc;}
+  if(attr.type == qacc_MemoryTypeManaged){mem_type = MemType::Uvm;}
+  qassert(false);
+#else
+  mem_type = MemType::Cpu;
+#endif
+  return mem_type;
+}
+
 }  // namespace qlat

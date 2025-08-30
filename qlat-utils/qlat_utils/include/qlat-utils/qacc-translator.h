@@ -1,5 +1,7 @@
-//// https://github.com/ROCm-Developer-Tools/HIPIFY/blob/amd-staging/docs/tables/CUDA_Runtime_API_functions_supported_by_HIP.md
-//// https://github.com/ROCm-Developer-Tools/HIPIFY/blob/amd-staging/docs/tables/CUFFT_API_supported_by_HIP.md
+/* 
+  https://github.com/ROCm/HIPIFY/blob/f4bfb3385dfd55692f0aaec865a0227410d6bb38/docs/reference/tables/CUDA_Runtime_API_functions_supported_by_HIP.md?plain=1#L1583
+ https://github.com/ROCm-Developer-Tools/HIPIFY/blob/amd-staging/docs/tables/CUFFT_API_supported_by_HIP.md
+*/
 
 #ifndef QLAT_GPU_TRANSLATOR_H
 #define QLAT_GPU_TRANSLATOR_H
@@ -50,6 +52,11 @@
 #define qacc_Stream_t                   cudaStream_t
 #define qacc_Success                    cudaSuccess
 #define qacc_StreamDestroy              cudaStreamDestroy
+#define qacc_PointerAttributes          cudaPointerAttributes
+#define qacc_PointerGetAttributes       cudaPointerGetAttributes
+#define qacc_MemoryTypeHost             cudaMemoryTypeHost
+#define qacc_MemoryTypeDevice           cudaMemoryTypeDevice
+#define qacc_MemoryTypeManaged          cudaMemoryTypeManaged
 
 #else
 
@@ -97,9 +104,15 @@
 #define qacc_Stream_t                   hipStream_t
 #define qacc_Success                    hipSuccess
 #define qacc_StreamDestroy              hipStreamDestroy
+#define qacc_PointerAttributes          hipPointerAttribute_t
+#define qacc_PointerGetAttributes       hipPointerGetAttributes
+#define qacc_MemoryTypeHost             hipMemoryTypeHost
+#define qacc_MemoryTypeDevice           hipMemoryTypeDevice
+#define qacc_MemoryTypeManaged          hipMemoryTypeManaged
 
 #endif
 
 #endif
 
 #endif
+
