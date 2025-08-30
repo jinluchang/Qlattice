@@ -329,12 +329,12 @@ qacc void assign(Vector<Long> xx, const Vector<Long>& yy)
 {
 #ifndef QLAT_IN_ACC
   qassert(xx.size() == yy.size());
-  std::memcpy((void*)xx.data(), (void*)yy.data(), xx.size());
+  std::memcpy((void*)xx.data(), (void*)yy.data(), sizeof(Long) * xx.size());
 #else
   const Long num = xx.size();
   assert(num == yy.size());
-  Long* px = (Long*)xx.data();
-  const Long* py = (Long*)yy.data();
+  Long* px = xx.data();
+  const Long* py = yy.data();
   for (Long i = 0; i < num; ++i) {
     px[i] = py[i];
   }
