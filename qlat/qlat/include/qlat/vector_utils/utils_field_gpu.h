@@ -479,6 +479,7 @@ inline void set_field(Field<M >& res, M* src, const Long n, const Geometry& geo,
   }
   res.initialized = true;
   //res.geo.set_view(geo);
+
   res.geo.set(geo);
   const Long Nd = geo.local_volume_expanded();
   Qassert(n % Nd == 0);

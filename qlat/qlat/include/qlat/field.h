@@ -673,50 +673,105 @@ void field_shift_steps(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
   field_shift_dir(f, tmp, 3, shift[3]);
 }
 
+// maybe unsafe to cast the const to Handle ...
 template <class M>
-void field_shift_local(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
-// node process local shift
-// roughly f[(xl + shift) % node_site] == f1[xl]
+void vector_to_handle(vector<M* >& res, const std::vector<Field<M > >& src)
 {
-  TIMER("field_shift_no_comm");
-  if (shift == Coordinate()) {
-    f = f1;
-    return;
+  if(src.size() == 0){res.resize(0);}
+  const Long Nv = src.size();
+  res.resize(Nv);
+  for(Long iv=0;iv<Nv;iv++){
+    res[iv] = (M*) get_data(src[iv]).data();
   }
-  const Geometry geo = geo_resize(f1.geo());
-  Field<M> f0;
-  f0.init(geo, f1.multiplicity);
-  f0 = f1;
-  f.init(geo, f1.multiplicity);
-  qthread_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xl_s = mod(xl + shift, geo.node_site);
-    Vector<M> fv = f.get_elems(xl_s);
-    const Vector<M> f0v = f0.get_elems_const(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
-      fv[m] = f0v[m];
-    }
-  });
 }
 
 template <class M>
-void field_shift_direct(Field<M>& f, const Field<M>& f1,
-                        const Coordinate& shift)
-// shift f1 with 'shift'
-// roughly f[(xg + shift) % total_site] == f1[xg]
+void vector_to_handle(vector<M* >& res, const std::vector<vector<M > >& src)
+{
+  if(src.size() == 0){res.resize(0);}
+  const Long Nv = src.size();
+  res.resize(Nv);
+  for(Long iv=0;iv<Nv;iv++){
+    res[iv] = (M*) get_data(src[iv]).data();
+  }
+}
+
+// fr and fs must be different
+template <class M>
+void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift)
+// node process local shift
+// roughly fr[(xl + shift) % node_site] == fs[xl]
+{
+  TIMER("field_shift_no_comm");
+
+  const Geometry& geo = fs.geo();
+  if(fr.initialized){
+    qassert(fr.geo() == fs.geo() and fr.multiplicity == fs.multiplicity);
+    qassert(get_data(fr).data() != get_data(fs).data());
+  }else{
+    fr.init(geo, fs.multiplicity);
+  }
+
+  if (shift == Coordinate()) {
+    fr = fs;
+    return;
+  }
+
+  Field<M> f0;f0.set_view(fs);
+  const MemType mem = fs.field.mem_type;
+
+  qmem_for(index, geo.local_volume(), mem, {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xl_s = mod(xl + shift, geo.node_site);
+    Vector<M> fv = fr.get_elems(xl_s);
+    const Vector<M> f0v = f0.get_elems_const(xl);
+    for (int m = 0; m < fr.multiplicity; ++m) {
+      fv[m] = f0v[m];
+    }
+  })
+}
+
+// fr and fs can be the same
+template <class M>
+void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
+                        const Coordinate& shift, std::vector<vector<M> >& to_bufL)
+// shift fs with 'shift'
+// roughly f[(xg + shift) % total_site] == fs[xg]
 // use the fact that the ordering does not change
 // UNLESS in some direction there is only one node,
 // THEN periodic boundary condition shall mess up the order
 // JUST do NOT shift in such direction
 // shift it afterwards (in the final step of this function)
 {
-  TIMER("field_shift_direct");
-  const Geometry& geo = f1.geo();
+  TIMER("field_shift_directT");
+  if(fs.size() == 0){fr.resize(0);return ;}
+  const unsigned int Nvec = fs.size();
+
+  const Geometry& geo = fs[0].geo();
   qassert(geo.is_only_local);
+  const MemType mem_type = fs[0].field.mem_type;
+  const MemType QACC_EFF_MEM_TYPE = get_eff_mem_type(mem_type);
+  const MemType mem_comm = QACC_EFF_MEM_TYPE == MemType::Cpu ? MemType::Cpu : MemType::Acc;
+
+  if(fr.size() != Nvec){
+    fr.resize(0);
+    fr.resize(Nvec);
+  }
+
+  for(unsigned int iv=0;iv<Nvec;iv++){
+    qassert(fs[iv].geo() == fs[0].geo() and fs[iv].field.mem_type == fs[0].field.mem_type);
+    qassert(fs[iv].multiplicity == fs[0].multiplicity);
+    if(fr[iv].initialized){
+      qassert(fr[iv].geo() == fs[0].geo() and fr[iv].multiplicity == fs[iv].multiplicity);
+    }else{
+      fr[iv].init(geo, fs[iv].multiplicity);
+    }
+  }
+
   const int num_node = geo.geon.num_node;
-  const Coordinate& node_site = geo.node_site;
-  const Coordinate& size_node = geo.geon.size_node;
-  const Coordinate total_site = geo.total_site();
+  const Coordinate& node_site  = geo.node_site;
+  const Coordinate& size_node  = geo.geon.size_node;
+  const Coordinate  total_site = geo.total_site();
   Coordinate shift_corrected = shift;
   Coordinate shift_remain;
   for (int mu = 0; mu < 4; ++mu) {
@@ -728,12 +783,30 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     }
   }
   if (shift_corrected == Coordinate()) {
-    field_shift_local(f, f1, shift);
+    for(unsigned int iv=0;iv<Nvec;iv++){
+      if(get_data(fr[iv]).data() != get_data(fs[iv]).data()){
+        field_shift_local(fr[iv], fs[iv], shift);
+      }else{
+        if(to_bufL.size() == 0){to_bufL.resize(1);}
+        to_bufL[0] = fs[iv].field;
+
+        Field<M> buf;
+        buf.initialized = true;
+        buf.geo.set_view(geo);
+        buf.multiplicity = fs[iv].multiplicity;
+        buf.mem_order = fs[iv].mem_order;
+        buf.field.set_view(to_bufL[0]);
+        field_shift_local(fr[iv], buf, shift);
+      }
+    }
     return;
   }
   std::vector<Long> to_send_size(num_node, 0);
   std::vector<Long> to_recv_size(num_node, 0);
+  //  Uvm
   FieldM<Long, 2> f_send_idx, f_recv_idx;  // id_node, idx_for_that_node
+  {
+  TIMER("field_shift_direct setup");
   f_send_idx.init(geo);
   f_recv_idx.init(geo);
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -754,102 +827,140 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     to_send_size[id_node_send] += 1;
     to_recv_size[id_node_recv] += 1;
   }
-  int n_send = 0;
-  int n_recv = 0;
-  std::vector<vector<M>> to_send(num_node);
-  std::vector<vector<M>> to_recv(num_node);
-  for (int i = 0; i < num_node; ++i) {
-    const Long size_s = to_send_size[i];
-    if (size_s > 0) {
-      to_send[i].resize(size_s * f1.multiplicity);
-      n_send += 1;
-    }
-    const Long size_r = to_recv_size[i];
-    if (size_r > 0) {
-      to_recv[i].resize(size_r * f1.multiplicity);
-      n_recv += 1;
-    }
   }
-#pragma omp parallel for
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const Vector<M> fv = f1.get_elems_const(index);
-    const Vector<Long> fsv = f_send_idx.get_elems_const(index);
-    const int id_node = fsv[0];
-    const Long offset = fsv[1] * f1.multiplicity;
-    vector<M>& to_send_v = to_send[id_node];
-    for (int m = 0; m < f1.multiplicity; ++m) {
-      to_send_v[offset + m] = fv[m];
-    }
-  }
+  Long N_send = 0;
+  Long N_recv = 0;
+  // Uvm
+  vector<Long > to_send_offset(num_node);
+  vector<Long > to_recv_offset(num_node);
   {
-    TIMER_FLOPS("field_shift_direct-comm");
-    timer.flops +=
-        geo.local_volume() * (Long)f1.multiplicity * (Long)sizeof(M);
-    const Long max_elem = 1 + get_max_field_shift_direct_msg_size() / sizeof(M);
-    std::vector<MPI_Request> reqs(n_recv + n_send);
-    Vector<MPI_Request> recv_reqs(reqs.data(), n_recv);
-    Vector<MPI_Request> send_reqs(reqs.data() + n_recv, n_send);
-    const int mpi_tag = 11;
-    int i_send = 0;
-    int i_recv = 0;
+    TIMER("field_shift_direct setup");
     for (int i = 0; i < num_node; ++i) {
-      Long size_r = to_recv[i].size();
-      if (size_r > 0) {
-        const int id_node = i;
-        qassert(i_recv < n_recv);
-        vector<M>& to_recv_v = to_recv[id_node];
-        Long offset = 0;
-        while (size_r > max_elem) {
-          MPI_Request req;
-          MPI_Irecv(&to_recv_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
-                    mpi_tag, get_comm(), &req);
-          reqs.push_back(req);
-          offset += max_elem;
-          size_r -= max_elem;
-        }
-        MPI_Irecv(&to_recv_v[offset], size_r * sizeof(M), MPI_BYTE, id_node,
-                  mpi_tag, get_comm(), &recv_reqs[i_recv]);
-        i_recv += 1;
-      }
-      Long size_s = to_send[i].size();
-      if (size_s > 0) {
-        const int id_node = i;
-        qassert(i_send < n_send);
-        vector<M>& to_send_v = to_send[id_node];
-        Long offset = 0;
-        while (size_s > max_elem) {
-          MPI_Request req;
-          MPI_Isend(&to_send_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
-                    mpi_tag, get_comm(), &req);
-          reqs.push_back(req);
-          offset += max_elem;
-          size_s -= max_elem;
-        }
-        MPI_Isend(&to_send_v[offset], size_s * sizeof(M), MPI_BYTE, id_node,
-                  mpi_tag, get_comm(), &send_reqs[i_send]);
-        i_send += 1;
-      }
-    }
-    if (reqs.size() > 0) {
-      MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-    }
-    SYNC_NODE();
-  }
-  f.init(geo, f1.multiplicity);
-#pragma omp parallel for
-  for (Long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xl_s = mod(xl + shift_remain, total_site);
-    const Long index_s = geo.index_from_coordinate(xl_s);
-    Vector<M> fv = f.get_elems(index_s);
-    const Vector<Long> frv = f_recv_idx.get_elems_const(index);
-    const int id_node = frv[0];
-    const Long offset = frv[1] * f1.multiplicity;
-    vector<M>& to_recv_v = to_recv[id_node];
-    for (int m = 0; m < f1.multiplicity; ++m) {
-      fv[m] = to_recv_v[offset + m];
+      to_send_offset[i] = N_send;
+      to_recv_offset[i] = N_recv;
+      const Long size_s = to_send_size[i];
+      const Long size_r = to_recv_size[i];
+      N_send += size_s;
+      N_recv += size_r;
     }
   }
+
+  const Long MULTI = fs[0].multiplicity;
+  if(to_bufL.size() != 2*Nvec){to_bufL.resize(2*Nvec);}
+  for(unsigned int iv=0;iv<to_bufL.size();iv++)
+  {
+    if(to_bufL[iv].mem_type != mem_comm or to_bufL[iv].size() < N_send * MULTI){
+      to_bufL[iv].set_mem_type(mem_comm);
+      to_bufL[iv].resize(N_send * MULTI);
+    }
+  }
+  vector<M* > bufh;
+  vector_to_handle(bufh, to_bufL);
+
+  // copy to send
+  {
+    TIMER("field_shift_direct copy");
+    vector<M* > fh1;
+    vector_to_handle(fh1, fs);
+    qmem_for(index, geo.local_volume(), mem_comm, {
+      const Vector<Long> fsv = f_send_idx.get_elems_const(index);
+      const int id_node = fsv[0];
+      const Long offset = fsv[1] * MULTI;
+      const Long off_send = to_send_offset[id_node] * MULTI;
+      for(unsigned int iv=0;iv<Nvec;iv++)
+      {
+        const M* fv = &fh1[iv][index*MULTI + 0];
+        M* to_send = &bufh[iv][off_send + offset];
+        for (int m = 0; m < MULTI; ++m) {
+          to_send[m] = fv[m];
+        }
+      }
+    });
+  }
+
+  // comm send to recv
+  {
+    std::vector<MPI_Request> reqs_send;
+    std::vector<MPI_Request> reqs_recv;
+    const int rank  = qlat::get_id_node();
+    for(unsigned int iv=0;iv<Nvec;iv++)
+    {
+      TIMER_FLOPS("field_shift_direct-commT");
+      timer.flops +=
+          geo.local_volume() * (Long) MULTI * (Long) sizeof(M);
+
+      const int mpi_tag = 11 + iv;
+      for (int id_node = 0; id_node < num_node; id_node++) {
+        const Long off_send = to_send_offset[id_node] * MULTI;
+        const Long off_recv = to_recv_offset[id_node] * MULTI;
+
+        if(to_recv_size[id_node] > 0 and id_node != rank)
+        mpi_irecv(&to_bufL[Nvec + iv][off_recv], to_recv_size[id_node] * MULTI * sizeof(M), MPI_BYTE,
+                  id_node, mpi_tag, get_comm(), reqs_recv);
+
+        if(to_send_size[id_node] > 0 and id_node != rank)
+        mpi_isend(&to_bufL[iv][off_send], to_send_size[id_node] * MULTI * sizeof(M), MPI_BYTE,
+                  id_node, mpi_tag, get_comm(), reqs_send);
+      }
+    }
+
+    // within node copy
+    {
+      const int id_node = rank;
+      const size_t Nd = to_recv_size[id_node] * MULTI * sizeof(M);
+      if(Nd > 0){
+        for(unsigned int iv=0;iv<Nvec;iv++){
+          TIMER("field_shift_direct node copy");
+          const Long off_send = to_send_offset[id_node] * MULTI;
+          const Long off_recv = to_recv_offset[id_node] * MULTI;
+          qassert(Nd == to_send_size[id_node] * MULTI * sizeof(M));
+          copy_mem(&to_bufL[Nvec + iv][off_recv], mem_comm, &to_bufL[iv][off_send], mem_comm, Nd);
+        }
+      }
+    }
+
+    mpi_waitall(reqs_recv);////receive done and write
+    mpi_waitall(reqs_send);
+  }
+
+  // copy to f 
+  //for(unsigned int iv=0;iv<Nvec;iv++)
+  {
+    TIMER("field_shift_direct copy");
+    vector<M* > fh0;
+    vector_to_handle(fh0, fr);
+    qmem_for(index, geo.local_volume(), mem_comm, {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xl_s = mod(xl + shift_remain, total_site);
+      const Long index_s = geo.index_from_coordinate(xl_s);
+      const Vector<Long> frv = f_recv_idx.get_elems_const(index);
+      const int id_node = frv[0];
+      const Long offset = frv[1] * MULTI;
+      const Long off_recv = to_recv_offset[id_node] * MULTI;
+      for(unsigned int iv=0;iv<Nvec;iv++)
+      {
+        M* fv = &fh0[iv][index_s*MULTI + 0];
+        const M* to_recv = &bufh[Nvec + iv][off_recv + offset];
+        for (int m = 0; m < MULTI; ++m) {
+          fv[m] = to_recv[m];
+        }
+      }
+    });
+  }
+}
+
+template <class M>
+void field_shift_direct(Field<M>& fr, const Field<M>& fs,
+                        const Coordinate& shift)
+{
+  std::vector<Field<M> > frL;
+  std::vector<Field<M> > fsL ;
+  frL.resize(1);
+  fsL.resize(1);
+  frL[0].set_view(fr);
+  fsL[0].set_view(fs);
+  std::vector<vector<M> > to_bufL;
+  field_shift_direct(frL, fsL, shift, to_bufL);
 }
 
 template <class M>

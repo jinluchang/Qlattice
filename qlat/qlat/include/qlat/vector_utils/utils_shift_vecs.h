@@ -1326,9 +1326,11 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<int >& iDir, cons
   std::vector<Coordinate > total_siteL;
   total_siteL.resize(3);
 
-  // 0 to be full block small lattice
-  // 1 3/4 Nx shifts
-  // 2 max volume
+  /*
+    0 to be full block small lattice
+    1 3/4 Nx shifts
+    2 max volume
+  */
   for(int s=0;s<3;s++){
     for(int i=0;i<4;i++){
       if(s == 0 ){total_siteL[s][i] = total_site[i] / local_site[i];}
