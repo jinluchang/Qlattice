@@ -73,7 +73,7 @@ API inline MemType check_mem_type(void* ptr) {
   if(attr.type == qacc_MemoryTypeHost){mem_type = MemType::Cpu;}
   if(attr.type == qacc_MemoryTypeDevice){mem_type = MemType::Acc;}
   if(attr.type == qacc_MemoryTypeManaged){mem_type = MemType::Uvm;}
-  qassert(false);
+  assert(false);
 #else
   mem_type = MemType::Cpu;
 #endif
