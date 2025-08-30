@@ -681,7 +681,8 @@ void vector_to_handle(vector<M* >& res, const std::vector<Field<M > >& src)
   const Long Nv = src.size();
   res.resize(Nv);
   for(Long iv=0;iv<Nv;iv++){
-    res[iv] = (M*) get_data(src[iv]).data();
+    res[iv] = (M*) &src[iv].get_elems_const(0)[0];
+    //res[iv] = (M*) get_data(src[iv]).data();
   }
 }
 
@@ -692,7 +693,8 @@ void vector_to_handle(vector<M* >& res, const std::vector<vector<M > >& src)
   const Long Nv = src.size();
   res.resize(Nv);
   for(Long iv=0;iv<Nv;iv++){
-    res[iv] = (M*) get_data(src[iv]).data();
+    res[iv] = (M*) &src[iv][0];
+    //res[iv] = (M*) src[iv].get_elems_const(0)[0];
   }
 }
 
