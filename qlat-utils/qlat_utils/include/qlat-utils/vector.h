@@ -441,25 +441,31 @@ struct API vector {
     v.set_cast(vec.v);
   }
   //
-  void resize(const Long size)
+  void resize(const Long size) { resize(size, mem_type); }
+  void resize(const Long size, const MemType mem_type_)
   {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M), mem_type);
+      v.p = (M*)alloc_mem(size * sizeof(M), mem_type_);
       v.n = size;
+      mem_type = mem_type_;
       return;
     }
     if (size == v.n) {
+      if (mem_type != mem_type_) {
+        set_mem_type(mem_type_);
+      }
       return;
     }
     if (size == 0) {
       clear();
+      mem_type = mem_type_;
       return;
     }
     {
       TIMER("vector::resize");
-      vector<M> vp(size, mem_type);
+      vector<M> vp(size, mem_type_);
       qswap(*this, vp);
       const Long n_min = std::min(size, vp.v.n);
       copy_mem(v.p, mem_type, vp.v.p, vp.mem_type, n_min * sizeof(M));

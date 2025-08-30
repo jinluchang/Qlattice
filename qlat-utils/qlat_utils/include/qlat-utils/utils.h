@@ -325,6 +325,22 @@ qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
 #endif
 }
 
+qacc void assign(Vector<Long> xx, const Vector<Long>& yy)
+{
+#ifndef QLAT_IN_ACC
+  qassert(xx.size() == yy.size());
+  std::memcpy((void*)xx.data(), (void*)yy.data(), xx.size());
+#else
+  const Long num = xx.size();
+  assert(num == yy.size());
+  Long* px = (Long*)xx.data();
+  const Long* py = (Long*)yy.data();
+  for (Long i = 0; i < num; ++i) {
+    px[i] = py[i];
+  }
+#endif
+}
+
 template <class T1, class T2,
           class E1 = typename IsGetDataType<T1>::ElementaryType,
           class E2 = typename IsGetDataType<T2>::ElementaryType,
