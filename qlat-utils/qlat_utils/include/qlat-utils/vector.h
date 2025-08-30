@@ -22,26 +22,6 @@ void clear_all_caches();
 
 // --------------------
 
-enum struct MemType : Int {
-  Cpu,      // CPU main memory
-  Acc,      // Accelerator
-  Uvm,      // Uniform virtual memory
-  Comm,     // For communication on CPU
-  CommAcc,  // For communication on ACC
-  SIZE,
-};
-
-std::string show(const MemType mem_type);
-
-MemType read_mem_type(const std::string& mem_type_str);
-
-API inline MemType& get_default_mem_type()
-{
-  static MemType mem_type =
-      read_mem_type(get_env_default("q_default_mem_type", "uvm"));
-  return mem_type;
-}
-
 API inline Long& get_alignment(const MemType mem_type)
 // qlat parameter
 //
@@ -391,9 +371,10 @@ struct API vector {
   {
     if (not is_copy) {
       clear();
+    } else {
+      v = Vector<M>();
     }
     is_copy = false;
-    v = Vector<M>();
   }
   //
   void clear()
@@ -673,9 +654,10 @@ struct API box {
   {
     if (not is_copy) {
       clear();
+    } else {
+      v = Handle<M>();
     }
     is_copy = false;
-    v = Handle<M>();
   }
   //
   void clear()
@@ -716,7 +698,9 @@ struct API box {
     qassert(mem_type != MemType::Acc);
     init();
     is_copy = true;
-    v.p = const_cast<M*>(&x);// assumes one will never modify the content ?
+    // Be cautious about the const property
+    // 改不改靠自觉
+    v.p = const_cast<M*>(&x);
   }
   void set_view(const Handle<M> h)
   // does not change mem_type

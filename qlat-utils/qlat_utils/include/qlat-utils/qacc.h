@@ -23,7 +23,10 @@
 
 #endif
 
+#include <qlat-utils/env.h>
 #include <qlat-utils/qacc-translator.h>
+
+#include <string>
 
 namespace qlat
 {  //
@@ -41,5 +44,25 @@ namespace qlat
 #define qacc inline
 
 #endif
+
+enum struct MemType : Int {
+  Cpu,      // CPU main memory
+  Acc,      // Accelerator
+  Uvm,      // Uniform virtual memory
+  Comm,     // For communication on CPU
+  CommAcc,  // For communication on ACC
+  SIZE,
+};
+
+std::string show(const MemType mem_type);
+
+MemType read_mem_type(const std::string& mem_type_str);
+
+API inline MemType& get_default_mem_type()
+{
+  static MemType mem_type =
+      read_mem_type(get_env_default("q_default_mem_type", "uvm"));
+  return mem_type;
+}
 
 }  // namespace qlat
