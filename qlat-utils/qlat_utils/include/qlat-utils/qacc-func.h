@@ -18,7 +18,7 @@ API inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
-inline void gpuErrCheck(qacc_Error err, const char *file, int line)
+inline void gpuErr(qacc_Error err, const char *file, int line)
 {
   if (qacc_Success != err) {
     qlat::displayln(
@@ -30,14 +30,13 @@ inline void gpuErrCheck(qacc_Error err, const char *file, int line)
 
 #ifdef __NVCC__
 
-#define gpuErr(ans) { gpuErrCheck((ans), __FILE__, __LINE__); }
+#define gpuErrCheck(ans) { gpuErr((ans), __FILE__, __LINE__); }
 
 #else
 
-#define gpuErr(ans) { ans;gpuErrCheck((qacc_GetLastError()), __FILE__, __LINE__); }
+#define gpuErrCheck(ans) { (ans);gpuErr(qacc_GetLastError(), __FILE__, __LINE__); }
 
 #endif
-
 
 //inline void qacc_DeviceSynchronize()
 //{
@@ -65,9 +64,9 @@ inline void gpuErrCheck(qacc_Error err, const char *file, int line)
 inline void qacc_DeviceSynchronize()
 {
 #ifdef __NVCC__
-  gpuErr(cudaDeviceSynchronize());
+  gpuErrCheck(cudaDeviceSynchronize());
 #else
-  gpuErr(hipDeviceSynchronize());
+  gpuErrCheck(hipDeviceSynchronize());
 #endif
 }
 
