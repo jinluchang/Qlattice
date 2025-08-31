@@ -62,6 +62,7 @@
 
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#include <omp.h>
 
 #define qacc_DeviceProp                 hipDeviceProp_t
 #define qacc_DeviceReset                hipDeviceReset
