@@ -229,7 +229,7 @@ inline void print_NONE(const char *filename)
 #endif  // CUDA_RT_CALL
 
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(qacc_Error code, const char *file, int line, bool abort=true)
+inline void gpuAssert(qacc_Error code, const char *file, int line)
 {
    if (code != qacc_Success)
    {

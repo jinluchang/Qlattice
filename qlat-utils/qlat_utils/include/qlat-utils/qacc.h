@@ -69,18 +69,19 @@ API inline MemType check_mem_type(void* ptr)
 {
   MemType mem_type;
 #ifdef QLAT_USE_ACC
+  bool find = false;
   qacc_PointerAttributes attr;
-  qacc_PointerGetAttributes(&attr, ptr);
+  gpuErr(qacc_PointerGetAttributes(&attr, ptr));
   if (attr.type == qacc_MemoryTypeHost) {
-    mem_type = MemType::Cpu;
+    mem_type = MemType::Cpu;find = true;
   }
   if (attr.type == qacc_MemoryTypeDevice) {
-    mem_type = MemType::Acc;
+    mem_type = MemType::Acc;find = true;
   }
   if (attr.type == qacc_MemoryTypeManaged) {
-    mem_type = MemType::Uvm;
+    mem_type = MemType::Uvm;find = true;
   }
-  assert(false);
+  if(!find){assert(false);}
 #else
   (void)ptr;
   mem_type = MemType::Cpu;

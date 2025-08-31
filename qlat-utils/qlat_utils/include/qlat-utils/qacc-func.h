@@ -20,33 +20,58 @@ API inline int& qacc_num_threads()
 
 #ifdef __NVCC__
 
-inline void qacc_DeviceSynchronize()
-{
-  cudaDeviceSynchronize();
-  qacc_Error err = qacc_GetLastError();
-  if (qacc_Success != err) {
-    qlat::displayln(
-        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
-                       qacc_GetErrorString(err), __FILE__, __LINE__));
-    qassert(false);
-  }
-}
+#define gpuErr(ans) { gpuErrCheck((ans), __FILE__, __LINE__); }
+#endif
 
 #else
 
-inline void qacc_DeviceSynchronize()
-{
-  qacc_Error err = hipDeviceSynchronize();
-  if (qacc_Success != err) {
-    qlat::displayln(
-        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
-                       qacc_GetErrorString(err), __FILE__, __LINE__));
-    qassert(false);
-  }
-}
+#define gpuErr(ans) { ans;gpuErrCheck((qacc_GetLastError()), __FILE__, __LINE__); }
+#endif
 
 #endif
 
+
+//inline void qacc_DeviceSynchronize()
+//{
+//  cudaDeviceSynchronize();
+//  qacc_Error err = qacc_GetLastError();
+//  if (qacc_Success != err) {
+//    qlat::displayln(
+//        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+//                       qacc_GetErrorString(err), __FILE__, __LINE__));
+//    qassert(false);
+//  }
+//}
+
+//inline void qacc_DeviceSynchronize()
+//{
+//  qacc_Error err = hipDeviceSynchronize();
+//  if (qacc_Success != err) {
+//    qlat::displayln(
+//        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+//                       qacc_GetErrorString(err), __FILE__, __LINE__));
+//    qassert(false);
+//  }
+//}
+
+inline void qacc_DeviceSynchronize();
+{
+#ifdef __NVCC__
+  gpuErr(cudaDeviceSynchronize());
+#else
+  gpuErr(hipDeviceSynchronize());
+#endif
+}
+
+inline void gpuErrCheck(qacc_Error err, const char *file, int line)
+{
+  if (qacc_Success != err) {
+    qlat::displayln(
+        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+                       qacc_GetErrorString(err), file, line));
+    qassert(false);
+  }
+}
 #endif
 
 #define qfor(iter, num, ...)                                   \
