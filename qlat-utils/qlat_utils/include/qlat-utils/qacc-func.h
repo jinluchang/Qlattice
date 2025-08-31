@@ -18,7 +18,7 @@ API inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
-inline void gpuErr(qacc_Error err, const char *file, int line)
+inline void qacc_Err(qacc_Error err, const char* file, int line)
 {
   if (qacc_Success != err) {
     qlat::displayln(
@@ -34,11 +34,18 @@ inline void gpuErr(qacc_Error err, const char *file, int line)
 #error "please compile with --expt-extended-lambda"
 #endif
 
-#define gpuErrCheck(ans) { (ans);gpuErr(qacc_GetLastError(), __FILE__, __LINE__); }
+#define qacc_ErrCheck(ans)                             \
+  {                                                    \
+    (ans);                                             \
+    qacc_Err(qacc_GetLastError(), __FILE__, __LINE__); \
+  }
 
 #else
 
-#define gpuErrCheck(ans) { gpuErr((ans), __FILE__, __LINE__); }
+#define qacc_ErrCheck(ans)               \
+  {                                      \
+    qacc_Err((ans), __FILE__, __LINE__); \
+  }
 
 #endif
 
@@ -50,7 +57,7 @@ API inline MemType check_mem_type(void* ptr)
 #ifdef QLAT_USE_ACC
   bool find = false;
   qacc_PointerAttributes attr;
-  gpuErrCheck(qacc_PointerGetAttributes(&attr, ptr));
+  qacc_ErrCheck(qacc_PointerGetAttributes(&attr, ptr));
   if (attr.type == qacc_MemoryTypeHost) {
     mem_type = MemType::Cpu;find = true;
   }
@@ -125,7 +132,7 @@ __global__ void qlambda_apply(Long num, Lambda lam)
 
 #define qacc_barrier(dummy)   \
   {                           \
-    gpuErrCheck(qacc_DeviceSynchronize()); \
+    qacc_ErrCheck(qacc_DeviceSynchronize()); \
   }
 
 #define qacc_for(iter, num, ...) \

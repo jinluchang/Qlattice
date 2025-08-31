@@ -292,7 +292,7 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
   } else {
     qassert(false);
   }
-  gpuErrCheck(qacc_DeviceSynchronize());  // HIP XNACK need barrier...
+  qacc_ErrCheck(qacc_DeviceSynchronize());  // HIP XNACK need barrier...
   if (qacc_Success != err) {
     qerr(ssprintf("mem copy : ACC error '%s' (%d) after qacc_Malloc.",
                           qacc_GetErrorString(err), err));
