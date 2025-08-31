@@ -18,6 +18,16 @@ API inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
+inline void gpuErr(qacc_Error err, const char *file, int line)
+{
+  if (qacc_Success != err) {
+    qlat::displayln(
+        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+                       qacc_GetErrorString(err), file, line));
+    qassert(false);
+  }
+}
+
 #ifdef __NVCC__
 
 #define gpuErrCheck(ans) { gpuErr((ans), __FILE__, __LINE__); }
@@ -61,6 +71,31 @@ inline void qacc_DeviceSynchronize()
 }
 
 #endif
+
+API inline MemType check_mem_type(void* ptr)
+{
+  MemType mem_type;
+#ifdef QLAT_USE_ACC
+  bool find = false;
+  qacc_PointerAttributes attr;
+  gpuErrCheck(qacc_PointerGetAttributes(&attr, ptr));
+  if (attr.type == qacc_MemoryTypeHost) {
+    mem_type = MemType::Cpu;find = true;
+  }
+  if (attr.type == qacc_MemoryTypeDevice) {
+    mem_type = MemType::Acc;find = true;
+  }
+  if (attr.type == qacc_MemoryTypeManaged) {
+    mem_type = MemType::Uvm;find = true;
+  }
+  if(!find){assert(false);}
+#else
+  (void)ptr;
+  mem_type = MemType::Cpu;
+#endif
+  return mem_type;
+}
+
 
 #define qfor(iter, num, ...)                                   \
   {                                                            \
