@@ -2,6 +2,7 @@
 
 #include <qlat-utils/config.h>
 #include <qlat-utils/handle.h>
+#include <qlat-utils/qacc-func.h>
 #include <qlat-utils/utils.h>
 #include <unistd.h>
 
