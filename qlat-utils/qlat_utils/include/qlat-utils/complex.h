@@ -427,6 +427,7 @@ qacc ComplexT<RealDD> qconj(const ComplexT<RealDD> &x)
 }  // namespace qlat
 
 #ifndef __HIPCC__
+
 namespace std
 {
 
@@ -439,4 +440,5 @@ qacc complex<double> &complex<double>::operator=(
 }
 
 }  // namespace std
+
 #endif
