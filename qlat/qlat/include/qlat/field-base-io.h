@@ -97,7 +97,7 @@ inline bool Is_not_null(FILE *pFile)
 template <class M, class N>
 void castTruncated(M &x, const N &y)
 {
-  qassert(sizeof(M) <= sizeof(N));
+  Qassert(sizeof(M) <= sizeof(N));
   memcpy(&x, &y, sizeof(M));
 }
 
@@ -124,11 +124,11 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
 {
   TIMER("fieldChecksumSum32");
   Geometry geo = geo_resize(f.geo(), 0);
-  qassert(geo.is_only_local);
+  Qassert(geo.is_only_local);
   Field<M> f_local;
   f_local.init(geo);
   f_local = f;
-  qassert(sizeof(M) % sizeof(uint32_t) == 0);
+  Qassert(sizeof(M) % sizeof(uint32_t) == 0);
   Long sum = 0;
   const uint32_t *data = (const uint32_t *)f_local.field.data();
   const Long size = f_local.field.size() * sizeof(M) / sizeof(uint32_t);
@@ -250,7 +250,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
   for (int i = 0; i < get_num_node(); i++) {
     if (get_id_node() == 0) {
       M *ptr = get_data(field_send).data();
-      qassert(ptr != NULL);
+      Qassert(ptr != NULL);
       Long size = sizeof(M) * geo_only_local.local_volume() * multiplicity;
       std::cout << "Writing CYCLE: " << i << "\tSIZE = " << size << std::endl;
       timer_fwrite((char *)ptr, size, outputFile);
@@ -280,7 +280,7 @@ inline void timer_fread(char *ptr, Long size, FILE *inputFile)
 {
   TIMER_VERBOSE("timer_fread");
   Long size_read = fread(ptr, size, 1, inputFile);
-  qassert(size_read == 1);
+  Qassert(size_read == 1);
 }
 
 template <class M>
@@ -316,8 +316,8 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   // reading speed is unbearablly slow. Anyway it is tested. And it seems to be
   // right.
   input = fopen(import.c_str(), "rb");
-  qassert(input != NULL);
-  qassert(!ferror(input));
+  Qassert(input != NULL);
+  Qassert(!ferror(input));
   //
   fseek(input, pos, SEEK_SET);
 //
@@ -339,7 +339,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
       M *ptr = field_send.field.data();
       Long size = sizeof(M) * geo_only_local.local_volume() *
                   multiplicity;
-      qassert(!fseek(input, size * get_id_node(), SEEK_CUR));
+      Qassert(!fseek(input, size * get_id_node(), SEEK_CUR));
       timer_fread((char *)ptr, size, input);
       std::cout << "Reading FINISHED: Node Number =\t" << get_id_node()
                 << std::endl;

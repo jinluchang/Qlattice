@@ -465,7 +465,7 @@ inline void Display(const char* cname, const char* fname, const char* format,
   va_start(args, format);
   char* str;
   const int ret = vasprintf(&str, format, args);
-  qassert(ret >= 0);
+  Qassert(ret >= 0);
   display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
@@ -481,7 +481,7 @@ inline void DisplayInfo(const char* cname, const char* fname,
   va_start(args, format);
   char* str;
   const int ret = vasprintf(&str, format, args);
-  qassert(ret >= 0);
+  Qassert(ret >= 0);
   display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }

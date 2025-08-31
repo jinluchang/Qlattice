@@ -153,8 +153,8 @@ int main(int argc, char* argv[])
     int nsource = npoint + ngrid ;
 
     ////==check setup and scales
-    qassert(gr_info[1] > gr_info[0]);
-    qassert(gr_info[2] > 1);
+    Qassert(gr_info[1] > gr_info[0]);
+    Qassert(gr_info[2] > 1);
     ////===setup basic info and factors
     const int oper = 32;
     int nmass = 0;
@@ -219,8 +219,8 @@ int main(int argc, char* argv[])
           std::string dtem = std::string("operator ") + mom_info.get_dim_name();
           average.create_dat(ktem, dtem);
 
-          qassert(mom_info.dim == 6);
-          qassert(average.key_T[0] == oper);
+          Qassert(mom_info.dim == 6);
+          Qassert(average.key_T[0] == oper);
           ////nmass = average.key_T[1];
           nt = average.key_T[2];
           for(int i=0;i<3;i++){pL[i] = average.key_T[i+3];}pL[3] = nt;

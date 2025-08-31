@@ -85,8 +85,8 @@ Long lat_dim_idx(const LatDim& dim, const std::string& idx);
 
 inline Long lat_dim_idx(const LatDim& dim, const Long& idx)
 {
-  qassert((Long)dim.indices.size() <= dim.size);
-  qassert(0 <= idx and idx < dim.size);
+  Qassert((Long)dim.indices.size() <= dim.size);
+  Qassert(0 <= idx and idx < dim.size);
   return idx;
 }
 
@@ -96,7 +96,7 @@ Long lat_info_offset(const LatInfo& info, const VecS& idx)
 // VecS can be std::vector<std::string> or std::vector<Long>
 // or can be array of certain length
 {
-  qassert((Long)idx.size() <= (Long)info.size());
+  Qassert((Long)idx.size() <= (Long)info.size());
   Long ret = 0;
   for (Int i = 0; i < (Int)idx.size(); ++i) {
     const Long k = lat_dim_idx(info[i], idx[i]);
@@ -245,7 +245,7 @@ bool is_zero(const LatDataT<T>& ld)
   if (ld.res.size() > 1) {
     return false;
   }
-  qassert(ld.res.size() == 1);
+  Qassert(ld.res.size() == 1);
   return ld.res[0] == 0;
 }
 
@@ -281,7 +281,7 @@ Vector<T> lat_data_get(LatDataT<T>& ld, const VecS& idx)
 {
   const Long offset = lat_data_offset(ld, idx);
   const Long size = lat_data_size(ld, idx.size());
-  qassert(offset * size + size <= (Long)ld.res.size());
+  Qassert(offset * size + size <= (Long)ld.res.size());
   Vector<T> ret(&ld.res[offset * size], size);
   return ret;
 }
@@ -293,7 +293,7 @@ Vector<T> lat_data_get_const(const LatDataT<T>& ld, const VecS& idx)
 {
   const Long offset = lat_data_offset(ld, idx);
   const Long size = lat_data_size(ld, idx.size());
-  qassert(offset * size + size <= (Long)ld.res.size());
+  Qassert(offset * size + size <= (Long)ld.res.size());
   Vector<T> ret(&ld.res[offset * size], size);
   return ret;
 }
@@ -337,7 +337,7 @@ Int bcast(LatDataT<T>& ld, const Int root)
     return ret;
   }
   if (get_id_node() == root) {
-    qassert((Long)ld.res.size() == lat_data_size(ld));
+    Qassert((Long)ld.res.size() == lat_data_size(ld));
   } else {
     ld.info = read_lat_info(info_str);
     lat_data_alloc(ld);
@@ -355,7 +355,7 @@ void lat_data_load_sync_node(LatDataT<T>& ld, const std::string& path)
     ld.load(path);
   }
   Int ret = bcast(ld, 0);
-  qassert(ret == 0);
+  Qassert(ret == 0);
 }
 
 template <class T>
@@ -492,12 +492,12 @@ LatData operator-(const LatData& ld);
 template <class VecS>
 Vector<ComplexD> lat_data_cget(LatData& ld, const VecS& idx)
 {
-  qassert(is_lat_info_complex(ld.info));
-  qassert((Long)idx.size() < (Long)ld.info.size());
+  Qassert(is_lat_info_complex(ld.info));
+  Qassert((Long)idx.size() < (Long)ld.info.size());
   const Long offset = lat_data_offset(ld, idx);
   const Long size = lat_data_size(ld, idx.size());
-  qassert(size % 2 == 0);
-  qassert(offset * size + size <= (Long)ld.res.size());
+  Qassert(size % 2 == 0);
+  Qassert(offset * size + size <= (Long)ld.res.size());
   Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
   return ret;
 }
@@ -507,12 +507,12 @@ Vector<ComplexD> lat_data_cget_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  qassert(is_lat_info_complex(ld.info));
-  qassert((Long)idx.size() < (Long)ld.info.size());
+  Qassert(is_lat_info_complex(ld.info));
+  Qassert((Long)idx.size() < (Long)ld.info.size());
   const Long offset = lat_data_offset(ld, idx);
   const Long size = lat_data_size(ld, idx.size());
-  qassert(size % 2 == 0);
-  qassert(offset * size + size <= (Long)ld.res.size());
+  Qassert(size % 2 == 0);
+  Qassert(offset * size + size <= (Long)ld.res.size());
   Vector<ComplexD> ret((ComplexD*)&ld.res[offset * size], size / 2);
   return ret;
 }

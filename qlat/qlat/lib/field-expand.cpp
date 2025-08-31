@@ -58,8 +58,8 @@ void g_offset_id_node_from_offset(Long& g_offset, int& id_node,
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xl = geo.coordinate_from_offset(offset, multiplicity);
-  qassert(not geo.is_local(xl));
-  qassert(geo.is_on_node(xl));
+  Qassert(not geo.is_local(xl));
+  Qassert(geo.is_on_node(xl));
   const Coordinate xg =
       mod(geo.coordinate_g_from_l(xl), lattice_size_multiplier * total_site);
   const Coordinate coor_node = mod(xg, total_site) / geo.node_site;
@@ -86,7 +86,7 @@ Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo,
       xl[mu] += total_site[mu];
     }
   }
-  qassert(geo.is_local(xl));
+  Qassert(geo.is_local(xl));
   return geo.offset_from_coordinate(xl, multiplicity) + g_offset % multiplicity;
 }
 
@@ -107,8 +107,8 @@ Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo,
       xl[mu] += lattice_size_multiplier * total_site[mu];
     }
   }
-  qassert(not geo.is_local(xl));
-  qassert(geo.is_on_node(xl));
+  Qassert(not geo.is_local(xl));
+  Qassert(geo.is_on_node(xl));
   return geo.offset_from_coordinate(xl, multiplicity) + g_offset % multiplicity;
 }
 
@@ -131,7 +131,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
       Long g_offset;
       g_offset_id_node_from_offset(g_offset, id_node, offset, geo, multiplicity);
       if (id_node != get_id_node()) {
-        qassert(0 <= id_node and id_node < get_num_node());
+        Qassert(0 <= id_node and id_node < get_num_node());
         src_id_node_g_offsets[id_node].push_back(g_offset);
       }
     }
@@ -229,9 +229,9 @@ CommPlan make_comm_plan(const CommMarks& marks)
          it != src_id_node_g_offsets.end(); ++it) {
       const int src_id_node = it->first;
       const std::vector<Long>& g_offsets = it->second;
-      qassert(src_id_node == ret.recv_msg_infos[k].id_node);
-      qassert(current_buffer_idx == ret.recv_msg_infos[k].buffer_idx);
-      qassert((Long)g_offsets.size() == ret.recv_msg_infos[k].size);
+      Qassert(src_id_node == ret.recv_msg_infos[k].id_node);
+      Qassert(current_buffer_idx == ret.recv_msg_infos[k].buffer_idx);
+      Qassert((Long)g_offsets.size() == ret.recv_msg_infos[k].size);
       Long current_offset = -1;
       for (Long i = 0; i < (Long)g_offsets.size(); ++i) {
         const Long g_offset = g_offsets[i];
@@ -263,9 +263,9 @@ CommPlan make_comm_plan(const CommMarks& marks)
          it != dst_id_node_g_offsets.end(); ++it) {
       const int dst_id_node = it->first;
       const std::vector<Long>& g_offsets = it->second;
-      qassert(dst_id_node == ret.send_msg_infos[k].id_node);
-      qassert(current_buffer_idx == ret.send_msg_infos[k].buffer_idx);
-      qassert((Long)g_offsets.size() == ret.send_msg_infos[k].size);
+      Qassert(dst_id_node == ret.send_msg_infos[k].id_node);
+      Qassert(current_buffer_idx == ret.send_msg_infos[k].buffer_idx);
+      Qassert((Long)g_offsets.size() == ret.send_msg_infos[k].size);
       Long current_offset = -1;
       for (Long i = 0; i < (Long)g_offsets.size(); ++i) {
         const Long g_offset = g_offsets[i];
@@ -329,7 +329,7 @@ void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo, const In
                                  const std::string& tag)
 {
   TIMER_VERBOSE("set_marks_field_gf_hamilton");
-  qassert(multiplicity == 4);
+  Qassert(multiplicity == 4);
   marks.init();
   marks.init(geo, multiplicity);
   set_zero(marks);
@@ -357,7 +357,7 @@ void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
                               const Int multiplicity, const std::string& tag)
 {
   TIMER_VERBOSE("set_marks_field_gm_force");
-  qassert(multiplicity == 4);
+  Qassert(multiplicity == 4);
   marks.init();
   marks.init(geo, multiplicity);
   set_zero(marks);

@@ -38,7 +38,7 @@
     throw std::string(msg);                    \
   };
 
-#define qqassert(x)                                \
+#define Qassert(x)                                \
   {                                                \
     if (not(x)) {                                  \
       std::string msg = MK_ERR_MSG("qassert", #x); \
@@ -64,7 +64,7 @@
 #else
 
 #define qwarn(str) qqwarn(str)
-#define qerr(str) qqerr(str)
-#define qassert(x) qqassert(x)
+#define qerr(str)  qqerr(str)
+#define qassert(x) Qassert(x)
 
 #endif

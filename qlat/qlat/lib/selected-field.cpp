@@ -510,7 +510,7 @@ void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1)
 {
   TIMER("intersect_with(fsel,fsel1)");
   const Geometry& geo = fsel.f_rank.geo();
-  qassert(geo == fsel1.f_rank.geo());
+  Qassert(geo == fsel1.f_rank.geo());
   qthread_for(idx, fsel.indices.size(), {
     const Long index = fsel.indices[idx];
     const int64_t rank = fsel1.f_rank.get_elem(index);

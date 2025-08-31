@@ -211,7 +211,7 @@ struct API MpiDataType {
   void set_contiguous(const Int size)
   {
     const Int mpi_ret = MPI_Type_contiguous(size, MPI_BYTE, &mpi_dtype);
-    qassert(mpi_ret == 0);
+    Qassert(mpi_ret == 0);
     MPI_Type_commit(&mpi_dtype);
   }
 };
@@ -263,7 +263,7 @@ template <class M, QLAT_ENABLE_IF(is_mpi_datatype<M>())>
 Int mpi_allreduce(const Vector<M>& sendbuf, Vector<M> recvbuf, MPI_Op op,
                   MPI_Comm comm)
 {
-  qassert(sendbuf.size() == recvbuf.size());
+  Qassert(sendbuf.size() == recvbuf.size());
   MPI_Datatype datatype = get_mpi_datatype<M>();
   return mpi_allreduce(sendbuf.data(), recvbuf.data(), sendbuf.size(), datatype,
                        op, comm);
@@ -317,7 +317,7 @@ M f_glb_sum(const M& xx)
 {
   M v = xx;
   const Int code = glb_sum(v);
-  qassert(code == 0);
+  Qassert(code == 0);
   return v;
 }
 
@@ -350,7 +350,7 @@ M f_glb_max(const M& xx)
 {
   M v = xx;
   const Int code = glb_max(v);
-  qassert(code == 0);
+  Qassert(code == 0);
   return v;
 }
 
@@ -381,7 +381,7 @@ M f_glb_min(const M& xx)
 {
   M v = xx;
   const Int code = glb_min(v);
-  qassert(code == 0);
+  Qassert(code == 0);
   return v;
 }
 
@@ -489,7 +489,7 @@ M f_bcast_any(const M& xx, const bool b)
 {
   M v = xx;
   const Int code = bcast_any(v, b);
-  qassert(code == 0);
+  Qassert(code == 0);
   return v;
 }
 
@@ -650,7 +650,7 @@ Int get_data_dir(Vector<M> recv, const Vector<M>& send, const Int dir)
 {
   TIMER_FLOPS("get_data_dir");
   const Int mpi_tag = 0;
-  qassert(recv.size() == send.size());
+  Qassert(recv.size() == send.size());
   const Long size = recv.size() * sizeof(M);
   timer.flops += size;
   const Int self_ID = get_id_node();
@@ -673,7 +673,7 @@ Int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const Int dir,
 {
   TIMER_FLOPS("get_data_dir_mu");
   const Int mpi_tag = 1;
-  qassert(recv.size() == send.size());
+  Qassert(recv.size() == send.size());
   const Long size = recv.size() * sizeof(M);
   timer.flops += size;
   const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();

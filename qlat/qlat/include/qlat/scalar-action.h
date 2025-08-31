@@ -374,6 +374,7 @@ struct ScalarAction {
     TIMER("hmc_predict_field");
     const Geometry& geo = momentum_ft.geo();
     const Int multiplicity = momentum_ft.multiplicity;
+    (void) multiplicity;
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = momentum_ft.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
@@ -404,12 +405,12 @@ struct ScalarAction {
     TIMER("ScalarAction.get_polar_field");
     const Geometry geo = sf.geo();
     const Int multiplicity = sf.multiplicity;
-    qassert(multiplicity == 4);
+    Qassert(multiplicity == 4);
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<double> sf_v = sf.get_elems_const(xl);
-      qassert(sf_v.size() == 4);
+      //const Vector<double> sf_v = sf.get_elems_const(xl);
+      qassert(sf.get_elems_const(xl).size() == 4);
       Vector<double> pf_v = polar_fields.get_elems(xl);
       qassert(pf_v.size() == 4);
       double w = sf.get_elem(xl,0);

@@ -118,7 +118,7 @@ std::string basename(const std::string& fn)
     }
     return std::string(fn, cur + 1, pos_stop);
   }
-  qassert(false);
+  Qassert(false);
   return std::string();
 }
 
@@ -153,7 +153,7 @@ std::string dirname(const std::string& fn)
       return std::string(fn, 0, cur + 1);
     }
   }
-  qassert(false);
+  Qassert(false);
   return std::string();
 }
 
@@ -536,7 +536,7 @@ std::vector<std::string> qls_sync_node(const std::string& path,
     ret = qls(path, is_sort);
   }
   int bret = bcast_val(ret, 0);
-  qassert(bret == 0);
+  Qassert(bret == 0);
   return ret;
 }
 
@@ -550,7 +550,7 @@ std::vector<std::string> qls_all_sync_node(const std::string& path,
     ret = qls_all(path, is_folder_before_files, is_sort);
   }
   int bret = bcast_val(ret, 0);
-  qassert(bret == 0);
+  Qassert(bret == 0);
   return ret;
 }
 

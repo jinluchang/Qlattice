@@ -50,10 +50,10 @@ SelectedPoints<M>& operator+=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
   if (not f.initialized) {
     f = f1;
   } else {
-    qassert(f1.initialized);
-    qassert(f.multiplicity == f1.multiplicity);
-    qassert(f.n_points == f1.n_points);
-    qassert(f.points.size() == f1.points.size());
+    Qassert(f1.initialized);
+    Qassert(f.multiplicity == f1.multiplicity);
+    Qassert(f.n_points == f1.n_points);
+    Qassert(f.points.size() == f1.points.size());
     qacc_for(k, f.points.size(), { f.points[k] += f1.points[k]; });
   }
   return f;
@@ -68,10 +68,10 @@ SelectedPoints<M>& operator-=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
     set_zero(f);
     f -= f1;
   } else {
-    qassert(f1.initialized);
-    qassert(f.multiplicity == f1.multiplicity);
-    qassert(f.n_points == f1.n_points);
-    qassert(f.points.size() == f1.points.size());
+    Qassert(f1.initialized);
+    Qassert(f.multiplicity == f1.multiplicity);
+    Qassert(f.n_points == f1.n_points);
+    Qassert(f.points.size() == f1.points.size());
     qacc_for(k, f.points.size(), { f.points[k] -= f1.points[k]; });
   }
   return f;
@@ -81,7 +81,7 @@ template <class M>
 SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const double factor)
 {
   TIMER("sel_points_operator*=(F,D)");
-  qassert(f.initialized);
+  Qassert(f.initialized);
   qacc_for(k, f.points.size(), { f.points[k] *= factor; });
   return f;
 }
@@ -90,7 +90,7 @@ template <class M>
 SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const ComplexD factor)
 {
   TIMER("sel_points_operator*=(F,C)");
-  qassert(f.initialized);
+  Qassert(f.initialized);
   qacc_for(k, f.points.size(), { f.points[k] *= factor; });
   return f;
 }
@@ -100,7 +100,7 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
 {
   TIMER("only_keep_selected_points");
   const Geometry& geo = f.geo();
-  qassert(geo.is_only_local);
+  Qassert(geo.is_only_local);
   Field<M> f1;
   f1.init(geo, f.multiplicity);
   set_zero(f1);
@@ -146,8 +146,8 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
 {
   TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
-  qassert(geo.is_only_local);
-  qassert(psel.points_dist_type == PointsDistType::Global);
+  Qassert(geo.is_only_local);
+  Qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   sp.init(psel, f.multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum
@@ -171,8 +171,8 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
 {
   TIMER("set_selected_points(sp,f,psel,m)");
   const Geometry& geo = f.geo();
-  qassert(geo.is_only_local);
-  qassert(psel.points_dist_type == PointsDistType::Global);
+  Qassert(geo.is_only_local);
+  Qassert(psel.points_dist_type == PointsDistType::Global);
   const Long n_points = psel.size();
   sp.init(psel, 1);
   set_zero(sp);  // has to set_zero for glb_sum
@@ -203,21 +203,21 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
     sp = sp0;
     return;
   }
-  qassert(psel.points_dist_type == psel0.points_dist_type);
+  Qassert(psel.points_dist_type == psel0.points_dist_type);
   const Long n_points = psel.size();
   const Long n_points0 = psel0.size();
   const Int multiplicity = sp0.multiplicity;
-  qassert(sp0.n_points == n_points0);
+  Qassert(sp0.n_points == n_points0);
   if (is_keeping_data) {
     sp.init_zero(psel, multiplicity);
   } else {
     sp.init(psel, multiplicity);
     set_zero(sp);
   }
-  qassert(sp.n_points == n_points);
+  Qassert(sp.n_points == n_points);
   SelectedPoints<Long> sp_idx;
   sp_idx.init(psel, 1);
-  qassert(sp_idx.n_points == n_points);
+  Qassert(sp_idx.n_points == n_points);
   Long idx_last = -1;
   qfor(idx, n_points, {
     const Coordinate& xg = psel[idx];
@@ -255,9 +255,9 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
                         const bool is_keeping_data = true)
 {
   TIMER("set_field_selected(f,sp,geo,psel)");
-  qassert(geo.is_only_local);
+  Qassert(geo.is_only_local);
   const Long n_points = sp.n_points;
-  qassert(n_points == (Long)psel.size());
+  Qassert(n_points == (Long)psel.size());
   if (is_keeping_data) {
     f.init_zero(geo, sp.multiplicity);
   } else {
@@ -290,10 +290,10 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
     f.init(geo, multiplicity);
     set_zero(f);
   }
-  qassert(0 <= m and m < multiplicity);
+  Qassert(0 <= m and m < multiplicity);
   const Long n_points = sp.n_points;
-  qassert(n_points == (Long)psel.size());
-  qassert(sp.multiplicity == 1);
+  Qassert(n_points == (Long)psel.size());
+  Qassert(sp.multiplicity == 1);
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -311,9 +311,9 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo,
                const PointsSelection& psel)
 {
   TIMER("acc_field(f,sp,geo,psel)");
-  qassert(geo.is_only_local);
+  Qassert(geo.is_only_local);
   const Long n_points = sp.n_points;
-  qassert(n_points == (Long)psel.size());
+  Qassert(n_points == (Long)psel.size());
   f.init(geo, sp.multiplicity);
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
@@ -382,15 +382,15 @@ void set_u_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
 {
   TIMER("set_u_rand(sp,psel,rs)");
   if (not is_composed_of_real<M>()) {
-    qassert(is_composed_of_real<M>());
+    Qassert(is_composed_of_real<M>());
     return;
   }
   using Real = typename IsDataValueType<M>::ElementaryType;
   const Long n_points = sp.n_points;
   const Int multiplicity = sp.multiplicity;
   const Coordinate total_site = psel.total_site;
-  qassert(n_points == psel.size());
-  qassert(sp.points.size() == n_points * multiplicity);
+  Qassert(n_points == psel.size());
+  Qassert(sp.points.size() == n_points * multiplicity);
   qthread_for(idx, n_points, {
     const Coordinate xg = psel[idx];
     const Long gindex = index_from_coordinate(xg, total_site);
@@ -410,15 +410,15 @@ void set_g_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
 {
   TIMER("set_g_rand(sp,psel,rs,center,sigma)");
   if (not is_composed_of_real<M>()) {
-    qassert(is_composed_of_real<M>());
+    Qassert(is_composed_of_real<M>());
     return;
   }
   using Real = typename IsDataValueType<M>::ElementaryType;
   const Long n_points = sp.n_points;
   const Int multiplicity = sp.multiplicity;
   const Coordinate total_site = psel.total_site;
-  qassert(n_points == psel.size());
-  qassert(sp.points.size() == n_points * multiplicity);
+  Qassert(n_points == psel.size());
+  Qassert(sp.points.size() == n_points * multiplicity);
   qthread_for(idx, n_points, {
     const Coordinate xg = psel[idx];
     const Long gindex = index_from_coordinate(xg, total_site);
@@ -437,18 +437,18 @@ template <class M>
 void lat_data_from_selected_points(LatData& ld, const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points(sp)");
-  qassert(is_composed_of_real_d<M>());
+  Qassert(is_composed_of_real_d<M>());
   ld.init();
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   if (is_composed_of_complex_d<M>()) {
     const Long n_v = sizeof(M) / sizeof(ComplexD);
-    qassert(n_v * (Long)sizeof(ComplexD) == (Long)sizeof(M));
+    Qassert(n_v * (Long)sizeof(ComplexD) == (Long)sizeof(M));
     ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
     ld.info.push_back(lat_dim_re_im());
   } else if (is_composed_of_real_d<M>()) {
     const Long n_v = sizeof(M) / sizeof(RealD);
-    qassert(n_v * (Long)sizeof(RealD) == (Long)sizeof(M));
+    Qassert(n_v * (Long)sizeof(RealD) == (Long)sizeof(M));
     ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
@@ -461,26 +461,26 @@ template <class M>
 void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatData& ld)
 {
   TIMER("selected_points_from_lat_data(sp,ld)");
-  qassert(is_composed_of_real_d<M>());
+  Qassert(is_composed_of_real_d<M>());
   if (is_composed_of_complex_d<M>()) {
-    qassert(ld.info.size() == 4);
+    Qassert(ld.info.size() == 4);
   } else if (is_composed_of_real_d<M>()) {
-    qassert(ld.info.size() == 3);
+    Qassert(ld.info.size() == 3);
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
   }
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "m");
-  qassert(ld.info[2].name == "v");
+  Qassert(ld.info[0].name == "idx");
+  Qassert(ld.info[1].name == "m");
+  Qassert(ld.info[2].name == "v");
   const Long n_points = ld.info[0].size;
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
   if (is_composed_of_complex_d<M>()) {
-    qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(ComplexD));
-    qassert(ld.info[3].name == "re-im");
-    qassert(ld.info[3].size == 2);
+    Qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(ComplexD));
+    Qassert(ld.info[3].name == "re-im");
+    Qassert(ld.info[3].size == 2);
   } else {
-    qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealD));
+    Qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealD));
   }
   sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
@@ -491,18 +491,18 @@ void lat_data_from_selected_points(LatDataRealF& ld,
                                    const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points(sp)");
-  qassert(is_composed_of_real_f<M>());
+  Qassert(is_composed_of_real_f<M>());
   ld.init();
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   if (is_composed_of_complex_f<M>()) {
     const Long n_v = sizeof(M) / sizeof(ComplexF);
-    qassert(n_v * (Long)sizeof(ComplexF) == (Long)sizeof(M));
+    Qassert(n_v * (Long)sizeof(ComplexF) == (Long)sizeof(M));
     ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
     ld.info.push_back(lat_dim_re_im());
   } else if (is_composed_of_real_f<M>()) {
     const Long n_v = sizeof(M) / sizeof(RealF);
-    qassert(n_v * (Long)sizeof(RealF) == (Long)sizeof(M));
+    Qassert(n_v * (Long)sizeof(RealF) == (Long)sizeof(M));
     ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
@@ -516,26 +516,26 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp,
                                    const LatDataRealF& ld)
 {
   TIMER("selected_points_from_lat_data(sp,ld)");
-  qassert(is_composed_of_real_f<M>());
+  Qassert(is_composed_of_real_f<M>());
   if (is_composed_of_complex_f<M>()) {
-    qassert(ld.info.size() == 4);
+    Qassert(ld.info.size() == 4);
   } else if (is_composed_of_real_f<M>()) {
-    qassert(ld.info.size() == 3);
+    Qassert(ld.info.size() == 3);
   } else {
     qerr(fname + ssprintf(": get_type_name(M)=%s", get_type_name<M>().c_str()));
   }
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "m");
-  qassert(ld.info[2].name == "v");
+  Qassert(ld.info[0].name == "idx");
+  Qassert(ld.info[1].name == "m");
+  Qassert(ld.info[2].name == "v");
   const Long n_points = ld.info[0].size;
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
   if (is_composed_of_complex_f<M>()) {
-    qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(ComplexF));
-    qassert(ld.info[3].name == "re-im");
-    qassert(ld.info[3].size == 2);
+    Qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(ComplexF));
+    Qassert(ld.info[3].name == "re-im");
+    Qassert(ld.info[3].size == 2);
   } else {
-    qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealF));
+    Qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(RealF));
   }
   sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
@@ -545,12 +545,12 @@ template <class M>
 void lat_data_from_selected_points(LatDataLong& ld, const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points(sp)");
-  qassert(is_composed_of_long<M>());
+  Qassert(is_composed_of_long<M>());
   ld.init();
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   const Long n_v = sizeof(M) / sizeof(Long);
-  qassert(n_v * (Long)sizeof(Long) == (Long)sizeof(M));
+  Qassert(n_v * (Long)sizeof(Long) == (Long)sizeof(M));
   ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
   lat_data_alloc(ld);
   assign(get_data(ld.res), get_data(sp.points));
@@ -560,15 +560,15 @@ template <class M>
 void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataLong& ld)
 {
   TIMER("selected_points_from_lat_data(sp,ld)");
-  qassert(is_composed_of_long<M>());
-  qassert(ld.info.size() == 3);
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "m");
-  qassert(ld.info[2].name == "v");
+  Qassert(is_composed_of_long<M>());
+  Qassert(ld.info.size() == 3);
+  Qassert(ld.info[0].name == "idx");
+  Qassert(ld.info[1].name == "m");
+  Qassert(ld.info[2].name == "v");
   const Long n_points = ld.info[0].size;
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
-  qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(Long));
+  Qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(Long));
   sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
 }
@@ -577,12 +577,12 @@ template <class M>
 void lat_data_from_selected_points(LatDataInt& ld, const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points(sp)");
-  qassert(is_composed_of_int<M>());
+  Qassert(is_composed_of_int<M>());
   ld.init();
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
   const Long n_v = sizeof(M) / sizeof(Int);
-  qassert(n_v * (Long)sizeof(Int) == (Long)sizeof(M));
+  Qassert(n_v * (Long)sizeof(Int) == (Long)sizeof(M));
   ld.info.push_back(lat_dim_number("v", 0, n_v - 1));
   lat_data_alloc(ld);
   assign(get_data(ld.res), get_data(sp.points));
@@ -592,15 +592,15 @@ template <class M>
 void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataInt& ld)
 {
   TIMER("selected_points_from_lat_data(sp,ld)");
-  qassert(is_composed_of_int<M>());
-  qassert(ld.info.size() == 3);
-  qassert(ld.info[0].name == "idx");
-  qassert(ld.info[1].name == "m");
-  qassert(ld.info[2].name == "v");
+  Qassert(is_composed_of_int<M>());
+  Qassert(ld.info.size() == 3);
+  Qassert(ld.info[0].name == "idx");
+  Qassert(ld.info[1].name == "m");
+  Qassert(ld.info[2].name == "v");
   const Long n_points = ld.info[0].size;
   const Long multiplicity = ld.info[1].size;
   const Long sizof_M_vs_sizeof_v = ld.info[2].size;
-  qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(Int));
+  Qassert(sizeof(M) == sizof_M_vs_sizeof_v * sizeof(Int));
   sp.init(n_points, multiplicity, PointsDistType::Global);
   assign(get_data(sp.points), get_data(ld.res));
 }
@@ -611,7 +611,7 @@ template <class M>
 void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile)
 {
   TIMER_VERBOSE("save_selected_points(sp,qfile)");
-  qassert(sp.points_dist_type == PointsDistType::Global);
+  Qassert(sp.points_dist_type == PointsDistType::Global);
   if (get_id_node() == 0) {
     if (is_composed_of_real_d<M>()) {
       LatData ld;
@@ -630,7 +630,7 @@ void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile)
       lat_data_from_selected_points(ld, sp);
       ld.save(qfile);
     } else {
-      qassert(false);
+      Qassert(false);
     }
   }
 }
@@ -659,7 +659,7 @@ void load_selected_points(SelectedPoints<M>& sp, QFile& qfile)
       ld.load(qfile);
       selected_points_from_lat_data(sp, ld);
     } else {
-      qassert(false);
+      Qassert(false);
     }
     n_points = sp.n_points;
     multiplicity = sp.multiplicity;

@@ -7,14 +7,14 @@ void ColorMatrixConstants::check() const
 {
   for (int a = 0; a < 8; ++a) {
     ColorMatrix m = make_tr_less_anti_herm_matrix(ts[a]);
-    qassert(qnorm(m - ts[a]) < 1e-20);
+    Qassert(qnorm(m - ts[a]) < 1e-20);
   }
   for (int a = 0; a < 8; ++a) {
     array<double, 8> basis;
     set_zero(basis);
     basis[a] = 1.0;
-    qassert(qnorm(make_anti_hermitian_matrix(basis) - ts[a]) < 1e-20);
-    qassert(qnorm(basis - basis_projection_anti_hermitian_matrix(ts[a])) <
+    Qassert(qnorm(make_anti_hermitian_matrix(basis) - ts[a]) < 1e-20);
+    Qassert(qnorm(basis - basis_projection_anti_hermitian_matrix(ts[a])) <
             1e-20);
   }
   for (int a = 0; a < 8; ++a) {
@@ -25,13 +25,13 @@ void ColorMatrixConstants::check() const
       }
       if (qnorm(tr) >= 1e-20) {
         displayln_info(ssprintf("a=%d b=%d tr-dif=%s", a, b, show(tr).c_str()));
-        qassert(false);
+        Qassert(false);
       }
     }
   }
   RngState rs("ColorMatrixConstants::check");
   ColorMatrix x = make_g_rand_anti_hermitian_matrix(rs, 1.0);
-  qassert(qnorm(x - make_tr_less_anti_herm_matrix(x)) < 1e-20);
+  Qassert(qnorm(x - make_tr_less_anti_herm_matrix(x)) < 1e-20);
   AdjointColorMatrix adx = make_adjoint_representation(x, *this);
   array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
   for (int a = 0; a < 8; ++a) {
@@ -40,7 +40,7 @@ void ColorMatrixConstants::check() const
       for (int c = 0; c < 8; ++c) {
         sum += -f[c](a, b) * basis[c];
       }
-      qassert(qnorm(adx(a, b) - sum) < 1e-20);
+      Qassert(qnorm(adx(a, b) - sum) < 1e-20);
     }
   }
   const double coef = 0.2;
@@ -58,18 +58,18 @@ void ColorMatrixConstants::check() const
       displayln_info("exp_x b exp_n_x: " +
                      show(qnorm(exp_x * ts[b] * exp_n_x)));
       displayln_info("diff: " + show(qnorm(mx_b - exp_x * ts[b] * exp_n_x)));
-      qassert(false);
+      Qassert(false);
     }
   }
   const AdjointColorMatrix j_x = make_diff_exp_map((ComplexD)coef * x, *this);
   const AdjointColorMatrix j_n_x =
       make_diff_exp_map(-(ComplexD)coef * x, *this);
-  qassert(qnorm(j_x - matrix_adjoint(j_n_x)) < 1e-20);
-  qassert(qnorm(j_n_x - exp_adx * j_x) < 1e-20);
+  Qassert(qnorm(j_x - matrix_adjoint(j_n_x)) < 1e-20);
+  Qassert(qnorm(j_n_x - exp_adx * j_x) < 1e-20);
   for (int a = 0; a < 8; ++a) {
     const AdjointColorMatrix am0 = make_diff_exp_map_diff_ref(x, a, *this);
     const AdjointColorMatrix am1 = make_diff_exp_map_diff(x, a, *this);
-    qassert(qnorm(am0 - am1) < 1e-8);
+    Qassert(qnorm(am0 - am1) < 1e-8);
   }
 }
 

@@ -571,7 +571,7 @@ inline int read_vector(const char *filename, std::vector<double > &dat)
 
       //fread(buf, 1, sizec, filer);
       long sizec_read = fread(buf, 1, sizec, filer);
-      qassert(sizec_read == (long)sizec);
+      Qassert(sizec_read == (long)sizec);
       offr = offr + sizec;
     }    
 

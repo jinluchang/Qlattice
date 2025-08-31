@@ -143,13 +143,14 @@ inline Coordinate read_coordinate(const std::string& str)
   Long t = 0;
   Long cur = 0;
   char c;
-  qassert(parse_long(x, cur, str));
-  qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));
-  qassert(parse_long(y, cur, str));
-  qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));
-  qassert(parse_long(z, cur, str));
-  qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));
-  qassert(parse_long(t, cur, str));
+  bool f = false;
+  f = parse_long(x, cur, str);Qassert(f );
+  f = parse_char(c, cur, str);Qassert(f and (c == 'x' or c == ','));
+  f = parse_long(y, cur, str);Qassert(f );
+  f = parse_char(c, cur, str);Qassert(f and (c == 'x' or c == ','));
+  f = parse_long(z, cur, str);Qassert(f );
+  f = parse_char(c, cur, str);Qassert(f and (c == 'x' or c == ','));
+  f = parse_long(t, cur, str);Qassert(f );
   return Coordinate(x, y, z, t);
 }
 

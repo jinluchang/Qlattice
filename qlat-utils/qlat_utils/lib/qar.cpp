@@ -299,9 +299,9 @@ Long write_from_qfile(QFileBase& qfile_out, QFileBase& qfile_in)
   Long total_bytes = 0;
   while (not qfile_in.eof()) {
     const Long size = qfile_in.read_data(get_data(buf));
-    qassert(size <= chunk_size);
+    Qassert(size <= chunk_size);
     const Long size_out = qfile_out.write_data(get_data(get_data(buf), size));
-    qassert(size_out == size);
+    Qassert(size_out == size);
     total_bytes += size;
   }
   timer.flops += total_bytes;
@@ -1784,13 +1784,13 @@ bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo)
 std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
 {
   TIMER("read_fn(qar_v,qsinfo)");
-  qassert(not qar.null());
-  qassert(qar.mode() == QFileMode::Read);
+  Qassert(not qar.null());
+  Qassert(qar.mode() == QFileMode::Read);
   std::vector<Char> data(qsinfo.fn_len);
   const int code = qfseek(qar.qfile(), qsinfo.offset_fn, SEEK_SET);
-  qassert(code == 0);
+  Qassert(code == 0);
   if (1 != qfread(data.data(), qsinfo.fn_len, 1, qar.qfile())) {
-    qassert(false);
+    Qassert(false);
   }
   std::string fn;
   fn = std::string((char*)data.data(), qsinfo.fn_len);

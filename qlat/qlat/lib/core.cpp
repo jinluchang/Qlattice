@@ -24,7 +24,7 @@ void Geometry::init(const Coordinate& total_site)
   const GeometryNode& geon_ = get_geometry_node();
   Coordinate node_site_;
   for (int i = 0; i < DIMN; ++i) {
-    qassert(0 == total_site[i] % geon_.size_node[i]);
+    Qassert(0 == total_site[i] % geon_.size_node[i]);
     node_site_[i] = total_site[i] / geon_.size_node[i];
   }
   init(geon_, node_site_);
@@ -61,7 +61,7 @@ std::string show(const PointsDistType points_dist_type)
   } else if (points_dist_type == PointsDistType::Other) {
     return "o";
   } else {
-    qassert(false);
+    Qassert(false);
     return "";
   }
 }
@@ -79,7 +79,7 @@ PointsDistType read_points_dist_type(const std::string& points_dist_type_str)
   } else if (points_dist_type_str == "o") {
     return PointsDistType::Other;
   } else {
-    qassert(false);
+    Qassert(false);
     return PointsDistType::Global;
   }
 }
@@ -122,7 +122,7 @@ void PointsSelection::init(const Coordinate& total_site_,
 void PointsSelection::init(const Coordinate& total_site_,
                            const SelectedPoints<Coordinate>& spx)
 {
-  qassert(spx.multiplicity == 1);
+  Qassert(spx.multiplicity == 1);
   initialized = spx.initialized;
   points_dist_type = spx.points_dist_type;
   total_site = total_site_;
@@ -201,15 +201,15 @@ void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
 // `m` and `m1` have NOT be multiplied by `sizeof_m` yet.
 {
   TIMER_FLOPS("set_field_m(f,f1,m,m1,sizeof_m)");
-  qassert(f.initialized);
-  qassert(f1.initialized);
+  Qassert(f.initialized);
+  Qassert(f1.initialized);
   const Geometry geo = f.get_geo();
-  qassert(geo.is_only_local);
-  qassert(geo == f1.get_geo());
+  Qassert(geo.is_only_local);
+  Qassert(geo == f1.get_geo());
   const Int multiplicity = f.multiplicity;
   const Int multiplicity1 = f1.multiplicity;
-  qassert(multiplicity % sizeof_m == 0);
-  qassert(multiplicity1 % sizeof_m == 0);
+  Qassert(multiplicity % sizeof_m == 0);
+  Qassert(multiplicity1 % sizeof_m == 0);
   const Int m_c = m * sizeof_m;
   const Int m1_c = m1 * sizeof_m;
   const Long local_volume = geo.local_volume();
@@ -255,7 +255,7 @@ void set_psel_from_fsel(PointsSelection& psel, const FieldSelection& fsel)
 // psel.points_dist_type will be PointsDistType::Local
 {
   TIMER("set_psel_from_fsel(psel,fsel)");
-  qassert(fsel.f_rank.initialized);
+  Qassert(fsel.f_rank.initialized);
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   const Long n_points = fsel.n_elems;
@@ -277,11 +277,11 @@ void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel,
 // or PointsDistType::Global
 {
   TIMER("set_fsel_from_psel(fsel,psel,geo,rank_psel)");
-  qassert(psel.initialized);
-  qassert((psel.points_dist_type == PointsDistType::Local) or
+  Qassert(psel.initialized);
+  Qassert((psel.points_dist_type == PointsDistType::Local) or
           (psel.points_dist_type == PointsDistType::Full) or
           (psel.points_dist_type == PointsDistType::Global));
-  qassert(psel.total_site == geo.total_site());
+  Qassert(psel.total_site == geo.total_site());
   fsel.init();
   mk_field_selection(fsel.f_rank, geo, -1);
   qthread_for(idx, psel.size(), {
@@ -296,18 +296,18 @@ void set_fsel_from_psel(FieldSelection& fsel, const PointsSelection& psel,
   update_field_selection(fsel);
   if ((psel.points_dist_type == PointsDistType::Local) or
       (psel.points_dist_type == PointsDistType::Full)) {
-    qassert(fsel.n_elems == psel.size());
+    Qassert(fsel.n_elems == psel.size());
   }
 }
 
 void set_geo_from_psel(Geometry& geo, const PointsSelection& psel)
 {
   TIMER("set_geo_from_psel");
-  qassert(psel.points_dist_type == PointsDistType::Full);
+  Qassert(psel.points_dist_type == PointsDistType::Full);
   psel.set_mem_type(MemType::Cpu);
   const Coordinate total_site = psel.total_site;
   const Long n_points = psel.size();
-  qassert(n_points > 0);
+  Qassert(n_points > 0);
   Coordinate left = psel.xgs[0];
   Coordinate right = psel.xgs[n_points - 1];
   qfor(idx, n_points, {
@@ -327,11 +327,11 @@ void set_geo_from_psel(Geometry& geo, const PointsSelection& psel)
     node_site[m] = right[m] - left[m] + 1;
     size_node[m] = total_site[m] / node_site[m];
     coor_node[m] = left[m] / node_site[m];
-    qassert(size_node[m] * node_site[m] == total_site[m]);
-    qassert(coor_node[m] * node_site[m] == left[m]);
+    Qassert(size_node[m] * node_site[m] == total_site[m]);
+    Qassert(coor_node[m] * node_site[m] == left[m]);
   }
   geo.init(coor_node, size_node, node_site);
-  qassert(geo.local_volume() == n_points);
+  Qassert(geo.local_volume() == n_points);
   psel.set_mem_type(get_default_mem_type());
 }
 

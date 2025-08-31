@@ -15,8 +15,8 @@ void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
   TIMER("gf_wilson_line_no_comm")
   const Geometry& geo = wilson_line_field.geo();
   const Int multiplicity = wilson_line_field.multiplicity;
-  qassert(check_matching_geo(geo, gf_ext.geo()));
-  qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
+  Qassert(check_matching_geo(geo, gf_ext.geo()));
+  Qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);

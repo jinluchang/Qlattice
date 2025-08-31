@@ -884,16 +884,14 @@ struct API Field {
   qacc M& get_elem(const Long index, const int m)
   {
     qassert(mem_order == MemOrder::TZYXM);
-    const Geometry& geo_v = geo();
-    qassert(geo_v.is_only_local);
+    qassert(geo().is_only_local);
     qassert(0 <= m && m < multiplicity);
     return get_elem_offset(index * multiplicity + m);
   }
   qacc const M& get_elem(const Long index, const int m) const
   {
     qassert(mem_order == MemOrder::TZYXM);
-    const Geometry& geo_v = geo();
-    qassert(geo_v.is_only_local);
+    qassert(geo().is_only_local);
     qassert(0 <= m && m < multiplicity);
     return get_elem_offset(index * multiplicity + m);
   }
@@ -901,8 +899,7 @@ struct API Field {
   qacc M& get_elem(const Long index)
   {
     qassert(mem_order == MemOrder::TZYXM);
-    const Geometry& geo_v = geo();
-    qassert(geo_v.is_only_local);
+    qassert(geo().is_only_local);
     if (1 != multiplicity) {
       qerr(ssprintf("Field::get_elem: mult=%d", multiplicity));
     }
@@ -911,8 +908,7 @@ struct API Field {
   qacc const M& get_elem(const Long index) const
   {
     qassert(mem_order == MemOrder::TZYXM);
-    const Geometry& geo_v = geo();
-    qassert(geo_v.is_only_local);
+    qassert(geo().is_only_local);
     qassert(1 == multiplicity);
     return get_elem_offset(index);
   }
@@ -920,8 +916,7 @@ struct API Field {
   qacc Vector<M> get_elems(const Long index)
   {
     qassert(mem_order == MemOrder::TZYXM);
-    const Geometry& geo_v = geo();
-    qassert(geo_v.is_only_local);
+    qassert(geo().is_only_local);
     return Vector<M>(&field[index * multiplicity], multiplicity);
   }
   qacc Vector<M> get_elems_const(const Long index) const
@@ -929,8 +924,7 @@ struct API Field {
   // 改不改靠自觉
   {
     qassert(mem_order == MemOrder::TZYXM);
-    const Geometry& geo_v = geo();
-    qassert(geo_v.is_only_local);
+    qassert(geo().is_only_local);
     return Vector<M>(&field[index * multiplicity], multiplicity);
   }
 };

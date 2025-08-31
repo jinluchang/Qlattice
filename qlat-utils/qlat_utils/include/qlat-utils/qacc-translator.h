@@ -81,7 +81,7 @@
 #define qacc_GetLastError               hipGetLastError
 #define qacc_Malloc                     hipMalloc
 #define qacc_Malloc3D                   hipMalloc3D
-#define qacc_MallocManaged              hipMalloc
+#define qacc_MallocManaged              hipMallocManaged
 #define qacc_MemAdvise                  hipMemAdvise
 #define qacc_MemAdviseSetReadMostly     hipMemAdviseSetReadMostly
 #define qacc_MemAdviseUnsetReadMostly   hipMemAdviseUnsetReadMostly
