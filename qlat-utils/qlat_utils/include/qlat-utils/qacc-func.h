@@ -52,7 +52,7 @@ API inline int& qacc_num_threads()
 //  }
 //}
 
-inline void qacc_DeviceSynchronize();
+inline void qacc_DeviceSynchronize()
 {
 #ifdef __NVCC__
   gpuErr(cudaDeviceSynchronize());
