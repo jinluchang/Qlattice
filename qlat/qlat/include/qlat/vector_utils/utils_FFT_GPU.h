@@ -368,9 +368,6 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   if(GPU == true){
   #ifdef QLAT_USE_ACC
 
-  //if(data_on_cpu_only){CUDA_RT_CALL( qacc_Memcpy( fft_dat, src, datasize, qacc_MemcpyHostToDevice   ) );}
-  //else{                CUDA_RT_CALL( qacc_Memcpy( fft_dat, src, datasize, qacc_MemcpyDeviceToDevice ) );}
-
   if(single_type == 0){
     if(fftdir == true )qacc_FFT_CALL( qacc_fftExecZ2Z( plan_gpu, (qacc_fftDoubleComplex*) fft_dat, (qacc_fftDoubleComplex*) fft_dat, qacc_FFT_FORWARD  ) );
     if(fftdir == false)qacc_FFT_CALL( qacc_fftExecZ2Z( plan_gpu, (qacc_fftDoubleComplex*) fft_dat, (qacc_fftDoubleComplex*) fft_dat, qacc_FFT_INVERSE  ) );
@@ -381,9 +378,6 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   }
 
   if(dummy)qacc_barrier(dummy);
-
-  //if(data_on_cpu_only){CUDA_RT_CALL( qacc_Memcpy( res, fft_dat, datasize, qacc_MemcpyDeviceToHost   ) );}
-  //else{                CUDA_RT_CALL( qacc_Memcpy( res, fft_dat, datasize, qacc_MemcpyDeviceToDevice ) );}
 
   #endif
   }else{

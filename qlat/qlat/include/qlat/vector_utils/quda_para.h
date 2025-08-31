@@ -226,7 +226,7 @@ inline void quda_begin_internal(int mpi_layout[4], int quda_rankx = 1)
   for (int d = 0; d < 4; d++) {
     Qassert(comm_coord(d) == get_coor_node()[d]);
   }
-  gpuErrCheck(qacc_DeviceSetCacheConfig(qacc_FuncCachePreferNone ));// for smearing settings
+  qacc_ErrCheck(qacc_DeviceSetCacheConfig(qacc_FuncCachePreferNone ));// for smearing settings
 }
 
 // need to begin quda before any GPU memory allocation

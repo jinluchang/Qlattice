@@ -1277,10 +1277,10 @@ struct API SelectedField {
   void set_view(const SelectedField<M>& sf)
   {
     TIMER("SelectedField::set_view");
-    SelectedField<M> f;
+    //SelectedField<M> f;
     initialized = sf.initialized;
     n_elems = sf.n_elems;
-    multiplicity = f.multiplicity;
+    multiplicity = sf.multiplicity;
     geo.set_view(sf.geo);
     field.set_view(sf.field);
   }

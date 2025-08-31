@@ -210,40 +210,25 @@ inline void print_NONE(const char *filename)
 #endif
 
 #ifdef QLAT_USE_ACC
-// *************** FOR ERROR CHECKING *******************
-#ifndef CUDA_RT_CALL
-#define CUDA_RT_CALL( call )                                                                                           \
-    {                                                                                                                  \
-        auto status = static_cast<qacc_Error>( call );                                                                \
-        if ( status != qacc_Success )                                                                                   \
-            fprintf( stderr,                                                                                           \
-                     "ERROR: CUDA RT call \"%s\" in line %d of file %s failed "                                        \
-                     "with "                                                                                           \
-                     "%s (%d).\n",                                                                                     \
-                     #call,                                                                                            \
-                     __LINE__,                                                                                         \
-                     __FILE__,                                                                                         \
-                     qacc_GetErrorString( status ),                                                                     \
-                     status );                                                                                         \
-    }
-#endif  // CUDA_RT_CALL
 
-#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(qacc_Error code, const char *file, int line)
-{
-   if (code != qacc_Success)
-   {
-      qlat::displayln(qlat::ssprintf("qacc error: %s %s %d\n", qacc_GetErrorString(code), file, line ));
-      qassert(false);
-   }
-}
+//// *************** FOR ERROR CHECKING *******************
+#define qacc_Errchk(ans) { qacc_Err((ans), __FILE__, __LINE__); }
+//inline void gpuAssert(qacc_Error code, const char *file, int line)
+//{
+//   if (code != qacc_Success)
+//   {
+//      qlat::displayln(qlat::ssprintf("qacc error: %s %s %d\n", qacc_GetErrorString(code), file, line ));
+//      qassert(false);
+//   }
+//}
+
 #endif
 
 inline void gpuFree(void* res)
 {
   if(res!=NULL){
     #ifdef QLAT_USE_ACC
-    gpuErrchk(qacc_Free(res));
+    qacc_Errchk(qacc_Free(res));
     #else
     //delete [] res;
     free(res);
@@ -307,9 +292,9 @@ inline void abort_r(std::string stmp=std::string(""))
 
 #ifdef QLAT_USE_ACC
 #define gpuMalloc(bres, bsize, Ty, GPU) { \
-  if(int(GPU) == -1){gpuErrchk(qacc_MallocManaged(&bres, bsize*sizeof(Ty)));} \
+  if(int(GPU) == -1){qacc_Errchk(qacc_MallocManaged(&bres, bsize*sizeof(Ty)));} \
   if(int(GPU) ==  0){bres = (Ty*) aligned_alloc_no_acc(bsize * sizeof(Ty));} \
-  if(int(GPU) ==  1){gpuErrchk(qacc_Malloc(&bres, bsize*sizeof(Ty)));} }
+  if(int(GPU) ==  1){qacc_Errchk(qacc_Malloc(&bres, bsize*sizeof(Ty)));} }
 #else
 #define gpuMalloc(bres,bsize, Ty, GPU) {bres = (Ty *)aligned_alloc_no_acc(bsize*sizeof(Ty));}
 #endif

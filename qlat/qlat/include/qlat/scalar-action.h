@@ -120,6 +120,7 @@ struct ScalarAction {
     TIMER("ScalarAction.hmc_estimate_mass");
     const Geometry geo = field_ft.geo();
     const Int multiplicity = field_ft.multiplicity;
+    (void) multiplicity;
     //masses.init(geo);
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = field_ft.geo();
@@ -203,6 +204,7 @@ struct ScalarAction {
     TIMER("ScalarAction.hmc_set_sm_force_no_comm");
     const Geometry geo = sf.geo();
     const Int multiplicity = sf.multiplicity;
+    (void) multiplicity;
     //sm_force.init(geo);
     ScalarAction& sa = *this;
     qthread_for(index, geo.local_volume(), {
@@ -280,6 +282,7 @@ struct ScalarAction {
     TIMER("ScalarAction.axial_current_node_no_comm");
     const Geometry geo = sf.geo();
     const Int multiplicity = sf.multiplicity;
+    (void) multiplicity;
     // const Geometry geo_r = geo_resize(geo);
     // axial_current.init(geo_r, sf.multiplicity-1);
     qthread_for(index, geo.local_volume(), {

@@ -856,17 +856,6 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   NabV.set_zero();
 
   Complexq* NabL = NabV.data();
-  ///{TIMER("CUDA mem allocate");gpuMalloc(NabL, bufN*NabL_size, Complexq);}
-  //gpuErrchk(qacc_Malloc(&NabL, bufN*NabL_size*sizeof(Complexq)))
-  //qlat::vector<Complexq > NabL;NabL.resize(bufN*NabL_size);
-  //NabL.resize(bufN*16*nt);
-  //set_zero(NabL);
-  //#ifdef QLAT_USE_ACC
-  //qacc_cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
-  //#else
-  //qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
-  //#endif
-
   qmessage("===job start 3 \n");
   fflush_MPI();
 

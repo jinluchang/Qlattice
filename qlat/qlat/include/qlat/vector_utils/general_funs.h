@@ -369,7 +369,7 @@ inline void set_GPU(int set_gpu_id = 1){
   //Qassert(localSize == num_gpus and localRank >= 0);//same number of GPUs
   if(set_gpu_id == 1 and qlat_set_device == 1)
   {
-    gpuErrchk(qacc_SetDevice(localRank % num_gpus));
+    qacc_Errchk(qacc_SetDevice(localRank % num_gpus));
   }
   int gpu_id = -1; 
   qacc_ErrCheck(qacc_GetDevice(&gpu_id));

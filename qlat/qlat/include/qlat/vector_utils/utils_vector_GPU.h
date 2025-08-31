@@ -47,16 +47,6 @@ struct vector_gpu{
       n = n_set;
       GPU    = GPU_set;
       gpuMalloc(p, size_t(n), Ty, GPU);
-      //if(GPU){
-      //  #ifdef QLAT_USE_ACC
-      //  gpuErrchk(qacc_Malloc(&p, n*sizeof(Ty)));
-      //  #else
-      //  p = (Ty*) aligned_alloc_no_acc( n*sizeof(Ty));
-      //  #endif
-      //}
-      //else{
-      //  p = (Ty*) aligned_alloc_no_acc(n*sizeof(Ty));
-      //}
       set_zero();
     }
     ////qacc_barrier(dummy);

@@ -127,52 +127,18 @@ struct API Vector {
       Long total_size = vec.n * sizeof(N);
       p = (M*)vec.p;
       n = total_size / (Long)sizeof(M);
-#ifndef SKIP_ASSERT
-      if (n * (Long)sizeof(M) != total_size) {
-#ifndef QLAT_IN_ACC
-        qerr(
-            ssprintf("Vector::set_cast: n=%ld ; sizeof(M)=%ld ; "
-                     "total_size=%ld=%ld*%ld .",
-                     (long)n, (long)sizeof(M), (long)total_size, (long)vec.n,
-                     (long)sizeof(N)));
-#else
-        qassert(false);
-#endif
-      }
-#endif
+      qassert(n * (Long)sizeof(M) == total_size);
     }
   }
   //
   qacc const M& operator[](const Long i) const
   {
-#ifndef SKIP_ASSERT
-    if (not(0 <= i && i < n)) {
-#ifndef QLAT_IN_ACC
-      qerr(
-          ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
-                   i, n, sizeof(M)));
-#else
-      printf("%ld %ld %ld", (long)i, (long)n, (long)sizeof(M));
-      qassert(false);
-#endif
-    }
-#endif
+    qassert(0 <= i && i < n);
     return p[i];
   }
   qacc M& operator[](const Long i)
   {
-#ifndef SKIP_ASSERT
-    if (not(0 <= i && i < n)) {
-#ifndef QLAT_IN_ACC
-      qerr(
-          ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
-                   i, n, sizeof(M)));
-#else
-      printf("%ld %ld %ld", (long)i, (long)n, (long)sizeof(M));
-      qassert(false);
-#endif
-    }
-#endif
+    qassert(0 <= i && i < n);
     return p[i];
   }
   //

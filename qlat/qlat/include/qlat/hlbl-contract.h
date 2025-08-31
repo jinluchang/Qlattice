@@ -118,7 +118,7 @@ qacc ManyMagneticMoments pion_projection(const Coordinate& x,
   } else {
     return pion_projection(xz, yz, zz);
   }
-  qassert(false);
+  Qassert(false);
   return mmm;
 }
 
@@ -222,10 +222,10 @@ inline ChooseReferenceLabel choose_reference_label(const std::string& label)
   } else if (does_string_have_tag(label, "ref-center")) {
     return ChooseReferenceLabel::RefCenter;
   } else {
-    qassert(false);
+    Qassert(false);
     return ChooseReferenceLabel::RefFar;
   }
-  qassert(false);
+  Qassert(false);
   return ChooseReferenceLabel::RefFar;
 }
 
@@ -276,9 +276,9 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
                                             smod(xg_y - xg_z, total_site)),
         total_site);
   } else {
-    qassert(false);
+    Qassert(false);
   }
-  qassert(false);
+  Qassert(false);
   return CoordinateD();
 }
 

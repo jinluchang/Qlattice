@@ -15,7 +15,7 @@ void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
 {
   TIMER_VERBOSE("set_m_z_field_tag(smf_d,psel_d,xg_x,xg_y,a,tag)");
   const int multiplicity = sizeof(ManyMagneticMoments) / sizeof(RealD);
-  qassert(multiplicity * (int)sizeof(RealD) ==
+  Qassert(multiplicity * (int)sizeof(RealD) ==
           (int)sizeof(ManyMagneticMoments));
   smf_d.init(psel_d, multiplicity);
   SelectedPoints<ManyMagneticMoments> smf;
@@ -63,21 +63,21 @@ RealD set_psel_d_prob_xy(SelectedPoints<RealD>& psel_d_prob_xy,
 {
   TIMER("set_psel_d_prob_xy(psel_d_prob_xy,...)");
   psel_d_prob_xy = psel_d_prob;
-  qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
-  qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
+  Qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
+  Qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   const RealD prob_xg_y = psel_prob.get_elem(idx_xg_y);
   const Coordinate& xg_x = psel[idx_xg_x];
   const Coordinate& xg_y = psel[idx_xg_y];
   RealD prob_pair = 0.0;
   if (xg_x == xg_y) {
-    qassert(idx_xg_x == idx_xg_y);
-    qassert(prob_xg_x == prob_xg_y);
+    Qassert(idx_xg_x == idx_xg_y);
+    Qassert(prob_xg_x == prob_xg_y);
     prob_pair = prob_xg_x;
     qthread_for(idx, psel_d.size(), {
       const Coordinate xg_z = psel_d[idx];
       if (xg_z == xg_x) {
-        qassert(xg_z == xg_y);
+        Qassert(xg_z == xg_y);
         const RealD prob = psel_d_prob_xy.get_elem(idx);
         psel_d_prob_xy.get_elem(idx) = std::min(1.0, prob / prob_xg_x);
       }
@@ -104,7 +104,7 @@ void set_current_moments_from_current_par(
     const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo)
 {
   TIMER("set_current_moments_from_current_par");
-  qassert(current.multiplicity == 4);
+  Qassert(current.multiplicity == 4);
   const Coordinate total_site = geo.total_site();
   const int lsize =
       std::max(total_site[0], std::max(total_site[1], total_site[2]));
@@ -132,7 +132,7 @@ void set_current_moments_from_current_nopar(
     const SelectedPoints<RealD>& psel_d_prob_xy, const Geometry& geo)
 {
   TIMER("set_current_moments_from_current_nopar");
-  qassert(current.multiplicity == 4);
+  Qassert(current.multiplicity == 4);
   const Coordinate total_site = geo.total_site();
   const int lsize =
       std::max(total_site[0], std::max(total_site[1], total_site[2]));
@@ -258,7 +258,7 @@ void contract_four_combine(
 // x and y are global coordinates
 {
   TIMER("contract_four_combine");
-  qassert(f_loop_i_rho_sigma_lambda.multiplicity == 3 * 4 * 4 * 4);
+  Qassert(f_loop_i_rho_sigma_lambda.multiplicity == 3 * 4 * 4 * 4);
   const Coordinate total_site = geo.total_site();
   SelectedPoints<Complex> fsum;
   fsum.init(psel_d, 2);
@@ -327,8 +327,8 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
 // tags can include "ref-far", "ref-center", "ref-close"
 {
   TIMER_VERBOSE("contract_four_pair_no_glb_sum");
-  qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
-  qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
+  Qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
+  Qassert(0 <= idx_xg_y and idx_xg_y < (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const Coordinate& xg_y = psel[idx_xg_y];
   const Long total_volume = geo.total_volume();
@@ -340,9 +340,9 @@ std::vector<SlTable> contract_four_pair_no_glb_sum(
   }
   SelectedPoints<ManyMagneticMoments> smf;
   smf.set_view_cast(smf_d);
-  qassert(psel_d.size() == psel_d_prob_xy.n_points);
-  qassert(psel_d.size() == sc_xy.n_points);
-  qassert(psel_d.size() == sc_yx.n_points);
+  Qassert(psel_d.size() == psel_d_prob_xy.n_points);
+  Qassert(psel_d.size() == sc_xy.n_points);
+  Qassert(psel_d.size() == sc_yx.n_points);
   const RealD alpha_inv = 137.035999139;
   const RealD e_charge = std::sqrt(4 * qlat::PI / alpha_inv);
   const Complex coef0 = 1.0E10 * 2.0 * muon_mass * std::pow(e_charge, 6);
@@ -387,15 +387,15 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
 // points.
 {
   TIMER_VERBOSE("contract_two_plus_two_pair_no_glb_sum");
-  qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
-  qassert(psel_prob.multiplicity == 1);
-  qassert(psel_prob.n_points == (Long)psel.size());
-  qassert(psel_lps_prob.multiplicity == 1);
-  qassert(psel_lps_prob.n_points == (Long)psel_lps.size());
-  qassert(lps_hvp_x.multiplicity == 16);
-  qassert(lps_hvp_x.n_points == (Long)psel_lps.size());
-  qassert(edl_list_c.multiplicity == 3 * 4);
-  qassert(edl_list_c.n_points == (Long)psel.size());
+  Qassert(0 <= idx_xg_x and idx_xg_x < (Long)psel.size());
+  Qassert(psel_prob.multiplicity == 1);
+  Qassert(psel_prob.n_points == (Long)psel.size());
+  Qassert(psel_lps_prob.multiplicity == 1);
+  Qassert(psel_lps_prob.n_points == (Long)psel_lps.size());
+  Qassert(lps_hvp_x.multiplicity == 16);
+  Qassert(lps_hvp_x.n_points == (Long)psel_lps.size());
+  Qassert(edl_list_c.multiplicity == 3 * 4);
+  Qassert(edl_list_c.n_points == (Long)psel.size());
   const Coordinate& xg_x = psel[idx_xg_x];
   const RealD prob_xg_x = psel_prob.get_elem(idx_xg_x);
   n_points_selected = 0;
@@ -418,14 +418,14 @@ std::vector<SlTable> contract_two_plus_two_pair_no_glb_sum(
       break;
     }
   });
-  qassert(has_same_x_z);
+  Qassert(has_same_x_z);
   vector<ManyMagneticMoments> mmm_0_list(n_points);
   qfor(k, n_points, {
     const Coordinate& xg_z = psel[k];
     mmm_0_list[k] = get_muon_line_m_extra_lat(xg_x, xg_x, xg_z, total_site,
                                               muon_mass, sub_tag);
   });
-  qassert(n_labels == (long)contract_two_plus_two_pair_labels().size());
+  Qassert(n_labels == (long)contract_two_plus_two_pair_labels().size());
   std::vector<SlTable> ts(n_labels);
   for (long i = 0; i < n_labels; ++i) {
     ts[i].init(total_site);

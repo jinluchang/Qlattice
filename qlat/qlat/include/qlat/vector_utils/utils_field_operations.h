@@ -15,9 +15,9 @@ template <class Fieldy >
 void clear_fields(Fieldy& pr, int GPU = 1)
 {
   TIMER("clear_fields");
-  qassert(pr.initialized);
+  Qassert(pr.initialized);
   const Long Nd = GetFieldSize(pr);
-  qassert(Nd % sizeof(double) == 0);
+  Qassert(Nd % sizeof(double) == 0);
   const Long Ndata = Nd / sizeof(double);
   double* r0 = (double*) get_data(pr).data();
   qGPU_for(isp, Ndata, GPU, {
@@ -71,7 +71,7 @@ template <class T1, class T2 >
 void copy_fields(T1* pr, const T2* p0, const int civ, const Geometry& geor, const Geometry& geo0)
 {
   TIMER("copy_fields");
-  qassert(IsBasicTypeReal<T1>() and IsBasicTypeReal<T2>());
+  Qassert(IsBasicTypeReal<T1>() and IsBasicTypeReal<T2>());
 
   using M1 = typename IsBasicDataType<T1>::ElementaryType;
   using M2 = typename IsBasicDataType<T2>::ElementaryType;
@@ -81,7 +81,7 @@ void copy_fields(T1* pr, const T2* p0, const int civ, const Geometry& geor, cons
   //int Ndata2    = 1;
   int Ndata1 = sizeof(T1) / sizeof(M1);
   int Ndata2 = sizeof(T2) / sizeof(M2);
-  qassert(Ndata1 == Ndata2);
+  Qassert(Ndata1 == Ndata2);
   Ndata1 = Ndata1 * civ;// multiplicity
 
   qacc_for(isp, geor.local_volume(), {
@@ -97,14 +97,14 @@ void copy_fields(T1* pr, const T2* p0, const int civ, const Geometry& geor, cons
 template <class T1, class T2 >
 void copy_fields(qlat::Field<T1>& pr, const qlat::Field<T2>& p0)
 {
-  qassert(p0.initialized);
+  Qassert(p0.initialized);
   if(!pr.initialized){
     pr.init(p0.geo(), p0.multiplicity);
   }
 
   T1* res = (T1*) qlat::get_data(pr).data();
   const T2* src = (T2*) qlat::get_data(p0).data();
-  qassert(pr.multiplicity == p0.multiplicity);
+  Qassert(pr.multiplicity == p0.multiplicity);
   const int civ = pr.multiplicity;
   copy_fields<T1, T2>(res, src, civ, pr.geo(), p0.geo());
 }
@@ -144,7 +144,7 @@ void copy_fieldsG(std::vector< qlat::FieldG<T1> >& pr, const std::vector< qlat::
 template <class T1, class T2 >
 void copy_fieldsG(SelectedFieldG<T1>& pr, const SelectedFieldG<T2>& p0)
 {
-  qassert(p0.initialized);
+  Qassert(p0.initialized);
   if(!pr.initialized){
     pr.init(p0.geo(), p0.n_elems, p0.multiplicity, get_type_mem(p0.field_gpu.GPU));
   }
@@ -161,16 +161,16 @@ template <class Fieldy>
 double fields_quick_checksum(Fieldy& fs, const Long block = 128, const bool log = true)
 {
   TIMER("fields_quick_checksum");
-  qassert(fs.initialized);
+  Qassert(fs.initialized);
   //Ty --> double float ...
-  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
-  qassert(IsBasicTypeReal<D>());
+  Qassert(IsBasicTypeReal<D>());
 
   const Long Nd = GetFieldSize(fs);
-  qassert(Nd % (2 * sizeof(D)) == 0);
+  Qassert(Nd % (2 * sizeof(D)) == 0);
   const Long Ndata = Nd / ( 2 * sizeof(D));
-  qassert(Ndata % block == 0);
+  Qassert(Ndata % block == 0);
   qlat::ComplexT<D >  res = 0.0;
   void* src = (void*) qlat::get_data(fs).data();
   res = vec_norm2((qlat::ComplexT<D >*) src, (qlat::ComplexT<D >*)src, Ndata, QMGPU, block);
@@ -185,16 +185,16 @@ void fields_operationsGT(std::vector<FieldG<T1> >& pr, std::vector<FieldG<T2> >&
   const T1 fr = T1(1.0, 0.0), const T1 f0 = T1(1.0, 0.0), const T1 f1 = T1(1.0, 0.0))
 {
   TIMER_FLOPS("fields_operationsG");
-  qassert(IsTypeComplex<T1>() and IsTypeComplex<T1>() and IsTypeComplex<T1>());
+  Qassert(IsTypeComplex<T1>() and IsTypeComplex<T1>() and IsTypeComplex<T1>());
   const Long nvec = p1.size();
   Qassert(nvec > 0);Qassert(p0.size() == p1.size() and p0.size() == pr.size());
   const int civ = p0[0].multiplicity;
   const QMEM_ORDER mem_order = p0[0].mem_order;
   for(Long iv=0;iv<nvec;iv++){
     Qassert(p0[iv].initialized and p1[iv].initialized and pr[iv].initialized);
-    qassert(civ == p0[iv].multiplicity and civ == p1[iv].multiplicity and civ == pr[iv].multiplicity);
+    Qassert(civ == p0[iv].multiplicity and civ == p1[iv].multiplicity and civ == pr[iv].multiplicity);
     if(civ != 1){
-      qassert(mem_order == p0[iv].mem_order and mem_order == p1[iv].mem_order and mem_order == pr[iv].mem_order);
+      Qassert(mem_order == p0[iv].mem_order and mem_order == p1[iv].mem_order and mem_order == pr[iv].mem_order);
     }
   }
   Qassert(mem_order == QLAT_DEFAULT or mem_order == QLAT_OUTTER);
@@ -251,21 +251,21 @@ void fields_operationsGT(std::vector<FieldG<T1> >& pr, std::vector<FieldG<T2> >&
 //  const Ty f0 = Ty(1.0, 0.0), const Ty f1 = Ty(1.0, 0.0), const Ty f2 = Ty(1.0, 0.0))
 //{
 //  TIMER("fields_operations");
-//  qassert(p0.initialized);
-//  qassert(p1.initialized);
+//  Qassert(p0.initialized);
+//  Qassert(p1.initialized);
 //
 //  const Geometry& geo = p0.geo();
 //  const int civ = p0.multiplicity;
 //  if(!pr.initialized){pr.init(geo, civ);}
-//  qassert(civ == pr.multiplicity and civ == p1.multiplicity);
+//  Qassert(civ == pr.multiplicity and civ == p1.multiplicity);
 //
-//  qassert(GetBasicDataType<Fd1>::get_type_name() != std::string("unknown_type"));
-//  qassert(GetBasicDataType<Fd2>::get_type_name() != std::string("unknown_type"));
-//  qassert(GetBasicDataType<Fd3>::get_type_name() != std::string("unknown_type"));
+//  Qassert(GetBasicDataType<Fd1>::get_type_name() != std::string("unknown_type"));
+//  Qassert(GetBasicDataType<Fd2>::get_type_name() != std::string("unknown_type"));
+//  Qassert(GetBasicDataType<Fd3>::get_type_name() != std::string("unknown_type"));
 //  using D1 = typename GetBasicDataType<Fd1>::ElementaryType; 
 //  using D2 = typename GetBasicDataType<Fd2>::ElementaryType; 
 //  using D3 = typename GetBasicDataType<Fd3>::ElementaryType; 
-//  qassert(IsBasicTypeReal<D1>() and IsBasicTypeReal<D2>() and IsBasicTypeReal<D3>());
+//  Qassert(IsBasicTypeReal<D1>() and IsBasicTypeReal<D2>() and IsBasicTypeReal<D3>());
 //
 //  // geometry can be extended, but only operated on local numbers
 //  qacc_for(isp, geo.local_volume(), {
@@ -330,7 +330,7 @@ void fields_operations(FieldM<T1, civ>& pr, FieldM<T2, civ>& p0, FieldM<T3, civ>
 //template <class Fd1, class Fd2, class Fd3, class Ty>
 //void fields_operations(std::vector<Fd1 >& pr, std::vector<Fd2 >& p0, std::vector<Fd3 >& p1, const Ty f0 = Ty(1.0, 0.0), const Ty f1 = Ty(1.0, 0.0), const Ty f2 = Ty(1.0, 0.0))
 //{
-//  qassert(p0.size() == p1.size());
+//  Qassert(p0.size() == p1.size());
 //  if(p0.size() == 0){return ;}
 //  //const Geometry& geo = p0[0].geo();
 //  const int Nvec = p0.size();
@@ -343,7 +343,7 @@ void fields_operations(FieldM<T1, civ>& pr, FieldM<T2, civ>& p0, FieldM<T3, civ>
 //template <class T1, class T2, class T3, class Ty>
 //void fields_operationsG(std::vector<qlat::FieldG<T1> >& pr, std::vector<qlat::FieldG<T2> >& p0, std::vector<qlat::FieldG<T3> >& p1, const Ty f0 = Ty(1.0, 0.0), const Ty f1 = Ty(1.0, 0.0), const Ty f2 = Ty(1.0, 0.0))
 //{
-//  qassert(p0.size() == p1.size());
+//  Qassert(p0.size() == p1.size());
 //  if(p0.size() == 0){return ;}
 //  //const Geometry& geo = p0[0].geo();
 //  const unsigned int Nvec = p0.size();
@@ -401,8 +401,8 @@ template <class T1 >
 void fields_conj(T1** src, const int nvec, const int civ, const Geometry& geo)
 {
   TIMER("fields_conj");
-  qassert(IsBasicDataType<T1>::value and IsBasicDataType<T1>::is_complex);
-  qassert(IsBasicTypeReal<T1>());// real numbers
+  Qassert(IsBasicDataType<T1>::value and IsBasicDataType<T1>::is_complex);
+  Qassert(IsBasicTypeReal<T1>());// real numbers
 
   // M1 will be double / float
   using M1 = typename IsBasicDataType<T1>::ElementaryType;
@@ -425,7 +425,7 @@ void fields_conj(T1** src, const int nvec, const int civ, const Geometry& geo)
 template <class T1>
 void fields_conj(qlat::FieldG<T1>& pr)
 {
-  qassert(pr.initialized);
+  Qassert(pr.initialized);
   qlat::vector<T1* > src;src.resize(1);
   src[0] = (T1*) qlat::get_data(pr).data();
   const int civ = pr.multiplicity;
@@ -436,7 +436,7 @@ void fields_conj(qlat::FieldG<T1>& pr)
 template <class T1>
 void fields_conj(qlat::Field<T1>& pr)
 {
-  qassert(pr.initialized);
+  Qassert(pr.initialized);
   qlat::vector<T1* > src;src.resize(1);
   src[0] = (T1*) qlat::get_data(pr).data();
   const int civ = pr.multiplicity;
@@ -451,7 +451,7 @@ void fields_conj(std::vector<qlat::FieldM<T1, civ> >& pr)
   qlat::vector<T1* > src;src.resize(nvec);
   for(int si=0;si<nvec;si++)
   {
-    qassert(pr[si].initialized);
+    Qassert(pr[si].initialized);
     src[si] = (T1*) qlat::get_data(pr[si]).data();
   }
   fields_conj(src.data(), nvec, civ, pr[0].geo());
@@ -460,8 +460,8 @@ void fields_conj(std::vector<qlat::FieldM<T1, civ> >& pr)
 template <class M >
 void switch_orders(M& f, const QMEM_ORDER order_){
   if(f.mem_order == order_){return ;}
-  qassert(order_ == QLAT_DEFAULT or order_== QLAT_OUTTER);
-  qassert(f.mem_order == QLAT_DEFAULT or f.mem_order == QLAT_OUTTER);
+  Qassert(order_ == QLAT_DEFAULT or order_== QLAT_OUTTER);
+  Qassert(f.mem_order == QLAT_DEFAULT or f.mem_order == QLAT_OUTTER);
   move_index mv_idx;
   const Long Nd  = f.get_nsites();
   const Long Dim = f.multiplicity;

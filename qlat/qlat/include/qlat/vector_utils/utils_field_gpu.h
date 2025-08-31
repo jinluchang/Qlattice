@@ -407,36 +407,35 @@ struct API SelectedFieldG : SelectedField<M> {
 
 
 template <typename M >
-qacc void set_zero(FieldG<M>& f)
+inline void set_zero(FieldG<M>& f)
 {
   f.set_zero();
 }
 
 template <typename M >
-qacc void set_zero(SelectedFieldG<M>& f)
+inline void set_zero(SelectedFieldG<M>& f)
 {
   f.set_zero();
 }
 
 template <typename M >
-qacc QMEM_ORDER get_mem_order(FieldG<M>& f)
+inline QMEM_ORDER get_mem_order(FieldG<M>& f)
 {
   return f.mem_order;
 }
 
 template <typename M >
-qacc QMEM_ORDER get_mem_order(SelectedFieldG<M>& f)
+inline QMEM_ORDER get_mem_order(SelectedFieldG<M>& f)
 {
   return f.mem_order;
 }
 
 template <typename M >
-qacc QMEM_ORDER get_mem_order(Field<M>& f)
+inline QMEM_ORDER get_mem_order(Field<M>& f)
 {
   Qassert(f.initialized);
   return QLAT_DEFAULT;
 }
-
 
 //// always 12*12 --> civ for vectorization
 //// could change data orders

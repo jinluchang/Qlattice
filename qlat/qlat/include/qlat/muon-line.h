@@ -195,8 +195,8 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
   }
   const CoordinateD y1 = rotx * y;
   // displayln(ssprintf("y1=") + show(y1));
-  qassert(is_very_close(y1[2], 0));
-  qassert(y1[1] >= 0 || is_very_close(y1[1], 0));
+  Qassert(is_very_close(y1[2], 0));
+  Qassert(y1[1] >= 0 || is_very_close(y1[1], 0));
   if (is_very_close(y1[1], 0) && is_very_close(y1[0], 0)) {
     rotz = makeRotationAroundZ(0);
   } else {
@@ -205,9 +205,9 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
   }
   const CoordinateD y2 = rotz * y1;
   // displayln(ssprintf("y2=") + show(y2));
-  qassert(is_very_close(y2[2], 0));
-  qassert(is_very_close(y2[1], 0));
-  qassert(y2[0] >= 0 || is_very_close(y2[0], 0));
+  Qassert(is_very_close(y2[2], 0));
+  Qassert(is_very_close(y2[1], 0));
+  Qassert(y2[0] >= 0 || is_very_close(y2[0], 0));
   rot = rotz * rotx;
   const CoordinateD x2 = rot * x;
   if (is_very_close(x2[2], 0) && is_very_close(x2[1], 0)) {
@@ -218,8 +218,8 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
   }
   const CoordinateD x3 = xrotx * x2;
   // displayln(ssprintf("x3=") + show(x3));
-  qassert(is_very_close(x3[2], 0));
-  qassert(x3[1] >= 0 || is_very_close(x3[1], 0));
+  Qassert(is_very_close(x3[2], 0));
+  Qassert(x3[1] >= 0 || is_very_close(x3[1], 0));
   rot = xrotx * rot;
   if (is_very_close(y2[0], 0) && is_very_close(y2[1], 0) &&
       is_very_close(y2[2], 0)) {
@@ -236,9 +236,9 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
     }
     const CoordinateD x4 = rotzz * x3;
     // displayln(ssprintf("y2=") + show(y2));
-    qassert(is_very_close(x4[2], 0));
-    qassert(is_very_close(x4[0], 0));
-    qassert(x4[1] >= 0 || is_very_close(x4[1], 0));
+    Qassert(is_very_close(x4[2], 0));
+    Qassert(is_very_close(x4[0], 0));
+    Qassert(x4[1] >= 0 || is_very_close(x4[1], 0));
     rot = rotzz * rot;
   }
   return rot;
@@ -361,7 +361,7 @@ inline void paramsFromCoordinates(std::vector<RealD>& params,
   const double d = coordinate_len(y) + 1.0E-99;
   double alpha = x_len / d;
   if (alpha > 1.0) {
-    qassert(alpha < 1.0 + 1e-10);
+    Qassert(alpha < 1.0 + 1e-10);
     alpha = 1.0;
   }
   const double cos_theta = y[3] / d;
@@ -385,7 +385,7 @@ inline void paramsFromCoordinates(std::vector<RealD>& params,
     displayln_c_stdout(shows("paramsFromCoordinates ") + show(x));
     displayln_c_stdout(shows("paramsFromCoordinates ") + show(y));
     displayln_c_stdout(shows("paramsFromCoordinates ") + show(params));
-    qassert(false);
+    Qassert(false);
   }
 }
 
@@ -473,7 +473,7 @@ API inline Long& get_default_muonline_interp_idx()
 inline MuonLineInterp& getMuonLineInterp(
     const Long idx = get_default_muonline_interp_idx())
 {
-  qassert(idx >= 0);
+  Qassert(idx >= 0);
   std::vector<MuonLineInterp>& interps = get_muonline_interps();
   if (idx >= (Long)interps.size()) {
     interps.resize(idx + 1);
@@ -643,7 +643,7 @@ inline ManyMagneticMoments muonLineSymPermute(
         permuteNuRhoMu(muonLineSymRotate(x - y, -y, eps, b_interp),
                        1, 0, 2));  // z y x
   }
-  qassert(mmms.size() > 0);
+  Qassert(mmms.size() > 0);
   return averageManyMagneticMoments(mmms);
 }
 
@@ -853,10 +853,10 @@ inline bool loadMuonLineInterpolation(const std::string& path,
   interp.init();
   std::vector<std::vector<RealD>> dims;
   if (0 == get_id_node()) {
-    qassert(does_file_exist_qar(path + "/dims.txt"));
+    Qassert(does_file_exist_qar(path + "/dims.txt"));
     dims = qload_datatable(path + "/dims.txt");
     for (size_t i = 0; i < dims.size(); ++i) {
-      qassert(i == (size_t)dims[i][0]);
+      Qassert(i == (size_t)dims[i][0]);
       interp.add_dimension((int)dims[i][1], dims[i][2], dims[i][3]);
     }
   }
@@ -864,7 +864,7 @@ inline bool loadMuonLineInterpolation(const std::string& path,
   bcast(dims);
   if (0 != get_id_node()) {
     for (size_t i = 0; i < dims.size(); ++i) {
-      qassert(i == (size_t)dims[i][0]);
+      Qassert(i == (size_t)dims[i][0]);
       interp.add_dimension((int)dims[i][1], dims[i][2], dims[i][3]);
     }
   }
@@ -882,11 +882,11 @@ inline bool loadMuonLineInterpolation(const std::string& path,
   const int id_node = get_id_node();
   for (size_t i = id_node; i < (size_t)limit; i += num_node) {
     std::string fn = path + ssprintf("/data.txt.%010d", i);
-    qassert(does_file_exist_qar(fn));
+    Qassert(does_file_exist_qar(fn));
     tables[i] = qload_datatable_par(fn);
   }
   if (limit == 0 && get_id_node() == 0) {
-    qassert(does_file_exist_qar(path + "/data.txt"));
+    Qassert(does_file_exist_qar(path + "/data.txt"));
     tables.push_back(qload_datatable_par(path + "/data.txt"));
   }
   DataTable data;
@@ -1001,7 +1001,7 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
       }
     }
   }
-  qassert(rxy_list[0] == rxy0);
+  Qassert(rxy_list[0] == rxy0);
   std::vector<PointPairWeight> ret;
   for (int i = 0; i < (int)rxy_list.size(); ++i) {
     const Coordinate rxy = rxy_list[i];
@@ -1062,7 +1062,7 @@ inline void clear_muon_line_interpolations()
 inline Long get_number_of_muon_line_interpolations()
 {
   const Long size = get_muonline_interps().size();
-  qassert(size >= 1);
+  Qassert(size >= 1);
   Long count = 0;
   for (Long i = 0; i < size; ++i) {
     if (not getMuonLineInterp(i).empty()) {
@@ -1082,12 +1082,12 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
   if (0 == get_id_node() && does_file_exist_qar(path + "/dims.txt")) {
     std::vector<std::vector<RealD>> ldims =
         qload_datatable(path + "/dims.txt");
-    qassert(ldims.size() == dims.size());
+    Qassert(ldims.size() == dims.size());
     for (Long i = 0; i < (Long)ldims.size(); ++i) {
-      qassert(i == (Long)ldims[i][0]);
-      qassert(dims[i] == (int)ldims[i][1]);
-      qassert(1.0 == ldims[i][2]);
-      qassert(0.0 == ldims[i][3]);
+      Qassert(i == (Long)ldims[i][0]);
+      Qassert(dims[i] == (int)ldims[i][1]);
+      Qassert(1.0 == ldims[i][2]);
+      Qassert(0.0 == ldims[i][3]);
     }
   }
   assert(dims.size() == 5);
@@ -1125,7 +1125,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
     }
     displayln_info(ssprintf("jobs.size()=%ld", jobs.size()));
     std::vector<array<ManyMagneticMomentsCompressed, job_chunk_size>> data;
-    qassert(get_num_node() > 1);
+    Qassert(get_num_node() > 1);
     if (0 == get_id_node()) {
       const Long size = jobs.size();
       data.resize(size);
@@ -1356,7 +1356,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
   // TIMER("get_muon_line_m_extra");
   const std::vector<std::vector<RealD>>& weights =
       get_muon_line_m_extra_weights();
-  qassert(0 <= tag and tag < (int)weights.size());
+  Qassert(0 <= tag and tag < (int)weights.size());
   const std::vector<RealD> ws = weights[tag];
   const int size = ws.size();
   ManyMagneticMoments m;

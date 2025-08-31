@@ -35,8 +35,8 @@ void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
   TIMER("gf_wilson_line_no_comm")
   const Geometry& geo = wilson_line_field.geo();
   const Int multiplicity = wilson_line_field.multiplicity;
-  qassert(check_matching_geo(geo, gf_ext.geo()));
-  qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
+  Qassert(check_matching_geo(geo, gf_ext.geo()));
+  Qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
@@ -98,7 +98,7 @@ void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
 {
   TIMER_VERBOSE("set_local_current_from_props");
   const Geometry geo = geo_resize(prop1.geo());
-  qassert(geo == geo_resize(prop2.geo()));
+  Qassert(geo == geo_resize(prop2.geo()));
   const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -144,7 +144,7 @@ std::vector<int> find_next_dirs(const Coordinate& loc,
       dirs.push_back(-i - 1);
     }
   }
-  qassert(0 < dirs.size());
+  Qassert(0 < dirs.size());
   if (1 == dirs.size()) {
     return dirs;
   } else {
@@ -187,7 +187,7 @@ void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
     const Coordinate c = cs[i];
     cset.insert(c);
     const WilsonLinePathStop& ps = stops[c];
-    qassert(c == ps.x);
+    Qassert(c == ps.x);
     for (int k = 0; k < (int)ps.paths.size(); ++k) {
       const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
       cs.push_back(nc);
@@ -202,7 +202,7 @@ void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
   for (int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate& c = cs[i];
     const WilsonLinePathStop& ps = stops[c];
-    qassert(c == ps.x);
+    Qassert(c == ps.x);
     for (int k = 0; k < (int)ps.paths.size(); ++k) {
       const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
       stops[nc].num_origins += 1;
@@ -224,20 +224,20 @@ WilsonLinePathSegment make_wilson_line_path_segment(const Coordinate& target)
     ps.x = c;
     ps.paths.resize(dirs.size());
     for (int k = 0; k < (int)dirs.size(); ++k) {
-      qassert(ps.paths[k].size() == 0);
+      Qassert(ps.paths[k].size() == 0);
       int dir = dirs[k];
       ps.paths[k].push_back(dir);
       Coordinate nc = coordinate_shifts(c, dir);
-      qassert(nc == coordinate_shifts(c, ps.paths[k]));
+      Qassert(nc == coordinate_shifts(c, ps.paths[k]));
       std::vector<int> ndirs = find_next_dirs(nc, target);
       while (ndirs.size() == 1 && ret.stops.find(nc) == ret.stops.end()) {
         dir = ndirs[0];
         ps.paths[k].push_back(dir);
         nc = coordinate_shifts(nc, dir);
-        qassert(nc == coordinate_shifts(c, ps.paths[k]));
+        Qassert(nc == coordinate_shifts(c, ps.paths[k]));
         ndirs = find_next_dirs(nc, target);
       }
-      qassert(nc == coordinate_shifts(c, ps.paths[k]));
+      Qassert(nc == coordinate_shifts(c, ps.paths[k]));
       if (ret.stops.find(nc) == ret.stops.end()) {
         ret.stops[nc].x = nc;
         cs.push_back(nc);
@@ -258,11 +258,11 @@ void set_multiply_simple_wilson_line_field_partial_comm(
 {
   TIMER("set_multiply_simple_wilson_line_field_partial_comm");
   const Geometry geo = geo_resize(gf1.geo());
-  qassert(&wlf != &wlf1);
+  Qassert(&wlf != &wlf1);
   wlf.init(geo);
   for (size_t i = 0; i < path.size(); ++i) {
     const int dir = path[i];
-    qassert(-DIMN <= dir && dir < DIMN);
+    Qassert(-DIMN <= dir && dir < DIMN);
     refresh_expanded_1(wlf1);
 #pragma omp parallel for
     for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -314,10 +314,10 @@ void set_multiply_wilson_line_field_partial_comm(
     for (int i = 0; i < (int)cs.size(); ++i) {
       const Coordinate c = cs[i];
       const WilsonLinePathStop& ps = pacc.stops[c];
-      qassert(c == ps.x);
+      Qassert(c == ps.x);
       if (is_initialized(fs[i]) && ps.num_origins == 0) {
         if (c == pacc.target) {
-          qassert(ps.paths.size() == 0);
+          Qassert(ps.paths.size() == 0);
           wlf = fs[i];
           return;
         }
@@ -338,7 +338,7 @@ void set_multiply_wilson_line_field_partial_comm(
             hf.init(fs[dict[nc]]);
             hf() += wlf;
           }
-          qassert(cs[dict[nc]] == nc);
+          Qassert(cs[dict[nc]] == nc);
         }
         fs[i].init();
       }
@@ -353,7 +353,7 @@ void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf)
   const Coordinate expansion_right(0, 0, 0, 0);
   const Geometry geo1 = geo_resize(gf.geo(), expansion_left, expansion_right);
   gf1.init(geo1);
-  qassert(gf1.geo() == geo1);
+  Qassert(gf1.geo() == geo1);
   gf1 = gf;
   refresh_expanded_1(gf1);
 }

@@ -99,7 +99,7 @@ const Field<M>& operator*=(Field<M>& f, const Field<RealD>& f_factor)
         v[m] *= fac;
       }
     } else {
-      Qassert(multiplicity_f == f.multiplicity);
+      qassert(multiplicity_f == f.multiplicity);
       Vector<RealD> fac = f_factor.get_elems_const(xl);
       for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];
@@ -126,7 +126,7 @@ const Field<M>& operator*=(Field<M>& f, const Field<ComplexD>& f_factor)
         v[m] *= fac;
       }
     } else {
-      Qassert(multiplicity_f == f.multiplicity);
+      qassert(multiplicity_f == f.multiplicity);
       const Vector<ComplexD> fac = f_factor.get_elems_const(xl);
       for (int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];

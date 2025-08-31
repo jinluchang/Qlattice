@@ -95,16 +95,16 @@ void shuffle_selected_points(std::vector<SelectedPoints<M>>& sp_vec,
 // completely reset sp_vec
 {
   TIMER("shuffle_selected_points(sp_vec,sp0_vec,ssp)");
-  qassert(ssp.num_selected_points_send == (Long)sp0_vec.size());
-  qassert(f_glb_sum((Long)sp0_vec.size()) > 0);
+  Qassert(ssp.num_selected_points_send == (Long)sp0_vec.size());
+  Qassert(f_glb_sum((Long)sp0_vec.size()) > 0);
   const Int multiplicity = f_bcast_any(
       sp0_vec.size() > 0 ? sp0_vec[0].multiplicity : 0, sp0_vec.size() > 0);
   std::vector<SelectedPoints<Char>> spc_vec;
   std::vector<SelectedPoints<Char>> spc0_vec(sp0_vec.size());
   for (Int i = 0; i < (Int)sp0_vec.size(); ++i) {
-    qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_send[i]);
-    qassert(sp0_vec[i].multiplicity == multiplicity);
-    qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_send);
+    Qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_send[i]);
+    Qassert(sp0_vec[i].multiplicity == multiplicity);
+    Qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_send);
     spc0_vec[i].set_view_cast(sp0_vec[i]);
   }
   shuffle_selected_points_char(spc_vec, spc0_vec, ssp);
@@ -121,16 +121,16 @@ void shuffle_selected_points_back(std::vector<SelectedPoints<M>>& sp_vec,
 // completely reset sp_vec
 {
   TIMER("shuffle_selected_points_back(sp_vec,sp0_vec,ssp)");
-  qassert(ssp.num_selected_points_recv == (Long)sp0_vec.size());
-  qassert(f_glb_sum((Long)sp0_vec.size()) > 0);
+  Qassert(ssp.num_selected_points_recv == (Long)sp0_vec.size());
+  Qassert(f_glb_sum((Long)sp0_vec.size()) > 0);
   const Int multiplicity = f_bcast_any(
       sp0_vec.size() > 0 ? sp0_vec[0].multiplicity : 0, sp0_vec.size() > 0);
   std::vector<SelectedPoints<Char>> spc_vec;
   std::vector<SelectedPoints<Char>> spc0_vec(sp0_vec.size());
   for (Int i = 0; i < (Int)sp0_vec.size(); ++i) {
-    qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_recv[i]);
-    qassert(sp0_vec[i].multiplicity == multiplicity);
-    qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_recv);
+    Qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_recv[i]);
+    Qassert(sp0_vec[i].multiplicity == multiplicity);
+    Qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_recv);
     spc0_vec[i].set_view_cast(sp0_vec[i]);
   }
   shuffle_selected_points_back_char(spc_vec, spc0_vec, ssp);
@@ -146,8 +146,8 @@ void shuffle_selected_points(SelectedPoints<M>& sp,
                              const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_points(sp,sp0,ssp)");
-  qassert(ssp.num_selected_points_send == 1);
-  qassert(ssp.num_selected_points_recv == 1);
+  Qassert(ssp.num_selected_points_send == 1);
+  Qassert(ssp.num_selected_points_recv == 1);
   SelectedPoints<Char> spc;
   SelectedPoints<Char> spc0;
   spc0.set_view_cast(sp0);
@@ -161,8 +161,8 @@ void shuffle_selected_points_back(SelectedPoints<M>& sp,
                                   const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_points_back(sp,sp0,ssp)");
-  qassert(ssp.num_selected_points_send == 1);
-  qassert(ssp.num_selected_points_recv == 1);
+  Qassert(ssp.num_selected_points_send == 1);
+  Qassert(ssp.num_selected_points_recv == 1);
   SelectedPoints<Char> spc;
   SelectedPoints<Char> spc0;
   spc0.set_view_cast(sp0);
@@ -238,8 +238,8 @@ void shuffle_selected_field(SelectedPoints<M>& sp, const SelectedField<M>& sf0,
                             const SelectedShufflePlan& ssp)
 {
   TIMER("shuffle_selected_field(sp,sf0,ssp)");
-  qassert(ssp.num_selected_points_send == 1);
-  qassert(ssp.num_selected_points_recv == 1);
+  Qassert(ssp.num_selected_points_send == 1);
+  Qassert(ssp.num_selected_points_recv == 1);
   SelectedPoints<Char> spc;
   const SelectedPoints<Char> spc0(sf0.view_sp().view_as_char());
   shuffle_selected_points_char(spc, spc0, ssp);

@@ -92,7 +92,7 @@ static void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
                                  const double alpha)
 {
   TIMER_VERBOSE("gf_ape_smear_no_comm");
-  qassert(&gf != &gf0);
+  Qassert(&gf != &gf0);
   const Geometry geo0 = gf0.get_geo();
   const Geometry geo = geo_resize(geo0);
   gf.init(geo);
@@ -135,7 +135,7 @@ static void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
                                          const double alpha)
 {
   TIMER_VERBOSE("gf_spatial_ape_smear_no_comm");
-  qassert(&gf != &gf0);
+  Qassert(&gf != &gf0);
   const Geometry geo0 = gf0.get_geo();
   const Geometry geo = geo_resize(geo0);
   gf.init(geo);
@@ -258,10 +258,10 @@ void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
                           const double alpha3)
 {
   TIMER_VERBOSE("gf_hyp_smear_no_comm");
-  qassert(&gf != &gf0);
+  Qassert(&gf != &gf0);
   const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo(geo, gf.geo()));
+  Qassert(is_matching_geo(geo, gf.geo()));
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -390,16 +390,16 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
   box<array<ComplexD, 6>> mom_factors(mom_factors_v,
                                       MemType::Acc);  // (array<ComplexD, 8>());
   const Int t_size = geo.total_site()[3];
-  qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
-  qassert(geo.is_only_local);
-  qassert(num_field >= 0);
+  Qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
+  Qassert(geo.is_only_local);
+  Qassert(num_field >= 0);
   if (num_field == 0) {
     return;
   }
   vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
   set_zero(ffv_vec);
   qfor(id_field, num_field, {
-    qassert(ff_vec[id_field].geo.get() == geo);
+    Qassert(ff_vec[id_field].geo.get() == geo);
     ff_vec[id_field].set_mem_type(MemType::Acc);
     ffv_vec[id_field].set_view(ff_vec[id_field]);
   });
@@ -416,7 +416,7 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
   const Int chunk_num_color_vec = get_env_long_default(
       "q_prop_spatial_smear_no_comm_chunk_num_color_vec", 1);
   const Int num_chunk_color_vec = num_color_vec / chunk_num_color_vec;
-  qassert(num_chunk_color_vec * chunk_num_color_vec == num_color_vec);
+  Qassert(num_chunk_color_vec * chunk_num_color_vec == num_color_vec);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = gf_spatial.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -541,16 +541,16 @@ static void prop_spatial_smear_no_comm_cpu(std::vector<FermionField4d>& ff_vec,
   box<array<ComplexD, 6>> mom_factors(mom_factors_v,
                                       MemType::Acc);  // (array<ComplexD, 8>());
   const Int t_size = geo.total_site()[3];
-  qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
-  qassert(geo.is_only_local);
-  qassert(num_field >= 0);
+  Qassert(geo.geon.size_node == Coordinate(1, 1, 1, t_size));
+  Qassert(geo.is_only_local);
+  Qassert(num_field >= 0);
   if (num_field == 0) {
     return;
   }
   vector<FermionField4d> ffv_vec(num_field, MemType::Cpu);
   set_zero(ffv_vec);
   qfor(id_field, num_field, {
-    qassert(ff_vec[id_field].geo.get() == geo);
+    Qassert(ff_vec[id_field].geo.get() == geo);
     ff_vec[id_field].set_mem_type(MemType::Acc);
     ffv_vec[id_field].set_view(ff_vec[id_field]);
   });
@@ -664,7 +664,7 @@ void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
   } else if (q_prop_spatial_smear_no_comm == "cpu") {
     prop_spatial_smear_no_comm_cpu(ff_vec, gf, coef, step, mom);
   } else {
-    qassert(false);
+    Qassert(false);
   }
 }
 
@@ -675,8 +675,8 @@ void gf_reduce_half(GaugeField& hgf, const GaugeField& gf)
   const Geometry geo = gf.get_geo();
   Geometry hgeo;
   hgeo.init(geo.geon, geo.node_site / 2);
-  qassert(geo.node_site == hgeo.node_site * 2);
-  qassert(DIMN == gf.multiplicity);
+  Qassert(geo.node_site == hgeo.node_site * 2);
+  Qassert(DIMN == gf.multiplicity);
   hgf.init(hgeo, DIMN);
   qacc_for(hindex, hgeo.local_volume(), {
     const Geometry& hgeo = hgf.geo();
