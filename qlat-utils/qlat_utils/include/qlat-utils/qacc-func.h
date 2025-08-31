@@ -21,12 +21,10 @@ API inline int& qacc_num_threads()
 #ifdef __NVCC__
 
 #define gpuErr(ans) { gpuErrCheck((ans), __FILE__, __LINE__); }
-#endif
 
 #else
 
 #define gpuErr(ans) { ans;gpuErrCheck((qacc_GetLastError()), __FILE__, __LINE__); }
-#endif
 
 #endif
 
