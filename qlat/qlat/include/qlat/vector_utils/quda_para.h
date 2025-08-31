@@ -209,7 +209,7 @@ inline void quda_begin_internal(int mpi_layout[4], int quda_rankx = 1)
   }
 
   // comm_set_gridsize(mpi_layout);
-  //int gpu_id = -1;qacc_GetDevice(&gpu_id);
+  //int gpu_id = -1;gpuErrCheck(qacc_GetDevice(&gpu_id));
   //initQuda(gpu_id);
   initQuda(-1000);
   //initQuda(-1);

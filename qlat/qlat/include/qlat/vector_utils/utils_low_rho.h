@@ -798,7 +798,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   /////CPU memory limit, only bufN 1 or a small number
 
   ////if(modeCopy == 1){extra = 0.0;facbufN = 5;}
-  qacc_MemGetInfo(&freeM,&totalM);
+  gpuErrCheck(qacc_MemGetInfo(&freeM,&totalM));
   double freeD = freeM*pow(0.5,30);double totalD = totalM*pow(0.5,30);
   if(membufN * bufN > extra*totalD){bufN = int(extra*totalD/(membufN));if(bufN == 0)bufN = 1;}
   freeD = freeD - membufN * bufN;

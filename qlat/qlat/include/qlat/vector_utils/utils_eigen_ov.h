@@ -295,7 +295,7 @@ void eigen_ov::setup_gpufac(int nprop)
   if(enable_smearE){sm_factor = 0.5;}
 
   size_t freeM = 0;size_t totalM = 0;
-  qacc_MemGetInfo(&freeM,&totalM);
+  gpuErrCheck(qacc_MemGetInfo(&freeM,&totalM));
   //double freeD = 0;
   //freeD = freeM*pow(0.5,30);
   double totalD=0;

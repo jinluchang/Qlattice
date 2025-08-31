@@ -392,7 +392,7 @@ void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
   (void)dummy;
   #ifdef QLAT_USE_ACC
   if(GPU == 1 or GPU == -1){
-    qacc_MemsetAsync(a, 0, size*sizeof(Ty));
+    gpuErrCheck(qacc_MemsetAsync(a, 0, size*sizeof(Ty)));
     if(dummy==QTRUE){qacc_barrier(dummy);}
     return ;
   }
