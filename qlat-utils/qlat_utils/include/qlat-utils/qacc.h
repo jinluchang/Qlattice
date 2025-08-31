@@ -14,7 +14,7 @@
 #define QLAT_USE_ACC
 #endif
 
-// if QLAT_IN_ACC : code compile on device,  without formated message on error, on host with messag
+// if QLAT_IN_ACC : code compile on device,  without formated message on error, on host with message
 #ifdef __CUDA_ARCH__
 #define QLAT_IN_ACC
 #endif

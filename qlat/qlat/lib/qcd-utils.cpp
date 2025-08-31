@@ -17,7 +17,7 @@ void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
   const Int multiplicity = wilson_line_field.multiplicity;
   qassert(check_matching_geo(geo, gf_ext.geo()));
   qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
-  qacc_for(index, geo.local_volume(), {
+  qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
     v[wilson_line_field_m] = gf_wilson_line_no_comm(gf_ext, xl, path);
@@ -37,7 +37,7 @@ void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
   const Int multiplicity = wilson_line_field.multiplicity;
   qassert(check_matching_geo(geo, gf_ext.geo()));
   qassert(0 <= wilson_line_field_m and wilson_line_field_m < multiplicity);
-  qacc_for(index, geo.local_volume(), {
+  qthead_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
     v[wilson_line_field_m] = gf_wilson_line_no_comm(gf_ext, xl, path, path_n);
