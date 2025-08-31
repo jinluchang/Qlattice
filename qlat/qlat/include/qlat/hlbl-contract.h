@@ -118,7 +118,7 @@ qacc ManyMagneticMoments pion_projection(const Coordinate& x,
   } else {
     return pion_projection(xz, yz, zz);
   }
-  Qassert(false);
+  qassert(false);
   return mmm;
 }
 
@@ -276,9 +276,9 @@ qacc CoordinateD choose_reference(const Coordinate& xg_x,
                                             smod(xg_y - xg_z, total_site)),
         total_site);
   } else {
-    Qassert(false);
+    qassert(false);
   }
-  Qassert(false);
+  qassert(false);
   return CoordinateD();
 }
 

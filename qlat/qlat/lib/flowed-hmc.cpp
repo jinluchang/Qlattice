@@ -254,7 +254,7 @@ static qacc void set_xl_nu_from_mask_mu_yl_m_plaq(
     qassert(false);
   }
   //const Coordinate xg = geo.coordinate_g_from_l(xl);
-  qassert(mask == mask_from_coordinate(geo.coordinate_g_from_l(xl);, flow_type));
+  qassert(mask == mask_from_coordinate(geo.coordinate_g_from_l(xl), flow_type));
 }
 
 static qacc void set_xg_nu_from_mask_mu_yg_m_srect_nu_neq_mu(
