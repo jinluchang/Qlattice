@@ -20,11 +20,30 @@ API inline int& qacc_num_threads()
 
 #ifdef __NVCC__
 
-inline void qacc_DeviceSynchronize() { cudaDeviceSynchronize(); }
+inline void qacc_DeviceSynchronize()
+{
+  cudaDeviceSynchronize();
+  qacc_Error err = qacc_GetLastError();
+  if (qacc_Success != err) {
+    qlat::displayln(
+        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+                       qacc_GetErrorString(err), __FILE__, __LINE__));
+    qassert(false);
+  }
+}
 
 #else
 
-inline void qacc_DeviceSynchronize() { hipDeviceSynchronize(); }
+inline void qacc_DeviceSynchronize()
+{
+  qacc_Error err = hipDeviceSynchronize();
+  if (qacc_Success != err) {
+    qlat::displayln(
+        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+                       qacc_GetErrorString(err), __FILE__, __LINE__));
+    qassert(false);
+  }
+}
 
 #endif
 
@@ -88,16 +107,9 @@ __global__ void qlambda_apply(Long num, Lambda lam)
   }
 }
 
-#define qacc_barrier(dummy)                                               \
-  {                                                                       \
-    qacc_DeviceSynchronize();                                             \
-    qacc_Error err = qacc_GetLastError();                                 \
-    if (qacc_Success != err) {                                            \
-      qlat::displayln(                                                    \
-          qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.", \
-                         qacc_GetErrorString(err), __FILE__, __LINE__));  \
-      qassert(false);                                                     \
-    }                                                                     \
+#define qacc_barrier(dummy)   \
+  {                           \
+    qacc_DeviceSynchronize(); \
   }
 
 #define qacc_for(iter, num, ...) \
