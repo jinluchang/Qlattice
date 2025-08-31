@@ -56,6 +56,7 @@
 #define qacc_MemoryTypeHost             cudaMemoryTypeHost
 #define qacc_MemoryTypeDevice           cudaMemoryTypeDevice
 #define qacc_MemoryTypeManaged          cudaMemoryTypeManaged
+#define qacc_DeviceSynchronize          cudaDeviceSynchronize
 
 #else
 
@@ -107,6 +108,7 @@
 #define qacc_MemoryTypeHost             hipMemoryTypeHost
 #define qacc_MemoryTypeDevice           hipMemoryTypeDevice
 #define qacc_MemoryTypeManaged          hipMemoryTypeManaged
+#define qacc_DeviceSynchronize          hipDeviceSynchronize
 
 #endif
 
