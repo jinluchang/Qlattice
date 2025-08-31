@@ -18,16 +18,6 @@ API inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
-inline void gpuErr(qacc_Error err, const char *file, int line)
-{
-  if (qacc_Success != err) {
-    qlat::displayln(
-        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
-                       qacc_GetErrorString(err), file, line));
-    qassert(false);
-  }
-}
-
 #ifdef __NVCC__
 
 #define gpuErrCheck(ans) { gpuErr((ans), __FILE__, __LINE__); }

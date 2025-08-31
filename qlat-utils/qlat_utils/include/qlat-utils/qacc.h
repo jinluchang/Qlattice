@@ -37,6 +37,16 @@ namespace qlat
 
 #define qacc __host__ __device__ inline
 
+inline void gpuErr(qacc_Error err, const char *file, int line)
+{
+  if (qacc_Success != err) {
+    qlat::displayln(
+        qlat::ssprintf("qacc_barrier: ACC error %s from '%s' Line %d.",
+                       qacc_GetErrorString(err), file, line));
+    qassert(false);
+  }
+}
+
 #else
 
 #define qacc_no_inline
@@ -71,7 +81,7 @@ API inline MemType check_mem_type(void* ptr)
 #ifdef QLAT_USE_ACC
   bool find = false;
   qacc_PointerAttributes attr;
-  gpuErr(qacc_PointerGetAttributes(&attr, ptr));
+  gpuErrCheck(qacc_PointerGetAttributes(&attr, ptr));
   if (attr.type == qacc_MemoryTypeHost) {
     mem_type = MemType::Cpu;find = true;
   }
