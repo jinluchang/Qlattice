@@ -18,6 +18,10 @@ API inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
+#ifndef __CUDACC_EXTENDED_LAMBDA__
+#error "please compile with --expt-extended-lambda"
+#endif
+
 inline void gpuErr(qacc_Error err, const char *file, int line)
 {
   if (qacc_Success != err) {
@@ -86,10 +90,6 @@ API inline MemType check_mem_type(void* ptr)
   }
 
 #ifdef QLAT_USE_ACC
-
-#ifndef __CUDACC_EXTENDED_LAMBDA__
-#error "please compile with --expt-extended-lambda"
-#endif
 
 #define qacc_continue return
 
