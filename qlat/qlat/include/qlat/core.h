@@ -871,10 +871,11 @@ struct API Field {
     const Geometry& geo_v = geo();
     if (not geo_v.is_on_node(x)) {
 #ifndef QLAT_IN_ACC
-      displayln_c_stdout("Field::get_elems_const: x=" + show(x) +
+      qerr("Field::get_elems_const: x=" + show(x) +
                          "\ngeo=" + show(geo_v));
-#endif
+#else
       qassert(false);
+#endif
     }
     const Long offset = geo_v.offset_from_coordinate(x, multiplicity);
     return Vector<M>(&field[offset], multiplicity);

@@ -82,7 +82,7 @@ qacc ComplexD dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y
 template <int DIMN, class T>
 qacc void set_zero(MvectorT<DIMN, T>& m)
 {
-  std::memset((void*)&m, 0, sizeof(MvectorT<DIMN, T>));
+  memset((void*)&m, 0, sizeof(MvectorT<DIMN, T>));
 }
 
 template <int DIMN, class T>

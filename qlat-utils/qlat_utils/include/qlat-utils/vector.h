@@ -602,8 +602,8 @@ template <class M>
 qacc void set_zero(vector<M>& xx)
 {
   Vector<Char> vec = get_data_char(xx);
-#ifdef QLAT_IN_ACC
-  std::memset(vec.data(), 0, vec.size());
+#ifdef QLAT_USE_ACC
+  memset(vec.data(), 0, vec.size());
 #else
   set_mem(vec.data(), 0, vec.size(), xx.mem_type);
 #endif
@@ -750,7 +750,8 @@ struct API box {
     copy_mem(v.p, mem_type, &x, MemType::Cpu, sizeof(M));
   }
   //
-  M get() const
+  // may have BUG here ? somewhere called get() in qacc
+  qacc M get() const
   {
     qassert(not v.null());
 #ifdef QLAT_USE_ACC

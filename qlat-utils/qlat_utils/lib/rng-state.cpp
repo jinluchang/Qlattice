@@ -149,7 +149,7 @@ bool operator!=(const RngState& rs1, const RngState& rs2)
 
 void reset(RngState& rs)
 {
-  std::memset((void*)&rs, 0, sizeof(RngState));
+  memset((void*)&rs, 0, sizeof(RngState));
   rs.numBytes = 0;
   sha256::setInitialHash(rs.hash);
   rs.type = ULONG_MAX;

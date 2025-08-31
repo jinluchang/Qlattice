@@ -267,7 +267,7 @@ Long lat_data_offset(const LatDataT<T>& ld, const VecS& idx)
 template <class T>
 void set_zero(LatDataT<T>& ld)
 {
-  std::memset(ld.res.data(), 0, ld.res.size() * sizeof(T));
+  memset(ld.res.data(), 0, ld.res.size() * sizeof(T));
 }
 
 template <class T>

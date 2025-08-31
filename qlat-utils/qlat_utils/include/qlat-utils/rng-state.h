@@ -51,12 +51,12 @@ struct API RngState {
   RngState(const Long seed) { reset(*this, seed); }
   RngState(const RngState& rs0, const std::string& sindex)
   {
-    std::memset((void*)this, 0, sizeof(RngState));
+    memset((void*)this, 0, sizeof(RngState));
     split_rng_state(*this, rs0, sindex);
   }
   RngState(const RngState& rs0, const Long sindex)
   {
-    std::memset((void*)this, 0, sizeof(RngState));
+    memset((void*)this, 0, sizeof(RngState));
     split_rng_state(*this, rs0, sindex);
   }
   //

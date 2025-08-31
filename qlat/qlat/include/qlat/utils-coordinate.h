@@ -71,7 +71,7 @@ struct API EpsilonTensorTable {
   //
   void init()
   {
-    std::memset(this, 0, sizeof(tensor));
+    memset(this, 0, sizeof(tensor));
     setv(0, 1, 2, 3);
     setv(0, 2, 3, 1);
     setv(0, 3, 1, 2);

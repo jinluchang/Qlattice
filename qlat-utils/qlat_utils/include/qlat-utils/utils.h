@@ -281,32 +281,31 @@ template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
 qacc void set_zero(T& xx)
 {
   Vector<Char> vec = get_data_char(xx);
-  std::memset(vec.data(), 0, vec.size());
+  memset(vec.data(), 0, vec.size());
 }
 
 template <class M>
 qacc void set_zero(Vector<M> xx)
 {
   Vector<Char> vec = get_data_char(xx);
-  std::memset(vec.data(), 0, vec.size());
+  memset(vec.data(), 0, vec.size());
 }
 
 template <class M, int N>
 qacc void set_zero(Array<M, N> xx)
 {
   Vector<Char> vec = get_data_char(xx);
-  std::memset(vec.data(), 0, vec.size());
+  memset(vec.data(), 0, vec.size());
 }
 
 // -------------------
 
 qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
 {
-#ifndef QLAT_IN_ACC
   qassert(xx.size() == yy.size());
+#ifndef QLAT_USE_ACC
   std::memcpy((void*)xx.data(), (void*)yy.data(), xx.size());
 #else
-  assert(xx.size() == yy.size());
   const Long num = xx.size() / sizeof(Long);
   const Long offset = num * sizeof(Long);
   const Long rem = xx.size() - offset;
@@ -327,12 +326,11 @@ qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
 
 qacc void assign(Vector<Long> xx, const Vector<Long>& yy)
 {
-#ifndef QLAT_IN_ACC
   qassert(xx.size() == yy.size());
+#ifndef QLAT_USE_ACC
   std::memcpy((void*)xx.data(), (void*)yy.data(), sizeof(Long) * xx.size());
 #else
   const Long num = xx.size();
-  assert(num == yy.size());
   Long* px = xx.data();
   const Long* py = yy.data();
   for (Long i = 0; i < num; ++i) {

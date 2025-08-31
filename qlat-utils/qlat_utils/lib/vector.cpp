@@ -311,7 +311,7 @@ void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type)
 #ifdef QLAT_USE_ACC
   const MemType eff_mem_type = get_eff_mem_type(mem_type);
   if (eff_mem_type == MemType::Cpu) {
-    std::memset(ptr, v, size);
+    memset(ptr, v, size);
   } else {
     qacc_Error err = qacc_ErrorUnknown;
     err = qacc_Memset(ptr, v, size);
@@ -322,7 +322,7 @@ void set_mem(void* ptr, const Int v, const Long size, const MemType mem_type)
   }
 #else
   (void)mem_type;
-  std::memset(ptr, v, size);
+  memset(ptr, v, size);
 #endif
 }
 

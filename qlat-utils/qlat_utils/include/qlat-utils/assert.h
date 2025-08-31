@@ -48,6 +48,7 @@
     }                                              \
   }
 
+// compile without assert message and vector in qacc lengh checks
 #ifdef SKIP_ASSERT
 
 #define qassert(x) assert(true)

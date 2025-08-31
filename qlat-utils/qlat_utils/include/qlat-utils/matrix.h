@@ -130,7 +130,7 @@ qacc MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
 template <int DIMN, class T>
 qacc void set_zero(MatrixT<DIMN, T>& m)
 {
-  std::memset((void*)&m, 0, sizeof(MatrixT<DIMN, T>));
+  memset((void*)&m, 0, sizeof(MatrixT<DIMN, T>));
 }
 
 template <int DIMN>

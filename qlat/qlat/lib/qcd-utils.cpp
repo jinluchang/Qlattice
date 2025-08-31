@@ -4,6 +4,7 @@
 namespace qlat
 {  //
 
+// BUG ! path with std::vector using in qacc
 void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
                             const int wilson_line_field_m,
                             const GaugeField& gf_ext,

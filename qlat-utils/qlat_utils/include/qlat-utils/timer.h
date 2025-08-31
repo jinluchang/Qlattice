@@ -213,7 +213,7 @@ inline Long get_total_flops()
 #ifdef USE_PAPI
   const int n_threads = omp_get_max_threads();
   Long flopses[n_threads];
-  std::memset(flopses, 0, n_threads * sizeof(Long));
+  memset(flopses, 0, n_threads * sizeof(Long));
 #pragma omp parallel
   {
     float rtime, ptime, mflops;

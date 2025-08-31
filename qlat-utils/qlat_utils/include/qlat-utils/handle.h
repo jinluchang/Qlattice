@@ -127,6 +127,7 @@ struct API Vector {
       Long total_size = vec.n * sizeof(N);
       p = (M*)vec.p;
       n = total_size / (Long)sizeof(M);
+#ifndef SKIP_ASSERT
       if (n * (Long)sizeof(M) != total_size) {
 #ifndef QLAT_IN_ACC
         qerr(
@@ -138,11 +139,13 @@ struct API Vector {
         qassert(false);
 #endif
       }
+#endif
     }
   }
   //
   qacc const M& operator[](const Long i) const
   {
+#ifndef SKIP_ASSERT
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_IN_ACC
       qerr(
@@ -153,10 +156,12 @@ struct API Vector {
       qassert(false);
 #endif
     }
+#endif
     return p[i];
   }
   qacc M& operator[](const Long i)
   {
+#ifndef SKIP_ASSERT
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_IN_ACC
       qerr(
@@ -167,6 +172,7 @@ struct API Vector {
       qassert(false);
 #endif
     }
+#endif
     return p[i];
   }
   //
