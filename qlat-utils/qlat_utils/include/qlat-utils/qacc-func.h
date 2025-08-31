@@ -34,11 +34,11 @@ inline void gpuErr(qacc_Error err, const char *file, int line)
 
 #ifdef __NVCC__
 
-#define gpuErrCheck(ans) { gpuErr((ans), __FILE__, __LINE__); }
+#define gpuErrCheck(ans) { (ans);gpuErr(qacc_GetLastError(), __FILE__, __LINE__); }
 
 #else
 
-#define gpuErrCheck(ans) { (ans);gpuErr(qacc_GetLastError(), __FILE__, __LINE__); }
+#define gpuErrCheck(ans) { gpuErr((ans), __FILE__, __LINE__); }
 
 #endif
 
