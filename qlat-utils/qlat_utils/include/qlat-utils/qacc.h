@@ -5,7 +5,7 @@
 
 #ifndef QLAT_NO_ACC
 
-// QLAT_USE_ACC whether to use GPU or not
+// QLAT_USE_ACC : whether to use GPU or not
 #ifdef __NVCC__
 #define QLAT_USE_ACC
 #endif
@@ -14,7 +14,7 @@
 #define QLAT_USE_ACC
 #endif
 
-// if QLAT_IN_ACC, without formated message on error
+// if QLAT_IN_ACC : code compile on device,  without formated message on error, on host with messag
 #ifdef __CUDA_ARCH__
 #define QLAT_IN_ACC
 #endif

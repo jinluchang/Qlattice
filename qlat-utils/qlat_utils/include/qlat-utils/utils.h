@@ -303,7 +303,7 @@ qacc void set_zero(Array<M, N> xx)
 qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
 {
   qassert(xx.size() == yy.size());
-#ifndef QLAT_USE_ACC
+#ifndef QLAT_IN_ACC
   std::memcpy((void*)xx.data(), (void*)yy.data(), xx.size());
 #else
   const Long num = xx.size() / sizeof(Long);
@@ -327,7 +327,7 @@ qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
 qacc void assign(Vector<Long> xx, const Vector<Long>& yy)
 {
   qassert(xx.size() == yy.size());
-#ifndef QLAT_USE_ACC
+#ifndef QLAT_IN_ACC
   std::memcpy((void*)xx.data(), (void*)yy.data(), sizeof(Long) * xx.size());
 #else
   const Long num = xx.size();
