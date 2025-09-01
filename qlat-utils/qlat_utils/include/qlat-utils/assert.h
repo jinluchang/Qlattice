@@ -18,6 +18,35 @@
 
 #include <qlat-utils/qacc.h>
 
+#include <cstdio>
+
+#if defined QLAT_IN_ACC
+
+#define PRINT_ERR_MSG(tag, str)                                             \
+  std::printf("%s: %s from '%s' line %d. (IN_ACC)", (tag), (str), __FILE__, \
+              __LINE__)
+
+#define qqwarn(str)               \
+  {                               \
+    PRINT_ERR_MSG("qwarn", #str); \
+  }
+
+#define qqerr(str)               \
+  {                              \
+    PRINT_ERR_MSG("qerr", #str); \
+    assert(false);               \
+  }
+
+#define qqassert(x)                 \
+  {                                 \
+    if (not(x)) {                   \
+      PRINT_ERR_MSG("qassert", #x); \
+      assert(false);                \
+    }                               \
+  }
+
+#else
+
 #define MK_ERR_MSG(tag, str)                                            \
   qlat::ssprintf("%s: %s from '%s' line %d. (id_node=%d id_thread=%d)", \
                  qlat::get_c_str(tag), qlat::get_c_str(str), __FILE__,  \
@@ -38,7 +67,7 @@
     throw std::string(msg);                    \
   };
 
-#define Qassert(x)                                 \
+#define qqassert(x)                                \
   {                                                \
     if (not(x)) {                                  \
       std::string msg = MK_ERR_MSG("qassert", #x); \
@@ -48,6 +77,10 @@
     }                                              \
   }
 
+#endif
+
+#define Qassert(x) qqassert(x)
+
 // compile without assert message and vector in qacc lengh checks
 #ifdef SKIP_ASSERT
 
@@ -55,34 +88,9 @@
 #define qwarn(str) assert(true)
 #define qerr(str) assert(false)
 
-#elif defined QLAT_IN_ACC
-
-#define Qassert(x)                                                    \
-  {                                                                   \
-    if (not(x)) {                                                     \
-      printf("qassert: %s from '%s' line %d. (IN_ACC)", #x, __FILE__, \
-             __LINE__);                                               \
-      assert(false);                                                  \
-    }                                                                 \
-  }
-
-#define qassert(x) Qassert(x)
-
-#define qwarn(str)                                                   \
-  {                                                                  \
-    printf("qwarn: %s from '%s' line %d. (IN_ACC)", (str), __FILE__, \
-           __LINE__);                                                \
-  }
-
-#define qerr(str)                                                              \
-  {                                                                            \
-    printf("qerr: %s from '%s' line %d. (IN_ACC)", (str), __FILE__, __LINE__); \
-    assert(false);                                                             \
-  }
-
 #else
 
-#define qassert(x) Qassert(x)
+#define qassert(x) qqassert(x)
 #define qwarn(str) qqwarn(str)
 #define qerr(str) qqerr(str)
 
