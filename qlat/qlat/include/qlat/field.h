@@ -700,9 +700,9 @@ void vector_to_acc(vector<M >& res, const std::vector<M >& src)
   res.set_mem_type(src[0].get_mem_type());
 }
 
-// fr and fs must be different
 template <class M>
 void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift)
+// fr and fs must be different
 // node process local shift
 // roughly fr[(xl + shift) % node_site] == fs[xl]
 {
@@ -723,10 +723,10 @@ void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift
   })
 }
 
-// fr and fs can be the same
 template <class M>
 void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
                         const Coordinate& shift, std::vector<vector<M> >& to_bufL)
+// fr and fs can be the same
 // shift fs with 'shift'
 // roughly f[(xg + shift) % total_site] == fs[xg]
 // use the fact that the ordering does not change
@@ -780,7 +780,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
         }
         Qassert(to_bufL[0].size() >= Nd and to_bufL[0].mem_type == fs[iv].get_mem_type());
         Vector<M> v(&to_bufL[0][0], Nd);
-
+        //
         Field<M> buf;
         buf.initialized = true;
         buf.geo.set_view(geo);
@@ -934,18 +934,18 @@ template <class M>
 void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
                         const Coordinate& shift, std::vector<vector<M> >& to_bufL)
 {
-  if(sizeof(M) % sizeof(Long) == 0){
-    std::vector<Field<Long>  >  f0;
-    std::vector<Field<Long>  >  f1;
-    std::vector<vector<Long> >  tb;
+  if (sizeof(M) % sizeof(Long) == 0) {
+    std::vector<Field<Long>> f0;
+    std::vector<Field<Long>> f1;
+    std::vector<vector<Long>> tb;
     vector_field_cast(f0, fr);
     vector_field_cast(f1, fs);
     vector_field_cast(tb, to_bufL);
     field_shift_directT(f0, f1, shift, tb);
-  }else{
-    std::vector<Field< Char>  >  f0;
-    std::vector<Field< Char>  >  f1;
-    std::vector<vector<Char> >   tb;
+  } else {
+    std::vector<Field<Char>> f0;
+    std::vector<Field<Char>> f1;
+    std::vector<vector<Char>> tb;
     vector_field_cast(f0, fr);
     vector_field_cast(f1, fs);
     vector_field_cast(tb, to_bufL);
