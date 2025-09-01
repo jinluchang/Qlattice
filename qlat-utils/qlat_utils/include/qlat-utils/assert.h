@@ -38,7 +38,7 @@
     throw std::string(msg);                    \
   };
 
-#define Qassert(x)                                \
+#define Qassert(x)                                 \
   {                                                \
     if (not(x)) {                                  \
       std::string msg = MK_ERR_MSG("qassert", #x); \
@@ -57,14 +57,33 @@
 
 #elif defined QLAT_IN_ACC
 
-#define qassert(x) assert(x)
-#define qwarn(str) assert(true)
-#define qerr(str) assert(false)
+#define Qassert(x)                                                    \
+  {                                                                   \
+    if (not(x)) {                                                     \
+      printf("qassert: %s from '%s' line %d. (IN_ACC)", #x, __FILE__, \
+             __LINE__);                                               \
+      assert(false);                                                  \
+    }                                                                 \
+  }
+
+#define qassert(x) Qassert(x)
+
+#define qwarn(str)                                                   \
+  {                                                                  \
+    printf("qwarn: %s from '%s' line %d. (IN_ACC)", (str), __FILE__, \
+           __LINE__);                                                \
+  }
+
+#define qerr(str)                                                              \
+  {                                                                            \
+    printf("qerr: %s from '%s' line %d. (IN_ACC)", (str), __FILE__, __LINE__); \
+    assert(false);                                                             \
+  }
 
 #else
 
-#define qwarn(str) qqwarn(str)
-#define qerr(str)  qqerr(str)
 #define qassert(x) Qassert(x)
+#define qwarn(str) qqwarn(str)
+#define qerr(str) qqerr(str)
 
 #endif
