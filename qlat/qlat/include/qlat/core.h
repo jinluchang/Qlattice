@@ -1277,7 +1277,6 @@ struct API SelectedField {
   void set_view(const SelectedField<M>& sf)
   {
     TIMER("SelectedField::set_view");
-    //SelectedField<M> f;
     initialized = sf.initialized;
     n_elems = sf.n_elems;
     multiplicity = sf.multiplicity;
