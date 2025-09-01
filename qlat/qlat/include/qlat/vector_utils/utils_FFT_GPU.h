@@ -242,7 +242,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   if (get_fftw_plan_flag() == "measure") {
     fftw_plan_flag = FFTW_MEASURE;
   } else {
-    qassert(get_fftw_plan_flag() == "estimate");
+    Qassert(get_fftw_plan_flag() == "estimate");
     fftw_plan_flag = FFTW_ESTIMATE;
   }
 
@@ -307,9 +307,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   }////MPI verstion
   }
 
-  ////Qassert(fft_dat != NULL);
   flag_mem_set = true;
-
 }
 
 inline void FFT_Vecs::clear_plan()
@@ -973,7 +971,7 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
   using ElementaryType = typename IsBasicDataType<Ty >::ElementaryType ;
   fkey.prec = IsBasicDataType<ElementaryType >::get_type_name();
   //fkey.prec = IsBasicDataType<Ty >::get_type_name();
-  qassert(fkey.prec == "RealF" or fkey.prec == "RealD");
+  Qassert(fkey.prec == "RealF" or fkey.prec == "RealD");
 
   fkey.fft4D = fft4d;
   return fkey;
@@ -1020,7 +1018,7 @@ void fft_fieldM(std::vector<Ty* >& data, int civ, const Geometry& geo, bool fftd
   using ElementaryType = typename IsBasicDataType<Ty >::ElementaryType ;
   fkey.prec = IsBasicDataType<ElementaryType >::get_type_name();
   //fkey.prec = IsBasicDataType<Ty >::get_type_name();
-  qassert(fkey.prec == "RealF" or fkey.prec == "RealD");
+  Qassert(fkey.prec == "RealF" or fkey.prec == "RealD");
 
   fkey.fft4D = fft4d;
   ////std::vector<Ty* > data;data.resize(nvec);
@@ -1083,7 +1081,7 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   using ElementaryType = typename IsBasicDataType<M >::ElementaryType ;
   std::string prec = IsBasicDataType<ElementaryType >::get_type_name();
   int civ = multiplicity * sizeof(M)/( 2 *sizeof( ElementaryType ) );
-  qassert(prec == "RealF" or prec == "RealD");
+  Qassert(prec == "RealF" or prec == "RealD");
 
   int nfft = src.size() * civ;
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);

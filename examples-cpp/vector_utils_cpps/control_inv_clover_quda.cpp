@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
   for(int i=0;i<4;i++){sp[i] = 0;}
   if(in.paraI != "None"){
     std::vector<std::string > Li = stringtolist(in.paraI);
-    qassert(sp.size() == Li.size());
+    Qassert(sp.size() == Li.size());
     for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
   }
 

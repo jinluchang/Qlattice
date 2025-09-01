@@ -711,13 +711,13 @@ template<class Fieldy>
 inline void random_FieldG(Fieldy& a,int GPU=0, int seed = 0)
 {
   Qassert(a.initialized);
-  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
-  qassert(IsBasicTypeReal<D>());
+  Qassert(IsBasicTypeReal<D>());
 
   //const Geometry& geo = a.geo();
   const Long Nd = GetFieldSize(a);
-  qassert(Nd % (2 * sizeof(D)) == 0);
+  Qassert(Nd % (2 * sizeof(D)) == 0);
   ComplexT<D>* buf = (ComplexT<D>*) qlat::get_data(a).data();
   random_Ty(buf, Nd / (2 * sizeof(D)), GPU, seed);
 }

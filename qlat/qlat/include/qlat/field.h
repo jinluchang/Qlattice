@@ -734,6 +734,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
 // THEN periodic boundary condition shall mess up the order
 // JUST do NOT shift in such direction
 // shift it afterwards (in the final step of this function)
+// to_bufL : buffers which should have the mem_type for communication
 {
   TIMER("field_shift_direct");
   if(fs.size() == 0){fr.resize(0);return ;}
@@ -742,8 +743,12 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
   const Geometry& geo = fs[0].geo();
   Qassert(geo.is_only_local);
   const MemType mem_type = fs[0].get_mem_type();
-  const MemType QACC_EFF_MEM_TYPE = get_eff_mem_type(mem_type);
-  const MemType mem_comm = QACC_EFF_MEM_TYPE == MemType::Cpu ? MemType::Cpu : MemType::Acc;
+  const MemType mem_comm =  get_comm_mem_type(mem_type);// for buffer mem_type
+  /*
+    mem_type transfer for to_bufL currently not supported
+    May try to have another buffer to hold the memeory for communications
+  */
+  Qassert(is_same_comm_mem_type(mem_type, mem_comm));
   //
   Qassert(fr.size() == Nvec);
   const Long MULTI = fs[0].multiplicity;
@@ -779,7 +784,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
           to_bufL[0].resize(Nd, mem_comm);
         }
         Qassert(to_bufL[0].size() >= Nd);
-        // Qassert(to_bufL[0].mem_type == fs[iv].get_mem_type());
+        Qassert(is_same_comm_mem_type(to_bufL[0].mem_type, mem_comm));
         Vector<M> v(&to_bufL[0][0], Nd);
         //
         Field<M> buf;
@@ -843,9 +848,9 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
   {
     const Long Nd = iv < Nvec ? N_send : N_recv;
     if(to_bufL[iv].mem_type != mem_comm or to_bufL[iv].size() < Nd * MULTI){
-      to_bufL[iv].set_mem_type(mem_comm);
-      to_bufL[iv].resize( Nd * MULTI );
+      to_bufL[iv].resize_zero( Nd * MULTI, mem_comm);// may detach from the given buffer
     }
+    Qassert(is_same_comm_mem_type(to_bufL[0].mem_type, mem_comm));
   }
   vector<vector<M > > bufh;
   vector_to_acc(bufh, to_bufL);

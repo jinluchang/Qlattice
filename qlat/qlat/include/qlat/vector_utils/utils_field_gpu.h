@@ -19,32 +19,6 @@
     6. Unified interface for Field and SelectedField
 */
 
-/*
-  Fake vectors with pointers to only GPU
-*/
-//template <class M>
-//struct API vectorG  : vector<M> {
-//  // Avoid copy constructor when possible
-//  // (it is likely not what you think it is)
-//  // Only used in qacc macros, or if it is already a copy.
-//  //
-//  vector_gpu<M > vg;
-//
-//  vectorG(){
-//    qassert(v.p == NULL);
-//    is_copy = true;
-//    vector();
-//  }
-//
-//  set_mem(void* p, Long n)
-//  {
-//    is_copy = true;
-//    is_acc  = true
-//    v.is_copy = 
-//  } 
-//
-//}
-
 namespace qlat
 {
 
@@ -76,13 +50,13 @@ struct API FieldG : Field<M> {
     Field<M>::field.v.n = field_gpu.n;
     Field<M>::initialized = true;
     const Long Ve = Field<M>::geo().local_volume_expanded();
-    qassert(field_gpu.n % Ve == 0);
+    Qassert(field_gpu.n % Ve == 0);
     Field<M>::multiplicity = field_gpu.n / Ve;
   }
 
   // set the fields from qacc fields and qacc into is_copy
   void set_ghost_field(QMEM GPU, bool copy_data = false){
-    qassert(Field<M>::field.size() != 0);
+    Qassert(Field<M>::field.size() != 0);
     const Long n = Field<M>::field.size();
     field_gpu.resize(n, GPU);
     if(copy_data){
@@ -137,7 +111,7 @@ struct API FieldG : Field<M> {
   {
     bool need_init = false;
     if(Field<M>::initialized){
-      qassert(field_gpu.GPU == GPU);
+      Qassert(field_gpu.GPU == GPU);
       if(Field<M>::geo() != geo_ or Field<M>::multiplicity != multiplicity_ or field_gpu.GPU != GPU or mem_order_ != mem_order){
         need_init = true;
       }else{
@@ -176,7 +150,7 @@ struct API FieldG : Field<M> {
     const QMEM_ORDER order_ = QLAT_DEFAULT)
   {
     TIMER("FieldG set_pointer");
-    qassert(Nd % geo_.local_volume_expanded() == 0);
+    Qassert(Nd % geo_.local_volume_expanded() == 0);
     // clear current field
     clear_copy();
     //Field<M>::geo.set(geo_);
@@ -274,13 +248,13 @@ struct API SelectedFieldG : SelectedField<M> {
     SelectedField<M>::field.v.n = field_gpu.n;
     SelectedField<M>::initialized = true;
     const Long Ve = SelectedField<M>::n_elems;
-    qassert(field_gpu.n % Ve == 0);
+    Qassert(field_gpu.n % Ve == 0);
     SelectedField<M>::multiplicity = field_gpu.n / Ve;
   }
 
   // set the fields from qacc fields and qacc into is_copy
   void set_ghost_field(QMEM GPU, bool copy_data = false){
-    qassert(SelectedField<M>::field.size() != 0);
+    Qassert(SelectedField<M>::field.size() != 0);
     const Long n = SelectedField<M>::field.size();
     field_gpu.resize(n, GPU);
     if(copy_data){
@@ -340,7 +314,7 @@ struct API SelectedFieldG : SelectedField<M> {
   {
     bool need_init = false;
     if(SelectedField<M>::initialized){
-      qassert(field_gpu.GPU == GPU);
+      Qassert(field_gpu.GPU == GPU);
       if(SelectedField<M>::geo() != geo_ or SelectedField<M>::n_elems != n_elems_ or SelectedField<M>::multiplicity != multiplicity_ or field_gpu.GPU != GPU or mem_order_ != mem_order){
         need_init = true;
       }else{ 
@@ -387,7 +361,7 @@ struct API SelectedFieldG : SelectedField<M> {
   void set_pointer(const vector_gpu<M>& src, const Long n_elems_, const Geometry& geo_, 
     const QMEM_ORDER order_ = QLAT_DEFAULT)
   {
-    qassert(src.n % n_elems_ == 0);
+    Qassert(src.n % n_elems_ == 0);
     const Long multiplicity_ = src.n / n_elems_;
     set_pointer(src.p, n_elems_, multiplicity_, src.GPU, geo_, order_);
   }
@@ -436,37 +410,6 @@ inline QMEM_ORDER get_mem_order(Field<M>& f)
   Qassert(f.initialized);
   return QLAT_DEFAULT;
 }
-
-//// always 12*12 --> civ for vectorization
-//// could change data orders
-//template <class M>
-//struct API FieldP : Field<M> {
-//  void init() { Field<M>::init(); }
-//  void init(const Geometry& geo_) { Field<M>::init(geo_, multiplicity); }
-//  void init(const Geometry& geo_, const int multiplicity_)
-//  {
-//    qassert(multiplicity == multiplicity_);
-//    Field<M>::init(geo_, multiplicity);
-//  }
-//  void init(const Field<M>& f)
-//  {
-//    qassert(multiplicity == f.multiplicity);
-//    Field<M>::init(f);
-//  }
-//  //
-//  FieldM<M, multiplicity>() { init(); }
-//  FieldM(const FieldM<M, multiplicity>&) = default;
-//  FieldM(FieldM<M, multiplicity>&&) noexcept = default;
-//  FieldM<M, multiplicity>& operator=(FieldM<M, multiplicity>&&) noexcept =
-//      default;
-//  //
-//  FieldM<M, multiplicity>& operator=(const FieldM<M, multiplicity>& f)
-//  {
-//    qassert(f.multiplicity == multiplicity);
-//    Field<M>::operator=(f);
-//    return *this;
-//  }
-//};
 
 template <class M>
 inline void set_field(Field<M >& res, M* src, const Long n, const Geometry& geo,

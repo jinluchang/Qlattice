@@ -205,9 +205,9 @@ void get_noise_pos(Fieldy& noise, std::vector<Coordinate >& grids, std::vector<i
  const int Zn = 3, const int printS=0, const bool need_copy = false)
 {
   Qassert(noise.initialized and noise.multiplicity == 1);
-  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
-  qassert(IsBasicTypeReal<D>());
+  Qassert(IsBasicTypeReal<D>());
   using Ty = ComplexT<D>;
 
   qlat::Geometry& geo = noise.geo();
@@ -335,9 +335,9 @@ void check_noise_high(Fieldy& noise, std::vector<int >& sinkt, Long& npoints, co
   ////const Long Nvol = geo.local_volume();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
-  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
-  qassert(IsBasicTypeReal<D>());
+  Qassert(IsBasicTypeReal<D>());
   using Ty = ComplexT<D>;
 
   Ty* srcP = (Ty*) get_data(noise).data();

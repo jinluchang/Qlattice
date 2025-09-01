@@ -16,8 +16,8 @@ inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& 
   const int nmass = res.key_T[4];
   const int nt    = res.key_T[5];
   Complexq* Pres = (Complexq*) (&res.dat[off]);
-  qassert(int(Bsite.size()) == nt);
-  qassert(int(Zsite.size()) == nt);
+  Qassert(int(Bsite.size()) == nt);
+  Qassert(int(Zsite.size()) == nt);
   const int nvec = 32*nmass;
   qlat::vector<Complexq > buf_gpu;buf_gpu.resize(nvec * nt);
   qlat::set_zero(buf_gpu);
@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
     for(unsigned int i=0;i<pt_infoS.size();i++){pt_info.push_back(stringtonum(pt_infoS[i]));}
     for(unsigned int i=0;i<gr_infoS.size();i++){gr_info.push_back(stringtonum(gr_infoS[i]));}
 
-    qassert(pt_info.size() == 2);qassert(gr_info.size() == 3);
+    Qassert(pt_info.size() == 2);Qassert(gr_info.size() == 3);
     int npoint = pt_info[1] - pt_info[0];
     int ngrid  = gr_info[1] - gr_info[0];
     int nsource = npoint + ngrid ;
@@ -280,7 +280,7 @@ int main(int argc, char* argv[])
     }
     ////===
 
-    qassert(output_vecG!= std::string("NONE"));
+    Qassert(output_vecG!= std::string("NONE"));
 
     qlat::vector_gpu<Complexq > FFT_data;
     qlat::vector_gpu<Complexq > FFT_data_average;
@@ -297,8 +297,8 @@ int main(int argc, char* argv[])
 
       ///std::vector<Complexq > phases;
 
-      //qassert(gr_info[1] > gr_info[0]);
-      //qassert(gr_info[2] > 1);
+      //Qassert(gr_info[1] > gr_info[0]);
+      //Qassert(gr_info[2] > 1);
 
       int nsi = 0;
       for(int si = gr_info[0]; si < gr_info[1]; si++)
@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
         for(int gi = 0; gi < gr_info[2]; gi++)
         {
           fflush_MPI();sprintf(namei, "%09d", gi);
-          if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){qassert(false);}
+          if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){Qassert(false);}
           if(FFT_data_average.size() ==  0){FFT_data_average.resize(FFT_data.size());FFT_data_average.set_zero();}
 
           mdat.apply_src_phases(FFT_data, src_pos[gi] );
@@ -358,11 +358,11 @@ int main(int argc, char* argv[])
         //std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
         mom_info.print_info();
 
-        qassert(mom_info.dim == 6);
+        Qassert(mom_info.dim == 6);
 
         for(int gi=0;gi<2;gi++){
           fflush_MPI();sprintf(namei, "%09d", gi);
-          if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){qassert(false);}
+          if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){Qassert(false);}
 
           if(FFT_data_average.size() ==  0){FFT_data_average.resize(FFT_data.size());FFT_data_average.set_zero();}
           mdat.apply_src_phases(FFT_data, src_pos[gi] );

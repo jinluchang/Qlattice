@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     if(nt/Nt != Nmpi){
       qmessage("Number of nodes not sparsed on time. \n");
       GPUFM = 2;
-      ///qassert(false);
+      ///Qassert(false);
     }
   }
   #endif

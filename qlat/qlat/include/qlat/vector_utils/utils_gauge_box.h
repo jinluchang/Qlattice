@@ -35,7 +35,7 @@ struct API FieldBoxT {
   FieldBoxT()
   {
     // TIMER("FieldBoxT::FieldBoxT()")
-    qassert(v.p == NULL);
+    Qassert(v.p == NULL);
     //type = Su3::u9;
     Multiplicity = 9;
   }
@@ -86,8 +86,6 @@ struct API FieldBoxT {
 
   FieldBoxT(const FieldBoxT<Ty, type>& vp)
   {
-    // TIMER("FieldBoxT::FieldBoxT(&)")
-    //qassert(x.type == type);
     v    = vp.v;
     geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
@@ -95,9 +93,6 @@ struct API FieldBoxT {
 
   FieldBoxT(FieldBoxT<Ty, type>&& vp) noexcept
   {
-    // TIMER("FieldBoxT::FieldBoxT(&&)")
-    //type = vp.type;
-    //qassert(x.type == type);
     v    = vp.v;
     geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
@@ -132,11 +127,6 @@ struct API FieldBoxT {
   //
   qacc void swap(FieldBoxT<Ty, type>& x)
   {
-    //qassert(x.type == type);
-    //Su3 tb = x.type;
-    //x.type = type;
-    //type = tb;
-
     Handle<Ty > t = v;
     v = x.v;
     x.v = t;
@@ -159,10 +149,6 @@ struct API FieldBoxT {
   //
   FieldBoxT<Ty, type >& operator=(const FieldBoxT<Ty, type >& vp)
   {
-    // TIMER("FieldBoxT::operator=(&)");
-    //clear();
-    //type = vp.type;
-    //qassert(x.type == type);
     v    = vp.v;
     geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
@@ -170,9 +156,6 @@ struct API FieldBoxT {
   }
   FieldBoxT<Ty, type>& operator=(FieldBoxT<Ty, type>&& vp) noexcept
   {
-    // TIMER("FieldBoxT::operator=(&&)");
-    //type = vp.type;
-    //qassert(x.type == type);
     v    = vp.v;
     geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;

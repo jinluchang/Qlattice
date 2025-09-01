@@ -18,8 +18,8 @@ inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& 
   //const int nmass = res.key_T[4];
   //const int nt    = res.key_T[5];
   //Complexq* Pres = (Complexq*) (&res.dat[off]);
-  qassert(int(Bsite.size()) == nt);
-  qassert(int(Zsite.size()) == nt);
+  Qassert(int(Bsite.size()) == nt);
+  Qassert(int(Zsite.size()) == nt);
   //const int nvec = 1;
   //const int nvec = 32*nmass;
   qlat::vector<Complexq > buf_gpu;buf_gpu.resize(nread * nt);
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
   
   if(in.paraIA != "NONE"){
     info_tmp = stringtolist(in.paraIA);
-    qassert(long(info_tmp.size()) == in.nsource);
+    Qassert(long(info_tmp.size()) == in.nsource);
   }
 
   char key_T[1000], dimN[1000];
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
     if(get_file_size_MPI(name_info.c_str()) > 0){
       with_info = 1;
       corr_info.read_dat(name_info.c_str());
-      qassert(corr_info.dim == 6);
+      Qassert(corr_info.dim == 6);
     }
 
     // continue if info not found
@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
       check_nan_GPU(FFT_data);
       if(do_fft == 1){
         fft_local_to_global(FFT_data_global, FFT_data, mdat, mom_shiftp);
-        qassert(long(FFT_data_global.size()) == long(nread) * mvol);
+        Qassert(long(FFT_data_global.size()) == long(nread) * mvol);
         average.write_corr(FFT_data_global.data(), FFT_data_global.size(), 3);
       }
       if(do_corr == 1){

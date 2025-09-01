@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     /////set_left_expanded_gauge_field(gfD, gf);
   }
   /////========load links
-  int nmass_group = in.nmass;qassert(nmass_group > 0);
+  int nmass_group = in.nmass;Qassert(nmass_group > 0);
   if(mass_split != -1 and mass_split < nmass_group){
     nmass_group = mass_split;
   }

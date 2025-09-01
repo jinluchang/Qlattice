@@ -206,9 +206,9 @@ void copy_bsize_prop_to_FieldP(std::vector<Fieldy >& res, Ty* src, const LInt nV
   move_index mv_civ;
 
   //Ty --> double float ...
-  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using Dy = typename GetBasicDataType<Fieldy>::ElementaryType;
-  qassert(IsBasicTypeReal<Dy>());
+  Qassert(IsBasicTypeReal<Dy>());
   if(c_add != 0){Qassert(rotate == false);}
 
   const int  NTt  = fd.Nv[3];

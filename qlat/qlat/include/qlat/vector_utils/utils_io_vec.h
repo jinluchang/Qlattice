@@ -1498,9 +1498,9 @@ void save_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty,1>> &noi){
 template<class Fieldy>
 void load_gwu_noiP(const char *filename, Fieldy& noi,bool read=true, bool GPU = false){
   TIMER("load_gwu_noi");
-  qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
+  Qassert(GetBasicDataType<Fieldy>::get_type_name() != std::string("unknown_type"));
   using D = typename GetBasicDataType<Fieldy>::ElementaryType;
-  qassert(IsBasicTypeReal<D>());
+  Qassert(IsBasicTypeReal<D>());
   using Ty = ComplexT<D >;
 
   if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ) and IsTypeComplex<Ty>() == 0){abort_r("Cannot understand the input format! \n");}

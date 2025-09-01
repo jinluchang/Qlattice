@@ -172,6 +172,25 @@ inline MemType get_eff_mem_type(const MemType mem_type)
   return mem_type;
 }
 
+// assume always have Acc memeory to compare even on CPU
+inline MemType get_comm_mem_type(const MemType mem_type)
+{
+  if(!get_mem_type_comm_use_acc()){return MemType::Cpu;}
+  else{
+    MemType b = get_eff_mem_type(mem_type);
+    if(b == MemType::Cpu){return MemType::Cpu;}
+    else{return MemType::Acc;}
+  }
+}
+
+inline bool is_same_comm_mem_type(const MemType t1, const MemType t2)
+{
+  if(get_comm_mem_type(t1) == get_comm_mem_type(t2)){
+    return true;
+  }
+  return false;
+}
+
 inline Long get_chunked_mem_size(const Long chunk_size, const Long min_size)
 {
   const Long n_elem = 1 + (min_size - 1) / chunk_size;
@@ -479,6 +498,7 @@ struct API vector {
     }
   }
   //
+  void resize_zero(const Long size){ resize_zero(size, mem_type); }
   void resize_zero(const Long size, const MemType mem_type_)
   {
     resize(0);

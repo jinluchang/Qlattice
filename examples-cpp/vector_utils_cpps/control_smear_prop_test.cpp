@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     std::vector<std::string > Li = stringtolist(in.paraI);
     qmessage("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
     fflush_MPI();
-    qassert(Li.size()%3 == 0);
+    Qassert(Li.size()%3 == 0);
 
     for(int si=0;si<Li.size()/3;si++)
     {

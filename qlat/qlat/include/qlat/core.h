@@ -528,7 +528,7 @@ struct API SelectedPoints {
   void set_view(const SelectedPoints<M>& sp)
   {
     TIMER("SelectedPoints::set_view");
-    qassert(sp.initialized);
+    Qassert(sp.initialized);
     initialized = sp.initialized;
     points_dist_type = sp.points_dist_type;
     multiplicity = sp.multiplicity;
@@ -540,12 +540,12 @@ struct API SelectedPoints {
   void set_view_cast(const SelectedPoints<N>& sp)
   {
     TIMER("SelectedPoints::set_view_cast");
-    qassert(sp.initialized);
+    Qassert(sp.initialized);
     const Int total_size = sp.multiplicity * sizeof(N);
     initialized = sp.initialized;
     points_dist_type = sp.points_dist_type;
     multiplicity = total_size / sizeof(M);
-    qassert(multiplicity * (Int)sizeof(M) == total_size);
+    Qassert(multiplicity * (Int)sizeof(M) == total_size);
     n_points = sp.n_points;
     points.set_view_cast(sp.points);
   }
@@ -617,10 +617,10 @@ void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
                              const PointsDistType points_dist_type_)
 {
   if (initialized) {
-    qassert(points_dist_type_ == points_dist_type);
-    qassert(multiplicity_ == multiplicity);
-    qassert(n_points_ == n_points);
-    qassert((Long)points.size() == n_points * multiplicity);
+    Qassert(points_dist_type_ == points_dist_type);
+    Qassert(multiplicity_ == multiplicity);
+    Qassert(n_points_ == n_points);
+    Qassert((Long)points.size() == n_points * multiplicity);
   } else {
     TIMER("SelectedPoints::init(np,mult,dist)")
     init();
@@ -634,7 +634,7 @@ void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
     } else if (2 == get_field_init()) {
       set_u_rand(get_data(points), RngState(show(get_time())));
     } else {
-      qassert(0 == get_field_init());
+      Qassert(0 == get_field_init());
     }
   }
 }
@@ -651,10 +651,10 @@ void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
                                   const PointsDistType points_dist_type_)
 {
   if (initialized) {
-    qassert(points_dist_type_ == points_dist_type);
-    qassert(multiplicity_ == multiplicity);
-    qassert(n_points_ == n_points);
-    qassert((Long)points.size() == n_points * multiplicity);
+    Qassert(points_dist_type_ == points_dist_type);
+    Qassert(multiplicity_ == multiplicity);
+    Qassert(n_points_ == n_points);
+    Qassert((Long)points.size() == n_points * multiplicity);
   } else {
     TIMER("SelectedPoints::init_zero(np,mult,dist)")
     init();
@@ -706,8 +706,8 @@ void qswap_cast(SelectedPoints<M>& f1, SelectedPoints<N>& f2)
   const Long data_size2 = f1.multiplicity * sizeof(M);
   f1.multiplicity = data_size1 / sizeof(M);
   f2.multiplicity = data_size2 / sizeof(N);
-  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
-  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  Qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  Qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   std::swap(f1.n_points, f2.n_points);
   qswap_cast(f1.points, f2.points);
 }
@@ -719,11 +719,11 @@ void qswap_cast(PointsSelection& f1, SelectedPoints<M>& f2,
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.points_dist_type, f2.points_dist_type);
   std::swap(f1.total_site, total_site2);
-  qassert(f2.multiplicity == 0 or
+  Qassert(f2.multiplicity == 0 or
           (f2.multiplicity * sizeof(M) == sizeof(Coordinate)));
   if (f2.initialized) {
     f2.multiplicity = sizeof(Coordinate) / sizeof(M);
-    qassert(f2.multiplicity * sizeof(M) == sizeof(Coordinate));
+    Qassert(f2.multiplicity * sizeof(M) == sizeof(Coordinate));
   }
   qswap_cast(f1.xgs, f2.points);
 }
@@ -772,7 +772,7 @@ struct API Field {
   void set_view(const Field<M>& f)
   {
     TIMER("Field::set_view");
-    qassert(f.initialized);
+    Qassert(f.initialized);
     initialized = f.initialized;
     geo.set_view(f.geo);
     multiplicity = f.multiplicity;
@@ -784,13 +784,13 @@ struct API Field {
   void set_view_cast(const Field<N>& f)
   {
     TIMER("Field::set_view_cast");
-    qassert(f.initialized);
-    qassert(f.mem_order == MemOrder::TZYXM);
+    Qassert(f.initialized);
+    Qassert(f.mem_order == MemOrder::TZYXM);
     const Int total_size = f.multiplicity * sizeof(N);
     initialized = f.initialized;
     multiplicity = total_size / sizeof(M);
     mem_order = f.mem_order;
-    qassert(multiplicity * (Int)sizeof(M) == total_size);
+    Qassert(multiplicity * (Int)sizeof(M) == total_size);
     geo.set_view(f.geo);
     field.set_view_cast(f.field);
   }
@@ -799,8 +799,8 @@ struct API Field {
   {
     TIMER("Field::view_sp");
     const Geometry geo_local = geo.get();
-    qassert(geo_local.is_only_local);
-    qassert(mem_order == MemOrder::TZYXM);
+    Qassert(geo_local.is_only_local);
+    Qassert(mem_order == MemOrder::TZYXM);
     SelectedPoints<M> f;
     f.initialized = initialized;
     f.points_dist_type = PointsDistType::Full;
@@ -935,12 +935,12 @@ struct API FieldM : Field<M> {
   void init(const Geometry& geo_) { Field<M>::init(geo_, multiplicity); }
   void init(const Geometry& geo_, const int multiplicity_)
   {
-    qassert(multiplicity == multiplicity_);
+    Qassert(multiplicity == multiplicity_);
     Field<M>::init(geo_, multiplicity);
   }
   void init(const Field<M>& f)
   {
-    qassert(multiplicity == f.multiplicity);
+    Qassert(multiplicity == f.multiplicity);
     Field<M>::init(f);
   }
   //
@@ -952,7 +952,7 @@ struct API FieldM : Field<M> {
   //
   FieldM<M, multiplicity>& operator=(const FieldM<M, multiplicity>& f)
   {
-    qassert(f.multiplicity == multiplicity);
+    Qassert(f.multiplicity == multiplicity);
     Field<M>::operator=(f);
     return *this;
   }
@@ -981,7 +981,7 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
     if (not is_matching_geo_included(geo_new, geo_old)) {
       displayln("old geo = " + show(geo_old));
       displayln("new geo = " + show(geo_new));
-      qassert(false);
+      Qassert(false);
     }
     if (multiplicity != multiplicity_) {
       qerr(ssprintf("Field::init: mult=%d ; mult_=%d", multiplicity,
@@ -1000,7 +1000,7 @@ void Field<M>::init(const Geometry& geo_, const int multiplicity_)
     } else if (2 == get_field_init()) {
       set_u_rand(*this, RngState(show(get_time())));
     } else {
-      qassert(0 == get_field_init());
+      Qassert(0 == get_field_init());
     }
   }
 }
@@ -1036,9 +1036,9 @@ void Field<M>::init_zero(const Geometry& geo_, const Int multiplicity_)
     if (not is_matching_geo_included(geo_new, geo_old)) {
       displayln("old geo = " + show(geo_old));
       displayln("new geo = " + show(geo_new));
-      qassert(false);
+      Qassert(false);
     }
-    qassert(multiplicity == multiplicity_);
+    Qassert(multiplicity == multiplicity_);
   } else {
     TIMER("Field::init_zero(geo,mult)");
     init();
@@ -1063,7 +1063,7 @@ Field<M>& Field<M>::operator=(const Field<M>& f)
     return *this;
   }
   TIMER_FLOPS("Field::operator=");
-  qassert(f.initialized);
+  Qassert(f.initialized);
   const Geometry geo_local = geo_resize(f.geo.get());
   init(geo_local, f.multiplicity);
   Field<M>& f0 = *this;
@@ -1120,10 +1120,10 @@ void qswap_cast(Field<M>& f1, Field<N>& f2)
   const Long data_size2 = f1.multiplicity * sizeof(M);
   f1.multiplicity = data_size1 / sizeof(M);
   f2.multiplicity = data_size2 / sizeof(N);
-  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
-  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
-  qassert(f1.mem_order == MemOrder::TZYXM);
-  qassert(f2.mem_order == MemOrder::TZYXM);
+  Qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  Qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  Qassert(f1.mem_order == MemOrder::TZYXM);
+  Qassert(f2.mem_order == MemOrder::TZYXM);
   qswap(f1.geo, f2.geo);
   qswap_cast(f1.field, f2.field);
 }
@@ -1150,7 +1150,7 @@ void set_field_from_pointer(Field<M>& f, Vector<M> field, const Geometry& geo,
   f.field.set_mem_type(mem_type);
   f.field.set_view(field);
   f.field.is_copy = is_copy;
-  qassert(f.geo().local_volume_expanded() * f.multiplicity == f.field.size());
+  Qassert(f.geo().local_volume_expanded() * f.multiplicity == f.field.size());
 }
 
 void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
@@ -1192,7 +1192,7 @@ using FermionField5d = FermionField5dT<>;
 
 inline GaugeField& gf_from_field(Field<ColorMatrix>& f)
 {
-  qassert(f.multiplicity == 4);
+  Qassert(f.multiplicity == 4);
   return (GaugeField&)f;
 }
 
@@ -1292,7 +1292,7 @@ struct API SelectedField {
     initialized = sf.initialized;
     n_elems = sf.n_elems;
     multiplicity = total_size / sizeof(M);
-    qassert(multiplicity * (Int)sizeof(M) == total_size);
+    Qassert(multiplicity * (Int)sizeof(M) == total_size);
     geo.set(sf.geo());
     field.set_view_cast(sf.field);
   }
@@ -1357,16 +1357,16 @@ void SelectedField<M>::init(const Geometry& geo_, const Long n_elems_,
                             const Int multiplicity_)
 {
   if (initialized) {
-    qassert(geo() == geo_);
-    qassert(n_elems == n_elems_);
+    Qassert(geo() == geo_);
+    Qassert(n_elems == n_elems_);
     if (multiplicity != multiplicity_) {
       qerr(ssprintf("SelectedField::init: mult=%d ; mult_=%d", multiplicity,
                     multiplicity_));
     }
-    qassert((Long)field.size() == n_elems * multiplicity);
+    Qassert((Long)field.size() == n_elems * multiplicity);
   } else {
     TIMER("SelectedField::init(geo,n_elems,mult)")
-    qassert(multiplicity_ != 0);
+    Qassert(multiplicity_ != 0);
     init();
     initialized = true;
     geo.set(geo_);
@@ -1378,7 +1378,7 @@ void SelectedField<M>::init(const Geometry& geo_, const Long n_elems_,
     } else if (2 == get_field_init()) {
       set_u_rand(get_data(field), RngState(show(get_time())));
     } else {
-      qassert(0 == get_field_init());
+      Qassert(0 == get_field_init());
     }
   }
 }
@@ -1394,13 +1394,13 @@ void SelectedField<M>::init_zero(const Geometry& geo_, const Long n_elems_,
                                  const Int multiplicity_)
 {
   if (initialized) {
-    qassert(geo() == geo_);
-    qassert(n_elems == n_elems_);
-    qassert(multiplicity == multiplicity_);
-    qassert((Long)field.size() == n_elems * multiplicity);
+    Qassert(geo() == geo_);
+    Qassert(n_elems == n_elems_);
+    Qassert(multiplicity == multiplicity_);
+    Qassert((Long)field.size() == n_elems * multiplicity);
   } else {
     TIMER("SelectedField::init_zero(geo,n_elems,mult)");
-    qassert(multiplicity_ != 0);
+    Qassert(multiplicity_ != 0);
     init();
     initialized = true;
     geo.set(geo_);
@@ -1450,8 +1450,8 @@ void qswap_cast(SelectedField<M>& f1, SelectedField<N>& f2)
   const Long data_size2 = f1.multiplicity * sizeof(M);
   f1.multiplicity = data_size1 / sizeof(M);
   f2.multiplicity = data_size2 / sizeof(N);
-  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
-  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  Qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  Qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, f2.geo);
   qswap_cast(f1.field, f2.field);
 }
@@ -1462,28 +1462,28 @@ template <class M, class N>
 void qswap_cast(Field<M>& f1, SelectedPoints<N>& f2, box<Geometry>& geo2)
 {
   if (f1.initialized) {
-    qassert(f1.mem_order == MemOrder::TZYXM);
+    Qassert(f1.mem_order == MemOrder::TZYXM);
   }
   if (f2.initialized) {
-    qassert(f2.points_dist_type == PointsDistType::Full);
+    Qassert(f2.points_dist_type == PointsDistType::Full);
   }
   std::swap(f1.initialized, f2.initialized);
   const Long data_size1 = f2.multiplicity * sizeof(N);
   const Long data_size2 = f1.multiplicity * sizeof(M);
   f1.multiplicity = data_size1 / sizeof(M);
   f2.multiplicity = data_size2 / sizeof(N);
-  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
-  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  Qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  Qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
   if (f1.initialized) {
-    qassert(f1.geo().local_volume_expanded() * f1.multiplicity ==
+    Qassert(f1.geo().local_volume_expanded() * f1.multiplicity ==
             f1.field.size());
   }
   if (f2.initialized) {
     f2.points_dist_type = PointsDistType::Full;
     f2.n_points = f2.points.size() / f2.multiplicity;
-    qassert(f2.n_points * f2.multiplicity == f2.points.size());
+    Qassert(f2.n_points * f2.multiplicity == f2.points.size());
   }
 }
 
@@ -1508,7 +1508,7 @@ void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
                 box<Geometry>& geo2)
 {
   if (f2.initialized) {
-    qassert(f2.points_dist_type == PointsDistType::Local);
+    Qassert(f2.points_dist_type == PointsDistType::Local);
   }
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.n_elems, f2.n_points);
@@ -1516,16 +1516,16 @@ void qswap_cast(SelectedField<M>& f1, SelectedPoints<N>& f2,
   const Long data_size2 = f1.multiplicity * sizeof(M);
   f1.multiplicity = data_size1 / sizeof(M);
   f2.multiplicity = data_size2 / sizeof(N);
-  qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
-  qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
+  Qassert(f1.multiplicity * (Long)sizeof(M) == data_size1);
+  Qassert(f2.multiplicity * (Long)sizeof(N) == data_size2);
   qswap(f1.geo, geo2);
   qswap_cast(f1.field, f2.points);
   if (f1.initialized) {
-    qassert(f1.n_elems * f1.multiplicity == f1.field.size());
+    Qassert(f1.n_elems * f1.multiplicity == f1.field.size());
   }
   if (f2.initialized) {
     f2.points_dist_type = PointsDistType::Full;
-    qassert(f2.n_points * f2.multiplicity == f2.points.size());
+    Qassert(f2.n_points * f2.multiplicity == f2.points.size());
   }
 }
 
@@ -1595,7 +1595,7 @@ void set_g_rand(Field<M>& f, const RngState& rs, const RealD center = 0.0,
 {
   TIMER("set_g_rand(f,rs,center,sigma)");
   if (not is_composed_of_real<M>()) {
-    qassert(is_composed_of_real<M>());
+    Qassert(is_composed_of_real<M>());
     return;
   }
   using Real = typename IsDataValueType<M>::ElementaryType;
