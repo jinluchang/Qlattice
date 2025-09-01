@@ -741,11 +741,12 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
   //
   const Geometry& geo = fs[0].geo();
   Qassert(geo.is_only_local);
-  const MemType mem_type = fs[0].field.mem_type;
+  const MemType mem_type = fs[0].get_mem_type();
   const MemType QACC_EFF_MEM_TYPE = get_eff_mem_type(mem_type);
   const MemType mem_comm = QACC_EFF_MEM_TYPE == MemType::Cpu ? MemType::Cpu : MemType::Acc;
   //
   Qassert(fr.size() == Nvec);
+  const Long MULTI = fs[0].multiplicity;
   for(unsigned int iv=0;iv<Nvec;iv++){
     Qassert(fs[iv].geo() == fs[0].geo() and fs[iv].field.mem_type == fs[0].field.mem_type);
     Qassert(fs[iv].multiplicity == fs[0].multiplicity);
@@ -772,15 +773,21 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
       if(get_data(fr[iv]).data() != get_data(fs[iv]).data()){
         field_shift_local(fr[iv], fs[iv], shift);
       }else{
-        if(to_bufL.size() == 0){to_bufL.resize(1);}
-        to_bufL[0] = fs[iv].field;
+        const Long Nd = MULTI * geo.local_volume();
+        if(to_bufL.size() == 0){
+          to_bufL.resize(1);
+          to_bufL[0].resize(Nd, mem_comm);
+        }
+        Qassert(to_bufL[0].size() >= Nd and to_bufL[0].mem_type == fs[iv].get_mem_type());
+        Vector<M> v(&to_bufL[0][0], Nd);
 
         Field<M> buf;
         buf.initialized = true;
         buf.geo.set_view(geo);
-        buf.multiplicity = fs[iv].multiplicity;
+        buf.multiplicity = MULTI;
         buf.mem_order = fs[iv].mem_order;
-        buf.field.set_view(to_bufL[0]);
+        buf.field.set_view(v);
+        buf = fs[iv];
         field_shift_local(fr[iv], buf, shift);
       }
     }
@@ -830,7 +837,6 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
     }
   }
   //
-  const Long MULTI = fs[0].multiplicity;
   if(to_bufL.size() != 2*Nvec){to_bufL.resize(2*Nvec);}
   for(unsigned int iv=0;iv<to_bufL.size();iv++)
   {

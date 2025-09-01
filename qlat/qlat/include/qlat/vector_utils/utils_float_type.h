@@ -432,10 +432,6 @@ inline unsigned int get_node_rank_funs0()
   return rank;
 }
 
-////printf("calling rank %d Nmpi %d \n", qlat::get_id_node(), qlat::get_num_node());MPI_Barrier(get_comm());fflush(stdout);
-#define QLAT_VEC_CKPOINT qlat::abort_r("QLAT CHECK POINT \n");
-
-
 }
 
 #endif

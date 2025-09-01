@@ -414,10 +414,12 @@ struct API vector {
     return mem_type;
   }
   //
-  void set_view(const Vector<M>& vec)
+  void set_view(const Vector<M>& vec) { set_view(vec, mem_type); }
+  void set_view(const Vector<M>& vec, const MemType mem_type_)
   // does not change mem_type
   {
     init();
+    set_mem_type(mem_type_);
     is_copy = true;
     v = vec;
   }

@@ -1300,26 +1300,40 @@ void shift_fields_qlat(Ty* src, Ta* res, const std::vector<int >& iDir, const in
 }
 
 template <class Ty>
-void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<int >& iDir, const int biva, const int civ, const Geometry& geo, const int mode = 0)
+void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<int >& iDir, const int biva, const int civ, const Geometry& geo, const int mode = 1)
 {
   TIMER("shift_fields_grid");
   const Coordinate  total_site = geo.total_site();
   const LInt V = geo.local_volume();
   Qassert(geo.is_only_local);
-  (void)mode;
-  //if(mode == 1){
-  //  std::vector<Field<Ty > > bs;
-  //  std::vector<Field<Ty > > br;
-  //  bs.resize(biva);
-  //  br.resize(biva);
-  //  for(unsigned int iv=0;iv<bs.size();iv++){
-  //    set_field(bs[iv], src[iv], V * civ, geo);
-  //    set_field(br[iv], src[iv], V * civ, geo);
-  //  }
-  //  std::vector<vector<Ty> > to_bufL;
-  //  Coordinate shift;for(int i=0;i<4;i++){shift[i] = 1.0 * iDir[i];}
-  //  field_shift_direct(buf, buf, shift, to_bufL);
-  //}
+  //(void)mode;
+  if(mode == 1){
+    const int GPU = 1;
+    std::vector<Field<Ty > > bs;
+    std::vector<Field<Ty > > br;
+    bs.resize(biva);
+    br.resize(biva);
+    for(unsigned int iv=0;iv<bs.size();iv++){
+      set_field(bs[iv], src[iv], V * civ, geo);
+      set_field(br[iv], res[iv], V * civ, geo);
+    }
+
+    const size_t Nd = size_t(V) * civ * sizeof(Ty);
+    VectorGPUKey gkey(0, ssprintf("shift_vec_buf"), GPU);
+    qlat::vector_gpu<char >& tem = get_vector_gpu_plan<char >(gkey);
+
+    tem.resizeL(2 * biva * Nd);
+    std::vector<vector<Ty> > to_bufL;to_bufL.resize(2 * biva);
+    for(size_t i=0;i<to_bufL.size();i++){
+      Vector<Ty> v( (Ty*) &tem[i * Nd], Nd / sizeof(Ty) );
+      to_bufL[i].set_mem_type(MemType::Acc);
+      to_bufL[i].set_view(v);
+    }
+
+    Coordinate shift;for(int i=0;i<4;i++){shift[i] = 1.0 * iDir[i];}
+    field_shift_directT(br, bs, shift, to_bufL);
+    return ;
+  }
 
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   const Coordinate  local_site(fd.Nx, fd.Ny, fd.Nz, fd.Nt);
