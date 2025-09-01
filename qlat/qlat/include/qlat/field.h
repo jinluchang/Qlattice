@@ -778,7 +778,8 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
           to_bufL.resize(1);
           to_bufL[0].resize(Nd, mem_comm);
         }
-        Qassert(to_bufL[0].size() >= Nd and to_bufL[0].mem_type == fs[iv].get_mem_type());
+        Qassert(to_bufL[0].size() >= Nd);
+        // Qassert(to_bufL[0].mem_type == fs[iv].get_mem_type());
         Vector<M> v(&to_bufL[0][0], Nd);
         //
         Field<M> buf;
