@@ -12,9 +12,6 @@ int main(int argc, char* argv[])
 {
   using namespace qlat;
 
-  ///int mode_dis = 0;
-  //inputpara in;int mode_dis = 0;
-  //begin_Lat(&argc, &argv, in, mode_dis);
   inputpara in;begin_Lat(&argc, &argv, in);
 
   //if(mode_dis == 0)
@@ -47,7 +44,6 @@ int main(int argc, char* argv[])
   //begin(&argc, &argv, size_node_list);
   //in.load_para("input.txt");
   //}
-  //begin_Lat(&argc, &argv, "input.txt", in, mode_dis);
 
 
   fflush_MPI();

@@ -49,8 +49,8 @@ inline void write_corr_zero(corr_dat<Ftype >& res, qlat::vector_gpu<Complexq >& 
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  inputpara in;int mode_dis = -1; 
-  begin_Lat(&argc, &argv, in, mode_dis);
+  inputpara in;
+  begin_Lat(&argc, &argv, in);
 
   int nx,ny,nz,nt;
   nx = in.nx;

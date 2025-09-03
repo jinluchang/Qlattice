@@ -297,12 +297,24 @@ struct sec_list{
       assuming host_ti is ordered to avoid sector conflicts 
     */
     for(size_t i=0;i<data.size();i++){
-      if(i != data.size() - 1){Qassert( host_ti[i] < host_ti[i + 1] );}
-
-      int si   = map_sec[host_ti[i]];   //  current sectors of the data
-      int tmi0 = host_ti[i]/fd.Nt;
-      int g_rank = fd.mi_list[tmi0][fd.get_xyzmi_curr()];  /// each xyz do the bcast to each other
+      const int si   = map_sec[host_ti[i]];   //  current sectors of the data
+      const int tmi0 = host_ti[i]/fd.Nt;
+      const int g_rank = fd.mi_list[tmi0][fd.get_xyzmi_curr()];  /// each xyz do the bcast to each other
       const int rank = map_mpi_t[si][g_rank];   ////host rank for bcast data
+
+      if(i != data.size() - 1){
+        if(host_ti[i] < host_ti[i + 1]){
+          print_info();
+          for(size_t i=0;i<data.size();i++)
+          {
+            printf("rank %5d, datai %5d, host_ti %5d, sec %5d has sec %5d \n", fd.rank, int(i), host_ti[i], si, has_sec[si]);
+          }
+          Qassert(false);
+        }
+        //Qassert( host_ti[i] < host_ti[i + 1] );
+      }
+
+
       ////printf("rank %5d, local %5d, seci %5d \n", fd.rank, rank, si);
       /* 
         bcast from the data sector

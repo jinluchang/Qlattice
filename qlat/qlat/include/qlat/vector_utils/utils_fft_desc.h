@@ -31,7 +31,7 @@ struct fft_desc_basic
   int variable_set;
 
   int order_ch;
-  qlat::vector<int > orderN;   ////4
+  std::vector<int > orderN;   ////4
 
   fft_desc_basic(int order_ch_or=0)
   {
@@ -280,7 +280,7 @@ inline void fft_desc_basic::set_variable()
   inix = iniv[0];iniy = iniv[1];iniz = iniv[2];init = iniv[3];
 
   ////Do not assume 0 is the initial positions
-  qlat::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
+  std::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
   for(unsigned int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
   for(unsigned int i=0;i<4;i++)Pos0_tem[rank*4 + i] = iniv[i];
   sum_all_size(Pos0_tem.data(), Nmpi*4);

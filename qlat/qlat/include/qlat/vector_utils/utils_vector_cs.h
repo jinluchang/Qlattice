@@ -54,27 +54,15 @@ struct vector_cs{
   QMEM  GPU;
 
   ////infos
-  ////Geometry geo; //no need to know geo, local vector
-  LInt nsum;////
-  //int nx;int ny;int nz;int nt;
-  //int Nx;int Ny;int Nz;int Nt;
+  LInt nsum;// length of each vector
   Long bfac, b_size, bfac_group;
-  LInt La, Lb; //// derived variables
-  Long btotal; ///== bfac
+  LInt La, Lb; // derived variables
+  Long btotal; //  == bfac
 
-  //Ty* mem_1d;
-
-  ////only one container
-  //qlat::vector_gpu<Ty > a;
-
-  ////std::vector<qlat::vector<Ty > > a;
-  //std::vector<qlat::vector<Ty > > buf_a;
-
-  std::vector<qlat::vector_gpu<Ty > > buf_g;
+  std::vector<qlat::vector_gpu<Ty > > buf_g;// actual data positions
   qlat::vector<Ty* > pL; //// pointers to data
   qlat::vector_gpu<Ty > alpha_buf;
   qlat::vector<Ty* > pointersL; ////grouped with ni -> btotal 
-  //qlat::vector_gpu<Ty > buf_V;
 
   qlat::vector_gpu<Ty > alphaG;
   qlat::vector_gpu<Ty > norm2_buf;
@@ -236,6 +224,9 @@ struct vector_cs{
     std::string val = get_env(std::string("q_setup_cs_bfac_group"));
     if(val != ""){bfac_group = stringtonum(val);}
 
+    if(max_bfac % bfac_group != 0){
+      qmessage("total %ld, current %ld \n", long(max_bfac), long(bfac_group));
+    }
     Qassert(max_bfac % bfac_group == 0);
     allocate_mem(silence_mem);
     ////qacc_barrier(dummy);
@@ -867,6 +858,27 @@ struct vector_cs{
       }else{nzero += 1; }
     }
     if( nzero >  0)qmessage("zero norms %8d, nvec %8d \n", nzero, int(nvec));
+  }
+
+  inline void print_checksum(const bool with_sum = false){
+    qmessage("eigen ");
+    if(with_sum){
+      Ty nsum = 0.0;
+      for(unsigned int iv=0;iv<buf_g.size();iv++){
+        const Ty n = buf_g[iv].norm2();
+        nsum += n;
+      }
+      qmessage("sum %.8e ", nsum.real());
+    }
+
+    std::vector<Ty > buf;buf.resize(nsum);
+    crc32_t sum = 0;
+    for(int iv=0;iv<nvec;iv++){
+      copy_to(buf.data(), iv, false);
+      qacc_barrier(dummy);
+      sum ^= quick_checksum(buf.data(), buf.size());
+    }
+    qmessage("checksum %12X . \n", sum);
   }
 
   inline void print_prod(double cut = 1e-19, int maxN = -1)
@@ -1506,7 +1518,10 @@ qacc void set_zero(vector_cs<Ty>& vec)
   vec.set_zero();
 }
 
-////B will be resized
+/*
+  A = A + B 
+  B will be resized
+*/
 template <typename Ty, typename Tb >
 void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, int b0, int b1, bool clearB = false, int GPU = 0)
 {

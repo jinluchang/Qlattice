@@ -229,8 +229,11 @@ inline void quda_begin_internal(int mpi_layout[4], int quda_rankx = 1)
   qacc_ErrCheck(qacc_DeviceSetCacheConfig(qacc_FuncCachePreferNone ));// for smearing settings
 }
 
-// need to begin quda before any GPU memory allocation
-inline void begin_quda_with_qlat()
+/*
+  need to begin quda before any GPU memory allocation
+  Assume Qlattice does not assign GPUs
+*/
+inline void begin_quda_with_gpu()
 {
   using namespace quda;
 
@@ -265,6 +268,12 @@ inline void begin_quda_with_qlat()
 
   qlat::quda_begin_internal(mpi_layout, quda_rankx);
 
+}
+
+inline void begin_Qlat_quda(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
+{
+  begin_Lat(argc, argv, in, 0, read_Lat);
+  begin_quda_with_gpu();
 }
 
 inline void check_quda_layout_eo(const Geometry& geo)

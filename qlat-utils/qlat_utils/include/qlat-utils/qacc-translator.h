@@ -35,6 +35,7 @@
 #define qacc_MemGetInfo                 cudaMemGetInfo
 #define qacc_MemPrefetchAsync           cudaMemPrefetchAsync
 #define qacc_Memcpy                     cudaMemcpy
+#define qacc_Memcpy2D                   cudaMemcpy2D
 #define qacc_Memcpy2DAsync              cudaMemcpy2DAsync
 #define qacc_MemcpyAsync                cudaMemcpyAsync
 #define qacc_MemcpyDeviceToDevice       cudaMemcpyDeviceToDevice
@@ -56,6 +57,9 @@
 #define qacc_MemoryTypeHost             cudaMemoryTypeHost
 #define qacc_MemoryTypeDevice           cudaMemoryTypeDevice
 #define qacc_MemoryTypeManaged          cudaMemoryTypeManaged
+#define qacc_MemoryTypeArray            cudaMemoryTypeUnregistered
+#define qacc_MemoryTypeUnified          cudaMemoryTypeUnregistered
+#define qacc_MemoryTypeUnregistered     cudaMemoryTypeUnregistered
 #define qacc_DeviceSynchronize          cudaDeviceSynchronize
 
 #else
@@ -88,6 +92,7 @@
 #define qacc_MemGetInfo                 hipMemGetInfo
 #define qacc_MemPrefetchAsync           hipMemPrefetchAsync
 #define qacc_Memcpy                     hipMemcpy
+#define qacc_Memcpy2D                   hipMemcpy2D
 #define qacc_Memcpy2DAsync              hipMemcpy2DAsync
 #define qacc_MemcpyAsync                hipMemcpyAsync
 #define qacc_MemcpyDeviceToDevice       hipMemcpyDeviceToDevice
@@ -109,6 +114,9 @@
 #define qacc_MemoryTypeHost             hipMemoryTypeHost
 #define qacc_MemoryTypeDevice           hipMemoryTypeDevice
 #define qacc_MemoryTypeManaged          hipMemoryTypeManaged
+#define qacc_MemoryTypeArray            hipMemoryTypeArray
+#define qacc_MemoryTypeUnified          hipMemoryTypeUnified
+#define qacc_MemoryTypeUnregistered     hipMemoryTypeUnregistered
 #define qacc_DeviceSynchronize          hipDeviceSynchronize
 
 #endif

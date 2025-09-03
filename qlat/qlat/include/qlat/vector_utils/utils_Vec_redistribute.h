@@ -22,7 +22,7 @@ struct Vec_redistribute
 
   qlat::vector<int> Nv,nv,mv;
 
-  qlat::vector<int > orderN;
+  std::vector<int > orderN;
   fft_desc_basic *fd;
 
 

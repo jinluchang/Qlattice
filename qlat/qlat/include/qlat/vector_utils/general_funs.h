@@ -640,21 +640,15 @@ inline void random_vec(vector<Ty >& buf, int seed = 0, const int mode = 0)
 }
 
 template<typename Ty>
-inline double norm_vec(vector<Ty >& buf)
+inline double norm_vec(Ty* buf, const size_t Nd, const MemType mem_type = MemType::Acc)
 {
-  if(buf.size() == 0){return 0;}
-
-  const Long  Nd = buf.size();
   const int off  = 16;
   const Long  Nf = (Nd + off - 1) / off;
-  int GPU = 1;
-  if(buf.mem_type == MemType::Cpu){GPU = 0;}
   vector<double > tmp;
-  tmp.set_mem_type(buf.mem_type);
+  tmp.set_mem_type(mem_type);
   tmp.resize(Nf);
   set_zero(tmp);
-
-  qGPU_for(isp, Nf, GPU, {
+  qmem_for(isp, Nf, mem_type, {
     for(int i=0;i<off;i++)
     {
       const Long idx = isp * off + i;
@@ -662,12 +656,16 @@ inline double norm_vec(vector<Ty >& buf)
       tmp[isp] += qnorm(buf[idx]);
     }
   });
+  const double r = reduce_vecs(tmp);
+  return r;
+}
 
-  double r = reduce_vecs(tmp);
-  //vector<double > copy;copy.resize(1);
-  //double* res = copy.data();
-  //reduce_vecs(tmp.data(), res, tmp.size(), 1, GPU);
-  //double r = copy[0]; 
+template<typename Ty>
+inline double norm_vec(vector<Ty >& buf)
+{
+  if(buf.size() == 0){return 0;}
+  const Long  Nd = buf.size();
+  const double r = norm_vec((Ty*) buf.data(), Nd, buf.mem_type);
   return r;
 }
 
@@ -994,9 +992,9 @@ inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 
 ////mode_dis % 1 == 0, t in diff node, mode_dis % 2 == 1, t in single node
 ////mode_dis < 2, T, mode_dis >= 2 even
-inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0){
+inline void begin_Lat(int* argc, char** argv[], inputpara& in, const int with_GPU = 1, const int read_input_Lat = 0){
   //initialisation_cuda();
-  if(read_Lat >= 0)
+  if(read_input_Lat >= 0)
   {
     int n_node = init_mpi(argc, argv);
     in.load_para(*argc, *argv);
@@ -1035,7 +1033,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
     ////printf("new id %5d, old id %5d\n", get_id_node(), old_id);
   }
 
-  if(read_Lat == -1)
+  if(read_input_Lat == -1)
   {
     std::vector<Coordinate> size_node_list;
     add_nodeL(size_node_list);
@@ -1043,7 +1041,8 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
     in.load_para(*argc, *argv);
   }
 
-  set_GPU();
+  Qassert(with_GPU == 0 or with_GPU == 1);
+  if(with_GPU == 1){set_GPU();}
 
   omp_set_num_threads(omp_get_max_threads());
   qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());

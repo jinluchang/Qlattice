@@ -312,6 +312,18 @@ inline expand_field_buffer& expand_buffer(const Geometry& geo,
   const std::string& tag, T* res, const int MULTI,  const int GPU, int& idx)
 {
   std::vector<expand_field_buffer>& bufs = get_expand_buffer_full_list();
+  // check if res is already in buffer or not
+  for(int i=0;i<MAX_EXPAND_BUF;i++){
+    if(bufs[i].initialized){
+      if(bufs[i].pres == (int8_t*) res){
+        expand_buffer_wait_mpi();
+        bufs[0].init(geo, tag, res, MULTI, GPU);
+        idx = 0;
+        return bufs[0];
+      }
+    }
+  }
+
   for(int i=0;i<MAX_EXPAND_BUF;i++){
     if(!bufs[i].initialized){
       bufs[i].init(geo, tag, res, MULTI, GPU);
@@ -323,10 +335,10 @@ inline expand_field_buffer& expand_buffer(const Geometry& geo,
   // if not found then quite, too many buffers
   //qmessage("Compile with larger MAX_EXPAND_BUF!\n");
   //Qassert(false);
-
   // if not found then do all mpi and return 0
   expand_buffer_wait_mpi();
   ////clear_expand_plan_cache();
+  idx = 0;
   bufs[0].init(geo, tag, res, MULTI, GPU);
   return bufs[0];
 }

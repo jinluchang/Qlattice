@@ -410,6 +410,7 @@ inline void abort_sum(double flag, std::string stmp=std::string(""))
 }
 
 inline void fflush_MPI(){
+  qacc_barrier(dummy);
   MPI_Barrier(get_comm());
   fflush(stdout);
 }

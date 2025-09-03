@@ -1306,7 +1306,11 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<int >& iDir, cons
   const Coordinate  total_site = geo.total_site();
   const LInt V = geo.local_volume();
   Qassert(geo.is_only_local);
-  //(void)mode;
+  /*
+    (void)mode;
+    Fast mode to avoid too many shifts and copies
+    Not related to field grid shifts...
+  */
   if(mode == 1){
     const int GPU = 1;
     std::vector<Field<Ty > > bs;

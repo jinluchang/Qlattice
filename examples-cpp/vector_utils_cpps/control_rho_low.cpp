@@ -7,26 +7,8 @@
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  ////int n_node = init_mpi(&argc, &argv);
-  //int n_node = init_mpi_thread(&argc, &argv, 1);
-
-  //inputpara in; 
-  //in.load_para(argc, argv);
-  //int nx,ny,nz,nt;
-  //nx = in.nx;
-  //ny = in.ny;
-  //nz = in.nz;
-  //nt = in.nt;
-  //Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
-  //Coordinate spreadT = guess_nodeL(n_node, Lat);
-
-  //std::vector<Coordinate > size_node_list;
-  //size_node_list.push_back(spreadT);
-  //begin_comm(MPI_COMM_WORLD , spreadT);
-  //set_GPU();
-
-  inputpara in;int mode_dis = 0;
-  begin_Lat(&argc, &argv, in, mode_dis);
+  inputpara in;
+  begin_Lat(&argc, &argv, in);
   int nx,ny,nz,nt;
   nx = in.nx;
   ny = in.ny;

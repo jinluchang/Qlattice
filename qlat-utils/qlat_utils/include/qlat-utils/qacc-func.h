@@ -67,7 +67,11 @@ API inline MemType check_mem_type(void* ptr)
   if (attr.type == qacc_MemoryTypeManaged) {
     mem_type = MemType::Uvm;find = true;
   }
-  if(!find){assert(false);}
+  if (attr.type == qacc_MemoryTypeUnregistered) {
+    // assume all Acc memeory is allocate by Acc and pt is not out of the range
+    mem_type = MemType::Cpu;find = true;
+  }
+  assert(find);
 #else
   (void)ptr;
   mem_type = MemType::Cpu;

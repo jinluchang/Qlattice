@@ -2388,6 +2388,19 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   //eL[0] = eigen0;eL[1] = eigen1;
   //pL[0] = eigen_prec0;pL[1] = eigen_prec1;
 
+  //// check norm
+  //{
+  //  for(unsigned int vi=0;vi<Pres.size();vi++){
+  //    double d0 = 0.0;
+  //    double d1 = 0.0;
+  //    if(buf_prec == 0){d0 = norm_vec((qlat::ComplexT<double>*) Psrc[vi], Ndata);}
+  //    if(buf_prec == 1){d0 = norm_vec((qlat::ComplexT<float >*) Psrc[vi], Ndata);}
+  //    if(buf_prec == 0){d1 = norm_vec((qlat::ComplexT<double>*) Pres[vi], Ndata);}
+  //    if(buf_prec == 1){d1 = norm_vec((qlat::ComplexT<float >*) Pres[vi], Ndata);}
+  //    qmessage("==vec eigens %5d norm %.8e %.8e \n", int(vi), d0, d1);
+  //  }
+  //}
+
   for(unsigned int i=0;i<eigenL.size();i++)
   {
     void* Ea        = eigenL[i];
@@ -2406,6 +2419,19 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
       }
     }
   }
+
+  //// check norm
+  //{
+  //  for(unsigned int vi=0;vi<Pres.size();vi++){
+  //    double d0 = 0.0;
+  //    double d1 = 0.0;
+  //    if(buf_prec == 0){d0 = norm_vec((qlat::ComplexT<double>*) Psrc[vi], Ndata);}
+  //    if(buf_prec == 1){d0 = norm_vec((qlat::ComplexT<float >*) Psrc[vi], Ndata);}
+  //    if(buf_prec == 0){d1 = norm_vec((qlat::ComplexT<double>*) Pres[vi], Ndata);}
+  //    if(buf_prec == 1){d1 = norm_vec((qlat::ComplexT<float >*) Pres[vi], Ndata);}
+  //    qmessage("==vec eigenr %5d norm %.8e %.8e \n", int(vi), d0, d1);
+  //  }
+  //}
 }
 
 /* 

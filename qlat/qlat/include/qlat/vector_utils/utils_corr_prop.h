@@ -480,18 +480,10 @@ void vec_corrE(Ty* srcE, qlat::vector<Ty >& res,qlat::fft_desc_basic &fd,const i
     qlat::vector<Ty > phaseEG;phaseEG.resize(Nxyz);
     //Ty* phaseE = (Ty*) qlat::get_data(phaseEG).data();
 
-    //const qlat::vector<int >& orderN = fd.orderN;
-    //const qlat::vector<int >& Nv = fd.Nv;
-
     ////qlat::vector_gpu<int > pos_tem;pos_tem.copy_from(fd.Pos0[fd.rank]);int* posP = pos_tem.data();
     /////===may not be consistent for fd definiations under qacc
     /////===slow
     qthread_for(xi, Long(Nxyz),{
-      //int pi[3];
-      //pi[orderN[0]] = xi/(Nv[orderN[1]]*Nv[orderN[2]]);
-      //pi[orderN[1]] = (xi%(Nv[orderN[1]]*Nv[orderN[2]]))/Nv[orderN[2]];
-      //pi[orderN[2]] = xi%Nv[orderN[2]];
-      //for(int ptem=0;ptem<3;ptem++){pi[ptem] = pi[ptem] + posP[ptem];}
       Coordinate pi = fd.coordinate_g_from_index(xi );
 
       double theta=mom[0]*p0[0]*pi[0]+mom[1]*p0[1]*pi[1]+mom[2]*p0[2]*pi[2];
