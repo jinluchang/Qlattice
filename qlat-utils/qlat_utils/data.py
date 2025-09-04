@@ -87,7 +87,7 @@ def interp(data_arr, i_arr, axis):
     v_arr = np.asarray(data_arr)
     i_arr = np.asarray(i_arr)
     v_arr = np.swapaxes(v_arr, 0, axis)
-    iv_arr = np.array([ q.interpolate_list(v_arr, i) for i in i_arr ], v_arr.dtype)
+    iv_arr = np.array([ interpolate_list(v_arr, i) for i in i_arr ], v_arr.dtype)
     iv_arr = np.swapaxes(iv_arr, 0, axis)
     return iv_arr
 
