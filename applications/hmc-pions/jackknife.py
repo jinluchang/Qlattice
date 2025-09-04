@@ -11,6 +11,23 @@ def get_jackknife_blocks(data, block_size, f=lambda x:x):
         block_av /= (N-1)*block_size
         block_avgs.append(f(block_av))
     return block_avgs
+
+def get_jackknife_blocks_2(data1, data2, block_size, f=lambda x:x):
+    assert len(data1)=len(data2)
+    N = int(len(data1)/block_size)
+    data1_mean = np.mean(data1,axis=0)*N*block_size
+    data2_mean = np.mean(data2,axis=0)*N*block_size
+    block_avgs = []
+    for i in range(N):
+        block_av1=np.copy(data1_mean)
+        block_av2=np.copy(data2_mean)
+        for j in range(block_size):
+            block_av1 -= data1[i*block_size+j]
+            block_av2 -= data2[i*block_size+j]
+        block_av1 /= (N-1)*block_size
+        block_av2 /= (N-1)*block_size
+        block_avgs.append(f(block_av1, block_av2))
+    return block_avgs
     
 def get_errors_from_blocks(est_value, blocks):
     N = len(blocks)

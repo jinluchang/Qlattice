@@ -302,7 +302,10 @@ class Correlators():
         with open(f"output_data/corrs/corrs_{self.Nx}x{self.Nt}_msq_{self.msq}_lmbd_{self.lmbd}_alph_{self.alpha}_{date}_corrs.bin","rb") as file:
             data = pickle.load(file)
             for f in data[0]:
-                self.load_data("-","-",f)
+                try:
+                    self.load_data("-","-",f)
+                except FileNotFoundError:
+                    print("Warning: One of the files on which these correlators are based could not be found.")
             [self.loaded_files,
              self.done,
              self.vev,

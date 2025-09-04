@@ -14,6 +14,7 @@ class Spectrum():
         self.energy_errors = {}
         self.A = {}
         self.matrix = [[]]
+        self.pion_mass_blocks = []
         
         self.cosh_model = lambda nt,A0,m : [A0*np.cosh((self.Nt/2.0-nt[i])*m)/np.cosh((self.Nt/2.0-1)*m) for i in range(len(nt))]
     
@@ -77,13 +78,13 @@ class Spectrum():
                     elems[i][j] = corrs[matrix[i][j]][t]
         return elems
     
-    def get_spectrum_from_corrs(self, t, matrix, corrs):
+    def get_spectrum_from_corrs(self, t, matrix, corrs, fact = 1):
         T1=self.get_matrix_elems(t,matrix,corrs)
         T2=self.get_matrix_elems(t+1,matrix,corrs)
         w,v = sp.linalg.eigh(T1,T2)
-        return np.concatenate([[np.log(w)], v])
+        return np.concatenate([[np.log(w)*fact], v])
     
-    def get_spectrum(self, t):
+    def get_spectrum(self, t, divide_pion_mass=False):
         names = list(self.corrs)
         N = len(self.corrs[names[0]])
         corrs = []
@@ -101,5 +102,11 @@ class Spectrum():
                     matrix[i].append("0")
                 else:
                     matrix[i].append(names.index(self.matrix[i][j]))
-        blocks = jackknife.get_jackknife_blocks(corrs, self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x))
-        return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0)), blocks)
+        if divide_pion_mass:
+            if not self.pion_mass_blocks:
+                self.pion_mass_blocks = jackknife.get_jackknife_blocks(self.corrs["pipi"], self.block_size, self.find_E_from_fit)
+            blocks = jackknife.get_jackknife_blocks(np.column_stack([corrs, self.pion_mass_blocks]), self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x[0],x[1]))
+            return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0), self.get_energy("pipi")), blocks)
+        else:
+            blocks = jackknife.get_jackknife_blocks(corrs, self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x))
+            return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0)), blocks)
