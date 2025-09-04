@@ -75,6 +75,17 @@ def interpolate(v_arr, i_arr):
     else:
         return np.array([ interpolate_list(vt, i) for i in i_arr ], v_arr.dtype).transpose()
 
+def interp(v_arr, i_arr, axis):
+    """
+    return approximately v_arr[..., i_arr]
+    """
+    v_arr = np.asarray(v_arr)
+    i_arr = np.asarray(i_arr)
+    v_arr = np.swapaxes(v_arr, 0, axis)
+    iv_arr = np.array([ q.interpolate_list(v_arr, i) for i in i_arr ], v_arr.dtype)
+    iv_arr = np.swapaxes(iv_arr, 0, axis)
+    return iv_arr
+
 def get_threshold_idx(arr, threshold):
     """
     return x
