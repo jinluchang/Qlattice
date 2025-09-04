@@ -75,11 +75,16 @@ def interpolate(v_arr, i_arr):
     else:
         return np.array([ interpolate_list(vt, i) for i in i_arr ], v_arr.dtype).transpose()
 
-def interp(v_arr, i_arr, axis):
+def interp_i_arr(data_x_arr, x_arr):
+    data_i_arr = np.arange(len(data_x_arr))
+    i_arr = np.interp(x_arr, data_x_arr, data_i_arr)
+    return i_arr
+
+def interp(data_arr, i_arr, axis):
     """
-    return approximately v_arr[..., i_arr]
+    return approximately data_arr[..., i_arr]
     """
-    v_arr = np.asarray(v_arr)
+    v_arr = np.asarray(data_arr)
     i_arr = np.asarray(i_arr)
     v_arr = np.swapaxes(v_arr, 0, axis)
     iv_arr = np.array([ q.interpolate_list(v_arr, i) for i in i_arr ], v_arr.dtype)
