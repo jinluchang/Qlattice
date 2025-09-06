@@ -652,7 +652,7 @@ inline double norm_vec(Ty* buf, const size_t Nd, const MemType mem_type = MemTyp
     for(int i=0;i<off;i++)
     {
       const Long idx = isp * off + i;
-      if(idx > Nd){continue;}
+      if(idx > (Long)Nd){continue;}
       tmp[isp] += qnorm(buf[idx]);
     }
   });
