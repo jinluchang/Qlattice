@@ -275,11 +275,9 @@ inline std::vector<expand_field_buffer>& get_expand_buffer_full_list()
 }
 
 inline void clean_expand_buffer_vecs(){
-  TIMERA("clean_expand_buffer_vecs");
 
+  static const Long max_bytes  = Long( get_env_double_default("q_expand_buffer_size", 0.5) * 1024 * 1024 * 1024 );
   std::vector<expand_field_buffer>& bufs = get_expand_buffer_full_list();
-
-  const Long max_bytes  = Long( get_env_double_default("q_expand_buffer_size", 0.5) * 1024 * 1024 * 1024 );
   Long total_size = 0;
   bool clean = false;
 
@@ -287,7 +285,10 @@ inline void clean_expand_buffer_vecs(){
     if(!bufs[i].initialized){continue;}
     total_size += bufs[i].buf_size();
     if(total_size > max_bytes){clean = true;}
-    if(clean){bufs[i].buf_clean();}
+    if(clean){
+      TIMER("clean_expand_buffer_vecs");
+      bufs[i].buf_clean();
+    }
   }
 }
 
@@ -296,12 +297,25 @@ inline void expand_buffer_wait_mpi(){
   std::vector<expand_field_buffer>& bufs = get_expand_buffer_full_list();
   std::vector<MPI_Request>& reqs_recv = get_expand_buffer_reqs_recv();
   std::vector<MPI_Request>& reqs_send = get_expand_buffer_reqs_send();
-  mpi_waitall(reqs_recv);//receive done and write
-  for(int i=0;i<MAX_EXPAND_BUF;i++){
-    timer.flops += bufs[i].get_flops();
-    bufs[i].excute_copy(1);
+  static int do_comm_step = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_AMD"), 0);
+  Qassert(do_comm_step == 1 or do_comm_step == 0);
+  if(do_comm_step == 1){
+    mpi_waitall(reqs_recv);//receive done and write
+    for(int i=0;i<MAX_EXPAND_BUF;i++){
+      timer.flops += bufs[i].get_flops();
+      bufs[i].excute_copy(1);
+    }
+    mpi_waitall(reqs_send);//send    done and write
   }
-  mpi_waitall(reqs_send);//send    done and write
+  // copy after communications to avoid bad news on AMD GPUs...
+  if(do_comm_step == 0){
+    mpi_waitall(reqs_recv);//receive done and write
+    mpi_waitall(reqs_send);//send    done and write
+    for(int i=0;i<MAX_EXPAND_BUF;i++){
+      timer.flops += bufs[i].get_flops();
+      bufs[i].excute_copy(1);
+    }
+  }
   reqs_send.resize(0);
   reqs_recv.resize(0);
   clean_expand_buffer_vecs();
@@ -313,33 +327,37 @@ inline expand_field_buffer& expand_buffer(const Geometry& geo,
 {
   std::vector<expand_field_buffer>& bufs = get_expand_buffer_full_list();
   // check if res is already in buffer or not
+  static int do_comm_default = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_asyn"), 1);
+  Qassert(do_comm_default == 0 or do_comm_default == 1);
+  int do_comm = 1 - do_comm_default;
   for(int i=0;i<MAX_EXPAND_BUF;i++){
     if(bufs[i].initialized){
-      if(bufs[i].pres == (int8_t*) res){
-        expand_buffer_wait_mpi();
-        bufs[0].init(geo, tag, res, MULTI, GPU);
-        idx = 0;
-        return bufs[0];
+      if(&bufs[i].pres[0] == (int8_t*) &res[0]){
+        do_comm = 1;
       }
     }
   }
-
-  for(int i=0;i<MAX_EXPAND_BUF;i++){
-    if(!bufs[i].initialized){
-      bufs[i].init(geo, tag, res, MULTI, GPU);
-      idx = i;
-      return bufs[i];
-    }
-  }
-
-  // if not found then quite, too many buffers
-  //qmessage("Compile with larger MAX_EXPAND_BUF!\n");
-  //Qassert(false);
   // if not found then do all mpi and return 0
-  expand_buffer_wait_mpi();
-  ////clear_expand_plan_cache();
-  idx = 0;
-  bufs[0].init(geo, tag, res, MULTI, GPU);
+  if(do_comm == 0){
+    for(int i=0;i<MAX_EXPAND_BUF;i++){
+      if(!bufs[i].initialized){
+        bufs[i].init(geo, tag, res, MULTI, GPU);
+        idx = i;
+        return bufs[i];
+      }
+    }
+    do_comm = 1;
+  }
+  if(do_comm == 1)
+  {
+    expand_buffer_wait_mpi();
+    idx = 0;
+    bufs[idx].init(geo, tag, res, MULTI, GPU);
+    return bufs[idx];
+  }
+  // qmessage("Compile with larger MAX_EXPAND_BUF!\n");
+  // won't reach here to avoid warning
+  Qassert(do_comm == 0);
   return bufs[0];
 }
 

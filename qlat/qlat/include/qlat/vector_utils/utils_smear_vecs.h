@@ -1053,8 +1053,8 @@ struct smear_fun{
     redistribution_copy = 1;
   }
 
-  ////on CPU or Nvidia GPU, could avoid copy data to buffer
-  ////on GPU AMD hip, somehow necessary
+  //  on CPU or Nvidia GPU, could avoid copy data to buffer
+  //  on GPU AMD hip, somehow necessary
   template<int bfac>
   void refresh_expanded_GPU(Ty* f, int GPU = 1)
   {

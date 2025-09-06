@@ -4092,7 +4092,8 @@ void get_staggered_multishift_even(quda_inverter& qinv,
     Qassert(false);// default inverter could not copy single source correcttly
   }
 
-  QudaInvertParam inv_param = qinv.inv_param;
+  QudaInvertParam  inv_param_bak = qinv.inv_param;
+  QudaInvertParam& inv_param     = qinv.inv_param;
   inv_param.secs = 0;
   inv_param.gflops = 0;
   inv_param.iter = 0;
@@ -4187,6 +4188,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
           inv_param.iter, inv_param.secs, inv_param.gflops / inv_param.secs,
           inv_param.gflops / (inv_param.secs * qlat::get_num_node()), inv_param.gflops);
   }
+  qinv.inv_param =  inv_param_bak;
   qinv.inv_param.secs   = inv_param.secs;
   qinv.inv_param.gflops = inv_param.gflops;
   qinv.inv_param.iter   = inv_param.iter;

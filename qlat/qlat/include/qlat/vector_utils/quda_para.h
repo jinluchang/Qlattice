@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include "utils_float_type.h"
 #include "utils_stagger_contractions.h"
-#include "utils_gaugefield.h"
+#include "utils_gauge_field.h"
 
 namespace quda
 {

@@ -8,7 +8,7 @@
 #include "utils_stagger_contractions.h"
 #include "quda_para.h"
 #include "utils_quda_inverter.h"
-#include "utils_gaugefield.h"
+#include "utils_gauge_field.h"
 
 int main(int argc, char* argv[])
 {

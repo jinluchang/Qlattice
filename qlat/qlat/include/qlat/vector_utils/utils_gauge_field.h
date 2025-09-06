@@ -1,15 +1,13 @@
-// utils_GAUGEFIELD.h
+// utils_GAUGE_FIELD.h
 // Gen Wang
 // Mar. 2022
 
-#ifndef UTILS_GAUGEFIELD_H
-#define UTILS_GAUGEFIELD_H
+#ifndef UTILS_GAUGE_FIELD_H
+#define UTILS_GAUGE_FIELD_H
 #pragma once
 
 #include "general_funs.h"
 #include <qlat/qcd-topology.h>
-
-//////TODO
 
 namespace qlat
 {

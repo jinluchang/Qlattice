@@ -404,7 +404,6 @@ inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const Long Nsum =11, const 
   return sum;
 }
 
-
 inline unsigned int get_node_rank_funs0()
 {
   int rank;
@@ -412,6 +411,14 @@ inline unsigned int get_node_rank_funs0()
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   return rank;
 }
+
+// checkpoint with environment settings
+#define Qcheck(num)                                                   \
+  {                                                                   \
+    static int do_check =                                             \
+      qlat::get_env_long_default(std::string("qlat_checkpoint"), -1); \
+    if(num == do_check){Qassert(false);}                              \
+  }
 
 }
 

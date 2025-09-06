@@ -5,7 +5,7 @@
 #include "utils_io_vec.h"
 #include "utils_construction.h"
 #include "utils_stagger_contractions.h"
-#include "utils_gaugefield.h"
+#include "utils_gauge_field.h"
 #include "utils_shift_vecs.h"
 #include "utils_lms_funs.h"
 

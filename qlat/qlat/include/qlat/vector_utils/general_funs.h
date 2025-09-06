@@ -525,11 +525,11 @@ inline void print_mem_info(std::string stmp = "")
   struct sysinfo s_info;
   sysinfo(&s_info);
   #ifdef QLAT_USE_ACC
-  qmessage("===CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
+  qmessage("===CPU free %.8e GB, total %.3e GB; GPU free %.8e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30),freeD,totalD);
   //Qassert(freeD / totalD > 0.08);//unified memeory expand need more memory
   #else
-  qmessage("===CPU free %.3e GB, total %.3e GB. \n"
+  qmessage("===CPU free %.8e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30));
   #endif
   #else
@@ -1313,6 +1313,17 @@ inline std::vector<Long > random_list(const Long n, const Long m, const int seed
 
 }
 
+template<typename Ty, typename Int>
+inline Ty Reduce(Ty* buf, Int Ndata, int GPU = 1)
+{
+  TIMERB("Reduce");
+  qlat::vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
+  reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
+  Ty tmp = rsum[0];
+  sum_all_size( &tmp, 1, 0 );
+  return tmp;
+}
+
 template<typename Ty>
 inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngroup = 4)
 {
@@ -1334,21 +1345,7 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
     }
   });
 
-
-  qlat::vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vecs(buf, rsum.data(), Nvol, 1, GPU);
-  sum_all_size( (Ty*) rsum.data(), 1, 0 );
-  return rsum[0];
-}
-
-template<typename Ty, typename Int>
-inline Ty Reduce(Ty* buf, Int Ndata, int GPU = 1)
-{
-  TIMERB("Reduce");
-  qlat::vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
-  reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
-  sum_all_size( (Ty*) rsum.data(), 1, 0 );
-  return rsum[0];
+  return Reduce(buf, Nvol, GPU);
 }
 
 template<typename Ty>

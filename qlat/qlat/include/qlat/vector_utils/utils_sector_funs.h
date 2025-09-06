@@ -18,7 +18,8 @@ namespace qlat{
 */
 inline std::vector<int >  get_map_sec(int dT,int nt){
   std::vector<int > map_sec;map_sec.resize(nt);
-  int secN = 2*nt/dT;double lensec = nt/(1.0*secN);
+  Qassert(nt % dT == 0);
+  int secN = 2 * nt / dT;double lensec = nt/(1.0*secN);
   int tcount = 0;
   int t0 = 0;
   for(int si=0;si<secN;si++)
@@ -88,11 +89,11 @@ struct sec_list{
   int Nt;
   int Nsec;
   bool antiP;
-  std::vector<int > Loop_sec;
+  std::vector<int > Loop_sec;// defines the calculation order of sections start from 0, gap of Nsec / 2
   /*
     get sector number from time
     map_sec  [nt]  : global variable to check t is within which sections
-    has_sec [Nsec]: local variable to check whether a sector is within nodes
+    has_sec [Nsec] : local variable to check whether a sector is within nodes
     anti_sign : anti periodic signs for baryon
     src_t     : the source position for each time slice
     src_t_r_order : get src number of each time slice
@@ -303,7 +304,7 @@ struct sec_list{
       const int rank = map_mpi_t[si][g_rank];   ////host rank for bcast data
 
       if(i != data.size() - 1){
-        if(host_ti[i] < host_ti[i + 1]){
+        if(host_ti[i] >= host_ti[i + 1]){
           print_info();
           for(size_t i=0;i<data.size();i++)
           {
@@ -311,7 +312,7 @@ struct sec_list{
           }
           Qassert(false);
         }
-        //Qassert( host_ti[i] < host_ti[i + 1] );
+        Qassert( host_ti[i] < host_ti[i + 1] );
       }
 
 

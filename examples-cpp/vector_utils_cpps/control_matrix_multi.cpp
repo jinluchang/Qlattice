@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
     qlat::vector<ComplexM* > aP;aP.resize(L);ComplexM* A = a.data();
     qlat::vector<ComplexM* > bP;bP.resize(L);ComplexM* B = b.data();
     qlat::vector<ComplexM* > cP;cP.resize(L);ComplexM* C = c1.data();
+    display_mem_type(&aP[0]);
     for(size_t i=0;i < L;i++){
       aP[i] = &A[i* m*w];
       bP[i] = &B[i* w*n];

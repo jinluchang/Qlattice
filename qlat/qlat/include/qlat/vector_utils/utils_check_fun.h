@@ -76,7 +76,7 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
   TIMER("diff_gauge");
   const Geometry& geo = g0.geo();
   const Long V = geo.local_volume();
-  qlat::vector<Ta > dL;dL.resize(V);
+  vector<Ta > dL;dL.resize(V);
   qacc_for(index, V, {
     dL[index] = 0.0;
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -91,7 +91,7 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
   });
 
   double diff = Reduce(dL.data(), dL.size(), true);
-  diff = diff/(g0.geo().local_volume()*4*9*2.0);
+  diff = diff / (g0.geo().local_volume()*4*9*2.0);
   qmessage("===diff conf %.5e \n",diff);
   return double(diff);
 }

@@ -15,7 +15,7 @@ vector_utils_header_files = files(
   'utils_fft_desc.h',
   'utils_float_type.h',
   'utils_gammas.h',
-  'utils_gaugefield.h',
+  'utils_gauge_field.h',
   'utils_grid_src.h',
   'utils_io_vec.h',
   'utils_lms_funs.h',

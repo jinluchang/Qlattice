@@ -7,7 +7,7 @@
 #pragma once
 
 #include "general_funs.h"
-#include "utils_gaugefield.h"
+#include "utils_gauge_field.h"
 #include "utils_field_expand.h"
 
 namespace qlat
@@ -41,44 +41,38 @@ struct API FieldBoxT {
   }
 
   template <class M, int civ >
-  void init(qlat::FieldM<M, civ>& fr)
+  void init(FieldM<M, civ>& fr)
   {
-    // TIMER("FieldBoxT::FieldBoxT(&)")
-    //Qassert(get_data_type_is_double<Ty>() == get_data_type_is_double<M>());
     Qassert(Is_data_double<Ty>() == Is_data_double<M>());
     Qassert(fr.multiplicity == civ);
     Qassert(sizeof(M) % sizeof(Ty) == 0);
     const int Nd = sizeof(M) / sizeof(Ty);
-    v.p  = (Ty*) qlat::get_data(fr).data();
+    v.p  = (Ty*) get_data(fr).data();
     geo.set_view(fr.geo());
     Multiplicity = fr.multiplicity * Nd;
 
     if(type == Su3::u9){Qassert(Multiplicity % 9 == 0);}
     if(type == Su3::u6){Qassert(Multiplicity % 6 == 0);}
     if(type == Su3::uA){Qassert(Multiplicity % 6 == 0);}
-    //geo().multiplicity = 1;
-    //qmessage("multi %5d, geoM %5d \n", Multiplicity, geo().multiplicity);
   }
-
+  //
   template <class M, int civ >
-  FieldBoxT(qlat::FieldM<M, civ>& fr)
+  FieldBoxT(FieldM<M, civ>& fr)
   {
     init(fr);
   }
-
+  //
   FieldBoxT(Ty* p, const Geometry& geo_, int8_t Multiplicity_ = 1)
   {
-    // TIMER("FieldBoxT::FieldBoxT(&)")
     init(p, geo_, Multiplicity_);
   }
-
+  //
   void init(Ty* p, const Geometry& geo_, int8_t Multiplicity_ = 1)
   {
     Multiplicity = Multiplicity_;
     v.p  = p;
     geo.set_view(geo_);
-    //geo().multiplicity = 1;
-
+    //
     if(type == Su3::u9){Qassert(Multiplicity % 9 == 0);}
     if(type == Su3::u6){Qassert(Multiplicity % 6 == 0);}
     if(type == Su3::uA){Qassert(Multiplicity % 6 == 0);}
@@ -97,15 +91,8 @@ struct API FieldBoxT {
     geo.set_view(vp.geo());
     Multiplicity = vp.Multiplicity;
   }
-  //FieldBoxT(const FieldBoxT<Ty>& vp)
-  //{
-  //  // TIMER("FieldBoxT::FieldBoxT(std::FieldBoxT&)")
-  //  *this = vp;
-  //}
-  //
   ~FieldBoxT()
   {
-    // TIMER("FieldBoxT::~FieldBoxT()")
     clear();
   }
   //
@@ -118,7 +105,7 @@ struct API FieldBoxT {
   {
     v.p = NULL;
   }
-
+  //
   qacc int initialized()
   {
     if(v.p == NULL){return 0;}
@@ -161,21 +148,6 @@ struct API FieldBoxT {
     Multiplicity = vp.Multiplicity;
     return *this;
   }
-  //FieldBoxT<Ty>& operator=(const std::FieldBoxT<Ty>& vp)
-  //{
-  //  // TIMER("FieldBoxT::operator=(std::FieldBoxT&)");
-  //  //clear();
-  //  type = vp.type;
-  //  v    = vp.v;
-  //  geo.set(vp.geo());
-  //  Multiplicity = vp.Multiplicity;
-  //  //resize(vp.size());
-  //  //for (Long i = 0; i < v.n; ++i) {
-  //  //  v[i] = vp[i];
-  //  //}
-  //  return *this;
-  //}
-
   qacc Ty* data(const Coordinate& xl, const Long mu = 0)
   {
     const Long index = geo().offset_from_coordinate(xl, 1);
@@ -192,12 +164,6 @@ struct API FieldBoxT {
     qassert(false);
     return NULL;
   }
-  //
-  //qacc const M& operator[](const Long i) const { return v[i]; }
-  //qacc M& operator[](const Long i) { return v[i]; }
-  ////
-  //qacc Long size() const { return v.size(); }
-  ////
   qacc Ty* data() { return v.p; }
   qacc const Ty* data() const { return v.p; }
 
@@ -207,6 +173,14 @@ struct API FieldBoxT {
     if(type == Su3::u6){Nc = Multiplicity / 6;}
     if(type == Su3::uA){Nc = Multiplicity / 6;}
     return Nc;
+  }
+
+  // print out info
+  void show(){
+    const Long V    = geo().local_volume();
+    const Long V_ex = geo().local_volume_expanded();
+    qmessage("FieldM %2d, nc %2d, V %10ld, Vex %10ld, ", Multiplicity, nc(), V, V_ex);
+    display_mem_type(v.p);
   }
 
   template <class Tb>
@@ -265,7 +239,7 @@ struct API FieldBoxT {
     }
     if(type == Su3::uA)
     {
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty b[9];
+      Ty b[9];
       for(int i=0;i<9;i++){b[i] = s[i];}
       //su3_traceless_anti_hermition(b);
       r[0] = b[1*3 + 0];
@@ -298,7 +272,7 @@ struct API FieldBoxT {
     }
     if(type == Su3::uA)
     {
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty b[9];
+      Ty b[9];
       for(int i=0;i<9;i++){b[i] = s[i];}
       //su3_traceless_anti_hermition(b);
       r[0] += b[1*3 + 0];
@@ -326,21 +300,15 @@ void copy_ux(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs)
   Qassert(fs.initialized() and fr.initialized())
   const Geometry& geo = fs.geo();
   const Long V = geo.local_volume();
-
-  int Nr = 4;
-  int Nb = 4;
-  if(ta == Su3::u9){Nr = fr.Multiplicity / 9;}
-  if(ta == Su3::u6){Nr = fr.Multiplicity / 6;}
-  if(ta == Su3::uA){Nr = fr.Multiplicity / 6;}
-
-  if(tb == Su3::u9){Nb = fs.Multiplicity / 9;}
-  if(tb == Su3::u6){Nb = fs.Multiplicity / 6;}
-  if(tb == Su3::uA){Nb = fs.Multiplicity / 6;}
-  Qassert(Nr == Nb);
-
+  const int Nr = fr.nc();
+  const int Ns = fs.nc();
+  Qassert(Nr > 0 and Ns > 0 and Nr == Ns);
+  //
+  //fr.show();
+  //fs.show();
   qacc_for(isp, V, {
+    Ty b0[9];
     const Coordinate xl = geo.coordinate_from_index(isp);
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty b0[9];
     for(int mu=0;mu<Nr;mu++)
     {
       fs.construct(b0, xl, mu);
@@ -356,26 +324,17 @@ void copy_uf(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs, int dr, int ds)
   Qassert(fs.initialized() and fr.initialized())
   const Geometry& geo = fs.geo();
   const Long V = geo.local_volume();
-
-  int Nr = 4;
-  int Nb = 4;
-  if(ta == Su3::u9){Nr = fr.Multiplicity / 9;}
-  if(ta == Su3::u6){Nr = fr.Multiplicity / 6;}
-  if(ta == Su3::uA){Nr = fr.Multiplicity / 6;}
-
-  if(tb == Su3::u9){Nb = fs.Multiplicity / 9;}
-  if(tb == Su3::u6){Nb = fs.Multiplicity / 6;}
-  if(tb == Su3::uA){Nb = fs.Multiplicity / 6;}
-  Qassert(dr < Nr and ds < Nb);
-
+  const int Nr = fr.nc();
+  const int Ns = fs.nc();
+  Qassert(dr < Nr and ds < Ns and Nr > 0 and Ns > 0);
+  //
   qacc_for(isp, V, {
+    Ty b0[9];
     const Coordinate xl = geo.coordinate_from_index(isp);
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty b0[9];
     fs.construct(b0, xl, ds);
     fr.copy_from(b0, xl, dr);
   });
 }
-
 
 template <class Ty, class Tf, Su3 ta>
 void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
@@ -385,67 +344,6 @@ void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
     copy_fields<Ty, Tf>(fr.data(), fs.data(), fs.Multiplicity, fr.geo(), fs.geo());
   }
 }
-
-//template <class Ty, Su3 ta, class Tf, Su3 tb>
-//void copy_u9_from_u6(FieldBoxT<Ty, Su3::u9 >& f9, FieldBoxT<Ty, Su3::u6 >& f6)
-//{
-//  copy_u6_from_u9(f6, f9, 0);
-//}
-
-//template <class Ty, class Td>
-//void copy_uA_from_u9(FieldBoxT<Ty, Su3::u6 >& fA, FieldBoxT<Ty, Su3::u9 >& f9, int dir = 1)
-//{
-//  const Geometry& geo = gf.geo();
-//  const Long V = geo.local_volume();
-//  fu.init(geo);
-//  qacc_for(isp, V, {
-//    const Coordinate xl = geo.coordinate_from_index(isp);
-//    Ty* s2  = (Ty*) fu.get_elems(xl).p;
-//    Ty sb[9];
-//    Ty BUF[9];
-//    for(int mu=0;mu<4;mu++)
-//    {
-//      qlat::ComplexT<Td >* s1  = (qlat::ComplexT<Td >*) gf.get_elem(xl, mu).p;
-//      for(int i=0;i<9;i++){sb[i] = s1[i];}
-//      su3_traceless_anti_hermition(sb);
-//      s2[mu*6 + 0] = sb[1*3 + 0]; 
-//      s2[mu*6 + 1] = sb[2*3 + 0]; 
-//      s2[mu*6 + 2] = sb[2*3 + 1]; 
-//
-//      s2[mu*6 + 3] = sb[0*3 + 0]; 
-//      s2[mu*6 + 4] = sb[1*3 + 1]; 
-//      s2[mu*6 + 5] = sb[2*3 + 2]; 
-//    }
-//  });
-//}
-//
-//template <class Ty, class Td>
-//void copy_u9_from_uA(GaugeFieldT<Td >& gf, FieldM<Ty, 24>& fu)
-//{
-//  const Geometry& geo = fu.geo();
-//  const Long V = geo.local_volume();
-//  gf.init(geo);
-//  qacc_for(isp, V, {
-//    const Coordinate xl = geo.coordinate_from_index(isp);
-//    Ty* sf  = (Ty*) fu.get_elems(xl).p;
-//    for(int mu=0;mu<4;mu++)
-//    {
-//      Ty* s = &sf[mu*6 + 0];
-//      qlat::ComplexT<Td >* r  = (qlat::ComplexT<Td >*) gf.get_elem(xl, mu).p;
-//      r[1*3 + 0] = s[0];
-//      r[2*3 + 0] = s[1];
-//      r[2*3 + 1] = s[2];
-//
-//      r[0*3 + 1] = Ty(-1.0, 0.0) * qconj(s[0]);
-//      r[0*3 + 2] = Ty(-1.0, 0.0) * qconj(s[1]);
-//      r[1*3 + 2] = Ty(-1.0, 0.0) * qconj(s[2]);
-//
-//      r[0*3 + 0] = s[3];
-//      r[1*3 + 1] = s[4];
-//      r[2*3 + 2] = s[5];
-//    }
-//  });
-//}
 
 template <class Ty, Su3 type>
 void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", const int GPU = 1, const QBOOL dummy = QTRUE)

@@ -51,7 +51,7 @@ inline void qacc_Err(qacc_Error err, const char* file, int line)
 
 #endif
 
-API inline MemType check_mem_type(void* ptr)
+API inline MemType check_mem_type(const void* ptr)
 {
   MemType mem_type;
 #ifdef QLAT_USE_ACC
@@ -79,6 +79,9 @@ API inline MemType check_mem_type(void* ptr)
   return mem_type;
 }
 
+API inline void display_mem_type(const void* p){
+  displayln_info(ssprintf("mem type %s \n", show(check_mem_type( p )).c_str()));
+}
 
 #define qfor(iter, num, ...)                                   \
   {                                                            \
