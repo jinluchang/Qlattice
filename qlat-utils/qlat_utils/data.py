@@ -502,31 +502,6 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 # ----------
 
-def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
-    """
-    Recommend to use `jk_blocking_func_default` instead.
-    #
-    block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
-    """
-    if block_size_dict is None:
-        block_size_dict = dict()
-    def jk_blocking_func(jk_idx):
-        if all_jk_idx_set is not None:
-            all_jk_idx_set.add(jk_idx)
-        if isinstance(jk_idx, int_types):
-            traj = jk_idx
-            return traj // block_size
-        elif isinstance(jk_idx, tuple) and len(jk_idx) == 2 and isinstance(jk_idx[1], int_types):
-            job_tag, traj = jk_idx
-            assert isinstance(job_tag, str)
-            assert isinstance(traj, int_types)
-            block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
-            assert isinstance(block_size_for_this_job_tag, int_types)
-            return (job_tag, traj // block_size_for_this_job_tag,)
-        else:
-            return jk_idx
-    return jk_blocking_func
-
 @timer
 def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True, is_use_old_rand_alg=False):
     """
@@ -849,14 +824,20 @@ def g_jk_size(**kwargs):
     return None
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_blocking_func(idx, *, jk_blocking_func, **_kwargs):
+def g_jk_blocking_func(jk_idx, *, jk_blocking_func, **_kwargs):
     """
-    Return ``jk_blocking_func(idx)``.
+    Return ``jk_blocking_func(jk_idx)``.
     """
     if jk_blocking_func is None:
-        return idx
+        return jk_idx
     else:
-        return jk_blocking_func(idx)
+        return jk_blocking_func(jk_idx)
+
+@use_kwargs(default_g_jk_kwargs)
+def g_jk_sample_size(job_tag, traj_list, **kwargs):
+    jk_idx_list = [ (job_tag, traj,) for traj in traj_list ]
+    b_jk_idx_set = set( g_jk_blocking_func(jk_idx, **kwargs) for jk_idx in jk_idx_list )
+    return len(b_jk_idx_set)
 
 class JkKwargs:
 
@@ -887,3 +868,30 @@ class JkKwargs:
         self.original = None
 
 # ----
+
+# ---- old funcs
+
+def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
+    """
+    Recommend to use `jk_blocking_func_default` instead.
+    #
+    block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+    """
+    if block_size_dict is None:
+        block_size_dict = dict()
+    def jk_blocking_func(jk_idx):
+        if all_jk_idx_set is not None:
+            all_jk_idx_set.add(jk_idx)
+        if isinstance(jk_idx, int_types):
+            traj = jk_idx
+            return traj // block_size
+        elif isinstance(jk_idx, tuple) and len(jk_idx) == 2 and isinstance(jk_idx[1], int_types):
+            job_tag, traj = jk_idx
+            assert isinstance(job_tag, str)
+            assert isinstance(traj, int_types)
+            block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
+            assert isinstance(block_size_for_this_job_tag, int_types)
+            return (job_tag, traj // block_size_for_this_job_tag,)
+        else:
+            return jk_idx
+    return jk_blocking_func

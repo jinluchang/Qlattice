@@ -12,7 +12,11 @@ def bench_rjk(n_data_sample, n_rand_sample, is_normalizing_rand_sample):
     q.default_g_jk_kwargs["jk_type"] = "rjk"
     q.default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
     q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
-    q.default_g_jk_kwargs["jk_blocking_func"] = None
+    q.default_g_jk_kwargs["block_size"] = 1
+    q.default_g_jk_kwargs["block_size_dict"] = {
+            "job_tag": 1,
+            "test1": 1,
+            }
     q.default_g_jk_kwargs["is_normalizing_rand_sample"] = is_normalizing_rand_sample
     @functools.lru_cache
     def get_traj_list(job_tag):
