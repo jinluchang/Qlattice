@@ -404,6 +404,37 @@ inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const Long Nsum =11, const 
   return sum;
 }
 
+inline void get_local_geo(const qlat::Geometry& geo, Geometry& geo_l){
+  Coordinate total_site;
+  for(int i=0;i<4;i++){
+    total_site[i] = geo.node_site[i] * geo.geon.size_node[i];
+  }
+  geo_l.init(total_site);
+}
+
+inline Geometry& get_geo(const Coordinate& tot, box<Geometry>& geo_BOX)
+{
+  Geometry geo_tmp;
+  geo_tmp.init(tot);
+  geo_BOX.set(geo_tmp);
+  return geo_BOX();
+}
+
+inline Geometry& get_geo_resize(const Geometry& geo, const Coordinate& gl, const Coordinate& gr, box<Geometry>& geo_BOX)
+{
+  Geometry geo_ex = geo_resize(geo, gl, gr );
+  geo_BOX.set(geo_ex);
+  return geo_BOX();
+}
+
+inline Geometry& get_geo_local(const Geometry& geo, box<Geometry>& geo_BOX)
+{
+  Geometry geo_local;
+  get_local_geo(geo, geo_local);
+  geo_BOX.set(geo_local);
+  return geo_BOX();
+}
+
 inline unsigned int get_node_rank_funs0()
 {
   int rank;

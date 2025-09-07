@@ -1282,7 +1282,6 @@ struct smear_fun{
 
 /////smear plan buffer related
 struct SmearPlanKey {
-  //Geometry geo;
   Coordinate total_site;
   bool smear_in_time_dir;
   int bfac;
@@ -1453,7 +1452,7 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Td >& gf, const qlat::vecto
   GaugeFieldT<Td > gf1;
   Coordinate expan_left(1, 1, 1, 1);
   Coordinate expan_zero(0, 0, 0, 0);
-  const Geometry geo_ex = geo_resize(gf.geo(), expan_left, expan_zero);
+  const Geometry& geo_ex = geo_resize(gf.geo(), expan_left, expan_zero);
   gf1.init(geo_ex);
   copy_fields(gf1, gf);
   {
@@ -1949,9 +1948,8 @@ void smear_propagator_gwu_convension_inner(
   Long Tfloat = 0;
   ///double mem       = 0.0;
   Qassert(gf.initialized);
-  Geometry geo = gf.geo();
-  //geo.multiplicity = 1;
-  geo.eo=0;
+  const Geometry& geo = gf.geo();
+  Qassert(geo.eo == 0);
   #ifdef QLAT_USE_ACC
   if(c0*d0 > 48){abort_r("d0 should be smaller than 48 for gpu mem. \n");}
   #endif
@@ -2073,7 +2071,7 @@ double source_radius(Propagator4dT<Td >& prop, const int tsrc = 0)
   double radius = 0; 
   double rho = 0; 
   double rho_x2 = 0; 
-  const qlat::Geometry &geo = prop.geo();
+  const Geometry& geo = prop.geo();
   const Long Nvol = geo.local_volume();
   std::vector<int > nv, Nv, mv;
   geo_to_nv(geo, nv, Nv, mv);

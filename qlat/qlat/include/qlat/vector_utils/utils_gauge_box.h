@@ -66,9 +66,14 @@ struct API FieldBoxT {
   {
     init(p, geo_, Multiplicity_);
   }
-  //
+  // will check whether geo is good to use
   void init(Ty* p, const Geometry& geo_, int8_t Multiplicity_ = 1)
   {
+    const MemType gmem = check_mem_type( &geo_);
+    const MemType pmem  = check_mem_type(&p);
+    if(gmem != MemType::Uvm){
+      Qassert(gmem == pmem);
+    }
     Multiplicity = Multiplicity_;
     v.p  = p;
     geo.set_view(geo_);

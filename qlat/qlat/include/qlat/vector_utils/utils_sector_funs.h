@@ -80,7 +80,7 @@ inline void get_src_times(vector<int>& src_t, vector<int>& src_t_order, vector<i
 }
 
 struct sec_list{
-  Geometry geo;
+  box<Geometry> geoB;
 
   int tini;
   int dT;
@@ -173,8 +173,8 @@ struct sec_list{
 
   inline void init(const Geometry& geo_, const int tini_, const int dT_, const bool antiP_ = false, const bool message = true){
     TIMERA("Initialize sec_list ");
-    geo = geo_;
-    fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    geoB.set(geo_);
+    fft_desc_basic& fd = get_fft_desc_basic_plan(geoB());
     nt = fd.nt;
     dT = dT_;
     antiP = antiP_;
@@ -201,7 +201,7 @@ struct sec_list{
     if(tini == tini_ % dT){return ;}
     tini = tini_ % dT;
 
-    fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    fft_desc_basic& fd = get_fft_desc_basic_plan(geoB());
     ////from t (without tini) to seci
     get_map_sec(map_sec, tini, dT, nt, message);
     //std::vector<int > map_sec_0 = get_map_sec(dT, nt);
@@ -278,7 +278,7 @@ struct sec_list{
   {
     TIMERA("bcast_sink_vecs");
     Qassert(nt != 0 and data.size() == host_ti.size());
-    fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    fft_desc_basic& fd = get_fft_desc_basic_plan(geoB());
   
     /*
       spatial sum only on the host ranks

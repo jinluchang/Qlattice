@@ -324,7 +324,7 @@ template <class Ta, class Td>
 void quda_convert_gauge(qlat::vector<qlat::ComplexT<Ta > >& qgf, GaugeFieldT<Td >& gf, int dir = 0, int GPU = 0)
 {
   TIMER("quda_convert_gauge(qgf,gf)");
-  Geometry geo = gf.geo();
+  const Geometry& geo = gf.geo();
   //Qassert(geo.multiplicity == 4);
   //geo.multiplicity = 1;
   qlat::ComplexT<Ta >* res = (qlat::ComplexT<Ta >*) qgf.data();

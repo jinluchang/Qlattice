@@ -30,7 +30,7 @@ struct quda_clover_inverter {
   //quda::Solver *solve_cg;
   //bool CG_reset;
 
-  Geometry geo;
+  box<Geometry> geo;
   qlat::vector<Long > map_index;
   int solve_mode ;
   /////QudaInvertParam df_param;
@@ -208,14 +208,14 @@ quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t
 {
   TIMER("quda_clover_inverter_constuctor");
   /////set up gauge parameters
-  geo = geo_;
-  V = geo.local_volume();
+  geo.set(geo_);
+  V = geo(0.local_volume();
   Qassert(num_src_ > 0);
   num_src = num_src_;
   num_src_inv = num_src;
   prec_type_check = -2;
 
-  for (int mu = 0; mu < 4; mu++) {X[mu] = geo.node_site[mu];}
+  for (int mu = 0; mu < 4; mu++) {X[mu] = geo().node_site[mu];}
   ////===Start of gauge_param
   gauge_param = newQudaGaugeParam();
   ////quda_gf_default = NULL;
@@ -478,17 +478,12 @@ inline void quda_clover_inverter::alloc_csfield_cpu()
 inline void quda_clover_inverter::save_prop(const void* srcP, const char* filename)
 {
   TIMER("quda save_prop");
-  ////qlat::Coordinate total_site;
-  ////qlat::Coordinate node_site = qlat::get_size_node();
-  ////for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
-  ////qlat::Geometry geo;geo.init(total_site, 1);
-
   const int n0 = 1;
   std::vector<qlat::FieldM<qlat::ComplexD , 3> > prop;prop.resize(n0);
-  for(int n = 0; n < prop.size(); n++){prop[n].init(geo);}
+  for(int n = 0; n < prop.size(); n++){prop[n].init(geo());}
 
   qlat::ComplexD* src = (qlat::ComplexD*) srcP;
-  Long Nvol = geo.local_volume() * n0 ;
+  Long Nvol = geo().local_volume() * n0 ;
 
   for(int n=0;n<n0;n++){
     quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
@@ -815,7 +810,7 @@ inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, c
   setup_clover(kappa, inv_param.clover_csw);
 
   Qassert((void*) (*gsrc).data() != (void*) src);
-  qlat_cf_to_quda_cf((*gsrc), src, geo, map_index);
+  qlat_cf_to_quda_cf((*gsrc), src, geo(), map_index);
 
   //ctmp0 = quda::ColorSpinorField::Create(cs_cpu);
   //ctmp1 = quda::ColorSpinorField::Create(cs_cpu);
@@ -843,7 +838,7 @@ inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, c
   //invertQuda(res, src, &inv_param);
 
   Qassert((void*) (*gres).data() != (void*) res);
-  quda_cf_to_qlat_cf(res, (*gres), geo, map_index);
+  quda_cf_to_qlat_cf(res, (*gres), geo(), map_index);
 
   gettimeofday(&tm1, NULL);double time0 = tm1.tv_sec - tm0.tv_sec;time0 += (tm1.tv_usec - tm0.tv_usec)/1000000.0;
 

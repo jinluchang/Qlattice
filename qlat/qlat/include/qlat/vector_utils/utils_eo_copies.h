@@ -14,7 +14,7 @@ inline void qlat_map_eo_site(qlat::FieldM<int8_t, 1>& eo, const Geometry& geo)
 {
   TIMER("qlat_map_eo_site");
   if(eo.initialized){
-    Geometry geo_ = eo.geo();
+    const Geometry& geo_ = eo.geo();
     if(geo_ == geo){return ;}
   }
   eo.init(geo, 1);

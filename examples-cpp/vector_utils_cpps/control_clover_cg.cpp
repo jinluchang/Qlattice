@@ -19,8 +19,7 @@ int main(int argc, char* argv[])
   nz = in.nz;
   nt = in.nt;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  Geometry geo;
-  geo.init(total_site); 
+  Geometry geo;geo.init(total_site); 
   fflush_MPI();
 
   int Nsrc =  12;

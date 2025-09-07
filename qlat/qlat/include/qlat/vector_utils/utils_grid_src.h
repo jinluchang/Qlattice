@@ -539,10 +539,6 @@ void write_grid_point_to_src(Ty* res, const Ty* srcP, const PointsSelection& pos
   const int  Ns = 12;
   if(total % b_size != 0){abort_r("eigen system configurations wrong! \n");}
 
-  ////Geometry geo;fd.get_geo(geo );
-  ////Coordinate xl0 = geo.coordinate_from_index(isp);
-  ////Coordinate xg0 = geo.coordinate_g_from_l(xl0);
-
   Ty phase = 0.0;
   for(Long pi=0;pi<Long(posL.size());pi++){
   const Coordinate& pos = posL[pi];

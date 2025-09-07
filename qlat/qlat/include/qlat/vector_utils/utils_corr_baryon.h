@@ -32,7 +32,7 @@ void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2
   qlat::vector<Ty > &res, const ga_M &ga2,const int ind2, const ga_M &ga1, const int ind1, int clear=1){
   TIMER("Proton_vectorE");
   if(prop1.size() == 0){res.resize(0); return ;}
-  const qlat::Geometry &geo = prop1[0].geo();
+  const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   /* 
@@ -124,7 +124,7 @@ void proton_vectorE_gwu(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2
 
   int nmass = prop1.size();
   if(prop1.size() == 0){res.resize(0); return ;}
-  const qlat::Geometry &geo = prop1[0].geo();
+  const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   int NTt  = fd.Nv[3];
@@ -226,7 +226,7 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   TIMER("Proton_vectorE");
   if(prop1.size() == 0){res.resize(0); return ;}
   ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
-  const qlat::Geometry &geo = prop1[0].geo();
+  const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   int NTt  = fd.Nv[3];
@@ -331,7 +331,7 @@ void baryon_vectorE(std::vector<qpropT >& prop1, std::vector<qpropT >& prop2, st
   TIMER("Baryon_vectorE_insertion");
   if(prop1.size() == 0){resP.resize(0); return ;}
   ////check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
-  const qlat::Geometry &geo = prop1[0].geo();
+  const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   Qassert(insertion == 0 or insertion == 1 or insertion == 2);
 
@@ -444,7 +444,7 @@ void baryon_vectorE_ud_insert(std::vector<qpropT >& prop1, std::vector<qpropT >&
   std::vector< std::vector<qpropT > >& resP, const int ud, const std::vector<int >& map_sec, std::vector< std::vector<qpropT > >& buf) 
 {
   if(prop1.size() == 0){resP.resize(0); return ;}
-  const qlat::Geometry &geo = prop1[0].geo();
+  const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   const Long Nt = fd.Nt;
@@ -1046,7 +1046,7 @@ void Omega_corrE(EigenTy& prop1, EigenTy& prop2, EigenTy& prop3,
   qlat::vector_gpu<Ty > &res, ga_M &ga2,int ind2,ga_M &ga1,int ind1, int clear=1,const Coordinate& mom = Coordinate())
 {
   if(prop1.size() == 0){res.resize(0); return ;}
-  const qlat::Geometry &geo = prop1[0].geo();
+  const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
 
   //int NTt  = fd.Nv[3];

@@ -42,7 +42,7 @@ struct quda_inverter {
   //quda::Solver *solve_cg;
   //bool CG_reset;
 
-  Geometry geo;
+  box<Geometry> geoB;
   qlat::vector<Long > map_index;
   qlat::FieldM<int8_t, 1> eo;//buffer for eo signs
   int solve_mode ;
@@ -189,9 +189,9 @@ struct quda_inverter {
 
   template<typename Ty>
   inline void get_inversion_bufs(qlat::vector<Ty* >& res, const int nvecs, const int halfV = 0){
-    LInt Vd = geo.local_volume() * 3 * sizeof(Ty) / sizeof(qlat::ComplexT<double>);
+    LInt Vd = geoB().local_volume() * 3 * sizeof(Ty) / sizeof(qlat::ComplexT<double>);
     if(halfV == 1){Vd = Vd / 2;}
-    Qassert(Vd / (geo.local_volume() * 3) <= 64);//at most 64 vectors in buf
+    Qassert(Vd / (geoB().local_volume() * 3) <= 64);//at most 64 vectors in buf
     const LInt totalD = Vd * nvecs;
     buf_inv.resizeL(totalD);
     res.resize(nvecs);
@@ -277,16 +277,16 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
 {
   TIMER("quda_inverter_constuctor");
   /////set up gauge parameters
-  geo = geo_;
-  V = geo.local_volume();
+  geoB.set(geo_);
+  V = geoB().local_volume();
   //Qassert(num_src_ > 0);
   //num_src = num_src_;
   //num_src_inv = num_src;
   prec_type_check = -2;
 
   for (int mu = 0; mu < 4; mu++) {
-    X[mu] = geo.node_site[mu];
-    Qassert(geo.node_site[mu] % 2 == 0);// needed for eo inverter
+    X[mu] = geoB().node_site[mu];
+    Qassert(geoB().node_site[mu] % 2 == 0);// needed for eo inverter
   }
   ////===Start of gauge_param
   gauge_param = newQudaGaugeParam();
@@ -483,7 +483,7 @@ inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const int apply_s
   /////load gauge to quda GPU default position
   freeGaugeQuda();
   //{
-  //qlat::ComplexD res =  vec_norm2(quda_gf, quda_gf, geo.local_volume() * 4 * 9, QMGPU, 64);
+  //qlat::ComplexD res =  vec_norm2(quda_gf, quda_gf, geo().local_volume() * 4 * 9, QMGPU, 64);
   //qmessage("gauge norm %.8e %.8e \n",  res.real(), res.imag());
   //}
   if(apply_stag_phase == 1 and (gauge_with_phase == false or force_phase == 1)){
@@ -688,7 +688,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  ////qlat::Coordinate total_site;
 //  ////qlat::Coordinate node_site = qlat::get_size_node();
 //  ////for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
-//  ////qlat::Geometry geo;geo.init(total_site, 1);
+//  ////Geometry geo;geo.init(total_site, 1);
 //
 //  const int n0 = 1;
 //  std::vector<qlat::FieldM<qlat::ComplexD , 3> > prop;prop.resize(n0);
@@ -2362,7 +2362,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   //Qassert(get_data_type<Ty>() == ComplexD_TYPE or get_data_type<Ty>() == ComplexF_TYPE);
   Qassert(buf_prec == 0 or buf_prec == 1);
   Qassert(eigenL.size() == eigen_precL.size());
-  const Long Ndata = 3 * geo.local_volume() / 2; // half volume vectors
+  const Long Ndata = 3 * geoB().local_volume() / 2; // half volume vectors
   if(eigen_with_nvec == false){
     for(unsigned int vi=0;vi<Pres.size();vi++){
       if(buf_prec == 0){zero_Ty((qlat::ComplexT<double>*) Pres[vi], Ndata, 1, QFALSE);}
@@ -2456,7 +2456,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
     cbuf[iv] = (Ty*) buf[iv];
   }
 
-  const Long V = geo.local_volume();
+  const Long V = geoB().local_volume();
   //if no eigen vectors return 0 vectors with each size V*3
   if(eigen_with_nvec == false){
     for(int vi=0;vi<nsrc;vi++){
@@ -2477,7 +2477,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   // src copy to buf
   for(int vi=0;vi<nsrc;vi++){
     if(qlat_format == 1){
-      qlat_cf_to_quda_cf(cbuf[vi], src[vi], DIM, geo, map_index);
+      qlat_cf_to_quda_cf(cbuf[vi], src[vi], DIM, geoB(), map_index);
       if(pB[vi]!=cbuf[vi]){
         cpy_GPU(pB[vi], cbuf[vi], V*3);
       }
@@ -2532,10 +2532,6 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
     Pres[vi*2 + 1] = Qvec[nsrc + vi]->Odd().data();
   }
 
-  //qlat_cf_to_quda_cf((*qinv.gsrc), src, qinv.geo, qinv.map_index);
-  //qinv.prepare_low_prop();
-  //quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geo, qinv.map_index);
-
   // actual low mode jobs
   deflate_Ty(Pres, Psrc, mass_mat, buf_prec, 1);
 
@@ -2549,8 +2545,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   // buf copy to res with rotations
   if(qlat_format == 1)
   for(int vi=0;vi<nsrc;vi++){
-    /////qlat_cf_to_quda_cf(pB[vi], pR[vi], DIM, geo, map_index);
-    quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geo, map_index);
+    quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geoB(), map_index);
   }
 
   for(int vi=0;vi<2*nsrc;vi++){
@@ -3306,7 +3301,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
   Qassert( nsrc == Long(prop.size()) );
   if(nsrc == 0){return ;}
   qlat::vector<Long >& map = qinv.map_index;
-  const Geometry& geo = qinv.geo;
+  const Geometry& geo = qinv.geoB();
   Qassert(low_only == 0 or low_only == 1 or low_only == -1);///0 for full, 1 for low only, -1 other ways to solve
   const int restart_cg = 0;
 
@@ -3317,7 +3312,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
   //auto& Ebuf = eigen.Ebuf;
   //auto& Sbuf = eigen.Sbuf;
   const int DIM = 3;
-  const LInt Nd = qinv.geo.local_volume() * DIM;
+  const LInt Nd = qinv.geoB().local_volume() * DIM;
 
   if(qinv.eigen_with_nvec == true){
     qinv.inv_param.use_init_guess = QUDA_USE_INIT_GUESS_YES;
@@ -3389,9 +3384,6 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
     for(int vi=0;vi<nsrc;vi++){
       param.v = (void*) prop[vi];
       Qvec[vi] = new quda::ColorSpinorField(param);
-      //if(buf_prec==0)qlat_cf_to_quda_cf((qlat::ComplexT<double >*) Qvec[vi]->data(), src[vi], DIM, geo, map);
-      //if(buf_prec==1)qlat_cf_to_quda_cf((qlat::ComplexT<float  >*) Qvec[vi]->data(), src[vi], DIM, geo, map);
-
       qlat_cf_to_quda_cf(buf[vi], src[vi], DIM, geo, map);
       //src and prop may be the same
       if(buf_prec==0)cpy_GPU((qlat::ComplexT<double >*) Qvec[vi]->data(), buf[vi], Nd);
@@ -3728,7 +3720,6 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   rP.resize(1);
   sP[0] = src ;
   rP[0] = prop;
-  //// qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geo, qinv.map_index);
 
   get_staggered_prop_group(qinv, sP, rP, mass, err, niter, low_only, prec_type);
 
@@ -3738,7 +3729,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   ////qlat_cf_to_quda_cf((qlat::ComplexD*) qinv.csrc->data(), src, geo, Dim);
 
   ////{
-  ////const Long V = qinv.geo.local_volume();
+  ////const Long V = qinv.geoB().local_volume();
   ////qlat::vector_gpu<Ty > tmp;tmp.resize(V*3);
   ////tmp.copy_from(src, V*3);
   ////Ty norm = tmp.norm();
@@ -3753,9 +3744,9 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //}
 
   //if(low_only == 1){
-  //  qlat_cf_to_quda_cf((*qinv.gsrc), src, qinv.geo, qinv.map_index);
+  //  qlat_cf_to_quda_cf((*qinv.gsrc), src, qinv.geoB(), qinv.map_index);
   //  qinv.prepare_low_prop();
-  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geo, qinv.map_index);
+  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geoB(), qinv.map_index);
   //}
 
   //if(low_only == 2){
@@ -3763,7 +3754,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //    quda::ColorSpinorParam param(*qinv.gres);
   //    qinv.gadd  = quda::ColorSpinorField::Create(param);
   //  }
-  //  qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geo, qinv.map_index);
+  //  qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geoB(), qinv.map_index);
 
   //  qinv.do_inv(prop, src, mass, err, niter, prec_type);
   //  //qinv.do_inv(qinv.cres->data(), qinv.csrc->data(), mass, err, niter, prec_type);
@@ -3775,7 +3766,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //  quda::Complex p_unit(-1.0, 0.0);
   //  quda::blas::caxpby(n_unit, *qinv.gadd  , p_unit, *qinv.gres);
   //  //(*qinv.cres) = (*qinv.gres);
-  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geo, qinv.map_index);
+  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geoB(), qinv.map_index);
   //}
 }
 
@@ -3799,7 +3790,6 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
     sP[iv] = srcP;
     rP[iv] = propP;
   }
-  //// qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geo, qinv.map_index);
   get_staggered_prop_group(qinv, sP, rP, mass, err, niter, low_only, prec_type);
 
   //   norm = norm_FieldM(prop);
@@ -3821,7 +3811,6 @@ void get_staggered_prop(quda_inverter& qinv, std::vector<qlat::FieldM<Ty, 3> >& 
     sP[iv] = (Ty*) qlat::get_data(srcL[iv] ).data();
     rP[iv] = (Ty*) qlat::get_data(propL[iv]).data();
   }
-  //// qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geo, qinv.map_index);
   get_staggered_prop_group(qinv, sP, rP, mass, err, niter, low_only, prec_type);
 
   //for(int iv=0;iv<Ninv;iv++)
@@ -3858,22 +3847,10 @@ void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::v
     rP[iv] = resP[iv*Vl];
   }
 
-  //// qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geo, qinv.map_index);
-
   get_staggered_prop_group(qinv, sP, rP, mass, err, niter, low_only, prec_type);
   //   get_staggered_prop(qinv, resP, resP,  mass, err, niter, low_only, prec_type);
   mv_civ.move_civ_in( resP, resP, 1, 3, Vl, 1, true);
 
-  //std::vector<colorFT > srcP;srcP.resize(3);
-  //for(int i=0;i<3;i++){srcP[i].init(qinv.geo);}
-  //Qassert(Ninv == 3);
-  //for(int iv=0;iv<Ninv;iv++)
-  //{
-  //  copy_to_color_prop(srcP, src);
-  //  get_staggered_prop(qinv, srcP, srcP,  mass, err, niter, low_only, prec_type);
-  //  copy_color_prop(prop, srcP);
-  //}
-  //qinv.num_src_inv = tmp_inv;
 }
 
 ////even dslash flops
@@ -3906,7 +3883,7 @@ void get_staggered_multishift(quda_inverter& qinv,
   Qassert(src.size() != 0);
 
   //const int DIM = 3;
-  const Geometry& geo = qinv.geo;
+  const Geometry& geo = qinv.geoB();
   qlat::vector<Long >& map = qinv.map_index;
 
   const int Nsrc = src.size();
@@ -4155,9 +4132,6 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
 
   std::vector<void *> _hp_multi_x(multishift);
-
-  //const Geometry& geo = qinv.geo;
-  //const long Ndata = geo.local_volume() * 3 / 2;
 
   if(multishift == 1)
   {

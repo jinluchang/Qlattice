@@ -346,7 +346,7 @@ template <class Ta, class Td>
 void copy_gf(GaugeFieldT<Ta> &g1, GaugeFieldT<Td> &g0)
 {
   TIMER("copy_gf");
-  const Geometry geo = g0.geo();
+  const Geometry& geo = g0.geo();
   if(!g1.initialized){g1.init(geo);}
 
   ///cannot use this due to extended gauge fields

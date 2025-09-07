@@ -171,12 +171,8 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
 #endif
 
 
-void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, int mode_reduce=1)
+void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry& geo, Complexq *fM, int mode_reduce=1)
 {
-  ////const qlat::Geometry &geo = a0.geo();
-  ////const Coordinate vg = geo.total_site();
-  ////int nt = vg[3];
-
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
   Long Nsum = Nvol/Nt;
@@ -217,12 +213,8 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
   }
 }
 
-inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
+inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry& geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
 {
-  /////const qlat::Geometry &geo = a0.geo();
-  ////const Coordinate vg = geo.total_site();
-  ////int nt = vg[3];
-
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
   qlat::vector<Complexq > reduce_sum;reduce_sum.resize((nvec*Nt)*16);
@@ -647,7 +639,7 @@ struct Nab_distribute{
 //
 //}
 
-inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector<Complexq > &values,const int &nzero,qlat::vector<Ftype > &Mres,const qlat::Geometry &geo, int GPUFM=1)
+inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector<Complexq > &values,const int &nzero,qlat::vector<Ftype > &Mres,const Geometry& geo, int GPUFM=1)
 {
   ////Input must be chiral vectors, eigen_chi, n_vec --> chi --> d/2 --> t,y,z,x --> c --> complex
   ////values --> n_vec --> massi

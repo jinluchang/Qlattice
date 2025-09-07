@@ -41,7 +41,7 @@ struct io_vec
   size_t vol,noden;
   int rank,Nmpi;
   std::vector<int > nv,Nv;
-  qlat::Geometry geop;
+  Geometry geop;
   int threadio;
   std::vector<FILE* > file_omp;
   std::vector<size_t > currsend,currrecv,currspls,currrpls;
@@ -1457,7 +1457,7 @@ void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &nois
         size_t sizen = get_file_size_MPI(filename);
         if(sizen != Nnoi*2*Fsize){abort_r("noise size wrong! \n");}
       }
-      qlat::Geometry geo = io_use.geop;// geo.multiplicity=1;
+      Geometry geo = io_use.geop;// geo.multiplicity=1;
       if(!noi.initialized)noi.init(geo);
     }
     if(read==false){
@@ -1518,9 +1518,6 @@ void load_gwu_noiP(const char *filename, Fieldy& noi,bool read=true, bool GPU = 
   if(read==true){
   size_t sizen = get_file_size_MPI(filename);
   if(sizen != 2*Fsize){abort_r("noise size wrong! \n");}
-
-  //qlat::Geometry geo = io_use.geop;// geo.multiplicity=1;
-  //if(!noi.initialized)noi.init(geo);
   }
   if(read==false){
     ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
@@ -1959,25 +1956,26 @@ void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises,
 
 ////initialize the instruct and end of file
 template <class Ty>
-void load_qlat_noisesT_file_ini(const char *filename, const int N_noi, const int bfac, inputpara& in, Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), const bool rotate_bfac = true){
+Geometry load_qlat_noisesT_file_ini(const char *filename, const int N_noi, const int bfac, inputpara& in, const Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), const bool rotate_bfac = true){
   if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ) and IsTypeComplex<Ty>() == 0){
     abort_r("Cannot understand the input format! \n");}
 
   open_file_qlat_noisesT(filename, bfac, in, read, single_file, N_noi, VECS_TYPE, INFO_LIST, rotate_bfac);
 
+  Geometry geo_copy = geo;
   if(read == true ){
     Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
-    geo.init(total_site);
+    geo_copy.init(total_site);
   }
 
-  ////io_vec io_use(geo, IO_DEFAULT, IO_THREAD, in.do_checksum);
-  IOvecKey fkey(geo, IO_DEFAULT, in.do_checksum);
+  IOvecKey fkey(geo_copy, IO_DEFAULT, in.do_checksum);
   io_vec& io_use = get_io_vec_plan(fkey);
   io_use.end_of_file = in.end_of_file;
+  return geo_copy;
 }
 
 template <class Ty>
-void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const int bfac, inputpara& in, Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1, bool rotate_bfac = true){
+void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const int bfac, inputpara& in, const Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1, bool rotate_bfac = true){
   TIMERB("load_qlat_noisesT kernel");
 
   Long N_noi = 0;
@@ -1985,7 +1983,7 @@ void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const i
     ////if(n0 != 0 or n1 != -1){abort_r("Write mode shoude have n0 0, n1 -1 . ! \n");}
     N_noi = noises.size();
   }
-  load_qlat_noisesT_file_ini<Ty>(filename, N_noi, bfac, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
+  Geometry geo_copy = load_qlat_noisesT_file_ini<Ty>(filename, N_noi, bfac, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
 
   if(in.read == true){
     if(n1 == -1){n1 = in.N_noi;}
@@ -1995,7 +1993,7 @@ void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const i
   }
 
   //////io_vec io_use(geo, IO_DEFAULT, IO_THREAD, in.do_checksum);
-  IOvecKey fkey(geo, IO_DEFAULT, in.do_checksum);
+  IOvecKey fkey(geo_copy, IO_DEFAULT, in.do_checksum);
   io_vec& io_use = get_io_vec_plan(fkey);
   io_use.end_of_file = in.end_of_file;
 
@@ -2006,7 +2004,7 @@ void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const i
   /////qmessage(" ionum off %zu, n0 %zu, n1 %zu, Vsize %zu, bsize %zu \n", off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
 
   io_use.io_off(file, in.off_file, true);  ////shift file for the head
-  load_qlat_noisesT_core(file, noises, bfac, QMCPU, geo, io_use, in, n0, n1);
+  load_qlat_noisesT_core(file, noises, bfac, QMCPU, geo_copy, io_use, in, n0, n1);
 
   close_file_qlat_noisesT(file, io_use, in);
 }
@@ -2023,7 +2021,7 @@ void load_qlat_noisesT(const char *filename, std::vector<qlat::FieldM<Ty, bfac> 
     in.read_geo(geo);
   }
 
-  load_qlat_noisesT_file_ini<Ty>(filename, N_noi, bfac, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
+  geo = load_qlat_noisesT_file_ini<Ty>(filename, N_noi, bfac, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
 
   std::vector<Ty* > bufP;n1 = load_qlat_noisesT_ini(bufP, noises, bfac, in, n0, n1);
 
@@ -2057,7 +2055,7 @@ void load_qlat_noisesG(const char *filename, std::vector<qlat::FieldG<Ty> > &noi
     in.read_geo(geo);
   }
 
-  load_qlat_noisesT_file_ini<Ty>(filename, N_noi, bfac, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
+  geo = load_qlat_noisesT_file_ini<Ty>(filename, N_noi, bfac, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
 
   std::vector<Ty* > bufP;n1 = load_qlat_noisesT_ini(bufP, noises, bfac, in, n0, n1);
 
@@ -2538,7 +2536,7 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 /////mode_c = 0, default even with vol -> color
 template<typename Ty >
 inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  Geometry& geo, const int N0=0, const int N1=-1,
+  const Geometry& geo, const int N0=0, const int N1=-1,
   double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
   std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
 {
@@ -2648,7 +2646,8 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   ////FILE* file_read  = open_eigensystem_file(filename, nini, ntotal, true , io_use , in_read_eigen , 2);
   ////close_eigensystem_file(file_read , io_use , in_read_eigen );
 
-  load_qlat_noisesT_file_ini<Ty>(filename, nhalf, DIM, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
+  Geometry geo_copy = load_qlat_noisesT_file_ini<Ty>(filename, nhalf, DIM, in, geo, read, single_file, VECS_TYPE, INFO_LIST, rotate_bfac);
+  Qassert(geo_copy == geo);
 
   io_use.end_of_file = in.end_of_file;
 
@@ -2678,14 +2677,14 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     for(int iv=0;iv<ncut;iv++){
       const int ne = (n0+iv) * 2 + nini;
       if(ne+2 <= even.nvec){
-        copy_eo_cs_to_fieldM(eig[iv], 3, geo, even,    even, ne, ne+1, ne+1, ne+2, map, mode_c);
+        copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even,    even, ne, ne+1, ne+1, ne+2, map, mode_c);
       }else{
-        copy_eo_cs_to_fieldM(eig[iv], 3, geo, even, tmp_end, ne, ne+1, 0, 1, map, mode_c);
+        copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even, tmp_end, ne, ne+1, 0, 1, map, mode_c);
       }
     }
 
     /////will shift file from current position
-    load_qlat_noisesT_core(file, noises, DIM, QMCPU, geo, io_use, in, nini_off, ncut + nini_off);
+    load_qlat_noisesT_core(file, noises, DIM, QMCPU, geo_copy, io_use, in, nini_off, ncut + nini_off);
     ////print_mem_info();
 
     if(read == true)
@@ -2693,9 +2692,9 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
       ////qmessage("iv %8d, ncut %8d \n", iv, int(ncut));
       const int ne = (n0+iv) * 2 + nini;
       if(ne+2 <= even.nvec){
-        copy_fieldM_to_eo_cs(even,   even ,eig[iv], 3, geo, ne, ne+1, ne+1, ne+2, map, mode_c);
+        copy_fieldM_to_eo_cs(even,   even ,eig[iv], 3, geo_copy, ne, ne+1, ne+1, ne+2, map, mode_c);
       }else{                                               
-        copy_fieldM_to_eo_cs(even, tmp_end,eig[iv], 3, geo, ne, ne+1, 0, 1, map, mode_c);
+        copy_fieldM_to_eo_cs(even, tmp_end,eig[iv], 3, geo_copy, ne, ne+1, 0, 1, map, mode_c);
       }
     }
   }
@@ -2707,7 +2706,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 
 template<typename Ty >
 inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  Geometry& geo, const int N0=0, const int N1=-1,
+  const Geometry& geo, const int N0=0, const int N1=-1,
   double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
   std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
 {
@@ -2716,7 +2715,7 @@ inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qla
 
 template<typename Ty>
 inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
+  const Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
   std::string VECS_TYPE = std::string("EO_Eigensystem"))
 {
   load_eo_evecs(filename, even, evals, err, geo, N0, N1, mass, mode_c, single_file, false, VECS_TYPE);
@@ -2724,7 +2723,7 @@ inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 
 template<typename Ty>
 inline void save_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
+  const Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
   std::string VECS_TYPE = std::string("EO_Eigensystem"))
 {
   load_eo_evecs(filename.c_str(), even, evals, err, geo, N0, N1, mass, mode_c, single_file, false, VECS_TYPE);

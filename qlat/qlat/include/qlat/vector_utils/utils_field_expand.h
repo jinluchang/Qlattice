@@ -371,10 +371,6 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const int MULTI,
   const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
   const Int multiplicity = 1;//always 1 for the buffers reuse
 
-  // Geometry geo1 = geo;
-  //Qassert(geo1 == geo);
-  // geo1.multiplicity = 1;// no multiplicity to save buffers
-
   const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, multiplicity);
   const Long total_bytes =
       (plan.total_recv_size + plan.total_send_size) * sizeof(M);

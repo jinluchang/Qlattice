@@ -257,7 +257,7 @@ void fieldG_sink_gammaG(std::vector<FieldG<Ty > >& prop, ga_M& ga, bool conj = f
 }
 
 template<typename Ty>
-void qprop_move_dc_in(Ty* src, const qlat::Geometry &geo, const int dir = 1)
+void qprop_move_dc_in(Ty* src, const qlat::Geometry& geo, const int dir = 1)
 {
   move_index mv_civ;
   const Long sizeF = geo.local_volume();
@@ -274,7 +274,7 @@ void qprop_move_dc_in(qpropT& src, const int dir = 1)
 }
 
 template<typename Ty>
-void qprop_move_dc_out(Ty* src, const qlat::Geometry &geo)
+void qprop_move_dc_out(Ty* src, const qlat::Geometry& geo)
 {
   qprop_move_dc_in(src, geo, 0);
 }
@@ -290,7 +290,7 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, const T
 {
   if(s0.size() == 0){res.resize(0); return ;}
   const int Nvec = s0.size();
-  const qlat::Geometry &geo = s0[0].geo();
+  const qlat::Geometry& geo = s0[0].geo();
   const Long Nvol = geo.local_volume();
 
   init_qpropT(res, Nvec, geo);
@@ -312,7 +312,7 @@ void qprop_sub_add(std::vector<qpropT >& res, std::vector< qpropT >& s0, std::ve
   if(s0.size() == 0){res.resize(0); return ;}
   Qassert(s0.size() == s1.size());
   const int Nvec = s0.size();
-  const qlat::Geometry &geo = s0[0].geo();
+  const qlat::Geometry& geo = s0[0].geo();
   const Long Nvol = geo.local_volume();
 
   init_qpropT(res, Nvec, geo);
@@ -405,7 +405,7 @@ void prop4d_ps_to_cps(Propagator4dT<Td >& prop){
 template<typename Td>
 void get_corr_pion(std::vector<qlat::FermionField4dT<Td > > &prop,const Coordinate &x_ini, std::vector<double > &write ){
 
-  const qlat::Geometry &geo = prop[0].geo();
+  const qlat::Geometry& geo = prop[0].geo();
 
   unsigned long Nvol = geo.local_volume();
   ///int Nt = geo.node_site[3];
@@ -577,91 +577,6 @@ void shift_result_t(qlat::vector<Ty >& Esrc, int nt, int tini){
 //  if(clear){zeroE(prop);}
 //}
 
-//////default dir == 0 from prop4d to propE
-//template<typename Ty, typename Ta>
-//void copy_propE(std::vector<Ty* > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
-//  TIMER("Copy prop");
-//  Qassert(fd.order_ch == 0);
-//  const LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-//  const int NTt  = fd.Nv[3];
-//  Geometry geo;fd.get_geo(geo);
-//  int nmass = 0;
-//  if(dir==0){nmass = pV1.size();ini_propE(prop,nmass,fd);}
-//  if(dir==1){
-//    nmass = prop.size()/(12*12*NTt);
-//    Qassert(int(pV1.size()) == nmass);
-//    //if(pV1.size() != (LInt) nmass){
-//    //  pV1.resize(0);
-//    //  pV1.resize(nmass);for(int i=0;i<nmass;i++){pV1[i].init(geo);}
-//    //}
-//  }
-//
-//  for(int mi = 0;mi < nmass;mi++)
-//  {
-//    Ty* pv = pV1[mi];
-//    /////Propagator4dT<Ty >& pv = pV1[mi];
-//    qlat::vector<Ta* > ps = EigenM_to_pointers(prop);
-//    qacc_for(isp, Long(NTt*Nxyz),{
-//      int ti = isp/Nxyz;
-//      int xi = isp%Nxyz;
-//      /////qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem_offset(isp);
-//      Ty* v0 = &pv[isp * 12 * 12];
-//
-//      for(int c0 = 0;c0 < 3; c0++)
-//      for(int d0 = 0;d0 < 4; d0++)
-//      for(int c1 = 0;c1 < 3; c1++)
-//      for(int d1 = 0;d1 < 4; d1++)
-//      {
-//        LInt off = mi*12*12 + (d1*3+c1)*12+d0*3+c0;
-//        if(dir==0){ps[off*NTt+ti][xi] = v0[(d0*3 + c0)*12 +  d1*3 + c1];}
-//        if(dir==1){v0[(d0*3 + c0)*12 +  d1*3 + c1] = ps[off*NTt+ti][xi];}
-//      }
-//    });
-//  }
-//
-//}
-
-//template<typename Ty, typename Ta>
-//void copy_propE(Propagator4dT<Ty > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
-//  int nmass = 1;
-//  if(dir==0){
-//    Qassert(pV.initialized);
-//    ini_propE(prop,nmass,fd);
-//  }
-//  if(dir==1){
-//    nmass = prop.size()/(12*12*fd.Nv[3]);
-//    Qassert(nmass == 1);
-//    if(!pV.initialized){
-//      Geometry geo;fd.get_geo(geo);
-//      pV.init(geo);
-//    }
-//  }
-//  std::vector<Ty* > PTy;PTy.resize(1);
-//  PTy[0] = (Ty*) (qlat::get_data(pV).data());
-//  copy_propE(PTy, prop, fd, dir);
-//}
-
-//template<typename Ty, typename Ta>
-//void copy_propE(std::vector<Propagator4dT<Ty > > &pV, EigenMTa &prop, qlat::fft_desc_basic &fd, int dir=0){
-//  int nmass = 0;
-//  if(dir==0){nmass = pV.size();ini_propE(prop,nmass,fd);}
-//  if(dir==1){
-//    nmass = prop.size()/(12*12*fd.Nv[3]);
-//    bool do_init = false;
-//    if(pV.size() != (LInt) nmass){do_init = true;}
-//    if(pV.size() > 0){if(!pV[0].initialized){do_init = true;}}
-//    if(do_init)
-//    {
-//      pV.resize(0);
-//      Geometry geo;fd.get_geo(geo);
-//      pV.resize(nmass);for(int i=0;i<nmass;i++){pV[i].init(geo);}
-//    }
-//  }
-//  std::vector<Ty* > PTy;PTy.resize(nmass);
-//  for(int im=0;im<nmass;im++){PTy[im] = (Ty*) (qlat::get_data(pV[im]).data());}
-//  copy_propE(PTy, prop, fd, dir);
-//}
-//
 //template<typename Ty, typename Ta>
 //void copy_prop4d_to_propE(EigenMTa &prop, std::vector<Propagator4dT<Ty > > &pV1, qlat::fft_desc_basic &fd){
 //  copy_propE(pV1, prop, fd, 0);
@@ -707,7 +622,7 @@ void check_prop_size(EigenTy& prop, fft_desc_basic& fd){
 }
 
 template <typename Ty >
-void copy_qprop_to_propG(EigenTy& res, std::vector<qlat::FieldM<Ty, 12*12> >& src, const qlat::Geometry &geo, int GPU = 1, int dir = 1)
+void copy_qprop_to_propG(EigenTy& res, std::vector<qlat::FieldM<Ty, 12*12> >& src, const qlat::Geometry& geo, int GPU = 1, int dir = 1)
 {
   int nvec = 0;
   if(dir == 1){
@@ -732,7 +647,7 @@ void copy_qprop_to_propG(EigenTy& res, std::vector<qlat::FieldM<Ty, 12*12> >& sr
 }
 
 template <typename Ty >
-void copy_propG_to_qprop(std::vector<qpropT >& res, EigenTy& src, const qlat::Geometry &geo, int GPU = 1)
+void copy_propG_to_qprop(std::vector<qpropT >& res, EigenTy& src, const qlat::Geometry& geo, int GPU = 1)
 {
   copy_qprop_to_propG(src, res, geo, 0, GPU);
 }
@@ -750,7 +665,7 @@ void ini_resE(qlat::vector<Ty > &res, int nmass, qlat::fft_desc_basic &fd){
   clear_qv(res);
 }
 
-inline Coordinate get_src_pos(std::string src_n, Coordinate& off_L, const Geometry &geo){
+inline Coordinate get_src_pos(std::string src_n, Coordinate& off_L, const Geometry& geo){
   std::string noi_name = ssprintf("%s",src_n.c_str()  );
 
   qlat::FieldM<Complexq, 1> noi;
@@ -1014,7 +929,7 @@ void copy_qprop_to_propE(std::vector<qlat::vector<Ty > >& Eprop, std::vector<qpr
     ps[mi] = (Ty*) qlat::get_data(src[mi]).data();
   }
 
-  const qlat::Geometry &geo = src[0].geo();
+  const qlat::Geometry& geo = src[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   if(dir == 1){ini_propE(Eprop, nmass, fd);}
   

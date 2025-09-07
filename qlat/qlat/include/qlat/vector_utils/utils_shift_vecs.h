@@ -1159,7 +1159,7 @@ void symmetric_shift(shift_vec& svec, std::vector<Propagator4dT<Td > >& src, std
   if(src.size() == 0){res.resize(0);return ;}
   std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
 
-  const qlat::Geometry &geo = src[0].geo();
+  const Geometry& geo = src[0].geo();
   const Long Nvol = geo.local_volume();
 
   if(res.size() != src.size()){res.resize(src.size());}
@@ -1273,7 +1273,7 @@ void shift_vecs_cov_fieldG(std::vector< std::vector<FieldG<Ty> > >& res, std::ve
 
 
 template <class Ty, class Ta>
-void shift_fields_qlat(Ty* src, Ta* res, const std::vector<int >& iDir, const int Nvec, const qlat::Geometry &geo, const int move_in = 1)
+void shift_fields_qlat(Ty* src, Ta* res, const std::vector<int >& iDir, const int Nvec, const Geometry& geo, const int move_in = 1)
 {
   TIMER("shift_fields_qlat");
   //Qassert(Nvec <= Ngroup);
@@ -1341,7 +1341,6 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<int >& iDir, cons
 
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   const Coordinate  local_site(fd.Nx, fd.Ny, fd.Nz, fd.Nt);
-  //// Geometry geo;geo.init(total_site);
 
   for(int bi=0;bi<biva;bi++){
     if(res[bi] != src[bi]){

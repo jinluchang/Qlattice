@@ -184,7 +184,8 @@ void prepare_gauge_buffer(std::vector< GaugeFieldT<Ta>   >& gfL, const GaugeFiel
 
   Qassert(fd.Nx % 2 == 0 and fd.Ny % 2 == 0 and fd.Nz % 2 == 0);
 
-  Geometry geoh;geoh.init(total_siteh);
+  //Geometry geoh;geoh.init(total_siteh);
+  box<Geometry> geo_BOX;const Geometry& geoh = get_geo(total_siteh, geo_BOX);
 
   const Coordinate expan_left( 0, 0, 0, 0);
   const Coordinate expan_right(1, 1, 1, 0);
@@ -274,7 +275,7 @@ void smear_propagator_gwu_convension_2shift_modi(std::vector< qlat::vector_gpu<T
   if(width == 0 or step == 0){return ;}
   Qassert(propL.size() == 8);
   Qassert(gfL.size() == 8);
-  const Geometry geoh = gfL[0].geo();
+  const Geometry& geoh = gfL[0].geo();
   const Long Ndata = c0 * 3 * d0;
 
   double factor_sigma = width;//width can be negative for normalization
@@ -295,7 +296,7 @@ template <class Ty, class Td, int c0, int d0>
 void smear_propagator_gwu_convension_2shift_modi(Ty* prop, const Geometry& geo, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<Ty > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
   Qassert(gfL.size() == 8);
-  const Geometry geoh = gfL[0].geo();
+  const Geometry& geoh = gfL[0].geo();
   if(width == 0 or step == 0){return ;}
 
   const int Ndata = c0 * 3 * d0;
