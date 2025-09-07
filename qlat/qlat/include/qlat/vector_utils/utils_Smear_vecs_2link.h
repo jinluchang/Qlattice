@@ -185,7 +185,7 @@ void prepare_gauge_buffer(std::vector< GaugeFieldT<Ta>   >& gfL, const GaugeFiel
   Qassert(fd.Nx % 2 == 0 and fd.Ny % 2 == 0 and fd.Nz % 2 == 0);
 
   //Geometry geoh;geoh.init(total_siteh);
-  box<Geometry> geo_BOX;const Geometry& geoh = get_geo(total_siteh, geo_BOX);
+  const Geometry& geoh = get_geo(total_siteh);
 
   const Coordinate expan_left( 0, 0, 0, 0);
   const Coordinate expan_right(1, 1, 1, 0);

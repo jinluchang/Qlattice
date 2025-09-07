@@ -20,14 +20,32 @@ bool Compare_geo(const Geometry& g0, const Geometry& g1){
   if(g0.expansion_left        != g1.expansion_left  ){ return 0; }
   if(g0.expansion_right       != g1.expansion_right ){ return 0; }
   //
-  //if(g0.total_site()    != g1.total_site()    ){ return 0; }
+  if(g0.total_site()          != g1.total_site()    ){ return 0; }
   //
   return equal;
 }
 
 bool Compare_geo_less(const Geometry& g0, const Geometry& g1){
-  if(g0.total_site()    < g1.total_site()    ){  return true;}
-  if(g1.total_site()    < g0.total_site()    ){  return false;}
+  if(g0.initialized     < g1.initialized     ){ return true; }
+  if(g1.initialized     < g0.initialized     ){ return false; }
+  //
+  if(g0.total_site()    < g1.total_site()    ){ return true;}
+  if(g1.total_site()    < g0.total_site()    ){ return false;}
+  //
+  if(g0.is_only_local   < g1.is_only_local   ){ return true;}
+  if(g1.is_only_local   < g0.is_only_local   ){ return false;}
+  //
+  if(g0.eo              < g1.eo              ){ return true;}
+  if(g1.eo              < g0.eo              ){ return false;}
+  //
+  if(g0.geon            < g1.geon            ){ return true;}
+  if(g1.geon            < g0.geon            ){ return false;}
+  //
+  if(g0.node_site       < g1.node_site       ){ return true;}
+  if(g1.node_site       < g0.node_site       ){ return false;}
+  //
+  if(g0.node_site_expanded < g1.node_site_expanded){ return true;}
+  if(g1.node_site_expanded < g0.node_site_expanded){ return false;}
   //
   if(g0.expansion_left  < g1.expansion_left  ){  return true;}
   if(g1.expansion_left  < g0.expansion_left  ){  return false;}
