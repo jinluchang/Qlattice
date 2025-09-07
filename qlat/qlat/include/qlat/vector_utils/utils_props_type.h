@@ -237,7 +237,7 @@ void copy_bsize_prop_to_FieldP(std::vector<Fieldy >& res, Ty* src, const LInt nV
     if(do_ini == true){Qassert(c_add == 0);}
 
     if(do_ini){
-      Geometry geo;fd.get_geo(geo);
+      const Geometry& geo = fd.Get_geo();
       res.resize(0);res.resize(ntem);
       for(LInt iv=0;iv<res.size();iv++){res[iv].init(geo, civ);}
     }

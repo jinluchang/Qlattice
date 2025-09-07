@@ -27,8 +27,7 @@ int main(int argc, char* argv[])
   int seed = 123;
 
   Coordinate total_site = Coordinate(nl, nl, nl, nt);
-  Geometry geo;
-  geo.init(total_site); 
+  const Geometry& geo = get_geo(total_site);
 
   PointSelection pconf;
   FieldSelection fsel;

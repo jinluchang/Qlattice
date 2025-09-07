@@ -493,25 +493,10 @@ void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int
   }
   if(mode == 1){
     MPI_Alltoallv_Send_Recv((char*) src, send, spls, (char*) res, recv, rpls, comm);
-
-    //int num_node;MPI_Comm_size(comm, &num_node);
-    //int id_node;MPI_Comm_rank(comm, &id_node);
-    //std::vector<MPI_Request> send_reqs(num_node);
-    //int mpi_tag = 10240 + 777;
-    //int c1 = 0;
-    //for(int n = 0; n < num_node; n++){
-    //  if(send[n]!=0){MPI_Isend(&src[spls[n]/sizeof(Ty)], send[n], MPI_CHAR, n, mpi_tag, comm, &send_reqs[c1]);c1 += 1;}
-    //}
-
-    //for(int n = 0; n < num_node; n++){
-    //  if(recv[n]!=0){MPI_Recv( &res[rpls[n]/sizeof(Ty)], recv[n], MPI_CHAR, n, mpi_tag, comm, MPI_STATUS_IGNORE);}
-    //}
-    //if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
   }
 
   if(do_copy == true){cpy_data_thread(res0, &tem_res[0], max_res, 2);}
 }
-
 
 ////Need add explanations
 ////sum all src or bcast each node data to others
@@ -548,7 +533,7 @@ void Redistribute_all_Nt(Ty *src,Long size,const qlat::Geometry& geo, int GPU=0)
 
   //Ty* buf;
   //if(GPU == 0){buf = (Ty *)aligned_alloc_no_acc(size*sizeof(Ty));}
-  qlat::vector_gpu<Ty > buf; buf.resize(size, GPU);
+  vector_gpu<Ty > buf; buf.resize(size, GPU);
 
   {
   ////TIMER("MPI call CPU");
@@ -724,17 +709,6 @@ inline int get_mpi_id_node_close()
   return id_node_local;
 }
 
-inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vector<int > &Nv, std::vector<int > &mv)
-{
-  Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
-}
-inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector<int >& nv, qlat::vector<int > &Nv, qlat::vector<int > &mv){
-  Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
-}
 
 }
 

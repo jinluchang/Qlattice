@@ -14,7 +14,7 @@
 #include <typeinfo>
 
 #include "utils_float_type.h"
-#include<type_traits>
+#include <type_traits>
 
 #include <iterator>
 #include "utils_read_txt.h"

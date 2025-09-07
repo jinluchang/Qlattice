@@ -92,8 +92,7 @@ int main(int argc, char* argv[])
 
   const int n_vec = in.nvec;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  Geometry geo;
-  geo.init(total_site); 
+  const Geometry& geo = get_geo(total_site);
   fflush_MPI();
 
   {

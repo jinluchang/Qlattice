@@ -60,8 +60,7 @@ int main(int argc, char* argv[])
 
   {
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  Geometry geo;
-  geo.init(total_site); 
+  const Geometry& geo = get_geo(total_site);
   fflush_MPI();
 
   std::string flag_add = std::string("FFT");

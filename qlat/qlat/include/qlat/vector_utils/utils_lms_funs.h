@@ -820,7 +820,7 @@ template<typename Ty>
 void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ty >& res, int mode_sm = 0)
 {
   /////if(propH.size() != src.size()*massL.size()){abort_r("prop size, mass size not match!\n");}
-  Geometry geo;fd.get_geo(geo );
+  const Geometry& geo = fd.Get_geo();
 
   int GPU = 1;
   int nmass = massL.size();

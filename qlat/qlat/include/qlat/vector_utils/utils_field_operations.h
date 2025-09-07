@@ -29,7 +29,7 @@ template<class Fieldy>
 inline bool is_field_local(Fieldy& field){
   Qassert(field.initialized);
   const Geometry& geo = field.geo();
-  Geometry geo_l;get_local_geo(geo, geo_l);
+  Geometry geo_l;Get_geo_local(geo, geo_l);
   if(geo == geo_l){return true;}
   return false;
 }
