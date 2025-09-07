@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
   int n_vec = 1;
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
 
   //char namew[500],namer[500],prop_tmp[500],name[500],name_tem[500];
   //char name0[500],name1[500],filename[500];

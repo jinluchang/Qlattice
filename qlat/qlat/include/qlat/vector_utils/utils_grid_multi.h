@@ -126,9 +126,9 @@ template <class Ty>
 void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const int civ,
   const Coordinate& n1, const Coordinate& n0, const Coordinate& nA)
 {
-  const Geometry& geoA = get_geo(nA);
-  const Geometry& geo0 = get_geo(n0);
-  const Geometry& geo1 = get_geo(n1);
+  const Geometry& geoA = get_geo_cache(nA);
+  const Geometry& geo0 = get_geo_cache(n0);
+  const Geometry& geo1 = get_geo_cache(n1);
   grid_memory_reshape(res, src, civ, geo1, geo0, geoA);
 }
 

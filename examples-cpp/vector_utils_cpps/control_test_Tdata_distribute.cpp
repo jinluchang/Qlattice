@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
   qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
   fflush_MPI();
 
   fft_desc_basic fd(geo);

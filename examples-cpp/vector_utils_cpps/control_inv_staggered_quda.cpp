@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   nz = in.nz;
   nt = in.nt;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
   fflush_MPI();
 
   Coordinate sp = string_to_Coordinate(in.paraI);

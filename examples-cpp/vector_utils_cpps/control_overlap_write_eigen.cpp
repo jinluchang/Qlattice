@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
   nx = in0.nx;ny = in0.ny;nz = in0.nz;nt = in0.nt;
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
 
   int icfg  = in0.icfg;
   /////int ionum = in0.ionum;

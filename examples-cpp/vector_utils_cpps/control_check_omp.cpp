@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
   //int n_vec = 1;
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
 
   std::vector<int > nv(4);
   std::vector<int > Nv(4);

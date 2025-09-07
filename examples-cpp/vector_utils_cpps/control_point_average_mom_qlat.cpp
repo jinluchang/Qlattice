@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
   {
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
   fflush_MPI();
 
   print_mem_info();

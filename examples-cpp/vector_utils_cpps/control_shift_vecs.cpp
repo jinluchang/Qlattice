@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
   ///int ionum = in.ionum;
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
 
   std::vector<int > nv,Nv,mv;
   geo_to_nv(geo, nv,Nv,mv);

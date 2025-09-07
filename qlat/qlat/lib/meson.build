@@ -24,6 +24,7 @@ cppsources = files(
   'dslash.cpp',
   'wilson-flow.cpp',
   'flowed-hmc.cpp',
+  'utils_geo_cache.cpp',
   )
 py3.install_sources(cppsources, subdir: 'qlat/lib')
 

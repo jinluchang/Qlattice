@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   for(int nx=int(nxi/4);nx<=nxi;nx = nx + int(nxi/4))
   {
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
   //char nameP0[500]
   //char nameP1[500];
 

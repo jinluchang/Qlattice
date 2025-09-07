@@ -97,7 +97,7 @@ struct fft_desc_basic
   inline Geometry& Get_geo(){
     const Coordinate total_site = Coordinate(nx, ny, nz, nt);
     //geo.init(total_site);
-    return qlat::get_geo(total_site);
+    return qlat::get_geo_cache(total_site);
   }
 
   inline size_t get_prop_size(){
@@ -467,7 +467,7 @@ inline fft_desc_basic& get_fft_desc_basic_plan(const FFTdescKey& fkey)
 {
   if (!get_fft_desc_basic_cache().has(fkey)) {
     //Geometry geo;geo.init(fkey.total_site);
-    const Geometry& geo = get_geo(fkey.total_site);
+    const Geometry& geo = get_geo_cache(fkey.total_site);
     get_fft_desc_basic_cache()[fkey] = fft_desc_basic(geo, fkey.order_ch_or);
   }
   fft_desc_basic& buf = get_fft_desc_basic_cache()[fkey];

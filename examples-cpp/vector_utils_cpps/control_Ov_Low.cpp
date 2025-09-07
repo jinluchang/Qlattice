@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
   int n_vec = in.nvec;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
   fflush_MPI();
 
   io_vec io_use(geo,ionum);

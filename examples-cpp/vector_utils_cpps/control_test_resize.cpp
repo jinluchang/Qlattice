@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   nt = 64;
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
-  const Geometry& geo = get_geo(total_site);
+  const Geometry& geo = get_geo_cache(total_site);
 
   std::vector< qlat::vector<qlat::ComplexD > > src;
   resize_EigenM(src, 2, 3);

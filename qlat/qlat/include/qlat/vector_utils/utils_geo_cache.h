@@ -27,11 +27,11 @@ namespace qlat{
 
 #define QLAT_MAX_GEO_CACHE 512
 
-bool Compare_geo(const Geometry& g0, const Geometry& g1);
-bool Compare_geo_less(const Geometry& g0, const Geometry& g1);
+bool Compare_geo(const Geometry& g0, const Geometry& g1, const bool compare_bytes = true);
+bool Compare_geo_less(const Geometry& g0, const Geometry& g1, const bool compare_bytes = true);
 
 void Get_geo_local(const qlat::Geometry& geo, Geometry& geo_l);
-Geometry& get_geo(const Coordinate& tot, box<Geometry>& geo_BOX);
+Geometry& get_geo_cache(const Coordinate& tot, box<Geometry>& geo_BOX);
 Geometry& get_geo_resize(const Geometry& geo, const Coordinate& gl, const Coordinate& gr, box<Geometry>& geo_BOX);
 Geometry& get_geo_local(const Geometry& geo, box<Geometry>& geo_BOX);
 
@@ -41,26 +41,20 @@ void geo_to_nv(const Geometry& geo, vector<int >& nv, vector<int >& Nv, vector<i
 
 // buffers for global geo box, will be replaced latter
 struct Gbox_key {
-  box<Geometry > geo;
-  Gbox_key(const box<Geometry>& geo_)
-  {
-    const MemType gmem  = check_mem_type(&geo_());
-    Qassert(gmem == MemType::Uvm or gmem == MemType::Cpu);
-    geo.set_view(geo_);
-  }
+  Geometry geo;
   Gbox_key(const Geometry& geo_)
   {
     const MemType gmem  = check_mem_type(&geo_);
     Qassert(gmem == MemType::Uvm or gmem == MemType::Cpu);
-    geo.set_view(geo_);
+    copy_mem(&geo, MemType::Cpu, &geo_, gmem, sizeof(Geometry));
   }
 };
 
 bool operator<(const Gbox_key& x, const Gbox_key& y);
 
-Geometry& get_geo(const Coordinate& Lat);
-Geometry& get_geo(const Geometry& geo);
-Geometry& get_geo(const Geometry& geo, const Coordinate& gl, const Coordinate& gr);
+Geometry& get_geo_cache(const Coordinate& Lat);
+Geometry& get_geo_cache(const Geometry& geo);
+Geometry& get_geo_cache(const Geometry& geo, const Coordinate& gl, const Coordinate& gr);
 Geometry& get_geo_local(const Geometry& geo);
 void clear_geo_cache();
 
