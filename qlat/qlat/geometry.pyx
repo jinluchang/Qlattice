@@ -153,6 +153,12 @@ cdef class Geometry:
         return x
 
     @property
+    def node_site(self):
+        cdef Coordinate x = Coordinate()
+        cc.assign_direct(x.xx, self.xx.node_site)
+        return x
+
+    @property
     def is_only_local(self):
         return self.xx.is_only_local
 
@@ -222,27 +228,30 @@ cdef class Geometry:
 
     def __getstate__(self):
         """
-        Only work when single node (or if all nodes has the same data).
-        Do not support expansion.
+        State of `Geometry` is different on different nodes.
         """
-        total_site = self.total_site
+        size_node = self.size_node
+        coor_node = self.coor_node
+        node_site = self.node_site
         expan_left = self.expansion_left
         expan_right = self.expansion_right
-        return [ total_site, expan_left, expan_right, ]
+        return [ size_node, coor_node, node_site, expan_left, expan_right, ]
 
     def __setstate__(self, state):
         """
-        Only work when single node (or if all nodes has the same data).
-        Do not support expansion.
+        State of `Geometry` is different on different nodes.
         """
         self.__init__()
-        cdef Coordinate total_site
+        cdef Coordinate size_node
+        cdef Coordinate coor_node
+        cdef Coordinate node_site
         cdef Coordinate expan_left
         cdef Coordinate expan_right
-        [ total_site, expan_left, expan_right, ] = state
-        self.xx.init(total_site.xx)
+        [ size_node, coor_node, node_site, expan_left, expan_right, ] = state
+        self.xx.init(coor_node.xx, size_node.xx, node_site.xx)
         self.xx.expansion_left = expan_left.xx
         self.xx.expansion_right = expan_right.xx
+        self.xx.reset_node_site_expanded()
 
 ### -------------------------------------------------------------------
 

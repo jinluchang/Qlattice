@@ -44,6 +44,54 @@ void gf_wilson_flow_step(GaugeField& gf, const double epsilon, const double c1)
   gf_evolve(w, z, epsilon);
 }
 
+// --------------------
+
+static qacc RealD gf_energy_density_dir_site_no_comm(const GaugeField& gf,
+                                                      const Coordinate& xl,
+                                                      const int mu,
+                                                      const int nu)
+{
+  const ColorMatrix g_mu_nu =
+      make_tr_less_anti_herm_matrix(gf_clover_leaf_no_comm(gf, xl, mu, nu));
+  const RealD s = -matrix_trace(g_mu_nu, g_mu_nu).real();
+  return s;
+}
+
+static void gf_energy_density_dir_field_no_comm(Field<RealD>& fd,
+                                                const GaugeField& gf)
+{
+  TIMER("gf_energy_density_dir_field_no_comm");
+  const Geometry geo = geo_resize(gf.geo());
+  qassert(geo.is_only_local);
+  fd.init(geo, 6);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<RealD> v = fd.get_elems(index);
+    v[0] = gf_energy_density_dir_site_no_comm(gf, xl, 0, 1);
+    v[1] = gf_energy_density_dir_site_no_comm(gf, xl, 0, 2);
+    v[2] = gf_energy_density_dir_site_no_comm(gf, xl, 0, 3);
+    v[3] = gf_energy_density_dir_site_no_comm(gf, xl, 1, 2);
+    v[4] = gf_energy_density_dir_site_no_comm(gf, xl, 1, 3);
+    v[5] = gf_energy_density_dir_site_no_comm(gf, xl, 2, 3);
+  });
+}
+
+void gf_energy_density_dir_field(Field<RealD>& fd, const GaugeField& gf)
+// Similar to `gf_plaq_feild`
+// fd.init(geo, 6);
+// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
+// https://arxiv.org/pdf/1203.4469.pdf
+{
+  TIMER("gf_energy_density_field");
+  GaugeField gf1;
+  gf1.init(geo_resize(gf.geo(), 1));
+  gf1 = gf;
+  refresh_expanded(gf1);
+  gf_energy_density_dir_field_no_comm(fd, gf1);
+}
+
+// --------------------
+
 static void gf_energy_density_field_no_comm(Field<RealD>& fd,
                                             const GaugeField& gf)
 {
@@ -86,6 +134,8 @@ RealD gf_energy_density(const GaugeField& gf)
   gf_energy_density_field(fd, gf);
   return field_glb_sum(fd)[0] / (RealD)geo.total_volume();
 }
+
+// --------------------
 
 std::vector<double> gf_wilson_flow(GaugeField& gf,
                                    const double existing_flow_time,

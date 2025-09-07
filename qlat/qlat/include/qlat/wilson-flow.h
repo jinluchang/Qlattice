@@ -15,6 +15,8 @@ void gf_wilson_flow_step_euler(GaugeField& gf, const double epsilon,
 void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
                          const double c1 = 0.0);
 
+void gf_energy_density_dir_field(Field<RealD>& fd, const GaugeField& gf);
+
 void gf_energy_density_field(Field<RealD>& fd, const GaugeField& gf);
 
 RealD gf_energy_density(const GaugeField& gf);

@@ -25,8 +25,9 @@ py_files = files(
   'field_analysis.py',
   'mat_mpi.py',
   'psel_split.py',
-  'instanton_map.py',
   'smear_prop.py',
+  'instanton_map.py',
+  'flow_scale.py',
   )
 
 pxd_files = files(

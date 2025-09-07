@@ -67,6 +67,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         void init(const Coordinate& total_site) except +
         void init(const Coordinate& coor_node, const Coordinate& size_node, const Coordinate& node_site) except +
         void init(const Int& id_node, const Coordinate& size_node, const Coordinate& node_site) except +
+        void reset_node_site_expanded() except +
         Coordinate total_site()
         Coordinate local_site()
         Long local_volume() except +
@@ -476,6 +477,7 @@ cdef extern from "qlat/wilson-flow.h" namespace "qlat":
     void set_wilson_flow_z(GaugeMomentum& z, const GaugeField& gf, const RealD c1) except +
     void gf_wilson_flow_step_euler(GaugeField& gf, const RealD epsilon, const RealD c1) except +
     void gf_wilson_flow_step(GaugeField& gf, const RealD epsilon, const RealD c1) except +
+    void gf_energy_density_dir_field(Field[RealD]& fd, const GaugeField& gf) except +
     void gf_energy_density_field(Field[RealD]& fd, const GaugeField& gf) except +
     RealD gf_energy_density(const GaugeField& gf) except +
     void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf, const Field[RealD]& plaq_factor) except +

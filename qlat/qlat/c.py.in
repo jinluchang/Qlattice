@@ -175,6 +175,7 @@ __all__ += [
         ]
 
 __all__ += [
+        'gf_energy_density_dir_field',
         'gf_energy_density_field',
         'gf_energy_density',
         'gf_wilson_flow_force',

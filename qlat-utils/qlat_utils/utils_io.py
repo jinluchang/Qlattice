@@ -218,8 +218,6 @@ def cache_call(
     else:
         The input `cache` will be used. This cache may be shared for other purpose
     #
-    f.cache = cache
-    #
     # Usage example:
     #
     @cache_call(maxsize=128, get_state=q.get_jk_state)
@@ -232,23 +230,27 @@ def cache_call(
     def func(x):
         return x**2
     #
+    func.cache # returns the underlying lru_cache object.
+    #
+    func.clear() # clears the underlying lru_cache cache object.
+    #
     """
     if cache is None:
         cache = LRUCache(maxsize)
-    def dec(func):
-        @functools.wraps(func)
-        def f(*args, **kwargs):
+    def dec(f):
+        @functools.wraps(f)
+        def func(*args, **kwargs):
             if get_state is None:
                 state = None
             else:
                 state = get_state()
-            func_args = (func.__qualname__, args, kwargs, state)
+            func_args = (f.__qualname__, args, kwargs, state,)
             if is_hash_args:
                 func_args_str = pickle.dumps(func_args)
                 key = hash_sha256(func_args_str)
             else:
                 assert kwargs == dict()
-                key = (func.__qualname__, args, state)
+                key = (f.__qualname__, args, state,)
             if key in cache:
                 c_res = cache[key]
                 c_func_args, c_ret = c_res
@@ -260,14 +262,15 @@ def cache_call(
                     cache[key] = c_res
                     c_func_args, c_ret = c_res
                     return c_ret
-            ret = func(*args, **kwargs)
+            ret = f(*args, **kwargs)
             res = (func_args, ret,)
             cache[key] = res
             if path is not None:
                 save_pickle_obj(res, fn, is_sync_node=is_sync_node)
             return ret
-        f.cache = cache
-        return f
+        func.cache = cache
+        func.clear = lambda: cache.clear()
+        return func
     return dec
 
 class SetDisplayMethod:

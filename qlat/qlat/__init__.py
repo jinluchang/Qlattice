@@ -37,6 +37,8 @@ from .smear_prop import *
 
 from .instanton_map import *
 
+from .flow_scale import *
+
 from . import field_double
 
 set_verbose_level()

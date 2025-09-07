@@ -16,7 +16,7 @@ class q:
             mk_fft,
             )
 
-@functools.lru_cache(maxsize=16)
+@q.cache_call(maxsize=16)
 @q.timer
 def mk_shift_xg_idx_arr(total_site, xg_shift):
     """
