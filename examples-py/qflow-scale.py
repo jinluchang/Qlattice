@@ -25,7 +25,7 @@ usage = f"""
 {__file__} [ --step_size 0.05 ] [ --num_step 400 ] [ --is_spatial False ] [ --t_dir 3 ] [ --integrator_type runge-kutta ] --gf PATH_GAUGE_FIELD --out SCALE_FLOW_RECORD.pickle ...
 ...
 # E.g.: {__file__} --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --out results/16IH2/gf-flow-record/traj-1000.pickle
-# E.g.: {__file__} --is_spatial True --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1010 --out results/16IH2/gf-flow-spatial-record/traj-1000.pickle --out results/16IH2/gf-flow-spatial-record/traj-1010.pickle
+# E.g.: {__file__} --is_spatial True --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1010 --out results/16IH2/gf-flow-record-spatial/traj-1000.pickle --out results/16IH2/gf-flow-record-spatial/traj-1010.pickle
 # The program does not overwrite output files. If the output file already exist, the program will simply display that output file content and skip that input and output file pair and continue.
 """
 
