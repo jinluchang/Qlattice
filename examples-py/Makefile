@@ -6,6 +6,7 @@ tests = \
 		qcalc-psel-closest-dis-sqr.log \
 		qconvert-psel-txt-to-lati.log \
 		qinst-map.log \
+		qflow-scale.log \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \

@@ -179,7 +179,7 @@ def gf_energy_density_dir_tslice(gf, *, t_dir=None):
     energy_density_dir_arr = np.array(energy_density_dir_arr, dtype=np.float64)
     return energy_density_dir_arr
 
-@q.timer
+@q.timer(is_timer_fork=True)
 def gf_flow_record(
         gf, step_size, num_step,
         *,
@@ -189,11 +189,14 @@ def gf_flow_record(
         integrator_type=None,
         ):
     """
-    return obj_list
-    obj_list = [
-        dict(flow_time, plaq_tslice, energy_density_dir_tslice,),
-        ...
-    ]
+    return obj_record 
+    obj_record = dict(
+        info_list=[
+            dict(flow_time, plaq_tslice, energy_density_dir_tslice,),
+            ...
+        ],
+        params=dict(step_size, num_step, flow_time, is_spatial, t_dir, integrator_type,),
+    )
     Modify `gf` in place.
     Default Wilson flow with Runge-Kutta integrator.
     ```
@@ -204,7 +207,15 @@ def gf_flow_record(
     """
     if flow_time is None:
         flow_time = flow_time_default
-    obj_list = []
+    params = dict(
+            step_size=step_size,
+            num_step=num_step,
+            flow_time=flow_time,
+            is_spatial=is_spatial,
+            t_dir=t_dir,
+            integrator_type=integrator_type,
+            )
+    info_list = []
     for i in range(num_step):
         q.gf_flow_scale(
                 gf, step_size,
@@ -215,13 +226,17 @@ def gf_flow_record(
         flow_time += step_size
         plaq_tslice = gf_plaq_tslice(gf)
         energy_density_dir_tslice = gf_energy_density_dir_tslice(gf)
-        obj = dict(
+        info = dict(
             flow_time=flow_time,
             plaq_tslice=plaq_tslice,
             energy_density_dir_tslice=energy_density_dir_tslice,
         )
-        obj_list.append(obj)
-    return obj_list
+        info_list.append(info)
+    obj_record = dict(
+            info_list=info_list,
+            params=params,
+            )
+    return obj_record
 
 ### --------------------------------------
 

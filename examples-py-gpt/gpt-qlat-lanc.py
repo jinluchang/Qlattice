@@ -26,6 +26,8 @@ import subprocess
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
     traj_gf = traj
+    if is_test():
+        traj_gf = 1000
     #
     fns_produce = [
             f"{job_tag}/eig/traj-{traj_gf}/metadata.txt",
@@ -35,7 +37,6 @@ def run_job(job_tag, traj):
             ]
     #
     if is_test():
-        traj_gf = 1000
         fns_need = []
     #
     if not check_job(job_tag, traj, fns_produce, fns_need):
