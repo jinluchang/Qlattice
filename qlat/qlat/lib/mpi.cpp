@@ -7,7 +7,7 @@ namespace qlat
 Int mpi_send(const void* buf, Long count, MPI_Datatype datatype, Int dest,
              Int tag, MPI_Comm comm)
 {
-  const Long int_max = INT_MAX;
+  const Long int_max = 1024 * 1024 * 1024;
   if (count <= int_max) {
     return MPI_Send(buf, count, datatype, dest, tag, comm);
   } else {
@@ -26,7 +26,7 @@ Int mpi_send(const void* buf, Long count, MPI_Datatype datatype, Int dest,
 Int mpi_recv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
              MPI_Comm comm, MPI_Status* status)
 {
-  const Long int_max = INT_MAX;
+  const Long int_max = 1024 * 1024 * 1024;
   if (count <= int_max) {
     return MPI_Recv(buf, count, datatype, source, tag, comm, status);
   } else {
@@ -47,7 +47,7 @@ Int mpi_recv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
 Int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, Int dest,
               Int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
 {
-  const Long int_max = INT_MAX;
+  const Long int_max = 1024 * 1024 * 1024;
   if (count <= int_max) {
     MPI_Request r;
     Int ret = MPI_Isend(buf, count, datatype, dest, tag, comm, &r);
@@ -70,7 +70,7 @@ Int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, Int dest,
 Int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
               MPI_Comm comm, std::vector<MPI_Request>& requests)
 {
-  const Long int_max = INT_MAX;
+  const Long int_max = 1024 * 1024 * 1024;
   if (count <= int_max) {
     MPI_Request r;
     Int ret = MPI_Irecv(buf, count, datatype, source, tag, comm, &r);
