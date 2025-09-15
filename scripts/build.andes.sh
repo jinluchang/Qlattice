@@ -6,19 +6,19 @@ set -e
     ./scripts/setenv.andes.sh
     ./scripts/qcore.sh
 
-    ./scripts/gmp.sh
-    ./scripts/mpfr.sh
-    ./scripts/mpc.sh
-    ./scripts/isl.sh
-    ./scripts/gcc.sh
-    ./scripts/bison.sh
-    ./scripts/binutils.sh
+    # ./scripts/gmp.sh
+    # ./scripts/mpfr.sh
+    # ./scripts/mpc.sh
+    # ./scripts/isl.sh
+    # ./scripts/gcc.sh
+    # ./scripts/bison.sh
+    # ./scripts/binutils.sh
 
     ./scripts/gsl.sh
     ./scripts/cuba.sh
-    ./scripts/zlib.sh
+    # ./scripts/zlib.sh
     ./scripts/eigen.sh
-    ./scripts/perl.sh
+    # ./scripts/perl.sh
     ./scripts/openssl.sh
     ./scripts/libffi.sh
     ./scripts/ncurses.sh
