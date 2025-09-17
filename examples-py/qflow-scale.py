@@ -16,13 +16,15 @@ from qlat_scripts.v1 import (
     get_save_path,
 )
 
+default_params = q.default_run_flow_scale_params
+
 usage = f"""
 {__file__} --usage
 # Show this message and exit.
 {__file__} --test
 # Generate some test data and then perform the scale flow, "Wilson flow" is the default. "Spatial flow" is performed if "--is-spatial True" option is specified.
 {""}
-{__file__} [ --step_size 0.05 ] [ --num_step 400 ] [ --is_spatial False ] [ --t_dir 3 ] [ --integrator_type runge-kutta ] --gf PATH_GAUGE_FIELD --out SCALE_FLOW_RECORD.pickle ...
+{__file__} [ --step_size {default_params["step_size"]} ] [ --num_step {default_params["num_step"]} ] [ --is_spatial {default_params["is_spatial"]} ] [ --t_dir {default_params["t_dir"]} ] [ --integrator_type {default_params["integrator_type"]} ] --gf PATH_GAUGE_FIELD --out SCALE_FLOW_RECORD.pickle ...
 ...
 # E.g.: {__file__} --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --out results/16IH2/gf-flow-record/traj-1000.pickle
 # E.g.: {__file__} --is_spatial True --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1010 --out results/16IH2/gf-flow-record-spatial/traj-1000.pickle --out results/16IH2/gf-flow-record-spatial/traj-1010.pickle
@@ -71,49 +73,13 @@ def gen_test_data():
         argv_list.append(argv)
     return argv_list
 
-@q.timer(is_timer_fork=True)
-def run_flow_scale(fn_out, fn_gf, params):
-    fname = q.get_fname()
-    if not fn_out.endswith(".pickle"):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' does not endswith '.pickle'. Skip this file.")
-        return
-    if q.does_file_exist_qar_sync_node(fn_out):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist.")
-        return
-    if not q.does_file_exist_qar_sync_node(fn_gf):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
-        return
-    q.json_results_append(f"{fname}: Start compute flow scale info fn='{fn_out}' for '{fn_gf}'")
-    gf = q.GaugeField()
-    gf.load(fn_gf)
-    step_size = params["step_size"]
-    num_step = params["num_step"]
-    is_spatial = params["is_spatial"]
-    t_dir = params["t_dir"]
-    integrator_type = params["integrator_type"]
-    obj_record = q.gf_flow_record(
-            gf, step_size, num_step,
-            is_spatial=is_spatial, t_dir=t_dir, integrator_type=integrator_type)
-    q.save_pickle_obj(obj_record, fn_out)
-    if is_test():
-        q.json_results_append(f"{fname}: params={obj_record['params']}")
-        q.json_results_append(f"{fname}: flow_time", obj_record['info_list'][-1]['flow_time'])
-        rs = q.RngState()
-        q.json_results_append(
-                f"{fname}: sig(plaq_tslice)",
-                q.get_data_sig_arr(obj_record['info_list'][-1]['plaq_tslice'], rs, 3))
-        q.json_results_append(
-                f"{fname}: sig(energy_density_dir_tslice)",
-                q.get_data_sig_arr(obj_record['info_list'][-1]['energy_density_dir_tslice'], rs, 3))
-    q.json_results_append(f"{fname}: End compute flow scale info fn='{fn_out}' for '{fn_gf}'")
-
 def parse_params(argv):
     params = dict()
-    params["step_size"] = float(q.get_arg("--step_size", "0.05", argv=argv))
-    params["num_step"] = int(q.get_arg("--num_step", "400", argv=argv))
-    params["is_spatial"] = q.get_arg("--is_spatial", "False", argv=argv).lower() in [ "true", "t", "yes", "y" ]
-    params["t_dir"] = int(q.get_arg("--t_dir", "3", argv=argv))
-    params["integrator_type"] = q.get_arg("--integrator_type", "runge-kutta", argv=argv)
+    params["step_size"] = float(q.get_arg("--step_size", f"{default_params['step_size']}", argv=argv))
+    params["num_step"] = int(q.get_arg("--num_step", f"{default_params['num_step']}", argv=argv))
+    params["is_spatial"] = q.get_arg("--is_spatial", f"{default_params['is_spatial']}", argv=argv).lower() in [ "true", "t", "yes", "y" ]
+    params["t_dir"] = int(q.get_arg("--t_dir", f"{default_params['t_dir']}", argv=argv))
+    params["integrator_type"] = q.get_arg("--integrator_type", default_params['integrator_type'], argv=argv)
     return params
 
 @q.timer(is_timer_fork=True)
@@ -123,7 +89,7 @@ def run_job(argv):
     assert len(fn_gf_list) == len(fn_out_list)
     params = parse_params(argv)
     for fn_gf, fn_out in zip(fn_gf_list, fn_out_list):
-        run_flow_scale(fn_out, fn_gf, params)
+        q.run_flow_scale(fn_out, fn_gf, params)
 
 @q.timer(is_timer_fork=True)
 def run():

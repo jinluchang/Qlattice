@@ -40,10 +40,15 @@ class q:
             set_verbose_level,
             cache_call,
             get_fname,
+            does_file_exist_qar_sync_node,
+            json_results_append,
+            save_pickle_obj,
+            RngState,
             )
 
     from .c import (
             FieldRealD,
+            GaugeField,
             gf_plaq_flow_force,
             gf_plaq_field,
             gf_energy_density_dir_field,
@@ -238,6 +243,54 @@ def gf_flow_record(
             )
     return obj_record
 
+default_run_flow_scale_params = dict(
+        step_size=0.05,
+        num_step=400,
+        is_spatial=False,
+        t_dir=3,
+        integrator_type="runge-kutta",
+        )
+
+@q.timer(is_timer_fork=True)
+def run_flow_scale(fn_out, fn_gf, params=None):
+    fname = q.get_fname()
+    if not fn_out.endswith(".pickle"):
+        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' does not endswith '.pickle'. Skip this file.")
+        return
+    if q.does_file_exist_qar_sync_node(fn_out):
+        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist.")
+        return
+    if not q.does_file_exist_qar_sync_node(fn_gf):
+        q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
+        return
+    if params is None:
+        params = default_run_flow_scale_params.copy()
+    else:
+        params = default_run_flow_scale_params | params
+    q.json_results_append(f"{fname}: Start compute flow scale info fn='{fn_out}' for '{fn_gf}'")
+    gf = q.GaugeField()
+    gf.load(fn_gf)
+    step_size = params["step_size"]
+    num_step = params["num_step"]
+    is_spatial = params["is_spatial"]
+    t_dir = params["t_dir"]
+    integrator_type = params["integrator_type"]
+    obj_record = q.gf_flow_record(
+            gf, step_size, num_step,
+            is_spatial=is_spatial, t_dir=t_dir, integrator_type=integrator_type)
+    q.save_pickle_obj(obj_record, fn_out)
+    if is_test():
+        q.json_results_append(f"{fname}: params={obj_record['params']}")
+        q.json_results_append(f"{fname}: flow_time", obj_record['info_list'][-1]['flow_time'])
+        rs = q.RngState()
+        q.json_results_append(
+                f"{fname}: sig(plaq_tslice)",
+                q.get_data_sig_arr(obj_record['info_list'][-1]['plaq_tslice'], rs, 3))
+        q.json_results_append(
+                f"{fname}: sig(energy_density_dir_tslice)",
+                q.get_data_sig_arr(obj_record['info_list'][-1]['energy_density_dir_tslice'], rs, 3))
+    q.json_results_append(f"{fname}: End compute flow scale info fn='{fn_out}' for '{fn_gf}'")
+
 ### --------------------------------------
 
 (
@@ -246,10 +299,14 @@ def gf_flow_record(
         q.gf_plaq_tslice,
         q.gf_energy_density_dir_tslice,
         q.gf_flow_record,
+        q.run_flow_scale,
+        q.default_run_flow_scale_params,
         ) = (
                 get_plaq_factor_for_gf_scale_flow,
                 gf_flow_scale,
                 gf_plaq_tslice,
                 gf_energy_density_dir_tslice,
                 gf_flow_record,
+                run_flow_scale,
+                default_run_flow_scale_params,
                 )
