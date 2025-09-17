@@ -42,6 +42,19 @@ class Spectrum():
         blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size, self.find_E_from_fit)
         [[self.energies[name], self.A[name]],[self.energy_errors[name],A_err]] = jackknife.get_errors_from_blocks(self.find_E_from_fit(np.mean(self.corrs[name],axis=0)), blocks)
         print(f"{name} energy is {self.energies[name]}/a +- {self.energy_errors[name]}/a")
+
+    def get_energy_div_mpi(self, name):
+        if(not (name in self.corrs)):
+            print(f"Error: Correlators for {name} have not been saved.")
+            return
+        if not self.pion_mass_blocks:
+            self.pion_mass_blocks = jackknife.get_jackknife_blocks(self.corrs["pipi"], self.block_size, lambda x: self.find_E_from_fit(x)[0])
+        blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size, lambda x: self.find_E_from_fit(x)[0])
+        blocks = np.divide(blocks, self.pion_mass_blocks)
+        mpi = self.find_E_from_fit(np.mean(self.corrs["pipi"],axis=0))[0]
+        energies, energy_errors = jackknife.get_errors_from_blocks(self.find_E_from_fit(np.mean(self.corrs[name],axis=0))[0]/mpi, blocks)
+        print(f"{name} energy is {energies}*m_pi +- {energy_errors}*m_pi")
+        return energies, energy_errors
     
     def plot_corrs(self, name):
         blocks = jackknife.get_jackknife_blocks(self.corrs[name], self.block_size)
@@ -78,11 +91,11 @@ class Spectrum():
                     elems[i][j] = corrs[matrix[i][j]][t]
         return elems
     
-    def get_spectrum_from_corrs(self, t, matrix, corrs, fact = 1):
+    def get_spectrum_from_corrs(self, t, matrix, corrs):
         T1=self.get_matrix_elems(t,matrix,corrs)
         T2=self.get_matrix_elems(t+1,matrix,corrs)
         w,v = sp.linalg.eigh(T1,T2)
-        return np.concatenate([[np.log(w)*fact], v])
+        return np.concatenate([[np.log(w)], v])
     
     def get_spectrum(self, t, divide_pion_mass=False):
         names = list(self.corrs)
@@ -104,9 +117,14 @@ class Spectrum():
                     matrix[i].append(names.index(self.matrix[i][j]))
         if divide_pion_mass:
             if not self.pion_mass_blocks:
-                self.pion_mass_blocks = jackknife.get_jackknife_blocks(self.corrs["pipi"], self.block_size, self.find_E_from_fit)
-            blocks = jackknife.get_jackknife_blocks(np.column_stack([corrs, self.pion_mass_blocks]), self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x[0],x[1]))
-            return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0), self.get_energy("pipi")), blocks)
+                self.pion_mass_blocks = jackknife.get_jackknife_blocks(self.corrs["pipi"], self.block_size, lambda x: self.find_E_from_fit(x)[0])
+            av = self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0))
+            blocks = jackknife.get_jackknife_blocks(corrs, self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x))
+            for b in range(len(blocks)):
+                blocks[b][0] = np.divide(blocks[b][0], self.pion_mass_blocks[b])
+            mpi = self.find_E_from_fit(np.mean(self.corrs["pipi"],axis=0))[0]
+            av[0] = np.divide(av[0], mpi)
+            return jackknife.get_errors_from_blocks(av, blocks)
         else:
             blocks = jackknife.get_jackknife_blocks(corrs, self.block_size, lambda x: self.get_spectrum_from_corrs(t,matrix,x))
             return jackknife.get_errors_from_blocks(self.get_spectrum_from_corrs(t,matrix,np.mean(corrs,axis=0)), blocks)

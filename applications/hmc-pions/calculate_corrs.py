@@ -114,6 +114,13 @@ class Correlators():
         return [[[f(ts[i][m][t]) for t in range(len(ts[0][0]))] 
             for m in range(len(ts[0]))]
             for i in range(self.cutoff,self.data_len)]
+
+    def proj_s(self, timeslices_m):
+        tslices_s = []
+        for m_list in [[0,2],[3,5],[6,9],[10,12],[13,15]]:
+            # Note the projection onto the s-wave is only correct for the lowest relative momentum
+            tslices_s.append(np.mean(np.array(timeslices_m)[:,m_list[0]:m_list[1],:],axis=1))
+        return np.swapaxes(np.array(tslices_s), 0, 1)
     
     def apply_to_obs(self, obs, f):
         return [f(obs[i]) for i in range(self.cutoff,self.data_len)]
@@ -151,8 +158,8 @@ class Correlators():
             lambda ts: self.pipi_I0_interp_no_vevsub(ts)/self.Vx), axis=1))
     
     def calc_psqm_I0_vev(self):
-        self.calc_vev_m("psqm_I0", np.mean(self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: self.pipi_I0_interp_no_vevsub(ts)/self.Vx), axis=2))
+        self.calc_vev_m("psqm_I0", np.mean(self.proj_s(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts)/self.Vx)), axis=2))
     
     def correlator(self,tslices1,tslices2,delta_t):
         rtn = 0
@@ -166,7 +173,7 @@ class Correlators():
         if(m==""):
             corrs=[]
             for i in range(len(tslices1)):
-                print(i)
+                #print(i)
                 corrs.append([self.correlator(tslices1[i],tslices2[i],dt) for dt in range(self.t_max)])
             self.corr_avgs[name] = np.mean(corrs,axis=0)
             self.corrs[name] = corrs #self.get_jackknife_blocks(corrs)
@@ -252,37 +259,37 @@ class Correlators():
     def calc_pipim_pipi_I0_corrs(self):
         self.calc_psq_I0_vev()
         self.calc_psqm_I0_vev()
-        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: self.pipi_I0_interp_no_vevsub(ts))
+        pipim_ts = self.proj_s(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts)))
         pipim_ts -= np.array(self.vev["psqm_I0"])[None,:,None]*self.Vx
         pipi_ts = self.apply_to_timeslices(self.timeslices,
             lambda ts: self.pipi_I0_interp(ts))
         self.calc_corrs_m("pipim_pipi_I0", pipim_ts, pipi_ts)
     
     def calc_pipim_pipi_I2_corrs(self):
-        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: self.pipi_I2_interp(ts))
+        pipim_ts = self.proj_s(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I2_interp(ts)))
         pipi_ts = self.apply_to_timeslices(self.timeslices,
             lambda ts: self.pipi_I2_interp(ts))
         self.calc_corrs_m("pipim_pipi_I2", pipim_ts, pipi_ts)
     
     def calc_pipim_pipim_I0_corrs(self):
         self.calc_psqm_I0_vev()
-        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: self.pipi_I0_interp_no_vevsub(ts))
+        pipim_ts = self.proj_s(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts)))
         pipim_ts -= np.array(self.vev["psqm_I0"])[None,:,None]*self.Vx
         self.calc_corrs_m("pipim_pipim_I0", pipim_ts, np.conj(pipim_ts))
     
     def calc_pipim_pipim_I2_corrs(self):
-        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: self.pipi_I2_interp(ts))
+        pipim_ts = self.proj_s(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I2_interp(ts)))
         self.calc_corrs_m("pipim_pipim_I2", pipim_ts, np.conj(pipim_ts))
     
     def calc_pipim_s_corrs(self):
         self.calc_sigma_vev()
         self.calc_psqm_I0_vev()
-        pipim_ts = self.apply_to_timeslices_m(np.array(self.timeslices_m),
-            lambda ts: self.pipi_I0_interp_no_vevsub(ts))
+        pipim_ts = self.proj_s(self.apply_to_timeslices_m(np.array(self.timeslices_m),
+            lambda ts: self.pipi_I0_interp_no_vevsub(ts)))
         pipim_ts -= np.array(self.vev["psqm_I0"])[None,:,None]*self.Vx
         sigma_ts = self.apply_to_timeslices(self.timeslices,
             lambda ts: self.sigma_interp(ts))
