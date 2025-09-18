@@ -1,0 +1,218 @@
+[
+ [
+  "{\"traj_list\": [1000, 1100], \"seed\": \"test-4nt8\", \"total_site\": [4, 4, 4, 8], \"load_config_params\": null, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"flow_scale\": {\"step_size\": 0.05, \"num_step\": 10, \"t_dir_list\": [0, 3], \"integrator_type\": \"runge-kutta\"}}"
+ ],
+ [
+  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': False, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
+ ],
+ [
+  "run_flow_scale: flow_time",
+  0.49999999999999994
+ ],
+ [
+  "run_flow_scale: sig(plaq_tslice)",
+  {
+   "value": [
+    3.4757593387546346,
+    -4.208793543957901,
+    -4.813774934667941
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: sig(energy_density_dir_tslice)",
+  {
+   "value": [
+    0.029508459412501752,
+    -0.030113533363663816,
+    -0.02853186798109062
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1000.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 0, 'integrator_type': 'runge-kutta'}"
+ ],
+ [
+  "run_flow_scale: flow_time",
+  0.49999999999999994
+ ],
+ [
+  "run_flow_scale: sig(plaq_tslice)",
+  {
+   "value": [
+    3.485459760051577,
+    -4.2117766253447515,
+    -4.8173833304640565
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: sig(energy_density_dir_tslice)",
+  {
+   "value": [
+    -0.0018466932060189692,
+    -0.02289854752489412,
+    -0.020107518706575227
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1000.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1000.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
+ ],
+ [
+  "run_flow_scale: flow_time",
+  0.49999999999999994
+ ],
+ [
+  "run_flow_scale: sig(plaq_tslice)",
+  {
+   "value": [
+    3.4867386489570764,
+    -4.212326525242407,
+    -4.821696435821825
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: sig(energy_density_dir_tslice)",
+  {
+   "value": [
+    -0.00632640608764639,
+    -0.02131248074351163,
+    -0.007581427814370765
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1000.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1100.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': False, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
+ ],
+ [
+  "run_flow_scale: flow_time",
+  0.49999999999999994
+ ],
+ [
+  "run_flow_scale: sig(plaq_tslice)",
+  {
+   "value": [
+    3.4701356733811273,
+    -4.209677320646803,
+    -4.807192004768597
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: sig(energy_density_dir_tslice)",
+  {
+   "value": [
+    0.036875029314636515,
+    -0.03571877363171396,
+    -0.037940901327203035
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1100.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1100.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 0, 'integrator_type': 'runge-kutta'}"
+ ],
+ [
+  "run_flow_scale: flow_time",
+  0.49999999999999994
+ ],
+ [
+  "run_flow_scale: sig(plaq_tslice)",
+  {
+   "value": [
+    3.4824774336146094,
+    -4.213489219270983,
+    -4.812338705145564
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: sig(energy_density_dir_tslice)",
+  {
+   "value": [
+    -0.002829821668423096,
+    -0.023511361174941858,
+    -0.022537001350294968
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1100.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1100.pickle' for 'None'"
+ ],
+ [
+  "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
+ ],
+ [
+  "run_flow_scale: flow_time",
+  0.49999999999999994
+ ],
+ [
+  "run_flow_scale: sig(plaq_tslice)",
+  {
+   "value": [
+    3.4841019663666497,
+    -4.212783047263983,
+    -4.81879047073321
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: sig(energy_density_dir_tslice)",
+  {
+   "value": [
+    -0.007896583507272872,
+    -0.02531408991007254,
+    -0.003318954404675354
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1100.pickle' for 'None'"
+ ],
+ [
+  "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1100-gauge_field']"
+ ]
+]

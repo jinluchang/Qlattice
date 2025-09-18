@@ -46,6 +46,7 @@ tests = \
 		fields-io.log \
 		fsel-psel.log \
 		psel-split.log \
+		run-flow-scale.log \
 		selected-convert-io.log \
 		selected-field.log \
 		selected-shuffle.log \

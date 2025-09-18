@@ -89,7 +89,7 @@ def run_job(argv):
     assert len(fn_gf_list) == len(fn_out_list)
     params = parse_params(argv)
     for fn_gf, fn_out in zip(fn_gf_list, fn_out_list):
-        q.run_flow_scale(fn_out, fn_gf, params)
+        q.run_flow_scale(fn_out, fn_gf=fn_gf, params=params)
 
 @q.timer(is_timer_fork=True)
 def run():

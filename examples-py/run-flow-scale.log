@@ -1,0 +1,29 @@
+CHECK: params: test-4nt8-checker: {
+CHECK: params: test-4nt8-checker:   "traj_list": [
+CHECK: params: test-4nt8-checker:     1000,
+CHECK: params: test-4nt8-checker:     1100
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "seed": "test-4nt8",
+CHECK: params: test-4nt8-checker:   "total_site": [
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     8
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "load_config_params": null,
+CHECK: params: test-4nt8-checker:   "mk_sample_gauge_field": {
+CHECK: params: test-4nt8-checker:     "rand_n_step": 2,
+CHECK: params: test-4nt8-checker:     "flow_n_step": 8,
+CHECK: params: test-4nt8-checker:     "hmc_n_traj": 1
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "flow_scale": {
+CHECK: params: test-4nt8-checker:     "step_size": 0.05,
+CHECK: params: test-4nt8-checker:     "num_step": 10,
+CHECK: params: test-4nt8-checker:     "t_dir_list": [
+CHECK: params: test-4nt8-checker:       0,
+CHECK: params: test-4nt8-checker:       3
+CHECK: params: test-4nt8-checker:     ],
+CHECK: params: test-4nt8-checker:     "integrator_type": "runge-kutta"
+CHECK: params: test-4nt8-checker:   }
+CHECK: params: test-4nt8-checker: }
+CHECK: finished successfully.

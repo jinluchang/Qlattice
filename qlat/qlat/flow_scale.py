@@ -254,7 +254,7 @@ default_run_flow_scale_params = dict(
         )
 
 @q.timer(is_timer_fork=True)
-def run_flow_scale(fn_out, fn_gf, params=None):
+def run_flow_scale(fn_out, *, get_gf=None, fn_gf=None, params=None):
     fname = q.get_fname()
     if not fn_out.endswith(".pickle"):
         q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' does not endswith '.pickle'. Skip this file.")
@@ -262,16 +262,22 @@ def run_flow_scale(fn_out, fn_gf, params=None):
     if q.does_file_exist_qar_sync_node(fn_out):
         q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist.")
         return
-    if not q.does_file_exist_qar_sync_node(fn_gf):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
-        return
-    if params is None:
-        params = default_run_flow_scale_params.copy()
+    if get_gf is None:
+        if not q.does_file_exist_qar_sync_node(fn_gf):
+            q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
+            return
     else:
-        params = default_run_flow_scale_params | params
+        assert fn_gf is None
+    if params is None:
+        params = q.default_run_flow_scale_params.copy()
+    else:
+        params = q.default_run_flow_scale_params | params
     q.json_results_append(f"{fname}: Start compute flow scale info fn='{fn_out}' for '{fn_gf}'")
-    gf = q.GaugeField()
-    gf.load(fn_gf)
+    if get_gf is None:
+        gf = q.GaugeField()
+        gf.load(fn_gf)
+    else:
+        gf = get_gf()
     step_size = params["step_size"]
     num_step = params["num_step"]
     is_spatial = params["is_spatial"]

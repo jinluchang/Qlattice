@@ -15,7 +15,6 @@ from qlat_scripts.v1 import (
         run_eig,
         run_params,
         test_eig,
-        is_test,
         get_param_clanc,
         )
 
@@ -26,7 +25,7 @@ import subprocess
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
     traj_gf = traj
-    if is_test():
+    if q.is_test():
         traj_gf = 1000
     #
     fns_produce = [
@@ -36,7 +35,7 @@ def run_job(job_tag, traj):
             (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
             ]
     #
-    if is_test():
+    if q.is_test():
         fns_need = []
     #
     if not check_job(job_tag, traj, fns_produce, fns_need):
@@ -45,7 +44,7 @@ def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
     #
-    if is_test():
+    if q.is_test():
         total_site = q.Coordinate(get_param(job_tag, "total_site"))
         geo = q.Geometry(total_site)
         q.json_results_append(f"geo.show() = {geo.show()}")
@@ -54,7 +53,7 @@ def run_job(job_tag, traj):
     get_eig = run_eig(job_tag, traj_gf, get_gf)
     #
     # test repartition
-    if is_test():
+    if q.is_test():
         if get_param_clanc(job_tag, inv_type=0, inv_acc=0) is not None:
             path = get_load_path(f"{job_tag}/eig/traj-{traj_gf}")
             q.check_compressed_eigen_vectors(path)
@@ -158,7 +157,7 @@ job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).spl
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
-    if is_test():
+    if q.is_test():
         q.json_results_append(f"q.obtained_lock_history_list={q.obtained_lock_history_list}")
         q.check_log_json(__file__)
     qg.end_with_gpt()
@@ -169,7 +168,7 @@ def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
-    if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
+    if (not q.is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
 
 if __name__ == "__main__":
@@ -183,7 +182,7 @@ if __name__ == "__main__":
         traj_list = get_param(job_tag, "traj_list")
         for traj in traj_list:
             job_tag_traj_list.append((job_tag, traj,))
-    if not is_test():
+    if not q.is_test():
         job_tag_traj_list = q.random_permute(job_tag_traj_list, q.RngState(f"{q.get_time()}"))
         job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:
