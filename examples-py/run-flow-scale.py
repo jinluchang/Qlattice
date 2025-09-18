@@ -172,7 +172,7 @@ set_param(job_tag, "traj_list")(list(range(500, 2000, 10)) + list(range(1000500,
 set_param(job_tag, "load_config_params")(None)
 set_param(job_tag, "flow_scale")(dict(
     step_size=0.05,
-    num_step=800,
+    num_step=400,
     t_dir_list=[ 3, ],
     integrator_type="runge-kutta",
     ))
@@ -182,7 +182,7 @@ set_param(job_tag, "traj_list")(list(range(500, 2000, 10)) + list(range(1000500,
 set_param(job_tag, "load_config_params")(None)
 set_param(job_tag, "flow_scale")(dict(
     step_size=0.05,
-    num_step=800,
+    num_step=400,
     t_dir_list=[ 3, ],
     integrator_type="runge-kutta",
     ))
@@ -192,7 +192,7 @@ set_param(job_tag, "traj_list")(list(range(500, 2000, 10)) + list(range(1000500,
 set_param(job_tag, "load_config_params")(None)
 set_param(job_tag, "flow_scale")(dict(
     step_size=0.05,
-    num_step=800,
+    num_step=400,
     t_dir_list=[ 3, ],
     integrator_type="runge-kutta",
     ))
