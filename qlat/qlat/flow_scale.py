@@ -44,6 +44,8 @@ class q:
             json_results_append,
             save_pickle_obj,
             RngState,
+            is_test,
+            get_data_sig_arr,
             )
 
     from .c import (
@@ -279,7 +281,7 @@ def run_flow_scale(fn_out, fn_gf, params=None):
             gf, step_size, num_step,
             is_spatial=is_spatial, t_dir=t_dir, integrator_type=integrator_type)
     q.save_pickle_obj(obj_record, fn_out)
-    if is_test():
+    if q.is_test():
         q.json_results_append(f"{fname}: params={obj_record['params']}")
         q.json_results_append(f"{fname}: flow_time", obj_record['info_list'][-1]['flow_time'])
         rs = q.RngState()
