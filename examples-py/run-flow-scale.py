@@ -15,6 +15,8 @@ from qlat_scripts.v1 import (
         run_params,
         run_gf,
         check_job,
+        get_save_path,
+        get_load_path,
         )
 
 load_path_list[:] = [
@@ -75,9 +77,9 @@ def run_job(job_tag, traj):
             integrator_type=integrator_type,
             is_spatial=False,
             )
-    if not q.does_file_exist_qar_sync_node(fn_out):
+    if get_load_path(fn_out) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-gf-flow-record"):
-            run_flow_scale(fn_out, get_gf=get_gf, params=params)
+            run_flow_scale(get_save_path(fn_out), get_gf=get_gf, params=params)
             q.release_lock()
     #
     for t_dir in t_dir_list:
@@ -92,9 +94,9 @@ def run_job(job_tag, traj):
                 is_spatial=True,
                 t_dir=t_dir,
                 )
-        if not q.does_file_exist_qar_sync_node(fn_out):
+        if get_load_path(fn_out) is None:
             if q.obtain_lock(f"locks/{job_tag}-{traj}-gf-flow-record-spatial-t_dir-{t_dir}"):
-                run_flow_scale(fn_out, get_gf=get_gf, params=params)
+                run_flow_scale(get_save_path(fn_out), get_gf=get_gf, params=params)
                 q.release_lock()
 
 # --------------------------------------------

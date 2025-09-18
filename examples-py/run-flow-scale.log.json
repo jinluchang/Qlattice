@@ -3,7 +3,7 @@
   "{\"traj_list\": [1000, 1100], \"seed\": \"test-4nt8\", \"total_site\": [4, 4, 4, 8], \"load_config_params\": null, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"flow_scale\": {\"step_size\": 0.05, \"num_step\": 10, \"t_dir_list\": [0, 3], \"integrator_type\": \"runge-kutta\"}}"
  ],
  [
-  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'None'"
+  "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'None'"
  ],
  [
   "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': False, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
@@ -35,10 +35,10 @@
   }
  ],
  [
-  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'None'"
+  "run_flow_scale: End compute flow scale info fn='results/test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'None'"
  ],
  [
-  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1000.pickle' for 'None'"
+  "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1000.pickle' for 'None'"
  ],
  [
   "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 0, 'integrator_type': 'runge-kutta'}"
@@ -70,10 +70,10 @@
   }
  ],
  [
-  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1000.pickle' for 'None'"
+  "run_flow_scale: End compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1000.pickle' for 'None'"
  ],
  [
-  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1000.pickle' for 'None'"
+  "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial/traj-1000.pickle' for 'None'"
  ],
  [
   "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
@@ -105,10 +105,10 @@
   }
  ],
  [
-  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1000.pickle' for 'None'"
+  "run_flow_scale: End compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial/traj-1000.pickle' for 'None'"
  ],
  [
-  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1100.pickle' for 'None'"
+  "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record/traj-1100.pickle' for 'None'"
  ],
  [
   "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': False, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
@@ -140,10 +140,10 @@
   }
  ],
  [
-  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record/traj-1100.pickle' for 'None'"
+  "run_flow_scale: End compute flow scale info fn='results/test-4nt8-checker/gf-flow-record/traj-1100.pickle' for 'None'"
  ],
  [
-  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1100.pickle' for 'None'"
+  "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1100.pickle' for 'None'"
  ],
  [
   "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 0, 'integrator_type': 'runge-kutta'}"
@@ -175,10 +175,10 @@
   }
  ],
  [
-  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1100.pickle' for 'None'"
+  "run_flow_scale: End compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial-t_dir-0/traj-1100.pickle' for 'None'"
  ],
  [
-  "run_flow_scale: Start compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1100.pickle' for 'None'"
+  "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial/traj-1100.pickle' for 'None'"
  ],
  [
   "run_flow_scale: params={'step_size': 0.05, 'num_step': 10, 'flow_time': 0.0, 'is_spatial': True, 't_dir': 3, 'integrator_type': 'runge-kutta'}"
@@ -210,7 +210,7 @@
   }
  ],
  [
-  "run_flow_scale: End compute flow scale info fn='test-4nt8-checker/gf-flow-record-spatial/traj-1100.pickle' for 'None'"
+  "run_flow_scale: End compute flow scale info fn='results/test-4nt8-checker/gf-flow-record-spatial/traj-1100.pickle' for 'None'"
  ],
  [
   "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-gf-flow-record', 'locks/test-4nt8-checker-1000-gf-flow-record-spatial-t_dir-0', 'locks/test-4nt8-checker-1000-gf-flow-record-spatial-t_dir-3', 'locks/test-4nt8-checker-1100-gauge_field', 'locks/test-4nt8-checker-1100-gf-flow-record', 'locks/test-4nt8-checker-1100-gf-flow-record-spatial-t_dir-0', 'locks/test-4nt8-checker-1100-gf-flow-record-spatial-t_dir-3']"
