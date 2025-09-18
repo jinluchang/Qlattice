@@ -75,7 +75,10 @@ def run_job(job_tag, traj):
             integrator_type=integrator_type,
             is_spatial=False,
             )
-    run_flow_scale(fn_out, get_gf=get_gf, params=params)
+    if not q.does_file_exist_qar_sync_node(fn_out):
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-gf-flow-record"):
+            run_flow_scale(fn_out, get_gf=get_gf, params=params)
+            q.release_lock()
     #
     for t_dir in t_dir_list:
         if t_dir == 3:
@@ -89,7 +92,10 @@ def run_job(job_tag, traj):
                 is_spatial=True,
                 t_dir=t_dir,
                 )
-        run_flow_scale(fn_out, get_gf=get_gf, params=params)
+        if not q.does_file_exist_qar_sync_node(fn_out):
+            if q.obtain_lock(f"locks/{job_tag}-{traj}-gf-flow-record-spatial-t_dir-{t_dir}"):
+                run_flow_scale(fn_out, get_gf=get_gf, params=params)
+                q.release_lock()
 
 # --------------------------------------------
 
@@ -124,6 +130,46 @@ set_param(job_tag, "load_config_params")(None)
 set_param(job_tag, "flow_scale")(dict(
     step_size=0.05,
     num_step=400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "64I"
+set_param(job_tag, "traj_list")(list(range(1000, 4000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "96I"
+set_param(job_tag, "traj_list")(list(range(800, 2000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=1000,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "48If"
+set_param(job_tag, "traj_list")(list(range(1000, 2000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=1000,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "9"
+set_param(job_tag, "traj_list")(list(range(500, 3000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
     t_dir_list=[ 3, ],
     integrator_type="runge-kutta",
     ))
