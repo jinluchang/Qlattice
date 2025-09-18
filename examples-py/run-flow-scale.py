@@ -13,6 +13,7 @@ from qlat_scripts.v1 import (
         get_param,
         load_path_list,
         run_params,
+        mk_gf_fn_list,
         run_gf,
         check_job,
         get_save_path,
@@ -56,7 +57,7 @@ def run_job(job_tag, traj):
                     f"{job_tag}/gf-flow-record-spatial-t_dir-{t_dir}/traj-{traj_gf}.pickle",
                     ]
     fns_need = [
-            (f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",),
+            mk_gf_fn_list(job_tag, traj_gf),
             ]
     #
     if q.is_test():
@@ -162,6 +163,36 @@ set_param(job_tag, "load_config_params")(None)
 set_param(job_tag, "flow_scale")(dict(
     step_size=0.05,
     num_step=1000,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "1"
+set_param(job_tag, "traj_list")(list(range(500, 2000, 10)) + list(range(1000500, 1002000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "3"
+set_param(job_tag, "traj_list")(list(range(500, 2000, 10)) + list(range(1000500, 1002000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "4"
+set_param(job_tag, "traj_list")(list(range(500, 2000, 10)) + list(range(1000500, 1002000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
     t_dir_list=[ 3, ],
     integrator_type="runge-kutta",
     ))

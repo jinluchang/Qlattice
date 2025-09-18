@@ -126,12 +126,37 @@ def run_params(job_tag):
 
 # ----------
 
-@q.timer_verbose
-def run_gf(job_tag, traj):
-    path_gf = get_load_path(
+def mk_gf_fn_list(job_tag, traj):
+    stream_skip = 1000000
+    fn_list = [
             f"{job_tag}/configs/ckpoint_lat.{traj}",
             f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",
-            )
+            ]
+    if traj >= stream_skip:
+        fn_list += [
+                f"{job_tag}/configs-b/ckpoint_lat.{traj - stream_skip}",
+                f"{job_tag}/configs-b/ckpoint_lat.IEEE64BIG.{traj - stream_skip}",
+                ]
+    if traj >= 2 * stream_skip:
+        fn_list += [
+                f"{job_tag}/configs-c/ckpoint_lat.{traj - 2 * stream_skip}",
+                f"{job_tag}/configs-c/ckpoint_lat.IEEE64BIG.{traj - 2 * stream_skip}",
+                ]
+    if traj >= 3 * stream_skip:
+        fn_list += [
+                f"{job_tag}/configs-d/ckpoint_lat.{traj - 3 * stream_skip}",
+                f"{job_tag}/configs-d/ckpoint_lat.IEEE64BIG.{traj - 3 * stream_skip}",
+                ]
+    if traj >= 4 * stream_skip:
+        fn_list += [
+                f"{job_tag}/configs-e/ckpoint_lat.{traj - 4 * stream_skip}",
+                f"{job_tag}/configs-e/ckpoint_lat.IEEE64BIG.{traj - 4 * stream_skip}",
+                ]
+    return fn_list
+
+@q.timer_verbose
+def run_gf(job_tag, traj):
+    path_gf = get_load_path(mk_gf_fn_list(job_tag, traj))
     if path_gf is None:
         if job_tag[:5] == "test-":
             if not q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_field"):
