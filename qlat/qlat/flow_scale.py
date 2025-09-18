@@ -277,7 +277,7 @@ def run_flow_scale(fn_out, *, get_gf=None, fn_gf=None, params=None):
         gf = q.GaugeField()
         gf.load(fn_gf)
     else:
-        gf = get_gf()
+        gf = get_gf().copy()
     step_size = params["step_size"]
     num_step = params["num_step"]
     is_spatial = params["is_spatial"]
