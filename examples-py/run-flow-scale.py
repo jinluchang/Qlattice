@@ -207,6 +207,136 @@ set_param(job_tag, "flow_scale")(dict(
     integrator_type="runge-kutta",
     ))
 
+job_tag = "24IH1"
+set_param(job_tag, "traj_list")(list(range(500, 9000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "24IH2"
+set_param(job_tag, "traj_list")(list(range(500, 9000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "24IH3"
+set_param(job_tag, "traj_list")(list(range(500, 9000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "24IH4"
+set_param(job_tag, "traj_list")(list(range(500, 9000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32IH1"
+set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32IH2"
+set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32IH3"
+set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=800,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32IcoarseH1"
+set_param(job_tag, "traj_list")(list(range(500, 2000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32IfineH"
+set_param(job_tag, "traj_list")(list(range(500, 2000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=1400,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32Dfine"
+set_param(job_tag, "traj_list")(list(range(500, 4000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=300,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "32D"
+set_param(job_tag, "traj_list")(list(range(500, 4000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=200,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "24D"
+set_param(job_tag, "traj_list")(list(range(500, 6000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=200,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
+job_tag = "24DH"
+set_param(job_tag, "traj_list")(list(range(200, 1000, 10)))
+set_param(job_tag, "load_config_params")(None)
+set_param(job_tag, "flow_scale")(dict(
+    step_size=0.05,
+    num_step=200,
+    t_dir_list=[ 3, ],
+    integrator_type="runge-kutta",
+    ))
+
 # --------------------------------------------
 
 job_tag_list_default = [
