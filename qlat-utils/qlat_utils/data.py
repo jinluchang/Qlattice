@@ -65,24 +65,24 @@ def interpolate_list(v, i):
     a2 = i - i1
     return a1 * v1 + a2 * v2
 
-def interpolate(v_arr, i_arr):
-    """
-    return approximately v_arr[..., i_arr]
-    """
-    vt = v_arr.transpose()
-    if isinstance(i_arr, real_types):
-        return interpolate_list(vt, i_arr).transpose()
-    else:
-        return np.array([ interpolate_list(vt, i) for i in i_arr ], v_arr.dtype).transpose()
-
 def interp_i_arr(data_x_arr, x_arr):
+    r"""
+    return i_arr
+    q.interp(data_x_arr, i_arr) \approx x_arr
+    #
+    e.g.:
+    data(x)
+    data_arr[:] = data(data_x_arr)
+    q.interp(data_arr, i_arr) \approx data(x_arr)
+    """
     data_i_arr = np.arange(len(data_x_arr))
     i_arr = np.interp(x_arr, data_x_arr, data_i_arr)
     return i_arr
 
-def interp(data_arr, i_arr, axis):
+def interp(data_arr, i_arr, axis=-1):
     """
-    return approximately data_arr[..., i_arr]
+    return approximately data_arr[..., i_arr] if axis=-1
+    Note that i_arr can be non-integer.
     """
     v_arr = np.asarray(data_arr)
     i_arr = np.asarray(i_arr)
@@ -90,6 +90,21 @@ def interp(data_arr, i_arr, axis):
     iv_arr = np.array([ interpolate_list(v_arr, i) for i in i_arr ], v_arr.dtype)
     iv_arr = np.swapaxes(iv_arr, 0, axis)
     return iv_arr
+
+def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
+    """
+    return interpolated_data_arr
+    #
+    `data_x_arr` is the x values for `data_arr`
+    `x_arr` is the x values for `interpolated_data_arr`
+    ``
+    data_arr.shape[axis] == len(data_x_arr)
+    interpolated_data_arr.shape[axis] == len(x_arr)
+    len(data_arr.shape) == len(interpolated_data_arr.shape)
+    ``
+    """
+    i_arr = interp_i_arr(data_x_arr, x_arr)
+    return interp(data_arr, i_arr, axis)
 
 def get_threshold_idx(arr, threshold):
     """
@@ -295,36 +310,6 @@ class Data:
 
 ###
 
-def add_jk_idx(arr):
-    """
-    arr: no jk index
-    return: add trivial jk index in the LAST axis
-    """
-    return arr.reshape(arr.shape + (1,))
-
-def jk_transpose(arr):
-    """
-    arr: jk index is the 0th axis
-    return: jk index is the last axis
-    """
-    shape = arr.shape
-    ndim = len(shape)
-    if ndim <= 1:
-        return arr
-    axes = list(range(1, ndim)) + [ 0, ]
-    return arr.transpose(axes)
-
-def jk_transpose_back(arr):
-    """
-    jk_transpose_back(jk_transpose(arr)) == arr
-    """
-    shape = arr.shape
-    ndim = len(shape)
-    if ndim <= 1:
-        return arr
-    axes = [ ndim - 1, ] + list(range(0, ndim - 1))
-    return arr.transpose(axes)
-
 def average(data_list):
     n = len(data_list)
     v = sum(data_list)
@@ -383,8 +368,8 @@ def avg_err(data_list, eps=1, *, block_size=1):
     return (avg, err,)
 
 def jackknife(data_list, eps=1):
-    """
-    Return jk[i] = avg - \\frac{eps}{N} (v[i] - avg)
+    r"""
+    Return jk[i] = avg - \frac{eps}{N} (v[i] - avg)
     normal jackknife uses eps=1, scale the fluctuation by eps
     """
     is_np_arr = isinstance(data_list, np.ndarray)
@@ -895,3 +880,45 @@ def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None)
         else:
             return jk_idx
     return jk_blocking_func
+
+def interpolate(data_arr, i_arr):
+    """
+    Old function. Use `q.interp(data_arr, i_arr, -1)` instead.
+    #
+    return approximately data_arr[..., i_arr]
+    """
+    vt = data_arr.transpose()
+    if isinstance(i_arr, real_types):
+        return interpolate_list(vt, i_arr).transpose()
+    else:
+        return np.array([ interpolate_list(vt, i) for i in i_arr ], data_arr.dtype).transpose()
+
+def add_jk_idx(arr):
+    """
+    arr: no jk index
+    return: add trivial jk index in the LAST axis
+    """
+    return arr.reshape(arr.shape + (1,))
+
+def jk_transpose(arr):
+    """
+    arr: jk index is the 0th axis
+    return: jk index is the last axis
+    """
+    shape = arr.shape
+    ndim = len(shape)
+    if ndim <= 1:
+        return arr
+    axes = list(range(1, ndim)) + [ 0, ]
+    return arr.transpose(axes)
+
+def jk_transpose_back(arr):
+    """
+    jk_transpose_back(jk_transpose(arr)) == arr
+    """
+    shape = arr.shape
+    ndim = len(shape)
+    if ndim <= 1:
+        return arr
+    axes = [ ndim - 1, ] + list(range(0, ndim - 1))
+    return arr.transpose(axes)

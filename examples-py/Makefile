@@ -39,6 +39,7 @@ tests = \
 		jackknife-random.log \
 		jackknife-super.log \
 		jackknife-random-bench.log \
+		interp.log \
 		field-utils.log \
 		field-analysis.log \
 		field-multi-size.log \
