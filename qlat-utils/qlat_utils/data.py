@@ -1,6 +1,11 @@
 from .rng_state import *
 from .timer import *
 
+class q:
+    from .utils import (
+            get_fname,
+            )
+
 import math
 import copy
 import functools
@@ -47,28 +52,12 @@ class use_kwargs:
 
 ###
 
-def interpolate_list(v, i):
-    """
-    return approximately v[i]
-    """
-    size = len(v)
-    i1 = math.floor(i)
-    assert i1 >= 0
-    i2 = i1 + 1
-    if i2 >= size:
-        return v[size - 1]
-    elif i1 < 0:
-        return v[0]
-    v1 = v[i1]
-    v2 = v[i2]
-    a1 = i2 - i
-    a2 = i - i1
-    return a1 * v1 + a2 * v2
-
 def interp_i_arr(data_x_arr, x_arr):
     r"""
     return i_arr
     q.interp(data_x_arr, i_arr) \approx x_arr
+    #
+    `x_arr` can be either an 1-D array-like object or a single number.
     #
     e.g.:
     data(x)
@@ -82,18 +71,43 @@ def interp_i_arr(data_x_arr, x_arr):
 def interp(data_arr, i_arr, axis=-1):
     """
     return approximately data_arr[..., i_arr] if axis=-1
-    Note that i_arr can be non-integer.
+    #
+    Note that `i_arr` can be non-integer.
+    #
+    `i_arr` can be either an 1-D array-like object or a single number.
     """
     v_arr = np.asarray(data_arr)
+    v_arr = np.moveaxis(v_arr, axis, 0)
     i_arr = np.asarray(i_arr)
-    v_arr = np.swapaxes(v_arr, 0, axis)
-    iv_arr = np.array([ interpolate_list(v_arr, i) for i in i_arr ], v_arr.dtype)
-    iv_arr = np.swapaxes(iv_arr, 0, axis)
-    return iv_arr
+    shape = i_arr.shape
+    if shape == ():
+        i = i_arr.item()
+        size = len(v_arr)
+        i1 = math.floor(i)
+        assert i1 >= 0
+        i2 = i1 + 1
+        if i2 >= size:
+            return v_arr[size - 1]
+        elif i1 < 0:
+            return v_arr[0]
+        v1 = v_arr[i1]
+        v2 = v_arr[i2]
+        a1 = i2 - i
+        a2 = i - i1
+        return a1 * v1 + a2 * v2
+    elif shape == (len(i_arr),):
+        iv_arr = np.array([ interp(v_arr, i, 0) for i in i_arr ], v_arr.dtype)
+        iv_arr = np.moveaxis(iv_arr, 0, axis)
+        return iv_arr
+    else:
+        fname = q.get_fname()
+        raise Exception(f"{fname}: i_arr={i_arr}")
 
 def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
     """
     return interpolated_data_arr
+    #
+    `x_arr` can be either an 1-D array-like object or a single number.
     #
     `data_x_arr` is the x values for `data_arr`
     `x_arr` is the x values for `interpolated_data_arr`
@@ -109,8 +123,11 @@ def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
 def get_threshold_idx(arr, threshold):
     """
     return x
-    interpolate(arr, x) = threshold
+    #
+    ``
+    q.interp(arr, [ x, ]) = np.array([ threshold, ])
     arr.shape == (len(arr),)
+    ``
     """
     i1 = 0
     i2 = len(arr) - 1
@@ -146,6 +163,30 @@ def get_threshold_idx(arr, threshold):
         else:
             assert False
     assert False
+
+def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
+    r"""
+    return i_arr
+    #
+    let `shape` = `np.moveaxis(data_arr, axis, -1)[..., 0].shape`
+    #
+    threshold_arr = np.broadcast_to(threshold_arr, shape)
+    #
+    such that
+    for index in np.ndindex(shape):
+        q.interp(data_arr[index], i_arr[index]) \approx threshold_arr[index]
+    """
+    v_arr = np.asarray(data_arr)
+    threshold_arr = np.asarray(threshold_arr)
+    v_arr = np.moveaxis(v_arr, axis, -1)
+    shape = v_arr[..., 0].shape
+    threshold_arr = np.broadcast_to(threshold_arr, shape)
+    i_arr = np.zeros(shape, dtype=np.float64)
+    for index in np.ndindex(shape):
+        t = threshold_arr[index]
+        arr = v_arr[index]
+        i_arr[index] = get_threshold_idx(arr, t)
+    return i_arr
 
 def partial_sum_list(x, *, is_half_last = False):
     """Modify in-place, preserve length"""
@@ -855,6 +896,14 @@ class JkKwargs:
 # ----
 
 # ---- old funcs
+
+def interpolate_list(data_arr, i):
+    """
+    Old function.
+    return approximately v[i]
+    Use `q.interp(data_arr, i, 0)` instead
+    """
+    return interp(v, i, 0)
 
 def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
     """

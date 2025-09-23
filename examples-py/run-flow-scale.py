@@ -288,7 +288,7 @@ set_param(job_tag, "flow_scale")(dict(
     ))
 
 job_tag = "32IfineH"
-set_param(job_tag, "traj_list")(list(range(500, 2000, 10)))
+set_param(job_tag, "traj_list")(list(range(1000, 8000, 10)))
 set_param(job_tag, "load_config_params")(None)
 set_param(job_tag, "flow_scale")(dict(
     step_size=0.05,

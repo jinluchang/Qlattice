@@ -90,5 +90,27 @@
    ],
    "__extended_json_type__": "ndarray"
   }
+ ],
+ [
+  "i_arr",
+  {
+   "value": [
+    11.28125,
+    7.402765287769785,
+    6.384497178279906
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "i2_arr",
+  {
+   "value": [
+    11.28125,
+    7.605665467625901,
+    6.620293695408242
+   ],
+   "__extended_json_type__": "ndarray"
+  }
  ]
 ]
