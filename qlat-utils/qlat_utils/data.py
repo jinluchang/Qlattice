@@ -112,13 +112,18 @@ def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
     `data_x_arr` is the x values for `data_arr`
     `x_arr` is the x values for `interpolated_data_arr`
     ``
-    data_arr.shape[axis] == len(data_x_arr)
+    data_x_arr.shape == (data_arr.shape[axis],)
+    ``
+    If len(x_arr)
+    ``
     interpolated_data_arr.shape[axis] == len(x_arr)
     len(data_arr.shape) == len(interpolated_data_arr.shape)
     ``
     """
+    assert data_x_arr.shape == (data_arr.shape[axis],)
     i_arr = interp_i_arr(data_x_arr, x_arr)
-    return interp(data_arr, i_arr, axis)
+    interpolated_data_arr = interp(data_arr, i_arr, axis)
+    return interpolated_data_arr
 
 def get_threshold_idx(arr, threshold):
     """
@@ -187,6 +192,28 @@ def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
         arr = v_arr[index]
         i_arr[index] = get_threshold_idx(arr, t)
     return i_arr
+
+def get_threshold_x_arr(data_arr, data_x_arr, threshold_arr, axis=-1):
+    r"""
+    return x_arr
+    #
+    ``
+    data_x_arr.shape == (data_arr.shape[axis],)
+    ``
+    #
+    let `shape` = `np.moveaxis(data_arr, axis, -1)[..., 0].shape`
+    #
+    threshold_arr = np.broadcast_to(threshold_arr, shape)
+    #
+    such that
+    for index in np.ndindex(shape):
+        q.interp_x(data_arr[index], data_x_arr, x_arr[index]) \approx threshold_arr[index]
+    """
+    assert data_x_arr.shape == (data_arr.shape[axis],)
+    i_arr = get_threshold_i_arr(data_arr, threshold_arr, axis)
+    x_arr = np.zeros(i_arr.shape, dtype=np.float64)
+    x_arr.ravel()[:] = interp(data_x_arr, i_arr.ravel())
+    return x_arr
 
 def partial_sum_list(x, *, is_half_last = False):
     """Modify in-place, preserve length"""

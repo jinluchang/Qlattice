@@ -43,6 +43,14 @@ assert np.all(q.get_threshold_i_arr(data_arr.T, threshold_arr, axis=0) == i2_arr
 
 assert np.allclose(np.array([ q.interp(data_arr[i], i2_arr[i]) for i in range(len(i2_arr)) ], dtype=np.float64), threshold_arr, rtol=1e-08, atol=1e-08)
 
+x_arr = q.get_threshold_x_arr(data_arr, data_x_arr, threshold)
+q.json_results_append(f"x_arr", x_arr)
+assert np.allclose(q.interp(data_x_arr, i_arr), x_arr, rtol=1e-08, atol=1e-08)
+
+x2_arr = q.get_threshold_x_arr(data_arr, data_x_arr, threshold_arr)
+q.json_results_append(f"x2_arr", x2_arr)
+assert np.allclose(q.interp(data_x_arr, i2_arr), x2_arr, rtol=1e-08, atol=1e-08)
+
 q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
 q.displayln_info(f"CHECK: finished successfully.")
