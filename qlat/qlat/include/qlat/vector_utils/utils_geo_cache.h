@@ -30,6 +30,11 @@ namespace qlat{
 bool Compare_geo(const Geometry& g0, const Geometry& g1, const bool compare_bytes = true);
 bool Compare_geo_less(const Geometry& g0, const Geometry& g1, const bool compare_bytes = true);
 
+// compare elements
+inline bool compare_geo(const Geometry& g0, const Geometry& g1){
+  return Compare_geo(g0, g1, false);
+}
+
 void Get_geo_local(const qlat::Geometry& geo, Geometry& geo_l);
 Geometry& get_geo_cache(const Coordinate& tot, box<Geometry>& geo_BOX);
 Geometry& get_geo_resize(const Geometry& geo, const Coordinate& gl, const Coordinate& gr, box<Geometry>& geo_BOX);

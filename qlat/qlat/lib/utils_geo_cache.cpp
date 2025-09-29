@@ -7,6 +7,7 @@
 namespace qlat
 {
 
+// compare in bytes may have issues when geo is have undefined values due to alignment
 bool Compare_geo(const Geometry& g0, const Geometry& g1, const bool compare_bytes){
   if(compare_bytes){
     const void* c0 = (void*) &g0;

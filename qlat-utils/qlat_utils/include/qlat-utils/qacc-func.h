@@ -80,7 +80,7 @@ API inline MemType check_mem_type(const void* ptr)
 }
 
 API inline void display_mem_type(const void* p){
-  displayln_info(ssprintf("mem type %s \n", show(check_mem_type( p )).c_str()));
+  displayln_info(ssprintf("mem type %s", show(check_mem_type( p )).c_str()));
 }
 
 #define qfor(iter, num, ...)                                   \
