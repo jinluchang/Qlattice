@@ -104,7 +104,7 @@ void FieldM_gamma_sink(qlat::FieldM<Ty , 12>& vec, ga_M& ga){
 template<typename Td, int dir, bool conj>
 void prop4d_src_gammaT(Propagator4dT<Td >& prop, ga_M& ga){
   TIMERA("prop4d_src_gamma");
-  ////Rowmajor (a,b), b is continues in memory
+  // Rowmajor (a,b), b is continues in memory
   qacc_for(isp, Long(prop.geo().local_volume()),{
     qlat::WilsonMatrixT<Td>& v0 =  prop.get_elem_offset(isp);
     qlat::WilsonMatrixT<Td>  v1 = v0;
@@ -113,12 +113,12 @@ void prop4d_src_gammaT(Propagator4dT<Td >& prop, ga_M& ga){
     for(int c0 = 0;c0< 3 ; c0++)
     for(int d0 = 0; d0 < 4; ++d0)
     {
-      /////Source multiply
+      // Source multiply
       if(dir==0)for(int c1=0;c1<3;c1++){
         if(!conj){v0(s*3 + c0, ga.ind[d0]*3 + c1) = ga.g[d0] * v1(s*3 + c0, d0*3 + c1);}
         if( conj){v0(s*3 + c0, ga.ind[d0]*3 + c1) = qlat::qconj(ga.g[d0] * v1(s*3 + c0, d0*3 + c1));}
       }
-      /////Sink multiply
+      // Sink multiply
       if(dir==1)for(int c1=0;c1<3;c1++){
         if(!conj){v0(d0*3 + c0, s*3 + c1) = ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1);}
         if( conj){v0(d0*3 + c0, s*3 + c1) = qlat::qconj(ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1));}

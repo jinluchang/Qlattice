@@ -1111,7 +1111,7 @@ struct smear_fun{
       const Long count1 = copy_extra_index1[isp + 1];
       const Long loop = count1 - count0;
       const Long* cP  = &copy_extra_posL[count0];
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[bfac];
+      Ty buf[bfac];
       for(Long bi=0;bi<bfac;bi++){buf[bi] = s_copy[send*bfac + bi];}
 
       //////Ty buf = f[send*bfac + bi];
@@ -1735,9 +1735,6 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
       const Long iwrite = map_final[count];
       QLAT_ALIGN(QLAT_ALIGNED_BYTES) T  buf[nsites];
 
-      //QLAT_ALIGN(QLAT_ALIGNED_BYTES) T lbuf[3*3];
-      //const T* lp = &lbuf[0];
-
       for(int i=0;i<nsites;i++){ 
         buf[i] = 0; 
       }
@@ -1911,7 +1908,7 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
 
   ComplexT<T>* src =  (ComplexT<T>*) qlat::get_data(prop).data();
   qacc_for(index, Long(Nvol), {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) ComplexT<T> buf[12*12];
+    ComplexT<T> buf[12*12];
     ComplexT<T>* res = &src[index*12*12];
     for(int i=0;i<12*12;i++){buf[i] = res[i];}
 
@@ -2130,7 +2127,7 @@ void smear_propagator_gwu_convension(FieldG<Ty >& prop, const GaugeFieldT<Td >& 
   flag = 0;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, true);
 
   qacc_for(isp, Nvol, {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[12*12];
+    Ty buf[12*12];
     for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
     for(int d0=0;d0<12*4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -2142,7 +2139,7 @@ void smear_propagator_gwu_convension(FieldG<Ty >& prop, const GaugeFieldT<Td >& 
   smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode, dup, force_update);
 
   qacc_for(isp, Nvol, {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[12*12];
+    Ty buf[12*12];
     for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
     for(int d0=0;d0<12*4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -2173,7 +2170,7 @@ void smear_propagator_gwu_convension(qlat::FieldM<ComplexT<Ty> , 12>& prop, cons
   if (0 == step) {return;}
   ComplexT<Ty>* src = (ComplexT<Ty>*) qlat::get_data(prop).data();
   qacc_for(isp, prop.geo().local_volume(), {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) ComplexT<Ty> buf[12];
+    ComplexT<Ty> buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
     for(int d0=0;d0<4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -2184,7 +2181,7 @@ void smear_propagator_gwu_convension(qlat::FieldM<ComplexT<Ty> , 12>& prop, cons
 
   smear_propagator_gwu_convension_inner<ComplexT<Ty>, 1, 4, Td>(src, gf, width, step, mom, smear_in_time_dir, mode, dup, force_update);
   qacc_for(isp, prop.geo().local_volume(), {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) ComplexT<Ty> buf[12];
+    ComplexT<Ty> buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
     for(int d0=0;d0<4;d0++)
     for(int c0=0;c0<   3;c0++)

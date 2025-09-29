@@ -52,30 +52,30 @@ template <typename Ty >
 struct vector_cs{
   Long nvec;
   QMEM  GPU;
-
+  //
   ////infos
   LInt nsum;// length of each vector
   Long bfac, b_size, bfac_group;
   LInt La, Lb; // derived variables
   Long btotal; //  == bfac
-
+  //
   std::vector<qlat::vector_gpu<Ty > > buf_g;// actual data positions
   qlat::vector<Ty* > pL; //// pointers to data
   qlat::vector_gpu<Ty > alpha_buf;
   qlat::vector<Ty* > pointersL; ////grouped with ni -> btotal 
-
+  //
   qlat::vector_gpu<Ty > alphaG;
   qlat::vector_gpu<Ty > norm2_buf;
-
+  //
   std::vector<Long > jobA;
-
+  //
   bool initialized;
-
+  //
   double flops_matrix;
   double flops_copy;
   int work_i;
   int work_f;
-
+  //
   inline void inialize_para(){
     nsum   =  0;     ////sites to be summed
     nvec   =  0;     ////number of vecs
@@ -91,56 +91,55 @@ struct vector_cs{
     work_f = 0;
     clean_mem();
   }
-
+  //
   vector_cs(){
     inialize_para();
   }
-
+  //
   vector_cs(int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, int b_size_ = -1, int bfac_group_ = -1)
   {
     resize(nvec_, nsum_, GPU_, b_size_, bfac_group_);
   }
-
+  //
   //inline void resize(int nvec_, int nsum_)
   //{
   //  resize(nvec_, nsum_, 1, -1, 1, -1);
   //}
-
+  //
   inline size_t vlength(){
     return nsum;
   }
-
-
+  //
   inline void resize(int nvec_, int nsum_, QMEM GPU_)
   {
     resize(nvec_, nsum_, GPU_, b_size, bfac_group);
   }
-
+  //
   inline void resize(int nvec_, int nsum_)
   {
     resize(nvec_, nsum_, GPU, b_size, bfac_group);
   }
-
+  //
   inline void resize(int nvec_)
   {
     Qassert(nsum > 0 and b_size > 0 and bfac > 0);
     resize(nvec_, nsum, GPU, b_size, bfac_group);
   }
-
+  //
   /////==added
   template <class Ta >
   inline void resize(int nvec_, vector_cs<Ta >& ref)
   {
     resize(nvec_, ref.nsum, ref.GPU, ref.b_size, ref.bfac_group);
   }
-
+  //
   /////==added
   template <class Ta >
   inline void resize(int nvec_, QMEM GPU, vector_cs<Ta >& ref)
   {
     resize(nvec_, ref.nsum, GPU, ref.b_size, ref.bfac_group);
   }
-
+  //
   inline double get_flops_matrix(){
     double  res = flops_matrix;
     flops_matrix = 0.0;
@@ -151,7 +150,6 @@ struct vector_cs{
     flops_copy = 0.0;
     return res;
   }
-
   //
   inline void resize(int nvec_, LInt nsum_, QMEM GPU_, int b_size_, int bfac_group_, bool silence_mem = false)
   {
@@ -231,8 +229,7 @@ struct vector_cs{
     allocate_mem(silence_mem);
     ////qacc_barrier(dummy);
   }
-
-
+  //
   inline Ty** get_pointers(Long ni)
   {
     ////qmessage("===%5d %5d \n", int(ni), int(nvec));
@@ -241,13 +238,13 @@ struct vector_cs{
     //return res; 
     return &pointersL[ni*btotal + 0];
   }
-
+  //
   inline Ty**  get_pointers(Long ni, Long bi)
   {
     Qassert(ni < nvec and bi <= bfac and ni >=0 and bi >= 0 );
     return &pointersL[ni*btotal + bi];
   }
-
+  //
   ////ni < nvec
   inline Ty* get_pointer_b(Long ni, Long bi)
   {
@@ -258,7 +255,7 @@ struct vector_cs{
     size_t bb  = t % Lb;
     return &pL[ba][bb];
   }
-
+  //
   inline Ty* get_pointer_x(Long ni, Long xi)
   {
     Qassert(ni < nvec and ni >= 0);
@@ -270,7 +267,7 @@ struct vector_cs{
     /////Ty* res = &pL[ba][bb];
     return &pL[ba][bb];
   }
-
+  //
   inline void allocate_mem(bool silence_mem = false)
   {
     TIMERA("vector cs allocate_mem");
@@ -282,12 +279,12 @@ struct vector_cs{
     //rpV.resize(bfac_group);
     //EpV.resize(bfac_group);
     //spV.resize(bfac_group);
-
+    //
     La = bfac/bfac_group;
     Lb = bfac_group*nvec*Long(b_size);
     if(pL.size() != 0){pL.resize(0);}
     pL.resize(La);
-
+    //
     if(!silence_mem){
       if(buf_g.size() != La){
         buf_g.resize(0);
@@ -298,15 +295,15 @@ struct vector_cs{
         //////pL[i] = (Ty*) qlat::get_data(buf_g[i]).data();
       }
     }
-
+    //
     for(LInt i=0;i<La;i++){
       pL[i] = (Ty*) qlat::get_data(buf_g[i]).data();
     }
-
+    //
     btotal = bfac;
     initialized = true;
     //if(silence_mem == true){qmessage("nvec %5d, bfac %5d, size %5d %5d \n", int(nvec), int(bfac), int(b_size), int(bfac_group));}
-
+    //
     {
       pointersL.resize(nvec * btotal);
       Ty** Pbuf = (Ty**) qlat::get_data(pointersL).data();
@@ -325,10 +322,10 @@ struct vector_cs{
         Pbuf[ni*btotal + bi] = &pA[ba][bb];
       });
     }
-
+    //
     work_f = nvec;////for projections and other operations
   }
-
+  //
   ////==added
   inline void set_zero(int ia = -1, QBOOL dummy = QTRUE)
   {
@@ -351,7 +348,7 @@ struct vector_cs{
     }
     if (dummy == QTRUE) { qacc_barrier(dummy); }
   }
-
+  //
   inline void clean_mem(){
     buf_g.resize(0);
     pL.resize(0);
@@ -360,7 +357,7 @@ struct vector_cs{
     initialized = false;
     nvec = 0;
   }
-
+  //
   inline double mem_report()
   {
     double memvec = double(b_size) * sizeof(Ty) / (1024.0 * 1024.0 * 1024.0);
@@ -371,7 +368,7 @@ struct vector_cs{
     //#endif
     return total;
   }
-
+  //
   inline void random_cs(int seed = 0)
   {
     Ty** res = get_pointers(0);
@@ -380,13 +377,12 @@ struct vector_cs{
       random_Ty(res[bg*bfac_group], bfac_group*nvec*b_size, GPU, bg + 12324 + seed, 1);
     }
   }
-
-
+  //
   inline void clear(){clean_mem();}
   ~vector_cs(){
     clean_mem();
   }
-
+  //
   ////copy from a continous memory?
   template <class Ta >
   void copy_from(Ta* src, int ncur, bool data_GPU_ = true, QBOOL dummy = QTRUE, const int dir = 1)
@@ -396,11 +392,11 @@ struct vector_cs{
       qmessage("Copy to position %8d larger than n_vec %8d ! \n", int(ncur), int(nvec));
       abort_r();
     }
-
+    //
     QMEM data_GPU = QMGPU;if(data_GPU_ == false){data_GPU = QMCPU;}
-
+    //
     const bool same_locate = check_GPU_same(GPU, data_GPU);
-
+    //
     Ty** res = get_pointers(ncur);
     const Long& b_size = this->b_size;
     const Long& btotal = this->btotal;

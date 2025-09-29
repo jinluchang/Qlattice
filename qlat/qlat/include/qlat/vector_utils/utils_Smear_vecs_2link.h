@@ -337,7 +337,7 @@ void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< Gaug
   flag = 0;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);
 
   qacc_for(isp, Nvol, {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[12*12];
+    Ty buf[12*12];
     for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
     for(int d0=0;d0<12*4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -350,7 +350,7 @@ void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< Gaug
     width, step, propL, even, 0, mom);
 
   qacc_for(isp, Nvol, {
-    QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty buf[12*12];
+    Ty buf[12*12];
     for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
     for(int d0=0;d0<12*4;d0++)
     for(int c0=0;c0<   3;c0++)

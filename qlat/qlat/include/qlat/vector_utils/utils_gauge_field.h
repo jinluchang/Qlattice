@@ -78,7 +78,7 @@ qacc void su3_multi_kerB(Ty* res, Ty* Q1, Ty* Q2, Ty* BUF)
 template <typename Ty, bool clear, bool dag1, bool dag2>
 qacc void su3_multi_ker(Ty* res, Ty* Q1, Ty* Q2)
 {
-  QLAT_ALIGN(QLAT_ALIGNED_BYTES) Ty BUF[9];
+  Ty BUF[9];
   su3_multi_kerB<Ty, clear, dag1, dag2>(res, Q1, Q2, BUF);
 }
 

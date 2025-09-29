@@ -83,7 +83,7 @@ void prop4d_to_qprop(qpropT& res, Propagator4dT<Td>& src, int dir = 1){
   ////V x 12 a x 12 b to 12b x 12a x V
   if(dir == 1){
     qthread_for(isp, Long(sizeF),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = ps[isp*12*12 + i];}
+      qlat::ComplexT<Td> buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = ps[isp*12*12 + i];}
       for(unsigned int d0=0;d0<12;d0++)
       for(unsigned int d1=0;d1<12;d1++)
       {
@@ -96,7 +96,7 @@ void prop4d_to_qprop(qpropT& res, Propagator4dT<Td>& src, int dir = 1){
   if(dir == 0){
     mv_civ.move_civ_in(pt, pt, 1, 12*12, sizeF, 1, false);
     qthread_for(isp, Long(sizeF),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = pt[isp*12*12 + i];}
+      qlat::ComplexT<Td> buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = pt[isp*12*12 + i];}
       for(unsigned int d0=0;d0<12;d0++)
       for(unsigned int d1=0;d1<12;d1++)
       {
@@ -127,7 +127,7 @@ void prop4d_to_fieldG(FieldG<Ty >& res, Propagator4dT<Td>& src, int dir = 1){
 
   if(dir == 1){
     qacc_for(isp, Long(sizeF),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];
+      qlat::ComplexT<Td> buf[12*12];
       for(unsigned int i=0;i<12*12;i++){buf[i] = srcP[isp*12*12 + i];}
       for(unsigned int d0=0;d0<12;d0++)
       for(unsigned int d1=0;d1<12;d1++)
@@ -147,7 +147,7 @@ void prop4d_to_fieldG(FieldG<Ty >& res, Propagator4dT<Td>& src, int dir = 1){
     move_index mv_civ;
     mv_civ.move_civ_in(srcP, srcP, 1, 12*12, sizeF, 1);
     qacc_for(isp, Long(sizeF),{
-      QLAT_ALIGN(QLAT_ALIGNED_BYTES) qlat::ComplexT<Td> buf[12*12];
+      qlat::ComplexT<Td> buf[12*12];
       for(unsigned int i=0;i<12*12;i++){buf[i] = srcP[isp*12*12+i];}
       for(unsigned int d0=0;d0<12;d0++)
       for(unsigned int d1=0;d1<12;d1++)
@@ -237,7 +237,7 @@ void copy_bsize_prop_to_FieldP(std::vector<Fieldy >& res, Ty* src, const LInt nV
     if(do_ini == true){Qassert(c_add == 0);}
 
     if(do_ini){
-      const Geometry& geo = fd.Get_geo();
+      const Geometry& geo = fd.geo();
       res.resize(0);res.resize(ntem);
       for(LInt iv=0;iv<res.size();iv++){res[iv].init(geo, civ);}
     }

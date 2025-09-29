@@ -170,15 +170,16 @@ inline void print_NONE(const char *filename)
 *
 */
 
-// checkpoint with environment settings
+/*
+  checkpoint with environment settings
+  display_mem_type();maybe used for debug
+*/
 #define Qcheck(num)                                                   \
   {                                                                   \
     static int do_check =                                             \
       qlat::get_env_long_default(std::string("qlat_checkpoint"), -1); \
     if(num == do_check){Qassert(false);}                              \
   }
-
-
 
 }
 

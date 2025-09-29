@@ -27,6 +27,7 @@ struct fft_desc_basic
 
   std::vector<std::vector<int> > Pos0;     ////size Nmpi * 4
   std::vector<std::vector<int>  > mi_list; ////mt , mx*my*mz
+  box<Geometry > geoB;
 
   int variable_set;
 
@@ -72,6 +73,8 @@ struct fft_desc_basic
     qlat::Coordinate gs = geo.coordinate_g_from_l(ts);
     iniv.resize(4);for(unsigned int i=0;i<4;i++){iniv[i] = gs[i];}
 
+    geoB.set_view(get_geo_cache(geo));
+
     order_ch = order_ch_or;
     set_variable();
     ////check_mem();
@@ -94,10 +97,10 @@ struct fft_desc_basic
 
   inline LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1) const;
 
-  inline Geometry& Get_geo(){
-    const Coordinate total_site = Coordinate(nx, ny, nz, nt);
-    //geo.init(total_site);
-    return qlat::get_geo_cache(total_site);
+  inline const Geometry& geo(){
+    return geoB();
+    //const Coordinate total_site = Coordinate(nx, ny, nz, nt);
+    //return qlat::get_geo_cache(total_site);
   }
 
   inline size_t get_prop_size(){

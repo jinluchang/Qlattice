@@ -179,7 +179,7 @@ struct quda_inverter {
   // even-even eigensystem, could be used with dslash to get full prop
   // mode == 0, deflate, mode == 1 get low prop
   // buf_prec = 0 : input doubleC, buf_prec = 1 : input singleC
-  inline void deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec, int mode = 0, int clear = 1);
+  inline void deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec, int mode = 0, int clear = 1, const bool data_from_quda = true);
 
   // src need to be unchanged if res != src
   // res could be the same as src
@@ -266,11 +266,90 @@ struct quda_inverter {
   //inline void invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, int solve_mode_ = 0);
   inline void invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src);
 
-  //inline void init_multiCG(int Nshift_);
+  inline void get_param_ref(quda::ColorSpinorParam& param, const bool is_double ){
+    param   = cs_gpu;
+    param.is_composite  = false;
+    param.is_component  = false;
+    if(is_double){
+      param.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
+    }else{
+      param.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+    }
+    param.create = QUDA_REFERENCE_FIELD_CREATE;
+  }
+
+  template <class Ty>
+  inline void qlat_cf_to_quda_cf_P(void* res, Ty* src, qlat::vector<Long >& map, quda::ColorSpinorParam& param){
+    param.v = (void*) res;
+    quda::ColorSpinorField* Qvec = NULL;
+    Qvec = new quda::ColorSpinorField(param);
+    qlat_cf_to_quda_cf(*Qvec, src, geoB(), map);
+    delete Qvec;
+  }
+
+  template <class Ty>
+  inline void quda_cf_to_qlat_cf_cf_P(Ty* res, void* src, qlat::vector<Long >& map, quda::ColorSpinorParam& param){
+    param.v = (void*) src;
+    quda::ColorSpinorField* Qvec = NULL;
+    Qvec = new quda::ColorSpinorField(param);
+    quda_cf_to_qlat_cf(res, *Qvec, geoB(), map);
+    delete Qvec;
+  }
+
+  /*
+    transform from quda double prec order to single prec order 
+    prec = 0 double, prec = 1 single
+  */
+  inline void quda_to_single_order(vector<void* >& src, const int prec, const int dir = 0){
+    TIMER("quda_to_single_order");
+    if(prec == 0){
+      return ;
+    }
+    const size_t Ndata = size_t(V) * 3 / 2;
+    //
+    qlat::vector_gpu<int8_t >& quda_buf = get_vector_gpu_plan<int8_t >(0, "quda_field_copy_buffers", 1);
+    quda_buf.resizeL(Ndata * sizeof(ComplexT<double>) / sizeof(int8_t));
+    //
+    quda::ColorSpinorParam pd = cs_gpuH;
+    quda::ColorSpinorParam pf = cs_gpuH;
+    pd.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
+    pf.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+    //
+    pd.create = QUDA_REFERENCE_FIELD_CREATE;
+    pf.create = QUDA_REFERENCE_FIELD_CREATE;
+    //
+    quda::ColorSpinorField* Qd = NULL;
+    quda::ColorSpinorField* Qf = NULL;
+    pd.v = (void*) quda_buf.data();
+    Qd = new quda::ColorSpinorField(pd);
+    //
+    for(Long iv=0;iv<src.size();iv++)
+    {
+      //display_mem_type(src[iv]);
+      pf.v = (void*) src[iv];
+      Qf = new quda::ColorSpinorField(pf);
+      //
+      if(dir == 0){
+        cpy_GPU((ComplexT<double>* ) quda_buf.data(), (ComplexT<float >* ) src[iv], Ndata);
+        *Qf = *Qd;
+      }
+      if(dir == 1){
+        *Qd = *Qf;
+        cpy_GPU((ComplexT<float >* ) src[iv], (ComplexT<double>* ) quda_buf.data(), Ndata);
+      }
+      delete Qf;
+    }
+    delete Qd;
+  }
+
+  /*
+    transform from quda single prec order to double prec order 
+  */
+  inline void quda_to_double_order(vector<void* >& src, const int prec){
+    quda_to_single_order(src, prec, 1);
+  }
 
   ~quda_inverter();
-
-
 };
 
 quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
@@ -344,7 +423,7 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   check_residue = 0;
 
   spinor_site_size =  0;
-  max_src_qinv     =  9;
+  max_src_qinv     =  qlat::get_env_long_default(std::string("qlat_quda_stag_mrh"), 9);
   gauge_with_phase = false;
   io_rotate_bfac = false;
 
@@ -2357,7 +2436,11 @@ inline void quda_inverter::prepare_low_prop()
 //  quda::blas::copy(sol, *sol_tmp); // no-op if these alias
 //}
 
-inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec , int mode, int clear)
+/*
+  If double inputs, do it directly
+  If single inputs, transform the data orderings with QUDA and then transform back 
+*/
+inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec , int mode, int clear, const bool data_from_quda)
 {
   //Qassert(get_data_type<Ty>() == ComplexD_TYPE or get_data_type<Ty>() == ComplexF_TYPE);
   Qassert(buf_prec == 0 or buf_prec == 1);
@@ -2383,6 +2466,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
       found_eig = 1;
     }
   }
+
   //std::vector<void* > eL;eL.resize(2);
   //std::vector<int   > pL;pL.resize(2);
   //eL[0] = eigen0;eL[1] = eigen1;
@@ -2401,6 +2485,12 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   //  }
   //}
 
+  if(data_from_quda){
+    quda_to_double_order(Psrc, buf_prec);
+    if(Psrc[0] != Pres[0] and clear == 0){
+      quda_to_double_order(Pres, buf_prec);
+    }
+  }
   for(unsigned int i=0;i<eigenL.size();i++)
   {
     void* Ea        = eigenL[i];
@@ -2417,6 +2507,13 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
         if(buf_prec == 0){eigen->deflate(Pres, Psrc, rD, mass, mode, true, 0, -1, 1, clearL[i]);}
         if(buf_prec == 1){eigen->deflate(Pres, Psrc, rF, mass, mode, true, 0, -1, 1, clearL[i]);}
       }
+    }
+  }
+  if(data_from_quda){
+    quda_to_single_order(Psrc, buf_prec);
+    // sometime the pointer is the same
+    if(Psrc[0] != Pres[0]){
+      quda_to_single_order(Pres, buf_prec);
     }
   }
 
@@ -2449,6 +2546,11 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
     Qassert(false);
   }
 
+  //// odd dslash
+  quda::ColorSpinorParam param   = cs_gpu;
+  get_param_ref(param, get_data_type_is_double<Ty >());
+  const int buf_prec =  get_data_type_is_double<Ty >() ? 0 : 1;
+
   const int nsrc = src.size();
   Qassert(nsrc == res.size() and nsrc == buf.size());
   qlat::vector<Ty* > cbuf;cbuf.resize(nsrc);
@@ -2466,7 +2568,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
     return ;
   }
 
-  const int DIM = 3;
+  // const int DIM = 3;
   Ty** pB =  res.data();
   Ty** pR = cbuf.data();
   if(qlat_format == 0){
@@ -2477,7 +2579,16 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   // src copy to buf
   for(int vi=0;vi<nsrc;vi++){
     if(qlat_format == 1){
-      qlat_cf_to_quda_cf(cbuf[vi], src[vi], DIM, geoB(), map_index);
+      qlat_cf_to_quda_cf_P(cbuf[vi], src[vi], map_index, param);
+      //{
+      //  param.v = (void*) cbuf[vi];
+      //  quda::ColorSpinorField* Qvec = NULL;
+      //  Qvec = new quda::ColorSpinorField(param);
+      //  qlat_cf_to_quda_cf(*Qvec, src[vi], geoB(), map_index);
+      //  //qlat_cf_to_quda_cf(cbuf[vi], src[vi], DIM, geoB(), map_index);
+      //  delete Qvec;
+      //}
+      //
       if(pB[vi]!=cbuf[vi]){
         cpy_GPU(pB[vi], cbuf[vi], V*3);
       }
@@ -2486,20 +2597,19 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
     }
   }
 
-  // odd dslash
-  quda::ColorSpinorParam param   = cs_gpu;
-  param.is_composite  = false;
-  param.is_component  = false;
-  //data double to quda double
-  int buf_prec = 0;
-  if(get_data_type_is_double<Ty >()){
-    param.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
-    buf_prec = 0;
-  }else{
-    param.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
-    buf_prec = 1;
-  }
-  param.create = QUDA_REFERENCE_FIELD_CREATE;
+
+  //if(get_data_type_is_double<Ty >()){
+  //param.is_composite  = false;
+  //param.is_component  = false;
+  ////data double to quda double
+  //if(get_data_type_is_double<Ty >()){
+  //  param.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
+  //  buf_prec = 0;
+  //}else{
+  //  param.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+  //  buf_prec = 1;
+  //}
+  //param.create = QUDA_REFERENCE_FIELD_CREATE;
 
   //if(inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
   //if(inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
@@ -2545,7 +2655,8 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   // buf copy to res with rotations
   if(qlat_format == 1)
   for(int vi=0;vi<nsrc;vi++){
-    quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geoB(), map_index);
+    quda_cf_to_qlat_cf_cf_P(pB[vi], pR[vi], map_index, param);
+    //quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geoB(), map_index);
   }
 
   for(int vi=0;vi<2*nsrc;vi++){
@@ -3348,19 +3459,29 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
     param.setPrecision(qinv.inv_param.cuda_prec, qinv.inv_param.cuda_prec, true);
     //param.setPrecision(QUDA_DOUBLE_PRECISION, qinv.inv_param.cuda_prec, true);
     param.create = QUDA_REFERENCE_FIELD_CREATE;
-
+    //
     //qlat::vector<qlat::ComplexT<double >* > Abuf;Abuf.resize(nsrc*2);
     //qlat::vector<qlat::ComplexT<float  >* > Bbuf;Bbuf.resize(nsrc*2);
     int buf_prec = 0;
     if(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
     if(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
     if(buf_prec == -1){abort_r("QUDA buffer prec not supported yet!");}
-
+    //
+    //quda::ColorSpinorParam param_src = qinv.cs_gpu;
+    //param_src.is_composite  = false;
+    //param_src.is_component  = false;
+    //if(get_data_type_is_double<Ty >()){
+    //  param_src.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
+    //}else{
+    //  param_src.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+    //}
+    //param_src.create = QUDA_REFERENCE_FIELD_CREATE;
+    //
     //using internal solver which always accept double input
     //Qassert(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION);
     //Qassert(get_data_type_is_double<Tk >());//buf must be double !
     /////TODO need to fix the precision issue here
-
+    //
     //prop have to be double if buf_prec is double
     if(buf_prec == 0){
       Qassert( get_data_type_is_double<Ty >());
@@ -3380,14 +3501,19 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
     }
 
     std::vector<quda::ColorSpinorField* > Qvec;Qvec.resize(nsrc * 2);
+    //quda::ColorSpinorField* Qsrc_tmp = NULL;
     ///0--nsrc for Qvec --> src; nsrc -- 2 nsrc --> res
     for(int vi=0;vi<nsrc;vi++){
       param.v = (void*) prop[vi];
       Qvec[vi] = new quda::ColorSpinorField(param);
-      qlat_cf_to_quda_cf(buf[vi], src[vi], DIM, geo, map);
+      qlat_cf_to_quda_cf(*Qvec[vi], src[vi], geo, map);
+      //qlat_cf_to_quda_cf(buf[vi], src[vi], DIM, geo, map);
       //src and prop may be the same
-      if(buf_prec==0)cpy_GPU((qlat::ComplexT<double >*) Qvec[vi]->data(), buf[vi], Nd);
-      if(buf_prec==1)cpy_GPU((qlat::ComplexT<float  >*) Qvec[vi]->data(), buf[vi], Nd);
+      //Qsrc_tmp = new quda::ColorSpinorField(param); 
+      //qlat_cf_to_quda_cf()
+      //delete Qsrc_tmp;Qsrc_tmp=NULL;
+      //if(buf_prec==0)cpy_GPU((qlat::ComplexT<double >*) Qvec[vi]->data(), buf[vi], Nd);
+      //if(buf_prec==1)cpy_GPU((qlat::ComplexT<float  >*) Qvec[vi]->data(), buf[vi], Nd);
 
       param.v = (void*) buf[vi];
       Qvec[nsrc + vi] = new quda::ColorSpinorField(param);
@@ -3654,12 +3780,13 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
     }
 
     for(int vi=0;vi<nsrc;vi++){
-      if(buf_prec==0){
-        quda_cf_to_qlat_cf(prop[vi], (qlat::ComplexT<double >*) (*Qvec[nsrc + vi]).data(), DIM, geo, map);
-      }
-      if(buf_prec==1){
-        quda_cf_to_qlat_cf(prop[vi], (qlat::ComplexT<float  >*) (*Qvec[nsrc + vi]).data(), DIM, geo, map);
-      }
+      quda_cf_to_qlat_cf(prop[vi], *Qvec[nsrc + vi], geo, map);
+      //if(buf_prec==0){
+      //  quda_cf_to_qlat_cf(prop[vi], (qlat::ComplexT<double >*) (*Qvec[nsrc + vi]).data(), DIM, geo, map);
+      //}
+      //if(buf_prec==1){
+      //  quda_cf_to_qlat_cf(prop[vi], (qlat::ComplexT<float  >*) (*Qvec[nsrc + vi]).data(), DIM, geo, map);
+      //}
     }
 
     for(int vi=0;vi<2*nsrc;vi++){

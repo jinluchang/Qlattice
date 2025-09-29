@@ -664,7 +664,7 @@ void eigen_ov::save_eigen_Mvec(const std::string& ename, int sm, int save_type)
 
   int each = io_use.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
-  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geop);}
+  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geo());}
 
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
@@ -765,7 +765,7 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
   {
   TIMER("load eigen from DISC");
   std::vector<qlat::FieldM<Complexq , 12> > buf ;buf.resize(each_io);
-  for(int iv=0;iv<each_io;iv++){buf[iv].init(io_use.geop);}
+  for(int iv=0;iv<each_io;iv++){buf[iv].init(io_use.geo());}
   std::vector<Long > job =  job_create(n_vec, each_io);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
@@ -863,7 +863,7 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int c
 
   int each = io_use.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
-  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geop);}
+  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geo());}
 
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)

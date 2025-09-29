@@ -231,6 +231,7 @@ template <class T1, class Ty, int dir>
 void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector<Long >& map_)
 {
   TIMER("qlat_cf_to_quda_cf");
+  Qassert(sizeof(T1) == sizeof(ComplexT<double>));// quda can only use double interface
   const Long V = geo.local_volume();
   Long Vh = V / 2;
   if(map_.size() != V){get_index_mappings(map_, geo);}
@@ -250,13 +251,13 @@ void qlat_cf_to_quda_cfT(T1*  quda_cf, Ty* src, const int Dim, const Geometry& g
 }
 
 template <class T1, class Ty>
-void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector<Long >& map)
+void qlat_cf_to_quda_cf_pointer(T1*  quda_cf, Ty* src, const int Dim, const Geometry& geo, qlat::vector<Long >& map)
 {
   qlat_cf_to_quda_cfT<T1, Ty, 1>(quda_cf, src, Dim, geo, map);
 }
 
 template <class T1, class Ty>
-void quda_cf_to_qlat_cf(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector<Long >& map)
+void quda_cf_to_qlat_cf_pointer(Ty* res, T1*  quda_cf, const int Dim, const Geometry& geo, qlat::vector<Long >& map)
 {
   qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
 }

@@ -679,9 +679,10 @@ void quda_ff_to_Ffield4d(qlat::FermionField4dT<Td>& ff, T1* quda_ff)
 }
 
 template <class Ty, class T1>
-void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const Geometry& geo, int Dim, int dir = 1)
+void qlat_cf_to_quda_cf_test(T1*  quda_cf, Ty* src, const Geometry& geo, int Dim, int dir = 1)
 {
-  TIMER("qlat_cf_to_quda_cf(qlat_cf, quda_cf)");
+  TIMER("qlat_cf_to_quda_cf_test(qlat_cf, quda_cf)");
+  Qassert(sizeof(T1) == sizeof(ComplexT<double>));// quda can only use double interface
   Long V = geo.local_volume();
   Long Vh = V / 2;
   #pragma omp parallel for
@@ -698,13 +699,13 @@ void qlat_cf_to_quda_cf(T1*  quda_cf, Ty* src, const Geometry& geo, int Dim, int
 }
 
 template <class Ty, class T1>
-void quda_cf_to_qlat_cf(Ty* qlat_cf, T1* quda_cf, const Geometry& geo, int Dim)
+void quda_cf_to_qlat_cf_test(Ty* qlat_cf, T1* quda_cf, const Geometry& geo, int Dim)
 {
-  qlat_cf_to_quda_cf(quda_cf, qlat_cf, geo, Dim, 0);
+  qlat_cf_to_quda_cf_test(quda_cf, qlat_cf, geo, Dim, 0);
 }
 
 template <class Ty, class T1>
-void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
+void qlat_cf_to_quda_cf_test(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
 {
   Qassert(qlat_cf.initialized);
   const Geometry& geo = qlat_cf.geo();
@@ -715,13 +716,13 @@ void qlat_cf_to_quda_cf(T1*  quda_cf, colorFT& qlat_cf, int dir = 1)
   const Long Dim = 3;
 
   Ty* src = (Ty*) qlat::get_data(qlat_cf).data();
-  qlat_cf_to_quda_cf(quda_cf, src, geo, Dim, dir);
+  qlat_cf_to_quda_cf_test(quda_cf, src, geo, Dim, dir);
 }
 
 template <class Ty, class T1>
-void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
+void quda_cf_to_qlat_cf_test(colorFT& qlat_cf, T1* quda_cf)
 {
-  qlat_cf_to_quda_cf(quda_cf, qlat_cf, 0);
+  qlat_cf_to_quda_cf_test(quda_cf, qlat_cf, 0);
 }
 
 //template <class Ty>
@@ -815,6 +816,10 @@ void quda_cf_to_qlat_cf(colorFT& qlat_cf, T1* quda_cf)
 //  qlat_cf_to_quda_cfT<T1, Ty, 0>(quda_cf, res, Dim, geo, map);
 //}
 
+/*
+  Always copy to double precions Quda fields first
+  x and src may share the same pointers
+*/
 template <class Ty, int dir>
 void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo, qlat::vector<Long >& map)
 {
@@ -828,44 +833,65 @@ void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo
   //Qassert( x.TotalBytes() % Vb == 0);
   QudaPrecision Dtype = param.Precision();
   Qassert(Dtype == QUDA_DOUBLE_PRECISION or Dtype == QUDA_SINGLE_PRECISION or Dtype == QUDA_HALF_PRECISION);
-
+  //
   quda::ColorSpinorField *g = NULL;
-  if(Dtype == QUDA_HALF_PRECISION){
+  qlat::vector_gpu<int8_t >& quda_buf = get_vector_gpu_plan<int8_t >(0, "quda_field_copy_buffers", 1);
+  //if(Dtype == QUDA_HALF_PRECISION or Dtype == QUDA_SINGLE_PRECISION)
+  //if(Dtype != QUDA_DOUBLE_PRECISION)
+  {
+    quda_buf.resizeL(Vl * sizeof(double) * 2 / sizeof(int8_t));
     //quda::ColorSpinorParam param(x);
-    param.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+    param.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
     param.is_composite  = false;
     param.is_component  = false;
     param.composite_dim = 1;
+    param.create = QUDA_REFERENCE_FIELD_CREATE;
+    param.v = (void*) quda_buf.data();
     g = quda::ColorSpinorField::Create(param);
   }
   if(x.IsComposite()){
     for(int di=0;di<x.CompositeDim();di++)
     {
-      if(Dtype == QUDA_DOUBLE_PRECISION)
-      qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.Component(di).data(), &src[di*Vl], Ndata, geo, map);
-      if(Dtype == QUDA_SINGLE_PRECISION)
-      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.Component(di).data(), &src[di*Vl], Ndata, geo, map);
-      if(Dtype == QUDA_HALF_PRECISION)
-      {
       if(dir == 0)*g = x.Component(di);
-      qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->data(), &src[di*Vl], Ndata, geo, map);
+      qlat_cf_to_quda_cfT<qlat::ComplexT<double >, Ty, dir>((qlat::ComplexT<double >* ) g->data(), &src[di*Vl], Ndata, geo, map);
       if(dir == 1)x.Component(di) = *g;
-      }
+
+      //if(Dtype == QUDA_DOUBLE_PRECISION){
+      //  qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.Component(di).data(), &src[di*Vl], Ndata, geo, map);
+      //}else{
+      //  if(dir == 0)*g = x.Component(di);
+      //  qlat_cf_to_quda_cfT<qlat::ComplexT<double >, Ty, dir>((qlat::ComplexT<double >* ) g->data(), &src[di*Vl], Ndata, geo, map);
+      //  if(dir == 1)x.Component(di) = *g;
+      //}
+      //if(Dtype == QUDA_SINGLE_PRECISION)
+      //qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.Component(di).data(), &src[di*Vl], Ndata, geo, map);
+      //if(Dtype == QUDA_HALF_PRECISION)
+      //{
+      //if(dir == 0)*g = x.Component(di);
+      //qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->data(), &src[di*Vl], Ndata, geo, map);
+      //if(dir == 1)x.Component(di) = *g;
+      //}
     }
   }else{
-    if(Dtype == QUDA_DOUBLE_PRECISION)
-    qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.data(), src, Ndata, geo, map);
-    if(Dtype == QUDA_SINGLE_PRECISION)
-    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.data(), src, Ndata, geo, map);
-    if(Dtype == QUDA_HALF_PRECISION)
-    {
     if(dir == 0)*g = x;
-    qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->data(), src, Ndata, geo, map);
+    qlat_cf_to_quda_cfT<qlat::ComplexT<double >, Ty, dir>((qlat::ComplexT<double >* ) g->data(), src, Ndata, geo, map);
     if(dir == 1)x = *g;
-    }
-
+    //if(Dtype == QUDA_DOUBLE_PRECISION){
+    //  qlat_cf_to_quda_cfT<qlat::ComplexT<double>, Ty, dir>((qlat::ComplexT<double>* ) x.data(), src, Ndata, geo, map);
+    //}else{
+    //  if(dir == 0)*g = x;
+    //  qlat_cf_to_quda_cfT<qlat::ComplexT<double >, Ty, dir>((qlat::ComplexT<double >* ) g->data(), src, Ndata, geo, map);
+    //  if(dir == 1)x = *g;
+    //}
+    //if(Dtype == QUDA_SINGLE_PRECISION)
+    //qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) x.data(), src, Ndata, geo, map);
+    //if(Dtype == QUDA_HALF_PRECISION)
+    //{
+    //if(dir == 0)*g = x;
+    //qlat_cf_to_quda_cfT<qlat::ComplexT<float >, Ty, dir>((qlat::ComplexT<float >* ) g->data(), src, Ndata, geo, map);
+    //if(dir == 1)x = *g;
+    //}
   }
-
   if(g != NULL){delete g;g=NULL;}
 }
 

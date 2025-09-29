@@ -41,7 +41,7 @@ struct io_vec
   size_t vol,noden;
   int rank,Nmpi;
   std::vector<int > nv,Nv;
-  Geometry geop;
+  box<Geometry> geoB;
   int threadio;
   std::vector<FILE* > file_omp;
   std::vector<size_t > currsend,currrecv,currspls,currrpls;
@@ -88,6 +88,13 @@ struct io_vec
       return fopen(filename, mode);
     }else{return NULL;}
 
+  }
+
+  // io geo always local
+  inline const Geometry& geo(){
+    //const Coordinate total_site = Coordinate(nx, ny, nz, nt);
+    //return get_geo_cache(total_site);
+    return geoB();
   }
   
   inline void io_close(FILE *file){
@@ -182,82 +189,83 @@ struct io_vec
 
 
   ////fd = &fds;
-  io_vec(const qlat::Geometry& geo,int ionum_or, int threadio_set = IO_THREAD, bool do_checksum_set=false){
-  TIMERA("Create io_vec");
-  /////x,y,z,t
-  geop = geo;
-  //const fft_desc_basic& fd = get_fft_desc_basic_plan(geop);
-  threadio = threadio_set;
-  MPI_size_c = 0;////tmp = NULL;
-  do_checksum = do_checksum_set;
-  end_of_file = 0;
+  io_vec(const Geometry& geo,int ionum_or, int threadio_set = IO_THREAD, bool do_checksum_set=false){
+    TIMERA("Create io_vec");
+    /////x,y,z,t
+    threadio = threadio_set;
+    MPI_size_c = 0;////tmp = NULL;
+    do_checksum = do_checksum_set;
+    end_of_file = 0;
 
-  //int Nv = omp_get_max_threads();
-  //if(threadio < 1 or threadio > Nv){threadio = Nv;}
+    //int Nv = omp_get_max_threads();
+    //if(threadio < 1 or threadio > Nv){threadio = Nv;}
 
-  nv.resize(4);Nv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
-  Nx = Nv[0];Ny = Nv[1];Nz = Nv[2];Nt = Nv[3];
+    nv.resize(4);Nv.resize(4);
+    for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+    nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
+    Nx = Nv[0];Ny = Nv[1];Nz = Nv[2];Nt = Nv[3];
 
-  vol   =  nx*ny*nz*nt;
-  noden =  Nx*Ny*Nz*Nt;
+    // set mapping to global geometry
+    geoB.set_view(get_geo_cache(geo));
 
-  Nmpi  = qlat::get_num_node();
-  rank  = qlat::get_id_node();
+    vol   =  nx*ny*nz*nt;
+    noden =  Nx*Ny*Nz*Nt;
 
-  //for(int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], (noden/Nx)*sizeof(LInt), MPI_CHAR, ri, get_comm());
-  //if(node_ioL[rank]==0){map_Nitoi[rank].resize(0);}
+    Nmpi  = qlat::get_num_node();
+    rank  = qlat::get_id_node();
 
-  node_ioL.resize(Nmpi);
-  if(ionum_or > 0 and ionum_or < Nmpi){ionum=ionum_or;}else{
-    std::string val = get_env(std::string("q_io_vec_ionum"));
-    if(val == ""){ionum = 32;}else{ionum = stringtonum(val);}
-    if(ionum < 0 or ionum > Nmpi){ionum = Nmpi;}
-    ////qmessage("==io number %d \n", ionum);
-  }
+    //for(int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], (noden/Nx)*sizeof(LInt), MPI_CHAR, ri, get_comm());
+    //if(node_ioL[rank]==0){map_Nitoi[rank].resize(0);}
 
-  for(int ni=0;ni<Nmpi;ni++){node_ioL[ni]=-1;}
-  /////distribute ranks out nodes
-  {
-    /////sorted id according to nodes
-    std::vector<int> id_to_node = qlat::get_id_node_in_shuffle_list();
-    //int off = Nmpi/ionum;
-    int countN = 0;
-    for(int ni=0;ni<Nmpi;ni++){
-      //if(ni%off==0 and countN < ionum)
-      if(countN < ionum){
-        ///node_ioL[ni]=countN;
-        node_ioL[id_to_node[ni]]=countN;
-        countN++;
+    node_ioL.resize(Nmpi);
+    if(ionum_or > 0 and ionum_or < Nmpi){ionum=ionum_or;}else{
+      std::string val = get_env(std::string("q_io_vec_ionum"));
+      if(val == ""){ionum = 32;}else{ionum = stringtonum(val);}
+      if(ionum < 0 or ionum > Nmpi){ionum = Nmpi;}
+      ////qmessage("==io number %d \n", ionum);
+    }
+
+    for(int ni=0;ni<Nmpi;ni++){node_ioL[ni]=-1;}
+    /////distribute ranks out nodes
+    {
+      /////sorted id according to nodes
+      std::vector<int> id_to_node = qlat::get_id_node_in_shuffle_list();
+      //int off = Nmpi/ionum;
+      int countN = 0;
+      for(int ni=0;ni<Nmpi;ni++){
+        //if(ni%off==0 and countN < ionum)
+        if(countN < ionum){
+          ///node_ioL[ni]=countN;
+          node_ioL[id_to_node[ni]]=countN;
+          countN++;
+        }
       }
     }
-  }
 
-  ////fd = fft_desc_basic(geo); ///new ways
-  #ifndef __IO_SMALL_MEM__
-  const fft_desc_basic& fd = get_fft_desc_basic_plan(geop);
-  if(node_ioL[rank]>=0){
-    map_Nitoi.resize(Nmpi);
-    for(int ri=0;ri<Nmpi;ri++){
-      map_Nitoi[ri].resize(noden/Nx);
+    ////fd = fft_desc_basic(geo); ///new ways
+    #ifndef __IO_SMALL_MEM__
+    const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    if(node_ioL[rank]>=0){
+      map_Nitoi.resize(Nmpi);
+      for(int ri=0;ri<Nmpi;ri++){
+        map_Nitoi[ri].resize(noden/Nx);
 
-      #pragma omp parallel for
-      for(size_t isp=0;isp<size_t(noden/Nx);isp++){
-        //qlat::Coordinate ts = geo.coordinate_from_index(isp * Nx);
-        //qlat::Coordinate gs = geo.coordinate_g_from_l(ts);
-        //LInt offv = ((gs[3]*nz+gs[2])*ny+gs[1])*nx+gs[0];
-        size_t offv = fd.index_g_from_local(isp*Nx +0 , ri);
-        map_Nitoi[ri][isp] = offv;
+        #pragma omp parallel for
+        for(size_t isp=0;isp<size_t(noden/Nx);isp++){
+          //qlat::Coordinate ts = geo.coordinate_from_index(isp * Nx);
+          //qlat::Coordinate gs = geo.coordinate_g_from_l(ts);
+          //LInt offv = ((gs[3]*nz+gs[2])*ny+gs[1])*nx+gs[0];
+          size_t offv = fd.index_g_from_local(isp*Nx +0 , ri);
+          map_Nitoi[ri][isp] = offv;
+        }
       }
     }
-  }
-  #endif
+    #endif
 
-  ///io_crc.resize(ionum);
-  ini_crc(true);
+    ///io_crc.resize(ionum);
+    ini_crc(true);
 
-  ////buf = NULL;size_buf = 0;
+    ////buf = NULL;size_buf = 0;
   }
 
   inline void clear_buf(){
@@ -277,8 +285,6 @@ struct io_vec
     currspls.resize(0);
     currrpls.resize(0);
     io_crc.resize(0);
-    ////geop = NULL;
-    //if(buf != NULL){free(buf);size_buf = 0;buf = NULL;}
   }
 
 
@@ -289,14 +295,23 @@ struct IOvecKey {
   Coordinate total_site;
   int ionum;
   bool do_checksum_set;
-  IOvecKey(const Geometry& geo, int ionum_ = 0, bool do_checksum_set_=false)
-  {
-    total_site = geo.total_site();
+  void init(const Coordinate& total_site_, int ionum_ = 0, bool do_checksum_set_=false){
+    total_site = total_site_;
     ionum = ionum_;
     do_checksum_set = do_checksum_set_;
   }
 
+  IOvecKey(const Coordinate& total_site_, int ionum_ = 0, bool do_checksum_set_=false)
+  {
+    init(total_site_, ionum_, do_checksum_set_);
+  }
+
+  IOvecKey(const Geometry& geo, int ionum_ = 0, bool do_checksum_set_=false)
+  {
+    init(geo.total_site(), ionum_, do_checksum_set_);
+  }
 };
+
 inline bool operator<(const IOvecKey& x, const IOvecKey& y)
 {
   if(x.total_site < y.total_site ){  return true;}
@@ -305,7 +320,6 @@ inline bool operator<(const IOvecKey& x, const IOvecKey& y)
   if(y.ionum < x.ionum ){  return false;}
   if(x.do_checksum_set < y.do_checksum_set ){  return true;}
   if(y.do_checksum_set < x.do_checksum_set ){  return false;}
-
   return false;
 }
 
@@ -318,8 +332,7 @@ inline Cache<IOvecKey, io_vec >& get_io_vec_cache()
 inline io_vec& get_io_vec_plan(const IOvecKey& fkey)
 {
   if (!get_io_vec_cache().has(fkey)) {
-    Geometry geo;geo.init(fkey.total_site);
-    get_io_vec_cache()[fkey] = io_vec(geo, fkey.ionum, IO_THREAD, fkey.do_checksum_set);
+    get_io_vec_cache()[fkey] = io_vec(fkey.total_site, fkey.ionum, IO_THREAD, fkey.do_checksum_set);
   }
   return get_io_vec_cache()[fkey];
 }
@@ -355,7 +368,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
   ////int size_c = gN*noden*dsize;
 
   #ifdef __IO_SMALL_MEM__
-  const fft_desc_basic& fd = get_fft_desc_basic_plan(io.geop);
+  const fft_desc_basic& fd = get_fft_desc_basic_plan(io.geo());
   #endif
 
   ////char* tmp=NULL;
@@ -1084,7 +1097,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
 //  {
 //    res.resize(0);
 //    res.resize(n_vec);
-//    for(int iv=0;iv<n_vec;iv++){res[iv].init(io_use.geop);}
+//    for(int iv=0;iv<n_vec;iv++){res[iv].init(io_use.geo());}
 //  }
 //  std::vector<Ty* > resp;resp.resize(n_vec);
 //  for(int iv=0;iv<n_vec;iv++){resp[iv] = (Ty*) qlat::get_data(res[iv]).data();}
@@ -1143,7 +1156,7 @@ void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> >
   if(read==true){
     eigen.resize(0);
     eigen.resize(n_vec);
-    for(int iv=0;iv<n_vec;iv++)eigen[iv].init(io_use.geop);
+    for(int iv=0;iv<n_vec;iv++)eigen[iv].init(io_use.geo());
   }
 
   if(sizeof(Td) == sizeof(double )){
@@ -1210,7 +1223,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
   if(sizen != 2*Fsize*12 and sizen != Fsize*12){qmessage("File %s \n",filename);abort_r("prop size wrong! \n");}
   prop.resize(0);
   prop.resize(12);
-  for(int iv=0;iv<12;iv++)prop[iv].init(io_use.geop);
+  for(int iv=0;iv<12;iv++)prop[iv].init(io_use.geo());
   if(sizen == 2*Fsize*12){single=false;}
   }
     
@@ -1288,10 +1301,11 @@ void save_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
 //////final result 12*12 --> Nt*Nxyz
 template<typename Td>
 void load_gwu_prop(const char *filename, qlat::FieldM<qlat::ComplexT<Td>, 12*12>& res,io_vec &io_use,bool read=true){
-  if(read == true ){res.init();res.init(io_use.geop);}
+  const Geometry& geo = io_use.geo();
+  if(read == true ){res.init();res.init(geo);}
   if(read == false){abort_r("Not supported! \n");}
 
-  Long sizeF = io_use.geop.local_volume();
+  Long sizeF = geo.local_volume();
 
   std::vector<qlat::FermionField4dT<Td> > prop;
   load_gwu_prop(filename, prop, io_use, read);
@@ -1360,7 +1374,6 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   {
     size_t sizen = get_file_size_MPI(filename);
     if(sizen != Fsize){abort_r("Link size wrong! \n");}
-    /////gf.init(*io_use.geop);
   }
 
 
@@ -1457,7 +1470,7 @@ void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &nois
         size_t sizen = get_file_size_MPI(filename);
         if(sizen != Nnoi*2*Fsize){abort_r("noise size wrong! \n");}
       }
-      Geometry geo = io_use.geop;// geo.multiplicity=1;
+      const Geometry& geo = io_use.geo();// geo.multiplicity=1;
       if(!noi.initialized)noi.init(geo);
     }
     if(read==false){
@@ -1838,9 +1851,8 @@ template <class Ty>
 void initialize_Field(std::vector<qlat::FieldG<Ty> > &noises, const int bfac, const int nread, inputpara& in)
 {
   Qassert(in.nx != 0 and in.ny != 0 and in.nz != 0 and in.nt != 0);
-  Geometry geo;
-  Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
-  geo.init(total_site);
+  const Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
+  const Geometry& geo = get_geo_cache(total_site);
   if(noises.size() != (LInt) nread){
     noises.resize(0);
     noises.resize(nread);
@@ -1875,9 +1887,10 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
   int nread = n1 - n0;
 
   if(in.read == true){
-    Geometry geo;
-    Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
-    geo.init(total_site);
+    //Geometry geo;
+    //Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
+    //geo.init(total_site);
+    const Geometry& geo = get_geo_cache(Coordinate(in.nx, in.ny, in.nz, in.nt));
 
     if(noises.size() != (LInt) nread){
       noises.resize(0);
@@ -1918,9 +1931,10 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
   int nread = n1 - n0;
 
   if(in.read == true){
-    Geometry geo;
-    Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
-    geo.init(total_site);
+    //Geometry geo;
+    //Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
+    //geo.init(total_site);
+    const Geometry& geo = get_geo_cache(Coordinate(in.nx, in.ny, in.nz, in.nt));
 
     if(noises.size() != (LInt) nread){
       noises.resize(0);
@@ -2350,7 +2364,7 @@ inline FILE* open_eigensystem_file(const char *filename, int nini, int nvec, boo
     io_use.do_checksum = false;
   }
   if(in.file_type == 2 or in.file_type == 3){
-    if(read == false){in.read_geo(io_use.geop);}
+    if(read == false){in.read_geo(io_use.geo());}
     int bfac_eigen = 12;
     std::string VECS_TYPE = std::string("Eigen_system_nvec.12.tzyx.R/I");
     std::string INFO_LIST = std::string("NONE");
@@ -2407,7 +2421,7 @@ void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noise
     {
       noises.resize(0);
       noises.resize(n_vec);
-      for(int iv=0;iv<n_vec;iv++){noises[iv].init(io_use.geop);}
+      for(int iv=0;iv<n_vec;iv++){noises[iv].init(io_use.geo());}
     }}
 
     if(sizeof(Ty) == 2*sizeof(double)){
@@ -2445,8 +2459,6 @@ template <class Td>
 void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_use, const bool single = false, bool Rendian=false)
 {
   ////if(sizeof(Td) != sizeof(double ) and sizeof(Td) != sizeof(float )){abort_r("Cannot understand the input format! \n");}
-  //const qlat::Geometry& geo = io_use.geop;
-
   size_t noden = io_use.noden;
   size_t Fsize = (noden)*io_use.Nmpi*nvec*sizeof(float);
 
