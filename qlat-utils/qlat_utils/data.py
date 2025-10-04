@@ -589,7 +589,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
         blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
     assert len(blocked_jk_idx_list[1:]) == n
     r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
-    if is_use_old_rand_alg:
+    if is_use_old_rand_alg == "v1":
         assert not is_normalizing_rand_sample
         for i in range(n_rand_sample):
             rsi = rs.split(str(i))
@@ -597,6 +597,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
             for j in range(n):
                 r_arr[i, j] = r[j]
     else:
+        assert is_use_old_rand_alg == False
         r_arr_dict = dict()
         for jk_idx in blocked_jk_idx_list[1:]:
             jk_idx_str = str(jk_idx)
@@ -672,27 +673,41 @@ def rjk_avg_err(rjk_list, eps=1):
 
 # ----------
 
-default_g_jk_kwargs = dict()
+def mk_g_jk_kwargs():
+    """
+    Return the predefined `default_g_jk_kwargs`.
+    """
+    g_jk_kwargs = dict()
+    #
+    g_jk_kwargs["jk_type"] = "rjk"  # choices: "rjk", "super"
+    g_jk_kwargs["eps"] = 1
+    #
+    # for jk_type = "super"
+    g_jk_kwargs["all_jk_idx"] = None
+    g_jk_kwargs["get_all_jk_idx"] = None
+    #
+    # for jk_type = "rjk"
+    g_jk_kwargs["n_rand_sample"] = 1024
+    g_jk_kwargs["rng_state"] = RngState("rejk")
+    g_jk_kwargs["is_normalizing_rand_sample"] = True
+    #
+    # Is only needed to reproduce old results
+    # Possible choice: "v1" (also need default_g_jk_kwargs["is_normalizing_rand_sample"] == False)
+    g_jk_kwargs["is_use_old_rand_alg"] = False
+    #
+    # these parameters are used in jk_blocking_func_default
+    g_jk_kwargs["block_size"] = 1
+    g_jk_kwargs["block_size_dict"] = {
+            "job_tag": 1,
+            }
+    g_jk_kwargs["all_jk_idx_set"] = set()
+    #
+    # jk_blocking_func(jk_idx) => blocked jk_idx
+    g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
+    #
+    return g_jk_kwargs
 
-default_g_jk_kwargs["jk_type"] = "rjk"  # choices: "rjk", "super"
-default_g_jk_kwargs["eps"] = 1
-
-# for jk_type = "super"
-default_g_jk_kwargs["all_jk_idx"] = None
-default_g_jk_kwargs["get_all_jk_idx"] = None
-
-# for jk_type = "rjk"
-default_g_jk_kwargs["n_rand_sample"] = 1024
-default_g_jk_kwargs["rng_state"] = RngState("rejk")
-default_g_jk_kwargs["is_normalizing_rand_sample"] = True
-default_g_jk_kwargs["is_use_old_rand_alg"] = False # only need to reproduce old results (need is_normalizing_rand_sample == False)
-
-# these parameters are used in jk_blocking_func_default
-default_g_jk_kwargs["block_size"] = 1
-default_g_jk_kwargs["block_size_dict"] = {
-        "job_tag": 1,
-        }
-default_g_jk_kwargs["all_jk_idx_set"] = set()
+default_g_jk_kwargs = mk_g_jk_kwargs()
 
 @use_kwargs(default_g_jk_kwargs)
 def get_jk_state(
@@ -762,8 +777,6 @@ def jk_blocking_func_default(
     else:
         return jk_idx
     assert False
-
-default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default # jk_blocking_func(jk_idx) => blocked jk_idx
 
 @use_kwargs(default_g_jk_kwargs)
 @timer
