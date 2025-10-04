@@ -839,7 +839,7 @@ def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, is_norma
     assert jk_type == "rjk"
     return rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, is_normalizing_rand_sample)
 
-def g_jk_avg(jk_list):
+def g_jk_avg(jk_list, **_kwargs):
     """
     Return ``avg`` of the ``jk_list``.
     """
@@ -913,7 +913,7 @@ def g_jk_sample_size(job_tag, traj_list, **kwargs):
     b_jk_idx_set = set( g_jk_blocking_func(jk_idx, **kwargs) for jk_idx in jk_idx_list )
     return len(b_jk_idx_set)
 
-default_g_jk_kwargs |= mk_g_jk_kwargs()
+default_g_jk_kwargs.update(mk_g_jk_kwargs())
 
 class JkKwargs:
 
