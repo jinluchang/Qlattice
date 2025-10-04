@@ -673,6 +673,8 @@ def rjk_avg_err(rjk_list, eps=1):
 
 # ----------
 
+default_g_jk_kwargs = dict()
+
 def mk_g_jk_kwargs():
     """
     Return the predefined `default_g_jk_kwargs`.
@@ -706,8 +708,6 @@ def mk_g_jk_kwargs():
     g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
     #
     return g_jk_kwargs
-
-default_g_jk_kwargs = mk_g_jk_kwargs()
 
 @use_kwargs(default_g_jk_kwargs)
 def get_jk_state(
@@ -912,6 +912,8 @@ def g_jk_sample_size(job_tag, traj_list, **kwargs):
     jk_idx_list = [ (job_tag, traj,) for traj in traj_list ]
     b_jk_idx_set = set( g_jk_blocking_func(jk_idx, **kwargs) for jk_idx in jk_idx_list )
     return len(b_jk_idx_set)
+
+default_g_jk_kwargs |= mk_g_jk_kwargs()
 
 class JkKwargs:
 
