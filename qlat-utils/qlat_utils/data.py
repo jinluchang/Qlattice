@@ -674,7 +674,7 @@ def rjk_avg_err(rjk_list, eps=1):
 
 default_g_jk_kwargs = dict()
 
-default_g_jk_kwargs["jk_type"] = "super"  # choices: "rjk", "super"
+default_g_jk_kwargs["jk_type"] = "rjk"  # choices: "rjk", "super"
 default_g_jk_kwargs["eps"] = 1
 
 # for jk_type = "super"
