@@ -491,6 +491,14 @@ def fsqrt(data):
         else:
             raise Exception(f"fsqr data={data} type not supported")
 
+def err_sum(*vs):
+    """
+    e.g.: `q.err_sum(1.4, 2.1, 1.0)` ==> `2.7147743920996454`
+    """
+    err_sqr = sum([ fsqr(v) for v in vs])
+    err = fsqrt(err_sqr)
+    return err
+
 def jk_avg(jk_list):
     is_np_arr = isinstance(jk_list, np.ndarray)
     val = jk_list[0]
@@ -500,8 +508,8 @@ def jk_avg(jk_list):
         return val
 
 def jk_err(jk_list, eps=1, *, block_size=1):
-    """
-    Return \\frac{1}{eps} \\sqrt{ \\sum_{i=1}^N (jk[i] - jk_avg)^2 } when block_size=1
+    r"""
+    Return \frac{1}{eps} \sqrt{ \sum_{i=1}^N (jk[i] - jk_avg)^2 } when block_size=1
     Note: len(jk_list) = N + 1
     Same eps as the eps used in the 'jackknife' function
     """
@@ -557,14 +565,14 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 @timer
 def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True, is_use_old_rand_alg=False):
-    """
+    r"""
     return rjk_list
     len(rjk_list) == 1 + n_rand_sample
     distribution of rjk_list should be similar as the distribution of avg
     r_{i,j} ~ N(0, 1)
     avg = jk_avg(jk_list)
     len(jk_list) = n + 1
-    rjk_list[i] = avg + \\sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
+    rjk_list[i] = avg + \sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
     #
     jk_blocking_func(jk_idx) => blocked jk_idx
     """

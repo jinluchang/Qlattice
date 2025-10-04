@@ -16,7 +16,7 @@ from pprint import pformat
 
 @q.timer
 def gf_plaq_action_density_field(GaugeField gf):
-    """
+    r"""
     return paf
     paf.geo.multiplicity == 1
     \sum_P (1 - 1/3 * Re Tr U_P)
@@ -34,7 +34,7 @@ def gf_plaq_action_density_field(GaugeField gf):
 
 @q.timer
 def gf_spatial_plaq_action_density_field(GaugeField gf):
-    """
+    r"""
     return paf
     paf.geo.multiplicity == 1
     \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
@@ -45,7 +45,7 @@ def gf_spatial_plaq_action_density_field(GaugeField gf):
 
 @q.timer
 def gf_plaq_action_density(GaugeField gf):
-    """
+    r"""
     return pa
     ininstance(pa, float)
     pa = gf_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
@@ -56,7 +56,7 @@ def gf_plaq_action_density(GaugeField gf):
 
 @q.timer
 def gf_spatial_plaq_action_density(GaugeField gf):
-    """
+    r"""
     return pa
     ininstance(pa, float)
     pa = gf_spatial_plaq_action_density_field(gf).glb_sum()[:].item() / total_volume
@@ -67,7 +67,7 @@ def gf_spatial_plaq_action_density(GaugeField gf):
 
 @q.timer
 def gf_topology_field_clf(GaugeField gf):
-    """
+    r"""
     return topf
     topf.geo.multiplicity == 1
     Use the basic gf_clover_leaf_field
@@ -79,7 +79,7 @@ def gf_topology_field_clf(GaugeField gf):
 
 @q.timer
 def gf_topology_clf(GaugeField gf):
-    """
+    r"""
     return top
     ininstance(top, float)
     Use the basic gf_clover_leaf_field
@@ -89,7 +89,7 @@ def gf_topology_clf(GaugeField gf):
 
 @q.timer
 def gf_topology_field(GaugeField gf):
-    """
+    r"""
     return topf
     topf.geo.multiplicity == 1
     Using the 5 loop improved definition
@@ -101,7 +101,7 @@ def gf_topology_field(GaugeField gf):
 
 @q.timer
 def gf_topology(GaugeField gf):
-    """
+    r"""
     return top
     ininstance(top, float)
     Using the 5 loop improved definition Eq. (2-7)
@@ -111,7 +111,7 @@ def gf_topology(GaugeField gf):
 
 @q.timer
 def gf_topology_terms_field(GaugeField gf):
-    """
+    r"""
     return topf;
     topf.geo.multiplicity == 5
     sum of the 5 terms should equal to gf_topology_field
@@ -122,7 +122,7 @@ def gf_topology_terms_field(GaugeField gf):
 
 @q.timer
 def gf_topology_terms(GaugeField gf):
-    """
+    r"""
     return top_terms;
     top_terms.shape == (5,)
     top_terms.dtype == np.float64
@@ -140,7 +140,7 @@ def smear_measure_topo(
         density_field_path=None,
         is_show_topo_terms=False,
         ):
-    """
+    r"""
     return topo_list, energy_list,
     gf will be modified in-place.
     smear_info_list = [ [ step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta", ], ... ]
