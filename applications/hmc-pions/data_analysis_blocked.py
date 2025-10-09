@@ -127,10 +127,12 @@ class LatticeData():
         self.A_corrs=0
         self.A_corr_avgs=0
         self.fpi=0
+        self.ainv=0
         self.fpi2=0
         self.mpi_from_fpi=0
         self.mpi_from_fpi2=0
         self.fpi_err=0
+        self.ainv_err=0
         self.fpi2_err=0
         self.mpi_from_fpi_err=0
         self.mpi_from_fpi2_err=0
@@ -489,7 +491,11 @@ class LatticeData():
     def calc_axpi_corrs(self):
         if(self.A_corrs_done):
             return
-        self.A_corrs = [[self.axpi_correlator(self.timeslices[i],self.A_timeslices[i],dt) for dt in range(self.Nt)] for i in range(self.cutoff,self.data_len)]
+        #self.A_corrs = [[self.axpi_correlator(self.timeslices[i],self.A_timeslices[i],dt) for dt in range(self.Nt)] for i in range(self.cutoff,self.data_len)]
+        self.A_corrs = []
+        for i in range(self.cutoff,self.data_len):
+            self.A_corrs.append([self.axpi_correlator(self.timeslices[i],self.A_timeslices[i],dt) for dt in range(self.Nt)])
+            print(f"{i} / {self.data_len}")
         self.A_corr_avgs = np.mean(self.A_corrs,axis=0)
         self.A_corrs_done = True
     
@@ -508,8 +514,15 @@ class LatticeData():
         self.calc_axpi_corrs()
         fpi_blocks = self.get_jackknife_blocks(self.A_corrs, self.fpi_fit)
         [[self.fpi, self.mpi_from_fpi],[self.fpi_err,self.mpi_from_fpi_err]] = self.get_errors_from_blocks(self.fpi_fit(self.A_corr_avgs), fpi_blocks)
+        self.ainv, self.ainv_err = self.get_errors_from_blocks(0.092/self.fpi_fit(self.A_corr_avgs), np.divide(0.092,fpi_blocks))
         print(f"F_pi is {self.fpi}/a +- {self.fpi_err}/a")
         print(f"m_pi is {self.mpi_from_fpi}/a +- {self.mpi_from_fpi_err}/a")
+        print(f"L is {self.fpi / 0.092 * 0.19732698044404103 * self.Nx} +- {self.fpi_err / 0.092 * 0.19732698044404103 * self.Nx} fm")
+        print(f"a inverse is {self.ainv[0]} +- {self.ainv_err[0]} GeV")
+        self.calc_pion_corrs()
+        pion_mass_blocks = self.get_jackknife_blocks(self.pi_corrs, self.find_mass_from_fit)
+        self.mpi_over_fpi, self.mpi_over_fpi_err = self.get_errors_from_blocks(self.find_mass_from_fit(self.pi_corr_avgs)[0]/self.fpi_fit(self.A_corr_avgs)[0], np.divide(pion_mass_blocks,fpi_blocks)[:,0])
+        print(f"m_pi over f_pi is {self.mpi_over_fpi} +- {self.mpi_over_fpi_err}")
         self.fpi_done=True
     
     def fpi2_fit(self, pi_corr_avgs, fit_range=[], fpi_guess=0.2, mpi_guess=0.2):
