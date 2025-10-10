@@ -69,8 +69,11 @@ struct QMAction {
     measure_offset_L = measure_offset_L_;
     measure_offset_M = measure_offset_M_;
     
+    // L = 1.0, M = 1.0 - Calculate observables for Q(t_TV+1) / Q(t_TV)
+    // L = 1.0, M != 0.0 - Calculate Q(M_{i+1})
+    // L != 1.0 - Calculate Q(L_{i+1}) / Q(L_i)
     if(L == 1.0) {
-      if(M == 0.0)
+      if(M == 1.0)
         vtype = GET_DTTV;
       else
         vtype = GET_M;
