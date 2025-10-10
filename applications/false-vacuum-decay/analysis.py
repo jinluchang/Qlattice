@@ -145,16 +145,16 @@ class Analysis:
         #return np.divide(blocks_FV,blocks_TV)
 
     def get_ddR_div_ddR_blocks(self, sf):
-        sf = self.data.replace_params(sf, ["Hlow", "disp"], [["True", "False"]])[0]
-        t_TV = int(self.data.params[sf]["tTV"])
-        t_FV = int(self.data.params[sf]["tFV"])
-        t_full2 = int(self.data.params[sf]["tfull2"])
-        blocks_C = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["D"]["C"][self.data.cutoff:self.data.end]), self.data.block_size)
-        blocks_D = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["D"]["D"][self.data.cutoff:self.data.end]), self.data.block_size)
-        sf2 = self.data.replace_params(sf, ["disp", "tfull2", "tTV"], [["True", t_full2+1, t_TV-1]])[0]
-        blocks_A = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["D"]["A"][self.data.cutoff:self.data.end]), self.data.block_size)
-        blocks_B = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["D"]["B"][self.data.cutoff:self.data.end]), self.data.block_size)
-        return jk.super_jackknife_combine_blocks([np.divide(blocks_A, blocks_B), np.divide(blocks_C, blocks_D)], lambda x: x[0]*x[1])
+        sf = self.data.replace_params(sf, ["offL", "offM", "L", "M"], [["False", "False", "1.0", "0.0"]])[0]
+        blocks_L = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["D"]["L"][self.data.cutoff:self.data.end]), self.data.block_size)
+        params = self.data.params[sf].copy()
+        params["tTV"] = int(params["tTV"]) - 1
+        params["tFV"] = int(params["tFV"]) + 1
+        del params["tFVout"]
+        del params["tFVmid"]
+        sf2 = self.data.get_indices(params)[0]
+        blocks_M = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf2]["D"]["M"][self.data.cutoff:self.data.end]), self.data.block_size)
+        return jk.super_jackknife_combine_blocks([blocks_L, blocks_M], lambda x: x[0]/x[1])
 
     # Functions for plotting data ================================
     
@@ -170,14 +170,14 @@ class Analysis:
         xs = []
         for sf in sfs:
             x=get_x(sf)
-            if(filter_x(x)): continue
+            if(filter_x(x) or int(self.data.params[sf]["tTV"])%2==0): continue
             blocks = self.get_ddR_div_ddR_blocks(sf)
             #blocks = np.log(self.get_ddR_div_ddR_blocks(sf)) / float(self.data.params[sf]["dt"])
             dS, err_dS = jk.get_errors_from_blocks(np.mean(blocks), blocks)
             expS.append(dS)
             expS_errs.append(err_dS)
             xs.append(x)
-        plt.errorbar(xs, expS, yerr=expS_errs, label=label)
+        plt.errorbar(xs, expS, yerr=expS_errs, label=label, fmt="o")
         plt.title("$Q(t_\\text{TV}-a)/Q(t_\\text{TV})$")
         plt.xlabel(param)
         return xs, expS, expS_errs
@@ -215,12 +215,12 @@ class Analysis:
                 print(f"No previous factor found for {param}={p}")
             last_params, last_expS, errs = self.plot_expS(delta_actions[sf][key], get_x, fact, f"{param}={p}", lambda x: filter_x(x,p))
     
-    def plot_expS_vs_M(self):
-        sfs = list(filter(lambda x: self.data.params[x]["M"]!="1.0", list(self.data.delta_actions)))
+    def plot_expS_vs_M(self, params={}):
+        sfs = list(filter(lambda x: self.data.params[x]["M"]!="1.0", list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "M", sfs, "M")
     
-    def plot_expS_vs_L(self):
-        sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.delta_actions)))
+    def plot_expS_vs_L(self, params={}):
+        sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L")
     
     def plot_expS_vs_P(self, params={"Hlow": False}):
@@ -265,7 +265,7 @@ class Analysis:
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), self.data.params[sf]["Hlow"]=="True", self.data.params[sf]["disp"]=="True")
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
         V_data = np.array([[action.V(x,t) - action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
@@ -276,9 +276,9 @@ class Analysis:
     
     def plot_potential_diff(self, params, params2, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), self.data.params[sf]["Hlow"]=="True", self.data.params[sf]["disp"]=="True")
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         sf = self.data.get_indices(params2)[0]
-        action2 = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["P"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tfull1"]), int(self.data.params[sf]["tfull2"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), 0, float(self.data.params[sf]["dt"]), self.data.params[sf]["Hlow"]=="True", self.data.params[sf]["disp"]=="True")
+        action2 = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
         V_data = np.array([[action.V(x,t)-action2.V(x,t) for t in ts[:-1]] for x in xs[:-1]])
