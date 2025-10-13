@@ -350,7 +350,7 @@ def main():
     measure_offset_L = False
     measure_offset_M = False
     #
-    version = "13-1"
+    version = "13-2"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -435,10 +435,10 @@ def main():
     measure_Ls = steps[steps>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
         
     actions = {"M": {}, "L": {}, "D": {}}
-    if(L==1.0):
-        if(M==1.0):
-            actions["D"]["L"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, True, False)
-            actions["D"]["M"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid-1, dt, False, True)
+    if(L==0.0 and M==0.0):
+        actions["D"]["L"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, True, False)
+        actions["D"]["M"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid-1, dt, False, True)
+    elif(L==1.0):
         for Mi in measure_Ms:
             actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, 1.0, Mi, epsilon, t_FV_out, t_FV_mid, dt, False, False)
     else:
