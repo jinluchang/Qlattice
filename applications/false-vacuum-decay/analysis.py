@@ -145,7 +145,7 @@ class Analysis:
         #return np.divide(blocks_FV,blocks_TV)
 
     def get_ddR_div_ddR_blocks(self, sf):
-        sf = self.data.replace_params(sf, ["offL", "offM", "L", "M"], [["False", "False", "1.0", "0.0"]])[0]
+        sf = self.data.replace_params(sf, ["offL", "offM", "L", "M"], [["False", "False", "1.0", "1.0"]])[0]
         blocks_L = jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sf]["D"]["L"][self.data.cutoff:self.data.end]), self.data.block_size)
         params = self.data.params[sf].copy()
         params["tTV"] = int(params["tTV"]) - 1
