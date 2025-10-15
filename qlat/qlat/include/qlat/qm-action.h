@@ -368,22 +368,26 @@ struct QMAction {
   
   inline double V_L(const double x, const double V_N)
   {
-    return V_max(V_FV_out(x), V_N, L);
+    double v_fv_out = V_FV_out(x);
+    return V_max(v_fv_out, V_N, L) + L*(V_FV_mid(x) - v_fv_out);
   }
   
   inline double dV_L(const double x, const double V_N, const double dV_N)
   {
-    return dV_max(V_FV_out(x), dV_FV_out(x), V_N, dV_N, L);
+    double dv_fv_out = dV_FV_out(x);
+    return dV_max(V_FV_out(x), dv_fv_out, V_N, dV_N, L) + L*(dV_FV_mid(x) - dv_fv_out);
   }
   
   inline double V_M(const double x, const double V_N)
   {
-    return V_max(V_N, V_FV_out(x), M);
+    double v_fv_out = V_FV_out(x);
+    return V_max(V_N, v_fv_out, M) + M*(V_FV_mid(x) - v_fv_out);
   }
   
   inline double dV_M(const double x, const double V_N, const double dV_N)
   {
-    return dV_max(V_N, dV_N, V_FV_out(x), dV_FV_out(x), M);
+    double dv_fv_out = dV_FV_out(x);
+    return dV_max(V_N, dV_N, V_FV_out(x), dv_fv_out, M) + M*(dV_FV_mid(x) - dv_fv_out);
   }
 
   inline double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)
