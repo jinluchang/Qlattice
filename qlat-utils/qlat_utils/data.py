@@ -540,7 +540,7 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
     assert all_jk_idx[0] == "avg"
     assert len(jk_idx_list) == len(jk_list)
     assert len(jk_idx_list) <= len(all_jk_idx)
-    is_np_arr = isinstance(jk_idx_list, np.ndarray)
+    is_np_arr = isinstance(jk_list, np.ndarray)
     jk_avg = jk_list[0]
     size_new = len(all_jk_idx)
     i_new = 0
@@ -570,7 +570,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     len(rjk_list) == 1 + n_rand_sample
     distribution of rjk_list should be similar as the distribution of avg
     r_{i,j} ~ N(0, 1)
-    avg = jk_avg(jk_list)
+    avg = jk_list[0]
     len(jk_list) = n + 1
     rjk_list[i] = avg + \sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
     #
@@ -580,7 +580,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     assert isinstance(n_rand_sample, int_types)
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
-    is_np_arr = isinstance(jk_idx_list, np.ndarray)
+    is_np_arr = isinstance(jk_list, np.ndarray)
     rs = rng_state
     n = len(jk_list) - 1
     if jk_blocking_func is None:
@@ -613,7 +613,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
         for j, jk_idx in enumerate(blocked_jk_idx_list[1:]):
             jk_idx_str = str(jk_idx)
             r_arr[:, j] = r_arr_dict[jk_idx_str]
-    avg = jk_avg(jk_list)
+    avg = jk_list[0]
     if is_np_arr:
         jk_arr = jk_list
         jk_diff = jk_arr[1:] - avg
