@@ -338,13 +338,20 @@ struct QMAction {
   
   inline double V_proj(const double x)
   {
-    return -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
+    double rtn = -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
+    // When x is low enough that epsilon is relevant, remove V_full (which
+    // will be added later) to avoid ergodicity issues
+    if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x);
+    return rtn;
+    
   }
   
   inline double dV_proj(const double x)
   {
     double Vbar = V_FV_out(x) - V_full(x);
-    return -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
+    double rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
+    if(x<center_bar+FV_offset) rtn += dV_full(center_bar+FV_offset) - dV_full(x);
+    return rtn;
   }
   
   inline double V_max(const double V_D, const double V_N, const double P)
