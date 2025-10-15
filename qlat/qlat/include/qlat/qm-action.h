@@ -369,25 +369,29 @@ struct QMAction {
   inline double V_L(const double x, const double V_N)
   {
     double v_fv_out = V_FV_out(x);
-    return V_max(v_fv_out, V_N, L) + L*(V_FV_mid(x) - v_fv_out);
+    if(L<1.0) return V_max(v_fv_out, V_N, 0) + L*(V_FV_mid(x) - v_fv_out);
+    else return V_max(v_fv_out, V_N, L-1.0) + V_FV_mid(x) - v_fv_out;
   }
   
   inline double dV_L(const double x, const double V_N, const double dV_N)
   {
     double dv_fv_out = dV_FV_out(x);
-    return dV_max(V_FV_out(x), dv_fv_out, V_N, dV_N, L) + L*(dV_FV_mid(x) - dv_fv_out);
+    if(L<1.0) return dV_max(V_FV_out(x), dv_fv_out, V_N, dV_N, 0) + L*(dV_FV_mid(x) - dv_fv_out);
+    else return dV_max(V_FV_out(x), dv_fv_out, V_N, dV_N, L-1.0) + dV_FV_mid(x) - dv_fv_out;
   }
   
   inline double V_M(const double x, const double V_N)
   {
     double v_fv_out = V_FV_out(x);
-    return V_max(V_N, v_fv_out, M) + M*(V_FV_mid(x) - v_fv_out);
+    if(M<1.0) return V_max(V_N, v_fv_out, 0) + M*(V_FV_mid(x) - v_fv_out);
+    else return V_max(V_N, v_fv_out, M-1.0) + V_FV_mid(x) - v_fv_out;
   }
   
   inline double dV_M(const double x, const double V_N, const double dV_N)
   {
     double dv_fv_out = dV_FV_out(x);
-    return dV_max(V_N, dV_N, V_FV_out(x), dv_fv_out, M) + M*(dV_FV_mid(x) - dv_fv_out);
+    if(M<1.0) return dV_max(V_N, dV_N, V_FV_out(x), dv_fv_out, 0) + M*(dV_FV_mid(x) - dv_fv_out);
+    else return dV_max(V_N, dV_N, V_FV_out(x), dv_fv_out, M-1.0) + dV_FV_mid(x) - dv_fv_out;
   }
 
   inline double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)
