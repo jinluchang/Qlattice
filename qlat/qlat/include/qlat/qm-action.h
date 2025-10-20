@@ -341,7 +341,7 @@ struct QMAction {
     double rtn = -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
     // When x is low enough that epsilon is relevant, remove V_full (which
     // will be added later) to avoid ergodicity issues
-    if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x);
+    if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
     return rtn;
     
   }
@@ -350,7 +350,7 @@ struct QMAction {
   {
     double Vbar = V_FV_out(x) - V_full(x);
     double rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
-    if(x<center_bar+FV_offset) rtn += dV_full(center_bar+FV_offset) - dV_full(x);
+    if(x<center_bar+FV_offset) rtn += dV_full(center_bar+FV_offset) - dV_full(x) + 2.0*barrier_strength*(x-center_bar-FV_offset);
     return rtn;
   }
   
@@ -366,32 +366,47 @@ struct QMAction {
     else return (1-P)*dV_D + P*dV_N;
   }
   
+  inline double V_FV_floored(const double x, const double P)
+  {
+    double v_fv_mid = V_FV_mid(x);
+    double v_fv_min = V_full(0);
+    double floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
+    if(v_fv_mid < floor) return floor;
+    else return v_fv_mid;
+  }
+  
+  inline double dV_FV_floored(const double x, const double P)
+  {
+    double v_fv_min = V_full(0);
+    double floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
+    if(V_FV_mid(x) < floor) return 0;
+    else return dV_FV_mid(x);
+  }
+  
   inline double V_L(const double x, const double V_N)
   {
-    double v_fv_out = V_FV_out(x);
-    if(L<1.0) return V_max(v_fv_out, V_N, 0) + L*(V_FV_mid(x) - v_fv_out);
-    else return V_max(v_fv_out, V_N, L-1.0) + V_FV_mid(x) - v_fv_out;
+    if(L<0.5) {
+      return V_FV_floored(x, 2*L);
+    }
+    else return V_max(V_FV_floored(x, 1), V_N, 2*(L-0.5));
   }
   
   inline double dV_L(const double x, const double V_N, const double dV_N)
   {
-    double dv_fv_out = dV_FV_out(x);
-    if(L<1.0) return dV_max(V_FV_out(x), dv_fv_out, V_N, dV_N, 0) + L*(dV_FV_mid(x) - dv_fv_out);
-    else return dV_max(V_FV_out(x), dv_fv_out, V_N, dV_N, L-1.0) + dV_FV_mid(x) - dv_fv_out;
+    if(L<0.5) {
+      return dV_FV_floored(x, 2*L);
+    }
+    else return dV_max(V_FV_floored(x, 1), dV_FV_floored(x, 1), V_N, dV_N, 2*(L-0.5));
   }
   
   inline double V_M(const double x, const double V_N)
   {
-    double v_fv_out = V_FV_out(x);
-    if(M<1.0) return V_max(V_N, v_fv_out, 0) + M*(V_FV_mid(x) - v_fv_out);
-    else return V_max(V_N, v_fv_out, M-1.0) + V_FV_mid(x) - v_fv_out;
+    return V_max(V_N, V_FV_floored(x, 1), M);
   }
   
   inline double dV_M(const double x, const double V_N, const double dV_N)
   {
-    double dv_fv_out = dV_FV_out(x);
-    if(M<1.0) return dV_max(V_N, dV_N, V_FV_out(x), dv_fv_out, 0) + M*(dV_FV_mid(x) - dv_fv_out);
-    else return dV_max(V_N, dV_N, V_FV_out(x), dv_fv_out, M-1.0) + dV_FV_mid(x) - dv_fv_out;
+    return dV_max(V_N, dV_N, V_FV_floored(x, 1), dV_FV_floored(x, 1), M);
   }
 
   inline double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)

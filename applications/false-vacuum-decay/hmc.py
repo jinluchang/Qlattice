@@ -430,9 +430,10 @@ def main():
     action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M)
     hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_eps_{epsilon}_offL_{measure_offset_L}_offM_{measure_offset_M}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
-    steps = np.array([0.001, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) #np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
-    measure_Ms = steps[steps>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
-    measure_Ls = steps[steps>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
+    steps_M = np.array([0.001, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) #np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
+    measure_Ms = steps_M[steps_M>M] #[round(min(max(M,0.001)*2**i, 1.0),5) for i in range(1,10)]
+    steps_L = np.array([0.002, 0.004, 0.006, 0.008, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.3, 0.4, 0.5, 0.501, 0.502, 0.503, 0.504, 0.506, 0.508, 0.51, 0.515, 0.52, 0.525, 0.53, 0.535, 0.54, 0.545, 0.55, 0.56, 0.57, 0.58, 0.6, 0.65, 0.7, 0.8, 0.9, 1.0])
+    measure_Ls = steps_L[steps_L>L] #[round(min(max(L,0.001)*2**i, 1.0),5) for i in range(1,10)]
         
     actions = {"M": {}, "L": {}, "D": {}}
     if(L==0.0 and M==0.0):
