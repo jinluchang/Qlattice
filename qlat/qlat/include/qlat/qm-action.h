@@ -101,16 +101,10 @@ struct QMAction {
     // Start with H_proj
     if(t==0)
       return V_L(x, V_full(x) + V_proj(x));
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<=t_FV_out)
-      return V_FV_out(x);
-    // Until t_FV_mid has past, use H_FV_mid
-    else if(t<=t_FV_out+t_FV_mid)
-      return V_FV_mid(x);
-    // Until t_FV_out has past, use H_FV_out
+    // Until t_FV has past, use H_FV_mid
     else if(t<=2*t_FV_out+t_FV_mid)
-      return V_FV_out(x);
-    // Right after t_FV_out has past, use H_proj
+      return V_FV_mid(x);
+    // Right after t_FV has past, use H_proj
     else if(t==2*t_FV_out+t_FV_mid+1)
       return V_L(x, V_full(x) + V_proj(x));
     // For the rest of the time, use H_TV
@@ -125,16 +119,10 @@ struct QMAction {
     // Start with H_proj
     if(t==0)
       return dV_L(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
-    // Until t_FV_out has past, use H_FV_out
-    else if(t<=t_FV_out)
-      return dV_FV_out(x);
-    // Until t_FV_mid has past, use H_FV_mid
-    else if(t<=t_FV_out+t_FV_mid)
-      return dV_FV_mid(x);
-    // Until t_FV_out has past, use H_FV_out
+    // Until t_FV has past, use H_FV_mid
     else if(t<=2*t_FV_out+t_FV_mid)
-      return dV_FV_out(x);
-    // Right after t_FV_out has past, use H_proj
+      return dV_FV_mid(x);
+    // Right after t_FV has past, use H_proj
     else if(t==2*t_FV_out+t_FV_mid+1)
       return dV_L(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
     // For the rest of the time, use H_TV
