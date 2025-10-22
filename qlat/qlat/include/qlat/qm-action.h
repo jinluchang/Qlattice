@@ -350,7 +350,7 @@ struct QMAction {
   {
     double Vbar = V_FV_out(x) - V_full(x);
     double rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
-    if(x<center_bar+FV_offset) rtn += - dV_full(x) + 0.5*barrier_strength/std::pow(center_bar+FV_offset-x, 0.5);
+    if(x<center_bar+FV_offset) rtn += - dV_full(x) - 0.5*barrier_strength/std::pow(center_bar+FV_offset-x, 0.5);
     return rtn;
   }
   
