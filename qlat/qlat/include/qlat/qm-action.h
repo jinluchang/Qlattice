@@ -341,7 +341,7 @@ struct QMAction {
     double rtn = -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
     // When x is low enough that epsilon is relevant, remove V_full (which
     // will be added later) to avoid ergodicity issues
-    if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
+    if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x) + barrier_strength*std::pow(center_bar+FV_offset-x, 0.5);
     return rtn;
     
   }
@@ -350,7 +350,7 @@ struct QMAction {
   {
     double Vbar = V_FV_out(x) - V_full(x);
     double rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
-    if(x<center_bar+FV_offset) rtn += - dV_full(x) + 2.0*barrier_strength*(x-center_bar-FV_offset);
+    if(x<center_bar+FV_offset) rtn += - dV_full(x) + 0.5*barrier_strength/std::pow(center_bar+FV_offset-x, 0.5);
     return rtn;
   }
   
