@@ -124,7 +124,7 @@ struct QMAction {
     // Returns the potential evaluated at point x
     // Start with H_proj
     if(t==0)
-      return dV_L(x, dV_full(x) + dV_proj(x), dV_full(x) + dV_proj(x));
+      return dV_L(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
     // Until t_FV_out has past, use H_FV_out
     else if(t<=t_FV_out)
       return dV_FV_out(x);
@@ -172,7 +172,7 @@ struct QMAction {
     // Returns the potential evaluated at point x
     // Start with H_proj
     if(t==0)
-      return dV_M(x, dV_full(x) + dV_proj(x), dV_full(x) + dV_proj(x));
+      return dV_M(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
     // Until t_FV_out has past, use H_FV_out
     else if(t<=t_FV_out)
       return dV_FV_out(x);
