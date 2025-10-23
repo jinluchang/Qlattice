@@ -36,9 +36,9 @@ class Analysis:
         ratio = 1.0
         for i in range(len(delta_actions)):
             if(i<N_Ms):
-                ratio *= np.mean(delta_actions[i])
-            else:
                 ratio /= np.mean(delta_actions[i])
+            else:
+                ratio *= np.mean(delta_actions[i])
         return ratio
 
     def get_Q_blocks(self, Ms, Ls, params, der = False):
@@ -54,8 +54,8 @@ class Analysis:
     def get_fit_ratios_blocks(self, params, start=0, stop=100, fitobject=ratios_fit.GaussianFit):
         t_TV = int(params["tTV"])*float(params["dt"])
         params_tTV = params.copy()
-        params_tTV["M"] = 1.0
-        params_tTV["L"] = 1.0
+        params_tTV["M"] = 0.0
+        params_tTV["L"] = 0.0
         del params_tTV["tTV"]
         #
         sfs = self.data.get_indices(params_tTV)
@@ -68,6 +68,7 @@ class Analysis:
         for sf in sfs:
             t = int(self.data.params[sf]["tTV"])*dt
             if(t>start):
+                if(int(self.data.params[sf]["tTV"])%2==0): continue
                 dS_blocks.append(self.get_Q_div_Q_blocks(sf))
                 errs.append(jk.get_errors_from_blocks(np.mean(dS_blocks[-1]),dS_blocks[-1])[1])
                 t_TVs.append(t)
@@ -221,12 +222,13 @@ class Analysis:
                     if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, self.data.timeslices[sf][i], alpha=alpha, color=color); count+=1;
         print(count)
 
-    def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
+    def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="grey"):
         sf = self.data.get_indices(params)[0]
         action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
-        V_data = np.array([[action.V(x,t) - action.V(0,0) for t in ts[:-1]] for x in xs[:-1]])
+        dt = float(self.data.params[sf]["dt"])
+        V_data = np.array([[action.V(x,t) - action.V(0,1) for t in ts[:-1]] for x in xs[:-1]])
         if(fig==None or ax==None):
             fig, ax = plt.subplots()
         pcm = ax.pcolormesh(ts, xs, V_data, cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
