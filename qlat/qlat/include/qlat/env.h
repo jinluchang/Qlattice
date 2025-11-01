@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qlat-utils/show.h>
 #include <qlat-utils/timer.h>
 
 namespace qlat

@@ -19,7 +19,7 @@
 #pragma once
 
 #include <qlat-utils/array.h>
-#include <qlat-utils/assert.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/config.h>
 #include <qlat-utils/core.h>
 #include <qlat-utils/qacc.h>

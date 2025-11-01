@@ -1,7 +1,7 @@
 #pragma once
 
 #include <qlat-utils/array.h>
-#include <qlat-utils/assert.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/qacc.h>
 #include <qlat-utils/timer.h>
 

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <qlat-utils/assert.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/crc32.h>
 #include <qlat-utils/env.h>
 #include <qlat-utils/handle.h>

@@ -414,4 +414,7 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
   return sum;
 }
 
+// Multiply M for DWF with QED background
+void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in1,
+                        const Field<ComplexD>& gf1, const RealD mass, const Int ls);
 }  // namespace qlat

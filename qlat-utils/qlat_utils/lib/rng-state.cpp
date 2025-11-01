@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <qlat-utils/assert.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/config.h>
 #include <qlat-utils/rng-state.h>
 #include <qlat-utils/sha256.h>

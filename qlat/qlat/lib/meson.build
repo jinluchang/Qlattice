@@ -12,6 +12,7 @@ cppsources = files(
   'qcd.cpp',
   'qcd-utils.cpp',
   'qcd-prop.cpp',
+  'qed.cpp',
   'selected-field.cpp',
   'selected-points.cpp',
   'selected-shuffle.cpp',

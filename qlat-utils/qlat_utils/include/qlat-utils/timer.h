@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <qlat-utils/assert.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/env.h>
 #include <qlat-utils/rng-state.h>
 #include <qlat-utils/show.h>
