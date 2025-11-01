@@ -53,7 +53,7 @@ header_files = files(
   'eigen.h',
   'eigen-sys.h',
   'env.h',
-  'endian.h',
+  'qendian.h',
   'handle.h',
   'lat-io.h',
   'mat.h',
