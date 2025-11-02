@@ -218,7 +218,7 @@ inline Long get_total_flops()
   memset(flopses, 0, n_threads * sizeof(Long));
 #pragma omp parallel
   {
-    float rtime, ptime, mflops;
+    RealF rtime, ptime, mflops;
     Int i = omp_get_thread_num();
     PAPI_flops(&rtime, &ptime, &flopses[i], &mflops);
   }

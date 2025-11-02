@@ -192,24 +192,24 @@ qacc ComplexT<RealD> operator*(const ComplexT<RealD> &b, const RealD &a)
   return ComplexT<RealD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<float> operator*(const RealD &a, const ComplexT<float> &b)
+qacc ComplexT<RealF> operator*(const RealD &a, const ComplexT<RealF> &b)
 {
-  return ComplexT<float>(b.real() * a, b.imag() * a);
+  return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<float> operator*(const ComplexT<float> &b, const RealD &a)
+qacc ComplexT<RealF> operator*(const ComplexT<RealF> &b, const RealD &a)
 {
-  return ComplexT<float>(b.real() * a, b.imag() * a);
+  return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<float> operator*(const float &a, const ComplexT<float> &b)
+qacc ComplexT<RealF> operator*(const RealF &a, const ComplexT<RealF> &b)
 {
-  return ComplexT<float>(b.real() * a, b.imag() * a);
+  return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<float> operator*(const ComplexT<float> &b, const float &a)
+qacc ComplexT<RealF> operator*(const ComplexT<RealF> &b, const RealF &a)
 {
-  return ComplexT<float>(b.real() * a, b.imag() * a);
+  return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
 qacc ComplexT<RealDD> operator*(const RealD &a, const ComplexT<RealDD> &b)

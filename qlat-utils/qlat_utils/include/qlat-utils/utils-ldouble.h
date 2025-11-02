@@ -39,7 +39,7 @@ class API RealDD{
   //qacc RealDD(){x = 0;y = 0;}
   qacc RealDD(const Int&    a){y = RealD(a);x = 0;}
   qacc RealDD(const RealD& a){y = a;        x = 0;}
-  qacc RealDD(const float&  a){y = a;        x = 0;}
+  qacc RealDD(const RealF&  a){y = a;        x = 0;}
   qacc RealDD(const RealDD& a)
   {
     y = a.y;
@@ -76,7 +76,7 @@ class API RealDD{
     return *this;
   }
 
-  qacc RealDD& operator= (float& a)
+  qacc RealDD& operator= (RealF& a)
   {
     y = a;
     x = 0;

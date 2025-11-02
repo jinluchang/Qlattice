@@ -897,7 +897,7 @@ inline Int test_single(const char *filename,io_vec &io_use,Int iv=0){
 
   {
   io_use.do_checksum = false;
-  std::vector<float > prop_E;
+  std::vector<RealF > prop_E;
   prop_E.resize(n_vec*12*noden*2);
   file = io_use.io_read(filename,"rb");
   io_use.io_off(file,iv*Fsize, false);
@@ -986,7 +986,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int 
     /////Load single precision
       
     Int count = 0;int off = io_use.ionum;
-    std::vector<float > prop_E;
+    std::vector<RealF > prop_E;
     Int n_vec = n1-n0;
     prop_E.resize(off*12*noden*2);
 
@@ -1168,9 +1168,9 @@ void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> >
   }
 
   if(sizeof(Td) == sizeof(float )){
-    std::vector<float* > resp;resp.resize(n_vec);
+    std::vector<RealF* > resp;resp.resize(n_vec);
     for(Int iv=0;iv<n_vec;iv++){
-      resp[iv]=(float*)(qlat::get_data(eigen[iv]).data());
+      resp[iv]=(RealF*)(qlat::get_data(eigen[iv]).data());
     }
     load_gwu_eigen(filename,resp,io_use,n0,n1,check,read);
   }
@@ -1233,15 +1233,15 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
   if(single == true)
   {
     ////Single vector read
-    std::vector<float > prop_qlat;
+    std::vector<RealF > prop_qlat;
     prop_qlat.resize(12*noden*12*2);
 
     if(read==false){
     for(Int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res   = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
-      ComplexT<float> *src = (ComplexT<float>*) &prop_qlat[iv*noden*12*2];
+      ComplexT<RealF> *src = (ComplexT<RealF>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
-      for(size_t isp=0;isp<noden*12;isp++)src[isp] = ComplexT<float>(res[isp].real(),res[isp].imag());
+      for(size_t isp=0;isp<noden*12;isp++)src[isp] = ComplexT<RealF>(res[isp].real(),res[isp].imag());
     }
 
     ////Do not rotate source, in ps/ky base
@@ -1263,7 +1263,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
 
     for(Int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res   = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
-      ComplexT<float> *src = (ComplexT<float>*) &prop_qlat[iv*noden*12*2];
+      ComplexT<RealF> *src = (ComplexT<RealF>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
       for(size_t isp=0;isp<noden*12;isp++)res[isp]= qlat::ComplexT<Td>(src[isp].real(),src[isp].imag());
     }
@@ -2430,8 +2430,8 @@ void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noise
       load_gwu_eigen(file, respD, io_use,n0,n1,check, in.read, in.single_file );
     }
     if(sizeof(Ty) == 2*sizeof(float) ){
-      std::vector<float*  > respF;respF.resize(n_vec);
-      for(Int iv=0;iv<n_vec;iv++){respF[iv] = (float*) qlat::get_data(noises[iv]).data();}
+      std::vector<RealF*  > respF;respF.resize(n_vec);
+      for(Int iv=0;iv<n_vec;iv++){respF[iv] = (RealF*) qlat::get_data(noises[iv]).data();}
       load_gwu_eigen(file, respF, io_use,n0,n1,check, in.read, in.single_file );
     }
 

@@ -133,7 +133,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local);
   qassert(sizeof(M) % sizeof(RealD) == 0);
-  qassert(sizeof(N) % sizeof(float) == 0);
+  qassert(sizeof(N) % sizeof(RealF) == 0);
   qassert(f.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
   const Int multiplicity = f.multiplicity * sizeof(M) / 2 / sizeof(N);
   ff.init(geo, multiplicity);
@@ -141,7 +141,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
   const Vector<double> fd((double*)fdata.data(),
                           fdata.data_size() / sizeof(RealD));
   Vector<N> ffdata = get_data(ff);
-  Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
+  Vector<RealF> ffd((RealF*)ffdata.data(), ffdata.data_size() / sizeof(RealF));
   qassert(ffd.size() == fd.size());
   qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
 }
@@ -154,13 +154,13 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
   const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity * sizeof(M) * 2 / sizeof(N);
   qassert(geo.is_only_local);
-  qassert(sizeof(M) % sizeof(float) == 0);
+  qassert(sizeof(M) % sizeof(RealF) == 0);
   qassert(sizeof(N) % sizeof(RealD) == 0);
   qassert(f.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
   ff.init(geo, multiplicity);
   const Vector<M> fdata = get_data(f);
-  const Vector<float> fd((float*)fdata.data(),
-                         fdata.data_size() / sizeof(float));
+  const Vector<RealF> fd((RealF*)fdata.data(),
+                         fdata.data_size() / sizeof(RealF));
   Vector<N> ffdata = get_data(ff);
   Vector<double> ffd((double*)ffdata.data(),
                      ffdata.data_size() / sizeof(RealD));
@@ -174,7 +174,7 @@ Long dist_write_field_float_from_double(const Field<M>& f,
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
-  Field<float> ff;
+  Field<RealF> ff;
   convert_field_float_from_double(ff, f);
   to_from_big_endian(get_data(ff));
   const Long total_bytes = dist_write_field(ff, path);
@@ -189,7 +189,7 @@ Long dist_write_field_float_from_double(const Field<M>& f,
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
-  Field<float> ff;
+  Field<RealF> ff;
   convert_field_float_from_double(ff, f);
   to_from_big_endian(get_data(ff));
   const Long total_bytes = dist_write_field(ff, new_size_node, path);
@@ -202,7 +202,7 @@ Long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_read_field_double_from_float");
-  Field<float> ff;
+  Field<RealF> ff;
   const Long total_bytes = dist_read_field(ff, path);
   if (total_bytes == 0) {
     return 0;
@@ -412,7 +412,7 @@ Long write_field_float_from_double(
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("write_field_float_from_double");
-  Field<float> ff;
+  Field<RealF> ff;
   convert_field_float_from_double(ff, f);
   to_from_big_endian(get_data(ff));
   const Long total_bytes = write_field(ff, path, new_size_node);
@@ -427,7 +427,7 @@ Long read_field_double_from_float(
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("read_field_double_from_float");
-  Field<float> ff;
+  Field<RealF> ff;
   const Long total_bytes = read_field(ff, path, new_size_node);
   if (total_bytes == 0) {
     return 0;

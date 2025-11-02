@@ -309,7 +309,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     /////Switch endian of the file write
     if(read==false){
       if(single_file == false)cpy_data_thread((double*)(&buf[0]), &dat[0], size, 0);
-      if(single_file == true )cpy_data_thread((float* )(&buf[0]), &dat[0], size, 0);
+      if(single_file == true )cpy_data_thread((RealF* )(&buf[0]), &dat[0], size, 0);
       /////memcpy(&buf[0],&dat[0],size*sizeof(RealD));
       if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
@@ -326,7 +326,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       ////memcpy(&dat[0],&buf[0],size*sizeof(RealD));
       if(single_file == false)cpy_data_thread(&dat[0], (double*)&buf[0], size, 0);
-      if(single_file == true )cpy_data_thread(&dat[0], (float* )&buf[0], size, 0);
+      if(single_file == true )cpy_data_thread(&dat[0], (RealF* )&buf[0], size, 0);
     }
 
     ////delete []buf;
@@ -1285,12 +1285,12 @@ struct corr_dat
       buf.resize(total* bsize);
 
       if(type==0)write_data((double*) buf.data(), file, total, true, false);
-      if(type==1)write_data((float* ) buf.data(), file, total, true, true );
+      if(type==1)write_data((RealF* ) buf.data(), file, total, true, true );
 
       crc32_tem = crc32_par(buf.data(), total * bsize);
 
       if(type == 0)cpy_data_thread(&dat[0], (double*)buf.data(), total, 0);
-      if(type == 1)cpy_data_thread(&dat[0], (float* )buf.data(), total, 0);
+      if(type == 1)cpy_data_thread(&dat[0], (RealF* )buf.data(), total, 0);
 
       fclose(file);file = NULL;
     }
@@ -1383,10 +1383,10 @@ struct corr_dat
       buf.resize(Psize * write_bsize);
 
       if(write_type == 0)cpy_data_thread((double*)&buf[0], &dat[off], Psize, 0);
-      if(write_type == 1)cpy_data_thread((float* )&buf[0], &dat[off], Psize, 0);
+      if(write_type == 1)cpy_data_thread((RealF* )&buf[0], &dat[off], Psize, 0);
 
       if(write_type==0)write_data((double*)&buf[0], file_open, Psize, false, false);
-      if(write_type==1)write_data((float* )&buf[0], file_open, Psize, false, true );
+      if(write_type==1)write_data((RealF* )&buf[0], file_open, Psize, false, true );
 
       crc32_tem = crc32_par(&buf[0], Psize * write_bsize);
     }

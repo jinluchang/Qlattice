@@ -350,7 +350,7 @@ void gcFloatFromDouble(GridComm<N>& gcf, const GridComm<M>& gcd)
   gcf.init(geof);
   assert(gcf.getGeometry() == geof);
   const RealD* gcdf = (const RealD*)gcd.getField();
-  float* gcff = (float*)gcf.getField();
+  RealF* gcff = (RealF*)gcf.getField();
   for (Long i = 0; i < gcf.getAllocSize() / sizeof(float); i++) {
     gcff[i] = gcdf[i];
   }
@@ -373,7 +373,7 @@ void gcDoubleFromFloat(GridComm<M>& gcd, const GridComm<N>& gcf)
                 (sizeof(M) / sizeof(RealD)));
   gcd.init(geod);
   assert(gcd.getGeometry() == geod);
-  const float* gcff = (const float*)gcf.getField();
+  const RealF* gcff = (const RealF*)gcf.getField();
   RealD* gcdf = (RealD*)gcd.getField();
   for (Long i = 0; i < gcd.getAllocSize() / sizeof(RealD); i++) {
     gcdf[i] = gcff[i];
@@ -383,7 +383,7 @@ void gcDoubleFromFloat(GridComm<M>& gcd, const GridComm<N>& gcf)
 template <class M>
 Long gcReadParNodeDoubleFromFloat(GridComm<M>& gc, const std::string& path)
 {
-  GridComm<float> gcf;
+  GridComm<RealF> gcf;
   gcFloatFromDouble(gcf, gc);
   Long total_bytes = gcReadParNode(gcf, path);
   if (0 != total_bytes) {
@@ -397,7 +397,7 @@ Long gcWriteParNodeFloatFromDouble(const GridComm<M>& gc,
                                    const std::string& path,
                                    const mode_t mode = defaultDirMode())
 {
-  GridComm<float> gcf;
+  GridComm<RealF> gcf;
   gcFloatFromDouble(gcf, gc);
   Long total_bytes = gcWriteParNode(gcf, path, mode);
   return total_bytes;

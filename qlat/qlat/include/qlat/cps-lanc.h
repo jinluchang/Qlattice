@@ -93,7 +93,7 @@ void lanczosFill(Lanczos& lanc, const Int size)
   for (Int k = 0; k < size; k++) {
     lanc.alloc(k);
     lanc.getVal(k) = k;
-    float* vec = lanc.getVec(k);
+    RealF* vec = lanc.getVec(k);
     for (Int i = 0; i < lanc.vec_size / sizeof(float); i++) {
       vec[i] = i;
     }

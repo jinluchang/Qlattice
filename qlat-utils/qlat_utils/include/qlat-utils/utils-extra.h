@@ -41,7 +41,7 @@ qacc RealD& operator*=(RealD& x, const ComplexD& factor)
   return x;
 }
 
-qacc float& operator*=(float& x, const ComplexD& factor)
+qacc RealF& operator*=(RealF& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;

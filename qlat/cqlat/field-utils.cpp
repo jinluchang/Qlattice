@@ -312,7 +312,7 @@ EXPORT(assign_as_field, {
     Field<ComplexF>& f = py_convert_type_field<ComplexF>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "RealF") {
-    Field<float>& f = py_convert_type_field<float>(p_field);
+    Field<RealF>& f = py_convert_type_field<RealF>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "Char") {
     Field<char>& f = py_convert_type_field<char>(p_field);
@@ -344,7 +344,7 @@ EXPORT(assign_from_field, {
     const Field<ComplexF>& f1 = py_convert_type_field<ComplexF>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "RealF") {
-    const Field<float>& f1 = py_convert_type_field<float>(p_field1);
+    const Field<RealF>& f1 = py_convert_type_field<RealF>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "Char") {
     const Field<char>& f1 = py_convert_type_field<char>(p_field1);

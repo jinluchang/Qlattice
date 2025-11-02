@@ -13,14 +13,14 @@ static void caxpy_single(ComplexT<T>* res, const ComplexT<T>& ca,
   }
 }
 
-void read_floats(Vector<float> out, const Vector<uint8_t> fp_data)
+void read_floats(Vector<RealF> out, const Vector<uint8_t> fp_data)
 {
   Qassert(out.data_size() == fp_data.size());
   memcpy(out.data(), fp_data.data(), fp_data.size());
   to_from_little_endian(out);
 }
 
-void read_floats_fp16(float* out, const uint8_t* ptr, const int64_t n,
+void read_floats_fp16(RealF* out, const uint8_t* ptr, const int64_t n,
                       const Int nsc)
 {
   const int64_t nsites = n / nsc;
@@ -28,18 +28,18 @@ void read_floats_fp16(float* out, const uint8_t* ptr, const int64_t n,
   const unsigned short* in = (const unsigned short*)ptr;
   // do for each site
   for (int64_t site = 0; site < nsites; site++) {
-    float* ev = &out[site * nsc];
+    RealF* ev = &out[site * nsc];
     const unsigned short* bptr = &in[site * (nsc + 1)];
     const unsigned short exp = bptr[0];
-    const float max = unmap_fp16_exp(exp);
-    const float min = -max;
+    const RealF max = unmap_fp16_exp(exp);
+    const RealF min = -max;
     for (Int i = 0; i < nsc; i++) {
       ev[i] = fp_unmap(bptr[1 + i], min, max, USHRT_MAX);
     }
   }
 }
 
-void read_floats_fp16(Vector<float> out, const Vector<uint8_t> fp_data,
+void read_floats_fp16(Vector<RealF> out, const Vector<uint8_t> fp_data,
                       const Int nsc)
 {
   const Long size = fp_16_size(out.size(), nsc);
@@ -755,14 +755,14 @@ void load_block(CompressedEigenSystemBases& cesb,
   {
     const Long c_size = cesi.nkeep_single * cesb.c_size_vec;
     const Long d_size = c_size * sizeof(ComplexF);
-    read_floats(Vector<float>((float*)&bases[0], c_size * 2),
+    read_floats(Vector<RealF>((RealF*)&bases[0], c_size * 2),
                 Vector<uint8_t>(&data[cesd.bases_offset_single], d_size));
   }
   {
     const Long c_size = cesi.nkeep_fp16 * cesb.c_size_vec;
     const Long d_size = fp_16_size(c_size * 2, 24);
     read_floats_fp16(
-        Vector<float>((float*)&bases[cesi.nkeep_single * cesb.c_size_vec],
+        Vector<RealF>((RealF*)&bases[cesi.nkeep_single * cesb.c_size_vec],
                       c_size * 2),
         Vector<uint8_t>(&data[cesd.bases_offset_fp16], d_size), 24);
   }
@@ -782,14 +782,14 @@ void load_block(CompressedEigenSystemBases& cesb,
     assign(basis, get_data(buffer));
   }
   for (Int i = 0; i < cesc.n_vec; ++i) {
-    Vector<float> coef((float*)&coefs[i * cesc.c_size_vec],
+    Vector<RealF> coef((RealF*)&coefs[i * cesc.c_size_vec],
                        cesc.c_size_vec * 2);
     Vector<uint8_t> dc(&data[cesd.coefs_offset + i * cesd.coef_size],
                        cesd.coef_size);
-    read_floats(Vector<float>(&coef[0], cesi.nkeep_single * 2),
+    read_floats(Vector<RealF>(&coef[0], cesi.nkeep_single * 2),
                 Vector<uint8_t>(&dc[0], cesi.nkeep_single * sizeof(ComplexF)));
     read_floats_fp16(
-        Vector<float>(&coef[cesi.nkeep_single * 2], cesi.nkeep_fp16 * 2),
+        Vector<RealF>(&coef[cesi.nkeep_single * 2], cesi.nkeep_fp16 * 2),
         Vector<uint8_t>(
             &dc[cesi.nkeep_single * sizeof(ComplexF)],
             fp_16_size(cesi.nkeep_fp16 * 2, cesi.FP16_COEF_EXP_SHARE_FLOATS)),

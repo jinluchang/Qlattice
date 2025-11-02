@@ -34,7 +34,7 @@
 namespace qlat
 {  //
 
-inline Int fp_map(const float in, const float min, const float max, const Int N)
+inline Int fp_map(const RealF in, const RealF min, const RealF max, const Int N)
 {
   // Idea:
   //
@@ -46,23 +46,23 @@ inline Int fp_map(const float in, const float min, const float max, const Int N)
   //
   // N=2
   // [-6,-2] -> 0, [-2,2] -> 1, [2,6] -> 2;  reconstruct 0 -> -4, 1->0, 2->4
-  Int ret = (int)((float)(N + 1) * ((in - min) / (max - min)));
+  Int ret = (int)((RealF)(N + 1) * ((in - min) / (max - min)));
   if (ret == N + 1) {
     ret = N;
   }
   return ret;
 }
 
-inline float fp_unmap(const Int val, const float min, const float max,
+inline RealF fp_unmap(const Int val, const RealF min, const RealF max,
                       const Int N)
 {
-  return min + (float)(val + 0.5) * (max - min) / (float)(N + 1);
+  return min + (RealF)(val + 0.5) * (max - min) / (RealF)(N + 1);
 }
 
-inline float unmap_fp16_exp(unsigned short e)
+inline RealF unmap_fp16_exp(unsigned short e)
 {
   const RealD base = 1.4142135623730950488;
-  const float de = (float)((int)e - USHRT_MAX / 2);
+  const RealF de = (RealF)((int)e - USHRT_MAX / 2);
   return pow(base, de);
 }
 
@@ -71,12 +71,12 @@ inline Long fp_16_size(const Long f_size, const Long nsc)
   return (f_size + f_size / nsc) * sizeof(uint16_t);
 }
 
-void read_floats(Vector<float> out, const Vector<uint8_t> fp_data);
+void read_floats(Vector<RealF> out, const Vector<uint8_t> fp_data);
 
-void read_floats_fp16(float* out, const uint8_t* ptr, const int64_t n,
+void read_floats_fp16(RealF* out, const uint8_t* ptr, const int64_t n,
                       const Int nsc);
 
-void read_floats_fp16(Vector<float> out, const Vector<uint8_t> fp_data,
+void read_floats_fp16(Vector<RealF> out, const Vector<uint8_t> fp_data,
                       const Int nsc);
 
 struct CompressedEigenSystemInfo {

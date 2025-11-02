@@ -91,7 +91,7 @@ bool dist_repartition(const Coordinate& new_size_node, const std::string& path,
     return true;
   }
   TIMER_VERBOSE("dist_repartition");
-  Field<float> f;
+  Field<RealF> f;
   read_field(f, npath);
   if (get_incorrect_field_read_sizeof_M() != 0) {
     get_force_field_write_sizeof_M() = get_incorrect_field_read_sizeof_M();

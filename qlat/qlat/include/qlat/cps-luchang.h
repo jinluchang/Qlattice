@@ -304,7 +304,7 @@ inline void run_lanc(LowModesCPS& lm, const GaugeField& gf,
   field_convert(cgf, gf);
   cps::LancArg cla = lanc_arg_convert(la, fa);
   lm.init(geo_reform(gf.geo(), fa.ls, 0), fa);
-  cps::LanczosRun<float>::run(lm.lanc, cgf, fa_convert(fa), cla);
+  cps::LanczosRun<RealF>::run(lm.lanc, cgf, fa_convert(fa), cla);
 }
 
 inline Long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)

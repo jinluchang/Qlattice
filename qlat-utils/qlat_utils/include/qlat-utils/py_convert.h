@@ -309,7 +309,7 @@ inline PyObject* py_convert(const uint64_t& x)
   return PyLong_FromUnsignedLongLong(x);
 }
 
-inline PyObject* py_convert(const float& x)
+inline PyObject* py_convert(const RealF& x)
 {
   return PyFloat_FromDouble((RealD)x);
 }

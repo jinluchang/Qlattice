@@ -181,7 +181,7 @@ inline void dist_write_geo_info(const Geometry& geo, const Int multiplicity,
                  pic[0], pic[1], pic[2], pic[3], pic[4], pic[5], pic[6],
                  pic[7]),
         fp);
-    const float PIf = PI;
+    const RealF PIf = PI;
     const char* pifc = (const char*)&PIf;
     qwrite_data(ssprintf("PI_float = %hhx %hhx %hhx %hhx\n", pifc[0], pifc[1],
                          pifc[2], pifc[3]),

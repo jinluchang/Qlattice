@@ -269,7 +269,7 @@ PyObject* load_sfield_ctype(PyObject* pf, const std::string& path,
 template <class M>
 PyObject* convert_float_from_double_sfield_ctype(PyObject* pf_new, PyObject* pf)
 {
-  SelectedField<float>& f_new = py_convert_type_sfield<float>(pf_new);
+  SelectedField<RealF>& f_new = py_convert_type_sfield<RealF>(pf_new);
   const SelectedField<M>& f = py_convert_type_sfield<M>(pf);
   convert_field_float_from_double(f_new, f);
   Py_RETURN_NONE;
@@ -278,7 +278,7 @@ PyObject* convert_float_from_double_sfield_ctype(PyObject* pf_new, PyObject* pf)
 template <class M>
 PyObject* convert_double_from_float_sfield_ctype(PyObject* pf_new, PyObject* pf)
 {
-  const SelectedField<float>& f = py_convert_type_sfield<float>(pf);
+  const SelectedField<RealF>& f = py_convert_type_sfield<RealF>(pf);
   SelectedField<M>& f_new = py_convert_type_sfield<M>(pf_new);
   convert_field_double_from_float(f_new, f);
   Py_RETURN_NONE;

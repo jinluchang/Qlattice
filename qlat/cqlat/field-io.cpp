@@ -24,7 +24,7 @@ template <class M>
 PyObject* convert_float_from_double_field_ctype(PyField& pf_new, PyField& pf)
 {
   qassert(pf_new.ctype == "RealF");
-  Field<float>& f_new = *(Field<float>*)pf_new.cdata;
+  Field<RealF>& f_new = *(Field<RealF>*)pf_new.cdata;
   const Field<M>& f = *(Field<M>*)pf.cdata;
   convert_field_float_from_double(f_new, f);
   Py_RETURN_NONE;
@@ -34,7 +34,7 @@ template <class M>
 PyObject* convert_double_from_float_field_ctype(PyField& pf_new, PyField& pf)
 {
   qassert(pf.ctype == "RealF");
-  const Field<float>& f = *(Field<float>*)pf.cdata;
+  const Field<RealF>& f = *(Field<RealF>*)pf.cdata;
   Field<M>& f_new = *(Field<M>*)pf_new.cdata;
   convert_field_double_from_float(f_new, f);
   Py_RETURN_NONE;
