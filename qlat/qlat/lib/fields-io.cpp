@@ -656,7 +656,7 @@ Long check_file(FieldsReader& fr, const std::string& fn, const bool is_check_dat
   }
 }
 
-int flush(FieldsWriter& fw)
+Int flush(FieldsWriter& fw)
 {
   TIMER("flush(fw)");
   return qfflush(fw.qfile);
@@ -1173,7 +1173,7 @@ std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_sk
 
 // ------------------------
 
-int truncate_fields_sync_node(const std::string& path,
+Int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
                               const Coordinate& new_size_node)
 {

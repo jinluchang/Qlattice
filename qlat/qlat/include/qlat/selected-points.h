@@ -6,7 +6,7 @@ namespace qlat
 {  //
 
 PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
-                                          const int t_dir = 3);
+                                          const Int t_dir = 3);
 
 PointsSelection mk_random_points_selection(const Coordinate& total_site,
                                            const Long num, const RngState& rs,
@@ -111,7 +111,7 @@ void only_keep_selected_points(Field<M>& f, const PointsSelection& psel)
     if (geo.is_local(xl)) {
       const Vector<M> fv = f.get_elems_const(xl);
       Vector<M> f1v = f1.get_elems(xl);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         f1v[m] = fv[m];
       }
     }
@@ -157,7 +157,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
     if (geo.is_local(xl)) {
       const Vector<M> fv = f.get_elems_const(xl);
       Vector<M> spv = sp.get_elems(idx);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         spv[m] = fv[m];
       }
     }
@@ -167,7 +167,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
 
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
-                         const PointsSelection& psel, const int m)
+                         const PointsSelection& psel, const Int m)
 {
   TIMER("set_selected_points(sp,f,psel,m)");
   const Geometry& geo = f.geo();
@@ -242,7 +242,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedPoints<M>& sp0,
       qassert(idx0 < n_points0);
       const Vector<M> spv0 = sp0.get_elems_const(idx0);
       Vector<M> spv = sp.get_elems(idx);
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         spv[m] = spv0[m];
       }
     }
@@ -270,7 +270,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
     if (geo.is_local(xl)) {
       const Vector<M> spv = sp.get_elems_const(idx);
       Vector<M> fv = f.get_elems(xl);
-      for (int m = 0; m < sp.multiplicity; ++m) {
+      for (Int m = 0; m < sp.multiplicity; ++m) {
         fv[m] = spv[m];
       }
     }
@@ -321,7 +321,7 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo,
     if (geo.is_local(xl)) {
       const Vector<M> spv = sp.get_elems_const(idx);
       Vector<M> fv = f.get_elems(xl);
-      for (int m = 0; m < sp.multiplicity; ++m) {
+      for (Int m = 0; m < sp.multiplicity; ++m) {
         fv[m] += spv[m];
       }
     }
@@ -341,7 +341,7 @@ void field_glb_sum(SelectedPoints<M>& sp, const Field<M>& f)
 
 template <class M>
 void field_glb_sum_tslice(SelectedPoints<M>& sp, const Field<M>& f,
-                          const int t_dir = 3)
+                          const Int t_dir = 3)
 {
   TIMER("field_glb_sum_tslice(sp,f)");
   sp.init();
@@ -397,7 +397,7 @@ void set_u_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = sp.get_elems(idx);
     Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
-    for (int m = 0; m < dv.size(); ++m) {
+    for (Int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, upper, lower);
     }
   });
@@ -425,7 +425,7 @@ void set_g_rand(SelectedPoints<M>& sp, const PointsSelection& psel,
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = sp.get_elems(idx);
     Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
-    for (int m = 0; m < dv.size(); ++m) {
+    for (Int m = 0; m < dv.size(); ++m) {
       dv[m] = g_rand_gen(rsi, center, sigma);
     }
   });
@@ -767,7 +767,7 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
                                                                           \
   QLAT_EXTERN template void set_selected_points<TYPENAME>(                \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,            \
-      const PointsSelection& psel, const int m);                          \
+      const PointsSelection& psel, const Int m);                          \
                                                                           \
   QLAT_EXTERN template void set_selected_points<TYPENAME>(                \
       SelectedPoints<TYPENAME> & sp, const SelectedPoints<TYPENAME>& sp0, \
@@ -790,7 +790,7 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
                                                                           \
   QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(               \
       SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,            \
-      const int t_dir);                                                   \
+      const Int t_dir);                                                   \
                                                                           \
   QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
       LatData & ld, const SelectedPoints<TYPENAME>& sp);                  \

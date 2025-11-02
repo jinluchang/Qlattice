@@ -10,16 +10,16 @@ struct test_unified
 {
   qlat::vector<qlat::vector<qlat::ComplexD > > alpha;
 
-  test_unified(int a){
+  test_unified(Int a){
     qlat::displayln_info(qlat::ssprintf("construct"));
     ////alpha.resize(a);
     ////alpha.resize(0);
   }
 
-  void initiallize_mass(int nmass,int Ns=12)
+  void initiallize_mass(Int nmass,Int Ns=12)
   {
     alpha.resize(2*nmass*Ns);
-    for(int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
+    for(Int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
   }
   void prop_L()
   {
@@ -31,9 +31,9 @@ struct test_unified
     qlat::displayln_info(qlat::ssprintf("b call"));
  
     alpha.resize(20);
-    for(int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
+    for(Int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
 
-    for(int coff=0;coff<int(alpha.size());coff++)
+    for(Int coff=0;coff<int(alpha.size());coff++)
     {
       alpha[coff][0] = 0.0;
     }
@@ -41,16 +41,16 @@ struct test_unified
 
     test_unified& f0 = *this;
 
-    int n_vec = 10;
-    for(int i=0;i<alpha.size();i++){
+    Int n_vec = 10;
+    for(Int i=0;i<alpha.size();i++){
       qlat::displayln_info(qlat::ssprintf("a qacc for size %5d \n", alpha[i].size()));
     }
 
     auto& alpha = this -> alpha;
     qacc_for(coff, Long(alpha.size()),{
-      for(int i=0;i<n_vec;i++)alpha[coff][i] = 0.0;
-      for(int i=0;i<10;i++)alpha[coff][i] = 0.0;
-      for(int i=0;i<alpha[coff].size();i++)alpha[coff][i] = 0.0;
+      for(Int i=0;i<n_vec;i++)alpha[coff][i] = 0.0;
+      for(Int i=0;i<10;i++)alpha[coff][i] = 0.0;
+      for(Int i=0;i<alpha[coff].size();i++)alpha[coff][i] = 0.0;
     });
     qlat::displayln_info(qlat::ssprintf("a qacc for call"));
   

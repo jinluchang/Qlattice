@@ -31,8 +31,8 @@ struct WallSrcProps {
   //
   // below is refreshed by refresh_prob
   std::vector<bool> exact_tslice_mask;  // true if has exact prop
-  int num_sloppy;                       // number of sloppy props
-  int num_exact;                // number of random choices (include duplicates)
+  Int num_sloppy;                       // number of sloppy props
+  Int num_exact;                // number of random choices (include duplicates)
   double sloppy_exact_ratio_1;  // inverse prob of one prop has exact version
   double sloppy_exact_ratio_11;  // inverse prob of two different props have
                                  // exact version
@@ -75,8 +75,8 @@ inline PselProp contract_wall_snk_prop(const SelProp& prop,
   PselProp ret;
   ret.init(total_site[3], 1, PointsDistType::Global);
   set_zero(ret);
-  for (int i = 0; i < omp_get_max_threads(); ++i) {
-    for (int t = 0; t < total_site[3]; ++t) {
+  for (Int i = 0; i < omp_get_max_threads(); ++i) {
+    for (Int t = 0; t < total_site[3]; ++t) {
       ret.get_elem(t) += gwm_ts[i * total_site[3] + t];
     }
   }
@@ -92,7 +92,7 @@ inline void refresh_wall_snk_prop(WallSrcProps& wsp, const FieldSelection& fsel)
   const Coordinate total_site = fsel.f_rank.geo().total_site();
   wsp.sloppy_wall_snk.resize(total_site[3]);
   wsp.exact_wall_snk.resize(total_site[3]);
-  for (int i = 0; i < total_site[3]; ++i) {
+  for (Int i = 0; i < total_site[3]; ++i) {
     {
       const SelProp& prop = wsp.sloppy[i];
       if (prop.initialized) {
@@ -109,14 +109,14 @@ inline void refresh_wall_snk_prop(WallSrcProps& wsp, const FieldSelection& fsel)
 }
 
 inline void refresh_prob(WallSrcProps& wsp, const Coordinate& total_site,
-                         const int num_exact)
+                         const Int num_exact)
 // num_exact: number of random choices (include duplicates)
 {
   TIMER_VERBOSE("refresh_prob");
   wsp.exact_tslice_mask.resize(total_site[3], false);
   wsp.num_sloppy = 0;
   wsp.num_exact = 0;
-  for (int i = 0; i < total_site[3]; ++i) {
+  for (Int i = 0; i < total_site[3]; ++i) {
     if (wsp.sloppy[i].initialized) {
       wsp.num_sloppy += 1;
     }
@@ -151,7 +151,7 @@ inline void refresh_prop_with_gt(WallSrcProps& wsp, const GaugeTransform& gt,
   const Coordinate total_site = fsel.f_rank.geo().total_site();
   GaugeTransform gt_inv;
   gt_invert(gt_inv, gt);
-  for (int i = 0; i < total_site[3]; ++i) {
+  for (Int i = 0; i < total_site[3]; ++i) {
     {
       SelProp& prop = wsp.sloppy[i];
       if (prop.initialized) {
@@ -179,7 +179,7 @@ inline void refresh_prop_with_gt(WallSrcProps& wsp, const GaugeTransform& gt,
   }
 }
 
-inline void refresh_wsp(WallSrcProps& wsp, const int num_exact,
+inline void refresh_wsp(WallSrcProps& wsp, const Int num_exact,
                         const GaugeTransform& gt, const PointsSelection& psel,
                         const FieldSelection& fsel)
 // interface function
@@ -191,7 +191,7 @@ inline void refresh_wsp(WallSrcProps& wsp, const int num_exact,
   refresh_prop_with_gt(wsp, gt, psel, fsel);
 }
 
-inline const SelProp& get_prop(const WallSrcProps& wsp, const int tslice,
+inline const SelProp& get_prop(const WallSrcProps& wsp, const Int tslice,
                                const bool exact)
 {
   if (exact) {
@@ -201,7 +201,7 @@ inline const SelProp& get_prop(const WallSrcProps& wsp, const int tslice,
   }
 }
 
-inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice,
+inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const Int tslice,
                                      const bool exact)
 {
   if (exact) {
@@ -211,7 +211,7 @@ inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice,
   }
 }
 
-inline const PselProp& get_wsnk_prop(const WallSrcProps& wsp, const int tslice,
+inline const PselProp& get_wsnk_prop(const WallSrcProps& wsp, const Int tslice,
                                      const bool exact)
 {
   if (exact) {

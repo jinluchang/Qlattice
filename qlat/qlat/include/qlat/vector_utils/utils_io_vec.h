@@ -34,18 +34,18 @@ struct io_vec
 {
 ////public:
 
-  std::vector<int > node_ioL;
-  int ionum;
-  int nx,ny,nz,nt;
-  int Nx,Ny,Nz,Nt;
+  std::vector<Int > node_ioL;
+  Int ionum;
+  Int nx,ny,nz,nt;
+  Int Nx,Ny,Nz,Nt;
   size_t vol,noden;
-  int rank,Nmpi;
-  std::vector<int > nv,Nv;
+  Int rank,Nmpi;
+  std::vector<Int > nv,Nv;
   box<Geometry> geoB;
-  int threadio;
+  Int threadio;
   std::vector<FILE* > file_omp;
   std::vector<size_t > currsend,currrecv,currspls,currrpls;
-  int MPI_size_c;
+  Int MPI_size_c;
   std::vector<char > res;
   std::vector<char > tmp;
   std::vector<char > buf;
@@ -63,17 +63,17 @@ struct io_vec
   //////each noden has the memory order to t,z,y,x
   std::vector<std::vector<LInt > > map_Nitoi;
   ////fft_desc_basic fd;
-  ///void get_pos(int i);
+  ///void get_pos(Int i);
   //FILE* io_read(const char *filename,const char* mode);
   //void io_close(FILE *file);
 
   inline FILE* io_read(const char *filename,const char* mode){
-    int do_thread_io = 0;
+    Int do_thread_io = 0;
     std::string val = get_env(std::string("q_io_vec_thread"));
     if(val != ""){do_thread_io = stringtonum(val);}
 
-    int curr_threadio = threadio;
-    int Nv = omp_get_max_threads();
+    Int curr_threadio = threadio;
+    Int Nv = omp_get_max_threads();
     if(curr_threadio < 1 or curr_threadio > Nv){curr_threadio = Nv;}
     if(do_thread_io == 0){curr_threadio = 1;}
     if(do_thread_io >  0){curr_threadio = do_thread_io;}
@@ -84,7 +84,7 @@ struct io_vec
     if(node_ioL[rank]>=0){
       /////Currently can only open one file with openmp
       Qassert(file_omp.size() == 0);
-      if(threadio!=1)for(int i=0;i<threadio;i++){file_omp.push_back(fopen(filename, mode));}
+      if(threadio!=1)for(Int i=0;i<threadio;i++){file_omp.push_back(fopen(filename, mode));}
       return fopen(filename, mode);
     }else{return NULL;}
 
@@ -100,7 +100,7 @@ struct io_vec
   inline void io_close(FILE *file){
     if(do_checksum){sum_crc();end_of_file = 0;do_checksum=false;}
     if(node_ioL[rank]>=0){
-      if(threadio!=1)for(int i=0;i<threadio;i++){fclose(file_omp[i]);}
+      if(threadio!=1)for(Int i=0;i<threadio;i++){fclose(file_omp[i]);}
       file_omp.resize(0);
       fclose(file);
     }
@@ -120,7 +120,7 @@ struct io_vec
     }
   }
 
-  inline void ini_MPI(int size_c0)
+  inline void ini_MPI(Int size_c0)
   {
     if(MPI_size_c == size_c0)return;
     MPI_size_c = size_c0;
@@ -144,12 +144,12 @@ struct io_vec
     std::fill(currrpls.begin(), currrpls.end(), 0);
 
     if(node_ioL[rank]>=0){
-      for(int n=0;n<Nmpi;n++){
+      for(Int n=0;n<Nmpi;n++){
         currsend[n] = size_c;
         currspls[n] = size_c*n;
       }
     }
-    for(int n=0;n<Nmpi;n++){
+    for(Int n=0;n<Nmpi;n++){
       if(node_ioL[n]>=0){
         currrecv[n] = size_c;
         currrpls[n] = size_c*node_ioL[n];
@@ -189,7 +189,7 @@ struct io_vec
 
 
   ////fd = &fds;
-  io_vec(const Geometry& geo,int ionum_or, int threadio_set = IO_THREAD, bool do_checksum_set=false){
+  io_vec(const Geometry& geo,Int ionum_or, Int threadio_set = IO_THREAD, bool do_checksum_set=false){
     TIMERA("Create io_vec");
     /////x,y,z,t
     threadio = threadio_set;
@@ -201,7 +201,7 @@ struct io_vec
     //if(threadio < 1 or threadio > Nv){threadio = Nv;}
 
     nv.resize(4);Nv.resize(4);
-    for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+    for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
     nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
     Nx = Nv[0];Ny = Nv[1];Nz = Nv[2];Nt = Nv[3];
 
@@ -214,7 +214,7 @@ struct io_vec
     Nmpi  = qlat::get_num_node();
     rank  = qlat::get_id_node();
 
-    //for(int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], (noden/Nx)*sizeof(LInt), MPI_CHAR, ri, get_comm());
+    //for(Int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], (noden/Nx)*sizeof(LInt), MPI_CHAR, ri, get_comm());
     //if(node_ioL[rank]==0){map_Nitoi[rank].resize(0);}
 
     node_ioL.resize(Nmpi);
@@ -225,14 +225,14 @@ struct io_vec
       ////qmessage("==io number %d \n", ionum);
     }
 
-    for(int ni=0;ni<Nmpi;ni++){node_ioL[ni]=-1;}
+    for(Int ni=0;ni<Nmpi;ni++){node_ioL[ni]=-1;}
     /////distribute ranks out nodes
     {
       /////sorted id according to nodes
-      std::vector<int> id_to_node = qlat::get_id_node_in_shuffle_list();
+      std::vector<Int> id_to_node = qlat::get_id_node_in_shuffle_list();
       //int off = Nmpi/ionum;
-      int countN = 0;
-      for(int ni=0;ni<Nmpi;ni++){
+      Int countN = 0;
+      for(Int ni=0;ni<Nmpi;ni++){
         //if(ni%off==0 and countN < ionum)
         if(countN < ionum){
           ///node_ioL[ni]=countN;
@@ -247,7 +247,7 @@ struct io_vec
     const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
     if(node_ioL[rank]>=0){
       map_Nitoi.resize(Nmpi);
-      for(int ri=0;ri<Nmpi;ri++){
+      for(Int ri=0;ri<Nmpi;ri++){
         map_Nitoi[ri].resize(noden/Nx);
 
         #pragma omp parallel for
@@ -293,20 +293,20 @@ struct io_vec
 /////io_vec buffers related
 struct IOvecKey {
   Coordinate total_site;
-  int ionum;
+  Int ionum;
   bool do_checksum_set;
-  void init(const Coordinate& total_site_, int ionum_ = 0, bool do_checksum_set_=false){
+  void init(const Coordinate& total_site_, Int ionum_ = 0, bool do_checksum_set_=false){
     total_site = total_site_;
     ionum = ionum_;
     do_checksum_set = do_checksum_set_;
   }
 
-  IOvecKey(const Coordinate& total_site_, int ionum_ = 0, bool do_checksum_set_=false)
+  IOvecKey(const Coordinate& total_site_, Int ionum_ = 0, bool do_checksum_set_=false)
   {
     init(total_site_, ionum_, do_checksum_set_);
   }
 
-  IOvecKey(const Geometry& geo, int ionum_ = 0, bool do_checksum_set_=false)
+  IOvecKey(const Geometry& geo, Int ionum_ = 0, bool do_checksum_set_=false)
   {
     init(geo.total_site(), ionum_, do_checksum_set_);
   }
@@ -337,7 +337,7 @@ inline io_vec& get_io_vec_plan(const IOvecKey& fkey)
   return get_io_vec_cache()[fkey];
 }
 
-inline io_vec& get_io_vec_plan(const Geometry& geo, int ionum_ = 0)
+inline io_vec& get_io_vec_plan(const Geometry& geo, Int ionum_ = 0)
 {
   IOvecKey fkey(geo, ionum_);
   return get_io_vec_plan(fkey);
@@ -356,15 +356,15 @@ inline void clear_io_vec_cache()
 
 /////io_vec buffers related
 
-inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, bool read=true)
+inline void send_vec_kentucky(char* src,char* res,Int dsize,Int gN, io_vec& io, bool read=true)
 {
-  const std::vector<int >& node_ioL = io.node_ioL;
-  int rank = io.rank;size_t vol = io.vol;size_t noden = io.noden;
+  const std::vector<Int >& node_ioL = io.node_ioL;
+  Int rank = io.rank;size_t vol = io.vol;size_t noden = io.noden;
   ///int Nmpi=io.Nmpi;
 
-  int Nx = io.Nx;
+  Int Nx = io.Nx;
 
-  int size_c0 = gN*dsize;
+  Int size_c0 = gN*dsize;
   ////int size_c = gN*noden*dsize;
 
   #ifdef __IO_SMALL_MEM__
@@ -380,7 +380,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
   {
   TIMERA("IO sort mem time");
   if(node_ioL[rank]>=0)
-  for(int ri=0;ri<io.Nmpi;ri++)for(int gi=0;gi<gN;gi++){
+  for(Int ri=0;ri<io.Nmpi;ri++)for(Int gi=0;gi<gN;gi++){
       #pragma omp parallel for
       for(size_t isp=0;isp<size_t(noden/Nx);isp++){
         char* pres=&io.tmp[(ri*gN+gi)*noden*dsize];
@@ -398,7 +398,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 
   {
   TIMERA("IO MPI time");
-  /////for(int io=0;io<node_ioL.size();io++)if(node_ioL[io]>=0)
+  /////for(Int io=0;io<node_ioL.size();io++)if(node_ioL[io]>=0)
   /////{
   /////  MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,get_comm());
   /////  ////if(rank==io){memcpy(&res[node_ioL[io]*size_c],tmp,size_c);}
@@ -438,7 +438,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
   {
   TIMERA("IO sort mem time");
   if(node_ioL[rank]>=0)
-  for(int ri=0;ri<io.Nmpi;ri++)for(int gi=0;gi<gN;gi++)
+  for(Int ri=0;ri<io.Nmpi;ri++)for(Int gi=0;gi<gN;gi++)
   {
     #pragma omp parallel for
     for(size_t isp=0;isp<size_t(noden/Nx);isp++){
@@ -464,7 +464,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 ////dsize inner size of vec can be 12*(8/4),
 ////single_file file format single/double,
 ////gN number of vec read for each io rank, read read/write of file
-inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool Rendian=false, int dsize=8, bool single_file=false,  int gN=1, bool read = true)
+inline void read_kentucky_vector(FILE *file,char* props,Int Nvec,io_vec& io,bool Rendian=false, Int dsize=8, bool single_file=false,  Int gN=1, bool read = true)
 {
   TIMER("IO VECS");
 
@@ -472,8 +472,8 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
   gettimeofday(&tm0, NULL);
   double mpi_t = 0.0;
 
-  const std::vector<int >& node_ioL = io.node_ioL;
-  int rank = io.rank;size_t vol = io.vol;int ionum=io.ionum;size_t noden=io.noden;
+  const std::vector<Int >& node_ioL = io.node_ioL;
+  Int rank = io.rank;size_t vol = io.vol;int ionum=io.ionum;size_t noden=io.noden;
 
   if(io.do_checksum){
     if(io.end_of_file == 0){abort_r("io_vec need end of file for check sum! \n ");}
@@ -500,16 +500,16 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
   std::vector<size_t > semL;semL.resize(io.threadio);for(LInt i=0;i<semL.size();i++){semL[i]=0;}
   if(node_ioL[rank]>=0){off_file = ftell(file);}
 
-  int curr_v = 0;
-  for(int readi=0;readi<Nvec;readi++){
+  Int curr_v = 0;
+  for(Int readi=0;readi<Nvec;readi++){
 
     /////From res to buf
     if(read==false)
     {
       TIMERA("IO copy mem time");
-      for(int iou=0;iou<ionum;iou++)
-      for(int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
-        int offv = curr_v + iou*gN + gi;
+      for(Int iou=0;iou<ionum;iou++)
+      for(Int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
+        Int offv = curr_v + iou*gN + gi;
         //memcpy(&res[(iou*gN+gi)*noden*dsize + 0],&props[(offv)*noden*dsize + 0],noden*dsize);
 
         char* pres=&res[(iou*gN+gi)*noden*dsize + 0];
@@ -534,11 +534,11 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
       fseek ( file , off_file + offv*sizec , SEEK_SET );
       size_t pos_file_cur = off_file + offv*sizec;
 
-      int rN = gN;if(offv+rN>=size_t(Nvec)){rN = Nvec-offv;}
+      Int rN = gN;if(offv+rN>=size_t(Nvec)){rN = Nvec-offv;}
 
       /////Switch endian of the file write
       if(read==false){
-        int dsize_single = sizeof(double);int fac = dsize/sizeof(double);
+        Int dsize_single = sizeof(double);int fac = dsize/sizeof(double);
         if(single_file == true){dsize_single = sizeof(float);fac = dsize/sizeof(float);}
         //////Write Prop and link
         if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], gN*vol*fac,dsize_single);
@@ -547,7 +547,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
       }
 
       if(rN>0){
-        int curr_threadio = io.threadio;
+        Int curr_threadio = io.threadio;
         if(curr_threadio==1){
           semL[0] = file_operation(&buf[0], rN*sizec, 1, file, read);
           //if(read==true ){semL[0] =  fread(&buf[0], rN*sizec, 1, file);}
@@ -562,7 +562,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
           size_t Group = (Nvec-1)/curr_threadio + 1;
           size_t off_file_local = ftell(file);
           #pragma omp parallel for
-          for(int tid=0;tid<curr_threadio;tid++)
+          for(Int tid=0;tid<curr_threadio;tid++)
           {
             //FILE *file_omp = file;
             /////FILE *fp2 = fdopen (dup (fileno (fp)), "r");
@@ -576,7 +576,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
               //if(read==false){semL[tid] = fwrite(&buf[iniN], currN, 1, io.file_omp[tid]);}
             }
           }
-          for(int tid=0;tid<curr_threadio;tid++){if(semL[tid] != 1){printf("Reading/Writing error %zu 1 \n", semL[tid] );}}
+          for(Int tid=0;tid<curr_threadio;tid++){if(semL[tid] != 1){printf("Reading/Writing error %zu 1 \n", semL[tid] );}}
           //fseek(file , rN*sizec , SEEK_CUR );
           fseek(file , off_file_local + rN*sizec , SEEK_SET );
         }
@@ -595,7 +595,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
 
       /////Switch endian of the file read
       if(read==true){
-        int dsize_single = sizeof(double);int fac = dsize/sizeof(double);
+        Int dsize_single = sizeof(double);int fac = dsize/sizeof(double);
         if(single_file == true){dsize_single = sizeof(float);fac = dsize/sizeof(float);}
         //////Read Prop and link
         if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], gN*vol*fac,dsize_single);
@@ -621,9 +621,9 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
     if(read==true)
     {
     TIMERA("IO copy mem time");
-    for(int iou=0;iou<ionum;iou++)
-    for(int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
-      int offv = curr_v + iou*gN + gi;
+    for(Int iou=0;iou<ionum;iou++)
+    for(Int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
+      Int offv = curr_v + iou*gN + gi;
       //memcpy(&props[(offv)*noden*dsize + 0],&res[(iou*gN+gi)*noden*dsize + 0],noden*dsize);
 
       char* pres=&props[(offv)*noden*dsize + 0];
@@ -661,7 +661,7 @@ inline void save_txt_eigenvalues(std::vector<double > &values,std::vector<double
 {
   if(qlat::get_id_node() == 0)
   {
-    int nvec = values.size()/2;
+    Int nvec = values.size()/2;
     FILE* filew = fopen(filename, "w");
 
     fprintf(filew, "Eigenvalues and eigenvectors for the %s\n", sDescription);
@@ -669,7 +669,7 @@ inline void save_txt_eigenvalues(std::vector<double > &values,std::vector<double
     fprintf(filew, "The residue is defined as norm(mat.vec-lambda.vec).\n");
     fprintf(filew, "The format is: a tag EIGV, the real and imaginary part of the eigenvalue and the residue.\n");
 
-    for(int iv=0;iv<nvec;iv++)fprintf(filew, "EIGV %+.15le\t%+.15le\t%.10le\n", values[iv*2+0],values[iv*2+1],errors[iv]);
+    for(Int iv=0;iv<nvec;iv++)fprintf(filew, "EIGV %+.15le\t%+.15le\t%.10le\n", values[iv*2+0],values[iv*2+1],errors[iv]);
 
     fclose(filew);
   }
@@ -682,14 +682,14 @@ inline void save_txt_eigenvalues(std::vector<double > &values,std::vector<double
 
 inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double > &errors,const char* filename)
 {
-  int nvec = 0;
+  Int nvec = 0;
   values.resize(0);errors.resize(0);
   if(qlat::get_id_node() == 0)
   {
     FILE* filer = fopen(filename, "r");
     char sTemp[300],tem[300];
     char* ftem = NULL;
-    for(int i=0;i<4;i++){
+    for(Int i=0;i<4;i++){
       ftem = fgets(sTemp, 300, filer);
       if(ftem == NULL){qmessage("Read eigenvalues error!\n");}
     }
@@ -698,7 +698,7 @@ inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double
     while(fgets(tem, 300, filer) != NULL){
       //fgets(tem, 300, filer);
       std::string re = std::string(tem);
-      int size = re.size();
+      Int size = re.size();
       if(size > 8 and strcmp(re.substr(0,4).c_str(), "EIGV")==0){
         double v[3];
         sscanf(re.substr(4,size).c_str(),"%le %le %le",&v[0],&v[1],&v[2]);
@@ -733,7 +733,7 @@ inline void load_txt_eigenvalues(std::vector<double > &values,std::vector<double
 //order C, iDir, C_col, C_row, RealIm, t,z,y,x
   
 template<typename Ty>
-void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool read=true){
+void rotate_gwu_vec_file(Ty* src,Int n_vec,size_t noden,bool single_file,bool read=true){
   TIMERB("Rotate gwu file vec");
 
   if(single_file == true){
@@ -742,7 +742,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
 
   //size_t noden = (*props[0]).desc->sites_on_node;
   size_t Np=noden*12*2;
-  for(int dc1=0;dc1<n_vec;dc1++){
+  for(Int dc1=0;dc1<n_vec;dc1++){
     std::vector<Ty > p;Ty *q;
     p.resize(Np);
     //memcpy(&p[0],&src[dc1*Np],sizeof(Ty)*p.size());
@@ -753,7 +753,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
     if(read==true){
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++){
-      for(int dc0=0;dc0<12;dc0++)
+      for(Int dc0=0;dc0<12;dc0++)
       {   
         q[isp*12*2 + dc0*2 + 0] = p[(0*12 + dc0)*noden + isp];
         q[isp*12*2 + dc0*2 + 1] = p[(1*12 + dc0)*noden + isp];
@@ -763,7 +763,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
     if(read==false){
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++){
-      for(int dc0=0;dc0<12;dc0++)
+      for(Int dc0=0;dc0<12;dc0++)
       {   
         q[(0*12 + dc0)*noden + isp] = p[isp*12*2 + dc0*2 + 0];
         q[(1*12 + dc0)*noden + isp] = p[isp*12*2 + dc0*2 + 1];
@@ -774,22 +774,22 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
 
 ///////Ty is real as the transformation have only real numbers
 template<typename Ty>
-void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bool PS0=true,bool PS1=true, bool read=true){
+void gwu_to_cps_rotation_vec(Ty* src,Int n_vec,size_t noden,bool source=false,bool PS0=true,bool PS1=true, bool read=true){
   TIMERB("Rotate gwu file vec");
   ///prop
   if(source == true)if(n_vec%12!=0){qmessage("n_vec %8d.\n",n_vec);abort_r("source vector size wrong.\n");}
   //size_t noden = geo.node_site[0]*geo.node_site[1]*geo.node_site[2]*geo.node_site[3];
 
-  int signT = 1;if(read==false){signT=-1;}
+  Int signT = 1;if(read==false){signT=-1;}
   //std::vector<Typ0 > q;q.resize(12*2)
   const double sqrt2=std::sqrt(2.0);
   //////Rotate source dirac
   if(source == true){
-    int dr,d0,d1;Ty *q;
-    int Nprop = n_vec/12;
+    Int dr,d0,d1;Ty *q;
+    Int Nprop = n_vec/12;
     
     size_t Np=noden*12*2;
-    for(int ip=0;ip<Nprop;ip++){
+    for(Int ip=0;ip<Nprop;ip++){
       q = &src[(ip*12+0)*Np];
       if(PS0 == true){
         std::vector<Ty > p;
@@ -823,22 +823,22 @@ void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bo
   }
 
   /////Rotate sink dirac
-  for(int dc1=0;dc1<n_vec;dc1++){
+  for(Int dc1=0;dc1<n_vec;dc1++){
   #pragma omp parallel for
   for(size_t isp=0;isp<noden;isp++){
-    int dr,d0,d1;Ty *q;
+    Int dr,d0,d1;Ty *q;
     std::vector<Ty > p;p.resize(12*2);
     q = &src[(dc1*noden + isp)*12*2 + 0];
 
     if(PS1 == true){
       memcpy(&p[0],&src[(dc1*noden + isp)*12*2 + 0],sizeof(Ty)*p.size());
-      dr=0;d0=1;d1=3;for(int c=0;c<6;c++)q[dr*6+c] = (-p[d0*6+c]*signT + p[d1*6+c])/sqrt2;
-      dr=1;d0=0;d1=2;for(int c=0;c<6;c++)q[dr*6+c] = ( p[d0*6+c]*signT - p[d1*6+c])/sqrt2;
-      dr=2;d0=1;d1=3;for(int c=0;c<6;c++)q[dr*6+c] = (-p[d0*6+c] - p[d1*6+c]*signT)/sqrt2;
-      dr=3;d0=0;d1=2;for(int c=0;c<6;c++)q[dr*6+c] = (+p[d0*6+c] + p[d1*6+c]*signT)/sqrt2;
+      dr=0;d0=1;d1=3;for(Int c=0;c<6;c++)q[dr*6+c] = (-p[d0*6+c]*signT + p[d1*6+c])/sqrt2;
+      dr=1;d0=0;d1=2;for(Int c=0;c<6;c++)q[dr*6+c] = ( p[d0*6+c]*signT - p[d1*6+c])/sqrt2;
+      dr=2;d0=1;d1=3;for(Int c=0;c<6;c++)q[dr*6+c] = (-p[d0*6+c] - p[d1*6+c]*signT)/sqrt2;
+      dr=3;d0=0;d1=2;for(Int c=0;c<6;c++)q[dr*6+c] = (+p[d0*6+c] + p[d1*6+c]*signT)/sqrt2;
     }else{
-      dr = 2;for(int c=0;c<6;c++)q[dr*6+c] = -1.0*q[dr*6+c];
-      dr = 3;for(int c=0;c<6;c++)q[dr*6+c] = -1.0*q[dr*6+c];
+      dr = 2;for(Int c=0;c<6;c++)q[dr*6+c] = -1.0*q[dr*6+c];
+      dr = 3;for(Int c=0;c<6;c++)q[dr*6+c] = -1.0*q[dr*6+c];
     }
   }}
 
@@ -866,10 +866,10 @@ Ty get_norm_vec(Ty *src,size_t noden){
 
 }
 
-inline int test_single(const char *filename,io_vec &io_use,int iv=0){
+inline Int test_single(const char *filename,io_vec &io_use,Int iv=0){
   
   double normd=0.0;double normf=0.0;
-  int n_vec = 1;
+  Int n_vec = 1;
   size_t noden = io_use.noden;
   size_t Fsize = io_use.Nmpi*(noden*12*2)*sizeof(float);
   FILE* file;
@@ -921,7 +921,7 @@ inline int test_single(const char *filename,io_vec &io_use,int iv=0){
 }
 /////================END of NO checksum read/write
 
-inline int check_Eigen_file_type(const char *filename, io_vec &io_use,int n1,bool check){
+inline Int check_Eigen_file_type(const char *filename, io_vec &io_use,Int n1,bool check){
 
   size_t noden = io_use.noden;
   size_t sizen = get_file_size_MPI(filename);
@@ -940,7 +940,7 @@ inline int check_Eigen_file_type(const char *filename, io_vec &io_use,int n1,boo
     return 1;
   }
 
-  int tmp = test_single(filename,io_use,0);
+  Int tmp = test_single(filename,io_use,0);
   if(tmp == -1){abort_r("Eigen system file norm not correct.\n");}
 
   if(tmp == 1){
@@ -960,7 +960,7 @@ inline int check_Eigen_file_type(const char *filename, io_vec &io_use,int n1,boo
 /////check --> if false, abort if file is double,
 /////read --> flag for writing and reading, may be can only write single currently
 template<typename Ty>
-void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int n1,
+void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int n1,
   bool check=true, bool read=true, bool read_single=true)
 {
   (void)check;
@@ -975,7 +975,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
   //bool single = true;
   //////read==false, write only single vectors
   //if(read==true){
-  //  int type = check_Eigen_file_type(filename,io_use,n1,check);
+  //  Int type = check_Eigen_file_type(filename,io_use,n1,check);
   //  if(type == 0){single = false;}
   //  if(type == 1){single = true ;}
   //  if(type !=0 and type != 1){abort_r("Eigen system not in gwu format! \n");}
@@ -985,21 +985,21 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
   if(single == true){
     /////Load single precision
       
-    int count = 0;int off = io_use.ionum;
+    Int count = 0;int off = io_use.ionum;
     std::vector<float > prop_E;
-    int n_vec = n1-n0;
+    Int n_vec = n1-n0;
     prop_E.resize(off*12*noden*2);
 
     ////if(read==true )file = io_use.io_read(filename,"rb");
     ////if(read==false)file = io_use.io_read(filename,"wb");
     io_use.io_off(file, n0*Fsize, true);
 
-    for(int iv=0;iv<n_vec;iv++){
-      int ri = off;if(count + off > n_vec){ri = n_vec - count;}
+    for(Int iv=0;iv<n_vec;iv++){
+      Int ri = off;if(count + off > n_vec){ri = n_vec - count;}
       //int offE = count*12*noden*2;
 
       if(read==false){
-        for(int ic=0;ic<ri;ic++)
+        for(Int ic=0;ic<ri;ic++)
         #pragma omp parallel for
         for(size_t isp=0;isp<noden*12*2;isp++){
            prop_E[ic*noden*12*2 + isp] = resp[count + ic][isp];
@@ -1020,7 +1020,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
         rotate_gwu_vec_file(&prop_E[0],ri,noden, true, read);
         ////Do not rotate source and sink
         gwu_to_cps_rotation_vec(&prop_E[0],ri,noden, false, false, false, read);
-        for(int ic=0;ic<ri;ic++)
+        for(Int ic=0;ic<ri;ic++)
         #pragma omp parallel for
         for(size_t isp=0;isp<noden*12*2;isp++){
           resp[count + ic][isp] = prop_E[ic*noden*12*2 + isp];}
@@ -1032,24 +1032,24 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
 
     /////rotate_qlat_to_gwu(prop_E,&src_new.vec[0],geo);
     /////////From ky to milc
-    /////for(int iv=0;iv<n_vec;iv++)ga.ga[4][0].multiply(*src_new.vec[iv],*src_new.vec[iv]);
+    /////for(Int iv=0;iv<n_vec;iv++)ga.ga[4][0].multiply(*src_new.vec[iv],*src_new.vec[iv]);
   }else{
     /////Load double precision
 
-    int count = 0;int off = io_use.ionum;
+    Int count = 0;int off = io_use.ionum;
     std::vector<double > prop_E;
-    int n_vec = n1-n0;
+    Int n_vec = n1-n0;
     prop_E.resize(off*12*noden*2);
 
     //////file = io_use.io_read(filename,"rb");
     io_use.io_off(file,n0*Fsize*2, true);
       
-    for(int iv=0;iv<n_vec;iv++){
-      int ri = off;if(count + off > n_vec){ri = n_vec - count;}
+    for(Int iv=0;iv<n_vec;iv++){
+      Int ri = off;if(count + off > n_vec){ri = n_vec - count;}
       //int offE = count*12*noden*2;
 
       if(read==false){
-        for(int ic=0;ic<ri;ic++)
+        for(Int ic=0;ic<ri;ic++)
         #pragma omp parallel for
         for(size_t isp=0;isp<noden*12*2;isp++){
           prop_E[ic*noden*12*2 + isp] = resp[count + ic][isp];
@@ -1069,7 +1069,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
         ////Do not rotate source, rotate sink
         gwu_to_cps_rotation_vec(&prop_E[0],ri,noden, false, true, true, read);
 
-        for(int ic=0;ic<ri;ic++)
+        for(Int ic=0;ic<ri;ic++)
         #pragma omp parallel for
         for(size_t isp=0;isp<noden*12*2;isp++){
           resp[count + ic][isp] = prop_E[ic*noden*12*2 + isp];
@@ -1086,21 +1086,21 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
 }
 
 //template<typename Ty>
-//void load_gwu_eigen(FILE* file, std::vector<qlat::FieldM<Ty , 12> > res,io_vec &io_use,int n0,int n1,
+//void load_gwu_eigen(FILE* file, std::vector<qlat::FieldM<Ty , 12> > res,io_vec &io_use,Int n0,Int n1,
 //  bool check=true, bool read=true, bool read_single=true)
 //{
 //  if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
-//  int n_vec = n1-n0;
+//  Int n_vec = n1-n0;
 //  size_t noden = io_use.noden;
 //  if(read == true)
 //  if(res.size() != n_vec)
 //  {
 //    res.resize(0);
 //    res.resize(n_vec);
-//    for(int iv=0;iv<n_vec;iv++){res[iv].init(io_use.geo());}
+//    for(Int iv=0;iv<n_vec;iv++){res[iv].init(io_use.geo());}
 //  }
 //  std::vector<Ty* > resp;resp.resize(n_vec);
-//  for(int iv=0;iv<n_vec;iv++){resp[iv] = (Ty*) qlat::get_data(res[iv]).data();}
+//  for(Int iv=0;iv<n_vec;iv++){resp[iv] = (Ty*) qlat::get_data(res[iv]).data();}
 //  load_gwu_eigen(file, resp, io_use,n0,n1,check, read, read_single);
 //}
 
@@ -1112,7 +1112,7 @@ inline FILE* open_gwu_eigen(const char *filename,io_vec &io_use, bool read=true)
 }
 
 template<typename Ty>
-void load_gwu_eigen(const char *filename,std::vector<Ty* > resp,io_vec &io_use,int n0,int n1,
+void load_gwu_eigen(const char *filename,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int n1,
   bool check=true, bool read=true)
 {
   /////FILE* file = NULL;
@@ -1124,20 +1124,20 @@ void load_gwu_eigen(const char *filename,std::vector<Ty* > resp,io_vec &io_use,i
 }
 
 template<typename Ty>
-void load_gwu_eigen(FILE *file,std::vector<Ty > &res,io_vec &io_use,int n0,int n1,bool check=true,bool read=true, bool read_single=true){
+void load_gwu_eigen(FILE *file,std::vector<Ty > &res,io_vec &io_use,Int n0,Int n1,bool check=true,bool read=true, bool read_single=true){
   if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
-  int n_vec = n1-n0;
+  Int n_vec = n1-n0;
   size_t noden = io_use.noden;
   if(read == true)res.resize(n_vec*noden*12*2);
 
   std::vector<Ty* > resp;resp.resize(n_vec);
-  for(int iv=0;iv<n_vec;iv++){resp[iv] = &res[iv*noden*12*2];}
+  for(Int iv=0;iv<n_vec;iv++){resp[iv] = &res[iv*noden*12*2];}
   load_gwu_eigen(file, resp, io_use,n0,n1,check,read, read_single);
 }
 
 //////Ty should be float or double
 template<typename Ty>
-void load_gwu_eigen(const char *filename,std::vector<Ty > &res,io_vec &io_use,int n0,int n1,bool check=true,bool read=true){
+void load_gwu_eigen(const char *filename,std::vector<Ty > &res,io_vec &io_use,Int n0,Int n1,bool check=true,bool read=true){
   /////FILE* file = NULL;
   bool read_single = true;
   if(read==true){read_single = check_Eigen_file_type(filename, io_use, n1, check);}
@@ -1148,20 +1148,20 @@ void load_gwu_eigen(const char *filename,std::vector<Ty > &res,io_vec &io_use,in
 
 
 template<typename Td>
-void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> > &eigen,io_vec &io_use,int n0,int n1,bool check=true,bool read=true){
+void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> > &eigen,io_vec &io_use,Int n0,Int n1,bool check=true,bool read=true){
   if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
   if(sizeof(Td) != sizeof(double ) and sizeof(Td) != sizeof(float )){abort_r("Cannot understand the input format! \n");}
 
-  int n_vec = n1-n0;
+  Int n_vec = n1-n0;
   if(read==true){
     eigen.resize(0);
     eigen.resize(n_vec);
-    for(int iv=0;iv<n_vec;iv++)eigen[iv].init(io_use.geo());
+    for(Int iv=0;iv<n_vec;iv++)eigen[iv].init(io_use.geo());
   }
 
   if(sizeof(Td) == sizeof(double )){
     std::vector<double* > resp;resp.resize(n_vec);
-    for(int iv=0;iv<n_vec;iv++){
+    for(Int iv=0;iv<n_vec;iv++){
       resp[iv]=(double*)(qlat::get_data(eigen[iv]).data());
     }
     load_gwu_eigen(filename,resp,io_use,n0,n1,check,read);
@@ -1169,7 +1169,7 @@ void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> >
 
   if(sizeof(Td) == sizeof(float )){
     std::vector<float* > resp;resp.resize(n_vec);
-    for(int iv=0;iv<n_vec;iv++){
+    for(Int iv=0;iv<n_vec;iv++){
       resp[iv]=(float*)(qlat::get_data(eigen[iv]).data());
     }
     load_gwu_eigen(filename,resp,io_use,n0,n1,check,read);
@@ -1179,20 +1179,20 @@ void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> >
 }
 
 template<typename Td>
-void save_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> > &eigen,io_vec &io_use,int n0,int n1,bool check=true){
+void save_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Td> > &eigen,io_vec &io_use,Int n0,Int n1,bool check=true){
   load_gwu_eigen(filename,eigen,io_use,n0,n1,check,false);
 }
 
-inline void load_gwu_eigen(const char *filename,EigenM &Mvec,io_vec &io_use,int n0,int n1,bool check=true,bool read=true)
+inline void load_gwu_eigen(const char *filename,EigenM &Mvec,io_vec &io_use,Int n0,Int n1,bool check=true,bool read=true)
 {
   if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
-  int n_vec = n1-n0;
+  Int n_vec = n1-n0;
   if(n_vec > int(Mvec.size())){abort_r("Read number of eigen larger than memory. \n");}
 
   Long Nsize = io_use.noden*12;
 
   std::vector<Ftype* > resp;resp.resize(n_vec);
-  for(int iv=0;iv<n_vec;iv++){
+  for(Int iv=0;iv<n_vec;iv++){
     if(Mvec[iv].size() != Nsize){
       if(read==false)abort_r("Mvec not initialized! \n");
       if(read==true ){Mvec[iv].resize(Nsize);set_zero(Mvec[iv]);}
@@ -1202,7 +1202,7 @@ inline void load_gwu_eigen(const char *filename,EigenM &Mvec,io_vec &io_use,int 
   load_gwu_eigen(filename,resp,io_use,n0,n1,check,read);
 }
 
-inline void save_gwu_eigen(const char *filename,EigenM &Mvec,io_vec &io_use,int n0,int n1,bool check=true)
+inline void save_gwu_eigen(const char *filename,EigenM &Mvec,io_vec &io_use,Int n0,Int n1,bool check=true)
 {
   load_gwu_eigen(filename, Mvec,io_use,n0,n1,check,false);
 }
@@ -1223,7 +1223,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
   if(sizen != 2*Fsize*12 and sizen != Fsize*12){qmessage("File %s \n",filename);abort_r("prop size wrong! \n");}
   prop.resize(0);
   prop.resize(12);
-  for(int iv=0;iv<12;iv++)prop[iv].init(io_use.geo());
+  for(Int iv=0;iv<12;iv++)prop[iv].init(io_use.geo());
   if(sizen == 2*Fsize*12){single=false;}
   }
     
@@ -1237,7 +1237,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     prop_qlat.resize(12*noden*12*2);
 
     if(read==false){
-    for(int iv=0;iv<12;iv++){
+    for(Int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res   = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
       ComplexT<float> *src = (ComplexT<float>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
@@ -1261,7 +1261,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     ////Do not rotate source, in ps/ky base
     gwu_to_cps_rotation_vec(&prop_qlat[0], 12,noden, true, true, true);
 
-    for(int iv=0;iv<12;iv++){
+    for(Int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res   = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
       ComplexT<float> *src = (ComplexT<float>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
@@ -1284,7 +1284,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     //Do not rotate source, 
     gwu_to_cps_rotation_vec(&prop_qlat[0], 12,noden, true, true,true);
 
-    for(int iv=0;iv<12;iv++){
+    for(Int iv=0;iv<12;iv++){
       qlat::ComplexT<Td>* res = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
       ComplexT<double> *src = (ComplexT<double>*) &prop_qlat[iv*noden*12*2];
       for(size_t isp=0;isp<noden*12;isp++)res[isp]= qlat::ComplexT<Td>(src[isp].real(),src[isp].imag());
@@ -1314,7 +1314,7 @@ void load_gwu_prop(const char *filename, qlat::FieldM<qlat::ComplexT<Td>, 12*12>
   qlat::ComplexT<Td>* p0; qlat::ComplexT<Td>* p1;qlat::ComplexT<Td>* pt;
   pt = (qlat::ComplexT<Td>*) qlat::get_data(res).data();
 
-  for(int iv=0;iv<12;iv++){
+  for(Int iv=0;iv<12;iv++){
     p0 = (qlat::ComplexT<Td>*) qlat::get_data(prop[iv]).data();
     p1 = (qlat::ComplexT<Td>*) &pt[iv*12*sizeF + 0];
     mv_civ.dojob(p0, p1, 1, 12, sizeF, 1, 1, false);
@@ -1382,14 +1382,14 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   {
     ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.multiplicity+0);
 
-    for(int dir=0;dir<4;dir++)
+    for(Int dir=0;dir<4;dir++)
     {
-      for(int c0=0;c0<3;c0++)
-      for(int c1=0;c1<3;c1++)
+      for(Int c0=0;c0<3;c0++)
+      for(Int c1=0;c1<3;c1++)
       {
-        int dir0  = ((dir*3+c0)*3+c1)    ;
-        int dir1R = ((dir*3+c1)*3+c0)*2+0;
-        int dir1I = ((dir*3+c1)*3+c0)*2+1;
+        Int dir0  = ((dir*3+c0)*3+c1)    ;
+        Int dir1R = ((dir*3+c1)*3+c0)*2+0;
+        Int dir1I = ((dir*3+c1)*3+c0)*2+1;
         link_qlat[dir1R*noden + index] = res.p[dir0].real();
         link_qlat[dir1I*noden + index] = res.p[dir0].imag();
       }
@@ -1413,14 +1413,14 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   {
     ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.multiplicity+0);
 
-    for(int dir=0;dir<4;dir++)
+    for(Int dir=0;dir<4;dir++)
     {
-      for(int c0=0;c0<3;c0++)
-      for(int c1=0;c1<3;c1++)
+      for(Int c0=0;c0<3;c0++)
+      for(Int c1=0;c1<3;c1++)
       {
-        int dir0  = ((dir*3+c0)*3+c1)    ;
-        int dir1R = ((dir*3+c1)*3+c0)*2+0;
-        int dir1I = ((dir*3+c1)*3+c0)*2+1;
+        Int dir0  = ((dir*3+c0)*3+c1)    ;
+        Int dir1R = ((dir*3+c1)*3+c0)*2+0;
+        Int dir1I = ((dir*3+c1)*3+c0)*2+1;
         res.p[dir0] = qlat::ComplexT<Td>(link_qlat[dir1R*noden + index], link_qlat[dir1I*noden + index]);
       }
     }
@@ -1595,8 +1595,8 @@ void save_gwu_noiP(const char *filename,Propagator4dT<Td>& prop){
   qthread_for(index, noden, {
     qlat::WilsonMatrixT<Td>&  src =  prop.get_elem_offset(index);
     double sum = 0.0;
-    for(int d1=0;d1<12;d1++)
-    for(int d0=0;d0<12;d0++)
+    for(Int d1=0;d1<12;d1++)
+    for(Int d0=0;d0<12;d0++)
     {
       sum += std::fabs(src(d1,d0).real());
       sum += std::fabs(src(d1,d0).imag());
@@ -1619,12 +1619,12 @@ void save_gwu_noiP(std::string &filename,Propagator4dT<Td>& prop){
 }
 
 template <typename Td>
-void noi_to_propP(qlat::FieldM<qlat::ComplexD,1> &noi,Propagator4dT<Td>& prop, int dir = 0){
+void noi_to_propP(qlat::FieldM<qlat::ComplexD,1> &noi,Propagator4dT<Td>& prop, Int dir = 0){
   for (Long index = 0; index < prop.geo().local_volume(); ++index)
   {
     qlat::WilsonMatrixT<Td>& res =  prop.get_elem_offset(index);
-    if(dir==0)for(int d0=0;d0<12;d0++){res(d0,d0) = noi.get_elem_offset(index);}
-    if(dir==1)for(int d0=0;d0<12;d0++){noi.get_elem_offset(index) = res(d0,d0);}
+    if(dir==0)for(Int d0=0;d0<12;d0++){res(d0,d0) = noi.get_elem_offset(index);}
+    if(dir==1)for(Int d0=0;d0<12;d0++){noi.get_elem_offset(index) = res(d0,d0);}
   }
 }
 
@@ -1653,7 +1653,7 @@ void load_gwu_noiP(std::string &filename,Propagator4dT<Td>& prop){
 
 //////Assume memory allocated already
 template<class T, typename Ty>
-void copy_noise_to_vec(T* noiP, Ty* buf, const Geometry& geo, const Long bfac, const int dir=1, const QMEM Gmem = QMCPU)
+void copy_noise_to_vec(T* noiP, Ty* buf, const Geometry& geo, const Long bfac, const Int dir=1, const QMEM Gmem = QMCPU)
 {
   TIMERB("copy_noise_to_vec");
   const Long Nd = geo.local_volume() * bfac;
@@ -1663,14 +1663,14 @@ void copy_noise_to_vec(T* noiP, Ty* buf, const Geometry& geo, const Long bfac, c
   //#pragma omp parallel for 
   //for (Long index = 0; index < geo.local_volume(); ++index)
   //{
-  //  for(int bi=0;bi<bfac;bi++){
+  //  for(Int bi=0;bi<bfac;bi++){
   //    if(dir==1){buf[index*bfac+bi] = noiP[index*bfac+bi];}
   //    if(dir==0){noiP[index*bfac+bi]= buf[index*bfac+bi];}
   //  }
   //}
 }
 
-inline void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in, bool read=true, bool single_file=true, int N_noi=-1, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), bool rotate_bfac = true)
+inline void open_file_qlat_noisesT(const char *filename, Int bfac, inputpara& in, bool read=true, bool single_file=true, Int N_noi=-1, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), bool rotate_bfac = true)
 {
   in.bsize = sizeof(float );
   in.rotate_bfac = rotate_bfac;
@@ -1697,7 +1697,7 @@ inline void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in
     in.bfac_write = in.bfac;
 
     if(in.OBJECT != std::string("BEGIN_Vecs_HEAD")){abort_r("File head wrong");}
-    int type = get_save_type(in.save_type);
+    Int type = get_save_type(in.save_type);
     if(type == 0){in.bsize=sizeof(double);in.single_file=false;}
     if(type == 1){in.bsize=sizeof(float) ;in.single_file=true; }
 
@@ -1754,7 +1754,7 @@ inline void close_file_qlat_noisesT(FILE* file, io_vec& io_use, inputpara& in)
     if(in.checksum != io_use.full_crc){
       qmessage("File %s check sum wrong, %12X %12X ! \n ", in.filename.c_str(), in.checksum, io_use.full_crc);
       // abort only when input checksum is not zero
-      int bad_crc = io_use.full_crc;
+      Int bad_crc = io_use.full_crc;
       if(bad_crc != 0)
       {
         abort_r("");
@@ -1764,11 +1764,11 @@ inline void close_file_qlat_noisesT(FILE* file, io_vec& io_use, inputpara& in)
 }
 
 template <class Ty>
-void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bfac, const QMEM Gmem, const Geometry& geo, io_vec& io_use, inputpara& in, int n0=0, int n1=-1)
+void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const Int bfac, const QMEM Gmem, const Geometry& geo, io_vec& io_use, inputpara& in, Int n0=0, Int n1=-1)
 {
   bool read        = in.read;
   bool rotate_bfac = in.rotate_bfac;
-  int bfac_write   = in.bfac_write;
+  Int bfac_write   = in.bfac_write;
   size_t bsize     = in.bsize;
   bool single_file = in.single_file;
 
@@ -1784,7 +1784,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bf
   if(n1 <= n0 or n0 < 0){qmessage("Need read more vectors, n0 %d, n1 %d !\n", n0, n1);abort_r();}
   if(n1 > in.N_noi){qmessage("Need set input more vectors, n1 %d, N_noi %d !\n", n1, in.N_noi);abort_r();}
   in.ncur = n1;
-  int nread = n1 - n0;
+  Int nread = n1 - n0;
 
   if(read == true){
     Qassert(noises.size() == (LInt) nread);
@@ -1797,7 +1797,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bf
   /////qmessage(" ionum off %zu, n0 %zu, n1 %zu, Vsize %zu, bsize %zu \n", off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
   io_use.io_off(file, off_file, true);
 
-  int io_gn = IO_GN;
+  Int io_gn = IO_GN;
   if(in.nvec/io_gn < 1){io_gn = 1;}
 
   bool Rendian = IO_ENDIAN;
@@ -1805,7 +1805,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bf
   if(in.FILE_ENDIAN == std::string("LITTLEENDIAN")){Rendian = true ;}
 
   /////int bufN = io_use.ionum;
-  int bufN = io_use.ionum;
+  Int bufN = io_use.ionum;
   /////qmessage("ionum %d %d \n", io_use.ionum, N_noi);
 
   //void* buf;
@@ -1818,8 +1818,8 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bf
   move_index mv_civ;
 
   //////false big endian, true small endian
-  int bi = 0;
-  for(int ni = 0; ni < nread; ni++)
+  Int bi = 0;
+  for(Int ni = 0; ni < nread; ni++)
   {
     if(read==false){
       if(!single_file)copy_noise_to_vec(noises[ni], &bufD[bi*bfac*io_use.noden], geo, bfac, 1, Gmem);
@@ -1832,7 +1832,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bf
     read_kentucky_vector(file,(char*) buf, bi*bfac/bfac_write, io_use, Rendian, bfac_write*bsize*2, single_file, io_gn , read);
 
     if(read==true)if(rotate_bfac)mv_civ.dojob((char*) buf,(char*) buf, bi, bfac, io_use.noden, 0, 2*bsize, false);
-    if(read==true)for(int nbi=0; nbi < bi; nbi++){int na = ni - bi + 1;
+    if(read==true)for(Int nbi=0; nbi < bi; nbi++){int na = ni - bi + 1;
     {
       if(!single_file)copy_noise_to_vec(noises[na + nbi], &bufD[nbi*bfac*io_use.noden], geo, bfac, 0, Gmem);
       if( single_file)copy_noise_to_vec(noises[na + nbi], &bufF[nbi*bfac*io_use.noden], geo, bfac, 0, Gmem);
@@ -1848,7 +1848,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const int bf
 }
 
 template <class Ty>
-void initialize_Field(std::vector<qlat::FieldG<Ty> > &noises, const int bfac, const int nread, inputpara& in)
+void initialize_Field(std::vector<qlat::FieldG<Ty> > &noises, const Int bfac, const Int nread, inputpara& in)
 {
   Qassert(in.nx != 0 and in.ny != 0 and in.nz != 0 and in.nt != 0);
   const Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
@@ -1867,8 +1867,8 @@ void initialize_Field(std::vector<qlat::FieldG<Ty> > &noises, const int bfac, co
   setup bufP from noises
   return n1 --> end of files or noises size
 */
-template <class Ty, int bfac>
-inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::FieldM<Ty, bfac> > &noises, const int bc, inputpara& in, int n0, int n1=-1)
+template <class Ty, Int bfac>
+inline Int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::FieldM<Ty, bfac> > &noises, const Int bc, inputpara& in, Int n0, Int n1=-1)
 {
   Qassert(bc == bfac);
   if(in.read == true){
@@ -1884,7 +1884,7 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
   }
   if(n1 <= n0 or n0 < 0){qmessage("Need read more vectors, n0 %d, n1 %d !\n", n0, n1);abort_r();}
   if(n1 > in.N_noi){qmessage("Need set input more vectors, n1 %d, N_noi %d !\n", n1, in.N_noi);abort_r();}
-  int nread = n1 - n0;
+  Int nread = n1 - n0;
 
   if(in.read == true){
     //Geometry geo;
@@ -1913,7 +1913,7 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
   May try to initialize fields on seperate functions ?
 */
 template <class Ty>
-inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::FieldG<Ty> > &noises, const int bfac, inputpara& in, int n0, int n1=-1)
+inline Int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::FieldG<Ty> > &noises, const Int bfac, inputpara& in, Int n0, Int n1=-1)
 {
   if(in.read == true){
     if(n1 == -1){n1 = in.N_noi;}
@@ -1928,7 +1928,7 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
   }
   if(n1 <= n0 or n0 < 0){qmessage("Need read more vectors, n0 %d, n1 %d !\n", n0, n1);abort_r();}
   if(n1 > in.N_noi){qmessage("Need set input more vectors, n1 %d, N_noi %d !\n", n1, in.N_noi);abort_r();}
-  int nread = n1 - n0;
+  Int nread = n1 - n0;
 
   if(in.read == true){
     //Geometry geo;
@@ -1960,8 +1960,8 @@ inline int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
 /*
   inputpara in should be initialized
 */
-template <class Ty, int bfac>
-void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises, io_vec& io_use, inputpara& in, int n0=0, int n1=-1)
+template <class Ty, Int bfac>
+void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises, io_vec& io_use, inputpara& in, Int n0=0, Int n1=-1)
 {
   std::vector<Ty* > bufP;
   n1 = load_qlat_noisesT_ini(bufP, noises, bfac, in, n0, n1);
@@ -1970,7 +1970,7 @@ void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises,
 
 ////initialize the instruct and end of file
 template <class Ty>
-Geometry load_qlat_noisesT_file_ini(const char *filename, const int N_noi, const int bfac, inputpara& in, const Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), const bool rotate_bfac = true){
+Geometry load_qlat_noisesT_file_ini(const char *filename, const Int N_noi, const Int bfac, inputpara& in, const Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), const bool rotate_bfac = true){
   if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ) and IsTypeComplex<Ty>() == 0){
     abort_r("Cannot understand the input format! \n");}
 
@@ -1989,7 +1989,7 @@ Geometry load_qlat_noisesT_file_ini(const char *filename, const int N_noi, const
 }
 
 template <class Ty>
-void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const int bfac, inputpara& in, const Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1, bool rotate_bfac = true){
+void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const Int bfac, inputpara& in, const Geometry& geo, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), Int n0=0,Int n1=-1, bool rotate_bfac = true){
   TIMERB("load_qlat_noisesT kernel");
 
   Long N_noi = 0;
@@ -2023,8 +2023,8 @@ void load_qlat_noisesT(const char *filename, std::vector<Ty*  > &noises, const i
   close_file_qlat_noisesT(file, io_use, in);
 }
 
-template <class Ty, int bfac>
-void load_qlat_noisesT(const char *filename, std::vector<qlat::FieldM<Ty, bfac> > &noises, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1, bool rotate_bfac = true){
+template <class Ty, Int bfac>
+void load_qlat_noisesT(const char *filename, std::vector<qlat::FieldM<Ty, bfac> > &noises, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), Int n0=0,Int n1=-1, bool rotate_bfac = true){
 
   Long N_noi = 0;
   inputpara in; Geometry geo;
@@ -2058,7 +2058,7 @@ void load_qlat_noisesT(const char *filename, std::vector<qlat::FieldM<Ty, bfac> 
   QMGPU by default
 */
 template <class Ty>
-void load_qlat_noisesG(const char *filename, std::vector<qlat::FieldG<Ty> > &noises, const int bfac, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1, bool rotate_bfac = true){
+void load_qlat_noisesG(const char *filename, std::vector<qlat::FieldG<Ty> > &noises, const Int bfac, bool read=true, bool single_file=true, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), Int n0=0,Int n1=-1, bool rotate_bfac = true){
 
   Long N_noi = 0;
   inputpara in; Geometry geo;
@@ -2087,8 +2087,8 @@ void load_qlat_noisesG(const char *filename, std::vector<qlat::FieldG<Ty> > &noi
   close_file_qlat_noisesT(file, io_use, in);
 }
 
-template <class T, int civ>
-void load_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &noises, bool read , bool single_file=true, const std::string& INFO_LIST = std::string("NONE"),int n0 = 0, int n1=-1, std::string info = "NONE")
+template <class T, Int civ>
+void load_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &noises, bool read , bool single_file=true, const std::string& INFO_LIST = std::string("NONE"),Int n0 = 0, Int n1=-1, std::string info = "NONE")
 {
   TIMERC("load/save qlat eigen");
   std::string VECS_TYPE;
@@ -2101,20 +2101,20 @@ void load_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &n
   load_qlat_noisesT(filename, noises, read, single_file, VECS_TYPE, INFO_LIST, n0, n1);
 }
 
-template <class T, int civ>
-void load_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &noises, int n0=0,int n1=-1, std::string info = "NONE")
+template <class T, Int civ>
+void load_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &noises, Int n0=0,Int n1=-1, std::string info = "NONE")
 {
   bool read = true; bool single_file = true; std::string INFO_LIST = std::string("NONE");
   load_qlat_eigen(filename, noises, read, single_file, INFO_LIST, n0, n1, info);
 }
 
-template <class T, int civ>
+template <class T, Int civ>
 void save_qlat_eigen(const char *filename, std::vector<qlat::FieldM<T, civ> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), std::string info = "NONE"){
   load_qlat_eigen(filename, noises, false, single_file, INFO_LIST, 0, -1, info);
 }
 
 ////===Check eigen system type
-inline int check_eigen_qlat(const char *filename, int n1, inputpara& in)
+inline Int check_eigen_qlat(const char *filename, Int n1, inputpara& in)
 {
   in.load_para(filename, false);
   if(in.VECS_TYPE != std::string("NONE"))
@@ -2125,7 +2125,7 @@ inline int check_eigen_qlat(const char *filename, int n1, inputpara& in)
     }
 
     Qassert(in.nvec > 0);////Qassert(in.bfac == bfac_write);
-    int type = get_save_type(in.save_type);
+    Int type = get_save_type(in.save_type);
     in.bsize = 8; in.single_file = true;
     if(type == 0){in.bsize=sizeof(double);in.single_file=false;}
     if(type == 1){in.bsize=sizeof(float) ;in.single_file=true; }
@@ -2153,8 +2153,8 @@ inline int check_eigen_qlat(const char *filename, int n1, inputpara& in)
 }
 
 ////return 0, gwu double, 1 gwu single, 2 qlat eigen with inputpar written
-inline int check_qlat_eigen_file_type(const char *filename, io_vec &io_use,int n1, inputpara& in){
-  int type = check_eigen_qlat(filename, n1, in);
+inline Int check_qlat_eigen_file_type(const char *filename, io_vec &io_use,Int n1, inputpara& in){
+  Int type = check_eigen_qlat(filename, n1, in);
   if(type != -1){return type;}
 
   bool check = true;
@@ -2164,25 +2164,25 @@ inline int check_qlat_eigen_file_type(const char *filename, io_vec &io_use,int n
 ////===Check eigen system type
 
 
-template <class T, int bfac>
-void load_qlat_noises(const char *filename, std::vector<qlat::FieldM<T, bfac> > &noises, bool read=true, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1)
+template <class T, Int bfac>
+void load_qlat_noises(const char *filename, std::vector<qlat::FieldM<T, bfac> > &noises, bool read=true, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), Int n0=0,Int n1=-1)
 {
   TIMERB("load/save qlat noises");
   std::string VECS_TYPE = std::string("Noise_Vectors");
   load_qlat_noisesT(filename, noises, read, single_file, VECS_TYPE, INFO_LIST, n0, n1);
 }
 
-template <class T, int bfac>
+template <class T, Int bfac>
 void save_qlat_noises(const char *filename, std::vector<qlat::FieldM<T, bfac> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE")){
   load_qlat_noises(filename, noises, false, single_file, INFO_LIST);
 }
 
-template <class T, int bfac>
+template <class T, Int bfac>
 void save_qlat_noises(const std::string& filename, std::vector<qlat::FieldM<T, bfac> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE")){
   load_qlat_noises(filename.c_str(), noises, false, single_file, INFO_LIST);
 }
 
-template <class T, int bfac>
+template <class T, Int bfac>
 void load_qlat_noise(const char *filename, qlat::FieldM<T, bfac> &noise, bool read=true, bool single_file=true, const std::string& INFO_LIST = std::string("NONE")){
   std::vector<qlat::FieldM<T, bfac> > noises;
   ///noises[0].init(noise.geo());
@@ -2191,7 +2191,7 @@ void load_qlat_noise(const char *filename, qlat::FieldM<T, bfac> &noise, bool re
   if(read == true ){noise = noises[0];}
 }
 
-template <class T, int bfac>
+template <class T, Int bfac>
 void save_qlat_noise(const char *filename, qlat::FieldM<T, bfac> &noise, bool single_file=true, const std::string& INFO_LIST = std::string("NONE")){
   load_qlat_noise(filename, noise, false, single_file, INFO_LIST);
 }
@@ -2202,7 +2202,7 @@ void save_qlat_noise(const char *filename, qlat::FieldM<T, bfac> &noise, bool si
   FieldG default bfac = 1
 */
 template <class T>
-void load_qlat_noises(const char *filename, std::vector<qlat::FieldG<T> > &noises, bool read=true, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), int n0=0,int n1=-1, const int bfac = 1)
+void load_qlat_noises(const char *filename, std::vector<qlat::FieldG<T> > &noises, bool read=true, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), Int n0=0,Int n1=-1, const Int bfac = 1)
 {
   TIMERB("load/save qlat noises");
   std::string VECS_TYPE = std::string("Noise_Vectors");
@@ -2210,19 +2210,19 @@ void load_qlat_noises(const char *filename, std::vector<qlat::FieldG<T> > &noise
 }
 
 template <class T>
-void save_qlat_noises(const char *filename, std::vector<qlat::FieldG<T> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), const int bfac = 1){
+void save_qlat_noises(const char *filename, std::vector<qlat::FieldG<T> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), const Int bfac = 1){
   load_qlat_noises(filename, noises, false, single_file, INFO_LIST, 0, -1, bfac);
 }
 
 template <class T>
-void save_qlat_noises(const std::string& filename, std::vector<qlat::FieldG<T> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), const int bfac = 1){
+void save_qlat_noises(const std::string& filename, std::vector<qlat::FieldG<T> > &noises, bool single_file=true, const std::string& INFO_LIST = std::string("NONE"), const Int bfac = 1){
   load_qlat_noises(filename.c_str(), noises, false, single_file, INFO_LIST, 0, -1, bfac);
 }
 
 
 //////Assume memory allocated already
 template<class T, typename Td>
-void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Td>& prop, int dir=1)
+void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Td>& prop, Int dir=1)
 {
   TIMERB("copy_noise_to_prop");
   if(dir == 1){prop.init(noise.geo());}
@@ -2235,9 +2235,9 @@ void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Td>& prop, 
     T* src   = (T*) &noi[index*12*12];
     qlat::ComplexT<Td>* res  = &prop.get_elem_offset(index)(0,0);
     
-    for(int d0=0;d0<12;d0++)
+    for(Int d0=0;d0<12;d0++)
     {
-      for(int d1=0;d1<12;d1++)
+      for(Int d1=0;d1<12;d1++)
       {
         //////copy to prop
         if(dir==0){src[d1*12+d0] = res[d0*12+d1];}
@@ -2252,7 +2252,7 @@ void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Td>& prop, 
 
 //////Assume memory allocated already
 template<class T, typename Td>
-void copy_noises_to_prop(std::vector<qlat::FieldM<T, 12*12> >& noises, Propagator4dT<Td>& prop, int dir=1)
+void copy_noises_to_prop(std::vector<qlat::FieldM<T, 12*12> >& noises, Propagator4dT<Td>& prop, Int dir=1)
 {
   TIMERB("copy_noises_to_prop");
   if(dir == 1){
@@ -2345,7 +2345,7 @@ void save_qlat_link(const std::string& filename,GaugeFieldT<Td> &gf, bool single
 }
 
 /////nvec needed for checksum
-inline FILE* open_eigensystem_file(const char *filename, int nini, int nvec, bool read, io_vec& io_use, inputpara& in, int save_type = 3)
+inline FILE* open_eigensystem_file(const char *filename, Int nini, Int nvec, bool read, io_vec& io_use, inputpara& in, Int save_type = 3)
 {
   in.single_file = true;
   in.read = read;
@@ -2365,7 +2365,7 @@ inline FILE* open_eigensystem_file(const char *filename, int nini, int nvec, boo
   }
   if(in.file_type == 2 or in.file_type == 3){
     if(read == false){in.read_geo(io_use.geo());}
-    int bfac_eigen = 12;
+    Int bfac_eigen = 12;
     std::string VECS_TYPE = std::string("Eigen_system_nvec.12.tzyx.R/I");
     std::string INFO_LIST = std::string("NONE");
     bool rotate_bfac = true;
@@ -2404,13 +2404,13 @@ inline FILE* open_eigensystem_file(const char *filename, int nini, int nvec, boo
 
 
 template <class Ty>
-void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noises, io_vec& io_use, inputpara& in, int n0=0, int n1=-1)
+void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noises, io_vec& io_use, inputpara& in, Int n0=0, Int n1=-1)
 {
 
   if(in.file_type == 0 or in.file_type == 1)
   {
     if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
-    int n_vec = n1-n0;
+    Int n_vec = n1-n0;
     ////if(in.file_type == 0){read_single = false;}
     ////if(in.file_type == 1){read_single = true ;}
 
@@ -2421,17 +2421,17 @@ void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noise
     {
       noises.resize(0);
       noises.resize(n_vec);
-      for(int iv=0;iv<n_vec;iv++){noises[iv].init(io_use.geo());}
+      for(Int iv=0;iv<n_vec;iv++){noises[iv].init(io_use.geo());}
     }}
 
     if(sizeof(Ty) == 2*sizeof(double)){
       std::vector<double* > respD;respD.resize(n_vec);
-      for(int iv=0;iv<n_vec;iv++){respD[iv] = (double*) qlat::get_data(noises[iv]).data();}
+      for(Int iv=0;iv<n_vec;iv++){respD[iv] = (double*) qlat::get_data(noises[iv]).data();}
       load_gwu_eigen(file, respD, io_use,n0,n1,check, in.read, in.single_file );
     }
     if(sizeof(Ty) == 2*sizeof(float) ){
       std::vector<float*  > respF;respF.resize(n_vec);
-      for(int iv=0;iv<n_vec;iv++){respF[iv] = (float*) qlat::get_data(noises[iv]).data();}
+      for(Int iv=0;iv<n_vec;iv++){respF[iv] = (float*) qlat::get_data(noises[iv]).data();}
       load_gwu_eigen(file, respF, io_use,n0,n1,check, in.read, in.single_file );
     }
 
@@ -2456,7 +2456,7 @@ inline void close_eigensystem_file(FILE* file, io_vec& io_use, inputpara& in){
 }
 
 template <class Td>
-void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_use, const bool single = false, bool Rendian=false)
+void load_qlat_vecs(const char *filename, Td* prop, const Int nvec, io_vec &io_use, const bool single = false, bool Rendian=false)
 {
   ////if(sizeof(Td) != sizeof(double ) and sizeof(Td) != sizeof(float )){abort_r("Cannot understand the input format! \n");}
   size_t noden = io_use.noden;
@@ -2467,8 +2467,8 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
   size_t sizen = get_file_size_MPI(filename);
 
   if(sizen != 2*Fsize and sizen != Fsize){qmessage("File %s \n",filename);abort_r("File size wrong! \n");}
-  const int ncomplex = sizen / Fsize;
-  int s_inner = sizeof(float);if(single == false){s_inner = sizeof(double);}
+  const Int ncomplex = sizen / Fsize;
+  Int s_inner = sizeof(float);if(single == false){s_inner = sizeof(double);}
   s_inner = s_inner * ncomplex;
 
   FILE* file = io_use.io_read(filename,"rb");
@@ -2477,9 +2477,9 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 }
 
 
-//template<typename Ty, int dir>
-//void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
-//  int e0, int e1, int o0, int o1, qlat::vector<Long >& map, int mode = 0)
+//template<typename Ty, Int dir>
+//void copy_eo_cs_to_fieldM(qlat::vector_gpu<Ty >& res, const Int civ, const Geometry& geo, vector_cs<Ty >& even, vector_cs<Ty >& odd,
+//  Int e0, Int e1, Int o0, Int o1, qlat::vector<Long >& map, Int mode = 0)
 //{
 //  TIMER_FLOPS("copy_eo_cs_to_fieldM");
 //  Qassert(even.initialized and odd.initialized);
@@ -2491,24 +2491,24 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 //  if(dir == 0){Qassert(Long(res.size()) == V * civ );}
 //  Qassert(res.GPU == even.GPU);
 //
-//  const int DIM = 3;
+//  const Int DIM = 3;
 //  Qassert(civ % DIM == 0);
 //  if(map.size() == 0){get_index_mappings_reverse(map, geo);}
-//  int nvec = civ / DIM;
+//  Int nvec = civ / DIM;
 //  Qassert(e1 > e0 and o1 > o0);
-//  int ne = e1 - e0;
-//  int no = o1 - o0;
+//  Int ne = e1 - e0;
+//  Int no = o1 - o0;
 //  Qassert(ne == no);
 //  Qassert(ne <= nvec and no <= nvec and e1 <= even.nvec and o1 <= odd.nvec);
-//  const int b_size = even.b_size;
-//  const int btotal = even.btotal;
+//  const Int b_size = even.b_size;
+//  const Int btotal = even.btotal;
 //
 //  Qassert(btotal * b_size == DIM*V/2);
 //  qlat::vector<Ty** > eP;eP.resize(2*ne);
 //  //qlat::vector<Ty** > oP;oP.resize(no);
 //  ////Ty** eP = even.get_pointers(ni)
-//  for(int ei=0;ei<ne;ei++){eP[ei]      = even.get_pointers(ei + e0);}
-//  for(int oi=0;oi<no;oi++){eP[ne + oi] =  odd.get_pointers(oi + o0);}
+//  for(Int ei=0;ei<ne;ei++){eP[ei]      = even.get_pointers(ei + e0);}
+//  for(Int oi=0;oi<no;oi++){eP[ne + oi] =  odd.get_pointers(oi + o0);}
 //  const Long* mapP = (Long*) qlat::get_data(map).data();
 //
 //  ////NtNzNyNx, DIM x nvec
@@ -2516,21 +2516,21 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 //  //if(mode == 1)
 //  {
 //  qGPU_for(qi, V/2, GPU,{
-//    //const int ni = ci / DIM;
-//    //const int c  = ci % DIM;
-//    for(int eo = 0; eo < 2;eo++)
+//    //const Int ni = ci / DIM;
+//    //const Int c  = ci % DIM;
+//    for(Int eo = 0; eo < 2;eo++)
 //    {
 //      const Long quda_idx = eo*Vh + qi;
 //      const Long qlat_idx_4d = mapP[quda_idx];
 //      Ty* rr = &r[qlat_idx_4d*civ];
-//      for(int c = 0; c < 3 ; c++)
+//      for(Int c = 0; c < 3 ; c++)
 //      {
 //        Long bv =  qi*DIM + c;
 //        ////const Long bv = qi*DIM + c; ////quda vectors this order
 //        if(mode == 1){bv = c*Vh + DIM;} ////quda vectors this order
 //        const Long bi = bv / b_size;
 //        const Long bj = bv % b_size;
-//        for(int ni=0;ni<ne;ni++)
+//        for(Int ni=0;ni<ne;ni++)
 //        {
 //          {
 //          if(dir == 1){rr[c*nvec + ni] = eP[eo*ne + ni][bi][bj];}
@@ -2548,9 +2548,9 @@ void load_qlat_vecs(const char *filename, Td* prop, const int nvec, io_vec &io_u
 /////mode_c = 0, default even with vol -> color
 template<typename Ty >
 inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  const Geometry& geo, const int N0=0, const int N1=-1,
-  double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
-  std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
+  const Geometry& geo, const Int N0=0, const Int N1=-1,
+  double mass = 0.0, Int mode_c = 0, const bool single_file = true, const bool read = true ,
+  std::string VECS_TYPE = std::string("EO_Eigensystem"), const Int n_off_file = 0)
 {
   TIMERB("load_eo_evecs");
   const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -2558,21 +2558,21 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   io_vec& io_use = get_io_vec_plan_with_checksum(geo);
   io_use.do_checksum = true; // turn on checksum and initialize files
   io_use.ini_crc(true);
-  const int DIM = 3;
+  const Int DIM = 3;
   const bool rotate_bfac = true; ////default rotate color to outside to save memory
 
   //char fileE[600];
   std::string fileE = ssprintf("%s.evals", filename);
-  int nini = N0;
-  int Nmax = even.nvec - nini;
+  Int nini = N0;
+  Int Nmax = even.nvec - nini;
   if(N1 != -1){
     Nmax = N1 - nini;
   }
   Qassert(Nmax > 0);
   /////qmessage("save Nmax %3d \n", Nmax);
 
-  int nvec  = 0;
-  int nhalf = 0;
+  Int nvec  = 0;
+  Int nhalf = 0;
   double mass_file = 0.0;
   if(read == true){
     inputpara in;
@@ -2597,7 +2597,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
       Qassert(nvec == Nmax);
 
       evals.resize(nvec);err.resize(nvec);
-      for(int n=  0;n<nvec;n++){
+      for(Int n=  0;n<nvec;n++){
         Qassert(qlat::qnorm( values[n*2 + 1] ) < 1e-10);
         evals[n] = Ty(values[n*2+0] - 4.0*mre*mre, 0.0);
         err[n]   = errors[n];
@@ -2622,7 +2622,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     if(evals.size() > 0){
       std::vector<double > values;values.resize(nvec*2);
       mass_file = 0.0;
-      for(int n=  0;n<nvec;n++){
+      for(Int n=  0;n<nvec;n++){
         values[n*2 + 0] = evals[n].real() - 4.0 * mass * mass; /// subtract to zero mass
         values[n*2 + 1] = 0.0;
       }
@@ -2633,7 +2633,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   print_mem_info();
 
   /////std::string VECS_TYPE("EO_Eigensystem");
-  int Ngroup = io_use.ionum;
+  Int Ngroup = io_use.ionum;
   if(Ngroup > nhalf){Ngroup = nhalf;}
   if(Ngroup <= 0){abort_r("ionum wrong!");}
   //char infoL[500];
@@ -2643,17 +2643,17 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
   qlat::vector<Long > map;
   std::vector<Ty*  > noises;noises.resize(Ngroup);
   std::vector<qlat::vector_gpu<Ty > > eig;eig.resize(Ngroup);
-  for(int iv=0;iv<Ngroup;iv++){
+  for(Int iv=0;iv<Ngroup;iv++){
     eig[iv].resize(V * DIM, QMSYNC);///default on SYNC
   }
-  for(int iv=0;iv<Ngroup;iv++){noises[iv] = (Ty*) qlat::get_data(eig[iv]).data();}
+  for(Int iv=0;iv<Ngroup;iv++){noises[iv] = (Ty*) qlat::get_data(eig[iv]).data();}
   vector_cs<Ty > tmp_end;tmp_end.resize(1, QMSYNC, even);
   qmessage("after io mem allocate");print_mem_info();
 
   ////load evecs
   {
   inputpara in;
-  /////const int ntotal = nhalf;
+  /////const Int ntotal = nhalf;
   in.nx = io_use.nx;in.ny = io_use.ny;in.nz = io_use.nz;in.nt = io_use.nt;
   ////FILE* file_read  = open_eigensystem_file(filename, nini, ntotal, true , io_use , in_read_eigen , 2);
   ////close_eigensystem_file(file_read , io_use , in_read_eigen );
@@ -2669,8 +2669,8 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 
   io_use.io_off(file, in.off_file, true);  ////shift file for the head
 
-  ////const int mode_c = 0;
-  int nini_off = 0;////will only affect read == true
+  ////const Int mode_c = 0;
+  Int nini_off = 0;////will only affect read == true
   ////only supports offset multiple of 2 due to even-odd writtings together
   if(read == true){Qassert(n_off_file % 2 == 0);}
 
@@ -2681,13 +2681,13 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     if(jobi != 0){nini_off = 0;}///default zero offset, by default it will always read next rounds
     const Long n0   = jobA[jobi*2 + 0];
     const Long ncut = jobA[jobi*2 + 1];
-    noises.resize(ncut);for(int iv=0;iv<ncut;iv++){noises[iv] = (Ty*) qlat::get_data(eig[iv]).data();}
+    noises.resize(ncut);for(Int iv=0;iv<ncut;iv++){noises[iv] = (Ty*) qlat::get_data(eig[iv]).data();}
     qmessage("load %5d, dN %5d, N %5d ", int(n0), int(ncut), int(nhalf));
     //qmessage("load %5d, dN %5d, N %5d, inioff %5d ", int(n0), int(ncut), int(nhalf), int(nini_off));
 
     if(read == false)
-    for(int iv=0;iv<ncut;iv++){
-      const int ne = (n0+iv) * 2 + nini;
+    for(Int iv=0;iv<ncut;iv++){
+      const Int ne = (n0+iv) * 2 + nini;
       if(ne+2 <= even.nvec){
         copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even,    even, ne, ne+1, ne+1, ne+2, map, mode_c);
       }else{
@@ -2700,9 +2700,9 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     ////print_mem_info();
 
     if(read == true)
-    for(int iv=0;iv<ncut;iv++){
+    for(Int iv=0;iv<ncut;iv++){
       ////qmessage("iv %8d, ncut %8d \n", iv, int(ncut));
-      const int ne = (n0+iv) * 2 + nini;
+      const Int ne = (n0+iv) * 2 + nini;
       if(ne+2 <= even.nvec){
         copy_fieldM_to_eo_cs(even,   even ,eig[iv], 3, geo_copy, ne, ne+1, ne+1, ne+2, map, mode_c);
       }else{                                               
@@ -2718,16 +2718,16 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 
 template<typename Ty >
 inline void load_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  const Geometry& geo, const int N0=0, const int N1=-1,
-  double mass = 0.0, int mode_c = 0, const bool single_file = true, const bool read = true ,
-  std::string VECS_TYPE = std::string("EO_Eigensystem"), const int n_off_file = 0)
+  const Geometry& geo, const Int N0=0, const Int N1=-1,
+  double mass = 0.0, Int mode_c = 0, const bool single_file = true, const bool read = true ,
+  std::string VECS_TYPE = std::string("EO_Eigensystem"), const Int n_off_file = 0)
 {
   load_eo_evecs(filename.c_str(), even, evals, err, geo, N0, N1, mass, mode_c, single_file, read, VECS_TYPE, n_off_file);
 }
 
 template<typename Ty>
 inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  const Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
+  const Geometry& geo, const Int N0=0, const Int N1=-1, double mass = 0.0, Int mode_c = 0, const bool single_file = true,
   std::string VECS_TYPE = std::string("EO_Eigensystem"))
 {
   load_eo_evecs(filename, even, evals, err, geo, N0, N1, mass, mode_c, single_file, false, VECS_TYPE);
@@ -2735,7 +2735,7 @@ inline void save_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
 
 template<typename Ty>
 inline void save_eo_evecs(const std::string& filename, vector_cs<Ty >& even, qlat::vector<Ty >& evals, std::vector<double>& err,
-  const Geometry& geo, const int N0=0, const int N1=-1, double mass = 0.0, int mode_c = 0, const bool single_file = true,
+  const Geometry& geo, const Int N0=0, const Int N1=-1, double mass = 0.0, Int mode_c = 0, const bool single_file = true,
   std::string VECS_TYPE = std::string("EO_Eigensystem"))
 {
   load_eo_evecs(filename.c_str(), even, evals, err, geo, N0, N1, mass, mode_c, single_file, false, VECS_TYPE);

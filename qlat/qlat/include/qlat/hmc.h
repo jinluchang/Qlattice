@@ -18,7 +18,7 @@ struct API GaugeMomentum : FieldM<ColorMatrix, 4> {
 };
 
 bool metropolis_accept(RealD& accept_prob, const RealD delta_h,
-                       const int traj, const RngState& rs_);
+                       const Int traj, const RngState& rs_);
 
 void set_rand_gauge_momentum(GaugeMomentum& gm, const RealD sigma,
                              const RngState& rs);

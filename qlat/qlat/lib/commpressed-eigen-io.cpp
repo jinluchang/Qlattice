@@ -417,7 +417,7 @@ void vbwrite_data(const Vector<uint8_t>& v, VBFile& fp)
   }
 }
 
-int vbseek(VBFile& fp, const Long offset, const Int whence)
+Int vbseek(VBFile& fp, const Long offset, const Int whence)
 {
   TIMER("vbseek");
   vbflush(fp);
@@ -511,7 +511,7 @@ void vclose(VFile& fp)
   fp.read_entries.clear();
 }
 
-int vseek(VFile& fp, const Long offset, const Int whence)
+Int vseek(VFile& fp, const Long offset, const Int whence)
 {
   if (whence == SEEK_END) {
     set_vfile_size(fp);

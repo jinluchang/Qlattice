@@ -128,7 +128,7 @@ EXPORT(mk_output, {
   std::vector<int > key_T;
   py_convert(key_T, p_0);
   long size = 1;
-  for(unsigned Int i=0;i<key_T.size();i++)
+  for(unsigned int i=0;i<key_T.size();i++)
   {
     Int li = key_T[i];
     qassert(li > 0);
@@ -159,7 +159,7 @@ EXPORT(clear_output, {
 
   std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_0));
   qmessage("size of write %d \n", int(write.size()));
-  for(unsigned Int i=0;i<write.size();i++){write[i] = 0;}
+  for(unsigned int i=0;i<write.size();i++){write[i] = 0;}
 
   Py_RETURN_NONE;
 })

@@ -18,7 +18,7 @@ inline void make_local_deflation_plan(
 // boundaries to approriate places.
 {
   // total number of partition of the global lattice
-  int Np = product(tw_par);
+  Int Np = product(tw_par);
   Printf("Number of partitions = %d\n", Np);
 
   Coordinate global_size = geo.global_size();
@@ -31,7 +31,7 @@ inline void make_local_deflation_plan(
 
   // initialize the U1 field
   u1gts.resize(Np);
-  for (int i = 0; i < Np; i++) {
+  for (Int i = 0; i < Np; i++) {
     u1gts[i].init(geo);
     for (Long j = 0; j < u1gts[i].field.size(); j++) {
       u1gts[i].field[j] = +1.;
@@ -41,10 +41,10 @@ inline void make_local_deflation_plan(
   // initialize the global_partition.
   global_partition.resize(Np);
 
-  for (int i = 0; i < Np; i++) {
+  for (Int i = 0; i < Np; i++) {
     Printf("partition #%04d:\n", i);
     Coordinate partition_coor = qlat::coordinate_from_index(i, tw_par);
-    for (int mu = 0; mu < 4; mu++) {
+    for (Int mu = 0; mu < 4; mu++) {
       global_partition[i].first[mu] = partition_coor[mu] * partition_size[mu];
       global_partition[i].second[mu] =
           (partition_coor[mu] + 1) *
@@ -52,7 +52,7 @@ inline void make_local_deflation_plan(
                                // excluding. [first, second)
 
       // Find the border that is fartest from the source(partition)
-      int target_border = (global_partition[i].second[mu] +
+      Int target_border = (global_partition[i].second[mu] +
                            (global_size[mu] - partition_size[mu]) / 2) %
                           global_size[mu];
 
@@ -207,7 +207,7 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct,
 inline void scalar_multiplication_by_partition(void* out_vct,
                                                const void* bfm_vct,
                                                const std::vector<ComplexD>& b,
-                                               int Ls, const Coordinate& tw_par,
+                                               Int Ls, const Coordinate& tw_par,
                                                const Geometry& geo)
 {
   // Assuming single precision.
@@ -233,7 +233,7 @@ inline void scalar_multiplication_by_partition(void* out_vct,
       continue;  // TODO: temporary fix. Fix me!!! We don't want even sites.
 
     Coordinate global_coor1 = geo.coordinate_g_from_l(local_coor1);
-    int p = qlat::index_from_coordinate(global_coor1 / partition_size, tw_par);
+    Int p = qlat::index_from_coordinate(global_coor1 / partition_size, tw_par);
 
     for (size_t s = 0; s < bfm_vct_block_size; s++) {
       b1 = (m / 2 * bfm_vct_block_size + s) * 2;
@@ -279,7 +279,7 @@ inline void fft_convolution(std::vector<ComplexD>& out,
   static fftw_complex* f_out;
 
   static bool initialized = false;
-  static int N;
+  static Int N;
 
   if (not initialized) {
     N = x.size();
@@ -318,7 +318,7 @@ inline void fft_convolution(std::vector<ComplexD>& out,
   fftw_execute(p_forward);
   std::memcpy(y_out, f_out, sizeof(fftw_complex) * N);
 
-  for (int i = 0; i < N; i++) {
+  for (Int i = 0; i < N; i++) {
     z_in[i][0] = x_out[i][0] * y_out[i][0] - x_out[i][1] * y_out[i][1];
     z_in[i][1] = x_out[i][1] * y_out[i][0] + x_out[i][0] * y_out[i][1];
     // Printf("x[%d] = %.8E + i %.8E, y[%d] = %.8E + i %.8E\n", i, x[i].real(),
@@ -329,7 +329,7 @@ inline void fft_convolution(std::vector<ComplexD>& out,
 
   std::memcpy((void*)out.data(), (void*)z_out, sizeof(fftw_complex) * N);
 
-  for (int i = 0; i < N; i++) {
+  for (Int i = 0; i < N; i++) {
     out[i] /= (double)N;
   }
 

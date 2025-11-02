@@ -22,14 +22,14 @@ namespace qlat
 // mask_coordinate_from_coordinate : xg, flow_type -> mxg
 
 struct FlowStepInfo {
-  int mask;
-  int mu;
+  Int mask;
+  Int mu;
   double epsilon;
-  int flow_size;
+  Int flow_size;
   //
   FlowStepInfo() {}
-  FlowStepInfo(const int mask_, const int mu_, const double epsilon_,
-               const int flow_size_ = 1)
+  FlowStepInfo(const Int mask_, const Int mu_, const double epsilon_,
+               const Int flow_size_ = 1)
   {
     mask = mask_;
     mu = mu_;

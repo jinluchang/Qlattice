@@ -110,7 +110,7 @@ struct ConfigurationsInfo;
 
 struct ConfigurationInfo {
   ConstHandle<ConfigurationsInfo> csi;
-  int traj;
+  Int traj;
   std::string path;
   std::string conf_format;
   std::string low_modes_path;
@@ -130,7 +130,7 @@ inline void load_gauge_field_artificial(GaugeField& gf, const std::string& path)
   TIMER_VERBOSE("load_gauge_field_artificial");
   set_g_rand_color_matrix_field(
       gf, RngState(RngState("load_gauge_field_artificial"), path), 1.0);
-  for (int i = 0; i < 10000; ++i) {
+  for (Int i = 0; i < 10000; ++i) {
     gf_ape_smear(gf, gf, 0.1);
     displayln_info(ssprintf("ape-smear 0.1 %d times", i + 1));
     if (gf_avg_plaq(gf) >= 0.6) {
@@ -168,7 +168,7 @@ inline ConfigurationsInfo make_configurations_info_test(
   csi.fas.push_back(FermionAction(0.1, 8, 1.8));
   csi.fas.push_back(FermionAction(0.4, 8, 1.8));
   if (make_cis) {
-    for (int traj = 0; traj < 3; ++traj) {
+    for (Int traj = 0; traj < 3; ++traj) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -193,7 +193,7 @@ inline ConfigurationsInfo make_configurations_info_free(
   csi.fas.push_back(FermionAction(0.20, 16, 1.0));
   csi.fas.push_back(FermionAction(0.40, 16, 1.0));
   if (make_cis) {
-    for (int traj = 0; traj < 3; ++traj) {
+    for (Int traj = 0; traj < 3; ++traj) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -220,7 +220,7 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(
   // csi.la = LancArg(5.5, 0.20, 200, 200, 110, 100);
   csi.la = LancArg(5.5, 0.50, 200, 600, 510, 500);
   if (make_cis) {
-    for (int traj = 1000; traj <= 4000; traj += 100) {
+    for (Int traj = 1000; traj <= 4000; traj += 100) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -254,7 +254,7 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(
   csi.fas.push_back(FermionAction(0.032, 16, 1.8));
   csi.la = LancArg(5.5, 0.20, 200, 200, 110, 100);
   if (make_cis) {
-    for (int traj = 1000; traj <= 11000; traj += 5) {
+    for (Int traj = 1000; traj <= 11000; traj += 5) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -277,7 +277,7 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(
   return csi;
 }
 
-inline std::string find_conf_24c64_mu0p01_ms0p04(const int traj)
+inline std::string find_conf_24c64_mu0p01_ms0p04(const Int traj)
 {
   const std::string parent_path =
       get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/24c64";
@@ -323,7 +323,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(
   csi.fas.push_back(FermionAction(0.04, 16, 1.8));
   csi.la = LancArg(5.5, 0.18, 200, 1100, 700, 600);
   if (make_cis) {
-    for (int traj = 1000; traj <= 10000; traj += 5) {
+    for (Int traj = 1000; traj <= 10000; traj += 5) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -343,7 +343,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(
   return csi;
 }
 
-inline std::string find_conf_24c64_mu0p005_ms0p04(const int traj)
+inline std::string find_conf_24c64_mu0p005_ms0p04(const Int traj)
 {
   const std::string parent_path =
       get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/24c64";
@@ -368,7 +368,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(
   csi.fas.push_back(FermionAction(0.04, 16, 1.8));
   csi.la = LancArg(5.5, 0.16, 100, 600, 555, 550);
   if (make_cis) {
-    for (int traj = 8545; traj >= 2000; traj -= 40) {
+    for (Int traj = 8545; traj >= 2000; traj -= 40) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -399,7 +399,7 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(
   // csi.la = LancArg(15.0, 0.08, 200, 600, 555, 550);
   csi.la = LancArg(15.0, 0.22, 200, 2600, 2100, 2000);
   if (make_cis) {
-    for (int traj = 520; traj <= 1280; traj += 40) {
+    for (Int traj = 520; traj <= 1280; traj += 40) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -433,7 +433,7 @@ make_configurations_info_32c64_dsdr_mu0p001_ms0p045_unitary(
   // csi.la = LancArg(15.0, 0.08, 200, 600, 555, 550);
   // csi.la = LancArg(15.0, 0.22, 200, 2600, 2100, 2000);
   if (make_cis) {
-    for (int traj = 520; traj <= 1280; traj += 40) {
+    for (Int traj = 520; traj <= 1280; traj += 40) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -457,7 +457,7 @@ make_configurations_info_32c64_dsdr_mu0p001_ms0p045_unitary(
   return csi;
 }
 
-inline std::string find_conf_24c64_dsdr_mu0p0017_ms0p0850(const int traj)
+inline std::string find_conf_24c64_dsdr_mu0p0017_ms0p0850(const Int traj)
 {
   const std::string parent_path =
       get_env("HOME") +
@@ -490,7 +490,7 @@ make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(
   csi.fas.push_back(FermionAction(0.00107, 12, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 12, 1.8, 4.0));
   csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
-  for (int i = 0; i < csi.fas.size(); ++i) {
+  for (Int i = 0; i < csi.fas.size(); ++i) {
     FermionAction& fa = csi.fas[i];
     fa.is_using_zmobius = true;
     std::vector<ComplexD> omega(12, 0);
@@ -509,13 +509,13 @@ make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(
     qassert(fa.bs.size() == fa.ls);
     qassert(fa.cs.size() == fa.ls);
     qassert(omega.size() == fa.ls);
-    for (int i = 0; i < omega.size(); i++) {
+    for (Int i = 0; i < omega.size(); i++) {
       fa.bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
       fa.cs[i] = fa.bs[i] - 1.0;
     }
   }
   if (make_cis) {
-    for (int traj = 2280; traj >= 1000; traj -= 10) {
+    for (Int traj = 2280; traj >= 1000; traj -= 10) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -546,7 +546,7 @@ make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850_unitary(
   csi.fas.push_back(FermionAction(0.00107, 24, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 24, 1.8, 4.0));
   if (make_cis) {
-    for (int traj = 2280; traj >= 1000; traj -= 40) {
+    for (Int traj = 2280; traj >= 1000; traj -= 40) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -570,7 +570,7 @@ make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(
   csi.fas.push_back(FermionAction(0.00107, 12, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 12, 1.8, 4.0));
   csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
-  for (int i = 0; i < csi.fas.size(); ++i) {
+  for (Int i = 0; i < csi.fas.size(); ++i) {
     FermionAction& fa = csi.fas[i];
     fa.is_using_zmobius = true;
     std::vector<ComplexD> omega(12, 0);
@@ -589,13 +589,13 @@ make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(
     qassert(fa.bs.size() == fa.ls);
     qassert(fa.cs.size() == fa.ls);
     qassert(omega.size() == fa.ls);
-    for (int i = 0; i < omega.size(); i++) {
+    for (Int i = 0; i < omega.size(); i++) {
       fa.bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
       fa.cs[i] = fa.bs[i] - 1.0;
     }
   }
   if (make_cis) {
-    for (int traj = 1080; traj >= 680; traj -= 20) {
+    for (Int traj = 1080; traj >= 680; traj -= 20) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -630,7 +630,7 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(
   // csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
   csi.la = LancArg(15.0, 0.22, 200, 2600, 2100, 2000);
   if (make_cis) {
-    for (int traj = 1080; traj >= 680; traj -= 20) {
+    for (Int traj = 1080; traj >= 680; traj -= 20) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -649,7 +649,7 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(
   return csi;
 }
 
-inline std::string find_conf_48c96_mu0p00078_ms0p0362(const int traj)
+inline std::string find_conf_48c96_mu0p00078_ms0p0362(const Int traj)
 {
   const std::string parent_path =
       get_env("HOME") + "/qcdarchive-ljin/48nt96-ainv1.73gev-mpi139mev-ls24";
@@ -671,7 +671,7 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(
   csi.fas.push_back(FermionAction(0.00078, 10, 1.8, 4.8));
   csi.fas.push_back(FermionAction(0.0362, 10, 1.8, 4.8));
   csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
-  for (int i = 0; i < csi.fas.size(); ++i) {
+  for (Int i = 0; i < csi.fas.size(); ++i) {
     FermionAction& fa = csi.fas[i];
     qassert(fa.bs.size() == fa.ls);
     qassert(fa.cs.size() == fa.ls);
@@ -688,12 +688,12 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(
         ComplexD(4.9320961582039766e+00, -3.5559998543638791e+00);
     fa.bs[9] =
         ComplexD(4.9320961582039766e+00, 3.5559998543638791e+00);
-    for (int i = 0; i < fa.ls; i++) {
+    for (Int i = 0; i < fa.ls; i++) {
       fa.cs[i] = fa.bs[i] - 1.0;
     }
   }
   if (make_cis) {
-    for (int traj = 2300; traj >= 1000; traj -= 10) {
+    for (Int traj = 2300; traj >= 1000; traj -= 10) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -718,7 +718,7 @@ inline ConfigurationsInfo make_configurations_info_milc(
   csi.fas.push_back(FermionAction(0.01, 8, 1.8));
   csi.fas.push_back(FermionAction(0.04, 8, 1.8));
   if (make_cis) {
-    for (int traj = 500; traj <= 1900; traj += 100) {
+    for (Int traj = 500; traj <= 1900; traj += 100) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;

@@ -42,7 +42,7 @@ inline double psiFromV(const double v)
     return psiFromVSolve(v);
   } else {
     // ADJUST ME
-    const int nv = 16 * 1024;
+    const Int nv = 16 * 1024;
     static Interpolation fi(psiFromVSolve, PI, 0.0, nv);
     return fi(v);
   }
@@ -140,7 +140,7 @@ struct MuonLineIntegrand {
   //
   void init()
   {
-    for (int i = 0; i < 4; ++i) {
+    for (Int i = 0; i < 4; ++i) {
       x[i] = 0.0;
       y[i] = 0.0;
     }
@@ -226,7 +226,7 @@ struct MuonLineIntegrand {
     f2subxs[3] = f0xx2sub;
     f2subxs[4] = fxx2sub;
     if (IS_USING_AGGRESSIVE_SUBTRACTION) {
-      for (int i = 0; i < 5; ++i) {
+      for (Int i = 0; i < 5; ++i) {
         if (IS_USING_MORE_AGGRESSIVE_SUBTRACTION || 4 == i) {
           if (0 == IS_USING_ONLY_SUBTRACTION) {
             fc1xs[i] -= f1subxs[i];
@@ -244,8 +244,8 @@ struct MuonLineIntegrand {
       }
     }
     const double factor = sqr(r0) / sqr(1.0 - rp) * rp / (1.0 - rp);
-    for (int i = 0; i < 5; ++i) {
-      for (int j = 0; j < 5; ++j) {
+    for (Int i = 0; i < 5; ++i) {
+      for (Int j = 0; j < 5; ++j) {
         ans[i * 5 + j] =
             0.5 * factor * (fc1xs[i] * fc2xs[j] - fs1xs[i] * fs2xs[j]);
         // the first 0.5 because we need to address the double counting in the
@@ -375,13 +375,13 @@ inline void profile_computeIntSeq_integrand()
 {
   TIMER_VERBOSE_FLOPS("profile_computeIntSeq_integrand");
   RngState rs("profile_computeIntSeq_integrand");
-  const int size = 128;
+  const Int size = 128;
   const double low = -3.0;
   const double high = 3.0;
   double sum = 0.0;
-  for (int i = 0; i < size; ++i) {
+  for (Int i = 0; i < size; ++i) {
     CoordinateD x, y, eta;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       x[m] = u_rand_gen(rs, high, low);
       y[m] = u_rand_gen(rs, high, low);
       eta[m] = u_rand_gen(rs, high, low);

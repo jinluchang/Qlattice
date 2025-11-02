@@ -28,8 +28,8 @@ struct CloverLeafField : FieldM<ColorMatrix, 6> {
 void gf_clover_leaf_field_no_comm(CloverLeafField& clf, const GaugeField& gf1);
 
 void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
-                                      const GaugeField& gf1, const int m,
-                                      const int n);
+                                      const GaugeField& gf1, const Int m,
+                                      const Int n);
 
 void gf_clover_leaf_field(CloverLeafField& clf, const GaugeField& gf);
 

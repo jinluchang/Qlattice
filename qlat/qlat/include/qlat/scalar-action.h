@@ -29,7 +29,7 @@ struct ScalarAction {
     alpha = alpha_;
   }
 
-  qacc double action_point(const Field<double>& sf, const int multiplicity, Coordinate xl)
+  qacc double action_point(const Field<double>& sf, const Int multiplicity, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
@@ -40,11 +40,11 @@ struct ScalarAction {
     double phi_sq=0;
     // Stores phi_0(x)
     double phi_0=0;
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       double phi = sf.get_elem(xl,m);
       phi_sq += phi*phi;
       if (m==0) phi_0 = phi;
-      for (int mu = 0; mu < 4; ++mu) {
+      for (Int mu = 0; mu < 4; ++mu) {
         xl[mu]+=1;
         double phi_mu = sf.get_elem(xl,m);
         dphi_sq += (phi_mu-phi)*(phi_mu-phi);
@@ -69,7 +69,7 @@ struct ScalarAction {
     FieldM<double, 1> fd;
     fd.init(geo_r);
     // Loops over every lattice point in the current node
-    const int multiplicity = sf.multiplicity;
+    const Int multiplicity = sf.multiplicity;
     ScalarAction& sa = *this;
     qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = sf.geo();
@@ -128,9 +128,9 @@ struct ScalarAction {
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Long gindex = geo.g_index_from_g_coordinate(xg);
       Vector<double> masses_v = masses.get_elems(xl);
-      int M = masses_v.size();
+      Int M = masses_v.size();
       qassert(M == multiplicity);
-      for (int m = 0; m < M; ++m) {
+      for (Int m = 0; m < M; ++m) {
         ComplexD fld = field_ft.get_elem(xl, m);
         ComplexD frc = force_ft.get_elem(xl, m);
         if(gindex==0 && m==0){
@@ -150,7 +150,7 @@ struct ScalarAction {
       const Geometry& geo = sin_domega.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> v = sin_domega.get_elems(xl);
-      for (int m = 0; m < v.size(); ++m) {
+      for (Int m = 0; m < v.size(); ++m) {
         v[m] = 1 + 2*std::asin(v[m])/PI;
         v[m] = v[m]*v[m];
       }
@@ -183,7 +183,7 @@ struct ScalarAction {
       const Geometry& geo = sm_complex.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       double s=0;
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         ComplexD c = sm_complex.get_elem(xl,m);
         s += (c.real()*c.real()+c.imag()*c.imag())/2/masses.get_elem(xl,m); // /hmc_mass_p(L,geo.coordinate_g_from_l(xl));
       }
@@ -211,17 +211,17 @@ struct ScalarAction {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> sm_force_v = sm_force.get_elems(xl);
-      int M = sm_force_v.size();
+      Int M = sm_force_v.size();
       qassert(M == multiplicity);
       double sum_mult_sq = 0.0;
-      for (int m = 0; m < M; ++m) {
+      for (Int m = 0; m < M; ++m) {
         sum_mult_sq += pow(sf.get_elem(xl, m), 2);
       }
-      for (int m = 0; m < M; ++m) {
+      for (Int m = 0; m < M; ++m) {
         sm_force_v[m] =
             (2 * 4 + sa.m_sq + sa.lmbd / 6 * sum_mult_sq) * sf.get_elem(xl, m);
         if (m == 0) sm_force_v[m] += sa.alpha;
-        for (int dir = 0; dir < 4; ++dir) {
+        for (Int dir = 0; dir < 4; ++dir) {
           xl[dir] += 1;
           sm_force_v[m] -= sf.get_elem(xl, m);
           xl[dir] -= 2;
@@ -268,7 +268,7 @@ struct ScalarAction {
       Vector<ComplexD> sf_v = sf_complex.get_elems(xl);
       const Vector<ComplexD> sm_v = sm_complex.get_elems_const(xl);
       qassert(sf_v.size() == sm_v.size());
-      for (int m = 0; m < sf_v.size(); ++m) {
+      for (Int m = 0; m < sf_v.size(); ++m) {
         sf_v[m] = sf_v[m] + sm_v[m]*step_size/masses.get_elem(xl,m);
       }
     });
@@ -289,11 +289,11 @@ struct ScalarAction {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> ac_v = axial_current.get_elems(xl);
-      int M = ac_v.size();
+      Int M = ac_v.size();
       qassert(M == multiplicity-1);
       double p0;
       double pi;
-      for (int m = 0; m < M; ++m) {
+      for (Int m = 0; m < M; ++m) {
         xl[3]-=1;
         p0 = sf.get_elem(xl, 0);
         pi = sf.get_elem(xl, m+1);
@@ -321,7 +321,7 @@ struct ScalarAction {
       // const Geometry& geo = f.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         double d = f.get_elem(xl,m);
         s += d*d;
       }
@@ -365,7 +365,7 @@ struct ScalarAction {
       const Long gindex = geo.g_index_from_g_coordinate(xg);
       RngState rsi = rs.newtype(gindex);
       Vector<ComplexD> v = sm_complex.get_elems(xl);
-      for (int m = 0; m < v.size(); ++m) {
+      for (Int m = 0; m < v.size(); ++m) {
         double sigma = std::pow(masses.get_elem(xl,m), 0.5);
         v[m] = ComplexD(g_rand_gen(rsi, 0, sigma), g_rand_gen(rsi, 0, sigma));
       }
@@ -384,10 +384,10 @@ struct ScalarAction {
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Long gindex = geo.g_index_from_g_coordinate(xg);
       Vector<ComplexD> v = field_ft.get_elems(xl);
-      int M = v.size();
+      Int M = v.size();
       qassert(M == multiplicity);
       qassert(M == masses.multiplicity);
-      for (int m = 0; m < M; ++m) {
+      for (Int m = 0; m < M; ++m) {
         ComplexD mom = momentum_ft.get_elem(xl, m);
         if (gindex == 0 && m == 0) {
           v[m] = ComplexD(mom.real() / masses.get_elem(xl, m) / PI * 2 +

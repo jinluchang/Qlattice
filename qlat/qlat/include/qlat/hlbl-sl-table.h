@@ -6,8 +6,8 @@ namespace qlat
 {  //
 
 struct SlTable {
-  int s_limit;
-  int l_limit;
+  Int s_limit;
+  Int l_limit;
   std::vector<ComplexD> table;
   //
   void init()
@@ -16,7 +16,7 @@ struct SlTable {
     l_limit = 0;
     clear(table);
   }
-  void init(const int s, const int l)
+  void init(const Int s, const Int l)
   {
     s_limit = s;
     l_limit = l;
@@ -24,8 +24,8 @@ struct SlTable {
   }
   void init(const Coordinate& total_site)
   {
-    const int s = std::min(total_site[0] / 2 + 10, total_site[0] + 2);
-    const int l =
+    const Int s = std::min(total_site[0] / 2 + 10, total_site[0] + 2);
+    const Int l =
         std::ceil(sqrt(distance_sq_relative_coordinate_g(total_site / 2))) + 2;
     qassert(s > 0);
     qassert(l > 0);
@@ -38,9 +38,9 @@ inline void acc_sl_table(SlTable& t)
   TIMER("acc_sl_table");
   qassert((int)t.table.size() == t.s_limit * t.l_limit);
   std::vector<Complex> l_table(t.l_limit, 0.0);
-  for (int i = 0; i < t.s_limit; ++i) {
+  for (Int i = 0; i < t.s_limit; ++i) {
     Complex sum = 0.0;
-    for (int j = 0; j < t.l_limit; ++j) {
+    for (Int j = 0; j < t.l_limit; ++j) {
       sum += t.table[i * t.l_limit + j];
       l_table[j] = l_table[j] + sum;
       t.table[i * t.l_limit + j] = l_table[j];
@@ -55,8 +55,8 @@ inline std::string show_sl_table(const SlTable& t)
   out << ssprintf("# %24.17E %24.17E", t.table.back().real(),
                   t.table.back().imag())
       << std::endl;
-  for (int i = 0; i < t.s_limit; ++i) {
-    for (int j = 0; j < t.l_limit; ++j) {
+  for (Int i = 0; i < t.s_limit; ++i) {
+    for (Int j = 0; j < t.l_limit; ++j) {
       if (j > 0) {
         out << " ";
       }
@@ -68,10 +68,10 @@ inline std::string show_sl_table(const SlTable& t)
 }
 
 inline void add_to_sl_table(SlTable& t, const Complex& val,
-                            const int dis_sq_min, const int dis_sq_max)
+                            const Int dis_sq_min, const Int dis_sq_max)
 {
-  const int l_len = std::min(t.l_limit - 1, (int)std::ceil(std::sqrt(dis_sq_max)));
-  const int s_len = std::min(t.s_limit - 1, (int)std::ceil(std::sqrt(dis_sq_min)));
+  const Int l_len = std::min(t.l_limit - 1, (int)std::ceil(std::sqrt(dis_sq_max)));
+  const Int s_len = std::min(t.s_limit - 1, (int)std::ceil(std::sqrt(dis_sq_min)));
   qassert(s_len < t.s_limit && l_len < t.l_limit);
   t.table[s_len * t.l_limit + l_len] += val;
 }
@@ -90,7 +90,7 @@ inline void add_to_sl_table(SlTable& t, const Complex& val, const Coordinate& x,
 
 inline const SlTable& operator*=(SlTable& t, const Complex& coef)
 {
-  for (int i = 0; i < (int)t.table.size(); ++i) {
+  for (Int i = 0; i < (int)t.table.size(); ++i) {
     t.table[i] *= coef;
   }
   return t;
@@ -101,7 +101,7 @@ inline const SlTable& operator+=(SlTable& t, const SlTable& t1)
   qassert(t.s_limit == t1.s_limit);
   qassert(t.l_limit == t1.l_limit);
   qassert(t.table.size() == t1.table.size());
-  for (int i = 0; i < (int)t.table.size(); ++i) {
+  for (Int i = 0; i < (int)t.table.size(); ++i) {
     t.table[i] += t1.table[i];
   }
   return t;
@@ -112,7 +112,7 @@ inline const SlTable& operator-=(SlTable& t, const SlTable& t1)
   qassert(t.s_limit == t1.s_limit);
   qassert(t.l_limit == t1.l_limit);
   qassert(t.table.size() == t1.table.size());
-  for (int i = 0; i < (int)t.table.size(); ++i) {
+  for (Int i = 0; i < (int)t.table.size(); ++i) {
     t.table[i] -= t1.table[i];
   }
   return t;

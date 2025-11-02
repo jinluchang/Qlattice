@@ -497,7 +497,7 @@ struct QMAction {
       const Geometry& geo_r = fd.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         double d = f.get_elem(xl,m);
         s += d*d;
       }

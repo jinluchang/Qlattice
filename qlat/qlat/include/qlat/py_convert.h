@@ -147,7 +147,7 @@ Field<M>& py_convert_type_field(PyObject* in)
   return f;
 }
 
-template <class M, int multiplicity>
+template <class M, Int multiplicity>
 FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
 // py_convert_type<FieldM<M, multiplicity> >(in);
 {

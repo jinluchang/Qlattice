@@ -65,7 +65,7 @@ qacc CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y,
 }
 
 struct API EpsilonTensorTable {
-  int tensor[4][4][4][4];
+  Int tensor[4][4][4][4];
   //
   EpsilonTensorTable() { init(); }
   //
@@ -77,12 +77,12 @@ struct API EpsilonTensorTable {
     setv(0, 3, 1, 2);
   }
   //
-  void setv(const int a, const int b, const int c, const int d)
+  void setv(const Int a, const Int b, const Int c, const Int d)
   {
     set(a, b, c, d, 1);
     set(a, b, d, c, -1);
   }
-  void set(const int a, const int b, const int c, const int d, const int val)
+  void set(const Int a, const Int b, const Int c, const Int d, const Int val)
   {
     tensor[a][b][c][d] = val;
     tensor[b][c][d][a] = -val;
@@ -91,19 +91,19 @@ struct API EpsilonTensorTable {
   }
 };
 
-API inline int epsilon_tensor(const int a, const int b, const int c,
-                              const int d)
+API inline Int epsilon_tensor(const Int a, const Int b, const Int c,
+                              const Int d)
 {
   static EpsilonTensorTable table;
   return table.tensor[a][b][c][d];
 }
 
-inline int epsilon_tensor(const int i, const int j, const int k)
+inline Int epsilon_tensor(const Int i, const Int j, const Int k)
 {
   return epsilon_tensor(i, j, k, 3);
 }
 
-qacc int epsilon_tensor_acc(const int i, const int j, const int k)
+qacc Int epsilon_tensor_acc(const Int i, const Int j, const Int k)
 {
   if (i == 0 and j == 1 and k == 2) {
     return 1;
@@ -121,7 +121,7 @@ qacc int epsilon_tensor_acc(const int i, const int j, const int k)
   return 0;
 }
 
-qacc int epsilon_tensor_acc(const int a, const int b, const int c, const int d)
+qacc Int epsilon_tensor_acc(const Int a, const Int b, const Int c, const Int d)
 {
   if (d == 3) {
     return epsilon_tensor_acc(a, b, c);

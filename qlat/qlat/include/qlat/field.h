@@ -48,7 +48,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> v1 = f1.get_elems_const(xl);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       v[m] += v1[m];
     }
   });
@@ -75,7 +75,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> v1 = f1.get_elems_const(xl);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       v[m] -= v1[m];
     }
   });
@@ -87,7 +87,7 @@ const Field<M>& operator*=(Field<M>& f, const Field<RealD>& f_factor)
 {
   TIMER("field_operator*=(F,FD)");
   Qassert(is_matching_geo(f.geo(), f_factor.geo()));
-  const int multiplicity_f = f_factor.multiplicity;
+  const Int multiplicity_f = f_factor.multiplicity;
   Qassert(multiplicity_f == 1 or multiplicity_f == f.multiplicity);
   qacc_for(index, f.geo().local_volume(), {
     const Geometry& geo = f.geo();
@@ -95,13 +95,13 @@ const Field<M>& operator*=(Field<M>& f, const Field<RealD>& f_factor)
     Vector<M> v = f.get_elems(xl);
     if (multiplicity_f == 1) {
       const RealD fac = f_factor.get_elem(xl);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac;
       }
     } else {
       qassert(multiplicity_f == f.multiplicity);
       Vector<RealD> fac = f_factor.get_elems_const(xl);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];
       }
     }
@@ -114,7 +114,7 @@ const Field<M>& operator*=(Field<M>& f, const Field<ComplexD>& f_factor)
 {
   TIMER("field_operator*=(F,FC)");
   Qassert(is_matching_geo(f.geo(), f_factor.geo()));
-  const int multiplicity_f = f_factor.multiplicity;
+  const Int multiplicity_f = f_factor.multiplicity;
   Qassert(multiplicity_f == 1 or multiplicity_f == f.multiplicity);
   qacc_for(index, f.geo().local_volume(), {
     const Geometry& geo = f.geo();
@@ -122,13 +122,13 @@ const Field<M>& operator*=(Field<M>& f, const Field<ComplexD>& f_factor)
     Vector<M> v = f.get_elems(xl);
     if (multiplicity_f == 1) {
       const ComplexD fac = f_factor.get_elem(xl);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac;
       }
     } else {
       qassert(multiplicity_f == f.multiplicity);
       const Vector<ComplexD> fac = f_factor.get_elems_const(xl);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         v[m] *= fac[m];
       }
     }
@@ -144,7 +144,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
     const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       v[m] *= factor;
     }
   });
@@ -159,7 +159,7 @@ const Field<M>& operator*=(Field<M>& f, const ComplexD& factor)
     const Geometry& geo = f.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = f.get_elems(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       v[m] *= factor;
     }
   });
@@ -179,11 +179,11 @@ double qnorm(const Field<M>& f)
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate x = geo.coordinate_from_index(index);
       const Vector<M> fx = f.get_elems_const(x);
-      for (int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < f.multiplicity; ++m) {
         psum += qnorm(fx[m]);
       }
     }
-    for (int i = 0; i < omp_get_num_threads(); ++i) {
+    for (Int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier
       if (omp_get_thread_num() == i) {
         sum += psum;
@@ -250,7 +250,7 @@ std::vector<M> field_sum(const Field<M>& f)
 {
   TIMER("field_sum");
   const Geometry& geo = f.geo();
-  const int multiplicity = f.multiplicity;
+  const Int multiplicity = f.multiplicity;
   std::vector<M> vec(multiplicity);
   set_zero(vec);
 #pragma omp parallel
@@ -261,14 +261,14 @@ std::vector<M> field_sum(const Field<M>& f)
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Vector<M> fvec = f.get_elems_const(xl);
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         pvec[m] += fvec[m];
       }
     }
     for (Int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier
       if (omp_get_thread_num() == i) {
-        for (int m = 0; m < multiplicity; ++m) {
+        for (Int m = 0; m < multiplicity; ++m) {
           vec[m] += pvec[m];
         }
       }
@@ -278,7 +278,7 @@ std::vector<M> field_sum(const Field<M>& f)
 }
 
 template <class M>
-std::vector<M> field_sum_tslice(const Field<M>& f, const int t_dir = 3)
+std::vector<M> field_sum_tslice(const Field<M>& f, const Int t_dir = 3)
 // length = t_size * multiplicity
 {
   TIMER("field_sum_tslice");
@@ -329,7 +329,7 @@ std::vector<M> field_glb_sum(const Field<M>& f)
 }
 
 template <class M>
-std::vector<M> field_glb_sum_tslice(const Field<M>& f, const int t_dir = 3)
+std::vector<M> field_glb_sum_tslice(const Field<M>& f, const Int t_dir = 3)
 // length = t_size * multiplicity
 {
   TIMER("field_glb_sum_tslice");
@@ -344,7 +344,7 @@ std::vector<M> field_max(const Field<M>& f)
 {
   TIMER("field_max");
   const Geometry& geo = f.geo();
-  const int multiplicity = f.multiplicity;
+  const Int multiplicity = f.multiplicity;
   std::vector<M> vec(multiplicity);
   assign(vec, f.get_elems_const(0));
 #pragma omp parallel
@@ -355,14 +355,14 @@ std::vector<M> field_max(const Field<M>& f)
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Vector<M> fvec = f.get_elems_const(xl);
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         pvec[m] = std::max(pvec[m], fvec[m]);
       }
     }
     for (Int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier
       if (omp_get_thread_num() == i) {
-        for (int m = 0; m < multiplicity; ++m) {
+        for (Int m = 0; m < multiplicity; ++m) {
           vec[m] = std::max(vec[m], pvec[m]);
         }
       }
@@ -388,7 +388,7 @@ std::vector<M> field_min(const Field<M>& f)
 {
   TIMER("field_min");
   const Geometry& geo = f.geo();
-  const int multiplicity = f.multiplicity;
+  const Int multiplicity = f.multiplicity;
   std::vector<M> vec(multiplicity);
   assign(vec, f.get_elems_const(0));
 #pragma omp parallel
@@ -399,14 +399,14 @@ std::vector<M> field_min(const Field<M>& f)
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Vector<M> fvec = f.get_elems_const(xl);
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         pvec[m] = std::min(pvec[m], fvec[m]);
       }
     }
     for (Int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier
       if (omp_get_thread_num() == i) {
-        for (int m = 0; m < multiplicity; ++m) {
+        for (Int m = 0; m < multiplicity; ++m) {
           vec[m] = std::min(vec[m], pvec[m]);
         }
       }
@@ -440,12 +440,12 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0;
-    for (int k = 0; k < DIMN; ++k) {
+    for (Int k = 0; k < DIMN; ++k) {
       phase += mom[k] * xg[k];
     }
     const ComplexD factor = qpolar(1.0, -phase);
     const Vector<M> v = f.get_elems_const(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       M x = v[m];
       x *= factor;
       ret[m] += x;
@@ -473,7 +473,7 @@ std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
 }
 
 template <class M>
-M field_get_elem(const Field<M>& f, const Coordinate& xg, const int m)
+M field_get_elem(const Field<M>& f, const Coordinate& xg, const Int m)
 // xg is same on all the nodes
 {
   const Geometry& geo = f.geo();
@@ -510,7 +510,7 @@ void field_set_elems(Field<M>& f, const Coordinate& xg, const Vector<M> val)
 }
 
 template <class M>
-void field_set_elem(Field<M>& f, const Coordinate& xg, const int m, const M& val)
+void field_set_elem(Field<M>& f, const Coordinate& xg, const Int m, const M& val)
 // xg do not need to be the same on all the nodes
 {
   const Geometry& geo = f.geo();
@@ -543,18 +543,18 @@ void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
   const Long nf = vec.size();
   const Geometry& geo = f.geo();
   Qassert(geo.is_only_local);
-  const int multiplicity = f.multiplicity;
-  const int multiplicity_v = multiplicity / nf;
+  const Int multiplicity = f.multiplicity;
+  const Int multiplicity_v = multiplicity / nf;
   Qassert(multiplicity_v * nf == multiplicity);
   for (Long i = 0; i < nf; ++i) {
     Field<M>& f1 = vec[i]();
     f1.init();
     f1.init(geo, multiplicity_v);
-    const int m_offset = i * multiplicity_v;
+    const Int m_offset = i * multiplicity_v;
     qacc_for(index, geo.local_volume(), {
       const Vector<M> fv = f.get_elems_const(index);
       Vector<M> f1v = f1.get_elems(index);
-      for (int m = 0; m < multiplicity_v; ++m) {
+      for (Int m = 0; m < multiplicity_v; ++m) {
         f1v[m] = fv[m + m_offset];
       }
     });
@@ -572,8 +572,8 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
   const Long nf = vec.size();
   const Geometry& geo = vec[0]().geo();
   Qassert(geo.is_only_local);
-  const int multiplicity_v = vec[0]().multiplicity;
-  const int multiplicity = nf * multiplicity_v;
+  const Int multiplicity_v = vec[0]().multiplicity;
+  const Int multiplicity = nf * multiplicity_v;
   for (Long i = 1; i < nf; ++i) {
     Qassert(geo == vec[i]().geo());
     Qassert(multiplicity_v == vec[i]().multiplicity);
@@ -581,11 +581,11 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
   f.init(geo, multiplicity);
   for (Long i = 0; i < nf; ++i) {
     const Field<M>& f1 = vec[i]();
-    const int m_offset = i * multiplicity_v;
+    const Int m_offset = i * multiplicity_v;
     qacc_for(index, geo.local_volume(), {
       Vector<M> fv = f.get_elems(index);
       const Vector<M> f1v = f1.get_elems_const(index);
-      for (int m = 0; m < multiplicity_v; ++m) {
+      for (Int m = 0; m < multiplicity_v; ++m) {
         fv[m + m_offset] = f1v[m];
       }
     });
@@ -593,7 +593,7 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
 }
 
 template <class M>
-void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec, const std::vector<int>& m_vec)
+void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec, const std::vector<Int>& m_vec)
 // f.get_elem(x, m) = vec[m].get_elem(x, m_vec[m])
 {
   TIMER("merge_fields_ms");
@@ -612,7 +612,7 @@ void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& ve
   }
   qthread_for(index, geo.local_volume(), {
     Vector<M> fv = f.get_elems(index);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       const Field<M>& f1 = vec[m]();
       const Vector<M> f1v = f1.get_elems_const(index);
       fv[m] = f1v[m_vec[m]];
@@ -621,8 +621,8 @@ void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& ve
 }
 
 template <class M>
-void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
-                     const int shift)
+void field_shift_dir(Field<M>& f, const Field<M>& f1, const Int dir,
+                     const Int shift)
 // shift f1 in 'dir' direction for 'shift' steps
 // roughly f[xg + shift * nvec] = f1[xg]
 // where
@@ -642,7 +642,7 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
   tmp.init(geo, multiplicity);
   tmp1.init(geo, multiplicity);
   tmp1 = f1;
-  for (int i = 0; i < geo.geon.size_node[dir]; ++i) {
+  for (Int i = 0; i < geo.geon.size_node[dir]; ++i) {
 #pragma omp parallel for
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
@@ -759,13 +759,13 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
     Qassert(fr[iv].geo() == fs[0].geo() and fr[iv].multiplicity == fs[iv].multiplicity);
   }
   //
-  const int num_node = geo.geon.num_node;
+  const Int num_node = geo.geon.num_node;
   const Coordinate& node_site  = geo.node_site;
   const Coordinate& size_node  = geo.geon.size_node;
   const Coordinate  total_site = geo.total_site();
   Coordinate shift_corrected = shift;
   Coordinate shift_remain;
-  for (int mu = 0; mu < 4; ++mu) {
+  for (Int mu = 0; mu < 4; ++mu) {
     Qassert(size_node[mu] >= 1);
     shift_corrected[mu] = shift[mu] % total_site[mu];
     if (size_node[mu] == 1) {
@@ -833,7 +833,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
   vector<Long > to_recv_offset(num_node);
   {
     TIMER("field_shift_direct setup");
-    for (int i = 0; i < num_node; ++i) {
+    for (Int i = 0; i < num_node; ++i) {
       to_send_offset[i] = N_send;
       to_recv_offset[i] = N_recv;
       const Long size_s = to_send_size[i];
@@ -861,7 +861,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
     vector_to_acc(fh1, fs);
     qmem_for(index, geo.local_volume(), mem_comm, {
       const Vector<Long> fsv = f_send_idx.get_elems_const(index);
-      const int id_node = fsv[0];
+      const Int id_node = fsv[0];
       const Long offset = fsv[1] * MULTI;
       const Long off_send = to_send_offset[id_node] * MULTI;
       for(unsigned int iv=0;iv<Nvec;iv++)
@@ -877,13 +877,13 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
     TIMER_FLOPS("field_shift_direct-commT");
     std::vector<MPI_Request> reqs_send;
     std::vector<MPI_Request> reqs_recv;
-    const int rank  = qlat::get_id_node();
+    const Int rank  = qlat::get_id_node();
     for(unsigned int iv=0;iv<Nvec;iv++)
     {
       timer.flops +=
           geo.local_volume() * (Long) MULTI * (Long) sizeof(M);
-      const int mpi_tag = 11 + iv;
-      for (int id_node = 0; id_node < num_node; id_node++) {
+      const Int mpi_tag = 11 + iv;
+      for (Int id_node = 0; id_node < num_node; id_node++) {
         const Long off_send = to_send_offset[id_node] * MULTI;
         const Long off_recv = to_recv_offset[id_node] * MULTI;
         if(to_recv_size[id_node] > 0 and id_node != rank)
@@ -897,7 +897,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
     }
     // within node copy
     {
-      const int id_node = rank;
+      const Int id_node = rank;
       const size_t Nd = to_recv_size[id_node] * MULTI * sizeof(M);
       if(Nd > 0){
         for(unsigned int iv=0;iv<Nvec;iv++){
@@ -923,7 +923,7 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
       const Coordinate xl_s = mod(xl + shift_remain, total_site);
       const Long index_s = geo.index_from_coordinate(xl_s);
       const Vector<Long> frv = f_recv_idx.get_elems_const(index);
-      const int id_node = frv[0];
+      const Int id_node = frv[0];
       const Long offset = frv[1] * MULTI;
       const Long off_recv = to_recv_offset[id_node] * MULTI;
       for(unsigned int iv=0;iv<Nvec;iv++)
@@ -1026,13 +1026,13 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       const Field<TYPENAME>& f);                                              \
                                                                               \
   QLAT_EXTERN template std::vector<TYPENAME> field_sum_tslice<TYPENAME>(      \
-      const Field<TYPENAME>& f, const int t_dir);                             \
+      const Field<TYPENAME>& f, const Int t_dir);                             \
                                                                               \
   QLAT_EXTERN template std::vector<TYPENAME> field_glb_sum<TYPENAME>(         \
       const Field<TYPENAME>& f);                                              \
                                                                               \
   QLAT_EXTERN template std::vector<TYPENAME> field_glb_sum_tslice<TYPENAME>(  \
-      const Field<TYPENAME>& f, const int t_dir);                             \
+      const Field<TYPENAME>& f, const Int t_dir);                             \
                                                                               \
   QLAT_EXTERN template std::vector<TYPENAME> field_project_mom<TYPENAME>(     \
       const Field<TYPENAME>& f, const CoordinateD& mom);                      \
@@ -1041,7 +1041,7 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       const Field<TYPENAME>& f, const Coordinate& xg);                        \
                                                                               \
   QLAT_EXTERN template TYPENAME field_get_elem<TYPENAME>(                     \
-      const Field<TYPENAME>& f, const Coordinate& xg, const int m);           \
+      const Field<TYPENAME>& f, const Coordinate& xg, const Int m);           \
                                                                               \
   QLAT_EXTERN template TYPENAME field_get_elem<TYPENAME>(                     \
       const Field<TYPENAME>& f, const Coordinate& xg);                        \
@@ -1050,7 +1050,7 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       Field<TYPENAME> & f, const Coordinate& xg, const Vector<TYPENAME> val); \
                                                                               \
   QLAT_EXTERN template void field_set_elem<TYPENAME>(                         \
-      Field<TYPENAME> & f, const Coordinate& xg, const int m,                 \
+      Field<TYPENAME> & f, const Coordinate& xg, const Int m,                 \
       const TYPENAME& val);                                                   \
                                                                               \
   QLAT_EXTERN template void field_set_elem<TYPENAME>(                         \
@@ -1066,11 +1066,11 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
   QLAT_EXTERN template void merge_fields_ms<TYPENAME>(                        \
       Field<TYPENAME> & f,                                                    \
       const std::vector<ConstHandle<Field<TYPENAME>>>& vec,                   \
-      const std::vector<int>& m_vec);                                         \
+      const std::vector<Int>& m_vec);                                         \
                                                                               \
   QLAT_EXTERN template void field_shift_dir<TYPENAME>(                        \
-      Field<TYPENAME> & f, const Field<TYPENAME>& f1, const int dir,          \
-      const int shift);                                                       \
+      Field<TYPENAME> & f, const Field<TYPENAME>& f1, const Int dir,          \
+      const Int shift);                                                       \
                                                                               \
   QLAT_EXTERN template void field_shift_steps<TYPENAME>(                      \
       Field<TYPENAME> & f, const Field<TYPENAME>& f1,                         \

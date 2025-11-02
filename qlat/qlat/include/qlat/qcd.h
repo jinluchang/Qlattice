@@ -32,7 +32,7 @@ void unitarize(Field<ColorMatrixT<T> >& gf)
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
-    for (int m = 0; m < gf.multiplicity; ++m) {
+    for (Int m = 0; m < gf.multiplicity; ++m) {
       unitarize(v[m]);
     }
   });
@@ -114,7 +114,7 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
           while (infos.back() != "END_HEADER\n" && infos.back() != "") {
             infos.push_back(qgetline(qfile));
           }
-          for (int m = 0; m < 4; ++m) {
+          for (Int m = 0; m < 4; ++m) {
             reads(gfi.total_site[m],
                   info_get_prop(infos, ssprintf("DIMENSION_%d = ", m + 1)));
           }
@@ -162,7 +162,7 @@ Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
     Vector<ComplexD> vt = gft.get_elems(xl);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       vt[6 * m + 0] = v[m](0, 0);
       vt[6 * m + 1] = v[m](0, 1);
       vt[6 * m + 2] = v[m](0, 2);
@@ -195,7 +195,7 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   read_gauge_field_header(gfi, path);
   const bool is_two_row = gfi.datatype == "4D_SU3_GAUGE";
   const bool is_three_row = gfi.datatype == "4D_SU3_GAUGE_3x3";
-  const int n_complex_su3 = is_two_row ? 6 : (is_three_row ? 9 : 0);
+  const Int n_complex_su3 = is_two_row ? 6 : (is_three_row ? 9 : 0);
   if (n_complex_su3 == 0) {
     displayln(fname + ssprintf(": gfi.datatype '%s' id_node=%d.",
                                gfi.datatype.c_str(), get_id_node()));
@@ -241,7 +241,7 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> vt = gft.get_elems(xl);
     Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       v[m](0, 0) = vt[m * n_complex_su3 + 0];
       v[m](0, 1) = vt[m * n_complex_su3 + 1];
       v[m](0, 2) = vt[m * n_complex_su3 + 2];
@@ -283,7 +283,7 @@ inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
     Vector<ComplexD> vt = gft.get_elems(xl);
     to_from_big_endian(vt);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
-    for (int m = 0; m < gf.multiplicity; ++m) {
+    for (Int m = 0; m < gf.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
     }
   }
@@ -319,7 +319,7 @@ inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
     Vector<ComplexF> vt = gft.get_elems(xl);
     to_from_big_endian(vt);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
-    for (int m = 0; m < gf.multiplicity; ++m) {
+    for (Int m = 0; m < gf.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
       v[m](0, 0) = vt[9 * m + 0 * 3 + 0];
       v[m](0, 1) = vt[9 * m + 0 * 3 + 1];
@@ -338,13 +338,13 @@ inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
 }
 
 template <class T>
-void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double lmom, int mu)
+void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double lmom, Int mu)
 {
   TIMER_VERBOSE_FLOPS("twist_boundary_at_boundary");
   const Geometry& geo = gf.geo();
   const double amp = 2.0 * PI * lmom;
-  const int len = geo.total_site()[mu];
-  for (int index = 0; index < geo.local_volume(); index++) {
+  const Int len = geo.total_site()[mu];
+  for (Int index = 0; index < geo.local_volume(); index++) {
     Coordinate xl = geo.coordinate_from_index(index);
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[mu] == len - 1) {
@@ -362,7 +362,7 @@ struct API GaugeTransformInfo {
   Coordinate total_site;
   crc32_t simple_checksum;
   std::string floating_point;
-  int data_per_site;
+  Int data_per_site;
   std::string gf_type;
   double gf_accuracy;
   //
@@ -422,7 +422,7 @@ inline void read_gauge_transform_header(GaugeTransformInfo& info,
               remove_trailing_newline(info_get_prop(infos, "HDR_VERSION = "));
           info.storage_format = remove_trailing_newline(
               info_get_prop(infos, "STORAGE_FORMAT = "));
-          for (int m = 0; m < 4; ++m) {
+          for (Int m = 0; m < 4; ++m) {
             reads(info.total_site[m],
                   info_get_prop(infos, ssprintf("DIMENSION_%d = ", m + 1)));
           }

@@ -9,8 +9,8 @@ namespace qlat
 std::string make_selected_field_header(const Geometry& geo, Int multiplicity,
                                        const Int sizeof_M, const crc32_t crc32);
 
-Long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
-                            int& sizeof_M, crc32_t& crc,
+Long read_selected_geo_info(Coordinate& total_site, Int& multiplicity,
+                            Int& sizeof_M, crc32_t& crc,
                             const std::string& path);
 
 bool is_selected_field(const std::string& path);
@@ -37,10 +37,10 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
-  const int new_num_node = product(new_size_node);
+  const Int new_num_node = product(new_size_node);
   crc32_t crc = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const int new_id_node = sfs[i].geo().geon.id_node;
+  for (Int i = 0; i < (int)sfs.size(); ++i) {
+    const Int new_id_node = sfs[i].geo().geon.id_node;
     qassert(sfs[i].geo().geon.num_node == new_num_node);
     const Vector<M> v = get_data(sfs[i].field);
     crc ^= crc32_shift(crc32_par(v),
@@ -74,24 +74,24 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
-  const int new_num_node = product(new_size_node);
+  const Int new_num_node = product(new_size_node);
   std::vector<Long> n_elems_vec(new_num_node, 0);
   for (size_t i = 0; i < sfs.size(); ++i) {
-    const int id_node = fsels[i].f_rank.geo().geon.id_node;
+    const Int id_node = fsels[i].f_rank.geo().geon.id_node;
     n_elems_vec[id_node] = fsels[i].n_elems;
     sfs[i].init(fsels[i], multiplicity);
   }
   glb_sum(n_elems_vec);
   std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   Long total_bytes = 0;
-  for (int i = 0; i < new_num_node; ++i) {
+  for (Int i = 0; i < new_num_node; ++i) {
     data_offset_vec[i] = total_bytes;
     total_bytes += n_elems_vec[i] * multiplicity * sizeof(M);
   }
   data_offset_vec[new_num_node] = total_bytes;
   crc32_t crc = 0;
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const int new_id_node = sfs[i].geo().geon.id_node;
+  for (Int i = 0; i < (int)sfs.size(); ++i) {
+    const Int new_id_node = sfs[i].geo().geon.id_node;
     qassert(sfs[i].geo().geon.num_node == new_num_node);
     const Vector<M> v = get_data(sfs[i].field);
     crc ^= crc32_shift(crc32_par(v),
@@ -102,23 +102,23 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     qtouch_info(path + ".partial",
                 make_selected_field_header(geo, multiplicity, sizeof(M), crc));
   } else {
-    const int sizeof_M = get_force_field_write_sizeof_M();
+    const Int sizeof_M = get_force_field_write_sizeof_M();
     qassert((multiplicity * sizeof(M)) % sizeof_M == 0);
-    const int multiplicity_new = (multiplicity * sizeof(M)) / sizeof_M;
+    const Int multiplicity_new = (multiplicity * sizeof(M)) / sizeof_M;
     qtouch_info(path + ".partial",
                 make_selected_field_header(geo, multiplicity_new, sizeof_M, crc));
     get_force_field_write_sizeof_M() = 0;
   }
-  const int mpi_tag = 8;
+  const Int mpi_tag = 8;
   if (get_id_node() == 0) {
     qassert(sfs.size() > 0);
     QFile fp = qfopen(path + ".partial", "a");
     qassert(not fp.null());
-    const int num_node = get_num_node();
-    for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
+    const Int num_node = get_num_node();
+    for (Int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
       vector<M> vec(n_elems_vec[new_id_node] * multiplicity);
       Vector<M> v = get_data(vec);
-      const int id_node =
+      const Int id_node =
           get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
       if (0 == id_node) {
         assign(v, get_data(sfs[new_id_node].field));
@@ -151,8 +151,8 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   sf.init();
   Coordinate total_site;
-  int multiplicity = 0;
-  int sizeof_M = 0;
+  Int multiplicity = 0;
+  Int sizeof_M = 0;
   crc32_t crc_info = 0;
   const Long pos = read_selected_geo_info(total_site, multiplicity, sizeof_M,
                                           crc_info, path);
@@ -187,17 +187,17 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
   }
   std::vector<SelectedField<M>> sfs;
   sfs.resize(fsels.size());
-  const int new_num_node = product(new_size_node);
+  const Int new_num_node = product(new_size_node);
   std::vector<Long> n_elems_vec(new_num_node, 0);
   for (size_t i = 0; i < sfs.size(); ++i) {
-    const int id_node = fsels[i].f_rank.geo().geon.id_node;
+    const Int id_node = fsels[i].f_rank.geo().geon.id_node;
     n_elems_vec[id_node] = fsels[i].n_elems;
     sfs[i].init(fsels[i], multiplicity);
   }
   glb_sum(n_elems_vec);
   std::vector<Long> data_offset_vec(new_num_node + 1, 0);
   Long total_bytes = 0;
-  for (int i = 0; i < new_num_node; ++i) {
+  for (Int i = 0; i < new_num_node; ++i) {
     data_offset_vec[i] = total_bytes;
     total_bytes += n_elems_vec[i] * multiplicity * sizeof(M);
   }
@@ -207,8 +207,8 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
     QFile fp = qfopen(path, "r");
     qassert(not fp.null());
     qfseek(fp, pos + data_offset_vec[sfs[0].geo().geon.id_node], SEEK_SET);
-    for (int i = 0; i < (int)sfs.size(); ++i) {
-      const int new_id_node = sfs[i].geo().geon.id_node;
+    for (Int i = 0; i < (int)sfs.size(); ++i) {
+      const Int new_id_node = sfs[i].geo().geon.id_node;
       qassert(sfs[i].geo().geon.num_node == new_num_node);
       const Vector<M> v = get_data(sfs[i].field);
       qread_data(v, fp);
@@ -485,7 +485,7 @@ Long read_selected_field_double_from_float(
                                                                         \
   QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(             \
       SelectedPoints<TYPENAME> & sp, const SelectedField<TYPENAME>& sf, \
-      const FieldSelection& fsel, const int t_dir);                     \
+      const FieldSelection& fsel, const Int t_dir);                     \
                                                                         \
   QLAT_EXTERN template crc32_t field_crc32<TYPENAME>(                   \
       const SelectedField<TYPENAME>& sf, const FieldSelection& fsel,    \

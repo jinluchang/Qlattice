@@ -13,23 +13,23 @@ bool isInitialized(const GridComm<M>& gc)
 bool isInitialized(const Geometry& geo) { return geo.initialized; }
 
 template <class T>
-inline void setZeroN(T xs[], const int xn)
+inline void setZeroN(T xs[], const Int xn)
 {
-  for (int i = 0; i < xn; i++) {
+  for (Int i = 0; i < xn; i++) {
     setZero(xs[i]);
   }
 }
 
-template <class M, int N>
+template <class M, Int N>
 struct Array {
   M data[N];
   //
-  const M& operator[](int n) const
+  const M& operator[](Int n) const
   {
     assert(0 <= n && n < N);
     return data[n];
   }
-  M& operator[](int n)
+  M& operator[](Int n)
   {
     assert(0 <= n && n < N);
     return data[n];
@@ -41,106 +41,106 @@ struct Array {
     return *this;
   }
   //
-  int size() const { return N; }
+  Int size() const { return N; }
 };
 
-template <class M, int N>
+template <class M, Int N>
 const Array<M, N>& operator+=(Array<M, N>& v, const Array<M, N>& v1)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] += v1.data[i];
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 const Array<M, N>& operator-=(Array<M, N>& v, const Array<M, N>& v1)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] -= v1.data[i];
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 const Array<M, N>& operator*=(Array<M, N>& v, double factor)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] *= factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 const Array<M, N>& operator*=(Array<M, N>& v, ComplexD factor)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] *= factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 Array<M, N> operator+(const Array<M, N>& v1, const Array<M, N>& v2)
 {
   Array<M, N> v;
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] = v1.data[i] + v2.data[i];
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 Array<M, N> operator-(const Array<M, N>& v1, const Array<M, N>& v2)
 {
   Array<M, N> v;
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] = v1.data[i] - v2.data[i];
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 Array<M, N> operator*(const Array<M, N>& v1, double factor)
 {
   Array<M, N> v;
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] = v1.data[i] * factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 Array<M, N> operator*(const Array<M, N>& v1, ComplexD factor)
 {
   Array<M, N> v;
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] = v1.data[i] * factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 Array<M, N> operator*(double factor, const Array<M, N>& v1)
 {
   Array<M, N> v;
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] = v1.data[i] * factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 Array<M, N> operator*(ComplexD factor, const Array<M, N>& v1)
 {
   Array<M, N> v;
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.data[i] = v1.data[i] * factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 void setZero(Array<M, N>& v)
 {
   memset(v.data, 0, N * sizeof(M));
@@ -154,11 +154,11 @@ void setZero(std::vector<M>& v)
 
 void print(const ComplexD& v) { printf("%.16E:+%.16E", v.real(), v.imag()); }
 
-template <class M, int N>
+template <class M, Int N>
 void print(const Array<M, N>& v)
 {
   printf("Array:");
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     printf(" ");
     print(v[i]);
   }
@@ -179,7 +179,7 @@ template <class M>
 inline bool notnanDoubles(const M& x)
 {
   const double* v = (const double*)&x;
-  for (int i = 0; i < sizeof(M) / sizeof(double); ++i) {
+  for (Int i = 0; i < sizeof(M) / sizeof(double); ++i) {
     if (isnan(v[i])) {
       return false;
     }
@@ -194,9 +194,9 @@ inline bool notnan(const GridComm<M>& gc)
 {
   const Geometry& geo = gc.getGeometry();
   for (Long index = 0; index < geo.localVolume(); ++index) {
-    int xl[4];
+    Int xl[4];
     geo.coordinateFromIndex(xl, index);
-    for (int m = 0; m < geo.multiplicity; ++m) {
+    for (Int m = 0; m < geo.multiplicity; ++m) {
       if (!notnan(gc.getElemV(xl, m))) {
         return false;
       }
@@ -207,26 +207,26 @@ inline bool notnan(const GridComm<M>& gc)
 
 struct Coordinate {
  public:
-  int x[4];
+  Int x[4];
   //
   Coordinate() { memset(x, 0, 4 * sizeof(int)); }
-  Coordinate(int x_, int y_, int z_, int t_) { init(x_, y_, z_, t_); }
-  Coordinate(const int x_[4]) { init(x_); }
-  void init(int x_, int y_, int z_, int t_)
+  Coordinate(Int x_, Int y_, Int z_, Int t_) { init(x_, y_, z_, t_); }
+  Coordinate(const Int x_[4]) { init(x_); }
+  void init(Int x_, Int y_, Int z_, Int t_)
   {
     x[0] = x_;
     x[1] = y_;
     x[2] = z_;
     x[3] = t_;
   }
-  void init(const int x_[4]) { memcpy(x, x_, 4 * sizeof(int)); }
+  void init(const Int x_[4]) { memcpy(x, x_, 4 * sizeof(int)); }
   //
-  int& operator[](int mu)
+  Int& operator[](Int mu)
   {
     assert(0 <= mu && mu < 4);
     return x[mu];
   }
-  const int& operator[](int mu) const
+  const Int& operator[](Int mu) const
   {
     assert(0 <= mu && mu < 4);
     return x[mu];
@@ -236,7 +236,7 @@ struct Coordinate {
 inline Coordinate operator+(const Coordinate& c1, const Coordinate& c2)
 {
   Coordinate c;
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     c[mu] = c1[mu] + c2[mu];
   }
   return c;
@@ -245,7 +245,7 @@ inline Coordinate operator+(const Coordinate& c1, const Coordinate& c2)
 inline Coordinate operator-(const Coordinate& c1, const Coordinate& c2)
 {
   Coordinate c;
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     c[mu] = c1[mu] - c2[mu];
   }
   return c;
@@ -254,7 +254,7 @@ inline Coordinate operator-(const Coordinate& c1, const Coordinate& c2)
 inline Coordinate operator%(const Coordinate& c1, const Coordinate& c2)
 {
   Coordinate c;
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     c[mu] = c1[mu] % c2[mu];
   }
   return c;
@@ -270,10 +270,10 @@ inline bool operator!=(const Coordinate& x, const Coordinate& y)
   return 0 != memcmp(x.x, y.x, sizeof(Coordinate));
 }
 
-inline int mod(const int x, const int len)
+inline Int mod(const Int x, const Int len)
 {
   assert(0 < len);
-  const int m = x % len;
+  const Int m = x % len;
   if (0 <= m) {
     return m;
   } else {
@@ -281,10 +281,10 @@ inline int mod(const int x, const int len)
   }
 }
 
-inline int signMod(const int x, const int len)
+inline Int signMod(const Int x, const Int len)
 {
   assert(0 < len);
-  const int m = mod(x, len);
+  const Int m = mod(x, len);
   if (m * 2 < len) {
     return m;
   } else {
@@ -292,21 +292,21 @@ inline int signMod(const int x, const int len)
   }
 }
 
-inline int middleMod(const int x, const int y, const int len)
+inline Int middleMod(const Int x, const Int y, const Int len)
 {
   assert(0 < len);
-  const int xm = mod(x, len);
-  const int ym = mod(y, len);
+  const Int xm = mod(x, len);
+  const Int ym = mod(y, len);
   if (xm <= ym) {
-    const int r = signMod(ym - xm, len);
+    const Int r = signMod(ym - xm, len);
     return mod(xm + r / 2, len);
   } else {
-    const int r = signMod(xm - ym, len);
+    const Int r = signMod(xm - ym, len);
     return mod(ym + r / 2, len);
   }
 }
 
-inline double modf(const double x, const int len)
+inline double modf(const double x, const Int len)
 {
   assert(0 < len);
   const double m = std::fmod(x, len);
@@ -317,7 +317,7 @@ inline double modf(const double x, const int len)
   }
 }
 
-inline double signModf(const double x, const int len)
+inline double signModf(const double x, const Int len)
 {
   assert(0 < len);
   const double m = modf(x, len);
@@ -328,7 +328,7 @@ inline double signModf(const double x, const int len)
   }
 }
 
-inline double middleModf(const double x, const double y, const int len)
+inline double middleModf(const double x, const double y, const Int len)
 {
   assert(0 < len);
   const double xm = modf(x, len);
@@ -342,7 +342,7 @@ inline double middleModf(const double x, const double y, const int len)
   }
 }
 
-inline void regularizeCoordinate(int x[4], const int size[4])
+inline void regularizeCoordinate(Int x[4], const Int size[4])
 {
   x[0] = mod(x[0], size[0]);
   x[1] = mod(x[1], size[1]);
@@ -350,33 +350,33 @@ inline void regularizeCoordinate(int x[4], const int size[4])
   x[3] = mod(x[3], size[3]);
 }
 
-inline void regularizeCoordinateG(int xg[4], const Geometry& geo)
+inline void regularizeCoordinateG(Int xg[4], const Geometry& geo)
 {
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     xg[mu] = mod(xg[mu], geo.totalSite(mu));
   }
 }
 
-inline void relativeCoordinateG(int xgrel[4], const Geometry& geo,
-                                const int xg[4], const int xgref[4])
+inline void relativeCoordinateG(Int xgrel[4], const Geometry& geo,
+                                const Int xg[4], const Int xgref[4])
 {
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     xgrel[mu] = signMod(xg[mu] - xgref[mu], geo.totalSite(mu));
   }
 }
 
-inline void absolueCoordinateG(int xg[4], const Geometry& geo,
-                               const int xgrel[4], const int xgref[4])
+inline void absolueCoordinateG(Int xg[4], const Geometry& geo,
+                               const Int xgrel[4], const Int xgref[4])
 {
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     xg[mu] = mod(xgrel[mu] + xgref[mu], geo.totalSite(mu));
   }
 }
 
-inline void middleCoordinateG(int xmg[4], const Geometry& geo, const int x1g[4],
-                              const int x2g[4])
+inline void middleCoordinateG(Int xmg[4], const Geometry& geo, const Int x1g[4],
+                              const Int x2g[4])
 {
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     xmg[mu] = middleMod(x1g[mu], x2g[mu], geo.totalSite(mu));
   }
 }
@@ -395,21 +395,21 @@ inline Coordinate mkCoordinateFromRefRel(const Geometry& geo,
   return c;
 }
 
-inline Long distance2RelativeCoordinateG(const int xg[4])
+inline Long distance2RelativeCoordinateG(const Int xg[4])
 {
   return sqr((Long)xg[0]) + sqr((Long)xg[1]) + sqr((Long)xg[2]) +
          sqr((Long)xg[3]);
 }
 
-inline double distanceRelativeCoordinateG(const int xg[4])
+inline double distanceRelativeCoordinateG(const Int xg[4])
 {
   return sqrt(distance2RelativeCoordinateG(xg));
 }
 
-inline Long distance2TwoCoordinateG(const int xg1[4], const int xg2[4],
+inline Long distance2TwoCoordinateG(const Int xg1[4], const Int xg2[4],
                                     const Geometry& geo)
 {
-  int xgref[4];
+  Int xgref[4];
   relativeCoordinateG(xgref, geo, xg1, xg2);
   return distance2RelativeCoordinateG(xgref);
 }
@@ -422,7 +422,7 @@ inline Long distance2TwoCoordinateG(const Coordinate& xg1,
   return distance2RelativeCoordinateG(xgref.x);
 }
 
-inline void coordinateFromIndex(int x[4], Long index, const int size[4])
+inline void coordinateFromIndex(Int x[4], Long index, const Int size[4])
 {
   x[0] = index % size[0];
   index /= size[0];
@@ -433,7 +433,7 @@ inline void coordinateFromIndex(int x[4], Long index, const int size[4])
   x[3] = index % size[3];
 }
 
-inline Long indexFromCoordinate(const int x[4], const int size[4])
+inline Long indexFromCoordinate(const Int x[4], const Int size[4])
 {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
@@ -445,7 +445,7 @@ inline void sumDoubleArray(double* vs, const Long n_elem)
 #endif
 }
 
-inline int sumArray(Long* recv, const Long* send, const Long n_elem)
+inline Int sumArray(Long* recv, const Long* send, const Long n_elem)
 {
 #ifdef USE_QMP
   return mpi_allreduce((Long*)send, recv, n_elem, MPI_LONG, MPI_SUM,
@@ -456,7 +456,7 @@ inline int sumArray(Long* recv, const Long* send, const Long n_elem)
 #endif
 }
 
-inline int sumArray(double* recv, const double* send, const Long n_elem)
+inline Int sumArray(double* recv, const double* send, const Long n_elem)
 {
 #ifdef USE_QMP
   return mpi_allreduce((double*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM,
@@ -468,10 +468,10 @@ inline int sumArray(double* recv, const double* send, const Long n_elem)
 }
 
 template <class M>
-int sumArray(M* vs, const Long n_elem)
+Int sumArray(M* vs, const Long n_elem)
 {
   // M can be double or long
-  int status = 0;
+  Int status = 0;
 #ifdef USE_QMP
   M tmp[n_elem];
   status = sumArray(tmp, vs, n_elem);
@@ -497,7 +497,7 @@ inline void allGather(void* recvbuf, const void* sendbuf, const Long sendsize)
 #endif
 }
 
-inline void bcast(void* recvbuf, const Long size, const int root = 0)
+inline void bcast(void* recvbuf, const Long size, const Int root = 0)
 {
 #ifdef USE_QMP
   MPI_Bcast(recvbuf, size, MPI_BYTE, root, QMP_COMM_WORLD);
@@ -507,13 +507,13 @@ inline void bcast(void* recvbuf, const Long size, const int root = 0)
 
 struct GeometryNode {
   // About qmp geometry.
-  int numNode;
+  Int numNode;
   // numNode = sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3]
-  int idNode;
+  Int idNode;
   // idNode = UniqueID()
   // 0 <= idNode < numNode
-  int sizeNode[4];
-  int coorNode[4];
+  Int sizeNode[4];
+  Int coorNode[4];
   // 0 <= coorNode[i] < sizeNode[i]
   //
   void init()
@@ -534,7 +534,7 @@ struct GeometryNode {
 #else
     numNode = 1;
     idNode = 0;
-    for (int i = 0; i < 4; i++) {
+    for (Int i = 0; i < 4; i++) {
       sizeNode[i] = 1;
       coorNode[i] = 1;
     }
@@ -562,22 +562,22 @@ API inline const GeometryNode& getGeometryNode()
   return geon;
 }
 
-inline int getNumNode() { return getGeometryNode().numNode; }
+inline Int getNumNode() { return getGeometryNode().numNode; }
 
-inline int getIdNode() { return getGeometryNode().idNode; }
+inline Int getIdNode() { return getGeometryNode().idNode; }
 
 struct GeometryNodeNeighbor {
-  int dest[2][4];
+  Int dest[2][4];
   // dest[dir][mu]
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
   //
   void init()
   {
-    const int* coorNode = getGeometryNode().coorNode;
-    const int* sizeNode = getGeometryNode().sizeNode;
-    for (int mu = 0; mu < 4; mu++) {
-      int coor[4];
+    const Int* coorNode = getGeometryNode().coorNode;
+    const Int* sizeNode = getGeometryNode().sizeNode;
+    for (Int mu = 0; mu < 4; mu++) {
+      Int coor[4];
       memcpy(coor, coorNode, 4 * sizeof(int));
       coor[mu]++;
       regularizeCoordinate(coor, sizeNode);
@@ -592,8 +592,8 @@ struct GeometryNodeNeighbor {
   GeometryNodeNeighbor() { init(); }
 };
 
-API inline int getDataDirMu(void* recv, void* send, const Long size, const int dir,
-                        const int mu)
+API inline Int getDataDirMu(void* recv, void* send, const Long size, const Int dir,
+                        const Int mu)
 {
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
@@ -603,11 +603,11 @@ API inline int getDataDirMu(void* recv, void* send, const Long size, const int d
   timer.flops += size;
 #ifdef USE_QMP
   static GeometryNodeNeighbor geonb;
-  const int idf = geonb.dest[dir][mu];
-  const int idt = geonb.dest[1 - dir][mu];
+  const Int idf = geonb.dest[dir][mu];
+  const Int idt = geonb.dest[1 - dir][mu];
   MPI_Request req;
   MPI_Isend(send, size, MPI_BYTE, idt, 0, QMP_COMM_WORLD, &req);
-  const int ret = mpi_recv(recv, size, MPI_BYTE, idf, 0, QMP_COMM_WORLD);
+  const Int ret = mpi_recv(recv, size, MPI_BYTE, idf, 0, QMP_COMM_WORLD);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 #else
@@ -616,12 +616,12 @@ API inline int getDataDirMu(void* recv, void* send, const Long size, const int d
 #endif
 }
 
-inline int getDataPlusMu(void* recv, void* send, const Long size, const int mu)
+inline Int getDataPlusMu(void* recv, void* send, const Long size, const Int mu)
 {
   return getDataDirMu(recv, send, size, 0, mu);
 }
 
-inline int getDataMinusMu(void* recv, void* send, const Long size, const int mu)
+inline Int getDataMinusMu(void* recv, void* send, const Long size, const Int mu)
 {
   return getDataDirMu(recv, send, size, 1, mu);
 }
@@ -660,11 +660,11 @@ API inline mode_t& defaultDirMode()
   return mode;
 }
 
-inline int checkdir(const std::string& path,
+inline Int checkdir(const std::string& path,
                     const mode_t mode = defaultDirMode())
 {
   TIMER("checkdir");
-  int ret = 0;
+  Int ret = 0;
   while (!doesFileExist(path)) {
     ret = mkdir(path.c_str(), mode);
     sleep(0.001);
@@ -672,7 +672,7 @@ inline int checkdir(const std::string& path,
   return ret;
 }
 
-inline int makedir(const std::string& path,
+inline Int makedir(const std::string& path,
                    const mode_t mode = defaultDirMode())
 {
   TIMER("makedir");
@@ -680,7 +680,7 @@ inline int makedir(const std::string& path,
   return checkdir(path, mode);
 }
 
-inline int Makedir(const std::string& path,
+inline Int Makedir(const std::string& path,
                    const mode_t mode = defaultDirMode())
 {
   TIMER("Makedir");
@@ -690,7 +690,7 @@ inline int Makedir(const std::string& path,
   return checkdir(path, mode);
 }
 
-inline int Mkdir(const std::string& path, const mode_t mode = defaultDirMode())
+inline Int Mkdir(const std::string& path, const mode_t mode = defaultDirMode())
 {
   TIMER("Mkdir");
   Long ret = 0;
@@ -701,7 +701,7 @@ inline int Mkdir(const std::string& path, const mode_t mode = defaultDirMode())
   return ret;
 }
 
-inline int Rmdir(const std::string& path)
+inline Int Rmdir(const std::string& path)
 {
   TIMER("Rmdir");
   Long ret = 0;
@@ -718,7 +718,7 @@ API inline std::string& jobLock()
   return lock;
 }
 
-inline int sleep(const double seconds)
+inline Int sleep(const double seconds)
 {
   return usleep((useconds_t)(seconds * 1.0e6));
 }
@@ -748,8 +748,8 @@ inline std::string showWilsonMatrix(const WilsonMatrix& mat,
                                     bool human_readable = false)
 {
   Float* p = (Float*)&mat;
-  const int sizewm = sizeof(WilsonMatrix) / sizeof(WilsonVector);
-  const int sizewv = sizeof(WilsonVector) / sizeof(Float);
+  const Int sizewm = sizeof(WilsonMatrix) / sizeof(WilsonVector);
+  const Int sizewv = sizeof(WilsonVector) / sizeof(Float);
   std::ostringstream out;
   if (human_readable) {
     out.precision(1);
@@ -758,9 +758,9 @@ inline std::string showWilsonMatrix(const WilsonMatrix& mat,
     out.precision(16);
     out << std::scientific;
   }
-  for (int i = 0; i < sizewm; i++) {
+  for (Int i = 0; i < sizewm; i++) {
     out << p[i * sizewv];
-    for (int j = 1; j < sizewv; j++) {
+    for (Int j = 1; j < sizewv; j++) {
       out << " " << p[i * sizewv + j];
     }
     out << std::endl;
@@ -768,13 +768,13 @@ inline std::string showWilsonMatrix(const WilsonMatrix& mat,
   return out.str();
 }
 
-inline std::string showSpinMatrix(const WilsonMatrix& mat, const int color1 = 0,
-                                  const int color2 = 0,
+inline std::string showSpinMatrix(const WilsonMatrix& mat, const Int color1 = 0,
+                                  const Int color2 = 0,
                                   bool human_readable = false)
 {
   Float* p = (Float*)&mat;
-  const int sizewm = sizeof(WilsonMatrix) / sizeof(WilsonVector);
-  const int sizewv = sizeof(WilsonVector) / sizeof(Float);
+  const Int sizewm = sizeof(WilsonMatrix) / sizeof(WilsonVector);
+  const Int sizewv = sizeof(WilsonVector) / sizeof(Float);
   std::ostringstream out;
   if (human_readable) {
     out.precision(1);
@@ -783,8 +783,8 @@ inline std::string showSpinMatrix(const WilsonMatrix& mat, const int color1 = 0,
     out.precision(16);
     out << std::scientific;
   }
-  for (int i = color1; i < sizewm; i += 3) {
-    for (int j = color2 * 2; j < sizewv; j += 6) {
+  for (Int i = color1; i < sizewm; i += 3) {
+    for (Int j = color2 * 2; j < sizewv; j += 6) {
       out << std::setw(8) << p[i * sizewv + j] << " " << std::setw(8)
           << p[i * sizewv + j + 1] << " ";
     }
@@ -805,8 +805,8 @@ inline std::string showSpinMatrix(const SpinMatrix& mat,
     out.precision(16);
     out << std::scientific;
   }
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (Int i = 0; i < 4; i++) {
+    for (Int j = 0; j < 4; j++) {
       out << std::setw(8) << mat(i, j).real() << " " << std::setw(8)
           << mat(i, j).imag() << " ";
     }
@@ -828,8 +828,8 @@ inline void setUnit(ComplexD& x) { x = 1; }
 inline void setUnit(WilsonMatrix& m)
 {
   setZero(m);
-  for (int s = 0; s < 4; s++) {
-    for (int c = 0; c < 3; c++) {
+  for (Int s = 0; s < 4; s++) {
+    for (Int c = 0; c < 3; c++) {
       m(s, c, s, c) = 1.0;
     }
   }
@@ -838,7 +838,7 @@ inline void setUnit(WilsonMatrix& m)
 inline void setUnit(SpinMatrix& m)
 {
   setZero(m);
-  for (int s = 0; s < 4; s++) {
+  for (Int s = 0; s < 4; s++) {
     m(s, s) = 1.0;
   }
 }
@@ -846,17 +846,17 @@ inline void setUnit(SpinMatrix& m)
 inline void multiplyPlus(SpinMatrix& m, const SpinMatrix& m1,
                          const SpinMatrix& m2)
 {
-  const int dim = 4;
-  for (int i = 0; i < dim; i++) {
-    for (int j = 0; j < dim; j++) {
-      for (int k = 0; k < dim; k++) {
+  const Int dim = 4;
+  for (Int i = 0; i < dim; i++) {
+    for (Int j = 0; j < dim; j++) {
+      for (Int k = 0; k < dim; k++) {
         m(i, j) += m1(i, k) * m2(k, j);
       }
     }
   }
 }
 
-inline SpinMatrix gammaInit(const int dir)
+inline SpinMatrix gammaInit(const Int dir)
 {
   static const char* fname = "gammaInit(sm)";
   VRB.Result(cname, fname, "dir=%d\n", dir);
@@ -900,7 +900,7 @@ inline SpinMatrix gammaInit(const int dir)
   return m;
 }
 
-API inline const SpinMatrix& gamma(const int dir)
+API inline const SpinMatrix& gamma(const Int dir)
 {
   static const char* fname = "gamma(sm)";
   static SpinMatrix gamma0 = gammaInit(0);
@@ -926,7 +926,7 @@ API inline const SpinMatrix& gamma(const int dir)
   return gamma5;
 }
 
-inline SpinMatrix sigmaInit(const int dir)
+inline SpinMatrix sigmaInit(const Int dir)
 {
   TIMER_VERBOSE("sigmaInit");
   switch (dir) {
@@ -941,7 +941,7 @@ inline SpinMatrix sigmaInit(const int dir)
   }
 }
 
-API inline const SpinMatrix& sigma(const int dir)
+API inline const SpinMatrix& sigma(const Int dir)
 {
   static SpinMatrix sigma0 = sigmaInit(0);
   static SpinMatrix sigma1 = sigmaInit(1);
@@ -958,19 +958,19 @@ API inline const SpinMatrix& sigma(const int dir)
   }
 }
 
-inline void gammaLeftPlus(SpinMatrix& m, const SpinMatrix& m1, const int dir)
+inline void gammaLeftPlus(SpinMatrix& m, const SpinMatrix& m1, const Int dir)
 {
   multiplyPlus(m, gamma(dir), m1);
 }
 
-inline void gammaRightPlus(SpinMatrix& m, const SpinMatrix& m1, const int dir)
+inline void gammaRightPlus(SpinMatrix& m, const SpinMatrix& m1, const Int dir)
 {
   multiplyPlus(m, m1, gamma(dir));
 }
 
-inline void gammaLeft(WilsonMatrix& m, const int dir) { m.gl(dir); }
+inline void gammaLeft(WilsonMatrix& m, const Int dir) { m.gl(dir); }
 
-inline void gammaLeft(SpinMatrix& m, const int dir)
+inline void gammaLeft(SpinMatrix& m, const Int dir)
 {
   SpinMatrix m1 = m;
   setZero(m);
@@ -980,8 +980,8 @@ inline void gammaLeft(SpinMatrix& m, const int dir)
 inline ComplexD trace(const WilsonMatrix& m)
 {
   ComplexD t = 0;
-  for (int s = 0; s < 4; s++) {
-    for (int c = 0; c < 3; c++) {
+  for (Int s = 0; s < 4; s++) {
+    for (Int c = 0; c < 3; c++) {
       t += m(s, c, s, c);
     }
   }
@@ -991,7 +991,7 @@ inline ComplexD trace(const WilsonMatrix& m)
 inline ComplexD trace(const SpinMatrix& m)
 {
   ComplexD t = 0;
-  for (int s = 0; s < 4; s++) {
+  for (Int s = 0; s < 4; s++) {
     t += m(s, s);
   }
   return t;

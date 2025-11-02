@@ -17,23 +17,23 @@ void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
                   const double alpha2, const double alpha3);
 
 void prop_smear(Propagator4dT<RealD>& prop, const GaugeFieldT<RealD>& gf1,
-                const double coef, const int step,
+                const double coef, const Int step,
                 const CoordinateD& mom = CoordinateD(),
                 const bool smear_in_time_dir = false);
 
 void prop_smear_qlat_convension(Propagator4dT<RealD>& prop,
                                 const GaugeFieldT<RealD>& gf, const double coef,
-                                const int step,
+                                const Int step,
                                 const CoordinateD& mom = CoordinateD(),
                                 const bool smear_in_time_dir = false,
-                                const int mode = 1);
+                                const Int mode = 1);
 
 void prop_smear_qlat_convension(Propagator4dT<RealF>& prop,
                                 const GaugeFieldT<RealF>& gf, const double coef,
-                                const int step,
+                                const Int step,
                                 const CoordinateD& mom = CoordinateD(),
                                 const bool smear_in_time_dir = false,
-                                const int mode = 1);
+                                const Int mode = 1);
 
 void prop_spatial_smear_no_comm(std::vector<FermionField4d>& ff_vec,
                                 const GaugeField& gf, const RealD coef,

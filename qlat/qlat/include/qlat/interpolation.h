@@ -20,7 +20,7 @@ struct Interpolation {
   //
   Interpolation() { init(); }
   template <class F>
-  Interpolation(const F& f, const double high, const double low, const int size)
+  Interpolation(const F& f, const double high, const double low, const Int size)
   {
     init();
     init(f, high, low, size);
@@ -29,19 +29,19 @@ struct Interpolation {
   //
   void init() { spline = NULL; }
   template <class F>
-  void init(const F& f, const double high, const double low, const int size)
+  void init(const F& f, const double high, const double low, const Int size)
   {
     free();
     spline = gsl_spline_alloc(gsl_interp_cspline, size);
     const double sep = (high - low) / (size - 1);
     std::vector<double> xs(size);
     std::vector<double> ys(size);
-    for (int i = 0; i < size; ++i) {
+    for (Int i = 0; i < size; ++i) {
       const double x = low + sep * i;
       xs[i] = x;
     }
     xs[size - 1] = high;
-    for (int i = 0; i < size; ++i) {
+    for (Int i = 0; i < size; ++i) {
       const double x = xs[i];
       ys[i] = f(x);
     }

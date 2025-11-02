@@ -23,8 +23,8 @@ qacc void set_marks_field_path(CommMarks& marks, const Coordinate xl,
 {
   const Geometry& geo = marks.geo();
   Coordinate xl1 = xl;
-  for (int i = 0; i < (int)path.size(); ++i) {
-    const int dir = path[i];
+  for (Int i = 0; i < (int)path.size(); ++i) {
+    const Int dir = path[i];
     qassert(-DIMN <= dir && dir < DIMN);
     if (0 <= dir) {
       if (not geo.is_local(xl1)) {
@@ -81,11 +81,11 @@ struct API CommPlanKey {
   Int multiplicity;
 };
 
-const int lattice_size_multiplier = 3;
+const Int lattice_size_multiplier = 3;
 // g_offset calculated assume lattice_size_multiplier*total_site
 // (This is a hack, please fix me)
 
-void g_offset_id_node_from_offset(Long& g_offset, int& id_node,
+void g_offset_id_node_from_offset(Long& g_offset, Int& id_node,
                                   const Long offset, const Geometry& geo, const Int multiplicity);
 
 Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo, const Int multiplicity);
@@ -134,7 +134,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
     std::vector<MPI_Request> reqs;
     {
       TIMER("refresh_expanded-comm-init");
-      const int mpi_tag = 10;
+      const Int mpi_tag = 10;
       for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
         const CommMsgInfo& cmi = plan.recv_msg_infos[i];
         mpi_irecv(&recv_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,

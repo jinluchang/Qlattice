@@ -2,7 +2,7 @@
 
 CPS_START_NAMESPACE
 
-inline std::string showIntWP(const int n, const int w, const char pad)
+inline std::string showIntWP(const Int n, const Int w, const char pad)
 {
   std::ostringstream out;
   out << std::setfill(pad) << std::setw(w) << n;
@@ -39,7 +39,7 @@ inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums,
 {
   // Length of chksums should be getNumNode()
   TIMER_FLOPS("dataCRC32");
-  for (int k = 0; k < dsns.size(); k++) {
+  for (Int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb;
   }
   qlat::crc32_t chksums1[getNumNode()];
@@ -48,7 +48,7 @@ inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums,
   }
   memset(chksums, 0, getNumNode() * sizeof(qlat::crc32_t));
   qlat::crc32_t chksum = 0;
-  for (int k = 0; k < dsns.size(); k++) {
+  for (Int k = 0; k < dsns.size(); k++) {
     chksum = qlat::crc32(chksum, dsns[k].data, dsns[k].size * dsns[k].nmemb);
   }
   allGather(chksums, &chksum, sizeof(qlat::crc32_t));
@@ -115,7 +115,7 @@ inline void dataWriteInfo(const std::vector<DataSizeNmemb>& dsns,
                           const std::string& path)
 {
   TIMER_FLOPS("dataWriteInfo");
-  for (int k = 0; k < dsns.size(); k++) {
+  for (Int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb;
   }
   qlat::crc32_t chksums[getNumNode()];
@@ -125,7 +125,7 @@ inline void dataWriteInfo(const std::vector<DataSizeNmemb>& dsns,
     FILE* file = fopen(filename.c_str(), "w");
     fprintf(file, "%X\n", chksum);
     fprintf(file, "\n");
-    for (int i = 0; i < getNumNode(); i++) {
+    for (Int i = 0; i < getNumNode(); i++) {
       fprintf(file, "%X\n", chksums[i]);
     }
     fclose(file);
@@ -136,7 +136,7 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns,
                          const std::string& path)
 {
   TIMER_FLOPS("dataReadInfo");
-  for (int k = 0; k < dsns.size(); k++) {
+  for (Int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb;
   }
   qlat::crc32_t chksums[getNumNode()];
@@ -148,7 +148,7 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns,
     qassert(file != NULL);
     fscanf(file, "%X\n", &chksum_read);
     fscanf(file, "\n");
-    for (int i = 0; i < getNumNode(); i++) {
+    for (Int i = 0; i < getNumNode(); i++) {
       fscanf(file, "%X\n", &chksum_read);
       qassert(chksums[i] == chksum_read);
     }
@@ -162,18 +162,18 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns,
   }
 }
 
-const int DATA_READ_WRITE_FILENAME_WIDTH = 10;
-const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
+const Int DATA_READ_WRITE_FILENAME_WIDTH = 10;
+const Int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
-API inline int& dataWriteParNumber()
+API inline Int& dataWriteParNumber()
 {
-  static int npar = 3;
+  static Int npar = 3;
   return npar;
 }
 
-API inline int& dataReadParNumber()
+API inline Int& dataReadParNumber()
 {
-  static int npar = 3;
+  static Int npar = 3;
   return npar;
 }
 
@@ -182,31 +182,31 @@ inline Long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns,
                              const mode_t mode = defaultDirMode())
 {
   TIMER_VERBOSE_FLOPS("dataWriteParNode");
-  for (int k = 0; k < dsns.size(); k++) {
+  for (Int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
   }
-  const int size_ndir =
+  const Int size_ndir =
       std::min(DATA_READ_WRITE_NUMBER_OF_DIRECTORIES, getNumNode());
   Makedir(path.c_str(), mode);
   if (getIdNode() < DATA_READ_WRITE_NUMBER_OF_DIRECTORIES) {
     makedir((path + "/" + showIntWP(getIdNode(), 2, '0')).c_str(), mode);
   }
-  const int dir_size = (getNumNode() - 1) / size_ndir + 1;
-  const int idDir = getIdNode() / dir_size;
+  const Int dir_size = (getNumNode() - 1) / size_ndir + 1;
+  const Int idDir = getIdNode() / dir_size;
   assert(0 <= idDir && idDir < size_ndir);
   const std::string pathId = path + "/" + showIntWP(idDir, 2, '0');
   checkdir(pathId.c_str(), mode);
   const std::string filename =
       pathId + "/" +
       showIntWP(getIdNode(), DATA_READ_WRITE_FILENAME_WIDTH, '0');
-  const int n_cycle = std::max(1, getNumNode() / dataWriteParNumber());
+  const Int n_cycle = std::max(1, getNumNode() / dataWriteParNumber());
   Long total_bytes = 0;
   {
     TIMER_FLOPS("dataWriteParNode-fwrite");
-    for (int k = 0; k < dsns.size(); k++) {
+    for (Int k = 0; k < dsns.size(); k++) {
       timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
     }
-    for (int i = 0; i < n_cycle; i++) {
+    for (Int i = 0; i < n_cycle; i++) {
       TIMER_VERBOSE_FLOPS("dataWriteParNode-fwrite-flops");
       Long bytes = 0;
       if (getIdNode() % n_cycle == i) {
@@ -215,7 +215,7 @@ inline Long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns,
           makedir(pathId.c_str(), mode);
           file = fopen(filename.c_str(), "w");
         }
-        for (int k = 0; k < dsns.size(); k++) {
+        for (Int k = 0; k < dsns.size(); k++) {
           bytes += dsns[k].size *
                    fwrite(dsns[k].data, dsns[k].size, dsns[k].nmemb, file);
         }
@@ -267,32 +267,32 @@ inline Long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
     return 0;
   }
   TIMER_VERBOSE_FLOPS("dataReadParNode");
-  for (int k = 0; k < dsns.size(); k++) {
+  for (Int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
   }
-  const int size_ndir =
+  const Int size_ndir =
       std::min(DATA_READ_WRITE_NUMBER_OF_DIRECTORIES, getNumNode());
-  const int dir_size = (getNumNode() - 1) / size_ndir + 1;
-  const int idDir = getIdNode() / dir_size;
+  const Int dir_size = (getNumNode() - 1) / size_ndir + 1;
+  const Int idDir = getIdNode() / dir_size;
   assert(0 <= idDir && idDir < size_ndir);
   const std::string pathId = path + "/" + showIntWP(idDir, 2, '0');
   const std::string filename =
       pathId + "/" +
       showIntWP(getIdNode(), DATA_READ_WRITE_FILENAME_WIDTH, '0');
-  const int n_cycle = std::max(1, getNumNode() / dataReadParNumber());
+  const Int n_cycle = std::max(1, getNumNode() / dataReadParNumber());
   Long total_bytes = 0;
   {
     TIMER_FLOPS("dataReadParNode-fread");
-    for (int k = 0; k < dsns.size(); k++) {
+    for (Int k = 0; k < dsns.size(); k++) {
       timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
     }
-    for (int i = 0; i < n_cycle; i++) {
+    for (Int i = 0; i < n_cycle; i++) {
       TIMER_VERBOSE_FLOPS("dataReadParNode-fread-flops");
       Long bytes = 0;
       if (getIdNode() % n_cycle == i) {
         FILE* file = fopen(filename.c_str(), "r");
         assert(NULL != file);
-        for (int k = 0; k < dsns.size(); k++) {
+        for (Int k = 0; k < dsns.size(); k++) {
           bytes += dsns[k].size *
                    fread(dsns[k].data, dsns[k].size, dsns[k].nmemb, file);
         }

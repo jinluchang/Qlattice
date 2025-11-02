@@ -130,8 +130,8 @@ qacc ManyMagneticMoments& operator+=(ManyMagneticMoments& m1,
   return m1;
 }
 
-inline MagneticMoment computeProjection(const int nu, const int rho,
-                                        const int mu,
+inline MagneticMoment computeProjection(const Int nu, const Int rho,
+                                        const Int mu,
                                         const std::vector<double>& integral)
 {
   assert(integral.size() == 5 * 5);
@@ -139,7 +139,7 @@ inline MagneticMoment computeProjection(const int nu, const int rho,
   const SpinMatrix& unit = smc.unit;
   const array<SpinMatrix, 3>& cap_sigmas = smc.cap_sigmas;
   array<SpinMatrix, 5> gammas;
-  for (int i = 0; i < 4; ++i) {
+  for (Int i = 0; i < 4; ++i) {
     gammas[i] = smc.gammas[i];
   }
   gammas[4] = gammas[3] + unit;
@@ -147,15 +147,15 @@ inline MagneticMoment computeProjection(const int nu, const int rho,
       (Complex)0.5 * (unit + gammas[3]);  // proj = (1 + gamma_0) / 2
   SpinMatrix magMat;
   set_zero(magMat);
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 5; ++j) {
+  for (Int i = 0; i < 5; ++i) {
+    for (Int j = 0; j < 5; ++j) {
       magMat += -ii / (4.0 * sqr(PI)) * integral[i * 5 + j] * proj *
                 gammas[nu] * gammas[i] * gammas[rho] * gammas[j] * gammas[mu] *
                 proj;
     }
   }
   MagneticMoment ans;
-  for (int i = 0; i < 3; ++i) {
+  for (Int i = 0; i < 3; ++i) {
     ans[i] = 0.5 * matrix_trace(magMat * cap_sigmas[i])
                        .real();  // indeed should be 0.5, note the proj matrix
   }
@@ -166,9 +166,9 @@ inline ManyMagneticMoments computeProjections(
     const std::vector<double>& integral)
 {
   ManyMagneticMoments ans;
-  for (int nu = 0; nu < 4; ++nu) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int mu = 0; mu < 4; ++mu) {
+  for (Int nu = 0; nu < 4; ++nu) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int mu = 0; mu < 4; ++mu) {
         // ans[y,z,x]
         ans[nu * 16 + rho * 4 + mu] = computeProjection(nu, rho, mu, integral);
       }
@@ -178,7 +178,7 @@ inline ManyMagneticMoments computeProjections(
 }
 
 inline ManyMagneticMoments permuteNuRhoMu(const ManyMagneticMoments& mmm,
-                                          const int i, const int j, const int k)
+                                          const Int i, const Int j, const Int k)
 // i, j, k are different integer, range from 0, 1, 2
 // represent different permutation
 {
@@ -188,9 +188,9 @@ inline ManyMagneticMoments permuteNuRhoMu(const ManyMagneticMoments& mmm,
   assert(i != j && i != k && j != k);
   ManyMagneticMoments ans;
   array<int, 3> nms, oms;
-  for (int nu = 0; nu < 4; ++nu) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int mu = 0; mu < 4; ++mu) {
+  for (Int nu = 0; nu < 4; ++nu) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int mu = 0; mu < 4; ++mu) {
         oms[0] = nu;
         oms[1] = rho;
         oms[2] = mu;
@@ -205,21 +205,21 @@ inline ManyMagneticMoments permuteNuRhoMu(const ManyMagneticMoments& mmm,
   return ans;
 }
 
-qacc const double& get_m_comp(const ManyMagneticMoments& mmm, const int i,
-                              const int rho, const int sigma, const int nu)
+qacc const double& get_m_comp(const ManyMagneticMoments& mmm, const Int i,
+                              const Int rho, const Int sigma, const Int nu)
 {
   return mmm[16 * sigma + 4 * nu + rho][i];
 }
 
-qacc double& get_m_comp(ManyMagneticMoments& mmm, const int i, const int rho,
-                        const int sigma, const int nu)
+qacc double& get_m_comp(ManyMagneticMoments& mmm, const Int i, const Int rho,
+                        const Int sigma, const Int nu)
 {
   return mmm[16 * sigma + 4 * nu + rho][i];
 }
 
 qacc ManyMagneticMoments permute_rho_sigma_nu(const ManyMagneticMoments& mmm,
-                                              const int i, const int j,
-                                              const int k)
+                                              const Int i, const Int j,
+                                              const Int k)
 // i, j, k are different integer, range from 0, 1, 2
 // represent different permutation
 {
@@ -229,13 +229,13 @@ qacc ManyMagneticMoments permute_rho_sigma_nu(const ManyMagneticMoments& mmm,
   assert(i != j && i != k && j != k);
   ManyMagneticMoments ans;
   array<int, 3> oms;
-  for (int nu = 0; nu < 4; ++nu) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int mu = 0; mu < 4; ++mu) {
+  for (Int nu = 0; nu < 4; ++nu) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int mu = 0; mu < 4; ++mu) {
         oms[0] = nu;
         oms[1] = rho;
         oms[2] = mu;
-        for (int a = 0; a < 3; ++a) {
+        for (Int a = 0; a < 3; ++a) {
           get_m_comp(ans, a, oms[i], oms[j], oms[k]) =
               get_m_comp(mmm, a, oms[0], oms[1], oms[2]);
         }
@@ -255,9 +255,9 @@ inline std::string showManyMagneticMoments(const ManyMagneticMoments& mmm)
   const double sqrt_qnorm = std::sqrt(qnorm(mmm));
   std::ostringstream out;
   out << "qnorm = " << show(sqrt_qnorm) << std::endl;
-  for (int nu = 0; nu < 4; ++nu) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int mu = 0; mu < 4; ++mu) {
+  for (Int nu = 0; nu < 4; ++nu) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int mu = 0; mu < 4; ++mu) {
         const MagneticMoment& mm = mmm[nu * 16 + rho * 4 + mu];
         out << show(nu) + show(rho) + show(mu) << " "
             << ssprintf("%9.6f", std::sqrt(qnorm(mm)) / sqrt_qnorm) << " "
@@ -277,13 +277,13 @@ inline ManyMagneticMoments averageManyMagneticMoments(
   if (size > 0) {
     for (size_t i = 0; i < size; ++i) {
       for (size_t m = 0; m < 4 * 4 * 4; ++m) {
-        for (int k = 0; k < 3; ++k) {
+        for (Int k = 0; k < 3; ++k) {
           mmm[m][k] += mmms[i][m][k];
         }
       }
     }
     for (size_t m = 0; m < 4 * 4 * 4; ++m) {
-      for (int k = 0; k < 3; ++k) {
+      for (Int k = 0; k < 3; ++k) {
         mmm[m][k] /= (double)size;
       }
     }
@@ -305,8 +305,8 @@ inline void test_projection()
   std::vector<double> integral(25);
   set_zero(integral);
   RngState rs("test_projection");
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 5; ++j) {
+  for (Int i = 0; i < 5; ++i) {
+    for (Int j = 0; j < 5; ++j) {
       if (3 > i && 3 > j) {
         integral[i * 5 + j] = u_rand_gen(rs);
       }

@@ -26,14 +26,14 @@ void check_time_limit(const double budget = get_time_budget());
 
 void check_stop(const std::string& fn = "stop.txt");
 
-int mkdir_lock(const std::string& path, const mode_t mode = default_dir_mode());
+Int mkdir_lock(const std::string& path, const mode_t mode = default_dir_mode());
 
-int mkdir_lock_all_node(const std::string& path,
+Int mkdir_lock_all_node(const std::string& path,
                         const mode_t mode = default_dir_mode());
 
-int rmdir_lock(const std::string& path);
+Int rmdir_lock(const std::string& path);
 
-int rmdir_lock_all_node(const std::string& path);
+Int rmdir_lock_all_node(const std::string& path);
 
 void check_sigterm();
 

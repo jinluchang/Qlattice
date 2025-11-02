@@ -32,7 +32,7 @@ inline std::string get_job_path(const std::string& job_tag)
   return "results/" + job_tag;
 }
 
-inline std::string get_job_path(const std::string& job_tag, const int traj)
+inline std::string get_job_path(const std::string& job_tag, const Int traj)
 {
   return get_job_path(job_tag) + ssprintf("/results=%d", traj);
 }
@@ -58,7 +58,7 @@ inline void setup(const std::string& job_tag)
   }
 }
 
-inline void setup(const std::string& job_tag, const int traj)
+inline void setup(const std::string& job_tag, const Int traj)
 {
   const std::string job_path = get_job_path(job_tag, traj);
   qmkdir_info("results");
@@ -74,48 +74,48 @@ inline void setup(const std::string& job_tag, const int traj)
 
 // -----------------------------------------------------------------------------------
 
-inline std::vector<int> get_traj_list(const std::string& job_tag)
+inline std::vector<Int> get_traj_list(const std::string& job_tag)
 {
   TIMER_VERBOSE("get_traj_list");
-  std::vector<int> ret;
+  std::vector<Int> ret;
   if (job_tag.substr(0, 5) == "free-") {
-    for (int traj = 1000; traj < 1020; traj += 10) {
+    for (Int traj = 1000; traj < 1020; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag.substr(0, 5) == "test-") {
-    for (int traj = 1000; traj < 1020; traj += 10) {
+    for (Int traj = 1000; traj < 1020; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "16I-0.01") {
-    for (int traj = 1000; traj <= 4000; traj += 100) {
+    for (Int traj = 1000; traj <= 4000; traj += 100) {
       ret.push_back(traj);
     }
   } else if (job_tag == "24I-0.01") {
-    for (int traj = 2700; traj <= 8500; traj += 100) {
+    for (Int traj = 2700; traj <= 8500; traj += 100) {
       ret.push_back(traj);
     }
   } else if (job_tag == "48I-0.00078") {
-    for (int traj = 500; traj <= 3000; traj += 10) {
+    for (Int traj = 500; traj <= 3000; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "64I-0.000678") {
-    for (int traj = 1000; traj <= 3000; traj += 10) {
+    for (Int traj = 1000; traj <= 3000; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "24D-0.00107") {
-    for (int traj = 1000; traj <= 4000; traj += 10) {
+    for (Int traj = 1000; traj <= 4000; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "24D-0.0174") {
-    for (int traj = 1000; traj >= 200; traj -= 10) {
+    for (Int traj = 1000; traj >= 200; traj -= 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "32D-0.00107") {
-    for (int traj = 680; traj <= 2000; traj += 10) {
+    for (Int traj = 680; traj <= 2000; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "32Dfine-0.0001") {
-    for (int traj = 2000; traj >= 200; traj -= 10) {
+    for (Int traj = 2000; traj >= 200; traj -= 10) {
       ret.push_back(traj);
     }
   } else {
@@ -162,7 +162,7 @@ inline Geometry get_geo(const std::string& job_tag)
   return geo;
 }
 
-inline std::string get_config_fn(const std::string& job_tag, const int traj)
+inline std::string get_config_fn(const std::string& job_tag, const Int traj)
 {
   std::string fn("");
   if (job_tag.substr(0, 5) == "free-" or job_tag.substr(0, 5) == "test-") {
@@ -290,7 +290,7 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
 }
 
 inline Long load_configuration(GaugeField& gf, const std::string& job_tag,
-                               const int traj)
+                               const Int traj)
 {
   TIMER_VERBOSE("load_configuration");
   Long file_size = 0;
@@ -304,7 +304,7 @@ inline Long load_configuration(GaugeField& gf, const std::string& job_tag,
     const RngState rs =
         RngState().split(job_tag).split(traj).split("load_configuration");
     set_g_rand_color_matrix_field(gf, rs, 1.0);
-    for (int i = 0; i < 5; ++i) {
+    for (Int i = 0; i < 5; ++i) {
       gf_ape_smear(gf, gf, 0.5);
     }
     file_size += geo.geon.num_node * get_data_size(gf);
@@ -329,7 +329,7 @@ inline bool& is_partially_quench_for_48I_and_64I()
 
 inline std::vector<FermionAction> get_fermion_actions(
     const std::string& job_tag)
-// FermionAction(const double mass_, const int ls_, const double m5_,
+// FermionAction(const double mass_, const Int ls_, const double m5_,
 //     const double mobius_scale_ = 1.0, const bool is_multiplying_dminus_ =
 //     true, bool is_using_zmobius_ = false)
 {
@@ -371,7 +371,7 @@ inline std::vector<FermionAction> get_fermion_actions(
       bs[7] = 5.5498080139636414e+00;
       bs[8] = ComplexD(4.9320961582039766e+00, -3.5559998543638791e+00);
       bs[9] = ComplexD(4.9320961582039766e+00, 3.5559998543638791e+00);
-      for (int i = 0; i < (int)bs.size(); i++) {
+      for (Int i = 0; i < (int)bs.size(); i++) {
         fas[0].bs[i] = bs[i];
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
         fas[1].bs[i] = bs[i];
@@ -403,7 +403,7 @@ inline std::vector<FermionAction> get_fermion_actions(
       omega[9] = ComplexD(0.05608303440064219, 0.007537158177840385);
       omega[10] = ComplexD(0.0365221637144842, -0.03343945161367745);
       omega[11] = ComplexD(0.0365221637144842, 0.03343945161367745);
-      for (int i = 0; i < (int)omega.size(); i++) {
+      for (Int i = 0; i < (int)omega.size(); i++) {
         fas[0].bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
       }
@@ -419,7 +419,7 @@ inline std::vector<FermionAction> get_fermion_actions(
     fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0 / 12.0, true, true));
     {
       std::vector<ComplexD> omega(12, 0.375);
-      for (int i = 0; i < (int)omega.size(); i++) {
+      for (Int i = 0; i < (int)omega.size(); i++) {
         fas[0].bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
       }
@@ -464,7 +464,7 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
 }
 
 inline std::string make_low_modes_path(const std::string& job_tag,
-                                       const int traj)
+                                       const Int traj)
 {
   qmkdir_info("lancs");
   qmkdir_info(ssprintf("lancs/%s", job_tag.c_str()));
@@ -473,7 +473,7 @@ inline std::string make_low_modes_path(const std::string& job_tag,
 }
 
 inline std::string get_low_modes_path(const std::string& job_tag,
-                                      const int traj)
+                                      const Int traj)
 {
   TIMER_VERBOSE("get_low_modes_path");
   if (job_tag.substr(0, 5) == "free-") {

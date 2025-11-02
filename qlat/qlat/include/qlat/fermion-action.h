@@ -8,13 +8,13 @@ namespace qlat
 struct API FermionAction {
   bool initialized;
   double mass;
-  int ls;
+  Int ls;
   double m5;
   double mobius_scale;  // b+c, b-c=1.0
   bool is_multiplying_dminus;
   //
   bool is_using_zmobius;
-  int cg_diagonal_mee;
+  Int cg_diagonal_mee;
   std::vector<ComplexD> bs;
   std::vector<ComplexD> cs;
   //
@@ -33,7 +33,7 @@ struct API FermionAction {
   }
   //
   FermionAction() { init(); }
-  FermionAction(const double mass_, const int ls_, const double m5_,
+  FermionAction(const double mass_, const Int ls_, const double m5_,
                 const double mobius_scale_ = 1.0,
                 const bool is_multiplying_dminus_ = true,
                 bool is_using_zmobius_ = false)

@@ -267,7 +267,7 @@ Long read_skip(FieldsReader& fr, const std::string& fn);
 
 Long check_file(FieldsReader& fr, const std::string& fn, const bool is_check_data);
 
-int flush(FieldsWriter& fw);
+Int flush(FieldsWriter& fw);
 
 // -----------------
 
@@ -352,7 +352,7 @@ void set_field_from_data(SelectedField<M>& sf, FieldRank& f_rank,
   qassert(sz_compressed % n_elems == 0);
   const size_t sz_block = sz_compressed / n_elems;
   qassert(sz_block % sizeof(M) == 0);
-  const int multiplicity = sz_block / sizeof(M);
+  const Int multiplicity = sz_block / sizeof(M);
   const Vector<M> fdata((const M*)&data[nbytes], n_elems * multiplicity);
   sf.init(geo, n_elems, multiplicity);
   assign(get_data(sf), fdata);
@@ -634,7 +634,7 @@ std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr, bool is_sk
 
 std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_skipping_check = false);
 
-int truncate_fields_sync_node(const std::string& path,
+Int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
                               const Coordinate& new_size_node = Coordinate());
 
@@ -695,11 +695,11 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
   Long total_bytes = 0;
-  const int num_node = product(sfw.new_size_node);
-  const int n_cycle = std::max(1, num_node / dist_write_par_limit());
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
-    for (int i = 0; i < (int)fs.size(); ++i) {
-      const int id_node = sfw.fws[i].geon.id_node;
+  const Int num_node = product(sfw.new_size_node);
+  const Int n_cycle = std::max(1, num_node / dist_write_par_limit());
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
+    for (Int i = 0; i < (int)fs.size(); ++i) {
+      const Int id_node = sfw.fws[i].geon.id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         total_bytes += write(sfw.fws[i], fn, fs[i]);
@@ -728,11 +728,11 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   qassert(sfs.size() == sfw.fws.size());
   qassert(sbs.vbs.size() == sfw.fws.size());
   Long total_bytes = 0;
-  const int num_node = product(sfw.new_size_node);
-  const int n_cycle = std::max(1, num_node / dist_write_par_limit());
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
-    for (int i = 0; i < (int)sfs.size(); ++i) {
-      const int id_node = sfw.fws[i].geon.id_node;
+  const Int num_node = product(sfw.new_size_node);
+  const Int n_cycle = std::max(1, num_node / dist_write_par_limit());
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
+    for (Int i = 0; i < (int)sfs.size(); ++i) {
+      const Int id_node = sfw.fws[i].geon.id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
@@ -755,25 +755,25 @@ void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
   total_site = Coordinate();
   multiplicity = 0;
   std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
-  for (int i = 0; i < (int)fs.size(); ++i) {
-    const int id_node = sfr.frs[i].geon.id_node;
+  for (Int i = 0; i < (int)fs.size(); ++i) {
+    const Int id_node = sfr.frs[i].geon.id_node;
     qassert(0 <= id_node and id_node < (int)available_nodes.size());
     if (fs[i].initialized) {
       available_nodes[id_node] = get_id_node() + 1;
     }
   }
   glb_sum(available_nodes);
-  int id_node_first_available = 0;
-  int id_node_bcast_from = 0;
-  for (int i = 0; i < (int)available_nodes.size(); ++i) {
+  Int id_node_first_available = 0;
+  Int id_node_bcast_from = 0;
+  for (Int i = 0; i < (int)available_nodes.size(); ++i) {
     if (available_nodes[i] > 0) {
       id_node_first_available = i;
       id_node_bcast_from = available_nodes[i] - 1;
       break;
     }
   }
-  for (int i = 0; i < (int)fs.size(); ++i) {
-    const int id_node = sfr.frs[i].geon.id_node;
+  for (Int i = 0; i < (int)fs.size(); ++i) {
+    const Int id_node = sfr.frs[i].geon.id_node;
     if (id_node == id_node_first_available) {
       total_site = fs[i].geo().total_site();
       multiplicity = fs[i].multiplicity;
@@ -782,7 +782,7 @@ void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
   }
   bcast(get_data_one_elem(total_site), id_node_bcast_from);
   bcast(get_data_one_elem(multiplicity), id_node_bcast_from);
-  for (int i = 0; i < (int)fs.size(); ++i) {
+  for (Int i = 0; i < (int)fs.size(); ++i) {
     if (not fs[i].initialized) {
       const GeometryNode& geon = sfr.frs[i].geon;
       const Coordinate node_site = total_site / geon.size_node;
@@ -803,25 +803,25 @@ void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
   total_site = Coordinate();
   multiplicity = 0;
   std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const int id_node = sfr.frs[i].geon.id_node;
+  for (Int i = 0; i < (int)sfs.size(); ++i) {
+    const Int id_node = sfr.frs[i].geon.id_node;
     qassert(0 <= id_node and id_node < (int)available_nodes.size());
     if (is_initialized(sfs[i])) {
       available_nodes[id_node] = get_id_node() + 1;
     }
   }
   glb_sum(available_nodes);
-  int id_node_first_available = 0;
-  int id_node_bcast_from = 0;
-  for (int i = 0; i < (int)available_nodes.size(); ++i) {
+  Int id_node_first_available = 0;
+  Int id_node_bcast_from = 0;
+  for (Int i = 0; i < (int)available_nodes.size(); ++i) {
     if (available_nodes[i] > 0) {
       id_node_first_available = i;
       id_node_bcast_from = available_nodes[i] - 1;
       break;
     }
   }
-  for (int i = 0; i < (int)sfs.size(); ++i) {
-    const int id_node = sfr.frs[i].geon.id_node;
+  for (Int i = 0; i < (int)sfs.size(); ++i) {
+    const Int id_node = sfr.frs[i].geon.id_node;
     if (id_node == id_node_first_available) {
       qassert(is_initialized(sfs[i]));
       total_site = sfs[i].geo().total_site();
@@ -831,7 +831,7 @@ void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
   }
   bcast(get_data_one_elem(total_site), id_node_bcast_from);
   bcast(get_data_one_elem(multiplicity), id_node_bcast_from);
-  for (int i = 0; i < (int)sfs.size(); ++i) {
+  for (Int i = 0; i < (int)sfs.size(); ++i) {
     if (not sfs[i].initialized) {
       const GeometryNode& geon = sfr.frs[i].geon;
       const Coordinate node_site = total_site / geon.size_node;
@@ -853,11 +853,11 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<Field<M>> fs(sfr.frs.size());
   Long zero_size_count = 0;
-  const int num_node = product(sfr.new_size_node);
-  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
-    for (int i = 0; i < (int)fs.size(); ++i) {
-      const int id_node = sfr.frs[i].geon.id_node;
+  const Int num_node = product(sfr.new_size_node);
+  const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
+    for (Int i = 0; i < (int)fs.size(); ++i) {
+      const Int id_node = sfr.frs[i].geon.id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         const Long bytes = read(sfr.frs[i], fn, fs[i]);
@@ -881,7 +881,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
     return 0;
   }
   Coordinate total_site;
-  int multiplicity = 0;
+  Int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, fs, sfr);
   Geometry geo;
   geo.init(total_site);
@@ -903,11 +903,11 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
   std::vector<SelectedField<M>> sfs(sfr.frs.size());
   std::vector<Field<int64_t>> f_rank_s(sfr.frs.size());
   Long zero_size_count = 0;
-  const int num_node = product(sfr.new_size_node);
-  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
-    for (int i = 0; i < (int)sfs.size(); ++i) {
-      const int id_node = sfr.frs[i].geon.id_node;
+  const Int num_node = product(sfr.new_size_node);
+  const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
+    for (Int i = 0; i < (int)sfs.size(); ++i) {
+      const Int id_node = sfr.frs[i].geon.id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         FieldRank& f_rank = static_cast<FieldRank&>(f_rank_s[i]);
@@ -932,7 +932,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
     return 0;
   }
   Coordinate total_site;
-  int multiplicity = 0;
+  Int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
   const Geometry geo(total_site);
   fsel.f_rank.init(geo, 1);
@@ -959,11 +959,11 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
                           fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M>> sfs(sfr.frs.size());
   Long zero_size_count = 0;
-  const int num_node = product(sfr.new_size_node);
-  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
-    for (int i = 0; i < (int)sfs.size(); ++i) {
-      const int id_node = sfr.frs[i].geon.id_node;
+  const Int num_node = product(sfr.new_size_node);
+  const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
+    for (Int i = 0; i < (int)sfs.size(); ++i) {
+      const Int id_node = sfr.frs[i].geon.id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         const Long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
@@ -987,7 +987,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
     return 0;
   }
   Coordinate total_site;
-  int multiplicity = 0;
+  Int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
   qassert(total_site != Coordinate());
   qassert(multiplicity > 0);

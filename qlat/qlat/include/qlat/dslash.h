@@ -106,7 +106,7 @@ void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm);
 
 void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm);
 
-void benchmark_deflate(const Geometry& geo, const int ls,
+void benchmark_deflate(const Geometry& geo, const Int ls,
                        const Coordinate& block_site, const Long neig,
                        const Long nkeep, const RngState& rs);
 
@@ -114,9 +114,9 @@ struct InverterParams {
   double stop_rsd;
   Long max_num_iter;
   Long max_mixed_precision_cycle;
-  int solver_type;  // 0 -> CG, 1-> EIGCG, 2->MSPCG
-  int higher_precision;
-  int lower_precision;
+  Int solver_type;  // 0 -> CG, 1-> EIGCG, 2->MSPCG
+  Int higher_precision;
+  Int lower_precision;
   //
   void init()
   {
@@ -233,12 +233,12 @@ void multiply_m_full(FermionField5d& out, const FermionField5d& in,
                      const InverterDomainWall& inv);
 
 void get_half_fermion(FermionField5d& half, const FermionField5d& ff,
-                      const int eo);
+                      const Int eo);
 
 void set_half_fermion(FermionField5d& ff, const FermionField5d& half,
-                      const int eo);
+                      const Int eo);
 
-void project_eo(FermionField5d& ff, const int eo);
+void project_eo(FermionField5d& ff, const Int eo);
 
 void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
                     const FermionAction& fa);
@@ -300,12 +300,12 @@ void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
                        const InverterDomainWall& inv);
 
 void multiply_m_eo_eo(FermionField5d& out, const FermionField5d& in,
-                      const InverterDomainWall& inv, const int eo_out,
-                      const int eo_in);
+                      const InverterDomainWall& inv, const Int eo_out,
+                      const Int eo_in);
 
 void multiply_mdag_eo_eo(FermionField5d& out, const FermionField5d& in,
-                         const InverterDomainWall& inv, const int eo_out,
-                         const int eo_in);
+                         const InverterDomainWall& inv, const Int eo_out,
+                         const Int eo_in);
 
 void multiply_m(FermionField5d& out, const FermionField5d& in,
                 const InverterDomainWall& inv);
@@ -491,7 +491,7 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
     tmp.init(in_o_p.geo(), in_o_p.multiplicity);
     itmp = in_o_p;
     double qnorm_itmp = qnorm_in_o_p;
-    int cycle;
+    Int cycle;
     for (cycle = 1; cycle <= max_mixed_precision_cycle; ++cycle) {
       if (not inv.lm.null() and inv.lm().initialized) {
         deflate(tmp, itmp, inv.lm.cast_const());

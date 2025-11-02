@@ -9,7 +9,7 @@ namespace qlat
 void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
                        const PointsSelection& psel_d, const Geometry& geo,
                        const Coordinate& xg_x, const Coordinate& xg_y,
-                       const double a, const int tag);
+                       const double a, const Int tag);
 
 // ------------------------------------------------------------------------
 
@@ -22,11 +22,11 @@ qacc ManyMagneticMoments simple_pion_projection(const CoordinateD& x,
   const CoordinateD y_z = y - z;
   array<array<double, 4>, 3> eps_eps_xyz;
   set_zero(eps_eps_xyz);
-  for (int i = 0; i < 3; ++i) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int j = 0; j < 3; ++j) {
-        for (int k = 0; k < 3; ++k) {
-          for (int m = 0; m < 4; ++m) {
+  for (Int i = 0; i < 3; ++i) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int j = 0; j < 3; ++j) {
+        for (Int k = 0; k < 3; ++k) {
+          for (Int m = 0; m < 4; ++m) {
             eps_eps_xyz[i][rho] += epsilon_tensor_acc(i, j, k) *
                                    epsilon_tensor_acc(rho, k, j, m) *
                                    x_mid_yz[m];
@@ -37,10 +37,10 @@ qacc ManyMagneticMoments simple_pion_projection(const CoordinateD& x,
   }
   array<array<double, 4>, 4> eps_yz_xyz;
   set_zero(eps_yz_xyz);
-  for (int sigma = 0; sigma < 4; ++sigma) {
-    for (int lambda = 0; lambda < 4; ++lambda) {
-      for (int r = 0; r < 4; ++r) {
-        for (int s = 0; s < 4; ++s) {
+  for (Int sigma = 0; sigma < 4; ++sigma) {
+    for (Int lambda = 0; lambda < 4; ++lambda) {
+      for (Int r = 0; r < 4; ++r) {
+        for (Int s = 0; s < 4; ++s) {
           eps_yz_xyz[sigma][lambda] +=
               epsilon_tensor_acc(sigma, lambda, r, s) * y_z[r] * x_mid_yz[s];
         }
@@ -49,10 +49,10 @@ qacc ManyMagneticMoments simple_pion_projection(const CoordinateD& x,
   }
   ManyMagneticMoments ret;
   set_zero(ret);
-  for (int i = 0; i < 3; ++i) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int sigma = 0; sigma < 4; ++sigma) {
-        for (int lambda = 0; lambda < 4; ++lambda) {
+  for (Int i = 0; i < 3; ++i) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int sigma = 0; sigma < 4; ++sigma) {
+        for (Int lambda = 0; lambda < 4; ++lambda) {
           get_m_comp(ret, i, rho, sigma, lambda) =
               0.5 * eps_eps_xyz[i][rho] * eps_yz_xyz[sigma][lambda];
         }
@@ -70,10 +70,10 @@ qacc ManyMagneticMoments pion_projection(const CoordinateD& x,
 {
   const ManyMagneticMoments mmm = simple_pion_projection(x, y, z);
   double sum = 0.0;
-  for (int i = 0; i < 3; ++i) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int sigma = 0; sigma < 4; ++sigma) {
-        for (int lambda = 0; lambda < 4; ++lambda) {
+  for (Int i = 0; i < 3; ++i) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int sigma = 0; sigma < 4; ++sigma) {
+        for (Int lambda = 0; lambda < 4; ++lambda) {
           sum += sqr(get_m_comp(mmm, i, rho, sigma, lambda));
         }
       }
@@ -137,7 +137,7 @@ struct CurrentMoments {
   // total_site[j]) * d[ xg[j] ][3*j + k]
   //
   void init() { clear(d); }
-  void init(const int lsize)
+  void init(const Int lsize)
   {
     init();
     d.resize(lsize);
@@ -150,17 +150,17 @@ qacc array<M, 3> simple_moment(const CurrentMoments<M>& cm,
                                const CoordinateD& ref,
                                const Coordinate& total_site)
 {
-  const int lsize =
+  const Int lsize =
       std::max(total_site[0], std::max(total_site[1], total_site[2]));
   array<M, 3> ret;
   set_zero(ret);
-  for (int x = 0; x < lsize; ++x) {
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 3; ++j) {
+  for (Int x = 0; x < lsize; ++x) {
+    for (Int i = 0; i < 3; ++i) {
+      for (Int j = 0; j < 3; ++j) {
         if (i == j) {
           continue;
         }
-        for (int k = 0; k < 3; ++k) {
+        for (Int k = 0; k < 3; ++k) {
           if (i == k or j == k) {
             continue;
           }
@@ -188,12 +188,12 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
   const RealD sub_coef = 1.0 - weight;
   const Vector<M> cv = current.get_elems_const(idx);
   array<M, 3> ret = simple_moment(cm, ref, total_site);
-  for (int i = 0; i < 3; ++i) {
-    for (int j = 0; j < 3; ++j) {
+  for (Int i = 0; i < 3; ++i) {
+    for (Int j = 0; j < 3; ++j) {
       if (i == j) {
         continue;
       }
-      for (int k = 0; k < 3; ++k) {
+      for (Int k = 0; k < 3; ++k) {
         if (i == k or j == k) {
           continue;
         }
@@ -333,7 +333,7 @@ inline std::vector<std::string> contract_four_pair_labels(
 {
   TIMER_VERBOSE("contract_four_pair_labels");
   std::vector<std::string> labels;
-  for (int i = 0; i < (int)tags.size(); ++i) {
+  for (Int i = 0; i < (int)tags.size(); ++i) {
     std::string label = tags[i] + " proj-all";
     std::string label_pi = tags[i] + " proj-pi";
     labels.push_back(label);
@@ -365,7 +365,7 @@ inline std::vector<std::string> contract_two_plus_two_pair_labels()
   tags.push_back("sub pisl");
   tags.push_back("dsub pisl");
   std::vector<std::string> labels;
-  for (int i = 0; i < (int)tags.size(); ++i) {
+  for (Int i = 0; i < (int)tags.size(); ++i) {
     std::string label = tags[i] + " proj-all";
     std::string label_pi = tags[i] + " proj-pi";
     labels.push_back(label);

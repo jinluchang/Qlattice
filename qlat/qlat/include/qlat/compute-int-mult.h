@@ -112,9 +112,9 @@ inline std::vector<double> integrateMuonLine(
   // %25.17E",
   //      coordinateLen(y), yVx[0], yVx[1], yVx[2], yVx[3]));
   std::vector<double> integral, error, prob;
-  const int ncomp = 25;
-  int nregions, fail;
-  long long int neval;
+  const Int ncomp = 25;
+  Int nregions, fail;
+  long long neval;
   // ADJUST ME
   integrateCuhre(integral, error, prob, nregions, neval, fail, 4, ncomp, mlic,
                  eps.epsabs, eps.epsrel, 0, eps.mineval, eps.maxeval);
@@ -127,13 +127,13 @@ inline void profile_computeIntMult()
 {
   TIMER_VERBOSE_FLOPS("profile_computeIntMult");
   RngState rs("profile_computeIntMult");
-  const int size = 4;
+  const Int size = 4;
   const double low = -3.0;
   const double high = 3.0;
   double sum = 0.0;
-  for (int i = 0; i < size; ++i) {
+  for (Int i = 0; i < size; ++i) {
     CoordinateD x, y;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       x[m] = u_rand_gen(rs, high, low);
       y[m] = u_rand_gen(rs, high, low);
     }
@@ -175,8 +175,8 @@ inline void test_computeIntMult()
   // 0.0, -0.3), CoordinateD(0.0, 0.0, 0.0, 0.3));
   // integrateMuonLine(CoordinateD(0.0, 0.0, 0.0, -0.4), CoordinateD(0.0, 0.0,
   // 0.0, 0.4)); integrateMuonLine(CoordinateD(0.0, 0.0, 0.0, -0.1),
-  // CoordinateD(0.0, 0.0, 0.0, 1.0)); for (int i = -3; i <= 3; ++i) {
-  //   for (int j = -3; j <= 3; ++j) {
+  // CoordinateD(0.0, 0.0, 0.0, 1.0)); for (Int i = -3; i <= 3; ++i) {
+  //   for (Int j = -3; j <= 3; ++j) {
   //     const double xt = 30.0 * i;
   //     const double yt = 30.0 * j;
   //     const double v = integrateMuonLine(CoordinateD(0.0, 0.0, 0.0, xt),

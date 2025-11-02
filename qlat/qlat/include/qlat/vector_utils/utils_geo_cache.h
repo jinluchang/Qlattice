@@ -41,8 +41,8 @@ Geometry& get_geo_resize(const Geometry& geo, const Coordinate& gl, const Coordi
 Geometry& get_geo_local(const Geometry& geo, box<Geometry>& geo_BOX);
 
 // read geo into vectors
-void geo_to_nv(const Geometry& geo, std::vector<int >& nv, std::vector<int >& Nv, std::vector<int>& mv);
-void geo_to_nv(const Geometry& geo, vector<int >& nv, vector<int >& Nv, vector<int >& mv);
+void geo_to_nv(const Geometry& geo, std::vector<Int >& nv, std::vector<Int >& Nv, std::vector<Int>& mv);
+void geo_to_nv(const Geometry& geo, vector<Int >& nv, vector<Int >& Nv, vector<Int >& mv);
 
 // buffers for global geo box, will be replaced latter
 struct Gbox_key {

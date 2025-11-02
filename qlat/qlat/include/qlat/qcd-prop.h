@@ -12,8 +12,8 @@ WilsonMatrixT<T> make_wilson_matrix_from_vectors(
     const array<ConstHandle<WilsonVectorT<T>>, 4 * NUM_COLOR>& cols)
 {
   WilsonMatrixT<T> ret;
-  for (int i = 0; i < 4 * NUM_COLOR; ++i) {
-    for (int j = 0; j < 4 * NUM_COLOR; ++j) {
+  for (Int i = 0; i < 4 * NUM_COLOR; ++i) {
+    for (Int j = 0; j < 4 * NUM_COLOR; ++j) {
       ret(j, i) = cols[i]()(j);
     }
   }
@@ -26,7 +26,7 @@ void set_propagator_from_fermion_fields(
 {
   TIMER_VERBOSE("set_propagator_from_fermion_fields");
   const Geometry& geo = ffs[0].geo();
-  for (int i = 0; i < 4 * NUM_COLOR; ++i) {
+  for (Int i = 0; i < 4 * NUM_COLOR; ++i) {
     qassert(geo == ffs[i].geo());
   }
   prop.init(geo_resize(geo));
@@ -35,7 +35,7 @@ void set_propagator_from_fermion_fields(
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     array<ConstHandle<WilsonVectorT<T>>, 4 * NUM_COLOR> cols;
-    for (int k = 0; k < 4 * NUM_COLOR; ++k) {
+    for (Int k = 0; k < 4 * NUM_COLOR; ++k) {
       cols[k].init(ffs[k].get_elem(xl));
     }
     prop.get_elem(xl) = make_wilson_matrix_from_vectors(cols);
@@ -43,17 +43,17 @@ void set_propagator_from_fermion_fields(
 }
 
 template <class T>
-qacc void set_wilson_matrix_col_from_vector(WilsonMatrixT<T>& wm, const int idx,
+qacc void set_wilson_matrix_col_from_vector(WilsonMatrixT<T>& wm, const Int idx,
                                             const WilsonVectorT<T>& col)
 {
-  for (int j = 0; j < 4 * NUM_COLOR; ++j) {
+  for (Int j = 0; j < 4 * NUM_COLOR; ++j) {
     wm(j, idx) = col(j);
   }
 }
 
 template <class T>
 void set_propagator_col_from_fermion_field(Propagator4dT<T>& prop,
-                                           const int idx,
+                                           const Int idx,
                                            const FermionField4dT<T>& ff)
 {
   TIMER("set_propagator_col_from_fermion_field");
@@ -69,9 +69,9 @@ void set_propagator_col_from_fermion_field(Propagator4dT<T>& prop,
 template <class T>
 qacc void set_wilson_vector_from_matrix_col(WilsonVectorT<T>& col,
                                             const WilsonMatrixT<T>& wm,
-                                            const int idx)
+                                            const Int idx)
 {
-  for (int j = 0; j < 4 * NUM_COLOR; ++j) {
+  for (Int j = 0; j < 4 * NUM_COLOR; ++j) {
     col(j) = wm(j, idx);
   }
 }
@@ -79,7 +79,7 @@ qacc void set_wilson_vector_from_matrix_col(WilsonVectorT<T>& col,
 template <class T>
 void set_fermion_field_from_propagator_col(FermionField4dT<T>& ff,
                                            const Propagator4dT<T>& prop,
-                                           const int idx)
+                                           const Int idx)
 {
   TIMER("set_fermion_field_from_propagator_col");
   const Geometry& geo = prop.geo();
@@ -94,8 +94,8 @@ void set_fermion_field_from_propagator_col(FermionField4dT<T>& ff,
 
 template <class T>
 void fermion_field_5d_from_4d(FermionField5dT<T>& ff5d,
-                              const FermionField4dT<T>& ff4d, const int upper,
-                              const int lower)
+                              const FermionField4dT<T>& ff4d, const Int upper,
+                              const Int lower)
 // ff5d need to be initialized
 // upper componets are right handed
 // lower componets are left handed
@@ -103,7 +103,7 @@ void fermion_field_5d_from_4d(FermionField5dT<T>& ff5d,
   TIMER("fermion_field_5d_from_4d");
   const Geometry& geo = ff5d.geo();
   set_zero(ff5d);
-  const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
+  const Int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -116,8 +116,8 @@ void fermion_field_5d_from_4d(FermionField5dT<T>& ff5d,
 
 template <class T>
 void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
-                              const FermionField5dT<T>& ff5d, const int upper,
-                              const int lower)
+                              const FermionField5dT<T>& ff5d, const Int upper,
+                              const Int lower)
 // upper componets are right handed
 // lower componets are left handed
 {
@@ -125,7 +125,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
   const Geometry& geo = ff5d.geo();
   ff4d.init(geo_resize(geo));
   set_zero(ff4d);
-  const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
+  const Int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -144,7 +144,7 @@ void set_prop_from_ff_vec(Propagator4d& prop,
 
 template <class Inverter, class T>
 Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
-                const Inverter& inv, const int ls_ = 0)
+                const Inverter& inv, const Int ls_ = 0)
 // sol do not need to be initialized
 // inv.geo() must be the geometry of the fermion field
 // invert(sol5d, src5d, inv) perform the inversion
@@ -154,7 +154,7 @@ Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
   const Geometry& geo = src.geo();
   qassert(check_matching_geo(geo, inv.geo()));
   sol.init(geo, src.multiplicity);
-  const int ls = ls_ != 0 ? ls_ : inv.fa.ls;
+  const Int ls = ls_ != 0 ? ls_ : inv.fa.ls;
   const Geometry geo_ls = geo_resize(inv.geo());
   FermionField5dT<T> sol5d, src5d;
   sol5d.init(geo_ls, ls);
@@ -178,7 +178,7 @@ void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   const Geometry geo = geo_resize(src.geo());
   sol.init(geo);
   FermionField4dT<T> ff_sol, ff_src;
-  for (int j = 0; j < 4 * NUM_COLOR; ++j) {
+  for (Int j = 0; j < 4 * NUM_COLOR; ++j) {
     set_fermion_field_from_propagator_col(ff_src, src, j);
     invert(ff_sol, ff_src, inv);
     set_propagator_col_from_fermion_field(sol, j, ff_sol);
@@ -186,11 +186,11 @@ void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 }
 
 void set_point_src_fermion_field(FermionField4dT<RealD>& ff,
-                                 const Coordinate& xg, const int cs,
+                                 const Coordinate& xg, const Int cs,
                                  const ComplexD& value = 1.0);
 
 void set_point_src_fermion_field(FermionField4dT<RealF>& ff,
-                                 const Coordinate& xg, const int cs,
+                                 const Coordinate& xg, const Int cs,
                                  const ComplexD& value = 1.0);
 
 void set_point_src(Propagator4dT<RealD>& prop, const Geometry& geo_input,
@@ -209,7 +209,7 @@ void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
   FermionField4dT<T> sol, src;
   sol.init(geo);
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_point_src_fermion_field(src, xg, cs, value);
     set_zero(sol);
     invert(sol, src, inv);
@@ -217,15 +217,15 @@ void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
   }
 }
 
-void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
-                                const CoordinateD& lmom, const int cs);
+void set_wall_src_fermion_field(FermionField4d& ff, const Int tslice,
+                                const CoordinateD& lmom, const Int cs);
 
 void set_wall_src(Propagator4d& prop, const Geometry& geo_input,
-                  const int tslice, const CoordinateD& lmom = CoordinateD());
+                  const Int tslice, const CoordinateD& lmom = CoordinateD());
 
 template <class Inverter>
 void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
-                                    const int tslice,
+                                    const Int tslice,
                                     const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_wall_src_propagator");
@@ -234,7 +234,7 @@ void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
   FermionField4d sol, src;
   sol.init(geo);
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_wall_src_fermion_field(src, tslice, lmom, cs);
     set_zero(sol);
     invert(sol, src, inv);
@@ -265,7 +265,7 @@ void set_rand_vol_u1(Field<ComplexD>& fu1, const Geometry& geo_input,
 void set_rand_vol_u1_src(Propagator4d& prop, const Field<ComplexD>& fu1);
 
 void set_mom_src_fermion_field(FermionField4d& ff, const CoordinateD& lmom,
-                               const int cs);
+                               const Int cs);
 
 void set_mom_src(Propagator4d& prop, const Geometry& geo_input,
                  const CoordinateD& lmom);
@@ -281,7 +281,7 @@ void set_mom_src_propagator(Propagator4d& prop, Inverter& inv,
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_mom_src_fermion_field(src, lmom, cs);
     set_zero(sol);
     invert(sol, src, inv);
@@ -308,7 +308,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
     double wp = 1.0 - m5;
     SpinMatrixT<T> pg;
     set_zero(pg);
-    for (int i = 0; i < DIMN; ++i) {
+    for (Int i = 0; i < DIMN; ++i) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
@@ -376,28 +376,28 @@ void convert_wm_from_mspincolor(SelectedPoints<WilsonMatrix>& prop_wm,
 void convert_mspincolor_from_wm(SelectedPoints<WilsonMatrix>& prop_msc,
                                 const SelectedPoints<WilsonMatrix>& prop_wm);
 
-void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
-                                       const int tslice_flip_tpbc,
-                                       const int t_size);
+void set_t_range_flip_tpbc_with_tslice(int& t_start, Int& t_stop,
+                                       const Int tslice_flip_tpbc,
+                                       const Int t_size);
 
 void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
                            const PointsSelection& psel,
-                           const int tslice_flip_tpbc, const int t_size);
+                           const Int tslice_flip_tpbc, const Int t_size);
 
 void flip_tpbc_with_tslice(SelectedField<WilsonMatrix>& s_prop,
                            const FieldSelection& fsel,
-                           const int tslice_flip_tpbc);
+                           const Int tslice_flip_tpbc);
 
 // -------------------------------------------------------------------------
 
-void set_tslice_mom_src_fermion_field(FermionField4d& ff, const int tslice,
-                                      const CoordinateD& lmom, const int cs);
+void set_tslice_mom_src_fermion_field(FermionField4d& ff, const Int tslice,
+                                      const CoordinateD& lmom, const Int cs);
 
 void set_tslice_mom_src(Propagator4d& prop, const Geometry& geo_input,
-                        const int tslice, const CoordinateD& lmom);
+                        const Int tslice, const CoordinateD& lmom);
 
 template <class Inverter>
-void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
+void set_tslice_mom_src_propagator(Propagator4d& prop, const Int tslice,
                                    const CoordinateD& lmom, Inverter& inverter)
 {
   TIMER_VERBOSE("set_tslice_mom_src_propagator");
@@ -407,7 +407,7 @@ void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     set_zero(sol);
     invert(sol, src, inverter);
@@ -416,7 +416,7 @@ void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
 }
 
 void set_volume_src_fermion_field(FermionField4d& ff, const CoordinateD& lmom,
-                                  const int cs);
+                                  const Int cs);
 
 void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
                     const CoordinateD& lmom = CoordinateD());
@@ -431,7 +431,7 @@ void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
   FermionField4d sol, src;
   sol.init(geo);
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_volume_src_fermion_field(src, lmom, cs);
     set_zero(sol);
     invert(sol, src, inv);

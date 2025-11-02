@@ -14,14 +14,14 @@ namespace qlat
 {  //
 
 template <class F>
-int integrate(double& result, double& abserr, const F& f, const double a,
+Int integrate(double& result, double& abserr, const F& f, const double a,
               const double b, const double epsabs, const double epsrel)
 {
-  const int limit = 1000;
-  const int key = 2;
+  const Int limit = 1000;
+  const Int key = 2;
   gsl_function gf = make_gsl_function(f);
   gsl_integration_workspace* w = gsl_integration_workspace_alloc(limit);
-  int ret = gsl_integration_qag(&gf, a, b, epsabs, epsrel, limit, key, w,
+  Int ret = gsl_integration_qag(&gf, a, b, epsabs, epsrel, limit, key, w,
                                 &result, &abserr);
   gsl_integration_workspace_free(w);
   return ret;

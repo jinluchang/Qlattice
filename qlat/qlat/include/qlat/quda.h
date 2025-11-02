@@ -10,31 +10,31 @@
 namespace qlat
 {  //
 
-static int mpi_rank_from_coords_x(const int* coords, void* fdata)
+static Int mpi_rank_from_coords_x(const Int* coords, void* fdata)
 {
-  int* dims = reinterpret_cast<int*>(fdata);
+  Int* dims = reinterpret_cast<int*>(fdata);
   //
-  int rank;
+  Int rank;
   rank = coords[3];
-  for (int i = 2; i >= 0; i--) {
+  for (Int i = 2; i >= 0; i--) {
     rank = dims[i] * rank + coords[i];
   }
   return rank;
 }
 //
-static int mpi_rank_from_coords_t(const int* coords, void* fdata)
+static Int mpi_rank_from_coords_t(const Int* coords, void* fdata)
 {
-  int* dims = reinterpret_cast<int*>(fdata);
+  Int* dims = reinterpret_cast<int*>(fdata);
   //
-  int rank;
+  Int rank;
   rank = coords[0];
-  for (int i = 1; i <= 3; i++) {
+  for (Int i = 1; i <= 3; i++) {
     rank = dims[i] * rank + coords[i];
   }
   return rank;
 }
 //
-inline void quda_begin(int mpi_layout[4], bool t = false)
+inline void quda_begin(Int mpi_layout[4], bool t = false)
 {
   using namespace quda;
   // The following sets the MPI comm stuff.
@@ -55,7 +55,7 @@ inline void quda_begin(int mpi_layout[4], bool t = false)
       get_coor_node()[3]);
   // Make sure there is no mismatch
   qassert(comm_rank() == get_id_node());
-  for (int d = 0; d < 4; d++) {
+  for (Int d = 0; d < 4; d++) {
     qassert(comm_coord(d) == get_coor_node()[d]);
   }
 }
@@ -75,12 +75,12 @@ void quda_convert_gauge(std::vector<T>& qgf, const GaugeField& gf)
   qassert(geo.multiplicity == 4);
   Long V = geo.local_volume();
   Long Vh = V / 2;
-  for (int qlat_idx = 0; qlat_idx < V; qlat_idx++) {
+  for (Int qlat_idx = 0; qlat_idx < V; qlat_idx++) {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
-    int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
-    for (int mu = 0; mu < 4; mu++) {
-      int quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
+    Int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    for (Int mu = 0; mu < 4; mu++) {
+      Int quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
       quda_pt[quda_idx] = ms[mu];
     }
   }
@@ -93,7 +93,7 @@ void quda_convert_fermion(FermionField5d& ff, const std::vector<T>& qff)
   const Geometry& geo = ff.geo();
   const WilsonVector* quda_pt =
       reinterpret_cast<const WilsonVector*>(qff.data());
-  int Ls = geo.multiplicity;
+  Int Ls = geo.multiplicity;
   qassert(Ls > 0);
   Long V = geo.local_volume();
   Long Vh = V / 2;
@@ -101,10 +101,10 @@ void quda_convert_fermion(FermionField5d& ff, const std::vector<T>& qff)
 #pragma omp parallel for
   for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
-    int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    Int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     Vector<WilsonVector> wvs = ff.get_elems(xl);
-    for (int s = 0; s < Ls; s++) {
-      int quda_idx = eo * Vh * Ls + s * Vh + qlat_idx_4d / 2;
+    for (Int s = 0; s < Ls; s++) {
+      Int quda_idx = eo * Vh * Ls + s * Vh + qlat_idx_4d / 2;
       wvs[s] = quda_pt[quda_idx];
     }
   }
@@ -116,7 +116,7 @@ void quda_convert_fermion(std::vector<T>& qff, const FermionField5d& ff)
   TIMER("quda_convert_fermion(qff,ff)");
   const Geometry& geo = ff.geo();
   WilsonVector* quda_pt = reinterpret_cast<WilsonVector*>(qff.data());
-  int Ls = geo.multiplicity;
+  Int Ls = geo.multiplicity;
   qassert(Ls > 0);
   Long V = geo.local_volume();
   Long Vh = V / 2;
@@ -124,16 +124,16 @@ void quda_convert_fermion(std::vector<T>& qff, const FermionField5d& ff)
 #pragma omp parallel for
   for (Long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
-    int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    Int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
-    for (int s = 0; s < Ls; s++) {
-      int quda_idx = eo * Vh * Ls + s * Vh + qlat_idx_4d / 2;
+    for (Int s = 0; s < Ls; s++) {
+      Int quda_idx = eo * Vh * Ls + s * Vh + qlat_idx_4d / 2;
       quda_pt[quda_idx] = wvs[s];
     }
   }
 }
 
-QudaPrecision get_quda_precision(int byte)
+QudaPrecision get_quda_precision(Int byte)
 {
   switch (byte) {
     case 8:
@@ -174,7 +174,7 @@ void set_gauge_param(QudaGaugeParam& gauge_param, const Geometry& geo,
                      const InverterParams& ip)
 {
   //
-  for (int mu = 0; mu < 4; mu++) {
+  for (Int mu = 0; mu < 4; mu++) {
     gauge_param.X[mu] = geo.node_site[mu];
   }
   //
@@ -203,11 +203,11 @@ void set_gauge_param(QudaGaugeParam& gauge_param, const Geometry& geo,
   gauge_param.anisotropy = 1.0;
   gauge_param.t_boundary = QUDA_PERIODIC_T;
   //
-  int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
-  int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
-  int pad_size = std::max(x_face_size, y_face_size);
+  Int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  Int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  Int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
+  Int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
+  Int pad_size = std::max(x_face_size, y_face_size);
   pad_size = std::max(pad_size, z_face_size);
   pad_size = std::max(pad_size, t_face_size);
   gauge_param.ga_pad = pad_size;
@@ -226,7 +226,7 @@ void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa,
     memcpy(inv_param.b_5, fa.bs.data(), fa.ls * sizeof(ComplexD));
     memcpy(inv_param.c_5, fa.cs.data(), fa.ls * sizeof(ComplexD));
   } else {
-    for (int s = 0; s < fa.ls; s++) {
+    for (Int s = 0; s < fa.ls; s++) {
       inv_param.b_5[s] = 0.5 * fa.mobius_scale + 0.5;
       inv_param.c_5[s] = 0.5 * fa.mobius_scale - 0.5;
     }

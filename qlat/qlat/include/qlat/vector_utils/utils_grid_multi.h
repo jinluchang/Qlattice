@@ -19,13 +19,13 @@ namespace qlat
   src to res : with civ to original geoA
 */
 template <class Ty>
-void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const int civ, const Geometry& geo1, const Geometry& geo0, const Geometry& geoA )
+void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const Int civ, const Geometry& geo1, const Geometry& geo0, const Geometry& geoA )
 {
   TIMERA("grid_memory_reshape");
   Qassert(geoA.node_site != qlat::Coordinate());
   Qassert(geo0.node_site != qlat::Coordinate());
   Qassert(geo1.node_site != qlat::Coordinate());
-  const int biva = src.size();
+  const Int biva = src.size();
   Qassert(res.size() == biva);
   Qassert(biva > 0 and civ > 0);
   const Coordinate NA = geoA.total_site();
@@ -35,7 +35,7 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
 
   // copy if pointer the same
   if(N0 == N1){
-    for(int bi=0;bi<biva;bi++){
+    for(Int bi=0;bi<biva;bi++){
       if(res[bi] != src[bi]){
         cpy_GPU(res[bi], src[bi], Vol * civ, 1, 1, QFALSE);
       }
@@ -48,7 +48,7 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
   Coordinate nfac1;
   LInt       Vfac0 = 1;
   LInt       Vfac1 = 1;
-  for(int i=0;i<4;i++){
+  for(Int i=0;i<4;i++){
     Qassert(NA[i] % N0[i] == 0 and NA[i] % N1[i] == 0);
     Qassert(NA[i] >= N0[i] and NA[i] >= N1[i]);
     nfac0[i] = NA[i] / N0[i];
@@ -57,8 +57,8 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
     Vfac1 *= nfac1[i];
   }
 
-  const int bmax = 24;
-  int bL = (bmax + civ - 1) / civ; 
+  const Int bmax = 24;
+  Int bL = (bmax + civ - 1) / civ; 
   if(biva*civ < bmax){bL = biva;}
 
   const size_t Ndata = bL * Vol * civ*sizeof(Ty) / sizeof(char);
@@ -73,7 +73,7 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
 
   std::vector<Long > jobA = job_create(biva, bL);
   qlat::vector<Ty* > bP;bP.resize(bL);
-  for(int bi=0;bi<bL;bi++){
+  for(Int bi=0;bi<bL;bi++){
     bP[bi] = &bufP[bi * Vol * civ];
   }
 
@@ -87,7 +87,7 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
       Coordinate x1;
       Coordinate y0;
       Coordinate y1;
-      for(int i=0;i<4;i++)
+      for(Int i=0;i<4;i++)
       {
         x0[i] = xl[i] / nfac0[i];
         x1[i] = xl[i] / nfac1[i];
@@ -102,18 +102,18 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
       const LInt g1 = geo1.index_from_coordinate(x1);
       const LInt off0 = (g0*Vfac0 + c0) * civ;
       const LInt off1 = (g1*Vfac1 + c1) * civ;
-      for(int bi = 0; bi < bcut; bi++)
+      for(Int bi = 0; bi < bcut; bi++)
       {
         Ty* sP = &src[bini + bi][ off0];
         Ty* rP = &bP[ bi][        off1] ;
-        for(int ci = 0; ci < civ; ci++)
+        for(Int ci = 0; ci < civ; ci++)
         {
           rP[ci] = sP[ci];
         }
       }
     });
 
-    for(int bi = 0; bi < bcut; bi++)
+    for(Int bi = 0; bi < bcut; bi++)
     {
       cpy_GPU(res[bini + bi], bP[bi], Vol * civ, 1, 1, QFALSE);
     }
@@ -123,7 +123,7 @@ void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const
 }
 
 template <class Ty>
-void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const int civ,
+void grid_memory_reshape(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, const Int civ,
   const Coordinate& n1, const Coordinate& n0, const Coordinate& nA)
 {
   const Geometry& geoA = get_geo_cache(nA);

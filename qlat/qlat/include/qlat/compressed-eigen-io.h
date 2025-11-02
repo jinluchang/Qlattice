@@ -34,7 +34,7 @@
 namespace qlat
 {  //
 
-inline int fp_map(const float in, const float min, const float max, const int N)
+inline Int fp_map(const float in, const float min, const float max, const Int N)
 {
   // Idea:
   //
@@ -46,15 +46,15 @@ inline int fp_map(const float in, const float min, const float max, const int N)
   //
   // N=2
   // [-6,-2] -> 0, [-2,2] -> 1, [2,6] -> 2;  reconstruct 0 -> -4, 1->0, 2->4
-  int ret = (int)((float)(N + 1) * ((in - min) / (max - min)));
+  Int ret = (int)((float)(N + 1) * ((in - min) / (max - min)));
   if (ret == N + 1) {
     ret = N;
   }
   return ret;
 }
 
-inline float fp_unmap(const int val, const float min, const float max,
-                      const int N)
+inline float fp_unmap(const Int val, const float min, const float max,
+                      const Int N)
 {
   return min + (float)(val + 0.5) * (max - min) / (float)(N + 1);
 }
@@ -74,22 +74,22 @@ inline Long fp_16_size(const Long f_size, const Long nsc)
 void read_floats(Vector<float> out, const Vector<uint8_t> fp_data);
 
 void read_floats_fp16(float* out, const uint8_t* ptr, const int64_t n,
-                      const int nsc);
+                      const Int nsc);
 
 void read_floats_fp16(Vector<float> out, const Vector<uint8_t> fp_data,
-                      const int nsc);
+                      const Int nsc);
 
 struct CompressedEigenSystemInfo {
   bool initialized;
-  // int s[5]; // local vol size
-  // int b[5]; // block size
+  // Int s[5]; // local vol size
+  // Int b[5]; // block size
   // // derived
-  // int nb[5];
-  // int blocks;
+  // Int nb[5];
+  // Int blocks;
   // //
-  // int index;
+  // Int index;
   //
-  int nkeep_fp16;          // nkeep - nkeep_single
+  Int nkeep_fp16;          // nkeep - nkeep_single
   Coordinate total_node;   // number of node in each direction (total)
   Coordinate total_block;  // number of block in each direction (total)
   Coordinate node_block;   // number of block in a node in each direction (node)
@@ -98,11 +98,11 @@ struct CompressedEigenSystemInfo {
   Coordinate node_site;   // number of site in a node in each direction (node)
   Coordinate
       block_site;  // number of site in each block in each direction (block)
-  int ls;
-  int neig;
-  int nkeep;         // number base
-  int nkeep_single;  // number base stored as single precision
-  int FP16_COEF_EXP_SHARE_FLOATS;
+  Int ls;
+  Int neig;
+  Int nkeep;         // number base
+  Int nkeep_single;  // number base stored as single precision
+  Int FP16_COEF_EXP_SHARE_FLOATS;
   //
   std::vector<crc32_t> crcs;
   //
@@ -115,11 +115,11 @@ struct CompressedEigenSystemDenseInfo {
   Coordinate total_site;
   Coordinate node_site;
   Coordinate block_site;
-  int ls;
-  int neig;
-  int nkeep;
-  int nkeep_single;
-  int FP16_COEF_EXP_SHARE_FLOATS;
+  Int ls;
+  Int neig;
+  Int nkeep;
+  Int nkeep_single;
+  Int FP16_COEF_EXP_SHARE_FLOATS;
 };
 
 CompressedEigenSystemInfo populate_eigen_system_info(
@@ -136,17 +136,17 @@ CompressedEigenSystemInfo resize_compressed_eigen_system_info(
     const CompressedEigenSystemInfo& cesi, const Coordinate& new_size_node);
 
 struct HalfVector : Field<ComplexF> {
-  static const int c_size = 12;  // number of complex number per wilson vector
-  int ls;
+  static const Int c_size = 12;  // number of complex number per wilson vector
+  Int ls;
   // geo.multiplicity = ls * c_size;
 };
 
-void init_half_vector(HalfVector& hv, const Geometry& geo, const int ls);
+void init_half_vector(HalfVector& hv, const Geometry& geo, const Int ls);
 
 struct CompressedEigenSystemData : Field<uint8_t> {
   CompressedEigenSystemInfo cesi;
   Long block_vol_eo;
-  int ls;
+  Int ls;
   Long basis_c_size;
   Long coef_c_size;
   Long basis_size_single;
@@ -163,57 +163,57 @@ struct CompressedEigenSystemData : Field<uint8_t> {
 };
 
 Geometry get_geo_from_cesi(const CompressedEigenSystemInfo& cesi,
-                           const int id_node,
+                           const Int id_node,
                            const Coordinate& new_size_node = Coordinate());
 
 Geometry block_geometry(const Geometry& geo_full, const Coordinate& block_site);
 
 void init_compressed_eigen_system_data(
     CompressedEigenSystemData& cesd, const CompressedEigenSystemInfo& cesi,
-    const int id_node, const Coordinate& new_size_node = Coordinate());
+    const Int id_node, const Coordinate& new_size_node = Coordinate());
 
 struct CompressedEigenSystemBases : Field<ComplexF> {
-  int n_basis;
+  Int n_basis;
   Long block_vol_eo;  // even odd precondition
                       // (block_vol_eo is half of the number of site within the
                       // block n_t * n_z * n_y * n_x/2) n_t slowest varying and
                       // n_x fastest varying
-  int ls;             // ls varying faster than n_x
-  int c_size_vec;     // c_size_vec = block_vol_eo * ls * HalfVector::c_size;
+  Int ls;             // ls varying faster than n_x
+  Int c_size_vec;     // c_size_vec = block_vol_eo * ls * HalfVector::c_size;
   // geo.multiplicity = n_basis * c_size_vec;
   Geometry geo_full;
   Coordinate block_site;
 };
 
 struct CompressedEigenSystemCoefs : Field<ComplexF> {
-  int n_vec;
-  int n_basis;
-  int ls;
-  int c_size_vec;  // c_size_vec = n_basis;
+  Int n_vec;
+  Int n_basis;
+  Int ls;
+  Int c_size_vec;  // c_size_vec = n_basis;
   // geo.multiplicity = n_vec * c_size_vec;
   Geometry geo_full;
   Coordinate block_site;
 };
 
 void init_compressed_eigen_system_bases(CompressedEigenSystemBases& cesb,
-                                        const int n_basis,
+                                        const Int n_basis,
                                         const Geometry& geo_full,
                                         const Coordinate& block_site,
-                                        const int ls);
+                                        const Int ls);
 
 void init_compressed_eigen_system_bases(
     CompressedEigenSystemBases& cesb, const CompressedEigenSystemInfo& cesi,
-    const int id_node, const Coordinate& new_size_node = Coordinate());
+    const Int id_node, const Coordinate& new_size_node = Coordinate());
 
 void init_compressed_eigen_system_coefs(CompressedEigenSystemCoefs& cesc,
-                                        const int n_vec, const int n_basis,
+                                        const Int n_vec, const Int n_basis,
                                         const Geometry& geo_full,
                                         const Coordinate& block_site,
-                                        const int ls);
+                                        const Int ls);
 
 void init_compressed_eigen_system_coefs(
     CompressedEigenSystemCoefs& cesc, const CompressedEigenSystemInfo& cesi,
-    const int id_node, const Coordinate& new_size_node = Coordinate());
+    const Int id_node, const Coordinate& new_size_node = Coordinate());
 
 API inline Long& get_vbfile_buffer_limit()
 {
@@ -252,7 +252,7 @@ void vbread_data(const Vector<uint8_t>& v, VBFile& fp);
 
 void vbwrite_data(const Vector<uint8_t>& v, VBFile& fp);
 
-int vbseek(VBFile& fp, const Long offset, const int whence);
+Int vbseek(VBFile& fp, const Long offset, const Int whence);
 
 struct VFile
 // virtual IO (real IO performed during vbclose)
@@ -292,7 +292,7 @@ Long vwrite_data(const Vector<M>& v, VFile& fp)
   return dv.size();
 }
 
-int vseek(VFile& fp, const Long offset, const int whence);
+Int vseek(VFile& fp, const Long offset, const Int whence);
 
 Long vtell(const VFile& fp);
 
@@ -332,14 +332,14 @@ std::vector<double> read_eigen_values(const std::string& path);
 struct BlockedHalfVector : Field<ComplexF> {
   Long block_vol_eo;  // even odd precondition (block_vol is half of the number
                       // of site within the block)
-  int ls;
+  Int ls;
   // geo.multiplicity = block_vol_eo * ls * HalfVector::c_size;
   Geometry geo_full;
   Coordinate block_site;
 };
 
 void init_blocked_half_vector(BlockedHalfVector& bhv, const Geometry& geo_full,
-                              const Coordinate& block_site, const int ls);
+                              const Coordinate& block_site, const Int ls);
 
 void decompress_eigen_system(std::vector<BlockedHalfVector>& bhvs,
                              const CompressedEigenSystemBases& cesb,
@@ -369,15 +369,15 @@ crc32_t save_half_vectors(const std::vector<HalfVector>& hvs,
 
 Long decompress_eigen_vectors_node(
     const std::string& old_path, const CompressedEigenSystemInfo& cesi,
-    const std::string& new_path, const int idx,
+    const std::string& new_path, const Int idx,
     const Coordinate& new_size_node = Coordinate());
 
 crc32_t resize_compressed_eigen_vectors_node(
     std::vector<crc32_t>& crcs_acc, const std::string& old_path,
     const CompressedEigenSystemInfo& cesi, const std::string& new_path,
-    const int idx, const Coordinate& size_node);
+    const Int idx, const Coordinate& size_node);
 
-void combine_crc32(const std::string& path, const int idx_size,
+void combine_crc32(const std::string& path, const Int idx_size,
                    const CompressedEigenSystemInfo& cesi);
 
 void decompress_eigen_vectors(const std::string& old_path,

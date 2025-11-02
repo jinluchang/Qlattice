@@ -18,14 +18,14 @@ inline double get_field_max(const FieldM<double, 1>& fd)
   std::vector<double> ms(get_num_node(), 0.0);
   ms[get_id_node()] = m;
   glb_sum(get_data(ms));
-  for (int i = 0; i < (int)ms.size(); ++i) {
+  for (Int i = 0; i < (int)ms.size(); ++i) {
     m = std::max(m, ms[i]);
   }
   return m;
 }
 
 inline std::vector<double> get_gm_force_magnitudes(
-    const GaugeMomentum& gm_force, const int n_elems)
+    const GaugeMomentum& gm_force, const Int n_elems)
 // return the l1, l2, ..., linf norm of the gm_force magnitudes
 // n_elems == mag_vec.size();
 // n_elems >= 3
@@ -45,7 +45,7 @@ inline std::vector<double> get_gm_force_magnitudes(
     qassert(gm_force_v.size() == 4);
     Vector<double> fdv = fd.get_elems(index);
     double linf = 0.0;
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       // multiply by additional small factor, will be compensated below
       const double l2 =
           sqr(1.0 / 15.0) * 2.0 * neg_half_tr_square(gm_force_v[mu]);
@@ -53,7 +53,7 @@ inline std::vector<double> get_gm_force_magnitudes(
       fdv[0] += l1;
       fdv[1] += l2;
       double ln = l2;
-      for (int m = 2; m < n_elems - 1; ++m) {
+      for (Int m = 2; m < n_elems - 1; ++m) {
         ln = sqr(ln);
         fdv[m] += ln;
       }
@@ -64,14 +64,14 @@ inline std::vector<double> get_gm_force_magnitudes(
   std::vector<double> mag_vec(n_elems, 0.0);
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Vector<double> fdv = fd.get_elems_const(index);
-    for (int m = 0; m < n_elems - 1; ++m) {
+    for (Int m = 0; m < n_elems - 1; ++m) {
       mag_vec[m] += fdv[m];
     }
   }
   glb_sum(get_data(mag_vec));
-  for (int m = 0; m < n_elems; ++m) {
+  for (Int m = 0; m < n_elems; ++m) {
     mag_vec[m] *= (1.0 / 4.0) / (double)geo.total_volume();
-    for (int i = 0; i < m; ++i) {
+    for (Int i = 0; i < m; ++i) {
       mag_vec[m] = std::sqrt(mag_vec[m]);
     }
     // The compensate the additional factor introduced above
@@ -85,7 +85,7 @@ inline std::string show_gm_force_magnitudes(const std::vector<double>& mag_vec)
 {
   std::ostringstream out;
   out << "# norm_idx gm_force_magnitude" << std::endl;
-  for (int i = 0; i < (int)mag_vec.size(); ++i) {
+  for (Int i = 0; i < (int)mag_vec.size(); ++i) {
     out << ssprintf("%5d %24.17E", i, mag_vec[i]) << std::endl;
   }
   return out.str();
@@ -98,7 +98,7 @@ API inline std::vector<std::vector<double> >& get_gm_force_magnitudes_list()
 }
 
 inline void display_gm_force_magnitudes(const GaugeMomentum& gm_force,
-                                        const int n_elems)
+                                        const Int n_elems)
 // e.g. n_elems = 10
 // Need to call: clear(get_gm_force_magnitudes_list()) to free memory
 {
@@ -138,7 +138,7 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
 // 3: avg(topo_density^2)
 {
   TIMER("get_gauge_field_infos");
-  const int info_vec_size = 4;
+  const Int info_vec_size = 4;
   const Geometry geo = geo_resize(gf.geo());
   FieldM<double, 1> paf;
   clf_plaq_action_density_field(paf, gf);
@@ -160,7 +160,7 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
   return info_vec;
 }
 
-inline std::string show_gauge_field_info_line(const int i,
+inline std::string show_gauge_field_info_line(const Int i,
                                               const std::vector<double>& v)
 {
   qassert(v.size() == 4);
@@ -179,10 +179,10 @@ inline LatData convert_gauge_field_info_table(
       make_array<std::string>("avg(plaq_action)", "avg(plaq_action^2)",
                               "tot(topo_density)", "avg(topo_density^2)")));
   lat_data_alloc(ld);
-  for (int i = 0; i < (int)dt.size(); ++i) {
+  for (Int i = 0; i < (int)dt.size(); ++i) {
     const std::vector<double>& v = dt[i];
     Vector<double> ldv = lat_data_get(ld, make_array<int>(i));
-    for (int j = 0; j < (int)v.size(); ++j) {
+    for (Int j = 0; j < (int)v.size(); ++j) {
       ldv[j] = v[j];
     }
   }
@@ -208,8 +208,8 @@ inline LatData convert_energy_list(
 
 inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
                                                          const double alpha,
-                                                         const int ape_steps,
-                                                         const int steps)
+                                                         const Int ape_steps,
+                                                         const Int steps)
 // DataTable.size() == steps + 1
 //
 {
@@ -220,7 +220,7 @@ inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
   dt.push_back(v);
   GaugeField gf1;
   gf1 = gf;
-  for (int i = 0; i < steps; ++i) {
+  for (Int i = 0; i < steps; ++i) {
     gf_ape_smear(gf1, gf1, alpha, ape_steps);
     v = get_gauge_field_infos(gf1);
     displayln_info(show_gauge_field_info_line(i + 1, v));
@@ -232,8 +232,8 @@ inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
 inline void display_gauge_field_info_table_with_ape_smear(const std::string& fn,
                                                           const GaugeField& gf,
                                                           const double alpha,
-                                                          const int ape_steps,
-                                                          const int steps)
+                                                          const Int ape_steps,
+                                                          const Int steps)
 // e.g. alpha = 0.5; steps = 50;
 {
   TIMER_VERBOSE("display_gauge_field_info_table_with_ape_smear");
@@ -247,7 +247,7 @@ inline void display_gauge_field_info_table_with_ape_smear(const std::string& fn,
 
 inline void get_gauge_field_info_table_with_wilson_flow(
     LatData& ld_gf_info, LatData& ld_wilson_flow_energy, const GaugeField& gf,
-    const double flow_time, const int flow_steps, const int steps,
+    const double flow_time, const Int flow_steps, const Int steps,
     const double c1 = 0.0)
 // DataTable.size() == steps + 1
 //
@@ -261,7 +261,7 @@ inline void get_gauge_field_info_table_with_wilson_flow(
   GaugeField gf1;
   gf1 = gf;
   double existing_flow_time = 0.0;
-  for (int i = 0; i < steps; ++i) {
+  for (Int i = 0; i < steps; ++i) {
     const std::vector<double> edl =
         gf_wilson_flow(gf1, existing_flow_time, flow_time, flow_steps, c1);
     existing_flow_time += flow_time;
@@ -277,8 +277,8 @@ inline void get_gauge_field_info_table_with_wilson_flow(
 
 inline void display_gauge_field_info_table_with_wilson_flow(
     const std::string& fn_gf_info, const std::string& fn_wilson_flow_energy,
-    const GaugeField& gf, const double flow_time, const int flow_steps,
-    const int steps, const double c1 = 0.0)
+    const GaugeField& gf, const double flow_time, const Int flow_steps,
+    const Int steps, const double c1 = 0.0)
 // e.g. alpha = 0.5; steps = 50;
 {
   TIMER_VERBOSE("display_gauge_field_info_table_with_wilson_flow");

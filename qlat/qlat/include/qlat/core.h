@@ -30,7 +30,7 @@ struct API GeometryNode {
   {
     init(coor_node_, size_node_);
   }
-  qacc GeometryNode(const int id_node_, const Coordinate& size_node_)
+  qacc GeometryNode(const Int id_node_, const Coordinate& size_node_)
   {
     init(id_node_, size_node_);
   }
@@ -45,8 +45,8 @@ struct API GeometryNode {
   }
   qacc void init(const Coordinate& coor_node_, const Coordinate& size_node_)
   {
-    const int id_node_ = index_from_coordinate(coor_node_, size_node_);
-    const int num_node_ = product(size_node_);
+    const Int id_node_ = index_from_coordinate(coor_node_, size_node_);
+    const Int num_node_ = product(size_node_);
     initialized = true;
     num_node = num_node_;
     id_node = id_node_;
@@ -147,7 +147,7 @@ struct API Geometry {
   qacc void reset_node_site_expanded()
   {
     is_only_local = true;
-    for (int i = 0; i < DIMN; ++i) {
+    for (Int i = 0; i < DIMN; ++i) {
       node_site_expanded[i] =
           expansion_left[i] + node_site[i] + expansion_right[i];
       if (expansion_left[i] != 0 or expansion_right[i] != 0) {
@@ -161,7 +161,7 @@ struct API Geometry {
   {
     expansion_left = expansion_left_;
     expansion_right = expansion_right_;
-    for (int i = 0; i < DIMN; ++i) {
+    for (Int i = 0; i < DIMN; ++i) {
       if (geon.size_node[i] == 1) {
         expansion_left[i] = 0;
         expansion_right[i] = 0;
@@ -169,7 +169,7 @@ struct API Geometry {
     }
     reset_node_site_expanded();
   }
-  qacc void resize(const int thick)
+  qacc void resize(const Int thick)
   {
     const Coordinate expansion(thick, thick, thick, thick);
     resize(expansion, expansion);
@@ -179,7 +179,7 @@ struct API Geometry {
   // avoid communicate in direction mu when geon.size_node[mu] == 1
   {
     Coordinate ret = xl;
-    for (int mu = 0; mu < DIMN; ++mu) {
+    for (Int mu = 0; mu < DIMN; ++mu) {
       if (geon.size_node[mu] == 1) {
         ret[mu] = mod(xl[mu], node_site[mu]);
       }
@@ -272,7 +272,7 @@ struct API Geometry {
   //
   qacc bool is_on_node(const Coordinate& xl) const
   {
-    for (int mu = 0; mu < DIMN; mu++) {
+    for (Int mu = 0; mu < DIMN; mu++) {
       if (not((-expansion_left[mu] <= xl[mu] and
                xl[mu] < node_site[mu] + expansion_right[mu]) or
               geon.size_node[mu] == 1)) {
@@ -284,7 +284,7 @@ struct API Geometry {
   //
   qacc bool is_local(const Coordinate& xl) const
   {
-    for (int mu = 0; mu < DIMN; mu++) {
+    for (Int mu = 0; mu < DIMN; mu++) {
       if (not((0 <= xl[mu] and xl[mu] < node_site[mu]) or
               geon.size_node[mu] == 1)) {
         return false;
@@ -369,7 +369,7 @@ qacc bool operator!=(const Geometry& geo1, const Geometry& geo2)
   return !(geo1 == geo2);
 }
 
-qacc Geometry geo_resize(const Geometry& geo_, const int thick = 0)
+qacc Geometry geo_resize(const Geometry& geo_, const Int thick = 0)
 {
   Geometry geo = geo_;
   geo.resize(thick);
@@ -385,7 +385,7 @@ qacc Geometry geo_resize(const Geometry& geo_,
   return geo;
 }
 
-qacc Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
+qacc Geometry geo_eo(const Geometry& geo_, const Int eo_ = 0)
 // 0:regular; 1:odd; 2:even
 {
   Geometry geo = geo_;
@@ -403,12 +403,12 @@ qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
 // return if geo1 is included in geo2
 {
   bool include = is_matching_geo(geo1, geo2);
-  for (int i = 0; i < 4; i++) {
+  for (Int i = 0; i < 4; i++) {
     if (geo2.expansion_left[i] < geo1.expansion_left[i]) {
       include = false;
     }
   }
-  for (int i = 0; i < 4; i++) {
+  for (Int i = 0; i < 4; i++) {
     if (geo2.expansion_right[i] < geo1.expansion_right[i]) {
       include = false;
     }
@@ -506,13 +506,13 @@ struct API SelectedPoints {
   // points.size() == n_points * multiplicity if initialized = true
   //
   void init();
-  void init(const Long n_points_, const int multiplicity_,
+  void init(const Long n_points_, const Int multiplicity_,
             const PointsDistType points_dist_type_);
-  void init(const PointsSelection& psel, const int multiplicity_);
+  void init(const PointsSelection& psel, const Int multiplicity_);
   //
-  void init_zero(const Long n_points_, const int multiplicity_,
+  void init_zero(const Long n_points_, const Int multiplicity_,
                  const PointsDistType points_dist_type_);
-  void init_zero(const PointsSelection& psel, const int multiplicity);
+  void init_zero(const PointsSelection& psel, const Int multiplicity);
   //
   SelectedPoints() { init(); }
   SelectedPoints(const SelectedPoints<M>&) = default;
@@ -580,12 +580,12 @@ struct API SelectedPoints {
     return points[idx];
   }
   //
-  qacc M& get_elem(const Long& idx, const int m)
+  qacc M& get_elem(const Long& idx, const Int m)
   {
     qassert(0 <= m and m < multiplicity);
     return points[idx * multiplicity + m];
   }
-  qacc const M& get_elem(const Long& idx, const int m) const
+  qacc const M& get_elem(const Long& idx, const Int m) const
   {
     qassert(0 <= m and m < multiplicity);
     return points[idx * multiplicity + m];
@@ -614,7 +614,7 @@ void SelectedPoints<M>::init()
 }
 
 template <class M>
-void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
+void SelectedPoints<M>::init(const Long n_points_, const Int multiplicity_,
                              const PointsDistType points_dist_type_)
 {
   if (initialized) {
@@ -642,13 +642,13 @@ void SelectedPoints<M>::init(const Long n_points_, const int multiplicity_,
 
 template <class M>
 void SelectedPoints<M>::init(const PointsSelection& psel,
-                             const int multiplicity)
+                             const Int multiplicity)
 {
   init(psel.size(), multiplicity, psel.points_dist_type);
 }
 
 template <class M>
-void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
+void SelectedPoints<M>::init_zero(const Long n_points_, const Int multiplicity_,
                                   const PointsDistType points_dist_type_)
 {
   if (initialized) {
@@ -670,7 +670,7 @@ void SelectedPoints<M>::init_zero(const Long n_points_, const int multiplicity_,
 
 template <class M>
 void SelectedPoints<M>::init_zero(const PointsSelection& psel,
-                                  const int multiplicity)
+                                  const Int multiplicity)
 {
   init_zero(psel.size(), multiplicity, psel.points_dist_type);
 }
@@ -748,10 +748,10 @@ struct API Field {
   vector<M> field;
   //
   void init();
-  void init(const Geometry& geo_, const int multiplicity_);
+  void init(const Geometry& geo_, const Int multiplicity_);
   void init(const Field<M>& f);
   //
-  void init_zero(const Geometry& geo_, const int multiplicity_);
+  void init_zero(const Geometry& geo_, const Int multiplicity_);
   //
   Field() { init(); }
   Field(const Field<M>&) = default;
@@ -824,7 +824,7 @@ struct API Field {
     return field[offset];
   }
   //
-  qacc M& get_elem(const Coordinate& x, const int m)
+  qacc M& get_elem(const Coordinate& x, const Int m)
   {
     qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
@@ -833,7 +833,7 @@ struct API Field {
     const Long offset = geo_v.offset_from_coordinate(x, multiplicity) + m;
     return get_elem_offset(offset);
   }
-  qacc const M& get_elem(const Coordinate& x, const int m) const
+  qacc const M& get_elem(const Coordinate& x, const Int m) const
   {
     qassert(mem_order == MemOrder::TZYXM);
     const Geometry& geo_v = geo();
@@ -882,14 +882,14 @@ struct API Field {
     return Vector<M>(&field[offset], multiplicity);
   }
   //
-  qacc M& get_elem(const Long index, const int m)
+  qacc M& get_elem(const Long index, const Int m)
   {
     qassert(mem_order == MemOrder::TZYXM);
     qassert(geo().is_only_local);
     qassert(0 <= m && m < multiplicity);
     return get_elem_offset(index * multiplicity + m);
   }
-  qacc const M& get_elem(const Long index, const int m) const
+  qacc const M& get_elem(const Long index, const Int m) const
   {
     qassert(mem_order == MemOrder::TZYXM);
     qassert(geo().is_only_local);
@@ -934,7 +934,7 @@ template <class M, Int multiplicity>
 struct API FieldM : Field<M> {
   void init() { Field<M>::init(); }
   void init(const Geometry& geo_) { Field<M>::init(geo_, multiplicity); }
-  void init(const Geometry& geo_, const int multiplicity_)
+  void init(const Geometry& geo_, const Int multiplicity_)
   {
     Qassert(multiplicity == multiplicity_);
     Field<M>::init(geo_, multiplicity);
@@ -970,7 +970,7 @@ void Field<M>::init()
 }
 
 template <class M>
-void Field<M>::init(const Geometry& geo_, const int multiplicity_)
+void Field<M>::init(const Geometry& geo_, const Int multiplicity_)
 // only initialize if uninitialized
 // if initialized already, then check for matching geo (including
 // multiplicity)
@@ -1073,7 +1073,7 @@ Field<M>& Field<M>::operator=(const Field<M>& f)
     const Coordinate xl = geo_v.coordinate_from_index(index);
     const Vector<M> v = f.get_elems_const(xl);
     Vector<M> v0 = f0.get_elems(xl);
-    for (int m = 0; m < f0.multiplicity; ++m) {
+    for (Int m = 0; m < f0.multiplicity; ++m) {
       v0[m] = v[m];
     }
   });
@@ -1322,12 +1322,12 @@ struct API SelectedField {
     qassert(1 == multiplicity);
     return field[idx];
   }
-  qacc M& get_elem(const Long idx, const int m)
+  qacc M& get_elem(const Long idx, const Int m)
   {
     qassert(0 <= m and m < multiplicity);
     return field[idx * multiplicity + m];
   }
-  qacc const M& get_elem(const Long idx, const int m) const
+  qacc const M& get_elem(const Long idx, const Int m) const
   {
     qassert(0 <= m and m < multiplicity);
     return field[idx * multiplicity + m];

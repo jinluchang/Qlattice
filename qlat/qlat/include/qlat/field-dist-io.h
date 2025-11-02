@@ -9,31 +9,31 @@
 namespace qlat
 {  //
 
-const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
+const Int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
-API inline int& dist_write_par_limit()
+API inline Int& dist_write_par_limit()
 // qlat parameter
 {
-  static int npar = get_env_long_default("q_write_par_limit", 16);
+  static Int npar = get_env_long_default("q_write_par_limit", 16);
   return npar;
 }
 
-API inline int& dist_read_par_limit()
+API inline Int& dist_read_par_limit()
 // qlat parameter
 {
-  static int npar = get_env_long_default("q_read_par_limit", 16);
+  static Int npar = get_env_long_default("q_read_par_limit", 16);
   return npar;
 }
 
-API inline int& get_force_field_write_sizeof_M()
+API inline Int& get_force_field_write_sizeof_M()
 {
-  static int sizeof_M = 0;
+  static Int sizeof_M = 0;
   return sizeof_M;
 }
 
-API inline int& get_incorrect_field_read_sizeof_M()
+API inline Int& get_incorrect_field_read_sizeof_M()
 {
-  static int sizeof_M = 0;
+  static Int sizeof_M = 0;
   return sizeof_M;
 }
 
@@ -47,12 +47,12 @@ API inline bool& is_checksum_mismatch()
   return b;
 }
 
-inline int dist_mkdir(const std::string& path, const int num_node,
+inline Int dist_mkdir(const std::string& path, const Int num_node,
                       const mode_t mode = default_dir_mode())
 {
-  int ret = 0;
+  Int ret = 0;
   qmkdir_p(path, mode);
-  for (int i = 0; i < std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES);
+  for (Int i = 0; i < std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES);
        ++i) {
     const std::string dir = path + ssprintf("/%02d", i);
     ret += qmkdir(dir, mode);
@@ -60,24 +60,24 @@ inline int dist_mkdir(const std::string& path, const int num_node,
   return ret;
 }
 
-inline int compute_dist_file_dir_id(const int id_node, const int num_node)
+inline Int compute_dist_file_dir_id(const Int id_node, const Int num_node)
 {
-  const int ndir = std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES);
-  const int dir_size = (num_node - 1) / ndir + 1;
-  const int id_dir = id_node / dir_size;
+  const Int ndir = std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES);
+  const Int dir_size = (num_node - 1) / ndir + 1;
+  const Int id_dir = id_node / dir_size;
   qassert(0 <= id_dir && id_dir < ndir);
   return id_dir;
 }
 
-inline std::string dist_file_name(const std::string& path, const int id_node,
-                                  const int num_node)
+inline std::string dist_file_name(const std::string& path, const Int id_node,
+                                  const Int num_node)
 {
   return path + ssprintf("/%02d/%010d",
                          compute_dist_file_dir_id(id_node, num_node), id_node);
 }
 
-inline QFile dist_open(const std::string& path, const int id_node,
-                       const int num_node, const std::string& fmode)
+inline QFile dist_open(const std::string& path, const Int id_node,
+                       const Int num_node, const std::string& fmode)
 // fmode: "w" for write, "r" for read, and "a" for append
 {
   const std::string fn = dist_file_name(path, id_node, num_node);
@@ -92,7 +92,7 @@ inline void dist_close(QFile& fp) { qfclose(fp); }
 
 template <class M>
 struct DistData {
-  int id_node;
+  Int id_node;
   Vector<M> data;
 };
 
@@ -104,15 +104,15 @@ Vector<M> get_data(const DistData<M>& dd)
 
 template <class M>
 std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M>>& dds,
-                                 const int num_node)
+                                 const Int num_node)
 {
   SYNC_NODE();
   TIMER_VERBOSE_FLOPS("dist_crc32s");
   Long total_bytes = 0;
   std::vector<crc32_t> ret(num_node, 0);
-  for (int k = 0; k < (int)dds.size(); ++k) {
+  for (Int k = 0; k < (int)dds.size(); ++k) {
     const DistData<M>& dd = dds[k];
-    const int id_node = dd.id_node;
+    const Int id_node = dd.id_node;
     ret[id_node] = crc32_par(ret[id_node], dd.data);
     total_bytes += dd.data.data_size();
   }
@@ -130,7 +130,7 @@ inline crc32_t dist_crc32(const std::vector<crc32_t>& crcs)
 }
 
 template <class M>
-crc32_t dist_crc32(const std::vector<DistData<M>>& dds, const int num_node)
+crc32_t dist_crc32(const std::vector<DistData<M>>& dds, const Int num_node)
 {
   return dist_crc32(dist_crc32s(dds, num_node));
 }
@@ -150,7 +150,7 @@ inline void dist_write_geo_info(const Geometry& geo, const Int multiplicity,
 {
   (void)mode;
   TIMER("dist_write_geo_info");
-  const int id_node = geo.geon.id_node;
+  const Int id_node = geo.geon.id_node;
   qassert(geo.is_only_local);
   if (0 == id_node) {
     const std::string fn = path + "/geo-info.txt";
@@ -203,7 +203,7 @@ inline void dist_read_geo_info(Geometry& geo, Int& multiplicity, Int& sizeof_M,
     reads(multiplicity,
           info_get_prop(lines, "multiplicity = ", "geo.multiplicity = "));
     reads(sizeof_M, info_get_prop(lines, "sizeof(M) = "));
-    for (int i = 0; i < 4; ++i) {
+    for (Int i = 0; i < 4; ++i) {
       reads(size_node[i],
             info_get_prop(lines, ssprintf("geo.geon.size_node[%d] = ", i),
                           ssprintf("geo.sizeNode[%d] = ", i)));
@@ -212,7 +212,7 @@ inline void dist_read_geo_info(Geometry& geo, Int& multiplicity, Int& sizeof_M,
                           ssprintf("geo.nodeSite[%d] = ", i)));
     }
     Long node_file_size;
-    int num_node;
+    Int num_node;
     Long local_volume;
     reads(node_file_size,
           info_get_prop(lines, "node_file_size = ", "nodeFileSize = "));
@@ -236,20 +236,20 @@ inline void dist_read_geo_info(Geometry& geo, Int& multiplicity, Int& sizeof_M,
 
 template <class M>
 Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
-                          const int num_node, const std::string& path)
+                          const Int num_node, const std::string& path)
 // interface_function
 {
   SYNC_NODE();
   TIMER_VERBOSE_FLOPS("dist_write_dist_data");
   Long total_bytes = 0;
   Long total_ops = 0;
-  const int n_cycle = std::max(1, num_node / dist_write_par_limit());
+  const Int n_cycle = std::max(1, num_node / dist_write_par_limit());
   std::vector<Long> id_counts(num_node, 0);
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
     Long bytes = 0;
     Long ops = 0;
     for (size_t k = 0; k < dds.size(); ++k) {
-      const int id_node = dds[k].id_node;
+      const Int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         if (id_counts[id_node] == 0) {
@@ -307,19 +307,19 @@ Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
 
 template <class M>
 Long dist_write_fields(const std::vector<ConstHandle<Field<M>>>& fs,
-                       const int num_node, const std::string& path)
+                       const Int num_node, const std::string& path)
 {
-  for (int k = 0; k < (int)fs.size(); ++k) {
+  for (Int k = 0; k < (int)fs.size(); ++k) {
     const Field<M>& f = fs[k]();
-    const int id_node = f.geo().geon.id_node;
+    const Int id_node = f.geo().geon.id_node;
     if (id_node == 0) {
       dist_mkdir(path + ".partial", id_node);
       if (get_force_field_write_sizeof_M() == 0) {
         dist_write_geo_info(f.geo(), f.multiplicity, sizeof(M), path + ".partial");
       } else {
-        const int sizeof_M = get_force_field_write_sizeof_M();
+        const Int sizeof_M = get_force_field_write_sizeof_M();
         qassert((f.multiplicity * sizeof(M)) % sizeof_M == 0);
-        const int multiplicity = (f.multiplicity * sizeof(M)) / sizeof_M;
+        const Int multiplicity = (f.multiplicity * sizeof(M)) / sizeof_M;
         dist_write_geo_info(f.geo(), multiplicity, sizeof_M, path + ".partial");
         get_force_field_write_sizeof_M() = 0;
       }
@@ -339,7 +339,7 @@ Long dist_write_fields(const std::vector<ConstHandle<Field<M>>>& fs,
 }
 
 template <class M>
-Long dist_write_fields(const std::vector<Field<M>>& fs, const int num_node,
+Long dist_write_fields(const std::vector<Field<M>>& fs, const Int num_node,
                        const std::string& path)
 {
   std::vector<ConstHandle<Field<M>>> fhs(fs.size());
@@ -362,7 +362,7 @@ Long dist_write_field(const Field<M>& f, const std::string& path)
 
 template <class M>
 Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
-                         const int num_node, const std::string& path)
+                         const Int num_node, const std::string& path)
 // interface_function
 {
   if (!does_file_exist_sync_node(path + "/checkpoint")) {
@@ -372,13 +372,13 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
   TIMER_VERBOSE_FLOPS("dist_read_dist_data");
   Long total_bytes = 0;
   Long total_ops = 0;
-  const int n_cycle = std::max(1, num_node / dist_read_par_limit());
+  const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
   std::vector<Long> id_counts(num_node, 0);
-  for (int cycle = 0; cycle < n_cycle; cycle++) {
+  for (Int cycle = 0; cycle < n_cycle; cycle++) {
     Long bytes = 0;
     Long ops = 0;
     for (size_t k = 0; k < dds.size(); ++k) {
-      const int id_node = dds[k].id_node;
+      const Int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == cycle) {
         if (id_counts[id_node] == 0) {
@@ -463,7 +463,7 @@ Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo, Int& multiplicit
     return 0;
   }
   clear(fs);
-  int sizeof_M;
+  Int sizeof_M;
   dist_read_geo_info(geo, multiplicity, sizeof_M, new_size_node, path);
   get_incorrect_field_read_sizeof_M() = 0;
   if ((int)sizeof(M) != sizeof_M) {

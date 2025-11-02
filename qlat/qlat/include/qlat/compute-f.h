@@ -105,8 +105,8 @@ inline double gxxCalc(const double len, const double ratio)
     return gxxCalcIntegrate(len, ratio);
   } else {
     // ADJUST ME
-    const int nlen = 512 + 1;
-    const int nratio = 128 + 1;
+    const Int nlen = 512 + 1;
+    const Int nratio = 128 + 1;
     static Interpolation2d fi(gxxInterpPrime, 1.0, 0.0, nlen, PI, 0.0, nratio);
     const double lenp = len / (1.0 + len);
     const double psi = std::acos(ratio);
@@ -196,7 +196,7 @@ inline double hxCalc(const double len)
     return hxCalcIntegrate(len);
   } else {
     // ADJUST ME
-    const int nlen = 16 * 1024 + 1;
+    const Int nlen = 16 * 1024 + 1;
     static Interpolation fi(hxInterpPrime, 1.0, 0.0, nlen);
     const double lenp = len / (1.0 + len);
     return fi(lenp);
@@ -277,8 +277,8 @@ inline double f1xxCalc(const double len, const double ratio)
     return 1.0 / len * f1xxCalcIntegrate(len, ratio);
   } else {
     // ADJUST ME
-    const int nlen = 512 + 1;
-    const int nratio = 128 + 1;
+    const Int nlen = 512 + 1;
+    const Int nratio = 128 + 1;
     static Interpolation2d fi(f1xxInterpPrime, 1.0, 0.0, nlen, PI, 0.0, nratio);
     const double lenp = len / (1.0 + len);
     const double psi = std::acos(ratio);
@@ -359,8 +359,8 @@ inline double g0xxCalc(const double len, const double ratio)
     return 1.0 / len * g0xxCalcIntegrate(len, ratio);
   } else {
     // ADJUST ME
-    const int nlen = 512 + 1;
-    const int nratio = 128 + 1;
+    const Int nlen = 512 + 1;
+    const Int nratio = 128 + 1;
     static Interpolation2d fi(g0xxInterpPrime, 1.0, 0.0, nlen, PI, 0.0, nratio);
     const double lenp = len / (1.0 + len);
     const double psi = std::acos(ratio);
@@ -391,7 +391,7 @@ inline void test_fderiv()
   const Long size = 4;
   for (Long i = 0; i < size; ++i) {
     CoordinateD c;
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       c[mu] = u_rand_gen(rs, high, low);
     }
     const double len = coordinate_len(c);
@@ -399,7 +399,7 @@ inline void test_fderiv()
     const double g0 = g0xxCalc(c);
     array<double, 4> fds;
     const double eps = 1.0e-5;
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       CoordinateD cdp = c;
       CoordinateD cdm = c;
       cdp[mu] += eps;
@@ -407,12 +407,12 @@ inline void test_fderiv()
       fds[mu] = (fxxCalc(cdp) - fxxCalc(cdm)) / (2 * eps);
     }
     array<double, 4> reffds;
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       reffds[mu] = c[mu] / len * f1;
     }
     reffds[3] += g0;
     if (0 == qlat::get_id_node()) {
-      for (int mu = 0; mu < 4; ++mu) {
+      for (Int mu = 0; mu < 4; ++mu) {
         displayln(ssprintf("%s : %d : %20e %20e %20e", show(c).c_str(), mu,
                            (fds[mu] - reffds[mu]) / reffds[mu], reffds[mu],
                            fds[mu]));

@@ -23,7 +23,7 @@ RealD gf_energy_density(const GaugeField& gf);
 
 std::vector<double> gf_wilson_flow(GaugeField& gf,
                                    const double existing_flow_time,
-                                   const double flow_time, const int steps,
+                                   const double flow_time, const Int steps,
                                    const double c1 = 0.0);
 
 void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,

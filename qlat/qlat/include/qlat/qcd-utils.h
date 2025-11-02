@@ -10,20 +10,20 @@ namespace qlat
 {  //
 
 void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
-                            const int wilson_line_field_m,
+                            const Int wilson_line_field_m,
                             const GaugeField& gf_ext,
                             const std::vector<Int>& path);
 
 void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
-                            const int wilson_line_field_m,
+                            const Int wilson_line_field_m,
                             const GaugeField& gf_ext,
                             const std::vector<Int>& path,
                             const std::vector<Int>& path_n);
 
 struct WilsonLinePathStop {
   Coordinate x;
-  std::vector<std::vector<int>> paths;
-  int num_origins;
+  std::vector<std::vector<Int>> paths;
+  Int num_origins;
   //
   WilsonLinePathStop() { num_origins = 0; }
 };
@@ -42,7 +42,7 @@ void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
                                             const double sigma);
 
 void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState& rs,
-                                   const double sigma, const int n_step = 1);
+                                   const double sigma, const Int n_step = 1);
 
 void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
                                   const Propagator4d& prop1,
@@ -51,7 +51,7 @@ void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
 double coordinate_distance_from_wilson_line(
     const Coordinate& x, const Coordinate& target_wilson_line);
 
-std::vector<int> find_next_dirs(const Coordinate& loc,
+std::vector<Int> find_next_dirs(const Coordinate& loc,
                                 const Coordinate& target_wilson_line);
 
 void acc_wilson_line_path_segment(WilsonLinePathSegment& path);
@@ -60,7 +60,7 @@ WilsonLinePathSegment make_wilson_line_path_segment(const Coordinate& target);
 
 void set_multiply_simple_wilson_line_field_partial_comm(
     FieldM<ColorMatrix, 1>& wlf, FieldM<ColorMatrix, 1>& wlf1,
-    const GaugeField& gf1, const std::vector<int>& path);
+    const GaugeField& gf1, const std::vector<Int>& path);
 
 void set_multiply_wilson_line_field_partial_comm(
     FieldM<ColorMatrix, 1>& wlf, FieldM<ColorMatrix, 1>& wlf1,
@@ -71,15 +71,15 @@ void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf);
 ColorMatrix gf_avg_wilson_line(const GaugeField& gf,
                                const WilsonLinePath& path);
 
-WilsonLinePath make_wilson_loop_path(const Coordinate& target_l, const int t);
+WilsonLinePath make_wilson_loop_path(const Coordinate& target_l, const Int t);
 
-ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l, const int t);
+ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Int l, const Int t);
 
 std::vector<Coordinate> spatial_permute_direction(const Coordinate& l);
 
 ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l,
-                               const int t);
+                               const Int t);
 
-void gf_show_info(const GaugeField& gf, const int level = 0);
+void gf_show_info(const GaugeField& gf, const Int level = 0);
 
 }  // namespace qlat

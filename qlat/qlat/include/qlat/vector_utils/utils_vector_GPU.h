@@ -21,7 +21,7 @@ struct vector_gpu{
   ///Vector<Ty > v;
   Ty*    p;
   size_t n;
-  int GPU;///1 for GPU, 0 for CPU, -1 for unified
+  Int GPU;///1 for GPU, 0 for CPU, -1 for unified
   bool is_copy;
 
   vector_gpu()
@@ -29,13 +29,13 @@ struct vector_gpu{
     p = NULL; n = 0;GPU = 1;is_copy = false;
   }
 
-  vector_gpu(const size_t n_set, const int GPU_set = 1)
+  vector_gpu(const size_t n_set, const Int GPU_set = 1)
   {
     p = NULL; n = 0;GPU = 1;is_copy = false;
     resize(n_set, GPU_set);
   }
 
-  inline void resize(const size_t n_set, const int GPU_set)
+  inline void resize(const size_t n_set, const Int GPU_set)
   {
     Qassert(not is_copy);
     Qassert(GPU_set == -1 or GPU_set == 0 or GPU_set == 1);
@@ -74,13 +74,13 @@ struct vector_gpu{
 
   inline void resize(const size_t n_set)
   {
-    int GPU_tem = GPU;
+    Int GPU_tem = GPU;
     resize(n_set, GPU_tem);
   }
 
-  inline void resizeL(const size_t n_set, const int GPU_ = -2)
+  inline void resizeL(const size_t n_set, const Int GPU_ = -2)
   {
-    int GPU_cur = GPU;if(GPU_ != -2){GPU_cur = GPU_;}
+    Int GPU_cur = GPU;if(GPU_ != -2){GPU_cur = GPU_;}
     if(GPU_cur != GPU){resize(n_set, GPU_cur); return ;}
     if(n < n_set){resize(n_set, GPU_cur);}
   }
@@ -100,7 +100,7 @@ struct vector_gpu{
   {
     (void)dummy;
     Ty* pr = p;
-    int GPU_ = GPU;
+    Int GPU_ = GPU;
     Long n_ = n;
     qGPU_for(isp, n_, GPU_, {pr[isp] = NULL;});
   }
@@ -140,7 +140,7 @@ struct vector_gpu{
   //  ////bool tem_GPU = vp.GPU;
   //  resize(vp.size(), vp.GPU);
 
-  //  int mode_cpu = 0;
+  //  Int mode_cpu = 0;
   //  if(vp.GPU == false and GPU == false){mode_cpu =  0;}
   //  if(vp.GPU == true  and GPU == true ){mode_cpu =  1;}
 
@@ -164,15 +164,15 @@ struct vector_gpu{
 
   ////
   template <class T >
-  void copy_from(const T* src, size_t Ndata, int GPU_set = -2, int GPU_ori = 0)
+  void copy_from(const T* src, size_t Ndata, Int GPU_set = -2, Int GPU_ori = 0)
   {
     //Qassert(GPU_ori == 0 or GPU_ori == 1);
     Qassert(GPU_ori == 0 or GPU_ori == 1 or GPU_ori == -1);
-    int GPU_src = GPU_ori;
+    Int GPU_src = GPU_ori;
     //if(GPU_ori == 0 ){GPU_src = false ;}
     //if(GPU_ori == 1 ){GPU_src = true  ;}
 
-    int tem_GPU = GPU;
+    Int tem_GPU = GPU;
     if(GPU_set != -2){tem_GPU = GPU_set;}
     resize(Ndata, tem_GPU);
   
@@ -188,34 +188,34 @@ struct vector_gpu{
   }
 
   template <class T >
-  void copy_from(const vector_gpu<T >& vp, int GPU_set = -2)
+  void copy_from(const vector_gpu<T >& vp, Int GPU_set = -2)
   {
     copy_from(vp.p, vp.n, GPU_set, int(vp.GPU));
   }
 
   template <class T >
-  void copy_from(const std::vector<T >& vp, int GPU_set = -2)
+  void copy_from(const std::vector<T >& vp, Int GPU_set = -2)
   {
-    int GPU_mem = 0;
+    Int GPU_mem = 0;
     if(GPU_set == -2){GPU_mem = GPU;}else{GPU_mem = GPU_set;}
     copy_from(&vp[0], vp.size(), GPU_mem, 0);
   }
 
 
   template <class T >
-  void copy_from(qlat::vector<T >& vp, int GPU_set = -2, int GPU_ori = 0)
+  void copy_from(qlat::vector<T >& vp, Int GPU_set = -2, Int GPU_ori = 0)
   {
-    int GPU_mem = 0;
+    Int GPU_mem = 0;
     if(GPU_set == -2){GPU_mem = GPU;}else{GPU_mem = GPU_set;}
     T* src = (T*) qlat::get_data(vp).data();
     copy_from(src, vp.size(), GPU_mem, GPU_ori);
   }
 
   template <class T >
-  void copy_to(T* res, int GPU_ori = -2)
+  void copy_to(T* res, Int GPU_ori = -2)
   {
     ////int mode_cpu = 0;
-    int GPU_set = GPU_ori;if(GPU_ori == -2){GPU_set  =  1;}
+    Int GPU_set = GPU_ori;if(GPU_ori == -2){GPU_set  =  1;}
     //if(GPU == false and GPU_set == 0){mode_cpu =  0;} // host to host
     //if(GPU == true  and GPU_set == 1){mode_cpu =  1;} // device to device
     //if(GPU == true  and GPU_set == 0){mode_cpu =  3;} // device to host
@@ -225,9 +225,9 @@ struct vector_gpu{
   }
 
   template <class T >
-  void copy_to(vector_gpu<T >& vp, int GPU_set = -2)
+  void copy_to(vector_gpu<T >& vp, Int GPU_set = -2)
   {
-    int tem_GPU =  GPU;
+    Int tem_GPU =  GPU;
     if(GPU_set != -2){tem_GPU = GPU_set;}
     //if(GPU_set == -2){tem_GPU = GPU;}
     //else{tem_GPU = GPU_set;}
@@ -272,7 +272,7 @@ struct vector_gpu{
     Qassert(not vp.is_copy);
     Ty*  p_tmp   = vp.p;
     size_t n_tmp = vp.n;
-    int GPU_tmp = vp.GPU;
+    Int GPU_tmp = vp.GPU;
 
     ////copy to vp
     vp.p = p;
@@ -297,7 +297,7 @@ struct vector_gpu{
   }
 
   template <class T >
-  void copy_to(qlat::vector<T >& vp, int GPU_ori = 0)
+  void copy_to(qlat::vector<T >& vp, Int GPU_ori = 0)
   {
     vp.resize(size());
     T* res = (T*) qlat::get_data(vp).data();
@@ -314,7 +314,7 @@ struct vector_gpu{
     //cpy_data_thread(p, vp.p, n, mode_cpu, true, 1.0);
     //cpy_GPU(p, vp.p,n, GPU, vp.GPU, true, 1.0);
     const Long N = n;
-    const int GPU_ = GPU;
+    const Int GPU_ = GPU;
     T*  r = p;
     Ty* s = vp.p;
     qGPU_for(isp, N, GPU_, { r[isp] += s[isp]; } );
@@ -331,7 +331,7 @@ struct vector_gpu{
     //cpy_data_thread(p, vp.p, n, mode_cpu, true, -1.0);
     //cpy_GPU(p, vp.p,n, GPU, vp.GPU, true, -1.0);
     const Long N = n;
-    const int GPU_ = GPU;
+    const Int GPU_ = GPU;
     T*  r = p;
     Ty* s = vp.p;
     qGPU_for(isp, N, GPU_, { r[isp] -= s[isp]; } );
@@ -342,7 +342,7 @@ struct vector_gpu{
   const vector_gpu<Ty>& operator*=(const T& f)
   {
     Ty* data = p;
-    const int GPU_ = GPU;
+    const Int GPU_ = GPU;
     qGPU_for(isp, Long(n), GPU_, {
       data[isp] = f * data[isp];
     });
@@ -359,7 +359,7 @@ void qblas_xAXPY(vector_gpu<Ty>& y, vector_gpu<Ty>& x, T& alpha, T& beta = 0.0)
   Ty* xp = x.p;
   Ty* yp = y.p;
   const Long N = x.n;
-  const int GPU = x.GPU;
+  const Int GPU = x.GPU;
   if(beta != 0.0){
     qGPU_for(isp, N, GPU, {
       yp[isp]  = alpha * xp[isp] + beta * yp[isp];
@@ -379,7 +379,7 @@ Ty qblas_dot(vector_gpu<Ty>& y, vector_gpu<Ty>& x, bool conj = true)
   Ty* xp = x.p;
   Ty* yp = y.p;
   const Long N = x.n;
-  const int GPU = x.GPU;
+  const Int GPU = x.GPU;
   vector_gpu<Ty > buf;buf.resize(N, GPU);
   if(conj){
     qGPU_for(isp, N, GPU, {
@@ -409,12 +409,12 @@ qacc void set_zero(vector_gpu<Ty>& vec)
 struct VectorGPUKey {
   std::string tag;
   size_t size;
-  int GPU;
+  Int GPU;
   VectorGPUKey()
   {
     size = 0; GPU = false;tag = std::string("");
   }
-  VectorGPUKey(size_t size_, const std::string tag_, int GPU_)
+  VectorGPUKey(size_t size_, const std::string tag_, Int GPU_)
   {
     size = size_; GPU = GPU_;tag = tag_;
   }
@@ -473,7 +473,7 @@ inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey, const bool zero 
 }
 
 template <typename Ty >
-inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, const std::string& info, const int GPU)
+inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, const std::string& info, const Int GPU)
 {
   VectorGPUKey gkey(vol, info, GPU);
   vector_gpu<Ty >& buf = get_vector_gpu_plan<Ty >(gkey);
@@ -481,7 +481,7 @@ inline vector_gpu<Ty >& get_vector_gpu_plan(size_t vol, const std::string& info,
 }
 
 template <typename Ty >
-inline void safe_free_vector_gpu_plan(const std::string& info, const int GPU, const bool zero = false)
+inline void safe_free_vector_gpu_plan(const std::string& info, const Int GPU, const bool zero = false)
 {
   VectorGPUKey gkey(0, info, GPU);
   safe_free_vector_gpu_plan<Ty >(gkey, zero);

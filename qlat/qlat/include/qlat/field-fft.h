@@ -13,8 +13,8 @@ namespace qlat
 
 struct API FftComplexFieldPlan {
   Geometry geo;     // geo.is_only_local == true
-  int mc;           // multiplicity * sizeof(M) / sizeof(ComplexD)
-  int dir;          // direction of the fft
+  Int mc;           // multiplicity * sizeof(M) / sizeof(ComplexD)
+  Int dir;          // direction of the fft
   bool is_forward;  // is forward fft (forward \sum_x f[x] exp(-i k x))
   //
   fftw_plan fftplan;
@@ -25,7 +25,7 @@ struct API FftComplexFieldPlan {
   ~FftComplexFieldPlan() { init(); }
   //
   void init();
-  void init(const Geometry& geo_, const int mc_, const int dir_,
+  void init(const Geometry& geo_, const Int mc_, const Int dir_,
             const bool is_forward_);
 };
 
@@ -37,19 +37,19 @@ API inline Cache<std::string, FftComplexFieldPlan>& get_fft_plan_cache()
 }
 
 FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const Int mc,
-                                  const int dir, const bool is_forward);
+                                  const Int dir, const bool is_forward);
 
 template <class M>
 void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
-                           const int dir, const bool is_forward)
+                           const Int dir, const bool is_forward)
 {
   TIMER("fft_complex_field_dir");
   const Geometry geo = geo_resize(field.geo());
   const Int multiplicity = field.multiplicity;
-  const int mc = multiplicity * sizeof(M) / sizeof(ComplexD);
+  const Int mc = multiplicity * sizeof(M) / sizeof(ComplexD);
   FftComplexFieldPlan& plan = get_fft_plan(geo, mc, dir, is_forward);
   fftw_plan& fftplan = plan.fftplan;
-  const int sizec = geo.total_site()[dir];
+  const Int sizec = geo.total_site()[dir];
   const Long nc = geo.local_volume() / geo.node_site[dir] * mc;
   const Long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
   const Long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
@@ -62,7 +62,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
   field1.init();
   ComplexD* fftdatac = (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
 #pragma omp parallel for
-  for (int i = 0; i < (int)fft_fields.size(); ++i) {
+  for (Int i = 0; i < (int)fft_fields.size(); ++i) {
     if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(ComplexD))) {
       displayln(fname +
                 ssprintf(": get_data_size=%d ; nc_size*sizeof(ComplexD)=%d",
@@ -79,7 +79,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
     fftw_execute_dft(fftplan, (fftw_complex*)fftdatac, (fftw_complex*)fftdatac);
   }
 #pragma omp parallel for
-  for (int i = 0; i < (int)fft_fields.size(); ++i) {
+  for (Int i = 0; i < (int)fft_fields.size(); ++i) {
     std::memcpy((void*)get_data(fft_fields[i]).data(),
                 (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
@@ -89,7 +89,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
 }
 
 template <class M>
-void fft_complex_field_dir(Field<M>& field, const int dir,
+void fft_complex_field_dir(Field<M>& field, const Int dir,
                            const bool is_forward)
 {
   fft_complex_field_dir(field, field, dir, is_forward);
@@ -104,7 +104,7 @@ void fft_complex_field(Field<M>& field, const bool is_forward = true)
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
   // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
-  for (int dir = 0; dir < 4; ++dir) {
+  for (Int dir = 0; dir < 4; ++dir) {
     fft_complex_field_dir(field, dir, is_forward);
   }
 }
@@ -118,19 +118,19 @@ void fft_complex_field_spatial(Field<M>& field, const bool is_forward = true)
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
   // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
-  for (int dir = 0; dir < 3; ++dir) {
+  for (Int dir = 0; dir < 3; ++dir) {
     fft_complex_field_dir(field, dir, is_forward);
   }
 }
 
 template <class M>
 void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
-                        const std::vector<int>& fft_dirs,
+                        const std::vector<Int>& fft_dirs,
                         const std::vector<bool>& fft_is_forwards,
-                        int mode_fft = 1)
+                        Int mode_fft = 1)
 {
   const Long n_field = vec.size();
-  int use_plan = 0;
+  Int use_plan = 0;
   bool fft_direction = false;
   bool ft4D = false;
   if (mode_fft == 1) {
@@ -161,7 +161,7 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
       Field<M> ft;
       for (Long k = 0; k < (Long)fft_dirs.size(); ++k) {
         ft = vec[i]();
-        const int fft_dir = fft_dirs[k];
+        const Int fft_dir = fft_dirs[k];
         const bool is_forward = fft_is_forwards[k];
         fft_complex_field_dir(vec[i](), ft, fft_dir, is_forward);
       }
@@ -184,11 +184,11 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
 #define QLAT_EXTERN_TEMPLATE(TYPENAME)                                       \
                                                                              \
   QLAT_EXTERN template void fft_complex_field_dir<TYPENAME>(                 \
-      Field<TYPENAME> & field1, const Field<TYPENAME>& field, const int dir, \
+      Field<TYPENAME> & field1, const Field<TYPENAME>& field, const Int dir, \
       const bool is_forward);                                                \
                                                                              \
   QLAT_EXTERN template void fft_complex_field_dir<TYPENAME>(                 \
-      Field<TYPENAME> & field, const int dir, const bool is_forward);        \
+      Field<TYPENAME> & field, const Int dir, const bool is_forward);        \
                                                                              \
   QLAT_EXTERN template void fft_complex_field<TYPENAME>(                     \
       Field<TYPENAME> & field, const bool is_forward);                       \
@@ -198,8 +198,8 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
                                                                              \
   QLAT_EXTERN template void fft_complex_fields<TYPENAME>(                    \
       std::vector<Handle<Field<TYPENAME> > > & vec,                          \
-      const std::vector<int>& fft_dirs,                                      \
-      const std::vector<bool>& fft_is_forwards, int mode_fft)
+      const std::vector<Int>& fft_dirs,                                      \
+      const std::vector<bool>& fft_is_forwards, Int mode_fft)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);
 #undef QLAT_EXTERN_TEMPLATE

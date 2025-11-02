@@ -89,8 +89,8 @@ namespace qlat
 */
 struct FFT_Vecs{
 
-  int dim;
-  std::vector<int > nv;
+  Int dim;
+  std::vector<Int > nv;
   size_t vol;
 
   void *fft_dat;
@@ -102,15 +102,15 @@ struct FFT_Vecs{
   #endif
 
   bool GPU;
-  int single_type;
+  Int single_type;
 
   size_t datasize;
   ////size_t doffsize;
   bool flag_mem_set;
-  int bsize;
-  int civ;
+  Int bsize;
+  Int civ;
 
-  int istride_fac_default, idist_default;
+  Int istride_fac_default, idist_default;
 
   ////MPI fft paras
   ptrdiff_t block0, color_xyz, ranku;
@@ -123,7 +123,7 @@ struct FFT_Vecs{
   ////MPI fft paras
 
   template<typename Ty>
-  void set_plan(std::vector<int>& nv_set, int civ_set=2, std::vector<size_t > MPI_para_set = std::vector<size_t>());
+  void set_plan(std::vector<Int>& nv_set, Int civ_set=2, std::vector<size_t > MPI_para_set = std::vector<size_t>());
 
   inline void clear_plan();
 
@@ -168,7 +168,7 @@ struct FFT_Vecs{
 };
 
 template<typename Ty>
-void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_t > MPI_para_set)
+void FFT_Vecs::set_plan(std::vector<Int>& nv_set, Int civ_set, std::vector<size_t > MPI_para_set)
 {
   TIMERB("FFT_Vecs Set up plan");
 
@@ -177,7 +177,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
 
   Qassert(nv_set.size()!=0 and civ_set > 0);
   ///Qassert(nv_set.size()!=0 and biva_set>0 and civ_set > 0);
-  int do_clear = 0;
+  Int do_clear = 0;
   if(do_clear == 0 and nv_set != nv){do_clear = 1;}
   ///if(do_clear == 0 and biva_set != biva){do_clear = 1;}
   if(do_clear == 0 and civ_set != civ){do_clear = 1;}
@@ -198,7 +198,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
     if(bsize == 2*sizeof(float ))single_type = 1;
     Qassert(single_type != -1);
 
-    vol = 1;for(int i=0;i<dim;i++){vol = vol*nv[i];}Qassert(vol > 0);
+    vol = 1;for(Int i=0;i<dim;i++){vol = vol*nv[i];}Qassert(vol > 0);
     #ifdef QLAT_USE_ACC
     if(MPI_para.size() !=0 ){abort_r("GPU FFT MPI version not supported. \n");}
     #endif
@@ -214,8 +214,8 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   
   }
 
-  int howmany = civ;   //// the number of transforms in fft_dat
-  int istride = howmany* istride_fac_default;int idist = idist_default;
+  Int howmany = civ;   //// the number of transforms in fft_dat
+  Int istride = howmany* istride_fac_default;int idist = idist_default;
   //doffsize  = vol * howmany * bsize;
   //datasize  = doffsize;
   datasize  = vol * Long(howmany * bsize);
@@ -250,7 +250,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   {
     #ifdef __QLAT_WITH_FFT_MPI__
     MPI_Comm_split(get_comm(), color_xyz, ranku, &fft_comm);
-    for(int i=0;i<int(nv.size());i++){nrank[i] = nv[i];}
+    for(Int i=0;i<int(nv.size());i++){nrank[i] = nv[i];}
 
     if(single_type == 0){
     alloc_local = fftw_mpi_local_size_many(dim, nrank, howmany, block0, fft_comm, &local_n0, &local_0_start);
@@ -414,7 +414,7 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
 
 
 struct customLess{
-    inline bool operator()(const std::vector<int >& a, const std::vector<int >& b) const {
+    inline bool operator()(const std::vector<Int >& a, const std::vector<Int >& b) const {
     bool flag = false;
     if(a[3] < b[3]){flag = true;}
     ////c0 to be large
@@ -429,34 +429,34 @@ struct customLess{
 };
 
 
-inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1, int maxN0 = 16, int dataB=1)
+inline std::vector<Int > get_factor_jobs(Int nvec, Int civ, Int N0=-1, Int N1=-1, Int maxN0 = 16, Int dataB=1)
 {
   if(nvec < 0 or civ < 0 or maxN0 <= 0){abort_r("Vectors wrong. \n");}
   if(N1 != -1){if(N0 < N1 or N0%N1 != 0){abort_r("Vectors wrong. \n");}}
-  std::vector<int > Nl;
+  std::vector<Int > Nl;
   if(N1 != -1){Nl.resize(2);Nl[0] = N0;Nl[1] = N1;}
   if(N1 == -1){Nl.resize(1);Nl[0] = N0;}
-  int total = nvec * civ;
-  std::vector<std::vector<int > > jobL;
+  Int total = nvec * civ;
+  std::vector<std::vector<Int > > jobL;
   for(LInt i=0;i<Nl.size();i++)
   {
-    int Ne = Nl[i];
-    int maxN = maxN0;
+    Int Ne = Nl[i];
+    Int maxN = maxN0;
     //if(N1 != -1){maxN = maxN * (Nl[0]/Nl[i]);}
     //if(N1 != -1){maxN = maxN;}
 
-    int Bmax = (total+Ne-1)/Ne;
+    Int Bmax = (total+Ne-1)/Ne;
     ////qmessage("N %d, maxN %d, Bmax %d, civ %d \n", Ne, maxN, Bmax, civ);
 
-    for(int bz = 1;bz <= Bmax ; bz++)
-    for(int cz = 1;cz <= maxN; cz++)
+    for(Int bz = 1;bz <= Bmax ; bz++)
+    for(Int cz = 1;cz <= maxN; cz++)
     {
       if( bz*cz <= maxN and civ%cz == 0){
-        std::vector<int > tmp;tmp.resize(5);
-        int one_job = bz*Ne*cz;
-        int count_job = (total + one_job -1)/one_job;
-        int cost = count_job*bz*Ne*cz;
-        int NEED_COPY = 1;
+        std::vector<Int > tmp;tmp.resize(5);
+        Int one_job = bz*Ne*cz;
+        Int count_job = (total + one_job -1)/one_job;
+        Int cost = count_job*bz*Ne*cz;
+        Int NEED_COPY = 1;
         if((dataB*(civ/cz))%(Ne) == 0 ){NEED_COPY = 0;}
         tmp[0] = i;tmp[1] = bz;tmp[2] = cz;tmp[3] = cost;tmp[4] = NEED_COPY;
         jobL.push_back(tmp);
@@ -467,7 +467,7 @@ inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1
 
   std::sort(jobL.begin(), jobL.end(), customLess());
   ///int cost = jobL0[0][2];
-  ///for(int i=0;i<jobL0.size();i++){if(jobL0[i][2] == cost)}
+  ///for(Int i=0;i<jobL0.size();i++){if(jobL0[i][2] == cost)}
   return jobL[0];
   ////b0 = jobL[0][0];c0 = jobL[0][1];
 
@@ -475,21 +475,21 @@ inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1
 
 struct fft_schedule{
   fft_desc_basic fd;
-  int default_MPI;int enable_MPI;
+  Int default_MPI;int enable_MPI;
   Rotate_vecs rot;
   FFT_Vecs fft;
   FFT_Vecs fft_gpu;
   bool GPU;
-  std::vector<int > dimN;
-  std::vector<int > dimN0, dimN1;
-  int dim, nvec, civ, N_extra;
-  int b0, c0;
-  int maxN;
+  std::vector<Int > dimN;
+  std::vector<Int > dimN0, dimN1;
+  Int dim, nvec, civ, N_extra;
+  Int b0, c0;
+  Int maxN;
   bool flag_mem_set;
   move_index mv_civ;
-  int NEED_COPY;
-  int dataB;
-  int bsize;
+  Int NEED_COPY;
+  Int dataB;
+  Int bsize;
 
   fft_schedule(fft_desc_basic& fd_set, bool GPU_set=true):fd(),rot(fd_set,GPU_set),fft(GPU_set),fft_gpu(GPU_set)
   {
@@ -512,7 +512,7 @@ struct fft_schedule{
   ////-1 auto choose MPI and civ
   ////-2, nvec, civ with MPI, -3 nvec, civ without MPI 
   template<typename Ty>
-  void set_mem(const int nvec_set, const int civ_set, const std::vector<int >& dimN_set=std::vector<int >(), int default_MPI_set = -1 , int maxN_set=16, int dataB_set=1)
+  void set_mem(const Int nvec_set, const Int civ_set, const std::vector<Int >& dimN_set=std::vector<Int >(), Int default_MPI_set = -1 , Int maxN_set=16, Int dataB_set=1)
   {
     TIMERA("fft_schedule set mem");
     if(nvec == nvec_set and civ == civ_set and default_MPI == default_MPI_set and maxN == maxN_set and dataB == dataB_set){
@@ -535,7 +535,7 @@ struct fft_schedule{
     if(dim == 4){N0 = fd.mt * fd.mz * fd.my * fd.mx;N1 = fd.mz * fd.my * fd.mx;}
 
     /////====Set up b0, c0
-    std::vector<int > job(5);
+    std::vector<Int > job(5);
 
     if(default_MPI == -2 or default_MPI == -3)
     {
@@ -545,8 +545,8 @@ struct fft_schedule{
       if(enable_MPI==1)job[1] = (nvec+N1-1)/N1;
       job[2] = civ;
     }else{
-      std::vector<int > job0 = get_factor_jobs(nvec, civ, N0, -1, maxN, dataB);
-      std::vector<int > job1 = get_factor_jobs(nvec, civ, N1, -1, maxN, dataB);
+      std::vector<Int > job0 = get_factor_jobs(nvec, civ, N0, -1, maxN, dataB);
+      std::vector<Int > job1 = get_factor_jobs(nvec, civ, N1, -1, maxN, dataB);
       ///////small rotation for 3D not defined, need define it from start;
         
       if(default_MPI == -1 and dim == 3 and fd.my * fd.mx != 1){enable_MPI = 0;}
@@ -575,7 +575,7 @@ struct fft_schedule{
     NEED_COPY = 0;
     if(civ%(N_extra*c0) != 0 or GPU){NEED_COPY = 1;}
 
-    int mode_rot = -2;
+    Int mode_rot = -2;
     if(enable_MPI == 0){N_extra = N0;if(dim == 3){mode_rot =  0;}if(dim == 4){mode_rot = 1;}}
     if(enable_MPI == 1){N_extra = N1;if(dim == 3){mode_rot = -1;}if(dim == 4){mode_rot = 0;}}
 
@@ -592,7 +592,7 @@ struct fft_schedule{
         if(dim == 3){fft.set_plan<Ty >(dimN, c0);}
         if(dim == 4){
           dimN0.resize(3);dimN1.resize(1);
-          for(int i=0;i<3;i++){dimN0[i] = dimN[i + 1];}
+          for(Int i=0;i<3;i++){dimN0[i] = dimN[i + 1];}
           dimN1[0] = dimN[0];
           fft.set_plan<Ty >(dimN0, c0);
           fft_gpu.set_plan<Ty >(dimN1, fd.nz*fd.ny*fd.nx * c0);
@@ -622,7 +622,7 @@ struct fft_schedule{
   inline void print_info()
   {
     qmessage("==Jobs dim %d, ", dim);
-    for(int di=0;di<dim;di++){qmessage("%d ", dimN[di]);}
+    for(Int di=0;di<dim;di++){qmessage("%d ", dimN[di]);}
     qmessage(", nvec %d, civ %d, bsize %d. \n", nvec, civ, bsize);
     qmessage("==N_extra %d, enable_MPI %d, GPU %d, b0 %d, c0 %d, mode_rot %d, need copy %d. \n", 
       N_extra , enable_MPI, int(GPU), b0, c0, rot.mode, NEED_COPY );
@@ -637,17 +637,17 @@ struct fft_schedule{
     bool flag_GPU_4d = false;
     if(GPU == true and dim == 4){flag_GPU_4d = true;}
     if(!flag_GPU_4d){
-    if(dim == 3){for(int ti=0;ti<fd.Nt;ti++){
+    if(dim == 3){for(Int ti=0;ti<fd.Nt;ti++){
       tsrc=&src[ti * (rot.vol_buf/fd.Nt)*c0];fft.do_fft(tsrc, fftdir, false);
     }
     qacc_barrier(dummy);
     }
     if(dim == 4){tsrc=src;fft.do_fft(tsrc, fftdir);}
-    ////if(dim==4){for(int ti=0;ti<fd.nt;ti++){tsrc=&src[ti * (fd.nz*fd.ny*fd.nx) *c0]; fft.do_fft(tsrc, fftdir, false);}}
+    ////if(dim==4){for(Int ti=0;ti<fd.nt;ti++){tsrc=&src[ti * (fd.nz*fd.ny*fd.nx) *c0]; fft.do_fft(tsrc, fftdir, false);}}
     }
     
     if(flag_GPU_4d){
-      for(int ti=0;ti<fd.nt;ti++){tsrc=&src[ti * (fd.nz*fd.ny*fd.nx) *c0]; fft.do_fft(tsrc, fftdir, false);}
+      for(Int ti=0;ti<fd.nt;ti++){tsrc=&src[ti * (fd.nz*fd.ny*fd.nx) *c0]; fft.do_fft(tsrc, fftdir, false);}
       qacc_barrier(dummy);
       tsrc=src;fft_gpu.do_fft(tsrc, fftdir);
     }
@@ -655,10 +655,10 @@ struct fft_schedule{
   }
 
   template<typename Ty>
-  void dojob(std::vector<Ty* >& data, bool fftdir=true, int civ_set = -1 ){
+  void dojob(std::vector<Ty* >& data, bool fftdir=true, Int civ_set = -1 ){
     TIMERC("fft dojob");
-    int bN = data.size();
-    int each = b0*N_extra*c0;
+    Int bN = data.size();
+    Int each = b0*N_extra*c0;
 
     ////update nvec, civ
     nvec = bN;if(civ_set != -1)civ = civ_set;
@@ -668,12 +668,12 @@ struct fft_schedule{
     if(rot.flag_mem_set != true or fft.flag_mem_set != true){abort_r("Memory not set for fft_schedule! \n");}
     if(civ%c0 != 0){abort_r("civ cannot by divided by c0 ! \n");}
 
-    int cN = civ/c0;
+    Int cN = civ/c0;
     /////qmessage("bN %d, cN %d, civ %d, c0 %d, vol %d \n", bN, cN, civ, c0, int(fd.noden));
     /////rotate civ
     if(civ != c0){
       TIMERB("fft mem reorder");
-      for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 1, c0, GPU);
+      for(Int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 1, c0, GPU);
     }
 
     NEED_COPY = 0;
@@ -684,21 +684,21 @@ struct fft_schedule{
     //////if(GPU)NEED_COPY = 1;
 
     ////qmessage("==buf size %zu \n", rot.Bsize);
-    int jobN = (bN*civ + each-1) /each;
-    int bm = 0;
-    int cm = 0;
+    Int jobN = (bN*civ + each-1) /each;
+    Int bm = 0;
+    Int cm = 0;
     Ty* src;Ty* dp;
-    for(int ji=0;ji<jobN;ji++)
+    for(Int ji=0;ji<jobN;ji++)
     {
       /////qmessage("jobN %d, bm %d, cm %d. \n", jobN, bm, cm);
       ////Ty* tsrc = NULL;
       if(bm == bN){break;}
-      int bma = bm;int cma = cm;
+      Int bma = bm;int cma = cm;
       ////copy result to buf
       if(NEED_COPY == 1){
         src = (Ty*) rot.src;
 
-        for(int bi=0;bi<b0*N_extra;bi++){
+        for(Int bi=0;bi<b0*N_extra;bi++){
           dp = &(data[bma][cma*fd.noden]);
           cpy_data_thread(&src[bi*fd.noden*c0], dp, fd.noden*c0, GPU , QFALSE);
           cma += c0;if(cma == civ){cma=0;bma+=1;if(bma == bN)break;}
@@ -707,13 +707,13 @@ struct fft_schedule{
 
         /////rotate data for FFT
         rot.reorder<Ty >(true , src);
-        ////for(int bi=0;bi<b0;bi++)fft.do_fft(&src[bi*fd.noden*c0], fftdir);
-        for(int bi=0;bi<b0;bi++){
+        ////for(Int bi=0;bi<b0;bi++)fft.do_fft(&src[bi*fd.noden*c0], fftdir);
+        for(Int bi=0;bi<b0;bi++){
           call_fft(&src[bi*rot.vol_buf*c0], fftdir);
         }
         rot.reorder<Ty >(false, src);
 
-        for(int bi=0;bi<b0*N_extra;bi++){
+        for(Int bi=0;bi<b0*N_extra;bi++){
           dp = &(data[bm ][cm *fd.noden]);
           cpy_data_thread(dp, &src[bi*fd.noden*c0], fd.noden*c0, GPU , QFALSE);
           cm  += c0;if(cm  == civ){cm =0;bm +=1;if(bm  == bN)break;}
@@ -722,7 +722,7 @@ struct fft_schedule{
       }
 
       if(NEED_COPY == 0){
-        for(int bi=0;bi<b0;bi++){
+        for(Int bi=0;bi<b0;bi++){
           src = &(data[bm ][cm * fd.noden]);
           rot.reorder<Ty >(true , src);
           call_fft(src, fftdir);
@@ -736,7 +736,7 @@ struct fft_schedule{
 
     if(civ != c0){
       TIMERB("fft mem reorder");
-      for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 0, c0, GPU);
+      for(Int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 0, c0, GPU);
     }
   }
 
@@ -760,7 +760,7 @@ struct fft_schedule{
 
 };
 
-template <class Ty, int civ>
+template <class Ty, Int civ>
 void fft_fieldM_test(std::vector<qlat::FieldM<Ty, civ> > &src, bool fftdir=true, bool GPU=true , bool fft4D = false)
 {
   TIMERD("fft fieldM");
@@ -771,12 +771,12 @@ void fft_fieldM_test(std::vector<qlat::FieldM<Ty, civ> > &src, bool fftdir=true,
   Geometry& geo = src[0].geo();
   fft_desc_basic fd(geo);
 
-  std::vector<int > nv,Nv,mv;
+  std::vector<Int > nv,Nv,mv;
   geo_to_nv(geo, nv,Nv,mv);
 
-  std::vector<int > dimN;int nvec = src.size();
+  std::vector<Int > dimN;int nvec = src.size();
   std::vector<Ty* > data;data.resize(nvec);
-  for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  for(Int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
   /////3D
   if(!fft4D){dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];}
   if( fft4D){dimN.resize(4);dimN[0] = nv[3];dimN[1] = nv[2];dimN[2] = nv[1];dimN[3] = nv[0];}
@@ -788,7 +788,7 @@ void fft_fieldM_test(std::vector<qlat::FieldM<Ty, civ> > &src, bool fftdir=true,
 
 }
 
-template <class Ty, int civ>
+template <class Ty, Int civ>
 void fft_fieldM(fft_schedule& fft, std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true)
 {
   #if PRINT_TIMER>4
@@ -799,9 +799,9 @@ void fft_fieldM(fft_schedule& fft, std::vector<qlat::FieldM<Ty, civ> >& src, boo
   #endif
 
   if(src.size() < 1)return;
-  int nvec = src.size();
+  Int nvec = src.size();
   std::vector<Ty* > data;data.resize(nvec);
-  for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  for(Int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
 
   fft.dojob(data, fftdir);
 }
@@ -811,8 +811,8 @@ struct FFTGPUPlanKey {
   Geometry geo;
   bool GPU;
   bool fft4D;
-  int nvec ;
-  int civ;
+  Int nvec ;
+  Int civ;
   std::string prec;
 };
 
@@ -861,9 +861,9 @@ struct fft_gpu_copy{
 
     prec = fft.prec;
     fftP = new fft_schedule(fft.fftP->fd, fft.fftP->GPU);
-    int nvec = fft.fftP->nvec;
-    int civ  = fft.fftP->civ;
-    std::vector<int > dimN = fft.fftP->dimN;
+    Int nvec = fft.fftP->nvec;
+    Int civ  = fft.fftP->civ;
+    std::vector<Int > dimN = fft.fftP->dimN;
 
     if(prec == "RealD" ){     fftP->set_mem<ComplexD  >(nvec, civ, dimN, -1 );}
     else if(prec == "RealF"){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
@@ -905,16 +905,16 @@ inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
 }
 
 
-inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , bool GPU, bool fft4D , const std::string& prec)
+inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, Int nvec, Int civ , bool GPU, bool fft4D , const std::string& prec)
 {
   TIMER_VERBOSE("make_fft_gpu_plan");
 
   fft_desc_basic fd(geo);
 
-  std::vector<int > nv,Nv,mv;
+  std::vector<Int > nv,Nv,mv;
   geo_to_nv(geo, nv,Nv,mv);
 
-  std::vector<int > dimN;
+  std::vector<Int > dimN;
   /////3D
   if(!fft4D){dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];}
   if( fft4D){dimN.resize(4);dimN[0] = nv[3];dimN[1] = nv[2];dimN[2] = nv[1];dimN[3] = nv[0];}
@@ -930,7 +930,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
 
   ///int nvec = src.size();
   //std::vector<Ty* > data;data.resize(nvec);
-  //for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  //for(Int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
   //fft.dojob(data, fftdir);
 
   return ft;
@@ -958,7 +958,7 @@ inline const fft_gpu_copy& get_fft_gpu_plan(const FFTGPUPlanKey& fkey)
 }
 
 
-template<typename Ty, int civ>
+template<typename Ty, Int civ>
 inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& src, bool fft4d=false)
 {
   Qassert(src.size() > 0);
@@ -977,10 +977,10 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
   return fkey;
 }
 
-inline bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d)
+inline bool check_fft_mode(const Int nfft, const Geometry& geo, const bool fft4d)
 {
   bool use_qlat = false;
-  std::vector<int > nv, Nv, mv;
+  std::vector<Int > nv, Nv, mv;
   geo_to_nv(geo, nv, Nv, mv);
   if(fft4d == true ){
     if(mv[0] * mv[1] * mv[2] > nfft)
@@ -998,7 +998,7 @@ inline bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d
 }
 
 template <class Ty>
-void fft_fieldM(std::vector<Ty* >& data, int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
+void fft_fieldM(std::vector<Ty* >& data, Int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
 {
   if(data.size() < 1)return;
 
@@ -1022,26 +1022,26 @@ void fft_fieldM(std::vector<Ty* >& data, int civ, const Geometry& geo, bool fftd
 
   fkey.fft4D = fft4d;
   ////std::vector<Ty* > data;data.resize(nvec);
-  ////for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  ////for(Int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
   /////int nvec = data.size();
   get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
 }
 
 template <class Ty>
-void fft_fieldM(Ty* src, int nvec, int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
+void fft_fieldM(Ty* src, Int nvec, Int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
 {
   std::vector<Ty* > data;data.resize(nvec);
   const Long offD = geo.local_volume() * civ;
-  for(int iv=0;iv<nvec;iv++){data[iv] = &src[iv*offD];}
+  for(Int iv=0;iv<nvec;iv++){data[iv] = &src[iv*offD];}
   fft_fieldM<Ty >(data, civ, geo, fftdir, fft4d);
 }
 
-template <class Ty, int civ>
+template <class Ty, Int civ>
 void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool fft4d = false)
 {
   if(src.size() < 1)return;
 
-  int nfft = src.size() * civ;
+  Int nfft = src.size() * civ;
   const Geometry& geo = src[0].geo();
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   if(use_qlat){
@@ -1049,8 +1049,8 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
     for(unsigned int i=0;i<src.size();i++)
     {
       qlat::FieldM<Ty, civ> ft;
-      int ndir = 3;if(fft4d){ndir = 4;}
-      for (int k = 0; k < ndir; k++) {
+      Int ndir = 3;if(fft4d){ndir = 4;}
+      for (Int k = 0; k < ndir; k++) {
         ft = src[i];
         fft_complex_field_dir(src[i], ft, k, fftdir);
       }
@@ -1071,7 +1071,7 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   if(src.size() < 1)return;
   const Geometry& geo = src[0]().geo();
   const Int multiplicity = src[0]().multiplicity;
-  const int is_double = Is_data_double<M>();
+  const Int is_double = Is_data_double<M>();
   Qassert(is_double == 0 or is_double == 1);
   //bool is_double     = get_data_type_is_double<M >();
   //std::string prec = ComplexD_TYPE;int civ = 1;
@@ -1080,18 +1080,18 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
 
   using ElementaryType = typename IsBasicDataType<M >::ElementaryType ;
   std::string prec = IsBasicDataType<ElementaryType >::get_type_name();
-  int civ = multiplicity * sizeof(M)/( 2 *sizeof( ElementaryType ) );
+  Int civ = multiplicity * sizeof(M)/( 2 *sizeof( ElementaryType ) );
   Qassert(prec == "RealF" or prec == "RealD");
 
-  int nfft = src.size() * civ;
+  Int nfft = src.size() * civ;
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   if(use_qlat){
     TIMER("fft_complex_field_dir fieldM");
     for(unsigned int i=0;i<src.size();i++)
     {
       qlat::Field<M > ft;
-      int ndir = 3;if(fft4d){ndir = 4;}
-      for (int k = 0; k < ndir; k++) {
+      Int ndir = 3;if(fft4d){ndir = 4;}
+      for (Int k = 0; k < ndir; k++) {
         ft = src[i]();
         fft_complex_field_dir(src[i](), ft, k, fftdir);
       }
@@ -1115,29 +1115,29 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   fkey.prec = prec;
   fkey.fft4D = fft4d;
 
-  int nvec = src.size();
+  Int nvec = src.size();
   if( is_double){
     std::vector<ComplexD* > data;data.resize(nvec);
-    for(int si=0;si<nvec;si++){data[si] = (ComplexD*) qlat::get_data(src[si]()).data();}
+    for(Int si=0;si<nvec;si++){data[si] = (ComplexD*) qlat::get_data(src[si]()).data();}
     get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
 
   if(!is_double){
     std::vector<ComplexF* > data;data.resize(nvec);
-    for(int si=0;si<nvec;si++){data[si] = (ComplexF*) qlat::get_data(src[si]()).data();}
+    for(Int si=0;si<nvec;si++){data[si] = (ComplexF*) qlat::get_data(src[si]()).data();}
     get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
   }
 
 }
 
 template<typename Ty>
-void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >& FFT_data, int off=0)
+void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >& FFT_data, Int off=0)
 {
   const Geometry& geo = FFT_data[0].geo();
   const Long volume = geo.local_volume();
-  const Long Sdata = src.size();const int nvecs = Sdata/volume;
+  const Long Sdata = src.size();const Int nvecs = Sdata/volume;
 
   fft_fieldM<Ty >(src.data(), nvecs, 1, geo, true);
-  for(int iv=0;iv<nvecs;iv++)
+  for(Int iv=0;iv<nvecs;iv++)
   {
     qlat::FieldM<Ty, 1>& buf = FFT_data[off*nvecs + iv];Qassert(buf.initialized);
     Ty* s0 = &src[iv*volume];
@@ -1152,12 +1152,12 @@ void fft_fieldG(std::vector<qlat::FieldG<Ty> >& src, bool fftdir=true, bool fft4
   if(src.size() < 1)return;
 
   Qassert(src[0].initialized);
-  const int civ = src[0].multiplicity;
+  const Int civ = src[0].multiplicity;
   for(unsigned int si=0;si<src.size();si++){
     Qassert(src[si].initialized and src[si].multiplicity == civ and src[si].mem_order == QLAT_OUTTER);
   }
 
-  int nfft = src.size() * civ;
+  Int nfft = src.size() * civ;
   const Geometry& geo = src[0].geo();
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   Qassert(use_qlat == false);
@@ -1165,8 +1165,8 @@ void fft_fieldG(std::vector<qlat::FieldG<Ty> >& src, bool fftdir=true, bool fft4
   {
   std::vector<Ty* > data;data.resize(src.size() * civ);
   for(unsigned int si=0;si<src.size() * civ;si++){
-    const int sj = si / civ;
-    const int ci = si % civ;
+    const Int sj = si / civ;
+    const Int ci = si % civ;
     Ty* tmp = (Ty*) qlat::get_data(src[sj]).data();
     data[si] = &tmp[ci * V];
   }

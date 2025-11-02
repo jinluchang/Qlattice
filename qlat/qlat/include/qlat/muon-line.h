@@ -33,13 +33,13 @@
 namespace qlat
 {  //
 
-inline int qrename_partial(const std::string& path)
+inline Int qrename_partial(const std::string& path)
 {
   TIMER("qrename_partial");
   return qrename(path + ".partial", path);
 }
 
-inline int qrename_partial_info(const std::string& path)
+inline Int qrename_partial_info(const std::string& path)
 {
   TIMER("qrename_partial_info");
   return qrename_info(path + ".partial", path);
@@ -62,7 +62,7 @@ inline std::vector<std::string> lines(const std::string& s)
   return get_lines(is);
 }
 
-inline std::string pad_cut_string(const std::string& s, const int width,
+inline std::string pad_cut_string(const std::string& s, const Int width,
                                   const char c = ' ')
 {
   std::string ret(s);
@@ -72,7 +72,7 @@ inline std::string pad_cut_string(const std::string& s, const int width,
 
 inline std::string compare_multiline_string(const std::string& s1,
                                             const std::string& s2,
-                                            const int width = 80)
+                                            const Int width = 80)
 {
   std::vector<std::string> ls1(lines(s1)), ls2(lines(s2));
   std::ostringstream out;
@@ -270,10 +270,10 @@ inline std::vector<RealD> std_vector_from_many_magnetic_moments(
 // = mmm[16 * sigma + 4 * lambda + rho][i]
 {
   std::vector<RealD> ret(3 * 4 * 4 * 4, 0.0);
-  for (int i = 0; i < 3; ++i) {
-    for (int rho = 0; rho < 4; ++rho) {
-      for (int sigma = 0; sigma < 4; ++sigma) {
-        for (int lambda = 0; lambda < 4; ++lambda) {
+  for (Int i = 0; i < 3; ++i) {
+    for (Int rho = 0; rho < 4; ++rho) {
+      for (Int sigma = 0; sigma < 4; ++sigma) {
+        for (Int lambda = 0; lambda < 4; ++lambda) {
           ret[i * 64 + rho * 16 + sigma * 4 + lambda] =
               mmm[16 * sigma + 4 * lambda + rho][i];
         }
@@ -395,13 +395,13 @@ inline ManyMagneticMomentsCompressed compressManyMagneticMoments(
   ManyMagneticMomentsCompressed ret;
   size_t index = 0;
   bool bi, bj, bk, bl;
-  for (int i = 0; i < 4; ++i) {
+  for (Int i = 0; i < 4; ++i) {
     bi = 2 == i;
-    for (int j = 0; j < 4; ++j) {
+    for (Int j = 0; j < 4; ++j) {
       bj = bi ^ (2 == j);
-      for (int k = 0; k < 4; ++k) {
+      for (Int k = 0; k < 4; ++k) {
         bk = bj ^ (2 == k);
-        for (int l = 0; l < 3; ++l) {
+        for (Int l = 0; l < 3; ++l) {
           bl = bk ^ (2 == l);
           if (bl) {
             ret[index] = m[i * 4 * 4 + j * 4 + k][l];
@@ -422,13 +422,13 @@ inline ManyMagneticMoments uncompressManyMagneticMoments(
   set_zero(ret);
   size_t index = 0;
   bool bi, bj, bk, bl;
-  for (int i = 0; i < 4; ++i) {
+  for (Int i = 0; i < 4; ++i) {
     bi = 2 == i;
-    for (int j = 0; j < 4; ++j) {
+    for (Int j = 0; j < 4; ++j) {
       bj = bi ^ (2 == j);
-      for (int k = 0; k < 4; ++k) {
+      for (Int k = 0; k < 4; ++k) {
         bk = bj ^ (2 == k);
-        for (int l = 0; l < 3; ++l) {
+        for (Int l = 0; l < 3; ++l) {
           bl = bk ^ (2 == l);
           if (bl) {
             ret[i * 4 * 4 + j * 4 + k][l] = mc[index];
@@ -483,7 +483,7 @@ inline MuonLineInterp& getMuonLineInterp(
 
 inline ManyMagneticMomentsCompressed muonLineSymParamsCompressedInterpolate(
     const std::vector<RealD>& params,
-    const int b_interp = get_default_muonline_interp_idx())
+    const Int b_interp = get_default_muonline_interp_idx())
 {
   const MuonLineInterp& interpolation = getMuonLineInterp(b_interp);
   // displayln(ssprintf("muonLineSymParamsCompressedInterpolate: ") +
@@ -493,7 +493,7 @@ inline ManyMagneticMomentsCompressed muonLineSymParamsCompressedInterpolate(
 
 inline ManyMagneticMoments muonLineSymParams(
     const std::vector<RealD>& params, const IntegrationEps& eps,
-    const int b_interp = get_default_muonline_interp_idx())
+    const Int b_interp = get_default_muonline_interp_idx())
 {
   ManyMagneticMomentsCompressed mmm;
   if (b_interp >= 0) {
@@ -506,7 +506,7 @@ inline ManyMagneticMoments muonLineSymParams(
 
 inline ManyMagneticMoments muonLineSymThroughParam(
     const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
-    const int b_interp = get_default_muonline_interp_idx())
+    const Int b_interp = get_default_muonline_interp_idx())
 {
   std::vector<RealD> params;
   paramsFromCoordinates(params, x, y);
@@ -531,18 +531,18 @@ inline ManyMagneticMoments operator*(const SpatialO3Matrix& m,
 {
   // TIMER_VERBOSE("SpatialO3Matrix*ManyMagneticMoments");
   ManyMagneticMoments ret, tmp;
-  for (int i = 0; i < 4 * 4 * 4; ++i) {
+  for (Int i = 0; i < 4 * 4 * 4; ++i) {
     ret[i] = m * v[i];
   }
   // displayln(show(sqrt(qnorm(ret))));
   tmp = ret;
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      const int prefix = i * 4 * 4 + j * 4;
-      for (int k = 0; k < 3; ++k) {
+  for (Int i = 0; i < 4; ++i) {
+    for (Int j = 0; j < 4; ++j) {
+      const Int prefix = i * 4 * 4 + j * 4;
+      for (Int k = 0; k < 3; ++k) {
         MagneticMoment& mm = ret[prefix + k];
         set_zero(mm);
-        for (int kk = 0; kk < 3; ++kk) {
+        for (Int kk = 0; kk < 3; ++kk) {
           mm = mm + m(k, kk) * tmp[prefix + kk];
         }
       }
@@ -550,13 +550,13 @@ inline ManyMagneticMoments operator*(const SpatialO3Matrix& m,
   }
   // displayln(show(sqrt(qnorm(ret))));
   tmp = ret;
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      const int prefix = i * 4 * 4 + j;
-      for (int k = 0; k < 3; ++k) {
+  for (Int i = 0; i < 4; ++i) {
+    for (Int j = 0; j < 4; ++j) {
+      const Int prefix = i * 4 * 4 + j;
+      for (Int k = 0; k < 3; ++k) {
         MagneticMoment& mm = ret[prefix + k * 4];
         set_zero(mm);
-        for (int kk = 0; kk < 3; ++kk) {
+        for (Int kk = 0; kk < 3; ++kk) {
           mm = mm + m(k, kk) * tmp[prefix + kk * 4];
         }
       }
@@ -564,13 +564,13 @@ inline ManyMagneticMoments operator*(const SpatialO3Matrix& m,
   }
   // displayln(show(sqrt(qnorm(ret))));
   tmp = ret;
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      const int prefix = i * 4 + j;
-      for (int k = 0; k < 3; ++k) {
+  for (Int i = 0; i < 4; ++i) {
+    for (Int j = 0; j < 4; ++j) {
+      const Int prefix = i * 4 + j;
+      for (Int k = 0; k < 3; ++k) {
         MagneticMoment& mm = ret[prefix + k * 4 * 4];
         set_zero(mm);
-        for (int kk = 0; kk < 3; ++kk) {
+        for (Int kk = 0; kk < 3; ++kk) {
           mm = mm + m(k, kk) * tmp[prefix + kk * 4 * 4];
         }
       }
@@ -582,12 +582,12 @@ inline ManyMagneticMoments operator*(const SpatialO3Matrix& m,
 
 inline ManyMagneticMoments muonLineSymRotate(
     const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
-    const int b_interp = get_default_muonline_interp_idx())
+    const Int b_interp = get_default_muonline_interp_idx())
 {
   const SpatialO3Matrix rot = makeProperRotation(x, y);
   CoordinateD xr = rot * x;
   CoordinateD yr = rot * y;
-  // for (int i = 0; i < 4; ++i) {
+  // for (Int i = 0; i < 4; ++i) {
   //   if (is_very_close(xr[i], 0)) {
   //     xr[i] = 0.0;
   //   }
@@ -601,7 +601,7 @@ inline ManyMagneticMoments muonLineSymRotate(
 
 inline ManyMagneticMoments muonLineSymPermute(
     const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
-    const int b_interp = get_default_muonline_interp_idx())
+    const Int b_interp = get_default_muonline_interp_idx())
 {
   const double xyl = coordinate_len(y - x);
   double xl = coordinate_len(x);
@@ -649,7 +649,7 @@ inline ManyMagneticMoments muonLineSymPermute(
 
 inline ManyMagneticMoments muonLineSymTransform(
     const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
-    const int b_interp = get_default_muonline_interp_idx())
+    const Int b_interp = get_default_muonline_interp_idx())
 // interface function
 // This function return the avg of six different muon-line diagram
 // proper rotation transformation is made in order to reduce to 5 parameters
@@ -753,7 +753,7 @@ inline ManyMagneticMoments muonLineSymRotateCheck(const SpatialO3Matrix& rot,
   return mmm;
 }
 
-inline void initializeMuonLineInterpolation(const std::vector<int>& dims,
+inline void initializeMuonLineInterpolation(const std::vector<Int>& dims,
                                             const IntegrationEps& eps)
 // computing the muon-line interpolation database
 // take quite some time
@@ -878,8 +878,8 @@ inline bool loadMuonLineInterpolation(const std::string& path,
   }
   glb_sum(limit);
   std::vector<DataTable> tables(limit);
-  const int num_node = get_num_node();
-  const int id_node = get_id_node();
+  const Int num_node = get_num_node();
+  const Int id_node = get_id_node();
   for (size_t i = id_node; i < (size_t)limit; i += num_node) {
     std::string fn = path + ssprintf("/data.txt.%010d", i);
     Qassert(does_file_exist_qar(fn));
@@ -919,7 +919,7 @@ inline bool loadMuonLineInterpolation(const std::string& path,
 }
 
 inline void load_or_compute_muonline_interpolation(const std::string& path,
-                                                   const std::vector<int>& dims,
+                                                   const std::vector<Int>& dims,
                                                    const IntegrationEps& eps)
 {
   if (!loadMuonLineInterpolation(path)) {
@@ -968,11 +968,11 @@ struct PointPairWeight {
   RealD weight;
 };
 
-inline int boundary_multiplicity(const Coordinate& xg, const Coordinate& lb,
+inline Int boundary_multiplicity(const Coordinate& xg, const Coordinate& lb,
                                  const Coordinate& ub)
 {
-  int ret = 1;
-  for (int i = 0; i < 4; ++i) {
+  Int ret = 1;
+  for (Int i = 0; i < 4; ++i) {
     if (xg[i] == lb[i] || xg[i] == ub[i]) {
       ret *= 2;
     }
@@ -992,10 +992,10 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
 {
   const Coordinate rxy0 = relative_coordinate(y - x, total_site);
   std::vector<Coordinate> rxy_list;
-  for (int r0 = rxy0[0]; r0 <= total_site[0] / 2; r0 += total_site[0]) {
-    for (int r1 = rxy0[1]; r1 <= total_site[1] / 2; r1 += total_site[1]) {
-      for (int r2 = rxy0[2]; r2 <= total_site[2] / 2; r2 += total_site[2]) {
-        for (int r3 = rxy0[3]; r3 <= total_site[3] / 2; r3 += total_site[3]) {
+  for (Int r0 = rxy0[0]; r0 <= total_site[0] / 2; r0 += total_site[0]) {
+    for (Int r1 = rxy0[1]; r1 <= total_site[1] / 2; r1 += total_site[1]) {
+      for (Int r2 = rxy0[2]; r2 <= total_site[2] / 2; r2 += total_site[2]) {
+        for (Int r3 = rxy0[3]; r3 <= total_site[3] / 2; r3 += total_site[3]) {
           rxy_list.push_back(Coordinate(r0, r1, r2, r3));
         }
       }
@@ -1003,28 +1003,28 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
   }
   Qassert(rxy_list[0] == rxy0);
   std::vector<PointPairWeight> ret;
-  for (int i = 0; i < (int)rxy_list.size(); ++i) {
+  for (Int i = 0; i < (int)rxy_list.size(); ++i) {
     const Coordinate rxy = rxy_list[i];
     const CoordinateD rdxy = a * CoordinateD(rxy);
     Coordinate lb, ub;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       lb[m] = std::max(0, rxy[m]) - total_site[m] / 2;
       ub[m] = std::min(0, rxy[m]) + total_site[m] / 2;
     }
     Coordinate rxz = relative_coordinate(z - x, total_site);
-    for (int r0 = rxz[0]; r0 <= ub[0]; r0 += total_site[0]) {
+    for (Int r0 = rxz[0]; r0 <= ub[0]; r0 += total_site[0]) {
       if (lb[0] > r0) {
         continue;
       }
-      for (int r1 = rxz[1]; r1 <= ub[1]; r1 += total_site[1]) {
+      for (Int r1 = rxz[1]; r1 <= ub[1]; r1 += total_site[1]) {
         if (lb[1] > r1) {
           continue;
         }
-        for (int r2 = rxz[2]; r2 <= ub[2]; r2 += total_site[2]) {
+        for (Int r2 = rxz[2]; r2 <= ub[2]; r2 += total_site[2]) {
           if (lb[2] > r2) {
             continue;
           }
-          for (int r3 = rxz[3]; r3 <= ub[3]; r3 += total_site[3]) {
+          for (Int r3 = rxz[3]; r3 <= ub[3]; r3 += total_site[3]) {
             if (lb[3] > r3) {
               continue;
             }
@@ -1073,7 +1073,7 @@ inline Long get_number_of_muon_line_interpolations()
 }
 
 inline bool compute_save_muonline_interpolation_cc(const std::string& path,
-                                                   const std::vector<int>& dims,
+                                                   const std::vector<Int>& dims,
                                                    const IntegrationEps& eps)
 // preferred way to generate interpolation field
 {
@@ -1131,7 +1131,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       data.resize(size);
       Long num_running_jobs = 0;
       Long idx = 0;
-      for (int dest = 1; dest < get_num_node(); ++dest) {
+      for (Int dest = 1; dest < get_num_node(); ++dest) {
         while (is_part_muonline_interpolation_data_done(path, idx)) {
           idx += 1;
         }
@@ -1147,7 +1147,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       while (idx < (Long)jobs.size()) {
         check_time_limit();
         TIMER_VERBOSE("muonline_interpolation_cc-traj");
-        int source;
+        Int source;
         int64_t flag;
         array<ManyMagneticMomentsCompressed, job_chunk_size> result;
         receive_result(source, flag, result);
@@ -1170,7 +1170,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       while (num_running_jobs > 0) {
         check_time_limit();
         TIMER_VERBOSE("muonline_interpolation_cc-traj");
-        int source;
+        Int source;
         int64_t flag;
         array<ManyMagneticMomentsCompressed, job_chunk_size> result;
         receive_result(source, flag, result);
@@ -1179,7 +1179,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
                                               get_data(result));
         num_running_jobs -= 1;
       }
-      for (int dest = 1; dest < get_num_node(); ++dest) {
+      for (Int dest = 1; dest < get_num_node(); ++dest) {
         Long job = 0;
         displayln_info(
             ssprintf("send-job: %5d %10ld/%ld", dest, (Long)-1, jobs_total));
@@ -1276,7 +1276,7 @@ inline bool load_multiple_muonline_interpolations(
 
 inline ManyMagneticMoments get_muon_line_m(
     const CoordinateD& x, const CoordinateD& y, const CoordinateD& z,
-    const int idx = get_default_muonline_interp_idx(),
+    const Int idx = get_default_muonline_interp_idx(),
     const IntegrationEps& eps = IntegrationEps())
 {
   // ADJUST ME
@@ -1286,7 +1286,7 @@ inline ManyMagneticMoments get_muon_line_m(
 
 inline std::vector<RealD> get_muon_line_m_py(
     const CoordinateD& x, const CoordinateD& y, const CoordinateD& z,
-    const int idx = get_default_muonline_interp_idx(),
+    const Int idx = get_default_muonline_interp_idx(),
     const IntegrationEps& eps = IntegrationEps())
 {
   const ManyMagneticMoments mmm = get_muon_line_m(x, y, z, idx, eps);
@@ -1330,7 +1330,7 @@ inline void set_muon_line_m_extra_weights(
 inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
                                                  const CoordinateD& y,
                                                  const CoordinateD& z,
-                                                 const int tag)
+                                                 const Int tag)
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
 // % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
@@ -1358,10 +1358,10 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
       get_muon_line_m_extra_weights();
   Qassert(0 <= tag and tag < (int)weights.size());
   const std::vector<RealD> ws = weights[tag];
-  const int size = ws.size();
+  const Int size = ws.size();
   ManyMagneticMoments m;
   set_zero(m);
-  for (int i = 0; i < size; ++i) {
+  for (Int i = 0; i < size; ++i) {
     const RealD w = ws[i];
     if (w == 0.0) {
       continue;
@@ -1374,7 +1374,7 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
 inline std::vector<RealD> get_muon_line_m_extra_py(const CoordinateD& x,
                                                     const CoordinateD& y,
                                                     const CoordinateD& z,
-                                                    const int tag)
+                                                    const Int tag)
 {
   const ManyMagneticMoments mmm = get_muon_line_m_extra(x, y, z, tag);
   return std_vector_from_many_magnetic_moments(mmm);
@@ -1382,7 +1382,7 @@ inline std::vector<RealD> get_muon_line_m_extra_py(const CoordinateD& x,
 
 inline ManyMagneticMoments get_muon_line_m_extra_lat(
     const Coordinate& x, const Coordinate& y, const Coordinate& z,
-    const Coordinate& total_site, const double a, const int tag)
+    const Coordinate& total_site, const double a, const Int tag)
 // interface
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
@@ -1411,7 +1411,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
   if (d2zx * sqr(a) > sqr(DISTANCE_LIMIT)) {
     return mmm;
   }
-  int ppws_counts = 0;
+  Int ppws_counts = 0;
   std::vector<PointPairWeight> ppws_total;
   if (d2xy <= d2yz and d2xy <= d2zx) {
     std::vector<PointPairWeight> ppws = shift_lat_corr(x, y, z, total_site, a);
@@ -1422,7 +1422,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
     std::vector<PointPairWeight> ppws = shift_lat_corr(y, z, x, total_site, a);
     // y z : z-y -y
     // -z y-z : y z
-    for (int i = 0; i < (int)ppws.size(); ++i) {
+    for (Int i = 0; i < (int)ppws.size(); ++i) {
       const PointPairWeight ppw = ppws[i];
       ppws[i].rxy = -ppw.rxz;
       ppws[i].rxz = ppw.rxy - ppw.rxz;
@@ -1434,7 +1434,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
     std::vector<PointPairWeight> ppws = shift_lat_corr(z, x, y, total_site, a);
     // y z : -z y-z
     // z-y -y : y z
-    for (int i = 0; i < (int)ppws.size(); ++i) {
+    for (Int i = 0; i < (int)ppws.size(); ++i) {
       const PointPairWeight ppw = ppws[i];
       ppws[i].rxy = ppw.rxz - ppw.rxy;
       ppws[i].rxz = -ppw.rxy;
@@ -1442,7 +1442,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
     vector_append(ppws_total, ppws);
     ppws_counts += 1;
   }
-  for (int i = 0; i < (int)ppws_total.size(); ++i) {
+  for (Int i = 0; i < (int)ppws_total.size(); ++i) {
     const PointPairWeight& ppw = ppws_total[i];
     mmm += (ppw.weight / ppws_counts) *
            get_muon_line_m_extra(CoordinateD(), ppw.rxy, ppw.rxz, tag);
@@ -1452,7 +1452,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
 
 inline std::vector<RealD> get_muon_line_m_extra_lat_py(
     const Coordinate& x, const Coordinate& y, const Coordinate& z,
-    const Coordinate& total_site, const double a, const int tag)
+    const Coordinate& total_site, const double a, const Int tag)
 // interface
 // tag = 0 sub
 // tag = 1 nosub
@@ -1465,7 +1465,7 @@ inline std::vector<RealD> get_muon_line_m_extra_lat_py(
 // ------------------------------------------------------
 
 inline void load_compute_save_muonline_interpolation(
-    const std::string& path, const std::vector<int>& dims,
+    const std::string& path, const std::vector<Int>& dims,
     const IntegrationEps& eps)
 {
   if (!load_multiple_muonline_interpolations(path)) {
@@ -1494,18 +1494,18 @@ inline void test_muonline_transformation()
     my_start = 0;
   }
 #pragma omp parallel for schedule(dynamic)
-  for (int i = my_start; i < (int)my_end; ++i) {
-    const int a = i / 9;
-    const int b = i % 9;
-    const int bx = b / 3;
-    const int by = b % 3;
+  for (Int i = my_start; i < (int)my_end; ++i) {
+    const Int a = i / 9;
+    const Int b = i % 9;
+    const Int bx = b / 3;
+    const Int by = b % 3;
     RngState rsi(rs, a);
     CoordinateD x, y;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       x[m] = u_rand_gen(rsi, high, low);
       y[m] = u_rand_gen(rsi, high, low);
     }
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       if (1 == bx) {
         x[m] /= 5.0;
       } else if (2 == bx) {
@@ -1526,7 +1526,7 @@ inline void test_muonline_transform_scaling()
 {
   TIMER_VERBOSE("test_muonline_transform_scaling");
   RngState rs(get_global_rng_state(), "test_muonline_transform_scaling");
-  const int size = 1024;
+  const Int size = 1024;
   const double high = 1.0;
   const double low = -1.0;
   // const double ratio = 2.0;
@@ -1542,10 +1542,10 @@ inline void test_muonline_transform_scaling()
     my_start = 0;
   }
 #pragma omp parallel for schedule(dynamic)
-  for (int i = my_start; i < (int)my_end; ++i) {
+  for (Int i = my_start; i < (int)my_end; ++i) {
     RngState rsi(rs, i);
     CoordinateD x, y;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       x[m] = u_rand_gen(rsi, high, low);
       x[m] *= pow(u_rand_gen(rsi, 1.0, 0.0), 10);
       y[m] = u_rand_gen(rsi, high, low);
@@ -1568,7 +1568,7 @@ inline void test_muonline_interp()
 {
   TIMER_VERBOSE("test_muonline_interp")
   RngState rs(get_global_rng_state(), "test_muonline_interp");
-  const int size = 1024;
+  const Int size = 1024;
   // const double high = 1.0;
   // const double low = -1.0;
   // const double ratio = 2.0;
@@ -1586,13 +1586,13 @@ inline void test_muonline_interp()
   const MuonLineInterp& interp = getMuonLineInterp();
   const size_t interp_size = interp.size();
 #pragma omp parallel for schedule(dynamic)
-  for (int i = my_start; i < (int)my_end; ++i) {
+  for (Int i = my_start; i < (int)my_end; ++i) {
     RngState rsi(rs, i);
     const size_t idx = rand_gen(rsi) % interp_size;
     const std::vector<RealD> params = interp.get_coor(idx);
     CoordinateD x, y;
     coordinatesFromParams(x, y, params);
-    for (int i = 0; i < 4; ++i) {
+    for (Int i = 0; i < 4; ++i) {
       if (is_very_close(x[i], 0)) {
         x[i] = 0.0;
       }
@@ -1630,10 +1630,10 @@ inline void test_muonline_rotate()
     my_start = 0;
   }
 #pragma omp parallel for schedule(dynamic)
-  for (int i = my_start; i < (int)my_end; ++i) {
+  for (Int i = my_start; i < (int)my_end; ++i) {
     RngState rsi(rs, i);
     CoordinateD x, y;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       x[m] = u_rand_gen(rsi, high, low);
       x[m] *= pow(u_rand_gen(rsi, 1.0, 0.0), 5);
       y[m] = u_rand_gen(rsi, high, low);
@@ -1662,10 +1662,10 @@ inline void test_muonline_int()
     my_start = 0;
   }
 #pragma omp parallel for schedule(dynamic)
-  for (int i = my_start; i < (int)my_end; ++i) {
+  for (Int i = my_start; i < (int)my_end; ++i) {
     RngState rsi(rs, i);
     CoordinateD x, y;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       x[m] = 0.1 * (int)u_rand_gen(rsi, high, low);
       y[m] = 0.1 * (int)u_rand_gen(rsi, high, low);
     }
@@ -1685,7 +1685,7 @@ inline void test_muonLine()
   TIMER_VERBOSE("test_muonLine");
   if (IS_USING_MUON_LINE_INTERPOLATION) {
     load_compute_save_muonline_interpolation(
-        "huge-data-muon-line-interpolation", std::vector<int>(5, 12),
+        "huge-data-muon-line-interpolation", std::vector<Int>(5, 12),
         IntegrationEps());
   }
   // const CoordinateD x(0.1, 0.2, 0.0, 0.5);

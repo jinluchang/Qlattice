@@ -45,7 +45,7 @@ inline std::string str_printf(const char *format, ...)
   return std::string(cstr);
 }
 
-inline int Printf(const char *format, ...)
+inline Int Printf(const char *format, ...)
 {
   if (!get_id_node()) {
     va_list args;
@@ -65,7 +65,7 @@ inline FILE *Fopen(const char *filename, const char *mode)
   }
 }
 
-inline int Fprintf(FILE *pFile, const char *format, ...)
+inline Int Fprintf(FILE *pFile, const char *format, ...)
 {
   if (!get_id_node()) {
     va_list args;
@@ -76,7 +76,7 @@ inline int Fprintf(FILE *pFile, const char *format, ...)
   }
 }
 
-inline int Fflush(FILE *pFile)
+inline Int Fflush(FILE *pFile)
 {
   if (!get_id_node()) {
     return fflush(pFile);
@@ -113,7 +113,7 @@ void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<N> s = src.get_elems_const(xl);
     Vector<M> d = dest.get_elems(xl);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       castTruncated(d[m], s[m]);
     }
   }
@@ -151,7 +151,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
   //
   Geometry geo_only_local = geo_resize(origin.geo(), 0);
   crc32_t hash;
-  for (int id_node = 0; id_node < get_num_node(); id_node++) {
+  for (Int id_node = 0; id_node < get_num_node(); id_node++) {
     if (get_id_node() == id_node) {
       crc32(hash, (void *)get_data(origin).data(),
             get_data(origin).size() * sizeof(M));
@@ -191,18 +191,18 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
   Long range_low = geo_only_local.local_volume() * get_id_node();
   Long range_high = range_low + geo_only_local.local_volume();
   //
-  for (int i = 0; i < get_num_node(); i++) {
+  for (Int i = 0; i < get_num_node(); i++) {
     // std::cout << "Shuffle loop: " << i << std::endl;
     //
-    int id_send_node = (get_id_node() + i) % get_num_node();
+    Int id_send_node = (get_id_node() + i) % get_num_node();
     //
     Coordinate coor_send_node = qlat::coordinate_from_index(
         id_send_node, geo_only_local.geon.size_node);
 #pragma omp parallel for
-    for (int index = 0; index < geo_only_local.local_volume(); index++) {
+    for (Int index = 0; index < geo_only_local.local_volume(); index++) {
       Coordinate local_coor = geo_only_local.coordinate_from_index(index);
       Coordinate global_coor;
-      for (int mu = 0; mu < 4; mu++) {
+      for (Int mu = 0; mu < 4; mu++) {
         global_coor[mu] =
             local_coor[mu] + coor_send_node[mu] * geo_only_local.node_site[mu];
       }
@@ -247,7 +247,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
       outputFile = fopen(write_addr.c_str(), "w");
   }
   //
-  for (int i = 0; i < get_num_node(); i++) {
+  for (Int i = 0; i < get_num_node(); i++) {
     if (get_id_node() == 0) {
       M *ptr = get_data(field_send).data();
       Qassert(ptr != NULL);
@@ -285,8 +285,8 @@ inline void timer_fread(char *ptr, Long size, FILE *inputFile)
 
 template <class M>
 void sophisticated_serial_read(qlat::Field<M> &destination,
-                               const std::string &import, int pos,
-                               const int num_of_reading_threads = 0)
+                               const std::string &import, Int pos,
+                               const Int num_of_reading_threads = 0)
 {
   // Blindly read binary data into field. All checking should be handled by
   // wrapper functions.
@@ -327,12 +327,12 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   Long range_high = range_low + geo_only_local.local_volume();
   //
   SYNC_NODE();
-  int cycle_limit = 0;
+  Int cycle_limit = 0;
   if (num_of_reading_threads > 0)
     cycle_limit = (int)ceil((double)get_num_node() / num_of_reading_threads);
   else
     cycle_limit = 1;
-  for (int cycle = 0; cycle < cycle_limit; cycle++) {
+  for (Int cycle = 0; cycle < cycle_limit; cycle++) {
     if (get_id_node() % cycle_limit == cycle) {
       std::cout << "Reading STARTED:  Node Number =\t" << get_id_node()
                 << std::endl;
@@ -363,7 +363,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //		qassert(pos_ > -1); qassert(!feof(inputFile));
   //	}
   //
-  //	for(int i = 0; i < get_num_node(); i++){
+  //	for(Int i = 0; i < get_num_node(); i++){
   //
   //		if(get_id_node() == 0){
   //			std::cout << "Reading Cycle: " << i << std::endl;
@@ -383,16 +383,16 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //
   field_rslt = field_send;
   //
-  for (int i = 0; i < get_num_node(); i++) {
-    int id_send_node = (get_id_node() + i) % get_num_node();
+  for (Int i = 0; i < get_num_node(); i++) {
+    Int id_send_node = (get_id_node() + i) % get_num_node();
     //
     Coordinate coor_send_node = qlat::coordinate_from_index(
         id_send_node, geo_only_local.geon.size_node);
 #pragma omp parallel for
-    for (int index = 0; index < geo_only_local.local_volume(); index++) {
+    for (Int index = 0; index < geo_only_local.local_volume(); index++) {
       Coordinate local_coor = geo_only_local.coordinate_from_index(index);
       Coordinate global_coor;
-      for (int mu = 0; mu < 4; mu++) {
+      for (Int mu = 0; mu < 4; mu++) {
         global_coor[mu] =
             local_coor[mu] + coor_send_node[mu] * geo_only_local.node_site[mu];
       }

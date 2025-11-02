@@ -6,12 +6,12 @@
 namespace qlat
 {  //
 
-int get_field_init_from_env();
+Int get_field_init_from_env();
 
-API inline int& get_field_init()
+API inline Int& get_field_init()
 // qlat parameter
 {
-  static int t = get_field_init_from_env();
+  static Int t = get_field_init_from_env();
   return t;
 }
 

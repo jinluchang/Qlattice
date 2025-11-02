@@ -25,7 +25,7 @@ inline bool has_cuba()
 }
 
 template <class F>
-inline int cubaFunction(const int* ndim, const double x[], const int* ncomp,
+inline Int cubaFunction(const Int* ndim, const double x[], const Int* ncomp,
                         double f[], void* userdata)
 {
   // TIMER("cubaFunction");
@@ -38,20 +38,18 @@ inline int cubaFunction(const int* ndim, const double x[], const int* ncomp,
 }
 
 template <class F>
-void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
-                      std::vector<double>& prob, int& nregions, long long int& neval,
-                      int& fail, const int ndim, const int ncomp, const F& f,
-                      const double epsabs = 0.0, const double epsrel = 1.0e-5,
-                      const int flags = 0, const int seed = 23,
-                      const long mineval = 128,
-                      const long maxeval = 16 * 1024 * 1024 * 4,
-                      const int key1 = 7, const int key2 = 7,
-                      const int key3 = 1, const int maxpass = 5,
-                      const double border = 0.0, const double maxchisq = 10.0,
-                      const double mindeviation = 0.25, const long long int ngiven = 0,
-                      int ldxgiven = 0, double xgiven[] = NULL,
-                      const long long int nextra = 0, peakfinder_t peakfinder = NULL,
-                      const char* statefile = NULL, void* spin = NULL)
+void integrateDivonne(
+    std::vector<double>& integral, std::vector<double>& error,
+    std::vector<double>& prob, Int& nregions, long long& neval, Int& fail,
+    const Int ndim, const Int ncomp, const F& f, const double epsabs = 0.0,
+    const double epsrel = 1.0e-5, const Int flags = 0, const Int seed = 23,
+    const long mineval = 128, const long maxeval = 16 * 1024 * 1024 * 4,
+    const Int key1 = 7, const Int key2 = 7, const Int key3 = 1,
+    const Int maxpass = 5, const double border = 0.0,
+    const double maxchisq = 10.0, const double mindeviation = 0.25,
+    const long long ngiven = 0, Int ldxgiven = 0, double xgiven[] = NULL,
+    const long long nextra = 0, peakfinder_t peakfinder = NULL,
+    const char* statefile = NULL, void* spin = NULL)
 {
   TIMER("integrateDivonne");
 #ifndef QLAT_NO_CUBA
@@ -68,7 +66,7 @@ void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
           spin, &nregions, &neval, &fail, integral.data(), error.data(),
           prob.data());
   // DisplayInfo("", fname, "nregions=%d ; neval=%d ; fail=%d\n", nregions,
-  // neval, fail); for (int i = 0; i < ncomp; ++i) {
+  // neval, fail); for (Int i = 0; i < ncomp; ++i) {
   //   DisplayInfo("", fname, "i=%d integral=%23.16e ; error=%23.16e ;
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
@@ -108,11 +106,11 @@ void integrateDivonne(std::vector<double>& integral, std::vector<double>& error,
 
 template <class F>
 void integrateCuhre(std::vector<double>& integral, std::vector<double>& error,
-                    std::vector<double>& prob, int& nregions, long long int& neval,
-                    int& fail, const int ndim, const int ncomp, const F& f,
+                    std::vector<double>& prob, Int& nregions, long long& neval,
+                    Int& fail, const Int ndim, const Int ncomp, const F& f,
                     const double epsabs = 0.0, const double epsrel = 1.0e-5,
-                    const int flags = 0, const long mineval = 128,
-                    const long maxeval = 16 * 1024 * 1024 * 4, const int key = 7,
+                    const Int flags = 0, const long mineval = 128,
+                    const long maxeval = 16 * 1024 * 1024 * 4, const Int key = 7,
                     const char* statefile = NULL, void* spin = NULL)
 {
   TIMER("integrateCuhre");
@@ -125,7 +123,7 @@ void integrateCuhre(std::vector<double>& integral, std::vector<double>& error,
         mineval, maxeval, key, statefile, spin, &nregions, &neval, &fail,
         integral.data(), error.data(), prob.data());
   // DisplayInfo("", fname, "nregions=%d ; neval=%d ; fail=%d\n", nregions,
-  // neval, fail); for (int i = 0; i < ncomp; ++i) {
+  // neval, fail); for (Int i = 0; i < ncomp; ++i) {
   //   DisplayInfo("", fname, "i=%d integral=%23.16e ; error=%23.16e ;
   //   fail=%f\n", i, integral[i], error[i], prob[i]);
   // }
@@ -167,8 +165,8 @@ inline void test_integrationMultidimensional()
 {
   TIMER_VERBOSE("test_integrationMultidimensional");
   std::vector<double> integral, error, prob;
-  int nregions, fail;
-  long long int neval;
+  Int nregions, fail;
+  long long neval;
   integrateCuhre(integral, error, prob, nregions, neval, fail, 4, 1,
                  test_integrand4d);
   fdisplayln(stdout, ssprintf("%f %f %f", integral[0], error[0], prob[0]));

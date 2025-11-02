@@ -158,7 +158,7 @@ struct expand_field_buffer {
   }
   //
   template<typename T>
-  void init(const Geometry& geo_, const std::string& tag_, T* res, const int MULTI, const int GPU){
+  void init(const Geometry& geo_, const std::string& tag_, T* res, const Int MULTI, const Int GPU){
     dsize = MULTI * sizeof(T);
     Qassert(dsize % sizeof(int8_t) == 0);
     //
@@ -206,12 +206,12 @@ struct expand_field_buffer {
   //
   // type 0 : first copy, 1 : second copy
   template<typename T>
-  void excute_copyT(int type, int MULTI )
+  void excute_copyT(Int type, Int MULTI )
   {
     TIMER_FLOPS("expand_field_buffer excute_copy");
     Qassert(initialized);
     Qassert(bs.size() > 0 and br.size() > 0  and bs.mem_type == br.mem_type);
-    int GPU = 1;
+    Int GPU = 1;
     if(bs.mem_type == MemType::Cpu or bs.mem_type == MemType::Comm){GPU = 0;}
     //
     T* sP  = (T*) bs.data();
@@ -230,7 +230,7 @@ struct expand_field_buffer {
       qGPU_for(isp, Nsend, GPU, {
         const Long ri = pack_send[isp * 2 + 0] * MULTI;//offset with MULTI
         const Long si = pack_send[isp * 2 + 1] * MULTI;
-        for(int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
+        for(Int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
       });
       timer.flops += Nsend * MULTI * sizeof(T);
     }
@@ -239,14 +239,14 @@ struct expand_field_buffer {
       qGPU_for(isp, Nrecv, GPU, {
         const Long ri = pack_recv[isp * 2 + 0] * MULTI;
         const Long si = pack_recv[isp * 2 + 1] * MULTI;
-        for(int n=0;n<MULTI;n++){res[ri + n] = rP[si + n];}
+        for(Int n=0;n<MULTI;n++){res[ri + n] = rP[si + n];}
       });
       init();
       timer.flops += Nrecv * MULTI * sizeof(T);
     }
   }
   //
-  inline void excute_copy(int type)
+  inline void excute_copy(Int type)
   {
     if(!initialized){return ;}
     bool find = false;
@@ -290,11 +290,11 @@ inline void expand_buffer_wait_mpi(){
   std::vector<expand_field_buffer>& bufs = get_expand_buffer_full_list();
   std::vector<MPI_Request>& reqs_recv = get_expand_buffer_reqs_recv();
   std::vector<MPI_Request>& reqs_send = get_expand_buffer_reqs_send();
-  static int do_comm_step = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_AMD"), 0);
+  static Int do_comm_step = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_AMD"), 0);
   Qassert(do_comm_step == 1 or do_comm_step == 0);
   if(do_comm_step == 1){
     mpi_waitall(reqs_recv);//receive done and write
-    for(int i=0;i<MAX_EXPAND_BUF;i++){
+    for(Int i=0;i<MAX_EXPAND_BUF;i++){
       timer.flops += bufs[i].get_flops();
       bufs[i].excute_copy(1);
     }
@@ -304,7 +304,7 @@ inline void expand_buffer_wait_mpi(){
   if(do_comm_step == 0){
     mpi_waitall(reqs_recv);//receive done and write
     mpi_waitall(reqs_send);//send    done and write
-    for(int i=0;i<MAX_EXPAND_BUF;i++){
+    for(Int i=0;i<MAX_EXPAND_BUF;i++){
       timer.flops += bufs[i].get_flops();
       bufs[i].excute_copy(1);
     }
@@ -316,13 +316,13 @@ inline void expand_buffer_wait_mpi(){
 
 template <class T>
 inline expand_field_buffer& expand_buffer(const Geometry& geo, 
-  const std::string& tag, T* res, const int MULTI,  const int GPU, int& idx){
+  const std::string& tag, T* res, const Int MULTI,  const Int GPU, Int& idx){
   std::vector<expand_field_buffer>& bufs = get_expand_buffer_full_list();
   // check if res is already in buffer or not
-  static int do_comm_default = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_asyn"), 1);
+  static Int do_comm_default = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_asyn"), 1);
   Qassert(do_comm_default == 0 or do_comm_default == 1);
-  int do_comm = 1 - do_comm_default;
-  for(int i=0;i<MAX_EXPAND_BUF;i++){
+  Int do_comm = 1 - do_comm_default;
+  for(Int i=0;i<MAX_EXPAND_BUF;i++){
     if(bufs[i].initialized){
       if(&bufs[i].pres[0] == (int8_t*) &res[0]){
         do_comm = 1;
@@ -331,7 +331,7 @@ inline expand_field_buffer& expand_buffer(const Geometry& geo,
   }
   // if not found then do all mpi and return 0
   if(do_comm == 0){
-    for(int i=0;i<MAX_EXPAND_BUF;i++){
+    for(Int i=0;i<MAX_EXPAND_BUF;i++){
       if(!bufs[i].initialized){
         bufs[i].init(geo, tag, res, MULTI, GPU);
         idx = i;
@@ -354,11 +354,11 @@ inline expand_field_buffer& expand_buffer(const Geometry& geo,
 }
 
 template <class M>
-void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const int MULTI, 
-  const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), int GPU = 1, const QBOOL dummy = QTRUE){
+void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const Int MULTI, 
+  const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), Int GPU = 1, const QBOOL dummy = QTRUE){
   Qassert(sizeof(M) % sizeof(double) == 0);
   (void) dummy;
-  //const int MULTI = geo.multiplicity;
+  //const Int MULTI = geo.multiplicity;
   const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
   const Int multiplicity = 1;//always 1 for the buffers reuse
   //
@@ -389,7 +389,7 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const int MULTI,
   M* rP = (M*) &rbuf[0];
   //
   ////setup reciev
-  const int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
+  const Int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
   for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
     const CommMsgInfo& cmi = plan.recv_msg_infos[i]; 
     mpi_irecv(&rP[cmi.buffer_idx * MULTI], cmi.size * mpi_size, MPI_DOUBLE,
@@ -403,7 +403,7 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const int MULTI,
   qGPU_for(isp, Nsend, GPU, {
     Long ri = pack_send[isp * 2 + 0] * MULTI;//offset with multivec
     Long si = pack_send[isp * 2 + 1] * MULTI;
-    for(int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
+    for(Int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
   });
   //
   { 
@@ -419,17 +419,17 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const int MULTI,
   qGPU_for(isp, Nrecv, GPU, {
     const Long ri = pack_recv[isp * 2 + 0] * MULTI;
     const Long si = pack_recv[isp * 2 + 1] * MULTI;
-    for(int n=0;n<MULTI;n++){res[ri + n] = rP[si + n];}
+    for(Int n=0;n<MULTI;n++){res[ri + n] = rP[si + n];}
   });
   //
   mpi_waitall(reqs_send);
 }
 
 template <class M>
-void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI, 
-  const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), int GPU = 1, const QBOOL dummy = QTRUE){
+void refresh_expanded_GPUT(M* res, const Geometry& geo, const Int MULTI, 
+  const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), Int GPU = 1, const QBOOL dummy = QTRUE){
   Qassert(sizeof(M) % sizeof(double) == 0);
-  //const int MULTI = geo.multiplicity;
+  //const Int MULTI = geo.multiplicity;
   const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
   const Int multiplicity = 1;//always 1 for the buffers reuse
   //
@@ -450,7 +450,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   std::vector<MPI_Request>& reqs_send = get_expand_buffer_reqs_send();
   std::vector<MPI_Request>& reqs_recv = get_expand_buffer_reqs_recv();
   //
-  int idx_buf = -1;
+  Int idx_buf = -1;
   expand_field_buffer& efb = expand_buffer(geo, tag, res, MULTI, GPU, idx_buf);
   Qassert(idx_buf >= 0);
   //
@@ -458,7 +458,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
   M* rP = (M*) efb.br.data();
   //
   ////setup reciev
-  const int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG + idx_buf;
+  const Int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG + idx_buf;
   for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
     const CommMsgInfo& cmi = plan.recv_msg_infos[i]; 
     mpi_irecv(&rP[cmi.buffer_idx * MULTI], cmi.size * mpi_size, MPI_DOUBLE,
@@ -479,7 +479,7 @@ void refresh_expanded_GPUT(M* res, const Geometry& geo, const int MULTI,
 }
 
 template <class M>
-void refresh_expanded_GPU(M* res, const Geometry& geo, const int MULTI, const std::string& tag, const int GPU = 1, const QBOOL dummy = QTRUE){
+void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI, const std::string& tag, const Int GPU = 1, const QBOOL dummy = QTRUE){
   std::vector<std::string > tagL = stringtolist(tag);
   //
   if(tagL.size() == 0 or tagL[0] == std::string(""))
@@ -500,7 +500,7 @@ inline std::vector<std::string > expand_tags(){
 }
 
 template <class M>
-void refresh_expanded_GPU(M* res, const Geometry& geo, const int MULTI, int dir = -1000, const int GPU = 1, const QBOOL dummy = QTRUE){
+void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI, Int dir = -1000, const Int GPU = 1, const QBOOL dummy = QTRUE){
   Qassert(dir == -1000 or dir == -100 or (dir >= -3-1 and dir <= 3));
   // with corner
   if(dir == -1000){
@@ -527,7 +527,7 @@ void refresh_expanded_GPU(M* res, const Geometry& geo, const int MULTI, int dir 
 }
 
 template <class M>
-void refresh_expanded_GPU(Field<M>& f, int dir = -1000, const int GPU = 1, const QBOOL dummy = QTRUE){
+void refresh_expanded_GPU(Field<M>& f, Int dir = -1000, const Int GPU = 1, const QBOOL dummy = QTRUE){
   M* res = (M*) qlat::get_data(f).data();
   refresh_expanded_GPU(res, f.geo(), f.multiplicity, dir, GPU, dummy);
 }

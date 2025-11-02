@@ -16,7 +16,7 @@ namespace qlat
 {  //
 
 struct InterpolationDim {
-  int n;
+  Int n;
   double xhigh;
   double xlow;
 };
@@ -42,7 +42,7 @@ struct InterpolationNd {
     return false;
   }
   //
-  void add_dimension(const int n, const double xhigh, const double xlow)
+  void add_dimension(const Int n, const double xhigh, const double xlow)
   // use n-grid in next dimension with i=0 <> xlow and i=n-1 <> xhigh
   {
     InterpolationDim d = {n, xhigh, xlow};
@@ -61,9 +61,9 @@ struct InterpolationNd {
   //
   size_t size() const { return data.size(); }
   //
-  std::vector<int> get_icoor(size_t idx) const
+  std::vector<Int> get_icoor(size_t idx) const
   {
-    std::vector<int> icoor(dims.size());
+    std::vector<Int> icoor(dims.size());
     for (size_t j = 0; j < dims.size(); j++) {
       icoor[j] = idx % dims[j].n;
       idx /= dims[j].n;
@@ -71,19 +71,19 @@ struct InterpolationNd {
     return icoor;
   }
   //
-  size_t get_index(const std::vector<int>& icoor) const
+  size_t get_index(const std::vector<Int>& icoor) const
   {
     size_t idx = 0;
-    for (int j = (int)dims.size() - 1; j >= 0; j--) {
+    for (Int j = (int)dims.size() - 1; j >= 0; j--) {
       idx *= dims[j].n;
       idx += icoor[j];
     }
     return idx;
   }
   //
-  std::vector<int> index_plus(const std::vector<int>& input, const int i) const
+  std::vector<Int> index_plus(const std::vector<Int>& input, const Int i) const
   {
-    std::vector<int> ret = input;
+    std::vector<Int> ret = input;
     ret[i] += 1;
     if (ret[i] == dims[i].n) {
       // this is intentional for use below
@@ -92,7 +92,7 @@ struct InterpolationNd {
     return ret;
   }
   //
-  std::vector<double> coor_from_icoor(const std::vector<int>& icoor) const
+  std::vector<double> coor_from_icoor(const std::vector<Int>& icoor) const
   {
     std::vector<double> x(icoor.size());
     for (size_t j = 0; j < dims.size(); j++) {
@@ -124,7 +124,7 @@ struct InterpolationNd {
       qerr(ssprintf("InterpolationNd: dims.size=%ld ; x.size()=%ld .",
                     (Long)dims.size(), (Long)x.size()));
     }
-    std::vector<int> il(dims.size());
+    std::vector<Int> il(dims.size());
     std::vector<double> vl(dims.size());
     // get coordinate left of x in each dimension
     for (size_t j = 0; j < dims.size(); j++) {
@@ -147,10 +147,10 @@ struct InterpolationNd {
             assert(false);
           }
         }
-        int ileft =
+        Int ileft =
             (int)(fj *
                   (d.n - 1));  // fringe case for x[j] == d.xhigh, ileft=d.n-1
-        // int iright = (ileft == d.n - 1) ? ileft : ileft + 1;
+        // Int iright = (ileft == d.n - 1) ? ileft : ileft + 1;
         double dj = (d.xhigh - d.xlow) / (double)(d.n - 1);
         double lam = (x[j] - d.xlow - dj * ileft) / dj;
         if (false == (0.0 <= lam && lam <= 1.0)) {
@@ -180,7 +180,7 @@ template <class C>
 struct SimpleInterpolator {
   typedef InterpolationNd<C, SimpleInterpolator<C> > IP;
   //
-  C operator()(const IP& ip, std::vector<int>& il,
+  C operator()(const IP& ip, std::vector<Int>& il,
                std::vector<double>& vl) const
   // do interpolation
   {
@@ -197,7 +197,7 @@ template <class C>
 struct BilinearInterpolator {
   typedef InterpolationNd<C, BilinearInterpolator<C> > IP;
   //
-  C operator()(const IP& ip, std::vector<int>& il,
+  C operator()(const IP& ip, std::vector<Int>& il,
                std::vector<double>& vl) const
   // n-dimensional box, interpolate one dimension at a time
   //
@@ -211,7 +211,7 @@ struct BilinearInterpolator {
   {
     std::vector<C> cube(1 << il.size());
     for (size_t points = 0; points < cube.size(); points++) {
-      std::vector<int> i = il;
+      std::vector<Int> i = il;
       for (size_t d = 0; d < il.size(); d++) {
         if ((1 << d) & points) {
           i = ip.index_plus(i, d);
@@ -249,18 +249,18 @@ inline void test_interpolationBilinear()
     return;
   }
   RngState rs("test_interpolationBilinear");
-  const int test_size = 4;
+  const Int test_size = 4;
   InterpolationBilinearNd<double> interpolation;
   // InterpolationNd<double, SimpleInterpolator<double> > interpolation;
   const double limit = 2.0;
-  const int dimN = 16;
+  const Int dimN = 16;
   interpolation.add_dimension(dimN, limit, -limit);
   interpolation.add_dimension(dimN, limit, -limit);
   interpolation.add_dimension(dimN, limit, -limit);
   interpolation.add_dimension(dimN, limit, -limit);
   interpolation.add_dimension(dimN, limit, -limit);
   std::vector<double> shift(5);
-  for (int k = 0; k < test_size; ++k) {
+  for (Int k = 0; k < test_size; ++k) {
     for (size_t i = 0; i < shift.size(); ++i) {
       shift[i] = u_rand_gen(rs, PI, 0.0);
     }

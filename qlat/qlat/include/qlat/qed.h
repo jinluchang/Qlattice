@@ -42,7 +42,7 @@ inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<T> fv = f.get_elems(xl);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       fv[m] = sqrt(2.0) * fv[m].real();
     }
   }
@@ -66,19 +66,19 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
     RngState rst = rs.newtype(gindex);
     double s2 = 0.0;
     array<double, DIMN> kk;
-    for (int i = 0; i < DIMN; i++) {
+    for (Int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
       kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     Vector<ComplexD> fv = f.get_elems(kl);
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         fv[m] = 0.0;
       }
     } else {
       const double sigma = std::sqrt(1.0 / (2.0 * total_volume * s2));
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         const double re = g_rand_gen(rst, 0.0, sigma);
         const double im = g_rand_gen(rst, 0.0, sigma);
         fv[m] = T(re, im);
@@ -114,14 +114,14 @@ inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo, 
     RngState rst = rs.newtype(gindex);
     double s2 = sqr(mass);
     array<double, DIMN> kk;
-    for (int i = 0; i < DIMN; i++) {
+    for (Int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
       kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     Vector<ComplexD> fv = f.get_elems(kl);
     const double sigma = std::sqrt(1.0 / (2.0 * total_volume * s2));
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       const double re = g_rand_gen(rst, 0.0, sigma);
       const double im = g_rand_gen(rst, 0.0, sigma);
       fv[m] = T(re, im);
@@ -153,19 +153,19 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk;
     double s2 = 0.0;
-    for (int i = 0; i < DIMN; i++) {
+    for (Int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
-      for (int mu = 0; mu < multiplicity; ++mu) {
+      for (Int mu = 0; mu < multiplicity; ++mu) {
         egf.get_elem(kl, mu) *= 0.0;
       }
     } else {
       double s2inv = 1.0 / s2;
-      for (int mu = 0; mu < multiplicity; ++mu) {
+      for (Int mu = 0; mu < multiplicity; ++mu) {
         egf.get_elem(kl, mu) *= s2inv;
       }
     }
@@ -198,14 +198,14 @@ inline void prop_mom_complex_scalar_invert(
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk;
     double s2 = sqr(mass);
-    for (int i = 0; i < DIMN; i++) {
+    for (Int i = 0; i < DIMN; i++) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     double s2inv = 1.0 / s2;
-    for (int mu = 0; mu < multiplicity; ++mu) {
+    for (Int mu = 0; mu < multiplicity; ++mu) {
       csf.get_elem(kl, mu) *= s2inv;
     }
   }
@@ -240,7 +240,7 @@ inline void prop_free_scalar_invert(Field<ComplexD>& f, const double mass,
     Coordinate kg = geo.coordinate_g_from_l(kl);
     CoordinateD kk, ks;
     double s2 = 0.0;
-    for (int i = 0; i < DIMN; i++) {
+    for (Int i = 0; i < DIMN; i++) {
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       ks[i] = 2.0 * std::sin(kk[i] / 2.0);
@@ -248,7 +248,7 @@ inline void prop_free_scalar_invert(Field<ComplexD>& f, const double mass,
     }
     const double fac = 1.0 / (m_pi_sq + s2);
     Vector<ComplexD> v = f.get_elems(kl);
-    for (int i = 0; i < v.size(); ++i) {
+    for (Int i = 0; i < v.size(); ++i) {
       v[i] *= fac;
     }
   })
@@ -272,7 +272,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
     double wp = 1.0 - m5;
     SpinMatrixT<T> pg;
     set_zero(pg);
-    for (int i = 0; i < DIMN; ++i) {
+    for (Int i = 0; i < DIMN; ++i) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
@@ -320,7 +320,7 @@ void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
 }
 
 inline void set_point_source_plusm(QedGaugeField& f, const ComplexD& coef,
-                                   const Coordinate& xg, const int mu)
+                                   const Coordinate& xg, const Int mu)
 {
   TIMER("set_point_source_plusm");
   const Geometry& geo = f.geo();
@@ -352,7 +352,7 @@ void set_box_source_plusm(SpinPropagator4dT<T>& f, const ComplexD& coef,
 
 template <class T>
 void set_wall_source_plusm(SpinPropagator4dT<T>& f, const ComplexD& coef,
-                           const int t)
+                           const Int t)
 {
   TIMER("set_wall_source_plusm");
   const Geometry& geo = f.geo();
@@ -374,7 +374,7 @@ void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
-    for (int mu = 0; mu < DIMN; mu++) {
+    for (Int mu = 0; mu < DIMN; mu++) {
       // a = A_\mu(x)
       ComplexD a = egf.get_elem(xl, mu);
       // tmp = \gamma_\mu \psi(x)
@@ -404,7 +404,7 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
       Coordinate xl = geo.coordinate_from_index(index);
       psum += matrix_adjoint(snk.get_elem(xl)) * src.get_elem(xl);
     }
-    for (int i = 0; i < omp_get_num_threads(); ++i) {
+    for (Int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier
       if (omp_get_thread_num() == i) {
         sum += psum;

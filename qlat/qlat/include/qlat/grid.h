@@ -10,7 +10,7 @@ namespace qlat
 typedef InverterDomainWall InverterDomainWallGrid;
 
 inline void grid_begin(
-    int* argc, char** argv[],
+    Int* argc, char** argv[],
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   begin(argc, argv, size_node_list);
@@ -36,17 +36,17 @@ namespace qlat
 
 inline Grid::Coordinate grid_convert(const Coordinate& x)
 {
-  std::vector<int> ret(4);
-  for (int mu = 0; mu < 4; ++mu) {
+  std::vector<Int> ret(4);
+  for (Int mu = 0; mu < 4; ++mu) {
     ret[mu] = x[mu];
   }
   return Grid::Coordinate(ret);
 }
 
-inline Grid::Coordinate grid_convert(const Coordinate& x, const int m)
+inline Grid::Coordinate grid_convert(const Coordinate& x, const Int m)
 {
-  std::vector<int> ret(5);
-  for (int mu = 0; mu < 4; ++mu) {
+  std::vector<Int> ret(5);
+  for (Int mu = 0; mu < 4; ++mu) {
     ret[mu + 1] = x[mu];
   }
   ret[0] = m;
@@ -64,7 +64,7 @@ inline Coordinate grid_convert(const Grid::Coordinate& x)
   }
 }
 
-inline int id_node_from_grid(const Grid::GridCartesian* UGrid)
+inline Int id_node_from_grid(const Grid::GridCartesian* UGrid)
 {
   using namespace Grid;
   const Grid::Coordinate& mpi_layout = UGrid->_processors;
@@ -75,15 +75,15 @@ inline int id_node_from_grid(const Grid::GridCartesian* UGrid)
 }
 
 inline void grid_begin(
-    int* argc, char** argv[],
+    Int* argc, char** argv[],
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   using namespace Grid;
-  // const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  // const Int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
   Grid_init(argc, argv);
-  const int num_node = init_mpi(argc, argv);
+  const Int num_node = init_mpi(argc, argv);
   Coordinate size_node;
-  for (int i = 0; i < (int)size_node_list.size(); ++i) {
+  for (Int i = 0; i < (int)size_node_list.size(); ++i) {
     size_node = size_node_list[i];
     if (num_node == product(size_node)) {
       break;
@@ -96,7 +96,7 @@ inline void grid_begin(
       grid_convert(size_node * 4), GridDefaultSimd(Nd, vComplexF::Nsimd()),
       grid_convert(size_node));
   UGrid->show_decomposition();
-  const int id_node = id_node_from_grid(UGrid);
+  const Int id_node = id_node_from_grid(UGrid);
   delete UGrid;
   begin(id_node, size_node);
   // displayln_info(ssprintf("grid_begin: rm returns %d", ret));
@@ -108,7 +108,7 @@ inline void grid_end(const bool is_preserving_cache = false)
 {
   end(is_preserving_cache);
   Grid::Grid_finalize();
-  // const int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  // const Int ret = system("rm /dev/shm/Grid* >/dev/null 2>&1");
   // displayln_info(ssprintf("grid_end: rm returns %d", ret));
 }
 
@@ -132,7 +132,7 @@ inline void grid_convert(Grid::LatticeGaugeField& ggf, const GaugeField& gf)
             ms.data_size() / sizeof(ComplexD) * sizeof(ComplexD));
     qassert((Long)fs.size() * (Long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
-    for (int i = 0; i < (int)fs.size(); ++i) {
+    for (Int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
     }
     pokeLocalSite(gms, ggf_v, coor);
@@ -159,7 +159,7 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
             ms.data_size() / sizeof(ComplexD) * sizeof(ComplexF));
     qassert((Long)fs.size() * (Long)sizeof(ComplexD) == ms.data_size());
     qassert(fs.size() == ds.size());
-    for (int i = 0; i < (int)fs.size(); ++i) {
+    for (Int i = 0; i < (int)fs.size(); ++i) {
       fs[i] = ds[i];
     }
     pokeLocalSite(gms, ggf_v, coor);
@@ -181,7 +181,7 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
     WilsonMatrix msc;
     convert_mspincolor_from_wm(msc, wm);
     array<ComplexF, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
-    for (int k = 0; k < (int)fs.size(); ++k) {
+    for (Int k = 0; k < (int)fs.size(); ++k) {
       fs[k] = msc.p[k];
     }
     pokeLocalSite(fs, gprop_v, coor);
@@ -203,7 +203,7 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
     WilsonMatrix msc;
     convert_mspincolor_from_wm(msc, wm);
     array<ComplexD, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
-    for (int k = 0; k < (int)fs.size(); ++k) {
+    for (Int k = 0; k < (int)fs.size(); ++k) {
       fs[k] = msc.p[k];
     }
     pokeLocalSite(fs, gprop_v, coor);
@@ -224,7 +224,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
     array<ComplexF, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
     peekLocalSite(fs, gprop_v, coor);
     WilsonMatrix msc;
-    for (int k = 0; k < (int)fs.size(); ++k) {
+    for (Int k = 0; k < (int)fs.size(); ++k) {
       msc.p[k] = fs[k];
     }
     WilsonMatrix& wm = prop.get_elem(xl);
@@ -246,7 +246,7 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
     array<ComplexD, sizeof(WilsonMatrix) / sizeof(ComplexD)> fs;
     peekLocalSite(fs, gprop_v, coor);
     WilsonMatrix msc;
-    for (int k = 0; k < (int)fs.size(); ++k) {
+    for (Int k = 0; k < (int)fs.size(); ++k) {
       msc.p[k] = fs[k];
     }
     WilsonMatrix& wm = prop.get_elem(xl);
@@ -266,13 +266,13 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
     Grid::Coordinate coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
     array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
-    for (int m = 0; m < ff.multiplicity; ++m) {
+    for (Int m = 0; m < ff.multiplicity; ++m) {
       coor[0] = m;
       peekLocalSite(fs, gff_v, coor);
       array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
           (array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)
               wvs[m];
-      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
+      for (Int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         ds[k] = fs[k];
       }
     }
@@ -290,12 +290,12 @@ inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
     Grid::Coordinate coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
     array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexD)> fs;
-    for (int m = 0; m < ff.multiplicity; ++m) {
+    for (Int m = 0; m < ff.multiplicity; ++m) {
       coor[0] = m;
       const array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
           (const array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)
               wvs[m];
-      for (int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
+      for (Int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         fs[k] = ds[k];
       }
       pokeLocalSite(fs, gff_v, coor);
@@ -339,7 +339,7 @@ struct InverterDomainWallGrid : InverterDomainWall {
     Umu = new LatticeGaugeFieldF(UGrid);
     grid_convert(*Umu, gf);
     std::vector<ComplexD> omega(fa.ls, 0.0);
-    for (int i = 0; i < fa.ls; ++i) {
+    for (Int i = 0; i < fa.ls; ++i) {
       omega[i] = 1.0 / (fa.bs[i] + fa.cs[i]);
     }
     Ddwf = new ZMobiusFermionF(*Umu, *FGrid, *FrbGrid, *UGrid, *UrbGrid,

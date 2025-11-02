@@ -217,13 +217,13 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(f.geo() == fsel.f_local_idx.geo());
   // const Geometry& geo = f.geo();
-  const int multiplicity = f.multiplicity;
+  const Int multiplicity = f.multiplicity;
   sf.init(fsel, multiplicity);
   qacc_for(idx, fsel.n_elems, {
     const Long index = fsel.indices[idx];
     const Vector<M> fv = f.get_elems_const(index);
     Vector<M> sfv = sf.get_elems(idx);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       sfv[m] = fv[m];
     }
   });
@@ -264,7 +264,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
     if (idx0 >= 0) {
       Vector<M> sfv = sf.get_elems(idx);
       const Vector<M> fv = sf0.get_elems_const(idx0);
-      for (int m = 0; m < multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         sfv[m] = fv[m];
       }
     }
@@ -282,7 +282,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
   const Long n_points = sp.n_points;
   qassert(n_points == (Long)psel.size());
   const Geometry& geo = fsel.f_rank.geo();
-  const int multiplicity = sp.multiplicity;
+  const Int multiplicity = sp.multiplicity;
   if (is_keeping_data) {
     sf.init_zero(fsel, multiplicity);
   } else {
@@ -298,7 +298,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
         qassert(sf_idx < sf.n_elems);
         const Vector<M> spv = sp.get_elems_const(idx);
         Vector<M> fv = sf.get_elems(sf_idx);
-        for (int m = 0; m < multiplicity; ++m) {
+        for (Int m = 0; m < multiplicity; ++m) {
           fv[m] = spv[m];
         }
       }
@@ -334,7 +334,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
         sp_count.get_elem(idx) += 1;
         Vector<M> spv = sp_tmp.get_elems(idx);
         const Vector<M> fv = sf.get_elems_const(sf_idx);
-        for (int m = 0; m < sf.multiplicity; ++m) {
+        for (Int m = 0; m < sf.multiplicity; ++m) {
           spv[m] = fv[m];
         }
       }
@@ -348,7 +348,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
       if (sp_count.get_elem(idx) > 0) {
         Vector<M> spv = sp.get_elems(idx);
         const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
-        for (int m = 0; m < sf.multiplicity; ++m) {
+        for (Int m = 0; m < sf.multiplicity; ++m) {
           spv[m] = spv_tmp[m];
         }
       }
@@ -368,7 +368,7 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(sf.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
-  const int multiplicity = sf.multiplicity;
+  const Int multiplicity = sf.multiplicity;
   if (is_keeping_data) {
     f.init_zero(geo, multiplicity);
   } else {
@@ -379,7 +379,7 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
     const Long index = fsel.indices[idx];
     Vector<M> fv = f.get_elems(index);
     const Vector<M> sfv = sf.get_elems_const(idx);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       fv[m] = sfv[m];
     }
   });
@@ -405,7 +405,7 @@ bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
       if (sf_idx >= 0) {
         const Vector<M> fv = sf.get_elems_const(sf_idx);
         const Vector<M> spv = sp.get_elems_const(idx);
-        for (int m = 0; m < sf.multiplicity; ++m) {
+        for (Int m = 0; m < sf.multiplicity; ++m) {
           qnorm_diff += qnorm(spv[m] - fv[m]);
         }
       }
@@ -422,7 +422,7 @@ void acc_field(Field<M>& f, const SelectedField<M>& sf,
 {
   TIMER("acc_field(f,sf,fsel)");
   const Geometry& geo = fsel.f_rank.geo();
-  const int multiplicity = sf.multiplicity;
+  const Int multiplicity = sf.multiplicity;
   if (not is_initialized(f)) {
     f.init(geo, multiplicity);
     set_zero(f);
@@ -434,7 +434,7 @@ void acc_field(Field<M>& f, const SelectedField<M>& sf,
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> fv = f.get_elems(xl);
     const Vector<M> sfv = sf.get_elems_const(idx);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       fv[m] += sfv[m];
     }
   });
@@ -442,7 +442,7 @@ void acc_field(Field<M>& f, const SelectedField<M>& sf,
 
 template <class M>
 std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
-                                const FieldSelection& fsel, const int t_dir = 3)
+                                const FieldSelection& fsel, const Int t_dir = 3)
 // length = t_size * multiplicity
 {
   TIMER("field_sum_tslice");
@@ -450,8 +450,8 @@ std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
   qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(sf.geo() == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
-  const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = sf.multiplicity;
+  const Int t_size = geo.total_site()[t_dir];
+  const Int multiplicity = sf.multiplicity;
   std::vector<M> vec(t_size * multiplicity);
   set_zero(vec);
   for (Long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -459,7 +459,7 @@ std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Vector<M> sfv = sf.get_elems_const(idx);
-    for (int m = 0; m < multiplicity; ++m) {
+    for (Int m = 0; m < multiplicity; ++m) {
       vec[xg[t_dir] * multiplicity + m] += sfv[m];
     }
   }
@@ -468,13 +468,13 @@ std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
 
 template <class M>
 void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
-                          const FieldSelection& fsel, const int t_dir = 3)
+                          const FieldSelection& fsel, const Int t_dir = 3)
 {
   TIMER("field_glb_sum_tslice(sp,sf,fsel)");
   sp.init();
   const Geometry& geo = sf.geo();
-  const int t_size = geo.total_site()[t_dir];
-  const int multiplicity = sf.multiplicity;
+  const Int t_size = geo.total_site()[t_dir];
+  const Int multiplicity = sf.multiplicity;
   std::vector<M> vec = field_sum_tslice(sf, fsel, t_dir);
   glb_sum(vec);
   sp.init(t_size, multiplicity, PointsDistType::Global);
@@ -504,7 +504,7 @@ void set_u_rand(SelectedField<M>& sf, const FieldSelection& fsel,
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = sf.get_elems(idx);
     Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
-    for (int m = 0; m < dv.size(); ++m) {
+    for (Int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, upper, lower);
     }
   });
@@ -533,7 +533,7 @@ void set_g_rand(SelectedField<M>& sf, const FieldSelection& fsel,
     RngState rsi = rs.newtype(gindex);
     Vector<M> v = sf.get_elems(idx);
     Vector<Real> dv((Real*)v.data(), v.data_size() / sizeof(Real));
-    for (int m = 0; m < dv.size(); ++m) {
+    for (Int m = 0; m < dv.size(); ++m) {
       dv[m] = g_rand_gen(rsi, center, sigma);
     }
   });
@@ -549,7 +549,7 @@ void convert_field_float_from_double(SelectedField<N>& ff,
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
   qassert(f.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.multiplicity * sizeof(M) / 2 / sizeof(N);
+  const Int multiplicity = f.multiplicity * sizeof(M) / 2 / sizeof(N);
   const Geometry& geo = f.geo();
   const Long n_elems = f.n_elems;
   ff.init(geo, n_elems, multiplicity);
@@ -572,7 +572,7 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
   qassert(f.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.multiplicity * sizeof(M) * 2 / sizeof(N);
+  const Int multiplicity = f.multiplicity * sizeof(M) * 2 / sizeof(N);
   const Geometry& geo = f.geo();
   const Long n_elems = f.n_elems;
   ff.init(geo, n_elems, multiplicity);

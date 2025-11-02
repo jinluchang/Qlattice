@@ -15,7 +15,7 @@ inline LatData mk_pion_corr_table(const Coordinate& total_site)
   return ld;
 }
 
-inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
+inline LatData contract_pion(const Propagator4d& prop, const Int tslice_src)
 {
   TIMER_VERBOSE("contract_pion(prop,tsrc)");
   const Geometry& geo = prop.geo();
@@ -26,14 +26,14 @@ inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const ComplexD val = qnorm(prop.get_elem(xl));
-    const int tsep = mod(xg[3] - tslice_src, total_site[3]);
+    const Int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
   glb_sum(ld);
   return ld;
 }
 
-inline LatData contract_pion(const PselProp& prop, const int tslice_src,
+inline LatData contract_pion(const PselProp& prop, const Int tslice_src,
                              const Geometry& geo, const PointsSelection& psel)
 {
   TIMER_VERBOSE("contract_pion(ps_prop,tsrc,geo,psel)");
@@ -45,14 +45,14 @@ inline LatData contract_pion(const PselProp& prop, const int tslice_src,
   for (Long idx = 0; idx < n_points; ++idx) {
     const Coordinate& xg = psel[idx];
     const ComplexD val = qnorm(prop.get_elem(idx));
-    const int tsep = mod(xg[3] - tslice_src, total_site[3]);
+    const Int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
   ld *= (double)product(total_site) / (double)n_points;
   return ld;
 }
 
-inline LatData contract_pion(const SelProp& prop, const int tslice_src,
+inline LatData contract_pion(const SelProp& prop, const Int tslice_src,
                              const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_pion(s_prop,tsrc,fsel)");
@@ -65,7 +65,7 @@ inline LatData contract_pion(const SelProp& prop, const int tslice_src,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const ComplexD val = qnorm(prop.get_elem(idx));
-    const int tsep = mod(xg[3] - tslice_src, total_site[3]);
+    const Int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
   glb_sum(ld);
@@ -74,7 +74,7 @@ inline LatData contract_pion(const SelProp& prop, const int tslice_src,
 }
 
 inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
-                             const int tslice_src, const FieldSelection& fsel)
+                             const Int tslice_src, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_kaon(s_prop1,s_prop2,fsel)");
   const Geometry& geo = prop1.geo();
@@ -87,7 +87,7 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const ComplexD val =
         matrix_trace(prop1.get_elem(idx), matrix_adjoint(prop2.get_elem(idx)));
-    const int tsep = mod(xg[3] - tslice_src, total_site[3]);
+    const Int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
   glb_sum(ld);
@@ -95,7 +95,7 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
   return ld;
 }
 
-inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
+inline LatData contract_pion_wall_snk(const SelProp& prop, const Int tslice_src,
                                       const FieldSelection& fsel)
 // is already sparse corrected
 {
@@ -106,8 +106,8 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
   qassert(wm_ts.n_points == (Long)total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
   Vector<ComplexD> ldv = lat_data_cget(ld);
-  for (int t = 0; t < total_site[3]; ++t) {
-    const int tsep = mod(t - tslice_src, total_site[3]);
+  for (Int t = 0; t < total_site[3]; ++t) {
+    const Int tsep = mod(t - tslice_src, total_site[3]);
     ldv[tsep] = qnorm(wm_ts.get_elem(t));
   }
   LatData ld_ps = contract_pion(prop, tslice_src, fsel);
@@ -118,7 +118,7 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
 
 inline LatData contract_kaon_wall_snk(const SelProp& prop1,
                                       const SelProp& prop2,
-                                      const int tslice_src,
+                                      const Int tslice_src,
                                       const FieldSelection& fsel)
 // is already sparse corrected
 {
@@ -131,8 +131,8 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
   qassert(wm2_ts.n_points == (Long)total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
   Vector<ComplexD> ldv = lat_data_cget(ld);
-  for (int t = 0; t < total_site[3]; ++t) {
-    const int tsep = mod(t - tslice_src, total_site[3]);
+  for (Int t = 0; t < total_site[3]; ++t) {
+    const Int tsep = mod(t - tslice_src, total_site[3]);
     ldv[tsep] =
         matrix_trace(wm1_ts.get_elem(t), matrix_adjoint(wm2_ts.get_elem(t)));
   }
@@ -158,7 +158,7 @@ inline LatData mk_two_point_table(const Coordinate& total_site)
 
 inline LatData contract_two_point_function(const SelProp& prop1,
                                            const SelProp& prop2,
-                                           const int tslice,
+                                           const Int tslice,
                                            const FieldSelection& fsel)
 // m_ts[tsep][op_src][op_snk] = trace( (\sum_x prop1(x) gms[op_src] gamma5
 // prop2(x)^\dagger gamma5) gms[op_snk] ) 0 <= tsep < total_site[3]
@@ -176,18 +176,18 @@ inline LatData contract_two_point_function(const SelProp& prop1,
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const int tsep = mod(xg[3] - tslice, total_site[3]);
+    const Int tsep = mod(xg[3] - tslice, total_site[3]);
     const WilsonMatrix wm = prop1.get_elem(idx);
     const WilsonMatrix wmd =
         gamma5 * (WilsonMatrix)matrix_adjoint(prop2.get_elem(idx)) * gamma5;
-    for (int op_src = 0; op_src < 16; ++op_src) {
+    for (Int op_src = 0; op_src < 16; ++op_src) {
       gwm_ts[omp_get_thread_num() * total_site[3] + tsep][op_src] +=
           wm * gms[op_src] * wmd;
     }
   }
-  for (int i = 1; i < omp_get_max_threads(); ++i) {
-    for (int t = 0; t < total_site[3]; ++t) {
-      for (int op_src = 0; op_src < 16; ++op_src) {
+  for (Int i = 1; i < omp_get_max_threads(); ++i) {
+    for (Int t = 0; t < total_site[3]; ++t) {
+      for (Int op_src = 0; op_src < 16; ++op_src) {
         gwm_ts[t][op_src] += gwm_ts[i * total_site[3] + t][op_src];
       }
     }
@@ -195,9 +195,9 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   vector<array<ComplexD, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
-  for (int t = 0; t < total_site[3]; ++t) {
-    for (int op_src = 0; op_src < 16; ++op_src) {
-      for (int op_snk = 0; op_snk < 16; ++op_snk) {
+  for (Int t = 0; t < total_site[3]; ++t) {
+    for (Int op_src = 0; op_src < 16; ++op_src) {
+      for (Int op_snk = 0; op_snk < 16; ++op_snk) {
         m_ts[t][op_src * 16 + op_snk] =
             matrix_trace(gwm_ts[t][op_src], gms[op_snk]);
       }
@@ -206,9 +206,9 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   glb_sum(m_ts);
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
-  for (int tsep = 0; tsep < total_site[3]; ++tsep) {
+  for (Int tsep = 0; tsep < total_site[3]; ++tsep) {
     Vector<ComplexD> m_src_snk = lat_data_cget(ld, make_array(tsep));
-    for (int k = 0; k < 16 * 16; ++k) {
+    for (Int k = 0; k < 16 * 16; ++k) {
       m_src_snk[k] += m_ts[tsep][k];
     }
   }
@@ -217,7 +217,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
 }
 
 inline LatData contract_two_point_wall_snk_function(
-    const PselProp& prop1, const PselProp& prop2, const int tslice,
+    const PselProp& prop1, const PselProp& prop2, const Int tslice,
     const Coordinate& total_site)
 // m_ts[tsep][op_src][op_snk] = trace( prop1[t] gms[op_src] gamma5
 // prop2[t]^\dagger gamma5 gms[op_snk] ) 0 <= tsep < total_site[3]
@@ -230,24 +230,24 @@ inline LatData contract_two_point_wall_snk_function(
   vector<array<ComplexD, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
-  for (int t = 0; t < total_site[3]; ++t) {
+  for (Int t = 0; t < total_site[3]; ++t) {
     const WilsonMatrix& wm = prop1.get_elem(mod(tslice + t, total_site[3]));
     const WilsonMatrix wmd = gamma5 *
                              (WilsonMatrix)matrix_adjoint(prop2.get_elem(
                                  mod(tslice + t, total_site[3]))) *
                              gamma5;
-    for (int op_src = 0; op_src < 16; ++op_src) {
+    for (Int op_src = 0; op_src < 16; ++op_src) {
       const WilsonMatrix wm_t = wm * gms[op_src] * wmd;
-      for (int op_snk = 0; op_snk < 16; ++op_snk) {
+      for (Int op_snk = 0; op_snk < 16; ++op_snk) {
         m_ts[t][op_src * 16 + op_snk] = matrix_trace(wm_t, gms[op_snk]);
       }
     }
   }
   LatData ld = mk_two_point_table(total_site);
   set_zero(ld);
-  for (int tsep = 0; tsep < total_site[3]; ++tsep) {
+  for (Int tsep = 0; tsep < total_site[3]; ++tsep) {
     Vector<ComplexD> m_src_snk = lat_data_cget(ld, make_array(tsep));
-    for (int k = 0; k < 16 * 16; ++k) {
+    for (Int k = 0; k < 16 * 16; ++k) {
       m_src_snk[k] += m_ts[tsep][k];
     }
   }
@@ -268,7 +268,7 @@ inline LatData contract_two_point_wall_snk_function(
 
 inline LatData contract_two_point_wall_snk_function(const SelProp& prop1,
                                                     const SelProp& prop2,
-                                                    const int tslice,
+                                                    const Int tslice,
                                                     const FieldSelection& fsel)
 // with sparse correction
 // m_ts[tsep][op_src][op_snk] = trace( prop1[t] gms[op_src] gamma5
@@ -297,7 +297,7 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_two_point_table(total_site);
-  for (int tslice = 0; tslice < total_site[3]; ++tslice) {
+  for (Int tslice = 0; tslice < total_site[3]; ++tslice) {
     qassert(is_initialized(wsp1.sloppy[tslice]));
     qassert(is_initialized(wsp2.sloppy[tslice]));
     const LatData ld_0 = contract_two_point_function(
@@ -324,7 +324,7 @@ inline LatData contract_two_point_wall_snk_function(const WallSrcProps& wsp1,
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_two_point_table(total_site);
-  for (int tslice = 0; tslice < total_site[3]; ++tslice) {
+  for (Int tslice = 0; tslice < total_site[3]; ++tslice) {
     qassert(is_initialized(wsp1.sloppy[tslice]));
     qassert(is_initialized(wsp2.sloppy[tslice]));
     const LatData ld_0 = contract_two_point_wall_snk_function(
@@ -360,7 +360,7 @@ inline LatData mk_three_point_table(const Coordinate& total_site)
 inline LatData contract_three_point_function(const SelProp& prop_a,
                                              const SelProp& prop_b,
                                              const WilsonMatrix& wm_ab,
-                                             const int ta, const int tb,
+                                             const Int ta, const Int tb,
                                              const FieldSelection& fsel)
 // ``wm_ab'' is prop from ``tb'' to ``ta''.
 // |  ->- prop_a ->- op ->- inv prop_b ->- |
@@ -391,18 +391,18 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   }
   vector<WilsonMatrix> wm_ts(total_site[3]);
   set_zero(wm_ts);
-  for (int i = 0; i < omp_get_max_threads(); ++i) {
-    for (int t = 0; t < total_site[3]; ++t) {
+  for (Int i = 0; i < omp_get_max_threads(); ++i) {
+    for (Int t = 0; t < total_site[3]; ++t) {
       wm_ts[t] += gwm_ts[i * total_site[3] + t];
     }
   }
   glb_sum(wm_ts);
   LatData ld = mk_three_point_table(total_site);
-  const int tsep = mod(tb - ta, total_site[3]);
-  for (int t = 0; t < total_site[3]; ++t) {
-    const int top = mod(t - ta, total_site[3]);
+  const Int tsep = mod(tb - ta, total_site[3]);
+  for (Int t = 0; t < total_site[3]; ++t) {
+    const Int top = mod(t - ta, total_site[3]);
     Vector<ComplexD> v = lat_data_cget(ld, make_array(tsep, top));
-    for (int op = 0; op < 16; ++op) {
+    for (Int op = 0; op < 16; ++op) {
       v[op] = matrix_trace(wm_ts[t], gms[op]);
     }
   }
@@ -413,7 +413,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
 inline LatData contract_three_point_function(
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const FieldSelection& fsel,
-    const int yt_measurement_sparsity = 1, const int yt_measurement_start = 0)
+    const Int yt_measurement_sparsity = 1, const Int yt_measurement_start = 0)
 {
   TIMER_VERBOSE("compute_three_point_function");
   const Geometry& geo = fsel.f_rank.geo();
@@ -427,7 +427,7 @@ inline LatData contract_three_point_function(
   qassert((int)wsp1.exact_tslice_mask.size() == total_site[3]);
   qassert((int)wsp2.exact_tslice_mask.size() == total_site[3]);
   qassert((int)wsp3.exact_tslice_mask.size() == total_site[3]);
-  for (int i = 0; i < total_site[3]; ++i) {
+  for (Int i = 0; i < total_site[3]; ++i) {
     qassert(is_initialized(wsp1.sloppy[i]));
     qassert(is_initialized(wsp2.sloppy[i]));
     qassert(is_initialized(wsp3.sloppy[i]));
@@ -435,13 +435,13 @@ inline LatData contract_three_point_function(
     qassert(wsp1.exact_tslice_mask[i] == wsp3.exact_tslice_mask[i]);
   }
   LatData ld;
-  for (int tslice = yt_measurement_start; tslice < total_site[3];
+  for (Int tslice = yt_measurement_start; tslice < total_site[3];
        tslice += yt_measurement_sparsity) {
     Timer::autodisplay();
     TIMER_VERBOSE("compute_three_point_function-tslice");
-    for (int tsep = 0; tsep < total_site[3]; ++tsep) {
-      const int ta = tslice;
-      const int tb = mod(ta + tsep, total_site[3]);
+    for (Int tsep = 0; tsep < total_site[3]; ++tsep) {
+      const Int ta = tslice;
+      const Int tb = mod(ta + tsep, total_site[3]);
       LatData ld_00, ld_10, ld_01, ld_11;
       ld_00 = contract_three_point_function(
           wsp1.sloppy[ta], wsp2.sloppy[tb],
@@ -491,8 +491,8 @@ inline LatData mk_meson_snk_src_table(const Coordinate& total_site)
 }
 
 inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
-                                      const WallSrcProps& wsp2, const int t_snk,
-                                      const bool exact_snk, const int t_src,
+                                      const WallSrcProps& wsp2, const Int t_snk,
+                                      const bool exact_snk, const Int t_src,
                                       const bool exact_src)
 {
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -510,8 +510,8 @@ inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
 }
 
 inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
-                                      const WallSrcProps& wsp2, const int t_snk,
-                                      const int t_src)
+                                      const WallSrcProps& wsp2, const Int t_snk,
+                                      const Int t_src)
 {
   qassert(wsp1.exact_tslice_mask.size() == wsp2.exact_tslice_mask.size());
   qassert(0 <= t_snk and t_snk < (int)wsp1.exact_tslice_mask.size());
@@ -575,8 +575,8 @@ inline LatData contract_meson_snk_src(const WallSrcProps& wsp1,
 {
   TIMER_VERBOSE("contract_meson");
   LatData ld = mk_meson_snk_src_table(total_site);
-  for (int t_snk = 0; t_snk < total_site[3]; ++t_snk) {
-    for (int t_src = 0; t_src < total_site[3]; ++t_src) {
+  for (Int t_snk = 0; t_snk < total_site[3]; ++t_snk) {
+    for (Int t_src = 0; t_src < total_site[3]; ++t_src) {
       lat_data_cget(ld, make_array<int>(t_snk, t_src))[0] =
           contract_meson_snk_src(wsp1, wsp2, t_snk, t_src);
     }

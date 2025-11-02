@@ -63,7 +63,7 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf,
     Vector<ColorMatrix> v = gf.get_elems(xl);
     const Vector<ColorMatrix> v0 = gf0.get_elems_const(xl);
     const ColorMatrix& t0 = gt.get_elem(xl);
-    for (int m = 0; m < DIMN; ++m) {
+    for (Int m = 0; m < DIMN; ++m) {
       xl[m] += 1;
       const ColorMatrix& t1 = gt.get_elem(xl);
       v[m] = t0 * v0[m] * matrix_adjoint(t1);
@@ -109,7 +109,7 @@ inline void ff_apply_gauge_transformation(FermionField4d& ff,
     Vector<WilsonVector> v = ff.get_elems(xl);
     const Vector<WilsonVector> v0 = ff0.get_elems_const(xl);
     const ColorMatrix& t = gt.get_elem(xl);
-    for (int m = 0; m < v0.size(); ++m) {
+    for (Int m = 0; m < v0.size(); ++m) {
       v[m] = t * v0[m];
     }
   });
@@ -129,7 +129,7 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
     Vector<WilsonMatrix> v = prop.get_elems(xl);
     const Vector<WilsonMatrix> v0 = prop0.get_elems_const(xl);
     const ColorMatrix& t = gt.get_elem(xl);
-    for (int m = 0; m < v0.size(); ++m) {
+    for (Int m = 0; m < v0.size(); ++m) {
       v[m] = t * v0[m];
     }
   });
@@ -142,7 +142,7 @@ inline void prop_apply_gauge_transformation(
   TIMER("prop_apply_gauge_transformation");
   qassert(is_matching_geo(prop0.geo(), gt.geo()));
   const Geometry& geo = prop0.geo();
-  const int multiplicity = prop0.multiplicity;
+  const Int multiplicity = prop0.multiplicity;
   prop.init(fsel, multiplicity);
   qassert(is_matching_geo(prop.geo(), prop0.geo()));
   qacc_for(idx, fsel.indices.size(), {
@@ -151,7 +151,7 @@ inline void prop_apply_gauge_transformation(
     Vector<WilsonMatrix> v = prop.get_elems(idx);
     const Vector<WilsonMatrix> v0 = prop0.get_elems_const(idx);
     const ColorMatrix& t = gt.get_elem(xl);
-    for (int m = 0; m < v0.size(); ++m) {
+    for (Int m = 0; m < v0.size(); ++m) {
       v[m] = t * v0[m];
     }
   });
@@ -223,8 +223,8 @@ inline void gf_apply_rand_gauge_transformation(GaugeField& gf,
 
 inline void make_temporal_gauge_transformation(GaugeTransform& gt,
                                                const GaugeField& gf,
-                                               const int tgref = 0,
-                                               const int dir = 3)
+                                               const Int tgref = 0,
+                                               const Int dir = 3)
 // after tranform: ``gf.get_elem(xl, dir) = unit'' is true from ``xg[dir] =
 // tgref'' until as far as possible
 // ``gt.get_elem(xl) = unit'' if ``xg[dir] = tgref''
@@ -246,9 +246,9 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt,
   gt1.init(geo1);
   set_unit(gt1);
   const Coordinate total_site = geo.total_site();
-  for (int tgrel = 1; tgrel < total_site[dir]; ++tgrel) {
+  for (Int tgrel = 1; tgrel < total_site[dir]; ++tgrel) {
     refresh_expanded(gt1);
-    const int tg = mod(tgref + tgrel, total_site[dir]);
+    const Int tg = mod(tgref + tgrel, total_site[dir]);
 #pragma omp parallel for
     for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
@@ -282,7 +282,7 @@ inline void make_tree_gauge_transformation(
   GaugeField gft;
   gft.init(geo);
   gft = gf;
-  for (int m = 0; m < DIMN; ++m) {
+  for (Int m = 0; m < DIMN; ++m) {
     make_temporal_gauge_transformation(gt_dir, gft, xgref[dirs[m]], dirs[m]);
     gf_apply_gauge_transformation(gft, gft, gt_dir);
     gt_apply_gauge_transformation(gt, gt_dir);
@@ -344,7 +344,7 @@ inline void invert(FermionField4d& out, const FermionField4d& in,
 // -------------------------------------------------------------------------
 
 template <class Inverter>
-void set_wall_src_propagator(Propagator4d& prop, const int tslice,
+void set_wall_src_propagator(Propagator4d& prop, const Int tslice,
                              const CoordinateD& lmom, const Inverter& inv,
                              const GaugeTransform& gt,
                              const GaugeTransform& gt_inv)
@@ -360,7 +360,7 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice,
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     ff_apply_gauge_transformation(src, src, gt_inv);
     set_zero(sol);
