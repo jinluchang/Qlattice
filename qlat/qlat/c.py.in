@@ -126,6 +126,8 @@ __all__ += [
         'gf_twist_boundary_at_boundary',
         'mk_left_expanded_gauge_field',
         'gf_reduce_half',
+        'set_left_expanded_gauge_field',
+        'multiply_m_dwf_qed',
         ]
 
 __all__ += [
