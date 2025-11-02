@@ -68,38 +68,38 @@
 namespace qlat
 {  //
 
-inline double get_time()
+inline RealD get_time()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);
-  return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);
+  return ((RealD)tp.tv_sec + (RealD)tp.tv_usec * 1e-6);
 }
 
-API inline double& get_actual_start_time()
+API inline RealD& get_actual_start_time()
 // not affected by Timer::reset()
 {
-  static double time = get_time();
+  static RealD time = get_time();
   return time;
 }
 
-inline double get_actual_total_time()
+inline RealD get_actual_total_time()
 {
   return get_time() - get_actual_start_time();
 }
 
-API inline double& get_start_time()
+API inline RealD& get_start_time()
 // will be reset by Timer::reset()
 {
-  static double time = get_actual_start_time();
+  static RealD time = get_actual_start_time();
   return time;
 }
 
-inline double get_remaining_time()
+inline RealD get_remaining_time()
 {
   return get_time_limit() - get_actual_total_time();
 }
 
-inline double get_total_time() { return get_time() - get_start_time(); }
+inline RealD get_total_time() { return get_time() - get_start_time(); }
 
 inline Int get_num_thread()
 {
@@ -260,8 +260,8 @@ API inline void initialize_papi()
 
 struct API TimerInfo {
   std::string fname;
-  double dtime;
-  double accumulated_time;
+  RealD dtime;
+  RealD accumulated_time;
   Long dflops;
   Long accumulated_flops;
   Int call_times;
@@ -292,8 +292,8 @@ struct API Timer {
   Long info_index;
   bool is_using_total_flops;
   Long is_running;
-  double start_time;
-  double stop_time;
+  RealD start_time;
+  RealD stop_time;
   Long start_flops;
   Long stop_flops;
   Long flops;
@@ -316,9 +316,9 @@ struct API Timer {
     return timer_database_history;
   }
   //
-  API static std::vector<double>& get_start_time_history()
+  API static std::vector<RealD>& get_start_time_history()
   {
-    static std::vector<double> history;
+    static std::vector<RealD> history;
     return history;
   }
   //
@@ -341,27 +341,27 @@ struct API Timer {
   //
   API static void merge();
   //
-  API static double& minimum_autodisplay_interval()
+  API static RealD& minimum_autodisplay_interval()
   // qlat parameter
   {
-    static double time =
+    static RealD time =
         get_env_double_default("q_timer_mini_auto_display", 5.0 * 60.0);
     return time;
   }
   //
-  API static double& minimum_duration_for_show_info()
+  API static RealD& minimum_duration_for_show_info()
   // qlat parameter
   {
-    static double time = get_env_double_default("q_timer_mini_auto_show", 1.0);
+    static RealD time = get_env_double_default("q_timer_mini_auto_show", 1.0);
     return time;
   }
   //
-  API static double& minimum_duration_for_show_stop_info()
+  API static RealD& minimum_duration_for_show_stop_info()
   {
     return minimum_duration_for_show_info();
   }
   //
-  API static double& minimum_duration_for_show_start_info()
+  API static RealD& minimum_duration_for_show_start_info()
   {
     return minimum_duration_for_show_info();
   }
@@ -413,7 +413,7 @@ struct API Timer {
   //
   API static void display(const std::string& tag = "");
   //
-  API static void autodisplay(const double time = get_time());
+  API static void autodisplay(const RealD time = get_time());
   //
   API static void display_stack_always();
   //

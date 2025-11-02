@@ -7,9 +7,9 @@ namespace qlat
 
 struct ScalarAction {
   bool initialized;
-  double m_sq;
-  double lmbd;
-  double alpha;
+  RealD m_sq;
+  RealD lmbd;
+  RealD alpha;
   //
   qacc void init()
   {
@@ -20,7 +20,7 @@ struct ScalarAction {
   }
   //
   qacc ScalarAction() { init(); }
-  qacc ScalarAction(const double m_sq_, const double lmbd_, const double alpha_)
+  qacc ScalarAction(const RealD m_sq_, const RealD lmbd_, const RealD alpha_)
   {
     init();
     initialized = true;
@@ -29,24 +29,24 @@ struct ScalarAction {
     alpha = alpha_;
   }
 
-  qacc double action_point(const Field<double>& sf, const Int multiplicity, Coordinate xl)
+  qacc RealD action_point(const Field<RealD>& sf, const Int multiplicity, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
     // TIMER("ScalarAction.action_point");
     // Stores [sum i, mu] [phi_i(x+mu)-phi_i(x)]^2
-    double dphi_sq=0;
+    RealD dphi_sq=0;
     // Stores [sum i] phi_i(x)^2
-    double phi_sq=0;
+    RealD phi_sq=0;
     // Stores phi_0(x)
-    double phi_0=0;
+    RealD phi_0=0;
     for (Int m = 0; m < multiplicity; ++m) {
-      double phi = sf.get_elem(xl,m);
+      RealD phi = sf.get_elem(xl,m);
       phi_sq += phi*phi;
       if (m==0) phi_0 = phi;
       for (Int mu = 0; mu < 4; ++mu) {
         xl[mu]+=1;
-        double phi_mu = sf.get_elem(xl,m);
+        RealD phi_mu = sf.get_elem(xl,m);
         dphi_sq += (phi_mu-phi)*(phi_mu-phi);
         xl[mu]-=1;
       }
@@ -54,7 +54,7 @@ struct ScalarAction {
     return dphi_sq/2.0 + m_sq*phi_sq/2.0 + lmbd*phi_sq*phi_sq/24.0 + alpha*phi_0;
   }
 
-  inline double action_node_no_comm(const Field<double>& sf)
+  inline RealD action_node_no_comm(const Field<RealD>& sf)
   {
 	// Returns the total action of the portion of the lattice on the
 	// current node (assuming the necessary communication has already
@@ -66,7 +66,7 @@ struct ScalarAction {
     const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the total action from
     // each point
-    FieldM<double, 1> fd;
+    FieldM<RealD, 1> fd;
     fd.init(geo_r);
     // Loops over every lattice point in the current node
     const Int multiplicity = sf.multiplicity;
@@ -79,14 +79,14 @@ struct ScalarAction {
     // Sums over the contributions to the total action from each point
     // (this cannot be done in the previous loops because the previous
     // loop runs in parallel)
-    double sum = 0.0;
+    RealD sum = 0.0;
     for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
   }
 
-  inline double action_node(const Field<double>& sf)
+  inline RealD action_node(const Field<RealD>& sf)
   {
 	// Return the total Euclidean action (on the current node) associated
 	// with the given scalar field.
@@ -96,7 +96,7 @@ struct ScalarAction {
     const Coordinate expand_left(0, 0, 0, 0);
     const Coordinate expand_right(1, 1, 1, 1);
     const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
-    Field<double> sf_ext;
+    Field<RealD> sf_ext;
     sf_ext.init(geo_ext, sf.multiplicity);
     sf_ext = sf;
     refresh_expanded(sf_ext);
@@ -104,7 +104,7 @@ struct ScalarAction {
     return action_node_no_comm(sf_ext);
   }
 
-  qacc double hmc_mass_p(const Coordinate& L, const Coordinate& pg)
+  qacc RealD hmc_mass_p(const Coordinate& L, const Coordinate& pg)
   {
     // Returns the momentum-dependent mass factor for HMC Fourier
     // acceleration
@@ -115,7 +115,7 @@ struct ScalarAction {
 									std::cos(2*PI*pg[3]/L[3])));
   }
 
-  inline void hmc_estimate_mass(Field<double>& masses, const Field<ComplexD>& field_ft, const Field<ComplexD>& force_ft, const double phi0)
+  inline void hmc_estimate_mass(Field<RealD>& masses, const Field<ComplexD>& field_ft, const Field<ComplexD>& force_ft, const RealD phi0)
   {
     TIMER("ScalarAction.hmc_estimate_mass");
     const Geometry geo = field_ft.geo();
@@ -127,7 +127,7 @@ struct ScalarAction {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Long gindex = geo.g_index_from_g_coordinate(xg);
-      Vector<double> masses_v = masses.get_elems(xl);
+      Vector<RealD> masses_v = masses.get_elems(xl);
       Int M = masses_v.size();
       qassert(M == multiplicity);
       for (Int m = 0; m < M; ++m) {
@@ -142,14 +142,14 @@ struct ScalarAction {
     });
   }
 
-  inline void to_mass_factor(Field<double>& sin_domega)
+  inline void to_mass_factor(Field<RealD>& sin_domega)
   {
     TIMER("ScalarAction.to_mass_factor");
     const Geometry geo = sin_domega.geo();
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sin_domega.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<double> v = sin_domega.get_elems(xl);
+      Vector<RealD> v = sin_domega.get_elems(xl);
       for (Int m = 0; m < v.size(); ++m) {
         v[m] = 1 + 2*std::asin(v[m])/PI;
         v[m] = v[m]*v[m];
@@ -157,7 +157,7 @@ struct ScalarAction {
     });
   }
 
-  inline double hmc_m_hamilton_node(const Field<ComplexD>& sm_complex, const Field<double>& masses)
+  inline RealD hmc_m_hamilton_node(const Field<ComplexD>& sm_complex, const Field<RealD>& masses)
   {
     // Return the part of an HMC Hamiltonian due to the given momentum
     // field (on the current node).
@@ -176,13 +176,13 @@ struct ScalarAction {
     const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the sum
     // from each point
-    FieldM<double, 1> fd;
+    FieldM<RealD, 1> fd;
     fd.init(geo_r);
     // Long V = geo.total_volume();
     qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = sm_complex.geo();
       Coordinate xl = geo.coordinate_from_index(index);
-      double s=0;
+      RealD s=0;
       for (Int m = 0; m < multiplicity; ++m) {
         ComplexD c = sm_complex.get_elem(xl,m);
         s += (c.real()*c.real()+c.imag()*c.imag())/2/masses.get_elem(xl,m); // /hmc_mass_p(L,geo.coordinate_g_from_l(xl));
@@ -192,14 +192,14 @@ struct ScalarAction {
     // Sums over the contributions to the sum from each point
     // (this cannot be done in the previous loops because the previous
     // loop runs in parallel)
-    double sum = 0.0;
+    RealD sum = 0.0;
     for (Long index = 0; index < geo.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
   }
 
-  inline void hmc_set_force_no_comm(Field<double>& sm_force, const Field<double>& sf)
+  inline void hmc_set_force_no_comm(Field<RealD>& sm_force, const Field<RealD>& sf)
   {
     TIMER("ScalarAction.hmc_set_sm_force_no_comm");
     const Geometry geo = sf.geo();
@@ -210,10 +210,10 @@ struct ScalarAction {
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
-      Vector<double> sm_force_v = sm_force.get_elems(xl);
+      Vector<RealD> sm_force_v = sm_force.get_elems(xl);
       Int M = sm_force_v.size();
       qassert(M == multiplicity);
-      double sum_mult_sq = 0.0;
+      RealD sum_mult_sq = 0.0;
       for (Int m = 0; m < M; ++m) {
         sum_mult_sq += pow(sf.get_elem(xl, m), 2);
       }
@@ -232,7 +232,7 @@ struct ScalarAction {
     });
   }
 
-  inline void hmc_set_force(Field<double>&  sm_force, const Field<double>&  sf)
+  inline void hmc_set_force(Field<RealD>&  sm_force, const Field<RealD>&  sf)
   {
 	// Calculate and set the HMC force field based on the given field
 	// configuration.
@@ -240,7 +240,7 @@ struct ScalarAction {
     Coordinate expand_left(1, 1, 1, 1);
     Coordinate expand_right(1, 1, 1, 1);
     const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
-    Field<double> sf_ext;
+    Field<RealD> sf_ext;
     sf_ext.init(geo_ext, sf.multiplicity);
     sf_ext = sf;
     refresh_expanded(sf_ext);
@@ -248,7 +248,7 @@ struct ScalarAction {
   }
 
   inline void hmc_field_evolve(Field<ComplexD>& sf_complex, const Field<ComplexD>& sm_complex,
-                               const Field<double>& masses, const double step_size)
+                               const Field<RealD>& masses, const RealD step_size)
   {
     TIMER("hmc_field_evolve");
     //Field<ComplexD> sf_complex;
@@ -277,7 +277,7 @@ struct ScalarAction {
     //set_double_from_complex(sf, sf_complex);
   }
 
-  inline void axial_current_node_no_comm(Field<double>&  axial_current, const Field<double>& sf)
+  inline void axial_current_node_no_comm(Field<RealD>&  axial_current, const Field<RealD>& sf)
   {
     TIMER("ScalarAction.axial_current_node_no_comm");
     const Geometry geo = sf.geo();
@@ -288,11 +288,11 @@ struct ScalarAction {
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
-      Vector<double> ac_v = axial_current.get_elems(xl);
+      Vector<RealD> ac_v = axial_current.get_elems(xl);
       Int M = ac_v.size();
       qassert(M == multiplicity-1);
-      double p0;
-      double pi;
+      RealD p0;
+      RealD pi;
       for (Int m = 0; m < M; ++m) {
         xl[3]-=1;
         p0 = sf.get_elem(xl, 0);
@@ -303,7 +303,7 @@ struct ScalarAction {
     });
   }
 
-  inline double sum_sq(const Field<double>& f)
+  inline RealD sum_sq(const Field<RealD>& f)
   {
     // Returns the sum of f(x)^2 over lattice sites (on the current
     // node) and multiplicity
@@ -315,14 +315,14 @@ struct ScalarAction {
     const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the sum of squares
     // from each point
-    FieldM<double, 1> fd;
+    FieldM<RealD, 1> fd;
     fd.init(geo_r);
     qthread_for(index, geo_r.local_volume(), {
       // const Geometry& geo = f.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
-      double s=0;
+      RealD s=0;
       for (Int m = 0; m < multiplicity; ++m) {
-        double d = f.get_elem(xl,m);
+        RealD d = f.get_elem(xl,m);
         s += d*d;
       }
       fd.get_elem(index) = s;
@@ -330,14 +330,14 @@ struct ScalarAction {
     // Sums over the contributions to the sum of squares from each point
     // (this cannot be done in the previous loops because the previous
      // loop runs in parallel)
-    double sum = 0;
+    RealD sum = 0;
     for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
   }
 
-  inline void axial_current_node(Field<double>& axial_current, const Field<double>& sf)
+  inline void axial_current_node(Field<RealD>& axial_current, const Field<RealD>& sf)
   {
 	// Sets the axial_current field based on the provided field
 	// configuration sf. axial_current.get_elem(x,i) will give the time
@@ -346,14 +346,14 @@ struct ScalarAction {
     const Coordinate expand_left(0, 0, 0, 1);
     const Coordinate expand_right(0, 0, 0, 0);
     const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
-    Field<double> sf_ext;
+    Field<RealD> sf_ext;
     sf_ext.init(geo_ext, sf.multiplicity);
     sf_ext = sf;
     refresh_expanded(sf_ext);
     axial_current_node_no_comm(axial_current, sf_ext);
   }
 
-  inline void hmc_set_rand_momentum(Field<ComplexD>& sm_complex, const Field<double>& masses, const RngState& rs)
+  inline void hmc_set_rand_momentum(Field<ComplexD>& sm_complex, const Field<RealD>& masses, const RngState& rs)
   {
     TIMER("set_rand_momentum");
     // Note that momentum fields produced with this function need to be
@@ -366,13 +366,13 @@ struct ScalarAction {
       RngState rsi = rs.newtype(gindex);
       Vector<ComplexD> v = sm_complex.get_elems(xl);
       for (Int m = 0; m < v.size(); ++m) {
-        double sigma = std::pow(masses.get_elem(xl,m), 0.5);
+        RealD sigma = std::pow(masses.get_elem(xl,m), 0.5);
         v[m] = ComplexD(g_rand_gen(rsi, 0, sigma), g_rand_gen(rsi, 0, sigma));
       }
     });
   }
 
-  inline void hmc_predict_field(Field<ComplexD>& field_ft, const Field<ComplexD>& momentum_ft, const Field<double>& masses, const double vev_sigma)
+  inline void hmc_predict_field(Field<ComplexD>& field_ft, const Field<ComplexD>& momentum_ft, const Field<RealD>& masses, const RealD vev_sigma)
   {
     TIMER("hmc_predict_field");
     const Geometry& geo = momentum_ft.geo();
@@ -401,7 +401,7 @@ struct ScalarAction {
     });
   }
 
-  inline void get_polar_field(Field<double>& polar_fields, const Field<double>& sf)
+  inline void get_polar_field(Field<RealD>& polar_fields, const Field<RealD>& sf)
   {
 	// Sets the fields corresponding to polar coordinates based on the
     // provided cartesian field configuration sf.
@@ -412,19 +412,19 @@ struct ScalarAction {
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = sf.geo();
       Coordinate xl = geo.coordinate_from_index(index);
-      //const Vector<double> sf_v = sf.get_elems_const(xl);
+      //const Vector<RealD> sf_v = sf.get_elems_const(xl);
       qassert(sf.get_elems_const(xl).size() == 4);
-      Vector<double> pf_v = polar_fields.get_elems(xl);
+      Vector<RealD> pf_v = polar_fields.get_elems(xl);
       qassert(pf_v.size() == 4);
-      double w = sf.get_elem(xl,0);
-      double x = sf.get_elem(xl,1);
-      double y = sf.get_elem(xl,2);
-      double z = sf.get_elem(xl,3);
+      RealD w = sf.get_elem(xl,0);
+      RealD x = sf.get_elem(xl,1);
+      RealD y = sf.get_elem(xl,2);
+      RealD z = sf.get_elem(xl,3);
       // The formula to be inverted is
       // x_0 = r * cos(phi/r)
       // x_i = r * sin(phi/r) * phi_i/phi
       pf_v[0] = std::pow(w*w+x*x+y*y+z*z,0.5);
-      double phi = pf_v[0]*std::acos(w/pf_v[0]);
+      RealD phi = pf_v[0]*std::acos(w/pf_v[0]);
       pf_v[1] = phi*x/(pf_v[0]*std::sin(phi/pf_v[0]));
       pf_v[2] = phi*y/(pf_v[0]*std::sin(phi/pf_v[0]));
       pf_v[3] = phi*z/(pf_v[0]*std::sin(phi/pf_v[0]));

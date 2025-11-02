@@ -608,22 +608,22 @@ enum DATA_TYPE {
   INT64_TYPE = 16 + MAXTYPE * sizeof(std::int64_t),
   UINT64_TYPE = 17 + MAXTYPE * sizeof(std::uint64_t),
   //
-  DOUBLE_TYPE = FLOATIND + 0 + MAXTYPE * sizeof(double),
+  DOUBLE_TYPE = FLOATIND + 0 + MAXTYPE * sizeof(RealD),
   FLOAT_TYPE = FLOATIND + 1 + MAXTYPE * sizeof(float),
   ComplexD_TYPE = FLOATIND + 2 + MAXTYPE * sizeof(ComplexD),
   ComplexF_TYPE = FLOATIND + 3 + MAXTYPE * sizeof(ComplexF),
   //
-  ColorMatrix_TYPE = FLOATIND + 4 + MAXTYPE * sizeof(ColorMatrixT<double>),
+  ColorMatrix_TYPE = FLOATIND + 4 + MAXTYPE * sizeof(ColorMatrixT<RealD>),
   ColorMatrixF_TYPE = FLOATIND + 5 + MAXTYPE * sizeof(ColorMatrixT<float>),
-  WilsonMatrix_TYPE = FLOATIND + 6 + MAXTYPE * sizeof(WilsonMatrixT<double>),
+  WilsonMatrix_TYPE = FLOATIND + 6 + MAXTYPE * sizeof(WilsonMatrixT<RealD>),
   WilsonMatrixF_TYPE = FLOATIND + 7 + MAXTYPE * sizeof(WilsonMatrixT<float>),
-  SpinMatrix_TYPE = FLOATIND + 8 + MAXTYPE * sizeof(SpinMatrixT<double>),
+  SpinMatrix_TYPE = FLOATIND + 8 + MAXTYPE * sizeof(SpinMatrixT<RealD>),
   SpinMatrixF_TYPE = FLOATIND + 9 + MAXTYPE * sizeof(SpinMatrixT<float>),
-  WilsonVector_TYPE = FLOATIND + 10 + MAXTYPE * sizeof(WilsonVectorT<double>),
+  WilsonVector_TYPE = FLOATIND + 10 + MAXTYPE * sizeof(WilsonVectorT<RealD>),
   WilsonVectorF_TYPE = FLOATIND + 11 + MAXTYPE * sizeof(WilsonVectorT<float>),
   //
   NonRelWilsonMatrix_TYPE =
-      FLOATIND + 12 + MAXTYPE * sizeof(NonRelWilsonMatrixT<double>),
+      FLOATIND + 12 + MAXTYPE * sizeof(NonRelWilsonMatrixT<RealD>),
   NonRelWilsonMatrixF_TYPE =
       FLOATIND + 13 + MAXTYPE * sizeof(NonRelWilsonMatrixT<float>),
   INVALID_TYPE = 9999999
@@ -691,7 +691,7 @@ qacc DATA_TYPE get_data_type<std::int8_t>()
 // INT64_TYPE         ; } template<> qacc DATA_TYPE get_data_type<std::uint64_t
 // >(){return  UINT64_TYPE         ; }
 template <>
-qacc DATA_TYPE get_data_type<double>()
+qacc DATA_TYPE get_data_type<RealD>()
 {
   return DOUBLE_TYPE;
 }
@@ -711,7 +711,7 @@ qacc DATA_TYPE get_data_type<ComplexF>()
   return ComplexF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<ColorMatrixT<double>>()
+qacc DATA_TYPE get_data_type<ColorMatrixT<RealD>>()
 {
   return ColorMatrix_TYPE;
 }
@@ -721,7 +721,7 @@ qacc DATA_TYPE get_data_type<ColorMatrixT<float>>()
   return ColorMatrixF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<WilsonMatrixT<double>>()
+qacc DATA_TYPE get_data_type<WilsonMatrixT<RealD>>()
 {
   return WilsonMatrix_TYPE;
 }
@@ -731,7 +731,7 @@ qacc DATA_TYPE get_data_type<WilsonMatrixT<float>>()
   return WilsonMatrixF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<SpinMatrixT<double>>()
+qacc DATA_TYPE get_data_type<SpinMatrixT<RealD>>()
 {
   return SpinMatrix_TYPE;
 }
@@ -741,7 +741,7 @@ qacc DATA_TYPE get_data_type<SpinMatrixT<float>>()
   return SpinMatrixF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<WilsonVectorT<double>>()
+qacc DATA_TYPE get_data_type<WilsonVectorT<RealD>>()
 {
   return WilsonVector_TYPE;
 }
@@ -751,7 +751,7 @@ qacc DATA_TYPE get_data_type<WilsonVectorT<float>>()
   return WilsonVectorF_TYPE;
 }
 template <>
-qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<double>>()
+qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<RealD>>()
 {
   return NonRelWilsonMatrix_TYPE;
 }

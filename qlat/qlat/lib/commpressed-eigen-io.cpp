@@ -832,11 +832,11 @@ std::vector<crc32_t> load_node(CompressedEigenSystemBases& cesb,
   return crcs;
 }
 
-std::vector<double> read_eigen_values(const std::string& path)
+std::vector<RealD> read_eigen_values(const std::string& path)
 {
   TIMER_VERBOSE("read_eigen_values");
   Long n_eigen_values = 0;
-  std::vector<double> vals;
+  std::vector<RealD> vals;
   if (0 == get_id_node()) {
     const std::string filename = path + "/eigen-values.txt";
     QFile file = qfopen(filename, "r");
@@ -1000,7 +1000,7 @@ void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data,
   }
 }
 
-Long load_compressed_eigen_vectors(vector<double>& eigen_values,
+Long load_compressed_eigen_vectors(vector<RealD>& eigen_values,
                                    CompressedEigenSystemInfo& cesi,
                                    CompressedEigenSystemBases& cesb,
                                    CompressedEigenSystemCoefs& cesc,

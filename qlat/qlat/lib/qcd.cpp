@@ -39,7 +39,7 @@ static qacc RealD clf_plaq_action_density(const CloverLeafField& clf,
 // beta = 6/g^2
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (Int i = 0; i < 6; ++i) {
     sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[i]).real();
   }
@@ -51,7 +51,7 @@ static qacc RealD clf_spatial_plaq_action_density(const CloverLeafField& clf,
 // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
-  double sum = 0.0;
+  RealD sum = 0.0;
   sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[0]).real();
   sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[1]).real();
   sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[3]).real();
@@ -67,8 +67,8 @@ static qacc RealD clf_topology_density(const CloverLeafField& clf,
   for (Int i = 0; i < 6; ++i) {
     arr[i] = (ComplexD)0.5 * (v[i] - matrix_adjoint(v[i]));
   }
-  const double fac = -1.0 / (4.0 * PI * PI);
-  double sum = 0.0;
+  const RealD fac = -1.0 / (4.0 * PI * PI);
+  RealD sum = 0.0;
   sum -= matrix_trace(arr[1] * arr[4]).real();
   sum += matrix_trace(arr[2] * arr[3]).real();
   sum += matrix_trace(arr[5] * arr[0]).real();
@@ -93,7 +93,7 @@ static RealD gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_plaq_no_comm");
   const Geometry geo = geo_resize(gf.geo());
-  FieldM<double, 1> cf;
+  FieldM<RealD, 1> cf;
   cf.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = cf.geo();
@@ -105,7 +105,7 @@ static RealD gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
       vms[m] = gf.get_elems_const(xl);
       xl[m] -= 1;
     }
-    double sum = 0.0;
+    RealD sum = 0.0;
     sum += gf_plaq_no_comm(v, vms, 0, 1);
     sum += gf_plaq_no_comm(v, vms, 0, 2);
     sum += gf_plaq_no_comm(v, vms, 0, 3);
@@ -118,9 +118,9 @@ static RealD gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
     }
     cf.get_elem(index) = sum;
   });
-  const std::vector<double> sum_vec = field_sum(cf);
+  const std::vector<RealD> sum_vec = field_sum(cf);
   qassert(sum_vec.size() == 1);
-  double sum = sum_vec[0];
+  RealD sum = sum_vec[0];
   glb_sum(sum);
   sum /= geo.total_volume();
   return sum;
@@ -143,10 +143,10 @@ static RealD gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_spatial_plaq_no_comm");
   const Geometry& geo = gf.geo();
-  std::vector<double> sums(omp_get_max_threads(), 0.0);
+  std::vector<RealD> sums(omp_get_max_threads(), 0.0);
 #pragma omp parallel
   {
-    double sum_avg_plaq = 0.0;
+    RealD sum_avg_plaq = 0.0;
 #pragma omp for
     for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
@@ -157,7 +157,7 @@ static RealD gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
         vms[m] = gf.get_elems_const(xl);
         xl[m] -= 1;
       }
-      double avg_plaq = 0.0;
+      RealD avg_plaq = 0.0;
       for (Int m1 = 1; m1 < 3; ++m1) {
         for (Int m2 = 0; m2 < m1; ++m2) {
           ColorMatrixT<T> cm =
@@ -174,7 +174,7 @@ static RealD gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
     }
     sums[omp_get_thread_num()] = sum_avg_plaq;
   }
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (size_t i = 0; i < sums.size(); ++i) {
     sum += sums[i];
   }
@@ -199,22 +199,22 @@ static RealD gf_avg_link_trace(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_link_trace");
   const Geometry& geo = gf.geo();
-  FieldM<double, 1> cf;
+  FieldM<RealD, 1> cf;
   cf.init(geo);
   qacc_for(index, geo.local_volume(), {
     const Geometry& geo = cf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
-    double sum = 0;
+    RealD sum = 0;
     for (Int m = 0; m < v.size(); ++m) {
       sum += matrix_trace(v[m]).real() / NUM_COLOR;
     }
     sum /= v.size();
     cf.get_elem(index) = sum;
   });
-  const std::vector<double> sum_vec = field_sum(cf);
+  const std::vector<RealD> sum_vec = field_sum(cf);
   qassert(sum_vec.size() == 1);
-  double sum = sum_vec[0];
+  RealD sum = sum_vec[0];
   glb_sum(sum);
   sum /= geo.total_volume();
   return sum;

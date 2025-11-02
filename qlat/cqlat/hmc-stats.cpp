@@ -8,7 +8,7 @@ EXPORT(get_gm_force_magnitudes, {
     return NULL;
   }
   const GaugeMomentum& gm_force = py_convert_type<GaugeMomentum>(p_gm_force);
-  std::vector<double> ret = get_gm_force_magnitudes(gm_force, n_elems);
+  std::vector<RealD> ret = get_gm_force_magnitudes(gm_force, n_elems);
   return py_convert(ret);
 })
 
@@ -41,10 +41,10 @@ EXPORT(display_gauge_field_info_table_with_wilson_flow, {
   PyObject* p_fn_gf_info = NULL;
   PyObject* p_fn_wilson_flow_energy = NULL;
   PyObject* p_gf = NULL;
-  double flow_time = 0.0;
+  RealD flow_time = 0.0;
   Int flow_steps = 0.0;
   Int steps = 0.0;
-  double c1 = 0.0;
+  RealD c1 = 0.0;
   if (!PyArg_ParseTuple(args, "OOOdii|d", &p_fn_gf_info,
                         &p_fn_wilson_flow_energy, &p_gf, &flow_time,
                         &flow_steps, &steps, &c1)) {

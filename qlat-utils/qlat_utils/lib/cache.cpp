@@ -15,11 +15,11 @@ void clear_mem_cache()
     displayln_info(
         0, fname + ssprintf(": mem_type=%s %ld bytes (%.3f GB) freed.",
                             show(mem_type).c_str(), bytes,
-                            (double)bytes / (1024.0 * 1024.0 * 1024.0)));
+                            (RealD)bytes / (1024.0 * 1024.0 * 1024.0)));
   }
   displayln_info(
       0, fname + ssprintf(": total %ld bytes (%.3f GB) freed.", total_bytes,
-                          (double)total_bytes / (1024.0 * 1024.0 * 1024.0)));
+                          (RealD)total_bytes / (1024.0 * 1024.0 * 1024.0)));
   timer.flops += total_bytes;
 }
 

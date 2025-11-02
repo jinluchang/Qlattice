@@ -182,22 +182,22 @@ inline std::string show(const ComplexT<T> &x)
   return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
 }
 
-qacc ComplexT<double> operator*(const double &a, const ComplexT<double> &b)
+qacc ComplexT<RealD> operator*(const RealD &a, const ComplexT<RealD> &b)
 {
-  return ComplexT<double>(b.real() * a, b.imag() * a);
+  return ComplexT<RealD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<double> operator*(const ComplexT<double> &b, const double &a)
+qacc ComplexT<RealD> operator*(const ComplexT<RealD> &b, const RealD &a)
 {
-  return ComplexT<double>(b.real() * a, b.imag() * a);
+  return ComplexT<RealD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<float> operator*(const double &a, const ComplexT<float> &b)
+qacc ComplexT<float> operator*(const RealD &a, const ComplexT<float> &b)
 {
   return ComplexT<float>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<float> operator*(const ComplexT<float> &b, const double &a)
+qacc ComplexT<float> operator*(const ComplexT<float> &b, const RealD &a)
 {
   return ComplexT<float>(b.real() * a, b.imag() * a);
 }
@@ -212,7 +212,7 @@ qacc ComplexT<float> operator*(const ComplexT<float> &b, const float &a)
   return ComplexT<float>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealDD> operator*(const double &a, const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator*(const RealD &a, const ComplexT<RealDD> &b)
 {
   return ComplexT<RealDD>(b.real() * RealDD(a), b.imag() * RealDD(a));
 }
@@ -229,7 +229,7 @@ qacc ComplexT<RealDD> operator*(const RealDD &a, const ComplexT<RealDD> &b)
   return ComplexT<RealDD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &b, const double &a)
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &b, const RealD &a)
 {
   return ComplexT<RealDD>(b.real() * RealDD(a), b.imag() * RealDD(a));
 }
@@ -321,8 +321,8 @@ qacc Ta qacos(Ta a)
 template <>
 qacc RealDD qsin(RealDD a)
 {
-  double y = a.Y();
-  double x = a.X();
+  RealD y = a.Y();
+  RealD x = a.X();
   RealDD z, e;
   RealDD cosy = std::cos(y);
   RealDD cosx = std::cos(x);
@@ -339,8 +339,8 @@ qacc RealDD qsin(RealDD a)
 template <>
 qacc RealDD qcos(RealDD a)
 {
-  double y = a.Y();
-  double x = a.X();
+  RealD y = a.Y();
+  RealD x = a.X();
   RealDD z, e;
   RealDD cosy = std::cos(y);
   RealDD cosx = std::cos(x);
@@ -357,8 +357,8 @@ qacc RealDD qcos(RealDD a)
 template <>
 qacc RealDD qacos(RealDD a)
 {
-  double y = a.Y();
-  double x = a.X();
+  RealD y = a.Y();
+  RealD x = a.X();
   RealDD z,e;
   e.Y() = std::acos(y);
   e.X() = -1.0 * (1.0 / std::sqrt(1.0 - y * y)) * x;
@@ -432,10 +432,10 @@ namespace std
 {
 
 template <>
-qacc complex<double> &complex<double>::operator=(
+qacc complex<qlat::RealD> &complex<qlat::RealD>::operator=(
     const complex<qlat::RealDD> &__z)
 {
-  *this = complex<double>(__z.real(), __z.imag());
+  *this = complex<qlat::RealD>(__z.real(), __z.imag());
   return *this;
 }
 

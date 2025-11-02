@@ -61,7 +61,7 @@ inline float fp_unmap(const Int val, const float min, const float max,
 
 inline float unmap_fp16_exp(unsigned short e)
 {
-  const double base = 1.4142135623730950488;
+  const RealD base = 1.4142135623730950488;
   const float de = (float)((int)e - USHRT_MAX / 2);
   return pow(base, de);
 }
@@ -327,7 +327,7 @@ std::vector<crc32_t> load_node(CompressedEigenSystemBases& cesb,
                                const CompressedEigenSystemInfo& cesi,
                                const std::string& path);
 
-std::vector<double> read_eigen_values(const std::string& path);
+std::vector<RealD> read_eigen_values(const std::string& path);
 
 struct BlockedHalfVector : Field<ComplexF> {
   Long block_vol_eo;  // even odd precondition (block_vol is half of the number
@@ -356,7 +356,7 @@ void convert_half_vectors(std::vector<HalfVector>& hvs,
 void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data,
                                     const HalfVector& hv);
 
-Long load_compressed_eigen_vectors(vector<double>& eigen_values,
+Long load_compressed_eigen_vectors(vector<RealD>& eigen_values,
                                    CompressedEigenSystemInfo& cesi,
                                    CompressedEigenSystemBases& cesb,
                                    CompressedEigenSystemCoefs& cesc,

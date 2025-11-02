@@ -16,7 +16,7 @@ inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site)
   begin(argc, argv);
 }
 
-void cps_end() { end(); }
+inline void cps_end() { end(); }
 
 }  // namespace qlat
 
@@ -159,8 +159,8 @@ inline void field_convert(Field<N>& f, const cps::GridComm<M>& gc)
 }
 
 inline void gf_fix_gauge_landau(GaugeField& gf,
-                                const double stop_cond = 1.0e-12,
-                                const double max_iter_num = 500000)
+                                const RealD stop_cond = 1.0e-12,
+                                const RealD max_iter_num = 500000)
 {
   TIMER_VERBOSE("gf_fix_gauge_landau")
   cps::GaugeField cgf;
@@ -184,8 +184,8 @@ inline void gf_fix_gauge_landau(GaugeField& gf,
 }
 
 inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
-                                    const double stop_cond = 1.0e-12,
-                                    const double max_iter_num = 500000)
+                                    const RealD stop_cond = 1.0e-12,
+                                    const RealD max_iter_num = 500000)
 {
   TIMER_VERBOSE("gt_gf_fix_gauge_coulomb")
   cps::GaugeField cgf;
@@ -216,8 +216,8 @@ inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
 }
 
 inline void gf_fix_gauge_coulomb(GaugeField& gf,
-                                 const double stop_cond = 1.0e-12,
-                                 const double max_iter_num = 500000)
+                                 const RealD stop_cond = 1.0e-12,
+                                 const RealD max_iter_num = 500000)
 {
   TIMER_VERBOSE("gf_fix_gauge_coulomb")
   GaugeTransform gt;
@@ -318,7 +318,7 @@ inline Long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
   TIMER_VERBOSE_FLOPS("read_low_modes_compressed");
   cps::LanczosDefault& lanc = lm.lanc;
   lanc.free_evecs();
-  vector<double> vals;
+  vector<RealD> vals;
   std::vector<HalfVector> hvs;
   {
     CompressedEigenSystemInfo cesi;
@@ -439,7 +439,7 @@ struct InverterDomainWallCPS {
     inverter.init(cgf, cfa);
   }
   //
-  double& stop_rsd() { return inverter.stop_rsd; }
+  RealD& stop_rsd() { return inverter.stop_rsd; }
   //
   Int& max_num_iter() { return inverter.max_num_iter; }
   //

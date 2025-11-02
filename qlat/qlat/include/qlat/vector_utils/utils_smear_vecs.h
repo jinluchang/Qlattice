@@ -1134,7 +1134,7 @@ struct smear_fun{
         const Int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
         for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.recv_msg_infos[i];
-          Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          Long count = cmi.size * bfac * sizeof(Ty) / sizeof(RealD);
           //qmessage("==recv comm %ld\n", count);
           //MPI_Irecv(&recv_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
           //          cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
@@ -1144,7 +1144,7 @@ struct smear_fun{
         }
         for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
           const CommMsgInfo& cmi = plan.send_msg_infos[i];
-          Long count = cmi.size * bfac * sizeof(Ty) / sizeof(double);
+          Long count = cmi.size * bfac * sizeof(Ty) / sizeof(RealD);
           //qmessage("==send comm %ld\n", count);
           //MPI_Isend(&send_buffer[cmi.buffer_idx*bfac], count, MPI_DOUBLE,
           //          cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);

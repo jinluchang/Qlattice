@@ -8,14 +8,14 @@
 #define EXPORT_FUNCTION(name) \
   extern PyObject* PKG_PREFIX(name)(PyObject* self, PyObject * args);
 extern "C" {
-#include "exports.h"
+#include "exports.h.template"
 }
 #undef EXPORT_FUNCTION
 
 // add to module functions
 #define EXPORT_FUNCTION(name) {#name, PKG_PREFIX(name), METH_VARARGS, #name},
 static PyMethodDef module_functions[] = {
-#include "exports.h"
+#include "exports.h.template"
     {NULL, NULL, 0, NULL}};
 #undef EXPORT_FUNCTION
 

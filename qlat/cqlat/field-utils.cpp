@@ -216,7 +216,7 @@ PyObject* merge_fields_ms_ctype(PyObject* p_field,
 }
 
 template <class M>
-PyObject* qnorm_field_field_ctype(FieldM<double, 1>& f, PyObject* p_field1)
+PyObject* qnorm_field_field_ctype(FieldM<RealD, 1>& f, PyObject* p_field1)
 {
   const Field<M>& f1 = py_convert_type_field<M>(p_field1);
   qnorm_field(f, f1);
@@ -306,7 +306,7 @@ EXPORT(assign_as_field, {
     Field<ComplexD>& f = py_convert_type_field<ComplexD>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "RealD") {
-    Field<double>& f = py_convert_type_field<double>(p_field);
+    Field<RealD>& f = py_convert_type_field<RealD>(p_field);
     FIELD_DISPATCH(p_ret, assign_as_field_ctype, ctype1, f, p_field1);
   } else if (ctype == "ComplexF") {
     Field<ComplexF>& f = py_convert_type_field<ComplexF>(p_field);
@@ -338,7 +338,7 @@ EXPORT(assign_from_field, {
     const Field<ComplexD>& f1 = py_convert_type_field<ComplexD>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "RealD") {
-    const Field<double>& f1 = py_convert_type_field<double>(p_field1);
+    const Field<RealD>& f1 = py_convert_type_field<RealD>(p_field1);
     FIELD_DISPATCH(p_ret, assign_from_field_ctype, ctype, p_field, f1);
   } else if (ctype1 == "ComplexF") {
     const Field<ComplexF>& f1 = py_convert_type_field<ComplexF>(p_field1);
@@ -552,7 +552,7 @@ EXPORT(qnorm_field_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  FieldM<double, 1>& f = py_convert_type_field<double, 1>(p_field);
+  FieldM<RealD, 1>& f = py_convert_type_field<RealD, 1>(p_field);
   const std::string ctype = py_get_ctype(p_field1);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_field_field_ctype, ctype, f, p_field1);
@@ -566,16 +566,16 @@ EXPORT(set_sqrt_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  Field<double>& f = py_convert_type_field<double>(p_field);
-  const Field<double>& f1 = py_convert_type_field<double>(p_field1);
+  Field<RealD>& f = py_convert_type_field<RealD>(p_field);
+  const Field<RealD>& f1 = py_convert_type_field<RealD>(p_field1);
   const Geometry geo = geo_resize(f1.geo());
   qassert(geo.is_only_local);
   f.init();
   f.init(geo, f1.multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<double> f1v = f1.get_elems_const(xl);
-    Vector<double> fv = f.get_elems(xl);
+    const Vector<RealD> f1v = f1.get_elems_const(xl);
+    Vector<RealD> fv = f.get_elems(xl);
     for (Int m = 0; m < f1.multiplicity; ++m) {
       fv[m] = std::sqrt(f1v[m]);
     }

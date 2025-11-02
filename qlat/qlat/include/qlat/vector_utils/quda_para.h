@@ -839,7 +839,7 @@ void qlat_cf_to_quda_cfT(quda::ColorSpinorField& x, Ty* src, const Geometry& geo
   //if(Dtype == QUDA_HALF_PRECISION or Dtype == QUDA_SINGLE_PRECISION)
   //if(Dtype != QUDA_DOUBLE_PRECISION)
   {
-    quda_buf.resizeL(Vl * sizeof(double) * 2 / sizeof(int8_t));
+    quda_buf.resizeL(Vl * sizeof(RealD) * 2 / sizeof(int8_t));
     //quda::ColorSpinorParam param(x);
     param.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
     param.is_composite  = false;

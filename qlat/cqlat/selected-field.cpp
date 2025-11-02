@@ -96,7 +96,7 @@ PyObject* set_mul_sfield_ctype(PyObject* pf, const ComplexD& factor)
 }
 
 template <class M>
-PyObject* set_mul_sfield_ctype(PyObject* pf, const double& factor)
+PyObject* set_mul_sfield_ctype(PyObject* pf, const RealD& factor)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(pf);
   f *= factor;
@@ -171,12 +171,12 @@ template <class M>
 PyObject* qnorm_sfield_ctype(PyObject* pf)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const double ret = qnorm(f);
+  const RealD ret = qnorm(f);
   return py_convert(ret);
 }
 
 template <class M>
-PyObject* qnorm_field_sfield_ctype(SelectedField<double>& f, PyObject* p_field1)
+PyObject* qnorm_field_sfield_ctype(SelectedField<RealD>& f, PyObject* p_field1)
 {
   const SelectedField<M>& f1 = py_convert_type_sfield<M>(p_field1);
   qnorm_field(f, f1);
@@ -337,7 +337,7 @@ EXPORT(set_sub_sfield, {
 EXPORT(set_mul_double_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  double factor = 0.0;
+  RealD factor = 0.0;
   if (!PyArg_ParseTuple(args, "Od", &p_field, &factor)) {
     return NULL;
   }
@@ -464,7 +464,7 @@ EXPORT(qnorm_field_sfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  SelectedField<double>& f = py_convert_type_sfield<double>(p_field);
+  SelectedField<RealD>& f = py_convert_type_sfield<RealD>(p_field);
   const std::string ctype = py_get_ctype(p_field1);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_field_sfield_ctype, ctype, f, p_field1);
@@ -478,15 +478,15 @@ EXPORT(set_sqrt_double_sfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  SelectedField<double>& f = py_convert_type_sfield<double>(p_field);
-  const SelectedField<double>& f1 = py_convert_type_sfield<double>(p_field1);
+  SelectedField<RealD>& f = py_convert_type_sfield<RealD>(p_field);
+  const SelectedField<RealD>& f1 = py_convert_type_sfield<RealD>(p_field1);
   const Geometry& geo = f1.geo();
   qassert(geo.is_only_local);
   f.init();
   f.init(geo, f1.n_elems, f1.multiplicity);
   qacc_for(idx, f.n_elems, {
-    const Vector<double> f1v = f1.get_elems_const(idx);
-    Vector<double> fv = f.get_elems(idx);
+    const Vector<RealD> f1v = f1.get_elems_const(idx);
+    Vector<RealD> fv = f.get_elems(idx);
     for (Int m = 0; m < f.multiplicity; ++m) {
       fv[m] = std::sqrt(f1v[m]);
     }

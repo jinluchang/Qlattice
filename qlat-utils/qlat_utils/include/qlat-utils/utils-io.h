@@ -74,7 +74,7 @@ bool does_file_exist_cache(const std::string& fn);
 
 Int qtruncate(const std::string& path, const Long offset=0);
 
-inline Int ssleep(const double seconds)
+inline Int ssleep(const RealD seconds)
 {
   return usleep((useconds_t)(seconds * 1.0e6));
 }
@@ -220,9 +220,9 @@ API inline Int& is_sigterm_received()
   return n;
 }
 
-API inline double& get_last_sigint_time()
+API inline RealD& get_last_sigint_time()
 {
-  static double time = 0.0;
+  static RealD time = 0.0;
   return time;
 }
 
@@ -243,7 +243,7 @@ inline void qhandler_sig(const Int signum)
     displayln(ssprintf("qhandler_sig: sigint triggered."));
     Timer::display();
     Timer::display_stack();
-    const double time = get_total_time();
+    const RealD time = get_total_time();
     if (time - get_last_sigint_time() <= 3.0) {
       displayln(ssprintf(
           "qhandler_sig: sigint triggered interval = %.2f <= 3.0. Quit.",

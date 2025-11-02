@@ -10,15 +10,15 @@ std::string get_env(const std::string& var_name);
 
 std::string get_env_default(const std::string& var_name, const std::string& x0);
 
-double get_env_double_default(const std::string& var_name, const double x0);
+RealD get_env_double_default(const std::string& var_name, const RealD x0);
 
 Long get_env_long_default(const std::string& var_name, const Long x0);
 
 Long get_verbose_level_default();
 
-double get_time_limit_default();
+RealD get_time_limit_default();
 
-double get_time_budget_default();
+RealD get_time_budget_default();
 
 Long get_qar_multi_vol_max_size_default();
 
@@ -29,17 +29,17 @@ API inline Long& get_verbose_level()
   return level;
 }
 
-API inline double& get_time_limit()
+API inline RealD& get_time_limit()
 // qlat parameter
 {
-  static double limit = get_time_limit_default();
+  static RealD limit = get_time_limit_default();
   return limit;
 }
 
-API inline double& get_time_budget()
+API inline RealD& get_time_budget()
 // qlat parameter
 {
-  static double budget = get_time_budget_default();
+  static RealD budget = get_time_budget_default();
   return budget;
 }
 

@@ -135,7 +135,7 @@ EXPORT(mk_output, {
     size = size * li;
   }
 
-  std::vector<double >* write = new std::vector<double >(size);
+  std::vector<RealD >* write = new std::vector<RealD >(size);
   return py_convert((void*)write);
 })
 
@@ -145,7 +145,7 @@ EXPORT(free_output, {
   if (!PyArg_ParseTuple(args, "O", &p_0)) {
     return NULL;
   }
-  std::vector<double >* write = (std::vector<double >*) PyLong_AsVoidPtr(p_0);
+  std::vector<RealD >* write = (std::vector<RealD >*) PyLong_AsVoidPtr(p_0);
   delete write;
   Py_RETURN_NONE;
 })
@@ -157,7 +157,7 @@ EXPORT(clear_output, {
     return NULL;
   }
 
-  std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_0));
+  std::vector<RealD >& write = *((std::vector<RealD >*) PyLong_AsVoidPtr(p_0));
   qmessage("size of write %d \n", int(write.size()));
   for(unsigned int i=0;i<write.size();i++){write[i] = 0;}
 
@@ -172,7 +172,7 @@ EXPORT(write_output, {
     return NULL;
   }
 
-  std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_0));
+  std::vector<RealD >& write = *((std::vector<RealD >*) PyLong_AsVoidPtr(p_0));
 
   std::string output;
   py_convert(output , p_1);

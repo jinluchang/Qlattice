@@ -137,7 +137,7 @@ const Field<M>& operator*=(Field<M>& f, const Field<ComplexD>& f_factor)
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const double factor)
+const Field<M>& operator*=(Field<M>& f, const RealD factor)
 {
   TIMER("field_operator*=(F,D)");
   qacc_for(index, f.geo().local_volume(), {
@@ -167,14 +167,14 @@ const Field<M>& operator*=(Field<M>& f, const ComplexD& factor)
 }
 
 template <class M>
-double qnorm(const Field<M>& f)
+RealD qnorm(const Field<M>& f)
 {
   TIMER("qnorm(f)");
   const Geometry& geo = f.geo();
-  double sum = 0.0;
+  RealD sum = 0.0;
 #pragma omp parallel
   {
-    double psum = 0.0;
+    RealD psum = 0.0;
 #pragma omp for nowait
     for (Long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate x = geo.coordinate_from_index(index);
@@ -207,12 +207,12 @@ void qnorm_field(Field<RealD>& f, const Field<M>& f1)
 }
 
 template <class M>
-double qnorm_double(const Field<M>& f1, const Field<M>& f2)
+RealD qnorm_double(const Field<M>& f1, const Field<M>& f2)
 {
   const Geometry& geo = f1.geo();
   Qassert(geo.is_only_local);
   Qassert(geo == f2.geo());
-  double sum = qnorm_double(get_data(f1), get_data(f2));
+  RealD sum = qnorm_double(get_data(f1), get_data(f2));
   glb_sum(sum);
   return sum;
 }
@@ -439,7 +439,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    double phase = 0;
+    RealD phase = 0;
     for (Int k = 0; k < DIMN; ++k) {
       phase += mom[k] * xg[k];
     }

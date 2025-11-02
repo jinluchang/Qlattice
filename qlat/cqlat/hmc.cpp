@@ -3,7 +3,7 @@
 EXPORT(set_rand_gauge_momentum, {
   using namespace qlat;
   PyObject* p_gm = NULL;
-  double sigma = 1.0;
+  RealD sigma = 1.0;
   PyObject* p_rng = NULL;
   if (!PyArg_ParseTuple(args, "OdO", &p_gm, &sigma, &p_rng)) {
     return NULL;
@@ -21,7 +21,7 @@ EXPORT(gm_hamilton_node, {
     return NULL;
   }
   const GaugeMomentum& gm = py_convert_type<GaugeMomentum>(p_gm);
-  const double ret = gm_hamilton_node(gm);
+  const RealD ret = gm_hamilton_node(gm);
   return py_convert(ret);
 })
 
@@ -34,7 +34,7 @@ EXPORT(gf_hamilton_node, {
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
-  const double ret = gf_hamilton_node(gf, ga);
+  const RealD ret = gf_hamilton_node(gf, ga);
   return py_convert(ret);
 })
 
@@ -42,7 +42,7 @@ EXPORT(gf_evolve, {
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_gm = NULL;
-  double step_size = 0.0;
+  RealD step_size = 0.0;
   if (!PyArg_ParseTuple(args, "OOd", &p_gf, &p_gm, &step_size)) {
     return NULL;
   }

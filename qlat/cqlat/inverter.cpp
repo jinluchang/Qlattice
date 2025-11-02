@@ -48,7 +48,7 @@ EXPORT(get_stop_rsd_inverter_domain_wall, {
 EXPORT(set_stop_rsd_inverter_domain_wall, {
   using namespace qlat;
   PyObject* p_inv = NULL;
-  double stop_rsd = 1e-8;
+  RealD stop_rsd = 1e-8;
   if (!PyArg_ParseTuple(args, "Od", &p_inv, &stop_rsd)) {
     return NULL;
   }

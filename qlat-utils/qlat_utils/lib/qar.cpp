@@ -3491,7 +3491,7 @@ DataTable qload_datatable_serial(QFile& qfile)
   while (not qfeof(qfile)) {
     const std::string line = qgetline(qfile);
     if (line.length() > 0 && line[0] != '#') {
-      const std::vector<double> xs = read_doubles(line);
+      const std::vector<RealD> xs = read_doubles(line);
       if (xs.size() > 0) {
         ret.push_back(xs);
       }

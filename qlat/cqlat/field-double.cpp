@@ -17,7 +17,7 @@ template <class M>
 PyObject* set_complex_from_double_field_ctype(PyObject* p_field, PyObject* p_sf)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<double>& sf = py_convert_type_field<double>(p_sf);
+  Field<RealD>& sf = py_convert_type_field<RealD>(p_sf);
   set_complex_from_double(f, sf);
   Py_RETURN_NONE;
 }
@@ -44,8 +44,8 @@ template <class M>
 PyObject* set_ratio_double_field_ctype(PyObject* p_field, PyObject* p_sf1, PyObject* p_sf2)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<double>& sf1 = py_convert_type_field<double>(p_sf1);
-  Field<double>& sf2 = py_convert_type_field<double>(p_sf2);
+  Field<RealD>& sf1 = py_convert_type_field<RealD>(p_sf1);
+  Field<RealD>& sf2 = py_convert_type_field<RealD>(p_sf2);
   set_ratio_double(f, sf1, sf2);
   Py_RETURN_NONE;
 }
@@ -54,8 +54,8 @@ template <class M>
 PyObject* less_than_double_field_ctype(PyObject* p_sf1, PyObject* p_sf2, PyObject* p_mask)
 {
   Field<M>& sf1 = py_convert_type_field<M>(p_sf1);
-  Field<double>& sf2 = py_convert_type_field<double>(p_sf2);
-  Field<double>& mask = py_convert_type_field<double>(p_mask);
+  Field<RealD>& sf2 = py_convert_type_field<RealD>(p_sf2);
+  Field<RealD>& mask = py_convert_type_field<RealD>(p_mask);
   less_than_double(sf1, sf2, mask);
   Py_RETURN_NONE;
 }
@@ -64,7 +64,7 @@ template <class M>
 PyObject* multiply_double_field_ctype(PyObject* p_sf, PyObject* p_factor)
 {
   Field<M>& sf = py_convert_type_field<M>(p_sf);
-  Field<double>& factor = py_convert_type_field<double>(p_factor);
+  Field<RealD>& factor = py_convert_type_field<RealD>(p_factor);
   multiply_double(sf, factor);
   Py_RETURN_NONE;
 }

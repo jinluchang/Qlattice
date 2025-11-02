@@ -120,8 +120,8 @@ EXPORT(free_invert_prop, {
   using namespace qlat;
   PyObject* p_prop_sol = NULL;
   PyObject* p_prop_src = NULL;
-  double mass = 0.0;
-  double m5 = 1.0;
+  RealD mass = 0.0;
+  RealD m5 = 1.0;
   PyObject* p_momtwist = NULL;
   if (!PyArg_ParseTuple(args, "OOd|dO", &p_prop_sol, &p_prop_src, &mass, &m5,
                         &p_momtwist)) {
@@ -224,7 +224,7 @@ EXPORT(convert_mspincolor_from_wm_s_prop, {
 EXPORT(free_scalar_invert_mom_cfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  double mass = 0.0;
+  RealD mass = 0.0;
   if (!PyArg_ParseTuple(args, "Od", &p_field, &mass)) {
     return NULL;
   }

@@ -37,8 +37,8 @@ class API RealDD{
 
   qacc RealDD() = default;
   //qacc RealDD(){x = 0;y = 0;}
-  qacc RealDD(const Int&    a){y = double(a);x = 0;}
-  qacc RealDD(const double& a){y = a;        x = 0;}
+  qacc RealDD(const Int&    a){y = RealD(a);x = 0;}
+  qacc RealDD(const RealD& a){y = a;        x = 0;}
   qacc RealDD(const float&  a){y = a;        x = 0;}
   qacc RealDD(const RealDD& a)
   {
@@ -48,8 +48,8 @@ class API RealDD{
 #if !defined(__QLAT_NO_FLOAT128__)
   inline RealDD(const __float128& a)
   {
-    double rety = (double)a;
-    double retx = (double)(a - (__float128)rety);
+    RealD rety = (RealD)a;
+    RealD retx = (RealD)(a - (__float128)rety);
     y = rety;
     x = retx;
   }
@@ -69,7 +69,7 @@ class API RealDD{
   //  return *this;
   //}
 
-  qacc RealDD& operator= (const double& a)
+  qacc RealDD& operator= (const RealD& a)
   {
     y = a;
     x = 0;
@@ -86,8 +86,8 @@ class API RealDD{
 #if !defined(__QLAT_NO_FLOAT128__)
   inline RealDD& operator= (__float128& a)
   {
-    double rety = (double) a;
-    double retx = (double)(a-(__float128)rety);
+    RealD rety = (RealD) a;
+    RealD retx = (RealD)(a-(__float128)rety);
     y = rety;
     x = retx;
     return *this;
@@ -115,7 +115,7 @@ class API RealDD{
     return  *this;
   }
 
-  qacc operator double() const { return Y() + X(); }
+  qacc operator RealD() const { return Y() + X(); }
   qacc operator  float() const { return Y() + X(); }
   //qacc operator double() const { return Y(); }
   //qacc operator  float() const { return Y(); }
@@ -173,7 +173,7 @@ qacc RealDD operator-(RealDD a, RealDD b)
 }
 
 /* Take full advantage of FMA. Only 8 DP operations */
-qacc double __Fma_rn(double x, double y, double z)
+qacc RealD __Fma_rn(RealD x, RealD y, RealD z)
 {
   #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
   return std::fma(x , y , z);
@@ -182,7 +182,7 @@ qacc double __Fma_rn(double x, double y, double z)
   #endif
 }
 
-qacc double __Dmul_rn(double x, double y)
+qacc RealD __Dmul_rn(RealD x, RealD y)
 {
 #if !defined(__CUDA_ARCH__) && !defined(__HIP_ARCH__)
   return x * y;
@@ -206,7 +206,7 @@ qacc RealDD RealDD::operator+=(RealDD b)
   return *this;
 #else
 
-  double t1, t2, t3, t4, t5, e;
+  RealD t1, t2, t3, t4, t5, e;
 
   t1 = a.y + b.y;
 
@@ -251,7 +251,7 @@ qacc RealDD RealDD::operator*=(RealDD b)
   *this = z128;
   return *this;
 #else
-  double e;
+  RealD e;
   RealDD t;
 
   t.y = __Dmul_rn (a.y, b.y);     /* prevent FMA-merging */
@@ -300,7 +300,7 @@ qacc RealDD RealDD::operator/= (RealDD b)
 
   //RealDD z;
 
-  double c, cc, up;
+   RealD c, cc, up;
 
   c = a.y / b.y;     /* compute most significant quotient "digit" */
 
@@ -344,7 +344,7 @@ qacc RealDD sqrtT (const RealDD a)
   return z;
 #else
 
-  double e, y, x;
+  RealD e, y, x;
 
   RealDD z;
   if(a.Y() == 0.0){

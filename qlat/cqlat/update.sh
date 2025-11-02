@@ -11,19 +11,19 @@ export LC_ALL=C
 (
     echo "// ${WARNING}"
     sed -n 's/EXPORT(\([^,]*\),.*/EXPORT_FUNCTION(\1)/p' *.cpp | sort
-) > exports.h.new
+) > exports.h.template.new
 
 for f in "$@" ; do
-    cat "$f" >> exports.h.new
+    cat "$f" >> exports.h.template.new
 done
 
-if [ -f exports.h ] && diff exports.h.new exports.h ; then
-    echo No update for exports.h
-    rm exports.h.new
+if [ -f exports.h.template ] && diff exports.h.template.new exports.h.template ; then
+    echo No update for exports.h.template
+    rm exports.h.template.new
 else
-    echo Update exports.h
-    mv exports.h.new exports.h
+    echo Update exports.h.template
+    mv exports.h.template.new exports.h.template
 fi
 
-echo "  Found $(grep -c EXPORT exports.h) exported functions"
+echo "  Found $(grep -c EXPORT exports.h.template) exported functions"
 echo "================================================================================"

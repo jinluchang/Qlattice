@@ -62,7 +62,7 @@ qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
 }
 
 template <Int DIMN, class T>
-qacc MatrixT<DIMN, T> operator*(const double x, const MatrixT<DIMN, T>& y)
+qacc MatrixT<DIMN, T> operator*(const RealD x, const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
   for (Int i = 0; i < DIMN * DIMN; ++i) {
@@ -72,7 +72,7 @@ qacc MatrixT<DIMN, T> operator*(const double x, const MatrixT<DIMN, T>& y)
 }
 
 template <Int DIMN, class T>
-qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const double y)
+qacc MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const RealD y)
 {
   MatrixT<DIMN, T> ret;
   for (Int i = 0; i < DIMN * DIMN; ++i) {
@@ -290,9 +290,9 @@ qacc void matrix_ludcmp(MatrixT<DIMN, T>& a,
   MvectorT<DIMN, T> vv;
   d = 1.0;
   for (Int i = 0; i < DIMN; ++i) {
-    double big = 0.0;
+    RealD big = 0.0;
     for (Int j = 0; j < DIMN; ++j) {
-      const double temp = std::abs(a(i, j));
+      const RealD temp = std::abs(a(i, j));
       if (temp > big) {
         big = temp;
       }
@@ -311,7 +311,7 @@ qacc void matrix_ludcmp(MatrixT<DIMN, T>& a,
       }
       a(i, j) = sum;
     }
-    double big = 0.0;
+    RealD big = 0.0;
     Int imax = -1;
     for (Int i = j; i < DIMN; ++i) {
       T sum = a(i, j);

@@ -71,7 +71,7 @@ void exportRngState(uint32_t* v, const RngState& rs)
     splitTwoUint32(v[14 + i * 2], v[14 + i * 2 + 1], rs.cache[i]);
   }
   union {
-    double d;
+    RealD d;
     uint64_t l;
   } g;
   g.d = rs.gaussian;
@@ -93,7 +93,7 @@ void importRngState(RngState& rs, const uint32_t* v)
     rs.cache[i] = patchTwoUint32(v[14 + i * 2], v[14 + i * 2 + 1]);
   }
   union {
-    double d;
+    RealD d;
     uint64_t l;
   } g;
   g.l = patchTwoUint32(v[20], v[21]);
@@ -238,15 +238,15 @@ uint64_t rand_gen(RngState& rs)
   }
 }
 
-double u_rand_gen(RngState& rs, const double upper, const double lower)
+RealD u_rand_gen(RngState& rs, const RealD upper, const RealD lower)
 {
   uint64_t u = rand_gen(rs);
-  const double fac =
+  const RealD fac =
       1.0 / (256.0 * 256.0 * 256.0 * 256.0) / (256.0 * 256.0 * 256.0 * 256.0);
   return u * fac * (upper - lower) + lower;
 }
 
-double g_rand_gen(RngState& rs, const double center, const double sigma)
+RealD g_rand_gen(RngState& rs, const RealD center, const RealD sigma)
 {
   rs.index += 1;
   if (rs.gaussianAvail) {
@@ -257,7 +257,7 @@ double g_rand_gen(RngState& rs, const double center, const double sigma)
     // -1 to 1 in each direction, see if they are in the
     // unit circle, and try again if they are not.
     Int num_try = 1;
-    double v1, v2, rsq;
+    RealD v1, v2, rsq;
     do {
       v1 = u_rand_gen(rs, 1.0, -1.0);
       v2 = u_rand_gen(rs, 1.0, -1.0);
@@ -274,7 +274,7 @@ double g_rand_gen(RngState& rs, const double center, const double sigma)
           "returning ridiculous numbers (1e+10)\n");
       return 1e+10;
     }
-    double fac = std::sqrt(-2.0 * std::log(rsq) / rsq);
+    RealD fac = std::sqrt(-2.0 * std::log(rsq) / rsq);
     rs.gaussian = v1 * fac;
     rs.gaussianAvail = true;
     return v2 * fac * sigma + center;

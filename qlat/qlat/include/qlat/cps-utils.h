@@ -2,7 +2,7 @@
 
 CPS_START_NAMESPACE
 
-const std::complex<double> ii(0.0, 1.0);
+const std::complex<RealD> ii(0.0, 1.0);
 
 template <class M>
 bool isInitialized(const GridComm<M>& gc)
@@ -63,7 +63,7 @@ const Array<M, N>& operator-=(Array<M, N>& v, const Array<M, N>& v1)
 }
 
 template <class M, Int N>
-const Array<M, N>& operator*=(Array<M, N>& v, double factor)
+const Array<M, N>& operator*=(Array<M, N>& v, RealD factor)
 {
   for (Int i = 0; i < N; ++i) {
     v.data[i] *= factor;
@@ -101,7 +101,7 @@ Array<M, N> operator-(const Array<M, N>& v1, const Array<M, N>& v2)
 }
 
 template <class M, Int N>
-Array<M, N> operator*(const Array<M, N>& v1, double factor)
+Array<M, N> operator*(const Array<M, N>& v1, RealD factor)
 {
   Array<M, N> v;
   for (Int i = 0; i < N; ++i) {
@@ -121,7 +121,7 @@ Array<M, N> operator*(const Array<M, N>& v1, ComplexD factor)
 }
 
 template <class M, Int N>
-Array<M, N> operator*(double factor, const Array<M, N>& v1)
+Array<M, N> operator*(RealD factor, const Array<M, N>& v1)
 {
   Array<M, N> v;
   for (Int i = 0; i < N; ++i) {
@@ -168,7 +168,7 @@ void print(const Array<M, N>& v)
 struct SpinorMatrix : public Array<ComplexD, 2 * 2> {
 };
 
-inline bool notnan(const double& x) { return !isnan(x); }
+inline bool notnan(const RealD& x) { return !isnan(x); }
 
 inline bool notnan(const ComplexD& x)
 {
@@ -178,8 +178,8 @@ inline bool notnan(const ComplexD& x)
 template <class M>
 inline bool notnanDoubles(const M& x)
 {
-  const double* v = (const double*)&x;
-  for (Int i = 0; i < sizeof(M) / sizeof(double); ++i) {
+  const RealD* v = (const RealD*)&x;
+  for (Int i = 0; i < sizeof(M) / sizeof(RealD); ++i) {
     if (isnan(v[i])) {
       return false;
     }
@@ -306,10 +306,10 @@ inline Int middleMod(const Int x, const Int y, const Int len)
   }
 }
 
-inline double modf(const double x, const Int len)
+inline RealD modf(const RealD x, const Int len)
 {
   assert(0 < len);
-  const double m = std::fmod(x, len);
+  const RealD m = std::fmod(x, len);
   if (0 <= m) {
     return m;
   } else {
@@ -317,10 +317,10 @@ inline double modf(const double x, const Int len)
   }
 }
 
-inline double signModf(const double x, const Int len)
+inline RealD signModf(const RealD x, const Int len)
 {
   assert(0 < len);
-  const double m = modf(x, len);
+  const RealD m = modf(x, len);
   if (m * 2 < len) {
     return m;
   } else {
@@ -328,16 +328,16 @@ inline double signModf(const double x, const Int len)
   }
 }
 
-inline double middleModf(const double x, const double y, const Int len)
+inline RealD middleModf(const RealD x, const RealD y, const Int len)
 {
   assert(0 < len);
-  const double xm = modf(x, len);
-  const double ym = modf(y, len);
+  const RealD xm = modf(x, len);
+  const RealD ym = modf(y, len);
   if (xm <= ym) {
-    const double r = signModf(ym - xm, len);
+    const RealD r = signModf(ym - xm, len);
     return modf(xm + r / 2, len);
   } else {
-    const double r = signModf(xm - ym, len);
+    const RealD r = signModf(xm - ym, len);
     return modf(ym + r / 2, len);
   }
 }
@@ -401,7 +401,7 @@ inline Long distance2RelativeCoordinateG(const Int xg[4])
          sqr((Long)xg[3]);
 }
 
-inline double distanceRelativeCoordinateG(const Int xg[4])
+inline RealD distanceRelativeCoordinateG(const Int xg[4])
 {
   return sqrt(distance2RelativeCoordinateG(xg));
 }
@@ -438,7 +438,7 @@ inline Long indexFromCoordinate(const Int x[4], const Int size[4])
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
 
-inline void sumDoubleArray(double* vs, const Long n_elem)
+inline void sumDoubleArray(RealD* vs, const Long n_elem)
 {
 #ifdef USE_QMP
   QMP_sum_double_array(vs, n_elem);
@@ -456,13 +456,13 @@ inline Int sumArray(Long* recv, const Long* send, const Long n_elem)
 #endif
 }
 
-inline Int sumArray(double* recv, const double* send, const Long n_elem)
+inline Int sumArray(RealD* recv, const RealD* send, const Long n_elem)
 {
 #ifdef USE_QMP
-  return mpi_allreduce((double*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM,
+  return mpi_allreduce((RealD*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM,
                        QMP_COMM_WORLD);
 #else
-  memmove(recv, send, n_elem * sizeof(double));
+  memmove(recv, send, n_elem * sizeof(RealD));
   return 0;
 #endif
 }
@@ -718,7 +718,7 @@ API inline std::string& jobLock()
   return lock;
 }
 
-inline Int sleep(const double seconds)
+inline Int sleep(const RealD seconds)
 {
   return usleep((useconds_t)(seconds * 1.0e6));
 }
@@ -815,7 +815,7 @@ inline std::string showSpinMatrix(const SpinMatrix& mat,
   return out.str();
 }
 
-inline void setZero(std::complex<double>& x) { x = 0.0; }
+inline void setZero(std::complex<RealD>& x) { x = 0.0; }
 
 inline void setZero(Matrix& m) { memset(&m, 0, sizeof(m)); }
 

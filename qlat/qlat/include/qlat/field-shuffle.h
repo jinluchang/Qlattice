@@ -228,7 +228,7 @@ void shuffle_field(std::vector<Field<M>>& fs, const Field<M>& f,
                          show(sp.new_size_node).c_str(),
                          show(geo.total_site()).c_str(),
                          multiplicity * (int)sizeof(M),
-                         (double)(sp.scp.global_comm_size * multiplicity *
+                         (RealD)(sp.scp.global_comm_size * multiplicity *
                                   sizeof(M) * std::pow(0.5, 30))));
   }
   qassert(sp.geo_send == geo_resize(geo));
@@ -283,7 +283,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M>>& fs,
                          show(geo.geon.size_node).c_str(),
                          show(geo.total_site()).c_str(),
                          multiplicity * (int)sizeof(M),
-                         (double)(sp.scp.global_comm_size * multiplicity *
+                         (RealD)(sp.scp.global_comm_size * multiplicity *
                                   sizeof(M) * std::pow(0.5, 30))));
   }
   const Long total_bytes =
@@ -327,7 +327,7 @@ void shuffle_field(std::vector<SelectedField<M>>& fs, const SelectedField<M>& f,
                           show(sp.new_size_node).c_str(),
                           show(geo.total_site()).c_str(),
                           multiplicity * (int)sizeof(M),
-                          (double)(sp.scp.global_comm_size * multiplicity *
+                          (RealD)(sp.scp.global_comm_size * multiplicity *
                                    sizeof(M) * std::pow(0.5, 30))));
   qassert(sp.geo_send == geo_resize(geo));
   clear(fs);
@@ -381,7 +381,7 @@ void shuffle_field_back(SelectedField<M>& f,
                           show(geo.geon.size_node).c_str(),
                           show(geo.total_site()).c_str(),
                           multiplicity * (int)sizeof(M),
-                          (double)(sp.scp.global_comm_size * multiplicity *
+                          (RealD)(sp.scp.global_comm_size * multiplicity *
                                    sizeof(M) * std::pow(0.5, 30))));
   const Long total_bytes =
       sp.scp.global_comm_size * multiplicity * sizeof(M);

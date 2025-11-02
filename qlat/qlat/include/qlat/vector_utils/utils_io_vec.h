@@ -538,7 +538,7 @@ inline void read_kentucky_vector(FILE *file,char* props,Int Nvec,io_vec& io,bool
 
       /////Switch endian of the file write
       if(read==false){
-        Int dsize_single = sizeof(double);int fac = dsize/sizeof(double);
+        Int dsize_single = sizeof(RealD);int fac = dsize/sizeof(RealD);
         if(single_file == true){dsize_single = sizeof(float);fac = dsize/sizeof(float);}
         //////Write Prop and link
         if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], gN*vol*fac,dsize_single);
@@ -595,7 +595,7 @@ inline void read_kentucky_vector(FILE *file,char* props,Int Nvec,io_vec& io,bool
 
       /////Switch endian of the file read
       if(read==true){
-        Int dsize_single = sizeof(double);int fac = dsize/sizeof(double);
+        Int dsize_single = sizeof(RealD);int fac = dsize/sizeof(RealD);
         if(single_file == true){dsize_single = sizeof(float);fac = dsize/sizeof(float);}
         //////Read Prop and link
         if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], gN*vol*fac,dsize_single);
@@ -607,7 +607,7 @@ inline void read_kentucky_vector(FILE *file,char* props,Int Nvec,io_vec& io,bool
     }
 
     ////////Reordersrc buf
-    ///if(gN!=1){if(node_ioL[rank]>=0)reorder_civ((char*)&buf[0],(char*)&buf[0],1,gN,vol,0 ,sizeof(double));}
+    ///if(gN!=1){if(node_ioL[rank]>=0)reorder_civ((char*)&buf[0],(char*)&buf[0],1,gN,vol,0 ,sizeof(RealD));}
     /////
       
     if(read==true){
@@ -883,7 +883,7 @@ inline Int test_single(const char *filename,io_vec &io_use,Int iv=0){
 
   file = io_use.io_read(filename,"rb");
   io_use.io_off(file,iv*Fsize*2, false);
-  read_kentucky_vector(file,(char*) &prop_E[0], n_vec*12*2,io_use, false, sizeof(double), false, 12*2);
+  read_kentucky_vector(file,(char*) &prop_E[0], n_vec*12*2,io_use, false, sizeof(RealD), false, 12*2);
   io_use.io_close(file);
 
   rotate_gwu_vec_file(&prop_E[0],n_vec,noden, false);
@@ -902,7 +902,7 @@ inline Int test_single(const char *filename,io_vec &io_use,Int iv=0){
   file = io_use.io_read(filename,"rb");
   io_use.io_off(file,iv*Fsize, false);
 
-  read_kentucky_vector(file,(char*) &prop_E[0], n_vec,io_use, true, 6*2*sizeof(double), true);
+  read_kentucky_vector(file,(char*) &prop_E[0], n_vec,io_use, true, 6*2*sizeof(RealD), true);
   io_use.io_close(file);
 
   rotate_gwu_vec_file(&prop_E[0],n_vec,noden, true);
@@ -966,7 +966,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int 
   (void)check;
   if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
   if(resp.size() < size_t(n1-n0)){abort_r("Final point size wrong!\n");}
-  if(sizeof(Ty) != sizeof(double) and sizeof(Ty) != sizeof(float)){abort_r("Need double or float pointer! \n");}
+  if(sizeof(Ty) != sizeof(RealD) and sizeof(Ty) != sizeof(float)){abort_r("Need double or float pointer! \n");}
   ////if(n0!=0 and read==false){abort_r("Write vectors with off not zero!");}
 
   size_t noden = io_use.noden;
@@ -1011,7 +1011,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int 
       }
 
       /////qmessage("WRITE!!!!!!\n");
-      read_kentucky_vector(file,(char*) &prop_E[0], ri,io_use, true, 6*2*sizeof(double), true, 1, read);
+      read_kentucky_vector(file,(char*) &prop_E[0], ri,io_use, true, 6*2*sizeof(RealD), true, 1, read);
       fflush_MPI();
 
       if(read==true){
@@ -1060,7 +1060,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int 
         rotate_gwu_vec_file(&prop_E[0],ri,noden, false, read);
       }
 
-      read_kentucky_vector(file,(char*) &prop_E[0], ri*12*2,io_use, false, sizeof(double), false, 12*2, read);
+      read_kentucky_vector(file,(char*) &prop_E[0], ri*12*2,io_use, false, sizeof(RealD), false, 12*2, read);
       fflush_MPI();
 
       if(read==true){
@@ -1252,7 +1252,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
 
     if(read==true )file = io_use.io_read(filename,"rb");
     if(read==false)file = io_use.io_read(filename,"wb");
-    read_kentucky_vector(file,(char*) &prop_qlat[0], 12,io_use, true, 6*2*sizeof(double), true, 1 , read);
+    read_kentucky_vector(file,(char*) &prop_qlat[0], 12,io_use, true, 6*2*sizeof(RealD), true, 1 , read);
     io_use.io_close(file);
       
     if(read==true){
@@ -1276,7 +1276,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Td> > 
     prop_qlat.resize(12*noden*12*2);
 
     file = io_use.io_read(filename,"rb");
-    read_kentucky_vector(file,(char*) &prop_qlat[0], 12*2*12,io_use, false, sizeof(double), false, 1);
+    read_kentucky_vector(file,(char*) &prop_qlat[0], 12*2*12,io_use, false, sizeof(RealD), false, 1);
     io_use.io_close(file);
       
     ///double precision eigen vector in ps base
@@ -1365,7 +1365,7 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   //{abort_r("Cannot understand the input format! \n");}
 
   size_t noden = io_use.noden;
-  size_t Fsize = io_use.Nmpi*(4*9*noden*2)*sizeof(double);
+  size_t Fsize = io_use.Nmpi*(4*9*noden*2)*sizeof(RealD);
 
   std::vector<double > link_qlat;
   link_qlat.resize(4*9*noden*2);
@@ -1399,7 +1399,7 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
   FILE* file;
   if(read==true )file = io_use.io_read(filename,"rb");
   if(read==false)file = io_use.io_read(filename,"wb");
-  read_kentucky_vector(file,(char*) &link_qlat[0], 4*9*2,io_use, false, sizeof(double), false,9*2, read);
+  read_kentucky_vector(file,(char*) &link_qlat[0], 4*9*2,io_use, false, sizeof(RealD), false,9*2, read);
   io_use.io_close(file);
     
   //////double precision eigen vector in ps base
@@ -1480,16 +1480,16 @@ void load_gwu_noies(const char *filename,std::vector<qlat::FieldM<Ty, 1> > &nois
       for(size_t isp=0;isp<noden;isp++){
         src[isp] = ComplexT<double>(res[isp].real(),res[isp].imag());
       }
-      mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
+      mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(RealD), false);
     }
 
-    read_kentucky_vector(file,(char*) &prop_noi[0], 2,io_use, true, sizeof(double), false, 1,read);
+    read_kentucky_vector(file,(char*) &prop_noi[0], 2,io_use, true, sizeof(RealD), false, 1,read);
 
     /////Copy noise vectors
     if(read==true){
-      //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double));
-      //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
-      mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
+      //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(RealD));
+      //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(RealD), false);
+      mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(RealD), false);
       ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
       Ty* res = (Ty*) qlat::get_data(noi).data();
       #pragma omp parallel for
@@ -1538,23 +1538,23 @@ void load_gwu_noiP(const char *filename, Fieldy& noi,bool read=true, bool GPU = 
     cpy_GPU(src, res, noden, 0, GPU);
     //#pragma omp parallel for
     //for(size_t isp=0;isp<noden;isp++)src[isp] = ComplexT<double>(res[isp].real(),res[isp].imag());
-    //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double));
-    //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
-    mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double), false);
+    //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(RealD));
+    //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(RealD), false);
+    mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(RealD), false);
   }
 
   FILE* file;
 
   if(read==true )file = io_use.io_read(filename,"rb");
   if(read==false)file = io_use.io_read(filename,"wb");
-  read_kentucky_vector(file,(char*) &prop_noi[0], 2,io_use, true, sizeof(double), false, 1,read);
+  read_kentucky_vector(file,(char*) &prop_noi[0], 2,io_use, true, sizeof(RealD), false, 1,read);
   io_use.io_close(file);
 
   /////Copy noise vectors
   if(read==true){
-    //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double));
-    //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
-    mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double), false);
+    //reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(RealD));
+    //io_use.mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(RealD), false);
+    mv_civ.dojob((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(RealD), false);
     ComplexT<double> *src = (ComplexT<double>*) &prop_noi[0];
     Ty* res = (Ty*) qlat::get_data(noi).data();
     cpy_GPU(res, src, noden, GPU, 0);
@@ -1698,7 +1698,7 @@ inline void open_file_qlat_noisesT(const char *filename, Int bfac, inputpara& in
 
     if(in.OBJECT != std::string("BEGIN_Vecs_HEAD")){abort_r("File head wrong");}
     Int type = get_save_type(in.save_type);
-    if(type == 0){in.bsize=sizeof(double);in.single_file=false;}
+    if(type == 0){in.bsize=sizeof(RealD);in.single_file=false;}
     if(type == 1){in.bsize=sizeof(float) ;in.single_file=true; }
 
     //////Check file sizes
@@ -1729,7 +1729,7 @@ inline void open_file_qlat_noisesT(const char *filename, Int bfac, inputpara& in
     //////in.nx = io_use.nx;in.ny = io_use.ny;in.nz = io_use.nz;in.nt = io_use.nt;
     if(in.nx == 0 or in.ny == 0 or in.nz == 0 or in.nt == 0){abort_r("Set up input dim first to write!\n");}
     in.bfac = in.bfac_write;in.checksum = 0;
-    if(in.single_file==false){in.bsize=sizeof(double);in.save_type = std::string("Double");}
+    if(in.single_file==false){in.bsize=sizeof(RealD);in.save_type = std::string("Double");}
     if(in.single_file==true ){in.bsize=sizeof(float) ;in.save_type = std::string("Single");}
 
     size_t Fsize = size_t(in.N_noi) * in.nx*in.ny*in.nz*in.nt* size_t(bfac*2);
@@ -2127,7 +2127,7 @@ inline Int check_eigen_qlat(const char *filename, Int n1, inputpara& in)
     Qassert(in.nvec > 0);////Qassert(in.bfac == bfac_write);
     Int type = get_save_type(in.save_type);
     in.bsize = 8; in.single_file = true;
-    if(type == 0){in.bsize=sizeof(double);in.single_file=false;}
+    if(type == 0){in.bsize=sizeof(RealD);in.single_file=false;}
     if(type == 1){in.bsize=sizeof(float) ;in.single_file=true; }
     //////Check file sizes
     size_t sizen = get_file_size_MPI(filename) - in.off_file;  //Qassert(sizen == string_to_size(in.total_size));
@@ -2389,9 +2389,9 @@ inline FILE* open_eigensystem_file(const char *filename, Int nini, Int nvec, boo
 
   //////shift the file to nini position
   {
-    size_t bsize = sizeof(double);int bfac = 12;
+    size_t bsize = sizeof(RealD);int bfac = 12;
     if( in.single_file){bsize=sizeof(float) ;}
-    if(!in.single_file){bsize=sizeof(double);}
+    if(!in.single_file){bsize=sizeof(RealD);}
     size_t Vsize = size_t(io_use.nx)*io_use.ny*io_use.nz*io_use.nt*size_t(bfac*2);
     size_t off_file = size_t(nini)*Vsize*bsize;
     ////qmessage("off each %ld, nini %ld %ld %ld...\n", Long(off_file), Long(nini), Long(Vsize), Long(bsize));
@@ -2424,7 +2424,7 @@ void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noise
       for(Int iv=0;iv<n_vec;iv++){noises[iv].init(io_use.geo());}
     }}
 
-    if(sizeof(Ty) == 2*sizeof(double)){
+    if(sizeof(Ty) == 2*sizeof(RealD)){
       std::vector<double* > respD;respD.resize(n_vec);
       for(Int iv=0;iv<n_vec;iv++){respD[iv] = (double*) qlat::get_data(noises[iv]).data();}
       load_gwu_eigen(file, respD, io_use,n0,n1,check, in.read, in.single_file );
@@ -2468,7 +2468,7 @@ void load_qlat_vecs(const char *filename, Td* prop, const Int nvec, io_vec &io_u
 
   if(sizen != 2*Fsize and sizen != Fsize){qmessage("File %s \n",filename);abort_r("File size wrong! \n");}
   const Int ncomplex = sizen / Fsize;
-  Int s_inner = sizeof(float);if(single == false){s_inner = sizeof(double);}
+  Int s_inner = sizeof(float);if(single == false){s_inner = sizeof(RealD);}
   s_inner = s_inner * ncomplex;
 
   FILE* file = io_use.io_read(filename,"rb");

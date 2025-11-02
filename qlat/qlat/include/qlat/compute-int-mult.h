@@ -15,13 +15,13 @@
 namespace qlat
 {  //
 
-inline std::vector<double> vxFromParam(const qlat::CoordinateD& param)
+inline std::vector<RealD> vxFromParam(const qlat::CoordinateD& param)
 {
-  std::vector<double> vx(4);
-  const double rp = param[0];
-  const double v = param[1];
-  const double u = param[2];
-  const double phi = param[3];
+  std::vector<RealD> vx(4);
+  const RealD rp = param[0];
+  const RealD v = param[1];
+  const RealD u = param[2];
+  const RealD phi = param[3];
   assert(0.0 <= rp && rp < 1.0);
   assert(0.0 <= v && v <= PI);
   assert(-1.0 <= u && u <= 1.0);
@@ -33,24 +33,24 @@ inline std::vector<double> vxFromParam(const qlat::CoordinateD& param)
   return vx;
 }
 
-inline qlat::CoordinateD paramFromVx(const std::vector<double>& vx)
+inline qlat::CoordinateD paramFromVx(const std::vector<RealD>& vx)
 {
   assert(0.0 <= vx[0] && vx[0] <= 1.0);
   assert(0.0 <= vx[1] && vx[1] <= 1.0);
   assert(0.0 <= vx[2] && vx[2] <= 1.0);
   assert(0.0 <= vx[3] && vx[3] <= 1.0);
-  const double rp = vx[0];
-  const double v = vx[1] * PI;
-  const double u = vx[2] * 2.0 - 1.0;
-  const double phi = vx[3] * 2.0 * PI - PI;
+  const RealD rp = vx[0];
+  const RealD v = vx[1] * PI;
+  const RealD u = vx[2] * 2.0 - 1.0;
+  const RealD phi = vx[3] * 2.0 * PI - PI;
   const CoordinateD param(rp, v, u, phi);
   return param;
 }
 
 inline void recordMuonIntegrand(const qlat::CoordinateD& x,
                                 const qlat::CoordinateD& y,
-                                const std::vector<double>& vx,
-                                const std::vector<double>& ans)
+                                const std::vector<RealD>& vx,
+                                const std::vector<RealD>& ans)
 {
   displayln(ssprintf("recordMuonCoordinate[%s,%s]", show(x).c_str(),
                      show(y).c_str()));
@@ -74,11 +74,11 @@ struct MuonLineIntCompact {
     mli.init(x, y);
   }
   //
-  std::vector<double> operator()(const std::vector<double>& vx) const
+  std::vector<RealD> operator()(const std::vector<RealD>& vx) const
   {
     // TIMER_VERBOSE("MuonLineIntCompact");
-    const double ratio = PI / 2.0 * 2.0 * 2.0 * PI;  // corresponding to volume
-    std::vector<double> ans(mli(paramFromVx(vx)));
+    const RealD ratio = PI / 2.0 * 2.0 * 2.0 * PI;  // corresponding to volume
+    std::vector<RealD> ans(mli(paramFromVx(vx)));
     for (size_t i = 0; i < ans.size(); ++i) {
       ans[i] *= ratio;
     }
@@ -88,21 +88,21 @@ struct MuonLineIntCompact {
 };
 
 struct IntegrationEps {
-  double epsabs = 1e-8;
-  double epsrel = 1e-3;
+  RealD epsabs = 1e-8;
+  RealD epsrel = 1e-3;
   long mineval = 1024 * 1024;
   long maxeval = 1024 * 1024 * 1024;
 };
 
-inline std::vector<double> integrateMuonLine(
+inline std::vector<RealD> integrateMuonLine(
     const qlat::CoordinateD& x, const qlat::CoordinateD& y,
     const IntegrationEps& eps = IntegrationEps())
 {
   TIMER("integrateMuonLine");
   MuonLineIntCompact mlic;
   mlic.init(x, y);
-  const std::vector<double> xVx(vxFromParam(paramFromEta(x, mlic.mli.r0)));
-  const std::vector<double> yVx(vxFromParam(paramFromEta(y, mlic.mli.r0)));
+  const std::vector<RealD> xVx(vxFromParam(paramFromEta(x, mlic.mli.r0)));
+  const std::vector<RealD> yVx(vxFromParam(paramFromEta(y, mlic.mli.r0)));
   // displayln(ssprintf("x =%s", show(x).c_str()));
   // displayln(ssprintf("y =%s", show(y).c_str()));
   // displayln(ssprintf("integrateMuonLine:x:(%15.5E) %25.17E %25.17E %25.17E
@@ -111,7 +111,7 @@ inline std::vector<double> integrateMuonLine(
   // displayln(ssprintf("integrateMuonLine:y:(%15.5E) %25.17E %25.17E %25.17E
   // %25.17E",
   //      coordinateLen(y), yVx[0], yVx[1], yVx[2], yVx[3]));
-  std::vector<double> integral, error, prob;
+  std::vector<RealD> integral, error, prob;
   const Int ncomp = 25;
   Int nregions, fail;
   long long neval;
@@ -119,7 +119,7 @@ inline std::vector<double> integrateMuonLine(
   integrateCuhre(integral, error, prob, nregions, neval, fail, 4, ncomp, mlic,
                  eps.epsabs, eps.epsrel, 0, eps.mineval, eps.maxeval);
   // displayln(ssprintf("%s: nregions=%d neval=%d (%.5lf %%) fail=%d", fname,
-  // nregions, neval, 100 * (double)neval/(double)(1024 * 1024 * 1024), fail));
+  // nregions, neval, 100 * (RealD)neval/(RealD)(1024 * 1024 * 1024), fail));
   return integral;
 }
 
@@ -128,9 +128,9 @@ inline void profile_computeIntMult()
   TIMER_VERBOSE_FLOPS("profile_computeIntMult");
   RngState rs("profile_computeIntMult");
   const Int size = 4;
-  const double low = -3.0;
-  const double high = 3.0;
-  double sum = 0.0;
+  const RealD low = -3.0;
+  const RealD high = 3.0;
+  RealD sum = 0.0;
   for (Int i = 0; i < size; ++i) {
     CoordinateD x, y;
     for (Int m = 0; m < 4; ++m) {
@@ -157,7 +157,7 @@ inline void test_computeIntMult()
   DisplayInfo(
       "", fname.c_str(), "param=%s\n",
       show(paramFromVx(vxFromParam(paramFromEta(x + y, mlic.mli.r0)))).c_str());
-  std::vector<double> vx(4);
+  std::vector<RealD> vx(4);
   vx[0] = 0.1;
   vx[1] = 0.2;
   vx[2] = 0.3;
@@ -177,9 +177,9 @@ inline void test_computeIntMult()
   // 0.0, 0.4)); integrateMuonLine(CoordinateD(0.0, 0.0, 0.0, -0.1),
   // CoordinateD(0.0, 0.0, 0.0, 1.0)); for (Int i = -3; i <= 3; ++i) {
   //   for (Int j = -3; j <= 3; ++j) {
-  //     const double xt = 30.0 * i;
-  //     const double yt = 30.0 * j;
-  //     const double v = integrateMuonLine(CoordinateD(0.0, 0.0, 0.0, xt),
+  //     const RealD xt = 30.0 * i;
+  //     const RealD yt = 30.0 * j;
+  //     const RealD v = integrateMuonLine(CoordinateD(0.0, 0.0, 0.0, xt),
   //     CoordinateD(0.0, 0.0, 0.0, yt)); DisplayInfo("", fname.c_str(), "TABLE
   //     %5f %5f %23.16e\n", xt, yt, v);
   //   }

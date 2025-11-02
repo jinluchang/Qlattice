@@ -143,27 +143,27 @@ inline void free_buf(void* buf, const Int GPU){
 #ifdef __GNUC__
 ///////Multiply of different types of complex
 
-//inline std::complex<double> operator*(const std::complex<float> &a, const double &b) {
-//    return std::complex<double>(a.real()*b, a.imag()*b);
+//inline std::complex<RealD> operator*(const std::complex<float> &a, const double &b) {
+//    return std::complex<RealD>(a.real()*b, a.imag()*b);
 //}
 //
-//inline std::complex<double> operator/(const std::complex<float> &a, const double &b) {
-//    return std::complex<double>(a.real()/b, a.imag()/b);
+//inline std::complex<RealD> operator/(const std::complex<float> &a, const double &b) {
+//    return std::complex<RealD>(a.real()/b, a.imag()/b);
 //}
 
-inline std::complex<double> operator*(const std::complex<float> &a, const std::complex<double > &b) {
-    return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+inline std::complex<RealD> operator*(const std::complex<float> &a, const std::complex<RealD > &b) {
+    return std::complex<RealD>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
 }
 
-inline std::complex<double> operator*(const std::complex<double > &b, const std::complex<float> &a) {
-    return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+inline std::complex<RealD> operator*(const std::complex<RealD > &b, const std::complex<float> &a) {
+    return std::complex<RealD>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
 }
 
-inline std::complex<double> operator-(const std::complex<double > &a, const std::complex<float> &b) {
-    return std::complex<double>(a.real() - b.real() , a.imag() - b.imag());
+inline std::complex<RealD> operator-(const std::complex<RealD > &a, const std::complex<float> &b) {
+    return std::complex<RealD>(a.real() - b.real() , a.imag() - b.imag());
 }
-inline std::complex<double> operator-(const std::complex<float > &a, const std::complex<double> &b) {
-    return std::complex<double>(a.real() - b.real() , a.imag() - b.imag());
+inline std::complex<RealD> operator-(const std::complex<float > &a, const std::complex<RealD> &b) {
+    return std::complex<RealD>(a.real() - b.real() , a.imag() - b.imag());
 }
 #endif
 #endif

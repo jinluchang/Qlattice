@@ -48,7 +48,7 @@ inline LatData contract_pion(const PselProp& prop, const Int tslice_src,
     const Int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
-  ld *= (double)product(total_site) / (double)n_points;
+  ld *= (RealD)product(total_site) / (RealD)n_points;
   return ld;
 }
 
@@ -310,7 +310,7 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
       ld += wsp1.sloppy_exact_ratio_1 * (ld_1 - ld_0);
     }
   }
-  ld *= 1.0 / (double)total_site[3];
+  ld *= 1.0 / (RealD)total_site[3];
   return ld;
 }
 
@@ -339,7 +339,7 @@ inline LatData contract_two_point_wall_snk_function(const WallSrcProps& wsp1,
       ld += wsp1.sloppy_exact_ratio_1 * (ld_1 - ld_0);
     }
   }
-  ld *= 1.0 / (double)total_site[3];
+  ld *= 1.0 / (RealD)total_site[3];
   return ld;
 }
 
@@ -473,7 +473,7 @@ inline LatData contract_three_point_function(
       }
     }
   }
-  ld *= (double)yt_measurement_sparsity / (double)total_site[3];
+  ld *= (RealD)yt_measurement_sparsity / (RealD)total_site[3];
   return ld;
 }
 
@@ -523,7 +523,7 @@ inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
   ComplexD ret = 0.0;
   if (t_src == t_snk and has_exact_src) {
     qassert(has_exact_src == has_exact_snk);
-    const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
+    const RealD sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
     const ComplexD coef1 = sloppy_exact_ratio_1;
     const ComplexD coef2 = 1.0 - sloppy_exact_ratio_1;
@@ -531,8 +531,8 @@ inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
     ret +=
         coef2 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
   } else if (has_exact_src and has_exact_snk) {
-    const double sloppy_exact_ratio_11 = wsp1.sloppy_exact_ratio_11;
-    const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
+    const RealD sloppy_exact_ratio_11 = wsp1.sloppy_exact_ratio_11;
+    const RealD sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
     const ComplexD coef1 = sloppy_exact_ratio_11;
     const ComplexD coef2 = sloppy_exact_ratio_1 - sloppy_exact_ratio_11;
@@ -546,7 +546,7 @@ inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
     ret +=
         coef3 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
   } else if (has_exact_snk or has_exact_src) {
-    const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
+    const RealD sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
     const ComplexD coef1 = sloppy_exact_ratio_1;
     const ComplexD coef2 = 1.0 - sloppy_exact_ratio_1;

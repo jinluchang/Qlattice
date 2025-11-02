@@ -33,7 +33,7 @@ qacc Long& operator*=(Long& x, const ComplexD& factor)
   return x;
 }
 
-qacc double& operator*=(double& x, const ComplexD& factor)
+qacc RealD& operator*=(RealD& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -60,7 +60,7 @@ qacc char& operator*=(char& x, const ComplexD& factor)
 template <class M>
 Int get_type_precision()
 // 0: Complex
-// 1: double
+// 1: RealD
 // 2: ComplexF
 // 3: float
 // 4: Long
@@ -77,7 +77,7 @@ inline Int get_type_precision<ComplexF>()
 }
 
 template <>
-inline Int get_type_precision<double>()
+inline Int get_type_precision<RealD>()
 {
   return 1;
 }
@@ -118,7 +118,7 @@ bool operator==(const array<M, N>& v1, const array<M, N>& v2)
 }
 
 template <typename F>
-double simpson(const F& f, const double a, const double b)
+RealD simpson(const F& f, const RealD a, const RealD b)
 {
   return 1.0 / 6.0 * (f(a) + 4 * f(0.5 * (a + b)) + f(b)) * (b - a);
 }
@@ -136,14 +136,14 @@ API inline Int adaptive_simpson_max_level()
 }
 
 template <typename F>
-double adaptive_simpson_level(const F& f, const double a, const double b,
-                              const double eps, const Int level)
+RealD adaptive_simpson_level(const F& f, const RealD a, const RealD b,
+                              const RealD eps, const Int level)
 {
-  const double w = simpson(f, a, b);
-  const double l = simpson(f, a, 0.5 * (a + b));
-  const double r = simpson(f, 0.5 * (a + b), b);
-  const double error = 1.0 / 15.0 * (l + r - w);
-  const double result = l + r + error;
+  const RealD w = simpson(f, a, b);
+  const RealD l = simpson(f, a, 0.5 * (a + b));
+  const RealD r = simpson(f, 0.5 * (a + b), b);
+  const RealD error = 1.0 / 15.0 * (l + r - w);
+  const RealD result = l + r + error;
   if ((level >= adaptive_simpson_min_level() and std::abs(error) <= eps) or
       level >= adaptive_simpson_max_level()) {
     return result;
@@ -157,9 +157,9 @@ double adaptive_simpson_level(const F& f, const double a, const double b,
 template <typename F>
 struct AdaptiveSimpsonToInf {
   ConstHandle<F> f;
-  double start;
+  RealD start;
   //
-  double operator()(const double x) const
+  RealD operator()(const RealD x) const
   {
     if (x == 1.0) {
       return 0.0;
@@ -172,9 +172,9 @@ struct AdaptiveSimpsonToInf {
 template <typename F>
 struct AdaptiveSimpsonFromInf {
   ConstHandle<F> f;
-  double end;
+  RealD end;
   //
-  double operator()(const double x) const
+  RealD operator()(const RealD x) const
   {
     if (x == 1.0) {
       return 0.0;
@@ -185,15 +185,15 @@ struct AdaptiveSimpsonFromInf {
 };
 
 template <typename F>
-double adaptive_simpson(const F& f, const double a, const double b,
-                        const double eps)
+RealD adaptive_simpson(const F& f, const RealD a, const RealD b,
+                        const RealD eps)
 {
   if (b < a) {
     return -adaptive_simpson(f, b, a, eps);
   } else if (a == b) {
     return 0.0;
   } else {
-    const double inf = 1.0 / 0.0;
+    const RealD inf = 1.0 / 0.0;
     if (a == -inf and b == inf) {
       return adaptive_simpson(f, a, 0.0, eps / 2.0) +
              adaptive_simpson(f, 0.0, b, eps / 2.0);
@@ -271,7 +271,7 @@ std::vector<T> vector_block(const std::vector<T>& vs, const Long n_block)
       cur += 1;
       count += 1;
     }
-    ret[i] *= 1.0 / (double)count;
+    ret[i] *= 1.0 / (RealD)count;
   }
   return ret;
 }
@@ -287,7 +287,7 @@ T average(const std::vector<T>& vs)
   for (Long i = 1; i < size; ++i) {
     val += vs[i];
   }
-  val *= 1.0 / (double)size;
+  val *= 1.0 / (RealD)size;
   return val;
 }
 
@@ -305,9 +305,9 @@ std::vector<T> jackknife(const std::vector<T>& vs)
   }
   for (Long i = 0; i < size; ++i) {
     ret[i + 1] = vs[i];
-    ret[i + 1] *= -1.0 / (double)size;
+    ret[i + 1] *= -1.0 / (RealD)size;
     ret[i + 1] += ret[0];
-    ret[i + 1] *= (double)size / (double)(size - 1);
+    ret[i + 1] *= (RealD)size / (RealD)(size - 1);
   }
   return ret;
 }
@@ -328,9 +328,9 @@ T jackknife_sigma(const std::vector<T>& vs)
     val_sum += val_diff;
     val2_sum += sqr(val_diff);
   }
-  val_sum *= 1.0 / (double)size;
-  val2_sum *= 1.0 / (double)size;
-  return std::sqrt((double)size * std::abs(val2_sum - sqr(val_sum)));
+  val_sum *= 1.0 / (RealD)size;
+  val2_sum *= 1.0 / (RealD)size;
+  return std::sqrt((RealD)size * std::abs(val2_sum - sqr(val_sum)));
 }
 
 template <typename T>

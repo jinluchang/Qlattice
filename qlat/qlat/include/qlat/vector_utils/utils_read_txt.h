@@ -284,8 +284,8 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
   TIMER("Single node write");
   if(qlat::get_id_node()==0){
     size_t sem = 0;
-    Qassert(sizeof(Ty) == sizeof(float) or sizeof(Ty) == sizeof(double));
-    Int bsize = sizeof(double);
+    Qassert(sizeof(Ty) == sizeof(float) or sizeof(Ty) == sizeof(RealD));
+    Int bsize = sizeof(RealD);
     if(single_file == true){bsize = sizeof(float);}
 
     ///////data for analysis is small endian
@@ -297,7 +297,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
 
     ////Set buf with size
     //char* buf=NULL;
-    ////buf = new char[size*sizeof(double)];
+    ////buf = new char[size*sizeof(RealD)];
     //buf = (char *)aligned_alloc_no_acc(size* bsize);
     qlat::vector<char > buf; buf.resize(size * bsize);
 
@@ -310,7 +310,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     if(read==false){
       if(single_file == false)cpy_data_thread((double*)(&buf[0]), &dat[0], size, 0);
       if(single_file == true )cpy_data_thread((float* )(&buf[0]), &dat[0], size, 0);
-      /////memcpy(&buf[0],&dat[0],size*sizeof(double));
+      /////memcpy(&buf[0],&dat[0],size*sizeof(RealD));
       if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
     }
@@ -324,7 +324,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     if(read==true ){
       if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
-      ////memcpy(&dat[0],&buf[0],size*sizeof(double));
+      ////memcpy(&dat[0],&buf[0],size*sizeof(RealD));
       if(single_file == false)cpy_data_thread(&dat[0], (double*)&buf[0], size, 0);
       if(single_file == true )cpy_data_thread(&dat[0], (float* )&buf[0], size, 0);
     }
@@ -339,7 +339,7 @@ template<typename Ty>
 void write_data(std::vector<Ty > dat,const char *filename, bool read=false, bool single_file = false){
   if(qlat::get_id_node()==0)
   {
-    Int bsize = sizeof(double);
+    Int bsize = sizeof(RealD);
     if(single_file == true){bsize = sizeof(float);}
 
     Int size = 0;
@@ -1157,7 +1157,7 @@ struct corr_dat
     dim_name.resize(0);
     initialize();
 
-    if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(double)){Qassert(false);};
+    if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(RealD)){Qassert(false);};
     std::vector<std::string > tem = stringtolist(key);
     dim = tem.size();
     key_T.resize(dim);c_a_t.resize(dim);total = 1;
@@ -1266,7 +1266,7 @@ struct corr_dat
     corr_name = in.corr_name;
 
     Int type = get_save_type(in.save_type);
-    Int bsize = sizeof(double);if(type == 1){bsize=sizeof(float);}
+    Int bsize = sizeof(RealD);if(type == 1){bsize=sizeof(float);}
     //char tem_size[500];
     //printf(tem_size, "%30zu", size_t(total * bsize));
     //Qassert(std::string(tem_size) == in.total_size);
@@ -1340,9 +1340,9 @@ struct corr_dat
   {
     in_buf = inputpara();///initialize the buf
 
-    if(sizeof(Ty) == sizeof(double)){in_buf.save_type = std::string("Double");write_type = 0;}
+    if(sizeof(Ty) == sizeof(RealD)){in_buf.save_type = std::string("Double");write_type = 0;}
     if(sizeof(Ty) == sizeof(float) ){in_buf.save_type = std::string("Single");write_type = 1;}
-    write_bsize = sizeof(double);if(write_type == 1){write_bsize=sizeof(float);}
+    write_bsize = sizeof(RealD);if(write_type == 1){write_bsize=sizeof(float);}
 
     in_buf.checksum = 0;
     update_info();
@@ -1519,7 +1519,7 @@ struct corr_dat
     //const Int is_double = Is_data_double<M>();
     //Qassert(is_double == 0 or is_double == 1);
     //const Int is_double = get_data_type_is_double<Ta >();
-    //if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
+    //if( is_double){double_size = size * sizeof(Ta)/sizeof(RealD);}
     //if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
     if(Long(double_size + cur) >  total){ 
@@ -1569,7 +1569,7 @@ struct corr_dat
   inline void print_info(){
     if(qlat::get_id_node()==node_control){
       printf("===Corr %s, dim %d, mem size %.3e MB \n", 
-            corr_name.c_str(), dim, total * sizeof(double)*1.0/(1024.0*1024.0));
+            corr_name.c_str(), dim, total * sizeof(RealD)*1.0/(1024.0*1024.0));
       for(Int d=0;d<dim;d++){
         printf("dim %30s   %d \n", dim_name[d].c_str(), key_T[d]);
       }

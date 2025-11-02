@@ -33,7 +33,7 @@ static std::string get_fname_cut(const std::string& fname, const Int fname_len)
 
 void TimerInfo::show_start(const Int fname_len) const
 {
-  double total_time = get_total_time();
+  RealD total_time = get_total_time();
   const std::string fnameCut = get_fname_cut(fname, fname_len);
   displayln_info(ssprintf(
       "Timer::start %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E "
@@ -41,25 +41,25 @@ void TimerInfo::show_start(const Int fname_len) const
       ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
       accumulated_time / total_time * 100, call_times, dtime,
       accumulated_time / (call_times - 1), dflops / dtime / 1.0E9,
-      (double)dflops));
+      (RealD)dflops));
 }
 
 void TimerInfo::show_stop(const Int fname_len) const
 {
-  double total_time = get_total_time();
+  RealD total_time = get_total_time();
   const std::string fnameCut = get_fname_cut(fname, fname_len);
   displayln_info(ssprintf(
       "Timer::stop  %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E "
       "flops)",
       ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
       accumulated_time / total_time * 100, call_times, dtime,
-      accumulated_time / call_times, dflops / dtime / 1.0E9, (double)dflops));
+      accumulated_time / call_times, dflops / dtime / 1.0E9, (RealD)dflops));
 }
 
 void TimerInfo::show_avg_always(const std::string& info,
                                 const Int fname_len) const
 {
-  double total_time = get_total_time();
+  RealD total_time = get_total_time();
   const std::string fnameCut = get_fname_cut(fname, fname_len);
   displayln_c_stdout(ssprintf(
       "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
@@ -68,14 +68,14 @@ void TimerInfo::show_avg_always(const std::string& info,
       ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
       accumulated_time / total_time * 100, call_times,
       accumulated_time / call_times, accumulated_time,
-      (double)accumulated_flops / (double)call_times, (double)accumulated_flops,
+      (RealD)accumulated_flops / (RealD)call_times, (RealD)accumulated_flops,
       accumulated_flops / accumulated_time / 1.0E9));
 }
 
 void TimerInfo::show_avg(const std::string& info, const Int fname_len) const
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
-    double total_time = get_total_time();
+    RealD total_time = get_total_time();
     const std::string fnameCut = get_fname_cut(fname, fname_len);
     displayln_info(ssprintf(
         "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
@@ -85,8 +85,8 @@ void TimerInfo::show_avg(const std::string& info, const Int fname_len) const
             .c_str(),
         accumulated_time / total_time * 100, call_times,
         accumulated_time / call_times, accumulated_time,
-        (double)accumulated_flops / (double)call_times,
-        (double)accumulated_flops,
+        (RealD)accumulated_flops / (RealD)call_times,
+        (RealD)accumulated_flops,
         accumulated_flops / accumulated_time / 1.0E9));
   }
 }
@@ -301,7 +301,7 @@ void Timer::test_timer_time_usage()
 
 void Timer::display(const std::string& tag)
 {
-  double total_time = get_total_time();
+  RealD total_time = get_total_time();
   const std::vector<TimerInfo>& tdb = get_timer_database();
   const std::vector<std::vector<TimerInfo>>& tdb_history =
       get_timer_database_history();
@@ -327,9 +327,9 @@ void Timer::display(const std::string& tag)
       tag.c_str(), (Long)tdb_history.size(), total_time, total_time / 3600));
 }
 
-void Timer::autodisplay(const double time)
+void Timer::autodisplay(const RealD time)
 {
-  static double last_time = get_start_time();
+  static RealD last_time = get_start_time();
   if (time - last_time > minimum_autodisplay_interval()) {
     last_time = time;
     display("autodisplay");

@@ -27,10 +27,10 @@ std::string get_env_default(const std::string& var_name, const std::string& x0)
   }
 }
 
-double get_env_double_default(const std::string& var_name, const double x0)
+RealD get_env_double_default(const std::string& var_name, const RealD x0)
 {
   const std::string val = get_env(var_name);
-  double x;
+  RealD x;
   if (val == "") {
     x = x0;
     displayln_info(0, ssprintf("QLAT: get_env_double_default: %s=%lG (default)", var_name.c_str(), x));
@@ -69,9 +69,9 @@ Long get_verbose_level_default()
   return x;
 }
 
-double get_time_limit_default()
+RealD get_time_limit_default()
 {
-  const double time_limit_default = 12.0 * 3600.0;
+  const RealD time_limit_default = 12.0 * 3600.0;
   if (get_env("q_end_time") == "") {
     return get_env_double_default("q_time_limit", time_limit_default);
   } else {
@@ -81,9 +81,9 @@ double get_time_limit_default()
   }
 }
 
-double get_time_budget_default()
+RealD get_time_budget_default()
 {
-  double budget = get_env_double_default("q_time_budget", 15.0 * 60.0);
+  RealD budget = get_env_double_default("q_time_budget", 15.0 * 60.0);
   return budget;
 }
 

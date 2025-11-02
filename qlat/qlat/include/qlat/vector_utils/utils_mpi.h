@@ -277,7 +277,7 @@ void bcast_all_size(Ty *src, Long size, Int root, Int GPU=0, MPI_Comm* commp=NUL
   if(size == 0){return ;}
   (void) GPU;
 
-  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
+  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(RealD);
   M_size = get_mpi_type<Ty >(curr);
 
   Qassert(sizeof(Ty)%M_size == 0);int M_fac = sizeof(Ty)/M_size;
@@ -316,7 +316,7 @@ void sum_all_size(Ty *src,Ty *sav,Long size, Int GPU=0, const MPI_Comm* commp=NU
     buf_res = (Ty*) tmp.data();
   }else{buf_res = sav;}////small modify for pointers
 
-  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
+  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(RealD);
   M_size = get_mpi_type<Ty >(curr);
 
   Qassert(sizeof(Ty)%M_size == 0);
@@ -400,7 +400,7 @@ void sum_all_size(Ty *src,Long size, Int GPU=0, const MPI_Comm* commp=NULL)
 }
 
 
-inline void abort_sum(double flag, std::string stmp=std::string(""))
+inline void abort_sum(RealD flag, std::string stmp=std::string(""))
 {
   sum_all_size(&flag,1);
   if(flag > 0)

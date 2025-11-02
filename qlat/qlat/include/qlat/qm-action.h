@@ -5,20 +5,20 @@ namespace qlat
 
 struct QMAction {
   bool initialized;
-  double alpha;
-  double beta;
-  double start_TV;
-  double FV_offset;
-  double TV_offset;
-  double center_bar;
-  double barrier_strength;
-  double L;
-  double M;
-  double epsilon;
-  double temp;
+  RealD alpha;
+  RealD beta;
+  RealD start_TV;
+  RealD FV_offset;
+  RealD TV_offset;
+  RealD center_bar;
+  RealD barrier_strength;
+  RealD L;
+  RealD M;
+  RealD epsilon;
+  RealD temp;
   Long t_FV_out;
   Long t_FV_mid;
-  double dt;
+  RealD dt;
   bool measure_offset_L;
   bool measure_offset_M;
   
@@ -45,10 +45,10 @@ struct QMAction {
     measure_offset_M = false;
   }
   //
-  qacc QMAction(const double alpha_, const double beta_, const double FV_offset_,
-                const double TV_offset_, const double barrier_strength_, const double L_,
-                const double M_, const double epsilon_, const Long t_FV_out_, 
-                const Long t_FV_mid_, const double dt_,
+  qacc QMAction(const RealD alpha_, const RealD beta_, const RealD FV_offset_,
+                const RealD TV_offset_, const RealD barrier_strength_, const RealD L_,
+                const RealD M_, const RealD epsilon_, const Long t_FV_out_, 
+                const Long t_FV_mid_, const RealD dt_,
                 const bool measure_offset_L_, const bool measure_offset_M_)
   {
     init();
@@ -77,7 +77,7 @@ struct QMAction {
       vtype = GET_L; // Calculate Q(L_{i+1}) / Q(L_i)
   }
   
-  inline double V(const double x, const Long t)
+  inline RealD V(const RealD x, const Long t)
   {
     switch(vtype) {
       case GET_L: return V_t_L(x,t);
@@ -86,7 +86,7 @@ struct QMAction {
     }
   }
   
-  inline double dV(const double x, const Long t)
+  inline RealD dV(const RealD x, const Long t)
   {
     switch(vtype) {
       case GET_L: return dV_t_L(x,t);
@@ -95,7 +95,7 @@ struct QMAction {
     }
   }
   
-  inline double V_t_L(const double x, const Long t)
+  inline RealD V_t_L(const RealD x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -119,7 +119,7 @@ struct QMAction {
     }
   }
   
-  inline double dV_t_L(const double x, const Long t)
+  inline RealD dV_t_L(const RealD x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -143,7 +143,7 @@ struct QMAction {
     }
   }
   
-  inline double V_t_M(const double x, const Long t)
+  inline RealD V_t_M(const RealD x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -167,7 +167,7 @@ struct QMAction {
     }
   }
   
-  inline double dV_t_M(const double x, const Long t)
+  inline RealD dV_t_M(const RealD x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -191,7 +191,7 @@ struct QMAction {
     }
   }
   
-  inline double V_t_dtTV(const double x, const Long t)
+  inline RealD V_t_dtTV(const RealD x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -224,7 +224,7 @@ struct QMAction {
     }
   }
   
-  inline double dV_t_dtTV(const double x, const Long t)
+  inline RealD dV_t_dtTV(const RealD x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -257,22 +257,22 @@ struct QMAction {
     }
   }
   
-  inline double V_zeroed(const double x, const Long t) {
+  inline RealD V_zeroed(const RealD x, const Long t) {
     return V(x,t) - log(dt) / dt;
   }
 
-  inline double V_phi4(const double x)
+  inline RealD V_phi4(const RealD x)
   {
     return beta*(x*x/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
   }
 
-  inline double dV_phi4(const double x)
+  inline RealD dV_phi4(const RealD x)
   {
     // Returns the derivative of the potential with respect to x
     return beta*(x-x*x*3.0/2.0+alpha*x*x*x/2.0);
   }
 
-  inline double V_full(const double x)
+  inline RealD V_full(const RealD x)
   {
     // Returns the potential evaluated at point x
     if(x>start_TV) {
@@ -281,16 +281,16 @@ struct QMAction {
     return V_phi4(x) - V_phi4(start_TV);
   }
 
-  inline double dV_full(const double x)
+  inline RealD dV_full(const RealD x)
   {
-    double rtn = dV_phi4(x);
+    RealD rtn = dV_phi4(x);
     if(x>start_TV) {
       return 0.0;
     }
     return rtn;
   }
 
-  inline double V_FV_out(const double x)
+  inline RealD V_FV_out(const RealD x)
   {
     if(x>center_bar+FV_offset)
         return V_full(center_bar+FV_offset) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
@@ -298,7 +298,7 @@ struct QMAction {
         return V_full(x);
   }
 
-  inline double dV_FV_out(const double x)
+  inline RealD dV_FV_out(const RealD x)
   {
     if(x>center_bar+FV_offset)
         return 2.0*barrier_strength*(x-center_bar-FV_offset);
@@ -306,21 +306,21 @@ struct QMAction {
         return dV_full(x);
   }
 
-  inline double V_FV_mid(const double x)
+  inline RealD V_FV_mid(const RealD x)
   {
     if(x>center_bar)
       return V_full(center_bar) + barrier_strength*(x-center_bar)*(x-center_bar);
     return V_full(x);
   }
 
-  inline double dV_FV_mid(const double x)
+  inline RealD dV_FV_mid(const RealD x)
   {
     if(x>center_bar)
       return 2.0*barrier_strength*(x-center_bar);
     return dV_full(x);
   }
 
-  inline double V_TV(const double x)
+  inline RealD V_TV(const RealD x)
   {
     if(x < center_bar+TV_offset)
       return V_full(center_bar+TV_offset) + barrier_strength*(x-center_bar-TV_offset)*(x-center_bar-TV_offset);
@@ -328,7 +328,7 @@ struct QMAction {
       return V_full(x);
   }
 
-  inline double dV_TV(const double x)
+  inline RealD dV_TV(const RealD x)
   {
     if(x < center_bar+TV_offset)
       return 2.0*barrier_strength*(x-center_bar-TV_offset);
@@ -336,9 +336,9 @@ struct QMAction {
       return dV_full(x);
   }
   
-  inline double V_proj(const double x)
+  inline RealD V_proj(const RealD x)
   {
-    double rtn = -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
+    RealD rtn = -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
     // When x is low enough that epsilon is relevant, remove V_full (which
     // will be added later) to avoid ergodicity issues
     if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x) + barrier_strength*std::pow(center_bar+FV_offset-x, 0.5);
@@ -346,44 +346,44 @@ struct QMAction {
     
   }
   
-  inline double dV_proj(const double x)
+  inline RealD dV_proj(const RealD x)
   {
-    double Vbar = V_FV_out(x) - V_full(x);
-    double rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
+    RealD Vbar = V_FV_out(x) - V_full(x);
+    RealD rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
     if(x<center_bar+FV_offset) rtn += - dV_full(x) - 0.5*barrier_strength/std::pow(center_bar+FV_offset-x, 0.5);
     return rtn;
   }
   
-  inline double V_max(const double V_D, const double V_N, const double P)
+  inline RealD V_max(const RealD V_D, const RealD V_N, const RealD P)
   {
     if(V_N < V_D) return V_D;
     else return (1-P)*V_D + P*V_N;
   }
   
-  inline double dV_max(const double V_D, const double dV_D, const double V_N, const double dV_N, const double P)
+  inline RealD dV_max(const RealD V_D, const RealD dV_D, const RealD V_N, const RealD dV_N, const RealD P)
   {
     if(V_N < V_D) return dV_D;
     else return (1-P)*dV_D + P*dV_N;
   }
   
-  inline double V_FV_floored(const double x, const double P)
+  inline RealD V_FV_floored(const RealD x, const RealD P)
   {
-    double v_fv_mid = V_FV_mid(x);
-    double v_fv_min = V_full(0);
-    double floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
+    RealD v_fv_mid = V_FV_mid(x);
+    RealD v_fv_min = V_full(0);
+    RealD floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
     if(v_fv_mid < floor) return floor;
     else return v_fv_mid;
   }
   
-  inline double dV_FV_floored(const double x, const double P)
+  inline RealD dV_FV_floored(const RealD x, const RealD P)
   {
-    double v_fv_min = V_full(0);
-    double floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
+    RealD v_fv_min = V_full(0);
+    RealD floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
     if(V_FV_mid(x) < floor) return 0;
     else return dV_FV_mid(x);
   }
   
-  inline double V_L(const double x, const double V_N)
+  inline RealD V_L(const RealD x, const RealD V_N)
   {
     if(L<0.5) {
       return V_FV_floored(x, 2*L);
@@ -391,7 +391,7 @@ struct QMAction {
     else return V_max(V_FV_floored(x, 1), V_N, 2*(L-0.5));
   }
   
-  inline double dV_L(const double x, const double V_N, const double dV_N)
+  inline RealD dV_L(const RealD x, const RealD V_N, const RealD dV_N)
   {
     if(L<0.5) {
       return dV_FV_floored(x, 2*L);
@@ -399,29 +399,29 @@ struct QMAction {
     else return dV_max(V_FV_floored(x, 1), dV_FV_floored(x, 1), V_N, dV_N, 2*(L-0.5));
   }
   
-  inline double V_M(const double x, const double V_N)
+  inline RealD V_M(const RealD x, const RealD V_N)
   {
     return V_max(V_N, V_FV_floored(x, 1), M);
   }
   
-  inline double dV_M(const double x, const double V_N, const double dV_N)
+  inline RealD dV_M(const RealD x, const RealD V_N, const RealD dV_N)
   {
     return dV_max(V_N, dV_N, V_FV_floored(x, 1), dV_FV_floored(x, 1), M);
   }
 
-  inline double action_point(QMAction& qma, const Field<double>& f, const Geometry& geo, Coordinate xl)
+  inline RealD action_point(QMAction& qma, const Field<RealD>& f, const Geometry& geo, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
     // TIMER("QMAction.action_point");
-    double psi = f.get_elem(xl);
+    RealD psi = f.get_elem(xl);
     xl[3]+=1;
-    double psi_eps = f.get_elem(xl);
+    RealD psi_eps = f.get_elem(xl);
     xl[3]-=1;
     return (beta/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V_zeroed(psi, geo.coordinate_g_from_l(xl)[3]);
   }
 
-  inline double action_node_no_comm(const Field<double>& f)
+  inline RealD action_node_no_comm(const Field<RealD>& f)
   {
 	// Returns the total action of the portion of the lattice on the
 	// current node (assuming the necessary communication has already
@@ -433,7 +433,7 @@ struct QMAction {
     const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the total action from
     // each point
-    FieldM<double, 1> fd;
+    FieldM<RealD, 1> fd;
     fd.init(geo_r);
     // Loops over every lattice point in the current node
     QMAction& qma = *this;
@@ -445,14 +445,14 @@ struct QMAction {
     // Sums over the contributions to the total action from each point
     // (this cannot be done in the previous loops because the previous
     // loop runs in parallel)
-    double sum = 0.0;
+    RealD sum = 0.0;
     for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum*dt;
   }
 
-  inline double action_node(const Field<double>& f)
+  inline RealD action_node(const Field<RealD>& f)
   {
 	// Return the total Euclidean action (on the current node) associated
 	// with the given scalar field.
@@ -463,7 +463,7 @@ struct QMAction {
     const Coordinate expand_left(0, 0, 0, 0);
     const Coordinate expand_right(0, 0, 0, 1);
     const Geometry geo_ext = geo_resize(f.geo(), expand_left, expand_right);
-    Field<double> f_ext;
+    Field<RealD> f_ext;
     f_ext.init(geo_ext, f.multiplicity);
     f_ext = f;
     refresh_expanded(f_ext);
@@ -471,16 +471,16 @@ struct QMAction {
     return action_node_no_comm(f_ext);
   }
 
-  inline double hmc_m_hamilton_node(const Field<double>& m)
+  inline RealD hmc_m_hamilton_node(const Field<RealD>& m)
   {
     // Return the part of an HMC Hamiltonian due to the given momentum
     // field (on the current node).
     TIMER("QMAction.hmc_m_hamilton_node");
-    double sum = sum_sq(m);
+    RealD sum = sum_sq(m);
     return sum/2.0;
   }
 
-  inline double sum_sq(const Field<double>& f)
+  inline RealD sum_sq(const Field<RealD>& f)
   {
     // Returns the sum of f(x)^2 over lattice sites (on the current
     // node) and multiplicity
@@ -491,14 +491,14 @@ struct QMAction {
     const Geometry geo_r = geo_resize(geo);
     // Creates a field to save the contribution to the sum of squares
     // from each point
-    FieldM<double, 1> fd;
+    FieldM<RealD, 1> fd;
     fd.init(geo_r);
     qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo_r = fd.geo();
       Coordinate xl = geo_r.coordinate_from_index(index);
-      double s=0;
+      RealD s=0;
       for (Int m = 0; m < f.multiplicity; ++m) {
-        double d = f.get_elem(xl,m);
+        RealD d = f.get_elem(xl,m);
         s += d*d;
       }
       fd.get_elem(index) = s;
@@ -506,14 +506,14 @@ struct QMAction {
     // Sums over the contributions to the sum of squares from each point
     // (this cannot be done in the previous loops because the previous
      // loop runs in parallel)
-    double sum = 0;
+    RealD sum = 0;
     for (Long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
     }
     return sum;
   }
 
-  inline void hmc_set_force_no_comm(Field<double>& force, const Field<double>& f)
+  inline void hmc_set_force_no_comm(Field<RealD>& force, const Field<RealD>& f)
   {
     TIMER("QMAction.hmc_set_sm_force_no_comm");
     const Geometry geo = f.geo();
@@ -521,9 +521,9 @@ struct QMAction {
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       Coordinate xl = geo.coordinate_from_index(index);
-      Vector<double> force_v = force.get_elems(xl);
+      Vector<RealD> force_v = force.get_elems(xl);
       qassert(force_v.size() == 1);
-      double psi = f.get_elem(xl);
+      RealD psi = f.get_elem(xl);
       force_v[0] = 2.0 * qma.beta / qma.dt / qma.dt * psi;
       force_v[0] += qma.dV(psi,geo.coordinate_g_from_l(xl)[3]);
       xl[3] += 1;
@@ -535,7 +535,7 @@ struct QMAction {
     });
   }
 
-  inline void hmc_set_force(Field<double>&  force, const Field<double>&  f)
+  inline void hmc_set_force(Field<RealD>&  force, const Field<RealD>&  f)
   {
 	// Calculate and set the HMC force field based on the given field
 	// configuration.
@@ -543,28 +543,28 @@ struct QMAction {
     Coordinate expand_left(0, 0, 0, 1);
     Coordinate expand_right(0, 0, 0, 1);
     const Geometry geo_ext = geo_resize(f.geo(), expand_left, expand_right);
-    Field<double> f_ext;
+    Field<RealD> f_ext;
     f_ext.init(geo_ext, f.multiplicity);
     f_ext = f;
     refresh_expanded(f_ext);
     hmc_set_force_no_comm(force, f_ext);
   }
 
-  inline void hmc_field_evolve(Field<double>& f, const Field<double>& m,
-                               const double step_size)
+  inline void hmc_field_evolve(Field<RealD>& f, const Field<RealD>& m,
+                               const RealD step_size)
   {
     TIMER("QMAction.hmc_field_evolve");
     const Geometry& geo = f.geo();
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<double> f_v = f.get_elems(xl);
+      Vector<RealD> f_v = f.get_elems(xl);
       qassert(f_v.size() == 1);
       f_v[0] = f_v[0] + m.get_elem(xl)*step_size;
     });
   }
 
-  inline void hmc_set_rand_momentum(Field<double>& m, const RngState& rs)
+  inline void hmc_set_rand_momentum(Field<RealD>& m, const RngState& rs)
   {
     TIMER("QMAction.set_rand_momentum");
     const Geometry& geo = m.geo();

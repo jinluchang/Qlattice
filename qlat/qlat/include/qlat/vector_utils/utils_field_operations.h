@@ -17,8 +17,8 @@ void clear_fields(Fieldy& pr, Int GPU = 1)
   TIMER("clear_fields");
   Qassert(pr.initialized);
   const Long Nd = GetFieldSize(pr);
-  Qassert(Nd % sizeof(double) == 0);
-  const Long Ndata = Nd / sizeof(double);
+  Qassert(Nd % sizeof(RealD) == 0);
+  const Long Ndata = Nd / sizeof(RealD);
   double* r0 = (double*) get_data(pr).data();
   qGPU_for(isp, Ndata, GPU, {
     r0[isp] = 0.0;

@@ -29,7 +29,7 @@ inline bool check_ctype_name<ComplexF>(const std::string& ctype)
 }
 
 template <>
-inline bool check_ctype_name<double>(const std::string& ctype)
+inline bool check_ctype_name<RealD>(const std::string& ctype)
 {
   return "RealD" == ctype;
 }
@@ -72,7 +72,7 @@ inline void py_convert(Long& out, PyObject* in)
   out = PyLong_AsLong(in);
 }
 
-inline void py_convert(double& out, PyObject* in)
+inline void py_convert(RealD& out, PyObject* in)
 {
   if (PyFloat_Check(in)) {
     out = PyFloat_AsDouble(in);
@@ -201,7 +201,7 @@ T py_convert_data(PyObject* in)
 // examples:
 // py_convert_data<Int>(in)
 // py_convert_data<Long>(in)
-// py_convert_data<double>(in)
+// py_convert_data<RealD>(in)
 // py_convert_data<ComplexD>(in)
 // py_convert_data<bool>(in)
 // py_convert_data<std::string>(in)
@@ -311,10 +311,10 @@ inline PyObject* py_convert(const uint64_t& x)
 
 inline PyObject* py_convert(const float& x)
 {
-  return PyFloat_FromDouble((double)x);
+  return PyFloat_FromDouble((RealD)x);
 }
 
-inline PyObject* py_convert(const double& x) { return PyFloat_FromDouble(x); }
+inline PyObject* py_convert(const RealD& x) { return PyFloat_FromDouble(x); }
 
 inline PyObject* py_convert(const ComplexD& x)
 {

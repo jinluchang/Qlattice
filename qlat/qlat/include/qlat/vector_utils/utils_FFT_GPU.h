@@ -194,7 +194,7 @@ void FFT_Vecs::set_plan(std::vector<Int>& nv_set, Int civ_set, std::vector<size_
     civ = civ_set;
 
     bsize = sizeof(Ty);
-    if(bsize == 2*sizeof(double))single_type = 0;
+    if(bsize == 2*sizeof(RealD))single_type = 0;
     if(bsize == 2*sizeof(float ))single_type = 1;
     Qassert(single_type != -1);
 

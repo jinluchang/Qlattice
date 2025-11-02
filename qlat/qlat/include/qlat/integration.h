@@ -14,8 +14,8 @@ namespace qlat
 {  //
 
 template <class F>
-Int integrate(double& result, double& abserr, const F& f, const double a,
-              const double b, const double epsabs, const double epsrel)
+Int integrate(RealD& result, RealD& abserr, const F& f, const RealD a,
+              const RealD b, const RealD epsabs, const RealD epsrel)
 {
   const Int limit = 1000;
   const Int key = 2;
@@ -28,10 +28,10 @@ Int integrate(double& result, double& abserr, const F& f, const double a,
 }
 
 template <class F>
-double integrate(const F& f, const double a, const double b,
-                 const double epsabs = 0.0, const double epsrel = 1.0e-8)
+RealD integrate(const F& f, const RealD a, const RealD b,
+                 const RealD epsabs = 0.0, const RealD epsrel = 1.0e-8)
 {
-  double result = 0.0, abserr = 0.0;
+  RealD result = 0.0, abserr = 0.0;
   integrate(result, abserr, f, a, b, epsabs, epsrel);
   return result;
 }

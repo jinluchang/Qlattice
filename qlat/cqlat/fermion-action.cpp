@@ -2,10 +2,10 @@
 
 EXPORT(mk_fermion_action_mobius, {
   using namespace qlat;
-  double mass = 0.0;
+  RealD mass = 0.0;
   Int ls = 0;
-  double m5 = 0.0;
-  double mobius_scale = 0.0;
+  RealD m5 = 0.0;
+  RealD mobius_scale = 0.0;
   if (!PyArg_ParseTuple(args, "didd", &mass, &ls, &m5, &mobius_scale)) {
     return NULL;
   }
@@ -15,8 +15,8 @@ EXPORT(mk_fermion_action_mobius, {
 
 EXPORT(mk_fermion_action_zmobius, {
   using namespace qlat;
-  double mass = 0.0;
-  double m5 = 0.0;
+  RealD mass = 0.0;
+  RealD m5 = 0.0;
   PyObject* p_omega = NULL;
   if (!PyArg_ParseTuple(args, "ddO", &mass, &m5, &p_omega)) {
     return NULL;

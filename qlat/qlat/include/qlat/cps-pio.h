@@ -336,20 +336,20 @@ void gcFloatFromDouble(GridComm<N>& gcf, const GridComm<M>& gcd)
 {
   // gcf can be uninitialized
   TIMER_FLOPS("gcFloatFromDouble");
-  timer.flops += gcd.getAllocSize() / sizeof(double);
+  timer.flops += gcd.getAllocSize() / sizeof(RealD);
   const Geometry& geod = gcd.getGeometry();
   assert(geod.isOnlyLocal());
-  assert(0 == sizeof(M) % sizeof(double));
+  assert(0 == sizeof(M) % sizeof(RealD));
   assert(0 == sizeof(N) % sizeof(float));
-  assert(0 == (geod.multiplicity * sizeof(M) / sizeof(double)) %
+  assert(0 == (geod.multiplicity * sizeof(M) / sizeof(RealD)) %
                   (sizeof(N) / sizeof(float)));
   Geometry geof;
   geof.init(geod, 0,
-            geod.multiplicity * sizeof(M) / sizeof(double) /
+            geod.multiplicity * sizeof(M) / sizeof(RealD) /
                 (sizeof(N) / sizeof(float)));
   gcf.init(geof);
   assert(gcf.getGeometry() == geof);
-  const double* gcdf = (const double*)gcd.getField();
+  const RealD* gcdf = (const RealD*)gcd.getField();
   float* gcff = (float*)gcf.getField();
   for (Long i = 0; i < gcf.getAllocSize() / sizeof(float); i++) {
     gcff[i] = gcdf[i];
@@ -364,18 +364,18 @@ void gcDoubleFromFloat(GridComm<M>& gcd, const GridComm<N>& gcf)
   timer.flops += gcf.getAllocSize() / sizeof(float);
   const Geometry& geof = gcf.getGeometry();
   assert(0 == sizeof(N) % sizeof(float));
-  assert(0 == sizeof(M) % sizeof(double));
+  assert(0 == sizeof(M) % sizeof(RealD));
   assert(0 == (geof.multiplicity * sizeof(N) / sizeof(float)) %
-                  (sizeof(M) / sizeof(double)));
+                  (sizeof(M) / sizeof(RealD)));
   Geometry geod;
   geod.init(geof, 0,
             geof.multiplicity * sizeof(N) / sizeof(float) /
-                (sizeof(M) / sizeof(double)));
+                (sizeof(M) / sizeof(RealD)));
   gcd.init(geod);
   assert(gcd.getGeometry() == geod);
   const float* gcff = (const float*)gcf.getField();
-  double* gcdf = (double*)gcd.getField();
-  for (Long i = 0; i < gcd.getAllocSize() / sizeof(double); i++) {
+  RealD* gcdf = (RealD*)gcd.getField();
+  for (Long i = 0; i < gcd.getAllocSize() / sizeof(RealD); i++) {
     gcdf[i] = gcff[i];
   }
 }

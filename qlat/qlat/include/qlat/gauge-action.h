@@ -7,8 +7,8 @@ namespace qlat
 
 struct API GaugeAction {
   bool initialized;
-  double beta;
-  double c1;
+  RealD beta;
+  RealD c1;
   //
   qacc void init()
   {
@@ -18,7 +18,7 @@ struct API GaugeAction {
   }
   //
   qacc GaugeAction() { init(); }
-  qacc GaugeAction(const double beta_, const double c1_ = 0.0)
+  qacc GaugeAction(const RealD beta_, const RealD c1_ = 0.0)
   {
     init();
     initialized = true;

@@ -25,11 +25,11 @@ void set_type(RngState& rs, const uint64_t type);
 
 uint64_t rand_gen(RngState& rs);
 
-double u_rand_gen(RngState& rs, const double upper = 1.0,
-                  const double lower = 0.0);
+RealD u_rand_gen(RngState& rs, const RealD upper = 1.0,
+                  const RealD lower = 0.0);
 
-double g_rand_gen(RngState& rs, const double center = 0.0,
-                  const double sigma = 1.0);
+RealD g_rand_gen(RngState& rs, const RealD center = 0.0,
+                  const RealD sigma = 1.0);
 
 void compute_hash_with_input(uint32_t hash[8], const RngState& rs,
                              const std::string& input);
@@ -41,7 +41,7 @@ struct API RngState {
   uint64_t index;
   //
   uint64_t cache[3];
-  double gaussian;
+  RealD gaussian;
   Int cacheAvail;
   bool gaussianAvail;
   //

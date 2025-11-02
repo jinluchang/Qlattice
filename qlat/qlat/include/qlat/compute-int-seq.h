@@ -15,18 +15,18 @@
 namespace qlat
 {  //
 
-inline double vFromPsi(const double psi)
+inline RealD vFromPsi(const RealD psi)
 {
   return psi - std::sin(psi) * std::cos(psi);
 }
 
 struct EquationPsiFromV {
-  double v;
+  RealD v;
   //
-  double operator()(const double psi) const { return vFromPsi(psi) - v; }
+  RealD operator()(const RealD psi) const { return vFromPsi(psi) - v; }
 };
 
-inline double psiFromVSolve(const double v)
+inline RealD psiFromVSolve(const RealD v)
 {
   if (v == 0 || v == PI) {
     return v;
@@ -36,7 +36,7 @@ inline double psiFromVSolve(const double v)
   return rootFSolver(f, v, 0.0, PI, 1.0e-12, 0.0);
 }
 
-inline double psiFromV(const double v)
+inline RealD psiFromV(const RealD v)
 {
   if (false == IS_USING_INTERPOLATION) {
     return psiFromVSolve(v);
@@ -48,21 +48,21 @@ inline double psiFromV(const double v)
   }
 }
 
-inline double uFromTheta(const double theta) { return std::cos(theta); }
+inline RealD uFromTheta(const RealD theta) { return std::cos(theta); }
 
-inline double thetaFromU(const double u) { return std::acos(u); }
+inline RealD thetaFromU(const RealD u) { return std::acos(u); }
 
-inline double rpFromR(const double r, const double r0)
+inline RealD rpFromR(const RealD r, const RealD r0)
 {
-  const double ra = r / r0;
+  const RealD ra = r / r0;
   return ra / (1.0 + ra);
 }
 
-inline double regularizeRp(const double rp)
+inline RealD regularizeRp(const RealD rp)
 {
   assert(0.0 <= rp && rp <= 1.0);
   // ADJUST ME
-  const double eps = 1.0e-5;
+  const RealD eps = 1.0e-5;
   if (1.0 == rp) {
     return 1.0 - eps;
   } else {
@@ -70,61 +70,61 @@ inline double regularizeRp(const double rp)
   }
 }
 
-inline double rFromRp(const double rp, const double r0)
+inline RealD rFromRp(const RealD rp, const RealD r0)
 {
-  const double rrp = regularizeRp(rp);
+  const RealD rrp = regularizeRp(rp);
   return rrp / (1.0 - rrp) * r0;
 }
 
 inline qlat::CoordinateD etaFromParam(const qlat::CoordinateD& param,
-                                      const double r0)
+                                      const RealD r0)
 {
   // TIMER_VERBOSE("etaFromParam");
-  const double rp = param[0];
-  const double v = param[1];
-  const double u = param[2];
-  const double phi = param[3];
+  const RealD rp = param[0];
+  const RealD v = param[1];
+  const RealD u = param[2];
+  const RealD phi = param[3];
   assert(0.0 <= rp && rp <= 1.0);
   assert(0.0 <= v && v <= PI);
   assert(-1.0 <= u && u <= 1.0);
   assert(-PI <= phi && phi <= PI);
-  const double r = rFromRp(rp, r0);
-  const double psi = psiFromV(v);
-  const double theta = thetaFromU(u);
-  const double t = r * std::cos(psi);
-  const double rSinPsi = r * std::sin(psi);
-  const double z = rSinPsi * std::cos(theta);
-  const double rSinPsiSinTheta = rSinPsi * std::sin(theta);
-  const double x = rSinPsiSinTheta * std::cos(phi);
-  const double y = rSinPsiSinTheta * std::sin(phi);
+  const RealD r = rFromRp(rp, r0);
+  const RealD psi = psiFromV(v);
+  const RealD theta = thetaFromU(u);
+  const RealD t = r * std::cos(psi);
+  const RealD rSinPsi = r * std::sin(psi);
+  const RealD z = rSinPsi * std::cos(theta);
+  const RealD rSinPsiSinTheta = rSinPsi * std::sin(theta);
+  const RealD x = rSinPsiSinTheta * std::cos(phi);
+  const RealD y = rSinPsiSinTheta * std::sin(phi);
   CoordinateD eta(x, y, z, t);
   return eta;
 }
 
 inline qlat::CoordinateD paramFromEta(const qlat::CoordinateD& eta,
-                                      const double r0)
+                                      const RealD r0)
 {
   // TIMER_VERBOSE("paramFromEta");
-  const double x = eta[0];
-  const double y = eta[1];
-  const double z = eta[2];
-  const double t = eta[3];
-  const double r = std::sqrt(sqr(x) + sqr(y) + sqr(z) + sqr(t));
-  const double rp = rpFromR(r, r0);
+  const RealD x = eta[0];
+  const RealD y = eta[1];
+  const RealD z = eta[2];
+  const RealD t = eta[3];
+  const RealD r = std::sqrt(sqr(x) + sqr(y) + sqr(z) + sqr(t));
+  const RealD rp = rpFromR(r, r0);
   if (0.0 == r) {
     return CoordinateD(rp, PI / 2, 0.0, 0.0);
   } else {
-    const double psi = std::acos(t / r);
-    const double v = vFromPsi(psi);
-    const double rspatial = std::sqrt(sqr(x) + sqr(y) + sqr(z));
+    const RealD psi = std::acos(t / r);
+    const RealD v = vFromPsi(psi);
+    const RealD rspatial = std::sqrt(sqr(x) + sqr(y) + sqr(z));
     if (0.0 == rspatial) {
       return CoordinateD(rp, v, 0.0, 0.0);
     } else {
-      const double u = z / rspatial;
+      const RealD u = z / rspatial;
       if (0.0 == x && 0.0 == y) {
         return CoordinateD(rp, v, u, 0.0);
       } else {
-        const double phi = std::atan2(y, x);
+        const RealD phi = std::atan2(y, x);
         CoordinateD param(rp, v, u, phi);
         return param;
       }
@@ -134,7 +134,7 @@ inline qlat::CoordinateD paramFromEta(const qlat::CoordinateD& eta,
 
 struct MuonLineIntegrand {
   qlat::CoordinateD x, y;
-  double r0;
+  RealD r0;
   //
   MuonLineIntegrand() { init(); }
   //
@@ -153,73 +153,73 @@ struct MuonLineIntegrand {
     r0 = (coordinate_len(x) + coordinate_len(y)) * 0.5 + 0.001;
   }
   //
-  std::vector<double> integrand(const double rp,
+  std::vector<RealD> integrand(const RealD rp,
                                 const qlat::CoordinateD& eta) const
   {
     // TIMER_VERBOSE("MuonLineIntegrand");
-    std::vector<double> ans(25, 0.0);
-    const double leta = coordinate_len(eta);
+    std::vector<RealD> ans(25, 0.0);
+    const RealD leta = coordinate_len(eta);
     const CoordinateD c1 = eta - y;
     const CoordinateD c2 = x - eta;
-    const double lc1 = coordinate_len(c1);
-    const double lc2 = coordinate_len(c2);
+    const RealD lc1 = coordinate_len(c1);
+    const RealD lc2 = coordinate_len(c2);
     const CoordinateD s1 = -eta + y;
     const CoordinateD s2 = -x + eta;
-    const double ls1 = coordinate_len(s1);
-    const double ls2 = coordinate_len(s2);
+    const RealD ls1 = coordinate_len(s1);
+    const RealD ls2 = coordinate_len(s2);
     if (leta < 1e-10 || lc1 < 1e-10 || lc2 < 1e-10 || ls1 < 1e-10 ||
         ls2 < 1e-10) {
       return ans;
     }
-    const double fxxC1 = fxxCalc(c1);
-    const double fxxC2 = fxxCalc(c2);
-    const double f1xxC1 = f1xxCalc(c1);
-    const double f1xxC2 = f1xxCalc(c2);
-    const double f0xxC1 = c1[3] / lc1 * f1xxC1 + g0xxCalc(c1);
-    const double f0xxC2 = c2[3] / lc2 * f1xxC2 + g0xxCalc(c2);
-    const double fxxS1 = fxxCalc(s1);
-    const double fxxS2 = fxxCalc(s2);
-    const double f1xxS1 = f1xxCalc(s1);
-    const double f1xxS2 = f1xxCalc(s2);
-    const double f0xxS1 = s1[3] / ls1 * f1xxS1 + g0xxCalc(s1);
-    const double f0xxS2 = s2[3] / ls2 * f1xxS2 + g0xxCalc(s2);
-    const double fxx1sub = fxxCalc(eta);
-    const double fxx2sub = fxxCalc(-eta);
-    const double f1xx1sub = f1xxCalc(eta);
-    const double f1xx2sub = f1xxCalc(-eta);
-    const double f0xx1sub = eta[3] / leta * f1xx1sub + g0xxCalc(eta);
-    const double f0xx2sub = -eta[3] / leta * f1xx2sub + g0xxCalc(-eta);
-    array<double, 5> fc1xs;
+    const RealD fxxC1 = fxxCalc(c1);
+    const RealD fxxC2 = fxxCalc(c2);
+    const RealD f1xxC1 = f1xxCalc(c1);
+    const RealD f1xxC2 = f1xxCalc(c2);
+    const RealD f0xxC1 = c1[3] / lc1 * f1xxC1 + g0xxCalc(c1);
+    const RealD f0xxC2 = c2[3] / lc2 * f1xxC2 + g0xxCalc(c2);
+    const RealD fxxS1 = fxxCalc(s1);
+    const RealD fxxS2 = fxxCalc(s2);
+    const RealD f1xxS1 = f1xxCalc(s1);
+    const RealD f1xxS2 = f1xxCalc(s2);
+    const RealD f0xxS1 = s1[3] / ls1 * f1xxS1 + g0xxCalc(s1);
+    const RealD f0xxS2 = s2[3] / ls2 * f1xxS2 + g0xxCalc(s2);
+    const RealD fxx1sub = fxxCalc(eta);
+    const RealD fxx2sub = fxxCalc(-eta);
+    const RealD f1xx1sub = f1xxCalc(eta);
+    const RealD f1xx2sub = f1xxCalc(-eta);
+    const RealD f0xx1sub = eta[3] / leta * f1xx1sub + g0xxCalc(eta);
+    const RealD f0xx2sub = -eta[3] / leta * f1xx2sub + g0xxCalc(-eta);
+    array<RealD, 5> fc1xs;
     fc1xs[0] = c1[0] / lc1 * f1xxC1;
     fc1xs[1] = c1[1] / lc1 * f1xxC1;
     fc1xs[2] = c1[2] / lc1 * f1xxC1;
     fc1xs[3] = f0xxC1;
     fc1xs[4] = fxxC1;
-    array<double, 5> fc2xs;
+    array<RealD, 5> fc2xs;
     fc2xs[0] = c2[0] / lc2 * f1xxC2;
     fc2xs[1] = c2[1] / lc2 * f1xxC2;
     fc2xs[2] = c2[2] / lc2 * f1xxC2;
     fc2xs[3] = f0xxC2;
     fc2xs[4] = fxxC2;
-    array<double, 5> fs1xs;
+    array<RealD, 5> fs1xs;
     fs1xs[0] = s1[0] / ls1 * f1xxS1;
     fs1xs[1] = s1[1] / ls1 * f1xxS1;
     fs1xs[2] = s1[2] / ls1 * f1xxS1;
     fs1xs[3] = f0xxS1;
     fs1xs[4] = fxxS1;
-    array<double, 5> fs2xs;
+    array<RealD, 5> fs2xs;
     fs2xs[0] = s2[0] / ls2 * f1xxS2;
     fs2xs[1] = s2[1] / ls2 * f1xxS2;
     fs2xs[2] = s2[2] / ls2 * f1xxS2;
     fs2xs[3] = f0xxS2;
     fs2xs[4] = fxxS2;
-    array<double, 5> f1subxs;
+    array<RealD, 5> f1subxs;
     f1subxs[0] = eta[0] / leta * f1xx1sub;
     f1subxs[1] = eta[1] / leta * f1xx1sub;
     f1subxs[2] = eta[2] / leta * f1xx1sub;
     f1subxs[3] = f0xx1sub;
     f1subxs[4] = fxx1sub;
-    array<double, 5> f2subxs;
+    array<RealD, 5> f2subxs;
     f2subxs[0] = -eta[0] / leta * f1xx2sub;
     f2subxs[1] = -eta[1] / leta * f1xx2sub;
     f2subxs[2] = -eta[2] / leta * f1xx2sub;
@@ -243,12 +243,12 @@ struct MuonLineIntegrand {
         }
       }
     }
-    const double factor = sqr(r0) / sqr(1.0 - rp) * rp / (1.0 - rp);
+    const RealD factor = sqr(r0) / sqr(1.0 - rp) * rp / (1.0 - rp);
     for (Int i = 0; i < 5; ++i) {
       for (Int j = 0; j < 5; ++j) {
         ans[i * 5 + j] =
             0.5 * factor * (fc1xs[i] * fc2xs[j] - fs1xs[i] * fs2xs[j]);
-        // the first 0.5 because we need to address the double counting in the
+        // the first 0.5 because we need to address the RealD counting in the
         // subtraction term
       }
     }
@@ -282,23 +282,23 @@ struct MuonLineIntegrand {
     return ans;
   }
   //
-  std::vector<double> integrand_eta_reflection_avg(
-      const double rp, const qlat::CoordinateD& eta) const
+  std::vector<RealD> integrand_eta_reflection_avg(
+      const RealD rp, const qlat::CoordinateD& eta) const
   {
-    const std::vector<double> pos = integrand(rp, eta);
-    const std::vector<double> neg = integrand(rp, -eta);
+    const std::vector<RealD> pos = integrand(rp, eta);
+    const std::vector<RealD> neg = integrand(rp, -eta);
     qassert(25 == pos.size());
     qassert(25 == neg.size());
-    std::vector<double> ret(25);
+    std::vector<RealD> ret(25);
     for (size_t i = 0; i < ret.size(); ++i) {
       ret[i] = 1.0 / 2.0 * (pos[i] + neg[i]);
     }
     return ret;
   }
   //
-  std::vector<double> operator()(const qlat::CoordinateD& param) const
+  std::vector<RealD> operator()(const qlat::CoordinateD& param) const
   {
-    const double rp = regularizeRp(param[0]);
+    const RealD rp = regularizeRp(param[0]);
     const CoordinateD eta = etaFromParam(param, r0);
     // ADJUST ME
     // return integrand(rp, eta);
@@ -308,9 +308,9 @@ struct MuonLineIntegrand {
 
 struct MuonLineIntegrandPhi {
   MuonLineIntegrand mli;
-  double rp, v, u;
+  RealD rp, v, u;
   //
-  double operator()(const double phi) const
+  RealD operator()(const RealD phi) const
   {
     TIMER("MuonLineIntegrandPhi");
     const CoordinateD param(rp, v, u, phi);
@@ -320,9 +320,9 @@ struct MuonLineIntegrandPhi {
 
 struct MuonLineIntegrandU {
   MuonLineIntegrand mli;
-  double rp, v;
+  RealD rp, v;
   //
-  double operator()(const double u) const
+  RealD operator()(const RealD u) const
   {
     TIMER("MuonLineIntegrandU");
     MuonLineIntegrandPhi mliPhi;
@@ -336,9 +336,9 @@ struct MuonLineIntegrandU {
 
 struct MuonLineIntegrandV {
   MuonLineIntegrand mli;
-  double rp;
+  RealD rp;
   //
-  double operator()(const double v) const
+  RealD operator()(const RealD v) const
   {
     TIMER("MuonLineIntegrandV");
     MuonLineIntegrandU mliU;
@@ -352,7 +352,7 @@ struct MuonLineIntegrandV {
 struct MuonLineIntegrandRp {
   MuonLineIntegrand mli;
   //
-  double operator()(const double rp) const
+  RealD operator()(const RealD rp) const
   {
     Timer::display();
     TIMER_VERBOSE("MuonLineIntegrandRp");
@@ -363,7 +363,7 @@ struct MuonLineIntegrandRp {
   }
 };
 
-inline double integrateMuonLineTest(const MuonLineIntegrand& mli)
+inline RealD integrateMuonLineTest(const MuonLineIntegrand& mli)
 {
   TIMER_VERBOSE("integrateMuonLineTest");
   MuonLineIntegrandRp mliRp;
@@ -376,9 +376,9 @@ inline void profile_computeIntSeq_integrand()
   TIMER_VERBOSE_FLOPS("profile_computeIntSeq_integrand");
   RngState rs("profile_computeIntSeq_integrand");
   const Int size = 128;
-  const double low = -3.0;
-  const double high = 3.0;
-  double sum = 0.0;
+  const RealD low = -3.0;
+  const RealD high = 3.0;
+  RealD sum = 0.0;
   for (Int i = 0; i < size; ++i) {
     CoordinateD x, y, eta;
     for (Int m = 0; m < 4; ++m) {
@@ -403,8 +403,8 @@ inline void profile_computeIntSeq()
 inline void test_computeIntSeq()
 {
   TIMER_VERBOSE("test_computeIntSeq");
-  const double v = 2.0;
-  const double psi = psiFromV(v);
+  const RealD v = 2.0;
+  const RealD psi = psiFromV(v);
   DisplayInfo("", fname.c_str(), "v=%23.16e ; psi=%23.16e -> v=%23.16e\n", v, psi,
               vFromPsi(psi));
   const CoordinateD eta(0.2, 0.2, 0.4, 1.4);
@@ -426,7 +426,7 @@ inline void test_computeIntSeq()
     mliPhi.rp = param[0];
     mliPhi.v = param[1];
     mliPhi.u = param[2];
-    const double mliPhiInt = integrate(mliPhi, -PI, PI);
+    const RealD mliPhiInt = integrate(mliPhi, -PI, PI);
     DisplayInfo("", fname.c_str(), "mliPhiInt=%23.16e\n", mliPhiInt);
   }
   // DisplayInfo("", fname.c_str(), "mliInt=%23.16e\n", integrateMuonLineTest(mli));

@@ -56,9 +56,9 @@ struct API QLAT_ALIGN(sizeof(T) * DIMN * DIMN) MatrixT {
   qacc T* data() { return p; }
   qacc const T* data() const { return p; }
   //
-  // convert to double array
-  qacc double* d() { return (double*)p; }
-  qacc const double* d() const { return (const double*)p; }
+  // convert to RealD array
+  qacc RealD* d() { return (RealD*)p; }
+  qacc const RealD* d() const { return (const RealD*)p; }
   //
   qacc T& operator()(Int i, Int j)
   {
@@ -235,9 +235,9 @@ struct API QLAT_ALIGN(sizeof(T) * DIMN) MvectorT {
   qacc T* data() { return p; }
   qacc const T* data() const { return p; }
   //
-  // convert to double array
-  qacc double* d() { return (double*)p; }
-  qacc const double* d() const { return (const double*)p; }
+  // convert to RealD array
+  qacc RealD* d() { return (RealD*)p; }
+  qacc const RealD* d() const { return (const RealD*)p; }
   //
   qacc T& operator()(Int i)
   {

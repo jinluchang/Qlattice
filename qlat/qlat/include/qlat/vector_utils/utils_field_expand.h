@@ -356,10 +356,10 @@ inline expand_field_buffer& expand_buffer(const Geometry& geo,
 template <class M>
 void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const Int MULTI, 
   const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), Int GPU = 1, const QBOOL dummy = QTRUE){
-  Qassert(sizeof(M) % sizeof(double) == 0);
+  Qassert(sizeof(M) % sizeof(RealD) == 0);
   (void) dummy;
   //const Int MULTI = geo.multiplicity;
-  const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
+  const Long mpi_size = MULTI * sizeof(M)/sizeof(RealD);
   const Int multiplicity = 1;//always 1 for the buffers reuse
   //
   const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, multiplicity);
@@ -428,9 +428,9 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const Int MULTI,
 template <class M>
 void refresh_expanded_GPUT(M* res, const Geometry& geo, const Int MULTI, 
   const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), Int GPU = 1, const QBOOL dummy = QTRUE){
-  Qassert(sizeof(M) % sizeof(double) == 0);
+  Qassert(sizeof(M) % sizeof(RealD) == 0);
   //const Int MULTI = geo.multiplicity;
-  const Long mpi_size = MULTI * sizeof(M)/sizeof(double);
+  const Long mpi_size = MULTI * sizeof(M)/sizeof(RealD);
   const Int multiplicity = 1;//always 1 for the buffers reuse
   //
   const CommPlan& plan = get_comm_plan(set_marks_field, tag, geo, multiplicity);

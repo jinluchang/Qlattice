@@ -4,15 +4,15 @@
 namespace qlat
 {  //
 
-void set_wilson_flow_z(GaugeMomentum& z, const GaugeField& gf, const double c1)
+void set_wilson_flow_z(GaugeMomentum& z, const GaugeField& gf, const RealD c1)
 {
   TIMER("set_wilson_flow_z");
   const GaugeAction ga(3.0, c1);
   set_gm_force(z, gf, ga);
 }
 
-void gf_wilson_flow_step_euler(GaugeField& gf, const double epsilon,
-                               const double c1)
+void gf_wilson_flow_step_euler(GaugeField& gf, const RealD epsilon,
+                               const RealD c1)
 {
   TIMER("gf_wilson_flow_step_euler");
   GaugeField& w = gf;
@@ -21,7 +21,7 @@ void gf_wilson_flow_step_euler(GaugeField& gf, const double epsilon,
   gf_evolve(w, z, epsilon);
 }
 
-void gf_wilson_flow_step(GaugeField& gf, const double epsilon, const double c1)
+void gf_wilson_flow_step(GaugeField& gf, const RealD epsilon, const RealD c1)
 // Runge-Kutta scheme
 // http://arxiv.org/abs/1006.4518v3
 {
@@ -100,7 +100,7 @@ static void gf_energy_density_field_no_comm(Field<RealD>& fd,
   fd.init(geo, 1);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
-    double s = 0.0;
+    RealD s = 0.0;
     for (Int mu = 0; mu < 3; ++mu) {
       for (Int nu = mu + 1; nu < 4; ++nu) {
         const ColorMatrix g_mu_nu = make_tr_less_anti_herm_matrix(
@@ -137,18 +137,18 @@ RealD gf_energy_density(const GaugeField& gf)
 
 // --------------------
 
-std::vector<double> gf_wilson_flow(GaugeField& gf,
-                                   const double existing_flow_time,
-                                   const double flow_time, const Int steps,
-                                   const double c1)
+std::vector<RealD> gf_wilson_flow(GaugeField& gf,
+                                   const RealD existing_flow_time,
+                                   const RealD flow_time, const Int steps,
+                                   const RealD c1)
 {
   TIMER("gf_wilson_flow");
-  std::vector<double> energy_density_list(steps, 0.0);
-  const double epsilon = flow_time / (double)steps;
+  std::vector<RealD> energy_density_list(steps, 0.0);
+  const RealD epsilon = flow_time / (RealD)steps;
   for (Int i = 0; i < steps; ++i) {
     gf_wilson_flow_step(gf, epsilon, c1);
-    const double t = (i + 1) * epsilon + existing_flow_time;
-    const double energy_density = gf_energy_density(gf);
+    const RealD t = (i + 1) * epsilon + existing_flow_time;
+    const RealD energy_density = gf_energy_density(gf);
     energy_density_list[i] = energy_density;
     displayln_info(fname +
                    ssprintf(": t = %24.17E ; E = %24.17E ; t^2 E = %24.17E.", t,

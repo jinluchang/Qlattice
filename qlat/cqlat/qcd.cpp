@@ -18,7 +18,7 @@ EXPORT(gf_avg_plaq, {
     return NULL;
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const double ret = gf_avg_plaq(gf);
+  const RealD ret = gf_avg_plaq(gf);
   return py_convert(ret);
 })
 
@@ -29,7 +29,7 @@ EXPORT(gf_avg_link_trace, {
     return NULL;
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const double ret = gf_avg_link_trace(gf);
+  const RealD ret = gf_avg_link_trace(gf);
   return py_convert(ret);
 })
 
@@ -42,7 +42,7 @@ EXPORT(gf_avg_wilson_loop_normalized_tr, {
     return NULL;
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const double ret = matrix_trace(gf_avg_wilson_loop(gf, l, t)).real() / 3.0;
+  const RealD ret = matrix_trace(gf_avg_wilson_loop(gf, l, t)).real() / 3.0;
   return py_convert(ret);
 })
 
@@ -77,7 +77,7 @@ EXPORT(set_g_rand_color_matrix_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_rng = NULL;
-  double sigma = 1.0;
+  RealD sigma = 1.0;
   Int n_step = 1;
   if (!PyArg_ParseTuple(args, "OOd|i", &p_field, &p_rng, &sigma, &n_step)) {
     return NULL;
@@ -129,7 +129,7 @@ EXPORT(load_gauge_field, {
 EXPORT(gf_twist_boundary_at_boundary, {
   using namespace qlat;
   PyObject* p_gf = NULL;
-  double lmom = 0.0;
+  RealD lmom = 0.0;
   Int mu = -1;
   if (!PyArg_ParseTuple(args, "Odi", &p_gf, &lmom, &mu)) {
     return NULL;

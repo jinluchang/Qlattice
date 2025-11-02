@@ -546,7 +546,7 @@ void convert_field_float_from_double(SelectedField<N>& ff,
 {
   TIMER("convert_field_float_from_double(sf)");
   qassert(f.geo().is_only_local);
-  qassert(sizeof(M) % sizeof(double) == 0);
+  qassert(sizeof(M) % sizeof(RealD) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
   qassert(f.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
   const Int multiplicity = f.multiplicity * sizeof(M) / 2 / sizeof(N);
@@ -555,7 +555,7 @@ void convert_field_float_from_double(SelectedField<N>& ff,
   ff.init(geo, n_elems, multiplicity);
   const Vector<M> fdata = get_data(f);
   const Vector<double> fd((double*)fdata.data(),
-                          fdata.data_size() / sizeof(double));
+                          fdata.data_size() / sizeof(RealD));
   Vector<N> ffdata = get_data(ff);
   Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
   qassert(ffd.size() == fd.size());
@@ -570,7 +570,7 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   TIMER("convert_field_double_from_float(sf)");
   qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(float) == 0);
-  qassert(sizeof(N) % sizeof(double) == 0);
+  qassert(sizeof(N) % sizeof(RealD) == 0);
   qassert(f.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
   const Int multiplicity = f.multiplicity * sizeof(M) * 2 / sizeof(N);
   const Geometry& geo = f.geo();
@@ -581,7 +581,7 @@ void convert_field_double_from_float(SelectedField<N>& ff,
                          fdata.data_size() / sizeof(float));
   Vector<N> ffdata = get_data(ff);
   Vector<double> ffd((double*)ffdata.data(),
-                     ffdata.data_size() / sizeof(double));
+                     ffdata.data_size() / sizeof(RealD));
   qassert(ffd.size() == fd.size());
   qacc_for(i, ffd.size(), { ffd[i] = fd[i]; });
 }

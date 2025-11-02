@@ -9,7 +9,7 @@ namespace qlat
 void set_m_z_field_tag(SelectedPoints<RealD>& smf_d,
                        const PointsSelection& psel_d, const Geometry& geo,
                        const Coordinate& xg_x, const Coordinate& xg_y,
-                       const double a, const Int tag);
+                       const RealD a, const Int tag);
 
 // ------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ qacc ManyMagneticMoments simple_pion_projection(const CoordinateD& x,
   const CoordinateD mid_yz = (y + z) / 2;
   const CoordinateD x_mid_yz = x - mid_yz;
   const CoordinateD y_z = y - z;
-  array<array<double, 4>, 3> eps_eps_xyz;
+  array<array<RealD, 4>, 3> eps_eps_xyz;
   set_zero(eps_eps_xyz);
   for (Int i = 0; i < 3; ++i) {
     for (Int rho = 0; rho < 4; ++rho) {
@@ -35,7 +35,7 @@ qacc ManyMagneticMoments simple_pion_projection(const CoordinateD& x,
       }
     }
   }
-  array<array<double, 4>, 4> eps_yz_xyz;
+  array<array<RealD, 4>, 4> eps_yz_xyz;
   set_zero(eps_yz_xyz);
   for (Int sigma = 0; sigma < 4; ++sigma) {
     for (Int lambda = 0; lambda < 4; ++lambda) {
@@ -69,7 +69,7 @@ qacc ManyMagneticMoments pion_projection(const CoordinateD& x,
 // x and y z are two ends of the pion
 {
   const ManyMagneticMoments mmm = simple_pion_projection(x, y, z);
-  double sum = 0.0;
+  RealD sum = 0.0;
   for (Int i = 0; i < 3; ++i) {
     for (Int rho = 0; rho < 4; ++rho) {
       for (Int sigma = 0; sigma < 4; ++sigma) {
@@ -165,7 +165,7 @@ qacc array<M, 3> simple_moment(const CurrentMoments<M>& cm,
             continue;
           }
           ret[i] += (Complex)(0.5 * epsilon_tensor_acc(i, j, k) *
-                              smod_sym(x - ref[j], (double)total_site[j])) *
+                              smod_sym(x - ref[j], (RealD)total_site[j])) *
                     cm.d[x][3 * j + k];
         }
       }
@@ -199,7 +199,7 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
         }
         ret[i] +=
             (sub_coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
-             (Complex)smod_sym(xg_op[j] - ref[j], (double)total_site[j])) *
+             (Complex)smod_sym(xg_op[j] - ref[j], (RealD)total_site[j])) *
             cv[k];
       }
     }

@@ -222,7 +222,7 @@ void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa,
   // Note that Quda uses -M5 as M5 ...
   inv_param.m5 = -fa.m5;
   if (fa.is_using_zmobius) {
-    static_assert(sizeof(__complex__ double) == sizeof(ComplexD));
+    static_assert(sizeof(__complex__ RealD) == sizeof(ComplexD));
     memcpy(inv_param.b_5, fa.bs.data(), fa.ls * sizeof(ComplexD));
     memcpy(inv_param.c_5, fa.cs.data(), fa.ls * sizeof(ComplexD));
   } else {
@@ -339,7 +339,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
   // static void* df_preconditioner;
   // static QudaEigParam df_param;
   //
-  std::vector<double> qgf;
+  std::vector<RealD> qgf;
   //
   bool qlat_check = true;
   //
@@ -360,7 +360,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
     qgf.resize(qgf_size);
     quda_convert_gauge(qgf, this->gf);
     loadGaugeQuda((void*)qgf.data(), &gauge_param);
-    double plaq[3];
+    RealD plaq[3];
     plaqQuda(plaq);
     printfQuda(
         "Computed plaquette is %16.12e (spatial = %16.12e, temporal = "
@@ -461,8 +461,8 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
 {
   // initialize the std::vectors that hold source and solution vectors.
   size_t qff_size = inv.geo().local_volume() * inv.fa.ls * 24;
-  std::vector<double> qff_src(qff_size);
-  std::vector<double> qff_sol(qff_size);
+  std::vector<RealD> qff_src(qff_size);
+  std::vector<RealD> qff_sol(qff_size);
   // inv_param_dup.deflation_op = inv.df_preconditioner;
   // Quda does not have D_minus built in.
   FermionField5d dm_in, check;

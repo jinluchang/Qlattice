@@ -15,7 +15,7 @@ void set_checkers_double(Field<M>& f)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     Vector<M> v = f.get_elems(xl);
-    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    Vector<RealD> dv((RealD*)v.data(), v.data_size() / sizeof(RealD));
     for (Int m = 0; m < dv.size(); ++m) {
       if ((xg[0] + xg[1] + xg[2] + xg[3]) % 2 == 0)
         dv[m] = 1.0;
@@ -26,7 +26,7 @@ void set_checkers_double(Field<M>& f)
 }
 
 template <class M>
-void set_complex_from_double(Field<M>& cf, const Field<double>& sf)
+void set_complex_from_double(Field<M>& cf, const Field<RealD>& sf)
 {
   TIMER("set_complex_from_double");
   const Geometry geo = sf.geo();
@@ -52,7 +52,7 @@ void set_double_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);
-    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    Vector<RealD> sf_v((RealD*)v.data(), v.data_size() / sizeof(RealD));
     Int N = sf_v.size();
     qassert(N == cf.multiplicity);
     for (Int m = 0; m < N; ++m) {
@@ -70,20 +70,20 @@ void set_abs_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);
-    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    Vector<RealD> sf_v((RealD*)v.data(), v.data_size() / sizeof(RealD));
     Int N = sf_v.size();
     qassert(N == cf.multiplicity);
     for (Int m = 0; m < N; ++m) {
-      double r = cf.get_elem(xl, m).real();
-      double i = cf.get_elem(xl, m).imag();
+      RealD r = cf.get_elem(xl, m).real();
+      RealD i = cf.get_elem(xl, m).imag();
       sf_v[m] = std::pow(r * r + i * i, 0.5);
     }
   });
 }
 
 template <class M>
-void set_ratio_double(Field<M>& sf, const Field<double>& sf1,
-                             const Field<double>& sf2)
+void set_ratio_double(Field<M>& sf, const Field<RealD>& sf1,
+                             const Field<RealD>& sf2)
 {
   TIMER("set_ratio_double");
   const Geometry geo = sf.geo();
@@ -91,7 +91,7 @@ void set_ratio_double(Field<M>& sf, const Field<double>& sf1,
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);
-    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    Vector<RealD> sf_v((RealD*)v.data(), v.data_size() / sizeof(RealD));
     Int N = sf_v.size();
     qassert(N == sf.multiplicity);
     for (Int m = 0; m < N; ++m) {
@@ -101,8 +101,8 @@ void set_ratio_double(Field<M>& sf, const Field<double>& sf1,
 }
 
 template <class M>
-void less_than_double(Field<M>& sf1, const Field<double>& sf2,
-                             Field<double>& mask)
+void less_than_double(Field<M>& sf1, const Field<RealD>& sf2,
+                             Field<RealD>& mask)
 {
   TIMER("less_than");
   const Geometry geo = sf1.geo();
@@ -110,9 +110,9 @@ void less_than_double(Field<M>& sf1, const Field<double>& sf2,
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> v = sf1.get_elems(xl);
-    Vector<double> mask_v = mask.get_elems(xl);
-    const Vector<double> sf1_v((double*)v.data(),
-                               v.data_size() / sizeof(double));
+    Vector<RealD> mask_v = mask.get_elems(xl);
+    const Vector<RealD> sf1_v((RealD*)v.data(),
+                               v.data_size() / sizeof(RealD));
     Int N = sf1_v.size();
     qassert(N == sf1.multiplicity);
     for (Int m = 0; m < N; ++m) {
@@ -130,7 +130,7 @@ void invert_double(Field<M>& sf)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);
-    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    Vector<RealD> sf_v((RealD*)v.data(), v.data_size() / sizeof(RealD));
     for (Int m = 0; m < sf.multiplicity; ++m) {
       sf_v[m] = 1 / sf_v[m];
     }
@@ -138,7 +138,7 @@ void invert_double(Field<M>& sf)
 }
 
 template <class M>
-void multiply_double(Field<M>& sf, const Field<double>& factor)
+void multiply_double(Field<M>& sf, const Field<RealD>& factor)
 {
   TIMER("invert");
   const Geometry geo = factor.geo();
@@ -146,7 +146,7 @@ void multiply_double(Field<M>& sf, const Field<double>& factor)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);
-    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    Vector<RealD> sf_v((RealD*)v.data(), v.data_size() / sizeof(RealD));
     Int N = sf_v.size();
     qassert(N == factor.multiplicity);
     for (Int m = 0; m < factor.multiplicity; ++m) {

@@ -147,9 +147,9 @@ qacc array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 // template <class T>
-// qacc double qnorm(const Vector<T>& mm)
+// qacc RealD qnorm(const Vector<T>& mm)
 // {
-//   double sum = 0.0;
+//   RealD sum = 0.0;
 //   const Long size = mm.size();
 //   for (Long i = 0; i < size; ++i) {
 //     sum += qnorm(mm[i]);
@@ -158,9 +158,9 @@ qacc array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 // }
 
 template <class T>
-qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
+qacc RealD qnorm(const Vector<T>& m1, const Vector<T>& m2)
 {
-  double sum = 0.0;
+  RealD sum = 0.0;
   const Long size = m1.size();
   qassert(size == (Long)m2.size());
   for (Long i = 0; i < size; ++i) {
@@ -170,10 +170,10 @@ qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
 }
 
 template <class T>
-qacc double qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
+qacc RealD qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
 {
-  const Vector<double> dm1((double*)m1.data(), m1.data_size() / sizeof(double));
-  const Vector<double> dm2((double*)m2.data(), m2.data_size() / sizeof(double));
+  const Vector<RealD> dm1((RealD*)m1.data(), m1.data_size() / sizeof(RealD));
+  const Vector<RealD> dm2((RealD*)m2.data(), m2.data_size() / sizeof(RealD));
   return qnorm(dm1, dm2);
 }
 
@@ -212,9 +212,9 @@ qacc void assign_truncate(M& x, const N& y)
   }
 }
 
-qacc bool is_integer(const double& x)
+qacc bool is_integer(const RealD& x)
 {
-  const double diff = x - (Long)x;
+  const RealD diff = x - (Long)x;
   return 1e-6 > diff || diff > 1 - 1e-6;
 }
 
@@ -259,7 +259,7 @@ qacc Array<M, N> operator-=(Array<M, N> v, const Array<M, N> v1)
 }
 
 template <class M, Int N>
-qacc Array<M, N> operator*=(Array<M, N> v, const double factor)
+qacc Array<M, N> operator*=(Array<M, N> v, const RealD factor)
 {
   for (Int i = 0; i < N; ++i) {
     v.p[i] *= factor;
@@ -297,7 +297,7 @@ qacc Vector<M> operator-=(Vector<M> v, const Vector<M> v1)
 }
 
 template <class M>
-qacc Vector<M> operator*=(Vector<M> v, const double factor)
+qacc Vector<M> operator*=(Vector<M> v, const RealD factor)
 {
   for (Long i = 0; i < v.size(); ++i) {
     v.p[i] *= factor;

@@ -106,14 +106,14 @@ inline SpatialO3Matrix makeRotationAroundZ(const RealD phi)
 
 inline SpatialO3Matrix makeRandomSpatialO3Matrix(RngState& rs)
 {
-  const double reflex_x = u_rand_gen(rs) >= 0.5 ? 1.0 : -1.0;
-  const double reflex_y = u_rand_gen(rs) >= 0.5 ? 1.0 : -1.0;
-  const double reflex_z = u_rand_gen(rs) >= 0.5 ? 1.0 : -1.0;
+  const RealD reflex_x = u_rand_gen(rs) >= 0.5 ? 1.0 : -1.0;
+  const RealD reflex_y = u_rand_gen(rs) >= 0.5 ? 1.0 : -1.0;
+  const RealD reflex_z = u_rand_gen(rs) >= 0.5 ? 1.0 : -1.0;
   SpatialO3Matrix reflex;
   reflex << reflex_x, 0, 0, 0, reflex_y, 0, 0, 0, reflex_z;
-  const double phi1 = u_rand_gen(rs, PI, -PI);
-  const double phi2 = u_rand_gen(rs, PI, -PI);
-  const double phi3 = u_rand_gen(rs, PI, -PI);
+  const RealD phi1 = u_rand_gen(rs, PI, -PI);
+  const RealD phi2 = u_rand_gen(rs, PI, -PI);
+  const RealD phi3 = u_rand_gen(rs, PI, -PI);
   return reflex * makeRotationAroundX(phi3) * makeRotationAroundZ(phi2) *
          makeRotationAroundX(phi1);
 }
@@ -190,7 +190,7 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
   if (is_very_close(y[2], 0) && is_very_close(y[1], 0)) {
     rotx = makeRotationAroundX(0);
   } else {
-    const double phi_x = std::atan2(y[2], y[1]);
+    const RealD phi_x = std::atan2(y[2], y[1]);
     rotx = makeRotationAroundX(-phi_x);
   }
   const CoordinateD y1 = rotx * y;
@@ -200,7 +200,7 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
   if (is_very_close(y1[1], 0) && is_very_close(y1[0], 0)) {
     rotz = makeRotationAroundZ(0);
   } else {
-    const double phi_z = std::atan2(y1[1], y1[0]);
+    const RealD phi_z = std::atan2(y1[1], y1[0]);
     rotz = makeRotationAroundZ(-phi_z);
   }
   const CoordinateD y2 = rotz * y1;
@@ -213,7 +213,7 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
   if (is_very_close(x2[2], 0) && is_very_close(x2[1], 0)) {
     xrotx = makeRotationAroundX(0);
   } else {
-    const double xphi_x = std::atan2(x2[2], x2[1]);
+    const RealD xphi_x = std::atan2(x2[2], x2[1]);
     xrotx = makeRotationAroundX(-xphi_x);
   }
   const CoordinateD x3 = xrotx * x2;
@@ -231,7 +231,7 @@ inline SpatialO3Matrix makeProperRotation(const CoordinateD& x,
     if (is_very_close(x3[1], 0) && is_very_close(x3[0], 0)) {
       rotzz = makeRotationAroundZ(0);
     } else {
-      const double phi_z = std::atan2(x3[1], x3[0]);
+      const RealD phi_z = std::atan2(x3[1], x3[0]);
       rotzz = makeRotationAroundZ(-phi_z + PI / 2.0);
     }
     const CoordinateD x4 = rotzz * x3;
@@ -357,16 +357,16 @@ inline void coordinatesFromParams(CoordinateD& x, CoordinateD& y,
 inline void paramsFromCoordinates(std::vector<RealD>& params,
                                   const CoordinateD& x, const CoordinateD& y)
 {
-  const double x_len = coordinate_len(x) + 1.0E-99;
-  const double d = coordinate_len(y) + 1.0E-99;
-  double alpha = x_len / d;
+  const RealD x_len = coordinate_len(x) + 1.0E-99;
+  const RealD d = coordinate_len(y) + 1.0E-99;
+  RealD alpha = x_len / d;
   if (alpha > 1.0) {
     Qassert(alpha < 1.0 + 1e-10);
     alpha = 1.0;
   }
-  const double cos_theta = y[3] / d;
-  const double cos_phi = x[3] / x_len;
-  double cos_eta = (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]) /
+  const RealD cos_theta = y[3] / d;
+  const RealD cos_phi = x[3] / x_len;
+  RealD cos_eta = (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]) /
                    (std::sqrt((x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) *
                               (y[0] * y[0] + y[1] * y[1] + y[2] * y[2])) +
                     1.0E-99);
@@ -452,7 +452,7 @@ inline ManyMagneticMomentsCompressed muonLineSymParamsCompressed(
   const ManyMagneticMoments mmm = muonLineSym(x, y, eps);
   assert(false == qisnan(mmm));
   const ManyMagneticMomentsCompressed ret = compressManyMagneticMoments(mmm);
-  // const double mmm_len = std::sqrt(qnorm(ret));
+  // const RealD mmm_len = std::sqrt(qnorm(ret));
   return ret;
 }
 
@@ -603,9 +603,9 @@ inline ManyMagneticMoments muonLineSymPermute(
     const CoordinateD& x, const CoordinateD& y, const IntegrationEps& eps,
     const Int b_interp = get_default_muonline_interp_idx())
 {
-  const double xyl = coordinate_len(y - x);
-  double xl = coordinate_len(x);
-  double yl = coordinate_len(y);
+  const RealD xyl = coordinate_len(y - x);
+  RealD xl = coordinate_len(x);
+  RealD yl = coordinate_len(y);
   if (is_very_close(xl, xyl)) {
     xl = xyl;
   }
@@ -665,9 +665,9 @@ inline void paramsFromCoordinatesPermute(std::vector<RealD>& params,
                                          const CoordinateD& x,
                                          const CoordinateD& y)
 {
-  const double xl = coordinate_len(x);
-  const double yl = coordinate_len(y);
-  const double xyl = coordinate_len(y - x);
+  const RealD xl = coordinate_len(x);
+  const RealD yl = coordinate_len(y);
+  const RealD xyl = coordinate_len(y - x);
   if (xl <= xyl && xyl <= yl) {
     paramsFromCoordinates(params, x, y);
   } else if (xyl <= yl && yl <= xl) {
@@ -693,7 +693,7 @@ inline void compare_many_magnetic_moments(const std::string& tag,
 {
   std::vector<RealD> params;
   paramsFromCoordinatesPermute(params, x, y);
-  const double diff_percent = 100.0 * sqrt(qnorm(mmmp - mmm) / qnorm(mmm));
+  const RealD diff_percent = 100.0 * sqrt(qnorm(mmmp - mmm) / qnorm(mmm));
   const bool is_print = diff_percent > 0.0001 || true;
   if (is_print) {
 #pragma omp critical
@@ -822,7 +822,7 @@ inline void saveMuonLineInterpolation(const std::string& path)
     fprintf(fdata, "# idx params[0-4] ManyMagneticMomentsCompressed[0-91]\n");
     for (size_t idx = 0; idx < data.size(); ++idx) {
       fprintf(fdata, "%10ld", idx);
-      const std::vector<double> params = interp.get_coor(idx);
+      const std::vector<RealD> params = interp.get_coor(idx);
       for (size_t i = 0; i < params.size(); ++i) {
         fprintf(fdata, " %24.17E", params[i]);
       }
@@ -984,7 +984,7 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
                                                    const Coordinate& y,
                                                    const Coordinate& z,
                                                    const Coordinate& total_site,
-                                                   const double a)
+                                                   const RealD a)
 // x and y are closest
 // rxy and rxz are returned
 // z must be (1) within the box centered at x (2) within the box centered at y
@@ -1032,9 +1032,9 @@ inline std::vector<PointPairWeight> shift_lat_corr(const Coordinate& x,
             ppw.rxy = rdxy;
             const Coordinate rxz(r0, r1, r2, r3);
             ppw.rxz = a * CoordinateD(rxz);
-            const double l1 = coordinate_len(ppw.rxz);
-            const double l2 = coordinate_len(ppw.rxz - ppw.rxy);
-            const double l3 = coordinate_len(ppw.rxy);
+            const RealD l1 = coordinate_len(ppw.rxz);
+            const RealD l2 = coordinate_len(ppw.rxz - ppw.rxy);
+            const RealD l3 = coordinate_len(ppw.rxy);
             if (l1 >= DISTANCE_LIMIT - 0.01 or l2 >= DISTANCE_LIMIT - 0.01 or
                 l3 >= DISTANCE_LIMIT - 0.01) {
               // one edge is too long, outside of the interpolation range
@@ -1382,7 +1382,7 @@ inline std::vector<RealD> get_muon_line_m_extra_py(const CoordinateD& x,
 
 inline ManyMagneticMoments get_muon_line_m_extra_lat(
     const Coordinate& x, const Coordinate& y, const Coordinate& z,
-    const Coordinate& total_site, const double a, const Int tag)
+    const Coordinate& total_site, const RealD a, const Int tag)
 // interface
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
@@ -1452,7 +1452,7 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
 
 inline std::vector<RealD> get_muon_line_m_extra_lat_py(
     const Coordinate& x, const Coordinate& y, const Coordinate& z,
-    const Coordinate& total_site, const double a, const Int tag)
+    const Coordinate& total_site, const RealD a, const Int tag)
 // interface
 // tag = 0 sub
 // tag = 1 nosub
@@ -1481,8 +1481,8 @@ inline void test_muonline_transformation()
   TIMER_VERBOSE_FLOPS("test_muonline_transformation");
   RngState rs(get_global_rng_state(), "test_muonline_transformation");
   const size_t size = 128 * 64 * 2;
-  const double high = 3.0;
-  const double low = -3.0;
+  const RealD high = 3.0;
+  const RealD low = -3.0;
   const size_t jobs_total = size;
   const size_t num_nodes = get_num_node();
   const size_t jobs_per_nodes = jobs_total / num_nodes;
@@ -1527,10 +1527,10 @@ inline void test_muonline_transform_scaling()
   TIMER_VERBOSE("test_muonline_transform_scaling");
   RngState rs(get_global_rng_state(), "test_muonline_transform_scaling");
   const Int size = 1024;
-  const double high = 1.0;
-  const double low = -1.0;
-  // const double ratio = 2.0;
-  // const double ratio2 = 10.0;
+  const RealD high = 1.0;
+  const RealD low = -1.0;
+  // const RealD ratio = 2.0;
+  // const RealD ratio2 = 10.0;
   const size_t jobs_total = size;
   const size_t num_nodes = get_num_node();
   const size_t jobs_per_nodes = jobs_total / num_nodes;
@@ -1569,10 +1569,10 @@ inline void test_muonline_interp()
   TIMER_VERBOSE("test_muonline_interp")
   RngState rs(get_global_rng_state(), "test_muonline_interp");
   const Int size = 1024;
-  // const double high = 1.0;
-  // const double low = -1.0;
-  // const double ratio = 2.0;
-  // const double ratio2 = 10.0;
+  // const RealD high = 1.0;
+  // const RealD low = -1.0;
+  // const RealD ratio = 2.0;
+  // const RealD ratio2 = 10.0;
   const size_t jobs_total = size;
   const size_t num_nodes = get_num_node();
   const size_t jobs_per_nodes = jobs_total / num_nodes;
@@ -1617,8 +1617,8 @@ inline void test_muonline_rotate()
   TIMER_VERBOSE_FLOPS("test_muonline_rotate");
   RngState rs(get_global_rng_state(), "test_muonline_rotate");
   const size_t size = 128 * 64 * 2;
-  const double high = 3.0;
-  const double low = -3.0;
+  const RealD high = 3.0;
+  const RealD low = -3.0;
   const size_t jobs_total = size;
   const size_t num_nodes = get_num_node();
   const size_t jobs_per_nodes = jobs_total / num_nodes;
@@ -1649,8 +1649,8 @@ inline void test_muonline_int()
   TIMER_VERBOSE_FLOPS("test_muonline_int");
   RngState rs(get_global_rng_state(), "test_muonline_int");
   const size_t size = 128 * 64 * 2;
-  const double high = 4.0;
-  const double low = -3.0;
+  const RealD high = 4.0;
+  const RealD low = -3.0;
   const size_t jobs_total = size;
   const size_t num_nodes = get_num_node();
   const size_t jobs_per_nodes = jobs_total / num_nodes;

@@ -432,7 +432,7 @@ void meson_vectorEV(Ty** p1, Ty** p2, Ty** resP,  Int nmass,
     const int8_t off1 = (d2*3+c2)*12+gI1[d1]*3+c1;
     const int8_t off2 = (gI2[d2]*3+c2)*12+d1*3+c1;
     const Ty g_tem = gC2[d2]*gC1[d1];
-    const double norm = qlat::qnorm(g_tem);
+    const RealD norm = qlat::qnorm(g_tem);
     if(norm < 1e-20)continue;
 
     oiL[iv].push_back(off1);
@@ -669,10 +669,10 @@ void meson_corrE(Propagator4dT<Td > &p1, Propagator4dT<Td > &p2, const Int ga, c
   for(Int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
   for(Int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
-  qlat::vector<qlat::ComplexT<double > > Res;
+  qlat::vector<qlat::ComplexT<RealD > > Res;
   meson_corrE(p1, p2, gL[ga], gL[gb], Res, 1, mom, invmode, tini);
   const size_t sizen = get_file_size_MPI(filename, true);
-  corr_dat<double > corr(std::string(""));
+  corr_dat<RealD > corr(std::string(""));
   Int nt = Res.size();
   if(sizen > 0){
     corr.read_dat(filename, 1);
@@ -706,7 +706,7 @@ void meson_corrE(std::vector<qpropT > &prop1, std::vector<qpropT > &prop2,  ga_M
 }
 
 template<typename Td>
-void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4dT<Td > > &prop2, const std::string& tag=std::string(""), double factor = 1.0){
+void print_pion(std::vector<Propagator4dT<Td > > &prop1, std::vector<Propagator4dT<Td > > &prop2, const std::string& tag=std::string(""), RealD factor = 1.0){
   ga_matrices_cps   ga_cps;
   const qlat::Geometry& geo = prop1[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -744,7 +744,7 @@ void pion_corr_simple(qlat::FieldG<Ty >& prop1, qlat::FieldG<Ty >& prop2, vector
 }
 
 template<typename Td>
-void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string& tag=std::string(""), double factor = 1.0){
+void print_pion(Propagator4dT<Td > &p1, Propagator4dT<Td >&p2, const std::string& tag=std::string(""), RealD factor = 1.0){
   std::vector<Propagator4dT<Td > > prop1;
   std::vector<Propagator4dT<Td > > prop2;
   const qlat::Geometry& geo = p1.geo();
