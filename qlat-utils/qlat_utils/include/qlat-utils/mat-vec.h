@@ -32,9 +32,9 @@ namespace qlat
 template <class T>
 struct CommaLoader {
   Vector<T> m;
-  int i;
+  Int i;
   //
-  CommaLoader(Vector<T> m_, int i_)
+  CommaLoader(Vector<T> m_, Int i_)
   {
     m = m_;
     i = i_;
@@ -49,7 +49,7 @@ struct CommaLoader {
 
 // --------------------
 
-template <int DIMN, class T>
+template <Int DIMN, class T>
 struct API QLAT_ALIGN(sizeof(T) * DIMN * DIMN) MatrixT {
   T p[DIMN * DIMN];
   //
@@ -60,13 +60,13 @@ struct API QLAT_ALIGN(sizeof(T) * DIMN * DIMN) MatrixT {
   qacc double* d() { return (double*)p; }
   qacc const double* d() const { return (const double*)p; }
   //
-  qacc T& operator()(int i, int j)
+  qacc T& operator()(Int i, Int j)
   {
     qassert(0 <= i && i < DIMN);
     qassert(0 <= j && j < DIMN);
     return p[i * DIMN + j];
   }
-  qacc const T& operator()(int i, int j) const
+  qacc const T& operator()(Int i, Int j) const
   {
     qassert(0 <= i && i < DIMN);
     qassert(0 <= j && j < DIMN);
@@ -228,7 +228,7 @@ using AdjointColorMatrixF = AdjointColorMatrixT<RealF>;
 
 // --------------------
 
-template <int DIMN, class T>
+template <Int DIMN, class T>
 struct API QLAT_ALIGN(sizeof(T) * DIMN) MvectorT {
   T p[DIMN];
   //
@@ -239,12 +239,12 @@ struct API QLAT_ALIGN(sizeof(T) * DIMN) MvectorT {
   qacc double* d() { return (double*)p; }
   qacc const double* d() const { return (const double*)p; }
   //
-  qacc T& operator()(int i)
+  qacc T& operator()(Int i)
   {
     qassert(0 <= i && i < DIMN);
     return p[i];
   }
-  qacc const T& operator()(int i) const
+  qacc const T& operator()(Int i) const
   {
     qassert(0 <= i && i < DIMN);
     return p[i];

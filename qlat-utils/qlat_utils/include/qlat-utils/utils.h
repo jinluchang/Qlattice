@@ -151,7 +151,7 @@ qacc Vector<M> get_data(ConstHandle<M> h)
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(Vector<M> vec, const Long size)
 // only get a portion of the vec
-// vec should be at least size long
+// vec should be at least size Long
 {
   qassert(vec.size() >= size);
   return Vector<M>(vec.data(), size);
@@ -270,7 +270,7 @@ qacc Vector<E> get_data_in_elementary_type(const T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;
   static_assert(sizeof(M) % sizeof(E) == 0, "get_data_in_elementary_type");
-  constexpr int m = sizeof(M) / sizeof(E);
+  constexpr Int m = sizeof(M) / sizeof(E);
   const Vector<M> vec = get_data(xx);
   return Vector<E>((E*)vec.p, vec.n * m);
 }
@@ -291,7 +291,7 @@ qacc void set_zero(Vector<M> xx)
   memset(vec.data(), 0, vec.size());
 }
 
-template <class M, int N>
+template <class M, Int N>
 qacc void set_zero(Array<M, N> xx)
 {
   Vector<Char> vec = get_data_char(xx);
@@ -434,7 +434,7 @@ qacc bool operator==(const T& x1, const T& x2)
   if (v1.size() != v2.size()) {
     return false;
   }
-  const int cmp = std::memcmp(v1.data(), v2.data(), v1.size());
+  const Int cmp = std::memcmp(v1.data(), v2.data(), v1.size());
   return cmp == 0;
 }
 

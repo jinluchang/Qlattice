@@ -86,7 +86,7 @@ inline double coordinate_len(const CoordinateD& c)
 {
   const double ans = std::sqrt(sqr(c[0]) + sqr(c[1]) + sqr(c[2]) + sqr(c[3]));
   double cmax = 0.0;
-  for (int i = 0; i < DIMN; ++i) {
+  for (Int i = 0; i < DIMN; ++i) {
     if (std::abs(c[i]) > cmax) {
       cmax = std::abs(c[i]);
     }

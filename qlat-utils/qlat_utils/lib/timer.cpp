@@ -23,15 +23,15 @@ void TimerInfo::merge(const TimerInfo& x)
   call_times += x.call_times;
 }
 
-static std::string get_fname_cut(const std::string& fname, const int fname_len)
+static std::string get_fname_cut(const std::string& fname, const Int fname_len)
 {
-  if (fname_len >= (int)fname.length()) {
+  if (fname_len >= (Int)fname.length()) {
     return fname;
   }
   return fname.substr(fname.length() - fname_len);
 }
 
-void TimerInfo::show_start(const int fname_len) const
+void TimerInfo::show_start(const Int fname_len) const
 {
   double total_time = get_total_time();
   const std::string fnameCut = get_fname_cut(fname, fname_len);
@@ -44,7 +44,7 @@ void TimerInfo::show_start(const int fname_len) const
       (double)dflops));
 }
 
-void TimerInfo::show_stop(const int fname_len) const
+void TimerInfo::show_stop(const Int fname_len) const
 {
   double total_time = get_total_time();
   const std::string fnameCut = get_fname_cut(fname, fname_len);
@@ -57,7 +57,7 @@ void TimerInfo::show_stop(const int fname_len) const
 }
 
 void TimerInfo::show_avg_always(const std::string& info,
-                                const int fname_len) const
+                                const Int fname_len) const
 {
   double total_time = get_total_time();
   const std::string fnameCut = get_fname_cut(fname, fname_len);
@@ -72,7 +72,7 @@ void TimerInfo::show_avg_always(const std::string& info,
       accumulated_flops / accumulated_time / 1.0E9));
 }
 
-void TimerInfo::show_avg(const std::string& info, const int fname_len) const
+void TimerInfo::show_avg(const std::string& info, const Int fname_len) const
 {
   if (0 == get_id_node() && 0 == get_id_thread()) {
     double total_time = get_total_time();

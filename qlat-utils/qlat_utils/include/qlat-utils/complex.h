@@ -14,7 +14,7 @@
 
 #if defined QLAT_NO_ALIGNED_ALLOC
 #define QLAT_ALIGNED_BYTES 1
-constexpr int qlat_aligned_bytes(int size) { (void)size; return 1; }
+constexpr Int qlat_aligned_bytes(Int size) { (void)size; return 1; }
 #define QLAT_ALIGN(SIZE) __attribute__((aligned(1)))
 // #define QLAT_ALIGN(SIZE) alignas(1)
 #else

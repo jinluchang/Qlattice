@@ -35,7 +35,7 @@
 namespace qlat
 {  //
 
-void set_type(RngState& rs, const unsigned long type)
+void set_type(RngState& rs, const uint64_t type)
 {
   qassert(ULONG_MAX == rs.type);
   qassert(ULONG_MAX != type);
@@ -62,12 +62,12 @@ void exportRngState(uint32_t* v, const RngState& rs)
 {
   qassert(24 == RNG_STATE_NUM_OF_INT32);
   splitTwoUint32(v[0], v[1], rs.numBytes);
-  for (int i = 0; i < 8; ++i) {
+  for (Int i = 0; i < 8; ++i) {
     v[2 + i] = rs.hash[i];
   }
   splitTwoUint32(v[10], v[11], rs.type);
   splitTwoUint32(v[12], v[13], rs.index);
-  for (int i = 0; i < 3; ++i) {
+  for (Int i = 0; i < 3; ++i) {
     splitTwoUint32(v[14 + i * 2], v[14 + i * 2 + 1], rs.cache[i]);
   }
   union {
@@ -84,12 +84,12 @@ void importRngState(RngState& rs, const uint32_t* v)
 {
   qassert(24 == RNG_STATE_NUM_OF_INT32);
   rs.numBytes = patchTwoUint32(v[0], v[1]);
-  for (int i = 0; i < 8; ++i) {
+  for (Int i = 0; i < 8; ++i) {
     rs.hash[i] = v[2 + i];
   }
   rs.type = patchTwoUint32(v[10], v[11]);
   rs.index = patchTwoUint32(v[12], v[13]);
-  for (int i = 0; i < 3; ++i) {
+  for (Int i = 0; i < 3; ++i) {
     rs.cache[i] = patchTwoUint32(v[14 + i * 2], v[14 + i * 2 + 1]);
   }
   union {
@@ -182,10 +182,10 @@ void split_rng_state(RngState& rs, const RngState& rs0,
   } else {
     data = ssprintf("[%lu,%lu] {%s}", rs0.type, rs0.index, sindex.c_str());
   }
-  const int nBlocks = (data.length() - 1) / 64 + 1;
+  const Int nBlocks = (data.length() - 1) / 64 + 1;
   data.resize(nBlocks * 64, ' ');
   sha256::processBlock(rs.hash, rs0.hash, (const uint8_t*)data.c_str());
-  for (int i = 1; i < nBlocks; ++i) {
+  for (Int i = 1; i < nBlocks; ++i) {
     sha256::processBlock(rs.hash, rs.hash,
                          (const uint8_t*)data.c_str() + i * 64);
   }
@@ -256,7 +256,7 @@ double g_rand_gen(RngState& rs, const double center, const double sigma)
     // pick 2 uniform numbers in the square extending from
     // -1 to 1 in each direction, see if they are in the
     // unit circle, and try again if they are not.
-    int num_try = 1;
+    Int num_try = 1;
     double v1, v2, rsq;
     do {
       v1 = u_rand_gen(rs, 1.0, -1.0);

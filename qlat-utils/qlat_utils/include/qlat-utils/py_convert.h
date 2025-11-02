@@ -60,7 +60,7 @@ inline bool check_ctype_name<int8_t>(const std::string& ctype)
 
 inline void py_convert(PyObject*& out, PyObject* in) { out = in; }
 
-inline void py_convert(int& out, PyObject* in)
+inline void py_convert(Int& out, PyObject* in)
 {
   qassert(PyLong_Check(in));
   out = PyLong_AsLong(in);
@@ -177,7 +177,7 @@ void py_convert(Vector<M> out, PyObject* in)
   }
 }
 
-template <class M, unsigned long N>
+template <class M, uint64_t N>
 void py_convert(array<M, N>& out, PyObject* in)
 {
   if (PyList_Check(in)) {
@@ -199,7 +199,7 @@ template <class T>
 T py_convert_data(PyObject* in)
 // interface
 // examples:
-// py_convert_data<int>(in)
+// py_convert_data<Int>(in)
 // py_convert_data<Long>(in)
 // py_convert_data<double>(in)
 // py_convert_data<ComplexD>(in)
@@ -295,21 +295,16 @@ inline PyObject* py_convert(const char& x) { return PyLong_FromLong((Long)x); }
 
 inline PyObject* py_convert(const bool& x) { return PyBool_FromLong((Long)x); }
 
-inline PyObject* py_convert(const int& x) { return PyLong_FromLong((Long)x); }
+inline PyObject* py_convert(const Int& x) { return PyLong_FromLong((Long)x); }
 
 inline PyObject* py_convert(const Long& x) { return PyLong_FromLong(x); }
 
-inline PyObject* py_convert(const unsigned int& x)
+inline PyObject* py_convert(const uint32_t& x)
 {
-  return PyLong_FromUnsignedLong((unsigned long)x);
+  return PyLong_FromUnsignedLong((uint64_t)x);
 }
 
-inline PyObject* py_convert(const unsigned long& x)
-{
-  return PyLong_FromUnsignedLong(x);
-}
-
-inline PyObject* py_convert(const unsigned long long& x)
+inline PyObject* py_convert(const uint64_t& x)
 {
   return PyLong_FromUnsignedLongLong(x);
 }

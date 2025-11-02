@@ -23,8 +23,8 @@
 namespace qlat
 {
 
-constexpr int DIMN = 4;
+constexpr Int DIMN = 4;
 
-constexpr int NUM_COLOR = 3;
+constexpr Int NUM_COLOR = 3;
 
 }  // namespace qlat

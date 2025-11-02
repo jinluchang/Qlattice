@@ -21,6 +21,7 @@
 
 #include <qlat-utils/config.h>
 #include <qlat-utils/sha256.h>
+#include <qlat-utils/show.h>
 
 #ifdef QLAT_USE_MACHINE_ENDIAN_H
 #include <machine/endian.h>
@@ -31,9 +32,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
-#include <istream>
-#include <ostream>
-#include <vector>
 
 namespace qlat
 {  //
@@ -88,7 +86,7 @@ void processBlock(uint32_t newHash[8], const uint32_t oldHash[8],
   const uint32_t* input = (uint32_t*)data;
   // convert to big endian
   uint32_t words[64];
-  int i;
+  Int i;
   for (i = 0; i < 16; i++) {
 #if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && \
     (__BYTE_ORDER == __BIG_ENDIAN)
@@ -434,8 +432,8 @@ void processInput(uint32_t hash[8], const uint32_t oldHash[8],
   // - append length as 64 bit integer
   // process initial parts of input
   std::memmove(hash, oldHash, 32);
-  const int nBlocks = inputSize / 64;
-  for (int i = 0; i < nBlocks; ++i) {
+  const Int nBlocks = inputSize / 64;
+  for (Int i = 0; i < nBlocks; ++i) {
     processBlock(hash, hash, input + i * 64);
   }
   // initialize buffer from input

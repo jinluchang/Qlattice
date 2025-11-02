@@ -162,7 +162,7 @@ Int bcast_vec(Vector<RealD> vec, const Int root)
 
 // ----------------------------
 
-Int bcast_val(Long& data, const int root)
+Int bcast_val(Long& data, const Int root)
 {
   return bcast_byte_vec(&data, sizeof(Long), root);
 }

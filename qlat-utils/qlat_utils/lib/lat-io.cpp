@@ -99,7 +99,7 @@ std::string show(const LatInfo& info)
 {
   std::ostringstream out;
   out << ssprintf("ndim: %ld\n", info.size());
-  for (int i = 0; i < (int)info.size(); ++i) {
+  for (Int i = 0; i < (Int)info.size(); ++i) {
     out << show(info[i]) << "\n";
   }
   return out.str();
@@ -146,7 +146,7 @@ LatInfo read_lat_info(const std::string& str)
   Qassert(infos[0].compare(0, ndim_prop.size(), ndim_prop) == 0);
   const Long ndim = read_long(std::string(infos[0], ndim_prop.size()));
   Qassert(ndim == (Long)infos.size() - 1);
-  for (int i = 1; i < (int)infos.size(); ++i) {
+  for (Int i = 1; i < (Int)infos.size(); ++i) {
     info.push_back(read_lat_dim(infos[i]));
   }
   return info;
@@ -177,7 +177,7 @@ void lat_data_load(LatDataT<T>& ld, QFile& qfile)
     infos.push_back(qgetline(qfile));
   }
   std::ostringstream out;
-  for (int i = 3; i < (int)infos.size() - 2; ++i) {
+  for (Int i = 3; i < (Int)infos.size() - 2; ++i) {
     out << infos[i];
   }
   const std::string info_str = out.str();
@@ -343,7 +343,7 @@ std::string show_real(const LatData& ld)
   std::ostringstream out;
   const LatInfo& info = ld.info;
   out << "# ";
-  for (int a = 0; a < (int)info.size(); ++a) {
+  for (Int a = 0; a < (Int)info.size(); ++a) {
     if (0 == a) {
       out << ssprintf("%10s ", info[a].name.c_str());
     } else {
@@ -353,13 +353,13 @@ std::string show_real(const LatData& ld)
   out << ssprintf("%24s\n", "VALUE");
   std::vector<Long> idx(info.size(), 0);
   for (Long k = 0; k < lat_data_size(ld); ++k) {
-    for (int a = 0; a < (int)info.size(); ++a) {
+    for (Int a = 0; a < (Int)info.size(); ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
     const Vector<RealD> ldv = lat_data_get_const(ld, idx);
     out << ssprintf("%24.17E\n", ldv[0]);
-    idx[(int)info.size() - 1] += 1;
-    for (int a = (int)info.size() - 1; a > 0; --a) {
+    idx[(Int)info.size() - 1] += 1;
+    for (Int a = (Int)info.size() - 1; a > 0; --a) {
       if (idx[a] == info[a].size) {
         idx[a] = 0;
         idx[a - 1] += 1;
@@ -374,7 +374,7 @@ std::string show_complex(const LatData& ld)
   std::ostringstream out;
   const LatInfo& info = ld.info;
   out << "# ";
-  for (int a = 0; a < (int)info.size() - 1; ++a) {
+  for (Int a = 0; a < (Int)info.size() - 1; ++a) {
     if (0 == a) {
       out << ssprintf("%10s ", info[a].name.c_str());
     } else {
@@ -382,17 +382,17 @@ std::string show_complex(const LatData& ld)
     }
   }
   out << ssprintf("%24s %24s\n", "RE-VALUE", "IM-VALUE");
-  std::vector<Long> idx((int)info.size() - 1, 0);
+  std::vector<Long> idx((Int)info.size() - 1, 0);
   for (Long k = 0; k < lat_data_size(ld) / 2; ++k) {
-    for (int a = 0; a < (int)info.size() - 1; ++a) {
+    for (Int a = 0; a < (Int)info.size() - 1; ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
     const Vector<ComplexD> ldv = lat_data_cget_const(ld, idx);
     out << ssprintf("%24.17E %24.17E\n", ldv[0].real(), ldv[0].imag());
-    if ((int)info.size() - 2 >= 0) {
-      idx[(int)info.size() - 2] += 1;
+    if ((Int)info.size() - 2 >= 0) {
+      idx[(Int)info.size() - 2] += 1;
     }
-    for (int a = (int)info.size() - 2; a > 0; --a) {
+    for (Int a = (Int)info.size() - 2; a > 0; --a) {
       if (idx[a] == info[a].size) {
         idx[a] = 0;
         idx[a - 1] += 1;
@@ -418,13 +418,13 @@ void print(const LatData& ld)
   display(ssprintf("%s", show(info).c_str()));
   std::vector<Long> idx(info.size(), 0);
   for (Long k = 0; k < lat_data_size(ld); ++k) {
-    for (int a = 0; a < (int)info.size(); ++a) {
+    for (Int a = 0; a < (Int)info.size(); ++a) {
       display(ssprintf("%s[%8s] ", info[a].name.c_str(),
                        idx_name(info[a], idx[a]).c_str()));
     }
     display(ssprintf("%24.17E\n", ld.res[lat_data_offset(ld, idx)]));
     idx[info.size() - 1] += 1;
-    for (int a = info.size() - 1; a > 0; --a) {
+    for (Int a = info.size() - 1; a > 0; --a) {
       if (idx[a] == info[a].size) {
         idx[a] = 0;
         idx[a - 1] += 1;

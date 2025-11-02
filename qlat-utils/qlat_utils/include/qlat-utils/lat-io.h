@@ -21,10 +21,10 @@ namespace qlat
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 // Recommended file extension ".lat"
 
-const std::string lat_data_int_header = "#!/usr/bin/env lat-io-int-glimpse\n";
+const std::string lat_data_int_header = "#!/usr/bin/env lat-io-Int-glimpse\n";
 // Recommended file extension ".lati"
 
-const std::string lat_data_long_header = "#!/usr/bin/env lat-io-long-glimpse\n";
+const std::string lat_data_long_header = "#!/usr/bin/env lat-io-Long-glimpse\n";
 // Recommended file extension ".latl"
 
 const std::string lat_data_real_f_header = "#!/usr/bin/env lat-io-real-f-glimpse\n";

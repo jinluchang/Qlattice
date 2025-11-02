@@ -7,7 +7,7 @@
 namespace qlat
 {  //
 
-const SpinMatrixT<RealD>& get_gamma_matrix(const int mu);
+const SpinMatrixT<RealD>& get_gamma_matrix(const Int mu);
 
 void benchmark_matrix_functions(const Long count = 128);
 
@@ -86,9 +86,9 @@ qacc IsospinMatrix matrix_adjoint(const IsospinMatrix& m)
   return matrix_adjoint<2, ComplexD>(m);
 }
 
-qacc ComplexD epsilon_contraction(const int v_s1, const int b_s1,
-                                  const int v_s2, const int b_s2,
-                                  const int v_s3, const int b_s3,
+qacc ComplexD epsilon_contraction(const Int v_s1, const Int b_s1,
+                                  const Int v_s2, const Int b_s2,
+                                  const Int v_s3, const Int b_s3,
                                   const WilsonMatrix& wm1,
                                   const WilsonMatrix& wm2,
                                   const WilsonMatrix& wm3)

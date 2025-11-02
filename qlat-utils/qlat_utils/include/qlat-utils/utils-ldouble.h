@@ -37,7 +37,7 @@ class API RealDD{
 
   qacc RealDD() = default;
   //qacc RealDD(){x = 0;y = 0;}
-  qacc RealDD(const int&    a){y = double(a);x = 0;}
+  qacc RealDD(const Int&    a){y = double(a);x = 0;}
   qacc RealDD(const double& a){y = a;        x = 0;}
   qacc RealDD(const float&  a){y = a;        x = 0;}
   qacc RealDD(const RealDD& a)
@@ -281,7 +281,7 @@ qacc RealDD  operator* (RealDD a, RealDD b)
 
 /* Take full advantage of the FMA (fused-multiply add) capability of the GPU.
 
-   Straighforward long-hand division that treats each double as a "digit".
+   Straighforward Long-hand division that treats each double as a "digit".
 
 */
 

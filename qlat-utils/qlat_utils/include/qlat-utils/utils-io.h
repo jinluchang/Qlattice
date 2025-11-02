@@ -35,15 +35,15 @@ bool is_directory(const std::string& fn);
 
 bool is_regular_file(const std::string& fn);
 
-int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
+Int qmkdir(const std::string& path, const mode_t mode = default_dir_mode());
 
-int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
+Int qmkdir_p(const std::string& path_, const mode_t mode = default_dir_mode());
 
-int qrename(const std::string& old_path, const std::string& new_path);
+Int qrename(const std::string& old_path, const std::string& new_path);
 
-int qremove(const std::string& path);
+Int qremove(const std::string& path);
 
-int qremove_all(const std::string& path);
+Int qremove_all(const std::string& path);
 
 bool check_dir(const std::string& path, const mode_t mode = default_dir_mode());
 
@@ -72,26 +72,26 @@ bool does_file_exist_cache(const std::string& fn);
 
 // --------------------------
 
-int qtruncate(const std::string& path, const Long offset=0);
+Int qtruncate(const std::string& path, const Long offset=0);
 
-inline int ssleep(const double seconds)
+inline Int ssleep(const double seconds)
 {
   return usleep((useconds_t)(seconds * 1.0e6));
 }
 
 // --------------------------
 
-int qmkdir_info(const std::string& path,
+Int qmkdir_info(const std::string& path,
                 const mode_t mode = default_dir_mode());
 
-int qmkdir_p_info(const std::string& path,
+Int qmkdir_p_info(const std::string& path,
                   const mode_t mode = default_dir_mode());
 
-int qrename_info(const std::string& old_path, const std::string& new_path);
+Int qrename_info(const std::string& old_path, const std::string& new_path);
 
-int qremove_info(const std::string& path);
+Int qremove_info(const std::string& path);
 
-int qremove_all_info(const std::string& path);
+Int qremove_all_info(const std::string& path);
 
 // --------------------------
 
@@ -114,15 +114,15 @@ bool is_directory_cache_sync_node(const std::string& fn);
 
 bool is_regular_file_cache_sync_node(const std::string& fn);
 
-int qmkdir_sync_node(const std::string& path,
+Int qmkdir_sync_node(const std::string& path,
                      const mode_t mode = default_dir_mode());
 
-int qmkdir_p_sync_node(const std::string& path,
+Int qmkdir_p_sync_node(const std::string& path,
                        const mode_t mode = default_dir_mode());
 
-int qremove_sync_node(const std::string& path);
+Int qremove_sync_node(const std::string& path);
 
-int qremove_all_sync_node(const std::string& path);
+Int qremove_all_sync_node(const std::string& path);
 
 // --------------------------
 
@@ -144,7 +144,7 @@ inline FILE* qopen(const std::string& path, const std::string& mode)
   return std::fopen(path.c_str(), mode.c_str());
 }
 
-inline int qfclose(FILE*& file)
+inline Int qfclose(FILE*& file)
 {
   TIMER("qfclose");
   if (NULL != file) {
@@ -168,7 +168,7 @@ inline FILE* qopen_info(const std::string& path, const std::string& mode)
   }
 }
 
-inline int qfclose_info(FILE*& file)
+inline Int qfclose_info(FILE*& file)
 {
   TIMER("qfclose_info");
   return qfclose(file);
@@ -214,9 +214,9 @@ inline std::vector<std::string> qgetlines(FILE* fp)
   return ret;
 }
 
-API inline int& is_sigterm_received()
+API inline Int& is_sigterm_received()
 {
-  static int n = 0;
+  static Int n = 0;
   return n;
 }
 
@@ -226,7 +226,7 @@ API inline double& get_last_sigint_time()
   return time;
 }
 
-inline void qhandler_sig(const int signum)
+inline void qhandler_sig(const Int signum)
 {
   if (signum == SIGTERM) {
     is_sigterm_received() += 1;
@@ -259,7 +259,7 @@ inline void qhandler_sig(const int signum)
   }
 }
 
-inline int install_qhandle_sig()
+inline Int install_qhandle_sig()
 {
   TIMER_VERBOSE("install_qhandle_sig");
   struct sigaction act;

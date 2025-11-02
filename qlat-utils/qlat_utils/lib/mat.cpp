@@ -6,7 +6,7 @@
 namespace qlat
 {  //
 
-const SpinMatrixT<RealD>& get_gamma_matrix(const int mu)
+const SpinMatrixT<RealD>& get_gamma_matrix(const Int mu)
 // CPS's convention gamma matrices
 {
   return SpinMatrixConstantsT<>::get_cps_gamma(mu);

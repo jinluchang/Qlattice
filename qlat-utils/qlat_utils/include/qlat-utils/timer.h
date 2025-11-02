@@ -101,7 +101,7 @@ inline double get_remaining_time()
 
 inline double get_total_time() { return get_time() - get_start_time(); }
 
-inline int get_num_thread()
+inline Int get_num_thread()
 {
 #ifdef _OPENMP
   return omp_get_max_threads();
@@ -110,7 +110,7 @@ inline int get_num_thread()
 #endif
 }
 
-inline int get_id_thread()
+inline Int get_id_thread()
 {
 #ifdef _OPENMP
   return omp_get_thread_num();
@@ -119,35 +119,35 @@ inline int get_id_thread()
 #endif
 }
 
-API inline int& get_id_node_in_shuffle_internal()
+API inline Int& get_id_node_in_shuffle_internal()
 // initialized in begin_comm in qlat/mpi.h
 {
-  static int id_node_in_shuffle = 0;
+  static Int id_node_in_shuffle = 0;
   return id_node_in_shuffle;
 }
 
-inline int get_id_node_in_shuffle()
+inline Int get_id_node_in_shuffle()
 {
   return get_id_node_in_shuffle_internal();
 }
 
-API inline int& get_num_node_internal()
+API inline Int& get_num_node_internal()
 // initialized in begin_comm in qlat/mpi.h
 {
-  static int num_node = 1;
+  static Int num_node = 1;
   return num_node;
 }
 
-API inline int& get_id_node_internal()
+API inline Int& get_id_node_internal()
 // initialized in begin_comm in qlat/mpi.h
 {
-  static int id_node = 0;
+  static Int id_node = 0;
   return id_node;
 }
 
-inline int get_num_node() { return get_num_node_internal(); }
+inline Int get_num_node() { return get_num_node_internal(); }
 
-inline int get_id_node() { return get_id_node_internal(); }
+inline Int get_id_node() { return get_id_node_internal(); }
 
 inline void display(const std::string& str)
 {
@@ -213,16 +213,16 @@ inline Long get_total_flops()
 {
   Long flops = 0;
 #ifdef USE_PAPI
-  const int n_threads = omp_get_max_threads();
+  const Int n_threads = omp_get_max_threads();
   Long flopses[n_threads];
   memset(flopses, 0, n_threads * sizeof(Long));
 #pragma omp parallel
   {
     float rtime, ptime, mflops;
-    int i = omp_get_thread_num();
+    Int i = omp_get_thread_num();
     PAPI_flops(&rtime, &ptime, &flopses[i], &mflops);
   }
-  for (int i = 0; i < n_threads; i++) {
+  for (Int i = 0; i < n_threads; i++) {
     flops += flopses[i];
   }
 #endif
@@ -252,7 +252,7 @@ API inline void initialize_papi()
   }
   displayln_info(0, "PAPI::initialize_papi Start.");
   PAPI_library_init(PAPI_VER_CURRENT);
-  PAPI_thread_init((unsigned long (*)(void))(omp_get_thread_num));
+  PAPI_thread_init((uint64_t (*)(void))(omp_get_thread_num));
   initialized = true;
   displayln_info(0, "PAPI::initialize_papi Finish.");
 #endif
@@ -264,7 +264,7 @@ struct API TimerInfo {
   double accumulated_time;
   Long dflops;
   Long accumulated_flops;
-  int call_times;
+  Int call_times;
   //
   TimerInfo() { init(); }
   //
@@ -278,13 +278,13 @@ struct API TimerInfo {
   //
   void merge(const TimerInfo& x);
   //
-  void show_start(const int fname_len) const;
+  void show_start(const Int fname_len) const;
   //
-  void show_stop(const int fname_len) const;
+  void show_stop(const Int fname_len) const;
   //
-  void show_avg_always(const std::string& info, const int fname_len) const;
+  void show_avg_always(const std::string& info, const Int fname_len) const;
   //
-  void show_avg(const std::string& info, const int fname_len) const;
+  void show_avg(const std::string& info, const Int fname_len) const;
 };
 
 struct API Timer {
@@ -466,7 +466,7 @@ inline void Display(const char* cname, const char* fname, const char* format,
   va_list args;
   va_start(args, format);
   char* str;
-  const int ret = vasprintf(&str, format, args);
+  const Int ret = vasprintf(&str, format, args);
   Qassert(ret >= 0);
   display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
@@ -475,14 +475,14 @@ inline void Display(const char* cname, const char* fname, const char* format,
 inline void DisplayInfo(const char* cname, const char* fname,
                         const char* format, ...)
 {
-  int rank = get_id_node();
+  Int rank = get_id_node();
   if (0 != rank) {
     return;
   }
   va_list args;
   va_start(args, format);
   char* str;
-  const int ret = vasprintf(&str, format, args);
+  const Int ret = vasprintf(&str, format, args);
   Qassert(ret >= 0);
   display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);

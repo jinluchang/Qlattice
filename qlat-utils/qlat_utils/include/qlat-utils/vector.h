@@ -587,7 +587,7 @@ qacc bool operator==(const vector<M>& v1, const vector<M>& v2)
   if (v1.size() != v2.size()) {
     return false;
   }
-  const int cmp = std::memcmp(v1.data(), v2.data(), v1.size() * sizeof(M));
+  const Int cmp = std::memcmp(v1.data(), v2.data(), v1.size() * sizeof(M));
   return cmp == 0;
 }
 

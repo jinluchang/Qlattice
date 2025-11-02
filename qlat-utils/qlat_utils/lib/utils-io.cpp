@@ -59,13 +59,13 @@ static std::vector<std::string> qls_all_aux(
   return all_contents;
 }
 
-static int qremove_aux(const std::string& path)
+static Int qremove_aux(const std::string& path)
 {
   TIMER("qremove_aux")
   displayln_info(0, ssprintf("qremove_aux: '%s' (id_node=%d).", path.c_str(),
                              get_id_node()));
   if (does_file_exist(path)) {
-    const int ret = std::remove(path.c_str());
+    const Int ret = std::remove(path.c_str());
     if (ret != 0) {
       qwarn(fname + ssprintf(": '%s' failed ret='%d'", path.c_str(), ret));
     }
@@ -78,12 +78,12 @@ static int qremove_aux(const std::string& path)
   }
 }
 
-static int qremove_all_aux(const std::string& path)
+static Int qremove_all_aux(const std::string& path)
 {
   if (not is_directory(path)) {
     return qremove_aux(path);
   } else {
-    int ret = 0;
+    Int ret = 0;
     const std::vector<std::string> paths = qls_aux(path);
     for (Long i = 0; i < (Long)paths.size(); ++i) {
       ret += qremove_all_aux(paths[i]);
@@ -334,10 +334,10 @@ bool does_file_exist_cache(const std::string& fn)
 
 void flush() { fflush(stdout); }
 
-int qtruncate(const std::string& path, const Long offset)
+Int qtruncate(const std::string& path, const Long offset)
 // return true if successful.
 {
-  const int ret = truncate(path.c_str(), offset);
+  const Int ret = truncate(path.c_str(), offset);
   return ret;
 }
 
@@ -359,7 +359,7 @@ std::vector<std::string> qls_all(const std::string& path,
 
 // --------------------------------
 
-int qrename(const std::string& old_path, const std::string& new_path)
+Int qrename(const std::string& old_path, const std::string& new_path)
 {
   TIMER_VERBOSE("qrename");
   displayln_info(0,
@@ -370,7 +370,7 @@ int qrename(const std::string& old_path, const std::string& new_path)
   update_qar_cache_due_to_change_of_directory(old_path);
   update_qar_cache_due_to_change_of_qar_file(old_path);
   update_qar_cache_due_to_change_of_qar_file(new_path);
-  const int ret = rename(old_path.c_str(), new_path.c_str());
+  const Int ret = rename(old_path.c_str(), new_path.c_str());
   if (ret != 0) {
     qwarn(fname + ssprintf(": '%s' '%s' ret=%d", old_path.c_str(),
                            new_path.c_str(), ret));
@@ -378,40 +378,40 @@ int qrename(const std::string& old_path, const std::string& new_path)
   return ret;
 }
 
-int qremove(const std::string& path)
+Int qremove(const std::string& path)
 {
   TIMER_VERBOSE("qremove")
   remove_entry_directory_cache(path);
   update_qar_cache_due_to_change_of_directory(path);
   update_qar_cache_due_to_change_of_qar_file(path);
-  const int ret = qremove_aux(path);
+  const Int ret = qremove_aux(path);
   return ret;
 }
 
-int qremove_all(const std::string& path)
+Int qremove_all(const std::string& path)
 {
   TIMER_VERBOSE("qremove_all")
   remove_entry_directory_cache(path);
   update_qar_cache_due_to_change_of_directory(path);
   update_qar_cache_due_to_change_of_qar_file(path);
-  const int ret = qremove_all_aux(remove_trailing_slashes(path));
+  const Int ret = qremove_all_aux(remove_trailing_slashes(path));
   return ret;
 }
 
-int qmkdir(const std::string& path, const mode_t mode)
+Int qmkdir(const std::string& path, const mode_t mode)
 {
   TIMER_VERBOSE("qmkdir");
   displayln_info(
       0, fname + ssprintf(": '%s' (id_node=%d).", path.c_str(), get_id_node()));
   remove_entry_directory_cache(path);
-  const int ret = mkdir(path.c_str(), mode);
+  const Int ret = mkdir(path.c_str(), mode);
   if (ret != 0) {
     qwarn(fname + ssprintf(": qmkdir failed '%s' ret=%d", path.c_str(), ret));
   }
   return ret;
 }
 
-int qmkdir_p(const std::string& dir_, const mode_t mode)
+Int qmkdir_p(const std::string& dir_, const mode_t mode)
 // return 0 if successful
 {
   TIMER_VERBOSE("qmkdir_p");
@@ -425,7 +425,7 @@ int qmkdir_p(const std::string& dir_, const mode_t mode)
     }
     const std::string subdir = dir.substr(0, cur + 1);
     if (not is_directory_cache(subdir)) {
-      const int ret = qmkdir(subdir, mode);
+      const Int ret = qmkdir(subdir, mode);
       if (ret != 0) {
         qwarn(fname +
               ssprintf(": '%s' failed at '%s'.", dir_.c_str(), subdir.c_str()));
@@ -448,8 +448,8 @@ bool check_dir(const std::string& path, const mode_t mode)
     add_entry_directory_cache(path, true);
     return true;
   }
-  const int max_attempts = 8;
-  for (int i = 0; i < max_attempts; ++i) {
+  const Int max_attempts = 8;
+  for (Int i = 0; i < max_attempts; ++i) {
     qmkdir(path, mode);
     ssleep(0.1);
     if (is_directory(path)) {
@@ -462,7 +462,7 @@ bool check_dir(const std::string& path, const mode_t mode)
 
 // --------------------------------
 
-int qrename_info(const std::string& old_path, const std::string& new_path)
+Int qrename_info(const std::string& old_path, const std::string& new_path)
 {
   TIMER("qrename_info");
   if (0 == get_id_node()) {
@@ -477,7 +477,7 @@ int qrename_info(const std::string& old_path, const std::string& new_path)
   }
 }
 
-int qremove_info(const std::string& path)
+Int qremove_info(const std::string& path)
 {
   TIMER("qremove_info");
   if (0 == get_id_node()) {
@@ -490,7 +490,7 @@ int qremove_info(const std::string& path)
   }
 }
 
-int qremove_all_info(const std::string& path)
+Int qremove_all_info(const std::string& path)
 {
   TIMER("qremove_all_info");
   if (0 == get_id_node()) {
@@ -503,7 +503,7 @@ int qremove_all_info(const std::string& path)
   }
 }
 
-int qmkdir_info(const std::string& path, const mode_t mode)
+Int qmkdir_info(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_info");
   if (0 == get_id_node()) {
@@ -514,7 +514,7 @@ int qmkdir_info(const std::string& path, const mode_t mode)
   }
 }
 
-int qmkdir_p_info(const std::string& path, const mode_t mode)
+Int qmkdir_p_info(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_info");
   if (0 == get_id_node()) {
@@ -535,7 +535,7 @@ std::vector<std::string> qls_sync_node(const std::string& path,
   if (0 == get_id_node()) {
     ret = qls(path, is_sort);
   }
-  int bret = bcast_val(ret, 0);
+  Int bret = bcast_val(ret, 0);
   Qassert(bret == 0);
   return ret;
 }
@@ -549,7 +549,7 @@ std::vector<std::string> qls_all_sync_node(const std::string& path,
   if (0 == get_id_node()) {
     ret = qls_all(path, is_folder_before_files, is_sort);
   }
-  int bret = bcast_val(ret, 0);
+  Int bret = bcast_val(ret, 0);
   Qassert(bret == 0);
   return ret;
 }
@@ -626,7 +626,7 @@ bool is_regular_file_cache_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
-int qmkdir_sync_node(const std::string& path, const mode_t mode)
+Int qmkdir_sync_node(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_sync_node");
   Long ret = 0;
@@ -639,7 +639,7 @@ int qmkdir_sync_node(const std::string& path, const mode_t mode)
   return ret;
 }
 
-int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
+Int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
 {
   TIMER("qmkdir_p_sync_node");
   Long ret = 0;
@@ -652,7 +652,7 @@ int qmkdir_p_sync_node(const std::string& path, const mode_t mode)
   return ret;
 }
 
-int qremove_sync_node(const std::string& path)
+Int qremove_sync_node(const std::string& path)
 {
   TIMER("qremove_sync_node");
   Long ret = 0;
@@ -667,7 +667,7 @@ int qremove_sync_node(const std::string& path)
   return ret;
 }
 
-int qremove_all_sync_node(const std::string& path)
+Int qremove_all_sync_node(const std::string& path)
 {
   TIMER("qremove_all_sync_node");
   Long ret = 0;

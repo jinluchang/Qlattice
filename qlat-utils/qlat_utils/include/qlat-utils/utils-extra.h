@@ -17,7 +17,7 @@ qacc int8_t& operator*=(int8_t& x, const ComplexD& factor)
   return x;
 }
 
-qacc int& operator*=(int& x, const ComplexD& factor)
+qacc Int& operator*=(Int& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
@@ -58,32 +58,32 @@ qacc char& operator*=(char& x, const ComplexD& factor)
 }
 
 template <class M>
-int get_type_precision()
+Int get_type_precision()
 // 0: Complex
 // 1: double
 // 2: ComplexF
 // 3: float
-// 4: long
-// 5: int
+// 4: Long
+// 5: Int
 // 6: char
 {
   return 0;
 }
 
 template <>
-inline int get_type_precision<ComplexF>()
+inline Int get_type_precision<ComplexF>()
 {
   return 2;
 }
 
 template <>
-inline int get_type_precision<double>()
+inline Int get_type_precision<double>()
 {
   return 1;
 }
 
 template <>
-inline int get_type_precision<float>()
+inline Int get_type_precision<float>()
 {
   return 3;
 }
@@ -111,7 +111,7 @@ qacc bool operator==(const std::vector<M>& v1, const std::vector<M>& v2)
   return is_equal_vec(v1, v2);
 }
 
-template <class M, int N>
+template <class M, Int N>
 bool operator==(const array<M, N>& v1, const array<M, N>& v2)
 {
   return is_equal_vec(v1, v2);
@@ -123,21 +123,21 @@ double simpson(const F& f, const double a, const double b)
   return 1.0 / 6.0 * (f(a) + 4 * f(0.5 * (a + b)) + f(b)) * (b - a);
 }
 
-API inline int adaptive_simpson_min_level()
+API inline Int adaptive_simpson_min_level()
 {
-  static int level = 6;
+  static Int level = 6;
   return level;
 }
 
-API inline int adaptive_simpson_max_level()
+API inline Int adaptive_simpson_max_level()
 {
-  static int level = 20;
+  static Int level = 20;
   return level;
 }
 
 template <typename F>
 double adaptive_simpson_level(const F& f, const double a, const double b,
-                              const double eps, const int level)
+                              const double eps, const Int level)
 {
   const double w = simpson(f, a, b);
   const double l = simpson(f, a, 0.5 * (a + b));
@@ -259,13 +259,13 @@ std::vector<T> vector_block(const std::vector<T>& vs, const Long n_block)
   const Long reminder = size - block_size * n_block;
   std::vector<T> ret(n_block);
   Long cur = 0;
-  for (int i = 0; i < n_block; ++i) {
+  for (Int i = 0; i < n_block; ++i) {
     Long count = 0;
     qassert(cur < size);
     ret[i] = vs[cur];
     cur += 1;
     count += 1;
-    for (int j = 1; j < block_size + (i < reminder ? 1 : 0); ++j) {
+    for (Int j = 1; j < block_size + (i < reminder ? 1 : 0); ++j) {
       qassert(cur < size);
       ret[i] += vs[cur];
       cur += 1;

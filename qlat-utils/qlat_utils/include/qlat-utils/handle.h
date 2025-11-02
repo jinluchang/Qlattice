@@ -94,7 +94,7 @@ struct API Vector {
     p = vec.p;
     n = vec.n;
   }
-  template <int N>
+  template <Int N>
   qacc Vector(const array<M, N>& arr)
   {
     p = (M*)arr.data();

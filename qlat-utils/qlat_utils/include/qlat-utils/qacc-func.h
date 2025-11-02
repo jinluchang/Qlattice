@@ -9,16 +9,16 @@
 namespace qlat
 {  //
 
-API inline int& qacc_num_threads()
+API inline Int& qacc_num_threads()
 // qlat parameter
 {
-  static int nt = get_env_long_default("q_acc_num_threads", 32);
+  static Int nt = get_env_long_default("q_acc_num_threads", 32);
   return nt;
 }
 
 #ifdef QLAT_USE_ACC
 
-inline void qacc_Err(qacc_Error err, const char* file, int line)
+inline void qacc_Err(qacc_Error err, const char* file, Int line)
 {
   if (qacc_Success != err) {
     qlat::displayln(
@@ -113,7 +113,7 @@ API inline void display_mem_type(const void* p){
     if (QACC_NUM_VALUE != 0) {                                                 \
       auto QACC_FOR_LOOP_LAMBDA =                                              \
           [=] __host__ __device__(qlat::Long iter) mutable { {__VA_ARGS__}; }; \
-      const int QACC_NUM_THREADS = qlat::qacc_num_threads();                   \
+      const Int QACC_NUM_THREADS = qlat::qacc_num_threads();                   \
       dim3 CUDA_THREADS_DIM3(QACC_NUM_THREADS, 1, 1);                          \
       dim3 CUDA_BLOCKS_DIM3(                                                   \
           (QACC_NUM_VALUE + QACC_NUM_THREADS - 1) / QACC_NUM_THREADS, 1, 1);   \

@@ -64,7 +64,7 @@ struct API array<M, 0> {
 template <class M, size_t N>
 qacc bool operator<(const array<M, N>& a1, const array<M, N>& a2)
 {
-  for (unsigned long i = 0; i < N; ++i) {
+  for (uint64_t i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
       return true;
     } else if (a1[i] > a2[i]) {
@@ -77,7 +77,7 @@ qacc bool operator<(const array<M, N>& a1, const array<M, N>& a2)
 template <class M, size_t N>
 qacc bool operator<=(const array<M, N>& a1, const array<M, N>& a2)
 {
-  for (unsigned long i = 0; i < N; ++i) {
+  for (uint64_t i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
       return true;
     } else if (a1[i] > a2[i]) {

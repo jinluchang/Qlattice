@@ -5,11 +5,11 @@ namespace qlat
 
 void ColorMatrixConstants::check() const
 {
-  for (int a = 0; a < 8; ++a) {
+  for (Int a = 0; a < 8; ++a) {
     ColorMatrix m = make_tr_less_anti_herm_matrix(ts[a]);
     Qassert(qnorm(m - ts[a]) < 1e-20);
   }
-  for (int a = 0; a < 8; ++a) {
+  for (Int a = 0; a < 8; ++a) {
     array<double, 8> basis;
     set_zero(basis);
     basis[a] = 1.0;
@@ -17,8 +17,8 @@ void ColorMatrixConstants::check() const
     Qassert(qnorm(basis - basis_projection_anti_hermitian_matrix(ts[a])) <
             1e-20);
   }
-  for (int a = 0; a < 8; ++a) {
-    for (int b = 0; b < 8; ++b) {
+  for (Int a = 0; a < 8; ++a) {
+    for (Int b = 0; b < 8; ++b) {
       ComplexD tr(matrix_trace(ts[a], ts[b]));
       if (a == b) {
         tr -= -2;
@@ -34,10 +34,10 @@ void ColorMatrixConstants::check() const
   Qassert(qnorm(x - make_tr_less_anti_herm_matrix(x)) < 1e-20);
   AdjointColorMatrix adx = make_adjoint_representation(x, *this);
   array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
-  for (int a = 0; a < 8; ++a) {
-    for (int b = 0; b < 8; ++b) {
+  for (Int a = 0; a < 8; ++a) {
+    for (Int b = 0; b < 8; ++b) {
       ComplexD sum(0.0);
-      for (int c = 0; c < 8; ++c) {
+      for (Int c = 0; c < 8; ++c) {
         sum += -f[c](a, b) * basis[c];
       }
       Qassert(qnorm(adx(a, b) - sum) < 1e-20);
@@ -45,9 +45,9 @@ void ColorMatrixConstants::check() const
   }
   const double coef = 0.2;
   const AdjointColorMatrix exp_adx = make_matrix_exp(coef * adx);
-  for (int b = 0; b < 8; ++b) {
+  for (Int b = 0; b < 8; ++b) {
     array<double, 8> basis_b;
-    for (int a = 0; a < 8; ++a) {
+    for (Int a = 0; a < 8; ++a) {
       basis_b[a] = exp_adx(a, b);
     }
     const ColorMatrix mx_b = make_anti_hermitian_matrix(basis_b);
@@ -66,7 +66,7 @@ void ColorMatrixConstants::check() const
       make_diff_exp_map(-(ComplexD)coef * x, *this);
   Qassert(qnorm(j_x - matrix_adjoint(j_n_x)) < 1e-20);
   Qassert(qnorm(j_n_x - exp_adx * j_x) < 1e-20);
-  for (int a = 0; a < 8; ++a) {
+  for (Int a = 0; a < 8; ++a) {
     const AdjointColorMatrix am0 = make_diff_exp_map_diff_ref(x, a, *this);
     const AdjointColorMatrix am1 = make_diff_exp_map_diff(x, a, *this);
     Qassert(qnorm(am0 - am1) < 1e-8);

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <qlat-utils/show.h>
 
 namespace qlat
 {  //
@@ -20,7 +21,7 @@ void split_rng_state(RngState& rs, const RngState& rs0,
 
 void split_rng_state(RngState& rs, const RngState& rs0, const Long sindex = 0);
 
-void set_type(RngState& rs, const unsigned long type);
+void set_type(RngState& rs, const uint64_t type);
 
 uint64_t rand_gen(RngState& rs);
 
@@ -36,12 +37,12 @@ void compute_hash_with_input(uint32_t hash[8], const RngState& rs,
 struct API RngState {
   uint64_t numBytes;
   uint32_t hash[8];
-  unsigned long type;
-  unsigned long index;
+  uint64_t type;
+  uint64_t index;
   //
   uint64_t cache[3];
   double gaussian;
-  int cacheAvail;
+  Int cacheAvail;
   bool gaussianAvail;
   //
   inline void init() { reset(*this); }
@@ -66,7 +67,7 @@ struct API RngState {
   }
   RngState split(const Long sindex) const { return RngState(*this, sindex); }
   //
-  RngState newtype(const unsigned long type) const
+  RngState newtype(const uint64_t type) const
   {
     RngState rs(*this);
     set_type(rs, type);

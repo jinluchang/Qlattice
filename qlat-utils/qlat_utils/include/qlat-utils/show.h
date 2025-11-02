@@ -54,7 +54,7 @@ using Real = RealD;  // default Real type should not change
 inline std::string vssprintf(const char* fmt, va_list args)
 {
   char* cstr;
-  int ret = vasprintf(&cstr, fmt, args);
+  Int ret = vasprintf(&cstr, fmt, args);
   if (ret < 0) {
     assert(false);
   }
@@ -72,13 +72,13 @@ inline std::string ssprintf(const char* fmt, ...)
 
 inline std::string show() { return ""; }
 
-inline std::string show(const int& x) { return ssprintf("%d", x); }
+inline std::string show(const Int& x) { return ssprintf("%d", x); }
 
-inline std::string show(const unsigned int& x) { return ssprintf("%u", x); }
+inline std::string show(const uint32_t& x) { return ssprintf("%u", x); }
 
 inline std::string show(const Long& x) { return ssprintf("%ld", x); }
 
-inline std::string show(const unsigned long& x) { return ssprintf("%lu", x); }
+inline std::string show(const uint64_t& x) { return ssprintf("%lu", x); }
 
 inline std::string show(const double& x) { return ssprintf("%24.17E", x); }
 

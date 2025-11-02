@@ -24,6 +24,9 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                         const RealD m5, const Int ls)
 // set_left_expanded_gauge_field(gf1, gf);
 // in.geo() should not be expanded.
+// mass is the masss of the fermion, for example, its value can be `0.1`.
+// m5 should typically to 1.0
+// ls should typically to a large even integer, such as 64.
 {
   TIMER("multiply_m_dwf_qed");
   Qassert(mass > 0.0);

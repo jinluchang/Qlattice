@@ -54,8 +54,8 @@ struct QFileBase {
   virtual Long size() const = 0;
   virtual bool eof() const = 0;
   virtual Long tell() const = 0;
-  virtual int flush() const = 0;
-  virtual int seek(const Long offset, const int whence) = 0;
+  virtual Int flush() const = 0;
+  virtual Int seek(const Long offset, const Int whence) = 0;
   virtual Long read(void* ptr, const Long size, const Long nmemb) = 0;
   virtual Long write(const void* ptr, const Long size, const Long nmemb) = 0;
   virtual const std::string& content() = 0;
@@ -73,8 +73,8 @@ struct QFileBase {
   virtual Long write_data(Vector<Char> v);
   virtual Long write_data(const std::string& v);
   virtual Long write_data(const std::vector<std::string>& v);
-  virtual int append(const std::string& content);
-  virtual int append(const std::vector<std::string>& content);
+  virtual Int append(const std::string& content);
+  virtual Int append(const std::vector<std::string>& content);
   //
   virtual Long vprintf(const char* fmt, va_list args);
   virtual Long printf(const char* fmt, ...);
@@ -111,8 +111,8 @@ struct QFileObjCFile : QFileBase {
   Long size() const;
   bool eof() const;
   Long tell() const;
-  int flush() const;
-  int seek(const Long offset, const int whence);
+  Int flush() const;
+  Int seek(const Long offset, const Int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
   const std::string& content();
@@ -151,8 +151,8 @@ struct QFileObjString : QFileBase {
   Long size() const;
   bool eof() const;
   Long tell() const;
-  int flush() const;
-  int seek(const Long offset, const int whence);
+  Int flush() const;
+  Int seek(const Long offset, const Int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
   const std::string& content();
@@ -214,8 +214,8 @@ struct QFileObj : QFileBase {
   Long size() const;
   bool eof() const;
   Long tell() const;
-  int flush() const;
-  int seek(const Long q_offset, const int whence);
+  Int flush() const;
+  Int seek(const Long q_offset, const Int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
   const std::string& content();
@@ -266,8 +266,8 @@ struct API QFile : QFileBase {
   Long size() const;
   bool eof() const;
   Long tell() const;
-  int flush() const;
-  int seek(const Long offset, const int whence);
+  Int flush() const;
+  Int seek(const Long offset, const Int whence);
   Long read(void* ptr, const Long size, const Long nmemb);
   Long write(const void* ptr, const Long size, const Long nmemb);
   const std::string& content();
@@ -275,7 +275,7 @@ struct API QFile : QFileBase {
 
 // ---------------------
 
-int clean_up_qfile_map();
+Int clean_up_qfile_map();
 
 std::vector<std::string> show_all_qfile();
 
@@ -305,15 +305,15 @@ bool qfeof(const QFile& qfile);
 
 Long qftell(const QFile& qfile);
 
-int qfflush(const QFile& qfile);
+Int qfflush(const QFile& qfile);
 
-int qfseek(QFile& qfile, const Long offset, const int whence);
+Int qfseek(QFile& qfile, const Long offset, const Int whence);
 
-int qfseek_set(QFile& qfile, const Long offset);
+Int qfseek_set(QFile& qfile, const Long offset);
 
-int qfseek_end(QFile& qfile, const Long offset);
+Int qfseek_end(QFile& qfile, const Long offset);
 
-int qfseek_cur(QFile& qfile, const Long offset);
+Int qfseek_cur(QFile& qfile, const Long offset);
 
 Long qfile_size(QFile& qfile);
 
@@ -377,9 +377,9 @@ Long qread_data_all(std::vector<M>& v, QFile& qfile)
 
 std::string qcat(QFile& qfile);
 
-int qappend(QFile& qfile, const std::string& content);
+Int qappend(QFile& qfile, const std::string& content);
 
-int qappend(QFile& qfile, const std::vector<std::string>& content);
+Int qappend(QFile& qfile, const std::vector<std::string>& content);
 
 // -------------------
 
@@ -463,7 +463,7 @@ struct QarFileVolObj {
   //
   bool null() const { return qfile.null(); }
   //
-  int flush() const { return qfile.flush(); }
+  Int flush() const { return qfile.flush(); }
   //
   const std::string& path() const { return qfile.path(); }
   //
@@ -490,7 +490,7 @@ struct API QarFileVol {
   //
   void close();
   bool null() const;
-  int flush() const;
+  Int flush() const;
   //
   const std::string& path() const;
   //
@@ -529,7 +529,7 @@ Long write_from_data(const QarFileVol& qar, const std::string& fn,
 
 // -------------------
 
-int truncate_qar_vol_file(const std::string& path,
+Int truncate_qar_vol_file(const std::string& path,
                           const std::vector<std::string>& fns_keep);
 
 void properly_truncate_qar_vol_file(
@@ -570,7 +570,7 @@ struct API QarFile : std::vector<QarFileVol> {
   //
   bool null() const { return size() == 0; }
   //
-  int flush() const;
+  Int flush() const;
   //
   Long index_size() const;
   //
@@ -648,15 +648,15 @@ std::vector<std::string> properly_truncate_qar_file(
 
 std::string show_qar_index(const QarFile& qar);
 
-int save_qar_index(const QarFile& qar, const std::string& fn);
+Int save_qar_index(const QarFile& qar, const std::string& fn);
 
-int parse_qar_index(QarFileIndex& qar_index,
+Int parse_qar_index(QarFileIndex& qar_index,
                     const std::string& qar_index_content);
 
 void install_qar_index(const QarFileVol& qar, const Long vol_idx,
                        const QarFileIndex& qar_index);
 
-int read_qar_index(const QarFile& qar, const std::string& qar_index_content);
+Int read_qar_index(const QarFile& qar, const std::string& qar_index_content);
 
 // -------------------
 
@@ -664,15 +664,15 @@ bool does_regular_file_exist_qar(const std::string& path);
 
 bool does_file_exist_qar(const std::string& path);
 
-int qar_build_index(const std::string& path_qar);
+Int qar_build_index(const std::string& path_qar);
 
-int qar_create(const std::string& path_qar, const std::string& path_folder_,
+Int qar_create(const std::string& path_qar, const std::string& path_folder_,
                const bool is_remove_folder_after = false);
 
-int qar_extract(const std::string& path_qar, const std::string& path_folder_,
+Int qar_extract(const std::string& path_qar, const std::string& path_folder_,
                 const bool is_remove_qar_after = false);
 
-int qcopy_file(const std::string& path_src, const std::string& path_dst);
+Int qcopy_file(const std::string& path_src, const std::string& path_dst);
 
 std::vector<std::string> list_qar(const std::string& path);
 
@@ -680,15 +680,15 @@ std::string qcat(const std::string& path);
 
 std::vector<std::string> qgetlines(const std::string& fn);
 
-int qtouch(const std::string& path);
+Int qtouch(const std::string& path);
 
-int qtouch(const std::string& path, const std::string& content);
+Int qtouch(const std::string& path, const std::string& content);
 
-int qtouch(const std::string& path, const std::vector<std::string>& content);
+Int qtouch(const std::string& path, const std::vector<std::string>& content);
 
-int qappend(const std::string& path, const std::string& content);
+Int qappend(const std::string& path, const std::string& content);
 
-int qappend(const std::string& path, const std::vector<std::string>& content);
+Int qappend(const std::string& path, const std::vector<std::string>& content);
 
 // -------------------
 
@@ -722,30 +722,30 @@ void check_all_files_crc32_info(const std::string& path);
 
 // -------------------
 
-int qar_build_index_info(const std::string& path_qar);
+Int qar_build_index_info(const std::string& path_qar);
 
-int qar_create_info(const std::string& path_qar,
+Int qar_create_info(const std::string& path_qar,
                     const std::string& path_folder_,
                     const bool is_remove_folder_after = false);
 
-int qar_extract_info(const std::string& path_qar,
+Int qar_extract_info(const std::string& path_qar,
                      const std::string& path_folder_,
                      const bool is_remove_qar_after = false);
 
-int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
+Int qcopy_file_info(const std::string& path_src, const std::string& path_dst);
 
 std::string qcat_info(const std::string& path);
 
-int qtouch_info(const std::string& path);
+Int qtouch_info(const std::string& path);
 
-int qtouch_info(const std::string& path, const std::string& content);
+Int qtouch_info(const std::string& path, const std::string& content);
 
-int qtouch_info(const std::string& path,
+Int qtouch_info(const std::string& path,
                 const std::vector<std::string>& content);
 
-int qappend_info(const std::string& path, const std::string& content);
+Int qappend_info(const std::string& path, const std::string& content);
 
-int qappend_info(const std::string& path,
+Int qappend_info(const std::string& path,
                  const std::vector<std::string>& content);
 
 // -------------------
@@ -754,15 +754,15 @@ bool does_regular_file_exist_qar_sync_node(const std::string& fn);
 
 bool does_file_exist_qar_sync_node(const std::string& fn);
 
-int qar_create_sync_node(const std::string& path_qar,
+Int qar_create_sync_node(const std::string& path_qar,
                          const std::string& path_folder_,
                          const bool is_remove_folder_after = false);
 
-int qar_extract_sync_node(const std::string& path_qar,
+Int qar_extract_sync_node(const std::string& path_qar,
                           const std::string& path_folder_,
                           const bool is_remove_qar_after = false);
 
-int qcopy_file_sync_node(const std::string& path_src,
+Int qcopy_file_sync_node(const std::string& path_src,
                          const std::string& path_dst);
 
 std::string qcat_sync_node(const std::string& path);

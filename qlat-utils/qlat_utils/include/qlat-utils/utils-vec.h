@@ -221,7 +221,7 @@ qacc bool is_integer(const double& x)
 template <class M>
 qacc bool is_integer(const std::vector<M>& v)
 {
-  for (int i = 0; i < (int)v.size(); ++i) {
+  for (Int i = 0; i < (Int)v.size(); ++i) {
     if (!is_integer(v[i])) {
       return false;
     }
@@ -229,10 +229,10 @@ qacc bool is_integer(const std::vector<M>& v)
   return true;
 }
 
-template <class M, unsigned long N>
+template <class M, uint64_t N>
 qacc bool is_integer(const array<M, N>& v)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     if (!is_integer(v[i])) {
       return false;
     }
@@ -240,37 +240,37 @@ qacc bool is_integer(const array<M, N>& v)
   return true;
 }
 
-template <class M, int N>
+template <class M, Int N>
 qacc Array<M, N> operator+=(Array<M, N> v, const Array<M, N> v1)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.p[i] += v1.p[i];
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 qacc Array<M, N> operator-=(Array<M, N> v, const Array<M, N> v1)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.p[i] -= v1.p[i];
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 qacc Array<M, N> operator*=(Array<M, N> v, const double factor)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.p[i] *= factor;
   }
   return v;
 }
 
-template <class M, int N>
+template <class M, Int N>
 qacc Array<M, N> operator*=(Array<M, N> v, const ComplexD factor)
 {
-  for (int i = 0; i < N; ++i) {
+  for (Int i = 0; i < N; ++i) {
     v.p[i] *= factor;
   }
   return v;
@@ -314,21 +314,21 @@ qacc Vector<M> operator*=(Vector<M> v, const ComplexD factor)
   return v;
 }
 
-template <class M, unsigned long N>
+template <class M, uint64_t N>
 qacc array<M, N> operator+(const array<M, N>& v1, const array<M, N>& v2)
 {
   array<M, N> ret;
-  for (unsigned long i = 0; i < N; ++i) {
+  for (uint64_t i = 0; i < N; ++i) {
     ret[i] = v1[i] + v2[i];
   }
   return ret;
 }
 
-template <class M, unsigned long N>
+template <class M, uint64_t N>
 qacc array<M, N> operator-(const array<M, N>& v1, const array<M, N>& v2)
 {
   array<M, N> ret;
-  for (unsigned long i = 0; i < N; ++i) {
+  for (uint64_t i = 0; i < N; ++i) {
     ret[i] = v1[i] - v2[i];
   }
   return ret;

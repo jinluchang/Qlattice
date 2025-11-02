@@ -50,9 +50,9 @@ qacc void flip_endian_16(void* str, const size_t len, const bool is_par)
   qassert(0 == len % 2);
   uint16_t* p = (uint16_t*)str;
   if (is_par) {
-    qthread_for(i, (long)(len / 2), { p[i] = flip_endian_16(p[i]); });
+    qthread_for(i, (Long)(len / 2), { p[i] = flip_endian_16(p[i]); });
   } else {
-    qfor(i, (long)(len / 2), { p[i] = flip_endian_16(p[i]); });
+    qfor(i, (Long)(len / 2), { p[i] = flip_endian_16(p[i]); });
   }
 }
 
@@ -61,9 +61,9 @@ qacc void flip_endian_32(void* str, const size_t len, const bool is_par)
   qassert(0 == len % 4);
   uint32_t* p = (uint32_t*)str;
   if (is_par) {
-    qthread_for(i, (long)(len / 4), { p[i] = flip_endian_32(p[i]); });
+    qthread_for(i, (Long)(len / 4), { p[i] = flip_endian_32(p[i]); });
   } else {
-    qfor(i, (long)(len / 4), { p[i] = flip_endian_32(p[i]); });
+    qfor(i, (Long)(len / 4), { p[i] = flip_endian_32(p[i]); });
   }
 }
 
@@ -72,13 +72,13 @@ qacc void flip_endian_64(void* str, const size_t len, const bool is_par)
   qassert(0 == len % 8);
   uint64_t* p = (uint64_t*)str;
   if (is_par) {
-    qthread_for(i, (long)(len / 8), { p[i] = flip_endian_64(p[i]); });
+    qthread_for(i, (Long)(len / 8), { p[i] = flip_endian_64(p[i]); });
   } else {
-    qfor(i, (long)(len / 8), { p[i] = flip_endian_64(p[i]); });
+    qfor(i, (Long)(len / 8), { p[i] = flip_endian_64(p[i]); });
   }
 }
 
-template <int SIZE>
+template <Int SIZE>
 qacc void flip_endian(void* str, const size_t len, const bool is_par);
 
 template <>
@@ -109,7 +109,7 @@ qacc void flip_endian<8>(void* str, const size_t len, const bool is_par)
 
 // -------------------
 
-template <int SIZE>
+template <Int SIZE>
 qacc void to_from_little_endian(void* str, const size_t len, const bool is_par)
 {
   qassert(0 == len % SIZE);
@@ -118,7 +118,7 @@ qacc void to_from_little_endian(void* str, const size_t len, const bool is_par)
   }
 }
 
-template <int SIZE>
+template <Int SIZE>
 qacc void to_from_big_endian(void* str, const size_t len, const bool is_par)
 {
   qassert(0 == len % SIZE);
@@ -132,14 +132,14 @@ qacc void to_from_big_endian(void* str, const size_t len, const bool is_par)
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc void to_from_little_endian(Vector<M> v, const bool is_par = false)
 {
-  constexpr int size = element_size_of<M>();
+  constexpr Int size = element_size_of<M>();
   to_from_little_endian<size>((void*)v.data(), v.data_size(), is_par);
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc void to_from_big_endian(Vector<M> v, const bool is_par = false)
 {
-  constexpr int size = element_size_of<M>();
+  constexpr Int size = element_size_of<M>();
   to_from_big_endian<size>((void*)v.data(), v.data_size(), is_par);
 }
 

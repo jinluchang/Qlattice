@@ -63,20 +63,20 @@ crc32_t crc32(const Vector<M> v)
 inline crc32_t crc32_par(const void* smessage, const Long nBytes)
 {
   const uint8_t* ptr = (const uint8_t*)smessage;
-  const int v_limit = omp_get_max_threads();
+  const Int v_limit = omp_get_max_threads();
   std::vector<crc32_t> crcs(v_limit, 0);
   crc32_t ret = 0;
 #pragma omp parallel
   {
-    const int nthreads = omp_get_num_threads();
-    const int id = omp_get_thread_num();
+    const Int nthreads = omp_get_num_threads();
+    const Int id = omp_get_thread_num();
     Long start = 0, len = 0;
     split_work(start, len, nBytes, nthreads, id);
     const crc32_t crc = crc32(ptr + start, len);
     crcs[id] = crc32_shift(crc, nBytes - start - len);
 #pragma omp barrier
     if (0 == id) {
-      for (int i = 0; i < nthreads; ++i) {
+      for (Int i = 0; i < nthreads; ++i) {
         ret ^= crcs[i];
       }
     }
@@ -111,14 +111,14 @@ inline void crc32_check()
   qassert(check_value == v1);
   qassert(check_value == v2);
   qassert(check_value == v3);
-  const int nthreads = omp_get_max_threads();
+  const Int nthreads = omp_get_max_threads();
   displayln(ssprintf("nthreads=%d", nthreads));
   const Long limit = 1024 * 1024;
   std::vector<uint8_t> test_data(limit, 0);
   for (Long i = 0; i < limit; ++i) {
     test_data[i] = i * 7 + 23;
   }
-  for (int i = 0; i < 128; ++i) {
+  for (Int i = 0; i < 128; ++i) {
     const Vector<uint8_t> v(&test_data[0], i);
     qassert(v.data_size() <= limit);
     if (crc32_par(check_value, v) != crc32(check_value, v)) {
@@ -126,7 +126,7 @@ inline void crc32_check()
       qassert(false);
     }
   }
-  for (int i = 0; i < 128; ++i) {
+  for (Int i = 0; i < 128; ++i) {
     const Vector<double> v((const double*)&test_data[0], i);
     qassert(v.data_size() <= limit);
     if (crc32_par(check_value, v) != crc32(check_value, v)) {
@@ -134,7 +134,7 @@ inline void crc32_check()
       qassert(false);
     }
   }
-  for (int i = 0; i < 4; ++i) {
+  for (Int i = 0; i < 4; ++i) {
     const Vector<uint8_t> v((const uint8_t*)&test_data[0], i * 16 * 1024 + 37);
     qassert(v.data_size() <= limit);
     if (crc32_par(check_value, v) != crc32(check_value, v)) {
