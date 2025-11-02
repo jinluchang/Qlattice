@@ -12,9 +12,9 @@ EXPORT(cbegin, {
   }
   if (p_v1 != NULL and PyLong_Check(p_v1) and p_v2 != NULL) {
     // initialize with existing MPI
-    int id_node = 0;
+    Int id_node = 0;
     Coordinate size_node;
-    int color = 0;
+    Int color = 0;
     py_convert(id_node, p_v1);
     py_convert(size_node, p_v2);
     if (p_v3 != NULL) {
@@ -40,7 +40,7 @@ EXPORT(cbegin, {
     }
     cargs.back() = NULL;
     //
-    int argc = (int)sargs.size();
+    Int argc = (int)sargs.size();
     char** argv = (char**)&cargs[0];
     //
     begin(&argc, &argv, node_size_list);

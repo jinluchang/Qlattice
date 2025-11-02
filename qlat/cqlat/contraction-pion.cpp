@@ -4,7 +4,7 @@ EXPORT(contract_pion_field, {
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_prop = NULL;
-  int tslice_src = -1;
+  Int tslice_src = -1;
   if (!PyArg_ParseTuple(args, "OOi", &p_ld, &p_prop, &tslice_src)) {
     return NULL;
   }
@@ -18,7 +18,7 @@ EXPORT(contract_pion_sfield, {
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_prop = NULL;
-  int tslice_src = -1;
+  Int tslice_src = -1;
   if (!PyArg_ParseTuple(args, "OOi", &p_ld, &p_prop, &tslice_src)) {
     return NULL;
   }

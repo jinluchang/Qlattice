@@ -48,8 +48,8 @@ void gf_wilson_flow_step(GaugeField& gf, const double epsilon, const double c1)
 
 static qacc RealD gf_energy_density_dir_site_no_comm(const GaugeField& gf,
                                                       const Coordinate& xl,
-                                                      const int mu,
-                                                      const int nu)
+                                                      const Int mu,
+                                                      const Int nu)
 {
   const ColorMatrix g_mu_nu =
       make_tr_less_anti_herm_matrix(gf_clover_leaf_no_comm(gf, xl, mu, nu));
@@ -101,8 +101,8 @@ static void gf_energy_density_field_no_comm(Field<RealD>& fd,
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;
-    for (int mu = 0; mu < 3; ++mu) {
-      for (int nu = mu + 1; nu < 4; ++nu) {
+    for (Int mu = 0; mu < 3; ++mu) {
+      for (Int nu = mu + 1; nu < 4; ++nu) {
         const ColorMatrix g_mu_nu = make_tr_less_anti_herm_matrix(
             gf_clover_leaf_no_comm(gf, xl, mu, nu));
         s += -matrix_trace(g_mu_nu, g_mu_nu).real();
@@ -139,13 +139,13 @@ RealD gf_energy_density(const GaugeField& gf)
 
 std::vector<double> gf_wilson_flow(GaugeField& gf,
                                    const double existing_flow_time,
-                                   const double flow_time, const int steps,
+                                   const double flow_time, const Int steps,
                                    const double c1)
 {
   TIMER("gf_wilson_flow");
   std::vector<double> energy_density_list(steps, 0.0);
   const double epsilon = flow_time / (double)steps;
-  for (int i = 0; i < steps; ++i) {
+  for (Int i = 0; i < steps; ++i) {
     gf_wilson_flow_step(gf, epsilon, c1);
     const double t = (i + 1) * epsilon + existing_flow_time;
     const double energy_density = gf_energy_density(gf);
@@ -159,7 +159,7 @@ std::vector<double> gf_wilson_flow(GaugeField& gf,
 
 static qacc ColorMatrix gf_plaq_flow_staple_no_comm(
     const GaugeField& gf, const Field<RealD>& plaq_factor, const Coordinate& xl,
-    const int mu)
+    const Int mu)
 // transpose the same way as gf.get_elem(xl, mu)
 {
   ColorMatrix acc;
@@ -197,7 +197,7 @@ static qacc ColorMatrix gf_plaq_flow_staple_no_comm(
 
 static qacc ColorMatrix
 gf_plaq_flow_site_no_comm(const GaugeField& gf, const Field<RealD>& plaq_factor,
-                          const Coordinate& xl, const int mu)
+                          const Coordinate& xl, const Int mu)
 {
   const ColorMatrix ad_staple =
       matrix_adjoint(gf_plaq_flow_staple_no_comm(gf, plaq_factor, xl, mu));
@@ -221,7 +221,7 @@ static void set_plaq_flow_z_no_comm(GaugeMomentum& z,
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> gm_force_v = z.get_elems(xl);
     qassert(gm_force_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       gm_force_v[mu] = gf_plaq_flow_site_no_comm(gf, plaq_factor, xl, mu);
     }
   });

@@ -149,9 +149,9 @@ Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
   if (get_id_node() == 0) {
     const std::string fn = path + "/geon-info.txt";
     const std::vector<std::string> lines = qgetlines(fn);
-    int num_node;
+    Int num_node;
     reads(num_node, info_get_prop(lines, "geon.num_node = "));
-    for (int i = 0; i < 4; ++i) {
+    for (Int i = 0; i < 4; ++i) {
       reads(size_node[i],
             info_get_prop(lines, ssprintf("geon.size_node[%d] = ", i)));
     }
@@ -308,7 +308,7 @@ Long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
   //
   const Coordinate total_site = geo.total_site();
   const Coordinate size_node = geo.geon.size_node;
-  for (int mu = 0; mu < 4; ++mu) {
+  for (Int mu = 0; mu < 4; ++mu) {
     gd[mu] = total_site[mu];
     num_procs[mu] = size_node[mu];
   }
@@ -448,7 +448,7 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   //
   const Coordinate size_node = fr.geon.size_node;
-  for (int mu = 0; mu < 4; ++mu) {
+  for (Int mu = 0; mu < 4; ++mu) {
     total_site[mu] = gd[mu];
     if (not(size_node[mu] == (int)num_procs[mu])) {
       qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
@@ -560,7 +560,7 @@ Long read_skip_next(FieldsReader& fr, std::string& fn)
     fn = "";
     return -1;
   }
-  const int ret = qfseek(fr.qfile, data_len, SEEK_CUR);
+  const Int ret = qfseek(fr.qfile, data_len, SEEK_CUR);
   if (ret != 0) {
     errno = 0;
     return -1;
@@ -577,7 +577,7 @@ void read_through(FieldsReader& fr)
   TIMER("read_through(fr)");
   Qassert(not fr.qfile.null());
   Qassert(fr.max_offset <= fr.file_size);
-  const int code = qfseek(fr.qfile, fr.max_offset, SEEK_SET);
+  const Int code = qfseek(fr.qfile, fr.max_offset, SEEK_SET);
   Qassert(code == 0);
   while (true) {
     std::string fn_read = "";
@@ -674,7 +674,7 @@ ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
   set_field_selection(sbs.fsel, f_rank);
   sbs.sp = make_shuffle_plan(sbs.fsels, sbs.fsel, new_size_node);
   sbs.vbs.resize(fs_rank.size());
-  for (int i = 0; i < (int)fs_rank.size(); ++i) {
+  for (Int i = 0; i < (int)fs_rank.size(); ++i) {
     FieldRank fs_rank_i;
     fs_rank_i.init(fs_rank[i]);
     sbs.vbs[i] = mk_bitset_from_field_rank(fs_rank_i);
@@ -798,20 +798,20 @@ void ShuffledFieldsWriter::init(const std::string& path_,
   qar_index_idx = list(qar_index).size();
   std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   fws.resize(geons.size());
-  for (int i = 0; i < (int)geons.size(); ++i) {
+  for (Int i = 0; i < (int)geons.size(); ++i) {
     const GeometryNode& geon = geons[i];
     if (geon.id_node == 0) {
       fws[i].init(path, geon, is_append);
     }
   }
   SYNC_NODE();
-  for (int i = 0; i < (int)geons.size(); ++i) {
+  for (Int i = 0; i < (int)geons.size(); ++i) {
     const GeometryNode& geon = geons[i];
     if (geon.id_node != 0) {
       fws[i].init(path, geon, is_append);
     }
   }
-  for (int i = 0; i < (int)fws.size(); ++i) {
+  for (Int i = 0; i < (int)fws.size(); ++i) {
     FieldsWriter& fw = fws[i];
     fw.fn_list = fn_list;
     for (Long j = 0; j < (Long)fn_list.size(); ++j) {
@@ -860,7 +860,7 @@ void ShuffledFieldsReader::init(const std::string& path_,
   }
   std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   frs.resize(geons.size());
-  for (int i = 0; i < (int)geons.size(); ++i) {
+  for (Int i = 0; i < (int)geons.size(); ++i) {
     frs[i].init(path, geons[i]);
   }
   if (does_file_exist_qar_sync_node(path + "/index.qar")) {
@@ -1008,7 +1008,7 @@ Long flush(ShuffledFieldsWriter& sfw)
 {
   TIMER_VERBOSE("flush(sfw)");
   Long ret = 0;
-  for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+  for (Int i = 0; i < (int)sfw.fws.size(); ++i) {
     ret += flush(sfw.fws[i]);
   }
   if (get_id_node() == 0) {
@@ -1021,7 +1021,7 @@ Long flush(ShuffledFieldsWriter& sfw)
 void read_through_sync_node(ShuffledFieldsReader& sfr)
 {
   TIMER_VERBOSE("read_through_sync_node(sfr)");
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     read_through(sfr.frs[i]);
   }
   SYNC_NODE();
@@ -1034,7 +1034,7 @@ bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std::strin
   Long total_counts = 0;
   displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfr.path.c_str()));
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     if (does_file_exist(sfr.frs[i], fn)) {
       total_counts += 1;
     }
@@ -1056,7 +1056,7 @@ bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
   Long total_counts = 0;
   displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfw.path.c_str()));
-  for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+  for (Int i = 0; i < (int)sfw.fws.size(); ++i) {
     if (does_file_exist(sfw.fws[i], fn)) {
       total_counts += 1;
     }
@@ -1078,7 +1078,7 @@ bool is_sparse_field_sync_node(const ShuffledFieldsReader& sfr,
   Long total_counts = 0;
   displayln_info(1, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
                                      sfr.path.c_str()));
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     const FieldsReader& fr = sfr.frs[i];
     if (has(fr.offsets_map, fn)) {
       const FieldsSegmentInfo& fsinfo = fr.offsets_map.at(fn);
@@ -1109,7 +1109,7 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
   clear(final_offsets);
   final_offsets.resize(sfr.frs.size(), 0);
   Long total_failed_counts = 0;
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     final_offsets[i] = check_file(sfr.frs[i], fn, is_check_data);
     if (final_offsets[i] == -1) {
       total_failed_counts += 1;
@@ -1136,7 +1136,7 @@ std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr, bool is_sk
   }
   bcast(ret);
   if (not is_skipping_check) {
-    for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
       const FieldsReader& fr = sfr.frs[i];
       Qassert(fr.is_read_through);
       Qassert(fr.fn_list.size() == ret.size());
@@ -1160,7 +1160,7 @@ std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_sk
   }
   bcast(ret);
   if (not is_skipping_check) {
-    for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+    for (Int i = 0; i < (int)sfw.fws.size(); ++i) {
       const FieldsWriter& fw = sfw.fws[i];
       Qassert(fw.fn_list.size() == ret.size());
       for (Long j = 0; j < (Long)ret.size(); ++j) {
@@ -1203,7 +1203,7 @@ int truncate_fields_sync_node(const std::string& path,
       return 2;
     }
   }
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
     const Long file_size = fr.file_size;
@@ -1219,7 +1219,7 @@ int truncate_fields_sync_node(const std::string& path,
       if (file_size < 0) {
         mkfile(fr);
       }
-      const int b = qtruncate(path_file, final_offset);
+      const Int b = qtruncate(path_file, final_offset);
       Qassert(b == 0);
       fr.fn_list = fns_keep;
       fr.max_offset = final_offset;
@@ -1276,7 +1276,7 @@ void properly_truncate_fields_sync_node(
   }
   fn_list.resize(last_idx + 1);
   offsets_list.resize(fn_list.size());
-  for (int j = 0; j < (int)sfr.frs.size(); ++j) {
+  for (Int j = 0; j < (int)sfr.frs.size(); ++j) {
     FieldsReader& fr = sfr.frs[j];
     fr.fn_list.resize(last_idx + 1);
     Qassert(fr.fn_list == fn_list);
@@ -1289,7 +1289,7 @@ void properly_truncate_fields_sync_node(
   if (not is_only_check) {
     fields_build_index(sfr);
   }
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
     const Long file_size = fr.file_size;
@@ -1309,7 +1309,7 @@ void properly_truncate_fields_sync_node(
         if (file_size < 0) {
           mkfile(fr);
         }
-        const int b = qtruncate(path_file, final_offset);
+        const Int b = qtruncate(path_file, final_offset);
         Qassert(b == 0);
       }
     }
@@ -1343,7 +1343,7 @@ bool has_duplicates(const ShuffledFieldsReader& sfr)
   TIMER("has_duplicates(sfr)");
   const std::vector<std::string> fn_list = list_fields(sfr);
   Long count = 0;
-  for (int j = 0; j < (int)sfr.frs.size(); ++j) {
+  for (Int j = 0; j < (int)sfr.frs.size(); ++j) {
     const FieldsReader& fr = sfr.frs[j];
     Qassert(fr.is_read_through);
     Qassert(fr.fn_list.size() == fn_list.size());
@@ -1447,7 +1447,7 @@ std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsWriter
   Vector<char> all_offsets_view((char*)all_offsets.data(),
                                 all_offsets.size() * sizeof(FieldsSegmentInfo));
   set_zero(all_offsets_view);
-  for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+  for (Int i = 0; i < (int)sfw.fws.size(); ++i) {
     const FieldsWriter& fw = sfw.fws[i];
     Qassert(fw.geon.num_node == num_files);
     Qassert(fw.geon.id_node >= 0);
@@ -1469,7 +1469,7 @@ std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsReader
   Vector<char> all_offsets_view((char*)all_offsets.data(),
                                 all_offsets.size() * sizeof(FieldsSegmentInfo));
   set_zero(all_offsets_view);
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     const FieldsReader& fr = sfr.frs[i];
     Qassert(fr.geon.num_node == num_files);
     Qassert(fr.geon.id_node >= 0);
@@ -1489,7 +1489,7 @@ bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
   TIMER("populate_fields_offsets(sfr,fn)");
   const Long num_files = all_offsets.size();
   Long count = 0;
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     Qassert(fr.geon.num_node == num_files);
     Qassert(fr.geon.id_node >= 0);
@@ -1523,7 +1523,7 @@ bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
     }
     return false;
   }
-  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+  for (Int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     fr.fn_list.push_back(fn);
     fr.offsets_map[fn] = all_offsets[fr.geon.id_node];

@@ -23,7 +23,7 @@ void Geometry::init(const Coordinate& total_site)
 {
   const GeometryNode& geon_ = get_geometry_node();
   Coordinate node_site_;
-  for (int i = 0; i < DIMN; ++i) {
+  for (Int i = 0; i < DIMN; ++i) {
     Qassert(0 == total_site[i] % geon_.size_node[i]);
     node_site_[i] = total_site[i] / geon_.size_node[i];
   }

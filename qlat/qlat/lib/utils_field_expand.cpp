@@ -21,7 +21,7 @@ void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long
     for (Long i = 0; i < (Long)plan.send_pack_infos.size(); ++i){
       const CommPackInfo& cpi = plan.send_pack_infos[i];
       #pragma omp parallel for
-      for(int off=0;off<cpi.size;off++){
+      for(Int off=0;off<cpi.size;off++){
         pack_send[(cur+off)*2 + 0] = cpi.buffer_idx + off;
         pack_send[(cur+off)*2 + 1] = cpi.offset + off;
       }
@@ -32,7 +32,7 @@ void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long
     for (Long i = 0; i < (Long)plan.recv_pack_infos.size(); ++i){
       const CommPackInfo& cpi = plan.recv_pack_infos[i];
       #pragma omp parallel for
-      for(int off=0;off<cpi.size;off++){
+      for(Int off=0;off<cpi.size;off++){
         pack_recv[(cur + off)*2 + 0] = cpi.offset + off;
         pack_recv[(cur + off)*2 + 1] = cpi.buffer_idx + off;
       }
@@ -42,7 +42,7 @@ void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long
 }
 
 bool operator<(const expand_index_Key& x, const expand_index_Key& y){
-  int sr = x.tag.compare(y.tag);
+  Int sr = x.tag.compare(y.tag);
   if (sr < 0) {
     return false;
   }
@@ -64,7 +64,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 // tag is partialy used
 {
   TIMER_VERBOSE("set_marks_field_dir");
-  int set_tag = -10000;
+  Int set_tag = -10000;
   if(tag == std::string("dirL")){set_tag = 500;}
   if(tag == std::string("dirR")){set_tag = 501;}
   //
@@ -88,7 +88,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
   #pragma omp parallel for
   for (Long index = 0; index < geo_full.local_volume(); ++index) {
     const Coordinate xl = geo_full.coordinate_from_index(index);
-    for (int dir = -4; dir < 4; ++dir)
+    for (Int dir = -4; dir < 4; ++dir)
     {
       if((set_tag >= -3 - 1 and set_tag < 4) and dir != set_tag){continue ;}
       if(set_tag == 500 and dir >= 0){continue ;}//only do left
@@ -102,7 +102,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
       //
       if (geo.is_on_node(xl1) and !geo.is_local(xl1)) {
         Vector<int8_t> v = marks.get_elems(xl1);
-        for (int m = 0; m < multiplicity; ++m) {
+        for (Int m = 0; m < multiplicity; ++m) {
           v[m] = 1;
         }
       }

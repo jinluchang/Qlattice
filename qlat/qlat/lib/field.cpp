@@ -31,7 +31,7 @@ void set_mom_phase_field(FieldM<ComplexD, 1>& f, const CoordinateD& mom)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0;
-    for (int k = 0; k < DIMN; ++k) {
+    for (Int k = 0; k < DIMN; ++k) {
       phase += mom[k] * xg[k];
     }
     f.get_elem(xl) = qpolar(1.0, phase);
@@ -56,7 +56,7 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     Vector<Int> fv = f.get_elems(xl);
-    for (int mu = 0; mu < DIMN; ++mu) {
+    for (Int mu = 0; mu < DIMN; ++mu) {
       fv[mu] = xg[mu];
     }
   });

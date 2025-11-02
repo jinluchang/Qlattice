@@ -5,7 +5,7 @@
 namespace qlat
 {  //
 
-bool check_fft_plan_key(const Geometry& geo, const int mc, const int dir,
+bool check_fft_plan_key(const Geometry& geo, const Int mc, const Int dir,
                         const bool is_forward)
 {
   (void)mc;
@@ -26,8 +26,8 @@ void FftComplexFieldPlan::init()
   }
 }
 
-void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
-                               const int dir_, const bool is_forward_)
+void FftComplexFieldPlan::init(const Geometry& geo_, const Int mc_,
+                               const Int dir_, const bool is_forward_)
 {
   TIMER_VERBOSE("FftComplexFieldPlan::init");
   qassert(check_fft_plan_key(geo_, mc_, dir_, is_forward_));
@@ -35,7 +35,7 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   mc = mc_;
   dir = dir_;
   is_forward = is_forward_;
-  const int sizec = geo.total_site()[dir];
+  const Int sizec = geo.total_site()[dir];
   const Long nc = geo.local_volume() / geo.node_site[dir] * mc;
   const Long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
   const Long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
@@ -46,8 +46,8 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   displayln_info(ssprintf("FftComplexFieldPlan::init: malloc %ld",
                           nc_size * sizec * sizeof(ComplexD)));
   ComplexD* fftdatac = (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
-  const int rank = 1;
-  const int n[1] = {sizec};
+  const Int rank = 1;
+  const Int n[1] = {sizec};
   const Long howmany = nc_size;
   const Long dist = 1;
   const Long stride = nc_size;
@@ -68,8 +68,8 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const int mc_,
   sp = make_shuffle_plan_fft(geo.total_site(), dir);
 }
 
-FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const int mc,
-                                  const int dir, const bool is_forward)
+FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const Int mc,
+                                  const Int dir, const bool is_forward)
 {
   TIMER("get_fft_plan");
   qassert(check_fft_plan_key(geo, mc, dir, is_forward));

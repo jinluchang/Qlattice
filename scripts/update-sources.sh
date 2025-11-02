@@ -65,12 +65,13 @@ fn=.clangd
 
 echo "CompileFlags:" >"$fn"
 echo "    Add: [" >>"$fn"
+echo "        '-DQLAT_USE_GRID_EIGEN'," >>"$fn"
+echo "        '-D__QLAT_NO_FLOAT128__'," >>"$fn"
+echo "        '$(pkg-config python --cflags)'," >>"$fn"
 echo "        '-I$PWD/qlat-utils/qlat_utils/include'," >>"$fn"
 echo "        '-I$PWD/qlat/qlat/include'," >>"$fn"
-echo "        '-I$PWD/qlat-cps/qlat_cps/include'," >>"$fn"
 echo "        '-I$PWD/qlat-grid/qlat_grid/include'," >>"$fn"
-echo "        '-D__QLAT_NO_FLOAT128__'," >>"$fn"
-echo "        '-DQLAT_USE_GRID_EIGEN'" >>"$fn"
+echo "        '-I$PWD/qlat-cps/qlat_cps/include'" >>"$fn"
 echo "    ]" >>"$fn"
 
 ) || echo "Create '.clangd' not successful."

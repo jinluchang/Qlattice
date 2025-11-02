@@ -4,7 +4,7 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_sfield_ctype(int dummy)
+PyObject* mk_sfield_ctype(Int dummy)
 {
   (void)dummy;
   SelectedField<M>* pf = new SelectedField<M>();
@@ -12,7 +12,7 @@ PyObject* mk_sfield_ctype(int dummy)
 }
 
 template <class M>
-PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel, const int multiplicity)
+PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel, const Int multiplicity)
 {
   SelectedField<M>* pf = new SelectedField<M>();
   SelectedField<M>& f = *pf;
@@ -191,7 +191,7 @@ PyObject* get_elems_sfield_ctype(PyObject* p_sfield, const Long idx)
 }
 
 template <class M>
-PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const Long idx, const int m)
+PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const Long idx, const Int m)
 {
   const SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
   if (m >= 0) {
@@ -206,7 +206,7 @@ PyObject* set_elems_sfield_ctype(PyObject* p_field, const Long idx,
                                  PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  const int multiplicity = f.multiplicity;
+  const Int multiplicity = f.multiplicity;
   qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
   const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
   assign(f.get_elems(idx), val);
@@ -215,7 +215,7 @@ PyObject* set_elems_sfield_ctype(PyObject* p_field, const Long idx,
 
 template <class M>
 PyObject* set_elem_sfield_ctype(PyObject* p_field, const Long idx,
-                                const int m, PyObject* p_val)
+                                const Int m, PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
   qassert(PyBytes_Size(p_val) == sizeof(M));
@@ -228,7 +228,7 @@ template <class M>
 PyObject* glb_sum_tslice_double_sfield_ctype(PyObject* p_spfield,
                                              PyObject* p_field,
                                              const FieldSelection& fsel,
-                                             const int t_dir)
+                                             const Int t_dir)
 {
   SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
   const SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
@@ -240,7 +240,7 @@ template <class M>
 PyObject* glb_sum_tslice_long_sfield_ctype(PyObject* p_spfield,
                                            PyObject* p_field,
                                            const FieldSelection& fsel,
-                                           const int t_dir)
+                                           const Int t_dir)
 {
   SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
   const SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
@@ -487,7 +487,7 @@ EXPORT(set_sqrt_double_sfield, {
   qacc_for(idx, f.n_elems, {
     const Vector<double> f1v = f1.get_elems_const(idx);
     Vector<double> fv = f.get_elems(idx);
-    for (int m = 0; m < f.multiplicity; ++m) {
+    for (Int m = 0; m < f.multiplicity; ++m) {
       fv[m] = std::sqrt(f1v[m]);
     }
   });
@@ -554,7 +554,7 @@ EXPORT(glb_sum_tslice_double_sfield, {
   using namespace qlat;
   PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;
-  int t_dir = 3;
+  Int t_dir = 3;
   if (!PyArg_ParseTuple(args, "OO|i", &p_spfield, &p_field, &t_dir)) {
     return NULL;
   }
@@ -573,7 +573,7 @@ EXPORT(glb_sum_tslice_long_sfield, {
   using namespace qlat;
   PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;
-  int t_dir = 3;
+  Int t_dir = 3;
   if (!PyArg_ParseTuple(args, "OO|i", &p_spfield, &p_field, &t_dir)) {
     return NULL;
   }

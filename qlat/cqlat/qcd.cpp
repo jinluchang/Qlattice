@@ -36,8 +36,8 @@ EXPORT(gf_avg_link_trace, {
 EXPORT(gf_avg_wilson_loop_normalized_tr, {
   using namespace qlat;
   PyObject* p_gf = NULL;
-  int l = 0;
-  int t = 0;
+  Int l = 0;
+  Int t = 0;
   if (!PyArg_ParseTuple(args, "Oii", &p_gf, &l, &t)) {
     return NULL;
   }
@@ -49,7 +49,7 @@ EXPORT(gf_avg_wilson_loop_normalized_tr, {
 EXPORT(gf_wilson_line_no_comm, {
   using namespace qlat;
   PyObject* p_wilson_line_field = NULL;
-  int wilson_line_field_m = 0;
+  Int wilson_line_field_m = 0;
   PyObject* p_gf_ext = NULL;
   PyObject* p_path = NULL;
   PyObject* p_path_n = NULL;
@@ -78,7 +78,7 @@ EXPORT(set_g_rand_color_matrix_field, {
   PyObject* p_field = NULL;
   PyObject* p_rng = NULL;
   double sigma = 1.0;
-  int n_step = 1;
+  Int n_step = 1;
   if (!PyArg_ParseTuple(args, "OOd|i", &p_field, &p_rng, &sigma, &n_step)) {
     return NULL;
   }
@@ -130,7 +130,7 @@ EXPORT(gf_twist_boundary_at_boundary, {
   using namespace qlat;
   PyObject* p_gf = NULL;
   double lmom = 0.0;
-  int mu = -1;
+  Int mu = -1;
   if (!PyArg_ParseTuple(args, "Odi", &p_gf, &lmom, &mu)) {
     return NULL;
   }

@@ -93,7 +93,7 @@ EXPORT(random_point_src, {
   if (!PyArg_ParseTuple(args, "OO", &p_prop, &p_seed)) {
     return NULL;
   }
-  int seed=0;
+  Int seed=0;
   py_convert(seed, p_seed);
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
 
@@ -128,9 +128,9 @@ EXPORT(mk_output, {
   std::vector<int > key_T;
   py_convert(key_T, p_0);
   long size = 1;
-  for(unsigned int i=0;i<key_T.size();i++)
+  for(unsigned Int i=0;i<key_T.size();i++)
   {
-    int li = key_T[i];
+    Int li = key_T[i];
     qassert(li > 0);
     size = size * li;
   }
@@ -159,7 +159,7 @@ EXPORT(clear_output, {
 
   std::vector<double >& write = *((std::vector<double >*) PyLong_AsVoidPtr(p_0));
   qmessage("size of write %d \n", int(write.size()));
-  for(unsigned int i=0;i<write.size();i++){write[i] = 0;}
+  for(unsigned Int i=0;i<write.size();i++){write[i] = 0;}
 
   Py_RETURN_NONE;
 })
@@ -201,10 +201,10 @@ EXPORT(make_point_prop, {
 EXPORT(make_volume_src, {
   using namespace qlat;
   PyObject* p_v0 = NULL;
-  int seed      =  0;
-  int mix_color =  0;
-  int mix_spin  =  0;
-  int tini      = -1;
+  Int seed      =  0;
+  Int mix_color =  0;
+  Int mix_spin  =  0;
+  Int tini      = -1;
   if (!PyArg_ParseTuple(args, "Oi|iii", &p_v0, &seed, &mix_color, &mix_spin, &tini)) {
     return NULL;
   }
@@ -219,7 +219,7 @@ EXPORT(local_sequential_source, {
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
   PyObject* p_v2 = NULL;
-  int gammai = -1;
+  Int gammai = -1;
   if (!PyArg_ParseTuple(args, "OOO|i", &p_v0, &p_v1, &p_v2, &gammai)) {
     return NULL;
   }
@@ -242,11 +242,11 @@ EXPORT(meson_corr, {
   PyObject* p_v4 = NULL;
   PyObject* p_v3 = NULL;
 
-  int g0      =  0;
-  int g1      =  0;
-  int tini    =  0;
-  int invmode =  1;
-  int shift_end = 1;
+  Int g0      =  0;
+  Int g1      =  0;
+  Int tini    =  0;
+  Int invmode =  1;
+  Int shift_end = 1;
   if (!PyArg_ParseTuple(args, "OOOii|iiOiO", &p_v0, &p_v1, &p_v2, &g0, &g1, &tini, &invmode, &p_v4, &shift_end, &p_v3)) {
     return NULL;
   }
@@ -272,8 +272,8 @@ EXPORT(prop_corr, {
   PyObject* p_v4 = NULL;
   PyObject* p_v3 = NULL;
 
-  int tini    =  0;
-  int shift_end = 1;
+  Int tini    =  0;
+  Int shift_end = 1;
   if (!PyArg_ParseTuple(args, "OO|iOiO", &p_v0, &p_v2, &tini, &p_v4, &shift_end, &p_v3)) {
     return NULL;
   }
@@ -338,7 +338,7 @@ EXPORT(corr_dat_info, {
 EXPORT(prop4d_conj, {
   using namespace qlat;
   PyObject* p_v0 = NULL;
-  int rotate = 1;
+  Int rotate = 1;
   if (!PyArg_ParseTuple(args, "O|i", &p_v0, &rotate)) {
     return NULL;
   }
@@ -350,8 +350,8 @@ EXPORT(prop4d_conj, {
 EXPORT(prop4d_src_gamma, {
   using namespace qlat;
   PyObject* p_v0 = NULL;
-  int g0      =  0;
-  int Conj    =  0;
+  Int g0      =  0;
+  Int Conj    =  0;
   if (!PyArg_ParseTuple(args, "Oi|i", &p_v0, &g0, &Conj)) {
     return NULL;
   }
@@ -359,12 +359,12 @@ EXPORT(prop4d_src_gamma, {
 
   ga_matrices_cps ga_cps;
   std::vector<ga_M > gL;gL.resize(16);
-  {int o=0;
-  for(int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
-  for(int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
-  for(int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
-  for(int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
-  for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
+  {Int o=0;
+  for(Int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
+  for(Int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
+  for(Int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
+  for(Int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
+  for(Int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
   prop4d_src_gamma(src, gL[g0], Conj);
   Py_RETURN_NONE;
@@ -373,8 +373,8 @@ EXPORT(prop4d_src_gamma, {
 EXPORT(prop4d_sink_gamma, {
   using namespace qlat;
   PyObject* p_v0 = NULL;
-  int g0      =  0;
-  int Conj    =  0;
+  Int g0      =  0;
+  Int Conj    =  0;
   if (!PyArg_ParseTuple(args, "Oi|i", &p_v0, &g0, &Conj)) {
     return NULL;
   }
@@ -382,12 +382,12 @@ EXPORT(prop4d_sink_gamma, {
 
   ga_matrices_cps ga_cps;
   std::vector<ga_M > gL;gL.resize(16);
-  {int o=0;
-  for(int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
-  for(int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
-  for(int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
-  for(int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
-  for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
+  {Int o=0;
+  for(Int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
+  for(Int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
+  for(Int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
+  for(Int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
+  for(Int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
   prop4d_sink_gamma(src, gL[g0], Conj);
   Py_RETURN_NONE;

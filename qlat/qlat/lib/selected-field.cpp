@@ -91,10 +91,10 @@ void mk_grid_field_selection(FieldRank& f_rank, const Coordinate& total_site,
     Field<int64_t>& nf = fs[0];
     const Geometry& ngeo = nf.geo();
     qassert(new_size_node == ngeo.geon.size_node);
-    const int t_start = ngeo.node_site[3] * ngeo.geon.coor_node[3];
-    const int t_end = t_start + ngeo.node_site[3];
+    const Int t_start = ngeo.node_site[3] * ngeo.geon.coor_node[3];
+    const Int t_end = t_start + ngeo.node_site[3];
 #pragma omp parallel for
-    for (int t = t_start; t < t_end; ++t) {
+    for (Int t = t_start; t < t_end; ++t) {
       RngState rst = rs.split(t);
       std::vector<Long> ranks(n_per_tslice);
       for (Long i = 0; i < n_per_tslice; ++i) {
@@ -247,7 +247,7 @@ void select_t_range(FieldRank& f_rank, const Long t_start, const Long t_stop)
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const int t = xg[3];
+    const Int t = xg[3];
     if (not((t_start <= t) and ((t < t_stop) or (t_stop == -1)))) {
       int64_t& rank = f_rank.get_elem(index);
       rank = -1;
@@ -567,7 +567,7 @@ PointsSelection psel_from_fsel(const FieldSelection& fsel)
   const Long n_elems = fsel.n_elems;
   Long total_n_elems = n_elems;
   glb_sum(total_n_elems);
-  // const int num_node = geo.geon.num_node;
+  // const Int num_node = geo.geon.num_node;
   const Int id_node = geo.geon.id_node;
   vector<Long> vec(geo.geon.num_node);
   set_zero(vec);
@@ -684,7 +684,7 @@ Long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
           while (infos.back() != "END_HEADER\n" && infos.back() != "") {
             infos.push_back(qgetline(fp));
           }
-          for (int m = 0; m < 4; ++m) {
+          for (Int m = 0; m < 4; ++m) {
             reads(total_site[m],
                   info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
           }

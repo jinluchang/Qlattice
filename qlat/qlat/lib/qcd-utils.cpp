@@ -6,7 +6,7 @@ namespace qlat
 
 // BUG ! path with std::vector using in qacc
 void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
-                            const int wilson_line_field_m,
+                            const Int wilson_line_field_m,
                             const GaugeField& gf_ext,
                             const std::vector<Int>& path)
 // wilson_line_field needs to be initialized before hand
@@ -25,7 +25,7 @@ void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
 }
 
 void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
-                            const int wilson_line_field_m,
+                            const Int wilson_line_field_m,
                             const GaugeField& gf_ext,
                             const std::vector<Int>& path,
                             const std::vector<Int>& path_n)
@@ -62,14 +62,14 @@ void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
     const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi(rs, gindex);
     Vector<ColorMatrix> v = fc.get_elems(xl);
-    for (int m = 0; m < (int)v.size(); ++m) {
+    for (Int m = 0; m < (int)v.size(); ++m) {
       v[m] = make_g_rand_anti_hermitian_matrix(rsi, sigma);
     }
   }
 }
 
 void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState& rs,
-                                   const double sigma, const int n_step)
+                                   const double sigma, const Int n_step)
 {
   TIMER("set_g_rand_color_matrix_field");
   const Geometry& geo = fc.geo();
@@ -80,10 +80,10 @@ void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState& rs,
     const Long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi(rs, gindex);
     Vector<ColorMatrix> v = fc.get_elems(xl);
-    for (int m = 0; m < (int)v.size(); ++m) {
+    for (Int m = 0; m < (int)v.size(); ++m) {
       v[m] =
           make_color_matrix_exp(make_g_rand_anti_hermitian_matrix(rsi, sigma));
-      for (int k = 1; k < n_step; ++k) {
+      for (Int k = 1; k < n_step; ++k) {
         v[m] *= make_color_matrix_exp(
             make_g_rand_anti_hermitian_matrix(rsi, sigma));
       }
@@ -111,7 +111,7 @@ void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
     Vector<WilsonMatrix> v = cf.get_elems(xl);
     const WilsonMatrix m2rev =
         gamma5 * (WilsonMatrix)matrix_adjoint(m2) * gamma5;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       v[m] = m2rev * gammas[m] * m1;
     }
   }
@@ -136,8 +136,8 @@ std::vector<int> find_next_dirs(const Coordinate& loc,
     return std::vector<int>();
   }
   std::vector<int> dirs;
-  for (int i = 0; i < DIMN; ++i) {
-    const int x = target_wilson_line[i];
+  for (Int i = 0; i < DIMN; ++i) {
+    const Int x = target_wilson_line[i];
     if (0 < x) {
       dirs.push_back(i);
     } else if (0 > x) {
@@ -157,14 +157,14 @@ std::vector<int> find_next_dirs(const Coordinate& loc,
       next_dirs = dirs;
     } else {
       double min_dis = 1e6;  // a very large number
-      for (int i = 0; i < (int)dirs.size(); ++i) {
+      for (Int i = 0; i < (int)dirs.size(); ++i) {
         const double next_dis = coordinate_distance_from_wilson_line(
             coordinate_shifts(loc, dirs[i]), target_wilson_line);
         if (next_dis < min_dis) {
           min_dis = next_dis;
         }
       }
-      for (int i = 0; i < (int)dirs.size(); ++i) {
+      for (Int i = 0; i < (int)dirs.size(); ++i) {
         const double next_dis = coordinate_distance_from_wilson_line(
             coordinate_shifts(loc, dirs[i]), target_wilson_line);
         if (next_dis <= min_dis + eps_dis) {
@@ -183,12 +183,12 @@ void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
   std::set<Coordinate> cset;
   std::vector<Coordinate> cs;
   cs.push_back(Coordinate());
-  for (int i = 0; i < (int)cs.size(); ++i) {
+  for (Int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate c = cs[i];
     cset.insert(c);
     const WilsonLinePathStop& ps = stops[c];
     Qassert(c == ps.x);
-    for (int k = 0; k < (int)ps.paths.size(); ++k) {
+    for (Int k = 0; k < (int)ps.paths.size(); ++k) {
       const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
       cs.push_back(nc);
       stops[nc].num_origins = 0;
@@ -199,11 +199,11 @@ void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
        ++it) {
     cs.push_back(*it);
   }
-  for (int i = 0; i < (int)cs.size(); ++i) {
+  for (Int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate& c = cs[i];
     const WilsonLinePathStop& ps = stops[c];
     Qassert(c == ps.x);
-    for (int k = 0; k < (int)ps.paths.size(); ++k) {
+    for (Int k = 0; k < (int)ps.paths.size(); ++k) {
       const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
       stops[nc].num_origins += 1;
     }
@@ -217,15 +217,15 @@ WilsonLinePathSegment make_wilson_line_path_segment(const Coordinate& target)
   ret.target = target;
   std::vector<Coordinate> cs;
   cs.push_back(Coordinate());
-  for (int i = 0; i < (int)cs.size(); ++i) {
+  for (Int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate c = cs[i];
     std::vector<int> dirs = find_next_dirs(c, target);
     WilsonLinePathStop& ps = ret.stops[c];
     ps.x = c;
     ps.paths.resize(dirs.size());
-    for (int k = 0; k < (int)dirs.size(); ++k) {
+    for (Int k = 0; k < (int)dirs.size(); ++k) {
       Qassert(ps.paths[k].size() == 0);
-      int dir = dirs[k];
+      Int dir = dirs[k];
       ps.paths[k].push_back(dir);
       Coordinate nc = coordinate_shifts(c, dir);
       Qassert(nc == coordinate_shifts(c, ps.paths[k]));
@@ -261,7 +261,7 @@ void set_multiply_simple_wilson_line_field_partial_comm(
   Qassert(&wlf != &wlf1);
   wlf.init(geo);
   for (size_t i = 0; i < path.size(); ++i) {
-    const int dir = path[i];
+    const Int dir = path[i];
     Qassert(-DIMN <= dir && dir < DIMN);
     refresh_expanded_1(wlf1);
 #pragma omp parallel for
@@ -311,7 +311,7 @@ void set_multiply_wilson_line_field_partial_comm(
   dict[cs[0]] = 0;
   wlf.init(geo);
   while (true) {
-    for (int i = 0; i < (int)cs.size(); ++i) {
+    for (Int i = 0; i < (int)cs.size(); ++i) {
       const Coordinate c = cs[i];
       const WilsonLinePathStop& ps = pacc.stops[c];
       Qassert(c == ps.x);
@@ -321,7 +321,7 @@ void set_multiply_wilson_line_field_partial_comm(
           wlf = fs[i];
           return;
         }
-        for (int k = 0; k < (int)ps.paths.size(); ++k) {
+        for (Int k = 0; k < (int)ps.paths.size(); ++k) {
           wlf1 = fs[i];
           const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
           pacc.stops[nc].num_origins -= 1;
@@ -370,7 +370,7 @@ ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const WilsonLinePath& path)
   wlf1.init(geo_resize(geo, 1));
   wlf.init(geo);
   set_unit(wlf1);
-  for (int i = 0; i < (int)path.ps.size(); ++i) {
+  for (Int i = 0; i < (int)path.ps.size(); ++i) {
     set_multiply_wilson_line_field_partial_comm(wlf, wlf1, gf1, path.ps[i]);
     if (i != (int)path.ps.size() - 1) {
       wlf1 = wlf;
@@ -379,7 +379,7 @@ ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const WilsonLinePath& path)
   return field_glb_sum(wlf)[0] / (ComplexD)geo.total_volume();
 }
 
-WilsonLinePath make_wilson_loop_path(const Coordinate& target_l, const int t)
+WilsonLinePath make_wilson_loop_path(const Coordinate& target_l, const Int t)
 {
   const Coordinate target_t(0, 0, 0, t);
   WilsonLinePath path;
@@ -390,7 +390,7 @@ WilsonLinePath make_wilson_loop_path(const Coordinate& target_l, const int t)
   return path;
 }
 
-ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l, const int t)
+ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Int l, const Int t)
 {
   TIMER_VERBOSE("gf_avg_wilson_loop");
   ColorMatrix m =
@@ -402,9 +402,9 @@ ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l, const int t)
 
 std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)
 {
-  const int x = l[0];
-  const int y = l[1];
-  const int z = l[2];
+  const Int x = l[0];
+  const Int y = l[1];
+  const Int z = l[2];
   std::set<Coordinate> cset;
   cset.insert(Coordinate(x, y, z, 0));
   cset.insert(Coordinate(y, z, x, 0));
@@ -435,7 +435,7 @@ std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)
        ++it) {
     cs.push_back(-*it);
   }
-  for (int i = 0; i < (int)cs.size(); ++i) {
+  for (Int i = 0; i < (int)cs.size(); ++i) {
     cset.insert(cs[i]);
   }
   clear(cs);
@@ -447,19 +447,19 @@ std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)
 }
 
 ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l,
-                               const int t)
+                               const Int t)
 {
   TIMER_VERBOSE("gf_avg_wilson_loop(Coordinate&)");
   ColorMatrix m;
   set_zero(m);
   std::vector<Coordinate> cs = spatial_permute_direction(l);
-  for (int i = 0; i < (int)cs.size(); ++i) {
+  for (Int i = 0; i < (int)cs.size(); ++i) {
     m += gf_avg_wilson_line(gf, make_wilson_loop_path(cs[i], t));
   }
   return m;
 }
 
-void gf_show_info(const GaugeField& gf, const int level)
+void gf_show_info(const GaugeField& gf, const Int level)
 {
   TIMER_VERBOSE("gf_show_info");
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));

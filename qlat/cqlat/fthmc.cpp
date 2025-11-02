@@ -31,10 +31,10 @@ EXPORT(show_flow_info, {
 EXPORT(add_flow_flow_info, {
   using namespace qlat;
   PyObject* p_fi = NULL;
-  int eo = 0;
-  int mu = 0;
+  Int eo = 0;
+  Int mu = 0;
   double epsilon = 0.0;
-  int flow_size = 1;
+  Int flow_size = 1;
   if (!PyArg_ParseTuple(args, "Oiid|i", &p_fi, &eo, &mu, &epsilon,
                         &flow_size)) {
     return NULL;

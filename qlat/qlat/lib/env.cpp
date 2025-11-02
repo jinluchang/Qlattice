@@ -4,7 +4,7 @@
 namespace qlat
 {  //
 
-int get_field_init_from_env()
+ Int  get_field_init_from_env()
 {
   std::string tag = get_env_default("q_field_init", "fast");
   if (tag == "fast") {

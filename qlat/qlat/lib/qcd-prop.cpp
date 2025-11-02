@@ -60,7 +60,7 @@ void set_prop_from_ff_vec(Propagator4d& prop,
 
 template <class T>
 static void set_point_src_fermion_field(FermionField4dT<T>& ff,
-                                        const Coordinate& xg, const int cs,
+                                        const Coordinate& xg, const Int cs,
                                         const ComplexD& value = 1.0)
 // ff need to be initialized
 {
@@ -82,21 +82,21 @@ static void set_point_src(Propagator4dT<T>& prop, const Geometry& geo_input,
   prop.init(geo);
   FermionField4dT<T> src;
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_point_src_fermion_field(src, xg, cs, value);
     set_propagator_col_from_fermion_field(prop, cs, src);
   }
 }
 
 void set_point_src_fermion_field(FermionField4dT<RealD>& ff,
-                                 const Coordinate& xg, const int cs,
+                                 const Coordinate& xg, const Int cs,
                                  const ComplexD& value)
 {
   set_point_src_fermion_field<RealD>(ff, xg, cs, value);
 }
 
 void set_point_src_fermion_field(FermionField4dT<RealF>& ff,
-                                 const Coordinate& xg, const int cs,
+                                 const Coordinate& xg, const Int cs,
                                  const ComplexD& value)
 {
   set_point_src_fermion_field<RealF>(ff, xg, cs, value);
@@ -114,8 +114,8 @@ void set_point_src(Propagator4dT<RealF>& prop, const Geometry& geo_input,
   set_point_src<RealF>(prop, geo_input, xg, value);
 }
 
-void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
-                                const CoordinateD& lmom, const int cs)
+void set_wall_src_fermion_field(FermionField4d& ff, const Int tslice,
+                                const CoordinateD& lmom, const Int cs)
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
@@ -128,7 +128,7 @@ void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[3] == tslice) {
       double phase = 0.0;
-      for (int i = 0; i < DIMN; ++i) {
+      for (Int i = 0; i < DIMN; ++i) {
         phase += mom[i] * xg[i];
       }
       ff.get_elem(xl)(cs) = qpolar(1.0, phase);
@@ -137,14 +137,14 @@ void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
 }
 
 void set_wall_src(Propagator4d& prop, const Geometry& geo_input,
-                  const int tslice, const CoordinateD& lmom)
+                  const Int tslice, const CoordinateD& lmom)
 {
   TIMER_VERBOSE("set_wall_src");
   const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   FermionField4d src;
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_wall_src_fermion_field(src, tslice, lmom, cs);
     set_propagator_col_from_fermion_field(prop, cs, src);
   }
@@ -269,7 +269,7 @@ void set_rand_vol_u1_src(Propagator4d& prop, const Field<ComplexD>& fu1)
 }
 
 void set_mom_src_fermion_field(FermionField4d& ff, const CoordinateD& lmom,
-                               const int cs)
+                               const Int cs)
 // ff need to be initialized beforehand
 {
   const Geometry& geo = ff.geo();
@@ -280,7 +280,7 @@ void set_mom_src_fermion_field(FermionField4d& ff, const CoordinateD& lmom,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0.0;
-    for (int i = 0; i < DIMN; ++i) {
+    for (Int i = 0; i < DIMN; ++i) {
       phase += mom[i] * xg[i];
     }
     ff.get_elem(xl)(cs) = qpolar(1.0, phase);
@@ -296,7 +296,7 @@ void set_mom_src(Propagator4d& prop, const Geometry& geo_input,
   qassert(prop.geo() == geo);
   FermionField4d src;
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_mom_src_fermion_field(src, lmom, cs);
     set_propagator_col_from_fermion_field(prop, cs, src);
   }
@@ -385,13 +385,13 @@ void convert_mspincolor_from_wm(SelectedPoints<WilsonMatrix>& prop_msc,
 }
 
 void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
-                                       const int tslice_flip_tpbc,
-                                       const int t_size)
+                                       const Int tslice_flip_tpbc,
+                                       const Int t_size)
 // flip range t_start <= t < t_stop
 // tslice_flip_tpbc - t_size_half ... tslice_flip_tpbc ... tslice_flip_tpbc +
 // t_size_half - 1
 {
-  const int t_size_half = t_size / 2;
+  const Int t_size_half = t_size / 2;
   qassert(t_size == t_size_half * 2);
   if (tslice_flip_tpbc + t_size_half < t_size) {
     t_start = tslice_flip_tpbc + t_size_half;
@@ -406,7 +406,7 @@ void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
 
 void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
                            const PointsSelection& psel,
-                           const int tslice_flip_tpbc, const int t_size)
+                           const Int tslice_flip_tpbc, const Int t_size)
 {
   if (tslice_flip_tpbc < 0) {
     return;
@@ -415,11 +415,11 @@ void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
   qassert(t_size > 0);
   qassert(t_size > tslice_flip_tpbc);
   qassert(ps_prop.n_points == (Long)psel.size());
-  int t_start, t_stop;
+  Int t_start, t_stop;
   set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
   qthread_for(idx, ps_prop.n_points, {
     const Coordinate xg = psel[idx];
-    const int t = xg[3];
+    const Int t = xg[3];
     qassert(t_size > t);
     if (t_start <= t and t < t_stop) {
       ps_prop.get_elem(idx) *= -1;
@@ -429,7 +429,7 @@ void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
 
 void flip_tpbc_with_tslice(SelectedField<WilsonMatrix>& s_prop,
                            const FieldSelection& fsel,
-                           const int tslice_flip_tpbc)
+                           const Int tslice_flip_tpbc)
 {
   if (tslice_flip_tpbc < 0) {
     return;
@@ -437,22 +437,22 @@ void flip_tpbc_with_tslice(SelectedField<WilsonMatrix>& s_prop,
   TIMER_VERBOSE("flip_tpbc_with_tslice(fsel)");
   qassert(s_prop.n_elems == (Long)fsel.n_elems);
   const Geometry& geo = fsel.f_rank.geo();
-  const int t_size = geo.total_site()[3];
-  int t_start, t_stop;
+  const Int t_size = geo.total_site()[3];
+  Int t_start, t_stop;
   set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
   qacc_for(idx, fsel.n_elems, {
     const Long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const int t = xg[3];
+    const Int t = xg[3];
     if (t_start <= t and t < t_stop) {
       s_prop.get_elem(idx) *= -1;
     }
   });
 }
 
-void set_tslice_mom_src_fermion_field(FermionField4d& ff, const int tslice,
-                                      const CoordinateD& lmom, const int cs)
+void set_tslice_mom_src_fermion_field(FermionField4d& ff, const Int tslice,
+                                      const CoordinateD& lmom, const Int cs)
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
@@ -465,7 +465,7 @@ void set_tslice_mom_src_fermion_field(FermionField4d& ff, const int tslice,
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[3] == tslice) {
       double phase = 0.0;
-      for (int i = 0; i < DIMN; ++i) {
+      for (Int i = 0; i < DIMN; ++i) {
         phase += mom[i] * xg[i];
       }
       ff.get_elem(xl)(cs) = qpolar(1.0, phase);
@@ -474,21 +474,21 @@ void set_tslice_mom_src_fermion_field(FermionField4d& ff, const int tslice,
 }
 
 void set_tslice_mom_src(Propagator4d& prop, const Geometry& geo_input,
-                        const int tslice, const CoordinateD& lmom)
+                        const Int tslice, const CoordinateD& lmom)
 {
   TIMER_VERBOSE("set_tslice_mom_src");
   const Geometry geo = geo_resize(geo_input);
   prop.init(geo);
   FermionField4d src;
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     set_propagator_col_from_fermion_field(prop, cs, src);
   }
 }
 
 void set_volume_src_fermion_field(FermionField4d& ff, const CoordinateD& lmom,
-                                  const int cs)
+                                  const Int cs)
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
@@ -500,7 +500,7 @@ void set_volume_src_fermion_field(FermionField4d& ff, const CoordinateD& lmom,
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     double phase = 0.0;
-    for (int i = 0; i < DIMN; ++i) {
+    for (Int i = 0; i < DIMN; ++i) {
       phase += mom[i] * xg[i];
     }
     ff.get_elem(xl)(cs) = qpolar(1.0, phase);
@@ -515,7 +515,7 @@ void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
   prop.init(geo);
   FermionField4d src;
   src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+  for (Int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_volume_src_fermion_field(src, lmom, cs);
     set_propagator_col_from_fermion_field(prop, cs, src);
   }

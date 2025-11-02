@@ -14,11 +14,11 @@ bool Compare_geo(const Geometry& g0, const Geometry& g1, const bool compare_byte
     const void* c1 = (void*) &g1;
     const size_t Nd  = sizeof(Geometry);
     //
-    const int res = std::memcmp(c0, c1, Nd);
+    const Int res = std::memcmp(c0, c1, Nd);
     if(res == 0){return true;}
     else{return false;}
   }else{
-    int equal = 1;
+    Int equal = 1;
     if(g0.initialized           != g1.initialized ){ return 0; }
     if(g0.eo                    != g1.eo ){ return 0; }
     if(g0.is_only_local         != g1.is_only_local    ){ return 0; }
@@ -43,7 +43,7 @@ bool Compare_geo_less(const Geometry& g0, const Geometry& g1, const bool compare
     const void* c1 = (void*) &g1;
     const size_t Nd  = sizeof(Geometry);
     //
-    const int res = std::memcmp(c0, c1, Nd);
+    const Int res = std::memcmp(c0, c1, Nd);
     if(res < 0){return true ;}
     if(res > 0){return false;}
     //
@@ -89,7 +89,7 @@ bool Compare_geo_less(const Geometry& g0, const Geometry& g1, const bool compare
 
 void Get_geo_local(const qlat::Geometry& geo, Geometry& geo_l){
   Coordinate total_site;
-  for(int i=0;i<4;i++){
+  for(Int i=0;i<4;i++){
     total_site[i] = geo.node_site[i] * geo.geon.size_node[i];
   }
   geo_l.init(total_site);
@@ -118,14 +118,14 @@ Geometry& get_geo_cache_local(const Geometry& geo, box<Geometry>& geo_BOX){
 void geo_to_nv(const Geometry& geo, std::vector<int >& nv, std::vector<int >& Nv, std::vector<int    >& mv){
   // read geo into vectors
   Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+  for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
 
 void geo_to_nv(const Geometry& geo, vector<int >& nv, vector<int >& Nv, vector<int >& mv){
   Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+  for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
 
 bool operator<(const Gbox_key& x, const Gbox_key& y){

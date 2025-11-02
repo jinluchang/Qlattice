@@ -3,7 +3,7 @@
 EXPORT(get_gm_force_magnitudes, {
   using namespace qlat;
   PyObject* p_gm_force = NULL;
-  int n_elems = 0;
+  Int n_elems = 0;
   if (!PyArg_ParseTuple(args, "Oi", &p_gm_force, &n_elems)) {
     return NULL;
   }
@@ -15,7 +15,7 @@ EXPORT(get_gm_force_magnitudes, {
 EXPORT(display_gm_force_magnitudes, {
   using namespace qlat;
   PyObject* p_gm_force = NULL;
-  int n_elems = 0;
+  Int n_elems = 0;
   if (!PyArg_ParseTuple(args, "Oi", &p_gm_force, &n_elems)) {
     return NULL;
   }
@@ -42,8 +42,8 @@ EXPORT(display_gauge_field_info_table_with_wilson_flow, {
   PyObject* p_fn_wilson_flow_energy = NULL;
   PyObject* p_gf = NULL;
   double flow_time = 0.0;
-  int flow_steps = 0.0;
-  int steps = 0.0;
+  Int flow_steps = 0.0;
+  Int steps = 0.0;
   double c1 = 0.0;
   if (!PyArg_ParseTuple(args, "OOOdii|d", &p_fn_gf_info,
                         &p_fn_wilson_flow_energy, &p_gf, &flow_time,

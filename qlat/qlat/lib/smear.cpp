@@ -6,14 +6,14 @@ namespace qlat
 {  //
 
 static qacc ColorMatrix color_matrix_sub_invert(const ColorMatrix& x,
-                                                const int ind)
+                                                const Int ind)
 // get su2 submatrix of x and return the su3 matrix that
 // has the inverse of this matrix in the relevant row and column
 {
-  const int su2_index[][3] = {{0, 1, 2}, {0, 2, 1}, {1, 2, 0}};
-  const int i1 = su2_index[ind][0];
-  const int i2 = su2_index[ind][1];
-  // const int zero_rc = su2_index[ind][2];
+  const Int su2_index[][3] = {{0, 1, 2}, {0, 2, 1}, {1, 2, 0}};
+  const Int i1 = su2_index[ind][0];
+  const Int i2 = su2_index[ind][1];
+  // const Int zero_rc = su2_index[ind][2];
   // project onto SU(2)
   double p0 = x(i1, i1).real() + x(i2, i2).real();
   double p1 = x(i1, i2).imag() + x(i2, i1).imag();
@@ -45,16 +45,16 @@ static qacc ColorMatrix color_matrix_su_projection(
   // usually takes ~5 hits, so just exit
   // if hits the max, as something is
   // probably very wrong.
-  const int max_iter = 10000;
+  const Int max_iter = 10000;
   const ColorMatrix xdag = matrix_adjoint(x);
   ColorMatrix tmp = xdag;
   ColorMatrix y;
   set_unit(y);
   double old_tr = matrix_trace(xdag).real();
-  for (int i = 0; i < max_iter; i++) {
+  for (Int i = 0; i < max_iter; i++) {
     // loop over su2 subgroups
     double diff = 0.0;
-    for (int j = 0; j < 3; j++) {
+    for (Int j = 0; j < 3; j++) {
       const ColorMatrix inv = color_matrix_sub_invert(tmp, j);
       // y  .DotMEqual( inv, ycopy );
       y = inv * y;
@@ -80,7 +80,7 @@ static qacc ColorMatrix color_matrix_su_projection(
 
 static qacc ColorMatrix gf_link_ape_smear_no_comm(const GaugeField& gf,
                                                   const Coordinate& xl,
-                                                  const int mu,
+                                                  const Int mu,
                                                   const double alpha)
 {
   return color_matrix_su_projection(
@@ -100,7 +100,7 @@ static void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
-    for (int mu = 0; mu < DIMN; ++mu) {
+    for (Int mu = 0; mu < DIMN; ++mu) {
       v[mu] = gf_link_ape_smear_no_comm(gf0, xl, mu, alpha);
     }
   });
@@ -122,7 +122,7 @@ void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha,
 
 static qacc ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf,
                                                           const Coordinate& xl,
-                                                          const int mu,
+                                                          const Int mu,
                                                           const double alpha)
 {
   const double multi = mu == 3 ? 6.0 : 4.0;
@@ -143,7 +143,7 @@ static void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
-    for (int mu = 0; mu < 3; ++mu) {
+    for (Int mu = 0; mu < 3; ++mu) {
       // No need to smear the temperal link (mu == 3)
       v[mu] = gf_link_spatial_ape_smear_no_comm(gf0, xl, mu, alpha);
     }
@@ -167,14 +167,14 @@ void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
 }
 
 ColorMatrix gf_link_hyp_smear_3_no_comm(const GaugeField& gf,
-                                        const Coordinate& xl, const int mu,
-                                        const int nu, const int rho,
+                                        const Coordinate& xl, const Int mu,
+                                        const Int nu, const Int rho,
                                         const double alpha3)
 {
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl, mu);
-  for (int m = 0; m < DIMN; ++m) {
+  for (Int m = 0; m < DIMN; ++m) {
     if (mu != m && nu != m && rho != m) {
       ret += gf.get_elem(xl, m) * gf.get_elem(coordinate_shifts(xl, m), mu) *
              matrix_adjoint(gf.get_elem(xl_mu, m));
@@ -189,14 +189,14 @@ ColorMatrix gf_link_hyp_smear_3_no_comm(const GaugeField& gf,
 }
 
 ColorMatrix gf_link_hyp_smear_2_no_comm(const GaugeField& gf,
-                                        const Coordinate& xl, const int mu,
-                                        const int nu, const double alpha2,
+                                        const Coordinate& xl, const Int mu,
+                                        const Int nu, const double alpha2,
                                         const double alpha3)
 {
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl, mu);
-  for (int m = 0; m < DIMN; ++m) {
+  for (Int m = 0; m < DIMN; ++m) {
     if (mu != m && nu != m) {
       ret += gf_link_hyp_smear_3_no_comm(gf, xl, m, mu, nu, alpha3) *
              gf_link_hyp_smear_3_no_comm(gf, coordinate_shifts(xl, m), mu, m,
@@ -217,7 +217,7 @@ ColorMatrix gf_link_hyp_smear_2_no_comm(const GaugeField& gf,
 }
 
 ColorMatrix gf_link_hyp_smear_1_no_comm(const GaugeField& gf,
-                                        const Coordinate& xl, const int mu,
+                                        const Coordinate& xl, const Int mu,
                                         const double alpha1,
                                         const double alpha2,
                                         const double alpha3)
@@ -225,7 +225,7 @@ ColorMatrix gf_link_hyp_smear_1_no_comm(const GaugeField& gf,
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl, mu);
-  for (int m = 0; m < DIMN; ++m) {
+  for (Int m = 0; m < DIMN; ++m) {
     if (mu != m) {
       ret += gf_link_hyp_smear_2_no_comm(gf, xl, m, mu, alpha2, alpha3) *
              gf_link_hyp_smear_2_no_comm(gf, coordinate_shifts(xl, m), mu, m,
@@ -246,7 +246,7 @@ ColorMatrix gf_link_hyp_smear_1_no_comm(const GaugeField& gf,
 }
 
 ColorMatrix gf_link_hyp_smear_no_comm(const GaugeField& gf,
-                                      const Coordinate& xl, const int mu,
+                                      const Coordinate& xl, const Int mu,
                                       const double alpha1, const double alpha2,
                                       const double alpha3)
 {
@@ -266,7 +266,7 @@ void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
-    for (int mu = 0; mu < DIMN; ++mu) {
+    for (Int mu = 0; mu < DIMN; ++mu) {
       v[mu] = gf_link_hyp_smear_no_comm(gf0, xl, mu, alpha1, alpha2, alpha3);
     }
   }
@@ -287,7 +287,7 @@ void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1,
 
 template <class T>
 static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
-                       const double coef, const int step,
+                       const double coef, const Int step,
                        const CoordinateD& mom = CoordinateD(),
                        const bool smear_in_time_dir = false)
 // gf1 is left_expanded and refreshed
@@ -295,7 +295,7 @@ static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 // prop is of normal size
 {
   TIMER_FLOPS("prop_smear");
-  const int n_avg = smear_in_time_dir ? 8 : 6;
+  const Int n_avg = smear_in_time_dir ? 8 : 6;
   const Long v_gb = prop.geo().local_volume() * 12 * 4;
   timer.flops += v_gb * step * n_avg * (3 * (3 * 6 + 2 * 2));
   if (0 == step) {
@@ -306,25 +306,25 @@ static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
       smear_in_time_dir
           ? geo_resize(geo, 1)
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
-  const int dir_limit = smear_in_time_dir ? 4 : 3;
+  const Int dir_limit = smear_in_time_dir ? 4 : 3;
   array<ComplexD, 8> mom_factors_v;
   box<array<ComplexD, 8>> mom_factors(
       mom_factors_v);  // (array<ComplexD, 8>());
-  for (int i = 0; i < 8; ++i) {
-    const int dir = i - 4;
+  for (Int i = 0; i < 8; ++i) {
+    const Int dir = i - 4;
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
     mom_factors()[i] = qpolar(coef / n_avg, -phase);
   }
   Propagator4dT<T> prop1;
   prop1.init(geo1);
-  for (int i = 0; i < step; ++i) {
+  for (Int i = 0; i < step; ++i) {
     prop1 = prop;
     refresh_expanded_1(prop1);
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = prop.geo().coordinate_from_index(index);
       WilsonMatrixT<T>& wm = prop.get_elem(xl);
       wm *= 1 - coef;
-      for (int dir = -dir_limit; dir < dir_limit; ++dir) {
+      for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
         ColorMatrixT<T> link =
             dir >= 0
@@ -338,7 +338,7 @@ static void prop_smear(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 }
 
 void prop_smear(Propagator4dT<RealD>& prop, const GaugeFieldT<RealD>& gf1,
-                const double coef, const int step, const CoordinateD& mom,
+                const double coef, const Int step, const CoordinateD& mom,
                 const bool smear_in_time_dir)
 {
   prop_smear<RealD>(prop, gf1, coef, step, mom, smear_in_time_dir);
@@ -346,8 +346,8 @@ void prop_smear(Propagator4dT<RealD>& prop, const GaugeFieldT<RealD>& gf1,
 
 void prop_smear_qlat_convension(Propagator4dT<RealD>& prop,
                                 const GaugeFieldT<RealD>& gf, const double coef,
-                                const int step, const CoordinateD& mom,
-                                const bool smear_in_time_dir, const int mode)
+                                const Int step, const CoordinateD& mom,
+                                const bool smear_in_time_dir, const Int mode)
 {
   prop_smear_qlat_convension<RealD, RealD>(prop, gf, coef, step, mom,
                                            smear_in_time_dir, mode);
@@ -355,8 +355,8 @@ void prop_smear_qlat_convension(Propagator4dT<RealD>& prop,
 
 void prop_smear_qlat_convension(Propagator4dT<RealF>& prop,
                                 const GaugeFieldT<RealF>& gf, const double coef,
-                                const int step, const CoordinateD& mom,
-                                const bool smear_in_time_dir, const int mode)
+                                const Int step, const CoordinateD& mom,
+                                const bool smear_in_time_dir, const Int mode)
 {
   prop_smear_qlat_convension<RealF, RealF>(prop, gf, coef, step, mom,
                                            smear_in_time_dir, mode);
@@ -382,7 +382,7 @@ static void prop_spatial_smear_no_comm_acc(std::vector<FermionField4d>& ff_vec,
   }
   const Int dir_limit = 3;
   array<ComplexD, 6> mom_factors_v;
-  for (int i = 0; i < 6; ++i) {
+  for (Int i = 0; i < 6; ++i) {
     const Int dir = i - 3;
     const RealD phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
     mom_factors_v[i] = qpolar(coef / n_avg, -phase);
@@ -533,7 +533,7 @@ static void prop_spatial_smear_no_comm_cpu(std::vector<FermionField4d>& ff_vec,
   }
   const Int dir_limit = 3;
   array<ComplexD, 6> mom_factors_v;
-  for (int i = 0; i < 6; ++i) {
+  for (Int i = 0; i < 6; ++i) {
     const Int dir = i - 3;
     const RealD phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
     mom_factors_v[i] = qpolar(coef / n_avg, -phase);
@@ -682,7 +682,7 @@ void gf_reduce_half(GaugeField& hgf, const GaugeField& gf)
     const Geometry& hgeo = hgf.geo();
     const Coordinate hxl = hgeo.coordinate_from_index(hindex);
     const Coordinate xl = coordinate_shifts(hxl * 2, 0);
-    for (int m = 0; m < DIMN; ++m) {
+    for (Int m = 0; m < DIMN; ++m) {
       hgf.get_elem(hxl, m) =
           gf.get_elem(xl, m) * gf.get_elem(coordinate_shifts(xl, m), m);
     }

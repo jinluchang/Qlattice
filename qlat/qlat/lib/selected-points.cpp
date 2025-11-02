@@ -6,11 +6,11 @@ namespace qlat
 {  //
 
 PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
-                                           const int t_dir)
+                                           const Int t_dir)
 // psel.size() == total_site[t_dir]
 {
   qassert(0 <= t_dir and t_dir < 4);
-  const int t_size = total_site[t_dir];
+  const Int t_size = total_site[t_dir];
   PointsSelection psel;
   psel.init(total_site, t_size);
   const Coordinate xg_all = Coordinate(-1, -1, -1, -1);
@@ -37,7 +37,7 @@ PointsSelection mk_random_points_selection(const Coordinate& total_site,
   for (Long i = 0; i < (Long)psel_pool.size(); ++i) {
     RngState rsi = rs.split(i);
     Coordinate xg;
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       xg[m] = modl(rand_gen(rsi), total_site[m]);
     }
     psel_pool[i] = xg;

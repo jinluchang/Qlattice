@@ -7,8 +7,8 @@ namespace qlat
 
 static qacc ColorMatrix gf_clover_leaf_m_n_no_comm(const GaugeField& gf1,
                                                    const Coordinate& xl,
-                                                   const int mu, const int m,
-                                                   const int nu, const int n)
+                                                   const Int mu, const Int m,
+                                                   const Int nu, const Int n)
 {
   ColorMatrix cm;
   set_zero(cm);
@@ -40,7 +40,7 @@ static qacc RealD clf_plaq_action_density(const CloverLeafField& clf,
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   double sum = 0.0;
-  for (int i = 0; i < 6; ++i) {
+  for (Int i = 0; i < 6; ++i) {
     sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[i]).real();
   }
   return sum;
@@ -64,7 +64,7 @@ static qacc RealD clf_topology_density(const CloverLeafField& clf,
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   array<ColorMatrix, 6> arr;
-  for (int i = 0; i < 6; ++i) {
+  for (Int i = 0; i < 6; ++i) {
     arr[i] = (ComplexD)0.5 * (v[i] - matrix_adjoint(v[i]));
   }
   const double fac = -1.0 / (4.0 * PI * PI);
@@ -100,7 +100,7 @@ static RealD gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
     array<Vector<ColorMatrixT<T>>, DIMN> vms;
-    for (int m = 0; m < DIMN; ++m) {
+    for (Int m = 0; m < DIMN; ++m) {
       xl[m] += 1;
       vms[m] = gf.get_elems_const(xl);
       xl[m] -= 1;
@@ -152,14 +152,14 @@ static RealD gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
       std::vector<Vector<ColorMatrixT<T> > > vms(DIMN - 1);
-      for (int m = 0; m < DIMN - 1; ++m) {
+      for (Int m = 0; m < DIMN - 1; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
         xl[m] -= 1;
       }
       double avg_plaq = 0.0;
-      for (int m1 = 1; m1 < 3; ++m1) {
-        for (int m2 = 0; m2 < m1; ++m2) {
+      for (Int m1 = 1; m1 < 3; ++m1) {
+        for (Int m2 = 0; m2 < m1; ++m2) {
           ColorMatrixT<T> cm =
               v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
@@ -206,7 +206,7 @@ static RealD gf_avg_link_trace(const GaugeFieldT<T>& gf)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
     double sum = 0;
-    for (int m = 0; m < v.size(); ++m) {
+    for (Int m = 0; m < v.size(); ++m) {
       sum += matrix_trace(v[m]).real() / NUM_COLOR;
     }
     sum /= v.size();
@@ -249,7 +249,7 @@ static void gf_plaq_field_no_comm(Field<RealD>& f_plaq,
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
     array<Vector<ColorMatrixT<T>>, DIMN> vms;
-    for (int m = 0; m < DIMN; ++m) {
+    for (Int m = 0; m < DIMN; ++m) {
       xl[m] += 1;
       vms[m] = gf.get_elems_const(xl);
       xl[m] -= 1;
@@ -443,8 +443,8 @@ void gf_clover_leaf_field_no_comm(CloverLeafField& clf, const GaugeField& gf1)
 }
 
 void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
-                                      const GaugeField& gf1, const int m,
-                                      const int n)
+                                      const GaugeField& gf1, const Int m,
+                                      const Int n)
 // F_01, F_02, F_03, F_12, F_13, F_23
 {
   TIMER("gf_clover_leaf_field_m_n_no_comm");
@@ -469,7 +469,7 @@ void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
       v[3] += gf_clover_leaf_m_n_no_comm(gf1, xl, 1, n, 2, m);
       v[4] += gf_clover_leaf_m_n_no_comm(gf1, xl, 1, n, 3, m);
       v[5] += gf_clover_leaf_m_n_no_comm(gf1, xl, 2, n, 3, m);
-      for (int i = 0; i < 6; ++i) {
+      for (Int i = 0; i < 6; ++i) {
         v[i] *= 0.5;
       }
     }

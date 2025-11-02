@@ -5,8 +5,8 @@ namespace qlat
 {  //
 
 static qacc RealD gf_re_tr_plaq_no_comm(const GaugeField& gf,
-                                         const Coordinate& xl, const int mu,
-                                         const int nu)
+                                         const Coordinate& xl, const Int mu,
+                                         const Int nu)
 {
   const ColorMatrix m =
       gf_wilson_line_no_comm(gf, xl, make_array<int>(mu, nu, -mu - 1, -nu - 1));
@@ -14,8 +14,8 @@ static qacc RealD gf_re_tr_plaq_no_comm(const GaugeField& gf,
 }
 
 static qacc RealD gf_re_tr_rect_no_comm(const GaugeField& gf,
-                                         const Coordinate& xl, const int mu,
-                                         const int nu)
+                                         const Coordinate& xl, const Int mu,
+                                         const Int nu)
 {
   const ColorMatrix m = gf_wilson_line_no_comm(
       gf, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
@@ -24,12 +24,12 @@ static qacc RealD gf_re_tr_rect_no_comm(const GaugeField& gf,
 
 static qacc ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
                                                const Coordinate& xl,
-                                               const int mu)
+                                               const Int mu)
 // transpose the same way as gf.get_elem(xl, mu)
 {
   ColorMatrix acc;
   set_zero(acc);
-  for (int nu = -4; nu < 4; ++nu) {
+  for (Int nu = -4; nu < 4; ++nu) {
     if (nu == mu or -nu - 1 == mu) {
       continue;
     }
@@ -46,7 +46,7 @@ static qacc ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
 static qacc ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
                                               const GaugeAction& ga,
                                               const Coordinate& xl,
-                                              const int mu)
+                                              const Int mu)
 // transpose the same way as gf.get_elem(xl, mu)
 {
   ColorMatrix acc;
@@ -62,7 +62,7 @@ static qacc ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
 static qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
                                               const GaugeAction& ga,
                                               const Coordinate& xl,
-                                              const int mu)
+                                              const Int mu)
 {
   const RealD beta = ga.beta;
   const ColorMatrix ad_staple =
@@ -73,7 +73,7 @@ static qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
 }
 
 bool metropolis_accept(RealD& accept_prob, const RealD delta_h,
-                       const int traj, const RngState& rs_)
+                       const Int traj, const RngState& rs_)
 // only compute at get_id_node() == 0
 // broad_cast the result to all nodes
 {
@@ -136,7 +136,7 @@ void set_rand_gauge_momentum(GaugeMomentum& gm, const Field<RealD>& mf,
     const Vector<RealD> vm = mf.get_elems_const(index);
     Vector<ColorMatrix> v = gm.get_elems(index);
     const RealD inf = std::numeric_limits<RealD>::infinity();
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       if (vm[m] != inf) {
         v[m] *= std::sqrt(vm[m]);
       } else {
@@ -158,7 +158,7 @@ RealD gm_hamilton_node(const GaugeMomentum& gm)
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
     RealD s = 0.0;
     qassert(gm_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       s += neg_half_tr_square(gm_v[mu]);
     }
     fd.get_elem(index) = s;
@@ -186,7 +186,7 @@ RealD gm_hamilton_node(const GaugeMomentum& gm, const Field<RealD>& mf)
     const Vector<RealD> mf_v = mf.get_elems_const(xl);
     RealD s = 0.0;
     qassert(gm_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       s += neg_half_tr_square(gm_v[mu]) / mf_v[mu];
     }
     fd.get_elem(index) = s;
@@ -209,8 +209,8 @@ RealD gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     RealD s = 0.0;
-    for (int mu = 0; mu < 3; ++mu) {
-      for (int nu = mu + 1; nu < 4; ++nu) {
+    for (Int mu = 0; mu < 3; ++mu) {
+      for (Int nu = mu + 1; nu < 4; ++nu) {
         s += gf_re_tr_plaq_no_comm(gf, xl, mu, nu) - 3.0;
       }
     }
@@ -234,8 +234,8 @@ RealD gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     RealD s = 0.0;
-    for (int mu = 0; mu < 3; ++mu) {
-      for (int nu = mu + 1; nu < 4; ++nu) {
+    for (Int mu = 0; mu < 3; ++mu) {
+      for (Int nu = mu + 1; nu < 4; ++nu) {
         s += gf_re_tr_rect_no_comm(gf, xl, mu, nu) - 3.0;
         s += gf_re_tr_rect_no_comm(gf, xl, nu, mu) - 3.0;
       }
@@ -319,7 +319,7 @@ void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const RealD step_size)
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
     qassert(gf_v.size() == 4);
     qassert(gm_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       gf_v[mu] = matrix_evolve(gf_v[mu], gm_v[mu], step_size);
     }
   });
@@ -339,7 +339,7 @@ void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
     const Vector<ColorMatrix> gm_v = gm_dual.get_elems_const(xl);
     qassert(gf_v.size() == 4);
     qassert(gm_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       gf_v[mu] = matrix_evolve_dual(gf_v[mu], gm_v[mu], step_size);
     }
   });
@@ -362,7 +362,7 @@ void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const Field<RealD>& mf,
     qassert(gf_v.size() == 4);
     qassert(gm_v.size() == 4);
     qassert(mf_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       const RealD dt_m = step_size / mf_v[mu];
       gf_v[mu] = matrix_evolve(gf_v[mu], gm_v[mu], dt_m);
     }
@@ -386,7 +386,7 @@ void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
     qassert(gf_v.size() == 4);
     qassert(gm_v.size() == 4);
     qassert(mf_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       const RealD dt_m = step_size / mf_v[mu];
       gf_v[mu] = matrix_evolve_dual(gf_v[mu], gm_v[mu], dt_m);
     }
@@ -407,7 +407,7 @@ void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> gm_force_v = gm_force.get_elems(xl);
     qassert(gm_force_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       gm_force_v[mu] = gf_force_site_no_comm(gf, ga, xl, mu);
     }
   });
@@ -456,7 +456,7 @@ void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf,
     qassert(gm_dual_v.size() == 4);
     qassert(gf_v.size() == 4);
     qassert(gm_v.size() == 4);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       gm_dual_v[mu] = -matrix_adjoint(gf_v[mu]) * gm_v[mu] * gf_v[mu];
     }
   });
@@ -499,7 +499,7 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
     const RealD inf = std::numeric_limits<RealD>::infinity();
     ColorMatrix v_sum;
     set_zero(v_sum);
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       const Coordinate xl_m = coordinate_shifts(xl, -m - 1);
       const RealD m1 = vm1[m];
       const RealD m2m = mf2_ext.get_elem(xl_m, m);
@@ -525,7 +525,7 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
     const Vector<RealD> vm2 = mf_dual.get_elems_const(xl);
     const ColorMatrix& ag1 = gm_ag_ext.get_elem(xl);
     const RealD inf = std::numeric_limits<RealD>::infinity();
-    for (int m = 0; m < 4; ++m) {
+    for (Int m = 0; m < 4; ++m) {
       const Coordinate xl_p = coordinate_shifts(xl, m);
       if (vm1[m] != inf) {
         v1[m] -= std::sqrt(vm1[m]) * ag1;
@@ -551,7 +551,7 @@ void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
     const Vector<ColorMatrix> v1 = gm1.get_elems_const(index);
     const Vector<ColorMatrix> v2 = gm2.get_elems_const(index);
     Vector<RealD> v = f.get_elems(index);
-    for (int m = 0; m < v.size(); ++m) {
+    for (Int m = 0; m < v.size(); ++m) {
       v[m] = qnorm(v1[m], v2[m]);
     }
   });

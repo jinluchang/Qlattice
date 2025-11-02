@@ -21,7 +21,7 @@ EXPORT(set_wall_src_prop, {
   using namespace qlat;
   PyObject* p_prop = NULL;
   PyObject* p_geo = NULL;
-  int tslice = -1;
+  Int tslice = -1;
   PyObject* p_lmom = NULL;
   if (!PyArg_ParseTuple(args, "OOi|O", &p_prop, &p_geo, &tslice, &p_lmom)) {
     return NULL;
@@ -238,7 +238,7 @@ EXPORT(free_scalar_invert_mom_cfield, {
 EXPORT(flip_tpbc_with_tslice_sp_prop, {
   using namespace qlat;
   PyObject* p_sp_prop = NULL;
-  int tslice_flip_tpbc = -1;
+  Int tslice_flip_tpbc = -1;
   if (!PyArg_ParseTuple(args, "Oi", &p_sp_prop, &tslice_flip_tpbc)) {
     return NULL;
   }
@@ -249,7 +249,7 @@ EXPORT(flip_tpbc_with_tslice_sp_prop, {
       py_convert_type<PointsSelection>(p_sp_prop, "psel");
   const Geometry& geo = py_convert_type<Geometry>(p_sp_prop, "psel", "geo");
   QLAT_DIAGNOSTIC_POP;
-  const int t_size = geo.total_site()[3];
+  const Int t_size = geo.total_site()[3];
   flip_tpbc_with_tslice(sp_prop, psel, tslice_flip_tpbc, t_size);
   Py_RETURN_NONE;
 })
@@ -257,7 +257,7 @@ EXPORT(flip_tpbc_with_tslice_sp_prop, {
 EXPORT(flip_tpbc_with_tslice_s_prop, {
   using namespace qlat;
   PyObject* p_s_prop = NULL;
-  int tslice_flip_tpbc = -1;
+  Int tslice_flip_tpbc = -1;
   if (!PyArg_ParseTuple(args, "Oi", &p_s_prop, &tslice_flip_tpbc)) {
     return NULL;
   }

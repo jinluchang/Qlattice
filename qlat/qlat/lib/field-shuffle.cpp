@@ -8,22 +8,22 @@ namespace qlat
 std::vector<GeometryNode> make_dist_io_geons(const Coordinate& new_size_node)
 {
   TIMER("make_dist_io_geons");
-  const int new_num_node = product(new_size_node);
-  const int num_node = get_num_node();
+  const Int new_num_node = product(new_size_node);
+  const Int num_node = get_num_node();
   std::vector<GeometryNode> ret;
-  const int min_size_chunk = new_num_node / num_node;
-  const int remain = new_num_node % num_node;
-  const int id_node_in_shuffle =
+  const Int min_size_chunk = new_num_node / num_node;
+  const Int remain = new_num_node % num_node;
+  const Int id_node_in_shuffle =
       get_num_node() == new_num_node
           ? get_id_node()
           : get_id_node_in_shuffle(get_id_node(), new_num_node, num_node);
-  const int size_chunk =
+  const Int size_chunk =
       id_node_in_shuffle < remain ? min_size_chunk + 1 : min_size_chunk;
-  const int chunk_start =
+  const Int chunk_start =
       id_node_in_shuffle * min_size_chunk +
       (id_node_in_shuffle < remain ? id_node_in_shuffle : remain);
-  const int chunk_end = std::min(new_num_node, chunk_start + size_chunk);
-  for (int new_id_node = chunk_start; new_id_node < chunk_end; ++new_id_node) {
+  const Int chunk_end = std::min(new_num_node, chunk_start + size_chunk);
+  for (Int new_id_node = chunk_start; new_id_node < chunk_end; ++new_id_node) {
     GeometryNode geon;
     geon.initialized = true;
     geon.num_node = new_num_node;
@@ -46,7 +46,7 @@ std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
   const std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
   std::vector<Geometry> ret;
   const Coordinate new_node_site = total_site / new_size_node;
-  for (int i = 0; i < (int)geons.size(); ++i) {
+  for (Int i = 0; i < (int)geons.size(); ++i) {
     Geometry geo_recv;
     geo_recv.init(geons[i], new_node_site);
     ret.push_back(geo_recv);
@@ -80,7 +80,7 @@ ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   return make_shuffle_plan(fsels, fsel, spk.new_size_node);
 }
 
-ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
+ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const Int dir)
 {
   TIMER_VERBOSE("make_shuffle_plan_fft");
   Geometry geo;
@@ -97,7 +97,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
   split_work(vpd_start, vpd_size, vol_perp_dir, num_node_dir, id_node_dir);
   std::vector<Geometry> geos_recv(total_site[dir]);
   const Coordinate new_size_node(1, 1, total_site[dir], geo.geon.num_node);
-  for (int i = 0; i < total_site[dir]; ++i) {
+  for (Int i = 0; i < total_site[dir]; ++i) {
     const Coordinate new_coor_node(0, 0, i, geo.geon.id_node);
     const GeometryNode geon(index_from_coordinate(new_coor_node, new_size_node),
                             new_size_node);
@@ -119,11 +119,11 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     // custom
-    const int id_node =
+    const Int id_node =
         get_id_node_fft(xl, geo.node_site, coor_node, size_node, dir);
     // custom
     const Coordinate new_coor_node(1, 1, xg[dir], id_node);
-    const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
+    const Int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
     //
     send_id_node_size[id_node] += 1;
     send_new_id_node_size[new_id_node] += 1;
@@ -132,7 +132,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
     Long count = 0;
     for (std::map<int, Long>::const_iterator it = send_id_node_size.begin();
          it != send_id_node_size.end(); ++it) {
-      const int id_node = it->first;
+      const Int id_node = it->first;
       const Long node_size = it->second;
       Long node_size_remain = node_size;
       while (node_size_remain > 0) {
@@ -154,7 +154,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
     Long count = 0;
     for (std::map<int, Long>::const_iterator it = send_new_id_node_size.begin();
          it != send_new_id_node_size.end(); ++it) {
-      const int new_id_node = it->first;
+      const Int new_id_node = it->first;
       const Long node_size = it->second;
       send_new_id_node_idx[new_id_node] = count;
       count += node_size;
@@ -169,11 +169,11 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       // custom
-      const int id_node =
+      const Int id_node =
           get_id_node_fft(xl, geo.node_site, coor_node, size_node, dir);
       // custom
       const Coordinate new_coor_node(1, 1, xg[dir], id_node);
-      const int new_id_node =
+      const Int new_id_node =
           index_from_coordinate(new_coor_node, new_size_node);
       //
       const Long buffer_idx = send_new_id_node_idx[new_id_node];
@@ -217,7 +217,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
     Long count = 0;
     for (std::map<int, Long>::const_iterator it = recv_id_node_size.begin();
          it != recv_id_node_size.end(); ++it) {
-      const int id_node = it->first;
+      const Int id_node = it->first;
       const Long node_size = it->second;
       Long node_size_remain = node_size;
       while (node_size_remain > 0) {
@@ -243,7 +243,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int dir)
     Long count = 0;
     for (std::map<int, Long>::const_iterator it = recv_id_node_size.begin();
          it != recv_id_node_size.end(); ++it) {
-      const int id_node = it->first;
+      const Int id_node = it->first;
       const Long node_size = it->second;
       recv_id_node_idx[id_node] = count;
       count += node_size;

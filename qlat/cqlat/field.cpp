@@ -4,7 +4,7 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_field_ctype(PyObject* p_geo, const int multiplicity)
+PyObject* mk_field_ctype(PyObject* p_geo, const Int multiplicity)
 {
   Field<M>* p_field = new Field<M>();
   Field<M>& f = *p_field;

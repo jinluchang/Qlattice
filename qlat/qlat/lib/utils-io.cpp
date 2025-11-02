@@ -64,13 +64,13 @@ void release_lock()
   }
 }
 
-int mkdir_lock(const std::string& path, const mode_t mode)
+ Int  mkdir_lock(const std::string& path, const mode_t mode)
 {
   TIMER("mkdir_lock");
   return qmkdir_sync_node(path, mode);
 }
 
-int rmdir_lock(const std::string& path)
+ Int  rmdir_lock(const std::string& path)
 {
   TIMER("rmdir_lock");
   return qremove_sync_node(path);
@@ -202,13 +202,13 @@ void release_lock_all_node()
   }
 }
 
-int mkdir_lock_all_node(const std::string& path, const mode_t mode)
+ Int  mkdir_lock_all_node(const std::string& path, const mode_t mode)
 {
   TIMER("mkdir_lock_all_node");
   return qmkdir(path, mode);
 }
 
-int rmdir_lock_all_node(const std::string& path)
+ Int  rmdir_lock_all_node(const std::string& path)
 {
   TIMER("rmdir_lock_all_node");
   return qremove(path);
