@@ -405,6 +405,9 @@ cdef extern from "qlat/qcd.h" namespace "qlat":
     RealD gf_avg_link_trace(const GaugeField& gf) except +
     void gf_plaq_field(Field[RealD]& f_plaq, const GaugeField& gf) except +
 
+cdef extern from "qlat/qcd-utils.h" namespace "qlat":
+    void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf) except +
+
 cdef extern from "qlat/hmc.h" namespace "qlat":
 
     bool metropolis_accept(double& accept_prob, const double delta_h, const int traj, const RngState& rs_) except +
@@ -570,3 +573,13 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
     #
     std_vector[SlTable] contract_two_plus_two_pair_no_glb_sum(Long& n_points_selected, Long& n_points_computed, const ComplexD& coef, const Geometry& geo, const PointsSelection& psel, const SelectedPoints[RealD]& psel_prob, const PointsSelection& psel_lps, const SelectedPoints[RealD]& psel_lps_prob, const Long idx_xg_x, const SelectedPoints[ComplexD]& lps_hvp_x, const SelectedPoints[ComplexD]& edl_list_c, const Long r_sq_limit, const RealD muon_mass, const RealD z_v) except +
     #
+
+cdef extern from "qlat/qed.h" namespace "qlat":
+
+    void set_left_expanded_gauge_field(
+        Field[ComplexD]& gf1, const Field[ComplexD]& gf) except +
+    #
+    void multiply_m_dwf_qed(
+        Field[ComplexD]& f_out, const Field[ComplexD]& f_in,
+        const Field[ComplexD]& gf1,
+        const RealD mass, const RealD m5, const Int ls) except +

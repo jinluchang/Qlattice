@@ -6,6 +6,7 @@ from .geometry cimport Geometry
 from .field_types cimport (
         FieldRealD,
         FieldColorMatrix,
+        FieldComplexD,
         )
 
 from cpython cimport Py_buffer
@@ -234,3 +235,35 @@ def gf_reduce_half(GaugeField gf):
     cdef GaugeField hgf = GaugeField()
     cc.gf_reduce_half(hgf.xxx().val(), gf.xxx().val())
     return hgf
+
+###
+
+@q.timer
+def set_left_expanded_gauge_field(gf):
+    cdef FieldComplexD gf_qed
+    cdef FieldComplexD gf1_qed
+    cdef GaugeField gf_qcd
+    cdef GaugeField gf1_qcd
+    if isinstance(gf, FieldComplexD):
+        gf_qed = gf
+        gf1_qed = FieldComplexD()
+        cc.set_left_expanded_gauge_field(gf1_qed.xx, gf_qed.xx)
+        return gf1_qed
+    elif isinstance(gf, GaugeField):
+        gf_qcd = gf
+        gf1_qcd = GaugeField()
+        cc.set_left_expanded_gauge_field(gf1_qcd.xxx().val(), gf_qcd.xxx().val())
+        return gf1_qcd
+    else:
+        assert False
+
+@q.timer
+def multiply_m_dwf_qed(
+        FieldComplexD f_in, FieldComplexD gf1,
+        cc.RealD mass, cc.RealD m5, cc.Int ls,
+        ):
+    cdef FieldComplexD f_out = FieldComplexD()
+    cc.multiply_m_dwf_qed(f_out.xx, f_in.xx, gf1.xx, mass, m5, ls)
+    return f_out
+
+###

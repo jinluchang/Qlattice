@@ -127,7 +127,7 @@ qacc MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
   return ret;
 }
 
-template <Int DIMN, class T>
+template <class T>
 qacc void mul_vec_plus(Vector<T> res, const T& coef, const Vector<T> y)
 // res[i] += coef * y[i]
 {
@@ -151,7 +151,7 @@ qacc void mat_mul_multi_vec_plus(Vector<T> res, const T& coef,
     const Int id = i * DIMN;
     for (Int j = 0; j < DIMN; ++j) {
       T m_val = x.p[id + j];
-      if (m_val == 0) {
+      if (m_val == 0.0) {
         continue;
       }
       m_val *= coef;
