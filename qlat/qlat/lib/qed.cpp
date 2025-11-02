@@ -39,6 +39,10 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   Qassert(geo.eo == 0);
   Qassert(geo1.eo == 0);
   Qassert(geo_gf1.eo == 0);
+  const box<SpinMatrixConstants>& smc = get_spin_matrix_constants();
+  const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  const SpinMatrix& unit = SpinMatrixConstants::get_unit();
   Field<ComplexD> in1;
   in1.init(geo1, 4 * ls);
   in1 = in;

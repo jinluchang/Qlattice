@@ -9,6 +9,8 @@
 #define UTILS_LDOUBLE_H
 
 #include <qlat-utils/config.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/qacc.h>
 
 //#include "utils_float_type.h"
 #if !defined(__QLAT_NO_FLOAT128__)

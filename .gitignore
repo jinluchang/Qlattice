@@ -1,6 +1,7 @@
 /distfiles
 /projects
 /.path
+/.clangd
 /.transfer
 /cmd-*
 /TODO

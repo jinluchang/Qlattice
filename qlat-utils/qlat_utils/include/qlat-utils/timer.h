@@ -41,6 +41,8 @@
 
 #ifdef _OPENMP
 #include <omp.h>
+#else
+#include <qlat-utils/compatible-omp.h>
 #endif
 
 #define TIMER(FNAME)                     \

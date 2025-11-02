@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qlat/core.h>
 #include <qlat/field-fft.h>
 #include <qlat/field.h>
 #include <qlat-utils/matrix.h>
@@ -416,5 +417,7 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
 
 // Multiply M for DWF with QED background
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in1,
-                        const Field<ComplexD>& gf1, const RealD mass, const Int ls);
+                        const Field<ComplexD>& gf1, const RealD mass,
+                        const Int ls);
+
 }  // namespace qlat
