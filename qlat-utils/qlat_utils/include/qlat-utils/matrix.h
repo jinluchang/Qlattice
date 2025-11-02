@@ -128,6 +128,42 @@ qacc MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
 }
 
 template <int DIMN, class T>
+qacc void mul_vec_plus(Vector<T> res, const T& coef, const Vector<T> y)
+// res[i] += coef * y[i]
+{
+  const Int size = y.size();
+  Qassert(size == res.size());
+  for (int i = 0; i < size; ++i) {
+    res.p[i] += coef * y.p[i];
+  }
+}
+
+template <int DIMN, class T>
+qacc void mat_mul_multi_vec_plus(Vector<T> res, const T& coef,
+                                 const MatrixT<DIMN, T>& x, const Vector<T> y)
+// res[k*d+i] += coef * x[i*d+j] * y[k*d + j]
+{
+  const Int size = y.size();
+  Qassert(size == res.size());
+  const Int n_vec = size / DIMN;
+  Qassert(n_vec * DIMN == size);
+  for (int i = 0; i < DIMN; ++i) {
+    const int id = i * DIMN;
+    for (int j = 0; j < DIMN; ++j) {
+      T m_val = x.p[id + j];
+      if (m_val == 0) {
+        continue;
+      }
+      m_val *= coef;
+      for (int k = 0; k < n_vec; ++k) {
+        const int kd = k * DIMN;
+        res.p[kd + i] += m_val * y.p[kd + j];
+      }
+    }
+  }
+}
+
+template <int DIMN, class T>
 qacc void set_zero(MatrixT<DIMN, T>& m)
 {
   memset((void*)&m, 0, sizeof(MatrixT<DIMN, T>));

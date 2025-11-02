@@ -1,10 +1,13 @@
 #include <qlat/core.h>
 #include <qlat/qed.h>
+#include "qlat-utils/qacc-func.h"
+#include "qlat-utils/types.h"
 
 namespace qlat
 {  //
 
-void set_left_expanded_gauge_field(Field<ComplexD>& gf1, const Field<ComplexD>& gf)
+void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
+                                   const Field<ComplexD>& gf)
 {
   TIMER("set_left_expanded_gauge_field");
   const Coordinate expansion_left(1, 1, 1, 1);
@@ -18,7 +21,7 @@ void set_left_expanded_gauge_field(Field<ComplexD>& gf1, const Field<ComplexD>& 
 
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                         const Field<ComplexD>& gf1, const RealD mass,
-                        const Int ls)
+                        const RealD m5, const Int ls)
 // set_left_expanded_gauge_field(gf1, gf);
 // in.geo() should not be expanded.
 {
@@ -40,9 +43,6 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   Qassert(geo1.eo == 0);
   Qassert(geo_gf1.eo == 0);
   const box<SpinMatrixConstants>& smc = get_spin_matrix_constants();
-  const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();
-  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  const SpinMatrix& unit = SpinMatrixConstants::get_unit();
   Field<ComplexD> in1;
   in1.init(geo1, 4 * ls);
   in1 = in;
@@ -51,6 +51,15 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   set_zero(out);
   // Placeholder implementation: copy input to output.
   out = in1;
+  qacc_for(index, geo.local_volume(),{
+    const Coordinate xl = geo.coordinate_from_index(index);
+    for (int mu = 0; mu < 4; ++mu) {
+      const Coordinate xl_p = coordinate_shifts(xl, mu);
+      const Coordinate xl_m = coordinate_shifts(xl, -mu - 1);
+      const ComplexD u_p = gf1.get_elem(xl, mu);
+      const ComplexD u_m = 1.0 / gf1.get_elem(xl_m, mu);
+    }
+  });
 }
 
 }  // namespace qlat
