@@ -53,7 +53,7 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   out = in1;
   qacc_for(index, geo.local_volume(),{
     const Coordinate xl = geo.coordinate_from_index(index);
-    for (int mu = 0; mu < 4; ++mu) {
+    for (Int mu = 0; mu < 4; ++mu) {
       const Coordinate xl_p = coordinate_shifts(xl, mu);
       const Coordinate xl_m = coordinate_shifts(xl, -mu - 1);
       const ComplexD u_p = gf1.get_elem(xl, mu);
