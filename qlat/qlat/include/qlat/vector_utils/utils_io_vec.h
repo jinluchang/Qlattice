@@ -504,26 +504,28 @@ inline void read_kentucky_vector(FILE *file,char* props,Int Nvec,io_vec& io,bool
   for(Int readi=0;readi<Nvec;readi++){
 
     /////From res to buf
-    if(read==false)
-    {
+    if (read == false) {
       TIMERA("IO copy mem time");
-      for(Int iou=0;iou<ionum;iou++)
-      for(Int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
-        Int offv = curr_v + iou*gN + gi;
-        //memcpy(&res[(iou*gN+gi)*noden*dsize + 0],&props[(offv)*noden*dsize + 0],noden*dsize);
+      for (Int iou = 0; iou < ionum; iou++)
+        for (Int gi = 0; gi < gN; gi++)
+          if (curr_v + iou * gN + gi < Nvec) {
+            Int offv = curr_v + iou * gN + gi;
+            // memcpy(&res[(iou*gN+gi)*noden*dsize +
+            // 0],&props[(offv)*noden*dsize + 0],noden*dsize);
 
-        char* pres=&res[(iou*gN+gi)*noden*dsize + 0];
-        char* psrc=&props[(offv)*noden*dsize + 0];
-        #pragma omp parallel for
-        for(size_t isp=0;isp<size_t(noden*dsize);isp++){pres[isp] = psrc[isp];}
-      }
+            char* pres = &res[(iou * gN + gi) * noden * dsize + 0];
+            char* psrc = &props[(offv)*noden * dsize + 0];
+#pragma omp parallel for
+            for (size_t isp = 0; isp < size_t(noden * dsize); isp++) {
+              pres[isp] = psrc[isp];
+            }
+          }
       gettimeofday(&tm2, NULL);
-      send_vec_kentucky((char*) &buf[0],(char*) &res[0], dsize,gN, io, read);
+      send_vec_kentucky((char*)&buf[0], (char*)&res[0], dsize, gN, io, read);
       gettimeofday(&tm3, NULL);
       mpi_t += tm3.tv_sec - tm2.tv_sec;
-      mpi_t += (tm3.tv_usec - tm2.tv_usec)/1000000.0;
+      mpi_t += (tm3.tv_usec - tm2.tv_usec) / 1000000.0;
     }
-
 
     {
     TIMERA("IO disk");
@@ -998,16 +1000,17 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int 
       Int ri = off;if(count + off > n_vec){ri = n_vec - count;}
       //int offE = count*12*noden*2;
 
-      if(read==false){
-        for(Int ic=0;ic<ri;ic++)
-        #pragma omp parallel for
-        for(size_t isp=0;isp<noden*12*2;isp++){
-           prop_E[ic*noden*12*2 + isp] = resp[count + ic][isp];
-        }
+      if (read == false) {
+        for (Int ic = 0; ic < ri; ic++)
+#pragma omp parallel for
+          for (size_t isp = 0; isp < noden * 12 * 2; isp++) {
+            prop_E[ic * noden * 12 * 2 + isp] = resp[count + ic][isp];
+          }
         ////Do not rotate source and sink
-        gwu_to_cps_rotation_vec(&prop_E[0],ri,noden, false, false, false, read);
+        gwu_to_cps_rotation_vec(&prop_E[0], ri, noden, false, false, false,
+                                read);
         /////single precision eigen vector in milc base
-        rotate_gwu_vec_file(&prop_E[0],ri,noden, true, read);
+        rotate_gwu_vec_file(&prop_E[0], ri, noden, true, read);
       }
 
       /////qmessage("WRITE!!!!!!\n");
@@ -1048,16 +1051,16 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,Int n0,Int 
       Int ri = off;if(count + off > n_vec){ri = n_vec - count;}
       //int offE = count*12*noden*2;
 
-      if(read==false){
-        for(Int ic=0;ic<ri;ic++)
-        #pragma omp parallel for
-        for(size_t isp=0;isp<noden*12*2;isp++){
-          prop_E[ic*noden*12*2 + isp] = resp[count + ic][isp];
-        }
+      if (read == false) {
+        for (Int ic = 0; ic < ri; ic++)
+#pragma omp parallel for
+          for (size_t isp = 0; isp < noden * 12 * 2; isp++) {
+            prop_E[ic * noden * 12 * 2 + isp] = resp[count + ic][isp];
+          }
         ////Do not rotate source and sink
-        gwu_to_cps_rotation_vec(&prop_E[0],ri,noden, false, true, true, read);
+        gwu_to_cps_rotation_vec(&prop_E[0], ri, noden, false, true, true, read);
         /////single precision eigen vector in milc base
-        rotate_gwu_vec_file(&prop_E[0],ri,noden, false, read);
+        rotate_gwu_vec_file(&prop_E[0], ri, noden, false, read);
       }
 
       read_kentucky_vector(file,(char*) &prop_E[0], ri*12*2,io_use, false, sizeof(RealD), false, 12*2, read);
@@ -1378,23 +1381,20 @@ void load_gwu_link(const char *filename,GaugeFieldT<Td> &gf, bool read = true){
 
 
   if(read == false)
-  for (size_t index = 0; index < noden; ++index)
-  {
-    ColorMatrixT<Td>& res = gf.get_elem_offset(index*gf.multiplicity+0);
+    for (size_t index = 0; index < noden; ++index) {
+      ColorMatrixT<Td>& res = gf.get_elem_offset(index * gf.multiplicity + 0);
 
-    for(Int dir=0;dir<4;dir++)
-    {
-      for(Int c0=0;c0<3;c0++)
-      for(Int c1=0;c1<3;c1++)
-      {
-        Int dir0  = ((dir*3+c0)*3+c1)    ;
-        Int dir1R = ((dir*3+c1)*3+c0)*2+0;
-        Int dir1I = ((dir*3+c1)*3+c0)*2+1;
-        link_qlat[dir1R*noden + index] = res.p[dir0].real();
-        link_qlat[dir1I*noden + index] = res.p[dir0].imag();
+      for (Int dir = 0; dir < 4; dir++) {
+        for (Int c0 = 0; c0 < 3; c0++)
+          for (Int c1 = 0; c1 < 3; c1++) {
+            Int dir0 = ((dir * 3 + c0) * 3 + c1);
+            Int dir1R = ((dir * 3 + c1) * 3 + c0) * 2 + 0;
+            Int dir1I = ((dir * 3 + c1) * 3 + c0) * 2 + 1;
+            link_qlat[dir1R * noden + index] = res.p[dir0].real();
+            link_qlat[dir1I * noden + index] = res.p[dir0].imag();
+          }
       }
     }
-  }
 
   FILE* file;
   if(read==true )file = io_use.io_read(filename,"rb");
@@ -2686,14 +2686,16 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
     //qmessage("load %5d, dN %5d, N %5d, inioff %5d ", int(n0), int(ncut), int(nhalf), int(nini_off));
 
     if(read == false)
-    for(Int iv=0;iv<ncut;iv++){
-      const Int ne = (n0+iv) * 2 + nini;
-      if(ne+2 <= even.nvec){
-        copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even,    even, ne, ne+1, ne+1, ne+2, map, mode_c);
-      }else{
-        copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even, tmp_end, ne, ne+1, 0, 1, map, mode_c);
+      for (Int iv = 0; iv < ncut; iv++) {
+        const Int ne = (n0 + iv) * 2 + nini;
+        if (ne + 2 <= even.nvec) {
+          copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even, even, ne, ne + 1,
+                               ne + 1, ne + 2, map, mode_c);
+        } else {
+          copy_eo_cs_to_fieldM(eig[iv], 3, geo_copy, even, tmp_end, ne, ne + 1,
+                               0, 1, map, mode_c);
+        }
       }
-    }
 
     /////will shift file from current position
     load_qlat_noisesT_core(file, noises, DIM, QMCPU, geo_copy, io_use, in, nini_off, ncut + nini_off);
