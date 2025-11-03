@@ -11,7 +11,7 @@ namespace qlat
 void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
                                    const Field<ComplexD>& gf)
 {
-  TIMER("set_left_expanded_gauge_field");
+  TIMER("set_left_expanded_gauge_field(qed-gf)");
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
   const Geometry geo1 = geo_resize(gf.geo(), expansion_left, expansion_right);
@@ -24,7 +24,7 @@ void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
 void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
                  const RealD m5, const CoordinateD& momtwist)
 {
-  TIMER("free_invert");
+  TIMER("free_invert(qed-ff)");
   sp_sol.init(sp_src);
   prop_spin_propagator4d(sp_sol, mass, m5, momtwist);
 }
@@ -35,7 +35,7 @@ void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
 // upper componets are right handed
 // lower componets are left handed
 {
-  TIMER("fermion_field_4d_from_5d_qed");
+  TIMER("fermion_field_4d_from_5d_qed(qed-ff)");
   const Geometry& geo = ff5d.geo();
   Qassert(geo.is_only_local);
   Qassert(4 * ls == ff5d.multiplicity);
@@ -75,7 +75,7 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
 ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2)
 // return ff1^dag * ff2
 {
-  TIMER("dot_product");
+  TIMER("dot_product(qed-ff)");
   Qassert(ff1.geo().is_only_local);
   Qassert(ff2.geo().is_only_local);
   Qassert(ff1.geo() == ff2.geo());

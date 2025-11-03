@@ -434,14 +434,14 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
 
 ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2);
 
-void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
-                        const Field<ComplexD>& gf1, const RealD mass,
-                        const RealD m5, const Int ls, const bool is_dagger);
-
 Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                        const Field<ComplexD>& gf1, const RealD mass,
                        const RealD m5, const Int ls, const bool is_dagger,
                        const RealD stop_rsd = 1e-8,
                        const Long max_num_iter = 50000);
+
+void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+                        const Field<ComplexD>& gf1, const RealD mass,
+                        const RealD m5, const Int ls, const bool is_dagger);
 
 }  // namespace qlat
