@@ -1157,6 +1157,19 @@ void set_field_from_pointer(Field<M>& f, Vector<M> field, const Geometry& geo,
 void set_field_m(Field<Char>& f, const Field<Char>& f1, const Int m,
                  const Int m1, const Int sizeof_m);
 
+template <class M>
+void set_field_m(Field<M>& f, const Field<M>& f1, const Int m, const Int m1)
+{
+  const Int sizeof_m = sizeof(M);
+  Qassert(f.initialized);
+  Qassert(f1.initialized);
+  Field<Char> fc, fc1;
+  qswap_cast(fc, f);
+  fc1.set_view_cast(f1);
+  set_field_m(fc, fc1, m, m1, sizeof_m);
+  qswap_cast(f, fc);
+}
+
 // --------------------
 
 template <class T = Real>

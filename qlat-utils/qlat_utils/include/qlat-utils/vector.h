@@ -565,7 +565,6 @@ qacc void qswap_cast(vector<M>& v1, vector<N>& v2)
 {
   qassert(not v1.is_copy);
   qassert(not v2.is_copy);
-  std::swap(v1.mem_type, v2.mem_type);
   const Long data_size1 = v2.v.data_size();
   const Long data_size2 = v1.v.data_size();
   const Long size1 = data_size1 / sizeof(M);
@@ -577,6 +576,7 @@ qacc void qswap_cast(vector<M>& v1, vector<N>& v2)
   v2.v.p = (N*)p_tmp;
   v1.v.n = size1;
   v2.v.n = size2;
+  std::swap(v1.mem_type, v2.mem_type);
 }
 
 // --------------------

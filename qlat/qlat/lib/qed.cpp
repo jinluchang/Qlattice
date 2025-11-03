@@ -29,6 +29,38 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
   prop_spin_propagator4d(sp_sol, mass, m5, momtwist);
 }
 
+void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src, const Field<ComplexD>& gf1,
+                const RealD mass, const RealD m5, const Int ls,
+                const bool is_dagger)
+{
+  TIMER("invert_qed(qed-sp)");
+  Qassert(sp_src.multiplicity == 1);
+  const Geometry& geo = sp_src.geo();
+  Qassert(geo.is_only_local);
+  Qassert(&sp_sol != &sp_src);
+  sp_sol.init(geo, sp_src.multiplicity);
+  Qassert(sp_sol.geo() == geo);
+  Qassert(sp_sol.multiplicity == 1);
+  Field<ComplexD> sp_sol_c, sp_src_c;
+  qswap_cast(sp_sol_c, sp_sol);
+  sp_src_c.set_view_cast(sp_src);
+  Qassert(sp_sol_c.multiplicity == 4 * 4);
+  Qassert(sp_src_c.multiplicity == 4 * 4);
+  Field<ComplexD> sol4d, src4d;
+  sol4d.init(geo, 4);
+  src4d.init(geo, 4);
+  for (Int i = 0; i < 4; ++i) {
+    for (Int j = 0; j < 4; ++j) {
+      set_field_m(src4d, sp_src_c, j, j * 4 + i);
+    }
+    invert_dwf_qed(sol4d, src4d, gf1, mass, m5, ls, is_dagger);
+    for (Int j = 0; j < 4; ++j) {
+      set_field_m(sp_sol_c, sol4d, j * 4 + i, j);
+    }
+  }
+  qswap_cast(sp_sol, sp_sol_c);
+}
+
 void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
                                   const Field<ComplexD>& ff5d, const Int ls,
                                   const Int upper, const Int lower)
@@ -70,6 +102,27 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
     v[lower * 4 + 2] = iv[2];
     v[lower * 4 + 3] = iv[3];
   });
+}
+
+Long invert_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+                    const Field<ComplexD>& gf1, const RealD mass,
+                    const RealD m5, const Int ls, const bool is_dagger)
+// properly project to 4d fermion field
+// if is_dagger is false (default), then M out = in
+// if is_dagger is true, then M^dag out = in
+{
+  TIMER("invert_dwf_qed(qed-ff)");
+  const Geometry& geo = in.geo();
+  Qassert(geo.is_only_local);
+  Field<ComplexD> sol5d, src5d;
+  sol5d.init(geo, 4 * ls);
+  src5d.init(geo, 4 * ls);
+  fermion_field_5d_from_4d_qed(src5d, in, ls, 0, ls - 1);
+  set_zero(sol5d);
+  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, is_dagger);
+  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls, is_dagger);
+  fermion_field_4d_from_5d_qed(out, sol5d, ls, ls - 1, 0);
+  return iter;
 }
 
 ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2)
@@ -171,6 +224,8 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
           max_num_iter + 1, sqrt(qnorm_r / qnorm_in), stop_rsd));
   return max_num_iter + 1;
 }
+
+
 
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                         const Field<ComplexD>& gf1, const RealD mass,

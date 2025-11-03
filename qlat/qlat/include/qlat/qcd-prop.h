@@ -151,18 +151,17 @@ Long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
 // invert(sol5d, src5d, inv) perform the inversion
 {
   TIMER_VERBOSE("invert_dwf(4d,4d,inv)");
-  qassert(&sol != &src);
   const Geometry& geo = src.geo();
   qassert(check_matching_geo(geo, inv.geo()));
-  sol.init(geo, src.multiplicity);
   const Int ls = ls_ != 0 ? ls_ : inv.fa.ls;
   const Geometry geo_ls = geo_resize(inv.geo());
   FermionField5dT<T> sol5d, src5d;
   sol5d.init(geo_ls, ls);
   src5d.init(geo_ls, ls);
   fermion_field_5d_from_4d(src5d, src, 0, ls - 1);
-  fermion_field_5d_from_4d(sol5d, sol, ls - 1, 0);
+  set_zero(sol5d);
   const Long iter = invert(sol5d, src5d, inv);
+  sol.init(geo, src.multiplicity);
   fermion_field_4d_from_5d(sol, sol5d, ls - 1, 0);
   return iter;
 }
