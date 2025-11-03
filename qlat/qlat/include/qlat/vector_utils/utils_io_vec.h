@@ -1890,7 +1890,9 @@ inline Int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
     //Geometry geo;
     //Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
     //geo.init(total_site);
+    QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
     const Geometry& geo = get_geo_cache(Coordinate(in.nx, in.ny, in.nz, in.nt));
+    QLAT_DIAGNOSTIC_POP;
 
     if(noises.size() != (LInt) nread){
       noises.resize(0);
