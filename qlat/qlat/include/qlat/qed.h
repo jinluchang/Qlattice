@@ -1,9 +1,9 @@
 #pragma once
 
+#include <qlat-utils/matrix.h>
 #include <qlat/core.h>
 #include <qlat/field-fft.h>
 #include <qlat/field.h>
-#include <qlat-utils/matrix.h>
 
 #include <cmath>
 
@@ -90,7 +90,8 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
 }
 
 template <class T>
-inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const Int multiplicity,
+inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo,
+                                             const Int multiplicity,
                                              const RngState& rs)
 {
   TIMER("set_stochastic_qed_field_feynman");
@@ -100,7 +101,8 @@ inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, c
 }
 
 template <class T>
-inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo, const Int multiplicity,
+inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
+                                              const Int multiplicity,
                                               const RealD mass,
                                               const RngState& rs)
 // use mass scheme, all zero modes are kept
@@ -174,8 +176,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
   }
 }
 
-inline void prop_photon_invert(QedGaugeField& egf,
-                               const CoordinateD& momtwist)
+inline void prop_photon_invert(QedGaugeField& egf, const CoordinateD& momtwist)
 // Feynman Gauge
 // All spatial zero mode removed.
 // egf in coordinate space.
@@ -188,9 +189,9 @@ inline void prop_photon_invert(QedGaugeField& egf,
   egf *= 1.0 / geo.total_volume();
 }
 
-inline void prop_mom_complex_scalar_invert(
-    ComplexScalerField& csf, const RealD mass,
-    const CoordinateD& momtwist)
+inline void prop_mom_complex_scalar_invert(ComplexScalerField& csf,
+                                           const RealD mass,
+                                           const CoordinateD& momtwist)
 {
   TIMER("prop_mom_complex_scalar_invert");
   const Geometry& geo = csf.geo();
