@@ -20,9 +20,17 @@ void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
   refresh_expanded_1(gf1);
 }
 
+void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
+                 const RealD m5, const CoordinateD& momtwist)
+{
+  TIMER("free_invert");
+  sp_sol.init(sp_src);
+  prop_spin_propagator4d(sp_sol, mass, m5, momtwist);
+}
+
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                         const Field<ComplexD>& gf1, const RealD mass,
-                        const RealD m5, const Int ls)
+                        const RealD m5, const Int ls, const bool is_dagger)
 // set_left_expanded_gauge_field(gf1, gf);
 // in.geo() should not be expanded.
 // out can be the same object as in.
@@ -56,6 +64,7 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   Qassert(out.geo().is_only_local);
   set_zero(out);
   out = in1;
+  const RealD dagger_factor = is_dagger ? -1.0 : 1.0;
   qacc_for(index, geo.local_volume(), {
     const SpinMatrix& gamma_5 = smc().gamma5;
     const array<SpinMatrix, 4>& gammas = smc().cps_gammas;
@@ -63,35 +72,45 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
     Vector<ComplexD> v = out.get_elems(index);
     {
       const Vector<ComplexD> iv = in1.get_elems_const(xl);
-      mul_vec_plus(v, (ComplexD)(5.0 - m5), iv);
+      vec_plusm(v, (ComplexD)(5.0 - m5), iv);
       const Vector<ComplexD> iv_m(iv.p + 4, 4 * (ls - 1));
-      const Vector<ComplexD> iv_m0(iv.p, 4);
       const Vector<ComplexD> iv_p(iv.p, 4 * (ls - 1));
+      const Vector<ComplexD> iv_m0(iv.p, 4);
       const Vector<ComplexD> iv_p0(iv.p + 4 * (ls - 1), 4);
       Vector<ComplexD> v_m(v.p, 4 * (ls - 1));
-      Vector<ComplexD> v_m0(v.p + 4 * (ls - 1), 4);
       Vector<ComplexD> v_p(v.p + 4, 4 * (ls - 1));
+      Vector<ComplexD> v_m0(v.p + 4 * (ls - 1), 4);
       Vector<ComplexD> v_p0(v.p, 4);
-      mul_vec_plus(v_m, (ComplexD)(-0.5), iv_m);
-      mul_vec_plus(v_m0, (ComplexD)(0.5 * mass), iv_m0);
-      mat_mul_multi_vec_plus(v_m, (ComplexD)(0.5), gamma_5, iv_m);
-      mat_mul_multi_vec_plus(v_m0, (ComplexD)(-0.5 * mass), gamma_5, iv_m0);
-      mul_vec_plus(v_p, (ComplexD)(-0.5), iv_p);
-      mul_vec_plus(v_p0, (ComplexD)(0.5 * mass), iv_p0);
-      mat_mul_multi_vec_plus(v_p, (ComplexD)(-0.5), gamma_5, iv_p);
-      mat_mul_multi_vec_plus(v_p0, (ComplexD)(0.5 * mass), gamma_5, iv_p0);
+      vec_plusm(v_m, (ComplexD)(-0.5), iv_m);
+      vec_plusm(v_p, (ComplexD)(-0.5), iv_p);
+      vec_plusm(v_m0, (ComplexD)(0.5 * mass), iv_m0);
+      vec_plusm(v_p0, (ComplexD)(0.5 * mass), iv_p0);
+      mat_mul_multi_vec_plusm(v_m, (ComplexD)(dagger_factor * 0.5), gamma_5,
+                              iv_m);
+      mat_mul_multi_vec_plusm(v_p, (ComplexD)(-dagger_factor * 0.5), gamma_5,
+                              iv_p);
+      mat_mul_multi_vec_plusm(v_m0, (ComplexD)(-dagger_factor * 0.5 * mass),
+                              gamma_5, iv_m0);
+      mat_mul_multi_vec_plusm(v_p0, (ComplexD)(dagger_factor * 0.5 * mass),
+                              gamma_5, iv_p0);
     }
     for (Int mu = 0; mu < 4; ++mu) {
       const Coordinate xl_p = coordinate_shifts(xl, mu);
       const Coordinate xl_m = coordinate_shifts(xl, -mu - 1);
-      const ComplexD u_p = gf1.get_elem(xl, mu);
-      const ComplexD u_m = 1.0 / gf1.get_elem(xl_m, mu);
+      ComplexD u_p = gf1.get_elem(xl, mu);
+      ComplexD u_m = 1.0 / gf1.get_elem(xl_m, mu);
+      if (is_dagger) {
+        u_p = qconj(1.0 / u_p);
+        u_m = qconj(1.0 / u_m);
+      }
       const Vector<ComplexD> iv_p = in1.get_elems_const(xl_p);
       const Vector<ComplexD> iv_m = in1.get_elems_const(xl_m);
-      mat_mul_multi_vec_plus(v, (ComplexD)(0.5 * u_p), gammas[mu], iv_p);
-      mat_mul_multi_vec_plus(v, (ComplexD)(-0.5 * u_m), gammas[mu], iv_m);
-      mul_vec_plus(v, (ComplexD)(-0.5 * u_p), iv_p);
-      mul_vec_plus(v, (ComplexD)(-0.5 * u_m), iv_m);
+      vec_plusm(v, (ComplexD)(-0.5 * u_p), iv_p);
+      vec_plusm(v, (ComplexD)(-0.5 * u_m), iv_m);
+      mat_mul_multi_vec_plusm(v, (ComplexD)(dagger_factor * 0.5 * u_p),
+                              gammas[mu], iv_p);
+      mat_mul_multi_vec_plusm(v, (ComplexD)(-dagger_factor * 0.5 * u_m),
+                              gammas[mu], iv_m);
     }
   });
 }

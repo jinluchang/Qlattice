@@ -24,11 +24,13 @@ struct SpinPropagator4dT : FieldM<SpinMatrixT<T>, 1> {
 
 #ifndef QLAT_NO_DEFAULT_TYPE
 
-typedef QedGaugeFieldT<> QedGaugeField;
+using QedGaugeField = QedGaugeFieldT<>;
 
-typedef ComplexScalerFieldT<> ComplexScalerField;
+using ComplexScalerField = ComplexScalerFieldT<>;
 
-typedef SpinPropagator4dT<> SpinPropagator4d;
+using SpinPropagator4d = SpinPropagator4dT<>;
+
+using SpinProp = SpinPropagator4d;
 
 #endif
 
@@ -140,7 +142,7 @@ inline void set_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
 }
 
 inline void prop_mom_photon_invert(QedGaugeField& egf,
-                                   const array<RealD, DIMN>& momtwist)
+                                   const CoordinateD& momtwist)
 // Feynman Gauge
 // All spatial zero mode removed.
 // egf in momentum space.
@@ -173,7 +175,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
 }
 
 inline void prop_photon_invert(QedGaugeField& egf,
-                               const array<RealD, DIMN>& momtwist)
+                               const CoordinateD& momtwist)
 // Feynman Gauge
 // All spatial zero mode removed.
 // egf in coordinate space.
@@ -188,7 +190,7 @@ inline void prop_photon_invert(QedGaugeField& egf,
 
 inline void prop_mom_complex_scalar_invert(
     ComplexScalerField& csf, const RealD mass,
-    const array<RealD, DIMN>& momtwist)
+    const CoordinateD& momtwist)
 {
   TIMER("prop_mom_complex_scalar_invert");
   const Geometry& geo = csf.geo();
@@ -213,7 +215,7 @@ inline void prop_mom_complex_scalar_invert(
 
 inline void prop_complex_scalar_invert(ComplexScalerField& csf,
                                        const RealD mass,
-                                       const array<RealD, DIMN>& momtwist)
+                                       const CoordinateD& momtwist)
 {
   TIMER_VERBOSE("prop_complex_scalar_invert");
   const Geometry& geo = csf.geo();
@@ -256,13 +258,12 @@ inline void prop_free_scalar_invert(Field<ComplexD>& f, const RealD mass,
 
 template <class T>
 void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
-                                const array<RealD, DIMN>& momtwist)
+                                const RealD m5, const CoordinateD& momtwist)
 // DWF infinite L_s
-// M_5 = 1.0
+// M_5 <= 1.0
 {
   TIMER("prop_mom_spin_propagator4d");
   const Geometry& geo = sp4d.geo();
-  const RealD m5 = 1.0;
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
@@ -309,15 +310,19 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
 
 template <class T>
 void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
-                            const array<RealD, DIMN>& momtwist)
+                            const RealD m5, const CoordinateD& momtwist)
 {
   TIMER_VERBOSE("prop_spin_propagator4d");
   const Geometry geo = sp4d.geo();
   fft_complex_field(sp4d, true);
-  prop_mom_spin_propagator4d(sp4d, mass, momtwist);
+  prop_mom_spin_propagator4d(sp4d, mass, m5, momtwist);
   fft_complex_field(sp4d, false);
   sp4d *= 1.0 / geo.total_volume();
 }
+
+void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
+                 const RealD m5 = 1.0,
+                 const CoordinateD& momtwist = CoordinateD());
 
 inline void set_point_source_plusm(QedGaugeField& f, const ComplexD& coef,
                                    const Coordinate& xg, const Int mu)
@@ -420,6 +425,6 @@ void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
 
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                         const Field<ComplexD>& gf1, const RealD mass,
-                        const RealD m5, const Int ls);
+                        const RealD m5, const Int ls, const bool is_dagger);
 
 }  // namespace qlat

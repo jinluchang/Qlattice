@@ -302,6 +302,13 @@ void set_mom_src(Propagator4d& prop, const Geometry& geo_input,
   }
 }
 
+void free_invert(Prop& p_sol, const Prop& p_src, const RealD mass, const RealD m5,
+                 const CoordinateD& momtwist)
+{
+  TIMER("free_invert");
+  free_invert<RealD>(p_sol, p_src, mass, m5, momtwist);
+}
+
 void convert_wm_from_mspincolor(Propagator4d& prop_wm,
                                 const Propagator4d& prop_msc)
 {

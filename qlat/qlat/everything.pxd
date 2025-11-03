@@ -387,6 +387,10 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
     void set_point_src(Prop& prop, const Geometry& geo_input, const Coordinate& xg, const ComplexD& value) except +
     void set_rand_vol_u1(Field[ComplexD]& fu1, const Geometry& geo_input, const RngState& rs) except +
     void set_rand_vol_u1_src(Prop& prop, const Field[ComplexD]& fu1) except +
+    void free_invert(
+        Prop& p_sol, const Prop& p_src,
+        const RealD mass, const RealD m5,
+        const CoordinateD& momtwist) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
@@ -576,10 +580,17 @@ cdef extern from "qlat/hlbl-contract.h" namespace "qlat":
 
 cdef extern from "qlat/qed.h" namespace "qlat":
 
-    void set_left_expanded_gauge_field(
-        Field[ComplexD]& gf1, const Field[ComplexD]& gf) except +
+    cdef cppclass SpinProp(Field[SpinMatrix]):
+        pass
+    #
+    void free_invert(
+        SpinProp& sp_sol, const SpinProp& sp_src,
+        const RealD mass, const RealD m5,
+        const CoordinateD& momtwist) except +
     #
     void multiply_m_dwf_qed(
         Field[ComplexD]& f_out, const Field[ComplexD]& f_in,
         const Field[ComplexD]& gf1,
-        const RealD mass, const RealD m5, const Int ls) except +
+        const RealD mass, const RealD m5, const Int ls,
+        const bool is_dagger) except +
+

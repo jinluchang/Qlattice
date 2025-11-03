@@ -502,7 +502,7 @@ def gf_avg_wilson_loop_normalized_tr(gf, l, t):
 def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
 def gf_twist_boundary_at_boundary(gf : GaugeField, lmom : float = -0.5, mu : int = 3):
     # modify gf in place
-def mk_left_expanded_gauge_field(gf):
+def mk_left_expanded_field(gf):
 ```
 
 ## GaugeTransform

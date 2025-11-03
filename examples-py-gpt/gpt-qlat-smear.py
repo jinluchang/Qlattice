@@ -48,7 +48,7 @@ fselc = fsel.copy()
 fselc.add_psel(psel)
 
 gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 30)
-gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
+gf_ape = q.mk_left_expanded_field(gf_ape)
 
 inv_type = 1
 inv_acc = 0

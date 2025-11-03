@@ -3,6 +3,7 @@
 #include <qlat/qcd.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
+#include <qlat/field-fft.h>
 
 namespace qlat
 {  //
@@ -291,7 +292,7 @@ void set_mom_src_propagator(Propagator4d& prop, Inverter& inv,
 
 template <class T>
 void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
-                     const double mass, const double m5 = 1.0,
+                     const RealD mass, const RealD m5 = 1.0,
                      const CoordinateD& momtwist = CoordinateD())
 // DWF infinite L_s
 // M_5 <= 1.0
@@ -346,7 +347,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 
 template <class T>
 void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
-                 const double mass, const double m5 = 1.0,
+                 const RealD mass, const RealD m5 = 1.0,
                  const CoordinateD& momtwist = CoordinateD())
 {
   TIMER_VERBOSE("free_invert");
@@ -357,6 +358,9 @@ void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   fft_complex_field(sol, false);
   sol *= 1.0 / geo.total_volume();
 }
+
+void free_invert(Prop& p_sol, const Prop& p_src, const RealD mass, const RealD m5 = 1.0,
+                 const CoordinateD& momtwist = CoordinateD());
 
 void convert_wm_from_mspincolor(Propagator4d& prop_wm,
                                 const Propagator4d& prop_msc);

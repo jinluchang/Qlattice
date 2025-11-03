@@ -220,8 +220,12 @@ def gf_twist_boundary_at_boundary(GaugeField gf, double lmom=-0.5, int mu=3):
     """
     c.gf_twist_boundary_at_boundary(gf, lmom, mu)
 
-def mk_left_expanded_gauge_field(GaugeField gf):
-    cdef GaugeField gf1 = field_expanded(gf, 1, 0)
+def mk_left_expanded_field(gf):
+    """
+    Return left expanded field.
+    Similar to ``set_left_expanded_gauge_field`` in C++
+    """
+    gf1 = field_expanded(gf, 1, 0)
     refresh_expanded_1(gf1)
     return gf1
 
@@ -239,31 +243,14 @@ def gf_reduce_half(GaugeField gf):
 ###
 
 @q.timer
-def set_left_expanded_gauge_field(gf):
-    cdef FieldComplexD gf_qed
-    cdef FieldComplexD gf1_qed
-    cdef GaugeField gf_qcd
-    cdef GaugeField gf1_qcd
-    if isinstance(gf, FieldComplexD):
-        gf_qed = gf
-        gf1_qed = FieldComplexD()
-        cc.set_left_expanded_gauge_field(gf1_qed.xx, gf_qed.xx)
-        return gf1_qed
-    elif isinstance(gf, GaugeField):
-        gf_qcd = gf
-        gf1_qcd = GaugeField()
-        cc.set_left_expanded_gauge_field(gf1_qcd.xxx().val(), gf_qcd.xxx().val())
-        return gf1_qcd
-    else:
-        assert False
-
-@q.timer
 def multiply_m_dwf_qed(
         FieldComplexD f_in, FieldComplexD gf1,
         cc.RealD mass, cc.RealD m5, cc.Int ls,
+        cc.Bool is_dagger,
         ):
     cdef FieldComplexD f_out = FieldComplexD()
-    cc.multiply_m_dwf_qed(f_out.xx, f_in.xx, gf1.xx, mass, m5, ls)
+    cc.multiply_m_dwf_qed(f_out.xx, f_in.xx, gf1.xx, mass, m5, ls, is_dagger)
     return f_out
+
 
 ###

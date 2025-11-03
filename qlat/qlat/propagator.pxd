@@ -1,7 +1,7 @@
 from . cimport everything as cqlat
-from .field_types cimport FieldWilsonMatrix, FieldWilsonVector
-from .selected_field_types cimport SelectedFieldWilsonMatrix
-from .selected_points_types cimport SelectedPointsWilsonMatrix
+from .field_types cimport FieldWilsonMatrix, FieldWilsonVector, FieldSpinMatrix
+from .selected_field_types cimport SelectedFieldWilsonMatrix, SelectedFieldSpinMatrix
+from .selected_points_types cimport SelectedPointsWilsonMatrix, SelectedPointsSpinMatrix
 
 cdef class Prop(FieldWilsonMatrix):
 
@@ -18,3 +18,7 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
 cdef class FermionField4d(FieldWilsonVector):
 
     cdef cqlat.Handle[cqlat.FermionField4d] xxx(self)
+
+cdef class SpinProp(FieldSpinMatrix):
+
+    cdef cqlat.Handle[cqlat.SpinProp] xxx(self)

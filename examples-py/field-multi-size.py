@@ -35,7 +35,7 @@ for total_site in total_site_list:
         gf = q.GaugeField(geo)
         gf.set_rand(rs)
         gf_ape = q.gf_spatial_ape_smear(gf, 0.5, 3)
-        gf1 = q.mk_left_expanded_gauge_field(gf_ape)
+        gf1 = q.mk_left_expanded_field(gf_ape)
         coef = 0.9375
         step = 3
         prop0 = q.prop_smear(prop, gf1, coef, step, mode_smear=0)

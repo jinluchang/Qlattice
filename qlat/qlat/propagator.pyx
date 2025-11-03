@@ -123,6 +123,39 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
 
 ###
 
+cdef class SpinProp(FieldSpinMatrix):
+
+    def __init__(self, Geometry geo=None, multiplicity=1):
+        assert multiplicity == 1
+        super().__init__(geo, 1)
+
+    cdef cc.Handle[cc.SpinProp] xxx(self):
+        assert self.xx.multiplicity == 1 or self.xx.multiplicity == 0
+        return cc.Handle[cc.SpinProp](<cc.SpinProp&>self.xx)
+
+    def get_elem_sm(self, cc.Long index, int m=0):
+        cdef SpinMatrix sm = SpinMatrix()
+        np.asarray(sm)[:] = self[index, m]
+        return sm
+
+    def __getstate__(self):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        return super().__getstate__()
+
+    def __setstate__(self, state):
+        """
+        Only work when single node (or if all nodes has the same data).
+        """
+        super().__setstate__(state)
+
+    def glb_sum_tslice(self, *, cc.Int t_dir=3):
+        cdef SelectedPointsSpinMatrix sp = super().glb_sum_tslice(t_dir=t_dir)
+        return sp
+
+###
+
 def set_point_src(Prop prop_src not None, Geometry geo not None, Coordinate xg not None, cc.PyComplexD value=1.0):
     cc.set_point_src(prop_src.xxx().val(), geo.xx, xg.xx, cc.ccpy_d(value))
 
@@ -234,13 +267,25 @@ def mk_rand_u1_prop(inv, sel, rs):
     return get_rand_u1_sol(prop_sol, fu1, sel)
 
 @q.timer
-def free_invert(prop_src, mass, m5=1.0, momtwist=None):
-    assert isinstance(prop_src, Prop)
+def free_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=None):
+    cdef Prop qcd_prop_src
+    cdef Prop qcd_prop_sol
+    cdef SpinProp spin_prop_src
+    cdef SpinProp spin_prop_sol
     if momtwist is None:
-        momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
-    prop_sol = Prop()
-    c.free_invert_prop(prop_sol, prop_src, mass, m5, momtwist)
-    return prop_sol
+        momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
+    if isinstance(prop_src, Prop):
+        qcd_prop_src = prop_src
+        qcd_prop_sol = Prop()
+        cc.free_invert(qcd_prop_sol.xxx().val(), qcd_prop_src.xxx().val(), mass, m5, momtwist.xx)
+        return qcd_prop_sol
+    elif isinstance(prop_src, SpinProp):
+        spin_prop_src = prop_src
+        spin_prop_sol = SpinProp()
+        cc.free_invert(spin_prop_sol.xxx().val(), spin_prop_src.xxx().val(), mass, m5, momtwist.xx)
+        return spin_prop_sol
+    else:
+        assert False
 
 def convert_mspincolor_from_wm(prop_wm):
     prop_msc = prop_wm.copy(False)

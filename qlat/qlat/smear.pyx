@@ -39,7 +39,7 @@ def prop_smear(Prop prop, GaugeField gf1,
                int mode_smear=1):
     """
     gf_ape = gf_spatial_ape_smear(gf, 0.5, 30)
-    gf1 = mk_left_expanded_gauge_field(gf_ape)
+    gf1 = mk_left_expanded_field(gf_ape)
     mom: momentum smearing in lattice unit 1/a (not unit of lattice momentum 2 pi / L / a)
     smear params:
     24D: coef = 0.9375, step = 10

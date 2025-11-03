@@ -128,7 +128,7 @@ qacc MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
 }
 
 template <class T>
-qacc void mul_vec_plus(Vector<T> res, const T& coef, const Vector<T> y)
+qacc void vec_plusm(Vector<T> res, const T& coef, const Vector<T> y)
 // res[i] += coef * y[i]
 {
   const Int size = y.size();
@@ -139,8 +139,8 @@ qacc void mul_vec_plus(Vector<T> res, const T& coef, const Vector<T> y)
 }
 
 template <Int DIMN, class T>
-qacc void mat_mul_multi_vec_plus(Vector<T> res, const T& coef,
-                                 const MatrixT<DIMN, T>& x, const Vector<T> y)
+qacc void mat_mul_multi_vec_plusm(Vector<T> res, const T& coef,
+                                  const MatrixT<DIMN, T>& x, const Vector<T> y)
 // res[k*d+i] += coef * x[i*d+j] * y[k*d + j]
 {
   const Int size = y.size();

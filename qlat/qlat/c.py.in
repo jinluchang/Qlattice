@@ -124,9 +124,8 @@ __all__ += [
         'gf_avg_wilson_loop_normalized_tr',
         'set_g_rand_color_matrix_field',
         'gf_twist_boundary_at_boundary',
-        'mk_left_expanded_gauge_field',
+        'mk_left_expanded_field',
         'gf_reduce_half',
-        'set_left_expanded_gauge_field',
         'multiply_m_dwf_qed',
         ]
 
@@ -134,6 +133,7 @@ __all__ += [
         'Prop',
         'SelProp',
         'PselProp',
+        'SpinProp',
         'FermionField4d',
         'set_point_src',
         'set_wall_src',

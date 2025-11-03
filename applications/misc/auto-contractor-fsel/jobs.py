@@ -415,7 +415,7 @@ def run_gf_ape(job_tag, get_gf):
         gf = get_gf()
         gf_ape = gf.copy()
         q.gf_spatial_ape_smear(gf_ape, coef, step)
-        gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
+        gf_ape = q.mk_left_expanded_field(gf_ape)
         return gf_ape
     return q.lazy_call(run)
 
