@@ -1,7 +1,5 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
-
 const char* cname = "Main";
 
 void setField(qlat::Field<qlat::ComplexD>& f)
@@ -31,7 +29,7 @@ qlat::SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
                              const qlat::QedGaugeField& egf1,
                              const qlat::QedGaugeField& egf2,
                              const qlat::QedGaugeField& egf3, const double mass,
-                             const qlat::array<double, qlat::DIMN>& momtwist)
+                             const qlat::CoordinateD& momtwist)
 {
   TIMER("lblMuonLine");
   const qlat::Geometry& geo = egf1.geo();
@@ -41,22 +39,19 @@ qlat::SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
   src.init(geo);
   qlat::set_zero(src);
   qlat::set_wall_source_plusm(src, 1.0, tsrc);
-  qlat::prop_spin_propagator4d(src, mass, momtwist);
+  qlat::free_invert(sol, src, mass, 1.0, momtwist);
   //
-  sol = src;
   qlat::set_zero(src);
   qlat::sequential_photon_spin_propagator_plusm(src, qlat::ii, egf1, sol);
-  qlat::prop_spin_propagator4d(src, mass, momtwist);
+  qlat::free_invert(sol, src, mass, 1.0, momtwist);
   //
-  sol = src;
   qlat::set_zero(src);
   qlat::sequential_photon_spin_propagator_plusm(src, qlat::ii, egf2, sol);
-  qlat::prop_spin_propagator4d(src, mass, momtwist);
+  qlat::free_invert(sol, src, mass, 1.0, momtwist);
   //
-  sol = src;
   qlat::set_zero(src);
   qlat::sequential_photon_spin_propagator_plusm(src, qlat::ii, egf3, sol);
-  qlat::prop_spin_propagator4d(src, mass, momtwist);
+  qlat::free_invert(src, src, mass, 1.0, momtwist);
   //
   qlat::SpinPropagator4d snk;
   snk.init(geo);
@@ -70,7 +65,7 @@ qlat::SpinMatrix lblMuonLineC(const int tsnk, const int tsrc,
                               const qlat::QedGaugeField& egf2,
                               const qlat::QedGaugeField& egf3,
                               const double mass,
-                              const qlat::array<double, qlat::DIMN>& momtwist)
+                              const qlat::CoordinateD& momtwist)
 {
   TIMER("lblMuonLineC");
   qlat::SpinMatrix sm;
@@ -89,7 +84,7 @@ qlat::SpinMatrix lblMuonPartPointSrc(
     const qlat::Geometry& geo, const int tsnk, const int tsrc,
     const qlat::Coordinate& xg1, const int mu1, const qlat::Coordinate& xg2,
     const int mu2, const qlat::Coordinate& xg3, const int mu3,
-    const double mass, const qlat::array<double, qlat::DIMN>& momtwist)
+    const double mass, const qlat::CoordinateD& momtwist)
 {
   TIMER("lblMuonPartPointSrc");
   qlat::QedGaugeField egf1;
@@ -116,7 +111,7 @@ qlat::SpinMatrix lblMuonPartPointSrc(
 void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
                                  const qlat::Geometry& geo, const int tsnk,
                                  const int tsrc, const double mass,
-                                 const qlat::array<double, qlat::DIMN>& momtwist)
+                                 const qlat::CoordinateD& momtwist)
 // pretend to the operator to be
 // \Sigma_i * mass / 2
 {
@@ -129,8 +124,8 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
   qlat::set_zero(src);
   qlat::set_wall_source_plusm(snk, 1.0, tsnk);
   qlat::set_wall_source_plusm(src, 1.0, tsrc);
-  qlat::prop_spin_propagator4d(snk, mass, momtwist);
-  qlat::prop_spin_propagator4d(src, mass, momtwist);
+  qlat::free_invert(snk, snk, mass, 1.0, momtwist);
+  qlat::free_invert(src, src, mass, 1.0, momtwist);
   const int top =
       qlat::mod(tsrc + qlat::mod(tsnk - tsrc, geo.total_site()[3]) / 2,
                 geo.total_site()[3]);
@@ -175,7 +170,7 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
                              const qlat::Coordinate& xg2, const int mu2,
                              const qlat::Coordinate& xg3, const int mu3,
                              const double mass,
-                             const qlat::array<double, qlat::DIMN>& momtwist)
+                             const qlat::CoordinateD& momtwist)
 {
   TIMER("lblShowMuonPartPointSrc");
   qlat::DisplayInfo(cname, fname.c_str(), "mass = %.2f\n", mass);
@@ -234,7 +229,7 @@ void lblMuonPart()
   qlat::Geometry geo;
   geo.init(total_site);
   qlat::DisplayInfo(cname, fname.c_str(), "geo =\n%s\n", qlat::show(geo).c_str());
-  qlat::array<double, qlat::DIMN> momtwist;
+  qlat::CoordinateD momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;
@@ -311,7 +306,7 @@ void displaySpinPropagator4d()
   qlat::Geometry geo;
   geo.init(total_site);
   qlat::DisplayInfo(cname, fname.c_str(), "geo =\n%s\n", qlat::show(geo).c_str());
-  qlat::array<double, qlat::DIMN> momtwist;
+  qlat::CoordinateD momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;
@@ -325,7 +320,7 @@ void displaySpinPropagator4d()
   if (geo.is_local(xlsrc)) {
     qlat::set_unit(prop.get_elem(xlsrc));
   }
-  qlat::prop_spin_propagator4d(prop, mass, momtwist);
+  qlat::free_invert(prop, prop, mass, 1.0, momtwist);
   qlat::Coordinate xgsnk(0, 0, 0, 0);
   qlat::Coordinate xlsnk = geo.coordinate_l_from_g(xgsnk);
   qlat::DisplayInfo(cname, fname.c_str(), "xgsnk = %s .\n", qlat::show(xgsnk).c_str());

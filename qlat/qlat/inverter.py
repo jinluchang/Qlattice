@@ -23,14 +23,14 @@ class InverterDwfFreeField(Inverter):
 
     def __init__(self, *, mass, m5=1.0, momtwist=None, qtimer=TimerNone()):
         if momtwist is None:
-            momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
+            momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
         self.mass = mass
         self.m5 = m5
         self.momtwist = momtwist
         self.timer = qtimer
         assert isinstance(self.mass, float)
         assert isinstance(self.m5, float)
-        assert isinstance(self.momtwist, list)
+        assert isinstance(self.momtwist, CoordinateD)
         assert isinstance(self.timer, (Timer, TimerNone,))
 
     def __mul__(self, prop_src):
