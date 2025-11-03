@@ -34,7 +34,7 @@ def field_expanded(f, expansion_left, expansion_right):
     geo = f.geo
     multiplicity = f.multiplicity
     geo_e = geo_resize(geo, expansion_left, expansion_right)
-    f_e = type(f)(geo=geo_e, multiplicity=multiplicity)
+    f_e = type(f)(geo_e, multiplicity)
     f_e @= f
     return f_e
 

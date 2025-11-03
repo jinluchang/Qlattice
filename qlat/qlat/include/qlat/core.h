@@ -377,8 +377,8 @@ qacc Geometry geo_resize(const Geometry& geo_, const Int thick = 0)
 }
 
 qacc Geometry geo_resize(const Geometry& geo_,
-                                   const Coordinate& expansion_left_,
-                                   const Coordinate& expansion_right_)
+                         const Coordinate& expansion_left_,
+                         const Coordinate& expansion_right_)
 {
   Geometry geo = geo_;
   geo.resize(expansion_left_, expansion_right_);

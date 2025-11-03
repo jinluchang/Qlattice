@@ -280,10 +280,10 @@ def geo_resize(Geometry geo, expansion_left=None, expansion_right=None):
     elif isinstance(expansion_right, list):
         er = Coordinate(expansion_right)
     else:
-        assert isinstance(expansion_left, Coordinate)
-        er = <Coordinate>expansion_left
+        assert isinstance(expansion_right, Coordinate)
+        er = <Coordinate>expansion_right
     cdef Geometry geo_new = Geometry()
-    geo_new.xx = cc.geo_resize(geo.xx, el.xx, er.xx)
+    cc.assign_direct(geo_new.xx, cc.geo_resize(geo.xx, el.xx, er.xx))
     return geo_new
 
 def geo_eo(Geometry geo, int eo=0):

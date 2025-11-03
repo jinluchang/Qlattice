@@ -1,0 +1,74 @@
+[
+ [
+  "f_in data sig",
+  {
+   "value": [
+    {
+     "real": 11.8844529387178,
+     "imag": 132.9571324600376,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -95.67676816281782,
+     "imag": -201.19509146384823,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -147.89757826063305,
+     "imag": 44.96612235007841,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "f_out data sig",
+  {
+   "value": [
+    {
+     "real": 619.4020851490588,
+     "imag": 1070.412616258858,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -449.56088960679097,
+     "imag": -1124.0632186118605,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -894.891624097462,
+     "imag": 174.3379690683321,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "f_out dagger data sig",
+  {
+   "value": [
+    {
+     "real": -5.793944766467234,
+     "imag": 1040.8002801052025,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -593.6886628888903,
+     "imag": -892.0295396583115,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -686.8209948087613,
+     "imag": 298.7725071835638,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ]
+]

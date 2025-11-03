@@ -1,8 +1,8 @@
+#include <qlat-utils/matrix.h>
+#include <qlat-utils/qacc-func.h>
+#include <qlat-utils/types.h>
 #include <qlat/core.h>
 #include <qlat/qed.h>
-#include "qlat-utils/matrix.h"
-#include "qlat-utils/qacc-func.h"
-#include "qlat-utils/types.h"
 
 namespace qlat
 {  //
@@ -44,8 +44,13 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   const Geometry& geo = in.geo();
   const Geometry& geo_gf1 = gf1.geo();
   Qassert(is_matching_geo(geo, geo_gf1));
-  Qassert(geo_gf1.expansion_left == Coordinate(1, 1, 1, 1));
-  Qassert(geo_gf1.expansion_right == Coordinate(0, 0, 0, 0));
+  const Coordinate size_node = geo_gf1.geon.size_node;
+  for (Int mu = 0; mu < DIMN; ++mu) {
+    if (size_node[mu] > 1) {
+      Qassert(geo_gf1.expansion_left[mu] == 1);
+      Qassert(geo_gf1.expansion_right[mu] == 0);
+    }
+  }
   Qassert(gf1.multiplicity == 4);
   Qassert(in.multiplicity == 4 * ls);
   Qassert(geo.is_only_local == true);

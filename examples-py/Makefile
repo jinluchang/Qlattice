@@ -31,6 +31,7 @@ tests = \
 		prop-smear.log \
 		set-rand.log \
 		utils.log \
+		dslash-qed.log \
 		benchmark-matrix-functions.log \
 		make-sample-gauge-field.log \
 		lat-io.log \
