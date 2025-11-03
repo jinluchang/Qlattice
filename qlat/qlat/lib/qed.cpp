@@ -3,6 +3,7 @@
 #include <qlat-utils/types.h>
 #include <qlat/core.h>
 #include <qlat/qed.h>
+#include <qlat/dslash.h>
 
 namespace qlat
 {  //
@@ -26,6 +27,149 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
   TIMER("free_invert");
   sp_sol.init(sp_src);
   prop_spin_propagator4d(sp_sol, mass, m5, momtwist);
+}
+
+void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
+                                  const Field<ComplexD>& ff5d, const Int ls,
+                                  const Int upper, const Int lower)
+// upper componets are right handed
+// lower componets are left handed
+{
+  TIMER("fermion_field_4d_from_5d_qed");
+  const Geometry& geo = ff5d.geo();
+  Qassert(geo.is_only_local);
+  Qassert(4 * ls == ff5d.multiplicity);
+  ff4d.init(geo, 4);
+  set_zero(ff4d);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<ComplexD> iv = ff5d.get_elems_const(index);
+    Vector<ComplexD> v = ff4d.get_elems(index);
+    v[0] = iv[upper * 4 + 0];
+    v[1] = iv[upper * 4 + 1];
+    v[2] = iv[lower * 4 + 2];
+    v[3] = iv[lower * 4 + 3];
+  });
+}
+
+void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
+                                  const Field<ComplexD>& ff4d, const Int ls,
+                                  const Int upper, const Int lower)
+// upper componets are right handed
+// lower componets are left handed
+{
+  TIMER("fermion_field_5d_from_4d_qed");
+  const Geometry& geo = ff4d.geo();
+  Qassert(geo.is_only_local);
+  ff5d.init(geo, 4 * ls);
+  set_zero(ff5d);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<ComplexD> iv = ff4d.get_elems_const(index);
+    Vector<ComplexD> v = ff5d.get_elems(index);
+    v[upper * 4 + 0] = iv[0];
+    v[upper * 4 + 1] = iv[1];
+    v[lower * 4 + 2] = iv[2];
+    v[lower * 4 + 3] = iv[3];
+  });
+}
+
+ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2)
+// return ff1^dag * ff2
+{
+  TIMER("dot_product");
+  Qassert(ff1.geo().is_only_local);
+  Qassert(ff2.geo().is_only_local);
+  Qassert(ff1.geo() == ff2.geo());
+  Qassert(ff1.multiplicity == ff2.multiplicity);
+  const Geometry& geo = ff1.geo();
+  Field<ComplexD> fsum;
+  fsum.init(geo, 1);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ComplexD> v1 = ff1.get_elems_const(xl);
+    const Vector<ComplexD> v2 = ff2.get_elems_const(xl);
+    Qassert(v1.size() == v2.size());
+    ComplexD s = 0.0;
+    for (Int k = 0; k < v1.size(); ++k) {
+      s += qconj(v1[k]) * v2[k];
+    }
+    fsum.get_elem(index) = s;
+  });
+  const std::vector<ComplexD> sum = field_glb_sum(fsum);
+  return sum[0];
+}
+
+Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+                       const Field<ComplexD>& gf1, const RealD mass,
+                       const RealD m5, const Int ls, const bool is_dagger,
+                       const RealD stop_rsd, const Long max_num_iter)
+// if is_dagger is false, then M^dag M out = in
+// if is_dagger is true, then M M^dag out = in
+{
+  TIMER("cg_with_m_dwf_qed");
+  Qassert(mass > 0.0);
+  Qassert(ls > 0);
+  Qassert(stop_rsd >= 0.0);
+  Qassert(max_num_iter >= 0);
+  Qassert(in.geo().is_only_local);
+  // Treat out as initial guess (zero if not provided)
+  out.init_zero(in.geo(), in.multiplicity);
+  Qassert(out.geo().is_only_local);
+  Qassert(out.multiplicity == in.multiplicity);
+  Qassert(gf1.multiplicity == 4);
+  Qassert(is_matching_geo(gf1.geo(), in.geo()));
+  if (max_num_iter == 0) {
+    return 0;
+  }
+  // implement conjugate gradient with normal equation solver
+  Field<ComplexD> r, p, tmp, ap;
+  r = in;
+  multiply_m_dwf_qed(tmp, out, gf1, mass, m5, ls, is_dagger);
+  multiply_m_dwf_qed(tmp, out, gf1, mass, m5, ls, not is_dagger);
+  r -= tmp;
+  p = r;
+  const RealD qnorm_in = qnorm(in);
+  displayln_info(
+      fname +
+      ssprintf(
+          ": start max_num_iter=%4ld        sqrt(qnorm_in)=%.3E stop_rsd=%.3E",
+          max_num_iter, sqrt(qnorm_in), stop_rsd));
+  RealD qnorm_r = qnorm(r);
+  for (Long iter = 1; iter <= max_num_iter; ++iter) {
+    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, is_dagger);
+    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, not is_dagger);
+    const RealD alpha = qnorm_r / dot_product(p, ap).real();
+    tmp = p;
+    tmp *= alpha;
+    out += tmp;
+    tmp = ap;
+    tmp *= alpha;
+    r -= tmp;
+    const RealD new_qnorm_r = qnorm(r);
+    if (is_cg_verbose()) {
+      displayln_info(
+          fname +
+          ssprintf(": iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
+                   iter, sqrt(new_qnorm_r / qnorm_in), stop_rsd));
+    }
+    if (new_qnorm_r <= qnorm_in * sqr(stop_rsd)) {
+      displayln_info(
+          fname +
+          ssprintf(
+              ": final iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
+              iter, sqrt(new_qnorm_r / qnorm_in), stop_rsd));
+      return iter;
+    }
+    const RealD beta = new_qnorm_r / qnorm_r;
+    p *= beta;
+    p += r;
+    qnorm_r = new_qnorm_r;
+  }
+  displayln_info(
+      fname +
+      ssprintf(
+          ": final max_num_iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
+          max_num_iter + 1, sqrt(qnorm_r / qnorm_in), stop_rsd));
+  return max_num_iter + 1;
 }
 
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,

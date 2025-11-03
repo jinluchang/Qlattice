@@ -320,10 +320,6 @@ void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
   sp4d *= 1.0 / geo.total_volume();
 }
 
-void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
-                 const RealD m5 = 1.0,
-                 const CoordinateD& momtwist = CoordinateD());
-
 inline void set_point_source_plusm(QedGaugeField& f, const ComplexD& coef,
                                    const Coordinate& xg, const Int mu)
 {
@@ -423,8 +419,28 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
 void set_left_expanded_gauge_field(Field<ComplexD>& gf1,
                                    const Field<ComplexD>& gf);
 
+void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
+                 const RealD m5 = 1.0,
+                 const CoordinateD& momtwist = CoordinateD());
+
+void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
+                                  const Field<ComplexD>& ff5d, const Int ls,
+                                  const Int upper, const Int lower);
+
+void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
+                                  const Field<ComplexD>& ff4d, const Int ls,
+                                  const Int upper, const Int lower);
+
+ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2);
+
 void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
                         const Field<ComplexD>& gf1, const RealD mass,
                         const RealD m5, const Int ls, const bool is_dagger);
+
+Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+                       const Field<ComplexD>& gf1, const RealD mass,
+                       const RealD m5, const Int ls, const bool is_dagger,
+                       const RealD stop_rsd = 1e-8,
+                       const Long max_num_iter = 50000);
 
 }  // namespace qlat
