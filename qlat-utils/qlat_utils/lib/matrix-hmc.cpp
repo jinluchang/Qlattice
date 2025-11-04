@@ -10,7 +10,7 @@ void ColorMatrixConstants::check() const
     Qassert(qnorm(m - ts[a]) < 1e-20);
   }
   for (Int a = 0; a < 8; ++a) {
-    array<double, 8> basis;
+    array<RealD, 8> basis;
     set_zero(basis);
     basis[a] = 1.0;
     Qassert(qnorm(make_anti_hermitian_matrix(basis) - ts[a]) < 1e-20);
@@ -33,7 +33,7 @@ void ColorMatrixConstants::check() const
   ColorMatrix x = make_g_rand_anti_hermitian_matrix(rs, 1.0);
   Qassert(qnorm(x - make_tr_less_anti_herm_matrix(x)) < 1e-20);
   AdjointColorMatrix adx = make_adjoint_representation(x, *this);
-  array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
+  array<RealD, 8> basis = basis_projection_anti_hermitian_matrix(x);
   for (Int a = 0; a < 8; ++a) {
     for (Int b = 0; b < 8; ++b) {
       ComplexD sum(0.0);
@@ -43,10 +43,10 @@ void ColorMatrixConstants::check() const
       Qassert(qnorm(adx(a, b) - sum) < 1e-20);
     }
   }
-  const double coef = 0.2;
+  const RealD coef = 0.2;
   const AdjointColorMatrix exp_adx = make_matrix_exp(coef * adx);
   for (Int b = 0; b < 8; ++b) {
-    array<double, 8> basis_b;
+    array<RealD, 8> basis_b;
     for (Int a = 0; a < 8; ++a) {
       basis_b[a] = exp_adx(a, b);
     }
