@@ -177,7 +177,7 @@ void py_convert(Vector<M> out, PyObject* in)
   }
 }
 
-template <class M, uint64_t N>
+template <class M, std::size_t N>
 void py_convert(array<M, N>& out, PyObject* in)
 {
   if (PyList_Check(in)) {

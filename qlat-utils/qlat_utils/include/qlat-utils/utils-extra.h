@@ -111,7 +111,7 @@ qacc bool operator==(const std::vector<M>& v1, const std::vector<M>& v2)
   return is_equal_vec(v1, v2);
 }
 
-template <class M, Int N>
+template <class M, std::size_t N>
 bool operator==(const array<M, N>& v1, const array<M, N>& v2)
 {
   return is_equal_vec(v1, v2);

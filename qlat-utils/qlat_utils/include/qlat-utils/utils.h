@@ -35,7 +35,7 @@ struct IsDataVectorType<std::vector<M>> {
   static constexpr bool value = is_data_value_type<DataType>();
 };
 
-template <class M, Long N>
+template <class M, std::size_t N>
 struct IsDataVectorType<Array<M, N>> {
   using DataType = M;
   using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
@@ -106,13 +106,13 @@ qacc Vector<M> get_data(const M& x)
   return Vector<M>(&x, 1);
 }
 
-template <class M, size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
+template <class M, std::size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(const array<M, N>& arr)
 {
   return Vector<M>(arr.data(), arr.size());
 }
 
-template <class M, size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
+template <class M, std::size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(const std::array<M, N>& arr)
 {
   return Vector<M>(arr.data(), arr.size());
@@ -124,7 +124,7 @@ qacc Vector<M> get_data(Vector<M> vec)
   return vec;
 }
 
-template <class M, Long N, QLAT_ENABLE_IF(is_data_value_type<M>())>
+template <class M, std::size_t N, QLAT_ENABLE_IF(is_data_value_type<M>())>
 qacc Vector<M> get_data(Array<M, N> arr)
 {
   return Vector<M>(arr.data(), arr.size());
@@ -291,7 +291,7 @@ qacc void set_zero(Vector<M> xx)
   memset(vec.data(), 0, vec.size());
 }
 
-template <class M, Int N>
+template <class M, std::size_t N>
 qacc void set_zero(Array<M, N> xx)
 {
   Vector<Char> vec = get_data_char(xx);

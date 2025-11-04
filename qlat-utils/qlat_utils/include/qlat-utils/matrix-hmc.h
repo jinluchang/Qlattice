@@ -7,25 +7,25 @@
 namespace qlat
 {  //
 
-template <class T, Long N>
+template <class T, std::size_t N>
 qacc void normalize_array_real(Array<T, N> p)
 //------------------------------------------------------------------
 // Few routines that are needed by the Unitarize routine
 //------------------------------------------------------------------
 {
   RealD norm = 0;
-  for (Long i = 0; i < N; i++) {
+  for (Long i = 0; i < (Long)N; i++) {
     norm += p[i] * p[i];
   }
   if (not(norm == 1.0)) {
     norm = 1.0 / sqrt(norm);
-    for (Long i = 0; i < N; i++) {
+    for (Long i = 0; i < (Long)N; i++) {
       p[i] *= norm;
     }
   }
 }
 
-template <class T, Long N>
+template <class T, std::size_t N>
 qacc void normalize_array_complex(Array<ComplexT<T>, N> p)
 //------------------------------------------------------------------
 // Few routines that are needed by the Unitarize routine
@@ -35,17 +35,17 @@ qacc void normalize_array_complex(Array<ComplexT<T>, N> p)
   normalize_array_real(p_r);
 }
 
-template <class T, Long N>
+template <class T, std::size_t N>
 qacc void orthogonalize_array_complex(Array<T, N> p2, const Array<T, N> p1)
 //	v2' = v2 - v1 * (v1^*, v2)
 // 	then	(v1^*, v2') = 0
 {
   ComplexD c = 0.0;
-  for (Long i = 0; i < N; ++i) {
+  for (Long i = 0; i < (Long)N; ++i) {
     c += qconj(p1[i]) * p2[i];
   }
   if (not(c == 0.0)) {
-    for (Long i = 0; i < N; ++i) {
+    for (Long i = 0; i < (Long)N; ++i) {
       p2[i] -= c * p1[i];
     }
   }

@@ -11,7 +11,7 @@
 namespace qlat
 {  //
 
-template <class T, size_t N>
+template <class T, std::size_t N>
 inline std::string show(const array<T, N>& mm)
 {
   if (0 == N) {
@@ -20,7 +20,7 @@ inline std::string show(const array<T, N>& mm)
     std::ostringstream out;
     out << "(";
     out << show(mm[0]);
-    for (size_t i = 1; i < N; ++i) {
+    for (std::size_t i = 1; i < N; ++i) {
       out << "," << show(mm[i]);
     }
     out << ")";
@@ -37,7 +37,7 @@ inline std::string show(const std::vector<T>& mm)
     std::ostringstream out;
     out << "[";
     out << show(mm[0]);
-    for (size_t i = 1; i < mm.size(); ++i) {
+    for (std::size_t i = 1; i < mm.size(); ++i) {
       out << "," << show(mm[i]);
     }
     out << "]";
@@ -86,7 +86,7 @@ qacc MagneticMoment operator-(const MagneticMoment& m1,
 qacc ManyMagneticMoments operator*(const RealD a, const ManyMagneticMoments& m)
 {
   ManyMagneticMoments ret;
-  for (size_t i = 0; i < ret.size(); ++i) {
+  for (std::size_t i = 0; i < ret.size(); ++i) {
     ret[i] = a * m[i];
   }
   return ret;
@@ -107,7 +107,7 @@ qacc ManyMagneticMoments operator+(const ManyMagneticMoments& m1,
                                    const ManyMagneticMoments& m2)
 {
   ManyMagneticMoments ret;
-  for (size_t i = 0; i < ret.size(); ++i) {
+  for (std::size_t i = 0; i < ret.size(); ++i) {
     ret[i] = m1[i] + m2[i];
   }
   return ret;
@@ -117,7 +117,7 @@ qacc ManyMagneticMoments operator-(const ManyMagneticMoments& m1,
                                    const ManyMagneticMoments& m2)
 {
   ManyMagneticMoments ret;
-  for (size_t i = 0; i < ret.size(); ++i) {
+  for (std::size_t i = 0; i < ret.size(); ++i) {
     ret[i] = m1[i] - m2[i];
   }
   return ret;
@@ -271,18 +271,18 @@ inline std::string showManyMagneticMoments(const ManyMagneticMoments& mmm)
 inline ManyMagneticMoments averageManyMagneticMoments(
     const std::vector<ManyMagneticMoments>& mmms)
 {
-  const size_t size = mmms.size();
+  const std::size_t size = mmms.size();
   ManyMagneticMoments mmm;
   set_zero(mmm);
   if (size > 0) {
-    for (size_t i = 0; i < size; ++i) {
+    for (std::size_t i = 0; i < size; ++i) {
       for (size_t m = 0; m < 4 * 4 * 4; ++m) {
         for (Int k = 0; k < 3; ++k) {
           mmm[m][k] += mmms[i][m][k];
         }
       }
     }
-    for (size_t m = 0; m < 4 * 4 * 4; ++m) {
+    for (std::size_t m = 0; m < 4 * 4 * 4; ++m) {
       for (Int k = 0; k < 3; ++k) {
         mmm[m][k] /= (RealD)size;
       }

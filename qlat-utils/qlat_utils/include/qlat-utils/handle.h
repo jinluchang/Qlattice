@@ -94,7 +94,7 @@ struct API Vector {
     p = vec.p;
     n = vec.n;
   }
-  template <Int N>
+  template <std::size_t N>
   qacc Vector(const array<M, N>& arr)
   {
     p = (M*)arr.data();
@@ -160,7 +160,7 @@ struct API Vector {
   }
 };
 
-template <class M, Long N>
+template <class M, std::size_t N>
 struct API Array {
   mutable M* p;
   //
@@ -181,21 +181,21 @@ struct API Array {
   //
   qacc const M& operator[](Long i) const
   {
-    qassert(0 <= i && i < N);
+    qassert(0 <= i && i < (Long)N);
     return p[i];
   }
   qacc M& operator[](Long i)
   {
-    qassert(0 <= i && i < N);
+    qassert(0 <= i && i < (Long)N);
     return p[i];
   }
   //
   qacc M* data() { return p; }
   qacc const M* data() const { return p; }
   //
-  qacc Long size() const { return N; }
+  qacc Long size() const { return (Long)N; }
   //
-  qacc Long data_size() const { return N * sizeof(M); }
+  qacc Long data_size() const { return (Long)N * sizeof(M); }
   //
   qacc Array<M, N>& operator=(const Array<M, N>& v)
   {

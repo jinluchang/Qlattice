@@ -229,10 +229,10 @@ qacc bool is_integer(const std::vector<M>& v)
   return true;
 }
 
-template <class M, uint64_t N>
+template <class M, std::size_t N>
 qacc bool is_integer(const array<M, N>& v)
 {
-  for (Int i = 0; i < N; ++i) {
+  for (Int i = 0; i < (Int)N; ++i) {
     if (!is_integer(v[i])) {
       return false;
     }
@@ -240,37 +240,37 @@ qacc bool is_integer(const array<M, N>& v)
   return true;
 }
 
-template <class M, Int N>
+template <class M, std::size_t N>
 qacc Array<M, N> operator+=(Array<M, N> v, const Array<M, N> v1)
 {
-  for (Int i = 0; i < N; ++i) {
+  for (Int i = 0; i < (Int)N; ++i) {
     v.p[i] += v1.p[i];
   }
   return v;
 }
 
-template <class M, Int N>
+template <class M, std::size_t N>
 qacc Array<M, N> operator-=(Array<M, N> v, const Array<M, N> v1)
 {
-  for (Int i = 0; i < N; ++i) {
+  for (Int i = 0; i < (Int)N; ++i) {
     v.p[i] -= v1.p[i];
   }
   return v;
 }
 
-template <class M, Int N>
+template <class M, std::size_t N>
 qacc Array<M, N> operator*=(Array<M, N> v, const RealD factor)
 {
-  for (Int i = 0; i < N; ++i) {
+  for (Int i = 0; i < (Int)N; ++i) {
     v.p[i] *= factor;
   }
   return v;
 }
 
-template <class M, Int N>
+template <class M, std::size_t N>
 qacc Array<M, N> operator*=(Array<M, N> v, const ComplexD factor)
 {
-  for (Int i = 0; i < N; ++i) {
+  for (Int i = 0; i < (Int)N; ++i) {
     v.p[i] *= factor;
   }
   return v;
@@ -314,21 +314,21 @@ qacc Vector<M> operator*=(Vector<M> v, const ComplexD factor)
   return v;
 }
 
-template <class M, uint64_t N>
+template <class M, std::size_t N>
 qacc array<M, N> operator+(const array<M, N>& v1, const array<M, N>& v2)
 {
   array<M, N> ret;
-  for (uint64_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     ret[i] = v1[i] + v2[i];
   }
   return ret;
 }
 
-template <class M, uint64_t N>
+template <class M, std::size_t N>
 qacc array<M, N> operator-(const array<M, N>& v1, const array<M, N>& v2)
 {
   array<M, N> ret;
-  for (uint64_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     ret[i] = v1[i] - v2[i];
   }
   return ret;

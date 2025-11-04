@@ -16,7 +16,7 @@ using crc32_t = uint32_t;
 
 // -------------------------------------------------------------------------
 
-template <class M, size_t N>
+template <class M, std::size_t N>
 qacc bool qisnan(const array<M, N>& arr)
 {
   for (Int i = 0; i < (Int)N; ++i) {
@@ -30,7 +30,7 @@ qacc bool qisnan(const array<M, N>& arr)
 template <class M>
 bool qisnan(const std::vector<M>& arr)
 {
-  for (size_t i = 0; i < arr.size(); ++i) {
+  for (std::size_t i = 0; i < arr.size(); ++i) {
     if (qisnan(arr[i])) {
       return true;
     }
@@ -424,7 +424,7 @@ struct IsDataValueType {
   static constexpr bool is_complex = IsBasicDataType<BasicDataType>::is_complex;
 };
 
-template <class M, size_t N>
+template <class M, std::size_t N>
 struct IsDataValueType<array<M, N>> {
   using DataType = M;
   using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;
@@ -433,7 +433,7 @@ struct IsDataValueType<array<M, N>> {
   static constexpr bool is_complex = IsDataValueType<DataType>::is_complex;
 };
 
-template <class M, size_t N>
+template <class M, std::size_t N>
 struct IsDataValueType<std::array<M, N>> {
   using DataType = M;
   using BasicDataType = typename IsDataValueType<DataType>::BasicDataType;

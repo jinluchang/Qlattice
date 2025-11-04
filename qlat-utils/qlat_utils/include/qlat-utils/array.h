@@ -8,15 +8,15 @@
 namespace qlat
 {  //
 
-template <class M, size_t N>
+template <class M, std::size_t N>
 struct API array {
   M v[N];
   //
-  qacc size_t size() const { return N; }
+  qacc std::size_t size() const { return N; }
   //
   qacc void fill(const M& x)
   {
-    for (size_t i = 0; i < N; ++i) {
+    for (std::size_t i = 0; i < N; ++i) {
       v[i] = x;
     }
   }
@@ -24,12 +24,12 @@ struct API array {
   qacc M* data() { return v; }
   qacc const M* data() const { return v; }
   //
-  qacc M& operator[](size_t k)
+  qacc M& operator[](std::size_t k)
   {
     assert(k < N);
     return v[k];
   };
-  qacc const M& operator[](size_t k) const
+  qacc const M& operator[](std::size_t k) const
   {
     assert(k < N);
     return v[k];
@@ -38,21 +38,21 @@ struct API array {
 
 template <class M>
 struct API array<M, 0> {
-  qacc size_t size() const { return 0; }
+  qacc std::size_t size() const { return 0; }
   //
   qacc void fill(const M& x) { (void)x; }
   qacc M* data() { return NULL; }
   //
   qacc const M* data() const { return NULL; }
   //
-  qacc M& operator[](size_t k)
+  qacc M& operator[](std::size_t k)
   {
     (void)k;
     assert(false);
     static M x;
     return x;
   };
-  qacc const M& operator[](size_t k) const
+  qacc const M& operator[](std::size_t k) const
   {
     (void)k;
     assert(false);
@@ -61,10 +61,10 @@ struct API array<M, 0> {
   };
 };
 
-template <class M, size_t N>
+template <class M, std::size_t N>
 qacc bool operator<(const array<M, N>& a1, const array<M, N>& a2)
 {
-  for (uint64_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
       return true;
     } else if (a1[i] > a2[i]) {
@@ -74,10 +74,10 @@ qacc bool operator<(const array<M, N>& a1, const array<M, N>& a2)
   return false;
 }
 
-template <class M, size_t N>
+template <class M, std::size_t N>
 qacc bool operator<=(const array<M, N>& a1, const array<M, N>& a2)
 {
-  for (uint64_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
       return true;
     } else if (a1[i] > a2[i]) {
