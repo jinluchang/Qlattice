@@ -10,7 +10,7 @@ void ColorMatrixConstants::check() const
     Qassert(qnorm(m - ts[a]) < 1e-20);
   }
   for (Int a = 0; a < 8; ++a) {
-    array<RealD, 8> basis;
+    array<RealD, (uint64_t)8> basis;
     set_zero(basis);
     basis[a] = 1.0;
     Qassert(qnorm(make_anti_hermitian_matrix(basis) - ts[a]) < 1e-20);
