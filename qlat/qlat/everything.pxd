@@ -588,6 +588,24 @@ cdef extern from "qlat/qed.h" namespace "qlat":
         const RealD mass, const RealD m5,
         const CoordinateD& momtwist) except +
     #
+    void invert_qed(
+        SpinProp& sp_sol, const SpinProp& sp_src, const Field[ComplexD]& gf1,
+        const RealD mass, const RealD m5, const Int ls,
+        const bool is_dagger,
+        const RealD stop_rsd, const Long max_num_iter) except +
+    #
+    Long invert_dwf_qed(
+        Field[ComplexD]& f_out4d, const Field[ComplexD]& f_in4d,
+        const Field[ComplexD]& gf1, const RealD mass,
+        const RealD m5, const Int ls, const bool is_dagger,
+        const RealD stop_rsd, const Long max_num_iter) except +
+    #
+    Long cg_with_m_dwf_qed(
+        Field[ComplexD]& f_out5d, const Field[ComplexD]& f_in5d,
+        const Field[ComplexD]& gf1, const RealD mass,
+        const RealD m5, const Int ls, const bool is_dagger,
+        const RealD stop_rsd, const Long max_num_iter) except +
+    #
     void multiply_m_dwf_qed(
         Field[ComplexD]& f_out, const Field[ComplexD]& f_in,
         const Field[ComplexD]& gf1,

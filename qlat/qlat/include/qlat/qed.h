@@ -424,9 +424,10 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
                  const RealD m5 = 1.0,
                  const CoordinateD& momtwist = CoordinateD());
 
-void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src, const Field<ComplexD>& gf1,
-                const RealD mass, const RealD m5, const Int ls,
-                const bool is_dagger = false);
+void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src,
+                const Field<ComplexD>& gf1, const RealD mass, const RealD m5,
+                const Int ls, const bool is_dagger = false,
+                const RealD stop_rsd = 1e-8, const Long max_num_iter = 50000);
 
 void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
                                   const Field<ComplexD>& ff5d, const Int ls,
@@ -436,20 +437,22 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
                                   const Field<ComplexD>& ff4d, const Int ls,
                                   const Int upper, const Int lower);
 
-Long invert_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
                     const Field<ComplexD>& gf1, const RealD mass,
-                    const RealD m5, const Int ls, const bool is_dagger = false);
+                    const RealD m5, const Int ls, const bool is_dagger = false,
+                    const RealD stop_rsd = 1e-8,
+                    const Long max_num_iter = 50000);
 
 ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2);
 
-Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                        const Field<ComplexD>& gf1, const RealD mass,
                        const RealD m5, const Int ls, const bool is_dagger = false,
                        const RealD stop_rsd = 1e-8,
                        const Long max_num_iter = 50000);
 
-void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                         const Field<ComplexD>& gf1, const RealD mass,
-                        const RealD m5, const Int ls, const bool is_dagger);
+                        const RealD m5, const Int ls, const bool is_dagger = false);
 
 }  // namespace qlat

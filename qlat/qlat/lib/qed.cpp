@@ -29,9 +29,18 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
   prop_spin_propagator4d(sp_sol, mass, m5, momtwist);
 }
 
-void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src, const Field<ComplexD>& gf1,
-                const RealD mass, const RealD m5, const Int ls,
-                const bool is_dagger)
+void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src,
+                const Field<ComplexD>& gf1, const RealD mass, const RealD m5,
+                const Int ls, const bool is_dagger, const RealD stop_rsd,
+                const Long max_num_iter)
+// sp_sol and sp_src are 4d spin propagator.
+// They cannot be the same object.
+//
+// mass is the masss of the fermion, for example, its value can be `0.1`.
+// m5 should typically to 1.0
+// ls should typically to a large even integer, such as 64.
+//
+// set_left_expanded_gauge_field(gf1, gf);
 {
   TIMER("invert_qed(qed-sp)");
   Qassert(sp_src.multiplicity == 1);
@@ -53,7 +62,8 @@ void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src, const Field<ComplexD>&
     for (Int j = 0; j < 4; ++j) {
       set_field_m(src4d, sp_src_c, j, j * 4 + i);
     }
-    invert_dwf_qed(sol4d, src4d, gf1, mass, m5, ls, is_dagger);
+    invert_dwf_qed(sol4d, src4d, gf1, mass, m5, ls, is_dagger, stop_rsd,
+                   max_num_iter);
     for (Int j = 0; j < 4; ++j) {
       set_field_m(sp_sol_c, sol4d, j * 4 + i, j);
     }
@@ -104,24 +114,32 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
   });
 }
 
-Long invert_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
                     const Field<ComplexD>& gf1, const RealD mass,
-                    const RealD m5, const Int ls, const bool is_dagger)
+                    const RealD m5, const Int ls, const bool is_dagger,
+                    const RealD stop_rsd, const Long max_num_iter)
 // properly project to 4d fermion field
 // if is_dagger is false (default), then M out = in
 // if is_dagger is true, then M^dag out = in
+//
+// mass is the masss of the fermion, for example, its value can be `0.1`.
+// m5 should typically to 1.0
+// ls should typically to a large even integer, such as 64.
+//
+// set_left_expanded_gauge_field(gf1, gf);
 {
   TIMER("invert_dwf_qed(qed-ff)");
-  const Geometry& geo = in.geo();
+  const Geometry& geo = f_in4d.geo();
   Qassert(geo.is_only_local);
   Field<ComplexD> sol5d, src5d;
   sol5d.init(geo, 4 * ls);
   src5d.init(geo, 4 * ls);
-  fermion_field_5d_from_4d_qed(src5d, in, ls, 0, ls - 1);
+  fermion_field_5d_from_4d_qed(src5d, f_in4d, ls, 0, ls - 1);
   set_zero(sol5d);
   multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, is_dagger);
-  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls, is_dagger);
-  fermion_field_4d_from_5d_qed(out, sol5d, ls, ls - 1, 0);
+  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls,
+                                      is_dagger, stop_rsd, max_num_iter);
+  fermion_field_4d_from_5d_qed(f_out4d, sol5d, ls, ls - 1, 0);
   return iter;
 }
 
@@ -151,36 +169,42 @@ ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2)
   return sum[0];
 }
 
-Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                        const Field<ComplexD>& gf1, const RealD mass,
                        const RealD m5, const Int ls, const bool is_dagger,
                        const RealD stop_rsd, const Long max_num_iter)
 // if is_dagger is false, then M^dag M out = in
 // if is_dagger is true, then M M^dag out = in
+//
+// mass is the masss of the fermion, for example, its value can be `0.1`.
+// m5 should typically to 1.0
+// ls should typically to a large even integer, such as 64.
+//
+// set_left_expanded_gauge_field(gf1, gf);
 {
   TIMER("cg_with_m_dwf_qed");
   Qassert(mass > 0.0);
   Qassert(ls > 0);
   Qassert(stop_rsd >= 0.0);
   Qassert(max_num_iter >= 0);
-  Qassert(in.geo().is_only_local);
+  Qassert(f_in5d.geo().is_only_local);
   // Treat out as initial guess (zero if not provided)
-  out.init_zero(in.geo(), in.multiplicity);
-  Qassert(out.geo().is_only_local);
-  Qassert(out.multiplicity == in.multiplicity);
+  f_out5d.init_zero(f_in5d.geo(), f_in5d.multiplicity);
+  Qassert(f_out5d.geo().is_only_local);
+  Qassert(f_out5d.multiplicity == f_in5d.multiplicity);
   Qassert(gf1.multiplicity == 4);
-  Qassert(is_matching_geo(gf1.geo(), in.geo()));
+  Qassert(is_matching_geo(gf1.geo(), f_in5d.geo()));
   if (max_num_iter == 0) {
     return 0;
   }
   // implement conjugate gradient with normal equation solver
   Field<ComplexD> r, p, tmp, ap;
-  r = in;
-  multiply_m_dwf_qed(tmp, out, gf1, mass, m5, ls, is_dagger);
-  multiply_m_dwf_qed(tmp, out, gf1, mass, m5, ls, not is_dagger);
+  r = f_in5d;
+  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, is_dagger);
+  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, !is_dagger);
   r -= tmp;
   p = r;
-  const RealD qnorm_in = qnorm(in);
+  const RealD qnorm_in = qnorm(f_in5d);
   displayln_info(
       fname +
       ssprintf(
@@ -189,11 +213,11 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   RealD qnorm_r = qnorm(r);
   for (Long iter = 1; iter <= max_num_iter; ++iter) {
     multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, is_dagger);
-    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, not is_dagger);
+    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, !is_dagger);
     const RealD alpha = qnorm_r / dot_product(p, ap).real();
     tmp = p;
     tmp *= alpha;
-    out += tmp;
+    f_out5d += tmp;
     tmp = ap;
     tmp *= alpha;
     r -= tmp;
@@ -225,22 +249,22 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   return max_num_iter + 1;
 }
 
-
-
-void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
+void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                         const Field<ComplexD>& gf1, const RealD mass,
                         const RealD m5, const Int ls, const bool is_dagger)
-// set_left_expanded_gauge_field(gf1, gf);
 // in.geo() should not be expanded.
 // out can be the same object as in.
 // mass is the masss of the fermion, for example, its value can be `0.1`.
 // m5 should typically to 1.0
 // ls should typically to a large even integer, such as 64.
+//
+// set_left_expanded_gauge_field(gf1, gf);
 {
   TIMER("multiply_m_dwf_qed");
   Qassert(mass > 0.0);
   Qassert(ls > 0);
-  const Geometry& geo = in.geo();
+  const Geometry& geo = f_in5d.geo();
+  Qassert(f_in5d.geo().is_only_local);
   const Geometry& geo_gf1 = gf1.geo();
   Qassert(is_matching_geo(geo, geo_gf1));
   const Coordinate size_node = geo_gf1.geon.size_node;
@@ -251,7 +275,7 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
     }
   }
   Qassert(gf1.multiplicity == 4);
-  Qassert(in.multiplicity == 4 * ls);
+  Qassert(f_in5d.multiplicity == 4 * ls);
   Qassert(geo.is_only_local == true);
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(1, 1, 1, 1);
@@ -262,18 +286,18 @@ void multiply_m_dwf_qed(Field<ComplexD>& out, const Field<ComplexD>& in,
   const box<SpinMatrixConstants>& smc = get_spin_matrix_constants();
   Field<ComplexD> in1;
   in1.init(geo1, 4 * ls);
-  in1 = in;
+  in1 = f_in5d;
   refresh_expanded_1(in1);
-  out.init(geo, 4 * ls);
-  Qassert(out.geo().is_only_local);
-  set_zero(out);
-  out = in1;
+  f_out5d.init(geo, 4 * ls);
+  Qassert(f_out5d.geo().is_only_local);
+  set_zero(f_out5d);
+  f_out5d = in1;
   const RealD dagger_factor = is_dagger ? -1.0 : 1.0;
   qacc_for(index, geo.local_volume(), {
     const SpinMatrix& gamma_5 = smc().gamma5;
     const array<SpinMatrix, 4>& gammas = smc().cps_gammas;
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<ComplexD> v = out.get_elems(index);
+    Vector<ComplexD> v = f_out5d.get_elems(index);
     {
       const Vector<ComplexD> iv = in1.get_elems_const(xl);
       vec_plusm(v, (ComplexD)(5.0 - m5), iv);

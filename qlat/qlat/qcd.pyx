@@ -243,14 +243,55 @@ def gf_reduce_half(GaugeField gf):
 ###
 
 @q.timer
-def multiply_m_dwf_qed(
-        FieldComplexD f_in, FieldComplexD gf1,
+def invert_dwf_qed(
+        FieldComplexD f_in4d, FieldComplexD gf1,
         cc.RealD mass, cc.RealD m5, cc.Int ls,
-        cc.Bool is_dagger,
+        cc.Bool is_dagger=False,
+        cc.RealD stop_rsd=1e-8, cc.Long max_num_iter=50000,
         ):
-    cdef FieldComplexD f_out = FieldComplexD()
-    cc.multiply_m_dwf_qed(f_out.xx, f_in.xx, gf1.xx, mass, m5, ls, is_dagger)
-    return f_out
+    """
+    properly project to 4d fermion field
+    if is_dagger is false (default), then M out = in
+    if is_dagger is true, then M^dag out = in
+    #
+    gf1 = q.mk_left_expanded_field(gf)
+    """
+    cdef FieldComplexD f_out4d = FieldComplexD()
+    cc.invert_dwf_qed(
+        f_out4d.xx, f_in4d.xx, gf1.xx,
+        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+    return f_out4d
 
+@q.timer
+def cg_with_m_dwf_qed(
+        FieldComplexD f_in5d, FieldComplexD gf1,
+        cc.RealD mass, cc.RealD m5, cc.Int ls,
+        cc.Bool is_dagger=False,
+        cc.RealD stop_rsd=1e-8, cc.Long max_num_iter=50000,
+        ):
+    """
+    if is_dagger is false, then M^dag M out = in
+    if is_dagger is true, then M M^dag out = in
+    #
+    gf1 = q.mk_left_expanded_field(gf)
+    """
+    cdef FieldComplexD f_out5d = FieldComplexD()
+    cc.cg_with_m_dwf_qed(
+        f_out5d.xx, f_in5d.xx, gf1.xx,
+        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+    return f_out5d
+
+@q.timer
+def multiply_m_dwf_qed(
+        FieldComplexD f_in5d, FieldComplexD gf1,
+        cc.RealD mass, cc.RealD m5, cc.Int ls,
+        cc.Bool is_dagger=False,
+        ):
+    """
+    gf1 = q.mk_left_expanded_field(gf)
+    """
+    cdef FieldComplexD f_out5d = FieldComplexD()
+    cc.multiply_m_dwf_qed(f_out5d.xx, f_in5d.xx, gf1.xx, mass, m5, ls, is_dagger)
+    return f_out5d
 
 ###

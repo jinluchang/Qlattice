@@ -287,6 +287,22 @@ def free_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=N
     else:
         assert False
 
+@q.timer
+def invert_qed(
+        SpinProp sp_src, FieldComplexD gf1,
+        cc.RealD mass, cc.RealD m5, cc.Int ls,
+        cc.Bool is_dagger=False,
+        cc.RealD stop_rsd=1e-8, cc.Long max_num_iter=50000,
+        ):
+    """
+    gf1 = q.mk_left_expanded_field(gf)
+    """
+    cdef SpinProp sp_sol = SpinProp()
+    cc.invert_qed(
+        sp_sol.xxx().val(), sp_src.xxx().val(), gf1.xx,
+        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+    return sp_sol
+
 def convert_mspincolor_from_wm(prop_wm):
     prop_msc = prop_wm.copy(False)
     if isinstance(prop_wm, Prop):

@@ -126,6 +126,8 @@ __all__ += [
         'gf_twist_boundary_at_boundary',
         'mk_left_expanded_field',
         'gf_reduce_half',
+        'invert_dwf_qed',
+        'cg_with_m_dwf_qed',
         'multiply_m_dwf_qed',
         ]
 
@@ -145,6 +147,7 @@ __all__ += [
         'get_rand_u1_sol',
         'mk_rand_u1_prop',
         'free_invert',
+        'invert_qed',
         'convert_mspincolor_from_wm',
         'convert_wm_from_mspincolor',
         'mk_ff_list_from_prop',
