@@ -132,7 +132,7 @@ qacc void vec_plusm(Vector<T> res, const T& coef, const Vector<T> y)
 // res[i] += coef * y[i]
 {
   const Int size = y.size();
-  Qassert(size == res.size());
+  qassert(size == res.size());
   for (Int i = 0; i < size; ++i) {
     res.p[i] += coef * y.p[i];
   }
@@ -144,9 +144,9 @@ qacc void mat_mul_multi_vec_plusm(Vector<T> res, const T& coef,
 // res[k*d+i] += coef * x[i*d+j] * y[k*d + j]
 {
   const Int size = y.size();
-  Qassert(size == res.size());
+  qassert(size == res.size());
   const Int n_vec = size / DIMN;
-  Qassert(n_vec * DIMN == size);
+  qassert(n_vec * DIMN == size);
   for (Int i = 0; i < DIMN; ++i) {
     const Int id = i * DIMN;
     for (Int j = 0; j < DIMN; ++j) {

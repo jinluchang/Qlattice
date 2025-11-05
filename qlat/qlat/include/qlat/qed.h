@@ -279,7 +279,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (RealD)total_site[i];
       ks[i] = sin(kk[i]);
-      pg += SpinMatrixConstantsT<T>::get_gamma(i) * (ComplexT<T>)ks[i];
+      pg += SpinMatrixConstantsT<T>::get_cps_gamma(i) * (ComplexT<T>)ks[i];
       p2 += sqr(ks[i]);
       wp += 2.0 * sqr(sin(kk[i] / 2.0));
     }

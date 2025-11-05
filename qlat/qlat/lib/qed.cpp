@@ -78,9 +78,9 @@ void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
 // lower componets are left handed
 {
   TIMER("fermion_field_4d_from_5d_qed(qed-ff)");
+  Qassert(ff5d.multiplicity == 4 * ls);
   const Geometry& geo = ff5d.geo();
   Qassert(geo.is_only_local);
-  Qassert(4 * ls == ff5d.multiplicity);
   ff4d.init(geo, 4);
   set_zero(ff4d);
   qacc_for(index, geo.local_volume(), {
@@ -100,6 +100,7 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
 // lower componets are left handed
 {
   TIMER("fermion_field_5d_from_4d_qed");
+  Qassert(ff4d.multiplicity == 4);
   const Geometry& geo = ff4d.geo();
   Qassert(geo.is_only_local);
   ff5d.init(geo, 4 * ls);
@@ -136,7 +137,7 @@ Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
   src5d.init(geo, 4 * ls);
   fermion_field_5d_from_4d_qed(src5d, f_in4d, ls, 0, ls - 1);
   set_zero(sol5d);
-  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, is_dagger);
+  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, !is_dagger);
   const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls,
                                       is_dagger, stop_rsd, max_num_iter);
   fermion_field_4d_from_5d_qed(f_out4d, sol5d, ls, ls - 1, 0);
@@ -183,7 +184,7 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
 // set_left_expanded_gauge_field(gf1, gf);
 {
   TIMER("cg_with_m_dwf_qed");
-  Qassert(mass > 0.0);
+  // Qassert(mass > 0.0);
   Qassert(ls > 0);
   Qassert(stop_rsd >= 0.0);
   Qassert(max_num_iter >= 0);
@@ -201,7 +202,7 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
   Field<ComplexD> r, p, tmp, ap;
   r = f_in5d;
   multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, is_dagger);
-  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, !is_dagger);
+  multiply_m_dwf_qed(tmp, tmp, gf1, mass, m5, ls, !is_dagger);
   r -= tmp;
   p = r;
   const RealD qnorm_in = qnorm(f_in5d);
@@ -213,7 +214,7 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
   RealD qnorm_r = qnorm(r);
   for (Long iter = 1; iter <= max_num_iter; ++iter) {
     multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, is_dagger);
-    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, !is_dagger);
+    multiply_m_dwf_qed(ap, ap, gf1, mass, m5, ls, !is_dagger);
     const RealD alpha = qnorm_r / dot_product(p, ap).real();
     tmp = p;
     tmp *= alpha;
@@ -261,7 +262,7 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
 // set_left_expanded_gauge_field(gf1, gf);
 {
   TIMER("multiply_m_dwf_qed");
-  Qassert(mass > 0.0);
+  // Qassert(mass > 0.0);
   Qassert(ls > 0);
   const Geometry& geo = f_in5d.geo();
   Qassert(f_in5d.geo().is_only_local);
@@ -291,7 +292,6 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
   f_out5d.init(geo, 4 * ls);
   Qassert(f_out5d.geo().is_only_local);
   set_zero(f_out5d);
-  f_out5d = in1;
   const RealD dagger_factor = is_dagger ? -1.0 : 1.0;
   qacc_for(index, geo.local_volume(), {
     const SpinMatrix& gamma_5 = smc().gamma5;
