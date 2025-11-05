@@ -20,7 +20,7 @@ void setField(qlat::Field<qlat::ComplexD>& f)
 qlat::SpinMatrix projPositiveState(const qlat::SpinMatrix& x)
 {
   const qlat::SpinMatrix psm = (qlat::SpinMatrixConstants::get_unit() +
-                                qlat::SpinMatrixConstants::get_gamma(3)) /
+                                qlat::SpinMatrixConstants::get_cps_gamma(3)) /
                                (qlat::ComplexD)2.0;
   return psm * x * psm;
 }
@@ -141,7 +141,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
       bs[i] = qlat::SpinMatrixConstants::get_gamma5() *
               matrix_adjoint(snk.get_elem(xlop)) *
               qlat::SpinMatrixConstants::get_gamma5();
-      bs[i] *= qlat::SpinMatrixConstants::get_cap_sigma(i) * (qlat::ComplexD)(mass / 2.0);
+      bs[i] *= qlat::SpinMatrixConstants::get_cps_cap_sigmas()[i] * (qlat::ComplexD)(mass / 2.0);
       bs[i] *= src.get_elem(xlop);
       bs[i] = projPositiveState(bs[i]);
     }
@@ -270,32 +270,35 @@ void lblMuonPart()
 void displayGammas()
 {
   TIMER("displayGammas");
-  qlat::DisplayInfo(cname, fname.c_str(), "gamma5 =\n%s\n",
-              qlat::show(qlat::SpinMatrixConstants::get_gamma5()).c_str());
+  qlat::DisplayInfo(
+      cname, fname.c_str(), "gamma5 =\n%s\n",
+      qlat::show(qlat::SpinMatrixConstants::get_gamma5()).c_str());
   qlat::DisplayInfo(
       cname, fname.c_str(), "gamma0 * gamma1 * gamma2 * gamma3 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)(qlat::SpinMatrixConstants::get_gamma(0) *
-                                    qlat::SpinMatrixConstants::get_gamma(1) *
-                                    qlat::SpinMatrixConstants::get_gamma(2) *
-                                    qlat::SpinMatrixConstants::get_gamma(3)))
-          .c_str());
-  qlat::DisplayInfo(cname, fname.c_str(), "gamma3 =\n%s\n",
-              qlat::show(qlat::SpinMatrixConstants::get_gamma(3)).c_str());
-  qlat::DisplayInfo(
-      cname, fname.c_str(), "ii * gamma0 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)((qlat::ComplexD)qlat::ii *
-                                    qlat::SpinMatrixConstants::get_gamma(0)))
+      qlat::show(
+          (qlat::SpinMatrix)(qlat::SpinMatrixConstants::get_cps_gamma(0) *
+                             qlat::SpinMatrixConstants::get_cps_gamma(1) *
+                             qlat::SpinMatrixConstants::get_cps_gamma(2) *
+                             qlat::SpinMatrixConstants::get_cps_gamma(3)))
           .c_str());
   qlat::DisplayInfo(
-      cname, fname.c_str(), "ii * gamma1 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)((qlat::ComplexD)qlat::ii *
-                                    qlat::SpinMatrixConstants::get_gamma(1)))
-          .c_str());
-  qlat::DisplayInfo(
-      cname, fname.c_str(), "ii * gamma2 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)((qlat::ComplexD)qlat::ii *
-                                    qlat::SpinMatrixConstants::get_gamma(2)))
-          .c_str());
+      cname, fname.c_str(), "gamma3 =\n%s\n",
+      qlat::show(qlat::SpinMatrixConstants::get_cps_gamma(3)).c_str());
+  qlat::DisplayInfo(cname, fname.c_str(), "ii * gamma0 =\n%s\n",
+                    qlat::show((qlat::SpinMatrix)(
+                                   (qlat::ComplexD)qlat::ii *
+                                   qlat::SpinMatrixConstants::get_cps_gamma(0)))
+                        .c_str());
+  qlat::DisplayInfo(cname, fname.c_str(), "ii * gamma1 =\n%s\n",
+                    qlat::show((qlat::SpinMatrix)(
+                                   (qlat::ComplexD)qlat::ii *
+                                   qlat::SpinMatrixConstants::get_cps_gamma(1)))
+                        .c_str());
+  qlat::DisplayInfo(cname, fname.c_str(), "ii * gamma2 =\n%s\n",
+                    qlat::show((qlat::SpinMatrix)(
+                                   (qlat::ComplexD)qlat::ii *
+                                   qlat::SpinMatrixConstants::get_cps_gamma(2)))
+                        .c_str());
 }
 
 void displaySpinPropagator4d()

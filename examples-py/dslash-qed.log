@@ -1,4 +1,1 @@
-CHECK:  Coordinate([0, 0, 0, 1])
-CHECK:  Coordinate([0, 0, 0, 0])
-CHECK:  Geometry([4, 4, 4, 8], expan_left=[0, 0, 0, 1], expan_right=[0, 0, 0, 0], eo=0)
 CHECK: finished successfully.

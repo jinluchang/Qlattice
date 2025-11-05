@@ -1,5 +1,32 @@
 [
  [
+  "gf1_qed.geo = Geometry([4, 4, 4, 8], expan_left=[0, 0, 0, 1], expan_right=[0, 0, 0, 0], eo=0)"
+ ],
+ [
+  "gf1_qed data sig",
+  {
+   "value": [
+    {
+     "real": 2.7656583886913806,
+     "imag": -3.8847032446375147,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -13.67680828547778,
+     "imag": 0.8979800692919193,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 34.468479147188944,
+     "imag": -0.19172667714581504,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
   "test 5d multiplication and inversion"
  ],
  [
@@ -55,18 +82,18 @@
   {
    "value": [
     {
-     "real": 11.888179672837168,
-     "imag": 132.95506201553172,
+     "real": 11.884503406346823,
+     "imag": 132.9571146121152,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -95.67709379617321,
-     "imag": -201.19712736059384,
+     "real": -95.67673689493189,
+     "imag": -201.19510875001237,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -147.89747250317376,
-     "imag": 44.96907791850747,
+     "real": -147.8975523115298,
+     "imag": 44.96614035399385,
      "__extended_json_type__": "complex"
     }
    ],
@@ -103,18 +130,18 @@
   {
    "value": [
     {
-     "real": 11.885985035414507,
-     "imag": 132.95949869098538,
+     "real": 11.884483049287951,
+     "imag": 132.95712827717225,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -95.67463100990895,
-     "imag": -201.1958822007673,
+     "real": -95.67676676388422,
+     "imag": -201.19509425921478,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -147.89788181631354,
-     "imag": 44.968119147094555,
+     "real": -147.89756698007594,
+     "imag": 44.96613582944195,
      "__extended_json_type__": "complex"
     }
    ],
@@ -276,6 +303,258 @@
   "test 4d propagator with free gauge field"
  ],
  [
+  "gf1_qed.geo = Geometry([4, 4, 4, 8], expan_left=[0, 0, 0, 1], expan_right=[0, 0, 0, 0], eo=0)"
+ ],
+ [
+  "gf1_qed data sig",
+  {
+   "value": [
+    {
+     "real": 1.7139903052703254,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -41.75770889868334,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 35.829043049182474,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "sp_in data sig",
+  {
+   "value": [
+    {
+     "real": 44.34934765568522,
+     "imag": 21.84539194798767,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 34.06185710296401,
+     "imag": 32.87477075965141,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 4.558490212547109,
+     "imag": -20.80542156993856,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "sp_out data sig",
+  {
+   "value": [
+    {
+     "real": 11.230110594720095,
+     "imag": -1.5815982279243315,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 23.136559366867566,
+     "imag": 5.957122124509921,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -14.933602946231655,
+     "imag": 13.982396608477725,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-06
+ ],
+ [
+  "sp_out2 data sig",
+  {
+   "value": [
+    {
+     "real": 11.230077574241458,
+     "imag": -1.5816324990028834,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 23.136580190423942,
+     "imag": 5.957170951193056,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -14.933631258078112,
+     "imag": 13.982396615816873,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-06
+ ],
+ [
+  "test 5d multiplication and inversion with complex gauge field"
+ ],
+ [
+  "gf1_qed.geo = Geometry([4, 4, 4, 8], expan_left=[0, 0, 0, 1], expan_right=[0, 0, 0, 0], eo=0)"
+ ],
+ [
+  "gf1_qed data sig",
+  {
+   "value": [
+    {
+     "real": 5.343135768402258,
+     "imag": -1.038020674971145,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -48.63743549301562,
+     "imag": -10.045177492868259,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 43.07278243170525,
+     "imag": -2.619673170548532,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "f_in data sig",
+  {
+   "value": [
+    {
+     "real": 11.8844529387178,
+     "imag": 132.9571324600376,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -95.67676816281782,
+     "imag": -201.19509146384823,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -147.89757826063305,
+     "imag": 44.96612235007841,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "f_out data sig",
+  {
+   "value": [
+    {
+     "real": 246.77452883471335,
+     "imag": 748.9292541461926,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -466.98080537282846,
+     "imag": -494.93703707137774,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -749.5479250140901,
+     "imag": 277.209288242706,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "f_in2 data sig",
+  {
+   "value": [
+    {
+     "real": 11.884446028002174,
+     "imag": 132.95714725687094,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -95.67675651175298,
+     "imag": -201.19509903870042,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -147.897574375719,
+     "imag": 44.96609975407304,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-06
+ ],
+ [
+  "f_out dagger data sig",
+  {
+   "value": [
+    {
+     "real": -24.082310446844303,
+     "imag": 984.7593668385651,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -528.8324143962377,
+     "imag": -460.019448689133,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -647.9813954006629,
+     "imag": 205.05933824745932,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "f_in3 dagger data sig",
+  {
+   "value": [
+    {
+     "real": 11.884441934072669,
+     "imag": 132.95711823728573,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -95.67678446123932,
+     "imag": -201.1950945266559,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -147.8975836683437,
+     "imag": 44.96613506137352,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-06
+ ],
+ [
+  "test 4d propagator with complex gauge field"
+ ],
+ [
   "sp_in data sig",
   {
    "value": [
@@ -304,18 +583,18 @@
   {
    "value": [
     {
-     "real": 22.460155150042247,
-     "imag": -3.163265003951996,
+     "real": 37.04949899781984,
+     "imag": 3.418599010584066,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 46.27316037436083,
-     "imag": 11.914341900587225,
+     "real": 47.13683060515864,
+     "imag": 8.650507166161045,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -29.86726252758728,
-     "imag": 27.964793242958493,
+     "real": -31.758653051170477,
+     "imag": 21.590968494944754,
      "__extended_json_type__": "complex"
     }
    ],
@@ -324,22 +603,22 @@
   1e-06
  ],
  [
-  "sp_out2 data sig",
+  "sp_out dagger data sig",
   {
    "value": [
     {
-     "real": 22.460155148482915,
-     "imag": -3.1632649980057668,
+     "real": -6.308139402791176,
+     "imag": -1.0539941765869594,
      "__extended_json_type__": "complex"
     },
     {
-     "real": 46.273160380847884,
-     "imag": 11.914341902386113,
+     "real": 5.359557543969084,
+     "imag": -11.641753599527162,
      "__extended_json_type__": "complex"
     },
     {
-     "real": -29.867262516156224,
-     "imag": 27.964793231633745,
+     "real": 2.126615398016207,
+     "imag": 0.11901293099710974,
      "__extended_json_type__": "complex"
     }
    ],

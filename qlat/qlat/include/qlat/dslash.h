@@ -391,11 +391,10 @@ inline Long cg_with_f(
     p += r;
     qnorm_r = new_qnorm_r;
   }
-  displayln_info(
-      fname +
-      ssprintf(
-          ": final max_num_iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
-          max_num_iter + 1, sqrt(qnorm_r / qnorm_in), stop_rsd));
+  displayln_info(fname + ssprintf(": final iter=%4ld (exceeded max_num_iter) "
+                                  "sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
+                                  max_num_iter + 1, sqrt(qnorm_r / qnorm_in),
+                                  stop_rsd));
   return max_num_iter + 1;
 }
 

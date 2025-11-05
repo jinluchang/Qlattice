@@ -381,7 +381,7 @@ void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
       ComplexD a = egf.get_elem(xl, mu);
       // tmp = \gamma_\mu \psi(x)
       SpinMatrixT<T> tmp =
-          SpinMatrixConstantsT<T>::get_gamma(mu) * sol.get_elem(xl);
+          SpinMatrixConstantsT<T>::get_cps_gamma(mu) * sol.get_elem(xl);
       // tmp = coef * \gamma_\mu A_\mu(x) \psi(x)
       tmp *= (ComplexT<T>)(a * coef);
       src.get_elem(xl) += tmp;
