@@ -298,9 +298,11 @@ def invert_qed(
     gf1 = q.mk_left_expanded_field(gf)
     """
     cdef SpinProp sp_sol = SpinProp()
+    cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
     cc.invert_qed(
         sp_sol.xxx().val(), sp_src.xxx().val(), gf1.xx,
-        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+        mass, m5, ls, t_wick_phase_factor_vec,
+        is_dagger, stop_rsd, max_num_iter)
     return sp_sol
 
 def convert_mspincolor_from_wm(prop_wm):

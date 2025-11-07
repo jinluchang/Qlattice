@@ -257,9 +257,10 @@ def invert_dwf_qed(
     gf1 = q.mk_left_expanded_field(gf)
     """
     cdef FieldComplexD f_out4d = FieldComplexD()
+    cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
     cc.invert_dwf_qed(
         f_out4d.xx, f_in4d.xx, gf1.xx,
-        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+        mass, m5, ls, t_wick_phase_factor_vec, is_dagger, stop_rsd, max_num_iter)
     return f_out4d
 
 @q.timer
@@ -276,9 +277,10 @@ def cg_with_m_dwf_qed(
     gf1 = q.mk_left_expanded_field(gf)
     """
     cdef FieldComplexD f_out5d = FieldComplexD()
+    cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
     cc.cg_with_m_dwf_qed(
         f_out5d.xx, f_in5d.xx, gf1.xx,
-        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+        mass, m5, ls, t_wick_phase_factor_vec, is_dagger, stop_rsd, max_num_iter)
     return f_out5d
 
 @q.timer
@@ -291,7 +293,8 @@ def multiply_m_dwf_qed(
     gf1 = q.mk_left_expanded_field(gf)
     """
     cdef FieldComplexD f_out5d = FieldComplexD()
-    cc.multiply_m_dwf_qed(f_out5d.xx, f_in5d.xx, gf1.xx, mass, m5, ls, is_dagger)
+    cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
+    cc.multiply_m_dwf_qed(f_out5d.xx, f_in5d.xx, gf1.xx, mass, m5, ls, t_wick_phase_factor_vec, is_dagger)
     return f_out5d
 
 ###
