@@ -150,7 +150,7 @@ def get_start_time():
 
 def set_start_time(time):
     cdef cc.RealD ret = time
-    cc.assign_direct(cc.get_start_time(), time)
+    cc.assign_direct(cc.get_start_time(), ret)
     assert cc.get_start_time() == time
 
 def get_actual_start_time():
