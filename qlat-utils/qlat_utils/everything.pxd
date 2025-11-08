@@ -337,12 +337,12 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     cdef cppclass Coordinate:
         Coordinate()
         Coordinate(int x, int y, int z, int t)
-        Int& operator[](unsigned long i) except +
+        Int& operator[](size_t i) except +
     cdef cppclass CoordinateD:
         CoordinateD()
         CoordinateD(const Coordinate& x)
         CoordinateD(RealD x, RealD y, RealD z, RealD t)
-        RealD& operator[](unsigned long i)
+        RealD& operator[](size_t i)
     Coordinate coordinate_from_index(Long index, const Coordinate& size)
     Long index_from_coordinate(const Coordinate& x, const Coordinate& size)
     int eo_from_coordinate(const Coordinate& xl)
