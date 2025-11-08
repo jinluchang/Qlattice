@@ -214,7 +214,7 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps=1):
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
-def gf_twist_boundary_at_boundary(GaugeField gf, RealD lmom=-0.5, int mu=3):
+def gf_twist_boundary_at_boundary(GaugeField gf, cc.RealD lmom=-0.5, int mu=3):
     """
     modify gf in place
     """
