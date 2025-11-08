@@ -26,8 +26,8 @@ def set_verbose_level(level=None):
     if level is None:
         level = cc.get_verbose_level_default()
     assert isinstance(level, int)
-    cdef cc.Long ret = level
-    cc.assign_direct(cc.get_verbose_level(), ret)
+    cdef cc.Long* p_ret = &cc.get_verbose_level()
+    p_ret[0] = level
     assert cc.get_verbose_level() == level
 
 set_verbose_level(-1)
@@ -149,8 +149,8 @@ def get_start_time():
     return cc.get_start_time()
 
 def set_start_time(time):
-    cdef cc.RealD ret = time
-    cc.assign_direct(cc.get_start_time(), ret)
+    cdef cc.RealD* p_ret = &cc.get_start_time()
+    p_ret[0] = time
     assert cc.get_start_time() == time
 
 def get_actual_start_time():
@@ -160,8 +160,8 @@ def get_actual_start_time():
     return cc.get_actual_start_time()
 
 def set_actual_start_time(time):
-    cdef cc.RealD ret = time
-    cc.assign_direct(cc.get_actual_start_time(), ret)
+    cdef cc.RealD* p_ret = &cc.get_actual_start_time()
+    p_ret[0] = time
     assert cc.get_actual_start_time() == time
 
 def get_total_time():
@@ -192,8 +192,8 @@ def set_time_limit(time_limit=None):
     """
     if time_limit is None:
         time_limit = cc.get_time_limit_default()
-    cdef cc.RealD ret = time_limit
-    cc.assign_direct(cc.get_time_limit(), ret)
+    cdef cc.RealD* p_ret = &cc.get_time_limit()
+    p_ret[0] = time_limit
     assert cc.get_time_limit() == time_limit
 
 def get_remaining_time():
@@ -208,8 +208,8 @@ def get_time_budget():
 def set_time_budget(time_budget=None):
     if time_budget is None:
         time_budget = cc.get_time_budget_default()
-    cdef cc.RealD ret = time_budget
-    cc.assign_direct(cc.get_time_budget(), ret)
+    cdef cc.RealD* p_ret = &cc.get_time_budget()
+    p_ret[0] = time_budget
     assert cc.get_time_budget() == time_budget
 
 ### -------------------------------------------------------------------
