@@ -59,7 +59,7 @@ ctypedef int8_t Int8t
 
 ctypedef uint32_t crc32_t
 
-ctypedef RealD RealD
+ctypedef double RealD
 
 ctypedef float RealF
 
