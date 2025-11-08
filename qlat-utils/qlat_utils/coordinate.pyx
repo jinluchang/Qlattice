@@ -109,16 +109,13 @@ cdef class Coordinate:
         svol *= self.xx[2]
         return svol
 
-    def __getitem__(self, int key):
-        assert 0 <= key
+    def __getitem__(self, size_t key):
         assert key < 4
         return self.xx[key]
 
-    def __setitem__(self, int key, int val):
-        assert 0 <= key
+    def __setitem__(self, size_t key, cc.Int val):
         assert key < 4
-        cdef cc.Int* p_val = &self.xx[key]
-        p_val[0] = val
+        self.xx[key] = val
 
     def __add__(Coordinate c1, Coordinate c2):
         cdef Coordinate x = Coordinate()
@@ -309,16 +306,13 @@ cdef class CoordinateD:
         """
         return cc.sqr(self.xx)
 
-    def __getitem__(self, int key):
-        assert 0 <= key
+    def __getitem__(self, size_t key):
         assert key < 4
         return self.xx[key]
 
-    def __setitem__(self, int key, double val):
-        assert 0 <= key
+    def __setitem__(self, size_t key, cc.RealD val):
         assert key < 4
-        cdef double* p_val = &self.xx[key]
-        p_val[0] = val
+        self.xx[key] = val
 
     def __add__(CoordinateD c1, CoordinateD c2):
         cdef CoordinateD x = CoordinateD()
