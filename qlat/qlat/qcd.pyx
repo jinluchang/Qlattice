@@ -246,6 +246,8 @@ def gf_reduce_half(GaugeField gf):
 def invert_dwf_qed(
         FieldComplexD f_in4d, FieldComplexD gf1,
         cc.RealD mass, cc.RealD m5, cc.Int ls,
+        *,
+        t_wick_phase_factor_arr=None,
         cc.Bool is_dagger=False,
         cc.RealD stop_rsd=1e-8, cc.Long max_num_iter=50000,
         ):
@@ -258,6 +260,13 @@ def invert_dwf_qed(
     """
     cdef FieldComplexD f_out4d = FieldComplexD()
     cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
+    cdef cc.Int t_size
+    cdef cc.Int i
+    if t_wick_phase_factor_arr is not None:
+        t_size = len(t_wick_phase_factor_arr)
+        t_wick_phase_factor_vec.resize(t_size)
+        for i in range(t_size):
+            t_wick_phase_factor_vec[i] = cc.ccpy_d(t_wick_phase_factor_arr[i])
     cc.invert_dwf_qed(
         f_out4d.xx, f_in4d.xx, gf1.xx,
         mass, m5, ls, t_wick_phase_factor_vec, is_dagger, stop_rsd, max_num_iter)
@@ -267,6 +276,8 @@ def invert_dwf_qed(
 def cg_with_m_dwf_qed(
         FieldComplexD f_in5d, FieldComplexD gf1,
         cc.RealD mass, cc.RealD m5, cc.Int ls,
+        *,
+        t_wick_phase_factor_arr=None,
         cc.Bool is_dagger=False,
         cc.RealD stop_rsd=1e-8, cc.Long max_num_iter=50000,
         ):
@@ -278,6 +289,13 @@ def cg_with_m_dwf_qed(
     """
     cdef FieldComplexD f_out5d = FieldComplexD()
     cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
+    cdef cc.Int t_size
+    cdef cc.Int i
+    if t_wick_phase_factor_arr is not None:
+        t_size = len(t_wick_phase_factor_arr)
+        t_wick_phase_factor_vec.resize(t_size)
+        for i in range(t_size):
+            t_wick_phase_factor_vec[i] = cc.ccpy_d(t_wick_phase_factor_arr[i])
     cc.cg_with_m_dwf_qed(
         f_out5d.xx, f_in5d.xx, gf1.xx,
         mass, m5, ls, t_wick_phase_factor_vec, is_dagger, stop_rsd, max_num_iter)
@@ -287,6 +305,8 @@ def cg_with_m_dwf_qed(
 def multiply_m_dwf_qed(
         FieldComplexD f_in5d, FieldComplexD gf1,
         cc.RealD mass, cc.RealD m5, cc.Int ls,
+        *,
+        t_wick_phase_factor_arr=None,
         cc.Bool is_dagger=False,
         ):
     """
@@ -294,6 +314,13 @@ def multiply_m_dwf_qed(
     """
     cdef FieldComplexD f_out5d = FieldComplexD()
     cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
+    cdef cc.Int t_size
+    cdef cc.Int i
+    if t_wick_phase_factor_arr is not None:
+        t_size = len(t_wick_phase_factor_arr)
+        t_wick_phase_factor_vec.resize(t_size)
+        for i in range(t_size):
+            t_wick_phase_factor_vec[i] = cc.ccpy_d(t_wick_phase_factor_arr[i])
     cc.multiply_m_dwf_qed(f_out5d.xx, f_in5d.xx, gf1.xx, mass, m5, ls, t_wick_phase_factor_vec, is_dagger)
     return f_out5d
 
