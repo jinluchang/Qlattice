@@ -498,7 +498,7 @@ struct API vector {
     }
   }
   //
-  void resize_zero(const Long size){ resize_zero(size, mem_type); }
+  void resize_zero(const Long size) { resize_zero(size, mem_type); }
   void resize_zero(const Long size, const MemType mem_type_)
   {
     resize(0);

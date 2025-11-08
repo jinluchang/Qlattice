@@ -81,14 +81,14 @@ cdef class GaugeTransform(FieldColorMatrix):
     @q.timer
     def save(self, path):
         """
-        Save as double precision with the generic Field format ``save_double``
+        Save as RealD precision with the generic Field format ``save_double``
         """
         return self.save_double(path)
 
     @q.timer
     def load(self, path):
         """
-        Load as double precision with the generic Field format ``load_double``
+        Load as RealD precision with the generic Field format ``load_double``
         """
         return self.load_double(path)
 
@@ -214,7 +214,7 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps=1):
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
-def gf_twist_boundary_at_boundary(GaugeField gf, double lmom=-0.5, int mu=3):
+def gf_twist_boundary_at_boundary(GaugeField gf, RealD lmom=-0.5, int mu=3):
     """
     modify gf in place
     """

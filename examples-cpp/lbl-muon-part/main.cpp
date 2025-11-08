@@ -28,7 +28,7 @@ qlat::SpinMatrix projPositiveState(const qlat::SpinMatrix& x)
 qlat::SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
                              const qlat::QedGaugeField& egf1,
                              const qlat::QedGaugeField& egf2,
-                             const qlat::QedGaugeField& egf3, const double mass,
+                             const qlat::QedGaugeField& egf3, const RealD mass,
                              const qlat::CoordinateD& momtwist)
 {
   TIMER("lblMuonLine");
@@ -64,7 +64,7 @@ qlat::SpinMatrix lblMuonLineC(const int tsnk, const int tsrc,
                               const qlat::QedGaugeField& egf1,
                               const qlat::QedGaugeField& egf2,
                               const qlat::QedGaugeField& egf3,
-                              const double mass,
+                              const RealD mass,
                               const qlat::CoordinateD& momtwist)
 {
   TIMER("lblMuonLineC");
@@ -84,7 +84,7 @@ qlat::SpinMatrix lblMuonPartPointSrc(
     const qlat::Geometry& geo, const int tsnk, const int tsrc,
     const qlat::Coordinate& xg1, const int mu1, const qlat::Coordinate& xg2,
     const int mu2, const qlat::Coordinate& xg3, const int mu3,
-    const double mass, const qlat::CoordinateD& momtwist)
+    const RealD mass, const qlat::CoordinateD& momtwist)
 {
   TIMER("lblMuonPartPointSrc");
   qlat::QedGaugeField egf1;
@@ -110,7 +110,7 @@ qlat::SpinMatrix lblMuonPartPointSrc(
 
 void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
                                  const qlat::Geometry& geo, const int tsnk,
-                                 const int tsrc, const double mass,
+                                 const int tsrc, const RealD mass,
                                  const qlat::CoordinateD& momtwist)
 // pretend to the operator to be
 // \Sigma_i * mass / 2
@@ -146,8 +146,8 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
       bs[i] = projPositiveState(bs[i]);
     }
   }
-  qlat::glb_sum(qlat::Vector<double>((double*)bs.data(),
-                                     get_data_size(bs) / sizeof(double)));
+  qlat::glb_sum(qlat::Vector<RealD>((RealD*)bs.data(),
+                                     get_data_size(bs) / sizeof(RealD)));
 }
 
 qlat::ComplexD linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
@@ -169,7 +169,7 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
                              const qlat::Coordinate& xg1, const int mu1,
                              const qlat::Coordinate& xg2, const int mu2,
                              const qlat::Coordinate& xg3, const int mu3,
-                             const double mass,
+                             const RealD mass,
                              const qlat::CoordinateD& momtwist)
 {
   TIMER("lblShowMuonPartPointSrc");
@@ -234,7 +234,7 @@ void lblMuonPart()
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;
   momtwist[3] = 0.0;
-  const double mass = 0.10;
+  const RealD mass = 0.10;
   const int tsnk = total_site[3] / 4 * 3;
   const int tsrc = total_site[3] / 4;
   qlat::array<qlat::SpinMatrix, 3> bs;
@@ -314,7 +314,7 @@ void displaySpinPropagator4d()
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;
   momtwist[3] = 0.0;
-  const double mass = 0.1;
+  const RealD mass = 0.1;
   qlat::SpinPropagator4d prop;
   prop.init(geo);
   set_zero(prop);

@@ -24,7 +24,7 @@ cdef extern from "qlat-utils/complex.h" namespace "qlat":
     cdef cppclass ComplexF:
         ComplexF()
 
-ctypedef double complex PyComplexD
+ctypedef RealD complex PyComplexD
 ctypedef float complex PyComplexF
 
 # Python Complex Cast utilities
@@ -59,7 +59,7 @@ ctypedef int8_t Int8t
 
 ctypedef uint32_t crc32_t
 
-ctypedef double RealD
+ctypedef RealD RealD
 
 ctypedef float RealF
 
@@ -133,8 +133,10 @@ cdef extern from "qlat-utils/vector.h" namespace "qlat":
         Vector[T] v
         vector()
         void init()
-        Long size()
-        T* data()
+        void resize(const Long size) except +
+        void resize_zero(const Long size) except +
+        Long size() except +
+        T* data() except +
         T& operator[](const Long i) except +
     cdef cppclass box[T]:
         bool is_copy
@@ -179,8 +181,8 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     ComplexD matrix_trace(const WilsonMatrix& m1, const ColorMatrix& m2)
     ComplexD matrix_trace(const ColorMatrix& m1, const WilsonMatrix& m2)
     ComplexD matrix_trace(const ColorMatrix& m1, const ColorMatrix& m2)
-    const SpinMatrix& get_gamma_matrix(const int mu)
-    void benchmark_matrix_functions(const Long count)
+    const SpinMatrix& get_gamma_matrix(const int mu) except +
+    void benchmark_matrix_functions(const Long count) except +
     WilsonMatrix g5_herm(const WilsonMatrix& m)
     SpinMatrix operator*(const ComplexD& a, const SpinMatrix& m)
     SpinMatrix operator*(const SpinMatrix& m, const ComplexD& a)
@@ -216,18 +218,18 @@ cdef extern from "qlat-utils/mat.h" namespace "qlat":
     ComplexD epsilon_contraction(const int v_s1, const int b_s1, const int v_s2,
                                  const int b_s2, const int v_s3, const int b_s3,
                                  const WilsonMatrix& wm1, const WilsonMatrix& wm2,
-                                 const WilsonMatrix& wm3)
+                                 const WilsonMatrix& wm3) except +
 
 cdef extern from "qlat-utils/env.h" namespace "qlat":
 
-    double& get_time_limit()
-    Long get_time_limit_default()
-    Long& get_verbose_level()
-    Long get_verbose_level_default()
-    double& get_time_budget()
-    double get_time_budget_default()
-    Long& get_qar_multi_vol_max_size()
-    Long get_qar_multi_vol_max_size_default()
+    RealD& get_time_limit() except +
+    Long get_time_limit_default() except +
+    Long& get_verbose_level() except +
+    Long get_verbose_level_default() except +
+    RealD& get_time_budget() except +
+    RealD get_time_budget_default() except +
+    Long& get_qar_multi_vol_max_size() except +
+    Long get_qar_multi_vol_max_size_default() except +
 
 cdef extern from "qlat-utils/show.h" namespace "qlat":
 
@@ -243,38 +245,38 @@ cdef extern from "qlat-utils/eigen.h" namespace "qlat":
 
 cdef extern from "qlat-utils/timer.h" namespace "qlat":
 
-    int get_id_node()
-    int get_num_node()
+    int get_id_node() except +
+    int get_num_node() except +
     void sync_node() except +
     void sync_node(const Long tag) except +
-    double get_time()
-    double& get_start_time()
-    double& get_actual_start_time()
-    double get_total_time()
-    double get_actual_total_time()
-    double get_remaining_time()
+    RealD get_time() except +
+    RealD& get_start_time() except +
+    RealD& get_actual_start_time() except +
+    RealD get_total_time() except +
+    RealD get_actual_total_time() except +
+    RealD get_remaining_time() except +
     cdef cppclass Timer:
         Long flops
-        Timer()
-        Timer(const std_string& fname)
-        void start()
-        void start(bool is_verbose)
-        void stop()
-        void stop(bool is_verbose)
+        Timer() except +
+        Timer(const std_string& fname) except +
+        void start() except +
+        void start(bool is_verbose) except +
+        void stop() except +
+        void stop(bool is_verbose) except +
         @staticmethod
-        void display(const std_string& tag)
+        void display(const std_string& tag) except +
         @staticmethod
-        void autodisplay()
+        void autodisplay() except +
         @staticmethod
-        void display_stack()
+        void display_stack() except +
         @staticmethod
-        void display_stack_always()
+        void display_stack_always() except +
         @staticmethod
-        void reset(Long max_call_times_for_always_show_info)
+        void reset(Long max_call_times_for_always_show_info) except +
         @staticmethod
-        void fork(Long max_call_times_for_always_show_info)
+        void fork(Long max_call_times_for_always_show_info) except +
         @staticmethod
-        void merge()
+        void merge() except +
 
 cdef extern from "qlat-utils/utils-io.h" namespace "qlat":
 
@@ -321,56 +323,56 @@ cdef extern from "qlat-utils/rng-state.h" namespace "qlat":
 
     cdef cppclass RngState:
         RngState()
-        RngState(const std_string& seed)
-        RngState(const RngState& rs0, const std_string& sindex)
-        RngState split(const std_string& sindex)
-        RngState newtype(const unsigned long type)
-    uint64_t rand_gen(RngState& rs)
-    double u_rand_gen(RngState& rs, const double upper, const double lower)
-    double g_rand_gen(RngState& rs, const double center, const double sigma)
-    void random_permute[T](std_vector[T]& vec, const RngState& rs)
+        RngState(const std_string& seed) except +
+        RngState(const RngState& rs0, const std_string& sindex) except +
+        RngState split(const std_string& sindex) except +
+        RngState newtype(const unsigned long type) except +
+    uint64_t rand_gen(RngState& rs) except +
+    RealD u_rand_gen(RngState& rs, const RealD upper, const RealD lower) except +
+    RealD g_rand_gen(RngState& rs, const RealD center, const RealD sigma) except +
+    void random_permute[T](std_vector[T]& vec, const RngState& rs) except +
 
 cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
 
     cdef cppclass Coordinate:
         Coordinate()
         Coordinate(int x, int y, int z, int t)
-        int& operator[](unsigned long i)
+        Int& operator[](unsigned long i) except +
     cdef cppclass CoordinateD:
         CoordinateD()
         CoordinateD(const Coordinate& x)
-        CoordinateD(double x, double y, double z, double t)
-        double& operator[](unsigned long i)
+        CoordinateD(RealD x, RealD y, RealD z, RealD t)
+        RealD& operator[](unsigned long i)
     Coordinate coordinate_from_index(Long index, const Coordinate& size)
     Long index_from_coordinate(const Coordinate& x, const Coordinate& size)
     int eo_from_coordinate(const Coordinate& xl)
-    Coordinate mod(const Coordinate& x, const Coordinate& size)
-    Coordinate smod(const Coordinate& x, const Coordinate& size)
-    Coordinate smod_sym(const Coordinate& x, const Coordinate& size)
-    Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+    Coordinate mod(const Coordinate& x, const Coordinate& size) except +
+    Coordinate smod(const Coordinate& x, const Coordinate& size) except +
+    Coordinate smod_sym(const Coordinate& x, const Coordinate& size) except +
+    Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coordinate& size) except +
     Coordinate operator+(const Coordinate& x, const Coordinate& y)
     Coordinate operator-(const Coordinate& x, const Coordinate& y)
     Coordinate operator*(const Coordinate& x, const Coordinate& y)
-    Coordinate operator*(const Coordinate& x, const int y)
-    Coordinate operator*(const int x, const Coordinate& y)
-    Coordinate operator/(const Coordinate& x, const Coordinate& y)
-    Coordinate operator/(const Coordinate& x, const int y)
+    Coordinate operator*(const Coordinate& x, const int y) except +
+    Coordinate operator*(const int x, const Coordinate& y) except +
+    Coordinate operator/(const Coordinate& x, const Coordinate& y) except +
+    Coordinate operator/(const Coordinate& x, const int y) except +
     bool operator==(const Coordinate& x, const Coordinate& y)
     Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
     Long sqr(const Coordinate& xg)
     Long product(const Coordinate& coor)
-    CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
-    CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
-    CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
-    CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
+    CoordinateD mod(const CoordinateD& x, const CoordinateD& size) except +
+    CoordinateD smod(const CoordinateD& x, const CoordinateD& size) except +
+    CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size) except +
+    CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size) except +
     CoordinateD operator+(const CoordinateD& x, const CoordinateD& y)
     CoordinateD operator-(const CoordinateD& x, const CoordinateD& y)
     CoordinateD operator*(const CoordinateD& x, const CoordinateD& y)
-    CoordinateD operator*(const CoordinateD& x, const double y)
-    CoordinateD operator*(const double x, const CoordinateD& y)
-    CoordinateD operator/(const CoordinateD& x, const CoordinateD& y)
-    CoordinateD operator/(const CoordinateD& x, const double y)
-    CoordinateD operator/(const double x, const CoordinateD& y)
+    CoordinateD operator*(const CoordinateD& x, const RealD y)
+    CoordinateD operator*(const RealD x, const CoordinateD& y)
+    CoordinateD operator/(const CoordinateD& x, const CoordinateD& y) except +
+    CoordinateD operator/(const CoordinateD& x, const RealD y) except +
+    CoordinateD operator/(const RealD x, const CoordinateD& y) except +
     bool operator==(const CoordinateD& x, const CoordinateD& y)
     RealD sqr(const CoordinateD& xg)
 
@@ -381,10 +383,10 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         Long size
         std_vector[std_string] indices
         LatDim()
-    LatDim lat_dim_re_im()
-    LatDim lat_dim_number(const std_string& name, const Long start, const Long end)
-    LatDim lat_dim_number(const std_string& name, const Long start, const Long end, const Long inc)
-    LatDim lat_dim_string(const std_string& name, const std_vector[std_string]& indices)
+    LatDim lat_dim_re_im() except +
+    LatDim lat_dim_number(const std_string& name, const Long start, const Long end) except +
+    LatDim lat_dim_number(const std_string& name, const Long start, const Long end, const Long inc) except +
+    LatDim lat_dim_string(const std_string& name, const std_vector[std_string]& indices) except +
     Long lat_dim_idx(const LatDim& dim, const std_string& idx) except +
     ctypedef std_vector[LatDim] LatInfo
     cdef cppclass LatDataT[T]:
@@ -395,9 +397,9 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         void save(const std_string& fn) except +
         void load_str(std_string& content) except +
         std_string save_str() except +
-        bool is_complex()
-        Int ndim()
-        T* data()
+        bool is_complex() except +
+        Int ndim() except +
+        T* data() except +
     bool is_matching[T](const LatDataT[T]& ld1, const LatDataT[T]& ld2) except +
     Long lat_data_size[T](LatDataT[T]& ld) except +
     void lat_data_alloc[T](LatDataT[T]& ld) except +
@@ -414,18 +416,18 @@ cdef extern from "qlat-utils/lat-io.h" namespace "qlat":
         LatDataLong()
     cdef cppclass LatDataRealF(LatDataT[RealF]):
         LatDataRealF()
-        LatDataRealF& operator=(const LatData&)
+        LatDataRealF& operator=(const LatData&) except +
     cdef cppclass LatData(LatDataT[RealD]):
         LatData()
-        LatData& operator=(const LatDataRealF&)
+        LatData& operator=(const LatDataRealF&) except +
     LatData operator*(const ComplexD& a, const LatData& ld) except +
     LatData operator*(const RealD a, const LatData& ld) except +
     LatData operator*(const LatData& ld, const ComplexD& a) except +
     LatData operator*(const LatData& ld, const RealD a) except +
     LatData operator+(const LatData& ld1, const LatData& ld2) except +
     LatData operator-(const LatData& ld1, const LatData& ld2) except +
-    std_string show(const LatData& x)
-    RealD qnorm(const LatData& x)
+    std_string show(const LatData& x) except +
+    RealD qnorm(const LatData& x) except +
 
 cdef extern from "qlat-utils/qar.h" namespace "qlat":
 
