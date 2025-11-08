@@ -117,7 +117,7 @@ cdef class Coordinate:
     def __setitem__(self, int key, int val):
         assert 0 <= key
         assert key < 4
-        cdef int* p_val = &self.xx[key]
+        cdef cc.Int* p_val = &self.xx[key]
         p_val[0] = val
 
     def __add__(Coordinate c1, Coordinate c2):
