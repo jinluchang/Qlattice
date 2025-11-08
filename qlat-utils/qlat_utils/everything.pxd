@@ -24,7 +24,7 @@ cdef extern from "qlat-utils/complex.h" namespace "qlat":
     cdef cppclass ComplexF:
         ComplexF()
 
-ctypedef RealD complex PyComplexD
+ctypedef double complex PyComplexD
 ctypedef float complex PyComplexF
 
 # Python Complex Cast utilities
