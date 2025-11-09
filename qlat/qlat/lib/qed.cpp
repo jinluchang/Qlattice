@@ -324,13 +324,20 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
       t_wick_phase_factor_m =
           t_wick_phase_factor_vec[(tg - 1 + t_size) % t_size];
     }
+    if (is_dagger) {
+      t_wick_phase_factor = qconj(t_wick_phase_factor);
+      t_wick_phase_factor_m = qconj(t_wick_phase_factor_m);
+    }
+    const ComplexD t_wick_phase_factor_avg =
+        0.5 * t_wick_phase_factor + 0.5 * t_wick_phase_factor_m;
+    const ComplexD t_wick_phase_factor_inv_avg =
+        0.5 / t_wick_phase_factor + 0.5 / t_wick_phase_factor_m;
     Vector<ComplexD> v = f_out5d.get_elems(index);
     {
       const Vector<ComplexD> iv = in1.get_elems_const(xl);
       vec_plusm(v,
-                (ComplexD)(4.0 - m5 +
-                           (0.5 / sqr(t_wick_phase_factor) +
-                            0.5 / sqr(t_wick_phase_factor_m))),
+                (ComplexD)((4.0 - m5) * t_wick_phase_factor_avg +
+                           t_wick_phase_factor_inv_avg),
                 iv);
       const Vector<ComplexD> iv_m(iv.p + 4, 4 * (ls - 1));
       const Vector<ComplexD> iv_p(iv.p, 4 * (ls - 1));
@@ -340,17 +347,17 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
       Vector<ComplexD> v_p(v.p + 4, 4 * (ls - 1));
       Vector<ComplexD> v_m0(v.p + 4 * (ls - 1), 4);
       Vector<ComplexD> v_p0(v.p, 4);
-      vec_plusm(v_m, (ComplexD)(-0.5), iv_m);
-      vec_plusm(v_p, (ComplexD)(-0.5), iv_p);
-      vec_plusm(v_m0, (ComplexD)(0.5 * mass), iv_m0);
-      vec_plusm(v_p0, (ComplexD)(0.5 * mass), iv_p0);
-      mat_mul_multi_vec_plusm(v_m, (ComplexD)(dagger_factor * 0.5), gamma_5,
+      vec_plusm(v_m, (ComplexD)(-0.5 * t_wick_phase_factor_avg), iv_m);
+      vec_plusm(v_p, (ComplexD)(-0.5 * t_wick_phase_factor_avg), iv_p);
+      vec_plusm(v_m0, (ComplexD)(0.5 * mass * t_wick_phase_factor_avg), iv_m0);
+      vec_plusm(v_p0, (ComplexD)(0.5 * mass * t_wick_phase_factor_avg), iv_p0);
+      mat_mul_multi_vec_plusm(v_m, (ComplexD)(dagger_factor * 0.5 * t_wick_phase_factor_avg), gamma_5,
                               iv_m);
-      mat_mul_multi_vec_plusm(v_p, (ComplexD)(-dagger_factor * 0.5), gamma_5,
+      mat_mul_multi_vec_plusm(v_p, (ComplexD)(-dagger_factor * 0.5 * t_wick_phase_factor_avg), gamma_5,
                               iv_p);
-      mat_mul_multi_vec_plusm(v_m0, (ComplexD)(-dagger_factor * 0.5 * mass),
+      mat_mul_multi_vec_plusm(v_m0, (ComplexD)(-dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
                               gamma_5, iv_m0);
-      mat_mul_multi_vec_plusm(v_p0, (ComplexD)(dagger_factor * 0.5 * mass),
+      mat_mul_multi_vec_plusm(v_p0, (ComplexD)(dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
                               gamma_5, iv_p0);
     }
     for (Int mu = 0; mu < 4; ++mu) {
@@ -362,23 +369,28 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
         u_p = qconj(1.0 / u_p);
         u_m = qconj(1.0 / u_m);
       }
-      ComplexD tf = 1.0;
-      ComplexD tfm = 1.0;
-      ComplexD tf2 = 1.0;
-      ComplexD tfm2 = 1.0;
+      ComplexD tf_1 = 1.0;
+      ComplexD tfm_1 = 1.0;
+      ComplexD tf_2 = 1.0;
+      ComplexD tfm_2 = 1.0;
       if (mu == 3) {
-        tf = 1.0 / t_wick_phase_factor;
-        tfm = 1.0 / t_wick_phase_factor_m;
-        tf2 = sqr(tf);
-        tfm2 = sqr(tfm);
+        tf_1 = 1.0;
+        tfm_1 = 1.0;
+        tf_2 = 1.0 / t_wick_phase_factor;
+        tfm_2 = 1.0 / t_wick_phase_factor_m;
+      } else {
+        tf_1 = t_wick_phase_factor_avg;
+        tfm_1 = t_wick_phase_factor_avg;
+        tf_2 = t_wick_phase_factor_avg;
+        tfm_2 = t_wick_phase_factor_avg;
       }
       const Vector<ComplexD> iv_p = in1.get_elems_const(xl_p);
       const Vector<ComplexD> iv_m = in1.get_elems_const(xl_m);
-      vec_plusm(v, (ComplexD)(-(0.5 * tf2) * u_p), iv_p);
-      vec_plusm(v, (ComplexD)(-(0.5 * tfm2) * u_m), iv_m);
-      mat_mul_multi_vec_plusm(v, (ComplexD)(dagger_factor * 0.5 * u_p * tf),
+      vec_plusm(v, (ComplexD)(-(0.5 * tf_2) * u_p), iv_p);
+      vec_plusm(v, (ComplexD)(-(0.5 * tfm_2) * u_m), iv_m);
+      mat_mul_multi_vec_plusm(v, (ComplexD)(dagger_factor * 0.5 * u_p * tf_1),
                               gammas[mu], iv_p);
-      mat_mul_multi_vec_plusm(v, (ComplexD)(-dagger_factor * 0.5 * u_m * tfm),
+      mat_mul_multi_vec_plusm(v, (ComplexD)(-dagger_factor * 0.5 * u_m * tfm_1),
                               gammas[mu], iv_m);
     }
   });
