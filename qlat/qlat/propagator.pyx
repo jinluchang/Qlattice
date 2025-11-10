@@ -291,6 +291,8 @@ def free_invert(prop_src, cc.RealD mass, cc.RealD m5=1.0, CoordinateD momtwist=N
 def invert_qed(
         SpinProp sp_src, FieldComplexD gf1,
         cc.RealD mass, cc.RealD m5, cc.Int ls,
+        *,
+        t_wick_phase_factor_arr=None,
         cc.Bool is_dagger=False,
         cc.RealD stop_rsd=1e-8, cc.Long max_num_iter=50000,
         ):
@@ -298,9 +300,18 @@ def invert_qed(
     gf1 = q.mk_left_expanded_field(gf)
     """
     cdef SpinProp sp_sol = SpinProp()
+    cdef cc.vector[cc.ComplexD] t_wick_phase_factor_vec = cc.vector[cc.ComplexD]()
+    cdef cc.Int t_size
+    cdef cc.Int i
+    if t_wick_phase_factor_arr is not None:
+        t_size = len(t_wick_phase_factor_arr)
+        t_wick_phase_factor_vec.resize(t_size)
+        for i in range(t_size):
+            t_wick_phase_factor_vec[i] = cc.ccpy_d(t_wick_phase_factor_arr[i])
     cc.invert_qed(
         sp_sol.xxx().val(), sp_src.xxx().val(), gf1.xx,
-        mass, m5, ls, is_dagger, stop_rsd, max_num_iter)
+        mass, m5, ls, t_wick_phase_factor_vec,
+        is_dagger, stop_rsd, max_num_iter)
     return sp_sol
 
 def convert_mspincolor_from_wm(prop_wm):

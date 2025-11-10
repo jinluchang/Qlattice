@@ -2,6 +2,7 @@
 
 import qlat as q
 import numpy as np
+import cmath
 
 q.begin_with_mpi()
 
@@ -9,6 +10,8 @@ check_eps = 1e-10
 
 total_site = q.Coordinate([ 4, 4, 4, 8, ])
 geo = q.Geometry(total_site)
+
+t_size = total_site[3]
 
 rs = q.RngState("seed")
 
@@ -40,7 +43,7 @@ q.json_results_append("f_in2 data sig", q.get_data_sig_arr(f_in2, rs, 3), 1e-6)
 
 f_in2_diff = f_in2.copy()
 f_in2_diff -= f_in
-assert f_in2_diff.qnorm() / f_in.qnorm() < 1e-6
+assert f_in2_diff.qnorm() / f_in.qnorm() < 1e-8
 
 f_out = q.multiply_m_dwf_qed(f_in, gf1_qed, mass, m5, ls, is_dagger=True)
 q.json_results_append("f_out dagger data sig", q.get_data_sig_arr(f_out, rs, 3), check_eps)
@@ -52,7 +55,7 @@ q.json_results_append("f_in3 dagger data sig", q.get_data_sig_arr(f_in3, rs, 3),
 
 f_in3_diff = f_in3.copy()
 f_in3_diff -= f_in
-assert f_in3_diff.qnorm() / f_in.qnorm() < 1e-6
+assert f_in3_diff.qnorm() / f_in.qnorm() < 1e-8
 
 q.json_results_append("test 4d inversion")
 
@@ -108,7 +111,7 @@ q.json_results_append("sp_out2 data sig", q.get_data_sig_arr(sp_out2, rs, 3), 1e
 
 sp_out2_diff = sp_out2.copy()
 sp_out2_diff -= sp_out
-assert sp_out2_diff.qnorm() / sp_out2.qnorm() < 1e-6
+assert sp_out2_diff.qnorm() / sp_out2.qnorm() < 1e-8
 
 q.json_results_append("test 5d multiplication and inversion with complex gauge field")
 
@@ -137,7 +140,7 @@ q.json_results_append("f_in2 data sig", q.get_data_sig_arr(f_in2, rs, 3), 1e-6)
 
 f_in2_diff = f_in2.copy()
 f_in2_diff -= f_in
-assert f_in2_diff.qnorm() / f_in.qnorm() < 1e-6
+assert f_in2_diff.qnorm() / f_in.qnorm() < 1e-8
 
 f_out = q.multiply_m_dwf_qed(f_in, gf1_qed, mass, m5, ls, is_dagger=True)
 q.json_results_append("f_out dagger data sig", q.get_data_sig_arr(f_out, rs, 3), check_eps)
@@ -149,7 +152,7 @@ q.json_results_append("f_in3 dagger data sig", q.get_data_sig_arr(f_in3, rs, 3),
 
 f_in3_diff = f_in3.copy()
 f_in3_diff -= f_in
-assert f_in3_diff.qnorm() / f_in.qnorm() < 1e-6
+assert f_in3_diff.qnorm() / f_in.qnorm() < 1e-8
 
 q.json_results_append("test 4d propagator with complex gauge field")
 
@@ -163,6 +166,45 @@ q.json_results_append("sp_out data sig", q.get_data_sig_arr(sp_out, rs, 3), 1e-6
 
 sp_out = q.invert_qed(sp_in, gf1_qed, mass, m5, ls, is_dagger=True,
                       max_num_iter=400)
+q.json_results_append("sp_out dagger data sig", q.get_data_sig_arr(sp_out, rs, 3), 1e-6)
+
+q.json_results_append("test 4d propagator with Minkowski time")
+
+gf_qed = q.FieldComplexD(geo, 4)
+gf_qed.set_rand_g(rs.split("gf_qed"), 0.0, 0.1)
+gf_qed[:] += 1.0
+gf1_qed = q.mk_left_expanded_field(gf_qed)
+q.json_results_append(f"gf1_qed.geo = {gf1_qed.geo}")
+q.json_results_append("gf1_qed data sig", q.get_data_sig_arr(gf1_qed, rs, 3), check_eps)
+
+mass = 0.2
+ls = 8
+m5 = 1.0
+
+t_wick_phase_factor_arr = [
+     1.0,
+     1.0,
+     cmath.rect(1.0, 0.5 * cmath.pi/2),
+     cmath.rect(1.0, 0.8 * cmath.pi/2),
+     cmath.rect(1.0, 0.8 * cmath.pi/2),
+     cmath.rect(1.0, 0.5 * cmath.pi/2),
+     1.0,
+     1.0,
+]
+assert len(t_wick_phase_factor_arr) == t_size
+
+sp_in = q.SpinProp(geo, 1)
+sp_in.set_rand_g(rs.split("sp_in"), 0.0, 1.0)
+q.json_results_append("sp_in data sig", q.get_data_sig_arr(sp_in, rs, 3), check_eps)
+
+sp_out = q.invert_qed(sp_in, gf1_qed, mass, m5, ls,
+                      t_wick_phase_factor_arr=t_wick_phase_factor_arr, is_dagger=False,
+                      max_num_iter=50000)
+q.json_results_append("sp_out data sig", q.get_data_sig_arr(sp_out, rs, 3), 1e-6)
+
+sp_out = q.invert_qed(sp_in, gf1_qed, mass, m5, ls,
+                      t_wick_phase_factor_arr=t_wick_phase_factor_arr, is_dagger=True,
+                      max_num_iter=50000)
 q.json_results_append("sp_out dagger data sig", q.get_data_sig_arr(sp_out, rs, 3), 1e-6)
 
 q.check_log_json(__file__, check_eps=1e-10)

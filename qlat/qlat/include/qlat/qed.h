@@ -265,8 +265,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
 {
   TIMER("prop_mom_spin_propagator4d");
   const Geometry& geo = sp4d.geo();
-#pragma omp parallel for
-  for (Long index = 0; index < geo.local_volume(); ++index) {
+  qthread_for(index, geo.local_volume(), {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<RealD, DIMN> kk, ks;
@@ -306,7 +305,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const RealD mass,
     }
     ipgm *= sp4d.get_elem(kl);
     sp4d.get_elem(kl) = ipgm;
-  }
+  });
 }
 
 template <class T>
@@ -426,8 +425,9 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
 
 void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src,
                 const Field<ComplexD>& gf1, const RealD mass, const RealD m5,
-                const Int ls, const bool is_dagger = false,
-                const RealD stop_rsd = 1e-8, const Long max_num_iter = 50000);
+                const Int ls, const vector<ComplexD>& t_wick_phase_factor_vec = vector<ComplexD>(),
+                const bool is_dagger = false, const RealD stop_rsd = 1e-8,
+                const Long max_num_iter = 50000);
 
 void fermion_field_4d_from_5d_qed(Field<ComplexD>& ff4d,
                                   const Field<ComplexD>& ff5d, const Int ls,
@@ -439,20 +439,25 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
 
 Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
                     const Field<ComplexD>& gf1, const RealD mass,
-                    const RealD m5, const Int ls, const bool is_dagger = false,
-                    const RealD stop_rsd = 1e-8,
+                    const RealD m5, const Int ls,
+                    const vector<ComplexD>& t_wick_phase_factor_vec = vector<ComplexD>(),
+                    const bool is_dagger = false, const RealD stop_rsd = 1e-8,
                     const Long max_num_iter = 50000);
 
 ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2);
 
 Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                        const Field<ComplexD>& gf1, const RealD mass,
-                       const RealD m5, const Int ls, const bool is_dagger = false,
+                       const RealD m5, const Int ls,
+                       const vector<ComplexD>& t_wick_phase_factor_vec = vector<ComplexD>(),
+                       const bool is_dagger = false,
                        const RealD stop_rsd = 1e-8,
                        const Long max_num_iter = 50000);
 
 void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                         const Field<ComplexD>& gf1, const RealD mass,
-                        const RealD m5, const Int ls, const bool is_dagger = false);
+                        const RealD m5, const Int ls,
+                        const vector<ComplexD>& t_wick_phase_factor_vec = vector<ComplexD>(),
+                        const bool is_dagger = false);
 
 }  // namespace qlat

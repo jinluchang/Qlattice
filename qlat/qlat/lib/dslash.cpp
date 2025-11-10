@@ -398,7 +398,7 @@ void multiply_m_dwf(FermionField5d& out, const FermionField5d& in,
 }
 
 void multiply_wilson_d_no_comm(FermionField5d& out, const FermionField5d& in,
-                               const GaugeField& gf, const double mass)
+                               const GaugeField& gf, const RealD mass)
 // set_left_expanded_gauge_field(gf, gf_);
 // in.geo() = geo_resize(geo, 1);
 // in.multiplicity == ls;
@@ -1321,7 +1321,7 @@ ComplexD dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
 }
 
 Long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
-                        const InverterDomainWall& inv, const double stop_rsd,
+                        const InverterDomainWall& inv, const RealD stop_rsd,
                         const Long max_num_iter)
 {
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,inv)");
@@ -1346,7 +1346,7 @@ Long invert(FermionField4d& out, const FermionField4d& in,
   return invert_dwf(out, in, inv);
 }
 
-double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
+RealD find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
                                         const RngState& rs, const Long max_iter)
 {
   TIMER_VERBOSE("find_max_eigen_value_hermop_sym2");
@@ -1356,7 +1356,7 @@ double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
   ff.init(geo, inv.fa.ls);
   set_u_rand(ff, rs);
   ff *= 1.0 / sqrt(qnorm(ff));
-  double sqrt_qnorm_ratio = 1.0;
+  RealD sqrt_qnorm_ratio = 1.0;
   for (Long i = 0; i < max_iter; ++i) {
     multiply_hermop_sym2(ff, ff, inv);
     sqrt_qnorm_ratio = sqrt(qnorm(ff));

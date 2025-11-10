@@ -31,7 +31,8 @@ void free_invert(SpinProp& sp_sol, SpinProp& sp_src, const RealD mass,
 
 void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src,
                 const Field<ComplexD>& gf1, const RealD mass, const RealD m5,
-                const Int ls, const bool is_dagger, const RealD stop_rsd,
+                const Int ls, const vector<ComplexD>& t_wick_phase_factor_vec,
+                const bool is_dagger, const RealD stop_rsd,
                 const Long max_num_iter)
 // sp_sol and sp_src are 4d spin propagator.
 // They cannot be the same object.
@@ -62,8 +63,8 @@ void invert_qed(SpinProp& sp_sol, const SpinProp& sp_src,
     for (Int j = 0; j < 4; ++j) {
       set_field_m(src4d, sp_src_c, j, j * 4 + i);
     }
-    invert_dwf_qed(sol4d, src4d, gf1, mass, m5, ls, is_dagger, stop_rsd,
-                   max_num_iter);
+    invert_dwf_qed(sol4d, src4d, gf1, mass, m5, ls, t_wick_phase_factor_vec,
+                   is_dagger, stop_rsd, max_num_iter);
     for (Int j = 0; j < 4; ++j) {
       set_field_m(sp_sol_c, sol4d, j * 4 + i, j);
     }
@@ -117,8 +118,10 @@ void fermion_field_5d_from_4d_qed(Field<ComplexD>& ff5d,
 
 Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
                     const Field<ComplexD>& gf1, const RealD mass,
-                    const RealD m5, const Int ls, const bool is_dagger,
-                    const RealD stop_rsd, const Long max_num_iter)
+                    const RealD m5, const Int ls,
+                    const vector<ComplexD>& t_wick_phase_factor_vec,
+                    const bool is_dagger, const RealD stop_rsd,
+                    const Long max_num_iter)
 // properly project to 4d fermion field
 // if is_dagger is false (default), then M out = in
 // if is_dagger is true, then M^dag out = in
@@ -137,8 +140,8 @@ Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
   src5d.init(geo, 4 * ls);
   fermion_field_5d_from_4d_qed(src5d, f_in4d, ls, 0, ls - 1);
   set_zero(sol5d);
-  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, !is_dagger);
-  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls,
+  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, t_wick_phase_factor_vec, !is_dagger);
+  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls, t_wick_phase_factor_vec,
                                       is_dagger, stop_rsd, max_num_iter);
   fermion_field_4d_from_5d_qed(f_out4d, sol5d, ls, ls - 1, 0);
   return iter;
@@ -172,8 +175,10 @@ ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2)
 
 Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                        const Field<ComplexD>& gf1, const RealD mass,
-                       const RealD m5, const Int ls, const bool is_dagger,
-                       const RealD stop_rsd, const Long max_num_iter)
+                       const RealD m5, const Int ls,
+                       const vector<ComplexD>& t_wick_phase_factor_vec,
+                       const bool is_dagger, const RealD stop_rsd,
+                       const Long max_num_iter)
 // if is_dagger is false, then M^dag M out = in
 // if is_dagger is true, then M M^dag out = in
 //
@@ -201,8 +206,8 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
   // implement conjugate gradient with normal equation solver
   Field<ComplexD> r, p, tmp, ap;
   r = f_in5d;
-  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, is_dagger);
-  multiply_m_dwf_qed(tmp, tmp, gf1, mass, m5, ls, !is_dagger);
+  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, t_wick_phase_factor_vec, is_dagger);
+  multiply_m_dwf_qed(tmp, tmp, gf1, mass, m5, ls, t_wick_phase_factor_vec, !is_dagger);
   r -= tmp;
   p = r;
   const RealD qnorm_in = qnorm(f_in5d);
@@ -213,8 +218,8 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
           max_num_iter, sqrt(qnorm_in), stop_rsd));
   RealD qnorm_r = qnorm(r);
   for (Long iter = 1; iter <= max_num_iter; ++iter) {
-    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, is_dagger);
-    multiply_m_dwf_qed(ap, ap, gf1, mass, m5, ls, !is_dagger);
+    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, t_wick_phase_factor_vec, is_dagger);
+    multiply_m_dwf_qed(ap, ap, gf1, mass, m5, ls, t_wick_phase_factor_vec, !is_dagger);
     const RealD alpha = qnorm_r / dot_product(p, ap).real();
     tmp = p;
     tmp *= alpha;
@@ -251,12 +256,21 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
 
 void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
                         const Field<ComplexD>& gf1, const RealD mass,
-                        const RealD m5, const Int ls, const bool is_dagger)
+                        const RealD m5, const Int ls,
+                        const vector<ComplexD>& t_wick_phase_factor_vec,
+                        const bool is_dagger)
 // in.geo() should not be expanded.
 // out can be the same object as in.
 // mass is the masss of the fermion, for example, its value can be `0.1`.
 // m5 should typically to 1.0
 // ls should typically to a large even integer, such as 64.
+//
+// \Pi_k exp(-H a_t) -> \Pi_k exp(-t_wick_phase_factor_vec[k] H a_t)
+// Here a_t is the lattice spacing in the time direction.
+// Wick rotation rule:
+// a_t -> t_wick_phase_factor_vec[k] a_t
+// 1 / a_t -> 1 / t_wick_phase_factor_vec[k] (1 / a_t)
+// 1 / a_t^2 -> 1 / t_wick_phase_factor_vec[k]^2 (1 / a_t)^2
 //
 // set_left_expanded_gauge_field(gf1, gf);
 {
@@ -273,6 +287,10 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
       Qassert(geo_gf1.expansion_left[mu] == 1);
       Qassert(geo_gf1.expansion_right[mu] == 0);
     }
+  }
+  const Int t_size = geo.total_site()[3];
+  if (t_wick_phase_factor_vec.size() > 0) {
+    Qassert(t_wick_phase_factor_vec.size() == t_size);
   }
   Qassert(gf1.multiplicity == 4);
   Qassert(f_in5d.multiplicity == 4 * ls);
@@ -296,10 +314,31 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
     const SpinMatrix& gamma_5 = smc().gamma5;
     const array<SpinMatrix, 4>& gammas = smc().cps_gammas;
     const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Int tg = xg[3];
+    ComplexD t_wick_phase_factor = 1.0;
+    ComplexD t_wick_phase_factor_m = 1.0;
+    if (t_wick_phase_factor_vec.size() > 0) {
+      qassert(tg >= 0 and tg < t_size);
+      t_wick_phase_factor = t_wick_phase_factor_vec[tg];
+      t_wick_phase_factor_m =
+          t_wick_phase_factor_vec[(tg - 1 + t_size) % t_size];
+    }
+    if (is_dagger) {
+      t_wick_phase_factor = qconj(t_wick_phase_factor);
+      t_wick_phase_factor_m = qconj(t_wick_phase_factor_m);
+    }
+    const ComplexD t_wick_phase_factor_avg =
+        0.5 * t_wick_phase_factor + 0.5 * t_wick_phase_factor_m;
+    const ComplexD t_wick_phase_factor_inv_avg =
+        0.5 / t_wick_phase_factor + 0.5 / t_wick_phase_factor_m;
     Vector<ComplexD> v = f_out5d.get_elems(index);
     {
       const Vector<ComplexD> iv = in1.get_elems_const(xl);
-      vec_plusm(v, (ComplexD)(5.0 - m5), iv);
+      vec_plusm(v,
+                (ComplexD)((4.0 - m5) * t_wick_phase_factor_avg +
+                           t_wick_phase_factor_inv_avg),
+                iv);
       const Vector<ComplexD> iv_m(iv.p + 4, 4 * (ls - 1));
       const Vector<ComplexD> iv_p(iv.p, 4 * (ls - 1));
       const Vector<ComplexD> iv_m0(iv.p, 4);
@@ -308,17 +347,17 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
       Vector<ComplexD> v_p(v.p + 4, 4 * (ls - 1));
       Vector<ComplexD> v_m0(v.p + 4 * (ls - 1), 4);
       Vector<ComplexD> v_p0(v.p, 4);
-      vec_plusm(v_m, (ComplexD)(-0.5), iv_m);
-      vec_plusm(v_p, (ComplexD)(-0.5), iv_p);
-      vec_plusm(v_m0, (ComplexD)(0.5 * mass), iv_m0);
-      vec_plusm(v_p0, (ComplexD)(0.5 * mass), iv_p0);
-      mat_mul_multi_vec_plusm(v_m, (ComplexD)(dagger_factor * 0.5), gamma_5,
+      vec_plusm(v_m, (ComplexD)(-0.5 * t_wick_phase_factor_avg), iv_m);
+      vec_plusm(v_p, (ComplexD)(-0.5 * t_wick_phase_factor_avg), iv_p);
+      vec_plusm(v_m0, (ComplexD)(0.5 * mass * t_wick_phase_factor_avg), iv_m0);
+      vec_plusm(v_p0, (ComplexD)(0.5 * mass * t_wick_phase_factor_avg), iv_p0);
+      mat_mul_multi_vec_plusm(v_m, (ComplexD)(dagger_factor * 0.5 * t_wick_phase_factor_avg), gamma_5,
                               iv_m);
-      mat_mul_multi_vec_plusm(v_p, (ComplexD)(-dagger_factor * 0.5), gamma_5,
+      mat_mul_multi_vec_plusm(v_p, (ComplexD)(-dagger_factor * 0.5 * t_wick_phase_factor_avg), gamma_5,
                               iv_p);
-      mat_mul_multi_vec_plusm(v_m0, (ComplexD)(-dagger_factor * 0.5 * mass),
+      mat_mul_multi_vec_plusm(v_m0, (ComplexD)(-dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
                               gamma_5, iv_m0);
-      mat_mul_multi_vec_plusm(v_p0, (ComplexD)(dagger_factor * 0.5 * mass),
+      mat_mul_multi_vec_plusm(v_p0, (ComplexD)(dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
                               gamma_5, iv_p0);
     }
     for (Int mu = 0; mu < 4; ++mu) {
@@ -330,13 +369,28 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
         u_p = qconj(1.0 / u_p);
         u_m = qconj(1.0 / u_m);
       }
+      ComplexD tf_1 = 1.0;
+      ComplexD tfm_1 = 1.0;
+      ComplexD tf_2 = 1.0;
+      ComplexD tfm_2 = 1.0;
+      if (mu == 3) {
+        tf_1 = 1.0;
+        tfm_1 = 1.0;
+        tf_2 = 1.0 / t_wick_phase_factor;
+        tfm_2 = 1.0 / t_wick_phase_factor_m;
+      } else {
+        tf_1 = t_wick_phase_factor_avg;
+        tfm_1 = t_wick_phase_factor_avg;
+        tf_2 = t_wick_phase_factor_avg;
+        tfm_2 = t_wick_phase_factor_avg;
+      }
       const Vector<ComplexD> iv_p = in1.get_elems_const(xl_p);
       const Vector<ComplexD> iv_m = in1.get_elems_const(xl_m);
-      vec_plusm(v, (ComplexD)(-0.5 * u_p), iv_p);
-      vec_plusm(v, (ComplexD)(-0.5 * u_m), iv_m);
-      mat_mul_multi_vec_plusm(v, (ComplexD)(dagger_factor * 0.5 * u_p),
+      vec_plusm(v, (ComplexD)(-(0.5 * tf_2) * u_p), iv_p);
+      vec_plusm(v, (ComplexD)(-(0.5 * tfm_2) * u_m), iv_m);
+      mat_mul_multi_vec_plusm(v, (ComplexD)(dagger_factor * 0.5 * u_p * tf_1),
                               gammas[mu], iv_p);
-      mat_mul_multi_vec_plusm(v, (ComplexD)(-dagger_factor * 0.5 * u_m),
+      mat_mul_multi_vec_plusm(v, (ComplexD)(-dagger_factor * 0.5 * u_m * tfm_1),
                               gammas[mu], iv_m);
     }
   });

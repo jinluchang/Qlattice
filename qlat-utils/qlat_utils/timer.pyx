@@ -149,7 +149,7 @@ def get_start_time():
     return cc.get_start_time()
 
 def set_start_time(time):
-    cdef double* p_ret = &cc.get_start_time()
+    cdef cc.RealD* p_ret = &cc.get_start_time()
     p_ret[0] = time
     assert cc.get_start_time() == time
 
@@ -160,7 +160,7 @@ def get_actual_start_time():
     return cc.get_actual_start_time()
 
 def set_actual_start_time(time):
-    cdef double* p_ret = &cc.get_actual_start_time()
+    cdef cc.RealD* p_ret = &cc.get_actual_start_time()
     p_ret[0] = time
     assert cc.get_actual_start_time() == time
 
@@ -192,7 +192,7 @@ def set_time_limit(time_limit=None):
     """
     if time_limit is None:
         time_limit = cc.get_time_limit_default()
-    cdef double* p_ret = &cc.get_time_limit()
+    cdef cc.RealD* p_ret = &cc.get_time_limit()
     p_ret[0] = time_limit
     assert cc.get_time_limit() == time_limit
 
@@ -208,7 +208,7 @@ def get_time_budget():
 def set_time_budget(time_budget=None):
     if time_budget is None:
         time_budget = cc.get_time_budget_default()
-    cdef double* p_ret = &cc.get_time_budget()
+    cdef cc.RealD* p_ret = &cc.get_time_budget()
     p_ret[0] = time_budget
     assert cc.get_time_budget() == time_budget
 

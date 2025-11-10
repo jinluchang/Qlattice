@@ -414,15 +414,15 @@ cdef extern from "qlat/qcd-utils.h" namespace "qlat":
 
 cdef extern from "qlat/hmc.h" namespace "qlat":
 
-    bool metropolis_accept(double& accept_prob, const double delta_h, const int traj, const RngState& rs_) except +
+    bool metropolis_accept(RealD& accept_prob, const RealD delta_h, const int traj, const RngState& rs_) except +
     void set_rand_gauge_momentum(GaugeMomentum& gm, const RealD sigma, const RngState& rs) except +
     void set_rand_gauge_momentum(GaugeMomentum& gm, const Field[RealD]& mf, const RngState& rs) except +
     RealD gm_hamilton_node(const GaugeMomentum& gm) except +
     RealD gm_hamilton_node(const GaugeMomentum& gm, const Field[RealD]& mf) except +
-    double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga) except +
-    double gf_hamilton(const GaugeField& gf, const GaugeAction& ga) except +
-    void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size) except +
-    void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const double step_size) except +
+    RealD gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga) except +
+    RealD gf_hamilton(const GaugeField& gf, const GaugeAction& ga) except +
+    void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const RealD step_size) except +
+    void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const RealD step_size) except +
     void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const Field[RealD]& mf, const RealD step_size) except +
     void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const Field[RealD]& mf_dual, const RealD step_size) except +
     void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf, const GaugeAction& ga) except +
@@ -591,24 +591,30 @@ cdef extern from "qlat/qed.h" namespace "qlat":
     void invert_qed(
         SpinProp& sp_sol, const SpinProp& sp_src, const Field[ComplexD]& gf1,
         const RealD mass, const RealD m5, const Int ls,
+        const vector[ComplexD]& t_wick_phase_factor_vec,
         const bool is_dagger,
         const RealD stop_rsd, const Long max_num_iter) except +
     #
     Long invert_dwf_qed(
         Field[ComplexD]& f_out4d, const Field[ComplexD]& f_in4d,
         const Field[ComplexD]& gf1, const RealD mass,
-        const RealD m5, const Int ls, const bool is_dagger,
+        const RealD m5, const Int ls,
+        const vector[ComplexD]& t_wick_phase_factor_vec,
+        const bool is_dagger,
         const RealD stop_rsd, const Long max_num_iter) except +
     #
     Long cg_with_m_dwf_qed(
         Field[ComplexD]& f_out5d, const Field[ComplexD]& f_in5d,
         const Field[ComplexD]& gf1, const RealD mass,
-        const RealD m5, const Int ls, const bool is_dagger,
+        const RealD m5, const Int ls,
+        const vector[ComplexD]& t_wick_phase_factor_vec,
+        const bool is_dagger,
         const RealD stop_rsd, const Long max_num_iter) except +
     #
     void multiply_m_dwf_qed(
         Field[ComplexD]& f_out, const Field[ComplexD]& f_in,
         const Field[ComplexD]& gf1,
         const RealD mass, const RealD m5, const Int ls,
+        const vector[ComplexD]& t_wick_phase_factor_vec,
         const bool is_dagger) except +
 

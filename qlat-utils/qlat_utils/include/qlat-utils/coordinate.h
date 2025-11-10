@@ -93,7 +93,7 @@ qacc Int smod_sym(const Int x, const Int len)
 {
   qassert(0 < len);
   const Int m = smod(x, len);
-  if (abs(m * 2) == len) {
+  if (std::abs(m * 2) == len) {
     return 0;
   } else {
     return m;
@@ -104,7 +104,7 @@ qacc double smod_sym(const double x, const double len,
                      const double eps = 1.0e-8)
 {
   const double m = smod(x, len);
-  if (abs(abs(m * 2) - len) < eps) {
+  if (std::abs(std::abs(m * 2) - len) < eps) {
     return 0;
   } else {
     return m;

@@ -625,5 +625,107 @@
    "__extended_json_type__": "ndarray"
   },
   1e-06
+ ],
+ [
+  "test 4d propagator with Minkowski time"
+ ],
+ [
+  "gf1_qed.geo = Geometry([4, 4, 4, 8], expan_left=[0, 0, 0, 1], expan_right=[0, 0, 0, 0], eo=0)"
+ ],
+ [
+  "gf1_qed data sig",
+  {
+   "value": [
+    {
+     "real": 2.9237054596476337,
+     "imag": -0.34600689165704995,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -44.05095109679411,
+     "imag": -3.3483924976227506,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 38.243622843356746,
+     "imag": -0.8732243901828445,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "sp_in data sig",
+  {
+   "value": [
+    {
+     "real": 88.69869531137044,
+     "imag": 43.69078389597534,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 68.12371420592802,
+     "imag": 65.74954151930282,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 9.116980425094217,
+     "imag": -41.61084313987712,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "sp_out data sig",
+  {
+   "value": [
+    {
+     "real": 4.823687652840968,
+     "imag": -24.34762070054015,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 27.198996179360957,
+     "imag": -12.83404952420986,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -25.689257391132088,
+     "imag": 7.246543967082749,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-06
+ ],
+ [
+  "sp_out dagger data sig",
+  {
+   "value": [
+    {
+     "real": -26.50868214518202,
+     "imag": -0.2382682109830836,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 7.115076017714443,
+     "imag": -6.039503798381601,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 10.3504616374106,
+     "imag": 2.1469891179747265,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-06
  ]
 ]
