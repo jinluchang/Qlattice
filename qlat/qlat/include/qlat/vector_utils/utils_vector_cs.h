@@ -1420,7 +1420,7 @@ struct vector_cs{
     if(nvec == 0){return ;}
     Long Nv = nvec;
     if(i1 != -1){Nv = i1;}
-    std::vector<long > jobA = job_create(Nv - i0, ngroup);
+    std::vector<Long > jobA = job_create(Nv - i0, ngroup);
     for(LInt jobi=0;jobi < jobA.size()/2; jobi++){
       const Long bini = jobA[jobi*2+0] + i0;
       const Long bcut = jobA[jobi*2+1];
