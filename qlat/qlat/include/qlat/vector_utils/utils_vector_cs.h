@@ -73,8 +73,8 @@ struct vector_cs{
   //
   double flops_matrix;
   double flops_copy;
-  Int work_i;
-  Int work_f;
+  int work_i;
+  int work_f;
   //
   inline void inialize_para(){
     nsum   =  0;     ////sites to be summed
@@ -96,12 +96,12 @@ struct vector_cs{
     inialize_para();
   }
   //
-  vector_cs(Int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, Int b_size_ = -1, Int bfac_group_ = -1)
+  vector_cs(int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, int b_size_ = -1, int bfac_group_ = -1)
   {
     resize(nvec_, nsum_, GPU_, b_size_, bfac_group_);
   }
   //
-  //inline void resize(Int nvec_, Int nsum_)
+  //inline void resize(int nvec_, int nsum_)
   //{
   //  resize(nvec_, nsum_, 1, -1, 1, -1);
   //}
@@ -110,17 +110,17 @@ struct vector_cs{
     return nsum;
   }
   //
-  inline void resize(Int nvec_, Int nsum_, QMEM GPU_)
+  inline void resize(int nvec_, int nsum_, QMEM GPU_)
   {
     resize(nvec_, nsum_, GPU_, b_size, bfac_group);
   }
   //
-  inline void resize(Int nvec_, Int nsum_)
+  inline void resize(int nvec_, int nsum_)
   {
     resize(nvec_, nsum_, GPU, b_size, bfac_group);
   }
   //
-  inline void resize(Int nvec_)
+  inline void resize(int nvec_)
   {
     Qassert(nsum > 0 and b_size > 0 and bfac > 0);
     resize(nvec_, nsum, GPU, b_size, bfac_group);
@@ -128,14 +128,14 @@ struct vector_cs{
   //
   /////==added
   template <class Ta >
-  inline void resize(Int nvec_, vector_cs<Ta >& ref)
+  inline void resize(int nvec_, vector_cs<Ta >& ref)
   {
     resize(nvec_, ref.nsum, ref.GPU, ref.b_size, ref.bfac_group);
   }
   //
   /////==added
   template <class Ta >
-  inline void resize(Int nvec_, QMEM GPU, vector_cs<Ta >& ref)
+  inline void resize(int nvec_, QMEM GPU, vector_cs<Ta >& ref)
   {
     resize(nvec_, ref.nsum, GPU, ref.b_size, ref.bfac_group);
   }
@@ -151,12 +151,12 @@ struct vector_cs{
     return res;
   }
   //
-  inline void resize(Int nvec_, LInt nsum_, QMEM GPU_, Int b_size_, Int bfac_group_, bool silence_mem = false)
+  inline void resize(int nvec_, LInt nsum_, QMEM GPU_, int b_size_, int bfac_group_, bool silence_mem = false)
   {
     ////Qassert(geo.node_site != Coordinate(0,0,0,0));
     //nsum = nsum_;
     //Qassert(Nt != 0 and noden != 0);
-    Int flag = 0;
+    int flag = 0;
 
     if(nvec_ == nvec){
       flag += 1;
@@ -211,7 +211,7 @@ struct vector_cs{
       if(memvec <= 0 or memvec*bfac_group > max_mem)
       {
         Long max_group = max_mem / memvec;
-        for(Int bini = bfac_group;bini >= 1; bini--){
+        for(int bini = bfac_group;bini >= 1; bini--){
           size_t tem = get_threads(bini, max_bfac, 0);
           if(tem != 0 and max_bfac%tem == 0 and tem <= max_group){bfac_group = tem;break;}
         }
@@ -312,7 +312,7 @@ struct vector_cs{
       const Long& btotal  = this->btotal;
       const Long& nvec = this->nvec;
       const unsigned long& Lb = this->Lb;
-      const Int& GPU = this->GPU;
+      const int& GPU = this->GPU;
       qGPU_for(isp, btotal*nvec, GPU, {
         Long bi = isp / nvec;
         Long ni = isp % nvec;
@@ -327,7 +327,7 @@ struct vector_cs{
   }
   //
   ////==added
-  inline void set_zero(Int ia = -1, QBOOL dummy = QTRUE)
+  inline void set_zero(int ia = -1, QBOOL dummy = QTRUE)
   {
     TIMERA("vector_cs set_zero");
     if(!initialized){return ;}
@@ -335,7 +335,7 @@ struct vector_cs{
     //if(GPU == 0){GPU_zero = false;}
     const Long& btotal = this->btotal;
     const Long& b_size = this->b_size;
-    const Int& GPU = this->GPU;
+    const int& GPU = this->GPU;
     for(Long ni = 0; ni < nvec; ni++)
     {
       if(ia != -1 and ni != ia){ continue; }
@@ -369,10 +369,10 @@ struct vector_cs{
     return total;
   }
   //
-  inline void random_cs(Int seed = 0)
+  inline void random_cs(int seed = 0)
   {
     Ty** res = get_pointers(0);
-    for(Int bg=0;bg<btotal/bfac_group;bg++)
+    for(int bg=0;bg<btotal/bfac_group;bg++)
     {
       random_Ty(res[bg*bfac_group], bfac_group*nvec*b_size, GPU, bg + 12324 + seed, 1);
     }
@@ -385,7 +385,7 @@ struct vector_cs{
   //
   ////copy from a continous memory?
   template <class Ta >
-  void copy_from(Ta* src, Int ncur, bool data_GPU_ = true, QBOOL dummy = QTRUE, const Int dir = 1)
+  void copy_from(Ta* src, int ncur, bool data_GPU_ = true, QBOOL dummy = QTRUE, const int dir = 1)
   {
     TIMER_FLOPS("vector_cs copy from A");
     if(ncur >= nvec){
@@ -402,7 +402,7 @@ struct vector_cs{
     const Long& btotal = this->btotal;
     ////Long  Ndata = btotal * b_size;
     ////int GPU_set = this->GPU;
-    const Int GPU_set = check_GPU_multi(  GPU, data_GPU);
+    const int GPU_set = check_GPU_multi(  GPU, data_GPU);
 
     QMEM GPU_r = QMGPU; QMEM GPU_s = QMGPU;
     if(dir == 1){GPU_r =      GPU; GPU_s = data_GPU;}
@@ -438,9 +438,9 @@ struct vector_cs{
     if(!same_locate){
       /////if(sizeof(Ty) == sizeof(Ta))
       size_t roff = 0;size_t soff = 0;
-      for(Int ig=0;ig<btotal/bfac_group;ig++)
+      for(int ig=0;ig<btotal/bfac_group;ig++)
       {
-        Int id = ig * bfac_group;
+        int id = ig * bfac_group;
         if(dir == 1){roff = nvec * size_t(b_size);soff = size_t(b_size);}
         if(dir == 0){roff = size_t(b_size);soff = nvec * size_t(b_size) ;}
         ////if(dir == 1)cpy_GPU(res[id], &src[id*b_size], b_size,     GPU, data_GPU, false);
@@ -459,15 +459,15 @@ struct vector_cs{
   }
 
   template <class Ta >
-  void copy_to(Ta* src, Int ncur , bool data_GPU = true, QBOOL dummy = QTRUE)
+  void copy_to(Ta* src, int ncur , bool data_GPU = true, QBOOL dummy = QTRUE)
   {
     copy_from(src, ncur, data_GPU, dummy, 0);
   }
 
   ////nsrc the ni's copy from the src, nres the destination ni's
   template <class Ta >
-  void copy_from(vector_cs<Ta >& src, std::vector<Int >& nres, std::vector<Int >& nsrc, QBOOL dummy = QTRUE,
-    QBOOL continus = QFALSE, const Int dir = 1)
+  void copy_from(vector_cs<Ta >& src, std::vector<int >& nres, std::vector<int >& nsrc, QBOOL dummy = QTRUE,
+    QBOOL continus = QFALSE, const int dir = 1)
   {
     TIMER_FLOPS("vector_cs copy from B");
     if(dir == 1){
@@ -482,7 +482,7 @@ struct vector_cs{
     Qassert(nsrc.size() == nres.size());
     if(nsrc.size() == 0 ){
       nsrc.resize(nvec);nres.resize(nvec);
-      for(Int ni=0;ni<nvec;ni++){
+      for(int ni=0;ni<nvec;ni++){
         nsrc[ni] = ni;nres[ni] = ni;
       }
     }
@@ -497,7 +497,7 @@ struct vector_cs{
     Long  Ndata = btotal * b_size;
     /////const bool same_locate = (GPU == src.GPU);
     const bool same_locate = check_GPU_same(GPU, src.GPU);
-    Int GPU_set = check_GPU_multi(  GPU, src.GPU);
+    int GPU_set = check_GPU_multi(  GPU, src.GPU);
     QMEM GPU_r = this->GPU;
     QMEM GPU_s = src.GPU;
     size_t roff = 0;
@@ -543,7 +543,7 @@ struct vector_cs{
 
       if(!same_locate and continus == QFALSE)
       {
-        for(Int id=0;id<btotal/bfac_group;id++)
+        for(int id=0;id<btotal/bfac_group;id++)
         {
           ////cpy_GPU(A[id], B[id], nsrc.size()*b_size,  GPU_r, GPU_s, false);
           if(dir == 1)cpy_GPU2D(A[id*bfac_group], B[id*bfac_group], 
@@ -551,7 +551,7 @@ struct vector_cs{
           if(dir == 0)cpy_GPU2D(B[id*bfac_group], A[id*bfac_group], 
             size_t(b_size), size_t(bfac_group), roff, soff,  GPU_r, GPU_s, QFALSE);
         }
-        //for(Int id=0;id<btotal;id++)
+        //for(int id=0;id<btotal;id++)
         //{
         //  cpy_GPU(A[id], B[id], b_size,  GPU_r, GPU_s, false);
         //}
@@ -580,7 +580,7 @@ struct vector_cs{
       //  A = src.get_pointers(nsrc[0]);
       //  B =     get_pointers(nres[0]);
       //}
-      for(Int id=0;id<btotal/bfac_group;id++)
+      for(int id=0;id<btotal/bfac_group;id++)
       {
         ////cpy_GPU(A[id], B[id], nsrc.size()*b_size,  GPU_r, GPU_s, false);
         ////if(sizeof(Ty) != sizeof(Ta)){
@@ -599,43 +599,43 @@ struct vector_cs{
   }
 
   template <class Ta >
-  void copy_to(vector_cs<Ta >& res, std::vector<Int >& nsrc, std::vector<Int >& nres, QBOOL dummy = QTRUE, QBOOL continus = QFALSE)
+  void copy_to(vector_cs<Ta >& res, std::vector<int >& nsrc, std::vector<int >& nres, QBOOL dummy = QTRUE, QBOOL continus = QFALSE)
   {
     copy_from(res, nsrc, nres, dummy, continus, 0);
   }
 
   template <class Ta >
-  void copy_from_group_same(vector_cs<Ta >& src, std::vector<Int >& nA, std::vector<Int >& nB, QBOOL dummy = QTRUE, Int dir = 1)
+  void copy_from_group_same(vector_cs<Ta >& src, std::vector<int >& nA, std::vector<int >& nB, QBOOL dummy = QTRUE, int dir = 1)
   {
     //if(a1-a0 == 0 and b1 - b0 == 0){return ;}
     //Qassert(a1 > a0 and b1 > b0);
-    //std::vector<Int > nA;
-    //std::vector<Int > nB;
-    //const Int na = a1 - a0;
-    //const Int nb = b1 - b0;
+    //std::vector<int > nA;
+    //std::vector<int > nB;
+    //const int na = a1 - a0;
+    //const int nb = b1 - b0;
     //Qassert(na == nb);
     //nA.resize(na);nB.resize(nb);
-    //for(Int a=0;a<na;a++){nA[a] = a0 + a;}
-    //for(Int b=0;b<nb;b++){nB[b] = b0 + b;}
+    //for(int a=0;a<na;a++){nA[a] = a0 + a;}
+    //for(int b=0;b<nb;b++){nB[b] = b0 + b;}
     const QBOOL continus = QTRUE;
     copy_from(src, nA, nB, dummy, continus, dir);
   }
 
   template <class Ta >
-  void copy_from_group(vector_cs<Ta >& src, Int a0, Int a1, Int b0, Int b1, QBOOL dummy = QTRUE, Int dir = 1)
+  void copy_from_group(vector_cs<Ta >& src, int a0, int a1, int b0, int b1, QBOOL dummy = QTRUE, int dir = 1)
   {
     if(a1-a0 == 0 and b1 - b0 == 0){return ;}
     Qassert(a1 > a0 and b1 > b0);
-    std::vector<Int > nA;
-    std::vector<Int > nB;
-    const Int na = a1 - a0;
-    const Int nb = b1 - b0;
+    std::vector<int > nA;
+    std::vector<int > nB;
+    const int na = a1 - a0;
+    const int nb = b1 - b0;
     Qassert(na == nb);
     nA.resize(na);nB.resize(nb);
-    for(Int a=0;a<na;a++){nA[a] = a0 + a;}
-    for(Int b=0;b<nb;b++){nB[b] = b0 + b;}
+    for(int a=0;a<na;a++){nA[a] = a0 + a;}
+    for(int b=0;b<nb;b++){nB[b] = b0 + b;}
 
-    Int do_same = 0;
+    int do_same = 0;
     Qassert(initialized or src.initialized);
     if( initialized and !src.initialized){do_same = 1;}
     if(!initialized and  src.initialized){do_same = 1;}
@@ -649,7 +649,7 @@ struct vector_cs{
     }else{
       TIMERA("vector_cs copy from group diff");
       Qassert(initialized and src.initialized);
-      Int GPU_set = check_GPU_multi(  GPU, src.GPU);
+      int GPU_set = check_GPU_multi(  GPU, src.GPU);
       if(GPU_set == -2){GPU_set = -1;}
       //Qassert(GPU_set != -2);
       VectorGPUKey gkey(0, ssprintf("vector_cs_buf"), GPU_set);
@@ -682,7 +682,7 @@ struct vector_cs{
     //Qassert(nsrc.size() == nres.size());
     //if(nsrc.size() == 0 ){
     //  nsrc.resize(nvec);nres.resize(nvec);
-    //  for(Int ni=0;ni<nvec;ni++){
+    //  for(int ni=0;ni<nvec;ni++){
     //    nsrc[ni] = ni;nres[ni] = ni;
     //  }
     //}
@@ -693,7 +693,7 @@ struct vector_cs{
 
   ////===added, -1 for copy all vecs, 
   template <class Ta >
-  inline void copy_from(vector_cs<Ta >& src,Int ir = -1, Int is = -1, QBOOL dummy = QTRUE, Int dir = 1)
+  inline void copy_from(vector_cs<Ta >& src,int ir = -1, int is = -1, QBOOL dummy = QTRUE, int dir = 1)
   {
     if(src.nvec == 0 and ir == -1 and is == -1){return ;}
     if(dir == 1){
@@ -712,7 +712,7 @@ struct vector_cs{
       }
     }
     Qassert(nvec > ir);Qassert(src.nvec > is);
-    std::vector<Int > ar(0);std::vector<Int > as(0);
+    std::vector<int > ar(0);std::vector<int > as(0);
     ////copy full
     if(ir == -1 and is == -1){
       Qassert(nvec == src.nvec);
@@ -733,7 +733,7 @@ struct vector_cs{
   }
 
   template <class Ta >
-  void copy_to(vector_cs<Ta >& res, Int ia = -1, Int is = -1, QBOOL dummy = QTRUE)
+  void copy_to(vector_cs<Ta >& res, int ia = -1, int is = -1, QBOOL dummy = QTRUE)
   {
     copy_from(res, ia, is, dummy, 0);
   }
@@ -743,7 +743,7 @@ struct vector_cs{
   }
 
   ////==added
-  void swap(vector_cs<Ty >& vp, Int ia = 0, Int ib = 0)
+  void swap(vector_cs<Ty >& vp, int ia = 0, int ib = 0)
   {
     TIMERA("vector_cs swap");
     Qassert(ia < v_size() and ib < vp.v_size());
@@ -761,7 +761,7 @@ struct vector_cs{
   }
 
   template <typename Tf >
-  Ty reduceT(Int ia, Ty** s1 = NULL)
+  Ty reduceT(int ia, Ty** s1 = NULL)
   {
     Qassert(initialized);
     bool GPU_set = true;if(GPU == 0){GPU_set = false;}
@@ -830,7 +830,7 @@ struct vector_cs{
   }
 
   ////norm2, ===added
-  Ty norm2_vec(Int ia=0)
+  Ty norm2_vec(int ia=0)
   {
     TIMERA("vector_cs norm2_vec");
 
@@ -838,10 +838,10 @@ struct vector_cs{
     return reduceT<D >(ia);
   }
 
-  inline void print_norm2(Int ic = -1)
+  inline void print_norm2(int ic = -1)
   {
-    Int nzero = 0;
-    for(Int ia=0;ia<nvec;ia++)
+    int nzero = 0;
+    for(int ia=0;ia<nvec;ia++)
     {
       if(ic != -1){if(ia != ic){continue ;}}
       Ty t = norm2_vec(ia);
@@ -869,7 +869,7 @@ struct vector_cs{
 
     std::vector<Ty > buf;buf.resize(nsum);
     crc32_t sum = 0;
-    for(Int iv=0;iv<nvec;iv++){
+    for(int iv=0;iv<nvec;iv++){
       copy_to(buf.data(), iv, false);
       qacc_barrier(dummy);
       sum ^= quick_checksum(buf.data(), buf.size());
@@ -877,24 +877,24 @@ struct vector_cs{
     qmessage("checksum %12X . \n", sum);
   }
 
-  inline void print_prod(double cut = 1e-19, Int maxN = -1)
+  inline void print_prod(double cut = 1e-19, int maxN = -1)
   {
     if(nvec <= 0){return ;}
     if(maxN == -1 or maxN > nvec){maxN = nvec;}
     qlat::vector_cs<Ty >& a = *this;
     qlat::vector<Ty > alpha;alpha.resize(maxN*maxN);
     a.vec_multi(a, alpha.data(), true, 0, maxN, 0, maxN);
-    for(Int i=0;i< maxN;i++)
+    for(int i=0;i< maxN;i++)
     {
       bool printK = false;
-      for(Int j=0;j<maxN;j++)
+      for(int j=0;j<maxN;j++)
       {
         if(std::sqrt(qnorm(alpha[i*maxN + j])) > cut and i != j){printK = true;break;}
       }
 
       if(printK){
         qmessage("vec i %5d norm %+.1e, ", i, alpha[i*maxN + i].real() - 1.0);
-        for(Int j=0;j<maxN;j++)
+        for(int j=0;j<maxN;j++)
         {
           if(std::sqrt(qnorm(alpha[i*maxN + j])) > cut and i != j){
             qmessage("%d %+.1e %+.1e, ", j, alpha[i*maxN + j].real(), alpha[i*maxN + j].imag());
@@ -905,8 +905,8 @@ struct vector_cs{
     }
   }
 
-  template <typename Ta, Int civ >
-  void copy_from_FieldM(qlat::FieldM<Ta , civ>& src, Int ncur, Int data_GPU = 0, QBOOL dummy = QTRUE, Int dir = 1 )
+  template <typename Ta, int civ >
+  void copy_from_FieldM(qlat::FieldM<Ta , civ>& src, int ncur, int data_GPU = 0, QBOOL dummy = QTRUE, int dir = 1 )
   {
     Qassert(src.initialized and initialized);
     const fft_desc_basic& fd = get_fft_desc_basic_plan(src.geo());
@@ -915,8 +915,8 @@ struct vector_cs{
     copy_from(s0, ncur, data_GPU, dummy, dir);
   }
 
-  template <typename Ta, Int civ >
-  void copy_to_FieldM(qlat::FieldM<Ta , civ>& src, Int ncur, Int data_GPU = 0, QBOOL dummy = QTRUE)
+  template <typename Ta, int civ >
+  void copy_to_FieldM(qlat::FieldM<Ta , civ>& src, int ncur, int data_GPU = 0, QBOOL dummy = QTRUE)
   {
     copy_from_FieldM(src, ncur, data_GPU, dummy, 0);
   }
@@ -932,7 +932,7 @@ struct vector_cs{
 
   ////===added
   template <class T >
-  void operator_vec(const T alpha_, Int ia = -1)
+  void operator_vec(const T alpha_, int ia = -1)
   {
     TIMERA("vector_cs operator_vec");
     Qassert(initialized);
@@ -961,7 +961,7 @@ struct vector_cs{
 
   ////===added
   template <typename Ta, typename T >
-  void operator_vec_to(Ta* b, const T alpha_, Int ia=0, bool GPU_src = true, Int dir = 1)
+  void operator_vec_to(Ta* b, const T alpha_, int ia=0, bool GPU_src = true, int dir = 1)
   {
     TIMERA("vector_cs operator_vec");
     Qassert(ia < nvec);
@@ -969,7 +969,7 @@ struct vector_cs{
     const Long& b_size = this->b_size;
     const Long& btotal = this->btotal;
     const T alpha = alpha_;
-    const Int GPU_ = GPU;
+    const int GPU_ = GPU;
     Qassert(GPU_ == int(GPU_src));
     Qassert(ia >=0);
     Ty** A =   get_pointers(ia);
@@ -986,7 +986,7 @@ struct vector_cs{
 
   ////===added
   template <typename T >
-  void operator_vec(vector_cs<Ty>& b, const T alpha_, Int ia=0, Int ib=0)
+  void operator_vec(vector_cs<Ty>& b, const T alpha_, int ia=0, int ib=0)
   {
     TIMERA("vector_cs operator_vec");
     Qassert(initialized and b.initialized);
@@ -996,7 +996,7 @@ struct vector_cs{
     const Long& b_size = this->b_size;
     const Long& btotal = this->btotal;
     const T alpha = alpha_;
-    const Int GPU_ = GPU;
+    const int GPU_ = GPU;
     Qassert(ia >=0 and ib >=0 );
     Ty** A =   get_pointers(ia);
     Ty** B = b.get_pointers(ib);
@@ -1013,7 +1013,7 @@ struct vector_cs{
   }
 
   /////*this^\dagger * b, ===added
-  inline Ty dot_vec(vector_cs<Ty>& b, Int ia=0, Int ib=0)
+  inline Ty dot_vec(vector_cs<Ty>& b, int ia=0, int ib=0)
   {
     TIMERA("vector_cs dot_vec");
     Qassert(initialized and b.initialized);
@@ -1044,7 +1044,7 @@ struct vector_cs{
   */
   template<typename Ta>
   inline void vec_multi(vector_cs<Ty >& b, Ta* alpha, bool Conj = true, 
-    Int aini = 0, Int aend = -1, Int bini = 0, Int bend = -1, bool do_sum = true)
+    int aini = 0, int aend = -1, int bini = 0, int bend = -1, bool do_sum = true)
   {
     TIMER_FLOPS("==vec_multi");
     //Long nvec;
@@ -1060,7 +1060,7 @@ struct vector_cs{
   
     //int GPU_multi = 0;///CPU multiplication
     //if(a.GPU == QMSYNC or a.GPU == QMGPU){GPU_multi = 1;}////GPU multiplication
-    Int GPU_multi = check_GPU_multi(a.GPU, b.GPU);
+    int GPU_multi = check_GPU_multi(a.GPU, b.GPU);
 
     if(aend == -1){aend = a.nvec;}
     if(bend == -1){bend = b.nvec;}
@@ -1070,10 +1070,10 @@ struct vector_cs{
   
     const bool& GPU  = a.GPU;
     const Long& bfac = a.bfac;
-    const Int& b_size= a.b_size;
-    ///const Int bfac_group = a.bfac_group;
-    ////const Int Nt    = a.Nt;
-    //const Int cs = a.cs;
+    const int& b_size= a.b_size;
+    ///const int bfac_group = a.bfac_group;
+    ////const int Nt    = a.Nt;
+    //const int cs = a.cs;
 
     Long Nres = bfac * nA * (nB);
     //Ty* pa =   get_pointer(na, ba);
@@ -1135,7 +1135,7 @@ struct vector_cs{
     }
 
     long long vGb = btotal * nA * nB * b_size;
-    Int Fcount0   = 6 + 2;
+    int Fcount0   = 6 + 2;
     double flops  = vGb*Fcount0;
     timer.flops  += flops;
     flops_matrix += flops;
@@ -1143,7 +1143,7 @@ struct vector_cs{
 
   template<typename Ta>
   inline void vec_multi(vector_cs<Ty >& b, qlat::vector_gpu<Ta >& alpha, bool Conj = true, 
-    Int aini = 0, Int aend = -1, Int bini = 0, Int bend = -1)
+    int aini = 0, int aend = -1, int bini = 0, int bend = -1)
   {
     vector_cs<Ty >& a = *this;
     if(aend == -1){aend = a.nvec;}
@@ -1161,7 +1161,7 @@ struct vector_cs{
   */
   template<typename Ta>
   inline void vec_sums(vector_cs<Ty >& b, Ta* alpha, bool Conj = false,
-    Int aini = 0, Int aend = -1, Int bini = 0, Int bend = -1)
+    int aini = 0, int aend = -1, int bini = 0, int bend = -1)
   {
     TIMER_FLOPS("==vec_sums");
     ////dup only for Nt, chi=2 of a within nvec
@@ -1179,7 +1179,7 @@ struct vector_cs{
   
     //int GPU_multi = 0;///CPU multiplication
     //if(a.GPU == QMSYNC or a.GPU == QMGPU){GPU_multi = 1;}////GPU multiplication
-    Int GPU_multi = check_GPU_multi(a.GPU, b.GPU);
+    int GPU_multi = check_GPU_multi(a.GPU, b.GPU);
   
     bool trans = true;///A(m, w) and B(w, n)
     const Long m = nB;
@@ -1202,7 +1202,7 @@ struct vector_cs{
     qacc_barrier(dummy);
 
     long long vGb = btotal * nA * nB * b_size;
-    Int Fcount0   = 6 + 2;
+    int Fcount0   = 6 + 2;
     double flops = vGb*Fcount0;
     timer.flops  += flops;
     flops_matrix += flops;
@@ -1210,7 +1210,7 @@ struct vector_cs{
 
   /////////alpha_ij = a_i^* x b_j
   //////alpha_i = v^dagger * b_i,  res = v - \sum alpha_i b_i, --> res, alpha
-  //inline void vec_projections(vector_cs<Ty >& b, qlat::vector<Ty >& alpha, Int Nv = -1, bool Conj = true)
+  //inline void vec_projections(vector_cs<Ty >& b, qlat::vector<Ty >& alpha, int Nv = -1, bool Conj = true)
   //{
   //  vector_cs<Ty >& a = *this;
   //  ////dup only for Nt, chi=2 of a within nvec
@@ -1218,7 +1218,7 @@ struct vector_cs{
   //  Qassert(Long(alpha.size()) == (a.nvec * b.nvec));
   //  ////if(T_keep){Qassert(a.bfac % a.Nt == 0);}
   //
-  //  Int GPU_multi = 0;///CPU multiplication
+  //  int GPU_multi = 0;///CPU multiplication
   //  if(a.GPU == QMSYNC or a.GPU == QMGPU){GPU_multi = 1;}////GPU multiplication
   //
   //  bool trans = true;///A(m, w) and B(w, n)
@@ -1250,17 +1250,18 @@ struct vector_cs{
     return same;
   }
 
-  ////Nv, end vector of basis, m start vector of basis
-  ////return the projection coefficient
-  ////remove_last donot remove a1-1 to vec if add_self == 1
+  /*
+    Nv, end vector of basis, m start vector of basis
+    return the projection coefficient
+    remove_last donot remove a1-1 to vec if add_self == 1
+  */
   template<typename Ta>
-  inline void Projections(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, Int a0, Int a1, Int b0, Int b1, Int add_self = 0){
+  inline void Projections(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, int a0, int a1, int b0, int b1, int add_self = 0){
     TIMERA("vector_cs projections");
     if(nvec == 0 or a1 - a0 <= 0){alpha.resize(0);return ;}
     Qassert(a1 > a0 and b1 > b0 and a1 <= nvec and b1 <= vec.nvec);
-    Int Na = a1 - a0;
-    Int Nb = b1 - b0;
-
+    int Na = a1 - a0;
+    int Nb = b1 - b0;
     ////if(Nv < 0){Nv = nvec; }
     //Qassert(Nv <= int(nvec) );
     //Qassert(vini <= int(nvec) and vini >= 0 );
@@ -1280,12 +1281,12 @@ struct vector_cs{
     /////+1 for other buffers
     //alpha_i^* = v_vb^\dagger * v_i
     //v_vb - alpha_i * v_i
-    Int GPU_work = GPU;
+    int GPU_work = GPU;
     const Long Ndata = Na * Nb;
     if(Long(alphaG.size())  < Ndata * 2){alphaG.resizeL(Ndata * 2, GPU);}
     if(Long(alpha.size() )  < Ndata){ alpha.resize( Ndata);}
     zero_Ty(alpha.data(), alpha.size(), true, QTRUE);
-    /////for(Int vi=m;vi<Nv;vi++)
+    /////for(int vi=m;vi<Nv;vi++)
     /////{alpha[]}
 
     Ty* alphaP = alphaG.data();
@@ -1303,9 +1304,9 @@ struct vector_cs{
     });
     vec_sums( vec, &alphaP[Na*Nb], false, a0, a1, b0, b1);
 
-    //for(Int vi=vini;vi<Nv;vi++){alpha[vi] = -1 * alpha[vi] ;}
+    //for(int vi=vini;vi<Nv;vi++){alpha[vi] = -1 * alpha[vi] ;}
 
-    //for(Int vi=vini;vi<Nv;vi++)
+    //for(int vi=vini;vi<Nv;vi++)
     //{
     //  //alpha[vi] = qlat::qconj( vec.dot_vec(*this, vb, vi) );
     //  vec.operator_vec(*this, -1 * alpha[vi], vb, vi );
@@ -1313,24 +1314,24 @@ struct vector_cs{
   }
 
   template<typename Ta>
-  inline void Projections_all(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, Int Nm = -1, Int bi = 0){
+  inline void Projections_all(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, int Nm = -1, int bi = 0){
     if(Nm == -1){Nm = nvec;}
     Projections(alpha, vec, 0, Nm, bi, bi+1);
   }
 
-  inline void projections(vector_cs<Ty >& vec, Int a0, Int a1, Int b0, Int b1, Int add_self = 0){
+  inline void projections(vector_cs<Ty >& vec, int a0, int a1, int b0, int b1, int add_self = 0){
     qlat::vector<Ty > alpha;
     Projections(alpha, vec, a0, a1, b0, b1, add_self );
   }
 
-  inline void projections_all(vector_cs<Ty >& vec, Int Nm = -1, Int bi = 0){
+  inline void projections_all(vector_cs<Ty >& vec, int Nm = -1, int bi = 0){
     qlat::vector<Ty > alpha;
     Projections_all(alpha, vec, Nm, bi);
   }
 
   ////Nv, end vector of basis, m start vector of basis
   ////return the projection coefficient
-  //qlat::vector<Ty > projections(vector_cs<Ty >& vec, Int Nv = -1, Int vb = 0, Int vini = 0, Int add_self = 0){
+  //qlat::vector<Ty > projections(vector_cs<Ty >& vec, int Nv = -1, int vb = 0, int vini = 0, int add_self = 0){
   //  qlat::vector<Ty > alpha;
   //  TIMERA("vector_cs projections");
   //  if(nvec == 0 or Nv == 0){alpha.resize(0);return alpha;}
@@ -1338,7 +1339,7 @@ struct vector_cs{
   //  Qassert(Nv <= int(nvec) );
   //  Qassert(vini <= int(nvec) and vini >= 0 );
   //  /////need to be self prod for the extra ones
-  //  Int Nv_multi = Nv;
+  //  int Nv_multi = Nv;
   //  if(add_self == 1){
   //    Nv_multi += 1;
   //    Qassert(Nv_multi <= this->nvec and Nv_multi-1 == vb);
@@ -1353,7 +1354,7 @@ struct vector_cs{
   //  if(Long(alphaG.size())  < Nv_multi  ){alphaG.resizeL(Nv_multi, GPU);}
   //  if(Long(alpha.size() )  < Nv_multi-vini){ alpha.resize( Nv_multi - vini);}
   //  zero_Ty(alpha.data(), alpha.size(), true, QTRUE);
-  //  /////for(Int vi=m;vi<Nv;vi++)
+  //  /////for(int vi=m;vi<Nv;vi++)
   //  /////{alpha[]}
 
   //  Ty* alphaP = alphaG.data();
@@ -1366,18 +1367,18 @@ struct vector_cs{
   //  });
   //  vec_sums( vec, &alphaP[0], false, vini, Nv, vb, vb+1);
 
-  //  //for(Int vi=vini;vi<Nv;vi++){alpha[vi] = -1 * alpha[vi] ;}
+  //  //for(int vi=vini;vi<Nv;vi++){alpha[vi] = -1 * alpha[vi] ;}
 
-  //  //for(Int vi=vini;vi<Nv;vi++)
+  //  //for(int vi=vini;vi<Nv;vi++)
   //  //{
   //  //  //alpha[vi] = qlat::qconj( vec.dot_vec(*this, vb, vi) );
   //  //  vec.operator_vec(*this, -1 * alpha[vi], vb, vi );
   //  //}
   //  return alpha;
   //}
-  inline void normalize(Int ai = -1){
+  inline void normalize(int ai = -1){
     if(nvec == 0){return ;}
-    for(Int vi=0;vi<nvec;vi++)
+    for(int vi=0;vi<nvec;vi++)
     {
       if(ai != -1 and vi != ai){continue ; }
       Ty norm = Ty(1.0/std::sqrt( norm2_vec(vi).real() ), 0.0);
@@ -1385,16 +1386,16 @@ struct vector_cs{
     }
   }
 
-  inline void orthogonalize(Int repeat = 2, Int i0=0, Int i1 = -1){
+  inline void orthogonalize(int repeat = 2, int i0=0, int i1 = -1){
     TIMERA("orthogonalize");
     if(nvec == 0){return ;}
     Long Nv = nvec;
     if(i1 != -1){Nv = i1;}
     Ty norm = Ty(1.0/std::sqrt( norm2_vec(i0).real() ), 0.0);
     operator_vec(norm,  i0);
-    for(Int vi=i0 + 1;vi<Nv;vi++)
+    for(int vi=i0 + 1;vi<Nv;vi++)
     {
-      for(Int i=0;i<repeat;i++){
+      for(int i=0;i<repeat;i++){
         projections(*this, i0, vi, vi, vi+1);
       }
       Ty norm = Ty(1.0/std::sqrt( norm2_vec(vi).real() ), 0.0);
@@ -1405,7 +1406,7 @@ struct vector_cs{
   /* 
     \sum_ni Qts[ni] * this->ni
   */
-  inline void linear_combination(vector_cs<Ty >& vec, Ty* Qts, const Int Nsum, Int vb = 0)
+  inline void linear_combination(vector_cs<Ty >& vec, Ty* Qts, const int Nsum, int vb = 0)
   {
     TIMERA("vector_cs linear_combination");
     if(!vec.initialized){vec.resize(vb+1, *this);}
@@ -1422,11 +1423,11 @@ struct vector_cs{
 
   template<typename Td>
   void rotateQ(const Td* Q,
-    const Int c0, const Int c1, const Int N0, const Int Nm, bool transpose = false, Int max_Q_dim = -1)
+    const int c0, const int c1, const int N0, const int Nm, bool transpose = false, int max_Q_dim = -1)
   {
     TIMER_FLOPS("==rotateQ ");
     Qassert(initialized );
-    Int GPU_ = 1;if(GPU == QMCPU){GPU_ = 0;}
+    int GPU_ = 1;if(GPU == QMCPU){GPU_ = 0;}
 
     Qassert(c1 <= nvec and Nm <= nvec);Qassert(c0 < c1 and N0 < Nm);
     if(max_Q_dim == -1){max_Q_dim = Nm;}
@@ -1444,13 +1445,13 @@ struct vector_cs{
     {
     TIMERA("Copy Q coefficient");
     if(!transpose)
-    for(Int ci=c0;ci<c1;ci++){
+    for(int ci=c0;ci<c1;ci++){
       const Td* s  = &Q[ ci * max_Q_dim + 0];
       Ty* r  = &Qb[(ci-c0) * Nsize + 0 ];
       cpy_GPU(r, s, Nsize,  GPU_, GPU_Q, QFALSE);
     }
     if( transpose)
-    for(Int ni=N0;ni<Nm;ni++){
+    for(int ni=N0;ni<Nm;ni++){
       const Td* s  = &Q[ni * max_Q_dim + 0];
       Ty* r  = &Qb[Npass + (ni-N0) * Csize + 0];
       //Ty tmp = 
@@ -1480,7 +1481,7 @@ struct vector_cs{
     Ty* bufP = (Ty*) buf_V.data();
 
     /////could make use of groups if needed, buf_V may be very large
-    for(Int bi=0;bi<btotal;bi++)
+    for(int bi=0;bi<btotal;bi++)
     {
       Ty* rs  =   get_pointer_b(N0, bi);
       Ty* rp  =   get_pointer_b(c0, bi);
@@ -1502,7 +1503,7 @@ struct vector_cs{
 
     }
     long long vGb = btotal * Csize * b_size * Nsize;
-    Int Fcount0   = 6 + 2;
+    int Fcount0   = 6 + 2;
     timer.flops  += vGb*Fcount0;
   }
 
@@ -1519,7 +1520,7 @@ qacc void set_zero(vector_cs<Ty>& vec)
   B will be resized
 */
 template <typename Ty, typename Tb >
-void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, Int b0, Int b1, bool clearB = false, Int GPU = 0)
+void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, int b0, int b1, bool clearB = false, int GPU = 0)
 {
   TIMERA("vector_cs_append");
   const Long NB  = b1 - b0;
@@ -1553,11 +1554,11 @@ void vector_cs_append(vector_cs<Ty >& A, vector_cs<Tb >& B, Int b0, Int b1, bool
 
   if(A.buf_g.size() == 0){A.buf_g.resize(btotal/bfac_group);}
 
-  for(Int Bi=0;Bi<btotal/bfac_group;Bi++)
+  for(int Bi=0;Bi<btotal/bfac_group;Bi++)
   {
-    const Int bi = Bi * bfac_group;
-    /////for(Int GPUi = 0;GPUi < 2;GPUi++)
-    //for(Int bj=0;bj<bfac_group;bj++)
+    const int bi = Bi * bfac_group;
+    /////for(int GPUi = 0;GPUi < 2;GPUi++)
+    //for(int bj=0;bj<bfac_group;bj++)
     {
       Ty* pa   = A.get_pointer_b( 0, bi + 0);
       Tb* pb   = B.get_pointer_b(b0, bi + 0);
@@ -1602,7 +1603,7 @@ struct vector_cs_mat{
   std::vector< qlat::vector<Ty > > bufs;
   qlat::vector<Ty* > mat_src;
   Long vsize;
-  Int ncount;
+  int ncount;
   double mass2_neg;
   double dslash_flops;
 
@@ -1613,20 +1614,20 @@ struct vector_cs_mat{
     mass2_neg = 0.0;
     dslash_flops = 0.0;
   }
-  Int flops;
+  int flops;
 
   inline Long get_vsize(){
     return vsize;
   }
 
   template<typename Tc>
-  inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, Int ir = 0, Int is = 0){
+  inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, int ir = 0, int is = 0){
     vs.copy_to(mat_src[0], is, true);
     multi(mat_src[1], mat_src[0]);
     vr.copy_from(mat_src[1], ir, true);
   }
 
-  //inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, Int ir = 0, Int is = 0){
+  //inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, int ir = 0, int is = 0){
   //  if(vr.v_size() == 0){vr.copy_from(vs);}
   //  const Long btotal = vr.btotal;
   //  const Long b_size = vr.b_size;
@@ -1685,7 +1686,7 @@ struct vector_cs_mat{
   //  mat_src_[4] = bufs[4].data();
   //}
 
-  //inline void copy_from_src(qlat::vector_cs<Ty >& src, Int is)
+  //inline void copy_from_src(qlat::vector_cs<Ty >& src, int is)
   //{
   //  Qassert(src.initialized);
   //  if(bufs.size() == 0){init_Ndata(std::sqrt( mat.size() ));}
@@ -1700,7 +1701,7 @@ struct vector_cs_mat{
   //  }
   //}
 
-  //inline void copy_to_res(Ty* dst, qlat::vector_cs<Ty >& res, Int ir)
+  //inline void copy_to_res(Ty* dst, qlat::vector_cs<Ty >& res, int ir)
   //{
   //  Qassert(res.initialized);
   //  const Long btotal = res.btotal;

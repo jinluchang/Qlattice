@@ -12,7 +12,7 @@ namespace qlat
 {
 
 inline bool is_big_endian_gwu(void){
-  Int num = 1;
+  int num = 1;
   if(*(char *)&num == 1)
   {
     return false;
@@ -36,7 +36,7 @@ inline void swapbytes(void *_object, size_t _size)
    }
 }
 
-inline void switchendian(void *buffer,size_t length,Int dsize)
+inline void switchendian(void *buffer,size_t length,int dsize)
 {
   #pragma omp parallel for
   for(size_t i=0;i<length;i++)
@@ -54,7 +54,7 @@ inline std::vector<std::string > stringtolist(const std::string &tem_string)
   return results;
 }
 
-inline std::string listtostring(const std::vector<Int > src, const Int limit = 0)
+inline std::string listtostring(const std::vector<int > src, const int limit = 0)
 {
   //char tmp[1000];
   std::string tmp;
@@ -101,13 +101,13 @@ inline double stringtodouble(std::string &tem_string)
   return use;
 }
 
-inline Int stringtonum(std::string &tem_string)
+inline int stringtonum(std::string &tem_string)
 {
   //int t_Total = 0;
   //if(tem_string!="_NONE_")
   //{
-  //  Int tem_length = strlen(tem_string.c_str());
-  //  for(Int i=0;i<tem_length;i++){t_Total = t_Total+(tem_string.c_str()[i]-'0')*std::pow(10,tem_length-i-1);};
+  //  int tem_length = strlen(tem_string.c_str());
+  //  for(int i=0;i<tem_length;i++){t_Total = t_Total+(tem_string.c_str()[i]-'0')*std::pow(10,tem_length-i-1);};
   //}
   //return t_Total;
   double use = 0.0;
@@ -119,7 +119,7 @@ inline Int stringtonum(std::string &tem_string)
 
 }
 
-inline Int stringtonumber(std::string &tem_string)
+inline int stringtonumber(std::string &tem_string)
 {
   return stringtonum(tem_string);
 }
@@ -132,11 +132,11 @@ inline std::string Coordinate_to_string(const Coordinate& sp)
 
 inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("NONE"))
 {
-  Coordinate sp;for(Int i=0;i<4;i++){sp[i] = 0;}
+  Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
   if(paraI != "NONE"){
     std::vector<std::string > Li = stringtolist(paraI);
     Qassert(Li.size() == 4);
-    for(Int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
+    for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
   }
   return sp;
 }
@@ -144,7 +144,7 @@ inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("N
 inline void write_pos_to_string(std::string& POS_LIST, Coordinate& pos){
   std::string buf;
   std::string pnum = ssprintf(" ");
-  for(Int i=0;i<4;i++){
+  for(int i=0;i<4;i++){
     pnum = ssprintf("%d ", pos[i]);
     buf += pnum;
   }
@@ -156,12 +156,12 @@ inline std::vector<Coordinate > string_to_Coordinates(std::string& INFO){
   std::vector<Coordinate > posL ;
   std::vector<std::string > a = stringtolist(INFO);
   Qassert(a.size() % 5 == 0);
-  Int Npos = a.size()/5;
-  for(Int i=0;i< Npos;i++)
+  int Npos = a.size()/5;
+  for(int i=0;i< Npos;i++)
   {
     Qassert(a[i*5+4] == std::string(";"));
     Coordinate c;
-    for(Int j = 0;j<4;j++){c[j] = stringtonum(a[i*5 + j]);}
+    for(int j = 0;j<4;j++){c[j] = stringtonum(a[i*5 + j]);}
     posL.push_back(c);
   }
   return posL;
@@ -233,7 +233,7 @@ inline size_t get_file_size_MPI(const std::string& filename, bool silence = fals
 
 inline size_t guess_factor(size_t n, const Long limit)
 {
-  const Int T = 30;
+  const int T = 30;
   std::vector<unsigned int > a;a.resize(T);
   a[ 0] =    2;a[ 1] =    3;a[ 2] =    5;a[ 3] =    7;a[ 4] =    9;
   a[ 5] =   11;a[ 6] =   13;a[ 7] =   17;a[ 8] =   23;a[ 9] =   31;
@@ -242,7 +242,7 @@ inline size_t guess_factor(size_t n, const Long limit)
   a[20] = 1000;a[21] = 1024;a[22] = 1280;a[23] = 1536;a[24] = 1792;
   a[25] = 2048;a[26] = 4096;a[27] = 8192;a[28] =12288;a[29] = 24576;
 
-  for(Int i=T;i<0;i--)
+  for(int i=T;i<0;i--)
   {
     if(a[i] <= limit and n % a[i] == 0){return a[i];}
   }
@@ -284,8 +284,8 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
   TIMER("Single node write");
   if(qlat::get_id_node()==0){
     size_t sem = 0;
-    Qassert(sizeof(Ty) == sizeof(float) or sizeof(Ty) == sizeof(RealD));
-    Int bsize = sizeof(RealD);
+    Qassert(sizeof(Ty) == sizeof(float) or sizeof(Ty) == sizeof(double));
+    int bsize = sizeof(double);
     if(single_file == true){bsize = sizeof(float);}
 
     ///////data for analysis is small endian
@@ -297,7 +297,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
 
     ////Set buf with size
     //char* buf=NULL;
-    ////buf = new char[size*sizeof(RealD)];
+    ////buf = new char[size*sizeof(double)];
     //buf = (char *)aligned_alloc_no_acc(size* bsize);
     qlat::vector<char > buf; buf.resize(size * bsize);
 
@@ -309,8 +309,8 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     /////Switch endian of the file write
     if(read==false){
       if(single_file == false)cpy_data_thread((double*)(&buf[0]), &dat[0], size, 0);
-      if(single_file == true )cpy_data_thread((RealF* )(&buf[0]), &dat[0], size, 0);
-      /////memcpy(&buf[0],&dat[0],size*sizeof(RealD));
+      if(single_file == true )cpy_data_thread((float* )(&buf[0]), &dat[0], size, 0);
+      /////memcpy(&buf[0],&dat[0],size*sizeof(double));
       if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
     }
@@ -324,9 +324,9 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     if(read==true ){
       if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
-      ////memcpy(&dat[0],&buf[0],size*sizeof(RealD));
+      ////memcpy(&dat[0],&buf[0],size*sizeof(double));
       if(single_file == false)cpy_data_thread(&dat[0], (double*)&buf[0], size, 0);
-      if(single_file == true )cpy_data_thread(&dat[0], (RealF* )&buf[0], size, 0);
+      if(single_file == true )cpy_data_thread(&dat[0], (float* )&buf[0], size, 0);
     }
 
     ////delete []buf;
@@ -339,10 +339,10 @@ template<typename Ty>
 void write_data(std::vector<Ty > dat,const char *filename, bool read=false, bool single_file = false){
   if(qlat::get_id_node()==0)
   {
-    Int bsize = sizeof(RealD);
+    int bsize = sizeof(double);
     if(single_file == true){bsize = sizeof(float);}
 
-    Int size = 0;
+    int size = 0;
     if(read==false)size = dat.size();
     if(read==true){size_t sizeF = get_file_size_o(filename);size = sizeF/bsize;dat.resize(size);}
     FILE* file = NULL;
@@ -373,15 +373,15 @@ inline size_t read_input(const char *filename,std::vector<std::vector<std::strin
   char tem[LINE_LIMIT+1];
   if (filer == NULL){printf("Error opening file");return 0;}
 
-  Int count_line = 0;
+  int count_line = 0;
   bool binary = 0;
   ////while(!feof(filer))
   /////maximum input line 5000
-  for(Int i=0;i<5000;i++)
+  for(int i=0;i<5000;i++)
   {
     tem[LINE_LIMIT] = 0;
     if(fgets(tem, LINE_LIMIT + 1, filer) == NULL){binary = true;break;};
-    ///for(Int j=0;j<1000;j++){if(tem[i] < 0){binary = true;break;}}if(binary){break};
+    ///for(int j=0;j<1000;j++){if(tem[i] < 0){binary = true;break;}}if(binary){break};
     /////If the file is binary
     /////qmessage("==%s \n",tem);
     if(tem[LINE_LIMIT] != 0){binary = true;break;}
@@ -418,9 +418,9 @@ inline bool check_qlat_head_exist(const char *filename)
 }
 
 ////Bcast conf_l from zero rank
-inline void bcast_vstring(std::vector<std::string> &conf_l, const Int Host_rank = 0){
+inline void bcast_vstring(std::vector<std::string> &conf_l, const int Host_rank = 0){
 
-  Int rank = get_node_rank_funs0();
+  int rank = get_node_rank_funs0();
   ////Bcast strings
   size_t sizen = 0;if(rank == Host_rank)sizen = conf_l.size();
   MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, get_comm());
@@ -438,45 +438,45 @@ inline void bcast_vstring(std::vector<std::string> &conf_l, const Int Host_rank 
 
 struct inputpara{
   std::vector<std::vector<std::string > > read_f;
-  Int bSize;
-  Int bSum;
-  Int cutN;
+  int bSize;
+  int bSum;
+  int cutN;
   std::string lat;
-  Int icfg;
-  Int icfg_end;
-  Int icfg_jump;
-  Int save_prop;
-  Int anti_peri;
+  int icfg;
+  int icfg_end;
+  int icfg_jump;
+  int save_prop;
+  int anti_peri;
 
-  Int bini, ncut0, ncut1;
+  int bini, ncut0, ncut1;
 
-  Int nx;
-  Int ny;
-  Int nz;
-  Int nt;
-  Int nini;
-  Int nvec;
-  Int with_mpi;
-  Int with_timer;
-  Int mode_dis;
+  int nx;
+  int ny;
+  int nz;
+  int nt;
+  int nini;
+  int nvec;
+  int with_mpi;
+  int with_timer;
+  int mode_dis;
   std::string layout;
-  Int ndouble;
-  Int nsave;
-  Int bfac;
-  Int ionum;
-  Int seed;
-  Int hyp;
-  Int sparsefactor;
-  Int gridtem;
-  Int split_save;
+  int ndouble;
+  int nsave;
+  int bfac;
+  int ionum;
+  int seed;
+  int hyp;
+  int sparsefactor;
+  int gridtem;
+  int split_save;
 
-  Int lms;
-  Int combineT;
-  Int mom_cut;
-  Int mode_FFT_MPI;
+  int lms;
+  int combineT;
+  int mom_cut;
+  int mode_FFT_MPI;
 
   double Eerr;
-  Int SRC_PROP_WITH_LOW;
+  int SRC_PROP_WITH_LOW;
 
   std::string Link_name;
   std::string Ename;
@@ -494,49 +494,49 @@ struct inputpara{
   std::string para_stag;
   std::string src_smear_para;
   std::string sink_smear_para;
-  Int write_mode;
+  int write_mode;
 
   //////qlat data tag
   std::string job_tag;
 
-  Int nprop;
+  int nprop;
   std::string Propname;
   std::string Srcname;
   std::string output;
   std::string output_vec;
-  Int do_all_low;
-  Int nmass;
+  int do_all_low;
+  int nmass;
   std::vector<double > masses;
 
   ////single inversion mass
   double fermion_mass;
-  Int niter;
+  int niter;
   double cg_err;
-  Int solver_type;
-  Int inv_deflate;
-  Int fermion_type;
-  Int prec_type;
+  int solver_type;
+  int inv_deflate;
+  int fermion_type;
+  int prec_type;
 
-  Int niter_sloppy;
+  int niter_sloppy;
 
-  Int eig_poly_deg;
+  int eig_poly_deg;
   double eig_amin;
   double eig_amax;
-  Int eig_check_interval;
-  Int eig_max_restarts;
-  Int eig_batched_rotate;
+  int eig_check_interval;
+  int eig_max_restarts;
+  int eig_batched_rotate;
   double eig_err;
   double eig_qr_tol;
 
-  Int nsource;
-  Int read_noi;
+  int nsource;
+  int read_noi;
   std::vector<std::string > propN;
   std::vector<std::string > srcN;
   std::vector<std::string > smearN;
 
-  Int debuga;
+  int debuga;
   bool printlog;
-  Int GPU;
+  int GPU;
 
   ////Double, Single .....
   std::string OBJECT;
@@ -561,16 +561,16 @@ struct inputpara{
   ////===clover paras
 
   ////===private usage, not loaded from file head
-  Int    bsize;
+  int    bsize;
   bool   read;
   bool   single_file;
   size_t Vsize;
   /////size_t file_type;
   /////flag 0,1,2,3 for eigen save
-  Int file_type;
+  int file_type;
   size_t end_of_file;
-  Int N_noi, ncur;
-  Int bfac_write;
+  int N_noi, ncur;
+  int bfac_write;
   bool rotate_bfac;
   bool do_checksum;
   std::string filename;
@@ -609,18 +609,18 @@ struct inputpara{
   //  return 0;
   //}
 
-  inline Int find_string(const std::string &str0, const std::string &str2)
+  inline int find_string(const std::string &str0, const std::string &str2)
   {
-    Int res = 0;
+    int res = 0;
     //int found = find_string(str0, str2);
     //if(found != std::string::npos and found==0){res = 1;}
     if(str0 == str2 ){res = 1;}
     return res;
   }
 
-  inline Int find_para(const std::string &str2, bool &res){
+  inline int find_para(const std::string &str2, bool &res){
     for(unsigned int is=0;is<read_f.size();is++){
-      Int found = find_string(read_f[is][0], str2);
+      int found = find_string(read_f[is][0], str2);
       if(found == 1 and read_f[is].size() >= 2){
         res = bool( stringtonum(read_f[is][1]) );
         if(printlog)if(get_node_rank_funs0() == 0)
@@ -632,10 +632,10 @@ struct inputpara{
   }
 
   //////TODO Check found == 0 correct for all cases
-  inline Int find_para(const std::string &str2, Int &res){
+  inline int find_para(const std::string &str2, int &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
-      Int found = find_string(read_f[is][0], str2);
+      int found = find_string(read_f[is][0], str2);
       ////std::size_t found = read_f[is][0].find(str2);
       if(found == 1 and read_f[is].size() >= 2){
         res = stringtonum(read_f[is][1]);
@@ -647,10 +647,10 @@ struct inputpara{
     return 0;
   }
 
-  inline Int find_para(const std::string &str2, double &res){
+  inline int find_para(const std::string &str2, double &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
-      Int found = find_string(read_f[is][0], str2);
+      int found = find_string(read_f[is][0], str2);
       //std::size_t found = read_f[is][0].find(str2);
       if(found == 1 and read_f[is].size() >= 2){
         res = stringtodouble(read_f[is][1]);
@@ -666,15 +666,15 @@ struct inputpara{
 
   inline void read_geo(const Geometry& geo)
   {
-    std::vector<Int > nv(4);
-    for(Int i=0;i<4;i++){nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+    std::vector<int > nv(4);
+    for(int i=0;i<4;i++){nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
     nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
   }
 
-  inline Int find_para(const std::string &str2, std::string &res){
+  inline int find_para(const std::string &str2, std::string &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
-      Int found = find_string(read_f[is][0], str2);
+      int found = find_string(read_f[is][0], str2);
       //std::size_t found = read_f[is][0].find(str2);
       if(found == 1 and read_f[is].size() >= 2){
         if(read_f[is].size()==2){res = read_f[is][1];}else{
@@ -693,13 +693,13 @@ struct inputpara{
 
   
   template<typename Ty>
-  Int find_para(const char* str2, Ty &res){
+  int find_para(const char* str2, Ty &res){
     return find_para(std::string(str2), res);
   }
 
   inline void load_para(const char *filename, bool printlog_set = true){
     printlog = printlog_set;
-    Int rank = get_node_rank_funs0();
+    int rank = get_node_rank_funs0();
     if(rank == 0)off_file = read_input(filename, read_f);
     MPI_Bcast(&off_file, sizeof(size_t), MPI_CHAR, 0, MPI_COMM_WORLD);
     ////===Bcast read_f;
@@ -833,7 +833,7 @@ struct inputpara{
     }
 
     if(find_para(std::string("nmass"),nmass)==0)nmass  = 0;
-    for(Int mi=0;mi<nmass;mi++){
+    for(int mi=0;mi<nmass;mi++){
       std::string tem = std::string("NONE");
       std::string mname = ssprintf( "mass%02d", mi);
       if(find_para(mname, tem)==0){masses.push_back(0.0);}
@@ -842,7 +842,7 @@ struct inputpara{
 
     if(find_para(std::string("read_noi"),read_noi)==0)read_noi  = 1;
     if(find_para(std::string("nsource"),nsource)==0)nsource  = 0;
-    for(Int si=0;si<nsource;si++){
+    for(int si=0;si<nsource;si++){
       std::string tem = std::string("NONE");
       std::string sname = ssprintf("nois%05d" , si);
       std::string pname = ssprintf("prop%05d", si);
@@ -868,10 +868,10 @@ struct inputpara{
 
   }
 
-  inline void load_para(Int argc, char* argv[]){
+  inline void load_para(int argc, char* argv[]){
     /////load_para("input.txt");
     std::string file = std::string("NONE");
-    for (Int i = 1; i < argc-1; ++i) {
+    for (int i = 1; i < argc-1; ++i) {
         if(std::string(argv[i]) == std::string("--input")){file = std::string(argv[i+1]);}
     }
     ////printf("===load %s \n",file.c_str());
@@ -881,7 +881,7 @@ struct inputpara{
     }
     else{load_para("input.txt");}
 
-    for (Int i = 1; i < argc-1; ++i) {
+    for (int i = 1; i < argc-1; ++i) {
       if(std::string(argv[i]) == std::string("--icfg")){
         std::string tem = std::string(argv[i+1]);icfg = stringtonum(tem);
         if(get_node_rank_funs0() == 0)printf("==Current  %20s %10d \n","icfg", icfg);
@@ -898,7 +898,7 @@ struct inputpara{
       if(get_node_rank_funs0() == 0)printf("========End Current input \n");
     }
 
-    //for(Int i=1;i<argc;i++){
+    //for(int i=1;i<argc;i++){
     //  std::string str=argv[i];
     //  std::size_t found = str.find(std::string("txt"));
     //  if(found != std::string::npos)
@@ -925,12 +925,12 @@ inline void print_time()
   qmessage("%s ", buf);
 }
 
-inline void readuce_input_Coordinate_info(std::string& a0, std::vector<std::string>& a1, const Int max_pos = 8){
+inline void readuce_input_Coordinate_info(std::string& a0, std::vector<std::string>& a1, const int max_pos = 8){
   if(a0.length() < int(LINE_LIMIT / 2)){return ;}
   std::vector<Coordinate > posL = string_to_Coordinates(a0);
   std::string tmp = " Positions ";
   std::string POS_CUR = "";
-  Int count = 0;
+  int count = 0;
   for(unsigned long pi=0;pi<posL.size();pi++)
   {
     POS_CUR = "";
@@ -950,7 +950,7 @@ inline void readuce_input_Coordinate_info(std::string& a0, std::vector<std::stri
   a0 = " DO_INFO_LIST";
 }
 
-inline size_t vec_head_write(inputpara &in, const char* filename, Int type=-1, bool clear=true){
+inline size_t vec_head_write(inputpara &in, const char* filename, int type=-1, bool clear=true){
   ////nx,ny,nz,nt, checksum, time
   ////type -1 --> prop, type 0 --> vectors, type 1 --> eigen system
   size_t off_file = 0;
@@ -970,7 +970,7 @@ inline size_t vec_head_write(inputpara &in, const char* filename, Int type=-1, b
     else{filew = fopen(filename, "r+");}}
 
     fseek(filew , 0 , SEEK_SET );
-    Int version = 0;
+    int version = 0;
     ///if(type == -1)fprintf(filew, "OBJECT BEGIN_Prop_HEAD VER %d, sink 12, src 12, zyxt, R/I \n" , version);
     ///if(type ==  0)fprintf(filew, "OBJECT BEGIN_Noise_HEAD VER %d \n", version);
     ///if(type ==  1)fprintf(filew, "OBJECT BEGIN_Eigen_HEAD VER %d \n", version);
@@ -1033,7 +1033,7 @@ inline size_t corr_head_write(inputpara &in, const char* filename, bool clear=tr
   return vec_head_write(in, filename,  1, clear);
 }
 
-inline Int get_save_type(const std::string save_type){
+inline int get_save_type(const std::string save_type){
   if(save_type.c_str() == std::string("double")){return 0;}
   if(save_type.c_str() == std::string("Double")){return 0;}
   if(save_type.c_str() == std::string("float") ){return 1;}
@@ -1058,7 +1058,7 @@ inline size_t string_to_size(std::string &tem_string)
   return size;
 }
 
-inline std::string print_size(size_t size, Int limit = 0){
+inline std::string print_size(size_t size, int limit = 0){
   //char tem_size[500];
   std::string tem_size;
   if(limit == 0){tem_size = ssprintf("%zu", size_t(size));}
@@ -1070,11 +1070,11 @@ inline std::string print_size(size_t size, Int limit = 0){
 template <typename Ty >
 struct corr_dat
 {
-  std::vector<Int > key_T;
-  std::vector<Int > c_a_t;
+  std::vector<int > key_T;
+  std::vector<int > c_a_t;
   std::vector<std::string> dim_name;
 
-  Int  dim;
+  int  dim;
   Long total;
   ////Long off;
   std::vector<Ty > dat;
@@ -1084,14 +1084,14 @@ struct corr_dat
   std::string file_write_name;
 
   ////write type and bsize
-  Int write_type;
-  Int write_bsize;
+  int write_type;
+  int write_bsize;
   bool small_size ;
   size_t head_off;
   FILE*  file_open;
   std::vector<crc32_t > crc32_list;
   std::vector<size_t  > crc32_size;
-  Int node_control;
+  int node_control;
 
   qlat::vector<char > buf;
   inputpara in_buf;
@@ -1111,9 +1111,9 @@ struct corr_dat
   }
 
   /////read mode
-  corr_dat(const char* filename, const Int node_control_ = 0){
+  corr_dat(const char* filename, const int node_control_ = 0){
     set_node_control(node_control_);
-    Int tmp = read_dat(filename);
+    int tmp = read_dat(filename);
     (void) tmp;
   }
 
@@ -1129,7 +1129,7 @@ struct corr_dat
     write_head(filename);
   }
 
-  inline void set_node_control(const Int node_control_){
+  inline void set_node_control(const int node_control_){
     node_control = node_control_;
   }
 
@@ -1157,7 +1157,7 @@ struct corr_dat
     dim_name.resize(0);
     initialize();
 
-    if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(RealD)){Qassert(false);};
+    if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(double)){Qassert(false);};
     std::vector<std::string > tem = stringtolist(key);
     dim = tem.size();
     key_T.resize(dim);c_a_t.resize(dim);total = 1;
@@ -1170,7 +1170,7 @@ struct corr_dat
     Qassert(total >= 0 and dim >= 0);
     if(dimN != std::string("NONE")){dim_name = stringtolist(dimN);}else{
       dim_name.resize(dim);
-      for(Int d=0;d<dim;d++){dim_name[d] = std::string(" ");}
+      for(int d=0;d<dim;d++){dim_name[d] = std::string(" ");}
     }
     Qassert(int(dim_name.size()) == dim);
 
@@ -1205,14 +1205,14 @@ struct corr_dat
     return get_off();
   }
 
-  inline std::vector<Int > get_site(Long n){
-    std::vector<Int > site;site.resize(dim);
-    for(Int iv=0;iv<dim;iv++){site[iv] = 0;}
+  inline std::vector<int > get_site(Long n){
+    std::vector<int > site;site.resize(dim);
+    for(int iv=0;iv<dim;iv++){site[iv] = 0;}
     Long tem_i = n;
-    for(Int Ni=0; Ni < dim; Ni++)
+    for(int Ni=0; Ni < dim; Ni++)
     {
       Long N_T = 1;
-      for(Int numi = Ni+1;numi < dim;numi++)
+      for(int numi = Ni+1;numi < dim;numi++)
       {
         N_T = N_T*key_T[numi];
       }
@@ -1237,14 +1237,14 @@ struct corr_dat
     c_a_t = get_site(cur + off);
   }
 
-  inline Long shift_off(std::vector<Int > c_a_t_off){
+  inline Long shift_off(std::vector<int > c_a_t_off){
     if(c_a_t_off.size() == 0){return get_off();}
     Qassert(c_a_t_off.size() == (LInt) dim);
     c_a_t = c_a_t_off;
     return get_off();
   }
 
-  inline Int read_dat(const char* filename, Int check_load = 0){
+  inline int read_dat(const char* filename, int check_load = 0){
     inputpara in;
     in.load_para(filename, false);
     /////if(in.OBJECT != std::string("BEGIN_Corr_HEAD")){return 0;}
@@ -1265,8 +1265,8 @@ struct corr_dat
     create_dat(in.key_T, in.dim_name);
     corr_name = in.corr_name;
 
-    Int type = get_save_type(in.save_type);
-    Int bsize = sizeof(RealD);if(type == 1){bsize=sizeof(float);}
+    int type = get_save_type(in.save_type);
+    int bsize = sizeof(double);if(type == 1){bsize=sizeof(float);}
     //char tem_size[500];
     //printf(tem_size, "%30zu", size_t(total * bsize));
     //Qassert(std::string(tem_size) == in.total_size);
@@ -1285,12 +1285,12 @@ struct corr_dat
       buf.resize(total* bsize);
 
       if(type==0)write_data((double*) buf.data(), file, total, true, false);
-      if(type==1)write_data((RealF* ) buf.data(), file, total, true, true );
+      if(type==1)write_data((float* ) buf.data(), file, total, true, true );
 
       crc32_tem = crc32_par(buf.data(), total * bsize);
 
       if(type == 0)cpy_data_thread(&dat[0], (double*)buf.data(), total, 0);
-      if(type == 1)cpy_data_thread(&dat[0], (RealF* )buf.data(), total, 0);
+      if(type == 1)cpy_data_thread(&dat[0], (float* )buf.data(), total, 0);
 
       fclose(file);file = NULL;
     }
@@ -1300,7 +1300,7 @@ struct corr_dat
     return 1;
   }
 
-  inline Int read_dat(const std::string& filename, Int check_load = 0){
+  inline int read_dat(const std::string& filename, int check_load = 0){
     //char name[1000];
     std::string name = ssprintf("%s", filename.c_str());
     return read_dat(name.c_str(), check_load);
@@ -1308,14 +1308,14 @@ struct corr_dat
 
   inline std::string get_key_T(){
     //std::string key = std::string("");
-    //for(Int d=0;d<dim;d++){key += (std::string("  ") + std::to_string(key_T[d]));}
+    //for(int d=0;d<dim;d++){key += (std::string("  ") + std::to_string(key_T[d]));}
     return qlat::listtostring(key_T, 1);
     //return key;
   }
 
   inline std::string get_dim_name(){
     //std::string dim_N = std::string("");
-    //for(Int d=0;d<dim;d++)(dim_N += (std::string("  ") + dim_name[d]));
+    //for(int d=0;d<dim;d++)(dim_N += (std::string("  ") + dim_name[d]));
     return qlat::listtostring(dim_name);
     //return dim_N;
   }
@@ -1340,16 +1340,16 @@ struct corr_dat
   {
     in_buf = inputpara();///initialize the buf
 
-    if(sizeof(Ty) == sizeof(RealD)){in_buf.save_type = std::string("Double");write_type = 0;}
+    if(sizeof(Ty) == sizeof(double)){in_buf.save_type = std::string("Double");write_type = 0;}
     if(sizeof(Ty) == sizeof(float) ){in_buf.save_type = std::string("Single");write_type = 1;}
-    write_bsize = sizeof(RealD);if(write_type == 1){write_bsize=sizeof(float);}
+    write_bsize = sizeof(double);if(write_type == 1){write_bsize=sizeof(float);}
 
     in_buf.checksum = 0;
     update_info();
     head_off = corr_head_write(in_buf, filename, true);
 
     ////in.dim_name = std::string("");
-    ////for(Int d=0;d<dim;d++)(in.dim_name += (std::string("  ") + dim_name[d]));
+    ////for(int d=0;d<dim;d++)(in.dim_name += (std::string("  ") + dim_name[d]));
     //in_buf.key_T = get_key_T();
     //in_buf.dim_name = get_dim_name();
 
@@ -1383,10 +1383,10 @@ struct corr_dat
       buf.resize(Psize * write_bsize);
 
       if(write_type == 0)cpy_data_thread((double*)&buf[0], &dat[off], Psize, 0);
-      if(write_type == 1)cpy_data_thread((RealF* )&buf[0], &dat[off], Psize, 0);
+      if(write_type == 1)cpy_data_thread((float* )&buf[0], &dat[off], Psize, 0);
 
       if(write_type==0)write_data((double*)&buf[0], file_open, Psize, false, false);
-      if(write_type==1)write_data((RealF* )&buf[0], file_open, Psize, false, true );
+      if(write_type==1)write_data((float* )&buf[0], file_open, Psize, false, true );
 
       crc32_tem = crc32_par(&buf[0], Psize * write_bsize);
     }
@@ -1475,7 +1475,7 @@ struct corr_dat
   }
 
   ////small_size, only update key_T; others update date and key_T
-  inline void add_size(const Int n){
+  inline void add_size(const int n){
     if(key_T.size() < 1){
       qmessage("key_T size wrong!\n");MPI_Barrier(get_comm());
       fflush(stdout);Qassert(false);}
@@ -1499,7 +1499,7 @@ struct corr_dat
   }
 
   template<typename Ta>
-  void write_corr(Ta* src, const Long size, Int mode_copy = 0){
+  void write_corr(Ta* src, const Long size, int mode_copy = 0){
     TIMER("write_corr");
     ///if(size > total){abort_r("Write size too larg. \n");}
     Long cur = 0;
@@ -1516,10 +1516,10 @@ struct corr_dat
 
     using D = typename IsBasicDataType<Ta>::ElementaryType;
     double_size = size * sizeof(Ta)/sizeof(D);
-    //const Int is_double = Is_data_double<M>();
+    //const int is_double = Is_data_double<M>();
     //Qassert(is_double == 0 or is_double == 1);
-    //const Int is_double = get_data_type_is_double<Ta >();
-    //if( is_double){double_size = size * sizeof(Ta)/sizeof(RealD);}
+    //const int is_double = get_data_type_is_double<Ta >();
+    //if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
     //if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
     if(Long(double_size + cur) >  total){ 
@@ -1569,8 +1569,8 @@ struct corr_dat
   inline void print_info(){
     if(qlat::get_id_node()==node_control){
       printf("===Corr %s, dim %d, mem size %.3e MB \n", 
-            corr_name.c_str(), dim, total * sizeof(RealD)*1.0/(1024.0*1024.0));
-      for(Int d=0;d<dim;d++){
+            corr_name.c_str(), dim, total * sizeof(double)*1.0/(1024.0*1024.0));
+      for(int d=0;d<dim;d++){
         printf("dim %30s   %d \n", dim_name[d].c_str(), key_T[d]);
       }
       if(INFO_LIST != "NONE"){printf("INFO_LIST %s \n", INFO_LIST.c_str());}
