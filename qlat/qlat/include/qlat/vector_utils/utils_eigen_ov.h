@@ -39,14 +39,14 @@ struct eigen_ov {
   ///move_index mv_civ;
 
   /////lattice copied from fd
-  Int nx;int ny;int nz;int nt;
-  Int Nx;int Ny;int Nz;int Nt;
+  int nx;int ny;int nz;int nt;
+  int Nx;int Ny;int Nz;int Nt;
   LInt noden;
 
   ////Eigensystem information
-  Int n_vec;
-  Int num_zero;
-  Int one_minus_halfD;
+  int n_vec;
+  int num_zero;
+  int one_minus_halfD;
   double rho;
   double Eeigenerror;
   EigenV eval_self;
@@ -55,12 +55,12 @@ struct eigen_ov {
   Long b_size, bfac;
 
   bool gpu_mem_set;
-  Int ncutgpu, ncutbuf;
+  int ncutgpu, ncutbuf;
   Long bfac_group;
   Long BFAC_GROUP_CPU;
 
 
-  Int nV_prop;
+  int nV_prop;
   double extra_mem_factor;
 
   ///Vlocal stmp;
@@ -70,7 +70,7 @@ struct eigen_ov {
   std::vector< Vlocal > Eigendyn;
   std::vector< Vlocal > Eigenbuf_Sm;
   std::vector< Vlocal > Eigendyn_Sm;
-  Int npos_Eigenbuf;int npos_Eigendyn;
+  int npos_Eigenbuf;int npos_Eigendyn;
 
   Vlocal alpha;
   Vlocal alpha_buf;
@@ -87,8 +87,8 @@ struct eigen_ov {
   vector<Complexq* > EpL;
   vector<Complexq* > spL;
 
-  Int Ns_buf;
-  Int nprop_buf;
+  int Ns_buf;
+  int nprop_buf;
 
   ////3pt function
   //EigenV alpha_list3pt;
@@ -97,56 +97,56 @@ struct eigen_ov {
   //EigenV alpha3pt_ker_low;
 
   /////Construction and memory allocations
-  eigen_ov(const Geometry& geo_,Int n_vec_or, Long bsize0=-1, double extra_mem_factor_set = 0.82);
+  eigen_ov(const Geometry& geo_,int n_vec_or, Long bsize0=-1, double extra_mem_factor_set = 0.82);
 
-  void copy_evec_to_GPU(Int nini);
+  void copy_evec_to_GPU(int nini);
   template <typename Ty >
-  void copy_FieldM_to_Mvec(Ty* src, Int ncur, Int sm = 0, Int dir = 1 , bool data_GPU = false);
+  void copy_FieldM_to_Mvec(Ty* src, int ncur, int sm = 0, int dir = 1 , bool data_GPU = false);
   template <typename Ty >
-  void copy_to_FieldM(Ty* src, Int ncur, Int sm = 0, bool data_GPU = false){
+  void copy_to_FieldM(Ty* src, int ncur, int sm = 0, bool data_GPU = false){
     copy_FieldM_to_Mvec(src, ncur, sm, 0, data_GPU);
   }
 
 
   template <typename Ty >
-  void copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, Int ncur, Int sm = 0, Int dir = 1);
+  void copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0, int dir = 1);
   template <typename Ty >
-  void copy_to_FieldM(qlat::FieldM<Ty , 12>& src, Int ncur, Int sm = 0){
+  void copy_to_FieldM(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0){
     copy_FieldM_to_Mvec(src, ncur, sm, 0);
   }
-  void load_eigen_Mvec(const std::string& ename, Int sm = 0, Int nini=0, Int checknorm = 1);
+  void load_eigen_Mvec(const std::string& ename, int sm = 0, int nini=0, int checknorm = 1);
 
   template <typename Tg >
   void load_eigen_Mvec_smear(const std::string& ename, 
     const GaugeFieldT<Tg >& gf,
     std::vector< qlat::GaugeFieldT<Ftype > >& gfL,
     std::vector<qlat::vector_gpu<qlat::ComplexT<Ftype > > >& propS,
-    Int nini = 0, Int checknorm = 0,  
-    const double src_width  = 0.0, const Int src_step  = 0,
-    const double sink_width = 0.0, const Int sink_step = 0,
+    int nini = 0, int checknorm = 0,  
+    const double src_width  = 0.0, const int src_step  = 0,
+    const double sink_width = 0.0, const int sink_step = 0,
     const CoordinateD& src_mom  = CoordinateD(),
     const CoordinateD& sink_mom = CoordinateD(),
     const bool src_smear_in_time_dir  = false,
     const bool sink_smear_in_time_dir = false
   );
-  void save_eigen_Mvec(const std::string& ename, Int sm = 0, Int save_type = 2);
+  void save_eigen_Mvec(const std::string& ename, int sm = 0, int save_type = 2);
 
   template <typename Tg >
   void smear_eigen(const std::string& Ename_Sm,
-    const GaugeFieldT<Tg >& gf, const double width, const Int step,
+    const GaugeFieldT<Tg >& gf, const double width, const int step,
     const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false);
 
 
-  Complexq* getEigenP(Int ni, size_t xi, Int sm = 0, Int mode_initial = 0);
+  Complexq* getEigenP(int ni, size_t xi, int sm = 0, int mode_initial = 0);
 
   void setup_bfac(Long bsize0=-1);
 
-  void load_eivals(const std::string& enamev,double rho_or,double Eerr=EIGENERROR, Int nini=0);
+  void load_eivals(const std::string& enamev,double rho_or,double Eerr=EIGENERROR, int nini=0);
   
   void load_eigen(const std::string& ov_evecname,
-    Int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, Int nini=0);
+    int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, int nini=0);
 
-  void random_eigen(Int sm = 0, Int seed = 1234);
+  void random_eigen(int sm = 0, int seed = 1234);
 
   void print_info()
   {
@@ -161,7 +161,7 @@ struct eigen_ov {
   }
 
   /////void checknormM(Ftype err=1e-3);
-  void initialize_mass(const std::vector<double>& mass,Int Nv=12,Int one_minus_halfD_or=1, Int nprop=1);
+  void initialize_mass(const std::vector<double>& mass,int Nv=12,int one_minus_halfD_or=1, int nprop=1);
   void initialize_mass();
   void alpha_clear();
 
@@ -169,9 +169,9 @@ struct eigen_ov {
   ///void seq_L(vector **prop3,double mass_d,double rho,int_vector &map,double_complex* ker_low);
   ///void setup_L(vector **prop2);
 
-  void setup_gpufac(Int nprop=1);
-  void allocate_GPU_mem(Int nprop=1);
-  void clear_GPU_mem(Int cpu_also = 0);
+  void setup_gpufac(int nprop=1);
+  void allocate_GPU_mem(int nprop=1);
+  void clear_GPU_mem(int cpu_also = 0);
   void print_norm_Mvec();
 
   ~eigen_ov()
@@ -231,7 +231,7 @@ void eigen_ov::setup_bfac(Long bsize0)
 
 }
 
-eigen_ov::eigen_ov(const Geometry& geo_,Int n_vec_or, Long bsize0, double extra_mem_factor_set)
+eigen_ov::eigen_ov(const Geometry& geo_,int n_vec_or, Long bsize0, double extra_mem_factor_set)
 {
   geo = geo_;
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -281,7 +281,7 @@ eigen_ov::eigen_ov(const Geometry& geo_,Int n_vec_or, Long bsize0, double extra_
 
 }
 
-void eigen_ov::setup_gpufac(Int nprop)
+void eigen_ov::setup_gpufac(int nprop)
 {
   TIMERA("setup_gpufac");
   /////To avoid very large continuous memories on CPU
@@ -302,7 +302,7 @@ void eigen_ov::setup_gpufac(Int nprop)
   totalD = totalM*pow(0.5,30);
 
   //int Ns = 12;
-  Int Ns = nV_prop;if(Ns <=0)Ns = 2;
+  int Ns = nV_prop;if(Ns <=0)Ns = 2;
   ////long long Lat   = noden;
   double memV     = noden*12.0*sizeof(Complexq)*pow(0.5,30);
   double mem_prop = Ns * memV;////Ns have a factor of 12 already
@@ -311,8 +311,8 @@ void eigen_ov::setup_gpufac(Int nprop)
     Qassert(false);
   }
 
-  Int vfac = ncutgpu;int vini = 8 * vfac;
-  Int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV); 
+  int vfac = ncutgpu;int vini = 8 * vfac;
+  int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV); 
   if(qlat::get_id_node() != 0){vres=0;};sum_all_size(&vres, 1);
   /////TODO Need global sum and average the final result?
   /////TODO need to test the continuous memory less thant 8GB
@@ -331,7 +331,7 @@ void eigen_ov::setup_gpufac(Int nprop)
 
   if(ncutgpu == 0 or ncutbuf == 0){bfac_group = 2*bfac;}else{
   bfac_group = 32;
-  for(Int bini=bfac_group;bini >= 1; bini--){
+  for(int bini=bfac_group;bini >= 1; bini--){
     size_t tem = get_threads(bini, bfac, 0);
     if(tem != 0 and bfac%tem == 0){bfac_group = tem;break;}
     bfac_group = 1;
@@ -340,7 +340,7 @@ void eigen_ov::setup_gpufac(Int nprop)
   #endif
 }
 
-void eigen_ov::allocate_GPU_mem(Int nprop)
+void eigen_ov::allocate_GPU_mem(int nprop)
 {
   setup_gpufac(nprop);
   #ifndef QLAT_USE_ACC
@@ -373,7 +373,7 @@ void eigen_ov::allocate_GPU_mem(Int nprop)
   }
 }
 
-void eigen_ov::clear_GPU_mem(Int cpu_also)
+void eigen_ov::clear_GPU_mem(int cpu_also)
 {
   for(LInt i=0;i<Eigenbuf.size();i++){Eigenbuf[i].resize(0);}  Eigenbuf.resize(0);
   for(LInt i=0;i<Eigendyn.size();i++){Eigendyn[i].resize(0);}  Eigendyn.resize(0);
@@ -395,7 +395,7 @@ void eigen_ov::clear_GPU_mem(Int cpu_also)
   gpu_mem_set = false;
 }
 
-void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, Int nini)
+void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, int nini)
 {
   rho = rho_or;
 
@@ -403,8 +403,8 @@ void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, 
   load_txt_eigenvalues(v,e, enamev.c_str());
   if((nini+n_vec)*2 > int(v.size()))abort_r("Eigen value size too small! ");
   eval_self.resize(n_vec);
-  for(Int iv=0;iv<n_vec;iv++){
-    Int off= iv + nini;
+  for(int iv=0;iv<n_vec;iv++){
+    int off= iv + nini;
     eval_self[iv] = Complexq(v[off*2+0],v[off*2+1]);
     /////////cps base eigen value will not change to complex conjugate
     //////eval_self[iv] = qconj(Complexq(v[off*2+0],v[off*2+1]));
@@ -413,7 +413,7 @@ void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, 
   num_zero = 0;// initialize the number of zeros
   Eeigenerror = Eerr;
   Ftype rho_tem = rho;
-  for(Int j=0; j<n_vec; ++j){
+  for(int j=0; j<n_vec; ++j){
     eval_self[j] = eval_self[j]/rho_tem;
     if(std::sqrt(qnorm(eval_self[j])) < Eerr) num_zero += 1; // this will square the values
     //if(abs(eval_self[j]) < Eerr) num_zero += 1;
@@ -423,7 +423,7 @@ void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, 
 }
 
 template <typename Ty >
-void eigen_ov::copy_FieldM_to_Mvec(Ty* src, Int ncur, Int sm, Int dir , bool data_GPU)
+void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool data_GPU)
 {
   TIMERA("COPY Eigen Vectors Mvec");
   if(ncur >= n_vec){abort_r("Cannot copy to position larger than n_vec ! \n");}
@@ -432,7 +432,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, Int ncur, Int sm, Int dir , bool dat
   s0 = src;
   move_index mv_civ;
 
-  Int GPU_cpy = 0;
+  int GPU_cpy = 0;
   if(data_GPU){
     if(dir == 1){GPU_cpy = 3;} // from device to host
     if(dir == 0){GPU_cpy = 2;} // from host to device
@@ -460,7 +460,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, Int ncur, Int sm, Int dir , bool dat
 
 
 template <typename Ty >
-void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, Int ncur, Int sm, Int dir )
+void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm, int dir )
 {
   TIMERA("COPY Eigen Vectors Mvec");
   if(ncur >= n_vec){abort_r("Cannot copy to position larger than n_vec ! \n");}
@@ -468,26 +468,26 @@ void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, Int ncur, Int sm,
     src.init(geo);
   }}
   Ty* s0 = (Ty*) qlat::get_data(src).data();
-  Int data_GPU = 0; ////do copies only from CPU here
+  int data_GPU = 0; ////do copies only from CPU here
   copy_FieldM_to_Mvec(s0, ncur, sm, dir, data_GPU);
 }
 
-void eigen_ov::copy_evec_to_GPU(Int nini)
+void eigen_ov::copy_evec_to_GPU(int nini)
 {
   (void) nini;
   #ifndef QLAT_USE_ACC
   return ;
   #else
 
-  Int mode_dyn = 0;
+  int mode_dyn = 0;
   if(nini < 0){abort_r("Copy initial negative! \n");}
   if(nini <  ncutbuf){mode_dyn = 0;}
   if(nini >= ncutbuf){mode_dyn = 1;}
 
-  Int n0 = 0;int n1 = 0;
+  int n0 = 0;int n1 = 0;
   if(mode_dyn == 0){n0=0;n1 = n0 + ncutbuf; }
   if(mode_dyn == 1){
-    Int maxN = (nini + ncutgpu)/ncutgpu;
+    int maxN = (nini + ncutgpu)/ncutgpu;
     n0=(maxN-1)*ncutgpu ;n1 = n0 + ncutgpu; 
   }
 
@@ -499,7 +499,7 @@ void eigen_ov::copy_evec_to_GPU(Int nini)
   Complexq* s1;Complexq* s0;
   /////a factor of 2 by chiral
   LInt total = 2*bfac*b_size;
-  for(Int ncur=n0;ncur<n1;ncur++)
+  for(int ncur=n0;ncur<n1;ncur++)
   {
     if(ncur >= n_vec){break;}
     for(LInt xini=0;xini < total/b_size; xini++)
@@ -524,14 +524,14 @@ void eigen_ov::copy_evec_to_GPU(Int nini)
 
 }
 
-Complexq* eigen_ov::getEigenP(Int ni, size_t xi, Int sm, Int mode_initial )
+Complexq* eigen_ov::getEigenP(int ni, size_t xi, int sm, int mode_initial )
 {
   if(sm == 1 and enable_smearE == false){abort_r("Smeared Eigen system not loaded or computed! \n");}
   if(ni >= n_vec){abort_r("Request ni too large! \n");}
 
   Complexq* buf = NULL;
   Complexq* s0 = NULL;
-  Int   chi = xi/(bfac*b_size);
+  int   chi = xi/(bfac*b_size);
   size_t vi = xi%(bfac*b_size);
   size_t bi = vi/b_size;
   size_t bj = vi%b_size;
@@ -570,9 +570,9 @@ Complexq* eigen_ov::getEigenP(Int ni, size_t xi, Int sm, Int mode_initial )
   }
 
   if(ni >= ncutbuf){
-    Int ncur = ni - ncutbuf;
-    Int na   = 0;
-    Int nb   = ncur%ncutgpu;
+    int ncur = ni - ncutbuf;
+    int na   = 0;
+    int nb   = ncur%ncutgpu;
 
     size_t off1 = (((na*2 + chi)*bfac + bi)*ncutgpu + nb)*b_size + bj;
     size_t Lb = bfac_group*ncutgpu*size_t(b_size);
@@ -603,7 +603,7 @@ inline void resize_EigenM(Elocal& a, size_t n0, size_t n1)
 
 template <typename Tg >
 void eigen_ov::smear_eigen(const std::string& Ename_Sm,
-  const GaugeFieldT<Tg >& gf, const double width, const Int step,
+  const GaugeFieldT<Tg >& gf, const double width, const int step,
   const CoordinateD& mom, const bool smear_in_time_dir)
 {
   TIMER("smear eigen system");
@@ -619,7 +619,7 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   resize_EigenM(Mvec_Sm , La, Lb);enable_smearE = true;
   print_mem_info("Eigen Memory Allocate Done");
 
-  const Int each = 12;
+  const int each = 12;
   Long Ncopy = geo.local_volume() * 12;
   qlat::vector_gpu<Complexq > buf;buf.resize(each * Ncopy);
 
@@ -627,16 +627,16 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    Int flag = 0;
+    int flag = 0;
     ////copy to buf
-    for(Int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
     flag = 0;mv_idx.dojob(buf.data(), buf.data(), 1, each , geo.local_volume()*12, flag, 1, true);
 
     smear_propagator_gwu_convension_inner<Complexq, 4,each  , Tg>(buf.data(), gf, width, step, mom, smear_in_time_dir);
 
     flag = 1;mv_idx.dojob(buf.data(), buf.data(), 1, each , geo.local_volume()*12, flag, 1, true);
     ////copy from buf
-    for(Int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  1, 1, true);}
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  1, 1, true);}
   }
 
   ////erase smear
@@ -651,25 +651,25 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   }
 }
 
-void eigen_ov::save_eigen_Mvec(const std::string& ename, Int sm, Int save_type)
+void eigen_ov::save_eigen_Mvec(const std::string& ename, int sm, int save_type)
 {
   if(sm == 1 and enable_smearE == false){qmessage("Could not save smear eigen without set it up.");return ;}
   io_vec& io_use = get_io_vec_plan(geo);
 
-  const Int nini = 0;
-  const Int ntotal = nini + n_vec;
+  const int nini = 0;
+  const int ntotal = nini + n_vec;
   const bool read = false;
   inputpara in_write_eigen;
   FILE* file_write  = open_eigensystem_file(ename.c_str(), nini, ntotal, read , io_use , in_write_eigen , save_type);
 
-  Int each = io_use.ionum;
+  int each = io_use.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
-  for(Int iv=0;iv<each;iv++){buf[iv].init(io_use.geo());}
+  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geo());}
 
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    for(Int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(buf[iv], job[ji*2 + 0] + iv, sm );}
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(buf[iv], job[ji*2 + 0] + iv, sm );}
     /////write to file
     load_eigensystem_vecs(file_write ,   buf, io_use , in_write_eigen , 0, job[ji*2 + 1]);
   }
@@ -683,9 +683,9 @@ void eigen_ov::print_norm_Mvec()
   qlat::FieldM<Complexq , 12> buf;
   buf.init(geo);
 
-  const Int Nsm = enable_smearE ? 2 : 1 ;
-  for(Int sm = 0; sm < Nsm; sm++)
-  for(Int ni = 0; ni < n_vec; ni++)
+  const int Nsm = enable_smearE ? 2 : 1 ;
+  for(int sm = 0; sm < Nsm; sm++)
+  for(int ni = 0; ni < n_vec; ni++)
   {
     copy_to_FieldM(buf, ni, sm);
     Ftype* Psrc = (Ftype*) qlat::get_data(buf).data();
@@ -697,7 +697,7 @@ void eigen_ov::print_norm_Mvec()
 // some strange float eigensystem name with .s appendix
 inline std::string get_eigen_name_string(const std::string& ename)
 {
-  Int found_file = 0;
+  int found_file = 0;
   std::string name_read = ename;
   if(get_file_size_MPI(name_read, true) > 0){
     found_file = 1;
@@ -721,9 +721,9 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
     const GaugeFieldT<Tg >& gf,
     std::vector< qlat::GaugeFieldT<Ftype > >& gfL,
     std::vector<qlat::vector_gpu<qlat::ComplexT<Ftype > > >& propS,
-    Int nini, Int checknorm, 
-    const double src_width , const Int src_step ,
-    const double sink_width, const Int sink_step,
+    int nini, int checknorm, 
+    const double src_width , const int src_step ,
+    const double sink_width, const int sink_step,
     const CoordinateD& src_mom ,
     const CoordinateD& sink_mom,
     const bool src_smear_in_time_dir ,
@@ -732,16 +732,16 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
 {
   TIMER("load_eigen_Mvec_smear");
   std::string name_read = get_eigen_name_string(ename);
-  Int ntotal = nini + n_vec;
+  int ntotal = nini + n_vec;
   Ftype norm_err  = 1e-3;
   std::string val = get_env(std::string("q_eigen_norm_err"));
   if(val != ""){norm_err = stringtodouble(val);}
-  Int print_norms = 0; 
+  int print_norms = 0; 
   val = get_env(std::string("q_eigen_print_norm"));
   if(val != ""){print_norms = stringtonum(val);}
 
   io_vec& io_use = get_io_vec_plan(geo);
-  const Int each_io = io_use.ionum;
+  const int each_io = io_use.ionum;
 
   Long La = 2*bfac/BFAC_GROUP_CPU;
   Long Lb = BFAC_GROUP_CPU*n_vec*Long(b_size);
@@ -757,7 +757,7 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
   FILE* file_read  = open_eigensystem_file(name_read.c_str(), nini, ntotal, true , io_use , in_read_eigen , 2);
 
   std::vector<double > widthL = {sink_width, src_width};
-  std::vector<Int    > stepL  = {sink_step, src_step};
+  std::vector<int    > stepL  = {sink_step, src_step};
   std::vector<CoordinateD > momL;momL.resize(2);
   momL[0] = sink_mom;momL[1] = src_mom;
   std::vector<bool > smear_in_time_dirL = {sink_smear_in_time_dir, src_smear_in_time_dir};
@@ -765,15 +765,15 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
   {
   TIMER("load eigen from DISC");
   std::vector<qlat::FieldM<Complexq , 12> > buf ;buf.resize(each_io);
-  for(Int iv=0;iv<each_io;iv++){buf[iv].init(io_use.geo());}
+  for(int iv=0;iv<each_io;iv++){buf[iv].init(io_use.geo());}
   std::vector<Long > job =  job_create(n_vec, each_io);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    ////int n0 = nini + job[ji*2 + 0]; Int n1 = n0 + job[ji*2 + 1]; 
+    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
     /////load from file
     load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
     ////copy to Mvec or Mvec_Sm
-    for(Int iv=0;iv<job[ji*2 + 1];iv++){
+    for(int iv=0;iv<job[ji*2 + 1];iv++){
       if(checknorm == 1){
         Ftype* Psrc = (Ftype*) qlat::get_data(buf[iv]).data();
         Ftype normf = get_norm_vec(Psrc, noden);
@@ -795,21 +795,21 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
 
   {
   TIMER("smear eigen for src and sink");
-  const Int each_sm = 12;
+  const int each_sm = 12;
   const Long Ncopy = geo.local_volume() * 12;
   std::vector<qlat::vector_gpu<Complexq > > bufL;bufL.resize(2);
   std::vector<Long > job =  job_create(n_vec, each_sm);
 
   move_index mv_idx;
-  Int flag = 0;
+  int flag = 0;
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     ///do smearings and copy to correct place
-    for(Int sm = 0 ; sm < 2; sm++)
+    for(int sm = 0 ; sm < 2; sm++)
     {
       if(Long(bufL[sm].size()) != Long(each_sm * Ncopy)){bufL[sm].resize(each_sm * Ncopy);}
       ////copy to buf
-      for(Int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&bufL[sm][iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
+      for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&bufL[sm][iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
       if(stepL[sm] == 0){continue;}
 
       Complexq* bufP = bufL[sm].data();
@@ -825,9 +825,9 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
       }
       flag = 1;mv_idx.dojob(bufP, bufP, 1, each_sm , geo.local_volume()*12, flag, 1, true);
     }
-    for(Int sm = 0 ; sm < 2; sm++)
+    for(int sm = 0 ; sm < 2; sm++)
     {
-      for(Int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&bufL[sm][iv*Ncopy], job[ji*2 + 0] + iv,  sm, 1, true);}
+      for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&bufL[sm][iv*Ncopy], job[ji*2 + 0] + iv,  sm, 1, true);}
     }
   }
   }
@@ -837,15 +837,15 @@ void eigen_ov::load_eigen_Mvec_smear(const std::string& ename,
   get_smear_plan_cache().clear();
 }
 
-void eigen_ov::load_eigen_Mvec(const std::string& ename, Int sm, Int nini, Int checknorm)
+void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int checknorm)
 {
   std::string name_read = get_eigen_name_string(ename);
 
-  Int ntotal = nini + n_vec;
+  int ntotal = nini + n_vec;
   Ftype norm_err  = 1e-3;
   std::string val = get_env(std::string("q_eigen_norm_err"));
   if(val != ""){norm_err = stringtodouble(val);}
-  Int print_norms = 0; 
+  int print_norms = 0; 
   val = get_env(std::string("q_eigen_print_norm"));
   if(val != ""){print_norms = stringtonum(val);}
 
@@ -861,18 +861,18 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, Int sm, Int nini, Int c
   inputpara in_read_eigen;
   FILE* file_read  = open_eigensystem_file(name_read.c_str(), nini, ntotal, true , io_use , in_read_eigen , 2);
 
-  Int each = io_use.ionum;
+  int each = io_use.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
-  for(Int iv=0;iv<each;iv++){buf[iv].init(io_use.geo());}
+  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geo());}
 
   std::vector<Long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
-    ////int n0 = nini + job[ji*2 + 0]; Int n1 = n0 + job[ji*2 + 1]; 
+    ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
     /////load from file
     load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
     ////copy to Mvec or Mvec_Sm
-    for(Int iv=0;iv<job[ji*2 + 1];iv++){
+    for(int iv=0;iv<job[ji*2 + 1];iv++){
       if(checknorm == 1 and sm == 0){
         Ftype* Psrc = (Ftype*) qlat::get_data(buf[iv]).data();
         Ftype normf = get_norm_vec(Psrc, noden);
@@ -896,7 +896,7 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, Int sm, Int nini, Int c
 }
 
 void eigen_ov::load_eigen(const std::string& ov_evecname,
-  Int checknorm, double kappa,double eigenerror, Int nini)
+  int checknorm, double kappa,double eigenerror, int nini)
 {
   TIMERB("=====Loading Eigen=====");
 
@@ -911,7 +911,7 @@ void eigen_ov::load_eigen(const std::string& ov_evecname,
 
 }
 
-void eigen_ov::random_eigen(Int sm, Int seed)
+void eigen_ov::random_eigen(int sm, int seed)
 {
   TIMERB("=====Loading random Eigen=====");
   eval_self.resize(n_vec);random_EigenM(eval_self, 0, seed + 10);
@@ -945,9 +945,9 @@ void eigen_ov::alpha_clear(){
 }
 
 //////Nv source number, 12 for prop
-void eigen_ov::initialize_mass(const std::vector<double>& mass, Int Ns, Int one_minus_halfD_or, Int nprop)
+void eigen_ov::initialize_mass(const std::vector<double>& mass, int Ns, int one_minus_halfD_or, int nprop)
 {
-  Int need_update_size = 0;
+  int need_update_size = 0;
 
   if(mass.size() != massL.size()){need_update_size = 1;}
   else{
@@ -969,7 +969,7 @@ void eigen_ov::initialize_mass(const std::vector<double>& mass, Int Ns, Int one_
     nprop_buf = nprop;
 
     ////std::vector<double> mass = mass_or;
-    const Int mN = mass.size();
+    const int mN = mass.size();
 
     // less the memory needed, allocate only large props needed
     #ifdef QLAT_USE_ACC
@@ -995,10 +995,10 @@ void eigen_ov::initialize_mass(const std::vector<double>& mass, Int Ns, Int one_
 
     if(eval_tem.size() != Long(mN*n_vec)){eval_tem.resize(mN*n_vec);}
     #pragma omp parallel for
-    for(Int mki=0;mki< mN*n_vec;mki++)
+    for(int mki=0;mki< mN*n_vec;mki++)
     {
-      Int mi = mki/n_vec;
-      Int kn = mki%n_vec;
+      int mi = mki/n_vec;
+      int kn = mki%n_vec;
       eval_tem[mi*n_vec + kn] = inv_self(eval_self[kn], mass[mi], rho, one_minus_halfD);
     }
 
@@ -1036,16 +1036,16 @@ void eigen_ov::initialize_mass()
     ### Qassert(bfac % ( 6 * Nt) == 0);
     bfac --> [6, Nt, Nb_eigen_prod]
 */
-void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const std::vector<double> &mass, Int mode_sm = 0, 
-  const std::vector<Int >& tsrcL = std::vector<Int>(), const bool conj_prop = false, Int one_minus_halfD_or=1)
+void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, int Ns, const std::vector<double> &mass, int mode_sm = 0, 
+  const std::vector<int >& tsrcL = std::vector<int>(), const bool conj_prop = false, int one_minus_halfD_or=1)
 {
   TIMER_FLOPS("==prop_L");
 
-  const Int mN   = mass.size();
+  const int mN   = mass.size();
   long long Lat = ei.noden;
   long long vGb = Lat*12;
-  Int Fcount0 = 6 + 2;
-  Int Fcount1 = 6 + 2;
+  int Fcount0 = 6 + 2;
+  int Fcount1 = 6 + 2;
   long long Tfloat = ei.n_vec*Ns*mN*vGb*Fcount1 + ei.n_vec*Ns*vGb*Fcount0;
   timer.flops += Tfloat;
   //double mem = Lat*12*(ei.n_vec + Ns + Ns*mN)*sizeof(Complexq);
@@ -1056,7 +1056,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
   ei.initialize_mass(mass, Ns, one_minus_halfD_or, Ns*mN);
   ////touch_GPU(ei.eval_list, ei.eval_list_size);
 
-  Int sm0 = 0; Int sm1 = 0;
+  int sm0 = 0; int sm1 = 0;
   if(mode_sm == 0){sm0 = 0; sm1 = 0;}//pt - pt
   if(mode_sm == 1){sm0 = 0; sm1 = 1;}//pt - sm
   if(mode_sm == 2){sm0 = 1; sm1 = 0;}//sm - pt
@@ -1077,10 +1077,10 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
   const Long& bfac        = ei.bfac;
   const Long& b_size      = ei.b_size;
 
-  const Int&  n_vec      = ei.n_vec;
-  const Int& ncutgpu     = ei.ncutgpu;
-  const Int& ncutbuf     = ei.ncutbuf;
-  const Int& num_zero    = ei.num_zero;
+  const int&  n_vec      = ei.n_vec;
+  const int& ncutgpu     = ei.ncutgpu;
+  const int& ncutbuf     = ei.ncutbuf;
+  const int& num_zero    = ei.num_zero;
   std::vector<bool > t_multi;t_multi.resize(fd.nt);
   Long Nb_eigen_prod = 0;
   if(tsrcL.size() != 0){
@@ -1088,7 +1088,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
     Nb_eigen_prod = bfac / ( 6 * fd.Nt);
   }
 
-  for(Int ti=0;ti<fd.nt;ti++){
+  for(int ti=0;ti<fd.nt;ti++){
     t_multi[ti] = true;
     if(tsrcL.size() != 0){
       // only do finit time slice
@@ -1112,13 +1112,13 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
 
   ////QBOOL dummy_test = QFALSE;
 
-  Int Ng = 0;if(ncutgpu!=0){Ng = ei.n_vec/ncutgpu + 1;}
-  Int nini = 0;
+  int Ng = 0;if(ncutgpu!=0){Ng = ei.n_vec/ncutgpu + 1;}
+  int nini = 0;
   /////each group have ncutgpu of vectors
-  for(Int ng=0;ng<Ng + 1;ng++)
+  for(int ng=0;ng<Ng + 1;ng++)
   {
     if(nini >= ei.n_vec)break;
-    Int  ncur = 0;
+    int  ncur = 0;
     if(nini>=ncutbuf){
       ncur = ncutgpu;
     }else{ncur = ncutbuf;}
@@ -1142,8 +1142,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
       if(Nb_eigen_prod != 0)
       {
         //const Long bini  = chi*bfac + (bsc*Nt + ti)*Nb_eigen_prod + bi;
-        const Int ti =  ((bini % bfac) / Nb_eigen_prod) % fd.Nt;
-        const Int t0 =  ti + fd.init;// current time slice
+        const int ti =  ((bini % bfac) / Nb_eigen_prod) % fd.Nt;
+        const int t0 =  ti + fd.init;// current time slice
         if(!t_multi[t0]){
           add_meas = false;
         }
@@ -1185,7 +1185,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
     {
     TIMERA("Reduce alpha");
     qacc_for(coff, Long(2*ncur*Ns),{
-      Int chi = coff/(ncur*Ns);
+      int chi = coff/(ncur*Ns);
       Long xi = coff%(ncur*Ns);
       if(!conj_prop){
         for(Long bi=0;bi<bfac;bi++){
@@ -1212,10 +1212,10 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
     const Complexq Iimag(0.0,1.0);
     const Complexq Two2(2.0,0.0);
     qacc_for(coff, Long(2*mN*Ns*ncur),{
-      const Int chi   =  coff/(mN*Ns*ncur);
-      const Int mi    = (coff/(Ns*ncur  ))%mN;
-      const Int is    = (coff/(ncur     ))%Ns;
-      const Int kn    = (coff             )%ncur;
+      const int chi   =  coff/(mN*Ns*ncur);
+      const int mi    = (coff/(Ns*ncur  ))%mN;
+      const int is    = (coff/(ncur     ))%Ns;
+      const int kn    = (coff             )%ncur;
       const long long offA = ((chi*mN+mi)*Ns+is)*ncur + kn;
       const Complexq a0 = alpha_buf[(chi*ncur+kn)*Ns+is];
       const Complexq a1 = alpha_buf[((1-chi)*ncur+kn)*Ns+is];
@@ -1247,7 +1247,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
     //TIMER("vec multi");
     TIMER_FLOPS("vec multi");
     long long vGb = 2*bfac*m*n*w;
-    Int Fcount0   = 2*(3 + 1);  
+    int Fcount0   = 2*(3 + 1);  
     timer.flops  += vGb*Fcount0;
 
     if((nini + ncur) < ei.n_vec){
@@ -1314,19 +1314,19 @@ void prop_L_device(eigen_ov& ei,Complexq *src, Complexq *props, Int Ns, const st
 */
 template <typename Ty>
 void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, eigen_ov& ei, 
-  vector_gpu<Complexq>& buf_eig, const std::vector<double >& massL, Int mode_sm = 0, 
-  const Int c_add = 0, const Int Ngroup_ = -1, const std::vector<Int >& tsrcL = std::vector<Int>(),
-   const bool conj_prop = false, Int one_minus_halfD_or=1, const std::vector<Int > sec_info = std::vector<Int>()){
+  vector_gpu<Complexq>& buf_eig, const std::vector<double >& massL, int mode_sm = 0, 
+  const int c_add = 0, const int Ngroup_ = -1, const std::vector<int >& tsrcL = std::vector<int>(),
+   const bool conj_prop = false, int one_minus_halfD_or=1, const std::vector<int > sec_info = std::vector<int>()){
 
   // includes src vector 12
-  const Int Ns = src.size();
-  const Int Nmass = massL.size();
+  const int Ns = src.size();
+  const int Nmass = massL.size();
   Qassert(Ns > 0 and Nmass > 0);
   const Geometry& geo = src[0].geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   const LInt total = 12 * fd.Nvol ;
-  const Int Ngroup = Ngroup_ == -1 ? Ns : Ngroup_;
-  const Int Ndc = 144;
+  const int Ngroup = Ngroup_ == -1 ? Ns : Ngroup_;
+  const int Ndc = 144;
   Qassert(c_add == 0 or c_add == -1 or c_add == 1);
   Qassert(Ngroup >= 1);
 
@@ -1346,20 +1346,20 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
     //}
   }
 
-  const Int Nbuf_T = (tsrcL.size() >= 2 and sec_info.size() == 2) ? 2 : 1;
-  Int src_dT  = 0;
-  Int src_ini = 0;
-  vector<Int > src_time;
-  vector<Int> src_t_order;
+  const int Nbuf_T = (tsrcL.size() >= 2 and sec_info.size() == 2) ? 2 : 1;
+  int src_dT  = 0;
+  int src_ini = 0;
+  vector<int > src_time;
+  vector<int> src_t_order;
   if(Nbuf_T == 2){
     src_dT  = sec_info[0];
     src_ini = sec_info[1];
-    vector<Int > map_sec;
+    vector<int > map_sec;
     get_map_sec(map_sec, src_ini, src_dT, fd.nt);
     get_src_times(src_time, src_t_order, map_sec, src_ini, src_dT);
   }
 
-  std::vector<std::vector<Int > > tbufL;tbufL.resize(tsrcL.size());
+  std::vector<std::vector<int > > tbufL;tbufL.resize(tsrcL.size());
   if(Nbuf_T == 2){
     for(unsigned int ti=0;ti<tsrcL.size();ti++){
       tbufL[ti].resize(1);
@@ -1378,7 +1378,7 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
     Qassert(fd.nt % src_dT == 0 and int(tsrcL.size()) == fd.nt / src_dT);
     Qassert(ei.bfac % ( 6 * fd.Nt) == 0);
     for(unsigned int ti=0;ti<tsrcL.size();ti++){
-      const Int t0 = tsrcL[ti];
+      const int t0 = tsrcL[ti];
       Qassert( (t0 - src_ini + fd.nt) % src_dT == 0 );
     }
   }
@@ -1389,7 +1389,7 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
   Complexq* buf_res  = &buf_eig[Ngroup * 12 * (1 + 0) * total];// size Ngroup * 12 * (0 + Nmass) * total
   Complexq* buf_res1 = NULL;
   if(Nbuf_T == 2){buf_res1 = &buf_eig[Ngroup * 12 * (1 + Nmass) * total];}// size Ngroup * 12 * (0 + Nmass) * total
-  const Int b_size = ei.b_size;
+  const int b_size = ei.b_size;
 
   // pointers for fields
   std::vector<FieldG<Ty > > srcP;
@@ -1398,13 +1398,13 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
   for(LInt jobi=0;jobi < jobA.size()/2; jobi++)
   {
     Long bini = jobA[jobi*2 + 0]; Long bcut = jobA[jobi*2+1];
-    const Int Nk = bcut * 12;
+    const int Nk = bcut * 12;
     if(Long(srcP.size()) != bcut){srcP.resize(0);srcP.resize(bcut);}
     if(Long(resP.size()) != Nmass * bcut){resP.resize(0);resP.resize(Nmass * bcut);}
-    for(Int bi=0;bi<bcut;bi++){
-      const Int bj = bini + bi;
+    for(int bi=0;bi<bcut;bi++){
+      const int bj = bini + bi;
       srcP[bi].set_pointer(src[bj]);
-      for(Int mi=0;mi<Nmass;mi++){
+      for(int mi=0;mi<Nmass;mi++){
         resP[mi*bcut + bi].set_pointer(res[mi*Ns + bj]);
       }
     }
@@ -1438,14 +1438,14 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
         const Long node_tini = fd.init;
         //const Long Nsrc_perT   = fd.nt / src_dT;
         //Qassert(Nsrc_perT == Long(tbufL.size()));
-        const Int curr_src_time = tbufL[ti][0];
+        const int curr_src_time = tbufL[ti][0];
 
         qacc_for(isp, Ndata, {
-          const Int bi = (isp / (mN * Ns * b_size) ) % bfac;
-          const Int t0 = ( bi / Nb_eigen_prod ) % Nt + node_tini;
-          //const Int seci = map_sec[t0];
+          const int bi = (isp / (mN * Ns * b_size) ) % bfac;
+          const int t0 = ( bi / Nb_eigen_prod ) % Nt + node_tini;
+          //const int seci = map_sec[t0];
           // map src number, first shit and each src have two sectors, then treat final sections
-          //const Int src_num = (( seci + 1 ) / 2 ) % Nsrc_perT;
+          //const int src_num = (( seci + 1 ) / 2 ) % Nsrc_perT;
           //if(src_num == int(ti))
           if(src_time[t0] == curr_src_time)
           {
