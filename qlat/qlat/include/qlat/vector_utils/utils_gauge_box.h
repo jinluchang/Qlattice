@@ -28,7 +28,7 @@ struct API FieldBoxT {
   // Only used in qacc macros, or if it is already a copy.
   //
   //Su3 type;   // 6, anti-hermition, 9 usual
-  Int Multiplicity;
+  int Multiplicity;
   box<Geometry> geo;
   Handle<Ty > v;//pointers to object
   //
@@ -40,13 +40,13 @@ struct API FieldBoxT {
     Multiplicity = 9;
   }
 
-  template <class M, Int civ >
+  template <class M, int civ >
   void init(FieldM<M, civ>& fr)
   {
     Qassert(Is_data_double<Ty>() == Is_data_double<M>());
     Qassert(fr.multiplicity == civ);
     Qassert(sizeof(M) % sizeof(Ty) == 0);
-    const Int Nd = sizeof(M) / sizeof(Ty);
+    const int Nd = sizeof(M) / sizeof(Ty);
     v.p  = (Ty*) get_data(fr).data();
     geo.set_view(fr.geo());
     Multiplicity = fr.multiplicity * Nd;
@@ -56,7 +56,7 @@ struct API FieldBoxT {
     if(type == Su3::uA){Qassert(Multiplicity % 6 == 0);}
   }
   //
-  template <class M, Int civ >
+  template <class M, int civ >
   FieldBoxT(FieldM<M, civ>& fr)
   {
     init(fr);
@@ -111,7 +111,7 @@ struct API FieldBoxT {
     v.p = NULL;
   }
   //
-  qacc Int initialized()
+  qacc int initialized()
   {
     if(v.p == NULL){return 0;}
     else{return 1;}
@@ -172,8 +172,8 @@ struct API FieldBoxT {
   qacc Ty* data() { return v.p; }
   qacc const Ty* data() const { return v.p; }
 
-  qacc Int nc(){
-    Int Nc = 0;
+  qacc int nc(){
+    int Nc = 0;
     if(type == Su3::u9){Nc = Multiplicity / 9;}
     if(type == Su3::u6){Nc = Multiplicity / 6;}
     if(type == Su3::uA){Nc = Multiplicity / 6;}
@@ -194,16 +194,16 @@ struct API FieldBoxT {
     const Ty* s = data(xl, mu);
     if(type == Su3::u9)
     {
-      for(Int i=0;i<9;i++){r[i] = s[i];}
+      for(int i=0;i<9;i++){r[i] = s[i];}
       //su3_unitarize(r);
       return ;
     }
     //row col may be exchanged
     if(type == Su3::u6)
     {
-      //for(Int i=0;i<6;i++){r[i] = s[i];}
-      for(Int i=0;i<3;i++){r[i*3 + 0] = s[0*3+i];}
-      for(Int i=0;i<3;i++){r[i*3 + 1] = s[1*3+i];}
+      //for(int i=0;i<6;i++){r[i] = s[i];}
+      for(int i=0;i<3;i++){r[i*3 + 0] = s[0*3+i];}
+      for(int i=0;i<3;i++){r[i*3 + 1] = s[1*3+i];}
       qlat::su3_reconstruct_col(r);
       //su3_unitarize(r);
       return ;
@@ -231,21 +231,21 @@ struct API FieldBoxT {
     Ty* r = data(xl, mu);
     if(type == Su3::u9)
     {
-      for(Int i=0;i<9;i++){r[i] = s[i];}
+      for(int i=0;i<9;i++){r[i] = s[i];}
       return ;
     }
     if(type == Su3::u6)
     {
-      //for(Int i=0;i<6;i++){r[i] = s[i];}
+      //for(int i=0;i<6;i++){r[i] = s[i];}
       //qlat::su3_reconstruct_col(r);
-      for(Int i=0;i<3;i++){r[0*3+i] = s[i*3 + 0];}
-      for(Int i=0;i<3;i++){r[1*3+i] = s[i*3 + 1];}
+      for(int i=0;i<3;i++){r[0*3+i] = s[i*3 + 0];}
+      for(int i=0;i<3;i++){r[1*3+i] = s[i*3 + 1];}
       return ;
     }
     if(type == Su3::uA)
     {
       Ty b[9];
-      for(Int i=0;i<9;i++){b[i] = s[i];}
+      for(int i=0;i<9;i++){b[i] = s[i];}
       //su3_traceless_anti_hermition(b);
       r[0] = b[1*3 + 0];
       r[1] = b[2*3 + 0];
@@ -264,21 +264,21 @@ struct API FieldBoxT {
     Ty* r = data(xl, mu);
     if(type == Su3::u9)
     {
-      for(Int i=0;i<9;i++){r[i] += s[i];}
+      for(int i=0;i<9;i++){r[i] += s[i];}
       return ;
     }
     if(type == Su3::u6)
     {
-      //for(Int i=0;i<6;i++){r[i] = s[i];}
+      //for(int i=0;i<6;i++){r[i] = s[i];}
       //qlat::su3_reconstruct_col(r);
-      for(Int i=0;i<3;i++){r[0*3+i] += s[i*3 + 0];}
-      for(Int i=0;i<3;i++){r[1*3+i] += s[i*3 + 1];}
+      for(int i=0;i<3;i++){r[0*3+i] += s[i*3 + 0];}
+      for(int i=0;i<3;i++){r[1*3+i] += s[i*3 + 1];}
       return ;
     }
     if(type == Su3::uA)
     {
       Ty b[9];
-      for(Int i=0;i<9;i++){b[i] = s[i];}
+      for(int i=0;i<9;i++){b[i] = s[i];}
       //su3_traceless_anti_hermition(b);
       r[0] += b[1*3 + 0];
       r[1] += b[2*3 + 0];
@@ -305,8 +305,8 @@ void copy_ux(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs)
   Qassert(fs.initialized() and fr.initialized())
   const Geometry& geo = fs.geo();
   const Long V = geo.local_volume();
-  const Int Nr = fr.nc();
-  const Int Ns = fs.nc();
+  const int Nr = fr.nc();
+  const int Ns = fs.nc();
   Qassert(Nr > 0 and Ns > 0 and Nr == Ns);
   //
   //fr.show();
@@ -314,7 +314,7 @@ void copy_ux(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs)
   qacc_for(isp, V, {
     Ty b0[9];
     const Coordinate xl = geo.coordinate_from_index(isp);
-    for(Int mu=0;mu<Nr;mu++)
+    for(int mu=0;mu<Nr;mu++)
     {
       fs.construct(b0, xl, mu);
       fr.copy_from(b0, xl, mu);
@@ -323,14 +323,14 @@ void copy_ux(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs)
 }
 
 template <class Ty, Su3 ta, class Tf, Su3 tb>
-void copy_uf(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs, Int dr, Int ds)
+void copy_uf(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, tb >& fs, int dr, int ds)
 {
   //Qassert(fs.geo() == fr.geo());
   Qassert(fs.initialized() and fr.initialized())
   const Geometry& geo = fs.geo();
   const Long V = geo.local_volume();
-  const Int Nr = fr.nc();
-  const Int Ns = fs.nc();
+  const int Nr = fr.nc();
+  const int Ns = fs.nc();
   Qassert(dr < Nr and ds < Ns and Nr > 0 and Ns > 0);
   //
   qacc_for(isp, V, {
@@ -351,13 +351,13 @@ void copy_fields(FieldBoxT<Ty, ta >& fr, FieldBoxT<Tf, ta >& fs)
 }
 
 template <class Ty, Su3 type>
-void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", const Int GPU = 1, const QBOOL dummy = QTRUE)
+void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const std::string& tag = "", const int GPU = 1, const QBOOL dummy = QTRUE)
 {
   refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, tag, GPU, dummy );
 }
 
 template <class Ty, Su3 type>
-void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const Int dir, const Int GPU = 1, const QBOOL dummy = QTRUE)
+void refresh_expanded_GPU(FieldBoxT<Ty, type>& g, const int dir, const int GPU = 1, const QBOOL dummy = QTRUE)
 {
   refresh_expanded_GPU(g.data(), g.geo(), g.Multiplicity, dir, GPU, dummy );
 }

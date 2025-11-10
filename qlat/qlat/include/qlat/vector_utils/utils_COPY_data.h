@@ -15,7 +15,7 @@ namespace qlat{
 
 #ifdef QLAT_USE_ACC
 template <typename T, typename TInt, typename TI0, typename TI1>
-__global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI1 bfac, const Int Ngap = 1, const LInt Lgap0 = 0, const LInt Lgap1 = 0)
+__global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI1 bfac, const int Ngap = 1, const LInt Lgap0 = 0, const LInt Lgap1 = 0)
 {
   //blockDim, gridDim
   //TI0  index =  blockIdx.y*gridDim.x + blockIdx.x;
@@ -37,7 +37,7 @@ __global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res
   const TInt m1 = map_src[index] * bfac + bi*bL;
   const TI0 Mend = (bcur*sizeof(T))/sizeof(float);
 
-  for(Int Ngi=0;Ngi<Ngap;Ngi++)
+  for(int Ngi=0;Ngi<Ngap;Ngi++)
   {
     float* r = (float*) &Pres[Ngi*Lgap0 + m0 ];
     float* s = (float*) &Psrc[Ngi*Lgap1 + m1 ];
@@ -50,7 +50,7 @@ __global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res
 
 //////Faster when T* is GPU memory without unified
 template <typename T, typename TInt, typename TI0, typename TI1>
-void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, Int GPU=1, QBOOL dummy=QTRUE, const Int Ngap = 1, const LInt Lgap0 = 0, const LInt Lgap1 = 0)
+void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, int GPU=1, QBOOL dummy=QTRUE, const int Ngap = 1, const LInt Lgap0 = 0, const LInt Lgap1 = 0)
 {
   TIMERB("copy data form index");
   (void)dummy;
@@ -73,7 +73,7 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
     //qacc_for2dNB(iv, Nvol, Ngi, Ngap, {
     //  T* r = &Pres[Ngi*Lgap0 + map_res[iv]*bfac];
     //  T* s = &Psrc[Ngi*Lgap1 + map_src[iv]*bfac];
-    //  for(Int bi=0;bi<bfac;bi++){
+    //  for(int bi=0;bi<bfac;bi++){
     //    r[bi] = Psrc[bi];
     //  }
     //});
@@ -83,7 +83,7 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
   #endif
 
   size_t Off = bfac*sizeof(T);
-  for(Int Ngi=0;Ngi<Ngap;Ngi++)
+  for(int Ngi=0;Ngi<Ngap;Ngi++)
   {
     #pragma omp parallel for
     for(TI0 iv=0;iv<Nvol;iv++)
@@ -99,7 +99,7 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 }
 
 template <typename T>
-void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const Long bfac, Int GPU=1, QBOOL dummy=QTRUE)
+void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const Long bfac, int GPU=1, QBOOL dummy=QTRUE)
 {
   //Qassert(map_res.size() ==     src.size());
   //Qassert(map_res.size() ==     res.size());
@@ -132,7 +132,7 @@ __global__ void cpy_data_from_group_global(T* Pres, T* Psrc, const TInt* map_res
 
 //////Faster when T* is GPU memory without unified
 template <typename T, typename TInt, typename TI0, typename TI1>
-void cpy_data_from_group(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TInt* map_off, const TI0 Nvol, const TI1 bfac, Int GPU=1, QBOOL dummy=QTRUE)
+void cpy_data_from_group(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TInt* map_off, const TI0 Nvol, const TI1 bfac, int GPU=1, QBOOL dummy=QTRUE)
 {
   TIMERB("copy data form group");
   (void)dummy;
@@ -147,7 +147,7 @@ void cpy_data_from_group(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
   dim3 dimGrid(  Nvol,  1, 1);
   cpy_data_from_group_global<T,TInt,TI0,TI1  ><<< dimGrid, dimBlock >>>(Pres, Psrc, &map_res[0], &map_src[0], &map_off[0], bfac);
   if(dummy==QTRUE){qacc_barrier(dummy);}
-  /////qacc_for(iv, Nvol, {for(Int bi=0;bi<bfac;bi++)Pres[map_res[iv]*bfac+bi] = Psrc[map_src[iv]*bfac+bi];});
+  /////qacc_for(iv, Nvol, {for(int bi=0;bi<bfac;bi++)Pres[map_res[iv]*bfac+bi] = Psrc[map_src[iv]*bfac+bi];});
   return ;}
   #endif
 
@@ -166,7 +166,7 @@ void cpy_data_from_group(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 
 
 template <typename T>
-void cpy_data_from_group(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const qlat::vector<Long >& map_off, const Long bfac, Int GPU=1, QBOOL dummy=QTRUE)
+void cpy_data_from_group(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<Long >& map_res, const qlat::vector<Long >& map_src, const qlat::vector<Long >& map_off, const Long bfac, int GPU=1, QBOOL dummy=QTRUE)
 {
   //Qassert(map_res.size() ==     src.size());
   //Qassert(map_res.size() ==     res.size());
@@ -183,11 +183,11 @@ void cpy_data_from_group(qlat::vector<T >& res, qlat::vector<T >& src, const qla
 
 
 #ifdef QLAT_USE_ACC
-template <typename T0, typename T1, typename TInt, Int bfac, Int ADD_FAC, typename Tadd>
+template <typename T0, typename T1, typename TInt, int bfac, int ADD_FAC, typename Tadd>
 __global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvol, const Tadd ADD)
 {
   TInt off = blockIdx.x*blockDim.x*bfac + threadIdx.x;
-  for(Int i=0;i<bfac;i++)
+  for(int i=0;i<bfac;i++)
   {
     if(ADD_FAC== 0)if(off < Nvol){Pres[off]  = Psrc[off];}
     if(ADD_FAC== 1)if(off < Nvol){Pres[off] += ADD*Psrc[off];}
@@ -198,7 +198,7 @@ __global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvo
 
 //////Copy data thread, cannot give to zero with ADD = 0
 template <typename T0, typename T1, typename TInt, typename Tadd>
-void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, QBOOL dummy, const Tadd ADD)
+void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL dummy, const Tadd ADD)
 {
   (void)dummy;
   if(GPU != 0 and GPU != 1){Qassert(false);}
@@ -211,7 +211,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, Q
   if(GPU == 1){
   /////qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});
 
-  const Int Threads = 64;const Int Biva = (4*16+sizeof(T0)-1)/sizeof(T0);
+  const int Threads = 64;const int Biva = (4*16+sizeof(T0)-1)/sizeof(T0);
   Long Nb = (Nvol + Threads*Biva -1)/(Threads*Biva);
   dim3 dimBlock(    Threads,    1, 1);
   dim3 dimGrid(     Nb,    1, 1);
@@ -248,7 +248,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, Q
 //0--> host to host, 1 device to device
 //2--> ===from host to device, 3 ===from device to host
 template <typename T0, typename T1,  typename TInt, typename Tadd>
-void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, QBOOL dummy, const Tadd ADD, void* stream = NULL)
+void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU, QBOOL dummy, const Tadd ADD, void* stream = NULL)
 {
   (void)stream;
   if(Nvol <= 0){return ;}
@@ -325,13 +325,13 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, QBOOL 
 }
 
 template <typename T0, typename T1,  typename TInt>
-void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU=1, QBOOL dummy=QTRUE, const double ADD = 0, void* stream = NULL)
+void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, QBOOL dummy=QTRUE, const double ADD = 0, void* stream = NULL)
 {
   cpy_data_threadT<T0, T1, TInt, double>(Pres, Psrc, Nvol, GPU, dummy, ADD, stream);
 }
 
 template <typename T0, typename T1,  typename TInt>
-void cpy_data_threadC(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU=1, QBOOL dummy=QTRUE, const T1 ADD = 0, void* stream = NULL)
+void cpy_data_threadC(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, QBOOL dummy=QTRUE, const T1 ADD = 0, void* stream = NULL)
 {
   cpy_data_threadT<T0, T1, TInt, T1>(Pres, Psrc, Nvol, GPU, dummy, ADD, stream);
 }
@@ -339,9 +339,9 @@ void cpy_data_threadC(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU=1, QBOO
 //0--> host to host, 1 device to device
 //2--> ===from host to device, 3 ===from device to host
 template <typename T0, typename T1,  typename TInt>
-void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, Int Gres=1, Int Gsrc=1, QBOOL dummy=QTRUE, void* stream = NULL)
+void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, int Gres=1, int Gsrc=1, QBOOL dummy=QTRUE, void* stream = NULL)
 {
-  Int GPU = 1;////default from device (Gsrc == -1)
+  int GPU = 1;////default from device (Gsrc == -1)
   if(Gsrc == 0 and Gres == 0){GPU = 0;}
   if(Gsrc != 0 and Gres != 0){GPU = 1;}////===from device to device
   if(Gsrc == 0 and Gres != 0){GPU = 2;}////===from host   to device
@@ -354,11 +354,11 @@ void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, Int Gres=1, Int Gsrc=1, 
 }
 
 template <typename T0, typename T1,  typename TInt>
-Int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, const QMEM Gres=QMGPU, const QMEM Gsrc=QMGPU, void* stream = NULL)
+int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, const QMEM Gres=QMGPU, const QMEM Gsrc=QMGPU, void* stream = NULL)
 {
   (void)stream;
-  Int diff_cuda = 0;
-  Int did = 0;
+  int diff_cuda = 0;
+  int did = 0;
   #ifdef QLAT_USE_ACC
   if(sizeof(T0) == sizeof(T1))
   {
@@ -382,7 +382,7 @@ Int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, cons
   if(diff_cuda == 0)
   {
     //////if(Gres == -1){Gori = Gsrc;}
-    Int Gori = Gsrc;
+    int Gori = Gsrc;
     if(Gsrc == QMSYNC){Gori = Gres;}
     const Long Ndata = NOff * Nvol;
     qGPU_forNB(ik, Ndata, Gori, {
@@ -403,11 +403,11 @@ template <typename T0, typename T1,  typename TInt>
 void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const TInt rOff, const TInt sOff, const QMEM Gres=QMGPU, const QMEM Gsrc=QMGPU, const QBOOL dummy=QTRUE, void* stream = NULL)
 {
   ////TIMERA("cpy_GPU2D");
-  Int diff_cuda = 0;
-  Int did = 0;
+  int diff_cuda = 0;
+  int did = 0;
   #ifdef QLAT_USE_ACC
   qacc_Stream_t Lstream;
-  Int copy_stream = 0;
+  int copy_stream = 0;
   if(stream == NULL){
     qacc_ErrCheck(qacc_StreamCreate(&Lstream));
     stream = &Lstream;
@@ -480,7 +480,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 }
 
 //template <typename Ty>
-//void touch_GPU(Ty* Mres, long long Msize,long long offM = 0,long long size = -1, Int mode = 1)
+//void touch_GPU(Ty* Mres, long long Msize,long long offM = 0,long long size = -1, int mode = 1)
 //{
 //  (void)Mres;
 //  (void)mode;
@@ -492,7 +492,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 //  if(Total + offM > Msize){Total = Msize - offM;}
 //
 //  #ifdef QLAT_USE_ACC
-//  Int gpu_id = -1;
+//  int gpu_id = -1;
 //  qacc_ErrCheck(qacc_GetDevice(&gpu_id));
 //  qacc_MemAdvise(&Mres[offM], Total*sizeof(Ty), qacc_MemAdviseSetReadMostly, gpu_id);
 //  if(mode == 1){
@@ -507,7 +507,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 //  (void)Msize;
 //  #ifdef QLAT_USE_ACC
 //  size_t Total = Msize;
-//  Int gpu_id = -1;
+//  int gpu_id = -1;
 //  qacc_ErrCheck(qacc_GetDevice(&gpu_id));
 //  qacc_MemAdvise(&Mres[0], Total*sizeof(Ty), qacc_MemAdviseUnsetReadMostly, gpu_id);
 //  #endif
@@ -516,9 +516,9 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 ////Vol * N0 for res <== Vol * N1 for src
 ////N0 >= N1
 template<typename Ty>
-void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol, Int GPU = 1)
+void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol, int GPU = 1)
 {
-  Int GPU_set = GPU;
+  int GPU_set = GPU;
   #ifndef QLAT_USE_ACC
   GPU_set = 0;
   #endif
@@ -540,9 +540,9 @@ void copy_buffers_vecs(Ty *res, Ty *src,Long N0, Long N1, Long Ncopy, size_t Vol
 }
 
 template<typename T1, typename T2>
-qacc void copy_double_float(T1* a, const T2* b, const Int size)
+qacc void copy_double_float(T1* a, const T2* b, const int size)
 {
-  for(Int i=0;i<size;i++){a[i] = b[i];}
+  for(int i=0;i<size;i++){a[i] = b[i];}
 }
 
 

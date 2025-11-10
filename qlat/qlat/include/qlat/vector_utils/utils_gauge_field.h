@@ -16,7 +16,7 @@ namespace qlat
 template <typename Ty >
 qacc void su3_one(Ty* E)
 {
-  for(Int i=0;i<9;i++){ E[i] = 0.0; }
+  for(int i=0;i<9;i++){ E[i] = 0.0; }
   E[0*3 + 0] = 1.0;
   E[1*3 + 1] = 1.0;
   E[2*3 + 2] = 1.0;
@@ -24,28 +24,28 @@ qacc void su3_one(Ty* E)
 
 qacc Long su3_6(const Geometry& geo, const Coordinate& xl)
 {
-  const Int nD = 6;
+  const int nD = 6;
   return geo.offset_from_coordinate(xl, 1)*nD + 0;
 }
 
 qacc Long su3_n(const Geometry& geo, const Coordinate& xl)
 {
-  const Int nD = 9;
+  const int nD = 9;
   return geo.offset_from_coordinate(xl, 1)*nD + 0;
 }
 
-qacc Long su3_6(const Geometry& geo, const Coordinate& xl, const Int mu)
+qacc Long su3_6(const Geometry& geo, const Coordinate& xl, const int mu)
 {
-  const Int Dim = 4;
-  const Int nD  = 6;
+  const int Dim = 4;
+  const int nD  = 6;
   return (geo.offset_from_coordinate(xl, 1) * Dim + mu)*nD + 0;
   //return geo.offset_from_coordinate(xl, 1)*nD + 0;
 }
 
-qacc Long su3_n(const Geometry& geo, const Coordinate& xl, const Int mu)
+qacc Long su3_n(const Geometry& geo, const Coordinate& xl, const int mu)
 {
-  const Int Dim = 4;
-  const Int nD  = 9;
+  const int Dim = 4;
+  const int nD  = 9;
   qassert(mu >= 0 and mu < Dim);
   return (geo.offset_from_coordinate(xl, 1) * Dim + mu)*nD + 0;
   //if(mu > 0){
@@ -58,11 +58,11 @@ qacc Long su3_n(const Geometry& geo, const Coordinate& xl, const Int mu)
 template <typename Ty, bool clear, bool dag1, bool dag2>
 qacc void su3_multi_kerB(Ty* res, Ty* Q1, Ty* Q2, Ty* BUF)
 {
-  for(Int a=0;a<3;a++)
-  for(Int b=0;b<3;b++)
+  for(int a=0;a<3;a++)
+  for(int b=0;b<3;b++)
   {
     Ty& buf = BUF[b*3 + a];buf = 0.0;
-    for(Int d=0;d<3;d++)
+    for(int d=0;d<3;d++)
     {
       if(dag1 == false and dag2 == false){buf += Q1[b*3 + d]*Q2[d*3 + a];}
       if(dag1 == false and dag2 == true ){buf += Q1[b*3 + d]*qlat::qconj(Q2[a*3 + d]);}
@@ -70,8 +70,8 @@ qacc void su3_multi_kerB(Ty* res, Ty* Q1, Ty* Q2, Ty* BUF)
       if(dag1 == true  and dag2 == true ){buf += qlat::qconj(Q1[d*3 + b])*qlat::qconj(Q2[a*3 + d]);}
     }
   }
-  if( clear){for(Int a=0;a<9;a++){res[a]   = BUF[a];}}
-  if(!clear){for(Int a=0;a<9;a++){res[a]  += BUF[a];}}
+  if( clear){for(int a=0;a<9;a++){res[a]   = BUF[a];}}
+  if(!clear){for(int a=0;a<9;a++){res[a]  += BUF[a];}}
 }
 
 /////3x3 inner 3 is faster and 1,2,3 (row 0) --> 4,5,6 (row 1) --> 7,8,9 (row 2)
@@ -91,8 +91,8 @@ qacc void su3_multi(Ty* res, Ty* Q1, Ty* Q2)
 template <typename Ty>
 qacc void su3_dagger(Ty* res, Ty* src)
 {
-  for(Int a=0;a<3;a++)
-  for(Int b=0;b<3;b++)
+  for(int a=0;a<3;a++)
+  for(int b=0;b<3;b++)
   {
     res[a*3 + b] = qlat::qconj(src[b*3 + a]);
   }
@@ -137,7 +137,7 @@ template <typename Ty>
 qacc void su3_unitarize_col(Ty* src)
 {
   Ty p1[3],p2[3],p3[3];
-  for(Int i=0;i<3;i++)
+  for(int i=0;i<3;i++)
   {
     p1[i] = src[i*3 + 0];
     p2[i] = src[i*3 + 1];
@@ -150,7 +150,7 @@ qacc void su3_unitarize_col(Ty* src)
   cross_product_conj_c(p3, p1, p2);
   //normalize_array_c<Ty, 3>(p3);
 
-  for(Int i=0;i<3;i++)
+  for(int i=0;i<3;i++)
   {
     src[i*3 + 0] = p1[i];
     src[i*3 + 1] = p2[i];
@@ -162,7 +162,7 @@ template <typename Ty>
 qacc void su3_unitarize(Ty* src)
 {
   //Ty p1[3],p2[3],p3[3];
-  //for(Int i=0;i<3;i++)
+  //for(int i=0;i<3;i++)
   //{
   //  p1[i] = src[i*3 + 0];
   //  p2[i] = src[i*3 + 1];
@@ -179,7 +179,7 @@ qacc void su3_unitarize(Ty* src)
   cross_product_conj_c(p3, p1, p2);
   //normalize_array_c<Ty, 3>(p3);
 
-  //for(Int i=0;i<3;i++)
+  //for(int i=0;i<3;i++)
   //{
   //  src[i*3 + 0] = p1[i];
   //  src[i*3 + 1] = p2[i];
@@ -195,19 +195,19 @@ qacc void su3_unitarize(Ty* src)
 template <typename Tb>
 qacc void su3_traceless(ComplexT<Tb>* sz)
 {
-  Int use_type = 0;
+  int use_type = 0;
   if(is_same<RealDD, Tb>()){use_type = 1;}
   ////==type 0
   if(use_type == 0)
   {
     Tb c_tr = Tb(0.0);
-    for(Int a=0;a<3;a++){
+    for(int a=0;a<3;a++){
       c_tr += sz[a*3 + a].imag();
     }
     Tb one3 = Tb(1.0) / Tb(3.0);
     c_tr = c_tr * one3;
 
-    for(Int a=0;a<3;a++){
+    for(int a=0;a<3;a++){
       Tb tmp = sz[a*3 + a].imag();
       tmp   -= c_tr;
       sz[a*3 + a] = ComplexT<Tb>(0.0, tmp);
@@ -222,7 +222,7 @@ qacc void su3_traceless(ComplexT<Tb>* sz)
     RealDD c0 = 0.0;
     RealDD c1 = 0.0;
 
-    for(Int i=0;i<3;i++){
+    for(int i=0;i<3;i++){
       a[i] = sz[i*3 + i].imag();
 
       b[i].Y() = a[i].X();
@@ -240,7 +240,7 @@ qacc void su3_traceless(ComplexT<Tb>* sz)
     c0 += c1;
 
     //if(double(qfabs(c0)) > 1e-50)
-    for(Int a=0;a<3;a++){
+    for(int a=0;a<3;a++){
       RealDD tmp = sz[a*3 + a].imag();
       tmp   -= c0;
       Tb f   = tmp;
@@ -258,9 +258,9 @@ qacc void su3_traceless(ComplexT<Tb>* sz)
 template <typename Tb>
 qacc void su3_anti_hermition(ComplexT<Tb>* sz)
 {
-  //for(Int i=0;i<9;i++){BUF[i] = sz[i] ;}
-  for(Int a=0;a<3;a++)
-  for(Int b=0;b<3;b++)
+  //for(int i=0;i<9;i++){BUF[i] = sz[i] ;}
+  for(int a=0;a<3;a++)
+  for(int b=0;b<3;b++)
   {
     if(a > b){
       //Ty tmp = BUF[a*3 + b] - qconj(BUF[b*3 + a]);
@@ -294,8 +294,8 @@ qacc void su3_reconstruct_row(qlat::ComplexT<Tf >* r)
 template <typename Tf , typename Td>
 qacc void su3_reconstruct_row(qlat::ComplexT<Tf >* r, qlat::ComplexT<Td >* s)
 {
-  for(Int i=0;i<3;i++){r[0*3 + i] = s[0*3+i];}
-  for(Int i=0;i<3;i++){r[1*3 + i] = s[1*3+i];}
+  for(int i=0;i<3;i++){r[0*3 + i] = s[0*3+i];}
+  for(int i=0;i<3;i++){r[1*3 + i] = s[1*3+i];}
   su3_reconstruct_row(r);
   //r[2*3 + 0] = qlat::qconj( r[0*3+1]*r[1*3+2] - r[0*3+2]*r[1*3+1] );
   //r[2*3 + 1] = qlat::qconj( r[0*3+2]*r[1*3+0] - r[0*3+0]*r[1*3+2] );
@@ -313,13 +313,13 @@ qacc void su3_reconstruct_col(qlat::ComplexT<Tf >* r)
 template <typename Tf , typename Td>
 qacc void su3_reconstruct_col(qlat::ComplexT<Tf >* r, qlat::ComplexT<Td >* s)
 {
-  for(Int i=0;i<3;i++){r[i*3 + 0] = s[0*3+i];}
-  for(Int i=0;i<3;i++){r[i*3 + 1] = s[1*3+i];}
+  for(int i=0;i<3;i++){r[i*3 + 0] = s[0*3+i];}
+  for(int i=0;i<3;i++){r[i*3 + 1] = s[1*3+i];}
   su3_reconstruct_col(r);
 }
 
 template <class Td>
-void set_rand_link(GaugeFieldT<Td> &gf, const Int seed = -1)
+void set_rand_link(GaugeFieldT<Td> &gf, const int seed = -1)
 {
   if(seed == -1)
   {
@@ -359,8 +359,8 @@ void copy_gf(GaugeFieldT<Ta> &g1, GaugeFieldT<Td> &g0)
     const Coordinate xl = geo.coordinate_from_index(isp);
     qlat::ComplexT<Ta >* res = (qlat::ComplexT<Ta >*) g1.get_elem(xl, 0).p;
     qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) g0.get_elem(xl, 0).p;
-    for(Int i=0;i<9*4;i++){res[i] = src[i];}
-    //for (Int dir = 0; dir < 4; ++dir)
+    for(int i=0;i<9*4;i++){res[i] = src[i];}
+    //for (int dir = 0; dir < 4; ++dir)
     //{
     //  g1.get_elem(xl, dir) = g0.get_elem(xl, dir);
     //}
@@ -374,7 +374,7 @@ void Gauge_antihermition(GaugeFieldT<Td> &gf)
   const Long V = geo.local_volume();
   qacc_for(isp, V, {
     const Coordinate xl = geo.coordinate_from_index(isp);
-    for(Int mu=0;mu<4;mu++)
+    for(int mu=0;mu<4;mu++)
     {
       qlat::ComplexT<double >* s1  = (qlat::ComplexT<double >*) gf.get_elem(xl, mu).p;
       su3_traceless_anti_hermition(s1);
@@ -389,7 +389,7 @@ void Gauge_reconstruct_col(GaugeFieldT<Td> &gf)
   const Long V = geo.local_volume();
   qacc_for(isp, V, {
     const Coordinate xl = geo.coordinate_from_index(isp);
-    for(Int mu=0;mu<4;mu++)
+    for(int mu=0;mu<4;mu++)
     {
       qlat::ComplexT<double >* s1  = (qlat::ComplexT<double >*) gf.get_elem(xl, mu).p;
       su3_reconstruct_col(s1);

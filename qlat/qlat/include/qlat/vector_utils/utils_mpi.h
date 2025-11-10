@@ -97,7 +97,7 @@ struct GetBasicDataType<FieldG<N > > {
   using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
 };
 
-template <typename N, Int civ >
+template <typename N, int civ >
 struct GetBasicDataType<FieldM<N, civ > > {
   static const std::string get_type_name() {
     return IsBasicDataType<N>::get_type_name();
@@ -134,127 +134,127 @@ qacc Long GetFieldSize(const SelectedField<M>& f)
 }
 
 // template<class M>
-// struct get_MPI_Type{ static MPI_Datatype c=MPI_LOGICAL; static constexpr Int size = 0;};
+// struct get_MPI_Type{ static MPI_Datatype c=MPI_LOGICAL; static constexpr int size = 0;};
 //
 // template<>
-// struct get_MPI_Type<char    >{      static MPI_Datatype c=MPI_CHAR; static constexpr Int size = 1;};
+// struct get_MPI_Type<char    >{      static MPI_Datatype c=MPI_CHAR; static constexpr int size = 1;};
 // //template<>
-// //struct get_MPI_Type<unsigned char>{ static MPI_Datatype c=MPI_UNSIGNED_CHAR; static constexpr Int size = 1;};
+// //struct get_MPI_Type<unsigned char>{ static MPI_Datatype c=MPI_UNSIGNED_CHAR; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<int8_t  >{ static MPI_Datatype c=MPI_INT8_T  ; static constexpr Int size = 1;};
+// struct get_MPI_Type<int8_t  >{ static MPI_Datatype c=MPI_INT8_T  ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<int16_t >{ static MPI_Datatype c=MPI_INT16_T ; static constexpr Int size = 1;};
+// struct get_MPI_Type<int16_t >{ static MPI_Datatype c=MPI_INT16_T ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<int32_t >{ static MPI_Datatype c=MPI_INT32_T ; static constexpr Int size = 1;};
+// struct get_MPI_Type<int32_t >{ static MPI_Datatype c=MPI_INT32_T ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<int64_t >{ static MPI_Datatype c=MPI_INT64_T ; static constexpr Int size = 1;};
+// struct get_MPI_Type<int64_t >{ static MPI_Datatype c=MPI_INT64_T ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<uint8_t >{ static MPI_Datatype c=MPI_UINT8_T ; static constexpr Int size = 1;};
+// struct get_MPI_Type<uint8_t >{ static MPI_Datatype c=MPI_UINT8_T ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<uint16_t>{ static MPI_Datatype c=MPI_UINT16_T; static constexpr Int size = 1;};
+// struct get_MPI_Type<uint16_t>{ static MPI_Datatype c=MPI_UINT16_T; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<uint32_t>{ static MPI_Datatype c=MPI_UINT32_T; static constexpr Int size = 1;};
+// struct get_MPI_Type<uint32_t>{ static MPI_Datatype c=MPI_UINT32_T; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<uint64_t>{ static MPI_Datatype c=MPI_UINT64_T; static constexpr Int size = 1;};
+// struct get_MPI_Type<uint64_t>{ static MPI_Datatype c=MPI_UINT64_T; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<RealF   >{ static MPI_Datatype c=MPI_FLOAT   ; static constexpr Int size = 1;};
+// struct get_MPI_Type<RealF   >{ static MPI_Datatype c=MPI_FLOAT   ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<RealD   >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr Int size = 1;};
+// struct get_MPI_Type<RealD   >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr int size = 1;};
 // template<>
-// struct get_MPI_Type<RealDD >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr Int size = 2;};
+// struct get_MPI_Type<RealDD >{ static MPI_Datatype c=MPI_DOUBLE  ; static constexpr int size = 2;};
 
 template <class M>
-Int set_mpi_type(MPI_Datatype& mpi_type)
+int set_mpi_type(MPI_Datatype& mpi_type)
 // set mpi_type and return size
 {
   mpi_type = MPI_LOGICAL;
   if (get_id_node() == 0) {
     printf("Type not found !!!! \n");
   }
-  const Int set_mpi_type_size = 0;
+  const int set_mpi_type_size = 0;
   Qassert(set_mpi_type_size != 0);
   return 0;
 }
 
 template <>
-inline Int set_mpi_type<RealDD>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<RealDD>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_DOUBLE;
   return 2;
 }
 
 template <>
-inline Int set_mpi_type<RealD>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<RealD>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_DOUBLE;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<RealF>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<RealF>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_FLOAT ;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<uint64_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint64_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT64_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<uint32_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint32_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT32_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<uint16_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint16_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT16_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<uint8_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<uint8_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_UINT8_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<int64_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int64_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT64_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<int32_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int32_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT32_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<int16_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int16_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT16_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<int8_t>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<int8_t>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_INT8_T;
   return 1;
 }
 
 template <>
-inline Int set_mpi_type<char>(MPI_Datatype& mpi_type)
+inline int set_mpi_type<char>(MPI_Datatype& mpi_type)
 {
   mpi_type = MPI_CHAR;
   return 1;
@@ -264,20 +264,20 @@ template<class M>
 unsigned int get_mpi_type(MPI_Datatype& curr)
 {
   using D = typename IsBasicDataType<M>::ElementaryType;
-  const Int Nsize = set_mpi_type<D>(curr);
+  const int Nsize = set_mpi_type<D>(curr);
   Qassert(sizeof(D) % Nsize == 0);
-  const Int size = sizeof(D) / Nsize;
+  const int size = sizeof(D) / Nsize;
   return size;
 }
 
 template<typename Ty>
-void bcast_all_size(Ty *src, Long size, Int root, Int GPU=0, MPI_Comm* commp=NULL)
+void bcast_all_size(Ty *src, Long size, int root, int GPU=0, MPI_Comm* commp=NULL)
 {
   TIMER("bcast_all_size");
   if(size == 0){return ;}
   (void) GPU;
 
-  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(RealD);
+  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_mpi_type<Ty >(curr);
 
   Qassert(sizeof(Ty)%M_size == 0);int M_fac = sizeof(Ty)/M_size;
@@ -293,7 +293,7 @@ void bcast_all_size(Ty *src, Long size, Int root, Int GPU=0, MPI_Comm* commp=NUL
 
 
 template<typename Ty>
-void sum_all_size(Ty *src,Ty *sav,Long size, Int GPU=0, const MPI_Comm* commp=NULL)
+void sum_all_size(Ty *src,Ty *sav,Long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
   TIMERB("global sum sum_all_size");
   if(size == 0){return ;}
@@ -305,7 +305,7 @@ void sum_all_size(Ty *src,Ty *sav,Long size, Int GPU=0, const MPI_Comm* commp=NU
 
   //omp_get_thread_num
   Qassert(omp_get_num_threads() == 1);// need to check whether it works...
-  const Int iomp = omp_get_thread_num(); ////each thread will have it's own buf
+  const int iomp = omp_get_thread_num(); ////each thread will have it's own buf
   Ty* buf_res;int GPU_set = GPU;
   #ifndef QLAT_USE_ACC
   GPU_set = 0;
@@ -316,11 +316,11 @@ void sum_all_size(Ty *src,Ty *sav,Long size, Int GPU=0, const MPI_Comm* commp=NU
     buf_res = (Ty*) tmp.data();
   }else{buf_res = sav;}////small modify for pointers
 
-  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(RealD);
+  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_mpi_type<Ty >(curr);
 
   Qassert(sizeof(Ty)%M_size == 0);
-  const Int M_fac = sizeof(Ty)/M_size;
+  const int M_fac = sizeof(Ty)/M_size;
   //qmessage("mpi size %5d, M_fac %5d, Ty %5d, int8_t %5d \n", int(size), M_fac, int(sizeof(Ty)), int(sizeof(int8_t)) );
 
   //bool do_copy = false;
@@ -394,13 +394,13 @@ void sum_all_size(Ty *src,Ty *sav,Long size, Int GPU=0, const MPI_Comm* commp=NU
 }
 
 template<typename Ty>
-void sum_all_size(Ty *src,Long size, Int GPU=0, const MPI_Comm* commp=NULL)
+void sum_all_size(Ty *src,Long size, int GPU=0, const MPI_Comm* commp=NULL)
 {
   sum_all_size(src,src,size, GPU, commp);
 }
 
 
-inline void abort_sum(RealD flag, std::string stmp=std::string(""))
+inline void abort_sum(double flag, std::string stmp=std::string(""))
 {
   sum_all_size(&flag,1);
   if(flag > 0)
@@ -420,16 +420,16 @@ inline void fflush_MPI(){
 template<typename Iy0, typename Iy1>
 void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* recv, Iy1* rpls, const MPI_Comm& comm)
 {
-  Int num_node;MPI_Comm_size(comm, &num_node);
-  Int id_node;MPI_Comm_rank(comm, &id_node);
+  int num_node;MPI_Comm_size(comm, &num_node);
+  int id_node;MPI_Comm_rank(comm, &id_node);
   std::vector<MPI_Request> send_reqs(num_node);
   std::vector<MPI_Request> recv_reqs(num_node);
   //int mpi_tag = id_node;
-  const Int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
+  const int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG;
 
   /////===get proper M_size
   MPI_Datatype curr = MPI_BYTE;unsigned int M_size = 1;unsigned int M_tem = 1;
-  for(Int n = 0; n < num_node; n++){
+  for(int n = 0; n < num_node; n++){
     if(send[n]!= 0){
       reduce_MPI_type(send[n], curr, M_tem);
       if(M_size == 1){M_size = M_tem;}
@@ -438,13 +438,13 @@ void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* re
   }
   /////
 
-  Int c1 = 0;
-  Int c2 = 0;
-  for(Int n = 0; n < num_node; n++){
+  int c1 = 0;
+  int c2 = 0;
+  for(int n = 0; n < num_node; n++){
     if(send[n]!=0){MPI_Isend(&src[spls[n]], int(send[n]/M_size), curr, n, mpi_tag, comm, &send_reqs[c1]);c1 += 1;}
   }
 
-  for(Int n = 0; n < num_node; n++){
+  for(int n = 0; n < num_node; n++){
     if(recv[n]!=0){MPI_Irecv( &res[rpls[n]], int(recv[n]/M_size), curr, n, mpi_tag, comm, &recv_reqs[c2]);c2 += 1;}
   }
   if(c2!=0){MPI_Waitall(c2, recv_reqs.data(), MPI_STATUS_IGNORE);}
@@ -452,7 +452,7 @@ void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* re
 }
 
 template<typename Ty>
-void MPI_Alltoallv_mode(Ty* src0, Int* send, Int* spls, Ty* res0, Int* recv, Int* rpls, const MPI_Comm& comm, Int mode=0, Int GPU = 0)
+void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, const MPI_Comm& comm, int mode=0, int GPU = 0)
 {
   (void)GPU;
   Ty* src = NULL;Ty* res = NULL;
@@ -473,8 +473,8 @@ void MPI_Alltoallv_mode(Ty* src0, Int* send, Int* spls, Ty* res0, Int* recv, Int
   Long max_src = 0;
   Long max_res = 0;
   if(do_copy == true){
-    Int num_node;MPI_Comm_size(comm, &num_node);
-    for(Int n = 0; n < num_node; n++){
+    int num_node;MPI_Comm_size(comm, &num_node);
+    for(int n = 0; n < num_node; n++){
       Long cur_size = spls[n]/sizeof(Ty) + send[n]/sizeof(Ty);
       if(cur_size > max_src){max_src = cur_size;}
       cur_size = rpls[n]/sizeof(Ty) + recv[n]/sizeof(Ty);
@@ -501,28 +501,28 @@ void MPI_Alltoallv_mode(Ty* src0, Int* send, Int* spls, Ty* res0, Int* recv, Int
 ////Need add explanations
 ////sum all src or bcast each node data to others
 template<typename Ty>
-void Redistribute_all_Nt(Ty *src,Long size,const qlat::Geometry& geo, Int GPU=0)
+void Redistribute_all_Nt(Ty *src,Long size,const qlat::Geometry& geo, int GPU=0)
 {
   if(qlat::get_num_node() == 1){return;}
-  Int Nt = geo.node_site[3];
-  Int Nmpi  = qlat::get_num_node();
+  int Nt = geo.node_site[3];
+  int Nmpi  = qlat::get_num_node();
 
   const Coordinate vg = geo.total_site();
-  const Int nt = vg[3];
+  const int nt = vg[3];
 
-  Int mt = nt/Nt;
+  int mt = nt/Nt;
   if(mt != Nmpi){qmessage("Not supported !");Qassert(false);return;}
 
   /////int rank  = qlat::get_id_node();
   Long size_c = sizeof(Ty)*size/mt;
 
-  std::vector<Int > send,recv,spls,rpls;
+  std::vector<int > send,recv,spls,rpls;
   send.resize(Nmpi);
   recv.resize(Nmpi);
   spls.resize(Nmpi);
   rpls.resize(Nmpi);
 
-  for(Int ri=0;ri<Nmpi;ri++)
+  for(int ri=0;ri<Nmpi;ri++)
   {
     send[ri] = size_c;
     spls[ri] = size_c*ri;
@@ -549,11 +549,11 @@ template<typename Ty>
 void Bcast_all_Nt(Ty *src,Long size,const Geometry& geo)
 {
   if(qlat::get_num_node() == 1){return;}
-  Int Nt = geo.node_site[3];
-  Int Nmpi  = qlat::get_num_node();
+  int Nt = geo.node_site[3];
+  int Nmpi  = qlat::get_num_node();
 
   const Coordinate vg = geo.total_site();
-  const Int nt = vg[3];
+  const int nt = vg[3];
 
   /////if Nmpi is not equal to mt
   if(nt/Nt != Nmpi){
@@ -561,8 +561,8 @@ void Bcast_all_Nt(Ty *src,Long size,const Geometry& geo)
     return;
   }
 
-  Int mt = nt/Nt;
-  Int rank  = qlat::get_id_node();
+  int mt = nt/Nt;
+  int rank  = qlat::get_id_node();
   Long size_c = sizeof(Ty)*size/mt;
 
   unsigned short t0 = 0;
@@ -573,7 +573,7 @@ void Bcast_all_Nt(Ty *src,Long size,const Geometry& geo)
     t0 = xg[3];
   }
 
-  std::vector<Int > send,recv,spls,rpls;
+  std::vector<int > send,recv,spls,rpls;
   send.resize(Nmpi);
   recv.resize(Nmpi);
   spls.resize(Nmpi);
@@ -584,10 +584,10 @@ void Bcast_all_Nt(Ty *src,Long size,const Geometry& geo)
   std::fill(spls.begin(), spls.end(), 0);
   std::fill(rpls.begin(), rpls.end(), 0);
 
-  for(Int ti=0;ti<mt;ti++){
-    Int tini = ti*Nt;
+  for(int ti=0;ti<mt;ti++){
+    int tini = ti*Nt;
     if(t0 == tini){
-      for(Int ri=0;ri<Nmpi;ri++)if(ri != rank)
+      for(int ri=0;ri<Nmpi;ri++)if(ri != rank)
       {
         send[ri] = size_c;
         spls[ri] = size_c*ti;
@@ -595,7 +595,7 @@ void Bcast_all_Nt(Ty *src,Long size,const Geometry& geo)
     }
 
     if(t0 != tini){
-      Int ri_recv = ti;
+      int ri_recv = ti;
       recv[ri_recv] = size_c;
       rpls[ri_recv] = size_c*ti;
     }
@@ -620,9 +620,9 @@ void sum_value_mpi(Ty& num)
   num = buf;
 }
 
-inline Int get_mpi_id_node_close()
+inline int get_mpi_id_node_close()
 {
-  Int globalRank;
+  int globalRank;
   MPI_Comm_rank(MPI_COMM_WORLD, &globalRank);
   //Qassert(globalRank == get_id_node());
   // node local comm
@@ -631,23 +631,23 @@ inline Int get_mpi_id_node_close()
                       MPI_INFO_NULL, &nodeComm);
 
   // id within the node
-  Int localRank;
+  int localRank;
   MPI_Comm_rank(nodeComm, &localRank);
   //if (0 == get_id_node()) {
   //  Qassert(localRank == 0);
   //}
   //return 0;
   // number of process in this node
-  Int localSize;
+  int localSize;
   MPI_Comm_size(nodeComm, &localSize);
   // comm across node (each node select one process with the same local rank)
   MPI_Comm masterComm;
   MPI_Comm_split(MPI_COMM_WORLD, localRank, globalRank, &masterComm);
   // id across node
-  Int masterRank;
+  int masterRank;
   MPI_Comm_rank(masterComm, &masterRank);
   // size of each master comm
-  Int masterSize;
+  int masterSize;
   MPI_Comm_size(masterComm, &masterSize);
   // calculate number of node
   Long num_of_node = masterSize;
@@ -667,7 +667,7 @@ inline Int get_mpi_id_node_close()
   MPI_Allreduce(&n0[0], &n1[0], num_of_node, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
   ////printf("id_of_node %5d, total %5d \n", int(id_of_node), int(n1[id_of_node]));
 
-  Int id_node_local = localRank;
+  int id_node_local = localRank;
   for (Long i = 0; i < id_of_node; ++i) {
     id_node_local += n1[i];
   }
@@ -692,7 +692,7 @@ inline Int get_mpi_id_node_close()
   //std::vector<Long> list_long(get_num_node(), 0);
   //list_long[id_node_in_shuffle] = get_id_node();
   //glb_sum(get_data(list_long));
-  //std::vector<Int> list(get_num_node(), 0);
+  //std::vector<int> list(get_num_node(), 0);
   //for (Long i = 0; i < get_num_node(); ++i) {
   //  list[i] = list_long[i];
   //}

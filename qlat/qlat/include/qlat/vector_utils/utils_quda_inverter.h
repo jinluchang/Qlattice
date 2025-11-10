@@ -33,7 +33,7 @@ namespace qlat
 
 struct quda_inverter {
   Long V;
-  Int X[4];
+  int X[4];
   QudaGaugeParam  gauge_param;
   ////void* quda_gf_default;
   qlat::vector<qlat::ComplexD > quda_gf_default;
@@ -45,20 +45,20 @@ struct quda_inverter {
   box<Geometry> geoB;
   qlat::vector<Long > map_index;
   qlat::FieldM<int8_t, 1> eo;//buffer for eo signs
-  Int solve_mode ;
+  int solve_mode ;
   /////QudaInvertParam df_param;
 
   QudaEigParam    eig_param;
   //int nvec;
   double inv_residue;
   double inv_time;
-  Int    inv_iter;
+  int    inv_iter;
   double inv_gflops;
   //int add_high;
   //int num_src;
   //int num_src_inv;
-  Int quda_verbos;
-  Int prec_type_check;
+  int quda_verbos;
+  int prec_type_check;
 
   ///std::vector<std::vector<quda::Complex > > evecs;
 
@@ -107,8 +107,8 @@ struct quda_inverter {
   std::vector<quda::ColorSpinorField > ZSpace;
   std::vector<quda::Complex > evalsZ;
   ///std::vector<quda::ColorSpinorField *> evecs_;
-  Int spinor_site_size;
-  Int max_src_qinv;
+  int spinor_site_size;
+  int max_src_qinv;
 
   //quda::ColorSpinorParam cs_cpu;
   quda::ColorSpinorParam cs_gpu;
@@ -140,7 +140,7 @@ struct quda_inverter {
   bool io_rotate_bfac;
 
   ////0 for wilson, clover, 1 for stagger
-  Int fermion_type;
+  int fermion_type;
   bool gauge_with_phase;
   //int use_eigen_pc;
 
@@ -150,13 +150,13 @@ struct quda_inverter {
   */
 
   std::vector<void* > eigenL;
-  std::vector<Int   > eigen_precL;
+  std::vector<int   > eigen_precL;
   bool eigen_with_nvec;
-  std::vector<Int > eigen_with_nvecL;
+  std::vector<int > eigen_with_nvecL;
   //void* eigen0;//float  eigen
   //void* eigen1;//double eigen for high prec
 
-  Int check_residue;
+  int check_residue;
   bool clover_alloc;
 
   //int Nshift;
@@ -169,8 +169,8 @@ struct quda_inverter {
   quda_inverter(const Geometry& geo_, QudaTboundary t_boundary);
 
   inline void free_mem();
-  inline void setup_link(qlat::ComplexD* quda_gf, const Int apply_stag_phase = 0, const Int force_phase = 0);
-  inline void gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir = 3, Int gf_maxiter = 10000, double gf_tolerance = 1e-6, Int fix_type = 0);
+  inline void setup_link(qlat::ComplexD* quda_gf, const int apply_stag_phase = 0, const int force_phase = 0);
+  inline void gauge_fix(qlat::ComplexD* quda_gf, int gf_gauge_dir = 3, int gf_maxiter = 10000, double gf_tolerance = 1e-6, int fix_type = 0);
 
   //default e0 single, e1 double
   template<typename T1, typename T2>
@@ -179,23 +179,23 @@ struct quda_inverter {
   // even-even eigensystem, could be used with dslash to get full prop
   // mode == 0, deflate, mode == 1 get low prop
   // buf_prec = 0 : input doubleC, buf_prec = 1 : input singleC
-  inline void deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, Int buf_prec, Int mode = 0, Int clear = 1, const bool data_from_quda = true);
+  inline void deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec, int mode = 0, int clear = 1, const bool data_from_quda = true);
 
   // src need to be unchanged if res != src
   // res could be the same as src
   // use gtmp0
   template<typename Ty, typename Tk>
-  inline void get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, Int qlat_format = 1);
+  inline void get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, int qlat_format = 1);
 
   template<typename Ty>
-  inline void get_inversion_bufs(qlat::vector<Ty* >& res, const Int nvecs, const Int halfV = 0){
+  inline void get_inversion_bufs(qlat::vector<Ty* >& res, const int nvecs, const int halfV = 0){
     LInt Vd = geoB().local_volume() * 3 * sizeof(Ty) / sizeof(qlat::ComplexT<double>);
     if(halfV == 1){Vd = Vd / 2;}
     Qassert(Vd / (geoB().local_volume() * 3) <= 64);//at most 64 vectors in buf
     const LInt totalD = Vd * nvecs;
     buf_inv.resizeL(totalD);
     res.resize(nvecs);
-    for(Int iv=0;iv<nvecs;iv++)
+    for(int iv=0;iv<nvecs;iv++)
     {
       res[iv] = (Ty*) &buf_inv[iv*Vd];
     }
@@ -211,17 +211,17 @@ struct quda_inverter {
 
   //inline void update_eigen_mass(const double mass, bool force = false);
 
-  //inline void setup_inc_eigencg(const Int n_ev, const Int n_kr, const Int n_conv, const Int df_grid, const double tol, const double inc_tol, const double tol_restart, const Int restart_n, const Int pipeline, const Int inv_type = 1);
+  //inline void setup_inc_eigencg(const int n_ev, const int n_kr, const int n_conv, const int df_grid, const double tol, const double inc_tol, const double tol_restart, const int restart_n, const int pipeline, const int inv_type = 1);
 
   //template<typename Ty>
-  //inline void do_inv(Ty* res, Ty* src, const double mass, const double err = 1e-10, const Int niter = 10000 , const Int prec_type = 0);
+  //inline void do_inv(Ty* res, Ty* src, const double mass, const double err = 1e-10, const int niter = 10000 , const int prec_type = 0);
   //inline void deflate(quda::ColorSpinorField &sol, const quda::ColorSpinorField& src,
   //    std::vector<quda::ColorSpinorField> &evecs, const std::vector<quda::Complex > &evals, bool accumulate = false);
 
   //inline void deflate(std::vector<quda::ColorSpinorField* > &sol, const std::vector<quda::ColorSpinorField* > &src,
   //    std::vector<quda::ColorSpinorField> &evecs, const std::vector<quda::Complex > &evals, bool accumulate = false);
 
-  inline void callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, Int max_src = -1);
+  inline void callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, int max_src = -1);
 
   void print_plaq();
 
@@ -230,7 +230,7 @@ struct quda_inverter {
   inline void setup_mat_mass(const double mass, const bool force_do = false);
   inline void clear_mat();
 
-  inline void free_csfield(const Int mode = 0);
+  inline void free_csfield(const int mode = 0);
 
   // ctmp0, ctmp1, ctmp2, 
   inline void alloc_csfield_initial();
@@ -240,17 +240,17 @@ struct quda_inverter {
   inline void alloc_csfield_gpu();
   //need check residual CG
 
-  //inline void save_evecs(const char* filename, const bool read = false, const Int ndouble = -1, const Int split_save = 1 );
+  //inline void save_evecs(const char* filename, const bool read = false, const int ndouble = -1, const int split_save = 1 );
   //inline void save_evecsF(const char* filename, const bool read = false);
   //inline void check_residualF();
 
   // ghost function to set precision for inv and gauge, not loaded at all, need setup_inv_param_prec to force load gauge again or use setup_link
-  inline void setup_inv_param_prec_type(Int prec_type = 0);
+  inline void setup_inv_param_prec_type(int prec_type = 0);
   // automatic change presion based on current gauge, qinv buffers, update dslash
-  inline void setup_inv_param_prec(Int prec_type = 0, bool force_reload = false);
+  inline void setup_inv_param_prec(int prec_type = 0, bool force_reload = false);
   inline void setup_gauge_param(QudaTboundary t_boundary);
 
-  inline void random_src(const Int seed);
+  inline void random_src(const int seed);
 
   //inline void reconstruct_full(const double mass = -1);
   //inline void save_prop(const void* srcP, const char* filename);
@@ -261,9 +261,9 @@ struct quda_inverter {
   //  return ;
   //  //if(solve_cg != NULL){delete solve_cg;solve_cg = NULL;}
   //}
-  //inline void invertQuda_COPY(quda::ColorSpinorField& x, quda::ColorSpinorField& b, Int solve_mode_ = 0);
+  //inline void invertQuda_COPY(quda::ColorSpinorField& x, quda::ColorSpinorField& b, int solve_mode_ = 0);
   // the COPY could use single precison as input
-  //inline void invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, Int solve_mode_ = 0);
+  //inline void invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, int solve_mode_ = 0);
   inline void invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src);
 
   inline void get_param_ref(quda::ColorSpinorParam& param, const bool is_double ){
@@ -300,7 +300,7 @@ struct quda_inverter {
     transform from quda double prec order to single prec order 
     prec = 0 double, prec = 1 single
   */
-  inline void quda_to_single_order(vector<void* >& src, const Int prec, const Int dir = 0){
+  inline void quda_to_single_order(vector<void* >& src, const int prec, const int dir = 0){
     TIMER("quda_to_single_order");
     if(prec == 0){
       return ;
@@ -345,7 +345,7 @@ struct quda_inverter {
   /*
     transform from quda single prec order to double prec order 
   */
-  inline void quda_to_double_order(vector<void* >& src, const Int prec){
+  inline void quda_to_double_order(vector<void* >& src, const int prec){
     quda_to_single_order(src, prec, 1);
   }
 
@@ -363,7 +363,7 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   //num_src_inv = num_src;
   prec_type_check = -2;
 
-  for (Int mu = 0; mu < 4; mu++) {
+  for (int mu = 0; mu < 4; mu++) {
     X[mu] = geoB().node_site[mu];
     Qassert(geoB().node_site[mu] % 2 == 0);// needed for eo inverter
   }
@@ -449,7 +449,7 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
 inline void quda_inverter::setup_gauge_param(QudaTboundary t_boundary)
 {
   TIMER("setup_gauge_param");
-  for (Int mu = 0; mu < 4; mu++) {gauge_param.X[mu] = X[mu];}
+  for (int mu = 0; mu < 4; mu++) {gauge_param.X[mu] = X[mu];}
 
   ////tuning flag for not high mode
 
@@ -509,12 +509,12 @@ inline void quda_inverter::setup_gauge_param(QudaTboundary t_boundary)
 
   gauge_param.anisotropy = 1.0; /////anisotropy
 
-  Int pad_size = 0;
+  int pad_size = 0;
   // For multi-GPU, ga_pad must be large enough to store a time-slice
-  Int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  Int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  Int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
-  Int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
+  int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
+  int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
   pad_size = std::max({x_face_size, y_face_size, z_face_size, t_face_size});
   gauge_param.ga_pad = pad_size;
   gauge_param.struct_size = sizeof(gauge_param);
@@ -535,10 +535,10 @@ inline void quda_inverter::setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1)
   eigen_precL[0] = 1 - get_data_type_is_double<T1>();
   eigen_precL[1] = 1 - get_data_type_is_double<T2>();
 
-  for(Int i=0;i<2;i++){
-    Int total_n = 0;
+  for(int i=0;i<2;i++){
+    int total_n = 0;
     void* Ea    = eigenL[i];
-    Int   prec  = eigen_precL[i];
+    int   prec  = eigen_precL[i];
     if(Ea != NULL){
       if(prec == 0){
         eigen_cs<qlat::ComplexT<double  >>* eigen = (eigen_cs<qlat::ComplexT<double  >>*) Ea;
@@ -556,7 +556,7 @@ inline void quda_inverter::setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1)
   }
 }
 
-inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const Int apply_stag_phase, const Int force_phase)
+inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const int apply_stag_phase, const int force_phase)
 {
   TIMER("setup_link");
   /////load gauge to quda GPU default position
@@ -597,7 +597,7 @@ inline void quda_inverter::print_plaq()
 }
 
 ////mode = 0 all field, mode = 1 cpu field , mode = 2 gpu field
-inline void quda_inverter::free_csfield(const Int mode)
+inline void quda_inverter::free_csfield(const int mode)
 {
   TIMER("free_csfield");
   Qassert(mode == 0 or mode == 2 or mode == 3);
@@ -742,7 +742,7 @@ inline void quda_inverter::alloc_csfield_initial()
   //cs_cpu.nColor = 3;
   //cs_cpu.nSpin = 1;
   //cs_cpu.nDim = 5;
-  //for (Int d = 0; d < 4; d++) cs_cpu.x[d] = gauge_param.X[d];
+  //for (int d = 0; d < 4; d++) cs_cpu.x[d] = gauge_param.X[d];
   //bool pc = isPCSolution(inv_param.solution_type);
   //if (pc) cs_cpu.x[0] /= 2;
   //cs_cpu.x[4] = 1;
@@ -766,17 +766,17 @@ inline void quda_inverter::alloc_csfield_initial()
 //  TIMER("quda save_prop");
 //  ////qlat::Coordinate total_site;
 //  ////qlat::Coordinate node_site = qlat::get_size_node();
-//  ////for(Int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
+//  ////for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
 //  ////Geometry geo;geo.init(total_site, 1);
 //
-//  const Int n0 = 1;
+//  const int n0 = 1;
 //  std::vector<qlat::FieldM<qlat::ComplexD , 3> > prop;prop.resize(n0);
-//  for(Int n = 0; n < prop.size(); n++){prop[n].init(geo);}
+//  for(int n = 0; n < prop.size(); n++){prop[n].init(geo);}
 //
 //  qlat::ComplexD* src = (qlat::ComplexD*) srcP;
 //  Long Nvol = geo.local_volume() * n0 ;
 //
-//  for(Int n=0;n<n0;n++){
+//  for(int n=0;n<n0;n++){
 //    quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
 //  }   
 //
@@ -804,7 +804,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  ////quda::ColorSpinorField& c1 = (*ctmp1).Component(0);
 //  ///quda::ColorSpinorField c0 = quda::ColorSpinorField(cs0);
 //
-//  Int n0 = 0;
+//  int n0 = 0;
 //  if(read == true)
 //  {
 //    inputpara in0;////inputpara in1;
@@ -821,21 +821,21 @@ inline void quda_inverter::alloc_csfield_initial()
 //
 //  qlat::Coordinate total_site;
 //  qlat::Coordinate node_site = qlat::get_size_node();
-//  for(Int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
+//  for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
 //  qlat::Geometry geo;geo.init(total_site);
 //
 //  for(unsigned int n = 0; n < eigD.size(); n++){eigD[n].init(geo);}
 //
 //  if(read == true)
 //  {
-//    //for (Int i = 0; i < ZSpace.size(); i++){delete ZSpace[i];}ZSpace.resize(0);
-//    //for(Int n=0;n<n0;n++)ZSpace.push_back(quda::ColorSpinorField::Create(cs_gpu));
+//    //for (int i = 0; i < ZSpace.size(); i++){delete ZSpace[i];}ZSpace.resize(0);
+//    //for(int n=0;n<n0;n++)ZSpace.push_back(quda::ColorSpinorField::Create(cs_gpu));
 //    ZSpace.resize(n0);
-//    for(Int n=0;n<n0;n++)ZSpace[n] = quda::ColorSpinorField(cs_gpu);
+//    for(int n=0;n<n0;n++)ZSpace[n] = quda::ColorSpinorField(cs_gpu);
 //  }
 //
 //  if(read == false)
-//  for(Int n=0;n<n0;n++){
+//  for(int n=0;n<n0;n++){
 //    (c0) = (ZSpace[n]);
 //    quda_cf_to_qlat_cf(eigD[n], (qlat::ComplexD*) c0.data());
 //  }   
@@ -848,7 +848,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  qlat::load_qlat_noisesT(filename0.c_str(), eigD, read, single_file, VECS_TYPE, INFO_LIST, 0, n0, io_rotate_bfac);
 //
 //  if(read == true )
-//  for(Int n=0;n<n0;n++){
+//  for(int n=0;n<n0;n++){
 //    qlat_cf_to_quda_cf((qlat::ComplexD*) c0.data(),  eigD[n]);
 //    (ZSpace[n]) = (c0);
 //  }   
@@ -859,7 +859,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  if(read == false){
 //    Qassert(evalsZ.size() != evals_ZERO.size());
 //    Qassert(evals_ZERO.size() != 0 and evals_ERR.size() != 0);
-//    for(Int n=0;n<nvec;n++){
+//    for(int n=0;n<nvec;n++){
 //      values[n*2+0] = evals_ZERO[n].real();
 //      values[n*2+1] = evals_ZERO[n].imag();
 //      errors[n] = evals_ERR[n]; 
@@ -870,16 +870,16 @@ inline void quda_inverter::alloc_csfield_initial()
 //  if(read == true){
 //    load_txt_eigenvalues(values, errors, filename1.c_str());Qassert(n0 <= values.size());
 //    evals_ZERO.resize(n0);evals_ERR.resize(n0);
-//    /////for(Int n=  0;n<n0;n++){evals_ZERO[n] = quda::Complex(values[n*2+0], values[n*2+1]);}    
-//    for(Int n=  0;n<n0;n++){evals_ZERO[n] = quda::Complex(values[n*2+0] - 4.0*mre*mre, values[n*2+1]);}    
-//    for(Int n=  0;n<n0;n++){evals_ERR[ n] = errors[n];}    
+//    /////for(int n=  0;n<n0;n++){evals_ZERO[n] = quda::Complex(values[n*2+0], values[n*2+1]);}    
+//    for(int n=  0;n<n0;n++){evals_ZERO[n] = quda::Complex(values[n*2+0] - 4.0*mre*mre, values[n*2+1]);}    
+//    for(int n=  0;n<n0;n++){evals_ERR[ n] = errors[n];}    
 //
 //    evalsZ.resize(n0);evalsK.resize(n0, 0.0);evalsF.resize(0, 0.0);
 //    update_eigen_mass(0.0, true);
 //  }
 //}
 
-//inline void quda_inverter::save_evecs(const char* filename, const bool read, const Int ndouble, const Int split_save )
+//inline void quda_inverter::save_evecs(const char* filename, const bool read, const int ndouble, const int split_save )
 //{
 //  TIMERB("save_evecs");
 //  if(nvec <= 0){return ;}
@@ -894,7 +894,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  double mre = 0.0;
 //  quda::ColorSpinorField& c0 = (*ctmp0).Component(0);
 //
-//  Int nsave = nvec;
+//  int nsave = nvec;
 //  if(fermion_type == 1){
 //    nsave = nvec/2;
 //    if(nvec%2 != 0){qmessage("Even Odd savings, nvec  2 not 0, nvec %d \n", nvec);Qassert(false);}
@@ -908,7 +908,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  //std::string INFO_LIST(infoL);
 //  std::string INFO_LIST = ssprintf("mass %.8f", mass_value);
 //
-//  Int n0 = nsave;int n1 = 0;
+//  int n0 = nsave;int n1 = 0;
 //  if(read == false){
 //    if(split_save == 0){n0=nsave;n1=0;}
 //    if(split_save == 1){
@@ -968,26 +968,26 @@ inline void quda_inverter::alloc_csfield_initial()
 //
 //  }
 //
-//  Int ns0 = n0;int ns1 = n1;
+//  int ns0 = n0;int ns1 = n1;
 //  if(nsave == nvec/2){ns0 = n0*2;ns1 = n1*2;}
 //
 //  qlat::Coordinate total_site;
 //  qlat::Coordinate node_site = qlat::get_size_node();
-//  for(Int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
+//  for(int d=0;d<4;d++){total_site[d] = X[d] * node_site[d];}
 //  qlat::Geometry geo;geo.init(total_site);
 //
 //  //std::vector<qlat::FieldM<qlat::ComplexF, 3> > eig;eig.resize(nsave);
 //  Long Nvol = geo.local_volume() * spinor_site_size;
 //  std::vector<qlat::FieldM<qlat::ComplexD , 3> > eigD;eigD.resize(n0);
 //  //////if(read == false){eigD.resize(n0 + n1);}
-//  for(Int n = 0; n < eigD.size(); n++){eigD[n].init(geo);}
+//  for(int n = 0; n < eigD.size(); n++){eigD[n].init(geo);}
 //
 //  std::vector<qlat::FieldM<qlat::ComplexF, 3> > eigF;eigF.resize(n1);
-//  for (Int n = 0; n < eigF.size(); n++){eigF[n].init(geo);}
+//  for (int n = 0; n < eigF.size(); n++){eigF[n].init(geo);}
 //
 //
 //  if(read == false){
-//    for(Int n = 0; n < n0; n++){
+//    for(int n = 0; n < n0; n++){
 //      if(fermion_type == 0){c0 = (kSpace[n]);}
 //      if(fermion_type == 1){
 //        c0.Even() = (kSpace[2*n+0]);
@@ -1000,7 +1000,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //
 //    ////Maybe needed
 //    //eig_solveK->orthonormalizeMGS(fSpace, ns1);
-//    for(Int n = 0; n < n1; n++){
+//    for(int n = 0; n < n1; n++){
 //      if(fermion_type == 0){c0 = (kSpace[n + n0]);}
 //      if(fermion_type == 1){
 //        c0.Even() = (kSpace[2*(n+n0)+0]);
@@ -1028,8 +1028,8 @@ inline void quda_inverter::alloc_csfield_initial()
 //
 //  /////===load to gpu
 //  if(read == true){
-//  //for (Int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
-//  //for (Int i = 0; i < fSpace.size(); i++) delete fSpace[i];fSpace.resize(0);
+//  //for (int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
+//  //for (int i = 0; i < fSpace.size(); i++) delete fSpace[i];fSpace.resize(0);
 //  kSpace.resize(ns0);
 //  fSpace.resize(ns1);
 //
@@ -1041,9 +1041,9 @@ inline void quda_inverter::alloc_csfield_initial()
 //  csF.is_composite  = false;csF.is_component  = false;
 //
 //
-//  for(Int n = 0; n < ns0; n++){kSpace[n] = quda::ColorSpinorField(csD);}
-//  for(Int n = 0; n < ns1; n++){fSpace[n] = quda::ColorSpinorField(csF);}
-//  for(Int n = 0; n < n0; n++){
+//  for(int n = 0; n < ns0; n++){kSpace[n] = quda::ColorSpinorField(csD);}
+//  for(int n = 0; n < ns1; n++){fSpace[n] = quda::ColorSpinorField(csF);}
+//  for(int n = 0; n < n0; n++){
 //    qlat_cf_to_quda_cf((qlat::ComplexD*) c0.data(), eigD[n]);
 //    if(fermion_type == 0){(kSpace[n]) = c0;}
 //    if(fermion_type == 1){
@@ -1052,7 +1052,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //    }
 //  }
 //
-//  for(Int n = 0; n < n1; n++){
+//  for(int n = 0; n < n1; n++){
 //    qlat_cf_to_quda_cf((qlat::ComplexD*) c0.data(), eigF[n]);
 //    if(fermion_type == 0){(fSpace[n]) = c0;}
 //    if(fermion_type == 1){
@@ -1069,7 +1069,7 @@ inline void quda_inverter::alloc_csfield_initial()
 //  values.resize(2*nvec); errors.resize(nvec);
 //  if(read == false){
 //    Qassert(evals_ZERO.size() != 0 and evals_ERR.size() != 0);
-//    for(Int n=0;n<nvec;n++){
+//    for(int n=0;n<nvec;n++){
 //      values[n*2+0] = evals_ZERO[n].real();
 //      values[n*2+1] = evals_ZERO[n].imag();
 //      errors[n] = evals_ERR[n]; 
@@ -1081,9 +1081,9 @@ inline void quda_inverter::alloc_csfield_initial()
 //    load_txt_eigenvalues(values, errors, fileE.c_str());Qassert(ns0 + ns1 <= values.size()/2);
 //
 //    evals_ZERO.resize(ns0+ns1);evals_ERR.resize(ns0+ns1);
-//    for(Int n=  0;n<ns0+ns1;n++){evals_ZERO[n] = quda::Complex(values[n*2+0] - 4.0*mre*mre, values[n*2+1]);}    
+//    for(int n=  0;n<ns0+ns1;n++){evals_ZERO[n] = quda::Complex(values[n*2+0] - 4.0*mre*mre, values[n*2+1]);}    
 //
-//    for(Int n=  0;n<ns0+ns1;n++){evals_ERR[ n] = errors[n];}    
+//    for(int n=  0;n<ns0+ns1;n++){evals_ERR[ n] = errors[n];}    
 //
 //    evalsK.resize(ns0, 0.0);evalsF.resize(ns1, 0.0);
 //    update_eigen_mass(0.0, true);
@@ -1095,19 +1095,19 @@ inline void quda_inverter::free_mem(){
   TIMER("quda free_mem");
   buf_inv.resize(0);
   V = 0;
-  for(Int i=0;i<4;i++){X[i] = 0;}
+  for(int i=0;i<4;i++){X[i] = 0;}
 
-  //for (Int i = 0; i < evecs_.size(); i++) delete evecs_[i];
+  //for (int i = 0; i < evecs_.size(); i++) delete evecs_[i];
   //evecs_.resize(0);
   //evecs.resize(0);
   //kSpace.resize(0);
   //fSpace.resize(0);
   //ZSpace.resize(0);
   ////kSpace_cpu.resize(0);
-  //for (Int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
-  //for (Int i = 0; i < fSpace.size(); i++) delete fSpace[i];fSpace.resize(0);
-  //for (Int i = 0; i < ZSpace.size(); i++) delete ZSpace[i];ZSpace.resize(0);
-  //for (Int i = 0; i < kSpace_cpu.size(); i++) delete kSpace_cpu[i];kSpace_cpu.resize(0);
+  //for (int i = 0; i < kSpace.size(); i++) delete kSpace[i];kSpace.resize(0);
+  //for (int i = 0; i < fSpace.size(); i++) delete fSpace[i];fSpace.resize(0);
+  //for (int i = 0; i < ZSpace.size(); i++) delete ZSpace[i];ZSpace.resize(0);
+  //for (int i = 0; i < kSpace_cpu.size(); i++) delete kSpace_cpu[i];kSpace_cpu.resize(0);
   //evalsK.resize(0);
   //evalsF.resize(0);
   //evalsZ.resize(0);
@@ -1217,7 +1217,7 @@ inline void quda_inverter::free_mem(){
 //  //inv_param.solver_normalization = QUDA_KAPPA_NORMALIZATION;
 //
 //  ///unknown
-//  Int gcrNkrylov = 10;
+//  int gcrNkrylov = 10;
 //  QudaCABasis ca_basis = QUDA_POWER_BASIS;
 //  double ca_lambda_min = 0.0;
 //  double ca_lambda_max = -1.0;
@@ -1248,9 +1248,9 @@ inline void quda_inverter::free_mem(){
 //  //// These should be set in the application code. We set the them here by way of
 //  //// example
 //  //inv_param.num_offset = multishift;
-//  //for (Int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
+//  //for (int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
 //  //// these can be set individually
-//  //for (Int i = 0; i < inv_param.num_offset; i++) {
+//  //for (int i = 0; i < inv_param.num_offset; i++) {
 //  //  inv_param.tol_offset[i] = inv_param.tol;
 //  //  inv_param.tol_hq_offset[i] = inv_param.tol_hq;
 //  //}
@@ -1307,11 +1307,11 @@ inline void quda_inverter::free_mem(){
 //  //void *clover = nullptr;
 //  //void *clover_inv = nullptr;
 //
-//  Int clover_site_size           = 72; // real numbers per block-diagonal clover matrix
+//  int clover_site_size           = 72; // real numbers per block-diagonal clover matrix
 //  ////size_t host_clover_data_type_size = (cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-//  Int host_clover_data_type_size = sizeof(quda::Complex)/2;
+//  int host_clover_data_type_size = sizeof(quda::Complex)/2;
 //  ////size_t host_spinor_data_type_size = (cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-//  Int host_spinor_data_type_size = sizeof(quda::Complex)/2;
+//  int host_spinor_data_type_size = sizeof(quda::Complex)/2;
 //
 //  quda_clover.resize(    V * clover_site_size * host_clover_data_type_size);
 //  quda_clover_inv.resize(V * clover_site_size * host_spinor_data_type_size);
@@ -1428,7 +1428,7 @@ inline void quda_inverter::setup_stagger_inv()
   //inv_param.solver_normalization = QUDA_DEFAULT_NORMALIZATION;
 
   ///unknown
-  Int gcrNkrylov = 10;
+  int gcrNkrylov = 10;
   QudaCABasis ca_basis = QUDA_POWER_BASIS;
   double ca_lambda_min = 0.0;
   double ca_lambda_max = -1.0;
@@ -1459,9 +1459,9 @@ inline void quda_inverter::setup_stagger_inv()
   //// These should be set in the application code. We set the them here by way of
   //// example
   //inv_param.num_offset = multishift;
-  //for (Int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
+  //for (int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
   //// these can be set individually
-  //for (Int i = 0; i < inv_param.num_offset; i++) {
+  //for (int i = 0; i < inv_param.num_offset; i++) {
   //  inv_param.tol_offset[i] = inv_param.tol;
   //  inv_param.tol_hq_offset[i] = inv_param.tol_hq;
   //}
@@ -1519,7 +1519,7 @@ inline void quda_inverter::setup_stagger_inv()
 
 ////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
 ////may still cost time even using the comparisons, TODO need to investigate the issues
-inline void quda_inverter::setup_inv_param_prec_type(Int prec_type)
+inline void quda_inverter::setup_inv_param_prec_type(int prec_type)
 {
   TIMER("setup_inv_param_prec_type");
   inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
@@ -1582,7 +1582,7 @@ inline void quda_inverter::setup_inv_param_prec_type(Int prec_type)
 
 ////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
 ////may still cost time even using the comparisons, TODO need to investigate the issues
-inline void quda_inverter::setup_inv_param_prec(Int prec_type, bool force_reload)
+inline void quda_inverter::setup_inv_param_prec(int prec_type, bool force_reload)
 {
   if(prec_type_check == prec_type and force_reload == false){return ;}
   TIMER("setup_inv_param_prec");
@@ -1685,7 +1685,7 @@ inline void quda_inverter::clear_mat()
 //inline void quda_inverter::setup_inv_mass(const double mass)
 //{
 //  TIMER("setup_inv_mass");
-//  Int verbos = quda_verbos;
+//  int verbos = quda_verbos;
 //  Qassert(fermion_type == 1);//only stagger
 //  if(verbos <= -1)
 //  {
@@ -1733,14 +1733,14 @@ inline void quda_inverter::clear_mat()
 inline void quda_inverter::setup_mat_mass(const double mass, const bool force_do)
 {
   TIMER("setup_mat_mass");
-  Int flag_do = 0;
+  int flag_do = 0;
   if(mat == NULL){flag_do = 1;}
   if(std::fabs(mass_mat - mass) > 1e-15){flag_do = 1;}
   if(force_do == true){flag_do = 1;}
   if(flag_do == 0){return ;}
 
   ///setup verbose
-  Int verbos = quda_verbos;
+  int verbos = quda_verbos;
   Qassert(fermion_type == 1);//only stagger
   if(verbos <= -1)
   {
@@ -1834,7 +1834,7 @@ inline void quda_inverter::setup_mat_mass(const double mass, const bool force_do
   //dirac  = Dirac::create(diracParam);
 }
 
-//inline void quda_inverter::setup_inc_eigencg(const Int n_ev, const Int n_kr, const Int n_conv, const Int df_grid, const double tol, const double inc_tol, const double tol_restart, const Int restart_n, const Int pipeline, const Int inv_type)
+//inline void quda_inverter::setup_inc_eigencg(const int n_ev, const int n_kr, const int n_conv, const int df_grid, const double tol, const double inc_tol, const double tol_restart, const int restart_n, const int pipeline, const int inv_type)
 //{
 //  /////// inv_param.solve_type = QUDA_NORMOP_SOLVE;
 //  /////// inv_param.solve_type = QUDA_DIRECT_SOLVE;
@@ -2005,11 +2005,11 @@ inline void quda_inverter::setup_mat_mass(const double mass, const bool force_do
 //  if(mass_value != mass or force)
 //  {
 //    Qassert(evals_ZERO.size() == evalsK.size() + evalsF.size());
-//    Int n0  = evalsK.size();
-//    Int n1  = evalsF.size();
-//    Int nvec = n0+n1;
+//    int n0  = evalsK.size();
+//    int n1  = evalsF.size();
+//    int nvec = n0+n1;
 //    ///evalsZ.resize(nvec);
-//    for(Int ni=0;ni<nvec;ni++)
+//    for(int ni=0;ni<nvec;ni++)
 //    {
 //      quda::Complex tmp = quda::Complex(evals_ZERO[ni].real() + 4.0 * mass * mass, 0.0);
 //      if(ni <  n0){evalsK[ni     ] = tmp;}
@@ -2020,10 +2020,10 @@ inline void quda_inverter::setup_mat_mass(const double mass, const bool force_do
 //  mass_value = mass;
 //}
 
-inline void quda_inverter::random_src(const Int seed)
+inline void quda_inverter::random_src(const int seed)
 {
-  for(Int i=0;i<int(seed)%20 + 20*quda::comm_rank_global();i++){quda::comm_drand();}
-  Int random_mode = 1;
+  for(int i=0;i<int(seed)%20 + 20*quda::comm_rank_global();i++){quda::comm_drand();}
+  int random_mode = 1;
   random_Ty((qlat::ComplexD*) gsrc->data(), gsrc->Volume() * spinor_site_size, 1, seed + 111111, random_mode);
   quda::blas::ax(0.05, *gsrc);
   quda::Complex* tmp = (quda::Complex*) (gsrc->data());
@@ -2043,12 +2043,12 @@ inline void quda_inverter::random_src(const Int seed)
 //  TIMER("reconstruct_full");
 //  std::vector<quda::Complex  >& vals = evalsZ;
 //  if(use_eigen_pc == 0 or nvec <= 0){
-//    ////for (Int i = 0; i < ZSpace.size(); i++){delete ZSpace[i];}
+//    ////for (int i = 0; i < ZSpace.size(); i++){delete ZSpace[i];}
 //    ZSpace.resize(0); evalsZ.resize(0);
 //    return;
 //  }
 //  Qassert(kSpace.size() + fSpace.size() == nvec);
-//  const Int off = kSpace.size();
+//  const int off = kSpace.size();
 //  quda::Complex Im = quda::Complex(0.0, 1.0);
 //  setup_mat_mass(mass, true);
 //  update_eigen_mass(mass, true);
@@ -2076,7 +2076,7 @@ inline void quda_inverter::random_src(const Int seed)
 //  src = quda::ColorSpinorField::Create(csD);
 //
 //  ZSpace.resize(2 * nvec);
-//  for(Int n = 0; n < nvec; n++)
+//  for(int n = 0; n < nvec; n++)
 //  { 
 //    if(n <  off){(*src) = (kSpace[n]      ); lab = evalsK[n].real();}
 //    if(n >= off){(*src) = (fSpace[n - off]); lab = evalsF[n-off].real();}
@@ -2140,7 +2140,7 @@ inline void quda_inverter::random_src(const Int seed)
 //  quda::Complex n_unit(-1.0, 0.0);
 //  /////qmessage("mass check %.8e \n", mass_mat);
 //
-//  for(Int n=0;n<nvec*2;n++)
+//  for(int n=0;n<nvec*2;n++)
 //  {   
 //    quda::ColorSpinorField& gs = (*gsrc).Component(0);
 //    quda::ColorSpinorField& gr = (*gres).Component(0);
@@ -2214,14 +2214,14 @@ inline void quda_inverter::prepare_low_prop()
 
 ////from gsrc to gtmp2
 ////TODO move dirac0 to buffers
-//inline void quda_inverter::prepare_low_prop(Int mode )
+//inline void quda_inverter::prepare_low_prop(int mode )
 //{
 //  TIMER("prepare_low_prop");
 //
 //  /////std::string val = get_env(std::string("q_low_mode"));
 //  /////if(val != ""){mode = stringtonum(val);}
 //  
-//  if(use_eigen_pc == 0 or nvec <= 0){for(Int di=0;di<num_src_inv;di++){quda::blas::zero((*gres).Component(di));}return;}
+//  if(use_eigen_pc == 0 or nvec <= 0){for(int di=0;di<num_src_inv;di++){quda::blas::zero((*gres).Component(di));}return;}
 //  double m = inv_param.mass;
 //  update_eigen_mass(m, true);
 //
@@ -2235,10 +2235,10 @@ inline void quda_inverter::prepare_low_prop()
 //  quda::Complex n_unit(1.0, 0.0);
 //  if(mode == 0){
 //    ////mode 0 write
-//    Int n_defl = 0;
+//    int n_defl = 0;
 //    //*gtmp1 = *gsrc;
 //    /////Doe v_e
-//    for(Int di=0;di<num_src_inv;di++)
+//    for(int di=0;di<num_src_inv;di++)
 //    {
 //      quda::blas::zero((*gres).Component(di));
 //      quda::blas::zero((*gtmp1).Component(di));
@@ -2253,11 +2253,11 @@ inline void quda_inverter::prepare_low_prop()
 //      //if(gtmp2D == NULL){gtmp2D = new quda::ColorSpinorField(cs_gpuD);}
 //      //if(gtmp2F == NULL){gtmp2F = new quda::ColorSpinorField(cs_gpuF);}
 //
-//      for(Int kf=0;kf<2;kf++)
+//      for(int kf=0;kf<2;kf++)
 //      {
 //        std::vector<quda::ColorSpinorField > eig_vecs;
-//        if(kf==0){n_defl = kSpace.size();eig_vecs.resize(n_defl);for(Int i=0;i<n_defl;i++){eig_vecs[i]=kSpace[i].create_alias();}}
-//        if(kf==1){n_defl = fSpace.size();eig_vecs.resize(n_defl);for(Int i=0;i<n_defl;i++){eig_vecs[i]=fSpace[i].create_alias();}}
+//        if(kf==0){n_defl = kSpace.size();eig_vecs.resize(n_defl);for(int i=0;i<n_defl;i++){eig_vecs[i]=kSpace[i].create_alias();}}
+//        if(kf==1){n_defl = fSpace.size();eig_vecs.resize(n_defl);for(int i=0;i<n_defl;i++){eig_vecs[i]=fSpace[i].create_alias();}}
 //
 //        if(n_defl == 0){continue ;}
 //        std::vector<quda::Complex> A(n_defl);
@@ -2277,7 +2277,7 @@ inline void quda_inverter::prepare_low_prop()
 //        *buf[0] = gtmp1->Component(di).Odd();
 //        quda::blas::block::cDotProduct(B, eig_vecs, buf_);
 //        quda::Complex ev;
-//        for (Int i = 0; i < n_defl; i++) {
+//        for (int i = 0; i < n_defl; i++) {
 //          if(kf==0){ev = evalsK[i];}
 //          if(kf==1){ev = evalsF[i];}
 //          quda::Complex l = std::sqrt(ev.real()/1.0 - 4.0*m*m);
@@ -2340,17 +2340,17 @@ inline void quda_inverter::prepare_low_prop()
 //    if(ZSpace.size() != nvec*2){Qassert(false);}
 //    ////mode 1 write
 //    ///quda::ColorSpinorField& res = *gtmp2;
-//    for(Int di=0;di<num_src_inv;di++)
+//    for(int di=0;di<num_src_inv;di++)
 //    {
 //    quda::ColorSpinorField& gs = (*gsrc).Component(di);
 //    quda::ColorSpinorField& g2 = (*gtmp2).Component(di);
 //    quda::blas::zero(g2);
 //
 //    // Perform Sum_i V_i * (L_i)^{-1} * (V_i)^dag * vec = vec_defl
-//    Int n_defl = ZSpace.size();
+//    int n_defl = ZSpace.size();
 //    //std::vector<quda::ColorSpinorField *> eig_vecs;
 //    //eig_vecs.reserve(n_defl);
-//    //for (Int i = 0; i < n_defl; i++) eig_vecs.push_back(&ZSpace[i]);
+//    //for (int i = 0; i < n_defl; i++) eig_vecs.push_back(&ZSpace[i]);
 //
 //    // 1. Take block inner product: (V_i)^dag * vec = A_i
 //    std::vector<quda::Complex> s(n_defl * 1);
@@ -2363,7 +2363,7 @@ inline void quda_inverter::prepare_low_prop()
 //    quda::blas::block::cDotProduct(s, ZSpace, src);
 //
 //    // 2. Perform block caxpy: V_i * (L_i)^{-1} * A_i
-//    for (Int i = 0; i < n_defl; i++) { s[i] /= evalsZ[i]; }
+//    for (int i = 0; i < n_defl; i++) { s[i] /= evalsZ[i]; }
 //
 //    // 3. Accumulate sum vec_defl = Sum_i V_i * (L_i)^{-1} * A_i
 //    //if (!accumulate)
@@ -2440,7 +2440,7 @@ inline void quda_inverter::prepare_low_prop()
   If double inputs, do it directly
   If single inputs, transform the data orderings with QUDA and then transform back 
 */
-inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, Int buf_prec , Int mode, Int clear, const bool data_from_quda)
+inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, int buf_prec , int mode, int clear, const bool data_from_quda)
 {
   //Qassert(get_data_type<Ty>() == ComplexD_TYPE or get_data_type<Ty>() == ComplexF_TYPE);
   Qassert(buf_prec == 0 or buf_prec == 1);
@@ -2456,8 +2456,8 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   }
   qlat::ComplexT<double> rD;
   qlat::ComplexT< float> rF;
-  std::vector<Int> clearL;clearL.resize(eigenL.size());
-  Int found_eig = 0;
+  std::vector<int> clearL;clearL.resize(eigenL.size());
+  int found_eig = 0;
   for(unsigned int i=0;i<eigenL.size();i++)
   {
     clearL[i] = 0;
@@ -2468,7 +2468,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   }
 
   //std::vector<void* > eL;eL.resize(2);
-  //std::vector<Int   > pL;pL.resize(2);
+  //std::vector<int   > pL;pL.resize(2);
   //eL[0] = eigen0;eL[1] = eigen1;
   //pL[0] = eigen_prec0;pL[1] = eigen_prec1;
 
@@ -2494,7 +2494,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   for(unsigned int i=0;i<eigenL.size();i++)
   {
     void* Ea        = eigenL[i];
-    Int  eigen_prec = eigen_precL[i];
+    int  eigen_prec = eigen_precL[i];
     if(Ea != NULL){
       if(eigen_prec == 0){
         eigen_cs<qlat::ComplexT<double  >>* eigen = (eigen_cs<qlat::ComplexT<double  >>*) Ea;
@@ -2539,7 +2539,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   rotate res if needed
 */
 template<typename Ty, typename Tk>
-inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, Int qlat_format)
+inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, int qlat_format)
 {
   // double input, single buf
   if(get_data_type_is_double<Ty >() == 1 and get_data_type_is_double<Tk >() == 0){
@@ -2549,26 +2549,26 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   //// odd dslash
   quda::ColorSpinorParam param   = cs_gpu;
   get_param_ref(param, get_data_type_is_double<Ty >());
-  const Int buf_prec =  get_data_type_is_double<Ty >() ? 0 : 1;
+  const int buf_prec =  get_data_type_is_double<Ty >() ? 0 : 1;
 
-  const Int nsrc = src.size();
+  const int nsrc = src.size();
   Qassert(nsrc == res.size() and nsrc == buf.size());
   qlat::vector<Ty* > cbuf;cbuf.resize(nsrc);
-  for(Int iv=0;iv<nsrc;iv++){
+  for(int iv=0;iv<nsrc;iv++){
     cbuf[iv] = (Ty*) buf[iv];
   }
 
   const Long V = geoB().local_volume();
   //if no eigen vectors return 0 vectors with each size V*3
   if(eigen_with_nvec == false){
-    for(Int vi=0;vi<nsrc;vi++){
+    for(int vi=0;vi<nsrc;vi++){
       zero_Ty(res[vi], V*3, 1, QFALSE);
     }
     qacc_barrier(dummy);
     return ;
   }
 
-  // const Int DIM = 3;
+  // const int DIM = 3;
   Ty** pB =  res.data();
   Ty** pR = cbuf.data();
   if(qlat_format == 0){
@@ -2577,7 +2577,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   }
 
   // src copy to buf
-  for(Int vi=0;vi<nsrc;vi++){
+  for(int vi=0;vi<nsrc;vi++){
     if(qlat_format == 1){
       qlat_cf_to_quda_cf_P(cbuf[vi], src[vi], map_index, param);
       //{
@@ -2618,7 +2618,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 
   std::vector<quda::ColorSpinorField* > Qvec;Qvec.resize(nsrc * 2);
   // odd dlash and replaced
-  for(Int vi=0;vi<nsrc;vi++){
+  for(int vi=0;vi<nsrc;vi++){
     param.v = (void*) pB[vi];
     Qvec[vi] = new quda::ColorSpinorField(param);
     gbuf.Odd() = Qvec[vi]->Odd();
@@ -2634,7 +2634,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   qlat::vector<void* > Pres;
   Psrc.resize(2*nsrc);
   Pres.resize(2*nsrc);
-  for(Int vi=0;vi<nsrc;vi++)
+  for(int vi=0;vi<nsrc;vi++)
   {
     Psrc[vi*2 + 0] = Qvec[vi]->Even().data();
     Psrc[vi*2 + 1] = Qvec[vi]->Odd().data();
@@ -2646,7 +2646,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   deflate_Ty(Pres, Psrc, mass_mat, buf_prec, 1);
 
   //dslash
-  for(Int vi=0;vi<nsrc;vi++){
+  for(int vi=0;vi<nsrc;vi++){
     gbuf.Odd()  = Qvec[nsrc + vi]->Odd();
     dirac->Dslash(gbuf.Even(), gbuf.Odd() , QUDA_ODD_PARITY);
     Qvec[nsrc + vi]->Odd() = gbuf.Even();
@@ -2654,12 +2654,12 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 
   // buf copy to res with rotations
   if(qlat_format == 1)
-  for(Int vi=0;vi<nsrc;vi++){
+  for(int vi=0;vi<nsrc;vi++){
     quda_cf_to_qlat_cf_cf_P(pB[vi], pR[vi], map_index, param);
     //quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geoB(), map_index);
   }
 
-  for(Int vi=0;vi<2*nsrc;vi++){
+  for(int vi=0;vi<2*nsrc;vi++){
     delete Qvec[vi];
   }
 }
@@ -2668,7 +2668,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 //                            std::vector<quda::ColorSpinorField> &evecs, const std::vector<quda::Complex> &evals, bool accumulate)
 //{
 //  TIMER("quda deflate");
-//  Int n_defl = evecs.size();
+//  int n_defl = evecs.size();
 //  if( n_defl == 0){ return; }
 //
 //  if (getVerbosity() >= QUDA_VERBOSE){printfQuda("Deflating %d vectors\n", n_defl);}
@@ -2677,11 +2677,11 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 //
 //  std::vector<quda::ColorSpinorField > src_;
 //  std::vector<quda::ColorSpinorField > sol_;
-//  const Int Nsrc = src.size();
+//  const int Nsrc = src.size();
 //  Qassert(src.size() == sol.size());
 //  src_.resize(Nsrc);
 //  sol_.resize(Nsrc);
-//  for(Int i=0;i<Nsrc;i++)
+//  for(int i=0;i<Nsrc;i++)
 //  {
 //    src_[i] = (*src[i]).create_alias();
 //    sol_[i] = (*sol[i]).create_alias();
@@ -2694,7 +2694,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 //  // no extra memory is allocated.
 //  //std::vector<quda::ColorSpinorField *> eig_vecs;
 //  //eig_vecs.reserve(n_defl);
-//  //for (Int i = 0; i < n_defl; i++) eig_vecs.push_back(&evecs[i]);
+//  //for (int i = 0; i < n_defl; i++) eig_vecs.push_back(&evecs[i]);
 //
 //  // 1. Take block inner product: (V_i)^dag * vec = A_i
 //  std::vector<quda::Complex> s(n_defl * src_.size());
@@ -2703,7 +2703,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 //  quda::blas::block::cDotProduct(s, evecs, src_);
 //
 //  // 2. Perform block caxpy: V_i * (L_i)^{-1} * A_i
-//  for (Int i = 0; i < n_defl; i++) { s[i] /= evals[i].real(); }
+//  for (int i = 0; i < n_defl; i++) { s[i] /= evals[i].real(); }
 //
 //  // 3. Accumulate sum vec_defl = Sum_i V_i * (L_i)^{-1} * A_i
 //  if (!accumulate)
@@ -2744,24 +2744,24 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
 //  //CG_reset = false;
 //}
 
-inline void quda_inverter::callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, Int max_src)
+inline void quda_inverter::callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, int max_src)
 {
   TIMER_FLOPS("invertQuda Multi");
   Qassert(src.size() == res.size());
-  Int max_src_inv = -1;
+  int max_src_inv = -1;
   if(max_src_qinv != -1){
     max_src_inv = max_src_qinv;
   }
   if(max_src != -1){
     max_src_inv = max_src;
   }
-  const Int num_src = src.size();
+  const int num_src = src.size();
   if(num_src <= max_src_inv){
     inv_param.num_src = num_src;
     invertMultiSrcQuda(res.data(), src.data(), &inv_param);
   }else{
     std::vector<Long > jobA = job_create(num_src, max_src_inv);
-    Int njobs = jobA.size() / 2;
+    int njobs = jobA.size() / 2;
     Qassert(max_src_inv >= 4 and njobs >= 2);
     if(jobA[(njobs - 1)*2 + 1] == 1 )
     {
@@ -2923,7 +2923,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
   ////quda::enable_profiler = false;
 }
 
-//inline void quda_inverter::invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, Int solve_mode_)
+//inline void quda_inverter::invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, int solve_mode_)
 //{
 //  TIMERA("Quda invertQuda_COPY");
 //  //solverParam.secs = 0;
@@ -2963,7 +2963,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  //const bool no_clear_guess = (param.use_init_guess == QUDA_USE_INIT_GUESS_YES && !param.chrono_use_resident);
 //  /////->Even(), gres->Odd()
 //  std::vector<double > nbL;nbL.resize(num_src_inv);
-//  for(Int di=0;di<num_src_inv;di++)
+//  for(int di=0;di<num_src_inv;di++)
 //  {
 //    quda::ColorSpinorField& x = res.Component(di);
 //    quda::ColorSpinorField& b = src.Component(di);
@@ -3035,13 +3035,13 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  //param->use_sloppy_partial_accumulator = 1;
 //  Qassert(src.IsComposite());
 //  Qassert(res.IsComposite());
-//  const Int dim = src.CompositeDim();
+//  const int dim = src.CompositeDim();
 //  Qassert(num_src_inv <= dim);
 //  if (direct_solve) {
 //    if(solve_mode == 0){
 //      solverParam.num_src = 1;
 //      //quda::ColorSpinorField r = res.Component(0);
-//      for(Int di=0;di<num_src_inv;di++)
+//      for(int di=0;di<num_src_inv;di++)
 //      {
 //        quda::Solver* solve_cg = quda::Solver::create(solverParam, *m_cg, *mSloppy, *mPre, *mEig);
 //        //(*solve_cg)(r, src.Component(di));
@@ -3055,7 +3055,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //        //qmessage("==normJ di %3d, %+.8e %+.8e \n", di, a, b);
 //      }
 //
-//      //for(Int di=0;di<num_src_inv;di++)
+//      //for(int di=0;di<num_src_inv;di++)
 //      //{
 //      //  double a = quda::blas::norm2(src.Component(di));
 //      //  double b = quda::blas::norm2(res.Component(di));
@@ -3075,7 +3075,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  }else{errorQuda("Solver not added");}
 //
 //
-//  for(Int di=0;di<num_src_inv;di++)
+//  for(int di=0;di<num_src_inv;di++)
 //  {
 //
 //    //{
@@ -3120,7 +3120,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //}
 
 //template<typename Ty>
-//inline void quda_inverter::do_inv(Ty* res, Ty* src, const double mass, const double err, const Int niter , const Int prec_type )
+//inline void quda_inverter::do_inv(Ty* res, Ty* src, const double mass, const double err, const int niter , const int prec_type )
 //{
 //  TIMER_FLOPS("QUDA CG");
 //  timeval tm0,tm1;gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);
@@ -3165,7 +3165,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  //      return ;
 //  //    }
 //
-//  //    for(Int di=0;di<num_src_inv;di++)
+//  //    for(int di=0;di<num_src_inv;di++)
 //  //    {
 //  //      quda::ColorSpinorField srcP;
 //  //      quda::ColorSpinorField sol0;
@@ -3189,7 +3189,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  //}else
 //  {
 //    if(fermion_type == 1){
-//      //for(Int di=0;di<num_src_inv;di++)
+//      //for(int di=0;di<num_src_inv;di++)
 //      {
 //        quda::ColorSpinorField srcP;
 //        quda::ColorSpinorField solP;
@@ -3209,7 +3209,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //    //if(add_high >= 1)
 //    {
 //      //invertQuda((void*)((*ctmp1).Component(0).Even()).data(), (void*)((*ctmp1).Component(0).Odd()).data(), &inv_param);
-//      //for(Int di=0;di<num_src_inv;di++)
+//      //for(int di=0;di<num_src_inv;di++)
 //      {
 //        //(*gresH).Component(di) = (*gres).Component(di).Even();
 //        //(*gsrcH).Component(di) = (*gres).Component(di).Odd();
@@ -3239,7 +3239,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //
 //      //invertQuda_COPY(*gresH, *gsrcH, solve_mode);
 //
-//      //for(Int di=0;di<num_src_inv;di++)
+//      //for(int di=0;di<num_src_inv;di++)
 //      //{
 //      //  (*gres).Component(di).Even() = (*gresH).Component(di);
 //      //  (*gres).Component(di).Odd()  = (*gsrcH).Component(di);
@@ -3287,7 +3287,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //
 //    //*gres = *cres;
 //    //*gres = *ctmp1;
-//    //for(Int di=0;di<num_src_inv;di++)
+//    //for(int di=0;di<num_src_inv;di++)
 //    {
 //      //(*gres).Component(di) = (*ctmp1).Component(di);
 //      dirac_pc->reconstruct((*gres), (*gsrc), QUDA_MAT_SOLUTION);
@@ -3312,7 +3312,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //    cs_gpu1.is_component  = false;
 //
 //    quda::ColorSpinorField buf(cs_gpu1);
-//    //for(Int di=0;di<num_src_inv;di++)
+//    //for(int di=0;di<num_src_inv;di++)
 //    {
 //      quda::ColorSpinorField& src = (*gsrc);
 //      quda::ColorSpinorField& res = (*gres);
@@ -3358,7 +3358,7 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  //*ctmp0 = *gres;
 //  //const size_t Nd = (*gsrc).Component(0).Volume() * spinor_site_size * sizeof(quda::Complex);
 //  //qlat::vector<qlat::ComplexD > buf;buf.resize(Nd/sizeof(quda::Complex));
-//  //for(Int di=0;di<num_src_inv;di++){
+//  //for(int di=0;di<num_src_inv;di++){
 //  //  quda_cf_to_qlat_cf((qlat::ComplexD*) buf.data(), (qlat::ComplexD*) ctmp0->Component(di).data(), geo, 3);
 //  //  qudaMemcpy(&res[di*Nd/sizeof(quda::Complex)], (void*) buf.data(), Nd, qudaMemcpyDeviceToDevice);
 //  //}
@@ -3402,19 +3402,19 @@ quda_inverter::~quda_inverter()
 */
 template<typename Ty>
 void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat::vector<Ty* >& prop,
-    const double mass, const double err, const Int niter, Int low_only = 0, const Int prec_type = 0, 
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0, 
     const bool inv_even_even = true)
 {
   TIMER("get_staggered_prop_group");
   //timeval tm0,tm1;gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);
 
-  const Int nsrc = src.size();
+  const int nsrc = src.size();
   Qassert( nsrc == Long(prop.size()) );
   if(nsrc == 0){return ;}
   qlat::vector<Long >& map = qinv.map_index;
   const Geometry& geo = qinv.geoB();
   Qassert(low_only == 0 or low_only == 1 or low_only == -1);///0 for full, 1 for low only, -1 other ways to solve
-  const Int restart_cg = 0;
+  const int restart_cg = 0;
 
 
   qlat::vector<Ty* > buf;
@@ -3422,7 +3422,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
 
   //auto& Ebuf = eigen.Ebuf;
   //auto& Sbuf = eigen.Sbuf;
-  const Int DIM = 3;
+  const int DIM = 3;
   const LInt Nd = qinv.geoB().local_volume() * DIM;
 
   if(qinv.eigen_with_nvec == true){
@@ -3462,7 +3462,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
     //
     //qlat::vector<qlat::ComplexT<double >* > Abuf;Abuf.resize(nsrc*2);
     //qlat::vector<qlat::ComplexT<float  >* > Bbuf;Bbuf.resize(nsrc*2);
-    Int buf_prec = 0;
+    int buf_prec = 0;
     if(qinv.inv_param.cuda_prec == QUDA_DOUBLE_PRECISION){buf_prec = 0;}
     if(qinv.inv_param.cuda_prec == QUDA_SINGLE_PRECISION){buf_prec = 1;}
     if(buf_prec == -1){abort_r("QUDA buffer prec not supported yet!");}
@@ -3503,7 +3503,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
     std::vector<quda::ColorSpinorField* > Qvec;Qvec.resize(nsrc * 2);
     //quda::ColorSpinorField* Qsrc_tmp = NULL;
     ///0--nsrc for Qvec --> src; nsrc -- 2 nsrc --> res
-    for(Int vi=0;vi<nsrc;vi++){
+    for(int vi=0;vi<nsrc;vi++){
       param.v = (void*) prop[vi];
       Qvec[vi] = new quda::ColorSpinorField(param);
       qlat_cf_to_quda_cf(*Qvec[vi], src[vi], geo, map);
@@ -3536,7 +3536,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
       Psrc.resize(nsrc);
       Pres.resize(nsrc);
       Pbuf.resize(nsrc);
-      for(Int vi=0;vi<nsrc;vi++)
+      for(int vi=0;vi<nsrc;vi++)
       {
         quda::ColorSpinorField srcP;
         quda::ColorSpinorField sol1;
@@ -3553,7 +3553,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
           qinv.deflate_Ty(Pres, Psrc, mass, buf_prec, 0);
         }
         //else{
-        //  for(Int vi=0;vi<nsrc;vi++){
+        //  for(int vi=0;vi<nsrc;vi++){
         //    quda::blas::zero(Qvec[nsrc + vi]->Odd());
         //  }
         //}
@@ -3561,7 +3561,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
 
         qlat::vector<void* > srcI;srcI.resize(nsrc);
         qlat::vector<void* > resI;resI.resize(nsrc);
-        for(Int vi=0;vi<nsrc;vi++)
+        for(int vi=0;vi<nsrc;vi++)
         {
           if(inv_even_even){
             srcI[vi] = Qvec[nsrc + vi]->Odd().data();
@@ -3576,7 +3576,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
           qinv.callMultiSrcQuda(resI, srcI);
         }
 
-        for(Int vi=0;vi<nsrc;vi++)
+        for(int vi=0;vi<nsrc;vi++)
         {
           dirac_pc->reconstruct(    (*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
           //if(inv_even_even){
@@ -3587,15 +3587,15 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
         }
         qinv.inv_param.solution_type = QUDA_MAT_SOLUTION;
       }else{
-        //const Int solve_mode = 0;
+        //const int solve_mode = 0;
         ////qacc_barrier(dummy);
         ////deflate on CPU with Ebuf???
-        //const Int mode_def = 1;
+        //const int mode_def = 1;
         qinv.inv_param.solution_type = QUDA_MATPC_SOLUTION;
 
-        const Int iter_group =  200;
-        //const Int iter_group = qinv.inv_param.maxiter;
-        const Int maxN = (qinv.inv_param.maxiter + iter_group - 1) / iter_group;
+        const int iter_group =  200;
+        //const int iter_group = qinv.inv_param.maxiter;
+        const int maxN = (qinv.inv_param.maxiter + iter_group - 1) / iter_group;
         qinv.inv_param.maxiter = iter_group;
 
         quda::ColorSpinorParam cs_tmp(*qinv.gsrcH);
@@ -3612,7 +3612,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
         std::vector<double > residual_vecs;residual_vecs.resize(nsrc);
         std::vector<double > norm_vecs;norm_vecs.resize(nsrc);
         //std::vector<double > norm_vecs_buf;norm_vecs_buf.resize(nsrc);
-        for(Int vi=0;vi<nsrc;vi++){
+        for(int vi=0;vi<nsrc;vi++){
           residual_vecs[vi] = 1.0;
           gresV[vi] = quda::ColorSpinorField(cs_tmp); 
           gsumV[vi] = quda::ColorSpinorField(cs_tmp); 
@@ -3635,17 +3635,17 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
         quda::Dirac& xpay = *dirac_pc;
         double mass2 = 4 * xpay.Mass() * xpay.Mass();
         quda::Complex One = quda::Complex(1.0, 0.0);
-        Int iter_total    = 0;
-        Int count_diverge = 0;
+        int iter_total    = 0;
+        int count_diverge = 0;
 
-        for(Int it =0;it<maxN;it++)
+        for(int it =0;it<maxN;it++)
         {
           //qinv.deflate_Ty(Pres, Psrc, mass, buf_prec, 0);
-          //for(Int vi=0;vi<nsrc;vi++){
+          //for(int vi=0;vi<nsrc;vi++){
           //  quda::blas::ax( 1.0 / norm_vecs_buf[vi], gsrcV[vi]);
           //}
-          Int converge = 0;
-          for(Int vi=0;vi<nsrc;vi++){
+          int converge = 0;
+          for(int vi=0;vi<nsrc;vi++){
             if(residual_vecs[vi] < err){converge += 1; }
           }
           if(converge == nsrc){continue ;}
@@ -3654,7 +3654,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
             qmessage("Too many inversion diverge %d, nsrc %d!", count_diverge, nsrc);
             break;
           }
-          for(Int vi=0;vi<nsrc;vi++){
+          for(int vi=0;vi<nsrc;vi++){
             qinv.inv_param.tol = err / residual_vecs[vi];
           }
 
@@ -3662,7 +3662,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
 
           //qlat::vector<void* > srcI;srcI.resize(nsrc);
           //qlat::vector<void* > resI;resI.resize(nsrc);
-          //for(Int vi=0;vi<nsrc;vi++)
+          //for(int vi=0;vi<nsrc;vi++)
           //{
           //  srcI[vi] = Qvec[nsrc + vi]->Odd().data();
           //  resI[vi] = Qvec[nsrc + vi]->Even().data();
@@ -3676,13 +3676,13 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
             //invertQuda(Qvec[nsrc + vi]->Even().data(), Qvec[nsrc + vi]->Odd().data(), &qinv.inv_param);
           }
 
-          //for(Int vi=0;vi<nsrc;vi++){
+          //for(int vi=0;vi<nsrc;vi++){
           //  ////TIMER("invertQuda group");
           //  invertQuda(gresV[vi].data(), gsrcV[vi].data(), &qinv.inv_param);
           //}
           iter_total += iter_group;
 
-          for(Int vi=0;vi<nsrc;vi++){
+          for(int vi=0;vi<nsrc;vi++){
             quda::blas::caxpy( 1.0*One , gresV[vi], gsumV[vi]);
             //quda::blas::caxpy( 1.0*One * norm_vecs[vi], gresV[vi], gsumV[vi]);
 
@@ -3706,7 +3706,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
           }
         }
 
-        for(Int vi=0;vi<nsrc;vi++)
+        for(int vi=0;vi<nsrc;vi++)
         {
           gsrcV[vi] = Qvec[nsrc + vi]->Odd();
           xpay.Dslash(tmp0, gsumV[vi], QUDA_ODD_PARITY);
@@ -3719,7 +3719,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
 
         //Qvec[nsrc + vi]->Odd()  = (*qinv.gsrcH).Component(0);
 
-        for(Int vi=0;vi<nsrc;vi++){
+        for(int vi=0;vi<nsrc;vi++){
           Qvec[nsrc + vi]->Even() = gsumV[vi];
           dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
           //delete res;delete src;
@@ -3735,8 +3735,8 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
       Pres.resize(nsrc);
       Pbuf.resize(nsrc);
 
-      //const Int solve_mode = 0;
-      for(Int vi=0;vi<nsrc;vi++)
+      //const int solve_mode = 0;
+      for(int vi=0;vi<nsrc;vi++)
       {
         quda::ColorSpinorField srcP;
         quda::ColorSpinorField sol1;
@@ -3758,7 +3758,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
       //}
 
       qinv.inv_param.solution_type = QUDA_MATPC_SOLUTION;
-      for(Int vi=0;vi<nsrc;vi++)
+      for(int vi=0;vi<nsrc;vi++)
       {
         // the COPY could use single precison as input
         qinv.invertQuda_COPY_single(Qvec[nsrc + vi]->Even(), Qvec[nsrc + vi]->Odd());
@@ -3773,13 +3773,13 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
       //  if(eigenD != NULL){if(buf_prec == 1){eigenD->deflateA(Pres, Pbuf, rF, mass,  0);}}
       //}
 
-      for(Int vi=0;vi<nsrc;vi++){
+      for(int vi=0;vi<nsrc;vi++){
         dirac_pc->reconstruct((*Qvec[nsrc + vi]), (*Qvec[vi]), QUDA_MAT_SOLUTION);
       }
       qinv.inv_param.solution_type = QUDA_MAT_SOLUTION;
     }
 
-    for(Int vi=0;vi<nsrc;vi++){
+    for(int vi=0;vi<nsrc;vi++){
       quda_cf_to_qlat_cf(prop[vi], *Qvec[nsrc + vi], geo, map);
       //if(buf_prec==0){
       //  quda_cf_to_qlat_cf(prop[vi], (qlat::ComplexT<double >*) (*Qvec[nsrc + vi]).data(), DIM, geo, map);
@@ -3789,7 +3789,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
       //}
     }
 
-    for(Int vi=0;vi<2*nsrc;vi++){
+    for(int vi=0;vi<2*nsrc;vi++){
       delete Qvec[vi];
     }
     //gettimeofday(&tm1, NULL);double time0 = tm1.tv_sec - tm0.tv_sec;time0 += (tm1.tv_usec - tm0.tv_usec)/1000000.0;
@@ -3818,15 +3818,15 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
 
 template<typename Ty>
 void get_staggered_prop_group(quda_inverter& qinv, std::vector<colorFT >& src, std::vector<colorFT >& prop,
-    const double mass, const double err, const Int niter, Int low_only = 0, const Int prec_type = 0)
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
   qlat::vector<Ty* > s0;
   qlat::vector<Ty* > r0;
-  const Int nsrc = src.size();
+  const int nsrc = src.size();
   Qassert(nsrc == Long(prop.size()));
   s0.resize(nsrc);
   r0.resize(nsrc);
-  for(Int i=0;i<nsrc;i++)
+  for(int i=0;i<nsrc;i++)
   {
     Qassert(src[i].initialized and prop[i].initialized);
     s0[i] = (Ty*) qlat::get_data(src[i] ).data();
@@ -3838,7 +3838,7 @@ void get_staggered_prop_group(quda_inverter& qinv, std::vector<colorFT >& src, s
 // avoid using it, only SRH
 template<typename Ty>
 void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
-    const double mass, const double err, const Int niter, Int low_only = 0, const Int prec_type = 0)
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
   qinv.setup_mat_mass(mass);
   qlat::vector<Ty* > sP;
@@ -3852,7 +3852,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
 
   //TIMER("QUDA inversions");
   ////if(qinv.fermion_type == 0)qinv.setup_inv_mass(mass);
-  ////const Int Dim = 3;
+  ////const int Dim = 3;
   ////qlat_cf_to_quda_cf((qlat::ComplexD*) qinv.csrc->data(), src, geo, Dim);
 
   ////{
@@ -3899,7 +3899,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
 
 template<typename Ty>
 void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::FieldM<Ty, 3>& prop
-    , const double mass, const double err, const Int niter, Int low_only = 0, const Int prec_type = 0)
+    , const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
   Ty* srcP = (Ty*) qlat::get_data(src).data();
 
@@ -3913,7 +3913,7 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
   qlat::vector<Ty* > rP;
   sP.resize(1);
   rP.resize(1);
-  for(Int iv=0;iv<1;iv++){
+  for(int iv=0;iv<1;iv++){
     sP[iv] = srcP;
     rP[iv] = propP;
   }
@@ -3925,22 +3925,22 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
 
 template<typename Ty>
 void get_staggered_prop(quda_inverter& qinv, std::vector<qlat::FieldM<Ty, 3> >& srcL, std::vector<qlat::FieldM<Ty, 3> >& propL
-    , const double mass, const double err, const Int niter, Int low_only = 0, const Int prec_type = 0)
+    , const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
-  const Int Ninv = srcL.size();
+  const int Ninv = srcL.size();
   if(Ninv <= 0){propL.resize(0);return ;}
 
   qlat::vector<Ty* > sP;
   qlat::vector<Ty* > rP;
   sP.resize(Ninv);
   rP.resize(Ninv);
-  for(Int iv=0;iv<Ninv;iv++){
+  for(int iv=0;iv<Ninv;iv++){
     sP[iv] = (Ty*) qlat::get_data(srcL[iv] ).data();
     rP[iv] = (Ty*) qlat::get_data(propL[iv]).data();
   }
   get_staggered_prop_group(qinv, sP, rP, mass, err, niter, low_only, prec_type);
 
-  //for(Int iv=0;iv<Ninv;iv++)
+  //for(int iv=0;iv<Ninv;iv++)
   //{
   //  get_staggered_prop(qinv,srcL[iv], propL[iv], mass, err, niter, low_only, prec_type);
   //}
@@ -3948,12 +3948,12 @@ void get_staggered_prop(quda_inverter& qinv, std::vector<qlat::FieldM<Ty, 3> >& 
 
 template<typename Ty>
 void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::vector_gpu<Ty >& prop,
-    const double mass, const double err, const Int niter, Int low_only = 0, const Int prec_type = 0)
+    const double mass, const double err, const int niter, int low_only = 0, const int prec_type = 0)
 {
   const size_t Vl = qinv.V * 3;
   Qassert(src.size() % Vl == 0);
   prop.resize(src.size());
-  const Int Ninv = src.size() / Vl;
+  const int Ninv = src.size() / Vl;
   if(Ninv <= 0){prop.resize(0);return ;}
 
   //Qassert(Ninv <= qinv.num_src);
@@ -3969,7 +3969,7 @@ void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::v
   qlat::vector<Ty* > rP;
   sP.resize(Ninv);
   rP.resize(Ninv);
-  for(Int iv=0;iv<Ninv;iv++){
+  for(int iv=0;iv<Ninv;iv++){
     sP[iv] = srcP[iv*Vl];
     rP[iv] = resP[iv*Vl];
   }
@@ -3983,9 +3983,8 @@ void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::v
 ////even dslash flops
 inline double get_stagger_even_flops(const Geometry& geo)
 {
-  Int nv[4];
-  for(Int i=0;i<4;i++){
-    //nv[i] = geo.node_site[i] * geo.geon.size_node[i];
+  int nv[4];
+  for(int i=0;i<4;i++){
     nv[i] = geo.node_site[i];
   }
   const double fac = 670.00;
@@ -4004,18 +4003,18 @@ void get_staggered_multishift(quda_inverter& qinv,
   std::vector<qlat::FieldM<Ty, 3> >& res,
   std::vector<qlat::FieldM<Ty, 3> >& src,
   const std::vector<double >& masses2,
-  const double err, const Int niter)
+  const double err, const int niter)
 {
   TIMER("get_staggered_multishift");
   Qassert(src.size() != 0);
 
-  //const Int DIM = 3;
+  //const int DIM = 3;
   const Geometry& geo = qinv.geoB();
   qlat::vector<Long >& map = qinv.map_index;
 
-  const Int Nsrc = src.size();
-  const Int Nres = res.size();
-  const Int multishift = masses2.size();
+  const int Nsrc = src.size();
+  const int Nres = res.size();
+  const int multishift = masses2.size();
 
   Qassert(Nres  == Nsrc * multishift);
   for(unsigned int i=0;i<src.size();i++){Qassert(src[i].initialized);}
@@ -4032,7 +4031,7 @@ void get_staggered_multishift(quda_inverter& qinv,
 
   //std::vector<quda::ColorSpinorField> out_multishift_gpu(multishift);
 
-  ////const Int Cdim = ref.CompositeDim();
+  ////const int Cdim = ref.CompositeDim();
   quda::ColorSpinorField& ref = *qinv.gsrc;
   const size_t Lsize = ref.TotalBytes();
 
@@ -4090,7 +4089,7 @@ void get_staggered_multishift(quda_inverter& qinv,
     inv_param.num_offset = multishift;
     inv_param.compute_true_res = 0;
     //inv_param.mass = masses[0]; 
-    for (Int i = 0; i < multishift; i++) {
+    for (int i = 0; i < multishift; i++) {
       // Set masses and offsets
       //inv_param.offset[i] = 4 * masses[i] * masses[i] - 4 * masses[0] * masses[0];
       inv_param.offset[i] = masses2[i];
@@ -4106,12 +4105,12 @@ void get_staggered_multishift(quda_inverter& qinv,
   inv_param.use_init_guess = QUDA_USE_INIT_GUESS_NO;
 
   std::vector<void *> _hp_multi_x(multishift);
-  for(Int di=0;di<multishift;di++)
+  for(int di=0;di<multishift;di++)
   {
     _hp_multi_x[di] = out_multishift_gpu[di].Even().data();
   }
 
-  for(Int srci=0;srci<Nsrc;srci++)
+  for(int srci=0;srci<Nsrc;srci++)
   {
     qlat_cf_to_quda_cf(src_multishift_gpu[0], (Ty*) qlat::get_data(src[srci]).data(), geo, map);
     //{
@@ -4126,7 +4125,7 @@ void get_staggered_multishift(quda_inverter& qinv,
       invertMultiShiftQuda(_hp_multi_x.data(), src_multishift_gpu[0].Even().data(), &inv_param);
     }
 
-    for(Int mi = 0; mi < multishift; mi++)
+    for(int mi = 0; mi < multishift; mi++)
     {
       quda_cf_to_qlat_cf((Ty*) qlat::get_data(res[mi*Nsrc + srci]).data(), out_multishift_gpu[mi], geo, map);
     }
@@ -4152,17 +4151,17 @@ template<typename Ty>
 void get_staggered_multishift_even(quda_inverter& qinv,
   std::vector<Ty* > res, std::vector<Ty* > src,
   const std::vector<double >& masses2,
-  const double err, const Int niter)
+  const double err, const int niter)
 {
   TIMER_FLOPS("get_staggered_multishift_even");
   Qassert(src.size() != 0);
   if(qinv.quda_verbos >= 0){print_mem_info();}
 
-  //const Int DIM = 3;
+  //const int DIM = 3;
 
-  const Int Nsrc = src.size();
-  const Int Nres = res.size();
-  const Int multishift = masses2.size();
+  const int Nsrc = src.size();
+  const int Nres = res.size();
+  const int multishift = masses2.size();
 
   Qassert(Nres  == Nsrc * multishift);
   //for(unsigned int i=0;i<src.size();i++){Qassert(src[i].initialized);}
@@ -4180,7 +4179,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   //std::vector<quda::ColorSpinorField> out_multishift_gpu(multishift);
 
   //quda::ColorSpinorField& ref = *qinv.gsrc;
-  //const Int Cdim = ref.CompositeDim();
+  //const int Cdim = ref.CompositeDim();
   //const size_t Lsize = ref.TotalBytes() / Cdim;
 
   //int buf_prec = -1;
@@ -4213,7 +4212,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
     inv_param.num_offset = multishift;
 
     //temporary hack for refinement
-    Int qlat_multi_refine = 1;
+    int qlat_multi_refine = 1;
     std::string val = qlat::get_env(std::string("qlat_multi_refine"));
     if(val != ""){qlat_multi_refine = stringtonum(val);}
 
@@ -4242,7 +4241,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
     //if(gap < 0 or inv_param.tol < 1e-11){gap = 0.0;}
     //if(qlat_multi_refine == 0){gap = 0.0;}//to zero if no refinement
 
-    for (Int i = 0; i < multishift; i++) {
+    for (int i = 0; i < multishift; i++) {
       // Set masses and offsets
       //inv_param.offset[i] = 4 * masses[i] * masses[i] - 4 * masses[0] * masses[0];
       inv_param.offset[i] = masses2[i];
@@ -4264,7 +4263,7 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   {
     qlat::vector<void *> srcP;srcP.resize(Nsrc);
     qlat::vector<void *> resP;resP.resize(Nsrc);
-    for(Int srci=0;srci<Nsrc;srci++)
+    for(int srci=0;srci<Nsrc;srci++)
     {
       srcP[srci] = src[srci];
       resP[srci] = res[srci];
@@ -4272,9 +4271,9 @@ void get_staggered_multishift_even(quda_inverter& qinv,
     qinv.callMultiSrcQuda(resP, srcP);
   }
   else{
-    for(Int srci=0;srci<Nsrc;srci++)
+    for(int srci=0;srci<Nsrc;srci++)
     {
-      for(Int mi=0;mi<multishift;mi++)
+      for(int mi=0;mi<multishift;mi++)
       {
         _hp_multi_x[mi] = res[mi*Nsrc + srci];
       }
@@ -4296,15 +4295,15 @@ void get_staggered_multishift_even(quda_inverter& qinv,
   timer.flops += inv_param.gflops * 1024 * 1024 * 1024 / qlat::get_num_node();
 }
 
-// Int gf_gauge_dir 3=Coulomb, 4=Landau
-inline void quda_inverter::gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir, Int gf_maxiter, double gf_tolerance, Int fix_type)
+// int gf_gauge_dir 3=Coulomb, 4=Landau
+inline void quda_inverter::gauge_fix(qlat::ComplexD* quda_gf, int gf_gauge_dir, int gf_maxiter, double gf_tolerance, int fix_type)
 {
   TIMER("quda gauge fix");
   /////load gauge to quda GPU default position
   const double gf_ovr_relaxation_boost = 1.5;
-  const Int gf_reunit_interval = 10;
+  const int gf_reunit_interval = 10;
   const bool gf_theta_condition = false;
-  const Int gf_verbosity_interval = 100;
+  const int gf_verbosity_interval = 100;
   const double gf_fft_alpha = 0.8;
   const bool gf_fft_autotune = false;
 
@@ -4352,7 +4351,7 @@ inline void quda_inverter::gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir, 
     //*tmp = *in;
 
     quda::lat_dim_t R = {0, 0, 0, 0};
-    for (Int d = 0; d < 4; d++)
+    for (int d = 0; d < 4; d++)
       if (quda::comm_dim_partitioned(d)) R[d] = 2;
     static quda::TimeProfile GaugeFix("GaugeFix");
     U = quda::createExtendedGauge(*tmp, R, GaugeFix);
@@ -4365,7 +4364,7 @@ inline void quda_inverter::gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir, 
   }
 
   // Reunitarization
-  // Int num_failures_h = 0;
+  // int num_failures_h = 0;
   // quda::unitarizeLinks(*U, &num_failures_h);
   // qudaDeviceSynchronize();
   // if (num_failures_h > 0) errorQuda("Error in the unitarization (%d errors)", num_failures_h);
