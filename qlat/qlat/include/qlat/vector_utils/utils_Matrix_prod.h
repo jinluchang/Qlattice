@@ -41,13 +41,13 @@ __global__ void matrix_prod_global2(Ty** a, Ty** b, Ty** c, const Long m, const 
   //  ap = &a[(li*m + blockIdx.y * blockDim.y + 0)*w + wini];
   //  bp = &b[(li*n + blockIdx.x * blockDim.x + 0)*w + wini];
 
-  //  for(int i=0;i<sm;i++){as[i][tid] = ap[i*w + tid ];}
+  //  for(Int i=0;i<sm;i++){as[i][tid] = ap[i*w + tid ];}
 
-  //  for(int i=0;i<sn;i++){bs[tid][i] = bp[i*w + tid ];}
+  //  for(Int i=0;i<sn;i++){bs[tid][i] = bp[i*w + tid ];}
 
   //  __syncthreads();
 
-  //  for(int i = 0; i < blockSize; i++)
+  //  for(Int i = 0; i < blockSize; i++)
   //  {
   //    buf += as[threadIdx.y][i] * bs[i][threadIdx.x];
   //  }
@@ -74,19 +74,19 @@ __global__ void matrix_prod_global2(Ty** a, Ty** b, Ty** c, const Long m, const 
     if(trans == 1){bp = &bl[(wini)*n + blockIdx.x * blockDim.x + 0];}
 
     if(tid < wcut){
-      for(int i=0;i<smcut;i++){as[i][tid] = ap[i*w + tid ];}
-      if(trans == 0)for(int i=0;i<sncut;i++){bs[tid][i] = bp[i*w + tid ];}
-      if(trans == 1)for(int i=0;i<sncut;i++){bs[tid][i] = bp[tid*n + i];}
+      for(Int i=0;i<smcut;i++){as[i][tid] = ap[i*w + tid ];}
+      if(trans == 0)for(Int i=0;i<sncut;i++){bs[tid][i] = bp[i*w + tid ];}
+      if(trans == 1)for(Int i=0;i<sncut;i++){bs[tid][i] = bp[tid*n + i];}
     }
 
     __syncthreads();
 
     if(ch == 1){if(threadIdx.y < smcut and threadIdx.x < sncut)
-         for(int i = 0; i < wcut; i++){
+         for(Int i = 0; i < wcut; i++){
           if(Conj==0)buf += as[threadIdx.y][i] * bs[i][threadIdx.x];
           if(Conj==1)buf += qlat::qconj(as[threadIdx.y][i]) * bs[i][threadIdx.x];
     }}
-    else{for(int i = 0; i < wcut; i++){
+    else{for(Int i = 0; i < wcut; i++){
           if(Conj==0)buf += as[threadIdx.y][i] * bs[i][threadIdx.x];
           if(Conj==1)buf += qlat::qconj(as[threadIdx.y][i]) * bs[i][threadIdx.x];
     }}
@@ -101,7 +101,7 @@ __global__ void matrix_prod_global2(Ty** a, Ty** b, Ty** c, const Long m, const 
 template<typename Ty>
 void matrix_prod_gpu2(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false)
 {
-  int nt = 32;int sm = 8;int sn = 4;
+  Int nt = 32;int sm = 8;int sn = 4;
 
   //int ntLm[] = {32,32,16,16,8,8,4,4,2,2,1};
   //int ntLn[] = {32,16,16, 8,8,4,4,2,2,1,1};
@@ -110,13 +110,13 @@ void matrix_prod_gpu2(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const 
   //if(sizeof(Ty) == 8){nt = 64;sm=8;sn=8;}
   //int sm=1;int sn=1;
 
-  //for(int i=0;i< 11;i++){
+  //for(Int i=0;i< 11;i++){
   //  if(nt == ntLm[i]*ntLn[i]){sm=ntLm[i];sn=ntLn[i];break;}
   //}
 
-  int cnt = nt;
-  int mc = m/sm;
-  int nc = n/sn;
+  Int cnt = nt;
+  Int mc = m/sm;
+  Int nc = n/sn;
 
   if(m%sm != 0 or m < sm){cnt = nt+1;mc += 1;}
   if(n%sn != 0 or n < sn){cnt = nt+1;nc += 1;}
@@ -230,7 +230,7 @@ __global__ void matrix_prod_global1(Ty** a, Ty** b, Ty** c, const Long m, const 
     }
     __syncthreads();
 
-    for(int i = 0; i < sn; i++)
+    for(Int i = 0; i < sn; i++)
     {
       //////buf += as[threadIdx.y][i] * bs[i][threadIdx.x];
       if(Conj==0){buf += as[threadIdx.y][i] * bs[i][threadIdx.x];}
@@ -247,18 +247,18 @@ __global__ void matrix_prod_global1(Ty** a, Ty** b, Ty** c, const Long m, const 
 template<typename Ty>
 void matrix_prod_gpu1(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true)
 {
-  int sn = 4;
-  int nt = sn*sn;
+  Int sn = 4;
+  Int nt = sn*sn;
 
   ///if(m%sn != 0 or n%sn != 0 or w%sn != 0){
   ///  qlat::displayln_info(qlat::ssprintf("Dimension not dividable by 4 ! "));
   ///  Qassert(false);
   ///}
 
-  int nc = n/sn ;
-  int mc = m/sn ;
+  Int nc = n/sn ;
+  Int mc = m/sn ;
 
-  int csn = sn;
+  Int csn = sn;
   if(m%sn != 0 or m<sn){csn = sn+2000;mc += 1;}
   if(n%sn != 0 or n<sn){csn = sn+2000;nc += 1;}
   if(w%nt != 0 or w<nt){csn = sn+2000;}
@@ -342,21 +342,21 @@ template<typename Ty>
 void matrix_prod_gpu0(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true)
 {
   //case 1024:reduce6<1024,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
-  int ntLm[] = {32,32,16,16,8,8,4,4,2,2,1};
-  int ntLn[] = {32,16,16, 8,8,4,4,2,2,1,1};
+  Int ntLm[] = {32,32,16,16,8,8,4,4,2,2,1};
+  Int ntLn[] = {32,16,16, 8,8,4,4,2,2,1,1};
 
-  int nt = 64;
-  int sm=1;int sn=1;
-  for(int i=0;i< 11;i++){
+  Int nt = 64;
+  Int sm=1;int sn=1;
+  for(Int i=0;i< 11;i++){
     if(nt == ntLm[i]*ntLn[i]){sm=ntLm[i];sn=ntLn[i];break;}
   }
 
-  int nc = n/sn + 1;
-  int mc = m/sm + 1;
+  Int nc = n/sn + 1;
+  Int mc = m/sm + 1;
   ////////memory L --> m --> n
   dim3 dimGrid( nc, mc, L); 
   dim3 dimBlock(sn, sm, 1); 
-  int snt = 0;if(Conj){snt += 1;}
+  Int snt = 0;if(Conj){snt += 1;}
 
   bool jobdo = true;
   switch (snt)
@@ -398,7 +398,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
   //    if(Conj){C += A.conjugate() * B;}else{C += A * B;}
   //}
 
-  int Nv = omp_get_max_threads();
+  Int Nv = omp_get_max_threads();
   /////#ifdef QLAT_USE_ACC
   /////Nv = 1;
   /////#endif
@@ -418,14 +418,14 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
     //Eigen::setNbThreads(1);
     //int Nm = get_threads_GPU(m,Nv);
     //int Nfac = m/Nm;
-    int Nfac = Nv;
-    int Nm = (m+Nv-1)/Nv;
+    Int Nfac = Nv;
+    Int Nm = (m+Nv-1)/Nv;
     #pragma omp parallel for
     for(Long off=0;off<L*Nfac;off++)
     {
-      int li   = off/Nfac;
-      int mi   = off%Nfac;
-      int mcut = Nm;if(mi*Nm + mcut > m){mcut = m - mi*Nm;if(mcut <=0){continue;}}
+      Int li   = off/Nfac;
+      Int mi   = off%Nfac;
+      Int mcut = Nm;if(mi*Nm + mcut > m){mcut = m - mi*Nm;if(mcut <=0){continue;}}
 
       /////if(mi*Nm + Nm > m){mcut = m - mi*Nm;}
       EML  A( &a[li][(mi*Nm)*w], mcut, w);
@@ -441,7 +441,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
 
 
   long long vGb = L*m*n*w;
-  int Fcount0   = 6 + 2; 
+  Int Fcount0   = 6 + 2; 
   timer.flops  += vGb*Fcount0;
 
   //double Gsize = (m*n + m*w + n*w)*sizeof(Complexq)/(1024.0*1024*1024);
@@ -449,7 +449,7 @@ void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
 }
 
 template<typename Ty>
-void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, QBOOL dummy = QTRUE, bool trans=false, int modeGPU = 2)
+void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, QBOOL dummy = QTRUE, bool trans=false, Int modeGPU = 2)
 {
   (void)dummy;
   (void)modeGPU;
@@ -457,7 +457,7 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
 
   TIMER_FLOPS("==Matrix Multi GPU");
   long long vGb = L*m*n*w;
-  int Fcount0   = 6 + 2; 
+  Int Fcount0   = 6 + 2; 
   timer.flops += vGb*Fcount0;
 
   /////int modeGPU = 1;
@@ -469,7 +469,7 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
   if(dummy == QTRUE)qacc_barrier(dummy);
 
   #else
-  ////matrix_prod_gpu(bool Conj=true, bool dummy = true, bool trans=false, int modeGPU = 2)
+  ////matrix_prod_gpu(bool Conj=true, bool dummy = true, bool trans=false, Int modeGPU = 2)
   matrix_prod_cpu(a,b,c , m,n,w,L, Conj, trans);
   #endif
 }

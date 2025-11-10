@@ -176,7 +176,7 @@ inline void print_NONE(const char *filename)
 */
 #define Qcheck(num)                                                   \
   {                                                                   \
-    static int do_check =                                             \
+    static Int do_check =                                             \
       qlat::get_env_long_default(std::string("qlat_checkpoint"), -1); \
     if(num == do_check or num <= -1 or do_check <= -1){Qassert(false);}                              \
   }

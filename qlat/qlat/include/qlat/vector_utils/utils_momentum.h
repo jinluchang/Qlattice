@@ -20,29 +20,29 @@
 namespace qlat{
 
 inline void get_mom_single_nodeA(qlat::vector<Long >& mapA,
-    const Geometry& geo, const int mom_cut, const std::vector< Coordinate>& mom_off = std::vector< Coordinate>(0))
+    const Geometry& geo, const Int mom_cut, const std::vector< Coordinate>& mom_off = std::vector< Coordinate>(0))
 {
   TIMERA("get_mom_single_nodeA");
-  qlat::vector<int > nv,Nv,mv;
+  qlat::vector<Int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
 
   qlat::vector<Long > mapB;
   mapB.resize(geo.local_volume());Long* Bi = mapB.data();
-  ///const int mc = mom_cut*2 + 1;
+  ///const Int mc = mom_cut*2 + 1;
 
   for(unsigned long momG=0;momG<mom_off.size();momG++){
     Qassert(mom_off[momG][3] == 0);////only spatial momentum pick
-    for(int i=0;i<3;i++){
+    for(Int i=0;i<3;i++){
       Qassert(mom_off[momG][i] >= 0 and mom_off[momG][i] < nv[i]);
     }
   }
   qlat::vector<long> momL;momL.resize(mom_off.size() * 4);
   for(unsigned long momG=0;momG<mom_off.size();momG++){
-    for(int i=0;i<4;i++){
+    for(Int i=0;i<4;i++){
       momL[momG*4 + i] = mom_off[momG][i];
     }
   }
-  if(momL.size() == 0){momL.resize(4);for(int i=0;i<4;i++){momL[i] = 0;}}
+  if(momL.size() == 0){momL.resize(4);for(Int i=0;i<4;i++){momL[i] = 0;}}
   Qassert(momL.size() % 4 == 0);
   const long Nmom_off = momL.size() / 4;
 
@@ -50,7 +50,7 @@ inline void get_mom_single_nodeA(qlat::vector<Long >& mapA,
   qacc_for(isp,  geo.local_volume(),{
     Coordinate xl  = geo.coordinate_from_index(isp);
     Coordinate xg  = geo.coordinate_g_from_l(xl);
-    int Nmom_flag = 0;
+    Int Nmom_flag = 0;
     //Coordinate xo  = xg;
     ////xg = xg - mom_off;
     for(long momG=0;momG<Nmom_off;momG++)
@@ -59,10 +59,10 @@ inline void get_mom_single_nodeA(qlat::vector<Long >& mapA,
       //xo = xg;
       Coordinate mom  = xg;
       ////any direction larger than mom_cut, than disable
-      for(int i=0;i<3;i++){
+      for(Int i=0;i<3;i++){
         mom[i] = (xg[i] - momL[momG*4 + i] + nv[i])%nv[i];
       } ////move to positive
-      for(int i=0;i<3;i++){
+      for(Int i=0;i<3;i++){
         if(mom[i] > nv[i]/2){
           mom[i] = (nv[i] - mom[i]);
           if(mom[i] > mom_cut)
@@ -98,19 +98,19 @@ inline void get_mom_single_nodeA(qlat::vector<Long >& mapA,
 }
 
 inline void get_mom_single_nodeB(qlat::vector<Long >& mapA, qlat::vector<Long >& mapB,
-    const Geometry& geo, const int mom_cut, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
+    const Geometry& geo, const Int mom_cut, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
 {
   TIMERA("get_mom_single_nodeB");
-  qlat::vector<int > nv,Nv,mv;
+  qlat::vector<Int > nv,Nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
 
   const Long* A   = mapA.data();
   const Long Mvol = mapA.size();
-  const int mc = mom_cut*2 + 1;
+  const Int mc = mom_cut*2 + 1;
 
   mapB.resize(Mvol);Long* Bi = mapB.data();
   Qassert(mom_off[3] == 0);////only spatial momentum pick
-  for(int i=0;i<3;i++){
+  for(Int i=0;i<3;i++){
     Qassert(mom_off[i] >= 0 and mom_off[i] < nv[i]);
   }
 
@@ -120,11 +120,11 @@ inline void get_mom_single_nodeB(qlat::vector<Long >& mapA, qlat::vector<Long >&
     Coordinate xg   = geo.coordinate_g_from_l(xl);
     ////any direction not less than mom_cut, disable
     bool flag = true;
-    for(int i=0;i<3;i++){
+    for(Int i=0;i<3;i++){
       xg[i] = (xg[i] - mom_off[i] + nv[i])%nv[i];
     } ////move to positive
     Coordinate mom  = xg;
-    for(int i=0;i<3;i++){
+    for(Int i=0;i<3;i++){
       if(xg[i] > nv[i]/2){
         mom[i] = (nv[i] - xg[i]);
         if(mom[i] >  mom_cut){flag = false;}
@@ -143,7 +143,7 @@ inline void get_mom_single_nodeB(qlat::vector<Long >& mapA, qlat::vector<Long >&
 struct momentum_dat{
   ////int nx,ny,nz,nt;
   Geometry geo;
-  int mom_cut;
+  Int mom_cut;
   ////Long Nvol;
   ////int  nt;
 
@@ -166,7 +166,7 @@ struct momentum_dat{
   ShuffledBitSet sbs ;
   Coordinate new_size_node;
 
-  qlat::vector<int > nv;
+  qlat::vector<Int > nv;
   Coordinate  cur_pos;
   qlat::vector_gpu<Complexq > phases;
   Coordinate cur_shift;
@@ -178,7 +178,7 @@ struct momentum_dat{
   qlat::vector<Long > mapB_buf;
   Coordinate mom_off_buf;
 
-  int nvec_copy;
+  Int nvec_copy;
 
   template<typename Ty > 
   void pick_mom_from_vecs(qlat::vector_gpu<Ty >& resF, qlat::vector_gpu<Ty >& resV){
@@ -186,7 +186,7 @@ struct momentum_dat{
     const Long Mvol = mapA.size();
     ////const Long Nvol_ = V;
     const Long Nvol = geo.local_volume();
-    int nvec = resV.size()/Nvol;
+    Int nvec = resV.size()/Nvol;
     resF.resize(Mvol * nvec);
     ////sum_value_mpi(nvec);
     nvec_copy = nvec;
@@ -197,7 +197,7 @@ struct momentum_dat{
     if(mapA.size() != 0)
     qacc_for(isp, mapA.size() ,{
       const Long i0 = A[isp];
-      for(int iv=0;iv<nvec;iv++){
+      for(Int iv=0;iv<nvec;iv++){
         ////resF[isp*nvec + iv] = resV[i0*nvec + iv];
         resFP[isp*nvec + iv] = resVP[iv*Nvol + i0];
       }
@@ -218,7 +218,7 @@ struct momentum_dat{
     const Long Mvol = mapA.size();
     ////const Long Nvol_ = V;
     //const Long Nvol = geo.local_volume();
-    int nvec = resV.size();
+    Int nvec = resV.size();
     resF.resize(Mvol * nvec);
     nvec_copy = nvec;
 
@@ -228,7 +228,7 @@ struct momentum_dat{
     if(mapA.size() != 0)
     qacc_for(isp, mapA.size() ,{
       const Long i0 = A[isp];
-      for(int iv=0;iv<nvec;iv++){
+      for(Int iv=0;iv<nvec;iv++){
         ////resF[isp*nvec + iv] = resV[i0*nvec + iv];
         resFP[isp*nvec + iv] = resVP[iv][i0];
       }
@@ -236,12 +236,12 @@ struct momentum_dat{
   }
 
   template<typename Ty, typename Ty1 > 
-  int copy_momF_to_sf(qlat::SelectedField<Ty1  >& sf_, qlat::vector_gpu<Ty >& srcF, int dir = 0 ){
+  Int copy_momF_to_sf(qlat::SelectedField<Ty1  >& sf_, qlat::vector_gpu<Ty >& srcF, Int dir = 0 ){
     TIMERA("copy_momF_to_sf");
     const Long Mvol = mapA.size();
     ///const Long Mvol_ = Mvol;
     ///const Long Nvol_ = V;
-    int nvec  = 0;
+    Int nvec  = 0;
     if(dir == 0){
      if(Mvol != 0){nvec = srcF.size()/Mvol;}
     }
@@ -267,14 +267,14 @@ struct momentum_dat{
       const Long si = F[isp];
       Ty1* sfP = (Ty1*) qlat::get_data(sf_.get_elems(si)).data();
       Ty* reP = (Ty*) &src[isp*nvec + 0];
-      if(dir == 0){for(int iv=0;iv<nvec;iv++){sfP[iv] = reP[iv];} }
-      if(dir == 1){for(int iv=0;iv<nvec;iv++){reP[iv] = sfP[iv];} }
+      if(dir == 0){for(Int iv=0;iv<nvec;iv++){sfP[iv] = reP[iv];} }
+      if(dir == 1){for(Int iv=0;iv<nvec;iv++){reP[iv] = sfP[iv];} }
     });
     return nvec;
   }
 
   template<typename Ty, typename Ty1 > 
-  int copy_sf_to_momF(qlat::vector_gpu<Ty >& srcF, qlat::SelectedField<Ty1 >& sf_ )
+  Int copy_sf_to_momF(qlat::vector_gpu<Ty >& srcF, qlat::SelectedField<Ty1 >& sf_ )
   {
     return copy_momF_to_sf(sf_, srcF, 1);
   }
@@ -304,7 +304,7 @@ struct momentum_dat{
     }
     ShuffledFieldsWriter sfw(nameQ, new_size_node, append);
 
-    const int nread = copy_momF_to_sf(sf, srcF);
+    const Int nread = copy_momF_to_sf(sf, srcF);
     Qassert( nread != 0);// must read or write something
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
     //qlat::write(sfw, tag, sf, sbs);
@@ -314,7 +314,7 @@ struct momentum_dat{
   }
 
   /////template<typename Ty > 
-  //Long read(qlat::SelectedField<TWOPT_TYPE  >& sf_, const int nvec, const std::string& nameQ, const std::string& tag_){
+  //Long read(qlat::SelectedField<TWOPT_TYPE  >& sf_, const Int nvec, const std::string& nameQ, const std::string& tag_){
   //  if(!sf_.initialized or sf_.n_elems != nvec){sf_.init(fsel, nvec);}
   //  ShuffledFieldsReader sfr(nameQ);
   //  std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
@@ -330,10 +330,10 @@ struct momentum_dat{
     ////Qassert(t0 < nv[3]);
 
     Coordinate shift(0, 0, 0, 0);
-    for(int i=0;i<4;i++){Qassert(shift[i] < nv[i]); shift[i] = -1 * shift_[i];}
+    for(Int i=0;i<4;i++){Qassert(shift[i] < nv[i]); shift[i] = -1 * shift_[i];}
     //shift[3] = (nv[3] - t0 + nv[3])%nv[3];
     //shift[3] = -t0;
-    int nread = copy_momF_to_sf(sf, s0);
+    Int nread = copy_momF_to_sf(sf, s0);
     Qassert( nread != 0);// must read or write something
 
     qlat::field_shift(sf_1, fsel_1, sf, fsel, shift);
@@ -350,14 +350,14 @@ struct momentum_dat{
     //  const Long si = fsel_1.f_local_idx.get_elem_offset(i0);
     //  TWOPT_TYPE* sfP = (TWOPT_TYPE*) qlat::get_data(sf_1.get_elems(si)).data();
     //  Ty* reP = (Ty*) &src[isp*nvec_copy + 0];
-    //  ////if(dir == 0){for(int iv=0;iv<nvec_copy;iv++){sfP[iv] = reP[iv];} }
-    //  ////if(dir == 1){for(int iv=0;iv<nvec_copy;iv++){reP[iv] = sfP[iv];} }
-    //  for(int iv=0;iv<nvec_copy;iv++){reP[iv] = sfP[iv];}
+    //  ////if(dir == 0){for(Int iv=0;iv<nvec_copy;iv++){sfP[iv] = reP[iv];} }
+    //  ////if(dir == 1){for(Int iv=0;iv<nvec_copy;iv++){reP[iv] = sfP[iv];} }
+    //  for(Int iv=0;iv<nvec_copy;iv++){reP[iv] = sfP[iv];}
     //});
   }
 
   template<typename Ty > 
-  void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const int t0){
+  void shift_t(qlat::vector_gpu<Ty >& s1, qlat::vector_gpu<Ty >& s0, const Int t0){
     shift_t(s1, s0, Coordinate(0,0,0, t0));
   }
 
@@ -391,7 +391,7 @@ struct momentum_dat{
 
   // change interface to return number of vectors read
   template<typename Ty > 
-  int read(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag){
+  Int read(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag){
     TIMERA("Qlat read mdat");
     ShuffledFieldsReader sfr(nameQ);
     if(!check_fn(nameQ, tag)){
@@ -400,14 +400,14 @@ struct momentum_dat{
     Long total_bytes = qlat::read(sfr, tag, sf, fsel);
     sfr.close();
     if(total_bytes ==  0){srcF.resize(0); return  total_bytes;}
-    const int nread = copy_sf_to_momF(srcF, sf);
+    const Int nread = copy_sf_to_momF(srcF, sf);
     Qassert( nread != 0);// must read or write something
     //return total_bytes;
     return nread;
   }
 
   template<typename Ty > 
-  int read_momcut(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_){
+  Int read_momcut(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_){
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);
     return read(srcF, nameQ, tag);
   }
@@ -423,12 +423,12 @@ struct momentum_dat{
   }
 
   /////mom_cut should be consistent with your production indicated in the saving file
-  momentum_dat(const Geometry& geo_, const int mom_cut_, const std::vector< Coordinate>& mom_off = std::vector< Coordinate>(0)){
+  momentum_dat(const Geometry& geo_, const Int mom_cut_, const std::vector< Coordinate>& mom_off = std::vector< Coordinate>(0)){
     TIMERA("momentum_dat");
     geo = geo_;
     mom_cut = mom_cut_;
 
-    qlat::vector<int > Nv, mv;
+    qlat::vector<Int > Nv, mv;
     geo_to_nv(geo, nv, Nv, mv);
     ////nt = nv[3];
     ////Nvol = geo.local_volume();
@@ -438,20 +438,20 @@ struct momentum_dat{
     mapB_size = -1;
 
     ///Mvol = mapA.size();
-    ////const int mc = mom_cut*2 + 1;
+    ////const Int mc = mom_cut*2 + 1;
     //Mvol = nt * mc*mc*mc;
     ////read_field_selection(fsel, nameQF, -1);
 
     ////TODO
-    //const int Nmpi = qlat::get_num_node();
-    //const int rank  = qlat::get_id_node();
-    //std::vector<int > pconf_vec;
+    //const Int Nmpi = qlat::get_num_node();
+    //const Int rank  = qlat::get_id_node();
+    //std::vector<Int > pconf_vec;
     //pconf_vec.resize(Nmpi * Mvol * 4);
     //qthread_for(ai , Mvol , {
     //  const Long isp = mapA[ai];
     //  const Coordinate xl  = geo.coordinate_from_index(isp);
     //  const Coordinate xg  = geo.coordinate_g_from_l(xl);
-    //  int* res = &pconf_vec[(rank * Mvol + ai) * 4 + 0];
+    //  Int* res = &pconf_vec[(rank * Mvol + ai) * 4 + 0];
     //  for(unsigned int i = 0; i < 4 ; i++){res[i] = xg[i];}
     //});
     //sum_all_size(pconf_vec.data(), pconf_vec.size(), 0);
@@ -459,7 +459,7 @@ struct momentum_dat{
     //PointSelection pconf;
     //pconf.resize(Nmpi * Mvol);
     //qthread_for(ai , Nmpi * Mvol , {
-    //  int* src = &pconf_vec[ai * 4 + 0];
+    //  Int* src = &pconf_vec[ai * 4 + 0];
     //  for(unsigned int i = 0; i < 4 ; i++){pconf[ai][i] = src[i];}
     //});
 
@@ -496,10 +496,10 @@ struct momentum_dat{
       fsel_map[isp] = si;
     });
 
-    int ionum = 16;
+    Int ionum = 16;
     std::string val = get_env(std::string("q_io_sparse_vec_ionum"));
     if(val == ""){ionum = 16;}else{
-      int tem = stringtonum(val);
+      Int tem = stringtonum(val);
       if(tem <= 8){ionum = 8;}
       if(tem > 8  and tem <= 16){ionum = 16;}
       if(tem > 16){ionum = 32;}
@@ -542,16 +542,16 @@ struct momentum_dat{
   /////calculate source phases with coordinate `shift`
   /////src phases e^{-i p ( x - y)}
   template<typename Ty > 
-  void update_phases(const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0), const int sign = -1)
+  void update_phases(const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0), const Int sign = -1)
   {
     TIMERA("update_phases");
     const Long Mvol = mapA.size();
     Qassert(sizeof(Ty)%sizeof(Complexq) == 0);
-    const int fac = sizeof(Ty)/sizeof(Complexq);
+    const Int fac = sizeof(Ty)/sizeof(Complexq);
     if(cur_pos == src and Long(phases.size()) == Mvol * fac and cur_shift == shift){return ;}
     cur_shift = shift;
     phases.resize(Mvol * fac);Ty* resP = (Ty*) phases.data();
-    qlat::vector<int >& Lat = nv;
+    qlat::vector<Int >& Lat = nv;
     Long* A = mapA.data();
     const Geometry& geo_ = geo;
     if(Mvol != 0)
@@ -560,7 +560,7 @@ struct momentum_dat{
       const Coordinate xl  = geo_.coordinate_from_index(ilocal);
       const Coordinate mom  = geo_.coordinate_g_from_l(xl);
       double v0 = 0.0; 
-      for(int i=0;i<3;i++){v0 += (2.0* QLAT_PI_LOCAL * src[i] * ((mom[i] + shift[i] + Lat[i])%(Lat[i]))/Lat[i]);}
+      for(Int i=0;i<3;i++){v0 += (2.0* QLAT_PI_LOCAL * src[i] * ((mom[i] + shift[i] + Lat[i])%(Lat[i]))/Lat[i]);}
       resP[isp] = Ty(std::cos(v0), sign * std::sin(v0));
     });
     cur_pos = src;
@@ -568,7 +568,7 @@ struct momentum_dat{
 
   /////src phases e^{-i p ( x - y)}
   template<typename Ty > 
-  void apply_src_phases(qlat::vector_gpu<Ty >& vec, const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0) , const int sign = -1)
+  void apply_src_phases(qlat::vector_gpu<Ty >& vec, const Coordinate& src , const Coordinate& shift = Coordinate(0,0,0,0) , const Int sign = -1)
   {
     TIMERA("apply_src_phases");
     const Long Mvol = mapA.size();
@@ -585,7 +585,7 @@ struct momentum_dat{
     qacc_for(isp, Mvol, {
       Ty ph = momP[isp];
       Ty* tmp = &resV[isp*nvec + 0];
-      for(int iv=0;iv<nvec;iv++){
+      for(Int iv=0;iv<nvec;iv++){
         //tmp[iv] = tmp[iv] * ph;
         tmp[iv] *= ph;
       }
@@ -600,9 +600,9 @@ template<typename Ty >
 void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, momentum_dat& mdat, const Coordinate& mom_off = Coordinate(0, 0, 0, 0))
 {
   TIMERA("fft_local_to_global");
-  //std::vector<int > nv, Nv, mv;
+  //std::vector<Int > nv, Nv, mv;
   //geo_to_nv(mdat.geo, nv, Nv, mv);
-  const int    mc = mdat.mom_cut*2 + 1;
+  const Int    mc = mdat.mom_cut*2 + 1;
 
   Long nvec = 0;
   if(mdat.mapA.size() != 0){ nvec = FL.size()/mdat.mapA.size();}
@@ -635,7 +635,7 @@ void fft_local_to_global(qlat::vector_gpu<Ty >& FG, qlat::vector_gpu<Ty >& FL, m
 }
 
 template<typename Ty, typename Ta>
-void copy_sparse_fields(qlat::SelectedField<Ty >& res, qlat::SelectedField<Ta >& src, const int Ndc, int nr=0, const int ns=0)
+void copy_sparse_fields(qlat::SelectedField<Ty >& res, qlat::SelectedField<Ta >& src, const Int Ndc, Int nr=0, const Int ns=0)
 {
   Qassert(src.initialized and res.initialized);
   Qassert(src.field.size() % Ndc == 0);
@@ -647,15 +647,15 @@ void copy_sparse_fields(qlat::SelectedField<Ty >& res, qlat::SelectedField<Ta >&
   ///// printf("=== %8d %8d \n", int(src.field.size() / src.multiplicity), int(res.field.size() / res.multiplicity));
   Qassert(Ndata == (res.field.size() / res.multiplicity));
 
-  const int Nr = res.field.size() / (Ndata * Ndc);
-  const int Ns = src.field.size() / (Ndata * Ndc);
+  const Int Nr = res.field.size() / (Ndata * Ndc);
+  const Int Ns = src.field.size() / (Ndata * Ndc);
   Qassert(Nr > nr and Ns > ns);
 
   Ty* pr = (Ty*) qlat::get_data(res.field).data();
   Ta* ps = (Ta*) qlat::get_data(src.field).data();
 
   qacc_for(idx, Ndata, {
-    for(int i=0;i<Ndc;i++)
+    for(Int i=0;i<Ndc;i++)
     {
       pr[(idx*Nr + nr)*Ndc+i] = ps[(idx*Ns + ns)*Ndc + i];
     }

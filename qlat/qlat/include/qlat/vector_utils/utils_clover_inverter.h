@@ -27,7 +27,7 @@ namespace qlat
 
 struct quda_clover_inverter {
   Long V;
-  int X[4];
+  Int X[4];
   QudaGaugeParam  gauge_param;
   qlat::vector<qlat::ComplexD > quda_gf_default;
   QudaInvertParam   inv_param;
@@ -37,20 +37,20 @@ struct quda_clover_inverter {
 
   box<Geometry> geo;
   qlat::vector<Long > map_index;
-  int solve_mode ;
+  Int solve_mode ;
   /////QudaInvertParam df_param;
 
   QudaEigParam    eig_param;
-  int nvec;
+  Int nvec;
   double inv_residue;
   double inv_time;
-  int    inv_iter;
+  Int    inv_iter;
   double inv_gflops;
-  int add_high;
-  int num_src;
-  int num_src_inv;
-  int quda_verbos;
-  int prec_type_check;
+  Int add_high;
+  Int num_src;
+  Int num_src_inv;
+  Int quda_verbos;
+  Int prec_type_check;
 
   quda::DiracMatrix* mat;
   //quda::DiracMatrix* mat_pc;
@@ -76,7 +76,7 @@ struct quda_clover_inverter {
   quda::Dirac *dPre;
   quda::Dirac *dEig;
 
-  int spinor_site_size;
+  Int spinor_site_size;
   qlat::vector<Long > mapI;// field copy index buffers
 
   std::vector<signed char > QUDA_clover;
@@ -108,12 +108,12 @@ struct quda_clover_inverter {
   bool io_rotate_bfac;
 
   ////0 for wilson, clover, 1 for stagger
-  int fermion_type;
-  int check_residue;
+  Int fermion_type;
+  Int check_residue;
   bool clover_alloc;
   bool clover_setup;
 
-  quda_clover_inverter(const Geometry& geo_, QudaTboundary t_boundary, int num_src_=1);
+  quda_clover_inverter(const Geometry& geo_, QudaTboundary t_boundary, Int num_src_=1);
 
   inline void free_mem();
   inline void setup_link(qlat::ComplexD* quda_gf);
@@ -121,7 +121,7 @@ struct quda_clover_inverter {
   inline void setup_clover(const double kappa, const double clover_csw);
 
   template<typename Ty>
-  inline void do_inv(Ty* res, Ty* src, const double kappa, const double err = 1e-10, const int niter = 10000);
+  inline void do_inv(Ty* res, Ty* src, const double kappa, const double err = 1e-10, const Int niter = 10000);
 
   /*
     copy to res under CPS basis
@@ -143,14 +143,14 @@ struct quda_clover_inverter {
 
   //inline void setup_inv_kappa(const double kappa);
   inline void clear_mat();
-  inline void free_csfield(const int mode = 0);
+  inline void free_csfield(const Int mode = 0);
   inline void alloc_csfield_cpu();
   inline void alloc_csfield_gpu();
 
-  //inline void setup_inv_param_prec(int prec_type = 0, bool force_reload = false);
+  //inline void setup_inv_param_prec(Int prec_type = 0, bool force_reload = false);
   inline void setup_gauge_param(QudaTboundary t_boundary);
 
-  inline void random_src(const int seed);
+  inline void random_src(const Int seed);
 
   inline void save_prop(const void* srcP, const char* filename);
 
@@ -161,7 +161,7 @@ struct quda_clover_inverter {
 inline void quda_clover_inverter::setup_gauge_param(QudaTboundary t_boundary)
 {
   TIMER("setup_gauge_param");
-  for (int mu = 0; mu < 4; mu++) {gauge_param.X[mu] = X[mu];}
+  for (Int mu = 0; mu < 4; mu++) {gauge_param.X[mu] = X[mu];}
 
   ////tuning flag for not high mode
 
@@ -214,19 +214,19 @@ inline void quda_clover_inverter::setup_gauge_param(QudaTboundary t_boundary)
 
   gauge_param.anisotropy = 1.0; /////anisotropy
 
-  int pad_size = 0;
+  Int pad_size = 0;
   // For multi-GPU, ga_pad must be large enough to store a time-slice
-  int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
-  int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
+  Int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  Int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  Int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
+  Int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
   pad_size = std::max({x_face_size, y_face_size, z_face_size, t_face_size});
   gauge_param.ga_pad = pad_size;
   gauge_param.struct_size = sizeof(gauge_param);
   ////===END of gauge_param
 }
 
-quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t_boundary, int num_src_)
+quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t_boundary, Int num_src_)
 {
   TIMER("quda_clover_inverter_constuctor");
   /////set up gauge parameters
@@ -237,7 +237,7 @@ quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t
   num_src_inv = num_src;
   prec_type_check = -2;
 
-  for (int mu = 0; mu < 4; mu++) {X[mu] = geo().node_site[mu];}
+  for (Int mu = 0; mu < 4; mu++) {X[mu] = geo().node_site[mu];}
   ////===Start of gauge_param
   gauge_param = newQudaGaugeParam();
   ////quda_gf_default = NULL;
@@ -338,7 +338,7 @@ inline void quda_clover_inverter::print_plaq()
 }
 
 ////mode = 0 all field, mode = 1 cpu field , mode = 2 gpu field
-inline void quda_clover_inverter::free_csfield(const int mode)
+inline void quda_clover_inverter::free_csfield(const Int mode)
 {
   TIMER("free_csfield");
   if(mode == 0 or mode == 1){
@@ -482,16 +482,16 @@ inline void quda_clover_inverter::alloc_csfield_cpu()
 inline void quda_clover_inverter::save_prop(const void* srcP, const char* filename)
 {
   TIMER("quda save_prop");
-  const int n0 = 1;
+  const Int n0 = 1;
   std::vector<qlat::FieldM<qlat::ComplexD , 3> > prop;prop.resize(n0);
-  for(int n = 0; n < prop.size(); n++){prop[n].init(geo());}
+  for(Int n = 0; n < prop.size(); n++){prop[n].init(geo());}
 
   qlat::ComplexD* src = (qlat::ComplexD*) srcP;
   Long Nvol = geo().local_volume() * n0 ;
 
-  for(int n=0;n<n0;n++){
+  for(Int n=0;n<n0;n++){
     //quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
-    quda_cf_to_qlat_cf_test(prop[n], &src[n*Nvol]);
+    quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
   }   
 
   std::string VECS_TYPE("STAGGERED_Prop");
@@ -505,7 +505,7 @@ inline void quda_clover_inverter::save_prop(const void* srcP, const char* filena
 inline void quda_clover_inverter::free_mem(){
   TIMER("quda free_mem");
   V = 0;
-  for(int i=0;i<4;i++){X[i] = 0;}
+  for(Int i=0;i<4;i++){X[i] = 0;}
 
   free_csfield();
   if(clover_setup == true){freeCloverQuda();}
@@ -647,7 +647,7 @@ inline void quda_clover_inverter::setup_clover(const double kappa, const double 
     //inv_param.solver_normalization = QUDA_KAPPA_NORMALIZATION;
 
     ///unknown
-    int gcrNkrylov = 10;
+    Int gcrNkrylov = 10;
     QudaCABasis ca_basis = QUDA_POWER_BASIS;
     double ca_lambda_min = 0.0;
     double ca_lambda_max = -1.0;
@@ -678,9 +678,9 @@ inline void quda_clover_inverter::setup_clover(const double kappa, const double 
     //// These should be set in the application code. We set the them here by way of
     //// example
     //inv_param.num_offset = multishift;
-    //for (int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
+    //for (Int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
     //// these can be set individually
-    //for (int i = 0; i < inv_param.num_offset; i++) {
+    //for (Int i = 0; i < inv_param.num_offset; i++) {
     //  inv_param.tol_offset[i] = inv_param.tol;
     //  inv_param.tol_hq_offset[i] = inv_param.tol_hq;
     //}
@@ -736,11 +736,11 @@ inline void quda_clover_inverter::setup_clover(const double kappa, const double 
     //void *clover = nullptr;
     //void *clover_inv = nullptr;
 
-    int clover_site_size           = 72; // real numbers per block-diagonal clover matrix
+    Int clover_site_size           = 72; // real numbers per block-diagonal clover matrix
     ////size_t host_clover_data_type_size = (cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-    int host_clover_data_type_size = sizeof(quda::Complex)/2;
+    Int host_clover_data_type_size = sizeof(quda::Complex)/2;
     ////size_t host_spinor_data_type_size = (cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-    int host_spinor_data_type_size = sizeof(quda::Complex)/2;
+    Int host_spinor_data_type_size = sizeof(quda::Complex)/2;
 
     QUDA_clover.resize(    V * clover_site_size * host_clover_data_type_size);
     QUDA_clover_inv.resize(V * clover_site_size * host_spinor_data_type_size);
@@ -782,7 +782,7 @@ inline void quda_clover_inverter::setup_clover(const double kappa, const double 
       clover_alloc = true;
     }
 
-    int verbos = quda_verbos;
+    Int verbos = quda_verbos;
     if(verbos <= -1)
     {
       inv_param.verbosity   = QUDA_SILENT;
@@ -834,10 +834,10 @@ inline void quda_clover_inverter::clear_mat()
   //if(mEig != NULL){delete mEig;  mEig = NULL;}
 }
 
-inline void quda_clover_inverter::random_src(const int seed)
+inline void quda_clover_inverter::random_src(const Int seed)
 {
-  for(int i=0;i<int(seed)%20 + 20*quda::comm_rank_global();i++){quda::comm_drand();}
-  int random_mode = 1;
+  for(Int i=0;i<int(seed)%20 + 20*quda::comm_rank_global();i++){quda::comm_drand();}
+  Int random_mode = 1;
   random_Ty((qlat::ComplexD*) gsrc->data(), gsrc->Volume() * spinor_site_size, 1, seed + 111111, random_mode);
   quda::blas::ax(0.05, *gsrc);
   quda::Complex* tmp = (quda::Complex*) (gsrc->data());
@@ -845,7 +845,7 @@ inline void quda_clover_inverter::random_src(const int seed)
 }
 
 template<typename Ty>
-inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, const double err, const int niter )
+inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, const double err, const Int niter )
 {
   TIMER_FLOPS("QUDA CG");
   timeval tm0,tm1;gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);
@@ -878,7 +878,7 @@ inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, c
   //*ctmp1 = *gresH;
 
   //qudaMemcpy((void*)(*gres).data(), (void*)ctmp1->data(), ctmp0->Volume() * spinor_site_size * sizeof(quda::Complex), qudaMemcpyHostToDevice);
-  //for(int si=0;si<(*gsrc).CompositeDim();si++)
+  //for(Int si=0;si<(*gsrc).CompositeDim();si++)
   //{
   //  invertQuda((void*) (*gres).Component(si).data(), (void*) (*gsrc).Component(si).data(), &inv_param);
   //}
@@ -924,11 +924,11 @@ template <typename Float> void constructCloverField(Float *res, double norm, dou
 
   Float c = 2.0 * norm / RAND_MAX;
 
-  for (int i = 0; i < V; i++) {
-    for (int j = 0; j < 72; j++) { res[i * 72 + j] = c * rand() - norm; }
+  for (Int i = 0; i < V; i++) {
+    for (Int j = 0; j < 72; j++) { res[i * 72 + j] = c * rand() - norm; }
 
     // impose clover symmetry on each chiral block
-    for (int ch = 0; ch < 2; ch++) {
+    for (Int ch = 0; ch < 2; ch++) {
       res[i * 72 + 3 + 36 * ch] = -res[i * 72 + 0 + 36 * ch];
       res[i * 72 + 4 + 36 * ch] = -res[i * 72 + 1 + 36 * ch];
       res[i * 72 + 5 + 36 * ch] = -res[i * 72 + 2 + 36 * ch];
@@ -940,7 +940,7 @@ template <typename Float> void constructCloverField(Float *res, double norm, dou
       res[i * 72 + 35 + 36 * ch] = -res[i * 72 + 17 + 36 * ch];
     }
 
-    for (int j = 0; j < 6; j++) {
+    for (Int j = 0; j < 6; j++) {
       res[i * 72 + j] += diag;
       res[i * 72 + j + 36] += diag;
     }
@@ -957,7 +957,7 @@ void constructQudaCloverField(void *clover, double norm, double diag, QudaPrecis
 
 template<typename Td>
 void get_clover_prop(quda_clover_inverter& qinv, qlat::FermionField4dT<Td >& src, qlat::FermionField4dT<Td >& prop,
-       const double kappa, const double err, const int niter)
+       const double kappa, const double err, const Int niter)
 {
   qlat::ComplexT<Td >* srcP = (qlat::ComplexT<Td >*) qlat::get_data(src).data();
 
@@ -971,17 +971,17 @@ void get_clover_prop(quda_clover_inverter& qinv, qlat::FermionField4dT<Td >& src
 template<typename Td>
 void get_clover_prop(quda_clover_inverter& qinv, qlat::Propagator4dT<Td >& src, qlat::Propagator4dT<Td >& prop,
       std::vector<qlat::FermionField4dT<Td > >& b0, std::vector<qlat::FermionField4dT<Td > >& b1,
-       const double kappa, const double err, const int niter)
+       const double kappa, const double err, const Int niter)
 {
   const Geometry& geo = src.geo();
   if(!prop.initialized){prop.init(geo);} ////allocate mem for prop
 
   if(b0.size() != 12){b0.resize(12);}
   if(b1.size() != 12){b1.resize(12);}
-  for(int i=0;i<12;i++){if(!b0[i].initialized){b0[i].init(geo);}}
+  for(Int i=0;i<12;i++){if(!b0[i].initialized){b0[i].init(geo);}}
 
   prop4d_to_Fermion(b0, src);
-  for(int i=0;i<12;i++){
+  for(Int i=0;i<12;i++){
     get_clover_prop(qinv, b0[i], b1[i], kappa, err, niter);
   }
   Fermion_to_prop4d(prop, b1);
@@ -989,7 +989,7 @@ void get_clover_prop(quda_clover_inverter& qinv, qlat::Propagator4dT<Td >& src, 
 
 template<typename Td>
 void get_clover_prop(quda_clover_inverter& qinv, qlat::Propagator4dT<Td >& src, qlat::Propagator4dT<Td >& prop,
-       const double kappa, const double err, const int niter)
+       const double kappa, const double err, const Int niter)
 {
   std::vector<qlat::FermionField4dT<Td > > b0;
   std::vector<qlat::FermionField4dT<Td > > b1;

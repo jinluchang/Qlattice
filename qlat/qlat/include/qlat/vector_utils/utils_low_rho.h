@@ -22,7 +22,7 @@ namespace qlat{
 //__device__ __constant__  int8_t  Gmap2C[32];
 //__device__ __constant__  int8_t  Gmap3C[32];
 
-__global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype *Mvalues,const int nt,const int nmass,const unsigned long bufN0, int8_t* GmapM)
+__global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype *Mvalues,const Int nt,const Int nmass,const unsigned long bufN0, int8_t* GmapM)
 {
   __shared__ int8_t G0[32];
   __shared__ int8_t G1[32];
@@ -38,7 +38,7 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
   ///unsigned int ipr  = ji%Aoper;
 
   ////Load gammas
-  int off = tid;
+  Int off = tid;
   //          while(off < 32){G0[off] = Gmap0C[off];off += blockDim.x;}
   //off = tid;while(off < 32){G1[off] = Gmap1C[off];off += blockDim.x;}
   //off = tid;while(off < 32){G2[off] = Gmap2C[off];off += blockDim.x;}
@@ -52,11 +52,11 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
   //while(off < nt*16){NMv_values[off] = Nab[offAB + off];off += blockDim.x;}
   ////off = tid;
   unsigned long offAB = bufN0*16;/////off = bi*16;
-  /////if(tid < 16){for(int ti=0;ti<nt;ti++)NMv_values[ti*16 + tid] = Nab[ti*offAB + off + tid];}
+  /////if(tid < 16){for(Int ti=0;ti<nt;ti++)NMv_values[ti*16 + tid] = Nab[ti*offAB + off + tid];}
   off = tid;
   while(off < nt*16){
-    int ti = off/16;
-    int op = off%16;
+    Int ti = off/16;
+    Int op = off%16;
     NMv_values[ti*16 + op] = Nab[ti*offAB + bi*16 + op];
     off += blockDim.x;
   }
@@ -67,7 +67,7 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
   const Complexq *Av,*Bv;
   Complexq v0[16];
   Complexq v1[16];
-  ////for(int ipr=0;ipr<16*nt;ipr++){v1[ipr] = 0.0;}
+  ////for(Int ipr=0;ipr<16*nt;ipr++){v1[ipr] = 0.0;}
 
   off = tid;offAB = bi*nmass*2;
   Ftype *buf = (Ftype*) &NMv_values[nt*16+0];
@@ -80,13 +80,13 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
   /////unsigned int t0 = tid;
   for(unsigned int t0=0;t0<nt;t0++)
   {
-    ////for(int ipr=0;ipr<16;ipr++){v0[ipr] = 0.0;v1[ipr] = 0.0;}
+    ////for(Int ipr=0;ipr<16;ipr++){v0[ipr] = 0.0;v1[ipr] = 0.0;}
     unsigned int t1 = (t0+toff)%nt;
     ///Bv = &Avs[0];
     Bv = &NMv_values[t0*16 + 0];
     Av = &NMv_values[t1*16 + 0];
 
-    for(int ipr=0;ipr<16;ipr++){
+    for(Int ipr=0;ipr<16;ipr++){
       v0[ipr] = Av[G0[ipr*2+0]]*qlat::qconj(Bv[G1[ipr*2+0]])
        *Ftype(G0[ipr*2+1])*Ftype(         G1[ipr*2+1]);
       v1[ipr] = Av[G2[ipr*2+0]]*qlat::qconj(Bv[G3[ipr*2+0]])
@@ -94,11 +94,11 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
     }
 
     offAB = (((0*nmass+0)*bufN0 + bi)*nt+t0)*nt + toff;
-    for(int ipr=0;ipr<16;ipr++)
+    for(Int ipr=0;ipr<16;ipr++)
     {
       Ftype v00 = v0[ipr].real();
       Ftype v10 = v1[ipr].real();
-      for(int mi=0;mi<nmass;mi++)
+      for(Int mi=0;mi<nmass;mi++)
       {
         ////Long jobN = Aoper*nt;
         Mres[offAB] += (buf[mi*2+0]*v00 + buf[mi*2+1]*v10);
@@ -110,7 +110,7 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
 
 }
 
-__global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,const int Nvol,const int Nsum)
+__global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,const Int Nvol,const Int Nsum)
 {
   Complexq as[12];
   Complexq bs[12];
@@ -120,14 +120,14 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
   unsigned long isp = blockIdx.x*blockDim.x + threadIdx.x;
 
   if(isp < Nvol){
-    for(int dc=0;dc<12;dc++){as[dc] = a[dc*Nvol+isp];}
-    for(int dc=0;dc<12;dc++){bs[dc] = b[dc*Nvol+isp];}
+    for(Int dc=0;dc<12;dc++){as[dc] = a[dc*Nvol+isp];}
+    for(Int dc=0;dc<12;dc++){bs[dc] = b[dc*Nvol+isp];}
 
     {
-    for(int bi=0;bi<4;bi++)
+    for(Int bi=0;bi<4;bi++)
     {
-      int iv = bi*4 + 0;
-      for(int ai=0;ai<4;ai++)
+      Int iv = bi*4 + 0;
+      for(Int ai=0;ai<4;ai++)
       {
         //#ifndef __HIP_PLATFORM_HCC__
         //Eigen::Map<const EigenVq > aM(&as[ai*3+0],3);
@@ -136,7 +136,7 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
         //#else
 
         resab[tid*16 + iv] = 0; 
-        for(int doti=0;doti<3;doti++){resab[tid*16 + iv] += qlat::qconj(bs[bi*3+doti]) * as[ai*3+doti];}
+        for(Int doti=0;doti<3;doti++){resab[tid*16 + iv] += qlat::qconj(bs[bi*3+doti]) * as[ai*3+doti];}
 
         //#endif
         iv += 1;
@@ -145,36 +145,36 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
     }
 
   }else{
-    for(int iv=0;iv<16;iv++){resab[tid*16 + iv] = 0.0;}
+    for(Int iv=0;iv<16;iv++){resab[tid*16 + iv] = 0.0;}
   }
   __syncthreads();
 
   ///resab --> isp --> 16 --> reduce by a factor of 4/8/16
   ////Assume thread number 32
-  if(tid<16){for(int is= 1;is<16;is++){resab[ 0*16 +tid   ] += resab[is*16+tid   ];}}
-  else{      for(int is=17;is<32;is++){resab[16*16 +tid-16] += resab[is*16+tid-16];}}
+  if(tid<16){for(Int is= 1;is<16;is++){resab[ 0*16 +tid   ] += resab[is*16+tid   ];}}
+  else{      for(Int is=17;is<32;is++){resab[16*16 +tid-16] += resab[is*16+tid-16];}}
   __syncthreads();
 
   if(tid < 16){resab[ 0*16 + tid] += resab[16*16 + tid];}
   __syncthreads();
 
-  const int it  = isp/Nsum;
+  const Int it  = isp/Nsum;
   ////blockIdx.x*blockDim.x
   const unsigned long offv = Nsum/32;
   const unsigned long off0 = it*16*offv + blockIdx.x%offv;
   Complexq *f0 = &fd[off0];
 
-  ////if(tid==0){for(int iv=0;iv<16;iv++)f0[iv*offv] = resab[iv];}
+  ////if(tid==0){for(Int iv=0;iv<16;iv++)f0[iv*offv] = resab[iv];}
   if(tid < 16){f0[tid*offv] = resab[tid];}
 
 }
 #endif
 
 
-void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry& geo, Complexq *fM, int mode_reduce=1)
+void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry& geo, Complexq *fM, Int mode_reduce=1)
 {
   unsigned long Nvol = geo.local_volume();
-  int Nt = geo.node_site[3];
+  Int Nt = geo.node_site[3];
   Long Nsum = Nvol/Nt;
   /////Qassert(Nsum%32 == 0);
 
@@ -185,7 +185,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry& geo, Complexq *fM, 
   //////GPU version and function return
   if(mode_reduce == 1){
     #ifdef QLAT_USE_ACC
-    const int nthreads = 32;
+    const Int nthreads = 32;
     size_t bN = (Nvol+nthreads-1)/nthreads;
     /////#pragma acc host_data use_device (a,b,f0)
     ////size_t bSize = nthreads*16*sizeof(Complexq);
@@ -204,7 +204,7 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry& geo, Complexq *fM, 
     #pragma omp parallel for
     for(Long i=0;i<Nt*4*4;i++){f0[i] = 0;}
     //#pragma omp parallel for
-    //for(int it=0;it<Nt;it++){
+    //for(Int it=0;it<Nt;it++){
     //  matrix_prod_cpu(&b[it*m*w], &a[it*n*w], &f0[it*m*n] , m,n, w, 1, true, true);
     //}
     matrix_prod_cpu(b,a, f0 , m, n, w, Nt, true, false);
@@ -213,10 +213,10 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry& geo, Complexq *fM, 
   }
 }
 
-inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry& geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
+inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std::vector<ga_M > &gL,const Geometry& geo,const Int nvec,const Ftype facvol, unsigned long bufi, Int mode_reduce=1)
 {
   unsigned long Nvol = geo.local_volume();
-  int Nt = geo.node_site[3];
+  Int Nt = geo.node_site[3];
   qlat::vector<Complexq > reduce_sum;reduce_sum.resize((nvec*Nt)*16);
 
   if(mode_reduce == 1)
@@ -227,39 +227,39 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std:
 
     set_zero(reduce_sum);
 
-    int bSum = 256/4;
-    int cutN  = 32;
+    Int bSum = 256/4;
+    Int cutN  = 32;
     reduce_gpu2d_6(fd.data(),&reduce_sum[0],Nsum,nvec*Nt*16,  1, bSum, cutN);
   }
   if(mode_reduce == 0)
   {
     #pragma omp parallel for
-    for(int i=0;i<reduce_sum.size();i++){reduce_sum[i] = fd[i];}
+    for(Int i=0;i<reduce_sum.size();i++){reduce_sum[i] = fd[i];}
   }
   
 
   ///TODO correct the reduce_gamma to GPU
   //qlat::vector<Complexq > NabL_tem;NabL_tem.resize(nvec*Nt*16);
   //qthread_for(op0, nvec*Nt*16, {
-  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-  //  int it = op/16; int gi = op%16;
+  //  Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  Int it = op/16; Int gi = op%16;
   //  NabL_tem[ivec*Nt*16 + it*16 + gi] = reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0], gL[gi])/facvol;
   //});
 
   //qacc_for(op0, nvec*Nt*16, {
-  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-  //  int it = op/16; int gi = op%16;
+  //  Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  Int it = op/16; Int gi = op%16;
   //  NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += NabL_tem[ivec*Nt*16 + it*16 + gi];
   //});
 
-  qlat::vector<Complexq* > gP; qlat::vector<int* > iP;get_g_pointer(gL, gP, iP);
+  qlat::vector<Complexq* > gP; qlat::vector<Int* > iP;get_g_pointer(gL, gP, iP);
   /////qacc_for(i0, 1,{
   /////  NabL[0] = gP[0][0];
   /////});
 
   qacc_for(op0, nvec*Nt*16, {
-    int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-    int it = op/16; int gi = op%16;
+    Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+    Int it = op/16; Int gi = op%16;
     NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0], gP[gi], iP[gi])/facvol;
   });
   /////============================
@@ -272,16 +272,16 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std:
   //if(mode_nt == 1)
   //{
   //qacc_for(op0, nvec*Nt*16, {
-  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-  //  int it = op/16; int gi = op%16;
+  //  Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  Int it = op/16; Int gi = op%16;
   //  ////Nab[ivec*Nt*16 + it*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   //  NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   //});
   /////unsigned long bufN = NabL.size()/(nt*16);
   ////#pragma omp parallel for
-  ////for(int op0=0;op0<nvec*Nt*16;op0++){
-  ////  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-  ////  int it = op/16; int gi = op%16;
+  ////for(Int op0=0;op0<nvec*Nt*16;op0++){
+  ////  Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  ////  Int it = op/16; Int gi = op%16;
   ////  ////Nab[ivec*Nt*16 + it*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   ////  NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   ////}
@@ -294,16 +294,16 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std:
   //int  Nmpi   = qlat::get_num_node();
   ///////unsigned long bufN = NabL.size()/(Nmpi*nt*16);
   //qacc_for(op0, nvec*Nt*16, {
-  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-  //  int it = op/16; int gi = op%16;
+  //  Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  Int it = op/16; Int gi = op%16;
   //  ////Nab[ivec*Nt*16 + it*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   //  NabL[ivec*nt*bufN*16 + (it+tini)*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   //});
 
   //#pragma omp parallel for
-  //for(int op0=0;op0<nvec*Nt*16;op0++){
-  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
-  //  int it = op/16; int gi = op%16;
+  //for(Int op0=0;op0<nvec*Nt*16;op0++){
+  //  Int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  Int it = op/16; Int gi = op%16;
   //  ////Nab[ivec*Nt*16 + it*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   //  NabL[ivec*nt*bufN*16 + (it+tini)*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   //}
@@ -311,7 +311,7 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, Long bufN, std:
 
 }
 
-inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector<Complexq > &values, qlat::vector<int8_t> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
+inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,std::vector<Int > avL, std::vector<Int > bvL,const qlat::vector<Complexq > &values, qlat::vector<int8_t> &GmapM,const Int &nmass,const Int &nt,const Int nzero,const unsigned long bufN0, Int mode_reduce=1)
 {
   unsigned long bufN = avL.size();
   if(bufN == 0)return;
@@ -326,11 +326,11 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
   #pragma omp parallel for
   for(unsigned long bmi=0;bmi<bufN*nmass;bmi++){
     unsigned long bi = bmi/nmass;
-    int mi = bmi%nmass;
-    int av = avL[bi];
-    int bv = bvL[bi];
+    Int mi = bmi%nmass;
+    Int av = avL[bi];
+    Int bv = bvL[bi];
 
-    int caseab = 2;
+    Int caseab = 2;
     Ftype fac_ab = 2.0;
     if(av==bv)fac_ab = 1.0;
     if(av >= nzero and bv >= nzero ){caseab = 2;}
@@ -367,14 +367,14 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
   ////GPU prod
   if(mode_reduce == 1){
     #ifdef QLAT_USE_ACC
-    int rank = qlat::get_id_node();
+    Int rank = qlat::get_id_node();
 
-    int  nthreads = nt;
+    Int  nthreads = nt;
     Long nB = bufN;
     //Long largeB = nt*16;if(nmass > largeB){largeB = nmass;}
     //int sizeB = largeB*sizeof(Complexq);
     Long largeB = nt*16;largeB += nmass;
-    int sizeB = largeB*sizeof(Complexq);
+    Int sizeB = largeB*sizeof(Complexq);
     /////Sum over time
     /////if(nt < 16){qmessage("time too short for production. \n");Qassert(false);}
     multiplyNab_global<<< nB, nthreads, sizeB >>>(&Nab[offNab],MresP,&Mvalues[0],nt,nmass,bufN0, GmapM.data());
@@ -406,7 +406,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
     {
       std::vector<Complexq > Mv; Mv.resize(nt*16);
       /////Copy original data
-      for(int ti=0;ti<nt;ti++)
+      for(Int ti=0;ti<nt;ti++)
       for(unsigned int op=0;op<16;op++)
       {
         Mv[ti*16 + op] = Nab[offNab + ti*(bufN0*16) + bi*16 + op];
@@ -416,7 +416,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
       unsigned long offAB = bi*nmass*2;
       std::vector<Ftype > buf;buf.resize(nmass*2);
       Ftype *src = (Ftype*) &Mvalues[offAB];
-      for(int off=0;off<nmass*2;off++){buf[off] = src[off];}
+      for(Int off=0;off<nmass*2;off++){buf[off] = src[off];}
 
       /////Buffer for A,B values
       const Complexq *Av,*Bv;
@@ -425,13 +425,13 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
 
       /////unsigned long shiftM = bufN0*nt*nt;
       ////Do calculations
-      for(int t0=0;t0<nt;t0++)
-      for(int t1=0;t1<nt;t1++)
+      for(Int t0=0;t0<nt;t0++)
+      for(Int t1=0;t1<nt;t1++)
       {
         unsigned int to = (t0+t1)%nt;
         Bv = &Mv[t0*16 + 0];
         Av = &Mv[to*16 + 0];
-        for(int ipr=0;ipr<16;ipr++){
+        for(Int ipr=0;ipr<16;ipr++){
           v0[ipr] = Av[G0[ipr*2+0]]*qlat::qconj(Bv[G1[ipr*2+0]])
            *Ftype(G0[ipr*2+1])*Ftype(         G1[ipr*2+1]);
           v1[ipr] = Av[G2[ipr*2+0]]*qlat::qconj(Bv[G3[ipr*2+0]])
@@ -441,11 +441,11 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
         //offAB = (((0*nmass+0)*bufN0 + bi)*nt+t0)*nt + t1;
         Ftype *res = (Ftype*) &MresP[((bi*nt+t0)*nt+t1)*16*nmass];
 
-        for(int ipr=0;ipr<16;ipr++)
+        for(Int ipr=0;ipr<16;ipr++)
         {
           Ftype v00 = v0[ipr].real();
           Ftype v10 = v1[ipr].real();
-          for(int mi=0;mi<nmass;mi++)
+          for(Int mi=0;mi<nmass;mi++)
           {
             res[ipr*nmass + mi] += (buf[mi*2+0]*v00 + buf[mi*2+1]*v10);
             //Mres[offAB] += (buf[mi*2+0]*v00 + buf[mi*2+1]*v10);
@@ -461,16 +461,16 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
 }
 
 
-inline std::vector<unsigned long > get_loop_cut(int Nx,int Ny, int Nycut, int Nxcut){
+inline std::vector<unsigned long > get_loop_cut(Int Nx,Int Ny, Int Nycut, Int Nxcut){
   std::vector<unsigned long >jobL;
   jobL.resize(Ny*Nx);
-  int Nx_bound = (Nx+Nxcut-1)/Nxcut;
-  int Ny_bound = (Ny+Nycut-1)/Nycut;
+  Int Nx_bound = (Nx+Nxcut-1)/Nxcut;
+  Int Ny_bound = (Ny+Nycut-1)/Nycut;
   Long count = 0;
-  for(int lyi=0;lyi<Ny_bound;lyi++)
-  for(int lxi=0;lxi<Nx_bound;lxi++)
-  for(int ayi=0;ayi<Nycut;ayi++)
-  for(int axi=0;axi<Nxcut;axi++)
+  for(Int lyi=0;lyi<Ny_bound;lyi++)
+  for(Int lxi=0;lxi<Nx_bound;lxi++)
+  for(Int ayi=0;ayi<Nycut;ayi++)
+  for(Int axi=0;axi<Nxcut;axi++)
   {
     Long yi = lyi*Nycut + ayi;
     Long xi = lxi*Nxcut + axi;
@@ -483,13 +483,13 @@ inline std::vector<unsigned long > get_loop_cut(int Nx,int Ny, int Nycut, int Nx
 
 inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::vector<int8_t > &Gmap){
   Gmap.resize(32);
-  for(int i=0;i<16;i++){
+  for(Int i=0;i<16;i++){
     unsigned long r0;unsigned long r1;
     unsigned long a0;unsigned long a1;
     int8_t findi =-1;
     int8_t sign = 1;
     g0[i].check_sum(r0,r1);
-    for(int j=0;j<16;j++){
+    for(Int j=0;j<16;j++){
       gL[j].check_sum(a0,a1);
       if(r0==a0){
         if(findi != -1){qmessage("WRONG!!!!\n");}
@@ -510,35 +510,35 @@ inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::v
 
 struct Nab_distribute{
 
-  int mxyz;
-  int NabL_size;
-  int bufN;
-  int rank;
+  Int mxyz;
+  Int NabL_size;
+  Int bufN;
+  Int rank;
   ////Complexq* NabN;
   //qlat::vector<Complexq > NabN;
   qlat::vector_gpu<Complexq > NabN;
   MPI_Comm xyz_comm;
   MPI_Comm t_comm;
-  std::vector<int > rank_map;
-  std::vector<int > send,recv,spls,rpls;
+  std::vector<Int > rank_map;
+  std::vector<Int > send,recv,spls,rpls;
 
-  Nab_distribute(const fft_desc_basic &fd, int bufN_or){
+  Nab_distribute(const fft_desc_basic &fd, Int bufN_or){
     TIMER("Create Nab_distribute");
 
     NabL_size = 16*fd.Nt*fd.Nmpi;
     mxyz = fd.mx*fd.my*fd.mz;
     rank = fd.rank;
 
-    int color_xyz = fd.init;
+    Int color_xyz = fd.init;
     MPI_Comm_split(get_comm(), color_xyz, fd.rank, &xyz_comm);
 
       color_xyz = (fd.iniz * fd.ny + fd.iniy)*fd.nx + fd.inix;
-    int rank_t    = fd.init;
+    Int rank_t    = fd.init;
     MPI_Comm_split(get_comm(), color_xyz, rank_t, &t_comm);
     rank_map.resize(fd.mt);
 
     {
-      int rank;
+      Int rank;
       MPI_Comm_rank(t_comm, &rank);
       rank_map[rank] = fd.rank;
     }
@@ -549,7 +549,7 @@ struct Nab_distribute{
   
   }
 
-  void set_bufN(const fft_desc_basic &fd, int bufN_or)
+  void set_bufN(const fft_desc_basic &fd, Int bufN_or)
   {
     bufN = bufN_or;
     Long size_c = fd.Nt*bufN*16 * sizeof(Complexq);
@@ -558,7 +558,7 @@ struct Nab_distribute{
     spls.resize(fd.mt);
     rpls.resize(fd.mt);
 
-    for(int ri=0;ri<fd.mt;ri++)
+    for(Int ri=0;ri<fd.mt;ri++)
     {
       send[ri] = size_c;
       spls[ri] = size_c*rank_map[ri];
@@ -588,7 +588,7 @@ struct Nab_distribute{
     //MPI_Alltoallv(NabN.data(),(int*) &send[0],(int*) &spls[0], MPI_CHAR,
     //              &NabL[0]   ,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, t_comm);
 
-    int GPU = 1;
+    Int GPU = 1;
     MPI_Alltoallv_mode(NabN.data(),(int*) &send[0],(int*) &spls[0],
                        &NabL[0]   ,(int*) &recv[0],(int*) &rpls[0], t_comm, 1, GPU);
   }
@@ -604,7 +604,7 @@ struct Nab_distribute{
 //{
 //  TIMER("Reduce Nab");
 //  dis()
-//  ///qlat::vector<int > nv,Nv,mv;
+//  ///qlat::vector<Int > nv,Nv,mv;
 //  ///geo_to_nv(geo, nv,Nv,mv);
 //
 //  /////rank  --> Nt/nt --> bufi --> 16
@@ -628,26 +628,26 @@ struct Nab_distribute{
 //  //  //MPI_Allreduce(&src[src_off],&src[src_off], size_sum, curr, MPI_SUM, vec_comm);
 //
 //  //  //MPI_Gather( void* send_data,
-//  //  //    int send_count,
+//  //  //    Int send_count,
 //  //  //    MPI_Datatype send_datatype,
 //  //  //    void* recv_data,
-//  //  //    int recv_count,
+//  //  //    Int recv_count,
 //  //  //    MPI_Datatype recv_datatype,
-//  //  //    int root,
+//  //  //    Int root,
 //  //  //    get_comm());
 //  //}
 //
 //}
 
-inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector<Complexq > &values,const int &nzero,qlat::vector<Ftype > &Mres,const Geometry& geo, int GPUFM=1)
+inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector<Complexq > &values,const Int &nzero,qlat::vector<Ftype > &Mres,const Geometry& geo, Int GPUFM=1)
 {
   ////Input must be chiral vectors, eigen_chi, n_vec --> chi --> d/2 --> t,y,z,x --> c --> complex
   ////values --> n_vec --> massi
   ////
-  const int n_vec = eigen.size();
-  const int nmass = values.size()/n_vec;
+  const Int n_vec = eigen.size();
+  const Int nmass = values.size()/n_vec;
   const Coordinate vg = geo.total_site();
-  const int nt = vg[3];
+  const Int nt = vg[3];
 
   fft_desc_basic fd(geo);
 
@@ -656,7 +656,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   ////0 for nt not on MPIs, 1 for nt on MPIs 
   //int mode_nt = 1;
   ////0 use CPU to reduce, 1 use GPU to reduce
-  int mode_reduce = 1;
+  Int mode_reduce = 1;
   //if(GPUFM == 0){mode_nt = 0;mode_reduce = 0;}
   //if(GPUFM == 1){mode_nt = 1;mode_reduce = 1;}
   //if(GPUFM == 2){mode_nt = 0;mode_reduce = 1;}
@@ -684,40 +684,40 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   //////3-4, 3-5
   //////4-5
   {int o=0;
-  for(int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
-  for(int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
-  for(int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
-  for(int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
-  for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
+  for(Int i=0;i<6;i++){gL[o] = ga_cps.ga[0][i];o+=1;}
+  for(Int i=2;i<6;i++){gL[o] = ga_cps.ga[1][i];o+=1;}
+  for(Int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
+  for(Int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
+  for(Int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
 
   ga_M g5;
   g5 = ga_cps.ga[0][5];
   ////match gammas with twopt functions
-  for(int o=0;o<16;o++){
+  for(Int o=0;o<16;o++){
     ////gL[o] = ga_cps.ga[0][5] * gL[o];
     gL[o] = gL[o] * g5;
     /////gL[o] = g5 * gL[o];
   }
   ////GL
 
-  for(int i=0;i<Aoper;i++){
+  for(Int i=0;i<Aoper;i++){
      g0[i] = gL[i];
     g05[i] = (g5*gL[i])*g5;
      g1[i] = gL[i]*g5;
     g15[i] = g5*gL[i];
   }
 
-  ///std::vector<std::vector<int > > Gmap;Gmap.resize(4);
-  ///for(int gi=0;gi<4;gi++){Gmap[gi].resize(32);}
+  ///std::vector<std::vector<Int > > Gmap;Gmap.resize(4);
+  ///for(Int gi=0;gi<4;gi++){Gmap[gi].resize(32);}
   //qlat::vector<int8_t> Gmap;///g0
   qlat::vector<int8_t> Gmap0;///g0
   qlat::vector<int8_t> Gmap1;///g05
   qlat::vector<int8_t> Gmap2;///g1
   qlat::vector<int8_t> Gmap3;///g15
-  get_map_gammaL(g0 ,gL, Gmap0);for(int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
-  get_map_gammaL(g05,gL, Gmap1);for(int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
-  get_map_gammaL(g1 ,gL, Gmap2);for(int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
-  get_map_gammaL(g15,gL, Gmap3);for(int i=0;i<32;i++){GmapM[3*32+i] = Gmap3[i];}
+  get_map_gammaL(g0 ,gL, Gmap0);for(Int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
+  get_map_gammaL(g05,gL, Gmap1);for(Int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
+  get_map_gammaL(g1 ,gL, Gmap2);for(Int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
+  get_map_gammaL(g15,gL, Gmap3);for(Int i=0;i<32;i++){GmapM[3*32+i] = Gmap3[i];}
 
 
   //#ifdef QLAT_USE_ACC
@@ -729,25 +729,25 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   }
 
-  /////for(int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
-  /////for(int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
-  /////for(int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
-  /////for(int i=0;i<32;i++){GmapM[3*32+i] = Gmap3[i];}
+  /////for(Int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
+  /////for(Int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
+  /////for(Int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
+  /////for(Int i=0;i<32;i++){GmapM[3*32+i] = Gmap3[i];}
 
   /////int Ncut = n_vec;
-  int Ncut = (n_vec-1)/2 + 1;
+  Int Ncut = (n_vec-1)/2 + 1;
 
-  int  Nmpi   = qlat::get_num_node();
+  Int  Nmpi   = qlat::get_num_node();
   Long npoints = eigen[0].geo().local_volume()*12;
   ////double vGb_vec = npoints*Nmpi*2.0/(1024.0*1024*1024);
   double vGb_vec = npoints*2.0/(1024.0*1024*1024);
 
-  int meas = 4;int Fcount = 3 + 1;////((complex multi 6 + plus 2)/2)
+  Int meas = 4;int Fcount = 3 + 1;////((complex multi 6 + plus 2)/2)
   double vGb     = vGb_vec*meas*Fcount;
   qmessage("==total Eigen %.3e Gb \n", vGb_vec*Nmpi*(sizeof(Complexq)/2.0)*n_vec);
 
   ////double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
-  int modeCopy = 0;
+  Int modeCopy = 0;
 
   ///int N_bound = (n_vec+Ncut-1)/Ncut;
   ///Ncut = n_vec;
@@ -768,14 +768,14 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   qmessage("===job start 0 \n");
   fflush_MPI();
 
-  int Ncutbuf = Ncut;
+  Int Ncutbuf = Ncut;
   /////Buffer for Nab products
   unsigned long bufN = 1;
   /////Get Ncut
   #ifdef QLAT_USE_ACC
-  int bufa0 = -1;int bufa1 = -1;
-  int bufb0 = -1;int bufb1 = -1;
-  int facbufN = 1;
+  Int bufa0 = -1;int bufa1 = -1;
+  Int bufb0 = -1;int bufb1 = -1;
+  Int facbufN = 1;
 
   size_t freeM = 0;size_t totalM = 0;double extra = 0.2;double fac_extra=1.5;
   #ifdef __HIP_PLATFORM_HCC__
@@ -795,7 +795,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   if(membufN * bufN > extra*totalD){bufN = int(extra*totalD/(membufN));if(bufN == 0)bufN = 1;}
   freeD = freeD - membufN * bufN;
 
-  int Nfull = (freeD/(vGb_vec*sizeof(Complexq)/2.0));
+  Int Nfull = (freeD/(vGb_vec*sizeof(Complexq)/2.0));
   if(n_vec < Nfull/(fac_extra)){
     //Ncut = (n_vec-1)/2 + 1;
     Ncut = n_vec;
@@ -853,13 +853,13 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
 
   std::vector<unsigned long > jobL = get_loop_cut(n_vec,n_vec,Ncut,Ncut);
-  int countrun = 0;int totrun =  0;timeval tm0,tm1,tm2;
+  Int countrun = 0;int totrun =  0;timeval tm0,tm1,tm2;
   gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);gettimeofday(&tm2, NULL);
-  int eachrun  = 0;
+  Int eachrun  = 0;
   for(LInt jobi=0;jobi<jobL.size();jobi++){
-    int avi = jobL[jobi];
-    int av = avi/n_vec;
-    int bv = avi%n_vec;
+    Int avi = jobL[jobi];
+    Int av = avi/n_vec;
+    Int bv = avi%n_vec;
     if(bv > av){continue;}totrun +=1;
   }
 
@@ -869,9 +869,9 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   ////qlat::vector<Complexq > NabS;NabS.resize(16*nt);
   /////Rederive chiral forms
-  std::vector<int > avL,bvL;
+  std::vector<Int > avL,bvL;
   avL.resize(0);bvL.resize(0);
-  std::vector<int > avL_local,bvL_local;
+  std::vector<Int > avL_local,bvL_local;
   avL_local.resize(0);bvL_local.resize(0);
 
   qmessage("===job start n \n");
@@ -882,9 +882,9 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   for(LInt jobi=0;jobi<jobL.size();jobi++)
   {
     TIMER("Kernel jobs");
-    int avi = jobL[jobi];
-    int av = avi/n_vec;
-    int bv = avi%n_vec;
+    Int avi = jobL[jobi];
+    Int av = avi/n_vec;
+    Int bv = avi%n_vec;
     if(bv > av)continue;
 
     avL.push_back(av);
@@ -903,7 +903,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
     if(bv >= bufb0 and bv < bufb1){b0p = bufE[bv%Ncut];}else{
       if(bv % Ncut == 0){
-        for(int iv=0;iv<Ncut;iv++){
+        for(Int iv=0;iv<Ncut;iv++){
           if(bv + iv < n_vec)qacc_MemcpyAsync(bufE[iv], qlat::get_data(eigen[bv+iv]).data(),
             npoints*sizeof(Complexq), qacc_MemcpyHostToDevice);
         }
@@ -916,7 +916,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
     if(av >= bufb0 and av < bufb1){a0p = bufE[av%Ncut];}else{
     if(av >= bufa0 and av < bufa1){a0p = bufE[Ncut+av%Ncut];}else{
       if(av % Ncut == 0){
-        for(int iv=0;iv<Ncut;iv++){
+        for(Int iv=0;iv<Ncut;iv++){
           if(av + iv < n_vec)qacc_MemcpyAsync(bufE[Ncut + iv], qlat::get_data(eigen[av+iv]).data(),
             npoints*sizeof(Complexq), qacc_MemcpyHostToDevice);
         }
@@ -943,12 +943,12 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
     if((countrun%Nmpi == 0) or countrun == totrun)
     {
-      int nvec = Nmpi;if(countrun%Nmpi != 0)nvec = countrun%Nmpi;
+      Int nvec = Nmpi;if(countrun%Nmpi != 0)nvec = countrun%Nmpi;
       {TIMER("Reduce prodFM");reducefM(prodFMV, NabL, bufN,gL,geo,nvec,facvol, bufi, mode_reduce);}
       ////bufi += nvec;
       bufi += 1;
 
-      int rank = qlat::get_id_node();
+      Int rank = qlat::get_id_node();
       if(rank < nvec){
         avL_local.push_back(avL[rank]);bvL_local.push_back(bvL[rank]);
       }
@@ -1021,29 +1021,29 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   TIMER("Copy final result");
   Long Nsize = nmass*16*nt;
   qacc_for(isp, Nsize, {
-    int mi  =  isp/(16*nt); 
-    int ipr = (isp%(16*nt))/(nt);
-    int t0  = (isp)%(nt);
+    Int mi  =  isp/(16*nt); 
+    Int ipr = (isp%(16*nt))/(nt);
+    Int t0  = (isp)%(nt);
     Ftype *res =  &Mres[((mi*16 + ipr)*nt+t0)*nt + 0];
 
     if(mode_reduce == 1)
     for(unsigned long bi=0;bi<bufN;bi++){
       Ftype *src =  &MresL[(((ipr*nmass+mi)*bufN+bi)*nt+t0)*nt + 0];
       ///#pragma omp parallel for
-      for(int ti=0;ti<nt;ti++){res[ti] += src[ti];}
+      for(Int ti=0;ti<nt;ti++){res[ti] += src[ti];}
     }
 
     if(mode_reduce == 0)
     for(unsigned long bi=0;bi<bufN;bi++){
       Ftype *src =  &MresL[((bi*nt+t0)*nt +0)*16*nmass + ipr*nmass + mi];
       ///#pragma omp parallel for
-      for(int ti=0;ti<nt;ti++){res[ti] += src[ti*16*nmass];}
+      for(Int ti=0;ti<nt;ti++){res[ti] += src[ti*16*nmass];}
     }
   
   });
 
-  //for(int mi=0;mi<nmass;mi++)
-  //for(int ipr=0;ipr<16;ipr++)
+  //for(Int mi=0;mi<nmass;mi++)
+  //for(Int ipr=0;ipr<16;ipr++)
   //for(unsigned int t0=0;t0<nt;t0++)
   //{
   //  Ftype *res =  &Mres[((mi*16 + ipr)*nt+t0)*nt + 0];
@@ -1051,14 +1051,14 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   //  for(unsigned long bi=0;bi<bufN;bi++){
   //    Ftype *src =  &MresL[(((ipr*nmass+mi)*bufN+bi)*nt+t0)*nt + 0];
   //    #pragma omp parallel for
-  //    for(int ti=0;ti<nt;ti++){res[ti] += src[ti];}
+  //    for(Int ti=0;ti<nt;ti++){res[ti] += src[ti];}
   //  }
 
   //  if(mode_reduce == 0)
   //  for(unsigned long bi=0;bi<bufN;bi++){
   //    Ftype *src =  &MresL[((bi*nt+t0)*nt +0)*16*nmass + ipr*nmass + mi];
   //    #pragma omp parallel for
-  //    for(int ti=0;ti<nt;ti++){res[ti] += src[ti*16*nmass];}
+  //    for(Int ti=0;ti<nt;ti++){res[ti] += src[ti*16*nmass];}
   //  }
 
   //}

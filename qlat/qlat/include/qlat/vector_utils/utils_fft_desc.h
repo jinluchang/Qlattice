@@ -17,24 +17,24 @@ namespace qlat{
 struct fft_desc_basic
 {
   LInt noden;int rank;int Nmpi;
-  int nx,ny,nz,nt;
+  Int nx,ny,nz,nt;
   LInt vol,Nvol;
-  int inix,iniy,iniz,init;
-  int Nx,Ny,Nz,Nt;
-  int mx,my,mz,mt;
+  Int inix,iniy,iniz,init;
+  Int Nx,Ny,Nz,Nt;
+  Int mx,my,mz,mt;
 
-  qlat::vector<int> iniv,Nv,nv,mv;     ///4 
+  qlat::vector<Int> iniv,Nv,nv,mv;     ///4 
 
-  std::vector<std::vector<int> > Pos0;     ////size Nmpi * 4
-  std::vector<std::vector<int>  > mi_list; ////mt , mx*my*mz
+  std::vector<std::vector<Int> > Pos0;     ////size Nmpi * 4
+  std::vector<std::vector<Int>  > mi_list; ////mt , mx*my*mz
   box<Geometry > geoB;
 
-  int variable_set;
+  Int variable_set;
 
-  int order_ch;
-  std::vector<int > orderN;   ////4
+  Int order_ch;
+  std::vector<Int > orderN;   ////4
 
-  fft_desc_basic(int order_ch_or=0)
+  fft_desc_basic(Int order_ch_or=0)
   {
     TIMERA("Create fft_desc_basic");
   
@@ -51,7 +51,7 @@ struct fft_desc_basic
     nv.resize(4);Nv.resize(4);iniv.resize(4);
   }
 
-  fft_desc_basic(const qlat::Geometry& geo,int order_ch_or=0)
+  fft_desc_basic(const qlat::Geometry& geo,Int order_ch_or=0)
   {
     TIMER("Create fft_desc_basic");
   
@@ -82,20 +82,20 @@ struct fft_desc_basic
 
   inline void set_variable();
   inline void print_info();
-  inline Long get_mi_curr(int dir=3);
+  inline Long get_mi_curr(Int dir=3);
   inline Long get_tmi_curr();
   inline Long get_xyzmi_curr();
   inline void check_mem();
   inline Coordinate coordinate_l_from_index(LInt isp) const;
   inline Coordinate coordinate_g_from_g_index(LInt isp) const ;
-  inline Coordinate coordinate_g_from_index(LInt isp, int rank_set = -1) const;
-  inline LInt index_g_from_local(LInt isp, int rank_set = -1) const;
-  //////LInt index_g_from_g_coordinate(std::vector<int > pos);
-  inline LInt index_g_from_g_coordinate(int t, int z, int y, int x) const;
+  inline Coordinate coordinate_g_from_index(LInt isp, Int rank_set = -1) const;
+  inline LInt index_g_from_local(LInt isp, Int rank_set = -1) const;
+  //////LInt index_g_from_g_coordinate(std::vector<Int > pos);
+  inline LInt index_g_from_g_coordinate(Int t, Int z, Int y, Int x) const;
   inline LInt index_g_from_g_coordinate(const Coordinate& g0) const ;
   inline bool coordinate_g_is_local(const Coordinate& g0) const ;
 
-  inline LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1) const;
+  inline LInt index_l_from_g_coordinate(const Coordinate& pos, Int rank_set = -1) const;
 
   inline const Geometry& geo(){
     return geoB();
@@ -129,12 +129,12 @@ inline void copy_fft_desc(fft_desc_basic& fd1, const fft_desc_basic& fd0)
 
 /////Get the index for current node in 3D or 4D
 /////fft redistribution needed
-inline Long fft_desc_basic::get_mi_curr(int dir)
+inline Long fft_desc_basic::get_mi_curr(Int dir)
 {
-  int tmi = Pos0[rank][3]/Nt;
-  int zmi = Pos0[rank][2]/Nz;
-  int ymi = Pos0[rank][1]/Ny;
-  int xmi = Pos0[rank][0]/Nx;
+  Int tmi = Pos0[rank][3]/Nt;
+  Int zmi = Pos0[rank][2]/Nz;
+  Int ymi = Pos0[rank][1]/Ny;
+  Int xmi = Pos0[rank][0]/Nx;
 
   Long re = (zmi*my + ymi)*mx + xmi;
   if(dir == 4){
@@ -147,7 +147,7 @@ inline Long fft_desc_basic::get_mi_curr(int dir)
 
 inline Long fft_desc_basic::get_tmi_curr()
 {
-  int tmi = Pos0[rank][3]/Nt;
+  Int tmi = Pos0[rank][3]/Nt;
   return tmi;
 }
 
@@ -161,8 +161,8 @@ inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
-  ////std::vector<int > g0;g0.resize(4);for(int i=0;i<4;i++){g0[i] = 0;}
-  Coordinate g0;for(int i=0;i<4;i++){g0[i] = 0;}
+  ////std::vector<Int > g0;g0.resize(4);for(Int i=0;i<4;i++){g0[i] = 0;}
+  Coordinate g0;for(Int i=0;i<4;i++){g0[i] = 0;}
   g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);Long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
   g0[orderN[0]] += tem/(Nv[orderN[1]]*Nv[orderN[2]]);tem = tem%(Nv[orderN[1]]*Nv[orderN[2]]);
   g0[orderN[1]] += tem/(Nv[orderN[2]]);
@@ -175,8 +175,8 @@ inline Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
-  ////std::vector<int > g0;g0.resize(4);
-  Coordinate g0;for(int i=0;i<4;i++){g0[i] = 0;}
+  ////std::vector<Int > g0;g0.resize(4);
+  Coordinate g0;for(Int i=0;i<4;i++){g0[i] = 0;}
   g0[3] += isp/(nv[0]*nv[1]*nv[2]);Long tem = isp%(nv[0]*nv[1]*nv[2]);
   g0[orderN[0]] += tem/(nv[orderN[1]]*nv[orderN[2]]);tem = tem%(nv[orderN[1]]*nv[orderN[2]]);
   g0[orderN[1]] += tem/(nv[orderN[2]]);
@@ -198,7 +198,7 @@ inline bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0) const
 {
   /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
   bool is_local = true;
-  for(int i=0;i<4;i++)
+  for(Int i=0;i<4;i++)
   {
     if(g0[i] < Pos0[rank][i] or g0[i] >= (Pos0[rank][i]+Nv[i])){is_local = false;}
   }
@@ -206,23 +206,23 @@ inline bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0) const
 }
 
 
-inline LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x) const
+inline LInt fft_desc_basic::index_g_from_g_coordinate(Int t, Int z, Int y, Int x) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
-  /////std::vector<int > g0;g0.resize(4);
+  /////std::vector<Int > g0;g0.resize(4);
   Coordinate g0;
   g0[0] = x;g0[1] = y;g0[2] = z;g0[3] = t;
   return index_g_from_g_coordinate(g0);
 }
 
-inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set) const
+inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, Int rank_set) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
-  int rank_cur = rank;if(rank_set != -1){rank_cur = rank_set;}
-  ////std::vector<int > g0;g0.resize(4);
-  Coordinate g0;/////for(int i=0;i<4;i++){g0[i] = 0;}
-  for(int i=0;i<4;i++){g0[i] = Pos0[rank_cur][i];}
+  Int rank_cur = rank;if(rank_set != -1){rank_cur = rank_set;}
+  ////std::vector<Int > g0;g0.resize(4);
+  Coordinate g0;/////for(Int i=0;i<4;i++){g0[i] = 0;}
+  for(Int i=0;i<4;i++){g0[i] = Pos0[rank_cur][i];}
 
   g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);Long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
   g0[orderN[0]] += tem/(Nv[orderN[1]]*Nv[orderN[2]]);tem = tem%(Nv[orderN[1]]*Nv[orderN[2]]);
@@ -232,13 +232,13 @@ inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set
   return g0;
 }
 
-inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_set) const
+inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, Int rank_set) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
-  int rank_cur = rank;if(rank_set != -1){rank_cur = rank_set;}
-  std::vector<int > p;p.resize(4);
-  for(int i=0;i<4;i++){
+  Int rank_cur = rank;if(rank_set != -1){rank_cur = rank_set;}
+  std::vector<Int > p;p.resize(4);
+  for(Int i=0;i<4;i++){
     p[i] = pos[i] - Pos0[rank_cur][i];
     if(p[i] < 0 or p[i] >= Nv[i]){abort_r("pos not local!\n");}
   }
@@ -248,7 +248,7 @@ inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int
   return index;
 }
 
-inline LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set) const
+inline LInt fft_desc_basic::index_g_from_local(LInt isp, Int rank_set) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   const Coordinate p = this->coordinate_g_from_index(isp, rank_set);
@@ -270,8 +270,8 @@ inline void fft_desc_basic::print_info(){
 inline void fft_desc_basic::set_variable()
 {
   TIMERA("fft_desc_basic::set_variable");
-  for(int i=0;i<4;i++){Qassert(iniv[i] >= 0);Qassert(nv[i] > 0);Qassert(Nv[i] > 0);}
-  mv.resize(4);for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];Qassert(mv[i] > 0);}
+  for(Int i=0;i<4;i++){Qassert(iniv[i] >= 0);Qassert(nv[i] > 0);Qassert(Nv[i] > 0);}
+  mv.resize(4);for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];Qassert(mv[i] > 0);}
 
   nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
   Nx = Nv[0];Ny = Nv[1];Nz = Nv[2];Nt = Nv[3];
@@ -284,54 +284,54 @@ inline void fft_desc_basic::set_variable()
   inix = iniv[0];iniy = iniv[1];iniz = iniv[2];init = iniv[3];
 
   ////Do not assume 0 is the initial positions
-  std::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
+  std::vector<Int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
   for(unsigned int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
   for(unsigned int i=0;i<4;i++)Pos0_tem[rank*4 + i] = iniv[i];
   sum_all_size(Pos0_tem.data(), Nmpi*4);
   Pos0.resize(Nmpi);
-  for(int ri=0;ri<Nmpi;ri++)
+  for(Int ri=0;ri<Nmpi;ri++)
   {
     Pos0[ri].resize(4);
-    for(int i=0;i<4;i++){Pos0[ri][i] = Pos0_tem[ri*4+i];}
+    for(Int i=0;i<4;i++){Pos0[ri][i] = Pos0_tem[ri*4+i];}
   }
 
   orderN.resize(3);orderN[0] = 2;orderN[1] = 1;orderN[2] = 0;
 
   if(order_ch == 1){
-    int maxD = 0;int maxN = Nv[maxD];
-    for(int i=0;i<3;i++){if(Nv[i]>maxN){maxD = i;maxN = Nv[i];}}
+    Int maxD = 0;int maxN = Nv[maxD];
+    for(Int i=0;i<3;i++){if(Nv[i]>maxN){maxD = i;maxN = Nv[i];}}
     orderN[2] = maxD;
-    int ci = 0;
-    for(int i=0;i<3;i++){if(i != maxD){orderN[ci] = i;ci++;}}
+    Int ci = 0;
+    for(Int i=0;i<3;i++){if(i != maxD){orderN[ci] = i;ci++;}}
     ////f1 = nv[orderN[0]];f2 = nv[orderN[1]]; f3 = nv[orderN[2]];
   }
 
   ////////position p;
 
   ////depend on rank, geo.coordinate_g_from_l or gs
-  std::vector<int> mi_list_tem;
+  std::vector<Int> mi_list_tem;
   mi_list_tem.resize(mt*mz*my*mx);
   for(unsigned int i=0;i<mi_list_tem.size();i++){mi_list_tem[i] = 0;}
-  std::vector<int > p_tem(4);
+  std::vector<Int > p_tem(4);
   /////qlat::Coordinate p_tem;
-  for(int tmi=0;tmi<mt;tmi++)
+  for(Int tmi=0;tmi<mt;tmi++)
   {
-    for(int zi=0;zi<mz;zi++)
-    for(int yi=0;yi<my;yi++)
-    for(int xi=0;xi<mx;xi++)
+    for(Int zi=0;zi<mz;zi++)
+    for(Int yi=0;yi<my;yi++)
+    for(Int xi=0;xi<mx;xi++)
     {
       LInt off = (zi*my+yi)*mx+xi;
       p_tem[0] = xi*Nx;
       p_tem[1] = yi*Ny;
       p_tem[2] = zi*Nz;
       p_tem[3] = tmi*Nt;
-      int flagE = 1;
-      for(int i=0;i<4;i++){if(p_tem[i] != Pos0[rank][i]){flagE = 0;}}
+      Int flagE = 1;
+      for(Int i=0;i<4;i++){if(p_tem[i] != Pos0[rank][i]){flagE = 0;}}
       if(flagE == 1){mi_list_tem[tmi*mz*my*mx + off] = rank;}
     }
   }
   sum_all_size(&mi_list_tem[0], mi_list_tem.size());
-  std::vector<int> cp_l(mi_list_tem.size());
+  std::vector<Int> cp_l(mi_list_tem.size());
   for(unsigned int i=0;i<cp_l.size();i++){cp_l[i] = mi_list_tem[i];}
   std::sort(cp_l.begin(), cp_l.end());
   for(unsigned int i=0;i<cp_l.size();i++){
@@ -341,7 +341,7 @@ inline void fft_desc_basic::set_variable()
   }
 
   mi_list.resize(mt);
-  for(int tmi=0;tmi<mt;tmi++)
+  for(Int tmi=0;tmi<mt;tmi++)
   {
     mi_list[tmi].resize(mz*my*mx);
     for(LInt off=0;off<mi_list[tmi].size();off++){
@@ -356,27 +356,27 @@ inline void fft_desc_basic::check_mem()
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
   /////Check assumption, Initial point is the smallest point
-  std::vector< std::vector<int> > ranged;
+  std::vector< std::vector<Int> > ranged;
   ranged.resize(4);
   for(size_t isp= 0; isp < size_t(noden); isp++)
   {
     Coordinate g0 = coordinate_g_from_index(isp);
-    for(int i=0;i<4;i++){ranged[i].push_back(g0[i]);}
+    for(Int i=0;i<4;i++){ranged[i].push_back(g0[i]);}
   }
 
-  for(int i=0;i<4;i++){
+  for(Int i=0;i<4;i++){
     std::sort(ranged[i].begin(), ranged[i].end());
     ranged[i].erase( unique( ranged[i].begin(), ranged[i].end() ), ranged[i].end() );
   }
 
-  int flagC = 0;
+  Int flagC = 0;
   for(unsigned int i=0;i<4;i++){unsigned int tem = Nv[i];if(tem != ranged[i].size()){flagC = 1;}}
   for(unsigned int i=0;i<4;i++){if(Pos0[rank][i] != ranged[i][0]){flagC = 1;}}
   sum_all_size(&flagC,1);
   if(flagC>0){
-    for(int i=0;i<4;i++)qmessage("%5d %5d, ", Nv[i], int(ranged[i].size()));
+    for(Int i=0;i<4;i++)qmessage("%5d %5d, ", Nv[i], int(ranged[i].size()));
     qmessage("\n");
-    for(int i=0;i<4;i++)qmessage("%5d %5d, ", Pos0[rank][i], int(ranged[i][0]));
+    for(Int i=0;i<4;i++)qmessage("%5d %5d, ", Pos0[rank][i], int(ranged[i][0]));
     qmessage("\n");
     abort_r("Layout not continuous in x, A! \n");
   }
@@ -384,7 +384,7 @@ inline void fft_desc_basic::check_mem()
   /////Check continues between nodes
   std::vector<std::vector<LInt > > map_Nitoi;
   map_Nitoi.resize(Nmpi);
-  for(int ri=0;ri<Nmpi;ri++){
+  for(Int ri=0;ri<Nmpi;ri++){
     map_Nitoi[ri].resize(noden);
   }
 
@@ -394,13 +394,13 @@ inline void fft_desc_basic::check_mem()
     map_Nitoi[rank][isp] = offv;
   }
 
-  for(int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], noden*sizeof(LInt), MPI_CHAR, ri, get_comm());
+  for(Int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], noden*sizeof(LInt), MPI_CHAR, ri, get_comm());
 
-  int flag = 0;
-  for(int i=0;i<Nmpi;i++)
+  Int flag = 0;
+  for(Int i=0;i<Nmpi;i++)
   for(size_t isp=0;isp<size_t(noden/Nx);isp++){
     LInt inix = map_Nitoi[i][isp*Nx+ 0];
-    for(int xi=0;xi<Nx;xi++)if(map_Nitoi[i][isp*Nx+xi] != inix + xi){flag=1;}
+    for(Int xi=0;xi<Nx;xi++)if(map_Nitoi[i][isp*Nx+xi] != inix + xi){flag=1;}
   }
   sum_all_size(&flag,1);
   if(flag>0){abort_r("Layout not continuous in x, B! \n");}
@@ -408,8 +408,8 @@ inline void fft_desc_basic::check_mem()
 }
 
 ///mode 0, mxyz ->  Nt ; mode 1, Nt -> mxyz
-inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 1){
-  qlat::vector<int> Nv,nv,mv;
+inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, Int mode = 1){
+  qlat::vector<Int> Nv,nv,mv;
   geo_to_nv(geo, nv, Nv, mv);
   /////dim of lat
   fd.nv[0] = nv[0];
@@ -434,7 +434,7 @@ inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 
   //int t0 = fd.iniv[3];
   for(unsigned int i=0;i<4;i++){fd.iniv[i] = 0;} 
   Coordinate tnode = coor_node_from_id_node(qlat::get_id_node());
-  int tA = (tnode[2]*mv[1] + tnode[1])*mv[0] + tnode[0];
+  Int tA = (tnode[2]*mv[1] + tnode[1])*mv[0] + tnode[0];
   if(mode == 0){fd.iniv[3] = tA*nv[3] + gs[3]; }
   if(mode == 1){fd.iniv[3] = gs[3] * (mv[2]*mv[1]*mv[0]) + tA * Nv[3]; }
   fd.set_variable();
@@ -443,8 +443,8 @@ inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 
 /////fft desc buffers related
 struct FFTdescKey {
   Coordinate total_site;
-  int order_ch_or;
-  FFTdescKey(const Geometry& geo, int order_ch_or_ = 0)
+  Int order_ch_or;
+  FFTdescKey(const Geometry& geo, Int order_ch_or_ = 0)
   {
     total_site = geo.total_site();
     order_ch_or = order_ch_or_;

@@ -47,10 +47,10 @@ double diff_gauge( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1, double err=1e-6)
   double diff = 0.0;int count_print = 0;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    for(int m = 0; m < 4; ++m){
+    for(Int m = 0; m < 4; ++m){
       const Ta *p0 = (Ta*)  g0.get_elem(xl, m).p;
       const Tb *p1 = (Tb*)  g1.get_elem(xl, m).p;
-      for(int pi=0;pi<9*2;pi++)
+      for(Int pi=0;pi<9*2;pi++)
       {
         diff += std::fabs(p0[pi]-p1[pi]);
         if(std::fabs(p0[pi]-p1[pi]) > err and count_print < 300){
@@ -80,10 +80,10 @@ double diff_gauge_GPU( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1)
   qacc_for(index, V, {
     dL[index] = 0.0;
     const Coordinate xl = geo.coordinate_from_index(index);
-    for(int m = 0; m < 4; ++m){
+    for(Int m = 0; m < 4; ++m){
       const Ta *p0 = (Ta*)  g0.get_elem(xl, m).p;
       const Tb *p1 = (Tb*)  g1.get_elem(xl, m).p;
-      for(int pi=0;pi<9*2;pi++)
+      for(Int pi=0;pi<9*2;pi++)
       {
         dL[index] += qfabs(p0[pi]-p1[pi]);
       }
@@ -102,14 +102,14 @@ double diff_fields(Field<Ta>& p0, Field<Tb>& p1)
   Qassert(p0.geo() == p1.geo());
   Qassert(p0.multiplicity == p1.multiplicity);
   //int rank = qlat::get_id_node();
-  const int Dim = p0.multiplicity;
+  const Int Dim = p0.multiplicity;
   const Long V = p0.geo().local_volume();
   Field<double > fd;fd.init(p0.geo(), 1);
   qacc_for(index, V, {
     Ta* r0 = (Ta*) p0.get_elems(index).p;
     Tb* r1 = (Tb*) p1.get_elems(index).p;
     double d0 = 0.0;
-    for(int i=0;i<Dim;i++){
+    for(Int i=0;i<Dim;i++){
       d0 += qnorm(r0[i] - r1[i]);
     }
     fd.get_elem(index) = d0;
@@ -121,7 +121,7 @@ double diff_fields(Field<Ta>& p0, Field<Tb>& p1)
 template <class Ta, class Tb>
 void diff_prop(Propagator4dT<Ta>& p0, Propagator4dT<Tb>& p1, double err=1e-15)
 {
-  int rank = qlat::get_id_node();
+  Int rank = qlat::get_id_node();
   Long MAX_COUNT = 64;
   double diffp = 0.0; Long countp = 0;
   for (Long index = 0; index < p0.geo().local_volume(); ++index) {
@@ -130,8 +130,8 @@ void diff_prop(Propagator4dT<Ta>& p0, Propagator4dT<Tb>& p1, double err=1e-15)
 
     qlat::WilsonMatrixT<Ta>&  s0 =  p0.get_elem_offset(index);
     qlat::WilsonMatrixT<Tb>&  s1 =  p1.get_elem_offset(index);
-    for(int d0=0;d0<12;d0++)
-    for(int d1=0;d1<12;d1++)
+    for(Int d0=0;d0<12;d0++)
+    for(Int d1=0;d1<12;d1++)
     {
       qlat::ComplexT<Ta > p0 = s0(d0,d1);
       qlat::ComplexT<Tb > p1 = s1(d0,d1);
@@ -162,7 +162,7 @@ void diff_prop(Propagator4dT<Ta>& p0, Propagator4dT<Tb>& p1, double err=1e-15)
   MPI_Barrier(get_comm());fflush(stdout);
 }
 
-template <class Ty, int civ>
+template <class Ty, Int civ>
 void print_norm2(qlat::FieldM<Ty , civ>& p0)
 {
   const Long V = p0.geo().local_volume() * civ;
@@ -173,10 +173,10 @@ void print_norm2(qlat::FieldM<Ty , civ>& p0)
 }
 
 
-template <class Ty, int civ>
+template <class Ty, Int civ>
 void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double err=1e-15, Long MAX_COUNT = 64)
 {
-  int rank = qlat::get_id_node();
+  Int rank = qlat::get_id_node();
   /////Long MAX_COUNT = 64;
   double diffp = 0.0; Long countp = 0;
   Ty* s0 = (Ty*) qlat::get_data(p0).data();
@@ -185,7 +185,7 @@ void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double e
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
 
-    for(int c0=0;c0<civ;c0++)
+    for(Int c0=0;c0<civ;c0++)
     {
       Ty& pa = s0[index*civ + c0];
       Ty& pb = s1[index*civ + c0];
@@ -215,14 +215,14 @@ void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double e
   MPI_Barrier(get_comm());fflush(stdout);
 }
 
-template <class T, int bfac>
+template <class T, Int bfac>
 void print_src(qlat::FieldM<T, bfac> &noi)
 {
   for (Long index = 0; index < noi.geo().local_volume(); ++index) {
     Coordinate xl0 = noi.geo().coordinate_from_index(index);
     Coordinate xg0 = noi.geo().coordinate_g_from_l(xl0);
 
-    for(int bi=0;bi<bfac;bi++){
+    for(Int bi=0;bi<bfac;bi++){
       qlat::ComplexD tem = noi.get_elems(index)[bi]; 
       double sum = 0.0;
       sum += std::fabs(tem.real());
@@ -256,15 +256,15 @@ void diff_EigenM(qlat::vector<T >& a, qlat::vector<T >& b, std::string lab)
 }
 
 template <class T>
-void random_point_src(Propagator4dT<T>& prop, int seed = 0)
+void random_point_src(Propagator4dT<T>& prop, Int seed = 0)
 {
   set_zero(prop);
   qlat::RngState rs(seed);
-  int rank = qlat::get_id_node();
+  Int rank = qlat::get_id_node();
   const qlat::Geometry& geo = prop.geo();
   Coordinate xg;
-  for(int i=0;i<4;i++){
-    int nl = geo.node_site[i] * geo.geon.size_node[i];
+  for(Int i=0;i<4;i++){
+    Int nl = geo.node_site[i] * geo.geon.size_node[i];
     xg[i] = int(nl*qlat::u_rand_gen(rs));
   }
   qlat::displayln_info(qlat::ssprintf("===Point src x %5d, y %5d, z %5d, t %5d \n",xg[0], xg[1], xg[2], xg[3]));
@@ -272,20 +272,20 @@ void random_point_src(Propagator4dT<T>& prop, int seed = 0)
   if(geo.is_local(xl)){
     Long index = geo.index_from_coordinate(xl);
     qlat::WilsonMatrixT<T>&  s0 =  prop.get_elem_offset(index);
-    for(int d0=0;d0<12;d0++)s0(d0,d0) = 1.0;
+    for(Int d0=0;d0<12;d0++)s0(d0,d0) = 1.0;
     printf("===set value, node %d, index %ld \n", rank, (long)index );
   }
 
 }
 
-template <typename Ty0, typename Ty1 , int civ>
-void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vector<Ty1 >& dat, bool dir=true, bool ft4D=false)
+template <typename Ty0, typename Ty1 , Int civ>
+void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<Int >& mom, std::vector<Ty1 >& dat, bool dir=true, bool ft4D=false)
 {
   Geometry& geo = src.geo();
-  std::vector<int > Nv,nv,mv;
+  std::vector<Int > Nv,nv,mv;
   Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+  for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 
   Ty0* P0 = (Ty0*) (qlat::get_data(src).data());int psum = 3;
   if( ft4D){dat.resize(civ);psum = 4;}
@@ -298,7 +298,7 @@ void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vec
     Coordinate xl = geo.coordinate_from_index(isp);
     Coordinate xg = geo.coordinate_g_from_l(xl);
     double tem = 0.0;
-    for(int i=0;i<psum;i++){tem += (2*pi/nv[i]) * xg[i] * mom[i];}
+    for(Int i=0;i<psum;i++){tem += (2*pi/nv[i]) * xg[i] * mom[i];}
     Ty1 phase = 0.0;
     if(!dir)phase = Ty1(std::cos(tem), std::sin(tem));
     if( dir)phase = Ty1(std::cos(tem), -1.0*std::sin(tem));
@@ -312,14 +312,14 @@ void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vec
 
 }
 
-template <typename Ty0, typename Ty1 , int civ>
-void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vector<Ty1 >& dat, bool ft4D=false)
+template <typename Ty0, typename Ty1 , Int civ>
+void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<Int >& mom, std::vector<Ty1 >& dat, bool ft4D=false)
 {
   Geometry& geo = src.geo();
-  std::vector<int > Nv,nv,mv;
+  std::vector<Int > Nv,nv,mv;
   Nv.resize(4);nv.resize(4);mv.resize(4);
-  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
-  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+  for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 
   Ty0* P0 = (Ty0*) (qlat::get_data(src).data());
   if( ft4D){dat.resize(civ);}
@@ -332,10 +332,10 @@ void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vecto
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if( ft4D)
     if(xg[0] == mom[0] and xg[1] == mom[1] and xg[2] == mom[2] and xg[3] == mom[3])
-    {for(int di=0;di<civ;di++){dat[di] += P0[isp*civ + di];}}
+    {for(Int di=0;di<civ;di++){dat[di] += P0[isp*civ + di];}}
     if(!ft4D)
     if(xg[0] == mom[0] and xg[1] == mom[1] and xg[2] == mom[2])
-    {for(int di=0;di<civ;di++){dat[xg[3]*civ + di] += P0[isp*civ + di];}}
+    {for(Int di=0;di<civ;di++){dat[xg[3]*civ + di] += P0[isp*civ + di];}}
   }
 
   sum_all_size(&dat[0], dat.size());
@@ -344,7 +344,7 @@ void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vecto
 
 
 template<typename Ty>
-void print_sum(const Ty* a, size_t size, std::string stmp=std::string(""), int GPU = 1)
+void print_sum(const Ty* a, size_t size, std::string stmp=std::string(""), Int GPU = 1)
 {
   Ty sum = Reduce(a, size, GPU);
   qmessage("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum) );
@@ -355,7 +355,7 @@ double check_sum_FieldM(qlat::Field<Ty>& p0)
 {
   const Geometry& geo = p0.geo();
   double check_sum = 0.0;
-  const int civ = p0.multiplicity;
+  const Int civ = p0.multiplicity;
   const Ty* src = (Ty*) qlat::get_data(p0).data();
   const Long Nvol = geo.local_volume();
   for(Long index = 0; index < Nvol; ++index){
@@ -420,18 +420,18 @@ double check_sum_prop(qpropT& p0)
   return check_sum;
 }
 
-template <class T, int civ>
+template <class T, Int civ>
 double diff_FieldM(qlat::FieldM<T , civ>& prop0, qlat::FieldM<T , civ>& prop1, double err=1e-15)
 {
-  const int rank = qlat::get_id_node();
-  const Long MAX_COUNT = 80;
+  Int rank = qlat::get_id_node();
+  Long MAX_COUNT = 80;
   double diffp = 0.0; Long countp = 0;
   T* s0 = (T*) qlat::get_data(prop0).data();
   T* s1 = (T*) qlat::get_data(prop1).data();
   for (Long index = 0; index < prop0.geo().local_volume(); ++index) {
     Coordinate xl0 = prop0.geo().coordinate_from_index(index);
     Coordinate xg0 = prop0.geo().coordinate_g_from_l(xl0);
-    for(int d0=0;d0<civ;d0++)
+    for(Int d0=0;d0<civ;d0++)
     {
       T p0 = s0[index*civ + d0];
       T p1 = s1[index*civ + d0];

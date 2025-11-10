@@ -30,14 +30,14 @@ inline QMEM get_type_mem(QMEM g){
   return g;
 }
 
-inline QMEM get_type_mem(int g){
+inline QMEM get_type_mem(Int g){
   if(g == -1){return QMSYNC;}
   if(g ==  0){return QMCPU ;}
   if(g ==  1){return QMGPU ;}
   return QMCPU;
 }
 
-inline int check_GPU_same(QMEM a, QMEM b)
+inline Int check_GPU_same(QMEM a, QMEM b)
 {
   if(a == QMSYNC){return 1;}
   if(b == QMSYNC){return 1;}
@@ -45,7 +45,7 @@ inline int check_GPU_same(QMEM a, QMEM b)
   return 0;
 }
 
-inline int check_GPU_same(QMEM a, bool b)
+inline Int check_GPU_same(QMEM a, bool b)
 {
   if(a == QMSYNC){return 1;}
   if(a == QMGPU and b == 1){return 1;}
@@ -53,7 +53,7 @@ inline int check_GPU_same(QMEM a, bool b)
   return 0;
 }
 
-inline int check_GPU_multi(QMEM a, QMEM b)
+inline Int check_GPU_multi(QMEM a, QMEM b)
 {
   if(a == QMSYNC){return b;}
   if(b == QMSYNC){return a;}
@@ -61,7 +61,7 @@ inline int check_GPU_multi(QMEM a, QMEM b)
   return -2;
 }
 
-inline int check_GPU_multi(QMEM a, bool b)
+inline Int check_GPU_multi(QMEM a, bool b)
 {
   if(a == QMSYNC){return b;}
   if(a == QMGPU and b == 1){return 1;}
@@ -93,7 +93,7 @@ inline void qmessage(const char* fmt, ...)
     va_start(args, fmt);
 
     char* cstr;
-    int ret = vasprintf(&cstr, fmt, args);
+    Int ret = vasprintf(&cstr, fmt, args);
     if (ret < 0) {
       assert(false);
     }
@@ -142,7 +142,7 @@ inline void gpuFree(void* res)
   }
 }
 
-inline void free_buf(void* buf, const int GPU){
+inline void free_buf(void* buf, const Int GPU){
   if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}
   buf = NULL;
 }
@@ -160,27 +160,27 @@ inline void free_buf(void* buf, const int GPU){
 #ifdef __GNUC__
 ///////Multiply of different types of complex
 
-//inline std::complex<double> operator*(const std::complex<float> &a, const double &b) {
-//    return std::complex<double>(a.real()*b, a.imag()*b);
+//inline std::complex<RealD> operator*(const std::complex<float> &a, const double &b) {
+//    return std::complex<RealD>(a.real()*b, a.imag()*b);
 //}
 //
-//inline std::complex<double> operator/(const std::complex<float> &a, const double &b) {
-//    return std::complex<double>(a.real()/b, a.imag()/b);
+//inline std::complex<RealD> operator/(const std::complex<float> &a, const double &b) {
+//    return std::complex<RealD>(a.real()/b, a.imag()/b);
 //}
 
-inline std::complex<double> operator*(const std::complex<float> &a, const std::complex<double > &b) {
-    return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+inline std::complex<RealD> operator*(const std::complex<float> &a, const std::complex<RealD > &b) {
+    return std::complex<RealD>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
 }
 
-inline std::complex<double> operator*(const std::complex<double > &b, const std::complex<float> &a) {
-    return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+inline std::complex<RealD> operator*(const std::complex<RealD > &b, const std::complex<float> &a) {
+    return std::complex<RealD>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
 }
 
-inline std::complex<double> operator-(const std::complex<double > &a, const std::complex<float> &b) {
-    return std::complex<double>(a.real() - b.real() , a.imag() - b.imag());
+inline std::complex<RealD> operator-(const std::complex<RealD > &a, const std::complex<float> &b) {
+    return std::complex<RealD>(a.real() - b.real() , a.imag() - b.imag());
 }
-inline std::complex<double> operator-(const std::complex<float > &a, const std::complex<double> &b) {
-    return std::complex<double>(a.real() - b.real() , a.imag() - b.imag());
+inline std::complex<RealD> operator-(const std::complex<float > &a, const std::complex<RealD> &b) {
+    return std::complex<RealD>(a.real() - b.real() , a.imag() - b.imag());
 }
 #endif
 #endif
@@ -192,7 +192,7 @@ template<typename T>
 struct qlat_is_pointer<T*> { static const bool value = true; };
 
 template<typename Ty>
-void zero_Ty(Ty* a, size_t size,int GPU=0, QBOOL dummy=QTRUE)
+void zero_Ty(Ty* a, size_t size,Int GPU=0, QBOOL dummy=QTRUE)
 {
   TIMERA("zero_Ty")
   if(qlat_is_pointer<Ty>::value){
@@ -253,7 +253,7 @@ inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const Long Nsum =11, const 
 
 inline unsigned int get_node_rank_funs0()
 {
-  int rank;
+  Int rank;
   ///MPI_Comm_rank(get_comm(), &rank);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   return rank;

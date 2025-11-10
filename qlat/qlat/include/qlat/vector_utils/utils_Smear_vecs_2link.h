@@ -19,7 +19,7 @@
 namespace qlat{
 
 template <class Td>
-void smear_propagator_gwu_convension_shift(Propagator4dT<Td>& prop, const GaugeFieldT<Td >& gf, const double width, const int step)
+void smear_propagator_gwu_convension_shift(Propagator4dT<Td>& prop, const GaugeFieldT<Td >& gf, const double width, const Int step)
 {
   const Geometry& geo = gf.geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -48,17 +48,17 @@ void smear_propagator_gwu_convension_shift(Propagator4dT<Td>& prop, const GaugeF
 
   prop4D_factor(bufc, qlat::ComplexT<Td >(0.0, 0.0));
   bufc += prop;
-  for (int i = 0; i < step; ++i){
+  for (Int i = 0; i < step; ++i){
     ///bufa = bufc;
     prop4D_factor(bufa, qlat::ComplexT<Td >(0.0, 0.0));
-    for(int mu=0;mu<3;mu++)
+    for(Int mu=0;mu<3;mu++)
     {
       qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(bufc).data();
       qlat::ComplexT<Td >* r0  = (qlat::ComplexT<Td >*) qlat::get_data(buf0).data();
       qlat::ComplexT<Td >* r1  = (qlat::ComplexT<Td >*) qlat::get_data(buf1).data();
       ////svec.shift_vecs_dir(bufc, buf0, mu, -1);
       ////svec.shift_vecs_dir(bufc, buf1, mu, +1);
-      std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+      std::vector<Int > iDir(4);for(Int i=0;i<4;i++){iDir[i] = 0;}
       iDir[mu] = +1;
       svec.shift_vecP(src, r0, iDir, 12*12);
       iDir[mu] = -1;
@@ -67,7 +67,7 @@ void smear_propagator_gwu_convension_shift(Propagator4dT<Td>& prop, const GaugeF
       bufa += buf0;
       bufa += buf1;
     }
-    /////for(int i=0;i<nsites;i++){wmp[i]  = norm*(wmp[i] + bw*buf[i]);}
+    /////for(Int i=0;i<nsites;i++){wmp[i]  = norm*(wmp[i] + bw*buf[i]);}
     prop4D_factor(bufc, norm);
     prop4D_factor(bufa, b1  );
     bufc += bufa;
@@ -78,7 +78,7 @@ void smear_propagator_gwu_convension_shift(Propagator4dT<Td>& prop, const GaugeF
 }
 
 template <class Td>
-void smear_propagator_gwu_convension_1shift(Propagator4dT<Td>& prop, const GaugeFieldT<Td >& gf, const double width, const int step)
+void smear_propagator_gwu_convension_1shift(Propagator4dT<Td>& prop, const GaugeFieldT<Td >& gf, const double width, const Int step)
 {
   const Geometry& geo = gf.geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -99,15 +99,15 @@ void smear_propagator_gwu_convension_1shift(Propagator4dT<Td>& prop, const Gauge
 
   prop4D_factor(bufc, qlat::ComplexT<Td >(0.0, 0.0));
   bufc += prop;
-  for (int i = 0; i < step; ++i){
+  for (Int i = 0; i < step; ++i){
     ///bufa = bufc;
     prop4D_factor(bufa, qlat::ComplexT<Td >(0.0, 0.0));
-    for(int mu=0;mu<3;mu++)
+    for(Int mu=0;mu<3;mu++)
     {
       qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(bufc).data();
       qlat::ComplexT<Td >* r0  = (qlat::ComplexT<Td >*) qlat::get_data(buf0).data();
       qlat::ComplexT<Td >* r1  = (qlat::ComplexT<Td >*) qlat::get_data(buf1).data();
-      std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+      std::vector<Int > iDir(4);for(Int i=0;i<4;i++){iDir[i] = 0;}
       iDir[mu] = +1;
       svec.shift_vecP(src, r0, iDir, 12*12);
       iDir[mu] = -1;
@@ -116,7 +116,7 @@ void smear_propagator_gwu_convension_1shift(Propagator4dT<Td>& prop, const Gauge
       bufa += buf0;
       bufa += buf1;
     }
-    /////for(int i=0;i<nsites;i++){wmp[i]  = norm*(wmp[i] + bw*buf[i]);}
+    /////for(Int i=0;i<nsites;i++){wmp[i]  = norm*(wmp[i] + bw*buf[i]);}
     prop4D_factor(bufc, b0);
     prop4D_factor(bufa, b1);
     bufc += bufa;
@@ -126,7 +126,7 @@ void smear_propagator_gwu_convension_1shift(Propagator4dT<Td>& prop, const Gauge
 }
 
 template <class Td>
-void smear_propagator_gwu_convension_2shift_ori(Propagator4dT<Td>& prop, const GaugeFieldT<Td >& gf, const double width, const int step)
+void smear_propagator_gwu_convension_2shift_ori(Propagator4dT<Td>& prop, const GaugeFieldT<Td >& gf, const double width, const Int step)
 {
   const Geometry& geo = gf.geo();
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
@@ -147,15 +147,15 @@ void smear_propagator_gwu_convension_2shift_ori(Propagator4dT<Td>& prop, const G
 
   prop4D_factor(bufc, qlat::ComplexT<Td >(0.0, 0.0));
   bufc += prop;
-  for (int i = 0; i < step; ++i){
+  for (Int i = 0; i < step; ++i){
     ///bufa = bufc;
     prop4D_factor(bufa, qlat::ComplexT<Td >(0.0, 0.0));
-    for(int mu=0;mu<3;mu++)
+    for(Int mu=0;mu<3;mu++)
     {
       qlat::ComplexT<Td >* src = (qlat::ComplexT<Td >*) qlat::get_data(bufc).data();
       qlat::ComplexT<Td >* r0  = (qlat::ComplexT<Td >*) qlat::get_data(buf0).data();
       qlat::ComplexT<Td >* r1  = (qlat::ComplexT<Td >*) qlat::get_data(buf1).data();
-      std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+      std::vector<Int > iDir(4);for(Int i=0;i<4;i++){iDir[i] = 0;}
       iDir[mu] = +2;
       svec.shift_vecP(src, r0, iDir, 12*12);
       iDir[mu] = -2;
@@ -164,7 +164,7 @@ void smear_propagator_gwu_convension_2shift_ori(Propagator4dT<Td>& prop, const G
       bufa += buf0;
       bufa += buf1;
     }
-    /////for(int i=0;i<nsites;i++){wmp[i]  = norm*(wmp[i] + bw*buf[i]);}
+    /////for(Int i=0;i<nsites;i++){wmp[i]  = norm*(wmp[i] + bw*buf[i]);}
     prop4D_factor(bufc, b0);
     prop4D_factor(bufa, b1);
     bufc += bufa;
@@ -189,15 +189,15 @@ void prepare_gauge_buffer(std::vector< GaugeFieldT<Ta>   >& gfL, const GaugeFiel
 
   const Coordinate expan_left( 0, 0, 0, 0);
   const Coordinate expan_right(1, 1, 1, 0);
-  const int dir_limit = 3;
+  const Int dir_limit = 3;
   GaugeField gf1;
   gf1.init(geo_resize(gf.geo(), expan_left, expan_right));
   gf1 = gf;
   refresh_expanded(gf1);
 
-  for(int z=0;z<2;z++)
-  for(int y=0;y<2;y++)
-  for(int x=0;x<2;x++)
+  for(Int z=0;z<2;z++)
+  for(Int y=0;y<2;y++)
+  for(Int x=0;x<2;x++)
   {
     const long i = (z*2+y)*2+x;
     gfL[i].init();gfL[i].init(geoh);
@@ -208,17 +208,17 @@ void prepare_gauge_buffer(std::vector< GaugeFieldT<Ta>   >& gfL, const GaugeFiel
       const Coordinate xlh = gfh.geo().coordinate_from_index(index);
       const Coordinate xl1 = Coordinate(xlh[0]*2 + x, xlh[1]*2 + y, xlh[2]*2 + z, xlh[3]);
 
-      for (int dir = 0; dir < dir_limit; ++dir) {
+      for (Int dir = 0; dir < dir_limit; ++dir) {
         ////auto&
         const Coordinate xld = coordinate_shifts(xl1, dir);
         qlat::ComplexT<Ta>*  res = (qlat::ComplexT<Ta>*) &gfh.get_elem(xlh, dir)(0,0);
         qlat::ComplexT<Tb>*  s0  = (qlat::ComplexT<Tb>*) &gf1.get_elem(xl1, dir)(0,0);
         qlat::ComplexT<Tb>*  s1  = (qlat::ComplexT<Tb>*) &gf1.get_elem(xld, dir)(0,0);
-        for(int a=0;a<3;a++)
-        for(int b=0;b<3;b++)
+        for(Int a=0;a<3;a++)
+        for(Int b=0;b<3;b++)
         {
           res[a*3+b] = 0.0;
-          for(int c=0;c<3;c++)
+          for(Int c=0;c<3;c++)
           {
             res[a*3+b] += s0[a*3+c] * s1[c*3+b];
           }
@@ -228,10 +228,10 @@ void prepare_gauge_buffer(std::vector< GaugeFieldT<Ta>   >& gfL, const GaugeFiel
   }
 }
 
-template <class Ty, const int dir>
-void prop_full_copy_to_prop_8(std::vector< qlat::vector_gpu<Ty > >& propL, Ty* prop, const int Ndata,
+template <class Ty, const Int dir>
+void prop_full_copy_to_prop_8(std::vector< qlat::vector_gpu<Ty > >& propL, Ty* prop, const Int Ndata,
   const Geometry& geo, const Geometry& geoh,
-  const int even, const int idx = 0, int NdataP = -1)
+  const Int even, const Int idx = 0, Int NdataP = -1)
 {
   TIMERA("prop_full_copy_to_prop_8");
   if(propL.size()!= 8 and dir == 1){propL.resize(8);}
@@ -241,9 +241,9 @@ void prop_full_copy_to_prop_8(std::vector< qlat::vector_gpu<Ty > >& propL, Ty* p
   Qassert(idx*NdataP <  Ndata);
   Qassert((idx + 1)*NdataP <= Ndata);
 
-  for(int z=0;z<2;z++)
-  for(int y=0;y<2;y++)
-  for(int x=0;x<2;x++)
+  for(Int z=0;z<2;z++)
+  for(Int y=0;y<2;y++)
+  for(Int x=0;x<2;x++)
   {
     const long i = (z*2+y)*2+x;
     long writei = i;
@@ -261,15 +261,15 @@ void prop_full_copy_to_prop_8(std::vector< qlat::vector_gpu<Ty > >& propL, Ty* p
 
       const Coordinate xl1 = Coordinate(xlh[0]*2 + x, xlh[1]*2 + y, xlh[2]*2 + z, xlh[3]);
       long sp = geo.index_from_coordinate(xl1);
-      if(dir == 1)for(int di=0;di<NdataP;di++){proph[sh*Ndata + idx*NdataP + di] = prop[sp*NdataP + di];}
-      if(dir == 0)for(int di=0;di<NdataP;di++){prop[sp*NdataP + di] = proph[sh*Ndata + idx*NdataP + di];}
+      if(dir == 1)for(Int di=0;di<NdataP;di++){proph[sh*Ndata + idx*NdataP + di] = prop[sp*NdataP + di];}
+      if(dir == 0)for(Int di=0;di<NdataP;di++){prop[sp*NdataP + di] = proph[sh*Ndata + idx*NdataP + di];}
     });
   }
 }
 
 // wuppertal convension
-template <class Ty, class Td, int c0, int d0>
-void smear_propagator_gwu_convension_2shift_modi(std::vector< qlat::vector_gpu<Ty > >& propL, const Geometry& geo, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, const int even = -1, const int force_update = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
+template <class Ty, class Td, Int c0, Int d0>
+void smear_propagator_gwu_convension_2shift_modi(std::vector< qlat::vector_gpu<Ty > >& propL, const Geometry& geo, std::vector< GaugeFieldT<Td> >& gfL, const double width, const Int step, const Int even = -1, const Int force_update = -1, const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
   (void)geo;
   if(width == 0 or step == 0){return ;}
@@ -282,7 +282,7 @@ void smear_propagator_gwu_convension_2shift_modi(std::vector< qlat::vector_gpu<T
   if(wuppertal_conv == 1){
     factor_sigma = std::sqrt( 2 * step * width / 3.0);
   }
-  for(int i=0;i<8;i++){
+  for(Int i=0;i<8;i++){
     long writei = i;if(even != -1 and even != i){continue;}if(even != -1){writei = 0;}
 
     Qassert(Long(propL[writei].size()) >= geoh.local_volume() * Ndata);
@@ -292,14 +292,14 @@ void smear_propagator_gwu_convension_2shift_modi(std::vector< qlat::vector_gpu<T
 }
 
 
-template <class Ty, class Td, int c0, int d0>
-void smear_propagator_gwu_convension_2shift_modi(Ty* prop, const Geometry& geo, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<Ty > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
+template <class Ty, class Td, Int c0, Int d0>
+void smear_propagator_gwu_convension_2shift_modi(Ty* prop, const Geometry& geo, std::vector< GaugeFieldT<Td> >& gfL, const double width, const Int step, std::vector< qlat::vector_gpu<Ty > >& propL, const Int even = -1, const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
   Qassert(gfL.size() == 8);
   const Geometry& geoh = gfL[0].geo();
   if(width == 0 or step == 0){return ;}
 
-  const int Ndata = c0 * 3 * d0;
+  const Int Ndata = c0 * 3 * d0;
   prop_full_copy_to_prop_8<Ty, 1>(propL, prop, Ndata, geo, geoh, even);
   smear_propagator_gwu_convension_2shift_modi<Ty, Td, c0, d0>(propL, geo, gfL, width, step, even, -1, wuppertal_conv, mom);
   prop_full_copy_to_prop_8<Ty, 0>(propL, prop, Ndata, geo, geoh, even);
@@ -307,7 +307,7 @@ void smear_propagator_gwu_convension_2shift_modi(Ty* prop, const Geometry& geo, 
 
 // wuppertal convension
 template <class Td>
-void smear_propagator_wuppertal_convension_2shift(Propagator4dT<Td>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
+void smear_propagator_wuppertal_convension_2shift(Propagator4dT<Td>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const Int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const Int even = -1, const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
   Qassert(prop.initialized);
   if(width == 0 or step == 0){return ;}
@@ -319,15 +319,15 @@ void smear_propagator_wuppertal_convension_2shift(Propagator4dT<Td>& prop, std::
 
 // gwu convension
 template <class Td>
-void smear_propagator_gwu_convension_2shift(Propagator4dT<Td>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const int even = -1, const CoordinateD& mom = CoordinateD())
+void smear_propagator_gwu_convension_2shift(Propagator4dT<Td>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const Int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const Int even = -1, const CoordinateD& mom = CoordinateD())
 {
-  const int wuppertal_conv = 0;
+  const Int wuppertal_conv = 0;
   smear_propagator_wuppertal_convension_2shift(prop, gfL, width, step, propL, even, wuppertal_conv, mom);
 }
 
 template <class Ty, class Td>
 void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< GaugeFieldT<Td> >& gfL,
-         const double width, const int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const int even = -1, const CoordinateD& mom = CoordinateD())
+         const double width, const Int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const Int even = -1, const CoordinateD& mom = CoordinateD())
 {
   if (0 == step) {return;}
   Qassert(prop.initialized and prop.multiplicity == 12 * 12 and prop.mem_order == QLAT_OUTTER);
@@ -338,9 +338,9 @@ void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< Gaug
 
   qacc_for(isp, Nvol, {
     Ty buf[12*12];
-    for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
-    for(int d0=0;d0<12*4;d0++)
-    for(int c0=0;c0<   3;c0++)
+    for(Int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
+    for(Int d0=0;d0<12*4;d0++)
+    for(Int c0=0;c0<   3;c0++)
     {
       src[isp*12*12 + c0*12*4 + d0] = buf[d0*3 + c0];
     }
@@ -351,9 +351,9 @@ void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< Gaug
 
   qacc_for(isp, Nvol, {
     Ty buf[12*12];
-    for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
-    for(int d0=0;d0<12*4;d0++)
-    for(int c0=0;c0<   3;c0++)
+    for(Int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
+    for(Int d0=0;d0<12*4;d0++)
+    for(Int c0=0;c0<   3;c0++)
     {
       src[isp*12*12 + d0*3 + c0] = buf[c0*12*4 + d0];
     }
@@ -365,7 +365,7 @@ void smear_propagator_gwu_convension_2shift(FieldG<Ty >& prop, std::vector< Gaug
 // gwu convension with all cs outer prop : 4*3 * V * complex
 template <class Ty, class Td>
 void smear_propagator_gwu_convension_2shift(qpropT& prop, std::vector< GaugeFieldT<Td> >& gfL,
-         const double width, const int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const int even = -1, const CoordinateD& mom = CoordinateD())
+         const double width, const Int step, std::vector< qlat::vector_gpu<qlat::ComplexT<Td > > >& propL, const Int even = -1, const CoordinateD& mom = CoordinateD())
 {
   if (0 == step) {return;}
   Qassert(prop.initialized);
@@ -377,7 +377,7 @@ void smear_propagator_gwu_convension_2shift(qpropT& prop, std::vector< GaugeFiel
 }
 
 template <typename Ty, typename Td>
-void smear_propagator_gwu_convension_2shift_modi(colorFT& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<Ty > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
+void smear_propagator_gwu_convension_2shift_modi(colorFT& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const Int step, std::vector< qlat::vector_gpu<Ty > >& propL, const Int even = -1, const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
   Qassert(prop.initialized);
   Ty* src = (Ty*) qlat::get_data(prop).data();
@@ -385,7 +385,7 @@ void smear_propagator_gwu_convension_2shift_modi(colorFT& prop, std::vector< Gau
 }
 
 template <typename Ty, typename Td>
-void smear_propagator_gwu_convension_2shift_modi(std::vector<colorFT>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const int step, std::vector< qlat::vector_gpu<Ty > >& propL, const int even = -1, const int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
+void smear_propagator_gwu_convension_2shift_modi(std::vector<colorFT>& prop, std::vector< GaugeFieldT<Td> >& gfL, const double width, const Int step, std::vector< qlat::vector_gpu<Ty > >& propL, const Int even = -1, const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD())
 {
   for(unsigned int i=0;i<prop.size();i++){
     smear_propagator_gwu_convension_2shift_modi(prop[i], gfL, width, step, propL, even, wuppertal_conv, mom);

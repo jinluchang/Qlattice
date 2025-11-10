@@ -28,34 +28,34 @@ struct lms_para{
   Coordinate ini_pos;
   Coordinate off_L;
 
-  int SRC_PROP_WITH_LOW ;
-  int lms;
-  int combineT;
+  Int SRC_PROP_WITH_LOW ;
+  Int lms;
+  Int combineT;
 
-  int src_smear_iter;
+  Int src_smear_iter;
   double src_smear_kappa;
-  int sink_smear_iter;
+  Int sink_smear_iter;
   double sink_smear_kappa;
 
-  int mode_eig_sm;
-  int ckpoint;
+  Int mode_eig_sm;
+  Int ckpoint;
 
-  int do_all_low ;
+  Int do_all_low ;
 
-  int mom_cut;
-  int save_zero_corr;
-  int save_full_vec;
-  int save_low_fft;
+  Int mom_cut;
+  Int save_zero_corr;
+  Int save_full_vec;
+  Int save_low_fft;
 
 
   // sequential related parameters and buffers
-  int Ngroup_seq;
+  Int Ngroup_seq;
   double sink_hfactor; 
   //eigen related
   eigen_ov* eig_P;
   double eig_mass;
-  int    eig_mode_sm;
-  int    eig_one_minus_halfD;
+  Int    eig_mode_sm;
+  Int    eig_one_minus_halfD;
   std::vector<FieldG<Ty> > bufV ;
   std::vector<qlat::FieldG<Ty> > GresP;
   std::vector< std::vector<qlat::FieldG<Ty> > > shift_srcL;
@@ -85,7 +85,7 @@ struct lms_para{
   */
   std::vector<std::string > name_props ;
   std::vector<FieldG<Ty> > noise_props ;
-  std::vector<std::vector<int >    > prop_tposL ;
+  std::vector<std::vector<Int >    > prop_tposL ;
   std::vector<Long > prop_npointsL;
   std::vector<std::vector<Coordinate> > prop_coordL;
   std::vector<FieldG<Ty> > full_props ;
@@ -101,9 +101,9 @@ struct lms_para{
   qlat::SelectedField<Ty > sf_single;
   Coordinate new_size_node;
 
-  int check_prop_norm;
-  int sparse_src;
-  int do_hadron_contra;
+  Int check_prop_norm;
+  Int sparse_src;
+  Int do_hadron_contra;
 
   std::string name_sparse_prop;
   std::string name_mom_vecs;
@@ -162,7 +162,7 @@ struct lms_para{
   }
 
   inline void init(){
-    for(int i=0;i<4;i++){ini_pos[i] = 0;off_L[i] = 1;}
+    for(Int i=0;i<4;i++){ini_pos[i] = 0;off_L[i] = 1;}
 
     SRC_PROP_WITH_LOW = 0;
     lms = 0;
@@ -201,10 +201,10 @@ struct lms_para{
     save_zero_corr   = 1;
     save_full_vec    = 0;////1 if all grid source vec need to be saved
 
-    int ionum = 16;
+    Int ionum = 16;
     std::string val = get_env(std::string("q_io_sparse_vec_ionum"));
     if(val == ""){ionum = 16;}else{
-      int tem = stringtonum(val);
+      Int tem = stringtonum(val);
       if(tem <= 8){ionum = 8;}
       if(tem > 8  and tem <= 16){ionum = 16;}
       if(tem > 16){ionum = 32;}
@@ -219,7 +219,7 @@ struct lms_para{
     INFOA.resize(0);
   }
 
-  inline void set_eig(eigen_ov* eig, const double mass, const int mode_sm, const int one_minus = 1){
+  inline void set_eig(eigen_ov* eig, const double mass, const Int mode_sm, const Int one_minus = 1){
     Qassert(mass >= 0.0);
     Qassert(mode_sm >= 0);
     Qassert(one_minus == 1);
@@ -236,7 +236,7 @@ struct lms_para{
       ini_pos[0], ini_pos[1], ini_pos[2], ini_pos[3],
       off_L[0], off_L[1], off_L[2], off_L[3] );
 
-    int save_vecs = 0; if(name_mom_vecs != std::string("NONE")){save_vecs = 1;}
+    Int save_vecs = 0; if(name_mom_vecs != std::string("NONE")){save_vecs = 1;}
     qmessage("eigen mode sm %1d, src %5d %.3f, sink %5d %.3f , save_low %2d, mom_cut %5d , saveV %1d \n", 
       mode_eig_sm, src_smear_iter, src_smear_kappa, sink_smear_iter, sink_smear_kappa, do_all_low, mom_cut, save_vecs);
     //qmessage("  mom vecs %s \n" ,name_mom_vecs);
@@ -249,7 +249,7 @@ template<typename Ty>
 void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
 {
   TIMERA("check_nan_GPU");
-  const int GPU = resTa.GPU;
+  const Int GPU = resTa.GPU;
   const Long V  = resTa.size();
   const Ty* s   = resTa.data();
   const Long Bfac  = 64;
@@ -268,7 +268,7 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
       }
     }
   })
-  for(int ieach=0;ieach<Neach;ieach++)
+  for(Int ieach=0;ieach<Neach;ieach++)
   {
     if(buf[ieach] == 1)
     {
@@ -280,7 +280,7 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
 
 //template<typename Ty>
 //void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
-//  const int nvec, qlat::vector<Long >& mapA, qlat::vector<Long >& mapB, const Geometry& geo)
+//  const Int nvec, qlat::vector<Long >& mapA, qlat::vector<Long >& mapB, const Geometry& geo)
 //{
 //  TIMER("save FFT");
 //  ////false to match to gwu code convention
@@ -297,7 +297,7 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
 //  qacc_for(isp, mapA.size() ,{
 //    Long i0 = A[isp];
 //    Long i1 = B[isp];
-//    for(int iv=0;iv<nvec;iv++){res[iv*Mvol + i1] = src[iv*Nvol + i0];}
+//    for(Int iv=0;iv<nvec;iv++){res[iv*Mvol + i1] = src[iv*Nvol + i0];}
 //  });
 //
 //  sum_all_size(res.data(), res.size(), 1);
@@ -305,7 +305,7 @@ void check_nan_GPU(qlat::vector_gpu<Ty >& resTa)
 
 
 template<typename Ty>
-void save_sink_vecs(qlat::vector_gpu<Ty >& src, const Geometry& geo, const int nmass, lms_para<Ty >& srcI, 
+void save_sink_vecs(qlat::vector_gpu<Ty >& src, const Geometry& geo, const Int nmass, lms_para<Ty >& srcI, 
   const std::string& GRID_INFO, const std::string tag = "")
 {
   TIMER("lms savezero");
@@ -333,12 +333,12 @@ void save_sink_vecs(qlat::vector_gpu<Ty >& src, const Geometry& geo, const int n
 }
 
 template<typename Ty>
-void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& srcI, const std::string& tag, const int count, const bool save_files = false)
+void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& srcI, const std::string& tag, const Int count, const bool save_files = false)
 {
   if(srcI.name_sparse_prop == std::string("NONE")){return ;};
   TIMER("Save_sparse_prop");
   Qassert(srcI.fsel.n_elems > 0);
-  const int Nmass = src.size();
+  const Int Nmass = src.size();
 
   const Long Ndc = 12 * 12;
   Qassert(int(srcI.sfL.size()) == Nmass);
@@ -349,7 +349,7 @@ void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& s
   //Ty* p0 = (Ty*) qlat::get_data(srcI.sf_single.field).data();
   //Ty* pr = (Ty*) qlat::get_data(srcI.sf.field).data();
 
-  for(int mi=0;mi<Nmass;mi++)
+  for(Int mi=0;mi<Nmass;mi++)
   {
     ////if(mi != 0){append = true;}
     prop_gpu_to_qprop(srcI.tmp_prop, src[mi]);
@@ -370,7 +370,7 @@ void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& s
   if(save_files){
     // save files
     bool append = false;
-    for(int mi=0;mi<Nmass;mi++){
+    for(Int mi=0;mi<Nmass;mi++){
       const std::string nameQ = ssprintf("%s.mass%02d", srcI.name_sparse_prop.c_str(), mi);
       //bool append = true;if(tag == "-1" or clean == true){append = false;}
       if(append == false)
@@ -397,7 +397,7 @@ void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& s
 ////      src without smear, mode_sm = 2 smtopt, mode_sm = 3  smtosm
 template<typename Ty, typename Ta>
 void point_corr(qnoiT& src, std::vector<qpropT >& propH,
-    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para<Ty >& srcI, momentum_dat& mdat, int shift_t = 1)
+    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para<Ty >& srcI, momentum_dat& mdat, Int shift_t = 1)
 {
   TIMER("point corr");
   print_time();
@@ -407,13 +407,13 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   const Long Size_prop = fd.get_prop_size();
   const Geometry& geo = src.geo();
 
-  const int GPU = 1;const bool rotate = false;
-  const int nmass = massL.size();
+  const Int GPU = 1;const bool rotate = false;
+  const Int nmass = massL.size();
   const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
-  const int do_hadron_contra = srcI.do_hadron_contra;
+  const Int do_hadron_contra = srcI.do_hadron_contra;
   //const size_t Vol = geo.local_volume();
 
-  Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
+  Coordinate Lat;for(Int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
   std::vector<PointsSelection > Ngrid;
   {
@@ -423,20 +423,20 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
   }else{
     // sparse src, no grid off at all
-    for(int i=0;i<4;i++){off_L[i] = 0;pos[i] = 0;}
+    for(Int i=0;i<4;i++){off_L[i] = 0;pos[i] = 0;}
 
     // will not work for combineT
     std::vector<Coordinate > grids;
-    std::vector<int > Zlist;
+    std::vector<Int > Zlist;
     //get_noise_pos(src, grids, Zlist, 3, 1);
     get_noise_pos(src, grids, Zlist);
     pos = grids[0];
     Ngrid.resize(grids.size());
-    std::vector<int > tlist;
+    std::vector<Int > tlist;
     for(LInt gi=0;gi<grids.size();gi++){
       Ngrid[gi].resize(1);
       Ngrid[gi][0] = grids[gi];
-      const int tini = grids[gi][3];
+      const Int tini = grids[gi][3];
       if(std_find(tlist, tini) < 0){tlist.push_back(tini);}
     }
     // sparsen one could not do  combineT
@@ -462,12 +462,12 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   }
 
   // only do eigen props on desire src time slices
-  std::vector<int > tsrcL;tsrcL.resize(0);
+  std::vector<Int > tsrcL;tsrcL.resize(0);
   for(unsigned int ic=0;ic<Ngrid.size();ic++)
   {
     for(unsigned int id=0;id<Ngrid[ic].size();id++){
       qmessage("%s ", qlat::show(Ngrid[ic][id]).c_str());
-      const int tcur = Ngrid[ic][id][3];
+      const Int tcur = Ngrid[ic][id][3];
       bool add_time = true;
       for(unsigned int si=0;si<tsrcL.size();si++){
         if(tsrcL[si] == tcur){add_time = false;}
@@ -476,11 +476,11 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
     qmessage(" \n");
   }
-  //for(int si=0;si<int(tsrcL.size());si++)
+  //for(Int si=0;si<int(tsrcL.size());si++)
   //{
   //  qmessage("Low sink time si %3d : %6d \n", si, int(tsrcL[si]));
   //}
-  const int tini = pos[3];
+  const Int tini = pos[3];
 
   srcI.off_L   = off_L;
   srcI.ini_pos = pos;
@@ -529,7 +529,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     clear_qv(EresA , QFALSE);
     qacc_barrier(dummy);
   }
-  const int nvecs = 32 * nmass;
+  const Int nvecs = 32 * nmass;
   /////do corr
 
   /////copy src vectors
@@ -548,12 +548,12 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //}
 
   /////set memory for low_prop
-  int Nlms = 1;
+  Int Nlms = 1;
   if(srcI.lms == -1){Nlms = Ngrid.size();}
   if(srcI.lms == 0 ){Nlms = 1;}
   if(srcI.lms >  0 ){Nlms = srcI.lms;}
 
-  const int mc = srcI.mom_cut*2 + 1;
+  const Int mc = srcI.mom_cut*2 + 1;
   ////momentum_dat mdat(geo, srcI.mom_cut);
   //std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + Nlms);
   //qlat::vector_gpu<Ty > FFT_data;Long Nfdata = Long(32)*massL.size()*fd.nt*mc*mc*mc ;
@@ -564,13 +564,13 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(srcI.name_sparse_prop != std::string("NONE")){
     Qassert(srcI.fsel.n_elems > 0);
     bool ini = false;
-    const int Ndc = 12 * 12 ;
-    const int Nsparse = 1 + Nlms * (1 + srcI.do_all_low);
+    const Int Ndc = 12 * 12 ;
+    const Int Nsparse = 1 + Nlms * (1 + srcI.do_all_low);
     if(!srcI.sf_single.initialized){ini = true;}
     if(srcI.sfL.size() == 0){ini = true;}
     else{
       if(long(srcI.sfL.size()) != nmass){ini = true;}
-      for(int mi=0;mi<nmass;mi++){
+      for(Int mi=0;mi<nmass;mi++){
         if(srcI.sfL[mi].multiplicity != Nsparse*Ndc){ini = true;}
       }
     }
@@ -578,7 +578,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(ini){
       srcI.sfL.resize(0);
       srcI.sfL.resize(nmass);
-      for(int mi=0;mi<nmass;mi++){
+      for(Int mi=0;mi<nmass;mi++){
         srcI.sfL[mi].init(srcI.fsel, Nsparse*Ndc);
       }
       srcI.sf_single.init(srcI.fsel, Ndc);
@@ -663,7 +663,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   print_mem_info();
 
-  for(int gi=0;gi<Nlms;gi++){
+  for(Int gi=0;gi<Nlms;gi++){
     POS_CUR = std::string("");write_pos_to_string(POS_CUR, Ngrid[gi][0]);POS_LIST += POS_CUR;
     qmessage("Do, Nlms %5d, gi %5d, %s \n", Nlms, gi, POS_CUR.c_str());
     fflush_MPI();
@@ -817,19 +817,19 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
 /////all to all prop naive do, test for all-to-all low eigen
 template<typename Ty>
-void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ty >& res, int mode_sm = 0)
+void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ty >& res, Int mode_sm = 0)
 {
   /////if(propH.size() != src.size()*massL.size()){abort_r("prop size, mass size not match!\n");}
   const Geometry& geo = fd.geo();
 
-  int GPU = 1;
-  int nmass = massL.size();
+  Int GPU = 1;
+  Int nmass = massL.size();
 
   std::vector<qnoi > src; src.resize(1);src[0].init(geo);
   EigenV Eres;Eres.resize(nmass*32*fd.nt);
   qlat::set_zero(Eres);
 
-  ///std::vector<int > pos;pos.resize(src.size());qlat::vector<int > off_L;
+  ///std::vector<Int > pos;pos.resize(src.size());qlat::vector<Int > off_L;
   ///check_noise_pos(src[0], pos[0], off_L);
   ///int tini = pos[0]%1000;
   qlat::vector_gpu<Ty > stmp, low_prop;
@@ -839,10 +839,10 @@ void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basi
   /////do corr
   std::vector<qlat::vector_gpu<Ty > >  Eprop;
 
-  int tini = 0;
-  for(int zi=0;zi<fd.nz;zi++)
-  for(int yi=0;yi<fd.ny;yi++)
-  for(int xi=0;xi<fd.nx;xi++)
+  Int tini = 0;
+  for(Int zi=0;zi<fd.nz;zi++)
+  for(Int yi=0;yi<fd.ny;yi++)
+  for(Int xi=0;xi<fd.nx;xi++)
   {
     qmessage("===pos %d %d %d \n", zi, yi, xi);
     stmp.set_zero();
@@ -852,7 +852,7 @@ void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basi
     LInt indexL = fd.index_g_from_g_coordinate(tini, zi, yi, xi);
     if(indexL >= index0 and indexL < index0 + fd.noden)
     {
-      for(int di=0;di<12;di++){
+      for(Int di=0;di<12;di++){
         stmp[(di*12 + di)*fd.noden + indexL%fd.noden] = 1.0;
       }
     }
@@ -864,7 +864,7 @@ void test_all_prop_corr(std::vector<double >& massL, eigen_ov& ei, fft_desc_basi
     prop_to_corr_mom0(Eprop, Eres, fd, resTa,  0); 
     shift_result_t(Eres, fd.nt, tini);
   }
-  for(int i=0;i<Eres.size();i++){Eres[i] = Eres[i]/(Ftype(fd.nx*fd.ny*fd.nz*1.0));}
+  for(Int i=0;i<Eres.size();i++){Eres[i] = Eres[i]/(Ftype(fd.nx*fd.ny*fd.nz*1.0));}
   res.write_corr((Ftype*) &Eres[0], 2*Eres.size());
 }
 

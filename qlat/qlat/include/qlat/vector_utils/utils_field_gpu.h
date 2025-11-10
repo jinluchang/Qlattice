@@ -14,7 +14,7 @@
     1. memeory could be pure GPU/CPU/Mananged
     2. Constract from a memeory pointer
     3. Fix `civ` for contraction vectorizations
-    4. Dynamical group of vectors int boxes
+    4. Dynamical group of vectors Int boxes
     5. Different memeory order support
     6. Unified interface for Field and SelectedField
 */
@@ -65,7 +65,7 @@ struct API FieldG : Field<M> {
     set_ghost_field_pointer();
   }
 
-  int get_memtype(){
+  Int get_memtype(){
     return field_gpu.GPU;
   }
 
@@ -98,7 +98,7 @@ struct API FieldG : Field<M> {
   }
 
   // QLAT_OUTTER
-  void init(const Geometry& geo_, const int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
+  void init(const Geometry& geo_, const Int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     clear_copy();
     Field<M>::init(geo_, multiplicity_);
@@ -107,7 +107,7 @@ struct API FieldG : Field<M> {
   }
 
   // initialize only not initilized
-  void init_zero(const Geometry& geo_, const int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
+  void init_zero(const Geometry& geo_, const Int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     bool need_init = false;
     if(Field<M>::initialized){
@@ -310,7 +310,7 @@ struct API SelectedFieldG : SelectedField<M> {
   }
 
   // initialize only not initilized, could change parameters compare to initial ones
-  void init_zero(const Geometry& geo_, const Long n_elems_, const int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
+  void init_zero(const Geometry& geo_, const Long n_elems_, const Int multiplicity_, QMEM GPU = QMGPU, QMEM_ORDER mem_order_ = QLAT_DEFAULT)
   {
     bool need_init = false;
     if(SelectedField<M>::initialized){
@@ -340,7 +340,7 @@ struct API SelectedFieldG : SelectedField<M> {
   }
 
   // construct from vector_gpu
-  void set_pointer(M* srcp, const Long n_elems_, const int multiplicity_ , const Geometry& geo_, const QMEM GPU = QMGPU,
+  void set_pointer(M* srcp, const Long n_elems_, const Int multiplicity_ , const Geometry& geo_, const QMEM GPU = QMGPU,
     const QMEM_ORDER order_ = QLAT_DEFAULT)
   {
     TIMER("SelectedFieldG set_pointer");
