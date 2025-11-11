@@ -276,7 +276,7 @@ jobs:
         ./scripts/python-venv.sh
         ./scripts/python-pip-install.sh
         ./scripts/cuba.sh
-        ./scripts/eigen.sh
+        # ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Show python venv
@@ -559,7 +559,7 @@ jobs:
         ./scripts/python-venv.sh
         ./scripts/python-pip-install.sh
         ./scripts/cuba.sh
-        ./scripts/eigen.sh
+        # ./scripts/eigen.sh
         ./scripts/c-lime.sh
         ./scripts/hdf5.sh
     - name: Show python venv
