@@ -380,7 +380,7 @@ jobs:
       run: |
         # brew update
         brew install llvm autoconf automake coreutils flock findutils pkg-config gnu-sed
-        brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
+        brew install open-mpi ninja patchelf eigen@3 gsl zlib openssl@3 mpfr
         brew install fftw
         # brew upgrade
     - name: Build default
@@ -434,7 +434,7 @@ jobs:
       run: |
         # brew update
         brew install llvm autoconf automake coreutils flock findutils pkg-config gnu-sed
-        brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
+        brew install open-mpi ninja patchelf eigen@3 gsl zlib openssl@3 mpfr
         brew install fftw
         # brew upgrade
     - name: Download dependencies
@@ -539,7 +539,7 @@ jobs:
       run: |
         # brew update
         brew install llvm autoconf automake coreutils flock findutils pkg-config gnu-sed
-        brew install open-mpi ninja patchelf eigen gsl zlib openssl@3 mpfr
+        brew install open-mpi ninja patchelf eigen@3 gsl zlib openssl@3 mpfr
         brew install fftw
         # brew upgrade
     - name: Download dependencies
