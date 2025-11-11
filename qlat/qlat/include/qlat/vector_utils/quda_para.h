@@ -75,7 +75,7 @@ void massRescale(ColorSpinorField &b, QudaInvertParam &param, bool for_multishif
           param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
         blas::ax(2.0*kappa, b);
         if (for_multishift)
-          for (Int i = 0; i < param.num_offset; i++) param.offset[i] *= 2.0 * kappa;
+          for (qlat::Int i = 0; i < param.num_offset; i++) param.offset[i] *= 2.0 * kappa;
       }
       break;
     case QUDA_MATDAG_MAT_SOLUTION:
@@ -83,29 +83,29 @@ void massRescale(ColorSpinorField &b, QudaInvertParam &param, bool for_multishif
           param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
         blas::ax(4.0*kappa*kappa, b);
         if (for_multishift)
-          for (Int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
+          for (qlat::Int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
       }
       break;
     case QUDA_MATPC_SOLUTION:
       if (param.mass_normalization == QUDA_MASS_NORMALIZATION) {
         blas::ax(4.0*kappa*kappa, b);
         if (for_multishift)
-          for (Int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
+          for (qlat::Int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
       } else if (param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
         blas::ax(2.0*kappa, b);
         if (for_multishift)
-          for (Int i = 0; i < param.num_offset; i++) param.offset[i] *= 2.0 * kappa;
+          for (qlat::Int i = 0; i < param.num_offset; i++) param.offset[i] *= 2.0 * kappa;
       }
       break;
     case QUDA_MATPCDAG_MATPC_SOLUTION:
       if (param.mass_normalization == QUDA_MASS_NORMALIZATION) {
         blas::ax(16.0*std::pow(kappa,4), b);
         if (for_multishift)
-          for (Int i = 0; i < param.num_offset; i++) param.offset[i] *= 16.0 * std::pow(kappa, 4);
+          for (qlat::Int i = 0; i < param.num_offset; i++) param.offset[i] *= 16.0 * std::pow(kappa, 4);
       } else if (param.mass_normalization == QUDA_ASYMMETRIC_MASS_NORMALIZATION) {
         blas::ax(4.0*kappa*kappa, b);
         if (for_multishift)
-          for (Int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
+          for (qlat::Int i = 0; i < param.num_offset; i++) param.offset[i] *= 4.0 * kappa * kappa;
       }
       break;
     default:

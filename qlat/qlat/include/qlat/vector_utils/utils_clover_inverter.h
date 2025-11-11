@@ -490,8 +490,7 @@ inline void quda_clover_inverter::save_prop(const void* srcP, const char* filena
   Long Nvol = geo().local_volume() * n0 ;
 
   for(Int n=0;n<n0;n++){
-    //quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
-    quda_cf_to_qlat_cf(prop[n], &src[n*Nvol]);
+    quda_cf_to_qlat_cf_test(prop[n], &src[n*Nvol]);
   }   
 
   std::string VECS_TYPE("STAGGERED_Prop");
