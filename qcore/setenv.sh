@@ -62,6 +62,9 @@ if [ "$(uname)" == "Darwin" ]; then
         if [ -e "$(brew --prefix)/opt/openssl@3/include" ]; then
             export CPATH="$(brew --prefix)/opt/openssl@3/include""${CPATH:+:$CPATH}"
         fi
+        if [ -e "$(brew --prefix)/opt/eigen@3/include" ]; then
+            export CPATH="$(brew --prefix)/opt/eigen@3/include""${CPATH:+:$CPATH}"
+        fi
         if [ -e "$fftw_path/include" ]; then
             export CPATH="$fftw_path/include""${CPATH:+:$CPATH}"
         fi
@@ -76,6 +79,9 @@ if [ "$(uname)" == "Darwin" ]; then
         fi
         if [ -e "$(brew --prefix)/opt/zlib/lib/pkgconfig" ]; then
             export PKG_CONFIG_PATH="$(brew --prefix)/opt/zlib/lib/pkgconfig""${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+        fi
+        if [ -e "$(brew --prefix)/opt/eigen@3/share/pkgconfig" ]; then
+            export PKG_CONFIG_PATH="$(brew --prefix)/opt/eigen@3/share/pkgconfig""${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
         fi
     fi
     if [ -z ${USE_COMPILER+x} ] ; then
