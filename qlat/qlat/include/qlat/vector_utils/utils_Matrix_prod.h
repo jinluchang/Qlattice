@@ -517,6 +517,19 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const L
   #endif
 }
 
+// wrapper to RealDD slow matrix product
+template< >
+inline void matrix_prod_cpu(ComplexT<RealDD>** a, ComplexT<RealDD>** b, ComplexT<RealDD>** c, const Long m, const Long n, const Long w, const Long L, bool Conj, bool trans)
+{
+  matrix_prod_slowT(a, b, c, m, n, w, L, Conj, trans);
+}
+
+template< >
+inline void matrix_prod_cpu(RealDD** a, RealDD** b, RealDD** c, const Long m, const Long n, const Long w, const Long L, bool Conj, bool trans)
+{
+  matrix_prod_slowT(a, b, c, m, n, w, L, Conj, trans);
+}
+
 /* 
   C = A B; C dim m x n, A dim m x w, B dim w x n, do it l times
   mem A --> [L][mi * w + wi] if Conj, a[i] -> a^*[i]
@@ -550,11 +563,13 @@ void matrix_prodT(Ty* A, Ty* B, Ty* C, const Long m, const Long n, const Long w,
   if(dummy == QTRUE ){qacc_barrier(dummy);}
 }
 
-void matrix_prodP(qlat::ComplexT<double>** a, qlat::ComplexT<double>** b, qlat::ComplexT<double>** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
-void matrix_prodP(qlat::ComplexT<float >** a, qlat::ComplexT<float >** b, qlat::ComplexT<float >** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prodP(qlat::ComplexT<RealDD>** a, qlat::ComplexT<RealDD>** b, qlat::ComplexT<RealDD>** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prodP(qlat::ComplexT<RealD >** a, qlat::ComplexT<RealD >** b, qlat::ComplexT<RealD >** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prodP(qlat::ComplexT<RealF >** a, qlat::ComplexT<RealF >** b, qlat::ComplexT<RealF >** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
 
-void matrix_prod(qlat::ComplexT<double>* A, qlat::ComplexT<double>* B, qlat::ComplexT<double>* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
-void matrix_prod(qlat::ComplexT<float >* A, qlat::ComplexT<float >* B, qlat::ComplexT<float >* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prod(qlat::ComplexT<RealDD>* A, qlat::ComplexT<RealDD>* B, qlat::ComplexT<RealDD>* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prod(qlat::ComplexT<RealD >* A, qlat::ComplexT<RealD >* B, qlat::ComplexT<RealD >* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
+void matrix_prod(qlat::ComplexT<RealF >* A, qlat::ComplexT<RealF >* B, qlat::ComplexT<RealF >* C, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false, bool GPU = true, QBOOL dummy = QTRUE);
 
 
 //#ifdef QLAT_INSTANTIATE_MATRIX_PROD

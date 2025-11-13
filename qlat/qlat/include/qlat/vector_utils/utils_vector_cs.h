@@ -1910,7 +1910,7 @@ struct vector_cs_small_eig{
 
   inline Int cg(qlat::vector_cs<ComplexD >& vr, qlat::vector_cs<ComplexD >& vs, const Int ir = 0, const Int is = 0, const Int iter=1000, double err=1e-5, const Int prec_cg = 0)
   {
-    TIMER_FLOPS("QUDA WILSON CG");
+    TIMER_FLOPS("matrix cg");
     (void) prec_cg;
     cg_iter qcg(&(*this), &(*this));
     qcg.call(vr, vs, err, iter, ir, is);// QUDA CG need to find how to use g5 Hw
