@@ -205,8 +205,10 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, Q
   bool do_copy = true;
   if(double(qlat::qnorm(ADD)) <  QLAT_COPY_LIMIT){do_copy = true ;}
   if(double(qlat::qnorm(ADD)) >= QLAT_COPY_LIMIT){do_copy = false;}
-  const T1 tmp = ADD;
-
+  //const T1 tmp = ADD;
+  T1 tmp;Realcopy(tmp, ADD);
+  //const T1 tmp = Realcopy(ADD);
+  //
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
   /////qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});

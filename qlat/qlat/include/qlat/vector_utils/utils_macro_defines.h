@@ -181,6 +181,39 @@ inline void print_NONE(const char *filename)
     if(num == do_check or num <= -1 or do_check <= -1){Qassert(false);}                              \
   }
 
+//template <>
+//qacc std::complex<qlat::RealDD> &std::complex<qlat::RealDD>::operator=(
+//    const double &__z)
+//{
+//  *this = std::complex<qlat::RealDD>(RealDD(__z), 0.0);
+//  return *this;
+//}
+//
+//template <>
+//qacc std::complex<qlat::RealDD> &std::complex<qlat::RealDD>::operator=(
+//    const float &__z)
+//{
+//  *this = std::complex<qlat::RealDD>(RealDD(__z), 0.0);
+//  return *this;
+//}
+
+
+// RealDD copy structures
+template <class T0, class T1>
+qacc void Realcopy(T1& res, const T0& src){
+  res = src;
+}
+
+template <>
+qacc void Realcopy(ComplexT<RealDD >& res, const double& src){
+  res = ComplexT<RealDD >(RealDD(src), 0.0);
+}
+
+template <>
+qacc void Realcopy(ComplexT<RealDD >& res, const float& src){
+  res = ComplexT<RealDD >(RealDD(src), 0.0);
+}
+
 }
 
 #endif

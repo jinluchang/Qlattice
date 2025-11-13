@@ -16,6 +16,7 @@
 #include "general_funs.h"
 #include "utils_fft_desc.h"
 #include "utils_Matrix_prod.h"
+#include "utils_cg_iter.h"
 
 namespace qlat{
 
@@ -97,6 +98,9 @@ struct vector_cs{
   vector_cs(){
     inialize_para();
   }
+  void set_single_node_vecs(){
+    single_node_vecs = true;
+  }
   //
   vector_cs(Int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, Int b_size_ = -1, Int bfac_group_ = -1)
   {
@@ -124,6 +128,7 @@ struct vector_cs{
   //
   inline void resize(Int nvec_)
   {
+    if(nvec_ == 0){inialize_para();return ;}
     Qassert(nsum > 0 and b_size > 0 and bfac > 0);
     resize(nvec_, nsum, GPU, b_size, bfac_group);
   }
@@ -133,6 +138,7 @@ struct vector_cs{
   inline void resize(Int nvec_, vector_cs<Ta >& ref)
   {
     resize(nvec_, ref.nsum, ref.GPU, ref.b_size, ref.bfac_group);
+    single_node_vecs = ref.single_node_vecs;
   }
   //
   /////==added
@@ -140,6 +146,7 @@ struct vector_cs{
   inline void resize(Int nvec_, QMEM GPU, vector_cs<Ta >& ref)
   {
     resize(nvec_, ref.nsum, GPU, ref.b_size, ref.bfac_group);
+    single_node_vecs = ref.single_node_vecs;
   }
   //
   inline double get_flops_matrix(){
@@ -804,7 +811,7 @@ struct vector_cs{
     }
 
     //reduce double / float
-    Ty rsum = 0.0;
+    Ty rsum = Ty(0.0, 0.0);
     if(s1 == NULL){
       rsum = Reduce((Tf*) r,   size, GPU_set, single_node_vecs);
     }
@@ -1129,7 +1136,7 @@ struct vector_cs{
 
     Ta* alphaP     = alpha; //(Ty*) alpha.data();
     qGPU_for(xi, nA*nB, GPU,{
-      Ty buf = 0.0;
+      Ty buf = Ty(0.0, 0.0);
       for(Long bi=0;bi<bfac;bi++){
         buf += alpha_bufP[(bi)*nA*nB + xi];
       }
@@ -1393,7 +1400,7 @@ struct vector_cs{
     for(Int vi=0;vi<nvec;vi++)
     {
       if(ai != -1 and vi != ai){continue ; }
-      Ty norm = Ty(1.0/std::sqrt( norm2_vec(vi).real() ), 0.0);
+      const Ty norm = Ty(1.0, 0.0 ) / Ty(qsqrt( norm2_vec(vi).real() ), 0.0);
       operator_vec(norm, vi );
     }
   }
@@ -1403,14 +1410,14 @@ struct vector_cs{
     if(nvec == 0){return ;}
     Long Nv = nvec;
     if(i1 != -1){Nv = i1;}
-    Ty norm = Ty(1.0/std::sqrt( norm2_vec(i0).real() ), 0.0);
+    const Ty norm = Ty(1.0, 0.0) / Ty(qsqrt( norm2_vec(i0).real() ), 0.0);
     operator_vec(norm,  i0);
     for(Int vi=i0 + 1;vi<Nv;vi++)
     {
       for(Int i=0;i<repeat;i++){
         projections(*this, i0, vi, vi, vi+1);
       }
-      Ty norm = Ty(1.0/std::sqrt( norm2_vec(vi).real() ), 0.0);
+      const Ty norm = Ty(1.0, 0.0) / Ty(qsqrt( norm2_vec(vi).real() ), 0.0);
       operator_vec(norm, vi );
     }
   }
@@ -1714,7 +1721,7 @@ struct vector_cs_mat{
   //inline void get_src(qlat::vector<Ty* >& mat_src_)
   //{
   //  mat_src_.resize(5);
-  //  if(bufs.size() == 0){init_Ndata(std::sqrt( mat.size() ));}
+  //  if(bufs.size() == 0){init_Ndata(qsqrt( mat.size() ));}
   //  ////if(s0.size() == 0){s0.resize(mat.size());}
   //  ////if(r0.size() == 0){r0.resize(mat.size());}
   //  mat_src_[0] = bufs[0].data();
@@ -1727,7 +1734,7 @@ struct vector_cs_mat{
   //inline void copy_from_src(qlat::vector_cs<Ty >& src, Int is)
   //{
   //  Qassert(src.initialized);
-  //  if(bufs.size() == 0){init_Ndata(std::sqrt( mat.size() ));}
+  //  if(bufs.size() == 0){init_Ndata(qsqrt( mat.size() ));}
   //  const Long btotal = src.btotal;
   //  const Long b_size = src.b_size;
   //  Ty* r = bufs[0].data();
@@ -1754,7 +1761,7 @@ struct vector_cs_mat{
   //}
 
   inline void multi(Ty* vr,  Ty* vs){
-    const Long loop = vsize;////std::sqrt( mat.size() );
+    const Long loop = vsize;////qsqrt( mat.size() );
     zero_Ty(vr, loop, true );
     if(ncount == 1)
     for(Long i=0;i<loop;i++)
@@ -1786,9 +1793,130 @@ struct vector_cs_mat{
     dslash_flops += loop * loop * 3.0;
 
   }
+};
 
+/*
+  simple wrapper for gpu matrix (nvec X nvec) multiplications
+*/
+template <typename Ty>
+struct vector_cs_small_eig{
+  vector_cs<Ty > mat;
+  vector_gpu<Ty> buf;
+  double dslash_flops;
+  //Int count;
+  Long vsize;
 
+  vector_cs_small_eig(){
+    mat.inialize_para();
+    vsize = 0;
+    //ncount = 1;
+    dslash_flops = 0.0;
+  }
 
+  template< typename Ts>
+  vector_cs_small_eig(Ts* src, const Long num ){
+    const Long nvec = std::sqrt( num  * 1.0);
+    Qassert(num * num == nvec);
+    mat.resize(nvec, nvec);
+    for(int ni=0;ni<nvec;ni++){
+      mat.copy_from(&src[ni * nvec], ni);
+    }
+    mat.set_single_node_vecs();
+    buf.resize(nvec);
+    vsize = nvec;
+    dslash_flops = 6 * nvec * nvec;
+  }
+
+  template< typename Ts>
+  inline void copy_from(Ts* src, const Long num, const bool GPU = true){
+    const Long nvec = std::sqrt( 1.0 * num );
+    Qassert(num == nvec * nvec);
+    mat.resize(nvec, nvec);
+    for(int ni=0;ni<nvec;ni++){
+      mat.copy_from(&src[ni * nvec], ni, GPU);
+    }
+    mat.set_single_node_vecs();
+    buf.resize(nvec);
+    vsize = nvec;
+    dslash_flops = 6 * nvec * nvec;
+  }
+
+  template< typename Ts>
+  inline void copy_to(Ts* res, const bool GPU = true){
+    for(int ni=0;ni<mat.nvec;ni++){
+      mat.copy_to(&res[ni * mat.nvec], ni, GPU);
+    }
+  }
+
+  template< typename Ts>
+  inline void copy_from(vector<Ts>& src){
+    copy_from(&src[0], src.size(), true);
+  }
+
+  template< typename Ts>
+  inline void copy_from(std::vector<Ts>& src){
+    copy_from(&src[0], src.size(), false);
+  }
+
+  template< typename Ts>
+  inline void copy_to(vector<Ts>& src){
+    src.resize(mat.nvec * mat.nvec);
+    copy_to(&src[0], true);
+  }
+
+  template< typename Ts>
+  inline void copy_to(std::vector<Ts>& src){
+    src.resize(mat.nvec * mat.nvec);
+    copy_to(&src[0], false);
+  }
+
+  inline void random_mat(const Long nvec, const Int seed){
+    vector<Ty > tmp;
+    tmp.resize(nvec* nvec);
+    random_vec(tmp, seed + 341);
+    vector<Ty > diagonal;
+    diagonal.resize(nvec);
+    random_vec(diagonal, seed + 14);
+    //qmessage("test %5d \n", int(tmp.size()));
+    for(int ni=0;ni<nvec;ni++){
+      for(int nj=0;nj<nvec;nj++){
+        if(nj <= ni){
+          tmp[ni*nvec+nj] = (tmp[ni*nvec + nj] + qconj(tmp[ni*nvec + nj])) / 2.0;
+          tmp[nj*nvec+ni] =  tmp[ni*nvec + nj];
+        }
+      }
+    }
+    for(int ni=0;ni<nvec;ni++){
+      tmp[ni*nvec+ni] += diagonal[ni].real();
+    }
+    //for(unsigned int ni=0;ni<tmp.size();ni++){
+    //  qmessage("v %5d %+.8e %+.8e \n", int(ni), tmp[ni].real(), tmp[ni].imag());
+    //}
+    copy_from(tmp);
+  }
+
+  inline Long get_vsize(){
+    return vsize;
+  }
+
+  template<typename Tc>
+  inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, Int ir = 0, Int is = 0){
+    //vs.copy_to(mat_src[0], is, true);
+    //multi(mat_src[1], mat_src[0]);
+    //vr.copy_from(mat_src[1], ir, true);
+    vs.copy_to(buf.data(), is, true);
+    mat.linear_combination(vr, buf.data(), mat.nvec, ir);
+  }
+
+  inline Int cg(qlat::vector_cs<ComplexD >& vr, qlat::vector_cs<ComplexD >& vs, const Int ir = 0, const Int is = 0, const Int iter=1000, double err=1e-5, const Int prec_cg = 0)
+  {
+    TIMER_FLOPS("QUDA WILSON CG");
+    (void) prec_cg;
+    cg_iter qcg(&(*this), &(*this));
+    qcg.call(vr, vs, err, iter, ir, is);// QUDA CG need to find how to use g5 Hw
+    timer.flops += dslash_flops * qcg.multi_count ;
+    return qcg.multi_count ;
+  }
 };
 
 

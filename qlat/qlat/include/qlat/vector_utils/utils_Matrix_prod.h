@@ -370,6 +370,49 @@ void matrix_prod_gpu0(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const 
 }
 #endif
 
+/* 
+  C = A B; C dim m x n, A dim m x w, B dim w x n, do it l times
+  mem A --> [L][mi * w + wi] if Conj, a[i] -> a^*[i]
+  mem B --> [L][ni * w + wi] if tran [wi * n + ni]
+  mem C --> [L][mi * n + ni]
+*/
+template<typename Ty, bool Conj, bool trans>
+void matrix_prod_slowTT(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1)
+{
+  TIMER_FLOPS("==Matrix Multi slow");
+  const MemType gmem  = check_mem_type(&a[0][0]);
+  for(Long li=0;li<L;li++)
+  {
+    Ty* A = a[li];
+    Ty* B = b[li];
+    Ty* C = c[li];
+    //
+    qmem_for(ki, m*n, gmem, {
+      const Long mi = ki / n;
+      const Long ni = ki % n;
+      for(Long wi=0;wi<w;wi++)
+      {
+        if(Conj == false and trans == false){C[mi*n + ni] += A[mi*w + wi] * B[ni*w + wi];}
+        if(Conj == true  and trans == false){C[mi*n + ni] += qconj(A[mi*w + wi]) * B[ni*w + wi];}
+        if(Conj == true  and trans == true ){C[mi*n + ni] += qconj(A[mi*w + wi]) * B[wi*n + ni];}
+        if(Conj == false and trans == true ){C[mi*n + ni] +=       A[mi*w + wi]  * B[wi*n + ni];}
+      }
+    });
+  }
+  long long vGb = L*m*n*w;
+  Int Fcount0   = 6 + 2; 
+  timer.flops  += vGb*Fcount0;
+}
+
+template<typename Ty>
+void matrix_prod_slowT(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false)
+{
+  if(Conj == false and trans == false)matrix_prod_slowTT<Ty, false, false>(a, b, c, m, n, w, L);
+  if(Conj == true  and trans == false)matrix_prod_slowTT<Ty, true , false>(a, b, c, m, n, w, L);
+  if(Conj == true  and trans == true )matrix_prod_slowTT<Ty, true , true >(a, b, c, m, n, w, L);
+  if(Conj == false and trans == true )matrix_prod_slowTT<Ty, false, true >(a, b, c, m, n, w, L);
+}
+
 template<typename Ty>
 void matrix_prod_cpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n, const Long w, const Long L=1, bool Conj=true, bool trans=false)
 {

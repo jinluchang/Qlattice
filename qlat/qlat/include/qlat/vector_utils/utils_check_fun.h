@@ -44,7 +44,7 @@ double diff_gauge( GaugeFieldT<Ta> &g0, GaugeFieldT<Tb> &g1, double err=1e-6)
 {
   TIMER("diff_gauge");
   const Geometry& geo = g0.geo();
-  double diff = 0.0;int count_print = 0;
+  double diff = 0.0;Int count_print = 0;
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     for(Int m = 0; m < 4; ++m){
@@ -101,7 +101,7 @@ double diff_fields(Field<Ta>& p0, Field<Tb>& p1)
 {
   Qassert(p0.geo() == p1.geo());
   Qassert(p0.multiplicity == p1.multiplicity);
-  //int rank = qlat::get_id_node();
+  //Int rank = qlat::get_id_node();
   const Int Dim = p0.multiplicity;
   const Long V = p0.geo().local_volume();
   Field<double > fd;fd.init(p0.geo(), 1);
@@ -287,7 +287,7 @@ void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<Int >& mom, std::vec
   for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 
-  Ty0* P0 = (Ty0*) (qlat::get_data(src).data());int psum = 3;
+  Ty0* P0 = (Ty0*) (qlat::get_data(src).data());Int psum = 3;
   if( ft4D){dat.resize(civ);psum = 4;}
   if(!ft4D){dat.resize(nv[3]*civ);psum = 3;}
   for(Long di=0;di<Long(dat.size());di++){dat[di] = 0.0;}
@@ -376,7 +376,7 @@ double check_sum_FieldM(qlat::Field<Ty>& p0)
 template <typename Td>
 double check_sum_prop(Propagator4dT<Td >& p0)
 {
-  ////int rank = qlat::get_id_node();
+  ////Int rank = qlat::get_id_node();
   const Geometry& geo = p0.geo();
   double check_sum = 0.0;
   const ComplexT<Td>* src = (ComplexT<Td>*) qlat::get_data(p0).data();
@@ -399,7 +399,7 @@ double check_sum_prop(Propagator4dT<Td >& p0)
 template <typename Ty>
 double check_sum_prop(qpropT& p0)
 {
-  ////int rank = qlat::get_id_node();
+  ////Int rank = qlat::get_id_node();
   const Geometry& geo = p0.geo();
   double check_sum = 0.0;
   const Ty* src = (Ty*) qlat::get_data(p0).data();

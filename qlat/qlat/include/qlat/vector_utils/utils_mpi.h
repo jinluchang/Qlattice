@@ -270,27 +270,44 @@ unsigned int get_mpi_type(MPI_Datatype& curr)
   return size;
 }
 
+/*
+  send the src to all ranks with root default to zero
+*/
 template<typename Ty>
-void bcast_all_size(Ty *src, Long size, Int root, Int GPU=0, MPI_Comm* commp=NULL)
+void bcast_all_size(Ty *src, const Long size, const Int root = 0, MPI_Comm* commp=NULL)
 {
   TIMER("bcast_all_size");
   if(size == 0){return ;}
-  (void) GPU;
-
+  //
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(RealD);
   M_size = get_mpi_type<Ty >(curr);
-
+  //
   Qassert(sizeof(Ty)%M_size == 0);int M_fac = sizeof(Ty)/M_size;
-  ////printf("size %5d %5d, type %d \n", int(size), int(fac), int(sizeof(Ty)));
-
-  if(commp == NULL){
-    MPI_Bcast(src, size * M_fac, curr, root, get_comm());
-  }
-  else{
-    MPI_Bcast(src, size * M_fac, curr, root, *commp);
-  }
+  //printf("size %5d %5d, type %d \n", int(size), int(fac), int(sizeof(Ty)));
+  //
+  const MPI_Comm& comm = commp == NULL ? get_comm() : *commp;
+  MPI_Bcast(src, size * M_fac, curr, root, comm);
 }
 
+/*
+  gather data from all rank to rank zero with memeory order [ rank -> size ]
+  total res size : size * Nmpi
+*/
+template<typename Ty>
+void gather_all_size(Ty* res, Ty *src, const Long size, const Int root = 0, MPI_Comm* commp=NULL)
+{
+  TIMER("gather_all_size");
+  if(size == 0){return ;}
+  //
+  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(RealD);
+  M_size = get_mpi_type<Ty >(curr);
+  //
+  Qassert(sizeof(Ty)%M_size == 0);int M_fac = sizeof(Ty)/M_size;
+  //
+  const Int tsize = size * M_fac;
+  const MPI_Comm& comm = commp == NULL ? get_comm() : *commp;
+  MPI_Gather(src, tsize, curr, res, tsize, curr, root, comm);
+}
 
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,Long size, Int GPU=0, const MPI_Comm* commp=NULL)
@@ -399,13 +416,48 @@ void sum_all_size(Ty *src,Long size, Int GPU=0, const MPI_Comm* commp=NULL)
   sum_all_size(src,src,size, GPU, commp);
 }
 
-
 inline void abort_sum(RealD flag, std::string stmp=std::string(""))
 {
   sum_all_size(&flag,1);
   if(flag > 0)
   {
     abort_r(stmp);
+  }
+}
+
+template<typename Ty>
+void bcast_all_size(std::vector<Ty >& src, Int root=0, MPI_Comm* commp=NULL)
+{
+  Int nvec = src.size();
+  if(get_id_node() != root){nvec = 0;}
+  sum_all_size(&nvec, 1);
+  if(nvec == 0){src.resize(0);return;}
+  if(get_id_node()!= root){
+    src.resize(nvec);
+  }
+  bcast_all_size(&src[0], src.size(), root, commp);
+}
+
+template<typename Ty>
+void bcast_all_size(vector<Ty >& src, Int root=0, MPI_Comm* commp=NULL)
+{
+  Int nvec = src.size();
+  if(get_id_node() != root){nvec = 0;}
+  sum_all_size(&nvec, 1);
+  if(get_id_node()!= root){
+    src.resize(nvec);
+  }
+  const MemType gmem  = check_mem_type(&src[0]);
+  const MemType a = get_eff_mem_type(gmem);
+  if(a == MemType::Cpu or a == MemType::Acc){
+    bcast_all_size(&src[0], src.size(), root, commp);
+  }
+  if(a == MemType::Uvm){
+    vector_gpu<Ty> tmp;
+    tmp.resize(src.size());
+    tmp.copy_from(src);
+    bcast_all_size(&tmp[0], tmp.size(), root, commp);
+    tmp.copy_to(src);
   }
 }
 
@@ -709,6 +761,89 @@ inline Int get_mpi_id_node_close()
   return id_node_local;
 }
 
+template<class Ty >
+void sum_all_mpi(Ty* src, const Long size, const MPI_Comm* commp=NULL){
+  const Int GPU = check_mem_type(src) == MemType::Acc ? 1 : 0;
+  sum_all_size(src, size, GPU, commp);
+}
+
+template<>
+inline void sum_all_mpi(RealDD* src, const Long size, const MPI_Comm* commp)
+{
+  TIMER("sum_all_mpi DD");
+  const Int Nmpi  = get_num_node();
+  //const Int rank  = get_id_node();
+  if(Nmpi == 1){return ;}
+  vector<double > bufs;
+  vector<double > bufr;
+  //const MemType gmem = GPU == 0 ? MemType::Cpu : MemType::Acc;
+  const MemType gmem = check_mem_type(src) != MemType::Cpu ?  MemType::Acc : MemType::Cpu;
+  bufs.set_mem_type(gmem);
+  bufr.set_mem_type(gmem);
+  bufs.resize(size*2);
+  bufr.resize(Nmpi*size*2);
+  set_zero(bufs);
+  qmem_for(si, size, gmem, {
+    bufs[si*2 + 0] = src[si].X();
+    bufs[si*2 + 1] = src[si].Y();
+  });
+  //for(Long si=0;si<size;si++){
+  //  bufs[si*2 + 0] = src[si].X();
+  //  bufs[si*2 + 1] = src[si].Y();
+  //}
+  gather_all_size(bufr.data(), bufs.data(), size*2);
+  //sum_all_size(buf.data(), buf.size(), GPU, commp);
+  qmem_for(si, size, gmem, {
+    RealDD a = 0.0;
+    RealDD t = 0.0;
+    for(Int mi=0;mi<Nmpi;mi++){
+      t = 0.0;
+      t.X() = bufr[(mi * size + si)*2 + 0];
+      t.Y() = bufr[(mi * size + si)*2 + 1];
+      a += t;
+    }
+    src[si] = a;
+  });
+  bcast_all_size((double*) src, size * 2);
+}
+
+template<>
+inline void sum_all_mpi(ComplexT<RealDD >* src, const Long size, const MPI_Comm* commp)
+{
+  sum_all_mpi((RealDD*) src, size*2, commp);
+}
+
+template< >
+inline Int glb_sum(ComplexT<RealDD>& src)
+{
+  sum_all_mpi((RealDD*) &src, 2);
+  return 0;
+  //const Int Nmpi  = get_num_node();
+  //const Int rank  = get_id_node();
+  //if(Nmpi == 1){return 0;}
+  //std::vector<double > buf;buf.resize(Nmpi*4);
+  //for(unsigned long mi=0;mi<buf.size();mi++){buf[mi] = 0.0;}
+  //buf[rank*4 + 0] = src.real().X();
+  //buf[rank*4 + 1] = src.real().Y();
+  //buf[rank*4 + 2] = src.imag().X();
+  //buf[rank*4 + 3] = src.imag().Y();
+  //Vector<double > s(buf.data(), buf.size());
+  //const Int state = glb_sum(s);
+  //RealDD ar=0.0;
+  //RealDD ai=0.0;
+  //for(int mi=0;mi<Nmpi;mi++){
+  //  RealDD t0 = 0.0;
+  //  RealDD t1 = 0.0;
+  //  t0.X() += buf[mi*4 + 0];
+  //  t0.Y() += buf[mi*4 + 1];
+  //  t1.X() += buf[mi*4 + 2];
+  //  t1.Y() += buf[mi*4 + 3];
+  //  ar += t0;
+  //  ai += t1;
+  //}
+  //src = ComplexT<RealDD>( ar, ai );
+  //return state;
+}
 
 }
 

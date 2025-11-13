@@ -322,7 +322,7 @@ struct sec_list{
         bcast only to the needed sectors
       */
       if(has_sec[si] == 1){  
-        bcast_all_size(data[i].data(), data[i].size(), rank, data[i].GPU, &t_comm[si]);
+        bcast_all_size(data[i].data(), data[i].size(), rank, &t_comm[si]);
       }
     }
     MPI_Barrier(get_comm());

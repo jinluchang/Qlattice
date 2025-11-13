@@ -1012,7 +1012,6 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, const Int with_GP
     }
     ///3D begin
     ////begin_comm(MPI_COMM_WORLD , spreadT);
-
     ///4D begin
     Int id_node, n;
     Int old_id;MPI_Comm_rank(MPI_COMM_WORLD, &old_id);
@@ -1021,7 +1020,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, const Int with_GP
     if(in.mode_dis >= 10){
       id_node = get_mpi_id_node_close();
     }
-      ///abort_r();
+    ///abort_r();
     Int t =  id_node/(spreadT[0]*spreadT[1]*spreadT[2]);
     Int z = (id_node/(spreadT[0]*spreadT[1]))%(spreadT[2]);
     Int y = (id_node/(spreadT[0]))%(spreadT[1]);
@@ -1032,7 +1031,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, const Int with_GP
     if(in.mode_dis % 2 == 1)begin(new_id, spreadT);
     ////printf("new id %5d, old id %5d\n", get_id_node(), old_id);
   }
-
+  //
   if(read_input_Lat == -1)
   {
     std::vector<Coordinate> size_node_list;
@@ -1040,16 +1039,25 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, const Int with_GP
     begin(argc, argv, size_node_list);
     in.load_para(*argc, *argv);
   }
-
+  //
   Qassert(with_GPU == 0 or with_GPU == 1);
   if(with_GPU == 1){set_GPU();}
-
+  //
   omp_set_num_threads(omp_get_max_threads());
   qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
-
+  //
   fflush_MPI();
   print_mem_info();
+}
 
+inline const Geometry& get_geo_in(inputpara& in, Int& nx, Int& ny, Int& nz, Int& nt){
+  nx = in.nx;
+  ny = in.ny;
+  nz = in.nz;
+  nt = in.nt;
+  Qassert(nx > 0 and ny > 0 and nz > 0 and nt > 0);
+  const Coordinate total_site = Coordinate(nx, ny, nz, nt);
+  return get_geo_cache(total_site);
 }
 
 inline Int end_Lat(const Int with_mpi = 0, const Int with_timer = 1)
@@ -1081,7 +1089,7 @@ inline std::vector<Long > job_create(Long total, Long each)
     a.push_back(dj);
     i0 += dj;
   }
-
+  //
   return a;
 }
 
