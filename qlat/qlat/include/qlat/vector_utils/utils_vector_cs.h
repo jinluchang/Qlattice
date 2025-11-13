@@ -1912,7 +1912,7 @@ struct vector_cs_small_eig{
   {
     TIMER_FLOPS("matrix cg");
     (void) prec_cg;
-    cg_iter qcg(&(*this), &(*this));
+    cg_iter<vector_cs_small_eig<Ty> > qcg(&(*this), &(*this));
     qcg.call(vr, vs, err, iter, ir, is);// QUDA CG need to find how to use g5 Hw
     timer.flops += dslash_flops * qcg.multi_count ;
     return qcg.multi_count ;
