@@ -770,6 +770,7 @@ void sum_all_mpi(Ty* src, const Long size, const MPI_Comm* commp=NULL){
 template<>
 inline void sum_all_mpi(RealDD* src, const Long size, const MPI_Comm* commp)
 {
+  (void)commp;
   TIMER("sum_all_mpi DD");
   const Int Nmpi  = get_num_node();
   //const Int rank  = get_id_node();
