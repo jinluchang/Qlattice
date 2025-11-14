@@ -1358,6 +1358,9 @@ inline Ty vec_norm2(Ty* s0, Ty* s1, Long Ndata, QMEM GPU = QMGPU, const Long Ngr
   return Reduce(buf, Nvol, GPU);
 }
 
+/*
+  return the index to sort the list in descending_order as src[res[0]] to be smallest
+*/
 template<typename Ty>
 std::vector<Long > get_sort_index(Ty* src, Long size)
 {

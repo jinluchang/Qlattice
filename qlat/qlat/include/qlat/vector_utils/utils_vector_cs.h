@@ -1814,28 +1814,32 @@ struct vector_cs_small_eig{
   }
 
   template< typename Ts>
-  vector_cs_small_eig(Ts* src, const Long num ){
+  vector_cs_small_eig(Ts* src, const Long num, const bool single_node = true ){
     const Long nvec = std::sqrt( num  * 1.0);
     Qassert(num * num == nvec);
     mat.resize(nvec, nvec);
     for(int ni=0;ni<nvec;ni++){
       mat.copy_from(&src[ni * nvec], ni);
     }
-    mat.set_single_node_vecs();
+    if(single_node){
+      mat.set_single_node_vecs();
+    }
     buf.resize(nvec);
     vsize = nvec;
     dslash_flops = 6 * nvec * nvec;
   }
 
   template< typename Ts>
-  inline void copy_from(Ts* src, const Long num, const bool GPU = true){
+  inline void copy_from(Ts* src, const Long num, const bool GPU = true, const bool single_node = true ){
     const Long nvec = std::sqrt( 1.0 * num );
     Qassert(num == nvec * nvec);
     mat.resize(nvec, nvec);
     for(int ni=0;ni<nvec;ni++){
       mat.copy_from(&src[ni * nvec], ni, GPU);
     }
-    mat.set_single_node_vecs();
+    if(single_node){
+      mat.set_single_node_vecs();
+    }
     buf.resize(nvec);
     vsize = nvec;
     dslash_flops = 6 * nvec * nvec;
@@ -1849,13 +1853,13 @@ struct vector_cs_small_eig{
   }
 
   template< typename Ts>
-  inline void copy_from(vector<Ts>& src){
-    copy_from(&src[0], src.size(), true);
+  inline void copy_from(vector<Ts>& src, const bool single_node = true){
+    copy_from(&src[0], src.size(), true, single_node);
   }
 
   template< typename Ts>
-  inline void copy_from(std::vector<Ts>& src){
-    copy_from(&src[0], src.size(), false);
+  inline void copy_from(std::vector<Ts>& src, const bool single_node = true){
+    copy_from(&src[0], src.size(), false, single_node);
   }
 
   template< typename Ts>
