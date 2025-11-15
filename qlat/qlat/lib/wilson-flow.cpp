@@ -1,5 +1,6 @@
 #include <qlat/qcd-acc.h>
 #include <qlat/wilson-flow.h>
+#include "qlat-utils/types.h"
 
 namespace qlat
 {  //
@@ -271,16 +272,14 @@ static void set_marks_field_block_stout_smear(CommMarks& marks,
   set_zero(marks);
   const Coordinate block_site = read_coordinate(tag);
   const bool is_block_site = block_site != Coordinate();
-  const Coordinate size_node = geo.geon.size_node;
-  const Coordinate coor_node = geo.geon.coor_node;
-  const Coordinate node_site = geo.node_site;
+  // const Coordinate size_node = geo.geon.size_node;
+  // const Coordinate coor_node = geo.geon.coor_node;
+  // const Coordinate node_site = geo.node_site;
   const Coordinate total_site = geo.total_site();
   Coordinate size_block;
   if (is_block_site) {
     size_block = total_site / block_site;
     Qassert(total_site == block_site * size_block);
-  } else {
-    size_block = Coordinate();
   }
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -288,8 +287,6 @@ static void set_marks_field_block_stout_smear(CommMarks& marks,
     Coordinate xl_block;
     if (is_block_site) {
       xl_block = xg % block_site;
-    } else {
-      xl_block = Coordinate();
     }
     for (Int mu = 0; mu < 4; ++mu) {
       if (is_block_site and (xl_block[mu] == block_site[mu] - 1)) {
@@ -302,7 +299,7 @@ static void set_marks_field_block_stout_smear(CommMarks& marks,
         if (is_block_site and (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
           continue;
         }
-        if (is_block_site and (nu < 0 and xl_block[nu] == 0)) {
+        if (is_block_site and (nu < 0 and xl_block[-nu - 1] == 0)) {
           continue;
         }
         set_marks_field_path(marks, xl, make_array<int>(nu, mu, -nu - 1));
@@ -320,7 +317,7 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
   const Geometry geo = gf0.geo();
   Qassert(geo.is_only_local);
   const bool is_block_site = block_site != Coordinate();
-  const Coordinate size_node = geo.geon.size_node;
+  // const Coordinate size_node = geo.geon.size_node;
   const Coordinate coor_node = geo.geon.coor_node;
   const Coordinate node_site = geo.node_site;
   const Coordinate total_site = geo.total_site();
@@ -338,8 +335,6 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
         expand_right[i] = 0;
       }
     }
-  } else {
-    size_block = Coordinate();
   }
   const Geometry geo_ext = geo_resize(geo, expand_left, expand_right);
   GaugeField gf_ext;
@@ -359,7 +354,10 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Coordinate xl_block = xg % block_site;
+    Coordinate xl_block;
+    if (is_block_site) {
+      xl_block = xg % block_site;
+    }
     for (Int mu = 0; mu < 4; ++mu) {
       if (is_block_site and (xl_block[mu] == block_site[mu] - 1)) {
         continue;
@@ -373,7 +371,7 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
         if (is_block_site and (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
           continue;
         }
-        if (is_block_site and (nu < 0 and xl_block[nu] == 0)) {
+        if (is_block_site and (nu < 0 and xl_block[-nu - 1] == 0)) {
           continue;
         }
         acc += gf_wilson_line_no_comm(gf_ext, xl,

@@ -1,0 +1,118 @@
+[
+ [
+  "gf-init plaq",
+  -0.003987783999661486,
+  1e-08
+ ],
+ [
+  "gf-init",
+  {
+   "value": [
+    {
+     "real": -42.17564480733117,
+     "imag": 57.36752914276112,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.9571597598835506,
+     "imag": -4.833613971262505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 47.74374512276396,
+     "imag": -17.387499076167927,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf_block_stout_smear after plaq",
+  0.1747923820129676,
+  1e-08
+ ],
+ [
+  "gf_block_stout_smear after",
+  {
+   "value": [
+    {
+     "real": -41.29074718406813,
+     "imag": 54.282564390443056,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.982477753659417,
+     "imag": 0.33042300731232643,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 54.47126497195559,
+     "imag": -21.419859465198446,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf_block_stout_smear after block plaq",
+  0.21653266088858003,
+  1e-08
+ ],
+ [
+  "gf_block_stout_smear after block",
+  {
+   "value": [
+    {
+     "real": -42.73029541729238,
+     "imag": 51.31833156866027,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -4.858650783342522,
+     "imag": -6.122901257697926,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 56.435342566387675,
+     "imag": -22.94064050340111,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf_block_stout_smear after block 4 plaq",
+  0.3022765466500633,
+  1e-08
+ ],
+ [
+  "gf_block_stout_smear after block 4",
+  {
+   "value": [
+    {
+     "real": -45.11664702829778,
+     "imag": 47.16773918869211,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -5.891700458352094,
+     "imag": -5.9932881479501585,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 60.763977335385746,
+     "imag": -24.888118444728843,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ]
+]
