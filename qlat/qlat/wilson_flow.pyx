@@ -98,3 +98,11 @@ def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
         q.displayln_info(f"{fname}: t={t} ; E={energy_density} ; t^2 E={t*t*energy_density}")
     return energy_density_list
 
+@q.timer
+def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):
+    """
+    Stou smear in place.
+    If block_site = q.Coordinate(), then no blocking.
+    Otherwise, perform stout smearing for each block separately.
+    """
+    cc.gf_block_stout_smear(gf.xxx().val(), gf.xxx().val(), block_site.xx, step_size)

@@ -188,6 +188,7 @@ __all__ += [
         'gf_energy_derivative_density_field',
         'gf_wilson_flow',
         'gf_plaq_flow_force',
+        'gf_block_stout_smear',
         ]
 
 __all__ += [

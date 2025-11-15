@@ -259,4 +259,132 @@ void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
   qassert(z.multiplicity == 4);
 }
 
+static void set_marks_field_block_stout_smear(CommMarks& marks,
+                                              const Geometry& geo,
+                                              const Int multiplicity,
+                                              const std::string& tag)
+{
+  TIMER_VERBOSE("set_marks_field_block_stout_smear");
+  Qassert(multiplicity == 4);
+  marks.init();
+  marks.init(geo, multiplicity);
+  set_zero(marks);
+  const Coordinate block_site = read_coordinate(tag);
+  const bool is_block_site = block_site != Coordinate();
+  const Coordinate size_node = geo.geon.size_node;
+  const Coordinate coor_node = geo.geon.coor_node;
+  const Coordinate node_site = geo.node_site;
+  const Coordinate total_site = geo.total_site();
+  Coordinate size_block;
+  if (is_block_site) {
+    size_block = total_site / block_site;
+    Qassert(total_site == block_site * size_block);
+  } else {
+    size_block = Coordinate();
+  }
+  qthread_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    Coordinate xl_block;
+    if (is_block_site) {
+      xl_block = xg % block_site;
+    } else {
+      xl_block = Coordinate();
+    }
+    for (Int mu = 0; mu < 4; ++mu) {
+      if (is_block_site and (xl_block[mu] == block_site[mu] - 1)) {
+        continue;
+      }
+      for (Int nu = -4; nu < 4; ++nu) {
+        if (nu == mu or -nu - 1 == mu) {
+          continue;
+        }
+        if (is_block_site and (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
+          continue;
+        }
+        if (is_block_site and (nu < 0 and xl_block[nu] == 0)) {
+          continue;
+        }
+        set_marks_field_path(marks, xl, make_array<int>(nu, mu, -nu - 1));
+      }
+    }
+  });
+}
+
+void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
+                          const Coordinate& block_site, const RealD step_size)
+// gf can be the same object as gf0
+{
+  TIMER("gf_block_stout_smear");
+  Qassert(gf0.multiplicity == 4);
+  const Geometry geo = gf0.geo();
+  Qassert(geo.is_only_local);
+  const bool is_block_site = block_site != Coordinate();
+  const Coordinate size_node = geo.geon.size_node;
+  const Coordinate coor_node = geo.geon.coor_node;
+  const Coordinate node_site = geo.node_site;
+  const Coordinate total_site = geo.total_site();
+  Coordinate size_block;
+  Coordinate expand_left = Coordinate(1, 1, 1, 1);
+  Coordinate expand_right = Coordinate(1, 1, 1, 1);
+  if (is_block_site) {
+    size_block = total_site / block_site;
+    Qassert(total_site == block_site * size_block);
+    for (Int i = 0; i < 4; ++i) {
+      if ((coor_node[i] * node_site[i]) % block_site[i] == 0) {
+        expand_left[i] = 0;
+      }
+      if (((coor_node[i] + 1) * node_site[i]) % block_site[i] == 0) {
+        expand_right[i] = 0;
+      }
+    }
+  } else {
+    size_block = Coordinate();
+  }
+  const Geometry geo_ext = geo_resize(geo, expand_left, expand_right);
+  GaugeField gf_ext;
+  gf_ext.init(geo_ext);
+  Qassert(gf_ext.multiplicity == 4);
+  gf_ext = gf0;
+  const std::string tag_comm = show(block_site);
+  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
+  const CommPlan& plan =
+      get_comm_plan(set_marks_field_block_stout_smear, tag_comm, gf_ext.geo(),
+                    gf_ext.multiplicity);
+  QLAT_DIAGNOSTIC_POP;
+  refresh_expanded(gf_ext, plan);
+  GaugeMomentum gm;
+  gm.init(geo);
+  set_zero(gm);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xl_block = xg % block_site;
+    for (Int mu = 0; mu < 4; ++mu) {
+      if (is_block_site and (xl_block[mu] == block_site[mu] - 1)) {
+        continue;
+      }
+      ColorMatrix acc;
+      set_zero(acc);
+      for (Int nu = -4; nu < 4; ++nu) {
+        if (nu == mu or -nu - 1 == mu) {
+          continue;
+        }
+        if (is_block_site and (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
+          continue;
+        }
+        if (is_block_site and (nu < 0 and xl_block[nu] == 0)) {
+          continue;
+        }
+        acc += gf_wilson_line_no_comm(gf_ext, xl,
+                                      make_array<int>(nu, mu, -nu - 1));
+      }
+      const ColorMatrix force = -gf_ext.get_elem(xl, mu) * matrix_adjoint(acc);
+      gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
+    }
+  });
+  gf = gf0;
+  gf_evolve(gf, gm, step_size);
+}
+
 }  // namespace qlat

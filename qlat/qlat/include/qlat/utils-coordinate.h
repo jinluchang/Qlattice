@@ -144,13 +144,20 @@ inline Coordinate read_coordinate(const std::string& str)
   Long cur = 0;
   char c;
   bool f = false;
-  f = parse_long(x, cur, str);Qassert(f );
-  f = parse_char(c, cur, str);Qassert(f and (c == 'x' or c == ','));
-  f = parse_long(y, cur, str);Qassert(f );
-  f = parse_char(c, cur, str);Qassert(f and (c == 'x' or c == ','));
-  f = parse_long(z, cur, str);Qassert(f );
-  f = parse_char(c, cur, str);Qassert(f and (c == 'x' or c == ','));
-  f = parse_long(t, cur, str);Qassert(f );
+  f = parse_long(x, cur, str);
+  Qassert(f);
+  f = parse_char(c, cur, str);
+  Qassert(f and (c == 'x' or c == ','));
+  f = parse_long(y, cur, str);
+  Qassert(f);
+  f = parse_char(c, cur, str);
+  Qassert(f and (c == 'x' or c == ','));
+  f = parse_long(z, cur, str);
+  Qassert(f);
+  f = parse_char(c, cur, str);
+  Qassert(f and (c == 'x' or c == ','));
+  f = parse_long(t, cur, str);
+  Qassert(f);
   return Coordinate(x, y, z, t);
 }
 
