@@ -369,6 +369,8 @@ cdef extern from "qlat/field-shuffle.h" namespace "qlat":
     void field_shift[M](SelectedField[M]& sf, FieldSelection& fsel,
             const SelectedField[M]& sf0, const FieldSelection& fsel0,
             const Coordinate& shift, const bool is_reflect) except +
+    void shuffle_field[M](std_vector[Field[M]]& fs, const Field[M]& f, const Coordinate& new_size_node) except +
+    void shuffle_field_back[M](Field[M]& f, const std_vector[Field[M]]& fs, const Coordinate& new_size_node) except +
 
 cdef extern from "qlat/gauge-action.h" namespace "qlat":
 
@@ -489,6 +491,7 @@ cdef extern from "qlat/wilson-flow.h" namespace "qlat":
     RealD gf_energy_density(const GaugeField& gf) except +
     void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf, const Field[RealD]& plaq_factor) except +
     void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0, const Coordinate& block_site, const RealD step_size) except +
+    void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0, const RealD step_size) except +
 
 cdef extern from "qlat/qcd-topology.h" namespace "qlat":
 

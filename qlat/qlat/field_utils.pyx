@@ -11,6 +11,7 @@ from .field_base cimport (
 from .field_types cimport (
         FieldInt8t,
         FieldRealD,
+        FieldChar,
         )
 from .selected_field_types cimport SelectedFieldRealD
 from .selected_points_types cimport SelectedPointsRealD
@@ -189,3 +190,94 @@ def sqrt_field(f):
     return f_ret
 
 ###
+
+@q.timer
+def field_char_shift(FieldChar f, Coordinate shift):
+    """
+    return `sf`
+    `sf` is the new shifted Field.
+    `f` is not changed.
+    `shift` is the coordinate to shift the field (or None, which means no shift)
+    roughly shifted_field[(xg + shift) % total_site] == original_field[xg]
+    """
+    cdef FieldChar sf = FieldChar()
+    cc.field_shift(sf.xx, f.xx, shift.xx)
+    return sf
+
+@q.timer
+def field_shift(FieldBase f, Coordinate shift):
+    cdef FieldChar fc = FieldChar()
+    f.swap_cast(fc)
+    fc = field_char_shift(fc, shift)
+    sf = type(f)()
+    sf.swap_cast(fc)
+    return sf
+
+@q.timer
+def shuffle_field_char(FieldChar f, Coordinate new_size_node):
+    """
+    return f_list
+    """
+    cdef cc.std_vector[cc.Field[cc.Char]] fs
+    fs = cc.std_vector[cc.Field[cc.Char]]()
+    cc.shuffle_field(fs, f.xx, new_size_node.xx)
+    cdef cc.Int num_field = <cc.Int>fs.size()
+    cdef cc.Int i
+    cdef FieldChar f1
+    cdef list f_list = []
+    for i in range(num_field):
+        f1 = FieldChar()
+        cc.qswap(f1.xx, fs[i])
+        f_list.append(f1)
+    return f_list
+
+@q.timer
+def shuffle_field_char_back(FieldChar fc, list f_list, Coordinate new_size_node):
+    """
+    Modify `fc` in place.
+    NOTE: `fc` needs to have correct size.
+    """
+    cdef cc.std_vector[cc.Field[cc.Char]] fs
+    cdef cc.Int num_field = <cc.Int>len(f_list)
+    cdef cc.Int i
+    cdef FieldChar f1
+    fs = cc.std_vector[cc.Field[cc.Char]](num_field)
+    for i in range(num_field):
+        f1 = f_list[i]
+        cc.qswap(f1.xx, fs[i])
+    cc.shuffle_field_back(fc.xx, fs, new_size_node.xx)
+    for i in range(num_field):
+        f1 = f_list[i]
+        cc.qswap(f1.xx, fs[i])
+
+@q.timer
+def shuffle_field(FieldBase f, Coordinate new_size_node):
+    cdef FieldChar fc = FieldChar()
+    f.swap_cast(fc)
+    cdef list fc_list = shuffle_field_char(fc, new_size_node)
+    f.swap_cast(fc)
+    cdef list f_list = []
+    for i in range(len(fc_list)):
+        f1 = type(f)()
+        f1.swap_cast(fc_list[i])
+        f_list.append(f1)
+    return f_list
+
+@q.timer
+def shuffle_field_back(FieldBase f, list f_list, Coordinate new_size_node):
+    """
+    Modify `f` in place
+    NOTE: `f` needs to have correct size.
+    """
+    cdef FieldChar f1
+    cdef list fc_list = []
+    for i in range(len(f_list)):
+        f1 = FieldChar()
+        f_list[i].swap_cast(f1)
+        fc_list.append(f1)
+    cdef FieldChar fc = FieldChar()
+    f.swap_cast(fc)
+    shuffle_field_char_back(fc, fc_list, new_size_node)
+    f.swap_cast(fc)
+    for i in range(len(fc_list)):
+        f_list[i].swap_cast(fc_list[i])

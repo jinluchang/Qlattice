@@ -101,8 +101,18 @@ def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
 @q.timer
 def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):
     """
-    Stou smear in place.
+    Stout smear in place.
     If block_site = q.Coordinate(), then no blocking.
     Otherwise, perform stout smearing for each block separately.
     """
     cc.gf_block_stout_smear(gf.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
+
+@q.timer
+def gf_local_stout_smear(GaugeField gf, cc.RealD step_size):
+    """
+    Stout smear in place.
+    Otherwise, perform stout smearing for local field only.
+    No communiation involved.
+    """
+    cc.gf_local_stout_smear(gf.xxx().val(), gf.xxx().val(), step_size)
+

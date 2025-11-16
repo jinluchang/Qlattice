@@ -1,6 +1,7 @@
+#include <qlat-utils/types.h>
 #include <qlat/qcd-acc.h>
 #include <qlat/wilson-flow.h>
-#include "qlat-utils/types.h"
+#include <qlat/field-shuffle.h>
 
 namespace qlat
 {  //
@@ -378,6 +379,49 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
                                       make_array<int>(nu, mu, -nu - 1));
       }
       const ColorMatrix force = -gf_ext.get_elem(xl, mu) * matrix_adjoint(acc);
+      gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
+    }
+  });
+  gf = gf0;
+  gf_evolve(gf, gm, step_size);
+}
+
+void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
+                          const RealD step_size)
+// gf can be the same object as gf0
+// perform stout smear on each local object separately
+// intended to be used after `shuffle_field(gf_vec, gf, new_size_node)`
+{
+  TIMER("gf_local_stout_smear");
+  Qassert(gf0.multiplicity == 4);
+  const Geometry geo = gf0.geo();
+  Qassert(geo.is_only_local);
+  const Coordinate node_site = geo.node_site;
+  GaugeMomentum gm;
+  gm.init(geo);
+  set_zero(gm);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    for (Int mu = 0; mu < 4; ++mu) {
+      if (xl[mu] == node_site[mu] - 1) {
+        continue;
+      }
+      ColorMatrix acc;
+      set_zero(acc);
+      for (Int nu = -4; nu < 4; ++nu) {
+        if (nu == mu or -nu - 1 == mu) {
+          continue;
+        }
+        if (nu >= 0 and xl[nu] == node_site[nu] - 1) {
+          continue;
+        }
+        if (nu < 0 and xl[-nu - 1] == 0) {
+          continue;
+        }
+        acc +=
+            gf_wilson_line_no_comm(gf0, xl, make_array<int>(nu, mu, -nu - 1));
+      }
+      const ColorMatrix force = -gf0.get_elem(xl, mu) * matrix_adjoint(acc);
       gm.get_elem(xl, mu) = make_tr_less_anti_herm_matrix(force);
     }
   });

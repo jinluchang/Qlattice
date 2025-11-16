@@ -32,4 +32,7 @@ void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
 void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
                           const Coordinate& block_site, const RealD step_size);
 
+void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
+                          const RealD step_size);
+
 }  // namespace qlat

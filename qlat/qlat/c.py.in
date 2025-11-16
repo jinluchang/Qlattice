@@ -109,6 +109,12 @@ __all__ += [
         'mk_fft',
         'qnorm_field',
         'sqrt_field',
+        'field_char_shift',
+        'field_shift',
+        'shuffle_field_char',
+        'shuffle_field',
+        'shuffle_field_char_back',
+        'shuffle_field_back',
         ]
 
 __all__ += [
@@ -189,6 +195,7 @@ __all__ += [
         'gf_wilson_flow',
         'gf_plaq_flow_force',
         'gf_block_stout_smear',
+        'gf_local_stout_smear',
         ]
 
 __all__ += [
