@@ -2,9 +2,15 @@
 
 from qlat_utils.all cimport *
 from . cimport everything as cc
-from .field_types cimport FieldRealD
+from .field_types cimport (
+    FieldInt,
+    FieldRealD,
+)
 from .geometry cimport Geometry
-from .qcd cimport GaugeField
+from .qcd cimport (
+    GaugeField,
+    GaugeTransform,
+)
 from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
@@ -115,4 +121,28 @@ def gf_local_stout_smear(GaugeField gf, cc.RealD step_size):
     No communiation involved.
     """
     cc.gf_local_stout_smear(gf.xxx().val(), gf.xxx().val(), step_size)
+
+@q.timer
+def mk_local_tree_gauge_f_dir(Geometry geo, RngState rs):
+    """
+    return f_dir
+    Used for `gt_local_tree_gauge(gf, f_dir)`
+    """
+    cdef FieldInt f_dir = FieldInt()
+    cc.set_local_tree_gauge_f_dir(f_dir.xx, geo.xx, rs.xx)
+    return f_dir
+
+@q.timer
+def gt_local_tree_gauge(GaugeField gf, FieldInt f_dir):
+    """
+    return gt_inv
+    Note that the gauge fixed gauge field should be obtained as
+    gf_gt = gt_inv.inv() * gf
+    This is opposite to the other gauge tranformation functions.
+    f_dir = mk_local_tree_gauge_f_dir(gf.geo, rs)
+    """
+    cdef Geometry geo = gf.geo
+    cdef GaugeTransform gt_inv = GaugeTransform(geo)
+    cc.gt_local_tree_gauge(gt_inv.xxx().val(), gf.xxx().val(), f_dir.xx)
+    return gt_inv
 

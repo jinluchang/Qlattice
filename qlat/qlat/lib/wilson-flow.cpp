@@ -1,7 +1,8 @@
 #include <qlat-utils/types.h>
+#include <qlat/core.h>
+#include <qlat/field-shuffle.h>
 #include <qlat/qcd-acc.h>
 #include <qlat/wilson-flow.h>
-#include <qlat/field-shuffle.h>
 
 namespace qlat
 {  //
@@ -427,6 +428,98 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
   });
   gf = gf0;
   gf_evolve(gf, gm, step_size);
+}
+
+void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
+                                const RngState& rs)
+{
+  TIMER("set_local_tree_gauge_f_dir");
+  Qassert(geo.is_only_local);
+  const Coordinate node_site = geo.node_site;
+  const Coordinate node_center = node_site / 2;
+  const Coordinate total_site = geo.total_site();
+  f_dir.init(geo, 1);
+  set_zero(f_dir);
+  qthread_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    if (xl == node_center) {
+      f_dir.get_elem(index) = 0;
+      continue;
+    }
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Long gindex = index_from_coordinate(xg, total_site);
+    RngState rs_local = rs.newtype(gindex);
+    while (true) {
+      const Int dir = rand_gen(rs_local) % 4;
+      if (xl[dir] > node_center[dir]) {
+        f_dir.get_elem(index) = -dir - 1;
+      } else if (xl[dir] < node_center[dir]) {
+        f_dir.get_elem(index) = dir;
+      } else {
+        continue;
+      }
+      break;
+    }
+  });
+}
+
+void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
+                         const Field<Int>& f_dir)
+// `f_dir` can be set by:
+// set_local_tree_gauge_f_dir(f_dir, geo, rs);
+// Note that to apply the local tree gauge, we need to invert the returned `gt` first.
+// E.g.,
+// gt_invert(gt, gt_inv);
+// gf_apply_gauge_transformation(gf, gf, gt);
+{
+  TIMER("gt_local_tree_gauge");
+  Qassert(gf.multiplicity == 4);
+  Qassert(f_dir.multiplicity == 1);
+  const Geometry geo = gf.geo();
+  gt_inv.init(geo);
+  set_unit(gt_inv);
+  Qassert(geo.is_only_local);
+  Field<Int> f_marks, f_marks_new;
+  f_marks.init(geo, 1);
+  f_marks_new.init(geo, 1);
+  set_zero(f_marks);
+  set_zero(f_marks_new);
+  const Coordinate node_site = geo.node_site;
+  const Coordinate node_center = node_site / 2;
+  const Int dir = f_dir.get_elem(0);
+  Int num_step = 0;
+  for (Int mu = 0; mu < 4; ++mu) {
+    num_step += node_site[mu] / 2;
+  }
+  for (Int i = 0; i < num_step + 1; ++i) {
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Int mark = f_marks.get_elem(index);
+      if (mark != 0) {
+        continue;
+      }
+      if (xl == node_center) {
+        set_unit(gt_inv.get_elem(index));
+        f_marks_new.get_elem(index) = 1;
+        continue;
+      }
+      const Int dir = f_dir.get_elem(index);
+      const Coordinate xl1 = coordinate_shifts(xl, dir);
+      const Int mark1 = f_marks.get_elem(xl1);
+      if (mark1 == 0) {
+        continue;
+      }
+      gt_inv.get_elem(index) = gf_get_link(gf, xl, dir) * gt_inv.get_elem(xl1);
+      f_marks_new.get_elem(index) = 1;
+    });
+    qacc_for(index, geo.local_volume(), {
+      f_marks.get_elem(index) += f_marks_new.get_elem(index);
+    });
+    if (i == num_step) {
+      qacc_for(index, geo.local_volume(),
+               { qassert(f_marks.get_elem(index) >= 1); });
+    }
+  }
 }
 
 }  // namespace qlat

@@ -22,9 +22,9 @@ void gf_energy_density_field(Field<RealD>& fd, const GaugeField& gf);
 RealD gf_energy_density(const GaugeField& gf);
 
 std::vector<RealD> gf_wilson_flow(GaugeField& gf,
-                                   const RealD existing_flow_time,
-                                   const RealD flow_time, const Int steps,
-                                   const RealD c1 = 0.0);
+                                  const RealD existing_flow_time,
+                                  const RealD flow_time, const Int steps,
+                                  const RealD c1 = 0.0);
 
 void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf,
                      const Field<RealD>& plaq_factor);
@@ -34,5 +34,11 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
 
 void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
                           const RealD step_size);
+
+void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
+                                const RngState& rs);
+
+void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
+                         const Field<Int>& f_dir);
 
 }  // namespace qlat

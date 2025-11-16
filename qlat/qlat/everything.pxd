@@ -412,7 +412,19 @@ cdef extern from "qlat/qcd.h" namespace "qlat":
     void gf_plaq_field(Field[RealD]& f_plaq, const GaugeField& gf) except +
 
 cdef extern from "qlat/qcd-utils.h" namespace "qlat":
+
     void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf) except +
+
+cdef extern from "qlat/qcd-gauge-transformation.h" namespace "qlat":
+
+    void gt_apply_gauge_transformation(GaugeTransform& gt0, const GaugeTransform& gt1) except +
+    void gt_apply_gauge_transformation(GaugeTransform& gt, const GaugeTransform& gt0, const GaugeTransform& gt1) except +
+    void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt, const bool is_dagger) except +
+    void gt_invert(GaugeTransform& gt, const GaugeTransform& gt0) except +
+    void ff_apply_gauge_transformation(FermionField4d& ff, const FermionField4d& ff0, const GaugeTransform& gt) except +
+    void prop_apply_gauge_transformation(Prop& prop, const Prop& prop0, const GaugeTransform& gt) except +
+    void prop_apply_gauge_transformation(SelectedField[WilsonMatrix]& prop, const SelectedField[WilsonMatrix]& prop0, const GaugeTransform& gt, const FieldSelection& fsel) except +
+    void prop_apply_gauge_transformation(SelectedPoints[WilsonMatrix]& prop, const SelectedPoints[WilsonMatrix]& prop0, const GaugeTransform& gt, const PointsSelection& psel) except +
 
 cdef extern from "qlat/hmc.h" namespace "qlat":
 
@@ -492,6 +504,8 @@ cdef extern from "qlat/wilson-flow.h" namespace "qlat":
     void set_plaq_flow_z(GaugeMomentum& z, const GaugeField& gf, const Field[RealD]& plaq_factor) except +
     void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0, const Coordinate& block_site, const RealD step_size) except +
     void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0, const RealD step_size) except +
+    void set_local_tree_gauge_f_dir(Field[Int]& f_dir, const Geometry& geo, const RngState& rs) except +
+    void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf, const Field[Int]& f_dir) except +
 
 cdef extern from "qlat/qcd-topology.h" namespace "qlat":
 

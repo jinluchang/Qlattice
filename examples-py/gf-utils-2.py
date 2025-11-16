@@ -68,6 +68,49 @@ q.shuffle_field_back(gf, gf_list, q.Coordinate([ 2, 2, 2, 4, ]))
 q.json_results_append(f"gf_local_stout_smear plaq", gf.plaq(), 1e-8)
 q.json_results_append(f"gf_local_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 
+gt = q.GaugeTransform(geo)
+gt.set_rand(rs.split("gt-init"), 0.5, 2)
+q.json_results_append(f"gt-init", q.get_data_sig_arr(gt, q.RngState(), 3), 1e-8)
+gt_inv = gt.inv()
+q.json_results_append(f"gt_inv", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+
+gf_gt = gt * gf
+q.json_results_append(f"gf_gt", q.get_data_sig_arr(gf_gt, q.RngState(), 3), 1e-8)
+
+gt1 = gt * gt_inv
+q.json_results_append(f"gt1", q.get_data_sig_arr(gt1, q.RngState(), 3), 1e-8)
+
+prop = q.Prop(geo)
+prop.set_rand_g(rs.split("prop-init"), 0.0, 0.5)
+q.json_results_append(f"prop", q.get_data_sig_arr(prop, q.RngState(), 3), 1e-8)
+
+prop_gt = gt * prop
+q.json_results_append(f"prop_gt", q.get_data_sig_arr(prop_gt, q.RngState(), 3), 1e-8)
+
+psel = q.PointsSelection()
+psel.set_rand(geo.total_site, 16, rs.split("psel"))
+sp_prop = q.PselProp(psel)
+sp_prop @= prop
+q.json_results_append(f"sp_prop", q.get_data_sig_arr(sp_prop, q.RngState(), 3), 1e-8)
+
+sp_prop_gt = gt * sp_prop
+q.json_results_append(f"sp_prop_gt", q.get_data_sig_arr(sp_prop_gt, q.RngState(), 3), 1e-8)
+sp_prop_gt.set_zero()
+sp_prop_gt @= prop_gt
+q.json_results_append(f"sp_prop_gt 2", q.get_data_sig_arr(sp_prop_gt, q.RngState(), 3), 1e-8)
+
+fsel = q.FieldSelection(psel)
+s_prop = q.SelProp(fsel)
+s_prop @= prop
+q.json_results_append(f"s_prop", q.get_data_sig_arr(s_prop, q.RngState(), 3), 1e-8)
+
+s_prop_gt = gt * s_prop
+q.json_results_append(f"s_prop_gt", q.get_data_sig_arr(s_prop_gt, q.RngState(), 3), 1e-8)
+
+s_prop_gt.set_zero()
+s_prop_gt @= prop_gt
+q.json_results_append(f"s_prop_gt 2", q.get_data_sig_arr(s_prop_gt, q.RngState(), 3), 1e-8)
+
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
