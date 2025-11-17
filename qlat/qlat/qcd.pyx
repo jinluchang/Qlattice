@@ -60,7 +60,7 @@ cdef class GaugeField(FieldColorMatrix):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
-        c.unitarize_color_matrix_field(self)
+        cc.unitarize(self.xx)
 
     def plaq(self):
         return gf_avg_plaq(self)
@@ -121,7 +121,7 @@ cdef class GaugeTransform(FieldColorMatrix):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
-        c.unitarize_color_matrix_field(self)
+        cc.unitarize(self.xx)
 
     def __mul__(self, other):
         """
