@@ -638,5 +638,231 @@
   "gf_local_stout_smear gt trace",
   0.25950251098665444,
   1e-08
+ ],
+ [
+  "gt_block_tree_gauge gt_inv",
+  {
+   "value": [
+    {
+     "real": 33.13558974858954,
+     "imag": 3.297275023681614,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 6.670220287332149,
+     "imag": 2.5162921499521698,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -12.294768655223017,
+     "imag": -17.406151834296367,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf",
+  {
+   "value": [
+    {
+     "real": -42.17564480733117,
+     "imag": 57.36752914276112,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.9571597598835506,
+     "imag": -4.833613971262505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 47.74374512276396,
+     "imag": -17.387499076167927,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf_local_stout_smear gt_block_tree_gauge plaq",
+  -0.0039877839996614855,
+  1e-08
+ ],
+ [
+  "gf_local_stout_smear gt_block_tree_gauge",
+  {
+   "value": [
+    {
+     "real": -6.5099054542338095,
+     "imag": -29.666794037517278,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 40.02652732620623,
+     "imag": 16.771183886314926,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -45.26767683551266,
+     "imag": -14.641641545138654,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf_local_stout_smear gt_block_tree_gauge trace",
+  0.2515041490588486,
+  1e-08
+ ],
+ [
+  "gt_block_tree_gauge 4 gt_inv",
+  {
+   "value": [
+    {
+     "real": -26.961783696798722,
+     "imag": 27.995907457008578,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.7356079778387388,
+     "imag": 7.522886880378954,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 4.393767105548038,
+     "imag": -20.623477037682612,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf after gt_block_tree_gauge",
+  {
+   "value": [
+    {
+     "real": -42.17564480733117,
+     "imag": 57.36752914276112,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.9571597598835506,
+     "imag": -4.833613971262505,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 47.74374512276396,
+     "imag": -17.387499076167927,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf gt transformed",
+  {
+   "value": [
+    {
+     "real": 11.871473358566561,
+     "imag": 0.5312091069722111,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 19.81954693506747,
+     "imag": 20.128792225605764,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -15.383323428613094,
+     "imag": 41.20768424372513,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gt_block_tree_gauge 4 gt_inv 2nd",
+  {
+   "value": [
+    {
+     "real": -44.99313622522146,
+     "imag": 6.242835244882144e-14,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 2.6123849850102823,
+     "imag": 3.484810730118167e-14,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 40.422491063948,
+     "imag": 4.9908438867105755e-14,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf after gt_block_tree_gauge 2nd",
+  {
+   "value": [
+    {
+     "real": 11.871473358566561,
+     "imag": 0.5312091069722111,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 19.81954693506747,
+     "imag": 20.128792225605764,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -15.383323428613094,
+     "imag": 41.20768424372513,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gf gt transformed 2nd",
+  {
+   "value": [
+    {
+     "real": 11.8714733585665,
+     "imag": 0.5312091069718541,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 19.819546935067052,
+     "imag": 20.128792225606244,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -15.383323428612902,
+     "imag": 41.20768424372556,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
  ]
 ]

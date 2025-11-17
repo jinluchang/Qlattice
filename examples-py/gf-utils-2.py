@@ -145,6 +145,52 @@ q.json_results_append(f"gf_local_stout_smear gt plaq", gf.plaq(), 1e-8)
 q.json_results_append(f"gf_local_stout_smear gt", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 q.json_results_append(f"gf_local_stout_smear gt trace", gf.link_trace(), 1e-8)
 
+gf @= gf0
+f_dir_list = None
+gt_inv, f_dir_list = q.gt_block_tree_gauge(
+    gf,
+    block_site=q.Coordinate([ 2, 2, 2, 2, ]),
+    stout_smear_step_size=0.1,
+    num_smear_step=1,
+    f_dir_list=f_dir_list,
+    rs_f_dir=rs.split("gt_tree"),
+    )
+q.json_results_append(f"gt_block_tree_gauge gt_inv", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gt = gt_inv.inv()
+gf @= gt * gf
+q.json_results_append(f"gf_local_stout_smear gt_block_tree_gauge plaq", gf.plaq(), 1e-8)
+q.json_results_append(f"gf_local_stout_smear gt_block_tree_gauge", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf_local_stout_smear gt_block_tree_gauge trace", gf.link_trace(), 1e-8)
+
+gf @= gf0
+
+f_dir_list = None
+gt_inv, f_dir_list = q.gt_block_tree_gauge(
+    gf,
+    block_site=q.Coordinate([ 4, 4, 4, 4, ]),
+    f_dir_list=f_dir_list,
+    rs_f_dir=rs.split("gt_tree"),
+    )
+q.json_results_append(f"gt_block_tree_gauge 4 gt_inv", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf after gt_block_tree_gauge", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gf = gt_inv.inv() * gf
+q.json_results_append(f"gf gt transformed", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gt_inv, f_dir_list = q.gt_block_tree_gauge(
+    gf,
+    block_site=q.Coordinate([ 4, 4, 4, 4, ]),
+    f_dir_list=f_dir_list,
+    rs_f_dir=rs.split("gt_tree"),
+    )
+q.json_results_append(f"gt_block_tree_gauge 4 gt_inv 2nd", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf after gt_block_tree_gauge 2nd", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gf = gt_inv.inv() * gf
+q.json_results_append(f"gf gt transformed 2nd", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()

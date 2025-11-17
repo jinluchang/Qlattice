@@ -198,6 +198,7 @@ __all__ += [
         'gf_local_stout_smear',
         'mk_local_tree_gauge_f_dir',
         'gt_local_tree_gauge',
+        'gt_block_tree_gauge',
         ]
 
 __all__ += [

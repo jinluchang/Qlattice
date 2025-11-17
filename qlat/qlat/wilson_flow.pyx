@@ -14,8 +14,12 @@ from .qcd cimport (
 from .hmc cimport GaugeMomentum
 from .gauge_action cimport GaugeAction
 
-from .hmc import gf_evolve
 import qlat_utils as q
+from .hmc import gf_evolve
+from .field_utils import (
+    shuffle_field,
+    shuffle_field_back,
+)
 
 @q.timer
 def gf_energy_density(GaugeField gf):
@@ -145,4 +149,44 @@ def gt_local_tree_gauge(GaugeField gf, FieldInt f_dir):
     cdef GaugeTransform gt_inv = GaugeTransform(geo)
     cc.gt_local_tree_gauge(gt_inv.xxx().val(), gf.xxx().val(), f_dir.xx)
     return gt_inv
+
+@q.timer
+def gt_block_tree_gauge(
+        GaugeField gf,
+        *,
+        Coordinate block_site=None,
+        cc.RealD stout_smear_step_size=0.125,
+        cc.Int num_smear_step=4,
+        list f_dir_list=None,
+        RngState rs_f_dir=None,
+        ):
+    """
+    return (gt_inv, f_dir_list,)
+    Provide `f_dir_list`, otherwise `rs_f_dir` will be used to generate `f_dir_list`.
+    If `f_dir_list` is provided, `rs_f_dir` will be ignored.
+    Default `block_site = Coordinate([ 4, 4, 4, 4, ])`
+    Default `rs_f_dir = RngState("seed-gt_block_tree_gauge-rs_f_dir")`
+    """
+    if block_site is None:
+        block_site = Coordinate([ 4, 4, 4, 4, ])
+    cdef Geometry geo = gf.geo
+    cdef Coordinate total_site = geo.total_site
+    cdef Coordinate new_size_node = total_site // block_site
+    assert new_size_node * block_site == total_site
+    cdef list gf_list = shuffle_field(gf, new_size_node)
+    cdef list geo_list = [ gf_local.geo for gf_local in gf_list ]
+    if f_dir_list is None:
+        if rs_f_dir is None:
+            rs_f_dir = RngState("seed-gt_block_tree_gauge-rs_f_dir")
+        f_dir_list = [ mk_local_tree_gauge_f_dir(geo_local, rs_f_dir) for geo_local in geo_list ]
+    cdef list gt_inv_list = []
+    cdef GaugeTransform gt_inv
+    for gf_local, f_dir_local in zip(gf_list, f_dir_list):
+        for step in range(num_smear_step):
+            gf_local_stout_smear(gf_local, stout_smear_step_size)
+        gt_inv = gt_local_tree_gauge(gf_local, f_dir_local)
+        gt_inv_list.append(gt_inv)
+    gt_inv = GaugeTransform(geo)
+    shuffle_field_back(gt_inv, gt_inv_list, new_size_node)
+    return (gt_inv, f_dir_list,)
 
