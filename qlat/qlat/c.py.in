@@ -196,6 +196,7 @@ __all__ += [
         'gf_plaq_flow_force',
         'gf_block_stout_smear',
         'gf_local_stout_smear',
+        'mk_local_tree_gauge_f_dir',
         'gt_local_tree_gauge',
         ]
 

@@ -118,7 +118,32 @@ q.json_results_append(f"ff4d", q.get_data_sig_arr(ff4d, q.RngState(), 3), 1e-8)
 ff4d_gt = gt * ff4d
 q.json_results_append(f"ff4d_gt", q.get_data_sig_arr(ff4d_gt, q.RngState(), 3), 1e-8)
 
+gf @= gf0
+gf_list = q.shuffle_field(gf, q.Coordinate([ 2, 2, 2, 4, ]))
+geo_list = [ gf_local.geo for gf_local in gf_list ]
+rs_gt_tree = rs.split("gt_tree")
+f_dir_list = [ q.mk_local_tree_gauge_f_dir(geo, rs_gt_tree) for geo in geo_list ]
+gt_inv_list = []
+q.json_results_append(f"shuffle_field {len(gf_list)}")
+for gf_local, f_dir in zip(gf_list, f_dir_list):
+    for step in range(1):
+        q.gf_local_stout_smear(gf_local, 0.1)
+    gt_inv = q.gt_local_tree_gauge(gf_local, f_dir)
+    gt_inv_list.append(gt_inv)
+q.shuffle_field_back(gf, gf_list, q.Coordinate([ 2, 2, 2, 4, ]))
+q.json_results_append(f"gf_local_stout_smear plaq", gf.plaq(), 1e-8)
+q.json_results_append(f"gf_local_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf_local_stout_smear trace", gf.link_trace(), 1e-8)
 
+gt_inv = q.GaugeTransform(geo)
+q.shuffle_field_back(gt_inv, gt_inv_list, q.Coordinate([ 2, 2, 2, 4, ]))
+q.json_results_append(f"gt_inv", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+
+gt = gt_inv.inv()
+gf @= gt * gf
+q.json_results_append(f"gf_local_stout_smear gt plaq", gf.plaq(), 1e-8)
+q.json_results_append(f"gf_local_stout_smear gt", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf_local_stout_smear gt trace", gf.link_trace(), 1e-8)
 
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-5)
