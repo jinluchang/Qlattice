@@ -24,19 +24,7 @@ void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf);
 struct U1GaugeTransform : FieldM<ComplexF, 1> {
 };
 
-template <class T>
-void unitarize(Field<ColorMatrixT<T> >& gf)
-{
-  TIMER_VERBOSE("unitarize(gf)");
-  qacc_for(index, gf.geo().local_volume(), {
-    const Geometry& geo = gf.geo();
-    const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
-    for (Int m = 0; m < gf.multiplicity; ++m) {
-      unitarize(v[m]);
-    }
-  });
-}
+void unitarize(Field<ColorMatrix>& gf);
 
 // GaugeField IO
 

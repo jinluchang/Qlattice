@@ -4,10 +4,26 @@ from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry
 from .field_types cimport (
-        FieldRealD,
-        FieldColorMatrix,
-        FieldComplexD,
-        )
+    FieldRealD,
+    FieldColorMatrix,
+    FieldComplexD,
+)
+from .propagator cimport (
+    Prop,
+    SelProp,
+    PselProp,
+    FermionField4d,
+    SpinProp,
+)
+from .field_selection cimport (
+    FieldSelection,
+    PointsSelection,
+)
+
+from .field_utils import (
+    field_expanded,
+    refresh_expanded_1,
+)
 
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
@@ -15,11 +31,6 @@ from cpython.buffer cimport PyBUF_FORMAT
 import cqlat as c
 import qlat_utils as q
 import numpy as np
-
-from .field_utils import (
-        field_expanded,
-        refresh_expanded_1,
-        )
 
 cdef class GaugeField(FieldColorMatrix):
 
@@ -116,36 +127,55 @@ cdef class GaugeTransform(FieldColorMatrix):
         """
         other can be GaugeTransform, GaugeField, Prop, SelProp, PselProp, list
         """
-        from qlat.propagator import Prop, SelProp, PselProp
+        cdef GaugeTransform gt, gt1
+        cdef GaugeField gf, gf1
+        cdef Prop prop, prop1
+        cdef SelProp s_prop, s_prop1
+        cdef PselProp ps_prop, ps_prop1
+        cdef FermionField4d ff, ff1
+        cdef FieldSelection fsel
+        cdef PointsSelection psel
         if isinstance(other, GaugeTransform):
+            gt1 = other
             gt = GaugeTransform()
-            c.apply_gt_gt(gt, self, other)
+            cc.gt_apply_gauge_transformation(gt.xxx().val(), gt1.xxx().val(), self.xxx().val())
             return gt
         elif isinstance(other, GaugeField):
+            gf1 = other
             gf = GaugeField()
-            c.apply_gt_gf(gf, self, other)
+            cc.gf_apply_gauge_transformation(gf.xxx().val(), gf1.xxx().val(), self.xxx().val(), False)
             return gf
         elif isinstance(other, Prop):
+            prop1 = other
             prop = Prop()
-            c.apply_gt_prop(prop, self, other)
+            cc.prop_apply_gauge_transformation(prop.xxx().val(), prop1.xxx().val(), self.xxx().val())
             return prop
         elif isinstance(other, SelProp):
-            prop = SelProp(other.fsel)
-            c.apply_gt_sprop(prop, self, other)
-            return prop
+            s_prop1 = other
+            fsel = other.fsel
+            s_prop = SelProp(fsel)
+            cc.prop_apply_gauge_transformation(s_prop.xx, s_prop1.xx, self.xxx().val(), fsel.xx)
+            return s_prop
         elif isinstance(other, PselProp):
-            prop = PselProp(other.psel)
-            c.apply_gt_psprop(prop, self, other)
-            return prop
+            ps_prop1 = other
+            psel = other.psel
+            ps_prop = PselProp(psel)
+            cc.prop_apply_gauge_transformation(ps_prop.xx, ps_prop1.xx, self.xxx().val(), psel.xx)
+            return ps_prop
+        elif isinstance(other, FermionField4d):
+            ff1 = other
+            ff = FermionField4d()
+            cc.ff_apply_gauge_transformation(ff.xxx().val(), ff1.xxx().val(), self.xxx().val())
+            return ff
         elif isinstance(other, list):
             return [ self * p for p in other ]
         else:
             raise Exception("GaugeTransform.__mul__")
 
     def inv(self):
-        gt = GaugeTransform()
-        c.gt_invert(gt, self)
-        return gt
+        cdef GaugeTransform gt_inv = GaugeTransform()
+        cc.gt_invert(gt_inv.xxx().val(), self.xxx().val())
+        return gt_inv
 
 ###
 

@@ -410,6 +410,7 @@ cdef extern from "qlat/qcd.h" namespace "qlat":
     RealD gf_avg_spatial_plaq(const GaugeField& gf) except +
     RealD gf_avg_link_trace(const GaugeField& gf) except +
     void gf_plaq_field(Field[RealD]& f_plaq, const GaugeField& gf) except +
+    void unitarize(Field[ColorMatrix]& gf) except +
 
 cdef extern from "qlat/qcd-utils.h" namespace "qlat":
 

@@ -486,7 +486,6 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
   set_zero(f_marks_new);
   const Coordinate node_site = geo.node_site;
   const Coordinate node_center = node_site / 2;
-  const Int dir = f_dir.get_elem(0);
   Int num_step = 0;
   for (Int mu = 0; mu < 4; ++mu) {
     num_step += node_site[mu] / 2;
@@ -496,18 +495,18 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
       const Coordinate xl = geo.coordinate_from_index(index);
       const Int mark = f_marks.get_elem(index);
       if (mark != 0) {
-        continue;
+        qacc_continue;
       }
       if (xl == node_center) {
         set_unit(gt_inv.get_elem(index));
         f_marks_new.get_elem(index) = 1;
-        continue;
+        qacc_continue;
       }
       const Int dir = f_dir.get_elem(index);
       const Coordinate xl1 = coordinate_shifts(xl, dir);
       const Int mark1 = f_marks.get_elem(xl1);
       if (mark1 == 0) {
-        continue;
+        qacc_continue;
       }
       gt_inv.get_elem(index) = gf_get_link(gf, xl, dir) * gt_inv.get_elem(xl1);
       f_marks_new.get_elem(index) = 1;
