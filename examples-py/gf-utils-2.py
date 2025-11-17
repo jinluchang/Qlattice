@@ -111,6 +111,15 @@ s_prop_gt.set_zero()
 s_prop_gt @= prop_gt
 q.json_results_append(f"s_prop_gt 2", q.get_data_sig_arr(s_prop_gt, q.RngState(), 3), 1e-8)
 
+ff4d = q.FermionField4d(geo)
+ff4d.set_rand_g(rs.split("ff-init"), 0.0, 1.0)
+q.json_results_append(f"ff4d", q.get_data_sig_arr(ff4d, q.RngState(), 3), 1e-8)
+
+ff4d_gt = gt * ff4d
+q.json_results_append(f"ff4d_gt", q.get_data_sig_arr(ff4d_gt, q.RngState(), 3), 1e-8)
+
+
+
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
