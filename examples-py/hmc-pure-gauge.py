@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-json_results = []
-
 import sys
 import math as m
 import numpy as np
