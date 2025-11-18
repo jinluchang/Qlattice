@@ -294,7 +294,7 @@ void bcast_all_size(Ty *src, const Long size, const Int root = 0, MPI_Comm* comm
   total res size : size * Nmpi
 */
 template<typename Ty>
-void gather_all_size(Ty* res, Ty *src, const Long size, const Int root = 0, MPI_Comm* commp=NULL)
+void gather_all_size(Ty* res, Ty *src, const Long size, const Int root = 0, const MPI_Comm* commp=NULL)
 {
   TIMER("gather_all_size");
   if(size == 0){return ;}
@@ -770,7 +770,6 @@ void sum_all_mpi(Ty* src, const Long size, const MPI_Comm* commp=NULL){
 template<>
 inline void sum_all_mpi(RealDD* src, const Long size, const MPI_Comm* commp)
 {
-  (void)commp;
   TIMER("sum_all_mpi DD");
   const Int Nmpi  = get_num_node();
   //const Int rank  = get_id_node();
@@ -792,7 +791,7 @@ inline void sum_all_mpi(RealDD* src, const Long size, const MPI_Comm* commp)
   //  bufs[si*2 + 0] = src[si].X();
   //  bufs[si*2 + 1] = src[si].Y();
   //}
-  gather_all_size(bufr.data(), bufs.data(), size*2);
+  gather_all_size(bufr.data(), bufs.data(), size*2, 0, commp);
   //sum_all_size(buf.data(), buf.size(), GPU, commp);
   qmem_for(si, size, gmem, {
     RealDD a = 0.0;

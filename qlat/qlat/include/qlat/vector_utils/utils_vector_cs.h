@@ -98,8 +98,8 @@ struct vector_cs{
   vector_cs(){
     inialize_para();
   }
-  void set_single_node_vecs(){
-    single_node_vecs = true;
+  void set_single_node_vecs(bool tag = true){
+    single_node_vecs = tag;
   }
   //
   vector_cs(Int nvec_, LInt nsum_, QMEM GPU_ = QMGPU, Int b_size_ = -1, Int bfac_group_ = -1)
@@ -1802,15 +1802,39 @@ template <typename Ty>
 struct vector_cs_small_eig{
   vector_cs<Ty > mat;
   vector_gpu<Ty> buf;
+  vector_cs<Ty > vbuf;// vector_cs buffer
+  qlat::vector<Ty* > mat_src;
   double dslash_flops;
-  //Int count;
+  Int count;
   Long vsize;
 
   vector_cs_small_eig(){
     mat.inialize_para();
     vsize = 0;
-    //ncount = 1;
+    count = 1;
     dslash_flops = 0.0;
+  }
+
+  inline void set_multi_count(const Int count_){
+    Qassert(count_ > 0);
+    count = count_;
+  }
+
+  inline void initial_buf(const bool single_node = true){
+    const Int nvec = mat.nvec;
+    Qassert(nvec > 0);
+    if(single_node){
+      mat.set_single_node_vecs();
+    }
+    buf.resize(nvec * 4);
+    vbuf.resize(3, mat);
+    // set up buffers for various routines
+    mat_src.resize(4);
+    for(Int iv=0;iv<4;iv++){
+      mat_src[iv] = &buf[iv * nvec];
+    }
+    vsize = nvec;
+    dslash_flops = 6 * nvec * nvec;
   }
 
   template< typename Ts>
@@ -1821,35 +1845,18 @@ struct vector_cs_small_eig{
     for(int ni=0;ni<nvec;ni++){
       mat.copy_from(&src[ni * nvec], ni);
     }
-    if(single_node){
-      mat.set_single_node_vecs();
-    }
-    buf.resize(nvec);
-    vsize = nvec;
-    dslash_flops = 6 * nvec * nvec;
+    initial_buf(single_node);
   }
 
   template< typename Ts>
-  inline void copy_from(Ts* src, const Long num, const bool GPU = true, const bool single_node = true ){
+  inline void copy_from(Ts* src, const Long num, const bool GPU = true, const bool single_node = true ) {
     const Long nvec = std::sqrt( 1.0 * num );
     Qassert(num == nvec * nvec);
     mat.resize(nvec, nvec);
     for(int ni=0;ni<nvec;ni++){
       mat.copy_from(&src[ni * nvec], ni, GPU);
     }
-    if(single_node){
-      mat.set_single_node_vecs();
-    }
-    buf.resize(nvec);
-    vsize = nvec;
-    dslash_flops = 6 * nvec * nvec;
-  }
-
-  template< typename Ts>
-  inline void copy_to(Ts* res, const bool GPU = true){
-    for(int ni=0;ni<mat.nvec;ni++){
-      mat.copy_to(&res[ni * mat.nvec], ni, GPU);
-    }
+    initial_buf(single_node);
   }
 
   template< typename Ts>
@@ -1860,6 +1867,14 @@ struct vector_cs_small_eig{
   template< typename Ts>
   inline void copy_from(std::vector<Ts>& src, const bool single_node = true){
     copy_from(&src[0], src.size(), false, single_node);
+  }
+
+  // need bcast to all nodes ?
+  template< typename Ts>
+  inline void copy_to(Ts* res, const bool GPU = true){
+    for(int ni=0;ni<mat.nvec;ni++){
+      mat.copy_to(&res[ni * mat.nvec], ni, GPU);
+    }
   }
 
   template< typename Ts>
@@ -1885,13 +1900,13 @@ struct vector_cs_small_eig{
     for(int ni=0;ni<nvec;ni++){
       for(int nj=0;nj<nvec;nj++){
         if(nj <= ni){
-          tmp[ni*nvec+nj] = (tmp[ni*nvec + nj] + qconj(tmp[ni*nvec + nj])) / 2.0;
-          tmp[nj*nvec+ni] =  tmp[ni*nvec + nj];
+          tmp[ni*nvec+nj] = (tmp[ni*nvec + nj] + qconj(tmp[nj*nvec + ni])) / 2.0;
+          tmp[nj*nvec+ni] =  qconj( tmp[ni*nvec + nj] );
         }
       }
     }
     for(int ni=0;ni<nvec;ni++){
-      tmp[ni*nvec+ni] += diagonal[ni].real();
+      tmp[ni*nvec+ni] += (0.2 + ni*0.1 + diagonal[ni].real());
     }
     //for(unsigned int ni=0;ni<tmp.size();ni++){
     //  qmessage("v %5d %+.8e %+.8e \n", int(ni), tmp[ni].real(), tmp[ni].imag());
@@ -1905,11 +1920,27 @@ struct vector_cs_small_eig{
 
   template<typename Tc>
   inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, Int ir = 0, Int is = 0){
-    //vs.copy_to(mat_src[0], is, true);
-    //multi(mat_src[1], mat_src[0]);
-    //vr.copy_from(mat_src[1], ir, true);
-    vs.copy_to(buf.data(), is, true);
-    mat.linear_combination(vr, buf.data(), mat.nvec, ir);
+    if(count == 1){
+      vs.copy_to(buf.data(), is, true);
+      mat.linear_combination(vr, buf.data(), mat.nvec, ir);
+    }else{
+      vs.copy_to(buf.data(), is, true);
+      for(Int ni=0;ni<count;ni++){
+        vr.set_zero(ir);
+        mat.linear_combination(vbuf, buf.data(), mat.nvec, 0);
+        vr.operator_vec(vbuf, Tc(1.0, 0.0), ir, 0);
+        vr.copy_to(buf.data(), ir, true);
+      }
+    }
+  }
+
+  template<typename Tk>
+  inline void multi(Tk* res, Tk* src){
+    //cpy_GPU(buf.data(), src, mat.nsum, 1, 1);
+    vbuf.copy_from(src, 0);
+    multi(vbuf, vbuf, 1, 0);
+    //mat.linear_combination(vbuf, buf.data(), mat.nvec, 0);
+    vbuf.copy_to(res, 1, true);
   }
 
   inline Int cg(qlat::vector_cs<ComplexD >& vr, qlat::vector_cs<ComplexD >& vs, const Int ir = 0, const Int is = 0, const Int iter=1000, double err=1e-5, const Int prec_cg = 0)

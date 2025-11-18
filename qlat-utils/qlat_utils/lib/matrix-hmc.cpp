@@ -40,7 +40,7 @@ void ColorMatrixConstants::check() const
       for (Int c = 0; c < 8; ++c) {
         sum += -f[c](a, b) * basis[c];
       }
-      Qassert(qnorm(adx(a, b) - sum) < 1e-20);
+      Qassert(qnorm(ComplexD(adx(a, b), 0.0) - sum) < 1e-20);
     }
   }
   const RealD coef = 0.2;
