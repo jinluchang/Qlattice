@@ -54,6 +54,13 @@ void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
 void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
                           const GaugeAction& ga);
 
+void field_color_matrix_exp(Field<ColorMatrix>& fc,
+                            const Field<ColorMatrix>& fc1, const ComplexD coef);
+
+void field_color_matrix_mul(Field<ColorMatrix>& fc,
+                            const Field<ColorMatrix>& fc1,
+                            const Field<ColorMatrix>& fc2);
+
 void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
                   const GaugeAction& ga);
 

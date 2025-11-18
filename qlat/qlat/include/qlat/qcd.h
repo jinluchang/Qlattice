@@ -26,6 +26,8 @@ struct U1GaugeTransform : FieldM<ComplexF, 1> {
 
 void unitarize(Field<ColorMatrix>& gf);
 
+void make_tr_less_anti_herm_matrix(Field<ColorMatrix>& fc);
+
 // GaugeField IO
 
 struct API GaugeFieldInfo {

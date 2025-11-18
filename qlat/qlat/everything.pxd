@@ -411,6 +411,7 @@ cdef extern from "qlat/qcd.h" namespace "qlat":
     RealD gf_avg_link_trace(const GaugeField& gf) except +
     void gf_plaq_field(Field[RealD]& f_plaq, const GaugeField& gf) except +
     void unitarize(Field[ColorMatrix]& gf) except +
+    void make_tr_less_anti_herm_matrix(Field[ColorMatrix]& fc) except +
 
 cdef extern from "qlat/qcd-utils.h" namespace "qlat":
 
@@ -440,6 +441,8 @@ cdef extern from "qlat/hmc.h" namespace "qlat":
     void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const RealD step_size) except +
     void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const Field[RealD]& mf, const RealD step_size) except +
     void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual, const Field[RealD]& mf_dual, const RealD step_size) except +
+    void field_color_matrix_exp(Field[ColorMatrix]& fc, const Field[ColorMatrix]& fc1, const ComplexD coef) except +
+    void field_color_matrix_mul(Field[ColorMatrix]& fc, const Field[ColorMatrix]& fc1, const Field[ColorMatrix]& fc2) except +
     void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf, const GaugeAction& ga) except +
     void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf, const GaugeMomentum& gm_force) except +
     RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual, const Field[RealD]& mf, const Field[RealD]& mf_dual) except +

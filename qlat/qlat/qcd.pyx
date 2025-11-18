@@ -202,6 +202,10 @@ def gf_plaq_field(GaugeField gf):
     cc.gf_plaq_field(f_plaq.xx, gf.xxx().val())
     return f_plaq
 
+@q.timer
+def set_tr_less_anti_herm_matrix(FieldColorMatrix fc):
+    cc.make_tr_less_anti_herm_matrix(fc.xx)
+
 def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None):
     """
     wlf = FieldColorMatrix(geo)

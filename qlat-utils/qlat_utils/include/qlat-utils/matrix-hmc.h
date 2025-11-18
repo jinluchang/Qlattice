@@ -74,6 +74,11 @@ qacc void unitarize(ColorMatrixT<T>& cm)
 }
 
 qacc ColorMatrix make_anti_hermitian_matrix(const array<RealD, 8>& basis)
+// return m
+// m = T_a * basis[a]
+// where
+// T_a^\dagger = -T_a
+// Tr[T_a T_b] = -2 \delta_{a,b}
 {
   qassert(3 == NUM_COLOR);
   ColorMatrix m;
@@ -124,6 +129,9 @@ inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs,
 //  Hence the matrices are distributed according to
 //
 //  exp[- Tr(mat^2)/(2 sigma**2)]
+//
+// mat = T_a * basis[a]
+// basis[a] ~ exp(-basis[a]^2/(2 (sigma / \sqrt{2})^2))
 {
   const RealD s = sigma / std::sqrt(2);
   array<RealD, 8> a;

@@ -261,6 +261,9 @@ CHECK: params: test-4nt8:     "md_time": 1.0,
 CHECK: params: test-4nt8:     "n_step": 6,
 CHECK: params: test-4nt8:     "beta": 2.13,
 CHECK: params: test-4nt8:     "c1": -0.331,
+CHECK: params: test-4nt8:     "diff_eps": 1e-05,
+CHECK: params: test-4nt8:     "implicity_integrator_eps": 1e-11,
+CHECK: params: test-4nt8:     "implicity_integrator_max_iter": 20,
 CHECK: params: test-4nt8:     "gauge_fixing": {
 CHECK: params: test-4nt8:       "block_site": [
 CHECK: params: test-4nt8:         4,

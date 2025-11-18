@@ -216,6 +216,8 @@ __all__ += [
         'gf_evolve_dual',
         'gf_evolve_fa',
         'gf_evolve_fa_dual',
+        'field_color_matrix_exp',
+        'field_color_matrix_mul',
         'set_gm_force',
         'set_gm_force_dual',
         'project_gauge_transform',

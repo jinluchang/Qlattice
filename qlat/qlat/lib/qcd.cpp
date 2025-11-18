@@ -300,6 +300,19 @@ static void unitarize(Field<ColorMatrixT<T> >& gf)
 
 void unitarize(Field<ColorMatrix>& gf) { unitarize<RealD>(gf); }
 
+void make_tr_less_anti_herm_matrix(Field<ColorMatrix>& fc)
+{
+  TIMER("make_tr_less_anti_herm_matrix");
+  qacc_for(index, fc.geo().local_volume(), {
+    const Geometry& geo = fc.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v = fc.get_elems(xl);
+    for (Int m = 0; m < (Int)v.size(); ++m) {
+      v[m] = make_tr_less_anti_herm_matrix(v[m]);
+    }
+  });
+}
+
 // ------------------------------------
 
 RealD topology_charge_5(const GaugeField& gf)

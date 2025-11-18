@@ -17,6 +17,133 @@ load_path_list[:] = [
         ]
 
 @q.timer
+def mk_fgf(job_tag, rs):
+    r"""
+    return fgf, fgf_g
+    gt_inv = fgf(gf)
+    And:
+    fgf_g(gf, gm) * diff_eps
+    \approx
+    fgf(gf2) - fgf(gf1)
+    where
+    gf2 = gf.copy()
+    q.gf_evolve(gf2, gm, 0.5 * diff_eps)
+    gf1 = gf.copy()
+    q.gf_evolve(gf1, gm, -0.5 * diff_eps)
+    #
+    Assume `rs` is already the rng for this traj.
+    """
+    rs_f_dir = rs.split("seed-gt_block_tree_gauge-rs_f_dir")
+    f_dir_list = None
+    block_site = q.Coordinate(get_param(job_tag, "gauge_fixing", "block_site"))
+    stout_smear_step_size = get_param(job_tag, "gauge_fixing", "stout_smear_step_size")
+    num_smear_step = get_param(job_tag, "gauge_fixing", "num_smear_step")
+    diff_eps = get_param(job_tag, "hmc", "diff_eps")
+    @q.timer
+    def fgf(gf):
+        nonlocal f_dir_list
+        gt_inv, f_dir_list = q.gt_block_tree_gauge(
+            gf,
+            block_site=block_site,
+            stout_smear_step_size=stout_smear_step_size,
+            num_smear_step=num_smear_step,
+            f_dir_list=f_dir_list,
+            rs_f_dir=rs_f_dir,
+            )
+        return gt_inv
+    @q.timer
+    def fgf_g(gf, gm):
+        gf2 = gf.copy()
+        gf1 = gf.copy()
+        q.gf_evolve(gf2, gm, 0.5 * diff_eps)
+        q.gf_evolve(gf1, gm, -0.5 * diff_eps)
+        gt = fgf(gf2)
+        gt -= fgf(gf1)
+        gt /= diff_eps
+        q.set_tr_less_anti_herm_matrix(gt)
+        return gt
+    return fgf, fgf_g
+
+@q.timer
+def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
+    """
+    Evolve `gf` in place.
+    `gf` should be initially in the gauge fixed state.
+    gt = fgf(gf)
+    gf_gfixed = gt.inv() * gf
+    """
+    implicity_integrator_eps = get_param(job_tag, "hmc", "implicity_integrator_eps")
+    implicity_integrator_max_iter = get_param(job_tag, "hmc", "implicity_integrator_max_iter")
+    @q.timer
+    def gf_evolve(gf, af, gm, dt):
+        # Note that `af` represents $(1/\sqrt{2}) A_a(x,\mu) T_a$
+        #
+        # Preparation
+        fname = q.get_fname()
+        gf_init = gf
+        af_init = af
+        egm_p = q.field_color_matrix_exp(gm, 0.5 * dt)
+        egm_m = q.field_color_matrix_exp(gm, -0.5 * dt)
+        #
+        # Evolve gf
+        #
+        # Initial gauge fixing
+        gf = fgf(gf).inv() * gf
+        # Find proper initial gauge transformation so that the midpoint evolution is exactly gauge fixed
+        gt_unit = q.GaugeTransform(gf.geo)
+        gt_unit.set_unit()
+        gt_norm = q.qnorm(gt_unit)
+        for i in range(implicity_integrator_max_iter):
+            gf0 = gf
+            gf = q.field_color_matrix_mul(egm_p, gf0)
+            gt = fgf(gf)
+            gt_inv = gt.inv()
+            gf = gt_inv * gf0
+            gt -= gt_unit
+            gf_eps = np.sqrt(q.qnorm(gt) / gt_norm).item()
+            if gf_eps < implicity_integrator_eps:
+                break
+        q.displayln_info(f"{fname}: gf_eps: {gf_eps} (target: {implicity_integrator_eps})")
+        # Evolve half step
+        gf_tilde = q.field_color_matrix_mul(egm_p, gf)
+        # Evolve half step
+        gf = q.field_color_matrix_mul(egm_p, gf_tilde)
+        # Final gauge fixing
+        gf = fgf(gf).inv() * gf
+        #
+        # Evolve af
+        #
+        # Find proper af_tilde
+        af_tilde = af.copy()
+        for i in range(implicity_integrator_max_iter):
+            dg = fgf_g(gf_tilde, af_tilde)
+            dg_pi = dg.copy()
+            dg_pi = q.field_color_matrix_mul(dg_pi, egm_p)
+            dg_pi = q.field_color_matrix_mul(egm_m, dg_pi)
+            dg_pi -= dg
+            q.set_tr_less_anti_herm_matrix(dg_pi)
+            af_tilde_diff = af_tilde
+            af_tilde = af.copy()
+            af_tilde -= dg_pi
+            af_tilde_diff -= af_tilde
+            af_eps = np.sqrt(q.qnorm(af_tilde_diff) / (4 * gt_norm)).item()
+            if af_eps < implicity_integrator_eps:
+                break
+        q.displayln_info(f"{fname}: af_eps: {af_eps} (target: {implicity_integrator_eps})")
+        dg_pi = q.field_color_matrix_mul(dg_pi, egm_m)
+        dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
+        dg_pi -= dg
+        q.set_tr_less_anti_herm_matrix(dg_pi)
+        af = af_tilde
+        af += dg_pi
+        #
+        # Update input object
+        #
+        gf_init @= gf
+        af_init @= af
+    return gf_evolve
+
+@q.timer
 def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo
     gf = q.GaugeField(geo)
@@ -53,6 +180,8 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
 def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
+    fgf, fgf_g, = mk_fgf(job_tag, rs)
+    gf_evolve = mk_fgf_gf_evolve(job_tag, fgf, fgf_g)
     geo = gf.geo
     gf0 = q.GaugeField(geo)
     gf0 @= gf
@@ -161,6 +290,9 @@ set_param(job_tag, "hmc", "md_time")(1.0)
 set_param(job_tag, "hmc", "n_step")(6)
 set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "diff_eps")(1e-5)
+set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)

@@ -61,6 +61,17 @@ def gf_evolve_fa(GaugeField gf, GaugeMomentum gm, FieldRealD mf, cc.RealD step_s
 def gf_evolve_fa_dual(GaugeField gf, GaugeMomentum gm_dual, FieldRealD mf_dual, cc.RealD step_size):
     return cc.gf_evolve_dual(gf.xxx().val(), gm_dual.xxx().val(), mf_dual.xx, step_size)
 
+def field_color_matrix_exp(FieldColorMatrix fc1, cc.PyComplexD coef):
+    cdef FieldColorMatrix fc = FieldColorMatrix()
+    cdef cc.ComplexD cc_coef = cc.ccpy_d(coef)
+    cc.field_color_matrix_exp(fc.xx, fc1.xx, cc_coef)
+    return fc
+
+def field_color_matrix_mul(FieldColorMatrix fc1, FieldColorMatrix fc2):
+    cdef FieldColorMatrix fc = FieldColorMatrix()
+    cc.field_color_matrix_mul(fc.xx, fc1.xx, fc2.xx)
+    return fc
+
 def set_gm_force(GaugeMomentum gm_force, GaugeField gf, GaugeAction ga):
     return cc.set_gm_force(gm_force.xxx().val(), gf.xxx().val(), ga.xx)
 

@@ -393,6 +393,54 @@ void gf_evolve_dual(GaugeField& gf, const GaugeMomentum& gm_dual,
   });
 }
 
+void field_color_matrix_exp(Field<ColorMatrix>& fc,
+                            const Field<ColorMatrix>& fc1, const ComplexD coef)
+{
+  TIMER("field_color_matrix_exp");
+  const Geometry geo = fc1.geo();
+  const Int multiplicity = fc1.multiplicity;
+  fc.init(geo, multiplicity);
+  qacc_for(index, geo.local_volume(), {
+    Vector<ColorMatrix> v = fc.get_elems(index);
+    const Vector<ColorMatrix> v1 = fc1.get_elems_const(index);
+    for (Int m = 0; m < multiplicity; ++m) {
+      ColorMatrix cm = coef * v1[m];
+      v[m] = make_color_matrix_exp(cm);
+    }
+  });
+}
+
+void field_color_matrix_mul(Field<ColorMatrix>& fc,
+                            const Field<ColorMatrix>& fc1,
+                            const Field<ColorMatrix>& fc2)
+{
+  TIMER("field_color_matrix_mul");
+  const Geometry geo = fc1.geo();
+  qassert(check_matching_geo(geo, fc2.geo()));
+  const Int multiplicity1 = fc1.multiplicity;
+  const Int multiplicity2 = fc2.multiplicity;
+  Int multiplicity = 1;
+  if (multiplicity1 == multiplicity2) {
+    multiplicity = multiplicity1;
+  } else if (multiplicity1 == 1) {
+    multiplicity = multiplicity2;
+  } else if (multiplicity2 == 1) {
+    multiplicity = multiplicity1;
+  } else {
+    qerr("field_color_matrix_mul: multiplicity mismatch");
+  }
+  fc.init(geo, multiplicity);
+  qacc_for(index, geo.local_volume(), {
+    Vector<ColorMatrix> v = fc.get_elems(index);
+    const Vector<ColorMatrix> v1 = fc1.get_elems_const(index);
+    const Vector<ColorMatrix> v2 = fc2.get_elems_const(index);
+    for (Int m = 0; m < multiplicity; ++m) {
+      ColorMatrix cm = v1[m % multiplicity1] * v2[m % multiplicity2];
+      v[m] = cm;
+    }
+  });
+}
+
 void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
                           const GaugeAction& ga)
 // gf need comm
