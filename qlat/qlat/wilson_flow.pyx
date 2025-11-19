@@ -118,22 +118,26 @@ def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_siz
     cc.gf_block_stout_smear(gf.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
 
 @q.timer
-def gf_local_stout_smear(GaugeField gf, cc.RealD step_size):
+def gf_local_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):
     """
     Stout smear in place.
     Otherwise, perform stout smearing for local field only.
     No communiation involved.
+    If block_site = q.Coordinate(), then no blocking.
+    Otherwise, perform stout smearing for each block separately.
     """
-    cc.gf_local_stout_smear(gf.xxx().val(), gf.xxx().val(), step_size)
+    cc.gf_local_stout_smear(gf.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
 
 @q.timer
-def mk_local_tree_gauge_f_dir(Geometry geo, RngState rs):
+def mk_local_tree_gauge_f_dir(Geometry geo, Coordinate block_site, RngState rs):
     """
     return f_dir
     Used for `gt_local_tree_gauge(gf, f_dir)`
+    if dir == 5 for a lattice site, then the point is one of the tree root,
+    i.e. if f_dir[x] == 5, then gt[x] is identity.
     """
     cdef FieldInt f_dir = FieldInt()
-    cc.set_local_tree_gauge_f_dir(f_dir.xx, geo.xx, rs.xx)
+    cc.set_local_tree_gauge_f_dir(f_dir.xx, geo.xx, block_site.xx, rs.xx)
     return f_dir
 
 @q.timer
@@ -155,6 +159,7 @@ def gt_block_tree_gauge(
         GaugeField gf,
         *,
         Coordinate block_site=None,
+        Coordinate new_size_node=None,
         cc.RealD stout_smear_step_size=0.125,
         cc.Int num_smear_step=4,
         list f_dir_list=None,
@@ -171,22 +176,24 @@ def gt_block_tree_gauge(
         block_site = Coordinate([ 4, 4, 4, 4, ])
     cdef Geometry geo = gf.geo
     cdef Coordinate total_site = geo.total_site
-    cdef Coordinate new_size_node = total_site // block_site
-    assert new_size_node * block_site == total_site
+    if new_size_node is None:
+        new_size_node = total_site // block_site
+    cdef Coordinate new_node_site = total_site // new_size_node
+    assert new_node_site * new_size_node == total_site
+    assert (new_node_site // block_site) * block_site == new_node_site
     cdef list gf_list = shuffle_field(gf, new_size_node)
     cdef list geo_list = [ gf_local.geo for gf_local in gf_list ]
     if f_dir_list is None:
         if rs_f_dir is None:
             rs_f_dir = RngState("seed-gt_block_tree_gauge-rs_f_dir")
-        f_dir_list = [ mk_local_tree_gauge_f_dir(geo_local, rs_f_dir) for geo_local in geo_list ]
+        f_dir_list = [ mk_local_tree_gauge_f_dir(geo_local, block_site, rs_f_dir) for geo_local in geo_list ]
     cdef list gt_inv_list = []
     cdef GaugeTransform gt_inv
     for gf_local, f_dir_local in zip(gf_list, f_dir_list):
         for step in range(num_smear_step):
-            gf_local_stout_smear(gf_local, stout_smear_step_size)
+            gf_local_stout_smear(gf_local, block_site, stout_smear_step_size)
         gt_inv = gt_local_tree_gauge(gf_local, f_dir_local)
         gt_inv_list.append(gt_inv)
     gt_inv = GaugeTransform(geo)
     shuffle_field_back(gt_inv, gt_inv_list, new_size_node)
     return (gt_inv, f_dir_list,)
-

@@ -46,9 +46,14 @@ q.json_results_append(f"field_shift plaq", gf.plaq(), 1e-8)
 q.json_results_append(f"field_shift", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 
 gf @= gf0
-q.gf_local_stout_smear(gf, 0.1)
+q.gf_local_stout_smear(gf, q.Coordinate([ 4, 4, 4, 4, ]), 0.1)
 q.json_results_append(f"gf_local_stout_smear after block 4 plaq", gf.plaq(), 1e-8)
 q.json_results_append(f"gf_local_stout_smear after block 4", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gf @= gf0
+q.gf_local_stout_smear(gf, q.Coordinate([ 2, 2, 2, 2, ]), 0.1)
+q.json_results_append(f"gf_local_stout_smear after block 2 plaq", gf.plaq(), 1e-8)
+q.json_results_append(f"gf_local_stout_smear after block 2", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 
 fc = q.FieldChar(geo, 1)
 fc[:] = np.arange(len(fc[:]))[:, None]
@@ -63,7 +68,7 @@ gf @= gf0
 gf_list = q.shuffle_field(gf, q.Coordinate([ 2, 2, 2, 4, ]))
 q.json_results_append(f"shuffle_field {len(gf_list)}")
 for gf_local in gf_list:
-    q.gf_local_stout_smear(gf_local, 0.1)
+    q.gf_local_stout_smear(gf_local, q.Coordinate([ 2, 2, 2, 2, ]), 0.1)
 q.shuffle_field_back(gf, gf_list, q.Coordinate([ 2, 2, 2, 4, ]))
 q.json_results_append(f"gf_local_stout_smear plaq", gf.plaq(), 1e-8)
 q.json_results_append(f"gf_local_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
@@ -122,12 +127,12 @@ gf @= gf0
 gf_list = q.shuffle_field(gf, q.Coordinate([ 2, 2, 2, 4, ]))
 geo_list = [ gf_local.geo for gf_local in gf_list ]
 rs_gt_tree = rs.split("gt_tree")
-f_dir_list = [ q.mk_local_tree_gauge_f_dir(geo, rs_gt_tree) for geo in geo_list ]
+f_dir_list = [ q.mk_local_tree_gauge_f_dir(geo, q.Coordinate([ 2, 2, 2, 2, ]), rs_gt_tree) for geo in geo_list ]
 gt_inv_list = []
 q.json_results_append(f"shuffle_field {len(gf_list)}")
 for gf_local, f_dir in zip(gf_list, f_dir_list):
     for step in range(1):
-        q.gf_local_stout_smear(gf_local, 0.1)
+        q.gf_local_stout_smear(gf_local, q.Coordinate([ 2, 2, 2, 2, ]), 0.1)
     gt_inv = q.gt_local_tree_gauge(gf_local, f_dir)
     gt_inv_list.append(gt_inv)
 q.shuffle_field_back(gf, gf_list, q.Coordinate([ 2, 2, 2, 4, ]))
@@ -150,6 +155,20 @@ f_dir_list = None
 gt_inv, f_dir_list = q.gt_block_tree_gauge(
     gf,
     block_site=q.Coordinate([ 2, 2, 2, 2, ]),
+    stout_smear_step_size=0.1,
+    num_smear_step=1,
+    f_dir_list=f_dir_list,
+    rs_f_dir=rs.split("gt_tree"),
+    )
+q.json_results_append(f"gt_block_tree_gauge gt_inv", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gf @= gf0
+f_dir_list = None
+gt_inv, f_dir_list = q.gt_block_tree_gauge(
+    gf,
+    block_site=q.Coordinate([ 2, 2, 2, 2, ]),
+    new_size_node=q.Coordinate([ 1, 1, 1, 2, ]),
     stout_smear_step_size=0.1,
     num_smear_step=1,
     f_dir_list=f_dir_list,

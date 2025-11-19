@@ -3,6 +3,7 @@
 #include <qlat/field-shuffle.h>
 #include <qlat/qcd-acc.h>
 #include <qlat/wilson-flow.h>
+#include "qlat-utils/mpi-auto.h"
 
 namespace qlat
 {  //
@@ -388,7 +389,7 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
 }
 
 void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                          const RealD step_size)
+                          const Coordinate& block_site, const RealD step_size)
 // gf can be the same object as gf0
 // perform stout smear on each local object separately
 // intended to be used after `shuffle_field(gf_vec, gf, new_size_node)`
@@ -398,13 +399,16 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
   const Geometry geo = gf0.geo();
   Qassert(geo.is_only_local);
   const Coordinate node_site = geo.node_site;
+  const Coordinate block_site_ = block_site == Coordinate() ? node_site : block_site;
+  Qassert(node_site % block_site_ == Coordinate());
   GaugeMomentum gm;
   gm.init(geo);
   set_zero(gm);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xl_block = xl % block_site_;
     for (Int mu = 0; mu < 4; ++mu) {
-      if (xl[mu] == node_site[mu] - 1) {
+      if (xl_block[mu] == block_site_[mu] - 1) {
         continue;
       }
       ColorMatrix acc;
@@ -413,10 +417,10 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
         if (nu == mu or -nu - 1 == mu) {
           continue;
         }
-        if (nu >= 0 and xl[nu] == node_site[nu] - 1) {
+        if (nu >= 0 and xl_block[nu] == block_site_[nu] - 1) {
           continue;
         }
-        if (nu < 0 and xl[-nu - 1] == 0) {
+        if (nu < 0 and xl_block[-nu - 1] == 0) {
           continue;
         }
         acc +=
@@ -431,19 +435,24 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
 }
 
 void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
+                                const Coordinate& block_site,
                                 const RngState& rs)
+// dir == 5 for all the roots of the tree (xl_block == block_center)
 {
   TIMER("set_local_tree_gauge_f_dir");
   Qassert(geo.is_only_local);
   const Coordinate node_site = geo.node_site;
-  const Coordinate node_center = node_site / 2;
+  const Coordinate block_site_ = block_site == Coordinate() ? node_site : block_site;
+  Qassert(node_site % block_site_ == Coordinate());
+  const Coordinate block_center = block_site_ / 2;
   const Coordinate total_site = geo.total_site();
   f_dir.init(geo, 1);
   set_zero(f_dir);
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
-    if (xl == node_center) {
-      f_dir.get_elem(index) = 0;
+    const Coordinate xl_block = xl % block_site_;
+    if (xl_block == block_center) {
+      f_dir.get_elem(index) = 5;
       continue;
     }
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -451,9 +460,9 @@ void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
     RngState rs_local = rs.newtype(gindex);
     while (true) {
       const Int dir = rand_gen(rs_local) % 4;
-      if (xl[dir] > node_center[dir]) {
+      if (xl_block[dir] > block_center[dir]) {
         f_dir.get_elem(index) = -dir - 1;
-      } else if (xl[dir] < node_center[dir]) {
+      } else if (xl_block[dir] < block_center[dir]) {
         f_dir.get_elem(index) = dir;
       } else {
         continue;
@@ -485,7 +494,6 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
   set_zero(f_marks);
   set_zero(f_marks_new);
   const Coordinate node_site = geo.node_site;
-  const Coordinate node_center = node_site / 2;
   Int num_step = 0;
   for (Int mu = 0; mu < 4; ++mu) {
     num_step += node_site[mu] / 2;
@@ -497,12 +505,13 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
       if (mark != 0) {
         qacc_continue;
       }
-      if (xl == node_center) {
+      const Int dir = f_dir.get_elem(index);
+      if (dir == 5) {
         set_unit(gt_inv.get_elem(index));
         f_marks_new.get_elem(index) = 1;
         qacc_continue;
       }
-      const Int dir = f_dir.get_elem(index);
+      qassert(-4 <= dir and dir < 4);
       const Coordinate xl1 = coordinate_shifts(xl, dir);
       const Int mark1 = f_marks.get_elem(xl1);
       if (mark1 == 0) {

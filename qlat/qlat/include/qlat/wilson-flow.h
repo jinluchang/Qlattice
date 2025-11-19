@@ -33,9 +33,10 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
                           const Coordinate& block_site, const RealD step_size);
 
 void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
-                          const RealD step_size);
+                          const Coordinate& block_site, const RealD step_size);
 
 void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
+                                const Coordinate& block_site,
                                 const RngState& rs);
 
 void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
