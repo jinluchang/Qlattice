@@ -235,6 +235,8 @@ def run_hmc_evolve_pure_gauge(
 @q.timer(is_timer_fork=True)
 def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     fname = q.get_fname()
+    gf_in = gf
+    gf = gf.copy()
     rs = rs.split(f"{traj}")
     fgf, fgf_g, = mk_fgf(job_tag, rs)
     gf_evolve = mk_fgf_gf_evolve(job_tag, fgf, fgf_g)
@@ -250,27 +252,32 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     is_always_accept = traj < max_traj_always_accept
     is_reverse_test = traj < max_traj_reverse_test
     geo = gf.geo
-    gf_in = gf
-    gf = gf.copy()
+    total_site = geo.total_site
+    xg_field_shift = rs.split("xg_field_shift").c_rand_gen(total_site)
     gm = q.GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
     af = q.GaugeMomentum(geo)
     af.set_rand(rs.split("set_rand_af"), 1.0)
+    gf = gf.shift(xg_field_shift)
+    gf0 = gf.copy()
     delta_h = run_hmc_evolve_pure_gauge(
         gm, gf, af,
         ga=ga, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
         n_step=n_step, md_time=md_time,
         )
+    gf = gf.shift(-xg_field_shift)
     if is_reverse_test:
         gf_r = gf.copy()
         gm_r = gm.copy()
         af_r = af.copy()
+        gf_r = gf_r.shift(xg_field_shift)
         delta_h_rev = run_hmc_evolve_pure_gauge(
             gm_r, gf_r, af_r,
             ga=ga, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
             n_step=n_step, md_time=-md_time,
             )
-        gf_r -= fgf(gf_in).inv() * gf_in
+        gf_r -= fgf(gf0).inv() * gf0
+        gf_r = gf_r.shift(-xg_field_shift)
         q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
         gf_diff_norm = q.qnorm(gf_r)
         gf_norm = q.qnorm(gf_in)
