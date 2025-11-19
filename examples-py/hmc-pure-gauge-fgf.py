@@ -36,6 +36,7 @@ def mk_fgf(job_tag, rs):
     rs_f_dir = rs.split("seed-gt_block_tree_gauge-rs_f_dir")
     f_dir_list = None
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    new_size_node = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "new_size_node"))
     stout_smear_step_size = get_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")
     num_smear_step = get_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")
     diff_eps = get_param(job_tag, "hmc", "diff_eps")
@@ -45,6 +46,7 @@ def mk_fgf(job_tag, rs):
         gt_inv, f_dir_list = q.gt_block_tree_gauge(
             gf,
             block_site=block_site,
+            new_size_node=new_size_node,
             stout_smear_step_size=stout_smear_step_size,
             num_smear_step=num_smear_step,
             f_dir_list=f_dir_list,
@@ -364,6 +366,7 @@ set_param(job_tag, "hmc", "diff_eps")(1e-5)
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
 set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
@@ -383,6 +386,7 @@ set_param(job_tag, "hmc", "diff_eps")(1e-5)
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
 set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((8, 8, 8, 8,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
@@ -402,6 +406,7 @@ set_param(job_tag, "hmc", "diff_eps")(1e-5)
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
 set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((8, 8, 8, 8,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "save_traj_interval")(3)
