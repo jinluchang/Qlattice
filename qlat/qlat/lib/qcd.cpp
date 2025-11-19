@@ -285,9 +285,9 @@ void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf)
 // ------------------------------------
 
 template <class T>
-static void unitarize(Field<ColorMatrixT<T> >& gf)
+static void unitarize(Field<ColorMatrixT<T>>& gf)
 {
-  TIMER_VERBOSE("unitarize(gf)");
+  TIMER("unitarize(gf)");
   qacc_for(index, gf.geo().local_volume(), {
     const Geometry& geo = gf.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
