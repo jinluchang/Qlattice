@@ -129,29 +129,32 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         #
         # Evolve af
         #
-        # Find proper af_tilde
+        # Determine af_tilde
+        dg = fgf_g(gf_tilde, af)
+        dg = q.field_color_matrix_mul(gf_unit, dg)
+        dg_pi = q.field_color_matrix_mul(dg, egm_m)
+        dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
+        dg_pi -= dg
+        q.set_tr_less_anti_herm_matrix(dg_pi)
         af_tilde = af.copy()
+        af_tilde += dg_pi
+        af = af_tilde.copy()
+        # Find proper af'
         for i in range(implicity_integrator_max_iter):
-            dg = fgf_g(gf_tilde, af_tilde)
+            dg = fgf_g(gf_tilde, af)
             dg = q.field_color_matrix_mul(gf_unit, dg)
             dg_pi = q.field_color_matrix_mul(dg, egm_p)
             dg_pi = q.field_color_matrix_mul(egm_m, dg_pi)
             dg_pi -= dg
             q.set_tr_less_anti_herm_matrix(dg_pi)
-            af_tilde_diff = af_tilde
-            af_tilde = af.copy()
-            af_tilde -= dg_pi
-            af_tilde_diff -= af_tilde
-            af_eps = np.sqrt(q.qnorm(af_tilde_diff) / gf_norm).item()
+            af_diff = af
+            af = af_tilde.copy()
+            af -= dg_pi
+            af_diff -= af
+            af_eps = np.sqrt(q.qnorm(af_diff) / gf_norm).item()
             if af_eps < implicity_integrator_eps:
                 break
         q.displayln_info(0, f"{fname}: iter={i} af_eps: {af_eps} (target: {implicity_integrator_eps})")
-        dg_pi = q.field_color_matrix_mul(dg, egm_m)
-        dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
-        dg_pi -= dg
-        q.set_tr_less_anti_herm_matrix(dg_pi)
-        af = af_tilde
-        af += dg_pi
         #
         # Update input object
         #
@@ -344,12 +347,12 @@ def run_hmc(job_tag):
         info["flag"] = flag
         info["delta_h"] = delta_h
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
-        q.json_results_append(f"{fname}: {traj} plaq", plaq)
+        q.json_results_append(f"{fname}: {traj} plaq", plaq, 1e-10)
+        q.json_results_append(f"{fname}: {traj} delta_h", delta_h, 1e-4)
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
                 run_topo_info(job_tag, traj, gf)
-        q.timer_display()
 
 # ----
 
@@ -370,6 +373,27 @@ set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(False)
+
+job_tag = "test-4nt8-scaling"
+set_param(job_tag, "seed")("test-4nt8-scaling")
+set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "max_traj")(123)
+set_param(job_tag, "hmc", "max_traj_always_accept")(10000)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(0)
+set_param(job_tag, "hmc", "md_time")(1.0)
+set_param(job_tag, "hmc", "n_step")(40)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "diff_eps")(1e-3)
+set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
+set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
+# set_param(job_tag, "hmc", "gauge_fixing", "block_site")((1, 1, 1, 1,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 1,))
+set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.1)
+set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(2)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(False)
 
 job_tag = "16I_b2p8_fgf_md4"
@@ -447,12 +471,10 @@ if __name__ == "__main__":
         run_params(job_tag)
         run_hmc(job_tag)
 
-    q.check_log_json(__file__)
-
     q.timer_display()
 
+    q.check_log_json(__file__)
     q.end_with_mpi()
-
     q.displayln_info(f"CHECK: finished successfully.")
 
 # ----

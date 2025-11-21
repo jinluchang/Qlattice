@@ -12,7 +12,7 @@ load_path_list[:] = [
         "results",
         ]
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_topo_info(job_tag, traj, gf):
     info_path = get_save_path(f"{job_tag}/topo-measure-wilson-flow/traj-{traj}")
     flow_time = 6
@@ -29,7 +29,7 @@ def run_topo_info(job_tag, traj, gf):
             density_field_path=info_path,
             )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_hmc(job_tag):
     fname = q.get_fname()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
@@ -78,12 +78,12 @@ def run_hmc(job_tag):
         info["flag"] = flag
         info["delta_h"] = delta_h
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
-        q.json_results_append(f"{fname}: {traj} plaq", plaq)
+        q.json_results_append(f"{fname}: {traj} plaq", plaq, 1e-10)
+        q.json_results_append(f"{fname}: {traj} delta_h", delta_h, 1e-4)
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
                 run_topo_info(job_tag, traj, gf)
-        q.timer_display()
 
 # ----
 
@@ -303,12 +303,10 @@ if __name__ == "__main__":
         run_params(job_tag)
         run_hmc(job_tag)
 
-    q.check_log_json(__file__)
-
     q.timer_display()
 
+    q.check_log_json(__file__)
     q.end_with_mpi()
-
     q.displayln_info(f"CHECK: finished successfully.")
 
 # ----

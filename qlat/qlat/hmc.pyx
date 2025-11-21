@@ -123,7 +123,7 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     gm_force *= dt
     gm += gm_force
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
@@ -144,7 +144,7 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
     delta_h = glb_sum_double(delta_h)
     return delta_h
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
