@@ -691,6 +691,9 @@ void set_zero(SelectedPoints<M>& sp)
 template <class M>
 void qswap(SelectedPoints<M>& f1, SelectedPoints<M>& f2)
 {
+  if (&f1 == &f2) {
+    return;
+  }
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.points_dist_type, f2.points_dist_type);
   std::swap(f1.n_points, f2.n_points);
@@ -1106,6 +1109,9 @@ qacc Vector<M> get_data(const Field<M>& f)
 template <class M>
 void qswap(Field<M>& f1, Field<M>& f2)
 {
+  if (&f1 == &f2) {
+    return;
+  }
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.multiplicity, f2.multiplicity);
   std::swap(f1.mem_order, f2.mem_order);
@@ -1448,6 +1454,9 @@ void set_zero(SelectedField<M>& sf)
 template <class M>
 void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
 {
+  if (&f1 == &f2) {
+    return;
+  }
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.n_elems, f2.n_elems);
   std::swap(f1.multiplicity, f2.multiplicity);

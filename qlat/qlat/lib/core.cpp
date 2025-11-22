@@ -161,6 +161,9 @@ void PointsSelection::push_back_slow(const Coordinate& xg)
 
 void qswap(PointsSelection& f1, PointsSelection& f2)
 {
+  if (&f1 == &f2) {
+    return;
+  }
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.points_dist_type, f2.points_dist_type);
   std::swap(f1.total_site, f2.total_site);
