@@ -77,18 +77,30 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
     implicity_integrator_eps = get_param(job_tag, "hmc", "implicity_integrator_eps")
     implicity_integrator_max_iter = get_param(job_tag, "hmc", "implicity_integrator_max_iter")
     @q.timer
-    def gf_evolve(gf, af, gm, dt):
+    def gf_evolve(gf, af, gm, dt, *, tag=None, is_initial_gauge_fixed=False):
         # Update `gf` and `af` in place.
+        #
+        # Always return gauge field in a gauge fixed and unitarized state.
+        #
+        # tag in [ None, "fix_midpoint", "fix_endpoint", "fix_start", "fix_stop", "no_fix", ]
         #
         # Note that `af` represents $(1/\sqrt{2}) A_a(x,\mu) T_a$
         #
         # Preparation
         fname = q.get_fname()
+        #
+        if tag is None:
+            tag = "fix_midpoint"
+        #
         geo = gf.geo
         gf_init = gf
         af_init = af
-        egm_p = q.field_color_matrix_exp(gm, 0.5 * dt)
-        egm_m = q.field_color_matrix_exp(gm, -0.5 * dt)
+        if tag in [ "fix_midpoint", "fix_endpoint", ]:
+            egm_p = q.field_color_matrix_exp(gm, 0.5 * dt)
+            egm_m = q.field_color_matrix_exp(gm, -0.5 * dt)
+        else:
+            egm_p = q.field_color_matrix_exp(gm, dt)
+            egm_m = q.field_color_matrix_exp(gm, -dt)
         gt_unit = q.GaugeTransform(geo)
         gt_unit.set_unit()
         gt_norm = q.qnorm(gt_unit)
@@ -96,70 +108,113 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         gf_unit.set_unit()
         gf_norm = q.qnorm(gf_unit)
         #
-        # Evolve gf
+        if not is_initial_gauge_fixed:
+            gf = fgf(gf).inv() * gf
+            gf.unitarize()
         #
-        # Initial gauge fixing
-        gf0 = fgf(gf).inv() * gf
-        gf0.unitarize()
-        # Find proper initial gauge transformation so that the midpoint evolution is exactly gauge fixed
-        gt = q.GaugeTransform(geo)
-        gt.set_unit()
-        for i in range(implicity_integrator_max_iter):
+        def evolve_fix_stop():
+            nonlocal gf, af
+            #
+            gf0 = gf
             gf = q.GaugeField()
+            # Find proper initial gauge transformation so that the midpoint evolution is exactly gauge fixed
+            gt = q.GaugeTransform(geo)
+            gt.set_unit()
+            for i in range(implicity_integrator_max_iter):
+                gf.swap(q.field_color_matrix_mul(egm_p, gt * gf0))
+                gt_new = fgf(gf)
+                gt = gt_new.inv() * gt
+                gt.unitarize()
+                gt_new -= gt_unit
+                gf_eps = np.sqrt(q.qnorm(gt_new) / gt_norm).item()
+                # q.displayln_info(1, f"{fname}: iter={i} gf_eps: {gf_eps} (target: {implicity_integrator_eps})")
+                if gf_eps < implicity_integrator_eps:
+                    break
+            q.displayln_info(0, f"{fname}: iter={i} gf_eps: {gf_eps} (target: {implicity_integrator_eps})")
+            #
+            # Evolve a step
             gf.swap(q.field_color_matrix_mul(egm_p, gt * gf0))
-            gt_new = fgf(gf)
-            gt = gt_new.inv() * gt
-            gt.unitarize()
-            gt_new -= gt_unit
-            gf_eps = np.sqrt(q.qnorm(gt_new) / gt_norm).item()
-            # q.displayln_info(1, f"{fname}: iter={i} gf_eps: {gf_eps} (target: {implicity_integrator_eps})")
-            if gf_eps < implicity_integrator_eps:
-                break
-        q.displayln_info(0, f"{fname}: iter={i} gf_eps: {gf_eps} (target: {implicity_integrator_eps})")
-        # Perform initial gauge fixing
-        gf = gt * gf0
-        # Evolve half step
-        gf_tilde = q.GaugeField()
-        gf_tilde.swap(q.field_color_matrix_mul(egm_p, gf))
-        # Evolve half step
-        gf.swap(q.field_color_matrix_mul(egm_p, gf_tilde))
-        # Final gauge fixing
-        gf = fgf(gf).inv() * gf
-        gf.unitarize()
-        #
-        # Evolve af
-        #
-        # Determine af_tilde
-        dg = fgf_g(gf_tilde, af)
-        dg = q.field_color_matrix_mul(gf_unit, dg)
-        dg_pi = q.field_color_matrix_mul(dg, egm_m)
-        dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
-        dg_pi -= dg
-        q.set_tr_less_anti_herm_matrix(dg_pi)
-        af_tilde = af.copy()
-        af_tilde += dg_pi
-        af = af_tilde.copy()
-        # Find proper af'
-        for i in range(implicity_integrator_max_iter):
-            dg = fgf_g(gf_tilde, af)
+            gf = fgf(gf).inv() * gf
+            gf.unitarize()
+            #
+            gf_fixed = gf
+            #
+            dg = fgf_g(gf_fixed, af)
             dg = q.field_color_matrix_mul(gf_unit, dg)
-            dg_pi = q.field_color_matrix_mul(dg, egm_p)
-            dg_pi = q.field_color_matrix_mul(egm_m, dg_pi)
+            dg_pi = q.field_color_matrix_mul(dg, egm_m)
+            dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
             dg_pi -= dg
             q.set_tr_less_anti_herm_matrix(dg_pi)
-            af_diff = af
-            af = af_tilde.copy()
-            af -= dg_pi
-            af_diff -= af
-            af_eps = np.sqrt(q.qnorm(af_diff) / gf_norm).item()
-            if af_eps < implicity_integrator_eps:
-                break
-        q.displayln_info(0, f"{fname}: iter={i} af_eps: {af_eps} (target: {implicity_integrator_eps})")
+            af += dg_pi
+            #
+            af_fixed = af
+        #
+        def evolve_fix_start():
+            nonlocal gf, af
+            #
+            gf_fixed = gf
+            gf = q.GaugeField()
+            #
+            # Evolve a step
+            gf.swap(q.field_color_matrix_mul(egm_p, gf_fixed))
+            gf = fgf(gf).inv() * gf
+            gf.unitarize()
+            #
+            af_fixed = af.copy()
+            #
+            for i in range(implicity_integrator_max_iter):
+                dg = fgf_g(gf_fixed, af)
+                dg = q.field_color_matrix_mul(gf_unit, dg)
+                dg_pi = q.field_color_matrix_mul(dg, egm_p)
+                dg_pi = q.field_color_matrix_mul(egm_m, dg_pi)
+                dg_pi -= dg
+                q.set_tr_less_anti_herm_matrix(dg_pi)
+                af_diff = af
+                af = af_fixed.copy()
+                af -= dg_pi
+                af_diff -= af
+                af_eps = np.sqrt(q.qnorm(af_diff) / gf_norm).item()
+                if af_eps < implicity_integrator_eps:
+                    break
+            q.displayln_info(0, f"{fname}: iter={i} af_eps: {af_eps} (target: {implicity_integrator_eps})")
+        #
+        def evolve_no_fix():
+            nonlocal gf, af
+            #
+            gf0 = gf
+            gf = q.GaugeField()
+            #
+            gf.swap(q.field_color_matrix_mul(egm_p, gf0))
+            gf = fgf(gf).inv() * gf
+            gf.unitarize()
+            #
+            dg = fgf_g(gf0, af)
+            dg = q.field_color_matrix_mul(gf_unit, dg)
+            dg_pi = q.field_color_matrix_mul(dg, egm_m)
+            dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
+            dg_pi -= dg
+            q.set_tr_less_anti_herm_matrix(dg_pi)
+            af += dg_pi
+        #
+        if tag == "no_fix":
+            evolve_no_fix()
+        elif tag == "fix_start":
+            evolve_fix_start()
+        elif tag == "fix_stop":
+            evolve_fix_stop()
+        elif tag == "fix_midpoint":
+            evolve_fix_stop()
+            evolve_fix_start()
+        elif tag == "fix_endpoint":
+            evolve_fix_start()
+            evolve_fix_stop()
+        else:
+            raise Exception(f"{fname}: tag={tag}")
         #
         # Update input object
         #
-        gf_init @= gf
-        af_init @= af
+        gf_init.swap(gf)
+        af_init.swap(af)
     return gf_evolve
 
 @q.timer
@@ -198,11 +253,10 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
         """
         Modify `gm` in place.
         """
-        geo = gf.geo
         gf_g = gf.copy()
         af_g = af.copy()
         gm_force = get_gm_force(gf_g, af_g)
-        gf_evolve(gf_g, af_g, gm_force, fg_dt)
+        gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="fix_midpoint")
         gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
@@ -220,18 +274,18 @@ def run_hmc_evolve_pure_gauge(
         ):
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af)
     dt = md_time / n_step
-    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0));
-    theta = (2.0 - math.sqrt(3.0)) / 48.0;
-    ttheta = theta * dt * dt * dt;
-    gf_evolve(gf, af, gm, lam * dt)
+    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
+    theta = (2.0 - math.sqrt(3.0)) / 48.0
+    ttheta = theta * dt * dt
+    gf_evolve(gf, af, gm, lam * dt, tag="fix_midpoint")
     for i in range(n_step):
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta / dt, 0.5 * dt);
-        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt);
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta / dt, 0.5 * dt);
+        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
+        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_midpoint")
+        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
         if i < n_step - 1:
-            gf_evolve(gf, af, gm, 2.0 * lam * dt);
+            gf_evolve(gf, af, gm, 2.0 * lam * dt, tag="fix_midpoint")
         else:
-            gf_evolve(gf, af, gm, lam * dt);
+            gf_evolve(gf, af, gm, lam * dt, tag="fix_midpoint")
     gf.unitarize()
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
     delta_h = q.glb_sum(delta_h)
