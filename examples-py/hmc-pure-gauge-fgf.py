@@ -278,11 +278,11 @@ def run_hmc_evolve_pure_gauge(
     theta = (2.0 - math.sqrt(3.0)) / 48.0
     ttheta = theta * dt * dt
     for i in range(n_step):
-        gf_evolve(gf, af, gm, lam * dt, tag="fix_stop")
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_endpoint")
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
         gf_evolve(gf, af, gm, lam * dt, tag="fix_start")
+        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
+        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_midpoint")
+        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
+        gf_evolve(gf, af, gm, lam * dt, tag="fix_stop")
     gf.unitarize()
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
     delta_h = q.glb_sum(delta_h)
