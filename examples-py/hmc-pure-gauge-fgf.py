@@ -256,7 +256,7 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
         gf_g = gf.copy()
         af_g = af.copy()
         gm_force = get_gm_force(gf_g, af_g)
-        gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="fix_midpoint")
+        gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="no_fix")
         gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
@@ -277,15 +277,12 @@ def run_hmc_evolve_pure_gauge(
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
     theta = (2.0 - math.sqrt(3.0)) / 48.0
     ttheta = theta * dt * dt
-    gf_evolve(gf, af, gm, lam * dt, tag="fix_midpoint")
     for i in range(n_step):
+        gf_evolve(gf, af, gm, lam * dt, tag="fix_stop")
         gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_midpoint")
+        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_endpoint")
         gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        if i < n_step - 1:
-            gf_evolve(gf, af, gm, 2.0 * lam * dt, tag="fix_midpoint")
-        else:
-            gf_evolve(gf, af, gm, lam * dt, tag="fix_midpoint")
+        gf_evolve(gf, af, gm, lam * dt, tag="fix_start")
     gf.unitarize()
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
     delta_h = q.glb_sum(delta_h)
