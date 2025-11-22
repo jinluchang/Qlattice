@@ -95,12 +95,6 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         geo = gf.geo
         gf_init = gf
         af_init = af
-        if tag in [ "fix_midpoint", "fix_endpoint", ]:
-            egm_p = q.field_color_matrix_exp(gm, 0.5 * dt)
-            egm_m = q.field_color_matrix_exp(gm, -0.5 * dt)
-        else:
-            egm_p = q.field_color_matrix_exp(gm, dt)
-            egm_m = q.field_color_matrix_exp(gm, -dt)
         gt_unit = q.GaugeTransform(geo)
         gt_unit.set_unit()
         gt_norm = q.qnorm(gt_unit)
@@ -112,8 +106,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             gf = fgf(gf).inv() * gf
             gf.unitarize()
         #
-        def evolve_fix_stop():
+        def evolve_fix_stop(dt_step):
             nonlocal gf, af
+            #
+            egm_p = q.field_color_matrix_exp(gm, dt_step)
+            egm_m = q.field_color_matrix_exp(gm, -dt_step)
             #
             gf0 = gf
             gf = q.GaugeField()
@@ -149,8 +146,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             #
             af_fixed = af
         #
-        def evolve_fix_start():
+        def evolve_fix_start(dt_step):
             nonlocal gf, af
+            #
+            egm_p = q.field_color_matrix_exp(gm, dt_step)
+            egm_m = q.field_color_matrix_exp(gm, -dt_step)
             #
             gf_fixed = gf
             gf = q.GaugeField()
@@ -178,8 +178,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
                     break
             q.displayln_info(0, f"{fname}: iter={i} af_eps: {af_eps} (target: {implicity_integrator_eps})")
         #
-        def evolve_no_fix():
+        def evolve_no_fix(dt_step):
             nonlocal gf, af
+            #
+            egm_p = q.field_color_matrix_exp(gm, dt_step)
+            egm_m = q.field_color_matrix_exp(gm, -dt_step)
             #
             gf0 = gf
             gf = q.GaugeField()
@@ -197,17 +200,17 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             af += dg_pi
         #
         if tag == "no_fix":
-            evolve_no_fix()
+            evolve_no_fix(dt)
         elif tag == "fix_start":
-            evolve_fix_start()
+            evolve_fix_start(dt)
         elif tag == "fix_stop":
-            evolve_fix_stop()
+            evolve_fix_stop(dt)
         elif tag == "fix_midpoint":
-            evolve_fix_stop()
-            evolve_fix_start()
+            evolve_fix_stop(0.5 * dt)
+            evolve_fix_start(0.5 * dt)
         elif tag == "fix_endpoint":
-            evolve_fix_start()
-            evolve_fix_stop()
+            evolve_fix_start(0.5 * dt)
+            evolve_fix_stop(0.5 * dt)
         else:
             raise Exception(f"{fname}: tag={tag}")
         #
@@ -256,7 +259,7 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
         gf_g = gf.copy()
         af_g = af.copy()
         gm_force = get_gm_force(gf_g, af_g)
-        gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="no_fix")
+        gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
         gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
@@ -267,6 +270,7 @@ def run_hmc_evolve_pure_gauge(
         gm, gf, af,
         *,
         ga,
+        fgf,
         gf_evolve,
         gm_evolve_fg,
         n_step,
@@ -277,12 +281,14 @@ def run_hmc_evolve_pure_gauge(
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
     theta = (2.0 - math.sqrt(3.0)) / 48.0
     ttheta = theta * dt * dt
+    gf @= fgf(gf).inv() * gf
+    gf.unitarize()
     for i in range(n_step):
-        gf_evolve(gf, af, gm, lam * dt, tag="fix_start")
+        gf_evolve(gf, af, gm, lam * dt, tag="fix_start", is_initial_gauge_fixed=True)
         gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_midpoint")
+        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_midpoint", is_initial_gauge_fixed=True)
         gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, lam * dt, tag="fix_stop")
+        gf_evolve(gf, af, gm, lam * dt, tag="fix_stop", is_initial_gauge_fixed=True)
     gf.unitarize()
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
     delta_h = q.glb_sum(delta_h)
@@ -318,7 +324,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf0 = gf.copy()
     delta_h = run_hmc_evolve_pure_gauge(
         gm, gf, af,
-        ga=ga, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+        ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
         n_step=n_step, md_time=md_time,
         )
     gf = gf.shift(-xg_field_shift)
@@ -329,7 +335,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         gf_r = gf_r.shift(xg_field_shift)
         delta_h_rev = run_hmc_evolve_pure_gauge(
             gm_r, gf_r, af_r,
-            ga=ga, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+            ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
             n_step=n_step, md_time=-md_time,
             )
         gf_r -= fgf(gf0).inv() * gf0
