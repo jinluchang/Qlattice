@@ -110,7 +110,6 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             nonlocal gf, af
             #
             egm_p = q.field_color_matrix_exp(gm, dt_step)
-            egm_m = q.field_color_matrix_exp(gm, -dt_step)
             #
             gf0 = gf
             gf = q.GaugeField()
@@ -137,12 +136,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             gf_fixed = gf
             #
             dg = fgf_g(gf_fixed, af)
-            dg = q.field_color_matrix_mul(gf_unit, dg)
-            dg_pi = q.field_color_matrix_mul(dg, egm_m)
-            dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
-            dg_pi -= dg
-            q.set_tr_less_anti_herm_matrix(dg_pi)
-            af += dg_pi
+            prod = q.field_color_matrix_mul(gm, dg)
+            prod -= q.field_color_matrix_mul(dg, gm)
+            q.set_tr_less_anti_herm_matrix(prod)
+            prod *= dt_step
+            af += prod
             #
             af_fixed = af
         #
@@ -150,7 +148,6 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             nonlocal gf, af
             #
             egm_p = q.field_color_matrix_exp(gm, dt_step)
-            egm_m = q.field_color_matrix_exp(gm, -dt_step)
             #
             gf_fixed = gf
             gf = q.GaugeField()
@@ -164,14 +161,13 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             #
             for i in range(implicity_integrator_max_iter):
                 dg = fgf_g(gf_fixed, af)
-                dg = q.field_color_matrix_mul(gf_unit, dg)
-                dg_pi = q.field_color_matrix_mul(dg, egm_p)
-                dg_pi = q.field_color_matrix_mul(egm_m, dg_pi)
-                dg_pi -= dg
-                q.set_tr_less_anti_herm_matrix(dg_pi)
+                prod = q.field_color_matrix_mul(gm, dg)
+                prod -= q.field_color_matrix_mul(dg, gm)
+                q.set_tr_less_anti_herm_matrix(prod)
+                prod *= dt_step
                 af_diff = af
                 af = af_fixed.copy()
-                af -= dg_pi
+                af += prod
                 af_diff -= af
                 af_eps = np.sqrt(q.qnorm(af_diff) / gf_norm).item()
                 if af_eps < implicity_integrator_eps:
@@ -182,7 +178,6 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             nonlocal gf, af
             #
             egm_p = q.field_color_matrix_exp(gm, dt_step)
-            egm_m = q.field_color_matrix_exp(gm, -dt_step)
             #
             gf0 = gf
             gf = q.GaugeField()
@@ -192,12 +187,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             gf.unitarize()
             #
             dg = fgf_g(gf0, af)
-            dg = q.field_color_matrix_mul(gf_unit, dg)
-            dg_pi = q.field_color_matrix_mul(dg, egm_m)
-            dg_pi = q.field_color_matrix_mul(egm_p, dg_pi)
-            dg_pi -= dg
-            q.set_tr_less_anti_herm_matrix(dg_pi)
-            af += dg_pi
+            prod = q.field_color_matrix_mul(gm, dg)
+            prod -= q.field_color_matrix_mul(dg, gm)
+            q.set_tr_less_anti_herm_matrix(prod)
+            prod *= dt_step
+            af += prod
         #
         if tag == "no_fix":
             evolve_no_fix(dt)
@@ -284,11 +278,11 @@ def run_hmc_evolve_pure_gauge(
     gf @= fgf(gf).inv() * gf
     gf.unitarize()
     for i in range(n_step):
-        gf_evolve(gf, af, gm, lam * dt, tag="fix_start", is_initial_gauge_fixed=True)
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_midpoint", is_initial_gauge_fixed=True)
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
         gf_evolve(gf, af, gm, lam * dt, tag="fix_stop", is_initial_gauge_fixed=True)
+        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
+        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_endpoint", is_initial_gauge_fixed=True)
+        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
+        gf_evolve(gf, af, gm, lam * dt, tag="fix_start", is_initial_gauge_fixed=True)
     gf.unitarize()
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
     delta_h = q.glb_sum(delta_h)
