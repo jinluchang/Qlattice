@@ -16,6 +16,46 @@ load_path_list[:] = [
         "results",
         ]
 
+def mk_evolve_campostrini_from_leapfrog(evolve_leapfrog):
+    """
+    return evolve_campostrini
+    """
+    fac = 1.0 / (2.0 - math.cbrt(2.0))
+    fac2 = 1.0 - 2 * fac
+    @q.timer
+    def evolve_campostrini(dt):
+        evolve_leapfrog(fac * dt)
+        evolve_leapfrog(fac2 * dt)
+        evolve_leapfrog(fac * dt)
+    return evolve_campostrini
+
+def mk_evolve_force_gradient(qq_evolve, pp_evolve_fg):
+    """
+    return evolve_force_gradient
+    """
+    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
+    theta = (2.0 - math.sqrt(3.0)) / 48.0
+    @q.timer
+    def evolve_force_gradient(dt):
+        ttheta = theta * dt * dt
+        qq_evolve(lam * dt)
+        pp_evolve_fg(4.0 * ttheta, 0.5 * dt)
+        qq_evolve((1.0 - 2.0 * lam) * dt)
+        pp_evolve_fg(4.0 * ttheta, 0.5 * dt)
+        qq_evolve(lam * dt)
+    return evolve_force_gradient
+
+def mk_evolve_leapfrog(qq_evolve_1, qq_evolve_2, pp_evolve):
+    """
+    return evolve_leapfrog
+    """
+    @q.timer
+    def evolve_leapfrog(dt):
+        qq_evolve_1(0.5 * dt)
+        pp_evolve(dt)
+        qq_evolve_2(0.5 * dt)
+    return evolve_leapfrog
+
 @q.timer
 def mk_fgf(job_tag, rs):
     r"""
@@ -106,6 +146,7 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             gf = fgf(gf).inv() * gf
             gf.unitarize()
         #
+        @q.timer
         def evolve_fix_stop(dt_step):
             nonlocal gf, af
             #
@@ -144,6 +185,7 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             #
             af_fixed = af
         #
+        @q.timer
         def evolve_fix_start(dt_step):
             nonlocal gf, af
             #
@@ -174,6 +216,7 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
                     break
             q.displayln_info(0, f"{fname}: iter={i} af_eps: {af_eps} (target: {implicity_integrator_eps})")
         #
+        @q.timer
         def evolve_no_fix(dt_step):
             nonlocal gf, af
             #
@@ -193,6 +236,19 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
             prod *= dt_step
             af += prod
         #
+        @q.timer
+        def evolve_fix_endpoint(dt_step):
+            evolve_fix_start(0.5 * dt_step)
+            evolve_fix_stop(0.5 * dt_step)
+        #
+        @q.timer
+        def evolve_fix_midpoint(dt_step):
+            evolve_fix_stop(0.5 * dt_step)
+            evolve_fix_start(0.5 * dt_step)
+        #
+        evolve_fix_endpoint_4th = mk_evolve_campostrini_from_leapfrog(evolve_fix_endpoint)
+        evolve_fix_midpoint_4th = mk_evolve_campostrini_from_leapfrog(evolve_fix_midpoint)
+        #
         if tag == "no_fix":
             evolve_no_fix(dt)
         elif tag == "fix_start":
@@ -200,11 +256,13 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         elif tag == "fix_stop":
             evolve_fix_stop(dt)
         elif tag == "fix_midpoint":
-            evolve_fix_stop(0.5 * dt)
-            evolve_fix_start(0.5 * dt)
+            evolve_fix_midpoint(dt)
         elif tag == "fix_endpoint":
-            evolve_fix_start(0.5 * dt)
-            evolve_fix_stop(0.5 * dt)
+            evolve_fix_endpoint(dt)
+        elif tag == "fix_midpoint_4th":
+            evolve_fix_midpoint_4th(dt)
+        elif tag == "fix_endpoint_4th":
+            evolve_fix_endpoint_4th(dt)
         else:
             raise Exception(f"{fname}: tag={tag}")
         #
@@ -253,8 +311,9 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
         gf_g = gf.copy()
         af_g = af.copy()
         gm_force = get_gm_force(gf_g, af_g)
-        gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
-        gm_force = get_gm_force(gf_g, af_g)
+        if fg_dt != 0.0:
+            gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
+            gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
     return gm_evolve_fg
@@ -267,22 +326,43 @@ def run_hmc_evolve_pure_gauge(
         fgf,
         gf_evolve,
         gm_evolve_fg,
+        gf_integrator_tag,
         n_step,
-        md_time=1.0,
+        md_time,
         ):
+    fname = q.get_fname()
+    @q.timer
+    def qq_evolve_4th(dt):
+        gf_evolve(gf, af, gm, dt, tag="fix_endpoint_4th", is_initial_gauge_fixed=True)
+    @q.timer
+    def pp_evolve_fg(fg_dt, dt):
+        gm_evolve_fg(gm, gf, af, fg_dt, dt)
+    @q.timer
+    def qq_evolve_1(dt):
+        gf_evolve(gf, af, gm, dt, tag="fix_start", is_initial_gauge_fixed=True)
+    @q.timer
+    def qq_evolve_2(dt):
+        gf_evolve(gf, af, gm, dt, tag="fix_stop", is_initial_gauge_fixed=True)
+    @q.timer
+    def pp_evolve(dt):
+        pp_evolve_fg(0.0, dt)
+    evolve_leapfrog = mk_evolve_leapfrog(qq_evolve_1, qq_evolve_2, pp_evolve)
+    evolve_campostrini = mk_evolve_campostrini_from_leapfrog(evolve_leapfrog)
+    evolve_force_gradient = mk_evolve_force_gradient(qq_evolve_4th, pp_evolve_fg)
+    if gf_integrator_tag == "leapfrog":
+        evolve = evolve_leapfrog
+    elif gf_integrator_tag == "campostrini":
+        evolve = evolve_campostrini
+    elif gf_integrator_tag == "force_gradient":
+        evolve = evolve_force_gradient
+    else:
+        raise Exception(f"{fname}: gf_integrator_tag={gf_integrator_tag}")
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af)
-    dt = md_time / n_step
-    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
-    theta = (2.0 - math.sqrt(3.0)) / 48.0
-    ttheta = theta * dt * dt
     gf @= fgf(gf).inv() * gf
     gf.unitarize()
+    dt = md_time / n_step
     for i in range(n_step):
-        gf_evolve(gf, af, gm, lam * dt, tag="fix_stop", is_initial_gauge_fixed=True)
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, (1.0 - 2.0 * lam) * dt, tag="fix_endpoint", is_initial_gauge_fixed=True)
-        gm_evolve_fg(gm, gf, af, 4.0 * ttheta, 0.5 * dt)
-        gf_evolve(gf, af, gm, lam * dt, tag="fix_start", is_initial_gauge_fixed=True)
+        evolve(dt)
     gf.unitarize()
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
     delta_h = q.glb_sum(delta_h)
@@ -298,6 +378,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf_evolve = mk_fgf_gf_evolve(job_tag, fgf, fgf_g)
     get_gm_force = mk_fgf_get_gm_force(job_tag, fgf, fgf_g)
     gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve)
+    gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
     beta = get_param(job_tag, "hmc", "beta")
@@ -319,6 +400,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     delta_h = run_hmc_evolve_pure_gauge(
         gm, gf, af,
         ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+        gf_integrator_tag=gf_integrator_tag,
         n_step=n_step, md_time=md_time,
         )
     gf = gf.shift(-xg_field_shift)
@@ -330,6 +412,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         delta_h_rev = run_hmc_evolve_pure_gauge(
             gm_r, gf_r, af_r,
             ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+            gf_integrator_tag=gf_integrator_tag,
             n_step=n_step, md_time=-md_time,
             )
         gf_r -= fgf(gf0).inv() * gf0
@@ -409,14 +492,15 @@ def run_hmc(job_tag):
 
 job_tag = "test-4nt8"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
-set_param(job_tag, "hmc", "max_traj")(8)
-set_param(job_tag, "hmc", "max_traj_always_accept")(4)
+set_param(job_tag, "hmc", "max_traj")(4)
+set_param(job_tag, "hmc", "max_traj_always_accept")(3)
 set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
-set_param(job_tag, "hmc", "md_time")(1.0)
-set_param(job_tag, "hmc", "n_step")(6)
+set_param(job_tag, "hmc", "md_time")(0.3)
+set_param(job_tag, "hmc", "n_step")(2)
 set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "diff_eps")(1e-5)
+set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
 set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
@@ -424,28 +508,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
-set_param(job_tag, "hmc", "is_saving_topo_info")(False)
-
-job_tag = "test-4nt8-scaling"
-set_param(job_tag, "seed")("test-4nt8-scaling")
-set_param(job_tag, "total_site")((4, 4, 4, 8,))
-set_param(job_tag, "hmc", "max_traj")(123)
-set_param(job_tag, "hmc", "max_traj_always_accept")(10000)
-set_param(job_tag, "hmc", "max_traj_reverse_test")(0)
-set_param(job_tag, "hmc", "md_time")(1.0)
-set_param(job_tag, "hmc", "n_step")(40)
-set_param(job_tag, "hmc", "beta")(2.13)
-set_param(job_tag, "hmc", "c1")(-0.331)
-set_param(job_tag, "hmc", "diff_eps")(1e-3)
-set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
-set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
-set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
-# set_param(job_tag, "hmc", "gauge_fixing", "block_site")((1, 1, 1, 1,))
-set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 1,))
-set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.1)
-set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(2)
-set_param(job_tag, "hmc", "save_traj_interval")(1)
-set_param(job_tag, "hmc", "is_saving_topo_info")(False)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 job_tag = "16I_b2p8_fgf_md4"
 set_param(job_tag, "total_site")((16, 16, 16, 32,))
@@ -458,6 +521,7 @@ set_param(job_tag, "hmc", "n_step")(32 * 4)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "diff_eps")(1e-5)
+set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
 set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((8, 8, 8, 8,))
@@ -478,6 +542,7 @@ set_param(job_tag, "hmc", "n_step")(32 * 4)
 set_param(job_tag, "hmc", "beta")(2.80)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "diff_eps")(1e-5)
+set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
 set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((8, 8, 8, 8,))
