@@ -447,6 +447,8 @@ cdef extern from "qlat/hmc.h" namespace "qlat":
     void set_gm_force_dual(GaugeMomentum& gm_force_dual, const GaugeField& gf, const GaugeMomentum& gm_force) except +
     RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual, const Field[RealD]& mf, const Field[RealD]& mf_dual) except +
     void dot_gauge_momentum(Field[RealD]& f, const GaugeMomentum& gm1, const GaugeMomentum& gm2) except +
+    void set_anti_hermitian_matrix_from_basis(Field[ColorMatrix]& fc, const Field[RealD]& basis) except +
+    void set_basis_from_anti_hermitian_matrix(Field[RealD]& basis, const Field[ColorMatrix]& fc) except +
 
 cdef extern from "qlat/fields-io.h" namespace "qlat":
 

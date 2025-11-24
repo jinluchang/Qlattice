@@ -92,6 +92,12 @@ def dot_gauge_momentum(GaugeMomentum gm1, GaugeMomentum gm2):
     cc.dot_gauge_momentum(f.xx, gm1.xxx().val(), gm2.xxx().val())
     return f
 
+def set_anti_hermitian_matrix_from_basis(FieldColorMatrix fc, FieldRealD basis):
+    cc.set_anti_hermitian_matrix_from_basis(fc.xx, basis.xx)
+
+def set_basis_from_anti_hermitian_matrix(FieldRealD basis, FieldColorMatrix fc):
+    cc.set_basis_from_anti_hermitian_matrix(basis.xx, fc.xx)
+
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
     flag_d = 0.0

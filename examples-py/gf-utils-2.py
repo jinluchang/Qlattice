@@ -210,6 +210,18 @@ q.json_results_append(f"gf after gt_block_tree_gauge 2nd", q.get_data_sig_arr(gf
 gf = gt_inv.inv() * gf
 q.json_results_append(f"gf gt transformed 2nd", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 
+gm = q.GaugeMomentum(geo)
+gm.set_rand(rs.split("gm-init"), 1.0)
+q.json_results_append(f"gm", q.get_data_sig_arr(gm, q.RngState(), 3), 1e-8)
+
+basis = q.FieldRealD()
+q.set_basis_from_anti_hermitian_matrix(basis, gm)
+q.json_results_append(f"basis", q.get_data_sig_arr(basis, q.RngState(), 3), 1e-8)
+
+gm.set_unit()
+q.set_anti_hermitian_matrix_from_basis(gm, basis)
+q.json_results_append(f"gm", q.get_data_sig_arr(gm, q.RngState(), 3), 1e-8)
+
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()

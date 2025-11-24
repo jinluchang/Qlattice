@@ -941,5 +941,65 @@
    "__extended_json_type__": "ndarray"
   },
   1e-08
+ ],
+ [
+  "gm",
+  {
+   "value": [
+    {
+     "real": 36.61183599815966,
+     "imag": 36.864883035686624,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -14.143043527049155,
+     "imag": -62.10606267683721,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 69.7035242195918,
+     "imag": 50.46909852644932,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "basis",
+  {
+   "value": [
+    -52.305471155629874,
+    -10.475332235503465,
+    64.93855173758696
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "gm",
+  {
+   "value": [
+    {
+     "real": 36.61183599815966,
+     "imag": 36.86488303568663,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -14.143043527049155,
+     "imag": -62.10606267683721,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 69.7035242195918,
+     "imag": 50.46909852644932,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
  ]
 ]
