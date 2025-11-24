@@ -133,7 +133,7 @@ q.json_results_append(f"shuffle_field {len(gf_list)}")
 for gf_local, f_dir in zip(gf_list, f_dir_list):
     for step in range(1):
         q.gf_local_stout_smear(gf_local, q.Coordinate([ 2, 2, 2, 2, ]), 0.1)
-    gt_inv = q.gt_local_tree_gauge(gf_local, f_dir)
+    gt_inv = q.gt_local_tree_gauge(gf_local, f_dir, 4)
     gt_inv_list.append(gt_inv)
 q.shuffle_field_back(gf, gf_list, q.Coordinate([ 2, 2, 2, 4, ]))
 q.json_results_append(f"gf_local_stout_smear plaq", gf.plaq(), 1e-8)

@@ -141,7 +141,7 @@ def mk_local_tree_gauge_f_dir(Geometry geo, Coordinate block_site, RngState rs):
     return f_dir
 
 @q.timer
-def gt_local_tree_gauge(GaugeField gf, FieldInt f_dir):
+def gt_local_tree_gauge(GaugeField gf, FieldInt f_dir, cc.Int num_step):
     """
     return gt_inv
     Note that the gauge fixed gauge field should be obtained as
@@ -151,7 +151,7 @@ def gt_local_tree_gauge(GaugeField gf, FieldInt f_dir):
     """
     cdef Geometry geo = gf.geo
     cdef GaugeTransform gt_inv = GaugeTransform(geo)
-    cc.gt_local_tree_gauge(gt_inv.xxx().val(), gf.xxx().val(), f_dir.xx)
+    cc.gt_local_tree_gauge(gt_inv.xxx().val(), gf.xxx().val(), f_dir.xx, num_step)
     return gt_inv
 
 @q.timer
@@ -174,6 +174,9 @@ def gt_block_tree_gauge(
     """
     if block_site is None:
         block_site = Coordinate([ 4, 4, 4, 4, ])
+    num_step = 0
+    for mu in range(4):
+        num_step += block_site[mu] // 2
     cdef Geometry geo = gf.geo
     cdef Coordinate total_site = geo.total_site
     if new_size_node is None:
@@ -192,7 +195,7 @@ def gt_block_tree_gauge(
     for gf_local, f_dir_local in zip(gf_list, f_dir_list):
         for step in range(num_smear_step):
             gf_local_stout_smear(gf_local, block_site, stout_smear_step_size)
-        gt_inv = gt_local_tree_gauge(gf_local, f_dir_local)
+        gt_inv = gt_local_tree_gauge(gf_local, f_dir_local, num_step)
         gt_inv_list.append(gt_inv)
     gt_inv = GaugeTransform(geo)
     shuffle_field_back(gt_inv, gt_inv_list, new_size_node)

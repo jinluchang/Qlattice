@@ -40,6 +40,6 @@ void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
                                 const RngState& rs);
 
 void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
-                         const Field<Int>& f_dir);
+                         const Field<Int>& f_dir, const Int num_step);
 
 }  // namespace qlat

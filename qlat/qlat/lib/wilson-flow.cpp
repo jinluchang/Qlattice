@@ -473,13 +473,14 @@ void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
 }
 
 void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
-                         const Field<Int>& f_dir)
+                         const Field<Int>& f_dir, const Int num_step)
 // `f_dir` can be set by:
 // set_local_tree_gauge_f_dir(f_dir, geo, rs);
 // Note that to apply the local tree gauge, we need to invert the returned `gt` first.
 // E.g.,
 // gt_invert(gt, gt_inv);
 // gf_apply_gauge_transformation(gf, gf, gt);
+// `num_step` should be the sum block_site[mu] / 2
 {
   TIMER("gt_local_tree_gauge");
   Qassert(gf.multiplicity == 4);
@@ -493,11 +494,6 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
   f_marks_new.init(geo, 1);
   set_zero(f_marks);
   set_zero(f_marks_new);
-  const Coordinate node_site = geo.node_site;
-  Int num_step = 0;
-  for (Int mu = 0; mu < 4; ++mu) {
-    num_step += node_site[mu] / 2;
-  }
   for (Int i = 0; i < num_step + 1; ++i) {
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
