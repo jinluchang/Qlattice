@@ -5,7 +5,7 @@ Flexible gauge fixed HMC
 """
 
 import sys
-import math as m
+import math
 import numpy as np
 
 import qlat as q
@@ -279,7 +279,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     return gf_evolve
 
 @q.timer
-def mk_fgf_get_gm_force(job_tag, fgf, fgf_g):
+def mk_fgf_get_gm_force(job_tag, geo, fgf, fgf_g):
     """
     return `get_gm_force` for `gf` and `af`.
     `gf` should be in the gauge fixed state.
@@ -287,19 +287,36 @@ def mk_fgf_get_gm_force(job_tag, fgf, fgf_g):
     beta = get_param(job_tag, "hmc", "beta")
     c1 = get_param(job_tag, "hmc", "c1")
     ga = q.GaugeAction(beta, c1)
+    total_volume = geo.total_volume
     @q.timer
     def get_gm_force(gf, af):
+        #
         # Set QCD gauge action force
         geo = gf.geo
         gm_force = q.GaugeMomentum(geo)
         q.set_gm_force(gm_force, gf, ga)
+        #
+        force_size_qcd = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
+        q.displayln_info(0, f"force_size_qcd={force_size_qcd:.5f}")
         #
         # Add force due to gauge fixing
         dg = fgf_g(gf, af)
         prod = q.field_color_matrix_mul(af, dg)
         prod -= q.field_color_matrix_mul(dg, af)
         q.set_tr_less_anti_herm_matrix(prod)
+        #
+        force_size_gauge_fixing = math.sqrt(q.qnorm(prod) / (total_volume * 4))
+        q.displayln_info(0, f"force_size_gauge_fixing={force_size_gauge_fixing:.5f}")
+        #
         gm_force += prod
+        #
+        force_size_total = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
+        cos_alpha_qcd_gauge_fixing = (
+            (force_size_total**2 - force_size_qcd**2 - force_size_gauge_fixing**2)
+            / (force_size_qcd * force_size_gauge_fixing))
+        q.displayln_info(0, f"cos(alpha(qcd,gauge_fixing))={cos_alpha_qcd_gauge_fixing:.5f}")
+        q.displayln_info(0, f"force_size_total={force_size_total:.5f}")
+        #
         return gm_force
     return get_gm_force
 
@@ -314,11 +331,11 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
         """
         Modify `gm` and `gm_v` in place.
         """
-        gf_g = gf.copy()
-        af_g = af.copy()
-        gm_force = get_gm_force(gf_g, af_g)
+        gm_force = get_gm_force(gf, af)
         if fg_dt != 0.0:
             gm_force_v = gm_force
+            gf_g = gf.copy()
+            af_g = af.copy()
             gf_evolve(gf_g, af_g, gm_force_v, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
             gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
@@ -384,8 +401,8 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     rs = rs.split(f"{traj}")
     geo = gf.geo
     fgf, fgf_g, = mk_fgf(job_tag, rs)
-    gf_evolve = mk_fgf_gf_evolve(job_tag,geo, fgf, fgf_g)
-    get_gm_force = mk_fgf_get_gm_force(job_tag, fgf, fgf_g)
+    gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
+    get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf, fgf_g)
     gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve)
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -513,7 +530,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "diff_eps")(1e-5)
 set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
-set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(50)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
@@ -534,7 +551,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "diff_eps")(1e-5)
 set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
-set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(50)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
@@ -555,7 +572,7 @@ set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "diff_eps")(1e-5)
 set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
 set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
-set_param(job_tag, "hmc", "implicity_integrator_max_iter")(20)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(50)
 set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
