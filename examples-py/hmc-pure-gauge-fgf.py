@@ -62,14 +62,14 @@ def mk_fgf(job_tag, rs):
     return fgf, fgf_g
     gt_inv = fgf(gf)
     And:
-    fgf_g(gf, gm) * diff_eps
+    fgf_g(gf, gm_v) * diff_eps
     \approx
     fgf(gf2) - fgf(gf1)
     where
     gf2 = gf.copy()
-    q.gf_evolve(gf2, gm, 0.5 * diff_eps)
+    q.gf_evolve(gf2, gm_v, 0.5 * diff_eps)
     gf1 = gf.copy()
-    q.gf_evolve(gf1, gm, -0.5 * diff_eps)
+    q.gf_evolve(gf1, gm_v, -0.5 * diff_eps)
     #
     Assume `rs` is already the rng for this traj.
     """
@@ -94,11 +94,11 @@ def mk_fgf(job_tag, rs):
             )
         return gt_inv
     @q.timer
-    def fgf_g(gf, gm):
+    def fgf_g(gf, gm_v):
         gf2 = gf.copy()
         gf1 = gf.copy()
-        q.gf_evolve(gf2, gm, 0.5 * diff_eps)
-        q.gf_evolve(gf1, gm, -0.5 * diff_eps)
+        q.gf_evolve(gf2, gm_v, 0.5 * diff_eps)
+        q.gf_evolve(gf1, gm_v, -0.5 * diff_eps)
         gt = fgf(gf2)
         gt -= fgf(gf1)
         gt *= 1.0 / diff_eps
@@ -121,7 +121,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     gt_norm = q.qnorm(gt_unit)
     gf_norm = gt_norm * 4
     @q.timer
-    def gf_evolve(gf, af, gm, dt, *, tag=None, is_initial_gauge_fixed=False):
+    def gf_evolve(gf, af, gm_v, dt, *, tag=None, is_initial_gauge_fixed=False):
         # Update `gf` and `af` in place.
         #
         # Always return gauge field in a gauge fixed and unitarized state.
@@ -151,7 +151,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             nonlocal gf, af, egm_p, egm_p_dt
             #
             if egm_p_dt != dt_step:
-                egm_p = q.field_color_matrix_exp(gm, dt_step)
+                egm_p = q.field_color_matrix_exp(gm_v, dt_step)
                 egm_p_dt = dt_step
             #
             gf0 = gf
@@ -179,8 +179,8 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             gf_fixed = gf
             #
             dg = fgf_g(gf_fixed, af)
-            prod = q.field_color_matrix_mul(gm, dg)
-            prod -= q.field_color_matrix_mul(dg, gm)
+            prod = q.field_color_matrix_mul(gm_v, dg)
+            prod -= q.field_color_matrix_mul(dg, gm_v)
             q.set_tr_less_anti_herm_matrix(prod)
             prod *= dt_step
             af += prod
@@ -192,7 +192,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             nonlocal gf, af, egm_p, egm_p_dt
             #
             if egm_p_dt != dt_step:
-                egm_p = q.field_color_matrix_exp(gm, dt_step)
+                egm_p = q.field_color_matrix_exp(gm_v, dt_step)
                 egm_p_dt = dt_step
             #
             gf_fixed = gf
@@ -207,8 +207,8 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             #
             for i in range(implicity_integrator_max_iter):
                 dg = fgf_g(gf_fixed, af)
-                prod = q.field_color_matrix_mul(gm, dg)
-                prod -= q.field_color_matrix_mul(dg, gm)
+                prod = q.field_color_matrix_mul(gm_v, dg)
+                prod -= q.field_color_matrix_mul(dg, gm_v)
                 q.set_tr_less_anti_herm_matrix(prod)
                 prod *= dt_step
                 af_diff = af
@@ -225,7 +225,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             nonlocal gf, af, egm_p, egm_p_dt
             #
             if egm_p_dt != dt_step:
-                egm_p = q.field_color_matrix_exp(gm, dt_step)
+                egm_p = q.field_color_matrix_exp(gm_v, dt_step)
                 egm_p_dt = dt_step
             #
             gf0 = gf
@@ -236,8 +236,8 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             gf.unitarize()
             #
             dg = fgf_g(gf0, af)
-            prod = q.field_color_matrix_mul(gm, dg)
-            prod -= q.field_color_matrix_mul(dg, gm)
+            prod = q.field_color_matrix_mul(gm_v, dg)
+            prod -= q.field_color_matrix_mul(dg, gm_v)
             q.set_tr_less_anti_herm_matrix(prod)
             prod *= dt_step
             af += prod
@@ -310,23 +310,25 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
     `gf` should be in the gauge fixed state.
     """
     @q.timer
-    def gm_evolve_fg(gm, gf, af, fg_dt, dt):
+    def gm_evolve_fg(gm, gm_v, gf, af, fg_dt, dt):
         """
-        Modify `gm` in place.
+        Modify `gm` and `gm_v` in place.
         """
         gf_g = gf.copy()
         af_g = af.copy()
         gm_force = get_gm_force(gf_g, af_g)
         if fg_dt != 0.0:
-            gf_evolve(gf_g, af_g, gm_force, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
+            gm_force_v = gm_force
+            gf_evolve(gf_g, af_g, gm_force_v, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
             gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
+        gm_v @= gm
     return gm_evolve_fg
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge(
-        gm, gf, af,
+        gm, gm_v, gf, af,
         *,
         ga,
         fgf,
@@ -339,16 +341,16 @@ def run_hmc_evolve_pure_gauge(
     fname = q.get_fname()
     @q.timer
     def qq_evolve_4th(dt):
-        gf_evolve(gf, af, gm, dt, tag="fix_endpoint_4th", is_initial_gauge_fixed=True)
+        gf_evolve(gf, af, gm_v, dt, tag="fix_endpoint_4th", is_initial_gauge_fixed=True)
     @q.timer
     def pp_evolve_fg(fg_dt, dt):
-        gm_evolve_fg(gm, gf, af, fg_dt, dt)
+        gm_evolve_fg(gm, gm_v, gf, af, fg_dt, dt)
     @q.timer
     def qq_evolve_1(dt):
-        gf_evolve(gf, af, gm, dt, tag="fix_start", is_initial_gauge_fixed=True)
+        gf_evolve(gf, af, gm_v, dt, tag="fix_start", is_initial_gauge_fixed=True)
     @q.timer
     def qq_evolve_2(dt):
-        gf_evolve(gf, af, gm, dt, tag="fix_stop", is_initial_gauge_fixed=True)
+        gf_evolve(gf, af, gm_v, dt, tag="fix_stop", is_initial_gauge_fixed=True)
     @q.timer
     def pp_evolve(dt):
         pp_evolve_fg(0.0, dt)
@@ -399,12 +401,14 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     xg_field_shift = rs.split("xg_field_shift").c_rand_gen(total_site)
     gm = q.GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    gm_v = q.GaugeMomentum()
+    gm_v @= gm
     af = q.GaugeMomentum(geo)
     af.set_rand(rs.split("set_rand_af"), 1.0)
     gf = gf.shift(xg_field_shift)
     gf0 = gf.copy()
     delta_h = run_hmc_evolve_pure_gauge(
-        gm, gf, af,
+        gm, gm_v, gf, af,
         ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
         gf_integrator_tag=gf_integrator_tag,
         n_step=n_step, md_time=md_time,
@@ -413,10 +417,11 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     if is_reverse_test:
         gf_r = gf.copy()
         gm_r = gm.copy()
+        gm_v_r = gm_v.copy()
         af_r = af.copy()
         gf_r = gf_r.shift(xg_field_shift)
         delta_h_rev = run_hmc_evolve_pure_gauge(
-            gm_r, gf_r, af_r,
+            gm_r, gm_v_r, gf_r, af_r,
             ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
             gf_integrator_tag=gf_integrator_tag,
             n_step=n_step, md_time=-md_time,
