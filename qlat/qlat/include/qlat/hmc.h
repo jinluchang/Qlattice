@@ -74,6 +74,12 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
 void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
                         const GaugeMomentum& gm2);
 
+void set_anti_hermitian_matrix_from_basis(Field<ColorMatrix>& fc,
+                                          const Field<RealD>& basis);
+
+void set_basis_from_anti_hermitian_matrix(Field<RealD>& basis,
+                                          const Field<ColorMatrix>& fc);
+
 // -------------------
 
 }  // namespace qlat

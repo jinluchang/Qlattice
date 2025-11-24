@@ -107,7 +107,7 @@ def mk_fgf(job_tag, rs):
     return fgf, fgf_g
 
 @q.timer
-def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
+def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     """
     Evolve `gf` in place.
     `gf` should be initially in the gauge fixed state.
@@ -116,6 +116,10 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
     """
     implicity_integrator_eps = get_param(job_tag, "hmc", "implicity_integrator_eps")
     implicity_integrator_max_iter = get_param(job_tag, "hmc", "implicity_integrator_max_iter")
+    gt_unit = q.GaugeTransform(geo)
+    gt_unit.set_unit()
+    gt_norm = q.qnorm(gt_unit)
+    gf_norm = gt_norm * 4
     @q.timer
     def gf_evolve(gf, af, gm, dt, *, tag=None, is_initial_gauge_fixed=False):
         # Update `gf` and `af` in place.
@@ -132,25 +136,23 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         if tag is None:
             tag = "fix_midpoint"
         #
-        geo = gf.geo
         gf_init = gf
         af_init = af
-        gt_unit = q.GaugeTransform(geo)
-        gt_unit.set_unit()
-        gt_norm = q.qnorm(gt_unit)
-        gf_unit = q.GaugeField(geo)
-        gf_unit.set_unit()
-        gf_norm = q.qnorm(gf_unit)
         #
         if not is_initial_gauge_fixed:
             gf = fgf(gf).inv() * gf
             gf.unitarize()
         #
+        egm_p = None
+        egm_p_dt = None
+        #
         @q.timer
         def evolve_fix_stop(dt_step):
-            nonlocal gf, af
+            nonlocal gf, af, egm_p, egm_p_dt
             #
-            egm_p = q.field_color_matrix_exp(gm, dt_step)
+            if egm_p_dt != dt_step:
+                egm_p = q.field_color_matrix_exp(gm, dt_step)
+                egm_p_dt = dt_step
             #
             gf0 = gf
             gf = q.GaugeField()
@@ -187,9 +189,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         #
         @q.timer
         def evolve_fix_start(dt_step):
-            nonlocal gf, af
+            nonlocal gf, af, egm_p, egm_p_dt
             #
-            egm_p = q.field_color_matrix_exp(gm, dt_step)
+            if egm_p_dt != dt_step:
+                egm_p = q.field_color_matrix_exp(gm, dt_step)
+                egm_p_dt = dt_step
             #
             gf_fixed = gf
             gf = q.GaugeField()
@@ -218,9 +222,11 @@ def mk_fgf_gf_evolve(job_tag, fgf, fgf_g):
         #
         @q.timer
         def evolve_no_fix(dt_step):
-            nonlocal gf, af
+            nonlocal gf, af, egm_p, egm_p_dt
             #
-            egm_p = q.field_color_matrix_exp(gm, dt_step)
+            if egm_p_dt != dt_step:
+                egm_p = q.field_color_matrix_exp(gm, dt_step)
+                egm_p_dt = dt_step
             #
             gf0 = gf
             gf = q.GaugeField()
@@ -374,8 +380,9 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf_in = gf
     gf = gf.copy()
     rs = rs.split(f"{traj}")
+    geo = gf.geo
     fgf, fgf_g, = mk_fgf(job_tag, rs)
-    gf_evolve = mk_fgf_gf_evolve(job_tag, fgf, fgf_g)
+    gf_evolve = mk_fgf_gf_evolve(job_tag,geo, fgf, fgf_g)
     get_gm_force = mk_fgf_get_gm_force(job_tag, fgf, fgf_g)
     gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve)
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
@@ -388,7 +395,6 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     is_always_accept = traj < max_traj_always_accept
     is_reverse_test = traj < max_traj_reverse_test
-    geo = gf.geo
     total_site = geo.total_site
     xg_field_shift = rs.split("xg_field_shift").c_rand_gen(total_site)
     gm = q.GaugeMomentum(geo)

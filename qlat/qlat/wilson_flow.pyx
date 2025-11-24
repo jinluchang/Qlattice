@@ -185,12 +185,12 @@ def gt_block_tree_gauge(
     assert new_node_site * new_size_node == total_site
     assert (new_node_site // block_site) * block_site == new_node_site
     cdef Coordinate size_node = geo.size_node
-    cdef bool is_shuffle = size_node != new_size_node
+    cdef cc.Bool is_shuffle = size_node != new_size_node
     cdef list gf_list
     if is_shuffle:
         gf_list = shuffle_field(gf, new_size_node)
     else:
-        gf_list = [ gf, ]
+        gf_list = [ gf.copy(), ]
     cdef list geo_list = [ gf_local.geo for gf_local in gf_list ]
     if f_dir_list is None:
         if rs_f_dir is None:

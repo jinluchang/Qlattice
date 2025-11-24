@@ -605,4 +605,50 @@ void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
   });
 }
 
+void set_anti_hermitian_matrix_from_basis(Field<ColorMatrix>& fc,
+                                          const Field<RealD>& basis)
+{
+  TIMER("set_anti_hermitian_matrix_from_basis");
+  const Geometry& geo = basis.geo();
+  Qassert(geo.is_only_local);
+  const Int multiplicity = basis.multiplicity / 8;
+  Qassert(multiplicity * 8 == basis.multiplicity);
+  fc.init(geo, multiplicity);
+  Qassert(fc.geo().is_only_local);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<RealD> basis_v = basis.get_elems_const(index);
+    Vector<ColorMatrix> fc_v = fc.get_elems(index);
+    for (Int m = 0; m < multiplicity; ++m) {
+      array<RealD, 8> basis_arr;
+      for (Int i = 0; i < 8; ++i) {
+        basis_arr[i] = basis_v[m * 8 + i];
+      }
+      fc_v[m] = make_anti_hermitian_matrix(basis_arr);
+    }
+  });
+}
+
+void set_basis_from_anti_hermitian_matrix(Field<RealD>& basis,
+                                          const Field<ColorMatrix>& fc)
+{
+  TIMER("set_basis_from_anti_hermitian_matrix");
+  const Geometry& geo = fc.geo();
+  Qassert(geo.is_only_local);
+  const Int multiplicity = fc.multiplicity;
+  basis.init(geo, multiplicity * 8);
+  Qassert(basis.geo().is_only_local);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<ColorMatrix> fc_v = fc.get_elems_const(index);
+    Vector<RealD> basis_v = basis.get_elems(index);
+    for (Int m = 0; m < multiplicity; ++m) {
+      const ColorMatrix& c = fc_v[m];
+      const array<RealD, 8> basis_arr =
+          basis_projection_anti_hermitian_matrix(c);
+      for (Int i = 0; i < 8; ++i) {
+        basis_v[m * 8 + i] = basis_arr[i];
+      }
+    }
+  });
+}
+
 }  // namespace qlat
