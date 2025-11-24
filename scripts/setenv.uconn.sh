@@ -19,8 +19,8 @@ fi
 echo "May need to run 'source /etc/profile' if your bashrc does not include it."
 # source /etc/profile # cannot run it here as it requires interactive bash.
 module purge
-module add gcc/11.3.0
-module add openmpi/4.1.4
+module add gcc/14.2.0
+module add openmpi/5.0.6
 module add cuda/12.3
 module list
 # ``OMPI_MCA_pml=ucx'' does not work for mpi4py
