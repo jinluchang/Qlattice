@@ -64,7 +64,8 @@ def mk_mass_mats_for_gm(job_tag):
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     mat_dim = block_site.volume() * 4
     shape = (mat_dim, mat_dim,)
-    sqrt_mass_matrix = 2.0 * np.eye(mat_dim, dtype=np.float64)
+    sqrt_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")
+    sqrt_mass_matrix = sqrt_mass * np.eye(mat_dim, dtype=np.float64)
     assert sqrt_mass_matrix.shape == shape
     sqrt_mass_inv_matrix = np.linalg.inv(sqrt_mass_matrix)
     mass_inv_matrix = sqrt_mass_inv_matrix @ sqrt_mass_inv_matrix
@@ -632,6 +633,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(2.0)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
@@ -653,6 +655,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
@@ -661,7 +664,7 @@ set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
 set_param(job_tag, "hmc", "max_traj")(5000)
 set_param(job_tag, "hmc", "max_traj_always_accept")(100)
-set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(0)
 set_param(job_tag, "hmc", "md_time")(4.0)
 set_param(job_tag, "hmc", "n_step")(32 * 4)
 set_param(job_tag, "hmc", "beta")(2.80)
@@ -674,7 +677,8 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
-set_param(job_tag, "hmc", "save_traj_interval")(3)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
 # ----
