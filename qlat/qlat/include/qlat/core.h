@@ -1094,7 +1094,8 @@ template <class M>
 void set_unit(Field<M>& f, const ComplexD& coef = 1.0)
 {
   TIMER("set_unit(Field)");
-  set_unit(f.field, coef);
+  vector<M>& xx = f.field;
+  qmem_for(idx, xx.size(), xx.mem_type, { set_unit(xx[idx], coef); });
 }
 
 template <class M>

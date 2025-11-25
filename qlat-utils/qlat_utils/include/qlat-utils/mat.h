@@ -26,12 +26,30 @@ qacc void set_zero(NonRelWilsonMatrix& x) { set_zero<6, ComplexD>(x); }
 qacc void set_zero(IsospinMatrix& x) { set_zero<2, ComplexD>(x); }
 qacc void set_zero(WilsonVector& x) { set_zero<12, ComplexD>(x); }
 
-qacc void set_unit(ColorMatrix& x) { set_unit<3, ComplexD>(x); }
-qacc void set_unit(SpinMatrix& x) { set_unit<4, ComplexD>(x); }
-qacc void set_unit(WilsonMatrix& x) { set_unit<12, ComplexD>(x); }
-qacc void set_unit(NonRelWilsonMatrix& x) { set_unit<6, ComplexD>(x); }
-qacc void set_unit(IsospinMatrix& x) { set_unit<2, ComplexD>(x); }
-qacc void set_unit(WilsonVector& x) { set_unit<12, ComplexD>(x); }
+qacc void set_unit(ColorMatrix& x, const ComplexD& coef = 1.0)
+{
+  set_unit<3, ComplexD>(x, coef);
+}
+qacc void set_unit(SpinMatrix& x, const ComplexD& coef = 1.0)
+{
+  set_unit<4, ComplexD>(x, coef);
+}
+qacc void set_unit(WilsonMatrix& x, const ComplexD& coef = 1.0)
+{
+  set_unit<12, ComplexD>(x, coef);
+}
+qacc void set_unit(NonRelWilsonMatrix& x, const ComplexD& coef = 1.0)
+{
+  set_unit<6, ComplexD>(x, coef);
+}
+qacc void set_unit(IsospinMatrix& x, const ComplexD& coef = 1.0)
+{
+  set_unit<2, ComplexD>(x, coef);
+}
+qacc void set_unit(WilsonVector& x, const ComplexD& coef = 1.0)
+{
+  set_unit<12, ComplexD>(x, coef);
+}
 
 qacc SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 {

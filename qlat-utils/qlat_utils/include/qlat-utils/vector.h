@@ -632,12 +632,18 @@ qacc void set_zero(vector<M>& xx)
 }
 
 template <class M>
+void set_unit_no_acc(vector<M>& xx, const ComplexD& coef = 1.0)
+{
+  qmem_for(idx, xx.size(), xx.mem_type, { set_unit(xx[idx], coef); });
+}
+
+template <class M>
 qacc void set_unit(vector<M>& xx, const ComplexD& coef = 1.0)
 {
 #ifdef QLAT_IN_ACC
   qfor(idx, xx.size(), { set_unit(xx[idx], coef); });
 #else
-  qmem_for(idx, xx.size(), xx.mem_type, { set_unit(xx[idx], coef); });
+  set_unit_no_acc(xx, coef);
 #endif
 }
 
