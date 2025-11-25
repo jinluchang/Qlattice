@@ -246,24 +246,27 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
   qacc_Error err = qacc_ErrorUnknown;
   if (eff_mem_type_src == MemType::Uvm or eff_mem_type_dst == MemType::Uvm) {
     bool with_cpu = false;
-    if(size < 4096){
-      if(eff_mem_type_src == MemType::Uvm and eff_mem_type_dst == MemType::Uvm){with_cpu = true;}
-      if(eff_mem_type_src == MemType::Cpu or  eff_mem_type_dst == MemType::Cpu){with_cpu = true;}
-    }   
-
-    if(with_cpu == true){
+    if (size < 4096) {
+      if (eff_mem_type_src == MemType::Uvm and
+          eff_mem_type_dst == MemType::Uvm) {
+        with_cpu = true;
+      }
+      if (eff_mem_type_src == MemType::Cpu or
+          eff_mem_type_dst == MemType::Cpu) {
+        with_cpu = true;
+      }
+    }
+    if (with_cpu == true) {
       TIMER_FLOPS("copy_mem(Cpu<-Cpu)");
       timer.flops += size;
-
       std::memcpy(dst, src, size);
       err = qacc_Success;
-    }   
-    if(with_cpu == false)
-    {   
+    }
+    if (with_cpu == false) {
       TIMER_FLOPS("copy_mem(Uvm)");
       timer.flops += size;
       err = qacc_Memcpy(dst, src, size, qacc_MemcpyDefault);
-    }   
+    }
   } else if (eff_mem_type_src == MemType::Cpu) {
     if (eff_mem_type_dst == MemType::Cpu) {
       TIMER_FLOPS("copy_mem(Cpu<-Cpu)");
@@ -295,7 +298,7 @@ void copy_mem(void* dst, const MemType mem_type_dst, const void* src,
   qacc_ErrCheck(qacc_DeviceSynchronize());  // HIP XNACK need barrier...
   if (qacc_Success != err) {
     qerr(ssprintf("mem copy : ACC error '%s' (%d) after qacc_Malloc.",
-                          qacc_GetErrorString(err), err));
+                  qacc_GetErrorString(err), err));
   }
 #else
   TIMER_FLOPS("copy_mem");

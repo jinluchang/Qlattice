@@ -1095,9 +1095,8 @@ template <class M>
 void set_unit(Field<M>& f, const ComplexD& coef = 1.0)
 {
   TIMER("set_unit(Field)");
-  for (Long offset = 0; offset < f.field.size(); ++offset) {
-    set_unit(f.get_elem_offset(offset), coef);
-  }
+  qacc_for(offset, f.field.size(),
+           { set_unit(f.get_elem_offset(offset), coef); });
 }
 
 template <class M>
