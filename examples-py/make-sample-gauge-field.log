@@ -1,4 +1,4 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK:  Geometry([4, 4, 4, 8])
-CHECK: plaq: 6.147333258460E-01 6.147333258460E-01
+CHECK: plaq: 6.147333125563E-01 6.147333125563E-01
 CHECK: finished successfully.

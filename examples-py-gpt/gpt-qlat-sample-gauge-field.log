@@ -1,4 +1,4 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK:  Geometry([4, 4, 4, 8])
-qwarn: load_gauge_field: WARNING: fn='results/ckpoint_lat.0' CHECKSUM= CE6527B4 (calc) 00000000 (read) possibly missing CRC32HASH field from '../qlat/include/qlat/qcd.h' line 349. (id_node=0 id_thread=0)
+qwarn: load_gauge_field: WARNING: fn='results/ckpoint_lat.0' CHECKSUM= 1E7F6641 (calc) 00000000 (read) possibly missing CRC32HASH field from '../qlat/include/qlat/qcd.h' line 207. (id_node=0 id_thread=0)
 CHECK: finished successfully.

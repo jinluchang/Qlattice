@@ -4,174 +4,174 @@
  ],
  [
   "run_hmc: 1 plaq",
-  0.7450943920367528
+  0.7450943920366777
  ],
  [
   "run_hmc: 2 plaq",
-  0.6766937771184736
+  0.6766937771184065
  ],
  [
   "run_hmc: 3 plaq",
-  0.6436265119193416
+  0.6436265119193287
  ],
  [
   "run_hmc: 4 plaq",
-  0.6206781160838984
+  0.620678116083941
  ],
  [
   "run_hmc: 5 plaq",
-  0.5973990387209165
+  0.5973990387210244
  ],
  [
   "run_hmc: 6 plaq",
-  0.5846407720593919
+  0.58464077205947
  ],
  [
   "run_hmc: 7 plaq",
-  0.5867134719750318
+  0.5867134719746566
  ],
  [
   "run_hmc: 8 plaq",
-  0.5881418797220908
+  0.5881418797219449
  ],
  [
   "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"random\", \"interval_list\": [1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
  ],
  [
   "run_hmc: 1 plaq",
-  0.7574303159184316
+  0.7574303159183872
  ],
  [
   "run_hmc: 2 plaq",
-  0.7162682961967344
+  0.716268296196724
  ],
  [
   "run_hmc: 3 plaq",
-  0.6688024944326814
+  0.6688024944326754
  ],
  [
   "run_hmc: 4 plaq",
-  0.6473990260130363
+  0.6473990260130655
  ],
  [
   "run_hmc: 5 plaq",
-  0.6301599272579701
+  0.6301599272579756
  ],
  [
   "run_hmc: 6 plaq",
-  0.6183370383925256
+  0.618337038392542
  ],
  [
   "run_hmc: 7 plaq",
-  0.6056014047510287
+  0.6056014047510474
  ],
  [
   "run_hmc: 8 plaq",
-  0.5978031451858512
+  0.5978031451860256
  ],
  [
   "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": false, \"mass_type\": \"random\", \"interval_list\": [1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
  ],
  [
   "run_hmc: 1 plaq",
-  0.7553940083686734
+  0.7553940083686239
  ],
  [
   "run_hmc: 2 plaq",
-  0.7165997031181496
+  0.7165997031181199
  ],
  [
   "run_hmc: 3 plaq",
-  0.6672123175965112
+  0.6672123175965
  ],
  [
   "run_hmc: 4 plaq",
-  0.6478552906595931
+  0.6478552906595898
  ],
  [
   "run_hmc: 5 plaq",
-  0.6214441450798192
+  0.6214441450798227
  ],
  [
   "run_hmc: 6 plaq",
-  0.6085025839627993
+  0.6085025839628155
  ],
  [
   "run_hmc: 7 plaq",
-  0.5962901303161345
+  0.5962901303161343
  ],
  [
   "run_hmc: 8 plaq",
-  0.5905986666701075
+  0.5905986666701978
  ],
  [
   "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"grid-2\", \"mass_list\": [1.0, 1.25, 1.5, 4.0], \"interval_list\": [1, 1, 1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
  ],
  [
   "run_hmc: 1 plaq",
-  0.7481205279773053
+  0.7481205279772549
  ],
  [
   "run_hmc: 2 plaq",
-  0.6913357725999982
+  0.6913357725999691
  ],
  [
   "run_hmc: 3 plaq",
-  0.6516687241015605
+  0.6516687241015275
  ],
  [
   "run_hmc: 4 plaq",
-  0.6302214606616231
+  0.6302214606616167
  ],
  [
   "run_hmc: 5 plaq",
-  0.6161817292121352
+  0.6161817292121308
  ],
  [
   "run_hmc: 6 plaq",
-  0.6052181052599356
+  0.6052181052599284
  ],
  [
   "run_hmc: 7 plaq",
-  0.5997161531369353
+  0.5997161531369286
  ],
  [
   "run_hmc: 8 plaq",
-  0.5904677295132285
+  0.5904677295132341
  ],
  [
   "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"grid-2-eo\", \"mass_list\": [1.0, 1.25, 1.5, 4.0, Infinity, Infinity, Infinity, Infinity], \"interval_list\": [1, 1, 1, 2, 1, 1, 1, 1]}}}"
  ],
  [
   "run_hmc: 1 plaq",
-  0.7564848285840841
+  0.7564848285839987
  ],
  [
   "run_hmc: 2 plaq",
-  0.7077345298590232
+  0.7077345298589492
  ],
  [
   "run_hmc: 3 plaq",
-  0.6580872503111821
+  0.6580872503111501
  ],
  [
   "run_hmc: 4 plaq",
-  0.6392689277384989
+  0.639268927738485
  ],
  [
   "run_hmc: 5 plaq",
-  0.61921773217575
+  0.6192177321757432
  ],
  [
   "run_hmc: 6 plaq",
-  0.6067884819604743
+  0.6067884819604911
  ],
  [
   "run_hmc: 7 plaq",
-  0.5995068883214777
+  0.5995068883215305
  ],
  [
   "run_hmc: 8 plaq",
-  0.5909372191909894
+  0.590937219191039
  ]
 ]

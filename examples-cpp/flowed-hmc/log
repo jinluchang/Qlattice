@@ -1,4 +1,4 @@
-CHECK: test_hmc: traj=1 ; plaq_avg=      3.443232797422E-01 ; plaq_sum=      2.014238884632E+03.
-CHECK: test_hmc: traj=2 ; plaq_avg=      4.732559088402E-01 ; plaq_sum=      1.618157848043E+03.
-CHECK: test_hmc: traj=3 ; plaq_avg=      5.292922521503E-01 ; plaq_sum=      1.446014201394E+03.
+CHECK: test_hmc: traj=1 ; plaq_avg=      3.442618945996E-01 ; plaq_sum=      2.014427459790E+03.
+CHECK: test_hmc: traj=2 ; plaq_avg=      4.732751069415E-01 ; plaq_sum=      1.618098871476E+03.
+CHECK: test_hmc: traj=3 ; plaq_avg=      5.306183520309E-01 ; plaq_sum=      1.441940422561E+03.
 CHECK: finished successfully.
