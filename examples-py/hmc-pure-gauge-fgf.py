@@ -64,7 +64,7 @@ def mk_mass_mats_for_gm(job_tag):
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     mat_dim = block_site.volume() * 4
     shape = (mat_dim, mat_dim,)
-    sqrt_mass_matrix = np.eye(mat_dim, dtype=np.float64)
+    sqrt_mass_matrix = 2.0 * np.eye(mat_dim, dtype=np.float64)
     assert sqrt_mass_matrix.shape == shape
     sqrt_mass_inv_matrix = np.linalg.inv(sqrt_mass_matrix)
     mass_inv_matrix = sqrt_mass_inv_matrix @ sqrt_mass_inv_matrix
@@ -97,6 +97,34 @@ def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
         q.set_anti_hermitian_matrix_from_basis(gm_v, f_basis)
         return gm_v
     return gm_v_from_gm
+
+@q.timer
+def mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix):
+    r"""
+    return gm_set_rand
+    """
+    total_site = geo.total_site
+    block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    mat_dim = block_site.volume() * 4
+    new_size_node = total_site // block_site
+    assert isinstance(sqrt_mass_matrix, np.ndarray)
+    assert sqrt_mass_matrix.shape == (mat_dim, mat_dim,)
+    assert sqrt_mass_matrix.dtype == np.float64
+    @q.timer
+    def gm_set_rand(gm, rs):
+        assert gm.geo == geo
+        assert gm.multiplicity == 4
+        gm.set_rand(rs, 1.0)
+        f_basis = q.FieldRealD()
+        q.set_basis_from_anti_hermitian_matrix(f_basis, gm)
+        f_basis_list = q.shuffle_field(f_basis, new_size_node)
+        for f_basis_local in f_basis_list:
+            local_arr = np.asarray(f_basis_local).reshape((mat_dim, 8,), copy=False)
+            assert local_arr.shape == (mat_dim, 8,)
+            local_arr[:] = sqrt_mass_matrix @ local_arr[:]
+        q.shuffle_field_back(f_basis, f_basis_list, new_size_node)
+        q.set_anti_hermitian_matrix_from_basis(gm, f_basis)
+    return gm_set_rand
 
 @q.timer
 def gm_gm_v_hamilton_node(gm, gm_v):
@@ -467,6 +495,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     rs = rs.split(f"{traj}")
     geo = gf.geo
     sqrt_mass_matrix, mass_inv_matrix = mk_mass_mats_for_gm(job_tag)
+    gm_set_rand = mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix)
     gm_v_from_gm = mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix)
     fgf, fgf_g, = mk_fgf(job_tag, rs)
     gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
@@ -485,9 +514,9 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     total_site = geo.total_site
     xg_field_shift = rs.split("xg_field_shift").c_rand_gen(total_site)
     gm = q.GaugeMomentum(geo)
-    gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    gm_set_rand(gm, rs.split("set_rand_gauge_momentum"))
     gm_v = q.GaugeMomentum()
-    gm_v @= gm
+    gm_v.swap(gm_v_from_gm(gm))
     af = q.GaugeMomentum(geo)
     af.set_rand(rs.split("set_rand_af"), 1.0)
     gf = gf.shift(xg_field_shift)
@@ -591,7 +620,7 @@ set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(4)
 set_param(job_tag, "hmc", "max_traj_always_accept")(3)
 set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
-set_param(job_tag, "hmc", "md_time")(0.3)
+set_param(job_tag, "hmc", "md_time")(0.6)
 set_param(job_tag, "hmc", "n_step")(2)
 set_param(job_tag, "hmc", "beta")(2.13)
 set_param(job_tag, "hmc", "c1")(-0.331)

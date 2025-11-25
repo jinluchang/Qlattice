@@ -257,7 +257,7 @@ CHECK: params: test-4nt8:   "hmc": {
 CHECK: params: test-4nt8:     "max_traj": 4,
 CHECK: params: test-4nt8:     "max_traj_always_accept": 3,
 CHECK: params: test-4nt8:     "max_traj_reverse_test": 2,
-CHECK: params: test-4nt8:     "md_time": 0.3,
+CHECK: params: test-4nt8:     "md_time": 0.6,
 CHECK: params: test-4nt8:     "n_step": 2,
 CHECK: params: test-4nt8:     "beta": 2.13,
 CHECK: params: test-4nt8:     "c1": -0.331,
