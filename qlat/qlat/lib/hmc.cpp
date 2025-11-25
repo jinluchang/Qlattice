@@ -607,6 +607,9 @@ void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
 
 void set_anti_hermitian_matrix_from_basis(Field<ColorMatrix>& fc,
                                           const Field<RealD>& basis)
+// fc[x, m] = \sum_a T_a * basis[x, m * 8 + a]
+// T_a^dagger = -T_a
+// Tr[T_a T_b] = -2 \delta_{a,b}
 {
   TIMER("set_anti_hermitian_matrix_from_basis");
   const Geometry& geo = basis.geo();
@@ -630,6 +633,9 @@ void set_anti_hermitian_matrix_from_basis(Field<ColorMatrix>& fc,
 
 void set_basis_from_anti_hermitian_matrix(Field<RealD>& basis,
                                           const Field<ColorMatrix>& fc)
+// fc[x, m] = \sum_a T_a * basis[x, m * 8 + a]
+// T_a^dagger = -T_a
+// Tr[T_a T_b] = -2 \delta_{a,b}
 {
   TIMER("set_basis_from_anti_hermitian_matrix");
   const Geometry& geo = fc.geo();

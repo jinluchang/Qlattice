@@ -93,9 +93,19 @@ def dot_gauge_momentum(GaugeMomentum gm1, GaugeMomentum gm2):
     return f
 
 def set_anti_hermitian_matrix_from_basis(FieldColorMatrix fc, FieldRealD basis):
+    r"""
+    fc[x, m] = \sum_a T_a * basis[x, m * 8 + a]
+    T_a^dagger = -T_a
+    Tr[T_a T_b] = -2 \delta_{a,b}
+    """
     cc.set_anti_hermitian_matrix_from_basis(fc.xx, basis.xx)
 
 def set_basis_from_anti_hermitian_matrix(FieldRealD basis, FieldColorMatrix fc):
+    r"""
+    fc[x, m] = \sum_a T_a * basis[x, m * 8 + a]
+    T_a^dagger = -T_a
+    Tr[T_a T_b] = -2 \delta_{a,b}
+    """
     cc.set_basis_from_anti_hermitian_matrix(basis.xx, fc.xx)
 
 @q.timer_verbose

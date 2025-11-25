@@ -57,6 +57,62 @@ def mk_evolve_leapfrog(qq_evolve_1, qq_evolve_2, pp_evolve):
     return evolve_leapfrog
 
 @q.timer
+def mk_mass_mats_for_gm(job_tag):
+    r"""
+    return sqrt_mass_matrix, mass_inv_matrix
+    """
+    block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    mat_dim = block_site.volume() * 4
+    shape = (mat_dim, mat_dim,)
+    sqrt_mass_matrix = np.eye(mat_dim, dtype=np.float64)
+    assert sqrt_mass_matrix.shape == shape
+    sqrt_mass_inv_matrix = np.linalg.inv(sqrt_mass_matrix)
+    mass_inv_matrix = sqrt_mass_inv_matrix @ sqrt_mass_inv_matrix
+    return sqrt_mass_matrix, mass_inv_matrix
+
+@q.timer
+def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
+    r"""
+    return gm_v_from_gm
+    """
+    total_site = geo.total_site
+    block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    mat_dim = block_site.volume() * 4
+    new_size_node = total_site // block_site
+    assert isinstance(mass_inv_matrix, np.ndarray)
+    assert mass_inv_matrix.shape == (mat_dim, mat_dim,)
+    assert mass_inv_matrix.dtype == np.float64
+    @q.timer
+    def gm_v_from_gm(gm):
+        assert gm.geo == geo
+        f_basis = q.FieldRealD()
+        q.set_basis_from_anti_hermitian_matrix(f_basis, gm)
+        f_basis_list = q.shuffle_field(f_basis, new_size_node)
+        for f_basis_local in f_basis_list:
+            local_arr = np.asarray(f_basis_local).reshape((mat_dim, 8,), copy=False)
+            assert local_arr.shape == (mat_dim, 8,)
+            local_arr[:] = mass_inv_matrix @ local_arr[:]
+        q.shuffle_field_back(f_basis, f_basis_list, new_size_node)
+        gm_v = q.GaugeMomentum(geo)
+        q.set_anti_hermitian_matrix_from_basis(gm_v, f_basis)
+        return gm_v
+    return gm_v_from_gm
+
+@q.timer
+def gm_gm_v_hamilton_node(gm, gm_v):
+    geo = gm.geo
+    assert geo.is_only_local
+    assert gm_v.geo == geo
+    assert gm.multiplicity == 4
+    assert gm_v.multiplicity == 4
+    f_basis = q.FieldRealD()
+    f_basis_v = q.FieldRealD()
+    q.set_basis_from_anti_hermitian_matrix(f_basis, gm)
+    q.set_basis_from_anti_hermitian_matrix(f_basis_v, gm_v)
+    energy = np.sum(f_basis[:] * f_basis_v[:]).item()
+    return energy
+
+@q.timer
 def mk_fgf(job_tag, rs):
     r"""
     return fgf, fgf_g
@@ -279,7 +335,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     return gf_evolve
 
 @q.timer
-def mk_fgf_get_gm_force(job_tag, geo, fgf, fgf_g):
+def mk_fgf_get_gm_force(job_tag, geo, fgf_g):
     """
     return `get_gm_force` for `gf` and `af`.
     `gf` should be in the gauge fixed state.
@@ -311,17 +367,18 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf, fgf_g):
         gm_force += prod
         #
         force_size_total = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
+        q.displayln_info(0, f"force_size_total={force_size_total:.5f}")
+        #
         cos_alpha_qcd_gauge_fixing = (
             (force_size_total**2 - force_size_qcd**2 - force_size_gauge_fixing**2)
             / (force_size_qcd * force_size_gauge_fixing))
-        q.displayln_info(0, f"cos(alpha(qcd,gauge_fixing))={cos_alpha_qcd_gauge_fixing:.5f}")
-        q.displayln_info(0, f"force_size_total={force_size_total:.5f}")
+        q.displayln_info(0, f"cos_alpha_qcd_gauge_fixing={cos_alpha_qcd_gauge_fixing:.5f}")
         #
         return gm_force
     return get_gm_force
 
 @q.timer
-def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
+def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm):
     """
     return `gm_evolve_fg` for `gf` and `af`.
     `gf` should be in the gauge fixed state.
@@ -333,14 +390,14 @@ def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve):
         """
         gm_force = get_gm_force(gf, af)
         if fg_dt != 0.0:
-            gm_force_v = gm_force
+            gm_force_v = gm_v_from_gm(gm_force)
             gf_g = gf.copy()
             af_g = af.copy()
             gf_evolve(gf_g, af_g, gm_force_v, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
             gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
-        gm_v @= gm
+        gm_v.swap(gm_v_from_gm(gm))
     return gm_evolve_fg
 
 @q.timer(is_timer_fork=True)
@@ -382,14 +439,23 @@ def run_hmc_evolve_pure_gauge(
         evolve = evolve_force_gradient
     else:
         raise Exception(f"{fname}: gf_integrator_tag={gf_integrator_tag}")
-    energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af)
+    energy = (
+        gm_gm_v_hamilton_node(gm, gm_v)
+        + q.gf_hamilton_node(gf, ga)
+        + q.gm_hamilton_node(af)
+        )
     gf @= fgf(gf).inv() * gf
     gf.unitarize()
     dt = md_time / n_step
     for i in range(n_step):
         evolve(dt)
     gf.unitarize()
-    delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) + q.gm_hamilton_node(af) - energy
+    delta_h = (
+        gm_gm_v_hamilton_node(gm, gm_v)
+        + q.gf_hamilton_node(gf, ga)
+        + q.gm_hamilton_node(af)
+        - energy
+        )
     delta_h = q.glb_sum(delta_h)
     return delta_h
 
@@ -400,10 +466,12 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf = gf.copy()
     rs = rs.split(f"{traj}")
     geo = gf.geo
+    sqrt_mass_matrix, mass_inv_matrix = mk_mass_mats_for_gm(job_tag)
+    gm_v_from_gm = mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix)
     fgf, fgf_g, = mk_fgf(job_tag, rs)
     gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
-    get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf, fgf_g)
-    gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve)
+    get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf_g)
+    gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm)
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
