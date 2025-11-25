@@ -179,6 +179,7 @@ cdef extern from "qlat/core.h" namespace "qlat":
         Geometry get_geo() except +
     Vector[T] get_data[T](const Field[T]& x) except +
     void set_zero[T](Field[T]& x) except +
+    void set_unit[T](Field[T]& f, const ComplexD& coef) except +
     void qswap[T](Field[T]& x, Field[T]& y) except +
     Vector[T] get_data[T](const SelectedField[T]& x) except +
     void set_zero[T](SelectedField[T]& x) except +
@@ -202,7 +203,6 @@ cdef extern from "qlat/field.h" namespace "qlat":
 
     RealD qnorm[M](const Field[M]& f) except +
     void qnorm_field[M](Field[RealD]& f, const Field[M]& f1) except +
-    void set_unit[M](Field[M]& f, const ComplexD& coef) except +
     void set_u_rand[M](Field[M]& sp, const RngState& rs, const RealD upper, const RealD lower) except +
     void set_g_rand[M](Field[M]& sp, const RngState& rs, const RealD center, const RealD sigma) except +
     void set_xg_field(Field[Int]& f, const Geometry& geo) except +
