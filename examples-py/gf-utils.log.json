@@ -204,32 +204,32 @@
  ],
  [
   "smear_measure_topo default topo plaq",
-  3.076718739227715,
+  3.0767187392276103,
   1e-08
  ],
  [
   "smear_measure_topo default topo energy_density",
-  1.978586930707058,
+  1.978586930706961,
   1e-08
  ],
  [
   "smear_measure_topo default topo energy_deriv",
-  -4.001101798311381,
+  -4.001101798311245,
   1e-08
  ],
  [
   "smear_measure_topo default topo topo",
-  1.6946302474328112,
+  1.6946302474326218,
   1e-08
  ],
  [
   "smear_measure_topo default topo topo_clf",
-  1.2993794471883149,
+  1.299379447188145,
   1e-08
  ],
  [
   "smear_measure_topo default topo plaq_action_density",
-  -1.2950209602536027,
+  -1.29502096025297,
   1e-08
  ],
  [
@@ -239,12 +239,12 @@
  ],
  [
   "smear_measure_topo default energy plaq",
-  0.264447515853635,
+  0.26444751585349646,
   1e-08
  ],
  [
   "smear_measure_topo default energy energy_density",
-  11.801979768932263,
+  11.801979768932094,
   1e-08
  ],
  [
@@ -254,32 +254,32 @@
  ],
  [
   "smear_measure_topo wilson-flow topo plaq",
-  3.2532207719564195,
+  3.2532207719550525,
   1e-08
  ],
  [
   "smear_measure_topo wilson-flow topo energy_density",
-  0.17585860729477945,
+  0.17585860729471686,
   1e-08
  ],
  [
   "smear_measure_topo wilson-flow topo energy_deriv",
-  -0.06460451087276589,
+  -0.06460451087267428,
   1e-08
  ],
  [
   "smear_measure_topo wilson-flow topo topo",
-  1.1574492739914224,
+  1.1574492739913016,
   1e-08
  ],
  [
   "smear_measure_topo wilson-flow topo topo_clf",
-  0.8257635268285812,
+  0.8257635268284024,
   1e-08
  ],
  [
   "smear_measure_topo wilson-flow topo plaq_action_density",
-  0.04136638417177017,
+  0.04136638417997387,
   1e-08
  ],
  [
@@ -289,12 +289,12 @@
  ],
  [
   "smear_measure_topo wilson-flow energy plaq",
-  1.9736683946312037,
+  1.9736683946313223,
   1e-08
  ],
  [
   "smear_measure_topo wilson-flow energy energy_density",
-  0.46088758822429565,
+  0.4608875882242674,
   1e-08
  ]
 ]
