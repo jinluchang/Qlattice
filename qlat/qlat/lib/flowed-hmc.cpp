@@ -447,7 +447,7 @@ void gf_flow_plaq_mask_mu_no_comm(GaugeField& gf, const GaugeField& gf0_ext,
     const ColorMatrix z_u_x_mu =
         -make_tr_less_anti_herm_matrix(u0_x_mu * matrix_adjoint(c_x_mu));
     const ColorMatrix e_z_u_x_mu = (ComplexD)epsilon * z_u_x_mu;
-    const ColorMatrix e_u_x_mu = make_matrix_exp(e_z_u_x_mu) * u0_x_mu;
+    const ColorMatrix e_u_x_mu = make_color_matrix_exp(e_z_u_x_mu) * u0_x_mu;
     ColorMatrix& u_x_mu = gf.get_elem(xl, mu);
     u_x_mu = e_u_x_mu;
   });
@@ -481,8 +481,8 @@ void gf_flow_inv_plaq_mask_mu_no_comm(GaugeField& gf, const GaugeField& gf1_ext,
     for (Int n = 0; n < n_iter; ++n) {
       const ColorMatrix x_u_x_mu =
           -make_tr_less_anti_herm_matrix(u0_x_mu * c_x_mu_dagger);
-      const ColorMatrix e_x_u_x_mu = (ComplexD)epsilon * x_u_x_mu;
-      u0_x_mu = make_matrix_exp(-e_x_u_x_mu) * u1_x_mu;
+      const ColorMatrix e_x_u_x_mu = (ComplexD)(-epsilon) * x_u_x_mu;
+      u0_x_mu = make_color_matrix_exp(e_x_u_x_mu) * u1_x_mu;
     }
     ColorMatrix& u_x_mu = gf.get_elem(xl, mu);
     u_x_mu = u0_x_mu;

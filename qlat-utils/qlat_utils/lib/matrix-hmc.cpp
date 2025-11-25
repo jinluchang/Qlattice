@@ -51,8 +51,10 @@ void ColorMatrixConstants::check() const
       basis_b[a] = exp_adx(a, b);
     }
     const ColorMatrix mx_b = make_anti_hermitian_matrix(basis_b);
-    const ColorMatrix exp_x = make_matrix_exp((ComplexD)coef * x);
-    const ColorMatrix exp_n_x = make_matrix_exp(-(ComplexD)coef * x);
+    const ColorMatrix cx = (ComplexD)coef * x;
+    const ColorMatrix ncx = (ComplexD)(-coef) * x;
+    const ColorMatrix exp_x = make_color_matrix_exp(cx);
+    const ColorMatrix exp_n_x = make_color_matrix_exp(ncx);
     if (qnorm(mx_b - exp_x * ts[b] * exp_n_x) >= 1e-20) {
       displayln_info("adx_b: " + show(qnorm(mx_b)));
       displayln_info("exp_x b exp_n_x: " +

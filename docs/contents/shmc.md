@@ -280,7 +280,7 @@ P = make_g_rand_anti_hermitian_matrix(rng_state, sigma)
 ```
 
 ```
-matrix_evolve(U_x_mu,P_x_mu,dt) ==> make_matrix_exp(P_x_mu * dt) * U_x_mu
+matrix_evolve(U_x_mu,P_x_mu,dt) ==> make_color_matrix_exp(P_x_mu * dt) * U_x_mu
 U_x_mu = matrix_evolve(U_x_mu,P_x_mu,dt)
 ```
 

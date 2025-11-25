@@ -168,7 +168,7 @@ qacc M make_matrix_exp(const M& a, const Int max_order = 20)
 
 template <class T>
 qacc ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a,
-                                           const Int max_order = 9)
+                                           const Int max_order = 20)
 {
   ColorMatrixT<T> ret = make_matrix_exp(a, max_order);
   unitarize(ret);
@@ -182,7 +182,7 @@ qacc ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
 // return exp(gm_cm * step_size) * gf_cm
 {
   const ColorMatrixT<T> t = (ComplexT<T>)step_size * gm_cm;
-  return make_matrix_exp(t) * gf_cm;
+  return make_color_matrix_exp(t) * gf_cm;
 }
 
 template <class T>
@@ -192,7 +192,7 @@ qacc ColorMatrixT<T> matrix_evolve_dual(const ColorMatrixT<T>& gf_cm,
 // return gf_cm * exp(-gm_cm * step_size)
 {
   const ColorMatrixT<T> t = (ComplexT<T>)(-step_size) * gm_cm;
-  return gf_cm * make_matrix_exp(t);
+  return gf_cm * make_color_matrix_exp(t);
 }
 
 qacc ColorMatrix make_tr_less_anti_herm_matrix(const ColorMatrix& m)
