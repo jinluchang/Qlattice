@@ -228,6 +228,7 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     def acc_runtime_info(time, gm, gm_v, gf, af):
         nonlocal step
         if step % acc_runtime_info_interval != 0:
+            step += 1
             return
         nonlocal gm_init, gm_v_init, gf_init, af_init
         gm_force = get_gm_force(gf, af)
