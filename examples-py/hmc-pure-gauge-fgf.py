@@ -226,9 +226,10 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     energy_init = None
     @q.timer
     def acc_runtime_info(time, gm, gm_v, gf, af):
+        nonlocal step
         if step % acc_runtime_info_interval != 0:
             return
-        nonlocal step, gm_init, gm_v_init, gf_init, af_init
+        nonlocal gm_init, gm_v_init, gf_init, af_init
         gm_force = get_gm_force(gf, af)
         gm_force_qcd = get_gm_force(gf, af, tag="qcd")
         gm_force_gauge_fixing = get_gm_force(gf, af, tag="gauge_fixing")

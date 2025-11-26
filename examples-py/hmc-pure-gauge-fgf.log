@@ -285,6 +285,7 @@ CHECK: params: test-4nt8:     "fourier_acceleration": {
 CHECK: params: test-4nt8:       "sqrt_mass": 2.0,
 CHECK: params: test-4nt8:       "sqrt_af_mass": 2.0
 CHECK: params: test-4nt8:     },
+CHECK: params: test-4nt8:     "acc_runtime_info_interval": 2,
 CHECK: params: test-4nt8:     "save_traj_interval": 4,
 CHECK: params: test-4nt8:     "is_saving_topo_info": true
 CHECK: params: test-4nt8:   }
