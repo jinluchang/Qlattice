@@ -72,9 +72,29 @@ def mk_mass_mats_for_gm(job_tag):
     return sqrt_mass_matrix, mass_inv_matrix
 
 @q.timer
+def mk_mass_mats_for_af(job_tag):
+    r"""
+    return sqrt_af_mass_matrix, af_mass_inv_matrix
+    """
+    block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    mat_dim = block_site.volume() * 4
+    shape = (mat_dim, mat_dim,)
+    sqrt_af_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")
+    sqrt_af_mass_matrix = sqrt_af_mass * np.eye(mat_dim, dtype=np.float64)
+    assert sqrt_af_mass_matrix.shape == shape
+    sqrt_af_mass_inv_matrix = np.linalg.inv(sqrt_af_mass_matrix)
+    af_mass_inv_matrix = sqrt_af_mass_inv_matrix @ sqrt_af_mass_inv_matrix
+    return sqrt_af_mass_matrix, af_mass_inv_matrix
+
+@q.timer
 def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
     r"""
     return gm_v_from_gm
+    or
+    return af_v_from_af
+    Usage:
+    gm_v_from_gm = mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix)
+    af_v_from_af = mk_gm_v_from_gm(job_tag, geo, af_mass_inv_matrix)
     """
     total_site = geo.total_site
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
@@ -103,6 +123,11 @@ def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
 def mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix):
     r"""
     return gm_set_rand
+    or
+    return af_set_rand
+    Usage:
+    gm_set_rand = mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix)
+    af_set_rand = mk_gm_set_rand(job_tag, geo, sqrt_af_mass_matrix)
     """
     total_site = geo.total_site
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
@@ -364,7 +389,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     return gf_evolve
 
 @q.timer
-def mk_fgf_get_gm_force(job_tag, geo, fgf_g):
+def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
     """
     return `get_gm_force` for `gf` and `af`.
     `gf` should be in the gauge fixed state.
@@ -386,8 +411,9 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g):
         #
         # Add force due to gauge fixing
         dg = fgf_g(gf, af)
-        prod = q.field_color_matrix_mul(af, dg)
-        prod -= q.field_color_matrix_mul(dg, af)
+        af_v = af_v_from_af(af)
+        prod = q.field_color_matrix_mul(af_v, dg)
+        prod -= q.field_color_matrix_mul(dg, af_v)
         q.set_tr_less_anti_herm_matrix(prod)
         #
         force_size_gauge_fixing = math.sqrt(q.qnorm(prod) / (total_volume * 4))
@@ -437,6 +463,7 @@ def run_hmc_evolve_pure_gauge(
         fgf,
         gf_evolve,
         gm_evolve_fg,
+        af_v_from_af,
         gf_integrator_tag,
         n_step,
         md_time,
@@ -470,8 +497,8 @@ def run_hmc_evolve_pure_gauge(
         raise Exception(f"{fname}: gf_integrator_tag={gf_integrator_tag}")
     energy = (
         gm_gm_v_hamilton_node(gm, gm_v)
+        + gm_gm_v_hamilton_node(af, af_v_from_af(af))
         + q.gf_hamilton_node(gf, ga)
-        + q.gm_hamilton_node(af)
         )
     gf @= fgf(gf).inv() * gf
     gf.unitarize()
@@ -481,8 +508,8 @@ def run_hmc_evolve_pure_gauge(
     gf.unitarize()
     delta_h = (
         gm_gm_v_hamilton_node(gm, gm_v)
+        + gm_gm_v_hamilton_node(af, af_v_from_af(af))
         + q.gf_hamilton_node(gf, ga)
-        + q.gm_hamilton_node(af)
         - energy
         )
     delta_h = q.glb_sum(delta_h)
@@ -496,11 +523,14 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     rs = rs.split(f"{traj}")
     geo = gf.geo
     sqrt_mass_matrix, mass_inv_matrix = mk_mass_mats_for_gm(job_tag)
+    sqrt_af_mass_matrix, af_mass_inv_matrix = mk_mass_mats_for_af(job_tag)
     gm_set_rand = mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix)
+    af_set_rand = mk_gm_set_rand(job_tag, geo, sqrt_af_mass_matrix)
     gm_v_from_gm = mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix)
+    af_v_from_af = mk_gm_v_from_gm(job_tag, geo, af_mass_inv_matrix)
     fgf, fgf_g, = mk_fgf(job_tag, rs)
     gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
-    get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf_g)
+    get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af)
     gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm)
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
@@ -519,12 +549,13 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gm_v = q.GaugeMomentum()
     gm_v.swap(gm_v_from_gm(gm))
     af = q.GaugeMomentum(geo)
-    af.set_rand(rs.split("set_rand_af"), 1.0)
+    af_set_rand(af, rs.split("set_rand_af"))
     gf = gf.shift(xg_field_shift)
     gf0 = gf.copy()
     delta_h = run_hmc_evolve_pure_gauge(
         gm, gm_v, gf, af,
         ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+        af_v_from_af=af_v_from_af,
         gf_integrator_tag=gf_integrator_tag,
         n_step=n_step, md_time=md_time,
         )
@@ -538,6 +569,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         delta_h_rev = run_hmc_evolve_pure_gauge(
             gm_r, gm_v_r, gf_r, af_r,
             ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+            af_v_from_af=af_v_from_af,
             gf_integrator_tag=gf_integrator_tag,
             n_step=n_step, md_time=-md_time,
             )
@@ -634,6 +666,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(2.0)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
@@ -656,6 +689,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
@@ -678,6 +712,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
