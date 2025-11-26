@@ -575,7 +575,6 @@ def run_hmc_evolve_pure_gauge(
         fgf,
         gf_evolve,
         gm_evolve_fg,
-        get_gm_force,
         af_v_from_af,
         acc_runtime_info,
         gf_integrator_tag,
@@ -618,11 +617,13 @@ def run_hmc_evolve_pure_gauge(
     gf.unitarize()
     dt = md_time / n_step
     time = 0.0
-    acc_runtime_info(time, gm, gm_v, gf, af)
+    if acc_runtime_info is not None:
+        acc_runtime_info(time, gm, gm_v, gf, af)
     for i in range(n_step):
         evolve(dt)
         time += dt
-        acc_runtime_info(time, gm, gm_v, gf, af)
+        if acc_runtime_info is not None:
+            acc_runtime_info(time, gm, gm_v, gf, af)
     gf.unitarize()
     delta_h = (
         gm_gm_v_hamilton_node(gm, gm_v)
@@ -650,13 +651,13 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
     get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af)
     gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm)
-    acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
     beta = get_param(job_tag, "hmc", "beta")
     c1 = get_param(job_tag, "hmc", "c1")
     ga = q.GaugeAction(beta, c1)
+    acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
     max_traj_always_accept = get_param(job_tag, "hmc", "max_traj_always_accept")
     max_traj_reverse_test= get_param(job_tag, "hmc", "max_traj_reverse_test")
     is_always_accept = traj < max_traj_always_accept
@@ -762,7 +763,7 @@ def run_hmc(job_tag):
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         q.json_results_append(f"{fname}: {traj} plaq", plaq, 1e-10)
         q.json_results_append(f"{fname}: {traj} delta_h", delta_h, 1e-4)
-        q.save_pickle_obj(get_save_path(f"{job_tag}/runtime_info/traj-{traj}.pickle"), runtime_info)
+        q.save_pickle_obj(runtime_info, get_save_path(f"{job_tag}/runtime_info/traj-{traj}.pickle"))
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
