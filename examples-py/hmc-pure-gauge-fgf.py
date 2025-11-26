@@ -167,6 +167,99 @@ def gm_gm_v_hamilton_node(gm, gm_v):
     return energy
 
 @q.timer
+def gm_blocked_correlation(gm1, gm2, block_site):
+    """
+    return corr
+    `corr` is global averaged correlation matrix.
+    isinstance(corr, np.ndarray)
+    corr.shape == (mat_dim, mat_dim,)
+    corr.dtype == np.float64
+    mat_dim = block_site.volume() * 4
+    """
+    geo = gm1.geo
+    assert geo == gm2.geo
+    assert gm1.multiplicity == 4
+    assert gm2.multiplicity == 4
+    total_site = geo.total_site
+    mat_dim = block_site.volume() * 4
+    new_size_node = total_site // block_site
+    num_block = new_size_node.volume()
+    f1_basis = q.FieldRealD()
+    f2_basis = q.FieldRealD()
+    q.set_basis_from_anti_hermitian_matrix(f1_basis, gm1)
+    q.set_basis_from_anti_hermitian_matrix(f2_basis, gm2)
+    f1_basis_list = q.shuffle_field(f1_basis, new_size_node)
+    f2_basis_list = q.shuffle_field(f2_basis, new_size_node)
+    assert len(f1_basis_list) == len(f2_basis_list)
+    corr = np.zeros((mat_dim, mat_dim,), dtype=np.float64)
+    for f1_basis_local, f2_basis_local in zip(f1_basis_list, f2_basis_list):
+        local_arr1 = np.asarray(f1_basis_local).reshape((mat_dim, 8,), copy=False)
+        local_arr2 = np.asarray(f2_basis_local).reshape((mat_dim, 8,), copy=False)
+        assert local_arr1.shape == (mat_dim, 8,)
+        assert local_arr2.shape == (mat_dim, 8,)
+        corr += np.sum(local_arr1[:, None, :] * local_arr2[None, :, :], axis=-1)
+    corr = q.glb_sum(corr)
+    corr /= num_block
+    return corr
+
+runtime_info = dict()
+
+@q.timer
+def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
+    """
+    return acc_runtime_info
+    acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
+    """
+    block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    runtime_info.clear()
+    runtime_info["list"] = []
+    step = 0
+    gm_init = None
+    gm_v_init = None
+    gf_init = None
+    af_init = None
+    gm_force_init = None
+    gm_force_qcd_init = None
+    gm_force_gauge_fixing_init = None
+    energy_init = None
+    @q.timer
+    def acc_runtime_info(time, gm, gm_v, gf, af):
+        nonlocal step, gm_init, gm_v_init, gf_init, af_init
+        gm_force = get_gm_force(gf, af)
+        gm_force_qcd = get_gm_force(gf, af, tag="qcd")
+        gm_force_gauge_fixing = get_gm_force(gf, af, tag="gauge_fixing")
+        energy = (
+            gm_gm_v_hamilton_node(gm, gm_v)
+            + gm_gm_v_hamilton_node(af, af_v_from_af(af))
+            + q.gf_hamilton_node(gf, ga)
+            )
+        nonlocal gm_force_init, gm_force_qcd_init, gm_force_gauge_fixing_init, energy_init
+        if step == 0:
+            assert time == 0.0
+            gm_init = gm.copy()
+            gm_v_init = gm_v.copy()
+            gf_init = gf.copy()
+            af_init = af.copy()
+            gm_force_init = gm_force.copy()
+            gm_force_qcd_init = gm_force_qcd.copy()
+            gm_force_gauge_fixing_init = gm_force_gauge_fixing.copy()
+            energy_init = energy
+        info = dict()
+        info["time"] = time
+        info["plaq"] = gf.plaq()
+        info["link_trace"] = gf.link_trace()
+        info["delta_h"] = q.glb_sum(energy - energy_init)
+        info["gm_corr"] = gm_blocked_correlation(gm_init, gm, block_site)
+        info["gm_force_corr"] = gm_blocked_correlation(gm_force_init, gm_force, block_site)
+        info["gm_force_qcd_corr"] = gm_blocked_correlation(gm_force_qcd_init, gm_force_qcd, block_site)
+        info["gm_force_gauge_fixing_corr"] = gm_blocked_correlation(gm_force_gauge_fixing_init, gm_force_gauge_fixing, block_site)
+        info["gm_gm_force_corr"] = gm_blocked_correlation(gm_init, gm_force, block_site)
+        info["gm_force_gm_corr"] = gm_blocked_correlation(gm_force_init, gm, block_site)
+        runtime_info["list"].append(info)
+        step += 1
+    return acc_runtime_info
+
+@q.timer
 def mk_fgf(job_tag, rs):
     r"""
     return fgf, fgf_g
@@ -399,35 +492,54 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
     ga = q.GaugeAction(beta, c1)
     total_volume = geo.total_volume
     @q.timer
-    def get_gm_force(gf, af):
+    def get_gm_force(gf, af, tag=None):
         #
-        # Set QCD gauge action force
-        geo = gf.geo
-        gm_force = q.GaugeMomentum(geo)
-        q.set_gm_force(gm_force, gf, ga)
+        fname = q.get_fname()
         #
-        force_size_qcd = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
-        q.displayln_info(0, f"force_size_qcd={force_size_qcd:.5f}")
+        if tag is None:
+            tag = "all"
         #
-        # Add force due to gauge fixing
-        dg = fgf_g(gf, af)
-        af_v = af_v_from_af(af)
-        prod = q.field_color_matrix_mul(af_v, dg)
-        prod -= q.field_color_matrix_mul(dg, af_v)
-        q.set_tr_less_anti_herm_matrix(prod)
+        assert tag in ["all", "qcd", "gauge_fixing", ]
         #
-        force_size_gauge_fixing = math.sqrt(q.qnorm(prod) / (total_volume * 4))
-        q.displayln_info(0, f"force_size_gauge_fixing={force_size_gauge_fixing:.5f}")
+        if tag in [ "qcd", "all", ]:
+            # Set QCD gauge action force
+            gm_force_qcd = q.GaugeMomentum()
+            q.set_gm_force(gm_force_qcd, gf, ga)
+            force_size_qcd = math.sqrt(q.qnorm(gm_force_qcd) / (total_volume * 4))
+            q.displayln_info(0, f"force_size_qcd={force_size_qcd:.5f}")
         #
-        gm_force += prod
+        if tag in [ "gauge_fixing", "all", ]:
+            # Add force due to gauge fixing
+            geo = gf.geo
+            gm_force_gauge_fixing = q.GaugeMomentum(geo)
+            gm_force_gauge_fixing.set_zero()
+            dg = fgf_g(gf, af)
+            af_v = af_v_from_af(af)
+            prod = q.field_color_matrix_mul(af_v, dg)
+            prod -= q.field_color_matrix_mul(dg, af_v)
+            q.set_tr_less_anti_herm_matrix(prod)
+            gm_force_gauge_fixing += prod
+            force_size_gauge_fixing = math.sqrt(q.qnorm(gm_force_gauge_fixing) / (total_volume * 4))
+            q.displayln_info(0, f"force_size_gauge_fixing={force_size_gauge_fixing:.5f}")
         #
-        force_size_total = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
-        q.displayln_info(0, f"force_size_total={force_size_total:.5f}")
-        #
-        cos_alpha_qcd_gauge_fixing = (
-            (force_size_total**2 - force_size_qcd**2 - force_size_gauge_fixing**2)
-            / (force_size_qcd * force_size_gauge_fixing))
-        q.displayln_info(0, f"cos_alpha_qcd_gauge_fixing={cos_alpha_qcd_gauge_fixing:.5f}")
+        if tag == "all":
+            geo = gf.geo
+            gm_force = q.GaugeMomentum(geo)
+            gm_force.set_zero()
+            gm_force += gm_force_qcd
+            gm_force += gm_force_gauge_fixing
+            force_size_total = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
+            q.displayln_info(0, f"force_size_total={force_size_total:.5f}")
+            cos_alpha_qcd_gauge_fixing = (
+                (force_size_total**2 - force_size_qcd**2 - force_size_gauge_fixing**2)
+                / (force_size_qcd * force_size_gauge_fixing))
+            q.displayln_info(0, f"cos_alpha_qcd_gauge_fixing={cos_alpha_qcd_gauge_fixing:.5f}")
+        elif tag == "qcd":
+            gm_force = gm_force_qcd
+        elif tag == "gauge_fixing":
+            gm_force = gm_force_gauge_fixing
+        else:
+            raise Exception(f"{fname}: tag={tag}")
         #
         return gm_force
     return get_gm_force
@@ -463,7 +575,9 @@ def run_hmc_evolve_pure_gauge(
         fgf,
         gf_evolve,
         gm_evolve_fg,
+        get_gm_force,
         af_v_from_af,
+        acc_runtime_info,
         gf_integrator_tag,
         n_step,
         md_time,
@@ -503,8 +617,12 @@ def run_hmc_evolve_pure_gauge(
     gf @= fgf(gf).inv() * gf
     gf.unitarize()
     dt = md_time / n_step
+    time = 0.0
+    acc_runtime_info(time, gm, gm_v, gf, af)
     for i in range(n_step):
         evolve(dt)
+        time += dt
+        acc_runtime_info(time, gm, gm_v, gf, af)
     gf.unitarize()
     delta_h = (
         gm_gm_v_hamilton_node(gm, gm_v)
@@ -532,6 +650,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
     get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af)
     gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm)
+    acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
@@ -553,8 +672,9 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gf = gf.shift(xg_field_shift)
     gf0 = gf.copy()
     delta_h = run_hmc_evolve_pure_gauge(
-        gm, gm_v, gf, af,
-        ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+        gm, gm_v, gf, af, ga=ga,
+        fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+        acc_runtime_info=acc_runtime_info,
         af_v_from_af=af_v_from_af,
         gf_integrator_tag=gf_integrator_tag,
         n_step=n_step, md_time=md_time,
@@ -567,8 +687,9 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         af_r = af.copy()
         gf_r = gf_r.shift(xg_field_shift)
         delta_h_rev = run_hmc_evolve_pure_gauge(
-            gm_r, gm_v_r, gf_r, af_r,
-            ga=ga, fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+            gm_r, gm_v_r, gf_r, af_r, ga=ga,
+            fgf=fgf, gf_evolve=gf_evolve, gm_evolve_fg=gm_evolve_fg,
+            acc_runtime_info=None,
             af_v_from_af=af_v_from_af,
             gf_integrator_tag=gf_integrator_tag,
             n_step=n_step, md_time=-md_time,
@@ -641,6 +762,7 @@ def run_hmc(job_tag):
         q.qtouch_info(get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"), pformat(info))
         q.json_results_append(f"{fname}: {traj} plaq", plaq, 1e-10)
         q.json_results_append(f"{fname}: {traj} delta_h", delta_h, 1e-4)
+        q.save_pickle_obj(get_save_path(f"{job_tag}/runtime_info/traj-{traj}.pickle"), runtime_info)
         if traj % save_traj_interval == 0:
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
