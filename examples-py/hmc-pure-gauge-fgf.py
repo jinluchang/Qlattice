@@ -210,6 +210,8 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     return acc_runtime_info
     acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
     """
+    acc_runtime_info_interval = get_param(job_tag, "hmc", "acc_runtime_info_interval")
+    assert acc_runtime_info_interval > 0
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     runtime_info.clear()
     runtime_info["list"] = []
@@ -224,6 +226,8 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     energy_init = None
     @q.timer
     def acc_runtime_info(time, gm, gm_v, gf, af):
+        if step % acc_runtime_info_interval != 0:
+            return
         nonlocal step, gm_init, gm_v_init, gf_init, af_init
         gm_force = get_gm_force(gf, af)
         gm_force_qcd = get_gm_force(gf, af, tag="qcd")
@@ -790,6 +794,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(2.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
+set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
@@ -813,6 +818,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
+set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
@@ -836,6 +842,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
+set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
