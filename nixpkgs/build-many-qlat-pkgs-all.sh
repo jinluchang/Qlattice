@@ -16,9 +16,15 @@ dst="$HOME/qlat-build/nix"
 mkdir -p "$dst"
 cd "$dst"
 
+nix_version_list=(
+    "25.11"
+    "25.05"
+    "24.11"
+)
+
 time (
 
-    for nix_version in "25.05" "24.11" ; do
+    for nix_version in "${nix_version_list[@]}" ; do
         time nix-build "$src"/q-pkgs.nix -A qlat-name-list-file -o result-qlat-name-"$nix_version" --argstr version "$nix_version" "$@"
         echo
         echo result-qlat-name-"$nix_version"

@@ -17,6 +17,7 @@ mkdir -p "$dst"
 cd "$dst"
 
 nix_version_list=(
+    # "25.11"
     "25.05"
     # "24.11"
 )
