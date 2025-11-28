@@ -6,8 +6,6 @@ import gpt as g
 
 qg.begin_with_gpt()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
@@ -63,10 +61,12 @@ sol1 = inv_gt * src
 sol_diff = sol1.copy()
 sol_diff -= sol1
 
-q.displayln_info(f"CHECK: {sol.qnorm():.14E} {sol1.qnorm():.14E} {sol_diff.qnorm()}")
+q.json_results_append(f"sol.qnorm()", sol.qnorm(), 1e-10)
+q.json_results_append(f"sol1.qnorm()", sol1.qnorm(), 1e-10)
 
+assert sol_diff.qnorm() < sol.qnorm() * 1e-16
+
+q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
-
 qg.end_with_gpt()
-
 q.displayln_info(f"CHECK: finished successfully.")

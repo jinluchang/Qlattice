@@ -1,3 +1,2 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8])
-CHECK: 3.55266626757505E+06 3.55266626757505E+06 0.0
 CHECK: finished successfully.

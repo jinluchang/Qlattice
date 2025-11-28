@@ -114,9 +114,6 @@ with q.TimerFork():
     q.json_results_append(f"run: in TimerFork")
 
 q.check_log_json(__file__, check_eps=1e-14)
-
 q.timer_display()
-
 q.end_with_mpi()
-
 q.displayln_info(f"CHECK: finished successfully.")
