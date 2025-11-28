@@ -84,7 +84,7 @@ in stdenv.mkDerivation rec {
     cpu_cflags = "-fPIC -w -Wno-psabi";
     gpu_cflags = "-Xcompiler -fPIC -ccbin mpic++ -arch=${nvcc-arch} -w -cudart shared";
     cpu_ldflags = "";
-    gpu_ldflags = "-Xcompiler -fopenmp -ccbin mpic++ -cudart shared -lcublas";
+    gpu_ldflags = "-Xcompiler -fopenmp -ccbin mpic++ -cudart shared -lcublas -L${lib.getLib cudaPackages.cuda_cudart}/lib/stubs";
     cxx = if cudaSupport then gpu_cxx else cpu_cxx;
     cflags = if cudaSupport then gpu_cflags else cpu_cflags;
     ldflags = if cudaSupport then gpu_ldflags else cpu_ldflags;

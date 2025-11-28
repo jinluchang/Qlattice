@@ -257,14 +257,11 @@ let
       ++ (let
         cudaPackages = pkgs.cudaPackages;
         cudaSupport = opts.use-cuda-software;
-      in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
-      ++ (if lib.lists.elem version-wd [ "24.11" "25.05" ]
-      then [
-        (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart.stubs}/lib")
-      ]
-      else [
+        use-ucx = opts.use-ucx;
+      in [
+        (lib.withFeatureAs use-ucx "with-ucx" "${lib.getDev ucx-mt-dev}")
         (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart}/lib/stubs")
-      ])
+      ]
       );
       env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
         "-Wno-error=int-conversion"
