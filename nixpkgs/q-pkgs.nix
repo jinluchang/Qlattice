@@ -258,10 +258,12 @@ let
         cudaPackages = pkgs.cudaPackages;
         cudaSupport = opts.use-cuda-software;
       in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
-      ++ [
-        (lib.withFeatureAs cudaSupport "cuda" (lib.getOutput "include" cudaPackages.cuda_cudart))
-        (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart}/lib")
-      ]);
+      ++ (if lib.lists.elem version-wd [ "24.11" "25.05" ]
+      then [
+        (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart.stubs}/lib")
+      ]
+      else [])
+      );
       env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
         "-Wno-error=int-conversion"
         "-Wno-error=incompatible-pointer-types"
@@ -641,17 +643,30 @@ let
         texliveFull
         pipx
         twine
-        poppler_utils
         file
         zip
         unzip
         ;
       }
-      // (if is-linux then {
+      // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
+      then {
+        inherit (pkgs)
+        poppler_utils
+        ;
+      }
+      else {
+        inherit (pkgs)
+        poppler-utils
+        ;
+      }
+      )
+      // (if is-linux
+      then {
         inherit (pkgs)
         linux-pam
         ;
-      } else {}
+      }
+      else {}
       )
       // qlat-cc
       // qlat-dep-pkgs
