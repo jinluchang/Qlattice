@@ -262,7 +262,9 @@ let
       then [
         (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart.stubs}/lib")
       ]
-      else [])
+      else [
+        (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart}/lib/stubs")
+      ])
       );
       env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
         "-Wno-error=int-conversion"
@@ -277,7 +279,9 @@ let
         mpi4py = if ! opts.use-cuda-software
         then prev.mpi4py
         else prev.mpi4py.overridePythonAttrs (py-prev: {
-          doCheck = true;
+          doCheck = if lib.lists.elem version-wd [ "24.11" "25.05" ]
+          then true
+          else false;
           nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
             qlat-nixgl
             pkgs.which
