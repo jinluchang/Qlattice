@@ -256,9 +256,12 @@ let
       configureFlags = prev.configureFlags
       ++ (let
         cudaPackages = pkgs.cudaPackages;
+        cudaSupport = opts.use-cuda-software;
       in lib.optionals opts.use-ucx [ "--with-ucx=${lib.getDev ucx-mt-dev}" ]
-      ++ [ "--with-cuda-libdir=${cudaPackages.cuda_cudart.stubs}/lib" ]
-      );
+      ++ [
+        (lib.withFeatureAs cudaSupport "cuda" (lib.getOutput "include" cudaPackages.cuda_cudart))
+        (lib.withFeatureAs cudaSupport "cuda-libdir" "${lib.getLib cudaPackages.cuda_cudart}/lib")
+      ]);
       env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
         "-Wno-error=int-conversion"
         "-Wno-error=incompatible-pointer-types"
