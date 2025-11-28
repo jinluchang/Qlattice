@@ -1,6 +1,6 @@
 {
-  nixpkgs ? null, # nixpkgs. E.g. (fetchTarball "https://channels.nixos.org/nixos-25.05/nixexprs.tar.xz")
-  version ? null, # version of the nixpkgs. E.g. "25.05"
+  nixpkgs ? null, # nixpkgs. E.g. (fetchTarball "https://channels.nixos.org/nixos-25.11/nixexprs.tar.xz")
+  version ? null, # version of the nixpkgs. E.g. "25.11"
   ngpu ? null, # adjust with desired number of GPUs. E.g. "2"
   cudaCapability ? null, # adjust with desired cudaCapability. E.g. "8.6"
   cudaForwardCompat ? null, # adjust with desired cudaForwardCompat. E.g. false
@@ -9,7 +9,7 @@
 
 let
 
-  version-wd = if version == null then "25.05" else version;
+  version-wd = if version == null then "25.11" else version;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
   nixpkgs-default = import ./nixpkgs.nix {
     version = version-wd;
