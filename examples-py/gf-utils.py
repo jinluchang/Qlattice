@@ -80,13 +80,14 @@ t = 0
 def measure():
     gf_f.show_info()
     topo_clf = q.gf_topology_clf(gf_f)
-    q.displayln_info(f"CHECK: t={t} topo_clf={topo_clf:.10E}")
+    q.json_results_append(f"t={t} topo_clf", topo_clf, 1e-9)
     topo = q.gf_topology(gf_f)
     topo_terms = q.gf_topology_terms(gf_f)
     topo_field = q.gf_topology_field(gf_f)
     t_sum = topo_field.glb_sum_tslice()
     t_sum = [ str((t, t_sum.get_elem(t).item(),)) for t in range(t_sum.n_points) ]
-    q.displayln_info(f"CHECK: t={t} topo_5li={topo:.10E} {sum(topo_terms):.10E}")
+    q.json_results_append(f"t={t} topo_5li", topo, 1e-9)
+    q.json_results_append(f"t={t} topo_5li sum(topo_terms)", sum(topo_terms), 1e-9)
     topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
     q.displayln_info(f"[ {topo_terms_str},\n]")
     q.displayln_info("\n".join(t_sum))
@@ -109,7 +110,7 @@ if False:
     for i in range(1000):
         c1 = -1.4008
         force_size = np.sqrt(wilson_flow_force(gf_f, c1).qnorm() / geo.total_volume)
-        q.displayln_info(f"CHECK: force_size={force_size:.14E} flow_time={flow_time}")
+        q.json_results_append(f"force_size (flow_time={flow_time})", force_size, 1e-10)
         q.gf_wilson_flow(gf_f, flow_time, 50, existing_flow_time = t, c1 = c1)
         t += flow_time
         measure()
