@@ -144,9 +144,6 @@ cdef class QFile:
     def getlines(self):
         return cc.qgetlines(self.xx)
 
-    def getlines(self):
-        return cc.qgetlines(self.xx)
-
     def qcat(self):
         return <str>cc.qcat(self.xx)
 

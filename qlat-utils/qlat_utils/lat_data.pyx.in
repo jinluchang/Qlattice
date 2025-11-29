@@ -97,10 +97,16 @@ cdef class LatData{{type_ext}}:
         self.xx.load(path)
 
     def save(self, const cc.std_string& path):
+        """
+        save from node 0
+        """
         if cc.get_id_node() == 0:
             self.save_node(path)
 
     def load(self, const cc.std_string& path):
+        """
+        load from node 0 and bcast
+        """
         if cc.get_id_node() == 0:
             self.load_node(path)
         self.bcast()
@@ -424,6 +430,7 @@ def mk_lat_data{{type_ext2}}(list info_list, *, cc.Bool is_complex={{type_defaul
 def load_lat_data{{type_ext2}}(const cc.std_string& path):
     """
     Load ``lat_data`` from file ``path``.
+    Load from node 0 and bcast.
     """
     ld = LatData{{type_ext}}()
     ld.load(path)

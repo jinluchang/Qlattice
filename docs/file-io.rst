@@ -15,16 +15,86 @@ QAR
 .. autosummary::
    :toctree: generated
 
-   list_qar
-   qar_create_info
-   qar_extract_info
+   QFile
+   QFile.copy
+   QFile.path
+   QFile.mode
+   QFile.close
+   QFile.null
+   QFile.eof
+   QFile.tell
+   QFile.flush
+   QFile.seek_set
+   QFile.seek_end
+   QFile.seek_cur
+   QFile.content
+   QFile.content_bytes
+   QFile.size
+   QFile.remaining_size
+   QFile.getline
+   QFile.getlines
+   QFile.qcat
+   QFile.qcat_bytes
+   QFile.write
+   QFile.compute_crc32
+   open_qfile
+   open_qfile_str
+   QarFile
+   QarFile.path
+   QarFile.mode
+   QarFile.close
+   QarFile.null
+   QarFile.flush
+   QarFile.list
+   QarFile.has_regular_file
+   QarFile.has
+   QarFile.__contains__
+   QarFile.read
+   QarFile.read_data
+   QarFile.read_data_bytes
+   QarFile.read_info
+   QarFile.verify_index
+   QarFile.write
+   QarFile.show_index
+   QarFile.read_index
+   QarFile.index_size
+   QarFile.index_size_saved
+   QarFile.save_index
+   open_qar
+   open_qar_info
    get_qar_multi_vol_max_size
+   set_qar_multi_vol_max_size
+   clean_up_qfile_map
+   show_all_qfile
+   properly_truncate_qar_file
+   does_regular_file_exist_qar
+   does_file_exist_qar
+   qar_build_index
+   qar_create
+   qar_extract
+   qcopy_file
+   list_qar
    qcat
    qcat_bytes
+   qtouch
+   qappend
+   qload_datatable
+   compute_crc32
+   qar_build_index_info
+   qar_create_info
+   qar_extract_info
    qcopy_file_info
-   does_file_exist
-   does_file_exist_qar
-   does_regular_file_exist_qar
+   qtouch_info
+   qappend_info
+   check_all_files_crc32_info
+   does_regular_file_exist_qar_sync_node
+   does_file_exist_qar_sync_node
+   qar_create_sync_node
+   qar_extract_sync_node
+   qcopy_file_sync_node
+   qcat_sync_node
+   qcat_bytes_sync_node
+   qload_datatable_sync_node
 
 Pickle
 ^^^^^^
@@ -74,10 +144,29 @@ Consist of the data stored in double precision (little endian) in sequential ord
    LatData.set_info
    LatData.to_numpy
    LatData.from_numpy
+   LatData.to_list
+   LatData.from_list
+   LatData.copy
    LatData.load
    LatData.save
+   LatData.load_str
+   LatData.save_str
+   LatData.glb_sum
+   LatData.glb_sum_in_place
+   LatData.bcast
+   LatData.set_zero
+   LatData.is_complex
+   LatDataRealF
+   LatDataInt
+   LatDataLong
    mk_lat_data
+   mk_lat_data_real_f
+   mk_lat_data_int
+   mk_lat_data_long
    load_lat_data
+   load_lat_data_real_f
+   load_lat_data_int
+   load_lat_data_long
 
 Example: ``examples-py/lat-io.py``
 

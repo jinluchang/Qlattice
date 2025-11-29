@@ -10,7 +10,16 @@ import numpy as np
 
 import qlat as q
 
-from qlat_scripts.v1 import *
+from qlat_scripts.v1 import (
+    load_path_list,
+    get_param,
+    set_param,
+    get_job_seed,
+    get_load_path,
+    get_save_path,
+    run_params,
+    pformat,
+)
 
 load_path_list[:] = [
         "results",
@@ -57,31 +66,63 @@ def mk_evolve_leapfrog(qq_evolve_1, qq_evolve_2, pp_evolve):
     return evolve_leapfrog
 
 @q.timer
+@q.cache_call(maxsize=8)
 def mk_mass_mats_for_gm(job_tag):
     r"""
     return sqrt_mass_matrix, mass_inv_matrix
     """
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    sqrt_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")
     mat_dim = block_site.volume() * 4
     shape = (mat_dim, mat_dim,)
-    sqrt_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")
-    sqrt_mass_matrix = sqrt_mass * np.eye(mat_dim, dtype=np.float64)
+    fn = f"{job_tag}/hmc-fgf/sqrt_mass_matrix.lat"
+    path = get_load_path(fn)
+    if path is not None:
+        ld = q.load_lat_data(path)
+        sqrt_mass_matrix = np.zeros(shape, dtype=np.float64)
+        sqrt_mass_matrix[:] = ld[:]
+    else:
+        sqrt_mass_matrix = sqrt_mass * np.eye(mat_dim, dtype=np.float64)
+        info_list = [
+            [ "i", mat_dim, ],
+            [ "j", mat_dim, ],
+        ]
+        ld = q.mk_lat_data(info_list)
+        ld[:] = sqrt_mass_matrix
+        ld.save(get_save_path(fn))
     assert sqrt_mass_matrix.shape == shape
+    assert sqrt_mass_matrix.dtype == np.float64
     sqrt_mass_inv_matrix = np.linalg.inv(sqrt_mass_matrix)
     mass_inv_matrix = sqrt_mass_inv_matrix @ sqrt_mass_inv_matrix
     return sqrt_mass_matrix, mass_inv_matrix
 
 @q.timer
+@q.cache_call(maxsize=8)
 def mk_mass_mats_for_af(job_tag):
     r"""
     return sqrt_af_mass_matrix, af_mass_inv_matrix
     """
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
+    sqrt_af_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")
     mat_dim = block_site.volume() * 4
     shape = (mat_dim, mat_dim,)
-    sqrt_af_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")
-    sqrt_af_mass_matrix = sqrt_af_mass * np.eye(mat_dim, dtype=np.float64)
+    fn = f"{job_tag}/hmc-fgf/sqrt_af_mass_matrix.lat"
+    path = get_load_path(fn)
+    if path is not None:
+        ld = q.load_lat_data(path)
+        sqrt_af_mass_matrix = np.zeros(shape, dtype=np.float64)
+        sqrt_af_mass_matrix[:] = ld[:]
+    else:
+        sqrt_af_mass_matrix = sqrt_af_mass * np.eye(mat_dim, dtype=np.float64)
+        info_list = [
+            [ "i", mat_dim, ],
+            [ "j", mat_dim, ],
+        ]
+        ld = q.mk_lat_data(info_list)
+        ld[:] = sqrt_af_mass_matrix
+        ld.save(get_save_path(fn))
     assert sqrt_af_mass_matrix.shape == shape
+    assert sqrt_af_mass_matrix.dtype == np.float64
     sqrt_af_mass_inv_matrix = np.linalg.inv(sqrt_af_mass_matrix)
     af_mass_inv_matrix = sqrt_af_mass_inv_matrix @ sqrt_af_mass_inv_matrix
     return sqrt_af_mass_matrix, af_mass_inv_matrix
