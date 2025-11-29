@@ -19,7 +19,10 @@ import shutil
 import tempfile
 import subprocess
 
-from qlat_utils.timer import *
+from qlat_utils.timer import (
+    timer,
+    displayln_info,
+)
 
 def mk_file_dirs(fn):
     path = os.path.dirname(fn)
@@ -204,6 +207,7 @@ def mk_pyplot_folder(path=None):
         os.makedirs(path)
     return path
 
+@timer
 def display_img(fn, *, width=None):
     from IPython.display import HTML, Image, display
     displayln_info(0, f"display_img: fn='{fn}'")
@@ -259,25 +263,31 @@ def plot_save(
                 "set xlabel '$x$'",
                 "set ylabel '$y$'",
                 ]
-        displayln_info(f"cmds={cmds}")
+        displayln_info(f"cmds = [")
+        for l in cmds:
+            displayln_info(f'    "{l}",')
+        displayln_info(f"]")
     if dts is None:
         x = np.arange(31) * (6 / 30) - 3
         y = np.cos(x)
         yerr = 0.1 / (1 + x**2)
-        dts = {
-                "table.txt" : azip(x, y, yerr),
-                }
-        displayln_info(f"dts={dts}")
+        dts = dict()
+        dts["table.txt"] = azip(x, y, yerr)
+        displayln_info(f"dts = dict()")
+        for key, value in dts.items():
+            displayln_info(f'dts["{key}"]" = {value}')
         if lines is None:
             lines = [
                     "plot [-3:3] [-1.5:1.5]",
                     "0 not",
                     "sin(x) w l t '$y = \\sin(x)$'",
                     ]
-            if "table.txt" in dts:
-                lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
-            displayln_info(f"lines={lines}")
-    elif lines is None:
+            lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
+            displayln_info(f"lines = [")
+            for l in lines:
+                displayln_info(f'    "{l}",')
+            displayln_info(f"]")
+    if lines is None:
         lines = [
                 "plot [:] [:]",
                 ]
@@ -288,14 +298,36 @@ def plot_save(
                 lines.append(f"'{key}' u 1:2 w p t '{key}'")
             else:
                 lines.append(f"'{key}' t '{key}'")
-        displayln_info(f"lines={lines}")
+        displayln_info(f"lines = [")
+        for l in lines:
+            displayln_info(f'    "{l}",')
+        displayln_info(f"]")
     if fn is None:
         displayln_info(f"fn={fn}")
         displayln_info(f"is_run_make={is_run_make}")
         displayln_info(f"is_display={is_display}")
     if display_width is None:
-        display_width = plot_save_display_width
-        displayln_info(0, f"display_width={display_width}")
+        if is_display:
+            display_width = plot_save_display_width
+            displayln_info(f"display_width={display_width}")
+    if is_display and is_run_make:
+        displayln_info(f"q.plot_view(")
+        displayln_info(f"    fn={fn},")
+        displayln_info(f"    dts=dts,")
+        displayln_info(f"    cmds=cmds,")
+        displayln_info(f"    lines=lines,")
+        displayln_info(f"    is_verbose={is_verbose},")
+        displayln_info(f"    display_width={display_width},")
+        displayln_info(f")")
+    else:
+        displayln_info(f"q.plot_save(")
+        displayln_info(f"    fn={fn},")
+        displayln_info(f"    dts=dts,")
+        displayln_info(f"    cmds=cmds,")
+        displayln_info(f"    lines=lines,")
+        displayln_info(f"    is_verbose={is_verbose},")
+        displayln_info(f"    is_run_make={is_run_make},")
+        displayln_info(f")")
     populate_pyplot_folder(
             path,
             fn=target_fn,
