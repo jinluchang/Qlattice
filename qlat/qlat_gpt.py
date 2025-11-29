@@ -54,44 +54,43 @@ def mk_gpt_field(ctype, geo):
 @q.timer_verbose
 def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
     geo = q.Geometry(total_site)
-    # q.displayln_info("qlat geo created")
+    q.displayln_info(1, "qlat geo created")
     f_gpt = mk_gpt_field(ctype, geo)
-    # q.displayln_info("gpt field made")
+    q.displayln_info(1, "gpt field made")
     f_qlat = q.Field(ctype, geo, multiplicity)
-    # q.displayln_info("qlat field made")
+    q.displayln_info(1, "qlat field made")
     lexicographic_coordinates = g.coordinates(f_gpt)
-    # q.displayln_info("gpt coordinates collected")
+    q.displayln_info(1, "gpt coordinates collected")
     buf = memoryview(f_qlat)
-    # q.displayln_info("qlat mview made")
+    q.displayln_info(1, "qlat mview made")
     if tag == "qlat_from_gpt":
-        # q.displayln_info("qlat_from_gpt")
+        q.displayln_info(1, "qlat_from_gpt")
         qlat_from_gpt = g.copy_plan(buf, f_gpt)
-        # q.displayln_info("plan initialized")
+        q.displayln_info(1, "plan initialized")
         qlat_from_gpt.destination += g.global_memory_view(
             f_gpt.grid,
             [[f_gpt.grid.processor, buf, 0, buf.nbytes]])
-        # q.displayln_info("plan destination added")
+        q.displayln_info(1, "plan destination added")
         qlat_from_gpt.source += f_gpt.view[lexicographic_coordinates]
-        # q.displayln_info("plan source added")
+        q.displayln_info(1, "plan source added")
         qlat_from_gpt = qlat_from_gpt(local_only=True)
-        # q.displayln_info("plan created")
+        q.displayln_info(1, "plan created")
         return qlat_from_gpt
     elif tag == "gpt_from_qlat":
-        # q.displayln_info("gpt_from_qlat")
+        q.displayln_info(1, "gpt_from_qlat")
         gpt_from_qlat = g.copy_plan(f_gpt, buf)
-        # q.displayln_info("plan initialized")
+        q.displayln_info(1, "plan initialized")
         gpt_from_qlat.source += g.global_memory_view(
             f_gpt.grid,
             [[f_gpt.grid.processor, buf, 0, buf.nbytes]])
-        # q.displayln_info("plan source added")
+        q.displayln_info(1, "plan source added")
         gpt_from_qlat.destination += f_gpt.view[lexicographic_coordinates]
-        # q.displayln_info("plan destination added")
+        q.displayln_info(1, "plan destination added")
         gpt_from_qlat = gpt_from_qlat(local_only=True)
-        # q.displayln_info("plan created")
+        q.displayln_info(1, "plan created")
         return gpt_from_qlat
     else:
-        q.displayln_info(tag)
-        raise Exception("mk_qlat_gpt_copy_plan")
+        raise Exception(f"mk_qlat_gpt_copy_plan(tag={tag})")
 
 cache_qlat_gpt_copy_plan = q.mk_cache("qlat_gpt_copy_plan")
 
