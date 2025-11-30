@@ -801,6 +801,7 @@ def run_hmc(job_tag):
     else:
         traj = traj_load
         gf.load(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
+    gf.show_info()
     for traj in range(traj, max_traj):
         traj += 1
         flag, delta_h = run_hmc_pure_gauge(
