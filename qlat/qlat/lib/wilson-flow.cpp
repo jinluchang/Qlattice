@@ -299,7 +299,8 @@ static void set_marks_field_block_stout_smear(CommMarks& marks,
         if (nu == mu or -nu - 1 == mu) {
           continue;
         }
-        if (is_block_site and (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
+        if (is_block_site and
+            (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
           continue;
         }
         if (is_block_site and (nu < 0 and xl_block[-nu - 1] == 0)) {
@@ -436,8 +437,9 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
 
 void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
                                 const Coordinate& block_site,
-                                const RngState& rs)
+                                const bool is_uniform, const RngState& rs)
 // dir == 5 for all the roots of the tree (xl_block == block_center)
+// if is_uniform is True, use the same tree shape for all the blocks.
 {
   TIMER("set_local_tree_gauge_f_dir");
   Qassert(geo.is_only_local);
@@ -455,9 +457,15 @@ void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
       f_dir.get_elem(index) = 5;
       continue;
     }
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Long gindex = index_from_coordinate(xg, total_site);
-    RngState rs_local = rs.newtype(gindex);
+    RngState rs_local;
+    if (is_uniform) {
+      const Long bindex = index_from_coordinate(xl_block, block_site_);
+      rs_local = rs.newtype(bindex);
+    } else {
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const Long gindex = index_from_coordinate(xg, total_site);
+      rs_local = rs.newtype(gindex);
+    }
     while (true) {
       const Int dir = rand_gen(rs_local) % 4;
       if (xl_block[dir] > block_center[dir]) {

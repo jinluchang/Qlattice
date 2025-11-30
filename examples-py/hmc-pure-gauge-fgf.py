@@ -323,13 +323,18 @@ def mk_fgf(job_tag, rs):
     #
     Assume `rs` is already the rng for this traj.
     """
-    rs_f_dir = rs.split("seed-gt_block_tree_gauge-rs_f_dir")
     f_dir_list = None
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     new_size_node = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "new_size_node"))
     stout_smear_step_size = get_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")
     num_smear_step = get_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")
+    is_uniform = get_param(job_tag, "hmc", "gauge_fixing", "is_uniform")
+    f_dir_seed = get_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")
     diff_eps = get_param(job_tag, "hmc", "diff_eps")
+    if is_uniform:
+        rs_f_dir = q.RngState(f"{f_dir_seed}-gt_block_tree_gauge-rs_f_dir")
+    else:
+        rs_f_dir = rs.split(f"{f_dir_seed}-gt_block_tree_gauge-rs_f_dir")
     @q.timer
     def fgf(gf):
         nonlocal f_dir_list
@@ -337,6 +342,7 @@ def mk_fgf(job_tag, rs):
             gf,
             block_site=block_site,
             new_size_node=new_size_node,
+            is_uniform=is_uniform,
             stout_smear_step_size=stout_smear_step_size,
             num_smear_step=num_smear_step,
             f_dir_list=f_dir_list,
@@ -835,6 +841,8 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
+set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(False)
+set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(2.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
@@ -859,6 +867,8 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
+set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(False)
+set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
@@ -883,6 +893,8 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
+set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(False)
+set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
@@ -907,6 +919,8 @@ set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
 set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
 set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
+set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(False)
+set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)

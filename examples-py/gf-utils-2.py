@@ -127,7 +127,7 @@ gf @= gf0
 gf_list = q.shuffle_field(gf, q.Coordinate([ 2, 2, 2, 4, ]))
 geo_list = [ gf_local.geo for gf_local in gf_list ]
 rs_gt_tree = rs.split("gt_tree")
-f_dir_list = [ q.mk_local_tree_gauge_f_dir(geo, q.Coordinate([ 2, 2, 2, 2, ]), rs_gt_tree) for geo in geo_list ]
+f_dir_list = [ q.mk_local_tree_gauge_f_dir(geo, q.Coordinate([ 2, 2, 2, 2, ]), False, rs_gt_tree) for geo in geo_list ]
 gt_inv_list = []
 q.json_results_append(f"shuffle_field {len(gf_list)}")
 for gf_local, f_dir in zip(gf_list, f_dir_list):
@@ -155,6 +155,7 @@ f_dir_list = None
 gt_inv, f_dir_list = q.gt_block_tree_gauge(
     gf,
     block_site=q.Coordinate([ 2, 2, 2, 2, ]),
+    is_uniform=False,
     stout_smear_step_size=0.1,
     num_smear_step=1,
     f_dir_list=f_dir_list,
@@ -169,6 +170,7 @@ gt_inv, f_dir_list = q.gt_block_tree_gauge(
     gf,
     block_site=q.Coordinate([ 2, 2, 2, 2, ]),
     new_size_node=q.Coordinate([ 1, 1, 1, 2, ]),
+    is_uniform=False,
     stout_smear_step_size=0.1,
     num_smear_step=1,
     f_dir_list=f_dir_list,
@@ -189,6 +191,7 @@ f_dir_list = None
 gt_inv, f_dir_list = q.gt_block_tree_gauge(
     gf,
     block_site=q.Coordinate([ 4, 4, 4, 4, ]),
+    is_uniform=False,
     f_dir_list=f_dir_list,
     rs_f_dir=rs.split("gt_tree"),
     )
@@ -201,6 +204,7 @@ q.json_results_append(f"gf gt transformed", q.get_data_sig_arr(gf, q.RngState(),
 gt_inv, f_dir_list = q.gt_block_tree_gauge(
     gf,
     block_site=q.Coordinate([ 4, 4, 4, 4, ]),
+    is_uniform=False,
     f_dir_list=f_dir_list,
     rs_f_dir=rs.split("gt_tree"),
     )
@@ -209,6 +213,41 @@ q.json_results_append(f"gf after gt_block_tree_gauge 2nd", q.get_data_sig_arr(gf
 
 gf = gt_inv.inv() * gf
 q.json_results_append(f"gf gt transformed 2nd", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+q.json_results_append(f"test gt_block_tree_gauge again with is_uniform=True")
+
+gf @= gf0
+
+f_dir_list = None
+gt_inv, f_dir_list = q.gt_block_tree_gauge(
+    gf,
+    block_site=q.Coordinate([ 4, 4, 4, 4, ]),
+    is_uniform=True,
+    f_dir_list=f_dir_list,
+    rs_f_dir=rs.split("gt_tree"),
+    )
+q.json_results_append(f"gt_block_tree_gauge 4 gt_inv", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf after gt_block_tree_gauge", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gf = gt_inv.inv() * gf
+q.json_results_append(f"gf gt transformed", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gt_inv, f_dir_list = q.gt_block_tree_gauge(
+    gf,
+    block_site=q.Coordinate([ 4, 4, 4, 4, ]),
+    is_uniform=True,
+    f_dir_list=f_dir_list,
+    rs_f_dir=rs.split("gt_tree"),
+    )
+q.json_results_append(f"gt_block_tree_gauge 4 gt_inv 2nd", q.get_data_sig_arr(gt_inv, q.RngState(), 3), 1e-8)
+q.json_results_append(f"gf after gt_block_tree_gauge 2nd", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gf = gt_inv.inv() * gf
+q.json_results_append(f"gf gt transformed 2nd", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
+
+gm = q.GaugeMomentum(geo)
+gm.set_rand(rs.split("gm-init"), 1.0)
+q.json_results_append(f"gm", q.get_data_sig_arr(gm, q.RngState(), 3), 1e-8)
 
 gm = q.GaugeMomentum(geo)
 gm.set_rand(rs.split("gm-init"), 1.0)

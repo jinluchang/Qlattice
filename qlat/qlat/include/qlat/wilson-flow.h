@@ -37,7 +37,7 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
 
 void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
                                 const Coordinate& block_site,
-                                const RngState& rs);
+                                const bool is_uniform, const RngState& rs);
 
 void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
                          const Field<Int>& f_dir, const Int num_step);

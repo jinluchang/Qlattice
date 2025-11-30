@@ -129,7 +129,12 @@ def gf_local_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_siz
     cc.gf_local_stout_smear(gf.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
 
 @q.timer
-def mk_local_tree_gauge_f_dir(Geometry geo, Coordinate block_site, RngState rs):
+def mk_local_tree_gauge_f_dir(
+        Geometry geo,
+        Coordinate block_site,
+        cc.Bool is_uniform,
+        RngState rs,
+        ):
     """
     return f_dir
     Used for `gt_local_tree_gauge(gf, f_dir)`
@@ -137,7 +142,7 @@ def mk_local_tree_gauge_f_dir(Geometry geo, Coordinate block_site, RngState rs):
     i.e. if f_dir[x] == 5, then gt[x] is identity.
     """
     cdef FieldInt f_dir = FieldInt()
-    cc.set_local_tree_gauge_f_dir(f_dir.xx, geo.xx, block_site.xx, rs.xx)
+    cc.set_local_tree_gauge_f_dir(f_dir.xx, geo.xx, block_site.xx, is_uniform, rs.xx)
     return f_dir
 
 @q.timer
@@ -147,7 +152,9 @@ def gt_local_tree_gauge(GaugeField gf, FieldInt f_dir, cc.Int num_step):
     Note that the gauge fixed gauge field should be obtained as
     gf_gt = gt_inv.inv() * gf
     This is opposite to the other gauge tranformation functions.
-    f_dir = mk_local_tree_gauge_f_dir(gf.geo, rs)
+    is_uniform = True
+    block_site = q.Coordinate([ 4, 4, 4, 4, ])
+    f_dir = mk_local_tree_gauge_f_dir(gf.geo, block_site, is_uniform, rs)
     """
     cdef Geometry geo = gf.geo
     cdef GaugeTransform gt_inv = GaugeTransform(geo)
@@ -160,6 +167,7 @@ def gt_block_tree_gauge(
         *,
         Coordinate block_site=None,
         Coordinate new_size_node=None,
+        cc.Bool is_uniform=True,
         cc.RealD stout_smear_step_size=0.125,
         cc.Int num_smear_step=4,
         list f_dir_list=None,
@@ -195,7 +203,10 @@ def gt_block_tree_gauge(
     if f_dir_list is None:
         if rs_f_dir is None:
             rs_f_dir = RngState("seed-gt_block_tree_gauge-rs_f_dir")
-        f_dir_list = [ mk_local_tree_gauge_f_dir(geo_local, block_site, rs_f_dir) for geo_local in geo_list ]
+        f_dir_list = [
+            mk_local_tree_gauge_f_dir(geo_local, block_site, is_uniform, rs_f_dir)
+            for geo_local in geo_list
+            ]
     cdef list gt_inv_list = []
     cdef GaugeTransform gt_inv
     for gf_local, f_dir_local in zip(gf_list, f_dir_list):
