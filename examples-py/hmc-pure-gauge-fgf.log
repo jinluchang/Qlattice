@@ -280,7 +280,7 @@ CHECK: params: test-4nt8:         2
 CHECK: params: test-4nt8:       ],
 CHECK: params: test-4nt8:       "stout_smear_step_size": 0.125,
 CHECK: params: test-4nt8:       "num_smear_step": 4,
-CHECK: params: test-4nt8:       "is_uniform": false,
+CHECK: params: test-4nt8:       "is_uniform": true,
 CHECK: params: test-4nt8:       "f_dir_seed": "seed"
 CHECK: params: test-4nt8:     },
 CHECK: params: test-4nt8:     "fourier_acceleration": {
