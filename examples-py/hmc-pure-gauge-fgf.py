@@ -87,7 +87,7 @@ def mk_mass_mats_for_gm(job_tag):
             [ "i", mat_dim, ],
             [ "j", mat_dim, ],
         ]
-        ld = q.mk_lat_data(info_list)
+        ld = q.mk_lat_data(info_list, is_complex=False)
         ld[:] = sqrt_mass_matrix
         ld.save(get_save_path(fn))
     assert sqrt_mass_matrix.shape == shape
@@ -118,7 +118,7 @@ def mk_mass_mats_for_af(job_tag):
             [ "i", mat_dim, ],
             [ "j", mat_dim, ],
         ]
-        ld = q.mk_lat_data(info_list)
+        ld = q.mk_lat_data(info_list, is_complex=False)
         ld[:] = sqrt_af_mass_matrix
         ld.save(get_save_path(fn))
     assert sqrt_af_mass_matrix.shape == shape
