@@ -865,6 +865,30 @@ set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
 set_param(job_tag, "hmc", "save_traj_interval")(1)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "16I_b2p8_fgf_md0p5"
+set_param(job_tag, "total_site")((16, 16, 16, 32,))
+set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
+set_param(job_tag, "hmc", "max_traj")(20000)
+set_param(job_tag, "hmc", "max_traj_always_accept")(0)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(0)
+set_param(job_tag, "hmc", "md_time")(0.5)
+set_param(job_tag, "hmc", "n_step")(16)
+set_param(job_tag, "hmc", "beta")(2.80)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "diff_eps")(1e-5)
+set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
+set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(50)
+set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
+set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
+set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
+set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
+set_param(job_tag, "hmc", "save_traj_interval")(1)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
 job_tag = "32I_b2p8_fgf_md4"
 set_param(job_tag, "total_site")((32, 32, 32, 64,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
