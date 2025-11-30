@@ -256,6 +256,7 @@ def plot_save(
         path = os.path.join(os.path.dirname(target),
                 get_plot_name(target_fn) + ".pyplot.dir")
     path = mk_pyplot_folder(path)
+    is_show_cmd = False
     if dts is None:
         x = np.arange(31) * (6 / 30) - 3
         y = np.cos(x)
@@ -264,7 +265,7 @@ def plot_save(
         dts["table.txt"] = azip(x, y, yerr)
         displayln_info(f"dts = dict()")
         for key, value in dts.items():
-            displayln_info(f'dts["{key}"]" = {value.tolist()}')
+            displayln_info(f'dts["{key}"] = {value.tolist()}')
         if lines is None:
             lines = [
                     "plot [-3:3] [-1.5:1.5]",
@@ -276,6 +277,7 @@ def plot_save(
             for l in lines:
                 displayln_info(f'    {repr(l)},')
             displayln_info(f"]")
+        is_show_cmd = True
     if lines is None:
         lines = [
                 "plot [:] [:]",
@@ -291,38 +293,42 @@ def plot_save(
         for l in lines:
             displayln_info(f'    {repr(l)},')
         displayln_info(f"]")
+        is_show_cmd = True
     if cmds is None:
         cmds = [
                 "set size 0.8, 1.0",
                 "set key tm",
                 "set xlabel '$x$'",
                 "set ylabel '$y$'",
+                "set title 'title'",
                 ]
         displayln_info(f"cmds = [")
         for l in cmds:
             displayln_info(f'    {repr(l)},')
         displayln_info(f"]")
-    if display_width is None:
+        is_show_cmd = True
+    if is_display and (display_width is None):
         display_width = plot_save_display_width
-    if is_display:
-        displayln_info(f"q.plot_view(")
-        displayln_info(f"    fn={fn},")
-        displayln_info(f"    dts=dts,")
-        displayln_info(f"    cmds=cmds,")
-        displayln_info(f"    lines=lines,")
-        displayln_info(f"    is_verbose={is_verbose},")
-        displayln_info(f"    is_run_make={is_run_make},")
-        displayln_info(f"    display_width={display_width},")
-        displayln_info(f")")
-    else:
-        displayln_info(f"q.plot_save(")
-        displayln_info(f"    fn={fn},")
-        displayln_info(f"    dts=dts,")
-        displayln_info(f"    cmds=cmds,")
-        displayln_info(f"    lines=lines,")
-        displayln_info(f"    is_verbose={is_verbose},")
-        displayln_info(f"    is_run_make={is_run_make},")
-        displayln_info(f")")
+        is_show_cmd = True
+    if is_show_cmd:
+        if is_display:
+            displayln_info(f"q.plot_view(")
+            displayln_info(f"    fn={fn},")
+            displayln_info(f"    dts=dts,")
+            displayln_info(f"    lines=lines,")
+            displayln_info(f"    cmds=cmds,")
+            displayln_info(f"    display_width={display_width},")
+            displayln_info(f"    is_verbose={is_verbose},")
+            displayln_info(f")")
+        else:
+            displayln_info(f"q.plot_save(")
+            displayln_info(f"    fn={fn},")
+            displayln_info(f"    dts=dts,")
+            displayln_info(f"    lines=lines,")
+            displayln_info(f"    cmds=cmds,")
+            displayln_info(f"    is_run_make={is_run_make},")
+            displayln_info(f"    is_verbose={is_verbose},")
+            displayln_info(f")")
     populate_pyplot_folder(
             path,
             fn=target_fn,
