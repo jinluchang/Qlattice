@@ -1,3 +1,5 @@
+#include <qlat-utils/mat-vec.h>
+#include <qlat-utils/mpi-auto.h>
 #include <qlat/hmc.h>
 #include <qlat/qcd-acc.h>
 
@@ -584,6 +586,43 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
     }
   });
   return qnorm(gm_ag_ext) / geo.total_volume();
+}
+
+void set_gauge_transform_momentum(GaugeMomentum& gm, GaugeMomentum& gm_dual,
+                                  const Field<ColorMatrix>& gtm)
+// Set `gm` and `gm_dual` with `gtm`.
+// The overall effects of `gm` and `gm_dual` with `gf_evolve` and
+// `gf_evolve_dual` is a pure gauge transformation from `gtm`. The name `gtm`
+// stands for gauge tranformation momentum.
+{
+  TIMER("acc_gauge_transform_momentum");
+  const Geometry& geo = gtm.geo();
+  Qassert(geo.is_only_local);
+  gm.init(geo);
+  gm_dual.init(geo);
+  Qassert(geo == gm.geo());
+  Qassert(geo == gm_dual.geo());
+  Qassert(gtm.multiplicity == 1);
+  Qassert(gm.multiplicity == 4);
+  Qassert(gm_dual.multiplicity == 4);
+  const Coordinate expand_right = Coordinate(1, 1, 1, 1);
+  const Geometry geo_ext = geo_resize(geo, Coordinate(), expand_right);
+  Field<ColorMatrix> gtm_ext;
+  gtm_ext.init(geo_ext, 1);
+  gtm_ext = gtm;
+  refresh_expanded_1(gtm_ext);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gm.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v1 = gm.get_elems(index);
+    Vector<ColorMatrix> v2 = gm_dual.get_elems(index);
+    const ColorMatrix& ag1 = gtm_ext.get_elem(xl);
+    for (Int m = 0; m < 4; ++m) {
+      const Coordinate xl_p = coordinate_shifts(xl, m);
+      v1[m] = ag1;
+      v2[m] = gtm_ext.get_elem(xl_p);
+    }
+  });
 }
 
 void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,

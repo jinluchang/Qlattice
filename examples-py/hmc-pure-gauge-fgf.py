@@ -146,6 +146,8 @@ def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
     assert mass_inv_matrix.dtype == np.float64
     @q.timer
     def gm_v_from_gm(gm):
+        if gm is None:
+            return None
         assert gm.geo == geo
         f_basis = q.FieldRealD()
         q.set_basis_from_anti_hermitian_matrix(f_basis, gm)
@@ -195,6 +197,9 @@ def mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix):
 
 @q.timer
 def gm_gm_v_hamilton_node(gm, gm_v):
+    if gm is None:
+        assert gm_v is None
+        return 0.0
     geo = gm.geo
     assert geo.is_only_local
     assert gm_v.geo == geo
@@ -337,6 +342,9 @@ def mk_fgf(job_tag, rs):
         rs_f_dir = rs.split(f"{f_dir_seed}-gt_block_tree_gauge-rs_f_dir")
     @q.timer
     def fgf(gf):
+        """
+        Return `GaugeMomentum` type.
+        """
         nonlocal f_dir_list
         gt_inv, f_dir_list = q.gt_block_tree_gauge(
             gf,
@@ -351,6 +359,9 @@ def mk_fgf(job_tag, rs):
         return gt_inv
     @q.timer
     def fgf_g(gf, gm_v):
+        """
+        Return `GaugeMomentum` type.
+        """
         gf2 = gf.copy()
         gf1 = gf.copy()
         q.gf_evolve(gf2, gm_v, 0.5 * diff_eps)
@@ -372,6 +383,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     """
     implicity_integrator_eps = get_param(job_tag, "hmc", "implicity_integrator_eps")
     implicity_integrator_max_iter = get_param(job_tag, "hmc", "implicity_integrator_max_iter")
+    is_no_af = get_param(job_tag, "hmc", "is_no_af")
     gt_unit = q.GaugeTransform(geo)
     gt_unit.set_unit()
     gt_norm = q.qnorm(gt_unit)
@@ -391,6 +403,10 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
         #
         if tag is None:
             tag = "fix_midpoint"
+        #
+        if is_no_af:
+            assert tag == "project_gauge_transform"
+            assert af is None
         #
         gf_init = gf
         af_init = af
@@ -499,6 +515,27 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             af += prod
         #
         @q.timer
+        def evolve_gauge_transform_momentum(dt_step):
+            nonlocal gf, af, egm_p, egm_p_dt
+            #
+            gf0 = gf
+            gf = q.GaugeField()
+            #
+            dg = fgf_g(gf0, gm_v)
+            gm_v_left = q.GaugeMomentum()
+            gm_v_right = q.GaugeMomentum()
+            q.set_gauge_transform_momentum(gm_v_left, gm_v_right, dg)
+            gm_v_left += gm_v
+            q.gf_evolve(gf, gm_v_left, dt_step)
+            q.gf_evolve_dual(gf, gm_v_right, dt_step)
+            gt_inv = fgf(gf).inv()
+            gf = gt_inv * gf
+            gt_inv -= gt_unit
+            gf_eps = np.sqrt(q.qnorm(gt_inv) / gt_norm).item()
+            q.displayln_info(0, f"{fname}: evolve_gauge_transform_momentum gf_eps: {gf_eps}")
+            gf.unitarize()
+        #
+        @q.timer
         def evolve_fix_endpoint(dt_step):
             evolve_fix_start(0.5 * dt_step)
             evolve_fix_stop(0.5 * dt_step)
@@ -513,6 +550,8 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
         #
         if tag == "no_fix":
             evolve_no_fix(dt)
+        elif tag == "gauge_transform_momentum":
+            evolve_gauge_transform_momentum(dt)
         elif tag == "fix_start":
             evolve_fix_start(dt)
         elif tag == "fix_stop":
@@ -531,7 +570,8 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
         # Update input object
         #
         gf_init.swap(gf)
-        af_init.swap(af)
+        if af_init is not None:
+            af_init.swap(af)
     return gf_evolve
 
 @q.timer
@@ -542,6 +582,7 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
     """
     beta = get_param(job_tag, "hmc", "beta")
     c1 = get_param(job_tag, "hmc", "c1")
+    is_no_af = get_param(job_tag, "hmc", "is_no_af")
     ga = q.GaugeAction(beta, c1)
     total_volume = geo.total_volume
     @q.timer
@@ -554,6 +595,11 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
         #
         assert tag in ["all", "qcd", "gauge_fixing", ]
         #
+        assert gf.geo == geo
+        #
+        if is_no_af:
+            assert af is None
+        #
         if tag in [ "qcd", "all", ]:
             # Set QCD gauge action force
             gm_force_qcd = q.GaugeMomentum()
@@ -563,30 +609,30 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
         #
         if tag in [ "gauge_fixing", "all", ]:
             # Add force due to gauge fixing
-            geo = gf.geo
             gm_force_gauge_fixing = q.GaugeMomentum(geo)
             gm_force_gauge_fixing.set_zero()
-            dg = fgf_g(gf, af)
-            af_v = af_v_from_af(af)
-            prod = q.field_color_matrix_mul(af_v, dg)
-            prod -= q.field_color_matrix_mul(dg, af_v)
-            q.set_tr_less_anti_herm_matrix(prod)
-            gm_force_gauge_fixing += prod
-            force_size_gauge_fixing = math.sqrt(q.qnorm(gm_force_gauge_fixing) / (total_volume * 4))
-            q.displayln_info(0, f"force_size_gauge_fixing={force_size_gauge_fixing:.5f}")
+            if not is_no_af:
+                dg = fgf_g(gf, af)
+                af_v = af_v_from_af(af)
+                prod = q.field_color_matrix_mul(af_v, dg)
+                prod -= q.field_color_matrix_mul(dg, af_v)
+                q.set_tr_less_anti_herm_matrix(prod)
+                gm_force_gauge_fixing += prod
+                force_size_gauge_fixing = math.sqrt(q.qnorm(gm_force_gauge_fixing) / (total_volume * 4))
+                q.displayln_info(0, f"force_size_gauge_fixing={force_size_gauge_fixing:.5f}")
         #
         if tag == "all":
-            geo = gf.geo
             gm_force = q.GaugeMomentum(geo)
             gm_force.set_zero()
             gm_force += gm_force_qcd
             gm_force += gm_force_gauge_fixing
             force_size_total = math.sqrt(q.qnorm(gm_force) / (total_volume * 4))
             q.displayln_info(0, f"force_size_total={force_size_total:.5f}")
-            cos_alpha_qcd_gauge_fixing = (
-                (force_size_total**2 - force_size_qcd**2 - force_size_gauge_fixing**2)
-                / (force_size_qcd * force_size_gauge_fixing))
-            q.displayln_info(0, f"cos_alpha_qcd_gauge_fixing={cos_alpha_qcd_gauge_fixing:.5f}")
+            if not is_no_af:
+                cos_alpha_qcd_gauge_fixing = (
+                    (force_size_total**2 - force_size_qcd**2 - force_size_gauge_fixing**2)
+                    / (force_size_qcd * force_size_gauge_fixing))
+                q.displayln_info(0, f"cos_alpha_qcd_gauge_fixing={cos_alpha_qcd_gauge_fixing:.5f}")
         elif tag == "qcd":
             gm_force = gm_force_qcd
         elif tag == "gauge_fixing":
@@ -598,22 +644,29 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
     return get_gm_force
 
 @q.timer
-def mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm):
+def mk_fgf_gm_evolve_fg(job_tag, get_gm_force, gf_evolve, gm_v_from_gm):
     """
     return `gm_evolve_fg` for `gf` and `af`.
     `gf` should be in the gauge fixed state.
     """
+    is_no_af = get_param(job_tag, "hmc", "is_no_af")
     @q.timer
     def gm_evolve_fg(gm, gm_v, gf, af, fg_dt, dt):
         """
         Modify `gm` and `gm_v` in place.
         """
+        if is_no_af:
+            assert af is None
         gm_force = get_gm_force(gf, af)
         if fg_dt != 0.0:
             gm_force_v = gm_v_from_gm(gm_force)
             gf_g = gf.copy()
-            af_g = af.copy()
-            gf_evolve(gf_g, af_g, gm_force_v, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
+            if is_no_af:
+                af_g = None
+                gf_evolve(gf_g, af_g, gm_force_v, fg_dt, tag="project_gauge_transform", is_initial_gauge_fixed=True)
+            else:
+                af_g = af.copy()
+                gf_evolve(gf_g, af_g, gm_force_v, fg_dt, tag="no_fix", is_initial_gauge_fixed=True)
             gm_force = get_gm_force(gf_g, af_g)
         gm_force *= dt
         gm += gm_force
@@ -631,21 +684,27 @@ def run_hmc_evolve_pure_gauge(
         af_v_from_af,
         acc_runtime_info,
         gf_integrator_tag,
+        is_no_af,
         n_step,
         md_time,
         ):
     fname = q.get_fname()
     @q.timer
     def qq_evolve_4th(dt):
-        gf_evolve(gf, af, gm_v, dt, tag="fix_endpoint_4th", is_initial_gauge_fixed=True)
+        if is_no_af:
+            gf_evolve(gf, af, gm_v, dt, tag="project_gauge_transform", is_initial_gauge_fixed=True)
+        else:
+            gf_evolve(gf, af, gm_v, dt, tag="fix_endpoint_4th", is_initial_gauge_fixed=True)
     @q.timer
     def pp_evolve_fg(fg_dt, dt):
         gm_evolve_fg(gm, gm_v, gf, af, fg_dt, dt)
     @q.timer
     def qq_evolve_1(dt):
+        assert not is_no_af
         gf_evolve(gf, af, gm_v, dt, tag="fix_start", is_initial_gauge_fixed=True)
     @q.timer
     def qq_evolve_2(dt):
+        assert not is_no_af
         gf_evolve(gf, af, gm_v, dt, tag="fix_stop", is_initial_gauge_fixed=True)
     @q.timer
     def pp_evolve(dt):
@@ -703,7 +762,8 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     fgf, fgf_g, = mk_fgf(job_tag, rs)
     gf_evolve = mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g)
     get_gm_force = mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af)
-    gm_evolve_fg = mk_fgf_gm_evolve_fg(get_gm_force, gf_evolve, gm_v_from_gm)
+    gm_evolve_fg = mk_fgf_gm_evolve_fg(job_tag, get_gm_force, gf_evolve, gm_v_from_gm)
+    is_no_af = get_param(job_tag, "hmc", "is_no_af")
     gf_integrator_tag = get_param(job_tag, "hmc", "gf_integrator_tag")
     md_time = get_param(job_tag, "hmc", "md_time")
     n_step = get_param(job_tag, "hmc", "n_step")
@@ -721,8 +781,11 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
     gm_set_rand(gm, rs.split("set_rand_gauge_momentum"))
     gm_v = q.GaugeMomentum()
     gm_v.swap(gm_v_from_gm(gm))
-    af = q.GaugeMomentum(geo)
-    af_set_rand(af, rs.split("set_rand_af"))
+    if is_no_af:
+        af = None
+    else:
+        af = q.GaugeMomentum(geo)
+        af_set_rand(af, rs.split("set_rand_af"))
     gf = gf.shift(xg_field_shift)
     gf0 = gf.copy()
     delta_h = run_hmc_evolve_pure_gauge(
@@ -731,6 +794,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         acc_runtime_info=acc_runtime_info,
         af_v_from_af=af_v_from_af,
         gf_integrator_tag=gf_integrator_tag,
+        is_no_af=is_no_af,
         n_step=n_step, md_time=md_time,
         )
     gf = gf.shift(-xg_field_shift)
@@ -738,7 +802,10 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         gf_r = gf.copy()
         gm_r = gm.copy()
         gm_v_r = gm_v.copy()
-        af_r = af.copy()
+        if is_no_af:
+            af_r = None
+        else:
+            af_r = af.copy()
         gf_r = gf_r.shift(xg_field_shift)
         delta_h_rev = run_hmc_evolve_pure_gauge(
             gm_r, gm_v_r, gf_r, af_r, ga=ga,
@@ -746,6 +813,7 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
             acc_runtime_info=None,
             af_v_from_af=af_v_from_af,
             gf_integrator_tag=gf_integrator_tag,
+            is_no_af=is_no_af,
             n_step=n_step, md_time=-md_time,
             )
         gf_r -= fgf(gf0).inv() * gf0
@@ -844,6 +912,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(4)
 set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(True)
 set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
+set_param(job_tag, "hmc", "is_no_af")(False)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(2.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
@@ -870,6 +939,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(True)
 set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
+set_param(job_tag, "hmc", "is_no_af")(False)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
@@ -896,6 +966,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(True)
 set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
+set_param(job_tag, "hmc", "is_no_af")(False)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)
@@ -922,6 +993,7 @@ set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
 set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(6)
 set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(True)
 set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
+set_param(job_tag, "hmc", "is_no_af")(False)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(1.0)
 set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
 set_param(job_tag, "hmc", "acc_runtime_info_interval")(4)

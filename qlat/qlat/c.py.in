@@ -222,6 +222,7 @@ __all__ += [
         'set_gm_force',
         'set_gm_force_dual',
         'project_gauge_transform',
+        'set_gauge_transform_momentum',
         'dot_gauge_momentum',
         'set_anti_hermitian_matrix_from_basis',
         'set_basis_from_anti_hermitian_matrix',

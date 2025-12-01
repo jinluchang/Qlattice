@@ -71,6 +71,9 @@ RealD project_gauge_transform(GaugeMomentum& gm, GaugeMomentum& gm_dual,
                               const Field<RealD>& mf,
                               const Field<RealD>& mf_dual);
 
+void set_gauge_transform_momentum(GaugeMomentum& gm, GaugeMomentum& gm_dual,
+                                  const Field<ColorMatrix>& gtm);
+
 void dot_gauge_momentum(Field<RealD>& f, const GaugeMomentum& gm1,
                         const GaugeMomentum& gm2);
 

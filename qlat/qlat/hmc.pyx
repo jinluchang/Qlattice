@@ -84,6 +84,14 @@ def project_gauge_transform(GaugeMomentum gm, GaugeMomentum gm_dual, FieldRealD 
     """
     return cc.project_gauge_transform(gm.xxx().val(), gm_dual.xxx().val(), mf.xx, mf_dual.xx)
 
+def set_gauge_transform_momentum(GaugeMomentum gm, GaugeMomentum gm_dual, FieldColorMatrix gtm):
+    """
+    Set `gm` and `gm_dual` with `gtm`.
+    The overall effects of `gm` and `gm_dual` with `gf_evolve` and `gf_evolve_dual` is a pure gauge transformation from `gtm`.
+    The name `gtm` stands for gauge tranformation momentum.
+    """
+    return cc.set_gauge_transform_momentum(gm.xxx().val(), gm_dual.xxx().val(), gtm.xx)
+
 def dot_gauge_momentum(GaugeMomentum gm1, GaugeMomentum gm2):
     """
     return RealD dot field with multiplicity = 4
