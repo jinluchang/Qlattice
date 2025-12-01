@@ -595,7 +595,7 @@ void set_gauge_transform_momentum(GaugeMomentum& gm, GaugeMomentum& gm_dual,
 // `gf_evolve_dual` is a pure gauge transformation from `gtm`. The name `gtm`
 // stands for gauge tranformation momentum.
 {
-  TIMER("acc_gauge_transform_momentum");
+  TIMER("set_gauge_transform_momentum");
   const Geometry& geo = gtm.geo();
   Qassert(geo.is_only_local);
   gm.init(geo);

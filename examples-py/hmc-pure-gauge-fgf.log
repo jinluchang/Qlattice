@@ -1,3 +1,50 @@
+CHECK: params: test-4nt8-noaf: {
+CHECK: params: test-4nt8-noaf:   "total_site": [
+CHECK: params: test-4nt8-noaf:     4,
+CHECK: params: test-4nt8-noaf:     4,
+CHECK: params: test-4nt8-noaf:     4,
+CHECK: params: test-4nt8-noaf:     8
+CHECK: params: test-4nt8-noaf:   ],
+CHECK: params: test-4nt8-noaf:   "hmc": {
+CHECK: params: test-4nt8-noaf:     "max_traj": 4,
+CHECK: params: test-4nt8-noaf:     "max_traj_always_accept": 3,
+CHECK: params: test-4nt8-noaf:     "max_traj_reverse_test": 2,
+CHECK: params: test-4nt8-noaf:     "md_time": 0.6,
+CHECK: params: test-4nt8-noaf:     "n_step": 2,
+CHECK: params: test-4nt8-noaf:     "beta": 2.13,
+CHECK: params: test-4nt8-noaf:     "c1": -0.331,
+CHECK: params: test-4nt8-noaf:     "diff_eps": 1e-06,
+CHECK: params: test-4nt8-noaf:     "gf_integrator_tag": "force_gradient",
+CHECK: params: test-4nt8-noaf:     "implicity_integrator_eps": 1e-11,
+CHECK: params: test-4nt8-noaf:     "implicity_integrator_max_iter": 50,
+CHECK: params: test-4nt8-noaf:     "gauge_fixing": {
+CHECK: params: test-4nt8-noaf:       "block_site": [
+CHECK: params: test-4nt8-noaf:         4,
+CHECK: params: test-4nt8-noaf:         4,
+CHECK: params: test-4nt8-noaf:         4,
+CHECK: params: test-4nt8-noaf:         4
+CHECK: params: test-4nt8-noaf:       ],
+CHECK: params: test-4nt8-noaf:       "new_size_node": [
+CHECK: params: test-4nt8-noaf:         1,
+CHECK: params: test-4nt8-noaf:         1,
+CHECK: params: test-4nt8-noaf:         1,
+CHECK: params: test-4nt8-noaf:         2
+CHECK: params: test-4nt8-noaf:       ],
+CHECK: params: test-4nt8-noaf:       "stout_smear_step_size": 0.125,
+CHECK: params: test-4nt8-noaf:       "num_smear_step": 0,
+CHECK: params: test-4nt8-noaf:       "is_uniform": true,
+CHECK: params: test-4nt8-noaf:       "f_dir_seed": "seed"
+CHECK: params: test-4nt8-noaf:     },
+CHECK: params: test-4nt8-noaf:     "is_no_af": true,
+CHECK: params: test-4nt8-noaf:     "fourier_acceleration": {
+CHECK: params: test-4nt8-noaf:       "sqrt_mass": 2.0,
+CHECK: params: test-4nt8-noaf:       "sqrt_af_mass": 2.0
+CHECK: params: test-4nt8-noaf:     },
+CHECK: params: test-4nt8-noaf:     "acc_runtime_info_interval": 2,
+CHECK: params: test-4nt8-noaf:     "save_traj_interval": 4,
+CHECK: params: test-4nt8-noaf:     "is_saving_topo_info": true
+CHECK: params: test-4nt8-noaf:   }
+CHECK: params: test-4nt8-noaf: }
 CHECK: params: test-4nt8: {
 CHECK: params: test-4nt8:   "job_tag": "test-4nt8",
 CHECK: params: test-4nt8:   "total_site": [

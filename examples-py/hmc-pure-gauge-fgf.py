@@ -256,6 +256,7 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     return acc_runtime_info
     acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
     """
+    is_no_af = get_param(job_tag, "hmc", "is_no_af")
     acc_runtime_info_interval = get_param(job_tag, "hmc", "acc_runtime_info_interval")
     assert acc_runtime_info_interval > 0
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
@@ -291,7 +292,8 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
             gm_init = gm.copy()
             gm_v_init = gm_v.copy()
             gf_init = gf.copy()
-            af_init = af.copy()
+            if not is_no_af:
+                af_init = af.copy()
             gm_force_init = gm_force.copy()
             gm_force_qcd_init = gm_force_qcd.copy()
             gm_force_gauge_fixing_init = gm_force_gauge_fixing.copy()
@@ -515,13 +517,10 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             af += prod
         #
         @q.timer
-        def evolve_gauge_transform_momentum(dt_step):
+        def evolve_project_gauge_transform(dt_step):
             nonlocal gf, af, egm_p, egm_p_dt
-            #
-            gf0 = gf
-            gf = q.GaugeField()
-            #
-            dg = fgf_g(gf0, gm_v)
+            dg = fgf_g(gf, gm_v)
+            dg *= -1.0
             gm_v_left = q.GaugeMomentum()
             gm_v_right = q.GaugeMomentum()
             q.set_gauge_transform_momentum(gm_v_left, gm_v_right, dg)
@@ -532,7 +531,7 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
             gf = gt_inv * gf
             gt_inv -= gt_unit
             gf_eps = np.sqrt(q.qnorm(gt_inv) / gt_norm).item()
-            q.displayln_info(0, f"{fname}: evolve_gauge_transform_momentum gf_eps: {gf_eps}")
+            q.displayln_info(0, f"{fname}: evolve_project_gauge_transform gf_eps: {gf_eps}")
             gf.unitarize()
         #
         @q.timer
@@ -550,8 +549,8 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
         #
         if tag == "no_fix":
             evolve_no_fix(dt)
-        elif tag == "gauge_transform_momentum":
-            evolve_gauge_transform_momentum(dt)
+        elif tag == "project_gauge_transform":
+            evolve_project_gauge_transform(dt)
         elif tag == "fix_start":
             evolve_fix_start(dt)
         elif tag == "fix_stop":
@@ -919,6 +918,32 @@ set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "test-4nt8-noaf"
+set_param(job_tag, "total_site")((4, 4, 4, 8,))
+set_param(job_tag, "hmc", "max_traj")(4)
+set_param(job_tag, "hmc", "max_traj_always_accept")(3)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(0.6)
+set_param(job_tag, "hmc", "n_step")(2)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "diff_eps")(1e-6)
+set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
+set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(50)
+set_param(job_tag, "hmc", "gauge_fixing", "block_site")((4, 4, 4, 4,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
+set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
+set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(0)
+set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(True)
+set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
+set_param(job_tag, "hmc", "is_no_af")(True)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(2.0)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(2.0)
+set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
 job_tag = "16I_b2p8_fgf_md4"
 set_param(job_tag, "total_site")((16, 16, 16, 32,))
 set_param(job_tag, "a_inv_gev")(2.646) # 2003 lattice spacing 0309017.pdf
@@ -1025,6 +1050,7 @@ if __name__ == "__main__":
     #######################################################
 
     job_tag_list_default = [
+            "test-4nt8-noaf",
             "test-4nt8",
             ]
 
