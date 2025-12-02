@@ -186,6 +186,7 @@ __all__ += [
         'set_qar_multi_vol_max_size',
         'clean_up_qfile_map',
         'show_all_qfile',
+        'properly_truncate_qar_file',
         'does_regular_file_exist_qar',
         'does_file_exist_qar',
         'qar_build_index',
