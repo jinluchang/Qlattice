@@ -73,6 +73,8 @@ def mk_mass_mats_for_gm(job_tag):
     """
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     sqrt_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")
+    if sqrt_mass is None:
+        return None, None
     mat_dim = block_site.volume() * 4
     shape = (mat_dim, mat_dim,)
     fn = f"{job_tag}/hmc-fgf/sqrt_mass_matrix.lat"
@@ -104,6 +106,8 @@ def mk_mass_mats_for_af(job_tag):
     """
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     sqrt_af_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")
+    if sqrt_af_mass is None:
+        return None, None
     mat_dim = block_site.volume() * 4
     shape = (mat_dim, mat_dim,)
     fn = f"{job_tag}/hmc-fgf/sqrt_af_mass_matrix.lat"
@@ -141,14 +145,18 @@ def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     mat_dim = block_site.volume() * 4
     new_size_node = total_site // block_site
-    assert isinstance(mass_inv_matrix, np.ndarray)
-    assert mass_inv_matrix.shape == (mat_dim, mat_dim,)
-    assert mass_inv_matrix.dtype == np.float64
+    if mass_inv_matrix is not None:
+        assert isinstance(mass_inv_matrix, np.ndarray)
+        assert mass_inv_matrix.shape == (mat_dim, mat_dim,)
+        assert mass_inv_matrix.dtype == np.float64
     @q.timer
     def gm_v_from_gm(gm):
         if gm is None:
             return None
         assert gm.geo == geo
+        if mass_inv_matrix is None:
+            gm_v = gm.copy()
+            return gm_v
         f_basis = q.FieldRealD()
         q.set_basis_from_anti_hermitian_matrix(f_basis, gm)
         f_basis_list = q.shuffle_field(f_basis, new_size_node)
@@ -176,14 +184,17 @@ def mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix):
     block_site = q.Coordinate(get_param(job_tag, "hmc", "gauge_fixing", "block_site"))
     mat_dim = block_site.volume() * 4
     new_size_node = total_site // block_site
-    assert isinstance(sqrt_mass_matrix, np.ndarray)
-    assert sqrt_mass_matrix.shape == (mat_dim, mat_dim,)
-    assert sqrt_mass_matrix.dtype == np.float64
+    if sqrt_mass_matrix is not None:
+        assert isinstance(sqrt_mass_matrix, np.ndarray)
+        assert sqrt_mass_matrix.shape == (mat_dim, mat_dim,)
+        assert sqrt_mass_matrix.dtype == np.float64
     @q.timer
     def gm_set_rand(gm, rs):
         assert gm.geo == geo
         assert gm.multiplicity == 4
         gm.set_rand(rs, 1.0)
+        if sqrt_mass_matrix is None:
+            return
         f_basis = q.FieldRealD()
         q.set_basis_from_anti_hermitian_matrix(f_basis, gm)
         f_basis_list = q.shuffle_field(f_basis, new_size_node)
@@ -256,6 +267,7 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     return acc_runtime_info
     acc_runtime_info = mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af)
     """
+    sqrt_mass = get_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")
     is_no_af = get_param(job_tag, "hmc", "is_no_af")
     acc_runtime_info_interval = get_param(job_tag, "hmc", "acc_runtime_info_interval")
     assert acc_runtime_info_interval > 0
@@ -303,12 +315,13 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
         info["plaq"] = gf.plaq()
         info["link_trace"] = gf.link_trace()
         info["delta_h"] = q.glb_sum(energy - energy_init)
-        # info["gm_corr"] = gm_blocked_correlation(gm_init, gm, block_site)
-        # info["gm_force_corr"] = gm_blocked_correlation(gm_force_init, gm_force, block_site)
-        # info["gm_force_qcd_corr"] = gm_blocked_correlation(gm_force_qcd_init, gm_force_qcd, block_site)
-        # info["gm_force_gauge_fixing_corr"] = gm_blocked_correlation(gm_force_gauge_fixing_init, gm_force_gauge_fixing, block_site)
-        info["gm_gm_force_corr"] = gm_blocked_correlation(gm_init, gm_force, block_site)
-        # info["gm_force_gm_corr"] = gm_blocked_correlation(gm_force_init, gm, block_site)
+        if sqrt_mass is not None:
+            # info["gm_corr"] = gm_blocked_correlation(gm_init, gm, block_site)
+            # info["gm_force_corr"] = gm_blocked_correlation(gm_force_init, gm_force, block_site)
+            # info["gm_force_qcd_corr"] = gm_blocked_correlation(gm_force_qcd_init, gm_force_qcd, block_site)
+            # info["gm_force_gauge_fixing_corr"] = gm_blocked_correlation(gm_force_gauge_fixing_init, gm_force_gauge_fixing, block_site)
+            info["gm_gm_force_corr"] = gm_blocked_correlation(gm_init, gm_force, block_site)
+            # info["gm_force_gm_corr"] = gm_blocked_correlation(gm_force_init, gm, block_site)
         runtime_info["list"].append(info)
         step += 1
     return acc_runtime_info
@@ -918,6 +931,32 @@ set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
 set_param(job_tag, "hmc", "save_traj_interval")(4)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
 
+job_tag = "test-8nt16"
+set_param(job_tag, "total_site")((8, 8, 8, 16,))
+set_param(job_tag, "hmc", "max_traj")(16)
+set_param(job_tag, "hmc", "max_traj_always_accept")(3)
+set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+set_param(job_tag, "hmc", "md_time")(0.6)
+set_param(job_tag, "hmc", "n_step")(4)
+set_param(job_tag, "hmc", "beta")(2.13)
+set_param(job_tag, "hmc", "c1")(-0.331)
+set_param(job_tag, "hmc", "diff_eps")(1e-5)
+set_param(job_tag, "hmc", "gf_integrator_tag")("force_gradient")
+set_param(job_tag, "hmc", "implicity_integrator_eps")(1e-11)
+set_param(job_tag, "hmc", "implicity_integrator_max_iter")(500)
+set_param(job_tag, "hmc", "gauge_fixing", "block_site")((8, 8, 8, 8,))
+set_param(job_tag, "hmc", "gauge_fixing", "new_size_node")((1, 1, 1, 2,))
+set_param(job_tag, "hmc", "gauge_fixing", "stout_smear_step_size")(0.125)
+set_param(job_tag, "hmc", "gauge_fixing", "num_smear_step")(1)
+set_param(job_tag, "hmc", "gauge_fixing", "is_uniform")(True)
+set_param(job_tag, "hmc", "gauge_fixing", "f_dir_seed")("seed")
+set_param(job_tag, "hmc", "is_no_af")(False)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_mass")(None)
+set_param(job_tag, "hmc", "fourier_acceleration", "sqrt_af_mass")(None)
+set_param(job_tag, "hmc", "acc_runtime_info_interval")(2)
+set_param(job_tag, "hmc", "save_traj_interval")(4)
+set_param(job_tag, "hmc", "is_saving_topo_info")(False)
+
 job_tag = "test-4nt8-noaf"
 set_param(job_tag, "total_site")((4, 4, 4, 8,))
 set_param(job_tag, "hmc", "max_traj")(4)
@@ -1104,6 +1143,7 @@ if __name__ == "__main__":
     #######################################################
 
     job_tag_list_default = [
+            # "test-8nt16",
             "test-4nt8-noaf",
             "test-4nt8",
             ]
