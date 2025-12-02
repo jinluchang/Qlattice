@@ -268,7 +268,7 @@ RealD gf_local_avg_plaq(const GaugeField& gf, const Coordinate& block_site)
       if (xl_block[mu] == block_site_[mu] - 1) {
         continue;
       }
-      for (Int nu = mu; nu < 4; ++nu) {
+      for (Int nu = mu + 1; nu < 4; ++nu) {
         if (xl_block[nu] == block_site_[nu] - 1) {
           continue;
         }
