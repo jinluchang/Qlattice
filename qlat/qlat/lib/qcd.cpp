@@ -2,6 +2,7 @@
 #include <qlat/qcd-gauge-transformation.h>
 #include <qlat/qcd-topology.h>
 #include <qlat/qcd.h>
+#include "qlat-utils/coordinate.h"
 
 namespace qlat
 {  //
@@ -233,6 +234,60 @@ RealD gf_avg_plaq(const GaugeField& gf) { return gf_avg_plaq<RealD>(gf); }
 RealD gf_avg_link_trace(const GaugeField& gf)
 {
   return gf_avg_link_trace<RealD>(gf);
+}
+
+// ------------------------------------
+
+RealD gf_local_avg_plaq(const GaugeField& gf, const Coordinate& block_site)
+// Compuate local (no glb_sum) average of plaq for plaq within with each blocks.
+// Used for diagnostic in `gt_local_tree_gauge`.
+{
+  TIMER("gf_local_avg_plaq");
+  const Geometry geo = gf.geo();
+  Qassert(geo.is_only_local);
+  const Coordinate node_site = geo.node_site;
+  const Coordinate block_site_ =
+      block_site == Coordinate() ? node_site : block_site;
+  FieldM<RealD, 2> cf;
+  cf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = cf.geo();
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xl_block = xl % block_site_;
+    const Vector<ColorMatrix> v = gf.get_elems_const(xl);
+    array<Vector<ColorMatrix>, DIMN> vms;
+    for (Int mu = 0; mu < DIMN; ++mu) {
+      if (xl_block[mu] == block_site_[mu] - 1) {
+        continue;
+      }
+      vms[mu] = gf.get_elems_const(coordinate_shifts(xl, mu));
+    }
+    RealD count = 0.0;
+    RealD sum = 0.0;
+    for (Int mu = 0; mu < 3; ++mu) {
+      if (xl_block[mu] == block_site_[mu] - 1) {
+        continue;
+      }
+      for (Int nu = mu; nu < 4; ++nu) {
+        if (xl_block[nu] == block_site_[nu] - 1) {
+          continue;
+        }
+        count += 1.0;
+        sum += gf_plaq_no_comm(v, vms, mu, nu);
+      }
+    }
+    if (std::isnan(sum)) {
+      qerr(ssprintf("WARNING: isnan in gf_avg_plaq"));
+    }
+    cf.get_elem(index, 0) = count;
+    cf.get_elem(index, 1) = sum;
+  });
+  const std::vector<RealD> sum_vec = field_sum(cf);
+  Qassert(sum_vec.size() == 2);
+  const RealD count = sum_vec[0];
+  const RealD sum = sum_vec[1];
+  const RealD avg = sum / count;
+  return avg;
 }
 
 // ------------------------------------

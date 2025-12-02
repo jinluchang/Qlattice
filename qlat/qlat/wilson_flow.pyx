@@ -20,6 +20,9 @@ from .field_utils import (
     shuffle_field,
     shuffle_field_back,
 )
+from .mpi import (
+    glb_sum,
+)
 
 @q.timer
 def gf_energy_density(GaugeField gf):
@@ -129,6 +132,16 @@ def gf_local_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_siz
     cc.gf_local_stout_smear(gf.xxx().val(), gf.xxx().val(), block_site.xx, step_size)
 
 @q.timer
+def gf_local_avg_plaq(GaugeField gf, Coordinate block_site):
+    """
+    Compuate local (no glb_sum) average of plaq for plaq within with each blocks.
+    Used for diagnostic in `gt_local_tree_gauge`.
+    If `block_site == q.Coordinate()`, then `block_site = geo.node_site`.
+    Otherwise, perform stout smearing for each block separately.
+    """
+    return cc.gf_local_avg_plaq(gf.xxx().val(), block_site.xx)
+
+@q.timer
 def mk_local_tree_gauge_f_dir(
         Geometry geo,
         Coordinate block_site,
@@ -180,6 +193,7 @@ def gt_block_tree_gauge(
     Default `block_site = Coordinate([ 4, 4, 4, 4, ])`
     Default `rs_f_dir = RngState("seed-gt_block_tree_gauge-rs_f_dir")`
     """
+    fname = q.get_fname()
     if block_site is None:
         block_site = Coordinate([ 4, 4, 4, 4, ])
     num_step = 0
@@ -209,9 +223,13 @@ def gt_block_tree_gauge(
             ]
     cdef list gt_inv_list = []
     cdef GaugeTransform gt_inv
+    avg_plaq_sum = 0.0
+    avg_plaq_count = 0
     for gf_local, f_dir_local in zip(gf_list, f_dir_list):
         for step in range(num_smear_step):
             gf_local_stout_smear(gf_local, block_site, stout_smear_step_size)
+        avg_plaq_count += 1
+        avg_plaq_sum = gf_local_avg_plaq(gf_local, block_site)
         gt_inv = gt_local_tree_gauge(gf_local, f_dir_local, num_step)
         gt_inv_list.append(gt_inv)
     gt_inv = GaugeTransform(geo)
@@ -219,4 +237,6 @@ def gt_block_tree_gauge(
         shuffle_field_back(gt_inv, gt_inv_list, new_size_node)
     else:
         [ gt_inv, ] = gt_inv_list
+    avg_plaq = glb_sum(avg_plaq_sum) / glb_sum(avg_plaq_count)
+    q.displayln_info(0, f"{fname}: avg_plaq = {avg_plaq}")
     return (gt_inv, f_dir_list,)

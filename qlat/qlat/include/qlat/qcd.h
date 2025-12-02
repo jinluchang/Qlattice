@@ -21,6 +21,8 @@ RealD gf_avg_link_trace(const GaugeField& gf);
 
 void gf_plaq_field(Field<RealD>& f_plaq, const GaugeField& gf);
 
+RealD gf_local_avg_plaq(const GaugeField& gf, const Coordinate& block_site);
+
 struct U1GaugeTransform : FieldM<ComplexF, 1> {
 };
 

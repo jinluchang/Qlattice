@@ -397,7 +397,7 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
 {
   TIMER("gf_local_stout_smear");
   Qassert(gf0.multiplicity == 4);
-  const Geometry geo = gf0.geo();
+  const Geometry& geo = gf0.geo();
   Qassert(geo.is_only_local);
   const Coordinate node_site = geo.node_site;
   const Coordinate block_site_ = block_site == Coordinate() ? node_site : block_site;
@@ -406,6 +406,7 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
   gm.init(geo);
   set_zero(gm);
   qacc_for(index, geo.local_volume(), {
+    const Geometry& geo = gf0.geo();
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xl_block = xl % block_site_;
     for (Int mu = 0; mu < 4; ++mu) {
