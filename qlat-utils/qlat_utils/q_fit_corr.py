@@ -284,12 +284,16 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
         chisq, grad_all = fcn(p_all, requires_grad=True)
         return grad_all[free_param_mask]
     p_free = param_arr[free_param_mask]
+    fcn_initial = c_fcn(p_free)
+    minimize_kwargs_default = dict(
+            options=dict(maxiter=1e3),
+            method="BFGS",
+            )
     if minimize_kwargs is None:
-        minimize_kwargs = dict()
-    if "options" not in minimize_kwargs:
-        minimize_kwargs["options"] = dict(maxiter=1e3)
-    if "method" not in minimize_kwargs:
-        minimize_kwargs["method"] = 'BFGS'
+        minimize_kwargs = minimize_kwargs_default
+    else:
+        assert isinstance(minimize_kwargs, dict)
+        minimize_kwargs = minimize_kwargs_default | minimize_kwargs
     res = scipy.optimize.minimize(
             c_fcn,
             p_free,
@@ -297,11 +301,16 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
             **minimize_kwargs,
             )
     p_free_mini = res.x
-    param_arr_mini = param_arr.copy()
-    param_arr_mini[free_param_mask] = p_free_mini
+    fcn_final = c_fcn(p_free_mini)
     displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
     displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
-    return param_arr_mini
+    if fcn_final <= fcn_initial:
+        param_arr_mini = param_arr.copy()
+        param_arr_mini[free_param_mask] = p_free_mini
+        return param_arr_mini
+    else:
+        displayln_info(0, f"{fname}: return initial parameter instead due to: fcn_initial={fcn_initial} < fcn_final={fcn_final} .")
+        return param_arr
 
 ### -----------------
 

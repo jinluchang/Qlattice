@@ -5,6 +5,10 @@ from .utils import *
 from .data import *
 from .parallel import *
 
+from .q_fit_corr import (
+        minimize_scipy,
+        )
+
 @timer
 def build_corr_from_param_arr(
         param_arr,
@@ -316,100 +320,6 @@ def mk_fcn(
     return fcn
 
 ### -------------------
-
-@timer
-def minimize(fcn, n_step=10, step_size=1e-2, *, param_arr):
-    fname = get_fname()
-    chisq_pre = None
-    for i in range(n_step):
-        chisq, param_grad_arr = fcn(param_arr)
-        grad_norm = np.linalg.norm(param_grad_arr)
-        displayln_info(1, f"{fname}: step={i} chisq={chisq} grad_norm={grad_norm} param_arr={param_arr}")
-        if chisq_pre is not None:
-            if chisq > chisq_pre:
-                displayln_info(0, f"{fname}: early stop step={i} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}")
-                return param_arr_pre, i
-        param_arr_pre = param_arr
-        chisq_pre = chisq
-        param_arr = param_arr - step_size / grad_norm * param_grad_arr
-    displayln_info(0, f"{fname}: step={n_step} step_size={step_size} chisq={chisq_pre} grad_norm={grad_norm}")
-    return param_arr_pre, n_step
-
-@timer
-def adaptive_minimize(fcn, step_size_list, n_step=10, max_total_steps=10000, *, param_arr):
-    fname = get_fname()
-    idx = 0
-    total_steps = 0
-    total_steps_pre = 0
-    while True:
-        step_size = step_size_list[idx]
-        param_arr, i_step = minimize(fcn, n_step=n_step, step_size=step_size, param_arr=param_arr)
-        total_steps += i_step
-        if total_steps - total_steps_pre > 1000:
-            displayln_info(0, f"{fname}: {step_size:.8f} total_steps={total_steps}")
-            total_steps_pre = total_steps
-        if total_steps > max_total_steps:
-            return param_arr
-        if i_step == n_step:
-            idx = max(idx - 1, 0)
-        else:
-            idx = idx + 1
-            if idx == len(step_size_list):
-                return param_arr
-
-@timer
-def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None):
-    import scipy
-    fname = get_fname()
-    n_params = len(param_arr)
-    if fixed_param_mask is None:
-        fixed_param_mask = np.zeros(n_params, dtype=bool)
-    p_fixed = param_arr[fixed_param_mask]
-    free_param_mask = ~fixed_param_mask
-    @timer
-    def c_fcn(p_free):
-        p_all = np.empty(n_params, dtype=np.float64)
-        p_all[fixed_param_mask] = p_fixed
-        p_all[free_param_mask] = p_free
-        chisq = fcn(p_all, requires_grad=False)
-        return chisq
-    @timer
-    def c_fcn_grad(p_free):
-        p_all = np.empty(n_params, dtype=np.float64)
-        p_all[fixed_param_mask] = p_fixed
-        p_all[free_param_mask] = p_free
-        chisq, grad_all = fcn(p_all, requires_grad=True)
-        return grad_all[free_param_mask]
-    p_free = param_arr[free_param_mask]
-    fcn_initial = c_fcn(p_free)
-    minimize_kwargs_default = dict(
-            options=dict(maxiter=1e3),
-            method="BFGS",
-            )
-    if minimize_kwargs is None:
-        minimize_kwargs = minimize_kwargs_default
-    else:
-        assert isinstance(minimize_kwargs, dict)
-        minimize_kwargs = minimize_kwargs_default | minimize_kwargs
-    res = scipy.optimize.minimize(
-            c_fcn,
-            p_free,
-            jac=c_fcn_grad,
-            **minimize_kwargs,
-            )
-    p_free_mini = res.x
-    fcn_final = c_fcn(p_free_mini)
-    displayln_info(0, f"{fname}: fun={res.fun} ; grad_norm={np.linalg.norm(res.jac)}")
-    displayln_info(0, f"{fname}: success={res.success} ; message={res.message} ; nfev={res.nfev} ; njev={res.njev}")
-    if fcn_final <= fcn_initial:
-        param_arr_mini = param_arr.copy()
-        param_arr_mini[free_param_mask] = p_free_mini
-        return param_arr_mini
-    else:
-        displayln_info(0, f"{fname}: return initial parameter instead due to: fcn_initial={fcn_initial} < fcn_final={fcn_final} .")
-        return param_arr
-
-### -----------------
 
 def mp_initializer():
     import qlat_utils as q
