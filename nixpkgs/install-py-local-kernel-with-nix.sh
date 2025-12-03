@@ -63,4 +63,5 @@ ls -l "$dst"
     --env "CUBACORES" "0" \
     --env "OMP_NUM_THREADS" "2" \
     --env "JAX_ENABLE_X64" "True" \
+    --env "JAX_PLATFORMS" "cpu" \
     --name=$py_kernel_name
