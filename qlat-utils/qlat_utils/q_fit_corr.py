@@ -335,6 +335,8 @@ def MpPoolSingle():
     def close(self):
         pass
 
+### -----------------
+
 @timer_verbose
 def mk_mp_pool(n_proc=None):
     """

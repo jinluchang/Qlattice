@@ -206,3 +206,16 @@ def sum_list(res, start = None):
         for i, v in enumerate(r):
             ret[i] += v
     return ret
+
+@timer
+def trace_iter(iterable, tag=None, max_idx=None, verbose_level=0):
+    fname = get_fname()
+    if tag is None:
+        tag = fname
+    if max_idx is None:
+        max_idx_str = ""
+    else:
+        max_idx_str = f"/{max_idx}"
+    for idx, v in enumerate(iterable):
+        displayln_info(verbose_level, f"{tag}: idx={idx+1}{max_idx_str}")
+        yield v
