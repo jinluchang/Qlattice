@@ -327,6 +327,14 @@ def mp_initializer():
     v1, v2, = gf(1.0)
     assert (v1.item(), v2.item()) == (1.0, 2.0,)
 
+def MpPoolSingle():
+
+    def imap(func, iterable):
+        return map(func, iterable)
+
+    def close(self):
+        pass
+
 @timer_verbose
 def mk_mp_pool(n_proc=None):
     """
@@ -338,15 +346,20 @@ def mk_mp_pool(n_proc=None):
     if n_proc is None:
         n_proc = get_q_num_mp_processes()
     assert isinstance(n_proc, int)
-    mp_pool_n_proc = n_proc
-    import multiprocessing
-    mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+    if n_proc == 0:
+        mp_pool = MpPoolSingle()
+    else:
+        mp_pool_n_proc = n_proc
+        import multiprocessing
+        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
     mp_map = mp_pool.imap
     assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
     return mp_pool
 
 @timer_verbose
 def close_mp_pool(mp_pool):
+    if mp_pool is None:
+        return
     mp_pool.close()
 
 ### -----------------
