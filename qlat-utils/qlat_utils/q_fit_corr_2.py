@@ -7,6 +7,8 @@ from .parallel import *
 
 from .q_fit_corr import (
         minimize_scipy,
+        mk_mp_pool,
+        close_mp_pool,
         )
 
 @timer
@@ -321,16 +323,6 @@ def mk_fcn(
 
 ### -------------------
 
-def mp_initializer():
-    import qlat_utils as q
-    q.set_verbose_level(-1)
-    import jax
-    def f(x):
-        return x*x
-    gf = jax.jit(jax.value_and_grad(f))
-    v1, v2, = gf(1.0)
-    assert (v1.item(), v2.item()) == (1.0, 2.0,)
-
 def jk_mini_task_in_fit_eig_coef(kwargs):
     fname = get_fname()
     def f(*,
@@ -425,28 +417,6 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
         set_verbose_level(-1)
         return chisq, param_arr, param_grad
     return f(**kwargs)
-
-@timer_verbose
-def mk_mp_pool(n_proc=None):
-    """
-    return `mp_pool`
-    #
-    Usage of `mp_pool`
-    mp_map = mp_pool.imap
-    """
-    if n_proc is None:
-        n_proc = get_q_num_mp_processes()
-    assert isinstance(n_proc, int)
-    mp_pool_n_proc = n_proc
-    import multiprocessing
-    mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
-    mp_map = mp_pool.imap
-    assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
-    return mp_pool
-
-@timer_verbose
-def close_mp_pool(mp_pool):
-    mp_pool.close()
 
 @timer_verbose
 def fit_eig_coef(jk_corr_data,
@@ -713,7 +683,7 @@ def fit_eig_coef(jk_corr_data,
             if eig_maximum_arr is not None:
                 displayln_info(0, f"{fname}: map: jk_idx={idx} ; free_eig_arr/eig_maximum_arr={(param_arr[free_eig_idx_arr]/eig_maximum_arr).tolist()}")
     if is_close_pool:
-        mp_pool.close()
+        close_mp_pool(mp_pool)
     #
     jk_chisq = np.array(jk_chisq, dtype=np.float64)
     jk_param_arr = np.array(jk_param_arr, dtype=np.float64)

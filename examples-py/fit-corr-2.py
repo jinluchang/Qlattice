@@ -21,7 +21,7 @@ q.begin_with_mpi(size_node_list)
 mp_pool_n_proc = q.get_q_num_mp_processes()
 if mp_pool_n_proc > 0:
     import multiprocessing
-    mp_pool = multiprocessing.get_context('fork').Pool(mp_pool_n_proc, initializer=q.q_fit_corr_2.mp_initializer)
+    mp_pool = multiprocessing.get_context('fork').Pool(mp_pool_n_proc, initializer=q.q_fit_corr.mp_initializer)
 else:
     mp_pool = None
 

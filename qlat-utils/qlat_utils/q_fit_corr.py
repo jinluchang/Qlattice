@@ -3,6 +3,9 @@ import numpy as np
 from .c import *
 from .utils import *
 from .data import *
+from .parallel import (
+    get_q_num_mp_processes,
+)
 
 def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
     r"""
@@ -317,6 +320,36 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
 def mp_initializer():
     import qlat_utils as q
     q.set_verbose_level(-1)
+    import jax
+    def f(x):
+        return x*x
+    gf = jax.jit(jax.value_and_grad(f))
+    v1, v2, = gf(1.0)
+    assert (v1.item(), v2.item()) == (1.0, 2.0,)
+
+@timer_verbose
+def mk_mp_pool(n_proc=None):
+    """
+    return `mp_pool`
+    #
+    Usage of `mp_pool`
+    mp_map = mp_pool.imap
+    """
+    if n_proc is None:
+        n_proc = get_q_num_mp_processes()
+    assert isinstance(n_proc, int)
+    mp_pool_n_proc = n_proc
+    import multiprocessing
+    mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+    mp_map = mp_pool.imap
+    assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
+    return mp_pool
+
+@timer_verbose
+def close_mp_pool(mp_pool):
+    mp_pool.close()
+
+### -----------------
 
 def jk_mini_task_in_fit_energy_amplitude(kwargs):
     fname = get_fname()
@@ -547,8 +580,7 @@ def fit_energy_amplitude(jk_corr_data,
         mp_pool_n_proc = 1
     elif isinstance(mp_pool, int):
         mp_pool_n_proc = mp_pool
-        import multiprocessing
-        mp_pool = multiprocessing.get_context('spawn').Pool(mp_pool_n_proc, initializer=mp_initializer)
+        mp_pool = mk_mp_pool(mp_pool_n_proc)
         is_close_pool = True
         mp_map = mp_pool.imap
     else:
@@ -666,7 +698,7 @@ def fit_energy_amplitude(jk_corr_data,
             if energy_minimum_arr is not None:
                 displayln_info(0, f"{fname}: map: jk_idx={idx} ; free_energy_arr-energy_minimum_arr={(param_arr[free_energy_idx_arr]-energy_minimum_arr).tolist()}")
     if is_close_pool:
-        mp_pool.close()
+        close_mp_pool(mp_pool)
     #
     jk_chisq = np.array(jk_chisq, dtype=np.float64)
     jk_chisq_grad = np.array(jk_chisq_grad, dtype=np.float64)
