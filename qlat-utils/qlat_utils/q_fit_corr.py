@@ -337,10 +337,10 @@ def MpPoolSingle():
 
 ### -----------------
 
-@timer_verbose
+@timer
 def mk_mp_pool(n_proc=None):
     """
-    return `mp_pool`
+    return mp_pool
     #
     Usage of `mp_pool`
     mp_map = mp_pool.imap
@@ -358,7 +358,7 @@ def mk_mp_pool(n_proc=None):
     assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
     return mp_pool
 
-@timer_verbose
+@timer
 def close_mp_pool(mp_pool):
     if mp_pool is None:
         return
@@ -366,20 +366,60 @@ def close_mp_pool(mp_pool):
 
 ### -----------------
 
+n_proc_global = None
 mp_pool_global = None
 
 @timer
 def get_mp_pool_global(n_proc=None):
+    """
+    return mp_pool
+    #
+    Example usage:
+    #
+    n_proc = 8
+    mp_pool = q.get_mp_pool_global(n_proc)
+    #
+    mp_map = mp_pool.imap
+    result_iter = mp_map(
+        some_global_function,
+        input_iter,
+    )
+    result_iter = q.trace_iter(
+        result_iter,
+        verbose_level=-2,
+        max_idx=len_of_input_iter,
+    )
+    result_list = q.timer(
+        fname=f"{fname}.map",
+        is_timer_fork=True,
+    )(list)(result_iter)
+    #
+    # After finish using mp_pool
+    #
+    q.close_mp_pool_global()
+    #
+    """
     global mp_pool_global
+    global n_proc_global
+    if n_proc is None:
+        n_proc = get_q_num_mp_processes()
+    if n_proc_global != n_proc:
+        close_mp_pool_global()
     if mp_pool_global is None:
         mp_pool_global = mk_mp_pool(n_proc=n_proc)
+        n_proc_global = n_proc
     return mp_pool_global
 
 @timer
 def close_mp_pool_global():
+    """
+    See q.get_mp_pool_global(n_proc)
+    """
     global mp_pool_global
+    global n_proc_global
     close_mp_pool(mp_pool_global)
     mp_pool_global = None
+    n_proc_global = None
 
 ### -----------------
 
