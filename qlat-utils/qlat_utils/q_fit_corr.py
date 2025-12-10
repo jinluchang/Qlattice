@@ -366,6 +366,23 @@ def close_mp_pool(mp_pool):
 
 ### -----------------
 
+mp_pool_global = None
+
+@timer
+def get_mp_pool_global(n_proc=None):
+    global mp_pool_global
+    if mp_pool_global is None:
+        mp_pool_global = mk_mp_pool(n_proc=n_proc)
+    return mp_pool_global
+
+@timer
+def close_mp_pool_global():
+    global mp_pool_global
+    close_mp_pool(mp_pool_global)
+    mp_pool_global = None
+
+### -----------------
+
 def jk_mini_task_in_fit_energy_amplitude(kwargs):
     fname = get_fname()
     def f(*,
