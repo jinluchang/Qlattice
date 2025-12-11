@@ -251,13 +251,14 @@ def cache_call(
             else:
                 assert kwargs == dict()
                 key = (f.__qualname__, args, state,)
+            if path is not None:
+                fn = f"{path}/{key}.pickle"
             if not is_force_recompute:
                 if key in cache:
                     c_res = cache[key]
                     c_func_args, c_ret = c_res
                     return c_ret
                 if path is not None:
-                    fn = f"{path}/{key}.pickle"
                     c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
                     if c_res is not None:
                         cache[key] = c_res
