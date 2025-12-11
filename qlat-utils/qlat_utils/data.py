@@ -724,12 +724,15 @@ def get_jk_state(
     """
     Currently only useful if we set
     #
-    q.default_g_jk_kwargs["jk_type"] = "rjk" # this not yet the default
-    #
+    q.default_g_jk_kwargs["jk_type"] = "rjk" # this is the default now
     and
-    #
     q.default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
     #
+    Used for `q.cache_call`.
+    Example:
+    q.cache_call(get_state=q.get_jk_state)
+    def func(...):
+        ...
     """
     assert jk_type == "rjk"
     return (
