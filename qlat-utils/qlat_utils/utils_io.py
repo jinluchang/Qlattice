@@ -239,7 +239,7 @@ def cache_call(
         cache = LRUCache(maxsize)
     def dec(f):
         @functools.wraps(f)
-        def func(*args, **kwargs):
+        def func(*args, is_force_recompute=False, **kwargs):
             if get_state is None:
                 state = None
             else:
@@ -251,17 +251,18 @@ def cache_call(
             else:
                 assert kwargs == dict()
                 key = (f.__qualname__, args, state,)
-            if key in cache:
-                c_res = cache[key]
-                c_func_args, c_ret = c_res
-                return c_ret
-            if path is not None:
-                fn = f"{path}/{key}.pickle"
-                c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
-                if c_res is not None:
-                    cache[key] = c_res
+            if not is_force_recompute:
+                if key in cache:
+                    c_res = cache[key]
                     c_func_args, c_ret = c_res
                     return c_ret
+                if path is not None:
+                    fn = f"{path}/{key}.pickle"
+                    c_res = load_pickle_obj(fn, is_sync_node=is_sync_node)
+                    if c_res is not None:
+                        cache[key] = c_res
+                        c_func_args, c_ret = c_res
+                        return c_ret
             ret = f(*args, **kwargs)
             res = (func_args, ret,)
             cache[key] = res
