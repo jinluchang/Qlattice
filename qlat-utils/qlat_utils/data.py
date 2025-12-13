@@ -745,6 +745,25 @@ def get_jk_state(
             block_size_dict,
             )
 
+def set_jk_state(state):
+    (
+        jk_type,
+        eps,
+        n_rand_sample,
+        is_normalizing_rand_sample,
+        is_use_old_rand_alg,
+        block_size,
+        block_size_dict,
+    ) = state
+    g_dict = default_g_jk_kwargs
+    g_dict["jk_type"] = jk_type
+    g_dict["eps"] = eps
+    g_dict["n_rand_sample"] = n_rand_sample
+    g_dict["is_normalizing_rand_sample"] = is_normalizing_rand_sample
+    g_dict["is_use_old_rand_alg"] = is_use_old_rand_alg
+    g_dict["block_size"] = block_size
+    g_dict["block_size_dict"] = block_size_dict
+
 @use_kwargs(default_g_jk_kwargs)
 def jk_blocking_func_default(
         jk_idx,
