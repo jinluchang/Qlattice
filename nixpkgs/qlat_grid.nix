@@ -6,6 +6,7 @@
 , qlat
 , grid-lehner
 , git
+, mpi
 , which
 , use-pypi ? null
 , qlat-name ? ""
@@ -55,6 +56,7 @@ in buildPythonPackage {
   propagatedBuildInputs = [
     qlat
     grid-lehner
+    mpi
   ];
 
   dependencies = [
@@ -82,7 +84,7 @@ in buildPythonPackage {
       #
       export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing $GXX" # -D__DEBUG_VECUTILS__
       export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
-      export QLAT_MPICXX="$PWD/NVCC.py -ccbin mpic++ $NVCC_OPTIONS"
+      export QLAT_MPICXX="$PWD/NVCC.py -ccbin ${mpi.dev}/bin/mpic++ $NVCC_OPTIONS"
       export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
       export QLAT_LDFLAGS="--NVCC-link" # --shared
       #
