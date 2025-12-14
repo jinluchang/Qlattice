@@ -32,8 +32,8 @@ if [ -z "\$NVCC_ARCH" ] ; then
     export NVCC_ARCH=$NVCC_ARCH
 fi
 export NVCC_OPTIONS="-w -std=c++17 -arch=\$NVCC_ARCH --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing" # -D__DEBUG_VECUTILS__
-export QLAT_CXX="NVCC.py -ccbin CXX.sh \$NVCC_OPTIONS"
-export QLAT_MPICXX="NVCC.py -ccbin MPICXX.sh \$NVCC_OPTIONS"
+export QLAT_CXX="NVCC.py -ccbin $prefix/qcore/bin/CXX.sh \$NVCC_OPTIONS"
+export QLAT_MPICXX="NVCC.py -ccbin $prefix/qcore/bin/MPICXX.sh \$NVCC_OPTIONS"
 export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
 export QLAT_LDFLAGS="--NVCC-link" # --shared
 export CUDA_ROOT="$CUDA_ROOT"
