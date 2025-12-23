@@ -50,7 +50,7 @@ class q:
             is_test,
             json_results_append,
             )
-    from .c import (
+    from qlat.c import (
             Geometry,
             PointsSelection,
             FieldComplexD,

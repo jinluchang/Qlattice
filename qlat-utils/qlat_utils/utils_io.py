@@ -4,58 +4,81 @@ import hashlib
 import functools
 import numpy as np
 
-from .c import *
-from .lru_cache import *
-from .json import json_dumps, json_loads
+class q:
+    from qlat_utils.timer import (
+        timer,
+        displayln,
+        displayln_info,
+        get_id_node,
+        set_display_method,
+    )
+    from .json import (
+        json_dumps,
+        json_loads,
+    )
+    from .lru_cache import (
+        LRUCache,
+    )
+    from .c import (
+        remove_entry_directory_cache,
+        qtouch,
+        does_file_exist_qar,
+        does_file_exist_qar_sync_node,
+        qcat_bytes,
+        qcat_bytes_sync_node,
+    )
 
-@timer
+# from .c import *
+# from .lru_cache import *
+
+@q.timer
 def qmkdirs(path):
     os.makedirs(path, exist_ok=True)
-    remove_entry_directory_cache(path)
+    q.remove_entry_directory_cache(path)
 
-@timer
+@q.timer
 def qmkdirs_info(path):
-    remove_entry_directory_cache(path)
-    if get_id_node() == 0:
-        displayln(f"qmkdirs_info: '{path}'.")
+    q.remove_entry_directory_cache(path)
+    if q.get_id_node() == 0:
+        q.displayln(f"qmkdirs_info: '{path}'.")
         qmkdirs(path)
 
-@timer
+@q.timer
 def mk_dirs(path):
-    remove_entry_directory_cache(path)
+    q.remove_entry_directory_cache(path)
     os.makedirs(path, exist_ok=True)
 
-@timer
+@q.timer
 def mk_dirs_info(path):
-    remove_entry_directory_cache(path)
-    if get_id_node() == 0:
-        displayln(f"mk_dirs_info: '{path}'.")
+    q.remove_entry_directory_cache(path)
+    if q.get_id_node() == 0:
+        q.displayln(f"mk_dirs_info: '{path}'.")
         mk_dirs(path)
 
-@timer
+@q.timer
 def mk_file_dirs(fn):
-    remove_entry_directory_cache(fn)
+    q.remove_entry_directory_cache(fn)
     path = os.path.dirname(fn)
     if path != "":
         os.makedirs(path, exist_ok=True)
 
-@timer
+@q.timer
 def mk_file_dirs_info(path):
-    remove_entry_directory_cache(path)
-    if get_id_node() == 0:
-        displayln(f"mk_file_dirs_info: '{path}'.")
+    q.remove_entry_directory_cache(path)
+    if q.get_id_node() == 0:
+        q.displayln(f"mk_file_dirs_info: '{path}'.")
         mk_file_dirs(path)
 
-@timer
+@q.timer
 def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
     """
     only save from node 0 when is_sync_node
     mk_file_dirs_info(path)
     """
-    if not is_sync_node or get_id_node() == 0:
-        qtouch(path, json_dumps(obj, indent=indent))
+    if not is_sync_node or q.get_id_node() == 0:
+        q.qtouch(path, q.json_dumps(obj, indent=indent))
 
-@timer
+@q.timer
 def load_json_obj(path, default_value=None, *, is_sync_node=True):
     """
     all the nodes read the same data
@@ -65,28 +88,28 @@ def load_json_obj(path, default_value=None, *, is_sync_node=True):
         all nodes individually read the data
     """
     if is_sync_node:
-        b = does_file_exist_qar_sync_node(path)
+        b = q.does_file_exist_qar_sync_node(path)
     else:
-        b = does_file_exist_qar(path)
+        b = q.does_file_exist_qar(path)
     if b:
         if is_sync_node:
-            obj = json_loads(qcat_bytes_sync_node(path))
+            obj = q.json_loads(q.qcat_bytes_sync_node(path))
         else:
-            obj = json_loads(qcat_bytes(path))
+            obj = q.json_loads(q.qcat_bytes(path))
         return obj
     else:
         return default_value
 
-@timer
+@q.timer
 def save_pickle_obj(obj, path, *, is_sync_node=True):
     """
     only save from node 0 when is_sync_node
     mk_file_dirs_info(path)
     """
-    if not is_sync_node or get_id_node() == 0:
-        qtouch(path, pickle.dumps(obj))
+    if not is_sync_node or q.get_id_node() == 0:
+        q.qtouch(path, pickle.dumps(obj))
 
-@timer
+@q.timer
 def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
     """
     all the nodes read the same data
@@ -96,27 +119,27 @@ def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
         all nodes individually read the data
     """
     if is_sync_node:
-        b = does_file_exist_qar_sync_node(path)
+        b = q.does_file_exist_qar_sync_node(path)
     else:
-        b = does_file_exist_qar(path)
+        b = q.does_file_exist_qar(path)
     if b:
         if is_sync_node:
-            obj = pickle.loads(qcat_bytes_sync_node(path))
+            obj = pickle.loads(q.qcat_bytes_sync_node(path))
         else:
-            obj = pickle.loads(qcat_bytes(path))
+            obj = pickle.loads(q.qcat_bytes(path))
         return obj
     else:
         return default_value
 
-@timer
+@q.timer
 def pickle_cache_call(func, path, *, is_sync_node=True):
     """
     all the nodes compute or load the same data if is_sync_node
     """
     if is_sync_node:
-        b = does_file_exist_qar_sync_node(path)
+        b = q.does_file_exist_qar_sync_node(path)
     else:
-        b = does_file_exist_qar(path)
+        b = q.does_file_exist_qar(path)
     if not b:
         obj = func()
         save_pickle_obj(obj, path, is_sync_node=is_sync_node)
@@ -196,7 +219,7 @@ def cache_call(
     """
     get_state() => object to be used as extra key of cache
     #
-    `maxsize` can be `0`, where the LRUCache is effectively turned off.
+    `maxsize` can be `0`, where the q.LRUCache is effectively turned off.
     #
     if is_hash_args:
         Pickle all the keys and use hash as the key (default)
@@ -204,7 +227,7 @@ def cache_call(
         Use `(func.__qualname__, args, state)` directly as `key`.
         Note that `kwargs` has to be empty in this case.
     if path is None:
-        Only cache using LRUCache (default)
+        Only cache using q.LRUCache (default)
     else:
         Also cache the results in f"{path}/{key}.pickle".
         if is_sync_node:
@@ -214,7 +237,7 @@ def cache_call(
             Use this if (1) `path` or `key` is different for different processes;
                      or (2) this function is only called from a certain process.
     if cache is None:
-        cache = LRUCache(maxsize)
+        cache = q.LRUCache(maxsize)
     else:
         The input `cache` will be used. This cache may be shared for other purpose
     #
@@ -236,7 +259,7 @@ def cache_call(
     #
     """
     if cache is None:
-        cache = LRUCache(maxsize)
+        cache = q.LRUCache(maxsize)
     def dec(f):
         @functools.wraps(f)
         def func(*args, is_force_recompute=False, **kwargs):
@@ -278,11 +301,11 @@ def cache_call(
 class SetDisplayMethod:
 
     def __init__(self):
-        set_display_method("py_stdout")
-        # displayln_info(0, f"set_display_method('py_stdout')")
+        q.set_display_method("py_stdout")
+        # q.displayln_info(0, f"set_display_method('py_stdout')")
 
     def __del__(self):
-        displayln_info(0, f"set_display_method()")
-        set_display_method()
+        q.displayln_info(0, f"set_display_method()")
+        q.set_display_method()
 
 ###

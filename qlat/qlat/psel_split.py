@@ -12,7 +12,7 @@ class q:
             displayln_info,
             get_num_node,
             )
-    from .field_selection import (
+    from qlat.field_selection import (
             PointsSelection,
             )
     from .mpi_utils import (

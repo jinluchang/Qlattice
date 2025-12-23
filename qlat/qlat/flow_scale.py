@@ -28,12 +28,6 @@ class q:
 
     from qlat_utils import (
             timer,
-            )
-
-class q:
-
-    from qlat_utils import (
-            timer,
             displayln_info,
             TimerFork,
             timer_display,
@@ -48,7 +42,7 @@ class q:
             get_data_sig_arr,
             )
 
-    from .c import (
+    from qlat.c import (
             FieldRealD,
             GaugeField,
             gf_plaq_flow_force,
@@ -302,19 +296,19 @@ def run_flow_scale(fn_out, *, get_gf=None, fn_gf=None, params=None):
 ### --------------------------------------
 
 (
-        q.get_plaq_factor_for_gf_scale_flow,
-        q.gf_flow_scale,
-        q.gf_plaq_tslice,
-        q.gf_energy_density_dir_tslice,
-        q.gf_flow_record,
-        q.run_flow_scale,
-        q.default_run_flow_scale_params,
-        ) = (
-                get_plaq_factor_for_gf_scale_flow,
-                gf_flow_scale,
-                gf_plaq_tslice,
-                gf_energy_density_dir_tslice,
-                gf_flow_record,
-                run_flow_scale,
-                default_run_flow_scale_params,
-                )
+    q.get_plaq_factor_for_gf_scale_flow,
+    q.gf_flow_scale,
+    q.gf_plaq_tslice,
+    q.gf_energy_density_dir_tslice,
+    q.gf_flow_record,
+    q.run_flow_scale,
+    q.default_run_flow_scale_params,
+) = (
+    get_plaq_factor_for_gf_scale_flow,
+    gf_flow_scale,
+    gf_plaq_tslice,
+    gf_energy_density_dir_tslice,
+    gf_flow_record,
+    run_flow_scale,
+    default_run_flow_scale_params,
+)

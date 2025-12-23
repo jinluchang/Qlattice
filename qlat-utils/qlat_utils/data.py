@@ -1,15 +1,19 @@
-from .rng_state import *
-from .timer import *
-
-class q:
-    from .utils import (
-            get_fname,
-            )
-
 import math
 import copy
 import functools
 import numpy as np
+
+class q:
+    from qlat_utils.utils import (
+        get_fname,
+    )
+    from qlat_utils.timer import (
+        timer,
+        displayln_info,
+    )
+    from qlat_utils.rng_state import (
+        RngState,
+    )
 
 alpha_qed = 1.0 / 137.035999084
 fminv_gev = 0.197326979 # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
@@ -563,7 +567,7 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 # ----------
 
-@timer
+@q.timer
 def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func=None, is_normalizing_rand_sample=True, is_use_old_rand_alg=False):
     r"""
     return rjk_list
@@ -579,7 +583,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int_types)
     assert n_rand_sample >= 0
-    assert isinstance(rng_state, RngState)
+    assert isinstance(rng_state, q.RngState)
     is_np_arr = isinstance(jk_list, np.ndarray)
     rs = rng_state
     n = len(jk_list) - 1
@@ -630,7 +634,7 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
             rjk_list.append(avg + sum([ r_arr[i, j] * jk_diff[j] for j in range(n) ]))
         return rjk_list
 
-@timer
+@q.timer
 def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, is_normalizing_rand_sample=True):
     """
     return rjk_list
@@ -640,7 +644,7 @@ def rjk_mk_jk_val(rs_tag, val, err, n_rand_sample, rng_state, is_normalizing_ran
     where r[i] ~ N(0, 1)
     """
     assert n_rand_sample >= 0
-    assert isinstance(rng_state, RngState)
+    assert isinstance(rng_state, q.RngState)
     assert isinstance(val, real_types)
     assert isinstance(err, real_types)
     rs = rng_state.split(str(rs_tag))
@@ -690,7 +694,7 @@ def mk_g_jk_kwargs():
     #
     # for jk_type = "rjk"
     g_jk_kwargs["n_rand_sample"] = 1024
-    g_jk_kwargs["rng_state"] = RngState("rejk")
+    g_jk_kwargs["rng_state"] = q.RngState("rejk")
     g_jk_kwargs["is_normalizing_rand_sample"] = True
     #
     # Is only needed to reproduce old results
@@ -801,7 +805,7 @@ def jk_blocking_func_default(
     assert False
 
 @use_kwargs(default_g_jk_kwargs)
-@timer
+@q.timer
 def g_jk(data_list, *, eps, **_kwargs):
     """
     Perform initial Jackknife for the original data set.\n
@@ -809,7 +813,7 @@ def g_jk(data_list, *, eps, **_kwargs):
     return jackknife(data_list, eps)
 
 @use_kwargs(default_g_jk_kwargs)
-@timer
+@q.timer
 def g_rejk(jk_list, jk_idx_list, *,
         jk_type,
         all_jk_idx,
@@ -833,7 +837,7 @@ def g_rejk(jk_list, jk_idx_list, *,
     """
     if jk_type == "super":
         if jk_blocking_func is not None:
-            displayln_info(f"g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
+            q.displayln_info(f"g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
@@ -845,7 +849,7 @@ def g_rejk(jk_list, jk_idx_list, *,
     return None
 
 @use_kwargs(default_g_jk_kwargs)
-@timer
+@q.timer
 def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, is_normalizing_rand_sample, **_kwargs):
     """
     Create a jackknife sample with random numbers based on central value ``val`` and error ``err``.\n
@@ -854,7 +858,7 @@ def g_mk_jk_val(rs_tag, val, err, *, jk_type, n_rand_sample, rng_state, is_norma
         default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
         # e.g. n_rand_sample = 1024
         default_g_jk_kwargs["rng_state"] = rng_state
-        # e.g. rng_state = RngState("rejk")
+        # e.g. rng_state = q.RngState("rejk")
         default_g_jk_kwargs["is_normalizing_rand_sample"] = is_normalizing_rand_sample
         # e.g. is_normalizing_rand_sample = True
     """
@@ -884,14 +888,14 @@ def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
         assert False
     return None
 
-@timer
+@q.timer
 def g_jk_avg_err(jk_list, **kwargs):
     """
     Return ``(avg, err,)`` of the ``jk_list``.
     """
     return g_jk_avg(jk_list), g_jk_err(jk_list, **kwargs)
 
-@timer
+@q.timer
 def g_jk_avg_err_arr(jk_list, **kwargs):
     avg, err = g_jk_avg_err(jk_list, **kwargs)
     avg_err_arr = np.stack([ avg, err, ])
@@ -972,10 +976,10 @@ class JkKwargs:
 def interpolate_list(data_arr, i):
     """
     Old function.
-    return approximately v[i]
+    return approximately data_arr[i]
     Use `q.interp(data_arr, i, 0)` instead
     """
-    return interp(v, i, 0)
+    return interp(data_arr, i, 0)
 
 def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
     """

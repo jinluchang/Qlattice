@@ -11,7 +11,7 @@ class q:
             CoordinateD,
             mk_cache,
             )
-    from .c import (
+    from qlat.c import (
             GaugeField,
             Prop,
             FermionField4d,
