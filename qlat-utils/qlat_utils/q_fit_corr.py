@@ -852,7 +852,7 @@ class HmcParams:
             rng = RngState(f"seed-hmc-core-{traj}")
         if param_arr is None:
             assert n_params is not None
-            n_params = n_energies * (n_ops + 1)
+            # n_params = n_energies * (n_ops + 1)
             param_arr = np.zeros(n_params, dtype=float)
         else:
             if n_params is None:

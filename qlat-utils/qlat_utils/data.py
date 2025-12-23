@@ -971,6 +971,197 @@ class JkKwargs:
 
 # ----
 
+def get_val_exp(val, exp=0):
+    """
+    return val, exp
+    where
+    `val * 10**exp` is the same as input
+    """
+    assert isinstance(val, (int, float))
+    assert isinstance(exp, int)
+    if val == 0.0:
+        return 0.0, 0
+    while abs(val) >= 10.0:
+        val /= 10
+        exp += 1
+    while abs(val) < 1.0:
+        val *= 10
+        exp -= 1
+    return val, exp
+
+def show_val(
+        val,
+        *,
+        is_latex=None,
+        num_float_digit=None,
+        num_exp_digit=None,
+        exponent=None,
+    ):
+    """
+    `is_latex` can be in [ None, False, True, ]
+    `num_float_digit` or `num_exp_digit` can be in [ None, False, True, int, ]
+    `exponent` can be in [ None, int, ]
+    """
+    assert isinstance(val, (int, float))
+    if is_latex is None:
+        is_latex = True
+    if exponent is not None:
+        assert isinstance(exponent, int)
+        num_float_digit = False
+        assert num_exp_digit is not False
+        e = exponent
+        v = val / 10**e
+    else:
+        v, e = get_val_exp(val)
+    if (num_float_digit is None) and (num_exp_digit is None):
+        if -2 <= e <= 4:
+            num_float_digit = True
+            num_exp_digit = False
+        else:
+            num_exp_digit = True
+            num_float_digit = False
+    if num_float_digit is None:
+        if num_exp_digit is False:
+            num_float_digit = True
+        else:
+            num_float_digit = False
+    if num_exp_digit is None:
+        if num_float_digit is False:
+            num_exp_digit = True
+        else:
+            num_exp_digit = False
+    if num_float_digit is True:
+        num_float_digit = max(1, 5 - e)
+    else:
+        assert (num_float_digit is False) or isinstance(num_float_digit, int)
+    if num_exp_digit is True:
+        num_exp_digit = 5
+    else:
+        assert (num_exp_digit is False) or isinstance(num_exp_digit, int)
+    assert not ((num_float_digit is False)
+                and (num_exp_digit is False))
+    if num_exp_digit is False:
+        assert isinstance(num_float_digit, int)
+        assert num_float_digit >= 0
+        return (f"{{:.{num_float_digit}f}}").format(val)
+    else:
+        assert isinstance(num_exp_digit, int)
+        assert num_exp_digit >= 0
+        v_str = (f"{{:.{num_exp_digit}f}}").format(v)
+        if is_latex:
+            return f"{v_str} \\times 10^{{{e}}}"
+        else:
+            return f"{v_str}E{e}"
+
+def show_val_err(
+        val_err,
+        *,
+        is_latex=None,
+        num_float_digit=None,
+        num_exp_digit=None,
+        exponent=None,
+    ):
+    """
+    `is_latex` can be in [ None, False, True, ]
+    `num_float_digit` or `num_exp_digit` can be in [ None, False, True, int, ]
+    `exponent` can be in [ None, int, ]
+    #
+    Examples:
+    print(show_val_err((1.12e16, 12), num_float_digit=1))
+    print(show_val_err((1.12e16, 12e6), num_exp_digit=True))
+    print(show_val_err((1.12e16, 12e6)))
+    print(show_val_err((1.12e16, 12e7), exponent=10))
+    print(show_val_err((1.12e16, 12e7), exponent=10, is_latex=False))
+    """
+    if isinstance(val_err, (int, float)):
+        val = val_err
+        return show_val(
+            val,
+            is_latex=is_latex,
+            num_float_digit=num_float_digit,
+            num_exp_digit=num_exp_digit,
+            exponent=exponent,
+        )
+    val, err = val_err
+    if err == 0:
+        return show_val(
+            val,
+            is_latex=is_latex,
+            num_float_digit=num_float_digit,
+            num_exp_digit=num_exp_digit,
+            exponent=exponent,
+        )
+    assert isinstance(val, (int, float))
+    assert isinstance(err, (int, float))
+    if is_latex is None:
+        is_latex = True
+    if exponent is not None:
+        assert isinstance(exponent, int)
+        num_float_digit = False
+        assert num_exp_digit is not False
+        e = exponent
+        v = val / 10**e
+    else:
+        v, e = get_val_exp(val)
+    if (num_float_digit is None) and (num_exp_digit is None):
+        if -2 <= e <= 4:
+            num_float_digit = True
+            num_exp_digit = False
+        else:
+            num_exp_digit = True
+            num_float_digit = False
+    if num_float_digit is None:
+        if num_exp_digit is False:
+            num_float_digit = True
+        else:
+            num_float_digit = False
+    if num_exp_digit is None:
+        if num_float_digit is False:
+            num_exp_digit = True
+        else:
+            num_exp_digit = False
+    e_v, e_e = get_val_exp(err)
+    if abs(e_v) <= 2.5:
+        e_v *= 100
+        e_e -= 2
+    else:
+        e_v *= 10
+        e_e -= 1
+    if num_float_digit is True:
+        num_float_digit = max(0, -e_e)
+    else:
+        assert (num_float_digit is False) or isinstance(num_float_digit, int)
+    if num_exp_digit is True:
+        num_exp_digit = max(0, e - e_e)
+    else:
+        assert (num_exp_digit is False) or isinstance(num_exp_digit, int)
+    assert not ((num_float_digit is False)
+                and (num_exp_digit is False))
+    if num_exp_digit is False:
+        assert isinstance(num_float_digit, int)
+        assert num_float_digit >= 0
+        if abs(err) >= 1.0:
+            return (f"{{0:.{num_float_digit}f}}({{1:.{num_float_digit}f}})").format(val, err)
+        else:
+            e_e = -num_float_digit
+            e_v = err / 10**e_e
+            return (f"{{0:.{num_float_digit}f}}({{1}})").format(val, round(e_v))
+    else:
+        assert isinstance(num_exp_digit, int)
+        assert num_exp_digit >= 0
+        e_e = e
+        e_v = err / 10**e_e
+        if abs(e_v) >= 1.0:
+            v_str = (f"{{0:.{num_exp_digit}f}}({{1:.{num_exp_digit}f}})").format(v, e_v)
+        else:
+            e_e = e - num_exp_digit
+            e_v = err / 10**e_e
+            v_str = (f"{{0:.{num_exp_digit}f}}({{1}})").format(v, round(e_v))
+        if is_latex:
+            return f"{v_str} \\times 10^{{{e}}}"
+        else:
+            return f"{v_str}E{e}"
+
 # ---- old funcs
 
 def interpolate_list(data_arr, i):

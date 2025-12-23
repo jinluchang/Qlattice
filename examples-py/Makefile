@@ -68,6 +68,7 @@ tests = \
 		fit-corr-2.log \
 		hlt-reconstruction.log \
 		mpi-utils.log \
+		data.log \
 		mat-mpi-test.log
 
 all: run
