@@ -22,7 +22,8 @@ source qcore/set-prefix.sh $name
     # opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages -f $build"
     # opts="--user --verbose --force-reinstall -f $build"
     # opts="--verbose -f $build --force-reinstall --config-settings compile-args=-j$num_proc"
-    opts="--verbose -f $build --force-reinstall --no-build-isolation --config-settings compile-args=-j$num_proc"
+    # opts="--verbose -f $build --force-reinstall --no-build-isolation --config-settings compile-args=-j$num_proc"
+    opts="--verbose -f $build --no-build-isolation --config-settings compile-args=-j$num_proc"
 
     time-run python3 -m build -ns -o "$build" "$wd"/qlat-utils
     time-run pip3 install $opts qlat-utils
