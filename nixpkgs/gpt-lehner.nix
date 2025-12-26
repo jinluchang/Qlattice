@@ -19,7 +19,8 @@
 let
   use-gitee-wd = if use-gitee == null then false else use-gitee;
   pname = "gpt-lehenr";
-  version = "9bb16fc9fe134623b94116b2a47f7b9288f360df"; # 2025/06/15
+  # version = "9bb16fc9fe134623b94116b2a47f7b9288f360df"; # 2025/06/15
+  version = "d69e4d0389015b338a2956de806a53bb0354efaf"; # 2025/12/12
 in
 
 buildPythonPackage {
