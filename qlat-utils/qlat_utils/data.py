@@ -38,7 +38,10 @@ class use_kwargs:
     self.keys
     """
 
-    def __init__(self, default_kwargs, keys = None):
+    def __init__(self, default_kwargs, keys=None):
+        """
+        If `keys` is specified, then only the specified keys will be passed to the underlying function.
+        """
         self.default_kwargs = default_kwargs
         self.keys = None
 
@@ -688,14 +691,14 @@ def mk_g_jk_kwargs():
     g_jk_kwargs["jk_type"] = "rjk"  # choices: "rjk", "super"
     g_jk_kwargs["eps"] = 1
     #
-    # for jk_type = "super"
-    g_jk_kwargs["all_jk_idx"] = None
-    g_jk_kwargs["get_all_jk_idx"] = None
-    #
     # for jk_type = "rjk"
     g_jk_kwargs["n_rand_sample"] = 1024
     g_jk_kwargs["rng_state"] = q.RngState("rejk")
     g_jk_kwargs["is_normalizing_rand_sample"] = True
+    #
+    # for jk_type = "super"
+    g_jk_kwargs["all_jk_idx"] = None
+    g_jk_kwargs["get_all_jk_idx"] = None
     #
     # Is only needed to reproduce old results
     # Possible choice: "v1" (also need default_g_jk_kwargs["is_normalizing_rand_sample"] == False)
@@ -941,35 +944,19 @@ def g_jk_sample_size(job_tag, traj_list, **kwargs):
 
 default_g_jk_kwargs.update(mk_g_jk_kwargs())
 
-class JkKwargs:
-
-    """
-    Example:
-    #
-    with q.JkKwargs(n_rand_sample=1024, block_size=10, block_size_dict={ "48I": 20, }):
-        ...
-    #
-    """
-
-    def __init__(self, **kwargs):
-        self.new_kwargs = kwargs
-        self.original = dict()
-
-    def __enter__(self):
-        for key, value in self.new_kwargs.items():
-            self.original[key] = default_g_jk_kwargs[key]
-            default_g_jk_kwargs[key] = self.new_kwargs[key]
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        assert exc_type is None
-        assert exc_value is None
-        assert traceback is None
-        for key, value in self.new_kwargs.items():
-            default_g_jk_kwargs[key] = self.original[key]
-        self.new_kwargs = None
-        self.original = None
-
 # ----
+
+default_show_val_kwargs = dict()
+
+def mk_show_val_kwargs():
+    d = dict()
+    d["is_latex"] = True
+    d["num_float_digit"] = None
+    d["num_exp_digit"] = None
+    d["exponent"] = None
+    return d
+
+default_show_val_kwargs.update(mk_show_val_kwargs())
 
 def get_val_exp(val, exp=0):
     """
@@ -989,13 +976,14 @@ def get_val_exp(val, exp=0):
         exp -= 1
     return val, exp
 
+@use_kwargs(default_show_val_kwargs)
 def show_val(
         val,
         *,
-        is_latex=None,
-        num_float_digit=None,
-        num_exp_digit=None,
-        exponent=None,
+        is_latex,
+        num_float_digit,
+        num_exp_digit,
+        exponent,
     ):
     """
     `is_latex` can be in [ None, False, True, ]
@@ -1053,13 +1041,14 @@ def show_val(
         else:
             return f"{v_str}E{e}"
 
+@use_kwargs(default_show_val_kwargs)
 def show_val_err(
         val_err,
         *,
-        is_latex=None,
-        num_float_digit=None,
-        num_exp_digit=None,
-        exponent=None,
+        is_latex,
+        num_float_digit,
+        num_exp_digit,
+        exponent,
     ):
     """
     `is_latex` can be in [ None, False, True, ]
@@ -1161,6 +1150,69 @@ def show_val_err(
             return f"{v_str} \\times 10^{{{e}}}"
         else:
             return f"{v_str}E{e}"
+
+# ----
+
+class NewDictValues:
+
+    """
+    Example:
+    #
+    with q.NewDictValues(dictionary, k1=v1, k2=v2, ...):
+        ...
+    #
+    """
+
+    def __init__(self, dictionary, **kwargs):
+        self.dictionary = dictionary
+        self.new_kwargs = kwargs
+        self.original = dict()
+
+    def __enter__(self):
+        for key in self.new_kwargs.keys():
+            self.original[key] = self.dictionary[key]
+            self.dictionary[key] = self.new_kwargs[key]
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        assert exc_type is None
+        assert exc_value is None
+        assert traceback is None
+        for key in self.new_kwargs.keys():
+            self.dictionary[key] = self.original[key]
+        self.new_kwargs = None
+        self.original = None
+
+# ----
+
+class JkKwargs(NewDictValues):
+
+    """
+    Example:
+    #
+    with q.JkKwargs(n_rand_sample=1024, block_size=10, block_size_dict={ "48I": 20, }):
+        ...
+    #
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(default_g_jk_kwargs, **kwargs)
+
+# ----
+
+class ShowKwargs(NewDictValues):
+
+    """
+    Example:
+    #
+    with q.ShowKwargs(is_latex=True, exponent=-10):
+        ...
+    #
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(default_show_val_kwargs, **kwargs)
+
+# ----
 
 # ---- old funcs
 
