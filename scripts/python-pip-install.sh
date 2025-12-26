@@ -28,7 +28,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install -vU sympy
     time-run pip3 install -vU cython
     time-run pip3 install -vU pybind11
-    time-run pip3 install -vU numpy
+    time-run pip3 install -vU "numpy<=2.3.4"
     time-run pip3 install -vU pythran
     time-run pip3 install -vU scipy
     time-run pip3 install -vU poetry_core
