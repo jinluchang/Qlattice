@@ -1084,6 +1084,13 @@ def show_val_err(
     assert isinstance(err, (int, float))
     if is_latex is None:
         is_latex = True
+    e_v, e_e = get_val_exp(err)
+    if abs(e_v) <= 2.5:
+        e_v *= 100
+        e_e -= 2
+    else:
+        e_v *= 10
+        e_e -= 1
     if exponent is not None:
         assert isinstance(exponent, int)
         num_float_digit = False
@@ -1092,6 +1099,9 @@ def show_val_err(
         v = val / 10**e
     else:
         v, e = get_val_exp(val)
+        if e_e > e:
+            e = e_e
+            v = val / 10**e
     if (num_float_digit is None) and (num_exp_digit is None):
         if -2 <= e <= 4:
             num_float_digit = True
@@ -1109,13 +1119,6 @@ def show_val_err(
             num_exp_digit = True
         else:
             num_exp_digit = False
-    e_v, e_e = get_val_exp(err)
-    if abs(e_v) <= 2.5:
-        e_v *= 100
-        e_e -= 2
-    else:
-        e_v *= 10
-        e_e -= 1
     if num_float_digit is True:
         num_float_digit = max(0, -e_e)
     else:

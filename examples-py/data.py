@@ -37,6 +37,7 @@ q.json_results_append(q.show_val_err((1.12e16, 12e6), num_exp_digit=True))
 q.json_results_append(q.show_val_err((1.12e16, 12e6)))
 q.json_results_append(q.show_val_err((1.12e16, 12e7), exponent=10))
 q.json_results_append(q.show_val_err((1.12e16, 12e7), exponent=10, is_latex=False))
+q.json_results_append(q.show_val_err((1.12e6, 12e16)))
 
 with q.ShowKwargs(is_latex=True, exponent=-10):
     q.json_results_append(q.show_val_err((10.12e-10, 1.322e-10)))
