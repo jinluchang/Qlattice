@@ -198,7 +198,8 @@ in buildPythonPackage rec {
     #
     pwd
     #
-    rm -rfv ./*/build/results
+    # rm -rfv ./*/build/results
+    rm -rf ./*/build
     #
     mkdir -p "$out/share/qlat/examples-cpp-grid"
     rsync -a --delete . "$out/share/qlat/examples-cpp-grid"

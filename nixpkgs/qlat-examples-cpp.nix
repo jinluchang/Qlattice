@@ -186,7 +186,8 @@ in buildPythonPackage rec {
     fi
     echo
     #
-    rm -rfv ./*/build/results
+    # rm -rfv ./*/build/results
+    rm -rf ./*/build
     #
     pwd
     mkdir -p "$out/share/qlat/examples-cpp"

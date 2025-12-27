@@ -198,8 +198,10 @@ in buildPythonPackage rec {
     #
     pwd
     #
-    rm -rfv ./*.p/results
-    rm -rfv ./sparse-from-cps/results*
+    # rm -rfv ./*.p/results
+    # rm -rfv ./sparse-from-cps/results*
+    rm -rf ./sparse-from-cps/results*
+    rm -rf ./*.p
     #
     mkdir -p "$out/share/qlat/examples-py-cps"
     rsync -a --delete . "$out/share/qlat/examples-py-cps"

@@ -197,7 +197,8 @@ in buildPythonPackage rec {
     #
     pwd
     #
-    rm -rfv ./*.p/results
+    # rm -rfv ./*.p/results
+    rm -rf ./*.p
     #
     mkdir -p "$out/share/qlat/examples-py-gpt"
     rsync -a --delete . "$out/share/qlat/examples-py-gpt"
