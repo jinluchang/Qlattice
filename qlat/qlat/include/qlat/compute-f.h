@@ -168,7 +168,7 @@ inline RealD hxCalcIntegrate(const RealD len)
   hx.init(len);
   const RealD ans =
       1.0 / (4.0 * sqr(PI)) * integrate(hx, 0.0, 1.0, 0.0, 1.0e-12);
-  assert(false == isnan(ans));
+  assert(false == std::isnan(ans));
   return ans;
 }
 
