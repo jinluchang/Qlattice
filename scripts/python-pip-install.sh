@@ -24,6 +24,7 @@ source qcore/set-prefix.sh $name
     time-run pip3 install -vU mpi4py
     : )
 
+    time-run pip3 install -vU meson-python
     time-run pip3 install -vU psutil
     time-run pip3 install -vU sympy
     time-run pip3 install -vU cython
