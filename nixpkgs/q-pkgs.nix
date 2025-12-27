@@ -209,8 +209,8 @@ let
     else pkgs.eigen;
     #
     qlat-cc = (if ! opts.use-clang
-    then { inherit (pkgs) gcc; }
-    else { inherit (pkgs) clang; inherit openmp; }
+    then { cc = qlat-stdenv.cc; }
+    else { cc = qlat-stdenv.cc; inherit openmp; }
     )
     //
     { inherit (pkgs) pkg-config; }
@@ -230,8 +230,6 @@ let
     } else {}
     );
     #
-    qlat-cc-lib = qlat-stdenv.cc.cc.lib;
-    #
     # ollama = n-pkgs.ollama;
     ollama = pkgs.ollama;
     #
@@ -245,7 +243,7 @@ let
     ucx-mt-dev = pkgs.buildEnv {
       name = "ucx-mt-dev";
       paths = [ ucx-mt ];
-      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
     };
     mpi = if ! opts.use-ucx && ! opts.use-cuda-software
     then pkgs.mpi
@@ -493,20 +491,21 @@ let
       qlat-py
       qlat-nixgl
       qlat-stdenv
-      qlat-cc-lib
       mpi
       nvidia_x11_bin
       ;
-    } // qlat-dep-pkgs // qlat-dep-pkgs-extra;
+    }
+    // qlat-dep-pkgs
+    // qlat-dep-pkgs-extra;
     qlat-tests = pkgs.buildEnv {
       name = "qlat-tests${qlat-name}";
       paths = builtins.attrValues qlat-tests-pkgs;
-      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
     };
     qlat-env = pkgs.buildEnv {
       name = "qlat-env${qlat-name}";
       paths = builtins.attrValues qlat-pkgs;
-      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
     };
     qlat-sh = pkgs.mkShell rec {
@@ -526,7 +525,7 @@ let
         qlat-env
       ] ++ builtins.attrValues qlat-cc;
       runScript = "bash";
-      extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
+      extraOutputsToInstall = [ "bin" "dev" "lib" "static" "man" "doc" "info" ];
       profile=''
         # PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
@@ -615,7 +614,6 @@ let
         qlat-jhub-py
         qlat-nixgl
         qlat-stdenv
-        qlat-cc-lib
         mpi
         nvidia_x11_bin
         ollama
@@ -677,7 +675,7 @@ let
       // qlat-dep-pkgs
       // qlat-dep-pkgs-extra
       );
-      extraOutputsToInstall = [ "out" "bin" "dev" "static" "man" "doc" "info" ];
+      extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
     };
     qlat-jhub-sh = pkgs.mkShell rec {
@@ -697,7 +695,7 @@ let
         qlat-jhub-env
       ] ++ builtins.attrValues qlat-cc;
       runScript = "bash";
-      extraOutputsToInstall = [ "bin" "dev" "static" "man" "doc" "info" ];
+      extraOutputsToInstall = [ "bin" "dev" "lib" "static" "man" "doc" "info" ];
       profile=''
         # PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig"
       '';
