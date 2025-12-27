@@ -208,12 +208,13 @@ let
     then grid-lehner
     else pkgs.eigen;
     #
-    qlat-cc = (if ! opts.use-clang
-    then { cc = qlat-stdenv.cc; }
-    else { cc = qlat-stdenv.cc; inherit openmp; }
-    )
+    qlat-cc = {
+      cc = qlat-stdenv.cc;
+    }
     //
     { inherit (pkgs) pkg-config; }
+    //
+    (if opts.use-clang then { inherit openmp; } else {})
     //
     (if opts.use-cuda-software then {
       inherit (pkgs.cudaPackages)
@@ -701,6 +702,16 @@ let
       '';
     };
     #
+    qlat-cc-lib = pkgs.buildEnv {
+      name = "qlat-cc-lib-env${qlat-name}";
+      paths = builtins.attrValues ({
+        cc-cc = qlat-stdenv.cc.cc;
+        cc-c = qlat-stdenv.cc.libc;
+      });
+      extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
+      ignoreCollisions = true;
+    };
+    #
     q-pkgs = {
       inherit qlat-py qlat-env qlat-sh qlat-fhs;
       inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
@@ -719,6 +730,7 @@ let
     inherit qlat-py qlat-tests qlat-env qlat-sh qlat-fhs;
     inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
     inherit qlat-pkgs q-pkgs;
+    inherit qlat-cc-lib;
     qlat-options = opts;
     qlat-use-pypi = opts.use-pypi;
   };
