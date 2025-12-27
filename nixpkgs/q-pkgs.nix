@@ -18,7 +18,7 @@ let
   nixpkgs-wd = if nixpkgs == null then nixpkgs-default else nixpkgs;
   import-nixpkgs-wd = import nixpkgs-wd;
 
-  version-pypi = "0.86";
+  version-pypi = "0.87";
 
   o-pkgs = import-nixpkgs-wd {
     config.allowUnfree = true;
