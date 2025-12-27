@@ -210,6 +210,8 @@ let
     #
     qlat-cc = {
       cc = qlat-stdenv.cc;
+      cc-c = qlat-stdenv.cc.libc;
+      cc-cc = qlat-stdenv.cc.cc;
     }
     //
     { inherit (pkgs) pkg-config; }
@@ -705,8 +707,8 @@ let
     qlat-cc-lib = pkgs.buildEnv {
       name = "qlat-cc-lib-env${qlat-name}";
       paths = builtins.attrValues ({
-        cc-cc = qlat-stdenv.cc.cc;
         cc-c = qlat-stdenv.cc.libc;
+        cc-cc = qlat-stdenv.cc.cc;
       });
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
