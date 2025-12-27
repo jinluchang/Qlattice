@@ -191,7 +191,7 @@ in buildPythonPackage rec {
     pwd
     #
     # rm -rfv ./*.p/results
-    rm -rfv ./*.p
+    rm -rf ./*.p
     #
     mkdir -p "$out/share/qlat/examples-py"
     rsync -a --delete . "$out/share/qlat/examples-py"
