@@ -230,6 +230,8 @@ let
     } else {}
     );
     #
+    qlat-cc-lib = qlat-stdenv.cc.cc.lib;
+    #
     # ollama = n-pkgs.ollama;
     ollama = pkgs.ollama;
     #
@@ -491,6 +493,7 @@ let
       qlat-py
       qlat-nixgl
       qlat-stdenv
+      qlat-cc-lib
       mpi
       nvidia_x11_bin
       ;
@@ -612,6 +615,7 @@ let
         qlat-jhub-py
         qlat-nixgl
         qlat-stdenv
+        qlat-cc-lib
         mpi
         nvidia_x11_bin
         ollama
