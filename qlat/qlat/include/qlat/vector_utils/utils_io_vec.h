@@ -2767,6 +2767,7 @@ inline void load_gwu_cs_evecs(const char* filename, vector_cs<Ty >& eigen, vecto
   const bool check = true;
   bool read_single = single_file;
   if(read==true){read_single = check_Eigen_file_type(filename, io_use, n1, check);}
+  (void)read_single;
   FILE* file = open_gwu_eigen(filename, io_use, read);
   //
   size_t noden = io_use.noden;
