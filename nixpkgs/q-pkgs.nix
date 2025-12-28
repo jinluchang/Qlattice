@@ -649,7 +649,6 @@ let
         file
         zip
         unzip
-        acl
         atk
         attr
         bzip2
@@ -663,8 +662,8 @@ let
         libssh
         nspr
         nss
-        zstd
         pango
+        zstd
         ;
     }
     // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
@@ -688,6 +687,7 @@ let
       pipewire
       cups
       dbus
+      acl
       alsa-lib
       at-spi2-atk
       at-spi2-core
