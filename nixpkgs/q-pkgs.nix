@@ -650,7 +650,6 @@ let
         zip
         unzip
         atk
-        attr
         bzip2
         cairo
         curl
@@ -691,6 +690,7 @@ let
       alsa-lib
       at-spi2-atk
       at-spi2-core
+      attr
       gdk-pixbuf
       glib
       gtk3
