@@ -610,13 +610,10 @@ let
     )
     // qlat-py-pkgs
     ));
-    qlat-jhub-env = pkgs.buildEnv {
-      name = "qlat-jhub-env${qlat-name}";
-      paths = builtins.attrValues ({
+    qlat-lib-set = ({
         inherit
         qlat-jhub-py
         qlat-nixgl
-        qlat-stdenv
         mpi
         nvidia_x11_bin
         ollama
@@ -652,32 +649,90 @@ let
         file
         zip
         unzip
+        acl
+        atk
+        attr
+        bzip2
+        cairo
+        curl
+        expat
+        fontconfig
+        freetype
+        icu
+        libsodium
+        libssh
+        nspr
+        nss
+        zstd
+        pango
         ;
-      }
-      // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
-      then {
-        inherit (pkgs)
-        poppler_utils
-        ;
-      }
-      else {
-        inherit (pkgs)
-        poppler-utils
-        ;
-      }
-      )
-      // (if is-linux
-      then {
-        inherit (pkgs)
-        linux-pam
-        ;
-      }
-      else {}
-      )
-      // qlat-cc
-      // qlat-dep-pkgs
-      // qlat-dep-pkgs-extra
-      );
+    }
+    // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
+    then {
+      inherit (pkgs)
+      poppler_utils
+      ;
+    }
+    else {
+      inherit (pkgs)
+      poppler-utils
+      ;
+    }
+    )
+    // (if is-linux
+    then {
+      inherit (pkgs)
+      linux-pam
+      util-linux
+      fuse3
+      pipewire
+      cups
+      dbus
+      alsa-lib
+      at-spi2-atk
+      at-spi2-core
+      gdk-pixbuf
+      glib
+      gtk3
+      libappindicator-gtk3
+      libdrm
+      libGL
+      libglvnd
+      libnotify
+      libpulseaudio
+      libunwind
+      libusb1
+      libuuid
+      libxkbcommon
+      mesa
+      vulkan-loader
+      ;
+      inherit (pkgs.xorg)
+      libX11
+      libXScrnSaver
+      libXcomposite
+      libXcursor
+      libXdamage
+      libXext
+      libXfixes
+      libXi
+      libXrandr
+      libXrender
+      libXtst
+      libxcb
+      libxkbfile
+      libxshmfence
+      ;
+    }
+    else {}
+    )
+    // qlat-cc
+    // qlat-dep-pkgs
+    // qlat-dep-pkgs-extra
+    );
+    qlat-jhub-env = pkgs.buildEnv {
+      name = "qlat-jhub-env${qlat-name}";
+      paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
     };
@@ -704,16 +759,6 @@ let
       '';
     };
     #
-    qlat-cc-lib = pkgs.buildEnv {
-      name = "qlat-cc-lib-env${qlat-name}";
-      paths = builtins.attrValues ({
-        cc-c = qlat-stdenv.cc.libc;
-        cc-cc = qlat-stdenv.cc.cc;
-      });
-      extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
-      ignoreCollisions = true;
-    };
-    #
     q-pkgs = {
       inherit qlat-py qlat-env qlat-sh qlat-fhs;
       inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
@@ -732,7 +777,7 @@ let
     inherit qlat-py qlat-tests qlat-env qlat-sh qlat-fhs;
     inherit qlat-jhub-py qlat-jhub-env qlat-jhub-sh qlat-jhub-fhs;
     inherit qlat-pkgs q-pkgs;
-    inherit qlat-cc-lib;
+    inherit qlat-lib-set;
     qlat-options = opts;
     qlat-use-pypi = opts.use-pypi;
   };
