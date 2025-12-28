@@ -191,7 +191,15 @@ Spatial distance list
    mk_r_sq_interp_idx_coef_list
 
 Jackknife method
-^^^^^^^^^^^^^^^^
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   contents/jackknife-random.md
+
+Jackknife implementation
+------------------------
 
 .. autosummary::
    :toctree: generated

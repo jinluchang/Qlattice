@@ -605,11 +605,17 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func
     len(rjk_list) == 1 + n_rand_sample
     distribution of rjk_list should be similar as the distribution of avg
     r_{i,j} ~ N(0, 1)
+    if is_normalizing_rand_sample:
+        n_j = \sum_i r_{i,j}^2
+        r_{i,j} <- \sqrt{n_rand_sample / n_j} r_{i,j}
     avg = jk_list[0]
     len(jk_list) = n + 1
     rjk_list[i] = avg + \sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
     #
+    if `jk_blocking_func` is provided:
     jk_blocking_func(jk_idx) => blocked jk_idx
+    #
+    rjk_list[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_list[j] - avg)
     """
     assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int_types)
