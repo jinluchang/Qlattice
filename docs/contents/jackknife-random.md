@@ -1,7 +1,7 @@
 # A Jackknife-bootstrap hybrid resampling method
 
 > Luchang Jin
-> 2025/12/28
+> 2025/12/29
 
 $$
 \def\ba#1\ea{\begin{align}#1\end{align}}
@@ -46,9 +46,9 @@ C_\text{avg} = \frac{1}{N} \sum_{j} C_j
 \ea
 $$
 
-where the summation ranges over all available configurations, $N$ is the total number of available configurations.
+where the summation ranges over all available configurations, $N$ is the total number of available configurations for this observable $C$.
 
-We intend to define the Jackknife-bootstrap hybrid samples to fluctuate around $C_\text{avg}$ similar to how $C_\text{avg}$ fluctuate around the true expectation value of $C$. The definition of the hybrid samples is
+We intend to define the Jackknife-bootstrap hybrid (J-B hybrid) samples to fluctuate around $C_\text{avg}$ similar to how $C_\text{avg}$ fluctuate around the true expectation value of $C$. The total number of J-B hybrid samples is $N_\text{rs}$. Similar to the standard bootstrap procedure, this number is adjustable. The definition of the J-B hybrid samples is
 
 $$
 \ba
@@ -57,26 +57,14 @@ $$
 C_\text{avg}
 +
 \sum_{j}
-\frac{R_{i,j}}{\sqrt{N(N-1)}}
+\frac{r_{i,j}}{\sqrt{N(N-1)}}
 (C_j - C_\text{avg})
 ,
 \\
 \ea
 $$
 
-where $i$ is the resampling sample index that ranges from $1$ to $N_\text{rs}$. The random weights $R_{i,j}$ is given by
-
-$$
-\ba
-R_{i,j} = \sqrt\frac{N_\text{rs}}{\sum_{i'} r_{i',j}^2} r_{i,j}
-\approx
-r_{i,j}
-,
-\\
-\ea
-$$
-
-and $r_{i,j}$ is a random number follows standard normal distribution
+where $i$ is the resampling sample index that ranges from $1$ to $N_\text{rs}$. The random weights $r_{i,j}$ follow the standard normal distribution with
 
 $$
 \ba
@@ -89,36 +77,38 @@ $$
 \ea
 $$
 
-The random numbers $r_{i,j}$ with different $i$ or $j$ indices are statistically independent. Note that the $j$ index should uniquely label the configuration, including a ID for the ensemble and the trajectory number.
+The random numbers $r_{i,j}$ with different $i$ or $j$ indices are statistically independent. Note that the $j$ index should uniquely label the configuration, including both the ID for the ensemble and the trajectory number of the configuration within the ensemble.
 
-After the Jackknife-bootstrap hybrid samples are obtained, we can calculate the estimation of the central value and the statistical error of observable $O$.
+After the J-B hybrid samples are obtained, we can calculate the estimation of the central value and the statistical error of observable $O$.
 
 $$
 \ba
 O_\text{avg} =& O(C_\text{avg})
+,
 \\
-O_\text{err} =& \sqrt{\frac{1}{N_\text{rs}}\sum_{i} (O(\overline{C}_i) - O_\text{avg})^2}
+O_\text{err} =& \sqrt{\frac{1}{N_\text{rs}}\sum_{i=1}^{N_\text{rs}} (O(\overline{C}_i) - O_\text{avg})^2}
+.
 \\
 \ea
 $$
 
 ## Blocking
 
-To deal with possible correlation between the data from different configurations, we need to introduce blocking. In the Jackknife-bootstrap hybrid resampling method, we implement the blocking procedure as follow.
+To deal with possible correlation between the data from different configurations, we need to introduce blocking. In the J-B hybrid resampling method, we implement the blocking procedure as follow.
 
-We introduce the blocking function acting on the configuration index $j$
+We introduce the blocking function acting on the J-B hybrid sample index $i$ and the configuration index $j$
 
 $$
 \ba
-b(j).
+b(i,j).
 \ea
 $$
 
-The function should return unique label for the block that the configuration $j$ belongs to. The number of configurations within a block is
+The function should return unique label for the block that the configuration $j$ belongs to. Note that the blocking schemes can be different for different J-B hybrid sample index ($i$). Typically, we should keep the blocking size the same. However, we may choose different the blocking boundaries for different J-B hybrid samples. The number of configurations within a block is denoted as
 
 $$
 \ba
-N_{b(j)}.
+N_{b(i,j)}.
 \ea
 $$
 
@@ -132,7 +122,7 @@ C_\text{avg} = \frac{1}{N} \sum_{j} C_j
 \ea
 $$
 
-The definition of the hybrid samples is slightly altered as
+The definition of the J-B hybrid samples is slightly altered as
 
 $$
 \ba
@@ -141,13 +131,13 @@ $$
 C_\text{avg}
 +
 \sum_{j}
-\frac{R_{i,b(j)}}{\sqrt{N(N-N_{b(j)})}}
+\frac{r_{i,b(i,j)}}{\sqrt{N(N-N_{b(i,j)})}}
 (C_j - C_\text{avg})
 .
 \\
 \ea
 $$
 
-Note that the random weights depends on the label of the block ($b(j)$), instead of the index of the configuration ($j$).
+Note that the random weights $r_{i,b(i,j)}$ depends on the label of the block ($b(i,j)$), instead of the index of the configuration ($j$).
 
 The remaining procedures are the same as before.

@@ -178,6 +178,8 @@ Data analysis
    :toctree: generated
 
    get_chunk_list
+   check_zero
+   qnorm
 
 Spatial distance list
 ^^^^^^^^^^^^^^^^^^^^^
@@ -189,6 +191,19 @@ Spatial distance list
    mk_r_list
    mk_interp_tuple
    mk_r_sq_interp_idx_coef_list
+
+Interpolation
+^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+
+   interp_i_arr
+   interp
+   interp_x
+   get_threshold_idx
+   get_threshold_i_arr
+   get_threshold_x_arr
 
 Jackknife method
 ----------------
@@ -204,14 +219,40 @@ Jackknife implementation
 .. autosummary::
    :toctree: generated
 
-   g_jk
-   g_rejk
+   g_mk_jk
    g_mk_jk_val
    g_jk_avg
    g_jk_err
    g_jk_avg_err
    g_jk_size
    g_jk_blocking_func
+   default_g_jk_kwargs
+
+   get_jk_state
+   set_jk_state
+
+   average
+   avg_err
+   err_sum
+   block_data
+   fsqr
+   fsqrt
+
+   jackknife
+   jk_avg
+   jk_err
+   jk_avg_err
+
+   rejk_list
+
+   rjk_jk_list
+   rjk_mk_jk_val
+   rjackknife
+   rjk_avg
+   rjk_err
+   rjk_avg_err
+
+
 
 Example for the random Super-Jackknife method: ``examples-py/jackknife-random.py``
 
