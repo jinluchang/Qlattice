@@ -689,62 +689,85 @@ def mk_r_i_j_mat(
     jk_idx_list,
     rng_state,
     *,
-    jk_blocking_func=None,
-    is_normalizing_rand_sample=False,
-    is_use_old_rand_alg=False,
+    jk_blocking_func,
+    is_normalizing_rand_sample,
+    is_apply_rand_sample_jk_idx_blocking_shift,
+    is_use_old_rand_alg,
 ):
     assert n_rand_sample >= 0
     rs = rng_state
     n = len(jk_idx_list)
     r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
     b_arr = np.empty((n_rand_sample, n,), dtype=np.int32)
-    jk_idx_arr = np.empty((n_rand_sample, n,), dtype=object)
-    if jk_blocking_func is None:
-        for j in range(n):
-            jk_idx_arr[:, j] = jk_idx_list[j]
-    else:
-        for i in range(n_rand_sample):
+    jk_idx_str_arr = np.empty((n_rand_sample, n,), dtype=object)
+    jk_idx_str_set = set()
+
+    @q.timer
+    def set_jk_idx():
+        if (jk_blocking_func is not None) and is_apply_rand_sample_jk_idx_blocking_shift:
+            for i in range(n_rand_sample):
+                count_dict = dict()
+                for j in range(n):
+                    jk_idx = jk_blocking_func(i + 1, jk_idx_list[j])
+                    jk_idx_str = str(jk_idx)
+                    jk_idx_str_arr[i, j] = jk_idx_str
+                    jk_idx_str_set.add(jk_idx_str)
+                    if jk_idx_str in count_dict:
+                        count_dict[jk_idx_str] += 1
+                    else:
+                        count_dict[jk_idx_str] = 1
+                for j in range(n):
+                    jk_idx_str = jk_idx_str_arr[i, j]
+                    b_arr[i, j] = count_dict[jk_idx_str]
+        else:
+            count_dict = dict()
             for j in range(n):
-                jk_idx_arr[i, j] = jk_blocking_func(i + 1, jk_idx_list[j])
-    for i in range(n_rand_sample):
-        count_dict = dict()
-        for j in range(n):
-            jk_idx = jk_idx_arr[i, j]
-            jk_idx_str = str(jk_idx)
-            if jk_idx_str in count_dict:
-                count_dict[jk_idx_str] += 1
-            else:
-                count_dict[jk_idx_str] = 1
-        for j in range(n):
-            jk_idx = jk_idx_arr[i, j]
-            jk_idx_str = str(jk_idx)
-            b_arr[i, j] = count_dict[jk_idx_str]
+                jk_idx = jk_idx_list[j]
+                if jk_blocking_func is not None:
+                    jk_idx = jk_blocking_func(0, jk_idx)
+                jk_idx_str = str(jk_idx)
+                jk_idx_str_arr[:, j] = jk_idx_str
+                jk_idx_str_set.add(jk_idx_str)
+                if jk_idx_str in count_dict:
+                    count_dict[jk_idx_str] += 1
+                else:
+                    count_dict[jk_idx_str] = 1
+            for j in range(n):
+                jk_idx_str = jk_idx_str_arr[i, j]
+                b_arr[:, j] = count_dict[jk_idx_str]
+
+    set_jk_idx()
     if is_use_old_rand_alg == "v1":
         assert not is_normalizing_rand_sample
         for i in range(n_rand_sample):
             rsi = rs.split(str(i))
-            r = [rsi.split(str(idx)).g_rand_gen()
-                 for idx in jk_idx_arr[i]]
+            r = [rsi.split(jk_idx_str).g_rand_gen()
+                 for jk_idx_str in jk_idx_str_arr[i]]
             for j in range(n):
                 r_arr[i, j] = r[j]
-    else:
-        assert is_use_old_rand_alg == False
-        r_arr_dict = dict()
+        return r_arr, b_arr
+    assert is_use_old_rand_alg == False
+    r_arr_dict = dict()
+
+    @q.timer
+    def set_r():
+        for jk_idx_str in jk_idx_str_set:
+            rsi = rs.split(jk_idx_str)
+            garr = rsi.g_rand_arr(n_rand_sample)
+            r_arr_dict[jk_idx_str] = garr
+
+    set_r()
+    if is_apply_rand_sample_jk_idx_blocking_shift:
         for i in range(n_rand_sample):
-            for j, jk_idx in enumerate(jk_idx_arr[i]):
-                jk_idx_str = str(jk_idx)
-                if jk_idx_str in r_arr_dict:
-                    garr = r_arr_dict[jk_idx_str]
-                else:
-                    rsi = rs.split(str(jk_idx))
-                    garr = rsi.g_rand_arr(n_rand_sample)
-                    if is_normalizing_rand_sample:
-                        # garr_qnorm \approx n_rand_sample
-                        garr_qnorm = qnorm(garr)
-                        garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
-                        assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
-                    r_arr_dict[jk_idx_str] = garr
+            for j in range(n):
+                jk_idx_str = jk_idx_str_arr[i, j]
+                garr = r_arr_dict[jk_idx_str]
                 r_arr[i, j] = garr[i]
+    else:
+        for j in range(n):
+            jk_idx_str = jk_idx_str_arr[0, j]
+            garr = r_arr_dict[jk_idx_str]
+            r_arr[:, j] = garr
     return r_arr, b_arr
 
 
@@ -756,6 +779,7 @@ def rjk_jk_list(
     rng_state,
     jk_blocking_func=None,
     is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
     is_use_old_rand_alg=False,
 ):
     r"""
@@ -789,6 +813,7 @@ def rjk_jk_list(
         n_rand_sample, jk_idx_list[1:], rng_state,
         jk_blocking_func=jk_blocking_func,
         is_normalizing_rand_sample=is_normalizing_rand_sample,
+        is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
     avg = jk_list[0]
@@ -851,6 +876,7 @@ def rjackknife(
     *,
     jk_blocking_func=None,
     is_normalizing_rand_sample=False,
+    is_apply_rand_sample_jk_idx_blocking_shift=True,
     is_use_old_rand_alg=False,
     eps=1,
 ):
@@ -901,6 +927,7 @@ def rjackknife(
         rng_state,
         jk_blocking_func=jk_blocking_func,
         is_normalizing_rand_sample=is_normalizing_rand_sample,
+        is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
     n_b_arr = n - b_arr
@@ -969,6 +996,7 @@ def mk_g_jk_kwargs():
     g_jk_kwargs["n_rand_sample"] = 1024
     g_jk_kwargs["rng_state"] = q.RngState("rejk")
     g_jk_kwargs["is_normalizing_rand_sample"] = False
+    g_jk_kwargs["is_apply_rand_sample_jk_idx_blocking_shift"] = True
     #
     # for jk_type = "super"
     g_jk_kwargs["all_jk_idx"] = None
@@ -993,15 +1021,16 @@ def mk_g_jk_kwargs():
 
 @use_kwargs(default_g_jk_kwargs)
 def get_jk_state(
-        *,
-        jk_type,
-        eps,
-        n_rand_sample,
-        is_normalizing_rand_sample,
-        is_use_old_rand_alg,
-        block_size,
-        block_size_dict,
-        **_kwargs,
+    *,
+    jk_type,
+    eps,
+    n_rand_sample,
+    is_normalizing_rand_sample,
+    is_apply_rand_sample_jk_idx_blocking_shift,
+    is_use_old_rand_alg,
+    block_size,
+    block_size_dict,
+    **_kwargs,
 ):
     """
     Currently only useful if we set
@@ -1022,6 +1051,7 @@ def get_jk_state(
         eps,
         n_rand_sample,
         is_normalizing_rand_sample,
+        is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg,
         block_size,
         block_size_dict,
@@ -1034,6 +1064,7 @@ def set_jk_state(state):
         eps,
         n_rand_sample,
         is_normalizing_rand_sample,
+        is_apply_rand_sample_jk_idx_blocking_shift,
         is_use_old_rand_alg,
         block_size,
         block_size_dict,
@@ -1043,6 +1074,7 @@ def set_jk_state(state):
     g_dict["eps"] = eps
     g_dict["n_rand_sample"] = n_rand_sample
     g_dict["is_normalizing_rand_sample"] = is_normalizing_rand_sample
+    g_dict["is_apply_rand_sample_jk_idx_blocking_shift"] = is_apply_rand_sample_jk_idx_blocking_shift
     g_dict["is_use_old_rand_alg"] = is_use_old_rand_alg
     g_dict["block_size"] = block_size
     g_dict["block_size_dict"] = block_size_dict
@@ -1084,7 +1116,9 @@ def jk_blocking_func_default(
         shift = 0
     else:
         assert i >= 1
-        shift = int(jk_blocking_traj_shift_arr[(i - 1) % len(jk_blocking_traj_shift_arr)])
+        shift = int(jk_blocking_traj_shift_arr[
+            (i - 1) % len(jk_blocking_traj_shift_arr)
+        ])
     if block_size_dict is None:
         block_size_dict = dict()
     if all_jk_idx_set is not None:
@@ -1109,17 +1143,20 @@ def jk_blocking_func_default(
 @use_kwargs(default_g_jk_kwargs)
 @q.timer
 def g_mk_jk(
-        data_list, jk_idx_list, *,
-        jk_type,
-        all_jk_idx,
-        get_all_jk_idx,
-        n_rand_sample,
-        rng_state,
-        jk_blocking_func,
-        is_normalizing_rand_sample,
-        is_use_old_rand_alg,
-        eps,
-        **_kwargs,
+    data_list,
+    jk_idx_list,
+    *,
+    jk_type,
+    all_jk_idx,
+    get_all_jk_idx,
+    n_rand_sample,
+    rng_state,
+    jk_blocking_func,
+    is_normalizing_rand_sample,
+    is_apply_rand_sample_jk_idx_blocking_shift,
+    is_use_old_rand_alg,
+    eps,
+    **_kwargs,
 ):
     """
     Perform (randomized) Super-Jackknife for the Jackknife data set.
@@ -1152,6 +1189,7 @@ def g_mk_jk(
             rng_state,
             jk_blocking_func=jk_blocking_func,
             is_normalizing_rand_sample=is_normalizing_rand_sample,
+            is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
             is_use_old_rand_alg=is_use_old_rand_alg,
             eps=eps,
         )
@@ -1580,6 +1618,7 @@ def g_rejk(
     rng_state,
     jk_blocking_func,
     is_normalizing_rand_sample,
+    is_apply_rand_sample_jk_idx_blocking_shift,
     is_use_old_rand_alg,
     **_kwargs,
 ):
@@ -1603,9 +1642,22 @@ def g_rejk(
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
-        return rejk_list(jk_list, jk_idx_list, all_jk_idx)
+        return rejk_list(
+            jk_list,
+            jk_idx_list,
+            all_jk_idx,
+        )
     elif jk_type == "rjk":
-        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func, is_normalizing_rand_sample, is_use_old_rand_alg)
+        return rjk_jk_list(
+            jk_list,
+            jk_idx_list,
+            n_rand_sample,
+            rng_state,
+            jk_blocking_func,
+            is_normalizing_rand_sample,
+            is_apply_rand_sample_jk_idx_blocking_shift,
+            is_use_old_rand_alg,
+        )
     else:
         assert False
     return None
