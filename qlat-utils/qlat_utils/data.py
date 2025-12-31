@@ -617,9 +617,11 @@ def merge_jk_idx(*jk_idx_list_list):
     return ["avg", ] + [jk_idx for jk_idx_list in jk_idx_list_list for jk_idx in jk_idx_list[1:]]
 
 
+@q.timer
 def rejk_list(jk_list, jk_idx_list, all_jk_idx):
     """
     Super jackknife
+    ``jk_idx_list`` should be contained in ``all_jk_idx`` and have the same order.
     Does not properly honor the (N-1) formula in error calculation.
     """
     assert jk_idx_list[0] == "avg"
@@ -646,6 +648,74 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
     if is_np_arr:
         jk_list_new = np.array(jk_list_new, dtype=jk_list.dtype)
     return jk_list_new
+
+
+@q.timer
+def sjackknife(
+    data_list,
+    jk_idx_list,
+    all_jk_idx,
+    *,
+    jk_blocking_func=None,
+    eps=1,
+    ):
+    """
+    Super jackknife.
+    Return ``jk_arr``.
+    ``len(jk_idx_list) == len(data_list)``
+    ``len(jk_arr) == len(all_jk_idx)``
+    ``jk_idx_list`` (after processed by ``jk_blocking_func``) should be contained in ``all_jk_idx``.
+    Ideally, ``all_jk_idx`` should only contain distinct indices.
+    However, if there are repeatations, indices appear later take precedence.
+    """
+    assert all_jk_idx[0] == "avg"
+    assert len(jk_idx_list) == len(data_list)
+    if isinstance(data_list, np.ndarray):
+        dtype = data_list.dtype
+    else:
+        dtype = None
+    data_list_real = [d for d in data_list if d is not None]
+    data_arr = np.array(data_list_real, dtype=dtype)
+    avg = average(data_arr)
+    dtype = data_arr.dtype
+    jk_idx_list = [
+        jk_idx
+        for jk_idx, d in zip(jk_idx_list, data_list)
+        if d is not None
+    ]
+    if jk_blocking_func is not None:
+        jk_idx_list = [
+            jk_blocking_func(0, jk_idx)
+            for jk_idx in jk_idx_list
+        ]
+    jk_idx_str_list = [str(jk_idx) for jk_idx in jk_idx_list]
+    n = len(data_arr)
+    assert n == len(jk_idx_str_list)
+    count_dict = dict()
+    for j, jk_idx_str in enumerate(jk_idx_str_list):
+        if jk_idx_str in count_dict:
+            count_dict[jk_idx_str] += 1
+        else:
+            count_dict[jk_idx_str] = 1
+    i_dict = dict()
+    for i, jk_idx in enumerate(all_jk_idx):
+        jk_idx_str = str(jk_idx)
+        i_dict[jk_idx_str] = i
+    jk_arr = np.empty((len(all_jk_idx), *data_arr[0].shape,), dtype=dtype)
+    jk_arr[:] = avg
+    data_diff = data_arr - avg
+    for j in range(n):
+        jk_idx_str = jk_idx_str_list[j]
+        assert jk_idx_str in i_dict
+        assert jk_idx_str in count_dict
+        i = i_dict[jk_idx_str]
+        assert i > 0
+        n_b = n - count_dict[jk_idx_str]
+        if n_b <= 0:
+            n_b = 1
+        fac = -abs(eps) * np.sqrt(1 / (n * n_b))
+        jk_arr[i] += fac * data_diff[j]
+    return jk_arr
 
 
 def sjk_avg(jk_list):
@@ -891,7 +961,8 @@ def rjackknife(
     eps=1,
 ):
     r"""
-    return ``jk_arr``
+    Jackknife-bootstrap hybrid resampling.
+    Return ``jk_arr``.
     ``len(jk_arr) == 1 + n_rand_sample``
     distribution of ``jk_arr`` should be similar as the distribution of ``avg``.
     ``r_{i,j} ~ N(0, 1)``
@@ -1186,10 +1257,12 @@ def g_mk_jk(
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
-        jk_list = rejk_list(
-            jackknife(data_list, eps=eps),
-            ['avg', ] + jk_idx_list,
+        jk_list = sjackknife(
+            data_list,
+            jk_idx_list,
             all_jk_idx,
+            jk_blocking_func=jk_blocking_func,
+            eps=eps,
         )
     elif jk_type == "rjk":
         jk_list = rjackknife(
