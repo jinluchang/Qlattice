@@ -754,20 +754,30 @@ def mk_r_i_j_mat(
         for jk_idx_str in jk_idx_str_set:
             rsi = rs.split(jk_idx_str)
             garr = rsi.g_rand_arr(n_rand_sample)
+            if is_normalizing_rand_sample:
+                # garr_qnorm \approx n_rand_sample
+                garr_qnorm = qnorm(garr)
+                garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
+                assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
             r_arr_dict[jk_idx_str] = garr
 
     set_r()
-    if is_apply_rand_sample_jk_idx_blocking_shift:
-        for i in range(n_rand_sample):
+
+    @q.timer
+    def set_r_arr():
+        if is_apply_rand_sample_jk_idx_blocking_shift:
+            for i in range(n_rand_sample):
+                for j in range(n):
+                    jk_idx_str = jk_idx_str_arr[i, j]
+                    garr = r_arr_dict[jk_idx_str]
+                    r_arr[i, j] = garr[i]
+        else:
             for j in range(n):
-                jk_idx_str = jk_idx_str_arr[i, j]
+                jk_idx_str = jk_idx_str_arr[0, j]
                 garr = r_arr_dict[jk_idx_str]
-                r_arr[i, j] = garr[i]
-    else:
-        for j in range(n):
-            jk_idx_str = jk_idx_str_arr[0, j]
-            garr = r_arr_dict[jk_idx_str]
-            r_arr[:, j] = garr
+                r_arr[:, j] = garr
+
+    set_r_arr()
     return r_arr, b_arr
 
 
