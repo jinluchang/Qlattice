@@ -705,7 +705,7 @@ def mk_r_i_j_mat(
     else:
         for i in range(n_rand_sample):
             for j in range(n):
-                jk_idx_arr[i, j] = jk_blocking_func(i, jk_idx_list[j])
+                jk_idx_arr[i, j] = jk_blocking_func(i + 1, jk_idx_list[j])
     for i in range(n_rand_sample):
         count_dict = dict()
         for j in range(n):
@@ -771,9 +771,13 @@ def rjk_jk_list(
     jk_list[i] = avg + \sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
     #
     if `jk_blocking_func` is provided:
+    ``
     jk_blocking_func(i, jk_idx) => blocked jk_idx
-    #
-    jk_list[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_list[j] - avg)
+    ``
+    Note that: ``1 <= i <= n_rand_sample``
+    ``
+    jk_list[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(i, j)} (jk_list[j] - avg)
+    ``
     """
     assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int_types)
@@ -900,7 +904,7 @@ def rjackknife(
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
     data_diff = data_arr - avg
-    jk_arr = np.empty((1 + n_rand_sample, *avg.shape,), dtype=dtype)
+    jk_arr = np.empty((1 + n_rand_sample, *data_arr[0].shape,), dtype=dtype)
     jk_arr[:] = avg
     for i in range(n_rand_sample):
         for j in range(n):
@@ -1066,7 +1070,7 @@ def jk_blocking_func_default(
     ``blocked_jk_idx`` should uniquely identify the block
     that configuration identified by ``jk_idx`` belongs to.
     The block scheme can be different for different J-B hybrid sample.
-    The J-B hybrid sample is indexed by ``i``.
+    The J-B hybrid sample is indexed by ``i`` (``1 <= i <= n_rand_sample``).
     ``
     block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
     ``
@@ -1076,7 +1080,11 @@ def jk_blocking_func_default(
     block_size = default_g_jk_kwargs["block_size"]
     block_size_dict = default_g_jk_kwargs["block_size_dict"]
     all_jk_idx_set = default_g_jk_kwargs["all_jk_idx_set"]
-    shift = int(jk_blocking_traj_shift_arr[i % len(jk_blocking_traj_shift_arr)])
+    if i == 0:
+        shift = 0
+    else:
+        assert i >= 1
+        shift = int(jk_blocking_traj_shift_arr[(i - 1) % len(jk_blocking_traj_shift_arr)])
     if block_size_dict is None:
         block_size_dict = dict()
     if all_jk_idx_set is not None:
@@ -1245,20 +1253,20 @@ def g_jk_size(**kwargs):
 
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_blocking_func(jk_idx, *, jk_blocking_func, **_kwargs):
+def g_jk_blocking_func(i, jk_idx, *, jk_blocking_func, **_kwargs):
     """
     Return ``jk_blocking_func(jk_idx)``.
     """
     if jk_blocking_func is None:
         return jk_idx
     else:
-        return jk_blocking_func(jk_idx)
+        return jk_blocking_func(i, jk_idx)
 
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_sample_size(job_tag, traj_list, **kwargs):
     jk_idx_list = [(job_tag, traj,) for traj in traj_list]
-    b_jk_idx_set = set(g_jk_blocking_func(jk_idx, **kwargs)
+    b_jk_idx_set = set(g_jk_blocking_func(0, jk_idx, **kwargs)
                        for jk_idx in jk_idx_list)
     return len(b_jk_idx_set)
 
