@@ -733,7 +733,7 @@ def mk_r_i_j_mat(
                 else:
                     count_dict[jk_idx_str] = 1
             for j in range(n):
-                jk_idx_str = jk_idx_str_arr[i, j]
+                jk_idx_str = jk_idx_str_arr[0, j]
                 b_arr[:, j] = count_dict[jk_idx_str]
 
     set_jk_idx()

@@ -5,11 +5,12 @@ import numpy as np
 
 
 @q.timer
-def bench_rjk(n_rand_sample, n_data_sample_1, n_data_sample_2):
+def bench_rjk(n_rand_sample, n_data_sample_1, n_data_sample_2, is_apply_rand_sample_jk_idx_blocking_shift):
     fname = q.get_fname()
     q.default_g_jk_kwargs["jk_type"] = "rjk"
     q.default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
     q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
+    q.default_g_jk_kwargs["is_apply_rand_sample_jk_idx_blocking_shift"] = is_apply_rand_sample_jk_idx_blocking_shift
     q.default_g_jk_kwargs["block_size"] = 1
     q.default_g_jk_kwargs["block_size_dict"] = {
         "job_tag_1": 1,
@@ -62,7 +63,8 @@ for n_rand_sample in [1024, 128, 32, 8, 2, ]:
         (8, 57,),
         (2, 2,),
     ]:
-        bench_rjk(n_rand_sample, n_data_sample_1, n_data_sample_2)
+        for is_apply_rand_sample_jk_idx_blocking_shift in [ True, False, ]:
+            bench_rjk(n_rand_sample, n_data_sample_1, n_data_sample_2, is_apply_rand_sample_jk_idx_blocking_shift)
 
 q.check_log_json(__file__, check_eps=1e-10)
 q.timer_display()
