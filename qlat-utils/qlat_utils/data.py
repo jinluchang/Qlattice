@@ -971,7 +971,7 @@ def rjk_err(jk_list, eps=1):
     """
     avg = jk_avg(jk_list)
     n = len(jk_list) - 1
-    if n <= 1:
+    if n <= 0:
         fac = 1 / abs(eps)
         val = fac * avg
         val = filter_np_results(val)
