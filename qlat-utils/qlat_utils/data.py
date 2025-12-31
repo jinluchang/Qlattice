@@ -903,16 +903,16 @@ def rjackknife(
         is_normalizing_rand_sample=is_normalizing_rand_sample,
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
+    n_b_arr = n - b_arr
+    n_b_arr[n_b_arr <= 0] = 1
+    fac_arr = -abs(eps) / np.sqrt(n * n_b_arr)
+    fac_r_arr = fac_arr * r_arr
+    pad_shape = (1,) * len(data_arr[0].shape)
+    fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
     data_diff = data_arr - avg
     jk_arr = np.empty((1 + n_rand_sample, *data_arr[0].shape,), dtype=dtype)
-    jk_arr[:] = avg
-    for i in range(n_rand_sample):
-        for j in range(n):
-            if n <= b_arr[i, j]:
-                fac = -abs(eps) / np.sqrt(n * 1)
-            else:
-                fac = -abs(eps) / np.sqrt(n * (n - b_arr[i, j]))
-            jk_arr[i + 1] += fac * r_arr[i, j] * data_diff[j]
+    jk_arr[0] = avg
+    jk_arr[1:] = avg + np.sum(fac_r_arr * data_diff, axis=1)
     return jk_arr
 
 

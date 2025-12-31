@@ -2,9 +2,6 @@
 
 import qlat as q
 import numpy as np
-import functools
-
-q.begin_with_mpi()
 
 
 @q.timer
@@ -54,6 +51,8 @@ def bench_rjk(n_rand_sample, n_data_sample_1, n_data_sample_2):
         q.json_results_append(f"avg[{i}]", avg[i])
         q.json_results_append(f"err[{i}]", err[i])
 
+
+q.begin_with_mpi()
 
 for n_rand_sample in [1024, 128, 32, 8, 2, ]:
     for n_data_sample_1, n_data_sample_2 in [
