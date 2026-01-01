@@ -60,10 +60,10 @@ def compute_avg_err_sjk(data_list, block_size, rng_state):
     jk_idx_list = [("job_tag", traj,) for traj in range(n)]
     q.default_g_jk_kwargs["all_jk_idx"] = (
         ["avg", ]
-        + list(set(
+        + list(sorted(list(set(
             q.g_jk_blocking_func(0, jk_idx)
             for jk_idx in jk_idx_list
-        ))
+        ))))
     )
     jk_data_arr = q.g_mk_jk(data_list, jk_idx_list)
     avg, err = q.g_jk_avg_err(jk_data_arr)

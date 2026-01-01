@@ -1,17 +1,1 @@
-Qlat           3.904: INFO: check_log_json: 69 'q.jk_avg_err(jk_err_arr)'
-Qlat           3.904: INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.390384295003116e-16 .
-Qlat           3.904: INFO: check_log_json: 71 'q.jk_avg_err(jk_err_arr - jk_actual_err_arr)'
-Qlat           3.904: INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.1789585789294706e-15 .
-Qlat           3.906: INFO: check_log_json: 389 'q.jk_avg_err(jk_err_arr)'
-Qlat           3.906: INFO: check_log_json: target eps: 1e-10 ; actual eps: 2.1293288321653505e-17 .
-Qlat           3.906: INFO: check_log_json: 391 'q.jk_avg_err(jk_err_arr - jk_actual_err_arr)'
-Qlat           3.906: INFO: check_log_json: target eps: 1e-10 ; actual eps: 3.361019258431408e-16 .
-Qlat           3.907: INFO: check_log_json: 429 'q.jk_avg_err(jk_err_arr)'
-Qlat           3.907: INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.8518601485995787e-16 .
-Qlat           3.907: INFO: check_log_json: 431 'q.jk_avg_err(jk_err_arr - jk_actual_err_arr)'
-Qlat           3.907: INFO: check_log_json: target eps: 1e-10 ; actual eps: 2.671811028640988e-15 .
-Qlat           3.907: INFO: check_log_json: 509 'q.jk_avg_err(jk_err_arr)'
-Qlat           3.907: INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.5365003114103756e-16 .
-Qlat           3.907: INFO: check_log_json: 511 'q.jk_avg_err(jk_err_arr - jk_actual_err_arr)'
-Qlat           3.907: INFO: check_log_json: target eps: 1e-10 ; actual eps: 1.939932428328544e-15 .
 CHECK: finished successfully.
