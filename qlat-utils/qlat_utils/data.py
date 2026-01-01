@@ -461,7 +461,7 @@ def block_data(data_list, block_size, is_overlapping=True):
     return blocks
 
 
-def avg_err(data_list, eps=1, *, block_size=1):
+def avg_err(data_list, *, eps=1, block_size=1):
     """
     Compute `(avg, err)` of `data_list`.
         --
@@ -489,7 +489,7 @@ def avg_err(data_list, eps=1, *, block_size=1):
     return (avg, err,)
 
 
-def jackknife(data_list, eps=1):
+def jackknife(data_list, *, eps=1):
     r"""
     Return jk[i] = avg - \frac{eps}{N} (v[i] - avg)
     normal jackknife uses eps=1, scale the fluctuation by eps
@@ -576,7 +576,7 @@ def jk_avg(jk_list):
     return filter_np_results(val)
 
 
-def jk_err(jk_list, eps=1, *, block_size=1):
+def jk_err(jk_list, *, eps=1, block_size=1):
     r"""
     Return
     $$
@@ -607,8 +607,8 @@ def jk_err(jk_list, eps=1, *, block_size=1):
     return val
 
 
-def jk_avg_err(jk_list, eps=1, *, block_size=1):
-    return jk_avg(jk_list), jk_err(jk_list, eps, block_size=block_size)
+def jk_avg_err(jk_list, *, eps=1, block_size=1):
+    return jk_avg(jk_list), jk_err(jk_list, eps=eps, block_size=block_size)
 
 
 def merge_jk_idx(*jk_idx_list_list):
@@ -743,8 +743,6 @@ def sjackknife(
             n_b = n - count_dict[i]
             fac = -abs(eps) * np.sqrt(1 / (n * n_b))
             jk_arr[i] += fac * data_diff[j]
-        else:
-            assert qnorm(data_diff[j]) <= qnorm(avg) * 1e-10
     return jk_arr
 
 
@@ -752,7 +750,7 @@ def sjk_avg(jk_list):
     return jk_avg(jk_list)
 
 
-def sjk_err(jk_list, eps=1):
+def sjk_err(jk_list, *, eps=1):
     r"""
     Return
     $$
@@ -775,8 +773,8 @@ def sjk_err(jk_list, eps=1):
     return val
 
 
-def sjk_avg_err(jk_list, eps=1):
-    return sjk_avg(jk_list), sjk_err(jk_list, eps)
+def sjk_avg_err(jk_list, *, eps=1):
+    return sjk_avg(jk_list), sjk_err(jk_list, eps=eps)
 
 
 
@@ -1145,6 +1143,11 @@ def mk_g_jk_kwargs():
     return g_jk_kwargs
 
 
+def reset_default_g_jk_kwargs():
+    default_g_jk_kwargs.clear()
+    default_g_jk_kwargs.update(mk_g_jk_kwargs())
+
+
 @use_kwargs(default_g_jk_kwargs)
 def get_jk_state(
     *,
@@ -1377,9 +1380,9 @@ def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
     if isinstance(jk_list, number_types):
         return 0
     if jk_type == "super":
-        return sjk_err(jk_list, eps)
+        return sjk_err(jk_list, eps=eps)
     elif jk_type == "rjk":
-        return rjk_err(jk_list, eps)
+        return rjk_err(jk_list, eps=eps)
     else:
         assert False
     return None
@@ -1442,7 +1445,7 @@ def g_jk_sample_size(job_tag, traj_list, **kwargs):
     return len(b_jk_idx_set)
 
 
-default_g_jk_kwargs.update(mk_g_jk_kwargs())
+reset_default_g_jk_kwargs()
 
 # ----
 

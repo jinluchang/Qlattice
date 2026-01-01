@@ -43,6 +43,7 @@ tests = \
 		jackknife-random-bench.log \
 		jackknife-random-old.log \
 		jackknife-super-old.log \
+		jackknife-test.log \
 		interp.log \
 		field-utils.log \
 		field-analysis.log \
