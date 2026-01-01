@@ -30,7 +30,18 @@ def get_all_jk_idx():
 
 
 q.default_g_jk_kwargs["jk_type"] = "super"
+q.default_g_jk_kwargs["eps"] = 1
+q.default_g_jk_kwargs["is_hash_jk_idx"] = True
+q.default_g_jk_kwargs["jk_idx_hash_size"] = 1024
+q.default_g_jk_kwargs["block_size"] = 1
+q.default_g_jk_kwargs["block_size_dict"] = {
+    "job_tag_1": 1,
+    "job_tag_2": 4,
+}
+q.default_g_jk_kwargs["rng_state"] = q.RngState("rejk")
+q.default_g_jk_kwargs["all_jk_idx"] = None
 q.default_g_jk_kwargs["get_all_jk_idx"] = get_all_jk_idx
+q.default_g_jk_kwargs["all_jk_idx_set"] = set()
 
 rs = q.RngState("seed1")
 job_tag = "job_tag_1"
