@@ -39,6 +39,7 @@ tests = \
 		lat-io-test2.log \
 		jackknife-random.log \
 		jackknife-super.log \
+		jackknife-super-hash.log \
 		jackknife-random-bench.log \
 		jackknife-random-old.log \
 		jackknife-super-old.log \
