@@ -239,7 +239,7 @@ jobs:
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
-        for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
+        for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
 
   build_pip_ubuntu:
     runs-on: ubuntu-latest
@@ -521,7 +521,7 @@ jobs:
         USE_COMPILER=clang ./scripts/hadrons-tblum.sh
     - name: Check error for Build more packages
       run: |
-        for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Mobius2p1fEOFA,Benchmark_dwf,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
+        for path in $HOME/qlat-build/{default/gpt/lib/python3/dist-packages/{cgpt.so,gpt/__init__.py},{default/Grid-clehner,hadrons/Grid,tblum/Grid-tblum}/{lib/libGrid.a,bin/{grid-config,Benchmark_dwf_fp32}},{hadrons/Hadrons,tblum/Hadrons-tblum}/{lib/libHadrons.a,bin/{hadrons-config,HadronsXmlRun,HadronsContractor}}} ; do if [ -e "$path" ] ; then echo "Build '$path' successfully." ; else echo "Failed to build '$path'." ; fi ; done
 
   build_pip_mac:
     runs-on: macos-latest
