@@ -1740,7 +1740,7 @@ def g_jk(data_list, *, eps, **_kwargs):
         --
     Perform initial Jackknife for the original data set.\n
     """
-    return jackknife(data_list, eps)
+    return jackknife(data_list, eps=eps)
 
 
 @use_kwargs(default_g_jk_kwargs)
