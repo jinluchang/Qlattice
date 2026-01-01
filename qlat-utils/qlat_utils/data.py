@@ -654,8 +654,12 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 def sjackknife(
     data_list,
     jk_idx_list,
-    all_jk_idx,
     *,
+    is_hash_jk_idx=True,
+    jk_idx_hash_size=None,
+    rng_state=None,
+    all_jk_idx=None,
+    get_all_jk_idx=None,
     jk_blocking_func=None,
     eps=1,
     ):
@@ -664,11 +668,18 @@ def sjackknife(
     Return ``jk_arr``.
     ``len(jk_idx_list) == len(data_list)``
     ``len(jk_arr) == len(all_jk_idx)``
-    ``jk_idx_list`` (after processed by ``jk_blocking_func``) should be contained in ``all_jk_idx``.
+    ``jk_idx_list`` (after processed by ``jk_blocking_func``) should be contained in ``all_jk_idx``,
+    otherwise, if ``is_hash_jk_idx`` is true, then, a hash of ``jk_idx`` will be used instead.
     Ideally, ``all_jk_idx`` should only contain distinct indices.
     However, if there are repeatations, indices appear later take precedence.
+    if ``all_jk_idx`` and ``get_all_jk_idx`` are both ``None``, then a trivial
+    ``all_jk_idx`` will be created based on ``jk_idx_hash_size``.
     """
-    assert all_jk_idx[0] == "avg"
+    if jk_idx_hash_size is None:
+        jk_idx_hash_size = 1024
+    if rng_state is None:
+        rng_state = q.RngState("rejk")
+    rs = rng_state
     assert len(jk_idx_list) == len(data_list)
     if isinstance(data_list, np.ndarray):
         dtype = data_list.dtype
@@ -688,33 +699,52 @@ def sjackknife(
             jk_blocking_func(0, jk_idx)
             for jk_idx in jk_idx_list
         ]
-    jk_idx_str_list = [str(jk_idx) for jk_idx in jk_idx_list]
     n = len(data_arr)
-    assert n == len(jk_idx_str_list)
-    count_dict = dict()
-    for j, jk_idx_str in enumerate(jk_idx_str_list):
-        if jk_idx_str in count_dict:
-            count_dict[jk_idx_str] += 1
+    assert n == len(jk_idx_list)
+    if all_jk_idx is None:
+        if get_all_jk_idx is None:
+            assert is_hash_jk_idx
+            all_jk_idx = ["avg", ] + list(range(jk_idx_hash_size))
         else:
-            count_dict[jk_idx_str] = 1
+            all_jk_idx = get_all_jk_idx()
+    assert all_jk_idx[0] == "avg"
+    n_super_sample = len(all_jk_idx) - 1
     i_dict = dict()
     for i, jk_idx in enumerate(all_jk_idx):
         jk_idx_str = str(jk_idx)
         i_dict[jk_idx_str] = i
-    jk_arr = np.empty((len(all_jk_idx), *data_arr[0].shape,), dtype=dtype)
+    i_arr = np.zeros(n, dtype=np.int32)
+    for j in range(n):
+        jk_idx = jk_idx_list[j]
+        jk_idx_str = str(jk_idx)
+        if jk_idx_str in i_dict:
+            i = i_dict[jk_idx_str]
+        else:
+            assert is_hash_jk_idx
+            rsi = rs.split(jk_idx_str)
+            i = 1 + int(rsi.rand_gen() % n_super_sample)
+        assert i > 0
+        i_arr[j] = i
+    count_dict = dict()
+    for j in range(n):
+        i = i_arr[j]
+        if i in count_dict:
+            count_dict[i] += 1
+        else:
+            count_dict[i] = 1
+    jk_arr = np.empty((1 + n_super_sample, *data_arr[0].shape,), dtype=dtype)
     jk_arr[:] = avg
     data_diff = data_arr - avg
     for j in range(n):
-        jk_idx_str = jk_idx_str_list[j]
-        assert jk_idx_str in i_dict
-        assert jk_idx_str in count_dict
-        i = i_dict[jk_idx_str]
+        i = i_arr[j]
         assert i > 0
-        n_b = n - count_dict[jk_idx_str]
-        if n_b <= 0:
-            n_b = 1
-        fac = -abs(eps) * np.sqrt(1 / (n * n_b))
-        jk_arr[i] += fac * data_diff[j]
+        assert i in count_dict
+        if n > count_dict[i]:
+            n_b = n - count_dict[i]
+            fac = -abs(eps) * np.sqrt(1 / (n * n_b))
+            jk_arr[i] += fac * data_diff[j]
+        else:
+            assert qnorm(data_diff[j]) <= qnorm(avg) * 1e-10
     return jk_arr
 
 
@@ -771,10 +801,12 @@ def mk_r_i_j_mat(
     b_arr = np.empty((n_rand_sample, n,), dtype=np.int32)
     jk_idx_str_arr = np.empty((n_rand_sample, n,), dtype=object)
     jk_idx_str_set = set()
+    if jk_blocking_func is None:
+        is_apply_rand_sample_jk_idx_blocking_shift = False
 
     @q.timer
     def set_jk_idx():
-        if (jk_blocking_func is not None) and is_apply_rand_sample_jk_idx_blocking_shift:
+        if is_apply_rand_sample_jk_idx_blocking_shift:
             for i in range(n_rand_sample):
                 count_dict = dict()
                 for j in range(n):
@@ -951,9 +983,9 @@ def rjk_mk_jk_val(
 def rjackknife(
     data_list,
     jk_idx_list,
-    n_rand_sample,
-    rng_state,
     *,
+    rng_state=None,
+    n_rand_sample=None,
     jk_blocking_func=None,
     is_normalizing_rand_sample=False,
     is_apply_rand_sample_jk_idx_blocking_shift=True,
@@ -984,6 +1016,10 @@ def rjackknife(
     jk_list[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_list[j] - avg)
     ``
     """
+    if n_rand_sample is None:
+        n_rand_sample = 1024
+    if rng_state is None:
+        rng_state = q.RngState("rejk")
     assert len(data_list) == len(jk_idx_list)
     assert isinstance(n_rand_sample, int_types)
     assert n_rand_sample >= 0
@@ -1012,8 +1048,9 @@ def rjackknife(
         is_use_old_rand_alg=is_use_old_rand_alg,
     )
     n_b_arr = n - b_arr
-    n_b_arr[n_b_arr <= 0] = 1
+    n_b_arr[n <= b_arr] = 1
     fac_arr = -abs(eps) / np.sqrt(n * n_b_arr)
+    fac_arr[n <= b_arr] = 0
     fac_r_arr = fac_arr * r_arr
     pad_shape = (1,) * len(data_arr[0].shape)
     fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
@@ -1075,13 +1112,12 @@ def mk_g_jk_kwargs():
     #
     # for jk_type = "rjk"
     g_jk_kwargs["n_rand_sample"] = 1024
-    g_jk_kwargs["rng_state"] = q.RngState("rejk")
     g_jk_kwargs["is_normalizing_rand_sample"] = False
     g_jk_kwargs["is_apply_rand_sample_jk_idx_blocking_shift"] = True
     #
     # for jk_type = "super"
-    g_jk_kwargs["all_jk_idx"] = None
-    g_jk_kwargs["get_all_jk_idx"] = None
+    g_jk_kwargs["is_hash_jk_idx"] = True
+    g_jk_kwargs["jk_idx_hash_size"] = 1024
     #
     # Is only needed to reproduce old results
     # Possible choice: "v1" (also need default_g_jk_kwargs["is_normalizing_rand_sample"] == False)
@@ -1092,9 +1128,18 @@ def mk_g_jk_kwargs():
     g_jk_kwargs["block_size_dict"] = {
         "job_tag": 1,
     }
+    #
+    # Below are items which are not touched in
+    # ``get_jk_state`` or ``set_jk_state``
+    #
+    g_jk_kwargs["rng_state"] = q.RngState("rejk")
+    #
+    g_jk_kwargs["all_jk_idx"] = None
+    g_jk_kwargs["get_all_jk_idx"] = None
+    #
     g_jk_kwargs["all_jk_idx_set"] = set()
     #
-    # jk_blocking_func(jk_idx) => blocked jk_idx
+    # jk_blocking_func(i, jk_idx) => blocked_jk_idx
     g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
     #
     return g_jk_kwargs
@@ -1108,6 +1153,8 @@ def get_jk_state(
     n_rand_sample,
     is_normalizing_rand_sample,
     is_apply_rand_sample_jk_idx_blocking_shift,
+    is_hash_jk_idx,
+    jk_idx_hash_size,
     is_use_old_rand_alg,
     block_size,
     block_size_dict,
@@ -1133,6 +1180,8 @@ def get_jk_state(
         n_rand_sample,
         is_normalizing_rand_sample,
         is_apply_rand_sample_jk_idx_blocking_shift,
+        is_hash_jk_idx,
+        jk_idx_hash_size,
         is_use_old_rand_alg,
         block_size,
         block_size_dict,
@@ -1146,6 +1195,8 @@ def set_jk_state(state):
         n_rand_sample,
         is_normalizing_rand_sample,
         is_apply_rand_sample_jk_idx_blocking_shift,
+        is_hash_jk_idx,
+        jk_idx_hash_size,
         is_use_old_rand_alg,
         block_size,
         block_size_dict,
@@ -1156,6 +1207,8 @@ def set_jk_state(state):
     g_dict["n_rand_sample"] = n_rand_sample
     g_dict["is_normalizing_rand_sample"] = is_normalizing_rand_sample
     g_dict["is_apply_rand_sample_jk_idx_blocking_shift"] = is_apply_rand_sample_jk_idx_blocking_shift
+    g_dict["is_hash_jk_idx"] = is_hash_jk_idx
+    g_dict["jk_idx_hash_size"] = jk_idx_hash_size
     g_dict["is_use_old_rand_alg"] = is_use_old_rand_alg
     g_dict["block_size"] = block_size
     g_dict["block_size_dict"] = block_size_dict
@@ -1190,9 +1243,6 @@ def jk_blocking_func_default(
     use default_g_jk_kwargs for
     block_size, block_size_dict, all_jk_idx_set
     """
-    block_size = default_g_jk_kwargs["block_size"]
-    block_size_dict = default_g_jk_kwargs["block_size_dict"]
-    all_jk_idx_set = default_g_jk_kwargs["all_jk_idx_set"]
     if i == 0:
         shift = 0
     else:
@@ -1236,6 +1286,8 @@ def g_mk_jk(
     is_normalizing_rand_sample,
     is_apply_rand_sample_jk_idx_blocking_shift,
     is_use_old_rand_alg,
+    is_hash_jk_idx,
+    jk_idx_hash_size,
     eps,
     **_kwargs,
 ):
@@ -1251,16 +1303,14 @@ def g_mk_jk(
         jk_idx_list = [(job_tag, traj,) for traj in traj_list]
     """
     if jk_type == "super":
-        if jk_blocking_func is not None:
-            q.displayln_info(
-                f"g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
-        if all_jk_idx is None:
-            assert get_all_jk_idx is not None
-            all_jk_idx = get_all_jk_idx()
         jk_list = sjackknife(
             data_list,
             jk_idx_list,
-            all_jk_idx,
+            is_hash_jk_idx=is_hash_jk_idx,
+            jk_idx_hash_size=jk_idx_hash_size,
+            rng_state=rng_state,
+            all_jk_idx=all_jk_idx,
+            get_all_jk_idx=get_all_jk_idx,
             jk_blocking_func=jk_blocking_func,
             eps=eps,
         )
@@ -1268,8 +1318,8 @@ def g_mk_jk(
         jk_list = rjackknife(
             data_list,
             jk_idx_list,
-            n_rand_sample,
-            rng_state,
+            n_rand_sample=n_rand_sample,
+            rng_state=rng_state,
             jk_blocking_func=jk_blocking_func,
             is_normalizing_rand_sample=is_normalizing_rand_sample,
             is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,

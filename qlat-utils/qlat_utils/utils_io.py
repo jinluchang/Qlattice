@@ -4,6 +4,7 @@ import hashlib
 import functools
 import numpy as np
 
+
 class q:
     from qlat_utils.timer import (
         timer,
@@ -31,10 +32,12 @@ class q:
 # from .c import *
 # from .lru_cache import *
 
+
 @q.timer
 def qmkdirs(path):
     os.makedirs(path, exist_ok=True)
     q.remove_entry_directory_cache(path)
+
 
 @q.timer
 def qmkdirs_info(path):
@@ -43,10 +46,12 @@ def qmkdirs_info(path):
         q.displayln(f"qmkdirs_info: '{path}'.")
         qmkdirs(path)
 
+
 @q.timer
 def mk_dirs(path):
     q.remove_entry_directory_cache(path)
     os.makedirs(path, exist_ok=True)
+
 
 @q.timer
 def mk_dirs_info(path):
@@ -55,6 +60,7 @@ def mk_dirs_info(path):
         q.displayln(f"mk_dirs_info: '{path}'.")
         mk_dirs(path)
 
+
 @q.timer
 def mk_file_dirs(fn):
     q.remove_entry_directory_cache(fn)
@@ -62,12 +68,14 @@ def mk_file_dirs(fn):
     if path != "":
         os.makedirs(path, exist_ok=True)
 
+
 @q.timer
 def mk_file_dirs_info(path):
     q.remove_entry_directory_cache(path)
     if q.get_id_node() == 0:
         q.displayln(f"mk_file_dirs_info: '{path}'.")
         mk_file_dirs(path)
+
 
 @q.timer
 def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
@@ -77,6 +85,7 @@ def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
     """
     if not is_sync_node or q.get_id_node() == 0:
         q.qtouch(path, q.json_dumps(obj, indent=indent))
+
 
 @q.timer
 def load_json_obj(path, default_value=None, *, is_sync_node=True):
@@ -100,6 +109,7 @@ def load_json_obj(path, default_value=None, *, is_sync_node=True):
     else:
         return default_value
 
+
 @q.timer
 def save_pickle_obj(obj, path, *, is_sync_node=True):
     """
@@ -108,6 +118,7 @@ def save_pickle_obj(obj, path, *, is_sync_node=True):
     """
     if not is_sync_node or q.get_id_node() == 0:
         q.qtouch(path, pickle.dumps(obj))
+
 
 @q.timer
 def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
@@ -131,6 +142,7 @@ def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
     else:
         return default_value
 
+
 @q.timer
 def pickle_cache_call(func, path, *, is_sync_node=True):
     """
@@ -146,6 +158,7 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
     else:
         obj = load_pickle_obj(path, is_sync_node=is_sync_node)
     return obj
+
 
 def hash_sha256(s):
     """
@@ -184,6 +197,7 @@ def hash_sha256(s):
     else:
         assert False
 
+
 def pickle_cache(path, is_sync_node=True):
     """
     `path` is the directory to cache results
@@ -207,6 +221,7 @@ def pickle_cache(path, is_sync_node=True):
         return f
     return dec
 
+
 def cache_call(
         *,
         maxsize=128,
@@ -215,7 +230,7 @@ def cache_call(
         path=None,
         is_sync_node=True,
         cache=None,
-        ):
+):
     """
     get_state() => object to be used as extra key of cache
     #
@@ -260,6 +275,7 @@ def cache_call(
     """
     if cache is None:
         cache = q.LRUCache(maxsize)
+
     def dec(f):
         @functools.wraps(f)
         def func(*args, is_force_recompute=False, **kwargs):
@@ -297,6 +313,7 @@ def cache_call(
         func.clear = lambda: cache.clear()
         return func
     return dec
+
 
 class SetDisplayMethod:
 
