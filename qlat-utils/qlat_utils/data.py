@@ -616,6 +616,7 @@ def sjackknife(
     data_list,
     jk_idx_list,
     *,
+    avg=None,
     is_hash_jk_idx=True,
     jk_idx_hash_size=None,
     rng_state=None,
@@ -648,7 +649,8 @@ def sjackknife(
         dtype = None
     data_list_real = [d for d in data_list if d is not None]
     data_arr = np.array(data_list_real, dtype=dtype)
-    avg = average(data_arr)
+    if avg is None:
+        avg = average(data_arr)
     dtype = data_arr.dtype
     jk_idx_list = [
         jk_idx
@@ -895,6 +897,7 @@ def rjackknife(
     data_list,
     jk_idx_list,
     *,
+    avg=None,
     rng_state=None,
     n_rand_sample=None,
     jk_blocking_func=None,
@@ -941,7 +944,8 @@ def rjackknife(
         dtype = None
     data_list_real = [d for d in data_list if d is not None]
     data_arr = np.array(data_list_real, dtype=dtype)
-    avg = average(data_arr)
+    if avg is None:
+        avg = average(data_arr)
     dtype = data_arr.dtype
     jk_idx_list = [
         jk_idx
@@ -1229,6 +1233,7 @@ def g_mk_jk(
     data_list,
     jk_idx_list,
     *,
+    avg=None,
     jk_type,
     all_jk_idx,
     get_all_jk_idx,
@@ -1260,6 +1265,7 @@ def g_mk_jk(
         jk_list = sjackknife(
             data_list,
             jk_idx_list,
+            avg=avg,
             is_hash_jk_idx=is_hash_jk_idx,
             jk_idx_hash_size=jk_idx_hash_size,
             rng_state=rng_state,
@@ -1272,6 +1278,7 @@ def g_mk_jk(
         jk_list = rjackknife(
             data_list,
             jk_idx_list,
+            avg=avg,
             n_rand_sample=n_rand_sample,
             rng_state=rng_state,
             jk_blocking_func=jk_blocking_func,
