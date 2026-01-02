@@ -5,25 +5,25 @@ import numpy as np
 
 
 @q.timer
-def compute_avg_err_direct(data_list, block_size, rng_state):
+def compute_avg_err_direct(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
     avg, err = q.avg_err(data_list, block_size=block_size)
     return avg, err
 
 
 @q.timer
-def compute_avg_err_jk(data_list, block_size, rng_state):
+def compute_avg_err_jk(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
-    jk_data_list = q.jackknife(data_list.tolist())
-    avg, err = q.jk_avg_err(jk_data_list, block_size=block_size)
+    jk_data_list = q.jackknife(data_list.tolist(), eps=eps)
+    avg, err = q.jk_avg_err(jk_data_list, block_size=block_size, eps=eps)
     return avg, err
 
 
 @q.timer
-def compute_avg_err_sjk_hash(data_list, block_size, rng_state):
+def compute_avg_err_sjk_hash(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
     q.default_g_jk_kwargs["jk_type"] = "super"
-    q.default_g_jk_kwargs["eps"] = 1
+    q.default_g_jk_kwargs["eps"] = eps
     q.default_g_jk_kwargs["is_hash_jk_idx"] = True
     q.default_g_jk_kwargs["jk_idx_hash_size"] = 32
     q.default_g_jk_kwargs["block_size"] = 1
@@ -42,10 +42,10 @@ def compute_avg_err_sjk_hash(data_list, block_size, rng_state):
 
 
 @q.timer
-def compute_avg_err_sjk(data_list, block_size, rng_state):
+def compute_avg_err_sjk(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
     q.default_g_jk_kwargs["jk_type"] = "super"
-    q.default_g_jk_kwargs["eps"] = 1
+    q.default_g_jk_kwargs["eps"] = eps
     q.default_g_jk_kwargs["is_hash_jk_idx"] = True
     q.default_g_jk_kwargs["jk_idx_hash_size"] = 32
     q.default_g_jk_kwargs["block_size"] = 1
@@ -71,10 +71,10 @@ def compute_avg_err_sjk(data_list, block_size, rng_state):
 
 
 @q.timer
-def compute_avg_err_rjk(data_list, block_size, rng_state):
+def compute_avg_err_rjk(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
     q.default_g_jk_kwargs["jk_type"] = "rjk"
-    q.default_g_jk_kwargs["eps"] = 1
+    q.default_g_jk_kwargs["eps"] = eps
     q.default_g_jk_kwargs["n_rand_sample"] = 16
     q.default_g_jk_kwargs["is_normalizing_rand_sample"] = False
     q.default_g_jk_kwargs["is_apply_rand_sample_jk_idx_blocking_shift"] = True
@@ -92,7 +92,7 @@ def compute_avg_err_rjk(data_list, block_size, rng_state):
 
 
 @q.timer
-def jk_test(data_list_size, block_size, compute_avg_err):
+def jk_test(data_list_size, block_size, eps, compute_avg_err):
     #
     size = 128
     #
@@ -104,7 +104,7 @@ def jk_test(data_list_size, block_size, compute_avg_err):
         data_list = q.RngState(f"seed-{i}").g_rand_arr(data_list_size)
         #
         avg, err = compute_avg_err(
-            data_list, block_size, q.RngState(f"jk-seed-{i}"))
+            data_list, block_size, eps, q.RngState(f"jk-seed-{i}"))
         #
         avg_list.append(avg)
         err_list.append(err)
@@ -120,19 +120,20 @@ def jk_test(data_list_size, block_size, compute_avg_err):
     q.json_results_append("Test results")
     q.json_results_append(f"data_list_size={data_list_size}")
     q.json_results_append(f"block_size={block_size}")
+    q.json_results_append(f"eps={eps}")
     q.json_results_append(f"compute_avg_err={compute_avg_err.__qualname__}")
     #
     q.displayln_info(
         0,
-        "\n",
+        "Avg:",
         q.show_val_err(q.avg_err(avg_arr)),
-        "\n",
+        "Err:",
         q.show_val_err(q.jk_avg_err(jk_err_arr)),
-        "\n",
+        "Actual-err:",
         q.show_val_err(q.jk_avg_err(jk_actual_err_arr)),
-        "\nDifference: ",
+        "Diff:",
         q.show_val_err(q.jk_avg_err(jk_err_arr - jk_actual_err_arr)),
-        f"({data_list_size} {block_size} {compute_avg_err.__qualname__})",
+        f"({data_list_size} {block_size} {eps} {compute_avg_err.__qualname__})",
     )
     #
     q.json_results_append(
@@ -157,6 +158,8 @@ q.begin_with_mpi()
 
 for data_list_size in [1, 2, 4, 7, 15, 32, ]:
     for block_size in [1, 2, 4, 7, ]:
+        if data_list_size < 2 * block_size:
+            continue
         for compute_avg_err in [
             compute_avg_err_direct,
             compute_avg_err_jk,
@@ -164,9 +167,8 @@ for data_list_size in [1, 2, 4, 7, 15, 32, ]:
             compute_avg_err_sjk,
             compute_avg_err_rjk,
         ]:
-            if data_list_size < 2 * block_size:
-                continue
-            jk_test(data_list_size, block_size, compute_avg_err)
+            for eps in [ 1.0, 1.5, ]:
+                jk_test(data_list_size, block_size, eps, compute_avg_err)
 
 q.check_log_json(__file__, check_eps=1e-10)
 q.timer_display()

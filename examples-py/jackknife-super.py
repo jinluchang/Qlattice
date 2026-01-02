@@ -74,6 +74,19 @@ for i in range(len(avg)):
     q.json_results_append(f"avg[{i}]", avg[i])
     q.json_results_append(f"err[{i}]", err[i])
 
+jk_val_arr = q.g_mk_jk_val("val-tag", 1.0, 0.5)
+avg, err = q.g_jk_avg_err(jk_val_arr)
+
+q.json_results_append(f"avg", avg)
+q.json_results_append(f"err", err)
+
+jk_diff_arr = jk_arr - jk_val_arr[:, None]
+avg, err = q.g_jk_avg_err(jk_diff_arr)
+
+for i in range(len(avg)):
+    q.json_results_append(f"avg[{i}]", avg[i])
+    q.json_results_append(f"err[{i}]", err[i])
+
 q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
 q.displayln_info(f"CHECK: finished successfully.")

@@ -243,24 +243,29 @@ Jackknife implementation
    jk_err
    jk_avg_err
 
-   rejk_list
+   sjackknife
+   sjk_avg
+   sjk_err
+   sjk_avg_err
 
-   rjk_jk_list
-   rjk_mk_jk_val
    rjackknife
+   rjk_mk_jk_val
    rjk_avg
    rjk_err
    rjk_avg_err
 
 
-
-Example for the random Super-Jackknife method: ``examples-py/jackknife-random.py``
+Example for the Jackknife-bootstrap hybrid method (described in the Jackknife method section): ``examples-py/jackknife-random.py``
 
 .. literalinclude:: ../examples-py/jackknife-random.py
 
 Example for the conventional Super-Jackknife method: ``examples-py/jackknife-super.py``
 
 .. literalinclude:: ../examples-py/jackknife-super.py
+
+Example for a variant of the conventional Super-Jackknife method: ``examples-py/jackknife-super-hash.py``
+
+.. literalinclude:: ../examples-py/jackknife-super-hash.py
 
 Plotting
 ^^^^^^^^
