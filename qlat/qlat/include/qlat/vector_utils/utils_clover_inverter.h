@@ -4,6 +4,7 @@
 #pragma once
 
 #include <quda.h>
+#include <split_grid.h>
 #include <tune_quda.h>
 #include <deflation.h>
 #include <invert_quda.h>
@@ -87,6 +88,37 @@ struct quda_clover_inverter {
   quda::ColorSpinorParam cs_gpuH;
   quda::ColorSpinorParam cs_gpuD;
   quda::ColorSpinorParam cs_gpuF;
+
+  //=== split gauge buffers
+  std::vector<Int> split_grid;
+  Int split_mrh;
+  QudaInvertParam   split_param;
+  QudaInvertParam   split_param_copy;
+  quda::ColorSpinorParam cs_param_split;
+  quda::ColorSpinorParam devbuf_param;
+  std::vector<std::vector<quda::ColorSpinorField> > split_fields;
+  std::vector<vector_gpu<ComplexD > > split_fields_buffer;
+  std::vector<quda::ColorSpinorField>    dev_buf;
+  quda::CommKey split_key ;
+  quda::Dirac *split_dirac;
+  bool split_setup;
+  bool split_comm_buff;
+  Int num_sub_partition;
+  inline void rotate_quda_split(const bool swap_gauge = true);
+  inline void rotate_to_quda_split(){
+    if(split_comm_buff == true){return ;}
+    else{rotate_quda_split(true);}
+  }
+  inline void rotate_from_quda_split(){
+    if(split_comm_buff == false){return ;}
+    else{rotate_quda_split(true);}
+  }
+  inline void copy_to_buf_split(std::vector<quda::ColorSpinorField>& src, const Int i);
+  inline void copy_from_buf_split(std::vector<quda::ColorSpinorField>& res, const Int i);
+  inline void set_quda_split(const std::vector<Int >& grid, const Int num_src);
+  inline void free_quda_split();
+  //===
+
   //quda::ColorSpinorParam cs_copy;
 
   //quda::ColorSpinorField *csrc, *cres;
@@ -119,6 +151,7 @@ struct quda_clover_inverter {
   inline void setup_link(qlat::ComplexD* quda_gf);
 
   inline void setup_clover(const double kappa, const double clover_csw);
+  inline void set_dirac_mrh(const Int mrh);
 
   template<typename Ty>
   inline void do_inv(Ty* res, Ty* src, const double kappa, const double err = 1e-10, const Int niter = 10000);
@@ -187,8 +220,15 @@ inline void quda_clover_inverter::setup_gauge_param(QudaTboundary t_boundary)
   //gauge_param.cuda_prec_precondition = QUDA_DOUBLE_PRECISION;
   //gauge_param.cuda_prec_eigensolver  = QUDA_DOUBLE_PRECISION;
 
-  gauge_param.reconstruct                   = QUDA_RECONSTRUCT_NO;  ////gauge_param.reconstruct = link_recon;
-  gauge_param.reconstruct_sloppy            = QUDA_RECONSTRUCT_NO;
+  //gauge_param.reconstruct                   = QUDA_RECONSTRUCT_NO;  ////gauge_param.reconstruct = link_recon;
+  //gauge_param.reconstruct_sloppy            = QUDA_RECONSTRUCT_NO;
+  //gauge_param.reconstruct_precondition      = QUDA_RECONSTRUCT_NO;
+  //gauge_param.reconstruct_eigensolver       = QUDA_RECONSTRUCT_NO;
+  //gauge_param.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;  /////link_recon
+
+  gauge_param.reconstruct                   = QUDA_RECONSTRUCT_12;  ////gauge_param.reconstruct = link_recon;
+  gauge_param.reconstruct_sloppy            = QUDA_RECONSTRUCT_12;
+  gauge_param.location = QUDA_CPU_FIELD_LOCATION;
   gauge_param.reconstruct_precondition      = QUDA_RECONSTRUCT_NO;
   gauge_param.reconstruct_eigensolver       = QUDA_RECONSTRUCT_NO;
   gauge_param.reconstruct_refinement_sloppy = QUDA_RECONSTRUCT_NO;  /////link_recon
@@ -284,6 +324,9 @@ quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t
   dSloppy = NULL;
   dPre    = NULL;
   dEig    = NULL;
+
+  split_dirac = NULL;
+  split_comm_buff = false;
 
   nvec = 0;
   check_residue = 0;
@@ -811,12 +854,38 @@ inline void quda_clover_inverter::setup_clover(const double kappa, const double 
   }
 }
 
+inline void quda_clover_inverter::set_dirac_mrh(const Int mrh)
+{
+  if(dirac != NULL){delete dirac;dirac = NULL;}
+  inv_param.num_src = mrh;
+  const bool pc_solve = false;
+  quda::DiracParam diracParam;
+  setDiracParam(diracParam, &inv_param, pc_solve);
+  dirac     = quda::Dirac::create(diracParam);
+}
+
+inline void quda_clover_inverter::free_quda_split(){
+  split_fields.resize(0);
+     dev_buf.resize(0);
+  split_fields_buffer.resize(0);
+  split_setup = false;
+  if(split_dirac != NULL){
+    // swap current gauges with the split ones if split ones are not null
+    swapGaugeSplit(true);
+    // free the split gauges and swap the split gauges with the buffered gauges, if split gauges are not      null
+    swapGaugeSplit(false);
+    delete split_dirac;split_dirac = NULL;
+  }
+}
+
 inline void quda_clover_inverter::clear_mat()
 {
   TIMER("clear_mat");
   if(dirac != NULL){delete dirac;dirac=NULL;}
   if(dirac_cg != NULL){delete dirac_cg;dirac_cg=NULL;}
   if(dirac_pc != NULL){delete dirac_pc;dirac_pc=NULL;}
+  //if(split_dirac != NULL){delete split_dirac;split_dirac = NULL;}
+  free_quda_split();
   if(dSloppy != NULL){delete dSloppy;dSloppy=NULL;}
   if(dPre != NULL){delete dPre;dPre=NULL;}
   if(dEig != NULL){delete dEig;dEig=NULL;}
@@ -898,6 +967,243 @@ inline void quda_clover_inverter::do_inv(Ty* res, Ty* src, const double kappa, c
   inv_iter   = inv_param.iter;
   inv_gflops = inv_param.gflops / (inv_param.secs * qlat::get_num_node());
   timer.flops +=  inv_param.gflops * 1024 * 1024 * 1024 / qlat::get_num_node();
+}
+
+inline void quda_clover_inverter::rotate_quda_split(const bool swap_gauge){
+  TIMER("rotate_quda_split");
+  Qassert(split_setup);
+  if(split_comm_buff == true){
+    quda::push_communicator(quda::default_comm_key);
+    split_comm_buff = false;
+  }else{
+    quda::push_communicator(split_key);
+    split_comm_buff = true;
+  }
+  //if(split){
+  //  quda::push_communicator(quda::default_comm_key);
+  //}
+  //else{
+  //  quda::push_communicator(split_key);
+  //}
+  if(swap_gauge){swapGaugeSplit(true);}
+  updateR();
+  quda::comm_barrier();
+  //
+  //QudaInvertParam   split_param;
+  //QudaInvertParam   split_param_copy;
+  //quda::ColorSpinorParam cs_param_split;
+  //quda::ColorSpinorParam devbuf_param;
+  //std::vector<quda::ColorSpinorField> _collect_b;
+  //std::vector<quda::ColorSpinorField> _collect_x;
+  //std::vector<quda::ColorSpinorField>    dev_buf;
+  //quda::CommKey split_key ;
+  //quda::Dirac *split_dirac;
+}
+
+inline void quda_clover_inverter::set_quda_split(const std::vector<Int >& grid, const Int num_src){
+  TIMER("set_quda_split");
+  free_quda_split();// in case have previous buffers
+  split_grid = grid;
+  split_mrh  = num_src;
+  //std::vector<std::string > grid_s = stringtolist(split_info);
+  //std::vector<Int > grid;grid.resize(4);
+  //for(int i=0;i<4;i++){grid[i] = stringtonum(grid_s[i]);}
+  Qassert(grid.size() == 4);
+  split_setup = true;
+  //const Long V = geo.local_volume();
+  //
+  const Geometry& geo_ = geo();
+  qlat::vector<Int> Nv,nv,mv;
+  geo_to_nv(geo_, nv, Nv, mv);
+  for(int i=0;i<4;i++){Qassert( mv[i] >= grid[i] and mv[i] % grid[i] == 0);}
+  //
+  split_param = inv_param;
+  //qlat::vector<Int> Nv,nv,mv;
+  //geo_to_nv(geo, nv, Nv, mv);
+  //
+  split_param.split_grid[0] = grid[0];
+  split_param.split_grid[1] = grid[1];
+  split_param.split_grid[2] = grid[2];
+  split_param.split_grid[3] = grid[3];
+  split_key = {grid[0], grid[1], grid[2], grid[3]};
+  num_sub_partition = quda::product(split_key);
+  //qmessage("Quda splited MRH num_src %5d sub %5d \n", int(num_src), int(num_sub_partition));
+  Qassert(num_src >= num_sub_partition and num_src % num_sub_partition == 0);
+  const Int dslash_mrh = num_src / num_sub_partition;
+  split_param.num_src = dslash_mrh * num_sub_partition;
+  split_param.num_src_per_sub_partition = dslash_mrh;
+  //winv.inv_param.num_src = dslash_mrh;
+  //
+  //{
+  //quda::ColorSpinorParam cs_param_ref(QL[0][0]);
+  //cs_param_ref.create = QUDA_REFERENCE_FIELD_CREATE;
+  //std::vector<quda::ColorSpinorField > s;
+  //std::vector<quda::ColorSpinorField > r;
+  //s.resize(dslash_mrh);
+  //r.resize(dslash_mrh);
+  //for(int bi=0;bi<in.bfac;bi++)
+  //{
+  //  TIMER_FLOPS("MRH dslash");
+  //  //const double flops0 = quda::Tunable::flops_global();
+  //  for(int j=0;j<num_sub_partition;j++){
+  //    for(int m=0;m<dslash_mrh;m++){
+  //      cs_param_ref.v = QL[0][j*dslash_mrh+m].data();
+  //      s[m] = quda::ColorSpinorField(cs_param_ref);
+  //      cs_param_ref.v = QL[1][j*dslash_mrh+m].data();
+  //      r[m] = quda::ColorSpinorField(cs_param_ref);
+  //    }
+  //    winv.dirac->M(r, s);
+  //    qacc_barrier(dummy);
+  //  }
+  //  //winv.dirac->M(QL[1], QL[0]);
+  //  //const double flops1 = quda::Tunable::flops_global();
+  //  //qmessage("quda flops %.3f per site \n", (flops1 - flops0)/(geo.local_volume()));
+  //  //timer.flops += (flops1 - flops0) / qlat::get_num_node();
+  //  timer.flops += geo.local_volume() * 1368 * dslash_mrh * num_sub_partition;
+  //}
+  //}
+  UpdateSplitGauge(&split_param, false, false, split_param.split_grid); // split the gauges into split_key form
+  quda::comm_barrier();
+  //
+  cs_param_split = quda::ColorSpinorParam(*gquda0);
+  cs_param_split.setPrecision(split_param.cuda_prec, split_param.cuda_prec, true); // Native format
+  cs_param_split.location = QUDA_CUDA_FIELD_LOCATION;                    // Device side
+  cs_param_split.create = QUDA_REFERENCE_FIELD_CREATE;
+  //
+  // Expand the geometry for the collected fields
+  split_fields_buffer.resize(5);
+  split_fields.resize(split_fields_buffer.size());
+  size_t V_tot = geo().local_volume() * 12;// srh clover size
+  for (int d = 0; d < quda::CommKey::n_dim; d++) {
+    cs_param_split.x[d] *= split_key[d]; 
+    V_tot *= split_key[d];
+  }
+  for(unsigned int j=0;j<split_fields.size();j++){
+    split_fields_buffer[j].resize(split_param.num_src_per_sub_partition * V_tot);
+    split_fields[j].resize(split_param.num_src_per_sub_partition);
+    for(Int i=0;i<split_param.num_src_per_sub_partition;i++){
+      cs_param_split.v   = &split_fields_buffer[j][i* V_tot];
+      split_fields[j][i] = quda::ColorSpinorField(cs_param_split);
+    }
+  }
+  //
+  // We will use these dev_buf fields to download (if needed) and convert
+  // external fields into internal foramt
+  devbuf_param = quda::ColorSpinorParam(*gquda0);
+  devbuf_param.location = cs_param_split.location;                   // same location as collected (for copyOffset)
+  devbuf_param.setPrecision(split_param.cuda_prec, split_param.cuda_prec, true); // Native format
+  //std::vector<quda::ColorSpinorField> dev_buf(num_sub_partition, devbuf_param);
+  dev_buf.resize(num_sub_partition);
+  for(Int i=0;i<num_sub_partition;i++){
+    dev_buf[i] = quda::ColorSpinorField(devbuf_param);
+  }
+  //
+  //
+  //for (int n = 0; n < split_param.num_src_per_sub_partition; n++) {
+  //  // Download and change to Native Order and split
+  //  for (int j = 0; j < num_sub_partition; j++) dev_buf[j].copy(QL[0][n * num_sub_partition + j]);
+  //  quda::split_field(_collect_b[n], {dev_buf.begin(), dev_buf.end()}, split_key, QUDA_4D_PC);
+  //}
+  //
+  rotate_quda_split(false);
+  //quda::push_communicator(split_key);
+  //updateR();
+  //quda::comm_barrier();
+  //
+  split_param_copy = split_param;
+  split_param_copy.input_location  = cs_param_split.location;
+  split_param_copy.output_location = cs_param_split.location;
+  //
+  // Important: Don't use accessors for external formats any more
+  // Since input fields are in Native order now
+  split_param_copy.dirac_order = QUDA_INTERNAL_DIRAC_ORDER;
+  //
+  // We need to set the cpu_prec in the param_copy, because the op() passed in
+  // to us will try to create wrappers to the pointers we pass in. They expect
+  // the input spinors to be on the host, and will use param_copy.cpu_prec to set
+  // the precision. We want to avoid the situation, where the internal prec and the
+  // cpu_prec are somehow different.
+  split_param_copy.cpu_prec = split_fields[0][0].Precision();
+  //
+  //quda::Dirac *dirac;
+  // create dirac under splitted communicator
+  if(split_dirac != NULL){delete split_dirac;split_dirac = NULL;}
+  const bool pc_solve = false;
+  quda::DiracParam diracParam;
+  setDiracParam(diracParam, &split_param_copy, pc_solve);
+  split_dirac     = quda::Dirac::create(diracParam);
+  //{
+  //  // Make a copy of the params we can mess with
+  //  // Set solver input/output param location
+  //  //
+  //  // Do the solves
+  //  //std::vector<void *> x_raw(param->num_src_per_sub_partition);
+  //  //std::vector<void *> b_raw(param->num_src_per_sub_partition);
+  //  //for (auto i = 0u; i < x_raw.size(); i++) x_raw[i] = _collect_x[i].data();
+  //  //for (auto i = 0u; i < b_raw.size(); i++) b_raw[i] = _collect_b[i].data();
+  //  //op(x_raw, b_raw, param_copy, args...);
+  //  for(int bi=0;bi<in.bfac;bi++)
+  //  {
+  //    TIMER_FLOPS("SRH splitted dslash");
+  //    //const double flops0 = quda::Tunable::flops_global();
+  //    dirac->M(_collect_x, _collect_b);
+  //    //const double flops1 = quda::Tunable::flops_global();
+  //    //qmessage("quda flops %.3f per site \n", (flops1 - flops0)/(geo.local_volume()));
+  //    qacc_barrier(dummy);
+  //    //timer.flops += (flops1 - flops0) / qlat::get_num_node();
+  //    timer.flops += geo.local_volume() * 1368 * dslash_mrh * num_sub_partition;
+  //  }
+  //}
+  //
+  // back to the default communicator, now join the param entries
+  //auto split_rank = quda::comm_rank();
+  // rotate back to original communicator
+  rotate_quda_split(true);
+  //quda::push_communicator(quda::default_comm_key);
+  //updateR();
+  //quda::comm_barrier();
+  //quda::joinInvertParam(split_param, param_copy, split_key, split_rank);
+  //
+  // Join spinors: _h_x are aliases to host pointers in 'external order: QDP++, QDP-JIT, etc'
+  //for (int n = 0; n < split_param.num_src_per_sub_partition; n++) {
+  //  // join fields
+  //  quda::join_field({dev_buf.begin(), dev_buf.end()}, _collect_x[n], split_key, QUDA_4D_PC);
+  //  //
+  //  // export to desired location and layout
+  //  for (int j = 0; j < num_sub_partition; j++) QL[2][n * num_sub_partition + j].copy(dev_buf[j]);
+  //}
+  //
+  /* 
+    swap to original link and delete buffer
+    always keep the splitted gauge
+  */
+  //swapGaugeSplit(true);
+}
+
+inline void quda_clover_inverter::copy_to_buf_split(std::vector<quda::ColorSpinorField>& src, const Int i){
+  TIMER("copy_to_buf_split");
+  rotate_from_quda_split();// swap to default comm to split fields
+  Qassert(src.size() == split_param.num_src_per_sub_partition * num_sub_partition);
+  Qassert(i < split_fields.size());
+  for (int n = 0; n < split_param.num_src_per_sub_partition; n++) {
+    // Download and change to Native Order and split
+    for (int j = 0; j < num_sub_partition; j++) dev_buf[j].copy(src[n * num_sub_partition + j]);
+    quda::split_field_device(split_fields[i][n], {dev_buf.begin(), dev_buf.end()}, split_key, QUDA_4D_PC);
+  }
+  rotate_to_quda_split();// swap to splitted comms
+}
+
+inline void quda_clover_inverter::copy_from_buf_split(std::vector<quda::ColorSpinorField>& res, const Int i){
+  TIMER("copy_from_buf_split");
+  rotate_from_quda_split();
+  Qassert(res.size() == split_param.num_src_per_sub_partition * num_sub_partition);
+  Qassert(i < split_fields.size());
+  for (int n = 0; n < split_param.num_src_per_sub_partition; n++) {
+    quda::join_field_device({dev_buf.begin(), dev_buf.end()}, split_fields[i][n], split_key, QUDA_4D_PC);
+    //
+    // export to desired location and layout
+    for (int j = 0; j < num_sub_partition; j++) res[n * num_sub_partition + j].copy(dev_buf[j]);
+  }
 }
 
 quda_clover_inverter::~quda_clover_inverter()

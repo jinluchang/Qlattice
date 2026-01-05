@@ -4,6 +4,7 @@
 #pragma once
 
 #include <quda.h>
+#include <split_grid.h>
 ////#include <gauge_force_quda.h>
 #include <tune_quda.h>
 #include <deflation.h>
@@ -41,13 +42,13 @@ struct quda_inverter {
   //quda::SolverParam solverParam;
   //quda::Solver *solve_cg;
   //bool CG_reset;
-
-  box<Geometry> geoB;
+  //
+  box<Geometry> geo;
   qlat::vector<Long > map_index;
   qlat::FieldM<int8_t, 1> eo;//buffer for eo signs
   Int solve_mode ;
   /////QudaInvertParam df_param;
-
+  //
   QudaEigParam    eig_param;
   //int nvec;
   double inv_residue;
@@ -59,9 +60,9 @@ struct quda_inverter {
   //int num_src_inv;
   Int quda_verbos;
   Int prec_type_check;
-
-  ///std::vector<std::vector<quda::Complex > > evecs;
-
+  //
+  //std::vector<std::vector<quda::Complex > > evecs;
+  //
   //quda::EigenSolver *eig_solveK;
   //quda::EigenSolver *eig_solveF;
   quda::DiracMatrix* mat;
@@ -70,60 +71,59 @@ struct quda_inverter {
   quda::DiracMatrix* mat_Mdag;
   quda::DiracMatrix* mat_MMdag;
   quda::DiracMatrix* mat_MdagM;
-
+  //
   //quda::DiracM* m_cg;
   //quda::DiracM* mSloppy;
   //quda::DiracM* mPre;
   //quda::DiracM* mEig;
-
+  //
   //void* df_preconditioner;
-
+  //
   double mass_mat;
   //double mass_eig;
   double mass_value;
-
+  //
   ////eigen related
   quda::Dirac *dirac;
   quda::Dirac *dirac_pc;
   quda::Dirac *dirac_pc_odd;
-
+  //
   //quda::Dirac *dirac_cg;
   //quda::Dirac *dSloppy;
   //quda::Dirac *dPre;
   //quda::Dirac *dEig;
-
+  //
   //std::vector<quda::Complex > evals_ZERO;
   //std::vector<double        > evals_ERR ;
-
+  //
   //std::vector<quda::ColorSpinorField > kSpace;
   //std::vector<quda::ColorSpinorField > fSpace;
   //////std::vector<quda::ColorSpinorField > kSpace_cpu;
   //std::vector<quda::Complex > evalsK;
   //std::vector<quda::Complex > evalsF;
-
+  //
   std::vector<quda::ColorSpinorField> out_multishift_gpu;
   std::vector<quda::ColorSpinorField> src_multishift_gpu;
-
+  //
   std::vector<quda::ColorSpinorField > ZSpace;
   std::vector<quda::Complex > evalsZ;
   ///std::vector<quda::ColorSpinorField *> evecs_;
   Int spinor_site_size;
   Int max_src_qinv;
-
+  //
   //quda::ColorSpinorParam cs_cpu;
   quda::ColorSpinorParam cs_gpu;
   quda::ColorSpinorParam cs_gpuH;
-
+  //
   //quda::ColorSpinorField *csrc, *cres;
   //quda::ColorSpinorField *cpu_src, *cpu_res;
   quda::ColorSpinorField *gsrc, *gres;
   quda::ColorSpinorField *gsrcH, *gresH;
-  ///quda::ColorSpinorField *gsrcD, *gresD;
-
-
+  //quda::ColorSpinorField *gsrcD, *gresD;
+  //
   // should be used only for buffers of MRH inversions
   qlat::vector_gpu<ComplexT<double> > buf_inv;
-
+  //
   // used for eigensystem construction of double / single
   quda::ColorSpinorParam cs_gpuD;
   quda::ColorSpinorParam cs_gpuF;
@@ -131,67 +131,96 @@ struct quda_inverter {
   quda::ColorSpinorField *gtmp1F, *gtmp2F;
   quda::ColorSpinorField *gadd; ////for low mode addition
   //quda::ColorSpinorField *gtmp_invG0;
-
+  //
   //quda::ColorSpinorField *ctmp0, *ctmp1, *ctmp2;
   quda::ColorSpinorField *gtmp0, *gtmp1, *gtmp2;
   //quda::ColorSpinorField *gsrcF, *gresF; ////format to match gpu solver
-  ///bool singleE;
-
+  //bool singleE;
+  //
+  //=== split gauge buffers
+  std::vector<Int> split_grid;
+  Int split_mrh;
+  QudaInvertParam   split_param;
+  QudaInvertParam   split_param_copy;
+  quda::ColorSpinorParam cs_param_split;
+  quda::ColorSpinorParam devbuf_param;
+  std::vector<std::vector<quda::ColorSpinorField> > split_fields;
+  std::vector<vector_gpu<ComplexD > > split_fields_buffer;
+  std::vector<quda::ColorSpinorField>    dev_buf;
+  quda::CommKey split_key ;
+  quda::Dirac *split_dirac_pc;
+  bool split_setup;
+  bool split_comm_buff;
+  bool split_prec_double;
+  Int num_sub_partition;
+  inline void rotate_quda_split(const bool swap_gauge = true);
+  inline void rotate_to_quda_split(){
+    if(split_comm_buff == true){return ;}
+    else{rotate_quda_split(true);}
+  }
+  inline void rotate_from_quda_split(){
+    if(split_comm_buff == false){return ;}
+    else{rotate_quda_split(true);}
+  }
+  inline void copy_to_buf_split(std::vector<quda::ColorSpinorField>& src, const Int i);
+  inline void copy_from_buf_split(std::vector<quda::ColorSpinorField>& res, const Int i);
+  inline void set_quda_split(const std::vector<Int >& grid, const Int num_src, const bool split_prec_double_ = true);
+  inline void free_quda_split();
+  inline void set_dirac_mrh(const Int mrh);
+  //===
+  //
   bool io_rotate_bfac;
-
-  ////0 for wilson, clover, 1 for stagger
+  //
+  //0 for wilson, clover, 1 for stagger
   Int fermion_type;
   bool gauge_with_phase;
   //int use_eigen_pc;
-
+  //
   /*  TODO add redeflate for QUDA
       default precision float, double
       eigen related pointers and prec
   */
-
+  //
   std::vector<void* > eigenL;
   std::vector<Int   > eigen_precL;
   bool eigen_with_nvec;
   std::vector<Int > eigen_with_nvecL;
   //void* eigen0;//float  eigen
   //void* eigen1;//double eigen for high prec
-
+  //
   Int check_residue;
   bool clover_alloc;
-
+  //
   //int Nshift;
   //int shift_masses;
   //std::vector<quda::ColorSpinorField> out_multishift_gpu;
-
-  std::vector<std::vector<quda::Complex > > quda_clover;
-  std::vector<quda::Complex > quda_clover_inv;
-
+  //
   quda_inverter(const Geometry& geo_, QudaTboundary t_boundary);
-
+  //
   inline void free_mem();
   inline void setup_link(qlat::ComplexD* quda_gf, const Int apply_stag_phase = 0, const Int force_phase = 0);
   inline void gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir = 3, Int gf_maxiter = 10000, double gf_tolerance = 1e-6, Int fix_type = 0);
-
+  //
   //default e0 single, e1 double
   template<typename T1, typename T2>
   inline void setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1);
-
+  //
   // even-even eigensystem, could be used with dslash to get full prop
   // mode == 0, deflate, mode == 1 get low prop
   // buf_prec = 0 : input doubleC, buf_prec = 1 : input singleC
   inline void deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<void* >& Psrc, double mass, Int buf_prec, Int mode = 0, Int clear = 1, const bool data_from_quda = true);
-
+  //
   // src need to be unchanged if res != src
   // res could be the same as src
   // use gtmp0
   template<typename Ty, typename Tk>
   inline void get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty* >& src, qlat::vector<Tk* >& buf, Int qlat_format = 1);
-
+  //
   template<typename Ty>
   inline void get_inversion_bufs(qlat::vector<Ty* >& res, const Int nvecs, const Int halfV = 0){
-    LInt Vd = geoB().local_volume() * 3 * sizeof(Ty) / sizeof(qlat::ComplexT<double>);
+    LInt Vd = geo().local_volume() * 3 * sizeof(Ty) / sizeof(qlat::ComplexT<double>);
     if(halfV == 1){Vd = Vd / 2;}
-    Qassert(Vd / (geoB().local_volume() * 3) <= 64);//at most 64 vectors in buf
+    Qassert(Vd / (geo().local_volume() * 3) <= 64);//at most 64 vectors in buf
     const LInt totalD = Vd * nvecs;
     buf_inv.resizeL(totalD);
     res.resize(nvecs);
@@ -200,61 +229,61 @@ struct quda_inverter {
       res[iv] = (Ty*) &buf_inv[iv*Vd];
     }
   }
-
+  //
   // low mode from gsrc to gres
   // use gtmp1
   inline void prepare_low_prop();
-
+  //
   //inline void setup_clover(const double clover_csw);
   //initialize inv parameters, allocate initial cpu and gpu buffers
   inline void setup_stagger_inv();
-
+  //
   //inline void update_eigen_mass(const double mass, bool force = false);
-
+  //
   //inline void setup_inc_eigencg(const Int n_ev, const Int n_kr, const Int n_conv, const Int df_grid, const double tol, const double inc_tol, const double tol_restart, const Int restart_n, const Int pipeline, const Int inv_type = 1);
-
+  //
   //template<typename Ty>
   //inline void do_inv(Ty* res, Ty* src, const double mass, const double err = 1e-10, const Int niter = 10000 , const Int prec_type = 0);
   //inline void deflate(quda::ColorSpinorField &sol, const quda::ColorSpinorField& src,
   //    std::vector<quda::ColorSpinorField> &evecs, const std::vector<quda::Complex > &evals, bool accumulate = false);
-
+  //
   //inline void deflate(std::vector<quda::ColorSpinorField* > &sol, const std::vector<quda::ColorSpinorField* > &src,
   //    std::vector<quda::ColorSpinorField> &evecs, const std::vector<quda::Complex > &evals, bool accumulate = false);
-
+  //
   inline void callMultiSrcQuda(qlat::vector<void* >& res, qlat::vector<void* >& src, Int max_src = -1);
-
+  //
   void print_plaq();
-
+  //
   //inline void setup_inv_mass(const double mass);
   // setup masses and Dirac
   inline void setup_mat_mass(const double mass, const bool force_do = false);
   inline void clear_mat();
-
+  //
   inline void free_csfield(const Int mode = 0);
-
+  //
   // ctmp0, ctmp1, ctmp2, 
   inline void alloc_csfield_initial();
-
+  //
   // set up ColorSpinorParam from inv
   // gsrc, gres, gtmp0, gtmp1, gtmp2, cs_gpuH, gsrcH, gresH
   inline void alloc_csfield_gpu();
   //need check residual CG
-
+  //
   //inline void save_evecs(const char* filename, const bool read = false, const Int ndouble = -1, const Int split_save = 1 );
   //inline void save_evecsF(const char* filename, const bool read = false);
   //inline void check_residualF();
-
+  //
   // ghost function to set precision for inv and gauge, not loaded at all, need setup_inv_param_prec to force load gauge again or use setup_link
   inline void setup_inv_param_prec_type(Int prec_type = 0);
   // automatic change presion based on current gauge, qinv buffers, update dslash
   inline void setup_inv_param_prec(Int prec_type = 0, bool force_reload = false);
   inline void setup_gauge_param(QudaTboundary t_boundary);
-
+  //
   inline void random_src(const Int seed);
-
+  //
   //inline void reconstruct_full(const double mass = -1);
   //inline void save_prop(const void* srcP, const char* filename);
-
+  //
   // create solverParam needed by invertQuda_COPY_single
   //inline void setup_CG();
   //inline void clear_CG(){
@@ -265,7 +294,8 @@ struct quda_inverter {
   // the COPY could use single precison as input
   //inline void invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, Int solve_mode_ = 0);
   inline void invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src);
-
+  inline void invertQuda_COPY_single(std::vector<quda::ColorSpinorField> & res, std::vector<quda::ColorSpinorField>& src);
+  //
   inline void get_param_ref(quda::ColorSpinorParam& param, const bool is_double ){
     param   = cs_gpu;
     param.is_composite  = false;
@@ -277,25 +307,25 @@ struct quda_inverter {
     }
     param.create = QUDA_REFERENCE_FIELD_CREATE;
   }
-
+  //
   template <class Ty>
   inline void qlat_cf_to_quda_cf_P(void* res, Ty* src, qlat::vector<Long >& map, quda::ColorSpinorParam& param){
     param.v = (void*) res;
     quda::ColorSpinorField* Qvec = NULL;
     Qvec = new quda::ColorSpinorField(param);
-    qlat_cf_to_quda_cf(*Qvec, src, geoB(), map);
+    qlat_cf_to_quda_cf(*Qvec, src, geo(), map);
     delete Qvec;
   }
-
+  //
   template <class Ty>
   inline void quda_cf_to_qlat_cf_cf_P(Ty* res, void* src, qlat::vector<Long >& map, quda::ColorSpinorParam& param){
     param.v = (void*) src;
     quda::ColorSpinorField* Qvec = NULL;
     Qvec = new quda::ColorSpinorField(param);
-    quda_cf_to_qlat_cf(res, *Qvec, geoB(), map);
+    quda_cf_to_qlat_cf(res, *Qvec, geo(), map);
     delete Qvec;
   }
-
+  //
   /*
     transform from quda double prec order to single prec order 
     prec = 0 double, prec = 1 single
@@ -341,42 +371,42 @@ struct quda_inverter {
     }
     delete Qd;
   }
-
+  //
   /*
     transform from quda single prec order to double prec order 
   */
   inline void quda_to_double_order(vector<void* >& src, const Int prec){
     quda_to_single_order(src, prec, 1);
   }
-
+  //
   ~quda_inverter();
 };
 
 quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
 {
   TIMER("quda_inverter_constuctor");
-  /////set up gauge parameters
-  geoB.set(geo_);
-  V = geoB().local_volume();
+  //set up gauge parameters
+  geo.set(geo_);
+  V = geo().local_volume();
   //Qassert(num_src_ > 0);
   //num_src = num_src_;
   //num_src_inv = num_src;
   prec_type_check = -2;
-
+  //
   for (Int mu = 0; mu < 4; mu++) {
-    X[mu] = geoB().node_site[mu];
-    Qassert(geoB().node_site[mu] % 2 == 0);// needed for eo inverter
+    X[mu] = geo().node_site[mu];
+    Qassert(geo().node_site[mu] % 2 == 0);// needed for eo inverter
   }
   ////===Start of gauge_param
   gauge_param = newQudaGaugeParam();
   ////quda_gf_default = NULL;
   inv_param   = newQudaInvertParam();
-
+  //
   setup_gauge_param(t_boundary);
-
+  //
   //add_high = 1;
   //solve_mode = 0;
-
+  //
   clover_alloc = false;
   //csrc = NULL; cres = NULL;
   gsrc = NULL; gres = NULL;
@@ -387,10 +417,10 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   gtmp1F = NULL;gtmp2F = NULL;
   gadd = NULL;
   //gtmp_invG0 = NULL;
-
+  //
   //ctmp0 = NULL; ctmp1 = NULL; ctmp2 = NULL;
   gtmp0 = NULL; gtmp1 = NULL; gtmp2 = NULL;
-
+  //
   //eig_solveK = NULL;
   //eig_solveF = NULL;
   mat = NULL;
@@ -399,13 +429,13 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   mat_MMdag = NULL;
   mat_E = NULL;
   mat_MdagM = NULL;
-
+  //
   //m_cg = NULL;
   //mSloppy = NULL;
   //mPre = NULL;
   //mEig = NULL;
   //CG_reset = true;
-
+  //
   //solve_cg = NULL;
   dirac = NULL;
   //dirac_cg = NULL;
@@ -414,14 +444,18 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   //dSloppy = NULL;
   //dPre    = NULL;
   //dEig    = NULL;
-
+  //
+  split_dirac_pc = NULL;
+  split_comm_buff = false;
+  split_prec_double = true;
+  //
   eigen_with_nvec = false;
-
+  //
   //df_preconditioner = NULL;
   //nvec = 0;
   //use_eigen_pc = 0;
   check_residue = 0;
-
+  //
   spinor_site_size =  0;
   max_src_qinv     =  qlat::get_env_long_default(std::string("qlat_quda_stag_mrh"), 9);
   gauge_with_phase = false;
@@ -463,7 +497,7 @@ inline void quda_inverter::setup_gauge_param(QudaTboundary t_boundary)
   //gauge_param.t_boundary = QUDA_PERIODIC_T; ////fermion_t_boundary
   //QUDA_ANTI_PERIODIC_T
 
-  ////fine tune the precisions if needed
+  //fine tune the precisions if needed
   gauge_param.cpu_prec               = QUDA_DOUBLE_PRECISION;
   gauge_param.cuda_prec              = QUDA_DOUBLE_PRECISION;
 
@@ -508,7 +542,7 @@ inline void quda_inverter::setup_gauge_param(QudaTboundary t_boundary)
   gauge_param.staggered_phase_type = QUDA_STAGGERED_PHASE_MILC;
 
   gauge_param.anisotropy = 1.0; /////anisotropy
-
+  //
   Int pad_size = 0;
   // For multi-GPU, ga_pad must be large enough to store a time-slice
   Int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
@@ -1125,227 +1159,6 @@ inline void quda_inverter::free_mem(){
   clear_mat();
 }
 
-//inline void quda_inverter::setup_clover(const double clover_csw)
-//{
-//  fermion_type = 0;
-//  if(fermion_type == 0){spinor_site_size = 12;}
-//
-//  /////===Start of Inv parameters
-//  inv_param.dslash_type = QUDA_CLOVER_WILSON_DSLASH;
-//
-//  /////double kappa      = kappa;
-//  double anisotropy = gauge_param.anisotropy;
-//  inv_param.kappa = 0.150;
-//  inv_param.mass = 0.5 / inv_param.kappa - (1.0 + 3.0 / anisotropy);
-//
-//  // Use 3D or 4D laplace
-//  //===inv_param.laplace3D = laplace3D;
-//  inv_param.Ls = 1;
-//
-//  inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
-//  inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
-//  inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
-//  inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
-//
-//
-//  inv_param.preserve_source = QUDA_PRESERVE_SOURCE_YES;
-//  inv_param.gamma_basis = QUDA_DEGRAND_ROSSI_GAMMA_BASIS;
-//  inv_param.dirac_order = QUDA_DIRAC_ORDER;
-//
-//
-//  inv_param.clover_cpu_prec               = QUDA_DOUBLE_PRECISION;
-//  inv_param.clover_cuda_prec              = QUDA_DOUBLE_PRECISION;
-//
-//  inv_param.clover_cuda_prec_sloppy       = QUDA_SINGLE_PRECISION;
-//  inv_param.clover_cuda_prec_refinement_sloppy = QUDA_SINGLE_PRECISION;
-//
-//  ////related to eigensystem
-//  inv_param.cuda_prec_eigensolver         = QUDA_SINGLE_PRECISION;
-//  inv_param.cuda_prec_precondition        = QUDA_SINGLE_PRECISION;
-//  inv_param.clover_cuda_prec_precondition = QUDA_SINGLE_PRECISION;
-//  inv_param.clover_cuda_prec_eigensolver  = QUDA_SINGLE_PRECISION;
-//
-//  inv_param.clover_order = QUDA_PACKED_CLOVER_ORDER;
-//  // Use kappa * csw or supplied clover_coeff
-//  bool compute_clover_trlog = false;
-//  //bool compute_clover_trlog = true;
-//  inv_param.clover_csw = clover_csw;
-//  inv_param.clover_coeff = inv_param.clover_csw * inv_param.kappa;
-//  /////===unknow para
-//  inv_param.compute_clover_trlog = compute_clover_trlog ? 1 : 0;
-//
-//  // General parameter setup
-//  inv_param.inv_type = QUDA_CG_INVERTER;
-//
-//  // solution_type specifies *what* system is to be solved.
-//  // solve_type specifies *how* the system is to be solved.
-//  //
-//  // We have the following four cases (plus preconditioned variants):
-//  //
-//  // solution_type    solve_type    Effect
-//  // -------------    ----------    ------
-//  // MAT              DIRECT        Solve Ax=b
-//  // MATDAG_MAT       DIRECT        Solve A^dag y = b, followed by Ax=y
-//  // MAT              NORMOP        Solve (A^dag A) x = (A^dag b)
-//  // MATDAG_MAT       NORMOP        Solve (A^dag A) x = b
-//  // MAT              NORMERR       Solve (A A^dag) y = b, then x = A^dag y
-//  //
-//  // We generally require that the solution_type and solve_type
-//  // preconditioning match.  As an exception, the unpreconditioned MAT
-//  // solution_type may be used with any solve_type, including
-//  // DIRECT_PC and NORMOP_PC.  In these cases, preparation of the
-//  // preconditioned source and reconstruction of the full solution are
-//  // taken care of by Dirac::prepare() and Dirac::reconstruct(),
-//  // respectively.
-//
-//  // Eventually we want the unpreconditioned solution.
-//  inv_param.solution_type = QUDA_MAT_SOLUTION;
-//
-//  // NORMOP_PC means preconditioned normal operator MdagM
-//  //inv_param.solve_type = QUDA_NORMOP_PC_SOLVE;
-//  inv_param.solve_type = QUDA_NORMOP_SOLVE;
-//
-//  // There might be a performance difference.
-//  inv_param.matpc_type = QUDA_MATPC_EVEN_EVEN;
-//
-//  inv_param.dagger = QUDA_DAG_NO;
-//
-//  //inv_param.mass_normalization   = QUDA_KAPPA_NORMALIZATION;
-//  inv_param.mass_normalization   = QUDA_MASS_NORMALIZATION;
-//  inv_param.solver_normalization =  QUDA_SOURCE_NORMALIZATION;
-//  //inv_param.solver_normalization = QUDA_DEFAULT_NORMALIZATION;
-//  //inv_param.solver_normalization = QUDA_KAPPA_NORMALIZATION;
-//
-//  ///unknown
-//  Int gcrNkrylov = 10;
-//  QudaCABasis ca_basis = QUDA_POWER_BASIS;
-//  double ca_lambda_min = 0.0;
-//  double ca_lambda_max = -1.0;
-//
-//  inv_param.pipeline = 1;
-//  inv_param.Nsteps = 2;
-//  inv_param.gcrNkrylov = gcrNkrylov;
-//  inv_param.ca_basis = ca_basis;
-//  inv_param.ca_lambda_min = ca_lambda_min;
-//  inv_param.ca_lambda_max = ca_lambda_max;
-//
-//  inv_param.tol     = 1e-10;
-//  inv_param.maxiter = 100000;
-//  inv_param.tol_restart = 0.0005;
-//  //if (tol_hq == 0 && tol == 0) {
-//  //  errorQuda("qudaInvert: requesting zero residual\n");
-//  //  exit(1);
-//  //}
-//
-//  // require both L2 relative and heavy quark residual to determine convergence
-//  inv_param.residual_type = static_cast<QudaResidualType_s>(0);
-//  inv_param.residual_type = static_cast<QudaResidualType_s>(inv_param.residual_type | QUDA_L2_RELATIVE_RESIDUAL);
-//
-//  inv_param.tol_hq = 1e-5; // specify a tolerance for the residual for heavy quark residual
-//  //inv_param.tol_hq = 1e-10; // specify a tolerance for the residual for heavy quark residual
-//
-//  //// Offsets used only by multi-shift solver
-//  //// These should be set in the application code. We set the them here by way of
-//  //// example
-//  //inv_param.num_offset = multishift;
-//  //for (Int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 + i * i * 0.1;
-//  //// these can be set individually
-//  //for (Int i = 0; i < inv_param.num_offset; i++) {
-//  //  inv_param.tol_offset[i] = inv_param.tol;
-//  //  inv_param.tol_hq_offset[i] = inv_param.tol_hq;
-//  //}
-//
-//  // This is for Quda's sophisticated reliable update. 0.1 should be good.
-//  inv_param.reliable_delta = 0.1;
-//  inv_param.use_alternative_reliable = true;
-//  inv_param.use_sloppy_partial_accumulator = 0;
-//  inv_param.solution_accumulator_pipeline = 1;
-//  inv_param.max_res_increase = 1;
-//
-//  // domain decomposition preconditioner parameters
-//  // inv_param.inv_type_precondition = precon_type;
-//
-//  //inv_param.schwarz_type = precon_schwarz_type;
-//  //inv_param.precondition_cycle = precon_schwarz_cycle;
-//  //inv_param.tol_precondition = tol_precondition;
-//  //inv_param.maxiter_precondition = maxiter_precondition;
-//  //inv_param.omega = 1.0;
-//
-//  //inv_param.input_location  = QUDA_CPU_FIELD_LOCATION;
-//  //inv_param.output_location = QUDA_CPU_FIELD_LOCATION;
-//
-//  inv_param.input_location  = QUDA_CUDA_FIELD_LOCATION;
-//  inv_param.output_location = QUDA_CUDA_FIELD_LOCATION;
-//
-//  // QUDA_DEBUG_VERBOSE is too nasty.
-//
-//  inv_param.extlib_type = QUDA_EIGEN_EXTLIB;
-//
-//  // Whether or not to use native BLAS LAPACK
-//  //inv_param.native_blas_lapack = (native_blas_lapack ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE);
-//  inv_param.native_blas_lapack = QUDA_BOOLEAN_TRUE;
-//
-//  //// Whether or not use fused kernels for Mobius
-//  ////inv_param.use_mobius_fused_kernel = use_mobius_fused_kernel ? QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
-//  //inv_param.use_mobius_fused_kernel = QUDA_BOOLEAN_FALSE;
-//
-//
-//  ///////===check this variable
-//  std::array<int, 4> grid_partition = {1, 1, 1, 1};
-//  inv_param.split_grid[0] = grid_partition[0];
-//  inv_param.split_grid[1] = grid_partition[1];
-//  inv_param.split_grid[2] = grid_partition[2];
-//  inv_param.split_grid[3] = grid_partition[3];
-//
-//  inv_param.struct_size = sizeof(inv_param);
-//
-//  ////===END of Inv parameters
-//
-//  ///int do_inv = 1;
-//  {
-//  //////===operator define
-//  //void *clover = nullptr;
-//  //void *clover_inv = nullptr;
-//
-//  Int clover_site_size           = 72; // real numbers per block-diagonal clover matrix
-//  ////size_t host_clover_data_type_size = (cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-//  Int host_clover_data_type_size = sizeof(quda::Complex)/2;
-//  ////size_t host_spinor_data_type_size = (cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
-//  Int host_spinor_data_type_size = sizeof(quda::Complex)/2;
-//
-//  quda_clover.resize(    V * clover_site_size * host_clover_data_type_size);
-//  quda_clover_inv.resize(V * clover_site_size * host_spinor_data_type_size);
-//
-//  //constructHostCloverField((void*) quda_clover.data(), (void*) quda_clover_inv.data(), inv_param);
-//  /////===host
-//
-//  bool compute_clover = true;
-//  //if(in.clover_csw == 0){compute_clover = false;}
-//  //double norm = 0.00; // clover components are random numbers in the range (-norm, norm)
-//  //double diag = 1.0;  // constant added to the diagonal
-//  ////if (!compute_clover) constructQudaCloverField((void*) quda_clover.data(), norm, diag, inv_param.clover_cpu_prec, V);
-//  inv_param.compute_clover = compute_clover;
-//  if (compute_clover) inv_param.return_clover = 1;
-//  inv_param.compute_clover_inverse = 1;
-//  inv_param.return_clover_inverse  = 1;
-//
-//  //loadCloverQuda((void*) quda_clover.data(), (void*)  quda_clover_inv.data(), &inv_param);
-//  //if(in.clover_csw == 0){
-//  //inv_param.compute_clover_inverse = 0;
-//  //inv_param.return_clover_inverse  = 0;
-//  //}
-//  /////===host
-//  ///// Load the clover terms to the device
-//  //loadCloverQuda((void*) quda_clover.data(), (void*)  quda_clover_inv.data(), &inv_param);
-//  //loadCloverQuda((void*) quda_clover.data(), (void*)  quda_clover_inv.data(), &inv_param);
-//  loadCloverQuda((void*) quda_clover.data(), (void*)  quda_clover_inv.data(), &inv_param);
-//  }
-//
-//  alloc_csfield_cpu();
-//  alloc_csfield_gpu();
-//
-//}
-
 inline void quda_inverter::setup_stagger_inv()
 {
   TIMER("setup_stagger_inv");
@@ -1662,6 +1475,7 @@ inline void quda_inverter::clear_mat()
   //if(dirac_cg != NULL){delete dirac_cg;dirac_cg=NULL;}
   if(dirac_pc != NULL){delete dirac_pc;dirac_pc=NULL;}
   if(dirac_pc_odd != NULL){delete dirac_pc_odd;dirac_pc_odd=NULL;}
+  free_quda_split();
   //if(dSloppy != NULL){delete dSloppy;dSloppy=NULL;}
   //if(dPre != NULL){delete dPre;dPre=NULL;}
   //if(dEig != NULL){delete dEig;dEig=NULL;}
@@ -2445,7 +2259,7 @@ inline void quda_inverter::deflate_Ty(qlat::vector<void* >& Pres, qlat::vector<v
   //Qassert(get_data_type<Ty>() == ComplexD_TYPE or get_data_type<Ty>() == ComplexF_TYPE);
   Qassert(buf_prec == 0 or buf_prec == 1);
   Qassert(eigenL.size() == eigen_precL.size());
-  const Long Ndata = 3 * geoB().local_volume() / 2; // half volume vectors
+  const Long Ndata = 3 * geo().local_volume() / 2; // half volume vectors
   if(eigen_with_nvec == false){
     for(unsigned int vi=0;vi<Pres.size();vi++){
       if(buf_prec == 0){zero_Ty((qlat::ComplexT<double>*) Pres[vi], Ndata, 1, QFALSE);}
@@ -2558,7 +2372,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
     cbuf[iv] = (Ty*) buf[iv];
   }
 
-  const Long V = geoB().local_volume();
+  const Long V = geo().local_volume();
   //if no eigen vectors return 0 vectors with each size V*3
   if(eigen_with_nvec == false){
     for(Int vi=0;vi<nsrc;vi++){
@@ -2584,8 +2398,8 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
       //  param.v = (void*) cbuf[vi];
       //  quda::ColorSpinorField* Qvec = NULL;
       //  Qvec = new quda::ColorSpinorField(param);
-      //  qlat_cf_to_quda_cf(*Qvec, src[vi], geoB(), map_index);
-      //  //qlat_cf_to_quda_cf(cbuf[vi], src[vi], DIM, geoB(), map_index);
+      //  qlat_cf_to_quda_cf(*Qvec, src[vi], geo(), map_index);
+      //  //qlat_cf_to_quda_cf(cbuf[vi], src[vi], DIM, geo(), map_index);
       //  delete Qvec;
       //}
       //
@@ -2656,7 +2470,7 @@ inline void quda_inverter::get_low_prop(qlat::vector<Ty* >& res, qlat::vector<Ty
   if(qlat_format == 1)
   for(Int vi=0;vi<nsrc;vi++){
     quda_cf_to_qlat_cf_cf_P(pB[vi], pR[vi], map_index, param);
-    //quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geoB(), map_index);
+    //quda_cf_to_qlat_cf(pB[vi], pR[vi], DIM, geo(), map_index);
   }
 
   for(Int vi=0;vi<2*nsrc;vi++){
@@ -2795,132 +2609,47 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector<void* >& res, qlat::vec
 
 inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src)
 {
-  TIMERA("Quda invertQuda_COPY_single");
+  //TIMERA("Quda invertQuda_COPY_single");
   Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
-  inv_param.cpu_prec = src.Precision();
+  const Int nvec = 1;
+  // always mixed precison inversion
+  if(src.Precision() != inv_param.cpu_prec){
+    if(src.Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec_type(0);
+    if(src.Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec_type(1);
+  }
   //Qassert(src.Precision() == inv_param.cpu_prec);
   qlat::vector<void* > sI;
   qlat::vector<void* > rI;
-  sI.resize(1);
-  rI.resize(1);
-  sI[0] = src.data();
-  rI[0] = res.data();
-  
+  sI.resize(nvec);rI.resize(nvec);
+  for(Int i=0;i<nvec;i++){
+    sI[i] = src.data();
+    rI[i] = res.data();
+  }
   callMultiSrcQuda(rI, sI);
-  //invertMultiSrcQuda(rI.data(), sI.data(), &inv_param);
-  //if(src.Precision() == QUDA_DOUBLE_PRECISION)
-  //{
-  //}
+}
 
-  //extra copy needed
-  //if(src.Precision() == QUDA_SINGLE_PRECISION)
-  //{
-  //  (*gsrcH).Component(0) = src;
-  //  invertQuda((*gresH).Component(0).data(), (*gsrcH).Component(0).data(), &inv_param);
-  //  res = (*gresH).Component(0);
-  //}
-
-  ////solverParam.secs = 0;
-  ////solverParam.gflops = 0;
-  ////solverParam.iter = 0;
-  //solve_mode = solve_mode_;
-  //QudaInvertParam& param = inv_param;
-  ////param.secs = 0;
-  ////param.gflops = 0;
-  //param.iter = 0;
-  //solverParam.iter = 0;
-  //auto profile = quda::pushProfile(profileInvertC, param.secs, param.gflops);
-  ////quda::profilerStart(__func__);
-  ////quda::enable_profiler = true;
-  //quda::device::profile::start();
-
-  //bool pc_solution = (param.solution_type == QUDA_MATPC_SOLUTION) ||
-  //  (param.solution_type == QUDA_MATPCDAG_MATPC_SOLUTION);
-  //bool pc_solve = (param.solve_type == QUDA_DIRECT_PC_SOLVE) ||
-  //  (param.solve_type == QUDA_NORMOP_PC_SOLVE) || (param.solve_type == QUDA_NORMERR_PC_SOLVE);
-  //bool direct_solve = (param.solve_type == QUDA_DIRECT_SOLVE) ||
-  //  (param.solve_type == QUDA_DIRECT_PC_SOLVE);
-
-  //double nb = 1.0;
-  //{
-  //quda::ColorSpinorField& x = res;
-  //quda::ColorSpinorField& b = src;
-  ////if(use_eigen_pc == 0){quda::blas::zero(x);}
-  //if(param.use_init_guess != QUDA_USE_INIT_GUESS_YES){quda::blas::zero(x);}
-  //nb = quda::blas::norm2(b);
-  //if(nb == 0.0){errorQuda("Source has zero norm");}
-
-  //if (getVerbosity() >= QUDA_VERBOSE) {
-  //  printfQuda("Source: %g\n", nb);
-  //  if (param.use_init_guess == QUDA_USE_INIT_GUESS_YES) { printfQuda("Initial guess: %g\n", quda::blas::norm2(x)); }
-  //}
-
-  //// rescale the source and solution vectors to help prevent the onset of underflow
-  //if (param.solver_normalization == QUDA_SOURCE_NORMALIZATION) {
-  //  quda::blas::ax(1.0 / sqrt(nb), b);
-  //  quda::blas::ax(1.0 / sqrt(nb), x);
-  //}
-
-  //if (getVerbosity() >= QUDA_VERBOSE) {
-  //  double nin  = quda::blas::norm2(b);
-  //  double nout = quda::blas::norm2(x);
-  //  if(qlat::get_id_node() == 0){
-  //  printfQuda("Prepared source = %g\n", nin);
-  //  printfQuda("Prepared solution = %g\n", nout);
-  //  }
-  //}
-
-  //quda::massRescale(b, param, false);
-
-  //if (getVerbosity() >= QUDA_VERBOSE) {
-  //  double nin = quda::blas::norm2(b);
-  //  if(qlat::get_id_node() == 0){
-  //  printfQuda("Prepared source post mass rescale = %g\n", nin);
-  //  }
-  //}
-  //if (pc_solution && !pc_solve) {
-  //  errorQuda("Preconditioned (PC) solution_type requires a PC solve_type");
-  //}
-  //}
-
-  //if (direct_solve) {
-  //  if(solve_mode == 0){
-  //    solverParam.num_src = 1;
-  //    quda::Solver* solve_cg = quda::Solver::create(solverParam, *m_cg, *mSloppy, *mPre, *mEig);
-  //    (*solve_cg)(res, src);
-  //    delete solve_cg;
-  //  }else{errorQuda("Solver not added");}
-  //}else{errorQuda("Solver not added");}
-
-  //{
-  //quda::ColorSpinorField& x = res;
-  //////quda::ColorSpinorField& b = src;
-
-  //if (getVerbosity() >= QUDA_VERBOSE) { printfQuda("Solution = %g\n", quda::blas::norm2(x)); }
-  //////dirac.reconstruct(x, b, param.solution_type);
-
-  //if (param.solver_normalization == QUDA_SOURCE_NORMALIZATION) {
-  //  // rescale the solution
-  //  quda::blas::ax(sqrt(nb), x);
-  //  //quda::blas::ax(sqrt(nb), b);
-  //}
-
-  //if (getVerbosity() >= QUDA_VERBOSE) {
-  //  printfQuda("Reconstructed solution: %g\n", quda::blas::norm2(x));
-  //}
-  //}
-
-  //solverParam.updateInvertParam(param);
-
-  ////inv_param.secs = solverParam.secs;
-  ////inv_param.gflops = solverParam.gflops;
-  ////quda::comm_allreduce_sum(param.gflops);
-  ////inv_param.iter = solverParam.iter;
-  //// cache is written out even if a Long benchmarking job gets interrupted
-  //quda::saveTuneCache();
-  ////quda::profilerStop(__func__);
-  //quda::device::profile::stop();
-  ////quda::enable_profiler = false;
+inline void quda_inverter::invertQuda_COPY_single(std::vector<quda::ColorSpinorField>& res, std::vector<quda::ColorSpinorField>& src)
+{
+  //TIMERA("Quda invertQuda_COPY_single");
+  Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
+  const Int nvec = src.size();
+  Qassert(nvec >= 1);
+  // always mixed precison inversion
+  if(src[0].Precision() != inv_param.cpu_prec){
+    if(src[0].Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec_type(0);
+    if(src[0].Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec_type(1);
+  }
+  //inv_param.cpu_prec = src.Precision();
+  //Qassert(src.Precision() == inv_param.cpu_prec);
+  qlat::vector<void* > sI;
+  qlat::vector<void* > rI;
+  sI.resize(nvec);
+  rI.resize(nvec);
+  for(Int i=0;i<nvec;i++){
+    sI[i] = src[i].data();
+    rI[i] = res[i].data();
+  }
+  callMultiSrcQuda(rI, sI);
 }
 
 //inline void quda_inverter::invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, Int solve_mode_)
@@ -3386,6 +3115,173 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
 //  ////quda::saveTuneCache();
 //}
 
+//===split grid dslash related
+inline void quda_inverter::set_dirac_mrh(const Int mrh)
+{
+  if(dirac_pc != NULL){delete dirac_pc;dirac_pc = NULL;}
+  inv_param.num_src = mrh;
+  inv_param.matpc_type = QUDA_MATPC_EVEN_EVEN;
+  quda::DiracParam diracParam;
+  setDiracParam(diracParam, &inv_param, true);
+  dirac_pc = quda::Dirac::create(diracParam);
+}
+
+inline void quda_inverter::free_quda_split(){
+  split_fields.resize(0);
+     dev_buf.resize(0);
+  split_fields_buffer.resize(0);
+  split_setup = false;
+  if(split_dirac_pc != NULL){
+    // swap current gauges with the split ones if split ones are not null
+    swapGaugeSplit(true);
+    // free the split gauges and swap the split gauges with the buffered gauges, if split gauges are not      null
+    swapGaugeSplit(false);
+    delete split_dirac_pc;split_dirac_pc = NULL;
+  }
+}
+
+inline void quda_inverter::rotate_quda_split(const bool swap_gauge){
+  TIMER("rotate_quda_split");
+  Qassert(split_setup);
+  if(split_comm_buff == true){
+    quda::push_communicator(quda::default_comm_key);
+    split_comm_buff = false;
+  }else{
+    quda::push_communicator(split_key);
+    split_comm_buff = true;
+  }
+  if(swap_gauge){swapGaugeSplit(true);}
+  updateR();
+  quda::comm_barrier();
+}
+
+inline void quda_inverter::set_quda_split(const std::vector<Int >& grid, const Int num_src, const bool split_prec_double_){
+  TIMER("set_quda_split");
+  free_quda_split();// in case have previous buffers
+  split_grid = grid;
+  split_mrh  = num_src;
+  Qassert(grid.size() == 4);
+  split_setup = true;
+  const Geometry& geo_ = geo();
+  qlat::vector<Int> Nv,nv,mv;
+  geo_to_nv(geo_, nv, Nv, mv);
+  for(int i=0;i<4;i++){Qassert( mv[i] >= grid[i] and mv[i] % grid[i] == 0);}
+  //
+  split_param = inv_param;
+  //
+  split_param.split_grid[0] = grid[0];
+  split_param.split_grid[1] = grid[1];
+  split_param.split_grid[2] = grid[2];
+  split_param.split_grid[3] = grid[3];
+  split_key = {grid[0], grid[1], grid[2], grid[3]};
+  num_sub_partition = quda::product(split_key);
+  //qmessage("Quda splited MRH num_src %5d sub %5d \n", int(num_src), int(num_sub_partition));
+  Qassert(num_src >= num_sub_partition and num_src % num_sub_partition == 0);
+  const Int dslash_mrh = num_src / num_sub_partition;
+  split_param.num_src = dslash_mrh * num_sub_partition;
+  split_param.num_src_per_sub_partition = dslash_mrh;
+  //
+  UpdateSplitGauge(&split_param, false, false, split_param.split_grid); // split the gauges into split_key form
+  quda::comm_barrier();
+  //
+  Int off_factor = 1;
+  split_prec_double = split_prec_double_;
+  if( split_prec_double){cs_param_split = cs_gpuD;off_factor = 1;}
+  if(!split_prec_double){cs_param_split = cs_gpuF;off_factor = 2;}
+  cs_param_split.setPrecision(split_param.cuda_prec, split_param.cuda_prec, true); // Native format
+  cs_param_split.location = QUDA_CUDA_FIELD_LOCATION;                    // Device side
+  cs_param_split.create = QUDA_REFERENCE_FIELD_CREATE;
+  //
+  // Expand the geometry for the collected fields
+  split_fields_buffer.resize(6);
+  split_fields.resize(split_fields_buffer.size());
+  size_t V_tot = geo().local_volume()  * 3 / 2 ;// srh even-even size
+  for (int d = 0; d < quda::CommKey::n_dim; d++) {
+    cs_param_split.x[d] *= split_key[d]; 
+    V_tot *= split_key[d];
+  }
+  for(unsigned int j=0;j<split_fields.size();j++){
+    split_fields_buffer[j].resize(split_param.num_src_per_sub_partition * V_tot);
+    split_fields[j].resize(split_param.num_src_per_sub_partition);
+    for(Int i=0;i<split_param.num_src_per_sub_partition;i++){
+      /*
+        off_factor for ComplexF offset
+        assume no offset usage outsize qinv
+      */
+      cs_param_split.v   = &split_fields_buffer[j][i* V_tot / off_factor];
+      split_fields[j][i] = quda::ColorSpinorField(cs_param_split);
+    }
+  }
+  //
+  // We will use these dev_buf fields to download (if needed) and convert
+  // external fields into internal foramt
+  if( split_prec_double){devbuf_param = cs_gpuD;}
+  if(!split_prec_double){devbuf_param = cs_gpuF;}
+  //devbuf_param = quda::ColorSpinorParam(*gquda0);
+  devbuf_param.location = cs_param_split.location;                   // same location as collected (for copyOffset)
+  devbuf_param.setPrecision(split_param.cuda_prec, split_param.cuda_prec, true); // Native format
+  //std::vector<quda::ColorSpinorField> dev_buf(num_sub_partition, devbuf_param);
+  dev_buf.resize(num_sub_partition);
+  for(Int i=0;i<num_sub_partition;i++){
+    dev_buf[i] = quda::ColorSpinorField(devbuf_param);
+  }
+  //
+  rotate_quda_split(false);
+  //
+  split_param_copy = split_param;
+  split_param_copy.input_location  = cs_param_split.location;
+  split_param_copy.output_location = cs_param_split.location;
+  //
+  // Important: Don't use accessors for external formats any more
+  // Since input fields are in Native order now
+  split_param_copy.dirac_order = QUDA_INTERNAL_DIRAC_ORDER;
+  //
+  // We need to set the cpu_prec in the param_copy, because the op() passed in
+  // to us will try to create wrappers to the pointers we pass in. They expect
+  // the input spinors to be on the host, and will use param_copy.cpu_prec to set
+  // the precision. We want to avoid the situation, where the internal prec and the
+  // cpu_prec are somehow different.
+  split_param_copy.cpu_prec = split_fields[0][0].Precision();
+  //
+  //quda::Dirac *dirac;
+  // create dirac under splitted communicator
+  if(split_dirac_pc != NULL){delete split_dirac_pc;split_dirac_pc = NULL;}
+  const bool pc_solve = false;
+  split_param_copy.matpc_type = QUDA_MATPC_EVEN_EVEN;
+  quda::DiracParam diracParam;
+  setDiracParam(diracParam, &split_param_copy, pc_solve);
+  split_dirac_pc     = quda::Dirac::create(diracParam);
+  //
+  // rotate back to original communicator
+  rotate_quda_split(true);
+}
+
+inline void quda_inverter::copy_to_buf_split(std::vector<quda::ColorSpinorField>& src, const Int i){
+  TIMER("copy_to_buf_split");
+  rotate_from_quda_split();// swap to default comm to split fields
+  Qassert(src.size() == split_param.num_src_per_sub_partition * num_sub_partition);
+  Qassert(i < split_fields.size());
+  for (int n = 0; n < split_param.num_src_per_sub_partition; n++) {
+    // Download and change to Native Order and split
+    for (int j = 0; j < num_sub_partition; j++) dev_buf[j].copy(src[n * num_sub_partition + j]);
+    quda::split_field_device(split_fields[i][n], {dev_buf.begin(), dev_buf.end()}, split_key, QUDA_4D_PC);
+  }
+  rotate_to_quda_split();// swap to splitted comms
+}
+
+inline void quda_inverter::copy_from_buf_split(std::vector<quda::ColorSpinorField>& res, const Int i){
+  TIMER("copy_from_buf_split");
+  rotate_from_quda_split();
+  Qassert(res.size() == split_param.num_src_per_sub_partition * num_sub_partition);
+  Qassert(i < split_fields.size());
+  for (int n = 0; n < split_param.num_src_per_sub_partition; n++) {
+    quda::join_field_device({dev_buf.begin(), dev_buf.end()}, split_fields[i][n], split_key, QUDA_4D_PC);
+    //
+    // export to desired location and layout
+    for (int j = 0; j < num_sub_partition; j++) res[n * num_sub_partition + j].copy(dev_buf[j]);
+  }
+}
+
 quda_inverter::~quda_inverter()
 {
   free_mem();
@@ -3412,7 +3308,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
   Qassert( nsrc == Long(prop.size()) );
   if(nsrc == 0){return ;}
   qlat::vector<Long >& map = qinv.map_index;
-  const Geometry& geo = qinv.geoB();
+  const Geometry& geo = qinv.geo();
   Qassert(low_only == 0 or low_only == 1 or low_only == -1);///0 for full, 1 for low only, -1 other ways to solve
   const Int restart_cg = 0;
 
@@ -3423,7 +3319,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
   //auto& Ebuf = eigen.Ebuf;
   //auto& Sbuf = eigen.Sbuf;
   const Int DIM = 3;
-  const LInt Nd = qinv.geoB().local_volume() * DIM;
+  const LInt Nd = qinv.geo().local_volume() * DIM;
 
   if(qinv.eigen_with_nvec == true){
     qinv.inv_param.use_init_guess = QUDA_USE_INIT_GUESS_YES;
@@ -3856,7 +3752,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   ////qlat_cf_to_quda_cf((qlat::ComplexD*) qinv.csrc->data(), src, geo, Dim);
 
   ////{
-  ////const Long V = qinv.geoB().local_volume();
+  ////const Long V = qinv.geo().local_volume();
   ////qlat::vector_gpu<Ty > tmp;tmp.resize(V*3);
   ////tmp.copy_from(src, V*3);
   ////Ty norm = tmp.norm();
@@ -3871,9 +3767,9 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //}
 
   //if(low_only == 1){
-  //  qlat_cf_to_quda_cf((*qinv.gsrc), src, qinv.geoB(), qinv.map_index);
+  //  qlat_cf_to_quda_cf((*qinv.gsrc), src, qinv.geo(), qinv.map_index);
   //  qinv.prepare_low_prop();
-  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geoB(), qinv.map_index);
+  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geo(), qinv.map_index);
   //}
 
   //if(low_only == 2){
@@ -3881,7 +3777,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //    quda::ColorSpinorParam param(*qinv.gres);
   //    qinv.gadd  = quda::ColorSpinorField::Create(param);
   //  }
-  //  qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geoB(), qinv.map_index);
+  //  qlat_cf_to_quda_cf((*qinv.gtmp0), src, qinv.geo(), qinv.map_index);
 
   //  qinv.do_inv(prop, src, mass, err, niter, prec_type);
   //  //qinv.do_inv(qinv.cres->data(), qinv.csrc->data(), mass, err, niter, prec_type);
@@ -3893,7 +3789,7 @@ void get_staggered_prop(quda_inverter& qinv, Ty* src, Ty* prop,
   //  quda::Complex p_unit(-1.0, 0.0);
   //  quda::blas::caxpby(n_unit, *qinv.gadd  , p_unit, *qinv.gres);
   //  //(*qinv.cres) = (*qinv.gres);
-  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geoB(), qinv.map_index);
+  //  quda_cf_to_qlat_cf(prop, (*qinv.gres), qinv.geo(), qinv.map_index);
   //}
 }
 
@@ -3980,7 +3876,7 @@ void get_staggered_prop(quda_inverter& qinv, qlat::vector_gpu<Ty >& src, qlat::v
 
 }
 
-////even dslash flops
+// even-even dslash flops
 inline double get_stagger_even_flops(const Geometry& geo)
 {
   Int nv[4];
@@ -4010,7 +3906,7 @@ void get_staggered_multishift(quda_inverter& qinv,
   Qassert(src.size() != 0);
 
   //const Int DIM = 3;
-  const Geometry& geo = qinv.geoB();
+  const Geometry& geo = qinv.geo();
   qlat::vector<Long >& map = qinv.map_index;
 
   const Int Nsrc = src.size();

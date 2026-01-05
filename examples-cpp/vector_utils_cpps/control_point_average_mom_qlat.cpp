@@ -96,6 +96,8 @@ int main(int argc, char* argv[])
   in.find_para(std::string("flag_add"), flag_add);
   std::string output_vecs = std::string("NONE");
   in.find_para(std::string("output_vecs"), output_vecs);
+  int split_pt_gr = 0;
+  in.find_para(std::string("split_pt_gr"), split_pt_gr);
   if(output_vecs == std::string("NONE")){
     output_vecs = in.output_vec;
   }
@@ -214,15 +216,25 @@ int main(int argc, char* argv[])
           std::vector<Coordinate > src_pos = read_positions(mom_info);
           //std::vector<Coordinate > src_pos = string_to_Coordinates(mom_info.INFO_LIST);
 
-          std::string ktem = std::string("32 ")       + mom_info.get_key_T();
-          std::string dtem = std::string("operator ") + mom_info.get_dim_name();
+          std::string ktem = "NULL";
+          std::string dtem = "NULL";
+          Qassert(split_pt_gr == 0 or split_pt_gr == 1)
+          if(split_pt_gr == 0){
+            ktem = std::string("1 ") + std::string("32 ")       + mom_info.get_key_T();
+            dtem = std::string("LH ") + std::string("operator ") + mom_info.get_dim_name();
+          }
+          if(split_pt_gr == 1){
+            ktem = std::string("2 ") + std::string("32 ")       + mom_info.get_key_T();
+            dtem = std::string("LH ") + std::string("operator ") + mom_info.get_dim_name();
+          }
           average.create_dat(ktem, dtem);
 
           Qassert(mom_info.dim == 6);
-          Qassert(average.key_T[0] == oper);
-          ////nmass = average.key_T[1];
-          nt = average.key_T[2];
-          for(int i=0;i<3;i++){pL[i] = average.key_T[i+3];}pL[3] = nt;
+          Qassert(average.key_T[1] == oper);
+          // nmass = average.key_T[2];
+          nt = average.key_T[3];
+          for(int i=0;i<3;i++){pL[i] = average.key_T[i+4];}
+          pL[3] = nt;
 
           char tem[500];sprintf(tem, "point %s, grid %s ", in.paraIA.c_str(), in.paraIB.c_str());
           average.INFO_LIST = std::string("Average data, ") + std::string(tem);
@@ -235,7 +247,11 @@ int main(int argc, char* argv[])
         for(int gi = 0; gi < gr_info[2]; gi++)
         {
           fflush_MPI();sprintf(namei, "%09d", gi);
-          if(!mdat.check_fn_momcut(std::string(nameQ), std::string(namei))){data_sm[sm] = false;}
+          if(!mdat.check_fn_momcut(std::string(nameQ), std::string(namei))){
+            qmessage("mom not correct %s %s \n", nameQ, namei);
+            data_sm[sm] = false;
+            break;
+          }
         }
       }
 
@@ -282,8 +298,8 @@ int main(int argc, char* argv[])
     Qassert(output_vecG!= std::string("NONE"));
 
     qlat::vector_gpu<Complexq > FFT_data;
-    qlat::vector_gpu<Complexq > FFT_data_average;
-    ////qlat::vector_gpu<Complexq > FFT_data_average;
+    qlat::vector_gpu<Complexq > FFT_data_average_pt;
+    qlat::vector_gpu<Complexq > FFT_data_average_gr;
     qlat::vector_gpu<Complexq > FFT_data_global;
     //qlat::vector_gpu<Complexq > FFT_data_global_cpu;
 
@@ -292,7 +308,8 @@ int main(int argc, char* argv[])
     {
       if(data_sm[sm] == false){qmessage("Continue sm %2d \n", sm);continue ;}
 
-      FFT_data_average.set_zero();
+      FFT_data_average_pt.set_zero();
+      FFT_data_average_gr.set_zero();
 
       ///std::vector<Complexq > phases;
 
@@ -320,7 +337,7 @@ int main(int argc, char* argv[])
         {
           fflush_MPI();sprintf(namei, "%09d", gi);
           if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){Qassert(false);}
-          if(FFT_data_average.size() ==  0){FFT_data_average.resize(FFT_data.size());FFT_data_average.set_zero();}
+          if(FFT_data_average_gr.size() ==  0){FFT_data_average_gr.resize(FFT_data.size());FFT_data_average_gr.set_zero();}
 
           mdat.apply_src_phases(FFT_data, src_pos[gi] );
           mdat.shift_t(FFT_data, FFT_data, src_pos[gi][3]);
@@ -334,7 +351,7 @@ int main(int argc, char* argv[])
 
           ////omit high mode for grid source
           if(gi >= gr_start){
-            cpy_data_thread(FFT_data_average.data(), FFT_data.data(), FFT_data.size(), 1, QTRUE, factor_gr);
+            cpy_data_thread(FFT_data_average_gr.data(), FFT_data.data(), FFT_data.size(), 1, QTRUE, factor_gr);
           }
         }
         nsi += 1;
@@ -363,7 +380,7 @@ int main(int argc, char* argv[])
           fflush_MPI();sprintf(namei, "%09d", gi);
           if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){Qassert(false);}
 
-          if(FFT_data_average.size() ==  0){FFT_data_average.resize(FFT_data.size());FFT_data_average.set_zero();}
+          if(FFT_data_average_pt.size() ==  0){FFT_data_average_pt.resize(FFT_data.size());FFT_data_average_pt.set_zero();}
           mdat.apply_src_phases(FFT_data, src_pos[gi] );
           mdat.shift_t(FFT_data, FFT_data, src_pos[gi][3]);
 
@@ -376,7 +393,7 @@ int main(int argc, char* argv[])
 
           ////FFT_data[];
           if(gi == 0){
-            cpy_data_thread(FFT_data_average.data(), FFT_data.data(), FFT_data.size(), 1, QTRUE, factor_pt);
+            cpy_data_thread(FFT_data_average_pt.data(), FFT_data.data(), FFT_data.size(), 1, QTRUE, factor_pt);
           }
         }
         nsi += 1;
@@ -387,11 +404,21 @@ int main(int argc, char* argv[])
         if(sm == 0)sprintf(namecr, "%s.pt.average", name );
         if(sm == 1)sprintf(namecr, "%s.sm.average", name );
 
-        fft_local_to_global(FFT_data_global, FFT_data_average, mdat, mom_shiftp);
 
         //average.set_write_lines(namecr);
         average.set_zero();
-        average.write_corr(FFT_data_global.data(), FFT_data_global.size(), 3);
+        if(split_pt_gr == 0){
+          FFT_data_average_gr += FFT_data_average_pt;
+          fft_local_to_global(FFT_data_global, FFT_data_average_gr, mdat, mom_shiftp);
+          average.write_corr(FFT_data_global.data(), FFT_data_global.size(), 3);
+        }
+
+        if(split_pt_gr == 1){
+          fft_local_to_global(FFT_data_global, FFT_data_average_gr, mdat, mom_shiftp);
+          average.write_corr(FFT_data_global.data(), FFT_data_global.size(), 3);
+          fft_local_to_global(FFT_data_global, FFT_data_average_pt, mdat, mom_shiftp);
+          average.write_corr(FFT_data_global.data(), FFT_data_global.size(), 3);
+        }
 
         average.print_info();
         average.write_dat(namecr);

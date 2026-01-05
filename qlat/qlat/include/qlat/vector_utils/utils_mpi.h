@@ -121,6 +121,22 @@ struct GetBasicDataType<Propagator4dT<D> > {
   using ElementaryType = typename IsBasicDataType<WilsonMatrixT<D>>::ElementaryType;
 };
 
+template <typename N >
+struct GetBasicDataType<vector<N > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
+template <typename N >
+struct GetBasicDataType<vector_gpu<N > > {
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
 template <class M>
 qacc Long GetFieldSize(const Field<M>& f)
 {
