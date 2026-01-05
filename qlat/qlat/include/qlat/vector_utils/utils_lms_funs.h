@@ -16,6 +16,7 @@
 #include "utils_construction.h"
 #include "utils_FFT_GPU.h"
 #include "utils_grid_src.h"
+#include "utils_sector_funs.h"
 
 ////#define LOCALUSEACC 1
 
@@ -46,7 +47,7 @@ struct lms_para{
   Int save_zero_corr;
   Int save_full_vec;
   Int save_low_fft;
-
+  Int average_all_2pt;
 
   // sequential related parameters and buffers
   Int Ngroup_seq;
@@ -118,14 +119,19 @@ struct lms_para{
   qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
   std::vector<qlat::FieldM<Ty , 12*12> > src_prop;
   std::vector<qlat::vector_gpu<Ty > > FFT_data;
+  std::vector<qlat::vector_gpu<Ty > > FFT_data_ava;
   qlat::vector_gpu<Ty > resTa;
+  //qlat::vector_gpu<Ty > resHH;// buffer for 2pt average
+  //qlat::vector_gpu<Ty > resLL;// buffer for 2pt average
+  //qlat::vector_gpu<Ty > resLH;// buffer for 2pt average
+  std::vector<std::vector<FieldG<Ty > >> cur_2pt_buf;
+  //
   qlat::vector_gpu<Ty > resZero;
   std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
   std::vector<qlat::vector_gpu<Ty > > Eprop;
   qlat::Field<Ty > tmp_prop;
 
   /////initial with src noise
-
   inline void free_buf(){
     EresH.resize(0);
     EresL.resize(0);
@@ -135,6 +141,7 @@ struct lms_para{
     high_prop.resize(0);
     src_prop.resize(0);
     FFT_data.resize(0);
+    FFT_data_ava.resize(0);
     resTa.resize(0);
     resZero.resize(0);
     Vzero_data.resize(0);
@@ -177,6 +184,7 @@ struct lms_para{
     do_all_low       = 1;
     sparse_src       = 0;
     save_low_fft     = 0;
+    average_all_2pt  = 0;
 
     // sequential related parameters and buffers
     Ngroup_seq       = 8  ;
@@ -378,6 +386,7 @@ void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& s
         if(0 == qlat::get_id_node()){
           qlat::qremove_all(nameQ);
         }
+        fflush_MPI();
       }
 
       ShuffledFieldsWriter sfw(nameQ, srcI.new_size_node, append);
@@ -406,13 +415,13 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   ////int Ns = src.size();
   const Long Size_prop = fd.get_prop_size();
   const Geometry& geo = src.geo();
-
+  //
   const Int GPU = 1;const bool rotate = false;
   const Int nmass = massL.size();
   const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
   const Int do_hadron_contra = srcI.do_hadron_contra;
   //const size_t Vol = geo.local_volume();
-
+  //
   Coordinate Lat;for(Int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
   std::vector<PointsSelection > Ngrid;
@@ -420,11 +429,16 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   TIMER("check noise");
   if(srcI.sparse_src == 0){
     check_noise_pos(src, pos, off_L);
+    /* 
+      sort the grid points by relative distance
+      2pt is fine here as sink always full sum to do momentum projections
+      For somewhere else when sparsening is used for both sink and current, src should be sorted by grid to have well defined source momentum projections
+    */
     grid_list_posT(Ngrid, off_L, pos, srcI.combineT, Lat);
   }else{
     // sparse src, no grid off at all
     for(Int i=0;i<4;i++){off_L[i] = 0;pos[i] = 0;}
-
+    //
     // will not work for combineT
     std::vector<Coordinate > grids;
     std::vector<Int > Zlist;
@@ -449,24 +463,27 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     tmp = "";
     write_pos_to_string(tmp, Lat);
     GRID_INFO += ssprintf(" Lat %s", tmp.c_str());
-
+    //
     tmp = "";
     write_pos_to_string(tmp, pos);
     GRID_INFO += ssprintf(" pos %s", tmp.c_str());
-
+    //
     tmp = "";
     write_pos_to_string(tmp, off_L);
     GRID_INFO += ssprintf(" grid %s", tmp.c_str());
-
+    //
     GRID_INFO += ssprintf(" combineT %1d ", srcI.combineT);
   }
-
+  //
   // only do eigen props on desire src time slices
   std::vector<Int > tsrcL;tsrcL.resize(0);
+  const int lms_show_all = qlat::get_env_long_default(std::string("qlat_lms_show_all_points"), 0);
   for(unsigned int ic=0;ic<Ngrid.size();ic++)
   {
     for(unsigned int id=0;id<Ngrid[ic].size();id++){
-      qmessage("%s ", qlat::show(Ngrid[ic][id]).c_str());
+      if(lms_show_all == 1){
+        qmessage("%s ", qlat::show(Ngrid[ic][id]).c_str());
+      }
       const Int tcur = Ngrid[ic][id][3];
       bool add_time = true;
       for(unsigned int si=0;si<tsrcL.size();si++){
@@ -474,18 +491,20 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       }
       if(add_time){tsrcL.push_back(tcur);}
     }
-    qmessage(" \n");
+    if(lms_show_all == 1){
+      qmessage(" \n");
+    }
   }
   //for(Int si=0;si<int(tsrcL.size());si++)
   //{
   //  qmessage("Low sink time si %3d : %6d \n", si, int(tsrcL[si]));
   //}
   const Int tini = pos[3];
-
+  //
   srcI.off_L   = off_L;
   srcI.ini_pos = pos;
   srcI.print();
-
+  //
   //////===container for fft vecs
   ////int off_FFT = 0;
   bool saveFFT = false;bool savezero = false;bool save_zero_corr = false;
@@ -503,15 +522,29 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   qlat::vector_gpu<Ty >& high_prop = srcI.high_prop;
   std::vector<qlat::FieldM<Ty , 12*12> >& src_prop = srcI.src_prop;
   std::vector<qlat::vector_gpu<Ty > >& FFT_data = srcI.FFT_data;
+  std::vector<qlat::vector_gpu<Ty > >& FFT_data_ava = srcI.FFT_data_ava;
 
-  qlat::vector_gpu<Ty >& resTa = srcI.resTa;
+  qlat::vector_gpu<Ty >& resTa  = srcI.resTa ;
+  //qlat::vector_gpu<Ty >& resLL = srcI.resLL;
+  //qlat::vector_gpu<Ty >& resLH = srcI.resLH;
+  //qlat::vector_gpu<Ty >& resHH = srcI.resHH;
   qlat::vector_gpu<Ty >& resZero = srcI.resZero;
+  set_zero(resTa);
+  //set_zero(resLL);
+  //set_zero(resLH);
+  //set_zero(resHH);
 
   std::vector<qlat::vector_gpu<Ty > >& Eprop = srcI.Eprop;
 
   ////FFT_data do not need clean 
   if(src_prop.size() != 1){src_prop.resize(1);}
   if(FFT_data.size() != 2){FFT_data.resize(2);}
+  if(srcI.average_all_2pt == 1){
+    if(FFT_data_ava.size() != 2){FFT_data_ava.resize(2);}
+    for(int i=0;i<2;i++){
+      set_zero(FFT_data_ava[i]);
+    }
+  }
   ///qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
   ///std::vector<qlat::FieldM<Ty , 12*12> > src_prop;src_prop.resize(1);
   ///std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + 1);
@@ -551,15 +584,21 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   Int Nlms = 1;
   if(srcI.lms == -1){Nlms = Ngrid.size();}
   if(srcI.lms == 0 ){Nlms = 1;}
-  if(srcI.lms >  0 ){Nlms = srcI.lms;}
-
+  if(srcI.lms >  0 ){
+    Nlms = srcI.lms;
+    // in case it's only a point src
+    if(Ngrid.size() == 1){
+      Nlms = 1;
+    }
+  }
+  //
   const Int mc = srcI.mom_cut*2 + 1;
   ////momentum_dat mdat(geo, srcI.mom_cut);
   //std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + Nlms);
   //qlat::vector_gpu<Ty > FFT_data;Long Nfdata = Long(32)*massL.size()*fd.nt*mc*mc*mc ;
   //qlat::vector_gpu<Ty > FFT_data_high;
   //qlat::vector<Long > mapA, mapB;
-
+  //
   // initialize sparse parameters
   if(srcI.name_sparse_prop != std::string("NONE")){
     Qassert(srcI.fsel.n_elems > 0);
@@ -634,6 +673,12 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   qmessage("Do high %s \n", POS_CUR.c_str());
   copy_eigen_prop_to_EigenG(Eprop, high_prop.data(), ei.b_size, nmass, fd, GPU);
   Save_sparse_prop(Eprop, srcI, std::string("High"), 0, false);
+  /* 
+    average_all_2pt == 1
+      high mode will be rescaled to one 
+        shift with pos
+      LH   mode will be averaged based on the number of lms
+  */
   if(do_hadron_contra){
     prop_to_vec(Eprop, resTa, fd); 
     if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
@@ -654,9 +699,27 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
       mdat.pick_mom_from_vecs(FFT_data[0], resTa);
       //// ssprintf(name_mom_tmp, "%09d", 0);
-      name_mom_tmp = ssprintf("%09d", 0);
       //name_mom_tmp = ssprintf("High");
-      mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
+      //
+      if(srcI.average_all_2pt != 1){
+        name_mom_tmp = ssprintf("%09d", 0);
+        mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
+      }
+      //else{
+      //  FFT_data_ava[0] = FFT_data_ava[0];
+      //  mdat.apply_src_phases(FFT_data, pos );
+      //  mdat.shift_t(FFT_data, FFT_data, pos[3]);
+      //}
+      //if(srcI.average_all_2pt != 1){
+      //  FFT_data[1] = FFT_data[0];
+      //  mdat.apply_src_phases(FFT_data[1], pos );
+      //  mdat.shift_t(FFT_data[1], FFT_data[1], pos[3]);
+      //  const Long num_grid_points = Long(off_L[0]) * off_L[1] * off_L[2];
+      //  Qassert(num_grid_points > 0);
+      //  FFT_data[1] *= double(1.0 / num_grid_points);
+      //  mdat.write( FFT_data[1], name_mom, name_mom_tmp, true );
+      //}else{
+      //}
     }
   }
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
@@ -697,14 +760,27 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
         if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
         if(saveFFT and srcI.save_low_fft == 1){
           TIMER("saveFFT");
+          //if(srcI.average_all_2pt == 1){
+          //  mdat.apply_src_phases(FFT_data[0], pos );
+          //  mdat.shift_t(FFT_data[0], FFT_data[0], pos[3]);
+          //  const Long num_grid_points = Long(off_L[0]) * off_L[1] * off_L[2];
+          //  Qassert(num_grid_points > 0);
+          //  FFT_data[0] *= double(1.0 / num_grid_points);
+          //}
           check_nan_GPU(resTa);
           fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
           mdat.pick_mom_from_vecs(FFT_data[1], resTa);
-          name_mom_tmp = ssprintf("Low%09d", gi + 1);
-          mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+          if(srcI.average_all_2pt != 1){
+            name_mom_tmp = ssprintf("Low%09d", gi + 1);
+            mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+          }else{
+            mdat.apply_src_phases(FFT_data[1], Ngrid[gi][0] );
+            mdat.shift_t(FFT_data[1], FFT_data[1], Ngrid[gi][0][3]);
+            if(FFT_data_ava[0].size() == 0){FFT_data_ava[0].resize(FFT_data[1].size());}
+            FFT_data_ava[0] += FFT_data[1];
+          }
         }
       }
-
       //Ty norm0 = low_prop.norm();
       //Ty norm1 = resTa.norm();
       //qmessage("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
@@ -745,11 +821,38 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
         fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
         mdat.pick_mom_from_vecs(FFT_data[1], resTa);
         FFT_data[1] -= FFT_data[0];
-        name_mom_tmp = ssprintf("%09d", gi + 1);
-        //name_mom_tmp = ssprintf("LH%09d", gi);
-        mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+        if(srcI.average_all_2pt != 1){
+          name_mom_tmp = ssprintf("%09d", gi + 1);
+          mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+        }
+        else{
+          mdat.apply_src_phases(FFT_data[1], Ngrid[gi][0] );
+          mdat.shift_t(FFT_data[1], FFT_data[1], Ngrid[gi][0][3]);
+          if(FFT_data_ava[1].size() == 0){FFT_data_ava[1].resize(FFT_data[1].size());}
+          FFT_data_ava[1] += FFT_data[1];
+        }
       }
     }
+  }
+
+  // final save the averaged mom data
+  if(srcI.average_all_2pt == 1 and saveFFT){
+    const double num_grid_points = double(off_L[0]) * off_L[1] * off_L[2];
+    FFT_data[0] *= Complexq( 1.0 / num_grid_points, 0.0);
+    mdat.apply_src_phases(FFT_data[0], pos );
+    mdat.shift_t(FFT_data[0], FFT_data[0], pos[3]);
+    std::string name_mom_tmp = ssprintf("%09d", 0);
+    mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
+    //
+    if(srcI.save_low_fft){
+    FFT_data_ava[0] *= Complexq( 1.0 / Nlms, 0.0);
+    name_mom_tmp = ssprintf("Low%09d", 1);
+    mdat.write( FFT_data_ava[0], std::string(name_mom), name_mom_tmp, false );
+    }
+    //
+    FFT_data_ava[1] *= Complexq( 1.0 / Nlms, 0.0);
+    name_mom_tmp = ssprintf("%09d", 1);
+    mdat.write( FFT_data_ava[1], std::string(name_mom), name_mom_tmp, false );
   }
 
   ////  if(saveFFT)

@@ -1321,11 +1321,32 @@ inline std::vector<Long > random_list(const Long n, const Long m, const Int seed
 
 }
 
-template<typename Ty, typename Int>
-inline Ty Reduce(Ty* buf, Int Ndata, int GPU = 1, const bool single_node_vecs = false)
+/*
+  Reduce on GPU and then copy to unified memeory
+  may need to update sum_all_size to general memory types and avoid using unified memeory for communication
+*/
+template<typename Td, typename Ty>
+inline void Reduce_mrh(Td* res, Ty* buf, const Long Ndata, const Int mrh, const Int GPU = 1, const bool single_node_vecs = false)
 {
   TIMERB("Reduce");
-  qlat::vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
+  vector<double > tmp;
+  if(GPU == 0)tmp.set_mem_type(MemType::Cpu);
+  if(GPU == 1)tmp.set_mem_type(MemType::Acc);
+  tmp.resize(mrh);
+  set_zero(tmp);
+  reduce_vecs(buf, (Ty*) tmp.data(), Ndata, mrh, GPU);
+  if(!single_node_vecs){
+    sum_all_size( (Ty*) tmp.data(), mrh, GPU );
+  }
+  const Int GPU_res = check_mem_type(res) == MemType::Acc ? 1 : 0;
+  cpy_GPU(res, tmp.data(), mrh, GPU_res, GPU);
+}
+
+template<typename Ty>
+inline Ty Reduce(Ty* buf, const Long Ndata, const Int GPU = 1, const bool single_node_vecs = false)
+{
+  TIMERB("Reduce");
+  vector<Ty > rsum;rsum.resize(1);rsum[0] = 0.0;
   reduce_vecs(buf, rsum.data(), Ndata, 1, GPU);
   Ty tmp = rsum[0];
   if(!single_node_vecs){

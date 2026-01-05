@@ -494,7 +494,7 @@ inline void clear_vector_gpu_cache()
   get_vector_gpu_cache<double >().clear();
   get_vector_gpu_cache<qlat::ComplexT<float> >().clear();
   get_vector_gpu_cache<qlat::ComplexT<double> >().clear();
- 
+  //
   //Cache<VectorGPUKey, vector_gpu<int8_t > >& c0 = get_vector_gpu_cache<int8_t >();
   //Cache<VectorGPUKey, vector_gpu<float > >& c1 = get_vector_gpu_cache<float >();
   //Cache<VectorGPUKey, vector_gpu<double > >& c2 = get_vector_gpu_cache<double >();

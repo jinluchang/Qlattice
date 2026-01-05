@@ -279,6 +279,16 @@ struct momentum_dat{
     return copy_momF_to_sf(sf_, srcF, 1);
   }
 
+  // remove all previous files
+  inline void remove_all(const std::string& nameQ){
+    if(does_file_exist(nameQ)){
+      if(0 == qlat::get_id_node()){
+        qlat::qremove_all(nameQ);
+      }
+    }
+    fflush_MPI();
+  }
+
   template<typename Ty > 
   void write(qlat::vector_gpu<Ty >& srcF, const std::string& nameQ, const std::string& tag_ = std::string("-1"), const bool clean = false){
     TIMERA("Qlat write mdat");
@@ -286,11 +296,10 @@ struct momentum_dat{
     //printf("Long %d %ld %ld %ld \n",  qlat::get_id_node(), srcF.size() ,mapA.size(), srcF.size()%mapA.size());
     //Qassert(srcF.size() % Mvol == 0);
     if(mapA.size() !=0 ){Qassert(srcF.size() % mapA.size() == 0);}
-
+    //
     //qmessage("===check norm");srcF.print_norm2();
-
     ////const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
-
+    //
     bool append = true;if(tag_ == "-1" or clean == true){append = false;}
     // clean if not exist
     if(!does_file_exist_qar_sync_node(nameQ + "/geon-info.txt")){
@@ -298,12 +307,10 @@ struct momentum_dat{
     }
     if(append == false)
     {
-      if(0 == qlat::get_id_node()){
-        qlat::qremove_all(nameQ);
-      }
+      remove_all(nameQ);
     }
     ShuffledFieldsWriter sfw(nameQ, new_size_node, append);
-
+    //
     const Int nread = copy_momF_to_sf(sf, srcF);
     Qassert( nread != 0);// must read or write something
     std::string tag = ssprintf("%s.momcut%05d", tag_.c_str(), mom_cut);

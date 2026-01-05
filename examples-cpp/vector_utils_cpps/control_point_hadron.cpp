@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
   int mass_split = -1;
   int sparse_src = 0;
   int n_per_time_slice = 128;
+  int average_all_2pt = 0;
   // save the pure low mode fft data
   int save_low_fft = 0;
   int do_hadron_contra = 1;
@@ -44,6 +45,7 @@ int main(int argc, char* argv[])
   in.find_para(std::string("sparse_src"), sparse_src);
   in.find_para(std::string("n_per_time_slice"), n_per_time_slice);
   in.find_para(std::string("do_hadron_contra"), do_hadron_contra);
+  in.find_para(std::string("average_all_2pt") , average_all_2pt);
 
   int check_prop_norm = 0;
   in.find_para(std::string("check_prop_norm"), check_prop_norm);
@@ -376,6 +378,7 @@ int main(int argc, char* argv[])
       srcI.sparse_src = sparse_src;
       srcI.save_low_fft = save_low_fft;
       srcI.do_hadron_contra = do_hadron_contra;
+      srcI.average_all_2pt = average_all_2pt;
       if(save_vecs_vec){
         sprintf(namep, "%s.pt.zero.vec", names_vec);
         srcI.name_zero_vecs = std::string(namep);
@@ -434,21 +437,21 @@ int main(int argc, char* argv[])
         //copy_noise_to_prop(FpropV[im], prop4dS, 1);
         //diff_prop(prop4dS, prop4d);
         }
-
+        //
         if(save_vecs_vec){
           sprintf(namep, "%s.sm.zero.vec", names_vec);
           srcI.name_zero_vecs = std::string(namep);
         }
-
+        //
         if(save_vecs_mom){
           sprintf(namep, "%s.sm", names_mom);
           srcI.name_mom_vecs = std::string(namep);
         }
-
+        //
         if(save_sparse_prop){
           srcI.name_sparse_prop = ssprintf("%s.sm.sparse", names_sparse);
         }
-
+        //
         point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
       }
     }

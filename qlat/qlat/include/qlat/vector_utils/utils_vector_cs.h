@@ -78,7 +78,7 @@ struct vector_cs{
   Int work_f;
   bool single_node_vecs;
   //
-  inline void inialize_para(){
+  inline void initialize_para(){
     nsum   =  0;     ////sites to be summed
     nvec   =  0;     ////number of vecs
     bfac   =  0;     //volume related, outer loop, derived
@@ -96,7 +96,7 @@ struct vector_cs{
   }
   //
   vector_cs(){
-    inialize_para();
+    initialize_para();
   }
   void set_single_node_vecs(bool tag = true){
     single_node_vecs = tag;
@@ -128,7 +128,7 @@ struct vector_cs{
   //
   inline void resize(Int nvec_)
   {
-    if(nvec_ == 0){inialize_para();return ;}
+    if(nvec_ == 0){initialize_para();return ;}
     Qassert(nsum > 0 and b_size > 0 and bfac > 0);
     resize(nvec_, nsum, GPU, b_size, bfac_group);
   }
@@ -473,6 +473,26 @@ struct vector_cs{
     copy_from(src, ncur, data_GPU, dummy, 0);
   }
 
+  template <class Ta >
+  void copy_to_group(Ta* src, const Int ncur, const Int mrh , bool data_GPU = true, QBOOL dummy = QTRUE)
+  {
+    Qassert(mrh > 0);
+    for(int i=0;i<mrh;i++){
+      copy_to(&src[i * nsum], ncur + i, data_GPU, QFALSE);
+    }
+    if (dummy == QTRUE) { qacc_barrier(dummy); }
+  }
+
+  template <class Ta >
+  void copy_from_group(Ta* src, const Int ncur, const Int mrh , bool data_GPU = true, QBOOL dummy = QTRUE)
+  {
+    Qassert(mrh > 0);
+    for(int i=0;i<mrh;i++){
+      copy_from(&src[i * nsum], ncur + i, data_GPU, QFALSE);
+    }
+    if (dummy == QTRUE) { qacc_barrier(dummy); }
+  }
+
   ////nsrc the ni's copy from the src, nres the destination ni's
   template <class Ta >
   void copy_from(vector_cs<Ta >& src, std::vector<Int >& nres, std::vector<Int >& nsrc, QBOOL dummy = QTRUE,
@@ -773,10 +793,97 @@ struct vector_cs{
     //tmp.copy_from(vp, ib);
   }
 
+  std::vector<RealD> reduceT_mrh(Int ia, const Int mrh)
+  {
+    Qassert(initialized);
+    bool GPU_set = true;if(GPU == 0){GPU_set = false;}
+    const size_t size     =       btotal * b_size;
+    const size_t size_mrh = mrh * size;
+    //const Long loop = b_size;
+    // always reduce with double precision
+    const Long type_ratio = (sizeof(Ty) + sizeof(RealD) - 1) / sizeof(RealD);
+    if(norm2_buf.size() < size_mrh*type_ratio){norm2_buf.resize(size_mrh*type_ratio, GPU_set);}
+    RealD* rP  = (RealD*) norm2_buf.data();
+    const Long& b_size = this->b_size;
+    const Long& btotal = this->btotal;
+    const Long Ndata = btotal * b_size;
+    for(int iv = 0;iv < mrh; iv++)
+    {
+      Ty** s  = get_pointers(ia + iv);
+      RealD* r  = &rP[iv * size];
+      qGPU_for(isp, Ndata, GPU_set, {
+        const Long id = isp / b_size;
+        const Long jd = isp % b_size;
+        r[id*b_size + jd] = qnorm(s[id][jd]);
+      });
+    }
+    //
+    std::vector<RealD > normL;
+    normL.resize(mrh);
+    Reduce_mrh(normL.data(), rP, size, mrh, GPU_set, single_node_vecs);
+    return normL;
+  }
+
+  // need to work on the do prod
+  //template <typename Tf >
+  //Ty reduceT_mrh(vector<Ty >& normL, Int ia, const Int mrh, std::vector<Ty** >& sL = NULL)
+  //{
+  //  Qassert(initialized);
+  //  bool GPU_set = true;if(GPU == 0){GPU_set = false;}
+  //  const size_t size     =       btotal * b_size;
+  //  const size_t size_mrh = mrh * size;
+  //  //const Long loop = b_size;
+  //  if(norm2_buf.size() < size_mrh){norm2_buf.resize(size_mrh, GPU_set);}
+  //  if(sL.size() != 0){Qassert(mrh == sL.size());}
+  //  const bool do_dot = sL.size() != 0 ? true : false;
+  //  Tf* rP  = (Tf*) norm2_buf.data();
+  //  for(int iv = 0;iv < mrh; iv++)
+  //  {
+  //    const Ty** s  = get_pointers(ia + iv);
+  //    Ty** sC = NULL;
+  //    if(do_dot){sC = sL[iv]};
+  //    Tf* r  = &rP[ia * size];
+  //    const Long& b_size = this->b_size;
+  //    const Long& btotal = this->btotal;
+  //    const Long Ndata = btotal * b_size;
+  //    if(sC == NULL){
+  //      qGPU_for(isp, Ndata, GPU_set, {
+  //        const Long id = isp / b_size;
+  //        const Long jd = isp % b_size;
+  //        r[id*b_size + jd] = qnorm(s[id][jd]);
+  //      });
+  //    }
+  //    if(sC != NULL){
+  //      qGPU_for(isp, Ndata, GPU_set, {
+  //        const Long id = isp / b_size;
+  //        const Long jd = isp % b_size;
+  //        Ty tmp = qlat::qconj(s[id][jd]) * sC[id][jd];
+  //        Tf* r0 = &r[(id*b_size + jd)*2 + 0];
+  //        r0[0] = tmp.real();
+  //        r0[1] = tmp.imag();
+  //      });
+  //    }
+  //  }
+
+  //  //reduce double / float
+  //  Ty rsum = Ty(0.0, 0.0);
+  //  if(s1 == NULL){
+  //    rsum = Reduce((Tf*) r,   size, GPU_set, single_node_vecs);
+  //  }
+  //  if(s1 != NULL){
+  //    rsum = Reduce((Ty*) r,   size, GPU_set, single_node_vecs);
+  //  }
+  //  return rsum;
+  //}
+
   template <typename Tf >
   Ty reduceT(Int ia, Ty** s1 = NULL)
   {
     Qassert(initialized);
+    if(s1 == NULL){
+      std::vector<RealD> tmp = reduceT_mrh(ia, 1);
+      return Ty(tmp[0], 0.0);
+    }
     bool GPU_set = true;if(GPU == 0){GPU_set = false;}
     size_t size = btotal * b_size;
     //const Long loop = b_size;
@@ -787,7 +894,6 @@ struct vector_cs{
       //qlat::vector_gpu<Ty* > data = get_pointers(ia);
       //Ty** s = data.data();
       Ty** s = get_pointers(ia);
-
       const Long& b_size = this->b_size;
       const Long& btotal = this->btotal;
       const Long Ndata = btotal * b_size;
@@ -818,35 +924,20 @@ struct vector_cs{
     if(s1 != NULL){
       rsum = Reduce((Ty*) r,   size, GPU_set, single_node_vecs);
     }
-
-    ////Ty rsum = 0;Ty rre = 0;
-    //qlat::vector<Ty > rsum;rsum.resize(2);rsum[0] = 0.0;
-
-    //{
-    //print_numbers((Ty*) &r[0], 10, GPU_set);
-    //}
-
-    //{
-    ////TIMERA("norm2_vec reduce");
-    //if(s1 == NULL)reduce_vecs(r, (Tf*) rsum.data(),   size, 1, GPU_set);
-    //if(s1 != NULL)reduce_vecs(r, (Tf*) rsum.data(), 2*size, 1, GPU_set);
-    //}
-
-    ////qmessage("check sum %.8e %.8e \n",  rsum[0].real(), rsum[0].imag() );
-    //////fflush_MPI();
-    //{
-    //TIMERA("norm2_vec global sum");
-    //if(s1 == NULL)sum_all_size( (Tf*) rsum.data(), 1, true );
-    //if(s1 != NULL)sum_all_size( (Ty*) rsum.data(), 1, true );
-    //}
     return rsum;
+  }
+
+  // always reduce with double
+  std::vector<RealD > norm2_vec_mrh(const Int ia=0, const Int mrh = 1)
+  {
+    TIMERA("vector_cs norm2_vec_mrh");
+    return reduceT_mrh(ia, mrh);
   }
 
   ////norm2, ===added
   Ty norm2_vec(Int ia=0)
   {
     TIMERA("vector_cs norm2_vec");
-
     using D = typename IsBasicDataType<Ty>::ElementaryType;
     return reduceT<D >(ia);
   }
@@ -1028,7 +1119,7 @@ struct vector_cs{
     qacc_barrier(dummy);
   }
 
-  /////*this^\dagger * b, ===added
+  // *this^\dagger * b, ===added
   inline Ty dot_vec(vector_cs<Ty>& b, Int ia=0, Int ib=0)
   {
     TIMERA("vector_cs dot_vec");
@@ -1174,6 +1265,17 @@ struct vector_cs{
     vec_multi(b, alpha.data(), Conj, aini, aend, bini, bend);
   }
 
+  inline std::vector<ComplexD> vec_multi(vector_cs<Ty >& b, bool Conj = true, 
+    Int aini = 0, Int aend = -1, Int bini = 0, Int bend = -1)
+  {
+    std::vector<ComplexD> res;
+    vector_gpu<ComplexD > alpha;
+    vec_multi(b, alpha, Conj, aini, aend, bini, bend);
+    res.resize(alpha.size());
+    cpy_GPU(res.data(), alpha.data(), 0, 1);
+    return res;
+  }
+
   /*
     b_i += \sum_j alpha_ij * a_j, alpha i--> j continus
     alpha size nA * nB
@@ -1273,6 +1375,7 @@ struct vector_cs{
     Nv, end vector of basis, m start vector of basis
     return the projection coefficient
     remove_last donot remove a1-1 to vec if add_self == 1
+    alpha : (bi * Na + ai)
   */
   template<typename Ta>
   inline void Projections(qlat::vector<Ta >& alpha, vector_cs<Ty >& vec, Int a0, Int a1, Int b0, Int b1, Int add_self = 0){
@@ -1346,6 +1449,12 @@ struct vector_cs{
   inline void projections_all(vector_cs<Ty >& vec, Int Nm = -1, Int bi = 0){
     qlat::vector<Ty > alpha;
     Projections_all(alpha, vec, Nm, bi);
+  }
+  
+  inline void projections_all_mrh(vector_cs<Ty >& vec, Int Nm = -1, Int bi = 0, Int mrh = -1){
+    if(mrh == -1){mrh = vec.nvec;}
+    qlat::vector<Ty > alpha;
+    Projections(alpha, vec, 0, Nm, bi, bi + mrh);
   }
 
   ////Nv, end vector of basis, m start vector of basis
@@ -1444,13 +1553,14 @@ struct vector_cs{
 
   /* 
     \sum_ni Qts[ni] * this->ni
+    va initial shift of self vectors
   */
-  inline void linear_combination(vector_cs<Ty >& vec, Ty* Qts, const Int Nsum, Int vb = 0)
+  inline void linear_combination(vector_cs<Ty >& vec, Ty* Qts, const Int Nsum, Int vb = 0, Int va = 0)
   {
     TIMERA("vector_cs linear_combination");
     if(!vec.initialized){vec.resize(vb+1, *this);}
     vec.set_zero(vb);
-    vec_sums(vec, Qts, false, 0, Nsum, vb, vb + 1);
+    vec_sums(vec, Qts, false, va, Nsum, vb, vb + 1);
     ////const Long Nsize = vec.a[vb].size();
     ////for(Long i=0;i<Nsize;i++){vec.a[vb][i] = 0;}
     //for(Long ni = 0; ni< Nsum;ni++)
@@ -1554,6 +1664,14 @@ struct vector_cs{
 
 };
 
+template <typename N > 
+struct GetBasicDataType<vector_cs<N > > { 
+  static const std::string get_type_name() {
+    return IsBasicDataType<N>::get_type_name();
+  }
+  using ElementaryType = typename IsBasicDataType<N>::ElementaryType;
+};
+
 template <typename Ty >
 qacc void set_zero(vector_cs<Ty>& vec)
 {
@@ -1646,7 +1764,7 @@ template <typename Ty>
 struct vector_cs_mat{
   qlat::vector<Ty > mat;
   std::vector< qlat::vector<Ty > > bufs;
-  qlat::vector<Ty* > mat_src;
+  qlat::vector<Ty* > fmat_src;
   Long vsize;
   Int ncount;
   double mass2_neg;
@@ -1667,9 +1785,9 @@ struct vector_cs_mat{
 
   template<typename Tc>
   inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, Int ir = 0, Int is = 0){
-    vs.copy_to(mat_src[0], is, true);
-    multi(mat_src[1], mat_src[0]);
-    vr.copy_from(mat_src[1], ir, true);
+    vs.copy_to(fmat_src[0], is, true);
+    multi(fmat_src[1], fmat_src[0]);
+    vr.copy_from(fmat_src[1], ir, true);
   }
 
   //inline void multi(qlat::vector_cs<Tc >& vr, qlat::vector_cs<Tc >& vs, Int ir = 0, Int is = 0){
@@ -1710,11 +1828,11 @@ struct vector_cs_mat{
 
   inline void init_Ndata(const Long Ndata){
     bufs.resize(6);
-    mat_src.resize(6);
+    fmat_src.resize(6);
     vsize = Ndata;
     for(unsigned int i=0;i<bufs.size();i++){
       bufs[i].resize(Ndata);
-      mat_src[i] = bufs[i].data();
+      fmat_src[i] = bufs[i].data();
     }
   }
 
@@ -1773,7 +1891,7 @@ struct vector_cs_mat{
 
     if(ncount == 2)
     {
-      Ty* buf = mat_src[5];
+      Ty* buf = fmat_src[5];
       zero_Ty(buf, loop, true );
       for(Long i=0;i<loop;i++)
       for(Long j=0;j<loop;j++)
@@ -1799,25 +1917,91 @@ struct vector_cs_mat{
   simple wrapper for gpu matrix (nvec X nvec) multiplications
 */
 template <typename Ty>
-struct vector_cs_small_eig{
+class vector_cs_small_eig{
+  protected:
+    Int count;
+    Int mrh;
+    Long Vsize;
+    double dslash_flops;
+    Long nsum;
+    vector<Ty > cmat_buf;
+    qlat::vector<Ty* > fmat_src;
+    QMEM data_GPU;
+  public:
   vector_cs<Ty > mat;
   vector_gpu<Ty> buf;
   vector_cs<Ty > vbuf;// vector_cs buffer
-  qlat::vector<Ty* > mat_src;
-  double dslash_flops;
-  Int count;
-  Long vsize;
 
-  vector_cs_small_eig(){
-    mat.inialize_para();
-    vsize = 0;
+  vector_cs_small_eig(const QMEM data_GPU_ = QMGPU){
+    mat.initialize_para();
+    Vsize = 0;
+    nsum  = 0;
     count = 1;
+    mrh   = 1;
     dslash_flops = 0.0;
+    data_GPU = data_GPU_;
+  }
+
+  inline void set_mem(const QMEM data_GPU_){
+    data_GPU = data_GPU_;
   }
 
   inline void set_multi_count(const Int count_){
     Qassert(count_ > 0);
     count = count_;
+  }
+
+  inline void set_mrh(const Int mrh_){
+    mrh = mrh_;
+  }
+
+  inline Long vlength(){
+    Qassert(nsum > 0);
+    return nsum * mrh;
+  }
+
+  inline Long get_vsize(){
+    return Vsize;
+  }
+
+  inline Long get_mrh(){
+    return mrh;
+  }
+
+  inline double get_flops(){
+    return dslash_flops * count * mrh;
+  }
+
+  inline void set_buf_pointers(vector<Ty* >& cmat_src, const Int mrh_){
+    mrh = mrh_;
+    const Long dsize = 4 * vlength() * mrh;
+    Qassert(dsize > 0);
+    if(cmat_buf.size() != dsize or cmat_src.size() != 4){
+      cmat_buf.resize(dsize);
+      cmat_src.resize(4);
+      for(int i=0;i<4;i++){
+        cmat_src[i] = &cmat_buf[i * mrh * mat.vlength()];
+      } 
+    }
+  }
+
+  // copies of functions to mimic splitted mat
+  inline Long vlength_split(){
+    return vlength();
+  }
+
+  inline void set_buf_pointers_split(vector<Ty* >& cmat_src, const Int mrh_){
+    set_buf_pointers(cmat_src, mrh_);
+  }
+
+  template<typename Tv >
+  inline void copy_src_split(Ty* resP, Tv& src, const Int is){
+    src.copy_to_group(resP, is, mrh);
+  }
+
+  template<typename Tv >
+  inline void copy_res_split(Tv& res, const Int ir, Ty* srcP){
+    res.copy_from_group(srcP, ir, mrh);
   }
 
   inline void initial_buf(const bool single_node = true){
@@ -1826,14 +2010,15 @@ struct vector_cs_small_eig{
     if(single_node){
       mat.set_single_node_vecs();
     }
-    buf.resize(nvec * 4);
     vbuf.resize(3, mat);
+    buf.resize(nvec * 5, data_GPU);
+    nsum = vbuf.vlength();
     // set up buffers for various routines
-    mat_src.resize(4);
+    fmat_src.resize(4);
     for(Int iv=0;iv<4;iv++){
-      mat_src[iv] = &buf[iv * nvec];
+      fmat_src[iv] = &buf[( iv + 1 ) * nvec];
     }
-    vsize = nvec;
+    Vsize = nvec;
     dslash_flops = 6 * nvec * nvec;
   }
 
@@ -1852,7 +2037,7 @@ struct vector_cs_small_eig{
   inline void copy_from(Ts* src, const Long num, const bool GPU = true, const bool single_node = true ) {
     const Long nvec = std::sqrt( 1.0 * num );
     Qassert(num == nvec * nvec);
-    mat.resize(nvec, nvec);
+    mat.resize(nvec, nvec, data_GPU);
     for(int ni=0;ni<nvec;ni++){
       mat.copy_from(&src[ni * nvec], ni, GPU);
     }
@@ -1906,16 +2091,12 @@ struct vector_cs_small_eig{
       }
     }
     for(int ni=0;ni<nvec;ni++){
-      tmp[ni*nvec+ni] += (0.2 + ni*0.1 + diagonal[ni].real());
+      tmp[ni*nvec+ni] += (0.00002 + ni*0.001 + diagonal[ni].real());
     }
     //for(unsigned int ni=0;ni<tmp.size();ni++){
     //  qmessage("v %5d %+.8e %+.8e \n", int(ni), tmp[ni].real(), tmp[ni].imag());
     //}
     copy_from(tmp);
-  }
-
-  inline Long get_vsize(){
-    return vsize;
   }
 
   template<typename Tc>
@@ -1936,11 +2117,18 @@ struct vector_cs_small_eig{
 
   template<typename Tk>
   inline void multi(Tk* res, Tk* src){
-    //cpy_GPU(buf.data(), src, mat.nsum, 1, 1);
     vbuf.copy_from(src, 0);
     multi(vbuf, vbuf, 1, 0);
     //mat.linear_combination(vbuf, buf.data(), mat.nvec, 0);
     vbuf.copy_to(res, 1, true);
+  }
+
+  template<typename Tk>
+  inline void multi_mrh(Tk* res, Tk* src, const Int mrh_){
+    const Long offv = vlength();
+    for(Int iv=0;iv<mrh_;iv++){
+      multi(&res[iv * offv], &src[iv * offv]);
+    }
   }
 
   inline Int cg(qlat::vector_cs<ComplexD >& vr, qlat::vector_cs<ComplexD >& vs, const Int ir = 0, const Int is = 0, const Int iter=1000, double err=1e-5, const Int prec_cg = 0)

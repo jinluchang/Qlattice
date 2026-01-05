@@ -133,8 +133,12 @@ struct cg_iter{
   inline void call(Tv& dst, Tv& src, double resid_, const Int niter_, const Int ir = 0, const Int is = 0 ){
     if(!dst.initialized){Qassert(ir == 0);dst.resize(1, src);}
     M& mat  = *matP;resid = resid_; niter = niter_;
+    Qassert(mat.get_mrh() == 1);
     multi_count = 0;
-    auto& mat_src = mat.mat_src;
+    using Td = typename GetBasicDataType<Tv>::ElementaryType;
+    vector<ComplexT<Td>* > mat_src;
+    mat.set_buf_pointers(mat_src, 1);
+    //auto& mat_src = mat.mat_src;
     Qassert(mat_src.size()  >= 4);
     Qassert(mat.get_vsize() == long(src.nsum));
     /////const long Ndata = src.nsum;

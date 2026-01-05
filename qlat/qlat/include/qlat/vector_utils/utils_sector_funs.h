@@ -336,6 +336,289 @@ struct sec_list{
   }
 };
 
+/*
+  get src phase off set for different sections
+    [Nsrc, Nmom]
+*/
+template <typename Ty>
+inline void get_src_phases(std::vector<vector<Ty > >& src_phases, const std::vector<std::vector<Coordinate > >& pos_new, const std::vector<Coordinate >& sink_momL, const int sign_sink, const int NsecT, const fft_desc_basic& fd){
+  TIMER("src phase calculate");
+  src_phases.resize(0);
+  const int Npsrc = pos_new.size();
+  const int Nmom  = sink_momL.size();
+  src_phases.resize(Npsrc * sink_momL.size());
+  qlat::vector<double > p0;p0.resize(3);
+  for(int i=0;i<3;i++){p0[i] = 2 * QLAT_PI_LOCAL / fd.nv[i];}
+
+  for(int srci=0;srci<Npsrc;srci++)
+  {
+    for(int momi=0;momi<Nmom;momi++){
+      ////const int& NsecT = sec.Nsec / 2;// number of src points
+      const int  Npsec = pos_new[srci].size();
+      Qassert(Npsec == 1 or Npsec == NsecT);
+      src_phases[srci*Nmom + momi].resize(NsecT);
+      for(int si=0;si < NsecT;si++){
+        //pos_new[srci].size(); // src points from each sections
+        const Coordinate& sp       = Npsec == 1 ? pos_new[srci][0] : pos_new[srci][si];
+        double theta = 0.0;
+        // TODO check extra minus sign here
+        for(int i=0;i<3;i++){theta += ( p0[i] * sink_momL[momi][i] * ( -1 * sp[i]) );} 
+        src_phases[srci*Nmom + momi][si] = Ty(cos(theta), sign_sink * sin(theta));
+      }
+    }
+  }
+}
+
+/* 
+  shift result vectors based on sections
+    [Nsrc_ops (), Nops (Nmom - Nlh - 32)]
+  posL : positions of sources, with each section one source 
+  Will also apply anti-periodic signs
+  with_phases : simple shift or with momL phases and anti-periodic signs
+*/
+template <typename Ty>
+void shift_results_with_phases(std::vector<FieldG<Ty>>& curr_res, const Long Nops, 
+  const std::vector<std::vector<Coordinate > >& posL, const std::vector<Coordinate >& sink_momL, 
+  sec_list& sec, std::vector<std::vector<FieldG<Ty>>>& curr_shift_buf, std::vector<bool >& baryon_list, const int with_phases = 1){
+  TIMER("shift_results_with_phases");
+  //const Long Nsrc_ops = pos_new.size();
+  //Qassert(Long(curr_res.size()) == Nsrc_ops * Nops);
+  Qassert(curr_res.size() % Nops == 0);
+  const Long Nsrc_tot = curr_res.size() / Nops;
+  const Long Nmom = sink_momL.size();
+  Qassert(Nsrc_tot % posL.size() == 0);
+  Qassert(Nops % Nmom == 0);
+
+  // Nlh , 32
+  const int Nrest = Nops / Nmom;
+  // possible mesons / baryons
+  const Long Nsrc = posL.size();
+  const int Nsrc_ops = Nsrc_tot / Nsrc;
+  Qassert(Nsrc_ops == Long(baryon_list.size()));
+
+  std::vector<std::vector<Coordinate > > pos_new;
+  pos_new.resize(Nsrc_tot);
+  for(Long i=0;i<Nsrc_tot;i++){
+    const std::vector<Coordinate >& s = posL[i / Nsrc_ops];
+    const int Np = s.size();
+    bool same_spatial = true;
+    Coordinate s0 = s[0];s0[3] = 0;
+    for(int j=1;j<Np;j++){
+      Coordinate s1 = s[j];s1[3] = 0;
+      if(s0 != s1){same_spatial = false;break;}
+    }
+
+    /*
+      Inputs of posL should be consistent with section source positions
+    */
+    for(int j=0;j<Np;j++){
+      Qassert(sec.src_t_order[j] == s[j][3]);
+    }
+
+    if(!same_spatial){
+      pos_new[i].resize(Np);
+      for(int j=0;j<Np;j++){
+        pos_new[i][j] = s[j];
+      }
+    }
+    // same spatial, then only one shift
+    if( same_spatial){
+      pos_new[i].resize(1);
+      pos_new[i][0] = s[0];
+    }
+
+  }
+
+  Qassert(curr_res[0].initialized);
+  const Geometry& geo = curr_res[0].geo();
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+
+  const int sign_sink = -1;// DEBUG
+  const int Nsec = sec.Nsec;Qassert(Nsec % 2 == 0);
+  //const vector<int>& map_sec = sec.map_sec;
+  if(with_phases == 1){
+  std::vector<vector<Ty > > src_phases;src_phases.resize(0);
+  get_src_phases(src_phases, pos_new, sink_momL, sign_sink, Nsec / 2, fd);
+
+  // apply source phases and anti-periodic signs
+  {
+    TIMER("Apply source phases");
+    const Long Nvol = geo.local_volume();
+    //const int Nsrc_perT = Nsec / 2;
+    const int init = fd.init;
+
+    vector<int>& src_t_r_order = sec.src_t_r_order;
+    vector<signed char>& anti_sign = sec.anti_sign;
+    //vector<int>& src_t = sec.src_t;
+
+    vector<Ty* > resP;resP.resize(Nrest);
+    for(Long srci=0;srci<Nsrc_tot;srci++)
+    {
+      const bool is_baryon = baryon_list[srci % Nsrc_ops];
+      const bool antiP = sec.antiP;
+      for(Long momi=0;momi<Nmom;momi++)
+      {
+        vector<Ty >& sphase = src_phases[srci*Nmom + momi];
+        //const Ty p0 = phaseP[isp % Nxyz] * sphase[srci];
+        for(Long ri=0;ri<Nrest;ri++){
+          resP[ri] = (Ty*) get_data(curr_res[srci*Nops + momi * Nrest + ri]).data(); 
+        }
+
+        qacc_for(isp, Nvol, {
+          const Coordinate xl = geo.coordinate_from_index(isp);
+          const int ti   = xl[3] + init;
+          //const int seci = map_sec[ti];
+          // get the source number
+          //const int src_num = ((seci + 1) / 2) % (Nsrc_perT);
+          const int src_num = src_t_r_order[ti];
+          Ty ph = sphase[src_num];
+          // anti-periodic signs
+          if(is_baryon and antiP){
+            ph = ph * Ty(anti_sign[ti], 0.0);
+          }
+          for(Long ri=0;ri<Nrest;ri++){
+            resP[ri][isp] = resP[ri][isp] * ph;
+          }
+        });
+      }
+    }
+  }
+  }
+
+  bool need_buf = false;
+  for(Long si=0;si<Nsrc_tot;si++){
+    if(pos_new[si].size() != 1){need_buf = true;}
+  }
+
+  std::vector<FieldG<Ty> > shift_res;shift_res.resize(Nops);
+  if(need_buf){
+    curr_shift_buf.resize(2);
+    for(int i=0;i<2;i++){
+      if(Long(curr_shift_buf[i].size()) != Nops){
+        curr_shift_buf[i].resize(0);
+        curr_shift_buf[i].resize(Nops);
+      }
+      for(Long j=0;j<Nops;j++){
+        curr_shift_buf[i][j].init_size(curr_res[0]);
+      }
+    }
+  }
+
+  const int max_shift_grid = 128;
+
+  for(Long si=0;si<Nsrc_tot;si++){
+    // TODO check change it for different section T
+    if(pos_new[si].size() == 1){
+      for(Long j=0;j<Nops;j++){
+        shift_res[j].set_pointer( curr_res[si*Nops + j] );
+      }
+      shift_fields_grid(shift_res, shift_res, pos_new[si][0], -1, max_shift_grid);
+    }
+    else
+    {
+      Qassert(false);
+      //for(Long j=0;j<Nops;j++){
+      //  shift_res[j].set_pointer( curr_res[si*Nops + j] );
+      //}
+      //copy_fieldsG(curr_shift_buf[0], shift_res);
+      //const int Nsrc_perT = Nsec / 2;
+      //Qassert(Nsrc_perT == int(pos_new[si].size()));
+      //const int init = fd.init;
+      //const Long Nvol = geo.local_volume();
+
+      //vector<Ty*> resP = FieldG_to_pointers(shift_res);
+      //vector<Ty*> srcP = FieldG_to_pointers(curr_shift_buf[1]);
+      //vector<int>& src_t_order = sec.src_t_order;
+      //vector<int>& src_t = sec.src_t;
+
+      //const int stime = pos_new[si][0][3];//shift only first time slice to zero
+      //// copy only the time slice start with srci 
+      //for(int srci=0;srci<Nsrc_perT;srci++){
+      //  Coordinate sp_curr = pos_new[si][srci];sp_curr[3] = stime;
+      //  shift_fields_grid(curr_shift_buf[0], curr_shift_buf[1], sp_curr, -1, max_shift_grid);
+      //  //const int nt = fd.nt;
+      //  qacc_for(isp, Nvol, {
+      //    const Coordinate xl = geo.coordinate_from_index(isp);
+      //    const int ti      = xl[3] + init;
+      //    //const int seci    = map_sec[(ti + stime)%nt];// time already shifted
+      //    //const int src_num = ((seci + 1) / 2) % (Nsrc_perT);
+      //    //if(src_num == srci)
+      //    if(src_t[ti] == src_t_order[srci])
+      //    {
+      //      for(Long op=0;op<Nops;op++){
+      //        resP[op][isp] = srcP[op][isp];
+      //      }
+      //    }
+      //  });
+      //}
+    }
+  }
+}
+
+// 2pt shifts
+template <typename Ty>
+void shift_results_with_phases_2pt(qlat::vector_gpu<Ty >& res, const Geometry& geo, 
+  std::vector<Coordinate >& pos_src, sec_list& sec, std::vector<std::vector<FieldG<Ty>>>& shift_buf){
+  TIMER("shift_results_with_phases_2pt");
+  const Long Vol = geo.local_volume();
+  Qassert(Long(res.size()) == 32 * Vol);
+  std::vector<bool > baryon_list;baryon_list.resize(32);
+  for(int i= 0;i<16;i++){baryon_list[i] = false;}
+  for(int i=16;i<32;i++){baryon_list[i] = true ;}
+
+  std::vector<std::vector<Coordinate > > posL;posL.resize(1);
+  for(int i=0;i<1;i++){
+    posL[i].resize(pos_src.size());
+    for(unsigned int j=0;j<pos_src.size();j++){
+      posL[i][j] = pos_src[j];
+    }
+  }
+  std::vector<Coordinate > sink_momL;sink_momL.resize(1);
+  sink_momL[0] = Coordinate(0, 0, 0, 0);
+
+  std::vector<FieldG<Ty>> curr;curr.resize(32);
+  for(int i=0;i<32;i++){
+    Ty* srcp = &res[i * Vol];
+    curr[i].set_pointer(srcp, Vol, geo, QMGPU, QLAT_OUTTER);
+  }
+
+  // apply baryon antiperiodic signs
+  const bool antiP = sec.antiP;
+  fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+  if(antiP){
+    TIMER("Apply 2pt antiP");
+    const int init = fd.init;
+
+    vector<signed char>& anti_sign = sec.anti_sign;
+    for(Long srci=0;srci<32;srci++)
+    {
+      const bool is_baryon = baryon_list[srci];
+      Ty* resP = &res[srci * Vol];
+
+      qacc_for(isp, Vol, {
+        const Coordinate xl = geo.coordinate_from_index(isp);
+        const int ti   = xl[3] + init;
+        if(is_baryon){
+          resP[isp] = resP[isp] * Ty(anti_sign[ti], 0.0);
+        }
+      });
+    }
+  }
+
+  const int Nops = 32;
+  std::vector<bool > baryon_list_;baryon_list_.resize(1);
+  baryon_list_[0] = false;
+  shift_results_with_phases(curr, Nops, posL, sink_momL, sec, shift_buf, baryon_list_, 0);
+}
+
+template <typename Ty>
+void shift_results_with_phases_2pt(qlat::vector_gpu<Ty >& res, const Geometry& geo, 
+  qlat::PointsSelection& pL, sec_list& sec, std::vector<std::vector<FieldG<Ty>>>& shift_buf){
+  std::vector<Coordinate > pos_src;
+  pos_src.resize(pL.size());
+  for(unsigned int i=0;i<pos_src.size();i++){pos_src[i] = pL[i];}
+  shift_results_with_phases_2pt(res, geo, pos_src, sec, shift_buf);
+}
 
 }
 
