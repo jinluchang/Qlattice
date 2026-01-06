@@ -571,26 +571,26 @@ def err_sum(*vs):
     return err
 
 
-def jk_avg(jk_list):
-    val = jk_list[0]
+def jk_avg(jk_arr):
+    val = jk_arr[0]
     return filter_np_results(val)
 
 
-def jk_err(jk_list, *, eps=1, block_size=1):
+def jk_err(jk_arr, *, eps=1, block_size=1):
     r"""
     Return
     $$
     \frac{1}{eps} \sqrt{ N/(N-block_size) \sum_{i=1}^N (jk[i] - jk_avg)^2 }.
     $$
     when ``block_size=1``.
-    Note: ``len(jk_list) = N + 1``.
+    Note: ``len(jk_arr) = N + 1``.
     Same ``eps`` as the ``eps`` used in the ``jackknife`` function.
     Does not properly honor the $(N-1)$ formula in error calculation
     if there were missing data in the original ``data_list`` in the ``jackknife`` function.
     """
     assert block_size >= 1
-    avg = jk_avg(jk_list)
-    n = len(jk_list) - 1
+    avg = jk_avg(jk_arr)
+    n = len(jk_arr) - 1
     if n <= 1:
         fac = 1 / abs(eps)
         val = fac * avg
@@ -599,7 +599,7 @@ def jk_err(jk_list, *, eps=1, block_size=1):
     if n < 2 * block_size:
         block_size = 1
     assert n > block_size
-    blocks = block_data(jk_list[1:], block_size)
+    blocks = block_data(jk_arr[1:], block_size)
     diff_sqr = average([fsqr(jk - avg) for jk in blocks])
     fac = math.sqrt(block_size / (n - block_size)) * n / abs(eps)
     val = fac * fsqrt(diff_sqr)
@@ -607,8 +607,8 @@ def jk_err(jk_list, *, eps=1, block_size=1):
     return val
 
 
-def jk_avg_err(jk_list, *, eps=1, block_size=1):
-    return jk_avg(jk_list), jk_err(jk_list, eps=eps, block_size=block_size)
+def jk_avg_err(jk_arr, *, eps=1, block_size=1):
+    return jk_avg(jk_arr), jk_err(jk_arr, eps=eps, block_size=block_size)
 
 
 @q.timer
@@ -758,35 +758,35 @@ def sjk_mk_jk_val(
     return jk_arr
 
 
-def sjk_avg(jk_list):
-    return jk_avg(jk_list)
+def sjk_avg(jk_arr):
+    return jk_avg(jk_arr)
 
 
-def sjk_err(jk_list, *, eps=1):
+def sjk_err(jk_arr, *, eps=1):
     r"""
     Return
     $$
     \frac{1}{eps} \sqrt{ \sum_{i=1}^N (jk[i] - jk_avg)^2 }.
     $$
-    Note: ``len(jk_list) = N + 1``.
+    Note: ``len(jk_arr) = N + 1``.
     Same ``eps`` as the ``eps`` used in the ``jackknife`` function.
     """
-    avg = jk_avg(jk_list)
-    n = len(jk_list) - 1
+    avg = jk_avg(jk_arr)
+    n = len(jk_arr) - 1
     if n <= 1:
         fac = 1 / abs(eps)
         val = fac * avg
         val = filter_np_results(val)
         return val
-    diff_sqr = average([fsqr(jk - avg) for jk in jk_list[1:]])
+    diff_sqr = average([fsqr(jk - avg) for jk in jk_arr[1:]])
     fac = math.sqrt(n) / abs(eps)
     val = fac * fsqrt(diff_sqr)
     val = filter_np_results(val)
     return val
 
 
-def sjk_avg_err(jk_list, *, eps=1):
-    return sjk_avg(jk_list), sjk_err(jk_list, eps=eps)
+def sjk_avg_err(jk_arr, *, eps=1):
+    return sjk_avg(jk_arr), sjk_err(jk_arr, eps=eps)
 
 
 # ----------
@@ -927,7 +927,7 @@ def rjackknife(
     if ``jk_blocking_func`` is provided:
         ``jk_blocking_func(i, jk_idx) => blocked jk_idx``
     ``
-    jk_list[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_list[j] - avg)
+    jk_arr[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_arr[j] - avg)
     ``
     """
     if n_rand_sample is None:
@@ -1012,30 +1012,30 @@ def rjk_mk_jk_val(
     return jk_arr
 
 
-def rjk_avg(jk_list):
-    return jk_avg(jk_list)
+def rjk_avg(jk_arr):
+    return jk_avg(jk_arr)
 
 
-def rjk_err(jk_list, eps=1):
+def rjk_err(jk_arr, eps=1):
     r"""
     Return
     $$
     \frac{1}{eps} \sqrt{ 1/N \sum_{i=1}^N (jk[i] - jk_avg)^2 }.
     $$
     Note: ``
-    len(jk_list) = N + 1.
-    jk_avg = jk_list[0]
+    len(jk_arr) = N + 1.
+    jk_avg = jk_arr[0]
     ``
     Same ``eps`` as the ``eps`` used in the ``jackknife`` function.
     """
-    avg = jk_avg(jk_list)
-    n = len(jk_list) - 1
+    avg = jk_avg(jk_arr)
+    n = len(jk_arr) - 1
     if n <= 0:
         fac = 1 / abs(eps)
         val = fac * avg
         val = filter_np_results(val)
         return val
-    diff_sqr = average([fsqr(jk - avg) for jk in jk_list[1:]])
+    diff_sqr = average([fsqr(jk - avg) for jk in jk_arr[1:]])
     fac = 1 / abs(eps)
     val = fac * fsqrt(diff_sqr)
     val = filter_np_results(val)
@@ -1252,7 +1252,7 @@ def g_mk_jk(
     Perform (randomized) Super-Jackknife for the Jackknife data set.
         --
     :param data_list: initial un-jackknifed data.
-    :param jk_idx_list: should be list of indices that names the ``jk_list``.
+    :param jk_idx_list: should be list of indices that names the ``jk_arr``.
     :param jk_type: ``[ "rjk", "super", ]``
     :param eps: Error scaling factor.
     :return: (randomized) Super-Jackknife data set.
@@ -1262,7 +1262,7 @@ def g_mk_jk(
     We can set ``eps`` to be factor ``len(data_list)`` larger.
     """
     if jk_type == "super":
-        jk_list = sjackknife(
+        jk_arr = sjackknife(
             data_list,
             jk_idx_list,
             avg=avg,
@@ -1275,7 +1275,7 @@ def g_mk_jk(
             eps=eps,
         )
     elif jk_type == "rjk":
-        jk_list = rjackknife(
+        jk_arr = rjackknife(
             data_list,
             jk_idx_list,
             avg=avg,
@@ -1289,7 +1289,7 @@ def g_mk_jk(
         )
     else:
         assert False
-    return jk_list
+    return jk_arr
 
 
 @use_kwargs(default_g_jk_kwargs)
@@ -1345,62 +1345,78 @@ def g_mk_jk_val(
     return jk_val
 
 
-def g_jk_avg(jk_list, **_kwargs):
+def g_jk_avg(jk_arr, **_kwargs):
     """
-    Return ``avg`` of the ``jk_list``.
+    Return ``avg`` of the ``jk_arr``.
     """
-    if isinstance(jk_list, number_types):
-        return jk_list
-    return jk_avg(jk_list)
+    if isinstance(jk_arr, number_types):
+        return jk_arr
+    return jk_avg(jk_arr)
 
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
+def g_jk_err(jk_arr, *, eps, jk_type, **_kwargs):
     """
-    Return ``err`` of the ``jk_list``.
+    Return ``err`` of the ``jk_arr``.
     """
-    if isinstance(jk_list, number_types):
+    if isinstance(jk_arr, number_types):
         return 0
     if jk_type == "super":
-        return sjk_err(jk_list, eps=eps)
+        return sjk_err(jk_arr, eps=eps)
     elif jk_type == "rjk":
-        return rjk_err(jk_list, eps=eps)
+        return rjk_err(jk_arr, eps=eps)
     else:
         assert False
     return None
 
 
 @q.timer
-def g_jk_avg_err(jk_list, **kwargs):
+def g_jk_avg_err(jk_arr, **kwargs):
     """
-    Return ``(avg, err,)`` of the ``jk_list``.
+    Return ``(avg, err,)`` of the ``jk_arr``.
     """
-    return g_jk_avg(jk_list), g_jk_err(jk_list, **kwargs)
+    return g_jk_avg(jk_arr), g_jk_err(jk_arr, **kwargs)
 
 
 @q.timer
-def g_jk_avg_err_arr(jk_list, **kwargs):
-    avg, err = g_jk_avg_err(jk_list, **kwargs)
+def g_jk_avg_err_arr(jk_arr, **kwargs):
+    """
+    Return ``avg_err_arr`` of the ``jk_arr``.
+    ``
+    avg_err_arr.shape = jk_arr[0].shape + (2,)
+    ``
+    """
+    avg, err = g_jk_avg_err(jk_arr, **kwargs)
     avg_err_arr = np.stack([avg, err, ])
     avg_err_arr = np.moveaxis(avg_err_arr, 0, -1).copy()
     return avg_err_arr
 
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_size(**kwargs):
+def g_jk_size(
+    *,
+    jk_type,
+    all_jk_idx,
+    get_all_jk_idx,
+    n_rand_sample,
+    is_hash_jk_idx,
+    jk_idx_hash_size,
+    **_kwargs,
+):
     """
     Return number of samples for the (randomized) Super-Jackknife data set.
     """
-    jk_type = kwargs["jk_type"]
-    all_jk_idx = kwargs["all_jk_idx"]
-    get_all_jk_idx = kwargs["get_all_jk_idx"]
-    n_rand_sample = kwargs["n_rand_sample"]
-    # jk_type in [ "rjk", "super", ]
     if jk_type == "super":
         if all_jk_idx is None:
-            assert get_all_jk_idx is not None
-            all_jk_idx = get_all_jk_idx()
-        return len(all_jk_idx)
+            if get_all_jk_idx is None:
+                assert is_hash_jk_idx
+                all_jk_idx = ["avg", ] + list(range(jk_idx_hash_size))
+            else:
+                all_jk_idx = get_all_jk_idx()
+        assert all_jk_idx[0] == "avg"
+        n_super_sample = len(all_jk_idx) - 1
+        assert n_super_sample >= 0
+        return 1 + n_super_sample
     elif jk_type == "rjk":
         return 1 + n_rand_sample
     else:
@@ -1409,7 +1425,12 @@ def g_jk_size(**kwargs):
 
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_blocking_func(i, jk_idx, *, jk_blocking_func, **_kwargs):
+def g_jk_blocking_func(
+    i, jk_idx,
+    *,
+    jk_blocking_func,
+    **_kwargs,
+):
     """
     Return ``jk_blocking_func(jk_idx)``.
     """
@@ -1420,7 +1441,11 @@ def g_jk_blocking_func(i, jk_idx, *, jk_blocking_func, **_kwargs):
 
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_sample_size(job_tag, traj_list, **kwargs):
+def g_jk_sample_size(
+    job_tag,
+    traj_list,
+    **_kwargs,
+):
     jk_idx_list = [(job_tag, traj,) for traj in traj_list]
     b_jk_idx_set = set(g_jk_blocking_func(0, jk_idx, **kwargs)
                        for jk_idx in jk_idx_list)

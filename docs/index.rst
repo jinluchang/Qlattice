@@ -13,6 +13,8 @@ Qlattice
 
    file-io.rst
 
+   jackknife.rst
+
    contents/env-vars.md
 
    qlat-utils.rst
