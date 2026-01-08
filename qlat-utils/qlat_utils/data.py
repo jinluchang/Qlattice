@@ -1614,7 +1614,7 @@ def show_val_err(
         v = val / 10**e
     else:
         v, e = get_val_exp(val)
-        if e_e > e:
+        if (e_e > e) or (v == 0.0):
             e = e_e
             v = val / 10**e
     if (num_float_digit is None) and (num_exp_digit is None):
