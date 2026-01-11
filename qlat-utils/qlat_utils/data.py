@@ -1252,14 +1252,13 @@ def g_mk_jk(
     Perform (randomized) Super-Jackknife for the Jackknife data set.
         --
     :param data_list: initial un-jackknifed data.
-    :param jk_idx_list: should be list of indices that names the ``jk_arr``.
-    :param jk_type: ``[ "rjk", "super", ]``
-    :param eps: Error scaling factor.
+    :param jk_idx_list: should be list of indices that names the ``data_list``.
     :return: (randomized) Super-Jackknife data set.
     Note that::
-        len(data_list) == len(jk_idx_list)
-        jk_idx_list = [(job_tag, traj,) for traj in traj_list]
-    We can set ``eps`` to be factor ``len(data_list)`` larger.
+        ``len(data_list) == len(jk_idx_list)``
+        ``jk_idx_list = [(job_tag, traj,) for traj in traj_list]``
+    If the ``data_list`` is actually already jackknifed,
+    we can set ``eps`` to be factor ``len(data_list)`` larger.
     """
     if jk_type == "super":
         jk_arr = sjackknife(
