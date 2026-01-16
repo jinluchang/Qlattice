@@ -329,7 +329,7 @@ def mp_initializer():
 
 class MpPoolSingle():
 
-    def imap(func, iterable):
+    def imap(self, func, iterable):
         return map(func, iterable)
 
     def close(self):
