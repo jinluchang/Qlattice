@@ -1129,7 +1129,6 @@ def get_jk_state(
     def func(...):
         ...
     """
-    assert jk_type == "rjk"
     return (
         jk_type,
         eps,
