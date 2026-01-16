@@ -244,9 +244,9 @@ def cache_call(
     if path is None:
         Only cache using q.LRUCache (default)
     else:
-        Also cache the results in f"{path}/{key}.pickle".
+        Also cache the results in ``f"{path}/{key}.pickle"`` and save ``func_args`` in ``f"{path}/info/{key}.pickle"``.
         if is_sync_node:
-            Only read/write to f"{path}/{key}.pickle" from process 0 (broadcast to all nodes)
+            Only read/write to ``f"{path}/{key}.pickle"`` (and ``f"{path}/info/{key}.pickle"``) from process 0 (broadcast to all nodes)
         else:
             All the processes independently do the calculation and read/write to f"{path}/{key}.pickle"
             Use this if (1) `path` or `key` is different for different processes;
@@ -283,7 +283,12 @@ def cache_call(
                 state = None
             else:
                 state = get_state()
-            func_args = (f.__qualname__, args, kwargs, state,)
+            func_args = dict(
+                fname=f.__qualname__,
+                args=args,
+                kwargs=kwargs,
+                state=state,
+            )
             if is_hash_args:
                 func_args_str = pickle.dumps(func_args)
                 key = hash_sha256(func_args_str)
@@ -292,6 +297,7 @@ def cache_call(
                 key = (f.__qualname__, args, state,)
             if path is not None:
                 fn = f"{path}/{key}.pickle"
+                fn_info = f"{path}/info/{key}.pickle"
             if not is_force_recompute:
                 if key in cache:
                     c_res = cache[key]
@@ -308,6 +314,7 @@ def cache_call(
             cache[key] = res
             if path is not None:
                 save_pickle_obj(res, fn, is_sync_node=is_sync_node)
+                save_pickle_obj(func_args, fn_info, is_sync_node=is_sync_node)
             return ret
         func.cache = cache
         func.clear = lambda: cache.clear()
