@@ -78,13 +78,45 @@ def mk_file_dirs_info(path):
 
 
 @q.timer
-def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
+def save_bytes(obj_str, path, *, is_sync_node=True):
     """
     only save from node 0 when is_sync_node
     mk_file_dirs_info(path)
     """
     if not is_sync_node or q.get_id_node() == 0:
-        q.qtouch(path, q.json_dumps(obj, indent=indent))
+        q.qtouch(path, obj_str)
+
+
+@q.timer
+def load_bytes(path, default_value=None, *, is_sync_node=True):
+    """
+    all the nodes read the same data
+    if is_sync_node:
+        one node read and broadcast to other nodes
+    else:
+        all nodes individually read the data
+    """
+    if is_sync_node:
+        b = q.does_file_exist_qar_sync_node(path)
+    else:
+        b = q.does_file_exist_qar(path)
+    if b:
+        if is_sync_node:
+            obj_str = q.qcat_bytes_sync_node(path)
+        else:
+            obj_str = q.qcat_bytes(path)
+        return obj_str
+    else:
+        return default_value
+
+
+@q.timer
+def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
+    """
+    only save from node 0 when is_sync_node
+    mk_file_dirs_info(path)
+    """
+    save_bytes(q.json_dumps(obj, indent=indent), path, is_sync_node=is_sync_node)
 
 
 @q.timer
@@ -96,18 +128,11 @@ def load_json_obj(path, default_value=None, *, is_sync_node=True):
     else:
         all nodes individually read the data
     """
-    if is_sync_node:
-        b = q.does_file_exist_qar_sync_node(path)
-    else:
-        b = q.does_file_exist_qar(path)
-    if b:
-        if is_sync_node:
-            obj = q.json_loads(q.qcat_bytes_sync_node(path))
-        else:
-            obj = q.json_loads(q.qcat_bytes(path))
-        return obj
-    else:
+    obj_str = load_bytes(path, is_sync_node=is_sync_node)
+    if obj_str is None:
         return default_value
+    else:
+        return q.json_loads(obj_str)
 
 
 @q.timer
@@ -116,8 +141,7 @@ def save_pickle_obj(obj, path, *, is_sync_node=True):
     only save from node 0 when is_sync_node
     mk_file_dirs_info(path)
     """
-    if not is_sync_node or q.get_id_node() == 0:
-        q.qtouch(path, pickle.dumps(obj))
+    save_bytes(pickle.dumps(obj), path, is_sync_node=is_sync_node)
 
 
 @q.timer
@@ -129,18 +153,11 @@ def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
     else:
         all nodes individually read the data
     """
-    if is_sync_node:
-        b = q.does_file_exist_qar_sync_node(path)
-    else:
-        b = q.does_file_exist_qar(path)
-    if b:
-        if is_sync_node:
-            obj = pickle.loads(q.qcat_bytes_sync_node(path))
-        else:
-            obj = pickle.loads(q.qcat_bytes(path))
-        return obj
-    else:
+    obj_str = load_bytes(path, is_sync_node=is_sync_node)
+    if obj_str is None:
         return default_value
+    else:
+        return pickle.loads(obj_str)
 
 
 @q.timer
@@ -148,15 +165,12 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
     """
     all the nodes compute or load the same data if is_sync_node
     """
-    if is_sync_node:
-        b = q.does_file_exist_qar_sync_node(path)
-    else:
-        b = q.does_file_exist_qar(path)
-    if not b:
+    obj_str = load_bytes(path, is_sync_node=is_sync_node)
+    if obj_str is None:
         obj = func()
         save_pickle_obj(obj, path, is_sync_node=is_sync_node)
     else:
-        obj = load_pickle_obj(path, is_sync_node=is_sync_node)
+        obj = pickle.loads(obj_str)
     return obj
 
 
@@ -290,14 +304,14 @@ def cache_call(
                 state=state,
             )
             if is_hash_args:
-                func_args_str = pickle.dumps(func_args)
+                func_args_str = q.json_dumps(func_args, indent=2)
                 key = hash_sha256(func_args_str)
             else:
                 assert kwargs == dict()
                 key = (f.__qualname__, args, state,)
             if path is not None:
-                fn = f"{path}/{key}.pickle"
-                fn_info = f"{path}/info/{key}.pickle"
+                fn = f"{path}/data/{key}.pickle"
+                fn_info = f"{path}/info/{key}.json"
             if not is_force_recompute:
                 if key in cache:
                     c_res = cache[key]
@@ -314,7 +328,7 @@ def cache_call(
             cache[key] = res
             if path is not None:
                 save_pickle_obj(res, fn, is_sync_node=is_sync_node)
-                save_pickle_obj(func_args, fn_info, is_sync_node=is_sync_node)
+                save_bytes(func_args_str, fn_info, is_sync_node=is_sync_node)
             return ret
         func.cache = cache
         func.clear = lambda: cache.clear()
