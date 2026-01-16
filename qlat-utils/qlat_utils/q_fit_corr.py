@@ -327,7 +327,7 @@ def mp_initializer():
     v1, v2, = gf(1.0)
     assert (v1.item(), v2.item()) == (1.0, 2.0,)
 
-def MpPoolSingle():
+class MpPoolSingle():
 
     def imap(func, iterable):
         return map(func, iterable)
