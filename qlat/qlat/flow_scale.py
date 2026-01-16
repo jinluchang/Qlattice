@@ -40,11 +40,13 @@ class q:
             RngState,
             is_test,
             get_data_sig_arr,
+            Coordinate,
             )
 
     from qlat.c import (
             FieldRealD,
             GaugeField,
+            Geometry,
             gf_plaq_flow_force,
             gf_plaq_field,
             gf_energy_density_dir_field,
@@ -60,7 +62,7 @@ flow_time_default = 0.0
 
 @q.cache_call(maxsize=8)
 @q.timer
-def get_plaq_factor_for_gf_scale_flow(geo, is_spatial, t_dir):
+def get_plaq_factor_for_gf_scale_flow(total_site, is_spatial, t_dir):
     """
     return plaq_factor
     `plaq_factor` can be used in `gf_plaq_flow_force`.
@@ -70,6 +72,8 @@ def get_plaq_factor_for_gf_scale_flow(geo, is_spatial, t_dir):
     The 6 elements of plaq_factor represent plaq in directions:
     0:xy, 1:xz, 2:xt, 3:yz, 4:yt, 5:zt
     """
+    assert isinstance(total_site, tuple)
+    geo = q.Geometry(q.Coordinate(total_site))
     plaq_factor = q.FieldRealD(geo, 6)
     if is_spatial:
         plaq_factor.set_zero()
@@ -120,7 +124,7 @@ def gf_flow_scale(gf, step_size, *, is_spatial=None, t_dir=None, integrator_type
     if integrator_type is None:
         integrator_type = integrator_type_default
     geo = gf.geo
-    plaq_factor = get_plaq_factor_for_gf_scale_flow(geo, is_spatial, t_dir)
+    plaq_factor = get_plaq_factor_for_gf_scale_flow(geo.total_site.to_tuple(), is_spatial, t_dir)
     if integrator_type == "euler":
         gm_force = q.gf_plaq_flow_force(gf, plaq_factor)
         q.gf_evolve(gf, gm_force, step_size)
