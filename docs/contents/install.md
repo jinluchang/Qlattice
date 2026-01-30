@@ -23,7 +23,7 @@ sudo apt-get install -y git bzip2 autoconf unzip
 sudo apt-get install -y libopenmpi-dev ninja-build patchelf
 sudo apt-get install -y libeigen3-dev libgsl-dev libopenblas-dev
 sudo apt-get install -y zlib1g-dev libssl-dev libmpfr-dev
-sudo apt-get install -y gnuplot texlive-metapost poppler-utils
+sudo apt-get install -y gnuplot texlive texlive-font-utils poppler-utils
 sudo apt-get install -y libfftw3-dev
 ```
 
@@ -67,6 +67,35 @@ source DEST_DIRECTORY/setenv.sh
 ./scripts/download-core.sh
 ./build.sh default-gpt
 source DEST_DIRECTORY/setenv.sh
+```
+
+## Install on Google Colab
+
+```python
+!apt-get install -y ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libmpfr-dev libssl-dev
+!apt-get install -y gnuplot texlive texlive-font-utils poppler-utils
+!lscpu | grep CPU
+!pip install qlat-utils -Ccompile-args="-j2"
+#
+import qlat_utils as q
+q.set_verbose_level(-1)
+q.qplot.plot_save_display_width = 500
+q.plot_save("plots/tmp1.png", is_display=True)
+```
+
+```python
+!apt-get install -y ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libmpfr-dev libssl-dev
+!apt-get install -y gnuplot texlive texlive-font-utils poppler-utils
+!apt-get install -y libopenmpi-dev libfftw3-dev
+!lscpu | grep CPU
+!pip install qlat -Ccompile-args="-j2"
+#
+import qlat as q
+q.begin_with_mpi()
+q.set_verbose_level(-1)
+q.qplot.plot_save_display_width = 500
+q.plot_save("plots/tmp1.png", is_display=True)
+# q.end_with_mpi()
 ```
 
 ## Install on UCONN HPC

@@ -16,6 +16,7 @@ dependencies = [ 'qlat-utils', 'sympy', 'mpi4py', ]
 [tool.meson-python.args]
 setup = [ '-Doptimization=2', '-Ddebug=false', '-Dbuildtype=custom', '-Db_ndebug=false', ]
 compile = [ '-j4', ]
+# pip install qlat -Ccompile-args="-j2"
 
 [tool.cibuildwheel]
 build = [ "cp*-manylinux_x86_64", "cp311-manylinux_aarch64", "cp*-macosx_*", ]
