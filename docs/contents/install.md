@@ -72,31 +72,90 @@ source DEST_DIRECTORY/setenv.sh
 ## Install on Google Colab
 
 ```python
-!apt-get install -y ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libmpfr-dev libssl-dev
-!apt-get install -y gnuplot texlive texlive-font-utils poppler-utils
-!lscpu | grep CPU
-!pip install qlat-utils -Ccompile-args="-j2"
+# Setup a cache for the wheels in google drive to save the time to recompile the Qlattice packages.
+# (Recommended)
 #
-import qlat_utils as q
-q.set_verbose_level(-1)
-q.qplot.plot_save_display_width = 500
-q.plot_save("plots/tmp1.png", is_display=True)
+import os
+if not os.path.ismount('/content/drive'):
+    from google.colab import drive
+    drive.mount('/content/drive')
+DRIVE_CACHE_PATH = '/content/drive/MyDrive/python-pip-cache/.cache/pip'
+os.makedirs(DRIVE_CACHE_PATH, exist_ok=True)
+os.environ['PIP_CACHE_DIR'] = DRIVE_CACHE_PATH
+#
+# Install system dependencies with APT.
+#
+!time apt-get update
+!time apt-get install -y ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libmpfr-dev libssl-dev
+#
+# Install system packages needed to use Qlattice plotting wrapper based on "gnuplot" and its terminal "epslatex".
+#
+!time apt-get install -y gnuplot texlive texlive-font-utils poppler-utils
+#
+# Install system packages needed to use "qlat". The "qlat-utils" package does not need these packages.
+#
+!time apt-get install -y libopenmpi-dev libfftw3-dev
+#
+# Check system information, such as number of cores.
+#
+!lscpu | grep CPU
+#
+# Install the Qlattice packages. The compilation can take about 1 min for "qlat-utils" and 20 min for "qlat".
+#
+!time pip install qlat-utils -Ccompile-args="-j2"
+!time pip install qlat -Ccompile-args="-j2"
 ```
 
+The following sample code can test the installation.
+
 ```python
-!apt-get install -y ninja-build patchelf libeigen3-dev libgsl-dev zlib1g-dev libmpfr-dev libssl-dev
-!apt-get install -y gnuplot texlive texlive-font-utils poppler-utils
-!apt-get install -y libopenmpi-dev libfftw3-dev
-!lscpu | grep CPU
-!pip install qlat -Ccompile-args="-j2"
-#
 import qlat as q
+#
 q.begin_with_mpi()
+#
 q.set_verbose_level(-1)
 q.qplot.plot_save_display_width = 500
+#
+rs = q.RngState("seed")
+total_site = q.Coordinate([4, 4, 4, 8,])
+geo = q.Geometry(total_site)
+gf = q.GaugeField(geo)
+gf.set_rand(rs.split("gf.set_rand"), sigma=0.3, n_step=2)
+gf.show_info()
+beta = 2.13
+c1 = -0.331
+ga = q.GaugeAction(beta, c1)
+#
+for traj in range(10):
+  q.run_hmc_pure_gauge(
+    gf,
+    ga,
+    traj,
+    rs.split("run_hmc_pure_gauge"),
+  )
+  gf.show_info()
+#
 q.plot_save("plots/tmp1.png", is_display=True)
+#
+q.timer_display()
+#
 # q.end_with_mpi()
 ```
+
+Some common functions that are not related to MPI are implemented in "qlat_utils". They do not require MPI and package "qlat". All functions of "qlat_utils" are included in "qlat".
+
+```python
+import qlat_utils as q
+#
+q.set_verbose_level(-1)
+#
+q.qplot.plot_save_display_width = 500
+q.plot_save("plots/tmp1.png", is_display=True)
+#
+q.timer_display()
+```
+
+
 
 ## Install on UCONN HPC
 
