@@ -51,7 +51,6 @@ in buildPythonPackage rec {
 
   pyproject = false;
 
-
   enableParallelBuilding = true;
 
   stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;

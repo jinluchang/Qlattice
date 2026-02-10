@@ -11,8 +11,8 @@ jobs:
   build_nix_ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@v30
+    - uses: actions/checkout@v6
+    - uses: cachix/install-nix-action@v31
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
@@ -23,15 +23,15 @@ jobs:
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-tests -j 1 --cores 3
     - name: Build qlat with jhub-env
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-jhub-env -j 1 --cores 3
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: qlat-docs
         path: result/share/doc/qlat/html
-    - uses: actions/configure-pages@v4
-    - uses: actions/upload-pages-artifact@v3
+    - uses: actions/configure-pages@v5
+    - uses: actions/upload-pages-artifact@v4
       with:
         path: result/share/doc/qlat/html
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: qlat-packages
         path: result/share/qlat-pypi/*.tar.gz
@@ -57,8 +57,8 @@ jobs:
   build_nix_ubuntu_clang:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@v30
+    - uses: actions/checkout@v6
+    - uses: cachix/install-nix-action@v31
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
@@ -73,7 +73,7 @@ jobs:
   build_qlat_ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Show info
       run: |
         whoami
@@ -137,7 +137,7 @@ jobs:
   build_qlat_gpt_ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Show info
       run: |
         whoami
@@ -244,7 +244,7 @@ jobs:
   build_pip_ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Show info
       run: |
         whoami
@@ -351,8 +351,8 @@ jobs:
   build_nix_mac_clang:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: cachix/install-nix-action@v30
+    - uses: actions/checkout@v6
+    - uses: cachix/install-nix-action@v31
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
@@ -367,7 +367,7 @@ jobs:
   build_qlat_mac:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Show info
       run: |
         whoami
@@ -421,7 +421,7 @@ jobs:
   build_qlat_gpt_mac:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Show info
       run: |
         whoami
@@ -526,7 +526,7 @@ jobs:
   build_pip_mac:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Show info
       run: |
         whoami
