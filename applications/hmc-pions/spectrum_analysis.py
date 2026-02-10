@@ -95,7 +95,7 @@ class Spectrum():
         T1=self.get_matrix_elems(t,matrix,corrs)
         T2=self.get_matrix_elems(t+1,matrix,corrs)
         w,v = sp.linalg.eigh(T1,T2)
-        return np.concatenate([[np.log(w)], v])
+        return np.concatenate([[np.log(w)], v / np.sum(v**2,axis=0)**0.5])
     
     def get_spectrum(self, t, divide_pion_mass=False):
         names = list(self.corrs)
