@@ -193,8 +193,10 @@ def parallel_map_sum(func, iterable,
     return ret
 
 def sum_list(res, start = None):
-    # res = [ [ va1, vb1, ... ], [ va2, vb2, ... ], ... ]
-    # return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
+    """
+    res = [ [ va1, vb1, ... ], [ va2, vb2, ... ], ... ]
+    return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
+    """
     if start is not None:
         ret = list(start)
     else:
@@ -208,14 +210,17 @@ def sum_list(res, start = None):
     return ret
 
 @timer
-def trace_iter(iterable, tag=None, max_idx=None, verbose_level=0):
+def trace_iter(iterable, *, tag=None, step_size=None, max_idx=None, verbose_level=0):
     fname = get_fname()
     if tag is None:
         tag = fname
+    if step_size is None:
+        step_size = 1
     if max_idx is None:
         max_idx_str = ""
     else:
         max_idx_str = f"/{max_idx}"
     for idx, v in enumerate(iterable):
-        displayln_info(verbose_level, f"{tag}: idx={idx+1}{max_idx_str}")
+        if (idx % step_size == 0) or (idx + 1 == max_idx):
+            displayln_info(verbose_level, f"{tag}: idx={idx+1}{max_idx_str}")
         yield v
