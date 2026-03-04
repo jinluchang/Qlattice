@@ -41,10 +41,11 @@ Note that $f_\mathrm{Localize}$ tends to shrink the size of large instanton but 
 
 """
 
-### --------------------------------------
+# --------------------------------------
 
 import numpy as np
 from pprint import pformat
+
 
 class q:
     from qlat_utils import (
@@ -59,6 +60,7 @@ class q:
         get_num_node,
         is_test,
         json_results_append,
+        save_pickle_obj,
     )
     from qlat.c import (
         Geometry,
@@ -80,7 +82,6 @@ class q:
         gf_topology_field,
         gf_topology_terms,
         gf_plaq_action_density_field,
-        gf_energy_derivative_density_field,
     )
     from .field_analysis import (
         smear_field,
@@ -91,47 +92,124 @@ class q:
         get_comm,
     )
 
-### --------------------------------------
+# --------------------------------------
+
 
 @q.timer
-def gf_flow_topo(gf, step_size, tag=None):
+def gf_flow_topo(
+    gf, step_size,
+    flow_type=None,
+    wilson_flow_integrator_type=None,
+):
     """
     Modify ``gf`` in place.
     Default Wilson flow with Euler integrator.
-    ``tag`` in ``[ None, "Shrink", "Freeze", "Localize", ]``
+    ```
+    flow_type in [
+        None,
+        "Wilson", # c1 = 0.0
+        "Iwasaki", # c1 = -0.331
+        "DBW2", # c1 = -1.4008
+        "Shrink",
+        "Freeze",
+        "Localize",
+        c1,
+    ]
+    wilson_flow_integrator_type in [
+        None,
+        "euler", # Unlike ``q.gf_wilson_flow_step``, the default here is "euler"
+        "runge-kutta",
+    ]
+    ```
+    c1 = 0.0 # Wilson
+    c1 = -0.331 # Iwasaki
+    c1 = -1.4008 # DBW2
     """
+    fname = q.get_fname()
     geo = gf.geo
-    plaq_factor = q.FieldRealD(geo, 6)
-    if tag is None:
-        plaq_factor.set_unit()
+    if flow_type is None:
+        flow_type = "Wilson"
+    if wilson_flow_integrator_type is None:
+        wilson_flow_integrator_type = "euler"
+    if isinstance(flow_type, (int, float,)):
+        c1 = flow_type
+        q.gf_wilson_flow_step(
+            gf, step_size, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type,
+        )
+    elif flow_type in ["Wilson", "Iwasaki", "DBW2", ]:
+        if flow_type == "Wilson":
+            c1 = 0.0
+        elif flow_type == "Iwasaki":
+            c1 = -0.331
+        elif flow_type == "DBW2":
+            c1 = -1.4008
+        else:
+            raise Exception(f"{fname}: {flow_type=}")
+        q.gf_wilson_flow_step(
+            gf, step_size, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type,
+        )
     else:
+        plaq_factor = q.FieldRealD(geo, 6)
         f_plaq = q.gf_plaq_field(gf)
         plaq_min = np.min(f_plaq.glb_min()[:])
         plaq_max = np.max(f_plaq.glb_max()[:])
-        if tag == "Shrink":
+        if flow_type == "Shrink":
             eps = 0.005
             base = 0.5
             norm = eps / (1 - plaq_max + eps) + base
             plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + base
             plaq_factor *= 1 / norm
-        elif tag == "Freeze":
+        elif flow_type == "Freeze":
             norm = 1 - plaq_min
             plaq_factor[:] = 1 - f_plaq[:]
             plaq_factor *= 1 / norm
-        elif tag == "Localize":
+        elif flow_type == "Localize":
             eps = 0.005
             base = 200
             norm = max(
                 eps / (1 - plaq_max + eps) + base * (1 - plaq_max),
                 eps / (1 - plaq_min + eps) + base * (1 - plaq_min),
             )
-            plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + base * (1 - f_plaq[:])
+            plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + \
+                base * (1 - f_plaq[:])
             plaq_factor *= 1 / norm
         else:
-            fname = q.get_fname()
-            raise Exception(f"{fname}: tag={tag}")
-    gm_force = q.gf_plaq_flow_force(gf, plaq_factor)
-    q.gf_evolve(gf, gm_force, step_size)
+            raise Exception(f"{fname}: {flow_type=}")
+        gm_force = q.gf_plaq_flow_force(gf, plaq_factor)
+        q.gf_evolve(gf, gm_force, step_size)
+
+
+@q.timer
+def gf_energy_derivative_density_field_topo(
+    gf,
+    *,
+    epsilon=0.0125,
+    flow_typw=None,
+    wilson_flow_integrator_type=None,
+):
+    """
+    flow_type in [
+        None,
+        "Wilson", # c1 = 0.0
+        "Iwasaki", # c1 = -0.331
+        "DBW2", # c1 = -1.4008
+        c1,
+    ]
+    wilson_flow_integrator_type in [
+        None,
+        "euler", # Unlike ``q.gf_wilson_flow_step``, the default here is "euler"
+        "runge-kutta",
+    ]
+    """
+    gf1 = gf.copy()
+    gf_flow_topo(gf1, epsilon, flow_typw, wilson_flow_integrator_type)
+    fd1 = q.gf_energy_density_field(gf1)
+    gf1 @= gf
+    gf_flow_topo(gf1, -epsilon, flow_typw, wilson_flow_integrator_type)
+    fd2 = q.gf_energy_density_field(gf1)
+    fd1 -= fd2
+    fd1 *= 1 / (2 * epsilon)
+    return fd1
 
 @q.timer
 def mk_plaq_xg_arr(geo):
@@ -142,14 +220,15 @@ def mk_plaq_xg_arr(geo):
     assert n_points == geo.local_volume
     plaq_xg_arr = np.zeros((n_points, n_plaq, n_dim,), dtype=np.float64)
     plaq_xg_arr[:, :, :] = xg_arr[:, None, :]
-    plaq_xg_arr[:, 0, :] += [ 0.5, 0.5, 0, 0, ]
-    plaq_xg_arr[:, 1, :] += [ 0.5, 0, 0.5, 0, ]
-    plaq_xg_arr[:, 2, :] += [ 0.5, 0, 0, 0.5, ]
-    plaq_xg_arr[:, 3, :] += [ 0, 0.5, 0.5, 0, ]
-    plaq_xg_arr[:, 4, :] += [ 0, 0.5, 0, 0.5, ]
-    plaq_xg_arr[:, 5, :] += [ 0, 0, 0.5, 0.5, ]
+    plaq_xg_arr[:, 0, :] += [0.5, 0.5, 0, 0, ]
+    plaq_xg_arr[:, 1, :] += [0.5, 0, 0.5, 0, ]
+    plaq_xg_arr[:, 2, :] += [0.5, 0, 0, 0.5, ]
+    plaq_xg_arr[:, 3, :] += [0, 0.5, 0.5, 0, ]
+    plaq_xg_arr[:, 4, :] += [0, 0.5, 0, 0.5, ]
+    plaq_xg_arr[:, 5, :] += [0, 0, 0.5, 0.5, ]
     # print(plaq_xg_arr.shape)
     return plaq_xg_arr
+
 
 @q.timer
 def get_extreme_plaq_xg_list(plaq_xg_arr, f_plaq, threshold):
@@ -166,7 +245,8 @@ def get_extreme_plaq_xg_list(plaq_xg_arr, f_plaq, threshold):
     sel = f_plaq[:] < (1 - threshold)
     plaq_arr = f_plaq[sel]
     extreme_xg_arr = plaq_xg_arr[sel]
-    extreme_plaq_xg_list = list(zip(plaq_arr.tolist(), extreme_xg_arr.tolist()))
+    extreme_plaq_xg_list = list(
+        zip(plaq_arr.tolist(), extreme_xg_arr.tolist()))
     all_extreme_plaq_xg_list = q.get_comm().allgather(extreme_plaq_xg_list)
     extreme_plaq_xg_list = []
     for sub in all_extreme_plaq_xg_list:
@@ -174,8 +254,10 @@ def get_extreme_plaq_xg_list(plaq_xg_arr, f_plaq, threshold):
     extreme_plaq_xg_list.sort()
     return extreme_plaq_xg_list
 
+
 def point_d_dis_sqr(x, y, total_site):
     return q.smod_coordinate_d(x - y, total_site).sqr()
+
 
 @q.timer
 def get_group_extreme_plaq_xg_list(extreme_plaq_xg_list, total_site, dis_sqr_limit):
@@ -208,9 +290,10 @@ def get_group_extreme_plaq_xg_list(extreme_plaq_xg_list, total_site, dis_sqr_lim
                 b = True
                 break
         if not b:
-            l = [ (plaq, xg, 0,), ]
+            l = [(plaq, xg, 0,), ]
             group_extreme_plaq_xg_list.append(l)
     return group_extreme_plaq_xg_list
+
 
 @q.timer
 def process_inst_list(inst_list):
@@ -279,7 +362,8 @@ def process_inst_list(inst_list):
                 xg_d = info_dict["xg_d"]
         for info_dict in inst:
             total_site_d = q.CoordinateD(info_dict["total_site"])
-            c_dis_sqr = point_d_dis_sqr(q.CoordinateD(xg_d), q.CoordinateD(info_dict["xg_d"]), total_site_d)
+            c_dis_sqr = point_d_dis_sqr(q.CoordinateD(
+                xg_d), q.CoordinateD(info_dict["xg_d"]), total_site_d)
             c_dis_sqr_list.append(c_dis_sqr)
         s_topo_arr = np.array(s_topo_list, dtype=np.float64)
         s_topo_list = s_topo_arr.T.tolist()
@@ -295,7 +379,7 @@ def process_inst_list(inst_list):
         p_inst["inst_idx"] = inst_idx
         p_inst["inst_raw"] = inst
         p_inst["o_xg_d"] = o_xg_d
-        p_inst["o_total_site"] = [ current_spacing * c for c in total_site ]
+        p_inst["o_total_site"] = [current_spacing * c for c in total_site]
         p_inst["xg_d"] = xg_d
         p_inst["total_site"] = total_site
         p_inst["current_spacing"] = current_spacing
@@ -317,6 +401,7 @@ def process_inst_list(inst_list):
         p_inst["dis_sqr_max_list"] = dis_sqr_max_list
         p_inst["c_dis_sqr_list"] = c_dis_sqr_list
         p_inst_list.append(p_inst)
+
     def mk_closest_inst_info(inst_dis_sqr, p_inst):
         """
         e.g.
@@ -363,16 +448,18 @@ def process_inst_list(inst_list):
             inst_dis_sqr = point_d_dis_sqr(o_xg_d, o_xg_d_2, o_total_site_d)
             if (closest_inst_dis_sqr is None) or (inst_dis_sqr < closest_inst_dis_sqr):
                 closest_inst_dis_sqr = inst_dis_sqr
-                closest_inst_info = mk_closest_inst_info(inst_dis_sqr, p_inst_2)
+                closest_inst_info = mk_closest_inst_info(
+                    inst_dis_sqr, p_inst_2)
             if ((flow_time_start <= flow_time_start_2 <= flow_time_end)
-                or (flow_time_start <= flow_time_end_2 <= flow_time_end)
-                or (flow_time_start_2 <= flow_time_start <= flow_time_end_2)
-                or (flow_time_start_2 <= flow_time_end <= flow_time_end_2)
+                    or (flow_time_start <= flow_time_end_2 <= flow_time_end)
+                    or (flow_time_start_2 <= flow_time_start <= flow_time_end_2)
+                    or (flow_time_start_2 <= flow_time_end <= flow_time_end_2)
                 ):
                 if (closest_sim_inst_dis_sqr is None) or (inst_dis_sqr < closest_sim_inst_dis_sqr):
                     assert current_spacing_2 == current_spacing
                     closest_sim_inst_dis_sqr = inst_dis_sqr
-                    closest_sim_inst_info = mk_closest_inst_info(inst_dis_sqr, p_inst_2)
+                    closest_sim_inst_info = mk_closest_inst_info(
+                        inst_dis_sqr, p_inst_2)
         p_inst["closest_sim_inst_info"] = closest_sim_inst_info
         p_inst["closest_inst_info"] = closest_inst_info
     for p_inst in p_inst_list:
@@ -383,7 +470,8 @@ def process_inst_list(inst_list):
             continue
         delta_s_topo = np.array(delta_s_topo, dtype=np.float64)
         if len(delta_s_topo) > 1:
-            estimate_topo_charge = (delta_s_topo[0] - (delta_s_topo[1] - 1.5 * delta_s_topo[0]) / 3) / 0.44
+            estimate_topo_charge = (
+                delta_s_topo[0] - (delta_s_topo[1] - 1.5 * delta_s_topo[0]) / 3) / 0.44
         elif len(delta_s_topo) > 0:
             estimate_topo_charge = delta_s_topo[0] / 0.44
         p_inst["estimate_topo_charge"] = estimate_topo_charge
@@ -425,6 +513,7 @@ def process_inst_list(inst_list):
     # p_inst_list.sort(key=lambda v: v["flow_time"])
     return p_inst_list
 
+
 @q.timer
 def displayln_info_topo_info(topo_info):
     """
@@ -440,6 +529,7 @@ def displayln_info_topo_info(topo_info):
     num_instanton = info["num_instanton"]
     topo = info["topo"]
     q.displayln_info(0, f"{flow_type} flow_time={flow_time:9.2f} ; topo={topo:10.3f} ; plaq_min={plaq_min:8.5f} ; plaq={plaq:9.6f} ; num_instanton={num_instanton:11.2f} ; step_counter={step_counter:5} ; current_spacing={current_spacing}")
+
 
 @q.timer
 def displayln_info_p_inst(p_inst):
@@ -492,23 +582,31 @@ def displayln_info_p_inst(p_inst):
     q.displayln_info(0, f"{idx:3}: c_dis_sqr_max={c_dis_sqr_max}")
     q.displayln_info(0, f"{idx:3}: flow_time_start={flow_time_start:.2f}")
     q.displayln_info(0, f"{idx:3}: flow_time_end={flow_time_end:.2f}")
-    q.displayln_info(0, f"{idx:3}: plaq_list={[ f'{v:.4f}' for v in plaq_list ]}")
-    q.displayln_info(0, f"{idx:3}: s_topo_list={[ [ f'{v:.3f}' for v in l ] for l in s_topo_list ]}")
-    q.displayln_info(0, f"{idx:3}: topo_sphere_sum_radius_list={topo_sphere_sum_radius_list}")
+    q.displayln_info(
+        0, f"{idx:3}: plaq_list={[f'{v:.4f}' for v in plaq_list]}")
+    q.displayln_info(
+        0, f"{idx:3}: s_topo_list={[[f'{v:.3f}' for v in l] for l in s_topo_list]}")
+    q.displayln_info(
+        0, f"{idx:3}: topo_sphere_sum_radius_list={topo_sphere_sum_radius_list}")
     q.displayln_info(0, f"{idx:3}: num_plaq_list={num_plaq_list}")
-    q.displayln_info(0, f"{idx:3}: dis_sqr_avg_list={[ f'{v:.3f}' for v in dis_sqr_avg_list ]}")
+    q.displayln_info(
+        0, f"{idx:3}: dis_sqr_avg_list={[f'{v:.3f}' for v in dis_sqr_avg_list]}")
     q.displayln_info(0, f"{idx:3}: dis_sqr_max_list={dis_sqr_max_list}")
     q.displayln_info(0, f"{idx:3}: c_dis_sqr_list={c_dis_sqr_list}")
-    q.displayln_info(0, f"{idx:3}: closest_sim_inst_info={closest_sim_inst_info}")
+    q.displayln_info(
+        0, f"{idx:3}: closest_sim_inst_info={closest_sim_inst_info}")
     q.displayln_info(0, f"{idx:3}: closest_inst_info={closest_inst_info}")
     if delta_s_topo is None:
         q.displayln_info(0, f"{idx:3}: delta_s_topo={delta_s_topo}")
     else:
-        q.displayln_info(0, f"{idx:3}: delta_s_topo={[ f'{v:.3f}' for v in delta_s_topo ]}")
-    q.displayln_info(0, f"{idx:3}: estimate_topo_charge={estimate_topo_charge}")
+        q.displayln_info(
+            0, f"{idx:3}: delta_s_topo={[f'{v:.3f}' for v in delta_s_topo]}")
+    q.displayln_info(
+        0, f"{idx:3}: estimate_topo_charge={estimate_topo_charge}")
     # estimate_topo_charge_orig = p_inst["estimate_topo_charge_orig"]
     # if estimate_topo_charge_orig is not None:
     #     q.displayln_info(0, f"{idx:3}: estimate_topo_charge_orig={estimate_topo_charge_orig}")
+
 
 @q.timer
 def displayln_info_p_inst_list(p_inst_list):
@@ -543,21 +641,26 @@ def displayln_info_p_inst_list(p_inst_list):
     q.displayln_info(0, f"Final: tot_inst={tot_inst}")
     q.displayln_info(0, f"Final: tot_topo={tot_topo}")
 
+
 def get_tot_topo_count(p_inst_list, flow_time):
     """
     Get the total topological charge by counting the number of instanton minus anti-instanton.
     """
-    topo_count = sum([ round(p_inst["estimate_topo_charge"]) for p_inst in p_inst_list if p_inst["flow_time"] > flow_time ])
+    topo_count = sum([round(p_inst["estimate_topo_charge"])
+                     for p_inst in p_inst_list if p_inst["flow_time"] > flow_time])
     return topo_count
+
 
 def get_tot_inst_count(p_inst_list, flow_time):
     """
     Get the total number of instanton plus anti-instanton.
     """
-    inst_count = sum([ abs(round(p_inst["estimate_topo_charge"])) for p_inst in p_inst_list if p_inst["flow_time"] > flow_time ])
+    inst_count = sum([abs(round(p_inst["estimate_topo_charge"]))
+                     for p_inst in p_inst_list if p_inst["flow_time"] > flow_time])
     return inst_count
 
-### --------------------------------------
+# --------------------------------------
+
 
 class InstantonMap:
 
@@ -631,11 +734,13 @@ class InstantonMap:
         """
         assert self.initial_total_site is not None
         if isinstance(xg, q.Coordinate):
-            o_xg = (xg * self.current_spacing - self.origin_coordinate) % self.initial_total_site
+            o_xg = (xg * self.current_spacing -
+                    self.origin_coordinate) % self.initial_total_site
         elif isinstance(xg, q.CoordinateD):
             initial_total_site_d = q.CoordinateD(self.initial_total_site)
             origin_coordinate_d = q.CoordinateD(self.origin_coordinate)
-            o_xg = (xg * self.current_spacing - origin_coordinate_d) % initial_total_site_d
+            o_xg = (xg * self.current_spacing -
+                    origin_coordinate_d) % initial_total_site_d
         else:
             assert False
         return o_xg
@@ -645,7 +750,7 @@ class InstantonMap:
         assert len(self.active_inst_list) == 0
         self.current_spacing *= 2
         self.current_flow_time_multiplier *= 2**4 / 2
-        total_site = q.Coordinate([ c // 2 for c in self.total_site ])
+        total_site = q.Coordinate([c // 2 for c in self.total_site])
         assert total_site * 2 == self.total_site
         assert total_site * self.current_spacing == self.initial_total_site
         self.total_site = total_site
@@ -669,8 +774,10 @@ class InstantonMap:
         assert self.total_site is not None
         total_site = self.total_site
         total_site_d = q.CoordinateD(total_site)
-        extreme_plaq_xg_list = get_extreme_plaq_xg_list(self.plaq_xg_arr, f_plaq, self.threshold)
-        group_extreme_plaq_xg_list = get_group_extreme_plaq_xg_list(extreme_plaq_xg_list, total_site, self.dis_sqr_limit)
+        extreme_plaq_xg_list = get_extreme_plaq_xg_list(
+            self.plaq_xg_arr, f_plaq, self.threshold)
+        group_extreme_plaq_xg_list = get_group_extreme_plaq_xg_list(
+            extreme_plaq_xg_list, total_site, self.dis_sqr_limit)
         num_group = len(group_extreme_plaq_xg_list)
         if num_group == 0:
             self.inst_list += self.active_inst_list
@@ -681,9 +788,12 @@ class InstantonMap:
             assert len(g) > 0
             assert isinstance(g[0], tuple)
             assert len(g[0]) == 3
-        plaq_arr = np.array([ g[0][0] for g in group_extreme_plaq_xg_list ], dtype=np.float64)
-        xg_d_arr = np.array([ g[0][1] for g in group_extreme_plaq_xg_list ], dtype=np.float64)
-        dis_sqr_arr_list = [ np.array([ p[2] for p in g ]) for g in group_extreme_plaq_xg_list ]
+        plaq_arr = np.array(
+            [g[0][0] for g in group_extreme_plaq_xg_list], dtype=np.float64)
+        xg_d_arr = np.array(
+            [g[0][1] for g in group_extreme_plaq_xg_list], dtype=np.float64)
+        dis_sqr_arr_list = [np.array([p[2] for p in g])
+                            for g in group_extreme_plaq_xg_list]
         xg_arr = np.array(xg_d_arr, dtype=np.int32)
         if f_topo is not None:
             assert self.topo_sphere_sum_radius_list is not None
@@ -703,7 +813,8 @@ class InstantonMap:
             assert s_topo_arr.shape == (num_group, num_radius,)
         else:
             num_radius = 0
-            s_topo_arr = np.array([ None for i in range(num_group) ], dtype=object)
+            s_topo_arr = np.array(
+                [None for i in range(num_group)], dtype=object)
             assert s_topo_arr.shape == (num_group,)
         assert plaq_arr.shape == (num_group,)
         assert xg_d_arr.shape == (num_group, 4,)
@@ -752,11 +863,12 @@ class InstantonMap:
                     del prev_active_inst_list[k]
                     break
             if not is_active:
-                inst = [ info_dict, ]
+                inst = [info_dict, ]
                 self.active_inst_list.append(inst)
         self.inst_list += prev_active_inst_list
 
-### --------------------------------------
+# --------------------------------------
+
 
 @q.timer(is_timer_fork=True)
 def compute_inst_map(
@@ -792,8 +904,9 @@ def compute_inst_map(
     """
     fname = q.get_fname()
     if topo_sphere_sum_radius_list is None:
-        topo_sphere_sum_radius_list = [ 2, 3, 4, 5, 6, ]
-    q.displayln_info(0, f"{fname}: topo_sphere_sum_radius_list={topo_sphere_sum_radius_list}")
+        topo_sphere_sum_radius_list = [2, 3, 4, 5, 6, ]
+    q.displayln_info(
+        0, f"{fname}: topo_sphere_sum_radius_list={topo_sphere_sum_radius_list}")
     if dis_sqr_limit is None:
         # limit to group plaq to identify as instanton
         dis_sqr_limit = 5
@@ -821,29 +934,30 @@ def compute_inst_map(
             max_spacing *= 2
     #
     if flow_step_size_list is None:
-        flow_step_size_list = [ 0.05, 0.1, 0.1, ]
+        flow_step_size_list = [0.05, 0.1, 0.1, ]
     else:
         assert isinstance(flow_step_size_list, list)
         assert len(flow_step_size_list) == 3
     #
     if flow_num_step_list is None:
-        flow_num_step_list = [ 80, 320, 1000000, ]
+        flow_num_step_list = [80, 320, 1000000, ]
     else:
         assert isinstance(flow_num_step_list, list)
         assert len(flow_num_step_list) == 3
     #
     inst_map = InstantonMap(
-            total_site=total_site,
-            topo_sphere_sum_radius_list=topo_sphere_sum_radius_list,
-            dis_sqr_limit=dis_sqr_limit,
-            threshold=threshold,
-            )
+        total_site=total_site,
+        topo_sphere_sum_radius_list=topo_sphere_sum_radius_list,
+        dis_sqr_limit=dis_sqr_limit,
+        threshold=threshold,
+    )
     #
     flow_type = None
     plaq = None
     plaq_min = None
     num_instanton = None
     topo = None
+
     def append_topo_info():
         info = dict()
         info["flow_time"] = inst_map.flow_time
@@ -864,12 +978,14 @@ def compute_inst_map(
         f_plaq = q.gf_plaq_field(gf)
         plaq_min = np.min(f_plaq.glb_min()[:]).item()
         plaq = f_plaq.glb_sum()[:].sum().item() / geo.total_volume / 6
-        num_instanton = ((1 - plaq) * 6 * geo.total_volume) / (8 * np.pi**2 / 6)
+        num_instanton = ((1 - plaq) * 6 * geo.total_volume) / \
+            (8 * np.pi**2 / 6)
         if inst_map.step_counter % 10 == 0:
             f_topo = q.gf_topology_field(gf)
             topo = f_topo.glb_sum()[:].item()
             append_topo_info()
-            q.displayln_info(0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
+            q.displayln_info(
+                0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
         q.displayln_info(0, f"{flow_type} ; {geo.total_site.to_list()} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
         if i != num_step:
             gf_flow_topo(gf, step_size)
@@ -889,12 +1005,14 @@ def compute_inst_map(
         f_plaq = q.gf_plaq_field(gf)
         plaq_min = np.min(f_plaq.glb_min()[:]).item()
         plaq = f_plaq.glb_sum()[:].sum().item() / geo.total_volume / 6
-        num_instanton = ((1 - plaq) * 6 * geo.total_volume) / (8 * np.pi**2 / 6)
+        num_instanton = ((1 - plaq) * 6 * geo.total_volume) / \
+            (8 * np.pi**2 / 6)
         if inst_map.step_counter % 10 == 0:
             f_topo = q.gf_topology_field(gf)
             topo = f_topo.glb_sum()[:].item()
             append_topo_info()
-            q.displayln_info(0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
+            q.displayln_info(
+                0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
         q.displayln_info(0, f"{flow_type} ; {geo.total_site.to_list()} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
         if plaq_min > 0.995:
             break
@@ -905,7 +1023,8 @@ def compute_inst_map(
     topo = q.gf_topology(gf)
     inst_map.flow_time_list.append(inst_map.flow_time)
     inst_map.tot_topo_list.append(topo)
-    q.displayln_info(0, f"flow_time_list={inst_map.flow_time_list} ; tot_topo_list={inst_map.tot_topo_list}")
+    q.displayln_info(
+        0, f"flow_time_list={inst_map.flow_time_list} ; tot_topo_list={inst_map.tot_topo_list}")
     if q.is_test():
         q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-10)
         q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-8)
@@ -920,17 +1039,20 @@ def compute_inst_map(
         f_plaq = q.gf_plaq_field(gf)
         plaq_min = np.min(f_plaq.glb_min()[:]).item()
         plaq = f_plaq.glb_sum()[:].sum().item() / geo.total_volume / 6
-        num_instanton = ((1 - plaq) * 6 * geo.total_volume) / (8 * np.pi**2 / 6)
+        num_instanton = ((1 - plaq) * 6 * geo.total_volume) / \
+            (8 * np.pi**2 / 6)
         if inst_map.step_counter % 4 == 0:
             f_topo = q.gf_topology_field(gf)
             topo = f_topo.glb_sum()[:].item()
             append_topo_info()
-            q.displayln_info(0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
+            q.displayln_info(
+                0, f"flow_time={inst_map.flow_time:.3f} ; topo", topo)
         else:
             f_topo = None
         q.displayln_info(0, f"{flow_type} ; {geo.total_site.to_list()} ; i={i} ; step_counter={inst_map.step_counter} ; flow_time={inst_map.flow_time:.3f} ; 1-plaq_min={1-plaq_min:.5f} ; 1-plaq={1-plaq:.5f} ; num_instanton={num_instanton:.2f}")
         inst_map.acc_topo_info(f_plaq, f_topo)
-        q.displayln_info(0, f"num_inst={len(inst_map.inst_list)} ; num_active_inst={len(inst_map.active_inst_list)}")
+        q.displayln_info(
+            0, f"num_inst={len(inst_map.inst_list)} ; num_active_inst={len(inst_map.active_inst_list)}")
         if num_instanton < 0.1:
             break
         if abs(topo) < 1e-5 and num_instanton < 0.9:
@@ -944,29 +1066,40 @@ def compute_inst_map(
             f_plaq = q.gf_plaq_field(gf)
             plaq_min = np.min(f_plaq.glb_min()[:]).item()
             plaq = f_plaq.glb_sum()[:].sum().item() / geo.total_volume / 6
-            num_instanton = ((1 - plaq) * 6 * geo.total_volume) / (8 * np.pi**2 / 6)
+            num_instanton = ((1 - plaq) * 6 *
+                             geo.total_volume) / (8 * np.pi**2 / 6)
             f_plaq_h = q.gf_plaq_field(gf_h)
             plaq_min_h = np.min(f_plaq_h.glb_min()[:]).item()
-            plaq_h = f_plaq_h.glb_sum()[:].sum().item() / geo_h.total_volume / 6
-            num_instanton_h = ((1 - plaq_h) * 6 * geo_h.total_volume) / (8 * np.pi**2 / 6)
+            plaq_h = f_plaq_h.glb_sum()[:].sum(
+            ).item() / geo_h.total_volume / 6
+            num_instanton_h = ((1 - plaq_h) * 6 *
+                               geo_h.total_volume) / (8 * np.pi**2 / 6)
             f_topo = q.gf_topology_field(gf)
             topo = f_topo.glb_sum()[:].item()
             f_topo_h = q.gf_topology_field(gf_h)
             topo_h = f_topo_h.glb_sum()[:].item()
-            q.displayln_info(0, f"===================== Half lattice size ===========================")
+            q.displayln_info(
+                0, f"===================== Half lattice size ===========================")
             q.displayln_info(0, f"flow_time={inst_map.flow_time}")
             q.displayln_info(0, f"min_plaq", plaq_min, plaq_min_h)
-            q.displayln_info(0, f"num_instanton", num_instanton, num_instanton_h)
+            q.displayln_info(0, f"num_instanton",
+                             num_instanton, num_instanton_h)
             q.displayln_info(0, f"topo", topo, topo_h)
-            q.displayln_info(0, f"===================== Half lattice size ===========================")
+            q.displayln_info(
+                0, f"===================== Half lattice size ===========================")
             if q.is_test():
-                q.json_results_append(f"{fname}: {flow_type} current_spacing={inst_map.current_spacing}")
+                q.json_results_append(
+                    f"{fname}: {flow_type} current_spacing={inst_map.current_spacing}")
                 q.json_results_append(f"{fname}: {flow_type} plaq", plaq, 1e-8)
-                q.json_results_append(f"{fname}: {flow_type} plaq_h", plaq_h, 1e-8)
-                q.json_results_append(f"{fname}: {flow_type} plaq_min", plaq_min, 1e-6)
-                q.json_results_append(f"{fname}: {flow_type} plaq_min_h", plaq_min_h, 1e-6)
+                q.json_results_append(
+                    f"{fname}: {flow_type} plaq_h", plaq_h, 1e-8)
+                q.json_results_append(
+                    f"{fname}: {flow_type} plaq_min", plaq_min, 1e-6)
+                q.json_results_append(
+                    f"{fname}: {flow_type} plaq_min_h", plaq_min_h, 1e-6)
                 q.json_results_append(f"{fname}: {flow_type} topo", topo, 1e-4)
-                q.json_results_append(f"{fname}: {flow_type} topo_h", topo_h, 1e-4)
+                q.json_results_append(
+                    f"{fname}: {flow_type} topo_h", topo_h, 1e-4)
             gf = gf_h
             geo = geo_h
             total_site = geo_h.total_site
@@ -984,6 +1117,7 @@ def compute_inst_map(
     obj["tot_topo_list"] = inst_map.tot_topo_list
     q.displayln_info(0, f"tot_topo_list={inst_map.tot_topo_list}")
     return obj
+
 
 @q.timer
 def displayln_info_inst_map_obj(inst_map_obj):
@@ -1014,11 +1148,14 @@ def displayln_info_inst_map_obj(inst_map_obj):
             flow_time = p_inst["flow_time"]
             delta_s_topo = p_inst["delta_s_topo"]
             estimate_topo_charge = p_inst["estimate_topo_charge"]
-            q.json_results_append(f"inst_idx={inst_idx} ; o_xg_d={o_xg_d} ; o_total_site={o_total_site} ; current_spacing={current_spacing}")
+            q.json_results_append(
+                f"inst_idx={inst_idx} ; o_xg_d={o_xg_d} ; o_total_site={o_total_site} ; current_spacing={current_spacing}")
             q.json_results_append(f"plaq", plaq, 1e-6)
             q.json_results_append(f"flow_time", flow_time, 1e-3)
-            q.json_results_append(f"delta_s_topo", np.array(delta_s_topo, dtype=np.float64), 1e-6)
-            q.json_results_append(f"estimate_topo_charge", estimate_topo_charge, 1e-4)
+            q.json_results_append(f"delta_s_topo", np.array(
+                delta_s_topo, dtype=np.float64), 1e-6)
+            q.json_results_append(f"estimate_topo_charge",
+                                  estimate_topo_charge, 1e-4)
     #
     s_p_inst_list = sorted(p_inst_list, key=lambda v: -v["flow_time"])
     #
@@ -1027,7 +1164,8 @@ def displayln_info_inst_map_obj(inst_map_obj):
         topo_count = get_tot_topo_count(p_inst_list, flow_time)
         inst_count = get_tot_inst_count(p_inst_list, flow_time)
         current_spacing = 2**idx
-        q.displayln_info(0, f"{idx:3}: flow_time={flow_time:9.2f} ; tot_topo={tot_topo:10.3f} ; topo_count={topo_count:4} ; inst_count={inst_count:4} ; current_spacing={current_spacing}")
+        q.displayln_info(
+            0, f"{idx:3}: flow_time={flow_time:9.2f} ; tot_topo={tot_topo:10.3f} ; topo_count={topo_count:4} ; inst_count={inst_count:4} ; current_spacing={current_spacing}")
     #
     q.displayln_info(0, f"")
     #
@@ -1042,7 +1180,8 @@ def displayln_info_inst_map_obj(inst_map_obj):
         displayln_info_topo_info(topo_info)
         topo_count = get_tot_topo_count(p_inst_list, flow_time)
         inst_count = get_tot_inst_count(p_inst_list, flow_time)
-        q.displayln_info(0, f"{flow_type} flow_time={flow_time:9.2f} ; topo_count={topo_count:4} ; inst_count={inst_count:4}")
+        q.displayln_info(
+            0, f"{flow_type} flow_time={flow_time:9.2f} ; topo_count={topo_count:4} ; inst_count={inst_count:4}")
     #
     q.displayln_info(0, f"")
     #
@@ -1050,47 +1189,74 @@ def displayln_info_inst_map_obj(inst_map_obj):
     tot_topo_count = get_tot_topo_count(p_inst_list, 0)
     tot_inst_count = get_tot_inst_count(p_inst_list, 0)
     #
-    q.displayln_info(0, f"{fname}: tot_topo_direct={tot_topo_direct} ; tot_topo_count={tot_topo_count}")
+    q.displayln_info(
+        0, f"{fname}: tot_topo_direct={tot_topo_direct} ; tot_topo_count={tot_topo_count}")
     if tot_topo_direct == tot_topo_count:
         q.displayln_info(0, f"{fname}: Topological charge matched.")
     else:
-        q.displayln_info(-1, f"{fname}: WARNING: Topological charge does not match.")
+        q.displayln_info(-1,
+                         f"{fname}: WARNING: Topological charge does not match.")
+
 
 @q.timer(is_timer_fork=True)
 def smear_measure_topo(
-        gf,
-        smear_info_list=None,
-        *,
-        energy_derivative_info=None,
-        info_path=None,
-        density_field_path=None,
-        is_show_topo_terms=False,
-        ):
+    gf,
+    smear_info_list=None,
+    *,
+    energy_derivative_info=None,
+    info_path=None,
+    density_field_path=None,
+    is_show_topo_terms=False,
+):
     r"""
     return topo_list, energy_list,
     gf will be modified in-place.
-    smear_info_list = [ [ step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta", ], ... ]
-    energy_derivative_info = [ step_size, c1=0.0, wilson_flow_integrator_type="runge-kutta", ]
-    c1 = 0.0 # Wilson
-    c1 = -0.331 # Iwasaki
-    c1 = -1.4008 # DBW2
-    wilson_flow_integrator_type = "runge-kutta"
-    wilson_flow_integrator_type = "euler"
-    `info_path` can be the same as `density_field_path`.
+    ```
+    smear_info_list = [
+        [
+            step_size,
+            n_step,
+            flow_type="Wilson",
+            wilson_flow_integrator_type="euler",
+        ],
+        ...
+    ]
+    energy_derivative_info = [
+        step_size,
+        flow_type="Wilson",
+        wilson_flow_integrator_type="euler",
+    ]
+    flow_type in [
+        None,
+        "Wilson", # c1 = 0.0
+        "Iwasaki", # c1 = -0.331
+        "DBW2", # c1 = -1.4008
+        "Shrink",
+        "Freeze",
+        "Localize",
+        c1,
+    ]
+    wilson_flow_integrator_type in [
+        None,
+        "euler",
+        "runge-kutta",
+    ]
+    ```
+    ``info_path`` can be the same as ``density_field_path``.
     """
     fname = q.get_fname()
     if smear_info_list is None:
         smear_info_list = [
-                [ 0.05, 20, 0.0, "euler", ],
-                [ 0.05, 20, 0.0, "euler", ],
-                [ 0.05, 20, 0.0, "euler", ],
-                [ 0.01, 50, -1.4008, "euler", ],
-                [ 0.01, 50, -1.4008, "euler", ],
-                [ 0.01, 50, -1.4008, "euler", ],
-                [ 0.01, 50, -1.4008, "euler", ],
-                ]
+            [0.05, 20, "Wilson", "euler", ],
+            [0.05, 20, "Wilson", "euler", ],
+            [0.05, 20, "Wilson", "euler", ],
+            [0.01, 50, "DBW2", "euler", ],
+            [0.01, 50, "DBW2", "euler", ],
+            [0.01, 50, "DBW2", "euler", ],
+            [0.01, 50, "DBW2", "euler", ],
+        ]
     if energy_derivative_info is None:
-        energy_derivative_info = [ 0.0125, 0.0, "runge-kutta", ]
+        energy_derivative_info = [0.0125, 0.0, "euler", ]
     q.displayln_info(0, f"{fname}: smear_info_list =")
     q.displayln_info(0, pformat(smear_info_list))
     geo = gf.geo
@@ -1100,59 +1266,78 @@ def smear_measure_topo(
     flow_time = 0
     topo_list = []
     energy_list = []
+
     @q.timer
-    def smear(step_size, n_step, c1=0.0, wilson_flow_integrator_type="runge-kutta"):
+    def smear(
+        step_size,
+        n_step,
+        flow_type="Wilson",
+        wilson_flow_integrator_type="euler",
+    ):
         nonlocal flow_time
         for i in range(n_step):
-            q.gf_wilson_flow_step(gf, step_size, c1=c1, wilson_flow_integrator_type=wilson_flow_integrator_type)
+            gf_flow_topo(gf, step_size, flow_type, wilson_flow_integrator_type)
             flow_time += step_size
             plaq = gf.plaq()
             energy_density_field = q.gf_energy_density_field(gf)
-            energy_density = energy_density_field.glb_sum()[:].item() / total_volume
-            energy_density_tslice = (energy_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+            energy_density = energy_density_field.glb_sum()[
+                :].item() / total_volume
+            energy_density_tslice = (energy_density_field.glb_sum_tslice()[
+                                     :].ravel() / spatial_volume).tolist()
             energy_list.append({
                 "flow_time": flow_time,
                 "plaq": plaq,
                 "energy_density": energy_density,
                 "energy_density_tslice": energy_density_tslice,
-                })
+            })
+
     @q.timer
     def measure():
         gf.show_info()
         plaq = gf.plaq()
         plaq_action_density_field = q.gf_plaq_action_density_field(gf)
-        plaq_action_density = plaq_action_density_field.glb_sum()[:].item() / total_volume
-        plaq_action_density_tslice = (plaq_action_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+        plaq_action_density = plaq_action_density_field.glb_sum()[
+            :].item() / total_volume
+        plaq_action_density_tslice = (plaq_action_density_field.glb_sum_tslice()[
+                                      :].ravel() / spatial_volume).tolist()
         energy_density_field = q.gf_energy_density_field(gf)
-        energy_density = energy_density_field.glb_sum()[:].item() / total_volume
-        energy_density_tslice = (energy_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
+        energy_density = energy_density_field.glb_sum()[
+            :].item() / total_volume
+        energy_density_tslice = (energy_density_field.glb_sum_tslice()[
+                                 :].ravel() / spatial_volume).tolist()
         topo_field_clf = q.gf_topology_field_clf(gf)
         topo_clf = topo_field_clf.glb_sum()[:].item()
         topo_clf_tslice = topo_field_clf.glb_sum_tslice()[:].ravel().tolist()
         topo_field = q.gf_topology_field(gf)
         topo = topo_field.glb_sum()[:].item()
         topo_tslice = topo_field.glb_sum_tslice()[:].ravel().tolist()
-        energy_deriv_density_field = q.gf_energy_derivative_density_field(
-                gf,
-                epsilon=energy_derivative_info[0],
-                c1=energy_derivative_info[1],
-                wilson_flow_integrator_type=energy_derivative_info[2],
-                )
-        energy_deriv = energy_deriv_density_field.glb_sum()[:].item() / total_volume
-        energy_deriv_tslice = (energy_deriv_density_field.glb_sum_tslice()[:].ravel() / spatial_volume).tolist()
-        q.displayln_info(0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; energy_deriv={energy_deriv} ; topo={topo}")
-        q.displayln_info(0, pformat(list(enumerate(zip(energy_density_tslice, energy_deriv_tslice, topo_tslice)))))
+        energy_deriv_density_field = gf_energy_derivative_density_field_topo(
+            gf,
+            epsilon=energy_derivative_info[0],
+            flow_typw=energy_derivative_info[1],
+            wilson_flow_integrator_type=energy_derivative_info[2],
+        )
+        energy_deriv = energy_deriv_density_field.glb_sum()[
+            :].item() / total_volume
+        energy_deriv_tslice = (energy_deriv_density_field.glb_sum_tslice()[
+                               :].ravel() / spatial_volume).tolist()
+        q.displayln_info(
+            0, f"{fname}: t={flow_time} ; energy_density={energy_density} ; energy_deriv={energy_deriv} ; topo={topo}")
+        q.displayln_info(0, pformat(
+            list(enumerate(zip(energy_density_tslice, energy_deriv_tslice, topo_tslice)))))
         if is_show_topo_terms:
             topo_terms = q.gf_topology_terms(gf)
-            q.displayln_info(0, f"{fname}: t={flow_time} ; topo={topo} ; {sum(topo_terms)}")
-            topo_terms_str = ',\n  '.join([ str(x) for x in topo_terms ])
+            q.displayln_info(
+                0, f"{fname}: t={flow_time} ; topo={topo} ; {sum(topo_terms)}")
+            topo_terms_str = ',\n  '.join([str(x) for x in topo_terms])
             q.displayln_info(0, f"[ {topo_terms_str},\n]")
         if density_field_path is not None:
-            # plaq_action_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/plaq_action_density.field")
-            # topo_field_clf.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo_clf.field")
-            energy_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/energy_density.field")
-            topo_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/topo.field")
-            energy_deriv_density_field.save_double(f"{density_field_path}/smear-step-{len(topo_list)}/energy_deriv_density_field.field")
+            energy_density_field.save_double(
+                f"{density_field_path}/smear-step-{len(topo_list)}/energy_density.field")
+            topo_field.save_double(
+                f"{density_field_path}/smear-step-{len(topo_list)}/topo.field")
+            energy_deriv_density_field.save_double(
+                f"{density_field_path}/smear-step-{len(topo_list)}/energy_deriv_density_field.field")
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
@@ -1166,7 +1351,8 @@ def smear_measure_topo(
             "topo_clf_tslice": topo_clf_tslice,
             "plaq_action_density": plaq_action_density,
             "plaq_action_density_tslice": plaq_action_density_tslice,
-            })
+        })
+
     measure()
     for si in smear_info_list:
         smear(*si)
@@ -1177,4 +1363,4 @@ def smear_measure_topo(
     return topo_list, energy_list,
 
 
-### --------------------------------------
+# --------------------------------------

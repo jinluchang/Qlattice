@@ -162,6 +162,7 @@ topo_list, energy_list, = q.smear_measure_topo(
         gf,
         is_show_topo_terms=True,
         density_field_path=density_field_path,
+        energy_derivative_info = [0.0125, 0.0, "runge-kutta", ]
         )
 
 q.save_pickle_obj(topo_list, f"{density_field_path}/info.pickle")
