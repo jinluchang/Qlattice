@@ -32,12 +32,12 @@ Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore en
 
 We can also choose the function $f$ that shrinks large instanton but prevent small instanton from tunnelling:
 $$
-\frac{d}{dp}f_\mathrm{Shrink}(p)
+\frac{d}{dp}f_\mathrm{Localize}(p)
 =
 \frac{\epsilon}{1 - p + \epsilon} + b (1-p)
 $$
 with a possible choice of parameters be $\epsilon = 0.005$ and $b=100$.
-Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore enhance topological charge tunnelling during flow.
+Note that $f_\mathrm{Localize}$ tends to shrink the size of large instanton but prevent tunnelling of small instantons during flow.
 
 """
 
@@ -90,7 +90,7 @@ def gf_flow_topo(gf, step_size, tag=None):
     """
     Modify ``gf`` in place.
     Default Wilson flow with Euler integrator.
-    ``tag`` in ``[ None, "Shrink", "Freeze", ]``
+    ``tag`` in ``[ None, "Shrink", "Freeze", "Localize", ]``
     """
     geo = gf.geo
     plaq_factor = q.FieldRealD(geo, 6)
