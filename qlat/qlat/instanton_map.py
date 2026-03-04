@@ -30,6 +30,15 @@ $$
 with a possible choice of parameters be $\epsilon = 0.005$ and $b=0.5$.
 Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore enhance topological charge tunnelling during flow.
 
+We can also choose the function $f$ that shrinks large instanton but prevent small instanton from tunnelling:
+$$
+\frac{d}{dp}f_\mathrm{Shrink}(p)
+=
+\frac{\epsilon}{1 - p + \epsilon} + b (1-p)
+$$
+with a possible choice of parameters be $\epsilon = 0.005$ and $b=100$.
+Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore enhance topological charge tunnelling during flow.
+
 """
 
 ### --------------------------------------
@@ -79,9 +88,9 @@ class q:
 @q.timer
 def gf_flow_topo(gf, step_size, tag=None):
     """
-    Modify `gf` in place.
+    Modify ``gf`` in place.
     Default Wilson flow with Euler integrator.
-    tag in [ None, "Shrink", "Freeze", ]
+    ``tag`` in ``[ None, "Shrink", "Freeze", ]``
     """
     geo = gf.geo
     plaq_factor = q.FieldRealD(geo, 6)
@@ -96,11 +105,20 @@ def gf_flow_topo(gf, step_size, tag=None):
             base = 0.5
             norm = eps / (1 - plaq_max + eps) + base
             plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + base
-            plaq_factor[:] *= 1 / norm
+            plaq_factor *= 1 / norm
         elif tag == "Freeze":
             norm = 1 - plaq_min
             plaq_factor[:] = 1 - f_plaq[:]
-            plaq_factor[:] *= 1 / norm
+            plaq_factor *= 1 / norm
+        elif tag == "Localize":
+            eps = 0.005
+            base = 100
+            norm = max(
+                eps / (1 - plaq_max + eps) + base * (1 - plaq_max),
+                eps / (1 - plaq_min + eps) + base * (1 - plaq_min),
+            )
+            plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + base * (1 - f_plaq[:])
+            plaq_factor *= 1 / norm
         else:
             fname = q.get_fname()
             raise Exception(f"{fname}: tag={tag}")
@@ -779,6 +797,8 @@ def compute_inst_map(
     if plaq_min_threshold is None:
         # ADJUST ME
         # https://inspirehep.net/literature/166110
+        # Tr(1 - U) < 0.03 for SU(2) field
+        # suggest 1 - Tr(U)/3 > 0.99 for SU(3) field
         plaq_min_threshold = 0.97**(1/16)
         # plaq_min_threshold = 0.99
     q.displayln_info(0, f"{fname}: plaq_min_threshold={plaq_min_threshold}")

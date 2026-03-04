@@ -55,9 +55,9 @@ def gf_energy_density_dir_field(GaugeField gf):
 def gf_plaq_flow_force(GaugeField gf, FieldRealD plaq_factor):
     """
     Compute force with plaq dependent beta factor (relative to standard
-    `set_wilson_flow_z`).
-    `plaq_factor.multiplicity == 6`.
-    Check `gf_plaq_field` for the order of plaq.
+    ``set_wilson_flow_z``).
+    ``plaq_factor.multiplicity == 6``.
+    Check ``gf_plaq_field`` for the order of plaq.
     """
     cdef GaugeMomentum gm_force = GaugeMomentum()
     cc.set_plaq_flow_z(gm_force.xxx().val(), gf.xxx().val(), plaq_factor.xx)

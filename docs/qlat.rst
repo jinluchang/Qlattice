@@ -1,5 +1,5 @@
 qlat
-----
+====
 
 .. automodule:: qlat
    :members:
@@ -9,18 +9,28 @@ qlat
  
    Geometry
 
-   Field
+   FieldSelection
+   PointsSelection
+
    FieldBase
+   FieldRealD
+
+   SelectedFieldBase
+   SelectedFieldRealD
+
+   SelectedPointsBase
+   SelectedPointsRealD
+
+Utilities
+---------
+
+.. autosummary::
+   :toctree: generated
 
    merge_fields_ms
    mk_merged_fields_ms
 
-   FieldSelection
-   SelectedField
-   SelectedFieldBase
-
-   PointsSelection
-   SelectedPoints
-   SelectedPointsBase
-
    get_mpi_chunk
+
+   get_plaq_field
+   gf_plaq_flow_force
