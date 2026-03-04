@@ -183,7 +183,6 @@ __all__ += [
         'gf_topology',
         'gf_topology_terms_field',
         'gf_topology_terms',
-        'smear_measure_topo',
         ]
 
 __all__ += [
