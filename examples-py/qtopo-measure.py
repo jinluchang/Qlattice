@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-import numpy as np
 import qlat as q
+import numpy as np
+from pprint import pformat
 
 from qlat_scripts.v1 import (
     set_param,
@@ -15,22 +16,33 @@ from qlat_scripts.v1 import (
 )
 
 usage = f"""
+Topological charge measurement based on Wilson flow with Qlattice
+by Luchang Jin
+2026/03/04
+{""}
 {__file__} --usage
 # Show this message and exit.
 {__file__} --test
 # Generate some test data and then perform the topo flow.
 {""}
-{__file__} --gf PATH_GAUGE_FIELD --out INST_MAP.pickle
-{__file__} --gf PATH_GAUGE_FIELD_1 --gf PATH_GAUGE_FIELD_2 --out INST_MAP_1.pickle --out INST_MAP_2.pickle
-...
-# E.g.: {__file__} --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --out results/16IH2/instanton-map/traj-1000.pickle
-# E.g.: {__file__} --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1000 --gf qcddata-1/16IH2/configs/ckpoint_lat.IEEE64BIG.1010 --out results/16IH2/instanton-map/traj-1000.pickle --out results/16IH2/instanton-map/traj-1010.pickle
+{__file__} --gf PATH_GAUGE_FIELD --out PATH_OUTPUT --step_size 0.05 --n_step 80 --flow_type Wilson
+{__file__} --gf PATH_GAUGE_FIELD --out PATH_OUTPUT --out_df PATH_DENSITY_FIELD_OUTPUT --step_size 0.05 --n_step 80 --flow_type Wilson --step_size 0.05 --n_step 80 --flow_type Localize
+# Multiple input and output paths can be specified (they will be processed the same way).
+# Default PATH_DENSITY_FIELD_OUTPUT is PATH_OUTPUT
 # The program does not overwrite output files. If the output file already exist, the program will simply display that output file content and skip that input and output file pair and continue.
-{""}
-{__file__} --info INST_MAP_1.pickle INST_MAP_2.pickle ...
-# E.g.: {__file__} --info results/16IH2/instanton-map/traj-1000.pickle results/16IH2/instanton-map/traj-1010.pickle
-# Display these INST_MAP file contents.
 """
+
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 3],
+        [1, 1, 1, 4],
+        [1, 1, 1, 6],
+        [1, 1, 1, 8],
+        [1, 2, 2, 4],
+        [2, 2, 2, 4],
+        [2, 2, 2, 4],
+        ]
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
@@ -46,58 +58,90 @@ def gen_test_data():
             job_tag_traj_list.append((job_tag, traj,))
     fn_gf_list = []
     fn_out_list = []
+    fn_out_df_list = []
     for job_tag, traj in job_tag_traj_list:
         traj_gf = traj
         get_gf = run_gf(job_tag, traj_gf)
         fn_gf = get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}")
         assert fn_gf is not None
-        fn_out = get_save_path(f"{job_tag}/instanton-map/traj-{traj_gf}.pickle")
+        fn_out = get_save_path(f"{job_tag}/flow-topo-info/traj-{traj_gf}")
+        fn_out_df = get_save_path(f"{job_tag}/flow-density-field/traj-{traj_gf}")
         fn_gf_list.append(fn_gf)
         fn_out_list.append(fn_out)
+        fn_out_df_list.append(fn_out_df)
     argv = []
     for fn in fn_gf_list:
         argv += [ "--gf", fn, ]
     for fn in fn_out_list:
         argv += [ "--out", fn, ]
-    argv += [ "--info", ]
-    for fn in fn_out_list:
-        argv += [ fn, ]
+    for fn in fn_out_df_list:
+        argv += [ "--out_df", fn, ]
+    argv += [
+        "--step_size", "0.05",
+        "--n_step", "80",
+        "--flow_type", "Wilson",
+        "--step_size", "0.05",
+        "--n_step", "80",
+        "--flow_type", "Localize",
+        "--step_size", "0.05",
+        "--n_step", "80",
+        "--flow_type", "Localize",
+    ]
     return argv
 
 @q.timer(is_timer_fork=True)
-def run_inst_map(fn_out, fn_gf=None):
+def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
     fname = q.get_fname()
-    if not fn_out.endswith(".pickle"):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' does not endswith '.pickle'. Skip this file.")
-        return
-    if fn_gf is None:
-        if not q.does_file_exist_qar_sync_node(fn_out):
-            return
-        q.json_results_append(f"{fname}: Start show inst_map_obj fn='{fn_out}'")
-        inst_map_obj = q.load_pickle_obj(fn_out)
-        q.displayln_info_inst_map_obj(inst_map_obj)
-        q.json_results_append(f"{fname}: End show inst_map_obj fn='{fn_out}'")
-        return
     if q.does_file_exist_qar_sync_node(fn_out):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Simply display its contents.")
-        q.json_results_append(f"{fname}: Start show inst_map_obj fn='{fn_out}'")
-        inst_map_obj = q.load_pickle_obj(fn_out)
-        q.displayln_info_inst_map_obj(inst_map_obj)
-        q.json_results_append(f"{fname}: End show inst_map_obj fn='{fn_out}'")
+        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip.")
+        return
+    if q.does_file_exist_qar_sync_node(fn_out_df):
+        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out_df}' for '{fn_gf}' already exist. Skip.")
         return
     if not q.does_file_exist_qar_sync_node(fn_gf):
         q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
         return
-    q.json_results_append(f"{fname}: Start compute inst_map_obj fn='{fn_out}' for '{fn_gf}'")
+    q.json_results_append(f"{fname}: Start compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'")
     gf = q.GaugeField()
     gf.load(fn_gf)
-    inst_map_obj = q.compute_inst_map(gf)
-    q.save_pickle_obj(inst_map_obj, fn_out)
-    q.json_results_append(f"{fname}: End compute inst_map_obj fn='{fn_out}' for '{fn_gf}'")
-    q.json_results_append(f"{fname}: Start show inst_map_obj fn='{fn_out}'")
-    inst_map_obj = q.load_pickle_obj(fn_out)
-    q.displayln_info_inst_map_obj(inst_map_obj)
-    q.json_results_append(f"{fname}: End show inst_map_obj fn='{fn_out}'")
+    topo_list, energy_list, = q.smear_measure_topo(
+        gf,
+        smear_info_list=smear_info_list,
+        info_path=fn_out,
+        density_field_path=fn_out_df,
+        energy_derivative_info=None,
+        is_show_topo_terms=False,
+    )
+    for name in [
+        "flow_time",
+        "plaq",
+        "energy_density",
+        "energy_deriv",
+        "topo",
+        "topo_tslice",
+        "topo_clf",
+        "plaq_action_density",
+    ]:
+        q.json_results_append(
+            f"{fname}: {name} in topo_list",
+            np.array([d[name] for d in topo_list]),
+            1e-8,
+        )
+    for name in [
+        "flow_time",
+        "plaq",
+        "energy_density",
+        "energy_density_tslice",
+    ]:
+        q.json_results_append(
+            f"{fname}: {name} in energy_list",
+            q.get_data_sig_arr(
+                np.array([d[name] for d in energy_list]),
+                q.RngState(),
+                3,
+            ),
+            1e-8)
+    q.json_results_append(f"{fname}: End compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'")
 
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
@@ -105,19 +149,37 @@ def show_usage():
 @q.timer(is_timer_fork=True)
 def run():
     if is_test():
-        q.displayln_info(f"Will now generate test data and run instanton map.")
+        q.displayln_info(f"Will now generate test data and run topo measure.")
         argv = gen_test_data()
     else:
         argv = sys.argv
     fn_gf_list = q.get_arg_list("--gf", argv=argv)
     fn_out_list = q.get_arg_list("--out", argv=argv)
-    fn_info_list = q.get_all_arg_list("--info", argv=argv)
+    fn_out_df_list = q.get_arg_list("--out_df", argv=argv)
     assert len(fn_gf_list) == len(fn_out_list)
-    for fn_gf, fn_out in zip(fn_gf_list, fn_out_list):
-        run_inst_map(fn_out, fn_gf)
-    if fn_info_list is not None:
-        for fn_info in fn_info_list:
-            run_inst_map(fn_info)
+    if len(fn_out_df_list) == 0:
+        fn_out_df_list = fn_out_list
+    assert len(fn_out_df_list) == len(fn_out_list)
+    p_step_size_list = q.get_arg_list("--step_size", argv=argv)
+    p_n_step_list = q.get_arg_list("--n_step", argv=argv)
+    flow_type_list = q.get_arg_list("--flow_type", argv=argv)
+    assert len(p_step_size_list) == len(flow_type_list)
+    assert len(p_step_size_list) == len(p_n_step_list)
+    smear_info_list = []
+    for step_size, n_step, flow_type in zip(p_step_size_list, p_n_step_list, flow_type_list):
+        smear_info = [
+            float(step_size),
+            int(n_step),
+            flow_type,
+        ]
+        smear_info_list.append(smear_info)
+    for fn_gf, fn_out, fn_out_df in zip(fn_gf_list, fn_out_list, fn_out_df_list):
+        run_topo_measure(
+            fn_gf,
+            fn_out,
+            fn_out_df,
+            smear_info_list=smear_info_list,
+        )
 
 # --------------------------------------------
 
@@ -173,7 +235,7 @@ if __name__ == "__main__":
     if is_show_usage:
         show_usage()
         exit()
-    q.begin_with_mpi()
+    q.begin_with_mpi(size_node_list)
     run()
     q.timer_display()
     if is_test():

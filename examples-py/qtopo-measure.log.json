@@ -1,0 +1,622 @@
+[
+ [
+  "{\"traj_list\": [1000, 1100], \"total_site\": [4, 4, 4, 8], \"mk_sample_gauge_field\": {\"rand_n_step\": 20, \"rand_sigma\": 0.25, \"flow_n_step\": 4, \"hmc_n_traj\": 5, \"hmc_beta\": 3.0}}"
+ ],
+ [
+  "{\"traj_list\": [1000], \"total_site\": [8, 8, 8, 16], \"mk_sample_gauge_field\": {\"rand_n_step\": 10, \"rand_sigma\": 0.25, \"flow_n_step\": 8, \"hmc_n_traj\": 5, \"hmc_beta\": 5.0}}"
+ ],
+ [
+  "run_topo_measure: Start compute topo_measure out='results/test-4nt8-checker/flow-topo-info/traj-1000' (out_df='results/test-4nt8-checker/flow-density-field/traj-1000') for 'results/test-4nt8-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "run_topo_measure: flow_time in topo_list",
+  {
+   "value": [
+    0.0,
+    3.999999999999994,
+    7.99999999999998,
+    12.000000000000036
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq in topo_list",
+  {
+   "value": [
+    0.20807790817294344,
+    0.9820242521743846,
+    0.9877012245511829,
+    0.9914771703116598
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density in topo_list",
+  {
+   "value": [
+    2.406237599923229,
+    0.45891587552679464,
+    0.35609685110144507,
+    0.25699195373052247
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_deriv in topo_list",
+  {
+   "value": [
+    3.777628665158196,
+    -0.18679789353499401,
+    -0.2048470022138807,
+    -0.10367488621192801
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo in topo_list",
+  {
+   "value": [
+    0.617165386521675,
+    -1.128932696681396,
+    -0.963068681831049,
+    -0.9845876945266926
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo_tslice in topo_list",
+  {
+   "value": [
+    [
+     0.2830675198099608,
+     0.05235471045686491,
+     -0.005682733458101847,
+     -0.03261555098110814,
+     0.1448828737120858,
+     0.08629846063972872,
+     -0.08159087993026931,
+     0.17045098627251432
+    ],
+    [
+     -0.12357426440867086,
+     0.02216379144517118,
+     0.16650891929650535,
+     0.00959530161266748,
+     -0.30450823785796294,
+     -0.24127013686214155,
+     -0.29518026079413007,
+     -0.3626678091128349
+    ],
+    [
+     -0.08063080693432328,
+     0.03195133757275404,
+     0.08964333698394487,
+     -0.0014494211054514013,
+     -0.19017618939044764,
+     -0.2537641326554629,
+     -0.3170399927010141,
+     -0.24160281360104888
+    ],
+    [
+     -0.07835072346910231,
+     0.0039960647137679646,
+     0.013523508715778286,
+     -0.030919291611188844,
+     -0.10328765827668855,
+     -0.2109207576351437,
+     -0.33450401779233735,
+     -0.24412481917177792
+    ]
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo_clf in topo_list",
+  {
+   "value": [
+    0.33470602976914643,
+    -0.7779857514575342,
+    -0.7120747745525675,
+    -0.7621538222975096
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq_action_density in topo_list",
+  {
+   "value": [
+    4.75153255096234,
+    0.10785448695369207,
+    0.07379265269290272,
+    0.05113697813004078
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: flow_time in energy_list",
+  {
+   "value": [
+    93.63070256949712,
+    -66.21330562005217,
+    34.22758412952445
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq in energy_list",
+  {
+   "value": [
+    16.078063139987343,
+    -10.458778445166669,
+    0.07694384033884427
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density in energy_list",
+  {
+   "value": [
+    13.438034485015471,
+    -5.230294430416626,
+    -5.278747110929526
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density_tslice in energy_list",
+  {
+   "value": [
+    57.30887606982701,
+    -27.160619995058095,
+    -31.55006957020135
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: End compute topo_measure out='results/test-4nt8-checker/flow-topo-info/traj-1000' (out_df='results/test-4nt8-checker/flow-density-field/traj-1000') for 'results/test-4nt8-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "run_topo_measure: Start compute topo_measure out='results/test-4nt8-checker/flow-topo-info/traj-1100' (out_df='results/test-4nt8-checker/flow-density-field/traj-1100') for 'results/test-4nt8-checker/configs/ckpoint_lat.1100'"
+ ],
+ [
+  "run_topo_measure: flow_time in topo_list",
+  {
+   "value": [
+    0.0,
+    3.999999999999994,
+    7.99999999999998,
+    12.000000000000036
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq in topo_list",
+  {
+   "value": [
+    0.20234638138722477,
+    0.984987032099877,
+    0.9898173871996365,
+    0.9930288649523054
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density in topo_list",
+  {
+   "value": [
+    2.455676161028067,
+    0.400375741748855,
+    0.3085377362373009,
+    0.21606504590983627
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_deriv in topo_list",
+  {
+   "value": [
+    4.261946461379269,
+    -0.12589355421069515,
+    -0.09789048532080408,
+    -0.05672314523425641
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo in topo_list",
+  {
+   "value": [
+    -0.2640052041193305,
+    -0.7643595821319504,
+    -0.990247293875356,
+    -0.9960263826257918
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo_tslice in topo_list",
+  {
+   "value": [
+    [
+     0.11472168810930305,
+     -0.08000340694118943,
+     -0.05813756015216663,
+     -0.17646258597384137,
+     -0.09556422531749699,
+     0.03037315091763191,
+     0.030034156655586397,
+     -0.028966421417157415
+    ],
+    [
+     -0.14360736006755762,
+     -0.05221976304099135,
+     -0.056887141091035744,
+     -0.05357883604140079,
+     -0.05726003707813628,
+     -0.06287976539474421,
+     -0.1433482243742228,
+     -0.19457845504386154
+    ],
+    [
+     -0.10065557574203605,
+     -0.07780148668570974,
+     -0.14347880579801542,
+     -0.21649774350510598,
+     -0.18356118313497327,
+     -0.08902378559762741,
+     -0.06300790942357141,
+     -0.1162208039883166
+    ],
+    [
+     -0.038448427654428276,
+     -0.04672131867130949,
+     -0.10108847566764045,
+     -0.21663477022361943,
+     -0.30912934099561384,
+     -0.18850061075798133,
+     -0.05802907117622638,
+     -0.03747436747897236
+    ]
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo_clf in topo_list",
+  {
+   "value": [
+    -0.14756414066891932,
+    -0.5786484595960966,
+    -0.7820865473818852,
+    -0.8060714754124598
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq_action_density in topo_list",
+  {
+   "value": [
+    4.785921711676652,
+    0.0900778074007383,
+    0.061095676802180865,
+    0.041826810286168165
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: flow_time in energy_list",
+  {
+   "value": [
+    93.63070256949712,
+    -66.21330562005217,
+    34.22758412952445
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq in energy_list",
+  {
+   "value": [
+    16.081425421509028,
+    -10.453257887390867,
+    0.13180804802954782
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density in energy_list",
+  {
+   "value": [
+    12.84888023661891,
+    -4.845404029785705,
+    -5.7314016090669115
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density_tslice in energy_list",
+  {
+   "value": [
+    58.703516834205544,
+    -28.638483636820695,
+    -31.525944119743656
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: End compute topo_measure out='results/test-4nt8-checker/flow-topo-info/traj-1100' (out_df='results/test-4nt8-checker/flow-density-field/traj-1100') for 'results/test-4nt8-checker/configs/ckpoint_lat.1100'"
+ ],
+ [
+  "run_topo_measure: Start compute topo_measure out='results/test-8nt16-checker/flow-topo-info/traj-1000' (out_df='results/test-8nt16-checker/flow-density-field/traj-1000') for 'results/test-8nt16-checker/configs/ckpoint_lat.1000'"
+ ],
+ [
+  "run_topo_measure: flow_time in topo_list",
+  {
+   "value": [
+    0.0,
+    3.999999999999994,
+    7.99999999999998,
+    12.000000000000036
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq in topo_list",
+  {
+   "value": [
+    0.4338324034707758,
+    0.9916605959931003,
+    0.9931916662464501,
+    0.9954912082416467
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density in topo_list",
+  {
+   "value": [
+    2.4874713863708138,
+    0.24881804062010182,
+    0.211075419566567,
+    0.1450456508261422
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_deriv in topo_list",
+  {
+   "value": [
+    1.416550504564364,
+    -0.08200602911493121,
+    -0.07393983740014673,
+    -0.03357448156479606
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo in topo_list",
+  {
+   "value": [
+    0.0686228691331085,
+    -1.9873907074284252,
+    -1.9984741948353606,
+    -2.002659740153705
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo_tslice in topo_list",
+  {
+   "value": [
+    [
+     0.24876372267756927,
+     -0.4183367209565339,
+     -0.2620788003054178,
+     0.11453519270872192,
+     0.19370605046750494,
+     -0.09936077126693764,
+     -0.18963894139246057,
+     0.10848508281711124,
+     0.2982803693294977,
+     0.12608485899229768,
+     -0.22017714444242206,
+     0.02920336823767684,
+     0.0020725003994391767,
+     0.1258632517386024,
+     0.2490339036653974,
+     -0.23781305353693627
+    ],
+    [
+     -1.1506819283740162,
+     -0.9267686622943622,
+     -0.7882626177377602,
+     -0.9092892082405226,
+     -0.834514379185998,
+     0.12948017363741043,
+     0.7232101013113988,
+     0.8705528532925895,
+     0.7193063425598873,
+     0.43668269439289414,
+     0.3827064113564663,
+     0.21153190791775447,
+     0.29827580681255667,
+     0.16343632166846297,
+     -0.3912671823481831,
+     -0.921789342197004
+    ],
+    [
+     -1.1309867423521025,
+     -1.0090019795240426,
+     -0.8386243829736826,
+     -0.8379187564311312,
+     -0.6123583408043366,
+     0.043198233216674126,
+     0.6209749986203748,
+     0.8096414126543813,
+     0.7347837661150909,
+     0.5591121889361342,
+     0.41131028999443103,
+     0.18906137490869793,
+     0.1884571757280204,
+     0.13660617095745592,
+     -0.3596347730079,
+     -0.9030948308734322
+    ],
+    [
+     -1.0118759679787266,
+     -0.9843959317291925,
+     -0.8102423213495709,
+     -0.6554147958819394,
+     -0.4613591997339639,
+     -0.043232218814161526,
+     0.44513543033968256,
+     0.7237470164974359,
+     0.7358851133839488,
+     0.5792586007077286,
+     0.37750416947126403,
+     0.15351528302861467,
+     0.06520610450045382,
+     -0.0022898643086901264,
+     -0.33657254140737175,
+     -0.7775286168792183
+    ]
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: topo_clf in topo_list",
+  {
+   "value": [
+    -0.00160749705289992,
+    -1.660705669383015,
+    -1.712997804531033,
+    -1.7264712237793454
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq_action_density in topo_list",
+  {
+   "value": [
+    3.397005579175344,
+    0.050036424041395876,
+    0.04085000252129478,
+    0.027052750550114885
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: flow_time in energy_list",
+  {
+   "value": [
+    93.63070256949712,
+    -66.21330562005217,
+    34.22758412952445
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: plaq in energy_list",
+  {
+   "value": [
+    16.62171989652318,
+    -10.53204648996358,
+    -0.09301949117455566
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density in energy_list",
+  {
+   "value": [
+    8.870504544890512,
+    -3.061000299575069,
+    -2.930104711829976
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: energy_density_tslice in energy_list",
+  {
+   "value": [
+    56.87565276495974,
+    -26.548347990094776,
+    -35.1472130683007
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-08
+ ],
+ [
+  "run_topo_measure: End compute topo_measure out='results/test-8nt16-checker/flow-topo-info/traj-1000' (out_df='results/test-8nt16-checker/flow-density-field/traj-1000') for 'results/test-8nt16-checker/configs/ckpoint_lat.1000'"
+ ]
+]

@@ -7,6 +7,7 @@ tests = \
 		qconvert-psel-txt-to-lati.log \
 		qinst-map.log \
 		qflow-scale.log \
+		qtopo-measure.log \
 		auto-cexprs.log \
 		auto-cexprs-more.log \
 		auto-cexprs-kpipi.log \
