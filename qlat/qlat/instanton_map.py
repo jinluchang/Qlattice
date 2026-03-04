@@ -34,9 +34,9 @@ We can also choose the function $f$ that shrinks large instanton but prevent sma
 $$
 \frac{d}{dp}f_\mathrm{Localize}(p)
 =
-\frac{\epsilon}{1 - p + \epsilon} + b (1-p)
+\frac{\epsilon}{1 - p + \epsilon} + (b (1 - p - 2\epsilon))^2
 $$
-with a possible choice of parameters be $\epsilon = 0.005$ and $b=50$.
+with a possible choice of parameters be $\epsilon = 0.005$ and $b=70$.
 Note that $f_\mathrm{Localize}$ tends to shrink the size of large instanton but prevent tunnelling of small instantons during flow.
 
 """
@@ -166,13 +166,13 @@ def gf_flow_topo(
             plaq_factor[:] = 1 - f_plaq[:]
         elif flow_type == "Localize":
             eps = 0.005
-            base = 50
+            base = 70
             norm = max(
-                eps / (1 - plaq_max + eps) + base * (1 - plaq_max),
-                eps / (1 - plaq_min + eps) + base * (1 - plaq_min),
+                eps / (1 - plaq_max + eps) + (base * (1 - plaq_max - 2 * eps))**2,
+                eps / (1 - plaq_min + eps) + (base * (1 - plaq_min - 2 * eps))**2,
             )
             plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + \
-                base * (1 - f_plaq[:])
+                (base * (1 - f_plaq[:] - 2 * eps))**2
         else:
             raise Exception(f"{fname}: {flow_type=}")
         gm_force = q.gf_plaq_flow_force(gf, plaq_factor)
