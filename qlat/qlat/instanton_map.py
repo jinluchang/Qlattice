@@ -36,7 +36,7 @@ $$
 =
 \frac{\epsilon}{1 - p + \epsilon} + b (1-p)
 $$
-with a possible choice of parameters be $\epsilon = 0.005$ and $b=100$.
+with a possible choice of parameters be $\epsilon = 0.005$ and $b=50$.
 Note that $f_\mathrm{Localize}$ tends to shrink the size of large instanton but prevent tunnelling of small instantons during flow.
 
 """
@@ -61,6 +61,7 @@ class q:
         is_test,
         json_results_append,
         save_pickle_obj,
+        filter_np_results,
     )
     from qlat.c import (
         Geometry,
@@ -102,6 +103,7 @@ def gf_flow_topo(
     wilson_flow_integrator_type=None,
 ):
     """
+    return step_size / norm
     Modify ``gf`` in place.
     Default Wilson flow with Euler integrator.
     ```
@@ -131,6 +133,7 @@ def gf_flow_topo(
         flow_type = "Wilson"
     if wilson_flow_integrator_type is None:
         wilson_flow_integrator_type = "euler"
+    norm = 1
     if isinstance(flow_type, (int, float,)):
         c1 = flow_type
         q.gf_wilson_flow_step(
@@ -151,32 +154,30 @@ def gf_flow_topo(
     else:
         plaq_factor = q.FieldRealD(geo, 6)
         f_plaq = q.gf_plaq_field(gf)
-        plaq_min = np.min(f_plaq.glb_min()[:])
-        plaq_max = np.max(f_plaq.glb_max()[:])
+        plaq_min = np.min(f_plaq.glb_min()[:]).item()
+        plaq_max = np.max(f_plaq.glb_max()[:]).item()
         if flow_type == "Shrink":
             eps = 0.005
             base = 0.5
             norm = eps / (1 - plaq_max + eps) + base
             plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + base
-            plaq_factor *= 1 / norm
         elif flow_type == "Freeze":
             norm = 1 - plaq_min
             plaq_factor[:] = 1 - f_plaq[:]
-            plaq_factor *= 1 / norm
         elif flow_type == "Localize":
             eps = 0.005
-            base = 200
+            base = 50
             norm = max(
                 eps / (1 - plaq_max + eps) + base * (1 - plaq_max),
                 eps / (1 - plaq_min + eps) + base * (1 - plaq_min),
             )
             plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + \
                 base * (1 - f_plaq[:])
-            plaq_factor *= 1 / norm
         else:
             raise Exception(f"{fname}: {flow_type=}")
         gm_force = q.gf_plaq_flow_force(gf, plaq_factor)
-        q.gf_evolve(gf, gm_force, step_size)
+        q.gf_evolve(gf, gm_force, step_size / norm)
+    return q.filter_np_results(step_size / norm)
 
 
 @q.timer
@@ -210,6 +211,7 @@ def gf_energy_derivative_density_field_topo(
     fd1 -= fd2
     fd1 *= 1 / (2 * epsilon)
     return fd1
+
 
 @q.timer
 def mk_plaq_xg_arr(geo):
@@ -1276,9 +1278,11 @@ def smear_measure_topo(
     ):
         nonlocal flow_time
         for i in range(n_step):
-            gf_flow_topo(gf, step_size, flow_type, wilson_flow_integrator_type)
-            flow_time += step_size
+            flow_time += gf_flow_topo(gf, step_size, flow_type, wilson_flow_integrator_type)
             plaq = gf.plaq()
+            f_plaq = q.gf_plaq_field(gf)
+            plaq_min = np.min(f_plaq.glb_min()[:]).item()
+            plaq_max = np.max(f_plaq.glb_max()[:]).item()
             energy_density_field = q.gf_energy_density_field(gf)
             energy_density = energy_density_field.glb_sum()[
                 :].item() / total_volume
@@ -1287,6 +1291,8 @@ def smear_measure_topo(
             energy_list.append({
                 "flow_time": flow_time,
                 "plaq": plaq,
+                "plaq_min": plaq_min,
+                "plaq_max": plaq_max,
                 "energy_density": energy_density,
                 "energy_density_tslice": energy_density_tslice,
             })
@@ -1295,6 +1301,9 @@ def smear_measure_topo(
     def measure():
         gf.show_info()
         plaq = gf.plaq()
+        f_plaq = q.gf_plaq_field(gf)
+        plaq_min = np.min(f_plaq.glb_min()[:]).item()
+        plaq_max = np.max(f_plaq.glb_max()[:]).item()
         plaq_action_density_field = q.gf_plaq_action_density_field(gf)
         plaq_action_density = plaq_action_density_field.glb_sum()[
             :].item() / total_volume
@@ -1311,6 +1320,10 @@ def smear_measure_topo(
         topo_field = q.gf_topology_field(gf)
         topo = topo_field.glb_sum()[:].item()
         topo_tslice = topo_field.glb_sum_tslice()[:].ravel().tolist()
+        abs_topo_field = topo_field.copy()
+        abs_topo_field[:] = np.abs(topo_field[:])
+        abs_topo = abs_topo_field.glb_sum()[:].item()
+        abs_topo_tslice = abs_topo_field.glb_sum_tslice()[:].ravel().tolist()
         energy_deriv_density_field = gf_energy_derivative_density_field_topo(
             gf,
             epsilon=energy_derivative_info[0],
@@ -1341,6 +1354,8 @@ def smear_measure_topo(
         topo_list.append({
             "flow_time": flow_time,
             "plaq": plaq,
+            "plaq_min": plaq_min,
+            "plaq_max": plaq_max,
             "energy_density": energy_density,
             "energy_density_tslice": energy_density_tslice,
             "energy_deriv": energy_deriv,
@@ -1349,6 +1364,8 @@ def smear_measure_topo(
             "topo_tslice": topo_tslice,
             "topo_clf": topo_clf,
             "topo_clf_tslice": topo_clf_tslice,
+            "abs_topo": abs_topo,
+            "abs_topo_tslice": abs_topo_tslice,
             "plaq_action_density": plaq_action_density,
             "plaq_action_density_tslice": plaq_action_density_tslice,
         })

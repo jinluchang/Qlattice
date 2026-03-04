@@ -26,7 +26,15 @@ by Luchang Jin
 # Generate some test data and then perform the topo flow.
 {""}
 {__file__} --gf PATH_GAUGE_FIELD --out PATH_OUTPUT --step_size 0.05 --n_step 80 --flow_type Wilson
-{__file__} --gf PATH_GAUGE_FIELD --out PATH_OUTPUT --out_df PATH_DENSITY_FIELD_OUTPUT --step_size 0.05 --n_step 80 --flow_type Wilson --step_size 0.05 --n_step 80 --flow_type Localize
+{__file__} \
+    --step_size 0.05 --n_step 80 --flow_type Wilson --integrator_type euler \
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
+    --gf PATH_GAUGE_FIELD \
+    --out PATH_OUTPUT \
+    --out_df PATH_DENSITY_FIELD_OUTPUT
 # Multiple input and output paths can be specified (they will be processed the same way).
 # Default PATH_DENSITY_FIELD_OUTPUT is PATH_OUTPUT
 # The program does not overwrite output files. If the output file already exist, the program will simply display that output file content and skip that input and output file pair and continue.
@@ -80,12 +88,15 @@ def gen_test_data():
         "--step_size", "0.05",
         "--n_step", "80",
         "--flow_type", "Wilson",
-        "--step_size", "0.05",
-        "--n_step", "80",
+        "--integrator_type", "euler",
+        "--step_size", "0.1",
+        "--n_step", "100",
         "--flow_type", "Localize",
-        "--step_size", "0.05",
-        "--n_step", "80",
+        "--integrator_type", "euler",
+        "--step_size", "0.1",
+        "--n_step", "100",
         "--flow_type", "Localize",
+        "--integrator_type", "euler",
     ]
     return argv
 
@@ -115,12 +126,15 @@ def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
     for name in [
         "flow_time",
         "plaq",
-        "energy_density",
-        "energy_deriv",
+        "plaq_min",
+        "plaq_max",
+        "abs_topo",
         "topo",
         "topo_tslice",
         "topo_clf",
         "plaq_action_density",
+        "energy_density",
+        "energy_deriv",
     ]:
         q.json_results_append(
             f"{fname}: {name} in topo_list",
@@ -130,6 +144,8 @@ def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
     for name in [
         "flow_time",
         "plaq",
+        "plaq_min",
+        "plaq_max",
         "energy_density",
         "energy_density_tslice",
     ]:
@@ -163,14 +179,17 @@ def run():
     p_step_size_list = q.get_arg_list("--step_size", argv=argv)
     p_n_step_list = q.get_arg_list("--n_step", argv=argv)
     flow_type_list = q.get_arg_list("--flow_type", argv=argv)
-    assert len(p_step_size_list) == len(flow_type_list)
+    integrator_type_list = q.get_arg_list("--integrator_type", argv=argv)
     assert len(p_step_size_list) == len(p_n_step_list)
+    assert len(p_step_size_list) == len(flow_type_list)
+    assert len(p_step_size_list) == len(integrator_type_list)
     smear_info_list = []
-    for step_size, n_step, flow_type in zip(p_step_size_list, p_n_step_list, flow_type_list):
+    for step_size, n_step, flow_type, integrator_type in zip(p_step_size_list, p_n_step_list, flow_type_list, integrator_type_list):
         smear_info = [
             float(step_size),
             int(n_step),
             flow_type,
+            integrator_type,
         ]
         smear_info_list.append(smear_info)
     for fn_gf, fn_out, fn_out_df in zip(fn_gf_list, fn_out_list, fn_out_df_list):
