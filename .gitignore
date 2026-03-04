@@ -5,3 +5,15 @@
 /.transfer
 /cmd-*
 /TODO
+/applications/false-vacuum-decay/.ipynb_checkpoints/
+/applications/false-vacuum-decay/output_data/
+/applications/false-vacuum-decay/*.pdf
+/applications/hmc-pions/.ipynb_checkpoints/
+/applications/hmc-pions/__pycache__/
+/applications/hmc-pions/*.pdf
+/applications/hmc-pions/*.png
+/applications/hmc-pions/output_data/
+/applications/hmc-pions/plots/
+/applications/hmc-pions/results/
+/examples-py/.ipynb_checkpoints/
+/output_data/
