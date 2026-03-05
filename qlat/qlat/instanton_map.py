@@ -1289,7 +1289,8 @@ def smear_measure_topo(
         wilson_flow_integrator_type="euler",
     ):
         nonlocal flow_time
-        for i in range(n_step):
+        flow_time_target = flow_time + n_step * step_size
+        while flow_time < flow_time_target - 1e-8:
             flow_time += gf_flow_topo(gf, step_size, flow_type, wilson_flow_integrator_type)
             plaq = gf.plaq()
             f_plaq = q.gf_plaq_field(gf)
