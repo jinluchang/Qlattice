@@ -36,7 +36,7 @@ $$
 =
 \frac{\epsilon}{1 - p + \epsilon} + (b (1 - p - \epsilon))^2
 $$
-with a possible choice of parameters be $\epsilon = 0.005$ and $b=55$.
+with a possible choice of parameters be $\epsilon = 0.005$ and $b=60$.
 Note that $f_\mathrm{Localize}$ tends to shrink the size of large instanton but prevent tunnelling of small instantons during flow.
 
 """
@@ -166,7 +166,7 @@ def gf_flow_topo(
             plaq_factor[:] = 1 - f_plaq[:]
         elif flow_type == "Localize":
             eps = 0.005
-            base = 55
+            base = 60
             norm = max(
                 eps / (1 - plaq_max + eps) + (base * (1 - plaq_max - eps))**2,
                 eps / (1 - plaq_min + eps) + (base * (1 - plaq_min - eps))**2,
