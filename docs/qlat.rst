@@ -32,5 +32,5 @@ Utilities
 
    get_mpi_chunk
 
-   get_plaq_field
+   gf_plaq_field
    gf_plaq_flow_force
