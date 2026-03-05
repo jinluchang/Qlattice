@@ -76,7 +76,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 def run_params(job_tag):
     fname = q.get_fname()
     param = get_param(job_tag)
-    q.json_results_append(q.json_dumps(param))
+    q.json_results_append(q.json_dumps(param, indent=None))
     param_lines = q.json_dumps(param, indent=2).split("\n")
     for v in param_lines:
         q.displayln_info(f"CHECK: params: {job_tag}: {v}")

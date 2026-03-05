@@ -61,6 +61,7 @@ class q:
         is_test,
         json_results_append,
         save_pickle_obj,
+        save_json_obj,
         filter_np_results,
     )
     from qlat.c import (
@@ -173,6 +174,10 @@ def gf_flow_topo(
             )
             plaq_factor[:] = eps / (1 - f_plaq[:] + eps) + \
                 (base * (1 - f_plaq[:]))
+        elif flow_type == "Preserve":
+            base = 50
+            norm = max(1, base * (1 - plaq_min))
+            plaq_factor[:] = np.maximum(1, base * (1 - f_plaq[:]))
         else:
             raise Exception(f"{fname}: {flow_type=}")
         gm_force = q.gf_plaq_flow_force(gf, plaq_factor)
@@ -1375,6 +1380,7 @@ def smear_measure_topo(
         smear(*si)
         measure()
     if info_path is not None:
+        q.save_json_obj(smear_info_list, f"{info_path}/smear-info-list.json", indent=2)
         q.save_pickle_obj(topo_list, f"{info_path}/info.pickle")
         q.save_pickle_obj(energy_list, f"{info_path}/energy-list.pickle")
     return topo_list, energy_list,

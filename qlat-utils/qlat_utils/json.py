@@ -69,7 +69,7 @@ class QlatDecoder(ExtendedDecoder):
     def decode_range(self, obj):
         return range(obj["start"], obj["stop"], obj["step"])
 
-def json_dumps(obj, *, indent=None):
+def json_dumps(obj, *, indent=2):
     """
     return str dumped from `obj`
     #

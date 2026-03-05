@@ -263,5 +263,59 @@
    "__extended_json_type__": "ndarray"
   },
   1e-10
+ ],
+ [
+  "gf_flow_topo ; Preserve ; num_step=5 ; step_size=0.100"
+ ],
+ [
+  "flow_time",
+  1.50251325094249,
+  1e-10
+ ],
+ [
+  "gf plaq",
+  0.8636078523150923,
+  1e-10
+ ],
+ [
+  "gf plaq_min",
+  0.5475052174792849,
+  1e-10
+ ],
+ [
+  "gf_sig",
+  {
+   "value": [
+    {
+     "real": 5.988056343204107,
+     "imag": 40.139233358619606,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -40.575490436535574,
+     "imag": 10.253596087454252,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 40.814322947069854,
+     "imag": 1.624654819500826,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "plaq_sig",
+  {
+   "value": [
+    -39.0689924421368,
+    -15.430554168907813,
+    13.304448998765533
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
  ]
 ]

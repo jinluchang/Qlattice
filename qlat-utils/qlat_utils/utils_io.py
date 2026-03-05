@@ -111,10 +111,12 @@ def load_bytes(path, default_value=None, *, is_sync_node=True):
 
 
 @q.timer
-def save_json_obj(obj, path, *, indent=None, is_sync_node=True):
+def save_json_obj(obj, path, *, indent=2, is_sync_node=True):
     """
     only save from node 0 when is_sync_node
     mk_file_dirs_info(path)
+    #
+    Set ``indent = None`` to turn off pretty printing.
     """
     save_bytes(q.json_dumps(obj, indent=indent), path, is_sync_node=is_sync_node)
 
