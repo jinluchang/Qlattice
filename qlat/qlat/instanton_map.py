@@ -37,7 +37,14 @@ $$
 \frac{\epsilon}{1 - p + \epsilon} + b (1 - p)
 $$
 with a possible choice of parameters be $\epsilon = 0.002$ and $b=50$.
-Note that $f_\mathrm{Localize}$ tends to shrink the size of large instanton but prevent tunnelling of small instantons during flow.
+
+We can also choose the function $f$ that mimic Wilson flow but prevent small instanton from tunnelling:
+$$
+\frac{d}{dp}f_\mathrm{Preserve}(p)
+=
+max(1, b (1 - p))
+$$
+with a possible choice of parameters be $b=50$.
 
 """
 
