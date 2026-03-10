@@ -590,6 +590,7 @@ let
       torchaudio
       jupyterlab
       ollama
+      rich
       ;
     }
     // (if is-linux then {
