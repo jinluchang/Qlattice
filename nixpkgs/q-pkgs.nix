@@ -568,29 +568,23 @@ let
       flit-core
       virtualenv
       h5py
-      pandas
       scikit-learn
       xarray
       matplotlib
       plotly
-      seaborn
       jupyter-server-mathjax
       numba
-      transformers
       sentencepiece
       ipywidgets
       accelerate
-      torch
       sphinx
       linkify-it-py
       myst-parser
       pytools
       lz4
-      torchvision
-      torchaudio
+      torch
       jupyterlab
       ollama
-      rich
       ;
     }
     // (if is-linux then {
@@ -598,6 +592,12 @@ let
       jupyterhub
       jupyterhub-systemdspawner
       xformers
+      rich
+      transformers
+      seaborn
+      pandas
+      torchvision
+      torchaudio
       ;
     } else {}
     )
@@ -644,7 +644,6 @@ let
         fftwFloat
         openssl
         gnuplot
-        texliveFull
         pipx
         twine
         file
@@ -655,8 +654,6 @@ let
         cairo
         curl
         expat
-        fontconfig
-        freetype
         icu
         libsodium
         libssh
@@ -707,6 +704,9 @@ let
       libxkbcommon
       mesa
       vulkan-loader
+      texliveFull
+      fontconfig
+      freetype
       ;
       inherit (pkgs.xorg)
       libX11
