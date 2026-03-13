@@ -132,11 +132,12 @@ EXPORT(dV_qm_action, {
   PyObject* p_qma = NULL;
   RealD x = 0.0;
   long t = 0;
-  if (!PyArg_ParseTuple(args, "O|d|l", &p_qma, &x, &t)) {
+  int idx = 0;
+  if (!PyArg_ParseTuple(args, "O|d|l|i", &p_qma, &x, &t, &idx)) {
     return NULL;
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
-  return py_convert(qma.dV(x,t));
+  return py_convert(qma.dV(x,t,idx));
 })
 
 EXPORT(action_node_qm_action, {
@@ -147,8 +148,8 @@ EXPORT(action_node_qm_action, {
     return NULL;
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
-  const Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
-  const RealD ret = qma.action_node(f);
+  Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
+  RealD ret = qma.action_node(f);
   return py_convert(ret);
 })
 
@@ -160,8 +161,8 @@ EXPORT(hmc_m_hamilton_node_qm_action, {
     return NULL;
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
-  const Field<RealD>& m = py_convert_type<Field<RealD>>(p_m);
-  const RealD ret = qma.hmc_m_hamilton_node(m);
+  Field<RealD>& m = py_convert_type<Field<RealD>>(p_m);
+  RealD ret = qma.hmc_m_hamilton_node(m);
   return py_convert(ret);
 })
 
@@ -173,8 +174,8 @@ EXPORT(sum_sq_qm_action, {
     return NULL;
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
-  const Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
-  const RealD ret = qma.sum_sq(f);
+  Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
+  RealD ret = qma.sum_sq(f);
   return py_convert(ret);
 })
 
@@ -188,7 +189,7 @@ EXPORT(hmc_set_force_qm_action, {
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
   Field<RealD>& force = py_convert_type<Field<RealD>>(p_force);
-  const Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
+  Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
   qma.hmc_set_force(force, f);
   Py_RETURN_NONE;
 })
@@ -204,7 +205,7 @@ EXPORT(hmc_field_evolve_qm_action, {
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
   Field<RealD>& f = py_convert_type<Field<RealD>>(p_f);
-  const Field<RealD>& m = py_convert_type<Field<RealD>>(p_m);
+  Field<RealD>& m = py_convert_type<Field<RealD>>(p_m);
   qma.hmc_field_evolve(f, m, step_size);
   Py_RETURN_NONE;
 })
@@ -219,7 +220,7 @@ EXPORT(hmc_set_rand_momentum_qm_action, {
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
   Field<RealD>& m = py_convert_type<Field<RealD>>(p_m);
-  const RngState& rs = py_convert_type<RngState>(p_rs);
+  RngState& rs = py_convert_type<RngState>(p_rs);
   qma.hmc_set_rand_momentum(m, rs);
   Py_RETURN_NONE;
 })

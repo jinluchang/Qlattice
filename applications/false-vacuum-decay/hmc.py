@@ -333,7 +333,7 @@ def main():
     Nt = 100
     total_site = q.Coordinate([1,1,1,Nt])
     # The multiplicity of the field
-    mult = 1
+    mult = 2
     alpha = 1.0
     beta = 9.0
     FV_offset = 0.3
@@ -350,7 +350,7 @@ def main():
     measure_offset_L = False
     measure_offset_M = False
     #
-    version = "13-4"
+    version = "14-0"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10

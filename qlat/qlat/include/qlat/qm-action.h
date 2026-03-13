@@ -269,6 +269,7 @@ struct QMAction {
   
   inline RealD d_order_param(const Vector<RealD> x, const int idx)
   {
+    (void) x; // avoid warnings about unused parameter
     if (idx==0) return 1;
     else return 0;
   }
@@ -288,11 +289,13 @@ struct QMAction {
   
   inline RealD V_phi4_TV(const RealD x, const RealD y)
   {
+    (void) x; // avoid warnings about unused parameter
     return V_phi4(start_TV,y);
   }
   
   inline RealD dV_phi4_TV(const RealD x, const RealD y, const int idx)
   {
+    (void) x; // avoid warnings about unused parameter
     if(idx==0) return 0.0;
     else return dV_phi4(start_TV, y, idx);
   }
@@ -321,7 +324,8 @@ struct QMAction {
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
   {
-    return dV_full_xy(op, x[1], idx);
+    if(idx == 0) return 0.0;
+    else return dV_full_xy(op, x[1], idx);
   }
 
   inline RealD V_full(const Vector<RealD>& x)
@@ -470,7 +474,7 @@ struct QMAction {
     return dV_max(V_N, dV_N, V_FV_floored(x, 1), dV_FV_floored(x, 1, idx), M);
   }
 
-  inline RealD action_point(QMAction& qma, const Field<RealD>& f, const Int multiplicity, const Geometry& geo, Coordinate xl)
+  inline RealD action_point(QMAction& qma, Field<RealD>& f, const Int multiplicity, const Geometry& geo, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
@@ -486,7 +490,7 @@ struct QMAction {
     return (beta/2.0/qma.dt/qma.dt)*dpsi_sq + qma.V_zeroed(psi, geo.coordinate_g_from_l(xl)[3]);
   }
 
-  inline RealD action_node_no_comm(const Field<RealD>& f)
+  inline RealD action_node_no_comm(Field<RealD>& f)
   {
 	// Returns the total action of the portion of the lattice on the
 	// current node (assuming the necessary communication has already
@@ -518,7 +522,7 @@ struct QMAction {
     return sum*dt;
   }
 
-  inline RealD action_node(const Field<RealD>& f)
+  inline RealD action_node(Field<RealD>& f)
   {
 	// Return the total Euclidean action (on the current node) associated
 	// with the given scalar field.
@@ -579,7 +583,7 @@ struct QMAction {
     return sum;
   }
 
-  inline void hmc_set_force_no_comm(Field<RealD>& force, const Field<RealD>& f)
+  inline void hmc_set_force_no_comm(Field<RealD>& force, Field<RealD>& f)
   {
     TIMER("QMAction.hmc_set_sm_force_no_comm");
     const Geometry geo = f.geo();
@@ -604,7 +608,7 @@ struct QMAction {
     });
   }
 
-  inline void hmc_set_force(Field<RealD>&  force, const Field<RealD>&  f)
+  inline void hmc_set_force(Field<RealD>&  force, Field<RealD>&  f)
   {
 	// Calculate and set the HMC force field based on the given field
 	// configuration.
