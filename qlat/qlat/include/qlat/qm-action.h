@@ -11,11 +11,11 @@ struct QMAction {
   RealD FV_offset;
   RealD TV_offset;
   RealD center_bar;
+  RealD V_min_FV;
   RealD barrier_strength;
   RealD L;
   RealD M;
   RealD epsilon;
-  RealD temp;
   Long t_FV_out;
   Long t_FV_mid;
   RealD dt;
@@ -34,6 +34,7 @@ struct QMAction {
     FV_offset = 0.0;
     TV_offset = 0.0;
     center_bar = 1.0;
+    V_min_FV = 0.0;
     barrier_strength = 1.0;
     L = 1.0;
     M = 0.0;
@@ -55,7 +56,8 @@ struct QMAction {
     initialized = true;
     alpha = alpha_;
     beta = beta_;
-    start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha; // (2.0-2.0*std::pow(1-alpha, 0.5))/alpha + start_TV_;
+    start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    V_min_FV = -V_phi4(start_TV,0);
     FV_offset = FV_offset_;
     TV_offset = TV_offset_;
     center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
@@ -77,7 +79,7 @@ struct QMAction {
       vtype = GET_L; // Calculate Q(L_{i+1}) / Q(L_i)
   }
   
-  inline RealD V(const RealD x, const Long t)
+  inline RealD V(const Vector<RealD>& x, const Long t)
   {
     switch(vtype) {
       case GET_L: return V_t_L(x,t);
@@ -86,16 +88,16 @@ struct QMAction {
     }
   }
   
-  inline RealD dV(const RealD x, const Long t)
+  inline RealD dV(const Vector<RealD>& x, const Long t, const int idx)
   {
     switch(vtype) {
-      case GET_L: return dV_t_L(x,t);
-      case GET_M: return dV_t_M(x,t);
-      default: return dV_t_dtTV(x,t);
+      case GET_L: return dV_t_L(x,t,idx);
+      case GET_M: return dV_t_M(x,t,idx);
+      default: return dV_t_dtTV(x,t,idx);
     }
   }
   
-  inline RealD V_t_L(const RealD x, const Long t)
+  inline RealD V_t_L(const Vector<RealD>& x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -119,31 +121,31 @@ struct QMAction {
     }
   }
   
-  inline RealD dV_t_L(const RealD x, const Long t)
+  inline RealD dV_t_L(const Vector<RealD>& x, const Long t, const int idx)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
     if(t==0)
-      return dV_L(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
+      return dV_L(x, V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), idx);
     // Until t_FV_out has past, use H_FV_out
     else if(t<=t_FV_out)
-      return dV_FV_out(x);
+      return dV_FV_out(x, idx);
     // Until t_FV_mid has past, use H_FV_mid
     else if(t<=t_FV_out+t_FV_mid)
-      return dV_FV_mid(x);
+      return dV_FV_mid(x, idx);
     // Until t_FV_out has past, use H_FV_out
     else if(t<=2*t_FV_out+t_FV_mid)
-      return dV_FV_out(x);
+      return dV_FV_out(x, idx);
     // Right after t_FV_out has past, use H_proj
     else if(t==2*t_FV_out+t_FV_mid+1)
-      return dV_L(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
+      return dV_L(x, V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), idx);
     // For the rest of the time, use H_TV
     else {
-      return dV_L(x, V_TV(x), dV_TV(x));
+      return dV_L(x, V_TV(x), dV_TV(x,idx), idx);
     }
   }
   
-  inline RealD V_t_M(const RealD x, const Long t)
+  inline RealD V_t_M(const Vector<RealD>& x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -167,31 +169,31 @@ struct QMAction {
     }
   }
   
-  inline RealD dV_t_M(const RealD x, const Long t)
+  inline RealD dV_t_M(const Vector<RealD>& x, const Long t, const int idx)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
     if(t==0)
-      return dV_M(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
+      return dV_M(x, V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), idx);
     // Until t_FV_out has past, use H_FV_out
     else if(t<=t_FV_out)
-      return dV_FV_out(x);
+      return dV_FV_out(x, idx);
     // Until t_FV_mid has past, use H_FV_mid
     else if(t<=t_FV_out+t_FV_mid)
-      return dV_FV_mid(x);
+      return dV_FV_mid(x, idx);
     // Until t_FV_out has past, use H_FV_out
     else if(t<=2*t_FV_out+t_FV_mid)
-      return dV_FV_out(x);
+      return dV_FV_out(x, idx);
     // Right after t_FV_out has past, use H_proj
     else if(t==2*t_FV_out+t_FV_mid+1)
-      return dV_M(x, V_full(x) + V_proj(x), dV_full(x) + dV_proj(x));
+      return dV_M(x, V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), idx);
     // For the rest of the time, use H_TV
     else {
-      return dV_M(x, V_TV(x), dV_TV(x));
+      return dV_M(x, V_TV(x), dV_TV(x,idx), idx);
     }
   }
   
-  inline RealD V_t_dtTV(const RealD x, const Long t)
+  inline RealD V_t_dtTV(const Vector<RealD>& x, const Long t)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
@@ -224,133 +226,198 @@ struct QMAction {
     }
   }
   
-  inline RealD dV_t_dtTV(const RealD x, const Long t)
+  inline RealD dV_t_dtTV(const Vector<RealD>& x, const Long t, const int idx)
   {
     // Returns the potential evaluated at point x
     // Start with H_proj
     if(t==0)
-      return dV_full(x) + dV_proj(x);
+      return dV_full(x,idx) + dV_proj(x,idx);
     // Until t_FV_out has past, use H_FV_out
     else if(t<=t_FV_out)
-      return dV_FV_out(x);
+      return dV_FV_out(x,idx);
     // Until t_FV_mid has past, use H_FV_mid
     else if(t<=t_FV_out+t_FV_mid)
-      return dV_FV_mid(x);
+      return dV_FV_mid(x,idx);
     // Until t_FV_out has past, use H_FV_out
     else if(t<=2*t_FV_out+t_FV_mid)
-      return dV_FV_out(x);
+      return dV_FV_out(x,idx);
     // Right after t_FV_out has past, use H_proj or V_max
     else if(t==2*t_FV_out+t_FV_mid+1) {
-      if(measure_offset_L) return dV_max(V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), V_FV_out(x), dV_FV_out(x), 1.0);
-      if(measure_offset_M) return dV_max(V_FV_out(x), dV_FV_out(x), V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), 1.0);
-      else return dV_full(x) + dV_proj(x);
+      if(measure_offset_L) return dV_max(V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), V_FV_out(x), dV_FV_out(x,idx), 1.0);
+      if(measure_offset_M) return dV_max(V_FV_out(x), dV_FV_out(x,idx), V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), 1.0);
+      else return dV_full(x,idx) + dV_proj(x,idx);
     }
     // One timeslice after t_FV_out has past, use H_TV or V_max
     else if(t==2*t_FV_out+t_FV_mid+2) {
-      if(measure_offset_L) return dV_max(V_TV(x), dV_TV(x), V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), 1.0);
-      if(measure_offset_M) return dV_max(V_full(x) + V_proj(x), dV_full(x) + dV_proj(x), V_TV(x), dV_TV(x), 1.0);
-      else return dV_TV(x);
+      if(measure_offset_L) return dV_max(V_TV(x), dV_TV(x,idx), V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), 1.0);
+      if(measure_offset_M) return dV_max(V_full(x) + V_proj(x), dV_full(x,idx) + dV_proj(x,idx), V_TV(x), dV_TV(x,idx), 1.0);
+      else return dV_TV(x,idx);
     }
     // For the rest of the time, use H_TV
-    else {
-      return dV_TV(x);
-    }
+    else return dV_TV(x, idx);
   }
   
-  inline RealD V_zeroed(const RealD x, const Long t) {
+  inline RealD V_zeroed(const Vector<RealD>& x, const Long t) {
     return V(x,t) - log(dt) / dt;
   }
-
-  inline RealD V_phi4(const RealD x)
+  
+  // Quantum Mechanics Potential========================================
+  inline RealD order_param(const Vector<RealD> x)
   {
-    return beta*(x*x/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
+    return x[0];
+  }
+  
+  inline RealD d_order_param(const Vector<RealD> x, const int idx)
+  {
+    if (idx==0) return 1;
+    else return 0;
   }
 
-  inline RealD dV_phi4(const RealD x)
+  inline RealD V_phi4(const RealD x, const RealD y)
   {
-    // Returns the derivative of the potential with respect to x
-    return beta*(x-x*x*3.0/2.0+alpha*x*x*x/2.0);
+    // return beta*(x*x/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
+    return beta*(x*x/2.0+y*y/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
   }
 
-  inline RealD V_full(const RealD x)
+  inline RealD dV_phi4(const RealD x, const RealD y, const int idx)
+  {
+    // Adds the derivative of the potential with respect to x
+    if (idx==0) return beta*(x - 1.5*x*x + alpha*x*x*x/2.0);
+    else return beta*y;
+  }
+  
+  inline RealD V_phi4_TV(const RealD x, const RealD y)
+  {
+    return V_phi4(start_TV,y);
+  }
+  
+  inline RealD dV_phi4_TV(const RealD x, const RealD y, const int idx)
+  {
+    if(idx==0) return 0.0;
+    else return dV_phi4(start_TV, y, idx);
+  }
+
+  inline RealD V_full_xy(const RealD x, const RealD y)
   {
     // Returns the potential evaluated at point x
-    if(x>start_TV) {
-      return 0;
-    }
-    return V_phi4(x) - V_phi4(start_TV);
+    if(x>start_TV) 
+      return V_phi4_TV(x, y) + V_min_FV;
+    else
+      return V_phi4(x, y) + V_min_FV;
   }
 
-  inline RealD dV_full(const RealD x)
+  inline RealD dV_full_xy(const RealD x, const RealD y, const int idx)
   {
-    RealD rtn = dV_phi4(x);
-    if(x>start_TV) {
-      return 0.0;
-    }
-    return rtn;
+    if(x>start_TV)
+      return dV_phi4_TV(x, y, idx);
+    else
+      return dV_phi4(x, y, idx);
   }
 
-  inline RealD V_FV_out(const RealD x)
+  inline RealD V_full_op_fixed(const Vector<RealD>& x, RealD op)
   {
-    if(x>center_bar+FV_offset)
-        return V_full(center_bar+FV_offset) + barrier_strength*(x-center_bar-FV_offset)*(x-center_bar-FV_offset);
+    return V_full_xy(op, x[1]);
+  }
+
+  inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
+  {
+    return dV_full_xy(op, x[1], idx);
+  }
+
+  inline RealD V_full(const Vector<RealD>& x)
+  {
+    return V_full_xy(x[0], x[1]);
+  }
+
+  inline RealD dV_full(const Vector<RealD>& x, const int idx)
+  {
+    return dV_full_xy(x[0], x[1], idx);
+  }
+  
+  // End Quantum Mechanics Potential====================================
+
+  inline RealD V_FV_out(const Vector<RealD>& x)
+  {
+    if(order_param(x)>center_bar+FV_offset)
+        return V_full_op_fixed(x,center_bar+FV_offset) + barrier_strength*(order_param(x)-center_bar-FV_offset)*(order_param(x)-center_bar-FV_offset);
     else
         return V_full(x);
   }
 
-  inline RealD dV_FV_out(const RealD x)
+  inline RealD dV_FV_out(const Vector<RealD>& x, const int idx)
   {
-    if(x>center_bar+FV_offset)
-        return 2.0*barrier_strength*(x-center_bar-FV_offset);
-    else
-        return dV_full(x);
+    if(order_param(x)>center_bar+FV_offset) {
+        return dV_full_op_fixed(x,center_bar+FV_offset,idx) + d_order_param(x,idx)*2.0*barrier_strength*(order_param(x)-center_bar-FV_offset);
+    }
+    else return dV_full(x,idx);
   }
 
-  inline RealD V_FV_mid(const RealD x)
+  inline RealD V_FV_mid(const Vector<RealD>& x)
   {
-    if(x>center_bar)
-      return V_full(center_bar) + barrier_strength*(x-center_bar)*(x-center_bar);
-    return V_full(x);
-  }
-
-  inline RealD dV_FV_mid(const RealD x)
-  {
-    if(x>center_bar)
-      return 2.0*barrier_strength*(x-center_bar);
-    return dV_full(x);
-  }
-
-  inline RealD V_TV(const RealD x)
-  {
-    if(x < center_bar+TV_offset)
-      return V_full(center_bar+TV_offset) + barrier_strength*(x-center_bar-TV_offset)*(x-center_bar-TV_offset);
+    if(order_param(x)>center_bar)
+      return V_full_op_fixed(x,center_bar) + barrier_strength*(order_param(x)-center_bar)*(order_param(x)-center_bar);
     else
       return V_full(x);
   }
 
-  inline RealD dV_TV(const RealD x)
+  inline RealD dV_FV_mid(const Vector<RealD>& x, const int idx)
   {
-    if(x < center_bar+TV_offset)
-      return 2.0*barrier_strength*(x-center_bar-TV_offset);
+    if(order_param(x)>center_bar) {
+      return dV_full_op_fixed(x,center_bar,idx) + d_order_param(x,idx)*2.0*barrier_strength*(order_param(x)-center_bar);
+    }
+    else return dV_full(x,idx);
+  }
+
+  inline RealD V_FV_mid_op_fixed(const Vector<RealD>& x, RealD op)
+  {
+    if(op>center_bar)
+      return V_full_op_fixed(x,center_bar) + barrier_strength*(op-center_bar)*(op-center_bar);
     else
-      return dV_full(x);
+      return V_full_op_fixed(x,op);
+  }
+
+  inline RealD dV_FV_mid_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
+  {
+    if(op>center_bar)
+      return dV_full_op_fixed(x,center_bar,idx);
+    else
+      return dV_full_op_fixed(x,op,idx);
+  }
+
+  inline RealD V_TV(const Vector<RealD>& x)
+  {
+    if(order_param(x) < center_bar+TV_offset)
+      return V_full_op_fixed(x,center_bar+TV_offset) + barrier_strength*(order_param(x)-center_bar-TV_offset)*(order_param(x)-center_bar-TV_offset);
+    else
+      return V_full(x);
+  }
+
+  inline RealD dV_TV(const Vector<RealD>& x, const int idx)
+  {
+    if(order_param(x) < center_bar+TV_offset) {
+      return dV_full_op_fixed(x,center_bar+TV_offset,idx) + d_order_param(x,idx)*2.0*barrier_strength*(order_param(x)-center_bar-TV_offset);
+    }
+    else return dV_full(x,idx);
   }
   
-  inline RealD V_proj(const RealD x)
+  inline RealD V_proj(const Vector<RealD>& x)
   {
     RealD rtn = -log((1-exp(-(V_FV_out(x) - V_full(x) + epsilon)*dt)) / dt) / dt;
     // When x is low enough that epsilon is relevant, remove V_full (which
     // will be added later) to avoid ergodicity issues
-    if(x<center_bar+FV_offset) rtn += V_full(center_bar+FV_offset) - V_full(x) + barrier_strength*std::pow(center_bar+FV_offset-x, 0.5);
+    if(order_param(x)<center_bar+FV_offset) {
+      rtn += V_full_op_fixed(x, center_bar+FV_offset) - V_full(x) + barrier_strength*std::pow(center_bar+FV_offset-order_param(x), 0.5);
+    }
     return rtn;
-    
   }
   
-  inline RealD dV_proj(const RealD x)
+  inline RealD dV_proj(const Vector<RealD>& x, const int idx)
   {
     RealD Vbar = V_FV_out(x) - V_full(x);
-    RealD rtn = -((dV_FV_out(x) - dV_full(x))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
-    if(x<center_bar+FV_offset) rtn += - dV_full(x) - 0.5*barrier_strength/std::pow(center_bar+FV_offset-x, 0.5);
+    RealD rtn = -((dV_FV_out(x,idx) - dV_full(x,idx))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
+    if(order_param(x)<center_bar+FV_offset) {
+      rtn += dV_full_op_fixed(x,center_bar+FV_offset,idx) - dV_full(x,idx) - d_order_param(x,idx)*0.5*barrier_strength/std::pow(center_bar+FV_offset-order_param(x), 0.5);
+    }
     return rtn;
   }
   
@@ -366,59 +433,57 @@ struct QMAction {
     else return (1-P)*dV_D + P*dV_N;
   }
   
-  inline RealD V_FV_floored(const RealD x, const RealD P)
+  inline RealD V_FV_floored(const Vector<RealD>& x, const RealD P)
   {
     RealD v_fv_mid = V_FV_mid(x);
-    RealD v_fv_min = V_full(0);
-    RealD floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
+    RealD floor = V_min_FV + P*(V_FV_mid_op_fixed(x,center_bar+FV_offset)-V_min_FV);
     if(v_fv_mid < floor) return floor;
     else return v_fv_mid;
   }
   
-  inline RealD dV_FV_floored(const RealD x, const RealD P)
+  inline RealD dV_FV_floored(const Vector<RealD>& x, const RealD P, const int idx)
   {
-    RealD v_fv_min = V_full(0);
-    RealD floor = v_fv_min + P*(V_FV_mid(center_bar+FV_offset)-v_fv_min);
-    if(V_FV_mid(x) < floor) return 0;
-    else return dV_FV_mid(x);
+    RealD floor = V_min_FV + P*(V_FV_mid_op_fixed(x,center_bar+FV_offset)-V_min_FV);
+    if(V_FV_mid(x) < floor) return P*dV_FV_mid_op_fixed(x,center_bar+FV_offset,idx);
+    else return dV_FV_mid(x, idx);
   }
   
-  inline RealD V_L(const RealD x, const RealD V_N)
+  inline RealD V_L(const Vector<RealD>& x, const RealD V_N)
   {
-    if(L<0.5) {
-      return V_FV_floored(x, 2*L);
-    }
+    if(L<0.5) return V_FV_floored(x, 2*L);
     else return V_max(V_FV_floored(x, 1), V_N, 2*(L-0.5));
   }
   
-  inline RealD dV_L(const RealD x, const RealD V_N, const RealD dV_N)
+  inline RealD dV_L(const Vector<RealD>& x, const RealD V_N, const RealD dV_N, const int idx)
   {
-    if(L<0.5) {
-      return dV_FV_floored(x, 2*L);
-    }
-    else return dV_max(V_FV_floored(x, 1), dV_FV_floored(x, 1), V_N, dV_N, 2*(L-0.5));
+    if(L<0.5) return dV_FV_floored(x, 2*L, idx);
+    else return dV_max(V_FV_floored(x, 1), dV_FV_floored(x, 1, idx), V_N, dV_N, 2*(L-0.5));
   }
   
-  inline RealD V_M(const RealD x, const RealD V_N)
+  inline RealD V_M(const Vector<RealD>& x, const RealD V_N)
   {
     return V_max(V_N, V_FV_floored(x, 1), M);
   }
   
-  inline RealD dV_M(const RealD x, const RealD V_N, const RealD dV_N)
+  inline RealD dV_M(const Vector<RealD>& x, const RealD V_N, const RealD dV_N, const int idx)
   {
-    return dV_max(V_N, dV_N, V_FV_floored(x, 1), dV_FV_floored(x, 1), M);
+    return dV_max(V_N, dV_N, V_FV_floored(x, 1), dV_FV_floored(x, 1, idx), M);
   }
 
-  inline RealD action_point(QMAction& qma, const Field<RealD>& f, const Geometry& geo, Coordinate xl)
+  inline RealD action_point(QMAction& qma, const Field<RealD>& f, const Int multiplicity, const Geometry& geo, Coordinate xl)
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
     // TIMER("QMAction.action_point");
-    RealD psi = f.get_elem(xl);
+    Vector<RealD> psi = f.get_elems(xl);
     xl[3]+=1;
-    RealD psi_eps = f.get_elem(xl);
+    Vector<RealD> psi_eps = f.get_elems(xl);
     xl[3]-=1;
-    return (beta/2.0/qma.dt/qma.dt)*(psi_eps-psi)*(psi_eps-psi) + qma.V_zeroed(psi, geo.coordinate_g_from_l(xl)[3]);
+    RealD dpsi_sq = 0;
+    for (Int i = 0; i < multiplicity; ++i) {
+      dpsi_sq += (psi_eps[i]-psi[i])*(psi_eps[i]-psi[i]);
+    }
+    return (beta/2.0/qma.dt/qma.dt)*dpsi_sq + qma.V_zeroed(psi, geo.coordinate_g_from_l(xl)[3]);
   }
 
   inline RealD action_node_no_comm(const Field<RealD>& f)
@@ -428,6 +493,7 @@ struct QMAction {
 	// been done)
     TIMER("QMAction.action_node_no_comm");
     const Geometry geo = f.geo();
+    const Int M = f.multiplicity;
     // Creates a geometry that is the same as the field geometry, except
     // with multiplicity 1
     const Geometry geo_r = geo_resize(geo);
@@ -440,7 +506,7 @@ struct QMAction {
     qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      fd.get_elem(index) = qma.action_point(qma, f, geo, xl);
+      fd.get_elem(index) = qma.action_point(qma, f, M, geo, xl);
     });
     // Sums over the contributions to the total action from each point
     // (this cannot be done in the previous loops because the previous
@@ -471,12 +537,12 @@ struct QMAction {
     return action_node_no_comm(f_ext);
   }
 
-  inline RealD hmc_m_hamilton_node(const Field<RealD>& m)
+  inline RealD hmc_m_hamilton_node(const Field<RealD>& mf)
   {
     // Return the part of an HMC Hamiltonian due to the given momentum
     // field (on the current node).
     TIMER("QMAction.hmc_m_hamilton_node");
-    RealD sum = sum_sq(m);
+    RealD sum = sum_sq(mf);
     return sum/2.0;
   }
 
@@ -517,21 +583,24 @@ struct QMAction {
   {
     TIMER("QMAction.hmc_set_sm_force_no_comm");
     const Geometry geo = f.geo();
+    const Int M = f.multiplicity;
     QMAction& qma = *this;
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<RealD> force_v = force.get_elems(xl);
-      qassert(force_v.size() == 1);
-      RealD psi = f.get_elem(xl);
-      force_v[0] = 2.0 * qma.beta / qma.dt / qma.dt * psi;
-      force_v[0] += qma.dV(psi,geo.coordinate_g_from_l(xl)[3]);
-      xl[3] += 1;
-      force_v[0] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl);
-      xl[3] -= 2;
-      force_v[0] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl);
-      xl[3] += 1;
-      force_v[0] *= qma.dt;
+      qassert(force_v.size() == M);
+      Vector<RealD> psi = f.get_elems(xl);
+      for (Int i = 0; i < M; ++i) {
+          force_v[i] = 2.0 * qma.beta / qma.dt / qma.dt * psi[i];
+          xl[3] += 1;
+          force_v[i] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl, i);
+          xl[3] -= 2;
+          force_v[i] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl, i);
+          xl[3] += 1;
+          force_v[i] += qma.dV(psi, geo.coordinate_g_from_l(xl)[3], i);
+          force_v[i] *= qma.dt;
+      }
     });
   }
 
@@ -550,32 +619,36 @@ struct QMAction {
     hmc_set_force_no_comm(force, f_ext);
   }
 
-  inline void hmc_field_evolve(Field<RealD>& f, const Field<RealD>& m,
+  inline void hmc_field_evolve(Field<RealD>& f, const Field<RealD>& mf,
                                const RealD step_size)
   {
     TIMER("QMAction.hmc_field_evolve");
     const Geometry& geo = f.geo();
+    const Int M = f.multiplicity;
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<RealD> f_v = f.get_elems(xl);
-      qassert(f_v.size() == 1);
-      f_v[0] = f_v[0] + m.get_elem(xl)*step_size;
+      for (Int i = 0; i < M; ++i) {
+        f_v[i] = f_v[i] + mf.get_elem(xl,i)*step_size;
+      }
     });
   }
 
-  inline void hmc_set_rand_momentum(Field<RealD>& m, const RngState& rs)
+  inline void hmc_set_rand_momentum(Field<RealD>& mf, const RngState& rs)
   {
     TIMER("QMAction.set_rand_momentum");
-    const Geometry& geo = m.geo();
+    const Geometry& geo = mf.geo();
     qthread_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Long gindex = geo.g_index_from_g_coordinate(xg);
       //displayln_info(ssprintf("gindex: %ld", gindex));
       RngState rsi = rs.newtype(gindex);
-      m.get_elem(xl) = g_rand_gen(rsi, 0, 1.0);
-      //displayln_info(ssprintf("random num: %24.17E", m.get_elem(xl)));
+      Vector<RealD> m_v = mf.get_elems(xl);
+      for (Int i = 0; i < M; ++i) {
+        m_v[i] = g_rand_gen(rsi, 0, 1.0);
+      }
     });
   }
 };
