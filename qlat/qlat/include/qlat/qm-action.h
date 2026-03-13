@@ -643,7 +643,7 @@ struct QMAction {
   {
     TIMER("QMAction.set_rand_momentum");
     const Geometry& geo = mf.geo();
-    const Int multiplicity = f.multiplicity;
+    const Int multiplicity = mf.multiplicity;
     qthread_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
