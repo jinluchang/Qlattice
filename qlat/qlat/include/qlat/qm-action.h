@@ -497,7 +497,7 @@ struct QMAction {
 	// been done)
     TIMER("QMAction.action_node_no_comm");
     const Geometry geo = f.geo();
-    const Int M = f.multiplicity;
+    const Int multiplicity = f.multiplicity;
     // Creates a geometry that is the same as the field geometry, except
     // with multiplicity 1
     const Geometry geo_r = geo_resize(geo);
@@ -510,7 +510,7 @@ struct QMAction {
     qthread_for(index, geo_r.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
-      fd.get_elem(index) = qma.action_point(qma, f, M, geo, xl);
+      fd.get_elem(index) = qma.action_point(qma, f, multiplicity, geo, xl);
     });
     // Sums over the contributions to the total action from each point
     // (this cannot be done in the previous loops because the previous
@@ -587,15 +587,15 @@ struct QMAction {
   {
     TIMER("QMAction.hmc_set_sm_force_no_comm");
     const Geometry geo = f.geo();
-    const Int M = f.multiplicity;
+    const Int multiplicity = f.multiplicity;
     QMAction& qma = *this;
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<RealD> force_v = force.get_elems(xl);
-      qassert(force_v.size() == M);
+      qassert(force_v.size() == multiplicity);
       Vector<RealD> psi = f.get_elems(xl);
-      for (Int i = 0; i < M; ++i) {
+      for (Int i = 0; i < multiplicity; ++i) {
           force_v[i] = 2.0 * qma.beta / qma.dt / qma.dt * psi[i];
           xl[3] += 1;
           force_v[i] -= qma.beta / qma.dt / qma.dt * f.get_elem(xl, i);
@@ -628,12 +628,12 @@ struct QMAction {
   {
     TIMER("QMAction.hmc_field_evolve");
     const Geometry& geo = f.geo();
-    const Int M = f.multiplicity;
+    const Int multiplicity = f.multiplicity;
     qthread_for(index, geo.local_volume(), {
       const Geometry& geo = f.geo();
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<RealD> f_v = f.get_elems(xl);
-      for (Int i = 0; i < M; ++i) {
+      for (Int i = 0; i < multiplicity; ++i) {
         f_v[i] = f_v[i] + mf.get_elem(xl,i)*step_size;
       }
     });
@@ -643,6 +643,7 @@ struct QMAction {
   {
     TIMER("QMAction.set_rand_momentum");
     const Geometry& geo = mf.geo();
+    const Int multiplicity = f.multiplicity;
     qthread_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -650,7 +651,7 @@ struct QMAction {
       //displayln_info(ssprintf("gindex: %ld", gindex));
       RngState rsi = rs.newtype(gindex);
       Vector<RealD> m_v = mf.get_elems(xl);
-      for (Int i = 0; i < M; ++i) {
+      for (Int i = 0; i < multiplicity; ++i) {
         m_v[i] = g_rand_gen(rsi, 0, 1.0);
       }
     });
