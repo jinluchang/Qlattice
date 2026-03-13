@@ -12,5 +12,6 @@ let
   # "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-${version-wd}/nixexprs.tar.xz"
   else
   "https://channels.nixos.org/nixos-${version-wd}/nixexprs.tar.xz";
+  nixpkgs = if version == null then fetchTarball url else <nixpkgs>;
 in
-  fetchTarball url
+  nixpkgs
