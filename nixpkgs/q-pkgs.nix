@@ -9,7 +9,7 @@
 
 let
 
-  version-wd = if version == null then "25.11" else version;
+  version-wd = if version == null then "" else version;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
   nixpkgs-default = import ./nixpkgs.nix {
     version = version-wd;
