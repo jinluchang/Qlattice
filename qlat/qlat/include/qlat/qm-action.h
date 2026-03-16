@@ -7,7 +7,7 @@ struct QMAction {
   bool initialized;
   RealD alpha;
   RealD beta;
-  RealD start_TV;
+  //RealD start_TV;
   RealD FV_offset;
   RealD TV_offset;
   RealD center_bar;
@@ -30,7 +30,7 @@ struct QMAction {
     initialized = false;
     alpha = 1.0;
     beta = 1.0;
-    start_TV = 2.0;
+    //start_TV = 2.0;
     FV_offset = 0.0;
     TV_offset = 0.0;
     center_bar = 1.0;
@@ -56,11 +56,12 @@ struct QMAction {
     initialized = true;
     alpha = alpha_;
     beta = beta_;
-    start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
-    V_min_FV = -V_phi4(start_TV,0);
+    //start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    V_min_FV = -1;//V_phi4(start_TV,0);
     FV_offset = FV_offset_;
     TV_offset = TV_offset_;
-    center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    // center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
+    center_bar = 3.0/(alpha*alpha);
     barrier_strength = barrier_strength_;
     L = L_;
     M = M_;
@@ -264,68 +265,54 @@ struct QMAction {
   // Quantum Mechanics Potential========================================
   inline RealD order_param(const Vector<RealD> x)
   {
-    return x[0];
+    return x[0]*x[0] + x[1]*x[1];
   }
   
   inline RealD d_order_param(const Vector<RealD> x, const int idx)
   {
-    (void) x; // avoid warnings about unused parameter
-    if (idx==0) return 1;
-    else return 0;
+    if (idx==0) return 2.0*x[0];
+    else return 2.0*x[1];
   }
 
   inline RealD V_phi4(const RealD x, const RealD y)
   {
     // return beta*(x*x/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
-    return beta*(x*x/2.0+y*y/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
+    // return beta*(x*x/2.0+y*y/2.0-x*x*x/2.0+alpha*x*x*x*x/8.0);
+    return beta*(x*x+(1-alpha*x)*y*y);
   }
 
   inline RealD dV_phi4(const RealD x, const RealD y, const int idx)
   {
     // Adds the derivative of the potential with respect to x
-    if (idx==0) return beta*(x - 1.5*x*x + alpha*x*x*x/2.0);
-    else return beta*y;
-  }
-  
-  inline RealD V_phi4_TV(const RealD x, const RealD y)
-  {
-    (void) x; // avoid warnings about unused parameter
-    return V_phi4(start_TV,y);
-  }
-  
-  inline RealD dV_phi4_TV(const RealD x, const RealD y, const int idx)
-  {
-    (void) x; // avoid warnings about unused parameter
-    if(idx==0) return 0.0;
-    else return dV_phi4(start_TV, y, idx);
+    // if (idx==0) return beta*(x - 1.5*x*x + alpha*x*x*x/2.0);
+    // else return beta*y;
+    if (idx==0) return beta*(2.0*x-alpha*y*y);
+    else return beta*2.0*(1-alpha*x)*y;
   }
 
   inline RealD V_full_xy(const RealD x, const RealD y)
   {
-    // Returns the potential evaluated at point x
-    if(x>start_TV) 
-      return V_phi4_TV(x, y) + V_min_FV;
-    else
-      return V_phi4(x, y) + V_min_FV;
+    const RealD rtn = V_phi4(x,y);
+    if(rtn<V_min_FV) return 0;
+    else return rtn - V_min_FV;
   }
 
   inline RealD dV_full_xy(const RealD x, const RealD y, const int idx)
   {
-    if(x>start_TV)
-      return dV_phi4_TV(x, y, idx);
-    else
-      return dV_phi4(x, y, idx);
+    if(V_phi4(x,y)<V_min_FV) return 0;
+    else return dV_phi4(x,y,idx);
   }
 
   inline RealD V_full_op_fixed(const Vector<RealD>& x, RealD op)
   {
-    return V_full_xy(op, x[1]);
+    const RealD norm = std::pow(order_param(x)/op,0.5);
+    return V_full_xy(x[0]/norm, x[1]/norm); // V(div(x))
   }
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
   {
-    if(idx == 0) return 0.0;
-    else return dV_full_xy(op, x[1], idx);
+    const RealD norm = std::pow(order_param(x)/op,0.5); // div(x) = op^0.5*x_i / order_param(x)^0.5
+    return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
   }
 
   inline RealD V_full(const Vector<RealD>& x)
