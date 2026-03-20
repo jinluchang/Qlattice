@@ -182,7 +182,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
       f_bcast(static_cast<Int>(psel.points_dist_type), 0));
   Qassert(psel.points_dist_type == points_dist_type);
   const Long n_points = psel.size();
-  sp.init(psel, f.multiplicity);
+  sp.init(psel, 1);
   set_zero(sp);  // has to set_zero for glb_sum
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];

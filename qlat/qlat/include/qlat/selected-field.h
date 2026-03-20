@@ -346,6 +346,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
     });
     glb_sum(get_data_char(sp_tmp.points));
     if (is_keeping_data) {
+      glb_sum(sp_count.points);
       sp.init_zero(psel, multiplicity);
       qthread_for(idx, n_points, {
         if (sp_count.get_elem(idx) > 0) {
