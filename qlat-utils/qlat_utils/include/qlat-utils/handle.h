@@ -133,12 +133,8 @@ struct API Vector {
   //
   qacc const M& operator[](const Long i) const
   {
-    if (not(0 <= i && i < n)) {
-      qerr(ssprintf("Vector::operator[]: i=%ld n=%ld", i, n));
-    }
-    qassert_info(0 <= i && i < n, {
-      std::printf("Vector::operator[]: i=%ld n=%ld", i, n);
-    });
+    qassert_info(0 <= i && i < n,
+                 { std::printf("Vector::operator[]: i=%ld n=%ld", i, n); });
     return p[i];
   }
   qacc M& operator[](const Long i)
