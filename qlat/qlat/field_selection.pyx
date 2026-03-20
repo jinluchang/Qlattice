@@ -105,7 +105,6 @@ cdef class SelectedShufflePlan:
         shuffle to PointsDistType::Local ("l") from PointsDistType::Global ("g").
         """
         assert len(root_list) == len(psel_src_list)
-        cdef cc.Int i
         cdef cc.Int id_node = cc.get_id_node()
         cdef cc.Int root
         cdef cc.std_vector[cc.Int] root_vec
@@ -114,7 +113,7 @@ cdef class SelectedShufflePlan:
             root = root_list[i]
             root_vec[i] = root
         self.psel_src_list = []
-        for i in range(len(psel_src_list)):
+        for i in range(root_vec.size()):
             root = root_vec[i]
             if root == id_node:
                 self.psel_src_list.append(psel_src_list[i])
