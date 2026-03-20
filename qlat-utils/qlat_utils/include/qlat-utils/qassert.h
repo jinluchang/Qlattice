@@ -26,15 +26,15 @@
   std::printf("%s: %s from '%s' line %d. (IN_ACC)", (tag), (str), __FILE__, \
               __LINE__)
 
-#define qqwarn(str)              \
-  {                              \
-    PRINT_ERR_MSG("qwarn", str); \
+#define qqwarn(str)               \
+  {                               \
+    PRINT_ERR_MSG("qwarn", #str); \
   }
 
-#define qqerr(str)              \
-  {                             \
-    PRINT_ERR_MSG("qerr", str); \
-    assert(false);              \
+#define qqerr(str)               \
+  {                              \
+    PRINT_ERR_MSG("qerr", #str); \
+    assert(false);               \
   }
 
 #define qqassert(x)                 \
