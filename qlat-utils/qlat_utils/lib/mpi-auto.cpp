@@ -1,14 +1,27 @@
 #include <qlat-utils/mpi-auto.h>
+#include "qlat-utils/rng-state.h"
 
 namespace qlat
 {  //
 
-void sync_node(const Long tag)
+void sync_node(const Long shift)
 {
-  TIMER("sync_node");
+  TIMER("sync_node(shift)");
   RngState& rs = get_sync_node_rs();
   const Long rand_limit = 1024L * 1024L * 1024L;
-  const Long v = rand_gen(rs) % rand_limit + tag;
+  const Long v = rand_gen(rs) % rand_limit + shift;
+  Long s = v;
+  glb_sum_val(s);
+  qassert(s == v * get_num_node());
+}
+
+void sync_node(const std::string& tag)
+{
+  TIMER("sync_node(tag)");
+  RngState& rs = get_sync_node_rs();
+  RngState rs_tag = rs.split(tag);
+  const Long rand_limit = 1024L * 1024L * 1024L;
+  const Long v = rand_gen(rs) % rand_limit + rand_gen(rs_tag) % rand_limit;
   Long s = v;
   glb_sum_val(s);
   qassert(s == v * get_num_node());

@@ -550,11 +550,12 @@ Int bcast(PointsSelection& psel, const Int root)
 }
 
 Int bcast_any(Vector<Char> xx, const bool b)
-// bcast to all nodes from any node if `b == true`.
-// `glb_all(b)` should be `true`.
-// The sizes of `xx` should be the same even when `b == false`.
-// The value of `xx` when `b == true`, should be the same.
-// If the condition is not met, this function will return `-1`.
+// bcast to all nodes from any node if ``b == true``.
+// ``glb_any(b)`` should be ``true``.
+// The sizes of ``xx`` should be the same even when ``b == false``.
+// The value of ``xx`` when ``b == true``, should be the same.
+// If the condition is not met, this function will return negative number collectively.
+// The function should not crash simply due to the input does not satisfy the above requirements.
 {
   Int code = 0;
   const Int num_node = get_num_node();

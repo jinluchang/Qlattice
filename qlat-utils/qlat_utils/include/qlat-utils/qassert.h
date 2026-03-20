@@ -26,15 +26,15 @@
   std::printf("%s: %s from '%s' line %d. (IN_ACC)", (tag), (str), __FILE__, \
               __LINE__)
 
-#define qqwarn(str)               \
-  {                               \
-    PRINT_ERR_MSG("qwarn", #str); \
+#define qqwarn(str)              \
+  {                              \
+    PRINT_ERR_MSG("qwarn", str); \
   }
 
-#define qqerr(str)               \
-  {                              \
-    PRINT_ERR_MSG("qerr", #str); \
-    assert(false);               \
+#define qqerr(str)              \
+  {                             \
+    PRINT_ERR_MSG("qerr", str); \
+    assert(false);              \
   }
 
 #define qqassert(x)                 \
@@ -45,53 +45,76 @@
     }                               \
   }
 
-#else
-
-#define MK_ERR_MSG(tag, str)                                            \
-  qlat::ssprintf("%s: %s from '%s' line %d. (id_node=%d id_thread=%d)", \
-                 qlat::get_c_str(tag), qlat::get_c_str(str), __FILE__,  \
-                 __LINE__, qlat::get_id_node(), qlat::get_id_thread())
-
-#define qqwarn(str)                             \
-  {                                             \
-    std::string msg = MK_ERR_MSG("qwarn", str); \
-    qlat::displayln_c_stdout(msg);              \
-    qlat::Timer::display_stack_always();        \
+#define qqassert_info(x, ...)            \
+  {                                      \
+    if (not(x)) {                        \
+      {__VA_ARGS__};                     \
+      PRINT_ERR_MSG("qassert_info", #x); \
+      assert(false);                     \
+    }                                    \
   }
 
-#define qqerr(str)                             \
-  {                                            \
-    std::string msg = MK_ERR_MSG("qerr", str); \
-    qlat::displayln_c_stdout(msg);             \
-    qlat::Timer::display_stack_always();       \
-    throw std::string(msg);                    \
-  };
+#else
 
-#define qqassert(x)                                \
-  {                                                \
-    if (not(x)) {                                  \
-      std::string msg = MK_ERR_MSG("qassert", #x); \
-      qlat::displayln_c_stdout(msg);               \
-      qlat::Timer::display_stack_always();         \
-      throw std::string(msg);                      \
-    }                                              \
+#define PRINT_ERR_MSG(tag, str)                                               \
+  {                                                                           \
+    std::string msg =                                                         \
+        qlat::ssprintf("%s: %s from '%s' line %d. (id_node=%d id_thread=%d)", \
+                       qlat::get_c_str(tag), qlat::get_c_str(str), __FILE__,  \
+                       __LINE__, qlat::get_id_node(), qlat::get_id_thread()); \
+    qlat::displayln_c_stdout(msg);                                            \
+    qlat::Timer::display_stack_always();                                      \
+  }
+
+#define qqwarn(str)                      \
+  {                                      \
+    PRINT_ERR_MSG("qwarn", str);         \
+  }
+
+#define qqerr(str)                       \
+  {                                      \
+    PRINT_ERR_MSG("qerr", str);          \
+    throw std::string(str);              \
+  }
+
+#define qqassert(x)                        \
+  {                                        \
+    if (not(x)) {                          \
+      PRINT_ERR_MSG("qassert", #x);        \
+      throw std::string(#x);               \
+    }                                      \
+  }
+
+#define qqassert_info(x, ...)            \
+  {                                      \
+    if (not(x)) {                        \
+      {__VA_ARGS__};                     \
+      PRINT_ERR_MSG("qassert_info", #x); \
+      throw std::string(#x);             \
+    }                                    \
   }
 
 #endif
 
+// Use this version if you want to keep the assert even if SKIP_ASSERT is defined
+#define Qwarn(str) qqwarn(str)
+#define Qerr(str) qqerr(str)
 #define Qassert(x) qqassert(x)
+#define Qassert_info(x, ...) qqassert_info(x, {__VA_ARGS__})
 
 // compile without assert message and vector in qacc lengh checks
 #ifdef SKIP_ASSERT
 
-#define qassert(x) assert(true)
 #define qwarn(str) assert(true)
 #define qerr(str) assert(false)
+#define qassert(x) assert(true)
+#define qassert_info(x, ...) assert(true)
 
 #else
 
-#define qassert(x) qqassert(x)
 #define qwarn(str) qqwarn(str)
 #define qerr(str) qqerr(str)
+#define qassert(x) qqassert(x)
+#define qassert_info(x, ...) qqassert_info(x, {__VA_ARGS__})
 
 #endif

@@ -40,8 +40,13 @@ cdef class SelectedShufflePlan:
     def __init__(self, *args):
         """
         SelectedShufflePlan()
+        SelectedShufflePlan("l_from_g", psel_src, root)
+        SelectedShufflePlan("l_from_g", psel_src_list, root_list)
+        SelectedShufflePlan("g_from_l", psel_src, root, geo)
+        SelectedShufflePlan("g_from_l", psel_src_list, root_list, geo_src_list)
         SelectedShufflePlan("r_from_l", psel_src, geo, rs)
         SelectedShufflePlan("r_from_l", psel_src_list, geo_src_list, rs)
+        SelectedShufflePlan("dist_r_from_l", psel_src, geo, rs, id_node_list)
         SelectedShufflePlan("t_slice_from_l", psel_src_list, geo_src_list)
         SelectedShufflePlan("dist_t_slice_from_l", psel_src, geo, num_field)
         """
@@ -56,16 +61,136 @@ cdef class SelectedShufflePlan:
             return
         elif len(args) == 1:
             return
+        elif args[0] == "l_from_g" and isinstance(args[1], PointsSelection):
+            self.init_from_psel_l_from_g(*args[1:])
+        elif args[0] == "l_from_g" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
+            self.init_from_psel_list_l_from_g(*args[1:])
+        elif args[0] == "g_from_l" and isinstance(args[1], PointsSelection):
+            self.init_from_psel_g_from_l(*args[1:])
+        elif args[0] == "g_from_l" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
+            self.init_from_psel_list_g_from_l(*args[1:])
         elif args[0] == "r_from_l" and isinstance(args[1], PointsSelection):
             self.init_from_psel_r_from_l(*args[1:])
         elif args[0] == "r_from_l" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
             self.init_from_psel_list_r_from_l(*args[1:])
+        elif args[0] == "dist_r_from_l" and isinstance(args[1], PointsSelection):
+            self.init_from_psel_dist_r_from_l(*args[1:])
         elif args[0] == "t_slice_from_l" and isinstance(args[1], list) and len(args[1]) > 0 and isinstance(args[1][0], PointsSelection):
             self.init_from_psel_list_t_slice_from_l(*args[1:])
         elif args[0] == "dist_t_slice_from_l" and isinstance(args[1], PointsSelection):
             self.init_from_psel_list_dist_t_slice_from_l(*args[1:])
         else:
             raise Exception(f"SelectedShufflePlan.__init__ {args}")
+
+    @q.timer
+    def init_from_psel_l_from_g(self, PointsSelection psel_src, cc.Int root):
+        """
+        shuffle to PointsDistType::Local ("l") from PointsDistType::Global ("g").
+        """
+        cdef cc.Int id_node = cc.get_id_node()
+        cdef PointsSelection psel_dst = PointsSelection()
+        self.xx.init()
+        cc.set_selected_shuffle_plan_l_from_g(self.xx, psel_src.xx, root)
+        psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
+        cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
+        if root == id_node:
+            self.psel_src_list = [ psel_src, ]
+        else:
+            self.psel_src_list = [ None, ]
+        self.psel_dst_list = [ psel_dst, ]
+
+    @q.timer
+    def init_from_psel_list_l_from_g(self, list psel_src_list, list root_list):
+        """
+        shuffle to PointsDistType::Local ("l") from PointsDistType::Global ("g").
+        """
+        assert len(root_list) == len(psel_src_list)
+        cdef cc.Int id_node = cc.get_id_node()
+        cdef cc.Int root
+        cdef cc.std_vector[cc.Int] root_vec
+        root_vec.resize(len(root_list))
+        for i in range(root_vec.size()):
+            root = root_list[i]
+            root_vec[i] = root
+        self.psel_src_list = []
+        for i in range(len(psel_src_list)):
+            root = root_vec[i]
+            if root == id_node:
+                self.psel_src_list.append(psel_src_list[i])
+            else:
+                self.psel_src_list.append(None)
+        cdef cc.std_vector[cc.PointsSelection] psel_src_vec
+        psel_src_vec.resize(len(self.psel_src_list))
+        cdef PointsSelection psel
+        for i in range(psel_src_vec.size()):
+            psel = self.psel_src_list[i]
+            if psel is not None:
+                cc.qswap(psel.xx, psel_src_vec[i])
+        self.xx.init()
+        cc.set_selected_shuffle_plan_l_from_g(self.xx, psel_src_vec, root_vec)
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
+        cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
+        psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
+        for i in range(psel_src_vec.size()):
+            psel = self.psel_src_list[i]
+            if psel is not None:
+                cc.qswap(psel.xx, psel_src_vec[i])
+        for i in range(psel_dst_vec.size()):
+            psel = psel_dst_list[i]
+            cc.qswap(psel.xx, psel_dst_vec[i])
+        self.psel_dst_list = psel_dst_list
+
+    @q.timer
+    def init_from_psel_g_from_l(self, PointsSelection psel_src, cc.Int root, Geometry geo_src):
+        """
+        shuffle to PointsDistType::Global ("g") from PointsDistType::Local ("l").
+        """
+        cdef PointsSelection psel_dst = PointsSelection()
+        self.xx.init()
+        cc.set_selected_shuffle_plan_g_from_l(self.xx, psel_src.xx, root, geo_src.xx)
+        psel_dst.xx.points_dist_type = self.xx.points_dist_type_recv
+        cc.shuffle_points_selection(psel_dst.xx, psel_src.xx, self.xx)
+        self.psel_src_list = [ psel_src, ]
+        self.psel_dst_list = [ psel_dst, ]
+
+    @q.timer
+    def init_from_psel_list_g_from_l(self, list psel_src_list, list root_list, list geo_src_list):
+        """
+        shuffle to PointsDistType::Global ("g") from PointsDistType::Local ("l").
+        """
+        assert len(root_list) == len(psel_src_list)
+        assert len(geo_src_list) == len(psel_src_list)
+        cdef cc.std_vector[cc.PointsSelection] psel_src_vec
+        psel_src_vec.resize(len(psel_src_list))
+        cdef PointsSelection psel
+        for i in range(psel_src_vec.size()):
+            psel = psel_src_list[i]
+            cc.qswap(psel.xx, psel_src_vec[i])
+        cdef cc.Int root
+        cdef cc.std_vector[cc.Int] root_vec
+        root_vec.resize(len(root_list))
+        for i in range(root_vec.size()):
+            root = root_list[i]
+            root_vec[i] = root
+        cdef cc.std_vector[cc.Geometry] geo_src_vec
+        geo_src_vec.resize(len(geo_src_list))
+        cdef Geometry geo
+        for i in range(geo_src_vec.size()):
+            geo = geo_src_list[i]
+            geo_src_vec[i] = geo.xx
+        self.xx.init()
+        cc.set_selected_shuffle_plan_g_from_l(self.xx, psel_src_vec, root_vec, geo_src_vec)
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
+        cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
+        psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
+        for i in range(psel_src_vec.size()):
+            psel = psel_src_list[i]
+            cc.qswap(psel.xx, psel_src_vec[i])
+        for i in range(psel_dst_vec.size()):
+            psel = psel_dst_list[i]
+            cc.qswap(psel.xx, psel_dst_vec[i])
+        self.psel_src_list = psel_src_list
+        self.psel_dst_list = psel_dst_list
 
     @q.timer
     def init_from_psel_r_from_l(self, PointsSelection psel_src, Geometry geo_src, RngState rs):
@@ -113,6 +238,34 @@ cdef class SelectedShufflePlan:
         self.psel_dst_list = psel_dst_list
 
     @q.timer
+    def init_from_psel_dist_r_from_l(self, PointsSelection psel_src, Geometry geo_src, RngState rs, list id_node_list=None):
+        """
+        shuffle to PointsDistType::Random ("r") (limited to ``id_node_list``) from PointsDistType::Local ("l").
+        """
+        cdef cc.std_vector[cc.PointsSelection] psel_src_vec
+        psel_src_vec.resize(1)
+        cc.qswap(psel_src.xx, psel_src_vec[0])
+        cdef cc.Int id_node
+        cdef cc.std_vector[cc.Int] id_node_vec
+        if id_node_list is not None:
+            id_node_vec.resize(len(id_node_list))
+            for i in range(id_node_vec.size()):
+                id_node = id_node_list[i]
+                id_node_vec[i] = id_node
+        self.xx.init()
+        cc.set_selected_shuffle_plan_dist_r_from_l(self.xx, psel_src.xx, geo_src.xx, rs.xx, id_node_vec)
+        cdef cc.std_vector[cc.PointsSelection] psel_dst_vec
+        cc.shuffle_points_selection(psel_dst_vec, psel_src_vec, self.xx)
+        psel_dst_list = [ PointsSelection() for i in range(psel_dst_vec.size()) ]
+        cc.qswap(psel_src.xx, psel_src_vec[0])
+        cdef PointsSelection psel
+        for i in range(psel_dst_vec.size()):
+            psel = psel_dst_list[i]
+            cc.qswap(psel.xx, psel_dst_vec[i])
+        self.psel_src_list = [ psel_src, ]
+        self.psel_dst_list = psel_dst_list
+
+    @q.timer
     def init_from_psel_list_t_slice_from_l(self, list psel_src_list, list geo_src_list):
         """
         shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
@@ -148,9 +301,9 @@ cdef class SelectedShufflePlan:
     def init_from_psel_list_dist_t_slice_from_l(self, PointsSelection psel_src, Geometry geo, int num_field):
         """
         shuffle to PointsDistType::Local ("l") from PointsDistType::Local ("l").
-        match `init_from_psel_list_t_slice_from_l`.
+        match ``init_from_psel_list_t_slice_from_l``.
         Example use case:
-            Perform spatial smearing for propagators:
+            Perform spatial smearing for propagators (see ``q.prop_spatial_smear``):
             (1) shuffle propagators with "t_slice_from_l".
             (2) shuffle gauge field with "dist_t_slice_from_l".
         """
@@ -248,7 +401,7 @@ cdef class SelectedShufflePlan:
 
     @property
     def fsel_send_list(self):
-        if self.fsel_src_list is None:
+        if self.fsel_src_list is not None:
             return self.fsel_src_list
         self.fsel_src_list = []
         if self.points_dist_type_send not in [ "l", "f", ]:
@@ -265,7 +418,7 @@ cdef class SelectedShufflePlan:
 
     @property
     def fsel_recv_list(self):
-        if self.fsel_dst_list is None:
+        if self.fsel_dst_list is not None:
             return self.fsel_dst_list
         self.fsel_dst_list = []
         if self.points_dist_type_recv not in [ "l", "f", ]:
@@ -295,11 +448,11 @@ cdef class SelectedShufflePlan:
         psel = sp_src.psel
         cdef SelectedPointsChar sp_dst
         if is_reverse:
-            assert (psel is None) or (psel == psel_dst)
+            assert (psel is None) or (psel_dst is None) or (psel == psel_dst)
             sp_dst = SelectedPointsChar(psel_src)
             cc.shuffle_selected_points_back(sp_dst.xx, sp_src.xx, self.xx)
         else:
-            assert (psel is None) or (psel == psel_src)
+            assert (psel is None) or (psel_src is None) or(psel == psel_src)
             sp_dst = SelectedPointsChar(psel_dst)
             cc.shuffle_selected_points(sp_dst.xx, sp_src.xx, self.xx)
         return sp_dst
@@ -321,7 +474,7 @@ cdef class SelectedShufflePlan:
         for sp_src, psel_src in zip(sp_src_list, psel_src_list):
             assert isinstance(sp_src, SelectedPointsChar)
             psel = sp_src.psel
-            assert (psel is None) or (psel == psel_src)
+            assert (psel is None) or (psel_src is None) or (psel == psel_src)
         cdef cc.std_vector[cc.SelectedPoints[cc.Char]] sp_src_vec
         cdef cc.std_vector[cc.SelectedPoints[cc.Char]] sp_dst_vec
         cdef SelectedPointsChar sp
@@ -570,17 +723,16 @@ cdef class PointsSelection:
 
     def init_from_total_site(self, Coordinate total_site, object xg_arr=None, str points_dist_type=None):
         """
-        xg_arr can be n_points, xg, xg_arr, xg_list.
-        points_dist_type in [ "g", "f", "l", "r", "o", ]
+        ``xg_arr`` can be n_points, xg, xg_arr, xg_list.
+        default ``points_dist_type == "g"``
+        ``points_dist_type in [ "g", "f", "l", "r", "o", ]``
         """
         self.xx.init()
         self.xx.init(total_site.xx, 0)
-        if xg_arr is None:
-            return
-        self.xg_arr = xg_arr
-        if points_dist_type is None:
-            return
-        self.points_dist_type = points_dist_type
+        if xg_arr is not None:
+            self.xg_arr = xg_arr
+        if points_dist_type is not None:
+            self.points_dist_type = points_dist_type
 
     def init_from_geo(self, Geometry geo):
         """
@@ -596,19 +748,22 @@ cdef class PointsSelection:
         self.xx.init()
         if ssp is None:
             self @= psel
-        elif (len(ssp.psel_send_list) == 1 and ssp.psel_send_list[0] is psel) and (not is_reverse):
+        elif (len(ssp.psel_send_list) == 1 and (ssp.psel_send_list[0] is psel or ssp.psel_send_list[0] is None)) and (not is_reverse):
             assert len(ssp.psel_recv_list) == 1
             self @= ssp.psel_recv_list[0]
         elif (len(ssp.psel_recv_list) == 1 and ssp.psel_recv_list[0] is psel) and is_reverse:
             assert len(ssp.psel_send_list) == 1
-            self @= ssp.psel_send_list[0]
+            if ssp.psel_send_list[0] is not None:
+                self @= ssp.psel_send_list[0]
         else:
             q.displayln_info(f"WARNING: {fname}: psel is not ssp.psel_src")
-            assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
-            self.xx.points_dist_type = ssp.xx.points_dist_type_recv
             if is_reverse:
+                assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_recv)
+                self.xx.points_dist_type = ssp.xx.points_dist_type_send
                 cc.shuffle_points_selection_back(self.xx, psel.xx, ssp.xx)
             else:
+                assert cc.show(psel.xx.points_dist_type) == cc.show(ssp.xx.points_dist_type_send)
+                self.xx.points_dist_type = ssp.xx.points_dist_type_recv
                 cc.shuffle_points_selection(self.xx, psel.xx, ssp.xx)
 
     def init_from_fsel(self, FieldSelection fsel, SelectedShufflePlan ssp=None):
@@ -753,7 +908,7 @@ cdef class PointsSelection:
         cc.points_selection_from_lat_data(self.xx, ld.xx)
 
     @q.timer
-    def bcast(self, cc.Int root=0):
+    def bcast_via_ld(self, cc.Int root=0):
         cdef LatDataInt ld
         if cc.get_num_node() != 1:
             if cc.get_id_node() == root:
@@ -763,6 +918,12 @@ cdef class PointsSelection:
             ld.bcast(root)
             if cc.get_id_node() != root:
                 self.from_lat_data(ld)
+        return self
+
+    @q.timer
+    def bcast(self, cc.Int root=0):
+        cdef cc.Int ret = cc.bcast(self.xx, root)
+        assert ret == 0
         return self
 
     def save_str(self):
@@ -877,7 +1038,7 @@ cdef class PointsSelection:
         """
         Return hash of psel.
         Always return the same hash from all the node.
-        If points_dist_type == "g", then return the hash for each node, and verify they are all the same.
+        If points_dist_type == "g" AND the hash for all the nodes are the same, then return the hash for each node.
         Otherwise, return the hash of the gathered information from all the node.
         """
         v = q.hash_sha256((
@@ -889,7 +1050,8 @@ cdef class PointsSelection:
         v_list = q.get_comm().allgather(v)
         if self.points_dist_type == "g":
             for v1 in v_list:
-                assert v == v1
+                if v != v1:
+                    return q.hash_sha256(v_list)
             return v
         return q.hash_sha256(v_list)
 

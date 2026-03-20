@@ -474,6 +474,27 @@ Int bcast(std::vector<std::string>& recv, const Int root = 0);
 
 Int bcast(PointsSelection& psel, const Int root = 0);
 
+template <class M>
+Int bcast(SelectedPoints<M>& sp, const Int root = 0)
+{
+  TIMER("bcast(SelectedPoints&)");
+  if (1 == get_num_node()) {
+    return 0;
+  }
+  if (get_id_node() == root) {
+    Qassert(sp.initialized);
+    Qassert(sp.points_dist_type == PointsDistType::Global);
+  } else {
+    sp.initialized = true;
+    sp.points_dist_type = PointsDistType::Global;
+  }
+  Int ret = 0;
+  ret += bcast(sp.multiplicity, root);
+  ret += bcast(sp.n_points, root);
+  ret += bcast(sp.points, root);
+  return ret;
+}
+
 Int bcast_any(Vector<Char> xx, const bool b);
 
 template <class T, QLAT_ENABLE_IF(is_get_data_type<T>())>
@@ -485,11 +506,21 @@ Int bcast_any(T& xx, const bool b)
 }
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
+M f_bcast(const M& xx, const Int root = 0)
+{
+  M v = xx;
+  const Int code = bcast(v, root);
+  Qassert(code == 0);
+  return v;
+}
+
+template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 M f_bcast_any(const M& xx, const bool b)
 {
   M v = xx;
   const Int code = bcast_any(v, b);
-  Qassert(code == 0);
+  Qassert_info(code == 0,
+               { printf("f_bcast_any: code=%d (b=%d)\n", code, b); });
   return v;
 }
 

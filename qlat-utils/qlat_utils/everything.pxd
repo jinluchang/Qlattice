@@ -248,7 +248,7 @@ cdef extern from "qlat-utils/timer.h" namespace "qlat":
     int get_id_node() except +
     int get_num_node() except +
     void sync_node() except +
-    void sync_node(const Long tag) except +
+    void sync_node(const std_string& tag) except +
     RealD get_time() except +
     RealD& get_start_time() except +
     RealD& get_actual_start_time() except +

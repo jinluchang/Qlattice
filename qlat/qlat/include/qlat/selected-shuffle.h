@@ -31,7 +31,7 @@ struct SelectedShufflePlan {
   // Shuffle recv buffer to fill selected points according to this idx field. (after receiving)
   // multiplicity = 3 (idx_selected_points_recv, idx_within_field_recv, idx_buffer_recv)
   SelectedPoints<Long> shuffle_idx_points_recv;
-  // Local field according to this idx field.after receiving
+  // Local field according to this idx field.
   // multiplicity = 4 (idx_selected_points_send, idx_within_field_send, idx_selected_points_recv, idx_within_field_recv,)
   SelectedPoints<Long> shuffle_idx_points_local;
   // shuffle_idx_points_send.n_points == total_count_send
@@ -102,7 +102,8 @@ void shuffle_selected_points(std::vector<SelectedPoints<M>>& sp_vec,
   std::vector<SelectedPoints<Char>> spc_vec;
   std::vector<SelectedPoints<Char>> spc0_vec(sp0_vec.size());
   for (Int i = 0; i < (Int)sp0_vec.size(); ++i) {
-    Qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_send[i]);
+    Qassert(sp0_vec[i].n_points == ssp.n_points_selected_points_send[i] or
+            0 == ssp.n_points_selected_points_send[i]);
     Qassert(sp0_vec[i].multiplicity == multiplicity);
     Qassert(sp0_vec[i].points_dist_type == ssp.points_dist_type_send);
     spc0_vec[i].set_view_cast(sp0_vec[i]);
@@ -176,7 +177,42 @@ void set_selected_shuffle_plan(
     SelectedShufflePlan& ssp, const SelectedPoints<Long>& sp_instruction,
     const vector<Long>& n_points_selected_points_send,
     const PointsDistType points_dist_type_send,
-    const PointsDistType points_dist_type_recv);
+    const PointsDistType points_dist_type_recv,
+    const Int num_selected_points_recv = 0);
+
+// -------------------
+
+void set_selected_shuffle_instruction_l_from_g(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send,
+    const std::vector<PointsSelection>& psel_vec,
+    const std::vector<Int>& root_vec);
+
+void set_selected_shuffle_plan_l_from_g(
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
+    const std::vector<Int>& root_vec);
+
+void set_selected_shuffle_plan_l_from_g(SelectedShufflePlan& ssp,
+                                        const PointsSelection& psel,
+                                        const Int root);
+
+// -------------------
+
+void set_selected_shuffle_instruction_g_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send,
+    const std::vector<PointsSelection>& psel_vec,
+    const std::vector<Int>& root_vec);
+
+void set_selected_shuffle_plan_g_from_l(
+    SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
+    const std::vector<Int>& root_vec, const std::vector<Geometry>& geo_vec);
+
+void set_selected_shuffle_plan_g_from_l(SelectedShufflePlan& ssp,
+                                        const PointsSelection& psel,
+                                        const Int root, const Geometry& geo);
 
 // -------------------
 
@@ -194,6 +230,20 @@ void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp,
                                         const PointsSelection& psel,
                                         const Geometry& geo,
                                         const RngState& rs);
+
+// -------------------
+
+void set_selected_shuffle_instruction_dist_r_from_l(
+    SelectedPoints<Long>& sp_instruction,
+    vector<Long>& n_points_selected_points_send,
+    PointsDistType& points_dist_type_send, const PointsSelection& psel,
+    const RngState& rs,
+    const std::vector<Int>& id_node_vec = std::vector<Int>());
+
+void set_selected_shuffle_plan_dist_r_from_l(
+    SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo,
+    const RngState& rs,
+    const std::vector<Int>& id_node_vec = std::vector<Int>());
 
 // -------------------
 

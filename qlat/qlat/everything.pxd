@@ -127,6 +127,8 @@ cdef extern from "qlat/core.h" namespace "qlat":
         void init()
         void init(const Long n_points, const Int multiplicity, const PointsDistType points_dist_type) except +
         void init(const PointsSelection& psel, const Int multiplicity) except +
+    Int bcast(PointsSelection& psel, const Int root) except +
+    Int bcast[T](SelectedPoints[T]& sp, const Int root) except +
     cdef cppclass Field[T]:
         Int multiplicity
         vector[T] field
@@ -271,8 +273,13 @@ cdef extern from "qlat/selected-shuffle.h" namespace "qlat":
         vector[Long] rdispls
         void init() except +
     #
+    void set_selected_shuffle_plan_l_from_g(SelectedShufflePlan& ssp, const PointsSelection& psel, const Int root) except +
+    void set_selected_shuffle_plan_l_from_g(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const std_vector[Int]& root_vec) except +
+    void set_selected_shuffle_plan_g_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Int root, const Geometry& geo) except +
+    void set_selected_shuffle_plan_g_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const std_vector[Int]& root_vec, const std_vector[Geometry]& geo_vec) except +
     void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo, const RngState& rs) except +
     void set_selected_shuffle_plan_r_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const std_vector[Geometry]& geo_vec, const RngState& rs) except +
+    void set_selected_shuffle_plan_dist_r_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo, const RngState& rs, const std_vector[Int]& id_node_vec) except +
     void set_selected_shuffle_plan_t_slice_from_l(SelectedShufflePlan& ssp, const std_vector[PointsSelection]& psel_vec, const std_vector[Geometry]& geo_vec) except +
     void set_selected_shuffle_plan_dist_t_slice_from_l(SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo, const Int num_field) except +
     #

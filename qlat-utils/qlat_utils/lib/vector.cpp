@@ -28,6 +28,9 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
 {
   TIMER_FLOPS("alloc_mem_alloc");
   timer.flops += size;
+  if (size == 0) {
+    return NULL;
+  }
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] += size;
   void* ptr = NULL;
@@ -74,7 +77,8 @@ void* alloc_mem_alloc(const Long size, const MemType mem_type)
   }
 #else
   ptr = alloc_mem_aligned(size, mem_type);
-  qassert(ptr != NULL);
+  qassert_info(ptr != NULL,
+               { printf("alloc_mem_alloc: %lX %ld\n", (Long)ptr, size); });
   set_mem(ptr, 0, size, mem_type);
 #endif
   return ptr;
@@ -84,6 +88,9 @@ void free_mem_free(void* ptr, const Long size, const MemType mem_type)
 {
   TIMER_FLOPS("free_mem_free");
   timer.flops += size;
+  if (size == 0) {
+    return;
+  }
   static MemoryStats& ms = get_mem_stats();
   ms.alloc[static_cast<Int>(mem_type)] -= size;
 #ifdef QLAT_USE_ACC

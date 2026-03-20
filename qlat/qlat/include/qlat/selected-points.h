@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/field.h>
+#include "core.h"
 
 namespace qlat
 {  //
@@ -147,9 +148,12 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
   Qassert(geo.is_only_local);
-  Qassert(psel.points_dist_type == PointsDistType::Global);
+  const PointsDistType points_dist_type = static_cast<PointsDistType>(
+      f_bcast(static_cast<Int>(psel.points_dist_type), 0));
+  Qassert(psel.points_dist_type == points_dist_type);
   const Long n_points = psel.size();
-  sp.init(psel, f.multiplicity);
+  const Int multiplicity = f.multiplicity;
+  sp.init(psel, multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
@@ -157,12 +161,14 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
     if (geo.is_local(xl)) {
       const Vector<M> fv = f.get_elems_const(xl);
       Vector<M> spv = sp.get_elems(idx);
-      for (Int m = 0; m < f.multiplicity; ++m) {
+      for (Int m = 0; m < multiplicity; ++m) {
         spv[m] = fv[m];
       }
     }
   });
-  glb_sum(get_data_char(sp.points));
+  if (points_dist_type == PointsDistType::Global) {
+    glb_sum(get_data_char(sp.points));
+  }
 }
 
 template <class M>
@@ -172,9 +178,11 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   TIMER("set_selected_points(sp,f,psel,m)");
   const Geometry& geo = f.geo();
   Qassert(geo.is_only_local);
-  Qassert(psel.points_dist_type == PointsDistType::Global);
+  const PointsDistType points_dist_type = static_cast<PointsDistType>(
+      f_bcast(static_cast<Int>(psel.points_dist_type), 0));
+  Qassert(psel.points_dist_type == points_dist_type);
   const Long n_points = psel.size();
-  sp.init(psel, 1);
+  sp.init(psel, f.multiplicity);
   set_zero(sp);  // has to set_zero for glb_sum
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
@@ -184,7 +192,9 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
       sp.get_elem(idx) = fv[m];
     }
   });
-  glb_sum(get_data_char(sp.points));
+  if (points_dist_type == PointsDistType::Global) {
+    glb_sum(get_data_char(sp.points));
+  }
 }
 
 template <class M>

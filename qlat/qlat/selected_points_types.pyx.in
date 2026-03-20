@@ -94,6 +94,7 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         """
         SelectedPoints()
         SelectedPoints(n_points, multiplicity, points_dist_type)
+        SelectedPoints(None)
         SelectedPoints(psel)
         SelectedPoints(psel, multiplicity)
         SelectedPoints(sp, ssp) # via `shuffle_selected_points` where ssp = SelectedShufflePlan("r_from_l", psel, rs)
@@ -110,6 +111,8 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
             return
         elif isinstance(args[0], int):
             self.init_from_n_points(*args)
+        elif args[0] is None:
+            return
         elif isinstance(args[0], PointsSelection):
             self.init_from_psel(*args)
         elif isinstance(args[0], SelectedPoints{{name}}):
@@ -209,6 +212,21 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
 
     def load(self, const cc.std_string& path):
         cc.load_selected_points(self.xx, path)
+
+    @q.timer
+    def bcast(self, cc.Int root=0):
+        """
+        Call ``self.psel.bcast(root)``
+        Note: will set ``self.psel`` to ``None`` if ``self.psel.n_points == 0``
+        """
+        cdef cc.Int ret = cc.bcast(self.xx, root)
+        assert ret == 0
+        if self.psel is None:
+            self.psel = PointsSelection()
+        self.psel.bcast(root)
+        if self.psel.n_points == 0:
+            self.psel = None
+        return self
 
     def save_str(self):
         """

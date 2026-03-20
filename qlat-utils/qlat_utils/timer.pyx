@@ -130,11 +130,14 @@ def get_num_node():
     """
     return cc.get_num_node()
 
-def sync_node():
+def sync_node(str tag=None):
     """
     Perform a glb_sum to make sure all nodes are synced.
     """
-    cc.sync_node()
+    if tag is None:
+        cc.sync_node()
+    else:
+        cc.sync_node(tag)
 
 def get_time():
     """

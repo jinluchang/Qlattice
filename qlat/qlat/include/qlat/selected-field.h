@@ -316,45 +316,71 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   TIMER("set_selected_points(sp,sf,psel,fsel)");
   const Geometry& geo = sf.geo();
   qassert(is_consistent(sf, fsel));
-  qassert(psel.points_dist_type == PointsDistType::Global);
+  const PointsDistType points_dist_type = static_cast<PointsDistType>(
+      f_bcast(static_cast<Int>(psel.points_dist_type), 0));
+  Qassert(psel.points_dist_type == points_dist_type);
   const Long n_points = psel.size();
-  SelectedPoints<M> sp_tmp;
-  sp_tmp.init(psel, sf.multiplicity);
-  set_zero(sp_tmp);
-  SelectedPoints<int8_t> sp_count;
-  sp_count.init(psel, 1);
-  set_zero(sp_count);
-  qthread_for(idx, n_points, {
-    const Coordinate& xg = psel[idx];
-    const Coordinate xl = geo.coordinate_l_from_g(xg);
-    if (geo.is_local(xl)) {
-      const Long sf_idx = fsel.f_local_idx.get_elem(xl);
-      if (sf_idx >= 0) {
-        qassert(sf_idx < sf.n_elems);
-        sp_count.get_elem(idx) += 1;
-        Vector<M> spv = sp_tmp.get_elems(idx);
-        const Vector<M> fv = sf.get_elems_const(sf_idx);
-        for (Int m = 0; m < sf.multiplicity; ++m) {
-          spv[m] = fv[m];
-        }
-      }
-    }
-  });
-  glb_sum(get_data_char(sp_tmp.points));
-  if (is_keeping_data) {
-    glb_sum(get_data_char(sp_count.points));
-    sp.init_zero(psel, sf.multiplicity);
+  const Int multiplicity = sf.multiplicity;
+  if (points_dist_type == PointsDistType::Global) {
+    SelectedPoints<M> sp_tmp;
+    sp_tmp.init(psel, multiplicity);
+    set_zero(sp_tmp);
+    SelectedPoints<int8_t> sp_count;
+    sp_count.init(psel, 1);
+    set_zero(sp_count);
     qthread_for(idx, n_points, {
-      if (sp_count.get_elem(idx) > 0) {
-        Vector<M> spv = sp.get_elems(idx);
-        const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
-        for (Int m = 0; m < sf.multiplicity; ++m) {
-          spv[m] = spv_tmp[m];
+      const Coordinate& xg = psel[idx];
+      const Coordinate xl = geo.coordinate_l_from_g(xg);
+      if (geo.is_local(xl)) {
+        const Long sf_idx = fsel.f_local_idx.get_elem(xl);
+        if (sf_idx >= 0) {
+          qassert(sf_idx < sf.n_elems);
+          sp_count.get_elem(idx) += 1;
+          Vector<M> spv = sp_tmp.get_elems(idx);
+          const Vector<M> fv = sf.get_elems_const(sf_idx);
+          for (Int m = 0; m < multiplicity; ++m) {
+            spv[m] = fv[m];
+          }
         }
       }
     });
+    glb_sum(get_data_char(sp_tmp.points));
+    if (is_keeping_data) {
+      sp.init_zero(psel, multiplicity);
+      qthread_for(idx, n_points, {
+        if (sp_count.get_elem(idx) > 0) {
+          Vector<M> spv = sp.get_elems(idx);
+          const Vector<M> spv_tmp = sp_tmp.get_elems_const(idx);
+          for (Int m = 0; m < multiplicity; ++m) {
+            spv[m] = spv_tmp[m];
+          }
+        }
+      });
+    } else {
+      qswap(sp, sp_tmp);
+    }
   } else {
-    sp = sp_tmp;
+    if (is_keeping_data) {
+      sp.init_zero(psel, multiplicity);
+    } else {
+      sp.init(psel, multiplicity);
+      set_zero(sp);
+    }
+    qthread_for(idx, n_points, {
+      const Coordinate& xg = psel[idx];
+      const Coordinate xl = geo.coordinate_l_from_g(xg);
+      if (geo.is_local(xl)) {
+        const Long sf_idx = fsel.f_local_idx.get_elem(xl);
+        if (sf_idx >= 0) {
+          qassert(sf_idx < sf.n_elems);
+          Vector<M> spv = sp.get_elems(idx);
+          const Vector<M> fv = sf.get_elems_const(sf_idx);
+          for (Int m = 0; m < multiplicity; ++m) {
+            spv[m] = fv[m];
+          }
+        }
+      }
+    });
   }
 }
 

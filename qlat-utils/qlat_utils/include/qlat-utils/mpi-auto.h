@@ -38,7 +38,9 @@ namespace qlat
     qlat::sync_node(SYNC_NODE_TAG);                                      \
   }
 
-void sync_node(const Long tag = 0);
+void sync_node(const Long shift = 0);
+
+void sync_node(const std::string& tag);
 
 // -------------------
 
