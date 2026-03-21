@@ -13,6 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-25.11
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
@@ -59,6 +61,8 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-25.11
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
@@ -353,6 +357,8 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-25.11
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
     - name: Test qlat
