@@ -568,32 +568,32 @@ let
       flit-core
       virtualenv
       h5py
-      scikit-learn
-      xarray
       matplotlib
-      plotly
-      jupyter-server-mathjax
-      numba
       sentencepiece
       ipywidgets
-      accelerate
       sphinx
       linkify-it-py
       myst-parser
       pytools
       lz4
-      torch
-      jupyterlab
-      ollama
       ;
     }
     // (if is-linux then {
       inherit (ps)
+      ollama
+      xarray
+      numba
+      torch
+      scikit-learn
+      accelerate
+      jupyter-server-mathjax
+      jupyterlab
       jupyterhub
       jupyterhub-systemdspawner
       xformers
       rich
       transformers
+      plotly
       seaborn
       pandas
       torchvision
@@ -649,9 +649,7 @@ let
         file
         zip
         unzip
-        atk
         bzip2
-        cairo
         curl
         expat
         icu
@@ -659,7 +657,6 @@ let
         libssh
         nspr
         nss
-        pango
         zstd
         ;
     }
@@ -691,7 +688,10 @@ let
       attr
       gdk-pixbuf
       glib
+      atk
       gtk3
+      pango
+      cairo
       libappindicator-gtk3
       libdrm
       libGL
