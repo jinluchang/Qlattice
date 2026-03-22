@@ -418,6 +418,37 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
                      (xg_arr[:, 2] + idx2) // 2 + (xg_arr[:, 3] + idx3) // 2 + idx4 + idx5) % 2 == 0
         assert np.all(sel2_arr == sel_arr)
         return sel_arr
+    elif sparse_ratio == 81:
+        assert 0 <= idx < sparse_ratio
+        sel_arr = True
+        idx0 = idx % 3
+        idx1 = (idx // 3) % 3
+        idx2 = (idx // 9) % 3
+        idx3 = (idx // 27) % 3
+        sel_arr &= (xg_arr[:, 0] + idx0) % 3 == 0
+        sel_arr &= (xg_arr[:, 1] + idx1) % 3 == 0
+        sel_arr &= (xg_arr[:, 2] + idx2) % 3 == 0
+        sel_arr &= (xg_arr[:, 3] + idx3) % 3 == 0
+        sel2_arr = sel_arr.copy()
+        assert np.all(sel2_arr == sel_arr)
+        return sel_arr
+    elif sparse_ratio == 162:
+        assert 0 <= idx < sparse_ratio
+        sel_arr = True
+        idx0 = idx % 3
+        idx1 = (idx // 3) % 3
+        idx2 = (idx // 9) % 3
+        idx3 = (idx // 27) % 3
+        idx4 = (idx // 81) % 2
+        sel_arr &= (xg_arr[:, 0] + idx0) % 3 == 0
+        sel_arr &= (xg_arr[:, 1] + idx1) % 3 == 0
+        sel_arr &= (xg_arr[:, 2] + idx2) % 3 == 0
+        sel_arr &= (xg_arr[:, 3] + idx3) % 3 == 0
+        sel_arr &= ((xg_arr[:, 0] + idx0) // 3 + (xg_arr[:, 1] + idx1) // 3 +
+                    (xg_arr[:, 2] + idx2) // 3 + (xg_arr[:, 3] + idx3) // 3 + idx4) % 2 == 0
+        sel2_arr = sel_arr.copy()
+        assert np.all(sel2_arr == sel_arr)
+        return sel_arr
     else:
         raise Exception(f"{sparse_ratio=}")
 
