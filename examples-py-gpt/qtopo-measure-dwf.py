@@ -42,7 +42,7 @@ by Luchang Jin
     [--num_of_rand_vol_u1 2] \
     [--ls 16] \
     [--b+c 3.0] \
-    [--maxiter_sloppy 100] \
+    [--maxiter_sloppy 50] \
     [--maxiter_exact 100] \
     [--ama_prob 0.1] \
     --gf PATH_GAUGE_FIELD \
@@ -112,15 +112,15 @@ def measure_topo_dwf(
     geo = gf.geo
     total_site = geo.total_site
     #
-    q.json_results_append(f"gf.plaq()", gf.plaq())
-    q.json_results_append(f"gf.link_trace()", gf.link_trace())
+    q.json_results_append(f"gf.plaq()", gf.plaq(), 1e-12)
+    q.json_results_append(f"gf.link_trace()", gf.link_trace(), 1e-12)
     #
     gt = q.GaugeTransform(geo)
     gt.set_rand(rs.split("gt-init"), 0.5, 50)
     gt.unitarize()
     gf = gt * gf
-    q.json_results_append(f"after transform gf.plaq()", gf.plaq())
-    q.json_results_append(f"after transform gf.link_trace()", gf.link_trace())
+    q.json_results_append(f"after transform gf.plaq()", gf.plaq(), 1e-12)
+    q.json_results_append(f"after transform gf.link_trace()", gf.link_trace(), 1e-12)
     #
     psel_full = q.PointsSelection(geo)
     #
@@ -140,10 +140,10 @@ def measure_topo_dwf(
     q.json_results_append(f"{len(psel_list)=}")
     #
     gpt_gf = qg.gpt_from_qlat(gf)
-    q.json_results_append(f"g.qcd.gauge.plaquette(gpt_gf)", g.qcd.gauge.plaquette(gpt_gf))
+    q.json_results_append(f"g.qcd.gauge.plaquette(gpt_gf)", g.qcd.gauge.plaquette(gpt_gf), 1e-12)
     #
     gf1 = qg.qlat_from_gpt(gpt_gf)
-    q.json_results_append(f"gf1.plaq()", gf1.plaq())
+    q.json_results_append(f"gf1.plaq()", gf1.plaq(), 1e-12)
     #
     qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
     slv_qm = qm.propagator(slv_5d).grouped(4)
@@ -462,7 +462,7 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sp_prop_src = q.PselProp(psel)
     sp_prop_src.set_zero()
     sp_prop_src @= prop_src
-    q.json_results_append(f"sp_prop_src {idx}", q.get_data_sig_arr(sp_prop_src, rs_sig, 3))
+    q.json_results_append(f"sp_prop_src {idx}", q.get_data_sig_arr(sp_prop_src, rs_sig, 3), 1e-12)
     sparse_grid_prop_src = q.Prop(geo)
     sparse_grid_prop_src.set_zero()
     sparse_grid_prop_src @= sp_prop_src
@@ -472,7 +472,7 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sp_fu1 = q.SelectedPointsComplexD(psel, 1)
     sp_fu1 @= fu1
     sp_prop_sol[:] *= sp_fu1[:, None, None].conj()
-    q.json_results_append(f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3))
+    q.json_results_append(f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3), 1e-7)
     return sp_prop_sol
 
 # --------------------------------------------
@@ -554,7 +554,7 @@ def run():
         num_of_rand_vol_u1=int(q.get_arg("--num_of_rand_vol_u1", "2", argv=argv)),
         ls=int(q.get_arg("--ls", "16", argv=argv)),
         b_plus_c=float(q.get_arg("--b+c", "3.0", argv=argv)),
-        maxiter_sloppy=int(q.get_arg("--maxiter_sloppy", "100", argv=argv)),
+        maxiter_sloppy=int(q.get_arg("--maxiter_sloppy", "50", argv=argv)),
         maxiter_exact=int(q.get_arg("--maxiter_exact", "100", argv=argv)),
         ama_prob=float(q.get_arg("--ama_prob", "0.1", argv=argv)),
     )
