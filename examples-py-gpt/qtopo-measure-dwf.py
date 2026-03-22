@@ -4,6 +4,7 @@ import qlat_gpt as qg
 import qlat as q
 import gpt as g
 import numpy as np
+import sys
 
 from auto_contractor import (
     mk_fac,
