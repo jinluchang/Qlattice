@@ -3,6 +3,7 @@ SHELL=/usr/bin/env bash
 mpi_options ?= --oversubscribe --bind-to none
 
 tests_gpt = \
+			qtopo-measure-dwf.log \
 			hlbl-muon-line.log \
 			grid-qlat-io-test.log \
 			gpt-qlat-auto-simple.log \
