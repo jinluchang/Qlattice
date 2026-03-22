@@ -201,8 +201,8 @@ def measure_topo_dwf(
         #
         cexpr = get_cexpr_tadpole_loop()
         expr_names = get_expr_names(cexpr)
-        n_proc = q.get_q_num_mp_processes()
-        chunk_list = q.get_chunk_list(xg_arr_full, chunk_number=n_proc)
+        chunk_list = q.get_chunk_list(
+            xg_arr_full, chunk_number=max(1, q.get_q_num_mp_processes()))
         @q.timer(is_verbose=True)
         def eval(chunk_idx):
             chunk = chunk_list[chunk_idx]
