@@ -15,16 +15,28 @@ jobs:
     - uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixos-25.11
+    - name: Check disk space
+      run: df -h
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Test qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-ucxless.qlat-tests -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Build qlat with GPT and CPS
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Test qlat with GPT and CPS
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-tests -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Build qlat with jhub-env
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-ucxless.qlat-jhub-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - uses: actions/upload-artifact@v6
       with:
         name: qlat-docs
@@ -37,6 +49,8 @@ jobs:
       with:
         name: qlat-packages
         path: result/share/qlat-pypi/*.tar.gz
+    - name: Check disk space
+      run: df -h
 
   deploy_docs:
     # Add a dependency to the build job
@@ -63,16 +77,28 @@ jobs:
     - uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixos-25.11
+    - name: Check disk space
+      run: df -h
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Test qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Build qlat with GPT and CPS
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Test qlat with GPT and CPS
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-tests -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Build qlat with jhub-env
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-clang-ucxless.qlat-jhub-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
 
   build_qlat_ubuntu:
     runs-on: ubuntu-latest
@@ -359,16 +385,28 @@ jobs:
     - uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixos-25.11
+    - name: Check disk space
+      run: df -h
     - name: Build qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-env -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Test qlat
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-std-clang-ucxless.qlat-tests -j 1 --cores 3
+    - name: Check disk space
+      run: df -h
     - name: Build qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3 # --argstr version "25.05"
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-env -j 1 --cores 3 --argstr version "25.05"
+    - name: Check disk space
+      run: df -h
     - name: Test qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 # --argstr version "25.05"
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 --argstr version "25.05"
+    - name: Check disk space
+      run: df -h
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 # --argstr version "25.05"
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 --argstr version "25.05"
+    - name: Check disk space
+      run: df -h
 
   build_qlat_mac:
     runs-on: macos-latest
