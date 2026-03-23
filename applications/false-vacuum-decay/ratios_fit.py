@@ -143,7 +143,7 @@ class GaussianFitNoBounds(GaussianFit):
     def get_correction(self, t, *argv):
         argv = (30,) + argv
         return super().get_correction(t, *argv)
-    
+
 class PowerFit(Fit): 
     def R0(self, E, E_FV, n):
         return np.abs(E+E_FV)**n

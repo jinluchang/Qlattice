@@ -26,9 +26,9 @@ class Analysis:
         sf_ML = self.data.get_indices(params)[0]
         sfs_M = self.data.replace_params(sf_ML, ["M", "L"], [[M, 1.0] for M in Ms])
         sfs_L = self.data.replace_params(sf_ML, ["M", "L"], [[1.0, L] for L in Ls])
-        delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_M[i]]["M"][str(Ms[i+1])][self.data.cutoff:]), self.data.block_size)
+        delta_actions_M = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_M[i]]["M"][str(Ms[i+1])][self.data.cutoff:self.data.end]), self.data.block_size)
                            for i in range(len(Ms)-1)]
-        delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_L[i]]["L"][str(Ls[i+1])][self.data.cutoff:]), self.data.block_size)
+        delta_actions_L = [jk.get_jackknife_blocks(np.exp(self.data.delta_actions[sfs_L[i]]["L"][str(Ls[i+1])][self.data.cutoff:self.data.end]), self.data.block_size)
                            for i in range(len(Ls)-1)]
         return delta_actions_M + delta_actions_L
     
@@ -100,6 +100,25 @@ class Analysis:
     
     # Estimating systematic errors----------
     
+    def calc_Q_M_L_errors(self, Ms, Ls, params):
+        Qs = []
+        Q_errs = []
+        for i in range(1,len(Ms)-1):
+            M = Ms.pop(i)
+            Q_blocks = self.get_Q_blocks(Ms, Ls, params)
+            Q, Q_err = jk.get_errors_from_blocks(np.mean(Q_blocks), Q_blocks)
+            Qs.append(Q)
+            Q_errs.append(Q_err)
+            Ms.insert(i,M)
+        for i in range(1,len(Ls)-1):
+            L = Ls.pop(i)
+            Q_blocks = self.get_Q_blocks(Ms, Ls, params)
+            Q, Q_err = jk.get_errors_from_blocks(np.mean(Q_blocks), Q_blocks)
+            Qs.append(Q)
+            Q_errs.append(Q_err)
+            Ls.insert(i,L)
+        return Qs, Q_errs
+    
     def calc_gamma_M_L_errors(self, Ms, Ls, fit_start, fit_stop, params):
         gammas = []
         for i in range(1,len(Ms)-1):
@@ -117,8 +136,8 @@ class Analysis:
     #def get_R_div_R_blocks(self, sf, delta_t=1):
         #t_TV = int(self.data.params[sf]["tTV"])
         #t_FV = int(self.data.params[sf]["tFV"])
-        #blocks_TV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.data.cutoff:]), self.data.block_size)
-        #blocks_FV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.data.cutoff:]), self.data.block_size)
+        #blocks_TV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_TV[sf][f"{t_TV+delta_t}"][self.data.cutoff:self.data.end]), self.data.block_size)
+        #blocks_FV = jk.get_jackknife_blocks(np.exp(self.data.delta_actions_t_FV[sf][f"{t_FV+delta_t}"][self.data.cutoff:self.data.end]), self.data.block_size)
         #return np.divide(blocks_FV,blocks_TV)
 
     def get_Q_div_Q_blocks(self, sf):
@@ -147,10 +166,15 @@ class Analysis:
         xs = []
         for sf in sfs:
             x=get_x(sf)
-            if(filter_x(x) or int(self.data.params[sf]["tTV"])%2==0): continue
-            blocks = self.get_Q_div_Q_blocks(sf)
+            if(filter_x(x)):
+                continue
+            try:
+                blocks = self.get_Q_div_Q_blocks(sf)
+            except IndexError:
+                continue
             #blocks = np.log(self.get_Q_div_Q_blocks(sf)) / float(self.data.params[sf]["dt"])
             dS, err_dS = jk.get_errors_from_blocks(np.mean(blocks), blocks)
+            print([dS, err_dS])
             expS.append(dS)
             expS_errs.append(err_dS)
             xs.append(x)
@@ -163,10 +187,12 @@ class Analysis:
         expS = []
         expS_errs = []
         x = []
+        p = []
         for k in delta_action:
             if(filter_x(k)): continue
             x.append(get_x(k))
-            blocks = jk.get_jackknife_blocks(np.exp(delta_action[k][self.data.cutoff:]), self.data.block_size)
+            p.append(float(k))
+            blocks = jk.get_jackknife_blocks(np.exp(delta_action[k][self.data.cutoff:self.data.end]), self.data.block_size)
             [eS, err] = jk.get_errors_from_blocks(np.mean(blocks), blocks)
             expS.append(eS*fact)
             expS_errs.append(err*fact)
@@ -174,7 +200,7 @@ class Analysis:
         print(x)
         print(expS)
         print(expS_errs)
-        return x, expS, expS_errs
+        return p, expS, expS_errs
     
     def plot_expS_extend(self, delta_actions, key, sfs, param, get_x=float, filter_x=lambda x,y: False, sort=None):
         fact = 1.0
@@ -190,36 +216,36 @@ class Analysis:
                 fact = last_expS[last_params.index(p)]
             else:
                 print(f"No previous factor found for {param}={p}")
-            last_params, last_expS, errs = self.plot_expS(delta_actions[sf][key], get_x, fact, f"{param}={p}", lambda x: filter_x(x,p))
+            last_params, last_expS, errs = self.plot_expS(delta_actions[sf][key], get_x, fact, f"${param}_i={get_x(p)}$", lambda x: filter_x(x,p))
     
     def plot_expS_vs_M(self, params={}):
         sfs = list(filter(lambda x: self.data.params[x]["M"]!="1.0", list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "M", sfs, "M")
     
-    def plot_expS_vs_L(self, params={}):
-        sfs = list(filter(lambda x: self.data.params[x]["L"]!="1.0", list(self.data.get_indices(params))))
-        self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L")
+    def plot_expS_vs_L(self, params={}, f=lambda x: self.data.params[x]["L"]!="1.0", get_x=lambda x: float):
+        sfs = list(filter(f, list(self.data.get_indices(params))))
+        self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L", get_x=get_x)
     
     # Functions for plotting data ================================
-    def plot_mean_path(self, params={}, label="tTV", ax=None, color="blue"):
+    def plot_mean_path(self, params={}, label="tTV", ax=None, color="blue", idx=0):
         sfs = self.data.get_indices(params)
         for sf in sfs:
             if(ax==None):
-                plt.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:],axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
+                plt.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
             else:
-                ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:],axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
+                ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
     
-    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False):
+    def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False, idx=0):
         sfs = self.data.get_indices(params)
         for sf in sfs:
             count = 0
             x = np.arange(t_offset, len(self.data.timeslices[sf][0])+t_offset)
             for i in range(len(self.data.timeslices[sf][cutoff:end])):
                 if(ax==None):
-                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): plt.plot(x, self.data.timeslices[sf][i], alpha=alpha, color=color); count+=1;
+                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): plt.plot(x, np.array(self.data.timeslices[sf][i])[:,idx], alpha=alpha, color=color); count+=1;
                     if (i+1)%new_plot==0: plt.show()
                 else:
-                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, self.data.timeslices[sf][i], alpha=alpha, color=color); count+=1;
+                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, np.array(self.data.timeslices[sf][i])[:,idx], alpha=alpha, color=color); count+=1;
         print(count)
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="grey"):
@@ -253,7 +279,7 @@ class Analysis:
             if(np.mean(self.data.accept_rates[i]) < 0.7 or len(self.data.trajs[i])<n_traj):
                 print(i)
                 print(len(self.data.trajs[i]))
-                print(np.mean(self.data.accept_rates[i][self.data.cutoff:]))
+                print(np.mean(self.data.accept_rates[i][self.data.cutoff:self.data.end]))
     
     def autocorr(self, data):
         N = len(data)
