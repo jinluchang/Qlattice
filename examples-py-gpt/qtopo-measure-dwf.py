@@ -41,7 +41,9 @@ by Luchang Jin
     [--sparse_ratio 32] \
     [--num_of_rand_vol_u1 2] \
     [--ls 16] \
-    [--b+c 3.0] \
+    [--ls_sloppy 8] \
+    [--b_plus_c 3.0] \
+    [--b_plus_c_sloppy 3.0] \
     [--maxiter_sloppy 50] \
     [--maxiter_exact 100] \
     [--ama_prob 0.1] \
@@ -69,7 +71,9 @@ def measure_topo_dwf(
     sparse_ratio = params["sparse_ratio"]
     num_of_rand_vol_u1 = params["num_of_rand_vol_u1"]
     ls = params["ls"]
+    ls_sloppy = params["ls_sloppy"]
     b_plus_c = params["b_plus_c"]
+    b_plus_c_sloppy = params["b_plus_c_sloppy"]
     maxiter_sloppy = params["maxiter_sloppy"]
     maxiter_exact = params["maxiter_exact"]
     ama_prob = params["ama_prob"]
@@ -86,6 +90,14 @@ def measure_topo_dwf(
         "b": (b_plus_c + 1) / 2,
         "c": (b_plus_c - 1) / 2,
         "Ls": ls,
+        "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+    }
+    mobius_params_sloppy = {
+        "mass": 1.0,
+        "M5": 1.8,
+        "b": (b_plus_c_sloppy + 1) / 2,
+        "c": (b_plus_c_sloppy - 1) / 2,
+        "Ls": ls_sloppy,
         "boundary_phases": [1.0, 1.0, 1.0, 1.0],
     }
     #
@@ -172,6 +184,8 @@ def measure_topo_dwf(
             if r <= ama_prob:
                 sp_prop_sol_ama = sparse_solve(idx, psel, prop_src, fu1, inv_qm)
                 sp_prop_sol_ama -= sp_prop_sol
+                q.json_results_append(f"sp_prop_sol_ama ratio ({idx+1}/{len(psel_list)}) ({ama_prob=:.4f})", np.sqrt(
+                    q.glb_sum(q.qnorm(sp_prop_sol_ama)) / q.glb_sum(q.qnorm(sp_prop_sol))).item())
                 sp_prop_sol_ama *= 1 / ama_prob
                 sp_prop_sol += sp_prop_sol_ama
             sp_prop_sol_list.append(sp_prop_sol)
@@ -269,6 +283,9 @@ def measure_topo_dwf(
     q.json_results_append(f"f_tadpole_loop_sum_arr topo sum", f_tadpole_loop_sum_arr[:, :, 0].sum(-1), 1e-7)
     #
     topo_tslice_arr = f_tadpole_loop_sum_arr[:, :, 0].copy()
+    #
+    q.qtouch_info(f"{info_path}/checkpoint.txt")
+    #
     return topo_tslice_arr
 
 # ------------------------------
@@ -493,7 +510,8 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sp_prop_src = q.PselProp(psel)
     sp_prop_src.set_zero()
     sp_prop_src @= prop_src
-    q.json_results_append(f"sp_prop_src {idx}", q.get_data_sig_arr(sp_prop_src, rs_sig, 3), 1e-12)
+    if is_test():
+        q.json_results_append(f"sp_prop_src {idx}", q.get_data_sig_arr(sp_prop_src, rs_sig, 3), 1e-12)
     sparse_grid_prop_src = q.Prop(geo)
     sparse_grid_prop_src.set_zero()
     sparse_grid_prop_src @= sp_prop_src
@@ -503,7 +521,8 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sp_fu1 = q.SelectedPointsComplexD(psel, 1)
     sp_fu1 @= fu1
     sp_prop_sol[:] *= sp_fu1[:, None, None].conj()
-    q.json_results_append(f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3), 1e-7)
+    if is_test():
+        q.json_results_append(f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3), 1e-7)
     return sp_prop_sol
 
 # --------------------------------------------
@@ -538,15 +557,17 @@ def gen_test_data():
     argv += [
         "--sparse_ratio", "2",
         "--num_of_rand_vol_u1", "2",
-        "--Ls", "16",
-        "--b+c", "3.0",
+        "--ls", "16",
+        "--ls_sloppy", "8",
+        "--b_plus_c", "3.0",
+        "--b_plus_c_sloppy", "3.0",
     ]
     return argv
 
 @q.timer(is_timer_fork=True)
 def run_topo_measure(fn_gf, fn_out, *, params=None):
     fname = q.get_fname()
-    if q.does_file_exist_qar_sync_node(fn_out):
+    if q.does_file_exist_qar_sync_node(fn_out + "/checkpoint.txt"):
         q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip.")
         return
     if not q.does_file_exist_qar_sync_node(fn_gf):
@@ -584,7 +605,9 @@ def run():
         sparse_ratio=int(q.get_arg("--sparse_ratio", "32", argv=argv)),
         num_of_rand_vol_u1=int(q.get_arg("--num_of_rand_vol_u1", "2", argv=argv)),
         ls=int(q.get_arg("--ls", "16", argv=argv)),
-        b_plus_c=float(q.get_arg("--b+c", "3.0", argv=argv)),
+        ls_sloppy=int(q.get_arg("--ls_sloppy", "8", argv=argv)),
+        b_plus_c=float(q.get_arg("--b_plus_c", "3.0", argv=argv)),
+        b_plus_c_sloppy=float(q.get_arg("--b_plus_c_sloppy", "3.0", argv=argv)),
         maxiter_sloppy=int(q.get_arg("--maxiter_sloppy", "50", argv=argv)),
         maxiter_exact=int(q.get_arg("--maxiter_exact", "100", argv=argv)),
         ama_prob=float(q.get_arg("--ama_prob", "0.1", argv=argv)),
