@@ -24,7 +24,7 @@ aget "https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz"
 
-aget "https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
+aget "https://ftp.gnu.org/gnu/automake/automake-1.18.1.tar.xz"
 
 aget "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
 
