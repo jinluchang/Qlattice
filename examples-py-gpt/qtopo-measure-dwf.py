@@ -184,8 +184,12 @@ def measure_topo_dwf(
             if r <= ama_prob:
                 sp_prop_sol_ama = sparse_solve(idx, psel, prop_src, fu1, inv_qm)
                 sp_prop_sol_ama -= sp_prop_sol
-                q.json_results_append(f"sp_prop_sol_ama ratio ({idx+1}/{len(psel_list)}) ({ama_prob=:.4f})", np.sqrt(
-                    q.glb_sum(q.qnorm(sp_prop_sol_ama)) / q.glb_sum(q.qnorm(sp_prop_sol))).item())
+                q.json_results_append(
+                    f"sp_prop_sol_ama ratio ({idx+1}/{len(psel_list)}) ({ama_prob=:.4f})",
+                    np.sqrt(q.glb_sum(q.qnorm(sp_prop_sol_ama)) /
+                            q.glb_sum(q.qnorm(sp_prop_sol))).item(),
+                    1e-5,
+                )
                 sp_prop_sol_ama *= 1 / ama_prob
                 sp_prop_sol += sp_prop_sol_ama
             sp_prop_sol_list.append(sp_prop_sol)
