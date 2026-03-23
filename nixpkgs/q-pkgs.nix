@@ -568,9 +568,7 @@ let
       flit-core
       virtualenv
       h5py
-      matplotlib
       sentencepiece
-      ipywidgets
       sphinx
       linkify-it-py
       myst-parser
@@ -584,6 +582,8 @@ let
       xarray
       numba
       torch
+      matplotlib
+      ipywidgets
       scikit-learn
       accelerate
       jupyter-server-mathjax
