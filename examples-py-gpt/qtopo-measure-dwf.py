@@ -41,7 +41,7 @@ by Luchang Jin
     [--sparse_ratio 32] \
     [--num_of_rand_vol_u1 2] \
     [--ls 16] \
-    [--ls_sloppy 8] \
+    [--ls_sloppy 12] \
     [--b_plus_c 3.0] \
     [--b_plus_c_sloppy 3.0] \
     [--maxiter_sloppy 50] \
@@ -158,8 +158,9 @@ def measure_topo_dwf(
     q.json_results_append(f"gf1.plaq()", gf1.plaq(), 1e-12)
     #
     qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
+    qm_f = g.qcd.fermion.mobius(gpt_gf, mobius_params_sloppy)
     slv_qm = qm.propagator(slv_5d).grouped(4)
-    slv_qm_f = qm.propagator(slv_5d_f).grouped(4)
+    slv_qm_f = qm_f.propagator(slv_5d_f).grouped(4)
     inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=q.Timer("py:slv_qm", True))
     inv_qm_f = qg.InverterGPT(inverter=slv_qm_f, qtimer=q.Timer("py:slv_qm_f", True))
     #
@@ -562,7 +563,7 @@ def gen_test_data():
         "--sparse_ratio", "2",
         "--num_of_rand_vol_u1", "2",
         "--ls", "16",
-        "--ls_sloppy", "8",
+        "--ls_sloppy", "12",
         "--b_plus_c", "3.0",
         "--b_plus_c_sloppy", "3.0",
     ]
@@ -609,7 +610,7 @@ def run():
         sparse_ratio=int(q.get_arg("--sparse_ratio", "32", argv=argv)),
         num_of_rand_vol_u1=int(q.get_arg("--num_of_rand_vol_u1", "2", argv=argv)),
         ls=int(q.get_arg("--ls", "16", argv=argv)),
-        ls_sloppy=int(q.get_arg("--ls_sloppy", "8", argv=argv)),
+        ls_sloppy=int(q.get_arg("--ls_sloppy", "12", argv=argv)),
         b_plus_c=float(q.get_arg("--b_plus_c", "3.0", argv=argv)),
         b_plus_c_sloppy=float(q.get_arg("--b_plus_c_sloppy", "3.0", argv=argv)),
         maxiter_sloppy=int(q.get_arg("--maxiter_sloppy", "50", argv=argv)),
