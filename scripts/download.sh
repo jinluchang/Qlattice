@@ -46,7 +46,7 @@ aget "https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.5/llvm
 
 aget "https://www.cpan.org/src/5.0/perl-5.38.2.tar.gz"
 
-aget "https://github.com/openssl/openssl/releases/download/openssl-3.3.0/openssl-3.3.0.tar.gz"
+aget "https://github.com/openssl/openssl/releases/download/openssl-3.5.5/openssl-3.5.5.tar.gz"
 
 aget "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz"
 
