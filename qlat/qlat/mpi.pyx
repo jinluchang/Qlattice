@@ -62,6 +62,32 @@ def bcast_lat_data(LatData ld, int root=0):
 
 ### -------------------------------------------------------------------
 
+def get_id_node_list_for_shuffle():
+    """
+    return ``list``
+    ``list`` is a list of ``id_node``s, which are intended to perform IO.
+    ``list[id_node_in_shuffle] = id_node``
+    """
+    cdef list id_node_list = []
+    cdef cc.std_vector[cc.Int] id_node_vec = cc.get_id_node_list_for_shuffle()
+    for id_node in id_node_vec:
+        id_node_list.append(id_node)
+    return id_node_list
+
+def get_id_node_in_shuffle_list():
+    """
+    return ``list``
+    ``list[id_node] = id_node_in_shuffle``
+    Related to ``get_id_node_list_for_shuffle()``
+    """
+    cdef list id_node_in_shuffle_list = []
+    cdef cc.std_vector[cc.Int] id_node_in_shuffle_vec = cc.get_id_node_in_shuffle_list()
+    for id_node in id_node_in_shuffle_vec:
+        id_node_in_shuffle_list.append(id_node)
+    return id_node_in_shuffle_list
+
+### -------------------------------------------------------------------
+
 def glb_sum_long(cc.Long x):
     cc.glb_sum(x)
     return x

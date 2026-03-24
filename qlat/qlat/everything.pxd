@@ -27,6 +27,8 @@ cdef extern from "qlat/mpi.h" namespace "qlat":
     RealF f_bcast_any(const RealF& x, const bool b) except +
     ComplexD f_bcast_any(const ComplexD& x, const bool b) except +
     ComplexF f_bcast_any(const ComplexF& x, const bool b) except +
+    std_vector[Int]& get_id_node_list_for_shuffle() except +
+    std_vector[Int]& get_id_node_in_shuffle_list() except +
     Int glb_sum(Long& x) except +
     Int glb_sum(RealD& x) except +
     Int glb_sum(RealF& x) except +
@@ -326,12 +328,12 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatDataLong& ld) except +
     void lat_data_from_selected_points[M](LatDataInt& ld, const SelectedPoints[M]& sp) except +
     void selected_points_from_lat_data[M](SelectedPoints[M]& sp, const LatDataInt& ld) except +
-    void save_selected_points[M](const SelectedPoints[M]& sp, QFile& qfile) except +
-    void load_selected_points[M](SelectedPoints[M]& sp, QFile& qfile) except +
-    void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& fn) except +
-    void load_selected_points[M](SelectedPoints[M]& sp, const std_string& fn) except +
-    std_string save_selected_points_str[M](const SelectedPoints[M]& sp) except +
-    void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content) except +
+    void save_selected_points[M](const SelectedPoints[M]& sp, QFile& qfile, const bool is_sync_node) except +
+    void load_selected_points[M](SelectedPoints[M]& sp, QFile& qfile, const bool is_sync_node) except +
+    void save_selected_points[M](const SelectedPoints[M]& sp, const std_string& fn, const bool is_sync_node) except +
+    void load_selected_points[M](SelectedPoints[M]& sp, const std_string& fn, const bool is_sync_node) except +
+    std_string save_selected_points_str[M](const SelectedPoints[M]& sp, const bool is_sync_node) except +
+    void load_selected_points_str[M](SelectedPoints[M]& sp, std_string& content, const bool is_sync_node) except +
     void field_glb_sum[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const Field[M]& f, const Int t_dir) except +
     void field_glb_max[M](SelectedPoints[M]& sp, const Field[M]& f) except +

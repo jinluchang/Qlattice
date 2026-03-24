@@ -428,6 +428,7 @@ Int bcast(vector<M>& recv, const Int root = 0)
   Int ret = 0;
   Long size = recv.size();
   ret += bcast<Long>(size, root);
+  Qassert(ret == 0);
   recv.resize(size);
   vector<M> buffer(size, MemType::Comm);
   if (get_id_node() == root) {

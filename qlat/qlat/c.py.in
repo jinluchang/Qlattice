@@ -32,6 +32,8 @@ __all__ += [
         'bcast_double',
         'bcast_complex',
         'bcast_lat_data',
+        'get_id_node_list_for_shuffle',
+        'get_id_node_in_shuffle_list',
         'glb_sum_long',
         'glb_sum_double',
         'glb_sum_complex',

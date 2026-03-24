@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qlat/field.h>
-#include "core.h"
 
 namespace qlat
 {  //
@@ -618,11 +617,13 @@ void selected_points_from_lat_data(SelectedPoints<M>& sp, const LatDataInt& ld)
 // -------------------------------------------
 
 template <class M>
-void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile)
+void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile,
+                          const bool is_sync_node)
 {
-  TIMER_VERBOSE("save_selected_points(sp,qfile)");
+  TIMER_VERBOSE("save_selected_points(sp,qfile,is_sync_node)");
   Qassert(sp.points_dist_type == PointsDistType::Global);
-  if (get_id_node() == 0) {
+  const Int root = 0;
+  if (not is_sync_node or get_id_node() == root) {
     if (is_composed_of_real_d<M>()) {
       LatData ld;
       lat_data_from_selected_points(ld, sp);
@@ -643,15 +644,18 @@ void save_selected_points(const SelectedPoints<M>& sp, QFile& qfile)
       Qassert(false);
     }
   }
+  if (is_sync_node) {
+    sync_node(fname);
+  }
 }
 
 template <class M>
-void load_selected_points(SelectedPoints<M>& sp, QFile& qfile)
+void load_selected_points(SelectedPoints<M>& sp, QFile& qfile,
+                          const bool is_sync_node)
 {
-  TIMER_VERBOSE("load_selected_points(sp,qfile)");
-  Long n_points = 0;
-  Long multiplicity = 0;
-  if (get_id_node() == 0) {
+  TIMER_VERBOSE("load_selected_points(sp,qfile,is_sync_node)");
+  const Int root = 0;
+  if (not is_sync_node or get_id_node() == root) {
     if (is_composed_of_real_d<M>()) {
       LatData ld;
       ld.load(qfile);
@@ -671,73 +675,89 @@ void load_selected_points(SelectedPoints<M>& sp, QFile& qfile)
     } else {
       Qassert(false);
     }
-    n_points = sp.n_points;
-    multiplicity = sp.multiplicity;
   }
-  bcast(get_data_one_elem(n_points));
-  bcast(get_data_one_elem(multiplicity));
-  if (get_id_node() != 0) {
-    sp.init(n_points, multiplicity, PointsDistType::Global);
+  if (is_sync_node) {
+    bcast(sp, root);
   }
-  vector<M> buffer(sp.points.size());
-  assign(get_data(buffer), get_data(sp.points));
-  bcast(get_data(buffer));
-  assign(get_data(sp.points), get_data(buffer));
 }
 
 template <class M>
-void save_selected_points(const SelectedPoints<M>& sp, const std::string& fn)
+void save_selected_points(const SelectedPoints<M>& sp, const std::string& fn,
+                          const bool is_sync_node)
 {
+  TIMER("save_selected_points(sp,fn,is_sync_node)");
   QFile qfile;
-  if (get_id_node() == 0) {
+  const Int root = 0;
+  if (not is_sync_node or get_id_node() == root) {
     qfile = qfopen(fn + ".partial", "w");
+    save_selected_points(sp, qfile, false);
+    qfclose(qfile);
+    qrename(fn + ".partial", fn);
   }
-  save_selected_points(sp, qfile);
-  qfclose(qfile);
-  qrename_info(fn + ".partial", fn);
+  if (is_sync_node) {
+    sync_node(fname);
+  }
 }
 
 template <class M>
-void load_selected_points(SelectedPoints<M>& sp, const std::string& fn)
+void load_selected_points(SelectedPoints<M>& sp, const std::string& fn,
+                          const bool is_sync_node)
 {
+  TIMER("load_selected_points(sp,fn,is_sync_node)");
   QFile qfile;
-  if (get_id_node() == 0) {
+  const Int root = 0;
+  if (not is_sync_node or get_id_node() == root) {
     qfile = qfopen(fn, "r");
+    load_selected_points(sp, qfile, false);
+    qfclose(qfile);
   }
-  load_selected_points(sp, qfile);
-  qfclose(qfile);
+  if (is_sync_node) {
+    bcast(sp, root);
+  }
 }
 
 template <class M>
-std::string save_selected_points_str(const SelectedPoints<M>& sp)
-// Right now only return content at node 0.
+std::string save_selected_points_str(const SelectedPoints<M>& sp,
+                                     const bool is_sync_node)
+// Right now only return content at node root.
+// Only returns content from node root (root=0) if is_sync_node.
+// Otherwise, always returns content.
 {
+  TIMER("save_selected_points_str(sp,is_sync_node)");
+  const Int root = 0;
   QFile qfile;
-  if (get_id_node() == 0) {
+  std::string ret;
+  if (not is_sync_node or get_id_node() == root) {
     qfile =
         qfopen(QFileType::String, "/ save SelectedPoints /", QFileMode::Write);
-  }
-  save_selected_points(sp, qfile);
-  std::string ret;
-  if (get_id_node() == 0) {
+    save_selected_points(sp, qfile, false);
     ret = qfile.content();
+    qfclose(qfile);
   }
-  qfclose(qfile);
+  if (is_sync_node) {
+    sync_node(fname);
+  }
   return ret;
 }
 
 template <class M>
-void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
+void load_selected_points_str(SelectedPoints<M>& sp, std::string& content,
+                              const bool is_sync_node)
 // Allow to destroy `content` to be more efficient.
-// Only need to set the content at node 0.
+// Only need to set the content at node root.
 {
+  TIMER("load_selected_points(sp,fn,is_sync_node)");
+  const Int root = 0;
   QFile qfile;
-  if (get_id_node() == 0) {
+  if (not is_sync_node or get_id_node() == root) {
     qfile = qfopen(QFileType::String, "/ load SelectedPoints /",
                    QFileMode::Read, content);
+    load_selected_points(sp, qfile, false);
+    qfclose(qfile);
   }
-  load_selected_points(sp, qfile);
-  qfclose(qfile);
+  if (is_sync_node) {
+    bcast(sp, root);
+  }
 }
 
 // --------------------
@@ -748,108 +768,112 @@ void load_selected_points_str(SelectedPoints<M>& sp, std::string& content)
 #define QLAT_EXTERN extern
 #endif
 
-#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                    \
-                                                                          \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator+= <TYPENAME>(   \
-      SelectedPoints<TYPENAME> & f, const SelectedPoints<TYPENAME>& f1);  \
-                                                                          \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator-= <TYPENAME>(   \
-      SelectedPoints<TYPENAME> & f, const SelectedPoints<TYPENAME>& f1);  \
-                                                                          \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=               \
-      <TYPENAME>(SelectedPoints<TYPENAME> & f, const double factor);      \
-                                                                          \
-  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=               \
-      <TYPENAME>(SelectedPoints<TYPENAME> & f, const ComplexD factor);    \
-                                                                          \
-  QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(          \
-      Field<TYPENAME> & f, const PointsSelection& psel);                  \
-                                                                          \
-  QLAT_EXTERN template double qnorm<TYPENAME>(                            \
-      const SelectedPoints<TYPENAME>& sp);                                \
-                                                                          \
-  QLAT_EXTERN template void qnorm_field<TYPENAME>(                        \
-      SelectedPoints<double> & sp, const SelectedPoints<TYPENAME>& sp1);  \
-                                                                          \
-  QLAT_EXTERN template void set_selected_points<TYPENAME>(                \
-      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,            \
-      const PointsSelection& psel);                                       \
-                                                                          \
-  QLAT_EXTERN template void set_selected_points<TYPENAME>(                \
-      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,            \
-      const PointsSelection& psel, const Int m);                          \
-                                                                          \
-  QLAT_EXTERN template void set_selected_points<TYPENAME>(                \
-      SelectedPoints<TYPENAME> & sp, const SelectedPoints<TYPENAME>& sp0, \
-      const PointsSelection& psel, const PointsSelection& psel0,          \
-      const bool is_keeping_data);                                        \
-                                                                          \
-  QLAT_EXTERN template void set_field_selected<TYPENAME>(                 \
-      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,            \
-      const Geometry& geo_, const PointsSelection& psel,                  \
-      const bool is_keeping_data);                                        \
-                                                                          \
-  QLAT_EXTERN template void set_field_selected<TYPENAME>(                 \
-      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,            \
-      const Geometry& geo_, const PointsSelection& psel,                  \
-      const Int multiplicity, const Int m, const bool is_keeping_data);   \
-                                                                          \
-  QLAT_EXTERN template void acc_field<TYPENAME>(                          \
-      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,            \
-      const Geometry& geo_, const PointsSelection& psel);                 \
-                                                                          \
-  QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(               \
-      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,            \
-      const Int t_dir);                                                   \
-                                                                          \
-  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
-      LatData & ld, const SelectedPoints<TYPENAME>& sp);                  \
-                                                                          \
-  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
-      SelectedPoints<TYPENAME> & sp, const LatData& ld);                  \
-                                                                          \
-  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
-      LatDataRealF & ld, const SelectedPoints<TYPENAME>& sp);             \
-                                                                          \
-  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
-      SelectedPoints<TYPENAME> & sp, const LatDataRealF& ld);             \
-                                                                          \
-  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
-      LatDataLong & ld, const SelectedPoints<TYPENAME>& sp);              \
-                                                                          \
-  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
-      SelectedPoints<TYPENAME> & sp, const LatDataLong& ld);              \
-                                                                          \
-  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(      \
-      LatDataInt & ld, const SelectedPoints<TYPENAME>& sp);               \
-                                                                          \
-  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(      \
-      SelectedPoints<TYPENAME> & sp, const LatDataInt& ld);               \
-                                                                          \
-  QLAT_EXTERN template void save_selected_points<TYPENAME>(               \
-      const SelectedPoints<TYPENAME>& sp, QFile& qfile);                  \
-                                                                          \
-  QLAT_EXTERN template void load_selected_points<TYPENAME>(               \
-      SelectedPoints<TYPENAME> & sp, QFile & qfile);                      \
-                                                                          \
-  QLAT_EXTERN template void save_selected_points<TYPENAME>(               \
-      const SelectedPoints<TYPENAME>& sp, const std::string& fn);         \
-                                                                          \
-  QLAT_EXTERN template void load_selected_points<TYPENAME>(               \
-      SelectedPoints<TYPENAME> & sp, const std::string& fn);              \
-                                                                          \
-  QLAT_EXTERN template std::string save_selected_points_str<TYPENAME>(    \
-      const SelectedPoints<TYPENAME>& sp);                                \
-                                                                          \
-  QLAT_EXTERN template void load_selected_points_str<TYPENAME>(           \
-      SelectedPoints<TYPENAME> & sp, std::string & content);              \
-                                                                          \
-  QLAT_EXTERN template void set_u_rand<TYPENAME>(                         \
-      SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,         \
-      const RngState& rs, const RealD upper, const RealD lower);          \
-                                                                          \
-  QLAT_EXTERN template void set_g_rand<TYPENAME>(                         \
-      SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,         \
+#define QLAT_EXTERN_TEMPLATE(TYPENAME)                                        \
+                                                                              \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator+= <TYPENAME>(       \
+      SelectedPoints<TYPENAME> & f, const SelectedPoints<TYPENAME>& f1);      \
+                                                                              \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator-= <TYPENAME>(       \
+      SelectedPoints<TYPENAME> & f, const SelectedPoints<TYPENAME>& f1);      \
+                                                                              \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=                   \
+      <TYPENAME>(SelectedPoints<TYPENAME> & f, const double factor);          \
+                                                                              \
+  QLAT_EXTERN template SelectedPoints<TYPENAME>& operator*=                   \
+      <TYPENAME>(SelectedPoints<TYPENAME> & f, const ComplexD factor);        \
+                                                                              \
+  QLAT_EXTERN template void only_keep_selected_points<TYPENAME>(              \
+      Field<TYPENAME> & f, const PointsSelection& psel);                      \
+                                                                              \
+  QLAT_EXTERN template double qnorm<TYPENAME>(                                \
+      const SelectedPoints<TYPENAME>& sp);                                    \
+                                                                              \
+  QLAT_EXTERN template void qnorm_field<TYPENAME>(                            \
+      SelectedPoints<double> & sp, const SelectedPoints<TYPENAME>& sp1);      \
+                                                                              \
+  QLAT_EXTERN template void set_selected_points<TYPENAME>(                    \
+      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,                \
+      const PointsSelection& psel);                                           \
+                                                                              \
+  QLAT_EXTERN template void set_selected_points<TYPENAME>(                    \
+      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,                \
+      const PointsSelection& psel, const Int m);                              \
+                                                                              \
+  QLAT_EXTERN template void set_selected_points<TYPENAME>(                    \
+      SelectedPoints<TYPENAME> & sp, const SelectedPoints<TYPENAME>& sp0,     \
+      const PointsSelection& psel, const PointsSelection& psel0,              \
+      const bool is_keeping_data);                                            \
+                                                                              \
+  QLAT_EXTERN template void set_field_selected<TYPENAME>(                     \
+      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,                \
+      const Geometry& geo_, const PointsSelection& psel,                      \
+      const bool is_keeping_data);                                            \
+                                                                              \
+  QLAT_EXTERN template void set_field_selected<TYPENAME>(                     \
+      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,                \
+      const Geometry& geo_, const PointsSelection& psel,                      \
+      const Int multiplicity, const Int m, const bool is_keeping_data);       \
+                                                                              \
+  QLAT_EXTERN template void acc_field<TYPENAME>(                              \
+      Field<TYPENAME> & f, const SelectedPoints<TYPENAME>& sp,                \
+      const Geometry& geo_, const PointsSelection& psel);                     \
+                                                                              \
+  QLAT_EXTERN template void field_glb_sum_tslice<TYPENAME>(                   \
+      SelectedPoints<TYPENAME> & sp, const Field<TYPENAME>& f,                \
+      const Int t_dir);                                                       \
+                                                                              \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(          \
+      LatData & ld, const SelectedPoints<TYPENAME>& sp);                      \
+                                                                              \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(          \
+      SelectedPoints<TYPENAME> & sp, const LatData& ld);                      \
+                                                                              \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(          \
+      LatDataRealF & ld, const SelectedPoints<TYPENAME>& sp);                 \
+                                                                              \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(          \
+      SelectedPoints<TYPENAME> & sp, const LatDataRealF& ld);                 \
+                                                                              \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(          \
+      LatDataLong & ld, const SelectedPoints<TYPENAME>& sp);                  \
+                                                                              \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(          \
+      SelectedPoints<TYPENAME> & sp, const LatDataLong& ld);                  \
+                                                                              \
+  QLAT_EXTERN template void lat_data_from_selected_points<TYPENAME>(          \
+      LatDataInt & ld, const SelectedPoints<TYPENAME>& sp);                   \
+                                                                              \
+  QLAT_EXTERN template void selected_points_from_lat_data<TYPENAME>(          \
+      SelectedPoints<TYPENAME> & sp, const LatDataInt& ld);                   \
+                                                                              \
+  QLAT_EXTERN template void save_selected_points<TYPENAME>(                   \
+      const SelectedPoints<TYPENAME>& sp, QFile& qfile,                       \
+      const bool is_sync_node);                                               \
+                                                                              \
+  QLAT_EXTERN template void load_selected_points<TYPENAME>(                   \
+      SelectedPoints<TYPENAME> & sp, QFile & qfile, const bool is_sync_node); \
+                                                                              \
+  QLAT_EXTERN template void save_selected_points<TYPENAME>(                   \
+      const SelectedPoints<TYPENAME>& sp, const std::string& fn,              \
+      const bool is_sync_node);                                               \
+                                                                              \
+  QLAT_EXTERN template void load_selected_points<TYPENAME>(                   \
+      SelectedPoints<TYPENAME> & sp, const std::string& fn,                   \
+      const bool is_sync_node);                                               \
+                                                                              \
+  QLAT_EXTERN template std::string save_selected_points_str<TYPENAME>(        \
+      const SelectedPoints<TYPENAME>& sp, const bool is_sync_node);           \
+                                                                              \
+  QLAT_EXTERN template void load_selected_points_str<TYPENAME>(               \
+      SelectedPoints<TYPENAME> & sp, std::string & content,                   \
+      const bool is_sync_node);                                               \
+                                                                              \
+  QLAT_EXTERN template void set_u_rand<TYPENAME>(                             \
+      SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,             \
+      const RngState& rs, const RealD upper, const RealD lower);              \
+                                                                              \
+  QLAT_EXTERN template void set_g_rand<TYPENAME>(                             \
+      SelectedPoints<TYPENAME> & sp, const PointsSelection& psel,             \
       const RngState& rs, const RealD center, const RealD sigma)
 
 QLAT_CALL_WITH_TYPES(QLAT_EXTERN_TEMPLATE);

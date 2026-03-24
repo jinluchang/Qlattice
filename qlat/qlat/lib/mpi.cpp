@@ -1,5 +1,6 @@
 #include <qlat-utils/core.h>
 #include <qlat/mpi.h>
+#include "qlat-utils/timer.h"
 
 namespace qlat
 {
@@ -758,6 +759,12 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
 }
 
 std::vector<Int> mk_id_node_list_for_shuffle()
+// return list
+// list.size() == num_node
+// list[id_node_in_shuffle] == id_node
+//
+// Call get_id_node_list_for_shuffle() instead.
+//
 // Use env variable "q_mk_id_node_in_shuffle_seed".
 // If the env variable is empty, then assignment based on physical node. (Should
 // be a good idea.) If env variable start with "seed_", then the rest will be
@@ -765,28 +772,35 @@ std::vector<Int> mk_id_node_list_for_shuffle()
 // Int for step_size.
 {
   TIMER_VERBOSE("mk_id_node_list_for_shuffle")
+  std::vector<Int> list;
   const std::string seed = get_env_default("q_mk_id_node_in_shuffle_seed", "");
   const std::string seed_prefix = "seed_";
   if (seed == "") {
-    return mk_id_node_list_for_shuffle_node();
+    list = mk_id_node_list_for_shuffle_node();
   } else if (seed.compare(0, seed_prefix.size(), seed_prefix) == 0) {
     RngState rs(seed.substr(seed_prefix.size()));
-    return mk_id_node_list_for_shuffle_rs(rs);
+    list = mk_id_node_list_for_shuffle_rs(rs);
   } else {
     const Long step_size = read_long(seed);
-    return mk_id_node_list_for_shuffle_step_size(step_size);
+    list = mk_id_node_list_for_shuffle_step_size(step_size);
   }
+  Qassert((Long)list.size() == get_num_node());
+  return list;
 }
 
 std::vector<Int> mk_id_node_in_shuffle_list()
 // return list_new
 // list_new[id_node] = id_node_in_shuffle
+//
+// Call get_id_node_in_shuffle_list() instead.
+//
 {
   TIMER_VERBOSE("mk_id_node_in_shuffle_list")
+  std::vector<Int> list_new;
   const std::vector<Int>& list = get_id_node_list_for_shuffle();
   const Int num_node = list.size();
   Qassert(num_node == get_num_node());
-  std::vector<Int> list_new(num_node, 0);
+  list_new.resize(num_node, 0);
   for (Int i = 0; i < num_node; ++i) {
     const Int id_node_in_shuffle = i;
     const Int id_node = list[i];

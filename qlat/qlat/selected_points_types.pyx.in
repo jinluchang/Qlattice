@@ -207,14 +207,22 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
         f1.psel = psel
         cc.qswap_cast(self.xx, f1.xx)
 
-    def save(self, const cc.std_string& path):
-        cc.save_selected_points(self.xx, path)
+    def save(
+        self, const cc.std_string& path,
+        const cc.Bool is_sync_node=True,
+    ):
+        cc.save_selected_points(self.xx, path, is_sync_node)
 
-    def load(self, const cc.std_string& path):
-        cc.load_selected_points(self.xx, path)
+    def load(
+        self, const cc.std_string& path,
+        const cc.Bool is_sync_node=True,
+    ):
+        cc.load_selected_points(self.xx, path, is_sync_node)
 
     @q.timer
-    def bcast(self, cc.Int root=0):
+    def bcast(
+        self, cc.Int root=0,
+    ):
         """
         Call ``self.psel.bcast(root)``
         Note: will set ``self.psel`` to ``None`` if ``self.psel.n_points == 0``
@@ -228,18 +236,23 @@ cdef class SelectedPoints{{name}}(SelectedPointsBase):
             self.psel = None
         return self
 
-    def save_str(self):
+    def save_str(
+        self, cc.Bool is_sync_node=True,
+    ):
         """
-        only return str at node 0
+        only return str at node root
         """
-        return <bytes>cc.save_selected_points_str(self.xx)
+        return <bytes>cc.save_selected_points_str(self.xx, is_sync_node)
 
-    def load_str(self, bytes content):
+    def load_str(
+        self, bytes content,
+        cc.Bool is_sync_node=True,
+    ):
         """
         only need str at node 0
         """
         cdef cc.std_string content_std_str = content
-        return cc.load_selected_points_str(self.xx, content_std_str)
+        return cc.load_selected_points_str(self.xx, content_std_str, is_sync_node)
 
 {{if name in real_d_type_name_list}}
     def to_lat_data(self):

@@ -99,6 +99,8 @@ cdef class PselProp(SelectedPointsWilsonMatrix):
             super().__init__(psel, 1)
         elif isinstance(args[0], SelProp):
             super().__init__(*args)
+        else:
+            assert False
 
     cdef cc.Handle[cc.PselProp] xxx(self):
         assert self.xx.multiplicity == 1 or self.xx.multiplicity == 0

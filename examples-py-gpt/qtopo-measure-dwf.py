@@ -176,8 +176,77 @@ def measure_topo_dwf(
         q.json_results_append(f"fu1", q.get_data_sig_arr(fu1, rs_sig, 3), 1e-12)
         q.json_results_append(f"prop_src", q.get_data_sig_arr(prop_src, rs_sig, 3), 1e-12)
         #
+        def mk_path(idx):
+            return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
+        #
+        @q.timer(is_verbose=True)
+        def save(idx, sp_prop_sol):
+            if info_path is None:
+                return
+            root = 0
+            psel = psel_list[idx]
+            assert sp_prop_sol.n_points == psel.n_points
+            ssp = q.SelectedShufflePlan("g_from_l", psel, root, geo)
+            psel_g = ssp.psel_recv_list[0]
+            sp_prop_sol_g = ssp.shuffle_sp(q.PselProp, sp_prop_sol)
+            if root == q.get_id_node():
+                assert sp_prop_sol_g.n_points == psel_g.n_points
+                psel_g.save(
+                    f"{mk_path(idx)}/psel.lati",
+                    is_sync_node=False,
+                )
+                sp_prop_sol_g.save(
+                    f"{mk_path(idx)}/sp_prop_sol.lat",
+                    is_sync_node=False,
+                )
+            else:
+                assert len(psel_g) == 0
+                assert sp_prop_sol_g.n_points == 0
+        #
+        @q.timer(is_verbose=True)
+        def load(idx_list):
+            """
+            return ``sp_prop_sol_il``
+            Note: ``sp_prop_sol_il`` is a list ``q.PselProp`` with ``"l"`` as the ``points_dist_type``.
+            """
+            if info_path is None:
+                return
+            id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
+            root_il = [
+                id_node_list_for_shuffle[
+                    i % len(id_node_list_for_shuffle)
+                ]
+                for i, idx in enumerate(idx_list)
+            ]
+            geo_il = [geo for idx in idx_list]
+            psel_il = [psel_list[idx] for idx in idx_list]
+            ssp = q.SelectedShufflePlan("g_from_l", psel_il, root_il, geo_il)
+            psel_g_il = ssp.psel_recv_list
+            sp_prop_sol_g_il = [
+                q.PselProp(psel_g_il[i])
+                for i, idx in enumerate(idx_list)
+            ]
+            for i, idx in enumerate(idx_list):
+                if root_il[i] == q.get_id_node():
+                    psel_g_l = q.PointsSelection()
+                    psel_g_l.load(
+                        f"{mk_path(idx)}/psel.lati",
+                        is_sync_node=False,
+                    )
+                    assert psel_g_il[i] == psel_g_l
+                    sp_prop_sol_g_il[i].load(
+                        f"{mk_path(idx)}/sp_prop_sol.lat",
+                        is_sync_node=False,
+                    )
+            sp_prop_sol_il = ssp.shuffle_sp_list(
+                q.PselProp, sp_prop_sol_g_il, is_reverse=True,
+            )
+            assert len(sp_prop_sol_il) == len(idx_list)
+            return sp_prop_sol_il
+        #
         sp_prop_sol_list = []
         for idx, psel in enumerate(psel_list):
+            root = 0
             q.json_results_append(f"sparse_solve: {idx+1}/{len(psel_list)}")
             sp_prop_sol = sparse_solve(idx, psel, prop_src, fu1, inv_qm_f)
             rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
@@ -193,6 +262,14 @@ def measure_topo_dwf(
                 )
                 sp_prop_sol_ama *= 1 / ama_prob
                 sp_prop_sol += sp_prop_sol_ama
+            save(idx, sp_prop_sol)
+            sp_prop_sol_il = load([idx,])
+            if sp_prop_sol_il is not None:
+                assert np.all(
+                    q.get_data_sig_arr(sp_prop_sol, rs_sig, 3)
+                    ==
+                    q.get_data_sig_arr(sp_prop_sol_il[0], rs_sig, 3)
+                )
             sp_prop_sol_list.append(sp_prop_sol)
         #
         prop_sol = q.Prop(geo)

@@ -39,6 +39,7 @@ OFFSET_STOP_0 OFFSET_STOP_1 OFFSET_STOP_2 ... OFFSET_STOP_N
 // (DENSE_OR_SPARSE will be "dense" or "sparse", not including quote.)
 
 #include <errno.h>
+#include <qlat/field-shuffle.h>
 #include <qlat-utils/qar.h>
 #include <qlat/field-io.h>
 #include <qlat/selected-field.h>
