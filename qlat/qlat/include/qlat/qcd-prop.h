@@ -260,7 +260,7 @@ void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
                           const FieldSelection& fsel);
 
 void set_rand_vol_u1(Field<ComplexD>& fu1, const Geometry& geo_input,
-                     const RngState& rs);
+                     const Int multiplicity, const RngState& rs);
 
 void set_rand_vol_u1_src(Propagator4d& prop, const Field<ComplexD>& fu1);
 

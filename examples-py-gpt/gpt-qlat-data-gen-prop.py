@@ -121,7 +121,7 @@ def run_prop_rand_vol_u1_src(
         q.check_stop()
         q.check_time_limit()
         rsi = rs_rand_u1.split(str(idx_rand_vol_u1))
-        fu1 = q.mk_rand_vol_u1(geo, rsi)
+        fu1 = q.mk_rand_vol_u1(geo, 1, rsi)
         prop_src = q.mk_rand_vol_u1_src(fu1)
         inv = qs.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
         prop_sol = inv * prop_src

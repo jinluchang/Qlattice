@@ -169,9 +169,10 @@ def set_wall_src(Prop prop_src not None, Geometry geo not None, int tslice, Coor
 def set_rand_vol_u1(
         FieldComplexD fu1 not None,
         Geometry geo not None,
+        cc.Int multiplicity,
         RngState rs not None,
         ):
-    cc.set_rand_vol_u1(fu1.xx, geo.xx, rs.xx)
+    cc.set_rand_vol_u1(fu1.xx, geo.xx, multiplicity, rs.xx)
 
 def set_rand_vol_u1_src(
         Prop prop_src not None,
@@ -197,6 +198,7 @@ def mk_wall_src(Geometry geo not None, int tslice, CoordinateD lmom=None):
 @q.timer
 def mk_rand_vol_u1(
         Geometry geo not None,
+        cc.Int multiplicity,
         RngState rs not None,
         ):
     """
@@ -204,7 +206,7 @@ def mk_rand_vol_u1(
     prop_src ~ fu1
     """
     cdef FieldComplexD fu1 = FieldComplexD(geo, 1)
-    set_rand_vol_u1(fu1, geo, rs)
+    set_rand_vol_u1(fu1, geo, multiplicity, rs)
     return fu1
 
 @q.timer

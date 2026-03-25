@@ -234,13 +234,13 @@ void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
 }
 
 void set_rand_vol_u1(Field<ComplexD>& fu1, const Geometry& geo_input,
-                     const RngState& rs)
-// fu1.multiplicity == 1
+                     const Int multiplicity, const RngState& rs)
+// Typically, multiplicity == 12 or multiplicity == 1
 {
   TIMER_VERBOSE("set_rand_vol_u1");
   const Geometry geo = geo_resize(geo_input);
   const Coordinate total_site = geo.total_site();
-  fu1.init(geo, 1);
+  fu1.init(geo, multiplicity);
   set_zero(fu1);
   qthread_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -248,9 +248,12 @@ void set_rand_vol_u1(Field<ComplexD>& fu1, const Geometry& geo_input,
     qassert(geo.is_local(xl));
     const Long gindex = index_from_coordinate(xg, total_site);
     RngState rst = rs.newtype(gindex);
-    const RealD phase = u_rand_gen(rst, PI, -PI);
-    const ComplexD u1 = qpolar(1.0, phase);
-    fu1.get_elem(xl) = u1;
+    Vector<ComplexD> fv = fu1.get_elems(xl);
+    for (Int m = 0; m < multiplicity; ++m) {
+      const RealD phase = u_rand_gen(rst, PI, -PI);
+      const ComplexD u1 = qpolar(1.0, phase);
+      fv[m] = u1;
+    }
   });
 }
 
@@ -259,6 +262,7 @@ void set_rand_vol_u1_src(Propagator4d& prop, const Field<ComplexD>& fu1)
 {
   TIMER_VERBOSE("set_rand_vol_u1_src");
   const Geometry geo = geo_resize(fu1.geo());
+  qassert(fu1.multiplicity == 1);
   prop.init(geo);
   set_zero(prop);
   qthread_for(index, geo.local_volume(), {
