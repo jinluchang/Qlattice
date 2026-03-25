@@ -171,8 +171,8 @@ def measure_topo_dwf(
     #
     qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
     qm_f = g.qcd.fermion.mobius(gpt_gf, mobius_params_sloppy)
-    slv_qm = qm.propagator(slv_5d).grouped(4)
-    slv_qm_f = qm_f.propagator(slv_5d_f).grouped(4)
+    slv_qm = qm.propagator(slv_5d).grouped(n_grouped)
+    slv_qm_f = qm_f.propagator(slv_5d_f).grouped(n_grouped)
     inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=q.Timer("py:slv_qm", True))
     inv_qm_f = qg.InverterGPT(inverter=slv_qm_f, qtimer=q.Timer("py:slv_qm_f", True))
     #
