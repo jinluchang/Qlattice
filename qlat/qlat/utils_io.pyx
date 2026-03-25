@@ -34,8 +34,9 @@ def qquit(const cc.std_string& msg):
 def check_time_limit(budget=None):
     """
     Related environment variables settings:
-    export q_end_time="$(($(date +%s) + 12 * 60 * 60))"
     export q_budget="$((1 * 60 * 60))"
+    export q_end_time="$(($(date +%s) + 12 * 60 * 60))"
+    export q_end_time="$SLURM_JOB_END_TIME"
     """
     if budget is None:
         budget = q.get_time_budget()

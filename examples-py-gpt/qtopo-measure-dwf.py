@@ -108,9 +108,14 @@ def measure_topo_dwf(
         "boundary_phases": [1.0, 1.0, 1.0, 1.0],
     }
     #
+    mpi_split = g.default.get_ivec("--mpi_split", None, 4)
+    if mpi_split is not None:
+        n_grouped = g.default.get_int("--grouped", 12)
+    else:
+        n_grouped = g.default.get_int("--grouped", 1)
     inv = g.algorithms.inverter
-    cg_f = inv.cg({"eps": 1e-8, "maxiter": maxiter_sloppy})
-    cg = inv.cg({"eps": 1e-8, "maxiter": maxiter_exact})
+    cg_f = inv.split(inv.cg({"eps": 1e-8, "maxiter": maxiter_sloppy}), mpi_split=mpi_split)
+    cg = inv.split(inv.cg({"eps": 1e-8, "maxiter": maxiter_exact}), mpi_split=mpi_split)
     pc = g.qcd.fermion.preconditioner
     #
     slv_5d = inv.defect_correcting(
