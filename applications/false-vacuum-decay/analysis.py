@@ -231,9 +231,9 @@ class Analysis:
         sfs = self.data.get_indices(params)
         for sf in sfs:
             if(ax==None):
-                plt.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
+                plt.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[:,idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
             else:
-                ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
+                ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[:,idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
     
     def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False, idx=0):
         sfs = self.data.get_indices(params)
@@ -248,7 +248,7 @@ class Analysis:
                     if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, np.array(self.data.timeslices[sf][i])[:,idx], alpha=alpha, color=color); count+=1;
         print(count)
 
-    def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="grey"):
+    def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="grey", idx=0):
         sf = self.data.get_indices(params)[0]
         action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
@@ -257,7 +257,7 @@ class Analysis:
         V_data = np.array([[action.V(x,t) - action.V(0,1) for t in ts[:-1]] for x in xs[:-1]])
         if(fig==None or ax==None):
             fig, ax = plt.subplots()
-        pcm = ax.pcolormesh(ts, xs, V_data, cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
+        pcm = ax.pcolormesh(ts, xs, np.roll(V_data,int(ts.shape[0]/2),axis=1), cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
         fig.colorbar(pcm, ax=ax)
     
     def plot_potential_diff(self, params, params2, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
