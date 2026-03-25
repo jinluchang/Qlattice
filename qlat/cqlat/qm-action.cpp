@@ -118,13 +118,16 @@ EXPORT(get_dt_qm_action, {
 EXPORT(V_qm_action, {
   using namespace qlat;
   PyObject* p_qma = NULL;
-  RealD x = 0.0;
+  RealD x[2];
+  x[0] = 0.0;
+  x[1] = 0.0;
   long t = 0;
-  if (!PyArg_ParseTuple(args, "O|d|l", &p_qma, &x, &t)) {
+  if (!PyArg_ParseTuple(args, "O|d|d|l", &p_qma, &x[0], &x[1], &t)) {
     return NULL;
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
-  return py_convert(qma.V(x,t));
+  Vector<RealD> x_v(&x[0],2);
+  return py_convert(qma.V(x_v,t));
 })
 
 EXPORT(dV_qm_action, {
