@@ -254,6 +254,7 @@ def measure_topo_dwf(
             return sp_prop_sol_il
         #
         for idx, psel in enumerate(psel_list):
+            q.check_time_limit()
             q.json_results_append(f"sparse_solve: {idx+1}/{len(psel_list)}")
             if check(idx):
                 continue

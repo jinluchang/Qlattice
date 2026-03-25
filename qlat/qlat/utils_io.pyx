@@ -32,6 +32,11 @@ def qquit(const cc.std_string& msg):
 
 @q.timer
 def check_time_limit(budget=None):
+    """
+    Related environment variables settings:
+    export q_end_time="$(($(date +%s) + 12 * 60 * 60))"
+    export q_budget="$((1 * 60 * 60))"
+    """
     if budget is None:
         budget = q.get_time_budget()
     return cc.check_time_limit(budget)
