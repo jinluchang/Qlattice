@@ -205,7 +205,7 @@ def mk_rand_vol_u1(
     return prop_src, fu1
     prop_src ~ fu1
     """
-    cdef FieldComplexD fu1 = FieldComplexD(geo, 1)
+    cdef FieldComplexD fu1 = FieldComplexD(geo, multiplicity)
     set_rand_vol_u1(fu1, geo, multiplicity, rs)
     return fu1
 

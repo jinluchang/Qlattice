@@ -183,7 +183,7 @@ def measure_topo_dwf(
     #
     for rand_vol_u1_idx in range(num_of_rand_vol_u1):
         q.check_time_limit()
-        fu1 = q.mk_rand_vol_u1(geo, 1, rs_rand_u1.split(f"{rand_vol_u1_idx}"))
+        fu1 = q.mk_rand_vol_u1(geo, 12, rs_rand_u1.split(f"{rand_vol_u1_idx}"))
         prop_src = q.Prop(geo)
         prop_src.set_unit()
         prop_src[:, :, :, :] *= fu1[:, None, None, :]
@@ -636,7 +636,7 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sparse_grid_prop_sol = inverter * sparse_grid_prop_src
     sp_prop_sol = q.PselProp(psel)
     sp_prop_sol @= sparse_grid_prop_sol
-    sp_fu1 = q.SelectedPointsComplexD(psel, 1)
+    sp_fu1 = q.SelectedPointsComplexD(psel, 12)
     sp_fu1 @= fu1
     sp_prop_sol[:, :, :, :] *= sp_fu1[:, None, None, :].conj()
     if is_test():
