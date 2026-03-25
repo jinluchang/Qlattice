@@ -64,10 +64,17 @@ rs_sig = q.RngState("rs_sig")
 @q.timer(is_verbose=True)
 def measure_topo_dwf(
     gf,
-    info_path=None,
+    info_path,
     *,
     params,
 ):
+    """
+    return ``f_tadpole_loop_sum_arr``
+    ``
+    f_tadpole_loop_sum_arr[rand_vol_u1_idx, tslice_idx, 0] == topo_tslice_sum
+    f_tadpole_loop_sum_arr[rand_vol_u1_idx, tslice_idx, 1] == quark_condenstate_tslice_sum
+    ``
+    """
     sparse_ratio = params["sparse_ratio"]
     num_of_rand_vol_u1 = params["num_of_rand_vol_u1"]
     ls = params["ls"]
@@ -79,8 +86,7 @@ def measure_topo_dwf(
     ama_prob = params["ama_prob"]
     seed = params["seed"]
     #
-    if info_path is not None:
-        q.save_json_obj(params, f"{info_path}/params.json")
+    q.save_json_obj(params, f"{info_path}/params.json")
     #
     rs = q.RngState(seed)
     #
@@ -179,10 +185,15 @@ def measure_topo_dwf(
         def mk_path(idx):
             return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
         #
+        def check(idx):
+            if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
+                return False
+            if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
+                return False
+            return True
+        #
         @q.timer(is_verbose=True)
         def save(idx, sp_prop_sol):
-            if info_path is None:
-                return
             root = 0
             psel = psel_list[idx]
             assert sp_prop_sol.n_points == psel.n_points
@@ -209,8 +220,6 @@ def measure_topo_dwf(
             return ``sp_prop_sol_il``
             Note: ``sp_prop_sol_il`` is a list ``q.PselProp`` with ``"l"`` as the ``points_dist_type``.
             """
-            if info_path is None:
-                return
             id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
             root_il = [
                 id_node_list_for_shuffle[
@@ -244,10 +253,10 @@ def measure_topo_dwf(
             assert len(sp_prop_sol_il) == len(idx_list)
             return sp_prop_sol_il
         #
-        sp_prop_sol_list = []
         for idx, psel in enumerate(psel_list):
-            root = 0
             q.json_results_append(f"sparse_solve: {idx+1}/{len(psel_list)}")
+            if check(idx):
+                continue
             sp_prop_sol = sparse_solve(idx, psel, prop_src, fu1, inv_qm_f)
             rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
             r = rs_ama_idx.u_rand_gen()
@@ -264,14 +273,13 @@ def measure_topo_dwf(
                 sp_prop_sol += sp_prop_sol_ama
             save(idx, sp_prop_sol)
             sp_prop_sol_il = load([idx,])
-            if sp_prop_sol_il is not None:
-                assert np.all(
-                    q.get_data_sig_arr(sp_prop_sol, rs_sig, 3)
-                    ==
-                    q.get_data_sig_arr(sp_prop_sol_il[0], rs_sig, 3)
-                )
-            sp_prop_sol_list.append(sp_prop_sol)
+            assert np.all(
+                q.get_data_sig_arr(sp_prop_sol, rs_sig, 3)
+                ==
+                q.get_data_sig_arr(sp_prop_sol_il[0], rs_sig, 3)
+            )
         #
+        sp_prop_sol_list = load([idx for idx in range(len(psel_list))])
         prop_sol = q.Prop(geo)
         prop_sol.set_zero()
         for sp_prop_sol in sp_prop_sol_list:
@@ -319,56 +327,74 @@ def measure_topo_dwf(
         #
         f_tadpole_loop_sum = f_tadpole_loop.glb_sum_tslice()[:]
         #
-        if info_path is not None:
-            q.save_json_obj(dict(
-                total=f_tadpole_loop_sum[:, 0].real.sum().item(),
-                tslice_sum=f_tadpole_loop_sum[:, 0].real,
-            ), f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/topo.json",
-            )
-            q.save_json_obj(dict(
-                total=f_tadpole_loop_sum[:, 1].real.sum().item(),
-                tslice_sum=f_tadpole_loop_sum[:, 1].real,
-            ), f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/quark_condensate.json",
-            )
-            q.save_pickle_obj(
-                f_tadpole_loop_sum, f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop_sum.pickle")
-            f_tadpole_loop.save_double(
-                f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop.field")
+        prop_sol.save_float_from_double(
+            f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/prop_sol.field",
+        )
+        f_tadpole_loop.save_double(
+            f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop.field",
+        )
+        q.save_pickle_obj(
+            f_tadpole_loop_sum, f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop_sum.pickle")
         #
-        q.json_results_append(f"f_tadpole_loop_sum sig", q.get_data_sig_arr(
-            f_tadpole_loop_sum, rs_sig, 3), 1e-7)
+        q.save_json_obj(dict(
+            total=f_tadpole_loop_sum[:, 0].real.sum().item(),
+            tslice_sum=f_tadpole_loop_sum[:, 0].real,
+        ), f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/topo.json",
+        )
+        q.save_json_obj(dict(
+            total=f_tadpole_loop_sum[:, 1].real.sum().item(),
+            tslice_sum=f_tadpole_loop_sum[:, 1].real,
+        ), f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/quark_condensate.json",
+        )
         #
-        q.json_results_append(f"f_tadpole_loop_sum topo sum", f_tadpole_loop_sum[:, 0].sum(-1), 1e-7)
+        q.json_results_append(
+            f"f_tadpole_loop_sum sig",
+            q.get_data_sig_arr(f_tadpole_loop_sum, rs_sig, 3),
+            1e-7,
+        )
+        q.json_results_append(
+            f"f_tadpole_loop_sum topo sum",
+            f_tadpole_loop_sum[:, 0].sum(-1),
+            1e-7,
+        )
         #
         f_tadpole_loop_sum_list.append(f_tadpole_loop_sum)
     #
     f_tadpole_loop_sum_arr = np.array(
         f_tadpole_loop_sum_list, dtype=np.complex128)
     #
-    if info_path is not None:
-        q.save_json_obj(dict(
-            total=f_tadpole_loop_sum_arr[:, :, 0].real.sum(-1),
-            tslice_sum=f_tadpole_loop_sum_arr[:, :, 0].real,
-        ), f"{info_path}/info/topo.json",
-        )
-        q.save_json_obj(dict(
-            total=f_tadpole_loop_sum_arr[:, :, 1].real.sum(-1),
-            tslice_sum=f_tadpole_loop_sum_arr[:, :, 1].real,
-        ), f"{info_path}/info/quark_condensate.json",
-        )
-        q.save_pickle_obj(
-            f_tadpole_loop_sum_arr, f"{info_path}/pickle/f_tadpole_loop_sum_arr.pickle")
+    q.save_json_obj(dict(
+        total=f_tadpole_loop_sum_arr[:, :, 0].real.sum(-1),
+        tslice_sum=f_tadpole_loop_sum_arr[:, :, 0].real,
+    ), f"{info_path}/info/topo.json",
+    )
+    q.save_json_obj(dict(
+        total=f_tadpole_loop_sum_arr[:, :, 1].real.sum(-1),
+        tslice_sum=f_tadpole_loop_sum_arr[:, :, 1].real,
+    ), f"{info_path}/info/quark_condensate.json",
+    )
+    q.save_pickle_obj(
+        f_tadpole_loop_sum_arr,
+        f"{info_path}/pickle/f_tadpole_loop_sum_arr.pickle",
+    )
     #
-    q.json_results_append(f"f_tadpole_loop_sum_arr sig", q.get_data_sig_arr(
-        f_tadpole_loop_sum_arr, rs_sig, 3), 1e-7)
-    #
-    q.json_results_append(f"f_tadpole_loop_sum_arr topo sum", f_tadpole_loop_sum_arr[:, :, 0].sum(-1), 1e-7)
+    q.json_results_append(
+        f"f_tadpole_loop_sum_arr sig",
+        q.get_data_sig_arr(f_tadpole_loop_sum_arr, rs_sig, 3),
+        1e-7,
+    )
+    q.json_results_append(
+        f"f_tadpole_loop_sum_arr topo sum",
+        f_tadpole_loop_sum_arr[:, :, 0].sum(-1),
+        1e-7,
+    )
     #
     topo_tslice_arr = f_tadpole_loop_sum_arr[:, :, 0].copy()
     #
     q.qtouch_info(f"{info_path}/checkpoint.txt")
     #
-    return topo_tslice_arr
+    q.release_lock()
+    return f_tadpole_loop_sum_arr
 
 # ------------------------------
 
@@ -655,6 +681,8 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
     if not q.does_file_exist_qar_sync_node(fn_gf):
         q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
         return
+    if not q.obtain_lock(f"{fn_out}/locks/measure-topo-dwf"):
+        return
     q.json_results_append(f"{fname}: Start compute topo_measure out='{fn_out}' for '{fn_gf}'")
     gf = q.GaugeField()
     gf.load(fn_gf)
@@ -663,12 +691,13 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
             params,
             seed=fn_gf,
         )
-    topo_tslice_arr = measure_topo_dwf(
+    f_tadpole_loop_sum_arr = measure_topo_dwf(
         gf,
         info_path=fn_out,
         params=params,
     )
     q.json_results_append(f"{fname}: End compute topo_measure out='{fn_out}' for '{fn_gf}'")
+    q.release_lock()
 
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
