@@ -393,8 +393,8 @@ def measure_topo_dwf(
     topo_tslice_arr = f_tadpole_loop_sum_arr[:, :, 0].copy()
     #
     q.qtouch_info(f"{info_path}/checkpoint.txt")
+    q.qremove_all_info(f"{info_path}/scratch")
     #
-    q.release_lock()
     return f_tadpole_loop_sum_arr
 
 # ------------------------------
@@ -697,8 +697,9 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
         info_path=fn_out,
         params=params,
     )
-    q.json_results_append(f"{fname}: End compute topo_measure out='{fn_out}' for '{fn_gf}'")
     q.release_lock()
+    q.qremove_all_info(f"{fn_out}/locks")
+    q.json_results_append(f"{fname}: End compute topo_measure out='{fn_out}' for '{fn_gf}'")
 
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
