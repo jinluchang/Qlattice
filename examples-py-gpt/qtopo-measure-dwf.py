@@ -75,6 +75,7 @@ def measure_topo_dwf(
     f_tadpole_loop_sum_arr[rand_vol_u1_idx, tslice_idx, 1] == quark_condenstate_tslice_sum
     ``
     """
+    q.check_time_limit()
     sparse_ratio = params["sparse_ratio"]
     num_of_rand_vol_u1 = params["num_of_rand_vol_u1"]
     ls = params["ls"]
@@ -176,6 +177,7 @@ def measure_topo_dwf(
     f_tadpole_loop_sum_list = []
     #
     for rand_vol_u1_idx in range(num_of_rand_vol_u1):
+        q.check_time_limit()
         fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1.split(f"{rand_vol_u1_idx}"))
         prop_src = q.mk_rand_vol_u1_src(fu1)
         #
@@ -676,6 +678,7 @@ def gen_test_data():
 @q.timer(is_timer_fork=True)
 def run_topo_measure(fn_gf, fn_out, *, params=None):
     fname = q.get_fname()
+    q.check_time_limit()
     if q.does_file_exist_qar_sync_node(fn_out + "/checkpoint.txt"):
         q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip.")
         return
@@ -706,6 +709,7 @@ def show_usage():
 
 @q.timer(is_timer_fork=True)
 def run():
+    q.check_time_limit()
     if is_test():
         q.displayln_info(f"Will now generate test data and run topo measure.")
         argv = gen_test_data()
@@ -726,6 +730,7 @@ def run():
         ama_prob=float(q.get_arg("--ama_prob", "0.1", argv=argv)),
     )
     for fn_gf, fn_out, in zip(fn_gf_list, fn_out_list):
+        q.check_time_limit()
         run_topo_measure(
             fn_gf,
             fn_out,
@@ -782,6 +787,7 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 # --------------------------------------------
 
 if __name__ == "__main__":
+    q.check_time_limit()
     is_show_usage = q.get_option("--usage")
     if is_show_usage:
         show_usage()
