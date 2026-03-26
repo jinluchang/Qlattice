@@ -230,10 +230,11 @@ class Analysis:
     def plot_mean_path(self, params={}, label="tTV", ax=None, color="blue", idx=0):
         sfs = self.data.get_indices(params)
         for sf in sfs:
+            x = np.arange(0, len(self.data.timeslices[sf][0]))
             if(ax==None):
-                plt.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[:,idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
+                plt.plot(x,np.roll(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[:,idx],int(x.shape[0]/2),axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
             else:
-                ax.plot(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[:,idx], label=f"{label} = {self.data.params[sf][label]}", color=color)
+                ax.plot(x,np.roll(np.mean(self.data.timeslices[sf][self.data.cutoff:self.data.end],axis=0)[:,idx],int(x.shape[0]/2),axis=0), label=f"{label} = {self.data.params[sf][label]}", color=color)
     
     def plot_paths(self, params={}, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False, idx=0):
         sfs = self.data.get_indices(params)
@@ -242,11 +243,10 @@ class Analysis:
             x = np.arange(t_offset, len(self.data.timeslices[sf][0])+t_offset)
             for i in range(len(self.data.timeslices[sf][cutoff:end])):
                 if(ax==None):
-                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): plt.plot(x, np.array(self.data.timeslices[sf][i])[:,idx], alpha=alpha, color=color); count+=1;
+                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): plt.plot(x, np.roll(np.array(self.data.timeslices[sf][i])[:,idx], int(x.shape[0]/2), axis=0), alpha=alpha, color=color); count+=1;
                     if (i+1)%new_plot==0: plt.show()
                 else:
-                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, np.array(self.data.timeslices[sf][i])[:,idx], alpha=alpha, color=color); count+=1;
-        print(count)
+                    if (i+1)%sampling_freq==0 and not filter_paths(sf,i): ax.plot(x, np.roll(np.array(self.data.timeslices[sf][i])[:,idx], int(x.shape[0]/2), axis=0), alpha=alpha, color=color); count+=1;
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="grey", idx=0):
         sf = self.data.get_indices(params)[0]
@@ -254,24 +254,25 @@ class Analysis:
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
         dt = float(self.data.params[sf]["dt"])
-        V_data = np.array([[action.V(x,t) - action.V(0,1) for t in ts[:-1]] for x in xs[:-1]])
+        if(idx==0):
+            V_data = np.array([[action.V(x,0,t) - action.V(0,0,1) for t in ts[:-1]] for x in xs[:-1]])
+        else:
+            V_data = np.array([[action.V(0,x,t) - action.V(0,0,1) for t in ts[:-1]] for x in xs[:-1]])
         if(fig==None or ax==None):
             fig, ax = plt.subplots()
         pcm = ax.pcolormesh(ts, xs, np.roll(V_data,int(ts.shape[0]/2),axis=1), cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
         fig.colorbar(pcm, ax=ax)
     
-    def plot_potential_diff(self, params, params2, xmin=-1, xmax=2, fig=None, ax=None, vmin=-1, vmax=2, cmap="grey"):
+    def plot_potential_2d(self, params, xmin=-1, xmax=2, ymin=-1, ymax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="Blues", idx=0):
         sf = self.data.get_indices(params)[0]
         action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
-        sf = self.data.get_indices(params2)[0]
-        action2 = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
-        ts = np.arange(0, params["Nt"], 1)
-        V_data = np.array([[action.V(x,t)-action2.V(x,t) for t in ts[:-1]] for x in xs[:-1]])
+        ys = np.arange(ymin,ymax,0.01)
+        xs, ys = np.meshgrid(xs, ys)
+        V_data = np.array([[action.V(xs[i][j],ys[i][j],1) - action.V(0,0,1) for i in range(len(xs))] for j in range(len(ys))])
         if(fig==None or ax==None):
-            fig, ax = plt.subplots()
-        pcm = ax.pcolormesh(ts, xs, V_data, cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
-        fig.colorbar(pcm, ax=ax)
+            fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        ax.plot_surface(xs, ys, V_data, vmin=vmin)#, cmap=matplotlib.colormaps[cmap])
 
     def check_data(self, n_traj = 50000):
         #self.plot_mean_path()
