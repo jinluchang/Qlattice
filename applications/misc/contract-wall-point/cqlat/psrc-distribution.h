@@ -50,7 +50,7 @@ inline void init_pd(PointDistribution& pd, const Coordinate& total_site)
 {
   const Coordinate limit = total_site / 2 + Coordinate(1, 1, 1, 1);
   clear(pd);
-  pd.resize(product(limit), 0.0);
+  pd.resize(volume(limit), 0.0);
 }
 
 inline void normalize_pd(PointDistribution& pd, const Coordinate& total_site)
@@ -65,7 +65,7 @@ inline void normalize_pd(PointDistribution& pd, const Coordinate& total_site)
   }
   PointDistribution pdm;
   init_pd(pdm, total_site);
-  for (long index = 0; index < product(total_site); ++index) {
+  for (long index = 0; index < volume(total_site); ++index) {
     const Coordinate rel = relative_coordinate(
         coordinate_from_index(index, total_site), total_site);
     const long idx = index_from_relative_coordinate(rel, total_site);
@@ -88,7 +88,7 @@ inline void renormalize_pd(PointDistribution& pd, const Coordinate& total_site)
   TIMER_VERBOSE("renormalize_pd");
   PointDistribution pdm;
   init_pd(pdm, total_site);
-  for (long index = 0; index < product(total_site); ++index) {
+  for (long index = 0; index < volume(total_site); ++index) {
     const Coordinate rel = relative_coordinate(
         coordinate_from_index(index, total_site), total_site);
     const long idx = index_from_relative_coordinate(rel, total_site);

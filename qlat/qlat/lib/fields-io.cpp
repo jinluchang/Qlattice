@@ -155,7 +155,7 @@ Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
       reads(size_node[i],
             info_get_prop(lines, ssprintf("geon.size_node[%d] = ", i)));
     }
-    Qassert(num_node == product(size_node));
+    Qassert(num_node == volume(size_node));
   }
   bcast(get_data(size_node));
   return size_node;
@@ -1043,7 +1043,7 @@ bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std::strin
   if (total_counts == 0) {
     return false;
   } else {
-    Qassert(total_counts == product(sfr.new_size_node));
+    Qassert(total_counts == volume(sfr.new_size_node));
     return true;
   }
 }
@@ -1065,7 +1065,7 @@ bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
   if (total_counts == 0) {
     return false;
   } else {
-    Qassert(total_counts == product(sfw.new_size_node));
+    Qassert(total_counts == volume(sfw.new_size_node));
     return true;
   }
 }
@@ -1091,7 +1091,7 @@ bool is_sparse_field_sync_node(const ShuffledFieldsReader& sfr,
   if (total_counts == 0) {
     return false;
   } else {
-    Qassert(total_counts == product(sfr.new_size_node));
+    Qassert(total_counts == volume(sfr.new_size_node));
     return true;
   }
 }

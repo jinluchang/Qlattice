@@ -765,7 +765,7 @@ void set_selected_shuffle_instruction_l_from_g(
   const Int num_node = get_num_node();
   const Coordinate size_node = get_size_node();
   const Coordinate coor_node = get_coor_node();
-  Qassert(product(size_node) == num_node);
+  Qassert(volume(size_node) == num_node);
   Qassert(index_from_coordinate(coor_node, size_node) == id_node);
   n_points_selected_points_send.clear();
   n_points_selected_points_send.set_mem_type(MemType::Comm);

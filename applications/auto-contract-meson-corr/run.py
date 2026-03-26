@@ -71,7 +71,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def fempty():
         values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
         return q.Data([ 0, values, ])

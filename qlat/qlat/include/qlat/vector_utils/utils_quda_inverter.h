@@ -3193,7 +3193,7 @@ inline void quda_inverter::set_quda_split(const std::vector<Int >& grid, const I
   split_param.split_grid[2] = grid[2];
   split_param.split_grid[3] = grid[3];
   split_key = {grid[0], grid[1], grid[2], grid[3]};
-  num_sub_partition = quda::product(split_key);
+  num_sub_partition = quda::volume(split_key);
   //qmessage("Quda splited MRH num_src %5d sub %5d \n", int(num_src), int(num_sub_partition));
   Qassert(num_src >= num_sub_partition and num_src % num_sub_partition == 0);
   const Int dslash_mrh = num_src / num_sub_partition;

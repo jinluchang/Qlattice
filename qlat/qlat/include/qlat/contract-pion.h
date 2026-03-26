@@ -48,7 +48,7 @@ inline LatData contract_pion(const PselProp& prop, const Int tslice_src,
     const Int tsep = mod(xg[3] - tslice_src, total_site[3]);
     ldv[tsep] += val;
   }
-  ld *= (RealD)product(total_site) / (RealD)n_points;
+  ld *= (RealD)volume(total_site) / (RealD)n_points;
   return ld;
 }
 

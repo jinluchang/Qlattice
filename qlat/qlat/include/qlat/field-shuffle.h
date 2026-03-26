@@ -512,7 +512,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   const Coordinate total_site = sp.geo_send.total_site();
   const Coordinate new_node_site = total_site / sp.new_size_node;
   qassert(sp.new_size_node * new_node_site == total_site);
-  const Int new_num_node = product(sp.new_size_node);
+  const Int new_num_node = volume(sp.new_size_node);
   const Int num_node = sp.geo_send.geon.num_node;
   // global index for each selected site
   SelectedField<Long> sf_rank;
@@ -941,7 +941,7 @@ inline Long get_id_node_fft(const Coordinate& xl, const Coordinate& node_site,
                             const Coordinate& coor_node,
                             const Coordinate& size_node, const Int dir)
 {
-  const Long vol_perp_dir = product(node_site) / node_site[dir];
+  const Long vol_perp_dir = volume(node_site) / node_site[dir];
   const Long idx = index_from_coordinate_perp_dir(xl, node_site, dir);
   Coordinate new_coor_node = coor_node;
   new_coor_node[dir] = find_worker(idx, vol_perp_dir, size_node[dir]);

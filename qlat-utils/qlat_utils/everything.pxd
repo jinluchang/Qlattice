@@ -362,7 +362,7 @@ cdef extern from "qlat-utils/coordinate-d.h" namespace "qlat":
     bool operator==(const Coordinate& x, const Coordinate& y)
     Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
     Long sqr(const Coordinate& xg)
-    Long product(const Coordinate& coor)
+    Long volume(const Coordinate& coor)
     CoordinateD mod(const CoordinateD& x, const CoordinateD& size) except +
     CoordinateD smod(const CoordinateD& x, const CoordinateD& size) except +
     CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size) except +

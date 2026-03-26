@@ -103,6 +103,10 @@ cdef class Geometry:
         return self.xx.total_volume()
 
     @property
+    def spatial_volume(self):
+        return self.xx.total_volume()
+
+    @property
     def local_site(self):
         cdef Coordinate x = Coordinate()
         cc.assign_direct(x.xx, self.xx.local_site())

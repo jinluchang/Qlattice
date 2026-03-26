@@ -97,7 +97,7 @@ Long dist_write_field(const Field<M>& f, const Coordinate& new_size_node,
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   std::vector<Field<M>> fs;
   shuffle_field(fs, f, new_size_node);
-  Long total_bytes = dist_write_fields(fs, product(new_size_node), path);
+  Long total_bytes = dist_write_fields(fs, volume(new_size_node), path);
   timer.flops += total_bytes;
   return total_bytes;
 }

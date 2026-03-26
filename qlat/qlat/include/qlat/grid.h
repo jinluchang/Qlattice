@@ -85,11 +85,11 @@ inline void grid_begin(
   Coordinate size_node;
   for (Int i = 0; i < (int)size_node_list.size(); ++i) {
     size_node = size_node_list[i];
-    if (num_node == product(size_node)) {
+    if (num_node == volume(size_node)) {
       break;
     }
   }
-  if (num_node != product(size_node)) {
+  if (num_node != volume(size_node)) {
     size_node = plan_size_node(num_node);
   }
   GridCartesian* UGrid = SpaceTimeGrid::makeFourDimGrid(

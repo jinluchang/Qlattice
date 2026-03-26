@@ -96,7 +96,7 @@ cdef class Coordinate:
         """
         get product of all components
         """
-        cdef cc.Long vol = cc.product(self.xx)
+        cdef cc.Long vol = cc.volume(self.xx)
         return vol
 
     def spatial_volume(self):

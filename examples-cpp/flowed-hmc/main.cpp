@@ -119,7 +119,7 @@ inline void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj,
       run_hmc_evolve_flowed(gm, gf0, ga, fi, rs, steps, md_time);
   //
   const double plaq_avg = gf_avg_plaq(gf0);
-  const double plaq_sum = product(geo.total_site()) * 6 * (1.0 - plaq_avg);
+  const double plaq_sum = volume(geo.total_site()) * 6 * (1.0 - plaq_avg);
   displayln_info(
       fname + ssprintf(": U_0: traj=%d ; plaq_avg=%24.17E ; plaq_sum=%24.17E .",
                        traj, plaq_avg, plaq_sum));
@@ -215,7 +215,7 @@ inline void test_hmc(const Coordinate& total_site)
     run_hmc(gf, ga, traj, rs.split(ssprintf("hmc-%d", traj)));
     //
     const double plaq_avg = gf_avg_plaq(gf);
-    const double plaq_sum = product(total_site) * 6 * (1.0 - plaq_avg);
+    const double plaq_sum = volume(total_site) * 6 * (1.0 - plaq_avg);
     displayln_info("CHECK: " + fname +
                    ssprintf(": traj=%d ; plaq_avg=%24.12E ; plaq_sum=%24.12E.",
                             traj, plaq_avg, plaq_sum));

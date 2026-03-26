@@ -306,7 +306,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
 {
   TIMER("set_field_from_data(field,geon,total_site,data)");
   const Coordinate node_site = total_site / geon.size_node;
-  const Long local_volume = product(node_site);
+  const Long local_volume = volume(node_site);
   ConstHandle<std::vector<char>> hdata(data);
   std::vector<char> dc_data;
   if (is_sparse_field) {
@@ -338,7 +338,7 @@ void set_field_from_data(SelectedField<M>& sf, FieldRank& f_rank,
   TIMER("set_field_from_data(sf,f_rank,data)");
   const Geometry& geo = f_rank.geo();
   const Coordinate& node_site = geo.node_site;
-  const Long local_volume = product(node_site);
+  const Long local_volume = volume(node_site);
   const size_t N = local_volume;
   const size_t nbytes = 1 + (N - 1) / 8;
   BitSet bs(N);
@@ -696,7 +696,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
   Long total_bytes = 0;
-  const Int num_node = product(sfw.new_size_node);
+  const Int num_node = volume(sfw.new_size_node);
   const Int n_cycle = std::max(1, num_node / dist_write_par_limit());
   for (Int cycle = 0; cycle < n_cycle; cycle++) {
     for (Int i = 0; i < (int)fs.size(); ++i) {
@@ -729,7 +729,7 @@ Long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   qassert(sfs.size() == sfw.fws.size());
   qassert(sbs.vbs.size() == sfw.fws.size());
   Long total_bytes = 0;
-  const Int num_node = product(sfw.new_size_node);
+  const Int num_node = volume(sfw.new_size_node);
   const Int n_cycle = std::max(1, num_node / dist_write_par_limit());
   for (Int cycle = 0; cycle < n_cycle; cycle++) {
     for (Int i = 0; i < (int)sfs.size(); ++i) {
@@ -755,7 +755,7 @@ void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
   TIMER("set_field_info_from_fields(total_site,multiplicity,fs,sfr)");
   total_site = Coordinate();
   multiplicity = 0;
-  std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
+  std::vector<Long> available_nodes(volume(sfr.new_size_node), 0);
   for (Int i = 0; i < (int)fs.size(); ++i) {
     const Int id_node = sfr.frs[i].geon.id_node;
     qassert(0 <= id_node and id_node < (int)available_nodes.size());
@@ -803,7 +803,7 @@ void set_field_info_from_fields(Coordinate& total_site, Int& multiplicity,
   TIMER("set_field_info_from_fields(total_site,multiplicity,sfs,sfr)");
   total_site = Coordinate();
   multiplicity = 0;
-  std::vector<Long> available_nodes(product(sfr.new_size_node), 0);
+  std::vector<Long> available_nodes(volume(sfr.new_size_node), 0);
   for (Int i = 0; i < (int)sfs.size(); ++i) {
     const Int id_node = sfr.frs[i].geon.id_node;
     qassert(0 <= id_node and id_node < (int)available_nodes.size());
@@ -854,7 +854,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
                                      fn.c_str(), sfr.path.c_str()));
   std::vector<Field<M>> fs(sfr.frs.size());
   Long zero_size_count = 0;
-  const Int num_node = product(sfr.new_size_node);
+  const Int num_node = volume(sfr.new_size_node);
   const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
   for (Int cycle = 0; cycle < n_cycle; cycle++) {
     for (Int i = 0; i < (int)fs.size(); ++i) {
@@ -904,7 +904,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
   std::vector<SelectedField<M>> sfs(sfr.frs.size());
   std::vector<Field<int64_t>> f_rank_s(sfr.frs.size());
   Long zero_size_count = 0;
-  const Int num_node = product(sfr.new_size_node);
+  const Int num_node = volume(sfr.new_size_node);
   const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
   for (Int cycle = 0; cycle < n_cycle; cycle++) {
     for (Int i = 0; i < (int)sfs.size(); ++i) {
@@ -960,7 +960,7 @@ Long read(ShuffledFieldsReader& sfr, const std::string& fn,
                           fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M>> sfs(sfr.frs.size());
   Long zero_size_count = 0;
-  const Int num_node = product(sfr.new_size_node);
+  const Int num_node = volume(sfr.new_size_node);
   const Int n_cycle = std::max(1, num_node / dist_read_par_limit());
   for (Int cycle = 0; cycle < n_cycle; cycle++) {
     for (Int i = 0; i < (int)sfs.size(); ++i) {

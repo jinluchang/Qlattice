@@ -78,7 +78,7 @@ struct LowModes {
     qassert(cesdi.total_site % geo.geon.size_node == Coordinate());
     cesdi.node_site = cesdi.total_site / geo.geon.size_node;
     cesi = populate_eigen_system_info(
-        cesdi, std::vector<crc32_t>(product(geo.geon.size_node), 0));
+        cesdi, std::vector<crc32_t>(volume(geo.geon.size_node), 0));
     init_compressed_eigen_system_bases(cesb, cesi, geo.geon.id_node);
     init_compressed_eigen_system_coefs(cesc, cesi, geo.geon.id_node);
   }

@@ -104,7 +104,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         t_t_list = get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
@@ -160,7 +160,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
             for xg_snk in xg_fsel_list:
@@ -217,7 +217,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         x_t_list = get_mpi_chunk(
                 [ (tuple(xg_src.tolist()), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
@@ -275,7 +275,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     def load_data():
@@ -379,7 +379,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for xg_snk in xg_fsel_list:
             yield xg_snk
@@ -471,7 +471,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for xg_snk in xg_fsel_list:
             yield xg_snk
@@ -1094,7 +1094,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_prop, get_psel, get_fsel):
     q.displayln_info("{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     res_sum *= 1.0 / (total_volume * fsel.prob() / t_size)
     ld_sum = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -1125,7 +1125,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     r_list = get_r_list(job_tag)
     r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
     n_elems = len(xg_fsel_list)

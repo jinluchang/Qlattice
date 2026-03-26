@@ -211,7 +211,7 @@ inline CorrFuncs measure_corr_funcs(const ScalarField& sf, const CorrParams& cp)
     cf.c4_t2 += phi_ts2[t] * phi_ts2[mod(t + cp.t2, total_site[3])];
   }
   cf *= 1.0 / (double)total_site[3];
-  cf.phi2 = phi2 / (double)product(total_site);
+  cf.phi2 = phi2 / (double)volume(total_site);
   // displayln_info(show(cf.phi2));
   return cf;
 }

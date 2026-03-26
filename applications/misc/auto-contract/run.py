@@ -397,7 +397,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def fempty():
         values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
         return q.Data([ 0, values, ])
@@ -439,7 +439,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     @q.timer
     def feval(xg_snk):
         res = np.zeros((total_site[3], len(expr_names),), dtype = complex)
@@ -478,7 +478,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     xg_psel_list = list(map(tuple, psel.to_list()))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def fempty():
         counts = 0
         values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
@@ -523,7 +523,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     xg_fsel_list = list(map(tuple, fsel.to_psel_local().to_list()))
     xg_psel_list = list(map(tuple, psel.to_list()))
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     @q.timer
     def feval(xg_src):
         counts = np.zeros(total_site[3], dtype = complex)

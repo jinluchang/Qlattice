@@ -8,7 +8,7 @@ namespace qlat
 std::vector<GeometryNode> make_dist_io_geons(const Coordinate& new_size_node)
 {
   TIMER("make_dist_io_geons");
-  const Int new_num_node = product(new_size_node);
+  const Int new_num_node = volume(new_size_node);
   const Int num_node = get_num_node();
   std::vector<GeometryNode> ret;
   const Int min_size_chunk = new_num_node / num_node;
@@ -87,7 +87,7 @@ ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const Int dir)
   geo.init(total_site);
   // vol_perp_dir -> vpd
   const Long vol_perp_dir =
-      product(geo.node_site) / geo.node_site[dir];  // local volume perp to dir
+      volume(geo.node_site) / geo.node_site[dir];  // local volume perp to dir
   const Coordinate size_node = geo.geon.size_node;
   const Coordinate coor_node = geo.geon.coor_node;
   const Long num_node_dir = size_node[dir];

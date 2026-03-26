@@ -926,7 +926,7 @@ void set_global_geon(const Coordinate& size_node)
 {
   Int num_node;
   MPI_Comm_size(get_comm(), &num_node);
-  Qassert(num_node == product(size_node));
+  Qassert(num_node == volume(size_node));
   Int id_node;
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
@@ -1058,7 +1058,7 @@ void begin(const Int id_node, const Coordinate& size_node, const Int color)
     get_comm_list().push_back(
         Q_Comm(MPI_COMM_WORLD, Coordinate(), RngState("sync_node")));
   }
-  Qassert(0 <= id_node and id_node < product(size_node));
+  Qassert(0 <= id_node and id_node < volume(size_node));
   Qassert(0 <= color);
   MPI_Comm comm;
   const Int ret =
@@ -1072,7 +1072,7 @@ void begin(Int* argc, char** argv[], const Coordinate& size_node)
 // not recommended
 {
   const Int num_node = init_mpi(argc, argv);
-  Qassert(num_node == product(size_node));
+  Qassert(num_node == volume(size_node));
   begin_comm(MPI_COMM_WORLD, size_node);
 }
 
@@ -1084,11 +1084,11 @@ void begin(Int* argc, char** argv[],
   Coordinate size_node;
   for (Int i = 0; i < (Int)size_node_list.size(); ++i) {
     size_node = size_node_list[i];
-    if (num_node == product(size_node)) {
+    if (num_node == volume(size_node)) {
       break;
     }
   }
-  if (num_node != product(size_node)) {
+  if (num_node != volume(size_node)) {
     size_node = plan_size_node(num_node);
   }
   begin_comm(MPI_COMM_WORLD, size_node);

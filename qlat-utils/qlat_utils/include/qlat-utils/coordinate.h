@@ -146,10 +146,21 @@ inline std::string show(const Coordinate& x)
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-qacc Long product(const Coordinate& coor)
+qacc Long volume(const Coordinate& coor)
 {
+  qassert(coor.size() == 4);
   Long ret = 1;
-  for (Int i = 0; i < (Int)coor.size(); i++) {
+  for (Int i = 0; i < 4; i++) {
+    ret *= coor[i];
+  }
+  return ret;
+}
+
+qacc Long spatial_volume(const Coordinate& coor)
+{
+  qassert(coor.size() == 4);
+  Long ret = 1;
+  for (Int i = 0; i < 3; i++) {
     ret *= coor[i];
   }
   return ret;
@@ -293,7 +304,7 @@ qacc Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
 
 qacc Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
 {
-  const Long total_vol = product(size);
+  const Long total_vol = volume(size);
   const Long ri = rand_gen(rs) % total_vol;
   return coordinate_from_index(ri, size);
 }

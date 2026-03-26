@@ -75,7 +75,7 @@ CompressedEigenSystemInfo populate_eigen_system_info(
   Qassert(cesi.total_site == cesi.total_node * cesi.node_site);
   Qassert(cesi.total_site == cesi.total_block * cesi.block_site);
   Qassert(cesi.node_site == cesi.node_block * cesi.block_site);
-  Qassert((int)cesi.crcs.size() == product(cesi.total_node));
+  Qassert((int)cesi.crcs.size() == volume(cesi.total_node));
   return cesi;
 }
 
@@ -105,7 +105,7 @@ CompressedEigenSystemInfo read_compressed_eigen_system_info(
     reads(cesdi.nkeep_single, info_get_prop(lines, "nkeep_single = "));
     Int blocks;
     reads(blocks, info_get_prop(lines, "blocks = "));
-    Qassert(blocks == product(cesdi.node_site / cesdi.block_site));
+    Qassert(blocks == volume(cesdi.node_site / cesdi.block_site));
     reads(cesdi.FP16_COEF_EXP_SHARE_FLOATS,
           info_get_prop(lines, "FP16_COEF_EXP_SHARE_FLOATS = "));
     for (Long idx = 0; true; ++idx) {
@@ -123,7 +123,7 @@ CompressedEigenSystemInfo read_compressed_eigen_system_info(
         reads(cesdi.total_site[i], str_gs);
       }
     }
-    const Long global_volume = crcs.size() * product(cesdi.node_site);
+    const Long global_volume = crcs.size() * volume(cesdi.node_site);
     if (cesdi.total_site == Coordinate()) {
       if (64 * 64 * 64 * 128 == global_volume) {
         cesdi.total_site = Coordinate(64, 64, 64, 128);
@@ -144,7 +144,7 @@ CompressedEigenSystemInfo read_compressed_eigen_system_info(
       displayln_info(0, fname + ssprintf(": using guessed total_site=%s",
                                          show(cesdi.total_site).c_str()));
     }
-    Qassert(product(cesdi.total_site) == global_volume);
+    Qassert(volume(cesdi.total_site) == global_volume);
     const std::string str_gs5 = info_get_prop(lines, ssprintf("gs[4] = "));
     if (str_gs5 != "") {
       Int gs5;
@@ -153,7 +153,7 @@ CompressedEigenSystemInfo read_compressed_eigen_system_info(
     }
   }
   bcast(Vector<Char>((Char*)&cesdi, sizeof(CompressedEigenSystemDenseInfo)));
-  crcs.resize(product(cesdi.total_site / cesdi.node_site));
+  crcs.resize(volume(cesdi.total_site / cesdi.node_site));
   bcast(get_data(crcs));
   return populate_eigen_system_info(cesdi, crcs);
 }
@@ -180,7 +180,7 @@ void write_compressed_eigen_system_info(const CompressedEigenSystemInfo& cesi,
     qwrite_data(ssprintf("neig = %d\n", cesi.neig), fp);
     qwrite_data(ssprintf("nkeep = %d\n", cesi.nkeep), fp);
     qwrite_data(ssprintf("nkeep_single = %d\n", cesi.nkeep_single), fp);
-    qwrite_data(ssprintf("blocks = %d\n", product(cesi.node_block)), fp);
+    qwrite_data(ssprintf("blocks = %d\n", volume(cesi.node_block)), fp);
     qwrite_data(ssprintf("FP16_COEF_EXP_SHARE_FLOATS = %d\n",
                          cesi.FP16_COEF_EXP_SHARE_FLOATS),
                 fp);
@@ -210,7 +210,7 @@ CompressedEigenSystemInfo resize_compressed_eigen_system_info(
   Qassert(cesdi.total_site % new_size_node == Coordinate());
   cesdi.node_site = cesdi.total_site / new_size_node;
   return populate_eigen_system_info(
-      cesdi, std::vector<crc32_t>(product(new_size_node), 0));
+      cesdi, std::vector<crc32_t>(volume(new_size_node), 0));
 }
 
 void init_half_vector(HalfVector& hv, const Geometry& geo, const Int ls)
@@ -239,7 +239,7 @@ Geometry get_geo_from_cesi(const CompressedEigenSystemInfo& cesi,
     Qassert(cesi.total_site == new_size_node * node_site);
   }
   geon.id_node = id_node;
-  geon.num_node = product(geon.size_node);
+  geon.num_node = volume(geon.size_node);
   geon.coor_node = coordinate_from_index(geon.id_node, geon.size_node);
   Geometry geo_full;
   geo_full.init(geon, node_site);
@@ -262,7 +262,7 @@ void init_compressed_eigen_system_data(
 {
   TIMER("init_compressed_eigen_system_data");
   cesd.cesi = cesi;
-  cesd.block_vol_eo = product(cesi.block_site) / 2;
+  cesd.block_vol_eo = volume(cesi.block_site) / 2;
   cesd.ls = cesi.ls;
   cesd.basis_c_size = cesd.block_vol_eo * cesd.ls * HalfVector::c_size;
   cesd.coef_c_size = cesi.nkeep;
@@ -294,7 +294,7 @@ void init_compressed_eigen_system_bases(CompressedEigenSystemBases& cesb,
   }
   TIMER("init_compressed_eigen_system_bases");
   cesb.n_basis = n_basis;
-  cesb.block_vol_eo = product(block_site) / 2;
+  cesb.block_vol_eo = volume(block_site) / 2;
   cesb.ls = ls;
   cesb.c_size_vec = cesb.block_vol_eo * cesb.ls * HalfVector::c_size;
   const Geometry geo = block_geometry(geo_full, block_site);
@@ -538,7 +538,7 @@ void load_block_data(CompressedEigenSystemData& cesd, const Coordinate& xl,
   TIMER("load_block_data");
   Vector<uint8_t> data = cesd.get_elems(xl);
   const Int block_idx = index_from_coordinate(xl_file, cesi.node_block);
-  const Int block_size = product(cesi.node_block);
+  const Int block_size = volume(cesi.node_block);
   vseek(fp, 0, SEEK_END);
   const Long file_size = vtell(fp);
   Qassert(file_size == block_size * cesd.end_offset);
@@ -575,7 +575,7 @@ void save_block_data(const CompressedEigenSystemData& cesd,
   TIMER("load_block_data");
   const Vector<uint8_t> data = cesd.get_elems_const(xl);
   const Int block_idx = index_from_coordinate(xl, cesi.node_block);
-  const Int block_size = product(cesi.node_block);
+  const Int block_size = volume(cesi.node_block);
   const Long bases_offset_single = block_size * cesd.bases_offset_single;
   const Long bases_offset_fp16 = block_size * cesd.bases_offset_fp16;
   const Long coefs_offset = block_size * cesd.coefs_offset;
@@ -611,7 +611,7 @@ crc32_t block_data_crc(const CompressedEigenSystemData& cesd,
   crc32_t crc = 0;
   const Vector<uint8_t> data = cesd.get_elems_const(xl);
   const Int block_idx = index_from_coordinate(xl_file, cesi.node_block);
-  const Int block_size = product(cesi.node_block);
+  const Int block_size = volume(cesi.node_block);
   const Long file_size = block_size * cesd.end_offset;
   const Long bases_offset_single = block_size * cesd.bases_offset_single;
   const Long bases_offset_fp16 = block_size * cesd.bases_offset_fp16;
@@ -656,9 +656,9 @@ std::vector<crc32_t> load_node_data(CompressedEigenSystemData& cesd,
     init_compressed_eigen_system_data(cesd, cesi, get_id_node(),
                                       get_size_node());
   }
-  std::vector<crc32_t> crcs(product(cesi.total_node), 0);
+  std::vector<crc32_t> crcs(volume(cesi.total_node), 0);
   const Geometry& geo = cesd.geo();
-  const Int idx_size = product(cesi.total_node);
+  const Int idx_size = volume(cesi.total_node);
   std::vector<VFile> fps(idx_size);
   for (Int idx = 0; idx < idx_size; ++idx) {
     const Int dir_idx = compute_dist_file_dir_id(idx, idx_size);
@@ -718,7 +718,7 @@ crc32_t save_node_data(const CompressedEigenSystemData& cesd,
   TIMER_VERBOSE_FLOPS("save_node_data");
   const Geometry& geo = cesd.geo();
   crc32_t crc_node = 0;
-  const Int idx_size = product(geo.geon.size_node);
+  const Int idx_size = volume(geo.geon.size_node);
   const Int idx = geo.geon.id_node;
   const Int dir_idx = compute_dist_file_dir_id(idx, idx_size);
   qmkdir(path);
@@ -862,7 +862,7 @@ void init_blocked_half_vector(BlockedHalfVector& bhv, const Geometry& geo_full,
                               const Coordinate& block_site, const Int ls)
 {
   TIMER("init_blocked_half_vector");
-  bhv.block_vol_eo = product(block_site) / 2;
+  bhv.block_vol_eo = volume(block_site) / 2;
   bhv.ls = ls;
   const Geometry geo = block_geometry(geo_full, block_site);
   bhv.geo_full = geo_full;
@@ -1098,7 +1098,7 @@ Long decompress_eigen_vectors_node(
   if (size_node == Coordinate()) {
     size_node = cesi.total_node;
   }
-  const Int idx_size = product(size_node);
+  const Int idx_size = volume(size_node);
   const Int dir_idx = compute_dist_file_dir_id(idx, idx_size);
   qmkdir(new_path);
   qmkdir(new_path + ssprintf("/%02d", dir_idx));
@@ -1240,7 +1240,7 @@ void decompress_eigen_vectors(const std::string& old_path,
   if (size_node == Coordinate()) {
     size_node = cesi.total_node;
   }
-  Long idx_size = product(size_node);
+  Long idx_size = volume(size_node);
   if (0 == get_id_node()) {
     const std::string eigen_values = qcat(old_path + "/eigen-values.txt");
     qtouch(new_path + "/eigen-values.txt", eigen_values);
@@ -1322,11 +1322,11 @@ bool check_compressed_eigen_vectors(const std::string& path)
       read_compressed_eigen_system_info(path);
   const Coordinate size_node = cesi.total_site / cesi.node_site;
   Long is_failed = 0;
-  for (Int idx = 0; idx < product(size_node); ++idx) {
+  for (Int idx = 0; idx < volume(size_node); ++idx) {
     if (idx % get_num_node() == get_id_node()) {
       const crc32_t crc = compute_crc32(
           path + ssprintf("/%02d/%010d.compressed",
-                          compute_dist_file_dir_id(idx, product(size_node)),
+                          compute_dist_file_dir_id(idx, volume(size_node)),
                           idx));
       displayln(fname + ssprintf(": idx=%d computed=%08X previous=%08X", idx,
                                  crc, cesi.crcs[idx]));
@@ -1360,7 +1360,7 @@ bool resize_compressed_eigen_vectors(const std::string& old_path,
   qmkdir_info(new_path);
   CompressedEigenSystemInfo cesi;
   cesi = read_compressed_eigen_system_info(old_path);
-  Long idx_size = product(size_node);
+  Long idx_size = volume(size_node);
   if (0 == get_id_node()) {
     const std::string eigen_values = qcat(old_path + "/eigen-values.txt");
     qtouch(new_path + "/eigen-values.txt", eigen_values);
@@ -1371,11 +1371,11 @@ bool resize_compressed_eigen_vectors(const std::string& old_path,
   CompressedEigenSystemInfo cesi_new =
       resize_compressed_eigen_system_info(cesi_old, size_node);
   std::vector<crc32_t> crcs_acc;
-  for (Int idx = 0; idx < product(size_node); ++idx) {
+  for (Int idx = 0; idx < volume(size_node); ++idx) {
     if (idx % get_num_node() == get_id_node()) {
       cesi_new.crcs[idx] = resize_compressed_eigen_vectors_node(
           crcs_acc, old_path, cesi_old, new_path, idx, size_node);
-      displayln(fname + ssprintf(": resized %d/%d", idx, product(size_node)));
+      displayln(fname + ssprintf(": resized %d/%d", idx, volume(size_node)));
       Timer::display();
     }
   }

@@ -221,8 +221,8 @@ inline void dist_read_geo_info(Geometry& geo, Int& multiplicity, Int& sizeof_M,
     reads(
         local_volume,
         info_get_prop(lines, "geo.local_volume() = ", "geo.localVolume() = "));
-    qassert(num_node == product(size_node));
-    qassert(local_volume == product(node_site));
+    qassert(num_node == volume(size_node));
+    qassert(local_volume == volume(node_site));
     qassert(node_file_size == local_volume * multiplicity * sizeof_M);
   }
   bcast(get_data(multiplicity));
@@ -488,7 +488,7 @@ Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo, Int& multiplicit
     dds[i].id_node = fs[i].geo().geon.id_node;
     dds[i].data = get_data(fs[i]);
   }
-  return dist_read_dist_data(dds, product(new_size_node), path);
+  return dist_read_dist_data(dds, volume(new_size_node), path);
 }
 
 }  // namespace qlat

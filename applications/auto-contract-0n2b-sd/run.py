@@ -222,7 +222,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         t_t_list = get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
@@ -278,7 +278,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
             for xg_snk in xg_fsel_list:
@@ -370,7 +370,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for xg_snk in xg_fsel_list:
             yield xg_snk
@@ -462,7 +462,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for xg_snk in xg_fsel_list:
             yield xg_snk
@@ -544,7 +544,7 @@ def auto_contract_meson_0n2b(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_psel_list = np.array(psel.to_list())
     tsep_list = rup.dict_params[job_tag]["meson_tsep_list"]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for tsep1_idx, tsep1 in enumerate(tsep_list):
             for tsep2_idx, tsep2 in enumerate(tsep_list):

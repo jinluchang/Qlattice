@@ -61,6 +61,7 @@ rs_sig = q.RngState("rs_sig")
 
 # ------------------------------
 
+
 @q.timer(is_verbose=True)
 def measure_topo_dwf(
     gf,
@@ -91,6 +92,8 @@ def measure_topo_dwf(
     #
     rs = q.RngState(seed)
     #
+    rand_vol_u1_multiplicity = 12
+    #
     mobius_params = {
         "mass": 1.0,
         "M5": 1.8,
@@ -114,8 +117,10 @@ def measure_topo_dwf(
     else:
         n_grouped = g.default.get_int("--grouped", 1)
     inv = g.algorithms.inverter
-    cg_f = inv.split(inv.cg({"eps": 1e-8, "maxiter": maxiter_sloppy}), mpi_split=mpi_split)
-    cg = inv.split(inv.cg({"eps": 1e-8, "maxiter": maxiter_exact}), mpi_split=mpi_split)
+    cg_f = inv.split(
+        inv.cg({"eps": 1e-8, "maxiter": maxiter_sloppy}), mpi_split=mpi_split)
+    cg = inv.split(
+        inv.cg({"eps": 1e-8, "maxiter": maxiter_exact}), mpi_split=mpi_split)
     pc = g.qcd.fermion.preconditioner
     #
     slv_5d = inv.defect_correcting(
@@ -144,7 +149,8 @@ def measure_topo_dwf(
     gt.unitarize()
     gf = gt * gf
     q.json_results_append(f"after transform gf.plaq()", gf.plaq(), 1e-12)
-    q.json_results_append(f"after transform gf.link_trace()", gf.link_trace(), 1e-12)
+    q.json_results_append(
+        f"after transform gf.link_trace()", gf.link_trace(), 1e-12)
     #
     psel_full = q.PointsSelection(geo)
     #
@@ -159,12 +165,14 @@ def measure_topo_dwf(
         xg_arr = xg_arr_full[sel_arr]
         psel = q.PointsSelection(total_site, xg_arr, "l")
         psel_list.append(psel)
-        q.json_results_append(f"{sparse_ratio=} {idx=} {len(psel)=} {q.hash_sha256(psel)=}")
+        q.json_results_append(
+            f"{sparse_ratio=} {idx=} {len(psel)=} {q.hash_sha256(psel)=}")
     #
     q.json_results_append(f"{len(psel_list)=}")
     #
     gpt_gf = qg.gpt_from_qlat(gf)
-    q.json_results_append(f"g.qcd.gauge.plaquette(gpt_gf)", g.qcd.gauge.plaquette(gpt_gf), 1e-12)
+    q.json_results_append(f"g.qcd.gauge.plaquette(gpt_gf)",
+                          g.qcd.gauge.plaquette(gpt_gf), 1e-12)
     #
     gf1 = qg.qlat_from_gpt(gpt_gf)
     q.json_results_append(f"gf1.plaq()", gf1.plaq(), 1e-12)
@@ -174,33 +182,40 @@ def measure_topo_dwf(
     slv_qm = qm.propagator(slv_5d).grouped(n_grouped)
     slv_qm_f = qm_f.propagator(slv_5d_f).grouped(n_grouped)
     inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=q.Timer("py:slv_qm", True))
-    inv_qm_f = qg.InverterGPT(inverter=slv_qm_f, qtimer=q.Timer("py:slv_qm_f", True))
+    inv_qm_f = qg.InverterGPT(
+        inverter=slv_qm_f, qtimer=q.Timer("py:slv_qm_f", True))
     #
     rs_rand_u1 = rs.split(f"qtopo-measure-dwf(rand_u1)")
     rs_ama = rs.split(f"qtopo-measure-dwf(ama)")
     #
-    f_tadpole_loop_sum_list = []
+    info_list = []
     #
     for rand_vol_u1_idx in range(num_of_rand_vol_u1):
         q.check_time_limit()
-        fu1 = q.mk_rand_vol_u1(geo, 12, rs_rand_u1.split(f"{rand_vol_u1_idx}"))
+        fu1 = q.mk_rand_vol_u1(geo, rand_vol_u1_multiplicity,
+                               rs_rand_u1.split(f"{rand_vol_u1_idx}"))
+        fu1[:, 3:6] = fu1[:, 0:3]
+        fu1[:, 6:12] = fu1[:, 0:6]
         prop_src = q.Prop(geo)
         prop_src.set_unit()
         prop_src[:, :, :, :] *= fu1[:, None, None, :]
         #
-        q.json_results_append(f"fu1", q.get_data_sig_arr(fu1, rs_sig, 3), 1e-12)
-        q.json_results_append(f"prop_src", q.get_data_sig_arr(prop_src, rs_sig, 3), 1e-12)
+        q.json_results_append(
+            f"fu1 sig", q.get_data_sig_arr(fu1, rs_sig, 3), 1e-12)
+        q.json_results_append(
+            f"prop_src sig", q.get_data_sig_arr(prop_src, rs_sig, 3), 1e-12)
         #
+
         def mk_path(idx):
             return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
-        #
+
         def check(idx):
             if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
                 return False
             if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
                 return False
             return True
-        #
+
         @q.timer(is_verbose=True)
         def save(idx, sp_prop_sol):
             root = 0
@@ -222,7 +237,7 @@ def measure_topo_dwf(
             else:
                 assert len(psel_g) == 0
                 assert sp_prop_sol_g.n_points == 0
-        #
+
         @q.timer(is_verbose=True)
         def load(idx_list):
             """
@@ -261,7 +276,7 @@ def measure_topo_dwf(
             )
             assert len(sp_prop_sol_il) == len(idx_list)
             return sp_prop_sol_il
-        #
+
         for idx, psel in enumerate(psel_list):
             q.check_time_limit()
             q.json_results_append(f"sparse_solve: {idx+1}/{len(psel_list)}")
@@ -271,10 +286,11 @@ def measure_topo_dwf(
             rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
             r = rs_ama_idx.u_rand_gen()
             if r <= ama_prob:
-                sp_prop_sol_ama = sparse_solve(idx, psel, prop_src, fu1, inv_qm)
+                sp_prop_sol_ama = sparse_solve(
+                    idx, psel, prop_src, fu1, inv_qm)
                 sp_prop_sol_ama -= sp_prop_sol
                 q.json_results_append(
-                    f"sp_prop_sol_ama ratio ({idx+1}/{len(psel_list)}) ({ama_prob=:.4f})",
+                    f"sp_prop_sol_ama ratio of sqrt(qnorm) ({idx+1}/{len(psel_list)}) ({ama_prob=:.4f})",
                     np.sqrt(q.glb_sum(q.qnorm(sp_prop_sol_ama)) /
                             q.glb_sum(q.qnorm(sp_prop_sol))).item(),
                     1e-5,
@@ -290,13 +306,20 @@ def measure_topo_dwf(
             )
         #
         sp_prop_sol_list = load([idx for idx in range(len(psel_list))])
+        #
         prop_sol = q.Prop(geo)
         prop_sol.set_zero()
         for sp_prop_sol in sp_prop_sol_list:
             prop_sol @= sp_prop_sol
-        #
-        q.json_results_append(f"prop_sol", q.get_data_sig_arr(prop_sol, rs_sig, 3), 1e-7)
-        #
+        q.json_results_append(
+            f"prop_sol sig",
+            q.get_data_sig_arr(prop_sol, rs_sig, 3),
+            1e-7,
+        )
+        prop_sol.save_float_from_double(
+            f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/prop_sol.field",
+        )
+
         def get_prop(flavor, p_snk, p_src):
             assert flavor == "c"
             assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
@@ -309,83 +332,148 @@ def measure_topo_dwf(
             assert pos_snk == pos_src
             index = geo.index_from_g_coordinate(pos_snk)
             return prop_sol.get_elem_wm(index)
-        #
-        f_tadpole_loop = q.FieldComplexD(geo, 2)
-        f_tadpole_loop.set_zero()
-        #
+
         cexpr = get_cexpr_tadpole_loop()
         expr_names = get_expr_names(cexpr)
         chunk_list = q.get_chunk_list(
-            xg_arr_full, chunk_number=max(1, q.get_q_num_mp_processes()))
+            xg_arr_full,
+            chunk_number=max(1, q.get_q_num_mp_processes()),
+        )
+
         @q.timer(is_verbose=True)
         def eval(chunk_idx):
             chunk = chunk_list[chunk_idx]
-            val_arr = np.zeros((len(chunk), len(expr_names),), dtype=np.complex128)
+            val_arr = np.zeros(
+                (len(chunk), len(expr_names),), dtype=np.complex128)
             for idx, xg in enumerate(chunk):
                 pd = {
                     "x_1": ("point-snk", tuple(xg))
                 }
-                val_arr[idx] = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+                val_arr[idx] = eval_cexpr(
+                    cexpr, positions_dict=pd, get_prop=get_prop)
             return val_arr
-        #
+
         val_arr_list = q.parallel_map(eval, range(len(chunk_list)))
         #
+        f_tadpole_loop = q.FieldComplexD(geo, 2)
+        f_tadpole_loop.set_zero()
         for idx, chunk in enumerate(chunk_list):
             f_tadpole_loop.set_elems_xg(chunk, val_arr_list[idx])
         #
-        q.json_results_append(f"f_tadpole_loop sig", q.get_data_sig_arr(f_tadpole_loop, rs_sig, 3), 1e-7)
-        #
-        f_tadpole_loop_sum = f_tadpole_loop.glb_sum_tslice()[:]
-        #
-        prop_sol.save_float_from_double(
-            f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/prop_sol.field",
+        q.json_results_append(
+            f"f_tadpole_loop sig",
+            q.get_data_sig_arr(f_tadpole_loop, rs_sig, 3),
+            1e-7,
         )
         f_tadpole_loop.save_double(
             f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop.field",
         )
-        q.save_pickle_obj(
-            f_tadpole_loop_sum, f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop_sum.pickle")
         #
-        q.save_json_obj(dict(
-            total=f_tadpole_loop_sum[:, 0].real.sum().item(),
-            tslice_sum=f_tadpole_loop_sum[:, 0].real,
-        ), f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/topo.json",
-        )
-        q.save_json_obj(dict(
-            total=f_tadpole_loop_sum[:, 1].real.sum().item(),
-            tslice_sum=f_tadpole_loop_sum[:, 1].real,
-        ), f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/quark_condensate.json",
-        )
-        #
+        f_tadpole_loop_sum = f_tadpole_loop.glb_sum_tslice()[:].copy()
         q.json_results_append(
             f"f_tadpole_loop_sum sig",
             q.get_data_sig_arr(f_tadpole_loop_sum, rs_sig, 3),
             1e-7,
         )
+        f_tadpole_loop_imag_sqr = q.FieldRealD(geo, 2)
+        f_tadpole_loop_imag_sqr[:] = f_tadpole_loop[:].imag**2
+        f_tadpole_loop_imag_sqr_sum = (
+            f_tadpole_loop_imag_sqr.glb_sum_tslice()[:].copy()
+        )
+        #
+        info = dict()
+        info["f_tadpole_loop_sum"] = f_tadpole_loop_sum
+        info["f_tadpole_loop_imag_sqr_sum"] = f_tadpole_loop_imag_sqr_sum
+        #
+        q.save_pickle_obj(
+            info,
+            f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/info.pickle",
+        )
+        #
+        q.save_json_obj(
+            dict(
+                total=f_tadpole_loop_sum[:, 0].real.sum().item(),
+                total_err=np.sqrt(
+                    f_tadpole_loop_imag_sqr_sum[:, 0].sum()).item(),
+                tslice_sum=f_tadpole_loop_sum[:, 0].real,
+                tslice_sum_err=np.sqrt(f_tadpole_loop_imag_sqr_sum[:, 0].real),
+            ),
+            f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/topo.json",
+        )
+        q.save_json_obj(
+            dict(
+                total=f_tadpole_loop_sum[:, 1].real.sum(
+                ).item() / geo.total_volume,
+                total_err=np.sqrt(
+                    f_tadpole_loop_imag_sqr_sum[:, 1].sum()).item() / geo.total_volume,
+                tslice_sum=f_tadpole_loop_sum[:, 1].real /
+                geo.spatial_volume,
+                tslice_sum_err=np.sqrt(f_tadpole_loop_imag_sqr_sum[:, 1].real) /
+                geo.spatial_volume,
+            ),
+            f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/quark_condensate.json",
+        )
+        #
         q.json_results_append(
-            f"f_tadpole_loop_sum topo sum",
-            f_tadpole_loop_sum[:, 0].sum(-1),
+            f"f_tadpole_loop_sum topo sum and err",
+            np.array([
+                f_tadpole_loop_sum[:, 0].sum(-1),
+                np.sqrt(
+                    f_tadpole_loop_imag_sqr_sum[:, 0].sum()).item()
+            ]),
+            1e-7,
+        )
+        q.json_results_append(
+            f"f_tadpole_loop_sum quark condensate avg and err",
+            np.array([
+                f_tadpole_loop_sum[:, 1].sum(-1) / geo.total_volume,
+                np.sqrt(
+                    f_tadpole_loop_imag_sqr_sum[:, 1].sum()).item() / geo.total_volume,
+            ]),
             1e-7,
         )
         #
-        f_tadpole_loop_sum_list.append(f_tadpole_loop_sum)
+        info_list.append(info)
     #
     f_tadpole_loop_sum_arr = np.array(
-        f_tadpole_loop_sum_list, dtype=np.complex128)
+        [info["f_tadpole_loop_sum"] for info in info_list], dtype=np.complex128,
+    )
+    f_tadpole_loop_imag_sqr_sum_arr = np.array(
+        [info["f_tadpole_loop_imag_sqr_sum"] for info in info_list], dtype=np.complex128,
+    )
     #
-    q.save_json_obj(dict(
-        total=f_tadpole_loop_sum_arr[:, :, 0].real.sum(-1),
-        tslice_sum=f_tadpole_loop_sum_arr[:, :, 0].real,
-    ), f"{info_path}/info/topo.json",
-    )
-    q.save_json_obj(dict(
-        total=f_tadpole_loop_sum_arr[:, :, 1].real.sum(-1),
-        tslice_sum=f_tadpole_loop_sum_arr[:, :, 1].real,
-    ), f"{info_path}/info/quark_condensate.json",
-    )
+    info = dict()
+    info["f_tadpole_loop_sum_arr"] = f_tadpole_loop_sum_arr
+    info["f_tadpole_loop_imag_sqr_sum_arr"] = f_tadpole_loop_imag_sqr_sum_arr
+    #
     q.save_pickle_obj(
-        f_tadpole_loop_sum_arr,
-        f"{info_path}/pickle/f_tadpole_loop_sum_arr.pickle",
+        info,
+        f"{info_path}/pickle/info.pickle",
+    )
+    #
+    q.save_json_obj(
+        dict(
+            total=f_tadpole_loop_sum_arr[:, :, 0].real.sum(-1),
+            total_err=np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].real.sum(-1)),
+            tslice_sum=f_tadpole_loop_sum_arr[:, :, 0].real,
+            tslice_sum_err=np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].real),
+        ),
+        f"{info_path}/info/topo.json",
+    )
+    q.save_json_obj(
+        dict(
+            total=f_tadpole_loop_sum_arr[:, :,
+                                         1].real.sum(-1) / geo.total_volume,
+            total_err=np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].real.sum(-1)) / geo.total_volume,
+            tslice_sum=f_tadpole_loop_sum_arr[:,
+                                              :, 1].real / geo.spatial_volume,
+            tslice_sum_err=np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].real) / geo.spatial_volume,
+        ),
+        f"{info_path}/info/quark_condensate.json",
     )
     #
     q.json_results_append(
@@ -394,8 +482,21 @@ def measure_topo_dwf(
         1e-7,
     )
     q.json_results_append(
-        f"f_tadpole_loop_sum_arr topo sum",
-        f_tadpole_loop_sum_arr[:, :, 0].sum(-1),
+        f"f_tadpole_loop_sum_arr topo sum and err",
+        np.array([
+            f_tadpole_loop_sum_arr[:, :, 0].sum(-1),
+            np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].real.sum(-1)),
+        ]),
+        1e-7,
+    )
+    q.json_results_append(
+        f"f_tadpole_loop_sum_arr quark condensate avg and err",
+        np.array([
+            f_tadpole_loop_sum_arr[:, :, 1].sum(-1) / geo.total_volume,
+            np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].real.sum(-1)) / geo.total_volume,
+        ]),
         1e-7,
     )
     #
@@ -636,7 +737,7 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sparse_grid_prop_sol = inverter * sparse_grid_prop_src
     sp_prop_sol = q.PselProp(psel)
     sp_prop_sol @= sparse_grid_prop_sol
-    sp_fu1 = q.SelectedPointsComplexD(psel, 12)
+    sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
     sp_fu1 @= fu1
     sp_prop_sol[:, :, :, :] *= sp_fu1[:, None, None, :].conj()
     if is_test():
@@ -679,6 +780,8 @@ def gen_test_data():
         "--ls_sloppy", "12",
         "--b_plus_c", "3.0",
         "--b_plus_c_sloppy", "3.0",
+        "--maxiter_sloppy", "50",
+        "--maxiter_exact", "100",
     ]
     return argv
 

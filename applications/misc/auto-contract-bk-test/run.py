@@ -325,7 +325,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         t_t_list = get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(total_site[3]) for t_src in range(total_site[3]) ],
@@ -379,7 +379,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         for t_src in range(total_site[3]):
             q.displayln_info(f"auto_contract_meson_f_corr: {t_src}")
@@ -433,7 +433,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
     xg_fsel_list = np.array(fsel.to_psel_local().to_list())
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     tsep_step = max(2, total_site[3] // 16)
     tsep_list = list(range(tsep_step, total_site[3], tsep_step))
     def load_data():

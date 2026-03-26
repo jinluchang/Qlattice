@@ -75,6 +75,7 @@ cdef extern from "qlat/geometry.h" namespace "qlat":
         Long local_volume() except +
         Long local_volume_expanded() except +
         Long total_volume() except +
+        Long spatial_volume() except +
         bool is_local(const Coordinate& x)
         Coordinate coordinate_g_from_l(const Coordinate& xl)
         Coordinate coordinate_l_from_g(const Coordinate& xg)

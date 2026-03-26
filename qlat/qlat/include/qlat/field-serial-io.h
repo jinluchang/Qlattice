@@ -57,7 +57,7 @@ Long serial_write_field(const Field<M>& f, const std::string& path,
     f = fs[0];
     Vector<M> v = get_data(f);
     const Int num_node = get_num_node();
-    const Int new_num_node = product(new_size_node);
+    const Int new_num_node = volume(new_size_node);
     QFile qfile = qfopen(path, "a");
     qassert(not qfile.null());
     for (Int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
@@ -114,7 +114,7 @@ Long serial_read_field(Field<M>& f, const std::string& path,
     f.init(fs[0].geo(), multiplicity);
     Vector<M> v = get_data(f);
     const Int num_node = get_num_node();
-    const Int new_num_node = product(new_size_node);
+    const Int new_num_node = volume(new_size_node);
     QFile qfile = qfopen(path, "r");
     qassert(not qfile.null());
     qfseek(qfile, offset, whence);

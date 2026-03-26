@@ -79,7 +79,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     def load_data():
         t_t_list = get_mpi_chunk(
                 [ (t_src, t_snk,) for t_snk in range(t_size) for t_src in range(t_size) ],
@@ -129,7 +129,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
@@ -180,7 +180,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
@@ -241,7 +241,7 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
@@ -599,7 +599,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]
@@ -803,7 +803,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     geo = q.Geometry(total_site, 1)
-    total_volume = geo.total_volume()
+    total_volume = geo.total_volume
     get_prop = get_get_prop()
     xg_list = get_all_points(total_site)
     xg_local_list = [ q.Coordinate(xg) for xg in geo.xg_list() ]

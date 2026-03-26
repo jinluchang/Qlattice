@@ -37,7 +37,7 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
-  const Int new_num_node = product(new_size_node);
+  const Int new_num_node = volume(new_size_node);
   crc32_t crc = 0;
   for (Int i = 0; i < (int)sfs.size(); ++i) {
     const Int new_id_node = sfs[i].geo().geon.id_node;
@@ -74,7 +74,7 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   std::vector<SelectedField<M>> sfs;
   shuffle_field(sfs, sf, sp);
   qassert(fsels.size() == sfs.size());
-  const Int new_num_node = product(new_size_node);
+  const Int new_num_node = volume(new_size_node);
   std::vector<Long> n_elems_vec(new_num_node, 0);
   for (size_t i = 0; i < sfs.size(); ++i) {
     const Int id_node = fsels[i].f_rank.geo().geon.id_node;
@@ -187,7 +187,7 @@ Long read_selected_field(SelectedField<M>& sf, const std::string& path,
   }
   std::vector<SelectedField<M>> sfs;
   sfs.resize(fsels.size());
-  const Int new_num_node = product(new_size_node);
+  const Int new_num_node = volume(new_size_node);
   std::vector<Long> n_elems_vec(new_num_node, 0);
   for (size_t i = 0; i < sfs.size(); ++i) {
     const Int id_node = fsels[i].f_rank.geo().geon.id_node;

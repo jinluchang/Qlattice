@@ -18,7 +18,7 @@ inline void make_local_deflation_plan(
 // boundaries to approriate places.
 {
   // total number of partition of the global lattice
-  Int Np = product(tw_par);
+  Int Np = volume(tw_par);
   Printf("Number of partitions = %d\n", Np);
 
   Coordinate global_size = geo.global_size();

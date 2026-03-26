@@ -8,6 +8,7 @@
 #include <qlat-utils/utils-vec.h>
 #include <qlat/config.h>
 #include <qlat/env.h>
+#include "qlat-utils/types.h"
 
 namespace qlat
 {  //
@@ -45,7 +46,7 @@ struct API GeometryNode {
   qacc void init(const Coordinate& coor_node_, const Coordinate& size_node_)
   {
     const Int id_node_ = index_from_coordinate(coor_node_, size_node_);
-    const Int num_node_ = product(size_node_);
+    const Int num_node_ = volume(size_node_);
     initialized = true;
     num_node = num_node_;
     id_node = id_node_;
@@ -322,6 +323,11 @@ struct API Geometry {
   qacc Coordinate total_site() const { return node_site * geon.size_node; }
   //
   qacc Long total_volume() const { return local_volume() * geon.num_node; }
+  //
+  qacc Long spatial_volume() const
+  {
+    return total_volume() / (node_site[3] * geon.size_node[3]);
+  }
   //
   qacc Coordinate coordinate_g_from_l(const Coordinate& xl) const
   {
