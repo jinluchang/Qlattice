@@ -196,14 +196,12 @@ def measure_topo_dwf(
                                rs_rand_u1.split(f"{rand_vol_u1_idx}"))
         fu1[:, 3:6] = fu1[:, 0:3]
         fu1[:, 6:12] = fu1[:, 0:6]
-        prop_src = q.Prop(geo)
-        prop_src.set_unit()
-        prop_src[:, :, :, :] *= fu1[:, None, None, :]
         #
         q.json_results_append(
-            f"fu1 sig", q.get_data_sig_arr(fu1, rs_sig, 3), 1e-12)
-        q.json_results_append(
-            f"prop_src sig", q.get_data_sig_arr(prop_src, rs_sig, 3), 1e-12)
+            f"fu1 sig",
+            q.get_data_sig_arr(fu1, rs_sig, 3),
+            1e-12,
+        )
 
         def mk_path(idx):
             return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
@@ -281,12 +279,12 @@ def measure_topo_dwf(
             q.json_results_append(f"sparse_solve: {idx+1}/{len(psel_list)}")
             if check(idx):
                 continue
-            sp_prop_sol = sparse_solve(idx, psel, prop_src, fu1, inv_qm_f)
+            sp_prop_sol = sparse_solve(idx, psel, fu1, inv_qm_f)
             rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
             r = rs_ama_idx.u_rand_gen()
             if r <= ama_prob:
                 sp_prop_sol_ama = sparse_solve(
-                    idx, psel, prop_src, fu1, inv_qm)
+                    idx, psel, fu1, inv_qm)
                 sp_prop_sol_ama -= sp_prop_sol
                 q.json_results_append(
                     f"sp_prop_sol_ama ratio of sqrt(qnorm) ({idx+1}/{len(psel_list)}) ({ama_prob=:.4f})",
@@ -717,15 +715,17 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         raise Exception(f"{sparse_ratio=}")
 
 @q.timer(is_verbose=True)
-def sparse_solve(idx, psel, prop_src, fu1, inverter):
+def sparse_solve(idx, psel, fu1, inverter):
     """
     return ``sp_prop_sol``
     Complex conjugate of the initial random phase is already multiplied.
     """
-    geo = prop_src.geo
+    geo = fu1.geo
+    sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
+    sp_fu1 @= fu1
     sp_prop_src = q.PselProp(psel)
     sp_prop_src.set_zero()
-    sp_prop_src @= prop_src
+    sp_prop_src[:, :, np.arange(12), np.arange(12)] = sp_fu1[:, None, np.arange(12)]
     if is_test():
         q.json_results_append(f"sp_prop_src {idx}", q.get_data_sig_arr(sp_prop_src, rs_sig, 3), 1e-12)
     sparse_grid_prop_src = q.Prop(geo)
@@ -734,8 +734,6 @@ def sparse_solve(idx, psel, prop_src, fu1, inverter):
     sparse_grid_prop_sol = inverter * sparse_grid_prop_src
     sp_prop_sol = q.PselProp(psel)
     sp_prop_sol @= sparse_grid_prop_sol
-    sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
-    sp_fu1 @= fu1
     sp_prop_sol[:, :, :, :] *= sp_fu1[:, None, None, :].conj()
     if is_test():
         q.json_results_append(f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3), 1e-7)

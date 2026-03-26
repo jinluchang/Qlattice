@@ -75,30 +75,6 @@
   1e-12
  ],
  [
-  "prop_src sig",
-  {
-   "value": [
-    {
-     "real": -14.940024971411212,
-     "imag": -75.58480041322784,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 46.494466721730284,
-     "imag": 12.597976303505224,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 9.487896858135596,
-     "imag": -28.779443556976688,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-12
- ],
- [
   "sparse_solve: 1/2"
  ],
  [
@@ -380,30 +356,6 @@
     {
      "real": 15.076746982963446,
      "imag": 22.040067584428257,
-     "__extended_json_type__": "complex"
-    }
-   ],
-   "__extended_json_type__": "ndarray"
-  },
-  1e-12
- ],
- [
-  "prop_src sig",
-  {
-   "value": [
-    {
-     "real": 34.510079819000794,
-     "imag": -15.221826339242867,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 22.527666931736817,
-     "imag": 2.5324281836486993,
-     "__extended_json_type__": "complex"
-    },
-    {
-     "real": 57.46017734585997,
-     "imag": 5.662069283494091,
      "__extended_json_type__": "complex"
     }
    ],
