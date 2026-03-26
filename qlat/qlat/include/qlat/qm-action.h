@@ -48,7 +48,7 @@ struct QMAction {
   //
   qacc QMAction(const RealD alpha_, const RealD beta_, const RealD V_FV_min_,
                 const RealD FV_offset_, const RealD TV_offset_,
-                 const RealD barrier_strength_, const RealD L_,
+                const RealD barrier_strength_, const RealD L_,
                 const RealD M_, const RealD epsilon_, const Long t_FV_out_, 
                 const Long t_FV_mid_, const RealD dt_,
                 const bool measure_offset_L_, const bool measure_offset_M_)

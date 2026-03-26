@@ -431,7 +431,7 @@ def main():
     t_FV_out = int((Nt - 2 - t_TV - t_FV_mid)/2)
     t_FV_mid = Nt - 2 - t_TV - 2*t_FV_out
     
-    action = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M)
+    action = q.QMAction(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M)
     hmc = HMC(action,f"alpha_{alpha}_beta_{beta}_FVmin_{V_FV_min}_dt_{dt}_FVoff_{FV_offset}_TVoff_{TV_offset}_bar_{barrier_strength}_M_{M}_L_{L}_eps_{epsilon}_offL_{measure_offset_L}_offM_{measure_offset_M}_tTV_{t_TV}_tFV_{t_FV_out*2+t_FV_mid}_tFVout_{t_FV_out}_tFVmid_{t_FV_mid}",total_site,mult,steps,init_length,date,version,fresh_start)
     
     steps_M = np.array([0.001, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) #np.concatenate([0.001*np.arange(1,100), 0.1 + 0.01*np.arange(0,91)])
@@ -441,14 +441,14 @@ def main():
         
     actions = {"M": {}, "L": {}, "D": {}}
     if(L==0.0 and M==0.0):
-        actions["D"]["L"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, True, False)
-        actions["D"]["M"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid-1, dt, False, True)
+        actions["D"]["L"] = q.QMAction(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, True, False)
+        actions["D"]["M"] = q.QMAction(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid-1, dt, False, True)
     elif(L==1.0):
         for Mi in measure_Ms:
-            actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, 1.0, Mi, epsilon, t_FV_out, t_FV_mid, dt, False, False)
+            actions["M"][f"{Mi}"] = q.QMAction(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, 1.0, Mi, epsilon, t_FV_out, t_FV_mid, dt, False, False)
     else:
         for Li in measure_Ls:
-            actions["L"][f"{Li}"] = q.QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, Li, 1.0, epsilon, t_FV_out, t_FV_mid, dt, False, False)
+            actions["L"][f"{Li}"] = q.QMAction(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, Li, 1.0, epsilon, t_FV_out, t_FV_mid, dt, False, False)
     
     
     measurements = Measurements(total_site, actions, f"output_data/measurements_{hmc.fileid}.bin")
