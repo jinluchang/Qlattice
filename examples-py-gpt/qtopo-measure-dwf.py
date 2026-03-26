@@ -204,7 +204,6 @@ def measure_topo_dwf(
             f"fu1 sig", q.get_data_sig_arr(fu1, rs_sig, 3), 1e-12)
         q.json_results_append(
             f"prop_src sig", q.get_data_sig_arr(prop_src, rs_sig, 3), 1e-12)
-        #
 
         def mk_path(idx):
             return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
@@ -500,12 +499,10 @@ def measure_topo_dwf(
         1e-7,
     )
     #
-    topo_tslice_arr = f_tadpole_loop_sum_arr[:, :, 0].copy()
-    #
     q.qtouch_info(f"{info_path}/checkpoint.txt")
     q.qremove_all_info(f"{info_path}/scratch")
     #
-    return f_tadpole_loop_sum_arr
+    return info
 
 # ------------------------------
 
@@ -805,7 +802,7 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
             params,
             seed=fn_gf,
         )
-    f_tadpole_loop_sum_arr = measure_topo_dwf(
+    info = measure_topo_dwf(
         gf,
         info_path=fn_out,
         params=params,
