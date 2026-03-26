@@ -1199,7 +1199,7 @@ def run_field_rand_u1_dict(
     seed = get_job_seed(job_tag)
     rs_rand_u1 = q.RngState(f"seed {seed} {traj}").split(f"compute_prop_rand_sparse_u1_src(rand_u1)")
     for psel_list_type in [ "fsel", "psel" ]:
-        fu1 = q.mk_rand_vol_u1(geo, rs_rand_u1.split(f"{psel_list_type}"))
+        fu1 = q.mk_rand_vol_u1(geo, 1, rs_rand_u1.split(f"{psel_list_type}"))
         fu1_dag = q.FieldComplexD(geo, 1)
         fu1_dag[:] = fu1[:].conj()
         fu1.save_double(get_save_path(f"{path}/{psel_list_type}-src.field"))
