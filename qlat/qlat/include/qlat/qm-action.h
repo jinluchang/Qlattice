@@ -46,8 +46,9 @@ struct QMAction {
     measure_offset_M = false;
   }
   //
-  qacc QMAction(const RealD alpha_, const RealD beta_, const RealD FV_offset_,
-                const RealD TV_offset_, const RealD barrier_strength_, const RealD L_,
+  qacc QMAction(const RealD alpha_, const RealD beta_, const RealD V_FV_min_,
+                const RealD FV_offset_, const RealD TV_offset_,
+                 const RealD barrier_strength_, const RealD L_,
                 const RealD M_, const RealD epsilon_, const Long t_FV_out_, 
                 const Long t_FV_mid_, const RealD dt_,
                 const bool measure_offset_L_, const bool measure_offset_M_)
@@ -57,7 +58,7 @@ struct QMAction {
     alpha = alpha_;
     beta = beta_;
     //start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
-    V_min_FV = -1;//V_phi4(start_TV,0);
+    V_min_FV = V_FV_min_;//V_phi4(start_TV,0);
     FV_offset = FV_offset_;
     TV_offset = TV_offset_;
     // center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
@@ -306,12 +307,14 @@ struct QMAction {
   inline RealD V_full_op_fixed(const Vector<RealD>& x, RealD op)
   {
     const RealD norm = std::pow(order_param(x)/op,0.5);
+    if(norm==0) return V_full_xy(op, 0);
     return V_full_xy(x[0]/norm, x[1]/norm); // V(div(x))
   }
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
   {
     const RealD norm = std::pow(order_param(x)/op,0.5); // div(x) = op^0.5*x_i / order_param(x)^0.5
+    if(norm==0) return 0;
     return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
   }
 

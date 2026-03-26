@@ -43,11 +43,11 @@ class QMAction:
     def dt(self):
         return c.get_dt_qm_action(self)
 
-    def V(self, x, y, t):
-        return c.V_qm_action(self, x, y, t)
+    def V(self, x, t):
+        return c.V_qm_action(self, x[0], x[1], t)
 
     def dV(self, x, t):
-        return c.dV_qm_action(self, x, t)
+        return c.dV_qm_action(self, x[0], x[1], t)
 
     def action_node(self, f):
         assert isinstance(f, FieldBase)

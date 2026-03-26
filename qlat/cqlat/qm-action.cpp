@@ -4,6 +4,7 @@ EXPORT(mk_qm_action, {
   using namespace qlat;
   RealD alpha = 0.0;
   RealD beta = 0.0;
+  RealD V_FV_min = 0.0;
   RealD FV_offset = 0.0;
   RealD TV_offset = 0.0;
   RealD barrier_strength = 1.0;
@@ -16,12 +17,12 @@ EXPORT(mk_qm_action, {
   bool measure_offset_L = false;
   bool measure_offset_M = false;
   
-  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|l|l|d|b|b", &alpha, &beta, &FV_offset, &TV_offset,
+  if (!PyArg_ParseTuple(args, "d|d|d|d|d|d|d|d|d|l|l|d|b|b", &alpha, &beta, &V_FV_min, &FV_offset, &TV_offset,
       &barrier_strength, &L, &M, &epsilon, &t_FV_out, &t_FV_mid, &dt, 
       &measure_offset_L, &measure_offset_M)) {
     return NULL;
   }
-  QMAction* pqma = new QMAction(alpha, beta, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M);
+  QMAction* pqma = new QMAction(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M);
   return py_convert((void*)pqma);
 })
 
@@ -133,14 +134,17 @@ EXPORT(V_qm_action, {
 EXPORT(dV_qm_action, {
   using namespace qlat;
   PyObject* p_qma = NULL;
-  RealD x = 0.0;
+  RealD x[2];
+  x[0] = 0.0;
+  x[1] = 0.0;
   long t = 0;
   int idx = 0;
-  if (!PyArg_ParseTuple(args, "O|d|l|i", &p_qma, &x, &t, &idx)) {
+  if (!PyArg_ParseTuple(args, "O|d|d|l|i", &p_qma, &x[0], &x[1], &t, &idx)) {
     return NULL;
   }
   QMAction& qma = py_convert_type<QMAction>(p_qma);
-  return py_convert(qma.dV(x,t,idx));
+  Vector<RealD> x_v(&x[0],2);
+  return py_convert(qma.dV(x_v,t,idx));
 })
 
 EXPORT(action_node_qm_action, {
