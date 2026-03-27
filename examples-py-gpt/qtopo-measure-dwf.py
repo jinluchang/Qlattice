@@ -274,12 +274,57 @@ def measure_topo_dwf(
             assert len(sp_prop_sol_il) == len(idx_list)
             return sp_prop_sol_il
 
+        @q.timer
+        def benchmark(sp_prop_sol):
+            fname = q.get_fname()
+            n_points = q.glb_sum(sp_prop_sol.n_points)
+            psel = sp_prop_sol.psel
+            total_site = psel.total_site
+            volume = total_site.volume()
+            gamma_5_s = q.get_gamma_matrix(5)[:]
+            gamma_5_sc = np.zeros((4, 3, 4, 3,), dtype=np.complex128)
+            gamma_5_sc[:, np.arange(3), :, np.arange(3)] = gamma_5_s[None, :, :]
+            gamma_5 = gamma_5_sc.reshape(12, 12).copy()
+            #
+            arr = sp_prop_sol[:, 0, :, :]
+            arr_t = gamma_5 @ arr.conj().swapaxes(-1, -2) @ gamma_5
+            arr_avg = 0.5 * (arr + arr_t)
+            arr_diff = 0.5 * (arr - arr_t)
+            val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points)
+            err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points)
+            q.json_results_append(
+                f"{fname}: prop_size val,err,err/val",
+                np.array([val, err, err/val, ]),
+                1e-5,
+            )
+            topo_arr = np.trace(gamma_5 @ arr, axis1=-1, axis2=-2)
+            arr_avg = topo_arr.real
+            arr_diff = topo_arr.imag
+            val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points * volume)
+            err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points * volume)
+            q.json_results_append(
+                f"{fname}: topo_sum val,err,err/val",
+                np.array([val, err, err/val, ]),
+                1e-5,
+            )
+            quark_condensate_arr = np.trace(arr, axis1=-1, axis2=-2)
+            arr_avg = quark_condensate_arr.real
+            arr_diff = quark_condensate_arr.imag
+            val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points)
+            err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points / volume)
+            q.json_results_append(
+                f"{fname}: quark_condensate_avg val,err,err/val",
+                np.array([val, err, err/val, ]),
+                1e-5,
+            )
+
         for idx, psel in enumerate(psel_list):
             q.check_time_limit()
             q.json_results_append(f"sparse_solve: {idx+1}/{len(psel_list)}")
             if check(idx):
                 continue
             sp_prop_sol = sparse_solve(idx, psel, fu1, inv_qm_f)
+            benchmark(sp_prop_sol)
             rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
             r = rs_ama_idx.u_rand_gen()
             if r <= ama_prob:
@@ -294,6 +339,7 @@ def measure_topo_dwf(
                 )
                 sp_prop_sol_ama *= 1 / ama_prob
                 sp_prop_sol += sp_prop_sol_ama
+                benchmark(sp_prop_sol)
             save(idx, sp_prop_sol)
             sp_prop_sol_il = load([idx,])
             assert np.all(

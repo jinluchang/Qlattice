@@ -126,6 +126,42 @@
   1e-07
  ],
  [
+  "benchmark: prop_size val,err,err/val",
+  {
+   "value": [
+    0.3301940286263917,
+    0.2855266850975234,
+    0.8647239512032225
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: topo_sum val,err,err/val",
+  {
+   "value": [
+    0.4949076319070669,
+    0.48854303408752187,
+    0.987139826890485
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: quark_condensate_avg val,err,err/val",
+  {
+   "value": [
+    0.5622836702387802,
+    0.005553293717584418,
+    0.009876320461567287
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
   "sp_prop_src 0",
   {
    "value": [
@@ -179,6 +215,42 @@
   1e-05
  ],
  [
+  "benchmark: prop_size val,err,err/val",
+  {
+   "value": [
+    0.3386028302508186,
+    0.29677615287265025,
+    0.8764727472975183
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: topo_sum val,err,err/val",
+  {
+   "value": [
+    0.6686826100714659,
+    0.6392607214070093,
+    0.9560002186069829
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: quark_condensate_avg val,err,err/val",
+  {
+   "value": [
+    0.5504742285754561,
+    0.00524073692967621,
+    0.00952040378572934
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
   "sparse_solve: 2/2"
  ],
  [
@@ -228,6 +300,42 @@
    "__extended_json_type__": "ndarray"
   },
   1e-07
+ ],
+ [
+  "benchmark: prop_size val,err,err/val",
+  {
+   "value": [
+    0.33296963659647616,
+    0.2934169576452717,
+    0.8812123551099103
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: topo_sum val,err,err/val",
+  {
+   "value": [
+    0.5365436993028094,
+    0.513694305081743,
+    0.9574137311634501
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: quark_condensate_avg val,err,err/val",
+  {
+   "value": [
+    0.5778555072351741,
+    0.0057970867412655,
+    0.01003206972795401
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
  ],
  [
   "prop_sol sig",
@@ -415,6 +523,42 @@
   1e-07
  ],
  [
+  "benchmark: prop_size val,err,err/val",
+  {
+   "value": [
+    0.33327759455984757,
+    0.2887941643858547,
+    0.866527390679409
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: topo_sum val,err,err/val",
+  {
+   "value": [
+    0.4665765133367367,
+    0.4952419899976439,
+    1.0614378903385109
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: quark_condensate_avg val,err,err/val",
+  {
+   "value": [
+    0.5765384762076898,
+    0.005623271000950126,
+    0.00975350515708586
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
   "sparse_solve: 2/2"
  ],
  [
@@ -464,6 +608,42 @@
    "__extended_json_type__": "ndarray"
   },
   1e-07
+ ],
+ [
+  "benchmark: prop_size val,err,err/val",
+  {
+   "value": [
+    0.32723616178427345,
+    0.2840709284082388,
+    0.8680914934930363
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: topo_sum val,err,err/val",
+  {
+   "value": [
+    0.47232795706086433,
+    0.5178528327080975,
+    1.0963840377574068
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
+ ],
+ [
+  "benchmark: quark_condensate_avg val,err,err/val",
+  {
+   "value": [
+    0.5601627248224452,
+    0.005341968500435192,
+    0.009536458360610189
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-05
  ],
  [
   "prop_sol sig",
