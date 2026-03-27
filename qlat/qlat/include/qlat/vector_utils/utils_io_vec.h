@@ -895,28 +895,31 @@ inline Int test_single(const char *filename,io_vec &io_use,Int iv=0){
   }
 
   io_use.do_checksum = do_checksum_buf;
+  //qmessage("norm 0 %.3e, %.3e \n", normd, normd - 1.0 );
+  if(!qisnan(normd))
   if(fabs(normd - 1.0) < err)return 0;
-
+  //
   {
   io_use.do_checksum = false;
   std::vector<RealF > prop_E;
   prop_E.resize(n_vec*12*noden*2);
   file = io_use.io_read(filename,"rb");
   io_use.io_off(file,iv*Fsize, false);
-
+  //
   read_kentucky_vector(file,(char*) &prop_E[0], n_vec,io_use, true, 6*2*sizeof(RealD), true);
   io_use.io_close(file);
-
+  //
   rotate_gwu_vec_file(&prop_E[0],n_vec,noden, true);
   gwu_to_cps_rotation_vec(&prop_E[0],n_vec,noden, false, false, false);
-
+  //
   normf = get_norm_vec(&prop_E[0],noden);
   }
-
-
+  //
   io_use.do_checksum = do_checksum_buf;
+  //qmessage("norm 1 %.3e, %.3e \n", normf, normf - 1.0 );
+  if(!qisnan(normf))
   if(fabs(normf - 1.0) < err)return 1;
-
+  //
   qmessage("Norm of vector double %.3e, %.3e.\n",normd,normd-1.0);
   qmessage("Norm of vector single %.3e, %.3e.\n",normf,normf-1.0);
   return -1;
@@ -1936,7 +1939,8 @@ inline Int load_qlat_noisesT_ini(std::vector<Ty* >& bufP, std::vector<qlat::Fiel
     //Geometry geo;
     //Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
     //geo.init(total_site);
-    const Geometry& geo = get_geo_cache(Coordinate(in.nx, in.ny, in.nz, in.nt));
+    const Coordinate total_site = Coordinate(in.nx, in.ny, in.nz, in.nt);
+    const Geometry& geo = get_geo_cache(total_site);
 
     if(noises.size() != (LInt) nread){
       noises.resize(0);

@@ -1384,11 +1384,11 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
   }
 
   // continus memeory allocations
-  buf_eig.resizeL(Ngroup * 12 * (1 + Nbuf_T * Nmass) * total);
+  buf_eig.resizeL(total * Ngroup * 12 * (1 + Nbuf_T * Nmass));
   Complexq* buf_src  = &buf_eig[0 ];// size Ngroup * 12 * (1) * total
-  Complexq* buf_res  = &buf_eig[Ngroup * 12 * (1 + 0) * total];// size Ngroup * 12 * (0 + Nmass) * total
+  Complexq* buf_res  = &buf_eig[total * Ngroup * 12 * (1 + 0)];// size Ngroup * 12 * (0 + Nmass) * total
   Complexq* buf_res1 = NULL;
-  if(Nbuf_T == 2){buf_res1 = &buf_eig[Ngroup * 12 * (1 + Nmass) * total];}// size Ngroup * 12 * (0 + Nmass) * total
+  if(Nbuf_T == 2){buf_res1 = &buf_eig[total * Ngroup * 12 * (1 + Nmass)];}// size Ngroup * 12 * (0 + Nmass) * total
   const Int b_size = ei.b_size;
 
   // pointers for fields
@@ -1411,7 +1411,7 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
 
     copy_bsize_prop_to_FieldP<Complexq, FieldG<Ty >, 0>(srcP, buf_src, Nk, b_size, fd, 1, false, 1);
     //buf_res.set_zero();
-    zero_Ty(buf_res, bcut * 12 * Nmass * total, 1);
+    zero_Ty(buf_res, total * bcut * 12 * Nmass, 1);
 
     /*
       actual low mode props
@@ -1419,10 +1419,16 @@ void ov_prop_L(std::vector<FieldG<Ty > >& res, std::vector<FieldG<Ty >>& src, ei
     */
     //qmessage("Nt %5d \n", int(tbufL[0].size()));
     prop_L_device(ei, buf_src, buf_res , Nk, massL, mode_sm, tbufL[0], conj_prop, one_minus_halfD_or);
+    //double C0 = norm_vec(buf_src, total * bcut * 12 * (1));
+    //double C1 = norm_vec(buf_res, total * bcut * 12 * (Nmass));
+    //qmessage("  check norm eign1 s %.18e r %.18e \n", C0, C1);
     if(Nbuf_T == 2){
       for(unsigned int ti=1;ti<tbufL.size();ti++){
         zero_Ty(buf_res1, bcut * 12 * Nmass * total, 1);
         prop_L_device(ei, buf_src, buf_res1, Nk, massL, mode_sm, tbufL[ti], conj_prop, one_minus_halfD_or);
+        //double c0 = norm_vec(buf_src , bcut * 12 * (1) * total);
+        //double c1 = norm_vec(buf_res1, bcut * 12 * (Nmass) * total);
+        //qmessage("  check norm eign1 s %.18e r %.18e \n", c0, c1);
         /* 
           copy results
           (2, bfac, mN, Ns, b_size)

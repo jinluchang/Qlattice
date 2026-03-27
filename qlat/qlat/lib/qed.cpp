@@ -162,7 +162,7 @@ ComplexD dot_product(const Field<ComplexD>& ff1, const Field<ComplexD>& ff2)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ComplexD> v1 = ff1.get_elems_const(xl);
     const Vector<ComplexD> v2 = ff2.get_elems_const(xl);
-    Qassert(v1.size() == v2.size());
+    qassert(v1.size() == v2.size());
     ComplexD s = 0.0;
     for (Int k = 0; k < v1.size(); ++k) {
       s += qconj(v1[k]) * v2[k];

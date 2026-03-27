@@ -115,15 +115,15 @@ Geometry& get_geo_cache_local(const Geometry& geo, box<Geometry>& geo_BOX){
   return geo_BOX();
 }
 
-void geo_to_nv(const Geometry& geo, std::vector<int >& nv, std::vector<int >& Nv, std::vector<int    >& mv){
+void geo_to_nv(const Geometry& geo, std::vector<Int >& nv, std::vector<Int >& Nv, std::vector<Int    >& mv){
   // read geo into vectors
   Nv.resize(4);nv.resize(4);mv.resize(4);
   for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
 
-void geo_to_nv(const Geometry& geo, vector<int >& nv, vector<int >& Nv, vector<int >& mv){
-  Nv.resize(4);nv.resize(4);mv.resize(4);
+void geo_to_nv(const Geometry& geo, vector<Int >& nv, vector<Int >& Nv, vector<Int >& mv){
+  Nv.resize(4, MemType::Uvm);nv.resize(4, MemType::Uvm);mv.resize(4, MemType::Uvm);
   for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }

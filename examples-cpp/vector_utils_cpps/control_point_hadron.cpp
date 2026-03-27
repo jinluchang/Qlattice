@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
   int sparse_src = 0;
   int n_per_time_slice = 128;
   int average_all_2pt = 0;
+  int Zn_src = 3;
   // save the pure low mode fft data
   int save_low_fft = 0;
   int do_hadron_contra = 1;
@@ -46,6 +47,7 @@ int main(int argc, char* argv[])
   in.find_para(std::string("n_per_time_slice"), n_per_time_slice);
   in.find_para(std::string("do_hadron_contra"), do_hadron_contra);
   in.find_para(std::string("average_all_2pt") , average_all_2pt);
+  in.find_para(std::string("Zn_src") , Zn_src);
 
   int check_prop_norm = 0;
   in.find_para(std::string("check_prop_norm"), check_prop_norm);
@@ -103,6 +105,7 @@ int main(int argc, char* argv[])
   print_mem_info("io_vec");
 
   /////========load links
+  sec_list sec_src;
   double src_width = 0.0; int src_step = 0;
   double sink_width = 0.0; int sink_step = 0;
   get_smear_para(in.src_smear_para , src_width, src_step);
@@ -113,7 +116,11 @@ int main(int argc, char* argv[])
     char rbc_conf[500];
     sprintf(rbc_conf,in.Link_name.c_str(), icfg);
     load_gwu_link(rbc_conf, gf);
-    if(in.anti_peri == 1){twist_boundary_at_boundary(gf, -0.5, 3);}
+    if(in.anti_peri == 1){
+      twist_boundary_at_boundary(gf, -0.5, 3);
+      Qassert(average_all_2pt == 0);// anti-periodic signs not enabled for average yet
+      sec_src.antiP = false;
+    }
     /////set_left_expanded_gauge_field(gfD, gf);
   }
   /////========load links
@@ -409,7 +416,7 @@ int main(int argc, char* argv[])
 
       // point sink
       if(do_point_sink == 1){
-        point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
+        point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, sec_src, 1, Zn_src);
       }
 
       if(do_smear_sink == 1)
@@ -452,7 +459,7 @@ int main(int argc, char* argv[])
           srcI.name_sparse_prop = ssprintf("%s.sm.sparse", names_sparse);
         }
         //
-        point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
+        point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, sec_src, 1, Zn_src);
       }
     }
 

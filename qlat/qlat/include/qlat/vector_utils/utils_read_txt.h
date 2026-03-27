@@ -747,7 +747,7 @@ struct inputpara{
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
     if(find_para(std::string("anti_peri"),anti_peri)==0)anti_peri  = 0;
     if(find_para(std::string("write_mode"),write_mode)==0)write_mode  = 0;
-    if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 2;
+    if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 12;
     if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;
     if(find_para(std::string("ndouble"),ndouble)==0)ndouble  = 200;
     if(find_para(std::string("fermion_type"),fermion_type)==1)fermion_type  = 1;

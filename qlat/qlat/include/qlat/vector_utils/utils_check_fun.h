@@ -172,6 +172,16 @@ void print_norm2(qlat::FieldM<Ty , civ>& p0)
   buf.print_norm2();
 }
 
+template <class Ty>
+double get_norm2(qlat::FieldG<Ty>& p0)
+{
+  const Long V = p0.geo().local_volume() * p0.multiplicity;
+  Ty* src = (Ty*) qlat::get_data(p0).data();
+  qlat::vector_gpu<Ty > buf;
+  buf.copy_from(src, V, 1, 1);
+  const Ty tmp = buf.norm2();
+  return tmp.real();
+}
 
 template <class Ty, Int civ>
 void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double err=1e-15, Long MAX_COUNT = 64)

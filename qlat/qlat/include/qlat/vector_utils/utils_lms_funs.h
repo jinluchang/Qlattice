@@ -119,11 +119,11 @@ struct lms_para{
   qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
   std::vector<qlat::FieldM<Ty , 12*12> > src_prop;
   std::vector<qlat::vector_gpu<Ty > > FFT_data;
-  std::vector<qlat::vector_gpu<Ty > > FFT_data_ava;
+  //std::vector<qlat::vector_gpu<Ty > > FFT_data_ava;
   qlat::vector_gpu<Ty > resTa;
-  //qlat::vector_gpu<Ty > resHH;// buffer for 2pt average
-  //qlat::vector_gpu<Ty > resLL;// buffer for 2pt average
-  //qlat::vector_gpu<Ty > resLH;// buffer for 2pt average
+  qlat::vector_gpu<Ty > resHH;// buffer for 2pt average
+  qlat::vector_gpu<Ty > resLL;// buffer for 2pt average
+  qlat::vector_gpu<Ty > resLH;// buffer for 2pt average
   std::vector<std::vector<FieldG<Ty > >> cur_2pt_buf;
   //
   qlat::vector_gpu<Ty > resZero;
@@ -141,7 +141,7 @@ struct lms_para{
     high_prop.resize(0);
     src_prop.resize(0);
     FFT_data.resize(0);
-    FFT_data_ava.resize(0);
+    //FFT_data_ava.resize(0);
     resTa.resize(0);
     resZero.resize(0);
     Vzero_data.resize(0);
@@ -406,7 +406,7 @@ void Save_sparse_prop(std::vector<qlat::vector_gpu<Ty > >& src, lms_para<Ty >& s
 ////      src without smear, mode_sm = 2 smtopt, mode_sm = 3  smtosm
 template<typename Ty, typename Ta>
 void point_corr(qnoiT& src, std::vector<qpropT >& propH,
-    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para<Ty >& srcI, momentum_dat& mdat, Int shift_t = 1)
+    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para<Ty >& srcI, momentum_dat& mdat, sec_list& sec, Int shift_t = 1, const Int Zn = 3)
 {
   TIMER("point corr");
   print_time();
@@ -424,7 +424,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //
   Coordinate Lat;for(Int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
-  std::vector<PointsSelection > Ngrid;
+  std::vector<std::vector<Coordinate > > Ngrid;
   {
   TIMER("check noise");
   if(srcI.sparse_src == 0){
@@ -441,9 +441,9 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     //
     // will not work for combineT
     std::vector<Coordinate > grids;
-    std::vector<Int > Zlist;
+    std::vector<RealD > Zlist;
     //get_noise_pos(src, grids, Zlist, 3, 1);
-    get_noise_pos(src, grids, Zlist);
+    get_noise_pos(src, grids, Zlist, Zn);
     pos = grids[0];
     Ngrid.resize(grids.size());
     std::vector<Int > tlist;
@@ -457,6 +457,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(srcI.combineT == 1){Qassert(tlist.size() == 1)}
   }
   }
+  // U1 phase could not combineT
+  if(srcI.combineT == 1){Qassert(Zn > 0);}
   // grid info
   std::string GRID_INFO, tmp;
   {
@@ -474,7 +476,10 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     //
     GRID_INFO += ssprintf(" combineT %1d ", srcI.combineT);
   }
-  //
+  const Int dT1_ = srcI.combineT == 0 ? fd.nt : fd.nt/off_L[3];
+  const Int dT4_ = fd.nt/off_L[3];
+  sec.init(geo, pos[3], dT4_, sec.antiP, false);
+  //sec.print_info();
   // only do eigen props on desire src time slices
   std::vector<Int > tsrcL;tsrcL.resize(0);
   const int lms_show_all = qlat::get_env_long_default(std::string("qlat_lms_show_all_points"), 0);
@@ -522,29 +527,29 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   qlat::vector_gpu<Ty >& high_prop = srcI.high_prop;
   std::vector<qlat::FieldM<Ty , 12*12> >& src_prop = srcI.src_prop;
   std::vector<qlat::vector_gpu<Ty > >& FFT_data = srcI.FFT_data;
-  std::vector<qlat::vector_gpu<Ty > >& FFT_data_ava = srcI.FFT_data_ava;
+  //std::vector<qlat::vector_gpu<Ty > >& FFT_data_ava = srcI.FFT_data_ava;
 
   qlat::vector_gpu<Ty >& resTa  = srcI.resTa ;
-  //qlat::vector_gpu<Ty >& resLL = srcI.resLL;
-  //qlat::vector_gpu<Ty >& resLH = srcI.resLH;
-  //qlat::vector_gpu<Ty >& resHH = srcI.resHH;
+  qlat::vector_gpu<Ty >& resLL = srcI.resLL;
+  qlat::vector_gpu<Ty >& resLH = srcI.resLH;
+  qlat::vector_gpu<Ty >& resHH = srcI.resHH;
   qlat::vector_gpu<Ty >& resZero = srcI.resZero;
   set_zero(resTa);
-  //set_zero(resLL);
-  //set_zero(resLH);
-  //set_zero(resHH);
+  set_zero(resLL);
+  set_zero(resLH);
+  set_zero(resHH);
 
   std::vector<qlat::vector_gpu<Ty > >& Eprop = srcI.Eprop;
 
   ////FFT_data do not need clean 
   if(src_prop.size() != 1){src_prop.resize(1);}
   if(FFT_data.size() != 2){FFT_data.resize(2);}
-  if(srcI.average_all_2pt == 1){
-    if(FFT_data_ava.size() != 2){FFT_data_ava.resize(2);}
-    for(int i=0;i<2;i++){
-      set_zero(FFT_data_ava[i]);
-    }
-  }
+  //if(srcI.average_all_2pt == 1){
+  //  if(FFT_data_ava.size() != 2){FFT_data_ava.resize(2);}
+  //  for(int i=0;i<2;i++){
+  //    set_zero(FFT_data_ava[i]);
+  //  }
+  //}
   ///qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
   ///std::vector<qlat::FieldM<Ty , 12*12> > src_prop;src_prop.resize(1);
   ///std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + 1);
@@ -695,31 +700,18 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     }
     if(saveFFT){
       TIMER("saveFFT");
-      check_nan_GPU(resTa);
-      fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
-      mdat.pick_mom_from_vecs(FFT_data[0], resTa);
       //// ssprintf(name_mom_tmp, "%09d", 0);
       //name_mom_tmp = ssprintf("High");
       //
       if(srcI.average_all_2pt != 1){
+        check_nan_GPU(resTa);
+        fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+        mdat.pick_mom_from_vecs(FFT_data[0], resTa);
         name_mom_tmp = ssprintf("%09d", 0);
         mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
+      }else{
+        resHH = resTa;
       }
-      //else{
-      //  FFT_data_ava[0] = FFT_data_ava[0];
-      //  mdat.apply_src_phases(FFT_data, pos );
-      //  mdat.shift_t(FFT_data, FFT_data, pos[3]);
-      //}
-      //if(srcI.average_all_2pt != 1){
-      //  FFT_data[1] = FFT_data[0];
-      //  mdat.apply_src_phases(FFT_data[1], pos );
-      //  mdat.shift_t(FFT_data[1], FFT_data[1], pos[3]);
-      //  const Long num_grid_points = Long(off_L[0]) * off_L[1] * off_L[2];
-      //  Qassert(num_grid_points > 0);
-      //  FFT_data[1] *= double(1.0 / num_grid_points);
-      //  mdat.write( FFT_data[1], name_mom, name_mom_tmp, true );
-      //}else{
-      //}
     }
   }
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
@@ -727,13 +719,18 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   print_mem_info();
 
   for(Int gi=0;gi<Nlms;gi++){
+    // needed for U1 phases
+    Ty src_point_phase = Ty(1.0, 0.0);
+    // time may change if not combineT
+    sec.init(geo, Ngrid[gi][0][3], dT1_, sec.antiP, false);
+    //
     POS_CUR = std::string("");write_pos_to_string(POS_CUR, Ngrid[gi][0]);POS_LIST += POS_CUR;
     qmessage("Do, Nlms %5d, gi %5d, %s \n", Nlms, gi, POS_CUR.c_str());
     fflush_MPI();
-
+    //
     stmp.set_zero();
     low_prop.set_zero();
-
+    //
     if(srcI.lms == 0)
     {
       FieldM_src_to_FieldM_prop(src, src_prop[0], GPU);
@@ -742,7 +739,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
     if(srcI.lms != 0){
       ////qmessage("gsize %d \n", int(Ngrid[gi].size()));
-      write_grid_point_to_src(stmp.data(), src, Ngrid[gi], ei.b_size, fd);
+      src_point_phase = write_grid_point_to_src(stmp.data(), src, Ngrid[gi], ei.b_size, fd);
     }
 
     /////get low mode prop
@@ -751,6 +748,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     //////format suitable for contractions
     ////low mode corr contractions
     if(srcI.do_all_low == 1){
+      if(Zn < 0)low_prop *= qconj(src_point_phase);
       copy_eigen_prop_to_EigenG(Eprop, low_prop.data(), ei.b_size, nmass, fd, GPU);
       std::string sparse_tag = "";
       if(gi == Nlms - 1){sparse_tag = ssprintf("Low%04d", Nlms);}
@@ -760,27 +758,23 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
         if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
         if(saveFFT and srcI.save_low_fft == 1){
           TIMER("saveFFT");
-          //if(srcI.average_all_2pt == 1){
-          //  mdat.apply_src_phases(FFT_data[0], pos );
-          //  mdat.shift_t(FFT_data[0], FFT_data[0], pos[3]);
-          //  const Long num_grid_points = Long(off_L[0]) * off_L[1] * off_L[2];
-          //  Qassert(num_grid_points > 0);
-          //  FFT_data[0] *= double(1.0 / num_grid_points);
-          //}
-          check_nan_GPU(resTa);
-          fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
-          mdat.pick_mom_from_vecs(FFT_data[1], resTa);
           if(srcI.average_all_2pt != 1){
+            check_nan_GPU(resTa);
+            fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+            mdat.pick_mom_from_vecs(FFT_data[1], resTa);
             name_mom_tmp = ssprintf("Low%09d", gi + 1);
             mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
           }else{
-            mdat.apply_src_phases(FFT_data[1], Ngrid[gi][0] );
-            mdat.shift_t(FFT_data[1], FFT_data[1], Ngrid[gi][0][3]);
-            if(FFT_data_ava[0].size() == 0){FFT_data_ava[0].resize(FFT_data[1].size());}
-            FFT_data_ava[0] += FFT_data[1];
+            shift_results_with_phases_2pt(resTa, geo, Ngrid[gi], sec, srcI.curr_shift_buf);
+            if(resLL.size() == 0){
+              resLL.resize(resTa.size());
+              set_zero(resLL);
+            }
+            resLL += resTa;
           }
         }
       }
+      if(Zn < 0)low_prop *= src_point_phase;// restore phase
       //Ty norm0 = low_prop.norm();
       //Ty norm1 = resTa.norm();
       //qmessage("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
@@ -789,6 +783,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     //qmessage("===check norm");low_prop.print_norm2();high_prop.print_norm2();
 
     low_prop += high_prop;
+    if(Zn < 0)low_prop *= qconj(src_point_phase);
     //qmessage("===check norm");low_prop.print_norm2();high_prop.print_norm2();
     if(srcI.check_prop_norm){qmessage("===low  norm 1 %ld , ", long(low_prop.size()));low_prop.print_norm2();}
 
@@ -817,19 +812,24 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       }
       if(saveFFT){
         TIMER("saveFFT");
-        check_nan_GPU(resTa);
-        fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
-        mdat.pick_mom_from_vecs(FFT_data[1], resTa);
-        FFT_data[1] -= FFT_data[0];
         if(srcI.average_all_2pt != 1){
+          check_nan_GPU(resTa);
+          fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+          mdat.pick_mom_from_vecs(FFT_data[1], resTa);
+          // U1 phase currently no subtraction
+          if(Zn > 0){FFT_data[1] -= FFT_data[0];}
           name_mom_tmp = ssprintf("%09d", gi + 1);
           mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
         }
         else{
-          mdat.apply_src_phases(FFT_data[1], Ngrid[gi][0] );
-          mdat.shift_t(FFT_data[1], FFT_data[1], Ngrid[gi][0][3]);
-          if(FFT_data_ava[1].size() == 0){FFT_data_ava[1].resize(FFT_data[1].size());}
-          FFT_data_ava[1] += FFT_data[1];
+          // U1 phase currently no subtraction
+          if(Zn > 0){resTa -= resHH;}
+          shift_results_with_phases_2pt(resTa, geo, Ngrid[gi], sec, srcI.curr_shift_buf);
+          if(resLH.size() == 0){
+            resLH.resize(resTa.size());
+            set_zero(resLH);
+          }
+          resLH += resTa;
         }
       }
     }
@@ -838,21 +838,33 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   // final save the averaged mom data
   if(srcI.average_all_2pt == 1 and saveFFT){
     const double num_grid_points = double(off_L[0]) * off_L[1] * off_L[2];
+    // write HH
+    check_nan_GPU(resHH);
+    // time may change if not combineT
+    sec.init(geo, Ngrid[0][0][3], dT4_, sec.antiP, false);
+    //
+    shift_results_with_phases_2pt(resHH, geo, Ngrid[0], sec, srcI.curr_shift_buf);
+    fft_fieldM(resHH.data(), 32*nmass, 1, geo, false);
+    mdat.pick_mom_from_vecs(FFT_data[0], resHH);
     FFT_data[0] *= Complexq( 1.0 / num_grid_points, 0.0);
-    mdat.apply_src_phases(FFT_data[0], pos );
-    mdat.shift_t(FFT_data[0], FFT_data[0], pos[3]);
     std::string name_mom_tmp = ssprintf("%09d", 0);
     mdat.write( FFT_data[0], name_mom, name_mom_tmp, true );
     //
     if(srcI.save_low_fft){
-    FFT_data_ava[0] *= Complexq( 1.0 / Nlms, 0.0);
+    check_nan_GPU(resLL);
+    fft_fieldM(resLL.data(), 32*nmass, 1, geo, false);
+    mdat.pick_mom_from_vecs(FFT_data[0], resLL);
+    FFT_data[0] *= Complexq( 1.0 / Nlms, 0.0);
     name_mom_tmp = ssprintf("Low%09d", 1);
-    mdat.write( FFT_data_ava[0], std::string(name_mom), name_mom_tmp, false );
+    mdat.write( FFT_data[0], std::string(name_mom), name_mom_tmp, false );
     }
     //
-    FFT_data_ava[1] *= Complexq( 1.0 / Nlms, 0.0);
+    check_nan_GPU(resLH);
+    fft_fieldM(resLH.data(), 32*nmass, 1, geo, false);
+    mdat.pick_mom_from_vecs(FFT_data[0], resLH);
+    FFT_data[0] *= Complexq( 1.0 / Nlms, 0.0);
     name_mom_tmp = ssprintf("%09d", 1);
-    mdat.write( FFT_data_ava[1], std::string(name_mom), name_mom_tmp, false );
+    mdat.write( FFT_data[0], std::string(name_mom), name_mom_tmp, false );
   }
 
   ////  if(saveFFT)

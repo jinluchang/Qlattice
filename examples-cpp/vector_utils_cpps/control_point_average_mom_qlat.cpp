@@ -91,6 +91,8 @@ int main(int argc, char* argv[])
 
   int mass_group = 1;
   in.find_para(std::string("mass_group"), mass_group);
+  int corr_with_phase_shift = 0;
+  in.find_para(std::string("corr_with_phase_shift"), corr_with_phase_shift);
 
   std::string flag_add = std::string("");
   in.find_para(std::string("flag_add"), flag_add);
@@ -339,8 +341,10 @@ int main(int argc, char* argv[])
           if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){Qassert(false);}
           if(FFT_data_average_gr.size() ==  0){FFT_data_average_gr.resize(FFT_data.size());FFT_data_average_gr.set_zero();}
 
-          mdat.apply_src_phases(FFT_data, src_pos[gi] );
-          mdat.shift_t(FFT_data, FFT_data, src_pos[gi][3]);
+          if(corr_with_phase_shift == 0){
+            mdat.apply_src_phases(FFT_data, src_pos[gi] );
+            mdat.shift_t(FFT_data, FFT_data, src_pos[gi][3]);
+          }
 
           if(gi != 0){
           long  corr_zero_off = (((long(nsi) + npoint)*Nsm + sm)*3 +  2) * 32 * nmass * in.nt * 2;
@@ -381,8 +385,10 @@ int main(int argc, char* argv[])
           if(mdat.read_momcut(FFT_data, std::string(nameQ), std::string(namei)) == 0){Qassert(false);}
 
           if(FFT_data_average_pt.size() ==  0){FFT_data_average_pt.resize(FFT_data.size());FFT_data_average_pt.set_zero();}
-          mdat.apply_src_phases(FFT_data, src_pos[gi] );
-          mdat.shift_t(FFT_data, FFT_data, src_pos[gi][3]);
+          if(corr_with_phase_shift == 0){
+            mdat.apply_src_phases(FFT_data, src_pos[gi] );
+            mdat.shift_t(FFT_data, FFT_data, src_pos[gi][3]);
+          }
 
           if(gi != 0){
           long  corr_zero_off = (((long(nsi) +   0)*Nsm + sm)*3 +  2) * 32 * nmass * in.nt * 2;

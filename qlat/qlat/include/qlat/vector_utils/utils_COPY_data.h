@@ -298,7 +298,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, QBOOL 
     }
     if(dummy==QTRUE){qacc_barrier(dummy);}
   }else{
-    qlat::vector< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
+    qlat::vector< T0 > buf;buf.resize(Nvol, MemType::Uvm);T0* s0 = (T0*) qlat::get_data(buf).data();
     /////host to host
     CPY_data_thread_basic(s0, Psrc, Nvol, 0,  QTRUE, 0.0);
     /////devic to device
@@ -313,7 +313,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU, QBOOL 
     qacc_Errchk(qacc_MemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), qacc_MemcpyDeviceToHost));
     if(dummy==QTRUE){qacc_barrier(dummy);}
   }else{
-    qlat::vector< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
+    qlat::vector< T0 > buf;buf.resize(Nvol, MemType::Uvm);T0* s0 = (T0*) qlat::get_data(buf).data();
     /////device to device
     CPY_data_thread_basic(s0, Psrc, Nvol, 1,  QTRUE, 0.0);
     /////host to host
@@ -439,7 +439,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
     size_t Ntotal = NOff * Nvol;
     if(sizeof(T0) < sizeof(T1))
     {
-      qlat::vector<T0 > tmp;tmp.resize(Ntotal);
+      qlat::vector<T0 > tmp;tmp.resize(Ntotal, MemType::Uvm);
       did += cpy_GPU2D_G((T0*) tmp.data(), Psrc, Nvol, NOff, Nvol, sOff, QMSYNC, Gsrc, stream);
       qacc_barrier(dummy);
       did += cpy_GPU2D_G(Pres, (T0*) tmp.data(), Nvol, NOff, rOff, Nvol, Gres, QMSYNC, stream);
@@ -448,7 +448,7 @@ void cpy_GPU2D(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff, const
 
     if(sizeof(T0) > sizeof(T1))
     {
-      qlat::vector<T1 > tmp;tmp.resize(Ntotal);
+      qlat::vector<T1 > tmp;tmp.resize(Ntotal, MemType::Uvm);
       did += cpy_GPU2D_G((T1*) tmp.data(), Psrc, Nvol, NOff, Nvol, sOff, QMSYNC, Gsrc, stream);
       qacc_barrier(dummy);
       did += cpy_GPU2D_G(Pres, (T1*) tmp.data(), Nvol, NOff, rOff, Nvol, Gres, QMSYNC, stream);

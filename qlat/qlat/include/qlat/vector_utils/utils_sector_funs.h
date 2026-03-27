@@ -36,6 +36,7 @@ inline std::vector<Int >  get_map_sec(Int dT,Int nt){
 }
 
 inline void get_map_sec(vector<Int >& map_sec, Int tini, Int dT,Int nt, bool message = false){
+  TIMER("get_map_sec");
   std::vector<Int > map_sec_0 = get_map_sec(dT, nt);
   map_sec.resize(map_sec_0.size());
   std::string m0 = "t ";
@@ -51,6 +52,7 @@ inline void get_map_sec(vector<Int >& map_sec, Int tini, Int dT,Int nt, bool mes
 }
 
 inline void get_src_times(vector<Int>& src_t, vector<Int>& src_t_order, vector<Int >& map_sec, const Int tini, const Int dT){
+  TIMER("get_src_times");
   Qassert(map_sec.size() != 0);
   const Int nt = map_sec.size();
   if(src_t.size() != nt){src_t.resize(nt);}
@@ -109,7 +111,8 @@ struct sec_list{
 
   ////communicater with the same init
   ////for spatial global sum
-  MPI_Comm xyz_comm;
+  bool mpi_setup_done;
+  MPI_Comm* xyz_comm;
   ////for time direction global sum
   std::vector< MPI_Comm > t_comm;
   ////rank within each mt
@@ -120,6 +123,15 @@ struct sec_list{
     tini = -1;
     dT   =  0;
     nt   =  0;
+    xyz_comm = NULL;
+    mpi_setup_done = false;
+  }
+
+  ~sec_list(){
+    if(xyz_comm != NULL){
+      MPI_Comm_free(xyz_comm);
+      xyz_comm = NULL;
+    }
   }
 
   inline std::vector<Int > get_sinkt(const Int sep)
@@ -196,31 +208,10 @@ struct sec_list{
     update(tini_, message);
   }
 
-  inline void update(Int tini_, const bool message = true){
-    TIMERA("update sec_list ");
-    if(tini == tini_ % dT){return ;}
-    tini = tini_ % dT;
-
+  inline void setup_mpi(){
+    if(mpi_setup_done == true){return ;}
+    Qassert(tini >= 0);
     fft_desc_basic& fd = get_fft_desc_basic_plan(geoB());
-    ////from t (without tini) to seci
-    get_map_sec(map_sec, tini, dT, nt, message);
-    //std::vector<Int > map_sec_0 = get_map_sec(dT, nt);
-    //map_sec.resize(map_sec_0.size());
-    //for(unsigned int t=0;t<map_sec.size();t++)
-    //{
-    //  map_sec[t] = map_sec_0[ ( t - tini + nt)%nt];
-    //  if(message)qmessage("t %5d, sec %5d \n", t, map_sec[t]);
-    //}
-    has_sec.resize(Nsec); //// local variable to check whether a sector is within nodes
-    for(Int si=0;si<Nsec;si++)
-    {
-      has_sec[si] = 0;
-      for(Int t0=0;t0<fd.Nt;t0++)
-      {
-        if( map_sec[t0 + fd.init] == si){has_sec[si] = 1;}
-      }
-    }
-
     Int Nmpi = fd.Nmpi;
     map_mpi_xyz.resize(Nmpi);
     for(unsigned long mapi=0;mapi<map_mpi_xyz.size();mapi++){
@@ -228,15 +219,27 @@ struct sec_list{
     }
 
     Int color_xyz = fd.init/fd.Nt;
-    MPI_Comm_split(get_comm() ,color_xyz, fd.rank, &xyz_comm);
+    if(xyz_comm == NULL){
+      xyz_comm = new MPI_Comm;
+    }else{
+      MPI_Comm_free(xyz_comm);
+      xyz_comm = new MPI_Comm;
+    }
+    MPI_Comm_split(get_comm() ,color_xyz, fd.rank, xyz_comm);
     {
       Int int_tem = -1;
-      MPI_Comm_rank(xyz_comm, &int_tem);
+      MPI_Comm_rank(*xyz_comm, &int_tem);
       map_mpi_xyz[fd.rank] = int_tem;
     }
     sum_all_size((int*) (&map_mpi_xyz[0]),Nmpi);
 
     //  split bcase for each sectors
+    if(t_comm.size() > 0){
+      for(unsigned int m=0;m<t_comm.size();m++){
+        MPI_Comm_free(&t_comm[m]);
+      }
+      t_comm.resize(0);
+    }
     t_comm.resize(Nsec);
     for(Int s0=0;s0<Nsec;s0++){
       Int si = Loop_sec[s0];
@@ -265,6 +268,35 @@ struct sec_list{
       Int si = Loop_sec[s0];
       sum_all_size((int*) (&map_mpi_t[si][0]),Nmpi);
     }
+    mpi_setup_done = true;
+  }
+
+  inline void update(Int tini_, const bool message = true){
+    TIMERA("update sec_list ");
+    if(tini == tini_ % dT){return ;}
+    tini = tini_ % dT;
+
+    fft_desc_basic& fd = get_fft_desc_basic_plan(geoB());
+    ////from t (without tini) to seci
+    get_map_sec(map_sec, tini, dT, nt, message);
+    //std::vector<Int > map_sec_0 = get_map_sec(dT, nt);
+    //map_sec.resize(map_sec_0.size());
+    //for(unsigned int t=0;t<map_sec.size();t++)
+    //{
+    //  map_sec[t] = map_sec_0[ ( t - tini + nt)%nt];
+    //  if(message)qmessage("t %5d, sec %5d \n", t, map_sec[t]);
+    //}
+    has_sec.resize(Nsec); //// local variable to check whether a sector is within nodes
+    for(Int si=0;si<Nsec;si++)
+    {
+      has_sec[si] = 0;
+      for(Int t0=0;t0<fd.Nt;t0++)
+      {
+        if( map_sec[t0 + fd.init] == si){has_sec[si] = 1;}
+      }
+    }
+    mpi_setup_done = false;
+    //  setup_mpi();
     setup();
   }
 
@@ -277,6 +309,7 @@ struct sec_list{
   void bcast_sink_vecs(std::vector<qlat::vector_gpu<Ty > >& data, const std::vector< Int >& host_ti)
   {
     TIMERA("bcast_sink_vecs");
+    setup_mpi();
     Qassert(nt != 0 and data.size() == host_ti.size());
     fft_desc_basic& fd = get_fft_desc_basic_plan(geoB());
   
@@ -288,7 +321,7 @@ struct sec_list{
       Qassert(host_ti[i] < fd.nt);
       if(host_ti[i]/fd.Nt == fd.init/fd.Nt) /// host t could be not the initial time of the node
       {
-        sum_all_size( data[i].data(), data[i].size(), data[i].GPU, &xyz_comm);
+        sum_all_size( data[i].data(), data[i].size(), data[i].GPU, xyz_comm);
       }
     }
     //  MPI_Barrier(get_comm());
@@ -561,13 +594,15 @@ void shift_results_with_phases_2pt(qlat::vector_gpu<Ty >& res, const Geometry& g
   std::vector<Coordinate >& pos_src, sec_list& sec, std::vector<std::vector<FieldG<Ty>>>& shift_buf){
   TIMER("shift_results_with_phases_2pt");
   const Long Vol = geo.local_volume();
-  Qassert(Long(res.size()) == 32 * Vol);
+  // res size 32 , nmass, Vol
+  Qassert(Long(res.size()) % (32 * Vol) == 0);
+  const Long nmass = Long(res.size()) / (32 * Vol);
   std::vector<bool > baryon_list;baryon_list.resize(32);
-  for(int i= 0;i<16;i++){baryon_list[i] = false;}
-  for(int i=16;i<32;i++){baryon_list[i] = true ;}
+  for(Int i= 0;i<16;i++){baryon_list[i] = false;}
+  for(Int i=16;i<32;i++){baryon_list[i] = true ;}
 
   std::vector<std::vector<Coordinate > > posL;posL.resize(1);
-  for(int i=0;i<1;i++){
+  for(Int i=0;i<1;i++){
     posL[i].resize(pos_src.size());
     for(unsigned int j=0;j<pos_src.size();j++){
       posL[i][j] = pos_src[j];
@@ -576,8 +611,8 @@ void shift_results_with_phases_2pt(qlat::vector_gpu<Ty >& res, const Geometry& g
   std::vector<Coordinate > sink_momL;sink_momL.resize(1);
   sink_momL[0] = Coordinate(0, 0, 0, 0);
 
-  std::vector<FieldG<Ty>> curr;curr.resize(32);
-  for(int i=0;i<32;i++){
+  std::vector<FieldG<Ty>> curr;curr.resize(32*nmass);
+  for(Long i=0;i<32*nmass;i++){
     Ty* srcp = &res[i * Vol];
     curr[i].set_pointer(srcp, Vol, geo, QMGPU, QLAT_OUTTER);
   }
@@ -587,25 +622,27 @@ void shift_results_with_phases_2pt(qlat::vector_gpu<Ty >& res, const Geometry& g
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   if(antiP){
     TIMER("Apply 2pt antiP");
-    const int init = fd.init;
+    const Int init = fd.init;
 
     vector<signed char>& anti_sign = sec.anti_sign;
     for(Long srci=0;srci<32;srci++)
     {
       const bool is_baryon = baryon_list[srci];
-      Ty* resP = &res[srci * Vol];
+      for(int mi=0;mi<nmass;mi++){
+        Ty* resP = &res[(srci*nmass+mi) * Vol];
 
-      qacc_for(isp, Vol, {
-        const Coordinate xl = geo.coordinate_from_index(isp);
-        const int ti   = xl[3] + init;
-        if(is_baryon){
-          resP[isp] = resP[isp] * Ty(anti_sign[ti], 0.0);
-        }
-      });
+        qacc_for(isp, Vol, {
+          const Coordinate xl = geo.coordinate_from_index(isp);
+          const Int ti   = xl[3] + init;
+          if(is_baryon){
+            resP[isp] = resP[isp] * Ty(anti_sign[ti], 0.0);
+          }
+        });
+      }
     }
   }
 
-  const int Nops = 32;
+  const Int Nops = 32 * nmass;
   std::vector<bool > baryon_list_;baryon_list_.resize(1);
   baryon_list_[0] = false;
   shift_results_with_phases(curr, Nops, posL, sink_momL, sec, shift_buf, baryon_list_, 0);

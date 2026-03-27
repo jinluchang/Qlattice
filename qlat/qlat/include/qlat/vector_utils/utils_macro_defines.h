@@ -170,17 +170,6 @@ inline void print_NONE(const char *filename)
 *
 */
 
-/*
-  checkpoint with environment settings
-  display_mem_type();maybe used for debug
-*/
-#define Qcheck(num)                                                   \
-  {                                                                   \
-    static Int do_check =                                             \
-      qlat::get_env_long_default(std::string("qlat_checkpoint"), -1); \
-    if(num == do_check or num <= -1 or do_check <= -1){Qassert(false);}                              \
-  }
-
 //template <>
 //qacc std::complex<qlat::RealDD> &std::complex<qlat::RealDD>::operator=(
 //    const double &__z)
@@ -197,7 +186,6 @@ inline void print_NONE(const char *filename)
 //  return *this;
 //}
 
-
 // RealDD copy structures
 template <class T0, class T1>
 qacc void Realcopy(T1& res, const T0& src){
@@ -213,6 +201,18 @@ template <>
 qacc void Realcopy(ComplexT<RealDD >& res, const float& src){
   res = ComplexT<RealDD >(RealDD(src), 0.0);
 }
+
+/*
+  checkpoint with environment settings
+  display_mem_type();maybe used for debug
+*/
+#define Qcheck(num)                                                   \
+  {                                                                   \
+    static Int do_check =                                             \
+      qlat::get_env_long_default(std::string("qlat_checkpoint"), -1); \
+    if(num == do_check or num <= -1 or do_check <= -1){Qassert(false);}                              \
+  }
+
 
 }
 

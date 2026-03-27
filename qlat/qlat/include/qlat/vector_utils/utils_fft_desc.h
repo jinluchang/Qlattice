@@ -48,33 +48,33 @@ struct fft_desc_basic
     order_ch = order_ch_or;
 
     ////Need set
-    nv.resize(4);Nv.resize(4);iniv.resize(4);
+    nv.resize(4, MemType::Uvm);Nv.resize(4, MemType::Uvm);mv.resize(4, MemType::Uvm);iniv.resize(4, MemType::Uvm);
   }
 
   fft_desc_basic(const qlat::Geometry& geo,Int order_ch_or=0)
   {
     TIMER("Create fft_desc_basic");
-  
+    //
     variable_set = -1;
     inix =-1;iniy =-1;iniz =-1;init =-1;
     Nx =-1;  Ny =-1;  Nz =-1;  Nt =-1;
     mx =-1;  my =-1;  mz =-1;  mt =-1;
     ////Order change of memory within a node
-  
+    //
     Nmpi  = qlat::get_num_node();
     rank  = qlat::get_id_node();
-
+    //
     Qassert(geo.node_site != qlat::Coordinate());
-
+    //
     ////set nv, Nv, mv, iniv
     geo_to_nv(geo, nv, Nv, mv);
-
+    //
     qlat::Coordinate ts = geo.coordinate_from_index(0);
     qlat::Coordinate gs = geo.coordinate_g_from_l(ts);
-    iniv.resize(4);for(unsigned int i=0;i<4;i++){iniv[i] = gs[i];}
-
+    iniv.resize(4, MemType::Uvm);for(unsigned int i=0;i<4;i++){iniv[i] = gs[i];}
+    //
     geoB.set_view(get_geo_cache(geo));
-
+    //
     order_ch = order_ch_or;
     set_variable();
     ////check_mem();
@@ -271,18 +271,20 @@ inline void fft_desc_basic::set_variable()
 {
   TIMERA("fft_desc_basic::set_variable");
   for(Int i=0;i<4;i++){Qassert(iniv[i] >= 0);Qassert(nv[i] > 0);Qassert(Nv[i] > 0);}
-  mv.resize(4);for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];Qassert(mv[i] > 0);}
-
+  mv.resize(4, MemType::Uvm);for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];Qassert(mv[i] > 0);}
+  //printf("rank %5d : mv %5d %5d %5d %5d, inv %5d %5d %5d %5d \n", rank, mv[0], mv[1], mv[2], mv[3], iniv[0], iniv[1], iniv[2], iniv[3]);
+  //printf("rank %5d : nv %5d %5d %5d %5d,  Nv %5d %5d %5d %5d \n", rank, nv[0], nv[1], nv[2], nv[3], Nv[0], Nv[1], Nv[2], Nv[3]);
+  //
   nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
   Nx = Nv[0];Ny = Nv[1];Nz = Nv[2];Nt = Nv[3];
   mx = mv[0];my = mv[1];mz = mv[2];mt = mv[3];
-
+  //
   vol   =  nx*ny*nz;////Only the spatial volume
   Nvol  =  Nx*Ny*Nz*Nt;
   noden =  Nx*Ny*Nz*Nt;
-
+  //
   inix = iniv[0];iniy = iniv[1];iniz = iniv[2];init = iniv[3];
-
+  //
   ////Do not assume 0 is the initial positions
   std::vector<Int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
   for(unsigned int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
@@ -294,9 +296,9 @@ inline void fft_desc_basic::set_variable()
     Pos0[ri].resize(4);
     for(Int i=0;i<4;i++){Pos0[ri][i] = Pos0_tem[ri*4+i];}
   }
-
+  //
   orderN.resize(3);orderN[0] = 2;orderN[1] = 1;orderN[2] = 0;
-
+  //
   if(order_ch == 1){
     Int maxD = 0;int maxN = Nv[maxD];
     for(Int i=0;i<3;i++){if(Nv[i]>maxN){maxD = i;maxN = Nv[i];}}
@@ -305,9 +307,8 @@ inline void fft_desc_basic::set_variable()
     for(Int i=0;i<3;i++){if(i != maxD){orderN[ci] = i;ci++;}}
     ////f1 = nv[orderN[0]];f2 = nv[orderN[1]]; f3 = nv[orderN[2]];
   }
-
+  //
   ////////position p;
-
   ////depend on rank, geo.coordinate_g_from_l or gs
   std::vector<Int> mi_list_tem;
   mi_list_tem.resize(mt*mz*my*mx);
@@ -339,7 +340,7 @@ inline void fft_desc_basic::set_variable()
     //if(v < 0 or v > Nmpi){abort_r("Node map Duplicated! \n");}
     if(v != i ){abort_r("Node map Duplicated! \n");}
   }
-
+  //
   mi_list.resize(mt);
   for(Int tmi=0;tmi<mt;tmi++)
   {

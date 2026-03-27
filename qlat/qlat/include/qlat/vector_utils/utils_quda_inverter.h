@@ -60,6 +60,8 @@ struct quda_inverter {
   //int num_src_inv;
   Int quda_verbos;
   Int prec_type_check;
+  Int restart_cg;
+  Int restart_cg_iter;
   //
   //std::vector<std::vector<quda::Complex > > evecs;
   //
@@ -274,8 +276,10 @@ struct quda_inverter {
   //inline void check_residualF();
   //
   // ghost function to set precision for inv and gauge, not loaded at all, need setup_inv_param_prec to force load gauge again or use setup_link
-  inline void setup_inv_param_prec_type(Int prec_type = 0);
+  // inline void setup_inv_param_prec_type(Int prec_type = 0);
+
   // automatic change presion based on current gauge, qinv buffers, update dslash
+  // still need to set inv.param.cpu_prec for different inputs
   inline void setup_inv_param_prec(Int prec_type = 0, bool force_reload = false);
   inline void setup_gauge_param(QudaTboundary t_boundary);
   //
@@ -294,7 +298,7 @@ struct quda_inverter {
   // the COPY could use single precison as input
   //inline void invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, Int solve_mode_ = 0);
   inline void invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src);
-  inline void invertQuda_COPY_single(std::vector<quda::ColorSpinorField> & res, std::vector<quda::ColorSpinorField>& src);
+  inline void invertQuda_COPY_single(std::vector<quda::ColorSpinorField>& res, std::vector<quda::ColorSpinorField>& src);
   //
   inline void get_param_ref(quda::ColorSpinorParam& param, const bool is_double ){
     param   = cs_gpu;
@@ -471,6 +475,8 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   quda_verbos = 0;
   std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
   if(val != ""){quda_verbos = stringtonum(val);}
+  restart_cg      = qlat::get_env_long_default(std::string("qlat_restart_cg"), 0);
+  restart_cg_iter = qlat::get_env_long_default(std::string("qlat_restart_cg_iter"), 200);
 
   //default stagger
   setup_stagger_inv();
@@ -1330,68 +1336,68 @@ inline void quda_inverter::setup_stagger_inv()
   alloc_csfield_gpu();
 }
 
-////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
-////may still cost time even using the comparisons, TODO need to investigate the issues
-inline void quda_inverter::setup_inv_param_prec_type(Int prec_type)
-{
-  TIMER("setup_inv_param_prec_type");
-  inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
-  if(prec_type == 0)
-  {
-    inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
-    inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
-  }
-
-  if(prec_type == 1)
-  {
-    inv_param.cpu_prec                      = QUDA_SINGLE_PRECISION;
-    inv_param.cuda_prec                     = QUDA_SINGLE_PRECISION;
-    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
-    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
-  }
-
-  if(prec_type == 2)
-  {
-    inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
-    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
-  }
-
-  
-  if(prec_type == 10)
-  {
-    inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec_sloppy              = QUDA_DOUBLE_PRECISION;
-    inv_param.cuda_prec_refinement_sloppy   = QUDA_DOUBLE_PRECISION;
-  }
- 
-  if(prec_type == 11)
-  {
-    inv_param.cpu_prec                      = QUDA_SINGLE_PRECISION;
-    inv_param.cuda_prec                     = QUDA_SINGLE_PRECISION;
-    inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
-    inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
-  }
-
-  Qassert(prec_type != 12);
-  //if(prec_type == 12)
-  //{
-  //  inv_param.cpu_prec                      = QUDA_SINGLE_PRECISION;
-  //  inv_param.cuda_prec                     = QUDA_HALF_PRECISION;
-  //  inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
-  //  inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
-  //}
-
-  gauge_param.cuda_prec              = inv_param.cuda_prec;
-  gauge_param.cuda_prec_sloppy       = inv_param.cuda_prec_sloppy;
-  gauge_param.struct_size = sizeof(gauge_param);
-  prec_type_check = -2;////need reload if this function is called
-
-}
+//////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
+//////may still cost time even using the comparisons, TODO need to investigate the issues
+//inline void quda_inverter::setup_inv_param_prec_type(Int prec_type)
+//{
+//  TIMER("setup_inv_param_prec_type");
+//  inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
+//  if(prec_type == 0)
+//  {
+//    inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
+//    inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
+//  }
+//
+//  if(prec_type == 1)
+//  {
+//    inv_param.cpu_prec                      = QUDA_SINGLE_PRECISION;
+//    inv_param.cuda_prec                     = QUDA_SINGLE_PRECISION;
+//    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
+//    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
+//  }
+//
+//  if(prec_type == 2)
+//  {
+//    inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
+//    inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
+//  }
+//
+//  
+//  if(prec_type == 10)
+//  {
+//    inv_param.cpu_prec                      = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec                     = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec_sloppy              = QUDA_DOUBLE_PRECISION;
+//    inv_param.cuda_prec_refinement_sloppy   = QUDA_DOUBLE_PRECISION;
+//  }
+// 
+//  if(prec_type == 11)
+//  {
+//    inv_param.cpu_prec                      = QUDA_SINGLE_PRECISION;
+//    inv_param.cuda_prec                     = QUDA_SINGLE_PRECISION;
+//    inv_param.cuda_prec_sloppy              = QUDA_SINGLE_PRECISION;
+//    inv_param.cuda_prec_refinement_sloppy   = QUDA_SINGLE_PRECISION;
+//  }
+//
+//  Qassert(prec_type != 12);
+//  //if(prec_type == 12)
+//  //{
+//  //  inv_param.cpu_prec                      = QUDA_SINGLE_PRECISION;
+//  //  inv_param.cuda_prec                     = QUDA_HALF_PRECISION;
+//  //  inv_param.cuda_prec_sloppy              = QUDA_HALF_PRECISION;
+//  //  inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
+//  //}
+//
+//  gauge_param.cuda_prec              = inv_param.cuda_prec;
+//  gauge_param.cuda_prec_sloppy       = inv_param.cuda_prec_sloppy;
+//  gauge_param.struct_size = sizeof(gauge_param);
+//  prec_type_check = -2;////need reload if this function is called
+//
+//}
 
 ////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
 ////may still cost time even using the comparisons, TODO need to investigate the issues
@@ -2610,12 +2616,16 @@ inline void quda_inverter::callMultiSrcQuda(qlat::vector<void* >& res, qlat::vec
 inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, quda::ColorSpinorField& src)
 {
   //TIMERA("Quda invertQuda_COPY_single");
-  Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
+  //Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
   const Int nvec = 1;
   // always mixed precison inversion
   if(src.Precision() != inv_param.cpu_prec){
-    if(src.Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec_type(0);
-    if(src.Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec_type(1);
+    inv_param.cpu_prec = src.Precision();
+    if(src.Precision()==QUDA_DOUBLE_PRECISION){Qassert(prec_type_check == 0 or prec_type_check == 2 or prec_type_check == 10);}
+    if(src.Precision()==QUDA_SINGLE_PRECISION){Qassert(prec_type_check == 1 or prec_type_check == 11);}
+    //if(src.Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec_type(1);
+    //if(src.Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec(0);
+    //if(src.Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec(1);
   }
   //Qassert(src.Precision() == inv_param.cpu_prec);
   qlat::vector<void* > sI;
@@ -2625,19 +2635,26 @@ inline void quda_inverter::invertQuda_COPY_single(quda::ColorSpinorField& res, q
     sI[i] = src.data();
     rI[i] = res.data();
   }
+  inv_param.solution_type = QUDA_MATPC_SOLUTION;
   callMultiSrcQuda(rI, sI);
+  inv_param.solution_type = QUDA_MAT_SOLUTION;
 }
 
 inline void quda_inverter::invertQuda_COPY_single(std::vector<quda::ColorSpinorField>& res, std::vector<quda::ColorSpinorField>& src)
 {
   //TIMERA("Quda invertQuda_COPY_single");
-  Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
+  //Qassert(inv_param.solution_type == QUDA_MATPC_SOLUTION);
   const Int nvec = src.size();
   Qassert(nvec >= 1);
   // always mixed precison inversion
   if(src[0].Precision() != inv_param.cpu_prec){
-    if(src[0].Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec_type(0);
-    if(src[0].Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec_type(1);
+    inv_param.cpu_prec = src[0].Precision();
+    if(src[0].Precision()==QUDA_DOUBLE_PRECISION){Qassert(prec_type_check == 0 or prec_type_check == 2 or prec_type_check == 10);}
+    if(src[0].Precision()==QUDA_SINGLE_PRECISION){Qassert(prec_type_check == 1 or prec_type_check == 11);}
+    //if(src[0].Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec_type(0);
+    //if(src[0].Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec_type(1);
+    //if(src[0].Precision()==QUDA_DOUBLE_PRECISION)setup_inv_param_prec(0);
+    //if(src[0].Precision()==QUDA_SINGLE_PRECISION)setup_inv_param_prec(1);
   }
   //inv_param.cpu_prec = src.Precision();
   //Qassert(src.Precision() == inv_param.cpu_prec);
@@ -2649,7 +2666,9 @@ inline void quda_inverter::invertQuda_COPY_single(std::vector<quda::ColorSpinorF
     sI[i] = src[i].data();
     rI[i] = res[i].data();
   }
+  inv_param.solution_type = QUDA_MATPC_SOLUTION;
   callMultiSrcQuda(rI, sI);
+  inv_param.solution_type = QUDA_MAT_SOLUTION;
 }
 
 //inline void quda_inverter::invertQuda_COPY(quda::ColorSpinorField& res, quda::ColorSpinorField& src, Int solve_mode_)
@@ -3310,8 +3329,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
   qlat::vector<Long >& map = qinv.map_index;
   const Geometry& geo = qinv.geo();
   Qassert(low_only == 0 or low_only == 1 or low_only == -1);///0 for full, 1 for low only, -1 other ways to solve
-  const Int restart_cg = 0;
-
+  const Int restart_cg = qinv.restart_cg;
 
   qlat::vector<Ty* > buf;
   qinv.get_inversion_bufs(buf, nsrc, 0);
@@ -3489,7 +3507,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
         //const Int mode_def = 1;
         qinv.inv_param.solution_type = QUDA_MATPC_SOLUTION;
 
-        const Int iter_group =  200;
+        const Int iter_group = qinv.restart_cg_iter;
         //const Int iter_group = qinv.inv_param.maxiter;
         const Int maxN = (qinv.inv_param.maxiter + iter_group - 1) / iter_group;
         qinv.inv_param.maxiter = iter_group;
@@ -3564,6 +3582,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
           //  resI[vi] = Qvec[nsrc + vi]->Even().data();
           //}
 
+          qinv.inv_param.iter = 0;
           {
             TIMER("invertQuda group");
             qinv.inv_param.num_src = nsrc;
@@ -3576,7 +3595,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
           //  ////TIMER("invertQuda group");
           //  invertQuda(gresV[vi].data(), gsrcV[vi].data(), &qinv.inv_param);
           //}
-          iter_total += iter_group;
+          iter_total += qinv.inv_param.iter;
 
           for(Int vi=0;vi<nsrc;vi++){
             quda::blas::caxpy( 1.0*One , gresV[vi], gsumV[vi]);
@@ -3611,6 +3630,7 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
           quda::blas::caxpy(-1.0*One, tmp1, gsrcV[vi]);
           double na = std::sqrt( quda::blas::norm2(gsrcV[vi]) ) / norm_vecs[vi] ;
           qmessage("===check res self %.8e, niter %d \n", na, iter_total);
+          qinv.inv_param.iter = iter_total;
         }
 
         //Qvec[nsrc + vi]->Odd()  = (*qinv.gsrcH).Component(0);
@@ -3659,6 +3679,8 @@ void get_staggered_prop_group(quda_inverter& qinv, qlat::vector<Ty* >& src, qlat
         // the COPY could use single precison as input
         qinv.invertQuda_COPY_single(Qvec[nsrc + vi]->Even(), Qvec[nsrc + vi]->Odd());
       }
+      // single need to restore inv_parm for reconstruct
+      qinv.inv_param.solution_type = QUDA_MATPC_SOLUTION;
 
       //add low to results
       qinv.deflate_Ty(Pres, Pbuf, mass, buf_prec, 0, 0);

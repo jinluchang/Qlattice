@@ -64,7 +64,7 @@ inline void reorder_civ(int8_t* src, int8_t* res,Int biva,Int civ,size_t sizeF,I
 template<typename Ty>
 inline void print_numbers(Ty* src, Int size, Int GPU)
 {
-  qlat::vector<Ty > buf;buf.resize(size);
+  qlat::vector<Ty > buf;buf.resize(size, MemType::Uvm);
   cpy_GPU(buf.data(), src, size, 0, GPU);
   for(Int i=0;i<size;i++)
   {
@@ -327,6 +327,44 @@ inline void clear_move_index_mem(){
 //static qacc_Stream_t Qstream[MAX_CUDA_STEAM];
 //#endif
 
+inline void print_mpi_host_name(){
+  // get local rank
+  Int num_node;MPI_Comm_size(get_comm(), &num_node);
+  Int id_node;MPI_Comm_rank(get_comm(), &id_node);
+  Int localRank  = -1;
+  Int localSize  =  0;
+  Int globalRank =  0;
+  {
+    MPI_Comm_rank(get_comm(), &globalRank);
+    MPI_Comm nodeComm;
+    MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
+                        MPI_INFO_NULL, &nodeComm);
+    // id within the node
+    MPI_Comm_rank(nodeComm, &localRank);
+    MPI_Comm_size(nodeComm, &localSize);
+  }
+  //
+  {
+    Int masterRank = -1;
+    Int masterSize =  0;
+    //
+    // comm across node (each node select one process with the same local rank)
+    MPI_Comm masterComm;
+    MPI_Comm_split(get_comm(), localRank, globalRank, &masterComm);
+    //
+    MPI_Comm_rank(masterComm, &masterRank);
+    // size of each master comm
+    MPI_Comm_size(masterComm, &masterSize);
+    //
+    char host_name[500];
+    Qassert(gethostname(host_name, 500) == 0);
+    printf("node info lR %d, lS %d, mR %d, mS %d, Ni %3d / %3d , host %s \n",
+      localRank, localSize, masterRank, masterSize, id_node, num_node, host_name);
+  }
+  fflush(stdout);
+  MPI_Barrier(get_comm());
+}
+
 inline void set_GPU(Int set_gpu_id = 1){
   (void)set_gpu_id;
   #ifdef QLAT_USE_ACC
@@ -584,13 +622,13 @@ inline Int read_vector(const char *filename, std::vector<double > &dat)
 }
 
 template<typename Yl>
-void p_vector(const Yl teml)
+void p_vector(const Yl& teml)
 {
   std::cout << teml << " ";
 }
 
 template<typename Ty>
-void p_vector(const std::vector<Ty> teml)
+void p_vector(const std::vector<Ty>& teml)
 {
   for(unsigned long i=0;i< teml.size();i++)
   {
@@ -600,7 +638,7 @@ void p_vector(const std::vector<Ty> teml)
 }
 
 template<typename Ty>
-void p_vector(const qlat::vector<Ty> teml)
+void p_vector(const qlat::vector<Ty>& teml)
 {
   for(unsigned long i=0;i< teml.size();i++)
   {
@@ -656,7 +694,8 @@ inline double norm_vec(Ty* buf, const size_t Nd, const MemType mem_type = MemTyp
       tmp[isp] += qnorm(buf[idx]);
     }
   });
-  const double r = reduce_vecs(tmp);
+  double r = reduce_vecs(tmp);
+  sum_all_size(&r, 1);
   return r;
 }
 
@@ -1392,11 +1431,11 @@ std::vector<Long > get_sort_index(Ty* src, Long size)
   {    
     vec.push_back( std::make_pair(src[it], it) );
   }    
-
+  //
   std::sort(vec.begin(), vec.end(), [](std::pair<Ty, Long >& a, std::pair<Ty, Long >& b) { 
     return a.first < b.first;
   });  //check order
-
+  //
   std::vector<Long > index;index.resize(size);
   for(Long it=0;it<size;it++) 
   {
