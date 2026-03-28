@@ -14,23 +14,19 @@ Primary languages: **C++17**, **Cython**, **Python**, **Bash**.
 
 Build system: **Meson** (via `meson-python` for pip packaging). No CMake or npm.
 
-### Build a package locally
+### Install via custom scripts
 ```bash
-cd qlat-utils   # or qlat, qlat-grid, qlat-cps
-meson setup build
-meson compile -C build
-```
-
-### Install via pip (editable/dev)
-```bash
-pip install -e ./qlat-utils
-pip install -e ./qlat        # after qlat-utils
+./scripts/setenv.default.sh
+./scripts/qcore.sh
+./scripts/qlat-utils.sh
+./scripts/qlat.sh
+./scripts/qlat-grid.sh
+./scripts/qlat-cps.sh
 ```
 
 ### Full build orchestration
 ```bash
-./scripts/qlat-all.sh        # builds all four packages in order
-./scripts/qlat-packages.sh   # pip install all packages
+./nixpkgs/install-py-local-kernel-with-nix.sh
 ```
 
 ## Testing
@@ -39,7 +35,7 @@ Tests live in `examples-py/` (Python) and `examples-cpp/` (C++). The testing fra
 
 ### Run all tests
 ```bash
-./cmd-test-all.sh
+./nixpkgs/build-many-qlat-pkgs-core.sh -j 4 --cores 15
 ```
 
 ### Run a single Python test
