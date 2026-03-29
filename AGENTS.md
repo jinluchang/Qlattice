@@ -12,17 +12,7 @@ Primary languages: **C++17**, **Cython**, **Python**, **Bash**.
 
 ## Build System
 
-Build system: **Meson** (via `meson-python` for pip packaging). No CMake or npm.
-
-### Install via custom scripts
-```bash
-./scripts/setenv.default.sh
-./scripts/qcore.sh
-./scripts/qlat-utils.sh
-./scripts/qlat.sh
-./scripts/qlat-grid.sh
-./scripts/qlat-cps.sh
-```
+Build system: **Nix** which calls **Meson** to build the packages (via `meson-python` for pip packaging). No CMake or npm.
 
 ### Full build orchestration
 ```bash
@@ -91,7 +81,7 @@ Configuration: `.clang-format` (Google base, Linux braces, left pointers).
 - All code in `namespace qlat { ... }`
 
 ### Error Handling
-- Use project macros: `qassert(cond)`, `Qassert(cond)`, `qerr(msg)`
+- Use project macros: `qassert(cond)`, `Qassert(cond)`, `qerr(msg)`, `Qassert_info(cond, {...})`
 - Warnings: `warn(msg)` or `displayln_info(ssprintf("WARNING: ..."))`
 - Test markers: `displayln_info("CHECK: ...")` for test verification
 
