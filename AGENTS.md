@@ -20,7 +20,7 @@ Tests live in `examples-py/` (Python) and `examples-cpp/` (C++). The testing fra
 
 ### Build and run all tests
 ```bash
-./nixpkgs/build-many-qlat-pkgs-core.sh -j 4 --cores 15
+./nixpkgs/build-many-qlat-pkgs-core.sh -j 4 --cores 31
 ```
 
 ### Run a single Python test
