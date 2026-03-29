@@ -14,16 +14,11 @@ Primary languages: **C++17**, **Cython**, **Python**, **Bash**.
 
 Build system: **Nix** which calls **Meson** to build the packages (via `meson-python` for pip packaging). No CMake or npm.
 
-### Full build orchestration
-```bash
-./nixpkgs/install-py-local-kernel-with-nix.sh
-```
-
-## Testing
+## Build and Testing
 
 Tests live in `examples-py/` (Python) and `examples-cpp/` (C++). The testing framework is **log-comparison**: each test prints `CHECK:` lines, which are compared against committed reference `.log` files.
 
-### Run all tests
+### Build and run all tests
 ```bash
 ./nixpkgs/build-many-qlat-pkgs-core.sh -j 4 --cores 15
 ```
