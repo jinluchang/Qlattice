@@ -27,7 +27,7 @@ name_list=(
     q-pkgs
     # q-pkgs-clang
     # q-pkgs-ucxless
-    q-pkgs-pypi
+    # q-pkgs-pypi
 )
 
 time (
