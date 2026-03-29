@@ -403,10 +403,8 @@ jobs:
       run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 --argstr version "25.05"
     - name: Check disk space
       run: df -h
-    - name: Build test
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.coreutils -A pkgs-cpsless-clang-ucxless.coreutils.info -j 1 --cores 3 --argstr version "25.05"
     - name: Build qlat with jhub-env
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3 --argstr version "25.05"
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-jhub-env -j 1 --cores 3
     - name: Check disk space
       run: df -h
 
