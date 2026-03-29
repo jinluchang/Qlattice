@@ -1,3 +1,5 @@
+:orphan:
+
 # Summit and Oakforest propagators
 
 ## Locations

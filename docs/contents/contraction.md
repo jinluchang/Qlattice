@@ -1,3 +1,5 @@
+:orphan:
+
 # Contraction
 
 > Luchang Jin

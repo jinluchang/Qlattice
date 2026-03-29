@@ -27,13 +27,8 @@ Evaluation
    get_expr_names
    get_diagram_type_dict
 
-   mk_sym
-   mk_fac
-
-   aff.rel_mod
-   aff.rel_mod_sym
-   aff.rel_mod_sym
-   aff.c_rel_mod_sqr
+    mk_sym
+    mk_fac
 
 Operators
 ---------
@@ -135,22 +130,23 @@ Operators
    mk_Q7_b81
    mk_Q8_b81
 
-3-flavor operators in (8,1) representation
-mk_Q1_b81
-mk_Q2_b81
-mk_Q3_b81
-mk_Q4_b81
+.. comment
+   3-flavor operators in (8,1) representation
+   mk_Q1_b81
+   mk_Q2_b81
+   mk_Q3_b81
+   mk_Q4_b81
 
-subtraction operators
-mk_Q0_b81 ( = mk_Qsub )
+   subtraction operators
+   mk_Q0_b81 ( = mk_Qsub )
 
-charm-contained operators in (8,1) representation
-mk_Q5_b81
-mk_Q6_b81
-mk_Q7_b81
-mk_Q8_b81
+   charm-contained operators in (8,1) representation
+   mk_Q5_b81
+   mk_Q6_b81
+   mk_Q7_b81
+   mk_Q8_b81
 
-:math:`Q_a^{e/o} = A_a^{e/o} Q_0^{e/o} + M_{a,i} Q_i^{e/o} ( i = 1, ... ,4; a = 5, ... ,8 )`
+   :math:`Q_a^{e/o} = A_a^{e/o} Q_0^{e/o} + M_{a,i} Q_i^{e/o} ( i = 1, ... ,4; a = 5, ... ,8 )`
 
 Tutorials
 ---------

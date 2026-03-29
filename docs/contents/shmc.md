@@ -1,3 +1,5 @@
+:orphan:
+
 $$
 \def\ba#1\ea{\begin{align}#1\end{align}}
 \newcommand{\nn}{\nonumber}

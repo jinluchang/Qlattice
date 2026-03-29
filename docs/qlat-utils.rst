@@ -82,11 +82,11 @@ Coordinate
    Coordinate.from_index
    Coordinate.to_index
 
-   CoordinateD
-   CoordinateD.to_list
-   CoordinateD.to_tuple
-   Coordinate.to_numpy
-   Coordinate.from_list
+    CoordinateD
+    CoordinateD.to_list
+    CoordinateD.to_tuple
+    CoordinateD.to_numpy
+    CoordinateD.from_list
 
 Cache system
 ------------
@@ -214,6 +214,6 @@ Plotting
    plot_save
    plot_view
 
-Example code to make a plot: ``examples-py/qplot.py``
+Example code to make a plot: ``examples-py/plot.py``
 
-.. literalinclude:: ../examples-py/qplot.py
+.. literalinclude:: ../examples-py/plot.py

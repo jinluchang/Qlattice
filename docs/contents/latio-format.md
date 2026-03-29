@@ -1,3 +1,5 @@
+:orphan:
+
 # LAT-IO format
 
 Source code located in `qlat-utils/include/qlat-utils/lat-io.h`

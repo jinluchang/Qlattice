@@ -1,3 +1,5 @@
+:orphan:
+
 # Qlat Core
 
 [TOC]
