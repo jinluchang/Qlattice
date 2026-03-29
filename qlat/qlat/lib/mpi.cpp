@@ -691,7 +691,11 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   {
     const Int ret = MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED,
                                         globalRank, MPI_INFO_NULL, &nodeComm);
-    Qassert(ret == MPI_SUCCESS);
+    Qassert_info(ret == MPI_SUCCESS, {
+      printf(
+          "%s: MPI_Comm_split_type failed: ret=%d globalRank=%d num_node=%d\n",
+          fname.c_str(), ret, globalRank, get_num_node());
+    });
   }
   // id within the node
   Int localRank;
@@ -865,7 +869,12 @@ void set_node_rank_size(Int& localRank, Int& localSize)
   {
     const Int ret = MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED,
                                         globalRank, MPI_INFO_NULL, &nodeComm);
-    Qassert(ret == MPI_SUCCESS);
+    Qassert_info(ret == MPI_SUCCESS, {
+      printf(
+          "set_node_rank_size: MPI_Comm_split_type failed: ret=%d "
+          "globalRank=%d num_node=%d\n",
+          ret, globalRank, get_num_node());
+    });
   }
   // id within the node
   // Int localRank;
