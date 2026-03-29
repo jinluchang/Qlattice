@@ -5,10 +5,8 @@ class Cache(dict):
 
     """
     Attributes:
-        cache_keys: The keys for this cache.
-
-    Example::
-
+        cache_keys: The keys for this cache.\n
+    Example::\n
         cache_fields_io = q.mk_cache("fields_io")
         cache_fields_io[id(self)] = (fsel, sbs,)
         if id(self) in cache_fields_io:

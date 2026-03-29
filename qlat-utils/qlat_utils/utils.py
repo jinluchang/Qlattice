@@ -169,12 +169,10 @@ def unitarize(x):
 def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=None):
     """
     Split ``total_list`` into ``chunk_number`` chunks or chunks with ``chunk_size``.
-    One (and only one) of ``chunk_size`` and ``chunk_number`` should not be ``None``.
-
+    One (and only one) of ``chunk_size`` and ``chunk_number`` should not be ``None``.\n
     Returns a list of chunks.
     Number of chunks is less or equal to ``chunk_number``.
-    Chunk sizes are less or equal to ``chunk_size``.
-
+    Chunk sizes are less or equal to ``chunk_size``.\n
     if rng_state is None:
         Do not randomly permute the list
     """

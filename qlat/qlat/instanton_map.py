@@ -1,26 +1,22 @@
 r"""
 
-# Plaq dependent flow
-
+# Plaq dependent flow\n
 Standard Wilson flow action:
 $$
 S_\mathrm{Wilson} = \frac{\beta}{2}\sum_{x,\mu,\nu} \Big(1 - \frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\Big)
 $$
-with $\beta = 3$.
-
+with $\beta = 3$.\n
 Modified flow to make the slope depends on the plaq value:
 $$
 S_f = -\frac{\beta}{2}\sum_{x,\mu,\nu} f\big(\frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\big)
-$$
-
+$$\n
 We can choose the function $f$ that smooths gauge field and therefore fix the total topological charge:
 $$
 \frac{d}{dp}f_\mathrm{Freeze}(p)
 =
 1 - p
 $$
-Note that $f_\mathrm{Freeze}$ suppresses plaq significantly deviate from $1$ and therefore prevent topological charge tunnelling during flow.
-
+Note that $f_\mathrm{Freeze}$ suppresses plaq significantly deviate from $1$ and therefore prevent topological charge tunnelling during flow.\n
 We can also choose the function $f$ that shrinks instanton:
 $$
 \frac{d}{dp}f_\mathrm{Shrink}(p)
@@ -28,16 +24,14 @@ $$
 \frac{\epsilon}{1 - p + \epsilon} + b
 $$
 with a possible choice of parameters be $\epsilon = 0.005$ and $b=0.5$.
-Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore enhance topological charge tunnelling during flow.
-
+Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore enhance topological charge tunnelling during flow.\n
 We can also choose the function $f$ that shrinks large instanton but prevent small instanton from tunnelling:
 $$
 \frac{d}{dp}f_\mathrm{Localize}(p)
 =
 \frac{\epsilon}{1 - p + \epsilon} + b (1 - p)
 $$
-with a possible choice of parameters be $\epsilon = 0.002$ and $b=50$.
-
+with a possible choice of parameters be $\epsilon = 0.002$ and $b=50$.\n
 We can also choose the function $f$ that mimic Wilson flow but prevent small instanton from tunnelling:
 $$
 \frac{d}{dp}f_\mathrm{Preserve}(p)

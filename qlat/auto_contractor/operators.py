@@ -22,8 +22,7 @@
 
 """
 
-Operators for pi and K follows Eq.(103,122) of the following reference
-
+Operators for pi and K follows Eq.(103,122) of the following reference\n
 @article{Christ:2019sah,
     author = "Christ, Norman H. and Kelly, Christopher and Zhang, Daiqian",
     title = "{Lattice simulations with G-parity Boundary Conditions}",

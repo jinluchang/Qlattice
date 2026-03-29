@@ -11,8 +11,7 @@
     reportNumber = "MIT-CTP/5414",
     month = "8",
     year = "2022"
-}
-
+}\n
 Operators' definition follow Eq. (13) of the above reference.
 
 """

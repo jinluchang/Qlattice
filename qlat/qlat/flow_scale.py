@@ -1,11 +1,8 @@
 r"""
 
-# Flow and lattice scale determination
-
-Generalize standard Wilson flow to spatial flow.
-
-Also, we can define additional flow observable ($W_2(t)$).
-
+# Flow and lattice scale determination\n
+Generalize standard Wilson flow to spatial flow.\n
+Also, we can define additional flow observable ($W_2(t)$).\n
 $$
 \ba
 W_0(t) =& t^2 \la E(t) \ra
@@ -14,8 +11,7 @@ W_1(t) =& W(t) = t \frac{d}{dt} (t^2 \la E(t) \ra)
 \\
 W_2(t) =& -t^3 \frac{d}{dt}\la E(t) \ra
 \ea
-$$
-
+$$\n
 https://arxiv.org/abs/1006.4518 for $W_0(t)$.
 https://arxiv.org/abs/1203.4469 for $W_1(t)$.
 """

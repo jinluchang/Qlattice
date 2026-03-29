@@ -1164,21 +1164,16 @@ def get_term_diagram_type_info(term):
 
 def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
-    first: drop diagrams with diagram_type_dict[diagram_type] == None
-
-    second:
-
+    first: drop diagrams with diagram_type_dict[diagram_type] == None\n
+    second:\n
         if included_types is None:
             return a list of a single expr with all the remaining diagrams summed together
         else:
             assert isinstance(included_types, list)
             # included_types = [ None, "Type1", [ "Type2", "Type3", ], ]
-            return a list of exprs, each expr only includes the types specified in the `included_types`.
-
-    `included_types` is a list of specs of included diagram type.
-
-    Each spec in the list of `included_types` can be:
-
+            return a list of exprs, each expr only includes the types specified in the `included_types`.\n
+    `included_types` is a list of specs of included diagram type.\n
+    Each spec in the list of `included_types` can be:\n
     (1) None: means all remaining types included
     (2) a single str, with value be one diagram_type_name: means only include this type
     (3) a list of str: means include only the types listed in the list.
@@ -1474,8 +1469,7 @@ def display_cexpr(cexpr:CExpr):
 def cexpr_code_gen_py(cexpr:CExpr, *, is_cython=True, is_distillation=False):
     """
     interface function
-    return a string
-
+    return a string\n
     if is_distillation:
         assert is_cython == False
     """
@@ -1494,10 +1488,8 @@ class CExprCodeGenPy:
         var_dict_for_factors: Dictionary for factor variables
         lines: List of generated code lines
         indent: Current indentation level
-        total_sloppy_flops: Total sloppy floating point operations
-
-    FLOPS info::
-
+        total_sloppy_flops: Total sloppy floating point operations\n
+    FLOPS info::\n
         flops per complex addition: 2
         flops per complex multiplication: 6
         flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s), 3168 (sc * c), 198 (c * c)

@@ -183,18 +183,12 @@ def get_threshold_idx(arr, threshold):
 
 def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
     r"""
-    return ``i_arr``
-
-    let ``shape`` = ``np.moveaxis(data_arr, axis, -1)[..., 0].shape``
-
-    ::
-
-        threshold_arr = np.broadcast_to(threshold_arr, shape)
-
-    such that
-
-    ::
-
+    return ``i_arr``\n
+    let ``shape`` = ``np.moveaxis(data_arr, axis, -1)[..., 0].shape``\n
+    ::\n
+        threshold_arr = np.broadcast_to(threshold_arr, shape)\n
+    such that\n
+    ::\n
         for index in np.ndindex(shape):
             q.interp(data_arr[index], i_arr[index]) \approx threshold_arr[index]
     """
@@ -213,22 +207,14 @@ def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
 
 def get_threshold_x_arr(data_arr, data_x_arr, threshold_arr, axis=-1):
     r"""
-    return x_arr
-
-    ::
-
-        data_x_arr.shape == (data_arr.shape[axis],)
-
-    let `shape` = `np.moveaxis(data_arr, axis, -1)[..., 0].shape`
-
-    ::
-
-        threshold_arr = np.broadcast_to(threshold_arr, shape)
-
-    such that
-
-    ::
-
+    return x_arr\n
+    ::\n
+        data_x_arr.shape == (data_arr.shape[axis],)\n
+    let `shape` = `np.moveaxis(data_arr, axis, -1)[..., 0].shape`\n
+    ::\n
+        threshold_arr = np.broadcast_to(threshold_arr, shape)\n
+    such that\n
+    ::\n
         for index in np.ndindex(shape):
             q.interp_x(data_arr[index], data_x_arr, x_arr[index]) \approx threshold_arr[index]
     """
@@ -471,8 +457,7 @@ def block_data(data_list, block_size, is_overlapping=True):
 
 def avg_err(data_list, *, eps=1, block_size=1):
     """
-    Compute `(avg, err)` of `data_list`.
-
+    Compute `(avg, err)` of `data_list`.\n
     :param data_list: list of data
     :param eps: additional scaling factor for the error
     :param block_size: blocking the list of data
@@ -520,8 +505,7 @@ def jackknife(data_list, *, eps=1):
 
 def fsqr(data):
     """
-    Separately square real and imag part in case of complex types.
-
+    Separately square real and imag part in case of complex types.\n
     :param data: real, complex, np.ndarray like objects.
     :return: squared `data`.
     :rtype: same type as `data`.
@@ -546,8 +530,7 @@ def fsqr(data):
 
 def fsqrt(data):
     """
-    Separately calculate the square root real and imag part in case of complex types.
-
+    Separately calculate the square root real and imag part in case of complex types.\n
     :param data: real, complex, np.ndarray like objects.
     :return: squared `data`.
     :rtype: same type as `data`.
@@ -919,10 +902,8 @@ def rjackknife(
     Return ``jk_arr``.
     ``len(jk_arr) == 1 + n_rand_sample``
     distribution of ``jk_arr`` should be similar as the distribution of ``avg``.
-    ``r_{i,j} ~ N(0, 1)``
-
-    ::
-
+    ``r_{i,j} ~ N(0, 1)``\n
+    ::\n
         if is_normalizing_rand_sample:
             n_j = \sum_i r_{i,j}^2
             r_{i,j} <- \sqrt{n_rand_sample / n_j} r_{i,j}
@@ -931,16 +912,11 @@ def rjackknife(
         avg = average(data_arr)
         len(data_list_real) = n
         jk_arr[0] = avg
-        jk_arr[i] = avg + \sum_{j=1}^{n} (-eps/\sqrt{n (n - b(i,j))}) r_{i,j} (data_list_real[j] - avg)
-
-    where ``b(i,j)`` represent the ``block_size``.
-
-    if ``jk_blocking_func`` is provided::
-
-        ``jk_blocking_func(i, jk_idx) => blocked jk_idx``
-
-    ::
-
+        jk_arr[i] = avg + \sum_{j=1}^{n} (-eps/\sqrt{n (n - b(i,j))}) r_{i,j} (data_list_real[j] - avg)\n
+    where ``b(i,j)`` represent the ``block_size``.\n
+    if ``jk_blocking_func`` is provided::\n
+        ``jk_blocking_func(i, jk_idx) => blocked jk_idx``\n
+    ::\n
         jk_arr[i] = avg + \sum_{j=1}^{n} r_{i,jk_block_func(j)} (jk_arr[j] - avg)
     """
     if n_rand_sample is None:
@@ -1130,18 +1106,12 @@ def get_jk_state(
     **_kwargs,
 ):
     """
-    Currently only useful if we set::
-
-        q.default_g_jk_kwargs["jk_type"] = "rjk" # this is the default now
-
-    and::
-
-        q.default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default
-
-    Used for `q.cache_call`.
-
-    Example::
-
+    Currently only useful if we set::\n
+        q.default_g_jk_kwargs["jk_type"] = "rjk" # this is the default now\n
+    and::\n
+        q.default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default\n
+    Used for `q.cache_call`.\n
+    Example::\n
         @cache_call(get_state=q.get_jk_state)
         def func(...):
             ...
@@ -1265,17 +1235,13 @@ def g_mk_jk(
     **_kwargs,
 ):
     """
-    Perform (randomized) Super-Jackknife for the Jackknife data set.
-
+    Perform (randomized) Super-Jackknife for the Jackknife data set.\n
     :param data_list: initial un-jackknifed data.
     :param jk_idx_list: should be list of indices that names the ``data_list``.
-    :return: (randomized) Super-Jackknife data set.
-
-    Note that::
-
+    :return: (randomized) Super-Jackknife data set.\n
+    Note that::\n
         ``len(data_list) == len(jk_idx_list)``
-        ``jk_idx_list = [(job_tag, traj,) for traj in traj_list]``
-
+        ``jk_idx_list = [(job_tag, traj,) for traj in traj_list]``\n
     If the ``data_list`` is actually already jackknifed,
     we can set ``eps`` to be factor ``len(data_list)`` larger.
     """
@@ -1328,10 +1294,8 @@ def g_mk_jk_val(
     **_kwargs,
 ):
     """
-    Create a jackknife sample with random numbers based on central value ``val`` and error ``err``.
-
-    Need::
-
+    Create a jackknife sample with random numbers based on central value ``val`` and error ``err``.\n
+    Need::\n
         default_g_jk_kwargs["jk_type"] = "rjk"
         default_g_jk_kwargs["n_rand_sample"] = n_rand_sample
         # e.g. n_rand_sample = 1024
