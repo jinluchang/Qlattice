@@ -1,5 +1,6 @@
 #include <qlat-utils/core.h>
 #include <qlat/mpi.h>
+
 #include "qlat-utils/timer.h"
 
 namespace qlat
@@ -192,10 +193,10 @@ static Int mpi_alltoallv_custom(const void* sendbuf, const Long* sendcounts,
 }
 
 static Int mpi_alltoallv_native(const void* sendbuf, const Long* sendcounts,
-                                 const Long* sdispls, MPI_Datatype sendtype,
-                                 void* recvbuf, const Long* recvcounts,
-                                 const Long* rdispls, MPI_Datatype recvtype,
-                                 MPI_Comm comm)
+                                const Long* sdispls, MPI_Datatype sendtype,
+                                void* recvbuf, const Long* recvcounts,
+                                const Long* rdispls, MPI_Datatype recvtype,
+                                MPI_Comm comm)
 {
   TIMER_FLOPS("mpi_alltoallv_native");
   Int sendtype_size_i, recvtype_size_i;
@@ -498,7 +499,8 @@ Int bcast(Vector<Char> recv, const Int root)
   if (1 == get_num_node()) {
     return 0;
   }
-  return mpi_bcast((void*)recv.data(), recv.size(), MPI_INT8_T, root, get_comm());
+  return mpi_bcast((void*)recv.data(), recv.size(), MPI_INT8_T, root,
+                   get_comm());
 }
 
 Int bcast(std::string& recv, const Int root)
@@ -555,8 +557,9 @@ Int bcast_any(Vector<Char> xx, const bool b)
 // ``glb_any(b)`` should be ``true``.
 // The sizes of ``xx`` should be the same even when ``b == false``.
 // The value of ``xx`` when ``b == true``, should be the same.
-// If the condition is not met, this function will return negative number collectively.
-// The function should not crash simply due to the input does not satisfy the above requirements.
+// If the condition is not met, this function will return negative number
+// collectively. The function should not crash simply due to the input does not
+// satisfy the above requirements.
 {
   Int code = 0;
   const Int num_node = get_num_node();
@@ -685,13 +688,19 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
   Qassert(globalRank == get_id_node());
   // node local comm
   MPI_Comm nodeComm;
-  MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
-                      MPI_INFO_NULL, &nodeComm);
+  {
+    const Int ret = MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED,
+                                        globalRank, MPI_INFO_NULL, &nodeComm);
+    Qassert(ret == MPI_SUCCESS);
+  }
   // id within the node
   Int localRank;
   MPI_Comm_rank(nodeComm, &localRank);
   if (0 == get_id_node()) {
-    Qassert(localRank == 0);
+    Qassert_info(localRank == 0, {
+      printf("%s: %d %d %d\n", fname.c_str(), localRank, get_id_node(),
+             get_num_node());
+    });
   }
   // number of process in this node
   Int localSize;
@@ -853,8 +862,11 @@ void set_node_rank_size(Int& localRank, Int& localSize)
   Qassert(globalRank == get_id_node());
   // node local comm
   MPI_Comm nodeComm;
-  MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
-                      MPI_INFO_NULL, &nodeComm);
+  {
+    const Int ret = MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED,
+                                        globalRank, MPI_INFO_NULL, &nodeComm);
+    Qassert(ret == MPI_SUCCESS);
+  }
   // id within the node
   // Int localRank;
   MPI_Comm_rank(nodeComm, &localRank);
