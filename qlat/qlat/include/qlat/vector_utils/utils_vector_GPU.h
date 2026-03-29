@@ -35,6 +35,14 @@ struct vector_gpu{
     resize(n_set, GPU_set);
   }
 
+  inline void set_mem_type(MemType mem)
+  {
+    GPU = -1;
+    if(mem == MemType::Cpu){GPU = 0;}
+    if(mem == MemType::Acc){GPU = 1;}
+    if(mem == MemType::Uvm){GPU =-1;}
+  }
+
   inline void resize(const size_t n_set, const Int GPU_set)
   {
     Qassert(not is_copy);

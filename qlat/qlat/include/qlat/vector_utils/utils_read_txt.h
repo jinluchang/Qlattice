@@ -269,10 +269,10 @@ inline size_t file_operation(void* buf, const size_t size, const size_t count, F
   Qassert(size  % factor == 0);
   const size_t currN = size / factor;
   size_t check = 1;
-
+  //
   if(read==true ){check =  fread(buf, currN, count * factor, file);}
   if(read==false){check = fwrite(buf, currN, count * factor, file);}
-
+  //
   if(check > 0){return 1;}
   return 0;
 }

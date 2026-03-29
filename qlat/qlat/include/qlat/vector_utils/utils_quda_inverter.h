@@ -390,6 +390,7 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
 {
   TIMER("quda_inverter_constuctor");
   //set up gauge parameters
+  geo.set_mem_type(MemType::Uvm);
   geo.set(geo_);
   V = geo().local_volume();
   //Qassert(num_src_ > 0);
@@ -464,20 +465,20 @@ quda_inverter::quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
   max_src_qinv     =  qlat::get_env_long_default(std::string("qlat_quda_stag_mrh"), 9);
   gauge_with_phase = false;
   io_rotate_bfac = false;
-
+  //
   mass_mat = -1000000;
   ///mass_eig = -1000000;
   mass_value  = -100000;
   inv_time = 0.0;
   inv_iter = 0;
   inv_gflops = 0.0;
-
+  //
   quda_verbos = 0;
   std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
   if(val != ""){quda_verbos = stringtonum(val);}
   restart_cg      = qlat::get_env_long_default(std::string("qlat_restart_cg"), 0);
   restart_cg_iter = qlat::get_env_long_default(std::string("qlat_restart_cg_iter"), 200);
-
+  //
   //default stagger
   setup_stagger_inv();
   ////default mass zero
@@ -3193,7 +3194,7 @@ inline void quda_inverter::set_quda_split(const std::vector<Int >& grid, const I
   split_param.split_grid[2] = grid[2];
   split_param.split_grid[3] = grid[3];
   split_key = {grid[0], grid[1], grid[2], grid[3]};
-  num_sub_partition = quda::volume(split_key);
+  num_sub_partition = quda::product(split_key);
   //qmessage("Quda splited MRH num_src %5d sub %5d \n", int(num_src), int(num_sub_partition));
   Qassert(num_src >= num_sub_partition and num_src % num_sub_partition == 0);
   const Int dslash_mrh = num_src / num_sub_partition;

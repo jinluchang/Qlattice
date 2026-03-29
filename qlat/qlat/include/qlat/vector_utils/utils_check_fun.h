@@ -184,6 +184,47 @@ double get_norm2(qlat::FieldG<Ty>& p0)
 }
 
 template <class Ty, Int civ>
+bool check_field_nan(qlat::FieldM<Ty , civ>& p0)
+{
+  TIMERA("check_field_nan");
+  using M1 = typename IsBasicDataType<Ty>::ElementaryType;
+  const Long Ndata1 = sizeof(Ty) / sizeof(M1);
+  //const Long V = p0.geo().local_volume() * civ * Ndata1;
+  const Long V = p0.field.size() * Ndata1;
+  M1* src = (M1*) qlat::get_data(p0).data();
+  const Long Bfac  = 64;
+  const Long Neach = (V + Bfac - 1 ) / Bfac;
+  const MemType mem_type = p0.field.mem_type;
+  qlat::vector<double > buf;buf.resize(Neach, mem_type);
+  //const MemType gmem = check_mem_type(src);
+  qmem_for(ieach, Neach, mem_type, {
+    buf[ieach] = 0;
+    for(Long bi=0;bi<Bfac;bi++)
+    {
+      const Long isp = ieach * Bfac + bi;
+      if(isp < V){
+        if(qisnan(src[isp])){
+          buf[ieach] = 1;
+          break;
+        }
+      }
+    }
+  })
+  bool is_nan = false;
+  for(Int ieach=0;ieach<Neach;ieach++)
+  {
+    if(buf[ieach] == 1)
+    {
+      qqwarn(ssprintf("WARNING: isnan corr"));
+      is_nan = true;
+      break;
+    }
+  }
+  return is_nan;
+  //Qassert(!is_nan);
+}
+
+template <class Ty, Int civ>
 void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double err=1e-15, Long MAX_COUNT = 64)
 {
   Int rank = qlat::get_id_node();

@@ -1813,7 +1813,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*  > &noises, const Int bf
 
   //void* buf;
   //buf = aligned_alloc_no_acc(bufN*bfac*io_use.noden * 2*bsize);
-  qlat::vector<char > buf_vec;buf_vec.resize(bufN*bfac*io_use.noden * 2*bsize);
+  qlat::vector<char > buf_vec;buf_vec.resize(bufN*bfac*io_use.noden * 2*bsize, MemType::Cpu);
   void* buf = (void*) buf_vec.data();
   qlat::ComplexD*  bufD = (qlat::ComplexD* ) buf;
   qlat::ComplexF* bufF = (qlat::ComplexF*) buf;
@@ -2602,7 +2602,7 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty >& even, qlat::vect
       }
       Qassert(nvec == Nmax);
 
-      evals.resize(nvec);err.resize(nvec);
+      evals.resize(nvec, MemType::Uvm);err.resize(nvec);
       for(Int n=  0;n<nvec;n++){
         Qassert(qlat::qnorm( values[n*2 + 1] ) < 1e-10);
         evals[n] = Ty(values[n*2+0] - 4.0*mre*mre, 0.0);

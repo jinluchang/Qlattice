@@ -12,6 +12,8 @@ void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long
   const Long Nsend = plan.total_send_size;
   const Long Nrecv = plan.total_recv_size;
   //printf("setup %8d %8d \n", int(Nsend * 2), int(Nrecv * 2));
+  pack_send.set_mem_type(MemType::Cpu);
+  pack_recv.set_mem_type(MemType::Cpu);
   pack_send.resize( Nsend * 2 );
   pack_recv.resize( Nrecv * 2 );
   //
@@ -39,6 +41,9 @@ void setup_expand(const Geometry& geo, const Int multiplicity, qlat::vector<Long
       cur += cpi.size;
     }
   }
+  // put the results to Acc
+  pack_send.set_mem_type(MemType::Acc);
+  pack_recv.set_mem_type(MemType::Acc);
 }
 
 bool operator<(const expand_index_Key& x, const expand_index_Key& y){

@@ -126,8 +126,8 @@ struct expand_field_buffer {
   Geometry geo;
   std::string tag;
   //expand_index_buf* index;
-  vector<int8_t> bs;
-  vector<int8_t> br;
+  qlat::vector<int8_t> bs;
+  qlat::vector<int8_t> br;
   int8_t* pres;
   size_t dsize;// in terms of size of char
   bool initialized;
@@ -211,8 +211,9 @@ struct expand_field_buffer {
     TIMER_FLOPS("expand_field_buffer excute_copy");
     Qassert(initialized);
     Qassert(bs.size() > 0 and br.size() > 0  and bs.mem_type == br.mem_type);
-    Int GPU = 1;
-    if(bs.mem_type == MemType::Cpu or bs.mem_type == MemType::Comm){GPU = 0;}
+    MemType mem_type = MemType::Acc;
+    //Int GPU = 1;
+    if(bs.mem_type == MemType::Cpu or bs.mem_type == MemType::Comm){mem_type = MemType::Cpu;}
     //
     T* sP  = (T*) bs.data();
     const T* rP  = (T*) br.data();
@@ -227,7 +228,7 @@ struct expand_field_buffer {
     const Long Nrecv = ebuf.pack_recv.size() / 2;
     //
     if(type == 0){
-      qGPU_for(isp, Nsend, GPU, {
+      qmem_for(isp, Nsend, mem_type, {
         const Long ri = pack_send[isp * 2 + 0] * MULTI;//offset with MULTI
         const Long si = pack_send[isp * 2 + 1] * MULTI;
         for(Int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
@@ -236,7 +237,7 @@ struct expand_field_buffer {
     }
     //
     if(type == 1){
-      qGPU_for(isp, Nrecv, GPU, {
+      qmem_for(isp, Nrecv, mem_type, {
         const Long ri = pack_recv[isp * 2 + 0] * MULTI;
         const Long si = pack_recv[isp * 2 + 1] * MULTI;
         for(Int n=0;n<MULTI;n++){res[ri + n] = rP[si + n];}
@@ -292,7 +293,7 @@ inline void expand_buffer_wait_mpi(){
   std::vector<MPI_Request>& reqs_send = get_expand_buffer_reqs_send();
   static Int do_comm_step = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_AMD"), 0);
   Qassert(do_comm_step == 1 or do_comm_step == 0);
-  if(do_comm_step == 1){
+  if(do_comm_step == 0){
     mpi_waitall(reqs_recv);//receive done and write
     for(Int i=0;i<MAX_EXPAND_BUF;i++){
       timer.flops += bufs[i].get_flops();
@@ -301,7 +302,7 @@ inline void expand_buffer_wait_mpi(){
     mpi_waitall(reqs_send);//send    done and write
   }
   // copy after communications to avoid bad news on AMD GPUs...
-  if(do_comm_step == 0){
+  if(do_comm_step == 1){
     mpi_waitall(reqs_recv);//receive done and write
     mpi_waitall(reqs_send);//send    done and write
     for(Int i=0;i<MAX_EXPAND_BUF;i++){
@@ -374,6 +375,7 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const Int MULTI,
   std::vector<MPI_Request> reqs_send;
   std::vector<MPI_Request> reqs_recv;
   //
+  const MemType mem_type = GPU == 1 ? MemType::Acc : MemType::Cpu;
   qlat::vector_gpu<int8_t >& sbuf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf0"), GPU);
   qlat::vector_gpu<int8_t >& rbuf = qlat::get_vector_gpu_plan<int8_t >(0, std::string("general_buf1"), GPU);
   expand_index_buf& ebuf = get_expand_index_buf_plan(geo, multiplicity, tag);
@@ -400,7 +402,7 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const Int MULTI,
   Long* pack_send = (Long*) &ebuf.pack_send[0];
   Long* pack_recv = (Long*) &ebuf.pack_recv[0];
   //
-  qGPU_for(isp, Nsend, GPU, {
+  qmem_for(isp, Nsend, mem_type, {
     Long ri = pack_send[isp * 2 + 0] * MULTI;//offset with multivec
     Long si = pack_send[isp * 2 + 1] * MULTI;
     for(Int n=0;n<MULTI;n++){sP[ri + n] = res[si + n];}
@@ -416,18 +418,26 @@ void refresh_expanded_GPUT_v0(M* res, const Geometry& geo, const Int MULTI,
   }
   //
   mpi_waitall(reqs_recv);////receive done and write
-  qGPU_for(isp, Nrecv, GPU, {
+  static Int do_comm_step = qlat::get_env_long_default(std::string("qlat_field_expand_buffer_AMD"), 0);
+  Qassert(do_comm_step == 0 or do_comm_step == 1);
+  if(do_comm_step == 1){mpi_waitall(reqs_send);}
+  qmem_for(isp, Nrecv, mem_type, {
     const Long ri = pack_recv[isp * 2 + 0] * MULTI;
     const Long si = pack_recv[isp * 2 + 1] * MULTI;
     for(Int n=0;n<MULTI;n++){res[ri + n] = rP[si + n];}
   });
   //
-  mpi_waitall(reqs_send);
+  if(do_comm_step == 0){mpi_waitall(reqs_send);}
+  //mpi_waitall(reqs_send);
 }
 
 template <class M>
 void refresh_expanded_GPUT(M* res, const Geometry& geo, const Int MULTI, 
   const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = std::string(""), Int GPU = 1, const QBOOL dummy = QTRUE){
+  static Int do_test_expand = qlat::get_env_long_default(std::string("qlat_do_test_expand"), 0);
+  if(do_test_expand == 1){
+    refresh_expanded_GPUT_v0(res, geo, MULTI, set_marks_field, tag, GPU, dummy);return ;
+  }
   Qassert(sizeof(M) % sizeof(RealD) == 0);
   //const Int MULTI = geo.multiplicity;
   const Long mpi_size = MULTI * sizeof(M)/sizeof(RealD);
@@ -536,3 +546,4 @@ void refresh_expanded_GPU(Field<M>& f, Int dir = -1000, const Int GPU = 1, const
 }
 
 #endif
+
