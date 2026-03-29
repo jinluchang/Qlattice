@@ -249,45 +249,46 @@ def cache_call(
 ):
     """
     get_state() => object to be used as extra key of cache
-    #
+
     `maxsize` can be `0`, where the q.LRUCache is effectively turned off.
-    #
+
     if is_hash_args:
         Pickle all the keys and use hash as the key (default)
     else:
         Use `(func.__qualname__, args, state)` directly as `key`.
         Note that `kwargs` has to be empty in this case.
+
     if path is None:
         Only cache using q.LRUCache (default)
     else:
         Also cache the results in ``f"{path}/{key}.pickle"`` and save ``func_args`` in ``f"{path}/info/{key}.pickle"``.
+
         if is_sync_node:
             Only read/write to ``f"{path}/{key}.pickle"`` (and ``f"{path}/info/{key}.pickle"``) from process 0 (broadcast to all nodes)
         else:
             All the processes independently do the calculation and read/write to f"{path}/{key}.pickle"
             Use this if (1) `path` or `key` is different for different processes;
                      or (2) this function is only called from a certain process.
+
     if cache is None:
         cache = q.LRUCache(maxsize)
     else:
         The input `cache` will be used. This cache may be shared for other purpose
-    #
-    # Usage example:
-    #
-    @cache_call(maxsize=128, get_state=q.get_jk_state)
-    def func(x):
-        return x**2
-    #
-    block_size = 10
-    block_size_dict = { "48I": 10, }
-    @cache_call(maxsize=128, get_state=lambda: (block_size, block_size_dict,), is_hash_args=True)
-    def func(x):
-        return x**2
-    #
-    func.cache # returns the underlying lru_cache object.
-    #
-    func.clear() # clears the underlying lru_cache cache object.
-    #
+
+    Usage example::
+
+        @cache_call(maxsize=128, get_state=q.get_jk_state)
+        def func(x):
+            return x**2
+
+        block_size = 10
+        block_size_dict = { "48I": 10, }
+        @cache_call(maxsize=128, get_state=lambda: (block_size, block_size_dict,), is_hash_args=True)
+        def func(x):
+            return x**2
+
+        func.cache # returns the underlying lru_cache object.
+        func.clear() # clears the underlying lru_cache cache object.
     """
     if cache is None:
         cache = q.LRUCache(maxsize)

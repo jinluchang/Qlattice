@@ -178,7 +178,7 @@ C++ example: ``examples-cpp/latio/main.cpp``
 
 C++ code: ``qlat-utils/include/qlat-utils/lat-io.h``
 
-.. literalinclude:: ../qlat-utils/qlat_utils/include/qlat-utils/lat-io.h
+See the source code in the repository for details.
 
 Gauge Field
 ^^^^^^^^^^^

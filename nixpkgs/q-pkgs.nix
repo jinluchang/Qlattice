@@ -233,9 +233,6 @@ let
     } else {}
     );
     #
-    # ollama = n-pkgs.ollama;
-    ollama = pkgs.ollama;
-    #
     ucx-mt = (pkgs.ucx.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++ [
         "--enable-mt"
@@ -578,7 +575,6 @@ let
     }
     // (if is-linux then {
       inherit (ps)
-      ollama
       xarray
       numba
       torch
@@ -617,7 +613,6 @@ let
         qlat-nixgl
         mpi
         nvidia_x11_bin
-        ollama
         ;
         inherit (pkgs)
         bashInteractive

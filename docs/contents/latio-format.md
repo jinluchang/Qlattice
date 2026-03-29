@@ -13,7 +13,7 @@ FILE-HEADER
 BINARY-DATA
 ```
 
-### FILE-HEADER
+## FILE-HEADER
 
 Example:
 
@@ -30,6 +30,6 @@ END_HEADER
 
 ```
 
-### BINARY-DATA
+## BINARY-DATA
 
 Consist of the data stored in double precision (little endian) in sequential order.

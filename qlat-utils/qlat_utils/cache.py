@@ -4,18 +4,16 @@ from . import c
 class Cache(dict):
 
     """
-    self.cache_keys
-    #
-    Example:
-    #
-    cache_fields_io = q.mk_cache("fields_io")
-    #
-    cache_fields_io[id(self)] = (fsel, sbs,)
-    #
-    if id(self) in cache_fields_io:
-        c_fsel, c_sbs = cache_fields_io[id(self)]
-    #
-    cache_fields_io.pop(id(self), None)
+    Attributes:
+        cache_keys: The keys for this cache.
+
+    Example::
+
+        cache_fields_io = q.mk_cache("fields_io")
+        cache_fields_io[id(self)] = (fsel, sbs,)
+        if id(self) in cache_fields_io:
+            c_fsel, c_sbs = cache_fields_io[id(self)]
+        cache_fields_io.pop(id(self), None)
     """
 
     def __init__(self, *keys):

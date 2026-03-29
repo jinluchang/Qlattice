@@ -1165,15 +1165,20 @@ def get_term_diagram_type_info(term):
 def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
     first: drop diagrams with diagram_type_dict[diagram_type] == None
+
     second:
+
         if included_types is None:
             return a list of a single expr with all the remaining diagrams summed together
         else:
             assert isinstance(included_types, list)
             # included_types = [ None, "Type1", [ "Type2", "Type3", ], ]
             return a list of exprs, each expr only includes the types specified in the `included_types`.
+
     `included_types` is a list of specs of included diagram type.
-    Each spec in the list of `included_types` can be
+
+    Each spec in the list of `included_types` can be:
+
     (1) None: means all remaining types included
     (2) a single str, with value be one diagram_type_name: means only include this type
     (3) a list of str: means include only the types listed in the list.
@@ -1470,7 +1475,7 @@ def cexpr_code_gen_py(cexpr:CExpr, *, is_cython=True, is_distillation=False):
     """
     interface function
     return a string
-    #
+
     if is_distillation:
         assert is_cython == False
     """
@@ -1482,19 +1487,22 @@ def cexpr_code_gen_py(cexpr:CExpr, *, is_cython=True, is_distillation=False):
 class CExprCodeGenPy:
 
     """
-    self.cexpr
-    self.is_cython
-    self.is_distillation
-    self.var_dict_for_factors
-    self.lines
-    self.indent
-    self.total_sloppy_flops
-    #
-    flops per complex addition: 2
-    flops per complex multiplication: 6
-    flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s), 3168 (sc * c), 198 (c * c)
-    flops per trace 2 (M-1) ==> 22 (sc)
-    flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
+    Attributes:
+        cexpr: The CExpr object
+        is_cython: Whether to generate Cython code
+        is_distillation: Whether to generate distillation code
+        var_dict_for_factors: Dictionary for factor variables
+        lines: List of generated code lines
+        indent: Current indentation level
+        total_sloppy_flops: Total sloppy floating point operations
+
+    FLOPS info::
+
+        flops per complex addition: 2
+        flops per complex multiplication: 6
+        flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s), 3168 (sc * c), 198 (c * c)
+        flops per trace 2 (M-1) ==> 22 (sc)
+        flops per trace2 6 M N + 2 (M N - 1) ==> 1150 (sc, sc)
     """
 
     def __init__(self, cexpr, *, is_cython=True, is_distillation=False):

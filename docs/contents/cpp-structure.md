@@ -5,7 +5,7 @@ const int DIMN = 4;
 struct Coordinate : public array<int, DIMN> {};
 ```
 
-### GeometryNode
+## GeometryNode
 
 ```c++
 struct GeometryNode {
@@ -17,7 +17,7 @@ struct GeometryNode {
 };
 ```
 
-### Geometry
+## Geometry
 
 ```c++
 struct Geometry {
@@ -31,7 +31,7 @@ struct Geometry {
 };
 ```
 
-### vector and box
+## vector and box
 
 ```c++
 template <class M>
@@ -74,7 +74,7 @@ struct API Handle {
 };
 ```
 
-### Field
+## Field
 
 ```c++
 template <class M>
@@ -86,14 +86,14 @@ struct Field {
 };
 ```
 
-### FieldM
+## FieldM
 
 ```c++
 template <class M, int multiplicity>
 struct FieldM : Field<M> {};
 ```
 
-### SelectedPoints
+## SelectedPoints
 
 ```c++
 enum struct PointsDistType {
@@ -124,7 +124,7 @@ struct SelectedPoints {
 };
 ```
 
-### SelectedField
+## SelectedField
 
 ```c++
 template <class M>
