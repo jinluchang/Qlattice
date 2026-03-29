@@ -54,7 +54,13 @@ Int mpi_isend(const void* buf, Long count, MPI_Datatype datatype, Int dest,
     MPI_Request r;
     Int ret = MPI_Isend(buf, count, datatype, dest, tag, comm, &r);
     requests.push_back(r);
-    Qassert(ret == MPI_SUCCESS);
+    Qassert_info(ret == MPI_SUCCESS, {
+      char errstr[MPI_MAX_ERROR_STRING];
+      int errlen = 0;
+      MPI_Error_string(ret, errstr, &errlen);
+      printf("mpi_isend: MPI_Isend failed: ret=%d '%s' dest=%d count=%ld\n",
+             ret, errstr, dest, count);
+    });
     return MPI_SUCCESS;
   } else {
     Int type_size = 0;
@@ -77,7 +83,13 @@ Int mpi_irecv(void* buf, Long count, MPI_Datatype datatype, Int source, Int tag,
     MPI_Request r;
     Int ret = MPI_Irecv(buf, count, datatype, source, tag, comm, &r);
     requests.push_back(r);
-    Qassert(ret == MPI_SUCCESS);
+    Qassert_info(ret == MPI_SUCCESS, {
+      char errstr[MPI_MAX_ERROR_STRING];
+      int errlen = 0;
+      MPI_Error_string(ret, errstr, &errlen);
+      printf("mpi_irecv: MPI_Irecv failed: ret=%d '%s' source=%d count=%ld\n",
+             ret, errstr, source, count);
+    });
     return MPI_SUCCESS;
   } else {
     Int type_size = 0;
@@ -97,7 +109,13 @@ Int mpi_waitall(std::vector<MPI_Request>& requests)
   TIMER("mpi_waitall");
   if (requests.size() > 0) {
     Int ret = MPI_Waitall(requests.size(), requests.data(), MPI_STATUS_IGNORE);
-    Qassert(ret == MPI_SUCCESS);
+    Qassert_info(ret == MPI_SUCCESS, {
+      char errstr[MPI_MAX_ERROR_STRING];
+      int errlen = 0;
+      MPI_Error_string(ret, errstr, &errlen);
+      printf("mpi_waitall: MPI_Waitall failed: ret=%d '%s' num_requests=%ld\n",
+             ret, errstr, (Long)requests.size());
+    });
   }
   requests.resize(0);
   return MPI_SUCCESS;
@@ -692,9 +710,13 @@ std::vector<Int> mk_id_node_list_for_shuffle_node()
     const Int ret = MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED,
                                         globalRank, MPI_INFO_NULL, &nodeComm);
     Qassert_info(ret == MPI_SUCCESS, {
+      char errstr[MPI_MAX_ERROR_STRING];
+      int errlen = 0;
+      MPI_Error_string(ret, errstr, &errlen);
       printf(
-          "%s: MPI_Comm_split_type failed: ret=%d globalRank=%d num_node=%d\n",
-          fname.c_str(), ret, globalRank, get_num_node());
+          "%s: MPI_Comm_split_type failed: ret=%d '%s' globalRank=%d "
+          "num_node=%d\n",
+          fname.c_str(), ret, errstr, globalRank, get_num_node());
     });
   }
   // id within the node
@@ -870,10 +892,13 @@ void set_node_rank_size(Int& localRank, Int& localSize)
     const Int ret = MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED,
                                         globalRank, MPI_INFO_NULL, &nodeComm);
     Qassert_info(ret == MPI_SUCCESS, {
+      char errstr[MPI_MAX_ERROR_STRING];
+      int errlen = 0;
+      MPI_Error_string(ret, errstr, &errlen);
       printf(
-          "set_node_rank_size: MPI_Comm_split_type failed: ret=%d "
+          "set_node_rank_size: MPI_Comm_split_type failed: ret=%d '%s' "
           "globalRank=%d num_node=%d\n",
-          ret, globalRank, get_num_node());
+          ret, errstr, globalRank, get_num_node());
     });
   }
   // id within the node
@@ -1082,9 +1107,17 @@ void begin(const Int id_node, const Coordinate& size_node, const Int color)
   Qassert(0 <= id_node and id_node < volume(size_node));
   Qassert(0 <= color);
   MPI_Comm comm;
-  const Int ret =
-      MPI_Comm_split(get_comm_list().back().comm, color, id_node, &comm);
-  Qassert(ret == MPI_SUCCESS);
+  {
+    const Int ret =
+        MPI_Comm_split(get_comm_list().back().comm, color, id_node, &comm);
+    Qassert_info(ret == MPI_SUCCESS, {
+      char errstr[MPI_MAX_ERROR_STRING];
+      int errlen = 0;
+      MPI_Error_string(ret, errstr, &errlen);
+      printf("begin: MPI_Comm_split failed: ret=%d '%s' color=%d id_node=%d\n",
+             ret, errstr, color, id_node);
+    });
+  }
   begin_comm(comm, size_node);
   Qassert(get_id_node() == id_node);
 }
