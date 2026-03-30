@@ -257,7 +257,8 @@ def upload_pypi() -> None:
 def bump_version() -> None:
     """Step 6: Bump version for next development cycle.
 
-    Increments the minor version number in three locations:
+    Increments the minor version with a cap at 99; when minor wraps from 99→0, increment major:
+    v0.99 → v1.00, v1.99 → v2.00, etc.
         - ./VERSION file (format: vX.Y)
         - Source files via ./scripts/update-sources.sh
         - version-pypi in nixpkgs/q-pkgs.nix (format: X.Y, no 'v' prefix)
@@ -271,8 +272,9 @@ def bump_version() -> None:
         print("ERROR: VERSION format not recognized (expected vX.Y).")
         sys.exit(1)
     major = int(m.group(1))
-    minor_num = int(m.group(2)) + 1
-    new_version = f"v{major}.{minor_num}"
+    minor_num = (int(m.group(2)) + 1) % 100
+    major += minor_num // 100  # increment major when minor wraps from 99→0
+    new_version = f"v{major}.{minor_num:02d}"
     Path("VERSION").write_text(new_version + "\n")
 
     # Update sources
@@ -284,7 +286,7 @@ def bump_version() -> None:
         print("ERROR: nixpkgs/q-pkgs.nix not found.")
         sys.exit(1)
     text = q_pkgs_nix.read_text()
-    new_pypi_version = f"{major}.{minor_num}"
+    new_pypi_version = f"{major}.{minor_num:02d}"
     # Use \g<1> to avoid ambiguity when replacement starts with digits
     text_new = re.sub(r'(version-pypi\s*=\s*")[^"]+(")', r"\g<1>" + new_pypi_version + r"\g<2>", text)
     if text == text_new:
