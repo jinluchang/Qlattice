@@ -445,13 +445,13 @@ def measure_topo_dwf(
         )
         q.save_json_obj(
             dict(
-                total=f_tadpole_loop_sum[:, 1].real.sum(
+                avg=f_tadpole_loop_sum[:, 1].real.sum(
                 ).item() / geo.total_volume,
-                total_err=np.sqrt(
+                avg_err=np.sqrt(
                     f_tadpole_loop_imag_sqr_sum[:, 1].sum()).item() / geo.total_volume,
-                tslice_sum=f_tadpole_loop_sum[:, 1].real /
+                tslice_avg=f_tadpole_loop_sum[:, 1].real /
                 geo.spatial_volume,
-                tslice_sum_err=np.sqrt(f_tadpole_loop_imag_sqr_sum[:, 1].real) /
+                tslice_avg_err=np.sqrt(f_tadpole_loop_imag_sqr_sum[:, 1].real) /
                 geo.spatial_volume,
             ),
             f"{info_path}/info/rand_vol_u1_idx-{rand_vol_u1_idx}/quark_condensate.json",
@@ -482,7 +482,7 @@ def measure_topo_dwf(
         [info["f_tadpole_loop_sum"] for info in info_list], dtype=np.complex128,
     )
     f_tadpole_loop_imag_sqr_sum_arr = np.array(
-        [info["f_tadpole_loop_imag_sqr_sum"] for info in info_list], dtype=np.complex128,
+        [info["f_tadpole_loop_imag_sqr_sum"] for info in info_list], dtype=np.float64,
     )
     #
     info = dict()
@@ -498,23 +498,23 @@ def measure_topo_dwf(
         dict(
             total=f_tadpole_loop_sum_arr[:, :, 0].real.sum(-1),
             total_err=np.sqrt(
-                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].real.sum(-1)),
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].sum(-1)),
             tslice_sum=f_tadpole_loop_sum_arr[:, :, 0].real,
             tslice_sum_err=np.sqrt(
-                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].real),
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0]),
         ),
         f"{info_path}/info/topo.json",
     )
     q.save_json_obj(
         dict(
-            total=f_tadpole_loop_sum_arr[:, :,
+            avg=f_tadpole_loop_sum_arr[:, :,
                                          1].real.sum(-1) / geo.total_volume,
-            total_err=np.sqrt(
-                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].real.sum(-1)) / geo.total_volume,
-            tslice_sum=f_tadpole_loop_sum_arr[:,
+            avg_err=np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].sum(-1)) / geo.total_volume,
+            tslice_avg=f_tadpole_loop_sum_arr[:,
                                               :, 1].real / geo.spatial_volume,
-            tslice_sum_err=np.sqrt(
-                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].real) / geo.spatial_volume,
+            tslice_avg_err=np.sqrt(
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1]) / geo.spatial_volume,
         ),
         f"{info_path}/info/quark_condensate.json",
     )
@@ -529,7 +529,7 @@ def measure_topo_dwf(
         np.array([
             f_tadpole_loop_sum_arr[:, :, 0].sum(-1),
             np.sqrt(
-                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].real.sum(-1)),
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 0].sum(-1)),
         ]),
         1e-7,
     )
@@ -538,7 +538,7 @@ def measure_topo_dwf(
         np.array([
             f_tadpole_loop_sum_arr[:, :, 1].sum(-1) / geo.total_volume,
             np.sqrt(
-                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].real.sum(-1)) / geo.total_volume,
+                f_tadpole_loop_imag_sqr_sum_arr[:, :, 1].sum(-1)) / geo.total_volume,
         ]),
         1e-7,
     )

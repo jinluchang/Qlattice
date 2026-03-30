@@ -104,7 +104,7 @@ cdef class Geometry:
 
     @property
     def spatial_volume(self):
-        return self.xx.total_volume()
+        return self.xx.spatial_volume()
 
     @property
     def local_site(self):
