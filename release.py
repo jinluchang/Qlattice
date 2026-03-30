@@ -39,7 +39,6 @@ Design goals:
 """
 
 from pathlib import Path
-from typing import Optional
 import subprocess
 import glob
 import sys
@@ -52,30 +51,6 @@ def print_step(n: int, description: str) -> None:
     print(f"Step {n}: {description}")
 
 
-def run(cmd, check: bool = True, capture_output: bool = True, text: bool = True, cwd: Optional[Path] = None):
-    """Run a subprocess command with configurable options.
-
-    Args:
-        cmd: Command to run (string or list).
-        check: If True, raise CalledProcessError on non-zero exit. Default True.
-        capture_output: If True, capture stdout/stderr. Default True.
-        text: If True, decode output as text. Default True.
-        cwd: Optional working directory for the command.
-
-    Returns:
-        subprocess.CompletedProcess result.
-    """
-    result = subprocess.run(
-        cmd,
-        check=False if not check else True,
-        stdout=subprocess.PIPE if capture_output else None,
-        stderr=subprocess.STDOUT,
-        text=text,
-        cwd=str(cwd) if cwd else None,
-    )
-    return result
-
-
 def check_environment() -> None:
     """Step 1: Verify the environment is suitable for release.
 
@@ -83,6 +58,7 @@ def check_environment() -> None:
         - VERSION file exists at project root
         - Script is running from git repository root
         - Working tree is clean (no uncommitted changes)
+        - Required remotes (origin, gitee) are configured
 
     Exits with error message if any check fails.
     """
@@ -118,6 +94,15 @@ def check_environment() -> None:
         print("ERROR: Working tree is not clean. Commit or stash changes before proceeding.")
         sys.exit(1)
 
+    # Verify required remotes exist
+    remotes = subprocess.run(
+        ["git", "remote"], stdout=subprocess.PIPE, text=True
+    ).stdout.split()
+    for required in ["origin", "gitee"]:
+        if required not in remotes:
+            print(f"ERROR: Required remote '{required}' not configured.")
+            sys.exit(1)
+
     print("Environment checks passed.")
 
 
@@ -150,6 +135,10 @@ def build_pull_loop() -> None:
         if not result_link.exists():
             print(f"ERROR: {result_link} does not exist after build.")
             sys.exit(1)
+        target = result_link.resolve()
+        if not target.exists():
+            print(f"ERROR: {result_link} symlink target {target} does not exist.")
+            sys.exit(1)
         mtime_after = result_link.stat().st_mtime
         if mtime_after == mtime_before:
             print(f"ERROR: {result_link} was not updated by build script (stale symlink).")
@@ -162,13 +151,13 @@ def build_pull_loop() -> None:
             print(f"ERROR: Build artifacts not found matching {tar_pattern}")
             sys.exit(1)
 
-        # Step C: record HEAD and pull
+        # Step D: record HEAD and pull
         head_before = subprocess.run(["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE, text=True).stdout.strip()
         pull = subprocess.run(["git", "pull", "origin"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         if pull.returncode != 0:
             out = pull.stdout or ""
             if "CONFLICT" in out or "conflict" in out:
-                subprocess.run(["git", "merge", "--abort"], check=True)
+                subprocess.run(["git", "merge", "--abort"], check=False)
                 print("ERROR: Merge conflict during git pull. Aborting release.")
                 sys.exit(1)
             else:
@@ -254,7 +243,7 @@ def upload_pypi() -> None:
     on already-uploaded versions.
     """
     print_step(5, "Upload tarballs to PyPI (twine)")
-    tar_pattern = str(Path.home() / "qlat-build" / "nix" / "result-*-q-pkgs" /
+    tar_pattern = str(Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2" /
                           "share" / "qlat-pypi" / "qlat*.tar.gz")
     tarballs = glob.glob(tar_pattern)
     if not tarballs:
@@ -277,18 +266,12 @@ def bump_version() -> None:
     """
     print_step(6, "Bump minor version, update sources and nix q-pkgs")
     version = Path("VERSION").read_text().strip()
-    m = re.match(r"^v?(\d+)\.(\d+.*)$", version)
+    m = re.match(r"^v?(\d+)\.(\d+)$", version)
     if not m:
         print("ERROR: VERSION format not recognized (expected vX.Y).")
         sys.exit(1)
     major = int(m.group(1))
-    minor_str = m.group(2)
-    # Increment the numeric minor component (treat non-numeric tail as part of minor)
-    try:
-        minor_num = int(minor_str.split(".")[0]) if "." in minor_str else int(minor_str)
-    except ValueError:
-        minor_num = 0
-    minor_num += 1
+    minor_num = int(m.group(2)) + 1
     new_version = f"v{major}.{minor_num}"
     Path("VERSION").write_text(new_version + "\n")
 
@@ -323,6 +306,10 @@ def verify_new_build() -> None:
     if not result_link.exists():
         print(f"ERROR: {result_link} does not exist after build.")
         sys.exit(1)
+    target = result_link.resolve()
+    if not target.exists():
+        print(f"ERROR: {result_link} symlink target {target} does not exist.")
+        sys.exit(1)
     mtime_after = result_link.stat().st_mtime
     if mtime_after == mtime_before:
         print(f"ERROR: {result_link} was not updated by build script (stale symlink).")
@@ -337,7 +324,8 @@ def commit_bump() -> None:
     (VERSION file, source files, nix config) with message "Upgrade version".
     """
     print_step(8, "Commit the version bump changes")
-    subprocess.run(["git", "commit", "-am", "Upgrade version"], check=True)
+    subprocess.run(["git", "add", "-A"], check=True)
+    subprocess.run(["git", "commit", "-m", "Upgrade version"], check=True)
     print("Commit created.")
 
 
