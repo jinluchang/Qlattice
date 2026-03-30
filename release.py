@@ -5,16 +5,17 @@ Qlattice Release Automation Script.
 A single-file Python script that automates the entire Qlattice release procedure.
 Uses only Python standard library (no external dependencies).
 
-The release process consists of 9 sequential steps:
+The release process consists of 10 sequential steps:
     1. Environment checks (VERSION file exists, git root, clean worktree)
     2. Build-pull loop (build tarballs, verify artifacts, pull remote changes, rebuild if needed)
     3. Tag the current commit with the version from VERSION file
     4. Push commit and tags to both origin (GitHub) and gitee (mirror)
-    5. Upload built packages to PyPI
-    6. Bump version in VERSION file, update-sources.sh, and nix config
-    7. Verify new build compiles successfully
-    8. Commit the version bump changes
-    9. Push the version bump to both remotes
+    5. Create GitHub Release from the tag
+    6. Upload built packages to PyPI
+    7. Bump version in VERSION file, update-sources.sh, and nix config
+    8. Verify new build compiles successfully
+    9. Commit the version bump changes
+    10. Push the version bump to both remotes
 
 All steps use hard-fail error handling: any failure causes the script to exit
 with a non-zero status. The script is fully automated with no interactive prompts.
@@ -44,6 +45,7 @@ import glob
 import sys
 import re
 import time
+import traceback
 
 
 def print_step(n: int, description: str) -> None:
@@ -235,14 +237,76 @@ def push_contents_and_tags() -> None:
     print("Pushes to origins completed.")
 
 
+def create_github_release() -> None:
+    """Step 5: Create a GitHub Release from the new tag using `gh` CLI.
+    
+    Non-fatal: any Exception causes release creation to be skipped,
+    script continues to remaining steps. Retries 3 times with 30s delays.
+    """
+    print_step(5, "Create GitHub Release using gh CLI (non-fatal, 3 retries)")
+    version = Path("VERSION").read_text().strip()
+    
+    try:
+        for attempt in range(3):
+            try:
+                result = subprocess.run(
+                    ["gh", "release", "create", version, "--notes", ""],
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+                print(f"GitHub Release '{version}' created.")
+                return
+            except subprocess.CalledProcessError as e:
+                error_output = e.stderr or e.output or ""
+                
+                # Check if tag already exists
+                if "tag already exists" in error_output.lower() or "already exists" in error_output.lower():
+                    print(f"INFO: GitHub Release '{version}' already exists, skipping creation.")
+                    print("Continuing with remaining steps...")
+                    return
+                
+                # Retry on failure (not last attempt)
+                if attempt < 2:
+                    print(f"Attempt {attempt + 1} failed: {error_output.strip()}")
+                    print("Waiting 30 seconds before retry...")
+                    time.sleep(30)
+                    continue
+                else:
+                    # Final attempt failed
+                    print(f"WARNING: GitHub Release creation failed after 3 attempts.")
+                    print(f"Error: {error_output.strip()}")
+                    print("Continuing with remaining steps...")
+                    return
+                    
+    except FileNotFoundError:
+        print("WARNING: 'gh' CLI not found. Skipping GitHub Release creation.")
+        print("Continuing with remaining steps...")
+        return
+    except subprocess.TimeoutExpired as e:
+        print(f"WARNING: GitHub Release creation timed out: {e}")
+        print("Continuing with remaining steps...")
+        return
+    except Exception as e:
+        # Catch all other unexpected exceptions with full traceback
+        tb_str = traceback.format_exc()
+        print(f"WARNING: Unexpected error creating GitHub Release:")
+        print(f"Exception type: {type(e).__name__}")
+        print(f"Exception message: {e}")
+        print("Stack trace:")
+        print(tb_str)
+        print("Continuing with remaining steps...")
+        return
+
+
 def upload_pypi() -> None:
-    """Step 5: Upload built packages to PyPI.
+    """Step 6: Upload built packages to PyPI.
 
     Uploads all tarballs matching qlat*.tar.gz from the build output directory.
     Uses twine with --skip-existing to safely handle re-runs without failing
     on already-uploaded versions.
     """
-    print_step(5, "Upload tarballs to PyPI (twine)")
+    print_step(6, "Upload tarballs to PyPI (twine)")
     tar_pattern = str(Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2" /
                           "share" / "qlat-pypi" / "qlat*.tar.gz")
     tarballs = glob.glob(tar_pattern)
@@ -255,7 +319,7 @@ def upload_pypi() -> None:
 
 
 def bump_version() -> None:
-    """Step 6: Bump version for next development cycle.
+    """Step 7: Bump version for next development cycle.
 
     Increments the minor version with a cap at 99; when minor wraps from 99→0, increment major:
     v0.99 → v1.00, v1.99 → v2.00, etc.
@@ -265,7 +329,7 @@ def bump_version() -> None:
 
     Exits with error if VERSION format is not recognized.
     """
-    print_step(6, "Bump minor version, update sources and nix q-pkgs")
+    print_step(7, "Bump minor version, update sources and nix q-pkgs")
     version = Path("VERSION").read_text().strip()
     m = re.match(r"^v?(\d+)\.(\d+)$", version)
     if not m:
@@ -296,13 +360,13 @@ def bump_version() -> None:
 
 
 def verify_new_build() -> None:
-    """Step 7: Verify the new version builds successfully.
+    """Step 8: Verify the new version builds successfully.
 
     Re-runs the build script with the bumped version.
     Catches version-related build breakage immediately before committing.
     """
     result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
-    print_step(7, "Verify new build by rebuilding packages")
+    print_step(8, "Verify new build by rebuilding packages")
     mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
     subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh"], check=True)
     if not result_link.exists():
@@ -320,12 +384,12 @@ def verify_new_build() -> None:
 
 
 def commit_bump() -> None:
-    """Step 8: Commit the version bump changes.
+    """Step 9: Commit the version bump changes.
 
     Creates a single atomic commit recording all version bump changes
     (VERSION file, source files, nix config) with informative message including new version.
     """
-    print_step(8, "Commit the version bump changes")
+    print_step(9, "Commit the version bump changes")
     new_version = Path("VERSION").read_text().strip()
     subprocess.run(["git", "add", "-A"], check=True)
     subprocess.run(["git", "commit", "-m", f"Upgrade version to {new_version}"], check=True)
@@ -333,12 +397,12 @@ def commit_bump() -> None:
 
 
 def push_bump() -> None:
-    """Step 9: Push the version bump to both remotes.
+    """Step 10: Push the version bump to both remotes.
 
     Pushes the version bump commit to origin (GitHub) and gitee (mirror).
     Includes retry logic for gitee (up to 3 attempts, 30s sleep).
     """
-    print_step(9, "Push the bump to remotes (origin and gitee)")
+    print_step(10, "Push the bump to remotes (origin and gitee)")
     subprocess.run(["git", "push", "origin"], check=True)
     # Push gitee with retries
     for attempt in range(3):
@@ -353,18 +417,19 @@ def push_bump() -> None:
 
 
 def main() -> None:
-    """Main entry point: runs all 9 release steps sequentially.
+    """Main entry point: runs all 10 release steps sequentially.
 
     Executes the complete release procedure:
         1. check_environment
         2. build_pull_loop
         3. tag_version
         4. push_contents_and_tags
-        5. upload_pypi
-        6. bump_version
-        7. verify_new_build
-        8. commit_bump
-        9. push_bump
+        5. create_github_release
+        6. upload_pypi
+        7. bump_version
+        8. verify_new_build
+        9. commit_bump
+        10. push_bump
 
     Prints "SUCCESS" on completion, exits with non-zero on any failure.
     """
@@ -374,6 +439,7 @@ def main() -> None:
     build_pull_loop()
     tag_version()
     push_contents_and_tags()
+    create_github_release()
     upload_pypi()
     bump_version()
     verify_new_build()
