@@ -346,6 +346,7 @@ let
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
         lsqfit = pkgs.python3.pkgs.callPackage ./lsqfit.nix { gvar = gvar; vegas = vegas; };
         corrfitter = pkgs.python3.pkgs.callPackage ./corrfitter.nix { lsqfit = lsqfit; gvar = gvar; };
+        qcd_ml = pkgs.python3.pkgs.callPackage ./qcd_ml.nix {};
         # diffusers = pkgs.python3.pkgs.callPackage
         # (import "${n-pkgs-src}/pkgs/development/python-modules/diffusers/default.nix") {
         #   jax = jax; diffusers = diffusers;
@@ -541,6 +542,7 @@ let
       jaxlib
       gvar
       vegas
+      qcd_ml
       lsqfit
       corrfitter
       meson
