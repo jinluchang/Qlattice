@@ -133,8 +133,12 @@ def build_pull_loop() -> None:
 
     Exits on build failure, missing artifacts, or merge conflicts.
     """
+    result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
     print_step(2, "Build loop: build tarballs, verify, pull and re-build on updates")
     while True:
+        # Record symlink mtime before build
+        mtime_before = result_link.stat().st_mtime if result_link.exists() else 0
+
         # Step A: build
         try:
             subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh"], check=True)
@@ -142,9 +146,17 @@ def build_pull_loop() -> None:
             print("ERROR: Build script failed.")
             sys.exit(1)
 
-        # Step B: verify artifacts exist
-        tar_pattern = str(Path.home() / "qlat-build" / "nix" / "result-*-q-pkgs" /
-                          "share" / "qlat-pypi" / "qlat*.tar.gz")
+        # Step B: verify build script actually recreated the artifact
+        if not result_link.exists():
+            print(f"ERROR: {result_link} does not exist after build.")
+            sys.exit(1)
+        mtime_after = result_link.stat().st_mtime
+        if mtime_after == mtime_before:
+            print(f"ERROR: {result_link} was not updated by build script (stale symlink).")
+            sys.exit(1)
+
+        # Step C: verify artifacts exist
+        tar_pattern = str(result_link / "share" / "qlat-pypi" / "qlat*.tar.gz")
         tarballs = glob.glob(tar_pattern)
         if not tarballs:
             print(f"ERROR: Build artifacts not found matching {tar_pattern}")
@@ -304,8 +316,17 @@ def verify_new_build() -> None:
     Re-runs the build script with the bumped version.
     Catches version-related build breakage immediately before committing.
     """
+    result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
     print_step(7, "Verify new build by rebuilding packages")
+    mtime_before = result_link.stat().st_mtime if result_link.exists() else 0
     subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh"], check=True)
+    if not result_link.exists():
+        print(f"ERROR: {result_link} does not exist after build.")
+        sys.exit(1)
+    mtime_after = result_link.stat().st_mtime
+    if mtime_after == mtime_before:
+        print(f"ERROR: {result_link} was not updated by build script (stale symlink).")
+        sys.exit(1)
     print("New build verification completed.")
 
 
