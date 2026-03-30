@@ -121,8 +121,8 @@ def build_pull_loop() -> None:
     result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
     print_step(2, "Build loop: build tarballs, verify, pull and re-build on updates")
     while True:
-        # Record symlink mtime before build
-        mtime_before = result_link.stat().st_mtime if result_link.exists() else 0
+        # Record symlink ltime before build (lstat to get symlink's own mtime, not target's)
+        mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
 
         # Step A: build
         try:
@@ -139,7 +139,7 @@ def build_pull_loop() -> None:
         if not target.exists():
             print(f"ERROR: {result_link} symlink target {target} does not exist.")
             sys.exit(1)
-        mtime_after = result_link.stat().st_mtime
+        mtime_after = result_link.lstat().st_mtime
         if mtime_after == mtime_before:
             print(f"ERROR: {result_link} was not updated by build script (stale symlink).")
             sys.exit(1)
@@ -301,7 +301,7 @@ def verify_new_build() -> None:
     """
     result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
     print_step(7, "Verify new build by rebuilding packages")
-    mtime_before = result_link.stat().st_mtime if result_link.exists() else 0
+    mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
     subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh"], check=True)
     if not result_link.exists():
         print(f"ERROR: {result_link} does not exist after build.")
@@ -310,7 +310,7 @@ def verify_new_build() -> None:
     if not target.exists():
         print(f"ERROR: {result_link} symlink target {target} does not exist.")
         sys.exit(1)
-    mtime_after = result_link.stat().st_mtime
+    mtime_after = result_link.lstat().st_mtime
     if mtime_after == mtime_before:
         print(f"ERROR: {result_link} was not updated by build script (stale symlink).")
         sys.exit(1)
