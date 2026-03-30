@@ -323,11 +323,12 @@ def commit_bump() -> None:
     """Step 8: Commit the version bump changes.
 
     Creates a single atomic commit recording all version bump changes
-    (VERSION file, source files, nix config) with message "Upgrade version".
+    (VERSION file, source files, nix config) with informative message including new version.
     """
     print_step(8, "Commit the version bump changes")
+    new_version = Path("VERSION").read_text().strip()
     subprocess.run(["git", "add", "-A"], check=True)
-    subprocess.run(["git", "commit", "-m", "Upgrade version"], check=True)
+    subprocess.run(["git", "commit", "-m", f"Upgrade version to {new_version}"], check=True)
     print("Commit created.")
 
 
