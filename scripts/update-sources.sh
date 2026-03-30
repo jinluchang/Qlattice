@@ -29,7 +29,7 @@ sed -i "s/^    version=\".*\" # default version$/    version=\"v$version-current
 
 echo "Version info updated."
 
-) || echo "Update version not successful."
+) || exit 1
 
 (
 
@@ -42,7 +42,7 @@ for dir in $(find qlat* examples-* -type d -name depend-qlat) ; do
     fi
 done
 
-) || echo "Update 'depend-qlat/meson.build' not successful"
+) || exit 1
 
 (
 
@@ -55,7 +55,7 @@ for dir in $(find qlat* examples-* -type d -name depend-grid) ; do
     fi
 done
 
-) || echo "Update 'depend-grid/meson.build' not successful"
+) || exit 1
 
 (
 
