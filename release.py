@@ -47,11 +47,9 @@ import re
 import time
 import traceback
 
-
 def print_step(n: int, description: str) -> None:
     """Print step number and description for user feedback."""
     print(f"Step {n}: {description}")
-
 
 def check_environment() -> None:
     """Step 1: Verify the environment is suitable for release.
@@ -107,7 +105,6 @@ def check_environment() -> None:
 
     print("Environment checks passed.")
 
-
 def build_pull_loop() -> None:
     """Step 2: Build tarballs with pull-to-rebuild loop.
 
@@ -128,7 +125,7 @@ def build_pull_loop() -> None:
 
         # Step A: build
         try:
-            subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh"], check=True)
+            subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh", "-j", "4", "--cores", "16"], check=True)
         except subprocess.CalledProcessError:
             print("ERROR: Build script failed.")
             sys.exit(1)
@@ -175,7 +172,6 @@ def build_pull_loop() -> None:
             break
     print("Build loop completed.")
 
-
 def tag_version() -> None:
     """Step 3: Create a git tag for the current version.
 
@@ -194,7 +190,6 @@ def tag_version() -> None:
         sys.exit(1)
     subprocess.run(["git", "tag", version], check=True)
     print(f"Tagged {version}.")
-
 
 def push_contents_and_tags() -> None:
     """Step 4: Push commit and tags to both remotes.
@@ -236,16 +231,15 @@ def push_contents_and_tags() -> None:
 
     print("Pushes to origins completed.")
 
-
 def create_github_release() -> None:
     """Step 5: Create a GitHub Release from the new tag using `gh` CLI.
-    
+
     Non-fatal: any Exception causes release creation to be skipped,
     script continues to remaining steps. Retries 3 times with 30s delays.
     """
     print_step(5, "Create GitHub Release using gh CLI (non-fatal, 3 retries)")
     version = Path("VERSION").read_text().strip()
-    
+
     try:
         for attempt in range(3):
             try:
@@ -259,13 +253,13 @@ def create_github_release() -> None:
                 return
             except subprocess.CalledProcessError as e:
                 error_output = e.stderr or e.output or ""
-                
+
                 # Check if tag already exists
                 if "tag already exists" in error_output.lower() or "already exists" in error_output.lower():
                     print(f"INFO: GitHub Release '{version}' already exists, skipping creation.")
                     print("Continuing with remaining steps...")
                     return
-                
+
                 # Retry on failure (not last attempt)
                 if attempt < 2:
                     print(f"Attempt {attempt + 1} failed: {error_output.strip()}")
@@ -278,7 +272,7 @@ def create_github_release() -> None:
                     print(f"Error: {error_output.strip()}")
                     print("Continuing with remaining steps...")
                     return
-                    
+
     except FileNotFoundError:
         print("WARNING: 'gh' CLI not found. Skipping GitHub Release creation.")
         print("Continuing with remaining steps...")
@@ -298,7 +292,6 @@ def create_github_release() -> None:
         print("Continuing with remaining steps...")
         return
 
-
 def upload_pypi() -> None:
     """Step 6: Upload built packages to PyPI.
 
@@ -316,7 +309,6 @@ def upload_pypi() -> None:
     cmd = ["twine", "upload", "--skip-existing"] + tarballs
     subprocess.run(cmd, check=True)
     print("PyPI upload completed.")
-
 
 def bump_version() -> None:
     """Step 7: Bump version for next development cycle.
@@ -358,7 +350,6 @@ def bump_version() -> None:
     q_pkgs_nix.write_text(text_new)
     print(f"Version bumped to {new_version}, version-pypi updated to {new_pypi_version}.")
 
-
 def verify_new_build() -> None:
     """Step 8: Verify the new version builds successfully.
 
@@ -368,7 +359,7 @@ def verify_new_build() -> None:
     result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
     print_step(8, "Verify new build by rebuilding packages")
     mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
-    subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh"], check=True)
+    subprocess.run(["./nixpkgs/build-many-qlat-pkgs-core.sh", "-j", "4", "--cores", "16"], check=True)
     if not result_link.exists():
         print(f"ERROR: {result_link} does not exist after build.")
         sys.exit(1)
@@ -382,7 +373,6 @@ def verify_new_build() -> None:
         sys.exit(1)
     print("New build verification completed.")
 
-
 def commit_bump() -> None:
     """Step 9: Commit the version bump changes.
 
@@ -394,7 +384,6 @@ def commit_bump() -> None:
     subprocess.run(["git", "add", "-A"], check=True)
     subprocess.run(["git", "commit", "-m", f"Upgrade version to {new_version}"], check=True)
     print("Commit created.")
-
 
 def push_bump() -> None:
     """Step 10: Push the version bump to both remotes.
@@ -414,7 +403,6 @@ def push_bump() -> None:
         print("ERROR: git push gitee failed after retries.")
         sys.exit(1)
     print("Push bump completed.")
-
 
 def main() -> None:
     """Main entry point: runs all 10 release steps sequentially.
@@ -446,7 +434,6 @@ def main() -> None:
     commit_bump()
     push_bump()
     print("SUCCESS")
-
 
 if __name__ == "__main__":
     main()
