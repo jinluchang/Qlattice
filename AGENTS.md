@@ -18,9 +18,16 @@ Build system: **Nix** which calls **Meson** to build the packages (via `meson-py
 
 Tests live in `examples-py/` (Python) and `examples-cpp/` (C++). The testing framework is **log-comparison**: each test prints `CHECK:` lines, which are compared against committed reference `.log` files.
 
-### Build and run all tests
+### Build
+
 ```bash
-./nixpkgs/build-many-qlat-pkgs-core.sh -j 4 --cores 31
+nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-jhub-env -j 4 --cores 31
+```
+
+### Run all tests
+
+```bash
+nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
 ```
 
 ### Run a single Python test
