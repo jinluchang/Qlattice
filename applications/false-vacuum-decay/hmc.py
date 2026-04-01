@@ -351,7 +351,7 @@ def main():
     measure_offset_L = False
     measure_offset_M = False
     #
-    version = "14-2"
+    version = "14-3"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10
@@ -409,7 +409,7 @@ def main():
             raise Exception("Invalid arguments: use \n\
                             -a for alpha, \n\
                             -b for beta, \n\
-                            -F for the energy difference between the minimum of the true vacuum and the minimum of the false vacuum, \n\
+                            -F for the energy difference between the minimum of the true vacuum minus the minimum of the false vacuum, \n\
                             -o to offset the barrier location in V_FV, \n\
                             -O to offset the barrier location in V_TV, \n\
                             -B for the barrier strength used in H_FV and H_TV, \n\

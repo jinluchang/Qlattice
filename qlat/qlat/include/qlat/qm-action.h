@@ -266,13 +266,15 @@ struct QMAction {
   // Quantum Mechanics Potential========================================
   inline RealD order_param(const Vector<RealD> x)
   {
-    return x[0]*x[0] + x[1]*x[1];
+    if(x[0]<0) return x[1]*x[1];
+    else return x[0]*x[0] + x[1]*x[1];
   }
   
   inline RealD d_order_param(const Vector<RealD> x, const int idx)
   {
-    if (idx==0) return 2.0*x[0];
-    else return 2.0*x[1];
+    if (idx==1) return 2.0*x[1];
+    else if (x[0]<0) return 0;
+    else return 2.0*x[0];
   }
 
   inline RealD V_phi4(const RealD x, const RealD y)
