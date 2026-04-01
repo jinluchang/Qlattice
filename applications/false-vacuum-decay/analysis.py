@@ -22,7 +22,7 @@ class Analysis:
     
     def get_M_L_blocks(self, Ms, Ls, params, der=False):
         params["M"] = 0.0
-        params["L"] = 1.0
+        params["L"] = 0.0
         sf_ML = self.data.get_indices(params)[0]
         sfs_M = self.data.replace_params(sf_ML, ["M", "L"], [[M, 1.0] for M in Ms])
         sfs_L = self.data.replace_params(sf_ML, ["M", "L"], [[1.0, L] for L in Ls])
@@ -183,7 +183,7 @@ class Analysis:
         plt.xlabel(param)
         return xs, expS, expS_errs
     
-    def plot_expS(self, delta_action, get_x=float, fact=1.0, label="p", filter_x=lambda x: False):
+    def plot_expS(self, delta_action, get_x=lambda x: float, fact=1.0, label="p", filter_x=lambda x: False):
         expS = []
         expS_errs = []
         x = []
@@ -219,10 +219,11 @@ class Analysis:
             last_params, last_expS, errs = self.plot_expS(delta_actions[sf][key], get_x, fact, f"${param}_i={get_x(p)}$", lambda x: filter_x(x,p))
     
     def plot_expS_vs_M(self, params={}):
-        sfs = list(filter(lambda x: self.data.params[x]["M"]!="1.0", list(self.data.get_indices(params))))
+        sfs = list(filter(lambda x: self.data.params[x]["L"]=="1.0", list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "M", sfs, "M")
     
-    def plot_expS_vs_L(self, params={}, f=lambda x: self.data.params[x]["L"]!="1.0", get_x=lambda x: float):
+    def plot_expS_vs_L(self, params={}, f=None, get_x=float):
+        if(f==None): f = lambda x: self.data.params[x]["M"]=="1.0"
         sfs = list(filter(f, list(self.data.get_indices(params))))
         self.plot_expS_extend(self.data.delta_actions, "L", sfs, "L", get_x=get_x)
     
@@ -250,29 +251,43 @@ class Analysis:
 
     def plot_potential(self, params, xmin=-1, xmax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="grey", idx=0):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVmin"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ts = np.arange(0, params["Nt"], 1)
         dt = float(self.data.params[sf]["dt"])
         if(idx==0):
-            V_data = np.array([[action.V(x,0,t) - action.V(0,0,1) for t in ts[:-1]] for x in xs[:-1]])
+            V_data = np.array([[action.V([x,0],t) - action.V([0,0],1) for t in ts[:-1]] for x in xs[:-1]])
         else:
-            V_data = np.array([[action.V(0,x,t) - action.V(0,0,1) for t in ts[:-1]] for x in xs[:-1]])
+            V_data = np.array([[action.V([0,x],t) - action.V([0,0],1) for t in ts[:-1]] for x in xs[:-1]])
         if(fig==None or ax==None):
             fig, ax = plt.subplots()
         pcm = ax.pcolormesh(ts, xs, np.roll(V_data,int(ts.shape[0]/2),axis=1), cmap=matplotlib.colormaps[cmap], vmin=vmin, vmax=vmax)
         fig.colorbar(pcm, ax=ax)
     
-    def plot_potential_2d(self, params, xmin=-1, xmax=2, ymin=-1, ymax=2, fig=None, ax=None, vmin=0, vmax=3, cmap="Blues", idx=0):
+    def plot_potential_2d(self, params, t=1, xmin=-1, xmax=2, ymin=-1, ymax=2, ax=None, vmin=0, vmax=3, cmap="Blues", idx=0):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVmin"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ys = np.arange(ymin,ymax,0.01)
         xs, ys = np.meshgrid(xs, ys)
-        V_data = np.array([[action.V(xs[i][j],ys[i][j],1) - action.V(0,0,1) for i in range(len(xs))] for j in range(len(ys))])
-        if(fig==None or ax==None):
+        V_data = np.array([[action.V([xs[j,i],ys[j,i]],t) - action.V([0,0],1) for i in range(xs.shape[1])] for j in range(ys.shape[0])])
+        if(ax==None):
             fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-        ax.plot_surface(xs, ys, V_data, vmin=vmin)#, cmap=matplotlib.colormaps[cmap])
+        ax.plot_surface(xs, ys, V_data, axlim_clip=True, vmin=vmin, vmax=vmax, cmap=matplotlib.colormaps[cmap])
+        ax.set_zlim([vmin,vmax])
+
+    def plot_paths_3d(self, params={}, t=1, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False):
+        sfs = self.data.get_indices(params)
+        if(ax==None):
+            fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        for sf in sfs:
+            count = 0
+            x = np.arange(t_offset, len(self.data.timeslices[sf][0])+t_offset)
+            for i in range(len(self.data.timeslices[sf][cutoff:end])):
+                if (i+1)%sampling_freq==0 and not filter_paths(sf,i):
+                    path = np.array(self.data.timeslices[sf][i])
+                    ax.scatter(xs=path[t,0], ys=path[t,1], zs=0, alpha=alpha, color=color)
+                    count+=1
 
     def check_data(self, n_traj = 50000):
         #self.plot_mean_path()
