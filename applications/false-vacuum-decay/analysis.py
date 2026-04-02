@@ -272,9 +272,10 @@ class Analysis:
         xs, ys = np.meshgrid(xs, ys)
         V_data = np.array([[action.V([xs[j,i],ys[j,i]],t) - action.V([0,0],1) for i in range(xs.shape[1])] for j in range(ys.shape[0])])
         if(ax==None):
-            fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-        ax.plot_surface(xs, ys, V_data, axlim_clip=True, vmin=vmin, vmax=vmax, cmap=matplotlib.colormaps[cmap])
-        ax.set_zlim([vmin,vmax])
+            fig, ax = plt.subplots()#subplot_kw={"projection": "3d"})
+        #ax.plot_surface(xs, ys, np.maximum(np.minimum(V_data,vmax),vmin), axlim_clip=True, vmin=vmin, vmax=vmax, cmap=matplotlib.colormaps[cmap])
+        ax.pcolormesh(xs, ys, np.maximum(np.minimum(V_data,vmax),vmin), vmin=vmin, vmax=vmax, cmap=matplotlib.colormaps[cmap])
+        #ax.set_zlim([vmin,vmax])
 
     def plot_paths_3d(self, params={}, t=1, sampling_freq=100, new_plot=10000, cutoff=0, end=1000000, ax=None, alpha=0.7, color="red", t_offset=0, filter_paths = lambda sf,i: False):
         sfs = self.data.get_indices(params)
@@ -286,7 +287,7 @@ class Analysis:
             for i in range(len(self.data.timeslices[sf][cutoff:end])):
                 if (i+1)%sampling_freq==0 and not filter_paths(sf,i):
                     path = np.array(self.data.timeslices[sf][i])
-                    ax.scatter(xs=path[t,0], ys=path[t,1], zs=0, alpha=alpha, color=color)
+                    ax.scatter(x=path[t,0], y=path[t,1], alpha=alpha, color=color)
                     count+=1
 
     def check_data(self, n_traj = 50000):
