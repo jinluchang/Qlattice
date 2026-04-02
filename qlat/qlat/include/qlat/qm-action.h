@@ -322,7 +322,7 @@ struct QMAction {
       if(idx==0) return dV_full_xy(x[0], x[1]/norm, idx);
       else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0], x[1]/norm, idx);
     }
-    else return return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
+    else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
   }
 
   inline RealD V_full(const Vector<RealD>& x)
