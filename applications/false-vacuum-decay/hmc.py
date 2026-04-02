@@ -351,7 +351,7 @@ def main():
     measure_offset_L = False
     measure_offset_M = False
     #
-    version = "14-3"
+    version = "14-4"
     date = datetime.datetime.now().date()
     # The number of steps to take in a single trajectory
     steps = 10

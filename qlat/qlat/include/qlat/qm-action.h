@@ -310,14 +310,19 @@ struct QMAction {
   {
     const RealD norm = std::pow(order_param(x)/op,0.5);
     if(norm==0) return V_full_xy(op, 0);
-    return V_full_xy(x[0]/norm, x[1]/norm); // V(div(x))
+    else if(x[0]<0) return V_full_xy(x[0], x[1]/norm);
+    else return V_full_xy(x[0]/norm, x[1]/norm);
   }
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
   {
     const RealD norm = std::pow(order_param(x)/op,0.5); // div(x) = op^0.5*x_i / order_param(x)^0.5
     if(norm==0) return 0;
-    return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
+    else if(x[0]<0) {
+      if(idx==0) return dV_full_xy(x[0], x[1]/norm, idx);
+      else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0], x[1]/norm, idx);
+    }
+    else return return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
   }
 
   inline RealD V_full(const Vector<RealD>& x)
@@ -383,7 +388,7 @@ struct QMAction {
   inline RealD V_TV(const Vector<RealD>& x)
   {
     if(order_param(x) < center_bar+TV_offset)
-      return V_full_op_fixed(x,center_bar+TV_offset) + barrier_strength*(order_param(x)-center_bar-TV_offset)*(order_param(x)-center_bar-TV_offset);
+      return V_full(x) + barrier_strength*(order_param(x)-center_bar-TV_offset)*(order_param(x)-center_bar-TV_offset);
     else
       return V_full(x);
   }
@@ -391,7 +396,7 @@ struct QMAction {
   inline RealD dV_TV(const Vector<RealD>& x, const int idx)
   {
     if(order_param(x) < center_bar+TV_offset) {
-      return dV_full_op_fixed(x,center_bar+TV_offset,idx) + d_order_param(x,idx)*2.0*barrier_strength*(order_param(x)-center_bar-TV_offset);
+      return dV_full(x,idx) + d_order_param(x,idx)*2.0*barrier_strength*(order_param(x)-center_bar-TV_offset);
     }
     else return dV_full(x,idx);
   }
@@ -402,7 +407,7 @@ struct QMAction {
     // When x is low enough that epsilon is relevant, remove V_full (which
     // will be added later) to avoid ergodicity issues
     if(order_param(x)<center_bar+FV_offset) {
-      rtn += V_full_op_fixed(x, center_bar+FV_offset) - V_full(x) + barrier_strength*std::pow(center_bar+FV_offset-order_param(x), 0.5);
+      rtn += barrier_strength*std::pow(center_bar+FV_offset-order_param(x), 0.5);
     }
     return rtn;
   }
@@ -412,7 +417,7 @@ struct QMAction {
     RealD Vbar = V_FV_out(x) - V_full(x);
     RealD rtn = -((dV_FV_out(x,idx) - dV_full(x,idx))*exp(-(Vbar + epsilon)*dt))/(1-exp(-(Vbar + epsilon)*dt));
     if(order_param(x)<center_bar+FV_offset) {
-      rtn += dV_full_op_fixed(x,center_bar+FV_offset,idx) - dV_full(x,idx) - d_order_param(x,idx)*0.5*barrier_strength/std::pow(center_bar+FV_offset-order_param(x), 0.5);
+      rtn += - d_order_param(x,idx)*0.5*barrier_strength/std::pow(center_bar+FV_offset-order_param(x), 0.5);
     }
     return rtn;
   }
