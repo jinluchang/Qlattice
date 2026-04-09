@@ -120,6 +120,9 @@ else
             fi
         done
     fi
+    if [ -d "/run/current-system/sw/lib" ] ; then
+        add-to-colon-list LD_LIBRARY_PATH "/run/current-system/sw/lib"
+    fi
 fi
 
 if [ -n "$NVCC_ARCH" ] ; then
