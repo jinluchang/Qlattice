@@ -626,6 +626,7 @@ let
         openssh
         findutils
         clang-tools
+        ruff
         m4
         git
         gnumake
