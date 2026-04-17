@@ -228,7 +228,9 @@ let
       libcublas
       libnpp
       cudnn
+      nccl
       cudatoolkit
+      fabricmanager
       ;
     } else {}
     );
