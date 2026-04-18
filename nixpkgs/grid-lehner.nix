@@ -33,7 +33,8 @@ in stdenv.mkDerivation rec {
   pname = "Grid-lehner";
   # version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2"; # 2025/04/17
   # version = "faed6d3e9d8bfa45326a2720b8916228b941b69b"; # 2025/12/12
-  version = "afd4423bef303fd176bcdb9f3ea89255cba06d53"; # 2026/03/11
+  # version = "afd4423bef303fd176bcdb9f3ea89255cba06d53"; # 2026/03/11
+  version = "e13370f81f553b06b62dd7c2aaf20677b5d16ede"; # 2026/04/18
 
   src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/grid" else "https://github.com/lehner/Grid";
