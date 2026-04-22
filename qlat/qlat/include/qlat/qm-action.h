@@ -11,7 +11,7 @@ struct QMAction {
   RealD FV_offset;
   RealD TV_offset;
   RealD center_bar;
-  RealD V_min_FV;
+  RealD V_FV_min;
   RealD barrier_strength;
   RealD L;
   RealD M;
@@ -34,7 +34,7 @@ struct QMAction {
     FV_offset = 0.0;
     TV_offset = 0.0;
     center_bar = 1.0;
-    V_min_FV = 0.0;
+    V_FV_min = 0.0;
     barrier_strength = 1.0;
     L = 1.0;
     M = 0.0;
@@ -58,7 +58,7 @@ struct QMAction {
     alpha = alpha_;
     beta = beta_;
     //start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
-    V_min_FV = V_FV_min_;//V_phi4(start_TV,0);
+    V_FV_min = V_FV_min_;//V_phi4(start_TV,0);
     FV_offset = FV_offset_;
     TV_offset = TV_offset_;
     // center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
@@ -296,13 +296,13 @@ struct QMAction {
   inline RealD V_full_xy(const RealD x, const RealD y)
   {
     const RealD rtn = V_phi4(x,y);
-    if(rtn<V_min_FV) return 0;
-    else return rtn - V_min_FV;
+    if(rtn<-V_FV_min) return 0;
+    else return rtn + V_FV_min;
   }
 
   inline RealD dV_full_xy(const RealD x, const RealD y, const int idx)
   {
-    if(V_phi4(x,y)<V_min_FV) return 0;
+    if(V_phi4(x,y)<-V_FV_min) return 0;
     else return dV_phi4(x,y,idx);
   }
   
@@ -310,7 +310,7 @@ struct QMAction {
   {
     // Returns the value of the potential at the top of the physical 
     // barrier separating the false and true vacua
-    return beta/alpha/alpha - V_min_FV;
+    return beta/alpha/alpha + V_FV_min;
   }
 
   inline RealD V_full_op_fixed(const Vector<RealD>& x, RealD op)
@@ -426,14 +426,14 @@ struct QMAction {
   inline RealD V_FV_floored(const Vector<RealD>& x, const RealD P)
   {
     RealD v_fv_mid = V_FV_mid(x);
-    RealD floor = V_min_FV + P*(V_bar_max()-V_min_FV);
+    RealD floor = V_FV_min + P*(V_bar_max()-V_FV_min);
     if(v_fv_mid < floor) return floor;
     else return v_fv_mid;
   }
   
   inline RealD dV_FV_floored(const Vector<RealD>& x, const RealD P, const int idx)
   {
-    RealD floor = V_min_FV + P*(V_bar_max()-V_min_FV);
+    RealD floor = V_FV_min + P*(V_bar_max()-V_FV_min);
     if(V_FV_mid(x) < floor) return 0;
     else return dV_FV_mid(x, idx);
   }
