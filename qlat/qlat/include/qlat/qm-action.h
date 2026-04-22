@@ -305,20 +305,25 @@ struct QMAction {
     if(V_phi4(x,y)<V_min_FV) return 0;
     else return dV_phi4(x,y,idx);
   }
+  
+  inline RealD V_bar_max()
+  {
+    // Returns the value of the potential at the top of the physical 
+    // barrier separating the false and true vacua
+    return beta/alpha/alpha - V_min_FV;
+  }
 
   inline RealD V_full_op_fixed(const Vector<RealD>& x, RealD op)
   {
     const RealD norm = std::pow(order_param(x)/op,0.5);
-    if(norm==0) return V_full_xy(op, 0);
-    else if(x[0]<0) return V_full_xy(x[0], x[1]/norm);
+    if(x[0]<0) return V_full_xy(x[0], x[1]/norm);
     else return V_full_xy(x[0]/norm, x[1]/norm);
   }
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
   {
     const RealD norm = std::pow(order_param(x)/op,0.5); // div(x) = op^0.5*x_i / order_param(x)^0.5
-    if(norm==0) return 0;
-    else if(x[0]<0) {
+    if(x[0]<0) {
       if(idx==0) return dV_full_xy(x[0], x[1]/norm, idx);
       else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0], x[1]/norm, idx);
     }
@@ -367,22 +372,6 @@ struct QMAction {
       return dV_full_op_fixed(x,center_bar,idx) + d_order_param(x,idx)*2.0*barrier_strength*(order_param(x)-center_bar);
     }
     else return dV_full(x,idx);
-  }
-
-  inline RealD V_FV_mid_op_fixed(const Vector<RealD>& x, RealD op)
-  {
-    if(op>center_bar)
-      return V_full_op_fixed(x,center_bar) + barrier_strength*(op-center_bar)*(op-center_bar);
-    else
-      return V_full_op_fixed(x,op);
-  }
-
-  inline RealD dV_FV_mid_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
-  {
-    if(op>center_bar)
-      return dV_full_op_fixed(x,center_bar,idx);
-    else
-      return dV_full_op_fixed(x,op,idx);
   }
 
   inline RealD V_TV(const Vector<RealD>& x)
@@ -437,15 +426,15 @@ struct QMAction {
   inline RealD V_FV_floored(const Vector<RealD>& x, const RealD P)
   {
     RealD v_fv_mid = V_FV_mid(x);
-    RealD floor = V_min_FV + P*(V_FV_mid_op_fixed(x,center_bar+FV_offset)-V_min_FV);
+    RealD floor = V_min_FV + P*(V_bar_max()-V_min_FV);
     if(v_fv_mid < floor) return floor;
     else return v_fv_mid;
   }
   
   inline RealD dV_FV_floored(const Vector<RealD>& x, const RealD P, const int idx)
   {
-    RealD floor = V_min_FV + P*(V_FV_mid_op_fixed(x,center_bar+FV_offset)-V_min_FV);
-    if(V_FV_mid(x) < floor) return P*dV_FV_mid_op_fixed(x,center_bar+FV_offset,idx);
+    RealD floor = V_min_FV + P*(V_bar_max()-V_min_FV);
+    if(V_FV_mid(x) < floor) return 0;
     else return dV_FV_mid(x, idx);
   }
   
