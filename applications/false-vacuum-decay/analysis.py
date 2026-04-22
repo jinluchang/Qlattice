@@ -266,7 +266,8 @@ class Analysis:
     
     def plot_potential_2d(self, params, t=1, xmin=-1, xmax=2, ymin=-1, ymax=2, ax=None, vmin=0, vmax=3, cmap="Blues", idx=0):
         sf = self.data.get_indices(params)[0]
-        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVmin"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), float(self.data.params[sf]["eps"]), int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
+        float(self.data.params[sf]["eps"])
+        action = q.QMAction(float(self.data.params[sf]["alpha"]), float(self.data.params[sf]["beta"]), float(self.data.params[sf]["FVmin"]), float(self.data.params[sf]["FVoff"]), float(self.data.params[sf]["TVoff"]), float(self.data.params[sf]["bar"]), float(self.data.params[sf]["L"]), float(self.data.params[sf]["M"]), 10, int(self.data.params[sf]["tFVout"]), int(self.data.params[sf]["tFVmid"]), float(self.data.params[sf]["dt"]), self.data.params[sf]["offL"]=="True", self.data.params[sf]["offM"]=="True")
         xs = np.arange(xmin,xmax,0.01)
         ys = np.arange(ymin,ymax,0.01)
         xs, ys = np.meshgrid(xs, ys)
@@ -274,6 +275,7 @@ class Analysis:
         if(ax==None):
             fig, ax = plt.subplots()#subplot_kw={"projection": "3d"})
         #ax.plot_surface(xs, ys, np.maximum(np.minimum(V_data,vmax),vmin), axlim_clip=True, vmin=vmin, vmax=vmax, cmap=matplotlib.colormaps[cmap])
+        print(np.any(np.isnan(V_data)))
         ax.pcolormesh(xs, ys, np.maximum(np.minimum(V_data,vmax),vmin), vmin=vmin, vmax=vmax, cmap=matplotlib.colormaps[cmap])
         #ax.set_zlim([vmin,vmax])
 
