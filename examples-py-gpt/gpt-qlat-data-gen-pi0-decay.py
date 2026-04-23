@@ -12,8 +12,6 @@ import qlat_gpt as qg
 from qlat_scripts.v1 import *
 from auto_contractor.operators import *
 
-is_cython = False
-
 # ----
 
 load_path_list[:] = [
@@ -28,45 +26,165 @@ load_path_list[:] = [
 
 is_cython = not is_test()
 
+# is_cython = True
+
+pname = "pi0_decay"
+
 # ----
 
 @q.timer
-def get_cexpr_meson_corr():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
+def get_cexpr_meson_corr(is_both_prop=True):
+    """
+    """
+    if is_both_prop:
+        fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_src_src"
+    else:
+        fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_snk_src"
     def calc_cexpr():
         diagram_type_dict = dict()
         diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type1'
-        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
-        exprs = [
+        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = 'Type2'
+        diagram_type_dict[((('x_1', 'x_2'), 3),)] = 'TypeB1'
+        exprs_1_list = [
                 mk_fac(1) + f"1",
-                mk_pi_p("x_2", True)    * mk_pi_p("x_1")             + f"pi+^dag(0) * pi+(-tsep)",
-                mk_k_p("x_2", True)     * mk_k_p("x_1")              + f"K+^dag(0) * K+(-tsep)",
-                mk_sw5("x_2")           * mk_pi_p("x_1")             + f"sw5(0) * pi+(-tsep)",
-                mk_sw5("x_2")           * mk_k_p("x_1")              + f"sw5(0) * K+(-tsep)",
-                mk_sw5("x_2")           * mk_j5pi_mu("x_1", 3, True) + f"sw5(0) * j5pi_t^dag(-tsep)",
-                mk_sw5("x_2")           * mk_j5k_mu("x_1", 3, True)  + f"sw5(0) * j5k_t^dag(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_pi_p("x_1")             + f"jw_a_t(0) * pi+(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_k_p("x_1")              + f"jw_a_t(0) * K+(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_j5pi_mu("x_1", 3, True) + f"jw_a_t(0) * j5pi_t^dag(-tsep)",
-                mk_jw_a_mu("x_2", 3)    * mk_j5k_mu("x_1", 3, True)  + f"jw_a_t(0) * j5k_t^dag(-tsep)",
-                mk_a0_p("x_2", True)    * mk_a0_p("x_1")             + f"a0+^dag(0) * a0+(-tsep)",
-                mk_kappa_p("x_2", True) * mk_kappa_p("x_1")          + f"kappa+^dag(0) * kappa+(-tsep)",
-                mk_j_mu("x_2", 3)       * mk_j_mu("x_1", 3)          + f"j_t(0) * j_t(-tsep)",
-                sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
-                + f"j_mu(0) * j_mu(-tsep)",
-                sum([ mk_jw_a_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(4) ])
-                + f"jw_a_mu(0) * j5pi_mu^dag(-tsep)",
-                sum([ mk_jw_a_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4) ])
-                + f"jw_a_mu(0) * j5k_mu^dag(-tsep)",
                 ]
+        exprs_12_corr_list = []
+        exprs_corr_list = []
+        exprs_b_corr_list = []
+        exprs_12_corr_list += [
+                mk_j_mu("x_2", 3)                * mk_j_mu("x_1", 3)               + f"j_t(0) * j_t(-tsep)",
+                mk_jl_mu("x_2", 3)               * mk_jl_mu("x_1", 3)              + f"jl_t(0) * jl_t(-tsep)",
+                mk_js_mu("x_2", 3)               * mk_js_mu("x_1", 3)              + f"js_t(0) * js_t(-tsep)",
+                sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(3) ])
+                + f"j_i(0) * j_i(-tsep)",
+                sum([ mk_jl_mu("x_2", mu) * mk_jl_mu("x_1", mu) for mu in range(3) ])
+                + f"jl_i(0) * jl_i(-tsep)",
+                sum([ mk_js_mu("x_2", mu) * mk_js_mu("x_1", mu) for mu in range(3) ])
+                + f"js_i(0) * js_i(-tsep)",
+                ]
+        exprs_corr_list += [
+                mk_a0_p("x_2", True)             * mk_a0_p("x_1")                  + f"a0+^dag(0) * a0+(-tsep)",
+                mk_jk_mu("x_2", 3, True)         * mk_jk_mu("x_1", 3)              + f"jk_t^dag(0) * jk_t(-tsep)",
+                sum([ mk_jk_mu("x_2", mu, True) * mk_jk_mu("x_1", mu) for mu in range(3) ])
+                + f"jk_i^dag(0) * jk_i(-tsep)",
+                sum([ mk_j5pi_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(3) ])
+                + f"j5pi_i(0) * j5pi_i^dag(-tsep)",
+                sum([ mk_j5k_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(3) ])
+                + f"j5k_i(0) * j5k_i^dag(-tsep)",
+                ]
+        pi_1_list = [
+                mk_pi_p("x_1")                  + f"pi+(-tsep)",
+                mk_j5pi_mu("x_1", 3, True)      + f"j5pi_t^dag(-tsep)",
+                ]
+        pi_2_list = [
+                mk_pi_p("x_2", True)            + f"pi+^dag(0)",
+                mk_j5pi_mu("x_2", 3)            + f"j5pi_t(0)",
+                ]
+        exprs_corr_list += [
+                pi_2 * pi_1
+                for pi_1 in pi_1_list
+                for pi_2 in pi_2_list
+                ]
+        kk_1_list = [
+                mk_k_p("x_1")                   + f"k+(-tsep)",
+                mk_j5k_mu("x_1", 3, True)       + f"j5k_t^dag(-tsep)",
+                ]
+        kk_2_list = [
+                mk_k_p("x_2", True)             + f"k+^dag(0)",
+                mk_j5k_mu("x_2", 3)             + f"j5k_t(0)",
+                ]
+        exprs_corr_list += [
+                kk_2 * kk_1
+                for kk_1 in kk_1_list
+                for kk_2 in kk_2_list
+                ]
+        eta_1_list = [
+                mk_eta_l("x_1")                 + f"eta_l(-tsep)",
+                mk_eta_s("x_1")                 + f"eta_s(-tsep)",
+                mk_j5eta_l_mu("x_1", 3, True)   + f"j5eta_l_t^dag(-tsep)",
+                mk_j5eta_s_mu("x_1", 3, True)   + f"j5eta_s_t^dag(-tsep)",
+                ]
+        eta_2_list = [
+                mk_eta_l("x_2", True)           + f"eta_l^dag(0)",
+                mk_eta_s("x_2", True)           + f"eta_s^dag(0)",
+                mk_j5eta_l_mu("x_2", 3)         + f"j5eta_l_t(0)",
+                mk_j5eta_s_mu("x_2", 3)         + f"j5eta_s_t(0)",
+                ]
+        exprs_12_corr_list += [
+                eta_2 * eta_1
+                for eta_1 in eta_1_list
+                for eta_2 in eta_2_list
+                ]
+        kappa_1_list = [
+                mk_kappa_p("x_1")               + f"kappa+(-tsep)",
+                mk_k_p_star_mu("x_1", 3)        + f"k_p_star_t+(-tsep)",
+                ]
+        kappa_2_list = [
+                mk_kappa_p("x_2", True)         + f"kappa+^dag(0)",
+                mk_k_p_star_mu("x_2", 3, True)  + f"k_p_star_t+^dag(0)",
+                ]
+        exprs_corr_list += [
+                kappa_2 * kappa_1
+                for kappa_1 in kappa_1_list
+                for kappa_2 in kappa_2_list
+                ]
+        for spin in [ "u3", "u1", "d1", "d3", ]:
+            omega_1_list = []
+            omega_2_list = []
+            for baryon_type in [ "std3", "pos3", ]:
+                omega_1_list += [
+                        mk_omega("x_1", spin, baryon_type) + f"omega[{baryon_type},{spin}](-tsep)",
+                        ]
+                omega_2_list += [
+                        mk_omega("x_2", spin, baryon_type, True) + f"omega[{baryon_type},{spin}]^dag(0)",
+                        ]
+            exprs_b_corr_list += [
+                    omega_2 * omega_1
+                    for omega_1 in omega_1_list
+                    for omega_2 in omega_2_list
+                    ]
+        for spin in [ "u", "d", ]:
+            proton_1_list = []
+            proton_2_list = []
+            for baryon_type in [ "std", "pos", ]:
+                proton_1_list += [
+                        mk_proton("x_1", spin, baryon_type) + f"proton[{baryon_type},{spin}](-tsep)",
+                        ]
+                proton_2_list += [
+                        mk_proton("x_2", spin, baryon_type, True) + f"proton[{baryon_type},{spin}]^dag(0)",
+                        ]
+            exprs_b_corr_list += [
+                    proton_2 * proton_1
+                    for proton_1 in proton_1_list
+                    for proton_2 in proton_2_list
+                    ]
+        if is_both_prop:
+            exprs_12_corr_list = [
+                    (expr, "Type1", "Type2",)
+                    for expr in exprs_12_corr_list
+                    ]
+        else:
+            exprs_12_corr_list = [
+                    (expr, "Type1",)
+                    for expr in exprs_12_corr_list
+                    ]
+        exprs_corr_list = [
+                (expr, None,)
+                for expr in exprs_corr_list
+                ]
+        exprs_b_corr_list = [
+                (expr, None,)
+                for expr in exprs_b_corr_list
+                ]
+        exprs = exprs_1_list + exprs_12_corr_list + exprs_corr_list + exprs_b_corr_list
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -126,13 +244,13 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     for i, en in enumerate(expr_names):
         q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_meson_corr()
+    cexpr = get_cexpr_meson_corr(False)
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -190,10 +308,10 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, ge
     for i, en in enumerate(expr_names):
         q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -257,13 +375,13 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, ge
     for i, en in enumerate(expr_names):
         q.json_results_append(f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState()))
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_meson_corr()
+    cexpr = get_cexpr_meson_corr(False)
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -372,10 +490,10 @@ def get_cexpr_meson_jt():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jt.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_jt.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_jt()
@@ -472,10 +590,10 @@ def get_cexpr_meson_m():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_m.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_m()
@@ -553,10 +671,6 @@ def get_cexpr_meson_jj():
         diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
         diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeD1'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeD2'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = None
         jj_list = [
                 sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
                 + "j_mu(x) * j_mu(0)",
@@ -617,13 +731,20 @@ def get_cexpr_meson_jj():
         exprs_self_energy = [ op * mm for mm in mm_list for op in op_list ]
         assert len(exprs_self_energy) == 60
         #
-        op_l_ope_list = [
+        op_u_ope_list = [
                 sum([ mk_vec_mu("d", "d", "x_2", mu) * mk_vec_mu("d", "d", "x_1", mu) for mu in range(4) ])
                 + "jd_mu(x) * jd_mu(0)",
                 mk_vec_mu("d", "d", "x_2", 3) * mk_vec_mu("d", "d", "x_1", 3)
                 + "jd_t(x) * jd_t(0)",
                 ]
-        assert len(op_l_ope_list) == 2
+        assert len(op_u_ope_list) == 2
+        op_d_ope_list = [
+                sum([ mk_vec_mu("d", "d", "x_2", mu) * mk_vec_mu("d", "d", "x_1", mu) for mu in range(4) ])
+                + "jd_mu(x) * jd_mu(0)",
+                mk_vec_mu("d", "d", "x_2", 3) * mk_vec_mu("d", "d", "x_1", 3)
+                + "jd_t(x) * jd_t(0)",
+                ]
+        assert len(op_d_ope_list) == 2
         op_s_ope_list = [
                 sum([ mk_vec_mu("s", "s", "x_2", mu) * mk_vec_mu("s", "s", "x_1", mu) for mu in range(4) ])
                 + "js_mu(x) * js_mu(0)",
@@ -631,159 +752,26 @@ def get_cexpr_meson_jj():
                 + "js_t(x) * js_t(0)",
                 ]
         assert len(op_s_ope_list) == 2
-        mm_l_ope_list = [
+        mm_pi_ope_list = [
                 mk_sym(1)/2 * (mk_pi_p("t_2", True) * mk_pi_p("t_1") + mk_pi_m("t_2", True) * mk_pi_m("t_1"))
                 + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
                 ]
-        assert len(mm_l_ope_list) == 1
-        mm_s_ope_list = [
+        assert len(mm_pi_ope_list) == 1
+        mm_kk_ope_list = [
                 mk_sym(1)/2 * (mk_k_p("t_2", True) * mk_k_p("t_1") + mk_k_m("t_2", True) * mk_k_m("t_1"))
                 + "K+^dag(x[t]+tsep) * K+(-tsep)",
                 ]
-        assert len(mm_s_ope_list) == 1
-        exprs_ope = [ op * mm for mm in mm_l_ope_list for op in op_l_ope_list ] + [ op * mm for mm in mm_s_ope_list for op in op_s_ope_list ]
-        assert len(exprs_ope) == 4
-        #
-        jwj_list = [
-                mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", 3)
-                + "jw_a_t(0) * j_t(x)",
-                #
-                mk_sw5("x_1") * mk_j_mu("x_2", 3)
-                + "sw5(0) * j_t(x)",
-                #
-                sum([
-                    mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", mu)
-                    for mu in range(3) ])
-                + "jw_a_i(0) * j_i(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", mu)
-                    for mu in range(3) ])
-                + "x[i] * jw_a_t(0) * j_i(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_sw5("x_1") * mk_j_mu("x_2", mu)
-                    for mu in range(3) ])
-                + "x[i] * sw5(0) * j_i(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", 3)
-                    for mu in range(3) ])
-                + "x[i] * jw_a_i(0) * j_t(x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_2[1][{nu}] - x_1[1][{nu}], size[{nu}])")
-                    * mk_jw_a_mu("x_1", mu) * mk_j_mu("x_2", nu)
-                    for mu in range(3) for nu in range(3) ])
-                + "x[i] * x[j] * jw_a_i(0) * j_j(x)",
-                #
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_jw_v_mu("x_1", nu) * mk_j_mu("x_2", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * x[i] * jw_v_j(0) * j_k(x)",
-                ]
-        assert len(jwj_list) == 8
-        jjw_list = [
-                mk_jw_a_mu("x_2", 3) * mk_j_mu("x_1", 3)
-                + "jw_a_t(0) * j_t(-x)",
-                #
-                mk_sw5("x_2") * mk_j_mu("x_1", 3)
-                + "sw5(0) * j_t(-x)",
-                #
-                sum([
-                    mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", mu)
-                    for mu in range(3) ])
-                + "jw_a_i(0) * j_i(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_2", 3) * mk_j_mu("x_1", mu)
-                    for mu in range(3) ])
-                + "-x[i] * jw_a_t(0) * j_i(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_sw5("x_2") * mk_j_mu("x_1", mu)
-                    for mu in range(3) ])
-                + "-x[i] * sw5(0) * j_i(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", 3)
-                    for mu in range(3) ])
-                + "-x[i] * jw_a_i(0) * j_t(-x)",
-                #
-                sum([
-                    mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_fac(f"rel_mod_sym(x_1[1][{nu}] - x_2[1][{nu}], size[{nu}])")
-                    * mk_jw_a_mu("x_2", mu) * mk_j_mu("x_1", nu)
-                    for mu in range(3) for nu in range(3) ])
-                + "-x[i] * -x[j] * jw_a_i(0) * j_j(-x)",
-                #
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_1[1][{mu}] - x_2[1][{mu}], size[{mu}])")
-                    * mk_jw_v_mu("x_2", nu) * mk_j_mu("x_1", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * -x[i] * jw_v_j(0) * j_k(-x)",
-                ]
-        assert len(jjw_list) == 8
-        md_list = [
-                mk_pi_p("t_1") + "pi+(-tsep)",
-                mk_k_p("t_1") + "K+(-tsep)",
-                mk_pi_p("t_2") + "pi+(x[t]+tsep)",
-                mk_k_p("t_2") + "K+(x[t]+tsep)",
-                ]
-        assert len(md_list) == 4
-        exprs_decay1 = [ jwj * md for md in md_list for jwj in jwj_list ]
-        assert len(exprs_decay1) == 32
-        exprs_decay2 = [ jjw * md for md in md_list for jjw in jjw_list ]
-        assert len(exprs_decay2) == 32
-        #
-        jwm_list = [
-                mk_jw_a_mu("x_1", 3) * mk_m("u", "x_2") + "jw_a_t(0) ubar_u(x)",
-                mk_jw_a_mu("x_1", 3) * mk_m("d", "x_2") + "jw_a_t(0) dbar_d(x)",
-                mk_jw_a_mu("x_1", 3) * mk_m("s", "x_2") + "jw_a_t(0) sbar_s(x)",
-                mk_jw_a_mu("x_2", 3) * mk_m("u", "x_1") + "jw_a_t(0) ubar_u(-x)",
-                mk_jw_a_mu("x_2", 3) * mk_m("d", "x_1") + "jw_a_t(0) dbar_d(-x)",
-                mk_jw_a_mu("x_2", 3) * mk_m("s", "x_1") + "jw_a_t(0) sbar_s(-x)",
-                mk_sw5("x_1") * mk_m("u", "x_2") + "sw5(0) ubar_u(x)",
-                mk_sw5("x_1") * mk_m("d", "x_2") + "sw5(0) dbar_d(x)",
-                mk_sw5("x_1") * mk_m("s", "x_2") + "sw5(0) sbar_s(x)",
-                mk_sw5("x_2") * mk_m("u", "x_1") + "sw5(0) ubar_u(-x)",
-                mk_sw5("x_2") * mk_m("d", "x_1") + "sw5(0) dbar_d(-x)",
-                mk_sw5("x_2") * mk_m("s", "x_1") + "sw5(0) sbar_s(-x)",
-                ]
-        assert len(jwm_list) == 12
-        exprs_decay_m = [ jwm * md for md in md_list for jwm in jwm_list ]
-        assert len(exprs_decay_m) == 48
-        #
-        jj_d_list = [
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
-                ]
-        assert len(jj_d_list) == 1
-        pi0d_list = [
-                mk_pi_0("t_1") + "pi0(-tsep)",
-                mk_pi_0("t_2") + "pi0(x[t]+tsep)",
-                ]
-        assert len(pi0d_list) == 2
-        exprs_pi0_decay = [ jj_d * pi0d for pi0d in pi0d_list for jj_d in jj_d_list ]
-        assert len(exprs_pi0_decay) == 2
+        assert len(mm_kk_ope_list) == 1
+        exprs_ope = []
+        exprs_ope += [ op * mm for mm in mm_pi_ope_list for op in op_u_ope_list ]
+        exprs_ope += [ op * mm for mm in mm_pi_ope_list for op in op_d_ope_list ]
+        exprs_ope += [ op * mm for mm in mm_kk_ope_list for op in op_u_ope_list ]
+        exprs_ope += [ op * mm for mm in mm_kk_ope_list for op in op_s_ope_list ]
+        assert len(exprs_ope) == 8
         #
         exprs = [ mk_expr(1) + f"1", ]
-        exprs += exprs_self_energy + exprs_ope + exprs_decay1 + exprs_decay2 + exprs_decay_m + exprs_pi0_decay
-        assert len(exprs) == 179
+        exprs += exprs_self_energy + exprs_ope
+        assert len(exprs) == 1 + 60 + 8
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit=True,
@@ -791,10 +779,10 @@ def get_cexpr_meson_jj():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jj.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_jj.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_jj()
@@ -881,45 +869,33 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
 # ----
 
 @q.timer
-def get_cexpr_meson_jwjj():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jwjj"
+def get_cexpr_pi0_jjp():
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_jjp"
     def calc_cexpr():
         diagram_type_dict = dict()
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_1'), 1))] = 'Type1'
-        diagram_type_dict[((('t_1', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'w'), 1))] = 'Type2'
-        diagram_type_dict[((('t_1', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('w', 't_1'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_1', 'w'), 1), (('w', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 'x_2'), 1), (('x_1', 'w'), 1), (('x_2', 't_2'), 1))] = 'Type1'
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'Type2'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'w'), 1))] = 'Type2'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('w', 't_2'), 1), (('x_1', 'w'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
-        diagram_type_dict[((('t_2', 'w'), 1), (('w', 't_2'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = None
         jj_list = [
-                (sum([ mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4) ])
-                    + "j_mu(x) * j_mu(y)"),
-                (mk_j_mu("x_2", 3) * mk_j_mu("x_1", 3)
-                    + "j_t(x) * j_t(y)"),
+                sum([
+                    q.epsilon_tensor(mu, nu, rho)
+                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
+                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
+                    for mu in range(3) for nu in range(3) for rho in range(3) ])
+                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
                 ]
-        assert len(jj_list) == 2
-        jm_list = [
-                mk_jw_a_mu("w", 3) * mk_pi_p("t_1") + "jw_a_t(0) * pi+(-tsep)",
-                mk_jw_a_mu("w", 3) * mk_k_p("t_1") + "jw_a_t(0) * K+(-tsep)",
-                mk_jw_a_mu("w", 3) * mk_pi_p("t_2") + "jw_a_t(0) * pi+(tsep)",
-                mk_jw_a_mu("w", 3) * mk_k_p("t_2") + "jw_a_t(0) * K+(tsep)",
-                mk_sw5("w") * mk_pi_p("t_1") + "sw5(0) * pi+(-tsep)",
-                mk_sw5("w") * mk_k_p("t_1") + "sw5(0) * K+(-tsep)",
-                mk_sw5("w") * mk_pi_p("t_2") + "sw5(0) * pi+(tsep)",
-                mk_sw5("w") * mk_k_p("t_2") + "sw5(0) * K+(tsep)",
+        assert len(jj_list) == 1
+        pp_u = mk_meson("u", "u", "w")
+        pp_d = mk_meson("d", "d", "w")
+        j5_u = (mk_fac(sympy.I) + "i") * mk_vec5_mu("u", "u", "w", 3)
+        j5_d = (mk_fac(sympy.I) + "i") * mk_vec5_mu("d", "d", "w", 3)
+        p_list = [
+                pp_u,
+                pp_d,
+                j5_u,
+                j5_d,
                 ]
-        assert len(jm_list) == 8
+        assert len(p_list) == 4
         exprs = [ mk_expr(1) + f"1", ]
-        exprs += [ jj * jm for jm in jm_list for jj in jj_list ]
-        assert len(exprs) == 17
+        exprs += [ jj * p for p in p_list for jj in jj_list ]
+        assert len(exprs) == 1 + 4
         cexpr = contract_simplify_compile(
                 *exprs,
                 is_isospin_symmetric_limit=True,
@@ -927,259 +903,13 @@ def get_cexpr_meson_jwjj():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
-def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+@q.timer(is_timer_fork=True)
+def auto_contract_pi0_jjp(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/pi0_jjp.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_meson_jwjj()
-    expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    t_size = total_site[3]
-    get_prop = get_get_prop()
-    psel_prob = get_psel_prob()
-    fsel_prob = get_fsel_prob()
-    psel = psel_prob.psel
-    fsel = fsel_prob.fsel
-    if not fsel.is_containing(psel):
-        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems
-    fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob_arr = psel_prob[:].ravel()
-    fsel_prob_inv_avg = np.average(1.0 / fsel_prob_arr)
-    psel_prob_inv_avg = np.average(1.0 / psel_prob_arr)
-    xg_fsel_arr = fsel.to_psel_local()[:]
-    xg_psel_arr = psel[:]
-    tsep = get_param(job_tag, "meson_tensor_tsep")
-    geo = q.Geometry(total_site)
-    total_volume = geo.total_volume
-    r_list = get_r_list(job_tag)
-    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
-    n_elems = len(xg_fsel_arr)
-    n_points = len(xg_psel_arr)
-    n_pairs = n_points * (n_points - 1) // 2 + n_points
-    #
-    threshold = get_param(job_tag, "meson_jwjj_threshold")
-    u_rand_prob = q.SelectedFieldRealD(fsel, 1)
-    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj,{get_job_seed(job_tag)},{traj}"), 1.0, 0.0)
-    u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
-    fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
-    if get_load_path(fn_meson_corr) is None:
-        q.displayln_info(f"{fname}: '{fn_meson_corr}' does not exist. Skipping.")
-        return
-    ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
-    meson_corr_arr = ld_meson_corr.to_numpy()
-    def get_prop_norm_sqrt(*args):
-        is_sloppy = True
-        return abs(ama_extract(get_prop(*args, is_norm_sqrt=True), is_sloppy=is_sloppy))
-    def load_psrc_psrc_prop_norm_sqrt(flavor, i):
-        xg1_src = tuple(xg_psel_arr[i])
-        x_1 = ("point", xg1_src,)
-        v_list = []
-        for j in range(n_points):
-            xg2_src = tuple(xg_psel_arr[j])
-            x_2 = ("point", xg2_src,)
-            v = get_prop_norm_sqrt(flavor, x_1, x_2)
-            v_list.append(v)
-        return np.array(v_list)
-    psrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
-        for flavor in [ "l", "s", ]
-        ], dtype = float)
-    def load_wsrc_psrc_prop_norm_sqrt(flavor, t):
-        ts = ("wall", t,)
-        v_list = []
-        for j in range(n_points):
-            xg2_src = tuple(xg_psel_arr[j])
-            x_2 = ("point", xg2_src,)
-            v = get_prop_norm_sqrt(flavor, x_2, ts)
-            v_list.append(v)
-        return np.array(v_list)
-    wsrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
-        for flavor in [ "l", "s", ]
-        ], dtype = float)
-    def load_wsrc_psnk_prop_norm_sqrt(flavor, t):
-        ts = ("wall", t,)
-        v_list = []
-        for j in range(n_elems):
-            xg2_snk = tuple(xg_fsel_arr[j])
-            x_2 = ("point-snk", xg2_snk,)
-            v = get_prop_norm_sqrt(flavor, x_2, ts)
-            v_list.append(v)
-        return np.array(v_list)
-    wsrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
-        for flavor in [ "l", "s", ]
-        ], dtype = float)
-    def load_psrc_psnk_prop_norm_sqrt(flavor, i):
-        xg1_src = tuple(xg_psel_arr[i])
-        x_1 = ("point", xg1_src,)
-        v_list = []
-        for j in range(n_elems):
-            xg2_snk = tuple(xg_fsel_arr[j])
-            x_2 = ("point-snk", xg2_snk,)
-            v = get_prop_norm_sqrt(flavor, x_2, x_1)
-            v_list.append(v)
-        return np.array(v_list)
-    psrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
-        for flavor in [ "l", "s", ]
-        ], dtype = float)
-    def get_estimate(idx_snk, idx1, idx2, t_1, t_2):
-        flavor_l = 0
-        flavor_s = 1
-        prob_1 = psel_prob_arr[idx1] * psel_prob_inv_avg
-        prob_2 = psel_prob_arr[idx2] * psel_prob_inv_avg
-        prob_w = fsel_prob_arr[idx_snk] * fsel_prob_inv_avg
-        xg_snk_t = xg_fsel_arr[idx_snk, 3]
-        corr1 = np.abs(meson_corr_arr[1, (xg_snk_t - t_1) % t_size])
-        corr2 = np.abs(meson_corr_arr[1, (xg_snk_t - t_2) % t_size])
-        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx1]
-        p2t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx2]
-        wt1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_snk]
-        wt2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_snk]
-        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx1]
-        p2t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx2]
-        p1p2 = psrc_psrc_prop_norm_sqrt[flavor_l, idx1, idx2]
-        wp1 = psrc_psnk_prop_norm_sqrt[flavor_l, idx1, idx_snk]
-        wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx2, idx_snk]
-        value = 0
-        value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
-        value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
-        value += 5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1)
-        value /= prob_1 * prob_w * prob_2
-        assert np.all(value > 0)
-        return value
-    @q.timer
-    def get_weight(idx_snk, idx1, idx2, t_1, t_2):
-        """
-        return weight for this point (1 / prob or zero)
-        """
-        idx_snk = np.asarray(idx_snk).ravel()
-        est = get_estimate(idx_snk, idx1, idx2, t_1, t_2)
-        assert est.shape == idx_snk.shape
-        prob = est / threshold
-        assert prob.shape == idx_snk.shape
-        rand = u_rand_prob_arr[idx_snk]
-        assert rand.shape == idx_snk.shape
-        weight = 1.0 / prob
-        weight[prob >= 1] = 1.0
-        weight[rand >= prob] = 0.0
-        return weight
-    #
-    def load_data():
-        idx_pair = 0
-        for idx1, xg1_src in enumerate(xg_psel_arr):
-            xg1_src = tuple(xg1_src.tolist())
-            for idx2, xg2_src in enumerate(xg_psel_arr):
-                xg2_src = tuple(xg2_src.tolist())
-                if idx2 > idx1:
-                    continue
-                idx_pair += 1
-                yield idx1, idx2
-    @q.timer
-    def feval(args):
-        idx1, idx2 = args
-        xg1_src = tuple(xg_psel_arr[idx1])
-        xg2_src = tuple(xg_psel_arr[idx2])
-        #
-        # Adaptive sampling method:
-        prob_1 = psel_prob_arr[idx1]
-        prob_2 = psel_prob_arr[idx2]
-        if idx1 != idx2:
-            prob = total_volume * prob_1 * prob_2
-        else:
-            prob = total_volume * prob_1
-        weight_base = 1.0 / prob / total_volume
-        #
-        xg1_src_t = xg1_src[3]
-        xg2_src_t = xg2_src[3]
-        x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
-        r_sq = q.get_r_sq(x_rel)
-        idx_snk_arr = np.arange(n_elems)
-        xg_t_arr = xg_fsel_arr[idx_snk_arr, 3]
-        t_size_arr = np.broadcast_to(t_size, xg_t_arr.shape)
-        xg1_xg_t_arr = q.rel_mod_arr(xg1_src_t - xg_t_arr, t_size_arr)
-        xg2_xg_t_arr = q.rel_mod_arr(xg2_src_t - xg_t_arr, t_size_arr)
-        t_1_arr = (np.minimum(0, np.minimum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr - tsep) % t_size
-        t_2_arr = (np.maximum(0, np.maximum(xg1_xg_t_arr, xg2_xg_t_arr)) + xg_t_arr + tsep) % t_size
-        weight_arr = weight_base * get_weight(idx_snk_arr, idx1, idx2, t_1_arr, t_2_arr)
-        weight_arr[np.abs(xg2_xg_t_arr - xg1_xg_t_arr) >= t_size_arr // 2] = 0.0
-        results = []
-        for idx_snk in idx_snk_arr[weight_arr > 0]:
-            xg_snk = tuple(xg_fsel_arr[idx_snk])
-            prob_snk = fsel_prob_arr[idx_snk]
-            weight = weight_arr[idx_snk]
-            #
-            # Adaptive sampling method:
-            if xg_snk != xg1_src and xg_snk != xg2_src:
-                weight = weight / prob_snk
-            #
-            xg_t = xg_t_arr[idx_snk]
-            xg1_xg_t = xg1_xg_t_arr[idx_snk]
-            xg2_xg_t = xg2_xg_t_arr[idx_snk]
-            t_1 = t_1_arr[idx_snk]
-            t_2 = t_2_arr[idx_snk]
-            pd = {
-                    "w" : ("point-snk", xg_snk,),
-                    "x_1" : ("point", xg1_src,),
-                    "x_2" : ("point", xg2_src,),
-                    "t_1" : ("wall", t_1,),
-                    "t_2" : ("wall", t_2,),
-                    "size" : total_site,
-                    }
-            t1 = xg1_xg_t
-            t2 = xg2_xg_t
-            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
-            results.append((weight * val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high,))
-        return idx1, idx2, results
-    def sum_function(val_list):
-        n_total = 0
-        n_selected = 0
-        idx_pair = 0
-        values = np.zeros((t_size, t_size, len(r_list), len(expr_names),), dtype=complex)
-        for idx1, idx2, results in val_list:
-            idx_pair += 1
-            n_total += n_elems
-            xg1_src = tuple(xg_psel_arr[idx1])
-            xg2_src = tuple(xg_psel_arr[idx2])
-            for val, t1, t2, r_idx_low, r_idx_high, coef_low, coef_high in results:
-                n_selected += 1
-                values[t1, t2, r_idx_low] += coef_low * val
-                values[t1, t2, r_idx_high] += coef_high * val
-            if idx_pair % (n_pairs // 1000 + 100) == 0:
-                q.displayln_info(1, f"{fname}: {idx_pair}/{n_pairs} {xg1_src} {xg2_src} {len(results)}/{n_elems} n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
-        q.displayln_info(1, f"{fname}: Final: n_total={n_total} n_selected={n_selected} ratio={n_selected/n_total}")
-        return values.transpose(3, 0, 1, 2)
-    q.timer_fork(0)
-    res_sum = q.glb_sum(
-            q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1))
-    q.displayln_info(f"{fname}: timer_display")
-    q.timer_display()
-    q.timer_merge()
-    res_sum *= 2.0 / (total_volume / t_size) # factor of 2 account for only calculating half of the pairs
-    ld_sum = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
-        [ "t1", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "t2", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
-        ])
-    ld_sum.from_numpy(res_sum)
-    ld_sum.save(get_save_path(fn))
-    q.json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
-    for i, en in enumerate(expr_names):
-        q.json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
-
-@q.timer_verbose
-def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
-    fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj2.lat"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_meson_jwjj()
+    cexpr = get_cexpr_pi0_jjp()
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -1210,16 +940,18 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
     total_site_arr = np.array(total_site.to_list())
     total_site_arr = np.broadcast_to(total_site_arr, (n_elems, 4,))
     #
-    threshold = get_param(job_tag, "meson_jwjj_threshold")
+    threshold = get_param(job_tag, "pi0_jjp_threshold")
     u_rand_prob = q.SelectedFieldRealD(fsel, 1)
-    u_rand_prob.set_rand(q.RngState(f"auto_contract_meson_jwjj2,{get_job_seed(job_tag)},{traj}"), 1.0, 0.0)
-    u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
-    fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
+    u_rand_prob.set_rand(q.RngState(f"auto_contract_pi0_jjp,{get_job_seed(job_tag)},{traj}"), 1.0, 0.0)
+    u_rand_prob_arr = u_rand_prob[:].ravel()
+    fn_meson_corr = f"{job_tag}/{pname}/traj-{traj}/meson_corr.lat"
     if get_load_path(fn_meson_corr) is None:
         q.displayln_info(f"{fname}: '{fn_meson_corr}' does not exist. Skipping.")
         return
     ld_meson_corr = q.load_lat_data(get_load_path(fn_meson_corr))
-    meson_corr_arr = ld_meson_corr.to_numpy()
+    expr_idx = ld_meson_corr.dim_idx(0, "< pi+^dag(0) * pi+(-tsep) >  exprs")
+    meson_corr_arr = ld_meson_corr[expr_idx]
+    meson_corr_arr = meson_corr_arr / meson_corr_arr[0]
     def get_prop_norm_sqrt(*args):
         is_sloppy = True
         return abs(ama_extract(get_prop(*args, is_norm_sqrt=True), is_sloppy=is_sloppy))
@@ -1237,32 +969,6 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         q.parallel_map(lambda i: load_psrc_psrc_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
-    def load_wsrc_psrc_prop_norm_sqrt(flavor, t):
-        ts = ("wall", t,)
-        v_list = []
-        for j in range(n_points):
-            xg2_src = tuple(xg_psel_arr[j])
-            x_2 = ("point", xg2_src,)
-            v = get_prop_norm_sqrt(flavor, x_2, ts)
-            v_list.append(v)
-        return np.array(v_list)
-    wsrc_psrc_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psrc_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
-        for flavor in [ "l", "s", ]
-        ], dtype = float)
-    def load_wsrc_psnk_prop_norm_sqrt(flavor, t):
-        ts = ("wall", t,)
-        v_list = []
-        for j in range(n_elems):
-            xg2_snk = tuple(xg_fsel_arr[j])
-            x_2 = ("point-snk", xg2_snk,)
-            v = get_prop_norm_sqrt(flavor, x_2, ts)
-            v_list.append(v)
-        return np.array(v_list)
-    wsrc_psnk_prop_norm_sqrt = np.array([
-        q.parallel_map(lambda t: load_wsrc_psnk_prop_norm_sqrt(flavor, t), range(t_size), verbose=1)
-        for flavor in [ "l", "s", ]
-        ], dtype = float)
     def load_psrc_psnk_prop_norm_sqrt(flavor, i):
         xg1_src = tuple(xg_psel_arr[i])
         x_1 = ("point", xg1_src,)
@@ -1277,36 +983,33 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         q.parallel_map(lambda i: load_psrc_psnk_prop_norm_sqrt(flavor, i), range(n_points), verbose=1)
         for flavor in [ "l", "s", ]
         ], dtype = float)
-    def get_estimate(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2):
+    t_psel_arr = xg_psel_arr[:, 3]
+    t_fsel_arr = xg_fsel_arr[:, 3]
+    def get_estimate(idx_w, idx_1, idx_2):
         flavor_l = 0
         flavor_s = 1
         prob_1 = psel_prob_arr[idx_1] * psel_prob_inv_avg
         prob_w = psel_prob_arr[idx_w] * psel_prob_inv_avg
         prob_2 = fsel_prob_arr[idx_2] * fsel_prob_inv_avg
-        corr1 = np.abs(meson_corr_arr[1, (xg_w_t - t_1) % t_size])
-        corr2 = np.abs(meson_corr_arr[1, (xg_w_t - t_2) % t_size])
-        p1t1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx_1]
-        p2t1 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_1, idx_2]
-        wt1 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_1, idx_w]
-        wt2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx_w]
-        p1t2 = wsrc_psrc_prop_norm_sqrt[flavor_l, t_2, idx_1]
-        p2t2 = wsrc_psnk_prop_norm_sqrt[flavor_l, t_2, idx_2]
+        xg_1_t = t_psel_arr[idx_1]
+        xg_w_t = t_psel_arr[idx_w]
+        xg_2_t = t_fsel_arr[idx_2]
+        corr1 = np.abs(meson_corr_arr[(xg_w_t - xg_1_t) % t_size])
+        corr2 = np.abs(meson_corr_arr[(xg_w_t - xg_2_t) % t_size])
         p1p2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx_1, idx_2]
         wp1 = psrc_psrc_prop_norm_sqrt[flavor_l, idx_1, idx_w]
         wp2 = psrc_psnk_prop_norm_sqrt[flavor_l, idx_w, idx_2]
         value = 0
-        value += 2 * (p1t1 * p2t1 / corr1 + p1t2 * p2t2 / corr2) * (wp1 * wp2)
-        value += 5 * (p1t1 * wt1 / corr1 + p1t2 * wt2 / corr2) * (p1p2 * wp2)
-        value += 5 * (p2t1 * wt1 / corr1 + p2t2 * wt2 / corr2) * (p1p2 * wp1)
+        value += p1p2 * wp1 * wp2 / np.sqrt(corr1 * corr2)
         value /= prob_1 * prob_w * prob_2
         assert np.all(value > 0)
         return value
     @q.timer
-    def get_weight(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2):
+    def get_weight(idx_w, idx_1, idx_2):
         """
         return weight for point ``idx_2`` (1 / prob or zero)
         """
-        est = get_estimate(idx_w, idx_1, idx_2, xg_w_t, t_1, t_2)
+        est = get_estimate(idx_w, idx_1, idx_2)
         assert est.shape == idx_2.shape
         prob = est / threshold
         assert prob.shape == idx_2.shape
@@ -1330,11 +1033,6 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         xg_1 = tuple(xg_psel_arr[idx_1])
         xg_w = tuple(xg_psel_arr[idx_w])
         #
-        # Old method to obtain the prob with previous sampling strategy:
-        #
-        # xg_rel_array = np.array(xg_1) - np.array(xg_w)
-        # prob = get_point_xrel_prob(xg_rel_array, total_site_array, point_distribution, n_points)
-        #
         # Adaptive sampling method:
         prob_1 = psel_prob_arr[idx_1]
         prob_w = psel_prob_arr[idx_w]
@@ -1355,17 +1053,13 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
         r_sq_arr = q.sqr(x_rel_arr[:, :3]).sum(-1)
         xg_1_xg_t_arr = q.rel_mod_arr(xg_1_t_arr - xg_w_t_arr, t_size_arr)
         xg_2_xg_t_arr = q.rel_mod_arr(xg_2_t_arr - xg_w_t_arr, t_size_arr)
-        t_1_arr = (np.minimum(0, np.minimum(xg_1_xg_t_arr, xg_2_xg_t_arr)) + xg_w_t_arr - tsep) % t_size
-        t_2_arr = (np.maximum(0, np.maximum(xg_1_xg_t_arr, xg_2_xg_t_arr)) + xg_w_t_arr + tsep) % t_size
-        weight_arr = weight_base * get_weight(idx_w, idx_1, idx_2_arr, xg_w_t_arr, t_1_arr, t_2_arr)
+        xg_m_xg_t_arr = xg_1_t_arr + 0.5 * q.rel_mod_arr(xg_2_t_arr - xg_1_t_arr, t_size_arr)
+        weight_arr = weight_base * get_weight(idx_w, idx_1, idx_2_arr)
         weight_arr[np.abs(xg_2_xg_t_arr - xg_1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
         for idx_2 in idx_2_arr[weight_arr > 0]:
             xg_2 = tuple(xg_fsel_arr[idx_2])
             weight = weight_arr[idx_2]
-            #
-            # Old method to obtain the prob with previous sampling strategy:
-            # prob_2 = fsel_prob_arr[idx_2]
             #
             # Adaptive sampling method:
             if xg_2 != xg_1 and xg_2 != xg_w:
@@ -1376,14 +1070,11 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
             r_sq = r_sq_arr[idx_2]
             xg_1_xg_t = xg_1_xg_t_arr[idx_2]
             xg_2_xg_t = xg_2_xg_t_arr[idx_2]
-            t_1 = t_1_arr[idx_2]
-            t_2 = t_2_arr[idx_2]
+            xg_w_t = xg_w_t_arr[idx_2]
             pd = {
                     "w" : ("point", xg_w,),
                     "x_1" : ("point", xg_1,),
                     "x_2" : ("point-snk", xg_2,),
-                    "t_1" : ("wall", t_1,),
-                    "t_2" : ("wall", t_2,),
                     "size" : total_site.to_list(),
                     }
             t_1 = xg_1_xg_t
@@ -1434,452 +1125,7 @@ def auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fs
 
 ### ------
 
-@q.timer
-def get_cexpr_pi0_gg():
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_gg"
-    def calc_cexpr():
-        diagram_type_dict = dict()
-        diagram_type_dict[()] = '1'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'TypeC'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 't_2'), 1), (('x_2', 'x_2'), 1))] = 'TypeD'
-        diagram_type_dict[((('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_2'), 1))] = 'TypeC'
-        #
-        jj_d_list = [
-                sum([
-                    q.epsilon_tensor(mu, nu, rho)
-                    * mk_fac(f"rel_mod_sym(x_2[1][{mu}] - x_1[1][{mu}], size[{mu}])")
-                    * mk_j_mu("x_2", nu) * mk_j_mu("x_1", rho)
-                    for mu in range(3) for nu in range(3) for rho in range(3) ])
-                + "e(i,j,k) * x[i] * j_j(x) * j_k(0)",
-                ]
-        assert len(jj_d_list) == 1
-        #
-        pi0d_list = [
-                mk_pi_0("t_1") + "pi0(-tsep)",
-                mk_pi_0("t_2") + "pi0(x[t]+tsep)",
-                ]
-        assert len(pi0d_list) == 2
-        #
-        exprs_list_pi0_decay = [
-                (jj_d * pi0d, None, "TypeC", "TypeD",)
-                for pi0d in pi0d_list for jj_d in jj_d_list
-                ]
-        assert len(exprs_list_pi0_decay) == 2
-        exprs_pi0_decay = [ e for e in exprs_list_pi0_decay ]
-        #
-        exprs = [
-                mk_expr(1) + f"1",
-                ]
-        exprs += exprs_pi0_decay
-        #
-        cexpr = contract_simplify_compile(
-                *exprs,
-                is_isospin_symmetric_limit=True,
-                diagram_type_dict=diagram_type_dict)
-        return cexpr
-        #
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
-@q.timer
-def get_cexpr_tadpole_current():
-    """
-    Intend to calculating < J_mu(x_1) >
-    !!! Results needs to be multiplied by (m_s - m_l) and sum over "x_2" over the entire space-time volume !!!
-    After summing over "x_2", the first and second expr should be same (and so is the following exprs). (We can average these two.)
-    1/3 charge factor is already multiplied.
-    """
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_tadpole_current"
-    def calc_cexpr():
-        diagram_type_dict = dict()
-        diagram_type_dict[()] = 'T1'
-        diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'TypeC'
-        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
-        #
-        jj_list = []
-        jj_list += [
-                1/3 * mk_vec_mu("l", "s", "x_1", mu) * mk_scalar("s", "l", "x_2")
-                for mu in range(4)
-                ]
-        jj_list += [
-                1/3 * mk_vec_mu("s", "l", "x_1", mu) * mk_scalar("l", "s", "x_2")
-                for mu in range(4)
-                ]
-        jj_list += [
-                1/3 * mk_vec_mu("l", "l", "x_1", mu) * mk_scalar("l", "l", "x_2")
-                for mu in range(4)
-                ]
-        jj_list += [
-                1/3 * mk_vec_mu("s", "s", "x_1", mu) * mk_scalar("s", "s", "x_2")
-                for mu in range(4)
-                ]
-        #
-        exprs = [
-                mk_expr(1) + f"1",
-                ]
-        exprs += jj_list
-        #
-        cexpr = contract_simplify_compile(
-                *exprs,
-                is_isospin_symmetric_limit=True,
-                diagram_type_dict=diagram_type_dict)
-        return cexpr
-        #
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
-@q.timer
-def get_cexpr_pi0_current():
-    """
-    Intend to calculating < J_mu(x_1) pi0(t_1) >
-    """
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_current"
-    def calc_cexpr():
-        diagram_type_dict = dict()
-        diagram_type_dict[()] = 'T0'
-        diagram_type_dict[((('t_1', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'TypeC'
-        #
-        jj_d_list = [
-            mk_j_mu("x_1", mu)
-            for mu in range(4)
-        ]
-        assert len(jj_d_list) == 4
-        #
-        pi0d_list = [
-                mk_pi_0("t_1") + "pi0(t_1)",
-                ]
-        assert len(pi0d_list) == 1
-        #
-        exprs_list_pi0_decay = [
-            jj_d * pi0d
-            for pi0d in pi0d_list for jj_d in jj_d_list
-        ]
-        #
-        exprs = [
-                mk_expr(1) + f"1",
-                ]
-        exprs += exprs_list_pi0_decay
-        #
-        cexpr = contract_simplify_compile(
-                *exprs,
-                is_isospin_symmetric_limit=True,
-                diagram_type_dict=diagram_type_dict)
-        return cexpr
-        #
-    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
-@q.timer_verbose
-def auto_contract_tadpole_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
-    fname = q.get_fname()
-    fn = f"{job_tag}/tadpole-current/traj-{traj}/tadpole-current.sfield"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_tadpole_current()
-    expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    t_size = total_site[3]
-    get_prop = get_get_prop()
-    psel_prob = get_psel_prob()
-    fsel_prob = get_fsel_prob()
-    psel = psel_prob.psel
-    fsel = fsel_prob.fsel
-    if not fsel.is_containing(psel):
-        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems
-    fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob_arr = psel_prob[:].ravel()
-    xg_fsel_arr = fsel.to_psel_local()[:]
-    xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site)
-    total_volume = geo.total_volume
-    sf_tadpole_current = q.SelectedFieldComplexD(fsel, len(expr_names))
-    q.set_zero(sf_tadpole_current)
-    sf_tadpole_current_arr = sf_tadpole_current[:]
-    def load_data():
-        for fidx in range(len(xg_fsel_arr)):
-            yield fidx
-    @q.timer
-    def feval(args):
-        fidx = args
-        xg_snk = tuple(xg_fsel_arr[fidx])
-        prob_snk = fsel_prob_arr[fidx]
-        val_sum = 0
-        for pidx in range(len(xg_psel_arr)):
-            xg_src = tuple(xg_psel_arr[pidx])
-            prob_src = psel_prob_arr[pidx]
-            if xg_snk == xg_src:
-                prob_src = prob_src / prob_snk
-            prob = prob_src * prob_snk
-            pd = {
-                    "x_1": ("point-snk", xg_snk,),
-                    "x_2": ("point", xg_src,),
-                    "size": total_site,
-                    }
-            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            val_sum = val_sum + val / prob
-        res = (fidx, val_sum,)
-        return res
-    def sum_function(val_list):
-        for idx, res in enumerate(val_list):
-            fidx, val_sum, = res
-            sf_tadpole_current_arr[fidx] = val_sum
-            if (idx + 1) % (len(xg_fsel_arr) // 128 + 16) == 0:
-                q.displayln_info(f"{fname}: {idx+1}/{len(xg_fsel_arr)}")
-        return None
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
-    sf_tadpole_current.save_double(get_save_path(fn))
-    q.json_results_append(f"{fname}: sf_tadpole_current sig", q.get_data_sig(sf_tadpole_current, q.RngState()))
-    for i, en in enumerate(expr_names):
-        q.json_results_append(f"{fname}: sf_tadpole_current '{en}' sig", q.glb_sum(q.get_data_sig(sf_tadpole_current[:, i], q.RngState())))
-
-@q.timer_verbose
-def auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
-    fname = q.get_fname()
-    fn = f"{job_tag}/pi0-current/traj-{traj}/pi0-current"
-    if get_load_path(fn) is not None:
-        return
-    cexpr = get_cexpr_pi0_current()
-    expr_names = get_expr_names(cexpr)
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    t_size = total_site[3]
-    get_prop = get_get_prop()
-    psel_prob = get_psel_prob()
-    fsel_prob = get_fsel_prob()
-    psel = psel_prob.psel
-    fsel = fsel_prob.fsel
-    if not fsel.is_containing(psel):
-        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems
-    fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob_arr = psel_prob[:].ravel()
-    xg_fsel_arr = fsel.to_psel_local()[:]
-    xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site)
-    total_volume = geo.total_volume
-    sf_pi0_current_list = []
-    sf_pi0_current_arr_list = []
-    for t_src in range(t_size):
-        sf = q.SelectedFieldComplexD(fsel, len(expr_names))
-        q.set_zero(sf)
-        sf_pi0_current_list.append(sf)
-        sf_pi0_current_arr_list.append(sf[:])
-    def load_data():
-        for fidx in range(len(xg_fsel_arr)):
-            yield fidx
-    @q.timer
-    def feval(args):
-        fidx = args
-        xg_snk = tuple(xg_fsel_arr[fidx])
-        prob_snk = fsel_prob_arr[fidx]
-        val_list = []
-        for t_src in range(t_size):
-            prob = prob_snk
-            pd = {
-                    "x_1": ("point-snk", xg_snk,),
-                    "t_1": ("wall", t_src,),
-                    "size": total_site,
-                    }
-            val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            val_list.append(val / prob)
-        res = (fidx, val_list,)
-        return res
-    def sum_function(val_list):
-        for idx, res in enumerate(val_list):
-            fidx, val_list, = res
-            for t_src in range(t_size):
-                sf_pi0_current_arr_list[t_src][fidx] = val_list[t_src]
-            if (idx + 1) % (len(xg_fsel_arr) // 128 + 16) == 0:
-                q.displayln_info(f"{fname}: {idx+1}/{len(xg_fsel_arr)}")
-        return None
-    auto_contractor_chunk_size = get_param(job_tag, "measurement", "auto_contractor_chunk_size", default=128)
-    q.timer_fork(0)
-    q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=auto_contractor_chunk_size)
-    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
-    q.timer_display()
-    q.timer_merge()
-    sfw = q.open_fields(get_save_path(fn + ".acc"), "w", q.Coordinate([ 2, 2, 2, 4, ]))
-    for t_src in range(t_size):
-        sf = sf_pi0_current_list[t_src]
-        tag = f"sf_pi0_current ; t_src={t_src}"
-        sf.save_double(sfw, tag)
-    sfw.close()
-    q.qrename_info(get_save_path(fn + ".acc"), get_save_path(fn))
-    sig_arr = np.zeros((t_size, len(expr_names),), dtype=np.complex128)
-    for t_src in range(t_size):
-        sf = sf_pi0_current_list[t_src]
-        q.json_results_append(f"{fname}: sf_pi0_current t_src={t_src} sig", q.get_data_sig(sf, q.RngState()))
-        for i, en in enumerate(expr_names):
-            sig_arr[t_src, i] = q.glb_sum(q.get_data_sig(sf[:, i], q.RngState(f"t_src={t_src}")))
-    for i, en in enumerate(expr_names):
-        q.json_results_append(f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum())
-
-@q.timer_verbose
-def auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
-    fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/pi0-gg-disc.lat"
-    if get_load_path(fn) is not None:
-        return
-    fn_tadpole_current = get_load_path(f"{job_tag}/tadpole-current/traj-{traj}/tadpole-current.sfield")
-    fn_pi0_current = get_load_path(f"{job_tag}/pi0-current/traj-{traj}/pi0-current")
-    if fn_tadpole_current is None or fn_pi0_current is None:
-        return
-    tadpole_current_expr_names = get_expr_names(get_cexpr_tadpole_current())
-    pi0_current_expr_names = get_expr_names(get_cexpr_pi0_current())
-    assert len(tadpole_current_expr_names) == 1 + 4 * 4
-    assert len(pi0_current_expr_names) == 1 + 4
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    t_size = total_site[3]
-    psel_prob = get_psel_prob()
-    fsel_prob = get_fsel_prob()
-    psel = psel_prob.psel
-    fsel = fsel_prob.fsel
-    if not fsel.is_containing(psel):
-        q.displayln_info(-1, f"WARNING: fsel is not containing psel. The probability weighting may be wrong.")
-    fsel_n_elems = fsel.n_elems
-    fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob_arr = psel_prob[:].ravel()
-    xg_fsel_arr = fsel.to_psel_local()[:]
-    xg_psel_arr = psel[:]
-    tsep = get_param(job_tag, "meson_tensor_tsep")
-    m_l = get_param(job_tag, "m_l")
-    m_h = get_param(job_tag, "m_h")
-    geo = q.Geometry(total_site)
-    total_volume = geo.total_volume
-    r_list = get_r_list(job_tag)
-    r_sq_interp_idx_coef_list = get_r_sq_interp_idx_coef_list(job_tag)
-    sf_tadpole_current = q.SelectedFieldComplexD(fsel)
-    sf_tadpole_current.load_double(fn_tadpole_current)
-    assert sf_tadpole_current.multiplicity == len(tadpole_current_expr_names)
-    sfr = q.open_fields(fn_pi0_current, "r")
-    sf_pi0_current_list = []
-    for t_src in range(t_size):
-        sf = q.SelectedFieldComplexD(fsel)
-        tag = f"sf_pi0_current ; t_src={t_src}"
-        sf.load_double(sfr, tag)
-        sf_pi0_current_list.append(sf)
-        assert sf.multiplicity == len(pi0_current_expr_names)
-    sfr.close()
-    q.displayln_info(f"{len(sf_pi0_current_list)}")
-    expr_names = [
-        "< 1 [disc x] [con 0] >",
-        "< 1 [disc 0] [con x] >",
-    ]
-    for tadpole in [ "ls", "sl", "ll", "ss", ]:
-        expr_names += [
-            f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole {tadpole})",
-            f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole {tadpole})",
-            f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole {tadpole})",
-            f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole {tadpole})",
-        ]
-    # Some final modification for sf_tadpole_current
-    sf_tadpole_current[:, 0] *= 1 / total_volume
-    sf_tadpole_current[:, 1:] *= m_h - m_l
-    # compute zero distance counts sum
-    zero_dis_counts_sum = q.glb_sum((fsel_prob_arr * sf_tadpole_current[:, 0] * sf_pi0_current_list[0][:, 0]).sum())
-    # Convert tadpole to field
-    f_tadpole_current = q.FieldComplexD(geo, sf_tadpole_current.multiplicity)
-    q.set_zero(f_tadpole_current)
-    f_tadpole_current @= sf_tadpole_current
-    # Convert pi0 current list to field list
-    f_pi0_current_list = []
-    for t_src in range(t_size):
-        sf = sf_pi0_current_list[t_src]
-        f = q.FieldComplexD(geo, sf.multiplicity)
-        q.set_zero(f)
-        f @= sf
-        f_pi0_current_list.append(f)
-    # make new pi0 current field list based on pi0_current_sep
-    xg_arr = geo.xg_arr()
-    t_arr = xg_arr[:, 3]
-    f_pi0_current_sep_list = []
-    for pi0_current_sep in range(t_size):
-        f = q.FieldComplexD(geo, sf.multiplicity)
-        q.set_zero(f)
-        for t_src in range(t_size):
-            f_src = f_pi0_current_list[t_src]
-            sel = (t_arr - t_src) % t_size == pi0_current_sep
-            f[sel] = f_src[sel]
-        f_pi0_current_sep_list.append(f)
-    # perform all needed convolution
-    ff_idx = 0
-    idx1 = [ 0, ] # for con 0 (f_pi0_current_sep_list)
-    idx2 = [ 0, ] # for disc x (f_tadpole_current)
-    info = [ (ff_idx,), ] # for (i, j, k,) tuple
-    ff_idx += 1
-    for i in range(3):
-        for j in range(3):
-            if i == j:
-                continue
-            for k in range(3):
-                if k == i or k == j:
-                    continue
-                for tadpole_idx in range(4):
-                    idx1.append(1 + k)
-                    idx2.append(1 + tadpole_idx * 4 + j)
-                    info.append((ff_idx, i, j, k, tadpole_idx,))
-                    ff_idx += 1
-    idx1 = np.array(idx1, dtype=np.int32)
-    idx2 = np.array(idx2, dtype=np.int32)
-    info = np.array(info, dtype=object)
-    assert ff_idx == len(idx1)
-    assert ff_idx == len(idx2)
-    assert ff_idx == len(info)
-    ff_list = [
-        q.field_convolution(f_pi0_current_sep_list[pi0_current_sep], f_tadpole_current, idx1, idx2)
-        for pi0_current_sep in range(t_size)
-    ]
-    pos_t_expr_name_idx_arr = np.arange(0, len(expr_names), 2, dtype=np.int32)
-    neg_t_expr_name_idx_arr = np.arange(1, len(expr_names), 2, dtype=np.int32)
-    values = np.zeros((t_size, len(r_list), len(expr_names),), dtype=np.complex128)
-    for xg_idx, xg_rel in enumerate(geo.xg_arr()):
-        x_rel = q.rel_mod_arr(xg_rel, total_site.to_numpy())
-        r_sq = q.get_r_sq(x_rel)
-        r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
-        x_rel_t = x_rel[3]
-        t = x_rel_t % t_size
-        if x_rel_t >= 0:
-            pi0_current_sep1 = tsep
-            pi0_current_sep2 = -tsep - abs(x_rel_t)
-        else:
-            pi0_current_sep1 = tsep + abs(x_rel_t)
-            pi0_current_sep2 = -tsep
-        val = np.zeros(len(expr_names) // 2, dtype=np.complex128)
-        val[0] = ff_list[0][xg_idx, 0]
-        for ff_idx, i, j, k, tadpole_idx in info[1:]:
-            x_i = q.rel_mod_sym(x_rel[i], total_site[i]) # x[i]
-            eijk = q.epsilon_tensor(i, j, k) # e(i,j,k)
-            jjpi0_t1 = ff_list[pi0_current_sep1][xg_idx, ff_idx] # disc[ j_j(x) ] * j_k(0) * pi0(-tsep)
-            jjpi0_t2 = ff_list[pi0_current_sep2][xg_idx, ff_idx] # disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep)
-            val[1 + tadpole_idx * 2] += eijk * x_i * jjpi0_t1
-            val[1 + tadpole_idx * 2 + 1] += eijk * x_i * jjpi0_t2
-        if np.all(x_rel == 0):
-            val[0] = zero_dis_counts_sum
-        if abs(x_rel_t) == t_size // 2:
-            continue
-        values[t, r_idx_low, pos_t_expr_name_idx_arr] += coef_low * val
-        values[t, r_idx_high, pos_t_expr_name_idx_arr] += coef_high * val
-        values[-t, r_idx_low, neg_t_expr_name_idx_arr] += coef_low * val
-        values[-t, r_idx_high, neg_t_expr_name_idx_arr] += coef_high * val
-    res_sum = q.glb_sum(values.transpose(2, 0, 1))
-    res_sum *= 1.0 / total_volume
-    ld_sum = q.mk_lat_data([
-        [ "expr_name", len(expr_names), expr_names, ],
-        [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
-        [ "r", len(r_list), [ f"{r:.5f}" for r in r_list ], ],
-        ])
-    ld_sum.from_numpy(res_sum)
-    ld_sum.save(get_save_path(fn))
-    q.json_results_append(f"{fname}: ld_sum sig", q.get_data_sig(ld_sum, q.RngState()))
-    for i, en in enumerate(expr_names):
-        q.json_results_append(f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState()))
-
-### ------
-
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
     fname = q.get_fname()
     #
@@ -2004,7 +1250,7 @@ def run_job_inversion(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_contract(job_tag, traj):
     #
     traj_gf = traj
@@ -2014,7 +1260,7 @@ def run_job_contract(job_tag, traj):
         #
     #
     fns_produce = [
-            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/{pname}/traj-{traj}/checkpoint.txt",
             #
             ]
     fns_need = [
@@ -2075,25 +1321,21 @@ def run_job_contract(job_tag, traj):
     #
     run_r_list(job_tag)
     #
-    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
+    fn_checkpoint = f"{job_tag}/{pname}/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-{pname}"):
             get_prop = get_get_prop()
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
+                auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_jwjj2(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
+                auto_contract_pi0_jjp(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_corr_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_tadpole_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_pi0_current(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
-                auto_contract_pi0_gg_disc(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob)
                 #
                 q.qtouch_info(get_save_path(fn_checkpoint))
                 q.displayln_info("timer_display for runjob")
@@ -2106,22 +1348,21 @@ def run_job_contract(job_tag, traj):
 
 ### ------
 
+@q.timer(is_timer_fork=True)
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_corr(False))
     benchmark_eval_cexpr(get_cexpr_meson_m())
     benchmark_eval_cexpr(get_cexpr_meson_jt())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
-    benchmark_eval_cexpr(get_cexpr_meson_jwjj())
-    benchmark_eval_cexpr(get_cexpr_pi0_gg())
-    benchmark_eval_cexpr(get_cexpr_tadpole_current())
-    benchmark_eval_cexpr(get_cexpr_pi0_current())
+    benchmark_eval_cexpr(get_cexpr_pi0_jjp())
 
 ### ------
 
 job_tag = "test-4nt8"
 set_param(job_tag, "traj_list")(list(range(1000, 1001)))
 set_param(job_tag, "meson_tensor_tsep")(1)
-set_param(job_tag, "meson_jwjj_threshold")(0.1)
+set_param(job_tag, "pi0_jjp_threshold")(0.1)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
 set_param(job_tag, "n_per_tslice_smear_median")(8)
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(2)
@@ -2156,28 +1397,28 @@ set_param(job_tag, "fermion_params", 2, 2, "Ls")(8)
 job_tag = "24D"
 set_param(job_tag, "traj_list")([ 2430, 2550, 2590, 2610, 2630, 2940, 2960, ])
 set_param(job_tag, "meson_tensor_tsep")(8)
-set_param(job_tag, "meson_jwjj_threshold")(0.02)
+set_param(job_tag, "pi0_jjp_threshold")(0.02)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "48I"
 set_param(job_tag, "seed")("48I")
 set_param(job_tag, "traj_list")(list(range(1000, 2000, 20)))
 set_param(job_tag, "meson_tensor_tsep")(12)
-set_param(job_tag, "meson_jwjj_threshold")(0.01)
+set_param(job_tag, "pi0_jjp_threshold")(0.01)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "64I"
 set_param(job_tag, "seed")("64I")
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 20)))
 set_param(job_tag, "meson_tensor_tsep")(18)
-set_param(job_tag, "meson_jwjj_threshold")(0.0005)
+set_param(job_tag, "pi0_jjp_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "64I-pq"
 set_param(job_tag, "seed")("64I")
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
 set_param(job_tag, "meson_tensor_tsep")(18)
-set_param(job_tag, "meson_jwjj_threshold")(0.0005)
+set_param(job_tag, "pi0_jjp_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 # ----
@@ -2254,7 +1495,7 @@ set_param(job_tag, "m_h")(get_param(job_tag, "quark_mass_list")[1])
 #
 set_param(job_tag, "meson_tensor_tsep")(1)
 #
-set_param(job_tag, "meson_jwjj_threshold")(0.1)
+set_param(job_tag, "pi0_jjp_threshold")(0.1)
 #
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_num")(32)
 set_param(job_tag, "measurement", "auto_contract_meson_corr_wf", "sample_size")(2)

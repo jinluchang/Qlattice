@@ -1,0 +1,992 @@
+CHECK: params: test-4nt8-checker: {
+CHECK: params: test-4nt8-checker:   "seed": "test-4nt8",
+CHECK: params: test-4nt8-checker:   "traj_list": [
+CHECK: params: test-4nt8-checker:     1000
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "total_site": [
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     4,
+CHECK: params: test-4nt8-checker:     8
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "load_config_params": {
+CHECK: params: test-4nt8-checker:     "twist_boundary_at_boundary": [
+CHECK: params: test-4nt8-checker:       0.0,
+CHECK: params: test-4nt8-checker:       0.0,
+CHECK: params: test-4nt8-checker:       0.0,
+CHECK: params: test-4nt8-checker:       -0.5
+CHECK: params: test-4nt8-checker:     ]
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "mk_sample_gauge_field": {
+CHECK: params: test-4nt8-checker:     "rand_n_step": 2,
+CHECK: params: test-4nt8-checker:     "flow_n_step": 8,
+CHECK: params: test-4nt8-checker:     "hmc_n_traj": 1
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "quark_flavor_list": [
+CHECK: params: test-4nt8-checker:     "light",
+CHECK: params: test-4nt8-checker:     "strange",
+CHECK: params: test-4nt8-checker:     "charm-1"
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "quark_mass_list": [
+CHECK: params: test-4nt8-checker:     0.01,
+CHECK: params: test-4nt8-checker:     0.04,
+CHECK: params: test-4nt8-checker:     0.2
+CHECK: params: test-4nt8-checker:   ],
+CHECK: params: test-4nt8-checker:   "fermion_params": {
+CHECK: params: test-4nt8-checker:     "0": {
+CHECK: params: test-4nt8-checker:       "0": {
+CHECK: params: test-4nt8-checker:         "Ls": 8,
+CHECK: params: test-4nt8-checker:         "M5": 1.8,
+CHECK: params: test-4nt8-checker:         "b": 1.5,
+CHECK: params: test-4nt8-checker:         "c": 0.5,
+CHECK: params: test-4nt8-checker:         "boundary_phases": [
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0
+CHECK: params: test-4nt8-checker:         ],
+CHECK: params: test-4nt8-checker:         "mass": 0.01
+CHECK: params: test-4nt8-checker:       }
+CHECK: params: test-4nt8-checker:     },
+CHECK: params: test-4nt8-checker:     "1": {
+CHECK: params: test-4nt8-checker:       "0": {
+CHECK: params: test-4nt8-checker:         "Ls": 8,
+CHECK: params: test-4nt8-checker:         "M5": 1.8,
+CHECK: params: test-4nt8-checker:         "b": 1.5,
+CHECK: params: test-4nt8-checker:         "c": 0.5,
+CHECK: params: test-4nt8-checker:         "boundary_phases": [
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0
+CHECK: params: test-4nt8-checker:         ],
+CHECK: params: test-4nt8-checker:         "mass": 0.04
+CHECK: params: test-4nt8-checker:       }
+CHECK: params: test-4nt8-checker:     },
+CHECK: params: test-4nt8-checker:     "2": {
+CHECK: params: test-4nt8-checker:       "0": {
+CHECK: params: test-4nt8-checker:         "Ls": 8,
+CHECK: params: test-4nt8-checker:         "M5": 1.8,
+CHECK: params: test-4nt8-checker:         "b": 1.5,
+CHECK: params: test-4nt8-checker:         "c": 0.5,
+CHECK: params: test-4nt8-checker:         "boundary_phases": [
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0,
+CHECK: params: test-4nt8-checker:           1.0
+CHECK: params: test-4nt8-checker:         ],
+CHECK: params: test-4nt8-checker:         "mass": 0.2
+CHECK: params: test-4nt8-checker:       }
+CHECK: params: test-4nt8-checker:     }
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-0-0": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 1
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-0-1": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 2
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-0-2": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 3
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-1-0": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 1
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-1-1": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 2
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-1-2": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 3
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-2-0": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 1
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-2-1": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 2
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "cg_params-2-2": {
+CHECK: params: test-4nt8-checker:     "maxiter": 10,
+CHECK: params: test-4nt8-checker:     "maxcycle": 3
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "lanc_params": {
+CHECK: params: test-4nt8-checker:     "0": {
+CHECK: params: test-4nt8-checker:       "0": {
+CHECK: params: test-4nt8-checker:         "fermion_params": {
+CHECK: params: test-4nt8-checker:           "Ls": 8,
+CHECK: params: test-4nt8-checker:           "M5": 1.8,
+CHECK: params: test-4nt8-checker:           "b": 1.5,
+CHECK: params: test-4nt8-checker:           "c": 0.5,
+CHECK: params: test-4nt8-checker:           "boundary_phases": [
+CHECK: params: test-4nt8-checker:             1.0,
+CHECK: params: test-4nt8-checker:             1.0,
+CHECK: params: test-4nt8-checker:             1.0,
+CHECK: params: test-4nt8-checker:             1.0
+CHECK: params: test-4nt8-checker:           ],
+CHECK: params: test-4nt8-checker:           "mass": 0.01
+CHECK: params: test-4nt8-checker:         },
+CHECK: params: test-4nt8-checker:         "cheby_params": {
+CHECK: params: test-4nt8-checker:           "low": 0.3,
+CHECK: params: test-4nt8-checker:           "high": 5.5,
+CHECK: params: test-4nt8-checker:           "order": 40
+CHECK: params: test-4nt8-checker:         },
+CHECK: params: test-4nt8-checker:         "irl_params": {
+CHECK: params: test-4nt8-checker:           "Nstop": 50,
+CHECK: params: test-4nt8-checker:           "Nk": 80,
+CHECK: params: test-4nt8-checker:           "Nm": 100,
+CHECK: params: test-4nt8-checker:           "resid": 1e-08,
+CHECK: params: test-4nt8-checker:           "betastp": 0.0,
+CHECK: params: test-4nt8-checker:           "maxiter": 20,
+CHECK: params: test-4nt8-checker:           "Nminres": 0
+CHECK: params: test-4nt8-checker:         },
+CHECK: params: test-4nt8-checker:         "pit_params": {
+CHECK: params: test-4nt8-checker:           "eps": 0.01,
+CHECK: params: test-4nt8-checker:           "maxiter": 500,
+CHECK: params: test-4nt8-checker:           "real": true
+CHECK: params: test-4nt8-checker:         }
+CHECK: params: test-4nt8-checker:       }
+CHECK: params: test-4nt8-checker:     }
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "field_selection_psel_rate": 0.03125,
+CHECK: params: test-4nt8-checker:   "field_selection_psel_rate_median": 0.0625,
+CHECK: params: test-4nt8-checker:   "field_selection_fsel_rate": 0.125,
+CHECK: params: test-4nt8-checker:   "field_selection_fsel_psrc_prop_norm_threshold": 0.001,
+CHECK: params: test-4nt8-checker:   "prob_exact_wsrc": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_1_psrc": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_2_psrc": 0.0625,
+CHECK: params: test-4nt8-checker:   "n_per_tslice_smear": 2,
+CHECK: params: test-4nt8-checker:   "n_per_tslice_smear_median": 8,
+CHECK: params: test-4nt8-checker:   "gf_ape_smear_coef": 0.5,
+CHECK: params: test-4nt8-checker:   "gf_ape_smear_step": 30,
+CHECK: params: test-4nt8-checker:   "prop_smear_coef": 0.9375,
+CHECK: params: test-4nt8-checker:   "prop_smear_step": 10,
+CHECK: params: test-4nt8-checker:   "prob_acc_1_smear": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_2_smear": 0.0625,
+CHECK: params: test-4nt8-checker:   "measurement": {
+CHECK: params: test-4nt8-checker:     "psel_split_num_piece": 2,
+CHECK: params: test-4nt8-checker:     "fsel_psel_split_num_piece": 4,
+CHECK: params: test-4nt8-checker:     "auto_contract_meson_corr_wf": {
+CHECK: params: test-4nt8-checker:       "sample_num": 32,
+CHECK: params: test-4nt8-checker:       "sample_size": 2,
+CHECK: params: test-4nt8-checker:       "t_sep_range": 6
+CHECK: params: test-4nt8-checker:     },
+CHECK: params: test-4nt8-checker:     "auto_contract_meson_meson_i0_j0_corr_wf": {
+CHECK: params: test-4nt8-checker:       "sample_num": 32,
+CHECK: params: test-4nt8-checker:       "sample_size": 2,
+CHECK: params: test-4nt8-checker:       "t_sep_range": 6
+CHECK: params: test-4nt8-checker:     },
+CHECK: params: test-4nt8-checker:     "auto_contractor_chunk_size": 2
+CHECK: params: test-4nt8-checker:   },
+CHECK: params: test-4nt8-checker:   "prob_acc_1_rand_u1_sparse": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_2_rand_u1_sparse": 0.0625,
+CHECK: params: test-4nt8-checker:   "n_rand_u1_fsel": 4,
+CHECK: params: test-4nt8-checker:   "prob_acc_1_rand_u1": 0.25,
+CHECK: params: test-4nt8-checker:   "prob_acc_2_rand_u1": 0.0625,
+CHECK: params: test-4nt8-checker:   "m_l": 0.01,
+CHECK: params: test-4nt8-checker:   "m_h": 0.04,
+CHECK: params: test-4nt8-checker:   "meson_tensor_tsep": 1,
+CHECK: params: test-4nt8-checker:   "pi0_jjp_threshold": 0.1
+CHECK: params: test-4nt8-checker: }
+Qlat          81.787: CHECK: 17 ('auto_contract_meson_corr: ld sig', np.complex128(-7819229.610159129-97495.82103553414j)) load:['auto_contract_meson_corr_psnk: ld sig', np.complex128(-23.96852145158789-6.72089294220586j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 18 ("auto_contract_meson_corr: ld '< 1 >  exprs[0]' sig", np.complex128(-1.635940411607483+0j)) load:["auto_contract_meson_corr_psnk: ld '< 1 >  exprs[0]' sig", np.complex128(-1.5553377974845144+0j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 19 ("auto_contract_meson_corr: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(-13711.503448983247-3.6339622740053645j)) load:["auto_contract_meson_corr_psnk: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(-3.2287942678238504+2.9090620129097186e-18j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 20 ("auto_contract_meson_corr: ld '< j_t(0) * j_t(-tsep) > (Type2)  exprs[2]' sig", np.complex128(0.493456686028775+1.1547484800172654j)) load:["auto_contract_meson_corr_psnk: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[2]' sig", np.complex128(-2.722899408815201+2.6887303024294885e-18j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 21 ("auto_contract_meson_corr: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(-11534.76298594685-0.11840204737737432j)) load:["auto_contract_meson_corr_psnk: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(-0.5058948590086496+2.203317104802291e-19j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 22 ("auto_contract_meson_corr: ld '< jl_t(0) * jl_t(-tsep) > (Type2)  exprs[4]' sig", np.complex128(-0.01822352010156479-0.00022808900452391323j)) load:["auto_contract_meson_corr_psnk: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[4]' sig", np.complex128(10.287169669471877-3.00496609866839e-17j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 23 ("auto_contract_meson_corr: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[5]' sig", np.complex128(-2176.7404630363985-3.5155602266279864j)) load:["auto_contract_meson_corr_psnk: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[5]' sig", np.complex128(8.719385979411141-3.0355446560368987e-17j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 24 ("auto_contract_meson_corr: ld '< js_t(0) * js_t(-tsep) > (Type2)  exprs[6]' sig", np.complex128(1.011882045350229+1.346514695419092j)) load:["auto_contract_meson_corr_psnk: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[6]' sig", np.complex128(1.5677836900607327+3.0578557368507135e-19j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 25 ("auto_contract_meson_corr: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[7]' sig", np.complex128(44154.31002876293+6.547991285884988j)) load:["auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[7]' sig", np.complex128(-5.6685954268867995+0j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 26 ("auto_contract_meson_corr: ld '< j_i(0) * j_i(-tsep) > (Type2)  exprs[8]' sig", np.complex128(1.297338492616876-0.05037593055244938j)) load:["auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[8]' sig", np.complex128(0j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 27 ("auto_contract_meson_corr: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[9]' sig", np.complex128(37302.75072909381+0.13038501824550952j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[9]' sig", np.complex128(3.8614179047234304e-18+0.6655707596868511j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 28 ("auto_contract_meson_corr: ld '< jl_i(0) * jl_i(-tsep) > (Type2)  exprs[10]' sig", np.complex128(8.810674223174713+0.00795424277869123j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[10]' sig", np.complex128(0j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.787: CHECK: 29 ("auto_contract_meson_corr: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[11]' sig", np.complex128(6851.559299669074+6.417606267639484j)) load:["auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[11]' sig", np.complex128(0j)]
+Qlat          81.787: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 30 ("auto_contract_meson_corr: ld '< js_i(0) * js_i(-tsep) > (Type2)  exprs[12]' sig", np.complex128(3.251581893709009-0.9051765542197892j)) load:["auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[12]' sig", np.complex128(-5.00958989879575+0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 31 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[13]' sig", np.complex128(-23476.024623904337+0.013803812685584928j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[13]' sig", np.complex128(0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 32 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type2)  exprs[14]' sig", np.complex128(-4.321158439059618+3.3887768674358346e-06j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[14]' sig", np.complex128(-1.9778015657738838e-20+0.9665614102540706j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 33 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[15]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[15]' sig", np.complex128(-1.7071499678299825e-18-0.657741968915142j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 34 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type2)  exprs[16]' sig", np.complex128(-3.1744586392389116-0.0007169319598123915j)) load:["auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[16]' sig", np.complex128(0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 35 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[17]' sig", np.complex128(0.1333506408765045+2791.0894757427977j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[17]' sig", np.complex128(-5.049780943149516-2.6560596846646506e-19j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 36 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type2)  exprs[18]' sig", np.complex128(-0.010651969758022873-0.6361959790336345j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[18]' sig", np.complex128(0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 37 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 38 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type2)  exprs[20]' sig", np.complex128(-0.04216206242019399-3.227279560707357j)) load:["auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[20]' sig", np.complex128(7.004181683501318e-18-0.9436250480355395j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 39 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 40 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type2)  exprs[22]' sig", np.complex128(-2.3334307698781975-0.005630285582157007j)) load:["auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[22]' sig", np.complex128(-4.657785971086412-5.005021472366076e-18j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 41 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[23]' sig", np.complex128(-21301.457404377263+8.264523971174722j)) load:["auto_contract_meson_corr_psnk: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[23]' sig", np.complex128(-5.298886330091285+0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 42 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type2)  exprs[24]' sig", np.complex128(-0.2791793019433817+0.002229655250713688j)) load:["auto_contract_meson_corr_psnk: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[24]' sig", np.complex128(-4.691450633317264+0.01014834801920737j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 43 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[25]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[25]' sig", np.complex128(-14.95379019877312+0.04666307876149999j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 44 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type2)  exprs[26]' sig", np.complex128(0.0017489319545177405-6.956221172297651j)) load:["auto_contract_meson_corr_psnk: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[26]' sig", np.complex128(-14.92168687539816+8.258562965955889e-18j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 45 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[27]' sig", np.complex128(-23.986969545944685+4275.293168072208j)) load:["auto_contract_meson_corr_psnk: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[27]' sig", np.complex128(-14.21430041979484-0.05071201483984729j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 46 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type2)  exprs[28]' sig", np.complex128(0.625993192329483-5.763403305059864j)) load:["auto_contract_meson_corr_psnk: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[28]' sig", np.complex128(-5.6685954268867995+0j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 47 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[29]' sig", np.complex128(-0.13112533696844414-2826.4640172996315j)) load:["auto_contract_meson_corr_psnk: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[29]' sig", np.complex128(3.8614179047234304e-18+0.6655707596868511j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 48 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[30]' sig", np.complex128(0.0071280204152567765+10.75451150855617j)) load:["auto_contract_meson_corr_psnk: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[30]' sig", np.complex128(-1.7071499678299825e-18-0.657741968915142j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 49 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[31]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[31]' sig", np.complex128(-5.049780943149516-2.6560596846646506e-19j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 50 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[32]' sig", np.complex128(0.00033979588351959597-0.7743992326287334j)) load:["auto_contract_meson_corr_psnk: ld '< k+^dag(0) * k+(-tsep) >  exprs[32]' sig", np.complex128(-5.384760348720055-0.015461238109058504j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 51 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[33]' sig", np.complex128(-21383.857408099455-0.22393796345770015j)) load:["auto_contract_meson_corr_psnk: ld '< j5k_t(0) * k+(-tsep) >  exprs[33]' sig", np.complex128(0.005672668507988223+0.8239041363424904j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 52 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[34]' sig", np.complex128(-31.209679390407317-0.02347333960305802j)) load:["auto_contract_meson_corr_psnk: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[34]' sig", np.complex128(-0.003786317820815915-0.7999644492941582j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 53 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[35]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[35]' sig", np.complex128(-4.822943239654963-0.008782122172229019j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 54 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[36]' sig", np.complex128(-23.274173057601768-2.40198529528575j)) load:["auto_contract_meson_corr_psnk: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[36]' sig", np.complex128(-5.031627574655083-0.015853345292168967j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 55 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[37]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[37]' sig", np.complex128(-0.06934417696890727-0.014145092453113774j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 56 ("auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[38]' sig", np.complex128(0.2960885876801157+13.220946389852474j)) load:["auto_contract_meson_corr_psnk: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[38]' sig", np.complex128(-0.07507479472827586-0.03611363657806729j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 57 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[39]' sig", np.complex128(4.196757407128905-4273.259116640308j)) load:["auto_contract_meson_corr_psnk: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[39]' sig", np.complex128(-4.691450633317263-0.01014834801920736j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 58 ("auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[40]' sig", np.complex128(0.38902387891691664+0.7744537751534502j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[40]' sig", np.complex128(10.536013511735112+0.12766913197138555j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 59 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[41]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[41]' sig", np.complex128(20.456285393914733+0.4113972431278071j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 60 ("auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[42]' sig", np.complex128(-20.603408786837292-2.299242663965761j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[42]' sig", np.complex128(20.49628630239195+0.4007439308563259j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 61 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[43]' sig", np.complex128(-20011.16870340641-36.19326596337432j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[43]' sig", np.complex128(56.81619150478828+1.2472863759306378j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 62 ("auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[44]' sig", np.complex128(-12.363614028680175-4.1954481112453585j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[44]' sig", np.complex128(10.432600829822245-0.010600720699684318j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 63 ("auto_contract_meson_corr: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[45]' sig", np.complex128(-21993.674288083726-0.021267028773135174j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[45]' sig", np.complex128(20.342654617100486+0.04679272578368909j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 64 ("auto_contract_meson_corr: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[46]' sig", np.complex128(-20017.172752854334+66.23269931721248j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[46]' sig", np.complex128(20.272544398753702+0.04223014081573062j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 65 ("auto_contract_meson_corr: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[47]' sig", np.complex128(-63882.381854515894+245.06088944800052j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[47]' sig", np.complex128(56.93026365876172+0.12015687101005301j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 66 ("auto_contract_meson_corr: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[48]' sig", np.complex128(-63901.82334456216-0.2860924524467918j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[48]' sig", np.complex128(10.453574741450911-0.11953743356991955j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 67 ("auto_contract_meson_corr: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[49]' sig", np.complex128(-60869.37136432175-296.0952617006668j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[49]' sig", np.complex128(20.385201574398153-0.24579023483531953j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 68 ("auto_contract_meson_corr: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[50]' sig", np.complex128(-23476.024623904337+0.013803812685584928j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[50]' sig", np.complex128(20.317168679555294-0.2241915737840035j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 69 ("auto_contract_meson_corr: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[51]' sig", np.complex128(0.1333506408765045+2791.0894757427977j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[51]' sig", np.complex128(57.12101002706416-0.7776621226007832j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 70 ("auto_contract_meson_corr: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[52]' sig", np.complex128(-0.13112533696844414-2826.4640172996315j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[52]' sig", np.complex128(10.638638141838403-0.25659838175912564j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 71 ("auto_contract_meson_corr: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[53]' sig", np.complex128(-21383.857408099455-0.22393796345770015j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[53]' sig", np.complex128(20.678904557128106-0.5495234761804958j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 72 ("auto_contract_meson_corr: ld '< k+^dag(0) * k+(-tsep) >  exprs[54]' sig", np.complex128(-22062.899925925187-82.34662483344387j)) load:["auto_contract_meson_corr_psnk: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[54]' sig", np.complex128(20.709574223299818-0.5693034772305274j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.788: CHECK: 73 ("auto_contract_meson_corr: ld '< j5k_t(0) * k+(-tsep) >  exprs[55]' sig", np.complex128(-3.5723628591787486+3554.4026389551573j)) load:["auto_contract_meson_corr_psnk: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[55]' sig", np.complex128(57.4986396543586-1.44696045851983j)]
+Qlat          81.788: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 74 ("auto_contract_meson_corr: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[56]' sig", np.complex128(-6.597447796279379-3625.6888964975437j)) load:["auto_contract_meson_corr_psnk: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[56]' sig", np.complex128(3.539402680628154+0.02056060529793118j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 75 ("auto_contract_meson_corr: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[57]' sig", np.complex128(-20532.67014399864-88.39953399034759j)) load:["auto_contract_meson_corr_psnk: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[57]' sig", np.complex128(3.7104249111218315+0.03442309476745855j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 76 ("auto_contract_meson_corr: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[58]' sig", np.complex128(-20783.83837634271-88.87454834981858j)) load:["auto_contract_meson_corr_psnk: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[58]' sig", np.complex128(3.6955067088838653+0.036012708159112714j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 77 ("auto_contract_meson_corr: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[59]' sig", np.complex128(-426.0972941303678-114.00988187488178j)) load:["auto_contract_meson_corr_psnk: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[59]' sig", np.complex128(7.089411681933113+0.09773565550841701j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 78 ("auto_contract_meson_corr: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[60]' sig", np.complex128(-390.6212539994939-78.1784931848351j)) load:["auto_contract_meson_corr_psnk: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[60]' sig", np.complex128(3.5438999972418133-0.06509488822113521j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 79 ("auto_contract_meson_corr: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[61]' sig", np.complex128(-20009.522211375726-85.83888633923345j)) load:["auto_contract_meson_corr_psnk: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[61]' sig", np.complex128(3.707829080179084-0.05383486612858645j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 80 ("auto_contract_meson_corr: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[62]' sig", np.complex128(2372284.53531326-3002.9747321299656j)) load:["auto_contract_meson_corr_psnk: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[62]' sig", np.complex128(3.696605219303035-0.05297988005759497j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 81 ("auto_contract_meson_corr: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[63]' sig", np.complex128(4546741.376716901+22301.005567758708j)) load:["auto_contract_meson_corr_psnk: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[63]' sig", np.complex128(7.092107148493299-0.08544211079670629j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 82 ("auto_contract_meson_corr: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[64]' sig", np.complex128(4552171.659587959+23645.856112738278j)) load:['auto_contract_meson_jj: ld_sum sig', np.complex128(-120.07932185739554-0.19956562741564018j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 83 ("auto_contract_meson_corr: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[65]' sig", np.complex128(12681730.916241005+88959.23440363735j)) load:["auto_contract_meson_jj: ld_sum '< 1 >  exprs[0]' sig", np.complex128(-8.309305847086893+0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 84 ("auto_contract_meson_corr: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[66]' sig", np.complex128(2352240.8175754086-19186.82797858154j)) load:["auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[1]' sig", np.complex128(58.91789629745953-0.002134747220555324j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 85 ("auto_contract_meson_corr: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[67]' sig", np.complex128(4524000.813970832-26962.79394950719j)) load:["auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[2]' sig", np.complex128(23.70213756604462+0.00017285626692499208j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 86 ("auto_contract_meson_corr: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[68]' sig", np.complex128(4515891.536964016-24870.266752201613j)) load:["auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[3]' sig", np.complex128(35.21575873141512-0.0023076034874811215j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 87 ("auto_contract_meson_corr: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[69]' sig", np.complex128(12713543.545952357-78766.19918237385j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[4]' sig", np.complex128(31.09412185982125-0.0013245024024232815j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 88 ("auto_contract_meson_corr: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[70]' sig", np.complex128(2361807.9272258463-30293.504156715688j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[5]' sig", np.complex128(-2.189268015121154+0.00013024697805410606j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 89 ("auto_contract_meson_corr: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[71]' sig", np.complex128(4544664.599524861-63528.89469790035j)) load:["auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[6]' sig", np.complex128(1.6832654601768846+2.787628276070911e-05j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 90 ("auto_contract_meson_corr: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[72]' sig", np.complex128(4536713.689453453-58486.33226172821j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[7]' sig", np.complex128(-17.440124176187574+0.0007680014487120414j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 91 ("auto_contract_meson_corr: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[73]' sig", np.complex128(12773374.86614164-204811.30983500066j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[8]' sig", np.complex128(-0.1528552743398392+0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 92 ("auto_contract_meson_corr: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[74]' sig", np.complex128(2395134.2810926577-52712.75359419943j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[9]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 93 ("auto_contract_meson_corr: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[75]' sig", np.complex128(4601870.837862836-115858.48828231447j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[10]' sig", np.complex128(-0.1528552743398392+0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 94 ("auto_contract_meson_corr: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[76]' sig", np.complex128(4602424.71980792-118593.68235235367j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[11]' sig", np.complex128(-17.440124176187574+0.0007680014487120414j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 95 ("auto_contract_meson_corr: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[77]' sig", np.complex128(12853820.232382841-294866.3748634634j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[12]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 96 ("auto_contract_meson_corr: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[78]' sig", np.complex128(764925.9247211909-3016.3447789671136j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[13]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 97 ("auto_contract_meson_corr: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[79]' sig", np.complex128(774377.9997307545-2352.193312612173j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[14]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 98 ("auto_contract_meson_corr: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[80]' sig", np.complex128(771600.8171586029-1809.863281678371j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[15]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 99 ("auto_contract_meson_corr: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[81]' sig", np.complex128(1500831.367965958+3916.715403819897j)) load:["auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[16]' sig", np.complex128(-79.41788292155145-0.002134747220557471j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 100 ("auto_contract_meson_corr: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[82]' sig", np.complex128(767145.2273239018-16391.07652500447j)) load:["auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[17]' sig", np.complex128(-15.681571248923156+0.0001728562669252844j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 101 ("auto_contract_meson_corr: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[83]' sig", np.complex128(775193.1184557895-14809.517303205914j)) load:["auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[18]' sig", np.complex128(-63.73631167262806-0.0023076034874828415j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 102 ("auto_contract_meson_corr: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[84]' sig", np.complex128(773108.0982968968-14775.611336435646j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[19]' sig", np.complex128(-53.97357682980625-0.001324502402411588j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 103 ("auto_contract_meson_corr: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[85]' sig", np.complex128(1504159.7397101836-24419.4667096954j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[20]' sig", np.complex128(-2.4132039129946077+0.0001302469780564435j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 104 ('auto_contract_meson_corr_psnk: ld sig', np.complex128(-23.96852145158789-6.72089294220586j)) load:["auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[21]' sig", np.complex128(1.5342723340417752+2.7876282769381005e-05j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 105 ("auto_contract_meson_corr_psnk: ld '< 1 >  exprs[0]' sig", np.complex128(-1.5553377974845144+0j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[22]' sig", np.complex128(17.17531350870213+0.0007680014487107764j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 106 ("auto_contract_meson_corr_psnk: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(-3.2287942678238504+2.9090620129097186e-18j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[23]' sig", np.complex128(-34.76829295922958+8.096318967778658e-16j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 107 ("auto_contract_meson_corr_psnk: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[2]' sig", np.complex128(-2.722899408815201+2.6887303024294885e-18j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[24]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 108 ("auto_contract_meson_corr_psnk: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(-0.5058948590086496+2.203317104802291e-19j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[25]' sig", np.complex128(-34.76829295922958+8.096318967778658e-16j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 109 ("auto_contract_meson_corr_psnk: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[4]' sig", np.complex128(10.287169669471877-3.00496609866839e-17j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[26]' sig", np.complex128(17.17531350870213+0.0007680014487107764j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 110 ("auto_contract_meson_corr_psnk: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[5]' sig", np.complex128(8.719385979411141-3.0355446560368987e-17j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[27]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 111 ("auto_contract_meson_corr_psnk: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[6]' sig", np.complex128(1.5677836900607327+3.0578557368507135e-19j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[28]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 112 ("auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[7]' sig", np.complex128(-5.6685954268867995+0j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[29]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 113 ("auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[8]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[30]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 114 ("auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[9]' sig", np.complex128(3.8614179047234304e-18+0.6655707596868511j)) load:["auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[31]' sig", np.complex128(25.901345427772775+0.03670887176559018j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 115 ("auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[10]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[32]' sig", np.complex128(8.979050693645-0.011041443558450548j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 116 ("auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[11]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[33]' sig", np.complex128(16.922294734127767+0.04775031532404091j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 117 ("auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[12]' sig", np.complex128(-5.00958989879575+0j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[34]' sig", np.complex128(13.372154427414937-0.021268069161827257j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 118 ("auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[13]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[35]' sig", np.complex128(-0.9180411316715404+0.008138420322987273j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 119 ("auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[14]' sig", np.complex128(-1.9778015657738838e-20+0.9665614102540706j)) load:["auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[36]' sig", np.complex128(0.9446348664610691-0.0010303390679129941j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 120 ("auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[15]' sig", np.complex128(-1.7071499678299825e-18-0.657741968915142j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[37]' sig", np.complex128(0j)]
+Qlat          81.789: CHECK: ERROR: JSON results item does not match.
+Qlat          81.789: CHECK: 121 ("auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[16]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[38]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 122 ("auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[17]' sig", np.complex128(-5.049780943149516-2.6560596846646506e-19j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[39]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 123 ("auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[18]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[40]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 124 ("auto_contract_meson_corr_psnk: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[41]' sig", np.complex128(14.083838525964975-0.18151354765257374j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 125 ("auto_contract_meson_corr_psnk: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[20]' sig", np.complex128(7.004181683501318e-18-0.9436250480355395j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[42]' sig", np.complex128(-37.239157436113786-2.885892375430036e-15j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 126 ("auto_contract_meson_corr_psnk: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[43]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 127 ("auto_contract_meson_corr_psnk: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[22]' sig", np.complex128(-4.657785971086412-5.005021472366076e-18j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[44]' sig", np.complex128(-36.5415980879692-2.142562642150861e-15j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 128 ("auto_contract_meson_corr_psnk: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[23]' sig", np.complex128(-5.298886330091285+0j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[45]' sig", np.complex128(6.51353961572142+0.000829778187942782j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 129 ("auto_contract_meson_corr_psnk: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[24]' sig", np.complex128(-4.691450633317264+0.01014834801920737j)) load:["auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[46]' sig", np.complex128(-78.07665737666278+0.14799148168504325j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 130 ("auto_contract_meson_corr_psnk: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[25]' sig", np.complex128(-14.95379019877312+0.04666307876149999j)) load:["auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[47]' sig", np.complex128(-17.99099393811275-0.04417769213068516j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 131 ("auto_contract_meson_corr_psnk: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[26]' sig", np.complex128(-14.92168687539816+8.258562965955889e-18j)) load:["auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[48]' sig", np.complex128(-60.0856634385501+0.192169173815728j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 132 ("auto_contract_meson_corr_psnk: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[27]' sig", np.complex128(-14.21430041979484-0.05071201483984729j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[49]' sig", np.complex128(-53.4358037511761-0.08438752598682217j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 133 ("auto_contract_meson_corr_psnk: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[28]' sig", np.complex128(-5.6685954268867995+0j)) load:["auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[50]' sig", np.complex128(-2.2523901572382807+0.03231492613347618j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 134 ("auto_contract_meson_corr_psnk: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[29]' sig", np.complex128(3.8614179047234304e-18+0.6655707596868511j)) load:["auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[51]' sig", np.complex128(1.5502443730935118-0.004058583265720561j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 135 ("auto_contract_meson_corr_psnk: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[30]' sig", np.complex128(-1.7071499678299825e-18-0.657741968915142j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[52]' sig", np.complex128(14.083838525964975-0.18151354765257374j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 136 ("auto_contract_meson_corr_psnk: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[31]' sig", np.complex128(-5.049780943149516-2.6560596846646506e-19j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[53]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 137 ("auto_contract_meson_corr_psnk: ld '< k+^dag(0) * k+(-tsep) >  exprs[32]' sig", np.complex128(-5.384760348720055-0.015461238109058504j)) load:["auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[54]' sig", np.complex128(-37.239157436113786-2.885892375430036e-15j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 138 ("auto_contract_meson_corr_psnk: ld '< j5k_t(0) * k+(-tsep) >  exprs[33]' sig", np.complex128(0.005672668507988223+0.8239041363424904j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[55]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 139 ("auto_contract_meson_corr_psnk: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[34]' sig", np.complex128(-0.003786317820815915-0.7999644492941582j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[56]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 140 ("auto_contract_meson_corr_psnk: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[35]' sig", np.complex128(-4.822943239654963-0.008782122172229019j)) load:["auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[57]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 141 ("auto_contract_meson_corr_psnk: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[36]' sig", np.complex128(-5.031627574655083-0.015853345292168967j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[58]' sig", np.complex128(-36.5415980879692-2.142562642150861e-15j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 142 ("auto_contract_meson_corr_psnk: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[37]' sig", np.complex128(-0.06934417696890727-0.014145092453113774j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[59]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 143 ("auto_contract_meson_corr_psnk: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[38]' sig", np.complex128(-0.07507479472827586-0.03611363657806729j)) load:["auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[60]' sig", np.complex128(6.51353961572142+0.000829778187942782j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 144 ("auto_contract_meson_corr_psnk: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[39]' sig", np.complex128(-4.691450633317263-0.01014834801920736j)) load:["auto_contract_meson_jj: ld_sum '< jd_mu(x) * jd_mu(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[61]' sig", np.complex128(-32.275917045101174-0.0038425449970039926j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 145 ("auto_contract_meson_corr_psnk: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[40]' sig", np.complex128(10.536013511735112+0.12766913197138555j)) load:["auto_contract_meson_jj: ld_sum '< jd_t(x) * jd_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[62]' sig", np.complex128(3.281720670426285+0.0003111412804642698j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 146 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[41]' sig", np.complex128(20.456285393914733+0.4113972431278071j)) load:["auto_contract_meson_jj: ld_sum '< jd_mu(x) * jd_mu(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[63]' sig", np.complex128(-32.275917045101174-0.0038425449970039926j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 147 ("auto_contract_meson_corr_psnk: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[42]' sig", np.complex128(20.49628630239195+0.4007439308563259j)) load:["auto_contract_meson_jj: ld_sum '< jd_t(x) * jd_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[64]' sig", np.complex128(3.281720670426285+0.0003111412804642698j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 148 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[43]' sig", np.complex128(56.81619150478828+1.2472863759306378j)) load:["auto_contract_meson_jj: ld_sum '< jd_mu(x) * jd_mu(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[65]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 149 ("auto_contract_meson_corr_psnk: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[44]' sig", np.complex128(10.432600829822245-0.010600720699684318j)) load:["auto_contract_meson_jj: ld_sum '< jd_t(x) * jd_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[66]' sig", np.complex128(0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 150 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[45]' sig", np.complex128(20.342654617100486+0.04679272578368909j)) load:["auto_contract_meson_jj: ld_sum '< js_mu(x) * js_mu(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[67]' sig", np.complex128(-23.719423254762212-0.0034679838680384796j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 151 ("auto_contract_meson_corr_psnk: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[46]' sig", np.complex128(20.272544398753702+0.04223014081573062j)) load:["auto_contract_meson_jj: ld_sum '< js_t(x) * js_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[68]' sig", np.complex128(-0.8279870258760162+3.5753690648171216e-05j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 152 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[47]' sig", np.complex128(56.93026365876172+0.12015687101005301j)) load:['auto_contract_meson_jt: ld_sum sig', np.complex128(-264.1932538687018+1.55533107963291j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 153 ("auto_contract_meson_corr_psnk: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[48]' sig", np.complex128(10.453574741450911-0.11953743356991955j)) load:["auto_contract_meson_jt: ld_sum '< 1 >  exprs[0]' sig", (0.9507301038894393+0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 154 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[49]' sig", np.complex128(20.385201574398153-0.24579023483531953j)) load:["auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[1]' sig", (162.4495497621836-0.36829468757487255j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 155 ("auto_contract_meson_corr_psnk: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[50]' sig", np.complex128(20.317168679555294-0.2241915737840035j)) load:["auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[2]' sig", (144.09667048421687-0.5856181799652646j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 156 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[51]' sig", np.complex128(57.12101002706416-0.7776621226007832j)) load:["auto_contract_meson_jt: ld_sum '< (-1) * sbar_gt_s(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[3]' sig", (163.89122203989783-0.9574568642473478j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 157 ("auto_contract_meson_corr_psnk: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[52]' sig", np.complex128(10.638638141838403-0.25659838175912564j)) load:["auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * pi+^dag(T/2+tsep) * pi+(T/2-tsep) >  exprs[4]' sig", (-39.32045892171813-0.38917841261855657j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 158 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[53]' sig", np.complex128(20.678904557128106-0.5495234761804958j)) load:["auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * K+^dag(T/2+tsep) * K+(T/2-tsep) >  exprs[5]' sig", (-36.668347924351245+0.07274115879003533j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 159 ("auto_contract_meson_corr_psnk: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[54]' sig", np.complex128(20.709574223299818-0.5693034772305274j)) load:["auto_contract_meson_jt: ld_sum '< (-1) * sbar_gt_s(0) * K+^dag(T/2+tsep) * K+(T/2-tsep) >  exprs[6]' sig", (-31.057547064581666-0.45345757582164814j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 160 ("auto_contract_meson_corr_psnk: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[55]' sig", np.complex128(57.4986396543586-1.44696045851983j)) load:['auto_contract_meson_m: ld_sum sig', np.complex128(-90.37863214633427+0.05142074464832902j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 161 ("auto_contract_meson_corr_psnk: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[56]' sig", np.complex128(3.539402680628154+0.02056060529793118j)) load:["auto_contract_meson_m: ld_sum '< 1 >  exprs[0]' sig", (0.9507301038894393+0j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 162 ("auto_contract_meson_corr_psnk: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[57]' sig", np.complex128(3.7104249111218315+0.03442309476745855j)) load:["auto_contract_meson_m: ld_sum '< ubar_u(0) * pi0^dag(+tsep) * pi0(-tsep) >  exprs[1]' sig", (70.56769310689378+0.0010927300106272403j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 163 ("auto_contract_meson_corr_psnk: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[58]' sig", np.complex128(3.6955067088838653+0.036012708159112714j)) load:["auto_contract_meson_m: ld_sum '< dbar_d(0) * pi0^dag(+tsep) * pi0(-tsep) >  exprs[2]' sig", (70.56769310689378+0.0010927300106272403j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 164 ("auto_contract_meson_corr_psnk: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[59]' sig", np.complex128(7.089411681933113+0.09773565550841701j)) load:["auto_contract_meson_m: ld_sum '< sbar_s(0) * pi0^dag(+tsep) * pi0(-tsep) >  exprs[3]' sig", 0j]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 165 ("auto_contract_meson_corr_psnk: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[60]' sig", np.complex128(3.5438999972418133-0.06509488822113521j)) load:["auto_contract_meson_m: ld_sum '< ubar_u(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[4]' sig", (70.57454897254121-0.2678134855347304j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 166 ("auto_contract_meson_corr_psnk: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[61]' sig", np.complex128(3.707829080179084-0.05383486612858645j)) load:["auto_contract_meson_m: ld_sum '< dbar_d(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[5]' sig", (70.56083724124633+0.2699989455559849j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 167 ("auto_contract_meson_corr_psnk: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[62]' sig", np.complex128(3.696605219303035-0.05297988005759497j)) load:["auto_contract_meson_m: ld_sum '< sbar_s(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[6]' sig", 0j]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 168 ("auto_contract_meson_corr_psnk: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[63]' sig", np.complex128(7.092107148493299-0.08544211079670629j)) load:["auto_contract_meson_m: ld_sum '< ubar_u(0) * K0^dag(+tsep) * K0(-tsep) >  exprs[7]' sig", 0j]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 169 ('auto_contract_meson_corr_psrc: ld sig', np.complex128(-41.52588894568737+1.3676133516539264j)) load:["auto_contract_meson_m: ld_sum '< dbar_d(0) * K0^dag(+tsep) * K0(-tsep) >  exprs[8]' sig", (62.75981698141-0.031482469997683005j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.790: CHECK: 170 ("auto_contract_meson_corr_psrc: ld '< 1 >  exprs[0]' sig", np.complex128(-1.5246116201606774+0j)) load:["auto_contract_meson_m: ld_sum '< sbar_s(0) * K0^dag(+tsep) * K0(-tsep) >  exprs[9]' sig", (77.04816559456285+0.42013167390286676j)]
+Qlat          81.790: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 171 ("auto_contract_meson_corr_psrc: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(-3.156940154908299-1.2231677045710208e-17j)) load:["auto_contract_meson_m: ld_sum '< ubar_u(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[10]' sig", (62.75981698141-0.031482469997683005j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 172 ("auto_contract_meson_corr_psrc: ld '< j_t(0) * j_t(-tsep) > (Type2)  exprs[2]' sig", np.complex128(0.0007208018909853617+0.0006363658317726169j)) load:["auto_contract_meson_m: ld_sum '< dbar_d(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[11]' sig", 0j]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 173 ("auto_contract_meson_corr_psrc: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(-2.6623063830465483-1.189673333087102e-17j)) load:["auto_contract_meson_m: ld_sum '< sbar_s(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[12]' sig", (77.04816559456285+0.42013167390286676j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 174 ("auto_contract_meson_corr_psrc: ld '< jl_t(0) * jl_t(-tsep) > (Type2)  exprs[4]' sig", np.complex128(7.074761249267112e-05-6.525672937189795e-06j)) load:['auto_contract_meson_corr: ld sig', np.complex128(-7819229.610159129-97495.82103553414j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 175 ("auto_contract_meson_corr_psrc: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[5]' sig", np.complex128(-0.4946337718617503-3.3494371483917866e-19j)) load:["auto_contract_meson_corr: ld '< 1 >  exprs[0]' sig", np.complex128(-1.635940411607483+0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 176 ("auto_contract_meson_corr_psrc: ld '< js_t(0) * js_t(-tsep) > (Type2)  exprs[6]' sig", np.complex128(0.0011654573602732613+0.0006191020031070195j)) load:["auto_contract_meson_corr: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(-13711.503448983247-3.6339622740053645j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 177 ("auto_contract_meson_corr_psrc: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[7]' sig", np.complex128(10.062537838697388+1.6957616178128368e-17j)) load:["auto_contract_meson_corr: ld '< j_t(0) * j_t(-tsep) > (Type2)  exprs[2]' sig", np.complex128(0.493456686028775+1.1547484800172654j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 178 ("auto_contract_meson_corr_psrc: ld '< j_i(0) * j_i(-tsep) > (Type2)  exprs[8]' sig", np.complex128(0.00023824513242794144-0.00023962275094080538j)) load:["auto_contract_meson_corr: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(-11534.76298594685-0.11840204737737432j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 179 ("auto_contract_meson_corr_psrc: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[9]' sig", np.complex128(8.521758548431219+1.648343221941089e-17j)) load:["auto_contract_meson_corr: ld '< jl_t(0) * jl_t(-tsep) > (Type2)  exprs[4]' sig", np.complex128(-0.01822352010156479-0.00022808900452391323j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 180 ("auto_contract_meson_corr_psrc: ld '< jl_i(0) * jl_i(-tsep) > (Type2)  exprs[10]' sig", np.complex128(0.0029461452603385873+5.705050531951612e-06j)) load:["auto_contract_meson_corr: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[5]' sig", np.complex128(-2176.7404630363985-3.5155602266279864j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 181 ("auto_contract_meson_corr_psrc: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[11]' sig", np.complex128(1.5407792902661699+4.741839587174783e-19j)) load:["auto_contract_meson_corr: ld '< js_t(0) * js_t(-tsep) > (Type2)  exprs[6]' sig", np.complex128(1.011882045350229+1.346514695419092j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 182 ("auto_contract_meson_corr_psrc: ld '< js_i(0) * js_i(-tsep) > (Type2)  exprs[12]' sig", np.complex128(0.0010756477949628192-0.00044058049411030344j)) load:["auto_contract_meson_corr: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[7]' sig", np.complex128(44154.31002876293+6.547991285884988j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 183 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[13]' sig", np.complex128(-5.545668924996869+0j)) load:["auto_contract_meson_corr: ld '< j_i(0) * j_i(-tsep) > (Type2)  exprs[8]' sig", np.complex128(1.297338492616876-0.05037593055244938j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 184 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type2)  exprs[14]' sig", np.complex128(0.00017436687495973413+2.3987076248726118e-06j)) load:["auto_contract_meson_corr: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[9]' sig", np.complex128(37302.75072909381+0.13038501824550952j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 185 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[15]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< jl_i(0) * jl_i(-tsep) > (Type2)  exprs[10]' sig", np.complex128(8.810674223174713+0.00795424277869123j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 186 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type2)  exprs[16]' sig", np.complex128(-0.0005629016698545262+2.1795269340496596e-05j)) load:["auto_contract_meson_corr: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[11]' sig", np.complex128(6851.559299669074+6.417606267639484j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 187 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[17]' sig", np.complex128(7.397276291740396e-18+0.6561008834010409j)) load:["auto_contract_meson_corr: ld '< js_i(0) * js_i(-tsep) > (Type2)  exprs[12]' sig", np.complex128(3.251581893709009-0.9051765542197892j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 188 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type2)  exprs[18]' sig", np.complex128(-4.387960468326018e-05-0.0019109626980616198j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[13]' sig", np.complex128(-23476.024623904337+0.013803812685584928j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 189 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type2)  exprs[14]' sig", np.complex128(-4.321158439059618+3.3887768674358346e-06j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 190 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type2)  exprs[20]' sig", np.complex128(-9.87838127385543e-05-0.0008439643014420163j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[15]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 191 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type2)  exprs[16]' sig", np.complex128(-3.1744586392389116-0.0007169319598123915j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 192 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type2)  exprs[22]' sig", np.complex128(0.00044871501488194423-8.60510979291488e-06j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[17]' sig", np.complex128(0.1333506408765045+2791.0894757427977j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 193 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[23]' sig", np.complex128(-4.940867819159719+0j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type2)  exprs[18]' sig", np.complex128(-0.010651969758022873-0.6361959790336345j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 194 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type2)  exprs[24]' sig", np.complex128(0.001701100939120975+7.905692396420241e-06j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 195 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[25]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type2)  exprs[20]' sig", np.complex128(-0.04216206242019399-3.227279560707357j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 196 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type2)  exprs[26]' sig", np.complex128(-3.294045041149807e-05-0.001006439399533236j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 197 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[27]' sig", np.complex128(1.0139637064541502e-18+0.9101935521788967j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type2)  exprs[22]' sig", np.complex128(-2.3334307698781975-0.005630285582157007j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 198 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type2)  exprs[28]' sig", np.complex128(-0.0004644126988666589-0.004516023787978255j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[23]' sig", np.complex128(-21301.457404377263+8.264523971174722j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 199 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[29]' sig", np.complex128(1.701895355037292e-17-0.6532333407344204j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type2)  exprs[24]' sig", np.complex128(-0.2791793019433817+0.002229655250713688j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 200 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[30]' sig", np.complex128(-9.83056434398509e-06+0.0016878088097833734j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[25]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 201 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[31]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type2)  exprs[26]' sig", np.complex128(0.0017489319545177405-6.956221172297651j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 202 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[32]' sig", np.complex128(4.639981110477749e-05-0.0062643145892096784j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[27]' sig", np.complex128(-23.986969545944685+4275.293168072208j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 203 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[33]' sig", np.complex128(-4.939149550144925+4.639927143745134e-18j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type2)  exprs[28]' sig", np.complex128(0.625993192329483-5.763403305059864j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 204 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[34]' sig", np.complex128(0.0012264760575876883+2.494927281472889e-05j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[29]' sig", np.complex128(-0.13112533696844414-2826.4640172996315j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 205 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[35]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[30]' sig", np.complex128(0.0071280204152567765+10.75451150855617j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 206 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[36]' sig", np.complex128(-0.013720572278738886+0.001413796898354712j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[31]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 207 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[37]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[32]' sig", np.complex128(0.00033979588351959597-0.7743992326287334j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 208 ("auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[38]' sig", np.complex128(0.0005844911883820132+0.0053468766665602995j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[33]' sig", np.complex128(-21383.857408099455-0.22393796345770015j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 209 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[39]' sig", np.complex128(-1.0340210894913339e-17-0.8944383931932287j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[34]' sig", np.complex128(-31.209679390407317-0.02347333960305802j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 210 ("auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[40]' sig", np.complex128(0.001770538212996895+0.003283891627864834j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[35]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 211 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[41]' sig", np.complex128(0j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[36]' sig", np.complex128(-23.274173057601768-2.40198529528575j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 212 ("auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[42]' sig", np.complex128(0.004161639751419076-0.0005701369542982602j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[37]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 213 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[43]' sig", np.complex128(-4.553288943707585+3.364094869521558e-18j)) load:["auto_contract_meson_corr: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[38]' sig", np.complex128(0.2960885876801157+13.220946389852474j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 214 ("auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[44]' sig", np.complex128(0.0068341420506554396-0.004235843563513922j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[39]' sig", np.complex128(4.196757407128905-4273.259116640308j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 215 ("auto_contract_meson_corr_psrc: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[45]' sig", np.complex128(-5.173254108896268+0j)) load:["auto_contract_meson_corr: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[40]' sig", np.complex128(0.38902387891691664+0.7744537751534502j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 216 ("auto_contract_meson_corr_psrc: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[46]' sig", np.complex128(-4.585462485933016+0.007216405944582572j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[41]' sig", np.complex128(0j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 217 ("auto_contract_meson_corr_psrc: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[47]' sig", np.complex128(-14.677654268721492+0.04644085649757696j)) load:["auto_contract_meson_corr: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[42]' sig", np.complex128(-20.603408786837292-2.299242663965761j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 218 ("auto_contract_meson_corr_psrc: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[48]' sig", np.complex128(-14.561637802599787+1.927309292893466e-17j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[43]' sig", np.complex128(-20011.16870340641-36.19326596337432j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.791: CHECK: 219 ("auto_contract_meson_corr_psrc: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[49]' sig", np.complex128(-13.915005611343338-0.0512921887936106j)) load:["auto_contract_meson_corr: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[44]' sig", np.complex128(-12.363614028680175-4.1954481112453585j)]
+Qlat          81.791: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 220 ("auto_contract_meson_corr_psrc: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[50]' sig", np.complex128(-5.545668924996869+0j)) load:["auto_contract_meson_corr: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[45]' sig", np.complex128(-21993.674288083726-0.021267028773135174j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 221 ("auto_contract_meson_corr_psrc: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[51]' sig", np.complex128(7.397276291740396e-18+0.6561008834010409j)) load:["auto_contract_meson_corr: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[46]' sig", np.complex128(-20017.172752854334+66.23269931721248j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 222 ("auto_contract_meson_corr_psrc: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[52]' sig", np.complex128(1.701895355037292e-17-0.6532333407344204j)) load:["auto_contract_meson_corr: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[47]' sig", np.complex128(-63882.381854515894+245.06088944800052j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 223 ("auto_contract_meson_corr_psrc: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[53]' sig", np.complex128(-4.939149550144925+4.639927143745134e-18j)) load:["auto_contract_meson_corr: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[48]' sig", np.complex128(-63901.82334456216-0.2860924524467918j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 224 ("auto_contract_meson_corr_psrc: ld '< k+^dag(0) * k+(-tsep) >  exprs[54]' sig", np.complex128(-5.30798524719266-0.01766504289825417j)) load:["auto_contract_meson_corr: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[49]' sig", np.complex128(-60869.37136432175-296.0952617006668j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 225 ("auto_contract_meson_corr_psrc: ld '< j5k_t(0) * k+(-tsep) >  exprs[55]' sig", np.complex128(0.0026899582582910926+0.7935786466472272j)) load:["auto_contract_meson_corr: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[50]' sig", np.complex128(-23476.024623904337+0.013803812685584928j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 226 ("auto_contract_meson_corr_psrc: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[56]' sig", np.complex128(-0.003082418203700776-0.7764814306967185j)) load:["auto_contract_meson_corr: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[51]' sig", np.complex128(0.1333506408765045+2791.0894757427977j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 227 ("auto_contract_meson_corr_psrc: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[57]' sig", np.complex128(-4.715173377871571-0.005486974975124465j)) load:["auto_contract_meson_corr: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[52]' sig", np.complex128(-0.13112533696844414-2826.4640172996315j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 228 ("auto_contract_meson_corr_psrc: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[58]' sig", np.complex128(-4.9374182502817785-0.01826587845132894j)) load:["auto_contract_meson_corr: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[53]' sig", np.complex128(-21383.857408099455-0.22393796345770015j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 229 ("auto_contract_meson_corr_psrc: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[59]' sig", np.complex128(-0.06338666714221625-0.009218410576006204j)) load:["auto_contract_meson_corr: ld '< k+^dag(0) * k+(-tsep) >  exprs[54]' sig", np.complex128(-22062.899925925187-82.34662483344387j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 230 ("auto_contract_meson_corr_psrc: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[60]' sig", np.complex128(-0.06552033425806868-0.036729945650227386j)) load:["auto_contract_meson_corr: ld '< j5k_t(0) * k+(-tsep) >  exprs[55]' sig", np.complex128(-3.5723628591787486+3554.4026389551573j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 231 ("auto_contract_meson_corr_psrc: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[61]' sig", np.complex128(-4.585462485933016-0.007216405944582501j)) load:["auto_contract_meson_corr: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[56]' sig", np.complex128(-6.597447796279379-3625.6888964975437j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 232 ("auto_contract_meson_corr_psrc: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[62]' sig", np.complex128(12.073454581641133+0.2821588041047163j)) load:["auto_contract_meson_corr: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[57]' sig", np.complex128(-20532.67014399864-88.39953399034759j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 233 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[63]' sig", np.complex128(23.45950403604745+0.792357767494459j)) load:["auto_contract_meson_corr: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[58]' sig", np.complex128(-20783.83837634271-88.87454834981858j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 234 ("auto_contract_meson_corr_psrc: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[64]' sig", np.complex128(23.528095650847458+0.765974452547651j)) load:["auto_contract_meson_corr: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[59]' sig", np.complex128(-426.0972941303678-114.00988187488178j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 235 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[65]' sig", np.complex128(65.126036400353+2.327398668554739j)) load:["auto_contract_meson_corr: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[60]' sig", np.complex128(-390.6212539994939-78.1784931848351j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 236 ("auto_contract_meson_corr_psrc: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[66]' sig", np.complex128(11.985656990003084+0.008725184146379628j)) load:["auto_contract_meson_corr: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[61]' sig", np.complex128(-20009.522211375726-85.83888633923345j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 237 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[67]' sig", np.complex128(23.404829303079726+0.11733159075629696j)) load:["auto_contract_meson_corr: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[62]' sig", np.complex128(2372284.53531326-3002.9747321299656j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 238 ("auto_contract_meson_corr_psrc: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[68]' sig", np.complex128(23.308842859337965+0.09699074767804872j)) load:["auto_contract_meson_corr: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[63]' sig", np.complex128(4546741.376716901+22301.005567758708j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 239 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[69]' sig", np.complex128(65.41531921295537+0.3388797001149506j)) load:["auto_contract_meson_corr: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[64]' sig", np.complex128(4552171.659587959+23645.856112738278j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 240 ("auto_contract_meson_corr_psrc: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[70]' sig", np.complex128(12.009266584999668-0.20037927319273924j)) load:["auto_contract_meson_corr: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[65]' sig", np.complex128(12681730.916241005+88959.23440363735j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 241 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[71]' sig", np.complex128(23.45471085830138-0.41500547535641347j)) load:["auto_contract_meson_corr: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[66]' sig", np.complex128(2352240.8175754086-19186.82797858154j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 242 ("auto_contract_meson_corr_psrc: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[72]' sig", np.complex128(23.384527099458406-0.3948690676286597j)) load:["auto_contract_meson_corr: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[67]' sig", np.complex128(4524000.813970832-26962.79394950719j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 243 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[73]' sig", np.complex128(65.72343975203012-1.2264987254415105j)) load:["auto_contract_meson_corr: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[68]' sig", np.complex128(4515891.536964016-24870.266752201613j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 244 ("auto_contract_meson_corr_psrc: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[74]' sig", np.complex128(12.248682688122138-0.41842005722567693j)) load:["auto_contract_meson_corr: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[69]' sig", np.complex128(12713543.545952357-78766.19918237385j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 245 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[75]' sig", np.complex128(23.85814822290819-0.9116371731929646j)) load:["auto_contract_meson_corr: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[70]' sig", np.complex128(2361807.9272258463-30293.504156715688j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 246 ("auto_contract_meson_corr_psrc: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[76]' sig", np.complex128(23.914433993868233-0.9457108462462346j)) load:["auto_contract_meson_corr: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[71]' sig", np.complex128(4544664.599524861-63528.89469790035j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 247 ("auto_contract_meson_corr_psrc: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[77]' sig", np.complex128(66.22067790387203-2.4484723382911002j)) load:["auto_contract_meson_corr: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[72]' sig", np.complex128(4536713.689453453-58486.33226172821j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 248 ("auto_contract_meson_corr_psrc: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[78]' sig", np.complex128(4.173115810535619+0.035224723654945986j)) load:["auto_contract_meson_corr: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[73]' sig", np.complex128(12773374.86614164-204811.30983500066j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 249 ("auto_contract_meson_corr_psrc: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[79]' sig", np.complex128(4.464809977601837+0.05485539209286514j)) load:["auto_contract_meson_corr: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[74]' sig", np.complex128(2395134.2810926577-52712.75359419943j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 250 ("auto_contract_meson_corr_psrc: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[80]' sig", np.complex128(4.450096971818743+0.055180862760205625j)) load:["auto_contract_meson_corr: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[75]' sig", np.complex128(4601870.837862836-115858.48828231447j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 251 ("auto_contract_meson_corr_psrc: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[81]' sig", np.complex128(8.500379129218977+0.15063295726562972j)) load:["auto_contract_meson_corr: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[76]' sig", np.complex128(4602424.71980792-118593.68235235367j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 252 ("auto_contract_meson_corr_psrc: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[82]' sig", np.complex128(4.180539323880858-0.09286392824870915j)) load:["auto_contract_meson_corr: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[77]' sig", np.complex128(12853820.232382841-294866.3748634634j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 253 ("auto_contract_meson_corr_psrc: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[83]' sig", np.complex128(4.46280893204055-0.07889721463765464j)) load:["auto_contract_meson_corr: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[78]' sig", np.complex128(764925.9247211909-3016.3447789671136j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 254 ("auto_contract_meson_corr_psrc: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[84]' sig", np.complex128(4.452375036301877-0.07909455081493019j)) load:["auto_contract_meson_corr: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[79]' sig", np.complex128(774377.9997307545-2352.193312612173j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 255 ("auto_contract_meson_corr_psrc: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[85]' sig", np.complex128(8.503497165691687-0.1220993310451044j)) load:["auto_contract_meson_corr: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[80]' sig", np.complex128(771600.8171586029-1809.863281678371j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 256 ('auto_contract_meson_corr_psnk_psrc: ld sig', np.complex128(-0.122603342246559+0.00029351075017911325j)) load:["auto_contract_meson_corr: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[81]' sig", np.complex128(1500831.367965958+3916.715403819897j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 257 ("auto_contract_meson_corr_psnk_psrc: ld '< 1 >  exprs[0]' sig", np.complex128(-0.1298329038607327+0j)) load:["auto_contract_meson_corr: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[82]' sig", np.complex128(767145.2273239018-16391.07652500447j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 258 ("auto_contract_meson_corr_psnk_psrc: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(0.0007459094314814653-3.515434011498457e-20j)) load:["auto_contract_meson_corr: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[83]' sig", np.complex128(775193.1184557895-14809.517303205914j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 259 ("auto_contract_meson_corr_psnk_psrc: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[2]' sig", np.complex128(0.0006306455643454758-4.8397861392902615e-21j)) load:["auto_contract_meson_corr: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[84]' sig", np.complex128(773108.0982968968-14775.611336435646j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 260 ("auto_contract_meson_corr_psnk_psrc: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(0.00011526386713598892-3.031455397569431e-20j)) load:["auto_contract_meson_corr: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[85]' sig", np.complex128(1504159.7397101836-24419.4667096954j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 261 ("auto_contract_meson_corr_psnk_psrc: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[4]' sig", np.complex128(-0.000314390974496684-2.6706006562421475e-20j)) load:['auto_contract_meson_corr_psrc: ld sig', np.complex128(-41.52588894568737+1.3676133516539264j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 262 ("auto_contract_meson_corr_psnk_psrc: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[5]' sig", np.complex128(-0.0002767774989919218-1.363404274321297e-20j)) load:["auto_contract_meson_corr_psrc: ld '< 1 >  exprs[0]' sig", np.complex128(-1.5246116201606774+0j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 263 ("auto_contract_meson_corr_psnk_psrc: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[6]' sig", np.complex128(-3.761347550476126e-05-1.3071963819208511e-20j)) load:["auto_contract_meson_corr_psrc: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(-3.156940154908299-1.2231677045710208e-17j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 264 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[7]' sig", np.complex128(-0.0003143632300248013+0j)) load:["auto_contract_meson_corr_psrc: ld '< j_t(0) * j_t(-tsep) > (Type2)  exprs[2]' sig", np.complex128(0.0007208018909853617+0.0006363658317726169j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 265 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[8]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(-2.6623063830465483-1.189673333087102e-17j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 266 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[9]' sig", np.complex128(1.1556191802770532e-20+4.901789544982794e-05j)) load:["auto_contract_meson_corr_psrc: ld '< jl_t(0) * jl_t(-tsep) > (Type2)  exprs[4]' sig", np.complex128(7.074761249267112e-05-6.525672937189795e-06j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 267 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[10]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[5]' sig", np.complex128(-0.4946337718617503-3.3494371483917866e-19j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.792: CHECK: 268 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[11]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< js_t(0) * js_t(-tsep) > (Type2)  exprs[6]' sig", np.complex128(0.0011654573602732613+0.0006191020031070195j)]
+Qlat          81.792: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 269 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[12]' sig", np.complex128(-0.000334295052726049+0j)) load:["auto_contract_meson_corr_psrc: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[7]' sig", np.complex128(10.062537838697388+1.6957616178128368e-17j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 270 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[13]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< j_i(0) * j_i(-tsep) > (Type2)  exprs[8]' sig", np.complex128(0.00023824513242794144-0.00023962275094080538j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 271 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[14]' sig", np.complex128(-9.766015743748768e-21-7.855560073108796e-06j)) load:["auto_contract_meson_corr_psrc: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[9]' sig", np.complex128(8.521758548431219+1.648343221941089e-17j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 272 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[15]' sig", np.complex128(4.6169098229058065e-21-5.539029388192342e-05j)) load:["auto_contract_meson_corr_psrc: ld '< jl_i(0) * jl_i(-tsep) > (Type2)  exprs[10]' sig", np.complex128(0.0029461452603385873+5.705050531951612e-06j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 273 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[16]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[11]' sig", np.complex128(1.5407792902661699+4.741839587174783e-19j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 274 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[17]' sig", np.complex128(0.0011353451791508424+9.088639779544103e-20j)) load:["auto_contract_meson_corr_psrc: ld '< js_i(0) * js_i(-tsep) > (Type2)  exprs[12]' sig", np.complex128(0.0010756477949628192-0.00044058049411030344j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 275 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[18]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[13]' sig", np.complex128(-5.545668924996869+0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 276 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type2)  exprs[14]' sig", np.complex128(0.00017436687495973413+2.3987076248726118e-06j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 277 ("auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[20]' sig", np.complex128(9.527708694864226e-21-6.08861883137676e-06j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[15]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 278 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type2)  exprs[16]' sig", np.complex128(-0.0005629016698545262+2.1795269340496596e-05j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 279 ("auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[22]' sig", np.complex128(0.001019557987568022-2.18508567701942e-19j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[17]' sig", np.complex128(7.397276291740396e-18+0.6561008834010409j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 280 ("auto_contract_meson_corr_psnk_psrc: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[23]' sig", np.complex128(-0.00031599602490305285+0j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type2)  exprs[18]' sig", np.complex128(-4.387960468326018e-05-0.0019109626980616198j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 281 ("auto_contract_meson_corr_psnk_psrc: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[24]' sig", np.complex128(0.0010837606781202436+6.2109700922707234e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 282 ("auto_contract_meson_corr_psnk_psrc: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[25]' sig", np.complex128(0.00042225646511445257-3.595475466874081e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type2)  exprs[20]' sig", np.complex128(-9.87838127385543e-05-0.0008439643014420163j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 283 ("auto_contract_meson_corr_psnk_psrc: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[26]' sig", np.complex128(0.000494480740159395+6.19243333274278e-20j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 284 ("auto_contract_meson_corr_psnk_psrc: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[27]' sig", np.complex128(0.0004396003387872379+4.392230051600016e-06j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type2)  exprs[22]' sig", np.complex128(0.00044871501488194423-8.60510979291488e-06j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 285 ("auto_contract_meson_corr_psnk_psrc: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[28]' sig", np.complex128(-0.0003143632300248013+0j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[23]' sig", np.complex128(-4.940867819159719+0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 286 ("auto_contract_meson_corr_psnk_psrc: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[29]' sig", np.complex128(1.1556191802770532e-20+4.901789544982794e-05j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type2)  exprs[24]' sig", np.complex128(0.001701100939120975+7.905692396420241e-06j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 287 ("auto_contract_meson_corr_psnk_psrc: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[30]' sig", np.complex128(4.6169098229058065e-21-5.539029388192342e-05j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[25]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 288 ("auto_contract_meson_corr_psnk_psrc: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[31]' sig", np.complex128(0.0011353451791508424+9.088639779544103e-20j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type2)  exprs[26]' sig", np.complex128(-3.294045041149807e-05-0.001006439399533236j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 289 ("auto_contract_meson_corr_psnk_psrc: ld '< k+^dag(0) * k+(-tsep) >  exprs[32]' sig", np.complex128(-0.0003211696026175318+6.330278819894412e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[27]' sig", np.complex128(1.0139637064541502e-18+0.9101935521788967j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 290 ("auto_contract_meson_corr_psnk_psrc: ld '< j5k_t(0) * k+(-tsep) >  exprs[33]' sig", np.complex128(-3.2558244322928637e-07+2.7292272338982483e-05j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type2)  exprs[28]' sig", np.complex128(-0.0004644126988666589-0.004516023787978255j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 291 ("auto_contract_meson_corr_psnk_psrc: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[34]' sig", np.complex128(-1.7869809869142305e-06-3.682720401888571e-05j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[29]' sig", np.complex128(1.701895355037292e-17-0.6532333407344204j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 292 ("auto_contract_meson_corr_psnk_psrc: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[35]' sig", np.complex128(0.001074679168977891-6.638134578351005e-06j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[30]' sig", np.complex128(-9.83056434398509e-06+0.0016878088097833734j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 293 ("auto_contract_meson_corr_psnk_psrc: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[36]' sig", np.complex128(-0.00031593364333134323+6.718264457002559e-06j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[31]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 294 ("auto_contract_meson_corr_psnk_psrc: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[37]' sig", np.complex128(2.2642598438152444e-05+2.7865734373194253e-06j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[32]' sig", np.complex128(4.639981110477749e-05-0.0062643145892096784j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 295 ("auto_contract_meson_corr_psnk_psrc: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[38]' sig", np.complex128(1.9993358680313108e-05-1.1293355274662943e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[33]' sig", np.complex128(-4.939149550144925+4.639927143745134e-18j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 296 ("auto_contract_meson_corr_psnk_psrc: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[39]' sig", np.complex128(0.0010837606781202462-6.210970092270749e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[34]' sig", np.complex128(0.0012264760575876883+2.494927281472889e-05j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 297 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[40]' sig", np.complex128(0.00013818692817591695+2.8519188853232764e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[35]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 298 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[41]' sig", np.complex128(0.0002786538943794476+6.269888702425586e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type2)  exprs[36]' sig", np.complex128(-0.013720572278738886+0.001413796898354712j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 299 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[42]' sig", np.complex128(0.00027938611995845556+6.0908254176302945e-06j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[37]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 300 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[43]' sig", np.complex128(0.0008172437475703415+1.6295317613905678e-05j)) load:["auto_contract_meson_corr_psrc: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[38]' sig", np.complex128(0.0005844911883820132+0.0053468766665602995j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 301 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[44]' sig", np.complex128(0.00011640036902033752+1.064562256838438e-07j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[39]' sig", np.complex128(-1.0340210894913339e-17-0.8944383931932287j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 302 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[45]' sig", np.complex128(0.00025622724385253906+6.711893641611577e-07j)) load:["auto_contract_meson_corr_psrc: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[40]' sig", np.complex128(0.001770538212996895+0.003283891627864834j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 303 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[46]' sig", np.complex128(0.0002559909979101549+7.627294821425297e-07j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[41]' sig", np.complex128(0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 304 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[47]' sig", np.complex128(0.0008178959169431382+6.6459328366300336e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[42]' sig", np.complex128(0.004161639751419076-0.0005701369542982602j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 305 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[48]' sig", np.complex128(0.00011685872722414-1.0507732779983474e-07j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[43]' sig", np.complex128(-4.553288943707585+3.364094869521558e-18j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 306 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[49]' sig", np.complex128(0.00025714077317438134+2.697472645738861e-07j)) load:["auto_contract_meson_corr_psrc: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type2)  exprs[44]' sig", np.complex128(0.0068341420506554396-0.004235843563513922j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 307 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[50]' sig", np.complex128(0.00025663353293425644-5.580690987383662e-07j)) load:["auto_contract_meson_corr_psrc: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[45]' sig", np.complex128(-5.173254108896268+0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 308 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[51]' sig", np.complex128(0.0008175906335038211-2.846143386287872e-06j)) load:["auto_contract_meson_corr_psrc: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[46]' sig", np.complex128(-4.585462485933016+0.007216405944582572j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 309 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[52]' sig", np.complex128(0.0001379266044989704-1.2197755522300285e-06j)) load:["auto_contract_meson_corr_psrc: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[47]' sig", np.complex128(-14.677654268721492+0.04644085649757696j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 310 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[53]' sig", np.complex128(0.0002785521929109971-2.844882500788792e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[48]' sig", np.complex128(-14.561637802599787+1.927309292893466e-17j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 311 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[54]' sig", np.complex128(0.000279136721269251-2.4781038603286323e-06j)) load:["auto_contract_meson_corr_psrc: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[49]' sig", np.complex128(-13.915005611343338-0.0512921887936106j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 312 ("auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[55]' sig", np.complex128(0.000817871014524222-1.1660348911573014e-05j)) load:["auto_contract_meson_corr_psrc: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[50]' sig", np.complex128(-5.545668924996869+0j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 313 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[56]' sig", np.complex128(4.088578590618796e-05-1.3271958558329867e-07j)) load:["auto_contract_meson_corr_psrc: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[51]' sig", np.complex128(7.397276291740396e-18+0.6561008834010409j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 314 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[57]' sig", np.complex128(5.268386594676713e-05-4.03361807759894e-08j)) load:["auto_contract_meson_corr_psrc: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[52]' sig", np.complex128(1.701895355037292e-17-0.6532333407344204j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 315 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[58]' sig", np.complex128(5.272544443321293e-05-9.900565907525902e-08j)) load:["auto_contract_meson_corr_psrc: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[53]' sig", np.complex128(-4.939149550144925+4.639927143745134e-18j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 316 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[59]' sig", np.complex128(0.00012972549212280694+3.8664590120853167e-07j)) load:["auto_contract_meson_corr_psrc: ld '< k+^dag(0) * k+(-tsep) >  exprs[54]' sig", np.complex128(-5.30798524719266-0.01766504289825417j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 317 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[60]' sig", np.complex128(4.091965219721508e-05+5.075723852662459e-07j)) load:["auto_contract_meson_corr_psrc: ld '< j5k_t(0) * k+(-tsep) >  exprs[55]' sig", np.complex128(0.0026899582582910926+0.7935786466472272j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 318 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[61]' sig", np.complex128(5.270022786057745e-05+5.911921495689041e-07j)) load:["auto_contract_meson_corr_psrc: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[56]' sig", np.complex128(-0.003082418203700776-0.7764814306967185j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.793: CHECK: 319 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[62]' sig", np.complex128(5.273469940088139e-05+5.952871918539569e-07j)) load:["auto_contract_meson_corr_psrc: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[57]' sig", np.complex128(-4.715173377871571-0.005486974975124465j)]
+Qlat          81.793: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 320 ("auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[63]' sig", np.complex128(0.00012961201559998057+7.181234139165471e-07j)) load:["auto_contract_meson_corr_psrc: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[58]' sig", np.complex128(-4.9374182502817785-0.01826587845132894j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 321 ('auto_contract_pi0_jjp: ld_sum sig', np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[59]' sig", np.complex128(-0.06338666714221625-0.009218410576006204j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 322 ("auto_contract_pi0_jjp: ld_sum '< 1 >  exprs[0]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[60]' sig", np.complex128(-0.06552033425806868-0.036729945650227386j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 323 ("auto_contract_pi0_jjp: ld_sum '< e(i,j,k) * x[i] * j_j(x) * j_k(0) * (i ubar g5 u)(w) >  exprs[1]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[61]' sig", np.complex128(-4.585462485933016-0.007216405944582501j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 324 ("auto_contract_pi0_jjp: ld_sum '< e(i,j,k) * x[i] * j_j(x) * j_k(0) * (i dbar g5 d)(w) >  exprs[2]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[62]' sig", np.complex128(12.073454581641133+0.2821588041047163j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 325 ("auto_contract_pi0_jjp: ld_sum '< e(i,j,k) * x[i] * j_j(x) * j_k(0) * i * (ubar g3 g5 u)(w) >  exprs[3]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[63]' sig", np.complex128(23.45950403604745+0.792357767494459j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 326 ("auto_contract_pi0_jjp: ld_sum '< e(i,j,k) * x[i] * j_j(x) * j_k(0) * i * (dbar g3 g5 d)(w) >  exprs[4]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[64]' sig", np.complex128(23.528095650847458+0.765974452547651j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 327 ('auto_contract_meson_jj: ld_sum sig', np.complex128(-120.07932185739554-0.19956562741564018j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[65]' sig", np.complex128(65.126036400353+2.327398668554739j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 328 ("auto_contract_meson_jj: ld_sum '< 1 >  exprs[0]' sig", np.complex128(-8.309305847086893+0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[66]' sig", np.complex128(11.985656990003084+0.008725184146379628j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 329 ("auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[1]' sig", np.complex128(58.91789629745953-0.002134747220555324j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[67]' sig", np.complex128(23.404829303079726+0.11733159075629696j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 330 ("auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[2]' sig", np.complex128(23.70213756604462+0.00017285626692499208j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[68]' sig", np.complex128(23.308842859337965+0.09699074767804872j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 331 ("auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[3]' sig", np.complex128(35.21575873141512-0.0023076034874811215j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[69]' sig", np.complex128(65.41531921295537+0.3388797001149506j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 332 ("auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[4]' sig", np.complex128(31.09412185982125-0.0013245024024232815j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[70]' sig", np.complex128(12.009266584999668-0.20037927319273924j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 333 ("auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[5]' sig", np.complex128(-2.189268015121154+0.00013024697805410606j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[71]' sig", np.complex128(23.45471085830138-0.41500547535641347j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 334 ("auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[6]' sig", np.complex128(1.6832654601768846+2.787628276070911e-05j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[72]' sig", np.complex128(23.384527099458406-0.3948690676286597j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 335 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[7]' sig", np.complex128(-17.440124176187574+0.0007680014487120414j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[73]' sig", np.complex128(65.72343975203012-1.2264987254415105j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 336 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[8]' sig", np.complex128(-0.1528552743398392+0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[74]' sig", np.complex128(12.248682688122138-0.41842005722567693j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 337 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[9]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[75]' sig", np.complex128(23.85814822290819-0.9116371731929646j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 338 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[10]' sig", np.complex128(-0.1528552743398392+0j)) load:["auto_contract_meson_corr_psrc: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[76]' sig", np.complex128(23.914433993868233-0.9457108462462346j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 339 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[11]' sig", np.complex128(-17.440124176187574+0.0007680014487120414j)) load:["auto_contract_meson_corr_psrc: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[77]' sig", np.complex128(66.22067790387203-2.4484723382911002j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 340 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[12]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[78]' sig", np.complex128(4.173115810535619+0.035224723654945986j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 341 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[13]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[79]' sig", np.complex128(4.464809977601837+0.05485539209286514j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 342 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[14]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[80]' sig", np.complex128(4.450096971818743+0.055180862760205625j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 343 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * pi0^dag(x[t]+tsep) * pi0(-tsep) >  exprs[15]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psrc: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[81]' sig", np.complex128(8.500379129218977+0.15063295726562972j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 344 ("auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[16]' sig", np.complex128(-79.41788292155145-0.002134747220557471j)) load:["auto_contract_meson_corr_psrc: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[82]' sig", np.complex128(4.180539323880858-0.09286392824870915j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 345 ("auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[17]' sig", np.complex128(-15.681571248923156+0.0001728562669252844j)) load:["auto_contract_meson_corr_psrc: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[83]' sig", np.complex128(4.46280893204055-0.07889721463765464j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 346 ("auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[18]' sig", np.complex128(-63.73631167262806-0.0023076034874828415j)) load:["auto_contract_meson_corr_psrc: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[84]' sig", np.complex128(4.452375036301877-0.07909455081493019j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 347 ("auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[19]' sig", np.complex128(-53.97357682980625-0.001324502402411588j)) load:["auto_contract_meson_corr_psrc: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[85]' sig", np.complex128(8.503497165691687-0.1220993310451044j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 348 ("auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[20]' sig", np.complex128(-2.4132039129946077+0.0001302469780564435j)) load:['auto_contract_meson_corr_psnk_psrc: ld sig', np.complex128(-0.122603342246559+0.00029351075017911325j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 349 ("auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[21]' sig", np.complex128(1.5342723340417752+2.7876282769381005e-05j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< 1 >  exprs[0]' sig", np.complex128(-0.1298329038607327+0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 350 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[22]' sig", np.complex128(17.17531350870213+0.0007680014487107764j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j_t(0) * j_t(-tsep) > (Type1)  exprs[1]' sig", np.complex128(0.0007459094314814653-3.515434011498457e-20j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 351 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[23]' sig", np.complex128(-34.76829295922958+8.096318967778658e-16j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< jl_t(0) * jl_t(-tsep) > (Type1)  exprs[2]' sig", np.complex128(0.0006306455643454758-4.8397861392902615e-21j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 352 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[24]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< js_t(0) * js_t(-tsep) > (Type1)  exprs[3]' sig", np.complex128(0.00011526386713598892-3.031455397569431e-20j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 353 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[25]' sig", np.complex128(-34.76829295922958+8.096318967778658e-16j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j_i(0) * j_i(-tsep) > (Type1)  exprs[4]' sig", np.complex128(-0.000314390974496684-2.6706006562421475e-20j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 354 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[26]' sig", np.complex128(17.17531350870213+0.0007680014487107764j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< jl_i(0) * jl_i(-tsep) > (Type1)  exprs[5]' sig", np.complex128(-0.0002767774989919218-1.363404274321297e-20j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 355 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[27]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< js_i(0) * js_i(-tsep) > (Type1)  exprs[6]' sig", np.complex128(-3.761347550476126e-05-1.3071963819208511e-20j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 356 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[28]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * eta_l(-tsep) > (Type1)  exprs[7]' sig", np.complex128(-0.0003143632300248013+0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 357 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[29]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * eta_l(-tsep) > (Type1)  exprs[8]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 358 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[30]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * eta_l(-tsep) > (Type1)  exprs[9]' sig", np.complex128(1.1556191802770532e-20+4.901789544982794e-05j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 359 ("auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[31]' sig", np.complex128(25.901345427772775+0.03670887176559018j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * eta_l(-tsep) > (Type1)  exprs[10]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 360 ("auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[32]' sig", np.complex128(8.979050693645-0.011041443558450548j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * eta_s(-tsep) > (Type1)  exprs[11]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 361 ("auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[33]' sig", np.complex128(16.922294734127767+0.04775031532404091j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * eta_s(-tsep) > (Type1)  exprs[12]' sig", np.complex128(-0.000334295052726049+0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 362 ("auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[34]' sig", np.complex128(13.372154427414937-0.021268069161827257j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * eta_s(-tsep) > (Type1)  exprs[13]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 363 ("auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[35]' sig", np.complex128(-0.9180411316715404+0.008138420322987273j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * eta_s(-tsep) > (Type1)  exprs[14]' sig", np.complex128(-9.766015743748768e-21-7.855560073108796e-06j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 364 ("auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[36]' sig", np.complex128(0.9446348664610691-0.0010303390679129941j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[15]' sig", np.complex128(4.6169098229058065e-21-5.539029388192342e-05j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 365 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[37]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[16]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 366 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[38]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[17]' sig", np.complex128(0.0011353451791508424+9.088639779544103e-20j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 367 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[39]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * j5eta_l_t^dag(-tsep) > (Type1)  exprs[18]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 368 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[40]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_l^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[19]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 369 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[41]' sig", np.complex128(14.083838525964975-0.18151354765257374j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< eta_s^dag(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[20]' sig", np.complex128(9.527708694864226e-21-6.08861883137676e-06j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 370 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[42]' sig", np.complex128(-37.239157436113786-2.885892375430036e-15j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_l_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[21]' sig", np.complex128(0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 371 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[43]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5eta_s_t(0) * j5eta_s_t^dag(-tsep) > (Type1)  exprs[22]' sig", np.complex128(0.001019557987568022-2.18508567701942e-19j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 372 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[44]' sig", np.complex128(-36.5415980879692-2.142562642150861e-15j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< a0+^dag(0) * a0+(-tsep) >  exprs[23]' sig", np.complex128(-0.00031599602490305285+0j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.794: CHECK: 373 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * K0^dag(x[t]+tsep) * K0(-tsep) >  exprs[45]' sig", np.complex128(6.51353961572142+0.000829778187942782j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< jk_t^dag(0) * jk_t(-tsep) >  exprs[24]' sig", np.complex128(0.0010837606781202436+6.2109700922707234e-06j)]
+Qlat          81.794: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 374 ("auto_contract_meson_jj: ld_sum '< j_mu(x) * j_mu(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[46]' sig", np.complex128(-78.07665737666278+0.14799148168504325j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< jk_i^dag(0) * jk_i(-tsep) >  exprs[25]' sig", np.complex128(0.00042225646511445257-3.595475466874081e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 375 ("auto_contract_meson_jj: ld_sum '< j_t(x) * j_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[47]' sig", np.complex128(-17.99099393811275-0.04417769213068516j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5pi_i(0) * j5pi_i^dag(-tsep) >  exprs[26]' sig", np.complex128(0.000494480740159395+6.19243333274278e-20j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 376 ("auto_contract_meson_jj: ld_sum '< j_i(x) * j_i(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[48]' sig", np.complex128(-60.0856634385501+0.192169173815728j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5k_i(0) * j5k_i^dag(-tsep) >  exprs[27]' sig", np.complex128(0.0004396003387872379+4.392230051600016e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 377 ("auto_contract_meson_jj: ld_sum '< x[i] * x[j] * j_i(x) * j_j(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[49]' sig", np.complex128(-53.4358037511761-0.08438752598682217j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< pi+^dag(0) * pi+(-tsep) >  exprs[28]' sig", np.complex128(-0.0003143632300248013+0j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 378 ("auto_contract_meson_jj: ld_sum '< x[i] * j_i(x) * j_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[50]' sig", np.complex128(-2.2523901572382807+0.03231492613347618j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5pi_t(0) * pi+(-tsep) >  exprs[29]' sig", np.complex128(1.1556191802770532e-20+4.901789544982794e-05j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 379 ("auto_contract_meson_jj: ld_sum '< -x[i] * j_i(-x) * j_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[51]' sig", np.complex128(1.5502443730935118-0.004058583265720561j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< pi+^dag(0) * j5pi_t^dag(-tsep) >  exprs[30]' sig", np.complex128(4.6169098229058065e-21-5.539029388192342e-05j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 380 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * ubar_u(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[52]' sig", np.complex128(14.083838525964975-0.18151354765257374j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5pi_t(0) * j5pi_t^dag(-tsep) >  exprs[31]' sig", np.complex128(0.0011353451791508424+9.088639779544103e-20j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 381 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * dbar_d(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[53]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< k+^dag(0) * k+(-tsep) >  exprs[32]' sig", np.complex128(-0.0003211696026175318+6.330278819894412e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 382 ("auto_contract_meson_jj: ld_sum '< ubar_u(x) * sbar_s(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[54]' sig", np.complex128(-37.239157436113786-2.885892375430036e-15j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5k_t(0) * k+(-tsep) >  exprs[33]' sig", np.complex128(-3.2558244322928637e-07+2.7292272338982483e-05j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 383 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * ubar_u(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[55]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< k+^dag(0) * j5k_t^dag(-tsep) >  exprs[34]' sig", np.complex128(-1.7869809869142305e-06-3.682720401888571e-05j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 384 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * dbar_d(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[56]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< j5k_t(0) * j5k_t^dag(-tsep) >  exprs[35]' sig", np.complex128(0.001074679168977891-6.638134578351005e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 385 ("auto_contract_meson_jj: ld_sum '< dbar_d(x) * sbar_s(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[57]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< kappa+^dag(0) * kappa+(-tsep) >  exprs[36]' sig", np.complex128(-0.00031593364333134323+6.718264457002559e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 386 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * ubar_u(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[58]' sig", np.complex128(-36.5415980879692-2.142562642150861e-15j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< k_p_star_t+^dag(0) * kappa+(-tsep) >  exprs[37]' sig", np.complex128(2.2642598438152444e-05+2.7865734373194253e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 387 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * dbar_d(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[59]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< kappa+^dag(0) * k_p_star_t+(-tsep) >  exprs[38]' sig", np.complex128(1.9993358680313108e-05-1.1293355274662943e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 388 ("auto_contract_meson_jj: ld_sum '< sbar_s(x) * sbar_s(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[60]' sig", np.complex128(6.51353961572142+0.000829778187942782j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< k_p_star_t+^dag(0) * k_p_star_t+(-tsep) >  exprs[39]' sig", np.complex128(0.0010837606781202462-6.210970092270749e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 389 ("auto_contract_meson_jj: ld_sum '< jd_mu(x) * jd_mu(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[61]' sig", np.complex128(-32.275917045101174-0.0038425449970039926j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[40]' sig", np.complex128(0.00013818692817591695+2.8519188853232764e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 390 ("auto_contract_meson_jj: ld_sum '< jd_t(x) * jd_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[62]' sig", np.complex128(3.281720670426285+0.0003111412804642698j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u3]^dag(0) * omega[std3,u3](-tsep) >  exprs[41]' sig", np.complex128(0.0002786538943794476+6.269888702425586e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 391 ("auto_contract_meson_jj: ld_sum '< jd_mu(x) * jd_mu(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[63]' sig", np.complex128(-32.275917045101174-0.0038425449970039926j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[42]' sig", np.complex128(0.00027938611995845556+6.0908254176302945e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 392 ("auto_contract_meson_jj: ld_sum '< jd_t(x) * jd_t(0) * pi+^dag(x[t]+tsep) * pi+(-tsep) >  exprs[64]' sig", np.complex128(3.281720670426285+0.0003111412804642698j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u3]^dag(0) * omega[pos3,u3](-tsep) >  exprs[43]' sig", np.complex128(0.0008172437475703415+1.6295317613905678e-05j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 393 ("auto_contract_meson_jj: ld_sum '< jd_mu(x) * jd_mu(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[65]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[44]' sig", np.complex128(0.00011640036902033752+1.064562256838438e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 394 ("auto_contract_meson_jj: ld_sum '< jd_t(x) * jd_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[66]' sig", np.complex128(0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u1]^dag(0) * omega[std3,u1](-tsep) >  exprs[45]' sig", np.complex128(0.00025622724385253906+6.711893641611577e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 395 ("auto_contract_meson_jj: ld_sum '< js_mu(x) * js_mu(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[67]' sig", np.complex128(-23.719423254762212-0.0034679838680384796j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[46]' sig", np.complex128(0.0002559909979101549+7.627294821425297e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 396 ("auto_contract_meson_jj: ld_sum '< js_t(x) * js_t(0) * K+^dag(x[t]+tsep) * K+(-tsep) >  exprs[68]' sig", np.complex128(-0.8279870258760162+3.5753690648171216e-05j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,u1]^dag(0) * omega[pos3,u1](-tsep) >  exprs[47]' sig", np.complex128(0.0008178959169431382+6.6459328366300336e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 397 ('auto_contract_meson_jt: ld_sum sig', np.complex128(-264.1932538687018+1.55533107963291j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[48]' sig", np.complex128(0.00011685872722414-1.0507732779983474e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 398 ("auto_contract_meson_jt: ld_sum '< 1 >  exprs[0]' sig", (0.9507301038894393+0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d1]^dag(0) * omega[std3,d1](-tsep) >  exprs[49]' sig", np.complex128(0.00025714077317438134+2.697472645738861e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 399 ("auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[1]' sig", (162.4495497621836-0.36829468757487255j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[50]' sig", np.complex128(0.00025663353293425644-5.580690987383662e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 400 ("auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[2]' sig", (144.09667048421687-0.5856181799652646j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d1]^dag(0) * omega[pos3,d1](-tsep) >  exprs[51]' sig", np.complex128(0.0008175906335038211-2.846143386287872e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 401 ("auto_contract_meson_jt: ld_sum '< (-1) * sbar_gt_s(0) * K+^dag(+tsep) * K+(-tsep) >  exprs[3]' sig", (163.89122203989783-0.9574568642473478j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[52]' sig", np.complex128(0.0001379266044989704-1.2197755522300285e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 402 ("auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * pi+^dag(T/2+tsep) * pi+(T/2-tsep) >  exprs[4]' sig", (-39.32045892171813-0.38917841261855657j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d3]^dag(0) * omega[std3,d3](-tsep) >  exprs[53]' sig", np.complex128(0.0002785521929109971-2.844882500788792e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 403 ("auto_contract_meson_jt: ld_sum '< ubar_gt_u(0) * K+^dag(T/2+tsep) * K+(T/2-tsep) >  exprs[5]' sig", (-36.668347924351245+0.07274115879003533j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[std3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[54]' sig", np.complex128(0.000279136721269251-2.4781038603286323e-06j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 404 ("auto_contract_meson_jt: ld_sum '< (-1) * sbar_gt_s(0) * K+^dag(T/2+tsep) * K+(T/2-tsep) >  exprs[6]' sig", (-31.057547064581666-0.45345757582164814j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< omega[pos3,d3]^dag(0) * omega[pos3,d3](-tsep) >  exprs[55]' sig", np.complex128(0.000817871014524222-1.1660348911573014e-05j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 405 ('auto_contract_meson_m: ld_sum sig', np.complex128(-90.37863214633427+0.05142074464832902j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[std,u]^dag(0) * proton[std,u](-tsep) >  exprs[56]' sig", np.complex128(4.088578590618796e-05-1.3271958558329867e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 406 ("auto_contract_meson_m: ld_sum '< 1 >  exprs[0]' sig", (0.9507301038894393+0j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,u]^dag(0) * proton[std,u](-tsep) >  exprs[57]' sig", np.complex128(5.268386594676713e-05-4.03361807759894e-08j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 407 ("auto_contract_meson_m: ld_sum '< ubar_u(0) * pi0^dag(+tsep) * pi0(-tsep) >  exprs[1]' sig", (70.56769310689378+0.0010927300106272403j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[std,u]^dag(0) * proton[pos,u](-tsep) >  exprs[58]' sig", np.complex128(5.272544443321293e-05-9.900565907525902e-08j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 408 ("auto_contract_meson_m: ld_sum '< dbar_d(0) * pi0^dag(+tsep) * pi0(-tsep) >  exprs[2]' sig", (70.56769310689378+0.0010927300106272403j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,u]^dag(0) * proton[pos,u](-tsep) >  exprs[59]' sig", np.complex128(0.00012972549212280694+3.8664590120853167e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 409 ("auto_contract_meson_m: ld_sum '< sbar_s(0) * pi0^dag(+tsep) * pi0(-tsep) >  exprs[3]' sig", 0j) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[std,d]^dag(0) * proton[std,d](-tsep) >  exprs[60]' sig", np.complex128(4.091965219721508e-05+5.075723852662459e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 410 ("auto_contract_meson_m: ld_sum '< ubar_u(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[4]' sig", (70.57454897254121-0.2678134855347304j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,d]^dag(0) * proton[std,d](-tsep) >  exprs[61]' sig", np.complex128(5.270022786057745e-05+5.911921495689041e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 411 ("auto_contract_meson_m: ld_sum '< dbar_d(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[5]' sig", (70.56083724124633+0.2699989455559849j)) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[std,d]^dag(0) * proton[pos,d](-tsep) >  exprs[62]' sig", np.complex128(5.273469940088139e-05+5.952871918539569e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 412 ("auto_contract_meson_m: ld_sum '< sbar_s(0) * pi+^dag(+tsep) * pi+(-tsep) >  exprs[6]' sig", 0j) load:["auto_contract_meson_corr_psnk_psrc: ld '< proton[pos,d]^dag(0) * proton[pos,d](-tsep) >  exprs[63]' sig", np.complex128(0.00012961201559998057+7.181234139165471e-07j)]
+Qlat          81.795: CHECK: ERROR: JSON results item does not match.
+Qlat          81.795: CHECK: 413 ("auto_contract_meson_m: ld_sum '< ubar_u(0) * K0^dag(+tsep) * K0(-tsep) >  exprs[7]' sig", 0j) load:["q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-gauge_fix_coulomb', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-run-eig', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-checker-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-checker-1000-run_f_rand_01', 'locks/test-4nt8-checker-1000-run_fsel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob-median', 'locks/test-4nt8-checker-1000-run_psel_split', 'locks/test-4nt8-checker-1000-run_fsel_split', 'locks/test-4nt8-checker-1000-psel-smear', 'locks/test-4nt8-checker-1000-run_psel_smear_median', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-light', 'locks/test-4nt8-checker-1000-run_prop_psrc-light', 'locks/test-4nt8-checker-1000-run_prop_smear-light', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-strange', 'locks/test-4nt8-checker-1000-run_prop_psrc-strange', 'locks/test-4nt8-checker-1000-run_prop_smear-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-charm-1', 'locks/test-4nt8-checker-1000-pi0_decay']"]
+Qlat          81.795: CHECK: ERROR: JSON results length does not match.
+Qlat          81.795: CHECK: len(json_results)=420 load:414
+Qlat          81.795: CHECK: ERROR: JSON results len does not match.
+CHECK: finished successfully.

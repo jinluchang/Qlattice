@@ -236,6 +236,18 @@ def mk_k_0_bar(p:str, is_dagger=False):
     """
     return -mk_meson("s", "d", p, is_dagger) + f"K0b({p}){show_dagger(is_dagger)}"
 
+def mk_eta_l(p:str, is_dagger=False):
+    """
+    i/sqrt(2) * (ubar g5 u + dbar g5 d)  #dag: same
+    """
+    return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) + mk_meson("d", "d", p, is_dagger)) + f"eta_l({p}){show_dagger(is_dagger)}"
+
+def mk_eta_s(p:str, is_dagger=False):
+    """
+    i sbar g5 s  #dag: i sbar g5 s
+    """
+    return mk_meson("s", "s", p, is_dagger) + f"eta_s({p}){show_dagger(is_dagger)}"
+
 def mk_sigma(p:str, is_dagger=False):
     """
     1/sqrt(2) * (ubar u + dbar d)
@@ -267,6 +279,18 @@ def mk_kappa_0_bar(p:str, is_dagger=False):
     sbar u
     """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa0bar({p}){show_dagger(is_dagger)}"
+
+def mk_k_p_star_mu(p:str, mu, is_dagger=False):
+    """
+    ubar gmu s
+    """
+    return mk_vec_mu("u", "s", p, mu, is_dagger)
+
+def mk_k_m_star_mu(p:str, mu, is_dagger=False):
+    """
+    sbar gmu u
+    """
+    return mk_vec_mu("s", "u", p, mu, is_dagger)
 
 def mk_k_0_star_mu(p:str, mu, is_dagger=False):
     """
@@ -425,6 +449,12 @@ def mk_j5k_mu(p:str, mu, is_dagger=False):
 def mk_j5km_mu(p:str, mu, is_dagger=False):
     return -mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
 
+def mk_j5eta_l_mu(p:str, mu, is_dagger=False):
+    return 1 / sympy.sqrt(2) * (mk_vec5_mu("u", "u", p, mu, is_dagger) + mk_vec5_mu("d", "d", p, mu, is_dagger)) + f"j5eta_l_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_j5eta_s_mu(p:str, mu, is_dagger=False):
+    return mk_vec5_mu("s", "s", p, mu, is_dagger) + f"j5eta_s_mu({p},{mu}){show_dagger(is_dagger)}"
+
 def mk_jpi_mu(p:str, mu, is_dagger=False):
     return mk_vec_mu("d", "u", p, mu, is_dagger) + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
 
@@ -454,6 +484,10 @@ def mk_jl_mu(p:str, mu, is_dagger=False):
     jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
     """
     return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_js_mu(p: str, mu, is_dagger=False):
+    return - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) \
+        + f"js_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j0_mu(p:str, mu, is_dagger=False):
     """
