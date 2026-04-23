@@ -550,6 +550,7 @@ let
       meson
       ninja
       mpi4py
+      soundfile
       psutil
       cython
       pybind11
