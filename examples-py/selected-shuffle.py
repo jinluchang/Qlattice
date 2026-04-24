@@ -2,28 +2,51 @@
 
 import qlat as q
 import numpy as np
-import sys
 
 size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 1, 2],
-        [1, 1, 1, 4],
-        [1, 1, 1, 8],
-        [2, 2, 2, 2],
-        [2, 2, 2, 4],
-        ]
+    [1, 1, 1, 1],
+    [1, 1, 1, 2],
+    [1, 1, 1, 4],
+    [1, 1, 1, 8],
+    [2, 2, 2, 2],
+    [2, 2, 2, 4],
+]
 
 q.begin_with_mpi(size_node_list)
 
 total_site_list = [
-        q.Coordinate([ 4, 4, 4, 4, ]),
-        q.Coordinate([ 6, 6, 6, 6, ]),
-        q.Coordinate([ 8, 8, 8, 8, ]),
+    q.Coordinate(
+        [
+            4,
+            4,
+            4,
+            4,
         ]
+    ),
+    q.Coordinate(
+        [
+            6,
+            6,
+            6,
+            6,
+        ]
+    ),
+    q.Coordinate(
+        [
+            8,
+            8,
+            8,
+            8,
+        ]
+    ),
+]
 
 multiplicity_list = [
-        1, 2, 3,
-        ]
+    1,
+    2,
+    3,
+]
+
 
 def get_f_list_sig(f_list, rs, n):
     sig = np.zeros(n, dtype=np.complex128)
@@ -31,6 +54,7 @@ def get_f_list_sig(f_list, rs, n):
         sig += q.get_data_sig_arr(sp[:], rs.split(f"sig {idx}"), n)
     sig = q.glb_sum(sig)
     return sig
+
 
 @q.timer
 def selected_shuffle_l_from_g(total_site, multiplicity, seed):
@@ -98,11 +122,11 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
         assert ssp.psel_send_list[0] is None
     sp.set_rand(rs.split("sp"))
     sig = q.get_data_sig_arr(sp, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp,rs,2)", sig, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp,rs,2)", sig, 1e-12)
     sp_l = q.SelectedPointsComplexD(sp, ssp)
     assert sp_l.psel is ssp.psel_recv_list[0]
     sig_l = q.get_data_sig_arr(sp_l, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
     sp1 = q.SelectedPointsComplexD(sp_l, ssp, True)
     assert sp1.psel is ssp.psel_send_list[0]
     # sig1 = q.get_data_sig_arr(sp1, rs.split("sig"), 2)
@@ -117,18 +141,18 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
     q.sync_node("sp1 bcast")
     sig1 = q.get_data_sig_arr(sp1, rs.split("sig"), 2)
     q.sync_node("sp1 sig1")
-    q.json_results_append(f"get_data_sig_arr(sp1,rs,2)", sig1, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp1,rs,2)", sig1, 1e-12)
     assert np.all(sig1 == sig)
     #
     sp_l = q.SelectedPointsComplexD(psel_l, multiplicity)
     assert sp_l.psel is ssp_r.psel_send_list[0]
     sp_l.set_rand(rs.split("sp"))
     sig_l = q.get_data_sig_arr(sp_l, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
     sp2 = q.SelectedPointsComplexD(sp_l, ssp_r)
     assert sp2.psel is ssp_r.psel_recv_list[0]
     sig2 = q.get_data_sig_arr(sp2, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp2,rs,2)", sig2, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp2,rs,2)", sig2, 1e-12)
     if q.get_id_node() == root:
         sp3 = q.SelectedPointsComplexD(sp2.psel, sp2.multiplicity)
         sp3 @= sp
@@ -138,7 +162,7 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
         assert sp2.points_dist_type == "g"
     sp_l1 = q.SelectedPointsComplexD(sp2, ssp_r, True)
     sig_l1 = q.get_data_sig_arr(sp_l1, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_l1,rs,2)", sig_l1, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_l1,rs,2)", sig_l1, 1e-12)
     assert np.all(sig_l1 == sig_l)
     #
     sp_l1 = sp_l.copy()
@@ -149,12 +173,12 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
     sp_l1.swap_cast(sp_sc)
     sp_s1 = sp_l1
     sig_s1 = q.get_data_sig_arr(sp_s1, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_s1,rs,2)", sig_s1, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_s1,rs,2)", sig_s1, 1e-12)
     assert np.all(sig_s1 == sig2)
     #
-    psel_list = [ psel.copy() for i in range(3) ]
-    geo_list = [ geo.copy() for i in range(3) ]
-    root_list = [ i % q.get_num_node() for i in range(3) ]
+    psel_list = [psel.copy() for i in range(3)]
+    geo_list = [geo.copy() for i in range(3)]
+    root_list = [i % q.get_num_node() for i in range(3)]
     psel_list_hash = q.hash_sha256(psel_list)
     q.json_results_append(f"hash(psel_list)={psel_list_hash}")
     #
@@ -162,7 +186,9 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
     ssp_r = q.SelectedShufflePlan("g_from_l", ssp.psel_recv_list, root_list, geo_list)
     for p1, p2 in zip(psel_list, ssp.psel_send_list):
         assert p1 is p2 or p2 is None
-    q.json_results_append(f"hash(ssp.psel_recv_list)={q.hash_sha256(ssp.psel_recv_list)}")
+    q.json_results_append(
+        f"hash(ssp.psel_recv_list)={q.hash_sha256(ssp.psel_recv_list)}"
+    )
     #
     sp_list = []
     for idx, psel_idx in enumerate(psel_list):
@@ -170,14 +196,14 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
         sp.set_rand(rs.split(f"sp {idx}"))
         sp_list.append(sp)
     sig_list = get_f_list_sig(sp_list, rs, 3)
-    q.json_results_append(f"sig sp_list", sig_list, 1e-12)
+    q.json_results_append("sig sp_list", sig_list, 1e-12)
     #
     sp_l_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_list)
     sig_l_list = get_f_list_sig(sp_l_list, rs, 3)
-    q.json_results_append(f"sig sp_l_list", sig_l_list, 1e-12)
+    q.json_results_append("sig sp_l_list", sig_l_list, 1e-12)
     sp1_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list, is_reverse=True)
     sig1_list = get_f_list_sig(sp1_list, rs, 3)
-    q.json_results_append(f"sig sp1_list", sig1_list, 1e-12)
+    q.json_results_append("sig sp1_list", sig1_list, 1e-12)
     for sp1, sp, root in zip(sp1_list, sp_list, root_list):
         if q.get_id_node() == root:
             assert np.all(sp1[:] == sp[:])
@@ -186,12 +212,12 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
             assert sp1.points_dist_type == "g"
         sp1.bcast(root)
     sig1p_list = get_f_list_sig(sp1_list, rs, 3)
-    q.json_results_append(f"sig sp1_list prime", sig1p_list, 1e-12)
+    q.json_results_append("sig sp1_list prime", sig1p_list, 1e-12)
     assert np.all(sig1p_list == sig_list)
     #
     sp2_list = ssp_r.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
     sig2_list = get_f_list_sig(sp2_list, rs, 3)
-    q.json_results_append(f"sig sp2_list", sig2_list, 1e-12)
+    q.json_results_append("sig sp2_list", sig2_list, 1e-12)
     #
     for sp1, sp, root in zip(sp2_list, sp_list, root_list):
         if q.get_id_node() == root:
@@ -201,10 +227,13 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
             assert sp1.n_points == 0
             assert sp1.points_dist_type == "g"
     #
-    sp_l1_list = ssp_r.shuffle_sp_list(q.SelectedPointsComplexD, sp2_list, is_reverse=True)
+    sp_l1_list = ssp_r.shuffle_sp_list(
+        q.SelectedPointsComplexD, sp2_list, is_reverse=True
+    )
     sig_l1_list = get_f_list_sig(sp_l1_list, rs, 3)
-    q.json_results_append(f"sig sp_l1_list", sig_l1_list, 1e-12)
+    q.json_results_append("sig sp_l1_list", sig_l1_list, 1e-12)
     assert np.all(sig_l1_list == sig_l_list)
+
 
 @q.timer
 def selected_shuffle_r_from_l(total_site, multiplicity, seed):
@@ -240,17 +269,17 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
     assert sp_l.psel is ssp.psel_src_list[0]
     sp_l.set_rand(rs.split("sp_l"))
     sig_l = q.get_data_sig_arr(sp_l, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
     sp_s = q.SelectedPointsComplexD(sp_l, ssp)
     assert sp_s.psel is ssp.psel_dst_list[0]
     sig_s = q.get_data_sig_arr(sp_s, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_s,rs,2)", sig_s, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_s,rs,2)", sig_s, 1e-12)
     psel_l1 = q.PointsSelection(psel_s, ssp, True)
     assert psel_l1 == psel_l
     sp_l1 = q.SelectedPointsComplexD(sp_s, ssp, True)
     assert sp_l1.psel is ssp.psel_src_list[0]
     sig_l1 = q.get_data_sig_arr(sp_l1, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_l1,rs,2)", sig_l1, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_l1,rs,2)", sig_l1, 1e-12)
     assert np.all(sig_l1 == sig_l)
     #
     sp_lc = q.SelectedPointsChar()
@@ -259,11 +288,11 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
     sp_l1.swap_cast(sp_sc)
     sp_s1 = sp_l1
     sig_s1 = q.get_data_sig_arr(sp_s1, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_s1,rs,2)", sig_s1, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_s1,rs,2)", sig_s1, 1e-12)
     assert np.all(sig_s1 == sig_s)
     #
-    psel_l_list = [ psel_l.copy() for i in range(3) ]
-    geo_list = [ geo.copy() for i in range(3) ]
+    psel_l_list = [psel_l.copy() for i in range(3)]
+    geo_list = [geo.copy() for i in range(3)]
     psel_l_list_hash = q.hash_sha256(psel_l_list)
     q.json_results_append(f"hash(psel_l_list)={psel_l_list_hash}")
     #
@@ -277,12 +306,15 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
         sp = q.SelectedPointsComplexD(psel, multiplicity)
         sp.set_rand(rs.split(f"sp_l {idx}"))
         sp_l_list.append(sp)
-    q.json_results_append(f"sig sp_l_list", get_f_list_sig(sp_l_list, rs, 3), 1e-12)
+    q.json_results_append("sig sp_l_list", get_f_list_sig(sp_l_list, rs, 3), 1e-12)
     #
     sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
-    q.json_results_append(f"sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
-    sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
+    q.json_results_append("sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
+    sp_ss_list = ssp.shuffle_sp_list(
+        q.SelectedPointsComplexD, sp_s_list, is_reverse=True
+    )
     assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig(sp_l_list, rs, 3))
+
 
 @q.timer
 def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
@@ -301,8 +333,8 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     fsel = q.FieldSelection(psel)
     psel_l = q.PointsSelection(fsel)
     #
-    psel_l_list = [ psel_l.copy() for i in range(3) ]
-    geo_list = [ geo.copy() for i in range(3) ]
+    psel_l_list = [psel_l.copy() for i in range(3)]
+    geo_list = [geo.copy() for i in range(3)]
     psel_l_list_hash = q.hash_sha256(psel_l_list)
     #
     q.json_results_append(f"hash(psel_l_list)={psel_l_list_hash}")
@@ -316,11 +348,13 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
         sp = q.SelectedPointsComplexD(psel, multiplicity)
         sp.set_rand(rs.split(f"sp_l {idx}"))
         sp_l_list.append(sp)
-    q.json_results_append(f"sig sp_l_list", get_f_list_sig(sp_l_list, rs, 3), 1e-12)
+    q.json_results_append("sig sp_l_list", get_f_list_sig(sp_l_list, rs, 3), 1e-12)
     #
     sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_l_list)
-    q.json_results_append(f"sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
-    sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
+    q.json_results_append("sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
+    sp_ss_list = ssp.shuffle_sp_list(
+        q.SelectedPointsComplexD, sp_s_list, is_reverse=True
+    )
     assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig(sp_l_list, rs, 3))
     #
     ssp = q.SelectedShufflePlan("dist_t_slice_from_l", psel_l, geo, len(psel_l_list))
@@ -331,12 +365,29 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     assert sp_l.psel is ssp.psel_src_list[0]
     sp_l.set_rand(rs.split("sp_l"))
     sig_l = q.get_data_sig_arr(sp_l, rs.split("sig"), 2)
-    q.json_results_append(f"get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
+    q.json_results_append("get_data_sig_arr(sp_l,rs,2)", sig_l, 1e-12)
     #
-    sp_s_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, [ sp_l, ])
-    q.json_results_append(f"sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
-    sp_ss_list = ssp.shuffle_sp_list(q.SelectedPointsComplexD, sp_s_list, is_reverse=True)
-    assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig([ sp_l, ], rs, 3))
+    sp_s_list = ssp.shuffle_sp_list(
+        q.SelectedPointsComplexD,
+        [
+            sp_l,
+        ],
+    )
+    q.json_results_append("sig sp_s_list", get_f_list_sig(sp_s_list, rs, 3), 1e-12)
+    sp_ss_list = ssp.shuffle_sp_list(
+        q.SelectedPointsComplexD, sp_s_list, is_reverse=True
+    )
+    assert np.all(
+        get_f_list_sig(sp_ss_list, rs, 3)
+        == get_f_list_sig(
+            [
+                sp_l,
+            ],
+            rs,
+            3,
+        )
+    )
+
 
 @q.timer
 def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
@@ -350,14 +401,21 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     #
     t_slice_node_site = total_site.copy()
     t_slice_node_site[3] = 1
-    t_slice_size_node = q.Coordinate([ 1, 1, 1, total_site[3], ])
+    t_slice_size_node = q.Coordinate(
+        [
+            1,
+            1,
+            1,
+            total_site[3],
+        ]
+    )
     #
     num_field = 3
     #
     gf = q.GaugeField(geo)
-    gf.set_rand(rs.split(f"gf"), 0.5, 2)
+    gf.set_rand(rs.split("gf"), 0.5, 2)
     gf_sig = q.get_data_sig_arr(gf, rs, 3)
-    q.json_results_append(f"gf sig", gf_sig, 1e-10)
+    q.json_results_append("gf sig", gf_sig, 1e-10)
     #
     psel_list = []
     geo_list = []
@@ -370,7 +428,7 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
         vec_list.append(vec)
     q.json_results_append(f"hash_sha256(psel_list)={q.hash_sha256(psel_list)}")
     vec_sig = get_f_list_sig(vec_list, rs, 3)
-    q.json_results_append(f"sig vec_list", vec_sig, 1e-12)
+    q.json_results_append("sig vec_list", vec_sig, 1e-12)
     #
     spc = q.SelectedPointsChar(psel)
     geo = q.Geometry()
@@ -382,31 +440,69 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     #
     ssp1 = q.SelectedShufflePlan("dist_t_slice_from_l", psel, geo, num_field)
     assert ssp1.psel_src_list[0] is psel
-    q.json_results_append(f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}")
-    t_list = [ psel[0][3].item() for psel in ssp1.psel_dst_list ]
-    s_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in t_list ]
+    q.json_results_append(
+        f"hash_sha256(ssp1.psel_dst_list)={q.hash_sha256(ssp1.psel_dst_list)}"
+    )
+    t_list = [psel[0][3].item() for psel in ssp1.psel_dst_list]
+    s_geo_list = [
+        q.Geometry(
+            q.Coordinate(
+                [
+                    0,
+                    0,
+                    0,
+                    t,
+                ]
+            ),
+            t_slice_size_node,
+            t_slice_node_site,
+        )
+        for t in t_list
+    ]
     all_t_list_list = q.get_comm().allgather(t_list)
     q.json_results_append(f"all_t_list_list={all_t_list_list}")
     #
     gf.swap_sp_cast(spc, geo)
-    s_spc_list = ssp1.shuffle_list([ spc, ])
+    s_spc_list = ssp1.shuffle_list(
+        [
+            spc,
+        ]
+    )
     s_gf_list = []
     for s_spc, s_geo in zip(s_spc_list, s_geo_list):
         s_gf = q.GaugeField()
         s_gf.swap_sp_cast(s_spc, s_geo)
         s_gf_list.append(s_gf)
-    q.json_results_append(f"sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
+    q.json_results_append("sig s_gf_list", get_f_list_sig(s_gf_list, rs, 3), 1e-10)
     for s_gf, s_spc, s_geo in zip(s_gf_list, s_spc_list, s_geo_list):
         s_gf.swap_sp_cast(s_spc, s_geo)
-    [ spc, ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
+    [
+        spc,
+    ] = ssp1.shuffle_list(s_spc_list, is_reverse=True)
     gf.swap_sp_cast(spc, geo)
     assert np.all(gf_sig == q.get_data_sig_arr(gf, rs, 3))
     #
     ssp2 = q.SelectedShufflePlan("t_slice_from_l", psel_list, geo_list)
     assert ssp2.psel_src_list is psel_list
-    q.json_results_append(f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}")
-    vt_list = [ psel[0][3].item() for psel in ssp2.psel_dst_list ]
-    vs_geo_list = [ q.Geometry(q.Coordinate([ 0, 0, 0, t, ]), t_slice_size_node, t_slice_node_site) for t in vt_list ]
+    q.json_results_append(
+        f"hash_sha256(ssp2.psel_dst_list)={q.hash_sha256(ssp2.psel_dst_list)}"
+    )
+    vt_list = [psel[0][3].item() for psel in ssp2.psel_dst_list]
+    vs_geo_list = [
+        q.Geometry(
+            q.Coordinate(
+                [
+                    0,
+                    0,
+                    0,
+                    t,
+                ]
+            ),
+            t_slice_size_node,
+            t_slice_node_site,
+        )
+        for t in vt_list
+    ]
     all_vt_list_list = q.get_comm().allgather(vt_list)
     q.json_results_append(f"all_vt_list_list={all_vt_list_list}")
     #
@@ -424,7 +520,7 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
         s_vec = q.FermionField4d()
         s_vec.swap_sp_cast(s_vspc, vs_geo)
         s_vec_list.append(s_vec)
-    q.json_results_append(f"sig s_vec_list", get_f_list_sig(s_vec_list, rs, 3), 1e-10)
+    q.json_results_append("sig s_vec_list", get_f_list_sig(s_vec_list, rs, 3), 1e-10)
     for s_vec, s_vspc, vs_geo in zip(s_vec_list, s_vspc_list, vs_geo_list):
         s_vec.swap_sp_cast(s_vspc, vs_geo)
     vspc_list = ssp2.shuffle_list(s_vspc_list, is_reverse=True)
@@ -433,6 +529,7 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
     for i in range(num_field):
         vec_list[i].swap_sp_cast(vspc_list[i], vgeo_list[i])
     assert np.all(vec_sig == get_f_list_sig(vec_list, rs, 3))
+
 
 @q.timer
 def test_prop_spatial_smear(total_site, multiplicity, seed):
@@ -447,9 +544,9 @@ def test_prop_spatial_smear(total_site, multiplicity, seed):
     num_field = multiplicity
     #
     gf = q.GaugeField(geo)
-    gf.set_rand(rs.split(f"gf"), 0.5, 2)
+    gf.set_rand(rs.split("gf"), 0.5, 2)
     gf_sig = q.get_data_sig_arr(gf, rs, 3)
-    q.json_results_append(f"gf sig", gf_sig, 1e-10)
+    q.json_results_append("gf sig", gf_sig, 1e-10)
     #
     ff_list = []
     for id_field in range(num_field):
@@ -457,32 +554,40 @@ def test_prop_spatial_smear(total_site, multiplicity, seed):
         ff.set_rand(rs.split(f"ff_list[{id_field}]"))
         ff_list.append(ff)
     ff_list_sig = get_f_list_sig(ff_list, rs, 3)
-    q.json_results_append(f"sig ff_list", ff_list_sig, 1e-12)
+    q.json_results_append("sig ff_list", ff_list_sig, 1e-12)
     #
     s_ff_list = q.prop_spatial_smear(ff_list, gf, coef, step)
     s_ff_list_sig = get_f_list_sig(s_ff_list, rs, 3)
-    q.json_results_append(f"sig s_ff_list", s_ff_list_sig, 1e-12)
+    q.json_results_append("sig s_ff_list", s_ff_list_sig, 1e-12)
     #
-    mom = q.CoordinateD([ 0.1, -0.2, 0.3, 0.5, ])
+    mom = q.CoordinateD(
+        [
+            0.1,
+            -0.2,
+            0.3,
+            0.5,
+        ]
+    )
     #
     ms_ff_list = q.prop_spatial_smear(ff_list, gf, coef, step, mom, chunk_size=2)
     ms_ff_list_sig = get_f_list_sig(ms_ff_list, rs, 3)
-    q.json_results_append(f"sig ms_ff_list", ms_ff_list_sig, 1e-12)
+    q.json_results_append("sig ms_ff_list", ms_ff_list_sig, 1e-12)
     #
     if multiplicity == 1:
         prop = q.Prop(geo)
-        prop.set_rand(rs.split(f"prop"))
+        prop.set_rand(rs.split("prop"))
         prop_sig = q.get_data_sig_arr(prop, rs, 3)
-        q.json_results_append(f"prop sig", prop_sig, 1e-10)
+        q.json_results_append("prop sig", prop_sig, 1e-10)
         ss_prop = q.prop_spatial_smear(prop, gf, coef, step, mom)
         ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
-        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+        q.json_results_append("ss_prop sig", ss_prop_sig, 1e-10)
         ss_prop = q.prop_smear(prop, gf, coef, step, mom)
         ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
-        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+        q.json_results_append("ss_prop sig", ss_prop_sig, 1e-10)
         ss_prop = q.prop_smear(prop, gf, coef, step, mom, mode_smear=0)
         ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
-        q.json_results_append(f"ss_prop sig", ss_prop_sig, 1e-10)
+        q.json_results_append("ss_prop sig", ss_prop_sig, 1e-10)
+
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:
@@ -496,4 +601,4 @@ for total_site in total_site_list:
 q.timer_display()
 q.check_log_json(__file__)
 q.end_with_mpi()
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

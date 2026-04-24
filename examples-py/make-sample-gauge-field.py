@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 import qlat as q
 
 size_node_list = [
@@ -10,14 +9,21 @@ size_node_list = [
     [1, 1, 1, 8],
     [2, 2, 2, 2],
     [2, 2, 2, 4],
-    ]
+]
 
 q.begin_with_mpi(size_node_list)
 
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
-total_site = q.Coordinate([ 4, 4, 4, 8, ])
+total_site = q.Coordinate(
+    [
+        4,
+        4,
+        4,
+        8,
+    ]
+)
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
@@ -54,4 +60,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

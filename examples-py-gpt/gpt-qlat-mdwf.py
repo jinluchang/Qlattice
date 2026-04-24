@@ -20,13 +20,13 @@ gf.set_rand(rs.split("gf-init"), 0.05, 2)
 gf.show_info()
 
 mobius_params = {
-        "mass": 0.1,
-        "M5": 1.0,
-        "b": 1.0,
-        "c": 0.0,
-        "Ls": 8,
-        "boundary_phases": [1.0, 1.0, 1.0, 1.0],
-        }
+    "mass": 0.1,
+    "M5": 1.0,
+    "b": 1.0,
+    "c": 0.0,
+    "Ls": 8,
+    "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+}
 
 gpt_gf = qg.gpt_from_qlat(gf)
 
@@ -43,7 +43,8 @@ inv = g.algorithms.inverter
 cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d).grouped(4)
-inv_qm = qg.InverterGPT(inverter = slv_qm, qtimer = q.Timer("py:slv_qm", True))
+inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=q.Timer("py:slv_qm", True))
+
 
 def mk_src(geo):
     src = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
@@ -54,6 +55,7 @@ def mk_src(geo):
     src1 -= src
     assert src1.qnorm() == 0.0
     return src
+
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
@@ -66,6 +68,7 @@ def test_inv(geo, inverter):
     q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.10E}")
     q.displayln_info(f"sol1 info {sol1.crc32()}")
     return src, sol, sol1
+
 
 src, sol, sol1 = test_inv(geo, inv_qm)
 
@@ -83,4 +86,4 @@ q.timer_display()
 
 qg.end_with_gpt()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

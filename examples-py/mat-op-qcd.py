@@ -7,11 +7,13 @@ q.begin_with_mpi()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
+
 def make_rnd_sm(rs: q.RngState):
     sm = q.SpinMatrix()
     x = np.asarray(sm)
     rs.u_rand_fill(x, 1.0, -1.0)
     return sm
+
 
 def make_rnd_cm(rs: q.RngState):
     cm = q.ColorMatrix()
@@ -19,11 +21,13 @@ def make_rnd_cm(rs: q.RngState):
     rs.u_rand_fill(x, 1.0, -1.0)
     return cm
 
+
 def make_rnd_wm(rs: q.RngState):
     wm = q.WilsonMatrix()
     x = np.asarray(wm)
     rs.u_rand_fill(x, 1.0, -1.0)
     return wm
+
 
 sm1 = make_rnd_sm(q.RngState("seed-sm1"))
 sm2 = make_rnd_sm(q.RngState("seed-sm2"))
@@ -129,4 +133,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

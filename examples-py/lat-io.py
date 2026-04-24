@@ -2,7 +2,6 @@
 
 import qlat as q
 import numpy as np
-import os
 
 q.begin_with_mpi()
 
@@ -12,11 +11,27 @@ q.qmkdir_info("results")
 rs = q.RngState("test")
 
 info_list = [
-        [ "dim1", 4, ],
-        [ "dim2 name", 3, ],
-        [ "dim3", 2, [ "u", "d", ], ],
-        [ "dim4", 5, ],
-        ]
+    [
+        "dim1",
+        4,
+    ],
+    [
+        "dim2 name",
+        3,
+    ],
+    [
+        "dim3",
+        2,
+        [
+            "u",
+            "d",
+        ],
+    ],
+    [
+        "dim4",
+        5,
+    ],
+]
 
 ld = q.mk_lat_data(info_list)
 
@@ -90,4 +105,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

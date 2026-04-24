@@ -3,7 +3,6 @@
 import sys
 import qlat as q
 import numpy as np
-from pprint import pformat
 
 from qlat_scripts.v1 import (
     set_param,
@@ -41,36 +40,45 @@ by Luchang Jin
 """
 
 size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 1, 2],
-        [1, 1, 1, 3],
-        [1, 1, 1, 4],
-        [1, 1, 1, 6],
-        [1, 1, 1, 8],
-        [1, 2, 2, 4],
-        [2, 2, 2, 4],
-        [2, 2, 2, 4],
-        ]
+    [1, 1, 1, 1],
+    [1, 1, 1, 2],
+    [1, 1, 1, 3],
+    [1, 1, 1, 4],
+    [1, 1, 1, 6],
+    [1, 1, 1, 8],
+    [1, 2, 2, 4],
+    [2, 2, 2, 4],
+    [2, 2, 2, 4],
+]
+
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
     job_tag_list = [
-            "test-4nt8-checker",
-            "test-8nt16-checker",
-            ]
+        "test-4nt8-checker",
+        "test-8nt16-checker",
+    ]
     job_tag_traj_list = []
     for job_tag in job_tag_list:
         run_params(job_tag)
         traj_list = get_param(job_tag, "traj_list")
         for traj in traj_list:
-            job_tag_traj_list.append((job_tag, traj,))
+            job_tag_traj_list.append(
+                (
+                    job_tag,
+                    traj,
+                )
+            )
     fn_gf_list = []
     fn_out_list = []
     fn_out_df_list = []
     for job_tag, traj in job_tag_traj_list:
         traj_gf = traj
-        get_gf = run_gf(job_tag, traj_gf)
-        fn_gf = get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj_gf}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}")
+        run_gf(job_tag, traj_gf)
+        fn_gf = get_load_path(
+            f"{job_tag}/configs/ckpoint_lat.{traj_gf}",
+            f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",
+        )
         assert fn_gf is not None
         fn_out = get_save_path(f"{job_tag}/flow-topo-info/traj-{traj_gf}")
         fn_out_df = get_save_path(f"{job_tag}/flow-density-field/traj-{traj_gf}")
@@ -79,43 +87,76 @@ def gen_test_data():
         fn_out_df_list.append(fn_out_df)
     argv = []
     for fn in fn_gf_list:
-        argv += [ "--gf", fn, ]
+        argv += [
+            "--gf",
+            fn,
+        ]
     for fn in fn_out_list:
-        argv += [ "--out", fn, ]
+        argv += [
+            "--out",
+            fn,
+        ]
     for fn in fn_out_df_list:
-        argv += [ "--out_df", fn, ]
+        argv += [
+            "--out_df",
+            fn,
+        ]
     argv += [
-        "--step_size", "0.05",
-        "--n_step", "80",
-        "--flow_type", "Wilson",
-        "--integrator_type", "euler",
-        "--step_size", "0.1",
-        "--n_step", "100",
-        "--flow_type", "Localize",
-        "--integrator_type", "euler",
-        "--step_size", "0.1",
-        "--n_step", "100",
-        "--flow_type", "Localize",
-        "--integrator_type", "euler",
+        "--step_size",
+        "0.05",
+        "--n_step",
+        "80",
+        "--flow_type",
+        "Wilson",
+        "--integrator_type",
+        "euler",
+        "--step_size",
+        "0.1",
+        "--n_step",
+        "100",
+        "--flow_type",
+        "Localize",
+        "--integrator_type",
+        "euler",
+        "--step_size",
+        "0.1",
+        "--n_step",
+        "100",
+        "--flow_type",
+        "Localize",
+        "--integrator_type",
+        "euler",
     ]
     return argv
+
 
 @q.timer(is_timer_fork=True)
 def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
     fname = q.get_fname()
     if q.does_file_exist_qar_sync_node(fn_out):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip.")
+        q.displayln_info(
+            -1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip."
+        )
         return
     if q.does_file_exist_qar_sync_node(fn_out_df):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_out_df}' for '{fn_gf}' already exist. Skip.")
+        q.displayln_info(
+            -1, f"{fname}: WARNING: '{fn_out_df}' for '{fn_gf}' already exist. Skip."
+        )
         return
     if not q.does_file_exist_qar_sync_node(fn_gf):
-        q.displayln_info(-1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file.")
+        q.displayln_info(
+            -1, f"{fname}: WARNING: '{fn_gf}' does not exist. Skip this file."
+        )
         return
-    q.json_results_append(f"{fname}: Start compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'")
+    q.json_results_append(
+        f"{fname}: Start compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'"
+    )
     gf = q.GaugeField()
     gf.load(fn_gf)
-    topo_list, energy_list, = q.smear_measure_topo(
+    (
+        topo_list,
+        energy_list,
+    ) = q.smear_measure_topo(
         gf,
         smear_info_list=smear_info_list,
         info_path=fn_out,
@@ -156,16 +197,21 @@ def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
                 q.RngState(),
                 3,
             ),
-            1e-8)
-    q.json_results_append(f"{fname}: End compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'")
+            1e-8,
+        )
+    q.json_results_append(
+        f"{fname}: End compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'"
+    )
+
 
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
 
+
 @q.timer(is_timer_fork=True)
 def run():
     if is_test():
-        q.displayln_info(f"Will now generate test data and run topo measure.")
+        q.displayln_info("Will now generate test data and run topo measure.")
         argv = gen_test_data()
     else:
         argv = sys.argv
@@ -184,7 +230,9 @@ def run():
     assert len(p_step_size_list) == len(flow_type_list)
     assert len(p_step_size_list) == len(integrator_type_list)
     smear_info_list = []
-    for step_size, n_step, flow_type, integrator_type in zip(p_step_size_list, p_n_step_list, flow_type_list, integrator_type_list):
+    for step_size, n_step, flow_type, integrator_type in zip(
+        p_step_size_list, p_n_step_list, flow_type_list, integrator_type_list
+    ):
         smear_info = [
             float(step_size),
             int(n_step),
@@ -200,11 +248,24 @@ def run():
             smear_info_list=smear_info_list,
         )
 
+
 # --------------------------------------------
 
 job_tag = "test-4nt8-checker"
-set_param(job_tag, "traj_list")([ 1000, 1100, ])
-set_param(job_tag, "total_site")([ 4, 4, 4, 8, ])
+set_param(job_tag, "traj_list")(
+    [
+        1000,
+        1100,
+    ]
+)
+set_param(job_tag, "total_site")(
+    [
+        4,
+        4,
+        4,
+        8,
+    ]
+)
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(20)
 set_param(job_tag, "mk_sample_gauge_field", "rand_sigma")(0.25)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(4)
@@ -212,8 +273,19 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(3.0)
 
 job_tag = "test-8nt16-checker"
-set_param(job_tag, "traj_list")([ 1000, ])
-set_param(job_tag, "total_site")([ 8, 8, 8, 16, ])
+set_param(job_tag, "traj_list")(
+    [
+        1000,
+    ]
+)
+set_param(job_tag, "total_site")(
+    [
+        8,
+        8,
+        8,
+        16,
+    ]
+)
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(10)
 set_param(job_tag, "mk_sample_gauge_field", "rand_sigma")(0.25)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
@@ -221,8 +293,19 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 
 job_tag = "test-16nt32-checker"
-set_param(job_tag, "traj_list")([ 1000, ])
-set_param(job_tag, "total_site")([ 16, 16, 16, 32, ])
+set_param(job_tag, "traj_list")(
+    [
+        1000,
+    ]
+)
+set_param(job_tag, "total_site")(
+    [
+        16,
+        16,
+        16,
+        32,
+    ]
+)
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(5)
 set_param(job_tag, "mk_sample_gauge_field", "rand_sigma")(0.25)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(8)
@@ -230,8 +313,19 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 
 job_tag = "test-48nt96-checker"
-set_param(job_tag, "traj_list")([ 1000, ])
-set_param(job_tag, "total_site")([ 48, 48, 48, 96, ])
+set_param(job_tag, "traj_list")(
+    [
+        1000,
+    ]
+)
+set_param(job_tag, "total_site")(
+    [
+        48,
+        48,
+        48,
+        96,
+    ]
+)
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(5)
 set_param(job_tag, "mk_sample_gauge_field", "rand_sigma")(0.25)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(4)
@@ -239,8 +333,19 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_n_traj")(5)
 set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 
 job_tag = "test-64nt128-checker"
-set_param(job_tag, "traj_list")([ 1000, ])
-set_param(job_tag, "total_site")([ 64, 64, 64, 64, ])
+set_param(job_tag, "traj_list")(
+    [
+        1000,
+    ]
+)
+set_param(job_tag, "total_site")(
+    [
+        64,
+        64,
+        64,
+        64,
+    ]
+)
 set_param(job_tag, "mk_sample_gauge_field", "rand_n_step")(5)
 set_param(job_tag, "mk_sample_gauge_field", "rand_sigma")(0.25)
 set_param(job_tag, "mk_sample_gauge_field", "flow_n_step")(4)
@@ -260,4 +365,4 @@ if __name__ == "__main__":
     if is_test():
         q.check_log_json(__file__, check_eps=1e-10)
     q.end_with_mpi()
-    q.displayln_info(f"CHECK: finished successfully.")
+    q.displayln_info("CHECK: finished successfully.")

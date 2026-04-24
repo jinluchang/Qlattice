@@ -10,4 +10,4 @@ q.hello()
 
 q.timer_display()
 
-q.displayln_info('CHECK: finished successfully.')
+q.displayln_info("CHECK: finished successfully.")

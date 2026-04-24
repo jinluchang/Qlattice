@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import sys
 import math as m
-import numpy as np
 
 import qlat as q
 # import gpt as g
 # import qlat_gpt as qg
 
 from qlat import metropolis_accept
+
 
 @q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
@@ -29,31 +28,33 @@ def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
     gm_force *= dt
     gm += gm_force
 
+
 @q.timer_verbose
 def run_hmc_evolve_flowed(gm, gf, ga, fi, rs, steps, md_time=1.0):
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_flowed_node(gf, ga, fi)
     #
     dt = md_time / steps
-    lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0));
-    theta = (2.0 - m.sqrt(3.0)) / 48.0;
-    ttheta = theta * dt * dt * dt;
+    lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0))
+    theta = (2.0 - m.sqrt(3.0)) / 48.0
+    ttheta = theta * dt * dt * dt
     #
     q.gf_evolve(gf, gm, lam * dt)
     for i in range(steps):
-        gm_evolve_fg(gm, gf, ga, fi, 4.0 * ttheta / dt, 0.5 * dt);
-        q.gf_evolve(gf, gm, (1.0 - 2.0 * lam) * dt);
-        gm_evolve_fg(gm, gf, ga, fi, 4.0 * ttheta / dt, 0.5 * dt);
+        gm_evolve_fg(gm, gf, ga, fi, 4.0 * ttheta / dt, 0.5 * dt)
+        q.gf_evolve(gf, gm, (1.0 - 2.0 * lam) * dt)
+        gm_evolve_fg(gm, gf, ga, fi, 4.0 * ttheta / dt, 0.5 * dt)
         if i < steps - 1:
-            q.gf_evolve(gf, gm, 2.0 * lam * dt);
+            q.gf_evolve(gf, gm, 2.0 * lam * dt)
         else:
-            q.gf_evolve(gf, gm, lam * dt);
+            q.gf_evolve(gf, gm, lam * dt)
     #
     q.unitarize(gf)
     #
-    delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_flowed_node(gf, ga, fi) - energy;
+    delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_flowed_node(gf, ga, fi) - energy
     delta_h = q.glb_sum(delta_h)
     #
     return delta_h
+
 
 @q.timer_verbose
 def mk_flow_info(rng):
@@ -62,6 +63,7 @@ def mk_flow_info(rng):
     # fi.add_rand_order_flow(rng, 0.1)
     # fi.add_rand_order_flow(rng, 0.1, 0.0)
     return fi
+
 
 @q.timer_verbose
 def run_hmc(gf, ga, traj, rs):
@@ -95,9 +97,17 @@ def run_hmc(gf, ga, traj, rs):
         gf0_r = q.GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_flowed(gm_r, gf0_r, ga, fi, rs, steps, -md_time)
-        gf0_r -= gf;
-        q.displayln_info("run_hmc_evolve_flowed reversed delta_diff: {} / {}".format(delta_h + delta_h_rev, delta_h))
-        q.displayln_info("run_hmc_evolve_flowed reversed gf_diff: {} / {}".format(q.qnorm(gf0_r), q.qnorm(gf0)))
+        gf0_r -= gf
+        q.displayln_info(
+            "run_hmc_evolve_flowed reversed delta_diff: {} / {}".format(
+                delta_h + delta_h_rev, delta_h
+            )
+        )
+        q.displayln_info(
+            "run_hmc_evolve_flowed reversed gf_diff: {} / {}".format(
+                q.qnorm(gf0_r), q.qnorm(gf0)
+            )
+        )
     #
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     #
@@ -105,12 +115,17 @@ def run_hmc(gf, ga, traj, rs):
         q.displayln_info("run_hmc: update gf (traj={:d})".format(traj))
         q.gf_flow(gf, gf0, fi)
 
+
 @q.timer_verbose
 def test_hmc(total_site, ga):
     geo = q.Geometry(total_site)
-    rs = q.RngState("test_hmc-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
+    rs = q.RngState(
+        "test_hmc-{}x{}x{}x{}".format(
+            total_site[0], total_site[1], total_site[2], total_site[3]
+        )
+    )
     gf = q.GaugeField(geo)
-    q.set_unit(gf);
+    q.set_unit(gf)
     q.set_g_rand_color_matrix_field(gf, q.RngState(), 1.0)
     traj = 0
     #
@@ -120,42 +135,61 @@ def test_hmc(total_site, ga):
         traj += 1
         run_hmc(gf, ga, traj, rs.split("hmc-{}".format(traj)))
         plaq_avg = q.gf_avg_plaq(gf)
-        plaq_sum = geo.total_volume * 6.0 * (1.0 - plaq_avg)
+        geo.total_volume * 6.0 * (1.0 - plaq_avg)
         q.displayln_info(f"CHECK: traj={traj} ; plaq_avg={plaq_avg:.12E}")
         wilson_loop = q.gf_avg_wilson_loop_normalized_tr(gf, 1, 1)
         q.displayln_info(f"CHECK: wilson_loop {wilson_loop:.12E}")
         q.displayln_info("test_hmc: traj={} ; plaq_avg={}".format(traj, plaq_avg))
         if traj % 1 == 0:
             q.display_gauge_field_info_table_with_wilson_flow(
-                    "results/gf_info/traj={}.lat".format(traj),
-                    "results/wilson_flow_energy_info/traj={}.lat".format(traj),
-                    gf, 1.0, 100, 2)
+                "results/gf_info/traj={}.lat".format(traj),
+                "results/wilson_flow_energy_info/traj={}.lat".format(traj),
+                gf,
+                1.0,
+                100,
+                2,
+            )
         if traj % traj_save_skip == 0:
             q.save_gm_force_magnitudes_list(
-                    "results/gm_force_info/traj={}.lat".format(traj))
+                "results/gm_force_info/traj={}.lat".format(traj)
+            )
+
 
 @q.timer_verbose
 def show_machine():
-    print("id_node: {:4} / {} ; coor_node: {:9} / {}".format(
-        q.get_id_node(),
-        q.get_num_node(),
-        str(q.get_coor_node()),
-        str(q.get_size_node())))
+    print(
+        "id_node: {:4} / {} ; coor_node: {:9} / {}".format(
+            q.get_id_node(),
+            q.get_num_node(),
+            str(q.get_coor_node()),
+            str(q.get_size_node()),
+        )
+    )
+
 
 @q.timer_verbose
 def main():
-    total_site = q.Coordinate([ 4, 4, 4, 8, ])
+    total_site = q.Coordinate(
+        [
+            4,
+            4,
+            4,
+            8,
+        ]
+    )
     ga = q.GaugeAction(2.31, -0.331)
     # ga = q.GaugeAction(5.5, 0.0)
     test_hmc(total_site, ga)
 
+
 size_node_list = [
-        (1, 1, 1, 1),
-        (1, 1, 1, 2),
-        (1, 1, 1, 4),
-        (1, 2, 2, 2),
-        (2, 2, 2, 2),
-        (2, 2, 2, 4)]
+    (1, 1, 1, 1),
+    (1, 1, 1, 2),
+    (1, 1, 1, 4),
+    (1, 2, 2, 2),
+    (2, 2, 2, 2),
+    (2, 2, 2, 4),
+]
 
 q.begin_with_mpi(size_node_list)
 
@@ -169,4 +203,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

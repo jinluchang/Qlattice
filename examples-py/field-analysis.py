@@ -2,7 +2,6 @@
 
 check_eps = 1e-10
 
-import sys
 import qlat as q
 import numpy as np
 
@@ -12,14 +11,22 @@ size_node_list = [
     [1, 1, 1, 4],
     [1, 1, 1, 8],
     [2, 2, 2, 2],
-    [2, 2, 2, 4]]
+    [2, 2, 2, 4],
+]
 
 q.begin_with_mpi(size_node_list)
 
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
-total_site = q.Coordinate([ 4, 4, 4, 8, ])
+total_site = q.Coordinate(
+    [
+        4,
+        4,
+        4,
+        8,
+    ]
+)
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
@@ -53,8 +60,20 @@ sf2p = q.sphere_sum_field(f1, radius, is_only_spatial=True)
 q.json_results_append("sf1p data sig", q.get_data_sig(sf1p, rs), check_eps)
 q.json_results_append("sf2p data sig", q.get_data_sig(sf2p, rs), check_eps)
 
-idx1 = np.array([ 0, 1, ], dtype=np.int32)
-idx2 = np.array([ 0, 2, ], dtype=np.int32)
+idx1 = np.array(
+    [
+        0,
+        1,
+    ],
+    dtype=np.int32,
+)
+idx2 = np.array(
+    [
+        0,
+        2,
+    ],
+    dtype=np.int32,
+)
 
 ff = q.field_convolution(f1, f2, idx1, idx2)
 
@@ -63,6 +82,7 @@ q.json_results_append("ff data sig", q.get_data_sig(ff, rs), check_eps)
 ff3d = q.field_convolution(f1, f2, idx1, idx2, is_only_spatial=True)
 
 q.json_results_append("ff3d data sig", q.get_data_sig(ff3d, rs), check_eps)
+
 
 def check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel):
     fsel = q.FieldSelection(geo, 0)
@@ -78,6 +98,7 @@ def check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel):
     diff = s - s_ref
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s)
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s_ref)
+
 
 def check_convolution_3d(f1, f2, idx1, idx2, ff, xg_rel):
     t = xg_rel[3]
@@ -99,6 +120,7 @@ def check_convolution_3d(f1, f2, idx1, idx2, ff, xg_rel):
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s)
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s_ref)
 
+
 rsi = rs.split("c-rand-gen")
 for i in range(4):
     xg_rel = rsi.c_rand_gen(total_site)
@@ -111,4 +133,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

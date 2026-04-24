@@ -1,9 +1,9 @@
 import numpy as np
 import qlat as q
-import qlat_gpt as qg
 import gpt as g
 
 from qlat_scripts.v1 import *
+
 
 def set_param_field_selection_rate(job_tag, f_rate, n_points):
     """
@@ -16,24 +16,31 @@ def set_param_field_selection_rate(job_tag, f_rate, n_points):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
     n_points_fsel = round(total_volume * f_rate)
-    fsel_prob = 1 - (1 - 1 / total_volume)**n_points_fsel
-    psel_prob = 1 - (1 - 1 / total_volume)**n_points
+    fsel_prob = 1 - (1 - 1 / total_volume) ** n_points_fsel
+    psel_prob = 1 - (1 - 1 / total_volume) ** n_points
     set_param(job_tag, "field_selection_fsel_rate")(fsel_prob)
     set_param(job_tag, "field_selection_psel_rate")(psel_prob)
+
 
 def get_num_points_fsel_sampling(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
     fsel_rate = get_param(job_tag, "field_selection_fsel_rate")
-    num_points_fsel_sampling = round(np.log(1 - fsel_rate) / np.log(1 - 1 / total_volume))
+    num_points_fsel_sampling = round(
+        np.log(1 - fsel_rate) / np.log(1 - 1 / total_volume)
+    )
     return num_points_fsel_sampling
+
 
 def get_num_points_psel_sampling(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
     psel_rate = get_param(job_tag, "field_selection_psel_rate")
-    num_points_psel_sampling = round(np.log(1 - psel_rate) / np.log(1 - 1 / total_volume))
+    num_points_psel_sampling = round(
+        np.log(1 - psel_rate) / np.log(1 - 1 / total_volume)
+    )
     return num_points_psel_sampling
+
 
 @q.cache_call()
 @q.timer_verbose
@@ -51,15 +58,20 @@ def get_all_positions(job_tag, traj):
     conf = traj
     rng = g.random(f"{job_tag}-positions-{conf}")
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    total_volume = total_site.volume()
+    total_site.volume()
     num_points_fsel_sampling = get_num_points_fsel_sampling(job_tag)
     n_all_points = num_points_fsel_sampling
     # n_all_points = 2654208 # 1/64 of all points, 96I
     L = total_site.to_list()
-    all_positions = np.array([
-        [rng.uniform_int(min=0, max=L[i] - 1) for i in range(4)] for j in range(n_all_points)
-    ], dtype=np.int32)
+    all_positions = np.array(
+        [
+            [rng.uniform_int(min=0, max=L[i] - 1) for i in range(4)]
+            for j in range(n_all_points)
+        ],
+        dtype=np.int32,
+    )
     return all_positions
+
 
 @q.cache_call()
 @q.timer_verbose
@@ -78,6 +90,7 @@ def get_psrc_positions(job_tag, traj):
     psrc_positions = all_positions[:num_points_psel_sampling].copy()
     return psrc_positions
 
+
 @q.timer
 def run_fsel_prob_uniform(job_tag, traj):
     """
@@ -93,6 +106,7 @@ def run_fsel_prob_uniform(job_tag, traj):
     fname = q.get_fname()
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
     fn_fsel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/fsel-prob.sfield"
+    #
     @q.lazy_call
     @q.timer_verbose
     def get_fsel_prob():
@@ -103,6 +117,7 @@ def run_fsel_prob_uniform(job_tag, traj):
         total_size = fsel_prob.load_double(get_load_path(fn_fsel_prob))
         assert total_size > 0
         return fsel_prob
+    #
     ret = get_fsel_prob
     if get_load_path(fn_fsel) is not None:
         if get_load_path(fn_fsel_prob) is not None:
@@ -125,6 +140,7 @@ def run_fsel_prob_uniform(job_tag, traj):
     q.release_lock()
     return ret
 
+
 @q.timer
 def run_psel_prob_uniform(job_tag, traj):
     """
@@ -140,6 +156,7 @@ def run_psel_prob_uniform(job_tag, traj):
     fn_psel_prob = f"{job_tag}/field-selection-weight/traj-{traj}/psel-prob.lat"
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     geo = q.Geometry(total_site)
+    #
     @q.lazy_call
     @q.timer_verbose
     def get_psel_prob():
@@ -148,6 +165,7 @@ def run_psel_prob_uniform(job_tag, traj):
         psel_prob = q.SelectedPointsRealD(psel, 1)
         psel_prob.load(get_load_path(fn_psel_prob))
         return psel_prob
+    #
     ret = get_psel_prob
     if get_load_path(fn_psel) is not None:
         if get_load_path(fn_psel_prob) is not None:

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
 import qlat as q
-import numpy as np
 import functools
 
 q.begin_with_mpi()
 
-job_tag_list = ['job_tag_1', 'job_tag_2', ]
+job_tag_list = [
+    "job_tag_1",
+    "job_tag_2",
+]
+
 
 @functools.lru_cache
 def get_traj_list(job_tag):
@@ -19,13 +22,21 @@ def get_traj_list(job_tag):
         raise Exception(f"{fname}: job_tag='{job_tag}'")
     return None
 
+
 @functools.lru_cache
 def get_all_jk_idx():
-    jk_idx_list = ['avg', ]
+    jk_idx_list = [
+        "avg",
+    ]
     for job_tag in job_tag_list:
         traj_list = get_traj_list(job_tag)
         for traj in traj_list:
-            jk_idx_list.append((job_tag, traj,))
+            jk_idx_list.append(
+                (
+                    job_tag,
+                    traj,
+                )
+            )
     return jk_idx_list
 
 
@@ -47,7 +58,12 @@ rs = q.RngState("seed1")
 job_tag = "job_tag_1"
 traj_list = get_traj_list(job_tag)
 
-data_arr = rs.g_rand_arr((len(traj_list), 5,))  # can be list or np.array
+data_arr = rs.g_rand_arr(
+    (
+        len(traj_list),
+        5,
+    )
+)  # can be list or np.array
 jk_arr_1 = q.g_mk_jk(data_arr, [(job_tag, traj) for traj in traj_list])
 avg, err = q.g_jk_avg_err(jk_arr_1)
 
@@ -59,7 +75,12 @@ rs = q.RngState("seed2")
 job_tag = "job_tag_2"
 traj_list = get_traj_list(job_tag)
 
-data_arr = rs.g_rand_arr((len(traj_list), 5,))  # can be list or np.array
+data_arr = rs.g_rand_arr(
+    (
+        len(traj_list),
+        5,
+    )
+)  # can be list or np.array
 jk_arr_2 = q.g_mk_jk(data_arr, [(job_tag, traj) for traj in traj_list])
 avg, err = q.g_jk_avg_err(jk_arr_2)
 
@@ -77,8 +98,8 @@ for i in range(len(avg)):
 jk_val_arr = q.g_mk_jk_val("val-tag", 1.0, 0.5)
 avg, err = q.g_jk_avg_err(jk_val_arr)
 
-q.json_results_append(f"avg", avg)
-q.json_results_append(f"err", err)
+q.json_results_append("avg", avg)
+q.json_results_append("err", err)
 
 jk_diff_arr = jk_arr - jk_val_arr[:, None]
 avg, err = q.g_jk_avg_err(jk_diff_arr)
@@ -89,4 +110,4 @@ for i in range(len(avg)):
 
 q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

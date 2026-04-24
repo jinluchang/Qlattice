@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import qlat as q
-import os
 
 q.begin_with_mpi()
 
@@ -12,7 +11,7 @@ total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 
-psel = q.PointsSelection(total_site, [[0,0,0,0], [0,1,2,0]])
+psel = q.PointsSelection(total_site, [[0, 0, 0, 0], [0, 1, 2, 0]])
 n_per_tslice = 16
 fsel = q.FieldSelection()
 fsel.set_rand(geo.total_site, n_per_tslice, rs.split("fsel"))
@@ -28,7 +27,18 @@ q.displayln_info("CHECK: prop", prop.crc32(), f"{prop.qnorm():.14E}")
 s_prop = q.SelProp(fselc)
 s_prop @= prop
 
-sfw = q.open_fields("results/prop1.fields", "w", q.Coordinate([ 1, 1, 1, 1, ]))
+sfw = q.open_fields(
+    "results/prop1.fields",
+    "w",
+    q.Coordinate(
+        [
+            1,
+            1,
+            1,
+            1,
+        ]
+    ),
+)
 
 prop.save_float_from_double(sfw, "prop", skip_if_exist=True)
 
@@ -65,18 +75,29 @@ assert q.qnorm(s_prop_1) < 1e-10
 assert q.qnorm(s_prop_2) < 1e-10
 assert q.qnorm(s_prop_3) < 1e-10
 
-sfw = q.open_fields("results/prop.fields", "w", q.Coordinate([ 1, 1, 1, 8, ]))
+sfw = q.open_fields(
+    "results/prop.fields",
+    "w",
+    q.Coordinate(
+        [
+            1,
+            1,
+            1,
+            8,
+        ]
+    ),
+)
 
 sf_list = sorted(q.show_all_shuffled_fields_writer())
 q.sync_node()
-q.displayln_info(f"CHECK: q.show_all_shuffled_fields_writer()")
+q.displayln_info("CHECK: q.show_all_shuffled_fields_writer()")
 for idx, s in enumerate(sf_list):
     q.displayln_info(f"CHECK: {idx} {s}")
 q.sync_node()
 
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
-q.displayln_info(f"CHECK: q.show_all_qfile()")
+q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
 q.sync_node()
@@ -91,12 +112,16 @@ sfw.flush()
 
 s_prop = q.SelProp(fsel)
 s_prop @= prop
-q.displayln_info("CHECK: s_prop = SelProp(fsel) and s_prop @= prop", f"{s_prop.qnorm():14E}")
+q.displayln_info(
+    "CHECK: s_prop = SelProp(fsel) and s_prop @= prop", f"{s_prop.qnorm():14E}"
+)
 s_prop.save_float_from_double(sfw, "s_prop")
 
 prop1 = q.SelProp(fselc)
 prop1 @= prop
-q.displayln_info("CHECK: prop1 = SelProp(fselc) and prop1 @= prop", f"{prop1.qnorm():.14E}")
+q.displayln_info(
+    "CHECK: prop1 = SelProp(fselc) and prop1 @= prop", f"{prop1.qnorm():.14E}"
+)
 prop1.save_float_from_double(sfw, "prop1")
 
 sfw.close()
@@ -105,7 +130,7 @@ sfr = q.open_fields("results/prop.fields", "r")
 
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
-q.displayln_info(f"CHECK: q.show_all_qfile()")
+q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
 q.sync_node()
@@ -163,12 +188,23 @@ crc = q.compute_crc32("results/prop.fields/index.qar")
 
 q.displayln_info(f"CHECK: index.qar crc={crc:08X}")
 
-q.displayln_info(f"CHECK: test read_as_char and write")
+q.displayln_info("CHECK: test read_as_char and write")
 
 sfr = q.open_fields("results/prop.fields", "r")
 tags = sfr.list()
 q.displayln_info(f"CHECK: tags={tags}")
-sfw = q.open_fields("results/prop-copy.fields", "w", q.Coordinate([ 1, 1, 1, 8, ]))
+sfw = q.open_fields(
+    "results/prop-copy.fields",
+    "w",
+    q.Coordinate(
+        [
+            1,
+            1,
+            1,
+            8,
+        ]
+    ),
+)
 for tag in tags:
     q.displayln_info(f"CHECK: tag='{tag}'")
     obj = sfr.read_as_char(tag)
@@ -214,4 +250,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

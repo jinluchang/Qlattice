@@ -2,7 +2,14 @@
 
 import numpy as np
 
-from qlat.mat_mpi import get_mpi_comm, set_mpi_comm, DistArray, scatter_arr, all_gather_arr, gather_arr, d_matmul, d_trace
+from qlat.mat_mpi import (
+    get_mpi_comm,
+    scatter_arr,
+    all_gather_arr,
+    gather_arr,
+    d_matmul,
+    d_trace,
+)
 
 comm = get_mpi_comm()
 size = comm.Get_size()
@@ -40,8 +47,8 @@ vec2 = all_gather_arr(d_vec) @ all_gather_arr(d_vec)
 if rank == root:
     print(vec2)
 
-axis=()
-keepdims=False
+axis = ()
+keepdims = False
 r = d_vec2.sum(axis, keepdims=keepdims)
 if rank == root:
     print()
@@ -69,7 +76,9 @@ nt = 4
 for i in range(nt):
     arr = None
     if rank == (i % size):
-        arr = (np.arange(16.0) + 1j).reshape(4, 4) # loading data from this tslsice locally
+        arr = (np.arange(16.0) + 1j).reshape(
+            4, 4
+        )  # loading data from this tslsice locally
     arr_list.append(arr)
 
 lam = np.arange(1.0, 5.0)
@@ -107,4 +116,4 @@ print(s / nt**2)
 comm.barrier()
 
 if rank == 0:
-    print(f"CHECK: finished successfully.")
+    print("CHECK: finished successfully.")

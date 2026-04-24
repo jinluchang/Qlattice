@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-import sys, os
-import numpy as np
 import glob
 import pickle
 import qlat as q
 
 from qlat_scripts.v1 import (
-    set_param,
-    get_param,
     make_psel_from_weight,
     is_test,
 )
@@ -24,6 +20,7 @@ usage = f"""
 # E.g.: {__file__} --grid 4.4.4.8 --src results/test-4nt8/point-selection --dst results/test-4nt8/points-selection
 """
 
+
 @q.timer
 def mk_psel(total_site, rate, rs):
     geo = q.Geometry(total_site)
@@ -33,6 +30,7 @@ def mk_psel(total_site, rate, rs):
     f_rand_01.set_rand(rs, 1.0, 0.0)
     psel = make_psel_from_weight(f_weight, f_rand_01, rate)
     return psel
+
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
@@ -48,10 +46,11 @@ def gen_test_data():
         psel.save(f"{path_src}/traj-{traj}.txt")
     return total_site_str, path_src, path_dst
 
+
 @q.timer(is_timer_fork=True)
 def run_conversion(total_site, path_dst, path_src):
     geo = q.Geometry(total_site)
-    fn_list = glob.glob(f"*.txt", root_dir=path_src)
+    fn_list = glob.glob("*.txt", root_dir=path_src)
     fn_list.sort()
     for fn in fn_list:
         name = fn.removesuffix(".txt")
@@ -70,6 +69,7 @@ def run_conversion(total_site, path_dst, path_src):
             psel_str = f"{psel.total_site} {psel[:].tolist()}"
             q.displayln_info(f"psel: {psel_str}")
 
+
 @q.timer(is_timer_fork=True)
 def run():
     total_site_str = q.get_arg("--grid")
@@ -80,7 +80,7 @@ def run():
         assert path_src is None
         assert path_dst is None
         q.displayln_info(f"Usage:{usage}")
-        q.displayln_info(f"Will now generate test data and run conversion.")
+        q.displayln_info("Will now generate test data and run conversion.")
         total_site_str, path_src, path_dst = gen_test_data()
     else:
         assert isinstance(total_site_str, str)
@@ -88,6 +88,7 @@ def run():
         assert path_dst is not None
     total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
+
 
 if __name__ == "__main__":
     is_show_usage = q.get_option("--usage")
@@ -100,4 +101,4 @@ if __name__ == "__main__":
     if is_test():
         q.check_log_json(__file__, check_eps=1e-10)
     q.end_with_mpi()
-    q.displayln_info(f"CHECK: finished successfully.")
+    q.displayln_info("CHECK: finished successfully.")

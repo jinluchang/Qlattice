@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 import qlat as q
-import numpy as np
 
 size_node_list = [
-        [1, 1, 1, 1],
-        [1, 1, 1, 2],
-        [1, 1, 1, 4],
-        [1, 1, 1, 8],
-        [2, 2, 2, 2],
-        [2, 2, 2, 4],
-        ]
+    [1, 1, 1, 1],
+    [1, 1, 1, 2],
+    [1, 1, 1, 4],
+    [1, 1, 1, 8],
+    [2, 2, 2, 2],
+    [2, 2, 2, 4],
+]
 
 q.begin_with_mpi(size_node_list)
 
@@ -47,4 +46,4 @@ with q.ShowKwargs(is_latex=True, exponent=-10):
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

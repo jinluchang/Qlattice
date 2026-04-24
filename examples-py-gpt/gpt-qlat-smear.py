@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
-import gpt as g
 import qlat as q
 import qlat_gpt as qg
 from qlat_scripts.v1 import (
-        get_param,
-        set_param,
-        mk_inverter,
-        get_job_seed,
-        )
-import subprocess
+    get_param,
+    mk_inverter,
+    get_job_seed,
+)
 
 qg.begin_with_gpt()
 
@@ -53,7 +50,7 @@ gf_ape = q.mk_left_expanded_field(gf_ape)
 inv_type = 1
 inv_acc = 0
 
-inv = mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped = q.get_num_node())
+inv = mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped=q.get_num_node())
 
 xg = q.Coordinate(psel_smear[0])
 
@@ -80,7 +77,18 @@ sol_psel.save(f"results/{tag} ; psnk.lat")
 
 q.displayln_info(f"CHECK: qnorm(sol_psel) = {q.qnorm(sol_psel):.6E}")
 
-sfw = q.open_fields("results/prop-smear", "w", q.Coordinate([ 1, 1, 2, 4, ]))
+sfw = q.open_fields(
+    "results/prop-smear",
+    "w",
+    q.Coordinate(
+        [
+            1,
+            1,
+            2,
+            4,
+        ]
+    ),
+)
 
 sol_s = q.SelProp(fselc)
 sol_s @= sol
@@ -116,4 +124,4 @@ q.timer_display()
 
 qg.end_with_gpt()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

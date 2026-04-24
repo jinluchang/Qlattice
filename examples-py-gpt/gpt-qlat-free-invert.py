@@ -21,16 +21,18 @@ mass = 0.05
 
 m5 = 1.0
 
-qinv = q.InverterDwfFreeField(mass = mass, m5 = m5, qtimer = q.Timer("py:InverterDwfFreeField"))
+qinv = q.InverterDwfFreeField(
+    mass=mass, m5=m5, qtimer=q.Timer("py:InverterDwfFreeField")
+)
 
 mobius_params = {
-        "mass": mass,
-        "M5": m5,
-        "b": 1.0,
-        "c": 0.0,
-        "Ls": 32,
-        "boundary_phases": [1.0, 1.0, 1.0, 1.0],
-        }
+    "mass": mass,
+    "M5": m5,
+    "b": 1.0,
+    "c": 0.0,
+    "Ls": 32,
+    "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+}
 
 gpt_gf = qg.gpt_from_qlat(gf)
 qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
@@ -39,7 +41,7 @@ inv = g.algorithms.inverter
 cg = inv.cg({"eps": 1e-11, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
-ginv = qg.InverterGPT(inverter = slv_qm, qtimer = q.Timer("py:InverterGPT"))
+ginv = qg.InverterGPT(inverter=slv_qm, qtimer=q.Timer("py:InverterGPT"))
 
 src_p = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
 
@@ -61,4 +63,4 @@ q.timer_display()
 
 qg.end_with_gpt()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

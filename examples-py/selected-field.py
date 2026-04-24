@@ -3,7 +3,6 @@
 check_eps = 1e-5
 
 import qlat as q
-import os
 import numpy as np
 
 q.begin_with_mpi()
@@ -16,14 +15,16 @@ geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
 
-q.save_pickle_obj(geo, f"results/geo.pickle")
-geo_load = q.load_pickle_obj(f"results/geo.pickle")
+q.save_pickle_obj(geo, "results/geo.pickle")
+geo_load = q.load_pickle_obj("results/geo.pickle")
 q.displayln_info("CHECK: geo_load.show() =", geo_load.show())
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
+q.displayln_info(
+    f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}"
+)
 
 prop_arr = np.asarray(prop)
 q.displayln_info(f"CHECK: prop_arr.dtype = {prop_arr.dtype}")
@@ -33,25 +34,44 @@ prop.save_double("results/prop-double.field")
 prop = q.Prop()
 prop.load_double("results/prop-double.field")
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
+q.displayln_info(
+    f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}"
+)
 
 prop.save_float_from_double("results/prop-float.field")
 prop = q.Prop()
 prop.load_double_from_float("results/prop-float.field")
 
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}")
+q.displayln_info(
+    f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}"
+)
 
 q.save_pickle_obj(prop, f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
-prop_load = q.load_pickle_obj(f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
+prop_load = q.load_pickle_obj(
+    f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False
+)
 assert np.all(prop[:] == prop_load[:])
 
-psel = q.PointsSelection(total_site, [
-    [ 0, 0, 0, 0, ],
-    [ 0, 1, 2, 0, ],
-    ])
+psel = q.PointsSelection(
+    total_site,
+    [
+        [
+            0,
+            0,
+            0,
+            0,
+        ],
+        [
+            0,
+            1,
+            2,
+            0,
+        ],
+    ],
+)
 
-q.save_pickle_obj(psel, f"results/psel.pickle")
-psel_load = q.load_pickle_obj(f"results/psel.pickle")
+q.save_pickle_obj(psel, "results/psel.pickle")
+psel_load = q.load_pickle_obj("results/psel.pickle")
 assert np.all(psel[:] == psel_load[:])
 
 n_per_tslice = 16
@@ -62,14 +82,20 @@ fselc = fsel.copy()
 fselc.add_psel(psel)
 
 q.save_pickle_obj(fselc, f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
-fselc_load = q.load_pickle_obj(f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False)
+fselc_load = q.load_pickle_obj(
+    f"results/fselc-{q.get_id_node()}.pickle", is_sync_node=False
+)
 assert np.all(fselc[:] == fselc_load[:])
 
 s_prop = q.SelProp(fselc)
 s_prop @= prop
 
-q.save_pickle_obj(s_prop, f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
-s_prop_load = q.load_pickle_obj(f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False)
+q.save_pickle_obj(
+    s_prop, f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False
+)
+s_prop_load = q.load_pickle_obj(
+    f"results/s_prop-{q.get_id_node()}.pickle", is_sync_node=False
+)
 assert np.all(s_prop[:] == s_prop_load[:])
 
 n1 = s_prop.n_elems
@@ -77,11 +103,23 @@ n2 = q.glb_sum(n1)
 
 q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")
 
-sp_prop = q.PselProp(s_prop, q.SelectedShufflePlan("r_from_l", q.PointsSelection(s_prop.fsel), s_prop.fsel.geo, rs.split("shuffle_selected_field-1")))
-q.displayln_info(f"CHECK: sp_prop from shuffle_selected_field")
+sp_prop = q.PselProp(
+    s_prop,
+    q.SelectedShufflePlan(
+        "r_from_l",
+        q.PointsSelection(s_prop.fsel),
+        s_prop.fsel.geo,
+        rs.split("shuffle_selected_field-1"),
+    ),
+)
+q.displayln_info("CHECK: sp_prop from shuffle_selected_field")
 
-q.save_pickle_obj(sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
-sp_prop_load = q.load_pickle_obj(f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False)
+q.save_pickle_obj(
+    sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False
+)
+sp_prop_load = q.load_pickle_obj(
+    f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False
+)
 assert np.all(sp_prop[:] == sp_prop_load[:])
 
 n3 = sp_prop.n_points
@@ -96,8 +134,8 @@ q.displayln_info(f"CHECK: sp_prop.psel[:].tolist() = {sp_prop.psel[:].tolist()}"
 sig1 = q.get_data_sig(sp_prop[:], q.RngState(f"{q.get_id_node()}"))
 sig2 = q.glb_sum(sig1)
 
-q.json_results_append(f"sp_prop from shuffle_selected_field sig1", sig1, check_eps)
-q.json_results_append(f"sp_prop from shuffle_selected_field sig2", sig2, check_eps)
+q.json_results_append("sp_prop from shuffle_selected_field sig1", sig1, check_eps)
+q.json_results_append("sp_prop from shuffle_selected_field sig2", sig2, check_eps)
 
 sp_prop = q.PselProp(psel)
 sp_prop @= prop
@@ -120,10 +158,12 @@ sp_prop1 = q.PselProp(psel)
 sp_prop1.from_lat_data(ld)
 sp_prop1 -= sp_prop
 
-q.displayln_info("CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion")
+q.displayln_info(
+    "CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion"
+)
 
-q.save_pickle_obj(sp_prop, f"results/sp_prop.pickle")
-sp_prop_load = q.load_pickle_obj(f"results/sp_prop.pickle")
+q.save_pickle_obj(sp_prop, "results/sp_prop.pickle")
+sp_prop_load = q.load_pickle_obj("results/sp_prop.pickle")
 assert np.all(sp_prop[:] == sp_prop_load[:])
 
 s_prop = q.SelProp(fsel)
@@ -200,4 +240,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

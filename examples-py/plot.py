@@ -19,15 +19,15 @@ dts = {
 
 if q.get_id_node() == 0:
     q.plot_save(
-        fn = "results/plot.png",
-        dts = dts,
-        cmds = [
+        fn="results/plot.png",
+        dts=dts,
+        cmds=[
             "set size 0.8, 1.0",
             "set key tm",
             "set xlabel '$x$'",
             "set ylabel '$y$'",
         ],
-        lines = [
+        lines=[
             "plot [-3:3] [-1.5:1.5]",
             "0 not",
             "sin(x) w l t '$y = \\sin(x)$'",
@@ -39,4 +39,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-q.displayln_info(f"CHECK: finished successfully.")
+q.displayln_info("CHECK: finished successfully.")
