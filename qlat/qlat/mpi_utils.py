@@ -1,5 +1,3 @@
-
-
 class q:
     from qlat_utils import (
         timer_verbose,

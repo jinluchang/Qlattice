@@ -1098,17 +1098,25 @@ def run_get_prop(
     prop_types=None,
 ):
     if get_gf is None:
+        #
         def get_gf():
             return None
+    #
     if get_gt is None:
+        #
         def get_gt():
             return None
+    #
     if get_gf_hyp is None:
+        #
         def get_gf_hyp():
             return None
+    #
     if get_psel_smear is None:
+        #
         def get_psel_smear():
             return None
+    #
     if prop_types is None:
         # load psel data before fsel data if possible
         # load strange quark before light quark if possible
@@ -1216,9 +1224,7 @@ def run_get_prop(
             #
             # prop_lookup_cache[(pos_src, type_src, type_snk,)] ==> get_prop_pos_snk
             # where get_prop_pos_snk(pos_snk) ==> ama_prop
-            prop_lookup_cache = q.mk_cache(
-                "prop_lookup_cache", f"{job_tag}", f"{traj}"
-            )
+            prop_lookup_cache = q.mk_cache("prop_lookup_cache", f"{job_tag}", f"{traj}")
             prop_norm_lookup_cache = q.mk_cache(
                 "prop_norm_lookup_cache", f"{job_tag}", f"{traj}"
             )
