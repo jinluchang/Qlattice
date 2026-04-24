@@ -900,7 +900,6 @@ def fit_energy_amplitude(
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
     #
-    #
     def mk_kwargs(jk_idx, is_sorting_energy_state, rng_seed, verbose_level):
         kwargs = dict(
             jk_idx=jk_idx,
@@ -925,7 +924,6 @@ def fit_energy_amplitude(
             verbose_level=verbose_level,
         )
         return kwargs
-    #
     #
     displayln_info(
         0,

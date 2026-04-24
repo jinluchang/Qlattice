@@ -19,7 +19,7 @@ action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
 if action == "qlat-utils-config":
-    import qlat_utils_config.__main__ # noqa
+    import qlat_utils_config.__main__  # noqa
 elif action == "crc32":
     from .scripts import crc32 as crc32
 elif action == "lat-io-glimpse":

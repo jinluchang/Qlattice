@@ -120,6 +120,31 @@ def get_string_lines(source):
     return string_lines
 
 
+def collapse_consecutive_comments(lines):
+    """Collapse multiple consecutive '#' comment lines into one.\n
+    Args:
+        lines (list[str]): Source code lines.\n
+    Returns:
+        list[str]: Lines with consecutive '#' comments collapsed.
+    """
+    result = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if stripped == "#":
+            j = i + 1
+            while j < len(lines) and lines[j].strip() == "#":
+                j += 1
+            if j > i + 1:
+                result.append(line)
+                i = j
+                continue
+        result.append(line)
+        i += 1
+    return result
+
+
 def transform_file(source, is_cython=False):
     """Replace empty lines inside function bodies with properly indented '#' comment lines.\n
     Args:
@@ -195,6 +220,7 @@ def transform_file(source, is_cython=False):
             result.append(line)
             i += 1
     #
+    result = collapse_consecutive_comments(result)
     return "".join(result)
 
 

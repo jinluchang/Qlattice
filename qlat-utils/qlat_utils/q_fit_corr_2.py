@@ -722,7 +722,6 @@ def fit_eig_coef(
     param_arr_mini = param_arr_initial.copy()
     chisq_mini = chisq_initial
     #
-    #
     def mk_kwargs(jk_idx, is_sorting_eig_state, rng_seed, verbose_level):
         kwargs = dict(
             jk_idx=jk_idx,
@@ -749,7 +748,6 @@ def fit_eig_coef(
             verbose_level=verbose_level,
         )
         return kwargs
-    #
     #
     displayln_info(
         0, f"{fname}: initial free_eig_arr={param_arr_mini[free_eig_mask].tolist()}"
