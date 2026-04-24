@@ -20,8 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-"""
-
+"""\n
 Operators for pi and K follows Eq.(103,122) of the following reference\n
 @article{Christ:2019sah,
     author = "Christ, Norman H. and Kelly, Christopher and Zhang, Daiqian",
@@ -35,8 +34,7 @@ Operators for pi and K follows Eq.(103,122) of the following reference\n
     number = "1",
     pages = "014506",
     year = "2020"
-}
-
+}\n
 """
 
 try:
@@ -52,23 +50,28 @@ spin_index_counter = 0
 
 color_index_counter = 0
 
+
 def new_spin_index():
     global spin_index_counter
     spin_index_counter += 1
     return f"a_s_{spin_index_counter}"
+
 
 def new_color_index():
     global color_index_counter
     color_index_counter += 1
     return f"a_c_{color_index_counter}"
 
+
 saved_sc_indices = []
 # saved_sc_indices = None
+
 
 def save_sc_indices():
     if saved_sc_indices is None:
         return
     saved_sc_indices.append([spin_index_counter, color_index_counter])
+
 
 def restore_sc_indices():
     if saved_sc_indices is None:
@@ -77,9 +80,11 @@ def restore_sc_indices():
     global color_index_counter
     spin_index_counter, color_index_counter = saved_sc_indices.pop()
 
+
 def rsc_call(x, *args):
     restore_sc_indices()
     return x(*args)
+
 
 def jump_sc_indices(step=100):
     if saved_sc_indices is None:
@@ -89,13 +94,16 @@ def jump_sc_indices(step=100):
     spin_index_counter += 100
     color_index_counter += 100
 
+
 ###################
+
 
 def show_dagger(is_dagger):
     if not is_dagger:
         return ""
     else:
         return "^dag"
+
 
 def show_parity(parity):
     if parity is None:
@@ -107,9 +115,11 @@ def show_parity(parity):
     else:
         return parity
 
+
 ###################
 
-def mk_scalar(f1:str, f2:str, p:str, is_dagger=False):
+
+def mk_scalar(f1: str, f2: str, p: str, is_dagger=False):
     """
     q1bar q2
     """
@@ -120,7 +130,8 @@ def mk_scalar(f1:str, f2:str, p:str, is_dagger=False):
     else:
         return Qb(f2, p, s, c) * Qv(f1, p, s, c) + f"({f2}bar {f1})({p})"
 
-def mk_scalar5(f1:str, f2:str, p:str, is_dagger=False):
+
+def mk_scalar5(f1: str, f2: str, p: str, is_dagger=False):
     """
     q1bar g5 q2
     """
@@ -128,11 +139,18 @@ def mk_scalar5(f1:str, f2:str, p:str, is_dagger=False):
     s2 = new_spin_index()
     c = new_color_index()
     if not is_dagger:
-        return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c) + f"({f1}bar g5 {f2})({p})"
+        return (
+            Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
+            + f"({f1}bar g5 {f2})({p})"
+        )
     else:
-        return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c) + f"(-{f2}bar g5 {f1})({p})"
+        return (
+            -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
+            + f"(-{f2}bar g5 {f1})({p})"
+        )
 
-def mk_vec_mu(f1:str, f2:str, p:str, mu, is_dagger=False):
+
+def mk_vec_mu(f1: str, f2: str, p: str, mu, is_dagger=False):
     """
     q1bar gmu q2
     """
@@ -140,15 +158,27 @@ def mk_vec_mu(f1:str, f2:str, p:str, mu, is_dagger=False):
     s2 = new_spin_index()
     c = new_color_index()
     if not is_dagger:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c) + f"({f1}bar g{mu} {f2})({p})"
+        return (
+            Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c)
+            + f"({f1}bar g{mu} {f2})({p})"
+        )
     else:
-        if mu in [ 0, 1, 2, 5 ]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"(-{f2}bar g{mu} {f1})({p})"
+        if mu in [0, 1, 2, 5]:
+            return (
+                -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+                + f"(-{f2}bar g{mu} {f1})({p})"
+            )
         else:
-            assert mu in [ 3, ]
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"({f2}bar g{mu} {f1})({p})"
+            assert mu in [
+                3,
+            ]
+            return (
+                Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+                + f"({f2}bar g{mu} {f1})({p})"
+            )
 
-def mk_vec5_mu(f1:str, f2:str, p:str, mu, is_dagger=False):
+
+def mk_vec5_mu(f1: str, f2: str, p: str, mu, is_dagger=False):
     """
     q1bar gmu g5 q2
     """
@@ -157,15 +187,32 @@ def mk_vec5_mu(f1:str, f2:str, p:str, mu, is_dagger=False):
     s3 = new_spin_index()
     c = new_color_index()
     if not is_dagger:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"({f1}bar g{mu} g5 {f2})({p})"
+        return (
+            Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
+            + f"({f1}bar g{mu} g5 {f2})({p})"
+        )
     else:
-        if mu in [ 0, 1, 2, ]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"(-{f2}bar g{mu} {f1})({p})"
+        if mu in [
+            0,
+            1,
+            2,
+        ]:
+            return (
+                -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+                + f"(-{f2}bar g{mu} {f1})({p})"
+            )
         else:
-            assert mu in [ 3, 5, ]
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"({f2}bar g{mu} {f1})({p})"
+            assert mu in [
+                3,
+                5,
+            ]
+            return (
+                Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+                + f"({f2}bar g{mu} {f1})({p})"
+            )
 
-def mk_meson(f1:str, f2:str, p:str, is_dagger=False):
+
+def mk_meson(f1: str, f2: str, p: str, is_dagger=False):
     """
     i q1bar g5 q2  #dag: i q2bar g5 q1
     """
@@ -174,477 +221,864 @@ def mk_meson(f1:str, f2:str, p:str, is_dagger=False):
     else:
         return -sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f2}bar g5 {f1})({p})"
 
+
 ###################
 
-def mk_pi_0(p:str, is_dagger=False):
+
+def mk_pi_0(p: str, is_dagger=False):
     """
     i/sqrt(2) * (ubar g5 u - dbar g5 d)  #dag: same
     """
-    return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) - mk_meson("d", "d", p, is_dagger)) + f"pi0({p}){show_dagger(is_dagger)}"
+    return (
+        1
+        / sympy.sqrt(2)
+        * (mk_meson("u", "u", p, is_dagger) - mk_meson("d", "d", p, is_dagger))
+        + f"pi0({p}){show_dagger(is_dagger)}"
+    )
 
-def mk_pi_p(p:str, is_dagger=False):
+
+def mk_pi_p(p: str, is_dagger=False):
     """
     i ubar g5 d  #dag: i dbar g5 u
     """
     return mk_meson("u", "d", p, is_dagger) + f"pi+({p}){show_dagger(is_dagger)}"
 
-def mk_pi_m(p:str, is_dagger=False):
+
+def mk_pi_m(p: str, is_dagger=False):
     """
     -i dbar g5 u  #dag: -i ubar g5 d
     """
     return -mk_meson("d", "u", p, is_dagger) + f"pi-({p}){show_dagger(is_dagger)}"
 
-def mk_a0_0(p:str, is_dagger=False):
+
+def mk_a0_0(p: str, is_dagger=False):
     """
     1/sqrt(2) * (ubar u - dbar d)
     """
-    return 1 / sympy.sqrt(2) * (mk_scalar("u", "u", p, is_dagger) - mk_scalar("d", "d", p, is_dagger)) + f"a0_0({p}){show_dagger(is_dagger)}"
+    return (
+        1
+        / sympy.sqrt(2)
+        * (mk_scalar("u", "u", p, is_dagger) - mk_scalar("d", "d", p, is_dagger))
+        + f"a0_0({p}){show_dagger(is_dagger)}"
+    )
 
-def mk_a0_p(p:str, is_dagger=False):
+
+def mk_a0_p(p: str, is_dagger=False):
     """
     ubar d
     """
     return mk_scalar("u", "d", p, is_dagger) + f"a0_+({p}){show_dagger(is_dagger)}"
 
-def mk_a0_m(p:str, is_dagger=False):
+
+def mk_a0_m(p: str, is_dagger=False):
     """
     dbar u
     """
     return mk_scalar("d", "u", p, is_dagger) + f"a0_-({p}){show_dagger(is_dagger)}"
 
-def mk_k_p(p:str, is_dagger=False):
+
+def mk_k_p(p: str, is_dagger=False):
     """
     i ubar g5 s  #dag:  i sbar g5 u
     """
     return mk_meson("u", "s", p, is_dagger) + f"K+({p}){show_dagger(is_dagger)}"
 
-def mk_k_m(p:str, is_dagger=False):
+
+def mk_k_m(p: str, is_dagger=False):
     """
     -i sbar g5 u  #dag: -i ubar g5 s
     """
     return -mk_meson("s", "u", p, is_dagger) + f"K-({p}){show_dagger(is_dagger)}"
 
-def mk_k_0(p:str, is_dagger=False):
+
+def mk_k_0(p: str, is_dagger=False):
     """
     i dbar g5 s  #dag: i sbar g5 d
     """
     return mk_meson("d", "s", p, is_dagger) + f"K0({p}){show_dagger(is_dagger)}"
 
-def mk_k_0_bar(p:str, is_dagger=False):
+
+def mk_k_0_bar(p: str, is_dagger=False):
     """
     -i sbar g5 d  #dag: -i dbar g5 s
     """
     return -mk_meson("s", "d", p, is_dagger) + f"K0b({p}){show_dagger(is_dagger)}"
 
-def mk_eta_l(p:str, is_dagger=False):
+
+def mk_eta_l(p: str, is_dagger=False):
     """
     i/sqrt(2) * (ubar g5 u + dbar g5 d)  #dag: same
     """
-    return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) + mk_meson("d", "d", p, is_dagger)) + f"eta_l({p}){show_dagger(is_dagger)}"
+    return (
+        1
+        / sympy.sqrt(2)
+        * (mk_meson("u", "u", p, is_dagger) + mk_meson("d", "d", p, is_dagger))
+        + f"eta_l({p}){show_dagger(is_dagger)}"
+    )
 
-def mk_eta_s(p:str, is_dagger=False):
+
+def mk_eta_s(p: str, is_dagger=False):
     """
     i sbar g5 s  #dag: i sbar g5 s
     """
     return mk_meson("s", "s", p, is_dagger) + f"eta_s({p}){show_dagger(is_dagger)}"
 
-def mk_sigma(p:str, is_dagger=False):
+
+def mk_sigma(p: str, is_dagger=False):
     """
     1/sqrt(2) * (ubar u + dbar d)
     """
     s = new_spin_index()
     c = new_color_index()
-    return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c)) + f"sigma({p})"
+    return (
+        1
+        / sympy.sqrt(2)
+        * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c))
+        + f"sigma({p})"
+    )
 
-def mk_kappa_p(p:str, is_dagger=False):
+
+def mk_kappa_p(p: str, is_dagger=False):
     """
     ubar s
     """
     return mk_scalar("u", "s", p, is_dagger) + f"kappa+({p}){show_dagger(is_dagger)}"
 
-def mk_kappa_m(p:str, is_dagger=False):
+
+def mk_kappa_m(p: str, is_dagger=False):
     """
     sbar u
     """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa-({p}){show_dagger(is_dagger)}"
 
-def mk_kappa_0(p:str, is_dagger=False):
+
+def mk_kappa_0(p: str, is_dagger=False):
     """
     dbar s
     """
     return mk_scalar("d", "s", p, is_dagger) + f"kappa0({p}){show_dagger(is_dagger)}"
 
-def mk_kappa_0_bar(p:str, is_dagger=False):
+
+def mk_kappa_0_bar(p: str, is_dagger=False):
     """
     sbar u
     """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa0bar({p}){show_dagger(is_dagger)}"
 
-def mk_k_p_star_mu(p:str, mu, is_dagger=False):
+
+def mk_k_p_star_mu(p: str, mu, is_dagger=False):
     """
     ubar gmu s
     """
     return mk_vec_mu("u", "s", p, mu, is_dagger)
 
-def mk_k_m_star_mu(p:str, mu, is_dagger=False):
+
+def mk_k_m_star_mu(p: str, mu, is_dagger=False):
     """
     sbar gmu u
     """
     return mk_vec_mu("s", "u", p, mu, is_dagger)
 
-def mk_k_0_star_mu(p:str, mu, is_dagger=False):
+
+def mk_k_0_star_mu(p: str, mu, is_dagger=False):
     """
     dbar gmu s
     """
     return mk_vec_mu("d", "s", p, mu, is_dagger)
 
-def mk_k_0_star_bar_mu(p:str, mu, is_dagger=False):
+
+def mk_k_0_star_bar_mu(p: str, mu, is_dagger=False):
     """
     sbar gmu d
     """
     return mk_vec_mu("s", "d", p, mu, is_dagger)
 
+
 ###################
 
-def mk_pipi_i22(p1:str, p2:str, is_dagger=False):
-    return mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"pipi_I22({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_pipi_i21(p1:str, p2:str, is_dagger=False):
-    return 1 / sympy.sqrt(2) * (
+def mk_pipi_i22(p1: str, p2: str, is_dagger=False):
+    return (
+        mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger)
+        + f"pipi_I22({p1},{p2}){show_dagger(is_dagger)}"
+    )
+
+
+def mk_pipi_i21(p1: str, p2: str, is_dagger=False):
+    return (
+        1
+        / sympy.sqrt(2)
+        * (
             mk_pi_p(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_0(p1, is_dagger) * mk_pi_p(p2, is_dagger)
-            ) + f"pipi_I21({p1},{p2}){show_dagger(is_dagger)}"
+        )
+        + f"pipi_I21({p1},{p2}){show_dagger(is_dagger)}"
+    )
 
-def mk_pipi_i11(p1:str, p2:str, is_dagger=False):
-    return 1 / sympy.sqrt(2) * (
+
+def mk_pipi_i11(p1: str, p2: str, is_dagger=False):
+    return (
+        1
+        / sympy.sqrt(2)
+        * (
             mk_pi_p(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             - mk_pi_0(p1, is_dagger) * mk_pi_p(p2, is_dagger)
-            ) + f"pipi_I11({p1},{p2}){show_dagger(is_dagger)}"
+        )
+        + f"pipi_I11({p1},{p2}){show_dagger(is_dagger)}"
+    )
 
-def mk_pipi_i20(p1:str, p2:str, is_dagger=False):
-    return 1 / sympy.sqrt(6) * (
+
+def mk_pipi_i20(p1: str, p2: str, is_dagger=False):
+    return (
+        1
+        / sympy.sqrt(6)
+        * (
             2 * mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
-            ) + f"pipi_I20({p1},{p2}){show_dagger(is_dagger)}"
+        )
+        + f"pipi_I20({p1},{p2}){show_dagger(is_dagger)}"
+    )
 
-def mk_pipi_i10(p1:str, p2:str, is_dagger=False):
-    return 1 / sympy.sqrt(2) * (
+
+def mk_pipi_i10(p1: str, p2: str, is_dagger=False):
+    return (
+        1
+        / sympy.sqrt(2)
+        * (
             mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             - mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
-            ) + f"pipi_I10({p1},{p2}){show_dagger(is_dagger)}"
+        )
+        + f"pipi_I10({p1},{p2}){show_dagger(is_dagger)}"
+    )
 
-def mk_pipi_i0(p1:str, p2:str, is_dagger=False):
-    return 1 / sympy.sqrt(3) * (
-            - mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
+
+def mk_pipi_i0(p1: str, p2: str, is_dagger=False):
+    return (
+        1
+        / sympy.sqrt(3)
+        * (
+            -mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
-            ) + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
+        )
+        + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
+    )
 
-def mk_kk_i11(p1:str, p2:str, is_dagger=False, *, is_sym=False):
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kk_i11(p1, p2, is_dagger) + mk_kk_i11(p2, p1, is_dagger)) + f"KK_I11({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"KK_I11({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kk_i10(p1:str, p2:str, is_dagger=False, *, is_sym=False):
+def mk_kk_i11(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kk_i10(p1, p2, is_dagger) + mk_kk_i10(p2, p1, is_dagger)) + f"KK_I10({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kk_i11(p1, p2, is_dagger) + mk_kk_i11(p2, p1, is_dagger))
+            + f"KK_I11({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return 1 / sympy.sqrt(2) * (
-            - mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
-            + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
-            ) + f"KK_I10({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+            + f"KK_I11({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_kk_i0(p1:str, p2:str, is_dagger=False, *, is_sym=False):
+
+def mk_kk_i10(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kk_i0(p1, p2, is_dagger) + mk_kk_i0(p2, p1, is_dagger)) + f"KK_I0({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kk_i10(p1, p2, is_dagger) + mk_kk_i10(p2, p1, is_dagger))
+            + f"KK_I10({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return 1 / sympy.sqrt(2) * (
+        return (
+            1
+            / sympy.sqrt(2)
+            * (
+                -mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+                + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
+            )
+            + f"KK_I10({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
+
+def mk_kk_i0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
+    if is_sym:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kk_i0(p1, p2, is_dagger) + mk_kk_i0(p2, p1, is_dagger))
+            + f"KK_I0({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
+    else:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (
+                mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+                + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
+            )
+            + f"KK_I0({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
+
+def mk_k0k0bar(p1: str, p2: str, is_dagger=False, *, is_sym=False):
+    if is_sym:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_k0k0bar(p1, p2, is_dagger) + mk_k0k0bar(p2, p1, is_dagger))
+            + f"K0K0b({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
+    else:
+        return (
             mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
-            + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
-            ) + f"KK_I0({p1},{p2}){show_dagger(is_dagger)}"
+            + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_k0k0bar(p1:str, p2:str, is_dagger=False, *, is_sym=False):
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_k0k0bar(p1, p2, is_dagger) + mk_k0k0bar(p2, p1, is_dagger)) + f"K0K0b({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_k0pi0(p1:str, p2:str, is_dagger=False, *, is_sym=False):
+def mk_k0pi0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_k0pi0(p1, p2, is_dagger) + mk_k0pi0(p2, p1, is_dagger)) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_k0pi0(p1, p2, is_dagger) + mk_k0pi0(p2, p1, is_dagger))
+            + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger) + f"K0pi0({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
+            + f"K0pi0({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_k0barpi0(p1:str, p2:str, is_dagger=False, *, is_sym=False):
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_k0barpi0(p1, p2, is_dagger) + mk_k0barpi0(p2, p1, is_dagger)) + f"K0barpi0({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return mk_k_0_bar(p1, is_dagger) * mk_pi_0(p2, is_dagger) + f"K0barpi0({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kppim(p1:str, p2:str, is_dagger=False, *, is_sym=False):
+def mk_k0barpi0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kppim(p1, p2, is_dagger) + mk_kppim(p2, p1, is_dagger)) + f"K+pi-({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_k0barpi0(p1, p2, is_dagger) + mk_k0barpi0(p2, p1, is_dagger))
+            + f"K0barpi0({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger) + f"K+pi-({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            mk_k_0_bar(p1, is_dagger) * mk_pi_0(p2, is_dagger)
+            + f"K0barpi0({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_kmpip(p1:str, p2:str, is_dagger=False, *, is_sym=False):
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kmpip(p1, p2, is_dagger) + mk_kmpip(p2, p1, is_dagger)) + f"K-pi+({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"K-pi+({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_0_i1half(p1:str, p2:str, is_dagger=False, *, is_sym=False):# strangeness = -1
+def mk_kppim(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_0_i1half(p1, p2, is_dagger) + mk_kpi_0_i1half(p2, p1, is_dagger)) + f"Kpi_0_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kppim(p1, p2, is_dagger) + mk_kppim(p2, p1, is_dagger))
+            + f"K+pi-({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return simplified( sympy.simplify(1)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
-                           + sympy.sqrt(2)/sympy.sqrt(3)* mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger) ) + f"Kpi_0_I1half({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
+            + f"K+pi-({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_kpi_p_i1half(p1:str, p2: str, is_dagger=False, *, is_sym=False):# strangeness = -1
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_m_i1half(p1, p2, is_dagger) + mk_kpi_m_i1half(p2, p1, is_dagger)) + f"Kpi_+_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return simplified( sympy.sqrt(2)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_p(p2, is_dagger)
-                           + sympy.simplify(1)/sympy.sqrt(3)* mk_k_p(p1, is_dagger) * mk_pi_0(p2, is_dagger) ) + f"Kpi_+_I1half({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_m_i3halves(p1:str, p2:str, is_dagger=False, *, is_sym=False):# strangeness = -1
+def mk_kmpip(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * ( mk_kpi_m_i3halves(p1, p2, is_dagger) + mk_kpi_m_i3halves(p2, p1, is_dagger) ) + f"Kpi_-_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kmpip(p1, p2, is_dagger) + mk_kmpip(p2, p1, is_dagger))
+            + f"K-pi+({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger) + f"Kpi_-_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
+            + f"K-pi+({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_kpi_0_i3halves(p1:str, p2: str, is_dagger=False, *, is_sym=False):# strangeness = -1
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_0_i3halves(p1, p2, is_dagger) + mk_kpi_0_i3halves(p2, p1, is_dagger)) + f"Kpi_0_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return simplified( - sympy.sqrt(2)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
-                           + sympy.simplify(1)/sympy.sqrt(3)* mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger) ) + f"Kpi_0_I3halves({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_p1_i3halves(p1:str, p2: str, is_dagger=False, *, is_sym=False):# strangeness = -1
+def mk_kpi_0_i1half(
+    p1: str, p2: str, is_dagger=False, *, is_sym=False
+):  # strangeness = -1
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_p1_i3halves(p1, p2, is_dagger) + mk_kpi_p1_i3halves(p2, p1, is_dagger)) + f"Kpi_+_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kpi_0_i1half(p1, p2, is_dagger) + mk_kpi_0_i1half(p2, p1, is_dagger))
+            + f"Kpi_0_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return simplified( - sympy.simplify(1)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_p(p2, is_dagger)
-                           + sympy.sqrt(2)/sympy.sqrt(3)* mk_k_p(p1, is_dagger) * mk_pi_0(p2, is_dagger) ) + f"Kpi_+_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            simplified(
+                sympy.simplify(1)
+                / sympy.sqrt(3)
+                * mk_k_0(p1, is_dagger)
+                * mk_pi_0(p2, is_dagger)
+                + sympy.sqrt(2)
+                / sympy.sqrt(3)
+                * mk_k_p(p1, is_dagger)
+                * mk_pi_m(p2, is_dagger)
+            )
+            + f"Kpi_0_I1half({p1},{p2}){show_dagger(is_dagger)}"
+        )
 
-def mk_kpi_p2_i3halves(p1:str, p2: str, is_dagger=False, *, is_sym=False):# strangeness = -1
+
+def mk_kpi_p_i1half(
+    p1: str, p2: str, is_dagger=False, *, is_sym=False
+):  # strangeness = -1
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_p2_i3halves(p1, p2, is_dagger) + mk_kpi_p2_i3halves(p2, p1, is_dagger)) + f"Kpi_++_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        return (
+            1
+            / sympy.sqrt(2)
+            * (mk_kpi_m_i1half(p1, p2, is_dagger) + mk_kpi_m_i1half(p2, p1, is_dagger))
+            + f"Kpi_+_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
     else:
-        return mk_k_p(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"Kpi_++_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        return (
+            simplified(
+                sympy.sqrt(2)
+                / sympy.sqrt(3)
+                * mk_k_0(p1, is_dagger)
+                * mk_pi_p(p2, is_dagger)
+                + sympy.simplify(1)
+                / sympy.sqrt(3)
+                * mk_k_p(p1, is_dagger)
+                * mk_pi_0(p2, is_dagger)
+            )
+            + f"Kpi_+_I1half({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
+
+def mk_kpi_m_i3halves(
+    p1: str, p2: str, is_dagger=False, *, is_sym=False
+):  # strangeness = -1
+    if is_sym:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (
+                mk_kpi_m_i3halves(p1, p2, is_dagger)
+                + mk_kpi_m_i3halves(p2, p1, is_dagger)
+            )
+            + f"Kpi_-_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
+    else:
+        return (
+            mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger)
+            + f"Kpi_-_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
+
+def mk_kpi_0_i3halves(
+    p1: str, p2: str, is_dagger=False, *, is_sym=False
+):  # strangeness = -1
+    if is_sym:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (
+                mk_kpi_0_i3halves(p1, p2, is_dagger)
+                + mk_kpi_0_i3halves(p2, p1, is_dagger)
+            )
+            + f"Kpi_0_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
+    else:
+        return (
+            simplified(
+                -sympy.sqrt(2)
+                / sympy.sqrt(3)
+                * mk_k_0(p1, is_dagger)
+                * mk_pi_0(p2, is_dagger)
+                + sympy.simplify(1)
+                / sympy.sqrt(3)
+                * mk_k_p(p1, is_dagger)
+                * mk_pi_m(p2, is_dagger)
+            )
+            + f"Kpi_0_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
+
+def mk_kpi_p1_i3halves(
+    p1: str, p2: str, is_dagger=False, *, is_sym=False
+):  # strangeness = -1
+    if is_sym:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (
+                mk_kpi_p1_i3halves(p1, p2, is_dagger)
+                + mk_kpi_p1_i3halves(p2, p1, is_dagger)
+            )
+            + f"Kpi_+_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
+    else:
+        return (
+            simplified(
+                -sympy.simplify(1)
+                / sympy.sqrt(3)
+                * mk_k_0(p1, is_dagger)
+                * mk_pi_p(p2, is_dagger)
+                + sympy.sqrt(2)
+                / sympy.sqrt(3)
+                * mk_k_p(p1, is_dagger)
+                * mk_pi_0(p2, is_dagger)
+            )
+            + f"Kpi_+_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
+
+def mk_kpi_p2_i3halves(
+    p1: str, p2: str, is_dagger=False, *, is_sym=False
+):  # strangeness = -1
+    if is_sym:
+        return (
+            1
+            / sympy.sqrt(2)
+            * (
+                mk_kpi_p2_i3halves(p1, p2, is_dagger)
+                + mk_kpi_p2_i3halves(p2, p1, is_dagger)
+            )
+            + f"Kpi_++_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        )
+    else:
+        return (
+            mk_k_p(p1, is_dagger) * mk_pi_p(p2, is_dagger)
+            + f"Kpi_++_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        )
+
 
 ###################
 
-def mk_m(f:str, p:str, is_dagger=False):
+
+def mk_m(f: str, p: str, is_dagger=False):
     return mk_scalar(f, f, p, is_dagger) + f"{f}bar{f}({p}){show_dagger(is_dagger)}"
 
-def mk_j5pi_mu(p:str, mu, is_dagger=False):
-    return mk_vec5_mu("d", "u", p, mu, is_dagger) + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_j5k_mu(p:str, mu, is_dagger=False):
-    return mk_vec5_mu("s", "u", p, mu, is_dagger) + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_j5pi_mu(p: str, mu, is_dagger=False):
+    return (
+        mk_vec5_mu("d", "u", p, mu, is_dagger)
+        + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j5km_mu(p:str, mu, is_dagger=False):
-    return -mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_j5eta_l_mu(p:str, mu, is_dagger=False):
-    return 1 / sympy.sqrt(2) * (mk_vec5_mu("u", "u", p, mu, is_dagger) + mk_vec5_mu("d", "d", p, mu, is_dagger)) + f"j5eta_l_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_j5k_mu(p: str, mu, is_dagger=False):
+    return (
+        mk_vec5_mu("s", "u", p, mu, is_dagger)
+        + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j5eta_s_mu(p:str, mu, is_dagger=False):
-    return mk_vec5_mu("s", "s", p, mu, is_dagger) + f"j5eta_s_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_jpi_mu(p:str, mu, is_dagger=False):
-    return mk_vec_mu("d", "u", p, mu, is_dagger) + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_j5km_mu(p: str, mu, is_dagger=False):
+    return (
+        -mk_vec5_mu("u", "s", p, mu, is_dagger)
+        + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_jk_mu(p:str, mu, is_dagger=False):
-    return mk_vec_mu("s", "u", p, mu, is_dagger) + f"jk_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_j_mu(p:str, mu, is_dagger=False):
-    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) \
-            - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) \
-            - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) \
-            + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_j5eta_l_mu(p: str, mu, is_dagger=False):
+    return (
+        1
+        / sympy.sqrt(2)
+        * (
+            mk_vec5_mu("u", "u", p, mu, is_dagger)
+            + mk_vec5_mu("d", "d", p, mu, is_dagger)
+        )
+        + f"j5eta_l_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j_prime_mu(p:str, mu, is_dagger=False):
-    return sympy.simplify(1)*2/3 * mk_vec_mu("u'", "u'", p, mu, is_dagger) \
-            - sympy.simplify(1)*1/3 * mk_vec_mu("d'", "d'", p, mu, is_dagger) \
-            - sympy.simplify(1)*1/3 * mk_vec_mu("s'", "s'", p, mu, is_dagger) \
-            + f"j'_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_j_prime2_mu(p:str, mu, is_dagger=False):
-    return sympy.simplify(1)*2/3 * mk_vec_mu("u''", "u''", p, mu, is_dagger) \
-            - sympy.simplify(1)*1/3 * mk_vec_mu("d''", "d''", p, mu, is_dagger) \
-            - sympy.simplify(1)*1/3 * mk_vec_mu("s''", "s''", p, mu, is_dagger) \
-            + f"j''_mu({p},{mu}){show_dagger(is_dagger)}"
+def mk_j5eta_s_mu(p: str, mu, is_dagger=False):
+    return (
+        mk_vec5_mu("s", "s", p, mu, is_dagger)
+        + f"j5eta_s_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_jl_mu(p:str, mu, is_dagger=False):
+
+def mk_jpi_mu(p: str, mu, is_dagger=False):
+    return (
+        mk_vec_mu("d", "u", p, mu, is_dagger)
+        + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
+
+def mk_jk_mu(p: str, mu, is_dagger=False):
+    return (
+        mk_vec_mu("s", "u", p, mu, is_dagger)
+        + f"jk_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
+
+def mk_j_mu(p: str, mu, is_dagger=False):
+    return (
+        sympy.simplify(1) * 2 / 3 * mk_vec_mu("u", "u", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("d", "d", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("s", "s", p, mu, is_dagger)
+        + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
+
+def mk_j_prime_mu(p: str, mu, is_dagger=False):
+    return (
+        sympy.simplify(1) * 2 / 3 * mk_vec_mu("u'", "u'", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("d'", "d'", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("s'", "s'", p, mu, is_dagger)
+        + f"j'_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
+
+def mk_j_prime2_mu(p: str, mu, is_dagger=False):
+    return (
+        sympy.simplify(1) * 2 / 3 * mk_vec_mu("u''", "u''", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("d''", "d''", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("s''", "s''", p, mu, is_dagger)
+        + f"j''_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
+
+def mk_jl_mu(p: str, mu, is_dagger=False):
     """
     jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
     """
-    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
+    return (
+        sympy.simplify(1) * 2 / 3 * mk_vec_mu("u", "u", p, mu, is_dagger)
+        - sympy.simplify(1) * 1 / 3 * mk_vec_mu("d", "d", p, mu, is_dagger)
+        + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
 
 def mk_js_mu(p: str, mu, is_dagger=False):
-    return - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) \
+    return (
+        -sympy.simplify(1) * 1 / 3 * mk_vec_mu("s", "s", p, mu, is_dagger)
         + f"js_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j0_mu(p:str, mu, is_dagger=False):
+
+def mk_j0_mu(p: str, mu, is_dagger=False):
     """
     I=0 Gparity -
     """
-    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger)) + f"j0_mu({p},{mu}){show_dagger(is_dagger)}"
+    return (
+        sympy.simplify(1)
+        * 1
+        / sympy.sqrt(2)
+        * (
+            mk_vec_mu("u", "u", p, mu, is_dagger)
+            + mk_vec_mu("d", "d", p, mu, is_dagger)
+        )
+        + f"j0_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j10_mu(p:str, mu, is_dagger=False):
+
+def mk_j10_mu(p: str, mu, is_dagger=False):
     """
     I=1 Gparity +
     """
-    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger)) + f"j10_mu({p},{mu}){show_dagger(is_dagger)}"
+    return (
+        sympy.simplify(1)
+        * 1
+        / sympy.sqrt(2)
+        * (
+            mk_vec_mu("u", "u", p, mu, is_dagger)
+            - mk_vec_mu("d", "d", p, mu, is_dagger)
+        )
+        + f"j10_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j11_mu(p:str, mu, is_dagger=False):
+
+def mk_j11_mu(p: str, mu, is_dagger=False):
     """
     I=1 Gparity +
     """
-    return mk_vec_mu("u", "d", p, mu, is_dagger) + f"j11_mu({p},{mu}){show_dagger(is_dagger)}"
+    return (
+        mk_vec_mu("u", "d", p, mu, is_dagger)
+        + f"j11_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
 
-def mk_j1n1_mu(p:str, mu, is_dagger=False):
+
+def mk_j1n1_mu(p: str, mu, is_dagger=False):
     """
     I=1 Gparity +
     """
-    return -mk_vec_mu("d", "u", p, mu, is_dagger) + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
+    return (
+        -mk_vec_mu("d", "u", p, mu, is_dagger)
+        + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
+    )
+
 
 ###################
+
 
 def mk_jw_v_mu(p, mu):
     return mk_jpi_mu(p, mu) + mk_jk_mu(p, mu)
 
+
 def mk_jw_a_mu(p, mu):
     return mk_j5pi_mu(p, mu) + mk_j5k_mu(p, mu)
+
 
 def mk_sw5(p):
     return mk_pi_p(p, is_dagger=True) + mk_k_p(p, is_dagger=True)
 
+
 ###################
 
-def mk_4qOp_VV(f1:str, f2:str, f3:str, f4:str, p, is_scalar=False, parity=None, is_dagger=False):
+
+def mk_4qOp_VV(
+    f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
+):
     if parity == "odd":
         return 0
     if is_scalar:
-        return mk_4qOp_SS(f1,f2,f3,f4,p,is_dagger)
+        return mk_4qOp_SS(f1, f2, f3, f4, p, is_dagger)
     s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        s = s + mk_vec_mu(f1,f2,p,mu,is_dagger) * mk_vec_mu(f3,f4,p,mu,is_dagger)
+        s = s + mk_vec_mu(f1, f2, p, mu, is_dagger) * mk_vec_mu(
+            f3, f4, p, mu, is_dagger
+        )
     s.simplify()
     jump_sc_indices()
     return s
 
-def mk_4qOp_VA(f1:str, f2:str, f3:str, f4:str, p, is_scalar=False, parity=None, is_dagger=False):
+
+def mk_4qOp_VA(
+    f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
+):
     if parity == "even":
         return 0
     if is_scalar:
-        return mk_4qOp_SP(f1,f2,f3,f4,p,is_dagger)
+        return mk_4qOp_SP(f1, f2, f3, f4, p, is_dagger)
     s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        s = s + mk_vec_mu(f1,f2,p,mu,is_dagger) * mk_vec5_mu(f3,f4,p,mu,is_dagger)
+        s = s + mk_vec_mu(f1, f2, p, mu, is_dagger) * mk_vec5_mu(
+            f3, f4, p, mu, is_dagger
+        )
     s.simplify()
     jump_sc_indices()
     return s
 
-def mk_4qOp_AV(f1:str, f2:str, f3:str, f4:str, p, is_scalar=False, parity=None, is_dagger=False):
+
+def mk_4qOp_AV(
+    f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
+):
     if parity == "even":
         return 0
     if is_scalar:
-        return mk_4qOp_PS(f1,f2,f3,f4,p,is_dagger)
+        return mk_4qOp_PS(f1, f2, f3, f4, p, is_dagger)
     s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        s = s + mk_vec5_mu(f1,f2,p,mu,is_dagger) * mk_vec_mu(f3,f4,p,mu,is_dagger)
+        s = s + mk_vec5_mu(f1, f2, p, mu, is_dagger) * mk_vec_mu(
+            f3, f4, p, mu, is_dagger
+        )
     s.simplify()
     jump_sc_indices()
     return s
 
-def mk_4qOp_AA(f1:str, f2:str, f3:str, f4:str, p, is_scalar=False, parity=None, is_dagger=False):
+
+def mk_4qOp_AA(
+    f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
+):
     if parity == "odd":
         return 0
     if is_scalar:
-        return mk_4qOp_PP(f1,f2,f3,f4,p,is_dagger)
+        return mk_4qOp_PP(f1, f2, f3, f4, p, is_dagger)
     s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        s = s + mk_vec5_mu(f1,f2,p,mu,is_dagger) * mk_vec5_mu(f3,f4,p,mu,is_dagger)
+        s = s + mk_vec5_mu(f1, f2, p, mu, is_dagger) * mk_vec5_mu(
+            f3, f4, p, mu, is_dagger
+        )
     s.simplify()
     jump_sc_indices()
     return s
 
-def mk_4qOp_SS(f1:str, f2:str, f3:str, f4:str, p, is_dagger=False):
-    return mk_scalar(f1,f2,p,is_dagger) * mk_scalar(f3,f4,p,is_dagger)
 
-def mk_4qOp_SP(f1:str, f2:str, f3:str, f4:str, p, is_dagger=False):
-    return mk_scalar(f1,f2,p,is_dagger) * mk_scalar5(f3,f4,p,is_dagger)
+def mk_4qOp_SS(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
+    return mk_scalar(f1, f2, p, is_dagger) * mk_scalar(f3, f4, p, is_dagger)
 
-def mk_4qOp_PS(f1:str, f2:str, f3:str, f4:str, p, is_dagger=False):
-    return mk_scalar5(f1,f2,p,is_dagger) * mk_scalar(f3,f4,p,is_dagger)
 
-def mk_4qOp_PP(f1:str, f2:str, f3:str, f4:str, p, is_dagger=False):
-    return mk_scalar5(f1,f2,p,is_dagger) * mk_scalar5(f3,f4,p,is_dagger)
+def mk_4qOp_SP(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
+    return mk_scalar(f1, f2, p, is_dagger) * mk_scalar5(f3, f4, p, is_dagger)
+
+
+def mk_4qOp_PS(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
+    return mk_scalar5(f1, f2, p, is_dagger) * mk_scalar(f3, f4, p, is_dagger)
+
+
+def mk_4qOp_PP(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
+    return mk_scalar5(f1, f2, p, is_dagger) * mk_scalar5(f3, f4, p, is_dagger)
+
 
 def mk_4qOp_LL(*args):
     for mu in range(4):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_VV,*args)
-                       - rsc_call(mk_4qOp_VA,*args)
-                       - rsc_call(mk_4qOp_AV,*args)
-                       + rsc_call(mk_4qOp_AA,*args) )
+    expr = simplified(
+        rsc_call(mk_4qOp_VV, *args)
+        - rsc_call(mk_4qOp_VA, *args)
+        - rsc_call(mk_4qOp_AV, *args)
+        + rsc_call(mk_4qOp_AA, *args)
+    )
     jump_sc_indices()
     return expr
+
 
 def mk_4qOp_LR(*args):
     for mu in range(4):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_VV,*args)
-                       + rsc_call(mk_4qOp_VA,*args)
-                       - rsc_call(mk_4qOp_AV,*args)
-                       - rsc_call(mk_4qOp_AA,*args) )
+    expr = simplified(
+        rsc_call(mk_4qOp_VV, *args)
+        + rsc_call(mk_4qOp_VA, *args)
+        - rsc_call(mk_4qOp_AV, *args)
+        - rsc_call(mk_4qOp_AA, *args)
+    )
     jump_sc_indices()
     return expr
+
 
 def mk_4qOp_RL(*args):
     for mu in range(4):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_VV,*args)
-                       - rsc_call(mk_4qOp_VA,*args)
-                       + rsc_call(mk_4qOp_AV,*args)
-                       - rsc_call(mk_4qOp_AA,*args) )
+    expr = simplified(
+        rsc_call(mk_4qOp_VV, *args)
+        - rsc_call(mk_4qOp_VA, *args)
+        + rsc_call(mk_4qOp_AV, *args)
+        - rsc_call(mk_4qOp_AA, *args)
+    )
     jump_sc_indices()
     return expr
+
 
 def mk_4qOp_RR(*args):
     for mu in range(4):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_VV,*args)
-                       + rsc_call(mk_4qOp_VA,*args)
-                       + rsc_call(mk_4qOp_AV,*args)
-                       + rsc_call(mk_4qOp_AA,*args) )
+    expr = simplified(
+        rsc_call(mk_4qOp_VV, *args)
+        + rsc_call(mk_4qOp_VA, *args)
+        + rsc_call(mk_4qOp_AV, *args)
+        + rsc_call(mk_4qOp_AA, *args)
+    )
     jump_sc_indices()
     return expr
 
-def mk_4qOp_LL_cmix(f1,f2,f3,f4,p,is_scalar=False, parity=None, is_dagger=False):
-    assert not is_scalar
-    return mk_4qOp_LL(f1,f4,f3,f2,p,is_scalar,parity,is_dagger)
 
-def mk_4qOp_LR_cmix(f1,f2,f3,f4,p,is_scalar=False, parity=None, is_dagger=False):
+def mk_4qOp_LL_cmix(f1, f2, f3, f4, p, is_scalar=False, parity=None, is_dagger=False):
     assert not is_scalar
-    return -2 * mk_4qOp_RL(f1,f4,f3,f2,p,True,parity,is_dagger)
+    return mk_4qOp_LL(f1, f4, f3, f2, p, is_scalar, parity, is_dagger)
+
+
+def mk_4qOp_LR_cmix(f1, f2, f3, f4, p, is_scalar=False, parity=None, is_dagger=False):
+    assert not is_scalar
+    return -2 * mk_4qOp_RL(f1, f4, f3, f2, p, True, parity, is_dagger)
+
 
 def mk_Qsub(p, parity=None, is_dagger=False):
     if parity is None:
@@ -655,83 +1089,132 @@ def mk_Qsub(p, parity=None, is_dagger=False):
         expr = -mk_scalar5("s", "d", p, is_dagger)
     return expr + f"Qsub({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
+
 def mk_Q1(p, parity=None, is_dagger=False):
-    return mk_4qOp_LL("s","d","u","u",p,False,parity,is_dagger) + f"Q1({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    return (
+        mk_4qOp_LL("s", "d", "u", "u", p, False, parity, is_dagger)
+        + f"Q1({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    )
+
 
 def mk_Q2(p, parity=None, is_dagger=False):
-    return mk_4qOp_LL_cmix("s","d","u","u",p,False,parity,is_dagger) + f"Q2({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    return (
+        mk_4qOp_LL_cmix("s", "d", "u", "u", p, False, parity, is_dagger)
+        + f"Q2({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    )
+
 
 def mk_Q3(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LL, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LL, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LL, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q3({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q4(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LL_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LL_cmix, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LL_cmix, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q4({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q5(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LR, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LR, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LR, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q5({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q6(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity,is_dagger)
-                       + rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LR_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LR_cmix, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + rsc_call(mk_4qOp_LR_cmix, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q6({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q7(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LR, "s", "d", "u", "u", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LR, "s", "d", "d", "d", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LR, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q7({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q8(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LR_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LR_cmix, "s", "d", "d", "d", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LR_cmix, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q8({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q9(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LL, "s", "d", "u", "u", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LL, "s", "d", "d", "d", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LL, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q9({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 def mk_Q10(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
-    expr = simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        rsc_call(mk_4qOp_LL_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LL_cmix, "s", "d", "d", "d", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / 2
+        * rsc_call(mk_4qOp_LL_cmix, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q10({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+
 
 ###################
 
@@ -752,58 +1235,113 @@ def mk_Q10(p, parity=None, is_dagger=False):
 #
 # Qa^{e/o} = Aa^{e/o} Q0^{e/o} + Mai Qi^{e/o} ( i = 1, ... ,4; a = 5, ... ,8 )
 
+
 def mk_Q0_b81(p, parity=None, is_dagger=False):
     return mk_Qsub(p, parity, is_dagger)
 
+
 def mk_Q1_b81(p, parity=None, is_dagger=False):
-    for mu in range (4):
+    for mu in range(4):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity,is_dagger)
-                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity,is_dagger)
-                       + sympy.simplify(2)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity,is_dagger)
-                       + sympy.simplify(2)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        sympy.simplify(1)
+        / sympy.sqrt(10)
+        * rsc_call(mk_4qOp_LL, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + sympy.simplify(1)
+        / sympy.sqrt(10)
+        * rsc_call(mk_4qOp_LL_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + sympy.simplify(2)
+        / sympy.sqrt(10)
+        * rsc_call(mk_4qOp_LL, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + sympy.simplify(2)
+        / sympy.sqrt(10)
+        * rsc_call(mk_4qOp_LL, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q1_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
+
 def mk_Q2_b81(p, parity=None, is_dagger=False):
-    for mu in range (2):
+    for mu in range(2):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(2)* rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity,is_dagger)
-                       - sympy.simplify(1)/sympy.sqrt(2)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity,is_dagger) )
+    expr = simplified(
+        sympy.simplify(1)
+        / sympy.sqrt(2)
+        * rsc_call(mk_4qOp_LL, "s", "d", "u", "u", p, False, parity, is_dagger)
+        - sympy.simplify(1)
+        / sympy.sqrt(2)
+        * rsc_call(mk_4qOp_LL_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q2_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
+
 def mk_Q3_b81(p, parity=None, is_dagger=False):
-    for mu in range (4):
+    for mu in range(4):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity,is_dagger)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity,is_dagger)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        sympy.simplify(1)
+        / sympy.sqrt(3)
+        * rsc_call(mk_4qOp_LR, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + sympy.simplify(1)
+        / sympy.sqrt(3)
+        * rsc_call(mk_4qOp_LR, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + sympy.simplify(1)
+        / sympy.sqrt(3)
+        * rsc_call(mk_4qOp_LR, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q3_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
+
 def mk_Q4_b81(p, parity=None, is_dagger=False):
-    for mu in range (4):
+    for mu in range(4):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity,is_dagger)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity,is_dagger)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity,is_dagger) )
+    expr = simplified(
+        sympy.simplify(1)
+        / sympy.sqrt(3)
+        * rsc_call(mk_4qOp_LR_cmix, "s", "d", "u", "u", p, False, parity, is_dagger)
+        + sympy.simplify(1)
+        / sympy.sqrt(3)
+        * rsc_call(mk_4qOp_LR_cmix, "s", "d", "d", "d", p, False, parity, is_dagger)
+        + sympy.simplify(1)
+        / sympy.sqrt(3)
+        * rsc_call(mk_4qOp_LR_cmix, "s", "d", "s", "s", p, False, parity, is_dagger)
+    )
     jump_sc_indices()
     return expr + f"Q4_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
+
 def mk_Q5_b81(p, parity=None, is_dagger=False):
-    return mk_4qOp_LL("s","d","c","c",p,False,parity,is_dagger) + f"Q5_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    return (
+        mk_4qOp_LL("s", "d", "c", "c", p, False, parity, is_dagger)
+        + f"Q5_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    )
+
 
 def mk_Q6_b81(p, parity=None, is_dagger=False):
-    return mk_4qOp_LL_cmix("s","d","c","c",p,False,parity,is_dagger) + f"Q6_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    return (
+        mk_4qOp_LL_cmix("s", "d", "c", "c", p, False, parity, is_dagger)
+        + f"Q6_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    )
+
 
 def mk_Q7_b81(p, parity=None, is_dagger=False):
-    return mk_4qOp_LR("s","d","c","c",p,False,parity,is_dagger) + f"Q7_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    return (
+        mk_4qOp_LR("s", "d", "c", "c", p, False, parity, is_dagger)
+        + f"Q7_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    )
+
 
 def mk_Q8_b81(p, parity=None, is_dagger=False):
-    return mk_4qOp_LR_cmix("s","d","c","c",p,False,parity,is_dagger) + f"Q8_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    return (
+        mk_4qOp_LR_cmix("s", "d", "c", "c", p, False, parity, is_dagger)
+        + f"Q8_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
+    )
+
 
 ###################
+
 
 def mk_vec_uu_mu(f1, f2, p1, p2, mu, is_dagger=False):
     """
@@ -814,23 +1352,59 @@ def mk_vec_uu_mu(f1, f2, p1, p2, mu, is_dagger=False):
     c1 = new_color_index()
     c2 = new_color_index()
     if not is_dagger:
-        return Qb(f1, p1, s1, c1) * G(mu, s1, s2) * U("gauge", p1, mu, c1, c2) * Qv(f2, p2, s2, c2) + f"{f1}bar({p1}) g{mu} U_{mu}({p1}) {f2}({p2})"
+        return (
+            Qb(f1, p1, s1, c1)
+            * G(mu, s1, s2)
+            * U("gauge", p1, mu, c1, c2)
+            * Qv(f2, p2, s2, c2)
+            + f"{f1}bar({p1}) g{mu} U_{mu}({p1}) {f2}({p2})"
+        )
     else:
-        if mu in [ 0, 1, 2, 5 ]:
-            return -Qb(f2, p2, s1, c1) * G(mu, s1, s2) * U("gauge-dagger", p1, mu) * Qv(f1, p1, s2, c2) + f"(-){f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
+        if mu in [0, 1, 2, 5]:
+            return (
+                -Qb(f2, p2, s1, c1)
+                * G(mu, s1, s2)
+                * U("gauge-dagger", p1, mu)
+                * Qv(f1, p1, s2, c2)
+                + f"(-){f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
+            )
         else:
-            assert mu in [ 3, ]
-            return Qb(f2, p2, s1, c1) * G(mu, s1, s2) * U("gauge-dagger", p1, mu) * Qv(f1, p1, s2, c2) + f"{f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
+            assert mu in [
+                3,
+            ]
+            return (
+                Qb(f2, p2, s1, c1)
+                * G(mu, s1, s2)
+                * U("gauge-dagger", p1, mu)
+                * Qv(f1, p1, s2, c2)
+                + f"{f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
+            )
+
 
 ###################
 
-def mk_baryon(f1:str, f2:str, f3:str, p:str, spin:str, baryon_type:str="std", is_dagger=False):
+
+def mk_baryon(
+    f1: str,
+    f2: str,
+    f3: str,
+    p: str,
+    spin: str,
+    baryon_type: str = "std",
+    is_dagger=False,
+):
     """
     spin in [ "u", "d", ]
     baryon_type in [ "std", "pos", ]
     """
-    assert spin in [ "u", "d", ]
-    assert baryon_type in [ "std", "pos", ]
+    assert spin in [
+        "u",
+        "d",
+    ]
+    assert baryon_type in [
+        "std",
+        "pos",
+    ]
     s1 = new_spin_index()
     s2 = new_spin_index()
     s3 = new_spin_index()
@@ -849,27 +1423,50 @@ def mk_baryon(f1:str, f2:str, f3:str, p:str, spin:str, baryon_type:str="std", is
         v = v + f"Bv_{baryon_type}({f1},{f2},{f3},{spin})({p})"
         return v
 
-def mk_proton(p:str, spin:str, baryon_type:str="std", is_dagger=False):
+
+def mk_proton(p: str, spin: str, baryon_type: str = "std", is_dagger=False):
     """
     spin in [ "u", "d", ]
     baryon_type in [ "std", "pos", ]
     """
-    return mk_baryon("u", "u", "d", p, spin, baryon_type=baryon_type, is_dagger=is_dagger)
+    return mk_baryon(
+        "u", "u", "d", p, spin, baryon_type=baryon_type, is_dagger=is_dagger
+    )
 
-def mk_neutron(p:str, spin:str, baryon_type:str="std", is_dagger=False):
+
+def mk_neutron(p: str, spin: str, baryon_type: str = "std", is_dagger=False):
     """
     spin in [ "u", "d", ]
     baryon_type in [ "std", "pos", ]
     """
-    return mk_baryon("d", "d", "u", p, spin, baryon_type=baryon_type, is_dagger=is_dagger)
+    return mk_baryon(
+        "d", "d", "u", p, spin, baryon_type=baryon_type, is_dagger=is_dagger
+    )
 
-def mk_baryon3(f1:str, f2:str, f3:str, p:str, spin:str, baryon_type:str="std3", is_dagger=False):
+
+def mk_baryon3(
+    f1: str,
+    f2: str,
+    f3: str,
+    p: str,
+    spin: str,
+    baryon_type: str = "std3",
+    is_dagger=False,
+):
     """
     spin in [ "u3", "u1", "d1", "d3", ]
     baryon_type in [ "std3", "pos3", ]
     """
-    assert spin in [ "u3", "u1", "d1", "d3", ]
-    assert baryon_type in [ "std3", "pos3", ]
+    assert spin in [
+        "u3",
+        "u1",
+        "d1",
+        "d3",
+    ]
+    assert baryon_type in [
+        "std3",
+        "pos3",
+    ]
     s1 = new_spin_index()
     s2 = new_spin_index()
     s3 = new_spin_index()
@@ -888,31 +1485,40 @@ def mk_baryon3(f1:str, f2:str, f3:str, p:str, spin:str, baryon_type:str="std3", 
         v = v + f"Bv_{baryon_type}({f1},{f2},{f3},{spin})({p})"
         return v
 
-def mk_omega(p:str, spin:str, baryon_type:str="std3", is_dagger=False):
+
+def mk_omega(p: str, spin: str, baryon_type: str = "std3", is_dagger=False):
     """
     spin in [ "u3", "u1", "d1", "d3", ]
     baryon_type in [ "std3", "pos3", ]
     """
-    return mk_baryon3("s", "s", "s", p, spin, baryon_type=baryon_type, is_dagger=is_dagger)
+    return mk_baryon3(
+        "s", "s", "s", p, spin, baryon_type=baryon_type, is_dagger=is_dagger
+    )
+
 
 ###################
+
 
 def test():
     print("test")
     args = ["x", None]
     for mu in range(11):
         save_sc_indices()
-    expr1 = simplified( rsc_call(mk_Q1,*args)
-                       - rsc_call(mk_Q2,*args)
-                       - rsc_call(mk_Q3,*args)
-                       + rsc_call(mk_Q4,*args) )
-    expr2 = simplified( 3 * rsc_call(mk_Q1,*args)
-                       - rsc_call(mk_Q3,*args)
-                       - 2 * rsc_call(mk_Q9,*args) )
-    expr3 = simplified( rsc_call(mk_Q1,*args)
-                       + 2 * rsc_call(mk_Q2,*args)
-                       - rsc_call(mk_Q3,*args)
-                       - 2 * rsc_call(mk_Q10,*args))
+    expr1 = simplified(
+        rsc_call(mk_Q1, *args)
+        - rsc_call(mk_Q2, *args)
+        - rsc_call(mk_Q3, *args)
+        + rsc_call(mk_Q4, *args)
+    )
+    expr2 = simplified(
+        3 * rsc_call(mk_Q1, *args) - rsc_call(mk_Q3, *args) - 2 * rsc_call(mk_Q9, *args)
+    )
+    expr3 = simplified(
+        rsc_call(mk_Q1, *args)
+        + 2 * rsc_call(mk_Q2, *args)
+        - rsc_call(mk_Q3, *args)
+        - 2 * rsc_call(mk_Q10, *args)
+    )
     jump_sc_indices()
     expr1 = mk_pipi_i0("x1_1", "x1_2", True) * expr1 * mk_k_0("x2")
     expr2 = mk_pipi_i0("x1_1", "x1_2", True) * expr2 * mk_k_0("x2")
@@ -931,97 +1537,414 @@ def test():
     #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q10("x") * mk_k_0("x2"),
     #     )))
 
+
 def test1():
     def A(j_p, pi_p, is_dagger=False):
         # I=21 Gparity +
-        return (mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-                + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger))
+        return mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger) + mk_j11_mu(
+            j_p, 0, is_dagger
+        ) * mk_pi_0(pi_p, is_dagger)
+    #
+    #
     def B(j_p, pi_p, is_dagger=False):
         # I=20 Gparity +
-        return (2 * mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
-                + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-                + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
+        return (
+            2 * mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+            + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+            + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger)
+        )
+    #
+    #
     def C(j_p, pi_p, is_dagger=False):
         # I=11 Gparity +
-        return (mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-                - mk_j11_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger))
+        return mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger) - mk_j11_mu(
+            j_p, 0, is_dagger
+        ) * mk_pi_0(pi_p, is_dagger)
+    #
+    #
     def D(j_p, pi_p, is_dagger=False):
         # I=10 Gparity +
-        return (mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-                - mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
+        return mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger) - mk_j11_mu(
+            j_p, 0, is_dagger
+        ) * mk_pi_m(pi_p, is_dagger)
+    #
+    #
     def E(j_p, pi_p, is_dagger=False):
         # I=0 Gparity +
-        return (-mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
-                + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-                + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
+        return (
+            -mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+            + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+            + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger)
+        )
+    #
+    #
     def F(j_p, pi_p, is_dagger=False):
         # I=11 Gparity -
         return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+    #
+    #
     def Gf(j_p, pi_p, is_dagger=False):
         # I=10 Gparity -
         return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+    #
+    #
     def jpi_p(j_p, pi_p, is_dagger=False):
         # charged
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+    #
+    #
     def jpi_0(j_p, pi_p, is_dagger=False):
         # neutral
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
-    expr1 = sympy.simplify(1)*1/4  * (A("xj_2", "x_2", True) * A("xj_1", "x_1") + A("xj_2", "x_2") * A("xj_1", "x_1", True))
-    expr2 = sympy.simplify(1)*1/12 * (B("xj_2", "x_2", True) * B("xj_1", "x_1") + B("xj_2", "x_2") * B("xj_1", "x_1", True))
-    expr3 = sympy.simplify(1)*1/4  * (C("xj_2", "x_2", True) * C("xj_1", "x_1") + C("xj_2", "x_2") * C("xj_1", "x_1", True))
-    expr4 = sympy.simplify(1)*1/4  * (D("xj_2", "x_2", True) * D("xj_1", "x_1") + D("xj_2", "x_2") * D("xj_1", "x_1", True))
-    expr5 = sympy.simplify(1)*1/6  * (E("xj_2", "x_2", True) * E("xj_1", "x_1") + E("xj_2", "x_2") * E("xj_1", "x_1", True))
-    expr6 = sympy.simplify(1)*1/2  * (F("xj_2", "x_2", True) * F("xj_1", "x_1") + F("xj_2", "x_2") * F("xj_1", "x_1", True))
-    expr7 = sympy.simplify(1)*1/2  * (Gf("xj_2", "x_2", True) * Gf("xj_1", "x_1") + Gf("xj_2", "x_2") * Gf("xj_1", "x_1", True))
-    expr8 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (
-            C("xj_2", "x_2", True) * F("xj_1", "x_1") + F("xj_2", "x_2", True) * C("xj_1", "x_1")
-            + C("xj_2", "x_2") * F("xj_1", "x_1", True) + F("xj_2", "x_2") * C("xj_1", "x_1", True))
-    expr9 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (
-            D("xj_2", "x_2", True) * Gf("xj_1", "x_1") + Gf("xj_2", "x_2", True) * D("xj_1", "x_1")
-            + D("xj_2", "x_2") * Gf("xj_1", "x_1", True) + Gf("xj_2", "x_2") * D("xj_1", "x_1", True))
-    expr_p = -sympy.simplify(1)*1/2*(
+    #
+    #
+    expr1 = (
+        sympy.simplify(1)
+        * 1
+        / 4
+        * (
+            A("xj_2", "x_2", True) * A("xj_1", "x_1")
+            + A("xj_2", "x_2") * A("xj_1", "x_1", True)
+        )
+    )
+    expr2 = (
+        sympy.simplify(1)
+        * 1
+        / 12
+        * (
+            B("xj_2", "x_2", True) * B("xj_1", "x_1")
+            + B("xj_2", "x_2") * B("xj_1", "x_1", True)
+        )
+    )
+    expr3 = (
+        sympy.simplify(1)
+        * 1
+        / 4
+        * (
+            C("xj_2", "x_2", True) * C("xj_1", "x_1")
+            + C("xj_2", "x_2") * C("xj_1", "x_1", True)
+        )
+    )
+    expr4 = (
+        sympy.simplify(1)
+        * 1
+        / 4
+        * (
+            D("xj_2", "x_2", True) * D("xj_1", "x_1")
+            + D("xj_2", "x_2") * D("xj_1", "x_1", True)
+        )
+    )
+    expr5 = (
+        sympy.simplify(1)
+        * 1
+        / 6
+        * (
+            E("xj_2", "x_2", True) * E("xj_1", "x_1")
+            + E("xj_2", "x_2") * E("xj_1", "x_1", True)
+        )
+    )
+    expr6 = (
+        sympy.simplify(1)
+        * 1
+        / 2
+        * (
+            F("xj_2", "x_2", True) * F("xj_1", "x_1")
+            + F("xj_2", "x_2") * F("xj_1", "x_1", True)
+        )
+    )
+    expr7 = (
+        sympy.simplify(1)
+        * 1
+        / 2
+        * (
+            Gf("xj_2", "x_2", True) * Gf("xj_1", "x_1")
+            + Gf("xj_2", "x_2") * Gf("xj_1", "x_1", True)
+        )
+    )
+    expr8 = (
+        sympy.simplify(1)
+        * 1
+        / (4 * sympy.sqrt(2))
+        * (
+            C("xj_2", "x_2", True) * F("xj_1", "x_1")
+            + F("xj_2", "x_2", True) * C("xj_1", "x_1")
+            + C("xj_2", "x_2") * F("xj_1", "x_1", True)
+            + F("xj_2", "x_2") * C("xj_1", "x_1", True)
+        )
+    )
+    expr9 = (
+        sympy.simplify(1)
+        * 1
+        / (4 * sympy.sqrt(2))
+        * (
+            D("xj_2", "x_2", True) * Gf("xj_1", "x_1")
+            + Gf("xj_2", "x_2", True) * D("xj_1", "x_1")
+            + D("xj_2", "x_2") * Gf("xj_1", "x_1", True)
+            + Gf("xj_2", "x_2") * D("xj_1", "x_1", True)
+        )
+    )
+    expr_p = (
+        -sympy.simplify(1)
+        * 1
+        / 2
+        * (
             jpi_p("xj_2", "x_2", True) * jpi_p("xj_1", "x_1")
-            + jpi_p("xj_2", "x_2") * jpi_p("xj_1", "x_1", True))
-    expr_0 = -sympy.simplify(1)*1/2*(
+            + jpi_p("xj_2", "x_2") * jpi_p("xj_1", "x_1", True)
+        )
+    )
+    expr_0 = (
+        -sympy.simplify(1)
+        * 1
+        / 2
+        * (
             jpi_0("xj_2", "x_2", True) * jpi_0("xj_1", "x_1")
-            + jpi_0("xj_2", "x_2") * jpi_0("xj_1", "x_1", True))
-    exprs = [expr1, expr1 - expr2, expr3, expr3 - expr4, expr5, expr6, expr6 - expr7, expr8, expr8 - expr9,]
+            + jpi_0("xj_2", "x_2") * jpi_0("xj_1", "x_1", True)
+        )
+    )
+    exprs = [
+        expr1,
+        expr1 - expr2,
+        expr3,
+        expr3 - expr4,
+        expr5,
+        expr6,
+        expr6 - expr7,
+        expr8,
+        expr8 - expr9,
+    ]
     diagram_type_dict = dict()
-    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_1'), 1), (('xj_2', 'x_2'), 1))] = "Type1"
-    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_2'), 1), (('xj_2', 'x_1'), 1))] = "Type2"
-    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'xj_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'x_1'), 1))] = "Type3"
-    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'xj_1'), 1))] = "Type4"
-    print(display_cexpr(contract_simplify_compile(*exprs, diagram_type_dict=diagram_type_dict)))
+    diagram_type_dict[
+        (
+            (("x_1", "xj_1"), 1),
+            (("x_2", "xj_2"), 1),
+            (("xj_1", "x_1"), 1),
+            (("xj_2", "x_2"), 1),
+        )
+    ] = "Type1"
+    diagram_type_dict[
+        (
+            (("x_1", "xj_1"), 1),
+            (("x_2", "xj_2"), 1),
+            (("xj_1", "x_2"), 1),
+            (("xj_2", "x_1"), 1),
+        )
+    ] = "Type2"
+    diagram_type_dict[
+        (
+            (("x_1", "x_2"), 1),
+            (("x_2", "xj_1"), 1),
+            (("xj_1", "xj_2"), 1),
+            (("xj_2", "x_1"), 1),
+        )
+    ] = "Type3"
+    diagram_type_dict[
+        (
+            (("x_1", "x_2"), 1),
+            (("x_2", "x_1"), 1),
+            (("xj_1", "xj_2"), 1),
+            (("xj_2", "xj_1"), 1),
+        )
+    ] = "Type4"
+    print(
+        display_cexpr(
+            contract_simplify_compile(*exprs, diagram_type_dict=diagram_type_dict)
+        )
+    )
     expr_i2_gm = expr1
     expr_i1_gm = expr3
     expr_i0_gm = expr5
     expr_i1_gp = expr6
     exprs1 = [
-            # expr_p + sympy.simplify(1)*1/18*(sympy.simplify(1)*9/2*expr1 + sympy.simplify(1)*9/2*expr3 + expr6 + 3*sympy.sqrt(2)*expr8),
-            expr_p + sympy.simplify(1)*1/18*(sympy.simplify(1)*9/2*expr_i2_gm + sympy.simplify(1)*9/2*expr_i1_gm + expr_i1_gp),
-            expr_0 + sympy.simplify(1)*1/18*(6*expr_i2_gm + 3*expr_i0_gm + expr_i1_gp),
-            # (expr_p - expr_0),
-            ]
-    print(display_cexpr(contract_simplify_compile(*exprs1, diagram_type_dict=diagram_type_dict)))
-    etype1n = Term([Tr([G(0), S('l','xj_1','x_1'), G(5), S('l','x_1','xj_1')],'sc'), Tr([G(0), S('l','xj_2','x_2'), G(5), S('l','x_2','xj_2')],'sc')],[],1)
-    etype1r = Term([Tr([G(0), S('l','xj_1','x_2'), G(5), S('l','x_2','xj_1')],'sc'), Tr([G(0), S('l','xj_2','x_1'), G(5), S('l','x_1','xj_2')],'sc')],[],1)
-    etype2 = sympy.simplify(1)/2 * (
-            Term([Tr([G(0), S('l','xj_1','x_1'), G(5), S('l','x_1','xj_2'), G(0), S('l','xj_2','x_2'), G(5), S('l','x_2','xj_1')],'sc')],[],1)
-            + Term([Tr([G(0), S('l','xj_1','x_2'), G(5), S('l','x_2','xj_2'), G(0), S('l','xj_2','x_1'), G(5), S('l','x_1','xj_1')],'sc')],[],1))
-    etype3n = sympy.simplify(1)/2 * (
-            Term([Tr([G(0), S('l','xj_1','x_1'), G(5), S('l','x_1','x_2'), G(5), S('l','x_2','xj_2'), G(0), S('l','xj_2','xj_1')],'sc')],[],1)
-            + Term([Tr([G(0), S('l','xj_1','xj_2'), G(0), S('l','xj_2','x_2'), G(5), S('l','x_2','x_1'), G(5), S('l','x_1','xj_1')],'sc')],[],1))
-    etype3r = sympy.simplify(1)/2 * (
-            Term([Tr([G(0), S('l','xj_1','x_2'), G(5), S('l','x_2','x_1'), G(5), S('l','x_1','xj_2'), G(0), S('l','xj_2','xj_1')],'sc')],[],1)
-            + Term([Tr([G(0), S('l','xj_1','xj_2'), G(0), S('l','xj_2','x_1'), G(5), S('l','x_1','x_2'), G(5), S('l','x_2','xj_1')],'sc')],[],1))
-    etype4 = Term([Tr([G(0), S('l','xj_1','xj_2'), G(0), S('l','xj_2','xj_1')],'sc'), Tr([G(5), S('l','x_1','x_2'), G(5), S('l','x_2','x_1')],'sc')],[],1)
+        # expr_p + sympy.simplify(1)*1/18*(sympy.simplify(1)*9/2*expr1 + sympy.simplify(1)*9/2*expr3 + expr6 + 3*sympy.sqrt(2)*expr8),
+        expr_p
+        + sympy.simplify(1)
+        * 1
+        / 18
+        * (
+            sympy.simplify(1) * 9 / 2 * expr_i2_gm
+            + sympy.simplify(1) * 9 / 2 * expr_i1_gm
+            + expr_i1_gp
+        ),
+        expr_0
+        + sympy.simplify(1) * 1 / 18 * (6 * expr_i2_gm + 3 * expr_i0_gm + expr_i1_gp),
+        # (expr_p - expr_0),
+    ]
+    print(
+        display_cexpr(
+            contract_simplify_compile(*exprs1, diagram_type_dict=diagram_type_dict)
+        )
+    )
+    etype1n = Term(
+        [
+            Tr([G(0), S("l", "xj_1", "x_1"), G(5), S("l", "x_1", "xj_1")], "sc"),
+            Tr([G(0), S("l", "xj_2", "x_2"), G(5), S("l", "x_2", "xj_2")], "sc"),
+        ],
+        [],
+        1,
+    )
+    etype1r = Term(
+        [
+            Tr([G(0), S("l", "xj_1", "x_2"), G(5), S("l", "x_2", "xj_1")], "sc"),
+            Tr([G(0), S("l", "xj_2", "x_1"), G(5), S("l", "x_1", "xj_2")], "sc"),
+        ],
+        [],
+        1,
+    )
+    etype2 = (
+        sympy.simplify(1)
+        / 2
+        * (
+            Term(
+                [
+                    Tr(
+                        [
+                            G(0),
+                            S("l", "xj_1", "x_1"),
+                            G(5),
+                            S("l", "x_1", "xj_2"),
+                            G(0),
+                            S("l", "xj_2", "x_2"),
+                            G(5),
+                            S("l", "x_2", "xj_1"),
+                        ],
+                        "sc",
+                    )
+                ],
+                [],
+                1,
+            )
+            + Term(
+                [
+                    Tr(
+                        [
+                            G(0),
+                            S("l", "xj_1", "x_2"),
+                            G(5),
+                            S("l", "x_2", "xj_2"),
+                            G(0),
+                            S("l", "xj_2", "x_1"),
+                            G(5),
+                            S("l", "x_1", "xj_1"),
+                        ],
+                        "sc",
+                    )
+                ],
+                [],
+                1,
+            )
+        )
+    )
+    etype3n = (
+        sympy.simplify(1)
+        / 2
+        * (
+            Term(
+                [
+                    Tr(
+                        [
+                            G(0),
+                            S("l", "xj_1", "x_1"),
+                            G(5),
+                            S("l", "x_1", "x_2"),
+                            G(5),
+                            S("l", "x_2", "xj_2"),
+                            G(0),
+                            S("l", "xj_2", "xj_1"),
+                        ],
+                        "sc",
+                    )
+                ],
+                [],
+                1,
+            )
+            + Term(
+                [
+                    Tr(
+                        [
+                            G(0),
+                            S("l", "xj_1", "xj_2"),
+                            G(0),
+                            S("l", "xj_2", "x_2"),
+                            G(5),
+                            S("l", "x_2", "x_1"),
+                            G(5),
+                            S("l", "x_1", "xj_1"),
+                        ],
+                        "sc",
+                    )
+                ],
+                [],
+                1,
+            )
+        )
+    )
+    etype3r = (
+        sympy.simplify(1)
+        / 2
+        * (
+            Term(
+                [
+                    Tr(
+                        [
+                            G(0),
+                            S("l", "xj_1", "x_2"),
+                            G(5),
+                            S("l", "x_2", "x_1"),
+                            G(5),
+                            S("l", "x_1", "xj_2"),
+                            G(0),
+                            S("l", "xj_2", "xj_1"),
+                        ],
+                        "sc",
+                    )
+                ],
+                [],
+                1,
+            )
+            + Term(
+                [
+                    Tr(
+                        [
+                            G(0),
+                            S("l", "xj_1", "xj_2"),
+                            G(0),
+                            S("l", "xj_2", "x_1"),
+                            G(5),
+                            S("l", "x_1", "x_2"),
+                            G(5),
+                            S("l", "x_2", "xj_1"),
+                        ],
+                        "sc",
+                    )
+                ],
+                [],
+                1,
+            )
+        )
+    )
+    etype4 = Term(
+        [
+            Tr([G(0), S("l", "xj_1", "xj_2"), G(0), S("l", "xj_2", "xj_1")], "sc"),
+            Tr([G(5), S("l", "x_1", "x_2"), G(5), S("l", "x_2", "x_1")], "sc"),
+        ],
+        [],
+        1,
+    )
     exprs2 = [
-            expr_i2_gm - (etype1r - 2*etype3r + etype4), # I=2 Gparity +
-            expr_i1_gm - (- etype1r + 2*etype2 - 2*etype3n + etype4), # I=1 Gparity +
-            expr_i0_gm - (3*etype1n + etype1r - 3*etype2 - 3*etype3n + etype3r + etype4), # I=0 Gparity +
-            expr_i1_gp - (- etype2 - etype3n - etype3r + etype4), # I=1 Gparity -
-            ]
-    print(display_cexpr(contract_simplify_compile(*exprs2, diagram_type_dict=diagram_type_dict)))
+        expr_i2_gm - (etype1r - 2 * etype3r + etype4),  # I=2 Gparity +
+        expr_i1_gm - (-etype1r + 2 * etype2 - 2 * etype3n + etype4),  # I=1 Gparity +
+        expr_i0_gm
+        - (
+            3 * etype1n + etype1r - 3 * etype2 - 3 * etype3n + etype3r + etype4
+        ),  # I=0 Gparity +
+        expr_i1_gp - (-etype2 - etype3n - etype3r + etype4),  # I=1 Gparity -
+    ]
+    print(
+        display_cexpr(
+            contract_simplify_compile(*exprs2, diagram_type_dict=diagram_type_dict)
+        )
+    )
+
 
 def test_kk():
     expr1 = mk_kk_i0("x2_1", "x2_2", True) * mk_kk_i0("x1_1", "x1_2")
@@ -1031,11 +1954,24 @@ def test_kk():
     expr5 = mk_k0k0bar("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2")
     expr6 = mk_k0k0bar("x2_1", "x2_2", True) * mk_sigma("x1", "x1")
     all_exprs = [
-            [ expr1, expr4, ],
-            [ expr2, expr5, ],
-            [ expr3, expr6, ],
-            ]
-    names = [ "kk kk", "kk pipi", "kk sigma", ]
+        [
+            expr1,
+            expr4,
+        ],
+        [
+            expr2,
+            expr5,
+        ],
+        [
+            expr3,
+            expr6,
+        ],
+    ]
+    names = [
+        "kk kk",
+        "kk pipi",
+        "kk sigma",
+    ]
     for name, exprs in zip(names, all_exprs):
         print(f"\n-- {name} --")
         cexpr = contract_simplify_compile(*exprs)
@@ -1044,19 +1980,37 @@ def test_kk():
         print(display_cexpr(cexpr))
         print(f"-- {name} --\n")
 
+
 def test_kk_sym():
-    expr1 = mk_kk_i0("x2_1", "x2_2", True, is_sym=True) * mk_kk_i0("x1_1", "x1_2", is_sym=True)
+    expr1 = mk_kk_i0("x2_1", "x2_2", True, is_sym=True) * mk_kk_i0(
+        "x1_1", "x1_2", is_sym=True
+    )
     expr2 = mk_kk_i0("x2_1", "x2_2", True, is_sym=True) * mk_pipi_i0("x1_1", "x1_2")
     expr3 = mk_kk_i0("x2_1", "x2_2", True, is_sym=True) * mk_sigma("x1", "x1")
-    expr4 = mk_k0k0bar("x2_1", "x2_2", True, is_sym=True) * mk_k0k0bar("x1_1", "x1_2", is_sym=True)
+    expr4 = mk_k0k0bar("x2_1", "x2_2", True, is_sym=True) * mk_k0k0bar(
+        "x1_1", "x1_2", is_sym=True
+    )
     expr5 = mk_k0k0bar("x2_1", "x2_2", True, is_sym=True) * mk_pipi_i0("x1_1", "x1_2")
     expr6 = mk_k0k0bar("x2_1", "x2_2", True, is_sym=True) * mk_sigma("x1", "x1")
     all_exprs = [
-            [ expr1, expr4, ],
-            [ expr2, expr5, ],
-            [ expr3, expr6, ],
-            ]
-    names = [ "kk kk", "kk pipi", "kk sigma", ]
+        [
+            expr1,
+            expr4,
+        ],
+        [
+            expr2,
+            expr5,
+        ],
+        [
+            expr3,
+            expr6,
+        ],
+    ]
+    names = [
+        "kk kk",
+        "kk pipi",
+        "kk sigma",
+    ]
     for name, exprs in zip(names, all_exprs):
         print(f"\n-- {name} --")
         cexpr = contract_simplify_compile(*exprs)
@@ -1064,6 +2018,7 @@ def test_kk_sym():
         cexpr.collect_op()
         print(display_cexpr(cexpr))
         print(f"-- {name} --\n")
+
 
 def test_kpipi():
     s1 = new_spin_index()
@@ -1081,7 +2036,14 @@ def test_kpipi():
     print(expr1)
     print(expr2)
     print(expr3)
-    print(display_cexpr(contract_simplify_compile(expr1 * expr2 * expr3, is_isospin_symmetric_limit=False)))
+    print(
+        display_cexpr(
+            contract_simplify_compile(
+                expr1 * expr2 * expr3, is_isospin_symmetric_limit=False
+            )
+        )
+    )
+
 
 def test_prop():
     s1 = new_spin_index()
@@ -1090,129 +2052,257 @@ def test_prop():
     c2 = new_color_index()
     expr = Qv("q", "x", s1, c1) * Qb("q", "y", s2, c2) + "q(x) qb(y)"
     print(expr)
-    print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=False)))
+    print(
+        display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=False))
+    )
+
 
 def test_pipi():
-    expr1 = mk_pi_0("x2_1", True) * mk_pi_0("x2_2", True) * mk_pi_0("x1_1") * mk_pi_0("x1_2")
-    expr2 = mk_pi_p("x2_1", True) * mk_pi_m("x2_2", True) * mk_pi_p("x1_1") * mk_pi_m("x1_2")
-    expr2p = mk_pi_m("x2_1", True) * mk_pi_p("x2_2", True) * mk_pi_p("x1_1") * mk_pi_m("x1_2")
+    expr1 = (
+        mk_pi_0("x2_1", True)
+        * mk_pi_0("x2_2", True)
+        * mk_pi_0("x1_1")
+        * mk_pi_0("x1_2")
+    )
+    expr2 = (
+        mk_pi_p("x2_1", True)
+        * mk_pi_m("x2_2", True)
+        * mk_pi_p("x1_1")
+        * mk_pi_m("x1_2")
+    )
+    expr2p = (
+        mk_pi_m("x2_1", True)
+        * mk_pi_p("x2_2", True)
+        * mk_pi_p("x1_1")
+        * mk_pi_m("x1_2")
+    )
     expr = (expr2 + expr2p) - expr1
     print(expr)
-    print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=True)))
+    print(
+        display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=True))
+    )
+
 
 def test_meson_corr():
     diagram_type_dict = dict()
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1))] = 'Type1'
+    diagram_type_dict[((("t_1", "t_2"), 1), (("t_2", "t_1"), 1))] = "Type1"
     exprs = [
-            mk_pi_0("t_1", True) * mk_pi_0("t_2"),
-            mk_k_0("t_1", True) * mk_k_0("t_2"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        mk_pi_0("t_1", True) * mk_pi_0("t_2"),
+        mk_k_0("t_1", True) * mk_k_0("t_2"),
+    ]
+    cexpr = contract_simplify_compile(
+        *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+    )
     print()
     print("meson_corr")
     print(display_cexpr(cexpr))
 
+
 def test_meson_f_corr():
     diagram_type_dict = dict()
-    diagram_type_dict[((('t_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type1'
+    diagram_type_dict[((("t_1", "x_2"), 1), (("x_2", "t_1"), 1))] = "Type1"
     exprs = [
-            mk_j5pi_mu("x_2", 3) * mk_pi_p("t_1") + "(a_pi * pi)",
-            mk_j5k_mu("x_2", 3)  * mk_k_p("t_1")  + "(a_k  * k )",
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        mk_j5pi_mu("x_2", 3) * mk_pi_p("t_1") + "(a_pi * pi)",
+        mk_j5k_mu("x_2", 3) * mk_k_p("t_1") + "(a_k  * k )",
+    ]
+    cexpr = contract_simplify_compile(
+        *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+    )
     print()
     print("meson_f_corr")
     print(display_cexpr(cexpr))
 
+
 def test_meson_m():
     diagram_type_dict = dict()
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1))] = None
+    diagram_type_dict[
+        ((("t_1", "t_2"), 1), (("t_2", "x_1"), 1), (("x_1", "t_1"), 1))
+    ] = "Type1"
+    diagram_type_dict[
+        ((("t_1", "t_2"), 1), (("t_2", "t_1"), 1), (("x_1", "x_1"), 1))
+    ] = None
     exprs = [
-            mk_pi_0("t_1", True) * mk_m("u", "x_1") * mk_pi_0("t_2"),
-            mk_pi_0("t_1", True) * mk_m("d", "x_1") * mk_pi_0("t_2"),
-            mk_pi_p("t_1", True) * mk_m("u", "x_1") * mk_pi_p("t_2"),
-            mk_pi_p("t_1", True) * mk_m("d", "x_1") * mk_pi_p("t_2"),
-            mk_k_0("t_1", True) * mk_m("d", "x_1") * mk_k_0("t_2"),
-            mk_k_0("t_1", True) * mk_m("s", "x_1") * mk_k_0("t_2"),
-            mk_k_p("t_1", True) * mk_m("u", "x_1") * mk_k_p("t_2"),
-            mk_k_p("t_1", True) * mk_m("s", "x_1") * mk_k_p("t_2"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        mk_pi_0("t_1", True) * mk_m("u", "x_1") * mk_pi_0("t_2"),
+        mk_pi_0("t_1", True) * mk_m("d", "x_1") * mk_pi_0("t_2"),
+        mk_pi_p("t_1", True) * mk_m("u", "x_1") * mk_pi_p("t_2"),
+        mk_pi_p("t_1", True) * mk_m("d", "x_1") * mk_pi_p("t_2"),
+        mk_k_0("t_1", True) * mk_m("d", "x_1") * mk_k_0("t_2"),
+        mk_k_0("t_1", True) * mk_m("s", "x_1") * mk_k_0("t_2"),
+        mk_k_p("t_1", True) * mk_m("u", "x_1") * mk_k_p("t_2"),
+        mk_k_p("t_1", True) * mk_m("s", "x_1") * mk_k_p("t_2"),
+    ]
+    cexpr = contract_simplify_compile(
+        *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+    )
     print()
     print("meson_m")
     print(display_cexpr(cexpr))
 
+
 def test_meson_jt():
     diagram_type_dict = dict()
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1))] = None
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
+    diagram_type_dict[
+        ((("t_1", "t_2"), 1), (("t_2", "x_1"), 1), (("x_1", "t_1"), 1))
+    ] = "Type1"
+    diagram_type_dict[
+        ((("t_1", "t_2"), 1), (("t_2", "t_1"), 1), (("x_1", "x_1"), 1))
+    ] = None
+    diagram_type_dict[
+        ((("t_1", "t_2"), 1), (("t_2", "x_2"), 1), (("x_2", "t_1"), 1))
+    ] = "Type2"
+    diagram_type_dict[
+        ((("t_1", "t_2"), 1), (("t_2", "t_1"), 1), (("x_2", "x_2"), 1))
+    ] = None
     exprs = [
-            mk_pi_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2"),
-            mk_k_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2"),
-            mk_k_m("t_1", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2"),
-            mk_pi_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2p"),
-            mk_k_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2p"),
-            mk_k_m("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2p"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        mk_pi_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2"),
+        mk_k_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2"),
+        mk_k_m("t_1", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2"),
+        mk_pi_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2p"),
+        mk_k_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2p"),
+        mk_k_m("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2p"),
+    ]
+    cexpr = contract_simplify_compile(
+        *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+    )
     print()
     print("meson_jt")
     print(display_cexpr(cexpr))
 
+
 def test_meson_jj():
     diagram_type_dict = dict()
-    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type0'
-    diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
-    diagram_type_dict[((('t_1', 'x_1'), 1), (('t_2', 'x_2'), 1), (('x_1', 't_1'), 1), (('x_2', 't_2'), 1))] = 'Type1'
-    diagram_type_dict[((('t_1', 'x_1'), 1), (('t_2', 'x_2'), 1), (('x_1', 't_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type3'
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type4'
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
-    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+    diagram_type_dict[((("x_1", "x_2"), 1), (("x_2", "x_1"), 1))] = "Type0"
+    diagram_type_dict[((("x_1", "x_1"), 1), (("x_2", "x_2"), 1))] = None
+    diagram_type_dict[
+        (
+            (("t_1", "x_1"), 1),
+            (("t_2", "x_2"), 1),
+            (("x_1", "t_1"), 1),
+            (("x_2", "t_2"), 1),
+        )
+    ] = "Type1"
+    diagram_type_dict[
+        (
+            (("t_1", "x_1"), 1),
+            (("t_2", "x_2"), 1),
+            (("x_1", "t_2"), 1),
+            (("x_2", "t_1"), 1),
+        )
+    ] = "Type2"
+    diagram_type_dict[
+        (
+            (("t_1", "t_2"), 1),
+            (("t_2", "x_1"), 1),
+            (("x_1", "x_2"), 1),
+            (("x_2", "t_1"), 1),
+        )
+    ] = "Type3"
+    diagram_type_dict[
+        (
+            (("t_1", "t_2"), 1),
+            (("t_2", "t_1"), 1),
+            (("x_1", "x_2"), 1),
+            (("x_2", "x_1"), 1),
+        )
+    ] = "Type4"
+    diagram_type_dict[
+        (
+            (("t_1", "t_2"), 1),
+            (("t_2", "x_1"), 1),
+            (("x_1", "t_1"), 1),
+            (("x_2", "x_2"), 1),
+        )
+    ] = None
+    diagram_type_dict[
+        (
+            (("t_1", "t_2"), 1),
+            (("t_2", "t_1"), 1),
+            (("x_1", "x_1"), 1),
+            (("x_2", "x_2"), 1),
+        )
+    ] = None
     exprs = [
-            mk_pi_0("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_0("t_2"),
-            mk_pi_p("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t_2"),
-            mk_k_0("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_0("t_2"),
-            mk_k_p("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t_2"),
-            mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        mk_pi_0("t_1", True)
+        * mk_j_mu("x_1", "mu")
+        * mk_j_mu("x_2", "nu")
+        * mk_pi_0("t_2"),
+        mk_pi_p("t_1", True)
+        * mk_j_mu("x_1", "mu")
+        * mk_j_mu("x_2", "nu")
+        * mk_pi_p("t_2"),
+        mk_k_0("t_1", True)
+        * mk_j_mu("x_1", "mu")
+        * mk_j_mu("x_2", "nu")
+        * mk_k_0("t_2"),
+        mk_k_p("t_1", True)
+        * mk_j_mu("x_1", "mu")
+        * mk_j_mu("x_2", "nu")
+        * mk_k_p("t_2"),
+        mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu"),
+    ]
+    cexpr = contract_simplify_compile(
+        *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+    )
     print()
     print("meson_jj")
     print(display_cexpr(cexpr))
 
+
 def test_meson_fj():
     diagram_type_dict = dict()
-    diagram_type_dict[((('t', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't'), 1))] = 'Type1'
-    diagram_type_dict[((('t', 'x_1'), 1), (('x_1', 't'), 1), (('x_2', 'x_2'), 1))] = None
+    diagram_type_dict[((("t", "x_1"), 1), (("x_1", "x_2"), 1), (("x_2", "t"), 1))] = (
+        "Type1"
+    )
+    diagram_type_dict[((("t", "x_1"), 1), (("x_1", "t"), 1), (("x_2", "x_2"), 1))] = (
+        None
+    )
     exprs = [
-            mk_j5pi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
-            mk_j5k_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
-            mk_jpi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
-            mk_jk_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict)
+        mk_j5pi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
+        mk_j5k_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
+        mk_jpi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
+        mk_jk_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
+    ]
+    cexpr = contract_simplify_compile(
+        *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+    )
     print()
     print("meson_fj")
     print(display_cexpr(cexpr))
+
 
 def test_meson_jj_all():
     print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) >")
     print("< pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) >")
     print("< pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >")
-    pi_p = mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1") + "< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) >"
-    pi_m = mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1") + "< pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) >"
-    pi_0 = mk_pi_0("x_1", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_0("x_2") + "< pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >"
+    pi_p = (
+        mk_pi_p("x_2", True)
+        * mk_jl_mu("xj_1", "mu")
+        * mk_jl_mu("xj_2", "nu")
+        * mk_pi_p("x_1")
+        + "< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) >"
+    )
+    pi_m = (
+        mk_pi_m("x_2", True)
+        * mk_jl_mu("xj_1", "mu")
+        * mk_jl_mu("xj_2", "nu")
+        * mk_pi_m("x_1")
+        + "< pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) >"
+    )
+    pi_0 = (
+        mk_pi_0("x_1", True)
+        * mk_jl_mu("xj_1", "mu")
+        * mk_jl_mu("xj_2", "nu")
+        * mk_pi_0("x_2")
+        + "< pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >"
+    )
     exprs = [
-            pi_p,
-            pi_m,
-            mk_sym(1)/2 * (pi_p + pi_m),
-            pi_0,
-            ]
+        pi_p,
+        pi_m,
+        mk_sym(1) / 2 * (pi_p + pi_m),
+        pi_0,
+    ]
     print(display_cexpr(contract_simplify_compile(*exprs)))
+
 
 if __name__ == "__main__":
     test_meson_jj_all()
@@ -1242,27 +2332,49 @@ if __name__ == "__main__":
     print("pi0(x2)^dag pi0(x1):\n", mk_pi_0("x2", True) * mk_pi_0("x1"))
     print("< pi0(x2)^dag pi0(x1) >:")
     expr = mk_pi_0("x2", True) * mk_pi_0("x1")
-    print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=False)))
+    print(
+        display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=False))
+    )
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< pi0(x2)^dag pi0(x1) > - < pi+(x2)^dag pi+(x1) >: ",
-            simplified(contract_expr(mk_pi_0("x2", True) * mk_pi_0("x1") - mk_pi_p("x2", True) * mk_pi_p("x1")), is_isospin_symmetric_limit=True))
+    print(
+        "< pi0(x2)^dag pi0(x1) > - < pi+(x2)^dag pi+(x1) >: ",
+        simplified(
+            contract_expr(
+                mk_pi_0("x2", True) * mk_pi_0("x1")
+                - mk_pi_p("x2", True) * mk_pi_p("x1")
+            ),
+            is_isospin_symmetric_limit=True,
+        ),
+    )
     print()
     print("< pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
     expr = mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
-    print("< pipiI21(x2_1,x2_2)^dag pipiI21(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
-    expr = mk_pipi_i21("x2_1", "x2_2", True) * mk_pipi_i21("x1_1", "x1_2") - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
+    print(
+        "< pipiI21(x2_1,x2_2)^dag pipiI21(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:"
+    )
+    expr = mk_pipi_i21("x2_1", "x2_2", True) * mk_pipi_i21(
+        "x1_1", "x1_2"
+    ) - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
-    print("< pipiI20(x2_1,x2_2)^dag pipiI20(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
-    expr = mk_pipi_i20("x2_1", "x2_2", True) * mk_pipi_i20("x1_1", "x1_2") - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
+    print(
+        "< pipiI20(x2_1,x2_2)^dag pipiI20(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:"
+    )
+    expr = mk_pipi_i20("x2_1", "x2_2", True) * mk_pipi_i20(
+        "x1_1", "x1_2"
+    ) - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:")
     expr = mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
-    print("< pipiI10(x2_1,x2_2)^dag pipiI10(x1_1,x1_2) - pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:")
-    expr = mk_pipi_i10("x2_1", "x2_2", True) * mk_pipi_i10("x1_1", "x1_2") - mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
+    print(
+        "< pipiI10(x2_1,x2_2)^dag pipiI10(x1_1,x1_2) - pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:"
+    )
+    expr = mk_pipi_i10("x2_1", "x2_2", True) * mk_pipi_i10(
+        "x1_1", "x1_2"
+    ) - mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pipiI0(x1_1,x1_2) >:")
@@ -1284,66 +2396,152 @@ if __name__ == "__main__":
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pi0(x2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x1) >:")
-    expr = mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
-    print(display_cexpr(contract_simplify_compile(expr)))
-    print()
-    print("< pi+(x2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x1) / 2 + pi-(x2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x1) / 2 >:")
     expr = (
-            sympy.simplify(1)/2 * mk_pi_p("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_p("x1")
-            + sympy.simplify(1)/2 * mk_pi_m("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
-            )
+        mk_pi_0("x1", True)
+        * mk_j_mu("xj_1", "mu")
+        * mk_j_mu("xj_2", "nu")
+        * mk_pi_0("x2")
+    )
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< pi+(x2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x1) / 2 + pi-(x2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x1) / 2 - pi0(x2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x1) >:")
+    print(
+        "< pi+(x2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x1) / 2 + pi-(x2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x1) / 2 >:"
+    )
+    expr = sympy.simplify(1) / 2 * mk_pi_p("x2", True) * mk_j_mu(
+        "xj_1", "mu"
+    ) * mk_j_mu("xj_2", "nu") * mk_pi_p("x1") + sympy.simplify(1) / 2 * mk_pi_m(
+        "x2", True
+    ) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
+    print(display_cexpr(contract_simplify_compile(expr)))
+    print()
+    print(
+        "< pi+(x2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x1) / 2 + pi-(x2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x1) / 2 - pi0(x2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x1) >:"
+    )
     expr = (
-            sympy.simplify(1)/2 * mk_pi_p("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_p("x1")
-            + sympy.simplify(1)/2 * mk_pi_m("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
-            - mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
-            )
+        sympy.simplify(1)
+        / 2
+        * mk_pi_p("x2", True)
+        * mk_j_mu("xj_1", "mu")
+        * mk_j_mu("xj_2", "nu")
+        * mk_pi_p("x1")
+        + sympy.simplify(1)
+        / 2
+        * mk_pi_m("x2", True)
+        * mk_j_mu("xj_1", "mu")
+        * mk_j_mu("xj_2", "nu")
+        * mk_pi_m("x1")
+        - mk_pi_0("x1", True)
+        * mk_j_mu("xj_1", "mu")
+        * mk_j_mu("xj_2", "nu")
+        * mk_pi_0("x2")
+    )
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< pi+(x2)^dag dm(xj_1) dm(xj_2) pi+(x1) / 2 + pi-(x2)^dag dm(xj_1) dm(xj_2) pi-(x1) / 2 - pi0(x2)^dag dm(xj_1) dm(xj_2) pi0(x1) >:")
+    print(
+        "< pi+(x2)^dag dm(xj_1) dm(xj_2) pi+(x1) / 2 + pi-(x2)^dag dm(xj_1) dm(xj_2) pi-(x1) / 2 - pi0(x2)^dag dm(xj_1) dm(xj_2) pi0(x1) >:"
+    )
     expr_dm1 = mk_scalar("d", "d", "xj_1") - mk_scalar("u", "u", "xj_1")
     expr_dm2 = mk_scalar("d", "d", "xj_2") - mk_scalar("u", "u", "xj_2")
     expr_dm = expr_dm1 * expr_dm2
     expr = (
-            sympy.simplify(1)/2 * mk_pi_p("x2", True) * expr_dm * mk_pi_p("x1")
-            + sympy.simplify(1)/2 * mk_pi_m("x2", True) * expr_dm * mk_pi_m("x1")
-            - mk_pi_0("x1", True) * expr_dm * mk_pi_0("x2")
-            )
+        sympy.simplify(1) / 2 * mk_pi_p("x2", True) * expr_dm * mk_pi_p("x1")
+        + sympy.simplify(1) / 2 * mk_pi_m("x2", True) * expr_dm * mk_pi_m("x1")
+        - mk_pi_0("x1", True) * expr_dm * mk_pi_0("x2")
+    )
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) + pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) + pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >:")
+    print(
+        "< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) + pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) + pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >:"
+    )
     expr = (
-            sympy.simplify(1) * mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1")
-            + sympy.simplify(1) * mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1")
-            + mk_pi_0("x_1", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_0("x_2")
-            )
+        sympy.simplify(1)
+        * mk_pi_p("x_2", True)
+        * mk_jl_mu("xj_1", "mu")
+        * mk_jl_mu("xj_2", "nu")
+        * mk_pi_p("x_1")
+        + sympy.simplify(1)
+        * mk_pi_m("x_2", True)
+        * mk_jl_mu("xj_1", "mu")
+        * mk_jl_mu("xj_2", "nu")
+        * mk_pi_m("x_1")
+        + mk_pi_0("x_1", True)
+        * mk_jl_mu("xj_1", "mu")
+        * mk_jl_mu("xj_2", "nu")
+        * mk_pi_0("x_2")
+    )
     diagram_type_dict = dict()
-    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_1'), 1), (('xj_2', 'x_2'), 1))] = "Type1"
-    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_2'), 1), (('xj_2', 'x_1'), 1))] = "Type2"
-    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'xj_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'x_1'), 1))] = "Type3"
-    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'xj_1'), 1))] = "Type4"
-    print(display_cexpr(contract_simplify_compile(expr, diagram_type_dict=diagram_type_dict)))
+    diagram_type_dict[
+        (
+            (("x_1", "xj_1"), 1),
+            (("x_2", "xj_2"), 1),
+            (("xj_1", "x_1"), 1),
+            (("xj_2", "x_2"), 1),
+        )
+    ] = "Type1"
+    diagram_type_dict[
+        (
+            (("x_1", "xj_1"), 1),
+            (("x_2", "xj_2"), 1),
+            (("xj_1", "x_2"), 1),
+            (("xj_2", "x_1"), 1),
+        )
+    ] = "Type2"
+    diagram_type_dict[
+        (
+            (("x_1", "x_2"), 1),
+            (("x_2", "xj_1"), 1),
+            (("xj_1", "xj_2"), 1),
+            (("xj_2", "x_1"), 1),
+        )
+    ] = "Type3"
+    diagram_type_dict[
+        (
+            (("x_1", "x_2"), 1),
+            (("x_2", "x_1"), 1),
+            (("xj_1", "xj_2"), 1),
+            (("xj_2", "xj_1"), 1),
+        )
+    ] = "Type4"
+    print(
+        display_cexpr(
+            contract_simplify_compile(expr, diagram_type_dict=diagram_type_dict)
+        )
+    )
     #
     print()
     print("< KpiI3/2_Iz1/2(x2_1,x2_2)^dag KpiI1/2_Iz1/2(x1_1,x1_2) >:")
     expr = mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< KpiI3/2_Iz3/2(x2_1,x2_2)^dag KpiI3/2_Iz3/2(x1_1,x1_2) > - KpiI3/2_Iz1/2(x2_1,x2_2)^dag KpiI3/2_Iz1/2(x1_1,x1_2) >:")
-    expr = mk_kpi_p2_i3halves("x2_1", "x2_2", True) * mk_kpi_p2_i3halves("x1_1", "x1_2") - mk_kpi_p1_i3halves("x2_1", "x2_2", True) * mk_kpi_p1_i3halves("x1_1", "x1_2")
+    print(
+        "< KpiI3/2_Iz3/2(x2_1,x2_2)^dag KpiI3/2_Iz3/2(x1_1,x1_2) > - KpiI3/2_Iz1/2(x2_1,x2_2)^dag KpiI3/2_Iz1/2(x1_1,x1_2) >:"
+    )
+    expr = mk_kpi_p2_i3halves("x2_1", "x2_2", True) * mk_kpi_p2_i3halves(
+        "x1_1", "x1_2"
+    ) - mk_kpi_p1_i3halves("x2_1", "x2_2", True) * mk_kpi_p1_i3halves("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< KpiI3/2_Iz3/2(x2_1,x2_2)^dag KpiI3/2_Iz3/2(x1_1,x1_2) > - KpiI3/2_Iz-1/2(x2_1,x2_2)^dag KpiI3/2_Iz-1/2(x1_1,x1_2) >:")
-    expr = mk_kpi_p2_i3halves("x2_1", "x2_2", True) * mk_kpi_p2_i3halves("x1_1", "x1_2") - mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2")
+    print(
+        "< KpiI3/2_Iz3/2(x2_1,x2_2)^dag KpiI3/2_Iz3/2(x1_1,x1_2) > - KpiI3/2_Iz-1/2(x2_1,x2_2)^dag KpiI3/2_Iz-1/2(x1_1,x1_2) >:"
+    )
+    expr = mk_kpi_p2_i3halves("x2_1", "x2_2", True) * mk_kpi_p2_i3halves(
+        "x1_1", "x1_2"
+    ) - mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< KpiI3/2_Iz3/2(x2_1,x2_2)^dag KpiI3/2_Iz3/2(x1_1,x1_2) > - KpiI3/2_Iz-3/2(x2_1,x2_2)^dag KpiI3/2_Iz-3/2(x1_1,x1_2) >:")
-    expr = mk_kpi_p2_i3halves("x2_1", "x2_2", True) * mk_kpi_p2_i3halves("x1_1", "x1_2") - mk_kpi_m_i3halves("x2_1", "x2_2", True) * mk_kpi_m_i3halves("x1_1", "x1_2")
+    print(
+        "< KpiI3/2_Iz3/2(x2_1,x2_2)^dag KpiI3/2_Iz3/2(x1_1,x1_2) > - KpiI3/2_Iz-3/2(x2_1,x2_2)^dag KpiI3/2_Iz-3/2(x1_1,x1_2) >:"
+    )
+    expr = mk_kpi_p2_i3halves("x2_1", "x2_2", True) * mk_kpi_p2_i3halves(
+        "x1_1", "x1_2"
+    ) - mk_kpi_m_i3halves("x2_1", "x2_2", True) * mk_kpi_m_i3halves("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    print("< KpiI1/2_Iz1/2(x2_1,x2_2)^dag KpiI1/2_Iz1/2(x1_1,x1_2) > - < KpiI1/2_Iz-1/2(x2_1,x2_2)^dag KpiI1/2_Iz-1/2(x1_1,x1_2) >:")
-    expr = mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2") - mk_kpi_p_i1half("x2_1", "x2_2", True) * mk_kpi_p_i1half("x1_1", "x1_2")
+    print(
+        "< KpiI1/2_Iz1/2(x2_1,x2_2)^dag KpiI1/2_Iz1/2(x1_1,x1_2) > - < KpiI1/2_Iz-1/2(x2_1,x2_2)^dag KpiI1/2_Iz-1/2(x1_1,x1_2) >:"
+    )
+    expr = mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i1half(
+        "x1_1", "x1_2"
+    ) - mk_kpi_p_i1half("x2_1", "x2_2", True) * mk_kpi_p_i1half("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()

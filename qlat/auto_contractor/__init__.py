@@ -6,4 +6,4 @@ Usage::\n
 
 from .operators import *
 from .eval import *
-from . import auto_fac_funcs as aff
+from . import auto_fac_funcs as aff  # noqa

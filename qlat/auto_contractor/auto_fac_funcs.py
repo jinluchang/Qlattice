@@ -19,13 +19,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from qlat_utils import \
-        rel_mod, \
-        rel_mod_sym, \
-        c_rel_mod_sqr
+__all__ = [
+    "rel_mod",
+    "rel_mod_sym",
+    "c_rel_mod_sqr",
+    "auto_fac_funcs_list",
+]
+
+from qlat_utils import rel_mod, rel_mod_sym, c_rel_mod_sqr
 
 auto_fac_funcs_list = [
-        "rel_mod",
-        "rel_mod_sym",
-        "c_rel_mod_sqr",
-        ]
+    "rel_mod",
+    "rel_mod_sym",
+    "c_rel_mod_sqr",
+]

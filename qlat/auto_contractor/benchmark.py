@@ -23,8 +23,9 @@ from auto_contractor.eval import *
 
 import qlat as q
 
+
 @q.timer
-def benchmark_function_1(f, arg, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
+def benchmark_function_1(f, arg, benchmark_size=1000, benchmark_num=10, total_flops=0):
     @q.timer_verbose
     def benchmark_run_10():
         q.acc_timer_flops("py:benchmark_run_10", total_flops * 10 * benchmark_size)
@@ -39,12 +40,17 @@ def benchmark_function_1(f, arg, benchmark_size = 1000, benchmark_num = 10, tota
             f(arg)
             f(arg)
             f(arg)
+    #
+    #
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
 
+
 @q.timer
-def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
+def benchmark_function_2(
+    f, arg1, arg2, benchmark_size=1000, benchmark_num=10, total_flops=0
+):
     @q.timer_verbose
     def benchmark_run_10():
         q.acc_timer_flops("py:benchmark_run_10", total_flops * 10 * benchmark_size)
@@ -59,12 +65,17 @@ def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 1
             f(arg1, arg2)
             f(arg1, arg2)
             f(arg1, arg2)
+    #
+    #
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
 
+
 @q.timer
-def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
+def benchmark_function_3(
+    f, arg1, arg2, arg3, benchmark_size=1000, benchmark_num=10, total_flops=0
+):
     @q.timer_verbose
     def benchmark_run_10():
         q.acc_timer_flops("py:benchmark_run_10", total_flops * 10 * benchmark_size)
@@ -79,9 +90,12 @@ def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_n
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
+    #
+    #
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
+
 
 if __name__ == "__main__":
     rng_state = q.RngState("seed")
@@ -92,14 +106,24 @@ if __name__ == "__main__":
     mat_s_2 = make_rand_spin_matrix(rng_state)
     mat_s_3 = get_gamma_matrix(1)
     print("sc * sc")
-    benchmark_function_2(mat_mul_sc_sc, get_mat(mat_sc_1), get_mat(mat_sc_2), total_flops = 13536)
+    benchmark_function_2(
+        mat_mul_sc_sc, get_mat(mat_sc_1), get_mat(mat_sc_2), total_flops=13536
+    )
     print("sc * s")
-    benchmark_function_2(mat_mul_sc_s, get_mat(mat_sc_1), get_mat(mat_s_1), total_flops = 4320)
+    benchmark_function_2(
+        mat_mul_sc_s, get_mat(mat_sc_1), get_mat(mat_s_1), total_flops=4320
+    )
     print("s * sc")
-    benchmark_function_2(mat_mul_s_sc, get_mat(mat_s_1), get_mat(mat_sc_1), total_flops = 4320)
+    benchmark_function_2(
+        mat_mul_s_sc, get_mat(mat_s_1), get_mat(mat_sc_1), total_flops=4320
+    )
     print("s * s")
-    benchmark_function_2(mat_mul_s_s, get_mat(mat_s_1), get_mat(mat_s_2), total_flops = 4320)
+    benchmark_function_2(
+        mat_mul_s_s, get_mat(mat_s_1), get_mat(mat_s_2), total_flops=4320
+    )
     print("tr(sc, sc)")
-    benchmark_function_2(mat_sc_sc_trace, get_mat(mat_sc_1), get_mat(mat_sc_2), total_flops = 480)
+    benchmark_function_2(
+        mat_sc_sc_trace, get_mat(mat_sc_1), get_mat(mat_sc_2), total_flops=480
+    )
     print("tr(sc)")
-    benchmark_function_1(mat_sc_trace, get_mat(mat_sc_1), total_flops = 22)
+    benchmark_function_1(mat_sc_trace, get_mat(mat_sc_1), total_flops=22)
