@@ -551,6 +551,7 @@ let
       ninja
       mpi4py
       soundfile
+      openai
       psutil
       cython
       pybind11
