@@ -13,7 +13,7 @@ action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
 if action == "qlat-cps-config":
-    import qlat_cps_config.__main__
+    import qlat_cps_config.__main__ # noqa
 else:
     print(usage_message)
     exit()

@@ -1,9 +1,7 @@
-from .c import \
-        as_wilson_matrix, \
-        as_wilson_matrix_g5_herm
+from .c import as_wilson_matrix, as_wilson_matrix_g5_herm
 
-from .ama import \
-        ama_apply1
+from .ama import ama_apply1
+
 
 def load_prop(x):
     if isinstance(x, tuple):

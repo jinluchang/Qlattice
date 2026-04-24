@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
-class LRUCache:
 
+class LRUCache:
     """
     Edited from: https://www.geeksforgeeks.org/lru-cache-in-python-using-ordereddict/
     """

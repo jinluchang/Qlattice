@@ -3,6 +3,7 @@
 import qlat_utils as q
 import sys
 
+
 def remove_trailing_slashes(path):
     while True:
         if path == "":
@@ -13,18 +14,22 @@ def remove_trailing_slashes(path):
             break
     return path
 
+
 def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
     assert path_qar[-4:] == ".qar"
     fns = q.list_qar(path_qar)
     for i, fn in enumerate(fns):
         pfn_full = path_qar[:-4] + "/" + fn
         assert pfn_full.startswith(drop_prefix)
-        pfn = pfn_full[len(drop_prefix):]
+        pfn = pfn_full[len(drop_prefix) :]
         q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{pfn}'")
         idx += 1
         if is_recursive and fn[-4:] == ".qar":
-            idx = show_list_qar(pfn_full, idx, is_recursive=is_recursive, drop_prefix=drop_prefix)
+            idx = show_list_qar(
+                pfn_full, idx, is_recursive=is_recursive, drop_prefix=drop_prefix
+            )
     return idx
+
 
 def build_index_qar(path_qar, is_recursive=True):
     assert path_qar[-4:] == ".qar"
@@ -36,6 +41,7 @@ def build_index_qar(path_qar, is_recursive=True):
         if fn[-4:] == ".qar":
             pfn_full = path_qar[:-4] + "/" + fn
             build_index_qar(pfn_full, is_recursive=is_recursive)
+
 
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar list path.qar")
@@ -109,7 +115,7 @@ elif action == "b":
 elif action == "br":
     for path_qar in sys.argv[2:]:
         build_index_qar(path_qar, is_recursive=True)
-elif action in [ "c", "cr" ]:
+elif action in ["c", "cr"]:
     path_list = sys.argv[2:]
     for path in path_list:
         path = remove_trailing_slashes(path)
@@ -123,7 +129,7 @@ elif action in [ "c", "cr" ]:
             q.qar_create_info(path_qar, path)
         elif action == "cr":
             q.qar_create_info(path_qar, path, is_remove_folder_after=True)
-elif action in [ "x", "xr" ]:
+elif action in ["x", "xr"]:
     path_qar_list = sys.argv[2:]
     for path_qar in path_qar_list:
         assert path_qar[-4:] == ".qar"

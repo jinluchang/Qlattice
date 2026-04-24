@@ -19,19 +19,19 @@ action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
 if action == "qlat-utils-config":
-    import qlat_utils_config.__main__
+    import qlat_utils_config.__main__ # noqa
 elif action == "crc32":
-    from .scripts import crc32
+    from .scripts import crc32 as crc32
 elif action == "lat-io-glimpse":
-    from .scripts import lat_io_glimpse
+    from .scripts import lat_io_glimpse as lat_io_glimpse
 elif action == "lat-io-diff":
-    from .scripts import lat_io_diff
+    from .scripts import lat_io_diff as lat_io_diff
 elif action == "pickle-glimpse":
-    from .scripts import pickle_glimpse
+    from .scripts import pickle_glimpse as pickle_glimpse
 elif action == "qar-glimpse":
-    from .scripts import qar_glimpse
+    from .scripts import qar_glimpse as qar_glimpse
 elif action == "qar":
-    from .scripts import qar
+    from .scripts import qar as qar
 else:
     print(usage_message)
     exit()

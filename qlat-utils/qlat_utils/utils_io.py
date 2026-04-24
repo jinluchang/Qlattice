@@ -29,6 +29,7 @@ class q:
         qcat_bytes_sync_node,
     )
 
+
 # from .c import *
 # from .lru_cache import *
 
@@ -184,31 +185,43 @@ def hash_sha256(s):
     Python `tuple` and `list`.
     Numpy `ndarray`.
     """
-    if isinstance(s, (str, bytes,)):
+    if isinstance(
+        s,
+        (
+            str,
+            bytes,
+        ),
+    ):
         m = hashlib.sha256()
         if isinstance(s, str):
-            s = s.encode('utf8')
+            s = s.encode("utf8")
         m.update(s)
         return m.hexdigest()
     elif hasattr(s, "hash_sha256"):
         return s.hash_sha256()
-    elif isinstance(s, (tuple, list,)):
+    elif isinstance(
+        s,
+        (
+            tuple,
+            list,
+        ),
+    ):
         if isinstance(s, tuple):
-            m = hashlib.sha256(b'tuple:')
+            m = hashlib.sha256(b"tuple:")
         elif isinstance(s, list):
-            m = hashlib.sha256(b'list:')
+            m = hashlib.sha256(b"list:")
         else:
             assert False
         for v in s:
-            m.update(hash_sha256(v).encode('utf8'))
+            m.update(hash_sha256(v).encode("utf8"))
         return m.hexdigest()
     elif isinstance(s, np.ndarray):
-        m = hashlib.sha256(b'np.ndarray:')
-        m.update(repr(s.tolist()).encode('utf8'))
+        m = hashlib.sha256(b"np.ndarray:")
+        m.update(repr(s.tolist()).encode("utf8"))
         return m.hexdigest()
     elif hasattr(s, "__repr__"):
-        m = hashlib.sha256(b'repr:')
-        m.update(repr(s).encode('utf8'))
+        m = hashlib.sha256(b"repr:")
+        m.update(repr(s).encode("utf8"))
         return m.hexdigest()
     else:
         assert False
@@ -219,6 +232,7 @@ def pickle_cache(path, is_sync_node=True):
     `path` is the directory to cache results
     sha256 hash based on pickle.dumps of the input parameters
     """
+    #
     def dec(func):
         @functools.wraps(func)
         def f(*args, **kwargs):
@@ -231,21 +245,26 @@ def pickle_cache(path, is_sync_node=True):
                 c_func_args, c_ret = c_res
                 return c_ret
             ret = func(*args, **kwargs)
-            res = (func_args, ret,)
+            res = (
+                func_args,
+                ret,
+            )
             save_pickle_obj(res, fn, is_sync_node=is_sync_node)
             return ret
+        #
         return f
+    #
     return dec
 
 
 def cache_call(
-        *,
-        maxsize=128,
-        get_state=None,
-        is_hash_args=True,
-        path=None,
-        is_sync_node=True,
-        cache=None,
+    *,
+    maxsize=128,
+    get_state=None,
+    is_hash_args=True,
+    path=None,
+    is_sync_node=True,
+    cache=None,
 ):
     """
     get_state() => object to be used as extra key of cache\n
@@ -283,7 +302,7 @@ def cache_call(
     """
     if cache is None:
         cache = q.LRUCache(maxsize)
-
+    #
     def dec(f):
         @functools.wraps(f)
         def func(*args, is_force_recompute=False, **kwargs):
@@ -302,7 +321,11 @@ def cache_call(
                 key = hash_sha256(func_args_str)
             else:
                 assert kwargs == dict()
-                key = (f.__qualname__, args, state,)
+                key = (
+                    f.__qualname__,
+                    args,
+                    state,
+                )
             if path is not None:
                 fn = f"{path}/data/{key}.pickle"
                 fn_info = f"{path}/info/{key}.json"
@@ -318,26 +341,31 @@ def cache_call(
                         c_func_args, c_ret = c_res
                         return c_ret
             ret = f(*args, **kwargs)
-            res = (func_args, ret,)
+            res = (
+                func_args,
+                ret,
+            )
             cache[key] = res
             if path is not None:
                 save_pickle_obj(res, fn, is_sync_node=is_sync_node)
                 save_bytes(func_args_str, fn_info, is_sync_node=is_sync_node)
             return ret
+        #
         func.cache = cache
         func.clear = lambda: cache.clear()
         return func
+    #
     return dec
 
 
 class SetDisplayMethod:
-
     def __init__(self):
         q.set_display_method("py_stdout")
         # q.displayln_info(0, f"set_display_method('py_stdout')")
 
     def __del__(self):
-        q.displayln_info(0, f"set_display_method()")
+        q.displayln_info(0, "set_display_method()")
         q.set_display_method()
+
 
 ###

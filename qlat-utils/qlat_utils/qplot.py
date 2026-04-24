@@ -1,20 +1,19 @@
 __all__ = [
-        'show_datatable',
-        'read_datatable',
-        'save_datatable',
-        'load_datatable',
-        'azip',
-        'plot_save',
-        'plot_view',
-        'gnuplot_png_density',
-        'gnuplot_plotfile_header',
-        'plot_save_display_width',
-        'display_img',
-        ]
+    "show_datatable",
+    "read_datatable",
+    "save_datatable",
+    "load_datatable",
+    "azip",
+    "plot_save",
+    "plot_view",
+    "gnuplot_png_density",
+    "gnuplot_plotfile_header",
+    "plot_save_display_width",
+    "display_img",
+]
 
 import numpy as np
 import os
-import sys
 import shutil
 import tempfile
 import subprocess
@@ -24,10 +23,12 @@ from qlat_utils.timer import (
     displayln_info,
 )
 
+
 def mk_file_dirs(fn):
     path = os.path.dirname(fn)
     if path != "":
         os.makedirs(path, exist_ok=True)
+
 
 def show_number(x):
     if isinstance(x, complex):
@@ -39,14 +40,17 @@ def show_number(x):
     else:
         return str(x)
 
+
 def show_vector(vec):
-    return " ".join([ show_number(x) for x in vec ])
+    return " ".join([show_number(x) for x in vec])
+
 
 def show_datatable(arr, *, is_return_list_of_string=False):
-    lines = [ show_vector(vec) + "\n" for vec in arr ]
+    lines = [show_vector(vec) + "\n" for vec in arr]
     if is_return_list_of_string:
         return lines
     return "".join(lines)
+
 
 def touch_file(fn, content="", *, is_directory_exist=False):
     if not is_directory_exist:
@@ -58,11 +62,15 @@ def touch_file(fn, content="", *, is_directory_exist=False):
             for s in content:
                 f.write(s)
 
+
 def save_datatable(arr, fn, *, is_directory_exist=False):
     """save_datatable(arr, fn), arr is (numpy) 2-D array, fn is file path name."""
-    touch_file(fn,
-            show_datatable(arr, is_return_list_of_string=True),
-            is_directory_exist=is_directory_exist)
+    touch_file(
+        fn,
+        show_datatable(arr, is_return_list_of_string=True),
+        is_directory_exist=is_directory_exist,
+    )
+
 
 def read_number(s):
     if s[-1] == "i":
@@ -70,9 +78,10 @@ def read_number(s):
     else:
         return float(s)
 
+
 def read_vector(line):
     ss = line.split()
-    fs = [ read_number(s) for s in ss if s != "" ]
+    fs = [read_number(s) for s in ss if s != ""]
     n = len(fs)
     xs = []
     i = 0
@@ -85,15 +94,18 @@ def read_vector(line):
             i += 1
     return xs
 
+
 def read_datatable(lines):
     # return list of list of numbers (float or complex)
     if isinstance(lines, str):
         return read_datatable(lines.splitlines())
-    return [ read_vector(line) for line in lines ]
+    return [read_vector(line) for line in lines]
+
 
 def load_datatable(fn):
     with open(fn) as f:
         return read_datatable(f)
+
 
 def azip(vec, *vecs):
     size_list = map(len, vecs)
@@ -101,18 +113,31 @@ def azip(vec, *vecs):
     for size in size_list:
         if size < size_min:
             size_min = size
-    return np.array([ np.array(v[:size_min]).transpose() for v in [ vec, ] + list(vecs) ]).transpose()
+    return np.array(
+        [
+            np.array(v[:size_min]).transpose()
+            for v in [
+                vec,
+            ]
+            + list(vecs)
+        ]
+    ).transpose()
+
 
 gnuplot_png_density = 500
+
 
 def mk_tmp_dir():
     return tempfile.mkdtemp(suffix=".dir", prefix="pyplot.")
 
-valid_fn_chars = ("abcdefghijklmnopqrstuvwxyz"
-        + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        + "0123456789"
-        + " ,.+-_=;:[]?{}"
-        )
+
+valid_fn_chars = (
+    "abcdefghijklmnopqrstuvwxyz"
+    + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    + "0123456789"
+    + " ,.+-_=;:[]?{}"
+)
+
 
 def check_fn(fn):
     if isinstance(fn, str):
@@ -122,11 +147,13 @@ def check_fn(fn):
         return True
     return False
 
+
 def get_plot_name(fn):
     assert fn[-4:] == ".png"
     assert check_fn(fn)
     name = fn[:-4]
     return name
+
 
 def mk_makefile(fn=None):
     # fn is the target file name, e.g. plot.pdf or plot.png
@@ -136,66 +163,84 @@ def mk_makefile(fn=None):
     else:
         name = "plot"
         target = "png"
-    return "\n".join([
-        f"all: {target}",
-        "",
-        "gnuplot:",
-        "\tgnuplot plotfile",
-        "",
-        "latex: gnuplot",
-        "\tpdflatex plot.tex",
-        "",
-        "pdf: latex",
-        f"\tmv plot.pdf tmp; mv tmp '{name}.pdf'",
-        "",
-        "png: pdf",
-        f"\tpdftoppm -r {gnuplot_png_density} -png '{name}.pdf' > plot.png",
-        f"\tmv plot.png tmp; mv tmp '{name}.png'",
-        "",
-        "install-pdf: pdf",
-        f"\tmv '{name}.pdf' ../'{name}.pdf'",
-        "",
-        "install-png: png",
-        f"\tmv '{name}.png' ../'{name}.png'",
-        "",
-        "install: install-png install-pdf",
-        "",
-        ])
+    return "\n".join(
+        [
+            f"all: {target}",
+            "",
+            "gnuplot:",
+            "\tgnuplot plotfile",
+            "",
+            "latex: gnuplot",
+            "\tpdflatex plot.tex",
+            "",
+            "pdf: latex",
+            f"\tmv plot.pdf tmp; mv tmp '{name}.pdf'",
+            "",
+            "png: pdf",
+            f"\tpdftoppm -r {gnuplot_png_density} -png '{name}.pdf' > plot.png",
+            f"\tmv plot.png tmp; mv tmp '{name}.png'",
+            "",
+            "install-pdf: pdf",
+            f"\tmv '{name}.pdf' ../'{name}.pdf'",
+            "",
+            "install-png: png",
+            f"\tmv '{name}.png' ../'{name}.png'",
+            "",
+            "install: install-png install-pdf",
+            "",
+        ]
+    )
+
 
 gnuplot_plotfile_header = [
-        "set terminal epslatex standalone color clip lw 3",
-        ]
+    "set terminal epslatex standalone color clip lw 3",
+]
+
 
 def mk_plotfile(plot_cmds, plot_lines):
     plot_output = [
-            "set output 'plot.tex'",
-            ]
+        "set output 'plot.tex'",
+    ]
     plot = plot_lines[0] + " \\\n    " + ", \\\n    ".join(plot_lines[1:])
-    return "\n".join(gnuplot_plotfile_header + plot_output + [ "", ] + plot_cmds + [ "", plot, "", ])
+    return "\n".join(
+        gnuplot_plotfile_header
+        + plot_output
+        + [
+            "",
+        ]
+        + plot_cmds
+        + [
+            "",
+            plot,
+            "",
+        ]
+    )
+
 
 def populate_pyplot_folder(
-        path,
-        *,
-        fn=None,
-        dict_datatable=None,
-        plot_cmds=None,
-        plot_lines=None,
-        ):
+    path,
+    *,
+    fn=None,
+    dict_datatable=None,
+    plot_cmds=None,
+    plot_lines=None,
+):
     if dict_datatable is None:
         dict_datatable = {}
     if plot_cmds is None:
         plot_cmds = []
     if plot_lines is not None:
-        touch_file(os.path.join(path, "plotfile"),
-                mk_plotfile(plot_cmds, plot_lines))
+        touch_file(os.path.join(path, "plotfile"), mk_plotfile(plot_cmds, plot_lines))
     touch_file(os.path.join(path, "Makefile"), mk_makefile(fn))
     for key, dt in dict_datatable.items():
         assert key[-4:] == ".txt"
         assert check_fn(key)
         save_datatable(dt, os.path.join(path, key))
 
+
 def qremove_all(path):
     return shutil.rmtree(path, ignore_errors=True)
+
 
 def mk_pyplot_folder(path=None):
     if path is None:
@@ -207,20 +252,22 @@ def mk_pyplot_folder(path=None):
         os.makedirs(path)
     return path
 
+
 @timer
 def display_img(fn, *, width=None):
     from IPython.display import HTML, Image, display
+    #
     displayln_info(0, f"display_img: fn='{fn}'")
     show_width = ""
     if width is not None:
         show_width = f"width='{width}'"
     try:
-      import google.colab
-      is_in_colab = True
+        #
+        is_in_colab = True
     except:
-      is_in_colab = False
+        is_in_colab = False
     is_fn_showable = True
-    if fn.startswith('/'):
+    if fn.startswith("/"):
         is_fn_showable = False
     is_using_html = is_fn_showable and not is_in_colab
     if is_using_html:
@@ -228,20 +275,22 @@ def display_img(fn, *, width=None):
     else:
         display(Image(filename=fn, width=width))
 
+
 plot_save_display_width = None
+
 
 @timer
 def plot_save(
-        fn=None,
-        dts=None,
-        cmds=None,
-        lines=None,
-        *,
-        is_run_make=True,
-        is_display=False,
-        is_verbose=False,
-        display_width=None,
-        ):
+    fn=None,
+    dts=None,
+    cmds=None,
+    lines=None,
+    *,
+    is_run_make=True,
+    is_display=False,
+    is_verbose=False,
+    display_width=None,
+):
     """
     fn is full name of the plot or None
     dts is dict_datatable, e.g. { "table.txt" : [ [ 0, 1, ], [ 1, 2, ], ], }
@@ -253,8 +302,9 @@ def plot_save(
     path = None
     if target is not None:
         target_fn = os.path.basename(target)
-        path = os.path.join(os.path.dirname(target),
-                get_plot_name(target_fn) + ".pyplot.dir")
+        path = os.path.join(
+            os.path.dirname(target), get_plot_name(target_fn) + ".pyplot.dir"
+        )
     path = mk_pyplot_folder(path)
     is_show_cmd = False
     if dts is None:
@@ -263,25 +313,25 @@ def plot_save(
         yerr = 0.1 / (1 + x**2)
         dts = dict()
         dts["table.txt"] = azip(x, y, yerr)
-        displayln_info(f"dts = dict()")
+        displayln_info("dts = dict()")
         for key, value in dts.items():
-            displayln_info(f'dts[{key!r}] = {value.tolist()}')
+            displayln_info(f"dts[{key!r}] = {value.tolist()}")
         if lines is None:
             lines = [
-                    "plot [-3:3] [-1.5:1.5]",
-                    "0 not",
-                    r"sin(x) w l t '$y = \sin(x)$'",
-                    ]
+                "plot [-3:3] [-1.5:1.5]",
+                "0 not",
+                r"sin(x) w l t '$y = \sin(x)$'",
+            ]
             lines.append(r"'table.txt' w yerrorb t '$y = \cos(x)$'")
             displayln_info("lines = [")
             for l in lines:
-                displayln_info(f'    {l!r},')
+                displayln_info(f"    {l!r},")
             displayln_info("]")
         is_show_cmd = True
     if lines is None:
         lines = [
-                "plot [:] [:]",
-                ]
+            "plot [:] [:]",
+        ]
         for key, val in dts.items():
             if len(val[0]) >= 3:
                 lines.append(f"'{key}' u 1:2:3 w yerrorb t '{key}'")
@@ -289,63 +339,73 @@ def plot_save(
                 lines.append(f"'{key}' u 1:2 w p t '{key}'")
             else:
                 lines.append(f"'{key}' t '{key}'")
-        displayln_info(f"lines = [")
+        displayln_info("lines = [")
         for l in lines:
-            displayln_info(f'    {l!r},')
-        displayln_info(f"]")
+            displayln_info(f"    {l!r},")
+        displayln_info("]")
         is_show_cmd = True
     if cmds is None:
         cmds = [
-                "set size 0.8, 1.0",
-                "set key tm",
-                "set xlabel '$x$'",
-                "set ylabel '$y$'",
-                "set title 'title'",
-                ]
-        displayln_info(f"cmds = [")
+            "set size 0.8, 1.0",
+            "set key tm",
+            "set xlabel '$x$'",
+            "set ylabel '$y$'",
+            "set title 'title'",
+        ]
+        displayln_info("cmds = [")
         for l in cmds:
-            displayln_info(f'    {l!r},')
-        displayln_info(f"]")
+            displayln_info(f"    {l!r},")
+        displayln_info("]")
         is_show_cmd = True
     if is_display and (display_width is None):
         display_width = plot_save_display_width
         is_show_cmd = True
     if is_show_cmd:
         if is_display:
-            displayln_info(f"q.plot_view(")
+            displayln_info("q.plot_view(")
             displayln_info(f"    fn={fn!r},")
-            displayln_info(f"    dts=dts,")
-            displayln_info(f"    lines=lines,")
-            displayln_info(f"    cmds=cmds,")
+            displayln_info("    dts=dts,")
+            displayln_info("    lines=lines,")
+            displayln_info("    cmds=cmds,")
             displayln_info(f"    display_width={display_width!r},")
             displayln_info(f"    is_verbose={is_verbose!r},")
-            displayln_info(f")")
+            displayln_info(")")
         else:
-            displayln_info(f"q.plot_save(")
+            displayln_info("q.plot_save(")
             displayln_info(f"    fn={fn!r},")
-            displayln_info(f"    dts=dts,")
-            displayln_info(f"    lines=lines,")
-            displayln_info(f"    cmds=cmds,")
+            displayln_info("    dts=dts,")
+            displayln_info("    lines=lines,")
+            displayln_info("    cmds=cmds,")
             displayln_info(f"    is_run_make={is_run_make!r},")
             displayln_info(f"    is_verbose={is_verbose!r},")
-            displayln_info(f")")
+            displayln_info(")")
     populate_pyplot_folder(
-            path,
-            fn=target_fn,
-            dict_datatable=dts,
-            plot_cmds=cmds,
-            plot_lines=lines,
-            )
+        path,
+        fn=target_fn,
+        dict_datatable=dts,
+        plot_cmds=cmds,
+        plot_lines=lines,
+    )
     if is_run_make:
+        #
         @timer
         def qplot_run_make():
-            status = subprocess.run([ "make", "-C", path, ], capture_output=True, text=True)
+            status = subprocess.run(
+                [
+                    "make",
+                    "-C",
+                    path,
+                ],
+                capture_output=True,
+                text=True,
+            )
             if is_verbose or status.returncode != 0:
                 displayln_info("stdout:")
                 displayln_info(status.stdout)
                 displayln_info("stderr:")
                 displayln_info(status.stderr)
             assert status.returncode == 0
+        #
         qplot_run_make()
         if target is None:
             path_img = os.path.join(path, "plot.png")
@@ -362,19 +422,23 @@ def plot_save(
         displayln_info(0, f"plot_save: creating data for plot at '{path}'.")
         return path
 
+
 def plot_view(
-        fn=None,
-        dts=None,
-        cmds=None,
-        lines=None,
-        *,
-        is_verbose=False,
-        display_width=None,
-        ):
+    fn=None,
+    dts=None,
+    cmds=None,
+    lines=None,
+    *,
+    is_verbose=False,
+    display_width=None,
+):
     return plot_save(
-            fn=fn, dts=dts, cmds=cmds, lines=lines,
-            is_run_make=True,
-            is_verbose=is_verbose,
-            is_display=True,
-            display_width=display_width,
-            )
+        fn=fn,
+        dts=dts,
+        cmds=cmds,
+        lines=lines,
+        is_run_make=True,
+        is_verbose=is_verbose,
+        is_display=True,
+        display_width=display_width,
+    )

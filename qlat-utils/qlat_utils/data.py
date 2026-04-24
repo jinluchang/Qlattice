@@ -20,9 +20,21 @@ class q:
 alpha_qed = 1.0 / 137.035999084
 fminv_gev = 0.197326979  # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
 
-float_types = (float, np.float32, np.float64,)
-complex_types = (complex, np.complex64, np.complex128,)
-int_types = (int, np.int32, np.int64,)
+float_types = (
+    float,
+    np.float32,
+    np.float64,
+)
+complex_types = (
+    complex,
+    np.complex64,
+    np.complex128,
+)
+int_types = (
+    int,
+    np.int32,
+    np.int64,
+)
 
 try:
     float_types = float_types + (np.float128,)
@@ -35,7 +47,6 @@ number_types = real_types + complex_types
 
 
 class use_kwargs:
-
     """
     self.default_kwargs
     self.keys
@@ -58,7 +69,9 @@ class use_kwargs:
             if self.keys is not None:
                 kwargs = {k: kwargs[k] for k in self.keys}
             return func(*args, **kwargs)
+        #
         return f
+
 
 ###
 
@@ -267,7 +280,13 @@ def qnorm(x):
         return x * x
     elif isinstance(x, complex_types):
         return x.real * x.real + x.imag * x.imag
-    elif isinstance(x, (list, tuple,)):
+    elif isinstance(
+        x,
+        (
+            list,
+            tuple,
+        ),
+    ):
         return sum([qnorm(x_i) for x_i in x])
     else:
         return x.qnorm()
@@ -275,7 +294,6 @@ def qnorm(x):
 
 
 class Data:
-
     def __init__(self, val):
         """
         # supported value types:
@@ -388,7 +406,9 @@ class Data:
 
     def glb_sum(self):
         from qlat.mpi import glb_sum
+        #
         return Data(glb_sum(self.val))
+
 
 ###
 
@@ -406,7 +426,7 @@ def filter_np_results(val):
 def average(data_list):
     n = len(data_list)
     v = sum(data_list)
-    return filter_np_results(1/n * v)
+    return filter_np_results(1 / n * v)
 
 
 def average_ignore_nan(value_arr_list):
@@ -439,7 +459,9 @@ def block_data(data_list, block_size, is_overlapping=True):
     assert block_size >= 1
     size = len(data_list)
     if block_size >= size:
-        return [average(data_list), ]
+        return [
+            average(data_list),
+        ]
     blocks = []
     start = 0
     stop = block_size
@@ -470,7 +492,10 @@ def avg_err(data_list, *, eps=1, block_size=1):
     if n <= 1:
         err = abs(eps) * avg
         err = filter_np_results(err)
-        return (avg, err,)
+        return (
+            avg,
+            err,
+        )
     if n < 2 * block_size:
         block_size = 1
     assert n > block_size
@@ -479,7 +504,10 @@ def avg_err(data_list, *, eps=1, block_size=1):
     fac = abs(eps) * math.sqrt(block_size / (n - block_size))
     err = fac * fsqrt(diff_sqr)
     err = filter_np_results(err)
-    return (avg, err,)
+    return (
+        avg,
+        err,
+    )
 
 
 def jackknife(data_list, *, eps=1):
@@ -492,7 +520,9 @@ def jackknife(data_list, *, eps=1):
     n = len(data_list_real)
     fac = eps / n
     avg = average(data_list_real)
-    jks = [avg, ]
+    jks = [
+        avg,
+    ]
     for data in data_list:
         if data is None:
             jks.append(avg)
@@ -615,7 +645,7 @@ def sjackknife(
     get_all_jk_idx=None,
     jk_blocking_func=None,
     eps=1,
-    ):
+):
     """
     Super jackknife.
     Return ``jk_arr``.
@@ -643,22 +673,17 @@ def sjackknife(
     if avg is None:
         avg = average(data_arr)
     dtype = data_arr.dtype
-    jk_idx_list = [
-        jk_idx
-        for jk_idx, d in zip(jk_idx_list, data_list)
-        if d is not None
-    ]
+    jk_idx_list = [jk_idx for jk_idx, d in zip(jk_idx_list, data_list) if d is not None]
     if jk_blocking_func is not None:
-        jk_idx_list = [
-            jk_blocking_func(0, jk_idx)
-            for jk_idx in jk_idx_list
-        ]
+        jk_idx_list = [jk_blocking_func(0, jk_idx) for jk_idx in jk_idx_list]
     n = len(data_arr)
     assert n == len(jk_idx_list)
     if all_jk_idx is None:
         if get_all_jk_idx is None:
             assert is_hash_jk_idx
-            all_jk_idx = ["avg", ] + list(range(jk_idx_hash_size))
+            all_jk_idx = [
+                "avg",
+            ] + list(range(jk_idx_hash_size))
         else:
             all_jk_idx = get_all_jk_idx()
     assert all_jk_idx[0] == "avg"
@@ -686,7 +711,13 @@ def sjackknife(
             count_dict[i] += 1
         else:
             count_dict[i] = 1
-    jk_arr = np.empty((1 + n_super_sample, *data_arr[0].shape,), dtype=dtype)
+    jk_arr = np.empty(
+        (
+            1 + n_super_sample,
+            *data_arr[0].shape,
+        ),
+        dtype=dtype,
+    )
     jk_arr[:] = avg
     data_diff = data_arr - avg
     for j in range(n):
@@ -729,7 +760,9 @@ def sjk_mk_jk_val(
     if all_jk_idx is None:
         if get_all_jk_idx is None:
             assert is_hash_jk_idx
-            all_jk_idx = ["avg", ] + list(range(jk_idx_hash_size))
+            all_jk_idx = [
+                "avg",
+            ] + list(range(jk_idx_hash_size))
         else:
             all_jk_idx = get_all_jk_idx()
     assert all_jk_idx[0] == "avg"
@@ -797,13 +830,31 @@ def mk_r_i_j_mat(
     assert n_rand_sample >= 0
     rs = rng_state
     n = len(jk_idx_list)
-    r_arr = np.empty((n_rand_sample, n,), dtype=np.float64)
-    b_arr = np.empty((n_rand_sample, n,), dtype=np.int32)
-    jk_idx_str_arr = np.empty((n_rand_sample, n,), dtype=object)
+    r_arr = np.empty(
+        (
+            n_rand_sample,
+            n,
+        ),
+        dtype=np.float64,
+    )
+    b_arr = np.empty(
+        (
+            n_rand_sample,
+            n,
+        ),
+        dtype=np.int32,
+    )
+    jk_idx_str_arr = np.empty(
+        (
+            n_rand_sample,
+            n,
+        ),
+        dtype=object,
+    )
     jk_idx_str_set = set()
     if jk_blocking_func is None:
         is_apply_rand_sample_jk_idx_blocking_shift = False
-
+    #
     @q.timer
     def set_jk_idx():
         if is_apply_rand_sample_jk_idx_blocking_shift:
@@ -837,20 +888,19 @@ def mk_r_i_j_mat(
             for j in range(n):
                 jk_idx_str = jk_idx_str_arr[0, j]
                 b_arr[:, j] = count_dict[jk_idx_str]
-
+    #
     set_jk_idx()
     if is_use_old_rand_alg == "v1":
         assert not is_normalizing_rand_sample
         for i in range(n_rand_sample):
             rsi = rs.split(str(i))
-            r = [rsi.split(jk_idx_str).g_rand_gen()
-                 for jk_idx_str in jk_idx_str_arr[i]]
+            r = [rsi.split(jk_idx_str).g_rand_gen() for jk_idx_str in jk_idx_str_arr[i]]
             for j in range(n):
                 r_arr[i, j] = r[j]
         return r_arr, b_arr
-    assert is_use_old_rand_alg == False
+    assert not is_use_old_rand_alg
     r_arr_dict = dict()
-
+    #
     @q.timer
     def set_r():
         for jk_idx_str in jk_idx_str_set:
@@ -862,9 +912,9 @@ def mk_r_i_j_mat(
                 garr = garr * np.sqrt(n_rand_sample / garr_qnorm)
                 assert abs(qnorm(garr) / n_rand_sample - 1) < 1e-8
             r_arr_dict[jk_idx_str] = garr
-
+    #
     set_r()
-
+    #
     @q.timer
     def set_r_arr():
         if is_apply_rand_sample_jk_idx_blocking_shift:
@@ -878,7 +928,7 @@ def mk_r_i_j_mat(
                 jk_idx_str = jk_idx_str_arr[0, j]
                 garr = r_arr_dict[jk_idx_str]
                 r_arr[:, j] = garr
-
+    #
     set_r_arr()
     return r_arr, b_arr
 
@@ -936,11 +986,7 @@ def rjackknife(
     if avg is None:
         avg = average(data_arr)
     dtype = data_arr.dtype
-    jk_idx_list = [
-        jk_idx
-        for jk_idx, d in zip(jk_idx_list, data_list)
-        if d is not None
-    ]
+    jk_idx_list = [jk_idx for jk_idx, d in zip(jk_idx_list, data_list) if d is not None]
     n = len(data_arr)
     r_arr, b_arr = mk_r_i_j_mat(
         n_rand_sample,
@@ -959,7 +1005,13 @@ def rjackknife(
     pad_shape = (1,) * len(data_arr[0].shape)
     fac_r_arr = fac_r_arr.reshape(fac_r_arr.shape + pad_shape)
     data_diff = data_arr - avg
-    jk_arr = np.empty((1 + n_rand_sample, *data_arr[0].shape,), dtype=dtype)
+    jk_arr = np.empty(
+        (
+            1 + n_rand_sample,
+            *data_arr[0].shape,
+        ),
+        dtype=dtype,
+    )
     jk_arr[0] = avg
     jk_arr[1:] = avg + np.sum(fac_r_arr * data_diff, axis=1)
     return jk_arr
@@ -1148,7 +1200,9 @@ def set_jk_state(state):
     g_dict["eps"] = eps
     g_dict["n_rand_sample"] = n_rand_sample
     g_dict["is_normalizing_rand_sample"] = is_normalizing_rand_sample
-    g_dict["is_apply_rand_sample_jk_idx_blocking_shift"] = is_apply_rand_sample_jk_idx_blocking_shift
+    g_dict["is_apply_rand_sample_jk_idx_blocking_shift"] = (
+        is_apply_rand_sample_jk_idx_blocking_shift
+    )
     g_dict["is_hash_jk_idx"] = is_hash_jk_idx
     g_dict["jk_idx_hash_size"] = jk_idx_hash_size
     g_dict["is_use_old_rand_alg"] = is_use_old_rand_alg
@@ -1156,11 +1210,9 @@ def set_jk_state(state):
     g_dict["block_size_dict"] = block_size_dict
 
 
-jk_blocking_traj_shift_arr = (
-    q.RngState("jk_blocking_traj_shift_arr").rand_arr(16 * 1024)
-    %
-    (1024 * 1024 * 1024 * 1024)
-)
+jk_blocking_traj_shift_arr = q.RngState("jk_blocking_traj_shift_arr").rand_arr(
+    16 * 1024
+) % (1024 * 1024 * 1024 * 1024)
 
 
 @use_kwargs(default_g_jk_kwargs)
@@ -1189,9 +1241,9 @@ def jk_blocking_func_default(
         shift = 0
     else:
         assert i >= 1
-        shift = int(jk_blocking_traj_shift_arr[
-            (i - 1) % len(jk_blocking_traj_shift_arr)
-        ])
+        shift = int(
+            jk_blocking_traj_shift_arr[(i - 1) % len(jk_blocking_traj_shift_arr)]
+        )
     if block_size_dict is None:
         block_size_dict = dict()
     if all_jk_idx_set is not None:
@@ -1200,14 +1252,21 @@ def jk_blocking_func_default(
         traj = jk_idx
         b_shift = shift % block_size
         return (traj + b_shift) // block_size
-    elif isinstance(jk_idx, tuple) and len(jk_idx) == 2 and isinstance(jk_idx[1], int_types):
+    elif (
+        isinstance(jk_idx, tuple)
+        and len(jk_idx) == 2
+        and isinstance(jk_idx[1], int_types)
+    ):
         job_tag, traj = jk_idx
         assert isinstance(job_tag, str)
         assert isinstance(traj, int_types)
         block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
         assert isinstance(block_size_for_this_job_tag, int_types)
         b_shift = shift % block_size_for_this_job_tag
-        return (job_tag, (traj + b_shift) // block_size_for_this_job_tag,)
+        return (
+            job_tag,
+            (traj + b_shift) // block_size_for_this_job_tag,
+        )
     else:
         return jk_idx
     assert False
@@ -1370,7 +1429,12 @@ def g_jk_avg_err_arr(jk_arr, **kwargs):
     ``
     """
     avg, err = g_jk_avg_err(jk_arr, **kwargs)
-    avg_err_arr = np.stack([avg, err, ])
+    avg_err_arr = np.stack(
+        [
+            avg,
+            err,
+        ]
+    )
     avg_err_arr = np.moveaxis(avg_err_arr, 0, -1).copy()
     return avg_err_arr
 
@@ -1393,7 +1457,9 @@ def g_jk_size(
         if all_jk_idx is None:
             if get_all_jk_idx is None:
                 assert is_hash_jk_idx
-                all_jk_idx = ["avg", ] + list(range(jk_idx_hash_size))
+                all_jk_idx = [
+                    "avg",
+                ] + list(range(jk_idx_hash_size))
             else:
                 all_jk_idx = get_all_jk_idx()
         assert all_jk_idx[0] == "avg"
@@ -1409,7 +1475,8 @@ def g_jk_size(
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_blocking_func(
-    i, jk_idx,
+    i,
+    jk_idx,
     *,
     jk_blocking_func,
     **_kwargs,
@@ -1429,9 +1496,16 @@ def g_jk_sample_size(
     traj_list,
     **_kwargs,
 ):
-    jk_idx_list = [(job_tag, traj,) for traj in traj_list]
-    b_jk_idx_set = set(g_jk_blocking_func(0, jk_idx, **kwargs)
-                       for jk_idx in jk_idx_list)
+    jk_idx_list = [
+        (
+            job_tag,
+            traj,
+        )
+        for traj in traj_list
+    ]
+    b_jk_idx_set = set(
+        g_jk_blocking_func(0, jk_idx, **kwargs) for jk_idx in jk_idx_list
+    )
     return len(b_jk_idx_set)
 
 
@@ -1523,8 +1597,7 @@ def show_val(
         num_exp_digit = 5
     else:
         assert (num_exp_digit is False) or isinstance(num_exp_digit, int)
-    assert not ((num_float_digit is False)
-                and (num_exp_digit is False))
+    assert not ((num_float_digit is False) and (num_exp_digit is False))
     if num_exp_digit is False:
         assert isinstance(num_float_digit, int)
         assert num_float_digit >= 0
@@ -1625,13 +1698,14 @@ def show_val_err(
         num_exp_digit = max(0, e - e_e)
     else:
         assert (num_exp_digit is False) or isinstance(num_exp_digit, int)
-    assert not ((num_float_digit is False)
-                and (num_exp_digit is False))
+    assert not ((num_float_digit is False) and (num_exp_digit is False))
     if num_exp_digit is False:
         assert isinstance(num_float_digit, int)
         assert num_float_digit >= 0
         if abs(err) >= 1.0:
-            return (f"{{0:.{num_float_digit}f}}({{1:.{num_float_digit}f}})").format(val, err)
+            return (f"{{0:.{num_float_digit}f}}({{1:.{num_float_digit}f}})").format(
+                val, err
+            )
         else:
             e_e = -num_float_digit
             e_v = err / 10**e_e
@@ -1642,8 +1716,7 @@ def show_val_err(
         e_e = e
         e_v = err / 10**e_e
         if abs(e_v) >= 1.0:
-            v_str = (f"{{0:.{num_exp_digit}f}}({{1:.{num_exp_digit}f}})").format(
-                v, e_v)
+            v_str = (f"{{0:.{num_exp_digit}f}}({{1:.{num_exp_digit}f}})").format(v, e_v)
         else:
             e_e = e - num_exp_digit
             e_v = err / 10**e_e
@@ -1653,11 +1726,11 @@ def show_val_err(
         else:
             return f"{v_str}E{e}"
 
+
 # ----
 
 
 class NewDictValues:
-
     """
     Example:
     #
@@ -1685,11 +1758,11 @@ class NewDictValues:
         self.new_kwargs = None
         self.original = None
 
+
 # ----
 
 
 class JkKwargs(NewDictValues):
-
     """
     Example:
     #
@@ -1701,11 +1774,11 @@ class JkKwargs(NewDictValues):
     def __init__(self, **kwargs):
         super().__init__(default_g_jk_kwargs, **kwargs)
 
+
 # ----
 
 
 class ShowKwargs(NewDictValues):
-
     """
     Example:
     #
@@ -1717,14 +1790,18 @@ class ShowKwargs(NewDictValues):
     def __init__(self, **kwargs):
         super().__init__(default_show_val_kwargs, **kwargs)
 
+
 # ----
 
 # ---- old funcs
 
+
 def merge_jk_idx(*jk_idx_list_list):
     for jk_idx_list in jk_idx_list_list:
         assert jk_idx_list[0] == "avg"
-    return ["avg", ] + [jk_idx for jk_idx_list in jk_idx_list_list for jk_idx in jk_idx_list[1:]]
+    return [
+        "avg",
+    ] + [jk_idx for jk_idx_list in jk_idx_list_list for jk_idx in jk_idx_list[1:]]
 
 
 @q.timer
@@ -1799,7 +1876,9 @@ def rjk_jk_list(
     is_np_arr = isinstance(jk_list, np.ndarray)
     n = len(jk_list) - 1
     r_arr, b_arr = mk_r_i_j_mat(
-        n_rand_sample, jk_idx_list[1:], rng_state,
+        n_rand_sample,
+        jk_idx_list[1:],
+        rng_state,
         jk_blocking_func=jk_blocking_func,
         is_normalizing_rand_sample=is_normalizing_rand_sample,
         is_apply_rand_sample_jk_idx_blocking_shift=is_apply_rand_sample_jk_idx_blocking_shift,
@@ -1809,19 +1888,25 @@ def rjk_jk_list(
     if is_np_arr:
         jk_arr = jk_list
         jk_diff = jk_arr[1:] - avg
-        rjk_arr = np.empty((1 + n_rand_sample, *avg.shape,),
-                           dtype=jk_arr.dtype)
+        rjk_arr = np.empty(
+            (
+                1 + n_rand_sample,
+                *avg.shape,
+            ),
+            dtype=jk_arr.dtype,
+        )
         rjk_arr[:] = avg
         for j in range(n):
             for i in range(n_rand_sample):
                 rjk_arr[i + 1] += r_arr[i, j] * jk_diff[j]
         return rjk_arr
     else:
-        rjk_list = [avg, ]
+        rjk_list = [
+            avg,
+        ]
         jk_diff = [jk_list[j] - avg for j in range(1, n + 1)]
         for i in range(n_rand_sample):
-            rjk_list.append(
-                avg + sum([r_arr[i, j] * jk_diff[j] for j in range(n)]))
+            rjk_list.append(avg + sum([r_arr[i, j] * jk_diff[j] for j in range(n)]))
         return rjk_list
 
 
@@ -1839,7 +1924,9 @@ def g_jk(data_list, *, eps, **_kwargs):
 @use_kwargs(default_g_jk_kwargs)
 @q.timer
 def g_rejk(
-    jk_list, jk_idx_list, *,
+    jk_list,
+    jk_idx_list,
+    *,
     jk_type,
     all_jk_idx,
     get_all_jk_idx,
@@ -1867,7 +1954,8 @@ def g_rejk(
     if jk_type == "super":
         if jk_blocking_func is not None:
             q.displayln_info(
-                f"g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}")
+                f"g_rejk: jk_type={jk_type} does not support jk_blocking_func={jk_blocking_func}"
+            )
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
@@ -1909,24 +1997,30 @@ def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None)
     """
     if block_size_dict is None:
         block_size_dict = dict()
-
+    #
     def jk_blocking_func(jk_idx):
         if all_jk_idx_set is not None:
             all_jk_idx_set.add(jk_idx)
         if isinstance(jk_idx, int_types):
             traj = jk_idx
             return traj // block_size
-        elif isinstance(jk_idx, tuple) and len(jk_idx) == 2 and isinstance(jk_idx[1], int_types):
+        elif (
+            isinstance(jk_idx, tuple)
+            and len(jk_idx) == 2
+            and isinstance(jk_idx[1], int_types)
+        ):
             job_tag, traj = jk_idx
             assert isinstance(job_tag, str)
             assert isinstance(traj, int_types)
-            block_size_for_this_job_tag = block_size_dict.get(
-                job_tag, block_size)
+            block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
             assert isinstance(block_size_for_this_job_tag, int_types)
-            return (job_tag, traj // block_size_for_this_job_tag,)
+            return (
+                job_tag,
+                traj // block_size_for_this_job_tag,
+            )
         else:
             return jk_idx
-
+    #
     return jk_blocking_func
 
 
@@ -1940,7 +2034,9 @@ def interpolate(data_arr, i_arr):
     if isinstance(i_arr, real_types):
         return interpolate_list(vt, i_arr).transpose()
     else:
-        return np.array([interpolate_list(vt, i) for i in i_arr], data_arr.dtype).transpose()
+        return np.array(
+            [interpolate_list(vt, i) for i in i_arr], data_arr.dtype
+        ).transpose()
 
 
 def add_jk_idx(arr):
@@ -1960,7 +2056,9 @@ def jk_transpose(arr):
     ndim = len(shape)
     if ndim <= 1:
         return arr
-    axes = list(range(1, ndim)) + [0, ]
+    axes = list(range(1, ndim)) + [
+        0,
+    ]
     return arr.transpose(axes)
 
 
@@ -1972,5 +2070,7 @@ def jk_transpose_back(arr):
     ndim = len(shape)
     if ndim <= 1:
         return arr
-    axes = [ndim - 1, ] + list(range(0, ndim - 1))
+    axes = [
+        ndim - 1,
+    ] + list(range(0, ndim - 1))
     return arr.transpose(axes)

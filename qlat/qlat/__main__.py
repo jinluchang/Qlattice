@@ -24,29 +24,29 @@ action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
 if action == "qlat-config":
-    import qlat_config.__main__
+    import qlat_config.__main__ # noqa
 elif action == "eigen-system-checksum":
-    from .scripts import eigen_system_checksum
+    from .scripts import eigen_system_checksum as eigen_system_checksum
 elif action == "eigen-system-repartition":
-    from .scripts import eigen_system_repartition
+    from .scripts import eigen_system_repartition as eigen_system_repartition
 elif action == "fields-checksum":
-    from .scripts import fields_checksum
+    from .scripts import fields_checksum as fields_checksum
 elif action == "fields-list":
-    from .scripts import fields_list
+    from .scripts import fields_list as fields_list
 elif action == "fields-build-index":
-    from .scripts import fields_build_index
+    from .scripts import fields_build_index as fields_build_index
 elif action == "fields-rewrite":
-    from .scripts import fields_rewrite
+    from .scripts import fields_rewrite as fields_rewrite
 elif action == "fields-properly-truncate":
-    from .scripts import fields_properly_truncate
+    from .scripts import fields_properly_truncate as fields_properly_truncate
 elif action == "gauge-fix-coulomb":
-    from .scripts import gauge_fix_coulomb
+    from .scripts import gauge_fix_coulomb as gauge_fix_coulomb
 elif action == "topo-measure":
-    from .scripts import topo_measure
+    from .scripts import topo_measure as topo_measure
 elif action == "topo-measure-wilson-flow":
-    from .scripts import topo_measure_wilson_flow
+    from .scripts import topo_measure_wilson_flow as topo_measure_wilson_flow
 elif action == "topo-measure-gpt":
-    from .scripts import topo_measure_gpt
+    from .scripts import topo_measure_gpt as topo_measure_gpt
 else:
     print(usage_message)
     exit()

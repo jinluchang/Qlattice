@@ -2,28 +2,31 @@ from .cache import *
 from .rng_state import *
 from .utils import *
 
-import sys
-import os
 import multiprocessing as mp
 import gc
 
 pool_function = None
 
+
 def call_pool_function(*args, **kwargs):
     assert pool_function is not None
     return pool_function(*args, **kwargs)
+
 
 @timer
 def gc_collect():
     gc.collect()
 
+
 @timer
 def gc_freeze():
     gc.freeze()
 
+
 @timer
 def gc_unfreeze():
     gc.unfreeze()
+
 
 def process_initialization():
     set_verbose_level(-2)
@@ -34,7 +37,9 @@ def process_initialization():
     # gc_freeze()
     # clear_all_caches()
 
+
 q_num_mp_processes = None
+
 
 def get_q_num_mp_processes():
     global q_num_mp_processes
@@ -45,11 +50,14 @@ def get_q_num_mp_processes():
     q_num_mp_processes = v
     return v
 
+
 def set_q_num_mp_processes(v):
     global q_num_mp_processes
     q_num_mp_processes = v
 
+
 q_verbose_parallel_map = None
+
 
 def get_q_verbose_parallel_map():
     global q_verbose_parallel_map
@@ -60,17 +68,22 @@ def get_q_verbose_parallel_map():
     q_verbose_parallel_map = v
     return v
 
+
 def set_q_verbose_parallel_map(v):
     global q_verbose_parallel_map
     q_verbose_parallel_map = v
 
+
 @timer
-def parallel_map(func, iterable,
-        *,
-        n_proc=None,
-        chunksize=1,
-        process_initialization=process_initialization,
-        verbose=None):
+def parallel_map(
+    func,
+    iterable,
+    *,
+    n_proc=None,
+    chunksize=1,
+    process_initialization=process_initialization,
+    verbose=None,
+):
     """
     iterable = [ i1, i2, ... ]
     v1 = func(i1)
@@ -128,15 +141,19 @@ def parallel_map(func, iterable,
         pool_function = None
     return ret
 
+
 @timer
-def parallel_map_sum(func, iterable,
-        *,
-        n_proc=None,
-        sum_function=None,
-        sum_start=None,
-        chunksize=1,
-        process_initialization=process_initialization,
-        verbose=None):
+def parallel_map_sum(
+    func,
+    iterable,
+    *,
+    n_proc=None,
+    sum_function=None,
+    sum_start=None,
+    chunksize=1,
+    process_initialization=process_initialization,
+    verbose=None,
+):
     """
     iterable = [ i1, i2, ... ]
     v1 = func(i1)
@@ -192,7 +209,8 @@ def parallel_map_sum(func, iterable,
         pool_function = None
     return ret
 
-def sum_list(res, start = None):
+
+def sum_list(res, start=None):
     """
     res = [ [ va1, vb1, ... ], [ va2, vb2, ... ], ... ]
     return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
@@ -209,6 +227,7 @@ def sum_list(res, start = None):
             ret[i] += v
     return ret
 
+
 @timer
 def trace_iter(iterable, *, tag=None, step_size=None, max_idx=None, verbose_level=0):
     fname = get_fname()
@@ -222,5 +241,5 @@ def trace_iter(iterable, *, tag=None, step_size=None, max_idx=None, verbose_leve
         max_idx_str = f"/{max_idx}"
     for idx, v in enumerate(iterable):
         if (idx % step_size == 0) or (idx + 1 == max_idx):
-            displayln_info(verbose_level, f"{tag}: idx={idx+1}{max_idx_str}")
+            displayln_info(verbose_level, f"{tag}: idx={idx + 1}{max_idx_str}")
         yield v

@@ -39,6 +39,6 @@ from .instanton_map import *
 
 from .flow_scale import *
 
-from . import field_double
+from . import field_double as field_double
 
 set_verbose_level()

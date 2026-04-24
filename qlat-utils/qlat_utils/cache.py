@@ -1,8 +1,8 @@
 from .timer import *
 from . import c
 
-class Cache(dict):
 
+class Cache(dict):
     """
     Attributes:
         cache_keys: The keys for this cache.\n
@@ -18,9 +18,11 @@ class Cache(dict):
         super().__init__()
         self.cache_keys = keys
 
+
 ###
 
 cache = Cache()
+
 
 @timer
 def list_cache(ca=cache):
@@ -30,11 +32,13 @@ def list_cache(ca=cache):
             l[key] = list_cache(val)
     return l
 
+
 def show_cache_keys(keys):
     if not keys:
         return ""
     else:
         return "['" + "']['".join(keys) + "']"
+
 
 @timer
 def clean_cache(ca=cache):
@@ -51,6 +55,7 @@ def clean_cache(ca=cache):
             # displayln_info(1, f"clean_cache: cache{info_str}['{key}']")
             ca.pop(key)
 
+
 def mk_cache(*keys, ca=cache):
     """
     make cache if it does not exist, otherwise return existing elements
@@ -64,6 +69,7 @@ def mk_cache(*keys, ca=cache):
             ca[key] = Cache(*ca.cache_keys, key)
             ca = ca[key]
     return ca
+
 
 @timer
 def rm_cache(*keys, ca=cache):
@@ -81,6 +87,7 @@ def rm_cache(*keys, ca=cache):
         return
     assert isinstance(ca[key], Cache)
     ca.pop(key)
+
 
 @timer
 def clear_all_caches():
