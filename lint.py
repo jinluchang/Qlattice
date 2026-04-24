@@ -9,7 +9,8 @@ Design goals:
 - Preserve the indentation of the surrounding context for each replaced empty line.
 - Leave empty lines outside function bodies untouched (module level, between functions).
 - Remove empty lines inside multi-line string literals (e.g., docstrings) while preserving content by appending "\\n" to the preceding line.
-- Handle nested functions correctly by scoping replacements to each function's body.\n
+- Handle nested functions correctly by scoping replacements to each function's body.
+- Support both .py and .pyx (Cython) files.\n
 Usage:
     python lint.py <file_or_directory> [--check] [--diff]\n
 Options:
@@ -26,6 +27,7 @@ import tokenize
 import io
 import subprocess
 import tempfile
+import re
 
 
 def get_function_body_lines(source_lines):
@@ -47,6 +49,46 @@ def get_function_body_lines(source_lines):
                 for line_no in range(start, end + 1):
                     body_lines.add(line_no)
     #
+    return body_lines
+
+
+def get_function_body_lines_cython(source_lines):
+    """Return set of line numbers that are inside a function/method body for Cython files.\n
+    Uses regex-based detection since ast.parse cannot handle .pyx syntax.\n
+    Args:
+        source_lines (list[str]): Source code lines.\n
+    Returns:
+        set[int]: 1-indexed line numbers inside function bodies.
+    """
+    body_lines = set()
+    func_pattern = re.compile(
+        r"^(\s*)(def|cdef|cpdef)\s+(?!class\b)(?:\w+\s+)*\w+\s*\("
+    )
+    i = 0
+    while i < len(source_lines):
+        m = func_pattern.match(source_lines[i])
+        if m:
+            base_indent = len(m.group(1))
+            j = i + 1
+            while j < len(source_lines) and source_lines[j].strip() == "":
+                j += 1
+            if j < len(source_lines):
+                body_indent = len(get_indent(source_lines[j]))
+                if body_indent > base_indent:
+                    body_start = j
+                    body_end = j
+                    for k in range(j + 1, len(source_lines)):
+                        line = source_lines[k]
+                        if line.strip() == "":
+                            continue
+                        curr_indent = len(get_indent(line))
+                        if curr_indent > base_indent:
+                            body_end = k
+                        else:
+                            break
+                    for ln in range(body_start, body_end + 1):
+                        body_lines.add(ln + 1)
+        i += 1
     return body_lines
 
 
@@ -78,15 +120,19 @@ def get_string_lines(source):
     return string_lines
 
 
-def transform_file(source):
+def transform_file(source, is_cython=False):
     """Replace empty lines inside function bodies with properly indented '#' comment lines.\n
     Args:
-        source (str): Python source code.\n
+        source (str): Python source code.
+        is_cython (bool): If True, use regex-based function detection for .pyx files.\n
     Returns:
         str: Transformed source code.
     """
     lines = source.splitlines(keepends=True)
-    body_lines = get_function_body_lines(lines)
+    if is_cython:
+        body_lines = get_function_body_lines_cython(lines)
+    else:
+        body_lines = get_function_body_lines(lines)
     try:
         string_lines = get_string_lines(source)
     except tokenize.TokenError:
@@ -175,19 +221,23 @@ def run_ruff(source):
 
 
 def process_file(filepath, check=False, diff=False):
-    """Process a single Python file.\n
+    """Process a single Python or Cython file.\n
     Args:
-        filepath (str): Path to the Python file.
+        filepath (str): Path to the file.
         check (bool): If True, only check if changes are needed.
         diff (bool): If True, show diff of changes.\n
     Returns:
         bool: True if file was changed (or would be changed in check mode).
     """
+    is_cython = filepath.endswith(".pyx")
     with open(filepath, "r") as f:
         original = f.read()
     #
-    ruffed = run_ruff(original)
-    transformed = transform_file(ruffed)
+    if is_cython:
+        transformed = transform_file(original, is_cython=True)
+    else:
+        ruffed = run_ruff(original)
+        transformed = transform_file(ruffed)
     #
     if original == transformed:
         return False
@@ -208,20 +258,20 @@ def process_file(filepath, check=False, diff=False):
     return True
 
 
-def find_python_files(path):
-    """Find all Python files at path (file or directory).\n
+def find_source_files(path):
+    """Find all Python and Cython files at path (file or directory).\n
     Args:
         path (str): File or directory path.\n
     Returns:
-        list[str]: List of Python file paths.
+        list[str]: List of source file paths.
     """
-    if os.path.isfile(path) and path.endswith(".py"):
+    if os.path.isfile(path) and (path.endswith(".py") or path.endswith(".pyx")):
         return [path]
     if os.path.isdir(path):
         files = []
         for root, _, filenames in os.walk(path):
             for fn in sorted(filenames):
-                if fn.endswith(".py"):
+                if fn.endswith(".py") or fn.endswith(".pyx"):
                     files.append(os.path.join(root, fn))
         return files
     return []
@@ -250,7 +300,7 @@ def main():
     #
     changed_files = []
     for path in args.paths:
-        for filepath in find_python_files(path):
+        for filepath in find_source_files(path):
             changed = process_file(filepath, check=args.check, diff=args.diff)
             if changed:
                 changed_files.append(filepath)
