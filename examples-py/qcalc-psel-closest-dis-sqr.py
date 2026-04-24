@@ -60,12 +60,8 @@ def gen_test_data():
         get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
         get_psel = run_psel_from_psel_prob(get_psel_prob)
         num_piece = 16
-        run_psel_split(
-            job_tag, traj, get_psel=get_psel, num_piece=num_piece
-        )
-        run_fsel_split(
-            job_tag, traj, get_fsel=get_fsel, num_piece=num_piece
-        )
+        run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=num_piece)
+        run_fsel_split(job_tag, traj, get_fsel=get_fsel, num_piece=num_piece)
         path_psel_list = (
             f"{job_tag}/points-selection-split/traj-{traj}/num-piece-{num_piece}"
         )

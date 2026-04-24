@@ -282,8 +282,7 @@ def get_cexpr_meson_jj_xx():
             ]
         )
         exprs = [
-            jj_op * mk_pi_0("t_1", True) * mk_pi_0("t_2")
-            + "x[a] x[b] pi0 j_a j_b pi0",
+            jj_op * mk_pi_0("t_1", True) * mk_pi_0("t_2") + "x[a] x[b] pi0 j_a j_b pi0",
             mk_sym(1)
             / 2
             * jj_op

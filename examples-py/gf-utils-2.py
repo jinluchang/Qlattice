@@ -239,9 +239,7 @@ s_prop @= prop
 q.json_results_append("s_prop", q.get_data_sig_arr(s_prop, q.RngState(), 3), 1e-8)
 
 s_prop_gt = gt * s_prop
-q.json_results_append(
-    "s_prop_gt", q.get_data_sig_arr(s_prop_gt, q.RngState(), 3), 1e-8
-)
+q.json_results_append("s_prop_gt", q.get_data_sig_arr(s_prop_gt, q.RngState(), 3), 1e-8)
 
 s_prop_gt.set_zero()
 s_prop_gt @= prop_gt

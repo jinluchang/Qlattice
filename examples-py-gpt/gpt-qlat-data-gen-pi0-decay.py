@@ -59,8 +59,7 @@ def get_cexpr_meson_corr(is_both_prop=True):
         ]
         exprs_corr_list += [
             mk_a0_p("x_2", True) * mk_a0_p("x_1") + "a0+^dag(0) * a0+(-tsep)",
-            mk_jk_mu("x_2", 3, True) * mk_jk_mu("x_1", 3)
-            + "jk_t^dag(0) * jk_t(-tsep)",
+            mk_jk_mu("x_2", 3, True) * mk_jk_mu("x_1", 3) + "jk_t^dag(0) * jk_t(-tsep)",
             sum([mk_jk_mu("x_2", mu, True) * mk_jk_mu("x_1", mu) for mu in range(3)])
             + "jk_i^dag(0) * jk_i(-tsep)",
             sum(
@@ -1540,9 +1539,7 @@ def auto_contract_pi0_jjp(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
         r_sq_arr = q.sqr(x_rel_arr[:, :3]).sum(-1)
         xg_1_xg_t_arr = q.rel_mod_arr(xg_1_t_arr - xg_w_t_arr, t_size_arr)
         xg_2_xg_t_arr = q.rel_mod_arr(xg_2_t_arr - xg_w_t_arr, t_size_arr)
-        xg_1_t_arr + 0.5 * q.rel_mod_arr(
-            xg_2_t_arr - xg_1_t_arr, t_size_arr
-        )
+        xg_1_t_arr + 0.5 * q.rel_mod_arr(xg_2_t_arr - xg_1_t_arr, t_size_arr)
         weight_arr = weight_base * get_weight(idx_w, idx_1, idx_2_arr)
         weight_arr[np.abs(xg_2_xg_t_arr - xg_1_xg_t_arr) >= t_size_arr // 2] = 0.0
         results = []
@@ -1808,9 +1805,7 @@ def run_job_inversion(job_tag, traj):
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     run_psel_from_psel_prob(get_psel_prob_median)
     #
-    run_psel_split(
-        job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece
-    )
+    run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece)
     run_fsel_split(
         job_tag, traj, get_fsel=get_fsel, num_piece=fsel_psel_split_num_piece
     )

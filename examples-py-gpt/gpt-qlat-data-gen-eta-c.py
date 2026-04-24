@@ -81,8 +81,7 @@ def get_cexpr_eta_c_corr():
         exprs = [
             mk_fac(1) + "1",
             mk_eta_c("x_2", True) * mk_eta_c("x_1") + "eta_c^dag(0) * eta_c(-tsep)",
-            mk_j5_eta_c_mu("x_2", 3) * mk_eta_c("x_1")
-            + "j5_eta_c_t(0) * eta_c(-tsep)",
+            mk_j5_eta_c_mu("x_2", 3) * mk_eta_c("x_1") + "j5_eta_c_t(0) * eta_c(-tsep)",
             mk_eta_c("x_2", True) * mk_j5_eta_c_mu("x_1", 3, True)
             + "eta_c^dag(0) * j5_eta_c_t^dag(-tsep)",
             mk_j5_eta_c_mu("x_2", 3) * mk_j5_eta_c_mu("x_1", 3, True)

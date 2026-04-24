@@ -2856,12 +2856,8 @@ def run_job_inversion(job_tag, traj):
     run_with_eig_strange()
     run_charm()
     #
-    run_hvp_average(
-        job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob
-    )
-    run_hvp_average(
-        job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob
-    )
+    run_hvp_average(job_tag, traj, inv_type=0, get_psel_prob=get_psel_prob)
+    run_hvp_average(job_tag, traj, inv_type=1, get_psel_prob=get_psel_prob)
     #
     q.sync_node()
     q.displayln_info(f"{fname}: run_ret_list={run_ret_list}")

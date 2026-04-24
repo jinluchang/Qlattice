@@ -3054,9 +3054,7 @@ def run_job_inversion(job_tag, traj):
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     run_psel_from_psel_prob(get_psel_prob_median)
     #
-    run_psel_split(
-        job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece
-    )
+    run_psel_split(job_tag, traj, get_psel=get_psel, num_piece=psel_split_num_piece)
     run_fsel_split(
         job_tag, traj, get_fsel=get_fsel, num_piece=fsel_psel_split_num_piece
     )

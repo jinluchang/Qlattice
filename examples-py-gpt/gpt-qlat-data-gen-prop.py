@@ -265,8 +265,10 @@ def run_prop_psrc_ref(
     if get_eig is None:
         if inv_type == 0:
             return
+        #
         def get_eig():
             return None
+    #
     quark_flavor_list = get_param(job_tag, "quark_flavor_list")
     quark_flavor = quark_flavor_list[inv_type]
     if (
