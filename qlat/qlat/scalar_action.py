@@ -2,8 +2,8 @@ from qlat_utils import *
 from .c import *
 from . import c
 
-class ScalarAction:
 
+class ScalarAction:
     def __init__(self, m_sq, lmbd, alpha):
         self.cdata = c.mk_scalar_action(m_sq, lmbd, alpha)
 
@@ -84,7 +84,9 @@ class ScalarAction:
         assert isinstance(field_ft, FieldBase)
         assert isinstance(momentum_ft, FieldBase)
         assert isinstance(masses, FieldBase)
-        return c.hmc_predict_field_scalar_action(self, field_ft, momentum_ft, masses, vev_sigma)
+        return c.hmc_predict_field_scalar_action(
+            self, field_ft, momentum_ft, masses, vev_sigma
+        )
 
     def get_polar_field(self, polar_field, field):
         assert isinstance(polar_field, FieldBase)

@@ -2156,14 +2156,12 @@ class BS(Op):
             i_list.append(i)
             s_chain_list.append(ch)
         #
-        #
         def permute_ss(ss):
             pss = []
             for i in i_list:
                 pss.append(ss[2 * i])
                 pss.append(ss[2 * i + 1])
             return tuple(pss)
-        #
         #
         s_elem_list = []
         for elem in self.elem_list:
@@ -3435,7 +3433,6 @@ def mk_test_expr_wick_06():
     #
     from operators import mk_j_mu
     #
-    #
     mu = 2
     fac = mk_fac(f"rel_mod_sym(x1[1][{mu}] - x1p[1][{mu}], size[{mu}])")
     #
@@ -3490,7 +3487,6 @@ def mk_test_expr_wick_07():
     bf_b = Bfield("std3-u3", s1, s2, s3, c1, c2, c3)
     #
     from operators import mk_j_mu
-    #
     #
     expr = (
         mk_j_mu("xx_1", 3)

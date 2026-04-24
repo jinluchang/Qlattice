@@ -7,6 +7,7 @@ Flexible gauge fixed HMC
 import sys
 import math
 import numpy as np
+from pprint import pformat
 
 import qlat as q
 
@@ -18,7 +19,6 @@ from qlat_scripts.v1 import (
     get_load_path,
     get_save_path,
     run_params,
-    pformat,
 )
 
 load_path_list[:] = [

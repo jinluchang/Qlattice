@@ -383,10 +383,8 @@ def combine_terms_expr(expr: Expr) -> Expr:
     if not expr.terms:
         return expr
     #
-    #
     def get_sig(t):
         return f"{t.factors}"
-    #
     #
     zero_term = Term([], 0)
     zero_term_sig = get_sig(zero_term)

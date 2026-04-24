@@ -1,25 +1,77 @@
+__all__ = [
+    "save_path_default",
+    "load_path_list",
+    "get_save_path",
+    "get_load_path",
+    "check_job",
+    "run_params",
+    "mk_gf_fn_list",
+    "run_gf",
+    "run_gt",
+    "mk_rand_wall_src_info_n_exact",
+    "mk_rand_wall_src_info_prob",
+    "get_prob_exact_wsrc",
+    "mk_rand_wall_src_info",
+    "save_wall_src_info",
+    "load_wall_src_info",
+    "run_wi",
+    "get_n_points_psel",
+    "mk_rand_psel",
+    "run_psel",
+    "get_n_points_pi",
+    "mk_rand_point_src_info",
+    "save_point_src_info",
+    "load_point_src_info",
+    "run_pi",
+    "load_point_distribution",
+    "classify_rel_coordinate",
+    "get_point_xrel_prob",
+    "mk_rand_fsel",
+    "run_fsel",
+    "mk_fselc",
+    "run_fselc",
+    "mk_rand_fsel_smear",
+    "run_psel_smear",
+    "run_psel_smear_median",
+    "run_gf_ape",
+    "run_gf_hyp",
+    "compute_eig",
+    "test_eig",
+    "run_eig",
+    "run_eig_strange",
+    "get_r_list",
+    "get_r_sq_interp_idx_coef_list",
+    "run_r_list",
+    "set_param",
+    "get_param",
+    "get_job_seed",
+    "is_test",
+]
+
 import qlat as q
 from . import rbc_ukqcd_params as rup
 from .rbc_ukqcd_params import (
-        set_param,
-        get_param,
-        get_job_seed,
-        )
+    set_param,
+    get_param,
+    get_job_seed,
+)
 
 from qlat import is_test
 
 import numpy as np
 
 import functools
-import os
-from pprint import pformat
 
 save_path_default = "results"
 
-load_path_list = [ "results", ]
+load_path_list = [
+    "results",
+]
+
 
 def get_save_path(fn):
     return f"{save_path_default}/{fn}"
+
 
 def get_load_path(*fns):
     def get(fn):
@@ -36,9 +88,12 @@ def get_load_path(*fns):
                 if q.does_file_exist_qar_sync_node(p):
                     return p
         return None
+    #
     return get(fns)
 
+
 # ----------
+
 
 @q.timer_verbose
 def check_job(job_tag, traj, fns_produce, fns_need):
@@ -48,7 +103,9 @@ def check_job(job_tag, traj, fns_produce, fns_need):
     is_job_done = True
     for fn in fns_produce:
         if get_load_path(fn) is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as '{fn}' does not exist.")
+            q.displayln_info(
+                f"check_job: {job_tag} {traj} to do as '{fn}' does not exist."
+            )
             is_job_done = False
             break
     if is_job_done:
@@ -57,7 +114,9 @@ def check_job(job_tag, traj, fns_produce, fns_need):
     is_job_avail = True
     for fn in fns_need:
         if get_load_path(fn) is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as '{fn}' does not exist.")
+            q.displayln_info(
+                f"check_job: {job_tag} {traj} unavailable as '{fn}' does not exist."
+            )
             is_job_avail = False
             break
     if not is_job_avail:
@@ -70,7 +129,9 @@ def check_job(job_tag, traj, fns_produce, fns_need):
     #
     return True
 
+
 # ----------
+
 
 @q.timer_verbose
 def run_params(job_tag):
@@ -84,9 +145,11 @@ def run_params(job_tag):
     fn_prefix = f"{path_dir}/version-"
     fn_suffix = ".json"
     fn_suffix2 = ".pickle"
+    #
     def mk_fn(version):
         path = f"{fn_prefix}{version:010}{fn_suffix}"
         return path
+    #
     fn_list = q.qls_sync_node(path_dir)
     assert isinstance(fn_list, list)
     if len(fn_list) == 0:
@@ -124,35 +187,38 @@ def run_params(job_tag):
     q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
     q.save_json_obj(get_param(job_tag), fn, indent=2, is_sync_node=True)
 
+
 # ----------
+
 
 def mk_gf_fn_list(job_tag, traj):
     stream_skip = 1000000
     fn_list = [
-            f"{job_tag}/configs/ckpoint_lat.{traj}",
-            f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",
-            ]
+        f"{job_tag}/configs/ckpoint_lat.{traj}",
+        f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",
+    ]
     if traj >= stream_skip:
         fn_list += [
-                f"{job_tag}/configs-b/ckpoint_lat.{traj - stream_skip}",
-                f"{job_tag}/configs-b/ckpoint_lat.IEEE64BIG.{traj - stream_skip}",
-                ]
+            f"{job_tag}/configs-b/ckpoint_lat.{traj - stream_skip}",
+            f"{job_tag}/configs-b/ckpoint_lat.IEEE64BIG.{traj - stream_skip}",
+        ]
     if traj >= 2 * stream_skip:
         fn_list += [
-                f"{job_tag}/configs-c/ckpoint_lat.{traj - 2 * stream_skip}",
-                f"{job_tag}/configs-c/ckpoint_lat.IEEE64BIG.{traj - 2 * stream_skip}",
-                ]
+            f"{job_tag}/configs-c/ckpoint_lat.{traj - 2 * stream_skip}",
+            f"{job_tag}/configs-c/ckpoint_lat.IEEE64BIG.{traj - 2 * stream_skip}",
+        ]
     if traj >= 3 * stream_skip:
         fn_list += [
-                f"{job_tag}/configs-d/ckpoint_lat.{traj - 3 * stream_skip}",
-                f"{job_tag}/configs-d/ckpoint_lat.IEEE64BIG.{traj - 3 * stream_skip}",
-                ]
+            f"{job_tag}/configs-d/ckpoint_lat.{traj - 3 * stream_skip}",
+            f"{job_tag}/configs-d/ckpoint_lat.IEEE64BIG.{traj - 3 * stream_skip}",
+        ]
     if traj >= 4 * stream_skip:
         fn_list += [
-                f"{job_tag}/configs-e/ckpoint_lat.{traj - 4 * stream_skip}",
-                f"{job_tag}/configs-e/ckpoint_lat.IEEE64BIG.{traj - 4 * stream_skip}",
-                ]
+            f"{job_tag}/configs-e/ckpoint_lat.{traj - 4 * stream_skip}",
+            f"{job_tag}/configs-e/ckpoint_lat.IEEE64BIG.{traj - 4 * stream_skip}",
+        ]
     return fn_list
+
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
@@ -161,7 +227,7 @@ def run_gf(job_tag, traj):
         if job_tag[:5] == "test-":
             if not q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_field"):
                 return None
-            total_site = q.Coordinate(get_param(job_tag, "total_site"))
+            q.Coordinate(get_param(job_tag, "total_site"))
             gf = rup.mk_sample_gauge_field_v3(job_tag, f"{traj}")
             path_gf = get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
             gf.save(path_gf)
@@ -171,22 +237,27 @@ def run_gf(job_tag, traj):
     get_gf = rup.load_config_lazy(job_tag, path_gf)
     return get_gf
 
+
 @q.timer_verbose
 def run_gt(job_tag, traj, get_gf):
     tfn = f"{job_tag}/gauge-transform/traj-{traj}.field"
     path_gt = get_load_path(tfn)
     if path_gt is None:
-        if None in [ get_gf, ]:
+        if None in [
+            get_gf,
+        ]:
             return None
         elif q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
             gf = get_gf()
             import qlat_gpt as qg
+            #
             gt = qg.gauge_fix_coulomb(gf)
             gt.save_cps(get_save_path(f"{job_tag}/gauge-transform/traj-{traj}.gfix"))
             gt.save_double(get_save_path(tfn))
             q.release_lock()
         else:
             return None
+    #
     @q.lazy_call
     @q.timer_verbose
     def load_gt():
@@ -199,10 +270,13 @@ def run_gt(job_tag, traj, get_gf):
         # qg.check_gauge_fix_coulomb(get_gf(), gt)
         #
         return gt
+    #
     get_gt = load_gt
     return get_gt
 
+
 # ----------
+
 
 @q.timer
 def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
@@ -214,19 +288,37 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
     inv_acc_e = 2
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
-    mask = [ False, ] * t_size
+    wi_s = [
+        [
+            t,
+            inv_type,
+            inv_acc_s,
+        ]
+        for t in range(t_size)
+    ]
+    mask = [
+        False,
+    ] * t_size
     for i in range(n_exact):
         t_e = rs.rand_gen() % t_size
         mask[t_e] = True
     wi_e = []
     for t in range(t_size):
         if mask[t]:
-            wi_e.append([ t, inv_type, inv_acc_e, ])
+            wi_e.append(
+                [
+                    t,
+                    inv_type,
+                    inv_acc_e,
+                ]
+            )
     wi = wi_e + wi_s
     for i in range(len(wi)):
-        wi[i] = [ i, ] + wi[i]
+        wi[i] = [
+            i,
+        ] + wi[i]
     return wi
+
 
 @q.timer
 def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
@@ -238,15 +330,31 @@ def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
     inv_acc_e = 2
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
+    wi_s = [
+        [
+            t,
+            inv_type,
+            inv_acc_s,
+        ]
+        for t in range(t_size)
+    ]
     wi_e = []
     for t in range(t_size):
         if rs.u_rand_gen() < prob:
-            wi_e.append([ t, inv_type, inv_acc_e, ])
+            wi_e.append(
+                [
+                    t,
+                    inv_type,
+                    inv_acc_e,
+                ]
+            )
     wi = wi_e + wi_s
     for i in range(len(wi)):
-        wi[i] = [ i, ] + wi[i]
+        wi[i] = [
+            i,
+        ] + wi[i]
     return wi
+
 
 def get_prob_exact_wsrc(job_tag):
     params = rup.dict_params[job_tag]
@@ -254,7 +362,8 @@ def get_prob_exact_wsrc(job_tag):
         return params["prob_exact_wsrc"]
     n_exact = params["n_exact_wsrc"]
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    return 1 - (1 - 1 / total_site[3])**n_exact
+    return 1 - (1 - 1 / total_site[3]) ** n_exact
+
 
 @q.timer
 def mk_rand_wall_src_info(job_tag, traj, inv_type):
@@ -266,6 +375,7 @@ def mk_rand_wall_src_info(job_tag, traj, inv_type):
         return mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type)
     return mk_rand_wall_src_info_prob(job_tag, traj, inv_type)
 
+
 @q.timer
 def save_wall_src_info(wi, path):
     """
@@ -273,9 +383,15 @@ def save_wall_src_info(wi, path):
     """
     if 0 != q.get_id_node():
         return None
-    lines = [ " ".join([ f"{v:5d}" for v in l ]) for l in wi ]
-    content = "\n".join(lines + [ "", ])
+    lines = [" ".join([f"{v:5d}" for v in l]) for l in wi]
+    content = "\n".join(
+        lines
+        + [
+            "",
+        ]
+    )
     q.qtouch(path, content)
+
 
 @q.timer
 def load_wall_src_info(path):
@@ -284,9 +400,18 @@ def load_wall_src_info(path):
     wi is a list of [ idx tslice inv_type inv_acc ]
     """
     dt = q.qload_datatable_sync_node(path, True)
-    t = [ list(map(int, l)) for l in dt ]
-    wi = [ [ l[0], l[1], l[2], l[3], ] for l in t ]
+    t = [list(map(int, l)) for l in dt]
+    wi = [
+        [
+            l[0],
+            l[1],
+            l[2],
+            l[3],
+        ]
+        for l in t
+    ]
     return wi
+
 
 @q.timer_verbose
 def run_wi(job_tag, traj):
@@ -296,7 +421,7 @@ def run_wi(job_tag, traj):
     if path_light is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-wi"):
             wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type=0)
-            save_wall_src_info(wi_light, get_save_path(tfn_l));
+            save_wall_src_info(wi_light, get_save_path(tfn_l))
             q.release_lock()
         else:
             return None
@@ -304,19 +429,23 @@ def run_wi(job_tag, traj):
     if path_strange is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-wi"):
             wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type=1)
-            save_wall_src_info(wi_strange, get_save_path(tfn_s));
+            save_wall_src_info(wi_strange, get_save_path(tfn_s))
             q.release_lock()
         else:
             return None
+    #
     @q.lazy_call
     @q.timer_verbose
     def load():
         wi_light = load_wall_src_info(get_load_path(tfn_l))
         wi_strange = load_wall_src_info(get_load_path(tfn_s))
         return wi_light + wi_strange
+    #
     return load
 
+
 # ----------
+
 
 def get_n_points_psel(job_tag):
     assert job_tag in rup.dict_params
@@ -330,6 +459,7 @@ def get_n_points_psel(job_tag):
     assert n_points is not None
     return n_points
 
+
 @q.timer
 def mk_rand_psel(job_tag, traj):
     seed = get_job_seed(job_tag)
@@ -339,6 +469,7 @@ def mk_rand_psel(job_tag, traj):
     psel = q.PointsSelection()
     psel.set_rand(total_site, n_points, rs)
     return psel
+
 
 @q.timer_verbose
 def run_psel(job_tag, traj):
@@ -362,14 +493,18 @@ def run_psel(job_tag, traj):
         psel.load(path_psel, q.Geometry(total_site))
         assert psel.n_points == get_n_points_psel(job_tag)
         return psel
+    #
     return load_psel
 
+
 # ----------
+
 
 def get_n_points_pi(job_tag, traj, inv_type, inv_acc):
     assert job_tag in rup.dict_params
     assert "n_points" in rup.dict_params[job_tag]
     return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
+
 
 @q.timer
 def mk_rand_point_src_info(job_tag, traj, psel):
@@ -377,20 +512,30 @@ def mk_rand_point_src_info(job_tag, traj, psel):
     pi is a list of [ idx xg inv_type inv_acc ]
     """
     seed = get_job_seed(job_tag)
-    rs = q.RngState(f"seed {seed} {traj}").split("mk_rand_point_src_info")
+    q.RngState(f"seed {seed} {traj}").split("mk_rand_point_src_info")
     xg_list = psel.xg_arr().tolist()
     assert len(xg_list) == get_n_points_pi(job_tag, traj, 0, 0)
-    g_pi = [ [] for _ in xg_list ]
-    for inv_type in [ 0, 1, ]:
-        for inv_acc in [ 0, 1, 2, ]:
+    g_pi = [[] for _ in xg_list]
+    for inv_type in [
+        0,
+        1,
+    ]:
+        for inv_acc in [
+            0,
+            1,
+            2,
+        ]:
             for i in range(get_n_points_pi(job_tag, traj, inv_type, inv_acc)):
-                g_pi[i].append([ xg_list[i], inv_type, inv_acc ])
+                g_pi[i].append([xg_list[i], inv_type, inv_acc])
     pi = []
     for g in g_pi:
         pi += g
     for i in range(len(pi)):
-        pi[i] = [ i, ] + pi[i]
+        pi[i] = [
+            i,
+        ] + pi[i]
     return pi
+
 
 @q.timer
 def save_point_src_info(pi, path):
@@ -399,12 +544,15 @@ def save_point_src_info(pi, path):
     """
     if 0 != q.get_id_node():
         return None
+    #
     def mk_line(l):
-        [ idx, xg, inv_type, inv_acc ] = l
+        [idx, xg, inv_type, inv_acc] = l
         return f"{idx:5d}    {xg[0]:3d} {xg[1]:3d} {xg[2]:3d} {xg[3]:3d}    {inv_type:3d} {inv_acc:3d}"
+    #
     lines = list(map(mk_line, pi))
-    content = "\n".join([ f"{len(lines)}" ] + lines + [ "" ])
+    content = "\n".join([f"{len(lines)}"] + lines + [""])
     q.qtouch(path, content)
+
 
 @q.timer
 def load_point_src_info(path):
@@ -412,9 +560,18 @@ def load_point_src_info(path):
     pi is a list of [ idx xg inv_type inv_acc ]
     """
     dt = q.qload_datatable_sync_node(path, True)
-    t = [ list(map(int, l)) for l in dt ][1:]
-    pi = [ [ l[0], l[1:5], l[5], l[6], ] for l in t ]
+    t = [list(map(int, l)) for l in dt][1:]
+    pi = [
+        [
+            l[0],
+            l[1:5],
+            l[5],
+            l[6],
+        ]
+        for l in t
+    ]
     return pi
+
 
 @q.timer_verbose
 def run_pi(job_tag, traj, get_psel):
@@ -423,10 +580,11 @@ def run_pi(job_tag, traj, get_psel):
     if path is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-pi"):
             pi = mk_rand_point_src_info(job_tag, traj, get_psel())
-            save_point_src_info(pi, get_save_path(tfn));
+            save_point_src_info(pi, get_save_path(tfn))
             q.release_lock()
         else:
             return None
+    #
     @q.lazy_call
     @q.timer_verbose
     def load():
@@ -434,9 +592,12 @@ def run_pi(job_tag, traj, get_psel):
         assert path is not None
         pi = load_point_src_info(path)
         return pi
+    #
     return load
 
+
 # ----------
+
 
 @q.timer
 def load_point_distribution(job_tag):
@@ -461,9 +622,24 @@ def load_point_distribution(job_tag):
         y = int(y)
         z = int(z)
         t = int(t)
-        point_distribution[(x, y, z, t,)] = prob * (n_points - 1) / n_points
-    point_distribution[(0, 0, 0, 0,)] = 1.0 / n_points
+        point_distribution[
+            (
+                x,
+                y,
+                z,
+                t,
+            )
+        ] = prob * (n_points - 1) / n_points
+    point_distribution[
+        (
+            0,
+            0,
+            0,
+            0,
+        )
+    ] = 1.0 / n_points
     return point_distribution
+
 
 def classify_rel_coordinate(xg_rel_arrary, total_site_array):
     """
@@ -475,7 +651,13 @@ def classify_rel_coordinate(xg_rel_arrary, total_site_array):
     xg_rel_abs = total_site_half - abs(xg_rel_arrary - total_site_half)
     x, y, z, t = xg_rel_abs
     x, y, z = sorted([x, y, z])
-    return (x, y, z, t,)
+    return (
+        x,
+        y,
+        z,
+        t,
+    )
+
 
 def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_points):
     """
@@ -494,7 +676,9 @@ def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_p
     prob = point_distribution[xg_rel]
     return prob
 
+
 # ----------
+
 
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
@@ -505,21 +689,23 @@ def mk_rand_fsel(job_tag, traj, n_per_tslice):
     fsel.set_rand(total_site, n_per_tslice, rs)
     return fsel
 
+
 @q.timer_verbose
 def run_fsel(job_tag, traj):
     tfn = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(tfn)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    fsel_rate = get_param(job_tag, "field_selection_fsel_rate", default=1/16)
+    fsel_rate = get_param(job_tag, "field_selection_fsel_rate", default=1 / 16)
     n_per_tslice = round(total_site[0] * total_site[1] * total_site[2] * fsel_rate)
     if path_fsel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-fsel"):
             fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
             fsel.save(get_save_path(tfn))
             q.release_lock()
-            return lambda : fsel
+            return lambda: fsel
         else:
             return None
+    #
     @q.lazy_call
     @q.timer_verbose
     def load_fsel():
@@ -529,9 +715,12 @@ def run_fsel(job_tag, traj):
         total_size = fsel.load(path_fsel)
         assert total_size > 0
         return fsel
+    #
     return load_fsel
 
+
 # ----------
+
 
 @q.timer
 def mk_fselc(fsel, psel):
@@ -542,20 +731,25 @@ def mk_fselc(fsel, psel):
         fselc.add_psel(psel)
     return fselc
 
+
 @q.timer_verbose
 def run_fselc(job_tag, traj, get_fsel, get_psel):
     if get_fsel is None:
         return None
     if get_psel is None:
         return None
+    #
     @q.lazy_call
     @q.timer_verbose
     def get():
         fselc = mk_fselc(get_fsel(), get_psel())
         return fselc
+    #
     return get
 
+
 # ----------
+
 
 @q.timer
 def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
@@ -566,6 +760,7 @@ def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
     fsel.set_rand(total_site, n_per_tslice_smear, rs)
     return fsel
 
+
 @q.timer_verbose
 def run_psel_smear(job_tag, traj):
     """
@@ -574,7 +769,7 @@ def run_psel_smear(job_tag, traj):
     """
     tfn = f"{job_tag}/points-selection-smear/traj-{traj}.lati"
     path_psel = get_load_path(tfn)
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    q.Coordinate(get_param(job_tag, "total_site"))
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel-smear"):
             n_per_tslice_smear = get_param(job_tag, "n_per_tslice_smear")
@@ -594,7 +789,9 @@ def run_psel_smear(job_tag, traj):
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         return psel
+    #
     return load_psel
+
 
 @q.timer_verbose
 def run_psel_smear_median(job_tag, traj):
@@ -605,7 +802,7 @@ def run_psel_smear_median(job_tag, traj):
     fname = q.get_fname()
     tfn = f"{job_tag}/psel_smear_median/traj-{traj}.lati"
     path_psel = get_load_path(tfn)
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    q.Coordinate(get_param(job_tag, "total_site"))
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
             n_per_tslice_smear = get_param(job_tag, "n_per_tslice_smear_median")
@@ -625,9 +822,12 @@ def run_psel_smear_median(job_tag, traj):
         psel = q.PointsSelection()
         psel.load(path_psel, q.Geometry(total_site))
         return psel
+    #
     return load_psel
 
+
 # ----------
+
 
 @q.timer_verbose
 def run_gf_ape(job_tag, get_gf):
@@ -643,13 +843,16 @@ def run_gf_ape(job_tag, get_gf):
         gf_ape = q.gf_spatial_ape_smear(gf, coef, step)
         gf_ape = q.mk_left_expanded_field(gf_ape)
         return gf_ape
+    #
     return run
+
 
 @q.timer_verbose
 def run_gf_hyp(job_tag, get_gf):
     if get_gf is None:
         return None
     step = get_param(job_tag, "gf_hyp_smear_step")
+    #
     @q.lazy_call
     @q.timer_verbose
     def run():
@@ -657,9 +860,12 @@ def run_gf_hyp(job_tag, get_gf):
         for i in range(step):
             gf_hyp = q.gf_hyp_smear(gf_hyp, 0.75, 0.6, 0.3)
         return gf_hyp
+    #
     return run
 
+
 # ----------
+
 
 @q.timer_verbose
 def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
@@ -668,57 +874,125 @@ def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
     ``get_eig()'' return the ``eig''
     """
     from . import rbc_ukqcd as ru
+    #
     load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
     if load_eig is not None:
         return load_eig
-    import gpt as g
+    #
     # eig = ru.mk_eig(job_tag, gf, inv_type, inv_acc)
     eig = ru.mk_ceig(job_tag, gf, inv_type, inv_acc, pc_ne=pc_ne)
-    ru.save_eig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
+    ru.save_eig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc)
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(job_tag, gf, eig, inv_type)
+    #
     def get_eig():
         return eig
+    #
     return get_eig
+
 
 @q.timer_verbose
 def test_eig(job_tag, gf, eig, inv_type, *, pc_ne=None):
     from .rbc_ukqcd import get_inv
+    #
     geo = gf.geo
     src = q.FermionField4d(geo)
     src.set_rand(q.RngState("test_eig:src.set_rand"))
-    q.json_results_append(f"src norm", src.qnorm(), 1e-10)
-    q.json_results_append(f"src get_data_sig", q.get_data_sig(src, q.RngState()), 1e-10)
-    sol_ref = get_inv(gf, job_tag, inv_type, inv_acc=3, eig=eig, eps=1e-14, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
-    q.json_results_append(f"sol_ref norm", sol_ref.qnorm(), 1e-10)
-    q.json_results_append(f"sol_ref get_data_sig", q.get_data_sig(sol_ref, q.RngState()), 1e-10)
-    for inv_acc in [ 0, 1, ]:
-        sol = get_inv(gf, job_tag, inv_type, inv_acc, eig=eig, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
+    q.json_results_append("src norm", src.qnorm(), 1e-10)
+    q.json_results_append("src get_data_sig", q.get_data_sig(src, q.RngState()), 1e-10)
+    sol_ref = (
+        get_inv(
+            gf,
+            job_tag,
+            inv_type,
+            inv_acc=3,
+            eig=eig,
+            eps=1e-14,
+            mpi_split=False,
+            n_grouped=1,
+            pc_ne=pc_ne,
+            qtimer=False,
+        )
+        * src
+    )
+    q.json_results_append("sol_ref norm", sol_ref.qnorm(), 1e-10)
+    q.json_results_append(
+        "sol_ref get_data_sig", q.get_data_sig(sol_ref, q.RngState()), 1e-10
+    )
+    for inv_acc in [
+        0,
+        1,
+    ]:
+        sol = (
+            get_inv(
+                gf,
+                job_tag,
+                inv_type,
+                inv_acc,
+                eig=eig,
+                mpi_split=False,
+                n_grouped=1,
+                pc_ne=pc_ne,
+                qtimer=False,
+            )
+            * src
+        )
         sol -= sol_ref
-        q.json_results_append(f"sol diff norm inv_acc={inv_acc} with eig", sol.qnorm(), 1e-2)
-        q.json_results_append(f"sol diff get_data_sig inv_acc={inv_acc} with eig", q.get_data_sig(sol, q.RngState()), 1e-2)
-        sol = get_inv(gf, job_tag, inv_type, inv_acc, mpi_split=False, n_grouped=1, pc_ne=pc_ne, qtimer=False) * src
+        q.json_results_append(
+            f"sol diff norm inv_acc={inv_acc} with eig", sol.qnorm(), 1e-2
+        )
+        q.json_results_append(
+            f"sol diff get_data_sig inv_acc={inv_acc} with eig",
+            q.get_data_sig(sol, q.RngState()),
+            1e-2,
+        )
+        sol = (
+            get_inv(
+                gf,
+                job_tag,
+                inv_type,
+                inv_acc,
+                mpi_split=False,
+                n_grouped=1,
+                pc_ne=pc_ne,
+                qtimer=False,
+            )
+            * src
+        )
         sol -= sol_ref
-        q.json_results_append(f"sol diff norm inv_acc={inv_acc} without eig", sol.qnorm(), 1e-2)
-        q.json_results_append(f"sol diff get_data_sig inv_acc={inv_acc} without eig", q.get_data_sig(sol, q.RngState()), 1e-2)
+        q.json_results_append(
+            f"sol diff norm inv_acc={inv_acc} without eig", sol.qnorm(), 1e-2
+        )
+        q.json_results_append(
+            f"sol diff get_data_sig inv_acc={inv_acc} without eig",
+            q.get_data_sig(sol, q.RngState()),
+            1e-2,
+        )
+
 
 @q.timer_verbose
 def run_eig(job_tag, traj, get_gf, *, is_only_load=False):
-    if None in [ get_gf, ]:
+    if None in [
+        get_gf,
+    ]:
         return None
     from . import rbc_ukqcd as ru
+    #
     get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
     if is_only_load:
         return get_eig
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            get_eig = compute_eig(job_tag, get_gf(), inv_type=0, path=f"{job_tag}/eig/traj-{traj}")
+            get_eig = compute_eig(
+                job_tag, get_gf(), inv_type=0, path=f"{job_tag}/eig/traj-{traj}"
+            )
             q.release_lock()
             return get_eig
         else:
             return None
     else:
         return get_eig
+
 
 @q.timer_verbose
 def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
@@ -726,20 +1000,27 @@ def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
     if failed, return None
     if no parameter, return lambda : None
     """
-    if None in [ get_gf, ]:
+    if None in [
+        get_gf,
+    ]:
         return None
     if get_param(job_tag, "clanc_params", 1) is None:
         fn = f"{job_tag}/eig-strange/traj-{traj}/no-eig-parameters.txt"
         if get_load_path(fn) is None:
             q.qtouch_info(get_save_path(fn))
-        return lambda : None
+        return lambda: None
     from . import rbc_ukqcd as ru
-    get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag)
+    #
+    get_eig = ru.load_eig_lazy(
+        get_load_path(f"{job_tag}/eig-strange/traj-{traj}"), job_tag
+    )
     if is_only_load:
         return get_eig
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
-            get_eig = compute_eig(job_tag, get_gf(), inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}")
+            get_eig = compute_eig(
+                job_tag, get_gf(), inv_type=1, path=f"{job_tag}/eig-strange/traj-{traj}"
+            )
             q.release_lock()
             return get_eig
         else:
@@ -747,7 +1028,9 @@ def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
     else:
         return get_eig
 
+
 # ----------
+
 
 @functools.lru_cache(maxsize=None)
 def get_r_list(job_tag):
@@ -757,6 +1040,7 @@ def get_r_list(job_tag):
     # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice
     return r_list
 
+
 @functools.lru_cache(maxsize=None)
 def get_r_sq_interp_idx_coef_list(job_tag):
     """
@@ -765,13 +1049,19 @@ def get_r_sq_interp_idx_coef_list(job_tag):
     r_list = get_r_list(job_tag)
     return q.mk_r_sq_interp_idx_coef_list(r_list)
 
+
 @q.timer_verbose
 def run_r_list(job_tag):
     fn = f"{job_tag}/r_list/r_list.lat"
     r_list = get_r_list(job_tag)
-    ld = q.mk_lat_data([
-        [ "r_idx", len(r_list), ],
-        ])
+    ld = q.mk_lat_data(
+        [
+            [
+                "r_idx",
+                len(r_list),
+            ],
+        ]
+    )
     ld.from_numpy(np.array(r_list))
     if get_load_path(fn) is not None:
         ld_load = q.load_lat_data(get_load_path(fn))
@@ -780,5 +1070,6 @@ def run_r_list(job_tag):
         assert ld_diff.qnorm() < 1e-20
         return
     ld.save(get_save_path(fn))
+
 
 # ----------

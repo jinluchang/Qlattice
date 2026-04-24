@@ -4,7 +4,9 @@ import qlat as q
 import sys
 
 if len(sys.argv) < 2:
-    q.displayln_info("Usage: fields-properly-truncate [--check-all] [--only-check] path1 path2 ...")
+    q.displayln_info(
+        "Usage: fields-properly-truncate [--check-all] [--only-check] path1 path2 ..."
+    )
     exit()
 
 q.begin_with_mpi()
@@ -18,7 +20,8 @@ path_list = argv
 
 for path in path_list:
     tags = q.properly_truncate_fields(
-            path, is_check_all = is_check_all, is_only_check = is_only_check)
+        path, is_check_all=is_check_all, is_only_check=is_only_check
+    )
     for tag in tags:
         q.displayln_info(tag)
 

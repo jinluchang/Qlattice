@@ -1545,7 +1545,6 @@ def test1():
             j_p, 0, is_dagger
         ) * mk_pi_0(pi_p, is_dagger)
     #
-    #
     def B(j_p, pi_p, is_dagger=False):
         # I=20 Gparity +
         return (
@@ -1554,20 +1553,17 @@ def test1():
             + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger)
         )
     #
-    #
     def C(j_p, pi_p, is_dagger=False):
         # I=11 Gparity +
         return mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger) - mk_j11_mu(
             j_p, 0, is_dagger
         ) * mk_pi_0(pi_p, is_dagger)
     #
-    #
     def D(j_p, pi_p, is_dagger=False):
         # I=10 Gparity +
         return mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger) - mk_j11_mu(
             j_p, 0, is_dagger
         ) * mk_pi_m(pi_p, is_dagger)
-    #
     #
     def E(j_p, pi_p, is_dagger=False):
         # I=0 Gparity +
@@ -1577,26 +1573,21 @@ def test1():
             + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger)
         )
     #
-    #
     def F(j_p, pi_p, is_dagger=False):
         # I=11 Gparity -
         return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-    #
     #
     def Gf(j_p, pi_p, is_dagger=False):
         # I=10 Gparity -
         return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
     #
-    #
     def jpi_p(j_p, pi_p, is_dagger=False):
         # charged
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
     #
-    #
     def jpi_0(j_p, pi_p, is_dagger=False):
         # neutral
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
-    #
     #
     expr1 = (
         sympy.simplify(1)

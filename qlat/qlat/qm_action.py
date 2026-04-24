@@ -2,10 +2,41 @@ from qlat_utils import *
 from .c import *
 from . import c
 
-class QMAction:
 
-    def __init__(self, alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M):
-        self.cdata = c.mk_qm_action(alpha, beta, V_FV_min, FV_offset, TV_offset, barrier_strength, L, M, epsilon, t_FV_out, t_FV_mid, dt, measure_offset_L, measure_offset_M)
+class QMAction:
+    def __init__(
+        self,
+        alpha,
+        beta,
+        V_FV_min,
+        FV_offset,
+        TV_offset,
+        barrier_strength,
+        L,
+        M,
+        epsilon,
+        t_FV_out,
+        t_FV_mid,
+        dt,
+        measure_offset_L,
+        measure_offset_M,
+    ):
+        self.cdata = c.mk_qm_action(
+            alpha,
+            beta,
+            V_FV_min,
+            FV_offset,
+            TV_offset,
+            barrier_strength,
+            L,
+            M,
+            epsilon,
+            t_FV_out,
+            t_FV_mid,
+            dt,
+            measure_offset_L,
+            measure_offset_M,
+        )
 
     def __del__(self):
         assert isinstance(self.cdata, int)
@@ -36,9 +67,9 @@ class QMAction:
 
     def t_FV_mid(self):
         return c.get_t_FV_mid_qm_action(self)
-    
+
     def t_FV(self):
-        return 2*self.t_FV_out() + self.t_FV_mid()
+        return 2 * self.t_FV_out() + self.t_FV_mid()
 
     def dt(self):
         return c.get_dt_qm_action(self)

@@ -2,8 +2,8 @@ from qlat import *
 
 import qlat.c as c
 
-class FlowInfo:
 
+class FlowInfo:
     def __init__(self):
         self.cdata = c.mk_flow_info()
 
@@ -25,11 +25,13 @@ class FlowInfo:
     def show(self):
         return c.show_flow_info(self)
 
+
 def gf_flow(gf, gf0, fi):
     assert isinstance(gf, GaugeField)
     assert isinstance(gf0, GaugeField)
     assert isinstance(fi, FlowInfo)
     c.gf_flow(gf, gf0, fi)
+
 
 def gf_flow_inv(gf, gf1, fi):
     assert isinstance(gf, GaugeField)
@@ -37,11 +39,13 @@ def gf_flow_inv(gf, gf1, fi):
     assert isinstance(fi, FlowInfo)
     c.gf_flow_inv(gf, gf1, fi)
 
+
 def gf_hamilton_flowed_node(gf0, ga, fi):
     assert isinstance(gf0, GaugeField)
     assert isinstance(ga, GaugeAction)
     assert isinstance(fi, FlowInfo)
     return c.gf_hamilton_flowed_node(gf0, ga, fi)
+
 
 def set_gm_force_flowed(gm_force, gf0, ga, fi):
     assert isinstance(gm_force, GaugeMomentum)
@@ -49,6 +53,7 @@ def set_gm_force_flowed(gm_force, gf0, ga, fi):
     assert isinstance(ga, GaugeAction)
     assert isinstance(fi, FlowInfo)
     c.set_gm_force_flowed(gm_force, gf0, ga, fi)
+
 
 def set_gm_force_flowed_no_det(gm_force, gm_force_pre, gf0, fi):
     assert isinstance(gm_force, GaugeMomentum)

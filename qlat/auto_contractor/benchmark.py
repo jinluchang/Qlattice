@@ -41,7 +41,6 @@ def benchmark_function_1(f, arg, benchmark_size=1000, benchmark_num=10, total_fl
             f(arg)
             f(arg)
     #
-    #
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
@@ -66,7 +65,6 @@ def benchmark_function_2(
             f(arg1, arg2)
             f(arg1, arg2)
     #
-    #
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
@@ -90,7 +88,6 @@ def benchmark_function_3(
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
-    #
     #
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):

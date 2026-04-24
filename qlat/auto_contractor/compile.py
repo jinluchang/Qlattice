@@ -408,7 +408,6 @@ def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_te
     var_counter = 0
     var_dataset = {}
     #
-    #
     def add_variables(ea_coef):
         nonlocal var_counter
         key = repr(ea_coef)
@@ -438,7 +437,6 @@ def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_te
                 var_dataset[key2] = var
         ea_var = ea.mk_expr(var)
         return ea_var
-    #
     #
     for _, expr in named_exprs:
         for i, (
@@ -663,7 +661,6 @@ def collect_prop_in_cexpr(named_terms):
     var_dataset = {}  # var_dataset[op_repr] = op_var
     var_nameset = set()
     #
-    #
     def add_prop_variables(x):
         nonlocal var_counter
         if isinstance(x, list):
@@ -702,7 +699,6 @@ def collect_prop_in_cexpr(named_terms):
             for t in x.terms:
                 add_prop_variables(t)
     #
-    #
     for name, term in named_terms:
         add_prop_variables(term)
         term.sort()
@@ -719,7 +715,6 @@ def collect_color_matrix_in_cexpr(named_terms):
     var_counter = 0
     var_dataset = {}  # var_dataset[op_repr] = op_var
     var_nameset = set()
-    #
     #
     def add_variables(x):
         nonlocal var_counter
@@ -759,7 +754,6 @@ def collect_color_matrix_in_cexpr(named_terms):
             for t in x.terms:
                 add_variables(t)
     #
-    #
     for name, term in named_terms:
         add_variables(term)
         term.sort()
@@ -779,7 +773,6 @@ def collect_chain_in_cexpr(named_terms):
     variables_chain = []
     var_counter = 0
     var_dataset_chain = {}  # var_dataset[op_repr] = op_var
-    #
     #
     def add_ch_varibles(x):
         nonlocal var_counter
@@ -814,7 +807,6 @@ def collect_chain_in_cexpr(named_terms):
                         x[i] = var
                         var_dataset_chain[op_repr] = var
     #
-    #
     for name, term in named_terms:
         add_ch_varibles(term)
         term.sort()
@@ -834,7 +826,6 @@ def collect_tr_in_cexpr(named_terms):
     variables_tr = []
     var_counter = 0
     var_dataset_tr = {}  # var_dataset[op_repr] = op_var
-    #
     #
     def add_tr_varibles(x):
         nonlocal var_counter
@@ -867,7 +858,6 @@ def collect_tr_in_cexpr(named_terms):
                         x[i] = var
                         var_dataset_tr[op_repr] = var
     #
-    #
     for name, term in named_terms:
         add_tr_varibles(term)
         term.sort()
@@ -891,7 +881,6 @@ def collect_baryon_prop_in_cexpr(named_terms):
     var_dataset = {}  # var_dataset[op_repr] = op_var
     variable_dict = {}  # variable_dict[name] = op
     var_chain_list_dataset = {}  # var_dataset[op_chain_list_repr] = [ name, ... ]
-    #
     #
     def add_varibles(x):
         nonlocal var_counter
@@ -921,7 +910,6 @@ def collect_baryon_prop_in_cexpr(named_terms):
                             var_chain_list_dataset[op_chain_list_repr] = []
                         var_chain_list_dataset[op_chain_list_repr].append(name)
     #
-    #
     for name, term in named_terms:
         add_varibles(term)
         term.sort()
@@ -944,7 +932,6 @@ def find_common_subexpr_in_tr(variables_tr):
     """
     subexpr_count = {}
     #
-    #
     def add(x, count_added):
         op_repr = repr(x)
         if op_repr in subexpr_count:
@@ -953,7 +940,6 @@ def find_common_subexpr_in_tr(variables_tr):
             subexpr_count[op_repr] = (c + count_added, x)
         else:
             subexpr_count[op_repr] = (count_added, x)
-    #
     #
     def find_op_pair(x: list, is_periodic=True):
         if len(x) < 2:
@@ -1052,7 +1038,6 @@ def find_common_subexpr_in_tr(variables_tr):
                     else:
                         assert False
     #
-    #
     def find(x):
         if isinstance(x, list):
             for op in x:
@@ -1069,7 +1054,6 @@ def find_common_subexpr_in_tr(variables_tr):
             for t in x.terms:
                 find(t)
     #
-    #
     for name, tr in variables_tr:
         find(tr)
     max_num_repeat = 1.5
@@ -1084,7 +1068,6 @@ def find_common_subexpr_in_tr(variables_tr):
 @q.timer
 def collect_common_subexpr_in_tr(variables_tr, op_common, var):
     op_repr = repr(op_common)
-    #
     #
     def replace(x, is_periodic=True):
         if x is None:
@@ -1134,7 +1117,6 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
             for t in x.terms:
                 replace(t)
     #
-    #
     def remove_none(x):
         """
         return a None removed x
@@ -1159,7 +1141,6 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
             return x
         else:
             assert False
-    #
     #
     for name, tr in variables_tr:
         replace(tr)
@@ -1460,7 +1441,6 @@ def mk_combined_permuting_dicts(term):
     pos_list_list = list(get_position_permutation_groups(term))
     p_dicts_list = [list(mk_permuting_dicts(pos_list)) for pos_list in pos_list_list]
     #
-    #
     def loop(level):
         if level < 0:
             yield dict()
@@ -1470,7 +1450,6 @@ def mk_combined_permuting_dicts(term):
                     d = d1.copy()
                     d.update(d2)
                     yield d
-    #
     #
     return loop(len(p_dicts_list) - 1)
 
@@ -1719,7 +1698,6 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
     See `filter_diagram_type` for more details.
     """
     #
-    #
     def func(expr):
         expr = copy.deepcopy(expr)
         if isinstance(expr, tuple):
@@ -1734,7 +1712,6 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
             expr, diagram_type_dict=diagram_type_dict, included_types=included_types
         )
         return expr_list
-    #
     #
     expr_list_list = q.parallel_map(func, exprs)
     expr_list = []
@@ -2491,10 +2468,8 @@ class CExprCodeGenPy:
                 ch3,
             ) = chain_list
             #
-            #
             def get_ss_tag(ss):
                 return "_".join([str(s) for s in ss])
-            #
             #
             ss_dict = dict()
             for bs in bs_list:
@@ -2684,7 +2659,6 @@ class CExprCodeGenPy:
             append("exprs_view = exprs")
         append("# set exprs")
         #
-        #
         def show_coef_term(coef, tname, ttype):
             coef, t = self.gen_expr(coef)
             assert t == "V_a"
@@ -2707,7 +2681,6 @@ class CExprCodeGenPy:
                         return f"mat_mul_a_cm({coef}, {tname})"
                     else:
                         raise Exception(f"coef={coef}; tname={tname} ttype={ttype}")
-        #
         #
         append_cy("cdef cc.PyComplexD expr_V_a")
         if not is_terms_all_complex_number:

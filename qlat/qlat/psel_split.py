@@ -1,30 +1,32 @@
 import numpy as np
 
+
 class q:
     from qlat_utils import (
-            timer,
-            Coordinate,
-            smod_coordinate,
-            get_fname,
-            RngState,
-            parallel_map,
-            random_permute,
-            displayln_info,
-            get_num_node,
-            )
+        timer,
+        Coordinate,
+        smod_coordinate,
+        get_fname,
+        RngState,
+        parallel_map,
+        random_permute,
+        displayln_info,
+        get_num_node,
+    )
     from qlat.field_selection import (
-            PointsSelection,
-            )
+        PointsSelection,
+    )
     from .mpi_utils import (
-            get_mpi_chunk,
-            get_comm,
-            )
+        get_mpi_chunk,
+        get_comm,
+    )
+
 
 def point_dis_sqr(x, y, total_site):
     return q.smod_coordinate(x - y, total_site).sqr()
 
-class PointsDistanceSet:
 
+class PointsDistanceSet:
     """
     self.total_site
     self.tree
@@ -81,10 +83,11 @@ class PointsDistanceSet:
         assert isinstance(n, int)
         return self.tree.find_closest_n_point_list(xg, n, self.total_site)
 
+
 ###
 
-class PointsDistanceTree:
 
+class PointsDistanceTree:
     """
     self.point
     self.range_sqr
@@ -108,7 +111,9 @@ class PointsDistanceTree:
             t.range_sqr = 1
         else:
             t.range_sqr = t0.range_sqr * 4
-        t.tree_list = [ t0, ]
+        t.tree_list = [
+            t0,
+        ]
         return t
 
     @classmethod
@@ -196,7 +201,7 @@ class PointsDistanceTree:
             return 1
         if self.tree_list is None:
             return 0
-        return sum([ t.count() for t in self.tree_list ])
+        return sum([t.count() for t in self.tree_list])
 
     def list(self):
         l = []
@@ -233,7 +238,10 @@ class PointsDistanceTree:
         mini_dis_sqr = None
         point_list = []
         pending_list = []
-        current_list = [ self, ]
+        current_list = [
+            self,
+        ]
+        #
         def consider_point(xg1):
             nonlocal mini_dis_sqr, point_list
             dis_sqr = point_dis_sqr(xg, xg1, total_site)
@@ -242,15 +250,19 @@ class PointsDistanceTree:
                 return
             if (mini_dis_sqr is None) or (mini_dis_sqr > dis_sqr):
                 mini_dis_sqr = dis_sqr
-                point_list = [ xg1, ]
+                point_list = [
+                    xg1,
+                ]
             elif mini_dis_sqr == dis_sqr:
                 point_list.append(xg1)
+        #
         def tree_dis_sqr(t):
             if t.point is None:
                 return 0
             assert isinstance(t.point, q.Coordinate)
             dis_sqr = point_dis_sqr(xg, t.point, total_site)
             return dis_sqr
+        #
         def consider_tree(t):
             nonlocal mini_dis_sqr, point_list, pending_list
             if t.point is None:
@@ -266,9 +278,12 @@ class PointsDistanceTree:
                 if (mini_dis_sqr is None) or (mini_dis_sqr > dis_sqr):
                     mini_dis_sqr = dis_sqr
                     point_list = []
-                if dis_sqr > mini_dis_sqr + t.range_sqr + 2 * np.sqrt(mini_dis_sqr * t.range_sqr):
+                if dis_sqr > mini_dis_sqr + t.range_sqr + 2 * np.sqrt(
+                    mini_dis_sqr * t.range_sqr
+                ):
                     return
             pending_list += sorted(t.tree_list, key=tree_dis_sqr)
+        #
         while len(current_list) > 0:
             for t in current_list:
                 consider_tree(t)
@@ -289,6 +304,7 @@ class PointsDistanceTree:
         assert isinstance(total_site, q.Coordinate)
         mini_dis_sqr = None
         point_list = []
+        #
         def consider_point(xg1):
             nonlocal mini_dis_sqr, point_list
             dis_sqr = point_dis_sqr(xg, xg1, total_site)
@@ -296,19 +312,26 @@ class PointsDistanceTree:
                 # Excluding the same point
                 return
             if (mini_dis_sqr is None) or (mini_dis_sqr > dis_sqr):
-                point_list.append((dis_sqr, xg1,))
+                point_list.append(
+                    (
+                        dis_sqr,
+                        xg1,
+                    )
+                )
                 point_list.sort(key=lambda x: x[0])
                 if len(point_list) >= n:
                     point_list = point_list[:n]
                     mini_dis_sqr = point_list[-1][0]
                 else:
                     assert mini_dis_sqr is None
+        #
         def tree_dis_sqr(t):
             if t.point is None:
                 return 0
             assert isinstance(t.point, q.Coordinate)
             dis_sqr = point_dis_sqr(xg, t.point, total_site)
             return dis_sqr
+        #
         def consider_tree(t):
             if t.point is None:
                 return
@@ -319,11 +342,15 @@ class PointsDistanceTree:
             assert isinstance(t.range_sqr, int)
             assert isinstance(t.tree_list, list)
             dis_sqr = point_dis_sqr(xg, t.point, total_site)
-            if (mini_dis_sqr is not None) and (dis_sqr >= mini_dis_sqr + t.range_sqr + 2 * np.sqrt(mini_dis_sqr * t.range_sqr)):
+            if (mini_dis_sqr is not None) and (
+                dis_sqr
+                >= mini_dis_sqr + t.range_sqr + 2 * np.sqrt(mini_dis_sqr * t.range_sqr)
+            ):
                 return
             pending_list = sorted(t.tree_list, key=tree_dis_sqr)
             for t1 in pending_list:
                 consider_tree(t1)
+        #
         consider_tree(self)
         if len(point_list) >= n:
             assert mini_dis_sqr == point_list[-1][0]
@@ -331,7 +358,9 @@ class PointsDistanceTree:
             assert mini_dis_sqr is None
         return point_list
 
+
 ###
+
 
 @q.timer
 def find_all_closest_point_list(psel, rs=None, is_parallel=True):
@@ -345,10 +374,18 @@ def find_all_closest_point_list(psel, rs=None, is_parallel=True):
         rs = q.RngState(f"{fname}")
     assert isinstance(rs, q.RngState)
     pds = PointsDistanceSet(psel)
+    #
     def find_closest(xg):
         assert isinstance(xg, q.Coordinate)
         mini_dis_sqr, point_list = pds.find_closest_point_list(xg)
-        return (mini_dis_sqr, (xg, point_list,))
+        return (
+            mini_dis_sqr,
+            (
+                xg,
+                point_list,
+            ),
+        )
+    #
     all_closest_point_list = []
     if is_parallel:
         xg_sub_list = q.get_mpi_chunk(list(psel))
@@ -358,19 +395,27 @@ def find_all_closest_point_list(psel, rs=None, is_parallel=True):
         else:
             n_proc = 0
         all_closest_point_sub_list = q.parallel_map(
-                find_closest, xg_sub_list,
-                chunksize=chunksize, n_proc=n_proc,
-                )
+            find_closest,
+            xg_sub_list,
+            chunksize=chunksize,
+            n_proc=n_proc,
+        )
         for sub_list in q.get_comm().allgather(all_closest_point_sub_list):
             all_closest_point_list += sub_list
     else:
         for xg in list(psel):
             x = find_closest(xg)
             all_closest_point_list.append(x)
-    all_closest_point_list = q.random_permute(all_closest_point_list, rs.split(f"permute"))
+    all_closest_point_list = q.random_permute(
+        all_closest_point_list, rs.split("permute")
+    )
     all_closest_point_list.sort(key=lambda x: x[0])
-    q.displayln_info(0, f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; {all_closest_point_list[:5]} .")
+    q.displayln_info(
+        0,
+        f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; {all_closest_point_list[:5]} .",
+    )
     return all_closest_point_list
+
 
 def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
     s = 0.0
@@ -379,7 +424,8 @@ def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
     if s == 0.0:
         return np.inf
     else:
-        return 1 / s**(1/6)
+        return 1 / s ** (1 / 6)
+
 
 @q.timer(is_timer_fork=True)
 def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
@@ -396,13 +442,24 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
     if rs is None:
         rs = q.RngState(f"{fname}")
     assert isinstance(rs, q.RngState)
-    q.displayln_info(0, f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; n={n} .")
+    q.displayln_info(
+        0,
+        f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; n={n} .",
+    )
     pds = PointsDistanceSet(psel)
+    #
     def find_closest(xg):
         assert isinstance(xg, q.Coordinate)
         point_list = pds.find_closest_n_point_list(xg, n)
-        ranking = ranking_func([ p[0] for p in point_list ])
-        return (ranking, (xg, point_list,))
+        ranking = ranking_func([p[0] for p in point_list])
+        return (
+            ranking,
+            (
+                xg,
+                point_list,
+            ),
+        )
+    #
     xg_sub_list = q.get_mpi_chunk(list(psel))
     chunksize = max(16, len(psel) // (q.get_num_node() * 128))
     if len(psel) // q.get_num_node() >= 128:
@@ -410,16 +467,24 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
     else:
         n_proc = 0
     all_closest_n_point_sub_list = q.parallel_map(
-            find_closest, xg_sub_list,
-            chunksize=chunksize, n_proc=n_proc,
-            )
+        find_closest,
+        xg_sub_list,
+        chunksize=chunksize,
+        n_proc=n_proc,
+    )
     all_closest_n_point_list = []
     for sub_list in q.get_comm().allgather(all_closest_n_point_sub_list):
         all_closest_n_point_list += sub_list
-    all_closest_n_point_list = q.random_permute(all_closest_n_point_list, rs.split(f"permute"))
+    all_closest_n_point_list = q.random_permute(
+        all_closest_n_point_list, rs.split("permute")
+    )
     all_closest_n_point_list.sort(key=lambda x: x[0])
-    q.displayln_info(0, f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; n={n} ; {all_closest_n_point_list[:5]} .")
+    q.displayln_info(
+        0,
+        f"{fname}: psel.total_site={psel.total_site} ; len(psel)={len(psel)} ; n={n} ; {all_closest_n_point_list[:5]} .",
+    )
     return all_closest_n_point_list
+
 
 @q.timer
 def psel_split_that_increase_separation_closest(psel, rs=None):
@@ -434,12 +499,20 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
     n_points = len(psel)
     total_site = psel.total_site
     q.displayln_info(0, f"{fname}: total_site={total_site} ; n_points={n_points} .")
-    pair_list = find_all_closest_point_list(psel, rs.split(f"find_all_closest_pair_list"))
+    pair_list = find_all_closest_point_list(
+        psel, rs.split("find_all_closest_pair_list")
+    )
     xg_set1 = set()
     xg_set2 = set()
-    for idx, (mini_dis_sqr, (xg, xg_list,)) in enumerate(pair_list):
+    for idx, (
+        mini_dis_sqr,
+        (
+            xg,
+            xg_list,
+        ),
+    ) in enumerate(pair_list):
         xg = xg.to_tuple()
-        xg_list = [ v.to_tuple() for v in xg_list ]
+        xg_list = [v.to_tuple() for v in xg_list]
         count1 = 0
         count2 = 0
         for xg1 in xg_list:
@@ -454,7 +527,12 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
         else:
             assert count1 == count2
             rsi = rs.split(f"select-{idx}")
-            choice = rsi.select([ 1, 2, ])
+            choice = rsi.select(
+                [
+                    1,
+                    2,
+                ]
+            )
             if choice == 1:
                 xg_set1.add(xg)
             elif choice == 2:
@@ -466,6 +544,7 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
     psel1 = q.PointsSelection(total_site, xg_list1)
     psel2 = q.PointsSelection(total_site, xg_list2)
     return psel1, psel2
+
 
 @q.timer
 def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=None):
@@ -485,12 +564,26 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     n_points = len(psel)
     total_site = psel.total_site
     q.displayln_info(0, f"{fname}: total_site={total_site} ; n_points={n_points} .")
-    all_closest_point_list = find_all_closest_n_point_list(psel, n, ranking_func, rs.split(f"find_all_closest_pair_list"))
+    all_closest_point_list = find_all_closest_n_point_list(
+        psel, n, ranking_func, rs.split("find_all_closest_pair_list")
+    )
     xg_set1 = set()
     xg_set2 = set()
-    for idx, (ranking, (xg, point_list,)) in enumerate(all_closest_point_list):
+    for idx, (
+        ranking,
+        (
+            xg,
+            point_list,
+        ),
+    ) in enumerate(all_closest_point_list):
         xg = xg.to_tuple()
-        point_list = [ (dis_sqr, xg1.to_tuple(),) for dis_sqr, xg1 in point_list ]
+        point_list = [
+            (
+                dis_sqr,
+                xg1.to_tuple(),
+            )
+            for dis_sqr, xg1 in point_list
+        ]
         dis_sqr_list1 = []
         dis_sqr_list2 = []
         for dis_sqr, xg1 in point_list:
@@ -507,7 +600,12 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
         else:
             assert ranking1 == ranking2
             rsi = rs.split(f"select-{idx}")
-            choice = rsi.select([ 1, 2, ])
+            choice = rsi.select(
+                [
+                    1,
+                    2,
+                ]
+            )
             if choice == 1:
                 xg_set1.add(xg)
             elif choice == 2:
@@ -519,6 +617,7 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     psel1 = q.PointsSelection(total_site, xg_list1)
     psel2 = q.PointsSelection(total_site, xg_list2)
     return psel1, psel2
+
 
 @q.timer(is_timer_fork=True)
 def psel_split_that_increase_separation(psel, mode=None, rs=None):
@@ -533,20 +632,26 @@ def psel_split_that_increase_separation(psel, mode=None, rs=None):
     elif mode == "ranking":
         n = 16
         ranking_func = None
-        return psel_split_that_increase_separation_ranking(psel, n=n, ranking_func=ranking_func, rs=rs)
+        return psel_split_that_increase_separation_ranking(
+            psel, n=n, ranking_func=ranking_func, rs=rs
+        )
     else:
         assert False
+
 
 @q.timer(is_timer_fork=True)
 def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
     fname = q.get_fname()
     assert isinstance(psel_list, list)
+    #
     def find_closest_dis_sqr(psel_idx):
         psel = psel_list[psel_idx]
         assert isinstance(psel, q.PointsSelection)
         if len(psel) == 0:
             return None
-        all_closest_point_list = find_all_closest_point_list(psel, is_parallel=not is_parallel)
+        all_closest_point_list = find_all_closest_point_list(
+            psel, is_parallel=not is_parallel
+        )
         assert isinstance(all_closest_point_list, list)
         assert len(all_closest_point_list) > 0
         closest_point_list = all_closest_point_list[0]
@@ -560,6 +665,7 @@ def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
         assert len(closest_point_list[1][1]) > 0
         closest_dis_sqr = closest_point_list[0]
         return closest_dis_sqr
+    #
     closest_dis_sqr_list = []
     if is_parallel:
         psel_idx_list = list(range(len(psel_list)))
@@ -570,9 +676,11 @@ def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
             n_proc = 0
         chunksize = 1
         closest_dis_sqr_sub_list = q.parallel_map(
-                find_closest_dis_sqr, psel_idx_sub_list,
-                chunksize=chunksize, n_proc=n_proc,
-                )
+            find_closest_dis_sqr,
+            psel_idx_sub_list,
+            chunksize=chunksize,
+            n_proc=n_proc,
+        )
         for sub_list in q.get_comm().allgather(closest_dis_sqr_sub_list):
             closest_dis_sqr_list += sub_list
     else:
@@ -581,6 +689,7 @@ def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
             closest_dis_sqr_list.append(closest_dis_sqr)
     q.displayln_info(0, f"{fname}: {sorted(closest_dis_sqr_list, reverse=True)[:5]}.")
     return closest_dis_sqr_list
+
 
 @q.timer(is_timer_fork=True)
 def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
@@ -593,7 +702,9 @@ def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     fname = q.get_fname()
     if rs is None:
         rs = q.RngState(f"{fname}")
-    current_list = [ psel, ]
+    current_list = [
+        psel,
+    ]
     pending_list = []
     idx = 0
     while True:
@@ -607,10 +718,10 @@ def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
             pending_list = []
         assert len(current_list) > 0
         psel0 = current_list.pop()
-        psel1, psel2 = psel_split_that_increase_separation(psel0, mode=None, rs=rs.split(f"{idx}"))
+        psel1, psel2 = psel_split_that_increase_separation(
+            psel0, mode=None, rs=rs.split(f"{idx}")
+        )
         idx += 1
         pending_list.append(psel1)
         pending_list.append(psel2)
     assert False
-
-

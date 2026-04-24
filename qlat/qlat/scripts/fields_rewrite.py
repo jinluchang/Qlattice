@@ -31,7 +31,9 @@ for path in path_list:
         tags = sfr.list()
         for tag in tags:
             if tag in sfw:
-                q.displayln_info(-1, f"INFO: Skip duplicated '{tag}' of '{sfr.path()}'.")
+                q.displayln_info(
+                    -1, f"INFO: Skip duplicated '{tag}' of '{sfr.path()}'."
+                )
                 continue
             q.displayln_info(-1, f"INFO: Read '{tag}' of '{sfr.path()}'.")
             obj = sfr.read_as_char(tag)

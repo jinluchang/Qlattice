@@ -24,7 +24,7 @@ action = sys.argv[1]
 sys.argv = sys.argv[1:]
 
 if action == "qlat-config":
-    import qlat_config.__main__ # noqa
+    import qlat_config.__main__  # noqa
 elif action == "eigen-system-checksum":
     from .scripts import eigen_system_checksum as eigen_system_checksum
 elif action == "eigen-system-repartition":

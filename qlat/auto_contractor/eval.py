@@ -28,23 +28,17 @@ except:
 
 from qlat_utils.ama import *
 
-from qlat_utils.c import \
-        as_wilson_matrix, as_wilson_matrix_g5_herm
 
 import numpy as np
 import qlat as q
-import copy
-import cmath
 import math
-import importlib
 import time
-import os
 import glob
 import subprocess
 import functools
 
-class CCExpr:
 
+class CCExpr:
     """
     self.cexpr_all
     self.module
@@ -81,18 +75,23 @@ class CCExpr:
         assert self.cexpr_function_bare is not None
         pd = self.base_positions_dict.copy()
         pd.update(positions_dict)
-        return self.cexpr_function_bare(positions_dict=pd, get_prop=get_prop, is_ama_and_sloppy=is_ama_and_sloppy)
+        return self.cexpr_function_bare(
+            positions_dict=pd, get_prop=get_prop, is_ama_and_sloppy=is_ama_and_sloppy
+        )
+
 
 # -----
 
+
 @q.timer_verbose
 def cache_compiled_cexpr(
-        calc_cexpr, path,
-        *,
-        is_cython=True,
-        is_distillation=False,
-        base_positions_dict=None,
-        ):
+    calc_cexpr,
+    path,
+    *,
+    is_cython=True,
+    is_distillation=False,
+    base_positions_dict=None,
+):
     """
     Return an ``CCExpr`` created from ``cexpr = calc_cexpr()`` and cache the results.\n
     Save cexpr object in pickle format for future reuse.
@@ -122,26 +121,34 @@ def cache_compiled_cexpr(
     @q.timer_fname("calc_compile_cexpr")
     def calc_compile_cexpr():
         with q.TimerFork():
+            #
             def compile_cexpr():
                 cexpr_original = calc_cexpr()
                 content_original = display_cexpr(cexpr_original)
                 q.qtouch_info(path + "/cexpr_original.txt", content_original)
                 return cexpr_original
+            #
             cexpr_original = q.pickle_cache_call(
-                    compile_cexpr, path + "/cexpr_original.pickle", is_sync_node=False)
+                compile_cexpr, path + "/cexpr_original.pickle", is_sync_node=False
+            )
+            #
             def optimize():
                 cexpr_optimized = cexpr_original.copy()
                 cexpr_optimized.optimize()
                 content_optimized = display_cexpr(cexpr_optimized)
                 q.qtouch_info(path + "/cexpr_optimized.txt", content_optimized)
                 return cexpr_optimized
+            #
             cexpr_optimized = q.pickle_cache_call(
-                    optimize, path + "/cexpr_optimized.pickle", is_sync_node=False)
+                optimize, path + "/cexpr_optimized.pickle", is_sync_node=False
+            )
+            #
             def gen_code():
                 code_py = cexpr_code_gen_py(
-                        cexpr_optimized,
-                        is_cython=is_cython,
-                        is_distillation=is_distillation)
+                    cexpr_optimized,
+                    is_cython=is_cython,
+                    is_distillation=is_distillation,
+                )
                 if is_cython:
                     fn_py = path + "/cexpr_code.pyx"
                 else:
@@ -149,8 +156,10 @@ def cache_compiled_cexpr(
                 q.qtouch_info(fn_py, code_py)
                 subprocess.run(["touch", "-d", "1 day ago", fn_py])
                 return code_py
+            #
             code_py = q.pickle_cache_call(
-                    gen_code, path + f"/cexpr_code.pickle", is_sync_node=False)
+                gen_code, path + "/cexpr_code.pickle", is_sync_node=False
+            )
             if is_cython:
                 meson_build_fn = path + "/meson.build"
                 q.qtouch_info(meson_build_fn, meson_build_content)
@@ -163,6 +172,7 @@ def cache_compiled_cexpr(
             cexpr_all["code_py"] = code_py
             q.save_pickle_obj(cexpr_all, fn_pickle)
         return cexpr_optimized
+    #
     if q.get_id_node() == 0 and not q.does_file_exist(fn_pickle):
         calc_compile_cexpr()
     q.sync_node()
@@ -185,11 +195,14 @@ def cache_compiled_cexpr(
         module = q.import_file(f"auto_contract_py_{h}.cexpr_code", file_path)
     q.displayln_info(1, f"{fname}: Loaded '{path}'.")
     options = dict(is_cython=is_cython, is_distillation=is_distillation)
-    ccexpr = CCExpr(cexpr_all, module, base_positions_dict=base_positions_dict, options=options)
+    ccexpr = CCExpr(
+        cexpr_all, module, base_positions_dict=base_positions_dict, options=options
+    )
     return ccexpr
 
+
 @q.timer
-def get_expr_names(ccexpr:CExpr|CCExpr):
+def get_expr_names(ccexpr: CExpr | CCExpr):
     """
     interface function
     #
@@ -198,8 +211,9 @@ def get_expr_names(ccexpr:CExpr|CCExpr):
     """
     return ccexpr.get_expr_names()
 
+
 @q.timer
-def get_diagram_type_dict(cexpr:CExpr|CCExpr):
+def get_diagram_type_dict(cexpr: CExpr | CCExpr):
     """
     interface function
     #
@@ -211,8 +225,9 @@ def get_diagram_type_dict(cexpr:CExpr|CCExpr):
         diagram_type_dict[diagram_type] = name
     return diagram_type_dict
 
+
 @q.timer
-def eval_cexpr(ccexpr:CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
+def eval_cexpr(ccexpr: CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
     """
     return 1 dimensional np.array
     cexpr can be cexpr object or can be a compiled function
@@ -228,16 +243,17 @@ def eval_cexpr(ccexpr:CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=Fal
     """
     return ccexpr.cexpr_function(positions_dict, get_prop, is_ama_and_sloppy)
 
+
 @q.timer
 def benchmark_eval_cexpr(
-        cexpr:CCExpr,
-        *,
-        benchmark_size=10,
-        benchmark_num=10,
-        benchmark_num_ama=2,
-        benchmark_rng_state=None,
-        base_positions_dict=None,
-        ):
+    cexpr: CCExpr,
+    *,
+    benchmark_size=10,
+    benchmark_num=10,
+    benchmark_num_ama=2,
+    benchmark_rng_state=None,
+    base_positions_dict=None,
+):
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     if base_positions_dict is None:
@@ -246,7 +262,14 @@ def benchmark_eval_cexpr(
     is_distillation = cexpr.options["is_distillation"]
     n_expr = len(expr_names)
     # prop_dict = {}
-    size = q.Coordinate([ 8, 8, 8, 16, ])
+    size = q.Coordinate(
+        [
+            8,
+            8,
+            8,
+            16,
+        ]
+    )
     positions_vars = []
     for pos in cexpr.positions:
         if pos == "size":
@@ -260,29 +283,60 @@ def benchmark_eval_cexpr(
         positions_vars.append(pos)
     n_pos = len(positions_vars)
     positions = [
-            ("point", benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size),)
-            for pos_idx in range(n_pos)
-            ]
+        (
+            "point",
+            benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size),
+        )
+        for pos_idx in range(n_pos)
+    ]
     #
     def mk_pos_dict(k):
         positions_dict = dict()
         positions_dict["size"] = size
-        idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
+        idx_list = q.random_permute(
+            list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}")
+        )
         for pos, idx in zip(positions_vars, idx_list):
             positions_dict[pos] = positions[idx]
         positions_dict.update(base_positions_dict)
         return positions_dict
-    positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
+    #
+    positions_dict_list = [mk_pos_dict(k) for k in range(benchmark_size)]
     #
     @functools.lru_cache(maxsize=None)
     def mk_prop(flavor, pos_snk, pos_src):
-        prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk} {pos_src}"), is_distillation=is_distillation)
-        prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk} {pos_src}"), is_distillation=is_distillation)
-        ama_val = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
+        prop = make_rand_spin_color_matrix(
+            benchmark_rng_state.split(f"prop {flavor} {pos_snk} {pos_src}"),
+            is_distillation=is_distillation,
+        )
+        prop_ama = make_rand_spin_color_matrix(
+            benchmark_rng_state.split(f"prop ama {flavor} {pos_snk} {pos_src}"),
+            is_distillation=is_distillation,
+        )
+        ama_val = mk_ama_val(
+            prop,
+            pos_src,
+            [
+                prop,
+                prop_ama,
+            ],
+            [
+                0,
+                1,
+            ],
+            [
+                1.0,
+                0.5,
+            ],
+        )
         return ama_val
+    #
     @functools.lru_cache(maxsize=None)
     def mk_prop_uu(tag, p, mu):
-        uu = make_rand_color_matrix(benchmark_rng_state.split(f"prop U {tag} {p} {mu}"), is_distillation=is_distillation)
+        uu = make_rand_color_matrix(
+            benchmark_rng_state.split(f"prop U {tag} {p} {mu}"),
+            is_distillation=is_distillation,
+        )
         return uu
     #
     def convert_pos(p):
@@ -304,48 +358,87 @@ def benchmark_eval_cexpr(
     #
     @q.timer_fname("benchmark_eval_cexpr_get_prop")
     def benchmark_eval_cexpr_get_prop(ptype, *args):
-        return ama_extract(benchmark_eval_cexpr_get_prop_ama(ptype, *args), is_sloppy=True)
+        return ama_extract(
+            benchmark_eval_cexpr_get_prop_ama(ptype, *args), is_sloppy=True
+        )
     #
     @q.timer_verbose_fname("benchmark_eval_cexpr_run")
     def benchmark_eval_cexpr_run():
         res_list = []
         for k in range(benchmark_size):
-            res = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop)
+            res = eval_cexpr(
+                cexpr,
+                positions_dict=positions_dict_list[k],
+                get_prop=benchmark_eval_cexpr_get_prop,
+            )
             res_list.append(res)
         res = np.array(res_list)
-        assert res.shape == (benchmark_size, n_expr,)
+        assert res.shape == (
+            benchmark_size,
+            n_expr,
+        )
         return res
+    #
     @q.timer_verbose_fname("benchmark_eval_cexpr_run_with_ama")
     def benchmark_eval_cexpr_run_with_ama():
         res_list = []
         for k in range(benchmark_size):
-            res1 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop_ama)
-            res2 = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop)
-            res_ama, res_sloppy = eval_cexpr(cexpr, positions_dict=positions_dict_list[k], get_prop=benchmark_eval_cexpr_get_prop_ama, is_ama_and_sloppy=True)
+            res1 = eval_cexpr(
+                cexpr,
+                positions_dict=positions_dict_list[k],
+                get_prop=benchmark_eval_cexpr_get_prop_ama,
+            )
+            res2 = eval_cexpr(
+                cexpr,
+                positions_dict=positions_dict_list[k],
+                get_prop=benchmark_eval_cexpr_get_prop,
+            )
+            res_ama, res_sloppy = eval_cexpr(
+                cexpr,
+                positions_dict=positions_dict_list[k],
+                get_prop=benchmark_eval_cexpr_get_prop_ama,
+                is_ama_and_sloppy=True,
+            )
             assert np.all(res1 == res_ama)
             assert np.all(res2 == res_sloppy)
             res_list.append(res_ama)
         res = np.array(res_list)
-        assert res.shape == (benchmark_size, n_expr,)
+        assert res.shape == (
+            benchmark_size,
+            n_expr,
+        )
         return res
+    #
     def mk_check_vector(k):
         rs = benchmark_rng_state.split(f"check_vector {k}")
-        res = np.array([
-            [ complex(rs.u_rand_gen(1.0, -1.0), rs.u_rand_gen(1.0, -1.0)) for i in range(n_expr) ]
-            for k in range(benchmark_size) ])
+        res = np.array(
+            [
+                [
+                    complex(rs.u_rand_gen(1.0, -1.0), rs.u_rand_gen(1.0, -1.0))
+                    for i in range(n_expr)
+                ]
+                for k in range(benchmark_size)
+            ]
+        )
         return res
-    check_vector_list = [ mk_check_vector(k) for k in range(3) ]
+    #
+    check_vector_list = [mk_check_vector(k) for k in range(3)]
+    #
     def check_res(res):
         if res.dtype != np.complex128:
-            rs_real = benchmark_rng_state.split(f"get_data_sig-real")
-            rs_imag = benchmark_rng_state.split(f"get_data_sig-imag")
+            rs_real = benchmark_rng_state.split("get_data_sig-real")
+            rs_imag = benchmark_rng_state.split("get_data_sig-imag")
             resc = np.zeros_like(res, dtype=np.complex128)
             l = []
             for idx, v in enumerate(res.ravel()):
-                l.append(q.get_data_sig(v, rs_real.split(str(idx))) + 1j * q.get_data_sig(v, rs_imag.split(str(idx))))
+                l.append(
+                    q.get_data_sig(v, rs_real.split(str(idx)))
+                    + 1j * q.get_data_sig(v, rs_imag.split(str(idx)))
+                )
             resc.ravel()[:] = l
             res = resc
-        return [ np.tensordot(res, cv).item() for cv in check_vector_list ]
+        return [np.tensordot(res, cv).item() for cv in check_vector_list]
+    #
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size}")
     with q.TimerFork(max_call_times_for_always_show_info=0):
         check = None
@@ -364,8 +457,11 @@ def benchmark_eval_cexpr(
                 check_ama = new_check_ama
             else:
                 assert check_ama == new_check_ama
-    q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)} {benchmark_show_check(check_ama)}")
+    q.displayln_info(
+        f"benchmark_eval_cexpr: {benchmark_show_check(check)} {benchmark_show_check(check_ama)}"
+    )
     return check, check_ama
+
 
 # -----------------------------------------
 
@@ -455,62 +551,80 @@ codelib = py3.extension_module('cexpr_code',
   )
 """
 
+
 def make_rand_spin_color_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
     if is_distillation:
         nc = 10
         ns = 4
-        shape = (ns, nc, ns, nc,)
-        wm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
+        shape = (
+            ns,
+            nc,
+            ns,
+            nc,
+        )
+        wm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     else:
         wm = q.WilsonMatrix()
         arr = wm[:]
         shape = arr.shape
-        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
+        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     return wm
+
 
 def make_rand_spin_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
     if is_distillation:
-        nc = 10
         ns = 4
-        shape = (ns, ns,)
-        sm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
+        shape = (
+            ns,
+            ns,
+        )
+        sm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     else:
         sm = q.SpinMatrix()
         arr = sm[:]
         shape = arr.shape
-        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
+        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     return sm
+
 
 def make_rand_color_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
     if is_distillation:
         nc = 10
-        ns = 4
-        shape = (nc, nc,)
-        cm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
+        shape = (
+            nc,
+            nc,
+        )
+        cm = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     else:
         cm = q.ColorMatrix()
         arr = cm[:]
         shape = arr.shape
-        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1+1j)
+        arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     return cm
 
+
 def benchmark_show_check(check):
-    return " ".join([ f"{v:.10E}" for v in check ])
+    return " ".join([f"{v:.10E}" for v in check])
+
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
 
+
 def sqrt_component(x):
     return math.sqrt(x.real) + 1j * math.sqrt(x.imag)
 
+
 def sqr_component_array(arr):
-    return np.array([ sqr_component(x) for x in arr ])
+    return np.array([sqr_component(x) for x in arr])
+
 
 def sqrt_component_array(arr):
-    return np.array([ sqrt_component(x) for x in arr ])
+    return np.array([sqrt_component(x) for x in arr])
+
 
 # -----
 

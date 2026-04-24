@@ -4,24 +4,28 @@ use_reference_implementation = False
 
 mpi_comm = None
 
+
 def set_mpi_comm(comm):
     global mpi_comm
     mpi_comm = comm
+
 
 def get_mpi_comm():
     global mpi_comm
     if mpi_comm is None:
         from mpi4py import MPI
+        #
         mpi_comm = MPI.COMM_WORLD
     return mpi_comm
+
 
 def bcast_py(x, root=0, comm=None):
     if comm is None:
         comm = get_mpi_comm()
     return comm.bcast(x, root)
 
-class DistArray:
 
+class DistArray:
     """
     self.n : total size for the first dimension (the distributed dimension) of the array.
     self.x : np.ndarray for this MPI process (pad zeros if does not divide).
@@ -175,7 +179,10 @@ class DistArray:
         rank = comm.Get_rank()
         root = 0
         axes = list(range(len(self.x.shape)))
-        axes[:2] = [ 1, 0, ]
+        axes[:2] = [
+            1,
+            0,
+        ]
         v = gather_arr(self, root)
         if rank == root:
             v = v.transpose(axes)
@@ -193,7 +200,10 @@ class DistArray:
         comm = self.comm
         size = comm.Get_size()
         axes = list(range(len(self.x.shape)))
-        axes[:2] = [ 1, 0, ]
+        axes[:2] = [
+            1,
+            0,
+        ]
         vec = self.x.transpose(axes)
         vec_len = len(vec)
         d_vec_len = (vec_len - 1) // size + 1
@@ -209,14 +219,24 @@ class DistArray:
             # make sure it is contiguous
             assert d_vec_len * size == vec_len
         vec = np.ascontiguousarray(vec)
-        nvec = np.empty((size, d_vec_len,) + vec.shape[1:], dtype=vec.dtype)
+        nvec = np.empty(
+            (
+                size,
+                d_vec_len,
+            )
+            + vec.shape[1:],
+            dtype=vec.dtype,
+        )
         comm.Alltoall(vec, nvec)
         axes = list(range(len(nvec.shape)))
-        axes[:2] = [ 1, 0, ]
+        axes[:2] = [
+            1,
+            0,
+        ]
         nvec = nvec.transpose(axes)
         nvec = nvec.reshape(d_vec_len, size * vec.shape[1], *vec.shape[2:])
         assert nvec.shape[1] >= self.n
-        nvec = nvec[:, :self.n]
+        nvec = nvec[:, : self.n]
         nvec = np.ascontiguousarray(nvec)
         d_ret = DistArray(comm=comm)
         d_ret.n = vec_len
@@ -229,10 +249,19 @@ class DistArray:
         if len(shape) == 1:
             return self
         elif len(shape) == 2:
-            if (axes is None) or (tuple(axes) == (1, 0,)):
+            if (axes is None) or (
+                tuple(axes)
+                == (
+                    1,
+                    0,
+                )
+            ):
                 return self.transpose2d()
             else:
-                assert tuple(axes) == (0, 1,)
+                assert tuple(axes) == (
+                    0,
+                    1,
+                )
                 return self
         else:
             raise Exception(f"DistArray.transpose: axes={axes}")
@@ -248,7 +277,9 @@ class DistArray:
         d_ret.x = self.x.conj()
         return d_ret
 
+
 ###
+
 
 def d_matmul_ref(d_mat, d_vec):
     """
@@ -270,6 +301,7 @@ def d_matmul_ref(d_mat, d_vec):
     d_ret = scatter_arr(ret, root, comm)
     return d_ret
 
+
 def d_matmul(d_mat, d_vec):
     """
     return DistArray
@@ -289,17 +321,19 @@ def d_matmul(d_mat, d_vec):
     d_ret.x = ret
     return d_ret
 
+
 def d_trace_ref(d_mat):
     assert len(d_mat.x.shape) >= 2
     mat = all_gather_arr(d_mat)
     return np.trace(mat)
+
 
 def d_trace(d_mat):
     if use_reference_implementation:
         return d_trace_ref(d_mat)
     assert len(d_mat.x.shape) >= 2
     comm = d_mat.comm
-    size = comm.Get_size()
+    comm.Get_size()
     rank = comm.Get_rank()
     d_vec_len = len(d_mat.x)
     r = np.trace(d_mat.x, offset=rank * d_vec_len)
@@ -309,7 +343,9 @@ def d_trace(d_mat):
         r = comm.allreduce(r)
     return r
 
+
 ###
+
 
 def scatter_arr(vec, root=0, comm=None):
     """
@@ -324,7 +360,10 @@ def scatter_arr(vec, root=0, comm=None):
     rank = comm.Get_rank()
     if rank == root:
         assert isinstance(vec, np.ndarray)
-        shape_dtype = (vec.shape, vec.dtype,)
+        shape_dtype = (
+            vec.shape,
+            vec.dtype,
+        )
     else:
         shape_dtype = None
     shape, dtype = comm.bcast(shape_dtype, root)
@@ -348,6 +387,7 @@ def scatter_arr(vec, root=0, comm=None):
     d_vec.comm = comm
     return d_vec
 
+
 def gather_arr(d_vec, root=0):
     """
     return np.ndarray on node root
@@ -369,9 +409,10 @@ def gather_arr(d_vec, root=0):
     comm.Gather(d_vec.x, vec_g, root)
     if rank == root:
         assert new_vec_len >= d_vec.n
-        vec_g = vec_g[:d_vec.n]
+        vec_g = vec_g[: d_vec.n]
         # vec_g = np.ascontiguousarray(vec_g)
     return vec_g
+
 
 def all_gather_arr(d_vec):
     """
@@ -387,6 +428,6 @@ def all_gather_arr(d_vec):
     d_vec.x = np.ascontiguousarray(d_vec.x)
     comm.Allgather(d_vec.x, vec_g)
     assert new_vec_len >= d_vec.n
-    vec_g = vec_g[:d_vec.n]
+    vec_g = vec_g[: d_vec.n]
     # vec_g = np.ascontiguousarray(vec_g)
     return vec_g

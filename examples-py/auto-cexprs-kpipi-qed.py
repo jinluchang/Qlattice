@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
+
 import qlat as q
 
 from auto_contractor.operators import *
 from auto_contractor.eval import *
-
-import sys
 
 is_cython = False
 
