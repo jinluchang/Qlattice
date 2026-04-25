@@ -3,7 +3,8 @@
 namespace qlat
 {  //
 
-void save_grid_prop_float(const Field<WilsonMatrix>& prop, const std::string& path)
+void save_grid_prop_float(const Field<WilsonMatrix>& prop,
+                          const std::string& path)
 {
   TIMER_VERBOSE("save_grid_prop_float");
   const std::string path_dir = dirname(path);
@@ -54,7 +55,8 @@ void load_grid_prop_float(Field<WilsonMatrix>& prop, const std::string& path)
   grid_convert((Propagator4d&)prop, gprop);
 }
 
-void save_grid_prop_double(const Field<WilsonMatrix>& prop, const std::string& path)
+void save_grid_prop_double(const Field<WilsonMatrix>& prop,
+                           const std::string& path)
 {
   TIMER_VERBOSE("save_grid_prop_double");
   const std::string path_dir = dirname(path);
