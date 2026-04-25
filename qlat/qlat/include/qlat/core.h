@@ -8,6 +8,7 @@
 #include <qlat-utils/utils-vec.h>
 #include <qlat/config.h>
 #include <qlat/env.h>
+
 #include "qlat-utils/types.h"
 
 namespace qlat
@@ -427,10 +428,10 @@ template <class M>
 struct API SelectedPoints;
 
 enum struct PointsDistType : Int {
-  Global, // Default
-  Full, // Similar to Field
-  Local, // Similar to SelectedField
-  Random, // Shuffle based on coordinate
+  Global,  // Default
+  Full,    // Similar to Field
+  Local,   // Similar to SelectedField
+  Random,  // Shuffle based on coordinate
   Other,
 };
 
@@ -440,7 +441,8 @@ PointsDistType read_points_dist_type(const std::string& points_dist_type_str);
 
 struct API PointsSelection {
   bool initialized;
-  PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
+  PointsDistType points_dist_type;  // default PointsDistType::Global (all node
+                                    // has the same data)
   Coordinate total_site;
   vector<Coordinate> xgs;
   //
@@ -449,7 +451,8 @@ struct API PointsSelection {
             const PointsDistType points_dist_type_ = PointsDistType::Global);
   void init(const Coordinate& total_site_, const std::vector<Coordinate>& xgs_);
   void init(const Coordinate& total_site_, const vector<Coordinate>& xgs_);
-  void init(const Coordinate& total_site_, const SelectedPoints<Coordinate>& spx);
+  void init(const Coordinate& total_site_,
+            const SelectedPoints<Coordinate>& spx);
   //
   PointsSelection() { init(); }
   PointsSelection(const PointsSelection&) = default;
@@ -504,10 +507,12 @@ struct API SelectedPoints {
   // (it is likely not what you think it is)
   //
   bool initialized;
-  PointsDistType points_dist_type;  // default PointsDistType::Global (all node has the same data)
+  PointsDistType points_dist_type;  // default PointsDistType::Global (all node
+                                    // has the same data)
   Int multiplicity;
   Long n_points;
-  vector<M> points;  // global quantity, same on each node if points_dist_type == PointsDistType::Global
+  vector<M> points;  // global quantity, same on each node if points_dist_type
+                     // == PointsDistType::Global
   // points.size() == n_points * multiplicity if initialized = true
   //
   void init();
@@ -773,10 +778,7 @@ struct API Field {
     geo.set_mem_type(mem_type);
     field.set_mem_type(mem_type);
   }
-  MemType get_mem_type() const
-  {
-    return field.mem_type;
-  }
+  MemType get_mem_type() const { return field.mem_type; }
   //
   void set_view(const Field<M>& f)
   {
@@ -880,8 +882,7 @@ struct API Field {
     const Geometry& geo_v = geo();
     if (not geo_v.is_on_node(x)) {
 #ifndef QLAT_IN_ACC
-      qerr("Field::get_elems_const: x=" + show(x) +
-                         "\ngeo=" + show(geo_v));
+      qerr("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo_v));
 #else
       qassert(false);
 #endif
@@ -1199,7 +1200,7 @@ struct API FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
 };
 
 template <class T = Real>
-struct API FermionField5dT : Field<WilsonVectorT<T> > {
+struct API FermionField5dT : Field<WilsonVectorT<T>> {
 };
 
 using GaugeField = GaugeFieldT<>;
@@ -1278,7 +1279,8 @@ struct API SelectedField {
   void init(const Geometry& geo_, const Long n_elems_, const Int multiplicity_);
   void init(const FieldSelection& fsel, const Int multiplicity_);
   //
-  void init_zero(const Geometry& geo_, const Long n_elems_, const Int multiplicity_);
+  void init_zero(const Geometry& geo_, const Long n_elems_,
+                 const Int multiplicity_);
   void init_zero(const FieldSelection& fsel, const Int multiplicity_);
   //
   SelectedField() { init(); }
@@ -1293,10 +1295,7 @@ struct API SelectedField {
     geo.set_mem_type(mem_type);
     field.set_mem_type(mem_type);
   }
-  MemType get_mem_type() const
-  {
-    return field.mem_type;
-  }
+  MemType get_mem_type() const { return field.mem_type; }
   //
   void set_view(const SelectedField<M>& sf)
   {

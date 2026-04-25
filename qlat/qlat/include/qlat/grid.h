@@ -166,7 +166,8 @@ inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
   })
 }
 
-inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatrix>& prop)
+inline void grid_convert(Grid::LatticePropagatorF& gprop,
+                         const Field<WilsonMatrix>& prop)
 {
   TIMER_VERBOSE("grid_convert(gprop,prop)");
   using namespace Grid;
@@ -188,7 +189,8 @@ inline void grid_convert(Grid::LatticePropagatorF& gprop, const Field<WilsonMatr
   })
 }
 
-inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatrix>& prop)
+inline void grid_convert(Grid::LatticePropagatorD& gprop,
+                         const Field<WilsonMatrix>& prop)
 {
   TIMER_VERBOSE("grid_convert(gprop,prop)");
   using namespace Grid;
@@ -210,7 +212,8 @@ inline void grid_convert(Grid::LatticePropagatorD& gprop, const Field<WilsonMatr
   })
 }
 
-inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagatorF& gprop)
+inline void grid_convert(Field<WilsonMatrix>& prop,
+                         const Grid::LatticePropagatorF& gprop)
 {
   TIMER_VERBOSE("grid_convert(prop,gprop)");
   using namespace Grid;
@@ -232,7 +235,8 @@ inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagato
   })
 }
 
-inline void grid_convert(Field<WilsonMatrix>& prop, const Grid::LatticePropagatorD& gprop)
+inline void grid_convert(Field<WilsonMatrix>& prop,
+                         const Grid::LatticePropagatorD& gprop)
 {
   TIMER_VERBOSE("grid_convert(prop,gprop)");
   using namespace Grid;
@@ -270,8 +274,7 @@ inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
       coor[0] = m;
       peekLocalSite(fs, gff_v, coor);
       array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>& ds =
-          (array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)
-              wvs[m];
+          (array<ComplexD, sizeof(WilsonVector) / sizeof(ComplexD)>&)wvs[m];
       for (Int k = 0; k < (int)(sizeof(WilsonVector) / sizeof(ComplexD)); ++k) {
         ds[k] = fs[k];
       }

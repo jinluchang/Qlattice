@@ -1,14 +1,13 @@
 #pragma once
 
-#include "utils.h"
-#include "function.h"
-
+#include <gsl/gsl_integration.h>
 #include <qlat/qlat.h>
 
-#include <gsl/gsl_integration.h>
-
-#include <iostream>
 #include <cmath>
+#include <iostream>
+
+#include "function.h"
+#include "utils.h"
 
 namespace qlat
 {  //
@@ -29,7 +28,7 @@ Int integrate(RealD& result, RealD& abserr, const F& f, const RealD a,
 
 template <class F>
 RealD integrate(const F& f, const RealD a, const RealD b,
-                 const RealD epsabs = 0.0, const RealD epsrel = 1.0e-8)
+                const RealD epsabs = 0.0, const RealD epsrel = 1.0e-8)
 {
   RealD result = 0.0, abserr = 0.0;
   integrate(result, abserr, f, a, b, epsabs, epsrel);

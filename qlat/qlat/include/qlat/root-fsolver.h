@@ -1,14 +1,13 @@
 #pragma once
 
-#include "utils.h"
-#include "function.h"
-
-#include <qlat/qlat.h>
-
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_roots.h>
+#include <qlat/qlat.h>
 
 #include <cassert>
+
+#include "function.h"
+#include "utils.h"
 
 namespace qlat
 {  //

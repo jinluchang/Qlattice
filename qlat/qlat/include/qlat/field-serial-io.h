@@ -2,17 +2,17 @@
 
 #include <qlat/field-base-io.h>
 #include <qlat/field-dist-io.h>
-
 #include <stdio.h>
-#include <ctime>
 
+#include <ctime>
 #include <fstream>
 #include <iostream>
 
 namespace qlat
 {  //
 
-inline Coordinate get_default_serial_new_size_node(const Geometry& geo, const Int max_num_ = 0)
+inline Coordinate get_default_serial_new_size_node(const Geometry& geo,
+                                                   const Int max_num_ = 0)
 {
   const Int num_node = geo.geon.num_node;
   const Int max_num =
@@ -48,7 +48,7 @@ Long serial_write_field(const Field<M>& f, const std::string& path,
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("serial_write_field");
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   shuffle_field(fs, f, new_size_node);
   const Int mpi_tag = 6;
   if (get_id_node() == 0) {
@@ -100,7 +100,7 @@ Long serial_read_field(Field<M>& f, const std::string& path,
   }
   const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity;
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   const std::vector<Geometry> new_geos =
       make_dist_io_geos(geo.total_site(), new_size_node);
   fs.resize(new_geos.size());
@@ -158,7 +158,7 @@ Long serial_read_field_par(Field<M>& f, const std::string& path,
   }
   const Geometry& geo = f.geo();
   const Int multiplicity = f.multiplicity;
-  std::vector<Field<M> > fs;
+  std::vector<Field<M>> fs;
   const std::vector<Geometry> new_geos =
       make_dist_io_geos(geo.total_site(), new_size_node);
   fs.resize(new_geos.size());
@@ -189,7 +189,8 @@ Long serial_write_field(const Field<M>& f, const std::string& path)
 // interface_function
 {
   return serial_write_field(
-      f, path, get_default_serial_new_size_node(f.geo(), dist_write_par_limit()));
+      f, path,
+      get_default_serial_new_size_node(f.geo(), dist_write_par_limit()));
 }
 
 template <class M>

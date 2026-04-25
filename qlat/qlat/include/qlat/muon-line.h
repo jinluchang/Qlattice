@@ -1,34 +1,37 @@
 #pragma once
 
-#include "integration-multidimensional.h"
-#include "compute-int-mult.h"
-#include "projection.h"
-#include "interpolation-bilinear.h"
-
 #include <qlat/qlat.h>
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <cassert>
 #include <string>
+
+#include "compute-int-mult.h"
+#include "integration-multidimensional.h"
+#include "interpolation-bilinear.h"
+#include "projection.h"
 
 // Eq. (9) of https://arxiv.org/pdf/2304.04423.pdf
 //
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % = muonLineSym(m * (x - z), m * (y - z))[16 * sigma + 4 * lambda + rho][i]
-// % = muon_line_sym_py(m * (x - z), m * (y - z))[i * 64 + rho * 16 + sigma * 4 + lambda]
+// % = muon_line_sym_py(m * (x - z), m * (y - z))[i * 64 + rho * 16 + sigma * 4
+// + lambda]
 //
 // % interpolate saved data and extrapolate different interpolations
 //
-// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
+// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda
+// + rho][i]
 //
-// % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i, rho, sigma, lambda)
+// % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i,
+// rho, sigma, lambda)
 //
 // % tag = 0 : subtraction
 // % tag = 1 : no subtraction
 //
-// % m is the muon mass in the lattice unit (or lattice spacing in muon mass unit)
-// % total_site is the lattice size in lattice unit
+// % m is the muon mass in the lattice unit (or lattice spacing in muon mass
+// unit) % total_site is the lattice size in lattice unit
 
 namespace qlat
 {  //
@@ -367,9 +370,9 @@ inline void paramsFromCoordinates(std::vector<RealD>& params,
   const RealD cos_theta = y[3] / d;
   const RealD cos_phi = x[3] / x_len;
   RealD cos_eta = (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]) /
-                   (std::sqrt((x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) *
-                              (y[0] * y[0] + y[1] * y[1] + y[2] * y[2])) +
-                    1.0E-99);
+                  (std::sqrt((x[0] * x[0] + x[1] * x[1] + x[2] * x[2]) *
+                             (y[0] * y[0] + y[1] * y[1] + y[2] * y[2])) +
+                   1.0E-99);
   if (cos_eta > 1.0) {
     cos_eta = 1.0;
   } else if (cos_eta < -1.0) {
@@ -620,28 +623,24 @@ inline ManyMagneticMoments muonLineSymPermute(
     mmms.push_back(muonLineSymRotate(x, y, eps, b_interp));  // y z x
   }
   if (xyl <= yl && yl <= xl) {
-    mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(-x + y, -x, eps, b_interp),
-                       2, 0, 1));  // z x y
+    mmms.push_back(permuteNuRhoMu(muonLineSymRotate(-x + y, -x, eps, b_interp),
+                                  2, 0, 1));  // z x y
   }
   if (yl <= xl && xl <= xyl) {
-    mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(-y, x - y, eps, b_interp),
-                       1, 2, 0));  // x y z
+    mmms.push_back(permuteNuRhoMu(muonLineSymRotate(-y, x - y, eps, b_interp),
+                                  1, 2, 0));  // x y z
   }
   if (yl <= xyl && xyl <= xl) {
-    mmms.push_back(permuteNuRhoMu(
-        muonLineSymRotate(y, x, eps, b_interp), 2, 1, 0));  // x z y
+    mmms.push_back(permuteNuRhoMu(muonLineSymRotate(y, x, eps, b_interp), 2, 1,
+                                  0));  // x z y
   }
   if (xl <= yl && yl <= xyl) {
-    mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(-x, -x + y, eps, b_interp),
-                       0, 2, 1));  // y x z
+    mmms.push_back(permuteNuRhoMu(muonLineSymRotate(-x, -x + y, eps, b_interp),
+                                  0, 2, 1));  // y x z
   }
   if (xyl <= xl && xl <= yl) {
-    mmms.push_back(
-        permuteNuRhoMu(muonLineSymRotate(x - y, -y, eps, b_interp),
-                       1, 0, 2));  // z y x
+    mmms.push_back(permuteNuRhoMu(muonLineSymRotate(x - y, -y, eps, b_interp),
+                                  1, 0, 2));  // z y x
   }
   Qassert(mmms.size() > 0);
   return averageManyMagneticMoments(mmms);
@@ -1080,8 +1079,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
   TIMER_VERBOSE("compute_save_muonline_interpolation_cc");
   std::vector<std::vector<RealD>> ldims;
   if (0 == get_id_node() && does_file_exist_qar(path + "/dims.txt")) {
-    std::vector<std::vector<RealD>> ldims =
-        qload_datatable(path + "/dims.txt");
+    std::vector<std::vector<RealD>> ldims = qload_datatable(path + "/dims.txt");
     Qassert(ldims.size() == dims.size());
     for (Long i = 0; i < (Long)ldims.size(); ++i) {
       Qassert(i == (Long)ldims[i][0]);
@@ -1205,8 +1203,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
 #pragma omp parallel for schedule(dynamic)
         for (Long i = 0; i < job_chunk_size; ++i) {
           const Long idx = job + i;
-          result[i] =
-              muonLineSymParamsCompressed(interp.get_coor(idx), eps);
+          result[i] = muonLineSymParamsCompressed(interp.get_coor(idx), eps);
 #pragma omp critical
           {
             displayln_c_stdout(ssprintf("par: %5d %10ld/%ld %10ld/%ld",
@@ -1222,8 +1219,7 @@ inline bool compute_save_muonline_interpolation_cc(const std::string& path,
       const Long last_start_idx = last_flag * job_chunk_size;
 #pragma omp parallel for schedule(dynamic)
       for (Long idx = last_start_idx; idx < jobs_total; ++idx) {
-        interp[idx] =
-            muonLineSymParamsCompressed(interp.get_coor(idx), eps);
+        interp[idx] = muonLineSymParamsCompressed(interp.get_coor(idx), eps);
 #pragma omp critical
         {
           displayln_c_stdout(
@@ -1333,25 +1329,16 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
                                                  const Int tag)
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
-// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
-// % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i, rho, sigma, lambda)
-// % tag = 0 : subtraction
-// % tag = 1 : no subtraction
-// % m is the muon mass in the lattice unit (or lattice spacing in muon mass unit)
-// % total_site is the lattice size in lattice unit
-// % Interpolations should be loaded for this function:
-// % 0: 6^5 with-sub
-// % 1: 8^5 with-sub (used for tag 0)
-// % 2: 10^5 with-sub
-// % 3: 12^5 with-sub (used for tag 0)
-// % 4: 14^5 with-sub
-// % 5: 16^5 with-sub (used for tag 0)
-// % 6: 6^5 no-sub
-// % 7: 8^5 no-sub (used for tag 1)
-// % 8: 10^5 no-sub
-// % 9: 12^5 no-sub (used for tag 1)
-// % l0: 14^5 no-sub
-// % 11: 16^5 no-sub (used for tag 1)
+// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda
+// + rho][i] % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m,
+// tag), i, rho, sigma, lambda) % tag = 0 : subtraction % tag = 1 : no
+// subtraction % m is the muon mass in the lattice unit (or lattice spacing in
+// muon mass unit) % total_site is the lattice size in lattice unit %
+// Interpolations should be loaded for this function: % 0: 6^5 with-sub % 1: 8^5
+// with-sub (used for tag 0) % 2: 10^5 with-sub % 3: 12^5 with-sub (used for tag
+// 0) % 4: 14^5 with-sub % 5: 16^5 with-sub (used for tag 0) % 6: 6^5 no-sub %
+// 7: 8^5 no-sub (used for tag 1) % 8: 10^5 no-sub % 9: 12^5 no-sub (used for
+// tag 1) % l0: 14^5 no-sub % 11: 16^5 no-sub (used for tag 1)
 {
   // TIMER("get_muon_line_m_extra");
   const std::vector<std::vector<RealD>>& weights =
@@ -1372,9 +1359,9 @@ inline ManyMagneticMoments get_muon_line_m_extra(const CoordinateD& x,
 }
 
 inline std::vector<RealD> get_muon_line_m_extra_py(const CoordinateD& x,
-                                                    const CoordinateD& y,
-                                                    const CoordinateD& z,
-                                                    const Int tag)
+                                                   const CoordinateD& y,
+                                                   const CoordinateD& z,
+                                                   const Int tag)
 {
   const ManyMagneticMoments mmm = get_muon_line_m_extra(x, y, z, tag);
   return std_vector_from_many_magnetic_moments(mmm);
@@ -1386,12 +1373,11 @@ inline ManyMagneticMoments get_muon_line_m_extra_lat(
 // interface
 // % \mathcal M_{i,\rho,\sigma,\lambda}(x,y,z)
 // % interpolate saved data and extrapolate different interpolations
-// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda + rho][i]
-// % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m, tag), i, rho, sigma, lambda)
-// % tag = 0 : subtraction
-// % tag = 1 : no subtraction
-// % m is the muon mass in the lattice unit (or lattice spacing in muon mass unit)
-// % total_site is the lattice size in lattice unit
+// % = get_muon_line_m_extra(m * x, m * y, m * z , tag)[16 * sigma  + 4 * lambda
+// + rho][i] % = get_m_comp(get_muon_line_m_extra_lat(x, y, z, total_site, m,
+// tag), i, rho, sigma, lambda) % tag = 0 : subtraction % tag = 1 : no
+// subtraction % m is the muon mass in the lattice unit (or lattice spacing in
+// muon mass unit) % total_site is the lattice size in lattice unit
 {
   // TIMER("get_muon_line_m_extra_lat");
   const Coordinate rxy = relative_coordinate(y - x, total_site);
@@ -1552,7 +1538,8 @@ inline void test_muonline_transform_scaling()
       y[m] *= pow(u_rand_gen(rsi, 1.0, 0.0), 10);
     }
     ManyMagneticMoments mmm = muonLineSym(x, y, IntegrationEps());
-    ManyMagneticMoments mmmp = muonLineSymTransform(x, y, IntegrationEps(), false);
+    ManyMagneticMoments mmmp =
+        muonLineSymTransform(x, y, IntegrationEps(), false);
     // ManyMagneticMoments mmmp = ratio * muonLineSymTransform(x/ratio, y/ratio,
     // 1e-12, 1e-3, false); ManyMagneticMoments mmmpp = ratio2 *
     // muonLineSymTransform(x/ratio2, y/ratio2, 1e-12, 1e-3, false);
@@ -1601,8 +1588,10 @@ inline void test_muonline_interp()
       }
     }
     ManyMagneticMoments mmm = muonLineSym(x, y, IntegrationEps());
-    ManyMagneticMoments mmmp = muonLineSymTransform(x, y, IntegrationEps(), false);
-    ManyMagneticMoments mmmpp = muonLineSymTransform(x, y, IntegrationEps(), true);
+    ManyMagneticMoments mmmp =
+        muonLineSymTransform(x, y, IntegrationEps(), false);
+    ManyMagneticMoments mmmpp =
+        muonLineSymTransform(x, y, IntegrationEps(), true);
     {
       compare_many_magnetic_moments("checking", x, y, mmm, mmmp);
       compare_many_magnetic_moments("checking2", x, y, mmm, mmmpp);
@@ -1639,7 +1628,8 @@ inline void test_muonline_rotate()
       y[m] = u_rand_gen(rsi, high, low);
       y[m] *= pow(u_rand_gen(rsi, 1.0, 0.0), 5);
     }
-    muonLineSymRotateCheck(makeRandomSpatialO3Matrix(rsi), x, y, IntegrationEps());
+    muonLineSymRotateCheck(makeRandomSpatialO3Matrix(rsi), x, y,
+                           IntegrationEps());
   }
   timer.flops += size;
 }

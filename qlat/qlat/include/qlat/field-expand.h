@@ -40,17 +40,18 @@ qacc void set_marks_field_path(CommMarks& marks, const Coordinate xl,
   }
 }
 
-void set_marks_field_all(CommMarks& marks, const Geometry& geo, const Int multiplicity,
-                         const std::string& tag);
+void set_marks_field_all(CommMarks& marks, const Geometry& geo,
+                         const Int multiplicity, const std::string& tag);
 
-void set_marks_field_1(CommMarks& marks, const Geometry& geo, const Int multiplicity,
-                       const std::string& tag);
+void set_marks_field_1(CommMarks& marks, const Geometry& geo,
+                       const Int multiplicity, const std::string& tag);
 
-void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo, const Int multiplicity,
+void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
+                                 const Int multiplicity,
                                  const std::string& tag);
 
-void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo, const Int multiplicity,
-                              const std::string& tag);
+void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
+                              const Int multiplicity, const std::string& tag);
 
 struct API CommPackInfo {
   Long offset;
@@ -86,11 +87,14 @@ const Int lattice_size_multiplier = 3;
 // (This is a hack, please fix me)
 
 void g_offset_id_node_from_offset(Long& g_offset, Int& id_node,
-                                  const Long offset, const Geometry& geo, const Int multiplicity);
+                                  const Long offset, const Geometry& geo,
+                                  const Int multiplicity);
 
-Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo, const Int multiplicity);
+Long offset_send_from_g_offset(const Long g_offset, const Geometry& geo,
+                               const Int multiplicity);
 
-Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo, const Int multiplicity);
+Long offset_recv_from_g_offset(const Long g_offset, const Geometry& geo,
+                               const Int multiplicity);
 
 CommPlan make_comm_plan(const CommMarks& marks);
 

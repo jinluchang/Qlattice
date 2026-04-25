@@ -168,8 +168,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
-  vector<array<WilsonMatrix, 16> > gwm_ts(omp_get_max_threads() *
-                                          total_site[3]);
+  vector<array<WilsonMatrix, 16>> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
 #pragma omp parallel for
   for (Long idx = 0; idx < (Long)fsel.indices.size(); ++idx) {
@@ -192,7 +191,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
       }
     }
   }
-  vector<array<ComplexD, 16 * 16> > m_ts(total_site[3]);
+  vector<array<ComplexD, 16 * 16>> m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (Int t = 0; t < total_site[3]; ++t) {
@@ -227,7 +226,7 @@ inline LatData contract_two_point_wall_snk_function(
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   qassert(prop1.n_points == (Long)total_site[3]);
   qassert(prop2.n_points == (Long)total_site[3]);
-  vector<array<ComplexD, 16 * 16> > m_ts(total_site[3]);
+  vector<array<ComplexD, 16 * 16>> m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (Int t = 0; t < total_site[3]; ++t) {
@@ -491,9 +490,9 @@ inline LatData mk_meson_snk_src_table(const Coordinate& total_site)
 }
 
 inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
-                                      const WallSrcProps& wsp2, const Int t_snk,
-                                      const bool exact_snk, const Int t_src,
-                                      const bool exact_src)
+                                       const WallSrcProps& wsp2,
+                                       const Int t_snk, const bool exact_snk,
+                                       const Int t_src, const bool exact_src)
 {
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const WilsonMatrix& wm1_snk_src =
@@ -510,8 +509,8 @@ inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
 }
 
 inline ComplexD contract_meson_snk_src(const WallSrcProps& wsp1,
-                                      const WallSrcProps& wsp2, const Int t_snk,
-                                      const Int t_src)
+                                       const WallSrcProps& wsp2,
+                                       const Int t_snk, const Int t_src)
 {
   qassert(wsp1.exact_tslice_mask.size() == wsp2.exact_tslice_mask.size());
   qassert(0 <= t_snk and t_snk < (int)wsp1.exact_tslice_mask.size());

@@ -35,8 +35,8 @@ inline void contract_psel_fsel_distribution_acc(FieldM<ComplexD, 1>& pos,
 }
 
 template <class M>
-void rescale_field_with_psel_fsel_distribution(Field<M>& f,
-                                               const FieldM<ComplexD, 1>& pfdist)
+void rescale_field_with_psel_fsel_distribution(
+    Field<M>& f, const FieldM<ComplexD, 1>& pfdist)
 {
   TIMER_VERBOSE("rescale_field_with_psel_fsel_distribution");
   const Geometry& geo = f.geo();
@@ -192,7 +192,7 @@ inline void contract_meson_vv_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_unshifted(
-    std::vector<SelectedField<ComplexD> >& sfs, const WallSrcProps& wsp1,
+    std::vector<SelectedField<ComplexD>>& sfs, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
     const Long xg_y_psel_idx, const Int tsep, const PointsSelection& psel,
     const FieldSelection& fsel)
@@ -259,7 +259,7 @@ inline void contract_meson_vv_acc(
   Qassert(psel[xg_y_psel_idx] == xg_y);
   Qassert(ssp.shift == -xg_y);
   Qassert(ssp.is_reflect == false);
-  std::vector<SelectedField<ComplexD> > sfs;
+  std::vector<SelectedField<ComplexD>> sfs;
   contract_meson_vv_unshifted(sfs, wsp1, wsp2, prop3_x_y, xg_y, xg_y_psel_idx,
                               tsep, psel, fsel);
   Qassert(sfs.size() == 2);
@@ -363,7 +363,8 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
     Qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
     const ComplexD coef1 = sloppy_exact_ratio_11 * coef;
-    const ComplexD coef2 = (sloppy_exact_ratio_1 - sloppy_exact_ratio_11) * coef;
+    const ComplexD coef2 =
+        (sloppy_exact_ratio_1 - sloppy_exact_ratio_11) * coef;
     const ComplexD coef3 =
         (1.0 - 2.0 * sloppy_exact_ratio_1 + sloppy_exact_ratio_11) * coef;
     contract_meson_vv_meson_unshifted_acc_x(v, coef1, wsp1, wsp2, wsp3, wm4_x_y,
@@ -407,7 +408,7 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_meson_unshifted(
-    std::vector<SelectedField<ComplexD> >& meson_vv_meson,
+    std::vector<SelectedField<ComplexD>>& meson_vv_meson,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
     const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
     const Long xg_y_psel_idx, const Int tsep, const PointsSelection& psel,
@@ -478,7 +479,7 @@ inline void contract_meson_vv_meson_acc(
   Qassert(psel[xg_y_psel_idx] == xg_y);
   Qassert(ssp.shift == -xg_y);
   Qassert(ssp.is_reflect == false);
-  std::vector<SelectedField<ComplexD> > sfs;
+  std::vector<SelectedField<ComplexD>> sfs;
   contract_meson_vv_meson_unshifted(sfs, wsp1, wsp2, wsp3, prop4_x_y, xg_y,
                                     xg_y_psel_idx, tsep, psel, fsel);
   Qassert(sfs.size() == 2);

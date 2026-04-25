@@ -1,8 +1,8 @@
 #pragma once
 
 #include <qlat/core.h>
-#include <qlat/mpi.h>
 #include <qlat/geometry.h>
+#include <qlat/mpi.h>
 
 #include <ctime>
 #include <fstream>
@@ -510,7 +510,8 @@ void field_set_elems(Field<M>& f, const Coordinate& xg, const Vector<M> val)
 }
 
 template <class M>
-void field_set_elem(Field<M>& f, const Coordinate& xg, const Int m, const M& val)
+void field_set_elem(Field<M>& f, const Coordinate& xg, const Int m,
+                    const M& val)
 // xg do not need to be the same on all the nodes
 {
   const Geometry& geo = f.geo();
@@ -534,7 +535,7 @@ void field_set_elem(Field<M>& f, const Coordinate& xg, const M& val)
 }
 
 template <class M>
-void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
+void split_fields(std::vector<Handle<Field<M>>>& vec, const Field<M>& f)
 // fields in vector will be reinitialized to have the same geo and multiplicity
 {
   TIMER("split_fields");
@@ -562,7 +563,7 @@ void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
 }
 
 template <class M>
-void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
+void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M>>>& vec)
 // fields in vector should have the same geo and multiplicity
 {
   TIMER("merge_fields");
@@ -593,7 +594,8 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
 }
 
 template <class M>
-void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec, const std::vector<Int>& m_vec)
+void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M>>>& vec,
+                     const std::vector<Int>& m_vec)
 // f.get_elem(x, m) = vec[m].get_elem(x, m_vec[m])
 {
   TIMER("merge_fields_ms");
@@ -674,34 +676,33 @@ void field_shift_steps(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 }
 
 template <typename M1, typename M2>
-void vector_field_cast(std::vector<M1 >& res, const std::vector<M2 >& src)
+void vector_field_cast(std::vector<M1>& res, const std::vector<M2>& src)
 {
   res.resize(0);
   const Long num_field = src.size();
-  if(num_field == 0){return ;}
+  if (num_field == 0) {
+    return;
+  }
   res.resize(num_field);
-  qfor(id_field, num_field, {
-    res[id_field].set_view_cast(src[id_field]);
-  });
+  qfor(id_field, num_field, { res[id_field].set_view_cast(src[id_field]); });
 }
 
 template <class M>
-void vector_to_acc(vector<M >& res, const std::vector<M >& src)
+void vector_to_acc(vector<M>& res, const std::vector<M>& src)
 {
   res.resize(0);
-  if(src.size() == 0){
-    return ;
+  if (src.size() == 0) {
+    return;
   }
   const Long num_field = src.size();
   res.resize_zero(num_field, MemType::Cpu);
-  qfor(id_field, num_field, {
-    res[id_field].set_view(src[id_field]);
-  });
+  qfor(id_field, num_field, { res[id_field].set_view(src[id_field]); });
   res.set_mem_type(src[0].get_mem_type());
 }
 
 template <class M>
-void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift)
+void field_shift_local(Field<M>& fr, const Field<M>& fs,
+                       const Coordinate& shift)
 // fr and fs must be different
 // node process local shift
 // roughly fr[(xl + shift) % node_site] == fs[xl]
@@ -712,7 +713,8 @@ void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift
     fr = fs;
     return;
   }
-  Field<M> f0;f0.set_view(fs);
+  Field<M> f0;
+  f0.set_view(fs);
   const MemType mem = fs.field.mem_type;
   qmem_for(index, geo.local_volume(), mem, {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -724,8 +726,10 @@ void field_shift_local(Field<M>& fr, const Field<M>& fs, const Coordinate& shift
 }
 
 template <class M>
-void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
-                        const Coordinate& shift, std::vector<vector<M> >& to_bufL)
+void field_shift_directT(std::vector<Field<M>>& fr,
+                         const std::vector<Field<M>>& fs,
+                         const Coordinate& shift,
+                         std::vector<vector<M>>& to_bufL)
 // fr and fs can be the same
 // shift fs with 'shift'
 // roughly f[(xg + shift) % total_site] == fs[xg]
@@ -945,8 +949,10 @@ void field_shift_directT(std::vector<Field<M> >& fr, const std::vector<Field<M> 
 }
 
 template <class M>
-void field_shift_direct(std::vector<Field<M> >& fr, const std::vector<Field<M> >& fs,
-                        const Coordinate& shift, std::vector<vector<M> >& to_bufL)
+void field_shift_direct(std::vector<Field<M>>& fr,
+                        const std::vector<Field<M>>& fs,
+                        const Coordinate& shift,
+                        std::vector<vector<M>>& to_bufL)
 {
   if (sizeof(M) % sizeof(Long) == 0) {
     std::vector<Field<Long>> f0;
@@ -971,14 +977,16 @@ template <class M>
 void field_shift_direct(Field<M>& fr, const Field<M>& fs,
                         const Coordinate& shift)
 {
-  if(!fr.initialized){fr.init(fs.geo(), fs.multiplicity);}
-  std::vector<Field<M> > frL;
-  std::vector<Field<M> > fsL;
+  if (!fr.initialized) {
+    fr.init(fs.geo(), fs.multiplicity);
+  }
+  std::vector<Field<M>> frL;
+  std::vector<Field<M>> fsL;
   frL.resize(1);
   fsL.resize(1);
   frL[0].set_view(fr);
   fsL[0].set_view(fs);
-  std::vector<vector<M> > to_bufL;
+  std::vector<vector<M>> to_bufL;
   field_shift_direct(frL, fsL, shift, to_bufL);
 }
 
@@ -1011,7 +1019,7 @@ void set_xg_field(Field<Int>& f, const Geometry& geo_);
       <TYPENAME>(Field<TYPENAME> & f, const Field<TYPENAME>& f1);             \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
-      Field<TYPENAME>& f, const Field<RealD>& f_factor);                     \
+      Field<TYPENAME>& f, const Field<RealD>& f_factor);                      \
                                                                               \
   QLAT_EXTERN template const Field<TYPENAME>& operator*=(                     \
       Field<TYPENAME>& f, const Field<ComplexD>& f_factor);                   \

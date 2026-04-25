@@ -1,16 +1,17 @@
 #pragma once
 
-#include "utils.h"
-#include "root-fsolver.h"
-#include "interpolation.h"
-#include "compute-f.h"
-#include "compute-int-seq.h"
-
 #include <qlat/qlat.h>
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <cassert>
+
+#include "compute-f.h"
+#include "compute-int-seq.h"
+#include "integration-multidimensional.h"
+#include "interpolation.h"
+#include "root-fsolver.h"
+#include "utils.h"
 
 namespace qlat
 {  //

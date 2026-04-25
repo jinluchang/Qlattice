@@ -1,9 +1,9 @@
 #pragma once
 
+#include <qlat/field-fft.h>
 #include <qlat/qcd.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
-#include <qlat/field-fft.h>
 
 namespace qlat
 {  //
@@ -225,8 +225,8 @@ void set_wall_src(Propagator4d& prop, const Geometry& geo_input,
 
 template <class Inverter>
 void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
-                                    const Int tslice,
-                                    const CoordinateD& lmom = CoordinateD())
+                             const Int tslice,
+                             const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_wall_src_propagator");
   const Geometry geo = geo_resize(inv.geo());
@@ -358,7 +358,8 @@ void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   sol *= 1.0 / geo.total_volume();
 }
 
-void free_invert(Prop& p_sol, const Prop& p_src, const RealD mass, const RealD m5 = 1.0,
+void free_invert(Prop& p_sol, const Prop& p_src, const RealD mass,
+                 const RealD m5 = 1.0,
                  const CoordinateD& momtwist = CoordinateD());
 
 void convert_wm_from_mspincolor(Propagator4d& prop_wm,

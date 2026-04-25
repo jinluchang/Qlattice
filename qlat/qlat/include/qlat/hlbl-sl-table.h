@@ -70,8 +70,10 @@ inline std::string show_sl_table(const SlTable& t)
 inline void add_to_sl_table(SlTable& t, const Complex& val,
                             const Int dis_sq_min, const Int dis_sq_max)
 {
-  const Int l_len = std::min(t.l_limit - 1, (int)std::ceil(std::sqrt(dis_sq_max)));
-  const Int s_len = std::min(t.s_limit - 1, (int)std::ceil(std::sqrt(dis_sq_min)));
+  const Int l_len =
+      std::min(t.l_limit - 1, (int)std::ceil(std::sqrt(dis_sq_max)));
+  const Int s_len =
+      std::min(t.s_limit - 1, (int)std::ceil(std::sqrt(dis_sq_min)));
   qassert(s_len < t.s_limit && l_len < t.l_limit);
   t.table[s_len * t.l_limit + l_len] += val;
 }

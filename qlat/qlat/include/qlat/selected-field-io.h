@@ -105,8 +105,8 @@ Long write_selected_field(const SelectedField<M>& sf, const std::string& path,
     const Int sizeof_M = get_force_field_write_sizeof_M();
     qassert((multiplicity * sizeof(M)) % sizeof_M == 0);
     const Int multiplicity_new = (multiplicity * sizeof(M)) / sizeof_M;
-    qtouch_info(path + ".partial",
-                make_selected_field_header(geo, multiplicity_new, sizeof_M, crc));
+    qtouch_info(path + ".partial", make_selected_field_header(
+                                       geo, multiplicity_new, sizeof_M, crc));
     get_force_field_write_sizeof_M() = 0;
   }
   const Int mpi_tag = 8;

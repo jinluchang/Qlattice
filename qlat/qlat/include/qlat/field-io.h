@@ -112,7 +112,8 @@ Long dist_read_field(Field<M>& f, const std::string& path)
   Int multiplicity;
   std::vector<Field<M>> fs;
   Coordinate new_size_node;
-  const Long total_bytes = dist_read_fields(fs, geo, multiplicity, new_size_node, path);
+  const Long total_bytes =
+      dist_read_fields(fs, geo, multiplicity, new_size_node, path);
   if (total_bytes == 0) {
     return 0;
   } else {
@@ -258,7 +259,8 @@ Long dist_read_field_double(Field<M>& f, const std::string& path)
 
 // ----------------------
 
-inline std::string make_field_header(const Geometry& geo, const Int multiplicity, const Int sizeof_M,
+inline std::string make_field_header(const Geometry& geo,
+                                     const Int multiplicity, const Int sizeof_M,
                                      const crc32_t crc32)
 {
   const Coordinate total_site = geo.total_site();
@@ -325,14 +327,14 @@ Long write_field(const Field<M>& f, const std::string& path,
   const Geometry& geo = f.geo();
   const crc32_t crc32 = field_crc32(f);
   if (get_force_field_write_sizeof_M() == 0) {
-    qtouch_info(path + ".partial", make_field_header(geo, f.multiplicity, sizeof(M), crc32));
+    qtouch_info(path + ".partial",
+                make_field_header(geo, f.multiplicity, sizeof(M), crc32));
   } else {
     const Int sizeof_M = get_force_field_write_sizeof_M();
     qassert((f.multiplicity * sizeof(M)) % sizeof_M == 0);
     const Int multiplicity = (f.multiplicity * sizeof(M)) / sizeof_M;
-    qtouch_info(
-        path + ".partial",
-        make_field_header(geo, multiplicity, sizeof_M, crc32));
+    qtouch_info(path + ".partial",
+                make_field_header(geo, multiplicity, sizeof_M, crc32));
     get_force_field_write_sizeof_M() = 0;
   }
   const Long file_size = serial_write_field(

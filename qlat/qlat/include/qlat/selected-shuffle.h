@@ -12,27 +12,33 @@ struct SelectedShufflePlan {
   PointsDistType points_dist_type_recv;
   // When the coordinate is not relevant, it is set to be Coordinate().
   Coordinate total_site;
-  // size_node_send and coor_node_send are relevant when points_dist_type_send is one of `Full` or `Local`.
+  // size_node_send and coor_node_send are relevant when points_dist_type_send
+  // is one of `Full` or `Local`.
   vector<Coordinate> size_node_send;
   vector<Coordinate> coor_node_send;
-  // size_node_recv and coor_node_recv are relevant when points_dist_type_recv is one of `Full` or `Local`.
+  // size_node_recv and coor_node_recv are relevant when points_dist_type_recv
+  // is one of `Full` or `Local`.
   vector<Coordinate> size_node_recv;
   vector<Coordinate> coor_node_recv;
-  // num_selected_points_send and num_selected_points_recv do not need to be the same across nodes.
+  // num_selected_points_send and num_selected_points_recv do not need to be the
+  // same across nodes.
   Long num_selected_points_send;
   Long num_selected_points_recv;
   // n_points_selected_points_send.size() == num_selected_points_send
   vector<Long> n_points_selected_points_send;
   // n_points_selected_points_recv.size() == num_selected_points_recv
   vector<Long> n_points_selected_points_recv;
-  // Prepare send buffer from selected points according to this idx field. (before sending)
-  // multiplicity = 3 (idx_selected_points_send, idx_within_field_send, idx_buffer_send)
+  // Prepare send buffer from selected points according to this idx field.
+  // (before sending) multiplicity = 3 (idx_selected_points_send,
+  // idx_within_field_send, idx_buffer_send)
   SelectedPoints<Long> shuffle_idx_points_send;
-  // Shuffle recv buffer to fill selected points according to this idx field. (after receiving)
-  // multiplicity = 3 (idx_selected_points_recv, idx_within_field_recv, idx_buffer_recv)
+  // Shuffle recv buffer to fill selected points according to this idx field.
+  // (after receiving) multiplicity = 3 (idx_selected_points_recv,
+  // idx_within_field_recv, idx_buffer_recv)
   SelectedPoints<Long> shuffle_idx_points_recv;
   // Local field according to this idx field.
-  // multiplicity = 4 (idx_selected_points_send, idx_within_field_send, idx_selected_points_recv, idx_within_field_recv,)
+  // multiplicity = 4 (idx_selected_points_send, idx_within_field_send,
+  // idx_selected_points_recv, idx_within_field_recv,)
   SelectedPoints<Long> shuffle_idx_points_local;
   // shuffle_idx_points_send.n_points == total_count_send
   Long total_count_send;

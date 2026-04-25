@@ -8,9 +8,9 @@
 
 #include <qlat/qlat.h>
 
-#include <vector>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <vector>
 
 namespace qlat
 {  //
@@ -178,10 +178,9 @@ struct InterpolationNd {
 
 template <class C>
 struct SimpleInterpolator {
-  typedef InterpolationNd<C, SimpleInterpolator<C> > IP;
+  typedef InterpolationNd<C, SimpleInterpolator<C>> IP;
   //
-  C operator()(const IP& ip, std::vector<Int>& il,
-               std::vector<RealD>& vl) const
+  C operator()(const IP& ip, std::vector<Int>& il, std::vector<RealD>& vl) const
   // do interpolation
   {
     C v0 = ip[ip.get_index(il)];
@@ -195,10 +194,9 @@ struct SimpleInterpolator {
 
 template <class C>
 struct BilinearInterpolator {
-  typedef InterpolationNd<C, BilinearInterpolator<C> > IP;
+  typedef InterpolationNd<C, BilinearInterpolator<C>> IP;
   //
-  C operator()(const IP& ip, std::vector<Int>& il,
-               std::vector<RealD>& vl) const
+  C operator()(const IP& ip, std::vector<Int>& il, std::vector<RealD>& vl) const
   // n-dimensional box, interpolate one dimension at a time
   //
   // cube_{000...0} is fundamental vertex of box
@@ -239,7 +237,7 @@ struct BilinearInterpolator {
 
 template <class C>
 struct InterpolationBilinearNd
-    : public InterpolationNd<C, BilinearInterpolator<C> > {
+    : public InterpolationNd<C, BilinearInterpolator<C>> {
 };
 
 inline void test_interpolationBilinear()
@@ -280,8 +278,8 @@ inline void test_interpolationBilinear()
       x[4] = u_rand_gen(rs, limit, -limit);
       const RealD fi = interpolation(x);
       const RealD f = std::sin(x[0] + shift[0]) * std::sin(x[1] + shift[1]) *
-                       std::sin(x[2] + shift[2]) * std::sin(x[3] + shift[3]) *
-                       std::sin(x[4] + shift[4]);
+                      std::sin(x[2] + shift[2]) * std::sin(x[3] + shift[3]) *
+                      std::sin(x[4] + shift[4]);
       fdisplayln(stdout,
                  ssprintf("%4d %4d: %10.4f %10.4f %13.7f %10.3f%%", k, i, f, fi,
                           fi - f, 200.0 * (fi - f) / std::abs(fi + f)));

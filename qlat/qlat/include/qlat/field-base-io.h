@@ -18,25 +18,25 @@ typedef array<ComplexD, 9> MatrixSU3;
 class rePort
 {
  public:
-  std::ostream *os;
+  std::ostream* os;
   rePort() { os = &std::cout; }
 };
 
 template <class T>
-const rePort &operator<<(const rePort &p, const T &data)
+const rePort& operator<<(const rePort& p, const T& data)
 {
   if (get_id_node() == 0) *(p.os) << data;
   return p;
 }
 
-inline const rePort &operator<<(const rePort &p,
-                                std::ostream &(*func)(std::ostream &))
+inline const rePort& operator<<(const rePort& p,
+                                std::ostream& (*func)(std::ostream&))
 {
   if (get_id_node() == 0) *(p.os) << func;
   return p;
 }
 
-inline std::string str_printf(const char *format, ...)
+inline std::string str_printf(const char* format, ...)
 {
   char cstr[512];
   va_list args;
@@ -45,7 +45,7 @@ inline std::string str_printf(const char *format, ...)
   return std::string(cstr);
 }
 
-inline Int Printf(const char *format, ...)
+inline Int Printf(const char* format, ...)
 {
   if (!get_id_node()) {
     va_list args;
@@ -56,7 +56,7 @@ inline Int Printf(const char *format, ...)
   }
 }
 
-inline FILE *Fopen(const char *filename, const char *mode)
+inline FILE* Fopen(const char* filename, const char* mode)
 {
   if (!get_id_node()) {
     return fopen(filename, mode);
@@ -65,7 +65,7 @@ inline FILE *Fopen(const char *filename, const char *mode)
   }
 }
 
-inline Int Fprintf(FILE *pFile, const char *format, ...)
+inline Int Fprintf(FILE* pFile, const char* format, ...)
 {
   if (!get_id_node()) {
     va_list args;
@@ -76,7 +76,7 @@ inline Int Fprintf(FILE *pFile, const char *format, ...)
   }
 }
 
-inline Int Fflush(FILE *pFile)
+inline Int Fflush(FILE* pFile)
 {
   if (!get_id_node()) {
     return fflush(pFile);
@@ -85,7 +85,7 @@ inline Int Fflush(FILE *pFile)
   }
 }
 
-inline bool Is_not_null(FILE *pFile)
+inline bool Is_not_null(FILE* pFile)
 {
   if (!get_id_node()) {
     return pFile != NULL;
@@ -95,17 +95,17 @@ inline bool Is_not_null(FILE *pFile)
 }
 
 template <class M, class N>
-void castTruncated(M &x, const N &y)
+void castTruncated(M& x, const N& y)
 {
   Qassert(sizeof(M) <= sizeof(N));
   memcpy(&x, &y, sizeof(M));
 }
 
 template <class M, class N>
-void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
+void fieldCastTruncated(Field<M>& dest, const Field<N>& src)
 {
   TIMER("fieldCastTruncated");
-  const Geometry &geo = src.geo();
+  const Geometry& geo = src.geo();
   const Int multiplicity = src.multiplicity;
   dest.init(geo, multiplicity);
 #pragma omp parallel for
@@ -120,7 +120,7 @@ void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
 }
 
 template <class M>
-uint32_t fieldChecksumSum32(const Field<M> &f)
+uint32_t fieldChecksumSum32(const Field<M>& f)
 {
   TIMER("fieldChecksumSum32");
   Geometry geo = geo_resize(f.geo(), 0);
@@ -130,7 +130,7 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
   f_local = f;
   Qassert(sizeof(M) % sizeof(uint32_t) == 0);
   Long sum = 0;
-  const uint32_t *data = (const uint32_t *)f_local.field.data();
+  const uint32_t* data = (const uint32_t*)f_local.field.data();
   const Long size = f_local.field.size() * sizeof(M) / sizeof(uint32_t);
   for (Long i = 0; i < size; ++i) {
     sum += data[i];
@@ -142,7 +142,7 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
 }
 
 template <class M>
-std::string field_hash_crc32(const qlat::Field<M> &origin)
+std::string field_hash_crc32(const qlat::Field<M>& origin)
 {
   // somehow this checksum function does not agree with CPS's one.
   // Do not know why. But I am not sure what algorithm CPS uses.
@@ -153,23 +153,23 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
   crc32_t hash;
   for (Int id_node = 0; id_node < get_num_node(); id_node++) {
     if (get_id_node() == id_node) {
-      crc32(hash, (void *)get_data(origin).data(),
+      crc32(hash, (void*)get_data(origin).data(),
             get_data(origin).size() * sizeof(M));
     }
     SYNC_NODE();
-    mpi_bcast((void *)&hash, 4, MPI_BYTE, id_node, get_comm());
+    mpi_bcast((void*)&hash, 4, MPI_BYTE, id_node, get_comm());
   }
   return ssprintf("%08X", hash);
 }
 
-inline void timer_fwrite(char *ptr, Long size, FILE *outputFile)
+inline void timer_fwrite(char* ptr, Long size, FILE* outputFile)
 {
   TIMER("timer_fwrite");
   fwrite(ptr, size, 1, outputFile);
 }
 
 template <class M>
-void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
+void sophisticated_make_to_order(Field<M>& result, const Field<M>& origin)
 {
   TIMER("sophisticated_make_to_order");
   //
@@ -223,8 +223,8 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
 }
 
 template <class M>
-void sophisticated_serial_write(const qlat::Field<M> &origin,
-                                const std::string &write_addr,
+void sophisticated_serial_write(const qlat::Field<M>& origin,
+                                const std::string& write_addr,
                                 const bool is_append = false)
 {
   TIMER("sophisticated_serial_write");
@@ -239,7 +239,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
   field_send.init(geo_only_local, multiplicity);
   field_send = origin;
   //
-  FILE *outputFile = NULL;
+  FILE* outputFile = NULL;
   if (get_id_node() == 0) {
     if (is_append)
       outputFile = fopen(write_addr.c_str(), "a");
@@ -249,11 +249,11 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
   //
   for (Int i = 0; i < get_num_node(); i++) {
     if (get_id_node() == 0) {
-      M *ptr = get_data(field_send).data();
+      M* ptr = get_data(field_send).data();
       Qassert(ptr != NULL);
       Long size = sizeof(M) * geo_only_local.local_volume() * multiplicity;
       std::cout << "Writing CYCLE: " << i << "\tSIZE = " << size << std::endl;
-      timer_fwrite((char *)ptr, size, outputFile);
+      timer_fwrite((char*)ptr, size, outputFile);
       fflush(outputFile);
     }
     //
@@ -276,7 +276,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 // IMPLEMENTED.";
 // }
 
-inline void timer_fread(char *ptr, Long size, FILE *inputFile)
+inline void timer_fread(char* ptr, Long size, FILE* inputFile)
 {
   TIMER_VERBOSE("timer_fread");
   Long size_read = fread(ptr, size, 1, inputFile);
@@ -284,8 +284,8 @@ inline void timer_fread(char *ptr, Long size, FILE *inputFile)
 }
 
 template <class M>
-void sophisticated_serial_read(qlat::Field<M> &destination,
-                               const std::string &import, Int pos,
+void sophisticated_serial_read(qlat::Field<M>& destination,
+                               const std::string& import, Int pos,
                                const Int num_of_reading_threads = 0)
 {
   // Blindly read binary data into field. All checking should be handled by
@@ -310,7 +310,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //
   // for every node:
   //
-  FILE *input = NULL;
+  FILE* input = NULL;
   //
   // Well as you can see this is not really serial reading anymore. The sertial
   // reading speed is unbearablly slow. Anyway it is tested. And it seems to be
@@ -336,11 +336,10 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
     if (get_id_node() % cycle_limit == cycle) {
       std::cout << "Reading STARTED:  Node Number =\t" << get_id_node()
                 << std::endl;
-      M *ptr = field_send.field.data();
-      Long size = sizeof(M) * geo_only_local.local_volume() *
-                  multiplicity;
+      M* ptr = field_send.field.data();
+      Long size = sizeof(M) * geo_only_local.local_volume() * multiplicity;
       Qassert(!fseek(input, size * get_id_node(), SEEK_CUR));
-      timer_fread((char *)ptr, size, input);
+      timer_fread((char*)ptr, size, input);
       std::cout << "Reading FINISHED: Node Number =\t" << get_id_node()
                 << std::endl;
       fclose(input);
@@ -416,10 +415,10 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 //
 #else
   //
-  M *ptr = field_rslt.field.data();
+  M* ptr = field_rslt.field.data();
   Long size = geo_only_local.local_volume() * multiplicity;
   //	printf("read = %d\n", fread((char*)ptr, sizeof(M), size, input));
-  fread((char *)ptr, sizeof(M), size, input);
+  fread((char*)ptr, sizeof(M), size, input);
   //
   destination = field_rslt;
 //

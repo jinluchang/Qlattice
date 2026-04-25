@@ -1,16 +1,15 @@
 #pragma once
 
-#include "utils.h"
-#include "function.h"
-#include "root-fsolver.h"
-
-#include <qlat/qlat.h>
-
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_spline2d.h>
+#include <qlat/qlat.h>
 
-#include <vector>
 #include <cassert>
+#include <vector>
+
+#include "function.h"
+#include "root-fsolver.h"
+#include "utils.h"
 
 namespace qlat
 {  //

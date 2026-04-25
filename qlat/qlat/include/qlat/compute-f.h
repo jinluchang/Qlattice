@@ -1,17 +1,16 @@
 #pragma once
 
-#include "muon-line-config.h"
-#include "utils.h"
-#include "integration.h"
-#include "interpolation.h"
-
+#include <gsl/gsl_specfunc.h>
 #include <qlat/qlat.h>
 
-#include <gsl/gsl_specfunc.h>
-
-#include <iostream>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <iostream>
+
+#include "integration.h"
+#include "interpolation.h"
+#include "muon-line-config.h"
+#include "utils.h"
 
 namespace qlat
 {  //

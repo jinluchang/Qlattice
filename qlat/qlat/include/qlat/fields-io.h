@@ -39,9 +39,9 @@ OFFSET_STOP_0 OFFSET_STOP_1 OFFSET_STOP_2 ... OFFSET_STOP_N
 // (DENSE_OR_SPARSE will be "dense" or "sparse", not including quote.)
 
 #include <errno.h>
-#include <qlat/field-shuffle.h>
 #include <qlat-utils/qar.h>
 #include <qlat/field-io.h>
+#include <qlat/field-shuffle.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
 
@@ -266,7 +266,8 @@ Long read(FieldsReader& fr, const std::string& fn, Coordinate& total_site,
 
 Long read_skip(FieldsReader& fr, const std::string& fn);
 
-Long check_file(FieldsReader& fr, const std::string& fn, const bool is_check_data);
+Long check_file(FieldsReader& fr, const std::string& fn,
+                const bool is_check_data);
 
 Int flush(FieldsWriter& fw);
 
@@ -625,15 +626,18 @@ bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr,
 bool does_file_exist_sync_node(const ShuffledFieldsWriter& sfw,
                                const std::string& fn);
 
-bool is_sparse_field_sync_node(const ShuffledFieldsReader& sfr, const std::string& fn);
+bool is_sparse_field_sync_node(const ShuffledFieldsReader& sfr,
+                               const std::string& fn);
 
 bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
                           const bool is_check_data,
                           std::vector<Long>& final_offsets);
 
-std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr, bool is_skipping_check = false);
+std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr,
+                                     bool is_skipping_check = false);
 
-std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_skipping_check = false);
+std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw,
+                                     bool is_skipping_check = false);
 
 Int truncate_fields_sync_node(const std::string& path,
                               const std::vector<std::string>& fns_keep,
@@ -641,8 +645,8 @@ Int truncate_fields_sync_node(const std::string& path,
 
 void properly_truncate_fields_sync_node(
     std::vector<std::string>& fn_list,
-    std::vector<std::vector<FieldsSegmentInfo>>& offsets_list, const std::string& path,
-    const bool is_check_all, const bool is_only_check,
+    std::vector<std::vector<FieldsSegmentInfo>>& offsets_list,
+    const std::string& path, const bool is_check_all, const bool is_only_check,
     const Coordinate& new_size_node);
 
 std::vector<std::string> properly_truncate_fields_sync_node(
@@ -657,24 +661,27 @@ bool has_duplicates(const ShuffledFieldsReader& sfr);
 std::string show_field_index(const std::string& fn,
                              const std::vector<FieldsSegmentInfo>& offsets);
 
-void parse_field_index(std::string& fn, std::vector<FieldsSegmentInfo>& all_offsets,
+void parse_field_index(std::string& fn,
+                       std::vector<FieldsSegmentInfo>& all_offsets,
                        const std::string& field_index_content);
 
-std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsWriter& sfw,
-                                         const std::string& fn);
+std::vector<FieldsSegmentInfo> collect_fields_offsets(
+    const ShuffledFieldsWriter& sfw, const std::string& fn);
 
-std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsReader& sfr,
-                                         const std::string& fn);
+std::vector<FieldsSegmentInfo> collect_fields_offsets(
+    const ShuffledFieldsReader& sfr, const std::string& fn);
 
 bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
                              const std::vector<FieldsSegmentInfo>& offsets);
 
-void load_all_fields_index(std::vector<std::string>& fn_list,
-                           std::vector<std::vector<FieldsSegmentInfo>>& all_offsets_list,
-                           QarFile& qar_index);
+void load_all_fields_index(
+    std::vector<std::string>& fn_list,
+    std::vector<std::vector<FieldsSegmentInfo>>& all_offsets_list,
+    QarFile& qar_index);
 
 void save_fields_index(QarFile& qar_index, const Long idx,
-                       const std::string& fn, const std::vector<FieldsSegmentInfo>& offsets);
+                       const std::string& fn,
+                       const std::vector<FieldsSegmentInfo>& offsets);
 
 void save_fields_index(ShuffledFieldsWriter& sfw, const std::string& fn);
 

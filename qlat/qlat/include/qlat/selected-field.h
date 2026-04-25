@@ -58,13 +58,17 @@ void set_field_selection(FieldSelection& fsel, const Coordinate& total_site,
 
 bool is_matching_fsel(const FieldSelection& fsel1, const FieldSelection& fsel2);
 
-bool is_containing(const PointsSelection& psel, const FieldSelection& fsel_small);
+bool is_containing(const PointsSelection& psel,
+                   const FieldSelection& fsel_small);
 
-bool is_containing(const PointsSelection& psel, const PointsSelection& psel_small);
+bool is_containing(const PointsSelection& psel,
+                   const PointsSelection& psel_small);
 
-bool is_containing(const FieldSelection& fsel, const FieldSelection& fsel_small);
+bool is_containing(const FieldSelection& fsel,
+                   const FieldSelection& fsel_small);
 
-bool is_containing(const FieldSelection& fsel, const PointsSelection& psel_small);
+bool is_containing(const FieldSelection& fsel,
+                   const PointsSelection& psel_small);
 
 void intersect_with(FieldSelection& fsel, const FieldSelection& fsel1);
 
@@ -510,8 +514,8 @@ void field_glb_sum_tslice(SelectedPoints<M>& sp, const SelectedField<M>& sf,
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 void set_u_rand(SelectedField<M>& sf, const FieldSelection& fsel,
-                       const RngState& rs, const RealD upper = 1.0,
-                       const RealD lower = -1.0)
+                const RngState& rs, const RealD upper = 1.0,
+                const RealD lower = -1.0)
 {
   TIMER("set_u_rand(sf,fsel,rs,upper,lower)");
   if (not is_composed_of_real<M>()) {
@@ -539,8 +543,8 @@ void set_u_rand(SelectedField<M>& sf, const FieldSelection& fsel,
 
 template <class M, QLAT_ENABLE_IF(is_data_value_type<M>())>
 void set_g_rand(SelectedField<M>& sf, const FieldSelection& fsel,
-                       const RngState& rs, const RealD center = 0.0,
-                       const RealD sigma = 1.0)
+                const RngState& rs, const RealD center = 0.0,
+                const RealD sigma = 1.0)
 {
   TIMER("set_g_rand(sf,fsel,rs,center,sigma)");
   if (not is_composed_of_real<M>()) {

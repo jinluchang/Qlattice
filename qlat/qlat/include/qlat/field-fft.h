@@ -57,10 +57,11 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field,
   const Long nc_size = nc_stop - nc_start;
   qassert(nc_size >= 0);
   const ShufflePlan& sp = plan.sp;
-  std::vector<Field<M> > fft_fields;
+  std::vector<Field<M>> fft_fields;
   shuffle_field(fft_fields, field, sp);
   field1.init();
-  ComplexD* fftdatac = (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
+  ComplexD* fftdatac =
+      (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
 #pragma omp parallel for
   for (Int i = 0; i < (int)fft_fields.size(); ++i) {
     if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(ComplexD))) {
@@ -124,7 +125,7 @@ void fft_complex_field_spatial(Field<M>& field, const bool is_forward = true)
 }
 
 template <class M>
-void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
+void fft_complex_fields(std::vector<Handle<Field<M>>>& vec,
                         const std::vector<Int>& fft_dirs,
                         const std::vector<bool>& fft_is_forwards,
                         Int mode_fft = 1)
@@ -197,7 +198,7 @@ void fft_complex_fields(std::vector<Handle<Field<M> > >& vec,
       Field<TYPENAME> & field, const bool is_forward);                       \
                                                                              \
   QLAT_EXTERN template void fft_complex_fields<TYPENAME>(                    \
-      std::vector<Handle<Field<TYPENAME> > > & vec,                          \
+      std::vector<Handle<Field<TYPENAME>>> & vec,                            \
       const std::vector<Int>& fft_dirs,                                      \
       const std::vector<bool>& fft_is_forwards, Int mode_fft)
 

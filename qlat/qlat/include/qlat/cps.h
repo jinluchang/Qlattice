@@ -1,7 +1,8 @@
 #pragma once
 
 // Use with CPS ( https://github.com/RBC-UKQCD/CPS_public ).
-// Program needs arguments like: "-qmp-geom 2 2 2 4" to specify the MPI geometry.
+// Program needs arguments like: "-qmp-geom 2 2 2 4" to specify the MPI
+// geometry.
 
 #include <qlat/qlat.h>
 
@@ -73,7 +74,8 @@ inline void set_do_arg(cps::DoArg& do_arg, const Coordinate& total_site)
   do_arg.gfix_chkb = 1;
 }
 
-inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site, const bool is_initialize_rng = false)
+inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site,
+                      const bool is_initialize_rng = false)
 {
   cps::Start(argc, argv);
   cps::DoArg do_arg;
@@ -91,7 +93,8 @@ inline void cps_end(const bool is_preserving_cache = false)
 {
   end(is_preserving_cache);
   cps::End();
-  // Currently CPS does not call destroy_qmp() in End(), so call it explicitly now.
+  // Currently CPS does not call destroy_qmp() in End(), so call it explicitly
+  // now.
   cps::QMPSCU::destroy_qmp();
 }
 

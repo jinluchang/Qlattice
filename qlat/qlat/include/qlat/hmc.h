@@ -1,11 +1,11 @@
 #pragma once
 
 #include <qlat/gauge-action.h>
-#include <qlat/scalar-action.h>
 #include <qlat/qcd-smear.h>
 #include <qlat/qcd-topology.h>
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd.h>
+#include <qlat/scalar-action.h>
 
 #include <cmath>
 #include <sstream>
@@ -17,8 +17,8 @@ namespace qlat
 struct API GaugeMomentum : FieldM<ColorMatrix, 4> {
 };
 
-bool metropolis_accept(RealD& accept_prob, const RealD delta_h,
-                       const Int traj, const RngState& rs_);
+bool metropolis_accept(RealD& accept_prob, const RealD delta_h, const Int traj,
+                       const RngState& rs_);
 
 void set_rand_gauge_momentum(GaugeMomentum& gm, const RealD sigma,
                              const RngState& rs);

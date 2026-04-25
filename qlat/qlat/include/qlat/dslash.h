@@ -1,9 +1,9 @@
 #pragma once
 
+#include <qlat/compressed-eigen-io.h>
 #include <qlat/fermion-action.h>
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd.h>
-#include <qlat/compressed-eigen-io.h>
 
 namespace qlat
 {  //

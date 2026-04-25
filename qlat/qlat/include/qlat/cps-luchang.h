@@ -24,29 +24,20 @@ inline void cps_end() { end(); }
 
 #define QLAT_CPS
 
-#include <gf/tools.h>
-
-#include <gf/gauge_field.h>
-
-#include <gf/fermion_field.h>
-
-#include <gf/qed.h>
-
-#include <gf/inverter.h>
-
-#include <gf/rng_state.h>
-
 #include <alg/alg_fix_gauge.h>
-
 #include <alg/alg_rnd_gauge.h>
+#include <gf/fermion_field.h>
+#include <gf/gauge_field.h>
+#include <gf/inverter.h>
+#include <gf/qed.h>
+#include <gf/rng_state.h>
+#include <gf/tools.h>
 
 extern MPI_Comm QMP_COMM_WORLD;
 
-#include "cps-utils.h"
-
-#include "cps-pio.h"
-
 #include "cps-lanc.h"
+#include "cps-pio.h"
+#include "cps-utils.h"
 
 namespace qlat
 {  //
@@ -158,8 +149,7 @@ inline void field_convert(Field<N>& f, const cps::GridComm<M>& gc)
   }
 }
 
-inline void gf_fix_gauge_landau(GaugeField& gf,
-                                const RealD stop_cond = 1.0e-12,
+inline void gf_fix_gauge_landau(GaugeField& gf, const RealD stop_cond = 1.0e-12,
                                 const RealD max_iter_num = 500000)
 {
   TIMER_VERBOSE("gf_fix_gauge_landau")
@@ -208,7 +198,8 @@ inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
   for (Long index = 0; index < gt.geo().local_volume(); ++index) {
     const Coordinate xl = gt.geo().coordinate_from_index(index);
     const Int k =
-        ((xl[2] * gt.geo().node_site[1]) + xl[1]) * gt.geo().node_site[0] + xl[0];
+        ((xl[2] * gt.geo().node_site[1]) + xl[1]) * gt.geo().node_site[0] +
+        xl[0];
     value_convert(gt.get_elem(xl), lat.fix_gauge_ptr[xl[3]][k]);
   }
   fg.free();

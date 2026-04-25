@@ -34,7 +34,8 @@ void set_complex_from_double(Field<M>& cf, const Field<RealD>& sf)
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = cf.get_elems(xl);
-    Vector<ComplexD> cf_v((ComplexD*)v.data(), v.data_size() / sizeof(ComplexD));
+    Vector<ComplexD> cf_v((ComplexD*)v.data(),
+                          v.data_size() / sizeof(ComplexD));
     Int N = cf_v.size();
     qassert(N == sf.multiplicity);
     for (Int m = 0; m < N; ++m) {
@@ -83,7 +84,7 @@ void set_abs_from_complex(Field<M>& sf, const Field<ComplexD>& cf)
 
 template <class M>
 void set_ratio_double(Field<M>& sf, const Field<RealD>& sf1,
-                             const Field<RealD>& sf2)
+                      const Field<RealD>& sf2)
 {
   TIMER("set_ratio_double");
   const Geometry geo = sf.geo();
@@ -102,7 +103,7 @@ void set_ratio_double(Field<M>& sf, const Field<RealD>& sf1,
 
 template <class M>
 void less_than_double(Field<M>& sf1, const Field<RealD>& sf2,
-                             Field<RealD>& mask)
+                      Field<RealD>& mask)
 {
   TIMER("less_than");
   const Geometry geo = sf1.geo();
@@ -111,8 +112,7 @@ void less_than_double(Field<M>& sf1, const Field<RealD>& sf2,
     Coordinate xl = geo.coordinate_from_index(index);
     const Vector<M> v = sf1.get_elems(xl);
     Vector<RealD> mask_v = mask.get_elems(xl);
-    const Vector<RealD> sf1_v((RealD*)v.data(),
-                               v.data_size() / sizeof(RealD));
+    const Vector<RealD> sf1_v((RealD*)v.data(), v.data_size() / sizeof(RealD));
     Int N = sf1_v.size();
     qassert(N == sf1.multiplicity);
     for (Int m = 0; m < N; ++m) {

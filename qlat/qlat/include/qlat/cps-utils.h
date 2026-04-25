@@ -592,8 +592,8 @@ struct GeometryNodeNeighbor {
   GeometryNodeNeighbor() { init(); }
 };
 
-API inline Int getDataDirMu(void* recv, void* send, const Long size, const Int dir,
-                        const Int mu)
+API inline Int getDataDirMu(void* recv, void* send, const Long size,
+                            const Int dir, const Int mu)
 {
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions

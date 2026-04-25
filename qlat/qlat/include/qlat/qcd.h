@@ -152,7 +152,7 @@ Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
+    const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
     Vector<ComplexD> vt = gft.get_elems(xl);
     for (Int m = 0; m < multiplicity; ++m) {
       vt[6 * m + 0] = v[m](0, 0);
@@ -164,7 +164,8 @@ Long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
     }
   }
   GaugeFieldInfo gfi = gfi_;
-  gfi.simple_checksum = field_simple_checksum(gft); // before to_from_big_endian_64
+  gfi.simple_checksum =
+      field_simple_checksum(gft);  // before to_from_big_endian_64
   to_from_big_endian(get_data(gft));
   gfi.plaq = gf_avg_plaq(gf);
   gfi.trace = gf_avg_link_trace(gf);
@@ -254,8 +255,7 @@ Long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 }
 
 template <class T = Real>
-inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
-                                    const std::string& path)
+inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
@@ -274,7 +274,7 @@ inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexD> vt = gft.get_elems(xl);
     to_from_big_endian(vt);
-    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
     for (Int m = 0; m < gf.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
     }
@@ -284,8 +284,7 @@ inline Long load_gauge_field_cps3x3(GaugeFieldT<T>& gf,
 }
 
 template <class T = Real>
-inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
-                                  const std::string& path,
+inline Long load_gauge_field_milc(GaugeFieldT<T>& gf, const std::string& path,
                                   const bool par_read = false)
 // assuming gf already initialized and have correct size;
 {
@@ -310,7 +309,7 @@ inline Long load_gauge_field_milc(GaugeFieldT<T>& gf,
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<ComplexF> vt = gft.get_elems(xl);
     to_from_big_endian(vt);
-    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T>> v = gf.get_elems(xl);
     for (Int m = 0; m < gf.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
       v[m](0, 0) = vt[9 * m + 0 * 3 + 0];
@@ -454,7 +453,8 @@ inline Long save_gauge_transform_cps(
   const Geometry& geo = gt1.geo();
   GaugeTransformInfo info = info_;
   info.total_site = geo.total_site();
-  info.simple_checksum = field_simple_checksum(gt1); // before to_from_big_endian_64
+  info.simple_checksum =
+      field_simple_checksum(gt1);  // before to_from_big_endian_64
   to_from_big_endian(get_data(gt1));
   qtouch_info(path + ".partial", make_gauge_transform_header(info));
   const Long file_size = serial_write_field(gt1, path + ".partial");
@@ -463,7 +463,8 @@ inline Long save_gauge_transform_cps(
   return file_size;
 }
 
-inline Long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path)
+inline Long load_gauge_transform_cps(GaugeTransform& gt,
+                                     const std::string& path)
 // USE: read_field_double(gt, path) for qlat format GaugeTransform
 {
   TIMER_VERBOSE_FLOPS("load_gauge_transform_cps");
@@ -488,7 +489,8 @@ inline Long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path
   } else {
     qassert(false);
   }
-  crc32_t simple_checksum = field_simple_checksum(gt); // after endianness conversion
+  crc32_t simple_checksum =
+      field_simple_checksum(gt);  // after endianness conversion
   if (simple_checksum != info.simple_checksum) {
     if (get_id_node() == 0) {
       qwarn(fname +

@@ -8,9 +8,9 @@
 using peakfinder_t = void*;
 #endif
 
-#include <vector>
-#include <cstring>
 #include <cassert>
+#include <cstring>
+#include <vector>
 
 namespace qlat
 {
@@ -61,10 +61,10 @@ void integrateDivonne(
   prob.resize(ncomp);
   // cubacores(0, 0);
   llDivonne(ndim, ncomp, cubaFunction<F>, (void*)&f, 1, epsrel, epsabs, flags,
-          seed, mineval, maxeval, key1, key2, key3, maxpass, border, maxchisq,
-          mindeviation, ngiven, ldxgiven, xgiven, nextra, peakfinder, statefile,
-          spin, &nregions, &neval, &fail, integral.data(), error.data(),
-          prob.data());
+            seed, mineval, maxeval, key1, key2, key3, maxpass, border, maxchisq,
+            mindeviation, ngiven, ldxgiven, xgiven, nextra, peakfinder,
+            statefile, spin, &nregions, &neval, &fail, integral.data(),
+            error.data(), prob.data());
   // DisplayInfo("", fname, "nregions=%d ; neval=%d ; fail=%d\n", nregions,
   // neval, fail); for (Int i = 0; i < ncomp; ++i) {
   //   DisplayInfo("", fname, "i=%d integral=%23.16e ; error=%23.16e ;
@@ -110,8 +110,9 @@ void integrateCuhre(std::vector<RealD>& integral, std::vector<RealD>& error,
                     Int& fail, const Int ndim, const Int ncomp, const F& f,
                     const RealD epsabs = 0.0, const RealD epsrel = 1.0e-5,
                     const Int flags = 0, const long mineval = 128,
-                    const long maxeval = 16 * 1024 * 1024 * 4, const Int key = 7,
-                    const char* statefile = NULL, void* spin = NULL)
+                    const long maxeval = 16 * 1024 * 1024 * 4,
+                    const Int key = 7, const char* statefile = NULL,
+                    void* spin = NULL)
 {
   TIMER("integrateCuhre");
 #ifndef QLAT_NO_CUBA
@@ -120,8 +121,8 @@ void integrateCuhre(std::vector<RealD>& integral, std::vector<RealD>& error,
   prob.resize(ncomp);
   // cubacores(0, 0);
   llCuhre(ndim, ncomp, cubaFunction<F>, (void*)&f, 1, epsrel, epsabs, flags,
-        mineval, maxeval, key, statefile, spin, &nregions, &neval, &fail,
-        integral.data(), error.data(), prob.data());
+          mineval, maxeval, key, statefile, spin, &nregions, &neval, &fail,
+          integral.data(), error.data(), prob.data());
   // DisplayInfo("", fname, "nregions=%d ; neval=%d ; fail=%d\n", nregions,
   // neval, fail); for (Int i = 0; i < ncomp; ++i) {
   //   DisplayInfo("", fname, "i=%d integral=%23.16e ; error=%23.16e ;

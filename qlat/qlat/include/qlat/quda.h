@@ -1,9 +1,8 @@
 #pragma once
 
-#include <qlat/qlat.h>
-
-#include <quda.h>
 #include <invert_quda.h>
+#include <qlat/qlat.h>
+#include <quda.h>
 
 #include <cstdlib>
 
@@ -155,16 +154,16 @@ void set_deflation_param(QudaEigParam& df_param)
 {
   df_param.import_vectors = QUDA_BOOLEAN_NO;
   df_param.run_verify = QUDA_BOOLEAN_NO;
-
+  //
   df_param.nk = df_param.invert_param->nev;
   df_param.np =
       df_param.invert_param->nev * df_param.invert_param->deflation_grid;
   df_param.extlib_type = QUDA_EIGEN_EXTLIB;
-
+  //
   df_param.cuda_prec_ritz = df_param.invert_param->cuda_prec;
   df_param.location = QUDA_CUDA_FIELD_LOCATION;
   df_param.mem_type_ritz = QUDA_MEMORY_DEVICE;
-
+  //
   // set file i/o parameters
   strcpy(df_param.vec_infile, "/ccs/home/jiquntu/meas-qlat/vec_outfile.txt");
   strcpy(df_param.vec_outfile, "/ccs/home/jiquntu/meas-qlat/vec_outfile.txt");

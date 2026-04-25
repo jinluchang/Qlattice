@@ -273,7 +273,8 @@ Long dist_write_dist_data(const std::vector<DistData<M>>& dds,
     total_ops += ops;
     displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d ; total_ops "
                                     "= %10ld ; total_bytes = %15ld",
-                                    cycle + 1, n_cycle, total_ops, total_bytes));
+                                    cycle + 1, n_cycle, total_ops,
+                                    total_bytes));
   }
   std::vector<Long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -315,7 +316,8 @@ Long dist_write_fields(const std::vector<ConstHandle<Field<M>>>& fs,
     if (id_node == 0) {
       dist_mkdir(path + ".partial", id_node);
       if (get_force_field_write_sizeof_M() == 0) {
-        dist_write_geo_info(f.geo(), f.multiplicity, sizeof(M), path + ".partial");
+        dist_write_geo_info(f.geo(), f.multiplicity, sizeof(M),
+                            path + ".partial");
       } else {
         const Int sizeof_M = get_force_field_write_sizeof_M();
         qassert((f.multiplicity * sizeof(M)) % sizeof_M == 0);
@@ -402,7 +404,8 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
     total_ops += ops;
     displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d ; total_ops "
                                     "= %10ld ; total_bytes = %15ld",
-                                    cycle + 1, n_cycle, total_ops, total_bytes));
+                                    cycle + 1, n_cycle, total_ops,
+                                    total_bytes));
   }
   std::vector<Long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -455,8 +458,9 @@ Long dist_read_dist_data(const std::vector<DistData<M>>& dds,
 }
 
 template <class M>
-Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo, Int& multiplicity,
-                      Coordinate& new_size_node, const std::string& path)
+Long dist_read_fields(std::vector<Field<M>>& fs, Geometry& geo,
+                      Int& multiplicity, Coordinate& new_size_node,
+                      const std::string& path)
 // will clear fs before read
 {
   if (!does_file_exist_sync_node(path + "/checkpoint")) {

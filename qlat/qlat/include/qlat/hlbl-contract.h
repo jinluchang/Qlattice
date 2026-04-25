@@ -197,10 +197,9 @@ qacc array<M, 3> simple_moment_with_contact_subtract(
         if (i == k or j == k) {
           continue;
         }
-        ret[i] +=
-            (sub_coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
-             (Complex)smod_sym(xg_op[j] - ref[j], (RealD)total_site[j])) *
-            cv[k];
+        ret[i] += (sub_coef * 0.5 * (Complex)epsilon_tensor_acc(i, j, k) *
+                   (Complex)smod_sym(xg_op[j] - ref[j], (RealD)total_site[j])) *
+                  cv[k];
       }
     }
   }
@@ -305,15 +304,15 @@ void contract_four_loop(SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
                         const CurrentMoments<WilsonMatrix>& cm_yx,
                         const PointsSelection& psel_d,
                         const SelectedPoints<RealD>& psel_d_prob_xy,
-                        const Geometry& geo,
-                        const Long r_sq_limit, const std::string& label);
+                        const Geometry& geo, const Long r_sq_limit,
+                        const std::string& label);
 
 void contract_four_combine(
     SlTable& t, SlTable& t_pi, const Complex& coef, const Geometry& geo,
     const Coordinate& xg_x, const Coordinate& xg_y,
     const SelectedPoints<Complex>& f_loop_i_rho_sigma_lambda,
-    const SelectedPoints<ManyMagneticMoments>& smf, const PointsSelection& psel_d,
-    const Long r_sq_limit);
+    const SelectedPoints<ManyMagneticMoments>& smf,
+    const PointsSelection& psel_d, const Long r_sq_limit);
 
 inline std::vector<std::string> get_clbl_inf_ref_tags(
     const std::string& job_tag)

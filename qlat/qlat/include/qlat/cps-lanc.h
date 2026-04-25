@@ -34,7 +34,7 @@ Long lanczosReadParNode(Lanczos& lanc, const std::string& path)
 {
   if (!DoesFileExist(path + "/checkpoint")) {
     qlat::DisplayInfo(cname, "lanczosReadParNode", "'%s' do not exist.\n",
-                path.c_str());
+                      path.c_str());
     return 0;
   }
   TIMER_VERBOSE_FLOPS("lanczosReadParNode");
@@ -51,7 +51,8 @@ Long lanczosReadParNode(Lanczos& lanc, const std::string& path)
   timer.flops += lanc.size * lanc.vec_size * getNumNode();
   double vals[lanc.size];
   memset(vals, 0, sizeof(vals));
-  qlat::DisplayInfo(cname, fname.c_str(), "Reading %d eigen-values.\n", lanc.size);
+  qlat::DisplayInfo(cname, fname.c_str(), "Reading %d eigen-values.\n",
+                    lanc.size);
   if (0 == getIdNode()) {
     const std::string filename = path + "/eigen-values.txt";
     FILE* file = fopen(filename.c_str(), "r");

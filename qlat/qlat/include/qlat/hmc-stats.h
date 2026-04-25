@@ -24,8 +24,8 @@ inline RealD get_field_max(const FieldM<RealD, 1>& fd)
   return m;
 }
 
-inline std::vector<RealD> get_gm_force_magnitudes(
-    const GaugeMomentum& gm_force, const Int n_elems)
+inline std::vector<RealD> get_gm_force_magnitudes(const GaugeMomentum& gm_force,
+                                                  const Int n_elems)
 // return the l1, l2, ..., linf norm of the gm_force magnitudes
 // n_elems == mag_vec.size();
 // n_elems >= 3
@@ -91,9 +91,9 @@ inline std::string show_gm_force_magnitudes(const std::vector<RealD>& mag_vec)
   return out.str();
 }
 
-API inline std::vector<std::vector<RealD> >& get_gm_force_magnitudes_list()
+API inline std::vector<std::vector<RealD>>& get_gm_force_magnitudes_list()
 {
-  static std::vector<std::vector<RealD> > gm_force_magnitudes_list;
+  static std::vector<std::vector<RealD>> gm_force_magnitudes_list;
   return gm_force_magnitudes_list;
 }
 
@@ -103,8 +103,7 @@ inline void display_gm_force_magnitudes(const GaugeMomentum& gm_force,
 // Need to call: clear(get_gm_force_magnitudes_list()) to free memory
 {
   TIMER_VERBOSE("display_gm_force_magnitudes");
-  const std::vector<RealD> mag_vec =
-      get_gm_force_magnitudes(gm_force, n_elems);
+  const std::vector<RealD> mag_vec = get_gm_force_magnitudes(gm_force, n_elems);
   display_info(show_gm_force_magnitudes(mag_vec));
   get_gm_force_magnitudes_list().push_back(mag_vec);
 }
@@ -112,7 +111,7 @@ inline void display_gm_force_magnitudes(const GaugeMomentum& gm_force,
 inline void save_gm_force_magnitudes_list(const std::string& fn = "")
 {
   TIMER_VERBOSE("save_gm_force_magnitudes_list");
-  std::vector<std::vector<RealD> >& db = get_gm_force_magnitudes_list();
+  std::vector<std::vector<RealD>>& db = get_gm_force_magnitudes_list();
   if (db.size() > 0 and fn != "") {
     const Long idx_size = db.size();
     const Long ln_size = db[0].size();
@@ -169,7 +168,7 @@ inline std::string show_gauge_field_info_line(const Int i,
 }
 
 inline LatData convert_gauge_field_info_table(
-    const std::vector<std::vector<RealD> >& dt)
+    const std::vector<std::vector<RealD>>& dt)
 {
   TIMER("convert_gauge_field_info_table");
   LatData ld;
@@ -194,7 +193,8 @@ inline LatData convert_energy_list(
 {
   TIMER("convert_energy_list");
   LatData ld;
-  ld.info.push_back(lat_dim_number("flow_steps", 1, energy_density_list.size()));
+  ld.info.push_back(
+      lat_dim_number("flow_steps", 1, energy_density_list.size()));
   ld.info.push_back(lat_dim_string(
       "name", make_array<std::string>("flow_time", "energy_density")));
   lat_data_alloc(ld);
@@ -214,7 +214,7 @@ inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
 //
 {
   TIMER("get_gauge_field_info_table_with_ape_smear");
-  std::vector<std::vector<RealD> > dt;
+  std::vector<std::vector<RealD>> dt;
   std::vector<RealD> v = get_gauge_field_infos(gf);
   displayln_info(show_gauge_field_info_line(0, v));
   dt.push_back(v);
@@ -253,7 +253,7 @@ inline void get_gauge_field_info_table_with_wilson_flow(
 //
 {
   TIMER("get_gauge_field_info_table_with_wilson_flow");
-  std::vector<std::vector<RealD> > dt;
+  std::vector<std::vector<RealD>> dt;
   std::vector<RealD> energy_density_list;
   std::vector<RealD> v = get_gauge_field_infos(gf);
   displayln_info(show_gauge_field_info_line(0, v));

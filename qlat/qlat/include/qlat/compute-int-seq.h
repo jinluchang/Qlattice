@@ -1,16 +1,16 @@
 #pragma once
 
-#include "muon-line-config.h"
-#include "utils.h"
-#include "root-fsolver.h"
-#include "interpolation.h"
-#include "compute-f.h"
-
 #include <qlat/qlat.h>
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <cassert>
+
+#include "compute-f.h"
+#include "interpolation.h"
+#include "muon-line-config.h"
+#include "root-fsolver.h"
+#include "utils.h"
 
 namespace qlat
 {  //
@@ -154,7 +154,7 @@ struct MuonLineIntegrand {
   }
   //
   std::vector<RealD> integrand(const RealD rp,
-                                const qlat::CoordinateD& eta) const
+                               const qlat::CoordinateD& eta) const
   {
     // TIMER_VERBOSE("MuonLineIntegrand");
     std::vector<RealD> ans(25, 0.0);
@@ -405,13 +405,14 @@ inline void test_computeIntSeq()
   TIMER_VERBOSE("test_computeIntSeq");
   const RealD v = 2.0;
   const RealD psi = psiFromV(v);
-  DisplayInfo("", fname.c_str(), "v=%23.16e ; psi=%23.16e -> v=%23.16e\n", v, psi,
-              vFromPsi(psi));
+  DisplayInfo("", fname.c_str(), "v=%23.16e ; psi=%23.16e -> v=%23.16e\n", v,
+              psi, vFromPsi(psi));
   const CoordinateD eta(0.2, 0.2, 0.4, 1.4);
   const CoordinateD param(paramFromEta(eta, 1.1));
   DisplayInfo("", fname.c_str(), "eta   =%s\n", show(eta).c_str());
   DisplayInfo("", fname.c_str(), "param =%s\n", show(param).c_str());
-  DisplayInfo("", fname.c_str(), "eta   =%s\n", show(etaFromParam(param, 1.1)).c_str());
+  DisplayInfo("", fname.c_str(), "eta   =%s\n",
+              show(etaFromParam(param, 1.1)).c_str());
   const CoordinateD x(0.1, 0.2, 0.0, 0.5);
   const CoordinateD y(0.3, 0.0, -0.2, 0.1);
   MuonLineIntegrand mli;
@@ -429,7 +430,8 @@ inline void test_computeIntSeq()
     const RealD mliPhiInt = integrate(mliPhi, -PI, PI);
     DisplayInfo("", fname.c_str(), "mliPhiInt=%23.16e\n", mliPhiInt);
   }
-  // DisplayInfo("", fname.c_str(), "mliInt=%23.16e\n", integrateMuonLineTest(mli));
+  // DisplayInfo("", fname.c_str(), "mliInt=%23.16e\n",
+  // integrateMuonLineTest(mli));
   profile_computeIntSeq();
 }
 

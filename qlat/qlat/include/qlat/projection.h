@@ -1,12 +1,12 @@
 #pragma once
 
-#include "muon-line-config.h"
-
 #include <qlat/qlat.h>
 
-#include <iostream>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <iostream>
+
+#include "muon-line-config.h"
 
 namespace qlat
 {  //
@@ -206,13 +206,13 @@ inline ManyMagneticMoments permuteNuRhoMu(const ManyMagneticMoments& mmm,
 }
 
 qacc const RealD& get_m_comp(const ManyMagneticMoments& mmm, const Int i,
-                              const Int rho, const Int sigma, const Int nu)
+                             const Int rho, const Int sigma, const Int nu)
 {
   return mmm[16 * sigma + 4 * nu + rho][i];
 }
 
 qacc RealD& get_m_comp(ManyMagneticMoments& mmm, const Int i, const Int rho,
-                        const Int sigma, const Int nu)
+                       const Int sigma, const Int nu)
 {
   return mmm[16 * sigma + 4 * nu + rho][i];
 }

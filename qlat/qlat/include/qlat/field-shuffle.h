@@ -221,20 +221,18 @@ void shuffle_field(std::vector<Field<M>>& fs, const Field<M>& f,
   const Int multiplicity = f.multiplicity;
   if (sp.new_size_node != Coordinate()) {
     displayln_info(
-        0,
-        fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
-                         "total_size: %.3lf GB)",
-                         show(geo.geon.size_node).c_str(),
-                         show(sp.new_size_node).c_str(),
-                         show(geo.total_site()).c_str(),
-                         multiplicity * (int)sizeof(M),
-                         (RealD)(sp.scp.global_comm_size * multiplicity *
-                                  sizeof(M) * std::pow(0.5, 30))));
+        0, fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
+                            "total_size: %.3lf GB)",
+                            show(geo.geon.size_node).c_str(),
+                            show(sp.new_size_node).c_str(),
+                            show(geo.total_site()).c_str(),
+                            multiplicity * (int)sizeof(M),
+                            (RealD)(sp.scp.global_comm_size * multiplicity *
+                                    sizeof(M) * std::pow(0.5, 30))));
   }
   qassert(sp.geo_send == geo_resize(geo));
   clear(fs);
-  const Long total_bytes =
-      sp.scp.global_comm_size * multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
   vector<M> send_buffer(sp.scp.total_send_size * multiplicity, MemType::Comm);
   shuffle_field_pack_send(get_data(send_buffer), get_data(f),
@@ -276,18 +274,16 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M>>& fs,
   const Int multiplicity = f.multiplicity;
   if (sp.new_size_node != Coordinate()) {
     displayln_info(
-        0,
-        fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
-                         "total_size: %.3lf GB)",
-                         show(sp.new_size_node).c_str(),
-                         show(geo.geon.size_node).c_str(),
-                         show(geo.total_site()).c_str(),
-                         multiplicity * (int)sizeof(M),
-                         (RealD)(sp.scp.global_comm_size * multiplicity *
-                                  sizeof(M) * std::pow(0.5, 30))));
+        0, fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
+                            "total_size: %.3lf GB)",
+                            show(sp.new_size_node).c_str(),
+                            show(geo.geon.size_node).c_str(),
+                            show(geo.total_site()).c_str(),
+                            multiplicity * (int)sizeof(M),
+                            (RealD)(sp.scp.global_comm_size * multiplicity *
+                                    sizeof(M) * std::pow(0.5, 30))));
   }
-  const Long total_bytes =
-      sp.scp.global_comm_size * multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
   vector<Vector<M>> fsdata(fs.size(), MemType::Cpu);
   for (size_t i = 0; i < fs.size(); ++i) {
@@ -328,11 +324,10 @@ void shuffle_field(std::vector<SelectedField<M>>& fs, const SelectedField<M>& f,
                           show(geo.total_site()).c_str(),
                           multiplicity * (int)sizeof(M),
                           (RealD)(sp.scp.global_comm_size * multiplicity *
-                                   sizeof(M) * std::pow(0.5, 30))));
+                                  sizeof(M) * std::pow(0.5, 30))));
   qassert(sp.geo_send == geo_resize(geo));
   clear(fs);
-  const Long total_bytes =
-      sp.scp.global_comm_size * multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
   qassert(sp.n_elems_send * multiplicity == (Long)f.field.size());
   vector<M> send_buffer(sp.scp.total_send_size * multiplicity, MemType::Comm);
@@ -382,9 +377,8 @@ void shuffle_field_back(SelectedField<M>& f,
                           show(geo.total_site()).c_str(),
                           multiplicity * (int)sizeof(M),
                           (RealD)(sp.scp.global_comm_size * multiplicity *
-                                   sizeof(M) * std::pow(0.5, 30))));
-  const Long total_bytes =
-      sp.scp.global_comm_size * multiplicity * sizeof(M);
+                                  sizeof(M) * std::pow(0.5, 30))));
+  const Long total_bytes = sp.scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
   vector<Vector<M>> fsdata(fs.size(), MemType::Cpu);
   for (size_t i = 0; i < fs.size(); ++i) {
@@ -839,8 +833,7 @@ void shuffle_field(std::vector<Field<M>>& fs, const Field<M>& f,
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   QLAT_DIAGNOSTIC_POP;
   shuffle_field(fs, f, sp);
-  const Long total_bytes =
-      sp.scp.global_comm_size * multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 
@@ -855,8 +848,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M>>& fs,
   const ShufflePlan& sp = get_shuffle_plan(f.geo().total_site(), new_size_node);
   QLAT_DIAGNOSTIC_POP;
   shuffle_field_back(f, fs, sp);
-  const Long total_bytes =
-      sp.scp.global_comm_size * f.multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * f.multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 
@@ -874,8 +866,7 @@ void shuffle_field(std::vector<SelectedField<M>>& fs,
   const Int multiplicity = f.multiplicity;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   shuffle_field(fs, f, sp);
-  const Long total_bytes =
-      sp.scp.global_comm_size * multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 
@@ -891,8 +882,7 @@ void shuffle_field_back(SelectedField<M>& f,
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   shuffle_field_back(f, fs, sp);
-  const Long total_bytes =
-      sp.scp.global_comm_size * f.multiplicity * sizeof(M);
+  const Long total_bytes = sp.scp.global_comm_size * f.multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 

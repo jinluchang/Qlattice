@@ -6,7 +6,7 @@ namespace qlat
 {  //
 
 PointsSelection mk_tslice_points_selection(const Coordinate& total_site,
-                                          const Int t_dir = 3);
+                                           const Int t_dir = 3);
 
 PointsSelection mk_random_points_selection(const Coordinate& total_site,
                                            const Long num, const RngState& rs,
@@ -14,14 +14,18 @@ PointsSelection mk_random_points_selection(const Coordinate& total_site,
 
 void set_psel_full(PointsSelection& psel, const Geometry& geo);
 
-void lat_data_from_points_selection(LatDataInt& ld, const PointsSelection& psel);
+void lat_data_from_points_selection(LatDataInt& ld,
+                                    const PointsSelection& psel);
 
-void points_selection_from_lat_data(PointsSelection& psel, const LatDataInt& ld, const PointsDistType points_dist_type = PointsDistType::Global);
+void points_selection_from_lat_data(
+    PointsSelection& psel, const LatDataInt& ld,
+    const PointsDistType points_dist_type = PointsDistType::Global);
 
-void save_points_selection(const PointsSelection& psel, const std::string& path);
+void save_points_selection(const PointsSelection& psel,
+                           const std::string& path);
 
 void save_points_selection_info(const PointsSelection& psel,
-                               const std::string& path);
+                                const std::string& path);
 
 PointsSelection load_points_selection(const std::string& path);
 
@@ -40,7 +44,8 @@ bool is_initialized(const SelectedPoints<M>& sp)
 template <class M>
 bool is_consistent(const SelectedPoints<M>& sp, const PointsSelection& psel)
 {
-  return sp.initialized and sp.n_points == (Long)psel.size() and sp.points_dist_type == psel.points_dist_type;
+  return sp.initialized and sp.n_points == (Long)psel.size() and
+         sp.points_dist_type == psel.points_dist_type;
 }
 
 template <class M>
