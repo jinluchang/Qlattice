@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 
 """
-Lint tool: replace empty lines inside function bodies with indented comment lines.
-
+Lint tool: replace empty lines inside function bodies with indented comment lines.\n
 Supported file types:
     .py          Python      — formatted with ruff, AST-based function detection
     .pyx         Cython      — regex-based function detection
-    .c .cc .cpp .cxx .h .hpp  C/C++ — formatted with clang-format, brace-based function detection
-
+    .c .cc .cpp .cxx .h .hpp  C/C++ — formatted with clang-format, brace-based function detection\n
 Comment markers:
     Python/Cython: #
-    C/C++:         //
-
+    C/C++:         //\n
 Design goals:
     - Remove all empty lines within function/method bodies to enforce compact code.
     - Use indented comment lines as visual separators when logical grouping is needed.
@@ -19,11 +16,9 @@ Design goals:
     - Leave empty lines outside function bodies untouched (module level, between functions).
     - Remove empty lines inside multi-line string literals (e.g., docstrings) while
       preserving content by appending "\\n" to the preceding line.
-    - Handle nested functions correctly by scoping replacements to each function's body.
-
+    - Handle nested functions correctly by scoping replacements to each function's body.\n
 Usage:
-    python lint.py <file_or_directory> [--check] [--diff]
-
+    python lint.py <file_or_directory> [--check] [--diff]\n
 Options:
     --check   Check if files need changes (exit 1 if so)
     --diff    Show diff of proposed changes
@@ -42,8 +37,7 @@ import re
 
 
 def get_function_body_lines(source_lines):
-    """Return 1-indexed line numbers inside function/method bodies for Python files.
-
+    """Return 1-indexed line numbers inside function/method bodies for Python files.\n
     Uses the ast module to walk the parse tree and collect line ranges
     of FunctionDef and AsyncFunctionDef nodes (including nested ones).
     """
@@ -63,8 +57,7 @@ def get_function_body_lines(source_lines):
 
 
 def get_function_body_lines_cython(source_lines):
-    """Return 1-indexed line numbers inside function/method bodies for Cython files.
-
+    """Return 1-indexed line numbers inside function/method bodies for Cython files.\n
     Uses regex-based detection (def/cdef/cpdef) since ast.parse cannot handle .pyx syntax.
     Scans for lines indented deeper than the function signature as the body extent.
     """
@@ -104,8 +97,7 @@ CPP_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hpp"}
 
 
 def get_function_body_lines_cpp(source_lines):
-    """Return 1-indexed line numbers inside function/method bodies for C/C++ files.
-
+    """Return 1-indexed line numbers inside function/method bodies for C/C++ files.\n
     Uses brace-depth tracking to find function bodies. Detects functions by looking
     for a ')' followed by optional qualifiers and then '{', while excluding control
     structures (if, for, while, switch, catch, else). Skips preprocessor directives
@@ -149,8 +141,8 @@ def get_function_body_lines_cpp(source_lines):
             sig = " ".join(sig_lines)
             #
             # Remove comments and strings from signature for analysis
-            clean = re.sub(r'//.*', '', sig)
-            clean = re.sub(r'/\*.*?\*/', '', clean)
+            clean = re.sub(r"//.*", "", sig)
+            clean = re.sub(r"/\*.*?\*/", "", clean)
             clean = re.sub(r'"(?:[^"\\]|\\.)*"', '""', clean)
             clean = re.sub(r"'(?:[^'\\]|\\.)*'", "''", clean)
             #
@@ -160,13 +152,13 @@ def get_function_body_lines_cpp(source_lines):
             #
             # Check for function call pattern: '...' before '{' ends with ')'
             # (after removing trailing qualifiers like 'const', 'override', 'noexcept')
-            qualifiers = r'(?:\b(?:const|override|noexcept|final|volatile|&|&&|\=\s*0|=\s*default|=\s*delete)\s*)*'
-            func_pat = re.compile(r'\)\s*' + qualifiers + r'$')
+            qualifiers = r"(?:\b(?:const|override|noexcept|final|volatile|&|&&|\=\s*0|=\s*default|=\s*delete)\s*)*"
+            func_pat = re.compile(r"\)\s*" + qualifiers + r"$")
             is_func = bool(func_pat.search(before_brace))
             #
             # Exclude control structures: if, for, while, switch, catch, else
             if is_func:
-                control_pat = re.compile(r'\b(?:if|for|while|switch|catch|else)\s*\(')
+                control_pat = re.compile(r"\b(?:if|for|while|switch|catch|else)\s*\(")
                 if control_pat.search(before_brace):
                     is_func = False
             #
@@ -208,7 +200,11 @@ def get_function_body_lines_cpp(source_lines):
                         elif line_text[col + 1] == "*":
                             col += 2
                             while col < len(line_text):
-                                if line_text[col] == "*" and col + 1 < len(line_text) and line_text[col + 1] == "/":
+                                if (
+                                    line_text[col] == "*"
+                                    and col + 1 < len(line_text)
+                                    and line_text[col + 1] == "/"
+                                ):
                                     col += 2
                                     break
                                 col += 1
@@ -235,8 +231,7 @@ def get_indent(line):
 
 
 def get_string_lines(source):
-    """Return 1-indexed line numbers inside multi-line string literals.
-
+    """Return 1-indexed line numbers inside multi-line string literals.\n
     Uses the tokenize module to find STRING tokens that span multiple lines.
     Only meaningful for Python/Cython sources.
     """
@@ -272,8 +267,7 @@ def collapse_consecutive_comments(lines):
 
 
 def transform_file(source, is_cython=False, is_cpp=False):
-    """Replace empty lines inside function bodies with indented comment lines.
-
+    """Replace empty lines inside function bodies with indented comment lines.\n
     The comment marker is '#' for Python/Cython and '//' for C/C++.
     Exactly one of is_cython/is_cpp should be True for non-Python files;
     when both are False, Python AST-based detection is used.
@@ -374,8 +368,7 @@ def run_ruff(source):
 
 
 def run_clang_format(source, filepath):
-    """Run clang-format on C/C++ source code.
-
+    """Run clang-format on C/C++ source code.\n
     Uses --assume-filename so clang-format picks up the correct language and
     .clang-format config from the file's original directory.
     """
@@ -395,13 +388,11 @@ def run_clang_format(source, filepath):
 
 
 def process_file(filepath, check=False, diff=False):
-    """Process a single source file through its language-specific formatter and transform.
-
+    """Process a single source file through its language-specific formatter and transform.\n
     Pipeline by extension:
         .py   — ruff format + ruff check --fix, then transform
         .pyx  — transform only (no formatter)
-        C/C++ — clang-format, then transform
-
+        C/C++ — clang-format, then transform\n
     Returns True if the file was (or would be) modified.
     """
     ext = os.path.splitext(filepath)[1]
@@ -439,8 +430,7 @@ def process_file(filepath, check=False, diff=False):
 
 
 def find_source_files(path):
-    """Find all supported source files (.py, .pyx, .c, .cc, .cpp, .cxx, .h, .hpp) at path.
-
+    """Find all supported source files (.py, .pyx, .c, .cc, .cpp, .cxx, .h, .hpp) at path.\n
     If path is a single file, returns it (if supported). If a directory, walks
     recursively and returns all matching files.
     """
