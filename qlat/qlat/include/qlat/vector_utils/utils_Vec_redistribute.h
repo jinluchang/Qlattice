@@ -9,405 +9,468 @@
 #include "general_funs.h"
 #include "utils_fft_desc.h"
 
-namespace qlat{
+namespace qlat
+{
 
 ////////each MPI NT will have all nx,ny,nz
-struct Vec_redistribute
-{
-  Long noden;int rank;int Nmpi;
-  Int nx,ny,nz,nt,vol,Nvol;
-  Int Nx,Ny,Nz,Nt;
-  Int mx,my,mz,mt;
+struct Vec_redistribute {
+  Long noden;
+  int rank;
+  int Nmpi;
+  Int nx, ny, nz, nt, vol, Nvol;
+  Int Nx, Ny, Nz, Nt;
+  Int mx, my, mz, mt;
   bool GPU;
 
-  qlat::vector<Int> Nv,nv,mv;
+  qlat::vector<Int> Nv, nv, mv;
 
-  std::vector<Int > orderN;
-  fft_desc_basic *fd;
+  std::vector<Int> orderN;
+  fft_desc_basic* fd;
 
-
-  Int b0,civa;
-  void* sendV; void* recvV;
+  Int b0, civa;
+  void* sendV;
+  void* recvV;
   Int tem_off;
   bool update_off;
   /////void* bufV ;
 
-  qlat::vector<Int > currsend;
-  qlat::vector<Int > currspls;
-  qlat::vector<Int > currrecv;
-  qlat::vector<Int > currrpls;
+  qlat::vector<Int> currsend;
+  qlat::vector<Int> currspls;
+  qlat::vector<Int> currrecv;
+  qlat::vector<Int> currrpls;
 
-  qlat::vector<Int > sendM;
-  qlat::vector<Int > splsM;
-  qlat::vector<Int > recvM;
-  qlat::vector<Int > rplsM;
+  qlat::vector<Int> sendM;
+  qlat::vector<Int> splsM;
+  qlat::vector<Int> recvM;
+  qlat::vector<Int> rplsM;
 
-  qlat::vector<LInt > map_order;
-  qlat::vector<LInt > map_Dorder;
+  qlat::vector<LInt> map_order;
+  qlat::vector<LInt> map_Dorder;
 
   /////May need to change?
-  qlat::vector<Int > secT;
+  qlat::vector<Int> secT;
 
-  inline void set_mem(Int b0_or,Int civa_or);
+  inline void set_mem(Int b0_or, Int civa_or);
   Int flag_set_mem;
 
-  template<typename Ty>
+  template <typename Ty>
   void call_MPI(Int flag);
 
   bool copy_same_node;
 
-  template<typename Ty>
+  template <typename Ty>
   void re_order_recv(Int flag);
 
-  template<typename Ty>
-  void reorder(Ty *sendbuf,Ty *recvbuf,Int b0_or,Int civa_or,Int flag= 0);
-  ////void reorder(Ftype *sendbuf,Ftype *recvbuf,Int b0_or,Int civa_or,qlat::vector<Int > secT_or,Int flag= 0);
+  template <typename Ty>
+  void reorder(Ty* sendbuf, Ty* recvbuf, Int b0_or, Int civa_or, Int flag = 0);
+  ////void reorder(Ftype *sendbuf,Ftype *recvbuf,Int b0_or,Int
+  ///civa_or,qlat::vector<Int > secT_or,Int flag= 0);
 
   inline void print_send_size();
 
-  qlat::vector<Int > map_mpi_vec;
+  qlat::vector<Int> map_mpi_vec;
 
   MPI_Comm vec_comm;
   Int mode_MPI;
 
-  //int flag_set_fft;
+  // int flag_set_fft;
 
   ////int flag_set_fft_force;
   ////void set_fft(Int civau=-1);
   ////void do_fft(bool fftdir=true);
 
-  Vec_redistribute(fft_desc_basic &fds, bool GPU_set = true);
+  Vec_redistribute(fft_desc_basic& fds, bool GPU_set = true);
   ~Vec_redistribute();
-
 };
 
-inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
+inline Vec_redistribute::Vec_redistribute(fft_desc_basic& fds, bool GPU_set)
 {
   TIMERA("Construct Vec_redistribute");
   (void)GPU_set;
   fd = &fds;
-  //GPU = GPU_set;
-  #ifndef QLAT_USE_ACC
+// GPU = GPU_set;
+#ifndef QLAT_USE_ACC
   GPU = false;
-  #else
+#else
   GPU = GPU_set;
-  #endif
-
+#endif
+  //
   noden = fds.noden;
-  rank  = fds.rank;
-  Nmpi  = fds.Nmpi;
-  nx=fds.nx;ny=fds.ny;nz=fds.nz;nt=fds.nt;
-  //nt=fds.nt;
-  vol  = fds.vol;Nvol = fds.Nvol;
-
-  Nx=fds.Nx;Ny=fds.Ny;Nz=fds.Nz;Nt=fds.Nt;
-  mx=fds.mx;my=fds.my;mz=fds.mz;mt=fds.mt;
-
-  Nv = fds.Nv;nv = fds.nv;
-  //mv = fds.mv;
+  rank = fds.rank;
+  Nmpi = fds.Nmpi;
+  nx = fds.nx;
+  ny = fds.ny;
+  nz = fds.nz;
+  nt = fds.nt;
+  // nt=fds.nt;
+  vol = fds.vol;
+  Nvol = fds.Nvol;
+  //
+  Nx = fds.Nx;
+  Ny = fds.Ny;
+  Nz = fds.Nz;
+  Nt = fds.Nt;
+  mx = fds.mx;
+  my = fds.my;
+  mz = fds.mz;
+  mt = fds.mt;
+  //
+  Nv = fds.Nv;
+  nv = fds.nv;
+  // mv = fds.mv;
   orderN = fds.orderN;
   /////Pos0 = fds.Pos0;
   /////mi_list = fds.mi_list;
   /////map_order.set_acc(true);map_Dorder.set_acc(true);
   tem_off = -1;
-
-  b0 =-1; civa =-1;
+  //
+  b0 = -1;
+  civa = -1;
   copy_same_node = true;
-
+  //
   //////Needed for three point functions, need copy from dev
   secT.resize(fd->Nmpi);
-  for(Long i=0;i<secT.size();i++){secT[i] = fd->Nt;}
-
-  //////if(secT_or.size()!=fd->Nmpi){qmessage("secT wrong %8d ! \n", int(secT_or.size()));Qassert(false);}
-  ////secT = secT_or;
-  ////Check same number secT for MPI
-  ////Long mvol = mx*my*mz;
-  qlat::vector<Int > check;check.resize(0);
-  for(Int n=0;n<fd->Nmpi;n++)
-  {
+  for (Long i = 0; i < secT.size(); i++) {
+    secT[i] = fd->Nt;
+  }
+  //
+  //////if(secT_or.size()!=fd->Nmpi){qmessage("secT wrong %8d ! \n",
+  ///int(secT_or.size()));Qassert(false);} /secT = secT_or; /Check same number
+  ///secT for MPI /Long mvol = mx*my*mz;
+  qlat::vector<Int> check;
+  check.resize(0);
+  for (Int n = 0; n < fd->Nmpi; n++) {
     Int init = fd->Pos0[n][3];
     Int ins = secT[n];
-    for(Int m=0;m<fd->Nmpi;m++)
-    {
-    if(fd->Pos0[m][3] == init)
-    {
-    Int ns   = secT[m];
-    if(ins != ns){qmessage("Not match, n %8d, m %8d, ins %8d, ns %8d \n",n,m,ins,ns);Qassert(false);}
-    }
-    }
-  }
-  ////Check same number secT for MPI
-
-  map_mpi_vec.resize(Nmpi);
-  for(Long mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
-
-  //for(Int icomm=0;icomm<vec_comm_list.size();icomm++)
-  //{MPI_Comm_free(&vec_comm_list[icomm]);}
-  ///vec_comm_list.resize(0);
-
-  ////MPI_Comm vec_comm;
-  Int color_xyz = fd->init;
-  MPI_Comm_split(get_comm() ,color_xyz,rank,&vec_comm);
-  {
-    Int int_tem = -1;
-    MPI_Comm_rank(vec_comm,&int_tem);
-    map_mpi_vec[fd->rank] = int_tem;
-  }
-  sum_all_size((int*) (&map_mpi_vec[0]),Nmpi);
-
-  flag_set_mem = 0;
-  mode_MPI     = 1;
-
-  //flag_set_fft = 0;
-  //howmany = 0;
-
-  /////flag_set_fft_force = 0;
-
-}
-
-inline void Vec_redistribute::set_mem(Int b0_or,Int civa_or)
-{
-  TIMERA("Vec redistribute set mem");
-
-  b0 = b0_or;civa = civa_or;
-
-  if(b0<=0 or civa<=0){
-    qmessage("Need at least biv = 1, civ %6d !\n",civa);Qassert(false);
-  }
-
-  /////set up the map on fd
-  //fd->set_up_map();
-  ///map i --> nz*ny*nx   to recieve position
-  /////2 is the fatest
-  qlat::vector<Long > mapcur_Vtoi;
-  mapcur_Vtoi.resize(nx*ny*nz/Nv[orderN[2]]);
-  Int Nts = secT[fd->rank];
-  for(Int tmi=0;tmi<mt;tmi++)
-  {
-    Int t0 = fd->Pos0[fd->mi_list[tmi][0]][3];
-    if(t0 == fd->Pos0[rank][3])
-    for(LInt temmi=0;temmi<fd->mi_list[tmi].size();temmi++)
-    {
-      //int off = Nx*Ny*Nz*Nt*temmi;
-      //for(Int iv=0;iv<Nx*Ny*Nz*Nt;iv++)
-      //#pragma omp parallel for
-      for(LInt iv=0;iv< ((LInt) Nx)*Ny*Nz;iv++)
-      {
-        //LInt Vi = fd->maporder_Nitoipos[fd->mi_list[tmi][temmi]][iv];
-        Int rank_tem = fd->mi_list[tmi][temmi];
-        LInt vi_tem = fd->index_g_from_local(iv, rank_tem);
-        LInt Vi = vi_tem - fd->Pos0[rank_tem][3] * fd->vol;
-
-        Int umi = temmi;
-        LInt offnode = Nx*Ny*Nz*Nts*umi;
-        LInt temiv = iv%(Nv[0]*Nv[1]*Nv[2]);
-        LInt inode = b0*offnode + temiv;
-        if(Vi%Nv[orderN[2]] == 0)
-        if(Vi/(nv[0]*nv[1]*nv[2]) == 0)
-        {
-          LInt temVi = Vi%(nv[0]*nv[1]*nv[2]);
-          mapcur_Vtoi[temVi/Nv[orderN[2]]]    = inode/Nv[orderN[2]];
+    for (Int m = 0; m < fd->Nmpi; m++) {
+      if (fd->Pos0[m][3] == init) {
+        Int ns = secT[m];
+        if (ins != ns) {
+          qmessage("Not match, n %8d, m %8d, ins %8d, ns %8d \n", n, m, ins,
+                   ns);
+          Qassert(false);
         }
       }
     }
   }
-
-
-  size_t svol = fd->nx*fd->ny*fd->nz;
-  size_t LoopN = svol/Nv[orderN[2]];
-
-  map_order.resize(b0*Nts * LoopN);
-  map_Dorder.resize(b0*Nts * LoopN);
-  qthread_for(iv, Long(b0*Nts * LoopN), {
-    Int bi   =  iv/(Nts*LoopN);
-    Int ti   = (iv%(Nts*LoopN))/LoopN;
-    size_t i =  iv%(LoopN);
-    size_t Aoff = (bi*Nts + ti)*svol;
-    size_t Boff = (bi*Nts + ti)*Nv[0]*Nv[1]*Nv[2];
-    map_order[iv]  = (Aoff +      i        *Nv[orderN[2]])/Nv[orderN[2]]; 
-    map_Dorder[iv] = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])/Nv[orderN[2]]; 
-  });
-
-
-  currsend.resize(Nmpi   );
-  currrecv.resize(Nmpi   );
-  currspls.resize(Nmpi/mt);
-  currrpls.resize(Nmpi/mt);
-
-  sendM.resize(Nmpi   );
-  recvM.resize(Nmpi   );
-  splsM.resize(Nmpi/mt);
-  rplsM.resize(Nmpi/mt);
-
-  for(Int n=0;n<Nmpi   ;n++)currsend[n] = 0;
-  for(Int n=0;n<Nmpi   ;n++)currrecv[n] = 0;
-  for(Int n=0;n<Nmpi/mt;n++)currspls[n] = 0;
-  for(Int n=0;n<Nmpi/mt;n++)currrpls[n] = 0;
-
-
-  for(Int tmi=0;tmi<mt;tmi++) //Loop of initial time on each node
+  ////Check same number secT for MPI
+  //
+  map_mpi_vec.resize(Nmpi);
+  for (Long mapi = 0; mapi < map_mpi_vec.size(); mapi++) {
+    map_mpi_vec[mapi] = 0;
+  }
+  //
+  // for(Int icomm=0;icomm<vec_comm_list.size();icomm++)
+  //{MPI_Comm_free(&vec_comm_list[icomm]);}
+  /// vec_comm_list.resize(0);
+  //
+  ////MPI_Comm vec_comm;
+  Int color_xyz = fd->init;
+  MPI_Comm_split(get_comm(), color_xyz, rank, &vec_comm);
   {
-    Int t0 = fd->Pos0[fd->mi_list[tmi][0]][3]; //Determine the initial time
-    if(t0 == fd->Pos0[rank][3]) // If current node initial time is the working initial time
-    {
-      for(LInt temmi=0;temmi<fd->mi_list[tmi].size();temmi++) //Determine the communication nodes of this node
-      {
-        //int umi = mi_list[tmi][temmi];
-        Int umi = temmi;
+    Int int_tem = -1;
+    MPI_Comm_rank(vec_comm, &int_tem);
+    map_mpi_vec[fd->rank] = int_tem;
+  }
+  sum_all_size((int*)(&map_mpi_vec[0]), Nmpi);
+  //
+  flag_set_mem = 0;
+  mode_MPI = 1;
+  //
+  // flag_set_fft = 0;
+  // howmany = 0;
+  //
+  /////flag_set_fft_force = 0;
+}
 
+inline void Vec_redistribute::set_mem(Int b0_or, Int civa_or)
+{
+  TIMERA("Vec redistribute set mem");
+  //
+  b0 = b0_or;
+  civa = civa_or;
+  //
+  if (b0 <= 0 or civa <= 0) {
+    qmessage("Need at least biv = 1, civ %6d !\n", civa);
+    Qassert(false);
+  }
+  //
+  /////set up the map on fd
+  // fd->set_up_map();
+  /// map i --> nz*ny*nx   to recieve position
+  /////2 is the fatest
+  qlat::vector<Long> mapcur_Vtoi;
+  mapcur_Vtoi.resize(nx * ny * nz / Nv[orderN[2]]);
+  Int Nts = secT[fd->rank];
+  for (Int tmi = 0; tmi < mt; tmi++) {
+    Int t0 = fd->Pos0[fd->mi_list[tmi][0]][3];
+    if (t0 == fd->Pos0[rank][3])
+      for (LInt temmi = 0; temmi < fd->mi_list[tmi].size(); temmi++) {
+        // int off = Nx*Ny*Nz*Nt*temmi;
+        // for(Int iv=0;iv<Nx*Ny*Nz*Nt;iv++)
+        // #pragma omp parallel for
+        for (LInt iv = 0; iv < ((LInt)Nx) * Ny * Nz; iv++) {
+          // LInt Vi = fd->maporder_Nitoipos[fd->mi_list[tmi][temmi]][iv];
+          Int rank_tem = fd->mi_list[tmi][temmi];
+          LInt vi_tem = fd->index_g_from_local(iv, rank_tem);
+          LInt Vi = vi_tem - fd->Pos0[rank_tem][3] * fd->vol;
+          //
+          Int umi = temmi;
+          LInt offnode = Nx * Ny * Nz * Nts * umi;
+          LInt temiv = iv % (Nv[0] * Nv[1] * Nv[2]);
+          LInt inode = b0 * offnode + temiv;
+          if (Vi % Nv[orderN[2]] == 0)
+            if (Vi / (nv[0] * nv[1] * nv[2]) == 0) {
+              LInt temVi = Vi % (nv[0] * nv[1] * nv[2]);
+              mapcur_Vtoi[temVi / Nv[orderN[2]]] = inode / Nv[orderN[2]];
+            }
+        }
+      }
+  }
+  //
+  size_t svol = fd->nx * fd->ny * fd->nz;
+  size_t LoopN = svol / Nv[orderN[2]];
+  //
+  map_order.resize(b0 * Nts * LoopN);
+  map_Dorder.resize(b0 * Nts * LoopN);
+  qthread_for(iv, Long(b0 * Nts * LoopN), {
+    Int bi = iv / (Nts * LoopN);
+    Int ti = (iv % (Nts * LoopN)) / LoopN;
+    size_t i = iv % (LoopN);
+    size_t Aoff = (bi * Nts + ti) * svol;
+    size_t Boff = (bi * Nts + ti) * Nv[0] * Nv[1] * Nv[2];
+    map_order[iv] = (Aoff + i * Nv[orderN[2]]) / Nv[orderN[2]];
+    map_Dorder[iv] = (Boff + mapcur_Vtoi[i] * Nv[orderN[2]]) / Nv[orderN[2]];
+  });
+  //
+  currsend.resize(Nmpi);
+  currrecv.resize(Nmpi);
+  currspls.resize(Nmpi / mt);
+  currrpls.resize(Nmpi / mt);
+  //
+  sendM.resize(Nmpi);
+  recvM.resize(Nmpi);
+  splsM.resize(Nmpi / mt);
+  rplsM.resize(Nmpi / mt);
+  //
+  for (Int n = 0; n < Nmpi; n++) currsend[n] = 0;
+  for (Int n = 0; n < Nmpi; n++) currrecv[n] = 0;
+  for (Int n = 0; n < Nmpi / mt; n++) currspls[n] = 0;
+  for (Int n = 0; n < Nmpi / mt; n++) currrpls[n] = 0;
+  //
+  for (Int tmi = 0; tmi < mt; tmi++)  // Loop of initial time on each node
+  {
+    Int t0 = fd->Pos0[fd->mi_list[tmi][0]][3];  // Determine the initial time
+    if (t0 == fd->Pos0[rank][3])  // If current node initial time is the working
+                                  // initial time
+    {
+      for (LInt temmi = 0; temmi < fd->mi_list[tmi].size();
+           temmi++)  // Determine the communication nodes of this node
+      {
+        // int umi = mi_list[tmi][temmi];
+        Int umi = temmi;
+        //
         LInt rankglobal = fd->mi_list[tmi][umi];
         LInt ranklocal = map_mpi_vec[rankglobal];
-
+        //
         ////no 2, 2 is inside b0
-        currsend[ranklocal] = b0*Nx*Ny*Nz*secT[fd->rank]*civa;
-        currspls[ranklocal] = b0*Nx*Ny*Nz*secT[fd->rank]*umi*civa;
-        currrecv[ranklocal] = b0*Nx*Ny*Nz*secT[fd->rank]*civa;
-        currrpls[ranklocal] = b0*Nx*Ny*Nz*secT[fd->rank]*umi*civa;
+        currsend[ranklocal] = b0 * Nx * Ny * Nz * secT[fd->rank] * civa;
+        currspls[ranklocal] = b0 * Nx * Ny * Nz * secT[fd->rank] * umi * civa;
+        currrecv[ranklocal] = b0 * Nx * Ny * Nz * secT[fd->rank] * civa;
+        currrpls[ranklocal] = b0 * Nx * Ny * Nz * secT[fd->rank] * umi * civa;
       }
     }
   }
-
+  //
   //////update offset from data type and new ios
-  update_off   = true;
+  update_off = true;
   flag_set_mem = 1;
 }
 
-inline void Vec_redistribute::print_send_size(){
+inline void Vec_redistribute::print_send_size()
+{
   printf("rank %3d, ", fd->rank);
-  for(Int n = 0; n < Nmpi/mt; n++){
+  for (Int n = 0; n < Nmpi / mt; n++) {
     printf("to %3d, %d %d;", n, sendM[n], recvM[n]);
   }
   printf("\n");
 }
 
-
-template<typename Ty>
+template <typename Ty>
 void Vec_redistribute::call_MPI(Int flag)
 {
-  #if PRINT_TIMER>4
+#if PRINT_TIMER > 4
   TIMER_FLOPS("==Vec redistribute MPI reorder");
   double Total = 0.0;
-  for(Long i=0;i<Long(currsend.size());i++){Total += double(currsend[i]);}
-  timer.flops  += Total*sizeof(Ty);
-  #endif
-
-  if(flag_set_mem==0){qmessage("Buf not set. \n");Qassert(false);}
-
-  Ty* src = NULL;Ty* res = NULL;
-  if(flag == 0){res = (Ty*) recvV; src = (Ty*) sendV;}
-  if(flag == 1){res = (Ty*) sendV; src = (Ty*) recvV;}
-
-  unsigned int off = sizeof(Ty);MPI_Datatype curr = MPI_BYTE;
-  unsigned int M_size = get_mpi_type<Ty >(curr );
-  Qassert(off%M_size == 0);off = off/M_size;
-
-  if(tem_off != int(off) or update_off == true){
-    ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
-    ///if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off = off/sizeof(double) ;findN=false;}
-    ///////qmessage("Check Int %d, Long %d \n",sizeof(int), sizeof(Long));
-    #pragma omp parallel for
-    for(Int n=0;n<Nmpi/mt;n++)sendM[n] = off*currsend[n];
-    #pragma omp parallel for
-    for(Int n=0;n<Nmpi/mt;n++)recvM[n] = off*currrecv[n];
-    #pragma omp parallel for
-    for(Int n=0;n<Nmpi/mt;n++)splsM[n] = off*currspls[n];
-    #pragma omp parallel for
-    for(Int n=0;n<Nmpi/mt;n++)rplsM[n] = off*currrpls[n];
+  for (Long i = 0; i < Long(currsend.size()); i++) {
+    Total += double(currsend[i]);
+  }
+  timer.flops += Total * sizeof(Ty);
+#endif
+  //
+  if (flag_set_mem == 0) {
+    qmessage("Buf not set. \n");
+    Qassert(false);
+  }
+  //
+  Ty* src = NULL;
+  Ty* res = NULL;
+  if (flag == 0) {
+    res = (Ty*)recvV;
+    src = (Ty*)sendV;
+  }
+  if (flag == 1) {
+    res = (Ty*)sendV;
+    src = (Ty*)recvV;
+  }
+  //
+  unsigned int off = sizeof(Ty);
+  MPI_Datatype curr = MPI_BYTE;
+  unsigned int M_size = get_mpi_type<Ty>(curr);
+  Qassert(off % M_size == 0);
+  off = off / M_size;
+  //
+  if (tem_off != int(off) or update_off == true) {
+/// if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)
+/// ;findN=false;} if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off =
+/// off/sizeof(double) ;findN=false;}
+///////qmessage("Check Int %d, Long %d \n",sizeof(int), sizeof(Long));
+#pragma omp parallel for
+    for (Int n = 0; n < Nmpi / mt; n++) sendM[n] = off * currsend[n];
+#pragma omp parallel for
+    for (Int n = 0; n < Nmpi / mt; n++) recvM[n] = off * currrecv[n];
+#pragma omp parallel for
+    for (Int n = 0; n < Nmpi / mt; n++) splsM[n] = off * currspls[n];
+#pragma omp parallel for
+    for (Int n = 0; n < Nmpi / mt; n++) rplsM[n] = off * currrpls[n];
     tem_off = off;
     update_off = false;
   }
-
+  //
   ////======Copy data
-  if(copy_same_node){
-  Int ranklocal = map_mpi_vec[fd->rank];
-  Qassert(currsend[ranklocal] == currrecv[ranklocal]);
-  if(currsend[ranklocal] != 0){
-    cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, QFALSE);
-    sendM[ranklocal] = 0;
-    recvM[ranklocal] = 0;
-  }}
-
-  if(mode_MPI == 0)
-  {MPI_Alltoallv(src,(int*) &sendM[0],(int*) &splsM[0], curr,
-                 res,(int*) &recvM[0],(int*) &rplsM[0], curr, vec_comm);}
-
+  if (copy_same_node) {
+    Int ranklocal = map_mpi_vec[fd->rank];
+    Qassert(currsend[ranklocal] == currrecv[ranklocal]);
+    if (currsend[ranklocal] != 0) {
+      cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]],
+                      currsend[ranklocal], GPU, QFALSE);
+      sendM[ranklocal] = 0;
+      recvM[ranklocal] = 0;
+    }
+  }
+  //
+  if (mode_MPI == 0) {
+    MPI_Alltoallv(src, (int*)&sendM[0], (int*)&splsM[0], curr, res,
+                  (int*)&recvM[0], (int*)&rplsM[0], curr, vec_comm);
+  }
+  //
   ///--gpu-bind=none for perlmuter, --gpu-bind=single:1 will fail
-  if(mode_MPI == 1)
-  {
-    std::vector<MPI_Request> send_reqs(Nmpi/mt);
-    std::vector<MPI_Request> recv_reqs(Nmpi/mt);
-    //int mpi_tag = omp_get_thread_num()*Nmpi + map_mpi_vec[fd->rank];
-    Int mpi_tag = QLAT_VECTOR_UTILS_MPI_TAG; // AMD machine MPI have tag issues....
+  if (mode_MPI == 1) {
+    std::vector<MPI_Request> send_reqs(Nmpi / mt);
+    std::vector<MPI_Request> recv_reqs(Nmpi / mt);
+    // int mpi_tag = omp_get_thread_num()*Nmpi + map_mpi_vec[fd->rank];
+    Int mpi_tag =
+        QLAT_VECTOR_UTILS_MPI_TAG;  // AMD machine MPI have tag issues....
     Int c1 = 0;
     Int c2 = 0;
-    for(Int n = 0; n < Nmpi/mt; n++){
-      //if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag + n, vec_comm, &send_reqs[c1]);c1 += 1;}
-      if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag, vec_comm, &send_reqs[c1]);c1 += 1;}
+    for (Int n = 0; n < Nmpi / mt; n++) {
+      // if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag
+      // + n, vec_comm, &send_reqs[c1]);c1 += 1;}
+      if (sendM[n] != 0) {
+        MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag, vec_comm,
+                  &send_reqs[c1]);
+        c1 += 1;
+      }
     }
-
-    for(Int n = 0; n < Nmpi/mt; n++){
-      //if(recvM[n]!=0){MPI_Irecv(&res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, &recv_reqs[c2]);c2 += 1;}
-      if(recvM[n]!=0){MPI_Irecv(&res[currrpls[n]], recvM[n], curr, n, mpi_tag, vec_comm, &recv_reqs[c2]);c2 += 1;}
-    }    
-
-    if(c2 != 0){MPI_Waitall(c2, recv_reqs.data(), MPI_STATUS_IGNORE);}
-    if(c1 != 0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
+    //
+    for (Int n = 0; n < Nmpi / mt; n++) {
+      // if(recvM[n]!=0){MPI_Irecv(&res[currrpls[n]], recvM[n], curr, n, mpi_tag
+      // + n, vec_comm, &recv_reqs[c2]);c2 += 1;}
+      if (recvM[n] != 0) {
+        MPI_Irecv(&res[currrpls[n]], recvM[n], curr, n, mpi_tag, vec_comm,
+                  &recv_reqs[c2]);
+        c2 += 1;
+      }
+    }
+    //
+    if (c2 != 0) {
+      MPI_Waitall(c2, recv_reqs.data(), MPI_STATUS_IGNORE);
+    }
+    if (c1 != 0) {
+      MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
+    }
   }
   qacc_barrier(dummy);
-
-  src = NULL;res = NULL;
+  //
+  src = NULL;
+  res = NULL;
 }
 
-template<typename Ty>
+template <typename Ty>
 void Vec_redistribute::re_order_recv(Int flag)
 {
   TIMERB("Copy and arrange data");
-  Ty* recv = (Ty*) recvV;
-  Ty* send = (Ty*) sendV;
-
-  Long bfac = Nv[orderN[2]]*civa;
-  LInt* m0 = (LInt*) qlat::get_data(map_order).data();
-  LInt* m1 = (LInt*) qlat::get_data(map_Dorder).data();
-  if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, GPU, QTRUE);}
-  if(flag==1){cpy_data_from_index(&recv[0],&send[0], m1, m0, map_order.size(), bfac, GPU, QTRUE);}
+  Ty* recv = (Ty*)recvV;
+  Ty* send = (Ty*)sendV;
+  //
+  Long bfac = Nv[orderN[2]] * civa;
+  LInt* m0 = (LInt*)qlat::get_data(map_order).data();
+  LInt* m1 = (LInt*)qlat::get_data(map_Dorder).data();
+  if (flag == 0) {
+    cpy_data_from_index(&send[0], &recv[0], m0, m1, map_order.size(), bfac, GPU,
+                        QTRUE);
+  }
+  if (flag == 1) {
+    cpy_data_from_index(&recv[0], &send[0], m1, m0, map_order.size(), bfac, GPU,
+                        QTRUE);
+  }
 }
 
-//////buf size  --> b0 * Nt * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa * sizeof(Ty)
+//////buf size  --> b0 * Nt * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa *
+///sizeof(Ty)
 //////Data will be modified for sendbuf and recvbuf, results on sendbuf
-//////vector maps ---> b0,mz,my,mx, (Nxyz), civ --> fd.get_mi_curr()*b0 + nbi, (nxyz), civ ;
-template<typename Ty>
-void Vec_redistribute::reorder(Ty *sendbuf,Ty *recvbuf,Int b0_or,Int civa_or,Int flag)
+//////vector maps ---> b0,mz,my,mx, (Nxyz), civ --> fd.get_mi_curr()*b0 + nbi,
+///(nxyz), civ ;
+template <typename Ty>
+void Vec_redistribute::reorder(Ty* sendbuf, Ty* recvbuf, Int b0_or, Int civa_or,
+                               Int flag)
 {
   TIMERB("Vec_redistribute::reorder");
-
-  if(flag_set_mem==0){set_mem(b0_or,civa_or);}
-  if(flag_set_mem==1){if(b0 != b0_or or civa != civa_or){
-    set_mem(b0_or,civa_or);}
+  //
+  if (flag_set_mem == 0) {
+    set_mem(b0_or, civa_or);
   }
-
-  if(fd->mz*fd->my*fd->mx == 1){return ;}
-
-  //if(flag%2 != 0)if(howmany != civa_or/2)set_fft();
-
+  if (flag_set_mem == 1) {
+    if (b0 != b0_or or civa != civa_or) {
+      set_mem(b0_or, civa_or);
+    }
+  }
+  //
+  if (fd->mz * fd->my * fd->mx == 1) {
+    return;
+  }
+  //
+  // if(flag%2 != 0)if(howmany != civa_or/2)set_fft();
+  //
   ////Set the size of civa, civa
-  sendV = sendbuf;recvV = recvbuf;
-
-  if(flag > -2 and flag < 2 )
-  {
-    call_MPI<Ty >(0);
+  sendV = sendbuf;
+  recvV = recvbuf;
+  //
+  if (flag > -2 and flag < 2) {
+    call_MPI<Ty>(0);
     /////from recvbuf to sendbuf
     re_order_recv<Ty>(0);
   }
-
+  //
   //////From reorder to original
-  if(flag == 100)
-  {
+  if (flag == 100) {
     re_order_recv<Ty>(1);
-    call_MPI<Ty >(1);
+    call_MPI<Ty>(1);
   }
 }
 
-inline Vec_redistribute::~Vec_redistribute(){
+inline Vec_redistribute::~Vec_redistribute()
+{
   currsend.resize(0);
   currrecv.resize(0);
   currspls.resize(0);
@@ -416,201 +479,272 @@ inline Vec_redistribute::~Vec_redistribute(){
 }
 
 /////To T distribute or whole vectors on each node
-struct Rotate_vecs{
-
+struct Rotate_vecs {
   fft_desc_basic fd;
   fft_desc_basic fd0;
-  Vec_redistribute *vec_re0;
-  Vec_redistribute *vec_re1;
-  bool  GPU;
+  Vec_redistribute* vec_re0;
+  Vec_redistribute* vec_re1;
+  bool GPU;
   void* src;
   void* buf;
   Int mode;
-  //int duel_rorate;
+  // int duel_rorate;
   Int b0, civa, N_extra;
   Int bsize;
-  size_t vol_buf,Bsize;
+  size_t vol_buf, Bsize;
 
   bool flag_mem_set;
 
-  Rotate_vecs(fft_desc_basic &fd_set, bool GPU_set=true):fd(),fd0(){
+  Rotate_vecs(fft_desc_basic& fd_set, bool GPU_set = true) : fd(), fd0()
+  {
     (void)GPU_set;
-    #ifndef QLAT_USE_ACC
+#ifndef QLAT_USE_ACC
     GPU = false;
-    #else
+#else
     GPU = GPU_set;
-    #endif
-
+#endif
+    //
     copy_fft_desc(fd, fd_set);
-    vec_re0 = NULL;vec_re1 = NULL;buf = NULL;src = NULL;
-    vol_buf = 0; Bsize = 0;
-    b0 = -1;civa = -1;bsize = -1;
+    vec_re0 = NULL;
+    vec_re1 = NULL;
+    buf = NULL;
+    src = NULL;
+    vol_buf = 0;
+    Bsize = 0;
+    b0 = -1;
+    civa = -1;
+    bsize = -1;
     flag_mem_set = false;
   }
 
-  void check_Bsize(size_t srcB){
-    if(Bsize == 0 or srcB != Bsize){
-    qmessage("==buf size %zu, input %zu", Bsize, srcB);
-    abort_r("Size not match");
+  void check_Bsize(size_t srcB)
+  {
+    if (Bsize == 0 or srcB != Bsize) {
+      qmessage("==buf size %zu, input %zu", Bsize, srcB);
+      abort_r("Size not match");
     }
   }
 
-  /////mode -1 --> no rotation, mode 0 --> rotate to T zyx, mode 1 --> every node have tzyx data
+  /////mode -1 --> no rotation, mode 0 --> rotate to T zyx, mode 1 --> every
+  ///node have tzyx data
   //////buf size  --> b0 * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa * sizeof(Ty)
-  template<typename Ty>
-  void set_mem(Int b0_or, Int civa_or, Int mode_set = -2){
+  template <typename Ty>
+  void set_mem(Int b0_or, Int civa_or, Int mode_set = -2)
+  {
     TIMERA("Rotate_vecs set_mem");
-    if(b0_or == -2 and civa_or == -2){Qassert(b0 > 0 and civa > 0 and mode > -2 and vol_buf > 0);return;}
-    if(b0_or == b0 and civa_or == civa and sizeof(Ty) == bsize){
-      if(mode_set == -2 or mode_set == mode){return ;}
+    if (b0_or == -2 and civa_or == -2) {
+      Qassert(b0 > 0 and civa > 0 and mode > -2 and vol_buf > 0);
+      return;
     }
-    else{clear_mem();}
-
-    if(mode_set != -2){mode = mode_set;}else{if(mode <= -2){abort_r("Need to set mode of rotation!\n");}}
-    b0 = b0_or;civa = civa_or;bsize = sizeof(Ty);
-    ///if(mode == -1){clear_mem(); return; }
-    if(mode < -1 or mode > 1){abort_r("Rotate_vecs mode not supportted! \n");}
-
-    if(mode == -1){
-    vol_buf = fd.Nt * fd.Nz * fd.ny * size_t(fd.nx);
-    N_extra = 1;
+    if (b0_or == b0 and civa_or == civa and sizeof(Ty) == bsize) {
+      if (mode_set == -2 or mode_set == mode) {
+        return;
+      }
+    } else {
+      clear_mem();
     }
-
-    if(mode == 0){
-    vol_buf = fd.Nt * fd.nz * fd.ny * size_t(fd.nx);
-    N_extra = fd.mz * fd.my * fd.mx;
+    //
+    if (mode_set != -2) {
+      mode = mode_set;
+    } else {
+      if (mode <= -2) {
+        abort_r("Need to set mode of rotation!\n");
+      }
     }
-    if(mode == 1){
-    vol_buf = fd.nt * fd.nz * fd.ny * size_t(fd.nx);
-    N_extra = fd.mt * fd.mz * fd.my * fd.mx;
+    b0 = b0_or;
+    civa = civa_or;
+    bsize = sizeof(Ty);
+    /// if(mode == -1){clear_mem(); return; }
+    if (mode < -1 or mode > 1) {
+      abort_r("Rotate_vecs mode not supportted! \n");
     }
-
-
-    size_t Bsize0 = vol_buf * b0 *  civa * sizeof(Ty);
-    if(Bsize != Bsize0){
-    Bsize = Bsize0;
-    free_buf(buf, GPU);free_buf(src, GPU);buf=NULL;src=NULL;
-    if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty, 1);gpuMalloc(src, Bsize/sizeof(Ty), Ty, 1);}
-    else{ 
-      src = aligned_alloc_no_acc(Bsize);
-      if(mode != -1)buf = aligned_alloc_no_acc(Bsize);
-    }}
+    //
+    if (mode == -1) {
+      vol_buf = fd.Nt * fd.Nz * fd.ny * size_t(fd.nx);
+      N_extra = 1;
+    }
+    //
+    if (mode == 0) {
+      vol_buf = fd.Nt * fd.nz * fd.ny * size_t(fd.nx);
+      N_extra = fd.mz * fd.my * fd.mx;
+    }
+    if (mode == 1) {
+      vol_buf = fd.nt * fd.nz * fd.ny * size_t(fd.nx);
+      N_extra = fd.mt * fd.mz * fd.my * fd.mx;
+    }
+    //
+    size_t Bsize0 = vol_buf * b0 * civa * sizeof(Ty);
+    if (Bsize != Bsize0) {
+      Bsize = Bsize0;
+      free_buf(buf, GPU);
+      free_buf(src, GPU);
+      buf = NULL;
+      src = NULL;
+      if (GPU) {
+        gpuMalloc(buf, Bsize / sizeof(Ty), Ty, 1);
+        gpuMalloc(src, Bsize / sizeof(Ty), Ty, 1);
+      } else {
+        src = aligned_alloc_no_acc(Bsize);
+        if (mode != -1) buf = aligned_alloc_no_acc(Bsize);
+      }
+    }
     Qassert(b0 > 0 and civa > 0 and vol_buf > 0);
-
-    //map_vecs.resize( b0);
-    //for(Int bi=0;bi<b0;bi++){map_vecs[bi] = fd.get_mi_curr(mode + 3)*b0 + bi;}
-
+    //
+    // map_vecs.resize( b0);
+    // for(Int bi=0;bi<b0;bi++){map_vecs[bi] = fd.get_mi_curr(mode + 3)*b0 +
+    // bi;}
+    //
     /////make new rotations or not
-    //if(fdp.Nv[0] != fdp.nv[0]){duel_rorate = 1;}
-    //else{duel_rorate = 0;}
-
-    if(mode == -1){vec_re0 = NULL;}
-
-    if(mode == 0){
-      vec_re0 = new Vec_redistribute(fd , GPU);
-      ////vec_large.reorder((T*) &gfET[0],(T*) &gfET_buf[0], 1, (dir_limit*2)*9 ,   0);
+    // if(fdp.Nv[0] != fdp.nv[0]){duel_rorate = 1;}
+    // else{duel_rorate = 0;}
+    //
+    if (mode == -1) {
+      vec_re0 = NULL;
     }
-
-    if(mode == 1){
-
-      if(fd.Nv[0] == fd.nv[0]){
-
-        fd0.nv[3]=1;fd0.Nv[3]=1;fd0.iniv[3]=0;
-        fd0.nv[2]=fd.nv[3];fd0.Nv[2]=fd.Nv[3];fd0.iniv[2]=fd.iniv[3];
-        fd0.nv[1]=fd.nv[2];fd0.Nv[1]=fd.Nv[2];fd0.iniv[1]=fd.iniv[2];
-
-        fd0.nv[0]=fd.nv[1]*fd.nv[0];
-        fd0.Nv[0]=fd.Nv[1]*fd.Nv[0];
-        fd0.iniv[0]=fd.iniv[1]*fd.nv[0] + fd.iniv[0];
-
+    //
+    if (mode == 0) {
+      vec_re0 = new Vec_redistribute(fd, GPU);
+      ////vec_large.reorder((T*) &gfET[0],(T*) &gfET_buf[0], 1, (dir_limit*2)*9
+      ///,   0);
+    }
+    //
+    if (mode == 1) {
+      if (fd.Nv[0] == fd.nv[0]) {
+        fd0.nv[3] = 1;
+        fd0.Nv[3] = 1;
+        fd0.iniv[3] = 0;
+        fd0.nv[2] = fd.nv[3];
+        fd0.Nv[2] = fd.Nv[3];
+        fd0.iniv[2] = fd.iniv[3];
+        fd0.nv[1] = fd.nv[2];
+        fd0.Nv[1] = fd.Nv[2];
+        fd0.iniv[1] = fd.iniv[2];
+        //
+        fd0.nv[0] = fd.nv[1] * fd.nv[0];
+        fd0.Nv[0] = fd.Nv[1] * fd.Nv[0];
+        fd0.iniv[0] = fd.iniv[1] * fd.nv[0] + fd.iniv[0];
+        //
         fd0.set_variable();
         vec_re0 = new Vec_redistribute(fd0, GPU);
-        //fd0.check_mem();
-        //fd0.print_info();
-        //fdp_new0 = new fft_desc_basic();
-        //duel_rorate = 1;
-
+        // fd0.check_mem();
+        // fd0.print_info();
+        // fdp_new0 = new fft_desc_basic();
+        // duel_rorate = 1;
       }
-      if(fd.Nv[0] != fd.nv[0]){
-        Int bN = fd.Nmpi/fd.mt;
+      if (fd.Nv[0] != fd.nv[0]) {
+        Int bN = fd.Nmpi / fd.mt;
         /////need to get this number??
         Int bi = fd.get_mi_curr(3);
-
-        fd0.nv[3]=bN;fd0.Nv[3]=1;fd0.iniv[3]=bi;
-
-        fd0.nv[2]=fd.nv[3];fd0.Nv[2]=fd.Nv[3];fd0.iniv[2]=fd.iniv[3];
-
-        fd0.nv[1]=fd.nv[2];fd0.nv[0]=fd.nv[1]*fd.nv[0];
-        fd0.Nv[1]=fd.nv[2];fd0.Nv[0]=fd.nv[1]*fd.nv[0];
-        fd0.iniv[1]=0;fd0.iniv[0]=0;
-
+        //
+        fd0.nv[3] = bN;
+        fd0.Nv[3] = 1;
+        fd0.iniv[3] = bi;
+        //
+        fd0.nv[2] = fd.nv[3];
+        fd0.Nv[2] = fd.Nv[3];
+        fd0.iniv[2] = fd.iniv[3];
+        //
+        fd0.nv[1] = fd.nv[2];
+        fd0.nv[0] = fd.nv[1] * fd.nv[0];
+        fd0.Nv[1] = fd.nv[2];
+        fd0.Nv[0] = fd.nv[1] * fd.nv[0];
+        fd0.iniv[1] = 0;
+        fd0.iniv[0] = 0;
+        //
         fd0.set_variable();
         ////fd0.check_mem();
         ////fd0.print_info();
-
-        vec_re0 = new Vec_redistribute(fd , GPU);
+        //
+        vec_re0 = new Vec_redistribute(fd, GPU);
         vec_re1 = new Vec_redistribute(fd0, GPU);
-
-        //fd0 = new fft_desc_basic();
-        //fdp_new0 = new fft_desc_basic(geo);
-        //duel_rorate = 0;
+        //
+        // fd0 = new fft_desc_basic();
+        // fdp_new0 = new fft_desc_basic(geo);
+        // duel_rorate = 0;
       }
     }
     /////only map for 3D and 4D
-
+    //
     flag_mem_set = true;
-
   }
 
-  void clear_mem(){
-    if(flag_mem_set == false){return;}
-    if(vec_re0 != NULL){delete vec_re0;vec_re0 = NULL;}
-    if(vec_re1 != NULL){delete vec_re1;vec_re1 = NULL;}
+  void clear_mem()
+  {
+    if (flag_mem_set == false) {
+      return;
+    }
+    if (vec_re0 != NULL) {
+      delete vec_re0;
+      vec_re0 = NULL;
+    }
+    if (vec_re1 != NULL) {
+      delete vec_re1;
+      vec_re1 = NULL;
+    }
     ////if(fdp_new0 != NULL){delete fdp_new0;fdp_new0 = NULL;}
     ////if(fdp_new1 != NULL){delete fdp_new1;fdp_new1 = NULL;}
-    free_buf(buf, GPU);free_buf(src, GPU);
-    Bsize = 0;b0 = -1;civa = -1;bsize = -1;
-    N_extra = -1;vol_buf =  0;mode = -2;
+    free_buf(buf, GPU);
+    free_buf(src, GPU);
+    Bsize = 0;
+    b0 = -1;
+    civa = -1;
+    bsize = -1;
+    N_extra = -1;
+    vol_buf = 0;
+    mode = -2;
     flag_mem_set = false;
   }
 
-  template<typename Ty>
-  void reorder(bool forward = true, Ty* input=NULL, Int b0_set=-2, Int civa_set=-2)
+  template <typename Ty>
+  void reorder(bool forward = true, Ty* input = NULL, Int b0_set = -2,
+               Int civa_set = -2)
   {
     TIMERC("Rotate_vecs Vec redistribute");
-    //set_mem<Ty>(b0_set, civa_set, mode);
+    // set_mem<Ty>(b0_set, civa_set, mode);
     set_mem<Ty>(b0_set, civa_set);
-    if(mode == -1){ return;}
-    Ty* res = (Ty*)buf;int flag = -1;
-    Ty* s0 = NULL;if(input == NULL){s0 = (Ty*) src;}else{s0 = input;}
-    if( forward){flag = 0  ;}if(!forward){flag = 100;}
-
-    if(mode == 0){vec_re0->reorder(s0, res, b0, civa, flag);}
-    if(mode == 1){
-      if(fd.Nv[0] == fd.nv[0]){vec_re0->reorder(s0, res, b0, civa, flag);}
-      if(fd.Nv[0] != fd.nv[0]){
-        if( forward){
-          vec_re0->reorder(s0, res, b0*fd.mt, civa, flag);
+    if (mode == -1) {
+      return;
+    }
+    Ty* res = (Ty*)buf;
+    int flag = -1;
+    Ty* s0 = NULL;
+    if (input == NULL) {
+      s0 = (Ty*)src;
+    } else {
+      s0 = input;
+    }
+    if (forward) {
+      flag = 0;
+    }
+    if (!forward) {
+      flag = 100;
+    }
+    //
+    if (mode == 0) {
+      vec_re0->reorder(s0, res, b0, civa, flag);
+    }
+    if (mode == 1) {
+      if (fd.Nv[0] == fd.nv[0]) {
+        vec_re0->reorder(s0, res, b0, civa, flag);
+      }
+      if (fd.Nv[0] != fd.nv[0]) {
+        if (forward) {
+          vec_re0->reorder(s0, res, b0 * fd.mt, civa, flag);
           vec_re1->reorder(s0, res, b0, civa, flag);
         }
-        if(!forward){
+        if (!forward) {
           vec_re1->reorder(s0, res, b0, civa, flag);
-          vec_re0->reorder(s0, res, b0*fd.mt, civa, flag);
+          vec_re0->reorder(s0, res, b0 * fd.mt, civa, flag);
         }
       }
     }
-
+    //
     s0 = NULL;
-
   }
 
-
-  ~Rotate_vecs(){
-    clear_mem();
-  }
-
+  ~Rotate_vecs() { clear_mem(); }
 };
 
-}
+}  // namespace qlat
 
 #endif

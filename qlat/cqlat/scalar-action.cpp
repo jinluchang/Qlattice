@@ -72,13 +72,16 @@ EXPORT(hmc_estimate_mass_scalar_action, {
   PyObject* p_field_ft = NULL;
   PyObject* p_force_ft = NULL;
   RealD phi0 = 0.0;
-  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_masses, &p_field_ft, &p_force_ft, &phi0)) {
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_masses, &p_field_ft,
+                        &p_force_ft, &phi0)) {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   Field<RealD>& masses = py_convert_type<Field<RealD>>(p_masses);
-  const Field<ComplexD>& field_ft = py_convert_type<Field<ComplexD>>(p_field_ft);
-  const Field<ComplexD>& force_ft = py_convert_type<Field<ComplexD>>(p_force_ft);
+  const Field<ComplexD>& field_ft =
+      py_convert_type<Field<ComplexD>>(p_field_ft);
+  const Field<ComplexD>& force_ft =
+      py_convert_type<Field<ComplexD>>(p_force_ft);
   sa.hmc_estimate_mass(masses, field_ft, force_ft, phi0);
   Py_RETURN_NONE;
 })
@@ -133,7 +136,8 @@ EXPORT(hmc_field_evolve_scalar_action, {
   PyObject* p_sm = NULL;
   PyObject* p_masses = NULL;
   RealD step_size = 0.0;
-  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_sf, &p_sm, &p_masses, &step_size)) {
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_sf, &p_sm, &p_masses,
+                        &step_size)) {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
@@ -196,7 +200,8 @@ EXPORT(hmc_predict_field_scalar_action, {
   PyObject* p_sm_ft = NULL;
   PyObject* p_masses = NULL;
   RealD vev_sigma = 0.0;
-  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_sf_ft, &p_sm_ft, &p_masses, &vev_sigma)) {
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_sf_ft, &p_sm_ft, &p_masses,
+                        &vev_sigma)) {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);

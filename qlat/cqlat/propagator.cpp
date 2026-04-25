@@ -41,7 +41,8 @@ EXPORT(set_rand_u1_src_psel, {
   PyObject* p_psel = NULL;
   PyObject* p_geo = NULL;
   PyObject* p_rs = NULL;
-  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_psel, &p_geo, &p_rs)) {
+  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_psel, &p_geo,
+                        &p_rs)) {
     return NULL;
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
@@ -65,7 +66,7 @@ EXPORT(set_rand_u1_sol_psel, {
     return NULL;
   }
   SelectedPoints<WilsonMatrix>& sp_prop =
-      py_convert_type<SelectedPoints<WilsonMatrix> >(p_sp_prop);
+      py_convert_type<SelectedPoints<WilsonMatrix>>(p_sp_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   qassert(fu1.multiplicity == 1);
@@ -105,7 +106,7 @@ EXPORT(set_rand_u1_sol_fsel, {
     return NULL;
   }
   SelectedField<WilsonMatrix>& sf_prop =
-      py_convert_type<SelectedField<WilsonMatrix> >(p_sf_prop);
+      py_convert_type<SelectedField<WilsonMatrix>>(p_sf_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const FieldM<ComplexD, 1>& fu1 = py_convert_type_field<ComplexD, 1>(p_fu1);
   qassert(fu1.multiplicity == 1);
@@ -169,9 +170,9 @@ EXPORT(convert_wm_from_mspincolor_sp_prop, {
     return NULL;
   }
   SelectedPoints<WilsonMatrix>& prop_wm =
-      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_wm);
+      py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop_wm);
   const SelectedPoints<WilsonMatrix>& prop_msc =
-      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_msc);
+      py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop_msc);
   convert_wm_from_mspincolor(prop_wm, prop_msc);
   Py_RETURN_NONE;
 })
@@ -184,9 +185,9 @@ EXPORT(convert_mspincolor_from_wm_sp_prop, {
     return NULL;
   }
   SelectedPoints<WilsonMatrix>& prop_msc =
-      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_msc);
+      py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop_msc);
   const SelectedPoints<WilsonMatrix>& prop_wm =
-      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_wm);
+      py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop_wm);
   convert_mspincolor_from_wm(prop_msc, prop_wm);
   Py_RETURN_NONE;
 })
@@ -199,9 +200,9 @@ EXPORT(convert_wm_from_mspincolor_s_prop, {
     return NULL;
   }
   SelectedField<WilsonMatrix>& prop_wm =
-      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_wm);
+      py_convert_type<SelectedField<WilsonMatrix>>(p_prop_wm);
   const SelectedField<WilsonMatrix>& prop_msc =
-      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_msc);
+      py_convert_type<SelectedField<WilsonMatrix>>(p_prop_msc);
   convert_wm_from_mspincolor(prop_wm, prop_msc);
   Py_RETURN_NONE;
 })
@@ -214,9 +215,9 @@ EXPORT(convert_mspincolor_from_wm_s_prop, {
     return NULL;
   }
   SelectedField<WilsonMatrix>& prop_msc =
-      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_msc);
+      py_convert_type<SelectedField<WilsonMatrix>>(p_prop_msc);
   const SelectedField<WilsonMatrix>& prop_wm =
-      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_wm);
+      py_convert_type<SelectedField<WilsonMatrix>>(p_prop_wm);
   convert_mspincolor_from_wm(prop_msc, prop_wm);
   Py_RETURN_NONE;
 })

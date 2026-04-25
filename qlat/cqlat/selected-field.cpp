@@ -12,7 +12,8 @@ PyObject* mk_sfield_ctype(Int dummy)
 }
 
 template <class M>
-PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel, const Int multiplicity)
+PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel,
+                               const Int multiplicity)
 {
   SelectedField<M>* pf = new SelectedField<M>();
   SelectedField<M>& f = *pf;
@@ -123,11 +124,14 @@ PyObject* acc_field_sfield_ctype(PyObject* p_field, PyObject* p_sfield,
 
 template <class M>
 PyObject* field_shift_sfield_ctype(PyObject* p_sfield_new, PyObject* p_sfield,
-                                   const Coordinate& shift, const bool is_reflect)
+                                   const Coordinate& shift,
+                                   const bool is_reflect)
 {
   QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
-  FieldSelection& fsel_new = py_convert_type<FieldSelection>(p_sfield_new, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
+  FieldSelection& fsel_new =
+      py_convert_type<FieldSelection>(p_sfield_new, "fsel");
+  const FieldSelection& fsel =
+      py_convert_type<FieldSelection>(p_sfield, "fsel");
   QLAT_DIAGNOSTIC_POP;
   SelectedField<M>& sf_new = py_convert_type_sfield<M>(p_sfield_new);
   const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
@@ -214,8 +218,8 @@ PyObject* set_elems_sfield_ctype(PyObject* p_field, const Long idx,
 }
 
 template <class M>
-PyObject* set_elem_sfield_ctype(PyObject* p_field, const Long idx,
-                                const Int m, PyObject* p_val)
+PyObject* set_elem_sfield_ctype(PyObject* p_field, const Long idx, const Int m,
+                                PyObject* p_val)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
   qassert(PyBytes_Size(p_val) == sizeof(M));
@@ -305,7 +309,6 @@ PyObject* to_from_endianness_sfield_ctype(PyObject* pf,
 
 }  // namespace qlat
 
-
 EXPORT(set_add_sfield, {
   using namespace qlat;
   PyObject* p_field_new = NULL;
@@ -369,7 +372,8 @@ EXPORT(acc_field_sfield, {
   const std::string ctype = py_get_ctype(p_sfield);
   qassert(py_get_ctype(p_sfield) == ctype);
   QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
+  const FieldSelection& fsel =
+      py_convert_type<FieldSelection>(p_sfield, "fsel");
   QLAT_DIAGNOSTIC_POP;
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, p_sfield, fsel);

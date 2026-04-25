@@ -18,10 +18,10 @@
 #define EXPORT(name, ...)                                      \
                                                                \
   extern "C" {                                                 \
-  PyObject* PKG_PREFIX(name)(PyObject* self, PyObject* args);  \
+  PyObject* PKG_PREFIX(name)(PyObject * self, PyObject* args); \
   }                                                            \
                                                                \
-  PyObject* PKG_PREFIX(name)(PyObject* self, PyObject* args)   \
+  PyObject* PKG_PREFIX(name)(PyObject * self, PyObject * args) \
   {                                                            \
     (void)self;                                                \
     (void)args;                                                \

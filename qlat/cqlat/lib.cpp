@@ -6,7 +6,7 @@
 
 // declare
 #define EXPORT_FUNCTION(name) \
-  extern PyObject* PKG_PREFIX(name)(PyObject* self, PyObject * args);
+  extern PyObject* PKG_PREFIX(name)(PyObject * self, PyObject * args);
 extern "C" {
 #include "exports.h.template"
 }

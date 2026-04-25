@@ -9,7 +9,8 @@ EXPORT(mk_fermion_action_mobius, {
   if (!PyArg_ParseTuple(args, "didd", &mass, &ls, &m5, &mobius_scale)) {
     return NULL;
   }
-  FermionAction* pfa = new FermionAction(mass, ls, m5, mobius_scale, true, true);
+  FermionAction* pfa =
+      new FermionAction(mass, ls, m5, mobius_scale, true, true);
   return py_convert((void*)pfa);
 })
 

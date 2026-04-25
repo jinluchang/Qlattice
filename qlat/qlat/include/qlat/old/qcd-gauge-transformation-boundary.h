@@ -105,10 +105,10 @@ inline void apply_u1_gauge_tranform_on_bfm_vct(void* bfm_vct, size_t Ls,
   // Assuming single precision.
   // Since this is only a U1 tranformation we treat spin and color equally.
   // Assuming bfm_vct is using even-odd preconditioning(checkerboarding).
-
+  //
   assert(u1gt.geo().eo == 0);  // NO checkerboarding for qlat
   assert(u1gt.geo().multiplicity == 1);
-
+  //
   size_t bfm_vct_block_size =
       Ls * 12;  // 12 = 3 * 4. bfm_vct_block_size is the number single precision
                 // complex number on one 4d site.
@@ -121,7 +121,7 @@ inline void apply_u1_gauge_tranform_on_bfm_vct(void* bfm_vct, size_t Ls,
     Coordinate local_coor = u1gt.geo().coordinate_from_index(m);
     if (sum(local_coor) % 2 == 0)
       continue;  // TODO: temporary fix. Fix me!!! We don't want even sites.
-
+    //
     size_t m1 = m;
     size_t m2 = m + site_size_4d / 2;
     size_t b1, b2;
@@ -152,13 +152,13 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct,
 {
   // Assuming single precision.
   // Assuming bfm_vct is using even-odd preconditioning(checkerboarding).
-
+  //
   assert(geo.eo == 0);  // NO checkerboarding for qlat
   assert(geo.multiplicity == 1);
-
+  //
   ComplexF* parp = (ComplexF*)par_vct;
   ComplexF* bfmp = (ComplexF*)bfm_vct;
-
+  //
   size_t bfm_vct_block_size =
       Ls * 12;  // 12 = 3 * 4. bfm_vct_block_size is the number of single
                 // precision complex number on one 4d site.
@@ -170,10 +170,10 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct,
     size_t b1;
     Coordinate local_coor1 = geo.coordinate_from_index(m1);
     Coordinate global_coor1 = geo.coordinate_g_from_l(local_coor1);
-
+    //
     if (sum(local_coor1) % 2 == 0)
       continue;  // TODO: temporary fix. Fix me!!! We don't want even sites.
-
+    //
     if (is_inside(global_coor1, par.first, par.second)) {
       for (size_t s = 0; s < bfm_vct_block_size; s++) {
         b1 = (m / 2 * bfm_vct_block_size + s) * 2;
@@ -185,7 +185,7 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct,
         parp[b1] = 0.;
       }
     }
-
+    //
     size_t m2 = m + site_size_4d / 2;
     size_t b2;
     Coordinate local_coor2 = geo.coordinate_from_index(m2);
@@ -212,13 +212,13 @@ inline void scalar_multiplication_by_partition(void* out_vct,
 {
   // Assuming single precision.
   // Assuming bfm_vct is using even-odd preconditioning(checkerboarding).
-
+  //
   Coordinate global_size = geo.global_size();
   Coordinate partition_size = global_size / tw_par;
-
+  //
   ComplexF* bfmp = (ComplexF*)bfm_vct;
   ComplexF* outp = (ComplexF*)out_vct;
-
+  //
   size_t bfm_vct_block_size =
       Ls * 12;  // 12 = 3 * 4. bfm_vct_block_size is the number of single
                 // precision complex number on one 4d site.
@@ -231,15 +231,15 @@ inline void scalar_multiplication_by_partition(void* out_vct,
     Coordinate local_coor1 = geo.coordinate_from_index(m1);
     if (sum(local_coor1) % 2 == 0)
       continue;  // TODO: temporary fix. Fix me!!! We don't want even sites.
-
+    //
     Coordinate global_coor1 = geo.coordinate_g_from_l(local_coor1);
     Int p = qlat::index_from_coordinate(global_coor1 / partition_size, tw_par);
-
+    //
     for (size_t s = 0; s < bfm_vct_block_size; s++) {
       b1 = (m / 2 * bfm_vct_block_size + s) * 2;
       outp[b1] = bfmp[b1] * (ComplexF)b[p];
     }
-
+    //
     // size_t m2 = m + site_size_4d / 2;
     size_t b2;
     // Coordinate local_coor2 = geo.coordinate_from_index(m2);
@@ -258,43 +258,43 @@ inline void fft_convolution(std::vector<ComplexD>& out,
 {
   // global calculation: same on all nodes.
   // single thread!!!
-
+  //
   TIMER("fft_convolution()");
-
+  //
   assert(x.size() == y.size());
   out.resize(x.size());
-
+  //
   // static fftw_complex* x_in;
   static fftw_complex* x_out;
   // static fftw_complex* y_in;
   static fftw_complex* y_out;
-
+  //
   static fftw_complex* z_in;
   static fftw_complex* z_out;
-
+  //
   static fftw_plan p_forward;
   static fftw_plan p_backward;
-
+  //
   static fftw_complex* f_in;
   static fftw_complex* f_out;
-
+  //
   static bool initialized = false;
   static Int N;
-
+  //
   if (not initialized) {
     N = x.size();
-
+    //
     // x_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     x_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     // y_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     y_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
-
+    //
     z_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     z_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
-
+    //
     f_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     f_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
-
+    //
     unsigned fftw_plan_flag = FFTW_ESTIMATE;
     if (get_fftw_plan_flag() == "measure") {
       fftw_plan_flag = FFTW_MEASURE;
@@ -303,36 +303,37 @@ inline void fft_convolution(std::vector<ComplexD>& out,
       fftw_plan_flag = FFTW_ESTIMATE;
     }
     p_forward = fftw_plan_dft_1d(N, f_in, f_out, FFTW_FORWARD, fftw_plan_flag);
-    p_backward = fftw_plan_dft_1d(N, z_in, z_out, FFTW_BACKWARD, fftw_plan_flag);
-
+    p_backward =
+        fftw_plan_dft_1d(N, z_in, z_out, FFTW_BACKWARD, fftw_plan_flag);
+    //
     initialized = true;
   }
-
+  //
   assert(N == (int)x.size());
-
+  //
   std::memcpy(f_in, x.data(), sizeof(fftw_complex) * N);
   fftw_execute(p_forward);
   std::memcpy(x_out, f_out, sizeof(fftw_complex) * N);
-
+  //
   std::memcpy(f_in, y.data(), sizeof(fftw_complex) * N);
   fftw_execute(p_forward);
   std::memcpy(y_out, f_out, sizeof(fftw_complex) * N);
-
+  //
   for (Int i = 0; i < N; i++) {
     z_in[i][0] = x_out[i][0] * y_out[i][0] - x_out[i][1] * y_out[i][1];
     z_in[i][1] = x_out[i][1] * y_out[i][0] + x_out[i][0] * y_out[i][1];
     // Printf("x[%d] = %.8E + i %.8E, y[%d] = %.8E + i %.8E\n", i, x[i].real(),
     // x[i].imag(), i, y[i].real(), y[i].imag());
   }
-
+  //
   fftw_execute(p_backward);
-
+  //
   std::memcpy((void*)out.data(), (void*)z_out, sizeof(fftw_complex) * N);
-
+  //
   for (Int i = 0; i < N; i++) {
     out[i] /= (double)N;
   }
-
+  //
   return;
 }
 

@@ -48,7 +48,8 @@ PyObject* get_elems_field_ctype(PyObject* p_field, const Coordinate& xg)
 }
 
 template <class M>
-PyObject* get_elem_field_ctype(PyObject* p_field, const Coordinate& xg, const Int m)
+PyObject* get_elem_field_ctype(PyObject* p_field, const Coordinate& xg,
+                               const Int m)
 {
   const Field<M>& f = py_convert_type_field<M>(p_field);
   if (m >= 0) {
@@ -116,8 +117,8 @@ PyObject* set_elems_field_ctype(PyObject* p_field, const Long index,
 }
 
 template <class M>
-PyObject* set_elem_field_ctype(PyObject* p_field, const Long index,
-                               const Int m, PyObject* p_val)
+PyObject* set_elem_field_ctype(PyObject* p_field, const Long index, const Int m,
+                               PyObject* p_val)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   qassert(PyBytes_Size(p_val) == sizeof(M));
@@ -137,7 +138,7 @@ PyObject* fft_fields_ctype(const std::vector<PyObject*>& p_field_vec,
                            Int mode_fft = 1)
 {
   const Long n_field = p_field_vec.size();
-  std::vector<Handle<Field<M> > > vec(n_field);
+  std::vector<Handle<Field<M>>> vec(n_field);
   for (Long i = 0; i < n_field; ++i) {
     vec[i].init(py_convert_type_field<M>(p_field_vec[i]));
   }
@@ -147,7 +148,7 @@ PyObject* fft_fields_ctype(const std::vector<PyObject*>& p_field_vec,
 
 template <class M>
 PyObject* field_shift_field_ctype(PyObject* p_field_new, PyObject* p_field,
-                                   const Coordinate& shift)
+                                  const Coordinate& shift)
 {
   Field<M>& f_new = py_convert_type_field<M>(p_field_new);
   const Field<M>& f = py_convert_type_field<M>(p_field);
@@ -170,7 +171,7 @@ PyObject* split_fields_field_ctype(const std::vector<PyObject*>& p_f_vec,
   const std::string ctype = py_get_ctype(p_field);
   const Field<M>& f = py_convert_type_field<M>(p_field);
   const Int nf = p_f_vec.size();
-  std::vector<Handle<Field<M> > > vec(nf);
+  std::vector<Handle<Field<M>>> vec(nf);
   for (Int i = 0; i < nf; ++i) {
     qassert(py_get_ctype(p_f_vec[i]) == ctype);
     Field<M>& fi = py_convert_type_field<M>(p_f_vec[i]);
@@ -187,7 +188,7 @@ PyObject* merge_fields_field_ctype(PyObject* p_field,
   const std::string ctype = py_get_ctype(p_field);
   Field<M>& f = py_convert_type_field<M>(p_field);
   const Int nf = p_f_vec.size();
-  std::vector<ConstHandle<Field<M> > > vec(nf);
+  std::vector<ConstHandle<Field<M>>> vec(nf);
   for (Int i = 0; i < nf; ++i) {
     qassert(py_get_ctype(p_f_vec[i]) == ctype);
     const Field<M>& fi = py_convert_type_field<M>(p_f_vec[i]);
@@ -205,7 +206,7 @@ PyObject* merge_fields_ms_ctype(PyObject* p_field,
   Field<M>& f = py_convert_type_field<M>(p_field);
   const std::string ctype = py_get_ctype(p_field);
   const Int multiplicity = p_f_vec.size();
-  std::vector<ConstHandle<Field<M> > > vec(multiplicity);
+  std::vector<ConstHandle<Field<M>>> vec(multiplicity);
   for (Int m = 0; m < multiplicity; ++m) {
     qassert(py_get_ctype(p_f_vec[m]) == ctype);
     const Field<M>& fm = py_convert_type_field<M>(p_f_vec[m]);
@@ -244,7 +245,8 @@ EXPORT(set_marks_field_all, {
   PyObject* p_geo = NULL;
   Int multiplicity = 0;
   PyObject* p_tag = NULL;
-  if (!PyArg_ParseTuple(args, "OOiO", &p_comm_marks, &p_geo, &multiplicity, &p_tag)) {
+  if (!PyArg_ParseTuple(args, "OOiO", &p_comm_marks, &p_geo, &multiplicity,
+                        &p_tag)) {
     return NULL;
   }
   CommMarks& marks = py_convert_type<CommMarks>(p_comm_marks);
@@ -263,7 +265,8 @@ EXPORT(refresh_expanded_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, refresh_expanded_field_ctype, ctype, p_field, p_comm_plan);
+  FIELD_DISPATCH(p_ret, refresh_expanded_field_ctype, ctype, p_field,
+                 p_comm_plan);
   return p_ret;
 })
 
@@ -428,7 +431,8 @@ EXPORT(set_elem_field, {
   PyObject* p_ret = NULL;
   if (PyLong_Check(p_index)) {
     const Long index = py_convert_data<Long>(p_index);
-    FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, index, m, p_val);
+    FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, index, m,
+                   p_val);
   } else {
     const Coordinate xg = py_convert_data<Coordinate>(p_index);
     FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, xg, m, p_val);
@@ -451,16 +455,16 @@ EXPORT(fft_fields, {
     return NULL;
   }
   const std::vector<PyObject*> p_f_vec =
-      py_convert_data<std::vector<PyObject*> >(p_field_vec);
+      py_convert_data<std::vector<PyObject*>>(p_field_vec);
   qassert(p_f_vec.size() >= 1);
   const std::string ctype = py_get_ctype(p_f_vec[0]);
   for (Long i = 0; i < (Long)p_f_vec.size(); ++i) {
     qassert(ctype == py_get_ctype(p_f_vec[i]));
   }
   const std::vector<int> fft_dirs =
-      py_convert_data<std::vector<int> >(p_fft_dirs);
+      py_convert_data<std::vector<int>>(p_fft_dirs);
   const std::vector<bool> fft_is_forwards =
-      py_convert_data<std::vector<bool> >(p_fft_is_forwards);
+      py_convert_data<std::vector<bool>>(p_fft_is_forwards);
   qassert(fft_dirs.size() == fft_is_forwards.size());
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, fft_fields_ctype, ctype, p_f_vec, fft_dirs,
@@ -506,7 +510,7 @@ EXPORT(split_fields_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   const std::vector<PyObject*> p_f_vec =
-      py_convert_data<std::vector<PyObject*> >(p_field_vec);
+      py_convert_data<std::vector<PyObject*>>(p_field_vec);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, split_fields_field_ctype, ctype, p_f_vec, p_field);
   return p_ret;
@@ -521,7 +525,7 @@ EXPORT(merge_fields_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   const std::vector<PyObject*> p_f_vec =
-      py_convert_data<std::vector<PyObject*> >(p_field_vec);
+      py_convert_data<std::vector<PyObject*>>(p_field_vec);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, merge_fields_field_ctype, ctype, p_field, p_f_vec);
   return p_ret;
@@ -537,11 +541,10 @@ EXPORT(merge_fields_ms_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   const std::vector<PyObject*> p_f_vec =
-      py_convert_data<std::vector<PyObject*> >(p_field_vec);
-  const std::vector<int> m_vec = py_convert_data<std::vector<int> >(p_m_vec);
+      py_convert_data<std::vector<PyObject*>>(p_field_vec);
+  const std::vector<int> m_vec = py_convert_data<std::vector<int>>(p_m_vec);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, merge_fields_ms_ctype, ctype, p_field, p_f_vec,
-                 m_vec);
+  FIELD_DISPATCH(p_ret, merge_fields_ms_ctype, ctype, p_field, p_f_vec, m_vec);
   return p_ret;
 })
 

@@ -72,7 +72,8 @@ PyObject* set_mul_field_ctype(PyObject* p_field, const ComplexD& factor)
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyObject* p_field, const Field<ComplexD>& f_factor)
+PyObject* set_mul_field_ctype(PyObject* p_field,
+                              const Field<ComplexD>& f_factor)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   f *= f_factor;
@@ -148,7 +149,7 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
   return p_mview;
 }
 
-} // namespace qlat
+}  // namespace qlat
 
 EXPORT(set_add_field, {
   using namespace qlat;
