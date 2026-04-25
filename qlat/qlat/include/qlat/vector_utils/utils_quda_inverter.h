@@ -38,6 +38,7 @@ struct quda_inverter {
   QudaGaugeParam  gauge_param;
   ////void* quda_gf_default;
   qlat::vector<qlat::ComplexD > quda_gf_default;
+  //qlat::vector<qlat::ComplexD > quda_gf_default_uvm;
   QudaInvertParam inv_param;
   //quda::SolverParam solverParam;
   //quda::Solver *solve_cg;
@@ -200,7 +201,8 @@ struct quda_inverter {
   quda_inverter(const Geometry& geo_, QudaTboundary t_boundary);
   //
   inline void free_mem();
-  inline void setup_link(qlat::ComplexD* quda_gf, const Int apply_stag_phase = 0, const Int force_phase = 0);
+  inline void setup_link_p(qlat::ComplexD* quda_gf, const Int apply_stag_phase = 0, const Int force_phase = 0);
+  inline void setup_link(qlat::vector<qlat::ComplexD>& quda_gf, const Int apply_stag_phase = 0, const Int force_phase = 0);
   inline void gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir = 3, Int gf_maxiter = 10000, double gf_tolerance = 1e-6, Int fix_type = 0);
   //
   //default e0 single, e1 double
@@ -280,7 +282,7 @@ struct quda_inverter {
 
   // automatic change presion based on current gauge, qinv buffers, update dslash
   // still need to set inv.param.cpu_prec for different inputs
-  inline void setup_inv_param_prec(Int prec_type = 0, bool force_reload = false);
+  inline void setup_inv_param_prec(Int prec_type = 0, bool force_reload = false, bool reload_link_default = true);
   inline void setup_gauge_param(QudaTboundary t_boundary);
   //
   inline void random_src(const Int seed);
@@ -597,7 +599,7 @@ inline void quda_inverter::setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1)
   }
 }
 
-inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const Int apply_stag_phase, const Int force_phase)
+inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf, const Int apply_stag_phase, const Int force_phase)
 {
   TIMER("setup_link");
   /////load gauge to quda GPU default position
@@ -617,11 +619,33 @@ inline void quda_inverter::setup_link(qlat::ComplexD* quda_gf, const Int apply_s
   }
   ////quda_gf_default = (void *) quda_gf; //required to reload gauge with prec
   if(quda_gf != quda_gf_default.data()){
-    quda_gf_default.resize(V *3*3*4 );
-    cpy_data_thread(&quda_gf_default[0], quda_gf, V*3*3*4, false);
+    if(quda_gf_default.size() != V *3*3*4 ){
+      quda_gf_default.set_mem_type(MemType::Acc);
+      quda_gf_default.resize(V *3*3*4 );
+    }
+    //cpy_data_thread(&quda_gf_default[0], quda_gf, V*3*3*4, false);
+    cpy_mem(&quda_gf_default[0], quda_gf, V*3*3*4);
   }
   if(gauge_with_phase == false){errorQuda("Quda stagger need link phases! \n");}
   //print_plaq();
+}
+
+inline void quda_inverter::setup_link(qlat::vector<qlat::ComplexD>& quda_gf, const Int apply_stag_phase, const Int force_phase)
+{
+  // to CPU to avoid quda error
+  const MemType gmem = quda_gf.mem_type;
+  // quda_gf.set_mem_type(MemType::Cpu);
+  static Int quda_link_Acc = qlat::get_env_long_default(std::string("qlat_quda_link_Acc"), 1);
+  if(quda_link_Acc == 1){
+    quda_gf.set_mem_type(MemType::Acc);
+  }else{
+    quda_gf.set_mem_type(MemType::Cpu);
+  }
+  setup_link_p(quda_gf.data(), apply_stag_phase, force_phase);
+  // to Uvm for general operations
+  if(gmem != quda_gf.mem_type){
+    quda_gf.set_mem_type(gmem);
+  }
 }
 
 inline void quda_inverter::print_plaq()
@@ -1402,7 +1426,7 @@ inline void quda_inverter::setup_stagger_inv()
 
 ////0, double to single, 1 single to half, 10 double to double, 11 single to single, 12 half to half
 ////may still cost time even using the comparisons, TODO need to investigate the issues
-inline void quda_inverter::setup_inv_param_prec(Int prec_type, bool force_reload)
+inline void quda_inverter::setup_inv_param_prec(Int prec_type, bool force_reload, bool reload_link_default)
 {
   if(prec_type_check == prec_type and force_reload == false){return ;}
   TIMER("setup_inv_param_prec");
@@ -1452,6 +1476,7 @@ inline void quda_inverter::setup_inv_param_prec(Int prec_type, bool force_reload
   //  inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
   //}
 
+  if( reload_link_default )
   if( gauge_param.cuda_prec != inv_param.cuda_prec or gauge_param.cuda_prec_sloppy != inv_param.cuda_prec_sloppy or force_reload)
   {
     Qassert(quda_gf_default.size() != 0);
@@ -1467,7 +1492,7 @@ inline void quda_inverter::setup_inv_param_prec(Int prec_type, bool force_reload
     //setup_gauge_param(gauge_param.t_boundary);
     //Qassert(fermion_type == 1);
     //freeGaugeQuda();
-    setup_link(&quda_gf_default[0], 0);
+    setup_link_p(&quda_gf_default[0], 0);
     alloc_csfield_gpu();
     //CG_reset = true;
     setup_mat_mass(mass_mat, true);
@@ -3194,7 +3219,7 @@ inline void quda_inverter::set_quda_split(const std::vector<Int >& grid, const I
   split_param.split_grid[2] = grid[2];
   split_param.split_grid[3] = grid[3];
   split_key = {grid[0], grid[1], grid[2], grid[3]};
-  num_sub_partition = quda::product(split_key);
+  num_sub_partition = grid[0] * grid[1] * grid[2] * grid[3];
   //qmessage("Quda splited MRH num_src %5d sub %5d \n", int(num_src), int(num_sub_partition));
   Qassert(num_src >= num_sub_partition and num_src % num_sub_partition == 0);
   const Int dslash_mrh = num_src / num_sub_partition;

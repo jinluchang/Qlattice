@@ -148,7 +148,8 @@ struct quda_clover_inverter {
   quda_clover_inverter(const Geometry& geo_, QudaTboundary t_boundary, Int num_src_=1);
 
   inline void free_mem();
-  inline void setup_link(qlat::ComplexD* quda_gf);
+  inline void setup_link_p(qlat::ComplexD* quda_gf);
+  inline void setup_link(qlat::vector<qlat::ComplexD>& quda_gf);
 
   inline void setup_clover(const double kappa, const double clover_csw);
   inline void set_dirac_mrh(const Int mrh);
@@ -346,7 +347,7 @@ quda_clover_inverter::quda_clover_inverter(const Geometry& geo_, QudaTboundary t
   if(val != ""){quda_verbos = stringtonum(val);}
 }
 
-inline void quda_clover_inverter::setup_link(qlat::ComplexD* quda_gf)
+inline void quda_clover_inverter::setup_link_p(qlat::ComplexD* quda_gf)
 {
   TIMER("setup_link");
   /////load gauge to quda GPU default position
@@ -362,8 +363,32 @@ inline void quda_clover_inverter::setup_link(qlat::ComplexD* quda_gf)
   //}
   ////quda_gf_default = (void *) quda_gf; //required to reload gauge with prec
   if(quda_gf != quda_gf_default.data()){
-    quda_gf_default.resize(V *3*3*4 );
-    cpy_data_thread(&quda_gf_default[0], quda_gf, V*3*3*4, false);
+    if(quda_gf_default.size() != V *3*3*4 ){
+      quda_gf_default.set_mem_type(MemType::Acc);
+      quda_gf_default.resize(V *3*3*4 );
+    }    
+    //cpy_data_thread(&quda_gf_default[0], quda_gf, V*3*3*4, false);
+    cpy_mem(&quda_gf_default[0], quda_gf, V*3*3*4);
+    //quda_gf_default.resize(V *3*3*4 );
+    //cpy_data_thread(&quda_gf_default[0], quda_gf, V*3*3*4, false);
+  }
+}
+
+inline void quda_clover_inverter::setup_link(qlat::vector<qlat::ComplexD>& quda_gf)
+{
+  // to CPU to avoid quda error
+  const MemType gmem = quda_gf.mem_type;
+  // quda_gf.set_mem_type(MemType::Cpu);
+  static Int quda_link_Acc = qlat::get_env_long_default(std::string("qlat_quda_link_Acc"), 1);
+  if(quda_link_Acc == 1){
+    quda_gf.set_mem_type(MemType::Acc);
+  }else{
+    quda_gf.set_mem_type(MemType::Cpu);
+  } 
+  setup_link_p(quda_gf.data());
+  // to Uvm for general operations
+  if(gmem != quda_gf.mem_type){
+    quda_gf.set_mem_type(gmem);
   }
 }
 
@@ -1026,7 +1051,7 @@ inline void quda_clover_inverter::set_quda_split(const std::vector<Int >& grid, 
   split_param.split_grid[2] = grid[2];
   split_param.split_grid[3] = grid[3];
   split_key = {grid[0], grid[1], grid[2], grid[3]};
-  num_sub_partition = quda::volume(split_key);
+  num_sub_partition = grid[0] * grid[1] * grid[2] * grid[3];
   //qmessage("Quda splited MRH num_src %5d sub %5d \n", int(num_src), int(num_sub_partition));
   Qassert(num_src >= num_sub_partition and num_src % num_sub_partition == 0);
   const Int dslash_mrh = num_src / num_sub_partition;

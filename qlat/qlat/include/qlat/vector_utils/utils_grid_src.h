@@ -569,16 +569,21 @@ Ty write_grid_point_to_src(FieldG<Ty>& res, const FieldG<Ty>& src, const std::ve
     }
   }
   const Long Np = listP.size();
+  vector<Ty > phaseR;phaseR.resize(1);
+  phaseR[0] = Ty(1.0, 0.0);
   qacc_for(li, Np, {
     if(listP[li] >= 0){
       const Long isp = listP[li];
+      if(li == 0){
+        phaseR[0] = srcP[isp];
+      }
       for(Int dc=0;dc<12;dc++){
         resP[(dc*12 + dc) * V + isp] = srcP[isp];
       }
     }
   });
   // return the phase of first point needed for U1 phase
-  return srcP[0];
+  return phaseR[0];
 }
 
 //////assume res have been cleared
@@ -618,8 +623,6 @@ Ty write_grid_point_to_src(Ty* res, const Ty* srcP, const std::vector<Coordinate
   qacc_barrier(dummy);
   return srcP[0];
 }
-
-
 
 template<typename Ty>
 Ty write_grid_point_to_src(Ty* res, const qnoiT& src, const std::vector<Coordinate >& posL, Int b_size, qlat::fft_desc_basic& fd)

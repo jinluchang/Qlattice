@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 
   quda_clover_inverter qinv(geo, QUDA_PERIODIC_T);
   //quda_clover_inverter qinv(geo, QUDA_ANTI_PERIODIC_T);
-  qinv.setup_link(quda_gf.data());
+  qinv.setup_link(quda_gf);
   qinv.setup_clover(in.kappa, in.clover_csw);
 
   Propagator4d qlat_prop;qlat_prop.init(geo);

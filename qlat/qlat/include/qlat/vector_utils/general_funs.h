@@ -327,7 +327,9 @@ inline void clear_move_index_mem(){
 //static qacc_Stream_t Qstream[MAX_CUDA_STEAM];
 //#endif
 
-inline void print_mpi_host_name(){
+inline void print_mpi_host_name(int print_type = 0){
+  fflush(stdout);
+  MPI_Barrier(get_comm());
   // get local rank
   Int num_node;MPI_Comm_size(get_comm(), &num_node);
   Int id_node;MPI_Comm_rank(get_comm(), &id_node);
@@ -358,8 +360,23 @@ inline void print_mpi_host_name(){
     //
     char host_name[500];
     Qassert(gethostname(host_name, 500) == 0);
+    if(print_type == 0)
     printf("node info lR %d, lS %d, mR %d, mS %d, Ni %3d / %3d , host %s \n",
       localRank, localSize, masterRank, masterSize, id_node, num_node, host_name);
+    if(print_type == 1)
+    {
+      qmessage("Host names : ");
+      std::vector<char > full_host;
+      full_host.resize(500 * num_node);
+      gather_all_size(full_host.data(), host_name, 500);
+      for(Int n=0;n<num_node;n++){
+        for(Int c=0;c<500;c++){
+          host_name[c] = full_host[n*500 + c];
+        }
+        qmessage("%s ", host_name);
+      }
+      qmessage(" \n");
+    }
   }
   fflush(stdout);
   MPI_Barrier(get_comm());
@@ -1084,6 +1101,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, const Int with_GP
   //
   omp_set_num_threads(omp_get_max_threads());
   qmessage("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+  print_mpi_host_name(1);
   //
   fflush_MPI();
   print_mem_info();

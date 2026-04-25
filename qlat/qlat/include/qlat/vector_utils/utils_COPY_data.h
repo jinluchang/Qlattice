@@ -341,7 +341,7 @@ void cpy_data_threadC(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU=1, QBOO
 //0--> host to host, 1 device to device
 //2--> ===from host to device, 3 ===from device to host
 template <typename T0, typename T1,  typename TInt>
-void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, Int Gres=1, Int Gsrc=1, QBOOL dummy=QTRUE, void* stream = NULL)
+void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, const Int Gres=1, const Int Gsrc=1, QBOOL dummy=QTRUE, void* stream = NULL)
 {
   Int GPU = 1;////default from device (Gsrc == -1)
   if(Gsrc == 0 and Gres == 0){GPU = 0;}
@@ -353,6 +353,14 @@ void cpy_GPU(T0* Pres, const T1* Psrc, const TInt Nvol, Int Gres=1, Int Gsrc=1, 
   if(Gsrc ==-1){GPU = bool(Gres);}
   if(Gres ==-1){GPU = bool(Gsrc);}
   cpy_data_threadT<T0, T1, TInt, double>(Pres, Psrc, Nvol, GPU, dummy, 0.0, stream);
+}
+
+template <typename T0, typename T1,  typename TInt>
+void cpy_mem(T0* Pres, const T1* Psrc, const TInt Nvol, QBOOL dummy=QTRUE, void* stream = NULL)
+{
+  const Int Gres = check_mem_type(Pres) != MemType::Cpu ?  0 : 1;
+  const Int Gsrc = check_mem_type(Psrc) != MemType::Cpu ?  0 : 1;
+  cpy_GPU(Pres, Psrc, Nvol, Gres, Gsrc, dummy, stream);
 }
 
 template <typename T0, typename T1,  typename TInt>

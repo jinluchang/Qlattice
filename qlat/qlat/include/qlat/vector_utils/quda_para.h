@@ -499,45 +499,42 @@ bool last_node_in_t()
   return commCoords(3) == commDim(3) - 1; 
 }
 
-Int fullLatticeIndex(Int dim[4], Int index, Int oddBit)
+qacc Int fullLatticeIndex(const Int* dim, const Int index, const Int oddBit)
 {
-
-  Int za = index / (dim[0] >> 1);
-  Int zb = za / dim[1];
-  Int x2 = za - zb * dim[1];
-  Int x4 = zb / dim[2];
-  Int x3 = zb - x4 * dim[2];
-
+  const Int za = index / (dim[0] >> 1);
+  const Int zb = za / dim[1];
+  const Int x2 = za - zb * dim[1];
+  const Int x4 = zb / dim[2];
+  const Int x3 = zb - x4 * dim[2];
+  //
   return 2 * index + ((x2 + x3 + x4 + oddBit) & 1);
 }
 
 // given a "half index" i into either an even or odd half lattice (corresponding
 // to oddBit = {0, 1}), returns the corresponding full lattice index.
 // TODO check Z is the dimension
-Int fullLatticeIndex(Int i, Int oddBit, Int Z[4])
+qacc Int fullLatticeIndex(const Int i, const Int oddBit, const Int* Z)
 {
   /*
     Int boundaryCrossings = i/(Z[0]/2) + i/(Z[1]*Z[0]/2) + i/(Z[2]*Z[1]*Z[0]/2);
     return 2*i + (boundaryCrossings + oddBit) % 2;
   */
-
-  Int X1 = Z[0];
-  Int X2 = Z[1];
-  Int X3 = Z[2];
+  const Int X1 = Z[0];
+  const Int X2 = Z[1];
+  const Int X3 = Z[2];
   // Int X4 = Z[3];
-  Int X1h = X1 / 2;
-
-  Int sid = i;
-  Int za = sid / X1h;
+  const Int X1h = X1 / 2;
+  //
+  const Int sid = i;
+  const Int za = sid / X1h;
   // Int x1h = sid - za*X1h;
-  Int zb = za / X2;
-  Int x2 = za - zb * X2;
-  Int x4 = zb / X3;
-  Int x3 = zb - x4 * X3;
-  Int x1odd = (x2 + x3 + x4 + oddBit) & 1;
+  const Int zb = za / X2;
+  const Int x2 = za - zb * X2;
+  const Int x4 = zb / X3;
+  const Int x3 = zb - x4 * X3;
+  const Int x1odd = (x2 + x3 + x4 + oddBit) & 1;
   // Int x1 = 2*x1h + x1odd;
-  Int X = 2 * sid + x1odd;
-
+  const Int X = 2 * sid + x1odd;
   return X;
 }
 
@@ -553,96 +550,106 @@ void applyGaugeFieldScaling_long(Ty *gauge, Long Vh, QudaGaugeParam *param, Quda
   Int X4 = param->X[3];
 
   const Long V = Vh*2;
-
+  const double tadpole_coeff = param->tadpole_coeff;
+  const MemType gmem  = check_mem_type(gauge) != MemType::Cpu ?  MemType::Acc : MemType::Cpu;
+  //
+  ///const int XL[4] = param->X;
+  qlat::vector<Int > XL;XL.resize(4);
+  for(Long i=0;i<XL.size();i++){XL[i] = param->X[i];}
+  XL.set_mem_type(gmem);
+  const Int* XLp = XL.data();
+  //
   // rescale Long links by the appropriate coefficient
   if (dslash_type == QUDA_ASQTAD_DSLASH) {
-    #pragma omp parallel for
-    for(Long isp=0;isp < V; isp ++)
-    for (Int d = 0; d < 4 * 9; d++) {
-      {
-        gauge[isp*4*9 + d] /= (-24 * param->tadpole_coeff * param->tadpole_coeff);
+    //#pragma omp parallel for
+    //for(Long isp=0;isp < V; isp ++)
+    qmem_for(isp, V, gmem, {
+      for (Int d = 0; d < 4 * 9; d++) {
+        {
+          gauge[isp*4*9 + d] /= (-24 * tadpole_coeff * tadpole_coeff);
+        }
       }
-    }
+    });
   }
 
   // apply the staggered phases
   for (Int d = 0; d < 3; d++) {
-
     // even
-    #pragma omp parallel for
-    for (Int i = 0; i < Vh; i++) {
-
-      Int index = fullLatticeIndex(i, 0, param->X);
-      Int i4 = index / (X3 * X2 * X1);
-      Int i3 = (index - i4 * (X3 * X2 * X1)) / (X2 * X1);
-      Int i2 = (index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1)) / X1;
-      Int i1 = index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1) - i2 * X1;
+    //#pragma omp parallel for
+    //for (Int i = 0; i < Vh; i++)
+    qmem_for(i, Vh, gmem, {
+      const Int index = fullLatticeIndex(i, 0, XLp);
+      const Int i4 = index / (X3 * X2 * X1);
+      const Int i3 = (index - i4 * (X3 * X2 * X1)) / (X2 * X1);
+      const Int i2 = (index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1)) / X1;
+      const Int i1 = index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1) - i2 * X1;
       Int sign = 1;
-
+      //
       if (d == 0) {
         if (i4 % 2 == 1) { sign = -1; }
       }
-
+      //
       if (d == 1) {
         if ((i4 + i1) % 2 == 1) { sign = -1; }
       }
       if (d == 2) {
         if ((i4 + i1 + i2) % 2 == 1) { sign = -1; }
       }
-
-      Long indexe = ((0 * Vh + i)*4 + d)*9 ;
+      //
+      const Long indexe = ((0 * Vh + i)*4 + d)*9 ;
       for (Int j = 0; j < 9; j++) { gauge[indexe + j] *= sign; }
       //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 1){qmessage("==even  %d \n", int(sign));}
-    }
+    });
     // odd
-    #pragma omp parallel for
-    for (Int i = 0; i < Vh; i++) {
-      Int index = fullLatticeIndex(i, 1, param->X);
-      Int i4 = index / (X3 * X2 * X1);
-      Int i3 = (index - i4 * (X3 * X2 * X1)) / (X2 * X1);
-      Int i2 = (index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1)) / X1;
-      Int i1 = index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1) - i2 * X1;
+    //#pragma omp parallel for
+    //for (Int i = 0; i < Vh; i++) 
+    qmem_for(i, Vh, gmem, {
+      const Int index = fullLatticeIndex(i, 1, XLp);
+      const Int i4 = index / (X3 * X2 * X1);
+      const Int i3 = (index - i4 * (X3 * X2 * X1)) / (X2 * X1);
+      const Int i2 = (index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1)) / X1;
+      const Int i1 = index - i4 * (X3 * X2 * X1) - i3 * (X2 * X1) - i2 * X1;
       Int sign = 1;
-
+      //
       if (d == 0) {
         if (i4 % 2 == 1) { sign = -1; }
       }
-
+      //
       if (d == 1) {
         if ((i4 + i1) % 2 == 1) { sign = -1; }
       }
       if (d == 2) {
         if ((i4 + i1 + i2) % 2 == 1) { sign = -1; }
       }
-
-      Long indexo = ((1 * Vh + i)*4 + d)*9 ;
+      //
+      const Long indexo = ((1 * Vh + i)*4 + d)*9 ;
       ////for (Int j = 0; j < 18; j++) { gauge[d][(Vh + i) * gauge_site_size + j] *= sign; }
       for (Int j = 0; j < 9; j++) { gauge[indexo + j] *= sign; }
       //if(i1 == 1 and i2 == 1 and i3 == 1 and i4 == 0){qmessage("==odd  %d \n", int(sign));}
-    }
+    });
   }
-
+  //
   // Apply boundary conditions to temporal links
   if (param->t_boundary == QUDA_ANTI_PERIODIC_T && last_node_in_t()) {
-    #pragma omp parallel for
-    for (Int j = 0; j < Vh; j++) {
+    //#pragma omp parallel for
+    //for (Int j = 0; j < Vh; j++) 
+    qmem_for(j, Vh, gmem, {
       Int sign = 1;
       if (dslash_type == QUDA_ASQTAD_DSLASH) {
         if (j >= (X4 - 3) * X1h * X2 * X3) { sign = -1; }
       } else {
         if (j >= (X4 - 1) * X1h * X2 * X3) { sign = -1; }
       }
-
-      Long indexe = ((0 * Vh + j)*4 + 3)*9 ;
-      Long indexo = ((1 * Vh + j)*4 + 3)*9 ;
+      //
+      const Long indexe = ((0 * Vh + j)*4 + 3)*9 ;
+      const Long indexo = ((1 * Vh + j)*4 + 3)*9 ;
       for (Int i = 0; i < 9; i++) {
         gauge[indexe + i] *= sign;
         gauge[indexo + i] *= sign;
       }
-    }
+    });
   }
 }
-
 
 template <class Td, class T1>
 void Ffield4d_to_quda_ff(T1*  quda_ff, qlat::FermionField4dT<Td>& ff, Int dir = 1)
