@@ -1,18 +1,29 @@
 #!/usr/bin/env python3
 
 """
-Lint tool to enforce a coding style where empty lines inside function bodies
-are replaced with indented '#' comment lines.\n
+Lint tool: replace empty lines inside function bodies with indented comment lines.
+
+Supported file types:
+    .py          Python      — formatted with ruff, AST-based function detection
+    .pyx         Cython      — regex-based function detection
+    .c .cc .cpp .cxx .h .hpp  C/C++ — formatted with clang-format, brace-based function detection
+
+Comment markers:
+    Python/Cython: #
+    C/C++:         //
+
 Design goals:
-- Remove all empty lines within function/method bodies to enforce compact code.
-- Use indented '#' comment lines as visual separators when logical grouping is needed.
-- Preserve the indentation of the surrounding context for each replaced empty line.
-- Leave empty lines outside function bodies untouched (module level, between functions).
-- Remove empty lines inside multi-line string literals (e.g., docstrings) while preserving content by appending "\\n" to the preceding line.
-- Handle nested functions correctly by scoping replacements to each function's body.
-- Support both .py and .pyx (Cython) files.\n
+    - Remove all empty lines within function/method bodies to enforce compact code.
+    - Use indented comment lines as visual separators when logical grouping is needed.
+    - Preserve the indentation of the surrounding context for each replaced empty line.
+    - Leave empty lines outside function bodies untouched (module level, between functions).
+    - Remove empty lines inside multi-line string literals (e.g., docstrings) while
+      preserving content by appending "\\n" to the preceding line.
+    - Handle nested functions correctly by scoping replacements to each function's body.
+
 Usage:
-    python lint.py <file_or_directory> [--check] [--diff]\n
+    python lint.py <file_or_directory> [--check] [--diff]
+
 Options:
     --check   Check if files need changes (exit 1 if so)
     --diff    Show diff of proposed changes
@@ -31,11 +42,10 @@ import re
 
 
 def get_function_body_lines(source_lines):
-    """Return set of line numbers that are inside a function/method body.\n
-    Args:
-        source_lines (list[str]): Source code lines.\n
-    Returns:
-        set[int]: 1-indexed line numbers inside function bodies.
+    """Return 1-indexed line numbers inside function/method bodies for Python files.
+
+    Uses the ast module to walk the parse tree and collect line ranges
+    of FunctionDef and AsyncFunctionDef nodes (including nested ones).
     """
     source = "".join(source_lines)
     tree = ast.parse(source)
@@ -53,12 +63,10 @@ def get_function_body_lines(source_lines):
 
 
 def get_function_body_lines_cython(source_lines):
-    """Return set of line numbers that are inside a function/method body for Cython files.\n
-    Uses regex-based detection since ast.parse cannot handle .pyx syntax.\n
-    Args:
-        source_lines (list[str]): Source code lines.\n
-    Returns:
-        set[int]: 1-indexed line numbers inside function bodies.
+    """Return 1-indexed line numbers inside function/method bodies for Cython files.
+
+    Uses regex-based detection (def/cdef/cpdef) since ast.parse cannot handle .pyx syntax.
+    Scans for lines indented deeper than the function signature as the body extent.
     """
     body_lines = set()
     func_pattern = re.compile(
@@ -92,22 +100,145 @@ def get_function_body_lines_cython(source_lines):
     return body_lines
 
 
-def get_indent(line):
-    """Return leading whitespace of a line.\n
-    Args:
-        line (str): Source code line.\n
-    Returns:
-        str: Leading whitespace string.
+CPP_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hpp"}
+
+
+def get_function_body_lines_cpp(source_lines):
+    """Return 1-indexed line numbers inside function/method bodies for C/C++ files.
+
+    Uses brace-depth tracking to find function bodies. Detects functions by looking
+    for a ')' followed by optional qualifiers and then '{', while excluding control
+    structures (if, for, while, switch, catch, else). Skips preprocessor directives
+    and comments.
     """
+    body_lines = set()
+    i = 0
+    while i < len(source_lines):
+        line = source_lines[i]
+        stripped = line.strip()
+        #
+        # Skip preprocessor directives
+        if stripped.startswith("#"):
+            i += 1
+            continue
+        #
+        # Skip single-line comments
+        if stripped.startswith("//"):
+            i += 1
+            continue
+        #
+        # Skip multi-line comments (advance i past them)
+        if "/*" in stripped:
+            while i < len(source_lines) and "*/" not in source_lines[i]:
+                i += 1
+            i += 1
+            continue
+        #
+        if "{" in stripped:
+            # Collect lines from '{' backwards to find function signature
+            sig_lines = []
+            found_paren = False
+            for k in range(i, max(-1, i - 15), -1):
+                sig_lines.insert(0, source_lines[k].rstrip())
+                if "(" in source_lines[k]:
+                    found_paren = True
+                    break
+            if not found_paren:
+                i += 1
+                continue
+            sig = " ".join(sig_lines)
+            #
+            # Remove comments and strings from signature for analysis
+            clean = re.sub(r'//.*', '', sig)
+            clean = re.sub(r'/\*.*?\*/', '', clean)
+            clean = re.sub(r'"(?:[^"\\]|\\.)*"', '""', clean)
+            clean = re.sub(r"'(?:[^'\\]|\\.)*'", "''", clean)
+            #
+            # Detect '{' position in cleaned signature
+            brace_pos = clean.find("{")
+            before_brace = clean[:brace_pos].rstrip()
+            #
+            # Check for function call pattern: '...' before '{' ends with ')'
+            # (after removing trailing qualifiers like 'const', 'override', 'noexcept')
+            qualifiers = r'(?:\b(?:const|override|noexcept|final|volatile|&|&&|\=\s*0|=\s*default|=\s*delete)\s*)*'
+            func_pat = re.compile(r'\)\s*' + qualifiers + r'$')
+            is_func = bool(func_pat.search(before_brace))
+            #
+            # Exclude control structures: if, for, while, switch, catch, else
+            if is_func:
+                control_pat = re.compile(r'\b(?:if|for|while|switch|catch|else)\s*\(')
+                if control_pat.search(before_brace):
+                    is_func = False
+            #
+            if not is_func:
+                i += 1
+                continue
+            #
+            # Find opening brace position in original source
+            brace_line = i
+            brace_col = source_lines[i].find("{")
+            depth = 1
+            j = i
+            col = brace_col + 1
+            while j < len(source_lines) and depth > 0:
+                line_text = source_lines[j]
+                while col < len(line_text):
+                    ch = line_text[col]
+                    if ch == "{":
+                        depth += 1
+                    elif ch == "}":
+                        depth -= 1
+                        if depth == 0:
+                            break
+                    elif ch == '"':
+                        col += 1
+                        while col < len(line_text) and line_text[col] != '"':
+                            if line_text[col] == "\\":
+                                col += 1
+                            col += 1
+                    elif ch == "'":
+                        col += 1
+                        while col < len(line_text) and line_text[col] != "'":
+                            if line_text[col] == "\\":
+                                col += 1
+                            col += 1
+                    elif ch == "/" and col + 1 < len(line_text):
+                        if line_text[col + 1] == "/":
+                            break
+                        elif line_text[col + 1] == "*":
+                            col += 2
+                            while col < len(line_text):
+                                if line_text[col] == "*" and col + 1 < len(line_text) and line_text[col + 1] == "/":
+                                    col += 2
+                                    break
+                                col += 1
+                            continue
+                    col += 1
+                if depth == 0:
+                    break
+                j += 1
+                col = 0
+            #
+            if depth == 0:
+                for ln in range(brace_line + 1, j + 2):
+                    body_lines.add(ln)
+            i = j + 1
+            continue
+        #
+        i += 1
+    return body_lines
+
+
+def get_indent(line):
+    """Return the leading whitespace string of a line."""
     return line[: len(line) - len(line.lstrip())]
 
 
 def get_string_lines(source):
-    """Return set of line numbers that are inside multi-line string literals.\n
-    Args:
-        source (str): Python source code.\n
-    Returns:
-        set[int]: 1-indexed line numbers inside multi-line strings.
+    """Return 1-indexed line numbers inside multi-line string literals.
+
+    Uses the tokenize module to find STRING tokens that span multiple lines.
+    Only meaningful for Python/Cython sources.
     """
     string_lines = set()
     tokens = tokenize.generate_tokens(io.StringIO(source).readline)
@@ -121,20 +252,15 @@ def get_string_lines(source):
 
 
 def collapse_consecutive_comments(lines):
-    """Collapse multiple consecutive '#' comment lines into one.\n
-    Args:
-        lines (list[str]): Source code lines.\n
-    Returns:
-        list[str]: Lines with consecutive '#' comments collapsed.
-    """
+    """Collapse runs of identical bare comment lines ('#' or '//') into a single line."""
     result = []
     i = 0
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-        if stripped == "#":
+        if stripped in ("#", "//"):
             j = i + 1
-            while j < len(lines) and lines[j].strip() == "#":
+            while j < len(lines) and lines[j].strip() == stripped:
                 j += 1
             if j > i + 1:
                 result.append(line)
@@ -145,23 +271,29 @@ def collapse_consecutive_comments(lines):
     return result
 
 
-def transform_file(source, is_cython=False):
-    """Replace empty lines inside function bodies with properly indented '#' comment lines.\n
-    Args:
-        source (str): Python source code.
-        is_cython (bool): If True, use regex-based function detection for .pyx files.\n
-    Returns:
-        str: Transformed source code.
+def transform_file(source, is_cython=False, is_cpp=False):
+    """Replace empty lines inside function bodies with indented comment lines.
+
+    The comment marker is '#' for Python/Cython and '//' for C/C++.
+    Exactly one of is_cython/is_cpp should be True for non-Python files;
+    when both are False, Python AST-based detection is used.
     """
     lines = source.splitlines(keepends=True)
-    if is_cython:
+    if is_cpp:
+        body_lines = get_function_body_lines_cpp(lines)
+        string_lines = set()
+        comment_marker = "//"
+    elif is_cython:
         body_lines = get_function_body_lines_cython(lines)
+        string_lines = set()
+        comment_marker = "#"
     else:
         body_lines = get_function_body_lines(lines)
-    try:
-        string_lines = get_string_lines(source)
-    except tokenize.TokenError:
-        string_lines = set()
+        comment_marker = "#"
+        try:
+            string_lines = get_string_lines(source)
+        except tokenize.TokenError:
+            string_lines = set()
     #
     # Build indent lookup: for each empty line in a function body,
     # use the indent of the nearest non-empty line (prefer next, then prev).
@@ -212,9 +344,9 @@ def transform_file(source, is_cython=False):
         elif line.strip() == "" and line_no in indent_map:
             indent = indent_map[line_no]
             if line.endswith("\n"):
-                result.append(f"{indent}#\n")
+                result.append(f"{indent}{comment_marker}\n")
             else:
-                result.append(f"{indent}#")
+                result.append(f"{indent}{comment_marker}")
             i += 1
         else:
             result.append(line)
@@ -225,12 +357,7 @@ def transform_file(source, is_cython=False):
 
 
 def run_ruff(source):
-    """Run ruff format and ruff check --fix on source code.\n
-    Args:
-        source (str): Python source code.\n
-    Returns:
-        str: Formatted source code after ruff processing.
-    """
+    """Run ruff format and ruff check --fix on Python source code."""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(source)
         tmp = f.name
@@ -246,24 +373,51 @@ def run_ruff(source):
         os.unlink(tmp)
 
 
-def process_file(filepath, check=False, diff=False):
-    """Process a single Python or Cython file.\n
-    Args:
-        filepath (str): Path to the file.
-        check (bool): If True, only check if changes are needed.
-        diff (bool): If True, show diff of changes.\n
-    Returns:
-        bool: True if file was changed (or would be changed in check mode).
+def run_clang_format(source, filepath):
+    """Run clang-format on C/C++ source code.
+
+    Uses --assume-filename so clang-format picks up the correct language and
+    .clang-format config from the file's original directory.
     """
-    is_cython = filepath.endswith(".pyx")
+    suffix = os.path.splitext(filepath)[1]
+    with tempfile.NamedTemporaryFile(mode="w", suffix=suffix, delete=False) as f:
+        f.write(source)
+        tmp = f.name
+    try:
+        subprocess.run(
+            ["clang-format", "-i", f"--assume-filename={filepath}", tmp],
+            capture_output=True,
+        )
+        with open(tmp, "r") as f:
+            return f.read()
+    finally:
+        os.unlink(tmp)
+
+
+def process_file(filepath, check=False, diff=False):
+    """Process a single source file through its language-specific formatter and transform.
+
+    Pipeline by extension:
+        .py   — ruff format + ruff check --fix, then transform
+        .pyx  — transform only (no formatter)
+        C/C++ — clang-format, then transform
+
+    Returns True if the file was (or would be) modified.
+    """
+    ext = os.path.splitext(filepath)[1]
     with open(filepath, "r") as f:
         original = f.read()
     #
-    if is_cython:
+    if ext in CPP_EXTENSIONS:
+        formatted = run_clang_format(original, filepath)
+        transformed = transform_file(formatted, is_cpp=True)
+    elif ext == ".pyx":
         transformed = transform_file(original, is_cython=True)
-    else:
+    elif ext == ".py":
         ruffed = run_ruff(original)
         transformed = transform_file(ruffed)
+    else:
+        return False
     #
     if original == transformed:
         return False
@@ -285,19 +439,19 @@ def process_file(filepath, check=False, diff=False):
 
 
 def find_source_files(path):
-    """Find all Python and Cython files at path (file or directory).\n
-    Args:
-        path (str): File or directory path.\n
-    Returns:
-        list[str]: List of source file paths.
+    """Find all supported source files (.py, .pyx, .c, .cc, .cpp, .cxx, .h, .hpp) at path.
+
+    If path is a single file, returns it (if supported). If a directory, walks
+    recursively and returns all matching files.
     """
-    if os.path.isfile(path) and (path.endswith(".py") or path.endswith(".pyx")):
+    all_extensions = {".py", ".pyx"} | CPP_EXTENSIONS
+    if os.path.isfile(path) and os.path.splitext(path)[1] in all_extensions:
         return [path]
     if os.path.isdir(path):
         files = []
         for root, _, filenames in os.walk(path):
             for fn in sorted(filenames):
-                if fn.endswith(".py") or fn.endswith(".pyx"):
+                if os.path.splitext(fn)[1] in all_extensions:
                     files.append(os.path.join(root, fn))
         return files
     return []
