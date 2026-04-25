@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import qlat as q
 import qlat_gpt as qg
+import qlat as q
 
 qg.begin_with_gpt()
 

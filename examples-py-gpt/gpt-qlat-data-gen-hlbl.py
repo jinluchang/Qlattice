@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-import pprint
-import copy
-import numpy as np
 import qlat_gpt as qg
 import qlat as q
+
 from qlat_scripts.v1 import (
     get_param,
     set_param,
@@ -46,6 +44,7 @@ from qlat_scripts.v1 import (
     get_r_sq_interp_idx_coef_list,
     get_job_seed,
 )
+
 from auto_contractor import (
     contract_simplify_compile,
     cache_compiled_cexpr,
@@ -63,6 +62,10 @@ from auto_contractor import (
     mk_j_mu,
     mk_kappa_p,
 )
+
+import pprint
+import copy
+import numpy as np
 
 load_path_list[:] = [
     "results",

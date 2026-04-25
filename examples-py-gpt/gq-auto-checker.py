@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import qlat_gpt as qg
+
 import math
 import cmath
-
-import qlat_gpt as qg
 
 from qlat_scripts.v1 import *
 from auto_contractor.operators import *

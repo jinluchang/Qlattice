@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 import qlat_gpt as qg
 
 from qlat_scripts.v1 import *
