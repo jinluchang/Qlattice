@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import qlat as q
 import qlat_gpt as qg
+import qlat as q
 from qlat_scripts.v1 import (
     get_param,
     mk_inverter,
