@@ -369,18 +369,18 @@ def run_ruff(source):
 
 def run_clang_format(source, filepath):
     """Run clang-format on C/C++ source code.\n
-    Uses --assume-filename so clang-format picks up the correct language and
-    .clang-format config from the file's original directory.
+    Writes a temp file in the original file's directory so clang-format
+    finds the .clang-format config via parent-directory search.
     """
     suffix = os.path.splitext(filepath)[1]
-    with tempfile.NamedTemporaryFile(mode="w", suffix=suffix, delete=False) as f:
+    directory = os.path.dirname(os.path.abspath(filepath))
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=suffix, dir=directory, delete=False
+    ) as f:
         f.write(source)
         tmp = f.name
     try:
-        subprocess.run(
-            ["clang-format", "-i", f"--assume-filename={filepath}", tmp],
-            capture_output=True,
-        )
+        subprocess.run(["clang-format", "-i", tmp], capture_output=True)
         with open(tmp, "r") as f:
             return f.read()
     finally:
