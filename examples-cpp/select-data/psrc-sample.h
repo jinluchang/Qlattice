@@ -263,7 +263,8 @@ inline std::vector<PointInfo> load_lbl_pis_info(const std::string& path)
   return pis;
 }
 
-inline std::vector<Coordinate> coordinates_from_point_infos(const std::vector<PointInfo>& pis)
+inline std::vector<Coordinate> coordinates_from_point_infos(
+    const std::vector<PointInfo>& pis)
 // interface function
 {
   TIMER("coordinates_from_point_infos");

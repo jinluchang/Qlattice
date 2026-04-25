@@ -12,8 +12,8 @@ inline std::string get_meson_snk_src(const std::string& job_tag, const int traj)
 }
 
 inline void compute_meson_snk_src_type(const std::string& job_tag,
-                                        const int traj, const int type1,
-                                        const int type2)
+                                       const int traj, const int type1,
+                                       const int type2)
 {
   check_sigterm();
   Timer::autodisplay();
@@ -62,7 +62,8 @@ inline void compute_meson_snk_src(const std::string& job_tag, const int traj)
   release_lock();
 }
 
-inline void compute_meson_snk_src_light(const std::string& job_tag, const int traj)
+inline void compute_meson_snk_src_light(const std::string& job_tag,
+                                        const int traj)
 {
   check_sigterm();
   Timer::autodisplay();

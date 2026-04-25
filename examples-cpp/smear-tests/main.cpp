@@ -1,8 +1,8 @@
 #include <qlat/qlat.h>
+#include <qlat/vector_utils/utils_smear_vecs.h>
 
 #include <complex>
 #include <iostream>
-#include <qlat/vector_utils/utils_smear_vecs.h>
 
 using namespace qlat;
 
@@ -21,7 +21,6 @@ void simple_tests()
   gf_show_info(gf, 1);
   GaugeField gf1;
   //
-
   Propagator4d prop_src;
   Propagator4d prop_qlat;
   Propagator4d prop_vec;
@@ -30,29 +29,33 @@ void simple_tests()
   prop_vec.init(geo);
   set_g_rand(prop_src, RngState(rs, "prop-0.1"));
   prop_qlat = prop_src;
-  prop_vec  = prop_src;
-
+  prop_vec = prop_src;
+  //
   {
     TIMER_VERBOSE("test-field_shift");
-
-    int nsmear   =  10;
+    //
+    int nsmear = 10;
     double width = 2.0;
-
+    //
     CoordinateD mom;
     bool smear_in_time_dir = false;
-    for(int i=0;i<4;i++){mom[i] = 0.0;}
-
-    const double coef =  3.0*width*width/(2*nsmear);
-    prop_smear_qlat_convension(prop_vec, gf, coef, nsmear, mom, smear_in_time_dir);
-
+    for (int i = 0; i < 4; i++) {
+      mom[i] = 0.0;
+    }
+    //
+    const double coef = 3.0 * width * width / (2 * nsmear);
+    prop_smear_qlat_convension(prop_vec, gf, coef, nsmear, mom,
+                               smear_in_time_dir);
+    //
     set_left_expanded_gauge_field(gf1, gf);
     prop_smear(prop_qlat, gf1, coef, nsmear, mom, smear_in_time_dir);
-
+    //
     ////prop_vec -= prop_qlat;
-    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; smear qnorm %.10E ; new smear qnorm: %.10E",
-                            qnorm(prop_src), qnorm(prop_qlat), qnorm(prop_vec)));
+    displayln_info(
+        ssprintf("CHECK: Consistency: orig qnorm: %.10E ; smear qnorm %.10E ; "
+                 "new smear qnorm: %.10E",
+                 qnorm(prop_src), qnorm(prop_qlat), qnorm(prop_vec)));
   }
-
 }
 
 int main(int argc, char* argv[])

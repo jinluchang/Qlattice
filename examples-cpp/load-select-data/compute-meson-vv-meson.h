@@ -6,10 +6,11 @@
 namespace qlat
 {  //
 
-inline std::string get_meson_vv_meson_path(const std::string& job_tag, const int traj)
+inline std::string get_meson_vv_meson_path(const std::string& job_tag,
+                                           const int traj)
 {
-  return ssprintf("analysis/field-meson-vv-meson/%s/results=%d", job_tag.c_str(),
-                  traj);
+  return ssprintf("analysis/field-meson-vv-meson/%s/results=%d",
+                  job_tag.c_str(), traj);
 }
 
 inline void compute_meson_vv_meson_type(const std::string& job_tag,
@@ -53,7 +54,7 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
   const Long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);
-  std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
+  std::map<std::string, FieldM<ComplexD, 8 * 8>> cache;
   Long iter = 0;
   for (Long n = 0; n < n_points; ++n) {
     const Long xg_y_psel_idx = n;

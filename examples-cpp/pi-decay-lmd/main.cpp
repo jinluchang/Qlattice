@@ -106,7 +106,8 @@ inline void scalar_divergence(Field<ComplexD>& sol, const Field<ComplexD>& src,
 
 inline void set_pion_photon_photon_vertex_two_end(
     FieldM<ComplexD, 4 * 4>& pion, const FieldM<ComplexD, 4>& photon1,
-    const FieldM<ComplexD, 4>& photon2, const double m_vector, const double f_pi)
+    const FieldM<ComplexD, 4>& photon2, const double m_vector,
+    const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_two_end");
   qassert(photon1.geo() == photon2.geo());
@@ -151,11 +152,10 @@ inline void set_pion_photon_photon_vertex_two_end(
   }
 }
 
-inline void set_pion_photon_photon_vertex_vmd(FieldM<ComplexD, 4 * 4>& pion,
-                                              const FieldM<ComplexD, 4>& photon1,
-                                              const FieldM<ComplexD, 4>& photon2,
-                                              const double m_vector,
-                                              const double f_pi)
+inline void set_pion_photon_photon_vertex_vmd(
+    FieldM<ComplexD, 4 * 4>& pion, const FieldM<ComplexD, 4>& photon1,
+    const FieldM<ComplexD, 4>& photon2, const double m_vector,
+    const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_vmd");
   qassert(photon1.geo() == photon2.geo());
@@ -197,11 +197,10 @@ inline void set_pion_photon_photon_vertex_vmd(FieldM<ComplexD, 4 * 4>& pion,
   }
 }
 
-inline void set_pion_photon_photon_vertex_lmd(FieldM<ComplexD, 4 * 4>& pion,
-                                              const FieldM<ComplexD, 4>& photon1,
-                                              const FieldM<ComplexD, 4>& photon2,
-                                              const double m_vector,
-                                              const double f_pi)
+inline void set_pion_photon_photon_vertex_lmd(
+    FieldM<ComplexD, 4 * 4>& pion, const FieldM<ComplexD, 4>& photon1,
+    const FieldM<ComplexD, 4>& photon2, const double m_vector,
+    const double f_pi)
 {
   TIMER_VERBOSE("set_pion_photon_photon_vertex_lmd");
   FieldM<ComplexD, 4 * 4> pion_tmp;
@@ -230,7 +229,8 @@ inline void set_pion_photon_photon_vertex(FieldM<ComplexD, 4 * 4>& pion,
 
 inline void set_photon_pion_photon_vertex_two_end(
     FieldM<ComplexD, 4>& photon1, const FieldM<ComplexD, 1>& pion,
-    const FieldM<ComplexD, 4>& photon2, const double m_vector, const double f_pi)
+    const FieldM<ComplexD, 4>& photon2, const double m_vector,
+    const double f_pi)
 {
   TIMER("set_photon_pion_photon_vertex_two_end");
   const Geometry geo = geo_reform(photon2.geo(), 4, 0);
@@ -279,11 +279,10 @@ inline void set_photon_pion_photon_vertex_two_end(
   scalar_divergence(photon1, p1);
 }
 
-inline void set_photon_pion_photon_vertex_vmd(FieldM<ComplexD, 4>& photon1,
-                                              const FieldM<ComplexD, 1>& pion,
-                                              const FieldM<ComplexD, 4>& photon2,
-                                              const double m_vector,
-                                              const double f_pi)
+inline void set_photon_pion_photon_vertex_vmd(
+    FieldM<ComplexD, 4>& photon1, const FieldM<ComplexD, 1>& pion,
+    const FieldM<ComplexD, 4>& photon2, const double m_vector,
+    const double f_pi)
 {
   TIMER("set_photon_pion_photon_vertex_vmd");
   const Geometry geo = geo_reform(photon2.geo(), 4, 0);
@@ -328,11 +327,10 @@ inline void set_photon_pion_photon_vertex_vmd(FieldM<ComplexD, 4>& photon1,
   scalar_divergence(photon1, p1);
 }
 
-inline void set_photon_pion_photon_vertex_lmd(FieldM<ComplexD, 4>& photon1,
-                                              const FieldM<ComplexD, 1>& pion,
-                                              const FieldM<ComplexD, 4>& photon2,
-                                              const double m_vector,
-                                              const double f_pi)
+inline void set_photon_pion_photon_vertex_lmd(
+    FieldM<ComplexD, 4>& photon1, const FieldM<ComplexD, 1>& pion,
+    const FieldM<ComplexD, 4>& photon2, const double m_vector,
+    const double f_pi)
 {
   TIMER_VERBOSE("set_photon_pion_photon_vertex_lmd");
   FieldM<ComplexD, 4> photon1_tmp;
@@ -411,7 +409,7 @@ inline void set_pion_gg_decay(FieldM<ComplexD, 4 * 4>& decay,
 }
 
 inline std::vector<ComplexD> get_pion_corr(const Coordinate& total_site,
-                                          const double m_pi)
+                                           const double m_pi)
 {
   TIMER_VERBOSE("get_pion_corr");
   Geometry geo;
@@ -483,18 +481,24 @@ inline void compute_all()
 {
   TIMER_VERBOSE("compute_all");
   qmkdir_info("results");
-  save_pion_gg("results/physical-24nt96-1.0", Coordinate(24, 24, 24, 96), 24, 1.0, 0.1349766, 0.092, 0.77);
-  // save_pion_gg("results/physical-32nt128-1.0", Coordinate(32, 32, 32, 128), 32, 1.0, 0.1349766, 0.092, 0.77);
-  // save_pion_gg("results/physical-32nt128-1.3333", Coordinate(32, 32, 32, 128), 32, 1.3333, 0.1349766, 0.092, 0.77);
-  // save_pion_gg("results/physical-48nt192-1.0", Coordinate(48, 48, 48, 192), 48, 1.0, 0.1349766, 0.092, 0.77);
-  // save_pion_gg("results/physical-48nt192-2.0", Coordinate(48, 48, 48, 192), 48, 2.0, 0.1349766, 0.092, 0.77);
-  // save_pion_gg("results/heavy-24nt96-1.0", Coordinate(24, 24, 24, 96), 24, 1.0, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/heavy-32nt128-1.0", Coordinate(32, 32, 32, 128), 32, 1.0, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/heavy-32nt128-1.3333", Coordinate(32, 32, 32, 128), 32, 1.3333, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/heavy-48nt192-1.0", Coordinate(48, 48, 48, 192), 48, 1.0, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/heavy-48nt192-2.0", Coordinate(48, 48, 48, 192), 48, 2.0, 0.340, 0.105, 0.83);
+  save_pion_gg("results/physical-24nt96-1.0", Coordinate(24, 24, 24, 96), 24,
+               1.0, 0.1349766, 0.092, 0.77);
+  // save_pion_gg("results/physical-32nt128-1.0", Coordinate(32, 32, 32, 128),
+  // 32, 1.0, 0.1349766, 0.092, 0.77);
+  // save_pion_gg("results/physical-32nt128-1.3333", Coordinate(32, 32, 32,
+  // 128), 32, 1.3333, 0.1349766, 0.092, 0.77);
+  // save_pion_gg("results/physical-48nt192-1.0", Coordinate(48, 48, 48, 192),
+  // 48, 1.0, 0.1349766, 0.092, 0.77);
+  // save_pion_gg("results/physical-48nt192-2.0", Coordinate(48, 48, 48, 192),
+  // 48, 2.0, 0.1349766, 0.092, 0.77); save_pion_gg("results/heavy-24nt96-1.0",
+  // Coordinate(24, 24, 24, 96), 24, 1.0, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-32nt128-1.0", Coordinate(32, 32, 32, 128),
+  // 32, 1.0, 0.340, 0.105, 0.83); save_pion_gg("results/heavy-32nt128-1.3333",
+  // Coordinate(32, 32, 32, 128), 32, 1.3333, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-48nt192-1.0", Coordinate(48, 48, 48, 192),
+  // 48, 1.0, 0.340, 0.105, 0.83); save_pion_gg("results/heavy-48nt192-2.0",
+  // Coordinate(48, 48, 48, 192), 48, 2.0, 0.340, 0.105, 0.83);
 }
-
 
 }  // namespace qlat
 

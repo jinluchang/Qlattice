@@ -1,8 +1,8 @@
 #include <qlat/qlat.h>
+#include <qlat/vector_utils/utils_FFT_GPU.h>
 
 #include <complex>
 #include <iostream>
-#include <qlat/vector_utils/utils_FFT_GPU.h>
 
 using namespace qlat;
 
@@ -15,23 +15,27 @@ void simple_tests()
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
   geo.init(total_site);
-
-  qlat::FieldM<qlat::ComplexD, 12> src;src.init(geo);
+  //
+  qlat::FieldM<qlat::ComplexD, 12> src;
+  src.init(geo);
   set_g_rand(src, RngState(rs, "prop-0.1"));
-
-  std::vector< qlat::FieldM<qlat::ComplexD, 12> > cpuF;cpuF.resize(1);
-  std::vector< qlat::FieldM<qlat::ComplexD, 12> > gpuF;gpuF.resize(1);
+  //
+  std::vector<qlat::FieldM<qlat::ComplexD, 12>> cpuF;
+  cpuF.resize(1);
+  std::vector<qlat::FieldM<qlat::ComplexD, 12>> gpuF;
+  gpuF.resize(1);
   cpuF[0] = src;
   gpuF[0] = src;
-
+  //
   {
     TIMER_VERBOSE("test-fft");
     qlat::fft_complex_field_spatial(cpuF[0], false);
     fft_fieldM(gpuF, false, false);
-    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; fft qnorm %.10E ; new fft qnorm: %.10E",
-                            qnorm(src), qnorm(cpuF[0]), qnorm(gpuF[0])));
+    displayln_info(
+        ssprintf("CHECK: Consistency: orig qnorm: %.10E ; fft qnorm %.10E ; "
+                 "new fft qnorm: %.10E",
+                 qnorm(src), qnorm(cpuF[0]), qnorm(gpuF[0])));
   }
-
 }
 
 int main(int argc, char* argv[])

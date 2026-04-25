@@ -14,8 +14,7 @@ void setField(Field<ComplexD>& f)
     Coordinate x = geo.coordinate_from_index(index);
     Vector<ComplexD> fx = f.get_elems(x);
     for (int m = 0; m < f.multiplicity; ++m) {
-      fx[m] =
-          geo.geon.id_node * sqrt(2) + index * sqrt(3) * ii + m * sqrt(5);
+      fx[m] = geo.geon.id_node * sqrt(2) + index * sqrt(3) * ii + m * sqrt(5);
     }
   }
 }
@@ -23,16 +22,15 @@ void setField(Field<ComplexD>& f)
 SpinMatrix projPositiveState(const SpinMatrix& x)
 {
   const SpinMatrix psm = (SpinMatrixConstants::get_unit() +
-                                SpinMatrixConstants::get_cps_gamma(3)) /
-                               (ComplexD)2.0;
+                          SpinMatrixConstants::get_cps_gamma(3)) /
+                         (ComplexD)2.0;
   return psm * x * psm;
 }
 
 SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
-                             const QedGaugeField& egf1,
-                             const QedGaugeField& egf2,
-                             const QedGaugeField& egf3, const RealD mass,
-                             const CoordinateD& momtwist)
+                       const QedGaugeField& egf1, const QedGaugeField& egf2,
+                       const QedGaugeField& egf3, const RealD mass,
+                       const CoordinateD& momtwist)
 {
   TIMER("lblMuonLine");
   const Geometry& geo = egf1.geo();
@@ -64,10 +62,9 @@ SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
 }
 
 SpinMatrix lblMuonLineC(const int tsnk, const int tsrc,
-                              const QedGaugeField& egf1,
-                              const QedGaugeField& egf2,
-                              const QedGaugeField& egf3, const RealD mass,
-                              const CoordinateD& momtwist)
+                        const QedGaugeField& egf1, const QedGaugeField& egf2,
+                        const QedGaugeField& egf3, const RealD mass,
+                        const CoordinateD& momtwist)
 {
   TIMER("lblMuonLineC");
   SpinMatrix sm;
@@ -83,12 +80,11 @@ SpinMatrix lblMuonLineC(const int tsnk, const int tsrc,
 }
 
 SpinMatrix lblMuonPartPointSrc(const Geometry& geo, const int tsnk,
-                                     const int tsrc,
-                                     const Coordinate& xg1, const int mu1,
-                                     const Coordinate& xg2, const int mu2,
-                                     const Coordinate& xg3, const int mu3,
-                                     const RealD mass,
-                                     const CoordinateD& momtwist)
+                               const int tsrc, const Coordinate& xg1,
+                               const int mu1, const Coordinate& xg2,
+                               const int mu2, const Coordinate& xg3,
+                               const int mu3, const RealD mass,
+                               const CoordinateD& momtwist)
 {
   TIMER("lblMuonPartPointSrc");
   QedGaugeField egf1;
@@ -112,10 +108,9 @@ SpinMatrix lblMuonPartPointSrc(const Geometry& geo, const int tsnk,
   return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
 }
 
-void lblMagneticMomentSpinMatrix(Array<SpinMatrix, 3> bs,
-                                 const Geometry& geo, const int tsnk,
-                                 const int tsrc, const RealD mass,
-                                 const CoordinateD& momtwist)
+void lblMagneticMomentSpinMatrix(Array<SpinMatrix, 3> bs, const Geometry& geo,
+                                 const int tsnk, const int tsrc,
+                                 const RealD mass, const CoordinateD& momtwist)
 // pretend to the operator to be
 // \Sigma_i * mass / 2
 {
@@ -130,33 +125,30 @@ void lblMagneticMomentSpinMatrix(Array<SpinMatrix, 3> bs,
   set_wall_source_plusm(src, 1.0, tsrc);
   free_invert(snk, snk, mass, 1.0, momtwist);
   free_invert(src, src, mass, 1.0, momtwist);
-  const int top =
-      mod(tsrc + mod(tsnk - tsrc, geo.total_site()[3]) / 2,
-                geo.total_site()[3]);
+  const int top = mod(tsrc + mod(tsnk - tsrc, geo.total_site()[3]) / 2,
+                      geo.total_site()[3]);
   Coordinate xgop(0, 0, 0, top);
   Coordinate xlop = geo.coordinate_l_from_g(xgop);
   set_zero(bs);
   if (geo.is_local(xlop)) {
     Display(cname, fname.c_str(), "src =\n%s\n",
-                  show(src.get_elem(xlop)).c_str());
+            show(src.get_elem(xlop)).c_str());
     Display(cname, fname.c_str(), "snk =\n%s\n",
-                  show(snk.get_elem(xlop)).c_str());
+            show(snk.get_elem(xlop)).c_str());
     for (int i = 0; i < 3; ++i) {
       bs[i] = SpinMatrixConstants::get_gamma5() *
               matrix_adjoint(snk.get_elem(xlop)) *
               SpinMatrixConstants::get_gamma5();
-      bs[i] *= SpinMatrixConstants::get_cps_cap_sigmas()[i] *
-               (ComplexD)(mass / 2.0);
+      bs[i] *=
+          SpinMatrixConstants::get_cps_cap_sigmas()[i] * (ComplexD)(mass / 2.0);
       bs[i] *= src.get_elem(xlop);
       bs[i] = projPositiveState(bs[i]);
     }
   }
-  glb_sum(Vector<RealD>((RealD*)bs.data(),
-                                    get_data_size(bs) / sizeof(RealD)));
+  glb_sum(Vector<RealD>((RealD*)bs.data(), get_data_size(bs) / sizeof(RealD)));
 }
 
-ComplexD linearFit(const SpinMatrix& x,
-                         const SpinMatrix& base)
+ComplexD linearFit(const SpinMatrix& x, const SpinMatrix& base)
 {
   using namespace qlat;
   const int size = 4 * 4;
@@ -170,59 +162,52 @@ ComplexD linearFit(const SpinMatrix& x,
 }
 
 void lblShowMuonPartPointSrc(const Geometry& geo, const int tsnk,
-                             const int tsrc,
-                             const Array<SpinMatrix, 3>& bs,
+                             const int tsrc, const Array<SpinMatrix, 3>& bs,
                              const Coordinate& xg1, const int mu1,
                              const Coordinate& xg2, const int mu2,
                              const Coordinate& xg3, const int mu3,
-                             const RealD mass,
-                             const CoordinateD& momtwist)
+                             const RealD mass, const CoordinateD& momtwist)
 {
   TIMER("lblShowMuonPartPointSrc");
   DisplayInfo(cname, fname.c_str(), "mass = %.2f\n", mass);
   DisplayInfo(cname, fname.c_str(), "xg1 = %s ; xg2 = %s ; xg3 = %s .\n",
-                    show(xg1).c_str(), show(xg2).c_str(),
-                    show(xg3).c_str());
-  DisplayInfo(cname, fname.c_str(), "mu1 = %d ; mu2 = %d ; mu3 = %d .\n",
-                    mu1, mu2, mu3);
-  SpinMatrix muonline = lblMuonPartPointSrc(
-      geo, tsnk, tsrc, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
+              show(xg1).c_str(), show(xg2).c_str(), show(xg3).c_str());
+  DisplayInfo(cname, fname.c_str(), "mu1 = %d ; mu2 = %d ; mu3 = %d .\n", mu1,
+              mu2, mu3);
+  SpinMatrix muonline = lblMuonPartPointSrc(geo, tsnk, tsrc, xg1, mu1, xg2, mu2,
+                                            xg3, mu3, mass, momtwist);
   muonline = projPositiveState(muonline);
   DisplayInfo(cname, fname.c_str(), "qnorm(muonline) = %.16e\n",
-                    qnorm(muonline));
+              qnorm(muonline));
   if (qnorm(muonline) < 1.0e-30) {
     return;
   }
-  DisplayInfo(cname, fname.c_str(), "muonline =\n%s\n",
-                    show(muonline).c_str());
+  DisplayInfo(cname, fname.c_str(), "muonline =\n%s\n", show(muonline).c_str());
   DisplayInfo(cname, fname.c_str(), "linearFit[0] = %s\n",
-                    show(linearFit(muonline, bs[0])).c_str());
+              show(linearFit(muonline, bs[0])).c_str());
   DisplayInfo(cname, fname.c_str(), "linearFit[1] = %s\n",
-                    show(linearFit(muonline, bs[1])).c_str());
+              show(linearFit(muonline, bs[1])).c_str());
   DisplayInfo(cname, fname.c_str(), "linearFit[2] = %s\n",
-                    show(linearFit(muonline, bs[2])).c_str());
-  DisplayInfo(
-      cname, fname.c_str(), "linearFitUni = %s\n",
-      show(
-          linearFit(muonline,
-                    projPositiveState(SpinMatrixConstants::get_unit())))
-          .c_str());
+              show(linearFit(muonline, bs[2])).c_str());
+  DisplayInfo(cname, fname.c_str(), "linearFitUni = %s\n",
+              show(linearFit(muonline, projPositiveState(
+                                           SpinMatrixConstants::get_unit())))
+                  .c_str());
   displayln_info("CHECK: " + fname +
-                       ssprintf(": linearFit[0] * 1e9 = %10.6f",
-                                      1e9 * linearFit(muonline, bs[0]).real()));
+                 ssprintf(": linearFit[0] * 1e9 = %10.6f",
+                          1e9 * linearFit(muonline, bs[0]).real()));
   displayln_info("CHECK: " + fname +
-                       ssprintf(": linearFit[1] * 1e9 = %10.6f",
-                                      1e9 * linearFit(muonline, bs[1]).real()));
+                 ssprintf(": linearFit[1] * 1e9 = %10.6f",
+                          1e9 * linearFit(muonline, bs[1]).real()));
   displayln_info("CHECK: " + fname +
-                       ssprintf(": linearFit[2] * 1e9 = %10.6f",
-                                      1e9 * linearFit(muonline, bs[2]).real()));
+                 ssprintf(": linearFit[2] * 1e9 = %10.6f",
+                          1e9 * linearFit(muonline, bs[2]).real()));
   displayln_info(
       "CHECK: " + fname +
-      ssprintf(
-          ": linearFitUni * 1e9 = %10.6f",
-          1e9 * linearFit(muonline, projPositiveState(
-                                        SpinMatrixConstants::get_unit()))
-                    .imag()));
+      ssprintf(": linearFitUni * 1e9 = %10.6f",
+               1e9 * linearFit(muonline, projPositiveState(
+                                             SpinMatrixConstants::get_unit()))
+                         .imag()));
 }
 
 void lblMuonPart()
@@ -234,8 +219,7 @@ void lblMuonPart()
   // Coordinate total_site(32, 32, 32, 128);
   Geometry geo;
   geo.init(total_site);
-  DisplayInfo(cname, fname.c_str(), "geo =\n%s\n",
-                    show(geo).c_str());
+  DisplayInfo(cname, fname.c_str(), "geo =\n%s\n", show(geo).c_str());
   CoordinateD momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
@@ -246,12 +230,9 @@ void lblMuonPart()
   const int tsrc = total_site[3] / 4;
   array<SpinMatrix, 3> bs;
   lblMagneticMomentSpinMatrix(bs, geo, tsnk, tsrc, mass, momtwist);
-  DisplayInfo(cname, fname.c_str(), "bs[0] =\n%s\n",
-                    show(bs[0]).c_str());
-  DisplayInfo(cname, fname.c_str(), "bs[1] =\n%s\n",
-                    show(bs[1]).c_str());
-  DisplayInfo(cname, fname.c_str(), "bs[2] =\n%s\n",
-                    show(bs[2]).c_str());
+  DisplayInfo(cname, fname.c_str(), "bs[0] =\n%s\n", show(bs[0]).c_str());
+  DisplayInfo(cname, fname.c_str(), "bs[1] =\n%s\n", show(bs[1]).c_str());
+  DisplayInfo(cname, fname.c_str(), "bs[2] =\n%s\n", show(bs[2]).c_str());
   // ADJUST ME
   // Coordinate xg1(0, 0, 0, total_site[3]/2 + 0);
   // Coordinate xg2(0, 0, 0, total_site[3]/2 + 0);
@@ -280,35 +261,28 @@ void lblMuonPart()
 void displayGammas()
 {
   TIMER("displayGammas");
+  DisplayInfo(cname, fname.c_str(), "gamma5 =\n%s\n",
+              show(SpinMatrixConstants::get_gamma5()).c_str());
+  DisplayInfo(cname, fname.c_str(), "gamma0 * gamma1 * gamma2 * gamma3 =\n%s\n",
+              show((SpinMatrix)(SpinMatrixConstants::get_cps_gamma(0) *
+                                SpinMatrixConstants::get_cps_gamma(1) *
+                                SpinMatrixConstants::get_cps_gamma(2) *
+                                SpinMatrixConstants::get_cps_gamma(3)))
+                  .c_str());
+  DisplayInfo(cname, fname.c_str(), "gamma3 =\n%s\n",
+              show(SpinMatrixConstants::get_cps_gamma(3)).c_str());
   DisplayInfo(
-      cname, fname.c_str(), "gamma5 =\n%s\n",
-      show(SpinMatrixConstants::get_gamma5()).c_str());
-  DisplayInfo(
-      cname, fname.c_str(), "gamma0 * gamma1 * gamma2 * gamma3 =\n%s\n",
-      show(
-          (SpinMatrix)(SpinMatrixConstants::get_cps_gamma(0) *
-                             SpinMatrixConstants::get_cps_gamma(1) *
-                             SpinMatrixConstants::get_cps_gamma(2) *
-                             SpinMatrixConstants::get_cps_gamma(3)))
+      cname, fname.c_str(), "ii * gamma0 =\n%s\n",
+      show((SpinMatrix)((ComplexD)ii * SpinMatrixConstants::get_cps_gamma(0)))
           .c_str());
   DisplayInfo(
-      cname, fname.c_str(), "gamma3 =\n%s\n",
-      show(SpinMatrixConstants::get_cps_gamma(3)).c_str());
-  DisplayInfo(cname, fname.c_str(), "ii * gamma0 =\n%s\n",
-                    show((SpinMatrix)(
-                                   (ComplexD)ii *
-                                   SpinMatrixConstants::get_cps_gamma(0)))
-                        .c_str());
-  DisplayInfo(cname, fname.c_str(), "ii * gamma1 =\n%s\n",
-                    show((SpinMatrix)(
-                                   (ComplexD)ii *
-                                   SpinMatrixConstants::get_cps_gamma(1)))
-                        .c_str());
-  DisplayInfo(cname, fname.c_str(), "ii * gamma2 =\n%s\n",
-                    show((SpinMatrix)(
-                                   (ComplexD)ii *
-                                   SpinMatrixConstants::get_cps_gamma(2)))
-                        .c_str());
+      cname, fname.c_str(), "ii * gamma1 =\n%s\n",
+      show((SpinMatrix)((ComplexD)ii * SpinMatrixConstants::get_cps_gamma(1)))
+          .c_str());
+  DisplayInfo(
+      cname, fname.c_str(), "ii * gamma2 =\n%s\n",
+      show((SpinMatrix)((ComplexD)ii * SpinMatrixConstants::get_cps_gamma(2)))
+          .c_str());
 }
 
 void displaySpinPropagator4d()
@@ -318,8 +292,7 @@ void displaySpinPropagator4d()
   Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
   geo.init(total_site);
-  DisplayInfo(cname, fname.c_str(), "geo =\n%s\n",
-                    show(geo).c_str());
+  DisplayInfo(cname, fname.c_str(), "geo =\n%s\n", show(geo).c_str());
   CoordinateD momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
@@ -337,11 +310,10 @@ void displaySpinPropagator4d()
   free_invert(prop, prop, mass, 1.0, momtwist);
   Coordinate xgsnk(0, 0, 0, 0);
   Coordinate xlsnk = geo.coordinate_l_from_g(xgsnk);
-  DisplayInfo(cname, fname.c_str(), "xgsnk = %s .\n",
-                    show(xgsnk).c_str());
+  DisplayInfo(cname, fname.c_str(), "xgsnk = %s .\n", show(xgsnk).c_str());
   if (geo.is_local(xlsnk)) {
     Display(cname, fname.c_str(), "prop[xgsnk] =\n%s\n",
-                  show(prop.get_elem(xlsnk)).c_str());
+            show(prop.get_elem(xlsnk)).c_str());
   }
 }
 

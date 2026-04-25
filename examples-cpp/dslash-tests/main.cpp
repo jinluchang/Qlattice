@@ -64,7 +64,8 @@ void simple_dwf_tests()
     ff5dout1 *= 1.0 / sqrt(qnorm(ff5dout1));
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
+    displayln_info(
+        ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
     ff5din = ff5dout;
     ff5din1 = ff5dout1;
   }
@@ -150,7 +151,8 @@ void simple_tests()
     ff5dout1 *= 1.0 / sqrt(qnorm(ff5dout1));
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
+    displayln_info(
+        ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
     ff5din = ff5dout;
     ff5din1 = ff5dout1;
   }
@@ -174,7 +176,8 @@ void simple_tests()
     ff5dout1 *= 1.0 / sqrt(qnorm(ff5dout1));
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
+    displayln_info(
+        ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
     ff5din = ff5dout;
     ff5din1 = ff5dout1;
   }

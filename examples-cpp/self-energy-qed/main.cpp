@@ -58,12 +58,12 @@ void set_h_field(FieldM<ComplexD, 1>& h, const Coordinate& total_site,
   fft_complex_field_spatial(h, false);
 }
 
-const std::vector<std::vector<double> >& get_l_func_table(
+const std::vector<std::vector<double>>& get_l_func_table(
     const double mass, const int ts_limit, const Long x_vec_sq_limit)
 {
-  static Cache<std::string, std::vector<std::vector<double> > > cache(
+  static Cache<std::string, std::vector<std::vector<double>>> cache(
       "l_func_tables", 16);
-  std::vector<std::vector<double> >& l_func_table =
+  std::vector<std::vector<double>>& l_func_table =
       cache[ssprintf("%24.17E %d %ld", mass, ts_limit, x_vec_sq_limit)];
   if (l_func_table.size() == 0) {
     TIMER_VERBOSE("acc_h_field-l_func_table");
@@ -95,7 +95,8 @@ void acc_h_field(const FieldM<ComplexD, 1>& h, const double mass,
   qassert(ts_limit >= total_site[3]);
   qassert(x_vec_sq_limit >= sqr(total_site[0] / 2) + sqr(total_site[1] / 2) +
                                 sqr(total_site[2] / 2) + 1);
-  const std::vector<std::vector<double> >& l_func_table = get_l_func_table(mass, ts_limit, x_vec_sq_limit);
+  const std::vector<std::vector<double>>& l_func_table =
+      get_l_func_table(mass, ts_limit, x_vec_sq_limit);
   std::vector<double> int_short(total_site[3], 0.0);
   std::vector<double> bound_long(total_site[3], 0.0);
   for (Long index = 0; index < geo.local_volume(); ++index) {
@@ -125,13 +126,14 @@ void acc_h_field(const FieldM<ComplexD, 1>& h, const double mass,
           acc_short[t - 1] + 0.5 * int_short[t - 1] + 0.5 * int_short[t];
       total[t] = acc_short[t] + bound_long[t];
     }
-    displayln_info(ssprintf("RESULT: %10.5f %3d %3d %3d %5d %24.17E %24.17E", mass,
-                            total_site[0], total_site[1], total_site[2], t,
-                            acc_short[t], total[t]));
+    displayln_info(ssprintf("RESULT: %10.5f %3d %3d %3d %5d %24.17E %24.17E",
+                            mass, total_site[0], total_site[1], total_site[2],
+                            t, acc_short[t], total[t]));
   }
 }
 
-void compute(const int l_size, const double mass, const int ts_limit, const Long x_vec_sq_limit)
+void compute(const int l_size, const double mass, const int ts_limit,
+             const Long x_vec_sq_limit)
 {
   {
     TIMER_VERBOSE("compute");

@@ -6,7 +6,7 @@ namespace qlat
 {  //
 
 inline std::string get_three_point_func_path(const std::string& job_tag,
-                                           const int traj)
+                                             const int traj)
 {
   return ssprintf("analysis/lat-three-point/%s/results=%d", job_tag.c_str(),
                   traj);
@@ -78,7 +78,8 @@ inline void compute_three_point_func(const std::string& job_tag, const int traj)
   release_lock();
 }
 
-inline void compute_three_point_func_light(const std::string& job_tag, const int traj)
+inline void compute_three_point_func_light(const std::string& job_tag,
+                                           const int traj)
 {
   check_sigterm();
   Timer::autodisplay();

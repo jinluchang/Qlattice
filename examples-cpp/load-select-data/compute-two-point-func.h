@@ -89,7 +89,8 @@ inline void compute_two_point_func(const std::string& job_tag, const int traj)
   release_lock();
 }
 
-inline void compute_two_point_func_light(const std::string& job_tag, const int traj)
+inline void compute_two_point_func_light(const std::string& job_tag,
+                                         const int traj)
 {
   check_sigterm();
   Timer::autodisplay();

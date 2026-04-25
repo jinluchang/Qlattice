@@ -4,7 +4,7 @@ namespace qlat
 {  //
 
 inline void set_rand_gauge_field(GaugeField& gf, const Geometry& geo,
-                          const RngState& rs)
+                                 const RngState& rs)
 {
   TIMER_VERBOSE("set_rand_gauge_field");
   gf.init();
@@ -16,7 +16,7 @@ inline void set_rand_gauge_field(GaugeField& gf, const Geometry& geo,
 }
 
 inline void set_rand_fermion_field(FermionField4d& ff, const Geometry& geo,
-                            const RngState& rs)
+                                   const RngState& rs)
 {
   TIMER_VERBOSE("set_rand_gauge_field");
   ff.init();
@@ -51,7 +51,7 @@ inline void set_smooth_gauge_field(GaugeField& sgf, const GaugeField& gf)
   const Geometry geo1 = geo_resize(sgf0.geo(), expansion_left, expansion_right);
   sgf.init(geo1);
   sgf = sgf0;
-  refresh_expanded(sgf); // TODO
+  refresh_expanded(sgf);  // TODO
 }
 
 inline void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf)
@@ -106,10 +106,7 @@ struct InverterDomainWallMixedSize : InverterDomainWall {
     update_hf();
   }
   //
-  bool check_local_volume()
-  {
-    return geo().node_site % 4 == Coordinate();
-  }
+  bool check_local_volume() { return geo().node_site % 4 == Coordinate(); }
   //
   void update_hf()
   {
@@ -131,7 +128,7 @@ inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in,
 }
 
 inline void reduce_half_fermion_field(FermionField5d& hff,
-                                   const FermionField5d& ff)
+                                      const FermionField5d& ff)
 // xl = coordinate_shifts(hxl * 2, 0)
 {
   TIMER_VERBOSE("reduce_half_fermion_field");
@@ -153,7 +150,8 @@ inline void reduce_half_fermion_field(FermionField5d& hff,
   // TODO
 }
 
-inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& hff)
+inline void extend_half_fermion_field(FermionField5d& ff,
+                                      const FermionField5d& hff)
 // xl = coordinate_shifts(hxl * 2, 0)
 {
   TIMER_VERBOSE("extend_half_fermion_field");
@@ -186,8 +184,8 @@ inline Long cg_with_herm_sym_2_half(FermionField5d& sol,
   FermionField5d hsol, hsrc;
   reduce_half_fermion_field(hsrc, src);
   reduce_half_fermion_field(hsol, sol);
-  const Long half_iter =
-      cg_with_f(hsol, hsrc, inv.hinv, multiply_hermop_sym2, stop_rsd, max_num_iter * 16);
+  const Long half_iter = cg_with_f(hsol, hsrc, inv.hinv, multiply_hermop_sym2,
+                                   stop_rsd, max_num_iter * 16);
   timer.flops += 5500 * half_iter * inv.fa.ls * inv.geo().local_volume() / 16;
   extend_half_fermion_field(sol, hsol);
   // set_zero(sol); // ADJUST ME
@@ -277,8 +275,9 @@ inline Long invert_mix_prec(FermionField5d& out, const FermionField5d& in,
                                inv.stop_rsd(), inv.max_num_iter(), 1, true);
   int cycle;
   for (cycle = 1; cycle <= inv.max_mixed_precision_cycle(); ++cycle) {
-    invert_with_cg_with_guess_half(out, dm_in, inv, cg_with_herm_sym_2, inv.stop_rsd(),
-                                   inv.max_num_iter() * 8, 1, true);
+    invert_with_cg_with_guess_half(out, dm_in, inv, cg_with_herm_sym_2,
+                                   inv.stop_rsd(), inv.max_num_iter() * 8, 1,
+                                   true);
     const Long iter =
         invert_with_cg_with_guess(out, dm_in, inv, cg_with_herm_sym_2,
                                   inv.stop_rsd(), inv.max_num_iter(), 1, true);
@@ -301,7 +300,7 @@ inline Long invert(FermionField5d& out, const FermionField5d& in,
 }
 
 inline Long invert(FermionField4d& out, const FermionField4d& in,
-                    const InverterDomainWallMixedSize& inv)
+                   const InverterDomainWallMixedSize& inv)
 {
   return invert_dwf(out, in, inv);
 }
@@ -326,7 +325,7 @@ int main(int argc, char* argv[])
 {
   using namespace qlat;
   begin(&argc, &argv);
-  const Coordinate total_site(4,4,4,8);
+  const Coordinate total_site(4, 4, 4, 8);
   // const Coordinate total_site(8,8,8,16);
   // const Coordinate total_site(16,16,16,32);
   const RngState rs("seed-mixed-size-cg");
@@ -337,7 +336,8 @@ int main(int argc, char* argv[])
   set_rand_gauge_field(gf, geo, RngState(rs, "set-field"));
   // set_unit(gf);
   // gf.init(geo);
-  // const std::string path = get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/16c32/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd/ckpoint_lat.IEEE64BIG.1000";
+  // const std::string path = get_env("HOME") +
+  // "/qcdarchive/DWF_iwa_nf2p1/16c32/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd/ckpoint_lat.IEEE64BIG.1000";
   // load_gauge_field(gf, path);
   gf_show_info(gf);
   FermionField4d ff_src, ff_sol, ff_sol_mixed;

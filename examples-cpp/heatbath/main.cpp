@@ -1,5 +1,5 @@
-#include <qlat/qlat.h>
 #include <qlat/field-rng.h>
+#include <qlat/qlat.h>
 
 #include "qlat-setup.h"
 
@@ -9,7 +9,8 @@ namespace qlat
 struct CorrParams {
   int t1, t2, dt;
   //
-  CorrParams(const int t1_, const int t2_, const int dt_) {
+  CorrParams(const int t1_, const int t2_, const int dt_)
+  {
     t1 = t1_;
     t2 = t2_;
     dt = dt_;
@@ -34,7 +35,8 @@ struct CorrFuncs {
   //
   CorrFuncs() { init(); }
   //
-  const CorrFuncs& operator+=(const CorrFuncs& cf) {
+  const CorrFuncs& operator+=(const CorrFuncs& cf)
+  {
     phi2 += cf.phi2;
     c2_0 += cf.c2_0;
     c2_t1 += cf.c2_t1;
@@ -44,7 +46,8 @@ struct CorrFuncs {
     return *this;
   }
   //
-  const CorrFuncs& operator*=(const double coef) {
+  const CorrFuncs& operator*=(const double coef)
+  {
     phi2 *= coef;
     c2_0 *= coef;
     c2_t1 *= coef;
@@ -55,8 +58,7 @@ struct CorrFuncs {
   }
 };
 
-struct Observables
-{
+struct Observables {
   double phi2, m_eff, v_eff;
   //
   void init()
@@ -68,14 +70,16 @@ struct Observables
   //
   Observables() { init(); }
   //
-  const Observables& operator+=(const Observables& obs) {
+  const Observables& operator+=(const Observables& obs)
+  {
     phi2 += obs.phi2;
     m_eff += obs.m_eff;
     v_eff += obs.v_eff;
     return *this;
   }
   //
-  const Observables& operator*=(const double coef) {
+  const Observables& operator*=(const double coef)
+  {
     phi2 *= coef;
     m_eff *= coef;
     v_eff *= coef;
@@ -141,9 +145,8 @@ inline void update_scalar_field_site(double& val, const double nearby_sum,
   }
 }
 
-inline void sweep_scalar_field(ScalarField& sf, RngField& rf,
-                               const int eo, const double mass_sqr,
-                               const double lambda)
+inline void sweep_scalar_field(ScalarField& sf, RngField& rf, const int eo,
+                               const double mass_sqr, const double lambda)
 {
   TIMER("sweep_scalar_field(sf,rf,eo,m2,lam)");
   const Geometry& geo = sf.geo();
@@ -221,7 +224,8 @@ inline Observables get_observables(const CorrFuncs& cf, const CorrParams& cp)
   TIMER("get_observables");
   const double r4_t1 = (cf.c4_t1 - sqr(cf.c2_0)) / sqr(cf.c2_t1);
   const double r4_t2 = (cf.c4_t2 - sqr(cf.c2_0)) / sqr(cf.c2_t2);
-  // displayln_info(fname + ssprintf(": r4_t1=%.8lf ; r4_t2=%.8lf.", r4_t1, r4_t2));
+  // displayln_info(fname + ssprintf(": r4_t1=%.8lf ; r4_t2=%.8lf.", r4_t1,
+  // r4_t2));
   Observables obs;
   obs.phi2 = cf.phi2;
   obs.m_eff = std::log(cf.c2_t1 / cf.c2_t2) / (double)(cp.t2 - cp.t1);
@@ -258,7 +262,8 @@ inline std::string show_results(const std::vector<CorrFuncs>& cfs,
 {
   TIMER("show_results");
   std::ostringstream out;
-  out << ssprintf("((total-site (%d %d %d %d))", total_site[0], total_site[1], total_site[2], total_site[3]);
+  out << ssprintf("((total-site (%d %d %d %d))", total_site[0], total_site[1],
+                  total_site[2], total_site[3]);
   out << std::endl;
   out << ssprintf(" (mass-sqr %.10lf)", mass_sqr);
   out << std::endl;
@@ -386,8 +391,7 @@ inline void compute_several_mass(const Coordinate& total_site,
   //
 }
 
-inline void compute(const Coordinate& total_site,
-                    const CorrParams& cp)
+inline void compute(const Coordinate& total_site, const CorrParams& cp)
 {
   // ADJUST ME
   // compute_several_mass(total_site, cp, +0.01, 0.01, 0.0);
@@ -399,10 +403,10 @@ inline void compute(const Coordinate& total_site,
   // compute_several_mass(total_site, cp, -1.28, 0.02, 16.0);
   // compute_several_mass(total_site, cp, -1.86, 0.02, 24.0);
   // compute_several_mass(total_site, cp, -2.36, 0.02, 32.0);
-  if (total_site == Coordinate(4,4,4,256)) {
+  if (total_site == Coordinate(4, 4, 4, 256)) {
     compute_several_mass(total_site, cp, -1.86, 0.04, 24.0);
     compute_several_mass(total_site, cp, -2.36, 0.04, 32.0);
-  } else if (total_site == Coordinate(8,8,8,512)) {
+  } else if (total_site == Coordinate(8, 8, 8, 512)) {
     compute_several_mass(total_site, cp, -1.69, 0.01, 24.0);
     compute_several_mass(total_site, cp, -2.18, 0.01, 32.0);
   }

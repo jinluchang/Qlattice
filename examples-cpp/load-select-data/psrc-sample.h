@@ -265,7 +265,8 @@ inline std::vector<PointInfo> load_lbl_pis_info(const std::string& path)
   return pis;
 }
 
-inline std::vector<Coordinate> coordinates_from_point_infos(const std::vector<PointInfo>& pis)
+inline std::vector<Coordinate> coordinates_from_point_infos(
+    const std::vector<PointInfo>& pis)
 // interface function
 {
   TIMER("coordinates_from_point_infos");
@@ -356,7 +357,7 @@ inline std::vector<Coordinate> load_lbl_pcs_info(const std::string& path)
   return pcs;
 }
 
-typedef std::vector<std::vector<int> > TypeAccuracyTable;
+typedef std::vector<std::vector<int>> TypeAccuracyTable;
 
 inline TypeAccuracyTable mk_type_accuracy_table(
     const std::vector<PointInfo>& pis)

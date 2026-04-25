@@ -96,7 +96,8 @@ void test_fft()
     f *= 1.0 / total_volume;
   }
   Timer::display();
-  displayln_info(fname + ssprintf(": total_site=%s N=%d fft", show(total_site).c_str(), N));
+  displayln_info(fname + ssprintf(": total_site=%s N=%d fft",
+                                  show(total_site).c_str(), N));
   Timer::reset();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft-spatial");
@@ -106,7 +107,8 @@ void test_fft()
     f *= 1.0 / (total_site[0] * total_site[1] * total_site[2]);
   }
   Timer::display();
-  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-spatial", show(total_site).c_str(), N));
+  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-spatial",
+                                  show(total_site).c_str(), N));
   Timer::reset();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft-dir-x");
@@ -116,7 +118,8 @@ void test_fft()
     f *= 1.0 / total_site[0];
   }
   Timer::display();
-  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-x", show(total_site).c_str(), N));
+  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-x",
+                                  show(total_site).c_str(), N));
   Timer::reset();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft-dir-y");
@@ -126,7 +129,8 @@ void test_fft()
     f *= 1.0 / total_site[1];
   }
   Timer::display();
-  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-y", show(total_site).c_str(), N));
+  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-y",
+                                  show(total_site).c_str(), N));
   Timer::reset();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft-dir-z");
@@ -137,7 +141,8 @@ void test_fft()
   }
   Timer::display();
   displayln_info(fname + ssprintf(": %d", N));
-  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-z", show(total_site).c_str(), N));
+  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-z",
+                                  show(total_site).c_str(), N));
   Timer::reset();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft-dir-t");
@@ -147,12 +152,16 @@ void test_fft()
     f *= 1.0 / total_site[3];
   }
   Timer::display();
-  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-t", show(total_site).c_str(), N));
+  displayln_info(fname + ssprintf(": total_site=%s N=%d fft-t",
+                                  show(total_site).c_str(), N));
   Timer::reset();
   ff -= f;
-  displayln_info(fname + ssprintf(": qnorm(f) = %24.17E ; qnorm(diff) = %24.17E", qnorm(f), qnorm(ff)));
+  displayln_info(fname +
+                 ssprintf(": qnorm(f) = %24.17E ; qnorm(diff) = %24.17E",
+                          qnorm(f), qnorm(ff)));
   fft_complex_field(f, true);
-  displayln_info(fname + ssprintf(": crc32 of fft(f) = %06X.", field_dist_crc32(f)));
+  displayln_info(fname +
+                 ssprintf(": crc32 of fft(f) = %06X.", field_dist_crc32(f)));
   fft_complex_field(f, false);
 }
 

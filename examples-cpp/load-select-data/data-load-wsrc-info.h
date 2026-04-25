@@ -93,7 +93,7 @@ inline bool check_wall_src_info(const std::string& job_tag, const int traj,
   return get_does_file_exist(get_wall_src_info_path(job_tag, traj, type));
 }
 
-typedef Cache<std::string, std::vector<WallInfo> > WallSrcInfoCache;
+typedef Cache<std::string, std::vector<WallInfo>> WallSrcInfoCache;
 
 inline WallSrcInfoCache& get_wall_src_info_cache()
 {

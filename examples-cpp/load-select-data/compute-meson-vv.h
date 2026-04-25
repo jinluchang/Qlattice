@@ -49,7 +49,7 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
   const Long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const int tsep = tsep_op_wall_src(job_tag);
-  std::map<std::string, FieldM<ComplexD, 8 * 8> > cache;
+  std::map<std::string, FieldM<ComplexD, 8 * 8>> cache;
   Long iter = 0;
   for (Long n = 0; n < n_points; ++n) {
     const Long xg_y_psel_idx = n;

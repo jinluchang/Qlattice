@@ -58,16 +58,22 @@ void simple_tests()
     field_shift(gf2, gf1, c2);
     field_shift(gf1, gf, c1 + c2);
     gf1 -= gf2;
-    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E ; diff qnorm: %.2E",
-                            qnorm(gf), qnorm(gf2), qnorm(gf1)));
+    displayln_info(
+        ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E ; "
+                 "diff qnorm: %.2E",
+                 qnorm(gf), qnorm(gf2), qnorm(gf1)));
     field_shift_direct(gf1, gf, c1 + c2);
     gf1 -= gf2;
-    displayln_info(ssprintf("CHECK: Reference (field_shift_direct): orig qnorm: %.10E ; shift qnorm %.10E ; diff qnorm: %.2E",
-                            qnorm(gf), qnorm(gf2), qnorm(gf1)));
+    displayln_info(
+        ssprintf("CHECK: Reference (field_shift_direct): orig qnorm: %.10E ; "
+                 "shift qnorm %.10E ; diff qnorm: %.2E",
+                 qnorm(gf), qnorm(gf2), qnorm(gf1)));
     field_shift_steps(gf1, gf, c1 + c2);
     gf1 -= gf2;
-    displayln_info(ssprintf("CHECK: Reference (field_shift_steps): orig qnorm: %.10E ; shift qnorm %.10E ; diff qnorm: %.2E",
-                            qnorm(gf), qnorm(gf2), qnorm(gf1)));
+    displayln_info(
+        ssprintf("CHECK: Reference (field_shift_steps): orig qnorm: %.10E ; "
+                 "shift qnorm %.10E ; diff qnorm: %.2E",
+                 qnorm(gf), qnorm(gf2), qnorm(gf1)));
   }
 }
 
@@ -81,7 +87,8 @@ void show_matrix()
   for (int i = 0; i < 16; ++i) {
     displayln_info(ssprintf("cps_gms[%d] =\n", i) + show(cps_gms[i]));
   }
-  displayln_info(ssprintf("gamma_x * gamma_y * gamma_z * gamma_t =\n") + show(gammas[0] * gammas[1] * gammas[2] * gammas[3]));
+  displayln_info(ssprintf("gamma_x * gamma_y * gamma_z * gamma_t =\n") +
+                 show(gammas[0] * gammas[1] * gammas[2] * gammas[3]));
   displayln_info(ssprintf("gamma_5 =\n") + show(gamma5));
 }
 

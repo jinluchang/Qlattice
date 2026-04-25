@@ -57,7 +57,7 @@ inline void test_shuffle()
   const std::vector<Coordinate> new_size_nodes = get_new_size_node_list();
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
-    std::vector<Field<ColorMatrix> > gfs;
+    std::vector<Field<ColorMatrix>> gfs;
     shuffle_field(gfs, gf, new_size_node);
     set_unit(gf);
     shuffle_field_back(gf, gfs, new_size_node);
@@ -86,11 +86,13 @@ inline void test_shuffle()
     fft_complex_field(gf_fft, true);
     const crc32_t crc_4 = field_crc32(gf_fft);
     displayln_info(ssprintf("crc32 = %08X after fft forward", crc_4));
-    displayln_info(ssprintf("qnorm = %24.17E after fft forward", qnorm(gf_fft)));
+    displayln_info(
+        ssprintf("qnorm = %24.17E after fft forward", qnorm(gf_fft)));
     fft_complex_field(gf_fft, false);
     const crc32_t crc_5 = field_crc32(gf_fft);
     displayln_info(ssprintf("crc32 = %08X after fft backward", crc_5));
-    displayln_info(ssprintf("qnorm = %24.17E after fft backward", qnorm(gf_fft)));
+    displayln_info(
+        ssprintf("qnorm = %24.17E after fft backward", qnorm(gf_fft)));
     gf_fft *= 1.0 / (double)gf_fft.geo().total_volume();
     const crc32_t crc_6 = field_crc32(gf_fft);
     displayln_info(ssprintf("crc32 = %08X after rescale", crc_6));

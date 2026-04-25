@@ -36,7 +36,7 @@ typedef Cache<std::string, FieldSelection> FieldSelectionCache;
 
 typedef Cache<std::string, ShuffledBitSet> ShuffledBitSetCache;
 
-typedef Cache<std::string, std::vector<PointInfo> > PointSrcInfoCache;
+typedef Cache<std::string, std::vector<PointInfo>> PointSrcInfoCache;
 
 typedef Cache<std::string, PointDistribution> PointDistributionCache;
 
@@ -46,11 +46,11 @@ typedef Cache<std::string, PselProp> PselPropCache;
 
 typedef Cache<std::string, SelProp> SelPropCache;
 
-typedef std::vector<std::vector<int> > TypeAccuracyTable;
+typedef std::vector<std::vector<int>> TypeAccuracyTable;
 
 typedef Cache<std::string, TypeAccuracyTable> TypeAccuracyTableCache;
 
-typedef std::map<std::string, std::vector<PointInfo> > PointInfoMap;
+typedef std::map<std::string, std::vector<PointInfo>> PointInfoMap;
 
 typedef Cache<std::string, PointInfoMap> PointInfoMapCache;
 
@@ -121,7 +121,7 @@ inline PointInfoMapCache& get_point_info_map_cache()
 }
 
 inline const PointsSelection& get_points_selection(const std::string& job_tag,
-                                                 const int traj)
+                                                   const int traj)
 {
   const std::string key = ssprintf("%s,%d,psel", job_tag.c_str(), traj);
   PointsSelectionCache& cache = get_points_selection_cache();

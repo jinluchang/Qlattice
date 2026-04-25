@@ -1,5 +1,5 @@
-#include "qlat/flowed-hmc.h"
 #include "qlat-setup.h"
+#include "qlat/flowed-hmc.h"
 
 namespace qlat
 {  //

@@ -45,8 +45,8 @@ inline std::string get_old_job_tag(const std::string& job_tag)
 
 inline bool is_old_collection_ensemble(const std::string& job_tag)
 {
-  if (job_tag == "24D" or job_tag == "32D" or
-      job_tag == "32Dfine" or job_tag == "24DH") {
+  if (job_tag == "24D" or job_tag == "32D" or job_tag == "32Dfine" or
+      job_tag == "24DH") {
     return true;
   } else {
     return false;

@@ -66,8 +66,8 @@ int main(int argc, char* argv[])
   const array<std::string, 1> job_tag_list =
       make_array<std::string>("free-4nt8");
   std::vector<Coordinate> size_node_list;
-  size_node_list.push_back(Coordinate(2,2,2,4));
-  size_node_list.push_back(Coordinate(1,1,1,4));
+  size_node_list.push_back(Coordinate(2, 2, 2, 4));
+  size_node_list.push_back(Coordinate(1, 1, 1, 4));
   begin(&argc, &argv, size_node_list);
   display_geometry_node();
   setup_log_idx();
@@ -75,7 +75,8 @@ int main(int argc, char* argv[])
   for (int k = 0; k < (int)job_tag_list.size(); ++k) {
     const std::string& job_tag = job_tag_list[k];
     if (not compute(job_tag)) {
-      displayln_info(ssprintf("program finished successfully for '%s'.", job_tag.c_str()));
+      displayln_info(
+          ssprintf("program finished successfully for '%s'.", job_tag.c_str()));
     }
   }
   displayln_info("CHECK: finished successfully.");
