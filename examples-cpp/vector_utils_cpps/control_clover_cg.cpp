@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
   //
   //// Offsets used only by multi-shift solver
   //// These should be set in the application code. We set the them here by way
-  ///of / example
+  /// of / example
   // inv_param.num_offset = multishift;
   // for (int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 +
   // i * i * 0.1;
@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
   //
   //// Whether or not use fused kernels for Mobius
   ////inv_param.use_mobius_fused_kernel = use_mobius_fused_kernel ?
-  ///QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  /// QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   // inv_param.use_mobius_fused_kernel = QUDA_BOOLEAN_FALSE;
   //
   ///////===check this variable

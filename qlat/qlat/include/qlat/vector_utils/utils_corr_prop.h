@@ -612,7 +612,7 @@ void vec_corrE(Ty* srcE, qlat::vector<Ty>& res, qlat::fft_desc_basic& fd,
     // Ty* phaseE = (Ty*) qlat::get_data(phaseEG).data();
     //
     ////qlat::vector_gpu<int > pos_tem;pos_tem.copy_from(fd.Pos0[fd.rank]);int*
-    ///posP = pos_tem.data();
+    /// posP = pos_tem.data();
     /////===may not be consistent for fd definiations under qacc
     /////===slow
     qthread_for(xi, Long(Nxyz), {
@@ -1238,7 +1238,7 @@ void prop4D_factor(Propagator4dT<Td>& prop, const qlat::ComplexT<Td>& factor)
   qlat::ComplexT<Td>* src = (qlat::ComplexT<Td>*)qlat::get_data(prop).data();
   qacc_for(isp, Long(Nvol), { src[isp] *= factor; })
   ////if(qlat::qnorm(factor) >= QLAT_COPY_LIMIT){cpy_data_threadC(src, src,
-  ///Nvol, 1, true, factor);} /else{;}
+  /// Nvol, 1, true, factor);} /else{;}
 }
 
 template <class Ty, Int civ>

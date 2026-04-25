@@ -539,7 +539,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, Int ncur, Int sm, Int dir,
     LInt xi = xini * b_size;
     s1 = getEigenP(ncur, xi, sm, 1);
     /////qacc_Memcpy(s1, &s0[xi], b_size*sizeof(Complexq),
-    ///qacc_MemcpyHostToDevice);
+    /// qacc_MemcpyHostToDevice);
     if (dir == 1) {
       cpy_data_thread(s1, &s0[xi], b_size, GPU_cpy, QFALSE);
     }
@@ -636,14 +636,14 @@ void eigen_ov::copy_evec_to_GPU(Int nini)
         s1 = getEigenP(ncur, xi, 0, 0);
         s0 = getEigenP(ncur, xi, 0, 1);
         //////qacc_Memcpy(s1, s0, b_size*sizeof(Complexq),
-        ///qacc_MemcpyHostToDevice);
+        /// qacc_MemcpyHostToDevice);
         cpy_data_thread(s1, s0, b_size, 2, QFALSE);
         //
         if (enable_smearE == true) {
           s1 = getEigenP(ncur, xi, 1, 0);
           s0 = getEigenP(ncur, xi, 1, 1);
           /////qacc_Memcpy(s1, s0, b_size*sizeof(Complexq),
-          ///qacc_MemcpyHostToDevice);
+          /// qacc_MemcpyHostToDevice);
           cpy_data_thread(s1, s0, b_size, 2, QFALSE);
         }
       }
@@ -799,7 +799,7 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   ////erase smear
   {
     /////const SmearPlanKey& skey = get_smear_plan_key<Complexq, 4,
-    ///each>(gf.geo(), smear_in_time_dir); /qlat::clear_all_caches();
+    /// each>(gf.geo(), smear_in_time_dir); /qlat::clear_all_caches();
     get_smear_plan_cache().clear();
   }
   //
@@ -1507,7 +1507,7 @@ void prop_L_device(eigen_ov& ei, Complexq* src, Complexq* props, Int Ns,
       //
       if ((nini + ncur) < ei.n_vec) {
         ////zero_Ty(ei.alpha_bfac, ei.alpha_bfac_size, 0,
-        ///false);zero_Ty(ei.alpha, ei.alpha_size, 0, false);
+        /// false);zero_Ty(ei.alpha, ei.alpha_size, 0, false);
         // ei.alpha_bfac.clear(false);
         // ei.alpha.clear(false);
         zero_Ty(ei.alpha.data(), ei.alpha.size(), 1, QFALSE);

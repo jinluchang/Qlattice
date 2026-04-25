@@ -18,7 +18,7 @@
 #include "utils_io_vec.h"
 
 /////use inv_param.dirac_order = QUDA_INTERNAL_DIRAC_ORDER; when we want to work
-///on GPU memeories
+/// on GPU memeories
 
 //  an overall sign for gamma5 compare to cps base
 #define QUDA_GAMMA QUDA_DEGRAND_ROSSI_GAMMA_BASIS
@@ -604,7 +604,7 @@ inline void quda_clover_inverter::alloc_csfield_cpu()
   cs_gpu.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION,
                       true);  ////double for all cpu cs field
   ////cs_gpu.setPrecision(inv_param.cuda_prec, inv_param.cuda_prec_eigensolver,
-  ///true);
+  /// true);
   //
   cs_gpu.siteSubset = QUDA_FULL_SITE_SUBSET;
   // if (inv_param.solution_type == QUDA_MAT_SOLUTION || inv_param.solution_type
@@ -895,7 +895,7 @@ inline void quda_clover_inverter::setup_clover(const double kappa,
     //
     //// Offsets used only by multi-shift solver
     //// These should be set in the application code. We set the them here by
-    ///way of / example
+    /// way of / example
     // inv_param.num_offset = multishift;
     // for (Int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06
     // + i * i * 0.1;
@@ -938,7 +938,7 @@ inline void quda_clover_inverter::setup_clover(const double kappa,
     //
     //// Whether or not use fused kernels for Mobius
     ////inv_param.use_mobius_fused_kernel = use_mobius_fused_kernel ?
-    ///QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+    /// QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
     // inv_param.use_mobius_fused_kernel = QUDA_BOOLEAN_FALSE;
     //
     ///////===check this variable
@@ -960,10 +960,10 @@ inline void quda_clover_inverter::setup_clover(const double kappa,
       Int clover_site_size =
           72;  // real numbers per block-diagonal clover matrix
       ////size_t host_clover_data_type_size = (cpu_prec ==
-      ///QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
+      /// QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
       Int host_clover_data_type_size = sizeof(quda::Complex) / 2;
       ////size_t host_spinor_data_type_size = (cpu_prec ==
-      ///QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
+      /// QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
       Int host_spinor_data_type_size = sizeof(quda::Complex) / 2;
       //
       QUDA_clover.resize(V * clover_site_size * host_clover_data_type_size);
@@ -981,7 +981,7 @@ inline void quda_clover_inverter::setup_clover(const double kappa,
       // range (-norm, norm) double diag = 1.0;  // constant added to the
       // diagonal
       ////if (!compute_clover) constructQudaCloverField((void*)
-      ///quda_clover.data(), norm, diag, inv_param.clover_cpu_prec, V);
+      /// quda_clover.data(), norm, diag, inv_param.clover_cpu_prec, V);
       //
       // loadCloverQuda((void*) quda_clover.data(), (void*)
       // quda_clover_inv.data(), &inv_param); if(in.clover_csw == 0){

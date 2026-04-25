@@ -25,7 +25,7 @@ namespace qlat
 
 ////Only cpu verstion
 ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF *
-///size_inner
+/// size_inner
 inline void reorder_civ(int8_t* src, int8_t* res, Int biva, Int civ,
                         size_t sizeF, Int flag, Int size_inner)
 {
@@ -210,7 +210,7 @@ struct move_index {
   }
 
   ////flag == 1 : biva * sizeF * civ * size_inner --> biva * civ * sizeF *
-  ///size_inner
+  /// size_inner
   template <typename Ty>
   void dojob(Ty* src, Ty* res, Int biva, Int civ, Long sizeF, Int flag,
              Int size_inner, bool GPU = false)
@@ -1224,7 +1224,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in,
         spreadT = guess_nodeL(n_node, Lat, 1);
       }
       ////if(in.mode_dis >= 10 and in.mode_dis < 12){spreadT =
-      ///guess_nodeL(n_node, Lat, 1);}
+      /// guess_nodeL(n_node, Lat, 1);}
     }
     /// 3D begin
     ////begin_comm(MPI_COMM_WORLD , spreadT);

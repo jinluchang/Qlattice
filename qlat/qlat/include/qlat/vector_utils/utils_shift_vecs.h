@@ -737,7 +737,7 @@ void multiply_gauge(void* src, void* gauge, const Int dir_gauge, const Int biva,
           }
           /////something wrong with gs x 3 Col \times 3 x 3 Col with gs = 1
           /////something wrong with mix of Row and Col with gs x 3 ColM \tims 3
-          ///x 3 RowM== 1 x 3
+          /// x 3 RowM== 1 x 3
           /////something may be good with mix of Row and Col with gs x 3 RowM
           ///\tims 3 x 3 ColwM == 1 x 3
         }
@@ -789,7 +789,7 @@ void shift_vec::mult_gauge(void* pt, Int dir_gauge)
   const Int id = Is_data_double<Ty>();
   // const bool id = get_data_type_is_double<Ty >();
   ////qmessage("civ %5d, gbfac %5d, gd0 %5d \n", int(civ), int(gbfac),
-  ///int(gd0));
+  /// int(gd0));
   Qassert(id == 0 or id == 1);
   if (id) {
     Qassert(Long(civ * sizeof(Ty) / 16) == gbfac * 3 * gd0);

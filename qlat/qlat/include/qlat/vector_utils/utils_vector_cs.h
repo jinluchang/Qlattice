@@ -90,10 +90,10 @@ struct vector_cs {
     bfac_group = -1;  // create large size of data or not, for GPU memories and
                       // performance
     GPU = QMGPU;  ////default data on GPU,  GPU, -1 -- unified memory, 0 -- on
-                  ///CPU, 1 -- on GPU
+                  /// CPU, 1 -- on GPU
     La = 0;
     Lb = 0;  ////parameter from bfac, La = bfac/bfac_group, Lb =
-             ///bfac_group*nvec*Long(b_size);
+             /// bfac_group*nvec*Long(b_size);
     btotal = bfac;
     flops_matrix = 0.0;
     flops_copy = 0.0;
@@ -273,7 +273,7 @@ struct vector_cs {
   inline Ty* get_pointer_b(Long ni, Long bi)
   {
     /////qmessage("rank %5d, %5d %5d, %5d %5d %5d \n", get_id_node(), int(ni),
-    ///int(nvec), int(bi), int(bfac) );
+    /// int(nvec), int(bi), int(bfac) );
     Qassert(ni < nvec and bi < bfac and ni >= 0 and bi >= 0);
     size_t t = (bi * nvec + ni) * size_t(b_size);
     size_t ba = t / Lb;
@@ -503,8 +503,8 @@ struct vector_cs {
           soff = nvec * size_t(b_size);
         }
         ////if(dir == 1)cpy_GPU(res[id], &src[id*b_size], b_size,     GPU,
-        ///data_GPU, false); /if(dir == 0)cpy_GPU(&src[id*b_size], res[id],
-        ///b_size,     data_GPU, GPU, false);
+        /// data_GPU, false); /if(dir == 0)cpy_GPU(&src[id*b_size], res[id],
+        /// b_size,     data_GPU, GPU, false);
         if (dir == 1)
           cpy_GPU2D(res[id], &src[id * b_size], size_t(b_size),
                     size_t(bfac_group), roff, soff, GPU_r, GPU_s, QFALSE);
@@ -620,7 +620,7 @@ struct vector_cs {
       soff = size_t(b_size) * nvec;
     }
     /////qmessage("===roff %8d, n %8d, soff %8d, n %8d \n", int(roff),
-    ///int(nvec), int(soff), int(src.nvec));
+    /// int(nvec), int(soff), int(src.nvec));
     //
     for (unsigned int n0 = 0; n0 < nsrc.size(); n0++) {
       ////qlat::vector_gpu<Ty* > va = src.get_pointers(nsrc[n0]);
@@ -684,7 +684,7 @@ struct vector_cs {
         ////cpy_GPU(A[id], B[id], nsrc.size()*b_size,  GPU_r, GPU_s, false);
         ////if(sizeof(Ty) != sizeof(Ta)){
         ////  qmessage("Check %d %d %d %d!\n", int(sizeof(Ty)), int(sizeof(Ta)),
-        ///int(GPU_r), int(GPU_s));return ;
+        /// int(GPU_r), int(GPU_s));return ;
         ////}
         if (dir == 1) {
           cpy_GPU2D(A[id * bfac_group], B[id * bfac_group],

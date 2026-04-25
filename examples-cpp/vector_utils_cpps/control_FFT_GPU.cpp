@@ -175,8 +175,8 @@ int main(int argc, char* argv[])
           //
           // FFTGPUPlanKey fkey = get_fft_gpu_plan_key(src, ft4D);
           //////fft_fieldM(*((fft_schedule*) get_fft_gpu_plan(fkey).fftP), src,
-          ///false); /get_fft_gpu_plan(fkey).fftP->print_info(); /fft_gpu_copy
-          ///ft = make_fft_gpu_plan(fkey); /ft.set(); /ft.fftP->print_info();
+          /// false); /get_fft_gpu_plan(fkey).fftP->print_info(); /fft_gpu_copy
+          /// ft = make_fft_gpu_plan(fkey); /ft.set(); /ft.fftP->print_info();
           // fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, false);
           // fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, true );
           // fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, false);

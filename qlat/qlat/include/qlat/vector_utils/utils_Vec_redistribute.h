@@ -64,7 +64,7 @@ struct Vec_redistribute {
   template <typename Ty>
   void reorder(Ty* sendbuf, Ty* recvbuf, Int b0_or, Int civa_or, Int flag = 0);
   ////void reorder(Ftype *sendbuf,Ftype *recvbuf,Int b0_or,Int
-  ///civa_or,qlat::vector<Int > secT_or,Int flag= 0);
+  /// civa_or,qlat::vector<Int > secT_or,Int flag= 0);
 
   inline void print_send_size();
 
@@ -135,8 +135,8 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic& fds, bool GPU_set)
   }
   //
   //////if(secT_or.size()!=fd->Nmpi){qmessage("secT wrong %8d ! \n",
-  ///int(secT_or.size()));Qassert(false);} /secT = secT_or; /Check same number
-  ///secT for MPI /Long mvol = mx*my*mz;
+  /// int(secT_or.size()));Qassert(false);} /secT = secT_or; /Check same number
+  /// secT for MPI /Long mvol = mx*my*mz;
   qlat::vector<Int> check;
   check.resize(0);
   for (Int n = 0; n < fd->Nmpi; n++) {
@@ -427,7 +427,7 @@ void Vec_redistribute::re_order_recv(Int flag)
 }
 
 //////buf size  --> b0 * Nt * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa *
-///sizeof(Ty)
+/// sizeof(Ty)
 //////Data will be modified for sendbuf and recvbuf, results on sendbuf
 //////vector maps ---> b0,mz,my,mx, (Nxyz), civ --> fd.get_mi_curr()*b0 + nbi,
 ///(nxyz), civ ;
@@ -526,7 +526,7 @@ struct Rotate_vecs {
   }
 
   /////mode -1 --> no rotation, mode 0 --> rotate to T zyx, mode 1 --> every
-  ///node have tzyx data
+  /// node have tzyx data
   //////buf size  --> b0 * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa * sizeof(Ty)
   template <typename Ty>
   void set_mem(Int b0_or, Int civa_or, Int mode_set = -2)

@@ -166,7 +166,7 @@ void begin_Qlat_with_quda(bool t = false)
   }
   //
   ////printf("rank %d, nodeD, %d %d %d %d \n", id_node, nodeD[0], nodeD[1],
-  ///nodeD[2], nodeD[3]);
+  /// nodeD[2], nodeD[3]);
   qlat::begin(rank, nodeD);
   // printf("rank %d check %d, ", quda::comm_rank(), qlat::get_id_node());
   /////Qassert(quda::comm_rank() == qlat::get_id_node());
@@ -309,10 +309,10 @@ inline void begin_Qlat_quda(int* argc, char** argv[], inputpara& in,
 inline void check_quda_layout_eo(const Geometry& geo)
 {
   ////qlat::GeometryNode geon = qlat::get_geometry_node();for(Int
-  ///i=0;i<4;i++){mpi_layout[i] = geon.size_node[i];}
+  /// i=0;i<4;i++){mpi_layout[i] = geon.size_node[i];}
   ////Nv.resize(4);nv.resize(4);mv.resize(4);
   ////for(Int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] *
-  ///geo.geon.size_node[i];} /for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+  /// geo.geon.size_node[i];} /for(Int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
   for (Int i = 0; i < 4; i++) {
     if (geo.node_site[i] % 2 != 0) {
       qmessage("dir %5d, size %5d wrong! \n", i, geo.node_site[i]);
@@ -690,7 +690,7 @@ void applyGaugeFieldScaling_long(
       //
       const Long indexo = ((1 * Vh + i) * 4 + d) * 9;
       ////for (Int j = 0; j < 18; j++) { gauge[d][(Vh + i) * gauge_site_size +
-      ///j] *= sign; }
+      /// j] *= sign; }
       for (Int j = 0; j < 9; j++) {
         gauge[indexo + j] *= sign;
       }

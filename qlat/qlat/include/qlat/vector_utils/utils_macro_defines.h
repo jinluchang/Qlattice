@@ -56,7 +56,7 @@ namespace qlat
 #define Complexq qlat::ComplexT<double>
 #define Ftype double
 //////needed for contraction change to small power of 2 if shared memory too
-///small
+/// small
 #endif
 
 #if Enablefloat == 1

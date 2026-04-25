@@ -137,7 +137,7 @@ inline void get_mapvq_each(const std::vector<CommPackInfo>& pack_infos,
       //   qmessage("transfer ori %8ld, buffer %8ld \n", fi, bufi);
       // }
       ////qmessage("size %d, group %d, bufi %d, fi %d \n", int(i),
-      ///int(cpi.size), int(bufi), int(fi));
+      /// int(cpi.size), int(bufi), int(fi));
       if (dir == 0) {
         mapv[0].push_back(bufi);
         mapv[1].push_back(fi);
@@ -164,12 +164,12 @@ inline void get_mapvq_each(const std::vector<CommPackInfo>& pack_infos,
 
 ////  === output
 ////  qlat::vector<Long > local_map_typeA0;  //// i to count, Nvol_ext, original
-///positions to count new positions /  qlat::vector<Long > local_map_typeA1;
+/// positions to count new positions /  qlat::vector<Long > local_map_typeA1;
 /////// reverse /  qlat::vector<Long > map_index_typeA0;  //// index to
-///index_typeA /  qlat::vector<Long > map_index_typeA1;  //// from count to
-///writi (new indexings) /  qlat::vector<Long > map_index_typeAL;  //// count to
-///index, loop mappings /  qlat::vector<Long > map_bufD_typeA  ;  //// Nvol *
-///dirL * 2, count*dirL*2 + (dir+dirL), direction indexings
+/// index_typeA /  qlat::vector<Long > map_index_typeA1;  //// from count to
+/// writi (new indexings) /  qlat::vector<Long > map_index_typeAL;  //// count
+/// to index, loop mappings /  qlat::vector<Long > map_bufD_typeA  ;  //// Nvol
+/// * dirL * 2, count*dirL*2 + (dir+dirL), direction indexings
 inline void get_maps_hoppings(
     const Geometry& geo, const Geometry& geo_ext, const Int dirL,
     qlat::vector<Long>& local_map_typeA0, qlat::vector<Long>& local_map_typeA1,
@@ -221,7 +221,7 @@ inline void get_maps_hoppings(
     // map_bufV[0][index]  = geo_ext.offset_from_coordinate(xl, 1);
     // map_bufV[1][index]  = index;
     //////qmessage(" mappings %ld %ld \n",map_bufV[0][index],
-    ///map_bufV[1][index]);
+    /// map_bufV[1][index]);
   }
   //
   map_bufD.resize(Nvol * dirL * 2);
@@ -284,7 +284,7 @@ inline void get_maps_hoppings(
   //
   ////Qassert(false);
   ////qmessage("rank %5d, send %ld, recv %ld \n", qlat::get_id_node(),
-  ///Long(plan.total_send_size), Long(plan.total_recv_size));
+  /// Long(plan.total_send_size), Long(plan.total_recv_size));
   //
   //{
   //  std::vector<Long > buf_s;
@@ -340,7 +340,7 @@ inline void get_maps_hoppings(
     Long si = mapvq_recv[0][i];
     // recv_buffer_index[ri] = si;
     ////qmessage("%ld %ld, max %ld %ld \n", ri, si,
-    ///Long(recv_buffer_index.size()), Nvol_ext);
+    /// Long(recv_buffer_index.size()), Nvol_ext);
     Qassert(check_send[si].size() == 0);
     check_recv[si].push_back(ri);
     count_r += 1;
@@ -595,7 +595,7 @@ inline void get_maps_hoppings(
   //
   Qassert(max_pos >= count);  ////some may be empty
   ////qmessage("actual send %ld, max send %ld \n", count - pos_send, max_pos -
-  ///pos_send);
+  /// pos_send);
   pos_recv = max_pos;
   // Long count0 = count;
   //
@@ -622,7 +622,7 @@ inline void get_maps_hoppings(
   //
   Qassert(max_pos >= count);  ////some may be empty
   /////qmessage("actual recv %ld, max recv %ld \n", count - pos_recv, max_pos -
-  ///pos_recv);
+  /// pos_recv);
   //
   pos_typeA[0] = pos_send;
   pos_typeA[1] = pos_recv;
@@ -885,7 +885,8 @@ struct smear_fun {
   inline void get_mapvq(const std::vector<CommPackInfo>& pack_infos,
                         std::vector<qlat::vector_gpu<Long>>& mapvq, Int dir = 0)
   {
-    std::vector<std::vector<Long>> mapv(3);  // mapv.resize(4*pack_infos.size());
+    std::vector<std::vector<Long>> mapv(
+        3);  // mapv.resize(4*pack_infos.size());
     /// std::vector<Long > factorL;
     for (Long i = 0; i < (Long)pack_infos.size(); ++i) {
       const CommPackInfo& cpi = pack_infos[i];
@@ -1917,7 +1918,7 @@ void gauss_smear_kernel(T* src, const double width, const Int step,
 ////copy src to buf0
 //
 ////if distributed, then no need to copy and src already in prop_buf0, not
-///expansion also
+/// expansion also
 //
 // prop_buf1.copy_from(prop_buf0); /// copy src
 //
@@ -2003,7 +2004,8 @@ void gauss_smear_kernel(T* src, const double width, const Int step,
         }
         for (Int dir = -dir_limit; dir < dir_limit; ++dir) {
           ////const Long index_dir =
-          ///smf.local_map_typeA0[Pdir1[index*dir_limit*2 + (dir + dir_limit)]];
+          /// smf.local_map_typeA0[Pdir1[index*dir_limit*2 + (dir +
+          /// dir_limit)]];
           const Long index_dir =
               Pdir1[count * dir_limit * 2 + (dir + dir_limit)];
           const T* wm1p = &prop_src[size_t(index_dir) * nsites];
@@ -2256,7 +2258,7 @@ void smear_propagator_gwu_convension_inner(
     } else {
       // Tfloat = c0*d0*2*int(qlat::qnorm(width))*vGb*Fcount;
       /////qmessage("%3d dir %d vol %d Flops %d \n", int(width), 6, int(vGb),
-      ///int(Fcount));
+      /// int(Fcount));
       Tfloat = 4 * 6 * int(width) * vGb * Fcount;
     }
   }

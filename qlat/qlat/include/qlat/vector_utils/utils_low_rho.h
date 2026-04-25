@@ -71,7 +71,7 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype* Mres,
   ////off = tid;
   unsigned long offAB = bufN0 * 16;  /////off = bi*16;
   /////if(tid < 16){for(Int ti=0;ti<nt;ti++)NMv_values[ti*16 + tid] =
-  ///Nab[ti*offAB + off + tid];}
+  /// Nab[ti*offAB + off + tid];}
   off = tid;
   while (off < nt * 16) {
     Int ti = off / 16;
@@ -169,7 +169,7 @@ __global__ void prodab_global(const Complexq* a, const Complexq* b,
         }
       }
     }
-  //
+    //
   } else {
     for (Int iv = 0; iv < 16; iv++) {
       resab[tid * 16 + iv] = 0.0;
@@ -341,7 +341,7 @@ inline void reducefM(qlat::vector<Complexq>& fd, Complexq* NabL, Long bufN,
   ////  Int it = op/16; Int gi = op%16;
   ////  ////Nab[ivec*Nt*16 + it*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16
   ///+ it*16+0],gL[gi])/facvol; /  NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 +
-  ///gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
+  /// gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
   ////}
   //}
   //
@@ -453,7 +453,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype>& Mres,
     multiplyNab_global<<<nB, nthreads, sizeB>>>(
         &Nab[offNab], MresP, &Mvalues[0], nt, nmass, bufN0, GmapM.data());
     /////multiplyNab_global<<< nB, nthreads, sizeB >>>(Nab,
-    ///0,&Mres[0],&Mvalues[0],nt,nmass,bufN0, &GmapM[0]);
+    /// 0,&Mres[0],&Mvalues[0],nt,nmass,bufN0, &GmapM[0]);
     qacc_barrier(dummy);
     return;
 #endif

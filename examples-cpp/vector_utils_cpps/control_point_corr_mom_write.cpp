@@ -37,8 +37,8 @@ inline void write_corr_zero(corr_dat<Ftype>& res,
   }
   //
   ////sprintf(key_T, "%d   %d    %d   %d  %d  %d %d", nsource, 2, 3, 32,
-  ///int(massL.size()), in.nt, 2); /long corr_zero_off = (((si + npoint)*2 +
-  ///sm)*3 + LHF) * 32 * nmass * in.nt * 2;
+  /// int(massL.size()), in.nt, 2); /long corr_zero_off = (((si + npoint)*2 +
+  /// sm)*3 + LHF) * 32 * nmass * in.nt * 2;
   for (int t = 0; t < nt; t++) {
     if (Bsite[t]) {
       qacc_for(iv, nread,

@@ -860,13 +860,13 @@ inline Int get_mpi_id_node_close()
   n0[id_of_node] = 1;
   /////glb_sum(get_data(num_process_for_each_node));
   /////MPI_Allreduce(get_data(num_process_for_each_node),
-  ///get_data(num_process_for_each_node), )
+  /// get_data(num_process_for_each_node), )
   //
   // if(commp == NULL){MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM,
   // get_comm());}
   MPI_Allreduce(&n0[0], &n1[0], num_of_node, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
   ////printf("id_of_node %5d, total %5d \n", int(id_of_node),
-  ///int(n1[id_of_node]));
+  /// int(n1[id_of_node]));
   //
   Int id_node_local = localRank;
   for (Long i = 0; i < id_of_node; ++i) {
@@ -874,7 +874,7 @@ inline Int get_mpi_id_node_close()
   }
   //
   //// calculate the number of master comm (the maximum in
-  ///num_process_for_each_node)
+  /// num_process_for_each_node)
   // Long num_of_master_comm = 0;
   // for (Long i = 0; i < (Long)num_process_for_each_node.size(); ++i) {
   //   if (num_process_for_each_node[i] > num_of_master_comm) {

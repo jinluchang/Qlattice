@@ -1270,7 +1270,7 @@ inline Int get_save_type(const std::string save_type)
   //
   return -1;
   ////  if(find_para(std::string("save_type"),save_type)==0)save_type  =
-  ///std::string("NONE");
+  /// std::string("NONE");
 }
 
 inline size_t string_to_size(std::string& tem_string)
@@ -1635,7 +1635,7 @@ struct corr_dat {
     //
     ////in.dim_name = std::string("");
     ////for(Int d=0;d<dim;d++)(in.dim_name += (std::string("  ") +
-    ///dim_name[d]));
+    /// dim_name[d]));
     // in_buf.key_T = get_key_T();
     // in_buf.dim_name = get_dim_name();
     //

@@ -312,7 +312,7 @@ void cpy_data_threadT(T0* Pres, const T1* Psrc, const TInt Nvol, Int GPU,
   }
   if ((GPU == 0 or GPU == 1) and double(qlat::qnorm(ADD)) < QLAT_COPY_LIMIT) {
     if ((void*)Pres == (void*)Psrc)  ////may need to be careful about comparing
-                                     ///pointers of CPU and GPUs
+                                     /// pointers of CPU and GPUs
     {
       return;
     }
@@ -485,9 +485,9 @@ Int cpy_GPU2D_G(T0* Pres, const T1* Psrc, const TInt Nvol, const TInt NOff,
   if (sizeof(T0) == sizeof(T1)) {
     qacc_MemcpyKind tmp = qacc_MemcpyDeviceToDevice;
     /////if(Gsrc == 0 and Gres == 1){tmp = qacc_MemcpyHostToDevice  ;diff_cuda =
-    ///1;}////===from host   to device
+    /// 1;}////===from host   to device
     /////if(Gsrc == 1 and Gres == 0){tmp = qacc_MemcpyDeviceToHost  ;diff_cuda =
-    ///1;}////===from device to   host
+    /// 1;}////===from device to   host
     if (Gsrc == QMCPU and Gres == QMGPU) {
       tmp = qacc_MemcpyHostToDevice;
       diff_cuda = 1;

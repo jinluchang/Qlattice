@@ -509,7 +509,7 @@ struct momentum_dat {
   }
 
   /////mom_cut should be consistent with your production indicated in the saving
-  ///file
+  /// file
   momentum_dat(
       const Geometry& geo_, const Int mom_cut_,
       const std::vector<Coordinate>& mom_off = std::vector<Coordinate>(0))
@@ -776,7 +776,7 @@ void copy_sparse_fields(qlat::SelectedField<Ty>& res,
   //
   const Long Ndata = src.field.size() / src.multiplicity;
   ///// printf("=== %8d %8d \n", int(src.field.size() / src.multiplicity),
-  ///int(res.field.size() / res.multiplicity));
+  /// int(res.field.size() / res.multiplicity));
   Qassert(Ndata == (res.field.size() / res.multiplicity));
   //
   const Int Nr = res.field.size() / (Ndata * Ndc);

@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
     set_zero(res2);
     //
     ////for(size_t
-    ///isp=0;isp<size_t(geo.local_volume());isp++){fint.get_elems(isp)[0]
+    /// isp=0;isp<size_t(geo.local_volume());isp++){fint.get_elems(isp)[0]
     ///= 1.0*std::cos(isp);} /get_elems return pointer V
     qacc_for(index, geo.local_volume(), {
       ///////Make a search of time

@@ -308,7 +308,7 @@ void FFT_Vecs::set_plan(std::vector<Int>& nv_set, Int civ_set,
       if (single_type == 1) fft_dat = fftwf_malloc(datasize);
       //
       /////////"n" same layout for input, "istride" -- zyx(j) --
-      ///j*istride+k*idist , "idist" -- howmany(k) -- in+k*idist
+      /// j*istride+k*idist , "idist" -- howmany(k) -- in+k*idist
       if (single_type == 0) {
         plan_cpuD0 = fftw_plan_many_dft(
             dim, &nv[0], howmany, (fftw_complex*)fft_dat, &nv[0], istride,
@@ -435,8 +435,8 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   } else {
     /////copy data from cpu
     ////qmessage("civ %d, nt %d, nz %d, ny %d, nx %d, block0 %d \n", civ, nv[0],
-    ///nv[1], nv[2], nv[3], int(block0)); /qmessage("alloc_local %d,
-    ///MPI_datasize %d . \n ", int(alloc_local), int(MPI_datasize/bsize));
+    /// nv[1], nv[2], nv[3], int(block0)); /qmessage("alloc_local %d,
+    /// MPI_datasize %d . \n ", int(alloc_local), int(MPI_datasize/bsize));
     ////abort_r("check point. \n");
     if (MPI_para.size() != 0)
       cpy_data_thread((Ty*)fft_dat, inputD, MPI_datasize / bsize, GPU);
@@ -721,7 +721,7 @@ struct fft_schedule {
     //
     b0 = job[1];
     c0 = job[2];  ///////NEED_COPY = job[4];
-    /////====Set up b0, c0
+                  /////====Set up b0, c0
 //
 #ifndef __QLAT_WITH_FFT_MPI__
     enable_MPI = 0;
@@ -877,7 +877,7 @@ struct fft_schedule {
     //
     Int cN = civ / c0;
     /////qmessage("bN %d, cN %d, civ %d, c0 %d, vol %d \n", bN, cN, civ, c0,
-    ///int(fd.noden));
+    /// int(fd.noden));
     /////rotate civ
     if (civ != c0) {
       TIMERB("fft mem reorder");
@@ -1080,7 +1080,7 @@ struct fft_gpu_copy {
   // void* fftP;
   // fft_gpu_copy(){fftP = NULL;}
   //~fft_gpu_copy(){if(fftP != NULL){delete ((fft_schedule*) fftP); fftP =
-  //NULL;}}
+  // NULL;}}
   fft_schedule* fftP;
   std::string prec;
   bool is_copy;  // do not free memory if is_copy=true
@@ -1347,7 +1347,7 @@ void fft_fieldM(std::vector<Ty*>& data, Int civ, const Geometry& geo,
   fkey.fft4D = fft4d;
   ////std::vector<Ty* > data;data.resize(nvec);
   ////for(Int si=0;si<nvec;si++){data[si] = (Ty*)
-  ///qlat::get_data(src[si]).data();}
+  /// qlat::get_data(src[si]).data();}
   /////int nvec = data.size();
   get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
 }

@@ -515,7 +515,7 @@ void baryon_sparse_kernel(Ty** p1, Ty** p2, Ty** p3, Ty** resP,
 }
 
 /////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of
-///diagram
+/// diagram
 /*
   p1, p2, p3 [Nsrc][Nvol]
 */

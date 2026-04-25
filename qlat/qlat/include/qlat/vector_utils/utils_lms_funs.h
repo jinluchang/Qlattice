@@ -1044,7 +1044,7 @@ void point_corr(qnoiT& src, std::vector<qpropT>& propH,
       // }
       //
       ////save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true,
-      ///POS_LIST);
+      /// POS_LIST);
       // save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true,
       // GRID_INFO);
     }
@@ -1073,7 +1073,7 @@ void test_all_prop_corr(std::vector<double>& massL, eigen_ov& ei,
                         fft_desc_basic& fd, corr_dat<Ty>& res, Int mode_sm = 0)
 {
   /////if(propH.size() != src.size()*massL.size()){abort_r("prop size, mass size
-  ///not match!\n");}
+  /// not match!\n");}
   const Geometry& geo = fd.geo();
   //
   Int GPU = 1;

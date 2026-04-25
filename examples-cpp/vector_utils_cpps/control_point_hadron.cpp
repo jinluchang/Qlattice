@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
   in.find_para(std::string("check_prop_norm"), check_prop_norm);
   //
   int prop_smear_inv_factor = 1;  ////1, if use modified factors within
-                                  ///inverstion ; 0 --> normal factors
+                                  /// inverstion ; 0 --> normal factors
   in.find_para(std::string("prop_smear_inv_factor"), prop_smear_inv_factor);
   int save_full_vec = 0;
   in.find_para(std::string("save_full_vec"), save_full_vec);
@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
     //
     ////qprop tmpa;tmpa.init(geo);
     ////qmessage("vol %ld %ld \n", geo.local_volume(),
-    ///Long(qlat::get_data_size(tmpa)));
+    /// Long(qlat::get_data_size(tmpa)));
     //
     ////===load eigen
     print_time();

@@ -749,7 +749,7 @@ inline void quda_inverter::free_csfield(const Int mode)
   Qassert(mode == 0 or mode == 2 or mode == 3);
   // if(mode == 0 or mode == 1){
   ////if(csrc  != NULL){delete csrc;csrc=NULL;}if(cres != NULL){delete
-  ///cres;cres=NULL;}
+  /// cres;cres=NULL;}
   // if(ctmp0 != NULL){delete ctmp0;ctmp0=NULL;}
   // if(ctmp1 != NULL){delete ctmp1;ctmp1=NULL;}
   // if(ctmp2 != NULL){delete ctmp2;ctmp2=NULL;}
@@ -875,7 +875,7 @@ inline void quda_inverter::alloc_csfield_initial()
   // cs_gpu.pc_type = QUDA_4D_PC;
   cs_gpu = quda::ColorSpinorParam(gpuParam0);
   ////cs_gpu.setPrecision(QUDA_DOUBLE_PRECISION); ////double for all cpu cs
-  ///field
+  /// field
   cs_gpu.create = QUDA_ZERO_FIELD_CREATE;
   cs_gpu.location = QUDA_CUDA_FIELD_LOCATION;
   cs_gpu.is_composite = false;
@@ -889,7 +889,7 @@ inline void quda_inverter::alloc_csfield_initial()
   cs_gpu.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION,
                       true);  ////double for all cpu cs field
   ////cs_gpu.setPrecision(inv_param.cuda_prec, inv_param.cuda_prec_eigensolver,
-  ///true);
+  /// true);
   //
   cs_gpu.siteSubset = QUDA_FULL_SITE_SUBSET;
   // if (inv_param.solution_type == QUDA_MAT_SOLUTION || inv_param.solution_type
@@ -1459,7 +1459,7 @@ inline void quda_inverter::setup_stagger_inv()
   //
   //// Offsets used only by multi-shift solver
   //// These should be set in the application code. We set the them here by way
-  ///of / example
+  /// of / example
   // inv_param.num_offset = multishift;
   // for (Int i = 0; i < inv_param.num_offset; i++) inv_param.offset[i] = 0.06 +
   // i * i * 0.1;
@@ -1503,7 +1503,7 @@ inline void quda_inverter::setup_stagger_inv()
   //
   //// Whether or not use fused kernels for Mobius
   ////inv_param.use_mobius_fused_kernel = use_mobius_fused_kernel ?
-  ///QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
+  /// QUDA_BOOLEAN_TRUE : QUDA_BOOLEAN_FALSE;
   // inv_param.use_mobius_fused_kernel = QUDA_BOOLEAN_FALSE;
   //
   ///////===check this variable
@@ -1522,9 +1522,9 @@ inline void quda_inverter::setup_stagger_inv()
 }
 
 //////0, double to single, 1 single to half, 10 double to double, 11 single to
-///single, 12 half to half
+/// single, 12 half to half
 //////may still cost time even using the comparisons, TODO need to investigate
-///the issues
+/// the issues
 // inline void quda_inverter::setup_inv_param_prec_type(Int prec_type)
 //{
 //   TIMER("setup_inv_param_prec_type");
@@ -1586,8 +1586,8 @@ inline void quda_inverter::setup_stagger_inv()
 // }
 
 ////0, double to single, 1 single to half, 10 double to double, 11 single to
-///single, 12 half to half /may still cost time even using the comparisons, TODO
-///need to investigate the issues
+/// single, 12 half to half /may still cost time even using the comparisons,
+/// TODO need to investigate the issues
 inline void quda_inverter::setup_inv_param_prec(Int prec_type,
                                                 bool force_reload,
                                                 bool reload_link_default)

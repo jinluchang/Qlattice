@@ -686,7 +686,7 @@ Ty write_grid_point_to_src(Ty* res, const Ty* srcP,
       LInt isp = fd.index_l_from_g_coordinate(pos);
       phase = srcP[isp];
       ////printf("src pos %d %d %d %d, real %.3f imag %.3f \n", pos[0], pos[1],
-      ///pos[2], pos[3], phase.real(), phase.imag());
+      /// pos[2], pos[3], phase.real(), phase.imag());
       qacc_forNB(d0, 12, {
         Int d1 = d0;
         Long mi = d1 * NTt * Nxyz + isp;
@@ -1069,7 +1069,7 @@ void get_mix_color_src(qlat::FieldM<Ty, civ>& src, const Coordinate& sp,
     Qassert(fd.nt % offT == 0);
     Qassert(Long(color_phases.size()) == fd.nt / offT * civ);
     /////qlat::RngState rs = qlat::RngState(seed + type_src*10 +
-    ///qlat::get_id_node() * 5);
+    /// qlat::get_id_node() * 5);
     Coordinate tem = sp;
     for (Int ti = 0; ti < fd.nt / offT; ti++) {
       tem[3] = (sp[3] + ti * offT) % fd.nt;

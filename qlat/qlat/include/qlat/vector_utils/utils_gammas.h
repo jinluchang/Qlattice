@@ -352,7 +352,7 @@ inline void get_g_pointer(std::vector<ga_M>& gL, qlat::vector<Complexq*>& gP,
                           qlat::vector<Int*>& iP)
 {
   /////qlat::vector<Complexq* > gP; qlat::vector<Int* > iP;get_g_pointer(gL, gP,
-  ///iP);
+  /// iP);
   gP.resize(gL.size());
   iP.resize(gL.size());
   for (unsigned int i = 0; i < gL.size(); i++) {

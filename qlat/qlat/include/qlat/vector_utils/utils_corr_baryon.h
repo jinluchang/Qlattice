@@ -943,7 +943,7 @@ void baryon_vectorEV_kernel(Ty** p1, Ty** p2, Ty** p3, Ty* resP,
 
 ////default gpu use kernel, cpu use c++ eigen
 /////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of
-///diagram
+/// diagram
 template <typename Ty>
 void baryon_vectorEV(Ty** p1, Ty** p2, Ty** p3, Ty* resP, Int nmass, ga_M& A,
                      ga_M& B, qlat::vector<Ty>& GV, qlat::vector<Int>& mLV,

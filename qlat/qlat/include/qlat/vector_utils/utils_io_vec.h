@@ -479,7 +479,7 @@ inline void send_vec_kentucky(char* src, char* res, Int dsize, Int gN,
     /////for(Int io=0;io<node_ioL.size();io++)if(node_ioL[io]>=0)
     /////{
     /////
-    ///MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,get_comm());
+    /// MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,get_comm());
     /////  ////if(rank==io){memcpy(&res[node_ioL[io]*size_c],tmp,size_c);}
     /////}
     //
@@ -487,12 +487,12 @@ inline void send_vec_kentucky(char* src, char* res, Int dsize, Int gN,
     //{
     // if(read==true)
     //{MPI_Alltoallv(io.tmp,(int*) &io.currsend[0],(int*) &io.currspls[0],
-    //MPI_CHAR,
+    // MPI_CHAR,
     //                   res,(int*) &io.currrecv[0],(int*) &io.currrpls[0],
     //                   MPI_CHAR, get_comm());}
     // if(read==false)
     //{MPI_Alltoallv(   res,(int*) &io.currrecv[0],(int*) &io.currrpls[0],
-    //MPI_CHAR,
+    // MPI_CHAR,
     //                io.tmp,(int*) &io.currsend[0],(int*) &io.currspls[0],
     //                MPI_CHAR, get_comm());}
     //
@@ -1189,7 +1189,7 @@ inline Int check_Eigen_file_type(const char* filename, io_vec& io_use, Int n1,
 /////Read the data into the point resp which have memory allocated already
 /////check --> if false, abort if file is double,
 /////read --> flag for writing and reading, may be can only write single
-///currently
+/// currently
 template <typename Ty>
 void load_gwu_eigen(FILE* file, std::vector<Ty*> resp, io_vec& io_use, Int n0,
                     Int n1, bool check = true, bool read = true,
@@ -1283,7 +1283,7 @@ void load_gwu_eigen(FILE* file, std::vector<Ty*> resp, io_vec& io_use, Int n0,
     /////rotate_qlat_to_gwu(prop_E,&src_new.vec[0],geo);
     /////////From ky to milc
     /////for(Int
-    ///iv=0;iv<n_vec;iv++)ga.ga[4][0].multiply(*src_new.vec[iv],*src_new.vec[iv]);
+    /// iv=0;iv<n_vec;iv++)ga.ga[4][0].multiply(*src_new.vec[iv],*src_new.vec[iv]);
   } else {
     /////Load double precision
     //
@@ -2140,7 +2140,7 @@ inline void open_file_qlat_noisesT(
     in.nvec = in.N_noi * (bfac / in.bfac_write);
     //
     //////in.nx = io_use.nx;in.ny = io_use.ny;in.nz = io_use.nz;in.nt =
-    ///io_use.nt;
+    /// io_use.nt;
     if (in.nx == 0 or in.ny == 0 or in.nz == 0 or in.nt == 0) {
       abort_r("Set up input dim first to write!\n");
     }
@@ -2238,7 +2238,7 @@ void load_qlat_noisesT_core(FILE* file, std::vector<Ty*>& noises,
   // size_t off_file = in.off_file + n0*Vsize*bsize;
   size_t off_file = size_t(n0) * Vsize * bsize;
   /////qmessage(" ionum off %zu, n0 %zu, n1 %zu, Vsize %zu, bsize %zu \n",
-  ///off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
+  /// off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
   io_use.io_off(file, off_file, true);
   //
   Int io_gn = IO_GN;
@@ -2546,7 +2546,7 @@ void load_qlat_noisesT(const char* filename, std::vector<Ty*>& noises,
   if (read == false) file = io_use.io_read(in.filename.c_str(), "wb");
   // size_t off_file = in.off_file + n0*Vsize*bsize;
   /////qmessage(" ionum off %zu, n0 %zu, n1 %zu, Vsize %zu, bsize %zu \n",
-  ///off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
+  /// off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
   //
   io_use.io_off(file, in.off_file, true);  ////shift file for the head
   load_qlat_noisesT_core(file, noises, bfac, QMCPU, geo_copy, io_use, in, n0,
@@ -3092,7 +3092,7 @@ inline FILE* open_eigensystem_file(const char* filename, Int nini, Int nvec,
                    size_t(bfac * 2);
     size_t off_file = size_t(nini) * Vsize * bsize;
     ////qmessage("off each %ld, nini %ld %ld %ld...\n", Long(off_file),
-    ///Long(nini), Long(Vsize), Long(bsize));
+    /// Long(nini), Long(Vsize), Long(bsize));
     if (in.file_type == 2 or in.file_type == 3) {
       off_file += in.off_file;
     }
@@ -3118,7 +3118,7 @@ void load_eigensystem_vecs(FILE* file,
     //
     bool check = true;
     ////load_gwu_eigen(file, noises, io_use, n0, n1, check, in.read,
-    ///in.single_file );
+    /// in.single_file );
     if (in.read == true) {
       if (noises.size() < (LInt)n_vec) {
         noises.resize(0);
@@ -3410,8 +3410,8 @@ inline void load_eo_evecs(const char* filename, vector_cs<Ty>& even,
     in.nz = io_use.nz;
     in.nt = io_use.nt;
     ////FILE* file_read  = open_eigensystem_file(filename, nini, ntotal, true ,
-    ///io_use , in_read_eigen , 2); /close_eigensystem_file(file_read , io_use ,
-    ///in_read_eigen );
+    /// io_use , in_read_eigen , 2); /close_eigensystem_file(file_read , io_use
+    /// , in_read_eigen );
     //
     Geometry geo_copy = load_qlat_noisesT_file_ini<Ty>(
         filename, nhalf, DIM, in, geo, read, single_file, VECS_TYPE, INFO_LIST,

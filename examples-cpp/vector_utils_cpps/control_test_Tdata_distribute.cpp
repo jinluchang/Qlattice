@@ -293,7 +293,7 @@ int main(int argc, char* argv[])
               int bi = fd.get_mi_curr() * b0 + ni;
               //
               /////databuf[off] = ((p[3]*900+p[2])*900+p[1])*900+p[0] +
-              ///std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
+              /// std::cos(ci) + qlat::ComplexD(0.0,std::cos(bi));
               qlat::ComplexD tem =
                   sendbuf[off] -
                   (((p[3] * 900 + p[2]) * 900 + p[1]) * 900 + p[0] +
@@ -317,8 +317,8 @@ int main(int argc, char* argv[])
     // qlat::ComplexD* sendT;
     // qlat::ComplexD* sbufT;
     ////gpuErrchk( qlat_GPU_Malloc(&sendT    , b0*civ*nvol*fd.Nt *
-    ///sizeof(qlat::ComplexD))); /gpuErrchk( qlat_GPU_Malloc(&sbufT    ,
-    ///b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
+    /// sizeof(qlat::ComplexD))); /gpuErrchk( qlat_GPU_Malloc(&sbufT    ,
+    /// b0*civ*nvol*fd.Nt * sizeof(qlat::ComplexD)));
     //
     // gpuMalloc(sendT, b0*civ*nvol*fd.Nt , qlat::ComplexD);
     // gpuMalloc(sbufT, b0*civ*nvol*fd.Nt , qlat::ComplexD);
@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
     // TIMER("Single Vec redistribute GPU");
     // vec_large.reorder((double*) &sendT[0],(double*) &sbufT[0],b0,c0 ,  0);
     ////vec_large.reorder((double*) &sendbuf[0],(double*) &recvbuf[0],b0,c0 ,
-    ///0);
+    /// 0);
     //}
     //
     // gpuFree(sendT);

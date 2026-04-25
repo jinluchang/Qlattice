@@ -761,7 +761,7 @@ void matrix_prod_gpu(Ty** a, Ty** b, Ty** c, const Long m, const Long n,
 //
 #else
   ////matrix_prod_gpu(bool Conj=true, bool dummy = true, bool trans=false, Int
-  ///modeGPU = 2)
+  /// modeGPU = 2)
   matrix_prod_cpu(a, b, c, m, n, w, L, Conj, trans);
 #endif
 }
