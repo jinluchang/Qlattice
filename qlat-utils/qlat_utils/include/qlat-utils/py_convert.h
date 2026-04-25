@@ -1,10 +1,9 @@
 #pragma once
 
-#include <qlat-utils/core.h>
-#include <qlat-utils/utils.h>
-#include <qlat-utils/utils-vec.h>
-
 #include <Python.h>
+#include <qlat-utils/core.h>
+#include <qlat-utils/utils-vec.h>
+#include <qlat-utils/utils.h>
 
 namespace qlat
 {  //
@@ -227,7 +226,8 @@ T py_convert_data(PyObject* in, const std::string& attr)
 }
 
 template <class T>
-T py_convert_data(PyObject* in, const std::string& attr, const std::string& attr1)
+T py_convert_data(PyObject* in, const std::string& attr,
+                  const std::string& attr1)
 // interface
 {
   PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
@@ -277,7 +277,8 @@ T& py_convert_type(PyObject* in, const std::string& attr)
 }
 
 template <class T>
-T& py_convert_type(PyObject* in, const std::string& attr, const std::string& attr1)
+T& py_convert_type(PyObject* in, const std::string& attr,
+                   const std::string& attr1)
 // interface
 // py_convert_type<Geometry>(in, "psel", "geo")
 {

@@ -11,9 +11,11 @@ static void add_qfile(const QFile& qfile);
 
 static void remove_qfile(const QFile& qfile);
 
-static bool operator==(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
+static bool operator==(const QarSegmentInfo& qsinfo1,
+                       const QarSegmentInfo& qsinfo2);
 
-static bool operator!=(const QarSegmentInfo& qsinfo1, const QarSegmentInfo& qsinfo2);
+static bool operator!=(const QarSegmentInfo& qsinfo1,
+                       const QarSegmentInfo& qsinfo2);
 
 static bool register_file(const QarFileVol& qar, const std::string& fn,
                           const QarSegmentInfo& qsinfo);
@@ -26,7 +28,8 @@ static bool read_qar_segment_info(QarFileVolObj& qar, QarSegmentInfo& qsinfo);
 
 static std::string read_fn(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
 
-static std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo);
+static std::string read_info(const QarFileVol& qar,
+                             const QarSegmentInfo& qsinfo);
 
 static QFile get_qfile_of_data(const QarFileVol& qar,
                                const QarSegmentInfo& qsinfo);
@@ -442,7 +445,8 @@ const std::string& QFileObjCFile::content()
 {
   TIMER_VERBOSE("QFileObjCFile::content()");
   Qassert(not null());
-  qerr(fname + ssprintf(": Cannot obtain content. Not available for this type."));
+  qerr(fname +
+       ssprintf(": Cannot obtain content. Not available for this type."));
   static std::string ret = "";
   return ret;
 }
@@ -650,7 +654,8 @@ void QFileObj::init(const QFileType ftype_, const std::string& path_,
                     path_.c_str(), show(mode_).c_str()));
   }
   Qassert(fp == nullptr);
-  if (ftype_ == QFileType::CFile and mode_ == QFileMode::Read and (not is_regular_file(path_))) {
+  if (ftype_ == QFileType::CFile and mode_ == QFileMode::Read and
+      (not is_regular_file(path_))) {
     qwarn(ssprintf("QFile: '%s' open '%s' with '%s'. Not regular file.",
                    show(ftype_).c_str(), path_.c_str(), show(mode_).c_str()));
   }
@@ -720,8 +725,8 @@ void QFileObj::init(const std::shared_ptr<QFileObj>& qfile,
 // NOTE: q_offset_start and q_offset_end are relative offset for qfile not the
 // absolute offset for qfile.fp .
 // q_offset_end == -1 means no additional limit
-// NOTE: Initial position set to be 0 regardless of `QFileMode`. Does not perform fseek to appropriate
-// position.
+// NOTE: Initial position set to be 0 regardless of `QFileMode`. Does not
+// perform fseek to appropriate position.
 {
   close();
   Qassert(null());
@@ -1028,7 +1033,8 @@ void QFile::init(const std::string& path, const QFileMode mode)
   init(QFileType::CFile, path, mode);
 }
 
-void QFile::init(const QFileType ftype, const std::string& path, const QFileMode mode)
+void QFile::init(const QFileType ftype, const std::string& path,
+                 const QFileMode mode)
 {
   close();
   TIMER("QFile::init(ftype,path,mode)");
@@ -1041,7 +1047,8 @@ void QFile::init(const QFileType ftype, const std::string& path, const QFileMode
   }
 }
 
-void QFile::init(const QFileType ftype, const std::string& path, const QFileMode mode, std::string& content)
+void QFile::init(const QFileType ftype, const std::string& path,
+                 const QFileMode mode, std::string& content)
 {
   close();
   TIMER("QFile::init(ftype,path,mode,content)");
@@ -1452,10 +1459,7 @@ Long qread_data(const Vector<Char>& v, QFile& qfile)
   return qfile.read_data(v);
 }
 
-std::string qcat(QFile& qfile)
-{
-  return qfile.cat();
-}
+std::string qcat(QFile& qfile) { return qfile.cat(); }
 
 Int qappend(QFile& qfile, const std::string& content)
 {
@@ -3764,7 +3768,8 @@ Int qappend_info(const std::string& path, const std::string& content)
   }
 }
 
-Int qappend_info(const std::string& path, const std::vector<std::string>& content)
+Int qappend_info(const std::string& path,
+                 const std::vector<std::string>& content)
 {
   TIMER("qappend_info(fn,content)");
   if (0 == get_id_node()) {

@@ -53,42 +53,42 @@ qacc void set_unit(WilsonVector& x, const ComplexD& coef = 1.0)
 
 qacc SpinMatrix operator*(const SpinMatrix& m1, const SpinMatrix& m2)
 {
-  return operator*<4, ComplexD>(m1, m2);
+  return operator* <4, ComplexD>(m1, m2);
 }
 
 qacc SpinMatrix operator*(const ComplexD& a, const SpinMatrix& m)
 {
-  return operator*<4, ComplexD>(a, m);
+  return operator* <4, ComplexD>(a, m);
 }
 
 qacc SpinMatrix operator*(const SpinMatrix& m, const ComplexD& a)
 {
-  return operator*<4, ComplexD>(m, a);
+  return operator* <4, ComplexD>(m, a);
 }
 
 qacc WilsonMatrix operator*(const WilsonMatrix& m1, const WilsonMatrix& m2)
 {
-  return operator*<12, ComplexD>(m1, m2);
+  return operator* <12, ComplexD>(m1, m2);
 }
 
 qacc WilsonMatrix operator*(const ComplexD& a, const WilsonMatrix& m)
 {
-  return operator*<12, ComplexD>(a, m);
+  return operator* <12, ComplexD>(a, m);
 }
 
 qacc WilsonMatrix operator*(const WilsonMatrix& m, const ComplexD& a)
 {
-  return operator*<12, ComplexD>(m, a);
+  return operator* <12, ComplexD>(m, a);
 }
 
 qacc WilsonMatrix operator*(const SpinMatrix& m1, const WilsonMatrix& m2)
 {
-  return operator*<Real>(m1, m2);
+  return operator* <Real>(m1, m2);
 }
 
 qacc WilsonMatrix operator*(const WilsonMatrix& m1, const SpinMatrix& m2)
 {
-  return operator*<Real>(m1, m2);
+  return operator* <Real>(m1, m2);
 }
 
 qacc ColorMatrix matrix_adjoint(const ColorMatrix& m)

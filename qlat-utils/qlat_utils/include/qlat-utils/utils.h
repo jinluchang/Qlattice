@@ -342,8 +342,7 @@ qacc void assign(Vector<Long> xx, const Vector<Long>& yy)
 template <class T1, class T2,
           class E1 = typename IsGetDataType<T1>::ElementaryType,
           class E2 = typename IsGetDataType<T2>::ElementaryType,
-          QLAT_ENABLE_IF(is_get_data_type<T1>() and
-                         is_get_data_type<T2>())>
+          QLAT_ENABLE_IF(is_get_data_type<T1>() and is_get_data_type<T2>())>
 qacc void assign(T1& xx, const T2& yy)
 {
   // static_assert(is_same<E1, E2>(), "assign type error");
@@ -358,10 +357,10 @@ qacc void assign(T1& xx, const T2& yy)
   assign(vx, vy);
 }
 
-template <
-    class M1, class T2, class E1 = typename IsGetDataType<M1>::ElementaryType,
-    class E2 = typename IsGetDataType<T2>::ElementaryType,
-    QLAT_ENABLE_IF((is_data_value_type<M1>() and is_get_data_type<T2>()))>
+template <class M1, class T2,
+          class E1 = typename IsGetDataType<M1>::ElementaryType,
+          class E2 = typename IsGetDataType<T2>::ElementaryType,
+          QLAT_ENABLE_IF((is_data_value_type<M1>() and is_get_data_type<T2>()))>
 qacc void assign(Vector<M1> xx, const T2& yy)
 {
   return assign<Vector<M1>, T2>(xx, yy);
@@ -401,8 +400,8 @@ qacc RealD qnorm(const M& x)
   return x * x;
 }
 
-template <class T, QLAT_ENABLE_IF(is_get_data_type<T>() and
-                                  not is_basic_data_type<T>())>
+template <class T,
+          QLAT_ENABLE_IF(is_get_data_type<T>() and not is_basic_data_type<T>())>
 qacc RealD qnorm(const T& xx)
 {
   using M = typename IsGetDataType<T>::DataType;

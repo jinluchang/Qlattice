@@ -219,7 +219,8 @@ void lat_data_save(const LatDataT<T>& ld, QFile& qfile)
                crc32_par(is_little_endian() ? ld.res.data() : res_copy.data(),
                          ld.res.size() * sizeof(T)));
   const std::string end_header = "END_HEADER\n";
-  qfwrite(get_lat_data_header<T>().data(), get_lat_data_header<T>().size(), 1, qfile);
+  qfwrite(get_lat_data_header<T>().data(), get_lat_data_header<T>().size(), 1,
+          qfile);
   qfwrite(data_size.data(), data_size.size(), 1, qfile);
   qfwrite(info_str.data(), info_str.size(), 1, qfile);
   qfwrite(checksum_str.data(), checksum_str.size(), 1, qfile);
@@ -458,10 +459,7 @@ LatData operator*(const LatData& ld, const RealD factor)
   return ret;
 }
 
-LatData operator*(const RealD factor, const LatData& ld)
-{
-  return ld * factor;
-}
+LatData operator*(const RealD factor, const LatData& ld) { return ld * factor; }
 
 LatData operator*(const LatData& ld, const ComplexD& factor)
 {

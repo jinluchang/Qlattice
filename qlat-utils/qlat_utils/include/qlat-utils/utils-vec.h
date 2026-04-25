@@ -1,7 +1,7 @@
 #pragma once
 
-#include <qlat-utils/utils-extra.h>
 #include <qlat-utils/rng-state.h>
+#include <qlat-utils/utils-extra.h>
 
 namespace qlat
 {  //
@@ -374,7 +374,7 @@ void vector_append(std::vector<M>& v, const std::vector<M>& v1)
 }
 
 template <class M>
-std::vector<Long> vector_map_size(const std::vector<std::vector<M> >& datatable)
+std::vector<Long> vector_map_size(const std::vector<std::vector<M>>& datatable)
 {
   std::vector<Long> row_sizes(datatable.size());
   for (size_t i = 0; i < datatable.size(); ++i) {
@@ -385,7 +385,7 @@ std::vector<Long> vector_map_size(const std::vector<std::vector<M> >& datatable)
 }
 
 template <class M>
-std::vector<M> vector_concat(const std::vector<std::vector<M> >& datatable)
+std::vector<M> vector_concat(const std::vector<std::vector<M>>& datatable)
 {
   size_t total_size = 0;
   for (size_t i = 0; i < datatable.size(); ++i) {

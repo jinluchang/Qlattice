@@ -1,9 +1,10 @@
 #pragma once
 
+#include <qlat-utils/show.h>
+
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
-#include <qlat-utils/show.h>
 
 namespace qlat
 {  //
@@ -26,10 +27,10 @@ void set_type(RngState& rs, const uint64_t type);
 uint64_t rand_gen(RngState& rs);
 
 RealD u_rand_gen(RngState& rs, const RealD upper = 1.0,
-                  const RealD lower = 0.0);
+                 const RealD lower = 0.0);
 
 RealD g_rand_gen(RngState& rs, const RealD center = 0.0,
-                  const RealD sigma = 1.0);
+                 const RealD sigma = 1.0);
 
 void compute_hash_with_input(uint32_t hash[8], const RngState& rs,
                              const std::string& input);

@@ -23,9 +23,9 @@ inline std::string get_eigen_type() { return "grid"; }
 
 namespace qlat
 {
-
+//
 inline std::string get_eigen_type() { return "system"; }
-
+//
 }  // namespace qlat
 
 #endif

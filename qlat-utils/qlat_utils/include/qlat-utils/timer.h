@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include <qlat-utils/qassert.h>
 #include <qlat-utils/env.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/rng-state.h>
 #include <qlat-utils/show.h>
 #include <sys/time.h>
@@ -370,7 +370,7 @@ struct API Timer {
   // qlat parameter
   {
     static Long max_call_times =
-      get_env_long_default("q_timer_max_always_show", 2);
+        get_env_long_default("q_timer_max_always_show", 2);
     return max_call_times;
   }
   //

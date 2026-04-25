@@ -18,10 +18,10 @@
 
 #pragma once
 
-#include <qlat-utils/qassert.h>
 #include <qlat-utils/crc32.h>
 #include <qlat-utils/env.h>
 #include <qlat-utils/handle.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/rng-state.h>
 #include <qlat-utils/show.h>
 #include <qlat-utils/timer.h>

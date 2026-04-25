@@ -27,7 +27,8 @@ const std::string lat_data_int_header = "#!/usr/bin/env lat-io-int-glimpse\n";
 const std::string lat_data_long_header = "#!/usr/bin/env lat-io-long-glimpse\n";
 // Recommended file extension ".latl"
 
-const std::string lat_data_real_f_header = "#!/usr/bin/env lat-io-real-f-glimpse\n";
+const std::string lat_data_real_f_header =
+    "#!/usr/bin/env lat-io-real-f-glimpse\n";
 // Recommended file extension ".latf"
 
 struct API LatDim {

@@ -59,17 +59,21 @@ API inline MemType check_mem_type(const void* ptr)
   qacc_PointerAttributes attr;
   qacc_ErrCheck(qacc_PointerGetAttributes(&attr, ptr));
   if (attr.type == qacc_MemoryTypeHost) {
-    mem_type = MemType::Cpu;find = true;
+    mem_type = MemType::Cpu;
+    find = true;
   }
   if (attr.type == qacc_MemoryTypeDevice) {
-    mem_type = MemType::Acc;find = true;
+    mem_type = MemType::Acc;
+    find = true;
   }
   if (attr.type == qacc_MemoryTypeManaged) {
-    mem_type = MemType::Uvm;find = true;
+    mem_type = MemType::Uvm;
+    find = true;
   }
   if (attr.type == qacc_MemoryTypeUnregistered) {
     // assume all Acc memeory is allocate by Acc and pt is not out of the range
-    mem_type = MemType::Cpu;find = true;
+    mem_type = MemType::Cpu;
+    find = true;
   }
   assert(find);
 #else
@@ -79,8 +83,9 @@ API inline MemType check_mem_type(const void* ptr)
   return mem_type;
 }
 
-API inline void display_mem_type(const void* p){
-  displayln_info(ssprintf("mem type %s", show(check_mem_type( p )).c_str()));
+API inline void display_mem_type(const void* p)
+{
+  displayln_info(ssprintf("mem type %s", show(check_mem_type(p)).c_str()));
 }
 
 #define qfor(iter, num, ...)                                   \
@@ -137,8 +142,8 @@ __global__ void qlambda_apply(Long num, Lambda lam)
   }
 }
 
-#define qacc_barrier(dummy)   \
-  {                           \
+#define qacc_barrier(dummy)                  \
+  {                                          \
     qacc_ErrCheck(qacc_DeviceSynchronize()); \
   }
 

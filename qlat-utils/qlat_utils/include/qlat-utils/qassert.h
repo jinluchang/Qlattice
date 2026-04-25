@@ -66,23 +66,23 @@
     qlat::Timer::display_stack_always();                                      \
   }
 
-#define qqwarn(str)                      \
-  {                                      \
-    PRINT_ERR_MSG("qwarn", str);         \
+#define qqwarn(str)              \
+  {                              \
+    PRINT_ERR_MSG("qwarn", str); \
   }
 
-#define qqerr(str)                       \
-  {                                      \
-    PRINT_ERR_MSG("qerr", str);          \
-    throw std::string(str);              \
+#define qqerr(str)              \
+  {                             \
+    PRINT_ERR_MSG("qerr", str); \
+    throw std::string(str);     \
   }
 
-#define qqassert(x)                        \
-  {                                        \
-    if (not(x)) {                          \
-      PRINT_ERR_MSG("qassert", #x);        \
-      throw std::string(#x);               \
-    }                                      \
+#define qqassert(x)                 \
+  {                                 \
+    if (not(x)) {                   \
+      PRINT_ERR_MSG("qassert", #x); \
+      throw std::string(#x);        \
+    }                               \
   }
 
 #define qqassert_info(x, ...)            \
@@ -96,7 +96,8 @@
 
 #endif
 
-// Use this version if you want to keep the assert even if SKIP_ASSERT is defined
+// Use this version if you want to keep the assert even if SKIP_ASSERT is
+// defined
 #define Qwarn(str) qqwarn(str)
 #define Qerr(str) qqerr(str)
 #define Qassert(x) qqassert(x)

@@ -85,8 +85,7 @@ void TimerInfo::show_avg(const std::string& info, const Int fname_len) const
             .c_str(),
         accumulated_time / total_time * 100, call_times,
         accumulated_time / call_times, accumulated_time,
-        (RealD)accumulated_flops / (RealD)call_times,
-        (RealD)accumulated_flops,
+        (RealD)accumulated_flops / (RealD)call_times, (RealD)accumulated_flops,
         accumulated_flops / accumulated_time / 1.0E9));
   }
 }
@@ -211,8 +210,8 @@ void Timer::start(bool verbose)
   } else {
     TimerInfo& info = get_timer_database()[info_index];
     info.show_avg_always("debug", max_function_name_length_shown());
-    displayln_c_stdout(ssprintf("%s::%s ERROR: is_running=%d", cname, info.fname.c_str(),
-                       is_running));
+    displayln_c_stdout(ssprintf("%s::%s ERROR: is_running=%d", cname,
+                                info.fname.c_str(), is_running));
     Timer::display_stack();
     qassert(false);
   }

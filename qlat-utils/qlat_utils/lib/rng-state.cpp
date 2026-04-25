@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <qlat-utils/qassert.h>
 #include <qlat-utils/config.h>
+#include <qlat-utils/qassert.h>
 #include <qlat-utils/rng-state.h>
 #include <qlat-utils/sha256.h>
 #include <qlat-utils/show.h>
@@ -171,7 +171,7 @@ void reset(RngState& rs, const std::string& seed)
 void reset(RngState& rs, const Long seed) { reset(rs, show(seed)); }
 
 void split_rng_state(RngState& rs, const RngState& rs0,
-                            const std::string& sindex)
+                     const std::string& sindex)
 // produce a new rng ``rs'' uniquely identified by ``rs0'' and ``sindex''
 // will not affect old rng ``rs0''
 // the function should behave correctly even if ``rs'' is actually ``rs0''
@@ -200,14 +200,13 @@ void split_rng_state(RngState& rs, const RngState& rs0,
   rs.gaussianAvail = false;
 }
 
-void split_rng_state(RngState& rs, const RngState& rs0,
-                            const Long sindex)
+void split_rng_state(RngState& rs, const RngState& rs0, const Long sindex)
 {
   split_rng_state(rs, rs0, show(sindex));
 }
 
 void compute_hash_with_input(uint32_t hash[8], const RngState& rs,
-                                    const std::string& input)
+                             const std::string& input)
 {
   sha256::processInput(hash, rs.hash, rs.numBytes,
                        (const uint8_t*)input.c_str(), input.length());

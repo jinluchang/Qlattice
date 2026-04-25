@@ -1,7 +1,7 @@
 #include <qlat-utils/mat.h>
 #include <qlat-utils/matrix.h>
-#include <qlat-utils/vector.h>
 #include <qlat-utils/rng-state.h>
+#include <qlat-utils/vector.h>
 
 namespace qlat
 {  //
@@ -49,7 +49,7 @@ void benchmark_matrix_functions(const Long count)
     for (Long i = 0; i < count; ++i) {
       const SpinMatrix& sm1 = sm[(i * 2) % n_mat];
       const WilsonMatrix& wm2 = wm[(i * 2 + 2) % n_mat];
-      WilsonMatrix& wm3 = wm[(i *2 + 1) % n_mat];
+      WilsonMatrix& wm3 = wm[(i * 2 + 1) % n_mat];
       wm3 = sm1 * wm2;
     }
     timer.flops += count * 4320;

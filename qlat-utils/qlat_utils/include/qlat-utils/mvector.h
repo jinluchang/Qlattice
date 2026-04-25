@@ -70,7 +70,8 @@ qacc MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const T& y)
 }
 
 template <Int DIMN, class T>
-qacc ComplexD dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
+qacc ComplexD dot_product(const MvectorT<DIMN, T>& x,
+                          const MvectorT<DIMN, T>& y)
 {
   ComplexD ret = 0.0;
   for (Int i = 0; i < DIMN; ++i) {

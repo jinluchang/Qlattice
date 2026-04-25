@@ -2,12 +2,12 @@
 
 #pragma once
 
+#include <qlat-utils/timer.h>
+#include <qlat-utils/vector.h>
+
 #include <map>
 #include <set>
 #include <utility>
-
-#include <qlat-utils/timer.h>
-#include <qlat-utils/vector.h>
 
 namespace qlat
 {  //
@@ -17,7 +17,7 @@ struct API CacheBase {
   Long limit;
   Long buffer_size;  // number of empty slots created by gc()
   //
-  virtual ~CacheBase(){};
+  virtual ~CacheBase() {};
   //
   virtual Long size() = 0;
   virtual void clear() = 0;
@@ -73,7 +73,7 @@ inline std::vector<std::string> get_all_caches_info()
 
 template <class K, class M>
 struct API Cache : CacheBase {
-  std::map<K, std::pair<Long, M> > m;
+  std::map<K, std::pair<Long, M>> m;
   Long idx;
   //
   Cache(const std::string& name_ = "Cache", const Long limit_ = 16,
@@ -105,7 +105,7 @@ struct API Cache : CacheBase {
   //
   M& operator[](const K& key)
   {
-    typename std::map<K, std::pair<Long, M> >::iterator it = m.find(key);
+    typename std::map<K, std::pair<Long, M>>::iterator it = m.find(key);
     if (it != m.end()) {
       if ((it->second).first != idx - 1) {
         (it->second).first = idx;
@@ -128,7 +128,7 @@ struct API Cache : CacheBase {
       TIMER_VERBOSE("Cache::gc");
       displayln_info(0, show_info() + " before gc");
       std::vector<Long> idxes;
-      for (typename std::map<K, std::pair<Long, M> >::iterator it = m.begin();
+      for (typename std::map<K, std::pair<Long, M>>::iterator it = m.begin();
            it != m.end(); ++it) {
         const Long i = (it->second).first;
         idxes.push_back(i);
@@ -138,7 +138,7 @@ struct API Cache : CacheBase {
       qassert((Long)m.size() > buffer_size);
       const Long threshhold = idxes[buffer_size];
       std::vector<K> to_free;
-      for (typename std::map<K, std::pair<Long, M> >::iterator it = m.begin();
+      for (typename std::map<K, std::pair<Long, M>>::iterator it = m.begin();
            it != m.end(); ++it) {
         const K& k = it->first;
         const Long i = (it->second).first;

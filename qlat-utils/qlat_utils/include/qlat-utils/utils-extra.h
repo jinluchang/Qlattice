@@ -2,9 +2,9 @@
 
 #include <qlat-utils/core.h>
 
-#include <vector>
 #include <map>
 #include <set>
+#include <vector>
 
 namespace qlat
 {  //
@@ -137,7 +137,7 @@ API inline Int adaptive_simpson_max_level()
 
 template <typename F>
 RealD adaptive_simpson_level(const F& f, const RealD a, const RealD b,
-                              const RealD eps, const Int level)
+                             const RealD eps, const Int level)
 {
   const RealD w = simpson(f, a, b);
   const RealD l = simpson(f, a, 0.5 * (a + b));
@@ -186,7 +186,7 @@ struct AdaptiveSimpsonFromInf {
 
 template <typename F>
 RealD adaptive_simpson(const F& f, const RealD a, const RealD b,
-                        const RealD eps)
+                       const RealD eps)
 {
   if (b < a) {
     return -adaptive_simpson(f, b, a, eps);

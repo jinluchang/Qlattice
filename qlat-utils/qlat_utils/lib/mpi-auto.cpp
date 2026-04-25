@@ -1,4 +1,5 @@
 #include <qlat-utils/mpi-auto.h>
+
 #include "qlat-utils/rng-state.h"
 
 namespace qlat

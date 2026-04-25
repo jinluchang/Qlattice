@@ -323,8 +323,7 @@ Long qfile_remaining_size(QFile& qfile);
 
 Long qfread(void* ptr, const Long size, const Long nmemb, QFile& qfile);
 
-Long qfwrite(const void* ptr, const Long size, const Long nmemb,
-             QFile& qfile);
+Long qfwrite(const void* ptr, const Long size, const Long nmemb, QFile& qfile);
 
 Long qvfprintf(QFile& qfile, const char* fmt, va_list args);
 

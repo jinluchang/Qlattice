@@ -279,8 +279,8 @@ qacc MatrixT<DIMN, T> matrix_conjugate(const MatrixT<DIMN, T>& x)
 }
 
 template <Int DIMN, class T>
-qacc void matrix_ludcmp(MatrixT<DIMN, T>& a,
-                        array<Int, (uint64_t)DIMN>& indx, T& d)
+qacc void matrix_ludcmp(MatrixT<DIMN, T>& a, array<Int, (uint64_t)DIMN>& indx,
+                        T& d)
 // https://www.astro.umd.edu/~ricotti/NEWWEB/teaching/ASTR415/InClassExamples/NR3/legacy/nr2/C_211/progs.htm
 // https://www.astro.umd.edu/~ricotti/NEWWEB/teaching/ASTR415/InClassExamples/NR3/legacy/nr2/C_211/recipes/ludcmp.c
 //
@@ -574,7 +574,7 @@ struct API SpinMatrixConstantsT {
   }
 };
 
-inline const box<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
+inline const box<SpinMatrixConstantsT<>>& get_spin_matrix_constants()
 {
   return SpinMatrixConstantsT<>::get_instance_box();
 }
@@ -719,7 +719,8 @@ qacc ComplexD matrix_trace(const ColorMatrixT<T>& cm, const WilsonMatrixT<T>& m)
       }
       const Int c3_c1 = c3 * (4 * NUM_COLOR) + c1;
       for (Int s1 = 0; s1 < 4; ++s1) {
-        ret += cm_c1_c3 * m.p[c3_c1 + s1 * (NUM_COLOR * 4 * NUM_COLOR + NUM_COLOR)];
+        ret += cm_c1_c3 *
+               m.p[c3_c1 + s1 * (NUM_COLOR * 4 * NUM_COLOR + NUM_COLOR)];
       }
     }
   }
@@ -804,11 +805,12 @@ qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
 }
 
 template <class T>
-qacc ComplexT<T> epsilon_contraction(const Int v_s1, const Int b_s1, const Int v_s2,
-                           const Int b_s2, const Int v_s3, const Int b_s3,
-                           const WilsonMatrixT<T>& wm1,
-                           const WilsonMatrixT<T>& wm2,
-                           const WilsonMatrixT<T>& wm3)
+qacc ComplexT<T> epsilon_contraction(const Int v_s1, const Int b_s1,
+                                     const Int v_s2, const Int b_s2,
+                                     const Int v_s3, const Int b_s3,
+                                     const WilsonMatrixT<T>& wm1,
+                                     const WilsonMatrixT<T>& wm2,
+                                     const WilsonMatrixT<T>& wm3)
 {
   array<array<Int, 4>, 6> eps_table;
   for (Int i = 0; i < 3; ++i) {

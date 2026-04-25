@@ -175,17 +175,21 @@ inline MemType get_eff_mem_type(const MemType mem_type)
 // assume always have Acc memeory to compare even on CPU
 inline MemType get_comm_mem_type(const MemType mem_type)
 {
-  if(!get_mem_type_comm_use_acc()){return MemType::Cpu;}
-  else{
+  if (!get_mem_type_comm_use_acc()) {
+    return MemType::Cpu;
+  } else {
     MemType b = get_eff_mem_type(mem_type);
-    if(b == MemType::Cpu){return MemType::Cpu;}
-    else{return MemType::Acc;}
+    if (b == MemType::Cpu) {
+      return MemType::Cpu;
+    } else {
+      return MemType::Acc;
+    }
   }
 }
 
 inline bool is_same_comm_mem_type(const MemType t1, const MemType t2)
 {
-  if(get_comm_mem_type(t1) == get_comm_mem_type(t2)){
+  if (get_comm_mem_type(t1) == get_comm_mem_type(t2)) {
     return true;
   }
   return false;
@@ -428,10 +432,7 @@ struct API vector {
       qassert(mem_type == mem_type_);
     }
   }
-  MemType get_mem_type() const
-  {
-    return mem_type;
-  }
+  MemType get_mem_type() const { return mem_type; }
   //
   void set_view(const Vector<M>& vec) { set_view(vec, mem_type); }
   void set_view(const Vector<M>& vec, const MemType mem_type_)
@@ -502,7 +503,9 @@ struct API vector {
   void resize_zero(const Long size, const MemType mem_type_)
   {
     resize(0);
-    if(size == 0){return ;}
+    if (size == 0) {
+      return;
+    }
     resize(size, mem_type_);
     set_zero(*this);
   }

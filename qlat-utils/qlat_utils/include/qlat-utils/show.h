@@ -459,19 +459,23 @@ inline std::string info_get_prop(const std::vector<std::string>& lines,
   }
 }
 
-inline bool starts_with(const std::string& str, const std::string& prefix) {
+inline bool starts_with(const std::string& str, const std::string& prefix)
+{
   return str.size() >= prefix.size() &&
-    str.compare(0, prefix.size(), prefix) == 0;
+         str.compare(0, prefix.size(), prefix) == 0;
 }
 
-inline bool ends_with(const std::string& str, const std::string& suffix) {
+inline bool ends_with(const std::string& str, const std::string& suffix)
+{
   if (str.size() < suffix.size()) {
     return false;
   }
   return (str.substr(str.size() - suffix.size()) == suffix);
 }
 
-inline std::string remove_prefix(const std::string& str, const std::string& prefix) {
+inline std::string remove_prefix(const std::string& str,
+                                 const std::string& prefix)
+{
   if (str.size() >= prefix.size() &&
       str.compare(0, prefix.size(), prefix) == 0) {
     return str.substr(prefix.size());
@@ -479,7 +483,9 @@ inline std::string remove_prefix(const std::string& str, const std::string& pref
   return str;
 }
 
-inline std::string remove_suffix(const std::string& str, const std::string& suffix) {
+inline std::string remove_suffix(const std::string& str,
+                                 const std::string& suffix)
+{
   if (str.size() >= suffix.size() &&
       str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0) {
     return str.substr(0, str.size() - suffix.size());

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <qlat-utils/config.h>
 #include <qlat-utils/complex.h>
+#include <qlat-utils/config.h>
 
 // -------------------------------------------------------------------------------------
 

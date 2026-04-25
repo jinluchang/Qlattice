@@ -1,13 +1,14 @@
 #pragma once
 
+#include <qlat-utils/cache.h>
 #include <qlat-utils/env.h>
+#include <qlat-utils/timer.h>
 #include <qlat-utils/utils-vec.h>
 #include <qlat-utils/utils.h>
-#include <qlat-utils/timer.h>
-#include <qlat-utils/cache.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -72,7 +73,7 @@ bool does_file_exist_cache(const std::string& fn);
 
 // --------------------------
 
-Int qtruncate(const std::string& path, const Long offset=0);
+Int qtruncate(const std::string& path, const Long offset = 0);
 
 inline Int ssleep(const RealD seconds)
 {

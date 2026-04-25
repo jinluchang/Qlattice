@@ -14,11 +14,16 @@
 
 #if defined QLAT_NO_ALIGNED_ALLOC
 #define QLAT_ALIGNED_BYTES 1
-constexpr Int qlat_aligned_bytes(Int size) { (void)size; return 1; }
+constexpr Int qlat_aligned_bytes(Int size)
+{
+  (void)size;
+  return 1;
+}
 #define QLAT_ALIGN(SIZE) __attribute__((aligned(1)))
 // #define QLAT_ALIGN(SIZE) alignas(1)
 #else
-#define QLAT_ALIGNED_BYTES 16 // should divide all matrix sizes (which can convert with GPT).
+#define QLAT_ALIGNED_BYTES \
+  16  // should divide all matrix sizes (which can convert with GPT).
 constexpr int qlat_aligned_bytes(int size)
 {
   int ret = 0;
@@ -73,25 +78,25 @@ qacc constexpr bool is_real()
 }
 
 template <class T, QLAT_ENABLE_IF(is_real<T>())>
-qacc bool qisnan(const T &x)
+qacc bool qisnan(const T& x)
 {
   return std::isnan(x);
 }
 
 template <class T, QLAT_ENABLE_IF(is_real<T>())>
-qacc RealD qnorm(const T &x)
+qacc RealD qnorm(const T& x)
 {
   return x * x;
 }
 
 template <class M, class N, QLAT_ENABLE_IF(is_real<M>() and is_real<N>())>
-qacc RealD qnorm(const M &x, const N &y)
+qacc RealD qnorm(const M& x, const N& y)
 {
   return x * y;
 }
 
 template <class T, QLAT_ENABLE_IF(is_real<T>())>
-qacc T qconj(const T &x)
+qacc T qconj(const T& x)
 {
   return x;
 }
@@ -102,19 +107,19 @@ template <class T, QLAT_ENABLE_IF(is_real<T>())>
 using ComplexT = thrust::complex<T>;
 
 template <class T>
-qacc ComplexT<T> qconj(const ComplexT<T> &x)
+qacc ComplexT<T> qconj(const ComplexT<T>& x)
 {
   return thrust::conj(x);
 }
 
 template <class T>
-qacc RealD qnorm(const ComplexT<T> &x)
+qacc RealD qnorm(const ComplexT<T>& x)
 {
   return thrust::norm(x);
 }
 
 template <class T>
-qacc ComplexT<T> qpolar(const T &r, const T &theta = T())
+qacc ComplexT<T> qpolar(const T& r, const T& theta = T())
 {
   return thrust::polar(r, theta);
 }
@@ -125,19 +130,19 @@ template <class T, QLAT_ENABLE_IF(is_real<T>())>
 using ComplexT = std::complex<T>;
 
 template <class T>
-ComplexT<T> qconj(const ComplexT<T> &x)
+ComplexT<T> qconj(const ComplexT<T>& x)
 {
   return std::conj(x);
 }
 
 template <class T>
-RealD qnorm(const ComplexT<T> &x)
+RealD qnorm(const ComplexT<T>& x)
 {
   return std::norm(x);
 }
 
 template <class T>
-ComplexT<T> qpolar(const T &r, const T &theta = T())
+ComplexT<T> qpolar(const T& r, const T& theta = T())
 {
   return std::polar(r, theta);
 }
@@ -145,13 +150,13 @@ ComplexT<T> qpolar(const T &r, const T &theta = T())
 #endif
 
 template <class T1, class T2>
-qacc RealD qnorm(const ComplexT<T1> &x, const ComplexT<T2> &y)
+qacc RealD qnorm(const ComplexT<T1>& x, const ComplexT<T2>& y)
 {
   return qnorm(x.real(), y.real()) + qnorm(x.imag(), y.imag());
 }
 
 template <class T>
-qacc bool qisnan(const ComplexT<T> &arg)
+qacc bool qisnan(const ComplexT<T>& arg)
 {
   return qisnan(arg.real()) or qisnan(arg.imag());
 }
@@ -177,77 +182,77 @@ qacc constexpr bool is_complex()
 const ComplexD ii(0, 1);
 
 template <class T>
-inline std::string show(const ComplexT<T> &x)
+inline std::string show(const ComplexT<T>& x)
 {
   return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
 }
 
-qacc ComplexT<RealD> operator*(const RealD &a, const ComplexT<RealD> &b)
+qacc ComplexT<RealD> operator*(const RealD& a, const ComplexT<RealD>& b)
 {
   return ComplexT<RealD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealD> operator*(const ComplexT<RealD> &b, const RealD &a)
+qacc ComplexT<RealD> operator*(const ComplexT<RealD>& b, const RealD& a)
 {
   return ComplexT<RealD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealF> operator*(const RealD &a, const ComplexT<RealF> &b)
+qacc ComplexT<RealF> operator*(const RealD& a, const ComplexT<RealF>& b)
 {
   return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealF> operator*(const ComplexT<RealF> &b, const RealD &a)
+qacc ComplexT<RealF> operator*(const ComplexT<RealF>& b, const RealD& a)
 {
   return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealF> operator*(const RealF &a, const ComplexT<RealF> &b)
+qacc ComplexT<RealF> operator*(const RealF& a, const ComplexT<RealF>& b)
 {
   return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealF> operator*(const ComplexT<RealF> &b, const RealF &a)
+qacc ComplexT<RealF> operator*(const ComplexT<RealF>& b, const RealF& a)
 {
   return ComplexT<RealF>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealDD> operator*(const RealD &a, const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator*(const RealD& a, const ComplexT<RealDD>& b)
 {
   return ComplexT<RealDD>(b.real() * RealDD(a), b.imag() * RealDD(a));
 }
 
-qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &a,
-                                const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD>& a,
+                                const ComplexT<RealDD>& b)
 {
   return ComplexT<RealDD>(a.real() * b.real() - a.imag() * b.imag(),
                           a.imag() * b.real() + a.real() * b.imag());
 }
 
-qacc ComplexT<RealDD> operator*(const RealDD &a, const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator*(const RealDD& a, const ComplexT<RealDD>& b)
 {
   return ComplexT<RealDD>(b.real() * a, b.imag() * a);
 }
 
-qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &b, const RealD &a)
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD>& b, const RealD& a)
 {
   return ComplexT<RealDD>(b.real() * RealDD(a), b.imag() * RealDD(a));
 }
 
-qacc ComplexT<RealDD> operator*(const ComplexT<RealDD> &b, const RealDD &a)
+qacc ComplexT<RealDD> operator*(const ComplexT<RealDD>& b, const RealDD& a)
 {
   return ComplexT<RealDD>(b.real() * a, b.imag() * a);
 }
 
 template <class Ta, class Tb>
-qacc void copy_complex(ComplexT<Ta> &r, const ComplexT<Tb> &a)
+qacc void copy_complex(ComplexT<Ta>& r, const ComplexT<Tb>& a)
 {
   r = a;
   // r = ComplexT<Ta>(a.real(), a.imag());
 }
 
 template <class Ta>
-qacc void copy_complex(ComplexT<Ta> &r, const ComplexT<RealDD> &a)
+qacc void copy_complex(ComplexT<Ta>& r, const ComplexT<RealDD>& a)
 {
   r = a;
 }
@@ -359,7 +364,7 @@ qacc RealDD qacos(RealDD a)
 {
   RealD y = a.Y();
   RealD x = a.X();
-  RealDD z,e;
+  RealDD z, e;
   e.Y() = std::acos(y);
   e.X() = -1.0 * (1.0 / std::sqrt(1.0 - y * y)) * x;
   z.Y() = e.X() + e.Y();
@@ -390,8 +395,8 @@ qacc RealDD qacos(RealDD a)
 //   return ComplexT<RealDD>(a.real(), a.imag());
 // }
 
-qacc ComplexT<RealDD> operator/(const ComplexT<RealDD> &a,
-                                const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator/(const ComplexT<RealDD>& a,
+                                const ComplexT<RealDD>& b)
 {
   RealDD sq = b.real() * b.real() + b.imag() * b.imag();
   RealDD r = a.real() * b.real() + a.imag() * b.imag();
@@ -399,26 +404,26 @@ qacc ComplexT<RealDD> operator/(const ComplexT<RealDD> &a,
   return ComplexT<RealDD>(r / sq, i / sq);
 }
 
-qacc ComplexT<RealDD> operator+(const ComplexT<RealDD> &a,
-                                const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator+(const ComplexT<RealDD>& a,
+                                const ComplexT<RealDD>& b)
 {
   return ComplexT<RealDD>(a.real() + b.real(), a.imag() + b.imag());
 }
 
-qacc ComplexT<RealDD> operator-(const ComplexT<RealDD> &a,
-                                const ComplexT<RealDD> &b)
+qacc ComplexT<RealDD> operator-(const ComplexT<RealDD>& a,
+                                const ComplexT<RealDD>& b)
 {
   return ComplexT<RealDD>(a.real() - b.real(), a.imag() - b.imag());
 }
 
-qacc RealDD qnorm(const ComplexT<RealDD> &a)
+qacc RealDD qnorm(const ComplexT<RealDD>& a)
 {
   RealDD sq = a.real() * a.real() + a.imag() * a.imag();
   return sq;
 }
 
 template <class T>
-qacc ComplexT<RealDD> qconj(const ComplexT<RealDD> &x)
+qacc ComplexT<RealDD> qconj(const ComplexT<RealDD>& x)
 {
   // RealDD tmp = minus(x.imag());
   return ComplexT<RealDD>(x.real(), -x.imag());
@@ -432,8 +437,8 @@ namespace std
 {
 
 template <>
-qacc complex<qlat::RealD> &complex<qlat::RealD>::operator=(
-    const complex<qlat::RealDD> &__z)
+qacc complex<qlat::RealD>& complex<qlat::RealD>::operator=(
+    const complex<qlat::RealDD>& __z)
 {
   *this = complex<qlat::RealD>(__z.real(), __z.imag());
   return *this;

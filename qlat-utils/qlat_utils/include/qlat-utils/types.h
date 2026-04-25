@@ -3,9 +3,9 @@
 #include <qlat-utils/mat-vec.h>
 #include <qlat-utils/rng-state.h>
 
+#include <array>
 #include <cstdint>
 #include <vector>
-#include <array>
 
 namespace qlat
 {  //
@@ -216,7 +216,10 @@ template <Int DIMN, class T>
 struct IsBasicDataType<MatrixT<DIMN, T>> {
   static constexpr bool value = IsBasicDataType<T>::value;
   static constexpr bool is_complex = IsBasicDataType<T>::is_complex;
-  static const std::string get_type_name() { return "MatrixT_" + IsBasicDataType<T>::get_type_name(); }
+  static const std::string get_type_name()
+  {
+    return "MatrixT_" + IsBasicDataType<T>::get_type_name();
+  }
   using ElementaryType = typename IsBasicDataType<T>::ElementaryType;
 };
 
@@ -224,7 +227,10 @@ template <Int DIMN, class T>
 struct IsBasicDataType<MvectorT<DIMN, T>> {
   static constexpr bool value = IsBasicDataType<T>::value;
   static constexpr bool is_complex = IsBasicDataType<T>::is_complex;
-  static const std::string get_type_name() { return "MvectorT_" + IsBasicDataType<T>::get_type_name(); }
+  static const std::string get_type_name()
+  {
+    return "MvectorT_" + IsBasicDataType<T>::get_type_name();
+  }
   using ElementaryType = typename IsBasicDataType<T>::ElementaryType;
 };
 
@@ -770,19 +776,19 @@ qacc Int get_data_type_is_Double()
 template <>
 qacc Int get_data_type_is_Double<RealF>()
 {
-  return  0;
+  return 0;
 }
 
 template <>
 qacc Int get_data_type_is_Double<RealD>()
 {
-  return  1;
+  return 1;
 }
 
 template <>
 qacc Int get_data_type_is_Double<RealDD>()
 {
-  return  2;
+  return 2;
 }
 
 template <class M>
