@@ -1,5 +1,5 @@
-#include <qlat/utils-io.h>
 #include <qlat/fields-io.h>
+#include <qlat/utils-io.h>
 
 namespace qlat
 {  //
@@ -34,9 +34,7 @@ bool obtain_lock(const std::string& path)
     }
     glb_sum(ret);
     if (ret > 0) {
-      displayln_info(
-          fname +
-          ssprintf(": Lock expired '%s'.", path.c_str()));
+      displayln_info(fname + ssprintf(": Lock expired '%s'.", path.c_str()));
       return obtain_lock(path + "-");
     } else {
       displayln_info(fname +
@@ -64,13 +62,13 @@ void release_lock()
   }
 }
 
- Int  mkdir_lock(const std::string& path, const mode_t mode)
+Int mkdir_lock(const std::string& path, const mode_t mode)
 {
   TIMER("mkdir_lock");
   return qmkdir_sync_node(path, mode);
 }
 
- Int  rmdir_lock(const std::string& path)
+Int rmdir_lock(const std::string& path)
 {
   TIMER("rmdir_lock");
   return qremove_sync_node(path);
@@ -172,9 +170,7 @@ bool obtain_lock_all_node(const std::string& path)
       }
     }
     if (ret > 0) {
-      displayln_info(
-          fname +
-          ssprintf(": Lock expired '%s'.", path.c_str()));
+      displayln_info(fname + ssprintf(": Lock expired '%s'.", path.c_str()));
       return obtain_lock_all_node(path + "-");
     } else {
       displayln_info(fname +
@@ -202,13 +198,13 @@ void release_lock_all_node()
   }
 }
 
- Int  mkdir_lock_all_node(const std::string& path, const mode_t mode)
+Int mkdir_lock_all_node(const std::string& path, const mode_t mode)
 {
   TIMER("mkdir_lock_all_node");
   return qmkdir(path, mode);
 }
 
- Int  rmdir_lock_all_node(const std::string& path)
+Int rmdir_lock_all_node(const std::string& path)
 {
   TIMER("rmdir_lock_all_node");
   return qremove(path);

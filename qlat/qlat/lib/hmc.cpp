@@ -7,8 +7,8 @@ namespace qlat
 {  //
 
 static qacc RealD gf_re_tr_plaq_no_comm(const GaugeField& gf,
-                                         const Coordinate& xl, const Int mu,
-                                         const Int nu)
+                                        const Coordinate& xl, const Int mu,
+                                        const Int nu)
 {
   const ColorMatrix m =
       gf_wilson_line_no_comm(gf, xl, make_array<int>(mu, nu, -mu - 1, -nu - 1));
@@ -16,8 +16,8 @@ static qacc RealD gf_re_tr_plaq_no_comm(const GaugeField& gf,
 }
 
 static qacc RealD gf_re_tr_rect_no_comm(const GaugeField& gf,
-                                         const Coordinate& xl, const Int mu,
-                                         const Int nu)
+                                        const Coordinate& xl, const Int mu,
+                                        const Int nu)
 {
   const ColorMatrix m = gf_wilson_line_no_comm(
       gf, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
@@ -74,8 +74,8 @@ static qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
   return make_tr_less_anti_herm_matrix(force);
 }
 
-bool metropolis_accept(RealD& accept_prob, const RealD delta_h,
-                       const Int traj, const RngState& rs_)
+bool metropolis_accept(RealD& accept_prob, const RealD delta_h, const Int traj,
+                       const RngState& rs_)
 // only compute at get_id_node() == 0
 // broad_cast the result to all nodes
 {

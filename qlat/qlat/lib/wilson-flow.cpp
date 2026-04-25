@@ -3,6 +3,7 @@
 #include <qlat/field-shuffle.h>
 #include <qlat/qcd-acc.h>
 #include <qlat/wilson-flow.h>
+
 #include "qlat-utils/mpi-auto.h"
 
 namespace qlat
@@ -51,9 +52,8 @@ void gf_wilson_flow_step(GaugeField& gf, const RealD epsilon, const RealD c1)
 // --------------------
 
 static qacc RealD gf_energy_density_dir_site_no_comm(const GaugeField& gf,
-                                                      const Coordinate& xl,
-                                                      const Int mu,
-                                                      const Int nu)
+                                                     const Coordinate& xl,
+                                                     const Int mu, const Int nu)
 {
   const ColorMatrix g_mu_nu =
       make_tr_less_anti_herm_matrix(gf_clover_leaf_no_comm(gf, xl, mu, nu));
@@ -83,8 +83,8 @@ static void gf_energy_density_dir_field_no_comm(Field<RealD>& fd,
 void gf_energy_density_dir_field(Field<RealD>& fd, const GaugeField& gf)
 // Similar to `gf_plaq_feild`
 // fd.init(geo, 6);
-// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
-// https://arxiv.org/pdf/1203.4469.pdf
+// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq.
+// (3.1)) https://arxiv.org/pdf/1203.4469.pdf
 {
   TIMER("gf_energy_density_field");
   GaugeField gf1;
@@ -117,8 +117,8 @@ static void gf_energy_density_field_no_comm(Field<RealD>& fd,
 }
 
 void gf_energy_density_field(Field<RealD>& fd, const GaugeField& gf)
-// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
-// https://arxiv.org/pdf/1203.4469.pdf
+// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq.
+// (3.1)) https://arxiv.org/pdf/1203.4469.pdf
 {
   TIMER("gf_energy_density_field");
   GaugeField gf1;
@@ -129,8 +129,8 @@ void gf_energy_density_field(Field<RealD>& fd, const GaugeField& gf)
 }
 
 RealD gf_energy_density(const GaugeField& gf)
-// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
-// https://arxiv.org/pdf/1203.4469.pdf
+// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq.
+// (3.1)) https://arxiv.org/pdf/1203.4469.pdf
 {
   TIMER("gf_energy_density");
   const Geometry& geo = gf.geo();
@@ -142,9 +142,9 @@ RealD gf_energy_density(const GaugeField& gf)
 // --------------------
 
 std::vector<RealD> gf_wilson_flow(GaugeField& gf,
-                                   const RealD existing_flow_time,
-                                   const RealD flow_time, const Int steps,
-                                   const RealD c1)
+                                  const RealD existing_flow_time,
+                                  const RealD flow_time, const Int steps,
+                                  const RealD c1)
 {
   TIMER("gf_wilson_flow");
   std::vector<RealD> energy_density_list(steps, 0.0);
@@ -209,8 +209,7 @@ gf_plaq_flow_site_no_comm(const GaugeField& gf, const Field<RealD>& plaq_factor,
   return make_tr_less_anti_herm_matrix(force);
 }
 
-static void set_plaq_flow_z_no_comm(GaugeMomentum& z,
-                                    const GaugeField& gf,
+static void set_plaq_flow_z_no_comm(GaugeMomentum& z, const GaugeField& gf,
                                     const Field<RealD>& plaq_factor)
 // gf need comm
 {
@@ -372,7 +371,8 @@ void gf_block_stout_smear(GaugeField& gf, const GaugeField& gf0,
         if (nu == mu or -nu - 1 == mu) {
           continue;
         }
-        if (is_block_site and (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
+        if (is_block_site and
+            (nu >= 0 and xl_block[nu] == block_site[nu] - 1)) {
           continue;
         }
         if (is_block_site and (nu < 0 and xl_block[-nu - 1] == 0)) {
@@ -400,7 +400,8 @@ void gf_local_stout_smear(GaugeField& gf, const GaugeField& gf0,
   const Geometry& geo = gf0.geo();
   Qassert(geo.is_only_local);
   const Coordinate node_site = geo.node_site;
-  const Coordinate block_site_ = block_site == Coordinate() ? node_site : block_site;
+  const Coordinate block_site_ =
+      block_site == Coordinate() ? node_site : block_site;
   Qassert(node_site % block_site_ == Coordinate());
   GaugeMomentum gm;
   gm.init(geo);
@@ -445,7 +446,8 @@ void set_local_tree_gauge_f_dir(Field<Int>& f_dir, const Geometry& geo,
   TIMER("set_local_tree_gauge_f_dir");
   Qassert(geo.is_only_local);
   const Coordinate node_site = geo.node_site;
-  const Coordinate block_site_ = block_site == Coordinate() ? node_site : block_site;
+  const Coordinate block_site_ =
+      block_site == Coordinate() ? node_site : block_site;
   Qassert(node_site % block_site_ == Coordinate());
   const Coordinate block_center = block_site_ / 2;
   const Coordinate total_site = geo.total_site();
@@ -485,11 +487,9 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
                          const Field<Int>& f_dir, const Int num_step)
 // `f_dir` can be set by:
 // set_local_tree_gauge_f_dir(f_dir, geo, rs);
-// Note that to apply the local tree gauge, we need to invert the returned `gt` first.
-// E.g.,
-// gt_invert(gt, gt_inv);
-// gf_apply_gauge_transformation(gf, gf, gt);
-// `num_step` should be the sum block_site[mu] / 2
+// Note that to apply the local tree gauge, we need to invert the returned `gt`
+// first. E.g., gt_invert(gt, gt_inv); gf_apply_gauge_transformation(gf, gf,
+// gt); `num_step` should be the sum block_site[mu] / 2
 {
   TIMER("gt_local_tree_gauge");
   Qassert(gf.multiplicity == 4);
@@ -525,9 +525,8 @@ void gt_local_tree_gauge(GaugeTransform& gt_inv, const GaugeField& gf,
       gt_inv.get_elem(index) = gf_get_link(gf, xl, dir) * gt_inv.get_elem(xl1);
       f_marks_new.get_elem(index) = 1;
     });
-    qacc_for(index, geo.local_volume(), {
-      f_marks.get_elem(index) += f_marks_new.get_elem(index);
-    });
+    qacc_for(index, geo.local_volume(),
+             { f_marks.get_elem(index) += f_marks_new.get_elem(index); });
     if (i == num_step) {
       qacc_for(index, geo.local_volume(),
                { qassert(f_marks.get_elem(index) >= 1); });

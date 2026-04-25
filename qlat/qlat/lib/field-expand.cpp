@@ -5,8 +5,8 @@
 namespace qlat
 {  //
 
-void set_marks_field_all(CommMarks& marks, const Geometry& geo, const Int multiplicity,
-                         const std::string& tag)
+void set_marks_field_all(CommMarks& marks, const Geometry& geo,
+                         const Int multiplicity, const std::string& tag)
 // tag is not used
 {
   TIMER_VERBOSE("set_marks_field_all");
@@ -121,7 +121,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   ret.total_send_size = 0;
   ret.total_recv_size = 0;
   //
-  std::map<int, std::vector<Long> >
+  std::map<int, std::vector<Long>>
       src_id_node_g_offsets;  // src node id ; vector of g_offset
   for (Long offset = 0; offset < geo.local_volume_expanded() * multiplicity;
        ++offset) {
@@ -129,7 +129,8 @@ CommPlan make_comm_plan(const CommMarks& marks)
     if (r != 0) {
       Int id_node;
       Long g_offset;
-      g_offset_id_node_from_offset(g_offset, id_node, offset, geo, multiplicity);
+      g_offset_id_node_from_offset(g_offset, id_node, offset, geo,
+                                   multiplicity);
       if (id_node != get_id_node()) {
         Qassert(0 <= id_node and id_node < get_num_node());
         src_id_node_g_offsets[id_node].push_back(g_offset);
@@ -142,7 +143,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   set_zero(src_id_node_count);
   {
     Long count = 0;
-    for (std::map<int, std::vector<Long> >::const_iterator it =
+    for (std::map<int, std::vector<Long>>::const_iterator it =
              src_id_node_g_offsets.begin();
          it != src_id_node_g_offsets.end(); ++it) {
       src_id_node_count[it->first] += 1;
@@ -160,7 +161,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   glb_sum(get_data(src_id_node_count));
   ret.send_msg_infos.resize(src_id_node_count[get_id_node()]);
   //
-  std::map<int, std::vector<Long> >
+  std::map<int, std::vector<Long>>
       dst_id_node_g_offsets;  // dst node id ; vector of g_offset
   {
     std::vector<MPI_Request> reqs;
@@ -174,7 +175,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
                   get_comm(), reqs);
       }
       Int k = 0;
-      for (std::map<int, std::vector<Long> >::const_iterator it =
+      for (std::map<int, std::vector<Long>>::const_iterator it =
                src_id_node_g_offsets.begin();
            it != src_id_node_g_offsets.end(); ++it) {
         CommMsgInfo& cmi = send_send_msg_infos[k];
@@ -195,7 +196,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
       const Int mpi_tag = 9;
       Int k = 0;
       Long count = 0;
-      for (std::map<int, std::vector<Long> >::iterator it =
+      for (std::map<int, std::vector<Long>>::iterator it =
                dst_id_node_g_offsets.begin();
            it != dst_id_node_g_offsets.end(); ++it) {
         CommMsgInfo& cmi = ret.send_msg_infos[k];
@@ -210,7 +211,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
       ret.total_send_size = count;
       // ret.total_send_size finish
       k = 0;
-      for (std::map<int, std::vector<Long> >::const_iterator it =
+      for (std::map<int, std::vector<Long>>::const_iterator it =
                src_id_node_g_offsets.begin();
            it != src_id_node_g_offsets.end(); ++it) {
         mpi_isend((void*)it->second.data(), it->second.size(), MPI_LONG,
@@ -224,7 +225,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   {
     Long current_buffer_idx = 0;
     Int k = 0;
-    for (std::map<int, std::vector<Long> >::const_iterator it =
+    for (std::map<int, std::vector<Long>>::const_iterator it =
              src_id_node_g_offsets.begin();
          it != src_id_node_g_offsets.end(); ++it) {
       const Int src_id_node = it->first;
@@ -235,8 +236,8 @@ CommPlan make_comm_plan(const CommMarks& marks)
       Long current_offset = -1;
       for (Long i = 0; i < (Long)g_offsets.size(); ++i) {
         const Long g_offset = g_offsets[i];
-        const Long offset =
-            offset_recv_from_g_offset(g_offset, geo, multiplicity);  // offset is expanded
+        const Long offset = offset_recv_from_g_offset(
+            g_offset, geo, multiplicity);  // offset is expanded
         if (offset != current_offset) {
           CommPackInfo cpi;
           cpi.offset = offset;
@@ -258,7 +259,7 @@ CommPlan make_comm_plan(const CommMarks& marks)
   {
     Long current_buffer_idx = 0;
     Int k = 0;
-    for (std::map<int, std::vector<Long> >::const_iterator it =
+    for (std::map<int, std::vector<Long>>::const_iterator it =
              dst_id_node_g_offsets.begin();
          it != dst_id_node_g_offsets.end(); ++it) {
       const Int dst_id_node = it->first;
@@ -269,8 +270,8 @@ CommPlan make_comm_plan(const CommMarks& marks)
       Long current_offset = -1;
       for (Long i = 0; i < (Long)g_offsets.size(); ++i) {
         const Long g_offset = g_offsets[i];
-        const Long offset =
-            offset_send_from_g_offset(g_offset, geo, multiplicity);  // offset is local
+        const Long offset = offset_send_from_g_offset(
+            g_offset, geo, multiplicity);  // offset is local
         if (offset != current_offset) {
           CommPackInfo cpi;
           cpi.offset = offset;
@@ -325,8 +326,8 @@ const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
   return get_comm_plan(cpk);
 }
 
-void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo, const Int multiplicity,
-                                 const std::string& tag)
+void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
+                                 const Int multiplicity, const std::string& tag)
 {
   TIMER_VERBOSE("set_marks_field_gf_hamilton");
   Qassert(multiplicity == 4);

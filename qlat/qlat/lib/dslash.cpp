@@ -267,7 +267,7 @@ void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    (void) xl;
+    (void)xl;
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     Vector<ComplexF> vhv = hv.get_elems(index);
     const Vector<WilsonVector> vin = in.get_elems_const(index);
@@ -287,7 +287,7 @@ void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
 #pragma omp parallel for
   for (Long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    (void) xl;
+    (void)xl;
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     const Vector<ComplexF> vhv = hv.get_elems(index);
     Vector<WilsonVector> vout = out.get_elems(index);
@@ -1347,7 +1347,7 @@ Long invert(FermionField4d& out, const FermionField4d& in,
 }
 
 RealD find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
-                                        const RngState& rs, const Long max_iter)
+                                       const RngState& rs, const Long max_iter)
 {
   TIMER_VERBOSE("find_max_eigen_value_hermop_sym2");
   Geometry geo = geo_resize(inv.geo());

@@ -45,7 +45,8 @@ void FftComplexFieldPlan::init(const Geometry& geo_, const Int mc_,
   // fftw_plan_with_nthreads(omp_get_max_threads());
   displayln_info(ssprintf("FftComplexFieldPlan::init: malloc %ld",
                           nc_size * sizec * sizeof(ComplexD)));
-  ComplexD* fftdatac = (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
+  ComplexD* fftdatac =
+      (ComplexD*)fftw_malloc(nc_size * sizec * sizeof(ComplexD));
   const Int rank = 1;
   const Int n[1] = {sizec};
   const Long howmany = nc_size;

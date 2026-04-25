@@ -2,8 +2,8 @@
 #include <qlat-utils/qacc-func.h>
 #include <qlat-utils/types.h>
 #include <qlat/core.h>
-#include <qlat/qed.h>
 #include <qlat/dslash.h>
+#include <qlat/qed.h>
 
 namespace qlat
 {  //
@@ -140,9 +140,11 @@ Long invert_dwf_qed(Field<ComplexD>& f_out4d, const Field<ComplexD>& f_in4d,
   src5d.init(geo, 4 * ls);
   fermion_field_5d_from_4d_qed(src5d, f_in4d, ls, 0, ls - 1);
   set_zero(sol5d);
-  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, t_wick_phase_factor_vec, !is_dagger);
-  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls, t_wick_phase_factor_vec,
-                                      is_dagger, stop_rsd, max_num_iter);
+  multiply_m_dwf_qed(src5d, src5d, gf1, mass, m5, ls, t_wick_phase_factor_vec,
+                     !is_dagger);
+  const Long iter = cg_with_m_dwf_qed(sol5d, src5d, gf1, mass, m5, ls,
+                                      t_wick_phase_factor_vec, is_dagger,
+                                      stop_rsd, max_num_iter);
   fermion_field_4d_from_5d_qed(f_out4d, sol5d, ls, ls - 1, 0);
   return iter;
 }
@@ -206,8 +208,10 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
   // implement conjugate gradient with normal equation solver
   Field<ComplexD> r, p, tmp, ap;
   r = f_in5d;
-  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, t_wick_phase_factor_vec, is_dagger);
-  multiply_m_dwf_qed(tmp, tmp, gf1, mass, m5, ls, t_wick_phase_factor_vec, !is_dagger);
+  multiply_m_dwf_qed(tmp, f_out5d, gf1, mass, m5, ls, t_wick_phase_factor_vec,
+                     is_dagger);
+  multiply_m_dwf_qed(tmp, tmp, gf1, mass, m5, ls, t_wick_phase_factor_vec,
+                     !is_dagger);
   r -= tmp;
   p = r;
   const RealD qnorm_in = qnorm(f_in5d);
@@ -218,8 +222,10 @@ Long cg_with_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
           max_num_iter, sqrt(qnorm_in), stop_rsd));
   RealD qnorm_r = qnorm(r);
   for (Long iter = 1; iter <= max_num_iter; ++iter) {
-    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, t_wick_phase_factor_vec, is_dagger);
-    multiply_m_dwf_qed(ap, ap, gf1, mass, m5, ls, t_wick_phase_factor_vec, !is_dagger);
+    multiply_m_dwf_qed(ap, p, gf1, mass, m5, ls, t_wick_phase_factor_vec,
+                       is_dagger);
+    multiply_m_dwf_qed(ap, ap, gf1, mass, m5, ls, t_wick_phase_factor_vec,
+                       !is_dagger);
     const RealD alpha = qnorm_r / dot_product(p, ap).real();
     tmp = p;
     tmp *= alpha;
@@ -351,14 +357,20 @@ void multiply_m_dwf_qed(Field<ComplexD>& f_out5d, const Field<ComplexD>& f_in5d,
       vec_plusm(v_p, (ComplexD)(-0.5 * t_wick_phase_factor_avg), iv_p);
       vec_plusm(v_m0, (ComplexD)(0.5 * mass * t_wick_phase_factor_avg), iv_m0);
       vec_plusm(v_p0, (ComplexD)(0.5 * mass * t_wick_phase_factor_avg), iv_p0);
-      mat_mul_multi_vec_plusm(v_m, (ComplexD)(dagger_factor * 0.5 * t_wick_phase_factor_avg), gamma_5,
-                              iv_m);
-      mat_mul_multi_vec_plusm(v_p, (ComplexD)(-dagger_factor * 0.5 * t_wick_phase_factor_avg), gamma_5,
-                              iv_p);
-      mat_mul_multi_vec_plusm(v_m0, (ComplexD)(-dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
-                              gamma_5, iv_m0);
-      mat_mul_multi_vec_plusm(v_p0, (ComplexD)(dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
-                              gamma_5, iv_p0);
+      mat_mul_multi_vec_plusm(
+          v_m, (ComplexD)(dagger_factor * 0.5 * t_wick_phase_factor_avg),
+          gamma_5, iv_m);
+      mat_mul_multi_vec_plusm(
+          v_p, (ComplexD)(-dagger_factor * 0.5 * t_wick_phase_factor_avg),
+          gamma_5, iv_p);
+      mat_mul_multi_vec_plusm(
+          v_m0,
+          (ComplexD)(-dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
+          gamma_5, iv_m0);
+      mat_mul_multi_vec_plusm(
+          v_p0,
+          (ComplexD)(dagger_factor * 0.5 * mass * t_wick_phase_factor_avg),
+          gamma_5, iv_p0);
     }
     for (Int mu = 0; mu < 4; ++mu) {
       const Coordinate xl_p = coordinate_shifts(xl, mu);

@@ -182,9 +182,10 @@ void FieldsWriter::init(const std::string& path_, const GeometryNode& geon_,
     displayln(0, "FieldsWriter: open '" + path + "'.");
     if (is_append and does_file_exist(path)) {
       if (not does_file_exist(path + "/geon-info.txt")) {
-        qwarn(
-            "FieldsWriter::init: " +
-            ssprintf("geon-info.txt does not exist! Will create again. path='%s'", path.c_str()));
+        qwarn("FieldsWriter::init: " +
+              ssprintf(
+                  "geon-info.txt does not exist! Will create again. path='%s'",
+                  path.c_str()));
         fields_writer_dirs_geon_info(geon, path);
       }
     } else {
@@ -472,7 +473,8 @@ bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   const Long offset_final = qftell(fr.qfile) + data_len;
   //
-  const FieldsSegmentInfo fsinfo = FieldsSegmentInfo(offset_initial, offset_final, is_sparse_field);
+  const FieldsSegmentInfo fsinfo =
+      FieldsSegmentInfo(offset_initial, offset_final, is_sparse_field);
   //
   if (has(fr.offsets_map, fn)) {
     if (fr.offsets_map[fn].offset_start != offset_initial) {
@@ -637,7 +639,8 @@ Long read_skip(FieldsReader& fr, const std::string& fn)
   return offset_final;
 }
 
-Long check_file(FieldsReader& fr, const std::string& fn, const bool is_check_data)
+Long check_file(FieldsReader& fr, const std::string& fn,
+                const bool is_check_data)
 // return final offset of the data
 // if check_file fail, return -1
 {
@@ -668,7 +671,7 @@ ShuffledBitSet mk_shuffled_bitset(const FieldRank& f_rank,
                                   const Coordinate& new_size_node)
 {
   TIMER("mk_shuffled_bitset(f_rank,new_size_node)");
-  std::vector<Field<int64_t> > fs_rank;
+  std::vector<Field<int64_t>> fs_rank;
   shuffle_field(fs_rank, f_rank, new_size_node);
   ShuffledBitSet sbs;
   set_field_selection(sbs.fsel, f_rank);
@@ -1027,7 +1030,8 @@ void read_through_sync_node(ShuffledFieldsReader& sfr)
   SYNC_NODE();
 }
 
-bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr, const std::string& fn)
+bool does_file_exist_sync_node(const ShuffledFieldsReader& sfr,
+                               const std::string& fn)
 // interface function
 {
   TIMER("does_file_exist_sync_node(sfr,fn)");
@@ -1123,7 +1127,8 @@ bool check_file_sync_node(ShuffledFieldsReader& sfr, const std::string& fn,
   return ret;
 }
 
-std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr, bool is_skipping_check)
+std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr,
+                                     bool is_skipping_check)
 // interface function
 {
   TIMER_VERBOSE("list_fields(sfr)");
@@ -1148,7 +1153,8 @@ std::vector<std::string> list_fields(const ShuffledFieldsReader& sfr, bool is_sk
   return ret;
 }
 
-std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw, bool is_skipping_check)
+std::vector<std::string> list_fields(const ShuffledFieldsWriter& sfw,
+                                     bool is_skipping_check)
 // interface function
 {
   TIMER_VERBOSE("list_fields(sfw)");
@@ -1213,9 +1219,9 @@ Int truncate_fields_sync_node(const std::string& path,
       displayln_info(
           0,
           fname +
-          ssprintf(
-            ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
-            path_file.c_str(), final_offset, file_size));
+              ssprintf(
+                  ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+                  path_file.c_str(), final_offset, file_size));
       if (file_size < 0) {
         mkfile(fr);
       }
@@ -1231,8 +1237,8 @@ Int truncate_fields_sync_node(const std::string& path,
 
 void properly_truncate_fields_sync_node(
     std::vector<std::string>& fn_list,
-    std::vector<std::vector<FieldsSegmentInfo>>& offsets_list, const std::string& path,
-    const bool is_check_all, const bool is_only_check,
+    std::vector<std::vector<FieldsSegmentInfo>>& offsets_list,
+    const std::string& path, const bool is_check_all, const bool is_only_check,
     const Coordinate& new_size_node)
 // interface function
 // offsets_list.size() == fn_list.size()
@@ -1356,7 +1362,8 @@ bool has_duplicates(const ShuffledFieldsReader& sfr)
 
 // ------------------------
 
-std::string show_field_index(const std::string& fn, const std::vector<FieldsSegmentInfo>& all_offsets)
+std::string show_field_index(const std::string& fn,
+                             const std::vector<FieldsSegmentInfo>& all_offsets)
 // all_offsets.size() == total number of part-files.
 {
   QFile qfile = qfopen(QFileType::String, "show_field_index", QFileMode::Write);
@@ -1392,7 +1399,9 @@ std::string show_field_index(const std::string& fn, const std::vector<FieldsSegm
   return ret;
 }
 
-void parse_field_index(std::string& fn, std::vector<FieldsSegmentInfo>& all_offsets, const std::string& field_index_content)
+void parse_field_index(std::string& fn,
+                       std::vector<FieldsSegmentInfo>& all_offsets,
+                       const std::string& field_index_content)
 {
   fn.clear();
   all_offsets.clear();
@@ -1438,7 +1447,8 @@ void parse_field_index(std::string& fn, std::vector<FieldsSegmentInfo>& all_offs
   }
 }
 
-std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsWriter& sfw, const std::string& fn)
+std::vector<FieldsSegmentInfo> collect_fields_offsets(
+    const ShuffledFieldsWriter& sfw, const std::string& fn)
 {
   TIMER("collect_fields_offsets(sfw,fn)");
   Long num_files = sfw.fws.size();
@@ -1460,7 +1470,8 @@ std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsWriter
   return all_offsets;
 }
 
-std::vector<FieldsSegmentInfo> collect_fields_offsets(const ShuffledFieldsReader& sfr, const std::string& fn)
+std::vector<FieldsSegmentInfo> collect_fields_offsets(
+    const ShuffledFieldsReader& sfr, const std::string& fn)
 {
   TIMER("collect_fields_offsets(sfr,fn)");
   Long num_files = sfr.frs.size();
@@ -1532,9 +1543,10 @@ bool populate_fields_offsets(ShuffledFieldsReader& sfr, const std::string& fn,
   return true;
 }
 
-void load_all_fields_index(std::vector<std::string>& fn_list,
-                           std::vector<std::vector<FieldsSegmentInfo>>& all_offsets_list,
-                           QarFile& qar_index)
+void load_all_fields_index(
+    std::vector<std::string>& fn_list,
+    std::vector<std::vector<FieldsSegmentInfo>>& all_offsets_list,
+    QarFile& qar_index)
 {
   TIMER("load_all_fields_index(fn_list,all_offsets_list,qar_index)");
   fn_list.clear();
@@ -1572,7 +1584,8 @@ void load_all_fields_index(std::vector<std::string>& fn_list,
 }
 
 void save_fields_index(QarFile& qar_index, const Long idx,
-                       const std::string& fn, const std::vector<FieldsSegmentInfo>& all_offsets)
+                       const std::string& fn,
+                       const std::vector<FieldsSegmentInfo>& all_offsets)
 {
   TIMER("save_fields_index(qar_index,idx,fn,all_offsets)");
   if (get_id_node() == 0) {
@@ -1585,7 +1598,8 @@ void save_fields_index(QarFile& qar_index, const Long idx,
 void save_fields_index(ShuffledFieldsWriter& sfw, const std::string& fn)
 {
   TIMER("save_fields_index(sfw,fn)");
-  const std::vector<FieldsSegmentInfo> all_offsets = collect_fields_offsets(sfw, fn);
+  const std::vector<FieldsSegmentInfo> all_offsets =
+      collect_fields_offsets(sfw, fn);
   save_fields_index(sfw.qar_index, sfw.qar_index_idx, fn, all_offsets);
   sfw.qar_index_idx += 1;
 }
@@ -1600,7 +1614,8 @@ void fields_build_index(const ShuffledFieldsReader& sfr)
   }
   for (Long i = 0; i < (Long)fn_list.size(); ++i) {
     const std::string& fn = fn_list[i];
-    const std::vector<FieldsSegmentInfo> all_offsets = collect_fields_offsets(sfr, fn);
+    const std::vector<FieldsSegmentInfo> all_offsets =
+        collect_fields_offsets(sfr, fn);
     save_fields_index(qar_index, i, fn, all_offsets);
   }
   qar_index.close();

@@ -225,8 +225,7 @@ void init_half_vector(HalfVector& hv, const Geometry& geo, const Int ls)
 }
 
 Geometry get_geo_from_cesi(const CompressedEigenSystemInfo& cesi,
-                           const Int id_node,
-                           const Coordinate& new_size_node)
+                           const Int id_node, const Coordinate& new_size_node)
 {
   GeometryNode geon;
   Coordinate node_site;
@@ -256,9 +255,10 @@ Geometry block_geometry(const Geometry& geo_full, const Coordinate& block_site)
   return geo;
 }
 
-void init_compressed_eigen_system_data(
-    CompressedEigenSystemData& cesd, const CompressedEigenSystemInfo& cesi,
-    const Int id_node, const Coordinate& new_size_node)
+void init_compressed_eigen_system_data(CompressedEigenSystemData& cesd,
+                                       const CompressedEigenSystemInfo& cesi,
+                                       const Int id_node,
+                                       const Coordinate& new_size_node)
 {
   TIMER("init_compressed_eigen_system_data");
   cesd.cesi = cesi;
@@ -304,9 +304,10 @@ void init_compressed_eigen_system_bases(CompressedEigenSystemBases& cesb,
   cesb.init(geo, n_basis * cesb.c_size_vec);
 }
 
-void init_compressed_eigen_system_bases(
-    CompressedEigenSystemBases& cesb, const CompressedEigenSystemInfo& cesi,
-    const Int id_node, const Coordinate& new_size_node)
+void init_compressed_eigen_system_bases(CompressedEigenSystemBases& cesb,
+                                        const CompressedEigenSystemInfo& cesi,
+                                        const Int id_node,
+                                        const Coordinate& new_size_node)
 {
   const Geometry geo_full = get_geo_from_cesi(cesi, id_node, new_size_node);
   init_compressed_eigen_system_bases(cesb, cesi.nkeep, geo_full,
@@ -334,9 +335,10 @@ void init_compressed_eigen_system_coefs(CompressedEigenSystemCoefs& cesc,
   cesc.init(geo, n_vec * cesc.c_size_vec);
 }
 
-void init_compressed_eigen_system_coefs(
-    CompressedEigenSystemCoefs& cesc, const CompressedEigenSystemInfo& cesi,
-    const Int id_node, const Coordinate& new_size_node)
+void init_compressed_eigen_system_coefs(CompressedEigenSystemCoefs& cesc,
+                                        const CompressedEigenSystemInfo& cesi,
+                                        const Int id_node,
+                                        const Coordinate& new_size_node)
 {
   const Geometry geo_full = get_geo_from_cesi(cesi, id_node, new_size_node);
   init_compressed_eigen_system_coefs(cesc, cesi.neig, cesi.nkeep, geo_full,
@@ -1053,8 +1055,7 @@ Long load_compressed_eigen_vectors(vector<RealD>& eigen_values,
 }
 
 crc32_t save_half_vectors(const std::vector<HalfVector>& hvs,
-                          const std::string& fn,
-                          const bool is_saving_crc,
+                          const std::string& fn, const bool is_saving_crc,
                           const bool is_bfm_format)
 // if is_bfm_format then will apply t_dir simd
 // always big endianness
@@ -1085,10 +1086,10 @@ crc32_t save_half_vectors(const std::vector<HalfVector>& hvs,
   return crc;
 }
 
-Long decompress_eigen_vectors_node(
-    const std::string& old_path, const CompressedEigenSystemInfo& cesi,
-    const std::string& new_path, const Int idx,
-    const Coordinate& new_size_node)
+Long decompress_eigen_vectors_node(const std::string& old_path,
+                                   const CompressedEigenSystemInfo& cesi,
+                                   const std::string& new_path, const Int idx,
+                                   const Coordinate& new_size_node)
 // interface
 // new_size_node can be Coordinate()
 // single node code

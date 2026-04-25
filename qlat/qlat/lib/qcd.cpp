@@ -2,6 +2,7 @@
 #include <qlat/qcd-gauge-transformation.h>
 #include <qlat/qcd-topology.h>
 #include <qlat/qcd.h>
+
 #include "qlat-utils/coordinate.h"
 
 namespace qlat
@@ -133,7 +134,8 @@ static RealD gf_avg_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_plaq");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
+  gf1.init(
+      geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);
@@ -152,8 +154,8 @@ static RealD gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
 #pragma omp for
     for (Long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
-      std::vector<Vector<ColorMatrixT<T> > > vms(DIMN - 1);
+      const Vector<ColorMatrixT<T>> v = gf.get_elems_const(xl);
+      std::vector<Vector<ColorMatrixT<T>>> vms(DIMN - 1);
       for (Int m = 0; m < DIMN - 1; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
@@ -190,7 +192,8 @@ static RealD gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_spatial_plaq(gf)");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
+  gf1.init(
+      geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_spatial_plaq_no_comm(gf1);
@@ -399,7 +402,8 @@ void clf_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf)
   clf_plaq_action_density_field(paf, clf);
 }
 
-void clf_spatial_plaq_action_density_field(Field<RealD>& paf, const GaugeField& gf)
+void clf_spatial_plaq_action_density_field(Field<RealD>& paf,
+                                           const GaugeField& gf)
 // interface function
 // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
 {

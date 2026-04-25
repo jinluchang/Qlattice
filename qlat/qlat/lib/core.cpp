@@ -30,7 +30,6 @@ void Geometry::init(const Coordinate& total_site)
   init(geon_, node_site_);
 }
 
-
 std::string show(const qlat::Geometry& geo)
 {
   std::string s;
@@ -44,7 +43,6 @@ std::string show(const qlat::Geometry& geo)
   s += ssprintf(", is_only_local = %s }", show(geo.is_only_local).c_str());
   return s;
 }
-
 
 // ----------------
 

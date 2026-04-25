@@ -2,6 +2,7 @@
 
 #include <array>
 #include <vector>
+
 #include "qlat-utils/coordinate.h"
 #include "qlat-utils/mpi-auto.h"
 #include "qlat-utils/qacc.h"
@@ -757,7 +758,9 @@ void set_selected_shuffle_instruction_l_from_g(
 // v[3] = idx_selected_points_recv
 // v[4] = rank_within_field_recv
 {
-  TIMER("set_selected_shuffle_instruction_l_from_g(sp_inst,vec,pdt,psel_vec,root_vec)");
+  TIMER(
+      "set_selected_shuffle_instruction_l_from_g(sp_inst,vec,pdt,psel_vec,root_"
+      "vec)");
   Qassert(f_bcast((Long)psel_vec.size()) == (Long)psel_vec.size());
   Qassert((Long)psel_vec.size() > 0);
   Qassert(psel_vec.size() == root_vec.size());
@@ -942,8 +945,7 @@ void set_selected_shuffle_instruction_g_from_l(
 
 void set_selected_shuffle_plan_g_from_l(
     SelectedShufflePlan& ssp, const std::vector<PointsSelection>& psel_vec,
-    const std::vector<Int>& root_vec,
-    const std::vector<Geometry>& geo_vec)
+    const std::vector<Int>& root_vec, const std::vector<Geometry>& geo_vec)
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Global
@@ -978,8 +980,7 @@ void set_selected_shuffle_plan_g_from_l(
 
 void set_selected_shuffle_plan_g_from_l(SelectedShufflePlan& ssp,
                                         const PointsSelection& psel,
-                                        const Int root,
-                                        const Geometry& geo)
+                                        const Int root, const Geometry& geo)
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Global
@@ -1206,8 +1207,7 @@ void set_selected_shuffle_instruction_dist_r_from_l(
 
 void set_selected_shuffle_plan_dist_r_from_l(
     SelectedShufflePlan& ssp, const PointsSelection& psel, const Geometry& geo,
-    const RngState& rs,
-    const std::vector<Int>& id_node_vec)
+    const RngState& rs, const std::vector<Int>& id_node_vec)
 // Collective operation.
 // make shuffle plan
 // ssp.points_dist_type_recv = PointsDistType::Random

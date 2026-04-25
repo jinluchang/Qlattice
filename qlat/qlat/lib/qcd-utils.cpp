@@ -99,8 +99,7 @@ void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
   TIMER_VERBOSE("set_local_current_from_props");
   const Geometry geo = geo_resize(prop1.geo());
   Qassert(geo == geo_resize(prop2.geo()));
-  const array<SpinMatrix, 4>& gammas =
-      SpinMatrixConstants::get_cps_gammas();
+  const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   cf.init(geo);
 #pragma omp parallel for
@@ -303,7 +302,7 @@ void set_multiply_wilson_line_field_partial_comm(
   }
   const Geometry geo = geo_resize(gf1.geo());
   std::vector<Coordinate> cs;
-  std::vector<FieldM<ColorMatrix, 1> > fs(pacc.stops.size());
+  std::vector<FieldM<ColorMatrix, 1>> fs(pacc.stops.size());
   std::map<Coordinate, int> dict;
   cs.push_back(Coordinate());
   fs[0].init(geo);
@@ -325,7 +324,7 @@ void set_multiply_wilson_line_field_partial_comm(
           wlf1 = fs[i];
           const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
           pacc.stops[nc].num_origins -= 1;
-          Handle<FieldM<ColorMatrix, 1> > hf;
+          Handle<FieldM<ColorMatrix, 1>> hf;
           if (dict.find(nc) == dict.end()) {
             cs.push_back(nc);
             dict[nc] = cs.size() - 1;

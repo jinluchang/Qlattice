@@ -253,7 +253,7 @@ static qacc void set_xl_nu_from_mask_mu_yl_m_plaq(
   } else {
     qassert(false);
   }
-  //const Coordinate xg = geo.coordinate_g_from_l(xl);
+  // const Coordinate xg = geo.coordinate_g_from_l(xl);
   qassert(mask == mask_from_coordinate(geo.coordinate_g_from_l(xl), flow_type));
 }
 
