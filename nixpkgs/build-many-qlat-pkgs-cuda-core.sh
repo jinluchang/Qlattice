@@ -25,6 +25,7 @@ nix_version_list=(
 
 name_list=(
     q-pkgs
+    q-pkgs-clang
     q-pkgs-cudasupport
 )
 
