@@ -1373,7 +1373,7 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ>>& src, bool fftdir = true,
   //
   Int nfft = src.size() * civ;
   const Geometry& geo = src[0].geo();
-  bool use_qlat = check_fft_mode(nfft, geo, fft4d);
+  const bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   if (use_qlat) {
     TIMER("fft_complex_field_dir fieldM");
     for (unsigned int i = 0; i < src.size(); i++) {
@@ -1421,7 +1421,7 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M>>>& src, bool fftdir = true,
   Qassert(prec == "RealF" or prec == "RealD");
   //
   Int nfft = src.size() * civ;
-  bool use_qlat = check_fft_mode(nfft, geo, fft4d);
+  const bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   if (use_qlat) {
     TIMER("fft_complex_field_dir fieldM");
     for (unsigned int i = 0; i < src.size(); i++) {
@@ -1497,7 +1497,7 @@ void FFT_vecs_corr(qlat::vector_gpu<Ty>& src,
 
 template <class Ty>
 void fft_fieldG(std::vector<qlat::FieldG<Ty>>& src, bool fftdir = true,
-                bool fft4d = false)
+                bool fft4d = false, const bool check_qlat = true)
 {
   if (src.size() < 1) return;
   //
@@ -1508,10 +1508,13 @@ void fft_fieldG(std::vector<qlat::FieldG<Ty>>& src, bool fftdir = true,
             src[si].mem_order == QLAT_OUTTER);
   }
   //
-  Int nfft = src.size() * civ;
+  const Int nfft = src.size() * civ;
   const Geometry& geo = src[0].geo();
-  bool use_qlat = check_fft_mode(nfft, geo, fft4d);
-  Qassert(use_qlat == false);
+  const bool use_qlat = check_fft_mode(nfft, geo, fft4d);
+  if(use_qlat == true and check_qlat){
+    qmessage("bad number of fft %5d fft4d %s \n", Int(nfft), Int(fft4d));
+    Qassert(false);
+  }
   const Long V = src[0].geo().local_volume();
   {
     std::vector<Ty*> data;
