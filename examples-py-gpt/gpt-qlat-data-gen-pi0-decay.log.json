@@ -3627,6 +3627,422 @@
   }
  ],
  [
+  "auto_contract_pi0_current: sf_pi0_current t_src=0 sig",
+  {
+   "real": -4602.4083447206995,
+   "imag": 4.207007316624326e-15,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=1 sig",
+  {
+   "real": -7327.131654368695,
+   "imag": -4.1234775673881756e-15,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=2 sig",
+  {
+   "real": -1675.102838643399,
+   "imag": -2.0328034411776363e-16,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=3 sig",
+  {
+   "real": -3063.05543470669,
+   "imag": -1.1976359355398714e-16,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=4 sig",
+  {
+   "real": -1405.4299808260062,
+   "imag": -3.4609817706329846e-16,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=5 sig",
+  {
+   "real": -4744.214662534931,
+   "imag": 1.396408489738537e-16,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=6 sig",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current t_src=7 sig",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< 1 >  exprs[0]' sig",
+  {
+   "real": 9852.0723242332,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,0) * 1/sqrt(2) * ( (i ubar g5 u)(w) + (-1) * (i dbar g5 d)(w) ) >  exprs[1]' sig",
+  {
+   "real": 0.025070106729462804,
+   "imag": 2.3746160608371505e-16,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,1) * 1/sqrt(2) * ( (i ubar g5 u)(w) + (-1) * (i dbar g5 d)(w) ) >  exprs[2]' sig",
+  {
+   "real": -0.01591158181314905,
+   "imag": 8.404338908175081e-17,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,2) * 1/sqrt(2) * ( (i ubar g5 u)(w) + (-1) * (i dbar g5 d)(w) ) >  exprs[3]' sig",
+  {
+   "real": 0.019939241230104196,
+   "imag": 4.746548040859081e-16,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,3) * 1/sqrt(2) * ( (i ubar g5 u)(w) + (-1) * (i dbar g5 d)(w) ) >  exprs[4]' sig",
+  {
+   "real": -0.005852550771007643,
+   "imag": 5.180335364903794e-16,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,0) * 1/sqrt(2) * ( i * (ubar g3 g5 u)(w) + (-1) * i * (dbar g3 g5 d)(w) ) >  exprs[5]' sig",
+  {
+   "real": 0.07712075502494188,
+   "imag": 1.8013484754115947e-15,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,1) * 1/sqrt(2) * ( i * (ubar g3 g5 u)(w) + (-1) * i * (dbar g3 g5 d)(w) ) >  exprs[6]' sig",
+  {
+   "real": 0.001033442726391734,
+   "imag": 2.470798603561721e-15,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,2) * 1/sqrt(2) * ( i * (ubar g3 g5 u)(w) + (-1) * i * (dbar g3 g5 d)(w) ) >  exprs[7]' sig",
+  {
+   "real": 0.15263384078590334,
+   "imag": 3.5068131755529147e-15,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_current: sf_pi0_current '< j_mu(x_1,3) * 1/sqrt(2) * ( i * (ubar g3 g5 u)(w) + (-1) * i * (dbar g3 g5 d)(w) ) >  exprs[8]' sig",
+  {
+   "real": 0.04995758362558805,
+   "imag": -1.1204483189634654e-14,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum sig",
+  {
+   "real": 994.3751950561507,
+   "imag": -1.9063776803496152e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc x] [con 0] >' sig",
+  {
+   "real": 617.1063337199708,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc 0] [con x] >' sig",
+  {
+   "real": 786.057268454203,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ls) (pi_op pp)' sig",
+  {
+   "real": -2.258799864241356e-06,
+   "imag": -2.0488529031425803e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ls) (pi_op pp)' sig",
+  {
+   "real": -1.8296786061709928e-06,
+   "imag": -2.3556400036384457e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ls) (pi_op pp)' sig",
+  {
+   "real": 5.358796594467086e-07,
+   "imag": -4.675247427789934e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ls) (pi_op pp)' sig",
+  {
+   "real": 6.902922754143527e-07,
+   "imag": -7.116716757500121e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ls) (pi_op j5)' sig",
+  {
+   "real": -2.0870340561379956e-06,
+   "imag": -4.3832694649583807e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ls) (pi_op j5)' sig",
+  {
+   "real": -3.4118502053140654e-06,
+   "imag": -7.860670083648235e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ls) (pi_op j5)' sig",
+  {
+   "real": -1.1916610871610582e-06,
+   "imag": 8.496284614775786e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ls) (pi_op j5)' sig",
+  {
+   "real": -3.1580910107845724e-06,
+   "imag": -3.322069605034781e-10,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole sl) (pi_op pp)' sig",
+  {
+   "real": 2.2587998642413546e-06,
+   "imag": -2.0488529031426428e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole sl) (pi_op pp)' sig",
+  {
+   "real": 1.8296786061709915e-06,
+   "imag": -2.3556400036385942e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole sl) (pi_op pp)' sig",
+  {
+   "real": -5.358796594467104e-07,
+   "imag": -4.67524742778878e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole sl) (pi_op pp)' sig",
+  {
+   "real": -6.902922754143519e-07,
+   "imag": -7.11671675749929e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole sl) (pi_op j5)' sig",
+  {
+   "real": 2.0870340561380354e-06,
+   "imag": -4.38326946495767e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole sl) (pi_op j5)' sig",
+  {
+   "real": 3.411850205314099e-06,
+   "imag": -7.860670083647422e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole sl) (pi_op j5)' sig",
+  {
+   "real": 1.1916610871610527e-06,
+   "imag": 8.496284614776633e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole sl) (pi_op j5)' sig",
+  {
+   "real": 3.1580910107845995e-06,
+   "imag": -3.322069604341008e-10,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ll) (pi_op pp)' sig",
+  {
+   "real": -9.945867482146984e-22,
+   "imag": -4.9224060043097576e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ll) (pi_op pp)' sig",
+  {
+   "real": -4.241561028941708e-22,
+   "imag": 7.535738370662865e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ll) (pi_op pp)' sig",
+  {
+   "real": -1.7322417932571932e-21,
+   "imag": -8.721476661893389e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ll) (pi_op pp)' sig",
+  {
+   "real": 7.143790729000069e-22,
+   "imag": -1.6776121801538232e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ll) (pi_op j5)' sig",
+  {
+   "real": 5.095069726962759e-21,
+   "imag": -2.3168663058840156e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ll) (pi_op j5)' sig",
+  {
+   "real": 1.3393832987791132e-20,
+   "imag": -3.453443274380344e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ll) (pi_op j5)' sig",
+  {
+   "real": -6.499897282635902e-21,
+   "imag": 8.139772012067851e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ll) (pi_op j5)' sig",
+  {
+   "real": 9.903552052142094e-21,
+   "imag": 1.8832564711120476e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ss) (pi_op pp)' sig",
+  {
+   "real": -1.4094474838658125e-21,
+   "imag": -4.0097397860748705e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ss) (pi_op pp)' sig",
+  {
+   "real": -8.67401757781551e-22,
+   "imag": -5.308407124845538e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ss) (pi_op pp)' sig",
+  {
+   "real": 2.8623979276003717e-22,
+   "imag": 6.4248596731947585e-09,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ss) (pi_op pp)' sig",
+  {
+   "real": 7.647057766136232e-22,
+   "imag": 1.0078317325599764e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ss) (pi_op j5)' sig",
+  {
+   "real": 2.805961376313386e-20,
+   "imag": -4.758375374895672e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ss) (pi_op j5)' sig",
+  {
+   "real": 1.7656723835648286e-20,
+   "imag": -9.83417107597141e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ss) (pi_op j5)' sig",
+  {
+   "real": 1.8909565544358364e-21,
+   "imag": 1.6867258335716212e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ss) (pi_op j5)' sig",
+  {
+   "real": 1.53735233266834e-20,
+   "imag": 1.1813145752343079e-08,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
   "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-gauge_fix_coulomb', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-run-eig', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-checker-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-checker-1000-run_f_rand_01', 'locks/test-4nt8-checker-1000-run_fsel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob-median', 'locks/test-4nt8-checker-1000-run_psel_split', 'locks/test-4nt8-checker-1000-run_fsel_split', 'locks/test-4nt8-checker-1000-psel-smear', 'locks/test-4nt8-checker-1000-run_psel_smear_median', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-light', 'locks/test-4nt8-checker-1000-run_prop_psrc-light', 'locks/test-4nt8-checker-1000-run_prop_smear-light', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-strange', 'locks/test-4nt8-checker-1000-run_prop_psrc-strange', 'locks/test-4nt8-checker-1000-run_prop_smear-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-charm-1', 'locks/test-4nt8-checker-1000-pi0_decay']"
  ]
 ]

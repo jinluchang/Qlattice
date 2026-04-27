@@ -35,6 +35,7 @@ def get_cexpr_meson_corr(is_both_prop=True):
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[((("x_1", "x_2"), 1), (("x_2", "x_1"), 1))] = "Type1"
         diagram_type_dict[((("x_1", "x_1"), 1), (("x_2", "x_2"), 1))] = "Type2"
         diagram_type_dict[((("x_1", "x_2"), 3),)] = "TypeB1"
@@ -654,6 +655,7 @@ def get_cexpr_meson_jt():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             ((("t_1", "t_2"), 1), (("t_2", "x"), 1), (("x", "t_1"), 1))
         ] = "Type1"
@@ -797,6 +799,7 @@ def get_cexpr_meson_m():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             ((("t_1", "t_2"), 1), (("t_2", "t_1"), 1), (("x", "x"), 1))
         ] = None
@@ -932,6 +935,7 @@ def get_cexpr_meson_jj():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             (
                 (("t_1", "x_1"), 1),
@@ -1304,6 +1308,7 @@ def get_cexpr_pi0_jjp():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             ((("w", "x_1"), 1), (("x_1", "x_2"), 1), (("x_2", "w"), 1))
         ] = "Type1"
@@ -1750,23 +1755,33 @@ def get_cexpr_pi0_current():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
-        diagram_type_dict[()] = "T0"
-        diagram_type_dict[((("t_1", "x_1"), 1), (("x_1", "t_1"), 1))] = "TypeC"
+        diagram_type_dict[()] = "T1"
+        diagram_type_dict[((("w", "x_1"), 1), (("x_1", "w"), 1))] = "TypeC"
         #
         jj_d_list = [mk_j_mu("x_1", mu) for mu in range(4)]
         assert len(jj_d_list) == 4
         #
+        pp_u = mk_meson("u", "u", "w")
+        pp_d = mk_meson("d", "d", "w")
+        j5_u = (mk_fac(sympy.I) + "i") * mk_vec5_mu("u", "u", "w", 3)
+        j5_d = (mk_fac(sympy.I) + "i") * mk_vec5_mu("d", "d", "w", 3)
+        sqrt_2_inv = mk_fac(1 / sympy.sqrt(2)) + "1/sqrt(2)"
+        pp_pi = sqrt_2_inv * (pp_u - pp_d)
+        j5_pi = sqrt_2_inv * (j5_u - j5_d)
         pi0d_list = [
-            mk_pi_0("t_1") + "pi0(t_1)",
-        ]
-        assert len(pi0d_list) == 1
+                pp_pi,
+                j5_pi,
+                ]
+        assert len(pi0d_list) == 2
         #
         exprs_list_pi0_decay = [jj_d * pi0d for pi0d in pi0d_list for jj_d in jj_d_list]
+        assert len(exprs_list_pi0_decay) == 2 * 4
         #
         exprs = [
             mk_expr(1) + "1",
         ]
         exprs += exprs_list_pi0_decay
+        assert len(exprs) == 1 + 4 * 2
         #
         cexpr = contract_simplify_compile(
             *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
@@ -1775,7 +1790,7 @@ def get_cexpr_pi0_current():
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_tadpole_current(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
@@ -1876,7 +1891,7 @@ def auto_contract_tadpole_current(
             q.glb_sum(q.get_data_sig(sf_tadpole_current[:, i], q.RngState())),
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pi0_current(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
@@ -1899,10 +1914,10 @@ def auto_contract_pi0_current(
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
     fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob[:].ravel()
+    psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    psel[:]
-    q.Geometry(total_site)
+    xg_psel_arr = psel[:]
+    geo = q.Geometry(total_site)
     sf_pi0_current_list = []
     sf_pi0_current_arr_list = []
     for t_src in range(t_size):
@@ -1920,25 +1935,31 @@ def auto_contract_pi0_current(
         fidx = args
         xg_snk = tuple(xg_fsel_arr[fidx])
         prob_snk = fsel_prob_arr[fidx]
-        val_list = []
-        for t_src in range(t_size):
-            prob = prob_snk
+        val_arr = np.zeros((t_size, len(expr_names),), dtype=np.complex128)
+        for pidx in range(len(xg_psel_arr)):
+            xg_src = tuple(xg_psel_arr[pidx])
+            t_src = xg_src[3]
+            prob_src = psel_prob_arr[pidx]
+            if xg_snk == xg_src:
+                prob = prob_src
+            else:
+                prob = prob_snk * prob_src
             pd = {
                 "x_1": (
                     "point-snk",
                     xg_snk,
                 ),
-                "t_1": (
-                    "wall",
-                    t_src,
+                "w": (
+                    "point",
+                    xg_src,
                 ),
                 "size": total_site,
             }
             val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            val_list.append(val / prob)
+            val_arr[t_src] += val / prob
         res = (
             fidx,
-            val_list,
+            val_arr,
         )
         return res
     #
@@ -1946,10 +1967,10 @@ def auto_contract_pi0_current(
         for idx, res in enumerate(val_list):
             (
                 fidx,
-                val_list,
+                val_arr,
             ) = res
             for t_src in range(t_size):
-                sf_pi0_current_arr_list[t_src][fidx] = val_list[t_src]
+                sf_pi0_current_arr_list[t_src][fidx] = val_arr[t_src]
             if (idx + 1) % (len(xg_fsel_arr) // 128 + 16) == 0:
                 q.displayln_info(f"{fname}: {idx + 1}/{len(xg_fsel_arr)}")
         return None
@@ -2007,24 +2028,24 @@ def auto_contract_pi0_current(
             f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum()
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pi0_gg_disc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/pi0-gg-disc.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/pi0-gg-disc.lat"
     if get_load_path(fn) is not None:
         return
     fn_tadpole_current = get_load_path(
-        f"{job_tag}/tadpole-current/traj-{traj}/tadpole-current.sfield"
+        f"{job_tag}/{pname}/traj-{traj}/tadpole-current.sfield"
     )
-    fn_pi0_current = get_load_path(f"{job_tag}/pi0-current/traj-{traj}/pi0-current")
+    fn_pi0_current = get_load_path(f"{job_tag}/{pname}/traj-{traj}/pi0-current")
     if fn_tadpole_current is None or fn_pi0_current is None:
         return
     tadpole_current_expr_names = get_expr_names(get_cexpr_tadpole_current())
     pi0_current_expr_names = get_expr_names(get_cexpr_pi0_current())
     assert len(tadpole_current_expr_names) == 1 + 4 * 4
-    assert len(pi0_current_expr_names) == 1 + 4
+    assert len(pi0_current_expr_names) == 1 + 4 * 2
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     psel_prob = get_psel_prob()
@@ -2070,12 +2091,16 @@ def auto_contract_pi0_gg_disc(
         "ll",
         "ss",
     ]:
-        expr_names += [
-            f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole {tadpole})",
-            f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole {tadpole})",
-            f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole {tadpole})",
-            f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole {tadpole})",
-        ]
+        for pi_op in [
+            "pp",
+            "j5",
+        ]:
+            expr_names += [
+                f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
+                f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
+                f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
+                f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
+            ]
     # Some final modification for sf_tadpole_current
     sf_tadpole_current[:, 0] *= 1 / total_volume
     sf_tadpole_current[:, 1:] *= m_h - m_l
@@ -2127,18 +2152,20 @@ def auto_contract_pi0_gg_disc(
                 if k == i or k == j:
                     continue
                 for tadpole_idx in range(4):
-                    idx1.append(1 + k)
-                    idx2.append(1 + tadpole_idx * 4 + j)
-                    info.append(
-                        (
-                            ff_idx,
-                            i,
-                            j,
-                            k,
-                            tadpole_idx,
+                    for pi_op_idx in range(2):
+                        idx1.append(1 + pi_op_idx * 4 + k)
+                        idx2.append(1 + tadpole_idx * 4 + j)
+                        info.append(
+                            (
+                                ff_idx,
+                                i,
+                                j,
+                                k,
+                                tadpole_idx,
+                                pi_op_idx,
+                            )
                         )
-                    )
-                    ff_idx += 1
+                        ff_idx += 1
     idx1 = np.array(idx1, dtype=np.int32)
     idx2 = np.array(idx2, dtype=np.int32)
     info = np.array(info, dtype=object)
@@ -2175,7 +2202,7 @@ def auto_contract_pi0_gg_disc(
             pi0_current_sep2 = -tsep
         val = np.zeros(len(expr_names) // 2, dtype=np.complex128)
         val[0] = ff_list[0][xg_idx, 0]
-        for ff_idx, i, j, k, tadpole_idx in info[1:]:
+        for ff_idx, i, j, k, tadpole_idx, pi_op_idx in info[1:]:
             x_i = q.rel_mod_sym(x_rel[i], total_site[i])  # x[i]
             eijk = q.epsilon_tensor(i, j, k)  # e(i,j,k)
             jjpi0_t1 = ff_list[pi0_current_sep1][
@@ -2184,8 +2211,8 @@ def auto_contract_pi0_gg_disc(
             jjpi0_t2 = ff_list[pi0_current_sep2][
                 xg_idx, ff_idx
             ]  # disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep)
-            val[1 + tadpole_idx * 2] += eijk * x_i * jjpi0_t1
-            val[1 + tadpole_idx * 2 + 1] += eijk * x_i * jjpi0_t2
+            val[1 + tadpole_idx * 4 + pi_op_idx * 2] += eijk * x_i * jjpi0_t1
+            val[1 + tadpole_idx * 4 + pi_op_idx * 2 + 1] += eijk * x_i * jjpi0_t2
         if np.all(x_rel == 0):
             val[0] = zero_dis_counts_sum
         if abs(x_rel_t) == t_size // 2:
@@ -2606,6 +2633,12 @@ def run_job_contract(job_tag, traj):
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
                 auto_contract_tadpole_current(
+                    job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
+                )
+                auto_contract_pi0_current(
+                    job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
+                )
+                auto_contract_pi0_gg_disc(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
                 #
