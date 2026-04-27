@@ -28,7 +28,6 @@ usage = f"""
 # The program does not overwrite output files. If the output file already exist, the program will simply display that output file content and skip that input and output file pair and continue.
 """
 
-
 @q.timer(is_timer_fork=True)
 def gen_test_data():
     job_tag_list = [
@@ -118,7 +117,6 @@ def gen_test_data():
         argv_list.append(argv)
     return argv_list
 
-
 def parse_params(argv):
     params = dict()
     params["step_size"] = float(
@@ -136,7 +134,6 @@ def parse_params(argv):
     )
     return params
 
-
 @q.timer(is_timer_fork=True)
 def run_job(argv):
     fn_gf_list = q.get_arg_list("--gf", argv=argv)
@@ -145,7 +142,6 @@ def run_job(argv):
     params = parse_params(argv)
     for fn_gf, fn_out in zip(fn_gf_list, fn_out_list):
         q.run_flow_scale(fn_out, fn_gf=fn_gf, params=params)
-
 
 @q.timer(is_timer_fork=True)
 def run():
@@ -159,10 +155,8 @@ def run():
     for argv in argv_list:
         run_job(argv)
 
-
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
-
 
 # --------------------------------------------
 

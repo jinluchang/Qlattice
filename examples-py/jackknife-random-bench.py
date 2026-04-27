@@ -2,7 +2,6 @@
 
 import qlat as q
 
-
 @q.timer
 def bench_rjk(
     n_rand_sample,
@@ -67,7 +66,6 @@ def bench_rjk(
     for i in range(len(avg)):
         q.json_results_append(f"avg[{i}]", avg[i])
         q.json_results_append(f"err[{i}]", err[i])
-
 
 q.begin_with_mpi()
 

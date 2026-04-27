@@ -86,7 +86,6 @@ q.json_results_append(
     "f_out4d dagger data sig", q.get_data_sig_arr(f_out4d, rs, 3), 1e-6
 )
 
-
 q.json_results_append("test 4d propagator")
 
 sp_in = q.SpinProp(geo, 1)

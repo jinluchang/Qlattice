@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-
 import qlat_gpt as qg
 import qlat as q
 import qlat_scripts.v1 as qs
-
 
 from qlat_scripts.v1 import (
     load_path_list,
@@ -45,7 +43,6 @@ load_path_list[:] = [
 ]
 
 ### ------
-
 
 @q.timer
 def run_prop_rand_vol_u1_src(
@@ -165,9 +162,7 @@ def run_prop_rand_vol_u1_src(
         f"{fname} {job_tag} {traj} {inv_type} done",
     ]
 
-
 ### ------
-
 
 @q.timer_verbose
 def compute_prop_psrc_ref(
@@ -237,7 +232,6 @@ def compute_prop_psrc_ref(
     qar_sp.flush()
     qar_sp.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-
 
 @q.timer
 def run_prop_psrc_ref(
@@ -309,14 +303,11 @@ def run_prop_psrc_ref(
         f"{fname} {job_tag} {traj} {inv_type} done",
     ]
 
-
 ### ------
-
 
 def get_param_quark_mass_list(job_tag):
     quark_mass_list = get_param(job_tag, "quark_mass_list")
     return quark_mass_list
-
 
 @q.timer_verbose
 def run_quark_mass_list(job_tag, traj):
@@ -338,9 +329,7 @@ def run_quark_mass_list(job_tag, traj):
         assert obj_load == obj
     return obj
 
-
 ### ------
-
 
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
@@ -450,12 +439,9 @@ def run_job(job_tag, traj):
                 get_f_rand_01=get_f_rand_01,
             )
 
-
 ### ------
 
-
 def get_all_cexpr(): ...
-
 
 ### ------
 
@@ -1006,14 +992,12 @@ set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
 
 # ----
 
-
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
     qg.end_with_gpt()
     q.displayln_info("CHECK: finished successfully.")
     exit()
-
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

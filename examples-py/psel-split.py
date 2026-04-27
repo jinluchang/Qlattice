@@ -15,7 +15,6 @@ from qlat_scripts.v1 import (
     run_fsel_split,
 )
 
-
 @q.timer(is_timer_fork=True)
 def run_check_psel(get_psel):
     q.json_results_append(q.get_fname())
@@ -26,7 +25,6 @@ def run_check_psel(get_psel):
     for v in all_closest_point_list[:4] + all_closest_point_list[-4:]:
         q.json_results_append(f"all_closest_point_list[...]={v[1]}")
 
-
 @q.timer(is_timer_fork=True)
 def run_check_fsel(get_fsel):
     q.json_results_append(q.get_fname())
@@ -36,7 +34,6 @@ def run_check_fsel(get_fsel):
     all_closest_point_list = q.find_all_closest_n_point_list(psel, n=4)
     for v in all_closest_point_list[:4] + all_closest_point_list[-4:]:
         q.json_results_append(f"all_closest_point_list[...]={v[1]}")
-
 
 @q.timer(is_timer_fork=True)
 def run_check_psel_list(get_psel_list):
@@ -55,7 +52,6 @@ def run_check_psel_list(get_psel_list):
         all_closest_point_list = q.find_all_closest_n_point_list(psel, n=4)
         for v in all_closest_point_list[:2] + all_closest_point_list[-2:]:
             q.json_results_append(f"all_closest_point_list[...]={v[1]}")
-
 
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
@@ -84,7 +80,6 @@ def run_job(job_tag, traj):
     run_check_fsel(get_fsel)
     q.json_results_append("run_check_psel_list(get_fsel_psel_list)")
     run_check_psel_list(get_fsel_psel_list)
-
 
 # --------------------------------------------
 

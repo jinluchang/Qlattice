@@ -33,7 +33,6 @@ load_path_list[:] = [
 
 # --------------------------------------------
 
-
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
     step_size = get_param(job_tag, "flow_scale", "step_size")
@@ -102,7 +101,6 @@ def run_job(job_tag, traj):
             ):
                 run_flow_scale(get_save_path(fn_out), get_gf=get_gf, params=params)
                 q.release_lock()
-
 
 # --------------------------------------------
 
@@ -462,7 +460,6 @@ job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).spl
 
 # ----
 
-
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
@@ -475,14 +472,12 @@ def gracefully_finish():
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
-
 def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
     if (not q.is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
-
 
 size_node_list = [
     [

@@ -83,7 +83,6 @@ ff3d = q.field_convolution(f1, f2, idx1, idx2, is_only_spatial=True)
 
 q.json_results_append("ff3d data sig", q.get_data_sig(ff3d, rs), check_eps)
 
-
 def check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel):
     fsel = q.FieldSelection(geo, 0)
     psel = fsel.to_psel()
@@ -98,7 +97,6 @@ def check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel):
     diff = s - s_ref
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s)
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s_ref)
-
 
 def check_convolution_3d(f1, f2, idx1, idx2, ff, xg_rel):
     t = xg_rel[3]
@@ -119,7 +117,6 @@ def check_convolution_3d(f1, f2, idx1, idx2, ff, xg_rel):
     diff = s - s_ref
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s)
     assert q.qnorm(diff) <= 1e-12 * q.qnorm(s_ref)
-
 
 rsi = rs.split("c-rand-gen")
 for i in range(4):

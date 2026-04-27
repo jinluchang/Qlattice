@@ -9,14 +9,12 @@ from qlat_scripts.v1 import (
     get_param,
 )
 
-
 @q.timer(is_timer_fork=True)
 def run_check_psel(get_psel):
     q.json_results_append(q.get_fname())
     psel = get_psel()
     q.json_results_append(f"len(psel) = {len(psel)}")
     q.json_results_append(f"psel.xg_arr {psel.xg_arr}")
-
 
 @q.timer(is_timer_fork=True)
 def run_check_fsel(get_fsel):
@@ -25,7 +23,6 @@ def run_check_fsel(get_fsel):
     q.json_results_append(f"len(fsel) = {len(fsel)}")
     sig = q.get_data_sig(fsel.to_psel().xg_arr, q.RngState("seed-sig"))
     q.json_results_append("fsel.to_psel().xg_arr sig", sig, 1e-14)
-
 
 @q.timer(is_timer_fork=True)
 def run_check_fsel_prob(get_fsel_prob):
@@ -37,14 +34,12 @@ def run_check_fsel_prob(get_fsel_prob):
     sig = q.get_data_sig(psel_prob[:], q.RngState("seed-sig"))
     q.json_results_append("psel_prob from fsel_prob sig", sig, 1e-14)
 
-
 @q.timer(is_timer_fork=True)
 def run_check_psel_prob(get_psel_prob):
     q.json_results_append(q.get_fname())
     psel_prob = get_psel_prob()
     sig = q.get_data_sig(psel_prob[:], q.RngState("seed-sig"))
     q.json_results_append("psel_prob sig", sig, 1e-14)
-
 
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
@@ -92,7 +87,6 @@ def run_job(job_tag, traj):
     run_check_fsel_prob(get_fsel_prob)
     q.json_results_append("run_check_fsel_prob(get_fsel_prob_sub)")
     run_check_fsel_prob(get_fsel_prob_sub)
-
 
 # --------------------------------------------
 

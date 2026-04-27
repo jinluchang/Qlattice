@@ -24,7 +24,6 @@ load_path_list[:] = [
     "results",
 ]
 
-
 def mk_evolve_campostrini_from_leapfrog(evolve_leapfrog):
     """
     return evolve_campostrini
@@ -39,7 +38,6 @@ def mk_evolve_campostrini_from_leapfrog(evolve_leapfrog):
         evolve_leapfrog(fac * dt)
     #
     return evolve_campostrini
-
 
 def mk_evolve_force_gradient(qq_evolve, pp_evolve_fg):
     """
@@ -59,7 +57,6 @@ def mk_evolve_force_gradient(qq_evolve, pp_evolve_fg):
     #
     return evolve_force_gradient
 
-
 def mk_evolve_leapfrog(qq_evolve_1, qq_evolve_2, pp_evolve):
     """
     return evolve_leapfrog
@@ -72,7 +69,6 @@ def mk_evolve_leapfrog(qq_evolve_1, qq_evolve_2, pp_evolve):
         qq_evolve_2(0.5 * dt)
     #
     return evolve_leapfrog
-
 
 @q.timer
 @q.cache_call(maxsize=8)
@@ -116,7 +112,6 @@ def mk_mass_mats_for_gm(job_tag):
     mass_inv_matrix = sqrt_mass_inv_matrix @ sqrt_mass_inv_matrix
     return sqrt_mass_matrix, mass_inv_matrix
 
-
 @q.timer
 @q.cache_call(maxsize=8)
 def mk_mass_mats_for_af(job_tag):
@@ -158,7 +153,6 @@ def mk_mass_mats_for_af(job_tag):
     sqrt_af_mass_inv_matrix = np.linalg.inv(sqrt_af_mass_matrix)
     af_mass_inv_matrix = sqrt_af_mass_inv_matrix @ sqrt_af_mass_inv_matrix
     return sqrt_af_mass_matrix, af_mass_inv_matrix
-
 
 @q.timer
 def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
@@ -213,7 +207,6 @@ def mk_gm_v_from_gm(job_tag, geo, mass_inv_matrix):
     #
     return gm_v_from_gm
 
-
 @q.timer
 def mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix):
     r"""
@@ -264,7 +257,6 @@ def mk_gm_set_rand(job_tag, geo, sqrt_mass_matrix):
     #
     return gm_set_rand
 
-
 @q.timer
 def gm_gm_v_hamilton_node(gm, gm_v):
     if gm is None:
@@ -281,7 +273,6 @@ def gm_gm_v_hamilton_node(gm, gm_v):
     q.set_basis_from_anti_hermitian_matrix(f_basis_v, gm_v)
     energy = np.sum(f_basis[:] * f_basis_v[:]).item()
     return energy
-
 
 @q.timer
 def gm_blocked_correlation(gm1, gm2, block_site):
@@ -343,9 +334,7 @@ def gm_blocked_correlation(gm1, gm2, block_site):
     corr /= num_block
     return corr
 
-
 runtime_info = dict()
-
 
 @q.timer
 def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
@@ -420,7 +409,6 @@ def mk_acc_runtime_info(job_tag, ga, get_gm_force, af_v_from_af):
     #
     return acc_runtime_info
 
-
 @q.timer
 def mk_fgf(job_tag, rs):
     r"""
@@ -489,7 +477,6 @@ def mk_fgf(job_tag, rs):
         return gt
     #
     return fgf, fgf_g
-
 
 @q.timer
 def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
@@ -703,7 +690,6 @@ def mk_fgf_gf_evolve(job_tag, geo, fgf, fgf_g):
     #
     return gf_evolve
 
-
 @q.timer
 def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
     """
@@ -791,7 +777,6 @@ def mk_fgf_get_gm_force(job_tag, geo, fgf_g, af_v_from_af):
     #
     return get_gm_force
 
-
 @q.timer
 def mk_fgf_gm_evolve_fg(job_tag, get_gm_force, gf_evolve, gm_v_from_gm):
     """
@@ -837,7 +822,6 @@ def mk_fgf_gm_evolve_fg(job_tag, get_gm_force, gf_evolve, gm_v_from_gm):
         gm_v.swap(gm_v_from_gm(gm))
     #
     return gm_evolve_fg
-
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge(
@@ -929,7 +913,6 @@ def run_hmc_evolve_pure_gauge(
     )
     delta_h = q.glb_sum(delta_h)
     return delta_h
-
 
 @q.timer(is_timer_fork=True)
 def run_hmc_pure_gauge(job_tag, gf, traj, rs):
@@ -1035,7 +1018,6 @@ def run_hmc_pure_gauge(job_tag, gf, traj, rs):
         gf_in @= gf
     return flag, delta_h
 
-
 @q.timer(is_timer_fork=True)
 def run_topo_info(job_tag, traj, gf):
     info_path = get_save_path(f"{job_tag}/topo-measure-wilson-flow/traj-{traj}")
@@ -1064,7 +1046,6 @@ def run_topo_info(job_tag, traj, gf):
         info_path=info_path,
         density_field_path=info_path,
     )
-
 
 @q.timer(is_timer_fork=True)
 def run_hmc(job_tag):
@@ -1117,7 +1098,6 @@ def run_hmc(job_tag):
             gf.save(get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
             if is_saving_topo_info:
                 run_topo_info(job_tag, traj, gf)
-
 
 # ----
 

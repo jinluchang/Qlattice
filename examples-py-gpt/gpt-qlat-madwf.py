@@ -125,7 +125,6 @@ inv_qm_madwf = qg.InverterGPT(
     inverter=slv_qm_madwf, qtimer=q.Timer("py:slv_qm_madwf", True)
 )
 
-
 def mk_src(geo):
     src = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
     grid = qg.mk_grid(geo)
@@ -135,7 +134,6 @@ def mk_src(geo):
     src1 -= src
     assert src1.qnorm() == 0.0
     return src
-
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
@@ -148,7 +146,6 @@ def test_inv(geo, inverter):
     q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.4E}")
     q.displayln_info(f"sol1 info {sol1.crc32():08X}")
     return src, sol, sol1
-
 
 tags = ["qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf"]
 invs = [inv_qm, inv_qz_f, inv_qm_mp, inv_qm_split, inv_qm_split_sloppy, inv_qm_madwf]

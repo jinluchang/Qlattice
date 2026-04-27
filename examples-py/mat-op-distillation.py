@@ -11,7 +11,6 @@ nn_s = 4
 
 nn_c = 3
 
-
 def make_rnd_sm(rs: q.RngState):
     x = np.zeros(
         (
@@ -23,7 +22,6 @@ def make_rnd_sm(rs: q.RngState):
     rs.u_rand_fill(x, 1.0, -1.0)
     return x
 
-
 def make_rnd_cm(rs: q.RngState):
     x = np.zeros(
         (
@@ -34,7 +32,6 @@ def make_rnd_cm(rs: q.RngState):
     )
     rs.u_rand_fill(x, 1.0, -1.0)
     return x
-
 
 def make_rnd_wm(rs: q.RngState):
     x = np.zeros(
@@ -48,7 +45,6 @@ def make_rnd_wm(rs: q.RngState):
     )
     rs.u_rand_fill(x, 1.0, -1.0)
     return x
-
 
 sm1 = make_rnd_sm(q.RngState("seed-sm1"))
 sm2 = make_rnd_sm(q.RngState("seed-sm2"))

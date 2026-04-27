@@ -24,13 +24,11 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-
 def mk_f_delta_target(center, sigma):
     def f_delta_target(e):
         return np.exp(-(((e - center) / sigma) ** 2))
     #
     return f_delta_target
-
 
 f_delta_target = mk_f_delta_target(0.20, 0.15)
 

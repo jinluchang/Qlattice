@@ -5,9 +5,7 @@ import qlat as q
 from auto_contractor.operators import *
 from auto_contractor.eval import *
 
-
 is_cython = False
-
 
 @q.timer
 def get_cexpr_meson_uu_corr():
@@ -25,7 +23,6 @@ def get_cexpr_meson_uu_corr():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 def get_all_cexpr():
     cexprs = [
         lambda: get_cexpr_meson_uu_corr(),
@@ -39,7 +36,6 @@ def get_all_cexpr():
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
-
 
 size_node_list = [
     [1, 1, 1, 1],

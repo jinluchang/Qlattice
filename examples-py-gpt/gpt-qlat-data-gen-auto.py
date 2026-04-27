@@ -23,7 +23,6 @@ is_cython = not is_test()
 
 # ----
 
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -65,7 +64,6 @@ def get_cexpr_meson_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -174,7 +172,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
@@ -279,7 +276,6 @@ def auto_contract_meson_corr_psnk(
         q.json_results_append(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
-
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(
@@ -395,7 +391,6 @@ def auto_contract_meson_corr_psrc(
         q.json_results_append(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
-
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(
@@ -518,9 +513,7 @@ def auto_contract_meson_corr_psnk_psrc(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_meson_jt():
@@ -566,7 +559,6 @@ def get_cexpr_meson_jt():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -664,9 +656,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_meson_m():
@@ -701,7 +691,6 @@ def get_cexpr_meson_m():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -802,9 +791,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_meson_jj():
@@ -1207,7 +1194,6 @@ def get_cexpr_meson_jj():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
@@ -1343,9 +1329,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_meson_jwjj():
@@ -1495,7 +1479,6 @@ def get_cexpr_meson_jwjj():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -1891,7 +1874,6 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         q.json_results_append(
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
-
 
 @q.timer_verbose
 def auto_contract_meson_jwjj2(
@@ -2313,9 +2295,7 @@ def auto_contract_meson_jwjj2(
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
 
-
 ### ------
-
 
 @q.timer
 def get_cexpr_pi0_gg():
@@ -2384,7 +2364,6 @@ def get_cexpr_pi0_gg():
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer
 def get_cexpr_tadpole_current():
     """
@@ -2431,7 +2410,6 @@ def get_cexpr_tadpole_current():
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer
 def get_cexpr_pi0_current():
     """
@@ -2465,7 +2443,6 @@ def get_cexpr_pi0_current():
         return cexpr
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_tadpole_current(
@@ -2567,7 +2544,6 @@ def auto_contract_tadpole_current(
             f"{fname}: sf_tadpole_current '{en}' sig",
             q.glb_sum(q.get_data_sig(sf_tadpole_current[:, i], q.RngState())),
         )
-
 
 @q.timer_verbose
 def auto_contract_pi0_current(
@@ -2699,7 +2675,6 @@ def auto_contract_pi0_current(
         q.json_results_append(
             f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum()
         )
-
 
 @q.timer_verbose
 def auto_contract_pi0_gg_disc(
@@ -2917,9 +2892,7 @@ def auto_contract_pi0_gg_disc(
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
 
-
 ### ------
-
 
 @q.timer_verbose
 def run_job_inversion(job_tag, traj):
@@ -3170,7 +3143,6 @@ def run_job_inversion(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-
 @q.timer_verbose
 def run_job_contract(job_tag, traj):
     #
@@ -3324,9 +3296,7 @@ def run_job_contract(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-
 ### ------
-
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
@@ -3337,7 +3307,6 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_pi0_gg())
     benchmark_eval_cexpr(get_cexpr_tadpole_current())
     benchmark_eval_cexpr(get_cexpr_pi0_current())
-
 
 ### ------
 
@@ -3629,7 +3598,6 @@ set_param(job_tag, "measurement", "auto_contractor_chunk_size")(2)
 
 # ----
 
-
 ##################### CMD options #####################
 
 job_tag_list_default = [
@@ -3644,7 +3612,6 @@ is_performing_contraction = q.get_arg("--no-contract", default=None) is None
 
 #######################################################
 
-
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
@@ -3657,14 +3624,12 @@ def gracefully_finish():
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
-
 def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
     if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
-
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

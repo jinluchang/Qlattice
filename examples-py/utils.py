@@ -43,7 +43,6 @@ block_size_dict = {
     "48I": 10,
 }
 
-
 @q.cache_call(
     maxsize=4,
 )
@@ -53,10 +52,8 @@ def func(x):
     )
     return x, block_size, block_size_dict
 
-
 for i in range(10):
     q.json_results_append(f"i={i} ; func(i % 4)")
-
 
 @q.cache_call(
     maxsize=4,
@@ -70,7 +67,6 @@ def func(x):
         f"run: func({x}) ; block_size={block_size} ; block_size_dict={block_size_dict}"
     )
     return x, block_size, block_size_dict
-
 
 for i in range(10):
     q.json_results_append(f"i={i} ; func(i % 4)")
@@ -87,7 +83,6 @@ for i in range(10):
 
 for i in range(20):
     q.json_results_append(f"i={i} ; func(i % 10)")
-
 
 @q.cache_call(
     maxsize=2,
@@ -103,7 +98,6 @@ def func(x):
     )
     return x, block_size, block_size_dict
 
-
 for i in range(10):
     q.json_results_append(f"i={i} ; func(i % 4)")
 
@@ -117,7 +111,6 @@ block_size_dict["64I"] = 20
 for i in range(20):
     q.json_results_append(f"i={i} ; func(i % 10)")
 
-
 @q.cache_call(
     maxsize=4,
     get_state=lambda: (block_size,),
@@ -128,7 +121,6 @@ def func(x):
         f"run: func({x}) ; block_size={block_size} ; block_size_dict={block_size_dict}"
     )
     return x, block_size, block_size_dict
-
 
 for i in range(10):
     q.json_results_append(f"i={i} ; {func(i % 4)}")

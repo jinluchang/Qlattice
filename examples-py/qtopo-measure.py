@@ -51,7 +51,6 @@ size_node_list = [
     [2, 2, 2, 4],
 ]
 
-
 @q.timer(is_timer_fork=True)
 def gen_test_data():
     job_tag_list = [
@@ -129,7 +128,6 @@ def gen_test_data():
     ]
     return argv
 
-
 @q.timer(is_timer_fork=True)
 def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
     fname = q.get_fname()
@@ -203,10 +201,8 @@ def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
         f"{fname}: End compute topo_measure out='{fn_out}' (out_df='{fn_out_df}') for '{fn_gf}'"
     )
 
-
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
-
 
 @q.timer(is_timer_fork=True)
 def run():
@@ -247,7 +243,6 @@ def run():
             fn_out_df,
             smear_info_list=smear_info_list,
         )
-
 
 # --------------------------------------------
 

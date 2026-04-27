@@ -55,20 +55,17 @@ is_cython = not is_test()
 
 ### ------
 
-
 def mk_eta_c(p: str, is_dagger=False):
     """
     cbar g5 c  #dag: same
     """
     return mk_meson("c", "c", p, is_dagger) + f"eta_c({p}){show_dagger(is_dagger)}"
 
-
 def mk_j5_eta_c_mu(p: str, mu, is_dagger=False):
     return (
         mk_vec5_mu("c", "c", p, mu, is_dagger)
         + f"j5_eta_c_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 @q.timer
 def get_cexpr_eta_c_corr():
@@ -94,9 +91,7 @@ def get_cexpr_eta_c_corr():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 ### ------
-
 
 @q.timer_verbose
 def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list):
@@ -191,7 +186,6 @@ def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list)
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-
 @q.timer_verbose
 def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, inv_type, tslice_list):
     fname = q.get_fname()
@@ -283,9 +277,7 @@ def auto_contract_eta_c_corr_psnk(job_tag, traj, get_get_prop, inv_type, tslice_
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-
 ### ------
-
 
 @q.timer_verbose
 def mk_get_prop(prop_dict):
@@ -328,7 +320,6 @@ def mk_get_prop(prop_dict):
     #
     return get_prop
 
-
 def mk_get_prop_point_snk(prop_ps, geo):
     def get(p_snk):
         type_snk, pos_snk = p_snk
@@ -340,7 +331,6 @@ def mk_get_prop_point_snk(prop_ps, geo):
     #
     return get
 
-
 def mk_get_prop_wall_snk(ps_prop_ws):
     def get(p_snk):
         type_snk, pos_snk = p_snk
@@ -349,7 +339,6 @@ def mk_get_prop_wall_snk(ps_prop_ws):
         return ps_prop_ws.get_elem_wm(pos_snk)
     #
     return get
-
 
 @q.timer_verbose
 def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, inv_type, tslice_list):
@@ -387,9 +376,7 @@ def run_get_prop_wsrc_charm(job_tag, traj, *, get_gf, get_gt, inv_type, tslice_l
     #
     return q.lazy_call(get_get_prop)
 
-
 ### ------
-
 
 @q.timer(is_timer_fork=True)
 def run_eta_c_corr(job_tag, traj, get_gf, get_gt):
@@ -417,14 +404,11 @@ def run_eta_c_corr(job_tag, traj, get_gf, get_gt):
     q.qtouch_info(get_save_path(fn_checkpoint))
     q.release_lock()
 
-
 ### ------
-
 
 def get_param_charm_mass_list(job_tag):
     charm_quark_mass_list = get_param(job_tag, "quark_mass_list")[2:]
     return charm_quark_mass_list
-
 
 @q.cache_call()
 @q.timer_verbose
@@ -441,7 +425,6 @@ def get_param_charm_wall_src_tslice_list(job_tag, traj):
         round(t_start + i * t_sep) % t_size for i in range(num_charm_wall_src)
     ]
     return tslice_list
-
 
 @q.timer_verbose
 def run_charm_wall_src_prop_params(job_tag, traj):
@@ -472,9 +455,7 @@ def run_charm_wall_src_prop_params(job_tag, traj):
         assert obj_load == obj
     return obj
 
-
 ### ------
-
 
 @q.timer(is_timer_fork=True)
 def run_job(job_tag, traj):
@@ -508,13 +489,10 @@ def run_job(job_tag, traj):
     #
     run_eta_c_corr(job_tag, traj, get_gf, get_gt)
 
-
 ### ------
-
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_eta_c_corr())
-
 
 ### ------
 
@@ -790,7 +768,6 @@ job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).spl
 
 #######################################################
 
-
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
@@ -803,14 +780,12 @@ def gracefully_finish():
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
-
 def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
     if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
-
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

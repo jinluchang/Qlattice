@@ -20,7 +20,6 @@ load_path_list[:] = [
 
 # ----
 
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -62,7 +61,6 @@ def get_cexpr_meson_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(
@@ -182,9 +180,7 @@ def auto_contract_meson_corr_psnk_psrc(
     ld.save(get_save_path(fn))
     q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
 
-
 ### ------
-
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -426,10 +422,8 @@ def run_job(job_tag, traj):
             q.release_lock()
             q.clean_cache()
 
-
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
-
 
 size_node_list = [
     [1, 1, 1, 1],

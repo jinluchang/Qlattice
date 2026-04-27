@@ -12,7 +12,6 @@ job_tag_list = [
 
 q.default_g_jk_kwargs["jk_type"] = "super"
 
-
 @functools.lru_cache
 def get_all_jk_idx():
     jk_idx_list = [
@@ -29,14 +28,11 @@ def get_all_jk_idx():
             )
     return jk_idx_list
 
-
 q.default_g_jk_kwargs["get_all_jk_idx"] = get_all_jk_idx
-
 
 @functools.lru_cache
 def get_traj_list(job_tag):
     return list(range(25))
-
 
 rs = q.RngState("seed")
 job_tag = "test1"

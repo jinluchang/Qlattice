@@ -24,7 +24,6 @@ load_path_list[:] = [
 
 # ----
 
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -68,7 +67,6 @@ def get_cexpr_meson_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_get_prop):
@@ -162,7 +160,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
     fname = q.get_fname()
@@ -247,7 +244,6 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_get_prop):
         q.json_results_append(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
-
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
@@ -355,7 +351,6 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_get_prop):
         q.json_results_append(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
-
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
@@ -481,7 +476,6 @@ def auto_contract_meson_corr_psnk_psrc_rand(job_tag, traj, get_get_prop):
         q.json_results_append(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
-
 
 # ----
 
@@ -762,13 +756,10 @@ all_mom_list_dict = {
     ],
 }
 
-
 def get_mom_list(mom_idx):
     return all_mom_list_dict[mom_idx]
 
-
 # ----
-
 
 def wave_function(p1, p2, radius, size):
     p1_tag, c1 = p1
@@ -781,7 +772,6 @@ def wave_function(p1, p2, radius, size):
     wf = vol**2 * math.exp(-dis / radius)
     return wf
 
-
 def momentum_factor(mom, p, size, is_dagger=False):
     p_tag, c = p
     assert mom[3] == 0
@@ -792,7 +782,6 @@ def momentum_factor(mom, p, size, is_dagger=False):
     else:
         mf = cmath.rect(1.0, -phase)
     return mf
-
 
 def mk_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
     """
@@ -818,7 +807,6 @@ def mk_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
             + f"(i {f2}bar g5 {f1})({p2},{p1},{radius},{mom})"
         )
 
-
 def mk_scalar_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
     """
     i q1bar g5 q2 #dag: i q2bar g5 q1
@@ -838,9 +826,7 @@ def mk_scalar_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
         mf = mk_fac(f"momentum_factor(-{mom},{p2},size)")
         return wf * mf * q2b * q1v + f"({f2}bar {f1})({p2},{p1},{radius},{mom})"
 
-
 # ----
-
 
 def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
     """
@@ -857,7 +843,6 @@ def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
         + f"pi0({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
 
-
 def mk_pi_p_wf(p1, p2, mom, is_dagger=False):
     """
     i ubar g5 d  #dag: i dbar g5 u
@@ -868,7 +853,6 @@ def mk_pi_p_wf(p1, p2, mom, is_dagger=False):
         + f"pi+({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
 
-
 def mk_pi_m_wf(p1, p2, mom, is_dagger=False):
     """
     -i dbar g5 u  #dag: -i ubar g5 d
@@ -878,7 +862,6 @@ def mk_pi_m_wf(p1, p2, mom, is_dagger=False):
         -mk_meson_wf("d", "u", p1, p2, radius, mom, is_dagger)
         + f"pi-({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
-
 
 def mk_sigma_wf(p1, p2, mom, is_dagger=False):
     """
@@ -895,7 +878,6 @@ def mk_sigma_wf(p1, p2, mom, is_dagger=False):
         + f"sigma({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
 
-
 def mk_kk_p_wf(p1, p2, mom, is_dagger=False):
     """
     i ubar g5 s  #dag:  i sbar g5 u
@@ -905,7 +887,6 @@ def mk_kk_p_wf(p1, p2, mom, is_dagger=False):
         mk_meson_wf("u", "s", p1, p2, radius, mom, is_dagger)
         + f"K+({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
-
 
 def mk_kk_m_wf(p1, p2, mom, is_dagger=False):
     """
@@ -917,7 +898,6 @@ def mk_kk_m_wf(p1, p2, mom, is_dagger=False):
         + f"K-({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
 
-
 def mk_kk_0_wf(p1, p2, mom, is_dagger=False):
     """
     i dbar g5 s  #dag: i sbar g5 d
@@ -927,7 +907,6 @@ def mk_kk_0_wf(p1, p2, mom, is_dagger=False):
         mk_meson_wf("d", "s", p1, p2, radius, mom, is_dagger)
         + f"K0({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
-
 
 def mk_kk_0_bar_wf(p1, p2, mom, is_dagger=False):
     """
@@ -939,9 +918,7 @@ def mk_kk_0_bar_wf(p1, p2, mom, is_dagger=False):
         + f"K0b({p1},{p2},{radius},{mom}){show_dagger(is_dagger)}"
     )
 
-
 # ----
-
 
 def mk_pipi_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False):
     """
@@ -976,7 +953,6 @@ def mk_pipi_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False):
         1 / sympy.sqrt(n_op) * expr
         + f"pipi_I0({p11},{p12},{p21},{p22},mom={mom}){show_dagger(is_dagger)}"
     )
-
 
 def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
     """
@@ -1021,9 +997,7 @@ def mk_kkkk_i0_j0_wf(p11, p12, p21, p22, mom, is_dagger=False, *, is_sym=True):
         + f"KK_I0({p11},{p12},{p21},{p22},mom={mom}){show_dagger(is_dagger)}"
     )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_meson_corr_wf():
@@ -1090,7 +1064,6 @@ def get_cexpr_meson_corr_wf():
         base_positions_dict=base_positions_dict,
         is_cython=is_cython,
     )
-
 
 @q.timer_verbose
 def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
@@ -1216,9 +1189,7 @@ def auto_contract_meson_corr_wf(job_tag, traj, get_get_prop):
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-
 # ----
-
 
 def time_selector_8(p):
     p_tag, c = p
@@ -1227,7 +1198,6 @@ def time_selector_8(p):
         return 8
     else:
         return 0
-
 
 @q.timer
 def get_cexpr_meson_meson_i0_j0_corr_wf():
@@ -1631,7 +1601,6 @@ def get_cexpr_meson_meson_i0_j0_corr_wf():
         is_cython=is_cython,
     )
 
-
 @q.timer_verbose
 def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
     fname = q.get_fname()
@@ -1934,9 +1903,7 @@ def auto_contract_meson_meson_i0_j0_corr_wf(job_tag, traj, get_get_prop):
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld_snk_op[i], q.RngState())
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_pi0_gg():
@@ -2004,7 +1971,6 @@ def get_cexpr_pi0_gg():
         return cexpr
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer_verbose
 def auto_contract_pi0_gg(job_tag, traj, get_get_prop):
@@ -2124,9 +2090,7 @@ def auto_contract_pi0_gg(job_tag, traj, get_get_prop):
             20e-5,
         )
 
-
 # ----
-
 
 @q.timer_verbose
 def get_all_cexpr():
@@ -2135,9 +2099,7 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr_wf())
     benchmark_eval_cexpr(get_cexpr_meson_meson_i0_j0_corr_wf())
 
-
 # ----
-
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -2227,7 +2189,6 @@ def run_job(job_tag, traj):
     if len(q.obtained_lock_history_list) > num_locks:
         q.timer_display()
 
-
 @q.timer_verbose
 def run_job_contract(job_tag, traj):
     #
@@ -2311,7 +2272,6 @@ def run_job_contract(job_tag, traj):
                 q.timer_display()
                 q.timer_merge()
     q.clean_cache()
-
 
 # ----
 
@@ -2763,13 +2723,11 @@ set_param(
 
 # ----
 
-
 def gracefully_finish():
     q.timer_display()
     qg.end_with_gpt()
     q.displayln_info("CHECK: finished successfully.")
     exit()
-
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

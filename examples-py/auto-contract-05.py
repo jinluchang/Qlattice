@@ -19,7 +19,6 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-
 def wave_function(p1, p2, radius, size):
     p1_tag, c1 = p1
     p2_tag, c2 = p2
@@ -31,7 +30,6 @@ def wave_function(p1, p2, radius, size):
     wf = vol**2 * math.exp(-dis / radius)
     return wf
 
-
 def momentum_factor(mom, p, size, is_dagger=False):
     p_tag, c = p
     assert mom[3] == 0
@@ -42,7 +40,6 @@ def momentum_factor(mom, p, size, is_dagger=False):
     else:
         mf = cmath.rect(1.0, -phase)
     return mf
-
 
 def mk_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
     """
@@ -68,7 +65,6 @@ def mk_meson_wf(f1, f2, p1, p2, radius, mom, is_dagger=False):
             + f"(i {f2}bar g5 {f1})({p2},{p1},{radius},{mom})"
         )
 
-
 def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
     """
     i/sqrt(2) * (ubar g5 u - dbar g5 d)  #dag: same
@@ -83,7 +79,6 @@ def mk_pi_0_wf(p1, p2, mom, is_dagger=False):
         )
         + f"pi0({p1},{p2},{radius},{mom}){qac.show_dagger(is_dagger)}"
     )
-
 
 diagram_type_dict = dict()
 diagram_type_dict[()] = "Type0"
@@ -133,7 +128,6 @@ q.json_results_append("qac.get_expr_names(cexpr_opt)")
 for name in qac.get_expr_names(cexpr_opt):
     q.json_results_append(name)
 
-
 @q.timer
 def get_cexpr_test(is_cython=False):
     fn_base = "cache/auto_contract_cexpr/get_cexpr_test"
@@ -154,7 +148,6 @@ def get_cexpr_test(is_cython=False):
         is_cython=is_cython,
         base_positions_dict=base_positions_dict,
     )
-
 
 for is_cython in [
     False,
@@ -189,7 +182,6 @@ for is_cython in [
         q.get_data_sig(np.array(check_ama, dtype=np.complex128), q.RngState()),
     )
 
-
 def get_prop(flavor, p1, p2):
     tag = f"get_prop({flavor!r},{p1!r},{p2!r})"
     q.displayln_info(f"Call {tag}")
@@ -197,7 +189,6 @@ def get_prop(flavor, p1, p2):
     wm = qac.make_rand_spin_color_matrix(rs)
     assert isinstance(wm, q.WilsonMatrix)
     return wm
-
 
 pd = {
     "x11": (

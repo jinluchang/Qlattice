@@ -31,7 +31,6 @@ qfile.write(content)
 assert content == qfile.content_bytes()
 qfile.close()
 
-
 def test_ld_str_io(path):
     ld_load = q.load_lat_data(path)
     ld_bytes = ld_load.save_str()
@@ -39,7 +38,6 @@ def test_ld_str_io(path):
     ld_str = q.LatData()
     ld_str.load_str(ld_bytes)
     assert ld_str.save_str() == ld_bytes
-
 
 ld = q.LatData()
 ld.save("results/data/ld.lat")
@@ -66,7 +64,6 @@ ld.from_numpy(np.arange(10000.0).astype(complex).reshape(2, 5, 10, 100))
 ld.save("results/data/ld-10000.lat")
 test_ld_str_io("results/data/ld-10000.lat")
 
-
 def test_ldi_str_io(path):
     ld_load = q.load_lat_data_int(path)
     ld_bytes = ld_load.save_str()
@@ -74,7 +71,6 @@ def test_ldi_str_io(path):
     ld_str = q.LatDataInt()
     ld_str.load_str(ld_bytes)
     assert ld_str.save_str() == ld_bytes
-
 
 ld = q.LatDataInt()
 ld.from_numpy(np.arange(10000).reshape(2, 5, 10, 100))

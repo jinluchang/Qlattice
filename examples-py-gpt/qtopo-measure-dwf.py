@@ -60,7 +60,6 @@ rs_sig = q.RngState("rs_sig")
 
 # ------------------------------
 
-
 @q.timer(is_verbose=True)
 def measure_topo_dwf(
     gf,
@@ -581,9 +580,7 @@ def measure_topo_dwf(
     #
     return info
 
-
 # ------------------------------
-
 
 @q.timer
 def get_cexpr_tadpole_loop():
@@ -603,11 +600,9 @@ def get_cexpr_tadpole_loop():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer(is_verbose=True)
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_tadpole_loop())
-
 
 @q.timer(is_verbose=True)
 def mk_sparse_grid(xg_arr, sparse_ratio, idx):
@@ -837,7 +832,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
     else:
         raise Exception(f"{sparse_ratio=}")
 
-
 @q.timer(is_verbose=True)
 def sparse_solve(idx, psel, fu1, inverter):
     """
@@ -867,9 +861,7 @@ def sparse_solve(idx, psel, fu1, inverter):
         )
     return sp_prop_sol
 
-
 # --------------------------------------------
-
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
@@ -932,7 +924,6 @@ def gen_test_data():
     ]
     return argv
 
-
 @q.timer(is_timer_fork=True)
 def run_topo_measure(fn_gf, fn_out, *, params=None):
     fname = q.get_fname()
@@ -970,10 +961,8 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
         f"{fname}: End compute topo_measure out='{fn_out}' for '{fn_gf}'"
     )
 
-
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
-
 
 @q.timer(is_timer_fork=True)
 def run():
@@ -1007,7 +996,6 @@ def run():
             fn_out,
             params=params,
         )
-
 
 # --------------------------------------------
 

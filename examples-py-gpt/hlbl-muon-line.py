@@ -35,7 +35,6 @@ eps3 = (
 
 eps = eps2
 
-
 def load_or_compute_muon_line_interpolation():
     path = "results/muon-line-interpolation-data"
     if not q.does_file_exist_qar_sync_node(f"{path}.qar"):
@@ -70,7 +69,6 @@ def load_or_compute_muon_line_interpolation():
             1,
         ],
     )
-
 
 q.begin_with_mpi()
 
@@ -315,7 +313,6 @@ if True:
         )
     q.clear_muon_line_interpolations()
 
-
 def test_get_muon_line_m_extra_lat(total_site, muon_mass, tag, rng_seed):
     fname = q.get_fname()
     rng = q.RngState(rng_seed)
@@ -343,7 +340,6 @@ def test_get_muon_line_m_extra_lat(total_site, muon_mass, tag, rng_seed):
         q.get_data_sig(vv_all, q.RngState()),
         check_eps_interp,
     )
-
 
 if True:
     fname = "get_muon_line_m_extra_lat"

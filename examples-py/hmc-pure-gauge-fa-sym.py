@@ -26,7 +26,6 @@ load_path_list[:] = [
 
 # ----
 
-
 class MomentumAutoCorr:
     """ "
     self.info_list
@@ -99,15 +98,12 @@ class MomentumAutoCorr:
         q.displayln_info(pformat(data))
         q.save_pickle_obj(data, fn)
 
-
 # ----
-
 
 @q.timer
 def gf_evolve(gf, gm, gm_dual, mf, mf_dual, dt):
     q.gf_evolve_fa(gf, gm, mf, dt)
     q.gf_evolve_fa_dual(gf, gm_dual, mf_dual, dt)
-
 
 @q.timer
 def gm_evolve_fg(
@@ -141,7 +137,6 @@ def gm_evolve_fg(
     gm_dual += gm_force_dual
     if is_project_gauge_transform:
         project_gauge_transform(gm, gm_dual, mf, mf_dual)
-
 
 @q.timer_verbose
 def run_hmc_evolve(
@@ -207,7 +202,6 @@ def run_hmc_evolve(
     )
     delta_h = q.glb_sum(delta_h)
     return delta_h
-
 
 @q.timer_verbose
 def run_hmc_traj(
@@ -308,7 +302,6 @@ def run_hmc_traj(
         gm *= -1
         gm_dual *= -1
     return flag, delta_h
-
 
 @q.timer_verbose
 def run_hmc_mass_mom_refresh(
@@ -548,7 +541,6 @@ def run_hmc_mass_mom_refresh(
             # Project out the gauge transform movement
             project_gauge_transform(gm, gm_dual, mf, mf_dual)
 
-
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
     info_path = get_save_path(f"{job_tag}/topo-measure-wilson-flow/traj-{traj}")
@@ -577,7 +569,6 @@ def run_topo_info(job_tag, traj, gf):
         info_path=info_path,
         density_field_path=info_path,
     )
-
 
 @q.timer_verbose
 def run_hmc(job_tag):
@@ -680,7 +671,6 @@ def run_hmc(job_tag):
             if is_saving_topo_info:
                 run_topo_info(job_tag, traj, gf)
         q.timer_display()
-
 
 # ----
 

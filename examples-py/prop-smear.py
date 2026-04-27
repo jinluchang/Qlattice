@@ -43,14 +43,12 @@ total_site_list = [
     # q.Coordinate([ 2, 2, 512, 2, ]),
 ]
 
-
 def get_f_list_sig(f_list, rs, n):
     sig = np.zeros(n, dtype=np.complex128)
     for idx, sp in enumerate(f_list):
         sig += q.get_data_sig_arr(sp[:], rs.split(f"sig {idx}"), n)
     sig = q.glb_sum(sig)
     return sig
-
 
 @q.timer(is_timer_fork=True, timer_fork_show_display=True)
 def benchmark_prop_spatial_smear(total_site, seed):
@@ -102,7 +100,6 @@ def benchmark_prop_spatial_smear(total_site, seed):
         if is_show_sig:
             ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
             q.json_results_append("ss_prop GWU sig", ss_prop_sig, 1e-10)
-
 
 for total_site in total_site_list:
     for seed in range(2):

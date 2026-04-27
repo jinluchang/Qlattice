@@ -8,7 +8,6 @@ import qlat as q
 
 from qlat import metropolis_accept
 
-
 @q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
     geo = gf_init.geo
@@ -27,7 +26,6 @@ def gm_evolve_fg(gm, gf_init, ga, fi, fg_dt, dt):
     #
     gm_force *= dt
     gm += gm_force
-
 
 @q.timer_verbose
 def run_hmc_evolve_flowed(gm, gf, ga, fi, rs, steps, md_time=1.0):
@@ -55,7 +53,6 @@ def run_hmc_evolve_flowed(gm, gf, ga, fi, rs, steps, md_time=1.0):
     #
     return delta_h
 
-
 @q.timer_verbose
 def mk_flow_info(rng):
     fi = q.FlowInfo()
@@ -63,7 +60,6 @@ def mk_flow_info(rng):
     # fi.add_rand_order_flow(rng, 0.1)
     # fi.add_rand_order_flow(rng, 0.1, 0.0)
     return fi
-
 
 @q.timer_verbose
 def run_hmc(gf, ga, traj, rs):
@@ -115,7 +111,6 @@ def run_hmc(gf, ga, traj, rs):
         q.displayln_info("run_hmc: update gf (traj={:d})".format(traj))
         q.gf_flow(gf, gf0, fi)
 
-
 @q.timer_verbose
 def test_hmc(total_site, ga):
     geo = q.Geometry(total_site)
@@ -154,7 +149,6 @@ def test_hmc(total_site, ga):
                 "results/gm_force_info/traj={}.lat".format(traj)
             )
 
-
 @q.timer_verbose
 def show_machine():
     print(
@@ -165,7 +159,6 @@ def show_machine():
             str(q.get_size_node()),
         )
     )
-
 
 @q.timer_verbose
 def main():
@@ -180,7 +173,6 @@ def main():
     ga = q.GaugeAction(2.31, -0.331)
     # ga = q.GaugeAction(5.5, 0.0)
     test_hmc(total_site, ga)
-
 
 size_node_list = [
     (1, 1, 1, 1),

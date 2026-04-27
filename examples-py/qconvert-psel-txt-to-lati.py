@@ -20,7 +20,6 @@ usage = f"""
 # E.g.: {__file__} --grid 4.4.4.8 --src results/test-4nt8/point-selection --dst results/test-4nt8/points-selection
 """
 
-
 @q.timer
 def mk_psel(total_site, rate, rs):
     geo = q.Geometry(total_site)
@@ -30,7 +29,6 @@ def mk_psel(total_site, rate, rs):
     f_rand_01.set_rand(rs, 1.0, 0.0)
     psel = make_psel_from_weight(f_weight, f_rand_01, rate)
     return psel
-
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
@@ -45,7 +43,6 @@ def gen_test_data():
         psel = mk_psel(total_site, rate, rs)
         psel.save(f"{path_src}/traj-{traj}.txt")
     return total_site_str, path_src, path_dst
-
 
 @q.timer(is_timer_fork=True)
 def run_conversion(total_site, path_dst, path_src):
@@ -69,7 +66,6 @@ def run_conversion(total_site, path_dst, path_src):
             psel_str = f"{psel.total_site} {psel[:].tolist()}"
             q.displayln_info(f"psel: {psel_str}")
 
-
 @q.timer(is_timer_fork=True)
 def run():
     total_site_str = q.get_arg("--grid")
@@ -88,7 +84,6 @@ def run():
         assert path_dst is not None
     total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
-
 
 if __name__ == "__main__":
     is_show_usage = q.get_option("--usage")

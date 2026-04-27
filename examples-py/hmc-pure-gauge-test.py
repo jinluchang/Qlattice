@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-
 import qlat as q
-
 
 @q.timer_verbose
 def test_hmc(total_site, ga):
@@ -36,7 +34,6 @@ def test_hmc(total_site, ga):
                 2,
             )
 
-
 @q.timer_verbose
 def main():
     total_site = q.Coordinate(
@@ -51,7 +48,6 @@ def main():
     test_hmc(total_site, ga)
     ga = q.GaugeAction(5.5, 0.0)
     test_hmc(total_site, ga)
-
 
 size_node_list = [
     [1, 1, 1, 1],

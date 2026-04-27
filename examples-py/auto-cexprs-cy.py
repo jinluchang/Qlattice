@@ -5,9 +5,7 @@ import qlat as q
 from auto_contractor.operators import *
 from auto_contractor.eval import *
 
-
 is_cython = True
-
 
 @q.timer
 def get_cexpr_zeros():
@@ -23,7 +21,6 @@ def get_cexpr_zeros():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -38,7 +35,6 @@ def get_cexpr_meson_corr():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer
 def get_cexpr_meson_f_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_f_corr"
@@ -52,7 +48,6 @@ def get_cexpr_meson_f_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer
 def get_cexpr_meson_corr2():
@@ -69,7 +64,6 @@ def get_cexpr_meson_corr2():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer
 def get_cexpr_meson_corr3():
@@ -90,7 +84,6 @@ def get_cexpr_meson_corr3():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer
 def get_cexpr_meson_f_corr2():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_f_corr2"
@@ -110,7 +103,6 @@ def get_cexpr_meson_f_corr2():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer
 def get_cexpr_meson_quark_mass():
@@ -162,7 +154,6 @@ def get_cexpr_meson_quark_mass():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 def get_all_cexpr():
     cexprs = [
         lambda: get_cexpr_zeros(),
@@ -182,7 +173,6 @@ def get_all_cexpr():
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
-
 
 size_node_list = [
     [1, 1, 1, 1],

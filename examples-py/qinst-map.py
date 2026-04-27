@@ -31,7 +31,6 @@ usage = f"""
 # Display these INST_MAP file contents.
 """
 
-
 @q.timer(is_timer_fork=True)
 def gen_test_data():
     job_tag_list = [
@@ -82,7 +81,6 @@ def gen_test_data():
         ]
     return argv
 
-
 @q.timer(is_timer_fork=True)
 def run_inst_map(fn_out, fn_gf=None):
     fname = q.get_fname()
@@ -130,10 +128,8 @@ def run_inst_map(fn_out, fn_gf=None):
     q.displayln_info_inst_map_obj(inst_map_obj)
     q.json_results_append(f"{fname}: End show inst_map_obj fn='{fn_out}'")
 
-
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
-
 
 @q.timer(is_timer_fork=True)
 def run():
@@ -151,7 +147,6 @@ def run():
     if fn_info_list is not None:
         for fn_info in fn_info_list:
             run_inst_map(fn_info)
-
 
 # --------------------------------------------
 

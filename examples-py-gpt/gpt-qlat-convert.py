@@ -4,7 +4,6 @@ import qlat_gpt as qg
 import qlat as q
 import gpt as g
 
-
 @q.timer
 def test_gf(gf):
     q.displayln_info("CHECK: test_gf")
@@ -18,7 +17,6 @@ def test_gf(gf):
         f"CHECK: gf.plaq()={plaq:.13E} ; g.qcd.gauge.plaquette(gpt_gf) = {g_plaq:.13F}"
     )
     assert abs(plaq - g_plaq) < 1.0e-10
-
 
 @q.timer
 def test_src(xg):
@@ -38,7 +36,6 @@ def test_src(xg):
         f"CHECK: {src_q.qnorm():.12E} {src_g.qnorm():.12E} {src_diff.qnorm():.12E}"
     )
     assert src_diff.qnorm() == 0
-
 
 qg.begin_with_gpt()
 

@@ -22,7 +22,6 @@ load_path_list[:] = [
 
 # ----
 
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -56,7 +55,6 @@ def get_cexpr_meson_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -162,13 +160,10 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4)
         )
 
-
 # ----
-
 
 def wave_function_mode_0(c12, size):
     return 1.0
-
 
 def wave_function_mode_1(c12, size):
     (
@@ -189,11 +184,9 @@ def wave_function_mode_1(c12, size):
     w = (w1 + w2 + w3) / 3.0
     return w
 
-
 wave_function_mode_dict = dict()
 wave_function_mode_dict[0] = wave_function_mode_0
 wave_function_mode_dict[1] = wave_function_mode_1
-
 
 def wave_function(p1, p2, mode, size):
     p1_tag, c1 = p1
@@ -206,7 +199,6 @@ def wave_function(p1, p2, mode, size):
         raise Exception(f"{fname}: {p1} {p2} {mode} {size}")
     wf = wave_function_mode_dict[mode]
     return wf(c12, size)
-
 
 @q.timer
 def get_cexpr_meson_corr_psnk_psrc():
@@ -291,7 +283,6 @@ def get_cexpr_meson_corr_psnk_psrc():
         is_cython=is_cython,
         base_positions_dict=base_positions_dict,
     )
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(
@@ -401,7 +392,6 @@ def auto_contract_meson_corr_psnk_psrc(
             f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4)
         )
 
-
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc_psel(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
@@ -510,9 +500,7 @@ def auto_contract_meson_corr_psnk_psrc_psel(
             f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4)
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_pipi_corr():
@@ -531,7 +519,6 @@ def get_cexpr_pipi_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -652,9 +639,7 @@ def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel
             f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4)
         )
 
-
 # ----
-
 
 def pipi_wave_function_mode_0(c12, size, pipi_op_dis_4d_sqr_limit):
     (
@@ -673,7 +658,6 @@ def pipi_wave_function_mode_0(c12, size, pipi_op_dis_4d_sqr_limit):
     if dis_4d_sqr <= pipi_op_dis_4d_sqr_limit:
         return 0.0
     return 1.0
-
 
 def pipi_wave_function_mode_1(c12, size, pipi_op_dis_4d_sqr_limit):
     (
@@ -697,11 +681,9 @@ def pipi_wave_function_mode_1(c12, size, pipi_op_dis_4d_sqr_limit):
     w = (w1 + w2 + w3) / 3.0
     return w
 
-
 pipi_wave_function_mode_dict = dict()
 pipi_wave_function_mode_dict[0] = pipi_wave_function_mode_0
 pipi_wave_function_mode_dict[1] = pipi_wave_function_mode_1
-
 
 def pipi_wave_function(p1, p2, mode, size, pipi_op_dis_4d_sqr_limit):
     p1_tag, c1 = p1
@@ -714,7 +696,6 @@ def pipi_wave_function(p1, p2, mode, size, pipi_op_dis_4d_sqr_limit):
         raise Exception(f"{fname}: {p1} {p2} {mode} {size}")
     wf = pipi_wave_function_mode_dict[mode]
     return wf(c12, size, pipi_op_dis_4d_sqr_limit)
-
 
 @q.timer
 def get_cexpr_pipi_corr_psnk_psrc():
@@ -764,7 +745,6 @@ def get_cexpr_pipi_corr_psnk_psrc():
         is_cython=is_cython,
         base_positions_dict=base_positions_dict,
     )
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_pipi_corr_psnk_psrc(
@@ -971,9 +951,7 @@ def auto_contract_pipi_corr_psnk_psrc(
             f"{fname}: ld '{en}' sig", q.get_data_sig_arr(ld[i], q.RngState(), 4)
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_meson_jj():
@@ -1176,7 +1154,6 @@ def get_cexpr_meson_jj():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
@@ -1312,9 +1289,7 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             q.get_data_sig_arr(ld_sum[i], q.RngState(), 4),
         )
 
-
 # ----
-
 
 @q.timer
 def get_cexpr_pipi_jj():
@@ -1598,7 +1573,6 @@ def get_cexpr_pipi_jj():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer(is_timer_fork=True)
 def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
@@ -1781,9 +1755,7 @@ def auto_contract_pipi_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
             q.get_data_sig_arr(ld_sum[i], q.RngState(), 4),
         )
 
-
 # ----
-
 
 @q.timer(is_timer_fork=True)
 def run_auto_contraction(
@@ -1831,9 +1803,7 @@ def run_auto_contraction(
     ]
     return v
 
-
 ### ------
-
 
 @q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
@@ -2008,7 +1978,6 @@ def run_job_inversion(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-
 @q.timer(is_timer_fork=True)
 def run_job_contraction(job_tag, traj):
     #
@@ -2123,9 +2092,7 @@ def run_job_contraction(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-
 ### ------
-
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
@@ -2134,7 +2101,6 @@ def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_pipi_jj())
     benchmark_eval_cexpr(get_cexpr_meson_corr_psnk_psrc())
     benchmark_eval_cexpr(get_cexpr_pipi_corr_psnk_psrc())
-
 
 ### ------
 
@@ -2458,7 +2424,6 @@ is_performing_contraction = not q.get_option("--no-contraction")
 
 #######################################################
 
-
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
@@ -2471,14 +2436,12 @@ def gracefully_finish():
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
-
 def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
     if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
-
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

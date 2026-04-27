@@ -25,7 +25,6 @@ gf_gfix = gt * gf
 
 gf_gfix.show_info()
 
-
 def mk_inverter_gpt(gf, qtimer):
     mobius_params = {
         "mass": 0.1,
@@ -44,7 +43,6 @@ def mk_inverter_gpt(gf, qtimer):
     slv_qm = qm.propagator(slv_5d)
     inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=qtimer)
     return inv_qm
-
 
 inv = mk_inverter_gpt(gf_gfix, q.Timer("py:slv_qm", True))
 

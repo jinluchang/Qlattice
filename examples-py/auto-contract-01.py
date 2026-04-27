@@ -74,7 +74,6 @@ q.json_results_append("qac.get_expr_names(cexpr_opt)")
 for name in qac.get_expr_names(cexpr_opt):
     q.json_results_append(name)
 
-
 @q.timer
 def get_cexpr_test(is_cython=False):
     fn_base = "cache/auto_contract_cexpr/get_cexpr_test"
@@ -84,7 +83,6 @@ def get_cexpr_test(is_cython=False):
         return cexpr
     #
     return qac.cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 for is_cython in [
     False,
@@ -108,7 +106,6 @@ for is_cython in [
         q.get_data_sig(np.array(check_ama, dtype=np.complex128), q.RngState()),
     )
 
-
 def get_prop(flavor, p1, p2):
     tag = f"get_prop({flavor!r},{p1!r},{p2!r})"
     q.displayln_info(f"Call {tag}")
@@ -116,7 +113,6 @@ def get_prop(flavor, p1, p2):
     wm = qac.make_rand_spin_color_matrix(rs)
     assert isinstance(wm, q.WilsonMatrix)
     return wm
-
 
 wm = get_prop(
     "l",

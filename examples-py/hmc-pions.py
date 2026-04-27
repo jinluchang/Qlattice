@@ -9,7 +9,6 @@ import fnmatch
 
 import qlat as q
 
-
 class Field_fft:
     def __init__(self, geo, mult=1):
         self.field = q.Field(q.ElemTypeRealD, geo, mult)
@@ -159,7 +158,6 @@ class Field_fft:
                 field_ft.get_elem_xg(q.Coordinate([3, 0, 0, 0]), 1)[:].item(),
             ],
         ]
-
 
 class HMC:
     def __init__(
@@ -632,7 +630,6 @@ class HMC:
             ]
         )
 
-
 class Measurements:
     def __init__(self, total_site, field_geo, multiplicity, save_file):
         self.save_file = save_file
@@ -904,7 +901,6 @@ class Measurements:
                     for i in range(len(self.theta_dist))
                 ]
 
-
 @q.timer_verbose
 def main():
     # The lattice dimensions
@@ -1025,7 +1021,6 @@ def main():
     q.displayln_info(
         f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj / 2) :]), 2)}."
     )
-
 
 size_node_list = [
     [1, 1, 1, 1],

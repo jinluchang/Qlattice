@@ -9,7 +9,6 @@ from auto_contractor.eval import *
 
 is_cython = False
 
-
 def momentum_factor(mom, p, size, is_dagger=False):
     p_tag, c = p
     assert mom[3] == 0
@@ -20,7 +19,6 @@ def momentum_factor(mom, p, size, is_dagger=False):
     else:
         mf = cmath.rect(1.0, -phase)
     return mf
-
 
 all_mom_list_dict = {
     0: [
@@ -299,7 +297,6 @@ all_mom_list_dict = {
     ],
 }
 
-
 def mk_mom_fac_jj0(mom, p1, p2):
     """
     mom in [ 0, 1, 2, 3, 4, ]
@@ -314,7 +311,6 @@ def mk_mom_fac_jj0(mom, p1, p2):
         fac = fac + fac1 * fac2
     fac = 1 / sympy.sqrt(len(mom_list)) * fac
     return fac + f"mom_fac_jj0(mom={mom})"
-
 
 @q.timer
 def get_cexpr_kpipi():
@@ -482,7 +478,6 @@ def get_cexpr_kpipi():
         is_cython=is_cython,
     )
 
-
 def get_all_cexpr():
     cexprs = [
         lambda: get_cexpr_kpipi(),
@@ -496,7 +491,6 @@ def get_all_cexpr():
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
-
 
 size_node_list = [
     [1, 1, 1, 1],

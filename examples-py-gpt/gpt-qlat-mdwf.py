@@ -45,7 +45,6 @@ slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d).grouped(4)
 inv_qm = qg.InverterGPT(inverter=slv_qm, qtimer=q.Timer("py:slv_qm", True))
 
-
 def mk_src(geo):
     src = q.mk_point_src(geo, q.Coordinate([0, 0, 0, 0]))
     grid = qg.mk_grid(geo)
@@ -55,7 +54,6 @@ def mk_src(geo):
     src1 -= src
     assert src1.qnorm() == 0.0
     return src
-
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
@@ -68,7 +66,6 @@ def test_inv(geo, inverter):
     q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.10E}")
     q.displayln_info(f"sol1 info {sol1.crc32()}")
     return src, sol, sol1
-
 
 src, sol, sol1 = test_inv(geo, inv_qm)
 

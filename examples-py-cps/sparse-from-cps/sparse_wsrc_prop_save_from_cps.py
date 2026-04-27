@@ -4,7 +4,6 @@ import qlat_cps as qc
 from qlat_scripts.v1 import *
 from sparse_prop_selection import *
 
-
 @q.cache_call()
 @q.timer
 def get_fn_gauge_transform_avail_from_cps(job_tag, traj):
@@ -23,7 +22,6 @@ def get_fn_gauge_transform_avail_from_cps(job_tag, traj):
     # TODO: add code here to return actual CPS data filename (full path) or `None`.
     #
     return None
-
 
 @q.cache_call()
 @q.timer_verbose
@@ -61,7 +59,6 @@ def check_prop_wsrc_avail_from_cps(
     #
     return False
 
-
 @q.cache_call()
 @q.timer
 def get_fn_prop_wsrc_avail_from_cps(
@@ -95,7 +92,6 @@ def get_fn_prop_wsrc_avail_from_cps(
     #
     return None
 
-
 @q.timer_verbose
 def run_gauge_transform_from_cps(job_tag, traj):
     fname = q.get_fname()
@@ -128,7 +124,6 @@ def run_gauge_transform_from_cps(job_tag, traj):
         is_doing_something = True
         q.release_lock()
     return is_doing_something
-
 
 @q.timer_verbose
 def run_prop_wsrc_sparse_from_cps(job_tag, traj, *, inv_type, get_fsel, get_psel):
@@ -219,7 +214,6 @@ def run_prop_wsrc_sparse_from_cps(job_tag, traj, *, inv_type, get_fsel, get_psel
         is_doing_something = True
         q.release_lock()
     return is_doing_something
-
 
 @q.timer_verbose
 def run_job(job_tag, traj):

@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-
 import qlat as q
 
 from auto_contractor.operators import *
 from auto_contractor.eval import *
 
 is_cython = True
-
 
 @q.timer
 def get_cexpr_kpipi():
@@ -90,7 +88,6 @@ def get_cexpr_kpipi():
         is_cython=is_cython,
     )
 
-
 def get_all_cexpr():
     cexprs = [
         lambda: get_cexpr_kpipi(),
@@ -104,7 +101,6 @@ def get_all_cexpr():
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
-
 
 size_node_list = [
     [1, 1, 1, 1],

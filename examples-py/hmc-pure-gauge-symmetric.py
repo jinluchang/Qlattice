@@ -22,12 +22,10 @@ load_path_list[:] = [
 
 # ----
 
-
 @q.timer
 def gf_evolve(gf, gm, gm_dual, dt):
     q.gf_evolve(gf, gm, dt)
     q.gf_evolve_dual(gf, gm_dual, dt)
-
 
 @q.timer
 def gm_evolve_fg(gm, gm_dual, gf_init, ga, fg_dt, dt):
@@ -45,7 +43,6 @@ def gm_evolve_fg(gm, gm_dual, gf_init, ga, fg_dt, dt):
     gm_force_dual *= dt
     gm += gm_force
     gm_dual += gm_force_dual
-
 
 @q.timer_verbose
 def run_hmc_evolve(gm, gm_dual, gf, ga, rs, n_step, md_time=1.0):
@@ -72,7 +69,6 @@ def run_hmc_evolve(gm, gm_dual, gf, ga, rs, n_step, md_time=1.0):
     )
     delta_h = q.glb_sum(delta_h)
     return delta_h
-
 
 @q.timer_verbose
 def run_hmc_traj(
@@ -121,7 +117,6 @@ def run_hmc_traj(
         gf @= gf0
     return flag, delta_h
 
-
 @q.timer_verbose
 def run_topo_info(job_tag, traj, gf):
     info_path = get_save_path(f"{job_tag}/topo-measure-wilson-flow/traj-{traj}")
@@ -150,7 +145,6 @@ def run_topo_info(job_tag, traj, gf):
         info_path=info_path,
         density_field_path=info_path,
     )
-
 
 @q.timer_verbose
 def run_hmc(job_tag):
@@ -212,7 +206,6 @@ def run_hmc(job_tag):
             if is_saving_topo_info:
                 run_topo_info(job_tag, traj, gf)
         q.timer_display()
-
 
 # ----
 

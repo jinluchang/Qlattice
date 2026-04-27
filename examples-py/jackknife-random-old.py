@@ -16,11 +16,9 @@ q.default_g_jk_kwargs["block_size_dict"] = {
 q.default_g_jk_kwargs["is_normalizing_rand_sample"] = True
 q.default_g_jk_kwargs["is_apply_rand_sample_jk_idx_blocking_shift"] = True
 
-
 @functools.lru_cache
 def get_traj_list(job_tag):
     return list(range(25))
-
 
 rs = q.RngState("seed")
 job_tag = "test1"

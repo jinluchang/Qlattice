@@ -10,7 +10,6 @@ job_tag_list = [
     "job_tag_2",
 ]
 
-
 @functools.lru_cache
 def get_traj_list(job_tag):
     fname = q.get_fname()
@@ -21,7 +20,6 @@ def get_traj_list(job_tag):
     else:
         raise Exception(f"{fname}: job_tag='{job_tag}'")
     return None
-
 
 @functools.lru_cache
 def get_all_jk_idx():
@@ -38,7 +36,6 @@ def get_all_jk_idx():
                 )
             )
     return jk_idx_list
-
 
 q.default_g_jk_kwargs["jk_type"] = "super"
 q.default_g_jk_kwargs["eps"] = 1

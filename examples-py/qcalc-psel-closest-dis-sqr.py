@@ -29,7 +29,6 @@ usage = f"""
 # E.g.: {__file__} --src results/test-4nt8/points-selection/traj-1000.lati results/test-4nt8/points-selection/traj-2000.lati
 """
 
-
 @q.timer(is_timer_fork=True)
 def gen_test_data():
     job_tag_list = [
@@ -76,7 +75,6 @@ def gen_test_data():
             fn_list.append(fn)
     return fn_list
 
-
 @q.timer(is_timer_fork=True)
 def run_psel_closest_dis_sqr(fn_list):
     fn_list_init = fn_list
@@ -122,7 +120,6 @@ def run_psel_closest_dis_sqr(fn_list):
         )
     return ret
 
-
 @q.timer(is_timer_fork=True)
 def run():
     if is_test():
@@ -135,7 +132,6 @@ def run():
             q.displayln_info(f"Usage:{usage}")
             return
     run_psel_closest_dis_sqr(fn_list)
-
 
 # --------------------------------------------
 

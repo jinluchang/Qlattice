@@ -86,7 +86,6 @@ gf_f = gf.copy()
 flow_time = 1.0
 t = 0
 
-
 @q.timer_verbose
 def measure():
     gf_f.show_info()
@@ -111,14 +110,12 @@ def measure():
     q.displayln_info(f"[ {topo_terms_str},\n]")
     q.displayln_info("\n".join(t_sum))
 
-
 @q.timer_verbose
 def wilson_flow_force(gf, c1=0.0):
     ga = q.GaugeAction(3.0, c1)
     gm_force = q.GaugeMomentum()
     q.set_gm_force(gm_force, gf, ga)
     return gm_force
-
 
 measure()
 for i in range(5):
@@ -137,7 +134,6 @@ if False:
         measure()
     gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
-
 def conv_topo_list(topo_list):
     return np.array(
         [
@@ -155,7 +151,6 @@ def conv_topo_list(topo_list):
         dtype=np.float64,
     )
 
-
 def conv_energy_list(energy_list):
     return np.array(
         [
@@ -168,7 +163,6 @@ def conv_energy_list(energy_list):
         ],
         dtype=np.float64,
     )
-
 
 def check_topo_energy_list(tag, topo_list, energy_list):
     topo_arr = conv_topo_list(topo_list)
@@ -225,7 +219,6 @@ def check_topo_energy_list(tag, topo_list, energy_list):
         q.get_data_sig(energy_arr[:, 2], q.RngState("check_topo_energy_list")),
         1e-8,
     )
-
 
 density_field_path = "results/topo-measure-density"
 

@@ -4,7 +4,6 @@ import gpt as g
 
 from qlat_scripts.v1 import *
 
-
 def set_param_field_selection_rate(job_tag, f_rate, n_points):
     """
     Use f_rate and n_points with Christoph & Mattia's strategy.
@@ -21,7 +20,6 @@ def set_param_field_selection_rate(job_tag, f_rate, n_points):
     set_param(job_tag, "field_selection_fsel_rate")(fsel_prob)
     set_param(job_tag, "field_selection_psel_rate")(psel_prob)
 
-
 def get_num_points_fsel_sampling(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
@@ -31,7 +29,6 @@ def get_num_points_fsel_sampling(job_tag):
     )
     return num_points_fsel_sampling
 
-
 def get_num_points_psel_sampling(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_volume = total_site.volume()
@@ -40,7 +37,6 @@ def get_num_points_psel_sampling(job_tag):
         np.log(1 - psel_rate) / np.log(1 - 1 / total_volume)
     )
     return num_points_psel_sampling
-
 
 @q.cache_call()
 @q.timer_verbose
@@ -72,7 +68,6 @@ def get_all_positions(job_tag, traj):
     )
     return all_positions
 
-
 @q.cache_call()
 @q.timer_verbose
 def get_psrc_positions(job_tag, traj):
@@ -89,7 +84,6 @@ def get_psrc_positions(job_tag, traj):
     all_positions = get_all_positions(job_tag, traj)
     psrc_positions = all_positions[:num_points_psel_sampling].copy()
     return psrc_positions
-
 
 @q.timer
 def run_fsel_prob_uniform(job_tag, traj):
@@ -139,7 +133,6 @@ def run_fsel_prob_uniform(job_tag, traj):
     fsel_prob.save_double(get_save_path(fn_fsel_prob))
     q.release_lock()
     return ret
-
 
 @q.timer
 def run_psel_prob_uniform(job_tag, traj):

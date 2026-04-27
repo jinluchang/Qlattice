@@ -79,7 +79,6 @@ is_cython = not is_test()
 
 # ----
 
-
 @q.timer
 def get_cexpr_meson_corr():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
@@ -121,7 +120,6 @@ def get_cexpr_meson_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
@@ -226,7 +224,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState())
         )
 
-
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
@@ -325,7 +322,6 @@ def auto_contract_meson_corr_psnk(
         q.json_results_append(
             f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState())
         )
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psrc(
@@ -435,7 +431,6 @@ def auto_contract_meson_corr_psrc(
         q.json_results_append(
             f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState())
         )
-
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(
@@ -554,16 +549,12 @@ def auto_contract_meson_corr_psnk_psrc(
             f"{fname}: {traj} ld sig", q.get_data_sig(ld, q.RngState())
         )
 
-
 # ----
-
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
 
-
 # ----
-
 
 @q.timer(is_timer_fork=True)
 def run_job_global_hvp_average(job_tag, *, inv_type):
@@ -671,7 +662,6 @@ def run_job_global_hvp_average(job_tag, *, inv_type):
     q.release_lock()
     return ret
 
-
 @q.timer(is_timer_fork=True)
 def run_job_global_hvp_average_for_subtract(
     job_tag, traj, *, inv_type, get_glb_hvp_avg, get_hvp_average
@@ -734,26 +724,21 @@ def run_job_global_hvp_average_for_subtract(
     q.release_lock()
     return ret
 
-
 # ----
-
 
 def get_muon_mass(job_tag):
     a_inv_gev = get_param(job_tag, "a_inv_gev")
     muon_mass_mev = 105.6583745
     return muon_mass_mev / 1e3 / a_inv_gev
 
-
 def get_r_sq_limit(job_tag):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     return q.sqr(total_site[0])
-
 
 def get_r_coordinate(xg, total_site):
     xg_rel = q.smod_coordinate(xg, total_site)
     r_sq = xg_rel.sqr()
     return np.sqrt(r_sq)
-
 
 def show_lslt(labels, lslt, *, label=None):
     nlabel, nshort, nlong = lslt.shape
@@ -779,7 +764,6 @@ def show_lslt(labels, lslt, *, label=None):
                 )
     return None
 
-
 @q.timer
 def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
     tag = mk_psrc_tag(xg, inv_type, inv_acc)
@@ -789,9 +773,7 @@ def get_psrc_prop(job_tag, traj, xg, inv_type, inv_acc, *, sfr, fsel):
     s_prop.load_double_from_float(sfr, tag)
     return s_prop
 
-
 # ----
-
 
 @q.timer(is_timer_fork=True)
 def load_or_compute_muon_line_interpolation():
@@ -879,9 +861,7 @@ def load_or_compute_muon_line_interpolation():
         f"{fname}: extrapolation weights={weights} loaded num_muon_line_interps={num_muon_line_interps}",
     )
 
-
 is_loaded_multiple_muonline_interpolations = False
-
 
 def force_load_muon_line_interpolation():
     """
@@ -894,9 +874,7 @@ def force_load_muon_line_interpolation():
     load_or_compute_muon_line_interpolation()
     is_loaded_multiple_muonline_interpolations = True
 
-
 # ----
-
 
 def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
     if (
@@ -962,7 +940,6 @@ def get_prob_func(job_tag, inv_type, r_sq_limit, r_sq):
     assert prob <= 1
     return prob
 
-
 def mk_hlbl_four_get_prob(job_tag, inv_type):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     r_sq_limit = get_r_sq_limit(job_tag)
@@ -981,7 +958,6 @@ def mk_hlbl_four_get_prob(job_tag, inv_type):
         return prob
     #
     return get_prob
-
 
 @q.timer
 def get_total_prob(total_site, get_prob):
@@ -1003,14 +979,12 @@ def get_total_prob(total_site, get_prob):
     total_prob = total_prob[0, 0]
     return total_prob
 
-
 @q.timer
 def get_hlbl_four_total_prob(job_tag, inv_type):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     get_prob = mk_hlbl_four_get_prob(job_tag, inv_type)
     total_prob = get_total_prob(total_site, get_prob)
     return total_prob
-
 
 @q.timer
 def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
@@ -1067,7 +1041,6 @@ def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     )
     return point_pairs
 
-
 @q.timer(is_timer_fork=True)
 def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
     """
@@ -1103,7 +1076,6 @@ def run_hlbl_four_point_pairs_info(job_tag, traj, *, inv_type, get_psel_prob):
     q.release_lock()
     return ret
 
-
 def get_hlbl_clbl_info_ref_tags(job_tag):
     return [
         "ref-far",
@@ -1111,12 +1083,10 @@ def get_hlbl_clbl_info_ref_tags(job_tag):
         "ref-center",
     ]
 
-
 @q.timer
 def contract_hlbl_four_labels(job_tag):
     tags = get_hlbl_clbl_info_ref_tags(job_tag)
     return q.contract_four_pair_labels(tags)
-
 
 @q.timer_verbose
 def contract_hlbl_four_ama(
@@ -1174,7 +1144,6 @@ def contract_hlbl_four_ama(
         q.ama_extract(ama_val, is_sloppy=False),
         q.ama_extract(ama_val, is_sloppy=True),
     )
-
 
 @q.timer(is_timer_fork=True)
 def run_hlbl_four_chunk(
@@ -1571,7 +1540,6 @@ def run_hlbl_four_chunk(
     q.displayln_info(f"{fname}: len(prop_cache)={len(prop_cache)}")
     q.release_lock()
 
-
 @q.timer(is_timer_fork=True)
 def run_hlbl_four(
     job_tag, traj, *, inv_type, get_psel_prob, get_fsel_prob, get_point_pairs
@@ -1691,9 +1659,7 @@ def run_hlbl_four(
         f"{fname}: {job_tag} {traj} {inv_type_name} done.",
     ]
 
-
 # ----
-
 
 @q.timer
 def run_hvp_sum_tslice_accs(job_tag, traj, *, inv_type, get_psel):
@@ -1760,7 +1726,6 @@ def run_hvp_sum_tslice_accs(job_tag, traj, *, inv_type, get_psel):
     #
     return get_hvp_sum_tslice_accs
 
-
 @q.timer
 def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_accs):
     """
@@ -1821,7 +1786,6 @@ def run_hvp_sum_tslice(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice_
     #
     return get_hvp_sum_tslice
 
-
 @q.timer
 def get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice):
     """
@@ -1863,7 +1827,6 @@ def get_edl_from_hvp_sum_tslice(xg, total_site, hvp_sum_tslice):
     edl[2] = inner_products[0, 1] - inner_products[1, 0]
     edl = (-1 * 0.5j * -1j) * edl
     return edl
-
 
 @q.timer(is_timer_fork=True)
 def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
@@ -1930,7 +1893,6 @@ def run_edl(job_tag, traj, *, inv_type, get_psel, get_hvp_sum_tslice):
         )
     q.release_lock()
     return ret
-
 
 @q.timer(is_timer_fork=True)
 def run_check_hvp_avg(
@@ -2017,7 +1979,6 @@ def run_check_hvp_avg(
             1e-4,
         )
     q.qtouch_info(get_save_path(fn))
-
 
 @q.timer(is_timer_fork=True)
 def run_hlbl_sub_hvp_sfield(
@@ -2147,7 +2108,6 @@ def run_hlbl_sub_hvp_sfield(
     q.qrename_info(get_save_path(fn + ".acc"), get_save_path(fn))
     #
     q.release_lock()
-
 
 @q.timer(is_timer_fork=True)
 def run_hlbl_two_plus_two_chunk(
@@ -2342,7 +2302,6 @@ def run_hlbl_two_plus_two_chunk(
     q.displayln_info(0, f"{info_str} done.")
     q.release_lock()
 
-
 @q.timer(is_timer_fork=True)
 def run_hlbl_two_plus_two(
     job_tag,
@@ -2466,9 +2425,7 @@ def run_hlbl_two_plus_two(
         f"{fname}: {job_tag} {traj} {inv_type_name} {inv_type_e_name} done.",
     ]
 
-
 # ----
-
 
 @q.timer(is_timer_fork=True)
 def run_auto_contraction(
@@ -2507,9 +2464,7 @@ def run_auto_contraction(
     ]
     return v
 
-
 # ----
-
 
 @q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
@@ -2868,7 +2823,6 @@ def run_job_inversion(job_tag, traj):
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
-
 @q.timer(is_timer_fork=True)
 def run_job_contract(job_tag, traj):
     fname = q.get_fname()
@@ -3185,7 +3139,6 @@ def run_job_contract(job_tag, traj):
     if not is_test():
         if run_ret_list:
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
-
 
 # ----
 
@@ -3585,7 +3538,6 @@ is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) i
 
 #######################################################
 
-
 def gracefully_finish():
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
@@ -3598,14 +3550,12 @@ def gracefully_finish():
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
-
 def try_gracefully_finish():
     """
     Call `gracefully_finish` if not test and if some work is done (q.obtained_lock_history_list != [])
     """
     if (not is_test()) and (len(q.obtained_lock_history_list) > 0):
         gracefully_finish()
-
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

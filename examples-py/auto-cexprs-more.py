@@ -5,9 +5,7 @@ import qlat as q
 from auto_contractor.operators import *
 from auto_contractor.eval import *
 
-
 is_cython = False
-
 
 def mk_bk_vv_aa(p: str):
     s = 0
@@ -17,7 +15,6 @@ def mk_bk_vv_aa(p: str):
         s = s + v1 * v2
     return s + f"(sbar gmu (1-g5) d)(sbar gmu (1-g5) d)({p})"
 
-
 def mk_bpi_vv_aa(p: str):
     s = 0
     for mu in range(4):
@@ -25,7 +22,6 @@ def mk_bpi_vv_aa(p: str):
         v2 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
         s = s + v1 * v2
     return s + f"(ubar gmu (1-g5) d)(ubar gmu (1-g5) d)({p})"
-
 
 def mk_bkp_vv_aa(p: str):
     s = 0
@@ -35,7 +31,6 @@ def mk_bkp_vv_aa(p: str):
         s = s + v1 * v2
     return s + f"(sbar gmu (1+g5) d)(sbar gmu (1+g5) d)({p})"
 
-
 def mk_bpip_vv_aa(p: str):
     s = 0
     for mu in range(4):
@@ -43,7 +38,6 @@ def mk_bpip_vv_aa(p: str):
         v2 = mk_vec_mu("u", "d", p, mu) + mk_vec5_mu("u", "d", p, mu)
         s = s + v1 * v2
     return s + f"(ubar gmu (1+g5) d)(ubar gmu (1+g5) d)({p})"
-
 
 def mk_bkpi1_vv_aa(p: str):
     s = 0
@@ -53,7 +47,6 @@ def mk_bkpi1_vv_aa(p: str):
         s = s + v1 * v2
     return s + f"(dbar gmu (1-g5) u)(u'bar gmu (1-g5) s)({p})"
 
-
 def mk_bkpi2_vv_aa(p: str):
     s = 0
     for mu in range(4):
@@ -61,7 +54,6 @@ def mk_bkpi2_vv_aa(p: str):
         v2 = mk_vec_mu("d", "s", p, mu) - mk_vec5_mu("d", "s", p, mu)
         s = s + v1 * v2
     return s + f"(u'bar gmu (1-g5) u)(dbar gmu (1-g5) s)({p})"
-
 
 def mk_bkpi1p_vv_aa(p: str):
     s = 0
@@ -71,7 +63,6 @@ def mk_bkpi1p_vv_aa(p: str):
         s = s + v1 * v2
     return s + f"(dbar gmu (1+g5) u)(u'bar gmu (1+g5) s)({p})"
 
-
 def mk_bkpi2p_vv_aa(p: str):
     s = 0
     for mu in range(4):
@@ -79,7 +70,6 @@ def mk_bkpi2p_vv_aa(p: str):
         v2 = mk_vec_mu("d", "s", p, mu) + mk_vec5_mu("d", "s", p, mu)
         s = s + v1 * v2
     return s + f"(u'bar gmu (1+g5) u)(dbar gmu (1+g5) s)({p})"
-
 
 def mk_bkpi3_vv_aa(p: str):
     s = 0
@@ -89,7 +79,6 @@ def mk_bkpi3_vv_aa(p: str):
         s = s + v1 * v2
     return s + f"(sbar gmu (1-g5) u)(u'bar gmu (1-g5) d)({p})"
 
-
 def mk_bkpi4_vv_aa(p: str):
     s = 0
     for mu in range(4):
@@ -97,7 +86,6 @@ def mk_bkpi4_vv_aa(p: str):
         v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
         s = s + v1 * v2
     return s + f"(u'bar gmu (1-g5) u)(sbar gmu (1-g5) d)({p})"
-
 
 def mk_bkpi3p_vv_aa(p: str):
     s = 0
@@ -107,7 +95,6 @@ def mk_bkpi3p_vv_aa(p: str):
         s = s + v1 * v2
     return s + f"(sbar gmu (1+g5) u)(u'bar gmu (1+g5) d)({p})"
 
-
 def mk_bkpi4p_vv_aa(p: str):
     s = 0
     for mu in range(4):
@@ -115,7 +102,6 @@ def mk_bkpi4p_vv_aa(p: str):
         v2 = mk_vec_mu("s", "d", p, mu) + mk_vec5_mu("s", "d", p, mu)
         s = s + v1 * v2
     return s + f"(u'bar gmu (1+g5) u)(sbar gmu (1+g5) d)({p})"
-
 
 @q.timer
 def get_cexpr_meson_bk_bpi_corr():
@@ -158,7 +144,6 @@ def get_cexpr_meson_bk_bpi_corr():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer
 def get_cexpr_meson_jt_zv():
@@ -225,7 +210,6 @@ def get_cexpr_meson_jt_zv():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 @q.timer
 def get_cexpr_meson_jj_mm():
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jj_mm"
@@ -264,7 +248,6 @@ def get_cexpr_meson_jj_mm():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer
 def get_cexpr_meson_jj_xx():
@@ -313,7 +296,6 @@ def get_cexpr_meson_jj_xx():
         return cexpr
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
-
 
 @q.timer
 def get_cexpr_meson_jj_mm_types():
@@ -428,7 +410,6 @@ def get_cexpr_meson_jj_mm_types():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-
 def get_all_cexpr():
     cexprs = [
         lambda: get_cexpr_meson_bk_bpi_corr(),
@@ -446,7 +427,6 @@ def get_all_cexpr():
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
-
 
 size_node_list = [
     [1, 1, 1, 1],

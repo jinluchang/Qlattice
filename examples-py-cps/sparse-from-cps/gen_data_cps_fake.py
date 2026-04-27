@@ -3,7 +3,6 @@ import qlat_cps as qc
 
 from qlat_scripts.v1 import *
 
-
 @q.timer_verbose
 def gen_gauge_transform_cps_fake(job_tag, traj):
     fname = q.get_fname()
@@ -19,7 +18,6 @@ def gen_gauge_transform_cps_fake(job_tag, traj):
     gt.unitarize()
     gt.save_cps(f"results-fake/{path}")
     q.displayln_info(-1, f"{fname}: {job_tag}/{traj} finish.")
-
 
 @q.timer_verbose
 def gen_prop_wsrc_cps_fake(job_tag, traj, inv_type):
@@ -77,7 +75,6 @@ def gen_prop_wsrc_cps_fake(job_tag, traj, inv_type):
             )
         q.qtouch_info(f"results-fake/{path}/checkpoint.txt")
         q.displayln_info(-1, f"{fname}: {job_tag}/{traj}/{inv_type_name} finish.")
-
 
 @q.timer_verbose
 def gen_all_data_cps_fake(job_tag):

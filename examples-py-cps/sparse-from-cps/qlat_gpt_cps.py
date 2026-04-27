@@ -4,7 +4,6 @@ import qlat_cps as qc
 import qlat_gpt as qg
 import gpt as g
 
-
 def begin_with_gpt_cps(total_site):
     """
     Note: It will likely be consistent only when MPI is only along one axis. e.g. with "-qmp-geom 1 1 1 4 --mpi 1.1.1.4"
@@ -14,11 +13,9 @@ def begin_with_gpt_cps(total_site):
     qc.begin_with_cps(total_site)
     check_cps_gpt_id_node()
 
-
 def end_with_gpt_cps():
     q.end()  # end begin_with_cps but do not finalize MPI
     qg.end_with_gpt()
-
 
 @q.timer_verbose
 def check_cps_gpt_id_node():
@@ -69,7 +66,6 @@ def check_cps_gpt_id_node():
             f"WARNING: id_node != id_node_gpt_rank ; error_count={error_count}"
         )
     q.sync_node()
-
 
 @q.timer_verbose
 def show_geo_total_site(total_site):

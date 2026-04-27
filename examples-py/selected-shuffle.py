@@ -47,14 +47,12 @@ multiplicity_list = [
     3,
 ]
 
-
 def get_f_list_sig(f_list, rs, n):
     sig = np.zeros(n, dtype=np.complex128)
     for idx, sp in enumerate(f_list):
         sig += q.get_data_sig_arr(sp[:], rs.split(f"sig {idx}"), n)
     sig = q.glb_sum(sig)
     return sig
-
 
 @q.timer
 def selected_shuffle_l_from_g(total_site, multiplicity, seed):
@@ -234,7 +232,6 @@ def selected_shuffle_l_from_g(total_site, multiplicity, seed):
     q.json_results_append("sig sp_l1_list", sig_l1_list, 1e-12)
     assert np.all(sig_l1_list == sig_l_list)
 
-
 @q.timer
 def selected_shuffle_r_from_l(total_site, multiplicity, seed):
     fname = q.get_fname()
@@ -315,7 +312,6 @@ def selected_shuffle_r_from_l(total_site, multiplicity, seed):
     )
     assert np.all(get_f_list_sig(sp_ss_list, rs, 3) == get_f_list_sig(sp_l_list, rs, 3))
 
-
 @q.timer
 def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
     fname = q.get_fname()
@@ -387,7 +383,6 @@ def selected_shuffle_t_slice_from_l(total_site, multiplicity, seed):
             3,
         )
     )
-
 
 @q.timer
 def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
@@ -530,7 +525,6 @@ def selected_shuffle_t_slice_from_f(total_site, multiplicity, seed):
         vec_list[i].swap_sp_cast(vspc_list[i], vgeo_list[i])
     assert np.all(vec_sig == get_f_list_sig(vec_list, rs, 3))
 
-
 @q.timer
 def test_prop_spatial_smear(total_site, multiplicity, seed):
     fname = q.get_fname()
@@ -587,7 +581,6 @@ def test_prop_spatial_smear(total_site, multiplicity, seed):
         ss_prop = q.prop_smear(prop, gf, coef, step, mom, mode_smear=0)
         ss_prop_sig = q.get_data_sig_arr(ss_prop, rs, 3)
         q.json_results_append("ss_prop sig", ss_prop_sig, 1e-10)
-
 
 for total_site in total_site_list:
     for multiplicity in multiplicity_list:

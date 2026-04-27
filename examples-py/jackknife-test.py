@@ -3,13 +3,11 @@
 import qlat as q
 import numpy as np
 
-
 @q.timer
 def compute_avg_err_direct(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
     avg, err = q.avg_err(data_list, block_size=block_size)
     return avg, err
-
 
 @q.timer
 def compute_avg_err_jk(data_list, block_size, eps, rng_state):
@@ -17,7 +15,6 @@ def compute_avg_err_jk(data_list, block_size, eps, rng_state):
     jk_data_list = q.jackknife(data_list.tolist(), eps=eps)
     avg, err = q.jk_avg_err(jk_data_list, block_size=block_size, eps=eps)
     return avg, err
-
 
 @q.timer
 def compute_avg_err_sjk_hash(data_list, block_size, eps, rng_state):
@@ -45,7 +42,6 @@ def compute_avg_err_sjk_hash(data_list, block_size, eps, rng_state):
     jk_data_arr = q.g_mk_jk(data_list, jk_idx_list)
     avg, err = q.g_jk_avg_err(jk_data_arr)
     return avg, err
-
 
 @q.timer
 def compute_avg_err_sjk(data_list, block_size, eps, rng_state):
@@ -79,7 +75,6 @@ def compute_avg_err_sjk(data_list, block_size, eps, rng_state):
     avg, err = q.g_jk_avg_err(jk_data_arr)
     return avg, err
 
-
 @q.timer
 def compute_avg_err_rjk(data_list, block_size, eps, rng_state):
     q.reset_default_g_jk_kwargs()
@@ -105,7 +100,6 @@ def compute_avg_err_rjk(data_list, block_size, eps, rng_state):
     jk_data_arr = q.g_mk_jk(data_list, jk_idx_list)
     avg, err = q.g_jk_avg_err(jk_data_arr)
     return avg, err
-
 
 @q.timer
 def jk_test(data_list_size, block_size, eps, compute_avg_err):
@@ -169,7 +163,6 @@ def jk_test(data_list_size, block_size, eps, compute_avg_err):
         "q.jk_avg_err(jk_err_arr - jk_actual_err_arr)",
         np.array(q.jk_avg_err(jk_err_arr - jk_actual_err_arr), dtype=np.float64),
     )
-
 
 q.begin_with_mpi()
 
