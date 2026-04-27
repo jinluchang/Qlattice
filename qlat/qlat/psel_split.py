@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class q:
     from qlat_utils import (
         timer,
@@ -21,10 +20,8 @@ class q:
         get_comm,
     )
 
-
 def point_dis_sqr(x, y, total_site):
     return q.smod_coordinate(x - y, total_site).sqr()
-
 
 class PointsDistanceSet:
     """
@@ -83,9 +80,7 @@ class PointsDistanceSet:
         assert isinstance(n, int)
         return self.tree.find_closest_n_point_list(xg, n, self.total_site)
 
-
 ###
-
 
 class PointsDistanceTree:
     """
@@ -358,9 +353,7 @@ class PointsDistanceTree:
             assert mini_dis_sqr is None
         return point_list
 
-
 ###
-
 
 @q.timer
 def find_all_closest_point_list(psel, rs=None, is_parallel=True):
@@ -416,7 +409,6 @@ def find_all_closest_point_list(psel, rs=None, is_parallel=True):
     )
     return all_closest_point_list
 
-
 def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
     s = 0.0
     for dis_sqr in dis_sqr_list:
@@ -425,7 +417,6 @@ def find_all_closest_n_point_list_ranking_func_default(dis_sqr_list):
         return np.inf
     else:
         return 1 / s ** (1 / 6)
-
 
 @q.timer(is_timer_fork=True)
 def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
@@ -485,7 +476,6 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
     )
     return all_closest_n_point_list
 
-
 @q.timer
 def psel_split_that_increase_separation_closest(psel, rs=None):
     """
@@ -544,7 +534,6 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
     psel1 = q.PointsSelection(total_site, xg_list1)
     psel2 = q.PointsSelection(total_site, xg_list2)
     return psel1, psel2
-
 
 @q.timer
 def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=None):
@@ -618,7 +607,6 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
     psel2 = q.PointsSelection(total_site, xg_list2)
     return psel1, psel2
 
-
 @q.timer(is_timer_fork=True)
 def psel_split_that_increase_separation(psel, mode=None, rs=None):
     """
@@ -637,7 +625,6 @@ def psel_split_that_increase_separation(psel, mode=None, rs=None):
         )
     else:
         assert False
-
 
 @q.timer(is_timer_fork=True)
 def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
@@ -689,7 +676,6 @@ def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
             closest_dis_sqr_list.append(closest_dis_sqr)
     q.displayln_info(0, f"{fname}: {sorted(closest_dis_sqr_list, reverse=True)[:5]}.")
     return closest_dis_sqr_list
-
 
 @q.timer(is_timer_fork=True)
 def psel_split_n_that_increase_separation(psel, num_piece, rs=None):

@@ -1,8 +1,6 @@
 from .. import rbc_ukqcd_params as rup
 
-
 import qlat as q
-
 
 def get_param(*keys, default=None, dict_params=None):
     """
@@ -18,7 +16,6 @@ def get_param(*keys, default=None, dict_params=None):
         else:
             return default
     return d
-
 
 def set_param(*keys, value=None, dict_params=None):
     """
@@ -42,17 +39,14 @@ def set_param(*keys, value=None, dict_params=None):
     else:
         d[keys[-1]] = value
 
-
 def get_total_site(job_tag: str):
     return get_param(job_tag, "total_site")
-
 
 def get_job_seed(job_tag):
     seed = get_param(job_tag, "seed")
     if seed is None:
         return job_tag
     return seed
-
 
 @q.timer_verbose
 def mk_sample_gauge_field(job_tag, fn):
@@ -66,7 +60,6 @@ def mk_sample_gauge_field(job_tag, fn):
         q.gf_wilson_flow_step(gf, 0.05)
     gf.unitarize()
     return gf
-
 
 @q.timer_verbose
 def mk_sample_gauge_field_v2(total_site, tag):
@@ -88,7 +81,6 @@ def mk_sample_gauge_field_v2(total_site, tag):
         )
     gf.unitarize()
     return gf
-
 
 @q.timer_verbose
 def mk_sample_gauge_field_v3(job_tag, fn):
@@ -137,7 +129,6 @@ def mk_sample_gauge_field_v3(job_tag, fn):
     gf.unitarize()
     return gf
 
-
 @q.timer_verbose
 def load_config(job_tag: str, fn: str):
     if not q.does_file_exist_qar_sync_node(fn):
@@ -157,7 +148,6 @@ def load_config(job_tag: str, fn: str):
                 gf.twist_boundary_at_boundary(lmom, mu)
     gf.show_info()
     return gf
-
 
 @q.timer_verbose
 def load_config_lazy(job_tag: str, fn: str):

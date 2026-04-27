@@ -68,10 +68,8 @@ load_path_list = [
     "results",
 ]
 
-
 def get_save_path(fn):
     return f"{save_path_default}/{fn}"
-
 
 def get_load_path(*fns):
     def get(fn):
@@ -91,9 +89,7 @@ def get_load_path(*fns):
     #
     return get(fns)
 
-
 # ----------
-
 
 @q.timer_verbose
 def check_job(job_tag, traj, fns_produce, fns_need):
@@ -129,9 +125,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
     #
     return True
 
-
 # ----------
-
 
 @q.timer_verbose
 def run_params(job_tag):
@@ -187,9 +181,7 @@ def run_params(job_tag):
     q.save_pickle_obj(get_param(job_tag), fn_pickle, is_sync_node=True)
     q.save_json_obj(get_param(job_tag), fn, indent=2, is_sync_node=True)
 
-
 # ----------
-
 
 def mk_gf_fn_list(job_tag, traj):
     stream_skip = 1000000
@@ -219,7 +211,6 @@ def mk_gf_fn_list(job_tag, traj):
         ]
     return fn_list
 
-
 @q.timer_verbose
 def run_gf(job_tag, traj):
     path_gf = get_load_path(mk_gf_fn_list(job_tag, traj))
@@ -236,7 +227,6 @@ def run_gf(job_tag, traj):
             return None
     get_gf = rup.load_config_lazy(job_tag, path_gf)
     return get_gf
-
 
 @q.timer_verbose
 def run_gt(job_tag, traj, get_gf):
@@ -274,9 +264,7 @@ def run_gt(job_tag, traj, get_gf):
     get_gt = load_gt
     return get_gt
 
-
 # ----------
-
 
 @q.timer
 def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
@@ -319,7 +307,6 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
         ] + wi[i]
     return wi
 
-
 @q.timer
 def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
     params = rup.dict_params[job_tag]
@@ -355,7 +342,6 @@ def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
         ] + wi[i]
     return wi
 
-
 def get_prob_exact_wsrc(job_tag):
     params = rup.dict_params[job_tag]
     if "prob_exact_wsrc" in params:
@@ -363,7 +349,6 @@ def get_prob_exact_wsrc(job_tag):
     n_exact = params["n_exact_wsrc"]
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     return 1 - (1 - 1 / total_site[3]) ** n_exact
-
 
 @q.timer
 def mk_rand_wall_src_info(job_tag, traj, inv_type):
@@ -374,7 +359,6 @@ def mk_rand_wall_src_info(job_tag, traj, inv_type):
     if "prob_exact_wsrc" not in params:
         return mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type)
     return mk_rand_wall_src_info_prob(job_tag, traj, inv_type)
-
 
 @q.timer
 def save_wall_src_info(wi, path):
@@ -391,7 +375,6 @@ def save_wall_src_info(wi, path):
         ]
     )
     q.qtouch(path, content)
-
 
 @q.timer
 def load_wall_src_info(path):
@@ -411,7 +394,6 @@ def load_wall_src_info(path):
         for l in t
     ]
     return wi
-
 
 @q.timer_verbose
 def run_wi(job_tag, traj):
@@ -443,9 +425,7 @@ def run_wi(job_tag, traj):
     #
     return load
 
-
 # ----------
-
 
 def get_n_points_psel(job_tag):
     assert job_tag in rup.dict_params
@@ -459,7 +439,6 @@ def get_n_points_psel(job_tag):
     assert n_points is not None
     return n_points
 
-
 @q.timer
 def mk_rand_psel(job_tag, traj):
     seed = get_job_seed(job_tag)
@@ -469,7 +448,6 @@ def mk_rand_psel(job_tag, traj):
     psel = q.PointsSelection()
     psel.set_rand(total_site, n_points, rs)
     return psel
-
 
 @q.timer_verbose
 def run_psel(job_tag, traj):
@@ -496,15 +474,12 @@ def run_psel(job_tag, traj):
     #
     return load_psel
 
-
 # ----------
-
 
 def get_n_points_pi(job_tag, traj, inv_type, inv_acc):
     assert job_tag in rup.dict_params
     assert "n_points" in rup.dict_params[job_tag]
     return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
-
 
 @q.timer
 def mk_rand_point_src_info(job_tag, traj, psel):
@@ -536,7 +511,6 @@ def mk_rand_point_src_info(job_tag, traj, psel):
         ] + pi[i]
     return pi
 
-
 @q.timer
 def save_point_src_info(pi, path):
     """
@@ -552,7 +526,6 @@ def save_point_src_info(pi, path):
     lines = list(map(mk_line, pi))
     content = "\n".join([f"{len(lines)}"] + lines + [""])
     q.qtouch(path, content)
-
 
 @q.timer
 def load_point_src_info(path):
@@ -571,7 +544,6 @@ def load_point_src_info(path):
         for l in t
     ]
     return pi
-
 
 @q.timer_verbose
 def run_pi(job_tag, traj, get_psel):
@@ -595,9 +567,7 @@ def run_pi(job_tag, traj, get_psel):
     #
     return load
 
-
 # ----------
-
 
 @q.timer
 def load_point_distribution(job_tag):
@@ -640,7 +610,6 @@ def load_point_distribution(job_tag):
     ] = 1.0 / n_points
     return point_distribution
 
-
 def classify_rel_coordinate(xg_rel_arrary, total_site_array):
     """
     xg_rel_arrary = np.array(xg_rel)
@@ -657,7 +626,6 @@ def classify_rel_coordinate(xg_rel_arrary, total_site_array):
         z,
         t,
     )
-
 
 def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_points):
     """
@@ -676,9 +644,7 @@ def get_point_xrel_prob(xg_rel_arrary, total_site_array, point_distribution, n_p
     prob = point_distribution[xg_rel]
     return prob
 
-
 # ----------
-
 
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
@@ -688,7 +654,6 @@ def mk_rand_fsel(job_tag, traj, n_per_tslice):
     fsel = q.FieldSelection()
     fsel.set_rand(total_site, n_per_tslice, rs)
     return fsel
-
 
 @q.timer_verbose
 def run_fsel(job_tag, traj):
@@ -718,9 +683,7 @@ def run_fsel(job_tag, traj):
     #
     return load_fsel
 
-
 # ----------
-
 
 @q.timer
 def mk_fselc(fsel, psel):
@@ -730,7 +693,6 @@ def mk_fselc(fsel, psel):
         q.displayln_info(f"WARNING: {fname}: fsel does not containing psel.")
         fselc.add_psel(psel)
     return fselc
-
 
 @q.timer_verbose
 def run_fselc(job_tag, traj, get_fsel, get_psel):
@@ -747,9 +709,7 @@ def run_fselc(job_tag, traj, get_fsel, get_psel):
     #
     return get
 
-
 # ----------
-
 
 @q.timer
 def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
@@ -759,7 +719,6 @@ def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
     fsel = q.FieldSelection()
     fsel.set_rand(total_site, n_per_tslice_smear, rs)
     return fsel
-
 
 @q.timer_verbose
 def run_psel_smear(job_tag, traj):
@@ -791,7 +750,6 @@ def run_psel_smear(job_tag, traj):
         return psel
     #
     return load_psel
-
 
 @q.timer_verbose
 def run_psel_smear_median(job_tag, traj):
@@ -825,9 +783,7 @@ def run_psel_smear_median(job_tag, traj):
     #
     return load_psel
 
-
 # ----------
-
 
 @q.timer_verbose
 def run_gf_ape(job_tag, get_gf):
@@ -846,7 +802,6 @@ def run_gf_ape(job_tag, get_gf):
     #
     return run
 
-
 @q.timer_verbose
 def run_gf_hyp(job_tag, get_gf):
     if get_gf is None:
@@ -863,9 +818,7 @@ def run_gf_hyp(job_tag, get_gf):
     #
     return run
 
-
 # ----------
-
 
 @q.timer_verbose
 def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
@@ -889,7 +842,6 @@ def compute_eig(job_tag, gf, inv_type=0, inv_acc=0, *, path=None, pc_ne=None):
         return eig
     #
     return get_eig
-
 
 @q.timer_verbose
 def test_eig(job_tag, gf, eig, inv_type, *, pc_ne=None):
@@ -969,7 +921,6 @@ def test_eig(job_tag, gf, eig, inv_type, *, pc_ne=None):
             1e-2,
         )
 
-
 @q.timer_verbose
 def run_eig(job_tag, traj, get_gf, *, is_only_load=False):
     if None in [
@@ -992,7 +943,6 @@ def run_eig(job_tag, traj, get_gf, *, is_only_load=False):
             return None
     else:
         return get_eig
-
 
 @q.timer_verbose
 def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
@@ -1028,9 +978,7 @@ def run_eig_strange(job_tag, traj, get_gf, *, is_only_load=False):
     else:
         return get_eig
 
-
 # ----------
-
 
 @functools.lru_cache(maxsize=None)
 def get_r_list(job_tag):
@@ -1040,7 +988,6 @@ def get_r_list(job_tag):
     # r_list = q.mk_r_list(r_limit, r_all_limit=0.0, r_scaling_factor=5.0) # old choice
     return r_list
 
-
 @functools.lru_cache(maxsize=None)
 def get_r_sq_interp_idx_coef_list(job_tag):
     """
@@ -1048,7 +995,6 @@ def get_r_sq_interp_idx_coef_list(job_tag):
     """
     r_list = get_r_list(job_tag)
     return q.mk_r_sq_interp_idx_coef_list(r_list)
-
 
 @q.timer_verbose
 def run_r_list(job_tag):
@@ -1070,6 +1016,5 @@ def run_r_list(job_tag):
         assert ld_diff.qnorm() < 1e-20
         return
     ld.save(get_save_path(fn))
-
 
 # ----------

@@ -45,7 +45,6 @@ with a possible choice of parameters be $b=50$.\n
 import numpy as np
 from pprint import pformat
 
-
 class q:
     from qlat_utils import (
         timer,
@@ -91,9 +90,7 @@ class q:
         get_comm,
     )
 
-
 # --------------------------------------
-
 
 @q.timer
 def gf_flow_topo(
@@ -198,7 +195,6 @@ def gf_flow_topo(
         q.gf_evolve(gf, gm_force, step_size / norm)
     return q.filter_np_results(step_size / norm)
 
-
 @q.timer
 def gf_energy_derivative_density_field_topo(
     gf,
@@ -230,7 +226,6 @@ def gf_energy_derivative_density_field_topo(
     fd1 -= fd2
     fd1 *= 1 / (2 * epsilon)
     return fd1
-
 
 @q.timer
 def mk_plaq_xg_arr(geo):
@@ -290,7 +285,6 @@ def mk_plaq_xg_arr(geo):
     # print(plaq_xg_arr.shape)
     return plaq_xg_arr
 
-
 @q.timer
 def get_extreme_plaq_xg_list(plaq_xg_arr, f_plaq, threshold):
     """
@@ -314,10 +308,8 @@ def get_extreme_plaq_xg_list(plaq_xg_arr, f_plaq, threshold):
     extreme_plaq_xg_list.sort()
     return extreme_plaq_xg_list
 
-
 def point_d_dis_sqr(x, y, total_site):
     return q.smod_coordinate_d(x - y, total_site).sqr()
-
 
 @q.timer
 def get_group_extreme_plaq_xg_list(extreme_plaq_xg_list, total_site, dis_sqr_limit):
@@ -359,7 +351,6 @@ def get_group_extreme_plaq_xg_list(extreme_plaq_xg_list, total_site, dis_sqr_lim
             ]
             group_extreme_plaq_xg_list.append(l)
     return group_extreme_plaq_xg_list
-
 
 @q.timer
 def process_inst_list(inst_list):
@@ -583,7 +574,6 @@ def process_inst_list(inst_list):
     # p_inst_list.sort(key=lambda v: v["flow_time"])
     return p_inst_list
 
-
 @q.timer
 def displayln_info_topo_info(topo_info):
     """
@@ -602,7 +592,6 @@ def displayln_info_topo_info(topo_info):
         0,
         f"{flow_type} flow_time={flow_time:9.2f} ; topo={topo:10.3f} ; plaq_min={plaq_min:8.5f} ; plaq={plaq:9.6f} ; num_instanton={num_instanton:11.2f} ; step_counter={step_counter:5} ; current_spacing={current_spacing}",
     )
-
 
 @q.timer
 def displayln_info_p_inst(p_inst):
@@ -681,7 +670,6 @@ def displayln_info_p_inst(p_inst):
     # if estimate_topo_charge_orig is not None:
     #     q.displayln_info(0, f"{idx:3}: estimate_topo_charge_orig={estimate_topo_charge_orig}")
 
-
 @q.timer
 def displayln_info_p_inst_list(p_inst_list):
     """
@@ -715,7 +703,6 @@ def displayln_info_p_inst_list(p_inst_list):
     q.displayln_info(0, f"Final: tot_inst={tot_inst}")
     q.displayln_info(0, f"Final: tot_topo={tot_topo}")
 
-
 def get_tot_topo_count(p_inst_list, flow_time):
     """
     Get the total topological charge by counting the number of instanton minus anti-instanton.
@@ -728,7 +715,6 @@ def get_tot_topo_count(p_inst_list, flow_time):
         ]
     )
     return topo_count
-
 
 def get_tot_inst_count(p_inst_list, flow_time):
     """
@@ -743,9 +729,7 @@ def get_tot_inst_count(p_inst_list, flow_time):
     )
     return inst_count
 
-
 # --------------------------------------
-
 
 class InstantonMap:
     """
@@ -981,9 +965,7 @@ class InstantonMap:
                 self.active_inst_list.append(inst)
         self.inst_list += prev_active_inst_list
 
-
 # --------------------------------------
-
 
 @q.timer(is_timer_fork=True)
 def compute_inst_map(
@@ -1259,7 +1241,6 @@ def compute_inst_map(
     q.displayln_info(0, f"tot_topo_list={inst_map.tot_topo_list}")
     return obj
 
-
 @q.timer
 def displayln_info_inst_map_obj(inst_map_obj):
     """
@@ -1346,7 +1327,6 @@ def displayln_info_inst_map_obj(inst_map_obj):
         q.displayln_info(0, f"{fname}: Topological charge matched.")
     else:
         q.displayln_info(-1, f"{fname}: WARNING: Topological charge does not match.")
-
 
 @q.timer(is_timer_fork=True)
 def smear_measure_topo(
@@ -1592,6 +1572,5 @@ def smear_measure_topo(
         topo_list,
         energy_list,
     )
-
 
 # --------------------------------------

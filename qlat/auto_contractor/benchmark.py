@@ -23,7 +23,6 @@ from auto_contractor.eval import *
 
 import qlat as q
 
-
 @q.timer
 def benchmark_function_1(f, arg, benchmark_size=1000, benchmark_num=10, total_flops=0):
     @q.timer_verbose
@@ -44,7 +43,6 @@ def benchmark_function_1(f, arg, benchmark_size=1000, benchmark_num=10, total_fl
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
-
 
 @q.timer
 def benchmark_function_2(
@@ -69,7 +67,6 @@ def benchmark_function_2(
         for i in range(benchmark_num):
             benchmark_run_10()
 
-
 @q.timer
 def benchmark_function_3(
     f, arg1, arg2, arg3, benchmark_size=1000, benchmark_num=10, total_flops=0
@@ -92,7 +89,6 @@ def benchmark_function_3(
     with q.TimerFork(max_call_times_for_always_show_info=0):
         for i in range(benchmark_num):
             benchmark_run_10()
-
 
 if __name__ == "__main__":
     rng_state = q.RngState("seed")

@@ -2,7 +2,6 @@ from qlat_utils import *
 from .c import *
 from . import c
 
-
 class QMAction:
     def __init__(
         self,

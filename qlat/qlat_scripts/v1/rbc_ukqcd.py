@@ -5,7 +5,6 @@ import pprint
 
 from .rbc_ukqcd_params import get_param
 
-
 def get_param_fermion(job_tag, inv_type, inv_acc):
     """
     Use param with lowewr `inv_acc` if the corresponding param does not exist.
@@ -17,13 +16,11 @@ def get_param_fermion(job_tag, inv_type, inv_acc):
         inv_acc -= 1
     return None
 
-
 def get_ls_from_fermion_params(fermion_params):
     if "omega" in fermion_params:
         return len(fermion_params["omega"])
     else:
         return fermion_params["Ls"]
-
 
 def get_param_lanc(job_tag, inv_type, inv_acc=0):
     """
@@ -36,7 +33,6 @@ def get_param_lanc(job_tag, inv_type, inv_acc=0):
         inv_acc -= 1
     return None
 
-
 def get_param_clanc(job_tag, inv_type, inv_acc=0):
     """
     Use param with lowewr `inv_acc` if the corresponding param does not exist.
@@ -48,12 +44,10 @@ def get_param_clanc(job_tag, inv_type, inv_acc=0):
         inv_acc -= 1
     return None
 
-
 def mk_pc_parity(job_tag, inv_type, inv_acc):
     import gpt as g
     #
     return g.odd
-
 
 def mk_pc_ne(job_tag, inv_type, inv_acc, *, eig=None, parity=None):
     import gpt as g
@@ -77,7 +71,6 @@ def mk_pc_ne(job_tag, inv_type, inv_acc, *, eig=None, parity=None):
         pc_ne = pc.eo2_ne(parity=parity)
     return pc_ne
 
-
 def mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc):
     import gpt as g
     #
@@ -87,7 +80,6 @@ def mk_quark_matrix(job_tag, gpt_gf, inv_type, inv_acc):
     else:
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
     return qm
-
 
 @q.timer_verbose
 def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
@@ -134,7 +126,6 @@ def mk_eig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     q.show_memory_usage()
     qtimer.stop()
     return eig
-
 
 @q.timer_verbose
 def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
@@ -224,7 +215,6 @@ def mk_ceig(job_tag, gf, inv_type, inv_acc=0, *, parity=None, pc_ne=None):
     qtimer.stop()
     return eig
 
-
 @q.timer_verbose
 def get_smoothed_evals(
     basis, cevec, gf, job_tag, inv_type, inv_acc=0, *, parity=None, pc_ne=None
@@ -262,7 +252,6 @@ def get_smoothed_evals(
         smoothed_evals = smoothed_evals + evals
     return smoothed_evals
 
-
 @q.timer_verbose
 def save_eig(path, eig, job_tag, inv_type=0, inv_acc=0):
     """
@@ -283,7 +272,6 @@ def save_eig(path, eig, job_tag, inv_type=0, inv_acc=0):
         eig.save(path)
     else:
         assert False
-
 
 @q.timer_verbose
 def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
@@ -332,7 +320,6 @@ def load_eig_lazy(path, job_tag, inv_type=0, inv_acc=0):
     #
     return load_eig
 
-
 def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
     maxiter = get_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")
     if maxiter is not None:
@@ -348,7 +335,6 @@ def get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc):
     else:
         maxiter = 200
     return maxiter
-
 
 @q.timer_verbose
 def mk_gpt_inverter(
@@ -485,7 +471,6 @@ def mk_gpt_inverter(
     else:
         return q.InverterGaugeTransform(inverter=inv_qm, gt=gt)
 
-
 @q.timer_verbose
 def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt=None):
     qtimer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_acc})", True)
@@ -527,10 +512,8 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt=None):
     else:
         return q.InverterGaugeTransform(inverter=inv, gt=gt)
 
-
 def mk_inverter(*args, **kwargs):
     return mk_gpt_inverter(*args, **kwargs)
-
 
 @q.timer
 def get_inv(

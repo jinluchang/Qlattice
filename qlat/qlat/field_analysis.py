@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class q:
     from qlat_utils import (
         timer,
@@ -15,7 +14,6 @@ class q:
         FieldComplexD,
         mk_fft,
     )
-
 
 @q.cache_call(maxsize=16)
 @q.timer
@@ -32,7 +30,6 @@ def mk_shift_xg_idx_arr(total_site, xg_shift):
     xg_arr = geo.xg_arr()
     xg_arr = (xg_arr + xg_shift) % total_site
     return xg_idx_arr[tuple(xg_arr.T)]
-
 
 @q.timer
 def smear_field_step_local(field, coef, n_steps=1):
@@ -68,7 +65,6 @@ def smear_field_step_local(field, coef, n_steps=1):
         new_field *= 1.0 - coef
     return new_field
 
-
 @q.timer
 def smear_field_step(field, coef, n_steps=1):
     """
@@ -98,7 +94,6 @@ def smear_field_step(field, coef, n_steps=1):
             new_field += field.shift(xg_shift)
         new_field *= coef_dir * (1.0 - coef)
     return new_field
-
 
 @q.cache_call(maxsize=128)
 @q.timer_verbose
@@ -134,7 +129,6 @@ def mk_smear_mom_kernel(total_site, radius):
         gg_arr = np.exp(-gg_arr)
         f[:] = gg_arr[:, None]
     return f
-
 
 @q.cache_call(maxsize=128)
 @q.timer_verbose
@@ -176,7 +170,6 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
         gg_arr = np.exp(-gg_arr)
         f[:] = gg_arr[:, None]
     return f
-
 
 @q.cache_call(maxsize=128)
 @q.timer_verbose
@@ -227,7 +220,6 @@ def mk_sphere_sum_mom_kernel(total_site, radius, is_only_spatial):
     f[:] = f_f[:].real
     return f
 
-
 @q.timer
 def sphere_sum_field(field, radius, *, is_only_spatial=False):
     r"""
@@ -252,7 +244,6 @@ def sphere_sum_field(field, radius, *, is_only_spatial=False):
     ftmp = fft2 * ftmp
     summed_field @= ftmp
     return summed_field
-
 
 @q.timer
 def smear_field(field, radius, *, is_only_spatial=False):
@@ -285,7 +276,6 @@ def smear_field(field, radius, *, is_only_spatial=False):
     ftmp = fft2 * ftmp
     smeared_field @= ftmp
     return smeared_field
-
 
 @q.timer
 def field_convolution(f1, f2, idx1=None, idx2=None, *, is_only_spatial=False):

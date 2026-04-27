@@ -7,7 +7,6 @@ g.message("2024/05/17")
 
 config = g.default.get_single("--config", None)
 
-
 def smear(Uin, c1, epsilon):
     Usm = g.copy(Uin)
     if c1 == 0.0:
@@ -20,7 +19,6 @@ def smear(Uin, c1, epsilon):
         Usm, lambda: [g(-u) for u in action.gradient(Usm, Usm)], 1.0
     )(epsilon)
     return Usm
-
 
 smear_info_list = [
     [20, 0.05, 0.0],

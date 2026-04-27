@@ -19,7 +19,6 @@ https://arxiv.org/abs/1203.4469 for $W_1(t)$.
 
 import numpy as np
 
-
 class q:
     from qlat_utils import (
         timer,
@@ -48,14 +47,12 @@ class q:
         gf_evolve,
     )
 
-
 ### --------------------------------------
 
 is_spatial_default = False
 t_dir_default = 3
 integrator_type_default = "runge-kutta"
 flow_time_default = 0.0
-
 
 @q.cache_call(maxsize=8)
 @q.timer
@@ -101,7 +98,6 @@ def get_plaq_factor_for_gf_scale_flow(total_site, is_spatial, t_dir):
         plaq_factor.set_unit()
     return plaq_factor
 
-
 @q.timer
 def gf_flow_scale(gf, step_size, *, is_spatial=None, t_dir=None, integrator_type=None):
     """
@@ -144,7 +140,6 @@ def gf_flow_scale(gf, step_size, *, is_spatial=None, t_dir=None, integrator_type
     else:
         raise Exception(f"{fname}: integrator_type={integrator_type}")
 
-
 @q.timer
 def gf_plaq_tslice(gf, *, t_dir=None):
     """
@@ -163,7 +158,6 @@ def gf_plaq_tslice(gf, *, t_dir=None):
     plaq_arr = f_plaq.glb_sum_tslice(t_dir=t_dir)[:] / (total_volume / t_size)
     plaq_arr = np.array(plaq_arr, dtype=np.float64)
     return plaq_arr
-
 
 @q.timer
 def gf_energy_density_dir_tslice(gf, *, t_dir=None):
@@ -187,7 +181,6 @@ def gf_energy_density_dir_tslice(gf, *, t_dir=None):
     )
     energy_density_dir_arr = np.array(energy_density_dir_arr, dtype=np.float64)
     return energy_density_dir_arr
-
 
 @q.timer(is_timer_fork=True)
 def gf_flow_record(
@@ -252,7 +245,6 @@ def gf_flow_record(
     )
     return obj_record
 
-
 default_run_flow_scale_params = dict(
     step_size=0.05,
     num_step=400,
@@ -260,7 +252,6 @@ default_run_flow_scale_params = dict(
     t_dir=3,
     integrator_type="runge-kutta",
 )
-
 
 @q.timer(is_timer_fork=True)
 def run_flow_scale(fn_out, *, get_gf=None, fn_gf=None, params=None):
@@ -329,7 +320,6 @@ def run_flow_scale(fn_out, *, get_gf=None, fn_gf=None, params=None):
     q.json_results_append(
         f"{fname}: End compute flow scale info fn='{fn_out}' for '{fn_gf}'"
     )
-
 
 ### --------------------------------------
 

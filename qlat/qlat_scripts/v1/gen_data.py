@@ -8,7 +8,6 @@ from .jobs import *
 
 # -----------------------------------------------------------------------------
 
-
 @q.timer
 def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=None):
     if None in [
@@ -35,9 +34,7 @@ def run_get_inverter(job_tag, traj, *, inv_type, get_gf, get_gt=None, get_eig=No
     ]:
         ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def compute_prop_wsrc_1(
@@ -63,7 +60,6 @@ def compute_prop_wsrc_1(
     src = q.mk_wall_src(geo, tslice)
     sol = inv * src
     return sol
-
 
 @q.timer
 def compute_prop_wsrc_full(
@@ -97,7 +93,6 @@ def compute_prop_wsrc_full(
     q.qnorm_field(prop).save_double(sfw, tag + " ; qnorm_field")
     prop.save_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
-
 
 @q.timer_verbose
 def compute_prop_wsrc_full_all(job_tag, traj, *, inv_type, gf, gt, wi, eig):
@@ -141,7 +136,6 @@ def compute_prop_wsrc_full_all(job_tag, traj, *, inv_type, gf, gt, wi, eig):
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-
 @q.timer(is_timer_fork=True)
 def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_wi):
     fname = q.get_fname()
@@ -184,9 +178,7 @@ def run_prop_wsrc_full(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_
             f"{fname} {job_tag} {traj} {inv_type} done",
         ]
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer
 def avg_weight_from_prop_full(geo, prop_nf_dict):
@@ -265,7 +257,6 @@ def avg_weight_from_prop_full(geo, prop_nf_dict):
         f_weight_final[:] += f_weight_avg[inv_type][:] / 4
     return f_weight_avg, f_weight_final
 
-
 @q.timer
 def make_fsel_from_weight(f_weight, f_rand_01, rate):
     """
@@ -285,7 +276,6 @@ def make_fsel_from_weight(f_weight, f_rand_01, rate):
     )
     return fsel
 
-
 @q.timer
 def make_psel_from_weight(f_weight, f_rand_01, rate):
     """
@@ -294,7 +284,6 @@ def make_psel_from_weight(f_weight, f_rand_01, rate):
     fsel = make_fsel_from_weight(f_weight, f_rand_01, rate)
     psel = fsel.to_psel()
     return psel
-
 
 @q.timer_verbose
 def compute_f_weight_from_wsrc_prop_full(
@@ -358,7 +347,6 @@ def compute_f_weight_from_wsrc_prop_full(
         "field-selection-weight final",
         f_weight_final.glb_sum_tslice()[:].ravel(),
     )
-
 
 @q.timer(is_timer_fork=True)
 def run_f_weight_from_wsrc_prop_full(job_tag, traj):
@@ -424,7 +412,6 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     q.release_lock()
     return ret
 
-
 @q.timer_verbose
 def run_f_weight_uniform(job_tag, traj):
     """
@@ -461,7 +448,6 @@ def run_f_weight_uniform(job_tag, traj):
     q.release_lock()
     return ret
 
-
 @q.timer_verbose
 def run_f_weight_load(job_tag, traj):
     """
@@ -489,7 +475,6 @@ def run_f_weight_load(job_tag, traj):
     if get_load_path(fn_f_weight) is not None:
         return ret
     raise Exception(f"{fname}: 'fn_f_weight' does not exist.")
-
 
 @q.timer_verbose
 def run_f_rand_01(job_tag, traj):
@@ -530,7 +515,6 @@ def run_f_rand_01(job_tag, traj):
     f_rand_01.save_double(get_save_path(fn_f_rand_01))
     q.release_lock()
     return ret
-
 
 @q.timer_verbose
 def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
@@ -614,7 +598,6 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
     fsel_prob.save_double(get_save_path(fn_fsel_prob))
     q.release_lock()
     return ret
-
 
 @q.timer_verbose
 def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight, tag=None):
@@ -704,13 +687,11 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight, tag=None):
     q.release_lock()
     return ret
 
-
 @q.timer
 def run_fsel_from_fsel_prob(get_fsel_prob):
     if get_fsel_prob is None:
         return None
     return lambda: get_fsel_prob().fsel
-
 
 @q.timer
 def run_psel_from_psel_prob(get_psel_prob):
@@ -718,9 +699,7 @@ def run_psel_from_psel_prob(get_psel_prob):
         return None
     return lambda: get_psel_prob().psel
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def run_fsel_prob_sub_sampling(
@@ -777,7 +756,6 @@ def run_fsel_prob_sub_sampling(
         return fsel_prob_sub
     #
     return get_fsel_prob_sub
-
 
 @q.timer_verbose
 def run_psel_prob_sub_sampling(
@@ -852,9 +830,7 @@ def run_psel_prob_sub_sampling(
     #
     return get_psel_prob_sub
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer(is_timer_fork=True)
 def run_psel_split(
@@ -909,7 +885,6 @@ def run_psel_split(
     q.release_lock()
     return ret
 
-
 @q.timer(is_timer_fork=True)
 def run_fsel_split(
     job_tag,
@@ -963,9 +938,7 @@ def run_fsel_split(
     q.release_lock()
     return ret
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def save_prop_wsrc_sparse(
@@ -1003,7 +976,6 @@ def save_prop_wsrc_sparse(
     s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
     qar_sp.flush()
     sfw.flush()
-
 
 @q.timer(is_timer_fork=True)
 def run_prop_wsrc_sparse(
@@ -1128,9 +1100,7 @@ def run_prop_wsrc_sparse(
         f"{fname} {job_tag} {traj} {inv_type} done",
     ]
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer
 def calc_hvp_sum_tslice(chvp_16):
@@ -1195,7 +1165,6 @@ def calc_hvp_sum_tslice(chvp_16):
         ld_arr[t_dir, :t_size] = arr.reshape(t_size, 4, 4)
     return ld_hvp_ts
 
-
 @q.timer
 def compute_prop_psrc_hvp_contract(
     job_tag, traj, xg_src, inv_type, inv_acc, *, prop, tag, sfw_hvp, qar_hvp_ts
@@ -1218,9 +1187,7 @@ def compute_prop_psrc_hvp_contract(
         chvp_16.save_float_from_double(sfw_hvp, tag, skip_if_exist=True)
         sfw_hvp.flush()
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def compute_prop_2(
@@ -1271,12 +1238,10 @@ def compute_prop_2(
     sfw.flush()
     return sol
 
-
 def mk_psrc_tag(xg, inv_type, inv_acc):
     xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
     tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
     return tag
-
 
 @q.timer
 def compute_prop_psrc(
@@ -1341,7 +1306,6 @@ def compute_prop_psrc(
         sfw_hvp=sfw_hvp,
         qar_hvp_ts=qar_hvp_ts,
     )
-
 
 @q.timer_verbose
 def compute_prop_psrc_all(
@@ -1439,7 +1403,6 @@ def compute_prop_psrc_all(
     if sfw_hvp is not None:
         q.qrename_info(get_save_path(path_s_hvp + ".acc"), get_save_path(path_s_hvp))
 
-
 @q.timer(is_timer_fork=True)
 def run_prop_psrc(
     job_tag,
@@ -1503,9 +1466,7 @@ def run_prop_psrc(
             f"{fname} {job_tag} {traj} {inv_type} done",
         ]
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def compute_hvp_average(job_tag, traj, *, inv_type, psel_prob, data_path, geo):
@@ -1546,7 +1507,6 @@ def compute_hvp_average(job_tag, traj, *, inv_type, psel_prob, data_path, geo):
     sfr.close()
     hvp_average *= 1 / geo.total_volume
     return hvp_average
-
 
 @q.timer(is_timer_fork=True)
 def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
@@ -1602,9 +1562,7 @@ def run_hvp_average(job_tag, traj, *, inv_type, get_psel_prob):
     q.release_lock()
     return load
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer(is_timer_fork=True)
 def run_field_rand_u1_dict(
@@ -1667,7 +1625,6 @@ def run_field_rand_u1_dict(
             )
     q.qtouch_info(get_save_path(f"{path}/checkpoint.txt"), "")
     return ret
-
 
 @q.timer(is_timer_fork=True)
 def run_prop_sparse_rand_u1_src(
@@ -1893,9 +1850,7 @@ def run_prop_sparse_rand_u1_src(
         f"{fname} {job_tag} {traj} {inv_type} done",
     ]
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def compute_prop_rand_u1_type_acc(
@@ -1920,7 +1875,6 @@ def compute_prop_rand_u1_type_acc(
     s_prop.save_float_from_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
     return s_prop
-
 
 @q.timer_verbose
 def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None):
@@ -1974,7 +1928,6 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig=None)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-
 @q.timer(is_timer_fork=True)
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None):
     fname = q.get_fname()
@@ -2021,9 +1974,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig=None)
             f"{fname} {job_tag} {traj} {inv_type} done",
         ]
 
-
 # -----------------------------------------------------------------------------
-
 
 @q.timer_verbose
 def compute_prop_3(
@@ -2064,7 +2015,6 @@ def compute_prop_3(
     s_sol.save_float_from_double(sfw, tag, skip_if_exist=True)
     sfw.flush()
     return sol
-
 
 @q.timer
 def compute_prop_smear(
@@ -2123,7 +2073,6 @@ def compute_prop_smear(
         fsel_smear_median=fsel_smear_median,
         smear=smear,
     )
-
 
 @q.timer_verbose
 def compute_prop_smear_all(
@@ -2213,7 +2162,6 @@ def compute_prop_smear_all(
     q.qrename_info(get_save_path(path_sm + ".acc"), get_save_path(path_sm))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-
 @q.timer(is_timer_fork=True)
 def run_prop_smear(
     job_tag,
@@ -2298,7 +2246,6 @@ def run_prop_smear(
         return [
             f"{fname} {job_tag} {traj} {inv_type} done",
         ]
-
 
 # -----------------------------------------------------------------------------
 

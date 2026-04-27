@@ -2,7 +2,6 @@ from qlat_utils import *
 from .c import *
 from . import c
 
-
 @timer
 def contract_pion_field(prop, tslice):
     ld = LatData()

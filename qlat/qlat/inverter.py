@@ -6,13 +6,10 @@ from . import c
 
 cache_inv = mk_cache("inv")
 
-
 class Inverter:
     pass
 
-
 ## -----
-
 
 class InverterDwfFreeField(Inverter):
     """
@@ -61,9 +58,7 @@ class InverterDwfFreeField(Inverter):
         else:
             raise Exception("InverterDwfFreeField")
 
-
 ## -----
-
 
 class InverterDomainWall(Inverter):
     """
@@ -121,9 +116,7 @@ class InverterDomainWall(Inverter):
             self, max_mixed_precision_cycle
         )
 
-
 ## -----
-
 
 class InverterGaugeTransform(Inverter):
     """
@@ -170,12 +163,9 @@ class InverterGaugeTransform(Inverter):
         self.timer.stop()
         return prop_sol
 
-
 ## -----
-
 
 class EigSystem:
     pass
-
 
 ## -----

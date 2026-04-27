@@ -24,7 +24,6 @@ dict_params["load_config_params"] = {
     ]
 }
 
-
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
     params["M5"] = 1.8
@@ -49,7 +48,6 @@ def mk_fermion_params(inv_type, inv_acc):
     params["Ls"] = 12
     return params
 
-
 def mk_dict_fermion_params():
     params = {}
     for inv_type in [
@@ -66,9 +64,7 @@ def mk_dict_fermion_params():
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
 
-
 dict_params["fermion_params"] = mk_dict_fermion_params()
-
 
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_type == 0
@@ -101,13 +97,11 @@ def mk_lanc_params(inv_type, inv_acc):
         "irl_params": irl_params,
     }
 
-
 dict_params["lanc_params"] = {
     0: {
         0: mk_lanc_params(0, 0),
     },
 }
-
 
 def mk_clanc_params(inv_type, inv_acc):
     assert inv_type == 0
@@ -155,7 +149,6 @@ def mk_clanc_params(inv_type, inv_acc):
         "smoother_params": smoother_params,
         "save_params": save_params,
     }
-
 
 dict_params["clanc_params"] = {
     0: {

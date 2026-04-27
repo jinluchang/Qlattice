@@ -2,7 +2,6 @@ from qlat_utils import *
 from .c import *
 from . import c
 
-
 class ScalarAction:
     def __init__(self, m_sq, lmbd, alpha):
         self.cdata = c.mk_scalar_action(m_sq, lmbd, alpha)

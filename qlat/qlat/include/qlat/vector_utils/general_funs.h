@@ -1034,7 +1034,7 @@ inline std::vector<unsigned int> get_num_power(
   return re;
 }
 
-//Even node in xyzT directions
+// Even node in xyzT directions
 inline Coordinate spread_even(const Int n, const Coordinate& Lat,
                               const std::vector<unsigned int>& a)
 {
@@ -1083,7 +1083,7 @@ inline Coordinate spread_even(const Int n, const Coordinate& Lat,
   return re;
 }
 
-//Most power in T direction
+// Most power in T direction
 inline Coordinate spread_powT(const Int n, const Coordinate& Lat,
                               const std::vector<unsigned int>& a)
 {
@@ -1202,11 +1202,12 @@ inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 /*
   mode_dis <  10 default mpi ranks, mode_dis >= 10 same node close ranks
   mode_dis % 1 == 0, t in diff node, mode_dis % 2 == 1, t in single node
-  mode_dis in [0, 2), mode ranks on T direction, mode_dis [2, 4), even spread of xyzt
-  Example : 12 --> same node close ranks, xyzt even spread, t in different nodes
-  Example : 13 --> same node close ranks, xyzt even spread, t in same      nodes
-  Example : 10 --> same node close ranks, most ranks in T , t in different nodes
-  Example :  0 --> default   ranks, most, ranks in T , t in different nodes
+  mode_dis in [0, 2), mode ranks on T direction, mode_dis [2, 4), even spread of
+  xyzt Example : 12 --> same node close ranks, xyzt even spread, t in different
+  nodes Example : 13 --> same node close ranks, xyzt even spread, t in same
+  nodes Example : 10 --> same node close ranks, most ranks in T , t in different
+  nodes Example :  0 --> default   ranks, most, ranks in T , t in different
+  nodes
 */
 inline void begin_Lat(int* argc, char** argv[], inputpara& in,
                       const Int with_GPU = 1, const Int read_input_Lat = 0)

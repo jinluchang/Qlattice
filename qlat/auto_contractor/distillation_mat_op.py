@@ -25,7 +25,6 @@ import functools
 
 import qlat as q
 
-
 @q.timer
 def einsum_cache_path(subscripts, *operands, optimize=None):
     """
@@ -40,7 +39,6 @@ def einsum_cache_path(subscripts, *operands, optimize=None):
         q.displayln_info(b)
     return np.einsum(subscripts, *operands, optimize=optimize)
 
-
 def as_wilson_matrix(x):
     if isinstance(x, np.ndarray):
         return x
@@ -49,9 +47,7 @@ def as_wilson_matrix(x):
     else:
         raise Exception(f"as_wilson_matrix: {x}")
 
-
 einsum_optimize_g5_herm = []
-
 
 def wilson_matrix_g5_herm(x):
     """
@@ -66,7 +62,6 @@ def wilson_matrix_g5_herm(x):
     )
     return corr_g5
 
-
 def as_wilson_matrix_g5_herm(x):
     if isinstance(x, np.ndarray):
         return wilson_matrix_g5_herm(x)
@@ -75,13 +70,11 @@ def as_wilson_matrix_g5_herm(x):
     else:
         raise Exception(f"as_wilson_matrix_g5_herm: {x}")
 
-
 def load_prop(x):
     if isinstance(x, tuple):
         assert len(x) == 2 and x[0] == "g5_herm"
         return q.ama_apply1(as_wilson_matrix_g5_herm, x[1])
     return q.ama_apply1(as_wilson_matrix, x)
-
 
 @functools.lru_cache(maxsize=None)
 def get_gamma_matrix(mu):
@@ -89,33 +82,25 @@ def get_gamma_matrix(mu):
     arr = np.asarray(sm)
     return arr
 
-
 einsum_optimize_mat_tr_sm = []
-
 
 def mat_tr_sm(mat):
     v = einsum_cache_path("ii->", mat, optimize=einsum_optimize_mat_tr_sm)
     return v
 
-
 einsum_optimize_mat_tr_cm = []
-
 
 def mat_tr_cm(mat):
     v = einsum_cache_path("ii->", mat, optimize=einsum_optimize_mat_tr_cm)
     return v
 
-
 einsum_optimize_mat_tr_wm = []
-
 
 def mat_tr_wm(mat):
     v = einsum_cache_path("iaia->", mat, optimize=einsum_optimize_mat_tr_wm)
     return v
 
-
 einsum_optimize_mat_tr_wm_wm = []
-
 
 def mat_tr_wm_wm(mat1, mat2):
     v = einsum_cache_path(
@@ -123,9 +108,7 @@ def mat_tr_wm_wm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_tr_wm_sm = []
-
 
 def mat_tr_wm_sm(mat1, mat2):
     v = einsum_cache_path(
@@ -133,21 +116,16 @@ def mat_tr_wm_sm(mat1, mat2):
     )
     return v
 
-
 def mat_tr_sm_wm(mat1, mat2):
     return mat_tr_wm_sm(mat2, mat1)
 
-
 einsum_optimize_mat_tr_sm_sm = []
-
 
 def mat_tr_sm_sm(mat1, mat2):
     v = einsum_cache_path("ij,ji->", mat1, mat2, optimize=einsum_optimize_mat_tr_sm_sm)
     return v
 
-
 einsum_optimize_mat_tr_wm_cm = []
-
 
 def mat_tr_wm_cm(mat1, mat2):
     v = einsum_cache_path(
@@ -155,21 +133,16 @@ def mat_tr_wm_cm(mat1, mat2):
     )
     return v
 
-
 def mat_tr_cm_wm(mat1, mat2):
     return mat_tr_wm_cm(mat2, mat1)
 
-
 einsum_optimize_mat_tr_cm_cm = []
-
 
 def mat_tr_cm_cm(mat1, mat2):
     v = einsum_cache_path("ab,ba->", mat1, mat2, optimize=einsum_optimize_mat_tr_cm_cm)
     return v
 
-
 einsum_optimize_mat_mul_wm_wm = []
-
 
 def mat_mul_wm_wm(mat1, mat2):
     v = einsum_cache_path(
@@ -177,9 +150,7 @@ def mat_mul_wm_wm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_mul_wm_sm = []
-
 
 def mat_mul_wm_sm(mat1, mat2):
     v = einsum_cache_path(
@@ -187,9 +158,7 @@ def mat_mul_wm_sm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_mul_sm_wm = []
-
 
 def mat_mul_sm_wm(mat1, mat2):
     v = einsum_cache_path(
@@ -197,9 +166,7 @@ def mat_mul_sm_wm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_mul_sm_sm = []
-
 
 def mat_mul_sm_sm(mat1, mat2):
     v = einsum_cache_path(
@@ -207,9 +174,7 @@ def mat_mul_sm_sm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_mul_wm_cm = []
-
 
 def mat_mul_wm_cm(mat1, mat2):
     v = einsum_cache_path(
@@ -217,9 +182,7 @@ def mat_mul_wm_cm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_mul_cm_wm = []
-
 
 def mat_mul_cm_wm(mat1, mat2):
     v = einsum_cache_path(
@@ -227,9 +190,7 @@ def mat_mul_cm_wm(mat1, mat2):
     )
     return v
 
-
 einsum_optimize_mat_mul_cm_cm = []
-
 
 def mat_mul_cm_cm(mat1, mat2):
     v = einsum_cache_path(

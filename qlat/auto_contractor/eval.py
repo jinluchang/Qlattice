@@ -28,7 +28,6 @@ except:
 
 from qlat_utils.ama import *
 
-
 import numpy as np
 import qlat as q
 import math
@@ -36,7 +35,6 @@ import time
 import glob
 import subprocess
 import functools
-
 
 class CCExpr:
     """
@@ -79,9 +77,7 @@ class CCExpr:
             positions_dict=pd, get_prop=get_prop, is_ama_and_sloppy=is_ama_and_sloppy
         )
 
-
 # -----
-
 
 @q.timer_verbose
 def cache_compiled_cexpr(
@@ -200,7 +196,6 @@ def cache_compiled_cexpr(
     )
     return ccexpr
 
-
 @q.timer
 def get_expr_names(ccexpr: CExpr | CCExpr):
     """
@@ -210,7 +205,6 @@ def get_expr_names(ccexpr: CExpr | CCExpr):
     diagram_type_dict[diagram_type] = name
     """
     return ccexpr.get_expr_names()
-
 
 @q.timer
 def get_diagram_type_dict(cexpr: CExpr | CCExpr):
@@ -224,7 +218,6 @@ def get_diagram_type_dict(cexpr: CExpr | CCExpr):
     for name, diagram_type in cexpr.diagram_types:
         diagram_type_dict[diagram_type] = name
     return diagram_type_dict
-
 
 @q.timer
 def eval_cexpr(ccexpr: CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
@@ -242,7 +235,6 @@ def eval_cexpr(ccexpr: CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=Fa
     cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
     """
     return ccexpr.cexpr_function(positions_dict, get_prop, is_ama_and_sloppy)
-
 
 @q.timer
 def benchmark_eval_cexpr(
@@ -462,7 +454,6 @@ def benchmark_eval_cexpr(
     )
     return check, check_ama
 
-
 # -----------------------------------------
 
 meson_build_content = r"""project(
@@ -551,7 +542,6 @@ codelib = py3.extension_module('cexpr_code',
   )
 """
 
-
 def make_rand_spin_color_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
     if is_distillation:
@@ -571,7 +561,6 @@ def make_rand_spin_color_matrix(rng_state, *, is_distillation=False):
         arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     return wm
 
-
 def make_rand_spin_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
     if is_distillation:
@@ -587,7 +576,6 @@ def make_rand_spin_matrix(rng_state, *, is_distillation=False):
         shape = arr.shape
         arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     return sm
-
 
 def make_rand_color_matrix(rng_state, *, is_distillation=False):
     rs = rng_state
@@ -605,26 +593,20 @@ def make_rand_color_matrix(rng_state, *, is_distillation=False):
         arr[:] = 2 * rs.u_rand_arr(shape) + 2j * rs.u_rand_arr(shape) - (1 + 1j)
     return cm
 
-
 def benchmark_show_check(check):
     return " ".join([f"{v:.10E}" for v in check])
-
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
 
-
 def sqrt_component(x):
     return math.sqrt(x.real) + 1j * math.sqrt(x.imag)
-
 
 def sqr_component_array(arr):
     return np.array([sqr_component(x) for x in arr])
 
-
 def sqrt_component_array(arr):
     return np.array([sqrt_component(x) for x in arr])
-
 
 # -----
 

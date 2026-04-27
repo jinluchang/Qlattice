@@ -25,7 +25,6 @@ import io
 import tokenize
 import sympy
 
-
 def get_variables(s):
     """
     `s` is a string
@@ -38,7 +37,6 @@ def get_variables(s):
             variables.append(tokval)
     variables = sorted(list(set(variables)))
     return variables
-
 
 class Factor:
     """
@@ -82,9 +80,7 @@ class Factor:
             )
         return s
 
-
 ### ------
-
 
 class Term:
     """
@@ -130,9 +126,7 @@ class Term:
             s |= f.get_variable_set()
         return s
 
-
 ### ------
-
 
 class Expr:
     """
@@ -227,9 +221,7 @@ class Expr:
             s |= t.get_variable_set()
         return s
 
-
 ### ------
-
 
 @q.timer
 def simplified_ea(x) -> Expr | int:
@@ -246,7 +238,6 @@ def simplified_ea(x) -> Expr | int:
             x = x.terms[0].coef
     return x
 
-
 @q.timer
 def simplified_coef_ea(x) -> Expr | int:
     """
@@ -256,7 +247,6 @@ def simplified_coef_ea(x) -> Expr | int:
     x = mk_expr(x).copy()
     x.simplify_coef()
     return simplified_ea(x)
-
 
 def compile_py(x, var_dict=None) -> str:
     """
@@ -274,7 +264,6 @@ def compile_py(x, var_dict=None) -> str:
         return compile_py_complex(x)
     else:
         return mk_expr(x).compile_py(var_dict)
-
 
 def is_zero(x) -> bool:
     """
@@ -295,7 +284,6 @@ def is_zero(x) -> bool:
     else:
         print(x)
         assert False
-
 
 def mk_expr(x) -> Expr:
     """
@@ -351,7 +339,6 @@ def mk_expr(x) -> Expr:
         print(x)
         assert False
 
-
 def compile_py_complex(x) -> str:
     """
     interface function
@@ -359,14 +346,12 @@ def compile_py_complex(x) -> str:
     v = complex(x)
     return f"{v}"
 
-
 def drop_zero_terms(expr: Expr) -> Expr:
     terms = []
     for t in expr.terms:
         if t.coef != 0:
             terms.append(t)
     return Expr(terms)
-
 
 def combine_two_terms(t1: Term, t2: Term, t1_sig: str, t2_sig: str) -> Term | None:
     if t1_sig == t2_sig:
@@ -377,7 +362,6 @@ def combine_two_terms(t1: Term, t2: Term, t1_sig: str, t2_sig: str) -> Term | No
             return Term(t1.factors, coef)
     else:
         return None
-
 
 def combine_terms_expr(expr: Expr) -> Expr:
     if not expr.terms:
@@ -411,9 +395,7 @@ def combine_terms_expr(expr: Expr) -> Expr:
         terms.append(term)
     return Expr(terms)
 
-
 ### ------
-
 
 def mk_sym(x):
     """
@@ -421,7 +403,6 @@ def mk_sym(x):
     Make a sympy simplified value with `sympy.simplify(x)`
     """
     return sympy.simplify(x)
-
 
 def mk_fac(x) -> Expr:
     """
@@ -435,7 +416,6 @@ def mk_fac(x) -> Expr:
     `base_position_dict` is argument in function `cache_compiled_cexpr`.
     """
     return mk_expr(x)
-
 
 ### ------
 

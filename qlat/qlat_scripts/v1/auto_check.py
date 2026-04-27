@@ -6,11 +6,9 @@ from .jobs import *
 
 # ----
 
-
 @q.timer
 def get_all_points(total_site):
     return list(get_all_points_psel(total_site))
-
 
 @q.timer
 def get_all_points_psel(total_site):
@@ -19,9 +17,7 @@ def get_all_points_psel(total_site):
     psel = fsel.to_psel()
     return psel
 
-
 # ----
-
 
 @q.timer
 def run_get_inverter_checker(
@@ -49,7 +45,6 @@ def run_get_inverter_checker(
     #
     ru.get_inv(gf, job_tag, inv_type, inv_acc, gt=gt, eig=eig)
 
-
 @q.timer_verbose
 def compute_prop_1_checker(inv, src, *, tag, sfw, path_sp):
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
@@ -59,7 +54,6 @@ def compute_prop_1_checker(inv, src, *, tag, sfw, path_sp):
     sol_ws = sol.glb_sum_tslice()
     sol_ws.save(get_save_path(fn_spw))
     return sol
-
 
 @q.timer
 def compute_prop_wsrc_checker(
@@ -78,7 +72,6 @@ def compute_prop_wsrc_checker(
     geo = q.Geometry(total_site)
     src = q.mk_wall_src(geo, tslice)
     compute_prop_1_checker(inv, src, tag=tag, sfw=sfw, path_sp=path_sp)
-
 
 @q.timer_verbose
 def compute_prop_wsrc_all_checker(job_tag, traj, *, inv_type, gf, gt, eig):
@@ -131,7 +124,6 @@ def compute_prop_wsrc_all_checker(job_tag, traj, *, inv_type, gf, gt, eig):
         is_remove_folder_after=True,
     )
 
-
 @q.timer
 def run_prop_wsrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
     if None in [
@@ -165,9 +157,7 @@ def run_prop_wsrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
         )
         q.release_lock()
 
-
 # ----
-
 
 @q.timer_verbose
 def compute_prop_2_checker(inv, src, *, tag, sfw):
@@ -175,7 +165,6 @@ def compute_prop_2_checker(inv, src, *, tag, sfw):
     sol.save_float_from_double(sfw, tag)
     sfw.flush()
     return sol
-
 
 @q.timer
 def compute_prop_psrc_checker(
@@ -194,7 +183,6 @@ def compute_prop_psrc_checker(
     geo = q.Geometry(total_site)
     src = q.mk_point_src(geo, q.Coordinate(xg))
     compute_prop_2_checker(inv, src, tag=tag, sfw=sfw)
-
 
 @q.timer_verbose
 def compute_prop_psrc_all_checker(job_tag, traj, *, inv_type, gf, gt, eig):
@@ -243,7 +231,6 @@ def compute_prop_psrc_all_checker(job_tag, traj, *, inv_type, gf, gt, eig):
         is_remove_folder_after=True,
     )
 
-
 @q.timer
 def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
     if None in [
@@ -277,9 +264,7 @@ def run_prop_psrc_checker(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt):
         )
         q.release_lock()
 
-
 # ----
-
 
 @q.timer_verbose
 def load_prop_psrc(job_tag, traj, inv_type):
@@ -315,7 +300,6 @@ def load_prop_psrc(job_tag, traj, inv_type):
         prop_list.append(sp_prop)
     sfr.close()
     cache["psnk-psrc"] = prop_list
-
 
 @q.timer_verbose
 def load_prop_wsrc(job_tag, traj, inv_type):
@@ -356,7 +340,6 @@ def load_prop_wsrc(job_tag, traj, inv_type):
     sfr.close()
     cache["psnk-wsrc"] = prop_list
     cache["wsnk-wsrc"] = prop2_list
-
 
 @q.timer_verbose
 def run_get_prop_checker(job_tag, traj, *, get_gf, get_gt):
@@ -434,6 +417,5 @@ def run_get_prop_checker(job_tag, traj, *, get_gf, get_gt):
         return get_prop
     #
     return mk_get_prop
-
 
 # ----

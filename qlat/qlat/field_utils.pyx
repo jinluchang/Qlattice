@@ -48,7 +48,6 @@ def refresh_expanded(field, comm_plan=None):
 def refresh_expanded_1(field):
     return c.refresh_expanded_1_field(field)
 
-
 cdef class CommMarks(FieldInt8t):
 
     def __init__(self, Geometry geo=None, int multiplicity=0):

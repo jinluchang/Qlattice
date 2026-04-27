@@ -32,7 +32,6 @@ except:
     import expr_arithmetic as ea
     from expr_arithmetic import mk_sym
 
-
 class Op:
     """
     self.otype
@@ -79,9 +78,7 @@ class Op:
     def isospin_symmetric_limit(self) -> None:
         pass
 
-
 ### ------
-
 
 class Qfield(Op):
     """
@@ -119,9 +116,7 @@ class Qfield(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
-
 ### ------
-
 
 class Qv(Qfield):
     """
@@ -134,9 +129,7 @@ class Qv(Qfield):
         """
         Qfield.__init__(self, "Qv", f, p, s, c)
 
-
 ### ------
-
 
 class Qb(Qfield):
     """
@@ -149,41 +142,31 @@ class Qb(Qfield):
         """
         Qfield.__init__(self, "Qb", f, p, s, c)
 
-
 ### ------
-
 
 class Hv(Qfield):
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "Hv", f, p, s, c)
 
-
 ### ------
-
 
 class Hb(Qfield):
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "Hb", f, p, s, c)
 
-
 ### ------
-
 
 class SHv(Qfield):
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "SHv", f, p, s, c)
 
-
 ### ------
-
 
 class HbS(Qfield):
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "HbS", f, p, s, c)
 
-
 ### ------
-
 
 class S(Op):
     """
@@ -304,9 +287,7 @@ class S(Op):
             fname = q.get_fname()
             raise Exception(f'{fname}: self.f="{self.f}"')
 
-
 ### ------
-
 
 class G(Op):
     """
@@ -342,9 +323,7 @@ class G(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
-
 ### ------
-
 
 class U(Op):
     """
@@ -384,9 +363,7 @@ class U(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
-
 ### ------
-
 
 class Tr(Op):
     """
@@ -453,9 +430,7 @@ class Tr(Op):
         for op in self.ops:
             op.isospin_symmetric_limit()
 
-
 ### ------
-
 
 class Chain(Op):
     """
@@ -564,9 +539,7 @@ class Chain(Op):
         for op in self.ops:
             op.isospin_symmetric_limit()
 
-
 ### ------
-
 
 def copy_op_index_auto(op: Op):
     if op.otype not in [
@@ -593,7 +566,6 @@ def copy_op_index_auto(op: Op):
         op.c2 = "auto"
     return op
 
-
 def check_chain_spin_index(ops: list, s: str):
     """
     for a spin index `s`,
@@ -618,7 +590,6 @@ def check_chain_spin_index(ops: list, s: str):
     assert count2 < 2
     return count1 == 1 and count2 == 1, i1, i2
 
-
 def check_chain_color_index(ops: list, c: str):
     """
     for a color index `s`,
@@ -642,7 +613,6 @@ def check_chain_color_index(ops: list, c: str):
     assert count1 < 2
     assert count2 < 2
     return count1 == 1 and count2 == 1, i1, i2
-
 
 def check_chain_op(ops: list, op: Op):
     """
@@ -697,7 +667,6 @@ def check_chain_op(ops: list, op: Op):
     else:
         return "middle"
 
-
 def check_chain_sc(op, s, c):
     if op.otype in [
         "S",
@@ -712,7 +681,6 @@ def check_chain_sc(op, s, c):
         if c is not None and c != op.c1:
             return False
     return True
-
 
 def update_chain_sc1(op, s, c):
     if op.otype in [
@@ -729,7 +697,6 @@ def update_chain_sc1(op, s, c):
         c = op.c1
     return s, c
 
-
 def update_chain_sc(op, s, c):
     if op.otype in [
         "S",
@@ -744,7 +711,6 @@ def update_chain_sc(op, s, c):
     ]:
         c = op.c2
     return s, c
-
 
 def pick_chain_op(ops: list, masks: list, s, c, type_list=None):
     if type_list is None:
@@ -763,7 +729,6 @@ def pick_chain_op(ops: list, masks: list, s, c, type_list=None):
             continue
         return i, op
     return None
-
 
 def find_trace(ops: list):
     """
@@ -806,7 +771,6 @@ def find_trace(ops: list):
                 c,
             ) = update_chain_sc(op2, s, c)
     return None
-
 
 def find_chain(ops: list):
     """
@@ -854,7 +818,6 @@ def find_chain(ops: list):
             ) = update_chain_sc(op2, s, c)
     return None
 
-
 @q.timer
 def collect_traces(ops: list) -> list:
     """
@@ -876,9 +839,7 @@ def collect_traces(ops: list) -> list:
         trs.append(tr)
     return chs + trs + ops
 
-
 ### ------
-
 
 @q.timer
 def baryon_spin_tensor_to_code(spin_tensor: np.ndarray) -> np.ndarray:
@@ -925,7 +886,6 @@ def baryon_spin_tensor_to_code(spin_tensor: np.ndarray) -> np.ndarray:
                 )
     return spin_tensor_code
 
-
 @q.timer
 def baryon_spin_tensor_from_code(spin_tensor_code: np.ndarray) -> np.ndarray:
     """
@@ -970,7 +930,6 @@ def baryon_spin_tensor_from_code(spin_tensor_code: np.ndarray) -> np.ndarray:
                     fac1 * fac2 * fac3 * spin_tensor_code[s1p, s2p, s3p]
                 )
     return spin_tensor
-
 
 class BfieldCoef:
     """
@@ -1084,7 +1043,6 @@ class BfieldCoef:
         st_list_code = self.get_spin_tensor_list_code()
         st_str = ",".join([repr(v) for v in st_list_code])
         return f"BfieldCoef([{st_str}])"
-
 
 ### ------
 
@@ -1908,7 +1866,6 @@ bfield_tag_dict["pos3-d3"].add(
 
 ### ------
 
-
 class Bfield(Op):
     """
     baryon tensor
@@ -1957,9 +1914,7 @@ class Bfield(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
-
 ### ------
-
 
 @q.timer
 def simplify_bs_elem_list(elem_list: list) -> list:
@@ -2002,7 +1957,6 @@ def simplify_bs_elem_list(elem_list: list) -> list:
             )
         )
     return s_elem_list
-
 
 @q.timer
 def mk_bs_elem_list(tag_v, permute_v, tag_b, permute_b):
@@ -2047,7 +2001,6 @@ def mk_bs_elem_list(tag_v, permute_v, tag_b, permute_b):
                                 )
                             )
     return elem_list
-
 
 class BS(Op):
     """
@@ -2223,9 +2176,7 @@ class BS(Op):
     def simplify_elem_list(self):
         self.elem_list = simplify_bs_elem_list(self.elem_list)
 
-
 ### ------
-
 
 def find_chains_for_bfield_v(
     bf: Bfield, op_list: list[Op]
@@ -2267,7 +2218,6 @@ def find_chains_for_bfield_v(
             remaining_op_list.append(op)
     return chain_list, remaining_op_list
 
-
 def find_bfield_b_from_chains(
     chain_list: list[Chain], op_list: list[Op]
 ) -> tuple[Bfield, tuple[int], list[Op]] | None:
@@ -2307,7 +2257,6 @@ def find_bfield_b_from_chains(
                 remaining_op_list.append(op)
         return bf, permute, remaining_op_list
     return None
-
 
 def mk_baryon_prop(bf_v: Bfield, bf_b: Bfield, chain_list: list[Chain]) -> BS:
     assert len(chain_list) == 3
@@ -2354,7 +2303,6 @@ def mk_baryon_prop(bf_v: Bfield, bf_b: Bfield, chain_list: list[Chain]) -> BS:
     )
     return bs
 
-
 def find_baryon_prop(op_list: list) -> tuple[BS, list[Op]] | None:
     """
     return (baryon_prop, remaining_op_list,) or None
@@ -2377,7 +2325,6 @@ def find_baryon_prop(op_list: list) -> tuple[BS, list[Op]] | None:
         return baryon_prop, remaining_op_list
     return None
 
-
 @q.timer
 def collect_baryon_props(op_list: list[Op]) -> list[Op]:
     """
@@ -2392,9 +2339,7 @@ def collect_baryon_props(op_list: list[Op]) -> list[Op]:
         bs_list.append(bs)
     return bs_list + op_list
 
-
 ### ------
-
 
 class Term:
     """
@@ -2499,9 +2444,7 @@ class Term:
         for op in self.c_ops:
             op.isospin_symmetric_limit()
 
-
 ### ------
-
 
 class Expr:
     """
@@ -2664,9 +2607,7 @@ class Expr:
         self.simplify_ea()
         # self.sort()
 
-
 ### ------
-
 
 @q.timer
 def mk_fac(x) -> Expr:
@@ -2682,7 +2623,6 @@ def mk_fac(x) -> Expr:
     """
     return mk_expr(ea.mk_fac(x))
 
-
 @q.timer
 def simplified(expr: Expr, *, is_isospin_symmetric_limit: bool = True) -> Expr:
     """
@@ -2692,7 +2632,6 @@ def simplified(expr: Expr, *, is_isospin_symmetric_limit: bool = True) -> Expr:
     sexpr = expr.copy()
     sexpr.simplify(is_isospin_symmetric_limit=is_isospin_symmetric_limit)
     return sexpr
-
 
 def mk_expr(x) -> Expr:
     if isinstance(x, Op):
@@ -2741,13 +2680,11 @@ def mk_expr(x) -> Expr:
     else:
         raise Exception(f"{x}")
 
-
 def get_op_signature(op: Op, bs_count: int) -> str:
     if bs_count == 0:
         if op.otype == "BS":
             return f"{op.otype}(elem_list,{op.chain_list!r})"
     return f"{op!r}"
-
 
 def get_term_signature(term: Term) -> str:
     """
@@ -2765,7 +2702,6 @@ def get_term_signature(term: Term) -> str:
         bs_count,
     )
 
-
 def get_bs_list_from_op_list(op_list: list[Op]) -> tuple[list[BS], list[Op]]:
     bs_list = []
     remaining_op_list = []
@@ -2775,7 +2711,6 @@ def get_bs_list_from_op_list(op_list: list[Op]) -> tuple[list[BS], list[Op]]:
         else:
             remaining_op_list.append(op)
     return bs_list, remaining_op_list
-
 
 @q.timer
 def combine_two_terms(t1: Term, t2: Term, t1_sig: str, t2_sig: str) -> Term | None:
@@ -2828,7 +2763,6 @@ def combine_two_terms(t1: Term, t2: Term, t1_sig: str, t2_sig: str) -> Term | No
     else:
         return None
 
-
 @q.timer
 def combine_terms_expr(expr: Expr) -> Expr | None:
     """
@@ -2870,7 +2804,6 @@ def combine_terms_expr(expr: Expr) -> Expr | None:
         terms.append(term)
     return Expr(terms, expr.description)
 
-
 def rescale_bs_term(term: Term) -> Term:
     (
         bs_list,
@@ -2910,7 +2843,6 @@ def rescale_bs_term(term: Term) -> Term:
     scaled_term = Term(scaled_bs_list + re_op_list, term.a_ops, coef_prod * term.coef)
     return scaled_term
 
-
 @q.timer
 def drop_zero_terms(expr: Expr) -> Expr:
     terms = []
@@ -2919,7 +2851,6 @@ def drop_zero_terms(expr: Expr) -> Expr:
             continue
         terms.append(t)
     return Expr(terms, expr.description)
-
 
 def op_derivative_exp(op: Op):
     if op.otype == "Qv":
@@ -2941,7 +2872,6 @@ def op_derivative_exp(op: Op):
     else:
         return None
 
-
 def op_derivative_op(op: Op, op1: Op):
     if op.otype == "Qv" and op1.otype == "HbS" and op.f == op1.f:
         return Term(
@@ -2962,13 +2892,11 @@ def op_derivative_op(op: Op, op1: Op):
     else:
         return None
 
-
 def flip_sign(i: int) -> int:
     if i % 2 == 0:
         return 1
     else:
         return -1
-
 
 def op_derivative_term(op: Op, term: Term) -> Expr:
     coef = term.coef
@@ -2992,7 +2920,6 @@ def op_derivative_term(op: Op, term: Term) -> Expr:
         sign = flip_sign(len(a_ops))
         terms.append(Term(de.c_ops + c_ops, a_ops + de.a_ops, sign * de.coef * coef))
     return Expr(terms)
-
 
 def op_push_term(op: Op, term: Term) -> Expr:
     if op.otype == "Qv" or op.otype == "Qb":
@@ -3028,13 +2955,11 @@ def op_push_term(op: Op, term: Term) -> Expr:
                 ]
             )
 
-
 def op_push_expr(op: Op, expr: Expr) -> Expr:
     terms = []
     for term in expr.terms:
         terms += op_push_term(op, term).terms
     return Expr(terms)
-
 
 def is_hop(op: Op) -> bool:
     if op.otype == "SHv" or op.otype == "HbS":
@@ -3042,7 +2967,6 @@ def is_hop(op: Op) -> bool:
     if op.otype == "Hv" or op.otype == "Hb":
         return True
     return False
-
 
 def has_hops(term: Term, count_limit: int = 0) -> bool:
     c = 0
@@ -3053,14 +2977,12 @@ def has_hops(term: Term, count_limit: int = 0) -> bool:
                 return True
     return False
 
-
 def remove_hops(expr: Expr, count_limit: int = 0) -> Expr:
     terms = []
     for term in expr.terms:
         if not has_hops(term, count_limit):
             terms.append(term)
     return Expr(terms)
-
 
 def contract_term(term: Term) -> Expr:
     coef = term.coef
@@ -3077,7 +2999,6 @@ def contract_term(term: Term) -> Expr:
         expr = remove_hops(expr, n_a_ops - idx - 1)
     return expr
 
-
 @q.timer
 def contract_expr(expr: Expr) -> Expr:
     """
@@ -3089,21 +3010,16 @@ def contract_expr(expr: Expr) -> Expr:
         all_terms += contract_term(term).terms
     return Expr(all_terms, f"< {expr.show()} >")
 
-
 ### ------
-
 
 def S_l(p1, p2):
     return mk_expr(S("l", p1, p2)) + f"S_l({p1},{p2})"
 
-
 def S_s(p1, p2):
     return mk_expr(S("s", p1, p2)) + f"S_s({p1},{p2})"
 
-
 def S_c(p1, p2):
     return mk_expr(S("c", p1, p2)) + f"S_c({p1},{p2})"
-
 
 def tr(expr):
     if isinstance(expr, Term):
@@ -3121,7 +3037,6 @@ def tr(expr):
     else:
         assert False
 
-
 gamma_x = mk_expr(G(0)) + "gamma_x"
 
 gamma_y = mk_expr(G(1)) + "gamma_y"
@@ -3132,10 +3047,8 @@ gamma_t = mk_expr(G(3)) + "gamma_t"
 
 gamma_5 = mk_expr(G(5)) + "gamma_5"
 
-
 def gamma(tag):
     return mk_expr(G(tag)) + f"gamma({tag})"
-
 
 def gamma_va(tag):
     assert isinstance(tag, int)
@@ -3156,9 +3069,7 @@ def gamma_va(tag):
     else:
         assert False
 
-
 ### ------
-
 
 def mk_test_expr_wick_01():
     expr = (
@@ -3171,7 +3082,6 @@ def mk_test_expr_wick_01():
         * Qv("d", "x2", "s4", "c2")
     )
     return expr
-
 
 def mk_test_expr_wick_02():
     f1 = "u"
@@ -3215,7 +3125,6 @@ def mk_test_expr_wick_02():
     expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + "expr"
     return expr
 
-
 def mk_test_expr_wick_03():
     f1 = "d"
     f2 = "u"
@@ -3257,7 +3166,6 @@ def mk_test_expr_wick_03():
     #
     expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + "expr"
     return expr
-
 
 def mk_test_expr_wick_04():
     f1 = "d"
@@ -3303,7 +3211,6 @@ def mk_test_expr_wick_04():
     expr = ubar_u * bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + "expr"
     return expr
 
-
 def mk_test_expr_wick_05():
     f1 = "u"
     f2 = "u"
@@ -3346,7 +3253,6 @@ def mk_test_expr_wick_05():
     #
     expr = bf_b * bf_v * q1v * q2v * q3v * q1b * q2b * q3b + "expr"
     return expr
-
 
 def mk_test_expr_wick_06():
     f1 = "s"
@@ -3444,7 +3350,6 @@ def mk_test_expr_wick_06():
     #
     return expr_list
 
-
 def mk_test_expr_wick_07():
     f1 = "s"
     f2 = "s"
@@ -3504,7 +3409,6 @@ def mk_test_expr_wick_07():
     expr_list.append(expr)
     #
     return expr_list
-
 
 if __name__ == "__main__":
     expr = mk_test_expr_wick_01()

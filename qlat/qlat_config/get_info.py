@@ -12,7 +12,6 @@ __all__ = [
     "get_header_list",
 ]
 
-
 import os
 from qlat_utils_config import (
     qls,
@@ -21,28 +20,22 @@ from qlat_utils_config import (
     get_dir_list as qu_get_dir_list,
 )
 
-
 def get_qlat_dir():
     return os.path.join(os.path.dirname(os.path.dirname(__file__)), "qlat")
 
-
 def get_qlat_include():
     return os.path.join(get_qlat_dir(), "include")
-
 
 def get_dir_list():
     return [
         get_qlat_dir(),
     ] + qu_get_dir_list()
 
-
 def get_include_list():
     return [os.path.join(p, "include") for p in get_dir_list()]
 
-
 def get_lib_list():
     return [os.path.join(p, "lib") for p in get_dir_list()]
-
 
 def get_new_ld_library_path():
     ld_lib_path = os.getenv("LD_LIBRARY_PATH")
@@ -56,7 +49,6 @@ def get_new_ld_library_path():
             new_path_list.append(p)
     return ":".join(new_path_list)
 
-
 def get_pxd_list():
     l = []
     for d in get_dir_list():
@@ -65,7 +57,6 @@ def get_pxd_list():
             if fn.endswith(".pxd"):
                 l.append(fn)
     return l
-
 
 def get_header_list():
     l = []

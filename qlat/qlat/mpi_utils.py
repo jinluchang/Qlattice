@@ -15,7 +15,6 @@ class q:
         end,
     )
 
-
 default_size_node_list = list(
     map(
         q.Coordinate,
@@ -188,15 +187,12 @@ default_size_node_list = list(
 
 comm = None
 
-
 def set_comm(x):
     global comm
     comm = x
 
-
 def get_comm():
     return comm
-
 
 def begin_with_mpi(size_node_list=None):
     global comm
@@ -223,13 +219,11 @@ def begin_with_mpi(size_node_list=None):
         raise Exception("begin_with_mpi: size_node_list not match num_node")
     q.begin(id_node, size_node)
 
-
 def end_with_mpi(is_preserving_cache=False):
     q.end(is_preserving_cache)
     from mpi4py import MPI
     #
     MPI.Finalize()
-
 
 @q.timer_verbose
 def show_machine():
@@ -238,7 +232,6 @@ def show_machine():
         f" ; coor_node: {str(q.get_coor_node()):9}"
         f" / {str(q.get_size_node())}"
     )
-
 
 def get_mpi_chunk(total_list, *, rng_state=None):
     """

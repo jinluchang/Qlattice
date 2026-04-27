@@ -19,7 +19,6 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 """\n
 Operators for pi and K follows Eq.(103,122) of the following reference\n
 @article{Christ:2019sah,
@@ -50,28 +49,23 @@ spin_index_counter = 0
 
 color_index_counter = 0
 
-
 def new_spin_index():
     global spin_index_counter
     spin_index_counter += 1
     return f"a_s_{spin_index_counter}"
-
 
 def new_color_index():
     global color_index_counter
     color_index_counter += 1
     return f"a_c_{color_index_counter}"
 
-
 saved_sc_indices = []
 # saved_sc_indices = None
-
 
 def save_sc_indices():
     if saved_sc_indices is None:
         return
     saved_sc_indices.append([spin_index_counter, color_index_counter])
-
 
 def restore_sc_indices():
     if saved_sc_indices is None:
@@ -80,11 +74,9 @@ def restore_sc_indices():
     global color_index_counter
     spin_index_counter, color_index_counter = saved_sc_indices.pop()
 
-
 def rsc_call(x, *args):
     restore_sc_indices()
     return x(*args)
-
 
 def jump_sc_indices(step=100):
     if saved_sc_indices is None:
@@ -94,16 +86,13 @@ def jump_sc_indices(step=100):
     spin_index_counter += 100
     color_index_counter += 100
 
-
 ###################
-
 
 def show_dagger(is_dagger):
     if not is_dagger:
         return ""
     else:
         return "^dag"
-
 
 def show_parity(parity):
     if parity is None:
@@ -115,9 +104,7 @@ def show_parity(parity):
     else:
         return parity
 
-
 ###################
-
 
 def mk_scalar(f1: str, f2: str, p: str, is_dagger=False):
     """
@@ -129,7 +116,6 @@ def mk_scalar(f1: str, f2: str, p: str, is_dagger=False):
         return Qb(f1, p, s, c) * Qv(f2, p, s, c) + f"({f1}bar {f2})({p})"
     else:
         return Qb(f2, p, s, c) * Qv(f1, p, s, c) + f"({f2}bar {f1})({p})"
-
 
 def mk_scalar5(f1: str, f2: str, p: str, is_dagger=False):
     """
@@ -148,7 +134,6 @@ def mk_scalar5(f1: str, f2: str, p: str, is_dagger=False):
             -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
             + f"(-{f2}bar g5 {f1})({p})"
         )
-
 
 def mk_vec_mu(f1: str, f2: str, p: str, mu, is_dagger=False):
     """
@@ -176,7 +161,6 @@ def mk_vec_mu(f1: str, f2: str, p: str, mu, is_dagger=False):
                 Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
                 + f"({f2}bar g{mu} {f1})({p})"
             )
-
 
 def mk_vec5_mu(f1: str, f2: str, p: str, mu, is_dagger=False):
     """
@@ -211,7 +195,6 @@ def mk_vec5_mu(f1: str, f2: str, p: str, mu, is_dagger=False):
                 + f"({f2}bar g{mu} {f1})({p})"
             )
 
-
 def mk_meson(f1: str, f2: str, p: str, is_dagger=False):
     """
     i q1bar g5 q2  #dag: i q2bar g5 q1
@@ -221,9 +204,7 @@ def mk_meson(f1: str, f2: str, p: str, is_dagger=False):
     else:
         return -sympy.I * mk_scalar5(f1, f2, p, is_dagger) + f"(i {f2}bar g5 {f1})({p})"
 
-
 ###################
-
 
 def mk_pi_0(p: str, is_dagger=False):
     """
@@ -236,20 +217,17 @@ def mk_pi_0(p: str, is_dagger=False):
         + f"pi0({p}){show_dagger(is_dagger)}"
     )
 
-
 def mk_pi_p(p: str, is_dagger=False):
     """
     i ubar g5 d  #dag: i dbar g5 u
     """
     return mk_meson("u", "d", p, is_dagger) + f"pi+({p}){show_dagger(is_dagger)}"
 
-
 def mk_pi_m(p: str, is_dagger=False):
     """
     -i dbar g5 u  #dag: -i ubar g5 d
     """
     return -mk_meson("d", "u", p, is_dagger) + f"pi-({p}){show_dagger(is_dagger)}"
-
 
 def mk_a0_0(p: str, is_dagger=False):
     """
@@ -262,13 +240,11 @@ def mk_a0_0(p: str, is_dagger=False):
         + f"a0_0({p}){show_dagger(is_dagger)}"
     )
 
-
 def mk_a0_p(p: str, is_dagger=False):
     """
     ubar d
     """
     return mk_scalar("u", "d", p, is_dagger) + f"a0_+({p}){show_dagger(is_dagger)}"
-
 
 def mk_a0_m(p: str, is_dagger=False):
     """
@@ -276,13 +252,11 @@ def mk_a0_m(p: str, is_dagger=False):
     """
     return mk_scalar("d", "u", p, is_dagger) + f"a0_-({p}){show_dagger(is_dagger)}"
 
-
 def mk_k_p(p: str, is_dagger=False):
     """
     i ubar g5 s  #dag:  i sbar g5 u
     """
     return mk_meson("u", "s", p, is_dagger) + f"K+({p}){show_dagger(is_dagger)}"
-
 
 def mk_k_m(p: str, is_dagger=False):
     """
@@ -290,20 +264,17 @@ def mk_k_m(p: str, is_dagger=False):
     """
     return -mk_meson("s", "u", p, is_dagger) + f"K-({p}){show_dagger(is_dagger)}"
 
-
 def mk_k_0(p: str, is_dagger=False):
     """
     i dbar g5 s  #dag: i sbar g5 d
     """
     return mk_meson("d", "s", p, is_dagger) + f"K0({p}){show_dagger(is_dagger)}"
 
-
 def mk_k_0_bar(p: str, is_dagger=False):
     """
     -i sbar g5 d  #dag: -i dbar g5 s
     """
     return -mk_meson("s", "d", p, is_dagger) + f"K0b({p}){show_dagger(is_dagger)}"
-
 
 def mk_eta_l(p: str, is_dagger=False):
     """
@@ -316,13 +287,11 @@ def mk_eta_l(p: str, is_dagger=False):
         + f"eta_l({p}){show_dagger(is_dagger)}"
     )
 
-
 def mk_eta_s(p: str, is_dagger=False):
     """
     i sbar g5 s  #dag: i sbar g5 s
     """
     return mk_meson("s", "s", p, is_dagger) + f"eta_s({p}){show_dagger(is_dagger)}"
-
 
 def mk_sigma(p: str, is_dagger=False):
     """
@@ -337,13 +306,11 @@ def mk_sigma(p: str, is_dagger=False):
         + f"sigma({p})"
     )
 
-
 def mk_kappa_p(p: str, is_dagger=False):
     """
     ubar s
     """
     return mk_scalar("u", "s", p, is_dagger) + f"kappa+({p}){show_dagger(is_dagger)}"
-
 
 def mk_kappa_m(p: str, is_dagger=False):
     """
@@ -351,13 +318,11 @@ def mk_kappa_m(p: str, is_dagger=False):
     """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa-({p}){show_dagger(is_dagger)}"
 
-
 def mk_kappa_0(p: str, is_dagger=False):
     """
     dbar s
     """
     return mk_scalar("d", "s", p, is_dagger) + f"kappa0({p}){show_dagger(is_dagger)}"
-
 
 def mk_kappa_0_bar(p: str, is_dagger=False):
     """
@@ -365,13 +330,11 @@ def mk_kappa_0_bar(p: str, is_dagger=False):
     """
     return mk_scalar("s", "u", p, is_dagger) + f"kappa0bar({p}){show_dagger(is_dagger)}"
 
-
 def mk_k_p_star_mu(p: str, mu, is_dagger=False):
     """
     ubar gmu s
     """
     return mk_vec_mu("u", "s", p, mu, is_dagger)
-
 
 def mk_k_m_star_mu(p: str, mu, is_dagger=False):
     """
@@ -379,13 +342,11 @@ def mk_k_m_star_mu(p: str, mu, is_dagger=False):
     """
     return mk_vec_mu("s", "u", p, mu, is_dagger)
 
-
 def mk_k_0_star_mu(p: str, mu, is_dagger=False):
     """
     dbar gmu s
     """
     return mk_vec_mu("d", "s", p, mu, is_dagger)
-
 
 def mk_k_0_star_bar_mu(p: str, mu, is_dagger=False):
     """
@@ -393,16 +354,13 @@ def mk_k_0_star_bar_mu(p: str, mu, is_dagger=False):
     """
     return mk_vec_mu("s", "d", p, mu, is_dagger)
 
-
 ###################
-
 
 def mk_pipi_i22(p1: str, p2: str, is_dagger=False):
     return (
         mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger)
         + f"pipi_I22({p1},{p2}){show_dagger(is_dagger)}"
     )
-
 
 def mk_pipi_i21(p1: str, p2: str, is_dagger=False):
     return (
@@ -415,7 +373,6 @@ def mk_pipi_i21(p1: str, p2: str, is_dagger=False):
         + f"pipi_I21({p1},{p2}){show_dagger(is_dagger)}"
     )
 
-
 def mk_pipi_i11(p1: str, p2: str, is_dagger=False):
     return (
         1
@@ -426,7 +383,6 @@ def mk_pipi_i11(p1: str, p2: str, is_dagger=False):
         )
         + f"pipi_I11({p1},{p2}){show_dagger(is_dagger)}"
     )
-
 
 def mk_pipi_i20(p1: str, p2: str, is_dagger=False):
     return (
@@ -440,7 +396,6 @@ def mk_pipi_i20(p1: str, p2: str, is_dagger=False):
         + f"pipi_I20({p1},{p2}){show_dagger(is_dagger)}"
     )
 
-
 def mk_pipi_i10(p1: str, p2: str, is_dagger=False):
     return (
         1
@@ -451,7 +406,6 @@ def mk_pipi_i10(p1: str, p2: str, is_dagger=False):
         )
         + f"pipi_I10({p1},{p2}){show_dagger(is_dagger)}"
     )
-
 
 def mk_pipi_i0(p1: str, p2: str, is_dagger=False):
     return (
@@ -464,7 +418,6 @@ def mk_pipi_i0(p1: str, p2: str, is_dagger=False):
         )
         + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
     )
-
 
 def mk_kk_i11(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
@@ -479,7 +432,6 @@ def mk_kk_i11(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
             + f"KK_I11({p1},{p2}){show_dagger(is_dagger)}"
         )
-
 
 def mk_kk_i10(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
@@ -500,7 +452,6 @@ def mk_kk_i10(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             + f"KK_I10({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_kk_i0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
         return (
@@ -520,7 +471,6 @@ def mk_kk_i0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             + f"KK_I0({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_k0k0bar(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
         return (
@@ -534,7 +484,6 @@ def mk_k0k0bar(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
             + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
         )
-
 
 def mk_k0pi0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
@@ -550,7 +499,6 @@ def mk_k0pi0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             + f"K0pi0({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_k0barpi0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
         return (
@@ -564,7 +512,6 @@ def mk_k0barpi0(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             mk_k_0_bar(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + f"K0barpi0({p1},{p2}){show_dagger(is_dagger)}"
         )
-
 
 def mk_kppim(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
@@ -580,7 +527,6 @@ def mk_kppim(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             + f"K+pi-({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_kmpip(p1: str, p2: str, is_dagger=False, *, is_sym=False):
     if is_sym:
         return (
@@ -594,7 +540,6 @@ def mk_kmpip(p1: str, p2: str, is_dagger=False, *, is_sym=False):
             mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + f"K-pi+({p1},{p2}){show_dagger(is_dagger)}"
         )
-
 
 def mk_kpi_0_i1half(
     p1: str, p2: str, is_dagger=False, *, is_sym=False
@@ -621,7 +566,6 @@ def mk_kpi_0_i1half(
             + f"Kpi_0_I1half({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_kpi_p_i1half(
     p1: str, p2: str, is_dagger=False, *, is_sym=False
 ):  # strangeness = -1
@@ -647,7 +591,6 @@ def mk_kpi_p_i1half(
             + f"Kpi_+_I1half({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_kpi_m_i3halves(
     p1: str, p2: str, is_dagger=False, *, is_sym=False
 ):  # strangeness = -1
@@ -666,7 +609,6 @@ def mk_kpi_m_i3halves(
             mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             + f"Kpi_-_I3halves({p1},{p2}){show_dagger(is_dagger)}"
         )
-
 
 def mk_kpi_0_i3halves(
     p1: str, p2: str, is_dagger=False, *, is_sym=False
@@ -696,7 +638,6 @@ def mk_kpi_0_i3halves(
             + f"Kpi_0_I3halves({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_kpi_p1_i3halves(
     p1: str, p2: str, is_dagger=False, *, is_sym=False
 ):  # strangeness = -1
@@ -725,7 +666,6 @@ def mk_kpi_p1_i3halves(
             + f"Kpi_+_I3halves({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 def mk_kpi_p2_i3halves(
     p1: str, p2: str, is_dagger=False, *, is_sym=False
 ):  # strangeness = -1
@@ -745,13 +685,10 @@ def mk_kpi_p2_i3halves(
             + f"Kpi_++_I3halves({p1},{p2}){show_dagger(is_dagger)}"
         )
 
-
 ###################
-
 
 def mk_m(f: str, p: str, is_dagger=False):
     return mk_scalar(f, f, p, is_dagger) + f"{f}bar{f}({p}){show_dagger(is_dagger)}"
-
 
 def mk_j5pi_mu(p: str, mu, is_dagger=False):
     return (
@@ -759,20 +696,17 @@ def mk_j5pi_mu(p: str, mu, is_dagger=False):
         + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j5k_mu(p: str, mu, is_dagger=False):
     return (
         mk_vec5_mu("s", "u", p, mu, is_dagger)
         + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j5km_mu(p: str, mu, is_dagger=False):
     return (
         -mk_vec5_mu("u", "s", p, mu, is_dagger)
         + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 def mk_j5eta_l_mu(p: str, mu, is_dagger=False):
     return (
@@ -785,13 +719,11 @@ def mk_j5eta_l_mu(p: str, mu, is_dagger=False):
         + f"j5eta_l_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j5eta_s_mu(p: str, mu, is_dagger=False):
     return (
         mk_vec5_mu("s", "s", p, mu, is_dagger)
         + f"j5eta_s_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 def mk_jpi_mu(p: str, mu, is_dagger=False):
     return (
@@ -799,13 +731,11 @@ def mk_jpi_mu(p: str, mu, is_dagger=False):
         + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_jk_mu(p: str, mu, is_dagger=False):
     return (
         mk_vec_mu("s", "u", p, mu, is_dagger)
         + f"jk_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 def mk_j_mu(p: str, mu, is_dagger=False):
     return (
@@ -815,7 +745,6 @@ def mk_j_mu(p: str, mu, is_dagger=False):
         + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j_prime_mu(p: str, mu, is_dagger=False):
     return (
         sympy.simplify(1) * 2 / 3 * mk_vec_mu("u'", "u'", p, mu, is_dagger)
@@ -824,7 +753,6 @@ def mk_j_prime_mu(p: str, mu, is_dagger=False):
         + f"j'_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j_prime2_mu(p: str, mu, is_dagger=False):
     return (
         sympy.simplify(1) * 2 / 3 * mk_vec_mu("u''", "u''", p, mu, is_dagger)
@@ -832,7 +760,6 @@ def mk_j_prime2_mu(p: str, mu, is_dagger=False):
         - sympy.simplify(1) * 1 / 3 * mk_vec_mu("s''", "s''", p, mu, is_dagger)
         + f"j''_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 def mk_jl_mu(p: str, mu, is_dagger=False):
     """
@@ -844,13 +771,11 @@ def mk_jl_mu(p: str, mu, is_dagger=False):
         + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_js_mu(p: str, mu, is_dagger=False):
     return (
         -sympy.simplify(1) * 1 / 3 * mk_vec_mu("s", "s", p, mu, is_dagger)
         + f"js_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 def mk_j0_mu(p: str, mu, is_dagger=False):
     """
@@ -867,7 +792,6 @@ def mk_j0_mu(p: str, mu, is_dagger=False):
         + f"j0_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j10_mu(p: str, mu, is_dagger=False):
     """
     I=1 Gparity +
@@ -883,7 +807,6 @@ def mk_j10_mu(p: str, mu, is_dagger=False):
         + f"j10_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 def mk_j11_mu(p: str, mu, is_dagger=False):
     """
     I=1 Gparity +
@@ -892,7 +815,6 @@ def mk_j11_mu(p: str, mu, is_dagger=False):
         mk_vec_mu("u", "d", p, mu, is_dagger)
         + f"j11_mu({p},{mu}){show_dagger(is_dagger)}"
     )
-
 
 def mk_j1n1_mu(p: str, mu, is_dagger=False):
     """
@@ -903,24 +825,18 @@ def mk_j1n1_mu(p: str, mu, is_dagger=False):
         + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
     )
 
-
 ###################
-
 
 def mk_jw_v_mu(p, mu):
     return mk_jpi_mu(p, mu) + mk_jk_mu(p, mu)
 
-
 def mk_jw_a_mu(p, mu):
     return mk_j5pi_mu(p, mu) + mk_j5k_mu(p, mu)
-
 
 def mk_sw5(p):
     return mk_pi_p(p, is_dagger=True) + mk_k_p(p, is_dagger=True)
 
-
 ###################
-
 
 def mk_4qOp_VV(
     f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
@@ -941,7 +857,6 @@ def mk_4qOp_VV(
     jump_sc_indices()
     return s
 
-
 def mk_4qOp_VA(
     f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
 ):
@@ -960,7 +875,6 @@ def mk_4qOp_VA(
     s.simplify()
     jump_sc_indices()
     return s
-
 
 def mk_4qOp_AV(
     f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
@@ -981,7 +895,6 @@ def mk_4qOp_AV(
     jump_sc_indices()
     return s
 
-
 def mk_4qOp_AA(
     f1: str, f2: str, f3: str, f4: str, p, is_scalar=False, parity=None, is_dagger=False
 ):
@@ -1001,22 +914,17 @@ def mk_4qOp_AA(
     jump_sc_indices()
     return s
 
-
 def mk_4qOp_SS(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
     return mk_scalar(f1, f2, p, is_dagger) * mk_scalar(f3, f4, p, is_dagger)
-
 
 def mk_4qOp_SP(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
     return mk_scalar(f1, f2, p, is_dagger) * mk_scalar5(f3, f4, p, is_dagger)
 
-
 def mk_4qOp_PS(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
     return mk_scalar5(f1, f2, p, is_dagger) * mk_scalar(f3, f4, p, is_dagger)
 
-
 def mk_4qOp_PP(f1: str, f2: str, f3: str, f4: str, p, is_dagger=False):
     return mk_scalar5(f1, f2, p, is_dagger) * mk_scalar5(f3, f4, p, is_dagger)
-
 
 def mk_4qOp_LL(*args):
     for mu in range(4):
@@ -1030,7 +938,6 @@ def mk_4qOp_LL(*args):
     jump_sc_indices()
     return expr
 
-
 def mk_4qOp_LR(*args):
     for mu in range(4):
         save_sc_indices()
@@ -1042,7 +949,6 @@ def mk_4qOp_LR(*args):
     )
     jump_sc_indices()
     return expr
-
 
 def mk_4qOp_RL(*args):
     for mu in range(4):
@@ -1056,7 +962,6 @@ def mk_4qOp_RL(*args):
     jump_sc_indices()
     return expr
 
-
 def mk_4qOp_RR(*args):
     for mu in range(4):
         save_sc_indices()
@@ -1069,16 +974,13 @@ def mk_4qOp_RR(*args):
     jump_sc_indices()
     return expr
 
-
 def mk_4qOp_LL_cmix(f1, f2, f3, f4, p, is_scalar=False, parity=None, is_dagger=False):
     assert not is_scalar
     return mk_4qOp_LL(f1, f4, f3, f2, p, is_scalar, parity, is_dagger)
 
-
 def mk_4qOp_LR_cmix(f1, f2, f3, f4, p, is_scalar=False, parity=None, is_dagger=False):
     assert not is_scalar
     return -2 * mk_4qOp_RL(f1, f4, f3, f2, p, True, parity, is_dagger)
-
 
 def mk_Qsub(p, parity=None, is_dagger=False):
     if parity is None:
@@ -1089,20 +991,17 @@ def mk_Qsub(p, parity=None, is_dagger=False):
         expr = -mk_scalar5("s", "d", p, is_dagger)
     return expr + f"Qsub({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q1(p, parity=None, is_dagger=False):
     return (
         mk_4qOp_LL("s", "d", "u", "u", p, False, parity, is_dagger)
         + f"Q1({p}{show_parity(parity)}{show_dagger(is_dagger)})"
     )
 
-
 def mk_Q2(p, parity=None, is_dagger=False):
     return (
         mk_4qOp_LL_cmix("s", "d", "u", "u", p, False, parity, is_dagger)
         + f"Q2({p}{show_parity(parity)}{show_dagger(is_dagger)})"
     )
-
 
 def mk_Q3(p, parity=None, is_dagger=False):
     for mu in range(3):
@@ -1115,7 +1014,6 @@ def mk_Q3(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q3({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q4(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
@@ -1126,7 +1024,6 @@ def mk_Q4(p, parity=None, is_dagger=False):
     )
     jump_sc_indices()
     return expr + f"Q4({p}{show_parity(parity)}{show_dagger(is_dagger)})"
-
 
 def mk_Q5(p, parity=None, is_dagger=False):
     for mu in range(3):
@@ -1139,7 +1036,6 @@ def mk_Q5(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q5({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q6(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
@@ -1150,7 +1046,6 @@ def mk_Q6(p, parity=None, is_dagger=False):
     )
     jump_sc_indices()
     return expr + f"Q6({p}{show_parity(parity)}{show_dagger(is_dagger)})"
-
 
 def mk_Q7(p, parity=None, is_dagger=False):
     for mu in range(3):
@@ -1167,7 +1062,6 @@ def mk_Q7(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q7({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q8(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
@@ -1182,7 +1076,6 @@ def mk_Q8(p, parity=None, is_dagger=False):
     )
     jump_sc_indices()
     return expr + f"Q8({p}{show_parity(parity)}{show_dagger(is_dagger)})"
-
 
 def mk_Q9(p, parity=None, is_dagger=False):
     for mu in range(3):
@@ -1199,7 +1092,6 @@ def mk_Q9(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q9({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q10(p, parity=None, is_dagger=False):
     for mu in range(3):
         save_sc_indices()
@@ -1214,7 +1106,6 @@ def mk_Q10(p, parity=None, is_dagger=False):
     )
     jump_sc_indices()
     return expr + f"Q10({p}{show_parity(parity)}{show_dagger(is_dagger)})"
-
 
 ###################
 
@@ -1235,10 +1126,8 @@ def mk_Q10(p, parity=None, is_dagger=False):
 #
 # Qa^{e/o} = Aa^{e/o} Q0^{e/o} + Mai Qi^{e/o} ( i = 1, ... ,4; a = 5, ... ,8 )
 
-
 def mk_Q0_b81(p, parity=None, is_dagger=False):
     return mk_Qsub(p, parity, is_dagger)
-
 
 def mk_Q1_b81(p, parity=None, is_dagger=False):
     for mu in range(4):
@@ -1260,7 +1149,6 @@ def mk_Q1_b81(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q1_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q2_b81(p, parity=None, is_dagger=False):
     for mu in range(2):
         save_sc_indices()
@@ -1274,7 +1162,6 @@ def mk_Q2_b81(p, parity=None, is_dagger=False):
     )
     jump_sc_indices()
     return expr + f"Q2_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
-
 
 def mk_Q3_b81(p, parity=None, is_dagger=False):
     for mu in range(4):
@@ -1293,7 +1180,6 @@ def mk_Q3_b81(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q3_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q4_b81(p, parity=None, is_dagger=False):
     for mu in range(4):
         save_sc_indices()
@@ -1311,13 +1197,11 @@ def mk_Q4_b81(p, parity=None, is_dagger=False):
     jump_sc_indices()
     return expr + f"Q4_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
 
-
 def mk_Q5_b81(p, parity=None, is_dagger=False):
     return (
         mk_4qOp_LL("s", "d", "c", "c", p, False, parity, is_dagger)
         + f"Q5_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
     )
-
 
 def mk_Q6_b81(p, parity=None, is_dagger=False):
     return (
@@ -1325,13 +1209,11 @@ def mk_Q6_b81(p, parity=None, is_dagger=False):
         + f"Q6_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
     )
 
-
 def mk_Q7_b81(p, parity=None, is_dagger=False):
     return (
         mk_4qOp_LR("s", "d", "c", "c", p, False, parity, is_dagger)
         + f"Q7_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
     )
-
 
 def mk_Q8_b81(p, parity=None, is_dagger=False):
     return (
@@ -1339,9 +1221,7 @@ def mk_Q8_b81(p, parity=None, is_dagger=False):
         + f"Q8_b81({p}{show_parity(parity)}{show_dagger(is_dagger)})"
     )
 
-
 ###################
-
 
 def mk_vec_uu_mu(f1, f2, p1, p2, mu, is_dagger=False):
     """
@@ -1380,9 +1260,7 @@ def mk_vec_uu_mu(f1, f2, p1, p2, mu, is_dagger=False):
                 + f"{f2}bar({p2}) g{mu} U^dag_{mu}({p1}) {f1}({p1})"
             )
 
-
 ###################
-
 
 def mk_baryon(
     f1: str,
@@ -1423,7 +1301,6 @@ def mk_baryon(
         v = v + f"Bv_{baryon_type}({f1},{f2},{f3},{spin})({p})"
         return v
 
-
 def mk_proton(p: str, spin: str, baryon_type: str = "std", is_dagger=False):
     """
     spin in [ "u", "d", ]
@@ -1433,7 +1310,6 @@ def mk_proton(p: str, spin: str, baryon_type: str = "std", is_dagger=False):
         "u", "u", "d", p, spin, baryon_type=baryon_type, is_dagger=is_dagger
     )
 
-
 def mk_neutron(p: str, spin: str, baryon_type: str = "std", is_dagger=False):
     """
     spin in [ "u", "d", ]
@@ -1442,7 +1318,6 @@ def mk_neutron(p: str, spin: str, baryon_type: str = "std", is_dagger=False):
     return mk_baryon(
         "d", "d", "u", p, spin, baryon_type=baryon_type, is_dagger=is_dagger
     )
-
 
 def mk_baryon3(
     f1: str,
@@ -1485,7 +1360,6 @@ def mk_baryon3(
         v = v + f"Bv_{baryon_type}({f1},{f2},{f3},{spin})({p})"
         return v
 
-
 def mk_omega(p: str, spin: str, baryon_type: str = "std3", is_dagger=False):
     """
     spin in [ "u3", "u1", "d1", "d3", ]
@@ -1495,9 +1369,7 @@ def mk_omega(p: str, spin: str, baryon_type: str = "std3", is_dagger=False):
         "s", "s", "s", p, spin, baryon_type=baryon_type, is_dagger=is_dagger
     )
 
-
 ###################
-
 
 def test():
     print("test")
@@ -1536,7 +1408,6 @@ def test():
     #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q9("x") * mk_k_0("x2"),
     #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q10("x") * mk_k_0("x2"),
     #     )))
-
 
 def test1():
     def A(j_p, pi_p, is_dagger=False):
@@ -1936,7 +1807,6 @@ def test1():
         )
     )
 
-
 def test_kk():
     expr1 = mk_kk_i0("x2_1", "x2_2", True) * mk_kk_i0("x1_1", "x1_2")
     expr2 = mk_kk_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2")
@@ -1970,7 +1840,6 @@ def test_kk():
         cexpr.collect_op()
         print(display_cexpr(cexpr))
         print(f"-- {name} --\n")
-
 
 def test_kk_sym():
     expr1 = mk_kk_i0("x2_1", "x2_2", True, is_sym=True) * mk_kk_i0(
@@ -2010,7 +1879,6 @@ def test_kk_sym():
         print(display_cexpr(cexpr))
         print(f"-- {name} --\n")
 
-
 def test_kpipi():
     s1 = new_spin_index()
     s2 = new_spin_index()
@@ -2035,7 +1903,6 @@ def test_kpipi():
         )
     )
 
-
 def test_prop():
     s1 = new_spin_index()
     s2 = new_spin_index()
@@ -2046,7 +1913,6 @@ def test_prop():
     print(
         display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=False))
     )
-
 
 def test_pipi():
     expr1 = (
@@ -2073,7 +1939,6 @@ def test_pipi():
         display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit=True))
     )
 
-
 def test_meson_corr():
     diagram_type_dict = dict()
     diagram_type_dict[((("t_1", "t_2"), 1), (("t_2", "t_1"), 1))] = "Type1"
@@ -2088,7 +1953,6 @@ def test_meson_corr():
     print("meson_corr")
     print(display_cexpr(cexpr))
 
-
 def test_meson_f_corr():
     diagram_type_dict = dict()
     diagram_type_dict[((("t_1", "x_2"), 1), (("x_2", "t_1"), 1))] = "Type1"
@@ -2102,7 +1966,6 @@ def test_meson_f_corr():
     print()
     print("meson_f_corr")
     print(display_cexpr(cexpr))
-
 
 def test_meson_m():
     diagram_type_dict = dict()
@@ -2128,7 +1991,6 @@ def test_meson_m():
     print()
     print("meson_m")
     print(display_cexpr(cexpr))
-
 
 def test_meson_jt():
     diagram_type_dict = dict()
@@ -2158,7 +2020,6 @@ def test_meson_jt():
     print()
     print("meson_jt")
     print(display_cexpr(cexpr))
-
 
 def test_meson_jj():
     diagram_type_dict = dict()
@@ -2238,7 +2099,6 @@ def test_meson_jj():
     print("meson_jj")
     print(display_cexpr(cexpr))
 
-
 def test_meson_fj():
     diagram_type_dict = dict()
     diagram_type_dict[((("t", "x_1"), 1), (("x_1", "x_2"), 1), (("x_2", "t"), 1))] = (
@@ -2259,7 +2119,6 @@ def test_meson_fj():
     print()
     print("meson_fj")
     print(display_cexpr(cexpr))
-
 
 def test_meson_jj_all():
     print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) >")
@@ -2293,7 +2152,6 @@ def test_meson_jj_all():
         pi_0,
     ]
     print(display_cexpr(contract_simplify_compile(*exprs)))
-
 
 if __name__ == "__main__":
     test_meson_jj_all()

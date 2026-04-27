@@ -1,6 +1,5 @@
 import qlat.c as c
 
-
 class FermionAction:
     def __init__(self, *, mass, ls, m5, mobius_scale=1.0, omega=None):
         assert isinstance(mass, float)

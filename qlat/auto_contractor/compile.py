@@ -30,7 +30,6 @@ from itertools import permutations
 
 import qlat as q
 
-
 class Var(Op):
     def __init__(self, name: str):
         Op.__init__(self, "Var")
@@ -45,9 +44,7 @@ class Var(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
-
 ### ----
-
 
 def get_var_name_type(x):
     """
@@ -84,7 +81,6 @@ def get_var_name_type(x):
     else:
         assert False
 
-
 def get_op_type(x):
     """
     ``x`` should be an Op
@@ -109,7 +105,6 @@ def get_op_type(x):
     else:
         assert False
     return None
-
 
 def add_positions(s, x):
     """
@@ -166,12 +161,10 @@ def add_positions(s, x):
         for v in x.variables:
             s.add(v)
 
-
 def get_positions(term):
     s = set()
     add_positions(s, term)
     return sorted(list(s))
-
 
 @q.timer
 def collect_position_in_cexpr(named_terms, named_exprs):
@@ -183,7 +176,6 @@ def collect_position_in_cexpr(named_terms, named_exprs):
             add_positions(s, coef)
     positions = sorted(list(s))
     return positions
-
 
 @q.timer
 def find_common_prod_in_factors(variables_factor):
@@ -218,7 +210,6 @@ def find_common_prod_in_factors(variables_factor):
         elif num_repeat == max_num_repeat:
             best_match_list.append(prod)
     return best_match_list
-
 
 @q.timer
 def collect_common_prod_in_factors(
@@ -287,7 +278,6 @@ def collect_common_prod_in_factors(
             t.factors = x_new
     return var_counter
 
-
 @q.timer
 def find_common_sum_in_factors(variables_factor):
     """
@@ -326,7 +316,6 @@ def find_common_sum_in_factors(variables_factor):
         elif num_repeat == max_num_repeat:
             best_match_list.append(pair)
     return best_match_list
-
 
 @q.timer
 def collect_common_sum_in_factors(
@@ -399,7 +388,6 @@ def collect_common_sum_in_factors(
         ea_coef.terms = x_new
     return var_counter
 
-
 @q.timer
 def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_terms):
     """
@@ -458,7 +446,6 @@ def collect_factor_in_cexpr(variables_factor, var_nameset, named_exprs, named_te
                     ea_var = add_variables(ea_coef)
                     op.elem_list[i] = (val, ea_var)
 
-
 @q.timer
 def collect_factor_coef_in_cexpr(
     variables_factor_intermediate, var_nameset, variables_factor
@@ -496,7 +483,6 @@ def collect_factor_coef_in_cexpr(
                 t.factors.append(var)
                 var_dataset[code] = var
 
-
 @q.timer
 def collect_factor_fac_in_cexpr(
     variables_factor_intermediate, var_nameset, variables_factor
@@ -531,7 +517,6 @@ def collect_factor_fac_in_cexpr(
                         var = ea.Factor(name, f.variables)
                         x[i] = var
                         var_dataset[f.code] = var
-
 
 @q.timer
 def collect_factor_facs_in_cexpr(variables_factors, var_nameset, variables_factor):
@@ -572,7 +557,6 @@ def collect_factor_facs_in_cexpr(variables_factors, var_nameset, variables_facto
                 ]
                 var_dataset[key] = var
 
-
 @q.timer
 def collect_factor_prod_in_cexpr(
     variables_factor_intermediate, var_nameset, variables_factor
@@ -595,7 +579,6 @@ def collect_factor_prod_in_cexpr(
             var_dataset,
         )
 
-
 @q.timer
 def collect_factor_sum_in_cexpr(
     variables_factor_intermediate, var_nameset, variables_factor
@@ -617,7 +600,6 @@ def collect_factor_sum_in_cexpr(
             pair_list,
             var_dataset,
         )
-
 
 @q.timer
 def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
@@ -648,7 +630,6 @@ def collect_and_optimize_factor_in_cexpr(named_exprs, named_terms):
         variables_factor_intermediate, var_nameset, variables_factor
     )
     return variables_factor_intermediate, variables_factor
-
 
 @q.timer
 def collect_prop_in_cexpr(named_terms):
@@ -704,7 +685,6 @@ def collect_prop_in_cexpr(named_terms):
         term.sort()
     return variables_prop
 
-
 @q.timer
 def collect_color_matrix_in_cexpr(named_terms):
     """
@@ -759,7 +739,6 @@ def collect_color_matrix_in_cexpr(named_terms):
         term.sort()
     return variables_color_matrix
 
-
 @q.timer
 def collect_chain_in_cexpr(named_terms):
     """
@@ -812,7 +791,6 @@ def collect_chain_in_cexpr(named_terms):
         term.sort()
     return variables_chain
 
-
 @q.timer
 def collect_tr_in_cexpr(named_terms):
     """
@@ -862,7 +840,6 @@ def collect_tr_in_cexpr(named_terms):
         add_tr_varibles(term)
         term.sort()
     return variables_tr
-
 
 @q.timer
 def collect_baryon_prop_in_cexpr(named_terms):
@@ -923,7 +900,6 @@ def collect_baryon_prop_in_cexpr(named_terms):
             )
         )
     return variables
-
 
 @q.timer
 def find_common_subexpr_in_tr(variables_tr):
@@ -1064,7 +1040,6 @@ def find_common_subexpr_in_tr(variables_tr):
             best_match = op
     return best_match
 
-
 @q.timer
 def collect_common_subexpr_in_tr(variables_tr, op_common, var):
     op_repr = repr(op_common)
@@ -1145,7 +1120,6 @@ def collect_common_subexpr_in_tr(variables_tr, op_common, var):
     for name, tr in variables_tr:
         replace(tr)
         remove_none(tr)
-
 
 @q.timer
 def collect_subexpr_in_cexpr(variables_tr):
@@ -1281,7 +1255,6 @@ def collect_subexpr_in_cexpr(variables_tr):
         collect_common_subexpr_in_tr(variables_tr, subexpr, var)
     return variables_prod
 
-
 class CExpr:
     """
     self.diagram_types
@@ -1392,9 +1365,7 @@ class CExpr:
             self.named_exprs,
         ]
 
-
 ### ----
-
 
 def increase_type_dict_count(type_dict, key):
     if key in type_dict:
@@ -1402,18 +1373,15 @@ def increase_type_dict_count(type_dict, key):
     else:
         type_dict[key] = 1
 
-
 def drop_tag_last_subscript(tag):
     """
     Coordinates with names that are same after dropping last subscript belong to the same permutation group.
     """
     return tag.rsplit("_", 1)[0]
 
-
 def mk_permuting_dicts(pos_list):
     for p_pos_list in permutations(pos_list):
         yield dict(zip(pos_list, p_pos_list))
-
 
 def get_position_permutation_groups(term):
     """
@@ -1431,7 +1399,6 @@ def get_position_permutation_groups(term):
             else:
                 group_dict[g_pos].append(pos)
     return group_dict.values()
-
 
 def mk_combined_permuting_dicts(term):
     """
@@ -1453,7 +1420,6 @@ def mk_combined_permuting_dicts(term):
     #
     return loop(len(p_dicts_list) - 1)
 
-
 def loop_term_ops(type_dict, ops):
     for op in ops:
         if op.otype == "S":
@@ -1472,19 +1438,16 @@ def loop_term_ops(type_dict, ops):
         elif op.otype == "BS":
             loop_term_ops(type_dict, op.chain_list)
 
-
 def get_term_diagram_type_info_no_permutation(term):
     type_dict = dict()
     loop_term_ops(type_dict, term.c_ops)
     return tuple(sorted(type_dict.items()))
-
 
 def permute_tag(x, p_dict):
     if x in p_dict:
         return p_dict[x]
     else:
         return x
-
 
 def permute_type_info_entry(x, p_dict):
     (
@@ -1504,11 +1467,9 @@ def permute_type_info_entry(x, p_dict):
         n,
     )
 
-
 def permute_type_info(type_info, p_dict):
     l = [permute_type_info_entry(e, p_dict) for e in type_info]
     return tuple(sorted(l))
-
 
 def get_term_diagram_type_info(term):
     base_type_info = get_term_diagram_type_info_no_permutation(term)
@@ -1521,7 +1482,6 @@ def get_term_diagram_type_info(term):
             min_type_info = type_info
             min_type_info_repr = type_info_repr
     return min_type_info
-
 
 def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
@@ -1584,7 +1544,6 @@ def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
             its_tag = " (" + ",".join(its) + ")"
         expr_list.append(Expr(expr_terms_list[i], expr.description + its_tag))
     return expr_list
-
 
 def mk_cexpr(*exprs, diagram_type_dict=None):
     """
@@ -1685,7 +1644,6 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
     cexpr.named_exprs = named_exprs
     return cexpr
 
-
 @q.timer
 def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
@@ -1719,7 +1677,6 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict
         expr_list += el
     return expr_list
 
-
 @q.timer
 def compile_expr(*exprs, diagram_type_dict=None):
     """
@@ -1728,7 +1685,6 @@ def compile_expr(*exprs, diagram_type_dict=None):
     exprs = [expr.copy() for expr in exprs]
     cexpr = mk_cexpr(*exprs, diagram_type_dict=diagram_type_dict)
     return cexpr
-
 
 @q.timer
 def contract_simplify_compile(
@@ -1753,7 +1709,6 @@ def contract_simplify_compile(
         *contracted_simplified_exprs, diagram_type_dict=diagram_type_dict
     )
     return cexpr
-
 
 def show_variable_value(value):
     if isinstance(value, list):
@@ -1827,7 +1782,6 @@ def show_variable_value(value):
         return f"{show_variable_value(value[0])}*{show_variable_value(value[1])}"
     else:
         return f"{value}"
-
 
 def display_cexpr(cexpr: CExpr):
     """
@@ -1915,7 +1869,6 @@ def display_cexpr(cexpr: CExpr):
     lines.append("# End CExpr")
     return "\n".join(lines)
 
-
 @q.timer_verbose
 def cexpr_code_gen_py(cexpr: CExpr, *, is_cython=True, is_distillation=False):
     """
@@ -1926,7 +1879,6 @@ def cexpr_code_gen_py(cexpr: CExpr, *, is_cython=True, is_distillation=False):
     """
     gen = CExprCodeGenPy(cexpr, is_cython=is_cython, is_distillation=is_distillation)
     return gen.code_gen()
-
 
 class CExprCodeGenPy:
     """
@@ -2742,9 +2694,7 @@ class CExprCodeGenPy:
         append(f"# Total flops per sloppy call is: {self.total_sloppy_flops}")
         append(f"total_sloppy_flops = {self.total_sloppy_flops}")
 
-
 #### ----
-
 
 def get_bs_factor_variable_list(bs_list: list[BS]) -> list[str]:
     """
@@ -2756,9 +2706,7 @@ def get_bs_factor_variable_list(bs_list: list[BS]) -> list[str]:
             variables_set |= ea.mk_fac(c).get_variable_set()
     return sorted(variables_set)
 
-
 #### ----
-
 
 def mk_test_expr_compile_01():
     expr = (
@@ -2770,7 +2718,6 @@ def mk_test_expr_compile_01():
         * Qv("d", "x2", "s4", "c2")
     )
     return expr
-
 
 if __name__ == "__main__":
     expr = mk_test_expr_compile_01()

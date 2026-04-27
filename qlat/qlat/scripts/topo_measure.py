@@ -38,7 +38,6 @@ if is_density_field:
 else:
     density_field_path = None
 
-
 def load():
     if p_source is None:
         q.displayln_info(
@@ -62,7 +61,6 @@ def load():
     q.clear_all_caches()
     q.clear_mem_cache()
     return gf
-
 
 gf = load()
 

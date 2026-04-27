@@ -42,7 +42,6 @@ p_guess = g.default.get("--guess", None)
 p_output = g.default.get("--output", "gt.field")
 p_rng_seed = g.default.get("--random", None)
 
-
 def load_gf():
     if p_source is None:
         q.displayln_info(
@@ -67,7 +66,6 @@ def load_gf():
         gf.load(p_source)
     return gf
 
-
 def load_gt_guess():
     if p_guess is None:
         q.displayln_info("No guess is provided. Gauge fix from scratch.")
@@ -87,7 +85,6 @@ def load_gt_guess():
         gt.load_double(p_guess)
     return gt
 
-
 def load_gt_output():
     assert isinstance(p_output, str)
     if not q.does_file_exist_qar_sync_node(p_output):
@@ -103,7 +100,6 @@ def load_gt_output():
         gt.load_double(p_output)
     return gt
 
-
 def save_gt_output(gt):
     assert isinstance(p_output, str)
     assert not q.does_file_exist_sync_node(p_output)
@@ -115,7 +111,6 @@ def save_gt_output(gt):
         q.displayln_info("Assuming Qlat field format (double precision, big endian).")
         gt.save_double(p_output)
     q.sync_node()
-
 
 gf = load_gf()
 

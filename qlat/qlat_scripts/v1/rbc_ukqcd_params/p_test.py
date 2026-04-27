@@ -1,6 +1,5 @@
 from .. import rbc_ukqcd_params as rup
 
-
 def mk_test_l_t_list():
     lt_list = []
     for l in [
@@ -38,7 +37,6 @@ def mk_test_l_t_list():
             )
     return lt_list
 
-
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
     params["M5"] = 1.8
@@ -68,7 +66,6 @@ def mk_fermion_params(inv_type, inv_acc):
         assert False
     return params
 
-
 def mk_dict_fermion_params():
     params = {}
     for inv_type in [
@@ -84,7 +81,6 @@ def mk_dict_fermion_params():
         ]:
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
-
 
 def mk_lanc_params(job_tag, inv_type, inv_acc):
     assert inv_type in [
@@ -116,7 +112,6 @@ def mk_lanc_params(job_tag, inv_type, inv_acc):
         "cheby_params": cheby_params,
         "irl_params": irl_params,
     }
-
 
 def mk_clanc_params(job_tag, inv_type, inv_acc):
     assert inv_type in [
@@ -177,7 +172,6 @@ def mk_clanc_params(job_tag, inv_type, inv_acc):
         "save_params": save_params,
     }
 
-
 def setup_params():
     for l, t in mk_test_l_t_list():
         job_tag = f"test-{l}nt{t}"
@@ -233,6 +227,5 @@ def setup_params():
         dict_params["gf_ape_smear_step"] = 30
         dict_params["prop_smear_coef"] = 0.9375
         dict_params["prop_smear_step"] = 10
-
 
 setup_params()

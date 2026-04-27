@@ -1511,7 +1511,7 @@ void fft_fieldG(std::vector<qlat::FieldG<Ty>>& src, bool fftdir = true,
   const Int nfft = src.size() * civ;
   const Geometry& geo = src[0].geo();
   const bool use_qlat = check_fft_mode(nfft, geo, fft4d);
-  if(use_qlat == true and check_qlat){
+  if (use_qlat == true and check_qlat) {
     qmessage("bad number of fft %5d fft4d %s \n", Int(nfft), Int(fft4d));
     Qassert(false);
   }

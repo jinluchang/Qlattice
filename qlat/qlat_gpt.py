@@ -4,7 +4,6 @@ import math
 
 import textwrap
 
-
 def mk_grid(geo=None):
     if geo is None:
         total_site_str = q.get_arg("--grid")
@@ -25,7 +24,6 @@ def mk_grid(geo=None):
         total_site = geo.total_site
     return g.grid(total_site.to_list(), g.double)
 
-
 def begin_with_gpt():
     assert q.get_comm() is None
     from mpi4py import MPI
@@ -39,14 +37,12 @@ def begin_with_gpt():
     q.set_comm(comm.Split(color=0, key=id_node))
     assert q.get_comm() is not None
 
-
 def end_with_gpt():
     assert q.get_comm() is not None
     q.get_comm().Free()
     q.set_comm(None)
     assert q.get_comm() is None
     q.end()
-
 
 def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
     return (
@@ -59,7 +55,6 @@ def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
         + tag
     )
 
-
 def mk_gpt_field(ctype, geo):
     if ctype is q.ElemTypeColorMatrix:
         return g.mcolor(mk_grid(geo))
@@ -71,7 +66,6 @@ def mk_gpt_field(ctype, geo):
         return g.complex(mk_grid(geo))
     else:
         raise Exception("make_gpt_field")
-
 
 @q.timer_verbose
 def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
@@ -114,9 +108,7 @@ def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
     else:
         raise Exception(f"mk_qlat_gpt_copy_plan(tag={tag})")
 
-
 cache_qlat_gpt_copy_plan = q.mk_cache("qlat_gpt_copy_plan")
-
 
 def get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
     key = mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag)
@@ -126,7 +118,6 @@ def get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
         plan = mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
         cache_qlat_gpt_copy_plan[key] = plan
         return plan
-
 
 @q.timer
 def qlat_from_gpt_gauge_field(gpt_gf):
@@ -144,7 +135,6 @@ def qlat_from_gpt_gauge_field(gpt_gf):
     gf = q.GaugeField()
     q.merge_fields(gf, fs)
     return gf
-
 
 @q.timer
 def gpt_from_qlat_gauge_field(gf):
@@ -170,7 +160,6 @@ def gpt_from_qlat_gauge_field(gf):
         fs[i] = None
     return gpt_gf
 
-
 @q.timer
 def qlat_from_gpt_gauge_transform(gpt_gt):
     ctype = q.ElemTypeColorMatrix
@@ -182,7 +171,6 @@ def qlat_from_gpt_gauge_transform(gpt_gt):
     gt = q.GaugeTransform(geo)
     plan(memoryview(gt), gpt_gt)
     return gt
-
 
 @q.timer
 def gpt_from_qlat_gauge_transform(gt):
@@ -198,7 +186,6 @@ def gpt_from_qlat_gauge_transform(gt):
     plan(gpt_gt, memoryview(gt))
     return gpt_gt
 
-
 @q.timer
 def qlat_from_gpt_prop(gpt_prop):
     ctype = q.ElemTypeWilsonMatrix
@@ -211,7 +198,6 @@ def qlat_from_gpt_prop(gpt_prop):
     plan(memoryview(prop_msc), gpt_prop)
     prop_wm = q.convert_wm_from_mspincolor(prop_msc)
     return prop_wm
-
 
 @q.timer
 def gpt_from_qlat_prop(prop_wm):
@@ -228,7 +214,6 @@ def gpt_from_qlat_prop(prop_wm):
     plan(gpt_prop, memoryview(prop_msc))
     return gpt_prop
 
-
 @q.timer
 def qlat_from_gpt_ff4d(gpt_ff):
     ctype = q.ElemTypeWilsonVector
@@ -240,7 +225,6 @@ def qlat_from_gpt_ff4d(gpt_ff):
     ff = q.FermionField4d(geo, multiplicity)
     plan(memoryview(ff), gpt_ff)
     return ff
-
 
 @q.timer
 def gpt_from_qlat_ff4d(ff):
@@ -255,7 +239,6 @@ def gpt_from_qlat_ff4d(ff):
     gpt_ff = g.vspincolor(grid)
     plan(gpt_ff, memoryview(ff))
     return gpt_ff
-
 
 @q.timer
 def qlat_from_gpt_complex(gpt_fcs):
@@ -276,7 +259,6 @@ def qlat_from_gpt_complex(gpt_fcs):
     ff = q.FieldComplexD(q.Geometry(total_site), n)
     q.merge_fields(ff, fs)
     return ff
-
 
 @q.timer
 def gpt_from_qlat_complex(fc):
@@ -302,7 +284,6 @@ def gpt_from_qlat_complex(fc):
         fs[i] = None
     return gpt_fcs
 
-
 def is_gpt_prop(obj):
     if (
         isinstance(obj, g.core.lattice)
@@ -312,7 +293,6 @@ def is_gpt_prop(obj):
     else:
         return False
 
-
 def is_gpt_ff4d(obj):
     if (
         isinstance(obj, g.core.lattice)
@@ -321,7 +301,6 @@ def is_gpt_ff4d(obj):
         return True
     else:
         return False
-
 
 def is_gpt_gauge_field(obj):
     if isinstance(obj, list) and len(obj) == 4:
@@ -335,7 +314,6 @@ def is_gpt_gauge_field(obj):
     else:
         return False
 
-
 def is_gpt_gauge_transform(obj):
     if (
         isinstance(obj, g.core.lattice)
@@ -344,7 +322,6 @@ def is_gpt_gauge_transform(obj):
         return True
     else:
         return False
-
 
 def is_gpt_complex(obj):
     if isinstance(obj, list):
@@ -357,7 +334,6 @@ def is_gpt_complex(obj):
         return True
     else:
         return False
-
 
 @q.timer
 def qlat_from_gpt(gpt_obj):
@@ -376,7 +352,6 @@ def qlat_from_gpt(gpt_obj):
     else:
         raise Exception("qlat_from_gpt")
 
-
 @q.timer
 def gpt_from_qlat(obj):
     if isinstance(obj, q.Prop):
@@ -394,14 +369,12 @@ def gpt_from_qlat(obj):
     else:
         raise Exception("gpt_from_qlat")
 
-
 @q.timer
 def gpt_invert(src, inverter, qtimer=q.TimerNone()):
     qtimer.start()
     sol = g.eval(inverter * src)
     qtimer.stop()
     return sol
-
 
 class InverterGPT(q.Inverter):
     def __init__(
@@ -442,9 +415,7 @@ class InverterGPT(q.Inverter):
         self.timer.stop()
         return prop_sol
 
-
 ###
-
 
 class EigSystemGPT(q.EigSystem):
     def __init__(self, *, evec=None, evals=None):
@@ -474,9 +445,7 @@ class EigSystemGPT(q.EigSystem):
         )
         g.save(path, eig)
 
-
 ###
-
 
 class EigSystemCompressedGPT(q.EigSystem):
     def __init__(self, *, basis=None, cevec=None, evals=None):
@@ -522,9 +491,7 @@ class EigSystemCompressedGPT(q.EigSystem):
         q.mk_file_dirs_info(path)
         g.save(path, eig, fmt)
 
-
 ###
-
 
 @q.timer
 def get_fgrid(total_site, fermion_params):
@@ -538,7 +505,6 @@ def get_fgrid(total_site, fermion_params):
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
     return qm.F_grid_eo
 
-
 @q.timer_verbose
 def save_gauge_field(gf, path):
     assert isinstance(gf, q.GaugeField)
@@ -546,12 +512,10 @@ def save_gauge_field(gf, path):
     q.mk_file_dirs_info(path)
     g.save(path, gpt_gf, g.format.nersc())
 
-
 @q.timer_verbose
 def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
-
 
 def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c=3):
     x = g.util.to_list(x)
@@ -604,7 +568,6 @@ def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c=3):
         if c > max_c:
             g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
             return sign * c
-
 
 class non_linear_cg(g.algorithms.base_iterative):
     @g.params_convention(
@@ -695,9 +658,7 @@ class non_linear_cg(g.algorithms.base_iterative):
             #
         return opt
 
-
 ###
-
 
 @q.timer_verbose
 def gauge_fix_coulomb(
@@ -829,7 +790,6 @@ def gauge_fix_coulomb(
     V = g.merge(Vt, 3)
     gt = qlat_from_gpt(V)
     return gt
-
 
 @q.timer
 def check_gauge_fix_coulomb(gf, gt, eps=1e-12):

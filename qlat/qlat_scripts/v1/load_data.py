@@ -10,7 +10,6 @@ from .jobs import *
 
 is_mira_data = False
 
-
 def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     cache_type_dict = {
         "wsrc_wsnk ; psel_ts": "psel_ts",
@@ -57,7 +56,6 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
-
 def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
     sp_prop = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc_wsnk ; psel_ts")
     #
@@ -65,7 +63,6 @@ def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
         return x.get_elem_wm(t_snk)
     #
     return ama_apply1(f, sp_prop)
-
 
 def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fsel_pos_dict):
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
@@ -76,7 +73,6 @@ def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fsel_pos_dict):
     #
     return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fsel"))
 
-
 def get_prop_psnk_wsrc_psel(prop_cache, inv_type, xg_snk, t_src, psel_pos_dict):
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
     idx_snk = psel_pos_dict[xg_snk]
@@ -86,9 +82,7 @@ def get_prop_psnk_wsrc_psel(prop_cache, inv_type, xg_snk, t_src, psel_pos_dict):
     #
     return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; psel"))
 
-
 ### -------
-
 
 def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     cache_type_dict = {
@@ -154,7 +148,6 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
-
 def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     sp_prop = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc_wsnk ; psel_ts")
@@ -165,7 +158,6 @@ def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
         return x.get_elem_wm(t_snk)
     #
     return ama_apply1(f, sp_prop)
-
 
 def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
@@ -179,7 +171,6 @@ def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict)
     #
     return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel"))
 
-
 def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
@@ -192,15 +183,12 @@ def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict)
     #
     return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; psel"))
 
-
 ### -------
-
 
 def get_prop_rand_u1_fsel(prop_cache, inv_type):
     inv_acc = 2
     tag = f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"
     return prop_cache["fsel"].get(tag)
-
 
 def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict):
     assert xg_snk == xg_src
@@ -215,7 +203,6 @@ def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_di
     #
     return ama_apply1(f, get_prop_rand_u1_fsel(prop_cache, inv_type))
 
-
 ### -------
 
 dict_flavor_inv_type = dict()
@@ -225,13 +212,11 @@ dict_flavor_inv_type["d"] = 0
 dict_flavor_inv_type["s"] = 1
 dict_flavor_inv_type["c"] = 2
 
-
 def f_get_elem_wm(field, pos_snk):
     if isinstance(field, int):
         assert field == 0
         return 0
     return field.get_elem_wm(pos_snk)
-
 
 def mk_get_elem_wm(field, pos_dict=None):
     """
@@ -267,20 +252,17 @@ def mk_get_elem_wm(field, pos_dict=None):
             #
             return get
 
-
 def f_get_elem_norm_sqrt(field_norm_sqrt, pos_snk):
     if isinstance(field_norm_sqrt, int):
         assert field_norm_sqrt == 0
         return 0
     return field_norm_sqrt.get_elem(pos_snk).item()
 
-
 def mk_field_norm_sqrt(field):
     if isinstance(field, int):
         assert field == 0
         return 0
     return q.sqrt_field(q.qnorm_field(field))
-
 
 def mk_get_elem_norm(field, pos_dict=None):
     """
@@ -316,7 +298,6 @@ def mk_get_elem_norm(field, pos_dict=None):
                 return ama_apply2_l(f_get_elem_norm_sqrt, field_norm_sqrt, idx_snk)
             #
             return get
-
 
 @q.timer
 def populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, fsel):
@@ -354,7 +335,6 @@ def populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, f
         prop_lookup_cache[key] = mk_get_elem_wm(f, psel_pos_dict)
         prop_norm_lookup_cache[key] = mk_get_elem_norm(f, psel_pos_dict)
 
-
 @q.timer
 def populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, fsel):
     prop_cache = q.mk_cache("prop_cache", f"{job_tag}", f"{traj}")
@@ -378,7 +358,6 @@ def populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, f
         f = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fsel")
         prop_lookup_cache[key] = mk_get_elem_wm(f, fsel_pos_dict)
         prop_norm_lookup_cache[key] = mk_get_elem_norm(f, fsel_pos_dict)
-
 
 @q.timer
 def populate_prop_idx_cache_psrc_psel(job_tag, traj, flavor, total_site, psel, fsel):
@@ -405,7 +384,6 @@ def populate_prop_idx_cache_psrc_psel(job_tag, traj, flavor, total_site, psel, f
         prop_lookup_cache[key] = mk_get_elem_wm(f, psel_pos_dict)
         prop_norm_lookup_cache[key] = mk_get_elem_norm(f, psel_pos_dict)
 
-
 @q.timer
 def populate_prop_idx_cache_psrc_fsel(job_tag, traj, flavor, total_site, psel, fsel):
     prop_cache = q.mk_cache("prop_cache", f"{job_tag}", f"{traj}")
@@ -430,7 +408,6 @@ def populate_prop_idx_cache_psrc_fsel(job_tag, traj, flavor, total_site, psel, f
         f = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel")
         prop_lookup_cache[key] = mk_get_elem_wm(f, fsel_pos_dict)
         prop_norm_lookup_cache[key] = mk_get_elem_norm(f, fsel_pos_dict)
-
 
 @q.timer
 def populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel, fsel):
@@ -459,7 +436,6 @@ def populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel
         }
         prop_lookup_cache[key] = mk_get_elem_wm(f, d)
         prop_norm_lookup_cache[key] = mk_get_elem_norm(f, d)
-
 
 @q.timer
 def get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src):
@@ -502,7 +478,6 @@ def get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src):
             assert False
             return None
 
-
 @q.timer
 def get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src):
     """
@@ -542,15 +517,12 @@ def get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src):
             assert False
             return None
 
-
 ### -------
-
 
 def check_cache_assign(cache, key, val):
     if key in cache:
         assert cache[key] == val
     cache[key] = val
-
 
 @q.timer
 def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
@@ -647,7 +619,6 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
     populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
 
-
 @q.timer
 def load_prop_wsrc_fsel(job_tag, traj, flavor, *, psel, fsel, gt):
     """
@@ -743,7 +714,6 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, psel, fsel, gt):
     populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
 
-
 @q.timer
 def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
     """
@@ -830,7 +800,6 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
     )
     populate_prop_idx_cache_psrc_psel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
-
 
 @q.timer
 def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
@@ -920,7 +889,6 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel):
     populate_prop_idx_cache_psrc_fsel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
 
-
 @q.timer
 def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
     """
@@ -1000,9 +968,7 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel):
     populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel, fsel)
     return True
 
-
 ### -------
-
 
 @q.timer
 def load_gauge_hyp(job_tag, traj, *, gf_hyp):
@@ -1051,7 +1017,6 @@ def load_gauge_hyp(job_tag, traj, *, gf_hyp):
     gauge_cache["gauge_hyp-dagger"] = gf_dagger_expand
     return True
 
-
 @q.timer
 def get_gauge_link_lookup_p_mu(prop_cache, tag, p, mu):
     """
@@ -1080,9 +1045,7 @@ def get_gauge_link_lookup_p_mu(prop_cache, tag, p, mu):
         cm[:] = gf[idx, mu].T.conj()
     return cm
 
-
 ### -------
-
 
 @q.timer_verbose
 def run_get_prop(

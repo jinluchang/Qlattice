@@ -4,11 +4,9 @@ use_reference_implementation = False
 
 mpi_comm = None
 
-
 def set_mpi_comm(comm):
     global mpi_comm
     mpi_comm = comm
-
 
 def get_mpi_comm():
     global mpi_comm
@@ -18,12 +16,10 @@ def get_mpi_comm():
         mpi_comm = MPI.COMM_WORLD
     return mpi_comm
 
-
 def bcast_py(x, root=0, comm=None):
     if comm is None:
         comm = get_mpi_comm()
     return comm.bcast(x, root)
-
 
 class DistArray:
     """
@@ -277,9 +273,7 @@ class DistArray:
         d_ret.x = self.x.conj()
         return d_ret
 
-
 ###
-
 
 def d_matmul_ref(d_mat, d_vec):
     """
@@ -301,7 +295,6 @@ def d_matmul_ref(d_mat, d_vec):
     d_ret = scatter_arr(ret, root, comm)
     return d_ret
 
-
 def d_matmul(d_mat, d_vec):
     """
     return DistArray
@@ -321,12 +314,10 @@ def d_matmul(d_mat, d_vec):
     d_ret.x = ret
     return d_ret
 
-
 def d_trace_ref(d_mat):
     assert len(d_mat.x.shape) >= 2
     mat = all_gather_arr(d_mat)
     return np.trace(mat)
-
 
 def d_trace(d_mat):
     if use_reference_implementation:
@@ -343,9 +334,7 @@ def d_trace(d_mat):
         r = comm.allreduce(r)
     return r
 
-
 ###
-
 
 def scatter_arr(vec, root=0, comm=None):
     """
@@ -387,7 +376,6 @@ def scatter_arr(vec, root=0, comm=None):
     d_vec.comm = comm
     return d_vec
 
-
 def gather_arr(d_vec, root=0):
     """
     return np.ndarray on node root
@@ -412,7 +400,6 @@ def gather_arr(d_vec, root=0):
         vec_g = vec_g[: d_vec.n]
         # vec_g = np.ascontiguousarray(vec_g)
     return vec_g
-
 
 def all_gather_arr(d_vec):
     """

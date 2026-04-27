@@ -26,7 +26,6 @@ dict_params["load_config_params"] = {
     ]
 }
 
-
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
     params["M5"] = 1.8
@@ -52,7 +51,6 @@ def mk_fermion_params(inv_type, inv_acc):
         assert False
     return params
 
-
 def mk_dict_fermion_params():
     params = {}
     for inv_type in [
@@ -68,6 +66,5 @@ def mk_dict_fermion_params():
         ]:
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
-
 
 dict_params["fermion_params"] = mk_dict_fermion_params()

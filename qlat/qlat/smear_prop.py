@@ -4,7 +4,6 @@ __all__ = [
 
 import numpy as np
 
-
 class q:
     from qlat_utils import (
         timer,
@@ -23,9 +22,7 @@ class q:
         mk_prop_from_ff_list,
     )
 
-
 cache_spatial_smear_chunk_plan = q.mk_cache("spatial_smear_chunk_plan")
-
 
 @q.timer(is_flops=True)
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
@@ -155,7 +152,6 @@ def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
     #
     return flops, ss_ff_list
 
-
 @q.timer
 def get_prop_spatial_smear_chunk_plan(gf, num_field):
     """
@@ -172,7 +168,6 @@ def get_prop_spatial_smear_chunk_plan(gf, num_field):
     plan = prop_spatial_smear_chunk_planner(gf, num_field)
     cache_spatial_smear_chunk_plan[key] = plan
     return plan
-
 
 @q.timer
 def prop_spatial_smear_chunk_planner(gf, num_field):
@@ -207,7 +202,6 @@ def prop_spatial_smear_chunk_planner(gf, num_field):
         flops_per_step=flops_per_step,
     )
     return plan
-
 
 @q.timer(is_flops=True)
 def prop_spatial_smear_chunk(ff_list, plan, coef, step, mom):
