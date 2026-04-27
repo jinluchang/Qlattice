@@ -35,7 +35,6 @@ import subprocess
 import tempfile
 import re
 
-
 def get_function_body_lines(source_lines):
     """Return 1-indexed line numbers inside function/method bodies for Python files.\n
     Uses the ast module to walk the parse tree and collect line ranges
@@ -54,7 +53,6 @@ def get_function_body_lines(source_lines):
                     body_lines.add(line_no)
     #
     return body_lines
-
 
 def get_function_body_lines_cython(source_lines):
     """Return 1-indexed line numbers inside function/method bodies for Cython files.\n
@@ -92,9 +90,7 @@ def get_function_body_lines_cython(source_lines):
         i += 1
     return body_lines
 
-
 CPP_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hpp"}
-
 
 def get_function_body_lines_cpp(source_lines):
     """Return 1-indexed line numbers inside function/method bodies for C/C++ files.\n
@@ -224,11 +220,9 @@ def get_function_body_lines_cpp(source_lines):
         i += 1
     return body_lines
 
-
 def get_indent(line):
     """Return the leading whitespace string of a line."""
     return line[: len(line) - len(line.lstrip())]
-
 
 def get_string_lines(source):
     """Return 1-indexed line numbers inside multi-line string literals.\n
@@ -244,7 +238,6 @@ def get_string_lines(source):
                 for ln in range(start[0], end[0]):
                     string_lines.add(ln)
     return string_lines
-
 
 def collapse_consecutive_comments(lines):
     """Collapse runs of identical bare comment lines ('#' or '//') into a single line."""
@@ -265,6 +258,23 @@ def collapse_consecutive_comments(lines):
         i += 1
     return result
 
+def collapse_consecutive_empty_lines(lines):
+    """Collapse two or more consecutive empty lines into a single empty line."""
+    result = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.strip() == "":
+            j = i + 1
+            while j < len(lines) and lines[j].strip() == "":
+                j += 1
+            if j > i + 1:
+                result.append(line)
+                i = j
+                continue
+        result.append(line)
+        i += 1
+    return result
 
 def transform_file(source, is_cython=False, is_cpp=False):
     """Replace empty lines inside function bodies with indented comment lines.\n
@@ -345,10 +355,8 @@ def transform_file(source, is_cython=False, is_cpp=False):
         else:
             result.append(line)
             i += 1
-    #
     result = collapse_consecutive_comments(result)
     return "".join(result)
-
 
 def run_ruff(source):
     """Run ruff format and ruff check --fix on Python source code."""
@@ -365,7 +373,6 @@ def run_ruff(source):
             return f.read()
     finally:
         os.unlink(tmp)
-
 
 def run_clang_format(source, filepath):
     """Run clang-format on C/C++ source code.\n
@@ -385,7 +392,6 @@ def run_clang_format(source, filepath):
             return f.read()
     finally:
         os.unlink(tmp)
-
 
 def process_file(filepath, check=False, diff=False):
     """Process a single source file through its language-specific formatter and transform.\n
@@ -410,6 +416,12 @@ def process_file(filepath, check=False, diff=False):
     else:
         return False
     #
+    # Globally collapse consecutive empty lines into single empty lines
+    transformed = collapse_consecutive_empty_lines(
+        transformed.splitlines(keepends=True)
+    )
+    transformed = "".join(transformed)
+    #
     if original == transformed:
         return False
     #
@@ -428,7 +440,6 @@ def process_file(filepath, check=False, diff=False):
     #
     return True
 
-
 def find_source_files(path):
     """Find all supported source files (.py, .pyx, .c, .cc, .cpp, .cxx, .h, .hpp) at path.\n
     If path is a single file, returns it (if supported). If a directory, walks
@@ -445,7 +456,6 @@ def find_source_files(path):
                     files.append(os.path.join(root, fn))
         return files
     return []
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -484,7 +494,6 @@ def main():
     #
     if args.check and changed_files:
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
