@@ -57,12 +57,11 @@ struct QMAction {
     initialized = true;
     alpha = alpha_;
     beta = beta_;
-    // start_TV = (3.0+std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
     V_FV_min = V_FV_min_;  // V_phi4(start_TV,0);
     FV_offset = FV_offset_;
     TV_offset = TV_offset_;
-    // center_bar = (3.0-std::pow(9.0-8.0*alpha, 0.5))/2.0/alpha;
-    center_bar = 3.0 / (alpha * alpha);
+    // center_bar = 3.0 / (alpha * alpha);
+    center_bar = 1.0 / (alpha * alpha);
     barrier_strength = barrier_strength_;
     L = L_;
     M = M_;
