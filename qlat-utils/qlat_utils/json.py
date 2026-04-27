@@ -8,7 +8,6 @@ https://mathspp.com/blog/custom-json-encoder-and-decoder
 With modifications to add np.ndarray support
 """
 
-
 class ExtendedEncoder(json.JSONEncoder):
     def default(self, obj):
         name = type(obj).__name__
@@ -20,7 +19,6 @@ class ExtendedEncoder(json.JSONEncoder):
             encoded = encoder(obj)
             encoded["__extended_json_type__"] = name
             return encoded
-
 
 class ExtendedDecoder(json.JSONDecoder):
     def __init__(self, **kwargs):
@@ -35,7 +33,6 @@ class ExtendedDecoder(json.JSONDecoder):
             return obj
         else:
             return decoder(obj)
-
 
 class QlatEncoder(ExtendedEncoder):
     def encode_complex(self, c):
@@ -62,7 +59,6 @@ class QlatEncoder(ExtendedEncoder):
     def encode_range(self, r):
         return {"start": r.start, "stop": r.stop, "step": r.step}
 
-
 class QlatDecoder(ExtendedDecoder):
     def decode_complex(self, obj):
         return complex(obj["real"], obj["imag"])
@@ -88,7 +84,6 @@ class QlatDecoder(ExtendedDecoder):
     def decode_range(self, obj):
         return range(obj["start"], obj["stop"], obj["step"])
 
-
 def json_dumps(obj, *, indent=2):
     """
     return str dumped from `obj`
@@ -96,7 +91,6 @@ def json_dumps(obj, *, indent=2):
     indent (int | str | None)
     """
     return json.dumps(obj, indent=indent, cls=QlatEncoder)
-
 
 def json_loads(s):
     """

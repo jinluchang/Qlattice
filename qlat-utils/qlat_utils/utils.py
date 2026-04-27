@@ -11,7 +11,6 @@ import inspect
 import importlib
 import importlib.util
 
-
 def getenv(*names, default=None):
     assert len(names) > 0
     for name in names:
@@ -22,7 +21,6 @@ def getenv(*names, default=None):
     val = default
     displayln_info(0, f"{names[0]}='{val}' (default)")
     return val
-
 
 def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
     """
@@ -45,7 +43,6 @@ def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
                     argv.pop(i)
                 return arg
     return default
-
 
 def get_arg_list(option, *, argv=None, is_removing_from_argv=False):
     """
@@ -77,7 +74,6 @@ def get_arg_list(option, *, argv=None, is_removing_from_argv=False):
             i += 1
     return arg_list
 
-
 def get_option(option, *, argv=None, is_removing_from_argv=False):
     """
     Return if `option` in `argv`.
@@ -91,7 +87,6 @@ def get_option(option, *, argv=None, is_removing_from_argv=False):
         return True
     else:
         return False
-
 
 def get_all_arg_list(option, default=None, *, argv=None, is_removing_from_argv=False):
     """
@@ -109,13 +104,10 @@ def get_all_arg_list(option, default=None, *, argv=None, is_removing_from_argv=F
             return arg_list
     return default
 
-
 is_test_state = get_option("--test")
-
 
 def is_test():
     return is_test_state
-
 
 def show_memory_usage():
     try:
@@ -127,7 +119,6 @@ def show_memory_usage():
     except:
         displayln_info("show_memory_usage: no psutil.")
 
-
 def import_file(module_name, file_path):
     """
     return the imported module
@@ -138,11 +129,9 @@ def import_file(module_name, file_path):
     spec.loader.exec_module(module)
     return module
 
-
 def displayln_info_malloc_stats():
     if get_id_node() == 0:
         return displayln_malloc_stats()
-
 
 def lazy_call(f, *args, **kwargs):
     is_thunk = True
@@ -157,7 +146,6 @@ def lazy_call(f, *args, **kwargs):
     #
     return get
 
-
 @timer
 def get_fname():
     """
@@ -166,26 +154,20 @@ def get_fname():
     f = inspect.currentframe().f_back
     return f.f_code.co_name
 
-
 def sqr(x):
     return x * x
-
 
 def set_zero(x):
     x.set_zero()
 
-
 def set_unit(x, coef=1.0):
     x.set_unit(coef)
-
 
 def show(x):
     return x.show()
 
-
 def unitarize(x):
     x.unitarize()
-
 
 def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=None):
     """
@@ -219,13 +201,11 @@ def get_chunk_list(total_list, *, chunk_size=None, chunk_number=None, rng_state=
             chunk_list.append(total_list[start:stop])
     return chunk_list
 
-
 def parse_grid_coordinate_str(x_str):
     x_str_list = x_str.split(".")
     x_list = [int(s) for s in x_str_list]
     x = Coordinate(x_list)
     return x
-
 
 def mk_epsilon_array():
     arr = np.zeros(
@@ -253,16 +233,13 @@ def mk_epsilon_array():
     setv(0, 3, 1, 2)
     return arr
 
-
 epsilon_array = mk_epsilon_array()
-
 
 def epsilon_tensor(i, j, k, l=3):
     """
     epsilon_tensor(0, 1, 2, 3) == 1
     """
     return epsilon_array[i, j, k, l].item()
-
 
 def rel_mod(x, size):
     """
@@ -274,7 +251,6 @@ def rel_mod(x, size):
         return x - size
     else:
         return x
-
 
 def rel_mod_sym(x, size):
     """
@@ -290,7 +266,6 @@ def rel_mod_sym(x, size):
         assert 2 * x == size
         return 0
 
-
 def rel_mod_arr(x, size):
     """
     Return ``x % size`` or ``x % size - size`` where ``x`` and ``size`` are np.array of same shape
@@ -301,7 +276,6 @@ def rel_mod_arr(x, size):
     mask = 2 * ans >= size
     ans[mask] = (ans - size)[mask]
     return ans
-
 
 def rel_mod_sym_arr(x, size):
     """
@@ -316,22 +290,18 @@ def rel_mod_sym_arr(x, size):
     ans[mask2] = 0
     return ans
 
-
 def c_sqr(x):
     return sum([sqr(v) for v in x])
-
 
 def c_rel_mod(x, size):
     l = len(size)
     assert l == len(x)
     return [rel_mod(x[i], size[i]) for i in range(l)]
 
-
 def c_rel_mod_sqr(x, size):
     l = len(size)
     assert l == len(x)
     return sum([sqr(rel_mod(x[i], size[i])) for i in range(l)])
-
 
 def phat_sqr(q, size):
     l = len(size)
@@ -340,13 +310,11 @@ def phat_sqr(q, size):
         [sqr(math.sin(math.pi * (q[i] % size[i]) / size[i])) for i in range(l)]
     )
 
-
 def get_r_sq(x_rel):
     """
     get spatial distance square as int
     """
     return sum([x * x for x in x_rel[:3]])
-
 
 def get_r_limit(total_site):
     """
@@ -354,7 +322,6 @@ def get_r_limit(total_site):
     :params total_site: must be Coordinate type
     """
     return math.sqrt(sum([(l / 2) ** 2 for l in total_site.to_list()[:3]]))
-
 
 def mk_r_sq_list_3d(r_sq_limit):
     r_limit = int(math.sqrt(r_sq_limit))
@@ -368,7 +335,6 @@ def mk_r_sq_list_3d(r_sq_limit):
                 r_sq_set.add(r_sq)
     return sorted(list(r_sq_set))
 
-
 def mk_r_sq_list(r_sq_limit, dimension="3D"):
     if dimension == "4D":
         # Lagrange's four-square theorem
@@ -378,7 +344,6 @@ def mk_r_sq_list(r_sq_limit, dimension="3D"):
         return mk_r_sq_list_3d(r_sq_limit)
     else:
         raise Exception(f"mk_r_sq_list: dimension='{dimension}' not recognized.")
-
 
 def mk_r_list(r_limit, *, r_all_limit=28.0, r_scaling_factor=5.0, dimension="3D"):
     """
@@ -404,7 +369,6 @@ def mk_r_list(r_limit, *, r_all_limit=28.0, r_scaling_factor=5.0, dimension="3D"
         r_list.append(r)
     return r_list
 
-
 def mk_interp_tuple(x, x0, x1, x_idx):
     """
     Returns `(x_idx_low, x_idx_high, coef_low, coef_high,)`\n
@@ -423,7 +387,6 @@ def mk_interp_tuple(x, x0, x1, x_idx):
         coef_low,
         coef_high,
     )
-
 
 def mk_r_sq_interp_idx_coef_list(r_list):
     """
@@ -460,7 +423,6 @@ def mk_r_sq_interp_idx_coef_list(r_list):
             r_idx += 1
     return r_sq_interp_idx_coef_list
 
-
 @timer
 def get_data_sig_arr(x, rs, sig_len):
     """
@@ -478,9 +440,7 @@ def get_data_sig_arr(x, rs, sig_len):
     sig_arr = np.array(sig_list)
     return sig_arr
 
-
 global_json_results = []  # Default value for param `json_results` in functions `check_log_json` and `json_results_append`
-
 
 def json_results_append(*args, json_results=None):
     if json_results is None:
@@ -493,7 +453,6 @@ def json_results_append(*args, json_results=None):
         0, r"\\------------------------------------------------------------//"
     )
     json_results.append(args)
-
 
 @timer_verbose
 def check_log_json(script_file, *, json_results=None, check_eps=1e-5):

@@ -23,12 +23,10 @@ from qlat_utils.timer import (
     displayln_info,
 )
 
-
 def mk_file_dirs(fn):
     path = os.path.dirname(fn)
     if path != "":
         os.makedirs(path, exist_ok=True)
-
 
 def show_number(x):
     if isinstance(x, complex):
@@ -40,17 +38,14 @@ def show_number(x):
     else:
         return str(x)
 
-
 def show_vector(vec):
     return " ".join([show_number(x) for x in vec])
-
 
 def show_datatable(arr, *, is_return_list_of_string=False):
     lines = [show_vector(vec) + "\n" for vec in arr]
     if is_return_list_of_string:
         return lines
     return "".join(lines)
-
 
 def touch_file(fn, content="", *, is_directory_exist=False):
     if not is_directory_exist:
@@ -62,7 +57,6 @@ def touch_file(fn, content="", *, is_directory_exist=False):
             for s in content:
                 f.write(s)
 
-
 def save_datatable(arr, fn, *, is_directory_exist=False):
     """save_datatable(arr, fn), arr is (numpy) 2-D array, fn is file path name."""
     touch_file(
@@ -71,13 +65,11 @@ def save_datatable(arr, fn, *, is_directory_exist=False):
         is_directory_exist=is_directory_exist,
     )
 
-
 def read_number(s):
     if s[-1] == "i":
         return complex(0, float(s[:-1]))
     else:
         return float(s)
-
 
 def read_vector(line):
     ss = line.split()
@@ -94,18 +86,15 @@ def read_vector(line):
             i += 1
     return xs
 
-
 def read_datatable(lines):
     # return list of list of numbers (float or complex)
     if isinstance(lines, str):
         return read_datatable(lines.splitlines())
     return [read_vector(line) for line in lines]
 
-
 def load_datatable(fn):
     with open(fn) as f:
         return read_datatable(f)
-
 
 def azip(vec, *vecs):
     size_list = map(len, vecs)
@@ -123,13 +112,10 @@ def azip(vec, *vecs):
         ]
     ).transpose()
 
-
 gnuplot_png_density = 500
-
 
 def mk_tmp_dir():
     return tempfile.mkdtemp(suffix=".dir", prefix="pyplot.")
-
 
 valid_fn_chars = (
     "abcdefghijklmnopqrstuvwxyz"
@@ -137,7 +123,6 @@ valid_fn_chars = (
     + "0123456789"
     + " ,.+-_=;:[]?{}"
 )
-
 
 def check_fn(fn):
     if isinstance(fn, str):
@@ -147,13 +132,11 @@ def check_fn(fn):
         return True
     return False
 
-
 def get_plot_name(fn):
     assert fn[-4:] == ".png"
     assert check_fn(fn)
     name = fn[:-4]
     return name
-
 
 def mk_makefile(fn=None):
     # fn is the target file name, e.g. plot.pdf or plot.png
@@ -191,11 +174,9 @@ def mk_makefile(fn=None):
         ]
     )
 
-
 gnuplot_plotfile_header = [
     "set terminal epslatex standalone color clip lw 3",
 ]
-
 
 def mk_plotfile(plot_cmds, plot_lines):
     plot_output = [
@@ -215,7 +196,6 @@ def mk_plotfile(plot_cmds, plot_lines):
             "",
         ]
     )
-
 
 def populate_pyplot_folder(
     path,
@@ -237,10 +217,8 @@ def populate_pyplot_folder(
         assert check_fn(key)
         save_datatable(dt, os.path.join(path, key))
 
-
 def qremove_all(path):
     return shutil.rmtree(path, ignore_errors=True)
-
 
 def mk_pyplot_folder(path=None):
     if path is None:
@@ -251,7 +229,6 @@ def mk_pyplot_folder(path=None):
         qremove_all(path)
         os.makedirs(path)
     return path
-
 
 @timer
 def display_img(fn, *, width=None):
@@ -275,9 +252,7 @@ def display_img(fn, *, width=None):
     else:
         display(Image(filename=fn, width=width))
 
-
 plot_save_display_width = None
-
 
 @timer
 def plot_save(
@@ -421,7 +396,6 @@ def plot_save(
         # return directory that contain the sources instead of the png path
         displayln_info(0, f"plot_save: creating data for plot at '{path}'.")
         return path
-
 
 def plot_view(
     fn=None,

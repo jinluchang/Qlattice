@@ -1,7 +1,6 @@
 import os
 from .config import *
 
-
 def qls(directory):
     """List full paths of all files (excluding directories) in the given directory."""
     regular_files = []
@@ -11,7 +10,6 @@ def qls(directory):
                 # Append the full path of the file
                 regular_files.append(entry.path)
     return regular_files
-
 
 def qls_all(directory):
     """Recursively list all files in a directory."""
@@ -24,28 +22,22 @@ def qls_all(directory):
                 file_list.append(filepath)
     return file_list
 
-
 def get_qlat_utils_dir():
     return os.path.join(os.path.dirname(os.path.dirname(__file__)), "qlat_utils")
 
-
 def get_qlat_utils_include():
     return os.path.join(get_qlat_utils_dir(), "include")
-
 
 def get_dir_list():
     return [
         get_qlat_utils_dir(),
     ]
 
-
 def get_include_list():
     return [os.path.join(p, "include") for p in get_dir_list()]
 
-
 def get_lib_list():
     return [os.path.join(p, "lib") for p in get_dir_list()]
-
 
 def get_new_ld_library_path():
     ld_lib_path = os.getenv("LD_LIBRARY_PATH")
@@ -59,7 +51,6 @@ def get_new_ld_library_path():
             new_path_list.append(p)
     return ":".join(new_path_list)
 
-
 def get_pxd_list():
     l = []
     for d in get_dir_list():
@@ -69,7 +60,6 @@ def get_pxd_list():
                 l.append(fn)
     return l
 
-
 def get_header_list():
     l = []
     for d in get_include_list():
@@ -78,7 +68,6 @@ def get_header_list():
             if fn.endswith(".h"):
                 l.append(fn)
     return l
-
 
 def get_eigen_type():
     return eigen_type

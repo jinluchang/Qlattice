@@ -7,7 +7,6 @@ from .parallel import (
     get_q_num_mp_processes,
 )
 
-
 def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None):
     r"""
     return param_arr, jk_corr_data, corr_data_sigma
@@ -73,7 +72,6 @@ def mk_data_set(*, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
     )
     return param_arr, jk_corr_data, corr_data_sigma
 
-
 @timer
 def build_corr_from_param_arr(
     param_arr,
@@ -126,7 +124,6 @@ def build_corr_from_param_arr(
         ).sum(0)
     return corr
 
-
 @timer
 def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
     """
@@ -154,7 +151,6 @@ def sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr):
     )
     return new_param_arr
 
-
 @timer
 def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None):
     """
@@ -177,7 +173,6 @@ def apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr
         new_param_arr[..., free_energy_idx_arr] - energy_minimum_arr
     )
     return new_param_arr
-
 
 @timer
 def mk_fcn(
@@ -301,9 +296,7 @@ def mk_fcn(
     #
     return fcn
 
-
 ### -------------------
-
 
 @timer
 def minimize(fcn, n_step=10, step_size=1e-2, *, param_arr):
@@ -332,7 +325,6 @@ def minimize(fcn, n_step=10, step_size=1e-2, *, param_arr):
     )
     return param_arr_pre, n_step
 
-
 @timer
 def adaptive_minimize(
     fcn, step_size_list, n_step=10, max_total_steps=10000, *, param_arr
@@ -358,7 +350,6 @@ def adaptive_minimize(
             idx = idx + 1
             if idx == len(step_size_list):
                 return param_arr
-
 
 @timer
 def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None):
@@ -422,9 +413,7 @@ def minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=Non
         )
         return param_arr
 
-
 ### -----------------
-
 
 def mp_initializer():
     import qlat_utils as q
@@ -445,7 +434,6 @@ def mp_initializer():
         2.0,
     )
 
-
 class MpPoolSingle:
     def imap(self, func, iterable):
         return map(func, iterable)
@@ -453,9 +441,7 @@ class MpPoolSingle:
     def close(self):
         pass
 
-
 ### -----------------
-
 
 @timer
 def mk_mp_pool(n_proc=None):
@@ -481,19 +467,16 @@ def mk_mp_pool(n_proc=None):
     assert list(mp_map(np.sin, range(n_proc))) == list(map(np.sin, range(n_proc)))
     return mp_pool
 
-
 @timer
 def close_mp_pool(mp_pool):
     if mp_pool is None:
         return
     mp_pool.close()
 
-
 ### -----------------
 
 n_proc_global = None
 mp_pool_global = None
-
 
 @timer
 def get_mp_pool_global(n_proc=None):
@@ -536,7 +519,6 @@ def get_mp_pool_global(n_proc=None):
         n_proc_global = n_proc
     return mp_pool_global
 
-
 @timer
 def close_mp_pool_global():
     """
@@ -548,9 +530,7 @@ def close_mp_pool_global():
     mp_pool_global = None
     n_proc_global = None
 
-
 ### -----------------
-
 
 def jk_mini_task_in_fit_energy_amplitude(kwargs):
     fname = get_fname()
@@ -678,7 +658,6 @@ def jk_mini_task_in_fit_energy_amplitude(kwargs):
         return chisq, chisq_grad, param_arr
     #
     return f(**kwargs)
-
 
 @timer_verbose
 def fit_energy_amplitude(
@@ -1046,14 +1025,11 @@ def fit_energy_amplitude(
     displayln_info(0, f"{fname} finished")
     return res
 
-
 ### -------------------
-
 
 @timer
 def param_evolve(param_arr, mom_arr, hmc_mass_arr, dt):
     param_arr += mom_arr / hmc_mass_arr * dt
-
 
 @timer
 def mom_evolve(mom_arr, param_arr, fcn, dt):
@@ -1064,11 +1040,9 @@ def mom_evolve(mom_arr, param_arr, fcn, dt):
     mom_arr -= param_grad_arr * dt
     return param_grad_arr
 
-
 @timer
 def hmc_energy(param_arr, mom_arr, hmc_mass_arr, fcn):
     return np.sum(mom_arr * mom_arr / hmc_mass_arr) / 2 + fcn(param_arr)[0]
-
 
 class HmcParams:
     def __init__(
@@ -1144,9 +1118,7 @@ class HmcParams:
         #
         return copy.deepcopy(self)
 
-
 ### -----------------
-
 
 @timer
 def hmc_traj(fcn, hmc_params):

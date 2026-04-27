@@ -1,6 +1,5 @@
 from collections import OrderedDict
 
-
 class LRUCache:
     """
     Edited from: https://www.geeksforgeeks.org/lru-cache-in-python-using-ordereddict/

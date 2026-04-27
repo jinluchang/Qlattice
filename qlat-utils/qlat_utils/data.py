@@ -3,7 +3,6 @@ import copy
 import functools
 import numpy as np
 
-
 class q:
     from qlat_utils.utils import (
         get_fname,
@@ -15,7 +14,6 @@ class q:
     from qlat_utils.rng_state import (
         RngState,
     )
-
 
 alpha_qed = 1.0 / 137.035999084
 fminv_gev = 0.197326979  # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
@@ -45,7 +43,6 @@ except:
 real_types = float_types + int_types
 number_types = real_types + complex_types
 
-
 class use_kwargs:
     """
     self.default_kwargs
@@ -72,9 +69,7 @@ class use_kwargs:
         #
         return f
 
-
 ###
-
 
 def interp_i_arr(data_x_arr, x_arr):
     r"""
@@ -93,7 +88,6 @@ def interp_i_arr(data_x_arr, x_arr):
     data_i_arr = np.arange(len(data_x_arr))
     i_arr = np.interp(x_arr, data_x_arr, data_i_arr)
     return i_arr
-
 
 def interp(data_arr, i_arr, axis=-1):
     """
@@ -128,7 +122,6 @@ def interp(data_arr, i_arr, axis=-1):
         fname = q.get_fname()
         raise Exception(f"{fname}: i_arr={i_arr}")
 
-
 def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
     """
     return ``interpolated_data_arr``
@@ -148,7 +141,6 @@ def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
     i_arr = interp_i_arr(data_x_arr, x_arr)
     interpolated_data_arr = interp(data_arr, i_arr, axis)
     return interpolated_data_arr
-
 
 def get_threshold_idx(arr, threshold):
     """
@@ -193,7 +185,6 @@ def get_threshold_idx(arr, threshold):
             assert False
     assert False
 
-
 def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
     r"""
     return ``i_arr``\n
@@ -217,7 +208,6 @@ def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
         i_arr[index] = get_threshold_idx(arr, t)
     return i_arr
 
-
 def get_threshold_x_arr(data_arr, data_x_arr, threshold_arr, axis=-1):
     r"""
     return x_arr\n
@@ -237,7 +227,6 @@ def get_threshold_x_arr(data_arr, data_x_arr, threshold_arr, axis=-1):
     x_arr.ravel()[:] = interp(data_x_arr, i_arr.ravel())
     return x_arr
 
-
 def partial_sum_list(x, *, is_half_last=False):
     """Modify in-place, preserve length"""
     s = 0
@@ -248,7 +237,6 @@ def partial_sum_list(x, *, is_half_last=False):
             x[i] = (s + sp) / 2
         else:
             x[i] = s
-
 
 def partial_sum(x, *, is_half_last=False):
     """Modify in-place, preserve length"""
@@ -263,12 +251,10 @@ def partial_sum(x, *, is_half_last=False):
     else:
         assert False
 
-
 def check_zero(x):
     if isinstance(x, real_types) and 0 == x:
         return True
     return False
-
 
 def qnorm(x):
     """
@@ -291,7 +277,6 @@ def qnorm(x):
     else:
         return x.qnorm()
     assert False
-
 
 class Data:
     def __init__(self, val):
@@ -409,9 +394,7 @@ class Data:
         #
         return Data(glb_sum(self.val))
 
-
 ###
-
 
 def filter_np_results(val):
     if not hasattr(val, "size"):
@@ -422,12 +405,10 @@ def filter_np_results(val):
         return val
     return val.item()
 
-
 def average(data_list):
     n = len(data_list)
     v = sum(data_list)
     return filter_np_results(1 / n * v)
-
 
 def average_ignore_nan(value_arr_list):
     if len(value_arr_list) == 0:
@@ -447,7 +428,6 @@ def average_ignore_nan(value_arr_list):
     avg_arr[sel] = sum_arr[sel] / count_arr[sel]
     avg_arr[~sel] = np.nan
     return avg_arr
-
 
 def block_data(data_list, block_size, is_overlapping=True):
     """
@@ -475,7 +455,6 @@ def block_data(data_list, block_size, is_overlapping=True):
             start += block_size
             stop += block_size
     return blocks
-
 
 def avg_err(data_list, *, eps=1, block_size=1):
     """
@@ -509,7 +488,6 @@ def avg_err(data_list, *, eps=1, block_size=1):
         err,
     )
 
-
 def jackknife(data_list, *, eps=1):
     r"""
     Return jk[i] = avg - \frac{eps}{N} (v[i] - avg)
@@ -531,7 +509,6 @@ def jackknife(data_list, *, eps=1):
     if is_np_arr:
         jks = np.array(jks, dtype=data_list.dtype)
     return jks
-
 
 def fsqr(data):
     """
@@ -557,7 +534,6 @@ def fsqr(data):
         else:
             raise Exception(f"fsqr data={data} type not supported")
 
-
 def fsqrt(data):
     """
     Separately calculate the square root real and imag part in case of complex types.\n
@@ -582,7 +558,6 @@ def fsqrt(data):
         else:
             raise Exception(f"fsqr data={data} type not supported")
 
-
 def err_sum(*vs):
     """
     e.g.: `q.err_sum(1.4, 2.1, 1.0)` ==> `2.7147743920996454`
@@ -591,11 +566,9 @@ def err_sum(*vs):
     err = fsqrt(err_sqr)
     return err
 
-
 def jk_avg(jk_arr):
     val = jk_arr[0]
     return filter_np_results(val)
-
 
 def jk_err(jk_arr, *, eps=1, block_size=1):
     r"""
@@ -627,10 +600,8 @@ def jk_err(jk_arr, *, eps=1, block_size=1):
     val = filter_np_results(val)
     return val
 
-
 def jk_avg_err(jk_arr, *, eps=1, block_size=1):
     return jk_avg(jk_arr), jk_err(jk_arr, eps=eps, block_size=block_size)
-
 
 @q.timer
 def sjackknife(
@@ -730,7 +701,6 @@ def sjackknife(
             jk_arr[i] += fac * data_diff[j]
     return jk_arr
 
-
 @q.timer
 def sjk_mk_jk_val(
     rs_tag,
@@ -781,10 +751,8 @@ def sjk_mk_jk_val(
     jk_arr[1:] = val + eps * r_arr * err
     return jk_arr
 
-
 def sjk_avg(jk_arr):
     return jk_avg(jk_arr)
-
 
 def sjk_err(jk_arr, *, eps=1):
     r"""
@@ -808,13 +776,10 @@ def sjk_err(jk_arr, *, eps=1):
     val = filter_np_results(val)
     return val
 
-
 def sjk_avg_err(jk_arr, *, eps=1):
     return sjk_avg(jk_arr), sjk_err(jk_arr, eps=eps)
 
-
 # ----------
-
 
 @q.timer
 def mk_r_i_j_mat(
@@ -932,7 +897,6 @@ def mk_r_i_j_mat(
     set_r_arr()
     return r_arr, b_arr
 
-
 @q.timer
 def rjackknife(
     data_list,
@@ -1016,7 +980,6 @@ def rjackknife(
     jk_arr[1:] = avg + np.sum(fac_r_arr * data_diff, axis=1)
     return jk_arr
 
-
 @q.timer
 def rjk_mk_jk_val(
     rs_tag,
@@ -1052,10 +1015,8 @@ def rjk_mk_jk_val(
     jk_arr[1:] = val + eps * r_arr * err
     return jk_arr
 
-
 def rjk_avg(jk_arr):
     return jk_avg(jk_arr)
-
 
 def rjk_err(jk_arr, eps=1):
     r"""
@@ -1082,16 +1043,12 @@ def rjk_err(jk_arr, eps=1):
     val = filter_np_results(val)
     return val
 
-
 def rjk_avg_err(rjk_list, eps=1):
     return rjk_avg(rjk_list), rjk_err(rjk_list, eps)
 
-
 # ----------
 
-
 default_g_jk_kwargs = dict()
-
 
 def mk_g_jk_kwargs():
     """
@@ -1136,11 +1093,9 @@ def mk_g_jk_kwargs():
     #
     return g_jk_kwargs
 
-
 def reset_default_g_jk_kwargs():
     default_g_jk_kwargs.clear()
     default_g_jk_kwargs.update(mk_g_jk_kwargs())
-
 
 @use_kwargs(default_g_jk_kwargs)
 def get_jk_state(
@@ -1181,7 +1136,6 @@ def get_jk_state(
         block_size_dict,
     )
 
-
 def set_jk_state(state):
     (
         jk_type,
@@ -1209,11 +1163,9 @@ def set_jk_state(state):
     g_dict["block_size"] = block_size
     g_dict["block_size_dict"] = block_size_dict
 
-
 jk_blocking_traj_shift_arr = q.RngState("jk_blocking_traj_shift_arr").rand_arr(
     16 * 1024
 ) % (1024 * 1024 * 1024 * 1024)
-
 
 @use_kwargs(default_g_jk_kwargs)
 def jk_blocking_func_default(
@@ -1270,7 +1222,6 @@ def jk_blocking_func_default(
     else:
         return jk_idx
     assert False
-
 
 @use_kwargs(default_g_jk_kwargs)
 @q.timer
@@ -1334,7 +1285,6 @@ def g_mk_jk(
         assert False
     return jk_arr
 
-
 @use_kwargs(default_g_jk_kwargs)
 @q.timer
 def g_mk_jk_val(
@@ -1386,7 +1336,6 @@ def g_mk_jk_val(
         assert False
     return jk_val
 
-
 def g_jk_avg(jk_arr, **_kwargs):
     """
     Return ``avg`` of the ``jk_arr``.
@@ -1394,7 +1343,6 @@ def g_jk_avg(jk_arr, **_kwargs):
     if isinstance(jk_arr, number_types):
         return jk_arr
     return jk_avg(jk_arr)
-
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_err(jk_arr, *, eps, jk_type, **_kwargs):
@@ -1411,14 +1359,12 @@ def g_jk_err(jk_arr, *, eps, jk_type, **_kwargs):
         assert False
     return None
 
-
 @q.timer
 def g_jk_avg_err(jk_arr, **kwargs):
     """
     Return ``(avg, err,)`` of the ``jk_arr``.
     """
     return g_jk_avg(jk_arr), g_jk_err(jk_arr, **kwargs)
-
 
 @q.timer
 def g_jk_avg_err_arr(jk_arr, **kwargs):
@@ -1437,7 +1383,6 @@ def g_jk_avg_err_arr(jk_arr, **kwargs):
     )
     avg_err_arr = np.moveaxis(avg_err_arr, 0, -1).copy()
     return avg_err_arr
-
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_size(
@@ -1472,7 +1417,6 @@ def g_jk_size(
         assert False
     return None
 
-
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_blocking_func(
     i,
@@ -1488,7 +1432,6 @@ def g_jk_blocking_func(
         return jk_idx
     else:
         return jk_blocking_func(i, jk_idx)
-
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk_sample_size(
@@ -1508,13 +1451,11 @@ def g_jk_sample_size(
     )
     return len(b_jk_idx_set)
 
-
 reset_default_g_jk_kwargs()
 
 # ----
 
 default_show_val_kwargs = dict()
-
 
 def mk_show_val_kwargs():
     d = dict()
@@ -1524,9 +1465,7 @@ def mk_show_val_kwargs():
     d["exponent"] = None
     return d
 
-
 default_show_val_kwargs.update(mk_show_val_kwargs())
-
 
 def get_val_exp(val, exp=0):
     """
@@ -1545,7 +1484,6 @@ def get_val_exp(val, exp=0):
         val *= 10
         exp -= 1
     return val, exp
-
 
 @use_kwargs(default_show_val_kwargs)
 def show_val(
@@ -1610,7 +1548,6 @@ def show_val(
             return f"{v_str} \\times 10^{{{e}}}"
         else:
             return f"{v_str}E{e}"
-
 
 @use_kwargs(default_show_val_kwargs)
 def show_val_err(
@@ -1726,9 +1663,7 @@ def show_val_err(
         else:
             return f"{v_str}E{e}"
 
-
 # ----
-
 
 class NewDictValues:
     """
@@ -1758,9 +1693,7 @@ class NewDictValues:
         self.new_kwargs = None
         self.original = None
 
-
 # ----
-
 
 class JkKwargs(NewDictValues):
     """
@@ -1774,9 +1707,7 @@ class JkKwargs(NewDictValues):
     def __init__(self, **kwargs):
         super().__init__(default_g_jk_kwargs, **kwargs)
 
-
 # ----
-
 
 class ShowKwargs(NewDictValues):
     """
@@ -1790,11 +1721,9 @@ class ShowKwargs(NewDictValues):
     def __init__(self, **kwargs):
         super().__init__(default_show_val_kwargs, **kwargs)
 
-
 # ----
 
 # ---- old funcs
-
 
 def merge_jk_idx(*jk_idx_list_list):
     for jk_idx_list in jk_idx_list_list:
@@ -1802,7 +1731,6 @@ def merge_jk_idx(*jk_idx_list_list):
     return [
         "avg",
     ] + [jk_idx for jk_idx_list in jk_idx_list_list for jk_idx in jk_idx_list[1:]]
-
 
 @q.timer
 def rejk_list(jk_list, jk_idx_list, all_jk_idx):
@@ -1835,7 +1763,6 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
     if is_np_arr:
         jk_list_new = np.array(jk_list_new, dtype=jk_list.dtype)
     return jk_list_new
-
 
 @q.timer
 def rjk_jk_list(
@@ -1909,7 +1836,6 @@ def rjk_jk_list(
             rjk_list.append(avg + sum([r_arr[i, j] * jk_diff[j] for j in range(n)]))
         return rjk_list
 
-
 @use_kwargs(default_g_jk_kwargs)
 @q.timer
 def g_jk(data_list, *, eps, **_kwargs):
@@ -1919,7 +1845,6 @@ def g_jk(data_list, *, eps, **_kwargs):
     Perform initial Jackknife for the original data set.\n
     """
     return jackknife(data_list, eps=eps)
-
 
 @use_kwargs(default_g_jk_kwargs)
 @q.timer
@@ -1979,7 +1904,6 @@ def g_rejk(
         assert False
     return None
 
-
 def interpolate_list(data_arr, i):
     """
     Old function.
@@ -1987,7 +1911,6 @@ def interpolate_list(data_arr, i):
     Use `q.interp(data_arr, i, 0)` instead
     """
     return interp(data_arr, i, 0)
-
 
 def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
     """
@@ -2023,7 +1946,6 @@ def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None)
     #
     return jk_blocking_func
 
-
 def interpolate(data_arr, i_arr):
     """
     Old function. Use `q.interp(data_arr, i_arr, -1)` instead.
@@ -2038,14 +1960,12 @@ def interpolate(data_arr, i_arr):
             [interpolate_list(vt, i) for i in i_arr], data_arr.dtype
         ).transpose()
 
-
 def add_jk_idx(arr):
     """
     arr: no jk index
     return: add trivial jk index in the LAST axis
     """
     return arr.reshape(arr.shape + (1,))
-
 
 def jk_transpose(arr):
     """
@@ -2060,7 +1980,6 @@ def jk_transpose(arr):
         0,
     ]
     return arr.transpose(axes)
-
 
 def jk_transpose_back(arr):
     """

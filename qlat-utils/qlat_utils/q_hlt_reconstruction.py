@@ -33,7 +33,6 @@ if jnp.zeros(2, dtype=jnp.float64).dtype != jnp.float64:
 
 ##############
 
-
 def mk_hlt_params():
     """
     t_arr.shape == (t_size,)
@@ -60,7 +59,6 @@ def mk_hlt_params():
     params["does_have_constraint"] = False
     return params
 
-
 def get_f_e_weight_log(params):
     f = params["f_e_weight_log"]
     if f is not None:
@@ -72,9 +70,7 @@ def get_f_e_weight_log(params):
     #
     return f
 
-
 ##############
-
 
 @jax.jit
 def delta_from_g(g_t_arr, t_arr, e_arr):
@@ -86,9 +82,7 @@ def delta_from_g(g_t_arr, t_arr, e_arr):
     delta = (jnp.exp(-e_arr[:, None] * t_arr) * g_t_arr[..., None, :]).sum(-1)
     return delta
 
-
 ############## with summation ##############
-
 
 def aa_from_g_via_sum(g_t_arr, params):
     """
@@ -114,7 +108,6 @@ def aa_from_g_via_sum(g_t_arr, params):
     f_e = (delta - delta_target) ** 2 * e_w
     return f_e.sum()
 
-
 def get_cov_term(g_t_arr, cov):
     t_size = len(g_t_arr)
     assert g_t_arr.shape == (t_size,)
@@ -129,7 +122,6 @@ def get_cov_term(g_t_arr, cov):
         )
         ee = (cov * g_t_arr[:, None] * g_t_arr).sum()
     return ee
-
 
 def normalization_constraint_via_sum(g_t_arr, params):
     """
@@ -166,7 +158,6 @@ def normalization_constraint_via_sum(g_t_arr, params):
     constraint_penalty = 10.0 * coef**2
     return new_g_t_arr, constraint_penalty
 
-
 def ww_from_g_via_sum(g_t_arr, params):
     """
     g_t_arr.shape == (t_size,)
@@ -180,9 +171,7 @@ def ww_from_g_via_sum(g_t_arr, params):
     ee = get_cov_term(new_g_t_arr, cov) * params["lambda"]
     return aa + ee + constraint_penalty
 
-
 ww_from_g_wgrad_via_sum = jax.value_and_grad(ww_from_g_via_sum)
-
 
 def mk_g_t_arr_optimization_fcn_via_sum(params):
     def fcn(g_t_arr, requires_grad=True):
@@ -192,7 +181,6 @@ def mk_g_t_arr_optimization_fcn_via_sum(params):
             return ww_from_g_via_sum(g_t_arr, params)
     #
     return fcn
-
 
 @q.timer
 def mk_g_t_arr_via_sum(params):
@@ -205,9 +193,7 @@ def mk_g_t_arr_via_sum(params):
         g_t_arr = q.q_fit_corr.minimize_scipy(fcn, param_arr=g_t_arr)
     return g_t_arr
 
-
 ############## with integration ##############
-
 
 def build_hlt_aa_mat(params):
     tag = "aa_mat"
@@ -254,7 +240,6 @@ def build_hlt_aa_mat(params):
     params[tag] = aa_mat
     return aa_mat
 
-
 def build_hlt_f_vec(params):
     tag = "f_vec"
     if tag in params:
@@ -289,7 +274,6 @@ def build_hlt_f_vec(params):
     f_vec = jnp.array(f_vec)
     params[tag] = f_vec
     return f_vec
-
 
 def build_hlt_fc_vec(params):
     """
@@ -336,7 +320,6 @@ def build_hlt_fc_vec(params):
     )
     return norm, fc_vec
 
-
 def build_hlt_aa_const(params):
     tag = "aa_const"
     if tag in params:
@@ -353,7 +336,6 @@ def build_hlt_aa_const(params):
     params[tag] = aa_const
     return aa_const
 
-
 def aa_from_g(g_t_arr, params):
     """
     g_t_arr.shape == (t_size,)
@@ -368,7 +350,6 @@ def aa_from_g(g_t_arr, params):
     s += (f_vec * g_t_arr).sum()
     s += (aa_mat * g_t_arr * g_t_arr[:, None]).sum()
     return s
-
 
 def normalization_constraint(g_t_arr, params):
     """
@@ -389,7 +370,6 @@ def normalization_constraint(g_t_arr, params):
     constraint_penalty = 10.0 * coef**2
     return new_g_t_arr, constraint_penalty
 
-
 def ww_from_g(g_t_arr, params):
     """
     g_t_arr.shape == (t_size,)
@@ -403,9 +383,7 @@ def ww_from_g(g_t_arr, params):
     ee = get_cov_term(new_g_t_arr, cov) * params["lambda"]
     return aa + ee + constraint_penalty
 
-
 ww_from_g_wgrad = jax.value_and_grad(ww_from_g)
-
 
 def mk_g_t_arr_optimization_fcn(params):
     def fcn(g_t_arr, requires_grad=True):
@@ -415,7 +393,6 @@ def mk_g_t_arr_optimization_fcn(params):
             return ww_from_g(g_t_arr, params)
     #
     return fcn
-
 
 @q.timer
 def mk_g_t_arr(params):
@@ -427,6 +404,5 @@ def mk_g_t_arr(params):
     for i in range(params["minimization_iter_max"]):
         g_t_arr = q.q_fit_corr.minimize_scipy(fcn, param_arr=g_t_arr)
     return g_t_arr
-
 
 ##############

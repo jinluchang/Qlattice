@@ -3,7 +3,6 @@
 import qlat_utils as q
 import sys
 
-
 def remove_trailing_slashes(path):
     while True:
         if path == "":
@@ -13,7 +12,6 @@ def remove_trailing_slashes(path):
         else:
             break
     return path
-
 
 def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
     assert path_qar[-4:] == ".qar"
@@ -30,7 +28,6 @@ def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
             )
     return idx
 
-
 def build_index_qar(path_qar, is_recursive=True):
     assert path_qar[-4:] == ".qar"
     q.qar_build_index_info(path_qar)
@@ -41,7 +38,6 @@ def build_index_qar(path_qar, is_recursive=True):
         if fn[-4:] == ".qar":
             pfn_full = path_qar[:-4] + "/" + fn
             build_index_qar(pfn_full, is_recursive=is_recursive)
-
 
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar list path.qar")

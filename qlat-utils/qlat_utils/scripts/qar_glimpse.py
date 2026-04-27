@@ -3,7 +3,6 @@
 import qlat_utils as q
 import sys
 
-
 def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
     assert path_qar[-4:] == ".qar"
     fns = q.list_qar(path_qar)
@@ -18,7 +17,6 @@ def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
                 pfn_full, idx, is_recursive=is_recursive, drop_prefix=drop_prefix
             )
     return idx
-
 
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar-glimpse path1.qar path2.qar ... path1 path2 ...")

@@ -11,7 +11,6 @@ from .q_fit_corr import (
     close_mp_pool,
 )
 
-
 @timer
 def build_corr_from_param_arr(
     param_arr,
@@ -137,7 +136,6 @@ def build_corr_from_param_arr(
         ).sum(0)
     return corr_data
 
-
 @timer
 def mk_data_set(
     *,
@@ -198,7 +196,6 @@ def mk_data_set(
     #
     return param_arr, jk_corr_data, corr_data_sigma, t_arr
 
-
 @timer
 def sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr):
     """
@@ -225,7 +222,6 @@ def sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr):
         dtype=np.float64,
     )
     return new_param_arr
-
 
 @timer
 def apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None):
@@ -254,7 +250,6 @@ def apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None):
     new_es[sel] = max_es[sel] ** 2 / es[sel]
     new_param_arr[..., free_eig_idx_arr] = new_es
     return new_param_arr
-
 
 @timer
 def mk_fcn(
@@ -374,9 +369,7 @@ def mk_fcn(
     #
     return fcn
 
-
 ### -------------------
-
 
 def jk_mini_task_in_fit_eig_coef(kwargs):
     fname = get_fname()
@@ -503,7 +496,6 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
         return chisq, param_arr, param_grad
     #
     return f(**kwargs)
-
 
 @timer_verbose
 def fit_eig_coef(

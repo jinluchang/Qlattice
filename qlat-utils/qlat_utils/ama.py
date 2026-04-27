@@ -21,7 +21,6 @@
 import copy
 from .timer import timer
 
-
 class AmaVal:
     def __init__(self, val=None, corrections=None):
         """
@@ -56,9 +55,7 @@ class AmaVal:
     def __radd__(self, other):
         return ama_msc_add(other, self)
 
-
 ###
-
 
 @timer
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
@@ -88,7 +85,6 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
         return val
     return AmaVal(val, corrections)
 
-
 @timer
 def ama_apply1_corrections(f, x):
     assert isinstance(x, AmaVal)
@@ -101,13 +97,11 @@ def ama_apply1_corrections(f, x):
     ]
     return corrections
 
-
 def ama_apply1(f, x):
     if not isinstance(x, AmaVal):
         return f(x)
     else:
         return AmaVal(None, ama_apply1_corrections(f, x))
-
 
 def ama_counts(x):
     """
@@ -117,7 +111,6 @@ def ama_counts(x):
         return 1
     else:
         return len(x.corrections)
-
 
 def merge_description_dict(d1, d2):
     sd1 = set(d1)
@@ -131,7 +124,6 @@ def merge_description_dict(d1, d2):
     for key in new_keys:
         d[key] = d2[key]
     return d
-
 
 @timer
 def ama_apply2_ama_val(f, x, y):
@@ -150,7 +142,6 @@ def ama_apply2_ama_val(f, x, y):
                 )
     return AmaVal(None, corrections)
 
-
 @timer
 def ama_apply2_r_ama_val(f, x, y):
     assert isinstance(y, AmaVal)
@@ -162,7 +153,6 @@ def ama_apply2_r_ama_val(f, x, y):
         for v, d in y.corrections
     ]
     return AmaVal(None, corrections)
-
 
 @timer
 def ama_apply2_l_ama_val(f, x, y):
@@ -176,20 +166,17 @@ def ama_apply2_l_ama_val(f, x, y):
     ]
     return AmaVal(None, corrections)
 
-
 def ama_apply2_r(f, x, y):
     if not isinstance(y, AmaVal):
         return f(x, y)
     else:
         return ama_apply2_r_ama_val(f, x, y)
 
-
 def ama_apply2_l(f, x, y):
     if not isinstance(x, AmaVal):
         return f(x, y)
     else:
         return ama_apply2_l_ama_val(f, x, y)
-
 
 def ama_apply2(f, x, y):
     if not isinstance(x, AmaVal) and not isinstance(y, AmaVal):
@@ -200,7 +187,6 @@ def ama_apply2(f, x, y):
         return ama_apply2_r_ama_val(f, x, y)
     else:
         return ama_apply2_ama_val(f, x, y)
-
 
 @timer
 def ama_list(*args):
@@ -217,7 +203,6 @@ def ama_list(*args):
         res = ama_apply2(f_add, res, x)
     return res
 
-
 def ama_apply(f, *args):
     res = ama_list(*args)
     #
@@ -225,7 +210,6 @@ def ama_apply(f, *args):
         return f(*xs)
     #
     return ama_apply1(f_list, res)
-
 
 @timer
 def ama_extract_ama_val(x, *, is_sloppy=False):
@@ -281,7 +265,6 @@ def ama_extract_ama_val(x, *, is_sloppy=False):
     #
     return ama_corr([], keys)
 
-
 def ama_extract(x, *, is_sloppy=False):
     if not isinstance(x, AmaVal):
         return x
@@ -290,20 +273,17 @@ def ama_extract(x, *, is_sloppy=False):
     else:
         assert False
 
-
 def ama_msc_mult(x, y):
     def f(x, y):
         return x * y
     #
     return ama_apply2(f, x, y)
 
-
 def ama_msc_add(x, y):
     def f(x, y):
         return x + y
     #
     return ama_apply2(f, x, y)
-
 
 if __name__ == "__main__":
     v1 = mk_ama_val(

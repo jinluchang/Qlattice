@@ -4,7 +4,6 @@ import hashlib
 import functools
 import numpy as np
 
-
 class q:
     from qlat_utils.timer import (
         timer,
@@ -29,16 +28,13 @@ class q:
         qcat_bytes_sync_node,
     )
 
-
 # from .c import *
 # from .lru_cache import *
-
 
 @q.timer
 def qmkdirs(path):
     os.makedirs(path, exist_ok=True)
     q.remove_entry_directory_cache(path)
-
 
 @q.timer
 def qmkdirs_info(path):
@@ -47,12 +43,10 @@ def qmkdirs_info(path):
         q.displayln(f"qmkdirs_info: '{path}'.")
         qmkdirs(path)
 
-
 @q.timer
 def mk_dirs(path):
     q.remove_entry_directory_cache(path)
     os.makedirs(path, exist_ok=True)
-
 
 @q.timer
 def mk_dirs_info(path):
@@ -61,7 +55,6 @@ def mk_dirs_info(path):
         q.displayln(f"mk_dirs_info: '{path}'.")
         mk_dirs(path)
 
-
 @q.timer
 def mk_file_dirs(fn):
     q.remove_entry_directory_cache(fn)
@@ -69,14 +62,12 @@ def mk_file_dirs(fn):
     if path != "":
         os.makedirs(path, exist_ok=True)
 
-
 @q.timer
 def mk_file_dirs_info(path):
     q.remove_entry_directory_cache(path)
     if q.get_id_node() == 0:
         q.displayln(f"mk_file_dirs_info: '{path}'.")
         mk_file_dirs(path)
-
 
 @q.timer
 def save_bytes(obj_str, path, *, is_sync_node=True):
@@ -86,7 +77,6 @@ def save_bytes(obj_str, path, *, is_sync_node=True):
     """
     if not is_sync_node or q.get_id_node() == 0:
         q.qtouch(path, obj_str)
-
 
 @q.timer
 def load_bytes(path, default_value=None, *, is_sync_node=True):
@@ -110,7 +100,6 @@ def load_bytes(path, default_value=None, *, is_sync_node=True):
     else:
         return default_value
 
-
 @q.timer
 def save_json_obj(obj, path, *, indent=2, is_sync_node=True):
     """
@@ -120,7 +109,6 @@ def save_json_obj(obj, path, *, indent=2, is_sync_node=True):
     Set ``indent = None`` to turn off pretty printing.
     """
     save_bytes(q.json_dumps(obj, indent=indent), path, is_sync_node=is_sync_node)
-
 
 @q.timer
 def load_json_obj(path, default_value=None, *, is_sync_node=True):
@@ -137,7 +125,6 @@ def load_json_obj(path, default_value=None, *, is_sync_node=True):
     else:
         return q.json_loads(obj_str)
 
-
 @q.timer
 def save_pickle_obj(obj, path, *, is_sync_node=True):
     """
@@ -145,7 +132,6 @@ def save_pickle_obj(obj, path, *, is_sync_node=True):
     mk_file_dirs_info(path)
     """
     save_bytes(pickle.dumps(obj), path, is_sync_node=is_sync_node)
-
 
 @q.timer
 def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
@@ -162,7 +148,6 @@ def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
     else:
         return pickle.loads(obj_str)
 
-
 @q.timer
 def pickle_cache_call(func, path, *, is_sync_node=True):
     """
@@ -175,7 +160,6 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
     else:
         obj = pickle.loads(obj_str)
     return obj
-
 
 def hash_sha256(s):
     """
@@ -226,7 +210,6 @@ def hash_sha256(s):
     else:
         assert False
 
-
 def pickle_cache(path, is_sync_node=True):
     """
     `path` is the directory to cache results
@@ -255,7 +238,6 @@ def pickle_cache(path, is_sync_node=True):
         return f
     #
     return dec
-
 
 def cache_call(
     *,
@@ -357,7 +339,6 @@ def cache_call(
     #
     return dec
 
-
 class SetDisplayMethod:
     def __init__(self):
         q.set_display_method("py_stdout")
@@ -366,6 +347,5 @@ class SetDisplayMethod:
     def __del__(self):
         q.displayln_info(0, "set_display_method()")
         q.set_display_method()
-
 
 ###
