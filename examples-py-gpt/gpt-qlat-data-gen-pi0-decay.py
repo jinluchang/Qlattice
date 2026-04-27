@@ -1769,9 +1769,9 @@ def get_cexpr_pi0_current():
         pp_pi = sqrt_2_inv * (pp_u - pp_d)
         j5_pi = sqrt_2_inv * (j5_u - j5_d)
         pi0d_list = [
-                pp_pi,
-                j5_pi,
-                ]
+            pp_pi,
+            j5_pi,
+        ]
         assert len(pi0d_list) == 2
         #
         exprs_list_pi0_decay = [jj_d * pi0d for pi0d in pi0d_list for jj_d in jj_d_list]
@@ -1917,7 +1917,6 @@ def auto_contract_pi0_current(
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    geo = q.Geometry(total_site)
     sf_pi0_current_list = []
     sf_pi0_current_arr_list = []
     for t_src in range(t_size):
@@ -1935,7 +1934,13 @@ def auto_contract_pi0_current(
         fidx = args
         xg_snk = tuple(xg_fsel_arr[fidx])
         prob_snk = fsel_prob_arr[fidx]
-        val_arr = np.zeros((t_size, len(expr_names),), dtype=np.complex128)
+        val_arr = np.zeros(
+            (
+                t_size,
+                len(expr_names),
+            ),
+            dtype=np.complex128,
+        )
         for pidx in range(len(xg_psel_arr)):
             xg_src = tuple(xg_psel_arr[pidx])
             t_src = xg_src[3]
