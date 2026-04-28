@@ -96,11 +96,12 @@ Configuration: `.clang-format` (Google base, Linux braces, left pointers).
 
 ### Imports
 ```python
-import sys
+import qlat_gpt as qg   # MUST be first if used (initializes GPT environment)
+import numpy as np
 import qlat as q
 import qlat_utils as qu   # if needed
 ```
-Standard library first, then `qlat` (aliased as `q`).
+`qlat_gpt` must be imported before all other packages when it is used, as it initializes the GPT/Grid runtime environment. After that, standard library, then `qlat` (aliased as `q`). Avoid `import *`; use explicit imports instead.
 
 ### Conventions
 - Shebang: `#!/usr/bin/env python3` for executable scripts
@@ -135,6 +136,19 @@ Every test must end with a `CHECK: finished successfully.` line (via `q.displayl
 - **C++**: Run `clang-format -i` (uses `.clang-format` config)
 - **Python/Cython**: No enforced formatter. Follow existing style (4-space indent, no trailing whitespace)
 - No flake8, ruff, black, or pylint configs exist — do not add them
+
+### Lint Tool (`lint.py`)
+
+After editing any `.py`, `.pyx`, `.c`, `.cc`, `.cpp`, `.h`, or `.hpp` file, run:
+```bash
+python3 lint.py <file>
+```
+This runs the project's canonical formatting and linting pipeline:
+- **Python**: `ruff format` + `ruff check --fix`, then replaces empty lines inside function bodies with indented `#` comment lines
+- **Cython**: replaces empty lines inside function bodies with `#` comment lines (no formatter)
+- **C/C++**: `clang-format`, then replaces empty lines inside function bodies with `//` comment lines
+
+Use `--check` to verify without modifying, or `--diff` to preview changes.
 
 ## Key Directories
 
