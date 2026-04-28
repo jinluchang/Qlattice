@@ -2064,8 +2064,6 @@ def auto_contract_pi0_gg_disc(
         )
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob[:].ravel()
-    fsel.to_psel_local()[:]
-    psel[:]
     tsep = get_param(job_tag, "meson_tensor_tsep")
     m_l = get_param(job_tag, "m_l")
     m_h = get_param(job_tag, "m_h")
@@ -2088,7 +2086,6 @@ def auto_contract_pi0_gg_disc(
     q.displayln_info(f"{len(sf_pi0_current_list)}")
     expr_names = [
         "< 1 [disc x] [con 0] >",
-        "< 1 [disc 0] [con x] >",
     ]
     for tadpole in [
         "ls",
@@ -2101,18 +2098,22 @@ def auto_contract_pi0_gg_disc(
             "j5",
         ]:
             expr_names += [
-                f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
-                f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
-                f"< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
-                f"< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole {tadpole}) (pi_op {pi_op})",
+                f"< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole {tadpole}) (pi_op {pi_op})",
             ]
     # Some final modification for sf_tadpole_current
     sf_tadpole_current[:, 0] *= 1 / total_volume
     sf_tadpole_current[:, 1:] *= m_h - m_l
     # compute zero distance counts sum
-    zero_dis_counts_sum = q.glb_sum(
-        (fsel_prob_arr * sf_tadpole_current[:, 0] * sf_pi0_current_list[0][:, 0]).sum()
-    )
+    zero_dis_counts_sum_t_1_arr = np.zeros(t_size, dtype=np.float64)
+    zero_dis_counts_sum_no_correction_t_1_arr = np.zeros(t_size, dtype=np.float64)
+    sf_count = q.SelectedFieldRealD(fsel, 1)
+    for t_src in range(t_size):
+        sf_count[:] = fsel_prob_arr[:, None] * sf_tadpole_current[:, 0, None].real * sf_pi0_current_list[t_src][:, 0, None].real
+        tslice_sum = sf_count.glb_sum_tslice()[:, 0]
+        zero_dis_counts_sum_t_1_arr += np.roll(tslice_sum, -t_src)
+        sf_count[:] = sf_tadpole_current[:, 0, None].real * sf_pi0_current_list[t_src][:, 0, None].real
+        tslice_sum = sf_count.glb_sum_tslice()[:, 0]
+        zero_dis_counts_sum_no_correction_t_1_arr += np.roll(tslice_sum, -t_src)
     # Convert tadpole to field
     f_tadpole_current = q.FieldComplexD(geo, sf_tadpole_current.multiplicity)
     q.set_zero(f_tadpole_current)
@@ -2125,7 +2126,7 @@ def auto_contract_pi0_gg_disc(
         q.set_zero(f)
         f @= sf
         f_pi0_current_list.append(f)
-    # make new pi0 current field list based on pi0_current_sep
+    # make new pi0 current field list based on pi0_current_sep (t_1)
     xg_arr = geo.xg_arr()
     t_arr = xg_arr[:, 3]
     f_pi0_current_sep_list = []
@@ -2183,10 +2184,9 @@ def auto_contract_pi0_gg_disc(
         )
         for pi0_current_sep in range(t_size)
     ]
-    pos_t_expr_name_idx_arr = np.arange(0, len(expr_names), 2, dtype=np.int32)
-    neg_t_expr_name_idx_arr = np.arange(1, len(expr_names), 2, dtype=np.int32)
     values = np.zeros(
         (
+            t_size,
             t_size,
             len(r_list),
             len(expr_names),
@@ -2199,34 +2199,28 @@ def auto_contract_pi0_gg_disc(
         r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
         x_rel_t = x_rel[3]
         t = x_rel_t % t_size
-        if x_rel_t >= 0:
-            pi0_current_sep1 = tsep
-            pi0_current_sep2 = -tsep - abs(x_rel_t)
-        else:
-            pi0_current_sep1 = tsep + abs(x_rel_t)
-            pi0_current_sep2 = -tsep
-        val = np.zeros(len(expr_names) // 2, dtype=np.complex128)
-        val[0] = ff_list[0][xg_idx, 0]
-        for ff_idx, i, j, k, tadpole_idx, pi_op_idx in info[1:]:
-            x_i = q.rel_mod_sym(x_rel[i], total_site[i])  # x[i]
-            eijk = q.epsilon_tensor(i, j, k)  # e(i,j,k)
-            jjpi0_t1 = ff_list[pi0_current_sep1][
-                xg_idx, ff_idx
-            ]  # disc[ j_j(x) ] * j_k(0) * pi0(-tsep)
-            jjpi0_t2 = ff_list[pi0_current_sep2][
-                xg_idx, ff_idx
-            ]  # disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep)
-            val[1 + tadpole_idx * 4 + pi_op_idx * 2] += eijk * x_i * jjpi0_t1
-            val[1 + tadpole_idx * 4 + pi_op_idx * 2 + 1] += eijk * x_i * jjpi0_t2
-        if np.all(x_rel == 0):
-            val[0] = zero_dis_counts_sum
-        if abs(x_rel_t) == t_size // 2:
-            continue
-        values[t, r_idx_low, pos_t_expr_name_idx_arr] += coef_low * val
-        values[t, r_idx_high, pos_t_expr_name_idx_arr] += coef_high * val
-        values[-t, r_idx_low, neg_t_expr_name_idx_arr] += coef_low * val
-        values[-t, r_idx_high, neg_t_expr_name_idx_arr] += coef_high * val
-    res_sum = q.glb_sum(values.transpose(2, 0, 1))
+        for t_1 in range(t_size):
+            # t_1 = pi0_current_sep
+            t_2 = (t_1 + t) % t_size
+            ff = ff_list[t_1]
+            val = np.zeros(len(expr_names), dtype=np.complex128)
+            if np.all(x_rel == 0):
+                zero_dis_counts_sum = zero_dis_counts_sum_t_1_arr[t_1]
+                zero_dis_counts_sum_no_correction = zero_dis_counts_sum_no_correction_t_1_arr[t_1]
+                assert abs(ff[xg_idx, 0] / zero_dis_counts_sum_no_correction - 1) < 1e-8
+                val[0] = zero_dis_counts_sum
+            else:
+                val[0] = ff[xg_idx, 0]
+            for ff_idx, i, j, k, tadpole_idx, pi_op_idx in info[1:]:
+                x_i = q.rel_mod_sym(x_rel[i], total_site[i])  # x[i]
+                eijk = q.epsilon_tensor(i, j, k)  # e(i,j,k)
+                jjpi0_t1 = ff[
+                    xg_idx, ff_idx
+                ]  # disc[ j_j(x_2) ] * j_k(x_1) * pi0(0)
+                val[1 + tadpole_idx * 2 + pi_op_idx] += eijk * x_i * jjpi0_t1
+            values[t_1, t_2, r_idx_low] += coef_low * val
+            values[t_1, t_2, r_idx_high] += coef_high * val
+    res_sum = q.glb_sum(values.transpose(3, 0, 1, 2))
     res_sum *= 1.0 / total_volume
     ld_sum = q.mk_lat_data(
         [
@@ -2236,7 +2230,12 @@ def auto_contract_pi0_gg_disc(
                 expr_names,
             ],
             [
-                "t",
+                "t1",
+                t_size,
+                [str(q.rel_mod(t, t_size)) for t in range(t_size)],
+            ],
+            [
+                "t2",
                 t_size,
                 [str(q.rel_mod(t, t_size)) for t in range(t_size)],
             ],

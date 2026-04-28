@@ -3765,280 +3765,80 @@
  [
   "auto_contract_pi0_gg_disc: ld_sum sig",
   {
-   "real": 994.3751950561507,
-   "imag": -1.9063776803496152e-07,
+   "real": -1710.298836182322,
+   "imag": -4.928376652435121e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc x] [con 0] >' sig",
   {
-   "real": 617.1063337199708,
+   "real": -1710.2988389254435,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< 1 [disc 0] [con x] >' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole ls) (pi_op pp)' sig",
   {
-   "real": 786.057268454203,
-   "imag": 0.0,
+   "real": -1.1941356948988453e-06,
+   "imag": 4.315765786448467e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ls) (pi_op pp)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole ls) (pi_op j5)' sig",
   {
-   "real": -2.258799864241356e-06,
-   "imag": -2.0488529031425803e-07,
+   "real": 6.056748680729697e-06,
+   "imag": 5.9134213055588744e-08,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ls) (pi_op pp)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole sl) (pi_op pp)' sig",
   {
-   "real": -1.8296786061709928e-06,
-   "imag": -2.3556400036384457e-07,
+   "real": 1.1941356948988424e-06,
+   "imag": 4.3157657864480693e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ls) (pi_op pp)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole sl) (pi_op j5)' sig",
   {
-   "real": 5.358796594467086e-07,
-   "imag": -4.675247427789934e-08,
+   "real": -6.056748680729664e-06,
+   "imag": 5.9134213055600206e-08,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ls) (pi_op pp)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole ll) (pi_op pp)' sig",
   {
-   "real": 6.902922754143527e-07,
-   "imag": -7.116716757500121e-08,
+   "real": 2.4708626135491374e-21,
+   "imag": -1.834654937419456e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ls) (pi_op j5)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole ll) (pi_op j5)' sig",
   {
-   "real": -2.0870340561379956e-06,
-   "imag": -4.3832694649583807e-07,
+   "real": 4.85971136582533e-21,
+   "imag": -1.1978775221269584e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ls) (pi_op j5)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole ss) (pi_op pp)' sig",
   {
-   "real": -3.4118502053140654e-06,
-   "imag": -7.860670083648235e-07,
+   "real": -4.432470096445442e-21,
+   "imag": 9.830299324746244e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ls) (pi_op j5)' sig",
+  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * (x_2-x_1)[i] * disc[ j_j(x_2) ] * j_k(x_1) * pi0(0) > (tadpole ss) (pi_op j5)' sig",
   {
-   "real": -1.1916610871610582e-06,
-   "imag": 8.496284614775786e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ls) (pi_op j5)' sig",
-  {
-   "real": -3.1580910107845724e-06,
-   "imag": -3.322069605034781e-10,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole sl) (pi_op pp)' sig",
-  {
-   "real": 2.2587998642413546e-06,
-   "imag": -2.0488529031426428e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole sl) (pi_op pp)' sig",
-  {
-   "real": 1.8296786061709915e-06,
-   "imag": -2.3556400036385942e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole sl) (pi_op pp)' sig",
-  {
-   "real": -5.358796594467104e-07,
-   "imag": -4.67524742778878e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole sl) (pi_op pp)' sig",
-  {
-   "real": -6.902922754143519e-07,
-   "imag": -7.11671675749929e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole sl) (pi_op j5)' sig",
-  {
-   "real": 2.0870340561380354e-06,
-   "imag": -4.38326946495767e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole sl) (pi_op j5)' sig",
-  {
-   "real": 3.411850205314099e-06,
-   "imag": -7.860670083647422e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole sl) (pi_op j5)' sig",
-  {
-   "real": 1.1916610871610527e-06,
-   "imag": 8.496284614776633e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole sl) (pi_op j5)' sig",
-  {
-   "real": 3.1580910107845995e-06,
-   "imag": -3.322069604341008e-10,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ll) (pi_op pp)' sig",
-  {
-   "real": -9.945867482146984e-22,
-   "imag": -4.9224060043097576e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ll) (pi_op pp)' sig",
-  {
-   "real": -4.241561028941708e-22,
-   "imag": 7.535738370662865e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ll) (pi_op pp)' sig",
-  {
-   "real": -1.7322417932571932e-21,
-   "imag": -8.721476661893389e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ll) (pi_op pp)' sig",
-  {
-   "real": 7.143790729000069e-22,
-   "imag": -1.6776121801538232e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ll) (pi_op j5)' sig",
-  {
-   "real": 5.095069726962759e-21,
-   "imag": -2.3168663058840156e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ll) (pi_op j5)' sig",
-  {
-   "real": 1.3393832987791132e-20,
-   "imag": -3.453443274380344e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ll) (pi_op j5)' sig",
-  {
-   "real": -6.499897282635902e-21,
-   "imag": 8.139772012067851e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ll) (pi_op j5)' sig",
-  {
-   "real": 9.903552052142094e-21,
-   "imag": 1.8832564711120476e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ss) (pi_op pp)' sig",
-  {
-   "real": -1.4094474838658125e-21,
-   "imag": -4.0097397860748705e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ss) (pi_op pp)' sig",
-  {
-   "real": -8.67401757781551e-22,
-   "imag": -5.308407124845538e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ss) (pi_op pp)' sig",
-  {
-   "real": 2.8623979276003717e-22,
-   "imag": 6.4248596731947585e-09,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ss) (pi_op pp)' sig",
-  {
-   "real": 7.647057766136232e-22,
-   "imag": 1.0078317325599764e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(-tsep) > (tadpole ss) (pi_op j5)' sig",
-  {
-   "real": 2.805961376313386e-20,
-   "imag": -4.758375374895672e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(-tsep) > (tadpole ss) (pi_op j5)' sig",
-  {
-   "real": 1.7656723835648286e-20,
-   "imag": -9.83417107597141e-07,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * disc[ j_j(x) ] * j_k(0) * pi0(x[t]+tsep) > (tadpole ss) (pi_op j5)' sig",
-  {
-   "real": 1.8909565544358364e-21,
-   "imag": 1.6867258335716212e-08,
-   "__extended_json_type__": "complex128"
-  }
- ],
- [
-  "auto_contract_pi0_gg_disc: ld_sum '< e(i,j,k) * x[i] * j_j(x) * disc[ j_k(0) ] * pi0(x[t]+tsep) > (tadpole ss) (pi_op j5)' sig",
-  {
-   "real": 1.53735233266834e-20,
-   "imag": 1.1813145752343079e-08,
+   "real": 1.762387525437098e-20,
+   "imag": 2.9802154832896385e-08,
    "__extended_json_type__": "complex128"
   }
  ],
