@@ -400,7 +400,7 @@ def combine_terms_expr(expr: Expr) -> Expr:
 def mk_sym(x):
     """
     interface function
-    Make a sympy simplified value with `sympy.simplify(x)`
+    Make a sympy simplified value with ``sympy.simplify(x)``
     """
     return sympy.simplify(x)
 
@@ -409,11 +409,11 @@ def mk_fac(x) -> Expr:
     interface function
     Stand for "make factor", the result of this function can be used in auto contractor as a factor.
     Make an Expr obj (can be sympy expression).
-    `x` can have type `str`, which will be viewed as code segment.
-    The code segment can use functions and variables defined in `auto_contractor.auto_fac_funcs`, `position_dict`, `base_position_dict`.
-    You can define functions in `position_dict` or `base_position_dict`.
-    `position_dict` is argument in function `eval_cexpr`.
-    `base_position_dict` is argument in function `cache_compiled_cexpr`.
+    ``x`` can have type ``str``, which will be viewed as code segment.
+    The code segment can use functions and variables defined in ``auto_contractor.auto_fac_funcs``, ``position_dict``, ``base_position_dict``.
+    You can define functions in ``position_dict`` or ``base_position_dict``.
+    ``position_dict`` is argument in function ``eval_cexpr``.
+    ``base_position_dict`` is argument in function ``cache_compiled_cexpr``.
     """
     return mk_expr(x)
 

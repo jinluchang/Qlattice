@@ -2,7 +2,9 @@ File IO
 -------
 
 .. module:: qlat_utils
+   :no-index:
 .. module:: qlat
+   :no-index:
 
 QAR
 ^^^

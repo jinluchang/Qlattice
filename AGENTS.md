@@ -131,25 +131,6 @@ Every test must end with a `CHECK: finished successfully.` line (via `q.displayl
 - Section separators: `### -------------------------------------------------------------------`
 - Error context: `fname = q.get_fname()` for error messages
 
-## Formatting & Linting
-
-- **C++**: Run `clang-format -i` (uses `.clang-format` config)
-- **Python/Cython**: No enforced formatter. Follow existing style (4-space indent, no trailing whitespace)
-- No flake8, ruff, black, or pylint configs exist — do not add them
-
-### Lint Tool (`lint.py`)
-
-After editing any `.py`, `.pyx`, `.c`, `.cc`, `.cpp`, `.h`, or `.hpp` file, run:
-```bash
-python3 lint.py <file>
-```
-This runs the project's canonical formatting and linting pipeline:
-- **Python**: `ruff format` + `ruff check --fix`, then replaces empty lines inside function bodies with indented `#` comment lines
-- **Cython**: replaces empty lines inside function bodies with `#` comment lines (no formatter)
-- **C/C++**: `clang-format`, then replaces empty lines inside function bodies with `//` comment lines
-
-Use `--check` to verify without modifying, or `--diff` to preview changes.
-
 ## Key Directories
 
 | Path | Contents |

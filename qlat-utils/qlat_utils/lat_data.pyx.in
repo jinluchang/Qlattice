@@ -309,8 +309,10 @@ cdef class LatData{{type_ext}}:
 
     def set_info(self, list info_list, *, cc.Bool is_complex={{type_default_complex}}):
         """
-        ``info_list`` format::\n
+        ``info_list`` format::
+
             [ [ dim_name, dim_size, dim_indices, ], ... ]
+
         dim_indices can be optional
         """
         if self.view_count > 0:
@@ -419,8 +421,10 @@ cdef class LatData{{type_ext}}:
 
 def mk_lat_data{{type_ext2}}(list info_list, *, cc.Bool is_complex={{type_default_complex}}):
     """
-    ``info_list`` format::\n
+    ``info_list`` format::
+
         [ [ dim_name, dim_size, dim_indices, ], ... ]
+
     dim_indices can be optional
     """
     ld = LatData{{type_ext}}()

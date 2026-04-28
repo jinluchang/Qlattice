@@ -187,7 +187,7 @@ def get_threshold_idx(arr, threshold):
 
 def get_threshold_i_arr(data_arr, threshold_arr, axis=-1):
     r"""
-    return ``i_arr``\n
+    return ``i_arr``
     let ``shape`` = ``np.moveaxis(data_arr, axis, -1)[..., 0].shape``\n
     ::\n
         threshold_arr = np.broadcast_to(threshold_arr, shape)\n
@@ -213,7 +213,7 @@ def get_threshold_x_arr(data_arr, data_x_arr, threshold_arr, axis=-1):
     return x_arr\n
     ::\n
         data_x_arr.shape == (data_arr.shape[axis],)\n
-    let `shape` = `np.moveaxis(data_arr, axis, -1)[..., 0].shape`\n
+    let ``shape`` = ``np.moveaxis(data_arr, axis, -1)[..., 0].shape``\n
     ::\n
         threshold_arr = np.broadcast_to(threshold_arr, shape)\n
     such that\n

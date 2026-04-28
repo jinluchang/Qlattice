@@ -2,6 +2,7 @@ Jackknife
 ---------
 
 .. module:: qlat_utils
+   :no-index:
 
 Jackknife method
 ^^^^^^^^^^^^^^^^

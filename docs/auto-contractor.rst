@@ -27,8 +27,8 @@ Evaluation
    get_expr_names
    get_diagram_type_dict
 
-    mk_sym
-    mk_fac
+   mk_sym
+   mk_fac
 
 Operators
 ---------

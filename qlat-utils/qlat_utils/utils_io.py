@@ -136,11 +136,9 @@ def save_pickle_obj(obj, path, *, is_sync_node=True):
 @q.timer
 def load_pickle_obj(path, default_value=None, *, is_sync_node=True):
     """
-    all the nodes read the same data
-    if is_sync_node:
-        one node read and broadcast to other nodes
-    else:
-        all nodes individually read the data
+    all the nodes read the same data.\n
+    If ``is_sync_node`` is True, one node reads and broadcasts to other nodes.
+    Otherwise, all nodes individually read the data.
     """
     obj_str = load_bytes(path, is_sync_node=is_sync_node)
     if obj_str is None:

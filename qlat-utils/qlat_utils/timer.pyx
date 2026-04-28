@@ -9,9 +9,12 @@ import sys
 
 def get_verbose_level():
     """
-    Return the current verbosity level as integer.\n
-    Usage::\n
+    Return the current verbosity level as integer.
+    #
+    Usage::
+        #
         get_verbose_level() # return the current verbosity level
+    #
     Default get_verbose_level() depends on the ``q_verbose`` environment variable. If unset, the default is ``-1``.
     """
     return cc.get_verbose_level()
@@ -414,12 +417,15 @@ def timer_verbose_fname(str fname):
 
 def timer_flops(object func):
     """
-    Timing functions with flops.\n
-    Usage::\n
+    Timing functions with flops.
+    #
+    Usage::
+        #
         @q.timer_flops
         def function(args):
             ...
             return flops, ret
+    #
     Modified function will only return ``ret`` in above example.
     """
     return timer(is_flops=True)(func)
@@ -438,12 +444,15 @@ def timer_flops_fname(str fname):
 
 def timer_verbose_flops(object func):
     """
-    Timing functions with flops. Always show output if ``get_verbose_level() > 0``\n
-    Usage::\n
+    Timing functions with flops. Always show output if ``get_verbose_level() > 0``
+    #
+    Usage::
+        #
         @q.timer_flops
         def function(args):
             ...
             return flops, ret
+    #
     Modified function will only return ``ret`` in above example.
     """
     return timer(is_verbose=True, is_flops=True)(func)

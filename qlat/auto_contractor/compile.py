@@ -1310,8 +1310,8 @@ class CExpr:
         """
         interface function
         Performing common sub-expression elimination
-        Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
-        The cexpr cannot be evaluated before collect_op!!!
+        Should be called after ``contract_simplify_compile(*exprs)`` or ``mk_cexpr(*exprs)``
+        **The cexpr cannot be evaluated before collect_op.**
         eval term factor
         """
         for name, term in self.named_terms:
@@ -1486,15 +1486,14 @@ def get_term_diagram_type_info(term):
 def filter_diagram_type(expr, diagram_type_dict=None, included_types=None):
     """
     first: drop diagrams with diagram_type_dict[diagram_type] == None\n
-    second:\n
+    second:
         if included_types is None:
             return a list of a single expr with all the remaining diagrams summed together
         else:
             assert isinstance(included_types, list)
-            # included_types = [ None, "Type1", [ "Type2", "Type3", ], ]
-            return a list of exprs, each expr only includes the types specified in the `included_types`.\n
-    `included_types` is a list of specs of included diagram type.\n
-    Each spec in the list of `included_types` can be:\n
+            return a list of exprs, each expr only includes the types specified in ``included_types``.\n
+    ``included_types`` is a list of specs of included diagram type.\n
+    Each spec in the list of ``included_types`` can be:\n
     (1) None: means all remaining types included
     (2) a single str, with value be one diagram_type_name: means only include this type
     (3) a list of str: means include only the types listed in the list.
@@ -1549,8 +1548,8 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
     """
     interface function
     exprs already finished wick contraction,
-    otherwise use `contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)`
-    !!!if diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped!!!
+    otherwise use ``contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)``
+    **If diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped.**
     """
     if diagram_type_dict is None:
         diagram_type_dict = dict()
@@ -1648,12 +1647,12 @@ def mk_cexpr(*exprs, diagram_type_dict=None):
 def contract_simplify(*exprs, is_isospin_symmetric_limit=True, diagram_type_dict=None):
     """
     interface function
-    `exprs = [ expr, (expr, *included_types,), ... ]`
-    #
-    In case `diagram_type_dict` is not `None`, perform the following filter
-    If `diagram_type_dict[diagram_type]` is `None`: term is removed.
-    For `(expr, *included_types,)`, only terms (in `expr`) with `diagram_type` that is in `included_types` is kept included_types should be a list/tuple of string.
-    See `filter_diagram_type` for more details.
+    ``exprs = [ expr, (expr, *included_types,), ... ]``\n
+    In case ``diagram_type_dict`` is not ``None``, perform the following filter.
+    If ``diagram_type_dict[diagram_type]`` is ``None``: term is removed.
+    For ``(expr, *included_types,)``, only terms (in ``expr``) with ``diagram_type`` that is in ``included_types`` is kept.
+    included_types should be a list/tuple of string.
+    See ``filter_diagram_type`` for more details.
     """
     #
     def func(expr):
@@ -1692,13 +1691,12 @@ def contract_simplify_compile(
 ):
     """
     interface function
-    Call `contract_simplify` and then `compile_expr`
-    #
-    This function can be used to construct the first argument of `cached_comipled_cexpr`.
-    `cached_comipled_cexpr` will call `cexpr.optimize()`.
-    #
-    e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
-    e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
+    Call ``contract_simplify`` and then ``compile_expr``\n
+    This function can be used to construct the first argument of ``cached_compiled_cexpr``.
+    ``cached_compiled_cexpr`` will call ``cexpr.optimize()``.\n
+    Example::\n
+        exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
+        exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
     """
     contracted_simplified_exprs = contract_simplify(
         *exprs,

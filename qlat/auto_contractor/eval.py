@@ -93,8 +93,8 @@ def cache_compiled_cexpr(
     Save cexpr object in pickle format for future reuse.
     Generate python code and save for future reuse.
     Create CCExpr with loaded python/cython module.
-    Return fully loaded ``ccexpr``.
-    !!!Note that the module will not be reloaded if it has been loaded before!!!
+    Return fully loaded ``ccexpr``.\n
+    **Note that the module will not be reloaded if it has been loaded before.**
     """
     fname = q.get_fname()
     if is_cython:
@@ -209,9 +209,8 @@ def get_expr_names(ccexpr: CExpr | CCExpr):
 @q.timer
 def get_diagram_type_dict(cexpr: CExpr | CCExpr):
     """
-    interface function
-    #
-    cexpr and be CExpr or CCExpr
+    interface function\n
+    cexpr can be CExpr or CCExpr
     diagram_type_dict[diagram_type] = name
     """
     diagram_type_dict = dict()
@@ -222,17 +221,18 @@ def get_diagram_type_dict(cexpr: CExpr | CCExpr):
 @q.timer
 def eval_cexpr(ccexpr: CCExpr, *, positions_dict, get_prop, is_ama_and_sloppy=False):
     """
-    return 1 dimensional np.array
-    cexpr can be cexpr object or can be a compiled function
+    return 1 dimensional np.array\n
+    cexpr can be cexpr object or can be a compiled function.\n
     xg = positions_dict[position]
-    wilson_matrix = get_prop(flavor, xg_snk, xg_src)
-    e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
-    e.g. flavor = "l"
-    e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    wilson_matrix = get_prop(flavor, xg_snk, xg_src)\n
+    e.g.::\n
+        ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
+        flavor = "l"
+        xg_snk = ("point-snk", [ 1, 2, 3, 4, ])\n
     if is_ama_and_sloppy: return (val_ama, val_sloppy,)
-    if not is_ama_and_sloppy: return val_ama
-    Note:
-    cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
+    if not is_ama_and_sloppy: return val_ama\n
+    Note::\n
+        cexpr_function(positions_dict, get_prop, is_ama_and_sloppy=False) => val as 1-D np.array
     """
     return ccexpr.cexpr_function(positions_dict, get_prop, is_ama_and_sloppy)
 

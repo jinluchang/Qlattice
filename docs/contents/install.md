@@ -71,7 +71,7 @@ source DEST_DIRECTORY/setenv.sh
 
 ## Install on Google Colab
 
-```python
+```
 # Setup a cache for the wheels in google drive to save the time to recompile the Qlattice packages.
 # (Recommended)
 #
