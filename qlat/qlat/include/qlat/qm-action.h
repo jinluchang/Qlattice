@@ -289,8 +289,8 @@ struct QMAction {
   inline RealD order_param(const Vector<RealD> x)
   {
     // if(x[0]<0) return x[1]*x[1];
-    //else return x[0]*x[0] + x[1]*x[1];
-    return x[0]*x[0] + x[1]*x[1];
+    // else return x[0]*x[0] + x[1]*x[1];
+    return x[0] * x[0] + x[1] * x[1];
   }
 
   inline RealD d_order_param(const Vector<RealD> x, const int idx)
@@ -298,21 +298,24 @@ struct QMAction {
     // if (idx==1) return 2.0*x[1];
     // else if (x[0]<0) return 0;
     // else return 2.0*x[0];
-    return 2.0*x[idx];
+    return 2.0 * x[idx];
   }
 
   inline RealD V_phi4(const RealD x, const RealD y)
   {
     // return beta*(x*x+(1-alpha*x)*y*y);
-    return beta*((x*x + y*y)/2.0 + alpha*(y*x*x - y*y*y/3.0));
+    return beta *
+           ((x * x + y * y) / 2.0 + alpha * (y * x * x - y * y * y / 3.0));
   }
 
   inline RealD dV_phi4(const RealD x, const RealD y, const int idx)
   {
     // if (idx==0) return beta*(2.0*x-alpha*y*y);
     // else return beta*2.0*(1-alpha*x)*y;
-    if (idx==0) return beta*(x + 2.0*alpha*y*x);
-    else return beta*(y + alpha*(x*x - y*y));
+    if (idx == 0)
+      return beta * (x + 2.0 * alpha * y * x);
+    else
+      return beta * (y + alpha * (x * x - y * y));
   }
 
   inline RealD V_full_xy(const RealD x, const RealD y)
@@ -342,21 +345,28 @@ struct QMAction {
 
   inline RealD V_full_op_fixed(const Vector<RealD>& x, RealD op)
   {
-    const RealD norm = std::pow(order_param(x)/op,0.5);
+    const RealD norm = std::pow(order_param(x) / op, 0.5);
     // if(x[0]<0) return V_full_xy(x[0], x[1]/norm);
     // else return V_full_xy(x[0]/norm, x[1]/norm);
-    return V_full_xy(x[0]/norm, x[1]/norm);
+    return V_full_xy(x[0] / norm, x[1] / norm);
   }
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
   {
-    const RealD norm = std::pow(order_param(x)/op,0.5); // div(x) = op^0.5*x_i / order_param(x)^0.5
+    const RealD norm = std::pow(
+        order_param(x) / op, 0.5);  // div(x) = op^0.5*x_i / order_param(x)^0.5
     // if(x[0]<0) {
     //   if(idx==0) return dV_full_xy(x[0], x[1]/norm, idx);
-    //   else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0], x[1]/norm, idx);
+    //   else return (1/norm -
+    //   0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0],
+    //   x[1]/norm, idx);
     // }
-    // else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
-    return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx);
+    // else return (1/norm -
+    // 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) *
+    // dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
+    return (1 / norm -
+            0.5 * x[idx] * d_order_param(x, idx) / norm / order_param(x)) *
+           dV_full_xy(x[0] / norm, x[1] / norm, idx);
   }
 
   inline RealD V_full(const Vector<RealD>& x) { return V_full_xy(x[0], x[1]); }
