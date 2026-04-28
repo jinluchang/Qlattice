@@ -7,7 +7,7 @@ from .rbc_ukqcd_params import get_param
 
 def get_param_fermion(job_tag, inv_type, inv_acc):
     """
-    Use param with lowewr `inv_acc` if the corresponding param does not exist.
+    Use param with lowewr ``inv_acc`` if the corresponding param does not exist.
     """
     while inv_acc >= 0:
         param = get_param(job_tag, "fermion_params", inv_type, inv_acc)
@@ -24,7 +24,7 @@ def get_ls_from_fermion_params(fermion_params):
 
 def get_param_lanc(job_tag, inv_type, inv_acc=0):
     """
-    Use param with lowewr `inv_acc` if the corresponding param does not exist.
+    Use param with lowewr ``inv_acc`` if the corresponding param does not exist.
     """
     while inv_acc >= 0:
         param = get_param(job_tag, "lanc_params", inv_type, inv_acc)
@@ -35,7 +35,7 @@ def get_param_lanc(job_tag, inv_type, inv_acc=0):
 
 def get_param_clanc(job_tag, inv_type, inv_acc=0):
     """
-    Use param with lowewr `inv_acc` if the corresponding param does not exist.
+    Use param with lowewr ``inv_acc`` if the corresponding param does not exist.
     """
     while inv_acc >= 0:
         param = get_param(job_tag, "clanc_params", inv_type, inv_acc)

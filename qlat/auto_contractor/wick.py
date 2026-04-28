@@ -568,7 +568,7 @@ def copy_op_index_auto(op: Op):
 
 def check_chain_spin_index(ops: list, s: str):
     """
-    for a spin index `s`,
+    for a spin index ``s``,
     return is_having_repeated_index, first_index_of_operator, second_index_of_operator
     """
     count1 = 0
@@ -592,7 +592,7 @@ def check_chain_spin_index(ops: list, s: str):
 
 def check_chain_color_index(ops: list, c: str):
     """
-    for a color index `s`,
+    for a color index ``s``,
     return is_having_repeated_index, first_index_of_operator, second_index_of_operator
     """
     count1 = 0
@@ -616,10 +616,10 @@ def check_chain_color_index(ops: list, c: str):
 
 def check_chain_op(ops: list, op: Op):
     """
-    for a operator `op`,
+    for a operator ``op``,
     return "single" or "begin" or "middle" or "end",
-    if this `op` is part of a (longer) chain of contraction
-    if `op` does not have right type, return `None`.
+    if this ``op`` is part of a (longer) chain of contraction
+    if ``op`` does not have right type, return ``None``.
     """
     if op.otype not in [
         "S",
@@ -821,7 +821,7 @@ def find_chain(ops: list):
 @q.timer
 def collect_traces(ops: list) -> list:
     """
-    First collect all the `Chain`s, then `Tr`s
+    First collect all the ``Chain``s, then ``Tr``s
     """
     chs = []
     while True:
@@ -987,7 +987,7 @@ class BfieldCoef:
     def get_spin_tensor_code(self, permute=None) -> np.ndarray:
         """
         return spin_tensor_code
-        See `baryon_spin_tensor_to_code` and `baryon_spin_tensor_from_code`.
+        See ``baryon_spin_tensor_to_code`` and ``baryon_spin_tensor_from_code``.
         """
         spin_tensor = self.get_spin_tensor(permute=permute)
         spin_tensor_code = baryon_spin_tensor_to_code(spin_tensor)
@@ -1919,7 +1919,7 @@ class Bfield(Op):
 @q.timer
 def simplify_bs_elem_list(elem_list: list) -> list:
     """
-    Merge `elem_pair` with the same spin settings (combine the `coef`s).
+    Merge ``elem_pair`` with the same spin settings (combine the ``coef``s).
     """
     elem_list = sorted(elem_list, key=repr)
     if len(elem_list) == 0:
@@ -2011,7 +2011,7 @@ class BS(Op):
     #
     elem_list = [ ((v_s1, b_s1, v_s2, b_s2, v_s3, b_s3,), coef,) ... ]
     chain_list = [ prop_0, prop_1, prop_2, ]
-    tag_v or tag_b in `bfield_tag_dict`
+    tag_v or tag_b in ``bfield_tag_dict``
     permute_v = (spin_color_index_that_prop_0_contract_with,
                  spin_color_index_that_prop_1_contract_with,
                  spin_color_index_that_prop_2_contract_with,)
@@ -2328,7 +2328,7 @@ def find_baryon_prop(op_list: list) -> tuple[BS, list[Op]] | None:
 @q.timer
 def collect_baryon_props(op_list: list[Op]) -> list[Op]:
     """
-    Collect all the `BS`s.
+    Collect all the ``BS``s.
     """
     bs_list = []
     while True:
@@ -2419,7 +2419,7 @@ class Term:
         """
         only sort commutable factors
         #
-        Important to keep the `BS` factors in front of other factors.
+        Important to keep the ``BS`` factors in front of other factors.
         """
         for op in self.c_ops:
             op.sort()
@@ -2434,7 +2434,7 @@ class Term:
     @q.timer
     def collect_traces(self) -> None:
         """
-        Collect `Chain`s, `Tr`s, `BS`s.
+        Collect ``Chain``s, ``Tr``s, ``BS``s.
         """
         if len(self.a_ops) == 0:
             self.c_ops = collect_traces(self.c_ops)
@@ -2471,7 +2471,7 @@ class Expr:
 
     def __add__(self, other):
         """
-        If other is str, then it is used to set the description of the resulting `expr`.
+        If other is str, then it is used to set the description of the resulting ``expr``.
         Otherwise return self + other.
         """
         if isinstance(other, str):
@@ -2615,11 +2615,11 @@ def mk_fac(x) -> Expr:
     interface function
     Stand for "make factor", the result of this function can be used in auto contractor as a factor.
     Make an Expr obj (can be sympy expression).
-    `x` can have type `str`, which will be viewed as code segment.
-    The code segment can use functions and variables defined in `auto_contractor.auto_fac_funcs`, `position_dict`, `base_position_dict`.
-    You can define functions in `position_dict` or `base_position_dict`.
-    `position_dict` is argument in function `eval_cexpr`.
-    `base_position_dict` is argument in function `cache_compiled_cexpr`.
+    ``x`` can have type ``str``, which will be viewed as code segment.
+    The code segment can use functions and variables defined in ``auto_contractor.auto_fac_funcs``, ``position_dict``, ``base_position_dict``.
+    You can define functions in ``position_dict`` or ``base_position_dict``.
+    ``position_dict`` is argument in function ``eval_cexpr``.
+    ``base_position_dict`` is argument in function ``cache_compiled_cexpr``.
     """
     return mk_expr(ea.mk_fac(x))
 
@@ -2767,7 +2767,7 @@ def combine_two_terms(t1: Term, t2: Term, t1_sig: str, t2_sig: str) -> Term | No
 def combine_terms_expr(expr: Expr) -> Expr | None:
     """
     Combine terms with the same signatures.
-    Return `None` if not terms are combined.
+    Return ``None`` if not terms are combined.
     """
     if not expr.terms:
         return None

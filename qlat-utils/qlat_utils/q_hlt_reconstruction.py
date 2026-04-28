@@ -50,7 +50,7 @@ def mk_hlt_params():
     params["e0"] = 0.0
     params["ee_max"] = np.inf  # only used for functions use integration with e
     params["lambda"] = 1.0
-    params["alpha"] = -0.01  # override by "f_e_weight_log", see `get_f_e_weight_log`
+    params["alpha"] = -0.01  # override by "f_e_weight_log", see ``get_f_e_weight_log``
     params["f_e_weight_log"] = None
     params["tt_size"] = None
     params["atw_factor"] = 1.0  # only has effects if "tt_size" is not None

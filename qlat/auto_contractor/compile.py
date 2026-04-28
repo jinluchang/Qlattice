@@ -488,7 +488,7 @@ def collect_factor_fac_in_cexpr(
     variables_factor_intermediate, var_nameset, variables_factor
 ):
     """
-    Add ea.Factor with `otype` "Expr" to `variables_factor_intermediate`
+    Add ea.Factor with ``otype`` "Expr" to ``variables_factor_intermediate``
     """
     var_counter = 0
     var_dataset = {}  # var_dataset[factor_code] = factor_var
@@ -521,7 +521,7 @@ def collect_factor_fac_in_cexpr(
 @q.timer
 def collect_factor_facs_in_cexpr(variables_factors, var_nameset, variables_factor):
     """
-    Add ea.Factor with `otype` "Expr" to `variables_factors`
+    Add ea.Factor with ``otype`` "Expr" to ``variables_factors``
     """
     var_counter = 0
     var_dataset = {}  # var_dataset[factor_code] = factor_var
@@ -1301,7 +1301,7 @@ class CExpr:
         """
         interface function
         #
-        This is necessary step to run the `CExpr`.
+        This is necessary step to run the ``CExpr``.
         """
         self.collect_op()
 
@@ -1965,7 +1965,7 @@ class CExprCodeGenPy:
     def gen_expr(self, x):
         """
         return code_str, type_str
-        `type_str` follows convention of `get_var_name_type`
+        ``type_str`` follows convention of ``get_var_name_type``
         """
         if isinstance(x, (int, float, complex)):
             return f"{x}", "V_a"
@@ -2101,7 +2101,7 @@ class CExprCodeGenPy:
     def gen_expr_prod(self, ct1, ct2):
         """
         return code_str, type_str
-        `type_str` follows convention of `get_var_name_type`
+        ``type_str`` follows convention of ``get_var_name_type``
         """
         c1, t1 = ct1
         c2, t2 = ct2
@@ -2195,7 +2195,7 @@ class CExprCodeGenPy:
     def gen_expr_prod_list(self, x_list):
         """
         return code_str, type_str
-        `type_str` follows convention of `get_var_name_type`
+        ``type_str`` follows convention of ``get_var_name_type``
         """
         if len(x_list) == 0:
             return "1", "V_a"
@@ -2696,7 +2696,7 @@ class CExprCodeGenPy:
 
 def get_bs_factor_variable_list(bs_list: list[BS]) -> list[str]:
     """
-    Get the factor variable names used in `bs_list`.
+    Get the factor variable names used in ``bs_list``.
     """
     variables_set = set()
     for bs in bs_list:

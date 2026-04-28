@@ -127,7 +127,7 @@ def interp_x(data_arr, data_x_arr, x_arr, axis=-1):
     return ``interpolated_data_arr``
     ``x_arr`` can be either an 1-D array-like object or a single number.
     ``data_x_arr`` is the x values for ``data_arr``
-    ``x_arr`` is the x values for `interpolated_data_arr`
+    ``x_arr`` is the x values for ``interpolated_data_arr``
     ``
     data_x_arr.shape == (data_arr.shape[axis],)
     ``
@@ -458,7 +458,7 @@ def block_data(data_list, block_size, is_overlapping=True):
 
 def avg_err(data_list, *, eps=1, block_size=1):
     """
-    Compute `(avg, err)` of `data_list`.\n
+    Compute ``(avg, err)`` of ``data_list``.\n
     :param data_list: list of data
     :param eps: additional scaling factor for the error
     :param block_size: blocking the list of data
@@ -514,8 +514,8 @@ def fsqr(data):
     """
     Separately square real and imag part in case of complex types.\n
     :param data: real, complex, np.ndarray like objects.
-    :return: squared `data`.
-    :rtype: same type as `data`.
+    :return: squared ``data``.
+    :rtype: same type as ``data``.
     """
     if isinstance(data, real_types):
         return data * data
@@ -538,8 +538,8 @@ def fsqrt(data):
     """
     Separately calculate the square root real and imag part in case of complex types.\n
     :param data: real, complex, np.ndarray like objects.
-    :return: squared `data`.
-    :rtype: same type as `data`.
+    :return: squared ``data``.
+    :rtype: same type as ``data``.
     """
     if isinstance(data, real_types):
         return math.sqrt(data)
@@ -560,7 +560,7 @@ def fsqrt(data):
 
 def err_sum(*vs):
     """
-    e.g.: `q.err_sum(1.4, 2.1, 1.0)` ==> `2.7147743920996454`
+    e.g.: ``q.err_sum(1.4, 2.1, 1.0)`` ==> ``2.7147743920996454``
     """
     err_sqr = sum([fsqr(v) for v in vs])
     err = fsqrt(err_sqr)
@@ -1052,7 +1052,7 @@ default_g_jk_kwargs = dict()
 
 def mk_g_jk_kwargs():
     """
-    Return the predefined `default_g_jk_kwargs`.
+    Return the predefined ``default_g_jk_kwargs``.
     """
     g_jk_kwargs = dict()
     #
@@ -1117,7 +1117,7 @@ def get_jk_state(
         q.default_g_jk_kwargs["jk_type"] = "rjk" # this is the default now\n
     and::\n
         q.default_g_jk_kwargs["jk_blocking_func"] = jk_blocking_func_default\n
-    Used for `q.cache_call`.\n
+    Used for ``q.cache_call``.\n
     Example::\n
         @cache_call(get_state=q.get_jk_state)
         def func(...):
@@ -1471,7 +1471,7 @@ def get_val_exp(val, exp=0):
     """
     return val, exp
     where
-    `val * 10**exp` is the same as input
+    ``val * 10**exp`` is the same as input
     """
     assert isinstance(val, (int, float))
     assert isinstance(exp, int)
@@ -1495,9 +1495,9 @@ def show_val(
     exponent,
 ):
     """
-    `is_latex` can be in [ None, False, True, ]
-    `num_float_digit` or `num_exp_digit` can be in [ None, False, True, int, ]
-    `exponent` can be in [ None, int, ]
+    ``is_latex`` can be in [ None, False, True, ]
+    ``num_float_digit`` or ``num_exp_digit`` can be in [ None, False, True, int, ]
+    ``exponent`` can be in [ None, int, ]
     """
     assert isinstance(val, (int, float))
     if is_latex is None:
@@ -1559,9 +1559,9 @@ def show_val_err(
     exponent,
 ):
     """
-    `is_latex` can be in [ None, False, True, ]
-    `num_float_digit` or `num_exp_digit` can be in [ None, False, True, int, ]
-    `exponent` can be in [ None, int, ]
+    ``is_latex`` can be in [ None, False, True, ]
+    ``num_float_digit`` or ``num_exp_digit`` can be in [ None, False, True, int, ]
+    ``exponent`` can be in [ None, int, ]
     #
     Examples:
     print(show_val_err((1.12e16, 12), num_float_digit=1))
@@ -1787,7 +1787,7 @@ def rjk_jk_list(
     len(jk_list) = n + 1
     jk_list[i] = avg + \sum_{j=1}^{n} r_{i,j} (jk_list[j] - avg)
     #
-    if `jk_blocking_func` is provided:
+    if ``jk_blocking_func`` is provided:
     ``
     jk_blocking_func(i, jk_idx) => blocked jk_idx
     ``
@@ -1908,13 +1908,13 @@ def interpolate_list(data_arr, i):
     """
     Old function.
     return approximately data_arr[i]
-    Use `q.interp(data_arr, i, 0)` instead
+    Use ``q.interp(data_arr, i, 0)`` instead
     """
     return interp(data_arr, i, 0)
 
 def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None):
     """
-    Recommend to use `jk_blocking_func_default` instead.
+    Recommend to use ``jk_blocking_func_default`` instead.
     #
     block_size_for_this_job_tag = block_size_dict.get(job_tag, block_size)
     """
@@ -1948,7 +1948,7 @@ def mk_jk_blocking_func(block_size=1, block_size_dict=None, all_jk_idx_set=None)
 
 def interpolate(data_arr, i_arr):
     """
-    Old function. Use `q.interp(data_arr, i_arr, -1)` instead.
+    Old function. Use ``q.interp(data_arr, i_arr, -1)`` instead.
     #
     return approximately data_arr[..., i_arr]
     """

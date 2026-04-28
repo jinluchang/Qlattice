@@ -314,7 +314,7 @@ def point_d_dis_sqr(x, y, total_site):
 @q.timer
 def get_group_extreme_plaq_xg_list(extreme_plaq_xg_list, total_site, dis_sqr_limit):
     """
-    Group points with distance square less than `dis_sqr_limit`.
+    Group points with distance square less than ``dis_sqr_limit``.
     #
     return group_extreme_plaq_xg_list
     group_extreme_plaq_xg_list = [
@@ -363,11 +363,11 @@ def process_inst_list(inst_list):
     p_inst_list = process_inst_list(inst_list)
     #
     p_inst_list[inst_idx] = dict(
-        # original `inst_idx` for `inst_list`
+        # original ``inst_idx`` for ``inst_list``
         inst_idx,
         inst_raw = inst_list[inst_idx],
         #
-        # Values are usually taken at minimum `plaq`
+        # Values are usually taken at minimum ``plaq``
         o_xg_d,
         o_total_site,
         xg_d,
@@ -577,7 +577,7 @@ def process_inst_list(inst_list):
 @q.timer
 def displayln_info_topo_info(topo_info):
     """
-    `topo_info` is a `dict`
+    ``topo_info`` is a ``dict``
     """
     info = topo_info
     flow_time = info["flow_time"]
@@ -785,7 +785,7 @@ class InstantonMap:
         # limit for the distance square to identify as the same instanton.
         self.dis_sqr_limit = dis_sqr_limit
         # threshold of (1 - plaq) for instanton detection
-        # if `plaq < 1 - threshold`, then this plaq will be considered for instanton tunnelling.
+        # if ``plaq < 1 - threshold``, then this plaq will be considered for instanton tunnelling.
         self.threshold = threshold
         self.topo_sphere_sum_radius_list = topo_sphere_sum_radius_list
         self.info_list = []
@@ -794,18 +794,18 @@ class InstantonMap:
 
     def shift(self, shift):
         """
-        If we shift the field with `shift` by
-        `field = field.shift(shift)`
-        then we also shift `self.origin_coordinate`,
+        If we shift the field with ``shift`` by
+        ``field = field.shift(shift)``
+        then we also shift ``self.origin_coordinate``,
         which represent the current location of the initial origin
         (in unit of the initial lattice space).
-        `shift` is in unit of the current lattice space.
+        ``shift`` is in unit of the current lattice space.
         """
         self.origin_coordinate = self.origin_coordinate + shift * self.current_spacing
 
     def convert_xg(self, xg):
         """
-        Convert current `xg` to the coordinate of the initial lattice.
+        Convert current ``xg`` to the coordinate of the initial lattice.
         """
         assert self.initial_total_site is not None
         if isinstance(xg, q.Coordinate):
@@ -991,7 +991,7 @@ def compute_inst_map(
         return
     gf = get_gf()
     #
-    inst_map_obj = compute_inst_map(gf) # Note that `gf` should not have boundary be twisted.
+    inst_map_obj = compute_inst_map(gf) # Note that ``gf`` should not have boundary be twisted.
     #
     obj = dict()
     obj["inst_list"] = inst_map.inst_list

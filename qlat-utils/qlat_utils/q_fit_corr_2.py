@@ -29,7 +29,7 @@ def build_corr_from_param_arr(
     es.shape == (n_eigs,)
     cs.shape == (n_eigs, n_ops,)
     #
-    Also work if `jk_param_arr` is input in place of `param_arr`.
+    Also work if ``jk_param_arr`` is input in place of ``param_arr``.
     #
     extra_state_sign_arr[ei] = extra_state_sign_arr[ei]
     state_sign_arr[ei] = (extra_state_sign_arr[ei]
@@ -159,7 +159,7 @@ def mk_data_set(
     corr_data[i, j, t] = \sum_{ei} coefs[ei, i] * coefs[ei, j] * es[ei]**t
     jk_corr_data[jk, i, j, t] = corr_data[i, j, t] + corr_data_sigma[i, j, t] * N(0,1)
     #
-    `t_arr`, `t_size`, `t_start_arr`, `atw_factor_arr`: see `build_corr_from_param_arr`
+    ``t_arr``, ``t_size``, ``t_start_arr``, ``atw_factor_arr``: see ``build_corr_from_param_arr``
     """
     if rng is None:
         rng = RngState("mk_data_set-seed")
@@ -267,14 +267,14 @@ def mk_fcn(
 ):
     r"""
     Shape of inputs and parameters are like:
-    `corr_data.shape == (n_ops, n_ops, t_len,)`
-    `corr_data_sigma.shape == (n_ops, n_ops, t_len,)`
-    `t_arr`, `t_size`, `t_start_arr`, `atw_factor_arr`: see `build_corr_from_param_arr`
-    `eig_maximum_arr`, `free_eig_idx_arr`: see `apply_eig_maximum`
-    `corr_data`: see `build_corr_from_param_arr`
+    ``corr_data.shape == (n_ops, n_ops, t_len,)``
+    ``corr_data_sigma.shape == (n_ops, n_ops, t_len,)``
+    ``t_arr``, ``t_size``, ``t_start_arr``, ``atw_factor_arr``: see ``build_corr_from_param_arr``
+    ``eig_maximum_arr``, ``free_eig_idx_arr``: see ``apply_eig_maximum``
+    ``corr_data``: see ``build_corr_from_param_arr``
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
-    `param_arr`: see `build_corr_from_param_arr`
+    ``param_arr``: see ``build_corr_from_param_arr``
     """
     import jax
     import jax.numpy as jnp
@@ -482,7 +482,7 @@ def jk_mini_task_in_fit_eig_coef(kwargs):
                 param_arr = sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
             param_arr = apply_eig_maximum(param_arr, eig_maximum_arr, free_eig_idx_arr)
             if is_sorting_eig_state:
-                # Assuming `eig_maximum_arr` is sorted.
+                # Assuming ``eig_maximum_arr`` is sorted.
                 param_arr = sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
             displayln_info(
                 0, f"{fname}: iter={i} free_eig_arr={param_arr[free_eig_mask].tolist()}"
@@ -551,7 +551,7 @@ def fit_eig_coef(
     diag_err_scale_factor should be 1.0
     off_diag_err_scale_factor should be np.sqrt(2) if jk_corr_data has been symmetrized.
     #
-    `eig_maximum_arr` should be of same shape as `free_eig_idx_arr` will constrain all the free eigs to be smaller than this eig value (None means no constraint)
+    ``eig_maximum_arr`` should be of same shape as ``free_eig_idx_arr`` will constrain all the free eigs to be smaller than this eig value (None means no constraint)
     #
     rng_seed_list=[ f"fit-eig-coef-seed-{i}" for i in range(32) ]
     mp_pool = mk_mp_pool(n_proc)

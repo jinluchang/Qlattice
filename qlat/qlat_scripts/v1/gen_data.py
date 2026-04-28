@@ -356,7 +356,7 @@ def run_f_weight_from_wsrc_prop_full(job_tag, traj):
     Or if wsrc_prop_full is not available
     return None
     #
-    `f_weight` is of type `q.FieldRealD(geo, 1)`.
+    ``f_weight`` is of type ``q.FieldRealD(geo, 1)``.
     #
     get_f_weight = run_f_weight_from_wsrc_prop_full(job_tag, traj)
     """
@@ -418,11 +418,11 @@ def run_f_weight_uniform(job_tag, traj):
     return get_f_weight
         f_weight = get_f_weight()
     #
-    `f_weight` is of type `q.FieldRealD(geo, 1)`.
+    ``f_weight`` is of type ``q.FieldRealD(geo, 1)``.
     #
     get_f_weight = run_f_weight_uniform(job_tag, traj)
     #
-    Another option to obtain `get_f_weight` is using `run_f_weight_from_wsrc_prop_full(job_tag, traj)`.
+    Another option to obtain ``get_f_weight`` is using ``run_f_weight_from_wsrc_prop_full(job_tag, traj)``.
     """
     fname = q.get_fname()
     fn_f_weight = f"{job_tag}/field-selection-weight/traj-{traj}/weight.field"
@@ -454,7 +454,7 @@ def run_f_weight_load(job_tag, traj):
     return get_f_weight
         f_weight = get_f_weight()
     #
-    `f_weight` is of type `q.FieldRealD(geo, 1)`.
+    ``f_weight`` is of type ``q.FieldRealD(geo, 1)``.
     #
     get_f_weight = run_f_weight_load(job_tag, traj)
     #
@@ -482,7 +482,7 @@ def run_f_rand_01(job_tag, traj):
     return get_f_rand_01
         f_rand_01 = get_f_rand_01()
     #
-    `f_rand_01` is of type `q.FieldRealD(geo, 1)`.
+    ``f_rand_01`` is of type ``q.FieldRealD(geo, 1)``.
     #
     get_f_rand_01 = run_f_rand_01(job_tag, traj)
     """
@@ -524,15 +524,15 @@ def run_fsel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight):
         fsel_prob = get_fsel_prob()
         fsel = fsel_prob.fsel
     #
-    One can set `get_f_rand_01=None` and `get_f_weight=None` if one intend to load existing data on `fsel_prob` instead of generating new `fsel_prob`.
+    One can set ``get_f_rand_01=None`` and ``get_f_weight=None`` if one intend to load existing data on ``fsel_prob`` instead of generating new ``fsel_prob``.
     #
-    `get_f_weight` is of type `lambda : q.FieldRealD(geo, 1)`.
-    `get_f_rand_01` is of type `lambda : q.FieldRealD(geo, 1)`.
+    ``get_f_weight`` is of type ``lambda : q.FieldRealD(geo, 1)``.
+    ``get_f_rand_01`` is of type ``lambda : q.FieldRealD(geo, 1)``.
     #
     get_fsel_prob = run_fsel_prob(job_tag, traj, get_f_rand_01=get_f_rand_01, get_f_weight=get_f_weight)
     get_fsel = lambda : get_fsel_prob().fsel
     #
-    For old data format, in which case the `fsel-prob.sfield` data is absent, we assume uniform probability AND will combine the `fsel` with `psel` obtained from `run_psel_prob` function.
+    For old data format, in which case the ``fsel-prob.sfield`` data is absent, we assume uniform probability AND will combine the ``fsel`` with ``psel`` obtained from ``run_psel_prob`` function.
     """
     fname = q.get_fname()
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
@@ -607,10 +607,10 @@ def run_psel_prob(job_tag, traj, *, get_f_rand_01, get_f_weight, tag=None):
         psel_prob = get_psel_prob()
         psel = psel_prob.psel
     #
-    One can set `get_f_rand_01=None` and `get_f_weight=None` if one intend to load existing data on `psel_prob` instead of generating new `psel_prob`.
+    One can set ``get_f_rand_01=None`` and ``get_f_weight=None`` if one intend to load existing data on ``psel_prob`` instead of generating new ``psel_prob``.
     #
-    `get_f_weight` is of type `lambda : q.FieldRealD(geo, 1)`.
-    `get_f_rand_01` is of type `lambda : q.FieldRealD(geo, 1)`.
+    ``get_f_weight`` is of type ``lambda : q.FieldRealD(geo, 1)``.
+    ``get_f_rand_01`` is of type ``lambda : q.FieldRealD(geo, 1)``.
     #
     tag can be "small", "median", "large", etc
     #
@@ -712,11 +712,11 @@ def run_fsel_prob_sub_sampling(
     get_f_weight,
 ):
     """
-    `sub_sampling_rate == 1` implies complete sub-sampling.
-    Approximately `sub_sampling_rate` portion of the original selection get selected.
+    ``sub_sampling_rate == 1`` implies complete sub-sampling.
+    Approximately ``sub_sampling_rate`` portion of the original selection get selected.
     #
-    If `get_f_weight is None` then use `fsel_prob * sub_sampling_rate` as prob to select.
-    This is not exactly the same as use `f_weight`!
+    If ``get_f_weight is None`` then use ``fsel_prob * sub_sampling_rate`` as prob to select.
+    This is not exactly the same as use ``f_weight``!
     """
     assert 1.0 >= sub_sampling_rate >= 0.0
     #
@@ -768,15 +768,15 @@ def run_psel_prob_sub_sampling(
     get_f_weight,
 ):
     """
-    `sub_sampling_rate == 1` implies complete sub-sampling.
-    Approximately `sub_sampling_rate` portion of the original selection get selected.
+    ``sub_sampling_rate == 1`` implies complete sub-sampling.
+    Approximately ``sub_sampling_rate`` portion of the original selection get selected.
     #
-    If `get_f_weight is None` then use `psel_prob * sub_sampling_rate` as prob to select.
-    This is not exactly the same as use `f_weight`!
-    This is due to `psel_prob` is always less or equal to 1, `f_weight` does not have any upper limit.
+    If ``get_f_weight is None`` then use ``psel_prob * sub_sampling_rate`` as prob to select.
+    This is not exactly the same as use ``f_weight``!
+    This is due to ``psel_prob`` is always less or equal to 1, ``f_weight`` does not have any upper limit.
     #
     if get_param(job_tag, "use_simple_psel_sub_sampling", default=False):
-        Will simply use the first `sub_sampling_rate * original_num` of the original points.
+        Will simply use the first ``sub_sampling_rate * original_num`` of the original points.
     """
     assert 1.0 >= sub_sampling_rate >= 0.0
     #
@@ -841,7 +841,7 @@ def run_psel_split(
     num_piece,
 ):
     """
-    Should set `num_piece` be in the form as 2^n.
+    Should set ``num_piece`` be in the form as 2^n.
     return psel_list
     #
     len(psel_list) == num_piece
@@ -894,7 +894,7 @@ def run_fsel_split(
     num_piece,
 ):
     """
-    Should set `num_piece` be in the form as 2^n.
+    Should set ``num_piece`` be in the form as 2^n.
     return psel_list
     #
     len(psel_list) == num_piece
@@ -945,10 +945,10 @@ def save_prop_wsrc_sparse(
     job_tag, traj, *, load_prop, tslice, inv_type, inv_acc, sfw, qar_sp, psel, fsel
 ):
     """
-    `load_prop()` is the wall source propagator, as if generated in a Coulomb gauge fixed gauge configuration.
-    `tslice` is the integer indicate the source time slice.
-    `inv_type` is `0` (light quark) or `1` (strange quark) or `2` (charm quark)
-    `inv_acc` for wall source typically be integer `1` (sloppy accuracy) or `2` (exact accuracy).
+    ``load_prop()`` is the wall source propagator, as if generated in a Coulomb gauge fixed gauge configuration.
+    ``tslice`` is the integer indicate the source time slice.
+    ``inv_type`` is ``0`` (light quark) or ``1`` (strange quark) or ``2`` (charm quark)
+    ``inv_acc`` for wall source typically be integer ``1`` (sloppy accuracy) or ``2`` (exact accuracy).
     """
     fname = q.get_fname()
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
@@ -1114,7 +1114,7 @@ def calc_hvp_sum_tslice(chvp_16):
     mu in range(4)
     nu in range(4)
     #
-    `mu` for sink and `nu` for source
+    ``mu`` for sink and ``nu`` for source
     t_size = max(total_site)
     #
     arr_for_t_dir.shape == (t_size, 4, 4,)
@@ -1642,7 +1642,7 @@ def run_prop_sparse_rand_u1_src(
 ):
     """
     fsel should contain psel
-    Should set one (and only one) of the `get_psel_list` and `get_fsel_psel_list`.
+    Should set one (and only one) of the ``get_psel_list`` and ``get_fsel_psel_list``.
     """
     fname = q.get_fname()
     if None in [
@@ -2308,7 +2308,7 @@ def run_prop_smear(
 # @q.timer
 # def run_prop_wsrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
 #     """
-#     Can use `run_prop_wsrc_sparse` instead.
+#     Can use ``run_prop_wsrc_sparse`` instead.
 #     #
 #     run_prop_wsrc_full(job_tag, traj, inv_type=0, get_gf=get_gf, get_eig=get_eig, get_gt=get_gt, get_wi=get_wi)
 #     get_fsel, get_psel, get_fsel_prob, get_psel_prob = run_fsel_psel_from_wsrc_prop_full(job_tag, traj, get_wi=get_wi)

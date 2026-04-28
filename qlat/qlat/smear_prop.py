@@ -27,12 +27,12 @@ cache_spatial_smear_chunk_plan = q.mk_cache("spatial_smear_chunk_plan")
 @q.timer(is_flops=True)
 def prop_spatial_smear(ff_list, gf, coef, step, mom=None, *, chunk_size=None):
     """
-    Perform spatial smear for `ff_list`, a list of `FermionField4d`.
-    Return new `ff_list` after smearing.
-    Original `ff_list` should not be modified.
+    Perform spatial smear for ``ff_list``, a list of ``FermionField4d``.
+    Return new ``ff_list`` after smearing.
+    Original ``ff_list`` should not be modified.
     #
-    `ff_list` can also be a `Prop`.
-    In this case, the function will also return a `Prop`.
+    ``ff_list`` can also be a ``Prop``.
+    In this case, the function will also return a ``Prop``.
     #
     get_gf_ape = run_gf_ape(job_tag, get_gf)
     gf = get_gf_ape()

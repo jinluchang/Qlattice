@@ -114,8 +114,8 @@ class PointsDistanceTree:
     @classmethod
     def mk_with_point(cls, xg, range_sqr=None):
         """
-        Make a leaf for a single point if `range_sqr` is `None` or `0`.
-        Otherwise, make a tree containing `xg` with range_sqr at least `range_sqr`.
+        Make a leaf for a single point if ``range_sqr`` is ``None`` or ``0``.
+        Otherwise, make a tree containing ``xg`` with range_sqr at least ``range_sqr``.
         """
         t = cls()
         t.point = xg
@@ -130,9 +130,9 @@ class PointsDistanceTree:
 
     def try_add(self, xg, total_site):
         """
-        Try to add the point `xg` to this tree.
+        Try to add the point ``xg`` to this tree.
         Possibly modify the current tree in place.
-        return `True` if `xg` is added in place, return `False` otherwise.
+        return ``True`` if ``xg`` is added in place, return ``False`` otherwise.
         """
         cls = self.__class__
         if self.point is None:
@@ -153,7 +153,7 @@ class PointsDistanceTree:
 
     def add(self, xg, total_site):
         """
-        return new tree with the point `xg` added.
+        return new tree with the point ``xg`` added.
         Possibly modify the current tree in place.
         """
         cls = self.__class__
@@ -479,7 +479,7 @@ def find_all_closest_n_point_list(psel, n, ranking_func=None, rs=None):
 @q.timer
 def psel_split_that_increase_separation_closest(psel, rs=None):
     """
-    split `psel` into `psel1` and `psel2`.
+    split ``psel`` into ``psel1`` and ``psel2``.
     return psel1, psel2
     """
     assert isinstance(psel, q.PointsSelection)
@@ -538,10 +538,10 @@ def psel_split_that_increase_separation_closest(psel, rs=None):
 @q.timer
 def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=None):
     """
-    split `psel` into `psel1` and `psel2`.
+    split ``psel`` into ``psel1`` and ``psel2``.
     return psel1, psel2
     #
-    `n` is the number of closest points to be considered for ranking.
+    ``n`` is the number of closest points to be considered for ranking.
     """
     fname = q.get_fname()
     assert isinstance(psel, q.PointsSelection)
@@ -610,7 +610,7 @@ def psel_split_that_increase_separation_ranking(psel, n, ranking_func=None, rs=N
 @q.timer(is_timer_fork=True)
 def psel_split_that_increase_separation(psel, mode=None, rs=None):
     """
-    split `psel` into `psel1` and `psel2`.
+    split ``psel`` into ``psel1`` and ``psel2``.
     return psel1, psel2
     """
     if mode is None:
@@ -681,7 +681,7 @@ def find_closest_dis_sqr_for_psel_list(psel_list, is_parallel=True):
 def psel_split_n_that_increase_separation(psel, num_piece, rs=None):
     """
     return psel_list
-    where `len(psel_list) == num_piece`
+    where ``len(psel_list) == num_piece``
     """
     assert isinstance(psel, q.PointsSelection)
     assert num_piece >= 1

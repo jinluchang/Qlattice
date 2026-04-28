@@ -161,11 +161,11 @@ def pickle_cache_call(func, path, *, is_sync_node=True):
 
 def hash_sha256(s):
     """
-    Compute sha256 of str (or bytes) `s`.
+    Compute sha256 of str (or bytes) ``s``.
     Also support:
-    Custom object that has `hash_sha256` attribute.
-    Python `tuple` and `list`.
-    Numpy `ndarray`.
+    Custom object that has ``hash_sha256`` attribute.
+    Python ``tuple`` and ``list``.
+    Numpy ``ndarray``.
     """
     if isinstance(
         s,
@@ -210,7 +210,7 @@ def hash_sha256(s):
 
 def pickle_cache(path, is_sync_node=True):
     """
-    `path` is the directory to cache results
+    ``path`` is the directory to cache results
     sha256 hash based on pickle.dumps of the input parameters
     """
     #
@@ -248,12 +248,12 @@ def cache_call(
 ):
     """
     get_state() => object to be used as extra key of cache\n
-    `maxsize` can be `0`, where the q.LRUCache is effectively turned off.\n
+    ``maxsize`` can be ``0``, where the q.LRUCache is effectively turned off.\n
     if is_hash_args:
         Pickle all the keys and use hash as the key (default)
     else:
-        Use `(func.__qualname__, args, state)` directly as `key`.
-        Note that `kwargs` has to be empty in this case.\n
+        Use ``(func.__qualname__, args, state)`` directly as ``key``.
+        Note that ``kwargs`` has to be empty in this case.\n
     if path is None:
         Only cache using q.LRUCache (default)
     else:
@@ -262,12 +262,12 @@ def cache_call(
             Only read/write to ``f"{path}/{key}.pickle"`` (and ``f"{path}/info/{key}.pickle"``) from process 0 (broadcast to all nodes)
         else:
             All the processes independently do the calculation and read/write to f"{path}/{key}.pickle"
-            Use this if (1) `path` or `key` is different for different processes;
+            Use this if (1) ``path`` or ``key`` is different for different processes;
                      or (2) this function is only called from a certain process.\n
     if cache is None:
         cache = q.LRUCache(maxsize)
     else:
-        The input `cache` will be used. This cache may be shared for other purpose\n
+        The input ``cache`` will be used. This cache may be shared for other purpose\n
     Usage example::\n
         @cache_call(maxsize=128, get_state=q.get_jk_state)
         def func(x):

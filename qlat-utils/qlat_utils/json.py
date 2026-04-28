@@ -86,7 +86,7 @@ class QlatDecoder(ExtendedDecoder):
 
 def json_dumps(obj, *, indent=2):
     """
-    return str dumped from `obj`
+    return str dumped from ``obj``
     #
     indent (int | str | None)
     """
@@ -94,6 +94,6 @@ def json_dumps(obj, *, indent=2):
 
 def json_loads(s):
     """
-    return obj loaded from str `s`
+    return obj loaded from str ``s``
     """
     return json.loads(s, cls=QlatDecoder)

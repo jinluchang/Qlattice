@@ -59,7 +59,7 @@ flow_time_default = 0.0
 def get_plaq_factor_for_gf_scale_flow(total_site, is_spatial, t_dir):
     """
     return plaq_factor
-    `plaq_factor` can be used in `gf_plaq_flow_force`.
+    ``plaq_factor`` can be used in ``gf_plaq_flow_force``.
     ```
     plaq_factor[:].shape == (local_volume, 6,)
     ```
@@ -101,7 +101,7 @@ def get_plaq_factor_for_gf_scale_flow(total_site, is_spatial, t_dir):
 @q.timer
 def gf_flow_scale(gf, step_size, *, is_spatial=None, t_dir=None, integrator_type=None):
     """
-    Modify `gf` in place.
+    Modify ``gf`` in place.
     Default Wilson flow with Runge-Kutta integrator.
     ```
     is_spatial in [ False, True, ]
@@ -167,8 +167,8 @@ def gf_energy_density_dir_tslice(gf, *, t_dir=None):
     t_size == geo.total_site[t_dir]
     energy_density_dir_arr.shape == (t_size, 6,)
     ```
-    Similar to `gf_plaq_tslice`
-    `gf_energy_density_dir_tslice(gf)[:]` \approx `6 * (1 - gf_plaq_tslice(gf)[:])`
+    Similar to ``gf_plaq_tslice``
+    ``gf_energy_density_dir_tslice(gf)[:]`` \approx ``6 * (1 - gf_plaq_tslice(gf)[:])``
     """
     if t_dir is None:
         t_dir = t_dir_default
@@ -202,7 +202,7 @@ def gf_flow_record(
         ],
         params=dict(step_size, num_step, flow_time, is_spatial, t_dir, integrator_type,),
     )
-    Modify `gf` in place.
+    Modify ``gf`` in place.
     Default Wilson flow with Runge-Kutta integrator.
     ```
     is_spatial in [ False, True, ]

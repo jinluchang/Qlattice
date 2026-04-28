@@ -24,8 +24,8 @@ def getenv(*names, default=None):
 
 def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
     """
-    Get the `arg` of the option when it first appears.
-    Remove the option and its arg if `is_removing_from_argv`.
+    Get the ``arg`` of the option when it first appears.
+    Remove the option and its arg if ``is_removing_from_argv``.
     """
     if argv is None:
         argv = sys.argv
@@ -46,8 +46,8 @@ def get_arg(option, default=None, *, argv=None, is_removing_from_argv=False):
 
 def get_arg_list(option, *, argv=None, is_removing_from_argv=False):
     """
-    Get all the `arg` of the option when it appears as `arg_list`, it may appear multiple times.
-    Remove the options and the args if `is_removing_from_argv`.
+    Get all the ``arg`` of the option when it appears as ``arg_list``, it may appear multiple times.
+    Remove the options and the args if ``is_removing_from_argv``.
     """
     if argv is None:
         argv = sys.argv
@@ -76,8 +76,8 @@ def get_arg_list(option, *, argv=None, is_removing_from_argv=False):
 
 def get_option(option, *, argv=None, is_removing_from_argv=False):
     """
-    Return if `option` in `argv`.
-    Remove the option if `is_removing_from_argv`
+    Return if ``option`` in ``argv``.
+    Remove the option if ``is_removing_from_argv``
     """
     if argv is None:
         argv = sys.argv
@@ -90,8 +90,8 @@ def get_option(option, *, argv=None, is_removing_from_argv=False):
 
 def get_all_arg_list(option, default=None, *, argv=None, is_removing_from_argv=False):
     """
-    Get all the following args as `arg_list` of the option when it first appears.
-    Remove the option and the remaining args if `is_removing_from_argv`.
+    Get all the following args as ``arg_list`` of the option when it first appears.
+    Remove the option and the remaining args if ``is_removing_from_argv``.
     """
     if argv is None:
         argv = sys.argv
@@ -347,12 +347,12 @@ def mk_r_sq_list(r_sq_limit, dimension="3D"):
 
 def mk_r_list(r_limit, *, r_all_limit=28.0, r_scaling_factor=5.0, dimension="3D"):
     """
-    Make a list of `r` values from `0` up to `r_limit`.\n
+    Make a list of ``r`` values from ``0`` up to ``r_limit``.\n
     Parameters
     ----------
-    r_limit: the limit for the generated `r` list.
-    r_scaling_factor: After `r_all_limit`, include `r` with integer values divide `r_scaling_factor`
-    r_all_limit: include all possible `r` values up to (include) this limit.
+    r_limit: the limit for the generated ``r`` list.
+    r_scaling_factor: After ``r_all_limit``, include ``r`` with integer values divide ``r_scaling_factor``
+    r_all_limit: include all possible ``r`` values up to (include) this limit.
     dimension: '3D' or '4D'
     """
     r_list = [
@@ -371,9 +371,9 @@ def mk_r_list(r_limit, *, r_all_limit=28.0, r_scaling_factor=5.0, dimension="3D"
 
 def mk_interp_tuple(x, x0, x1, x_idx):
     """
-    Returns `(x_idx_low, x_idx_high, coef_low, coef_high,)`\n
-    `x_idx` corresponds to `x0`
-    `x_idx + 1` corresponds to `x1`
+    Returns ``(x_idx_low, x_idx_high, coef_low, coef_high,)``\n
+    ``x_idx`` corresponds to ``x0``
+    ``x_idx + 1`` corresponds to ``x1``
     """
     assert x0 <= x and x <= x1
     x_idx_low = x_idx
@@ -394,7 +394,7 @@ def mk_r_sq_interp_idx_coef_list(r_list):
     ``r_sq_interp_idx_coef_list = [ (r_idx_low, r_idx_high, coef_low, coef_high,), ... ]``
     where:
     ``r_sq_interp_idx_coef_list[r_sq] = (r_idx_low, r_idx_high, coef_low, coef_high,)``
-    `r_sq` ranges from `0` to `int(r_list[-1]**2 + 1.5)`
+    ``r_sq`` ranges from ``0`` to ``int(r_list[-1]**2 + 1.5)``
     """
     r_list_len = len(r_list)
     assert r_list_len >= 2
@@ -427,7 +427,7 @@ def mk_r_sq_interp_idx_coef_list(r_list):
 def get_data_sig_arr(x, rs, sig_len):
     """
     Return a signature (an array of floating point number, real or complex) of data viewed as a 1-D array of numbers.\n
-    Call `get_data_sig` several times internally.
+    Call ``get_data_sig`` several times internally.
     Result only depends on the value of the data, not the structure.
     ``x`` can be an instance of ``LatData``, ``np.ndarray``, etc.
     """
@@ -440,7 +440,7 @@ def get_data_sig_arr(x, rs, sig_len):
     sig_arr = np.array(sig_list)
     return sig_arr
 
-global_json_results = []  # Default value for param `json_results` in functions `check_log_json` and `json_results_append`
+global_json_results = []  # Default value for param ``json_results`` in functions ``check_log_json`` and ``json_results_append``
 
 def json_results_append(*args, json_results=None):
     if json_results is None:

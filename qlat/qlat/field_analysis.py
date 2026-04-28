@@ -20,7 +20,7 @@ class q:
 def mk_shift_xg_idx_arr(total_site, xg_shift):
     """
     only work without comm
-    `total_site` and `xg_shift` should be tuple of ints.
+    ``total_site`` and ``xg_shift`` should be tuple of ints.
     """
     total_site = np.array(total_site, dtype=np.int32)
     xg_shift = np.array(xg_shift, dtype=np.int32)
@@ -100,10 +100,10 @@ def smear_field_step(field, coef, n_steps=1):
 def mk_smear_mom_kernel(total_site, radius):
     r"""
     return f
-    `radius` is the smear radius in lattice unit.
-    `isinstance(f, q.FieldRealD)`
-    `isinstance(total_site, tuple)`
-    `f.total_site == q.Coordinate(total_site)`
+    ``radius`` is the smear radius in lattice unit.
+    ``isinstance(f, q.FieldRealD)``
+    ``isinstance(total_site, tuple)``
+    ``f.total_site == q.Coordinate(total_site)``
     #
     f[:] == $G$
     #
@@ -135,10 +135,10 @@ def mk_smear_mom_kernel(total_site, radius):
 def mk_spatial_smear_mom_kernel(total_site, radius):
     r"""
     return f
-    `radius` is the smear radius in lattice unit.
-    `isinstance(f, q.FieldRealD)`
-    `isinstance(total_site, tuple)`
-    `f.total_site == q.Coordinate(total_site)`
+    ``radius`` is the smear radius in lattice unit.
+    ``isinstance(f, q.FieldRealD)``
+    ``isinstance(total_site, tuple)``
+    ``f.total_site == q.Coordinate(total_site)``
     #
     f[:] == $G$
     #
@@ -176,10 +176,10 @@ def mk_spatial_smear_mom_kernel(total_site, radius):
 def mk_sphere_sum_mom_kernel(total_site, radius, is_only_spatial):
     r"""
     return f
-    `radius` is the smear radius in lattice unit.
-    `isinstance(f, q.FieldRealD)`
-    `isinstance(total_site, tuple)`
-    `f.total_site == q.Coordinate(total_site)`
+    ``radius`` is the smear radius in lattice unit.
+    ``isinstance(f, q.FieldRealD)``
+    ``isinstance(total_site, tuple)``
+    ``f.total_site == q.Coordinate(total_site)``
     #
     f[:] == $G$
     #

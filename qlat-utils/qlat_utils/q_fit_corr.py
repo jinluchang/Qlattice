@@ -192,7 +192,7 @@ def mk_fcn(
     corr_data_sigma.shape == (n_ops, n_ops, t_size,)
     t_start_arr is the start tslice of the corr_data (energy dependent array, t_start_arr for negative_energy ~ -t_size)
     atw_t_start_arr is the start tslice of the ATW (around the world effects) corr_data (be default atw_t_start_arr = t_start_arr)
-    atw_factor_arr is the additional factor needs to be multiplied to the ATW term (by default `atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)`)
+    atw_factor_arr is the additional factor needs to be multiplied to the ATW term (by default ``atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)``)
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
     e.g.
@@ -448,7 +448,7 @@ def mk_mp_pool(n_proc=None):
     """
     return mp_pool
     #
-    Usage of `mp_pool`
+    Usage of ``mp_pool``
     mp_map = mp_pool.imap
     """
     if n_proc is None:
@@ -716,7 +716,7 @@ def fit_energy_amplitude(
     t_start = t_start_fit - t_start_data
     t_stop = t_stop_fit - t_start_data
     #
-    `energy_minimum_arr` should be of same shape as `free_energy_idx_arr` will constrain all the free energies to be larger than this energy (None means no constraint)
+    ``energy_minimum_arr`` should be of same shape as ``free_energy_idx_arr`` will constrain all the free energies to be larger than this energy (None means no constraint)
     """
     fname = get_fname()
     #

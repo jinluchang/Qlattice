@@ -27,8 +27,8 @@ import sympy
 
 def get_variables(s):
     """
-    `s` is a string
-    return a list of variables contained in `s`
+    ``s`` is a string
+    return a list of variables contained in ``s``
     """
     variables = []
     g = tokenize.tokenize(io.BytesIO(s.encode("utf-8")).readline)  # tokenize the string
@@ -191,7 +191,7 @@ class Expr:
 
     def simplify_coef(self) -> None:
         """
-        call `simplified_coef_ea` instead
+        call ``simplified_coef_ea`` instead
         """
         for t in self.terms:
             t.simplify_coef()
@@ -199,7 +199,7 @@ class Expr:
 
     def simplify(self) -> None:
         """
-        call `simplified_ea` instead
+        call ``simplified_ea`` instead
         """
         self.sort()
         self.combine_terms()
