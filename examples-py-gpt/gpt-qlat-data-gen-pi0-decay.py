@@ -2064,7 +2064,6 @@ def auto_contract_pi0_gg_disc(
         )
     fsel_prob_arr = fsel_prob[:].ravel()
     psel_prob[:].ravel()
-    tsep = get_param(job_tag, "meson_tensor_tsep")
     m_l = get_param(job_tag, "m_l")
     m_h = get_param(job_tag, "m_h")
     geo = q.Geometry(total_site)
@@ -2108,10 +2107,17 @@ def auto_contract_pi0_gg_disc(
     zero_dis_counts_sum_no_correction_t_1_arr = np.zeros(t_size, dtype=np.float64)
     sf_count = q.SelectedFieldRealD(fsel, 1)
     for t_src in range(t_size):
-        sf_count[:] = fsel_prob_arr[:, None] * sf_tadpole_current[:, 0, None].real * sf_pi0_current_list[t_src][:, 0, None].real
+        sf_count[:] = (
+            fsel_prob_arr[:, None]
+            * sf_tadpole_current[:, 0, None].real
+            * sf_pi0_current_list[t_src][:, 0, None].real
+        )
         tslice_sum = sf_count.glb_sum_tslice()[:, 0]
         zero_dis_counts_sum_t_1_arr += np.roll(tslice_sum, -t_src)
-        sf_count[:] = sf_tadpole_current[:, 0, None].real * sf_pi0_current_list[t_src][:, 0, None].real
+        sf_count[:] = (
+            sf_tadpole_current[:, 0, None].real
+            * sf_pi0_current_list[t_src][:, 0, None].real
+        )
         tslice_sum = sf_count.glb_sum_tslice()[:, 0]
         zero_dis_counts_sum_no_correction_t_1_arr += np.roll(tslice_sum, -t_src)
     # Convert tadpole to field
@@ -2206,7 +2212,9 @@ def auto_contract_pi0_gg_disc(
             val = np.zeros(len(expr_names), dtype=np.complex128)
             if np.all(x_rel == 0):
                 zero_dis_counts_sum = zero_dis_counts_sum_t_1_arr[t_1]
-                zero_dis_counts_sum_no_correction = zero_dis_counts_sum_no_correction_t_1_arr[t_1]
+                zero_dis_counts_sum_no_correction = (
+                    zero_dis_counts_sum_no_correction_t_1_arr[t_1]
+                )
                 assert abs(ff[xg_idx, 0] / zero_dis_counts_sum_no_correction - 1) < 1e-8
                 val[0] = zero_dis_counts_sum
             else:
@@ -2214,9 +2222,7 @@ def auto_contract_pi0_gg_disc(
             for ff_idx, i, j, k, tadpole_idx, pi_op_idx in info[1:]:
                 x_i = q.rel_mod_sym(x_rel[i], total_site[i])  # x[i]
                 eijk = q.epsilon_tensor(i, j, k)  # e(i,j,k)
-                jjpi0_t1 = ff[
-                    xg_idx, ff_idx
-                ]  # disc[ j_j(x_2) ] * j_k(x_1) * pi0(0)
+                jjpi0_t1 = ff[xg_idx, ff_idx]  # disc[ j_j(x_2) ] * j_k(x_1) * pi0(0)
                 val[1 + tadpole_idx * 2 + pi_op_idx] += eijk * x_i * jjpi0_t1
             values[t_1, t_2, r_idx_low] += coef_low * val
             values[t_1, t_2, r_idx_high] += coef_high * val
