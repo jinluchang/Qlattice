@@ -813,7 +813,7 @@ struct inputpara {
     return find_para(std::string(str2), res);
   }
 
-  inline void load_para(const char* filename, bool printlog_set = true)
+  inline void load_para(const char* filename, const bool printlog_set = true)
   {
     printlog = printlog_set;
     Int rank = get_node_rank_funs0();
@@ -1048,6 +1048,11 @@ struct inputpara {
     //
     // if(get_node_rank_funs0() == 0)printf("========sum print %12X %zu \n",
     // checksum, off_file);
+  }
+
+  inline void load_para(const std::string& filename, const bool printlog_set = true)
+  {
+    load_para(filename.c_str(), printlog_set);
   }
 
   inline void load_para(Int argc, char* argv[])

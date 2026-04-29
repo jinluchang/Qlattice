@@ -814,7 +814,8 @@ void eigen_ov::save_eigen_Mvec(const std::string& ename, Int sm, Int save_type)
     qmessage("Could not save smear eigen without set it up.");
     return;
   }
-  io_vec& io_use = get_io_vec_plan(geo);
+  // overlap eigen have not checksum currently
+  io_vec& io_use = get_io_vec_plan_no_checksum(geo);
   //
   const Int nini = 0;
   const Int ntotal = nini + n_vec;
@@ -905,8 +906,8 @@ void eigen_ov::load_eigen_Mvec_smear(
   if (val != "") {
     print_norms = stringtonum(val);
   }
-  //
-  io_vec& io_use = get_io_vec_plan(geo);
+  // overlap eigen have not checksum currently
+  io_vec& io_use = get_io_vec_plan_no_checksum(geo);
   const Int each_io = io_use.ionum;
   //
   Long La = 2 * bfac / BFAC_GROUP_CPU;
@@ -1044,7 +1045,8 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, Int sm, Int nini,
     print_norms = stringtonum(val);
   }
   //
-  io_vec& io_use = get_io_vec_plan(geo);
+  // overlap eigen have not checksum currently
+  io_vec& io_use = get_io_vec_plan_no_checksum(geo);
   //
   Long La = 2 * bfac / BFAC_GROUP_CPU;
   Long Lb = BFAC_GROUP_CPU * n_vec * Long(b_size);

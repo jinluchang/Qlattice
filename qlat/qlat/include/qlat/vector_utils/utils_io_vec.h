@@ -412,12 +412,26 @@ inline io_vec& get_io_vec_plan(const IOvecKey& fkey)
     get_io_vec_cache()[fkey] =
         io_vec(fkey.total_site, fkey.ionum, IO_THREAD, fkey.do_checksum_set);
   }
+  // clear io checksum and buffs
+  io_vec& io_use = get_io_vec_cache()[fkey];
+  if(fkey.do_checksum_set == true){
+    io_use.do_checksum = true;
+    io_use.full_crc = 0;
+  }
   return get_io_vec_cache()[fkey];
 }
 
 inline io_vec& get_io_vec_plan(const Geometry& geo, Int ionum_ = 0)
 {
-  IOvecKey fkey(geo, ionum_);
+  static const Long qlat_vecs_io_checksum = get_env_double_default("q_vecs_io_checksum", 1);
+  Qassert(qlat_vecs_io_checksum == 0 or qlat_vecs_io_checksum == 1);
+  IOvecKey fkey(geo, ionum_, qlat_vecs_io_checksum);
+  return get_io_vec_plan(fkey);
+}
+
+inline io_vec& get_io_vec_plan_no_checksum(const Geometry& geo, Int ionum_ = 0)
+{
+  IOvecKey fkey(geo, ionum_, false);
   return get_io_vec_plan(fkey);
 }
 
@@ -1654,7 +1668,8 @@ template <typename Td>
 void save_gwu_prop(const char* filename, Propagator4dT<Td>& prop)
 {
   Qassert(prop.initialized);
-  io_vec& io_use = get_io_vec_plan(prop.geo());
+  // gwu prop no checksum
+  io_vec& io_use = get_io_vec_plan_no_checksum(prop.geo());
   std::vector<qlat::FermionField4dT<Td>> prop_qlat;
   prop4d_to_Fermion(prop_qlat, prop, 1);
   save_gwu_prop(filename, prop_qlat, io_use);
@@ -1674,7 +1689,8 @@ template <typename Td>
 void load_gwu_prop(const char* filename, Propagator4dT<Td>& prop)
 {
   Qassert(prop.initialized);
-  io_vec& io_use = get_io_vec_plan(prop.geo());
+  // gwu prop no checksum
+  io_vec& io_use = get_io_vec_plan_no_checksum(prop.geo());
   std::vector<qlat::FermionField4dT<Td>> prop_qlat;
   load_gwu_prop(filename, prop_qlat, io_use);
   prop4d_to_Fermion(prop_qlat, prop, 0);
@@ -1693,7 +1709,8 @@ void load_gwu_prop(std::string& filename, Propagator4dT<Td>& prop)
 template <typename Td>
 void load_gwu_link(const char* filename, GaugeFieldT<Td>& gf, bool read = true)
 {
-  io_vec io_use(gf.geo(), 8);
+  // gwu link no checksum
+  io_vec& io_use = get_io_vec_plan_no_checksum(gf.geo());
   // if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ))
   //{abort_r("Cannot understand the input format! \n");}
   //
@@ -1789,7 +1806,8 @@ void load_gwu_noies(const char* filename,
   const Long Nnoi = noises.size();
   //
   Qassert(noises[0].initialized);
-  io_vec& io_use = get_io_vec_plan(noises[0].geo());
+  // gwu noise no checksum
+  io_vec& io_use = get_io_vec_plan_no_checksum(noises[0].geo());
   //
   FILE* file;
   if (read == true) file = io_use.io_read(filename, "rb");
@@ -1869,7 +1887,8 @@ void load_gwu_noiP(const char* filename, Fieldy& noi, bool read = true,
   }
   //
   Qassert(noi.initialized and noi.multiplicity == 1);
-  io_vec& io_use = get_io_vec_plan(noi.geo());
+  // gwu noise have no checkpoint
+  io_vec& io_use = get_io_vec_plan_no_checksum(noi.geo());
   //
   size_t noden = io_use.noden;
   size_t Fsize = io_use.Nmpi * (noden * 2) * sizeof(float);
