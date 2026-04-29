@@ -328,8 +328,9 @@ def bump_version() -> None:
         print("ERROR: VERSION format not recognized (expected vX.Y).")
         sys.exit(1)
     major = int(m.group(1))
-    minor_num = (int(m.group(2)) + 1) % 100
-    major += minor_num // 100  # increment major when minor wraps from 99→0
+    minor_raw = int(m.group(2)) + 1
+    major += minor_raw // 100
+    minor_num = minor_raw % 100
     new_version = f"v{major}.{minor_num:02d}"
     Path("VERSION").write_text(new_version + "\n")
 
