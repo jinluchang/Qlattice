@@ -550,7 +550,6 @@ let
       meson
       ninja
       mpi4py
-      soundfile
       openai
       psutil
       cython
@@ -577,6 +576,9 @@ let
       myst-parser
       pytools
       lz4
+      soundfile
+      pypdf
+      reportlab
       ;
     }
     // (if is-linux then {
