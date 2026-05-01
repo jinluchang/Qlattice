@@ -117,7 +117,8 @@ struct io_vec {
     if (do_checksum) {
       sum_crc();
       end_of_file = 0;
-      do_checksum = false;
+      // may not be needed
+      // do_checksum = false;
     }
     if (node_ioL[rank] >= 0) {
       if (threadio != 1)
@@ -414,10 +415,9 @@ inline io_vec& get_io_vec_plan(const IOvecKey& fkey)
   }
   // clear io checksum and buffs
   io_vec& io_use = get_io_vec_cache()[fkey];
-  if(fkey.do_checksum_set == true){
-    io_use.do_checksum = true;
-    io_use.full_crc = 0;
-  }
+  // in case io_use changed do_checksum
+  io_use.do_checksum = fkey.do_checksum_set;
+  //io_use.full_crc = 0;
   return get_io_vec_cache()[fkey];
 }
 
@@ -2190,12 +2190,16 @@ inline void open_file_qlat_noisesT(
 
 inline void close_file_qlat_noisesT(FILE* file, io_vec& io_use, inputpara& in)
 {
+  // write head after close the file
+  const bool io_with_checksum = io_use.do_checksum;
+  // this may change do_checksum
   io_use.io_close(file);
   if (in.read == false) {
     in.checksum = io_use.full_crc;
     vecs_head_write(in, in.filename.c_str(), false);
   }
-  if (in.read == true and in.ncur == in.N_noi and io_use.do_checksum == true) {
+  // if read then close file after checks
+  if (in.read == true and in.ncur == in.N_noi and io_with_checksum == true) {
     if (in.checksum != io_use.full_crc) {
       qmessage("File %s check sum wrong, %12X %12X ! \n ", in.filename.c_str(),
                in.checksum, io_use.full_crc);
