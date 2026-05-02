@@ -417,13 +417,14 @@ inline io_vec& get_io_vec_plan(const IOvecKey& fkey)
   io_vec& io_use = get_io_vec_cache()[fkey];
   // in case io_use changed do_checksum
   io_use.do_checksum = fkey.do_checksum_set;
-  //io_use.full_crc = 0;
+  // io_use.full_crc = 0;
   return get_io_vec_cache()[fkey];
 }
 
 inline io_vec& get_io_vec_plan(const Geometry& geo, Int ionum_ = 0)
 {
-  static const Long qlat_vecs_io_checksum = get_env_double_default("q_vecs_io_checksum", 1);
+  static const Long qlat_vecs_io_checksum =
+      get_env_double_default("q_vecs_io_checksum", 1);
   Qassert(qlat_vecs_io_checksum == 0 or qlat_vecs_io_checksum == 1);
   IOvecKey fkey(geo, ionum_, qlat_vecs_io_checksum);
   return get_io_vec_plan(fkey);

@@ -1050,7 +1050,8 @@ struct inputpara {
     // checksum, off_file);
   }
 
-  inline void load_para(const std::string& filename, const bool printlog_set = true)
+  inline void load_para(const std::string& filename,
+                        const bool printlog_set = true)
   {
     load_para(filename.c_str(), printlog_set);
   }

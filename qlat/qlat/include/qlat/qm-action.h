@@ -350,8 +350,10 @@ struct QMAction {
     // else return V_full_xy(x[0]/norm, x[1]/norm);
     RealD vfull = V_full_xy(x[0], x[1]);
     RealD vfull_op = V_full_xy(x[0] / norm, x[1] / norm);
-    if(vfull_op>vfull) return vfull_op;
-    else return vfull;
+    if (vfull_op > vfull)
+      return vfull_op;
+    else
+      return vfull;
   }
 
   inline RealD dV_full_op_fixed(const Vector<RealD>& x, RealD op, const int idx)
@@ -364,13 +366,17 @@ struct QMAction {
     //   0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0],
     //   x[1]/norm, idx);
     // }
-    // else return (1/norm - 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) * dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
+    // else return (1/norm -
+    // 0.5*x[idx]*d_order_param(x,idx)/norm/order_param(x)) *
+    // dV_full_xy(x[0]/norm, x[1]/norm, idx); // ddiv(x) * dV(div(x))
     RealD vfull = V_full_xy(x[0], x[1]);
     RealD vfull_op = V_full_xy(x[0] / norm, x[1] / norm);
-    if(vfull_op>vfull) return (1 / norm -
-            0.5 * x[idx] * d_order_param(x, idx) / norm / order_param(x)) *
-           dV_full_xy(x[0] / norm, x[1] / norm, idx);
-    else return dV_full_xy(x[0], x[1], idx);
+    if (vfull_op > vfull)
+      return (1 / norm -
+              0.5 * x[idx] * d_order_param(x, idx) / norm / order_param(x)) *
+             dV_full_xy(x[0] / norm, x[1] / norm, idx);
+    else
+      return dV_full_xy(x[0], x[1], idx);
   }
 
   inline RealD V_full(const Vector<RealD>& x) { return V_full_xy(x[0], x[1]); }
