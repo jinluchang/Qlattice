@@ -574,6 +574,7 @@ let
       sphinx
       linkify-it-py
       myst-parser
+      pytest
       pytools
       lz4
       soundfile
