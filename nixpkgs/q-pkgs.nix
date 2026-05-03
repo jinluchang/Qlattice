@@ -580,6 +580,26 @@ let
       soundfile
       pypdf
       reportlab
+      awkward
+      uproot
+      iminuit
+      hepunits
+      networkx
+      joblib
+      dask
+      tables
+      zarr
+      tqdm
+      pyarrow
+      bokeh
+      ipython
+      mypy
+      black
+      memory-profiler
+      tabulate
+      pyyaml
+      click
+      tiktoken
       ;
     }
     // (if is-linux then {
@@ -603,6 +623,11 @@ let
       pandas
       torchvision
       torchaudio
+      tensorboard
+      optuna
+      datasets
+      tokenizers
+      safetensors
       ;
     } else {}
     )
