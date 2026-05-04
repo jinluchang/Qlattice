@@ -18,6 +18,8 @@ module load Core/24.00
 module load gcc/14.2.0
 module load openmpi/4.1.2
 module list
+unset MPICXX
+unset MPICC
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc
 fi
