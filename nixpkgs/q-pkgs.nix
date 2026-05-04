@@ -580,6 +580,7 @@ let
       soundfile
       pypdf
       reportlab
+      pdfminer-six
       awkward
       uproot
       iminuit
@@ -688,6 +689,9 @@ let
         nspr
         nss
         zstd
+        pdftk
+        qpdf
+        ghostscript
         ;
     }
     // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
