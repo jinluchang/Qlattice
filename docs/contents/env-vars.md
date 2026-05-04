@@ -4,7 +4,7 @@
 
   Program finish time in seconds since epoch.
 
-  Used when `check_time_limit()`. Possible setting can be: `export q_end_time="$(($(date +%s) + 12 * 60 * 60))"` for jobs run for at most 12 hours.
+  Used when `check_time_limit()`. Possible setting can be: `export q_end_time="$(($(date +%s) + 12 * 60 * 60))"` or `export q_end_time=$SLURM_JOB_END_TIME` for jobs run for at most 12 hours.
 
   Default is empty.
 
