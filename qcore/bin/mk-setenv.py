@@ -4,7 +4,11 @@ import sys
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
     print(sys.argv)
-    print("You are using not supported Python {}.{}.".format(sys.version_info.major, sys.version_info.minor))
+    print(
+        "You are using not supported Python {}.{}.".format(
+            sys.version_info.major, sys.version_info.minor
+        )
+    )
     sys.exit(1)
 
 import os
@@ -15,7 +19,7 @@ def set_env(env, val):
 
 prefix = os.getenv("prefix")
 
-assert prefix[:-1] != '/'
+assert prefix[:-1] != "/"
 
 bin_dir = os.path.join(prefix, "bin")
 
@@ -38,9 +42,9 @@ setenv_fn = os.path.join(prefix, "setenv.sh")
 
 l_init = []
 if "--keep" in sys.argv and os.path.isfile(setenv_fn):
-    with open(setenv_fn, mode = "r") as f:
+    with open(setenv_fn, mode="r") as f:
         l_init = f.readlines()
-        l_init = [ v.rstrip() for v in l_init ]
+        l_init = [v.rstrip() for v in l_init]
 
 l = []
 
@@ -55,7 +59,9 @@ l.append("local v")
 l.append("")
 
 # l.append(f'setenv_prefix="{prefix}"')
-l.append('setenv_prefix="$(builtin cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && builtin pwd)"')
+l.append(
+    'setenv_prefix="$(builtin cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && builtin pwd)"'
+)
 
 if l_init:
     l.append("")
@@ -81,13 +87,21 @@ if os.path.isdir(include_ncursesw_dir):
     l.append(set_env("CPATH", "include/ncursesw"))
     l.append("")
 
-if glob.glob(f"{lib_dir}/*.a") + glob.glob(f"{lib_dir}/*.la") + glob.glob(f"{lib_dir}/*.so*"):
+if (
+    glob.glob(f"{lib_dir}/*.a")
+    + glob.glob(f"{lib_dir}/*.la")
+    + glob.glob(f"{lib_dir}/*.so*")
+):
     l.append(set_env("LD_RUN_PATH", "lib"))
     l.append(set_env("LD_LIBRARY_PATH", "lib"))
     l.append(set_env("LIBRARY_PATH", "lib"))
     l.append("")
 
-if glob.glob(f"{lib64_dir}/*.a") + glob.glob(f"{lib64_dir}/*.la") + glob.glob(f"{lib64_dir}/*.so*"):
+if (
+    glob.glob(f"{lib64_dir}/*.a")
+    + glob.glob(f"{lib64_dir}/*.la")
+    + glob.glob(f"{lib64_dir}/*.so*")
+):
     l.append(set_env("LD_RUN_PATH", "lib64"))
     l.append(set_env("LD_LIBRARY_PATH", "lib64"))
     l.append(set_env("LIBRARY_PATH", "lib64"))
@@ -104,14 +118,14 @@ if os.path.isdir(lib64_pkg_config_dir):
 for lib_python_dir in lib_python_dir_list:
     assert lib_python_dir.startswith(prefix + "/lib")
     if os.path.isdir(lib_python_dir):
-        l.append(set_env("PYTHONPATH", lib_python_dir[len(prefix + "/"):]))
+        l.append(set_env("PYTHONPATH", lib_python_dir[len(prefix + "/") :]))
         l.append("")
 
 l.append("}")
 l.append("")
 l.append("func")
 
-organize_env_path = f"""
+organize_env_path = """
 if python-check-version.py >/dev/null 2>&1 && which organize-env-path.py >/dev/null 2>&1 ; then
     eval "$(organize-env-path.py)"
 elif which organize-env-path.sh >/dev/null 2>&1 ; then
@@ -121,5 +135,5 @@ fi
 
 l.append(organize_env_path)
 
-with open(setenv_fn, mode = "w") as f:
+with open(setenv_fn, mode="w") as f:
     f.write("\n".join(l))

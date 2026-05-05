@@ -7,13 +7,17 @@ import sys
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
     print(sys.argv)
-    print("You are using not supported Python {}.{}.".format(sys.version_info.major, sys.version_info.minor))
+    print(
+        "You are using not supported Python {}.{}.".format(
+            sys.version_info.major, sys.version_info.minor
+        )
+    )
     sys.exit(1)
 
 import os
 
 def get_colon_list(str_colon_separated_list):
-    l = str_colon_separated_list.split(':')
+    l = str_colon_separated_list.split(":")
     if not l:
         return []
     elif l[-1] == "":
@@ -53,36 +57,36 @@ def show_env_var_list(env_list):
     return "\n".join(l)
 
 all_env_list = [
-        "SETENV_PATH",
-        "PATH",
-        "PYTHONPATH",
-        "LD_RUN_PATH",
-        "LD_LIBRARY_PATH",
-        "LIBRARY_PATH",
-        "CPATH",
-        "C_INCLUDE_PATH",
-        "CPLUS_INCLUDE_PATH",
-        "PKG_CONFIG_PATH",
-        ]
+    "SETENV_PATH",
+    "PATH",
+    "PYTHONPATH",
+    "LD_RUN_PATH",
+    "LD_LIBRARY_PATH",
+    "LIBRARY_PATH",
+    "CPATH",
+    "C_INCLUDE_PATH",
+    "CPLUS_INCLUDE_PATH",
+    "PKG_CONFIG_PATH",
+]
 
 all_env_var_list = [
-        "prefix",
-        "num_proc",
-        "num_test",
-        "USE_COMPILER",
-        "NVCC_ARCH",
-        "CC",
-        "CXX",
-        "MPICC",
-        "MPICXX",
-        "CFLAGS",
-        "CXXFLAGS",
-        "LDFLAGS",
-        "LIBS",
-        "LD_PRELOAD",
-        "NINJA_NUM_JOBS",
-        "OMP_NUM_THREADS",
-        ]
+    "prefix",
+    "num_proc",
+    "num_test",
+    "USE_COMPILER",
+    "NVCC_ARCH",
+    "CC",
+    "CXX",
+    "MPICC",
+    "MPICXX",
+    "CFLAGS",
+    "CXXFLAGS",
+    "LDFLAGS",
+    "LIBS",
+    "LD_PRELOAD",
+    "NINJA_NUM_JOBS",
+    "OMP_NUM_THREADS",
+]
 
 if __name__ == "__main__":
     print("---------------------------------------------------------------------")

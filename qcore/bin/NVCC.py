@@ -4,7 +4,11 @@ import sys
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
     print(sys.argv)
-    print("You are using not supported Python {}.{}.".format(sys.version_info.major, sys.version_info.minor))
+    print(
+        "You are using not supported Python {}.{}.".format(
+            sys.version_info.major, sys.version_info.minor
+        )
+    )
     sys.exit(1)
 
 import subprocess as p
@@ -14,24 +18,23 @@ import os
 ########################
 
 class LogCmd:
-
     def __init__(self):
         log_path = __file__ + ".log"
         time_sec = time.time()
         self.log_prefix = f"{time_sec:30.10f}: "
-        self.log_file = open(log_path, 'a')
+        self.log_file = open(log_path, "a")
         self.log("Start.")
         self.log(f"pwd='{os.getcwd()}'")
 
     def __del__(self):
         self.log("End.")
-        self.log_file.write(f"\n");
+        self.log_file.write("\n")
         self.log_file.close()
 
     def log(self, msg):
         msg = str(msg)
         msg = msg.replace("\n", f"\n{self.log_prefix}")
-        self.log_file.write(f"{self.log_prefix}{msg}\n");
+        self.log_file.write(f"{self.log_prefix}{msg}\n")
 
 log = LogCmd()
 
@@ -55,7 +58,6 @@ def quote_comma(arg):
     return arg.replace(",", "\\,").replace("$", "\\\\$")
 
 class NvccCmdLine:
-
     def __init__(self, argv):
         self.argv = argv.copy()
         self.name = None
@@ -73,21 +75,21 @@ class NvccCmdLine:
 
     def __str__(self):
         lines = [
-                "NvccCmdLine={",
-                f"argv={self.argv}",
-                f"name={self.name}",
-                f"ccbin={self.ccbin}",
-                f"cc_only_flags={self.cc_only_flags}",
-                f"is_compile={self.is_compile}",
-                f"is_link={self.is_link}",
-                f"output={self.output}",
-                f"common_flags={self.common_flags}",
-                f"nv_flags={self.nv_flags}",
-                f"cc_flags={self.cc_flags}",
-                f"omit_flags={self.omit_flags}",
-                f"wl_group_flags={self.wl_group_flags}",
-                "}",
-                ]
+            "NvccCmdLine={",
+            f"argv={self.argv}",
+            f"name={self.name}",
+            f"ccbin={self.ccbin}",
+            f"cc_only_flags={self.cc_only_flags}",
+            f"is_compile={self.is_compile}",
+            f"is_link={self.is_link}",
+            f"output={self.output}",
+            f"common_flags={self.common_flags}",
+            f"nv_flags={self.nv_flags}",
+            f"cc_flags={self.cc_flags}",
+            f"omit_flags={self.omit_flags}",
+            f"wl_group_flags={self.wl_group_flags}",
+            "}",
+        ]
         return "\n".join(lines)
 
     def parse_name(self):
@@ -97,7 +99,6 @@ class NvccCmdLine:
         self.name = self.argv[0]
         assert self.name.endswith("NVCC.py")
         self.argv = self.argv[1:]
-        ccbin = "-ccbin"
         assert self.argv[0] == "-ccbin"
         assert len(self.argv) >= 2
         self.ccbin = self.argv[1]
@@ -107,14 +108,16 @@ class NvccCmdLine:
         """
         If there is such flags, call cc instead of nvcc
         """
-        opt_pool = set([
-            "--version",
-            "-Wl,--version",
-            "--print-search-dirs",
-            "-dM",
-            "-E",
-            "-P",
-            ])
+        opt_pool = set(
+            [
+                "--version",
+                "-Wl,--version",
+                "--print-search-dirs",
+                "-dM",
+                "-E",
+                "-P",
+            ]
+        )
         argv_new = []
         for arg in self.argv:
             if arg in opt_pool:
@@ -151,10 +154,12 @@ class NvccCmdLine:
         self.argv = argv_new
 
     def parse_common_flags(self):
-        opt_pool = set([
-            "-w",
-            "-shared",
-            ])
+        opt_pool = set(
+            [
+                "-w",
+                "-shared",
+            ]
+        )
         argv_new = []
         for arg in self.argv:
             if arg in opt_pool:
@@ -170,16 +175,20 @@ class NvccCmdLine:
         self.argv = argv_new
 
     def parse_nv_flags(self):
-        opt_pool = set([
-            # "-w",
-            "--expt-extended-lambda",
-            "--expt-relaxed-constexpr",
-            "-lcublas",
-            ])
-        opt1_pool = set([
-            "-Xcudafe",
-            "-cudart",
-            ])
+        opt_pool = set(
+            [
+                # "-w",
+                "--expt-extended-lambda",
+                "--expt-relaxed-constexpr",
+                "-lcublas",
+            ]
+        )
+        opt1_pool = set(
+            [
+                "-Xcudafe",
+                "-cudart",
+            ]
+        )
         argv_new = []
         n_arg = 0
         for arg in self.argv:
@@ -198,25 +207,29 @@ class NvccCmdLine:
         self.argv = argv_new
 
     def parse_cc_flags(self):
-        opt_pool = set([
-            "-fopenmp",
-            "-fPIC",
-            "-fno-strict-aliasing",
-            "-fdiagnostics-color=always",
-            "-MD",
-            "-fpermissive",
-            "-D_FILE_OFFSET_BITS=64",
-            "-Wl,--allow-shlib-undefined",
-            "-Wl,--as-needed",
-            "-Wl,--no-undefined",
-            "-Wl,-O1",
-            "-fvisibility=hidden",
-            "-fvisibility-inlines-hidden",
-            ])
-        opt1_pool = set([
-            "-MQ",
-            "-MF",
-            ])
+        opt_pool = set(
+            [
+                "-fopenmp",
+                "-fPIC",
+                "-fno-strict-aliasing",
+                "-fdiagnostics-color=always",
+                "-MD",
+                "-fpermissive",
+                "-D_FILE_OFFSET_BITS=64",
+                "-Wl,--allow-shlib-undefined",
+                "-Wl,--as-needed",
+                "-Wl,--no-undefined",
+                "-Wl,-O1",
+                "-fvisibility=hidden",
+                "-fvisibility-inlines-hidden",
+            ]
+        )
+        opt1_pool = set(
+            [
+                "-MQ",
+                "-MF",
+            ]
+        )
         argv_new = []
         n_arg = 0
         for arg in self.argv:
@@ -229,27 +242,33 @@ class NvccCmdLine:
                 self.cc_flags.append(arg)
                 n_arg = 1
             elif arg.startswith("-Wl,-rpath"):
-                self.cc_flags.append("-Wl,-rpath,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                self.cc_flags.append(
+                    "-Wl,-rpath,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                )
                 self.cc_flags.append(arg)
             else:
                 argv_new.append(arg)
         self.argv = argv_new
 
     def parse_omit_flags(self):
-        opt_pool = set([
-            # "-w",
-            "-Wall",
-            "-Winvalid-pch",
-            "-Wextra",
-            "-Wpedantic",
-            "-Xcompiler",
-            "-MD",
-            ])
-        opt1_pool = set([
-            "-ccbin",
-            "-MQ",
-            "-MF",
-            ])
+        opt_pool = set(
+            [
+                # "-w",
+                "-Wall",
+                "-Winvalid-pch",
+                "-Wextra",
+                "-Wpedantic",
+                "-Xcompiler",
+                "-MD",
+            ]
+        )
+        opt1_pool = set(
+            [
+                "-ccbin",
+                "-MQ",
+                "-MF",
+            ]
+        )
         argv_new = []
         n_arg = 0
         for arg in self.argv:
@@ -268,12 +287,6 @@ class NvccCmdLine:
         self.argv = argv_new
 
     def parse_wl_group_flags(self):
-        opt_pool = set([
-            "-Wall",
-            "-Winvalid-pch",
-            "-Wextra",
-            "-Wpedantic",
-            ])
         argv_new = []
         is_wl_group = False
         for arg in self.argv:
@@ -301,7 +314,10 @@ class NvccCmdLine:
     def prepare_cc_flags(self):
         argv_new = []
         for arg in self.cc_flags:
-            argv_new += [ "-Xcompiler", quote_comma(arg), ]
+            argv_new += [
+                "-Xcompiler",
+                quote_comma(arg),
+            ]
         return argv_new
 
     def prepare_wl_group_flags(self):
@@ -314,27 +330,44 @@ class NvccCmdLine:
                 libname = os.path.basename(arg)
                 assert libname.startswith("lib")
                 libname = libname.removeprefix("lib").removesuffix(".so")
-                argv_new.append(f'-L{dirname}')
-                argv_new.append(f'-l{libname}')
+                argv_new.append(f"-L{dirname}")
+                argv_new.append(f"-l{libname}")
             else:
-                argv_new.append('-Xcompiler')
+                argv_new.append("-Xcompiler")
                 argv_new.append(quote_comma(arg))
         return argv_new
 
     def make_cc_argv(self):
         if not self.cc_only_flags:
             return None
-        argv_new = [ self.ccbin, ] + self.cc_only_flags + self.common_flags + self.cc_flags + self.argv
+        argv_new = (
+            [
+                self.ccbin,
+            ]
+            + self.cc_only_flags
+            + self.common_flags
+            + self.cc_flags
+            + self.argv
+        )
         return argv_new
 
     def make_argv(self):
         argv_new = []
         assert not self.cc_only_flags
-        argv_new += [ "nvcc", "-ccbin", self.ccbin, ]
+        argv_new += [
+            "nvcc",
+            "-ccbin",
+            self.ccbin,
+        ]
         if self.is_compile:
-            argv_new += [ "-x", "cu", ]
+            argv_new += [
+                "-x",
+                "cu",
+            ]
         if self.is_link:
-            argv_new += [ "-link", ]
+            argv_new += [
+                "-link",
+            ]
         argv_new += self.nv_flags
         if self.is_compile:
             # argv_new += [ "-dc", ]
@@ -344,14 +377,20 @@ class NvccCmdLine:
         argv_new += self.argv
         argv_new += self.prepare_wl_group_flags()
         if self.is_link:
-            argv_new += [ "-lcudart", "-lcufft", ]
+            argv_new += [
+                "-lcudart",
+                "-lcufft",
+            ]
         if self.output is not None:
-            argv_new += [ "-o", self.output, ]
+            argv_new += [
+                "-o",
+                self.output,
+            ]
         return argv_new
 
     def call(self, argv):
         status = p.call(argv)
-        log.log(f"{' '.join([ repr(arg) for arg in argv ])}")
+        log.log(f"{' '.join([repr(arg) for arg in argv])}")
         log.log(f"status={status}")
         if status != 0:
             print(f"pwd={os.getcwd()}")
@@ -368,10 +407,16 @@ class NvccCmdLine:
             return
         log.log(f"ldd '{out}'")
         try:
-            ldd_out = p.check_output([ "ldd", out, ], stderr=p.STDOUT).decode("utf-8")
+            ldd_out = p.check_output(
+                [
+                    "ldd",
+                    out,
+                ],
+                stderr=p.STDOUT,
+            ).decode("utf-8")
             log.log(ldd_out)
         except Exception:
-            log.log(f"ldd failed.")
+            log.log("ldd failed.")
 
     def readelf(self):
         out = self.output
@@ -381,10 +426,17 @@ class NvccCmdLine:
             return
         log.log(f"readelf -d '{out}'")
         try:
-            ldd_out = p.check_output([ "readelf", "-d", out, ], stderr=p.STDOUT).decode("utf-8")
+            ldd_out = p.check_output(
+                [
+                    "readelf",
+                    "-d",
+                    out,
+                ],
+                stderr=p.STDOUT,
+            ).decode("utf-8")
             log.log(ldd_out)
         except Exception:
-            log.log(f"readelf failed.")
+            log.log("readelf failed.")
 
     def call_and_exit(self, argv):
         status = self.call(argv)
