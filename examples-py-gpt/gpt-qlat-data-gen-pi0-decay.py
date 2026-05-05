@@ -3005,6 +3005,9 @@ def get_all_cexpr():
 ### ------
 
 job_tag = "24D"
+set_param(job_tag, "seed")("24D")
+set_param(job_tag, "n_per_tslice_smear_median")(128)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(8)
 set_param(job_tag, "pi0_jjp_threshold")(0.02)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
@@ -3022,6 +3025,7 @@ set_param(job_tag, "traj_list")(
 
 job_tag = "48I"
 set_param(job_tag, "seed")("48I")
+set_param(job_tag, "n_per_tslice_smear_median")(512)
 set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(13)
 set_param(job_tag, "pi0_jjp_threshold")(0.001)
@@ -3146,6 +3150,7 @@ set_param(job_tag, "traj_list")(
 
 job_tag = "64I"
 set_param(job_tag, "seed")("64I")
+set_param(job_tag, "n_per_tslice_smear_median")(512)
 set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "pi0_jjp_threshold")(0.0005)
@@ -3309,6 +3314,7 @@ set_param(job_tag, "traj_list")(
 
 job_tag = "64I-pq"
 set_param(job_tag, "seed")("64I")
+set_param(job_tag, "n_per_tslice_smear_median")(512)
 set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "pi0_jjp_threshold")(0.0005)
