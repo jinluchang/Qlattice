@@ -3570,11 +3570,12 @@ if __name__ == "__main__":
                     traj,
                 )
             )
-    if not is_test():
-        job_tag_traj_list = q.random_permute(
-            job_tag_traj_list, q.RngState(f"{q.get_time()}")
-        )
-        job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
+    if q.get_option("--random-permute-job_tag-traj-list"):
+        if not is_test():
+            job_tag_traj_list = q.random_permute(
+                job_tag_traj_list, q.RngState(f"{q.get_time()}")
+            )
+            job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:
         if is_performing_inversion:
             q.check_time_limit()
