@@ -14,9 +14,10 @@ if [ -z "\$num_proc" ] ; then
     export num_proc=8
 fi
 module purge
-module load Core/24.00
-module load gcc/14.2.0
-module load openmpi/4.1.2
+module load DefApps
+# module load Core/24.00
+# module load gcc/14.2.0
+# module load openmpi/4.1.2
 module list
 unset MPICXX
 unset MPICC
