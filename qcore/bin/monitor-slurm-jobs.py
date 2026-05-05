@@ -59,7 +59,7 @@ def get_running_jobs():
             parts[4],
             parts[5],
         )
-        if state == "RUNNING":
+        if state != "PENDING":
             jobs[job_id] = (user, partition, name, state, time_str)
     return jobs
 
