@@ -45,7 +45,7 @@ myst_enable_extensions = [
 exclude_patterns = []
 
 # Suppress docutils warnings from *args in function signatures rendered by autosummary
-suppress_warnings = ["docutils"]
+suppress_warnings = ["docutils", "myst.xref_missing"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
