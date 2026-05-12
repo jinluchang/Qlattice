@@ -20,8 +20,21 @@ Tests live in `examples-py/` (Python) and `examples-cpp/` (C++). The testing fra
 
 ### Build
 
+Full Nix build (all packages):
 ```bash
 nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-jhub-env -j 4 --cores 31
+```
+
+Recompile after source code changes (incremental):
+```bash
+bash scripts/qlat-all.sh
+```
+
+If the build fails during the configuration step (e.g., meson error about
+missing dependencies or stale build state), perform a clean build first:
+```bash
+bash scripts/qlat-clean-build.sh
+bash scripts/qlat-all.sh
 ```
 
 ### Run all tests

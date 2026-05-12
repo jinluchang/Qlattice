@@ -71,6 +71,12 @@ class QlatEncoder(ExtendedEncoder):
     def encode_ndarray(self, arr):
         return {"value": arr.tolist()}
 
+    def encode_Coordinate(self, obj):
+        return {"value": obj.to_list()}
+
+    def encode_CoordinateD(self, obj):
+        return {"value": obj.to_list()}
+
     def encode_range(self, r):
         return {"start": r.start, "stop": r.stop, "step": r.step}
 
@@ -95,6 +101,14 @@ class QlatDecoder(ExtendedDecoder):
 
     def decode_ndarray(self, obj):
         return np.array(obj["value"])
+
+    def decode_Coordinate(self, obj):
+        from .coordinate import Coordinate
+        return Coordinate(obj["value"])
+
+    def decode_CoordinateD(self, obj):
+        from .coordinate import CoordinateD
+        return CoordinateD(obj["value"])
 
     def decode_range(self, obj):
         return range(obj["start"], obj["stop"], obj["step"])

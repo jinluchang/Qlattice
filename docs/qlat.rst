@@ -6,6 +6,8 @@ qlat
 
    qlat/qlat_field_base.md
 
+   qlat/qlat_field_types.md
+
    qlat/qlat_mpi.md
 
 .. automodule:: qlat

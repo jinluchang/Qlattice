@@ -74,7 +74,8 @@ tests = \
 		hlt-reconstruction.log \
 		mpi-utils.log \
 		data.log \
-		mat-mpi-test.log
+		mat-mpi-test.log \
+		test_json.log
 
 all: run
 

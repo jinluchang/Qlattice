@@ -1,0 +1,74 @@
+[
+ [
+  "test json round-trip"
+ ],
+ [
+  "complex: (1.5-2.5j) -> (1.5-2.5j) ; match=True"
+ ],
+ [
+  "complex128: (3.14+2.71j) -> (3.14+2.71j) ; type=complex128 ; match=True"
+ ],
+ [
+  "complex64: (1-0.5j) -> (1-0.5j) ; type=complex64 ; match=True"
+ ],
+ [
+  "float32: 3.141590118408203 -> 3.141590118408203 ; type=float32 ; match=True"
+ ],
+ [
+  "int64: 9223372036854775807 -> 9223372036854775807 ; type=int64 ; match=True"
+ ],
+ [
+  "int32: 2147483647 -> 2147483647 ; type=int32 ; match=True"
+ ],
+ [
+  "ndarray: shape=(2, 3) -> (2, 3) ; type=ndarray ; match=True"
+ ],
+ [
+  "Coordinate: Coordinate([1, 2, 3, 4]) -> Coordinate([1, 2, 3, 4]) ; type=Coordinate ; match=True"
+ ],
+ [
+  "CoordinateD: CoordinateD([1.1, 2.2, 3.3, 4.4]) -> CoordinateD([1.1, 2.2, 3.3, 4.4]) ; type=CoordinateD ; match=True"
+ ],
+ [
+  "range: range(2, 10, 3) -> range(2, 10, 3) ; match=True"
+ ],
+ [
+  "float: 3.14159265358979 -> 3.14159265358979 ; type=float ; match=True"
+ ],
+ [
+  "int: 42 -> 42 ; type=int ; match=True"
+ ],
+ [
+  "list: len=4"
+ ],
+ [
+  "list[0]: type=int64 ; match=True"
+ ],
+ [
+  "list[1]: type=float32 ; match=True"
+ ],
+ [
+  "list[2]: type=complex ; match=True"
+ ],
+ [
+  "list[3]: type=Coordinate ; match=True"
+ ],
+ [
+  "dict: keys=['arr', 'complex128', 'coord', 'coord_d', 'int64']"
+ ],
+ [
+  "dict['int64']: type=int64 ; match=True"
+ ],
+ [
+  "dict['complex128']: type=complex128 ; match=True"
+ ],
+ [
+  "dict['coord']: type=Coordinate ; match=True"
+ ],
+ [
+  "dict['coord_d']: type=CoordinateD ; match=True"
+ ],
+ [
+  "dict['arr']: type=ndarray ; match=True"
+ ]
+]

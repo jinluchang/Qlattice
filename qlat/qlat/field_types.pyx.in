@@ -29,6 +29,17 @@ type_name_for_glb_max_min_list = [
     ]
 }}
 
+"""
+Module ``qlat.field_types``
+============================
+
+Typed lattice field classes (FieldColorMatrix, FieldComplexD, FieldRealD, ...).
+
+Documentation: ``docs/qlat/qlat_field_types.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer
