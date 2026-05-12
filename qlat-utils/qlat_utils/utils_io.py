@@ -1,3 +1,15 @@
+"""
+Module ``qlat_utils.utils_io``
+===============================
+
+File I/O utilities: directory creation, JSON/pickle save/load, hashing, and
+caching decorators for lattice QCD workflows.
+
+Documentation: ``docs/qlat-utils/qlat_utils_io.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import os
 import pickle
 import hashlib

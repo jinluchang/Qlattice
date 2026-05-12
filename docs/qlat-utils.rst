@@ -10,6 +10,8 @@ qlat_utils
 
    qlat-utils/qlat_coordinate.md
 
+   qlat-utils/qlat_utils_io.md
+
 .. automodule:: qlat_utils
    :members:
 
