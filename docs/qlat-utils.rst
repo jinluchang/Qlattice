@@ -8,6 +8,8 @@ qlat_utils
 
    qlat-utils/qlat_json.md
 
+   qlat-utils/qlat_coordinate.md
+
 .. automodule:: qlat_utils
    :members:
 

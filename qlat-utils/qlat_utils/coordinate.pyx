@@ -1,3 +1,17 @@
+"""
+Module ``qlat_utils.coordinate``
+================================
+
+4-component coordinate types for lattice QCD.
+
+Provides ``Coordinate`` (integer) and ``CoordinateD`` (double) with
+element-wise arithmetic, modular operations, and index↔coordinate conversion.
+
+Documentation: ``docs/qlat-utils/qlat_coordinate.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 
 import numpy as np
