@@ -1,6 +1,13 @@
 qlat
 ====
 
+.. toctree::
+   :maxdepth: 1
+
+   qlat/qlat_field_base.md
+
+   qlat/qlat_mpi.md
+
 .. automodule:: qlat
    :members:
 

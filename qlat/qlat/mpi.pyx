@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.mpi``
+===================
+
+Low-level MPI utilities for lattice QCD simulations: MPI communicator begin/end,
+node layout queries, broadcasting, and global sum reductions.
+
+Documentation: ``docs/qlat/qlat_mpi.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 cimport qlat_utils.everything
 from qlat_utils.all cimport *
 from . cimport everything as cc
@@ -49,7 +61,9 @@ def bcast_double(double x, int root=0):
     return x
 
 def bcast_complex(cc.PyComplexD x, int root=0):
-    cc.bcast(cc.ccpy_d(x), root)
+    cdef cc.ComplexD xx = cc.ccpy_d(x)
+    cc.bcast(xx, root)
+    x = cc.pycc_d(xx)
     return x
 
 def bcast_lat_data_in_place(LatData ld, int root=0):

@@ -18,5 +18,6 @@
 /examples-py/.ipynb_checkpoints/
 /output_data/
 /result*
+/tmp
 __pycache__
 .codex

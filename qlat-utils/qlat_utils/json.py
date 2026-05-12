@@ -1,12 +1,19 @@
+"""
+Module ``qlat_utils.json``
+==========================
+
+JSON serialization for NumPy and extended numeric types.
+
+Documentation: ``docs/qlat-utils/qlat_json.md``
+
+.. note:: Update the documentation when updating this source file.
+
+Based on `Mathspp Blog <https://mathspp.com/blog/custom-json-encoder-and-decoder>`_
+with modifications to add ``np.ndarray`` support.
+"""
+
 import json
 import numpy as np
-
-"""
-Mathspp Blog
-https://mathspp.com/blog/custom-json-encoder-and-decoder
-#
-With modifications to add np.ndarray support
-"""
 
 class ExtendedEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -46,6 +53,14 @@ class QlatEncoder(ExtendedEncoder):
 
     def encode_float32(self, f):
         return {"value": f.item()}
+
+    # np.float64 is intentionally not handled here.
+    # On 64-bit platforms, np.float64 is the same C type as Python's built-in
+    # ``float``, and in many NumPy builds it is also a subclass of ``float``.
+    # The standard JSON encoder therefore handles it natively (outputting a
+    # plain JSON number), and the decoder reconstructs it as a Python ``float``.
+    # No type fidelity is lost: both represent IEEE 754 double-precision floats
+    # with identical bit patterns.
 
     def encode_int64(self, i):
         return {"value": i.item()}

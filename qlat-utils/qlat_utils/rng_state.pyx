@@ -1,5 +1,16 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat_utils.rng_state``
+===============================
+
+Deterministic SHA-256-based random number generator and data signature utilities.
+
+Documentation: ``docs/qlat-utils/qlat_rng_state.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 
 from .mat cimport *

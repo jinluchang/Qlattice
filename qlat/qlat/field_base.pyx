@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.field_base``
+==========================
+
+Base classes and factory functions for lattice field types, selected fields,
+and selected points — the core data containers in qlat.
+
+Documentation: ``docs/qlat/qlat_field_base.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry

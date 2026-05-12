@@ -27,6 +27,8 @@ Qlattice
 
    contents/cpp-structure.md
 
+   contents/structure-of-docs.md
+
 Indices and tables
 ==================
 

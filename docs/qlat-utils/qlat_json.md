@@ -1,5 +1,9 @@
 # `qlat_utils.json` — JSON Serialization for NumPy and Numeric Types
 
+Source: `qlat-utils/qlat_utils/json.py`
+
+> **Note:** Update this document when updating the source file.
+
 ## Outline
 
 1. [Overview](#overview)
@@ -43,6 +47,13 @@ obj = q.json_loads(s)   # recovers np.float32(0.5)
 
 All standard JSON types (`int`, `float`, `str`, `list`, `dict`, `None`, `bool`)
 are handled by the standard encoder and pass through unchanged.
+
+`numpy.float64` is intentionally **not** included. On 64-bit platforms,
+`np.float64` uses the same underlying C type as Python's built-in ``float``,
+and is typically a subclass of ``float``. The standard JSON encoder therefore
+handles it natively (outputting a plain JSON number), and the decoder
+reconstructs it as a Python ``float``. No precision is lost — both represent
+IEEE 754 double-precision values with identical bit patterns.
 
 ---
 
@@ -172,5 +183,5 @@ data = {
 
 s = q.json_dumps(data)
 restored = q.json_loads(s)
-# All numpy types preserved through nesting
+# numpy array preserved through nesting; np.float64 round-trips as Python float
 ```

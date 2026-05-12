@@ -1,30 +1,39 @@
-# `qlat_utils.RngState` — Deterministic SHA-256-Based Random Number Generator
+# `qlat_utils.rng_state` — Deterministic SHA-256-Based Random Number Generator Module
+
+Source: `qlat-utils/qlat_utils/rng_state.pyx`
+
+> **Note:** Update this document when updating the source file.
 
 ## Outline
 
 1. [Overview](#overview)
 2. [Design Philosophy](#design-philosophy)
-3. [Constructor](#constructor)
-4. [Copying and Assignment](#copying-and-assignment)
-5. [Splitting](#splitting)
-6. [Scalar Random Generators](#scalar-random-generators)
-7. [Array Random Generators](#array-random-generators)
-8. [Selection and Permutation Helpers](#selection-and-permutation-helpers)
-9. [Module-Level Utility Functions](#module-level-utility-functions)
-10. [C++ Internals Reference](#c-internals-reference)
-11. [Examples](#examples)
+3. [RngState Class](#rngstate-class)
+   - [Constructor](#constructor)
+   - [Copying and Assignment](#copying-and-assignment)
+   - [Splitting](#splitting)
+   - [Scalar Random Generators](#scalar-random-generators)
+   - [Array Random Generators](#array-random-generators)
+   - [Selection and Permutation Helpers](#selection-and-permutation-helpers)
+4. [Module-Level Utility Functions](#module-level-utility-functions)
+5. [C++ Internals Reference](#c-internals-reference)
+6. [Examples](#examples)
 
 ---
 
 ## Overview
 
-`RngState` is a **deterministic**, **reproducible**, **split-based** pseudo-random
-number generator (PRNG) from the `qlat_utils` package. It is built on SHA-256
-hashing and is designed for parallel lattice-QCD simulations where every MPI
-rank, GPU, or thread must produce independent yet fully reproducible random
-streams — without a central coordinator.
+`rng_state` is the random number generator module of `qlat_utils`. It provides:
 
-Key properties:
+- **`RngState`** — a deterministic, reproducible, split-based PRNG built on
+  SHA-256 hashing, designed for parallel lattice-QCD simulations where every
+  MPI rank, GPU, or thread must produce independent yet fully reproducible
+  random streams without a central coordinator.
+- **`get_data_sig()`** — compute a deterministic floating-point signature of
+  arbitrary data by dotting with a random ±1 vector.
+- **`random_permute()`** — Fisher-Yates shuffle returning a new permuted list.
+
+Key properties of `RngState`:
 
 | Property | Description |
 |---|---|
@@ -72,7 +81,9 @@ so every pair of uniform draws produces two Gaussian draws efficiently.
 
 ---
 
-## Constructor
+## RngState Class
+
+### Constructor
 
 ```python
 RngState()
@@ -81,7 +92,7 @@ RngState(parent: RngState)
 RngState(parent: RngState, seed: str | int)
 ```
 
-### Parameters
+#### Parameters
 
 | Form | Behavior |
 |---|---|
@@ -90,7 +101,7 @@ RngState(parent: RngState, seed: str | int)
 | `RngState(parent)` | Copy constructor — create an independent but *identical* clone of `parent`. |
 | `RngState(parent, seed)` | Split `parent` by `seed` to produce a new independent child. Equivalent to `parent.split(seed)`. |
 
-### Examples
+#### Examples
 
 ```python
 import qlat_utils as q
@@ -104,9 +115,9 @@ rs4 = q.RngState(rs1, "sub") # split child of rs1 with label "sub"
 
 ---
 
-## Copying and Assignment
+### Copying and Assignment
 
-### `copy(is_copying_data=True) -> RngState`
+#### `copy(is_copying_data=True) -> RngState`
 
 Return a copy of this `RngState`. If `is_copying_data` is `False`, return a
 default-initialized (blank) `RngState`.
@@ -116,12 +127,12 @@ rs_copy = rs.copy()            # identical copy
 rs_blank = rs.copy(False)      # default state, not a copy of rs
 ```
 
-### `__copy__` / `__deepcopy__`
+#### `__copy__` / `__deepcopy__`
 
 Both delegate to `copy()`. Standard `copy.copy(rs)` and `copy.deepcopy(rs)`
 work as expected.
 
-### `__imatmul__` (in-place assignment `@=`)
+#### `__imatmul__` (in-place assignment `@=`)
 
 ```python
 rs1 @= rs2   # rs1 now has identical state to rs2
@@ -129,9 +140,9 @@ rs1 @= rs2   # rs1 now has identical state to rs2
 
 ---
 
-## Splitting
+### Splitting
 
-### `split(seed: str | int) -> RngState`
+#### `split(seed: str) -> RngState`
 
 Produce a new `RngState` deterministically derived from `self` and `seed`.
 The child is fully independent of the parent and of all other children with
@@ -143,7 +154,7 @@ rs_root = q.RngState("experiment-1")
 rs_site_0   = rs_root.split("site-0")
 rs_site_1   = rs_root.split("site-1")
 rs_direction = rs_root.split("mu=2")
-rs_rank     = rs_root.split(3)        # integer seed, converted to "3"
+rs_rank     = rs_root.split("3")
 ```
 
 **Splitting is the primary mechanism for assigning independent streams in
@@ -159,9 +170,9 @@ for site in all_sites:
 
 ---
 
-## Scalar Random Generators
+### Scalar Random Generators
 
-### `rand_gen() -> int`
+#### `rand_gen() -> int`
 
 Generate a uniformly distributed random integer in `[0, 2^64 - 1]`.
 
@@ -169,7 +180,7 @@ Generate a uniformly distributed random integer in `[0, 2^64 - 1]`.
 r = rs.rand_gen()   # e.g. 14873649204851673523
 ```
 
-### `u_rand_gen(upper=1.0, lower=0.0) -> float`
+#### `u_rand_gen(upper=1.0, lower=0.0) -> float`
 
 Generate a uniformly distributed random `float64` in `[lower, upper)`.
 
@@ -178,7 +189,7 @@ x = rs.u_rand_gen()          # uniform in [0.0, 1.0)
 x = rs.u_rand_gen(5.0, 2.0) # uniform in [2.0, 5.0)
 ```
 
-### `g_rand_gen(center=0.0, sigma=1.0) -> float`
+#### `g_rand_gen(center=0.0, sigma=1.0) -> float`
 
 Generate a Gaussian (normal) distributed random `float64` with the given
 `center` (mean) and `sigma` (standard deviation). Uses Box-Muller internally;
@@ -189,7 +200,7 @@ z = rs.g_rand_gen()              # standard normal N(0,1)
 x = rs.g_rand_gen(3.0, 0.5)     # N(3.0, 0.5)
 ```
 
-### `c_rand_gen(size: Coordinate) -> Coordinate`
+#### `c_rand_gen(size: Coordinate) -> Coordinate`
 
 Generate a uniformly random lattice coordinate within the hyper-rectangle
 defined by `size` (a 4-component `Coordinate`). Useful for picking a random
@@ -202,11 +213,11 @@ coord = rs.c_rand_gen(total_site)  # e.g. Coordinate((7, 3, 5, 2))
 
 ---
 
-## Array Random Generators
+### Array Random Generators
 
 These return NumPy arrays filled with random values of the specified shape.
 
-### `rand_arr(shape) -> np.ndarray`
+#### `rand_arr(shape) -> np.ndarray`
 
 Return a `uint64` array of the given `shape` filled with uniform random
 integers in `[0, 2^64-1]`.
@@ -215,7 +226,7 @@ integers in `[0, 2^64-1]`.
 arr = rs.rand_arr((4, 4))  # shape (4,4), dtype=uint64
 ```
 
-### `u_rand_arr(shape) -> np.ndarray`
+#### `u_rand_arr(shape) -> np.ndarray`
 
 Return a `float64` array of the given `shape` filled with uniform random
 values in `[0.0, 1.0)`.
@@ -224,7 +235,7 @@ values in `[0.0, 1.0)`.
 arr = rs.u_rand_arr((100,))  # 100 uniform floats
 ```
 
-### `g_rand_arr(shape) -> np.ndarray`
+#### `g_rand_arr(shape) -> np.ndarray`
 
 Return a `float64` array of the given `shape` filled with Gaussian random
 values with `center=0.0, sigma=1.0`.
@@ -235,9 +246,9 @@ arr = rs.g_rand_arr((8, 8, 8, 8))  # 4D lattice of N(0,1) values
 
 ---
 
-## Selection and Permutation Helpers
+### Selection and Permutation Helpers
 
-### `select(l: list) -> Any`
+#### `select(l: list) -> Any`
 
 Pick and return a uniformly random element from list `l`.
 
@@ -313,7 +324,7 @@ struct RngState {
 
 | Method | Description |
 |---|---|
-| `rs.split(sindex)` | Return new `RngState` split by string or int label |
+| `rs.split(sindex)` | Return new `RngState` split by string label |
 | `rs.newtype(type)` | Return a copy with the type tag set |
 
 ### How `rand_gen` Works Internally
