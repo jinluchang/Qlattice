@@ -608,6 +608,7 @@ let
       xarray
       numba
       torch
+      flax
       matplotlib
       ipywidgets
       scikit-learn
