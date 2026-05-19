@@ -1,5 +1,16 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat_utils.qar``
+=========================
+
+QAR archive format, QFile abstraction, and file I/O utilities.
+
+Documentation: ``docs/qlat-utils/qlat_qar.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 
 from .timer import timer, get_id_node

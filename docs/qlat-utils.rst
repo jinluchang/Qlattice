@@ -14,6 +14,8 @@ qlat_utils
 
    qlat-utils/qlat_data.md
 
+   qlat-utils/qlat_qar.md
+
 .. automodule:: qlat_utils
    :members:
 
