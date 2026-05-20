@@ -3438,12 +3438,12 @@ set_param(job_tag, "meson_jwjj_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "64I-pq2"
+set_param(job_tag, "job_tag")("64I-pq2")
 set_param(job_tag, "seed")("64I")
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
 set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "meson_jwjj_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
-set_param(job_tag, "job_tag")(64I-pq)
 set_param(job_tag, "total_site")([64, 64, 64, 128])
 set_param(job_tag, "load_config_params")({'twist_boundary_at_boundary': [0.0, 0.0, 0.0, 0.0]})
 set_param(job_tag, "fermion_params")({0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.0006203, 'Ls': 12}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.0006203, 'Ls': 12}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.0006203, 'Ls': 12}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.02539, 'Ls': 12}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.02539, 'Ls': 12}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.02539, 'Ls': 12}}, 2: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.31, 'Ls': 12}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.31, 'Ls': 12}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.31, 'Ls': 12}}})
