@@ -2,6 +2,7 @@
 
 import qlat_gpt as qg
 
+import qlat_scripts
 from qlat_scripts.v1 import *
 from auto_contractor.operators import *
 
@@ -3444,8 +3445,91 @@ set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "meson_jwjj_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 set_param(job_tag, "total_site")([64, 64, 64, 128])
-set_param(job_tag, "load_config_params")({'twist_boundary_at_boundary': [0.0, 0.0, 0.0, 0.0]})
-set_param(job_tag, "fermion_params")({0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.0006203, 'Ls': 12}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.0006203, 'Ls': 12}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.0006203, 'Ls': 12}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.02539, 'Ls': 12}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.02539, 'Ls': 12}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.02539, 'Ls': 12}}, 2: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.31, 'Ls': 12}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.31, 'Ls': 12}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'mass': 0.31, 'Ls': 12}}})
+set_param(job_tag, "load_config_params")(
+    {"twist_boundary_at_boundary": [0.0, 0.0, 0.0, 0.0]}
+)
+set_param(job_tag, "fermion_params")(
+    {
+        0: {
+            0: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.0006203,
+                "Ls": 12,
+            },
+            1: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.0006203,
+                "Ls": 12,
+            },
+            2: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.0006203,
+                "Ls": 12,
+            },
+        },
+        1: {
+            0: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.02539,
+                "Ls": 12,
+            },
+            1: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.02539,
+                "Ls": 12,
+            },
+            2: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.02539,
+                "Ls": 12,
+            },
+        },
+        2: {
+            0: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.31,
+                "Ls": 12,
+            },
+            1: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.31,
+                "Ls": 12,
+            },
+            2: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.31,
+                "Ls": 12,
+            },
+        },
+    }
+)
 set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
 set_param(job_tag, "field_selection_psel_rate")(2048 / (64**3 * 128))
 set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(2e-5)
@@ -3470,8 +3554,12 @@ set_param(job_tag, "zz_aa")(0.74341)
 set_param(job_tag, "m_res")(0.0003116)
 set_param(job_tag, "m_l")(0.000678)
 set_param(job_tag, "m_h")(0.02539)
-set_param(job_tag, "zz_m_l")(2.997 / 2.198) # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeV
-set_param(job_tag, "zz_m_h")(81.64 / 60.62 * 0.9628) # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeVset_param(job_tag, "zz_ss_l")()
+set_param(job_tag, "zz_m_l")(
+    2.997 / 2.198
+)  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeV
+set_param(job_tag, "zz_m_h")(
+    81.64 / 60.62 * 0.9628
+)  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeVset_param(job_tag, "zz_ss_l")()
 set_param(job_tag, "zz_ss_l")(1 / get_param(job_tag, "zz_m_l"))
 set_param(job_tag, "zz_ss_h")(1 / get_param(job_tag, "zz_m_h"))
 
@@ -3647,6 +3735,12 @@ job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).spl
 is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
 is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+
+if "64I-pq2" in job_tag_list:
+    assert job_tag_list == [
+        "64I-pq2",
+    ]
+    qlat_scripts.v1.load_data.is_source_specification_include_inv_type = True
 
 #######################################################
 

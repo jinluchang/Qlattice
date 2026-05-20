@@ -493,8 +493,8 @@
  [
   "auto_contract_meson_jwjj: ld_sum sig",
   {
-   "real": 0.05160527009488597,
-   "imag": 5.8822410914532646e-05,
+   "real": 0.051605270094886045,
+   "imag": 5.882241091453264e-05,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -637,8 +637,8 @@
  [
   "auto_contract_meson_jj: ld_sum sig",
   {
-   "real": -248.068394870723,
-   "imag": 0.06715844157426787,
+   "real": -248.06839487072304,
+   "imag": 0.06715844157426742,
    "__extended_json_type__": "complex128"
   }
  ],

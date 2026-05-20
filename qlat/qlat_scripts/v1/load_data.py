@@ -10,6 +10,10 @@ from .jobs import *
 
 is_mira_data = False
 
+# Added due to 64I-pq2 where light and strange psrc prop were sampled with different AMA selection (same set of points, but different subset of exact solves). This is not desired.
+# Most of cases, should set this to be False.
+is_source_specification_include_inv_type = False
+
 def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     cache_type_dict = {
         "wsrc_wsnk ; psel_ts": "psel_ts",
@@ -114,6 +118,9 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
             tuple(xg_src),
         )
     )
+    if is_source_specification_include_inv_type:
+        source_specification = f"{source_specification},{inv_type}"
+        q.displayln_info(-1, f"WARNING: {source_specification=}")
     if prob == 1.0:
         val = prop_cache_type.get(tag)
         assert val is not None
