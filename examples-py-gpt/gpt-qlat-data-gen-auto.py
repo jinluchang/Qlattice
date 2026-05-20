@@ -3250,13 +3250,16 @@ def run_job_contract(job_tag, traj):
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
+                auto_contract_meson_corr(
+                    job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
+                )
                 auto_contract_meson_corr_psnk(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
-                auto_contract_meson_jwjj2(
+                auto_contract_meson_corr_psrc(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
-                auto_contract_meson_jwjj(
+                auto_contract_meson_corr_psnk_psrc(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
                 auto_contract_meson_jj(
@@ -3268,13 +3271,10 @@ def run_job_contract(job_tag, traj):
                 auto_contract_meson_m(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
-                auto_contract_meson_corr(
+                auto_contract_meson_jwjj2(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
-                auto_contract_meson_corr_psrc(
-                    job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
-                )
-                auto_contract_meson_corr_psnk_psrc(
+                auto_contract_meson_jwjj(
                     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
                 )
                 auto_contract_tadpole_current(
