@@ -3215,8 +3215,7 @@ def run_job_contract(job_tag, traj):
     get_fsel = run_fsel_from_fsel_prob(get_fsel_prob)
     get_psel = run_psel_from_psel_prob(get_psel_prob)
     #
-    get_psel_smear = run_psel_smear(job_tag, traj)
-    run_psel_smear_median(job_tag, traj)
+    # get_psel_smear = run_psel_smear(job_tag, traj)
     #
     get_get_prop = run_get_prop(
         job_tag,
@@ -3225,7 +3224,7 @@ def run_job_contract(job_tag, traj):
         get_gt=get_gt,
         get_psel=get_psel,
         get_fsel=get_fsel,
-        get_psel_smear=get_psel_smear,
+        # get_psel_smear=get_psel_smear,
         prop_types=[
             "wsrc psel s",
             "wsrc psel l",
@@ -3464,8 +3463,6 @@ set_param(job_tag, "prop_smear_coef")(0.9375)
 set_param(job_tag, "prop_smear_step")(54)
 set_param(job_tag, "gf_ape_smear_coef")(0.5)
 set_param(job_tag, "gf_ape_smear_step")(30)
-set_param(job_tag, "meson_tensor_tsep")(18)
-set_param(job_tag, "meson_jwjj_threshold")(0.01)
 set_param(job_tag, "meson_tsep_list")(list(range(6, 128, 4)))
 set_param(job_tag, "a_inv_gev")(2.359)
 set_param(job_tag, "zz_vv")(0.74293)
