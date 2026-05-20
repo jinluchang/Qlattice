@@ -14,9 +14,9 @@ load_path_list[:] = [
     "qcddata",
     "qcddata1",
     "qcddata2",
-    "/lustre20/volatile/qcdqedta/qcddata",
-    "/lustre20/volatile/decay0n2b/qcddata",
-    "/lustre20/volatile/pqpdf/ljin/qcddata",
+    "qcddata3",
+    "qcddata4",
+    "qcddata5",
 ]
 
 is_cython = not is_test()
