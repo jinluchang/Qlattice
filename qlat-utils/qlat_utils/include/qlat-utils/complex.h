@@ -14,7 +14,7 @@
 
 #if defined QLAT_NO_ALIGNED_ALLOC
 #define QLAT_ALIGNED_BYTES 1
-constexpr Int qlat_aligned_bytes(Int size)
+constexpr qlat::Int qlat_aligned_bytes(qlat::Int size)
 {
   (void)size;
   return 1;
@@ -24,7 +24,7 @@ constexpr Int qlat_aligned_bytes(Int size)
 #else
 #define QLAT_ALIGNED_BYTES \
   16  // should divide all matrix sizes (which can convert with GPT).
-constexpr int qlat_aligned_bytes(int size)
+constexpr qlat::Int qlat_aligned_bytes(qlat::Int size)
 {
   int ret = 0;
   if (size % 2 != 0) {
