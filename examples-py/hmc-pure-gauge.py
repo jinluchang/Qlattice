@@ -90,7 +90,7 @@ def run_hmc(job_tag):
         info["flag"] = flag
         info["delta_h"] = delta_h
         q.qtouch_info(
-            get_save_path(f"{job_tag}/configs/ckpoint_lat_info.{traj}.txt"),
+            get_save_path(f"{job_tag}/configs_info/ckpoint_lat_info.{traj}.txt"),
             pformat(info),
         )
         q.json_results_append(f"{fname}: {traj} plaq", plaq, 1e-10)
@@ -380,6 +380,51 @@ set_param(job_tag, "hmc", "beta")(2.95)
 set_param(job_tag, "hmc", "c1")(-0.331)
 set_param(job_tag, "hmc", "save_traj_interval")(2)
 set_param(job_tag, "hmc", "is_saving_topo_info")(True)
+
+for beta in [
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0,
+    4.5,
+    5.0,
+    5.5,
+    6.0,
+    6.5,
+    7.0,
+    7.5,
+    8.0,
+    8.5,
+    9.0,
+    9.5,
+    10.0,
+]:
+    for ll in [
+        6,
+        8,
+        12,
+    ]:
+        tt = ll * 2
+        job_tag = f"{ll}nt{tt}-b{beta}"
+        set_param(job_tag, "seed")(job_tag)
+        set_param(job_tag, "total_site")(
+            (
+                ll,
+                ll,
+                ll,
+                tt,
+            )
+        )
+        set_param(job_tag, "hmc", "max_traj")(1000)
+        set_param(job_tag, "hmc", "max_traj_always_accept")(100)
+        set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
+        set_param(job_tag, "hmc", "md_time")(4.0)
+        set_param(job_tag, "hmc", "n_step")(64)
+        set_param(job_tag, "hmc", "beta")(beta)
+        set_param(job_tag, "hmc", "c1")(0.0)
+        set_param(job_tag, "hmc", "save_traj_interval")(4)
+        set_param(job_tag, "hmc", "is_saving_topo_info")(False)
 
 # ----
 
