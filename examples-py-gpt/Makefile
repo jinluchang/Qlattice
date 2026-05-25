@@ -1,5 +1,20 @@
 SHELL=/usr/bin/env bash
 
+# Usage:
+#   make                        Run all GPT tests (same as make run-gpt)
+#   make run-gpt                Run all GPT tests
+#   make <name>.log             Run a single test (e.g. make qtopo-measure-dwf.log)
+#   make clean                  Remove test build artifacts (*.p directories)
+#
+# Before running tests, restore the reference .log files:
+#   git checkout -- *.log *.log.json
+#
+# Run `make clean` first if a previous run left stale build artifacts.
+#
+# Test verification: each test prints CHECK: lines which are diffed against
+# the committed reference .log file. A test passes when the CHECK: output
+# matches exactly.
+
 mpi_options ?= --oversubscribe --bind-to none
 
 tests_gpt = \

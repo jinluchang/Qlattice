@@ -107,6 +107,10 @@ def measure_topo_dwf(
               used for error estimation.
     """
     q.check_time_limit()
+    lat_shape = tuple(gf.geo.total_site)
+    assert len(lat_shape) == 4 and all(s > 0 for s in lat_shape), \
+        f"measure_topo_dwf: lat_shape={lat_shape}"
+    #
     sparse_ratio = params["sparse_ratio"]
     num_of_rand_vol_u1 = params["num_of_rand_vol_u1"]
     ls = params["ls"]
@@ -496,22 +500,23 @@ def measure_topo_dwf(
                 Source specification: ``("point-snk", (x, y, z, t))``.\n
             Returns
             -------
-            np.ndarray
+            WilsonMatrix
                 12x12 Dirac-colour propagator matrix at the given site.
             """
-            assert flavor == "c"
-            assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
+            assert flavor == "c", f"get_prop: flavor={flavor} != 'c'"
+            assert isinstance(p_snk, tuple) and isinstance(p_src, tuple), \
+                f"get_prop: p_snk type={type(p_snk)} p_src type={type(p_src)}"
             type_snk, pos_snk = p_snk
             type_src, pos_src = p_src
-            assert type_snk == "point-snk"
-            assert type_src == "point-snk"
+            assert type_snk == "point-snk", f"get_prop: type_snk={type_snk}"
+            assert type_src == "point-snk", f"get_prop: type_src={type_src}"
             pos_snk = q.Coordinate(pos_snk)
             pos_src = q.Coordinate(pos_src)
-            assert pos_snk == pos_src
+            assert pos_snk == pos_src, f"get_prop: pos_snk={pos_snk} != pos_src={pos_src}"
             index = geo.index_from_g_coordinate(pos_snk)
             val = prop_sol.get_elem_wm(index)
-            assert val.shape == (12, 12)
-            assert val.dtype == np.complex128
+            assert isinstance(val, q.WilsonMatrix), \
+                f"get_prop: type(val)={type(val)}"
             return val
         #
         cexpr = get_cexpr_tadpole_loop()
@@ -549,7 +554,8 @@ def measure_topo_dwf(
             for idx, xg in enumerate(chunk):
                 pd = {"x_1": ("point-snk", tuple(xg))}
                 val_arr[idx] = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            assert val_arr.shape == (len(chunk), len(expr_names))
+            expected_shape = (len(chunk), len(expr_names))
+            assert val_arr.shape == expected_shape, f"eval: val_arr.shape={val_arr.shape} != {expected_shape}"
             assert val_arr.dtype == np.complex128
             return val_arr
         #
@@ -771,19 +777,22 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         Index of the desired sub-grid, ``0 <= idx < sparse_ratio``.\n
     Returns
     -------
-    sel_arr : np.ndarray, bool
-        Boolean mask of length ``N``, ``True`` for points belonging to the selected
+    sel2_arr : np.ndarray, bool
+        Boolean mask of shape ``(N,)``, ``True`` for points belonging to the selected
         sub-grid.
     """
-    assert isinstance(xg_arr, np.ndarray)
-    assert xg_arr.ndim == 2 and xg_arr.shape[1] == 4
-    assert xg_arr.dtype in (np.int32, np.int64)
+    assert isinstance(xg_arr, np.ndarray), f"mk_sparse_grid: xg_arr type={type(xg_arr)}"
+    n_points = len(xg_arr)
+    expected_xg_shape = (n_points, 4)
+    expected_sel_shape = (n_points,)
+    assert xg_arr.shape == expected_xg_shape, \
+        f"mk_sparse_grid: xg_arr.shape={xg_arr.shape} != {expected_xg_shape}"
+    assert xg_arr.dtype in (np.int32, np.int64), f"mk_sparse_grid: xg_arr.dtype={xg_arr.dtype}"
     if sparse_ratio == 1:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
         sel_arr &= (xg_arr[:, 0] + xg_arr[:, 1] + xg_arr[:, 2] + xg_arr[:, 3]) % 1 == 0
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
+        sel2_arr = sel_arr.copy()
     elif sparse_ratio == 2:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -792,9 +801,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             xg_arr[:, 0] + xg_arr[:, 1] + xg_arr[:, 2] + xg_arr[:, 3] + idx0
         ) % 2 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 4:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -806,9 +812,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sel2_arr &= (
             xg_arr[:, 0] + xg_arr[:, 1] + xg_arr[:, 2] + xg_arr[:, 3] + idx0 + idx1
         ) % 2 == 0
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 8:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -824,9 +827,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sel2_arr &= (
             xg_arr[:, 0] + xg_arr[:, 1] + xg_arr[:, 2] + xg_arr[:, 3] + idx0 + idx1
         ) % 2 == 0
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 16:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -839,9 +839,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sel_arr &= (xg_arr[:, 2] + idx2) % 2 == 0
         sel_arr &= (xg_arr[:, 3] + idx3) % 2 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 32:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -862,9 +859,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             + idx4
         ) % 2 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 64:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -893,9 +887,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             + idx4
             + idx5
         ) % 2 == 0
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 128:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -934,9 +925,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             + idx4
             + idx5
         ) % 2 == 0
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 81:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -949,9 +937,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sel_arr &= (xg_arr[:, 2] + idx2) % 3 == 0
         sel_arr &= (xg_arr[:, 3] + idx3) % 3 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 162:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -972,9 +957,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             + idx4
         ) % 2 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 256:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -987,9 +969,6 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sel_arr &= (xg_arr[:, 2] + idx2) % 4 == 0
         sel_arr &= (xg_arr[:, 3] + idx3) % 4 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     elif sparse_ratio == 512:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -1010,11 +989,14 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             + idx4
         ) % 2 == 0
         sel2_arr = sel_arr.copy()
-        assert np.all(sel2_arr == sel_arr)
-        assert isinstance(sel_arr, np.ndarray) and sel_arr.dtype == np.bool_ and sel_arr.shape == (len(xg_arr),)
-        return sel_arr
     else:
         raise Exception(f"{sparse_ratio=}")
+    assert isinstance(sel2_arr, np.ndarray), f"mk_sparse_grid: sel2_arr type={type(sel2_arr)}"
+    assert sel2_arr.dtype == np.bool_, f"mk_sparse_grid: sel2_arr.dtype={sel2_arr.dtype}"
+    assert np.all(sel2_arr == sel_arr)
+    assert sel2_arr.shape == expected_sel_shape, \
+        f"mk_sparse_grid: sel2_arr.shape={sel2_arr.shape} != {expected_sel_shape}"
+    return sel2_arr
 
 @q.timer(is_verbose=True)
 def sparse_solve(idx, psel, fu1, inverter):
@@ -1039,6 +1021,7 @@ def sparse_solve(idx, psel, fu1, inverter):
     sp_prop_sol : q.PselProp
         Sparse propagator solution with the conjugate random phase already multiplied.
     """
+    assert fu1.multiplicity == 12, f"sparse_solve: fu1.multiplicity={fu1.multiplicity} != 12"
     geo = fu1.geo
     sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
     sp_fu1 @= fu1
