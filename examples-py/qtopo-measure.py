@@ -1,5 +1,100 @@
 #!/usr/bin/env python3
 
+"""
+Topological charge measurement based on Wilson/Localize flow with Qlattice.\n
+Measures topological charge on gauge field configurations by applying Wilson
+or Localize smearing flows and computing the corresponding topological
+observables at each flow step.\n
+Workflow
+--------
+1. Load one or more gauge field configurations.
+2. Apply a sequence of smearing/flow steps (each with configurable step size,
+   number of steps, flow type, and integrator type).
+3. Output per-flow-step topological charge data (plaq, topo, energy density,
+   etc.) to an info JSON file, and optionally a density field to a separate
+   file.
+4. The program never overwrites existing output files: if the output already
+   exists, that (gauge field, output) pair is skipped.\n
+CLI interface
+-------------
+    python qtopo-measure.py [OPTIONS]\n
+Options
+-------
+    --gf PATH
+        Path to a gauge field configuration file.  Can be repeated to process
+        multiple configurations.  One --out and one --out_df correspond to
+        each --gf in the order they appear.\n
+    --out PATH
+        Path for the output JSON info file (flow times, plaquette, topological
+        charge, etc.).  Must appear the same number of times as --gf.\n
+    --out_df PATH
+        Path for the output density field file.  Optional; if omitted, the
+        value of --out is used instead.  Must appear the same number of times
+        as --gf or zero times.\n
+    --step_size FLOAT
+        Flow step size (dimensionless).  Must be paired with exactly one
+        --n_step, one --flow_type, and one --integrator_type.  Repeat the
+        group to define multiple flow stages.\n
+    --n_step INT
+        Number of flow steps for the preceding --step_size.\n
+    --flow_type STR
+        Flow type: one of 'Wilson', 'Localize'.\n
+    --integrator_type STR
+        Integrator type: e.g. 'euler'.\n
+    --test
+        Run in test mode.  Generate sample gauge field configurations
+        (4^3x8 and 8^3x16 checkerboard lattices) and run the topological
+        charge measurement on them.  Uses predefined flow parameters.\n
+    --usage
+        Show the usage message and exit.\n
+Examples
+--------
+    # Single short Wilson flow
+    python qtopo-measure.py \\
+        --gf config.lat --out topo.json \\
+        --step_size 0.05 --n_step 80 --flow_type Wilson --integrator_type euler\n
+    # Wilson flow followed by several Localize flow stages
+    python qtopo-measure.py \\
+        --step_size 0.05 --n_step 80  --flow_type Wilson   --integrator_type euler \\
+        --step_size 0.1  --n_step 100 --flow_type Localize --integrator_type euler \\
+        --step_size 0.1  --n_step 100 --flow_type Localize --integrator_type euler \\
+        --gf config.lat --out topo.json\n
+    # Test mode (generates data and runs the measurement)
+    python qtopo-measure.py --test\n
+Output
+------
+For each (gf, out) pair, two files may be written:\n
+- **info JSON**  (``--out``):  Per-flow-step dictionaries containing keys such
+  as ``flow_time``, ``plaq``, ``plaq_min``, ``plaq_max``, ``abs_topo``,
+  ``topo``, ``topo_tslice``, ``topo_clf``, ``plaq_action_density``,
+  ``energy_density``, ``energy_deriv``, and for energy lists also
+  ``energy_density_tslice``.  These are logged via ``q.json_results_append``.\n
+- **density field** (``--out_df``):  The topological charge density field
+  written at each smearing step (saved by ``q.smear_measure_topo``).\n
+If an output file already exists the program prints a warning and skips
+that configuration entirely — no overwriting.\n
+Test configurations
+-------------------
+When ``--test`` is given, the script generates two sample gauge fields:\n
++----------------------+-----------+--------+--------+---------+------+
+| job_tag              | lattice   | rand σ | HMC β  | HMC trajs | flow |
++======================+===========+========+========+=========+======+
+| test-4nt8-checker    | 4³ × 8    | 0.25   | 3.0    | 5         | 4    |
++----------------------+-----------+--------+--------+-----------+------+
+| test-8nt16-checker   | 8³ × 16   | 0.25   | 5.0    | 5         | 8    |
++----------------------+-----------+--------+--------+-----------+------+\n
+Several larger test configurations (16³×32, 48³×96, 64³×64) are also
+pre-defined but not used in the default test flow.\n
+MPI notes
+---------
+The script works both with and without MPI.  Single-rank runs can be launched
+directly:\n
+    python qtopo-measure.py --test\n
+For multi-rank runs, use ``mpiexec``:\n
+    mpiexec -n 2 python -m mpi4py qtopo-measure.py --test\n
+Author: Luchang Jin  (2026/03/04)
+"""
+
 import sys
 import qlat as q
 import numpy as np
@@ -25,14 +120,14 @@ by Luchang Jin
 # Generate some test data and then perform the topo flow.
 {""}
 {__file__} --gf PATH_GAUGE_FIELD --out PATH_OUTPUT --step_size 0.05 --n_step 80 --flow_type Wilson
-{__file__} \
-    --step_size 0.05 --n_step 80 --flow_type Wilson --integrator_type euler \
-    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
-    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
-    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
-    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \
-    --gf PATH_GAUGE_FIELD \
-    --out PATH_OUTPUT \
+{__file__} \\
+    --step_size 0.05 --n_step 80 --flow_type Wilson --integrator_type euler \\
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \\
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \\
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \\
+    --step_size 0.1 --n_step 100 --flow_type Localize --integrator_type euler \\
+    --gf PATH_GAUGE_FIELD \\
+    --out PATH_OUTPUT \\
     --out_df PATH_DENSITY_FIELD_OUTPUT
 # Multiple input and output paths can be specified (they will be processed the same way).
 # Default PATH_DENSITY_FIELD_OUTPUT is PATH_OUTPUT
