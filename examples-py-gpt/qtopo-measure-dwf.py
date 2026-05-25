@@ -68,11 +68,43 @@ def measure_topo_dwf(
     params,
 ):
     """
-    return ``f_tadpole_loop_sum_arr``
-    ``
-    f_tadpole_loop_sum_arr[rand_vol_u1_idx, tslice_idx, 0] == topo_tslice_sum
-    f_tadpole_loop_sum_arr[rand_vol_u1_idx, tslice_idx, 1] == quark_condenstate_tslice_sum
-    ``
+    Main measurement routine for topological charge via DWF fifth-dimension vector current.\n
+    For each random volume U(1) source, the routine:
+      1. Constructs a sparse grid decomposition and solves the DWF propagator on each
+         sparse subset using sloppy (and optionally exact AMA-corrected) inversions.
+      2. Saves/loads sparse solutions from disk.
+      3. Assembles the full propagator and evaluates the tadpole-loop contraction
+         expression (qbar gamma5 q and qbar q) at every lattice site.
+      4. Sums over time slices and accumulates results across random U(1) sources.\n
+    Parameters
+    ----------
+    gf : q.GaugeField
+        The input gauge field configuration.
+    info_path : str
+        Directory path for saving all output (pickle, JSON, field data, scratch).
+    params : dict
+        Dictionary of measurement parameters with keys:
+          - sparse_ratio (int): coarsening factor for the sparse-grid decomposition.
+          - num_of_rand_vol_u1 (int): number of random volume U(1) sources.
+          - ls (int): exact Mobius Ls (fifth-dimension length).
+          - ls_sloppy (int): sloppy Mobius Ls.
+          - b_plus_c (float): exact Mobius b + c parameter.
+          - b_plus_c_sloppy (float): sloppy Mobius b + c parameter.
+          - maxiter_sloppy (int): max CG iterations for the sloppy solve.
+          - maxiter_exact (int): max CG iterations for the exact solve.
+          - ama_prob (float): probability of applying the AMA correction.
+          - seed (str or int): random seed.\n
+    Returns
+    -------
+    info : dict
+        Dictionary with keys:
+          - "f_tadpole_loop_sum_arr" (np.ndarray, complex128):
+              shape (num_of_rand_vol_u1, nt, 2) where
+              [r, t, 0] = topological charge on time-slice t for source r,
+              [r, t, 1] = quark condensate on time-slice t for source r.
+          - "f_tadpole_loop_imag_sqr_sum_arr" (np.ndarray, float64):
+              shape (num_of_rand_vol_u1, nt, 2), imaginary-part squared sums
+              used for error estimation.
     """
     q.check_time_limit()
     sparse_ratio = params["sparse_ratio"]
@@ -206,9 +238,31 @@ def measure_topo_dwf(
         )
         #
         def mk_path(idx):
+            """
+            Build the scratch directory path for a given sparse-solve index.\n
+            Parameters
+            ----------
+            idx : int
+                Sparse-solve (grid subset) index.\n
+            Returns
+            -------
+            str
+                Full scratch path.
+            """
             return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
         #
         def check(idx):
+            """
+            Check whether scratch data (psel + sparse propagator) already exists on disk.\n
+            Parameters
+            ----------
+            idx : int
+                Sparse-solve index.\n
+            Returns
+            -------
+            bool
+                True if both ``psel.lati`` and ``sp_prop_sol.lat`` exist.
+            """
             if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
                 return False
             if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
@@ -217,6 +271,17 @@ def measure_topo_dwf(
         #
         @q.timer(is_verbose=True)
         def save(idx, sp_prop_sol):
+            """
+            Shuffle the sparse propagator to the root node and save it along with its point selection.\n
+            Only MPI rank 0 actually writes to disk; other ranks assert that their
+            shuffled data is empty.\n
+            Parameters
+            ----------
+            idx : int
+                Sparse-solve index (used to build the output path).
+            sp_prop_sol : q.PselProp
+                Sparse propagator solution in the local (``"l"``) point distribution.
+            """
             root = 0
             psel = psel_list[idx]
             assert sp_prop_sol.n_points == psel.n_points
@@ -240,8 +305,18 @@ def measure_topo_dwf(
         @q.timer(is_verbose=True)
         def load(idx_list):
             """
-            return ``sp_prop_sol_il``
-            Note: ``sp_prop_sol_il`` is a list ``q.PselProp`` with ``"l"`` as the ``points_dist_type``.
+            Load sparse propagator solutions from disk and redistribute across MPI ranks.\n
+            Each index is assigned a root rank via round-robin over the shuffle node list.
+            After reading on the respective root, the data is reverse-shuffled back to
+            the local (``"l"``) point distribution.\n
+            Parameters
+            ----------
+            idx_list : list of int
+                Sparse-solve indices to load.\n
+            Returns
+            -------
+            sp_prop_sol_il : list of q.PselProp
+                List of loaded sparse propagator solutions, one per index.
             """
             id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
             root_il = [
@@ -277,6 +352,18 @@ def measure_topo_dwf(
         #
         @q.timer
         def benchmark(sp_prop_sol):
+            """
+            Log quality metrics (signal/error ratio) for a sparse propagator solution.\n
+            Uses gamma_5 Hermiticity to separate signal (gamma_5-hermitian part) from
+            noise (anti-hermitian part). Reports:
+              - prop_size: Frobenius-norm signal, error, and error/signal ratio.
+              - topo_sum: trace(gamma_5 * prop), scaled by sqrt(volume).
+              - quark_condensate_avg: trace(prop) averaged over points.\n
+            Parameters
+            ----------
+            sp_prop_sol : q.PselProp
+                Sparse propagator solution to benchmark.
+            """
             fname = q.get_fname()
             n_points = q.glb_sum(sp_prop_sol.n_points)
             psel = sp_prop_sol.psel
@@ -395,6 +482,23 @@ def measure_topo_dwf(
         )
         #
         def get_prop(flavor, p_snk, p_src):
+            """
+            Callback for the contraction expression evaluator: return the propagator element.\n
+            Only the ``"c"`` (connected) flavor is supported.  Sink and source must both
+            be ``"point-snk"`` at the same coordinate.\n
+            Parameters
+            ----------
+            flavor : str
+                Flavor channel (must be ``"c"``).
+            p_snk : tuple(str, tuple)
+                Sink specification: ``("point-snk", (x, y, z, t))``.
+            p_src : tuple(str, tuple)
+                Source specification: ``("point-snk", (x, y, z, t))``.\n
+            Returns
+            -------
+            np.ndarray
+                12x12 Dirac-colour propagator matrix at the given site.
+            """
             assert flavor == "c"
             assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
             type_snk, pos_snk = p_snk
@@ -416,6 +520,21 @@ def measure_topo_dwf(
         #
         @q.timer(is_verbose=True)
         def eval(chunk_idx):
+            """
+            Evaluate the tadpole-loop contraction over a chunk of grid coordinates.\n
+            For each coordinate in the chunk, builds a position dictionary and calls
+            ``eval_cexpr`` with the tadpole-loop compiled expression and the
+            ``get_prop`` callback.\n
+            Parameters
+            ----------
+            chunk_idx : int
+                Index into ``chunk_list``, defining the subset of coordinates to process.\n
+            Returns
+            -------
+            val_arr : np.ndarray, complex128
+                Shape ``(len(chunk), len(expr_names))``.
+                Column 0 = ``qbar gamma5 q``, column 1 = ``qbar q`` at each site.
+            """
             chunk = chunk_list[chunk_idx]
             val_arr = np.zeros(
                 (
@@ -584,6 +703,18 @@ def measure_topo_dwf(
 
 @q.timer
 def get_cexpr_tadpole_loop():
+    """
+    Return the compiled contraction expression for the tadpole-loop.\n
+    The expression contains two operators evaluated at a single point ``x_1``:
+      - ``qbar gamma5 q``  (topological charge density)
+      - ``qbar q``         (quark condensate)\n
+    The expression is cached to disk under ``cache/auto_contract_cexpr/``
+    so that recompilation is avoided on subsequent runs.\n
+    Returns
+    -------
+    cexpr : auto_contractor compiled expression
+        Compiled contraction expression object ready for evaluation.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_tadpole_loop"
     #
     def calc_cexpr():
@@ -602,10 +733,35 @@ def get_cexpr_tadpole_loop():
 
 @q.timer(is_verbose=True)
 def get_all_cexpr():
+    """
+    Benchmark the evaluation performance of the tadpole-loop contraction expression.\n
+    Results are logged via ``benchmark_eval_cexpr`` for diagnostic and tuning purposes.
+    """
     benchmark_eval_cexpr(get_cexpr_tadpole_loop())
 
 @q.timer(is_verbose=True)
 def mk_sparse_grid(xg_arr, sparse_ratio, idx):
+    """
+    Build a boolean selection mask for a sparse sub-grid of the full coordinate array.\n
+    The lattice is divided into ``sparse_ratio`` interleaved sub-grids; ``idx`` selects
+    which sub-grid to return.  Supported ratios: 1, 2, 4, 8, 16, 32, 64, 81, 128, 162,
+    256, 512.\n
+    For power-of-two ratios the sub-grids are hyper-rectangular checkerboard patterns;
+    for ratio 81 / 162 / 256 / 512 they are based on mod-3 / mod-4 block decomposition.\n
+    Parameters
+    ----------
+    xg_arr : np.ndarray, int
+        Shape ``(N, 4)`` array of global grid coordinates ``(x, y, z, t)``.
+    sparse_ratio : int
+        Total number of sparse sub-grids.
+    idx : int
+        Index of the desired sub-grid, ``0 <= idx < sparse_ratio``.\n
+    Returns
+    -------
+    sel_arr : np.ndarray, bool
+        Boolean mask of length ``N``, ``True`` for points belonging to the selected
+        sub-grid.
+    """
     if sparse_ratio == 1:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -835,8 +991,25 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
 @q.timer(is_verbose=True)
 def sparse_solve(idx, psel, fu1, inverter):
     """
-    return ``sp_prop_sol``
-    Complex conjugate of the initial random phase is already multiplied.
+    Solve the DWF propagator on a sparse subset of the lattice with a random U(1) source.\n
+    The source is constructed by projecting the volume U(1) field onto the sparse
+    point selection, then solving with the provided inverter.  The solution is
+    multiplied by the complex conjugate of the random phase to undo the initial
+    phase factor.\n
+    Parameters
+    ----------
+    idx : int
+        Sparse-solve index (used for logging only).
+    psel : q.PointsSelection
+        Sparse point selection defining the source locations.
+    fu1 : q.FieldComplexD
+        Volume random U(1) field (multiplicity 12).
+    inverter : qg.InverterGPT
+        GPT inverter for the DWF operator (sloppy or exact).\n
+    Returns
+    -------
+    sp_prop_sol : q.PselProp
+        Sparse propagator solution with the conjugate random phase already multiplied.
     """
     geo = fu1.geo
     sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
@@ -865,6 +1038,16 @@ def sparse_solve(idx, psel, fu1, inverter):
 
 @q.timer(is_timer_fork=True)
 def gen_test_data():
+    """
+    Build a synthetic command-line argument list for testing.\n
+    Uses the first entry from ``job_tag_list`` (``"test-4nt8-checker"``), generates
+    a sample gauge field via the pipeline in ``qlat_scripts``, and returns an ``argv``
+    list with ``--gf``, ``--out``, and all solver parameters suitable for a quick test.\n
+    Returns
+    -------
+    argv : list of str
+        Simulated command-line arguments for ``run()``.
+    """
     job_tag_list = [
         "test-4nt8-checker",
         # "test-8nt16-checker",
@@ -926,6 +1109,20 @@ def gen_test_data():
 
 @q.timer(is_timer_fork=True)
 def run_topo_measure(fn_gf, fn_out, *, params=None):
+    """
+    Run the topological charge measurement for a single gauge field file.\n
+    Skips if the output checkpoint already exists or if the gauge field file is missing.
+    Acquires a file lock to prevent concurrent execution on the same output directory.\n
+    Parameters
+    ----------
+    fn_gf : str
+        Path to the input gauge field file.
+    fn_out : str
+        Output directory for measurement results.
+    params : dict or None
+        Parameter dictionary forwarded to ``measure_topo_dwf``.  If ``"seed"`` is not
+        present, it is set to ``fn_gf``.
+    """
     fname = q.get_fname()
     q.check_time_limit()
     if q.does_file_exist_qar_sync_node(fn_out + "/checkpoint.txt"):
@@ -962,10 +1159,21 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
     )
 
 def show_usage():
+    """Print the usage / help message to stdout and exit."""
     q.displayln_info(f"Usage:{usage}")
 
 @q.timer(is_timer_fork=True)
 def run():
+    """
+    Main entry point for the topological charge measurement workflow.\n
+    In test mode (``--test``), generates test data via ``gen_test_data()`` and uses
+    the resulting synthetic arguments.  Otherwise parses ``sys.argv``.\n
+    Iterates over all ``--gf`` / ``--out`` pairs and calls ``run_topo_measure`` on each.\n
+    Parameters are extracted from the command line with sensible defaults:
+      ``--sparse_ratio`` (32), ``--num_of_rand_vol_u1`` (2), ``--ls`` (16),
+      ``--ls_sloppy`` (12), ``--b_plus_c`` (3.0), ``--b_plus_c_sloppy`` (3.0),
+      ``--maxiter_sloppy`` (50), ``--maxiter_exact`` (100), ``--ama_prob`` (0.1).
+    """
     q.check_time_limit()
     if is_test():
         q.displayln_info("Will now generate test data and run topo measure.")
