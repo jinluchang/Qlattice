@@ -1,4 +1,4 @@
-# Documentation Structure and Procedure for Python Modules
+# Coding doc structure
 
 This document describes the standard procedure for adding documentation to Python
 modules in `qlat-utils` and `qlat`.

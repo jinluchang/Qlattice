@@ -27,7 +27,9 @@ Qlattice
 
    contents/cpp-structure.md
 
-   contents/structure-of-docs.md
+   contents/coding-doc-structure.md
+
+   contents/coding-assert-shape.md
 
 Indices and tables
 ==================

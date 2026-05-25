@@ -1,4 +1,4 @@
-# Shape assertion pattern
+# Coding assert shape
 
 The codebase follows a consistent pattern of asserting tensor shapes at every stage of computation.
 
@@ -14,13 +14,7 @@ The codebase follows a consistent pattern of asserting tensor shapes at every st
 
 2. **Always assert the whole shape, not slices of it.** Compare the full `.shape` tuple against the full expected tuple. Prefer `assert u.shape == full_shape` over `assert u.shape[4:] == (4, 3, 3)` — a slice assertion can miss a silently changed lattice dimension.
 
-3. **Assert every intermediate result immediately.** After every operation that produces a tensor, assert its shape matches the predefined expected shape. Never defer the check:
-   ```python
-   contribs = jnp.stack(contribs, axis=0)
-   assert contribs.shape == (7, *in_per_field_shape), (
-       f"func: contribs.shape={contribs.shape} != (7, {in_per_field_shape})"
-   )
-   ```
+3. **Only fix existing intermediate assertions.** Do not add new assertions for intermediate results; only maintain and fix shape assertions that already exist in the code.
 
 4. **Assert function input shapes at entry.** Validate input parameters and arguments before any computation — use `lat_shape`, `n_fields`, or hard-coded constants:
    ```python
