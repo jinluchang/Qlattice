@@ -1,19 +1,29 @@
 SHELL=/usr/bin/env bash
 
 # Usage:
-#   make                        Run all GPT tests (same as make run-gpt)
-#   make run-gpt                Run all GPT tests
-#   make <name>.log             Run a single test (e.g. make qtopo-measure-dwf.log)
-#   make clean                  Remove test build artifacts (*.p directories)
+#   make                          Run all GPT tests (same as make run-gpt).
+#   make run-gpt                  Run all GPT tests.
+#   make <name>.log               Run a single test (e.g. make qtopo-measure-dwf.log).
+#   make clean                    Remove test build artifacts (*.p directories).
 #
-# Before running tests, restore the reference .log files:
-#   git checkout -- *.log *.log.json
+# Before running tests:
+#   1. Restore the reference .log and .log.json files from git (required for
+#      the CHECK-line comparison that determines pass/fail):
+#        git checkout -- *.log *.log.json
 #
-# Run `make clean` first if a previous run left stale build artifacts.
+#   2. If a previous run left a *.p directory, run `make clean` first.
 #
-# Test verification: each test prints CHECK: lines which are diffed against
-# the committed reference .log file. A test passes when the CHECK: output
-# matches exactly.
+#   3. If the target .log already exists from a prior run, touch the .py source
+#      file to trigger a rebuild (make considers .log up-to-date otherwise):
+#        touch <name>.py
+#
+# How test verification works:
+#   - Each test prints CHECK: lines during execution.
+#   - After the run, these lines are extracted and diffed against the committed
+#     reference .log file.
+#   - A test passes when the CHECK: output matches exactly. A diff failure
+#     means the output changed (or the reference .log is missing — run
+#     `git checkout -- *.log` to restore it).
 
 mpi_options ?= --oversubscribe --bind-to none
 

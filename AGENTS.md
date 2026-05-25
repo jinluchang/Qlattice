@@ -16,14 +16,7 @@ Build system: **Nix** which calls **Meson** to build the packages (via `meson-py
 
 ## Build and Testing
 
-Tests live in `examples-py/` (Python) and `examples-cpp/` (C++). The testing framework is **log-comparison**: each test prints `CHECK:` lines, which are compared against committed reference `.log` files.
-
-### Build
-
-Full Nix build (all packages):
-```bash
-nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-jhub-env -j 4 --cores 31
-```
+Tests use **log-comparison**: each test prints `CHECK:` lines compared against reference `.log` files. See `examples-py-gpt/Makefile` and `examples-py/Makefile` for the full test-running workflow (usage, prerequisites, verification).
 
 Recompile after source code changes (incremental):
 ```bash
@@ -43,12 +36,37 @@ bash scripts/qlat-all.sh
 nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
 ```
 
-### Run a single Python test
+### Run a single Python test (examples-py)
+
 ```bash
 cd examples-py
 make utils.log                        # runs utils.py, compares CHECK lines
 ```
-Test execution pattern (from Makefile):
+Before re-running a test, touch the `.py` source to trigger a rebuild:
+```bash
+touch utils.py && make utils.log
+```
+
+### Run a single GPT/Grid test (examples-py-gpt)
+
+```bash
+cd examples-py-gpt
+make qtopo-measure-dwf.log            # runs qtopo-measure-dwf.py, compares CHECK lines
+```
+Before running GPT tests, restore reference files from git:
+```bash
+git checkout -- *.log *.log.json
+```
+If a `.p` directory from a prior run is present, clean first:
+```bash
+make clean
+```
+To re-run a single GPT test, touch the `.py` source:
+```bash
+touch qtopo-measure-dwf.py && make qtopo-measure-dwf.log
+```
+
+### Test execution pattern (from Makefiles)
 ```bash
 mpiexec -n 2 --oversubscribe --bind-to none python3 -m mpi4py ./utils.py \
   --test -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1 1 1 1 \

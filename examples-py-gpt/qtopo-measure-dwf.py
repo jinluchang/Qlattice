@@ -107,6 +107,9 @@ def measure_topo_dwf(
               used for error estimation.
     """
     q.check_time_limit()
+    assert isinstance(gf, q.GaugeField), f"measure_topo_dwf: gf type={type(gf)}"
+    assert isinstance(info_path, str), f"measure_topo_dwf: info_path type={type(info_path)}"
+    assert isinstance(params, dict), f"measure_topo_dwf: params type={type(params)}"
     lat_shape = tuple(gf.geo.total_site)
     assert len(lat_shape) == 4 and all(s > 0 for s in lat_shape), \
         f"measure_topo_dwf: lat_shape={lat_shape}"
@@ -253,6 +256,7 @@ def measure_topo_dwf(
             str
                 Full scratch path.
             """
+            assert isinstance(idx, int), f"mk_path: idx type={type(idx)}"
             return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
         #
         def check(idx):
@@ -267,6 +271,7 @@ def measure_topo_dwf(
             bool
                 True if both ``psel.lati`` and ``sp_prop_sol.lat`` exist.
             """
+            assert isinstance(idx, int), f"check: idx type={type(idx)}"
             if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
                 return False
             if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
@@ -286,6 +291,8 @@ def measure_topo_dwf(
             sp_prop_sol : q.PselProp
                 Sparse propagator solution in the local (``"l"``) point distribution.
             """
+            assert isinstance(idx, int), f"save: idx type={type(idx)}"
+            assert isinstance(sp_prop_sol, q.PselProp), f"save: sp_prop_sol type={type(sp_prop_sol)}"
             root = 0
             psel = psel_list[idx]
             assert sp_prop_sol.n_points == psel.n_points
@@ -322,6 +329,9 @@ def measure_topo_dwf(
             sp_prop_sol_il : list of q.PselProp
                 List of loaded sparse propagator solutions, one per index.
             """
+            assert isinstance(idx_list, list), f"load: idx_list type={type(idx_list)}"
+            for i_idx in idx_list:
+                assert isinstance(i_idx, int), f"load: idx_list element type={type(i_idx)}"
             id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
             root_il = [
                 id_node_list_for_shuffle[i % len(id_node_list_for_shuffle)]
@@ -352,6 +362,9 @@ def measure_topo_dwf(
                 is_reverse=True,
             )
             assert len(sp_prop_sol_il) == len(idx_list)
+            assert isinstance(sp_prop_sol_il, list), f"load: sp_prop_sol_il type={type(sp_prop_sol_il)}"
+            for sp in sp_prop_sol_il:
+                assert isinstance(sp, q.PselProp), f"load: sp_prop_sol_il element type={type(sp)}"
             return sp_prop_sol_il
         #
         @q.timer
@@ -368,6 +381,7 @@ def measure_topo_dwf(
             sp_prop_sol : q.PselProp
                 Sparse propagator solution to benchmark.
             """
+            assert isinstance(sp_prop_sol, q.PselProp), f"benchmark: sp_prop_sol type={type(sp_prop_sol)}"
             fname = q.get_fname()
             n_points = q.glb_sum(sp_prop_sol.n_points)
             psel = sp_prop_sol.psel
@@ -503,6 +517,7 @@ def measure_topo_dwf(
             WilsonMatrix
                 12x12 Dirac-colour propagator matrix at the given site.
             """
+            assert isinstance(flavor, str), f"get_prop: flavor type={type(flavor)}"
             assert flavor == "c", f"get_prop: flavor={flavor} != 'c'"
             assert isinstance(p_snk, tuple) and isinstance(p_src, tuple), \
                 f"get_prop: p_snk type={type(p_snk)} p_src type={type(p_src)}"
@@ -543,6 +558,7 @@ def measure_topo_dwf(
                 Shape ``(len(chunk), len(expr_names))``.
                 Column 0 = ``qbar gamma5 q``, column 1 = ``qbar q`` at each site.
             """
+            assert isinstance(chunk_idx, int), f"eval: chunk_idx type={type(chunk_idx)}"
             chunk = chunk_list[chunk_idx]
             val_arr = np.zeros(
                 (
@@ -716,6 +732,14 @@ def measure_topo_dwf(
     assert f_tadpole_loop_sum_arr.dtype == np.complex128
     assert f_tadpole_loop_imag_sqr_sum_arr.dtype == np.float64
     #
+    assert isinstance(info, dict), f"measure_topo_dwf: info type={type(info)}"
+    assert "f_tadpole_loop_sum_arr" in info
+    assert isinstance(info["f_tadpole_loop_sum_arr"], np.ndarray)
+    assert info["f_tadpole_loop_sum_arr"].dtype == np.complex128
+    assert "f_tadpole_loop_imag_sqr_sum_arr" in info
+    assert isinstance(info["f_tadpole_loop_imag_sqr_sum_arr"], np.ndarray)
+    assert info["f_tadpole_loop_imag_sqr_sum_arr"].dtype == np.float64
+    #
     return info
 
 # ------------------------------
@@ -782,6 +806,8 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sub-grid.
     """
     assert isinstance(xg_arr, np.ndarray), f"mk_sparse_grid: xg_arr type={type(xg_arr)}"
+    assert isinstance(sparse_ratio, int), f"mk_sparse_grid: sparse_ratio type={type(sparse_ratio)}"
+    assert isinstance(idx, int), f"mk_sparse_grid: idx type={type(idx)}"
     n_points = len(xg_arr)
     expected_xg_shape = (n_points, 4)
     expected_sel_shape = (n_points,)
@@ -1021,6 +1047,10 @@ def sparse_solve(idx, psel, fu1, inverter):
     sp_prop_sol : q.PselProp
         Sparse propagator solution with the conjugate random phase already multiplied.
     """
+    assert isinstance(idx, int), f"sparse_solve: idx type={type(idx)}"
+    assert isinstance(psel, q.PointsSelection), f"sparse_solve: psel type={type(psel)}"
+    assert isinstance(fu1, q.FieldComplexD), f"sparse_solve: fu1 type={type(fu1)}"
+    assert isinstance(inverter, qg.InverterGPT), f"sparse_solve: inverter type={type(inverter)}"
     assert fu1.multiplicity == 12, f"sparse_solve: fu1.multiplicity={fu1.multiplicity} != 12"
     geo = fu1.geo
     sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
@@ -1043,6 +1073,7 @@ def sparse_solve(idx, psel, fu1, inverter):
         q.json_results_append(
             f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3), 1e-7
         )
+    assert isinstance(sp_prop_sol, q.PselProp), f"sparse_solve: sp_prop_sol type={type(sp_prop_sol)}"
     return sp_prop_sol
 
 # --------------------------------------------
@@ -1116,6 +1147,9 @@ def gen_test_data():
         "--maxiter_exact",
         "100",
     ]
+    assert isinstance(argv, list), f"gen_test_data: argv type={type(argv)}"
+    for a in argv:
+        assert isinstance(a, str), f"gen_test_data: argv element type={type(a)}"
     return argv
 
 @q.timer(is_timer_fork=True)
@@ -1136,6 +1170,9 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
     """
     fname = q.get_fname()
     q.check_time_limit()
+    assert isinstance(fn_gf, str), f"run_topo_measure: fn_gf type={type(fn_gf)}"
+    assert isinstance(fn_out, str), f"run_topo_measure: fn_out type={type(fn_out)}"
+    assert params is None or isinstance(params, dict), f"run_topo_measure: params type={type(params)}"
     if q.does_file_exist_qar_sync_node(fn_out + "/checkpoint.txt"):
         q.displayln_info(
             -1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip."
