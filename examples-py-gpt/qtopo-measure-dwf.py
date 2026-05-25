@@ -36,21 +36,47 @@ by Luchang Jin
 {__file__} --test
 # Generate some test data and then perform the measurement.
 {""}
-{__file__} \
-    [--sparse_ratio 32] \
-    [--num_of_rand_vol_u1 2] \
-    [--ls 16] \
-    [--ls_sloppy 12] \
-    [--b_plus_c 3.0] \
-    [--b_plus_c_sloppy 3.0] \
-    [--maxiter_sloppy 50] \
-    [--maxiter_exact 100] \
-    [--ama_prob 0.1] \
-    --gf PATH_GAUGE_FIELD \
-    --out PATH_OUTPUT
-# Random number seed will be based on PATH_GAUGE_FIELD.
-# Multiple input and output paths can be specified (they will be processed the same way).
-# The program does not overwrite output files. If the output file already exist, the program will simply display that output file content and skip that input and output file pair and continue.
+Required arguments:
+  --gf PATH_GAUGE_FIELD         Input gauge field file path (can be specified multiple times).
+  --out PATH_OUTPUT             Output directory for results (one per --gf).
+
+Optional arguments:
+  --sparse_ratio INT            Sparse-grid decomposition factor (1,2,4,8,16,32,64,81,128,162,256,512).  Determines the number of interleaved sub-grids used for the sparse DWF solve. [32]
+  --num_of_rand_vol_u1 INT      Number of random volume U(1) sources for stochastic estimation. [2]
+  --ls INT                      Exact Mobius fifth-dimension length Ls. [16]
+  --ls_sloppy INT               Sloppy Mobius fifth-dimension length Ls for the sloppy (cheaper) solver. [12]
+  --b_plus_c FLOAT              Exact Mobius parameter b + c (related to the kernel weight). [3.0]
+  --b_plus_c_sloppy FLOAT       Sloppy Mobius parameter b + c for the sloppy solver. [3.0]
+  --maxiter_sloppy INT          Maximum CG iterations for the sloppy inverter. [50]
+  --maxiter_exact INT           Maximum CG iterations for the exact inverter (used for AMA correction). [100]
+  --ama_prob FLOAT              Probability of applying the AMA correction for each sparse solve. 0.0 disables AMA entirely. [0.1]
+  --mpi_split IVEC4             GPT option: override MPI split for the CG inverter (e.g. 2.1.1.1).  When set, enables grouped solves.
+  --grouped INT                 GPT option: number of grouped right-hand sides for the inverter (default 12 with --mpi_split, 1 otherwise). [12]
+
+Summary:
+  For each random U(1) source, the program:
+    1. Constructs a sparse-grid decomposition (sparse_ratio subsets).
+    2. Solves the DWF propagator on each sparse subset using the sloppy inverter.
+    3. Optionally applies AMA correction with the exact inverter (at probability ama_prob).
+    4. Assembles the full propagator and evaluates qbar gamma5 q (topological charge density) and qbar q (quark condensate) at every site.
+    5. Sums over time slices and accumulates across random U(1) sources.
+
+Output structure (under each --out directory):
+  params.json                               Measurement parameters used.
+  checkpoint.txt                            Created on successful completion.
+  info/topo.json                            Final topological charge results (total, tslice_sum, errors).
+  info/quark_condensate.json                Final quark condensate results (avg, tslice_avg, errors).
+  info/rand_vol_u1_idx-{{R}}/topo.json        Per-source topological charge.
+  info/rand_vol_u1_idx-{{R}}/quark_condensate.json  Per-source quark condensate.
+  field/rand_vol_u1_idx-{{R}}/prop_sol.field  Propagator solution field for each source.
+  field/rand_vol_u1_idx-{{R}}/f_tadpole_loop.field  Tadpole-loop field for each source.
+  pickle/                                   Pickle-serialized info dicts.
+  scratch/                                  Temporary per-sparse-solve data (removed on completion).
+
+Notes:
+  - The random seed is derived from PATH_GAUGE_FIELD.
+  - Multiple --gf / --out pairs are processed sequentially.
+  - Output is never overwritten: if checkpoint.txt already exists, the pair is skipped.
 """
 
 is_cython = not is_test()
@@ -108,11 +134,14 @@ def measure_topo_dwf(
     """
     q.check_time_limit()
     assert isinstance(gf, q.GaugeField), f"measure_topo_dwf: gf type={type(gf)}"
-    assert isinstance(info_path, str), f"measure_topo_dwf: info_path type={type(info_path)}"
+    assert isinstance(info_path, str), (
+        f"measure_topo_dwf: info_path type={type(info_path)}"
+    )
     assert isinstance(params, dict), f"measure_topo_dwf: params type={type(params)}"
     lat_shape = tuple(gf.geo.total_site)
-    assert len(lat_shape) == 4 and all(s > 0 for s in lat_shape), \
+    assert len(lat_shape) == 4 and all(s > 0 for s in lat_shape), (
         f"measure_topo_dwf: lat_shape={lat_shape}"
+    )
     #
     sparse_ratio = params["sparse_ratio"]
     num_of_rand_vol_u1 = params["num_of_rand_vol_u1"]
@@ -292,7 +321,9 @@ def measure_topo_dwf(
                 Sparse propagator solution in the local (``"l"``) point distribution.
             """
             assert isinstance(idx, int), f"save: idx type={type(idx)}"
-            assert isinstance(sp_prop_sol, q.PselProp), f"save: sp_prop_sol type={type(sp_prop_sol)}"
+            assert isinstance(sp_prop_sol, q.PselProp), (
+                f"save: sp_prop_sol type={type(sp_prop_sol)}"
+            )
             root = 0
             psel = psel_list[idx]
             assert sp_prop_sol.n_points == psel.n_points
@@ -331,7 +362,9 @@ def measure_topo_dwf(
             """
             assert isinstance(idx_list, list), f"load: idx_list type={type(idx_list)}"
             for i_idx in idx_list:
-                assert isinstance(i_idx, int), f"load: idx_list element type={type(i_idx)}"
+                assert isinstance(i_idx, int), (
+                    f"load: idx_list element type={type(i_idx)}"
+                )
             id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
             root_il = [
                 id_node_list_for_shuffle[i % len(id_node_list_for_shuffle)]
@@ -362,9 +395,13 @@ def measure_topo_dwf(
                 is_reverse=True,
             )
             assert len(sp_prop_sol_il) == len(idx_list)
-            assert isinstance(sp_prop_sol_il, list), f"load: sp_prop_sol_il type={type(sp_prop_sol_il)}"
+            assert isinstance(sp_prop_sol_il, list), (
+                f"load: sp_prop_sol_il type={type(sp_prop_sol_il)}"
+            )
             for sp in sp_prop_sol_il:
-                assert isinstance(sp, q.PselProp), f"load: sp_prop_sol_il element type={type(sp)}"
+                assert isinstance(sp, q.PselProp), (
+                    f"load: sp_prop_sol_il element type={type(sp)}"
+                )
             return sp_prop_sol_il
         #
         @q.timer
@@ -381,7 +418,9 @@ def measure_topo_dwf(
             sp_prop_sol : q.PselProp
                 Sparse propagator solution to benchmark.
             """
-            assert isinstance(sp_prop_sol, q.PselProp), f"benchmark: sp_prop_sol type={type(sp_prop_sol)}"
+            assert isinstance(sp_prop_sol, q.PselProp), (
+                f"benchmark: sp_prop_sol type={type(sp_prop_sol)}"
+            )
             fname = q.get_fname()
             n_points = q.glb_sum(sp_prop_sol.n_points)
             psel = sp_prop_sol.psel
@@ -519,19 +558,21 @@ def measure_topo_dwf(
             """
             assert isinstance(flavor, str), f"get_prop: flavor type={type(flavor)}"
             assert flavor == "c", f"get_prop: flavor={flavor} != 'c'"
-            assert isinstance(p_snk, tuple) and isinstance(p_src, tuple), \
+            assert isinstance(p_snk, tuple) and isinstance(p_src, tuple), (
                 f"get_prop: p_snk type={type(p_snk)} p_src type={type(p_src)}"
+            )
             type_snk, pos_snk = p_snk
             type_src, pos_src = p_src
             assert type_snk == "point-snk", f"get_prop: type_snk={type_snk}"
             assert type_src == "point-snk", f"get_prop: type_src={type_src}"
             pos_snk = q.Coordinate(pos_snk)
             pos_src = q.Coordinate(pos_src)
-            assert pos_snk == pos_src, f"get_prop: pos_snk={pos_snk} != pos_src={pos_src}"
+            assert pos_snk == pos_src, (
+                f"get_prop: pos_snk={pos_snk} != pos_src={pos_src}"
+            )
             index = geo.index_from_g_coordinate(pos_snk)
             val = prop_sol.get_elem_wm(index)
-            assert isinstance(val, q.WilsonMatrix), \
-                f"get_prop: type(val)={type(val)}"
+            assert isinstance(val, q.WilsonMatrix), f"get_prop: type(val)={type(val)}"
             return val
         #
         cexpr = get_cexpr_tadpole_loop()
@@ -571,7 +612,9 @@ def measure_topo_dwf(
                 pd = {"x_1": ("point-snk", tuple(xg))}
                 val_arr[idx] = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
             expected_shape = (len(chunk), len(expr_names))
-            assert val_arr.shape == expected_shape, f"eval: val_arr.shape={val_arr.shape} != {expected_shape}"
+            assert val_arr.shape == expected_shape, (
+                f"eval: val_arr.shape={val_arr.shape} != {expected_shape}"
+            )
             assert val_arr.dtype == np.complex128
             return val_arr
         #
@@ -725,10 +768,12 @@ def measure_topo_dwf(
     q.qremove_all_info(f"{info_path}/scratch")
     #
     nt = geo.total_site[3]
-    assert f_tadpole_loop_sum_arr.shape == (num_of_rand_vol_u1, nt, 2), \
+    assert f_tadpole_loop_sum_arr.shape == (num_of_rand_vol_u1, nt, 2), (
         f"Expected shape ({num_of_rand_vol_u1}, {nt}, 2), got {f_tadpole_loop_sum_arr.shape}"
-    assert f_tadpole_loop_imag_sqr_sum_arr.shape == (num_of_rand_vol_u1, nt, 2), \
+    )
+    assert f_tadpole_loop_imag_sqr_sum_arr.shape == (num_of_rand_vol_u1, nt, 2), (
         f"Expected shape ({num_of_rand_vol_u1}, {nt}, 2), got {f_tadpole_loop_imag_sqr_sum_arr.shape}"
+    )
     assert f_tadpole_loop_sum_arr.dtype == np.complex128
     assert f_tadpole_loop_imag_sqr_sum_arr.dtype == np.float64
     #
@@ -806,14 +851,19 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sub-grid.
     """
     assert isinstance(xg_arr, np.ndarray), f"mk_sparse_grid: xg_arr type={type(xg_arr)}"
-    assert isinstance(sparse_ratio, int), f"mk_sparse_grid: sparse_ratio type={type(sparse_ratio)}"
+    assert isinstance(sparse_ratio, int), (
+        f"mk_sparse_grid: sparse_ratio type={type(sparse_ratio)}"
+    )
     assert isinstance(idx, int), f"mk_sparse_grid: idx type={type(idx)}"
     n_points = len(xg_arr)
     expected_xg_shape = (n_points, 4)
     expected_sel_shape = (n_points,)
-    assert xg_arr.shape == expected_xg_shape, \
+    assert xg_arr.shape == expected_xg_shape, (
         f"mk_sparse_grid: xg_arr.shape={xg_arr.shape} != {expected_xg_shape}"
-    assert xg_arr.dtype in (np.int32, np.int64), f"mk_sparse_grid: xg_arr.dtype={xg_arr.dtype}"
+    )
+    assert xg_arr.dtype in (np.int32, np.int64), (
+        f"mk_sparse_grid: xg_arr.dtype={xg_arr.dtype}"
+    )
     if sparse_ratio == 1:
         assert 0 <= idx < sparse_ratio
         sel_arr = True
@@ -1017,11 +1067,16 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
         sel2_arr = sel_arr.copy()
     else:
         raise Exception(f"{sparse_ratio=}")
-    assert isinstance(sel2_arr, np.ndarray), f"mk_sparse_grid: sel2_arr type={type(sel2_arr)}"
-    assert sel2_arr.dtype == np.bool_, f"mk_sparse_grid: sel2_arr.dtype={sel2_arr.dtype}"
+    assert isinstance(sel2_arr, np.ndarray), (
+        f"mk_sparse_grid: sel2_arr type={type(sel2_arr)}"
+    )
+    assert sel2_arr.dtype == np.bool_, (
+        f"mk_sparse_grid: sel2_arr.dtype={sel2_arr.dtype}"
+    )
     assert np.all(sel2_arr == sel_arr)
-    assert sel2_arr.shape == expected_sel_shape, \
+    assert sel2_arr.shape == expected_sel_shape, (
         f"mk_sparse_grid: sel2_arr.shape={sel2_arr.shape} != {expected_sel_shape}"
+    )
     return sel2_arr
 
 @q.timer(is_verbose=True)
@@ -1050,8 +1105,12 @@ def sparse_solve(idx, psel, fu1, inverter):
     assert isinstance(idx, int), f"sparse_solve: idx type={type(idx)}"
     assert isinstance(psel, q.PointsSelection), f"sparse_solve: psel type={type(psel)}"
     assert isinstance(fu1, q.FieldComplexD), f"sparse_solve: fu1 type={type(fu1)}"
-    assert isinstance(inverter, qg.InverterGPT), f"sparse_solve: inverter type={type(inverter)}"
-    assert fu1.multiplicity == 12, f"sparse_solve: fu1.multiplicity={fu1.multiplicity} != 12"
+    assert isinstance(inverter, qg.InverterGPT), (
+        f"sparse_solve: inverter type={type(inverter)}"
+    )
+    assert fu1.multiplicity == 12, (
+        f"sparse_solve: fu1.multiplicity={fu1.multiplicity} != 12"
+    )
     geo = fu1.geo
     sp_fu1 = q.SelectedPointsComplexD(psel, fu1.multiplicity)
     sp_fu1 @= fu1
@@ -1073,7 +1132,9 @@ def sparse_solve(idx, psel, fu1, inverter):
         q.json_results_append(
             f"sp_prop_sol {idx}", q.get_data_sig_arr(sp_prop_sol, rs_sig, 3), 1e-7
         )
-    assert isinstance(sp_prop_sol, q.PselProp), f"sparse_solve: sp_prop_sol type={type(sp_prop_sol)}"
+    assert isinstance(sp_prop_sol, q.PselProp), (
+        f"sparse_solve: sp_prop_sol type={type(sp_prop_sol)}"
+    )
     return sp_prop_sol
 
 # --------------------------------------------
@@ -1172,7 +1233,9 @@ def run_topo_measure(fn_gf, fn_out, *, params=None):
     q.check_time_limit()
     assert isinstance(fn_gf, str), f"run_topo_measure: fn_gf type={type(fn_gf)}"
     assert isinstance(fn_out, str), f"run_topo_measure: fn_out type={type(fn_out)}"
-    assert params is None or isinstance(params, dict), f"run_topo_measure: params type={type(params)}"
+    assert params is None or isinstance(params, dict), (
+        f"run_topo_measure: params type={type(params)}"
+    )
     if q.does_file_exist_qar_sync_node(fn_out + "/checkpoint.txt"):
         q.displayln_info(
             -1, f"{fname}: WARNING: '{fn_out}' for '{fn_gf}' already exist. Skip."
