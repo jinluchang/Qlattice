@@ -50,7 +50,8 @@ Optional arguments:
   --maxiter_sloppy INT          Maximum CG iterations for the sloppy inverter. [50]
   --maxiter_exact INT           Maximum CG iterations for the exact inverter (used for AMA correction). [100]
   --ama_prob FLOAT              Probability of applying the AMA correction for each sparse solve. 0.0 disables AMA entirely. [0.1]
-  --mpi_split IVEC4             GPT option: override MPI split for the CG inverter (e.g. 2.1.1.1).  When set, enables grouped solves.
+  --mpi IVEC4                   GPT option: MPI decomposition for the grid (e.g. 1.1.1.2).
+  --mpi_split IVEC4             GPT option: override MPI split for the CG inverter (e.g. 1.1.1.1).  When set, enables grouped solves.
   --grouped INT                 GPT option: number of grouped right-hand sides for the inverter (default 12 with --mpi_split, 1 otherwise). [12]
 
 Summary:
