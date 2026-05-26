@@ -41,7 +41,7 @@ Required arguments:
   --out PATH_OUTPUT             Output directory for results (one per --gf).
 
 Optional arguments:
-  --sparse_ratio INT            Sparse-grid decomposition factor (1,2,4,8,16,32,64,81,128,162,256,512).  Determines the number of interleaved sub-grids used for the sparse DWF solve. [32]
+  --sparse_ratio INT            Sparse-grid decomposition factor (1,2,4,8,16,32,64,81,128,162,256,512,1296,2592).  Determines the number of interleaved sub-grids used for the sparse DWF solve. [32]
   --num_of_rand_vol_u1 INT      Number of random volume U(1) sources for stochastic estimation. [2]
   --ls INT                      Exact Mobius fifth-dimension length Ls. [16]
   --ls_sloppy INT               Sloppy Mobius fifth-dimension length Ls for the sloppy (cheaper) solver. [12]
@@ -832,10 +832,10 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
     """
     Build a boolean selection mask for a sparse sub-grid of the full coordinate array.\n
     The lattice is divided into ``sparse_ratio`` interleaved sub-grids; ``idx`` selects
-    which sub-grid to return.  Supported ratios: 1, 2, 4, 8, 16, 32, 64, 81, 128, 162,
-    256, 512.\n
+    which sub-grid to return.      Supported ratios: 1, 2, 4, 8, 16, 32, 64, 81, 128, 162,
+    256, 512, 1296, 2592.\n
     For power-of-two ratios the sub-grids are hyper-rectangular checkerboard patterns;
-    for ratio 81 / 162 / 256 / 512 they are based on mod-3 / mod-4 block decomposition.\n
+    for ratio 81 / 162 / 256 / 512 / 1296 / 2592 they are based on mod-3 / mod-4 / mod-6 block decomposition.\n
     Parameters
     ----------
     xg_arr : np.ndarray, int
@@ -1062,6 +1062,38 @@ def mk_sparse_grid(xg_arr, sparse_ratio, idx):
             + (xg_arr[:, 1] + idx1) // 4
             + (xg_arr[:, 2] + idx2) // 4
             + (xg_arr[:, 3] + idx3) // 4
+            + idx4
+        ) % 2 == 0
+        sel2_arr = sel_arr.copy()
+    elif sparse_ratio == 1296:
+        assert 0 <= idx < sparse_ratio
+        sel_arr = True
+        idx0 = idx % 6
+        idx1 = (idx // 6) % 6
+        idx2 = (idx // 36) % 6
+        idx3 = (idx // 216) % 6
+        sel_arr &= (xg_arr[:, 0] + idx0) % 6 == 0
+        sel_arr &= (xg_arr[:, 1] + idx1) % 6 == 0
+        sel_arr &= (xg_arr[:, 2] + idx2) % 6 == 0
+        sel_arr &= (xg_arr[:, 3] + idx3) % 6 == 0
+        sel2_arr = sel_arr.copy()
+    elif sparse_ratio == 2592:
+        assert 0 <= idx < sparse_ratio
+        sel_arr = True
+        idx0 = idx % 6
+        idx1 = (idx // 6) % 6
+        idx2 = (idx // 36) % 6
+        idx3 = (idx // 216) % 6
+        idx4 = (idx // 1296) % 2
+        sel_arr &= (xg_arr[:, 0] + idx0) % 6 == 0
+        sel_arr &= (xg_arr[:, 1] + idx1) % 6 == 0
+        sel_arr &= (xg_arr[:, 2] + idx2) % 6 == 0
+        sel_arr &= (xg_arr[:, 3] + idx3) % 6 == 0
+        sel_arr &= (
+            (xg_arr[:, 0] + idx0) // 6
+            + (xg_arr[:, 1] + idx1) // 6
+            + (xg_arr[:, 2] + idx2) // 6
+            + (xg_arr[:, 3] + idx3) // 6
             + idx4
         ) % 2 == 0
         sel2_arr = sel_arr.copy()
