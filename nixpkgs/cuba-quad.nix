@@ -19,8 +19,8 @@ in stdenv.mkDerivation rec {
   enableParallelBuilding = false;
 
   preConfigure = ''
-    export CFLAGS="-fPIC -O2"
-    export CXXFLAGS="-fPIC -O2"
+    export CFLAGS="-fPIC -O2 -std=c11"
+    export CXXFLAGS="-fPIC -O2 -std=c11"
   '';
 
 }

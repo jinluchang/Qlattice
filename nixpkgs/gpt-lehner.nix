@@ -24,7 +24,8 @@ let
   # version = "ac6d56e98dc961661ea6b6692490f66285a1530a"; # 2026/03/11
   # version = "464cef1bc5b7a69e5254dc00eb111eadb2430f66"; # 2026/03/22
   # version = "1f711e53911deb3113795547602a8825fc4bd959"; # 2026/04/18
-  version = "df6fa3f329a3679d884f64342f4dd773cfe32532"; # 2026/04/27
+  # version = "df6fa3f329a3679d884f64342f4dd773cfe32532"; # 2026/04/27
+  version = "0a034acc513bfd99a9f6a03b2d876877ab510aed"; # 2026/05/27
 in
 
 buildPythonPackage {

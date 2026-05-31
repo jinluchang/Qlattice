@@ -3,6 +3,7 @@
 , lib
 , config
 , buildPythonPackage
+, meson-python
 , mpi4py
 , sympy
 , scipy
@@ -50,6 +51,7 @@ in buildPythonPackage {
 
   build-system = [
     qlat_utils
+    meson-python
   ];
 
   nativeBuildInputs = [

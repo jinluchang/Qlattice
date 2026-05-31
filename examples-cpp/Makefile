@@ -36,6 +36,7 @@ clean: $(patsubst %, %.clean, $(tests))
 compile-proj:
 	-mkdir -p build
 	-meson setup build >build/log.compile 2>&1
+	-cat build/log.compile
 	-time meson compile -C build >>build/log.compile 2>&1
 
 run-proj: compile-proj

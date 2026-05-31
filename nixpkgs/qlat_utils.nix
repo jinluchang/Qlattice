@@ -5,6 +5,8 @@
 , buildPythonPackage
 , cython
 , meson-python
+, meson
+, ninja
 , pkg-config
 , numpy
 , psutil
@@ -33,7 +35,7 @@ let
   pname = "qlat_utils${qlat-name}";
   version = if use-pypi != null then version-pypi else version-local;
 
-in buildPythonPackage {
+in buildPythonPackage.override { stdenv = stdenv; } {
 
   pname = pname;
   version = version;
@@ -43,8 +45,6 @@ in buildPythonPackage {
   src = if use-pypi != null then src-pypi else src-local;
 
   enableParallelBuilding = true;
-
-  stdenv = stdenv;
 
   build-system = [
     meson-python
@@ -75,7 +75,9 @@ in buildPythonPackage {
   ;
 
   dependencies = [
-    meson-python
+    # meson-python
+    meson
+    ninja
     pkg-config
     cython
     numpy
@@ -121,7 +123,14 @@ in buildPythonPackage {
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''
-    # export
+    # export | grep build
+    # ls
+    # echo
+    # echo pyproject.toml
+    # cat pyproject.toml
+    # echo
+    # echo meson.build
+    # cat meson.build
   '';
 
   preFixup = ''

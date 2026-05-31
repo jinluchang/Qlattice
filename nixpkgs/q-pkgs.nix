@@ -18,7 +18,7 @@ let
   nixpkgs-wd = if nixpkgs == null then nixpkgs-default else nixpkgs;
   import-nixpkgs-wd = import nixpkgs-wd;
 
-  version-pypi = "1.03";
+  version-pypi = "1.2";
 
   o-pkgs = import-nixpkgs-wd {
     config.allowUnfree = true;
@@ -382,23 +382,27 @@ let
     qlat_utils = py-call-pkg ./qlat_utils.nix {
       stdenv = qlat-stdenv;
       eigen = qlat-eigen;
+      use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
     };
     qlat = py-call-pkg ./qlat.nix {
       stdenv = qlat-stdenv;
+      use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
       nixgl = qlat-nixgl;
     };
     qlat_grid = py-call-pkg ./qlat_grid.nix {
       stdenv = qlat-stdenv;
+      use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
       nixgl = qlat-nixgl;
     };
     qlat_cps = py-call-pkg ./qlat_cps.nix {
       stdenv = qlat-stdenv;
+      use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
       nixgl = qlat-nixgl;

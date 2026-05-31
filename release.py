@@ -352,8 +352,10 @@ def bump_version() -> None:
     if not m:
         print("ERROR: VERSION format not recognized (expected vX.Y).")
         sys.exit(1)
-    major = int(m.group(1))
-    minor_raw = int(m.group(2)) + 1
+    major_old = int(m.group(1))
+    minor_old = int(m.group(2))
+    major = major_old
+    minor_raw = minor_old + 1
     major += minor_raw // 100
     minor_num = minor_raw % 100
     new_version = f"v{major}.{minor_num:02d}"
@@ -368,7 +370,7 @@ def bump_version() -> None:
         print("ERROR: nixpkgs/q-pkgs.nix not found.")
         sys.exit(1)
     text = q_pkgs_nix.read_text()
-    new_pypi_version = f"{major}.{minor_num:02d}"
+    new_pypi_version = f"{major_old}.{minor_old}"
     # Use \g<1> to avoid ambiguity when replacement starts with digits
     text_new = re.sub(
         r'(version-pypi\s*=\s*")[^"]+(")', r"\g<1>" + new_pypi_version + r"\g<2>", text

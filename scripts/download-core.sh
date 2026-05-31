@@ -71,6 +71,12 @@ else
     git clone https://github.com/lehner/gpt.git
 fi
 
+if [ -d gpt-ljin ] ; then
+    ( cd gpt-ljin ; git pull )
+else
+    git clone https://github.com/jinluchang/gpt.git gpt-ljin
+fi
+
 if [ -d Hadrons ] ; then
     ( cd Hadrons ; git pull )
 else

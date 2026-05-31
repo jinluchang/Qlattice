@@ -3,6 +3,7 @@
 , lib
 , config
 , buildPythonPackage
+, meson-python
 , qlat
 , grid-lehner
 , git
@@ -42,6 +43,7 @@ in buildPythonPackage {
 
   build-system = [
     qlat
+    meson-python
   ];
 
   nativeBuildInputs = [
