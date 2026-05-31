@@ -73,6 +73,7 @@ in stdenv.mkDerivation rec {
     cuda_cudart
     cuda_profiler_api
     libcublas
+    libcufft
   ])
   ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]
   ;
@@ -171,6 +172,12 @@ in stdenv.mkDerivation rec {
     ];
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;
+
+  postPatch = lib.optionalString cudaSupport ''
+    substituteInPlace Grid/perfmon/PerfCount.h \
+      --replace '//accelerator_inline uint64_t __rdtsc(void) {  return 0; }' 'accelerator_inline uint64_t __rdtsc(void) {  return 0; }' \
+      --replace '//accelerator_inline uint64_t __rdpmc(int ) {  return 0; }' 'accelerator_inline uint64_t __rdpmc(int ) {  return 0; }'
+  '';
 
   preBuild = ''
     cd Grid
