@@ -65,6 +65,18 @@ else
     ( cd Grid-clehner ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
+if [ -d Grid-ljin ] ; then
+    ( cd Grid-ljin ; git pull )
+else
+    git clone https://github.com/jinluchang/Grid-clehner.git Grid-ljin
+fi
+
+if [ -e Grid-ljin/configure ] ; then
+    echo "Grid-ljin bootstrapped."
+else
+    ( cd Grid-ljin ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
+fi
+
 if [ -d gpt ] ; then
     ( cd gpt ; git pull )
 else
