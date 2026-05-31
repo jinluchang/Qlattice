@@ -26,22 +26,27 @@
 }:
 
 let
+  pname = "Grid-lehner";
   cpuinfo-has-avx2 = (builtins.match ".*flags.*:.*avx2.*" cpuinfo) != null;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
-in stdenv.mkDerivation rec {
-
-  pname = "Grid-lehner";
+  #
   # version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2"; # 2025/04/17
   # version = "faed6d3e9d8bfa45326a2720b8916228b941b69b"; # 2025/12/12
   # version = "afd4423bef303fd176bcdb9f3ea89255cba06d53"; # 2026/03/11
   # version = "e13370f81f553b06b62dd7c2aaf20677b5d16ede"; # 2026/04/18
   version = "f62689d905a5fe3445b93eadcf9e3b33aaf1b298"; # 2026/05/22
-
-  src = builtins.fetchGit {
+  #
+  src-remote = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/grid" else "https://github.com/lehner/Grid";
     ref = "feature/gpt";
     rev = version;
   };
+  src-local = builtins.fetchGit ../distfiles/Grid-ljin;
+in stdenv.mkDerivation {
+
+  inherit pname version;
+
+  src = src-local;
 
   enableParallelBuilding = true;
 
@@ -172,12 +177,6 @@ in stdenv.mkDerivation rec {
     ];
     flags = if cudaSupport then gpu_flags else cpu_flags;
   in flags;
-
-  postPatch = lib.optionalString cudaSupport ''
-    substituteInPlace Grid/perfmon/PerfCount.h \
-      --replace '//accelerator_inline uint64_t __rdtsc(void) {  return 0; }' 'accelerator_inline uint64_t __rdtsc(void) {  return 0; }' \
-      --replace '//accelerator_inline uint64_t __rdpmc(int ) {  return 0; }' 'accelerator_inline uint64_t __rdpmc(int ) {  return 0; }'
-  '';
 
   preBuild = ''
     cd Grid

@@ -18,7 +18,8 @@
 
 let
   use-gitee-wd = if use-gitee == null then false else use-gitee;
-  pname = "gpt-lehenr";
+  pname = "gpt-lehner";
+  #
   # version = "9bb16fc9fe134623b94116b2a47f7b9288f360df"; # 2025/06/15
   # version = "d69e4d0389015b338a2956de806a53bb0354efaf"; # 2025/12/12
   # version = "ac6d56e98dc961661ea6b6692490f66285a1530a"; # 2026/03/11
@@ -26,6 +27,13 @@ let
   # version = "1f711e53911deb3113795547602a8825fc4bd959"; # 2026/04/18
   # version = "df6fa3f329a3679d884f64342f4dd773cfe32532"; # 2026/04/27
   version = "0a034acc513bfd99a9f6a03b2d876877ab510aed"; # 2026/05/27
+  #
+  src-remote = builtins.fetchGit {
+    url = if use-gitee-wd then "https://gitee.com/jinluchang/gpt" else "https://github.com/lehner/gpt";
+    ref = "master";
+    rev = version;
+  };
+  src-local = builtins.fetchGit ../distfiles/gpt-ljin;
 in
 
 buildPythonPackage {
@@ -35,12 +43,7 @@ buildPythonPackage {
 
   pyproject = false;
 
-  src = builtins.fetchGit {
-    url = if use-gitee-wd then "https://gitee.com/jinluchang/gpt" else "https://github.com/lehner/gpt";
-    # url = "https://github.com/jinluchang/gpt";
-    ref = "master";
-    rev = version;
-  };
+  src = src-local;
 
   enableParallelBuilding = true;
 
