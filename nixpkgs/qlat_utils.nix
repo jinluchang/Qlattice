@@ -69,6 +69,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     cuda_cccl
     cuda_cudart
     cuda_profiler_api
+    libcublas
     libcufft
   ])
   ++ lib.optionals cudaSupport [ autoAddDriverRunpath ]

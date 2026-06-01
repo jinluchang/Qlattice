@@ -389,15 +389,20 @@ class NvccCmdLine:
         return argv_new
 
     def call(self, argv):
-        status = p.call(argv)
         log.log(f"{' '.join([repr(arg) for arg in argv])}")
-        log.log(f"status={status}")
-        if status != 0:
+        proc = p.Popen(argv, stdout=p.PIPE, stderr=p.PIPE)
+        stdout_bytes, stderr_bytes = proc.communicate()
+        stdout_text = stdout_bytes.decode('utf-8', errors='replace')
+        stderr_text = stderr_bytes.decode('utf-8', errors='replace')
+        sys.stdout.write(stdout_text)
+        sys.stderr.write(stderr_text)
+        log.log(f"status={proc.returncode}")
+        if proc.returncode != 0:
             print(f"pwd={os.getcwd()}")
             print(f"sys.argv={sys.argv}")
             print(f"argv={argv}")
-            print(f"status={status}")
-        return status
+            print(f"status={proc.returncode}")
+        return proc.returncode
 
     def ldd(self):
         out = self.output
