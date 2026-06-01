@@ -680,7 +680,6 @@ let
         fftwFloat
         openssl
         gnuplot
-        pipx
         twine
         file
         zip
@@ -698,6 +697,7 @@ let
         qpdf
         ghostscript
         ;
+        pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
     }
     // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
     then {
@@ -746,22 +746,6 @@ let
       texliveFull
       fontconfig
       freetype
-      ;
-      inherit (pkgs.xorg)
-      libX11
-      libXScrnSaver
-      libXcomposite
-      libXcursor
-      libXdamage
-      libXext
-      libXfixes
-      libXi
-      libXrandr
-      libXrender
-      libXtst
-      libxcb
-      libxkbfile
-      libxshmfence
       ;
     }
     else {}
