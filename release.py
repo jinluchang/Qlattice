@@ -3,7 +3,7 @@
 Qlattice Release Automation Script.\n
 A single-file Python script that automates the entire Qlattice release procedure.
 Uses only Python standard library (no external dependencies).\n
-The release process consists of 10 sequential steps:
+    The release process consists of 10 sequential steps:
     1. Environment checks (VERSION file exists, git root, clean worktree)
     2. Build-pull loop (build tarballs, verify artifacts, pull remote changes, rebuild if needed)
     3. Tag the current commit with the version from VERSION file
@@ -11,8 +11,8 @@ The release process consists of 10 sequential steps:
     5. Create GitHub Release from the tag
     6. Upload built packages to PyPI
     7. Bump version in VERSION file, update-sources.sh, and nix config
-    8. Verify new build compiles successfully
-    9. Commit the version bump changes
+    8. Commit the version bump changes
+    9. Verify new build compiles successfully
     10. Push the version bump to both remotes\n
 All steps use hard-fail error handling: any failure causes the script to exit
 with a non-zero status. The script is fully automated with no interactive prompts.\n
@@ -385,12 +385,12 @@ def bump_version() -> None:
     )
 
 def verify_new_build() -> None:
-    """Step 8: Verify the new version builds successfully.\n
+    """Step 9: Verify the new version builds successfully.\n
     Re-runs the build script with the bumped version.
-    Catches version-related build breakage immediately before committing.
+    Catches version-related build breakage after committing.
     """
     result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
-    print_step(8, "Verify new build by rebuilding packages")
+    print_step(9, "Verify new build by rebuilding packages")
     mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
     subprocess.run(
         ["./nixpkgs/build-many-qlat-pkgs-core.sh", "-j", "4", "--cores", "16"],
@@ -410,11 +410,11 @@ def verify_new_build() -> None:
     print("New build verification completed.")
 
 def commit_bump() -> None:
-    """Step 9: Commit the version bump changes.\n
+    """Step 8: Commit the version bump changes.\n
     Creates a single atomic commit recording all version bump changes
     (VERSION file, source files, nix config) with informative message including new version.
     """
-    print_step(9, "Commit the version bump changes")
+    print_step(8, "Commit the version bump changes")
     new_version = Path("VERSION").read_text().strip()
     subprocess.run(["git", "add", "-A"], check=True)
     subprocess.run(
@@ -455,8 +455,8 @@ def main() -> None:
         5. create_github_release
         6. upload_pypi
         7. bump_version
-        8. verify_new_build
-        9. commit_bump
+        8. commit_bump
+        9. verify_new_build
         10. push_bump\n
     Prints "SUCCESS" on completion, exits with non-zero on any failure.
     """
@@ -469,8 +469,9 @@ def main() -> None:
     create_github_release()
     upload_pypi()
     bump_version()
-    verify_new_build()
     commit_bump()
+    time.sleep(60)
+    verify_new_build()
     push_bump()
     print("SUCCESS")
 
