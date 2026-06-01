@@ -47,8 +47,6 @@ buildPythonPackage {
 
   enableParallelBuilding = true;
 
-  stdenv = stdenv;
-
   build-system = [
     pkg-config
     numpy

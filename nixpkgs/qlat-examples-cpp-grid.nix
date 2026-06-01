@@ -28,8 +28,6 @@ let
 
   use-gitee-wd = if use-gitee == null then false else use-gitee;
 
-  orig-stdenv = stdenv;
-
   version-pypi = use-pypi;
   qlat-src-pypi = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
@@ -40,7 +38,7 @@ let
 
   src = if use-pypi != null then "${qlat-src-pypi}/examples-cpp-grid" else ../examples-cpp-grid;
 
-in buildPythonPackage rec {
+in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv; }) rec {
 
   inherit version src;
 
@@ -49,8 +47,6 @@ in buildPythonPackage rec {
   pyproject = false;
 
   enableParallelBuilding = true;
-
-  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
 
   build-system = [
     qlat

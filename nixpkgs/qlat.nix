@@ -47,8 +47,6 @@ in buildPythonPackage {
 
   enableParallelBuilding = true;
 
-  stdenv = stdenv;
-
   build-system = [
     qlat_utils
     meson-python
