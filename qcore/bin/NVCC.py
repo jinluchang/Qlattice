@@ -300,6 +300,24 @@ class NvccCmdLine:
                 argv_new.append(arg)
         self.argv = argv_new
 
+    def parse_link_libs(self):
+        argv_new = []
+        for arg in self.argv:
+            if arg.startswith("-l") or arg.endswith(".a"):
+                argv_new.append(arg)
+            elif (not arg.startswith("-")) and arg.endswith(".so"):
+                dirname = os.path.dirname(arg)
+                libname = os.path.basename(arg)
+                if libname.startswith("lib"):
+                    libname = libname.removeprefix("lib").removesuffix(".so")
+                    argv_new.append(f"-L{dirname}")
+                    argv_new.append(f"-l{libname}")
+                else:
+                    argv_new.append(arg)
+            else:
+                argv_new.append(arg)
+        self.argv = argv_new
+
     def parse_all(self):
         self.parse_name()
         self.parse_cc_only_flags()
@@ -310,6 +328,7 @@ class NvccCmdLine:
         self.parse_nv_flags()
         self.parse_cc_flags()
         self.parse_wl_group_flags()
+        self.parse_link_libs()
 
     def prepare_cc_flags(self):
         argv_new = []
