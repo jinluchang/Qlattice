@@ -27,8 +27,6 @@
 
 let
 
-  orig-stdenv = stdenv;
-
   version-pypi = use-pypi;
   srcs-pypi = [
     (builtins.path { name = "qlat-utils"; path = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz"; })
@@ -49,7 +47,7 @@ let
 
   srcs = if use-pypi != null then srcs-pypi else srcs-local;
 
-in buildPythonPackage.override { stdenv = stdenv; } rec {
+in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv; }) rec {
 
   inherit version srcs;
 
@@ -60,8 +58,6 @@ in buildPythonPackage.override { stdenv = stdenv; } rec {
   sourceRoot = ".";
 
   enableParallelBuilding = true;
-
-  stdenv = if cudaSupport then cudaPackages.backendStdenv else orig-stdenv;
 
   build-system = [
     qlat
