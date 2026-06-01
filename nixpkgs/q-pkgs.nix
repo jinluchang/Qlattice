@@ -41,10 +41,10 @@ let
   nixgl-src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/nixGL" else "https://github.com/jinluchang/nixGL";
     ref = "main";
-    rev = "f72374ff8c0dccef46b7b02e7cde09f91007aac6";
+    rev = "28366884d82a3f471b471eea70baa2e6668d6b4e";
   };
 
-  nixgl = (import nixgl-src {}).auto.nixGLDefault;
+  nixgl = (import nixgl-src { pkgs = o-pkgs; }).auto.nixGLDefault;
 
   is-linux = lib.lists.elem builtins.currentSystem lib.platforms.linux;
 
