@@ -3,6 +3,7 @@
 , lib
 , config
 , buildPythonPackage
+, meson-python
 , qlat
 , qlat_utils
 , qlat_cps
@@ -88,6 +89,7 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
     qlat
     qlat_cps
     qlat_grid
+    meson-python
   ];
 
   preConfigure = let

@@ -303,13 +303,19 @@ class NvccCmdLine:
     def parse_link_libs(self):
         argv_new = []
         for arg in self.argv:
-            if arg.startswith("-l") or arg.endswith(".a"):
+            if arg.startswith("-l"):
                 argv_new.append(arg)
-            elif (not arg.startswith("-")) and arg.endswith(".so"):
+            elif (not arg.startswith("-")) and (
+                arg.endswith(".so") or arg.endswith(".a")
+            ):
                 dirname = os.path.dirname(arg)
                 libname = os.path.basename(arg)
                 if libname.startswith("lib"):
-                    libname = libname.removeprefix("lib").removesuffix(".so")
+                    libname = libname.removeprefix("lib")
+                    for suffix in (".so", ".a"):
+                        if libname.endswith(suffix):
+                            libname = libname.removesuffix(suffix)
+                            break
                     argv_new.append(f"-L{dirname}")
                     argv_new.append(f"-l{libname}")
                 else:
