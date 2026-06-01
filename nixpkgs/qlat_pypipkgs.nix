@@ -49,7 +49,7 @@ let
 
   srcs = if use-pypi != null then srcs-pypi else srcs-local;
 
-in buildPythonPackage rec {
+in buildPythonPackage.override { stdenv = stdenv; } rec {
 
   inherit version srcs;
 

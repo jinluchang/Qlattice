@@ -28,7 +28,7 @@ let
   pname = "qlat_grid${qlat-name}";
   version = if use-pypi != null then version-pypi else version-local;
 
-in buildPythonPackage {
+in buildPythonPackage.override { stdenv = stdenv; } {
 
   pname = pname;
   version = version;

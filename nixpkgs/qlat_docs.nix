@@ -43,7 +43,7 @@ let
 
   src = if use-pypi != null then "${qlat-src-pypi}/docs" else ../docs;
 
-in buildPythonPackage rec {
+in buildPythonPackage.override { stdenv = stdenv; } rec {
 
   inherit version src;
 
