@@ -109,7 +109,6 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
     # export LDFLAGS="''${CXX_ARR[@]:1} $LDFLAGS"
     #
     export OMP_NUM_THREADS=2
-    export
     echo
     ls -l
     echo
@@ -118,6 +117,10 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
     #
     export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${bash}/bin/bash
+    #
+    echo
+    export
+    echo
     #
     echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
     echo mpi_options=$mpi_options
