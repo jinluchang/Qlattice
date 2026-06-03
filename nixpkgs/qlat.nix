@@ -88,50 +88,34 @@ in buildPythonPackage.override { stdenv = stdenv; } {
   preConfigure = let
     gpu_extra = ''
       pwd
-      cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
-      patchShebangs --build "$PWD/NVCC.py"
+      mkdir -pv "$out/bin"
       #
-      GXX=""
-      GXX+=" -Xcudafe '--diag_suppress=20014'"
-      GXX+=" -Xcudafe '--diag_suppress=20236'"
-      GXX+=" -Xcudafe '--diag_suppress=20012'"
-      GXX+=" -Xcudafe '--diag_suppress=20011'"
-      GXX+=" -Xcudafe '--diag_suppress=1160'"
-      GXX+=" -Xcudafe '--diag_suppress=177'"
-      GXX+=" -Xcudafe '--diag_suppress=550'"
-      # GXX="-w"
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-mpi-qlat.sh
+      echo >>$out/bin/cuda-mpi-qlat.sh
       #
-      export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing $GXX" # -D__DEBUG_VECUTILS__
-      export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
-      export QLAT_MPICXX="$PWD/NVCC.py -ccbin ${mpi.dev}/bin/mpic++ $NVCC_OPTIONS"
-      export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
-      export QLAT_LDFLAGS="--NVCC-link" # --shared
+      cat >>"$out/bin/cuda-mpi-qlat.sh" <<EOF
+        #
+        source ${qlat_utils}/bin/cuda-qlat.sh
+        #
+        export QLAT_MPICXX="${qlat_utils}/bin/NVCC.py -ccbin ${mpi.dev}/bin/mpic++ \$NVCC_OPTIONS"
+        export CXX="\$QLAT_MPICXX"
+        #
+        export MPICXX="\$QLAT_MPICXX"
+        export OMPI_CXX=c++
+        #
+      EOF
       #
-      export OMPI_CXX=c++
-      export OMPI_CC=cc
+      source $out/bin/cuda-mpi-qlat.sh echo
       #
-      export MPICXX="$QLAT_MPICXX"
-      export CXX="$QLAT_MPICXX"
-      export CXXFLAGS="$QLAT_CXXFLAGS"
-      export LDFLAGS="$QLAT_LDFLAGS"
+      echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
       #
-      which nvcc
-      echo
-      nvcc --version
-      echo
-      which nixGL
-      echo
-      echo "run with nixGL"
-      echo
-      nixGL qlat-utils-config
-      echo
-      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
-      echo
-      echo cat nix-gl.sh
-      cat nix-gl.sh
-      source nix-gl.sh
-      echo
-      echo $LD_LIBRARY_PATH
+      echo "CXX=$CXX"
+      echo "CXXFLAGS=$CXXFLAGS"
+      echo "LDFLAGS=$LDFLAGS"
+      #
+      echo "MPICXX=$MPICXX"
+      echo "OMPI_CXX=$OMPI_CXX"
+      #
       echo
     '';
     cpu_extra = ''

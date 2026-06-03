@@ -14,12 +14,19 @@ if not (sys.version_info.major == 3 and sys.version_info.minor >= 6):
 import subprocess as p
 import time
 import os
+import tempfile
+import datetime
+import getpass
 
 ########################
 
 class LogCmd:
     def __init__(self):
-        log_path = __file__ + ".log"
+        now = datetime.datetime.now()
+        log_name = f"NVCC-{now:%Y%m%d-%H%M%S-%f}.log"
+        log_dir = os.path.join(tempfile.gettempdir(), getpass.getuser())
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, log_name)
         time_sec = time.time()
         self.log_prefix = f"{time_sec:30.10f}: "
         self.log_file = open(log_path, "a")

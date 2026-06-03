@@ -14,6 +14,7 @@
 , eigen
 , git
 , which
+, bash
 , autoAddDriverRunpath
 , openmp ? null
 , use-pypi ? null
@@ -21,6 +22,7 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
+, nixgl ? ""
 }:
 
 let
@@ -56,8 +58,10 @@ in buildPythonPackage.override { stdenv = stdenv; } {
   nativeBuildInputs = [
     git
     which
+    bash
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
+  ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -76,7 +80,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
   ;
 
   dependencies = [
-    # meson-python
+    bash
     meson
     ninja
     pkg-config
@@ -92,33 +96,56 @@ in buildPythonPackage.override { stdenv = stdenv; } {
   preConfigure = let
     gpu_extra = ''
       pwd
-      cp -pv "${../qcore/bin/NVCC.py}" "$PWD/NVCC.py"
-      patchShebangs --build "$PWD/NVCC.py"
+      mkdir -pv "$out/bin"
       #
-      GXX=""
-      GXX+=" -Xcudafe '--diag_suppress=20014'"
-      GXX+=" -Xcudafe '--diag_suppress=20236'"
-      GXX+=" -Xcudafe '--diag_suppress=20012'"
-      GXX+=" -Xcudafe '--diag_suppress=20011'"
-      GXX+=" -Xcudafe '--diag_suppress=1160'"
-      GXX+=" -Xcudafe '--diag_suppress=177'"
-      GXX+=" -Xcudafe '--diag_suppress=550'"
-      # GXX="-w"
+      cp -pv "${../qcore/bin/NVCC.py}" "$out/bin/NVCC.py"
+      patchShebangs --build "$out/bin/NVCC.py"
       #
-      export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing $GXX" # -D__DEBUG_VECUTILS__
-      export QLAT_CXX="$PWD/NVCC.py -ccbin c++ $NVCC_OPTIONS"
-      export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
-      export QLAT_LDFLAGS="--NVCC-link" # --shared
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh
+      echo >>$out/bin/cuda-qlat.sh
       #
-      export OMPI_CXX=c++
-      export OMPI_CC=cc
+      ls "${nixgl}/bin/nixGL"
+      cat "${nixgl}/bin/nixGL" | grep -v 'exec ' | grep -v '^#!' >>$out/bin/cuda-qlat.sh
+      echo >>$out/bin/cuda-qlat.sh
       #
-      export MPICXX="$QLAT_MPICXX"
-      export CXX="$QLAT_CXX"
-      export CXXFLAGS="$QLAT_CXXFLAGS"
-      export LDFLAGS="$QLAT_LDFLAGS"
+      cat >>"$out/bin/cuda-qlat.sh" <<EOF
+        #
+        # GXX="-w"
+        #
+        GXX=""
+        GXX+=" -Xcudafe '--diag_suppress=20014'"
+        GXX+=" -Xcudafe '--diag_suppress=20236'"
+        GXX+=" -Xcudafe '--diag_suppress=20012'"
+        GXX+=" -Xcudafe '--diag_suppress=20011'"
+        GXX+=" -Xcudafe '--diag_suppress=1160'"
+        GXX+=" -Xcudafe '--diag_suppress=177'"
+        GXX+=" -Xcudafe '--diag_suppress=550'"
+        #
+        export NVCC_OPTIONS="-std=c++17 -arch=${nvcc-arch} --expt-extended-lambda --expt-relaxed-constexpr -fopenmp -fno-strict-aliasing \$GXX" # -D__DEBUG_VECUTILS__
+        export QLAT_CXX="$out/bin/NVCC.py -ccbin c++ \$NVCC_OPTIONS"
+        export QLAT_CXXFLAGS="--NVCC-compile -D__QLAT_BARYON_SHARED_SMALL__" # -fPIC
+        export QLAT_LDFLAGS="--NVCC-link" # --shared
+        #
+        export CXX="\$QLAT_CXX"
+        export CXXFLAGS="\$QLAT_CXXFLAGS"
+        export LDFLAGS="\$QLAT_LDFLAGS"
+        #
+      EOF
       #
-      echo $LD_LIBRARY_PATH
+      echo >>$out/bin/cuda-qlat.sh
+      echo '"$@"' >>$out/bin/cuda-qlat.sh
+      #
+      chmod +x "$out/bin/cuda-qlat.sh"
+      patchShebangs --build "$out/bin/cuda-qlat.sh"
+      #
+      source $out/bin/cuda-qlat.sh echo
+      #
+      echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+      #
+      echo "CXX=$CXX"
+      echo "CXXFLAGS=$CXXFLAGS"
+      echo "LDFLAGS=$LDFLAGS"
+      #
       echo
     '';
     cpu_extra = ''

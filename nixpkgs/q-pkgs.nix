@@ -371,6 +371,7 @@ let
       use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      nixgl = qlat-nixgl;
     };
     qlat = py-call-pkg ./qlat.nix {
       stdenv = qlat-stdenv;
