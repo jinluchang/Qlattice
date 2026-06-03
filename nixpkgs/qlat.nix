@@ -95,7 +95,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       #
       cat >>"$out/bin/cuda-mpi-qlat.sh" <<EOF
         #
-        source ${qlat_utils}/bin/cuda-qlat.sh
+        source ${qlat_utils}/bin/cuda-qlat.sh :
         #
         export QLAT_MPICXX="${qlat_utils}/bin/NVCC.py -ccbin ${mpi.dev}/bin/mpic++ \$NVCC_OPTIONS"
         export CXX="\$QLAT_MPICXX"
