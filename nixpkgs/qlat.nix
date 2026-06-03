@@ -127,7 +127,9 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''
   '' + extra + ''
-    # export
+    echo
+    export
+    echo
   '';
 
   preFixup = ''

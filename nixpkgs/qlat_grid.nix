@@ -91,7 +91,9 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     # export CXXFLAGS="''${CXX_ARR[@]:1} $CXXFLAGS"
     # export LDFLAGS="''${CXX_ARR[@]:1} $LDFLAGS"
   '' + extra + ''
-    # export
+    echo
+    export
+    echo
   '';
 
   postFixup = ''

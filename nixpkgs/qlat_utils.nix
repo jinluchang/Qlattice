@@ -152,14 +152,9 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''
-    # export | grep build
-    # ls
-    # echo
-    # echo pyproject.toml
-    # cat pyproject.toml
-    # echo
-    # echo meson.build
-    # cat meson.build
+    echo
+    export
+    echo
   '';
 
   preFixup = ''
