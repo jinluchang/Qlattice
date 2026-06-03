@@ -105,6 +105,12 @@ in buildPythonPackage.override { stdenv = stdenv; } {
         #
       EOF
       #
+      echo >>$out/bin/cuda-mpi-qlat.sh
+      echo '"$@"' >>$out/bin/cuda-mpi-qlat.sh
+      #
+      chmod +x "$out/bin/cuda-mpi-qlat.sh"
+      patchShebangs --build "$out/bin/cuda-mpi-qlat.sh"
+      #
       source $out/bin/cuda-mpi-qlat.sh echo
       #
       echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
