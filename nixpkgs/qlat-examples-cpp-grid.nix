@@ -18,7 +18,6 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, nixgl ? null
 , ngpu ? "1"
 , use-pypi ? null
 , use-gitee ? null
@@ -63,7 +62,6 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
     rsync
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
-  ++ lib.optionals (nixgl != null) [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -102,23 +100,8 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
       fi
       export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     '';
-    nixgl_extra = if nixgl == null then "" else ''
-      which nixGL
-      echo
-      echo "run with nixGL"
-      echo
-      nixGL qlat-utils-config
-      echo
-      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
-      echo
-      echo cat nix-gl.sh
-      cat nix-gl.sh
-      source nix-gl.sh
-      echo
-      echo $LD_LIBRARY_PATH
-    '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
-  in extra + nixgl_extra + ''
+  in extra + ''
     #
     # CXX_ARR=($(grid-config --cxx))
     # export CXX="''${CXX_ARR[0]}"

@@ -378,21 +378,18 @@ let
       use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
     };
     qlat_grid = py-call-pkg ./qlat_grid.nix {
       stdenv = qlat-stdenv;
       use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
     };
     qlat_cps = py-call-pkg ./qlat_cps.nix {
       stdenv = qlat-stdenv;
       use-pypi = opts.use-pypi;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
     };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix {
       stdenv = qlat-stdenv;
@@ -403,48 +400,41 @@ let
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
       ngpu = opts.ngpu;
     };
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
       ngpu = opts.ngpu;
     };
     qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
       ngpu = opts.ngpu;
     };
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
       ngpu = opts.ngpu;
     };
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
       ngpu = opts.ngpu;
     };
     qlat_docs = py-call-pkg ./qlat_docs.nix {
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
     };
     qlat_pypipkgs = py-call-pkg ./qlat_pypipkgs.nix {
       stdenv = qlat-stdenv;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      nixgl = qlat-nixgl;
     };
     #
     qlat-dep-pkgs = {

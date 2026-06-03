@@ -22,7 +22,6 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, nixgl ? ""
 }:
 
 let
@@ -58,7 +57,6 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     which
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
-  ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
   propagatedBuildInputs = [

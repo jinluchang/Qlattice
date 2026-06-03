@@ -22,7 +22,6 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, nixgl ? ""
 , use-pypi ? null
 }:
 
@@ -78,7 +77,6 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
     rsync
   ]
   ++ lib.optionals cudaSupport (with cudaPackages; [ cuda_nvcc ])
-  ++ lib.optionals cudaSupport [ nixgl ]
   ;
 
   propagatedBuildInputs = [
@@ -94,20 +92,23 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
 
   preConfigure = let
     gpu_extra = ''
-      which nixGL
-      echo
-      echo "run with nixGL"
-      echo
-      nixGL qlat-utils-config
-      echo
-      cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
-      echo
-      echo cat nix-gl.sh
-      cat nix-gl.sh
-      source nix-gl.sh
-      echo
-      echo $LD_LIBRARY_PATH
-      echo
+      pwd
+      #
+      source ${qlat}/bin/cuda-mpi-qlat.sh echo
+      #
+      echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+      #
+      echo "CXX=$CXX"
+      echo "CXXFLAGS=$CXXFLAGS"
+      echo "LDFLAGS=$LDFLAGS"
+      #
+      echo "MPICXX=$MPICXX"
+      echo "OMPI_CXX=$OMPI_CXX"
+      #
+      export mpi_options="$mpi_options bind-gpu-qlat.sh"
+      #
+      export q_num_mp_processes=0
+      export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
     '';
