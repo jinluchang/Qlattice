@@ -56,9 +56,9 @@ let
       time = builtins.currentTime;
     }
     ''
-      cat /proc/cpuinfo >$out 2>/dev/null || echo >$out
       echo "cpuinfo="
-      echo "$(grep '^flags' $out 2>/dev/null | head -n 1)"
+      echo "$(grep '^flags' /proc/cpuinfo 2>/dev/null | head -n 1)" >$out
+      cat $out
     ''
     );
     #
@@ -362,7 +362,7 @@ let
       c-lime = grid-lehner-c-lime;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      # cpuinfo-sys = opts.cpuinfo-sys;
+      cpuinfo-sys = opts.cpuinfo-sys;
     };
     #
     qlat_utils = py-call-pkg ./qlat_utils.nix {

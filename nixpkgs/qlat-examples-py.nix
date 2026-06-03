@@ -85,6 +85,7 @@ in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.back
       GXX+=" -Xcudafe '--diag_suppress=20236'"
       GXX+=" -Xcudafe '--diag_suppress=20012'"
       GXX+=" -Xcudafe '--diag_suppress=20011'"
+      GXX+=" -Xcudafe '--diag_suppress=1160'"
       GXX+=" -Xcudafe '--diag_suppress=177'"
       GXX+=" -Xcudafe '--diag_suppress=550'"
       # GXX="-w"

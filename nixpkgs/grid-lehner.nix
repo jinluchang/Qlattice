@@ -27,7 +27,7 @@
 
 let
   pname = "Grid-lehner";
-  cpuinfo-has-avx2 = (builtins.match "flags *: .*avx2.*" cpuinfo-sys) != null;
+  cpuinfo-has-avx2 = (builtins.match "flags.*: .*avx2.*" cpuinfo-sys) != null;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
   #
   # version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2"; # 2025/04/17
