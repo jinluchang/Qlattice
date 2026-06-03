@@ -21,13 +21,13 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, cpuinfo ? "flags : avx2"
+, cpuinfo-sys ? "flags : avx2"
 , use-gitee ? null
 }:
 
 let
   pname = "Grid-lehner";
-  cpuinfo-has-avx2 = (builtins.match ".*flags.*:.*avx2.*" cpuinfo) != null;
+  cpuinfo-has-avx2 = (builtins.match "flags *: .*avx2.*" cpuinfo-sys) != null;
   use-gitee-wd = if use-gitee == null then false else use-gitee;
   #
   # version = "f0573d04c76dd67a0af2ef1ce18ddf6b227567e2"; # 2025/04/17

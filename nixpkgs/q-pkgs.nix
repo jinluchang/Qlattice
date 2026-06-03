@@ -20,17 +20,13 @@ let
 
   version-pypi = "1.4";
 
-  o-pkgs = import-nixpkgs-wd {
-    config.allowUnfree = true;
-  };
+  force = x: builtins.deepSeq x x;
+
+  o-pkgs = import-nixpkgs-wd {};
 
   lib = o-pkgs.lib;
 
   nixpkgs-release = lib.trivial.release;
-
-  runCommandLocal = o-pkgs.runCommandLocal;
-
-  runCommand = o-pkgs.runCommand;
 
   # n-pkgs-src = builtins.fetchTarball "https://channels.nixos.org/nixos-unstable-small/nixexprs.tar.xz";
 
@@ -44,90 +40,104 @@ let
     rev = "28366884d82a3f471b471eea70baa2e6668d6b4e";
   };
 
-  nixgl = (import nixgl-src { pkgs = o-pkgs; }).auto.nixGLDefault;
+  is-linux = (lib.lists.elem builtins.currentSystem lib.platforms.linux);
 
-  is-linux = lib.lists.elem builtins.currentSystem lib.platforms.linux;
-
-  cpuinfo-sys = builtins.readFile (runCommandLocal
-  "impure-cpuinfo-file"
-  {
-    time = builtins.currentTime;
-  }
-  ''
-    cat /proc/cpuinfo >$out 2>/dev/null || echo >$out
-    echo "cpuinfo="
-    echo "$(grep '^flags' $out 2>/dev/null | head -n 1)"
-  ''
-  );
-
-  ngpu-sys = builtins.head (builtins.match
-  "(.*)\n"
-  (builtins.readFile (runCommandLocal
-  "impure-ngpu-file"
-  {
-    time = builtins.currentTime;
-  }
-  ''
-    mkdir tmp
-    cd tmp
-    ls /dev/nvidia{?,??} 2>/dev/null | wc -l >$out 2>/dev/null || echo "0" >$out
-    echo "ngpu=$(cat $out)"
-  ''
-  )));
-
-  nvidia_x11_bin = if ngpu-sys == "0"
-  then null
-  else o-pkgs.linuxPackages.nvidia_x11.bin;
-
-  cudaCapability-sys = if ngpu-sys == "0"
-  then null
-  else builtins.head (builtins.match
-  "(.*)\n"
-  (builtins.readFile (runCommandLocal
-  "impure-cuda-capability-file"
-  {
-    time = builtins.currentTime;
-  }
-  ''
-    ${nixgl}/bin/nixGL ${nvidia_x11_bin}/bin/nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null \
-      | head -n 1 >$out 2>/dev/null \
-      || echo >$out
-    echo "cudaCapability=$(cat $out)"
-  ''
-  )));
-
-  cudaCapabilities-sys = if cudaCapability-sys == null
-  then []
-  else [ cudaCapability-sys ];
-
-  get-nvcc-arch-from-cudaCapability = cudaCapability:
-  "sm_" + builtins.replaceStrings [ "." ] [ "" ] cudaCapability;
-
-  nvcc-arch-sys = if cudaCapability-sys == null
-  then null
-  else get-nvcc-arch-from-cudaCapability cudaCapability-sys;
-
-  options-default = {
-    qlat-name = "";
-    ngpu = ngpu-sys;
-    nvcc-arch = nvcc-arch-sys;
-    cudaCapabilities = cudaCapabilities-sys;
-    cudaForwardCompat = false;
-    use-cuda-software = false;
-    use-grid-gpt = true;
-    use-cps = true;
-    use-cuda = false;
-    use-cudasupport = false;
-    use-cubaquad = true;
-    use-clang = false;
-    use-ucx = true;
-    use-pypi = null;
-  } // {
-    ${if ngpu != null then "ngpu" else null} = ngpu;
-    ${if cudaCapability != null then "nvcc-arch" else null} = get-nvcc-arch-from-cudaCapability cudaCapability;
-    ${if cudaCapability != null then "cudaCapabilities" else null} = [ cudaCapability ];
-    ${if cudaForwardCompat != null then "cudaForwardCompat" else null} = cudaForwardCompat;
-  };
+  options-default = let
+    #
+    pkgs = import-nixpkgs-wd {
+      config.allowUnfree = true;
+    };
+    #
+    runCommandLocal = pkgs.runCommandLocal;
+    #
+    cpuinfo-sys = builtins.readFile (runCommandLocal
+    "impure-cpuinfo-file"
+    {
+      time = builtins.currentTime;
+    }
+    ''
+      cat /proc/cpuinfo >$out 2>/dev/null || echo >$out
+      echo "cpuinfo="
+      echo "$(grep '^flags' $out 2>/dev/null | head -n 1)"
+    ''
+    );
+    #
+    nixgl = (import nixgl-src { pkgs = pkgs; }).auto.nixGLDefault;
+    #
+    ngpu-sys = if ngpu != null
+    then ngpu
+    else builtins.head (builtins.match
+    "(.*)\n"
+    (builtins.readFile (runCommandLocal
+    "impure-ngpu-file"
+    {
+      time = builtins.currentTime;
+    }
+    ''
+      mkdir tmp
+      cd tmp
+      ls /dev/nvidia{?,??} 2>/dev/null | wc -l >$out 2>/dev/null || echo "0" >$out
+      echo "ngpu=$(cat $out)"
+    ''
+    )));
+    #
+    nvidia_x11_bin = if ngpu-sys == "0"
+    then null
+    else pkgs.linuxPackages.nvidia_x11.bin;
+    #
+    cudaCapability-sys = if ngpu-sys == "0"
+    then null
+    else if cudaCapability != null
+    then null
+    else builtins.head (builtins.match
+    "(.*)\n"
+    (builtins.readFile (runCommandLocal
+    "impure-cuda-capability-file"
+    {
+      time = builtins.currentTime;
+    }
+    ''
+      ${nixgl}/bin/nixGL ${nvidia_x11_bin}/bin/nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null \
+        | head -n 1 >$out 2>/dev/null \
+        || echo >$out
+      echo "cudaCapability=$(cat $out)"
+    ''
+    )));
+    #
+    cudaCapabilities-sys = if cudaCapability-sys == null
+    then []
+    else [ cudaCapability-sys ];
+    #
+    cudaForwardCompat-sys = if cudaForwardCompat != null
+    then cudaForwardCompat
+    else false;
+    #
+    get-nvcc-arch-from-cudaCapability = cudaCapability:
+    "sm_" + builtins.replaceStrings [ "." ] [ "" ] cudaCapability;
+    #
+    nvcc-arch-sys = if cudaCapability-sys == null
+    then null
+    else get-nvcc-arch-from-cudaCapability cudaCapability-sys;
+    #
+    opts = {
+      qlat-name = "";
+      cpuinfo-sys = cpuinfo-sys;
+      ngpu = ngpu-sys;
+      nvcc-arch = nvcc-arch-sys;
+      cudaCapabilities = cudaCapabilities-sys;
+      cudaForwardCompat = false;
+      use-cuda-software = false;
+      use-grid-gpt = true;
+      use-cps = true;
+      use-cuda = false;
+      use-cudasupport = false;
+      use-cubaquad = true;
+      use-clang = false;
+      use-ucx = true;
+      use-pypi = null;
+    };
+    #
+  in force opts;
 
   mk-options = options:
   # Order the precedence:
@@ -169,7 +179,7 @@ let
   mk-qlat-name = options:
   let
     opts = options;
-  in opts.qlat-name
+  in (opts.qlat-name
   + lib.optionalString (! opts.use-grid-gpt && ! opts.use-cps) "-std"
   + lib.optionalString (opts.use-grid-gpt && ! opts.use-cps) "-cpsless"
   + lib.optionalString (! opts.use-grid-gpt && opts.use-cps) "-gridless"
@@ -180,14 +190,16 @@ let
   + lib.optionalString opts.use-clang "-clang"
   + lib.optionalString (! opts.use-ucx) "-ucxless"
   + lib.optionalString (opts.use-pypi != null) "-pypi"
-  ;
+  );
 
-  mk-overlay = options: final: prev: let
+  mk-overlay = options: final-g: prev-g: let
     opts = mk-options options;
     #
-    pkgs = prev;
+    pkgs = prev-g;
     #
-    call-pkg = prev.callPackage;
+    lib = pkgs.lib;
+    #
+    call-pkg = pkgs.callPackage;
     py-call-pkg = python3.pkgs.callPackage;
     #
     use-gitee = use-gitee-wd;
@@ -235,6 +247,10 @@ let
     } else {}
     );
     #
+    nvidia_x11_bin = if opts.ngpu == "0" || ! opts.use-cuda-software
+    then null
+    else pkgs.linuxPackages.nvidia_x11.bin;
+    #
     ucx-mt = (pkgs.ucx.overrideAttrs (final: prev: {
       configureFlags = prev.configureFlags ++ [
         "--enable-mt"
@@ -278,9 +294,7 @@ let
         mpi4py = if ! opts.use-cuda-software
         then prev.mpi4py
         else prev.mpi4py.overridePythonAttrs (py-prev: {
-          doCheck = if lib.lists.elem version-wd [ "24.11" "25.05" ]
-          then true
-          else false;
+          doCheck = false;
           nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
             qlat-nixgl
             pkgs.which
@@ -303,46 +317,16 @@ let
         then prev.jax
         else prev.jax.overridePythonAttrs (py-prev: {
           doCheck = false;
-          nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
-            prev.jaxlib
-            qlat-nixgl
-            pkgs.which
-          ];
-          preInstallCheck = ''
-            which nixGL
-            echo
-            echo "run with nixGL"
-            echo
-            cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
-            echo
-            echo cat nix-gl.sh
-            cat nix-gl.sh
-            source nix-gl.sh
-            echo
-            echo $LD_LIBRARY_PATH
-          '';
+        });
+        keras = if ! opts.use-cudasupport
+        then prev.keras
+        else prev.keras.overridePythonAttrs (py-prev: {
+          doCheck = false;
         });
         accelerate = if ! opts.use-cudasupport
         then prev.accelerate
         else prev.accelerate.overridePythonAttrs (py-prev: {
           doCheck = false;
-          nativeBuildInputs = (py-prev.nativeBuildInputs or []) ++ [
-            qlat-nixgl
-            pkgs.which
-          ];
-          preInstallCheck = ''
-            which nixGL
-            echo
-            echo "run with nixGL"
-            echo
-            cat $(which nixGL) | grep -v 'exec ' | grep -v '^#!' > nix-gl.sh
-            echo
-            echo cat nix-gl.sh
-            cat nix-gl.sh
-            source nix-gl.sh
-            echo
-            echo $LD_LIBRARY_PATH
-          '';
         });
         gvar = pkgs.python3.pkgs.callPackage ./gvar.nix {};
         vegas = pkgs.python3.pkgs.callPackage ./vegas.nix { gvar = gvar; };
@@ -361,6 +345,8 @@ let
     #
     grid-lehner-c-lime = if opts.use-cps then qio else c-lime;
     #
+    nixgl = (import nixgl-src { pkgs = pkgs; }).auto.nixGLDefault;
+    #
     qlat-nixgl = if opts.use-cuda-software then nixgl else null;
     #
     cuba-quad = if opts.use-cubaquad
@@ -376,7 +362,7 @@ let
       c-lime = grid-lehner-c-lime;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
-      cpuinfo = cpuinfo-sys;
+      # cpuinfo-sys = opts.cpuinfo-sys;
     };
     #
     qlat_utils = py-call-pkg ./qlat_utils.nix {
@@ -613,6 +599,7 @@ let
       numba
       torch
       flax
+      keras
       matplotlib
       ipywidgets
       scikit-learn
@@ -648,56 +635,56 @@ let
     // qlat-py-pkgs
     ));
     qlat-lib-set = ({
-        inherit
-        qlat-jhub-py
-        qlat-nixgl
-        mpi
-        nvidia_x11_bin
-        ;
-        inherit (pkgs)
-        bashInteractive
-        bash-completion
-        stdenvNoCC
-        coreutils
-        openssh
-        findutils
-        clang-tools
-        ruff
-        m4
-        git
-        gnumake
-        zlib
-        hwloc
-        killall
-        wget
-        which
-        gnugrep
-        rsync
-        automake
-        autoconf
-        gsl
-        fftw
-        fftwFloat
-        openssl
-        gnuplot
-        twine
-        file
-        zip
-        unzip
-        bzip2
-        curl
-        expat
-        icu
-        libsodium
-        libssh
-        nspr
-        nss
-        zstd
-        pdftk
-        qpdf
-        ghostscript
-        ;
-        pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
+      inherit
+      qlat-jhub-py
+      qlat-nixgl
+      mpi
+      nvidia_x11_bin
+      ;
+      inherit (pkgs)
+      bashInteractive
+      bash-completion
+      stdenvNoCC
+      coreutils
+      openssh
+      findutils
+      clang-tools
+      ruff
+      m4
+      git
+      gnumake
+      zlib
+      hwloc
+      killall
+      wget
+      which
+      gnugrep
+      rsync
+      automake
+      autoconf
+      gsl
+      fftw
+      fftwFloat
+      openssl
+      gnuplot
+      twine
+      file
+      zip
+      unzip
+      bzip2
+      curl
+      expat
+      icu
+      libsodium
+      libssh
+      nspr
+      nss
+      zstd
+      pdftk
+      qpdf
+      ghostscript
+      ;
+      pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
     }
     // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
     then {
@@ -821,12 +808,12 @@ let
       ];
     };
   in {
-    "qlat-pkgs${pkgs.qlat-name}" = pkgs.qlat-pkgs;
-    "q-pkgs${pkgs.qlat-name}" = pkgs.q-pkgs;
-    "pkgs${pkgs.qlat-name}" = pkgs;
+    "qlat-pkgs${qlat-name}" = pkgs.qlat-pkgs;
+    "q-pkgs${qlat-name}" = pkgs.q-pkgs;
+    "pkgs${qlat-name}" = pkgs;
     #
-    "qlat-env${pkgs.qlat-name}" = pkgs.qlat-env;
-    "qlat-tests${pkgs.qlat-name}" = pkgs.qlat-tests;
+    "qlat-env${qlat-name}" = pkgs.qlat-env;
+    "qlat-tests${qlat-name}" = pkgs.qlat-tests;
   };
 
   options-list = [
@@ -858,12 +845,12 @@ let
     { use-cps = false; use-grid-gpt = false; use-cudasupport = true; }
   ];
 
-  qlat-name-list = lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list));
+  qlat-name-list = force (lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list)));
 
   qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
   (builtins.foldl' (s: v: s + "${v}\n") "" qlat-name-list);
 
-  qlat-name-list-file = runCommand
+  qlat-name-list-file = o-pkgs.runCommand
   "qlat-name-list"
   {}
   ''
@@ -874,14 +861,28 @@ let
 
   all-q-pkgs = builtins.foldl' (s: v: s // v) {} q-pkgs-list;
 
-  all-qlat-env = builtins.foldl' (s: v: s // { "qlat-env${v}" = all-q-pkgs."qlat-env${v}"; }) {} qlat-name-list;
+  all-qlat-env = builtins.listToAttrs (builtins.map (v: {
+    name = "qlat-env${v}";
+    value = all-q-pkgs."qlat-env${v}";
+  }) qlat-name-list);
 
-  all-qlat-tests = builtins.foldl' (s: v: s // { "qlat-tests${v}" = all-q-pkgs."qlat-tests${v}"; }) {} qlat-name-list;
+  all-qlat-tests = builtins.listToAttrs (builtins.map (v: {
+    name = "qlat-tests${v}";
+    value = all-q-pkgs."qlat-tests${v}";
+  }) qlat-name-list);
 
-in all-q-pkgs // {
-  inherit mk-q-pkgs;
-  inherit mk-overlay;
-  inherit options-list qlat-name-list qlat-name-list-file-from-str;
-  inherit qlat-name-list-file;
-  inherit all-qlat-env all-qlat-tests;
-}
+  q-pkgs = all-q-pkgs // {
+    inherit mk-q-pkgs;
+    inherit mk-overlay;
+    inherit options-list qlat-name-list qlat-name-list-file-from-str;
+    inherit qlat-name-list-file;
+    inherit all-qlat-env all-qlat-tests;
+  };
+
+in builtins.deepSeq [
+  nixpkgs-release
+  is-linux
+  options-default
+  qlat-name-list
+  qlat-name-list-file-from-str
+] q-pkgs
