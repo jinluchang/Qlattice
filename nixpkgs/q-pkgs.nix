@@ -18,7 +18,7 @@ let
   nixpkgs-wd = if nixpkgs == null then nixpkgs-default else nixpkgs;
   import-nixpkgs-wd = import nixpkgs-wd;
 
-  version-pypi = "1.4";
+  version-pypi = "1.5";
 
   force = x: builtins.deepSeq x x;
 
