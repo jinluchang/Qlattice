@@ -732,12 +732,26 @@ let
     // qlat-dep-pkgs
     // qlat-dep-pkgs-extra
     );
-    qlat-jhub-env = pkgs.buildEnv {
-      name = "qlat-jhub-env${qlat-name}";
+    qlat-jhub-env-base = pkgs.buildEnv {
+      name = "qlat-jhub-env-base${qlat-name}";
       paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
     };
+    # When CUDA is enabled, remove glibc headers that conflict with CUDA math headers
+    # CUDA's math_functions.h declares functions without noexcept, but glibc 2.42+
+    # declares them with noexcept, causing compilation errors
+    qlat-jhub-env = if opts.use-cuda-software
+    then pkgs.runCommand "qlat-jhub-env${qlat-name}" {} ''
+      # Copy with dereferenced symlinks
+      cp -rL ${qlat-jhub-env-base} $out
+      chmod -R u+w $out
+      # Remove glibc math headers that conflict with CUDA
+      if [ -d "$out/include/bits" ]; then
+        rm -f "$out/include/bits/mathcalls.h" "$out/include/bits/mathcalls-macros.h"
+      fi
+    ''
+    else qlat-jhub-env-base;
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${qlat-name}";
       packages = [ qlat-jhub-env ];
