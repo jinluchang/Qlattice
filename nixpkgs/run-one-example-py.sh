@@ -3,7 +3,7 @@
 # Run a single qlat Python example test using a pre-built nix environment.
 #
 # Usage:
-#   ./run-example-py.sh <test-name> [options]
+#   ./run-one-example-py.sh <test-name> [options]
 #
 # Options:
 #   --cuda          Use CUDA-enabled build (result-py-local-cuda)
@@ -15,9 +15,9 @@
 #   --help          Show this help message
 #
 # Examples:
-#   ./run-example-py.sh utils
-#   ./run-example-py.sh auto-contract-01 --cuda
-#   ./run-example-py.sh qtopo-measure --cudasupport --n 4
+#   ./run-one-example-py.sh utils
+#   ./run-one-example-py.sh auto-contract-01 --cuda
+#   ./run-one-example-py.sh qtopo-measure --cudasupport --n 4
 
 set -euo pipefail
 

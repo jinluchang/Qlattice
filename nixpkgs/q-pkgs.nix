@@ -882,6 +882,13 @@ let
     inherit options-list qlat-name-list qlat-name-list-file-from-str;
     inherit qlat-name-list-file;
     inherit all-qlat-env all-qlat-tests;
+    inherit options-default;
+    version = version-wd;
+    nixpkgs = nixpkgs-wd;
+    ngpu = options-default.ngpu;
+    cudaCapability = if options-default.cudaCapabilities != [] then builtins.head options-default.cudaCapabilities else null;
+    cudaForwardCompat = options-default.cudaForwardCompat;
+    use-gitee = use-gitee-wd;
   };
 
 in builtins.deepSeq [
