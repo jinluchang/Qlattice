@@ -18,13 +18,13 @@ let
   nixpkgs-wd = if nixpkgs == null then nixpkgs-default else nixpkgs;
   import-nixpkgs-wd = import nixpkgs-wd;
 
-  # TODO: copy to q-pkgs.nix (and use it there when needed)
   force = x: builtins.deepSeq x x;
 
-  # TODO: rename to pkgs (and do not return it)
-  o-pkgs = import-nixpkgs-wd {};
+  pkgs = import-nixpkgs-wd {};
 
-  lib = o-pkgs.lib;
+  lib = pkgs.lib;
+
+  nixpkgs-release = lib.trivial.release;
 
   nixgl-src = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/nixGL" else "https://github.com/jinluchang/nixGL";
@@ -32,7 +32,6 @@ let
     rev = "28366884d82a3f471b471eea70baa2e6668d6b4e";
   };
 
-  # TODO: move to q-pkgs.nix
   is-linux = (lib.lists.elem builtins.currentSystem lib.platforms.linux);
 
   options-default = let
@@ -185,11 +184,59 @@ let
   + lib.optionalString (opts.use-pypi != null) "-pypi"
   );
 
+  version-pypi = "1.5";
+
+  options-list = [
+    {}
+    { use-cps = false; use-grid-gpt = false; }
+    { use-cps = false; }
+    { use-grid-gpt = false; }
+    { use-cuda-software = true; }
+    { use-cuda = true; }
+    { use-cudasupport = true; }
+    { use-ucx = false; }
+    { use-clang = true; }
+    { use-pypi = version-pypi; }
+    #
+    { use-clang = true; use-ucx = false; }
+    { use-cuda = true; use-ucx = false; }
+    { use-grid-gpt = false; use-cubaquad = false; }
+    { use-grid-gpt = false; use-clang = true; }
+    #
+    { use-cps = false; use-grid-gpt = false; use-ucx = false; }
+    { use-cps = false; use-grid-gpt = false; use-clang = true; use-ucx = false; }
+    #
+    { use-cps = false; use-ucx = false; }
+    { use-cps = false; use-clang = true; use-ucx = false; }
+    { use-cps = false; use-clang = true; }
+    #
+    { use-cps = false; use-grid-gpt = false; use-cuda-software = true; }
+    { use-cps = false; use-grid-gpt = false; use-cuda = true; }
+    { use-cps = false; use-grid-gpt = false; use-cudasupport = true; }
+  ];
+
+  qlat-name-list = let r = lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list)); in builtins.deepSeq r r;
+
+  qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
+  (builtins.foldl' (s: v: s + "${v}\n") "" qlat-name-list);
+
+  qlat-name-list-file = pkgs.runCommand
+  "qlat-name-list"
+  {}
+  ''
+    cp -v ${qlat-name-list-file-from-str} $out
+  '';
+
 in {
-  # TODO: For all args, return processed value with its original name (i.e., without -wd suffix)
-  inherit version-wd use-gitee-wd nixpkgs-wd import-nixpkgs-wd;
+  version = version-wd;
+  use-gitee = use-gitee-wd;
+  nixpkgs = nixpkgs-wd;
+  import-nixpkgs = import-nixpkgs-wd;
   inherit nixgl-src is-linux lib;
-  inherit o-pkgs;
+  inherit nixpkgs-release;
   inherit options-default;
   inherit mk-options mk-qlat-name;
+  inherit version-pypi;
+  inherit options-list qlat-name-list qlat-name-list-file-from-str;
+  inherit qlat-name-list-file;
 }

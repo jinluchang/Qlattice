@@ -13,14 +13,16 @@ let
     inherit nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
   };
 
-  inherit (opts) version-wd use-gitee-wd nixpkgs-wd import-nixpkgs-wd;
-  inherit (opts) nixgl-src is-linux lib o-pkgs;
+  inherit (opts) import-nixpkgs;
+  inherit (opts) nixgl-src is-linux lib;
+  inherit (opts) nixpkgs-release;
   inherit (opts) options-default mk-options mk-qlat-name;
+  inherit (opts) version-pypi;
+  inherit (opts) options-list qlat-name-list qlat-name-list-file-from-str;
+  inherit (opts) qlat-name-list-file;
 
-  version-pypi = "1.5";
-
-  # TODO: move to options.nix
-  nixpkgs-release = lib.trivial.release;
+  nixpkgs-version = opts.version;
+  use-gitee-value = opts.use-gitee;
 
   mk-overlay = options: final-g: prev-g: let
     opts = mk-options options;
@@ -32,7 +34,7 @@ let
     call-pkg = pkgs.callPackage;
     py-call-pkg = python3.pkgs.callPackage;
     #
-    use-gitee = use-gitee-wd;
+    use-gitee = use-gitee-value;
     #
     qlat-name = mk-qlat-name opts;
     #
@@ -507,7 +509,7 @@ let
       ;
       pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
     }
-    // (if lib.lists.elem version-wd [ "24.11" "25.05" ]
+    // (if lib.lists.elem nixpkgs-version [ "24.11" "25.05" ]
     then {
       inherit (pkgs)
       poppler_utils
@@ -631,7 +633,7 @@ let
   mk-q-pkgs = options: let
     opts = mk-options options;
     qlat-name = mk-qlat-name opts;
-    pkgs = import-nixpkgs-wd {
+    pkgs = import-nixpkgs {
       config = {
         allowUnfree = opts.use-cuda-software;
         cudaSupport = opts.use-cudasupport;
@@ -650,52 +652,6 @@ let
     "qlat-env${qlat-name}" = pkgs.qlat-env;
     "qlat-tests${qlat-name}" = pkgs.qlat-tests;
   };
-
-
-  #######################
-
-  # TODO: move this section to options.nix
-
-  options-list = [
-    {}
-    { use-cps = false; use-grid-gpt = false; }
-    { use-cps = false; }
-    { use-grid-gpt = false; }
-    { use-cuda-software = true; }
-    { use-cuda = true; }
-    { use-cudasupport = true; }
-    { use-ucx = false; }
-    { use-clang = true; }
-    { use-pypi = version-pypi; }
-    #
-    { use-clang = true; use-ucx = false; }
-    { use-cuda = true; use-ucx = false; }
-    { use-grid-gpt = false; use-cubaquad = false; }
-    { use-grid-gpt = false; use-clang = true; }
-    #
-    { use-cps = false; use-grid-gpt = false; use-ucx = false; }
-    { use-cps = false; use-grid-gpt = false; use-clang = true; use-ucx = false; }
-    #
-    { use-cps = false; use-ucx = false; }
-    { use-cps = false; use-clang = true; use-ucx = false; }
-    { use-cps = false; use-clang = true; }
-    #
-    { use-cps = false; use-grid-gpt = false; use-cuda-software = true; }
-    { use-cps = false; use-grid-gpt = false; use-cuda = true; }
-    { use-cps = false; use-grid-gpt = false; use-cudasupport = true; }
-  ];
-
-  qlat-name-list = let r = lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list)); in builtins.deepSeq r r;
-
-  qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
-  (builtins.foldl' (s: v: s + "${v}\n") "" qlat-name-list);
-
-  qlat-name-list-file = o-pkgs.runCommand
-  "qlat-name-list"
-  {}
-  ''
-    cp -v ${qlat-name-list-file-from-str} $out
-  '';
 
   #######################
 
@@ -720,12 +676,12 @@ let
     inherit qlat-name-list-file;
     inherit all-qlat-env all-qlat-tests;
     inherit options-default;
-    version = version-wd;
-    nixpkgs = nixpkgs-wd;
+    version = opts.version;
+    nixpkgs = opts.nixpkgs;
     ngpu = options-default.ngpu;
     cudaCapability = if options-default.cudaCapabilities != [] then builtins.head options-default.cudaCapabilities else null;
     cudaForwardCompat = options-default.cudaForwardCompat;
-    use-gitee = use-gitee-wd;
+    use-gitee = opts.use-gitee;
   };
 
 in builtins.deepSeq [
