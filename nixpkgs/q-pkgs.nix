@@ -62,11 +62,13 @@ in let
     //
     (if opts.use-clang then { inherit openmp; } else {})
     //
-    (if opts.use-cuda-software then {
+    (if opts.use-cuda-software then ({
+      cuda_cudart = lib.meta.hiPrio pkgs.cudaPackages.cuda_cudart;
+    }
+    // {
       inherit (pkgs.cudaPackages)
       cuda_nvcc
       cuda_cccl
-      cuda_cudart
       cuda_profiler_api
       libcufft
       libcublas
@@ -76,7 +78,7 @@ in let
       cudatoolkit
       fabricmanager
       ;
-    } else {}
+    }) else {}
     );
     #
     nvidia_x11_bin = if opts.ngpu == "0" || ! opts.use-cuda-software
@@ -322,7 +324,7 @@ in let
       name = "qlat-env${qlat-name}";
       paths = builtins.attrValues qlat-pkgs;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
-      ignoreCollisions = true;
+      # ignoreCollisions = true;
     };
     qlat-sh = pkgs.mkShell rec {
       name = "qlat-sh${qlat-name}";
@@ -458,8 +460,11 @@ in let
     // qlat-py-pkgs
     ));
     qlat-lib-set = ({
+      qlat-jhub-py = lib.meta.hiPrio qlat-jhub-py;
+      clang-tools = lib.meta.lowPrio pkgs.clang-tools;
+    }
+    // {
       inherit
-      qlat-jhub-py
       qlat-nixgl
       mpi
       nvidia_x11_bin
@@ -471,7 +476,6 @@ in let
       coreutils
       openssh
       findutils
-      clang-tools
       ruff
       m4
       git
@@ -522,10 +526,11 @@ in let
     }
     )
     // (if is-linux
-    then {
+    then ({
+      util-linux = lib.meta.hiPrio pkgs.util-linux;
+    } // {
       inherit (pkgs)
       linux-pam
-      util-linux
       fuse3
       pipewire
       cups
@@ -557,7 +562,7 @@ in let
       fontconfig
       freetype
       ;
-    }
+    })
     else {}
     )
     // qlat-cc
@@ -568,7 +573,7 @@ in let
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
-      ignoreCollisions = true;
+      # ignoreCollisions = true;
     };
     # When CUDA is enabled, remove glibc headers that conflict with CUDA math headers
     # CUDA's math_functions.h declares functions without noexcept, but glibc 2.42+
