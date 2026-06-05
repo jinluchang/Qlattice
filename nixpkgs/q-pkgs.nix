@@ -305,8 +305,10 @@ in let
     #
     qlat-py = python3.withPackages (ps: builtins.attrValues qlat-py-pkgs);
     qlat-pkgs = {
+      qlat-py = lib.meta.hiPrio qlat-py;
+    }
+    // {
       inherit
-      qlat-py
       qlat-nixgl
       qlat-stdenv
       mpi
