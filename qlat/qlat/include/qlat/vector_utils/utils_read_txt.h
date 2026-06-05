@@ -538,6 +538,9 @@ struct inputpara {
   Int icfg_jump;
   Int save_prop;
   Int anti_peri;
+  // 4D twist ...
+  std::string twist_angle;
+  int twist_with_eig;
 
   Int bini, ncut0, ncut1;
 
@@ -863,6 +866,8 @@ struct inputpara {
     if (find_para(std::string("nini"), nini) == 0) nini = 0;
     if (find_para(std::string("nvec"), nvec) == 0) nvec = 0;
     if (find_para(std::string("anti_peri"), anti_peri) == 0) anti_peri = 0;
+    if (find_para(std::string("twist_angle"), twist_angle) == 0) twist_angle = std::string("NONE");
+    if (find_para(std::string("twist_with_eig"), twist_with_eig) == 0) twist_with_eig = 0;
     if (find_para(std::string("write_mode"), write_mode) == 0) write_mode = 0;
     if (find_para(std::string("mode_dis"), mode_dis) == 0) mode_dis = 12;
     if (find_para(std::string("split_save"), split_save) == 0) split_save = 0;

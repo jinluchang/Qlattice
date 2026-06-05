@@ -430,11 +430,14 @@ void smear_propagator_gwu_convension_2shift(
   const Long Nvol = prop.geo().local_volume();
   Ty* src = (Ty*)qlat::get_data(prop).data();
   move_index mv_civ;
-  int flag = 0;
+  Int flag = 0;
+  const Int mem_GPU  =
+      check_mem_type(src) != MemType::Cpu ? 1 : 0;
+  const MemType gmem = mem_GPU == 1 ? MemType::Acc : MemType::Cpu;
   flag = 0;
-  mv_civ.dojob(src, src, 1, 12 * 12, Nvol, flag, 1, false);
+  mv_civ.dojob(src, src, 1, 12 * 12, Nvol, flag, 1, mem_GPU);
   //
-  qacc_for(isp, Nvol, {
+  qmem_for(isp, Nvol, gmem, {
     Ty buf[12 * 12];
     for (Int i = 0; i < 12 * 12; i++) {
       buf[i] = src[isp * 12 * 12 + i];
@@ -448,7 +451,7 @@ void smear_propagator_gwu_convension_2shift(
   smear_propagator_gwu_convension_2shift_modi<Ty, Td, 1, 12 * 4>(
       src, prop.geo(), gfL, width, step, propL, even, 0, mom);
   //
-  qacc_for(isp, Nvol, {
+  qmem_for(isp, Nvol, gmem, {
     Ty buf[12 * 12];
     for (Int i = 0; i < 12 * 12; i++) {
       buf[i] = src[isp * 12 * 12 + i];
@@ -459,7 +462,7 @@ void smear_propagator_gwu_convension_2shift(
       }
   });
   flag = 1;
-  mv_civ.dojob(src, src, 1, 12 * 12, Nvol, flag, 1, false);
+  mv_civ.dojob(src, src, 1, 12 * 12, Nvol, flag, 1, mem_GPU);
 }
 
 // gwu convension with all cs outer prop : 4*3 * V * complex

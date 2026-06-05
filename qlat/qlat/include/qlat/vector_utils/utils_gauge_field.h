@@ -434,6 +434,30 @@ void Gauge_reconstruct_col(GaugeFieldT<Td>& gf)
     }
   });
 }
+
+template <class T>
+void twist_boundary(GaugeFieldT<T>& gf, const CoordinateD& lmom)
+{ 
+  TIMER_VERBOSE_FLOPS("twist_boundary");
+  Qassert(lmom.size() == 4);
+  Qassert(gf.initialized);
+  const Geometry& geo = gf.geo();
+  vector<double > lv;
+  lv.resize(4);
+  for (Int d = 0; d < 4; d++){
+    lv[d] = 2.0 * PI * lmom[d] / double(geo.total_site()[d]);
+  }
+  for (Int index = 0; index < geo.local_volume(); index++) {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Coordinate xg = geo.coordinate_g_from_l(xl);
+    for (Int d = 0; d < 4; d++){
+      if (lv[d] != 0) {
+        ColorMatrixT<T>& mat = gf.get_elem(xl, d);
+        mat *= ComplexT<T>(qpolar(1.0, lv[d]));
+      } 
+    }
+  }
+} 
 }  // namespace qlat
 
 #endif

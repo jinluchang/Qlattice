@@ -11,7 +11,7 @@
 namespace qlat
 {
 
-inline void qlat_map_eo_site(qlat::FieldM<int8_t, 1>& eo, const Geometry& geo)
+inline void qlat_map_eo_site(qlat::FieldM<int8_t, 1>& eo, const Geometry& geo, const int eo_dir = -1)
 {
   TIMER("qlat_map_eo_site");
   if (eo.initialized) {
@@ -23,9 +23,15 @@ inline void qlat_map_eo_site(qlat::FieldM<int8_t, 1>& eo, const Geometry& geo)
   eo.init(geo, 1);
   int8_t* res = (int8_t*)qlat::get_data(eo).data();
   ////only bool is not write thread safe
+  Qassert(eo_dir == 0 or eo_dir == 1 or eo_dir == 2 or eo_dir == 3 or eo_dir == -1);
   qacc_for(isp, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(isp);
-    Int site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    Int site_eo = 1;
+    if(eo_dir == -1){
+      site_eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
+    }else{
+      site_eo = (xl[eo_dir]) % 2;
+    }
     res[isp] = site_eo;
   });
 }
@@ -67,14 +73,14 @@ void apply_eo_signT(qlat::vector<Ty*>& sP, qlat::vector<Ty*>& rP,
 /////src and res can be tthe same pointer
 template <class Ty, Int civ>
 void apply_eo_sign(qlat::FieldM<Ty, civ>& src, qlat::FieldM<Ty, civ>& res,
-                   qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1)
+                   qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1, const int8_t eo_dir = -1)
 {
   if (!src.initialized or !res.initialized) {
     abort_r("src should be initialized with geo!\n");
   }
   const Geometry& geo = src.geo();
   if (!eo.initialized) {
-    qlat_map_eo_site(eo, geo);
+    qlat_map_eo_site(eo, geo, eo_dir);
   }
   Qassert(geo == eo.geo() and src.multiplicity == res.multiplicity);
   Qassert(civ == res.multiplicity);
@@ -87,11 +93,11 @@ void apply_eo_sign(qlat::FieldM<Ty, civ>& src, qlat::FieldM<Ty, civ>& res,
 template <class Ty, Int civ>
 void apply_eo_sign(std::vector<qlat::FieldM<Ty, civ>>& src,
                    std::vector<qlat::FieldM<Ty, civ>>& res,
-                   qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1)
+                   qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1, const int eo_dir = -1)
 {
   Qassert(src.size() == res.size());
   for (unsigned int si = 0; si < src.size(); si++) {
-    apply_eo_sign<Ty, civ>(src[si], res[si], eo, dir);
+    apply_eo_sign<Ty, civ>(src[si], res[si], eo, dir, eo_dir);
   }
 }
 
@@ -121,17 +127,17 @@ void apply_eo_zeros(Ty* sP, Ty* rP, qlat::FieldM<int8_t, 1>& eo,
   });
 }
 
-/////src and res can be tthe same pointer
+/////src and res can be the same pointer
 template <class Ty, Int civ>
 void apply_eo_zeros(qlat::FieldM<Ty, civ>& src, qlat::FieldM<Ty, civ>& res,
-                    qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1)
+                    qlat::FieldM<int8_t, 1>& eo, const int8_t dir = 1, const int8_t eo_dir = -1)
 {
   if (!src.initialized or !res.initialized) {
     abort_r("src should be initialized with geo!\n");
   }
   const Geometry& geo = src.geo();
   if (!eo.initialized) {
-    qlat_map_eo_site(eo, geo);
+    qlat_map_eo_site(eo, geo, eo_dir);
   }
   Ty* sP = (Ty*)qlat::get_data(src).data();
   Ty* rP = (Ty*)qlat::get_data(res).data();

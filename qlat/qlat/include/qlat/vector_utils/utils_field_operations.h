@@ -117,6 +117,19 @@ void copy_fields(qlat::Field<T1>& pr, const qlat::Field<T2>& p0)
   copy_fields<T1, T2>(res, src, civ, pr.geo(), p0.geo());
 }
 
+template <class T1, class T2, int c>
+void copy_field_vec(std::vector<qlat::FieldM<T1, c>>& pr,
+                 const std::vector<qlat::FieldM<T2, c>>& p0)
+{
+  if (pr.size() != p0.size()) {
+    pr.resize(0);
+    pr.resize(p0.size());
+  }
+  for (unsigned int iv = 0; iv < p0.size(); iv++) {
+    copy_fields(pr[iv], p0[iv]);
+  }
+}
+
 template <class T1, class T2>
 void copy_fields(std::vector<qlat::Field<T1>>& pr,
                  const std::vector<qlat::Field<T2>>& p0)

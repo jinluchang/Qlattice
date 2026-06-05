@@ -1755,9 +1755,10 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<Int>& iDir,
   }
 }
 
+// default shift using grids
 template <class Ty>
 void shift_fields_gridP(Ty** src, Ty** res, const std::vector<Int>& iDir,
-                        const Int biva, const Int civ, const Geometry& geo,
+                        const Int biva, const Int civ, const Geometry& geo, const Int mode = 1,
                         const Int max_group = -1)
 {
   Int max_biva = biva;
@@ -1769,13 +1770,13 @@ void shift_fields_gridP(Ty** src, Ty** res, const std::vector<Int>& iDir,
   for (LInt jobi = 0; jobi < jobA.size() / 2; jobi++) {
     const Long bini = jobA[jobi * 2 + 0];
     const Long bcut = jobA[jobi * 2 + 1];
-    shift_fields_gridPT(&src[bini], &res[bini], iDir, bcut, civ, geo);
+    shift_fields_gridPT(&src[bini], &res[bini], iDir, bcut, civ, geo, mode);
   }
 }
 
 template <class Ty>
 void shift_fields_grid(Ty* src, Ty* res, const std::vector<Int>& iDir,
-                       const Int biva, const Int civ, const Geometry& geo,
+                       const Int biva, const Int civ, const Geometry& geo, const Int mode = 0,
                        const Int max_group = -1)
 {
   vector<Ty*> sP;
@@ -1787,7 +1788,7 @@ void shift_fields_grid(Ty* src, Ty* res, const std::vector<Int>& iDir,
     sP[bi] = &src[bi * V * civ];
     rP[bi] = &res[bi * V * civ];
   }
-  shift_fields_gridP(sP.data(), rP.data(), iDir, biva, civ, geo, max_group);
+  shift_fields_gridP(sP.data(), rP.data(), iDir, biva, civ, geo, mode, max_group);
 }
 
 /*
