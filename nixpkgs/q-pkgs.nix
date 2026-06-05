@@ -579,59 +579,22 @@ in let
       mkdir -p $out
       ln -s ${qlat-jhub-env-base}/* $out/
       chmod u+w $out
-      # Replace include/ symlink with a real directory to remove conflicting headers
-      if [ -d "${qlat-jhub-env-base}/include/bits" ]; then
+      # Replace include/ symlink with a copy and remove conflicting headers
+      if [ -d "${qlat-jhub-env-base}/include" ]; then
         rm -f $out/include
-        mkdir $out/include
-        for p in ${qlat-jhub-env-base}/include/*; do
-          name=$(basename "$p")
-          if [ "$name" = "bits" ]; then
-            cp -rL "$p" $out/include/bits
-            chmod -R u+w $out/include/bits
-            rm -f "$out/include/bits/mathcalls.h" "$out/include/bits/mathcalls-macros.h"
-          else
-            ln -s "$p" "$out/include/$name"
-          fi
-        done
-      fi
-      # Patch CUDA CCCL traits.h: GCC's <cmath> #undef's isgreater etc. macros,
-      # so ::isgreater() no longer exists. Replace with __builtin_isgreater() etc.
-      traits_h="${qlat-jhub-env-base}/include/cuda/std/__cmath/traits.h"
-      if [ -e "$traits_h" ]; then
-        cuda_src=$(readlink -f "$out/include/cuda")
-        rm -f "$out/include/cuda"
-        # Rebuild cuda/ with real dirs at std/ and std/__cmath/, symlinks elsewhere
-        mkdir -p "$out/include/cuda"
-        for p in "$cuda_src"/*; do
-          bname=$(basename "$p")
-          if [ "$bname" = "std" ]; then
-            mkdir -p "$out/include/cuda/std"
-            for q in "$cuda_src/std"/*; do
-              qname=$(basename "$q")
-              if [ "$qname" = "__cmath" ]; then
-                mkdir -p "$out/include/cuda/std/__cmath"
-                for r in "$cuda_src/std/__cmath"/*; do
-                  rname=$(basename "$r")
-                  if [ "$rname" = "traits.h" ]; then
-                    cp -L "$r" "$out/include/cuda/std/__cmath/traits.h"
-                    chmod u+w "$out/include/cuda/std/__cmath/traits.h"
-                    sed -i 's/::isgreater(/__builtin_isgreater(/g' "$out/include/cuda/std/__cmath/traits.h"
-                    sed -i 's/::isgreaterequal(/__builtin_isgreaterequal(/g' "$out/include/cuda/std/__cmath/traits.h"
-                    sed -i 's/::isless(/__builtin_isless(/g' "$out/include/cuda/std/__cmath/traits.h"
-                    sed -i 's/::islessequal(/__builtin_islessequal(/g' "$out/include/cuda/std/__cmath/traits.h"
-                    sed -i 's/::islessgreater(/__builtin_islessgreater(/g' "$out/include/cuda/std/__cmath/traits.h"
-                  else
-                    ln -s "$r" "$out/include/cuda/std/__cmath/$rname"
-                  fi
-                done
-              else
-                ln -s "$q" "$out/include/cuda/std/$qname"
-              fi
-            done
-          else
-            ln -s "$p" "$out/include/cuda/$bname"
-          fi
-        done
+        cp -rL ${qlat-jhub-env-base}/include $out/include
+        chmod -R u+w $out/include
+        rm -f "$out/include/bits/mathcalls.h" "$out/include/bits/mathcalls-macros.h"
+        # Patch CUDA CCCL traits.h: GCC's <cmath> #undef's isgreater etc. macros,
+        # so ::isgreater() no longer exists. Replace with __builtin_isgreater() etc.
+        traits_h="$out/include/cuda/std/__cmath/traits.h"
+        if [ -e "$traits_h" ]; then
+          sed -i 's/::isgreater(/__builtin_isgreater(/g' "$traits_h"
+          sed -i 's/::isgreaterequal(/__builtin_isgreaterequal(/g' "$traits_h"
+          sed -i 's/::isless(/__builtin_isless(/g' "$traits_h"
+          sed -i 's/::islessequal(/__builtin_islessequal(/g' "$traits_h"
+          sed -i 's/::islessgreater(/__builtin_islessgreater(/g' "$traits_h"
+        fi
       fi
     ''
     else qlat-jhub-env-base;
