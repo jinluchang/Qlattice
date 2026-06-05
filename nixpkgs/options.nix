@@ -9,34 +9,43 @@
 
 let
 
-  version-wd = if version == null then "" else version;
-  use-gitee-wd = if use-gitee == null then false else use-gitee;
+  nixpkgs-ini = nixpkgs;
+  version-ini = version;
+  ngpu-ini = ngpu;
+  cudaCapability-ini = cudaCapability;
+  cudaForwardCompat-ini = cudaForwardCompat;
+  use-gitee-ini = use-gitee;
+
+in let
+
+  version = if version-ini == null then "" else version-ini;
+  use-gitee = if use-gitee-ini == null then false else use-gitee-ini;
   nixpkgs-default = import ./nixpkgs.nix {
-    version = version-wd;
-    use-gitee = use-gitee-wd;
+    version = version;
+    use-gitee = use-gitee;
   };
-  nixpkgs-wd = if nixpkgs == null then nixpkgs-default else nixpkgs;
-  import-nixpkgs-wd = import nixpkgs-wd;
+  nixpkgs = if nixpkgs-ini == null then nixpkgs-default else nixpkgs-ini;
+  import-nixpkgs = import nixpkgs;
 
   force = x: builtins.deepSeq x x;
 
-  pkgs = import-nixpkgs-wd {};
+  pkgs = import-nixpkgs {};
 
   lib = pkgs.lib;
 
   nixpkgs-release = lib.trivial.release;
 
   nixgl-src = builtins.fetchGit {
-    url = if use-gitee-wd then "https://gitee.com/jinluchang/nixGL" else "https://github.com/jinluchang/nixGL";
+    url = if use-gitee then "https://gitee.com/jinluchang/nixGL" else "https://github.com/jinluchang/nixGL";
     ref = "main";
     rev = "28366884d82a3f471b471eea70baa2e6668d6b4e";
   };
 
-  is-linux = (lib.lists.elem builtins.currentSystem lib.platforms.linux);
+  import-nixgl = import nixgl-src;
 
   options-default = let
     #
-    pkgs = import-nixpkgs-wd {
+    pkgs = import-nixpkgs {
       config.allowUnfree = true;
     };
     #
@@ -54,10 +63,10 @@ let
     ''
     );
     #
-    nixgl = (import nixgl-src { pkgs = pkgs; }).auto.nixGLDefault;
+    nixgl = (import-nixgl { pkgs = pkgs; }).auto.nixGLDefault;
     #
-    ngpu-sys = if ngpu != null
-    then ngpu
+    ngpu-sys = if ngpu-ini != null
+    then ngpu-ini
     else builtins.head (builtins.match
     "(.*)\n"
     (builtins.readFile (runCommandLocal
@@ -79,7 +88,7 @@ let
     #
     cudaCapability-sys = if ngpu-sys == "0"
     then null
-    else if cudaCapability != null
+    else if cudaCapability-ini != null
     then null
     else builtins.head (builtins.match
     "(.*)\n"
@@ -100,8 +109,8 @@ let
     then []
     else [ cudaCapability-sys ];
     #
-    cudaForwardCompat-sys = if cudaForwardCompat != null
-    then cudaForwardCompat
+    cudaForwardCompat-sys = if cudaForwardCompat-ini != null
+    then cudaForwardCompat-ini
     else false;
     #
     get-nvcc-arch-from-cudaCapability = cudaCapability:
@@ -228,11 +237,11 @@ let
   '';
 
 in {
-  version = version-wd;
-  use-gitee = use-gitee-wd;
-  nixpkgs = nixpkgs-wd;
-  import-nixpkgs = import-nixpkgs-wd;
-  inherit nixgl-src is-linux lib;
+  version = version;
+  use-gitee = use-gitee;
+  nixpkgs = nixpkgs;
+  import-nixpkgs = import-nixpkgs;
+  inherit import-nixgl;
   inherit nixpkgs-release;
   inherit options-default;
   inherit mk-options mk-qlat-name;

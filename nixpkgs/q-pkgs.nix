@@ -13,16 +13,16 @@ let
     inherit nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
   };
 
+in let
+
+  inherit (opts) nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
   inherit (opts) import-nixpkgs;
-  inherit (opts) nixgl-src is-linux lib;
+  inherit (opts) import-nixgl;
   inherit (opts) nixpkgs-release;
   inherit (opts) options-default mk-options mk-qlat-name;
   inherit (opts) version-pypi;
   inherit (opts) options-list qlat-name-list qlat-name-list-file-from-str;
   inherit (opts) qlat-name-list-file;
-
-  nixpkgs-version = opts.version;
-  use-gitee-value = opts.use-gitee;
 
   mk-overlay = options: final-g: prev-g: let
     opts = mk-options options;
@@ -31,10 +31,10 @@ let
     #
     lib = pkgs.lib;
     #
+    is-linux = (lib.lists.elem builtins.currentSystem lib.platforms.linux);
+    #
     call-pkg = pkgs.callPackage;
     py-call-pkg = python3.pkgs.callPackage;
-    #
-    use-gitee = use-gitee-value;
     #
     qlat-name = mk-qlat-name opts;
     #
@@ -177,7 +177,7 @@ let
     #
     grid-lehner-c-lime = if opts.use-cps then qio else c-lime;
     #
-    nixgl = (import nixgl-src { pkgs = pkgs; }).auto.nixGLDefault;
+    nixgl = (import-nixgl { pkgs = pkgs; }).auto.nixGLDefault;
     #
     qlat-nixgl = if opts.use-cuda-software then nixgl else null;
     #
@@ -509,7 +509,7 @@ let
       ;
       pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
     }
-    // (if lib.lists.elem nixpkgs-version [ "24.11" "25.05" ]
+    // (if lib.lists.elem version [ "24.11" "25.05" ]
     then {
       inherit (pkgs)
       poppler_utils
@@ -565,7 +565,7 @@ let
     // qlat-dep-pkgs-extra
     );
     qlat-jhub-env-base = pkgs.buildEnv {
-      name = "qlat-jhub-env-base${qlat-name}";
+      name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       ignoreCollisions = true;
@@ -676,17 +676,15 @@ let
     inherit qlat-name-list-file;
     inherit all-qlat-env all-qlat-tests;
     inherit options-default;
-    version = opts.version;
+    inherit use-gitee version;
     nixpkgs = opts.nixpkgs;
     ngpu = options-default.ngpu;
     cudaCapability = if options-default.cudaCapabilities != [] then builtins.head options-default.cudaCapabilities else null;
     cudaForwardCompat = options-default.cudaForwardCompat;
-    use-gitee = opts.use-gitee;
   };
 
 in builtins.deepSeq [
   nixpkgs-release
-  is-linux
   options-default
   qlat-name-list
   qlat-name-list-file-from-str
