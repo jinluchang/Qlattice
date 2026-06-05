@@ -232,31 +232,31 @@ in let
     #
     qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix {
       stdenv = qlat-stdenv;
-      cudaSupport = opts.use-cuda;
+      cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
     };
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = qlat-stdenv;
-      cudaSupport = opts.use-cuda;
+      cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
     };
     qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
       stdenv = qlat-stdenv;
-      cudaSupport = opts.use-cuda;
+      cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
     };
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
       stdenv = qlat-stdenv;
-      cudaSupport = opts.use-cuda;
+      cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
     };
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
       stdenv = qlat-stdenv;
-      cudaSupport = opts.use-cuda;
+      cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
     };

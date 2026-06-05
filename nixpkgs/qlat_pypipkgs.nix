@@ -47,7 +47,7 @@ let
 
   srcs = if use-pypi != null then srcs-pypi else srcs-local;
 
-in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv; }) rec {
+in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 
   inherit version srcs;
 

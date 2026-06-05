@@ -38,7 +38,7 @@ let
 
   src = if use-pypi != null then "${qlat-src-pypi}/examples-py-gpt" else ../examples-py-gpt;
 
-in (buildPythonPackage.override { stdenv = if cudaSupport then cudaPackages.backendStdenv else stdenv; }) rec {
+in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 
   inherit version src;
 
