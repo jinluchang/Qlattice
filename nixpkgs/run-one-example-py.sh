@@ -116,10 +116,6 @@ export JAX_ENABLE_X64=True
 # For CUDA builds, clear CPATH and remove conflicting glibc math headers
 if [[ "$build_variant" == *cuda* ]]; then
     export CPATH=""
-    # Remove glibc math headers that conflict with CUDA
-    if [ -d "$result_dir/include/bits" ]; then
-        rm -f "$result_dir/include/bits/mathcalls.h" "$result_dir/include/bits/mathcalls-macros.h" 2>/dev/null || true
-    fi
 fi
 export CPATH="$result_dir/include${CPATH:+:$CPATH}"
 
