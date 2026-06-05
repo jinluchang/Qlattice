@@ -575,12 +575,24 @@ in let
     # declares them with noexcept, causing compilation errors
     qlat-jhub-env = if opts.use-cuda-software
     then pkgs.runCommand "qlat-jhub-env${qlat-name}" {} ''
-      # Copy with dereferenced symlinks
-      cp -rL ${qlat-jhub-env-base} $out
-      chmod -R u+w $out
-      # Remove glibc math headers that conflict with CUDA
-      if [ -d "$out/include/bits" ]; then
-        rm -f "$out/include/bits/mathcalls.h" "$out/include/bits/mathcalls-macros.h"
+      # Symlink everything from base (cheap)
+      mkdir -p $out
+      ln -s ${qlat-jhub-env-base}/* $out/
+      chmod u+w $out
+      # Replace include/ symlink with a real directory to remove conflicting headers
+      if [ -d "${qlat-jhub-env-base}/include/bits" ]; then
+        rm -f $out/include
+        mkdir $out/include
+        for p in ${qlat-jhub-env-base}/include/*; do
+          name=$(basename "$p")
+          if [ "$name" = "bits" ]; then
+            cp -rL "$p" $out/include/bits
+            chmod -R u+w $out/include/bits
+            rm -f "$out/include/bits/mathcalls.h" "$out/include/bits/mathcalls-macros.h"
+          else
+            ln -s "$p" "$out/include/$name"
+          fi
+        done
       fi
     ''
     else qlat-jhub-env-base;
