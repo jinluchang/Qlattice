@@ -52,7 +52,6 @@ if [ "$use_nom" = false ]; then
     time nix-build "$src"/q-pkgs.nix \
         -A pkgs$name.qlat-jhub-env \
         -o "$dst/result" \
-        --log-format internal-json -v \
         -j 6 --cores 15 \
         "$@"
 else
