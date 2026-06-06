@@ -16,4 +16,7 @@ dst="$HOME/qlat-build/nix"
 mkdir -p "$dst"
 cd "$dst"
 
-time nix-build "$src"/many-qlat-pkgs.nix -o "$dst/all/result" "$@"
+time nix-build \
+    "$src"/many-qlat-pkgs.nix \
+    -o "$dst/all/result" \
+    "$@"
