@@ -38,7 +38,7 @@ in let
       then builtins.filter (n: builtins.elem n qlat-name-list) q-pkgs.qlat-name-list
       else q-pkgs.qlat-name-list
     );
-    ver-suffix = if version == "" then "" else "-${version}";
+    ver-suffix = if version == "" then "" else "-${builtins.replaceStrings ["."] ["-"] version}";
     mk-name-entries = name: {
       "${name}${ver-suffix}-qlat-tests" = q-pkgs.${name}.qlat-tests;
       "${name}${ver-suffix}-qlat-env" = q-pkgs.${name}.qlat-env;
