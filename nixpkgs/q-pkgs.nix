@@ -56,6 +56,7 @@ in let
       cc = qlat-stdenv.cc;
       cc-c = qlat-stdenv.cc.libc;
       cc-cc = qlat-stdenv.cc.cc;
+      cc-cc-c = qlat-stdenv.cc.cc.lib;
     }
     //
     { inherit (pkgs) pkg-config; }
@@ -674,8 +675,6 @@ in let
     "qlat-tests${qlat-name}" = pkgs.qlat-tests;
   };
 
-  #######################
-
   q-pkgs-list = builtins.map mk-q-pkgs options-list;
 
   all-q-pkgs = builtins.foldl' (s: v: s // v) {} q-pkgs-list;
@@ -697,11 +696,7 @@ in let
     inherit qlat-name-list-file;
     inherit all-qlat-env all-qlat-tests;
     inherit options-default;
-    inherit use-gitee version;
-    nixpkgs = opts.nixpkgs;
-    ngpu = options-default.ngpu;
-    cudaCapability = if options-default.cudaCapabilities != [] then builtins.head options-default.cudaCapabilities else null;
-    cudaForwardCompat = options-default.cudaForwardCompat;
+    inherit nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
   };
 
 in builtins.deepSeq [
