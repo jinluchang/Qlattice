@@ -18,7 +18,12 @@ time (
     -A pkgs-cuda.qlat-jhub-env \
     -A pkgs-cudasupport.qlat-jhub-env \
     -A pkgs-clang.qlat-jhub-env \
-    --no-out-link "$@"
+    --no-out-link \
+    --log-format internal-json -v \
+    -j 6 --cores 15 \
+    "$@" \
+    |& nom --json
+  export use_nom=false
   time name="" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &
   time name="-cu" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &
   time name="-cuda" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &

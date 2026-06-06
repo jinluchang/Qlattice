@@ -18,6 +18,9 @@ Usage:
     name='-clang' ./install-py-local-kernel-with-nix.sh
     # Install a local kernel with clang.
 
+    use_nom=false ./install-py-local-kernel-with-nix.sh
+    # Install without using nom monitor.
+
 EOF
 
 script_path="$( cd -- "$(dirname -- "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -44,7 +47,24 @@ py_kernel_name=py-local$name
 src="$script_path"
 dst="$HOME/.local/share/jupyter/kernels/nix-build-$py_kernel_name"
 mkdir -p "$dst"
-time nix-build "$src"/q-pkgs.nix -A pkgs$name.qlat-jhub-env -o "$dst/result" "$@"
+
+if [ "$use_nom" = false ]; then
+    time nix-build "$src"/q-pkgs.nix \
+        -A pkgs$name.qlat-jhub-env \
+        -o "$dst/result" \
+        --log-format internal-json -v \
+        -j 6 --cores 15 \
+        "$@"
+else
+    time nix-build "$src"/q-pkgs.nix \
+        -A pkgs$name.qlat-jhub-env \
+        -o "$dst/result" \
+        --log-format internal-json -v \
+        -j 6 --cores 15 \
+        "$@" \
+        |& nom --json
+fi
+
 if [ ! -e "$dst"/result/bin/python3 ] ; then
     rmdir "$dst"
     exit 1
