@@ -19,4 +19,6 @@ cd "$dst"
 time nix-build \
     "$src"/many-qlat-pkgs.nix \
     -o "$dst/all/result" \
+    --log-format internal-json -v \
+    -j 6 --cores 15 \
     "$@"

@@ -21,4 +21,6 @@ time nix-build \
     -o "$dst/cuda-core/result" \
     --arg version-list '[""]' \
     --arg qlat-name-list '["" "-clang" "-cudasupport"]' \
+    --log-format internal-json -v \
+    -j 6 --cores 15 \
     "$@"

@@ -20,4 +20,6 @@ time nix-build \
     "$src"/many-qlat-pkgs.nix \
     -o "$dst/small/result" \
     --arg qlat-name-list '["" "-clang" "-ucxless" "-pypi"]' \
+    --log-format internal-json -v \
+    -j 6 --cores 15 \
     "$@"
