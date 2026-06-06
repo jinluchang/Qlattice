@@ -359,12 +359,12 @@ def bump_version() -> None:
     # Update sources
     subprocess.run(["./scripts/update-sources.sh"], check=True)
     #
-    # Update version-pypi in nix file (bare number, no 'v')
-    q_pkgs_nix = Path("nixpkgs/q-pkgs.nix")
-    if not q_pkgs_nix.exists():
-        print("ERROR: nixpkgs/q-pkgs.nix not found.")
+    # Update version-pypi in options.nix (bare number, no 'v')
+    options_nix = Path("nixpkgs/options.nix")
+    if not options_nix.exists():
+        print("ERROR: nixpkgs/options.nix not found.")
         sys.exit(1)
-    text = q_pkgs_nix.read_text()
+    text = options_nix.read_text()
     new_pypi_version = f"{major_old}.{minor_old}"
     # Use \g<1> to avoid ambiguity when replacement starts with digits
     text_new = re.sub(
@@ -372,9 +372,9 @@ def bump_version() -> None:
     )
     if text == text_new:
         print(
-            "WARNING: version-pypi pattern not found in q-pkgs.nix — manual update needed."
+            "WARNING: version-pypi pattern not found in options.nix — manual update needed."
         )
-    q_pkgs_nix.write_text(text_new)
+    options_nix.write_text(text_new)
     print(
         f"Version bumped to {new_version}, version-pypi updated to {new_pypi_version}."
     )
