@@ -88,7 +88,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       pwd
       mkdir -pv "$out/bin"
       #
-      echo "#!/usr/bin/env bash" >$out/bin/cuda-mpi-qlat.sh
+      echo "# Source nixGL and NVCC + MPI env var" >$out/bin/cuda-mpi-qlat.sh
       echo >>$out/bin/cuda-mpi-qlat.sh
       #
       cat >>"$out/bin/cuda-mpi-qlat.sh" <<EOF
@@ -106,9 +106,6 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       echo >>$out/bin/cuda-mpi-qlat.sh
       echo '"$@"' >>$out/bin/cuda-mpi-qlat.sh
       #
-      chmod +x "$out/bin/cuda-mpi-qlat.sh"
-      patchShebangs --build "$out/bin/cuda-mpi-qlat.sh"
-      #
       source $out/bin/cuda-mpi-qlat.sh echo
       #
       echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
@@ -123,6 +120,11 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       echo
     '';
     cpu_extra = ''
+      mkdir -pv "$out/bin"
+      cat >"$out/bin/cuda-mpi-qlat.sh" <<EOF
+        source ${qlat_utils}/bin/cuda-qlat.sh :
+      EOF
+      echo '"$@"' >>$out/bin/cuda-mpi-qlat.sh
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in ''

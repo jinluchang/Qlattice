@@ -22,7 +22,7 @@
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, nixgl ? ""
+, nixgl ? null
 }:
 
 let
@@ -94,6 +94,21 @@ in buildPythonPackage.override { stdenv = stdenv; } {
   '';
 
   preConfigure = let
+    gl_extra = if nixgl == null
+    then ''
+      mkdir -pv "$out/bin"
+      echo >$out/bin/nixgl-qlat.sh
+      echo '"$@"' >>$out/bin/nixgl-qlat.sh
+    ''
+    else ''
+      mkdir -pv "$out/bin"
+      ls "${nixgl}/bin/nixGL"
+      echo "# Source nixGL env var" >$out/bin/cuda-qlat.sh
+      echo >>$out/bin/nixgl-qlat.sh
+      cat "${nixgl}/bin/nixGL" | grep -v 'exec ' | grep -v '^#!' >>$out/bin/nixgl-qlat.sh
+      echo >>$out/bin/nixgl-qlat.sh
+      echo '"$@"' >>$out/bin/nixgl-qlat.sh
+    '';
     gpu_extra = ''
       pwd
       mkdir -pv "$out/bin"
@@ -101,14 +116,12 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       cp -pv "${../qcore/bin/NVCC.py}" "$out/bin/NVCC.py"
       patchShebangs --build "$out/bin/NVCC.py"
       #
-      echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh
-      echo >>$out/bin/cuda-qlat.sh
-      #
-      ls "${nixgl}/bin/nixGL"
-      cat "${nixgl}/bin/nixGL" | grep -v 'exec ' | grep -v '^#!' >>$out/bin/cuda-qlat.sh
+      echo "# Source nixGL and NVCC env var" >$out/bin/cuda-qlat.sh
       echo >>$out/bin/cuda-qlat.sh
       #
       cat >>"$out/bin/cuda-qlat.sh" <<EOF
+        #
+        source $out/bin/nixgl-qlat.sh :
         #
         # GXX="-w"
         #
@@ -135,9 +148,6 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       echo >>$out/bin/cuda-qlat.sh
       echo '"$@"' >>$out/bin/cuda-qlat.sh
       #
-      chmod +x "$out/bin/cuda-qlat.sh"
-      patchShebangs --build "$out/bin/cuda-qlat.sh"
-      #
       source $out/bin/cuda-qlat.sh echo
       #
       echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
@@ -149,9 +159,14 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       echo
     '';
     cpu_extra = ''
+      mkdir -pv "$out/bin"
+      cat >"$out/bin/cuda-qlat.sh" <<EOF
+        source $out/bin/nixgl-qlat.sh :
+      EOF
+      echo '"$@"' >>$out/bin/cuda-qlat.sh
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
-  in extra + ''
+  in gl_extra + extra + ''
     echo
     export
     echo

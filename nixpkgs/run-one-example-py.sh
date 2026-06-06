@@ -126,13 +126,8 @@ fi
 # Source CUDA compilation environment if using CUDA variant
 cuda_mpi_qlat_sh="$result_dir/bin/cuda-mpi-qlat.sh"
 if [[ "$build_variant" == *cuda* ]] && [ -e "$cuda_mpi_qlat_sh" ]; then
-    # The symlinks may point to binary wrappers (ELF). Extract the real shell script.
-    real_cuda_mpi_qlat_sh=$(strings "$cuda_mpi_qlat_sh" 2>/dev/null | grep -m1 "cuda-mpi-qlat.sh$" || true)
-    if [ -z "$real_cuda_mpi_qlat_sh" ]; then
-        real_cuda_mpi_qlat_sh="$cuda_mpi_qlat_sh"
-    fi
-    echo "Sourcing CUDA compilation environment from: $real_cuda_mpi_qlat_sh"
-    source "$real_cuda_mpi_qlat_sh" echo
+    echo "Sourcing CUDA compilation environment from: $cuda_mpi_qlat_sh"
+    source "$cuda_mpi_qlat_sh" echo
     # Re-export PKG_CONFIG_PATH after sourcing (it may override env)
     export PKG_CONFIG_PATH="$result_dir/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
     echo "CXX=${CXX:-unset}"
@@ -155,7 +150,7 @@ if [[ "$build_variant" == *cuda* ]]; then
 fi
 
 # Run the test
-work_dir="$project_root/examples-py/${test_name}.py.p"
+work_dir="$project_root/tmp/examples-py/${test_name}.py.p"
 rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
