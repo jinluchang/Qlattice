@@ -41,6 +41,9 @@ import re
 import time
 import traceback
 
+# Global constant: path to the nix build result symlink
+RESULT_LINK = Path.home() / "qlat-build" / "nix" / "core" / "result-3"
+
 def print_step(n: int, description: str) -> None:
     """Print step number and description for user feedback."""
     print(f"Step {n}: {description}")
@@ -110,7 +113,7 @@ def build_pull_loop() -> None:
     the 15-40 minute build — ensures the release always contains the latest code.\n
     Exits on build failure, missing artifacts, or merge conflicts.
     """
-    result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
+    result_link = RESULT_LINK
     print_step(2, "Build loop: build tarballs, verify, pull and re-build on updates")
     while True:
         # Record symlink ltime before build (lstat to get symlink's own mtime, not target's)
@@ -320,15 +323,7 @@ def upload_pypi() -> None:
     on already-uploaded versions.
     """
     print_step(6, "Upload tarballs to PyPI (twine)")
-    tar_pattern = str(
-        Path.home()
-        / "qlat-build"
-        / "nix"
-        / "result--q-pkgs-2"
-        / "share"
-        / "qlat-pypi"
-        / "qlat*.tar.gz"
-    )
+    tar_pattern = str(RESULT_LINK / "share" / "qlat-pypi" / "qlat*.tar.gz")
     tarballs = glob.glob(tar_pattern)
     if not tarballs:
         print(f"ERROR: No tarballs found for PyPI upload matching {tar_pattern}")
@@ -389,7 +384,7 @@ def verify_new_build() -> None:
     Re-runs the build script with the bumped version.
     Catches version-related build breakage after committing.
     """
-    result_link = Path.home() / "qlat-build" / "nix" / "result--q-pkgs-2"
+    result_link = RESULT_LINK
     print_step(9, "Verify new build by rebuilding packages")
     mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
     subprocess.run(
