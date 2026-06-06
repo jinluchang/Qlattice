@@ -1,10 +1,20 @@
 {
-  nixpkgs ? null, # nixpkgs. E.g. (fetchTarball "https://channels.nixos.org/nixos-25.11/nixexprs.tar.xz")
-  version ? null, # version of the nixpkgs. E.g. "25.11"
-  ngpu ? null, # adjust with desired number of GPUs. E.g. "2"
-  cudaCapability ? null, # adjust with desired cudaCapability. E.g. "8.6"
-  cudaForwardCompat ? null, # adjust with desired cudaForwardCompat. E.g. false
-  use-gitee ? null, # true or false (default false)
+  # Path or fetchTarball result to nixpkgs. Auto-detected from `version` if null.
+  # E.g. (fetchTarball "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz")
+  nixpkgs ? null,
+  # NixOS release version string. Used to fetch matching nixpkgs when `nixpkgs` is null.
+  # E.g. "26.05"
+  version ? null,
+  # Number of NVIDIA GPUs as a string. Auto-detected from /dev/nvidia* if null.
+  # E.g. "2"
+  ngpu ? null,
+  # CUDA compute capability string (major.minor). Auto-detected via nvidia-smi if null.
+  # E.g. "8.6"
+  cudaCapability ? null,
+  # Enable CUDA forward compatibility (bool). Defaults to false if null.
+  cudaForwardCompat ? null,
+  # Use gitee mirrors instead of github (bool). Defaults to false if null.
+  use-gitee ? null,
 }:
 
 let

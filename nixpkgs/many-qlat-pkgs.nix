@@ -1,8 +1,17 @@
 {
+  # List of nixpkgs versions to build for, e.g. ["" "26.05" "25.11"].
+  # "" means the default (unversioned) nixpkgs. null uses a built-in default.
   version-list ? null,
+  # Optional filter: only build qlat variants whose names are in this list.
+  # null means build all variants from q-pkgs.
+  qlat-name-list ? null,
+  # Number of GPUs to target (passed to q-pkgs). null uses the q-pkgs default.
   ngpu ? null,
+  # CUDA compute capability, e.g. "8.6" (passed to q-pkgs).
   cudaCapability ? null,
+  # Enable CUDA forward compatibility (passed to q-pkgs).
   cudaForwardCompat ? null,
+  # Use gitee mirrors instead of GitHub (passed to q-pkgs).
   use-gitee ? null,
 }:
 
@@ -24,7 +33,11 @@ in let
     q-pkgs = import ./q-pkgs.nix {
       inherit version ngpu cudaCapability cudaForwardCompat use-gitee;
     };
-    name-list = builtins.map (n: "q-pkgs${n}") q-pkgs.qlat-name-list;
+    name-list = builtins.map (n: "q-pkgs${n}") (
+      if qlat-name-list != null
+      then builtins.filter (n: builtins.elem n qlat-name-list) q-pkgs.qlat-name-list
+      else q-pkgs.qlat-name-list
+    );
     ver-suffix = if version == "" then "" else "-${version}";
     mk-name-entries = name: {
       "${name}${ver-suffix}-qlat-tests" = q-pkgs.${name}.qlat-tests;
