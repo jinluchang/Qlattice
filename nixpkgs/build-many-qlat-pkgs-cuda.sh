@@ -22,4 +22,5 @@ time nix-build \
     --arg qlat-name-list '["" "-clang" "-cu" "-cudasupport" "-ucxless" "-pypi"]' \
     --log-format internal-json -v \
     -j 6 --cores 15 \
-    "$@"
+    "$@" \
+    |& nom --json

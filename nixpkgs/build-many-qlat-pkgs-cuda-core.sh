@@ -23,4 +23,5 @@ time nix-build \
     --arg qlat-name-list '["" "-clang" "-cudasupport"]' \
     --log-format internal-json -v \
     -j 6 --cores 15 \
-    "$@"
+    "$@" \
+    |& nom --json

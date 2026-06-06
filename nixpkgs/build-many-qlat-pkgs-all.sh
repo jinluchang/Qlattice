@@ -21,4 +21,5 @@ time nix-build \
     -o "$dst/all/result" \
     --log-format internal-json -v \
     -j 6 --cores 15 \
-    "$@"
+    "$@" \
+    |& nom --json
