@@ -574,6 +574,20 @@ in let
       paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
       # ignoreCollisions = true;
+      postBuild = ''
+        cat >$out/bin/setenv-qlat.sh <<EOF
+          # Set up environment variables for qlat
+          export PATH="$out/bin\''${PATH:+:\$PATH}"
+          export LD_LIBRARY_PATH="$out/lib:$out/lib64\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+          export LIBRARY_PATH="$out/lib:$out/lib64\''${LIBRARY_PATH:+:\$LIBRARY_PATH}"
+          export CPATH="$out/include\''${CPATH:+:\$CPATH}"
+          export PKG_CONFIG_PATH="$out/lib/pkgconfig\''${PKG_CONFIG_PATH:+:\$PKG_CONFIG_PATH}"
+          #
+          source $out/bin/cuda-mpi-qlat.sh :
+          #
+          "\$@"
+        EOF
+      '';
     };
     # When CUDA is enabled, remove glibc headers that conflict with CUDA math headers
     # CUDA's math_functions.h declares functions without noexcept, but glibc 2.42+
