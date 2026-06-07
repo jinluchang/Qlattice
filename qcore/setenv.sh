@@ -100,6 +100,9 @@ else
     if [ -d /lib64 ] ; then
         export LIBRARY_PATH="${LIBRARY_PATH:+$LIBRARY_PATH:}"/lib64
     fi
+    if [ -e /run/current-system/sw/bin/setenv-qlat.sh ] ; then
+        source /run/current-system/sw/bin/setenv-qlat.sh echo "NixOS: source setenv-qlat.sh"
+    fi
     if [ -n "$NIX_CFLAGS_COMPILE" ] ; then
         value="$NIX_CFLAGS_COMPILE"
         IFS=' ' read -a vs <<< "$value"
@@ -119,9 +122,6 @@ else
                 add-to-colon-list LIBRARY_PATH "${v#-L}"
             fi
         done
-    fi
-    if [ -d "/run/current-system/sw/lib" ] ; then
-        add-to-colon-list LD_LIBRARY_PATH "/run/current-system/sw/lib"
     fi
 fi
 
