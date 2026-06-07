@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build all qlat packages (skip cuda tests).
+# Build all qlat packages (cuda tests only).
 # Output: ~/qlat-build/nix/all/result
 # Extra args passed to nix-build via "$@".
 
@@ -23,8 +23,8 @@ cd "$dst"
 time nix-build \
     "$src"/many-qlat-pkgs.nix \
     -o "$dst/all/result" \
-    --argstr qlat-cuda-tests none \
+    --argstr qlat-cuda-tests only \
     --log-format internal-json -v \
-    -j 6 --cores 15 \
+    -j 2 --cores 15 \
     "$@" \
     |& nom --json

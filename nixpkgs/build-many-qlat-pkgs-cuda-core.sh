@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# Build cuda core packages.
+# Output: ~/qlat-build/nix/cuda-core/result
+# Names: ["", "-clang", "-cudasupport"]
+# Extra args passed to nix-build via "$@".
 
 script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# Build core packages only.
+# Output: ~/qlat-build/nix/core/result
+# Names: ["", "-pypi"]
+# Extra args passed to nix-build via "$@".
 
 script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 

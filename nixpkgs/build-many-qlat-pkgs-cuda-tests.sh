@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Build all qlat packages (skip cuda tests).
-# Output: ~/qlat-build/nix/all/result
+# Build cuda packages (cuda tests only).
+# Output: ~/qlat-build/nix/cuda-tests/result
+# Names: ["", "-clang", "-cu", "-cudasupport", "-ucxless", "-pypi"]
 # Extra args passed to nix-build via "$@".
 
 script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -22,9 +23,10 @@ cd "$dst"
 
 time nix-build \
     "$src"/many-qlat-pkgs.nix \
-    -o "$dst/all/result" \
-    --argstr qlat-cuda-tests none \
+    -o "$dst/cuda-tests/result" \
+    --arg qlat-name-list '["" "-clang" "-cu" "-cudasupport" "-ucxless" "-pypi"]' \
+    --argstr qlat-cuda-tests only \
     --log-format internal-json -v \
-    -j 6 --cores 15 \
+    -j 2 --cores 15 \
     "$@" \
     |& nom --json
