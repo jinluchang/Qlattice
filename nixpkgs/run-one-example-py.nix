@@ -84,7 +84,7 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
       echo "CXX=$CXX"
       echo "MPICXX=$MPICXX"
       export NGPU=${if ngpu != null then ngpu else "1"}
-      export mpi_options="$mpi_options bind-gpu-qlat.sh"
+      export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
       export q_num_mp_processes=0
       export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';

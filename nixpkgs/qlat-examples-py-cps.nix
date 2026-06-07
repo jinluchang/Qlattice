@@ -93,7 +93,7 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
       echo "OMPI_CXX=$OMPI_CXX"
       #
       export NGPU=${ngpu}
-      export mpi_options="$mpi_options bind-gpu-qlat.sh"
+      export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
       #
       export q_num_mp_processes=0
     '';

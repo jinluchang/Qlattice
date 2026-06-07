@@ -522,26 +522,13 @@ in let
       zstd
       pdftk
       qpdf
+      poppler-utils
       ghostscript
       ;
       pipx = pkgs.pipx.overridePythonAttrs (py-prev: { doCheck = false; });
-    }
-    // (if lib.lists.elem version [ "24.11" "25.05" ]
+    } // (if is-linux
     then {
-      inherit (pkgs)
-      poppler_utils
-      ;
-    }
-    else {
-      inherit (pkgs)
-      poppler-utils
-      ;
-    }
-    )
-    // (if is-linux
-    then ({
       util-linux = lib.meta.hiPrio pkgs.util-linux;
-    } // {
       inherit (pkgs)
       linux-pam
       fuse3
@@ -575,7 +562,7 @@ in let
       fontconfig
       freetype
       ;
-    })
+    }
     else {}
     )
     // qlat-cc

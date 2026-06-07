@@ -97,13 +97,14 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     gl_extra = if nixgl == null
     then ''
       mkdir -pv "$out/bin"
-      echo >$out/bin/nixgl-qlat.sh
+      echo "#!/usr/bin/env bash" >$out/bin/nixgl-qlat.sh
       echo '"$@"' >>$out/bin/nixgl-qlat.sh
     ''
     else ''
       mkdir -pv "$out/bin"
       ls "${nixgl}/bin/nixGL"
-      echo "# Source nixGL env var" >$out/bin/cuda-qlat.sh
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh
+      echo "# Source nixGL env var" >>$out/bin/cuda-qlat.sh
       echo >>$out/bin/nixgl-qlat.sh
       cat "${nixgl}/bin/nixGL" | grep -v 'exec ' | grep -v '^#!' >>$out/bin/nixgl-qlat.sh
       echo >>$out/bin/nixgl-qlat.sh
@@ -116,7 +117,8 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       cp -pv "${../qcore/bin/NVCC.py}" "$out/bin/NVCC.py"
       patchShebangs --build "$out/bin/NVCC.py"
       #
-      echo "# Source nixGL and NVCC env var" >$out/bin/cuda-qlat.sh
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh
+      echo "# Source nixGL and NVCC env var" >>$out/bin/cuda-qlat.sh
       echo >>$out/bin/cuda-qlat.sh
       #
       cat >>"$out/bin/cuda-qlat.sh" <<EOF
@@ -160,7 +162,8 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     '';
     cpu_extra = ''
       mkdir -pv "$out/bin"
-      cat >"$out/bin/cuda-qlat.sh" <<EOF
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh
+      cat >>"$out/bin/cuda-qlat.sh" <<EOF
         source $out/bin/nixgl-qlat.sh :
       EOF
       echo '"$@"' >>$out/bin/cuda-qlat.sh

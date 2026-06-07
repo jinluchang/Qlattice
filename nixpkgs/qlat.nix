@@ -88,7 +88,8 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       pwd
       mkdir -pv "$out/bin"
       #
-      echo "# Source nixGL and NVCC + MPI env var" >$out/bin/cuda-mpi-qlat.sh
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-mpi-qlat.sh
+      echo "# Source nixGL and NVCC + MPI env var" >>$out/bin/cuda-mpi-qlat.sh
       echo >>$out/bin/cuda-mpi-qlat.sh
       #
       cat >>"$out/bin/cuda-mpi-qlat.sh" <<EOF
@@ -121,7 +122,8 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     '';
     cpu_extra = ''
       mkdir -pv "$out/bin"
-      cat >"$out/bin/cuda-mpi-qlat.sh" <<EOF
+      echo "#!/usr/bin/env bash" >$out/bin/cuda-mpi-qlat.sh
+      cat >>"$out/bin/cuda-mpi-qlat.sh" <<EOF
         source ${qlat_utils}/bin/cuda-qlat.sh :
       EOF
       echo '"$@"' >>$out/bin/cuda-mpi-qlat.sh
@@ -152,7 +154,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     # echo readelf -d $out
     # readelf -d $out/lib/python3*/site-packages/cqlat.cpython-*.so
     # echo
-    patchShebangs --build "$out"/bin/bind-gpu-qlat.sh
+    # patchShebangs --build "$out"/bin/bind-gpu-qlat.sh
     #
     mkdir -pv "$out"/share/version
     echo ${version} >"$out"/share/version/${pname}
