@@ -96,15 +96,19 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
       export mpi_options="$mpi_options bind-gpu-qlat.sh"
       #
       export q_num_mp_processes=0
-      export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
       if [ "$(uname)" == "Darwin" ]; then
         export q_num_mp_processes=0
       fi
-      export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     '';
-    extra = if cudaSupport then gpu_extra else cpu_extra;
+    extra = (if cudaSupport then gpu_extra else cpu_extra) + (
+      if cudaSupport && lib.hasInfix "cuda" qlat-name then ''
+        export num_proc=$((NIX_BUILD_CORES / 16 + 1))
+      '' else ''
+        export num_proc=$((NIX_BUILD_CORES / 4 + 1))
+      ''
+    );
   in extra + ''
     export OMP_NUM_THREADS=2
     echo
