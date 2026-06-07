@@ -27,6 +27,6 @@ time nix-build \
     --arg version-list '[""]' \
     --arg qlat-name-list '["" "-pypi"]' \
     --log-format internal-json -v \
-    -j 6 --cores 15 \
+    -j 4 --cores 15 \
     "$@" \
     |& nom --json

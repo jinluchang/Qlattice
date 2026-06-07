@@ -26,6 +26,6 @@ time nix-build \
     -o "$dst/small/result" \
     --arg qlat-name-list '["" "-clang" "-ucxless" "-pypi"]' \
     --log-format internal-json -v \
-    -j 6 --cores 15 \
+    -j 4 --cores 15 \
     "$@" \
     |& nom --json
