@@ -64,9 +64,9 @@ in let
     #
     qlat-cc = {
       cc = qlat-stdenv.cc;
-      cc-c = qlat-stdenv.cc.libc;
-      cc-cc = qlat-stdenv.cc.cc;
-      cc-cc-c = qlat-stdenv.cc.cc.lib;
+      # cc-c = qlat-stdenv.cc.libc;
+      # cc-cc = qlat-stdenv.cc.cc;
+      # cc-cc-c = qlat-stdenv.cc.cc.lib;
     }
     //
     { inherit (pkgs) pkg-config; }
@@ -569,7 +569,7 @@ in let
     // qlat-dep-pkgs
     // qlat-dep-pkgs-extra
     );
-    qlat-jhub-env-base = pkgs.buildEnv {
+    qlat-jhub-env = pkgs.buildEnv {
       name = "qlat-jhub-env${qlat-name}";
       paths = builtins.attrValues qlat-lib-set;
       extraOutputsToInstall = [ "out" "bin" "dev" "lib" "static" "man" "doc" "info" ];
@@ -589,34 +589,6 @@ in let
         EOF
       '';
     };
-    # When CUDA is enabled, remove glibc headers that conflict with CUDA math headers
-    # CUDA's math_functions.h declares functions without noexcept, but glibc 2.42+
-    # declares them with noexcept, causing compilation errors
-    qlat-jhub-env = if opts.use-cuda-software
-    then pkgs.runCommand "qlat-jhub-env${qlat-name}" {} ''
-      # Symlink everything from base (cheap)
-      mkdir -p $out
-      ln -s ${qlat-jhub-env-base}/* $out/
-      chmod u+w $out
-      # Replace include/ symlink with a copy and remove conflicting headers
-      if [ -d "${qlat-jhub-env-base}/include" ]; then
-        rm -f $out/include
-        cp -rL ${qlat-jhub-env-base}/include $out/include
-        chmod -R u+w $out/include
-        rm -f "$out/include/bits/mathcalls.h" "$out/include/bits/mathcalls-macros.h"
-        # Patch CUDA CCCL traits.h: GCC's <cmath> #undef's isgreater etc. macros,
-        # so ::isgreater() no longer exists. Replace with __builtin_isgreater() etc.
-        traits_h="$out/include/cuda/std/__cmath/traits.h"
-        if [ -e "$traits_h" ]; then
-          sed -i 's/::isgreater(/__builtin_isgreater(/g' "$traits_h"
-          sed -i 's/::isgreaterequal(/__builtin_isgreaterequal(/g' "$traits_h"
-          sed -i 's/::isless(/__builtin_isless(/g' "$traits_h"
-          sed -i 's/::islessequal(/__builtin_islessequal(/g' "$traits_h"
-          sed -i 's/::islessgreater(/__builtin_islessgreater(/g' "$traits_h"
-        fi
-      fi
-    ''
-    else qlat-jhub-env-base;
     qlat-jhub-sh = pkgs.mkShell rec {
       name = "qlat-jhub-sh${qlat-name}";
       packages = [ qlat-jhub-env ];
