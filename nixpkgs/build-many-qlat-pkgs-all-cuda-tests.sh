@@ -22,7 +22,7 @@ cd "$dst"
 
 time nix-build \
     "$src"/many-qlat-pkgs.nix \
-    -o "$dst/all/result" \
+    -o "$dst/all-cuda-tests/result" \
     --argstr qlat-cuda-tests only \
     --log-format internal-json -v \
     -j 2 --cores 15 \
