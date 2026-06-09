@@ -2,6 +2,8 @@ SHELL=/usr/bin/env bash
 
 mpi_options ?= --oversubscribe --bind-to none bash bind-gpu-qlat.sh
 
+export mpi_options
+
 tests = \
 		vector-utils \
 		fft-tests \
