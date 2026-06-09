@@ -1,6 +1,7 @@
 all:
 
 clean:
+	-rm -rfv tmp/*
 	make -C examples-py clean
 	make -C examples-py-gpt clean
 	make -C examples-py-cps clean

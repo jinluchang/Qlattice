@@ -261,6 +261,7 @@ in let
       eigen = qlat-eigen;
       qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
+      cudaSupportInLibs = opts.use-cudasupport;
       nvcc-arch = opts.nvcc-arch;
       nixgl = qlat-nixgl;
       version = qlat-version;

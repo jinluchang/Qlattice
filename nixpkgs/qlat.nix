@@ -6,8 +6,6 @@
 , mpi4py
 , sympy
 , scipy
-, jax
-, jaxlib
 , qlat_utils
 , mpi
 , git
@@ -66,8 +64,6 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     mpi4py
     sympy
     scipy
-    jax
-    jaxlib
   ];
 
   # requiredSystemFeatures = [ "require-cuda" ];

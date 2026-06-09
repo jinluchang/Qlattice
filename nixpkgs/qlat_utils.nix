@@ -9,6 +9,8 @@
 , pkg-config
 , numpy
 , psutil
+, jax
+, jaxlib
 , zlib
 , eigen
 , git
@@ -19,6 +21,7 @@
 , qlat-src
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
+, cudaSupportInLibs ? false
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
 , nixgl ? null
@@ -79,6 +82,8 @@ in buildPythonPackage.override { stdenv = stdenv; } {
     cython
     numpy
     psutil
+    jax
+    jaxlib
   ];
 
   postPatch = ''
@@ -137,6 +142,8 @@ in buildPythonPackage.override { stdenv = stdenv; } {
         export CXXFLAGS="\$QLAT_CXXFLAGS"
         export LDFLAGS="\$QLAT_LDFLAGS"
         #
+        export JAX_PLATFORMS="${if cudaSupportInLibs then "cuda" else "cpu"}"
+        #
       EOF
       #
       echo >>$out/bin/cuda-qlat.sh
@@ -157,6 +164,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh
       cat >>"$out/bin/cuda-qlat.sh" <<EOF
         source $out/bin/nixgl-qlat.sh :
+        export JAX_PLATFORMS="${if cudaSupportInLibs then "cuda" else "cpu"}"
       EOF
       echo '"$@"' >>$out/bin/cuda-qlat.sh
     '';
