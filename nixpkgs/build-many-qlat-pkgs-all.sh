@@ -25,6 +25,6 @@ time nix-build \
     -o "$dst/all/result" \
     --argstr qlat-cuda-tests none \
     --log-format internal-json -v \
-    -j 4 --cores 15 \
+    -j 8 --cores 7 \
     "$@" \
     |& nom --json
