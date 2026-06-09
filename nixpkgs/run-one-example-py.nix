@@ -95,12 +95,8 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
       echo "MPICXX=$MPICXX"
       export NGPU=${ngpu}
       export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
-      export q_num_mp_processes=0
     '';
     cpu_extra = ''
-      if [ "$(uname)" == "Darwin" ]; then
-        export q_num_mp_processes=0
-      fi
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''

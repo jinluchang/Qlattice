@@ -32,6 +32,8 @@ let
 
   pname = "qlat_utils${qlat-name}";
 
+  is-linux = lib.lists.elem builtins.currentSystem lib.platforms.linux;
+
 in buildPythonPackage.override { stdenv = stdenv; } {
 
   pname = pname;
@@ -144,6 +146,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
         #
         export JAX_PLATFORMS="${if cudaSupportInLibs then "cuda" else "cpu"}"
         #
+        ${if cudaSupport || !is-linux then "export q_num_mp_processes=0" else ""}
       EOF
       #
       echo >>$out/bin/cuda-qlat.sh
@@ -165,6 +168,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       cat >>"$out/bin/cuda-qlat.sh" <<EOF
         source $out/bin/nixgl-qlat.sh :
         export JAX_PLATFORMS="${if cudaSupportInLibs then "cuda" else "cpu"}"
+        ${if cudaSupport || !is-linux then "export q_num_mp_processes=0" else ""}
       EOF
       echo '"$@"' >>$out/bin/cuda-qlat.sh
     '';

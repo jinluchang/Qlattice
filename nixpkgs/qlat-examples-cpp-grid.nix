@@ -79,13 +79,8 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
       #
       export NGPU=${ngpu}
       export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
-      #
-      export q_num_mp_processes=0
     '';
     cpu_extra = ''
-      if [ "$(uname)" == "Darwin" ]; then
-        export q_num_mp_processes=0
-      fi
     '';
     extra = (if cudaSupport then gpu_extra else cpu_extra) + (
       if cudaSupport && lib.hasInfix "cuda" qlat-name then ''

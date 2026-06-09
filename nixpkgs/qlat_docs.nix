@@ -89,7 +89,6 @@ in buildPythonPackage.override { stdenv = stdenv; } rec {
       #
       export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
       #
-      export q_num_mp_processes=0
       export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
