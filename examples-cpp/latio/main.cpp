@@ -1,4 +1,4 @@
-#include <qutils/lat-io.h>
+#include "qlat-setup.h"
 
 namespace qlat
 {  //
@@ -54,8 +54,17 @@ inline void demo_r()
 
 int main(int argc, char* argv[])
 {
+  using namespace qlat;
+  std::vector<Coordinate> size_node_list;
+  size_node_list.push_back(Coordinate(1, 1, 1, 1));
+  begin(&argc, &argv, size_node_list);
+  display_geometry_node();
+  setup_log_idx();
+  setup();
   demo_c();
   demo_r();
   displayln_info("CHECK: finished successfully.");
+  Timer::display();
+  end();
   return 0;
 }

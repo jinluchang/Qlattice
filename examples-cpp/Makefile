@@ -23,7 +23,8 @@ tests = \
 		template \
 		dslash-tests \
 		propagators \
-		ldouble
+		ldouble \
+		latio
 
 all: run
 
