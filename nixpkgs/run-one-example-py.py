@@ -3,7 +3,7 @@
 """
 Run a single qlat Python example test using a pre-built nix environment.\n
 Usage:
-  ./run-one-example-py.py <test-name> [options]\n
+  ./nixpkgs/run-one-example-py.py <test-name> [options]\n
 Options:
   --cuda          Use CUDA-enabled build (result-py-local-cuda)
   --cudasupport   Use CUDA support build (result-py-local-cudasupport)
@@ -14,9 +14,9 @@ Options:
   --timeout <dur> Timeout duration (default: 60m)
   --help          Show this help message\n
 Examples:
-  ./run-one-example-py.py utils
-  ./run-one-example-py.py auto-contract-01 --cuda
-  ./run-one-example-py.py qtopo-measure --cudasupport --n 4
+  ./nixpkgs/run-one-example-py.py utils
+  ./nixpkgs/run-one-example-py.py auto-contract-01 --cuda
+  ./nixpkgs/run-one-example-py.py qtopo-measure --cudasupport --n 4
 """
 
 import argparse

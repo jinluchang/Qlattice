@@ -108,6 +108,21 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
     export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${pkgs.bash}/bin/bash
     make -B ${test-name}.log SHELL=$SHELL
+    echo
+    if [ ! -d "${test-name}.py.p" ] ; then
+      echo "${test-name}.py.p" directory not found
+      false
+    fi
+    if diff "${test-name}.py.p"/log.check.txt "${test-name}.py.p"/log.check.txt.new ; then
+      echo "${test-name}.py.p" passed
+    else
+      echo
+      cat "${test-name}.py.p"/log.full.txt
+      echo
+      echo "${test-name}.py.p" failed
+      false
+    fi
+    echo
     mkdir -p "$out/share/qlat/examples-py"
     cp ${test-name}.py "$out/share/qlat/examples-py/"
     cp ${test-name}.log.json "$out/share/qlat/examples-py/" 2>/dev/null || true
