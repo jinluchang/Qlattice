@@ -26,13 +26,11 @@ let
 in let
 
   inherit (opts) nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
-  inherit (opts) import-nixpkgs;
-  inherit (opts) import-nixgl;
-  inherit (opts) nixpkgs-release;
   inherit (opts) options-default mk-options mk-qlat-name;
+  inherit (opts) import-nixpkgs import-nixgl;
+  inherit (opts) nixpkgs-release;
   inherit (opts) version-pypi;
-  inherit (opts) options-list qlat-name-list qlat-name-list-file-from-str;
-  inherit (opts) qlat-name-list-file;
+  inherit (opts) options-list qlat-name-list qlat-name-list-file-from-str qlat-name-list-file;
 
   mk-overlay = options: final-g: prev-g: let
     opts = mk-options options;
@@ -210,31 +208,73 @@ in let
       cpuinfo-sys = opts.cpuinfo-sys;
     };
     #
+    qlat-version = if opts.use-pypi != null
+    then version-pypi
+    else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
+    #
+    version-pypi-git = let
+      parts = builtins.split "\\." version-pypi;
+      major = builtins.elemAt parts 0;
+      minor = builtins.elemAt parts 2;
+    in "${major}.${lib.fixedWidthNumber 2 (lib.toInt minor)}";
+    #
+    git-src = if opts.use-pypi != null
+    then builtins.fetchGit {
+      url = if use-gitee then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
+      ref = "refs/tags/v${version-pypi-git}";
+    }
+    else builtins.fetchGit ./..;
+    #
+    pypi-qlat-utils = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz";
+    pypi-qlat = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat/qlat-${version-pypi}.tar.gz";
+    pypi-qlat-grid = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_grid/qlat_grid-${version-pypi}.tar.gz";
+    pypi-qlat-cps = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_cps/qlat_cps-${version-pypi}.tar.gz";
+    #
+    qlat-src = if opts.use-pypi != null
+    then pkgs.linkFarm "qlat-src-pypi" [
+      { name = "qlat-utils"; path = pypi-qlat-utils; }
+      { name = "qlat"; path = pypi-qlat; }
+      { name = "qlat-grid"; path = pypi-qlat-grid; }
+      { name = "qlat-cps"; path = pypi-qlat-cps; }
+      { name = "examples-cpp"; path = "${git-src}/examples-cpp"; }
+      { name = "examples-cpp-grid"; path = "${git-src}/examples-cpp-grid"; }
+      { name = "examples-py"; path = "${git-src}/examples-py"; }
+      { name = "examples-py-gpt"; path = "${git-src}/examples-py-gpt"; }
+      { name = "examples-py-cps"; path = "${git-src}/examples-py-cps"; }
+      { name = "docs"; path = "${git-src}/docs"; }
+      { name = "qcore"; path = "${git-src}/qcore"; }
+    ]
+    else git-src;
+    #
     qlat_utils = py-call-pkg ./qlat_utils.nix {
       stdenv = qlat-stdenv;
       eigen = qlat-eigen;
-      use-pypi = opts.use-pypi;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
       nixgl = qlat-nixgl;
+      version = qlat-version;
     };
     qlat = py-call-pkg ./qlat.nix {
       stdenv = qlat-stdenv;
-      use-pypi = opts.use-pypi;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      version = qlat-version;
     };
     qlat_grid = py-call-pkg ./qlat_grid.nix {
       stdenv = qlat-stdenv;
-      use-pypi = opts.use-pypi;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      version = qlat-version;
     };
     qlat_cps = py-call-pkg ./qlat_cps.nix {
       stdenv = qlat-stdenv;
-      use-pypi = opts.use-pypi;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      version = qlat-version;
     };
     gpt-lehner = py-call-pkg ./gpt-lehner.nix {
       stdenv = qlat-stdenv;
@@ -243,43 +283,57 @@ in let
     #
     qlat-examples-cpp = py-call-pkg ./qlat-examples-cpp.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      version = qlat-version;
     };
     qlat-examples-cpp-grid = py-call-pkg ./qlat-examples-cpp-grid.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      version = qlat-version;
     };
     qlat-examples-py = py-call-pkg ./qlat-examples-py.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      version = qlat-version;
     };
     qlat-examples-py-gpt = py-call-pkg ./qlat-examples-py-gpt.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      version = qlat-version;
     };
     qlat-examples-py-cps = py-call-pkg ./qlat-examples-py-cps.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda-software;
       nvcc-arch = opts.nvcc-arch;
       ngpu = opts.ngpu;
+      version = qlat-version;
     };
     qlat_docs = py-call-pkg ./qlat_docs.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      version = qlat-version;
     };
     qlat_pypipkgs = py-call-pkg ./qlat_pypipkgs.nix {
       stdenv = qlat-stdenv;
+      qlat-src = qlat-src;
       cudaSupport = opts.use-cuda;
       nvcc-arch = opts.nvcc-arch;
+      version = qlat-version;
     };
     #
     qlat-dep-pkgs = {
@@ -679,6 +733,7 @@ in let
     inherit qlat-name-list-file;
     inherit all-qlat-env all-qlat-tests;
     inherit options-default;
+    inherit mk-options mk-qlat-name;
     inherit nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
   };
 

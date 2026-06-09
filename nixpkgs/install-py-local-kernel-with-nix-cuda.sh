@@ -18,6 +18,7 @@ time (
     -A pkgs-cuda.qlat-jhub-env \
     -A pkgs-cudasupport.qlat-jhub-env \
     -A pkgs-clang.qlat-jhub-env \
+    -A pkgs-pypi.qlat-jhub-env \
     --no-out-link \
     --log-format internal-json -v \
     -j 6 --cores 15 \
@@ -29,5 +30,6 @@ time (
   time name="-cuda" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &
   time name="-cudasupport" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &
   time name="-clang" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &
+  time name="-pypi" "$script_path"/install-py-local-kernel-with-nix.sh "$@" &
   time wait
 )

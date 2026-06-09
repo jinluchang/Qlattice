@@ -1,5 +1,4 @@
 { stdenv
-, fetchPypi
 , config
 , lib
 , buildPythonPackage
@@ -17,25 +16,18 @@
 , bash
 , autoAddDriverRunpath
 , openmp ? null
-, use-pypi ? null
+, qlat-src
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
 , nixgl ? null
+, version ? "current"
 }:
 
 let
 
-  version-pypi = use-pypi;
-
-  src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz";
-
-  version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
-  src-local = ../qlat-utils;
-
   pname = "qlat_utils${qlat-name}";
-  version = if use-pypi != null then version-pypi else version-local;
 
 in buildPythonPackage.override { stdenv = stdenv; } {
 
@@ -44,7 +36,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
 
   pyproject = true;
 
-  src = if use-pypi != null then src-pypi else src-local;
+  src = "${qlat-src}/qlat-utils/";
 
   enableParallelBuilding = true;
 
@@ -114,7 +106,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       pwd
       mkdir -pv "$out/bin"
       #
-      cp -pv "${../qcore/bin/NVCC.py}" "$out/bin/NVCC.py"
+      cp -pv "${qlat-src}/qcore/bin/NVCC.py" "$out/bin/NVCC.py"
       patchShebangs --build "$out/bin/NVCC.py"
       #
       echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh

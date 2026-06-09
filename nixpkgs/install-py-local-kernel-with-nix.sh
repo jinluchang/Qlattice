@@ -18,6 +18,9 @@ Usage:
     name='-clang' ./install-py-local-kernel-with-nix.sh
     # Install a local kernel with clang.
 
+    name='-pypi' ./install-py-local-kernel-with-nix.sh
+    # Install a local kernel with the latest PyPI version.
+
     use_nom=false ./install-py-local-kernel-with-nix.sh
     # Install without using nom monitor.
 

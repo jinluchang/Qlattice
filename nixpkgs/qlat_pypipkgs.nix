@@ -1,5 +1,4 @@
-{ fetchPypi
-, stdenv
+{ stdenv
 , lib
 , config
 , buildPythonPackage
@@ -18,34 +17,22 @@
 , mpi
 , mpiCheckPhaseHook
 , openssh
+, qlat-src
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, use-pypi ? null
+, version ? "current"
 }:
 
 let
 
-  version-pypi = use-pypi;
-  srcs-pypi = [
-    (builtins.path { name = "qlat-utils"; path = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz"; })
-    (builtins.path { name = "qlat"; path = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat/qlat-${version-pypi}.tar.gz"; })
-    (builtins.path { name = "qlat-cps"; path = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_cps/qlat_cps-${version-pypi}.tar.gz"; })
-    (builtins.path { name = "qlat-grid"; path = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_grid/qlat_grid-${version-pypi}.tar.gz"; })
+  srcs = [
+    "${qlat-src}/qlat-utils/"
+    "${qlat-src}/qlat/"
+    "${qlat-src}/qlat-cps/"
+    "${qlat-src}/qlat-grid/"
   ];
-
-  version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
-  srcs-local = [
-    ../qlat-utils
-    ../qlat
-    ../qlat-cps
-    ../qlat-grid
-  ];
-
-  version = if use-pypi != null then version-pypi else version-local;
-
-  srcs = if use-pypi != null then srcs-pypi else srcs-local;
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 

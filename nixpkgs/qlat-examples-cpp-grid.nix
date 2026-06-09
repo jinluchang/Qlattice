@@ -1,5 +1,4 @@
-{ fetchPypi
-, stdenv
+{ stdenv
 , lib
 , config
 , buildPythonPackage
@@ -14,28 +13,18 @@
 , mpi
 , mpiCheckPhaseHook
 , openssh
+, qlat-src
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
 , ngpu ? "1"
-, use-pypi ? null
-, use-gitee ? null
+, version ? "current"
 }:
 
 let
 
-  use-gitee-wd = if use-gitee == null then false else use-gitee;
-
-  version-pypi = use-pypi;
-  qlat-src-pypi = builtins.fetchGit {
-    url = if use-gitee-wd then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
-    ref = "refs/tags/v${version-pypi}";
-  };
-
-  version = if use-pypi != null then version-pypi else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
-
-  src = if use-pypi != null then "${qlat-src-pypi}/examples-cpp-grid" else ../examples-cpp-grid;
+  src = "${qlat-src}/examples-cpp-grid/";
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 

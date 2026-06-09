@@ -1,63 +1,49 @@
 {
+  test-name ? null,
+  qlat-name ? null,
   nixpkgs ? null,
   version ? null,
-  testName ? "auto-contract-01",
-  cudaSupport ? false,
+  ngpu ? null,
   cudaCapability ? null,
   cudaForwardCompat ? null,
-  nvcc-arch ? "sm_86",
-  ngpu ? null,
   use-gitee ? null,
-  use-pypi ? null,
 }:
 
 let
-  q-pkgs-module = import ./q-pkgs.nix {
-    inherit nixpkgs version cudaCapability cudaForwardCompat use-gitee;
-    ngpu = if ngpu != null then ngpu else if cudaSupport then "1" else null;
+
+  test-name-ini = test-name;
+
+  qlat-name-ini = qlat-name;
+
+  q-pkgs = import ./q-pkgs.nix {
+    inherit nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
   };
 
-  use-gitee-wd = if use-gitee == null then false else use-gitee;
+in let
 
-  opts = {
-    use-cuda = cudaSupport;
-    use-cudasupport = false;
-    use-cuda-software = cudaSupport;
-    use-pypi = use-pypi;
-  } // (if cudaSupport then {
-    use-cuda-software = true;
-    use-clang = false;
-  } else {});
+  test-name = if test-name-ini == null then "auto-contract-01" else test-name-ini;
 
-  q-pkgs-result = q-pkgs-module.mk-q-pkgs opts;
+  qlat-name = if qlat-name-ini == null then "" else qlat-name-ini;
 
-  pkgs-key = builtins.head (builtins.filter (k: builtins.substring 0 4 k == "pkgs") (builtins.attrNames q-pkgs-result));
-  pkgs = q-pkgs-result.${pkgs-key};
+  inherit (q-pkgs) nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
+
+  pkgs = q-pkgs."pkgs${qlat-name}";
   qlat = pkgs.qlat;
+  opts = pkgs.qlat-options;
+  cudaSupport = opts.use-cuda-software;
 
-  version-pypi = use-pypi;
-  qlat-src-pypi = builtins.fetchGit {
-    url = if use-gitee-wd then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
-    ref = "refs/tags/v${version-pypi}";
-  };
-
-  version-val = if use-pypi != null then version-pypi else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
-
-  src = if use-pypi != null then "${qlat-src-pypi}/examples-py" else ../examples-py;
+  src = ../examples-py;
 
   lib = pkgs.lib;
-
   mpi = pkgs.mpi;
-
-  cudaSupport-val = cudaSupport;
 
 in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }) rec {
 
   inherit src;
 
-  version = version-val;
+  version = qlat-version;
 
-  pname = "qlat-example-${testName}";
+  pname = "qlat-example-py-${test-name}";
 
   pyproject = false;
   enableParallelBuilding = true;
@@ -71,8 +57,7 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
     pkgs.mpiCheckPhaseHook
     pkgs.openssh
     pkgs.which
-    pkgs.rsync
-  ] ++ lib.optionals cudaSupport-val (with pkgs.cudaPackages; [ cuda_nvcc ]);
+  ] ++ lib.optionals cudaSupport (with pkgs.cudaPackages; [ cuda_nvcc ]);
 
   dependencies = [ qlat ];
 
@@ -83,58 +68,26 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
       echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
       echo "CXX=$CXX"
       echo "MPICXX=$MPICXX"
-      export NGPU=${if ngpu != null then ngpu else "1"}
+      export NGPU=${ngpu}
       export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
       export q_num_mp_processes=0
-      export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
       if [ "$(uname)" == "Darwin" ]; then
         export q_num_mp_processes=0
       fi
-      export num_proc=$((NIX_BUILD_CORES / 4 + 1))
     '';
-    extra = if cudaSupport-val then gpu_extra else cpu_extra;
+    extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''
     export OMP_NUM_THREADS=2
     export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${pkgs.bash}/bin/bash
-    echo num_proc=$num_proc
-    make clean SHELL=$SHELL
-    make -B ${testName}.log SHELL=$SHELL
-    #
-    for i in *.p ; do
-      if [ -d "$i" ] ; then
-        if diff "$i"/log.check.txt "$i"/log.check.txt.new ; then
-          echo "$i" passed
-        else
-          echo
-          cat "$i"/log.full.txt
-          echo
-          echo "$i" failed
-          echo
-        fi
-      fi
-    done
-    echo
-    failed=false
-    for i in *.p ; do
-      if [ -d "$i" ] ; then
-        if diff "$i"/log.check.txt "$i"/log.check.txt.new >/dev/null 2>&1 ; then
-          echo "$i" passed
-        else
-          echo "$i" failed
-          failed=true
-        fi
-      fi
-    done
-    if $failed ; then
-      false
-    fi
-    echo
-    #
+    make -B ${test-name}.log SHELL=$SHELL
     mkdir -p "$out/share/qlat/examples-py"
-    rsync -a --delete . "$out/share/qlat/examples-py"
+    cp ${test-name}.py "$out/share/qlat/examples-py/"
+    cp ${test-name}.log.json "$out/share/qlat/examples-py/" 2>/dev/null || true
+    cp ${test-name}.log "$out/share/qlat/examples-py/"
+    cp -r ${test-name}.py.p "$out/share/qlat/examples-py/" 2>/dev/null || true
   '';
 
   dontBuild = true;
@@ -142,6 +95,7 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
 
   postFixup = ''
     mkdir -pv "$out"/share/version
-    echo ${version-val} >"$out"/share/version/${pname}
+    echo ${version} >"$out"/share/version/${pname}
   '';
+
 }

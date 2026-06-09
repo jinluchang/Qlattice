@@ -112,15 +112,12 @@ export CUBACORES=0
 export OMP_NUM_THREADS=2
 export JAX_ENABLE_X64=True
 
-# CPATH: CUDA headers conflict with glibc headers (noexcept mismatch)
-# For CUDA builds, clear CPATH and remove conflicting glibc math headers
-if [[ "$build_variant" == *cuda* ]]; then
-    export CPATH=""
-fi
 export CPATH="$result_dir/include${CPATH:+:$CPATH}"
 
 if [ "$build_variant" != "-cudasupport" ]; then
     export JAX_PLATFORMS=cpu
+else
+    export JAX_PLATFORMS=cuda
 fi
 
 # Source CUDA compilation environment if using CUDA variant

@@ -1,5 +1,4 @@
-{ fetchPypi
-, stdenv
+{ stdenv
 , lib
 , config
 , buildPythonPackage
@@ -9,23 +8,17 @@
 , git
 , mpi
 , which
-, use-pypi ? null
+, qlat-src
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
+, version ? "current"
 }:
 
 let
 
-  version-pypi = use-pypi;
-  src-pypi = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_grid/qlat_grid-${version-pypi}.tar.gz";
-
-  version-local = builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
-  src-local = ../qlat-grid;
-
   pname = "qlat_grid${qlat-name}";
-  version = if use-pypi != null then version-pypi else version-local;
 
 in buildPythonPackage.override { stdenv = stdenv; } {
 
@@ -34,7 +27,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
 
   pyproject = true;
 
-  src = if use-pypi != null then src-pypi else src-local;
+  src = "${qlat-src}/qlat-grid/";
 
   enableParallelBuilding = true;
 

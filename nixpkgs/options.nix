@@ -247,15 +247,10 @@ in let
   '';
 
 in {
-  version = version;
-  use-gitee = use-gitee;
-  nixpkgs = nixpkgs;
-  import-nixpkgs = import-nixpkgs;
-  inherit import-nixgl;
+  inherit nixpkgs version ngpu cudaCapability cudaForwardCompat use-gitee;
+  inherit options-default mk-options mk-qlat-name;
+  inherit import-nixpkgs import-nixgl;
   inherit nixpkgs-release;
-  inherit options-default;
-  inherit mk-options mk-qlat-name;
   inherit version-pypi;
-  inherit options-list qlat-name-list qlat-name-list-file-from-str;
-  inherit qlat-name-list-file;
+  inherit options-list qlat-name-list qlat-name-list-file-from-str qlat-name-list-file;
 }

@@ -1,5 +1,4 @@
-{ fetchPypi
-, stdenv
+{ stdenv
 , lib
 , config
 , buildPythonPackage
@@ -18,27 +17,17 @@
 , mpi
 , mpiCheckPhaseHook
 , openssh
+, qlat-src
 , qlat-name ? ""
 , cudaSupport ? config.cudaSupport
 , cudaPackages ? {}
 , nvcc-arch ? "sm_86"
-, use-pypi ? null
-, use-gitee ? null
+, version ? "current"
 }:
 
 let
 
-  use-gitee-wd = if use-gitee == null then false else use-gitee;
-
-  version-pypi = use-pypi;
-  qlat-src-pypi = builtins.fetchGit {
-    url = if use-gitee-wd then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
-    ref = "refs/tags/v${version-pypi}";
-  };
-
-  version = if use-pypi != null then version-pypi else builtins.replaceStrings [ "\n" ] [ "" ] (builtins.readFile ../VERSION) + "-current";
-
-  src = if use-pypi != null then "${qlat-src-pypi}/docs" else ../docs;
+  src = "${qlat-src}/docs/";
 
 in buildPythonPackage.override { stdenv = stdenv; } rec {
 
@@ -79,11 +68,11 @@ in buildPythonPackage.override { stdenv = stdenv; } rec {
   ];
 
   preConfigure = let
-    examples-cpp = ../examples-cpp;
-    examples-cpp-grid = ../examples-cpp-grid;
-    examples-py = ../examples-py;
-    examples-py-cps = ../examples-py-cps;
-    examples-py-gpt = ../examples-py-gpt;
+    examples-cpp = "${qlat-src}/examples-cpp/";
+    examples-cpp-grid = "${qlat-src}/examples-cpp-grid/";
+    examples-py = "${qlat-src}/examples-py/";
+    examples-py-cps = "${qlat-src}/examples-py-cps/";
+    examples-py-gpt = "${qlat-src}/examples-py-gpt/";
     gpu_extra = ''
       pwd
       #
