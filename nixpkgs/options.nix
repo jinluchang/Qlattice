@@ -187,16 +187,33 @@ in let
       opts;
   in opts-1;
 
+  # Build a suffix string that identifies a pkgs variant.
+  # Each feature appends a dash-separated segment. Example output: "-cuda-ucxless"
   mk-qlat-name = options:
   let
     opts = options;
+    # Feature set: grid-gpt + cps combos (mutually exclusive).
+    #   -std       — no grid-gpt, no cps (minimal build)
+    #   -cpsless   — grid-gpt enabled, no cps
+    #   -gridless  — no grid-gpt, cps enabled
+    #   ""         — both grid-gpt and cps enabled (default)
+    feature-seg =
+      if ! opts.use-grid-gpt && ! opts.use-cps then "-std"
+      else if opts.use-grid-gpt && ! opts.use-cps then "-cpsless"
+      else if ! opts.use-grid-gpt && opts.use-cps then "-gridless"
+      else "";
+    # CUDA levels are mutually exclusive; pick the most specific one.
+    #   -cu           — use-cuda-software only (no GPU codegen)
+    #   -cuda         — use-cuda (implies -cu, adds GPU codegen)
+    #   -cudasupport  — use-cudasupport (implies -cuda, adds full CUDA libs)
+    cuda-seg =
+      if opts.use-cudasupport then "-cudasupport"
+      else if opts.use-cuda then "-cuda"
+      else if opts.use-cuda-software then "-cu"
+      else "";
   in (opts.qlat-name
-  + lib.optionalString (! opts.use-grid-gpt && ! opts.use-cps) "-std"
-  + lib.optionalString (opts.use-grid-gpt && ! opts.use-cps) "-cpsless"
-  + lib.optionalString (! opts.use-grid-gpt && opts.use-cps) "-gridless"
-  + lib.optionalString opts.use-cuda-software "-cu"
-  + lib.optionalString opts.use-cuda "da"
-  + lib.optionalString opts.use-cudasupport "support"
+  + feature-seg
+  + cuda-seg
   + lib.optionalString (! opts.use-cubaquad) "-cubaquadless"
   + lib.optionalString opts.use-clang "-clang"
   + lib.optionalString (! opts.use-ucx) "-ucxless"
@@ -234,7 +251,7 @@ in let
     { use-cps = false; use-grid-gpt = false; use-cudasupport = true; }
   ];
 
-  qlat-name-list = let r = lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list)); in builtins.deepSeq r r;
+  qlat-name-list = force (lib.lists.unique (builtins.map mk-qlat-name (builtins.map mk-options options-list)));
 
   qlat-name-list-file-from-str = builtins.toFile "qlat-name-list"
   (builtins.foldl' (s: v: s + "${v}\n") "" qlat-name-list);

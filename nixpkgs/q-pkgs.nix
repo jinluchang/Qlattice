@@ -688,6 +688,7 @@ in let
     inherit qlat-nixgl qlat-stdenv;
     inherit python3 mpi openmp ucx-mt ucx-mt-dev;
     inherit c-lime qmp qio cps cuba-quad grid-lehner gpt-lehner;
+    inherit qlat-src qlat-version;
     inherit qlat_utils qlat qlat_grid qlat_cps;
     inherit qlat-examples-cpp qlat-examples-cpp-grid qlat-examples-py qlat-examples-py-gpt qlat-examples-py-cps;
     inherit qlat_docs qlat_pypipkgs;
