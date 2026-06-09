@@ -2,7 +2,7 @@
 #
 # Build cuda core packages.
 # Output: ~/qlat-build/nix/cuda-core/result
-# Names: ["", "-clang", "-cudasupport"]
+# Names: ["", "-clang", "-cudasupport", "-pypi"]
 # Extra args passed to nix-build via "$@".
 
 script_path="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -25,7 +25,7 @@ time nix-build \
     "$src"/many-qlat-pkgs.nix \
     -o "$dst/cuda-core/result" \
     --arg version-list '[""]' \
-    --arg qlat-name-list '["" "-clang" "-cudasupport"]' \
+    --arg qlat-name-list '["" "-clang" "-cudasupport" "-pypi"]' \
     --log-format internal-json -v \
     -j 6 --cores 15 \
     "$@" \

@@ -25,7 +25,7 @@ SHELL=/usr/bin/env bash
 #     means the output changed (or the reference .log is missing — run
 #     `git checkout -- *.log` to restore it).
 
-mpi_options ?= --oversubscribe --bind-to none
+mpi_options ?= --oversubscribe --bind-to none bash bind-gpu-qlat.sh
 
 tests_gpt = \
 			qtopo-measure-dwf.log \

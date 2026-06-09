@@ -1,6 +1,6 @@
 SHELL=/usr/bin/env bash
 
-mpi_options ?= --oversubscribe --bind-to none
+mpi_options ?= --oversubscribe --bind-to none bash bind-gpu-qlat.sh
 
 tests_cps = \
 			cps-qlat-io-test.log \

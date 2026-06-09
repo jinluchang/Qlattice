@@ -82,7 +82,6 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
       echo "OMPI_CXX=$OMPI_CXX"
       #
       export NGPU=${ngpu}
-      export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
     '';
     cpu_extra = ''
     '';
@@ -101,7 +100,6 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
     pwd
     echo
     #
-    export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${bash}/bin/bash
     #
     echo
@@ -109,7 +107,6 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
     echo
     #
     echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-    echo mpi_options=$mpi_options
     echo SHELL=$SHELL
     echo NIX_BUILD_CORES=$NIX_BUILD_CORES
     echo NIX_BUILD_TOP=$NIX_BUILD_TOP

@@ -94,14 +94,12 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
       echo "CXX=$CXX"
       echo "MPICXX=$MPICXX"
       export NGPU=${ngpu}
-      export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
     '';
     cpu_extra = ''
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in extra + ''
     export OMP_NUM_THREADS=2
-    export mpi_options="--oversubscribe --bind-to none $mpi_options"
     export SHELL=${pkgs.bash}/bin/bash
     make -B ${test-name}.log SHELL=$SHELL
     echo

@@ -87,8 +87,6 @@ in buildPythonPackage.override { stdenv = stdenv; } rec {
       echo "MPICXX=$MPICXX"
       echo "OMPI_CXX=$OMPI_CXX"
       #
-      export mpi_options="$mpi_options bash bind-gpu-qlat.sh"
-      #
       export num_proc=$((NIX_BUILD_CORES / 16 + 1))
     '';
     cpu_extra = ''
