@@ -22,7 +22,7 @@
 
 let
 
-  src = "${qlat-src}/examples-py/";
+  src = qlat-src.examples-py;
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 

@@ -25,7 +25,7 @@
 
 let
 
-  src = "${qlat-src}/examples-py-gpt/";
+  src = qlat-src.examples-py-gpt;
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 

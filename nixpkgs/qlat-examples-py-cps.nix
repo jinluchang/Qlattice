@@ -25,7 +25,7 @@
 
 let
 
-  src = "${qlat-src}/examples-py-cps/";
+  src = qlat-src.examples-py-cps;
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 

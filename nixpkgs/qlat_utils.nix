@@ -36,7 +36,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
 
   pyproject = true;
 
-  src = "${qlat-src}/qlat-utils/";
+  src = qlat-src.qlat-utils;
 
   enableParallelBuilding = true;
 
@@ -106,7 +106,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       pwd
       mkdir -pv "$out/bin"
       #
-      cp -pv "${qlat-src}/qcore/bin/NVCC.py" "$out/bin/NVCC.py"
+      cp -pv "${qlat-src.qcore}/bin/NVCC.py" "$out/bin/NVCC.py"
       patchShebangs --build "$out/bin/NVCC.py"
       #
       echo "#!/usr/bin/env bash" >$out/bin/cuda-qlat.sh

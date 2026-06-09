@@ -28,10 +28,10 @@
 let
 
   srcs = [
-    "${qlat-src}/qlat-utils/"
-    "${qlat-src}/qlat/"
-    "${qlat-src}/qlat-cps/"
-    "${qlat-src}/qlat-grid/"
+    (builtins.path { name = "qlat-utils"; path = qlat-src.qlat-utils; })
+    (builtins.path { name = "qlat"; path = qlat-src.qlat; })
+    (builtins.path { name = "qlat-cps"; path = qlat-src.qlat-cps; })
+    (builtins.path { name = "qlat-grid"; path = qlat-src.qlat-grid; })
   ];
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {

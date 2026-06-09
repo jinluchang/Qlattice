@@ -27,7 +27,7 @@ in buildPythonPackage.override { stdenv = stdenv; } {
 
   pyproject = true;
 
-  src = "${qlat-src}/qlat-cps/";
+  src = qlat-src.qlat-cps;
 
   enableParallelBuilding = true;
 

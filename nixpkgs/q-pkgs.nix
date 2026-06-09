@@ -218,12 +218,10 @@ in let
       minor = builtins.elemAt parts 2;
     in "${major}.${lib.fixedWidthNumber 2 (lib.toInt minor)}";
     #
-    git-src = if opts.use-pypi != null
-    then builtins.fetchGit {
+    git-src = builtins.fetchGit {
       url = if use-gitee then "https://gitee.com/jinluchang/Qlattice" else "https://github.com/jinluchang/Qlattice";
       ref = "refs/tags/v${version-pypi-git}";
-    }
-    else builtins.fetchGit ./..;
+    };
     #
     pypi-qlat-utils = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_utils/qlat_utils-${version-pypi}.tar.gz";
     pypi-qlat = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat/qlat-${version-pypi}.tar.gz";
@@ -231,20 +229,32 @@ in let
     pypi-qlat-cps = builtins.fetchTarball "https://files.pythonhosted.org/packages/source/q/qlat_cps/qlat_cps-${version-pypi}.tar.gz";
     #
     qlat-src = if opts.use-pypi != null
-    then pkgs.linkFarm "qlat-src-pypi" [
-      { name = "qlat-utils"; path = pypi-qlat-utils; }
-      { name = "qlat"; path = pypi-qlat; }
-      { name = "qlat-grid"; path = pypi-qlat-grid; }
-      { name = "qlat-cps"; path = pypi-qlat-cps; }
-      { name = "examples-cpp"; path = "${git-src}/examples-cpp"; }
-      { name = "examples-cpp-grid"; path = "${git-src}/examples-cpp-grid"; }
-      { name = "examples-py"; path = "${git-src}/examples-py"; }
-      { name = "examples-py-gpt"; path = "${git-src}/examples-py-gpt"; }
-      { name = "examples-py-cps"; path = "${git-src}/examples-py-cps"; }
-      { name = "docs"; path = "${git-src}/docs"; }
-      { name = "qcore"; path = "${git-src}/qcore"; }
-    ]
-    else git-src;
+    then {
+      qlat-utils = pypi-qlat-utils;
+      qlat = pypi-qlat;
+      qlat-grid = pypi-qlat-grid;
+      qlat-cps = pypi-qlat-cps;
+      examples-cpp = "${git-src}/examples-cpp";
+      examples-cpp-grid = "${git-src}/examples-cpp-grid";
+      examples-py = "${git-src}/examples-py";
+      examples-py-gpt = "${git-src}/examples-py-gpt";
+      examples-py-cps = "${git-src}/examples-py-cps";
+      docs = "${git-src}/docs";
+      qcore = "${git-src}/qcore";
+    }
+    else {
+      qlat-utils = ../qlat-utils;
+      qlat = ../qlat;
+      qlat-grid = ../qlat-grid;
+      qlat-cps = ../qlat-cps;
+      examples-cpp = ../examples-cpp;
+      examples-cpp-grid = ../examples-cpp-grid;
+      examples-py = ../examples-py;
+      examples-py-gpt = ../examples-py-gpt;
+      examples-py-cps = ../examples-py-cps;
+      docs = ../docs;
+      qcore = ../qcore;
+    };
     #
     qlat_utils = py-call-pkg ./qlat_utils.nix {
       stdenv = qlat-stdenv;

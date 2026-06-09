@@ -24,7 +24,7 @@
 
 let
 
-  src = "${qlat-src}/examples-cpp-grid/";
+  src = qlat-src.examples-cpp-grid;
 
 in (buildPythonPackage.override { stdenv = stdenv; }) rec {
 

@@ -27,7 +27,7 @@
 
 let
 
-  src = "${qlat-src}/docs/";
+  src = qlat-src.docs;
 
 in buildPythonPackage.override { stdenv = stdenv; } rec {
 
@@ -68,11 +68,11 @@ in buildPythonPackage.override { stdenv = stdenv; } rec {
   ];
 
   preConfigure = let
-    examples-cpp = "${qlat-src}/examples-cpp/";
-    examples-cpp-grid = "${qlat-src}/examples-cpp-grid/";
-    examples-py = "${qlat-src}/examples-py/";
-    examples-py-cps = "${qlat-src}/examples-py-cps/";
-    examples-py-gpt = "${qlat-src}/examples-py-gpt/";
+    examples-cpp = qlat-src.examples-cpp;
+    examples-cpp-grid = qlat-src.examples-cpp-grid;
+    examples-py = qlat-src.examples-py;
+    examples-py-cps = qlat-src.examples-py-cps;
+    examples-py-gpt = qlat-src.examples-py-gpt;
     gpu_extra = ''
       pwd
       #
