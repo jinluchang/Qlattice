@@ -61,8 +61,10 @@ int main(int argc, char* argv[])
   display_geometry_node();
   setup_log_idx();
   setup();
-  demo_c();
-  demo_r();
+  if (get_id_node() == 0) {
+    demo_c();
+    demo_r();
+  }
   displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
