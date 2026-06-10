@@ -32,15 +32,17 @@ by Luchang Jin
 2026/03/21
 {""}
 {__file__} --usage
-# Show this message and exit.
+Show this message and exit.
 {__file__} --test
-# Generate some test data and then perform the measurement.
+Generate some test data and then perform the measurement.
 {""}
 Required arguments:
   --gf PATH_GAUGE_FIELD         Input gauge field file path (can be specified multiple times).
   --out PATH_OUTPUT             Output directory for results (one per --gf).
-
+{""}
 Optional arguments:
+  --mass FLOAT                  DWF fermion mass. [1.0]
+  --M5 FLOAT                    DWF fifth-dimension mass parameter M5. [1.8]
   --sparse_ratio INT            Sparse-grid decomposition factor (1,2,4,8,16,32,64,81,128,162,256,512,1296,2592).  Determines the number of interleaved sub-grids used for the sparse DWF solve. [32]
   --num_of_rand_vol_u1 INT      Number of random volume U(1) sources for stochastic estimation. [2]
   --ls INT                      Exact Mobius fifth-dimension length Ls. [16]
@@ -53,7 +55,7 @@ Optional arguments:
   --mpi IVEC4                   GPT option: MPI decomposition for the grid (e.g. 1.1.1.2).
   --mpi_split IVEC4             GPT option: override MPI split for the CG inverter (e.g. 1.1.1.1).  When set, enables grouped solves.
   --grouped INT                 GPT option: number of grouped right-hand sides for the inverter (default 12 with --mpi_split, 1 otherwise). [12]
-
+{""}
 Summary:
   For each random U(1) source, the program:
     1. Constructs a sparse-grid decomposition (sparse_ratio subsets).
@@ -61,7 +63,7 @@ Summary:
     3. Optionally applies AMA correction with the exact inverter (at probability ama_prob).
     4. Assembles the full propagator and evaluates qbar gamma5 q (topological charge density) and qbar q (quark condensate) at every site.
     5. Sums over time slices and accumulates across random U(1) sources.
-
+{""}
 Output structure (under each --out directory):
   params.json                               Measurement parameters used.
   checkpoint.txt                            Created on successful completion.
@@ -73,7 +75,7 @@ Output structure (under each --out directory):
   field/rand_vol_u1_idx-{{R}}/f_tadpole_loop.field  Tadpole-loop field for each source.
   pickle/                                   Pickle-serialized info dicts.
   scratch/                                  Temporary per-sparse-solve data (removed on completion).
-
+{""}
 Notes:
   - The random seed is derived from PATH_GAUGE_FIELD.
   - Multiple --gf / --out pairs are processed sequentially.
@@ -111,6 +113,8 @@ def measure_topo_dwf(
         Directory path for saving all output (pickle, JSON, field data, scratch).
     params : dict
         Dictionary of measurement parameters with keys:
+          - mass (float): DWF fermion mass.
+          - M5 (float): DWF fifth-dimension mass parameter.
           - sparse_ratio (int): coarsening factor for the sparse-grid decomposition.
           - num_of_rand_vol_u1 (int): number of random volume U(1) sources.
           - ls (int): exact Mobius Ls (fifth-dimension length).
@@ -144,6 +148,8 @@ def measure_topo_dwf(
         f"measure_topo_dwf: lat_shape={lat_shape}"
     )
     #
+    mass = params["mass"]
+    M5 = params["M5"]
     sparse_ratio = params["sparse_ratio"]
     num_of_rand_vol_u1 = params["num_of_rand_vol_u1"]
     ls = params["ls"]
@@ -162,16 +168,16 @@ def measure_topo_dwf(
     rand_vol_u1_multiplicity = 12
     #
     mobius_params = {
-        "mass": 1.0,
-        "M5": 1.8,
+        "mass": mass,
+        "M5": M5,
         "b": (b_plus_c + 1) / 2,
         "c": (b_plus_c - 1) / 2,
         "Ls": ls,
         "boundary_phases": [1.0, 1.0, 1.0, 1.0],
     }
     mobius_params_sloppy = {
-        "mass": 1.0,
-        "M5": 1.8,
+        "mass": mass,
+        "M5": M5,
         "b": (b_plus_c_sloppy + 1) / 2,
         "c": (b_plus_c_sloppy - 1) / 2,
         "Ls": ls_sloppy,
@@ -1314,6 +1320,7 @@ def run():
     the resulting synthetic arguments.  Otherwise parses ``sys.argv``.\n
     Iterates over all ``--gf`` / ``--out`` pairs and calls ``run_topo_measure`` on each.\n
     Parameters are extracted from the command line with sensible defaults:
+      ``--mass`` (1.0), ``--M5`` (1.8),
       ``--sparse_ratio`` (32), ``--num_of_rand_vol_u1`` (2), ``--ls`` (16),
       ``--ls_sloppy`` (12), ``--b_plus_c`` (3.0), ``--b_plus_c_sloppy`` (3.0),
       ``--maxiter_sloppy`` (50), ``--maxiter_exact`` (100), ``--ama_prob`` (0.1).
@@ -1328,6 +1335,8 @@ def run():
     fn_out_list = q.get_arg_list("--out", argv=argv)
     assert len(fn_gf_list) == len(fn_out_list)
     params = dict(
+        mass=float(q.get_arg("--mass", "1.0", argv=argv)),
+        M5=float(q.get_arg("--M5", "1.8", argv=argv)),
         sparse_ratio=int(q.get_arg("--sparse_ratio", "32", argv=argv)),
         num_of_rand_vol_u1=int(q.get_arg("--num_of_rand_vol_u1", "2", argv=argv)),
         ls=int(q.get_arg("--ls", "16", argv=argv)),
