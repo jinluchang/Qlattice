@@ -1,12 +1,21 @@
 SHELL=/usr/bin/env bash
 
-# Usage:
+# Run a single test — recommended:
+#   ../nixpkgs/run-one-example-py-gpt.py <name>
+#       e.g. ../nixpkgs/run-one-example-py-gpt.py qtopo-measure-dwf
+#       See --help for build variant options (--cuda, --cudasupport, --cu, --clang, --pypi).
+#
+#   The script sets up the environment from a qlat built by nix (via
+#   nixpkgs/install-py-local-kernel-with-nix.sh, which creates the
+#   ./result-py-local symlink) and then runs make with this Makefile.
+#
+# Run tests via make (uses whatever qlat is available in the environment):
 #   make                          Run all GPT tests (same as make run-gpt).
 #   make run-gpt                  Run all GPT tests.
 #   make <name>.log               Run a single test (e.g. make qtopo-measure-dwf.log).
 #   make clean                    Remove test build artifacts (*.p directories).
 #
-# Before running tests:
+# Before running tests (make only):
 #   1. Restore the reference .log and .log.json files from git (required for
 #      the CHECK-line comparison that determines pass/fail):
 #        git checkout -- *.log *.log.json

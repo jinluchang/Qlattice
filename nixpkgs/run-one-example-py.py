@@ -1,16 +1,30 @@
 #!/usr/bin/env python3
 
 """
-Run a single qlat Python example test using a pre-built nix environment.\n
+Run a single qlat Python example test using a pre-built nix environment.
+
+This script sets up the environment from a qlat build produced by nix and then
+runs the test via make with the examples-py/Makefile.  The Makefile itself is
+standalone — it runs tests using whatever qlat is available in the current
+environment.
+
+The nix build is created by nixpkgs/install-py-local-kernel-with-nix.sh, which
+runs nix-build and creates a ./result-py-local symlink (or ./result-py-local-*
+for variant builds) pointing to the nix store path.  This script sources the
+setenv-qlat.sh from that result directory to configure PATH, PYTHONPATH,
+LD_LIBRARY_PATH, etc., then delegates to make.
+
 Usage:
-  ./nixpkgs/run-one-example-py.py <test-name> [options]\n
+  ./nixpkgs/run-one-example-py.py <test-name> [options]
+
 Options:
   --cuda          Use CUDA-enabled build (result-py-local-cuda)
   --cudasupport   Use CUDA support build (result-py-local-cudasupport)
   --cu            Use CUDA utilities build (result-py-local-cu)
   --clang         Use clang build (result-py-local-clang)
   --pypi          Use PyPI build (result-py-local-pypi)
-  --help          Show this help message\n
+  --help          Show this help message
+
 Examples:
   ./nixpkgs/run-one-example-py.py utils
   ./nixpkgs/run-one-example-py.py auto-contract-01 --cuda

@@ -1,5 +1,20 @@
 SHELL=/usr/bin/env bash
 
+# Run a single test — recommended:
+#   ../nixpkgs/run-one-example-py-cps.py <name>
+#       e.g. ../nixpkgs/run-one-example-py-cps.py cps-qlat-io-test
+#       See --help for build variant options (--cuda, --cudasupport, --cu, --clang, --pypi).
+#
+#   The script sets up the environment from a qlat built by nix (via
+#   nixpkgs/install-py-local-kernel-with-nix.sh, which creates the
+#   ./result-py-local symlink) and then runs make with this Makefile.
+#
+# Run tests via make (uses whatever qlat is available in the environment):
+#   make                          Run all CPS tests (same as make run-cps).
+#   make run-cps                  Run all CPS tests.
+#   make <name>.log               Run a single test (e.g. make cps-qlat-io-test.log).
+#   make clean                    Remove test build artifacts (*.p directories).
+
 mpi_options ?= --oversubscribe --bind-to none bash bind-gpu-qlat.sh
 
 export mpi_options

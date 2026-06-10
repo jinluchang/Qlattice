@@ -16,19 +16,29 @@ Build system: **Nix** which calls **Meson** to build the packages (via `meson-py
 
 ## Build and Testing
 
-Tests use **log-comparison**: each test prints `CHECK:` lines compared against reference `.log` files. See `examples-py-gpt/Makefile` and `examples-py/Makefile` for the full test-running workflow (usage, prerequisites, verification).
+### Build qlat with nix
 
-Recompile after source code changes (incremental):
+Use `nixpkgs/install-py-local-kernel-with-nix.sh` to build qlat via nix. It creates a `./result-py-local` symlink to the nix store path. Build variants: `name='-cuda'`, `name='-cudasupport'`, `name='-cu'`, `name='-clang'`, `name='-pypi'`. See the script for details.
+
 ```bash
-bash scripts/qlat-all.sh
+cd nixpkgs && name='' ./install-py-local-kernel-with-nix.sh
 ```
 
-If the build fails during the configuration step (e.g., meson error about
-missing dependencies or stale build state), perform a clean build first:
+### Run a single test
+
+Use the `nixpkgs/run-one-example*.py` scripts — they set up the nix environment and delegate to `make`:
+
 ```bash
-bash scripts/qlat-clean-build.sh
-bash scripts/qlat-all.sh
+./nixpkgs/run-one-example-py.py utils                    # Python test
+./nixpkgs/run-one-example-py-gpt.py qtopo-measure-dwf   # GPT test
+./nixpkgs/run-one-example-cpp.py simple-1               # C++ test
+./nixpkgs/run-one-example-cpp-grid.py grid-with-qlat    # Grid test
+./nixpkgs/run-one-example-py-cps.py cps-qlat-io-test    # CPS test
 ```
+
+See `--help` for build variant options (`--cuda`, `--cudasupport`, `--cu`, `--clang`, `--pypi`).
+
+Tests use **log-comparison**: each test prints `CHECK:` lines compared against reference `.log` files. See each `examples-*/Makefile` for the full test-running workflow.
 
 ### Run all tests
 
@@ -36,59 +46,16 @@ bash scripts/qlat-all.sh
 nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
 ```
 
-### Run a single Python test (examples-py)
+### Run a new program with the nix-built environment
+
+Source `setenv-qlat.sh` from the nix result to configure PATH, PYTHONPATH, LD_LIBRARY_PATH, etc.:
 
 ```bash
-cd examples-py
-make utils.log                        # runs utils.py, compares CHECK lines
-```
-Before re-running a test, touch the `.py` source to trigger a rebuild:
-```bash
-touch utils.py && make utils.log
+source result-py-local/bin/setenv-qlat.sh
+mpiexec -n 2 --oversubscribe --bind-to none bash bind-gpu-qlat.sh python3 -m mpi4py ./your-script.py
 ```
 
-### Run a single GPT/Grid test (examples-py-gpt)
-
-```bash
-cd examples-py-gpt
-make qtopo-measure-dwf.log            # runs qtopo-measure-dwf.py, compares CHECK lines
-```
-Before running GPT tests, restore reference files from git:
-```bash
-git checkout -- *.log *.log.json
-```
-If a `.p` directory from a prior run is present, clean first:
-```bash
-make clean
-```
-To re-run a single GPT test, touch the `.py` source:
-```bash
-touch qtopo-measure-dwf.py && make qtopo-measure-dwf.log
-```
-
-### Test execution pattern (from Makefiles)
-```bash
-mpiexec -n 2 --oversubscribe --bind-to none python3 -m mpi4py ./utils.py \
-  --test -qmp-geom 1 1 1 2 --mpi 1.1.1.2 --mpi_split 1 1 1 1 \
-  --mpi 1.1.2 --mpi_split 1 1 1
-```
-
-### Run a single C++ test
-```bash
-cd examples-cpp
-make simple-1.run                     # builds and runs simple-1
-```
-
-### Verify test output (CI check)
-```bash
-! git diff | grep '^[+-]CHECK: '     # fails if CHECK lines changed
-```
-
-### Update reference logs after intentional changes
-```bash
-cd examples-py && make run           # regenerate logs
-git add *.log                        # commit new reference logs
-```
+See the `%.log` rule in `examples-py/Makefile` for the full invocation pattern (mpi options, CHECK-line extraction, etc.).
 
 ## Code Style — C++
 

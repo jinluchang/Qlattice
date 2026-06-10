@@ -1,5 +1,22 @@
 SHELL=/usr/bin/env bash
 
+# Run a single test — recommended:
+#   ../nixpkgs/run-one-example-cpp-grid.py <name>
+#       e.g. ../nixpkgs/run-one-example-cpp-grid.py grid-with-qlat
+#       See --help for build variant options (--cuda, --cudasupport, --cu, --clang, --pypi).
+#
+#   The script sets up the environment from a qlat built by nix (via
+#   nixpkgs/install-py-local-kernel-with-nix.sh, which creates the
+#   ./result-py-local symlink) and then runs make with this Makefile.
+#
+# Run tests via make (uses whatever qlat is available in the environment):
+#   make                          Run all Grid tests (same as make run-grid).
+#   make run-grid                 Run all Grid tests.
+#   make compile-grid             Compile all Grid tests.
+#   make <name>.run               Run a single test (e.g. make grid-with-qlat.run).
+#   make <name>.compile           Compile a single test.
+#   make clean                    Remove all build artifacts.
+
 mpi_options ?= --oversubscribe --bind-to none bash bind-gpu-qlat.sh
 
 export mpi_options
