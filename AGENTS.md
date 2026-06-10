@@ -21,7 +21,7 @@ Build system: **Nix** which calls **Meson** to build the packages (via `meson-py
 Use `nixpkgs/install-py-local-kernel-with-nix.sh` to build qlat via nix. It creates a `./result-py-local` symlink to the nix store path. Build variants: `name='-cuda'`, `name='-cudasupport'`, `name='-cu'`, `name='-clang'`, `name='-pypi'`. See the script for details.
 
 ```bash
-cd nixpkgs && name='' ./install-py-local-kernel-with-nix.sh
+name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
 ```
 
 ### Run a single test

@@ -71,8 +71,8 @@ if [ ! -e "$dst"/result/bin/python3 ] ; then
     rmdir "$dst"
     exit 1
 fi
-rm -fv result-$py_kernel_name
-ln -sv "$dst"/result result-$py_kernel_name
+rm -fv "$script_path"/../result-$py_kernel_name
+ln -sv "$dst"/result "$script_path"/../result-$py_kernel_name
 ls -l "$dst"
 if [ "$name" == "-cudasupport" ] ; then
     "$dst"/result/bin/python3 -m ipykernel \
