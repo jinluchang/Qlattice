@@ -4,6 +4,8 @@ qlat
 .. toctree::
    :maxdepth: 1
 
+   qlat/qlat_geometry.md
+
    qlat/qlat_field_base.md
 
    qlat/qlat_field_types.md

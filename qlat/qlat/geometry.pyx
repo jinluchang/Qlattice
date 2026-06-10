@@ -1,5 +1,18 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.geometry``
+========================
+
+Lattice geometry — describes the decomposition of a 4-D lattice across MPI
+nodes, including local site dimensions, halo expansion, and even/odd
+partitioning.
+
+Documentation: ``docs/qlat/qlat_geometry.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer
