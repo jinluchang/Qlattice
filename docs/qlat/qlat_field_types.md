@@ -79,12 +79,12 @@ construction via `Field(ctype, geo, multiplicity)`.
 
 ```python
 f = FieldRealD()                        # empty (uninitialized)
-f = FieldRealD(geo)                     # single multiplicity
-f = FieldRealD(geo, multiplicity=3)     # multiple multiplicities
+f = FieldRealD(geo, 1)                  # single multiplicity
+f = FieldRealD(geo, 3)                  # multiple multiplicities
 ```
 
 `geo` is a `Geometry` object defining the lattice on which the field lives.
-`multiplicity` specifies how many elements per site (default 1).
+The second argument specifies how many elements per site.
 
 ## Properties
 
@@ -215,25 +215,24 @@ This enables generic code that constructs fields by element type.
 import qlat as q
 import numpy as np
 
-q.begin_with_mpi([1, 1, 1, 4])
+q.begin_with_mpi([[1, 1, 1, 4]])
 
 # Create a geometry and field
 geo = q.Geometry(q.Coordinate([4, 4, 4, 8]))
-f = q.FieldRealD(geo)
+f = q.FieldRealD(geo, 1)
 
 # Set to Gaussian random
-rng = q.RngState()
-rng.reset(42)
+rng = q.RngState("seed-42")
 f.set_rand_g(rng, center=0.0, sigma=1.0)
 
 # Access as NumPy array (zero-copy)
 arr = np.asarray(f)
-print(f"Shape: {arr.shape}")            # (local_sites,)
+print(f"Shape: {arr.shape}")            # (local_sites, multiplicity)
 
 # Set zero and set a site to 1
 f.set_zero()
-f.set_elem_xg([0, 0, 0, 0], 0, 1.0)
-sp = f.get_elem_xg([0, 0, 0, 0], 0)
+f.set_elem_xg(q.Coordinate([0, 0, 0, 0]), 0, 1.0)
+sp = f.get_elem_xg(q.Coordinate([0, 0, 0, 0]), 0)
 print(f"Value: {np.asarray(sp)}")
 
 # Global sum

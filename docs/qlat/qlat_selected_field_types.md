@@ -77,7 +77,7 @@ sf  @= sp                   # SelectedField ← SelectedPoints
 |---|---|
 | `copy(is_copying_data=True)` | Deep copy; returns a new `SelectedField` with same `fsel` |
 | `set_zero()` | Set all elements to zero |
-| `swap(f1)` | Swap contents with another `SelectedField` of the same type |
+| `swap(f1)` | Swap contents with another `SelectedField` of the same type <!-- TODO: swap() has a source bug — uses self.psel instead of self.fsel in selected_field_types.pyx.in:142-143 --> |
 | `swap_cast(f1)` | Swap raw bytes with a `SelectedFieldChar` |
 | `swap_sp_cast(sp, geo)` | Swap raw bytes with a `SelectedPointsChar` (does not affect `psel`/`fsel`) |
 
@@ -161,9 +161,8 @@ f = q.FieldRealD(geo, 1)
 rng = q.RngState("seed-1")
 f.set_rand_g(rng)
 
-# Build a field selection (select even sites)
-fsel = q.FieldSelection(geo)
-fsel.select_tslice(geo.total_site[3], q.Coordinate([0, 0, 0, 0]))
+# Build a field selection (select all sites)
+fsel = q.FieldSelection(geo, 0)
 
 # Create a selected field
 sf = q.SelectedFieldRealD(fsel, 1)

@@ -243,6 +243,8 @@ must sum across MPI ranks.
 
 ### Compute Muon-Line Field
 
+<!-- TODO: mk_m_z_field_tag requires internal interpolation data (InterpolationNd) that is not available in a standalone snippet. This example cannot be run without a full lattice simulation context (e.g., from gpt-qlat-data-gen-hlbl.py). -->
+
 ```python
 import qlat as q
 
@@ -253,9 +255,9 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
-psel = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, 0])])
-psel_d = q.PointsSelection(geo, [q.Coordinate([1, 0, 0, 0]),
-                                  q.Coordinate([0, 1, 0, 0])])
+psel = q.PointsSelection(total_site, [[0, 0, 0, 0]])
+psel_d = q.PointsSelection(total_site, [[1, 0, 0, 0],
+                                         [0, 1, 0, 0]])
 
 xg_x = q.Coordinate([0, 0, 0, 0])
 xg_y = q.Coordinate([2, 0, 0, 0])
@@ -280,7 +282,7 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
-psel = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, 0])])
+psel = q.PointsSelection(total_site, [[0, 0, 0, 0]])
 
 sprop1 = q.PselProp(psel)
 sprop2 = q.PselProp(psel)
@@ -307,13 +309,13 @@ total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
 # Create minimal selections
-psel = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, 0]),
-                                q.Coordinate([1, 0, 0, 0])])
-psel_d = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, 0])])
+psel = q.PointsSelection(total_site, [[0, 0, 0, 0],
+                                [1, 0, 0, 0]])
+psel_d = q.PointsSelection(total_site, [[0, 0, 0, 0]])
 
 # Probability weights (uniform for demonstration)
-psel_prob = q.SelectedPointsRealD(psel)
-psel_d_prob = q.SelectedPointsRealD(psel_d)
+psel_prob = q.SelectedPointsRealD(psel, 1)
+psel_d_prob = q.SelectedPointsRealD(psel_d, 1)
 psel_prob.set_zero()
 psel_d_prob.set_zero()
 
@@ -341,8 +343,8 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
-psel = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, 0])])
-psel_d = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, 0])])
+psel = q.PointsSelection(total_site, [[0, 0, 0, 0]])
+psel_d = q.PointsSelection(total_site, [[0, 0, 0, 0]])
 
 # Build a current and probability field
 sprop1 = q.PselProp(psel)
@@ -351,7 +353,7 @@ sprop1.set_zero()
 sprop2.set_zero()
 
 scf = q.hlbl_contract.mk_local_current_from_props(sprop1, sprop2)
-psel_d_prob = q.SelectedPointsRealD(psel_d)
+psel_d_prob = q.SelectedPointsRealD(psel_d, 1)
 psel_d_prob.set_zero()
 
 cm = q.hlbl_contract.CurrentMoments(scf, psel_d_prob)

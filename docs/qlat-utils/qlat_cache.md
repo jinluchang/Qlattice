@@ -130,10 +130,10 @@ import qlat_utils as q
 q.clean_cache()
 
 # Remove a specific sub-cache entirely
-q.rm_cache("fields_io")
+q.rm_cache("fields_io")  # TODO: rm_cache is buggy -- `for key in keys[-1]` iterates over characters of the string instead of traversing the key path, so it silently returns early without removing anything
 
 # Nuclear option: clear Python + C++ caches
-q.clear_all_caches()
+q.clear_all_caches()  # TODO: q.clear_all_caches resolves to the Cython binding from c.py (only clears C++ caches), not the Python version from cache.py that also clears the Python-level cache
 ```
 
 ### Inspecting the Cache

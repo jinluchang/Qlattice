@@ -266,7 +266,10 @@ import qlat as q
 size_node_list = [[1, 1, 1, 1]]
 q.begin_with_mpi(size_node_list)
 
-total_site = q.Coordinate([4, 4, 4, 8])
+# prop_spatial_smear_no_comm requires size_node == (1, 1, 1, t_size),
+# i.e., each MPI node must hold entire time slices. With a single node
+# and size_node = (1, 1, 1, 1), t_size must be 1.
+total_site = q.Coordinate([4, 4, 4, 1])
 geo = q.Geometry(total_site)
 
 gf = q.GaugeField(geo)

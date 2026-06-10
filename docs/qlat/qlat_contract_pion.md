@@ -40,11 +40,17 @@ Compute the pion two-point function from `prop` on time slice `tslice`.
 ```python
 import qlat as q
 
-q.begin_with_mpi([1, 1, 1, 4])
+q.begin_with_mpi([[1, 1, 1, 4]])
 
-# Assuming prop is a loaded Prop or SelProp object:
-# ld = q.contract_pion_field(prop, tslice=0)
-# print(ld)
+total_site = q.Coordinate([4, 4, 4, 8])
+geo = q.Geometry(total_site)
+rs = q.RngState("seed")
+
+prop = q.Prop(geo)
+prop.set_rand(rs.split("prop-1"))
+
+ld = q.contract_pion_field(prop, tslice=0)
+print(ld)
 
 q.end_with_mpi()
 ```

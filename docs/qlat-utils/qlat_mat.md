@@ -180,18 +180,6 @@ Compute the epsilon (Levi-Civita) contraction of three `WilsonMatrix` objects wi
 
 ## Gamma Matrices
 
-The standard Dirac gamma matrices in the spin-4 basis:
-
-| Variable | Index | Description |
-|---|---|---|
-| `gamma_matrix_0` | 0 | gamma_0 |
-| `gamma_matrix_1` | 1 | gamma_1 |
-| `gamma_matrix_2` | 2 | gamma_2 |
-| `gamma_matrix_3` | 3 | gamma_3 |
-| `gamma_matrix_5` | 5 | gamma_5 (chirality matrix) |
-
-Each is a `SpinMatrix` (module-level constant).
-
 ### `get_gamma_matrix(mu) -> SpinMatrix`
 
 Return the gamma matrix for direction `mu` (0, 1, 2, 3, or 5).
@@ -199,6 +187,8 @@ Return the gamma matrix for direction `mu` (0, 1, 2, 3, or 5).
 ```python
 g5 = q.get_gamma_matrix(5)
 ```
+
+<!-- TODO: gamma_matrix_0..3, gamma_matrix_5 are defined in mat.pyx but declared cdef in mat.pxd (C-level only, not accessible from Python). Consider exposing them as Python-level module constants if user access is desired. -->
 
 ---
 
@@ -267,7 +257,7 @@ wm.g5_herm()
 ```python
 import qlat_utils as q
 
-g5 = q.gamma_matrix_5
+g5 = q.get_gamma_matrix(5)
 sm = q.SpinMatrix()
 g5_sm = q.mat_mul_sm_sm(g5, sm)
 ```

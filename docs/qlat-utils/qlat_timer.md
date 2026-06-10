@@ -317,12 +317,14 @@ q.timer_display()
 ### Verbose Timing with Custom Name
 
 ```python
+import numpy as np
 import qlat_utils as q
 
 @q.timer_fname("matrix-inversion")
 def invert(m):
-    ...
+    return np.linalg.inv(m)
 
+m = np.random.randn(4, 4)
 invert(m)
 q.timer_display()
 ```
@@ -330,6 +332,7 @@ q.timer_display()
 ### FLOP Tracking
 
 ```python
+import numpy as np
 import qlat_utils as q
 
 @q.timer_flops
@@ -339,6 +342,8 @@ def matmul(a, b):
     flops = 2 * n**3
     return flops, result
 
+a = np.random.randn(4, 4)
+b = np.random.randn(4, 4)
 result = matmul(a, b)  # result is just the product, flops tracked internally
 ```
 

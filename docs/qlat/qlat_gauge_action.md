@@ -113,7 +113,9 @@ q.begin_with_mpi(size_node_list)
 
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
+rs = q.RngState("seed")
 gf = q.GaugeField(geo)
+gf.set_rand(rs.split("gf-init"), 0.5, 10)
 gf.unitarize()
 
 ga = q.GaugeAction(6.0)

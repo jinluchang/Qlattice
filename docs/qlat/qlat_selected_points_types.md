@@ -177,15 +177,13 @@ SelectedPointsRealD = selected_points_type_dict[ElemTypeRealD]
 import qlat as q
 import numpy as np
 
-q.begin_with_mpi([1, 1, 1, 4])
+q.begin_with_mpi([[1, 1, 1, 4]])
 
 geo = q.Geometry(q.Coordinate([4, 4, 4, 8]))
 
 # Create a PointsSelection with a few global coordinates
-psel = q.PointsSelection([
-    q.Coordinate([0, 0, 0, 0]),
-    q.Coordinate([1, 1, 1, 1]),
-])
+total_site = q.Coordinate([4, 4, 4, 8])
+psel = q.PointsSelection(total_site, [[0, 0, 0, 0], [1, 1, 1, 1]])
 
 # Construct SelectedPoints with multiplicity 1
 sp = q.SelectedPointsRealD(psel, 1)

@@ -106,7 +106,7 @@ A hierarchical, scope-based timer system:
 
 | Function / Class | Description |
 |------------------|-------------|
-| `Timer` | Context-manager timer (enabled by default) |
+| `Timer` | Start/stop timer (enabled by default) |
 | `TimerNone` | No-op timer for disabled timers |
 | `timer(name)` | Decorator / context manager |
 | `timer_verbose(name)` | Timer that prints on destruction |
@@ -163,13 +163,14 @@ print("Node ID:", q.get_id_node())
 ```python
 import qlat_utils as q
 
-size = (4, 4, 4, 8)
+size = q.Coordinate([4, 4, 4, 8])
 coord = q.coordinate_from_index(13, size)
-print("Index 13 ->", coord)           # (1, 0, 0, 1)
+print("Index 13 ->", coord)           # [1, 3, 0, 0]
 idx = q.index_from_coordinate(coord, size)
 print("Back to index:", idx)          # 13
 
-print("smod(-1, 4) =", q.smod_coordinate(-1, 4))  # 3
+disp = q.smod_coordinate(q.Coordinate([3, 0, 0, 0]), q.Coordinate([4, 4, 4, 4]))
+print("smod(3, 4) =", disp[0])       # -1
 ```
 
 ### Matrix operations
@@ -189,11 +190,12 @@ wm_herm = q.wilson_matrix_g5_herm(wm)  # g5-hermitian conjugate
 ```python
 import qlat_utils as q
 
-with q.Timer("my-section"):
-    # timed block
-    pass
+t = q.Timer("my-section")
+t.start()
+# timed block
+t.stop()
 
-@q.timer_verbose("important-function")
+@q.timer_verbose_fname("important-function")
 def expensive():
     pass
 ```
@@ -204,8 +206,8 @@ def expensive():
 import qlat_utils as q
 
 # Create an archive from a directory
-q.qar_create("output.qar", "data_dir", False)
+q.qar_create("output.qar", "data_dir")
 
 # Extract it
-q.qar_extract("output.qar", "extracted_dir", False)
+q.qar_extract("output.qar", "extracted_dir")
 ```

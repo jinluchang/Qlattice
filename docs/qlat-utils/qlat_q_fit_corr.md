@@ -66,7 +66,7 @@ Parameters are packed as `param_arr = [E_0, ..., E_{n-1}, c_00, c_01, ...]`.
 ### `mk_data_set`
 
 ```python
-q.mk_data_set(
+q.q_fit_corr.mk_data_set(
     *, n_jk=10, n_ops=4, n_energies=4, t_size=4, sigma=0.1, rng=None
 )
 ```
@@ -89,7 +89,7 @@ parameters.
 ### `build_corr_from_param_arr`
 
 ```python
-q.build_corr_from_param_arr(
+q.q_fit_corr.build_corr_from_param_arr(
     param_arr, *, n_ops, t_arr, t_start_arr=None,
     is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
 )
@@ -102,7 +102,7 @@ Evaluate the model correlation matrix from packed parameters.
 ### `mk_fcn`
 
 ```python
-q.mk_fcn(
+q.q_fit_corr.mk_fcn(
     corr_data, corr_data_sigma, t_start_arr, *,
     is_atw=False, atw_t_start_arr=None, atw_factor_arr=None,
     energy_minimum_arr=None, free_energy_idx_arr=None,
@@ -121,7 +121,7 @@ Build a JIT-compiled chi-squared function using JAX.
 ### `minimize`
 
 ```python
-q.minimize(fcn, n_step=10, step_size=1e-2, *, param_arr)
+q.q_fit_corr.minimize(fcn, n_step=10, step_size=1e-2, *, param_arr)
 ```
 
 Fixed-step-size gradient descent with early stopping when chi-squared
@@ -132,7 +132,7 @@ increases.
 ### `adaptive_minimize`
 
 ```python
-q.adaptive_minimize(
+q.q_fit_corr.adaptive_minimize(
     fcn, step_size_list, n_step=10, max_total_steps=10000, *, param_arr,
 )
 ```
@@ -144,7 +144,7 @@ is steady.
 ### `minimize_scipy`
 
 ```python
-q.minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None)
+q.q_fit_corr.minimize_scipy(fcn, *, param_arr, fixed_param_mask=None, minimize_kwargs=None)
 ```
 
 Scipy-based minimisation (default: L-BFGS-B) with optional fixed-parameter
@@ -157,7 +157,7 @@ mask.  Falls back to the initial parameters if the final objective is worse.
 ### `sort_param_arr_free_energy`
 
 ```python
-q.sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr)
+q.q_fit_corr.sort_param_arr_free_energy(param_arr, n_ops, free_energy_idx_arr)
 ```
 
 Sort free-energy states by ascending energy while keeping fixed states in
@@ -166,7 +166,7 @@ place.
 ### `apply_energy_minimum`
 
 ```python
-q.apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None)
+q.q_fit_corr.apply_energy_minimum(param_arr, energy_minimum_arr=None, free_energy_idx_arr=None)
 ```
 
 Clamp free energies to be at least `energy_minimum_arr` via the reflection
@@ -179,9 +179,9 @@ Clamp free energies to be at least `energy_minimum_arr` via the reflection
 ### `mk_mp_pool` / `close_mp_pool`
 
 ```python
-mp_pool = q.mk_mp_pool(n_proc=8)
+mp_pool = q.q_fit_corr.mk_mp_pool(n_proc=8)
 # ... use mp_pool.imap ...
-q.close_mp_pool(mp_pool)
+q.q_fit_corr.close_mp_pool(mp_pool)
 ```
 
 Create a `multiprocessing.Pool` with spawn context and JAX pre-warming.
@@ -189,9 +189,9 @@ Create a `multiprocessing.Pool` with spawn context and JAX pre-warming.
 ### `get_mp_pool_global` / `close_mp_pool_global`
 
 ```python
-mp_pool = q.get_mp_pool_global(n_proc=8)
+mp_pool = q.q_fit_corr.get_mp_pool_global(n_proc=8)
 # ... use mp_pool.imap ...
-q.close_mp_pool_global()
+q.q_fit_corr.close_mp_pool_global()
 ```
 
 Module-level singleton pool.  Automatically re-created if `n_proc` changes.
@@ -201,7 +201,7 @@ Module-level singleton pool.  Automatically re-created if `n_proc` changes.
 ## Jackknife Fitting: `fit_energy_amplitude`
 
 ```python
-q.fit_energy_amplitude(
+q.q_fit_corr.fit_energy_amplitude(
     jk_corr_data, *,
     t_start_data=0, t_start_fit=4, t_stop_fit=None,
     t_start_param=0, t_start_fcn=0,
@@ -255,7 +255,7 @@ Container for HMC trajectory state.  Key attributes:
 ### `hmc_traj`
 
 ```python
-q.hmc_traj(fcn, hmc_params)
+q.q_fit_corr.hmc_traj(fcn, hmc_params)
 ```
 
 Run one HMC trajectory with leapfrog integration and Metropolis accept/reject.
@@ -271,11 +271,11 @@ Modifies `hmc_params` in place.
 import qlat_utils as q
 import numpy as np
 
-param_true, jk_data, sigma = q.mk_data_set(
+param_true, jk_data, sigma = q.q_fit_corr.mk_data_set(
     n_jk=50, n_ops=3, n_energies=2, t_size=8, sigma=0.05,
 )
 e_arr = np.array([1.0, 2.0])
-res = q.fit_energy_amplitude(
+res = q.q_fit_corr.fit_energy_amplitude(
     jk_data, e_arr=e_arr,
     free_energy_idx_arr=np.array([0, 1]),
     n_step_mini_avg=5, n_step_mini_jk=3,
@@ -289,9 +289,9 @@ print("Fitted energies:", res["jk_param_arr"][:, :2].mean(axis=0))
 import qlat_utils as q
 import numpy as np
 
-param_true, jk_data, sigma = q.mk_data_set(n_jk=5, t_size=6)
+param_true, jk_data, sigma = q.q_fit_corr.mk_data_set(n_jk=5, t_size=6)
 avg = jk_data.mean(axis=0)
-fcn = q.mk_fcn(avg, sigma, np.zeros(4))
+fcn = q.q_fit_corr.mk_fcn(avg, sigma, np.zeros(4))
 p0 = np.ones(4 * 5) * 0.5
-p_opt, n_steps = q.minimize(fcn, n_step=50, step_size=0.01, param_arr=p0)
+p_opt, n_steps = q.q_fit_corr.minimize(fcn, n_step=50, step_size=0.01, param_arr=p0)
 ```

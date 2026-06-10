@@ -144,6 +144,11 @@ field_ctypes_char = [
 
 Byte-level element types.
 
+> **Note:** `field_ctypes_char` is defined in `qlat.field_type_dict` but is
+> **not** re-exported at the top `qlat` level (not in `c.__all__`).
+> Access it as `qlat.field_type_dict.field_ctypes_char` or via
+> `import qlat.field_type_dict as ftd; ftd.field_ctypes_char`.
+
 ---
 
 ## Internal Lists
@@ -164,6 +169,7 @@ These are not exported in `__all__` but are available within the module:
 
 ```python
 import qlat as q
+import qlat.field_type_dict as ftd
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -172,15 +178,15 @@ size_node_list = [
 q.begin_with_mpi(size_node_list)
 
 print("field_type_dict keys:")
-for key in sorted(q.field_type_dict.keys()):
+for key in sorted(ftd.field_type_dict.keys(), key=str):
     print(f"  {key}")
 
 print("\nselected_field_type_dict keys:")
-for key in sorted(q.selected_field_type_dict.keys()):
+for key in sorted(ftd.selected_field_type_dict.keys(), key=str):
     print(f"  {key}")
 
 print("\nselected_points_type_dict keys:")
-for key in sorted(q.selected_points_type_dict.keys()):
+for key in sorted(ftd.selected_points_type_dict.keys(), key=str):
     print(f"  {key}")
 
 q.end_with_mpi()
@@ -190,6 +196,7 @@ q.end_with_mpi()
 
 ```python
 import qlat as q
+import qlat.field_type_dict as ftd
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -214,7 +221,7 @@ for et in q.field_ctypes_long:
     print(f"  {et}")
 
 print("\nChar element types:")
-for et in q.field_ctypes_char:
+for et in ftd.field_ctypes_char:
     print(f"  {et}")
 
 q.end_with_mpi()

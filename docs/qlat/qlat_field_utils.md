@@ -129,7 +129,7 @@ shuffle_field_back(f, f_list, new_size_node)   # reassemble in-place
 ```python
 import qlat as q
 
-q.begin_with_mpi([1, 1, 1, 4])
+q.begin_with_mpi([[1, 1, 1, 4]])
 
 geo = q.Geometry(q.Coordinate([4, 4, 4, 8]))
 f = q.FieldRealD(geo, 1)
@@ -139,9 +139,11 @@ f.set_zero()
 f_e = q.field_expanded(f, 1, 1)
 print(f"Expanded n_sites: {f_e.n_sites}")
 
-# FFT (forward, spatial only)
+# FFT (forward, spatial only) — requires ComplexD field
+f_c = q.FieldComplexD(geo, 1)
+f_c.set_zero()
 fft = q.mk_fft(True, is_only_spatial=True)
-f_fft = fft * f
+f_fft = fft * f_c
 
 # Norm
 norm = f.qnorm()
@@ -151,6 +153,8 @@ print(f"qnorm: {norm}")
 f_sqrt = q.sqrt_field(f)
 
 # Shift by (1,0,0,0)
+# Note: field_shift swaps data out of the original field
+norm_before = f.qnorm()
 f_shifted = q.field_shift(f, q.Coordinate([1, 0, 0, 0]))
 
 q.end_with_mpi()

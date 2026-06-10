@@ -283,6 +283,7 @@ Result is stored in `params["aa_const"]`.
 
 ```python
 import qlat_utils as q
+import qlat_utils.q_hlt_reconstruction
 import numpy as np
 
 # Create default parameters
@@ -306,6 +307,7 @@ print(f"Filter coefficients: {g_t_arr}")
 
 ```python
 import qlat_utils as q
+import qlat_utils.q_hlt_reconstruction
 import numpy as np
 
 params = q.q_hlt_reconstruction.mk_hlt_params()
@@ -322,6 +324,7 @@ print(f"Filter coefficients: {g_t_arr}")
 
 ```python
 import qlat_utils as q
+import qlat_utils.q_hlt_reconstruction
 import numpy as np
 
 params = q.q_hlt_reconstruction.mk_hlt_params()
@@ -342,6 +345,7 @@ print(f"Filter coefficients: {g_t_arr}")
 
 ```python
 import qlat_utils as q
+import qlat_utils.q_hlt_reconstruction
 import numpy as np
 
 params = q.q_hlt_reconstruction.mk_hlt_params()

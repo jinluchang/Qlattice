@@ -69,7 +69,7 @@ Parameters are packed as `param_arr = [es_0, ..., es_{n-1}, c_00, c_01, ...]`.
 ### `mk_data_set`
 
 ```python
-q.mk_data_set(
+q.q_fit_corr_2.mk_data_set(
     *, n_jk=10, n_ops=4, n_eigs=4, t_arr=None, t_start_arr=None,
     extra_state_sign_arr=None, extra_state_sign_t_start_arr=None,
     t_size=None, atw_factor_arr=None, sigma=0.1, rng=None,
@@ -88,7 +88,7 @@ ground truth.
 ### `build_corr_from_param_arr`
 
 ```python
-q.build_corr_from_param_arr(
+q.q_fit_corr_2.build_corr_from_param_arr(
     param_arr, *, t_arr, n_ops, n_eigs=None, t_start_arr=None,
     t_size=None, atw_factor_arr=None,
     extra_state_sign_arr=None, extra_state_sign_t_start_arr=None,
@@ -104,7 +104,7 @@ Also accepts a 2-D `jk_param_arr` to build all jackknife samples at once.
 ### `mk_fcn`
 
 ```python
-q.mk_fcn(
+q.q_fit_corr_2.mk_fcn(
     corr_data, corr_data_sigma, t_arr, t_start_arr, *,
     extra_state_sign_arr=None, extra_state_sign_t_start_arr=None,
     t_size=None, atw_factor_arr=None,
@@ -124,7 +124,7 @@ Build a JIT-compiled chi-squared function using JAX.
 ### `sort_param_arr_free_eig`
 
 ```python
-q.sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
+q.q_fit_corr_2.sort_param_arr_free_eig(param_arr, n_ops, free_eig_idx_arr)
 ```
 
 Sort free eigenvalue states by descending absolute value while keeping fixed
@@ -133,7 +133,7 @@ states in place.
 ### `apply_eig_maximum`
 
 ```python
-q.apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None)
+q.q_fit_corr_2.apply_eig_maximum(param_arr, eig_maximum_arr=None, free_eig_idx_arr=None)
 ```
 
 Clamp free eigenvalues to have magnitude at most `eig_maximum_arr` via the
@@ -144,7 +144,7 @@ reflection `max^2 / e` when `|e| > max`.
 ## Jackknife Fitting: `fit_eig_coef`
 
 ```python
-q.fit_eig_coef(
+q.q_fit_corr_2.fit_eig_coef(
     jk_corr_data, *,
     t_arr, e_arr, t_start_arr=None,
     extra_state_sign_arr=None, extra_state_sign_t_start_arr=None,
@@ -192,12 +192,13 @@ procedure is:
 import qlat_utils as q
 import numpy as np
 
+q2 = q.q_fit_corr_2
 t_arr = np.arange(6)
-param_true, jk_data, sigma, t_arr = q.mk_data_set(
+param_true, jk_data, sigma, t_arr = q2.mk_data_set(
     n_jk=50, n_ops=3, n_eigs=2, t_arr=t_arr, sigma=0.05,
 )
 e_arr = np.array([0.8, 0.5])
-res = q.fit_eig_coef(
+res = q2.fit_eig_coef(
     jk_data, t_arr=t_arr, e_arr=e_arr,
     free_eig_idx_arr=np.array([0, 1]),
     n_step_mini_avg=5, n_step_mini_jk=3,
@@ -211,12 +212,13 @@ print("Fitted eigenvalues:", res["jk_e_arr"].mean(axis=0))
 import qlat_utils as q
 import numpy as np
 
+q2 = q.q_fit_corr_2
 t_arr = np.arange(4)
-param_true, jk_data, sigma, t_arr = q.mk_data_set(
+param_true, jk_data, sigma, t_arr = q2.mk_data_set(
     n_jk=20, n_ops=2, n_eigs=2, t_arr=t_arr, sigma=0.1,
 )
 e_arr = np.array([0.9, 0.3])
-res = q.fit_eig_coef(
+res = q2.fit_eig_coef(
     jk_data, t_arr=t_arr, e_arr=e_arr,
     free_eig_idx_arr=np.array([0, 1]),
     eig_maximum_arr=np.array([1.0, 1.0]),

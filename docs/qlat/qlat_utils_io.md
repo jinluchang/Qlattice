@@ -98,6 +98,11 @@ q.qquit("finished all trajectories")
 
 ## Time and Stop Checks
 
+<!-- TODO: The return type is not bool. The C++ cc.check_time_limit() returns
+     None (falsy) when time is available, or calls qquit() to terminate the
+     program when the limit is reached. It never returns True. The doc
+     signature and return-type row should reflect this (e.g. "-> None" or
+     clarify that it terminates on limit). -->
 ### `check_time_limit(budget: float = None) -> bool`
 
 Check whether the simulation is approaching its time limit. Decorated with
@@ -128,6 +133,10 @@ if q.check_time_limit():
 
 ---
 
+<!-- TODO: The return type is not bool. The C++ cc.check_stop() returns
+     None (falsy) when the file does not exist, or calls qquit() to terminate
+     the program when the file is found. It never returns True. The doc
+     signature and return-type row should reflect this. -->
 ### `check_stop(fn: str = "stop.txt") -> bool`
 
 Check whether a sentinel file `fn` exists in the current working directory.

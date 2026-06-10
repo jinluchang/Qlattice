@@ -55,7 +55,8 @@ import qlat as q
 q.begin_with_mpi([[1, 1, 1, 1]])
 
 total_site = q.Coordinate([4, 4, 4, 8])
-psel = q.PointsSelection(total_site, 10, q.RngState("seed"))
+psel = q.PointsSelection(total_site)
+psel.set_rand(total_site, 10, q.RngState("seed"))
 print(psel.n_points)         # 10
 print(psel.points_dist_type) # "g"
 
@@ -616,7 +617,7 @@ total_site = q.Coordinate([4, 4, 4, 8])
 
 # Get a selection of all spatial sites per time slice
 psel_tslice = q.get_psel_tslice(total_site)
-print(f"n_points: {psel_tslice.n_points}")  # 4*4*4 = 64
+print(f"n_points: {psel_tslice.n_points}")  # 8 (one entry per time slice)
 
 q.end_with_mpi()
 ```
@@ -636,11 +637,13 @@ rs = q.RngState("seed")
 fsel = q.FieldSelection()
 fsel.set_rand(total_site, 2, rs)
 
-# Create a full point selection
-psel_full = q.PointsSelection(geo)
+# Create a global point selection
+psel = q.PointsSelection(total_site)
+psel.set_rand(total_site, 20, q.RngState("seed2"))
 
 # Intersect: keep only points in psel that are also in fsel
-psel_intersect = psel_full.intersect(fsel)
+psel_intersect = psel.intersect(fsel)
+print(f"psel n_points: {psel.n_points}")
 print(f"fsel n_elems: {fsel.n_elems}")
 print(f"psel_intersect n_points: {psel_intersect.n_points}")
 
@@ -664,7 +667,7 @@ fsel.set_rand(total_site, 2, rs)
 psel_local = q.PointsSelection(fsel)
 
 # Build a shuffle plan: local -> global
-ssp = q.SelectedShufflePlan("l_from_g", psel_local, 0)
+ssp = q.SelectedShufflePlan("g_from_l", psel_local, 0, geo)
 print(f"send dist type: {ssp.points_dist_type_send}")
 print(f"recv dist type: {ssp.points_dist_type_recv}")
 

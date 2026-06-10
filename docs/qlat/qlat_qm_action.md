@@ -74,11 +74,11 @@ C-level `mk_qm_action`.
 | `L` | `float` | Spatial extent parameter |
 | `M` | `float` | Mass parameter |
 | `epsilon` | `float` | Step-size parameter |
-| `t_FV_out` | `float` | Outer FV time extent |
-| `t_FV_mid` | `float` | Middle FV time extent |
+| `t_FV_out` | `int` | Outer FV time extent |
+| `t_FV_mid` | `int` | Middle FV time extent |
 | `dt` | `float` | Time step |
-| `measure_offset_L` | `float` | Measurement offset (L) |
-| `measure_offset_M` | `float` | Measurement offset (M) |
+| `measure_offset_L` | `bool` | Measurement offset (L) |
+| `measure_offset_M` | `bool` | Measurement offset (M) |
 
 ---
 
@@ -93,9 +93,9 @@ Each accessor returns the corresponding parameter stored in the C object.
 | `barrier_strength()` | `float` | Confining barrier strength |
 | `M()` | `float` | Mass parameter |
 | `L()` | `float` | Spatial extent parameter |
-| `t_FV_out()` | `float` | Outer FV time extent |
-| `t_FV_mid()` | `float` | Middle FV time extent |
-| `t_FV()` | `float` | Total FV time: `2 * t_FV_out + t_FV_mid` |
+| `t_FV_out()` | `int` | Outer FV time extent |
+| `t_FV_mid()` | `int` | Middle FV time extent |
+| `t_FV()` | `int` | Total FV time: `2 * t_FV_out + t_FV_mid` |
 | `dt()` | `float` | Time step |
 
 ---
@@ -113,7 +113,7 @@ Evaluate the confining potential at position `x = (x0, x1)` and time `t`.
 | Parameter | Type | Description |
 |---|---|---|
 | `x` | array-like | Position; `x[0]` and `x[1]` are used |
-| `t` | `float` | Time coordinate |
+| `t` | `int` | Time coordinate |
 | **Returns** | `float` | Potential value |
 
 ---
@@ -121,16 +121,19 @@ Evaluate the confining potential at position `x = (x0, x1)` and time `t`.
 #### `dV`
 
 ```python
-dV(x, t) -> tuple[float, float]
+dV(x, t) -> float
 ```
 
-Evaluate the gradient of the potential at position `x = (x0, x1)` and time `t`.
+Evaluate the derivative of the potential with respect to `x[0]` at position
+`x = (x0, x1)` and time `t`. (The underlying C function supports an
+additional `idx` parameter to select the component, but the Python wrapper
+always uses `idx=0`.)
 
 | Parameter | Type | Description |
 |---|---|---|
 | `x` | array-like | Position; `x[0]` and `x[1]` are used |
-| `t` | `float` | Time coordinate |
-| **Returns** | `tuple[float, float]` | `(dV/dx0, dV/dx1)` |
+| `t` | `int` | Time coordinate |
+| **Returns** | `float` | `dV/dx0` |
 
 ---
 
@@ -220,16 +223,16 @@ action = q.QMAction(
     L=4.0,
     M=1.0,
     epsilon=0.1,
-    t_FV_out=1.0,
-    t_FV_mid=2.0,
+    t_FV_out=1,
+    t_FV_mid=2,
     dt=0.01,
-    measure_offset_L=0.0,
-    measure_offset_M=0.0,
+    measure_offset_L=False,
+    measure_offset_M=False,
 )
 
 print(f"alpha = {action.alpha()}")
 print(f"t_FV  = {action.t_FV()}")
-print(f"V(0,0,0) = {action.V([0.0, 0.0], 0.0)}")
+print(f"V(0,0,0) = {action.V([0.0, 0.0], 0)}")
 
 q.end_with_mpi()
 ```
@@ -245,12 +248,12 @@ q.begin_with_mpi(size_node_list)
 action = q.QMAction(
     alpha=1.0, beta=1.0, V_FV_min=0.0, FV_offset=0.0, TV_offset=0.0,
     barrier_strength=1.0, L=4.0, M=1.0, epsilon=0.1,
-    t_FV_out=1.0, t_FV_mid=2.0, dt=0.01,
-    measure_offset_L=0.0, measure_offset_M=0.0,
+    t_FV_out=1, t_FV_mid=2, dt=0.01,
+    measure_offset_L=False, measure_offset_M=False,
 )
 
 x = [1.0, 2.0]
-t = 0.5
+t = 1
 v = action.V(x, t)
 dv = action.dV(x, t)
 print(f"V({x}, {t}) = {v}")
@@ -270,12 +273,17 @@ q.begin_with_mpi(size_node_list)
 action1 = q.QMAction(
     alpha=1.0, beta=1.0, V_FV_min=0.0, FV_offset=0.0, TV_offset=0.0,
     barrier_strength=1.0, L=4.0, M=1.0, epsilon=0.1,
-    t_FV_out=1.0, t_FV_mid=2.0, dt=0.01,
-    measure_offset_L=0.0, measure_offset_M=0.0,
+    t_FV_out=1, t_FV_mid=2, dt=0.01,
+    measure_offset_L=False, measure_offset_M=False,
 )
 
-# Copy via @=
-action2 = q.QMAction.__new__(q.QMAction)
+# Copy via @= (target must be a valid QMAction instance)
+action2 = q.QMAction(
+    alpha=0.0, beta=0.0, V_FV_min=0.0, FV_offset=0.0, TV_offset=0.0,
+    barrier_strength=0.0, L=0.0, M=0.0, epsilon=0.0,
+    t_FV_out=0, t_FV_mid=0, dt=1.0,
+    measure_offset_L=False, measure_offset_M=False,
+)
 action2 @= action1
 print(f"Copied alpha = {action2.alpha()}")
 

@@ -156,7 +156,7 @@ q.begin_with_mpi([[1, 1, 1, 1]])
 
 sa = q.ScalarAction(m_sq=0.1, lmbd=1.0, alpha=0.0)
 print(sa.m_sq())    # 0.1
-print(sa.lmbd())    # 1.0
+print(sa.lmbd())    # 1.0  <!-- TODO: source code bug — lmbd() is defined twice in scalar_action.py; the second def returns alpha, so this actually prints 0.0 -->
 
 q.end_with_mpi()
 ```
@@ -168,9 +168,10 @@ import qlat as q
 
 q.begin_with_mpi([[1, 1, 1, 1]])
 
-geo = q.Geometry([4, 4, 4, 8])
+total_site = q.Coordinate([4, 4, 4, 8])
+geo = q.Geometry(total_site)
 sa = q.ScalarAction(m_sq=0.1, lmbd=1.0, alpha=0.0)
-sf = q.Field("double", geo)
+sf = q.Field(q.ElemTypeRealD, geo, 1)
 sf.set_zero()
 
 action = sa.action_node(sf)

@@ -353,7 +353,7 @@ total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
 gf = q.GaugeField(geo)
-gf.unitarize()
+q.set_unit(gf)
 
 ga = q.GaugeAction(6.0)
 rs = q.RngState("test-hmc")
@@ -427,7 +427,7 @@ total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
 gf = q.GaugeField(geo)
-gf.unitarize()
+q.set_unit(gf)
 
 ga = q.GaugeAction(6.0)
 rs = q.RngState("hmc-run")
@@ -435,7 +435,7 @@ rs = q.RngState("hmc-run")
 n_traj = 10
 accept_count = 0
 for traj in range(n_traj):
-    flag, delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs.split(f"{traj}"),
+    flag, delta_h = q.run_hmc_pure_gauge(gf, ga, traj, rs,
                                          n_step=6, md_time=1.0)
     if flag:
         accept_count += 1

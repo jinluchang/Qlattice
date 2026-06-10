@@ -47,7 +47,7 @@ import qlat_utils as q
 |---|---|
 | `basename(fn)` | Return the filename portion of path `fn` (everything after the last `/`). |
 | `dirname(fn)` | Return the directory portion of path `fn` (everything before the last `/`). |
-| `all_dirname_vec(fn)` | Return a list of all ancestor directories of `fn`, from root to parent. |
+| `all_dirname_vec(fn)` | Return a list of all ancestor directories of `fn`, from parent to root. |
 | `remove_trailing_slashes(fn)` | Return `fn` with any trailing `/` characters removed. |
 
 ---
@@ -56,11 +56,11 @@ import qlat_utils as q
 
 ### `qls(path, is_sort=True) -> list[str]`
 
-List the immediate contents of directory `path`. If `is_sort` is `True`, results are sorted alphabetically.
+List the immediate contents of directory `path` (returned as full paths). If `is_sort` is `True`, results are sorted alphabetically.
 
 ### `qls_all(path, is_folder_before_files=False, is_sort=True) -> list[str]`
 
-Recursively list all entries under `path`. If `is_folder_before_files` is `True`, directories appear before their contents. If `is_sort` is `True`, entries are sorted within each directory level.
+Recursively list all entries under `path` (returned as full paths). If `is_folder_before_files` is `True`, directories appear before their contents. If `is_sort` is `True`, entries are sorted within each directory level.
 
 ---
 
@@ -164,7 +164,7 @@ import qlat_utils as q
 
 q.basename("/home/user/data/config.lime")   # "config.lime"
 q.dirname("/home/user/data/config.lime")     # "/home/user/data"
-q.all_dirname_vec("/a/b/c/d")                # ["/", "/a", "/a/b", "/a/b/c"]
+q.all_dirname_vec("/a/b/c/d")                # ["/a/b/c", "/a/b", "/a", "/"]
 q.remove_trailing_slashes("/home/user/")     # "/home/user"
 ```
 

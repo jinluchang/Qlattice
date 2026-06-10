@@ -25,6 +25,8 @@ from .contract_pion import *
 
 from .contract_field import *
 
+from .contract_hvp import *
+
 from .inverter import *
 
 from .field_analysis import *

@@ -410,6 +410,7 @@ Transforms to momentum space, applies the inverse, and transforms back.
 
 ```python
 import qlat as q
+import numpy as np
 
 size_node_list = [[1, 1, 1, 1]]
 
@@ -423,7 +424,7 @@ prop_src = q.mk_point_src(geo, xg)
 prop_sol = q.free_invert(prop_src, mass=0.1)
 
 wm = prop_sol.get_elem_wm(0)
-print("Wilson matrix at site 0 shape:", q.asarray(wm).shape)
+print("Wilson matrix at site 0 shape:", np.asarray(wm).shape)
 
 q.end_with_mpi()
 ```
@@ -462,7 +463,7 @@ geo = q.Geometry(total_site)
 
 # Create a points selection
 n_points = 8
-psel = q.PointsSelection(geo, [q.Coordinate([0, 0, 0, i]) for i in range(n_points)])
+psel = q.PointsSelection(total_site, [q.Coordinate([0, 0, 0, i]) for i in range(n_points)])
 
 rs = q.RngState("test-seed")
 prop_src, fu1 = q.mk_rand_u1_src(psel, rs)

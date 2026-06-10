@@ -497,6 +497,7 @@ print(f"plaq after inverse    = {gf_roundtrip.plaq():.10f}")
 q.end_with_mpi()
 ```
 
+<!-- TODO: gf_wilson_lines_no_comm in qcd.pyx uses q.geo_resize but q is qlat_utils which lacks geo_resize. Fix source: add `from .geometry import geo_resize` to qcd.pyx imports. -->
 ### Wilson Lines
 
 ```python
@@ -539,18 +540,18 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
-gf = q.qcd.GaugeField(geo)
-rng = q.RngState("dwf-qed")
-gf.set_rand(rng, sigma=0.3, n_step=3)
-gf.unitarize()
+# QED gauge field: must be FieldComplexD (not GaugeField)
+gf_qed = q.FieldComplexD(geo, 4)
+gf_qed.set_unit()
 
-gf1 = q.mk_left_expanded_field(gf)
+gf1 = q.mk_left_expanded_field(gf_qed)
 
 mass = 0.01
 m5 = 1.8
 ls = 12
 
-f_in = q.FieldComplexD(geo, 1)
+# 4d source field: multiplicity 4 (spin components)
+f_in = q.FieldComplexD(geo, 4)
 f_in.set_rand(q.RngState("source"))
 
 f_out = q.qcd.invert_dwf_qed(f_in, gf1, mass, m5, ls, stop_rsd=1e-8)

@@ -67,7 +67,7 @@ Append a deterministic flow step.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `eo` | `int` | — | Even/odd parity selector |
+| `eo` | `int` | — | Even/odd parity selector (1=even, 2=odd) |
 | `mu` | `int` | — | Lattice direction (0–3) |
 | `epsilon` | `float` | — | Flow step size |
 | `flow_size` | `int` | `1` | Number of sub-steps |
@@ -184,11 +184,11 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 gf0 = q.GaugeField(geo)
-gf0.unitarize()
+q.set_unit(gf0)
 
 fi = q.FlowInfo()
-fi.add_flow(0, 0, 0.1, flow_size=1)
-fi.add_flow(0, 1, 0.1, flow_size=1)
+fi.add_flow(1, 0, 0.1, flow_size=1)
+fi.add_flow(1, 1, 0.1, flow_size=1)
 
 gf1 = q.GaugeField(geo)
 q.gf_flow(gf1, gf0, fi)
@@ -216,12 +216,12 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 gf0 = q.GaugeField(geo)
-gf0.unitarize()
+q.set_unit(gf0)
 
 ga = q.GaugeAction(6.0)
 
 fi = q.FlowInfo()
-fi.add_flow(0, 0, 0.05, flow_size=2)
+fi.add_flow(1, 0, 0.05, flow_size=2)
 
 h = q.gf_hamilton_flowed_node(gf0, ga, fi)
 print(f"Flowed Hamiltonian (node-local) = {h}")
@@ -241,8 +241,8 @@ size_node_list = [
 q.begin_with_mpi(size_node_list)
 
 fi = q.FlowInfo()
-fi.add_flow(0, 0, 0.1, flow_size=3)
-fi.add_flow(0, 1, 0.05, flow_size=2)
+fi.add_flow(1, 0, 0.1, flow_size=3)
+fi.add_flow(1, 1, 0.05, flow_size=2)
 info_str = fi.show()
 print(info_str)
 

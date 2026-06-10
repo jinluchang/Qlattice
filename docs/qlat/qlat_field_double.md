@@ -122,19 +122,22 @@ Element-wise product `field[i] *= factor[i]`.  Both fields must be
 import qlat as q
 import qlat_utils as qu
 
-q.begin_with_mpi([1, 1, 1, 4])
+q.begin_with_mpi([[1, 1, 1, 4]])
 
-geo = q.Geometry([4, 4, 4, 8], 1)
-f_real = q.Field(qu.ElemTypeRealD, geo, 1)
-f_complex = q.Field(qu.ElemTypeComplexD, geo, 1)
-f_real.set_zero()
+geo = q.Geometry(q.Coordinate([4, 4, 4, 8]))
+f_real = q.Field(q.ElemTypeRealD, geo, 1)
+f_complex = q.Field(q.ElemTypeComplexD, geo, 1)
+f_real.set_rand(q.RngState("seed"), 1.0, -1.0)
 f_complex.set_zero()
 
 # Convert complex field to real (takes real part)
-q.set_double_from_complex(f_real, f_complex)
+q.field_double.set_double_from_complex(f_real, f_complex)
 
-# Invert all elements in-place
-q.invert_double(f_real)
+# Promote real field to complex
+f_complex2 = q.Field(q.ElemTypeComplexD, geo, 1)
+f_real2 = q.Field(q.ElemTypeRealD, geo, 1)
+f_real2.set_rand(q.RngState("seed2"), 1.0, -1.0)
+q.field_double.set_complex_from_double(f_complex2, f_real2)
 
 q.end_with_mpi()
 ```

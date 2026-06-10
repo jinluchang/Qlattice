@@ -248,12 +248,12 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
-f = q.FieldRealD(geo, 1)
+f = q.FieldComplexD(geo, 1)
 f.set_zero()
-f[0] = np.array([1.0])
+f[0] = np.array([1.0 + 0.0j])
 
 smeared = q.smear_field(f, radius=2.0)
-print(f"Smeared field sum = {np.asarray(smeared).sum():.6f}")
+print(f"Smeared field sum = {np.asarray(smeared).sum().real:.6f}")
 
 q.end_with_mpi()
 ```
@@ -273,12 +273,12 @@ q.begin_with_mpi(size_node_list)
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 
-f = q.FieldRealD(geo, 1)
+f = q.FieldComplexD(geo, 1)
 f.set_zero()
-f[0] = np.array([1.0])
+f[0] = np.array([1.0 + 0.0j])
 
 summed = q.sphere_sum_field(f, radius=3.0)
-print(f"Sphere-summed field sum = {np.asarray(summed).sum():.6f}")
+print(f"Sphere-summed field sum = {np.asarray(summed).sum().real:.6f}")
 
 q.end_with_mpi()
 ```
@@ -303,7 +303,7 @@ f.set_zero()
 f[0] = np.array([1.0 + 0.0j])
 
 smeared = q.smear_field_step_local(f, coef=0.5, n_steps=10)
-print(f"Step-smeared field sum = {np.asarray(smeared).sum():.6f}")
+print(f"Step-smeared field sum = {np.asarray(smeared).sum().real:.6f}")
 
 q.end_with_mpi()
 ```

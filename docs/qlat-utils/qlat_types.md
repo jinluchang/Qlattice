@@ -77,17 +77,14 @@ class ElemType:
     name = ""
 ```
 
-All subclasses provide the following class-level attributes and static methods:
+All subclasses provide the following class-level attributes:
 
-| Attribute/Method | Type | Description |
+| Attribute | Type | Description |
 |---|---|---|
 | `name` | `str` | Human-readable type name |
 | `sizeof_m` | `int` | Total byte size of the C++ type |
-| `format()` | `str` | Buffer protocol format string |
-| `itemsize()` | `int` | Byte size of one scalar element |
-| `ndim()` | `int` | Number of dimensions when viewed as an array of scalars |
-| `shape()` | `tuple` | Shape when viewed as an array of scalars |
-| `size()` | `int` | Total byte size (same as `sizeof_m`) |
+
+<!-- TODO: The C++ source also defines cdef methods format(), itemsize(), ndim(), shape(), and size() on each ElemType subclass, but these are Cython cdef methods and are NOT accessible from Python. To expose them to Python, they would need to be declared as cpdef or def, or wrapped with Python-accessible properties. -->
 
 ---
 
@@ -297,6 +294,8 @@ Signed character (`char`).
 
 ## Type Properties Reference
 
+> **Note:** The tables below document the full C++ type metadata. Only `name` and `sizeof_m` are accessible from Python. The `format`, `itemsize`, `ndim`, `shape`, and `size` values are defined as Cython `cdef` methods and are used internally by the buffer protocol implementation.
+
 ### Matrix Types Summary
 
 | Type | Name | Shape | Item Format | Element Size | Total Size |
@@ -333,21 +332,17 @@ Signed character (`char`).
 import qlat_utils as q
 from qlat_utils.types import ElemTypeColorMatrix, ElemTypeWilsonMatrix, ElemTypeRealD
 
-# ColorMatrix: 3x3 complex double
+# ColorMatrix: 3x3 complex double, total size 144 bytes
 print(ElemTypeColorMatrix.name)       # "ColorMatrix"
-print(ElemTypeColorMatrix.ndim())     # 2
-print(ElemTypeColorMatrix.shape())    # (3, 3)
-print(ElemTypeColorMatrix.itemsize()) # 16  (sizeof complex double)
-print(ElemTypeColorMatrix.size())     # 144 (16 * 9)
+print(ElemTypeColorMatrix.sizeof_m)   # 144
 
 # WilsonMatrix: 12x12 complex double
-print(ElemTypeWilsonMatrix.shape())   # (12, 12)
-print(ElemTypeWilsonMatrix.size())    # 2304
+print(ElemTypeWilsonMatrix.name)      # "WilsonMatrix"
+print(ElemTypeWilsonMatrix.sizeof_m)  # 2304
 
 # Scalar type
 print(ElemTypeRealD.name)            # "RealD"
-print(ElemTypeRealD.ndim())          # 0
-print(ElemTypeRealD.format())        # 'd'
+print(ElemTypeRealD.sizeof_m)        # 8
 ```
 
 ### Buffer Protocol Usage
@@ -373,8 +368,9 @@ import numpy as np
 from qlat_utils.types import ElemTypeColorMatrix
 
 # Construct a zero-filled array matching the ColorMatrix layout
-shape = ElemTypeColorMatrix.shape()   # (3, 3)
+# ColorMatrix is 3x3 complex double (sizeof_m = 144 bytes)
+shape = (3, 3)
 dtype = np.complex128                 # matches 'Zd' format
 mat = np.zeros(shape, dtype=dtype)
-print(mat.nbytes)                     # 144, matches ElemTypeColorMatrix.size()
+print(mat.nbytes)                     # 144, matches ElemTypeColorMatrix.sizeof_m
 ```

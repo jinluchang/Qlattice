@@ -64,6 +64,8 @@ Return `True` if the CUBA integration library is available at runtime.
 ```python
 import qlat as q
 
+size_node_list = [[1, 1, 1, 1]]
+
 q.begin_with_mpi(size_node_list)
 
 if q.has_cuba():

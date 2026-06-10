@@ -26,6 +26,8 @@ decodes them back to their original types, ensuring faithful round-tripping.
 
 ```python
 import qlat_utils as q
+import numpy as np
+
 s = q.json_dumps({"value": np.float32(0.5)})
 obj = q.json_loads(s)   # recovers np.float32(0.5)
 ```
@@ -71,7 +73,7 @@ Serialize `obj` to a JSON string. Extended types are encoded with an
 
 ```python
 s = q.json_dumps({"mass": np.float32(0.5), "corr": np.array([1, 2, 3])})
-compact = q.json_dumps(data, indent=None)
+compact = q.json_dumps({"mass": np.float32(0.5)}, indent=None)
 ```
 
 ### `json_loads(s) -> any`
@@ -164,7 +166,7 @@ with open("params.json") as f:
 ### Compact (No Indentation)
 
 ```python
-s = q.json_dumps(data, indent=None)
+s = q.json_dumps({"mass": np.float32(0.5)}, indent=None)
 ```
 
 ### Nested Structures

@@ -160,7 +160,7 @@ Useful for analyzing the contribution of each term. The sum over the last
 axis equals `gf_topology_field`:
 
 ```python
-gf_topology_terms_field(gf)[:].sum(-1) == gf_topology_field(gf)[:]
+gf_topology_terms_field(gf)[:].sum(-1) == gf_topology_field(gf)[:].ravel()
 ```
 
 ### `gf_topology_terms`
@@ -201,7 +201,7 @@ pa = q.gf_plaq_action_density(gf)
 print(f"Plaquette action density: {pa}")
 
 pa_field = q.gf_plaq_action_density_field(gf)
-print(f"Per-site shape: {pa_field.geo.multiplicity}")
+print(f"Per-site multiplicity: {pa_field.multiplicity}")
 
 q.end_with_mpi()
 ```

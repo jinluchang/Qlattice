@@ -50,13 +50,13 @@ new_size_node = q.Coordinate([1, 1, 1, 1])
 
 # Write a field
 sfw = q.open_fields("/tmp/test_fields", "w", new_size_node)
-f = q.Field("Complex", geo, 1)
+f = q.Field(q.ElemTypeComplexD, geo, 1)
 sfw.write("my_field", f)
 sfw.close()
 
 # Read it back
 sfr = q.open_fields("/tmp/test_fields", "r")
-f2 = q.Field("Complex", geo, 1)
+f2 = q.Field(q.ElemTypeComplexD, geo, 1)
 sfr.read("my_field", f2)
 sfr.close()
 
@@ -296,8 +296,8 @@ geo = q.Geometry(total_site)
 new_size_node = q.Coordinate([1, 1, 1, 1])
 
 # Create fields
-f1 = q.Field("Complex", geo, 1)
-f2 = q.Field("Complex", geo, 1)
+f1 = q.Field(q.ElemTypeComplexD, geo, 1)
+f2 = q.Field(q.ElemTypeComplexD, geo, 1)
 
 # Write fields
 sfw = q.open_fields("/tmp/fields_test", "w", new_size_node)
@@ -311,7 +311,7 @@ print(f"Stored fields: {names}")  # ["field_a", "field_b"]
 
 # Read fields back
 sfr = q.open_fields("/tmp/fields_test", "r")
-f1_read = q.Field("Complex", geo, 1)
+f1_read = q.Field(q.ElemTypeComplexD, geo, 1)
 sfr.read("field_a", f1_read)
 print("field_a" in sfr)  # True
 sfr.close()
@@ -332,12 +332,12 @@ new_size_node = q.Coordinate([1, 1, 1, 1])
 
 # Initial write
 sfw = q.open_fields("/tmp/fields_append", "w", new_size_node)
-sfw.write("field_1", q.Field("Complex", geo, 1))
+sfw.write("field_1", q.Field(q.ElemTypeComplexD, geo, 1))
 sfw.close()
 
 # Append more fields
 sfw = q.open_fields("/tmp/fields_append", "a", new_size_node)
-sfw.write("field_2", q.Field("Complex", geo, 1))
+sfw.write("field_2", q.Field(q.ElemTypeComplexD, geo, 1))
 sfw.close()
 
 names = q.list_fields("/tmp/fields_append", new_size_node)
@@ -359,9 +359,9 @@ new_size_node = q.Coordinate([1, 1, 1, 1])
 
 # Write some fields
 sfw = q.open_fields("/tmp/fields_check", "w", new_size_node)
-sfw.write("f1", q.Field("Complex", geo, 1))
-sfw.write("f2", q.Field("Complex", geo, 1))
-sfw.write("f3", q.Field("Complex", geo, 1))
+sfw.write("f1", q.Field(q.ElemTypeComplexD, geo, 1))
+sfw.write("f2", q.Field(q.ElemTypeComplexD, geo, 1))
+sfw.write("f3", q.Field(q.ElemTypeComplexD, geo, 1))
 sfw.close()
 
 # Check which fields are readable
@@ -391,7 +391,7 @@ path = "/tmp/fields_geon"
 
 # Write
 sfw = q.open_fields(path, "w", new_size_node)
-sfw.write("test", q.Field("Complex", geo, 1))
+sfw.write("test", q.Field(q.ElemTypeComplexD, geo, 1))
 sfw.close()
 
 # Read using geon-info.txt path (the /geon-info.txt suffix is stripped)

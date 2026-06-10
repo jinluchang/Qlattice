@@ -59,9 +59,18 @@ import qlat as q
 
 q.begin_with_mpi([1, 1, 1, 4])
 
-# Assuming prop1 and prop2 are loaded Prop objects:
-# chvp = q.contract_chvp_16(prop1, prop2)
-# print(chvp.total_elems())  # 16 * number of sites on this node
+total_site = q.Coordinate([4, 4, 4, 8])
+geo = q.Geometry(total_site)
+rs = q.RngState("seed")
+
+prop1 = q.Prop(geo)
+prop1.set_rand(rs.split("prop1"))
+
+prop2 = q.Prop(geo)
+prop2.set_rand(rs.split("prop2"))
+
+chvp = q.contract_chvp_16(prop1, prop2)
+print(chvp.multiplicity)  # 16
 
 q.end_with_mpi()
 ```

@@ -59,7 +59,7 @@ prop_spatial_smear(
     mom: CoordinateD = None,
     *,
     chunk_size: int = None,
-) -> tuple[int, list[FermionField4d] | Prop | FermionField4d]
+) -> list[FermionField4d] | Prop | FermionField4d
 ```
 
 Perform spatial Jacobi smearing on `ff_list`. The return type matches the
@@ -82,7 +82,7 @@ The original `ff_list` is not modified; a new list (or object) is returned.
 | `step` | `int` | — | Number of smearing iterations |
 | `mom` | `CoordinateD` or `None` | `None` | Momentum for phase projection; `None` = zero |
 | `chunk_size` | `int` or `None` | `None` | Chunk size for batching; default 12 for `FermionField4d`, 1 for `Prop` |
-| **Returns** | `tuple[int, list/Prop/FermionField4d]` | | `(flops, smeared_fields)` |
+| **Returns** | `list/Prop/FermionField4d` | | Smeared fields (type matches input) |
 
 When `step == 0`, a copy of the input is returned without smearing.
 
@@ -173,10 +173,10 @@ gf.set_unit()
 prop = q.Prop(geo)
 prop.set_zero()
 
-flops, prop_smeared = q.smear_prop.prop_spatial_smear(
+prop_smeared = q.smear_prop.prop_spatial_smear(
     prop, gf, coef=0.9375, step=54
 )
-print(f"Smeared propagator, flops: {flops}")
+print(f"Smeared propagator")
 
 q.end_with_mpi()
 ```
@@ -202,10 +202,10 @@ for ff in ff_list:
 
 # Smear with custom chunk size and momentum
 mom = q.CoordinateD([0.1, 0.0, 0.0, 0.0])
-flops, smeared_list = q.smear_prop.prop_spatial_smear(
+smeared_list = q.smear_prop.prop_spatial_smear(
     ff_list, gf, coef=0.9375, step=30, mom=mom, chunk_size=6
 )
-print(f"Smeared {len(smeared_list)} fields, flops: {flops}")
+print(f"Smeared {len(smeared_list)} fields")
 
 q.end_with_mpi()
 ```
@@ -228,8 +228,7 @@ ff = q.FermionField4d(geo)
 ff.set_zero()
 
 # step=0 returns a copy without smearing
-flops, ff_copy = q.smear_prop.prop_spatial_smear(ff, gf, coef=0.5, step=0)
-assert flops == 0
+ff_copy = q.smear_prop.prop_spatial_smear(ff, gf, coef=0.5, step=0)
 
 q.end_with_mpi()
 ```
