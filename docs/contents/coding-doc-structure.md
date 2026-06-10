@@ -120,45 +120,44 @@ that the examples actually work against the compiled module.
 
 **Procedure:**
 
-1. Create a fresh empty directory for testing:
+1. Build the environment with nix:
+    ```bash
+    cd nixpkgs && name='' ./install-py-local-kernel-with-nix.sh
+    ```
+
+2. Source the environment:
+    ```bash
+    source result-py-local/bin/setenv-qlat.sh
+    ```
+
+3. Create a temporary directory for testing:
     ```bash
     mkdir -p tmp/qlat-verify
     ```
 
-2. Write a verification script that exercises all the code examples from the
-   documentation, using ``assert`` statements to confirm correct behavior.
-   The script should verify:
+4. Write a verification script in
+   `tmp/qlat-verify/verify_doc_examples_<package>_<module>.py` that exercises
+   all the code examples from the documentation, using ``assert`` statements
+   to confirm correct behavior. The script should verify:
    - Round-trip fidelity for each supported type
    - Type preservation through nested structures
    - Edge cases (compact output, plain types, etc.)
 
- 3. If the source code was modified, recompile with:
+5. Run the verification script:
     ```bash
-    bash scripts/qlat-all.sh
-    ```
-
-    If the build fails during the configuration step (e.g., ``meson`` error about
-    missing dependencies or stale build state), perform a clean build first:
-    ```bash
-    bash scripts/qlat-clean-build.sh
-    bash scripts/qlat-all.sh
-    ```
-
-4. Run the verification script from the fresh directory:
-    ```bash
-    cd tmp/qlat-verify && python3 verify_examples.py
+    cd tmp/qlat-verify && python3 verify_doc_examples_<package>_<module>.py
     ```
 
 **Example** — verifying ``qlat_utils.json``:
 
 ```bash
 mkdir -p tmp/qlat-verify
-# write tmp/qlat-verify/verify_json.py
-python3 tmp/qlat-verify/verify_json.py
+# write tmp/qlat-verify/verify_doc_examples_qlat_utils_json.py
+cd tmp/qlat-verify && python3 verify_doc_examples_qlat_utils_json.py
 ```
 
 The verification script should print "All tests PASSED." on success. If any
-assertion fails, fix the documentation or the source code, recompile, and
+assertion fails, fix the documentation or the source code, rebuild, and
 re-run until all examples pass.
 
 ### Step 6: Final Checks
