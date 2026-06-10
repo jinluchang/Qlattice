@@ -139,8 +139,8 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         cc.set_zero(self.xx)
 
     def swap(self, SelectedField{{name}} f1):
-        cdef FieldSelection fsel = self.psel
-        self.fsel = f1.psel
+        cdef FieldSelection fsel = self.fsel
+        self.fsel = f1.fsel
         f1.fsel = fsel
         cc.qswap(self.xx, f1.xx)
 
