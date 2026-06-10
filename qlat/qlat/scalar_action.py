@@ -34,7 +34,7 @@ class ScalarAction:
     def lmbd(self):
         return c.get_lmbd_scalar_action(self)
 
-    def lmbd(self):
+    def alpha(self):
         return c.get_alpha_scalar_action(self)
 
     def action_node(self, sf):

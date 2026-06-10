@@ -62,6 +62,10 @@ Return the mass-squared parameter.
 
 Return the quartic coupling parameter.
 
+#### `alpha() -> float`
+
+Return the additional coupling parameter (alpha).
+
 ---
 
 ### Action and Energy Methods
@@ -156,7 +160,7 @@ q.begin_with_mpi([[1, 1, 1, 1]])
 
 sa = q.ScalarAction(m_sq=0.1, lmbd=1.0, alpha=0.0)
 print(sa.m_sq())    # 0.1
-print(sa.lmbd())    # 1.0  <!-- TODO: source code bug — lmbd() is defined twice in scalar_action.py; the second def returns alpha, so this actually prints 0.0 -->
+print(sa.lmbd())    # 1.0
 
 q.end_with_mpi()
 ```
