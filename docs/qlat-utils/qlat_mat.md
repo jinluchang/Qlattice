@@ -71,7 +71,7 @@ cm = q.ColorMatrix()  # zero-initialized
 
 All three matrix classes share the same interface:
 
-#### Copying
+### Copying
 
 | Method | Description |
 |---|---|
@@ -80,7 +80,7 @@ All three matrix classes share the same interface:
 | `__deepcopy__(memo)` | Deep copy (delegates to `copy()`). |
 | `__imatmul__(v)` | In-place assignment: `m1 @= m2`. |
 
-#### Element Access
+### Element Access
 
 | Method | Description |
 |---|---|
@@ -89,7 +89,7 @@ All three matrix classes share the same interface:
 
 The buffer protocol is implemented, so `np.asarray(wm)` returns a view of shape `(12, 12)` for `WilsonMatrix`, `(4, 4)` for `SpinMatrix`, or `(3, 3)` for `ColorMatrix`.
 
-#### Arithmetic
+### Arithmetic
 
 | Operator | Description |
 |---|---|
@@ -101,7 +101,7 @@ The buffer protocol is implemented, so `np.asarray(wm)` returns a view of shape 
 | `*=` | In-place scalar multiplication |
 | `==` | Equality check (via `qnorm` of difference) |
 
-#### Linear Algebra
+### Linear Algebra
 
 | Method | Description |
 |---|---|
@@ -112,7 +112,7 @@ The buffer protocol is implemented, so `np.asarray(wm)` returns a view of shape 
 | `qnorm()` | Squared Frobenius norm: `sum |M_ij|^2`. |
 | `set_zero()` | Set all elements to zero. |
 
-#### Representation
+### Representation
 
 | Method | Description |
 |---|---|
@@ -192,7 +192,7 @@ The standard Dirac gamma matrices in the spin-4 basis:
 
 Each is a `SpinMatrix` (module-level constant).
 
-#### `get_gamma_matrix(mu) -> SpinMatrix`
+### `get_gamma_matrix(mu) -> SpinMatrix`
 
 Return the gamma matrix for direction `mu` (0, 1, 2, 3, or 5).
 
@@ -204,19 +204,19 @@ g5 = q.get_gamma_matrix(5)
 
 ## Helper Functions
 
-#### `as_wilson_matrix(x) -> WilsonMatrix`
+### `as_wilson_matrix(x) -> WilsonMatrix`
 
 Convert `x` to a `WilsonMatrix`. If `x` is already a `WilsonMatrix`, return it directly. If `x == 0`, return a zero `WilsonMatrix`.
 
-#### `wilson_matrix_g5_herm(wm) -> WilsonMatrix`
+### `wilson_matrix_g5_herm(wm) -> WilsonMatrix`
 
 Return `g5 * wm^adjoint * g5` (non-mutating version of `wm.g5_herm()`).
 
-#### `as_wilson_matrix_g5_herm(x) -> WilsonMatrix`
+### `as_wilson_matrix_g5_herm(x) -> WilsonMatrix`
 
 Convert `x` to a `WilsonMatrix` and apply `g5_herm`. If `x == 0`, return a zero matrix.
 
-#### `benchmark_matrix_functions(count)`
+### `benchmark_matrix_functions(count)`
 
 Run a matrix-operation benchmark `count` times. Useful for performance testing.
 

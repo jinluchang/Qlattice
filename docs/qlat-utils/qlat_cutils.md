@@ -54,11 +54,11 @@ import qlat_utils as q
 
 ## Directory Listing
 
-#### `qls(path, is_sort=True) -> list[str]`
+### `qls(path, is_sort=True) -> list[str]`
 
 List the immediate contents of directory `path`. If `is_sort` is `True`, results are sorted alphabetically.
 
-#### `qls_all(path, is_folder_before_files=False, is_sort=True) -> list[str]`
+### `qls_all(path, is_folder_before_files=False, is_sort=True) -> list[str]`
 
 Recursively list all entries under `path`. If `is_folder_before_files` is `True`, directories appear before their contents. If `is_sort` is `True`, entries are sorted within each directory level.
 
@@ -145,11 +145,11 @@ In an MPI environment, all ranks must agree on the filesystem state before proce
 
 ## Diagnostics
 
-#### `displayln_malloc_stats()`
+### `displayln_malloc_stats()`
 
 Print glibc `malloc_stats()` output to stdout. Useful for tracking memory allocation in long-running jobs.
 
-#### `get_eigen_type() -> str`
+### `get_eigen_type() -> str`
 
 Return the name of the Eigen backend type used by the C++ layer (e.g., `"Eigen"` or `"Grid"`).
 

@@ -73,11 +73,11 @@ A selection of lattice sites represented as a list of 4-D global coordinates.
 
 ### Constructors
 
-#### `PointsSelection()`
+### `PointsSelection()`
 
 Create an empty, uninitialized selection.
 
-#### `PointsSelection(total_site: Coordinate)`
+### `PointsSelection(total_site: Coordinate)`
 
 Create a zero-length selection with the given total lattice dimensions.
 
@@ -85,7 +85,7 @@ Create a zero-length selection with the given total lattice dimensions.
 |---|---|---|
 | `total_site` | `Coordinate` | Total lattice dimensions |
 
-#### `PointsSelection(total_site, xg_arr)`
+### `PointsSelection(total_site, xg_arr)`
 
 Create from an explicit list of coordinates.
 
@@ -94,7 +94,7 @@ Create from an explicit list of coordinates.
 | `total_site` | `Coordinate` | Total lattice dimensions |
 | `xg_arr` | `int`, `Coordinate`, `numpy.ndarray`, or `list` | If `int`, treated as `n_points`; if `Coordinate`, a single point; if `ndarray`, shape `(n_points, 4)`; if `list` of `Coordinate` |
 
-#### `PointsSelection(total_site, xg_arr, points_dist_type)`
+### `PointsSelection(total_site, xg_arr, points_dist_type)`
 
 Same as above but also set the distribution type.
 
@@ -102,23 +102,23 @@ Same as above but also set the distribution type.
 |---|---|---|
 | `points_dist_type` | `str` | One of `"g"`, `"f"`, `"l"`, `"r"`, `"o"` |
 
-#### `PointsSelection(geo: Geometry)`
+### `PointsSelection(geo: Geometry)`
 
 Create a full selection (all sites) with `points_dist_type = "f"`.
 
-#### `PointsSelection(fsel: FieldSelection)`
+### `PointsSelection(fsel: FieldSelection)`
 
 Create a local selection from a `FieldSelection` (`points_dist_type = "l"`).
 
-#### `PointsSelection(fsel, ssp)`
+### `PointsSelection(fsel, ssp)`
 
 Create by shuffling a `FieldSelection` according to a `SelectedShufflePlan`.
 
-#### `PointsSelection(psel: PointsSelection)`
+### `PointsSelection(psel: PointsSelection)`
 
 Copy constructor.
 
-#### `PointsSelection(psel, ssp, is_reverse=False)`
+### `PointsSelection(psel, ssp, is_reverse=False)`
 
 Create by shuffling an existing `PointsSelection` according to a
 `SelectedShufflePlan`.
@@ -127,7 +127,7 @@ Create by shuffling an existing `PointsSelection` according to a
 
 ### Properties
 
-#### `points_dist_type -> str`
+### `points_dist_type -> str`
 
 Get or set the distribution type. Values:
 - `"g"` — Global: all points known on every node.
@@ -136,19 +136,19 @@ Get or set the distribution type. Values:
 - `"r"` — Random: points randomly distributed across nodes.
 - `"o"` — Other.
 
-#### `total_site -> Coordinate`
+### `total_site -> Coordinate`
 
 Get or set the total lattice dimensions.
 
-#### `geo -> Geometry`
+### `geo -> Geometry`
 
 A `Geometry` constructed from `total_site` with no halo expansion.
 
-#### `n_points -> int`
+### `n_points -> int`
 
 Number of selected points on this node.
 
-#### `xg_arr -> numpy.ndarray`
+### `xg_arr -> numpy.ndarray`
 
 The global coordinates of all selected points as a `(n_points, 4)` array of
 `int32`. Setting this property accepts an `int` (number of points), a single
@@ -158,19 +158,19 @@ The global coordinates of all selected points as a `(n_points, 4)` array of
 
 ### Indexing and Iteration
 
-#### `__getitem__(idx)` / `__setitem__(idx, val)`
+### `__getitem__(idx)` / `__setitem__(idx, val)`
 
 Index into the underlying `xg_arr` via `numpy.asarray`.
 
-#### `__iter__()`
+### `__iter__()`
 
 Iterate over selected points, yielding `Coordinate` objects.
 
-#### `__len__()`
+### `__len__()`
 
 Return `n_points`.
 
-#### `coordinate_from_idx(idx: int) -> Coordinate`
+### `coordinate_from_idx(idx: int) -> Coordinate`
 
 Return the global coordinate at linear index `idx`.
 
@@ -178,21 +178,21 @@ Return the global coordinate at linear index `idx`.
 
 ### Set Operations
 
-#### `intersect(fsel: FieldSelection) -> PointsSelection`
+### `intersect(fsel: FieldSelection) -> PointsSelection`
 
 Return a new `PointsSelection` containing only points that are also selected
 by `fsel`.
 
-#### `is_containing(sel_small) -> bool`
+### `is_containing(sel_small) -> bool`
 
 Return `True` if every point in `sel_small` (a `PointsSelection` or
 `FieldSelection`) is contained in `self`.
 
-#### `is_containing_psel(psel_small: PointsSelection) -> bool`
+### `is_containing_psel(psel_small: PointsSelection) -> bool`
 
 Check containment for a `PointsSelection`.
 
-#### `is_containing_fsel(fsel_small: FieldSelection) -> bool`
+### `is_containing_fsel(fsel_small: FieldSelection) -> bool`
 
 Check containment for a `FieldSelection`.
 
@@ -200,31 +200,31 @@ Check containment for a `FieldSelection`.
 
 ### Serialization and I/O
 
-#### `save(path: str, *, is_sync_node=True)`
+### `save(path: str, *, is_sync_node=True)`
 
 Save to file. When `is_sync_node=True`, writes via synchronized I/O
 (`save_points_selection_info`); otherwise writes per-node
 (`save_points_selection`).
 
-#### `load(path: str, geo=None, *, is_sync_node=True)`
+### `load(path: str, geo=None, *, is_sync_node=True)`
 
 Load from file. For `.lati` files, `geo` is optional (total_site is stored
 in the file). For other formats, `geo` is required.
 
-#### `save_str() -> bytes`
+### `save_str() -> bytes`
 
 Serialize to a byte string (only node 0 returns data).
 
-#### `load_str(content: bytes)`
+### `load_str(content: bytes)`
 
 Deserialize from a byte string (only node 0 needs the data; result is
 broadcast).
 
-#### `to_lat_data() -> LatDataInt`
+### `to_lat_data() -> LatDataInt`
 
 Convert to `LatDataInt` format.
 
-#### `from_lat_data(ld: LatDataInt)`
+### `from_lat_data(ld: LatDataInt)`
 
 Load from `LatDataInt`.
 
@@ -232,11 +232,11 @@ Load from `LatDataInt`.
 
 ### MPI Broadcast
 
-#### `bcast(root=0) -> PointsSelection`
+### `bcast(root=0) -> PointsSelection`
 
 Broadcast the selection from `root` to all nodes using native MPI broadcast.
 
-#### `bcast_via_ld(root=0) -> PointsSelection`
+### `bcast_via_ld(root=0) -> PointsSelection`
 
 Broadcast via `LatDataInt` serialization (alternative implementation).
 
@@ -244,13 +244,13 @@ Broadcast via `LatDataInt` serialization (alternative implementation).
 
 ### Hashing and Pickle
 
-#### `hash_sha256() -> str`
+### `hash_sha256() -> str`
 
 Return a SHA-256 hash that is consistent across all nodes. For `"g"`
 distribution, returns the local hash if all nodes agree; otherwise hashes
 the gathered data from all nodes.
 
-#### `__getstate__` / `__setstate__`
+### `__getstate__` / `__setstate__`
 
 Pickle support. Only works correctly on a single node or when all nodes hold
 the same data.
@@ -264,16 +264,16 @@ value: `rank >= 0` means selected, `rank == -1` means not selected.
 
 ### <a id="fieldselection-constructors"></a> Constructors
 
-#### `FieldSelection()`
+### `FieldSelection()`
 
 Create an empty, uninitialized selection.
 
-#### `FieldSelection(geo: Geometry, rank=-1)`
+### `FieldSelection(geo: Geometry, rank=-1)`
 
 Create a uniform selection. `rank=0` selects all sites; `rank=-1` (default)
 selects no sites.
 
-#### `FieldSelection(psel: PointsSelection, geo=None)`
+### `FieldSelection(psel: PointsSelection, geo=None)`
 
 Create from a `PointsSelection`. Requires `psel.points_dist_type in ["l", "f", "g"]`.
 
@@ -281,15 +281,15 @@ Create from a `PointsSelection`. Requires `psel.points_dist_type in ["l", "f", "
 
 ### <a id="fieldselection-properties"></a> Properties
 
-#### `geo -> Geometry`
+### `geo -> Geometry`
 
 The geometry of the underlying rank field.
 
-#### `total_site -> Coordinate`
+### `total_site -> Coordinate`
 
 The total lattice dimensions.
 
-#### `n_elems -> int`
+### `n_elems -> int`
 
 Number of selected elements on this node.
 
@@ -297,33 +297,33 @@ Number of selected elements on this node.
 
 ### Selection Modification
 
-#### `update()`
+### `update()`
 
 Rebuild internal indices from the `f_rank` field. Must be called after
 modifying `f_rank` directly (e.g., via buffer view).
 
-#### `set_empty(geo: Geometry)`
+### `set_empty(geo: Geometry)`
 
 Set an empty selection (all ranks = -1) with the given geometry.
 
-#### `set_uniform(geo: Geometry, val=0)`
+### `set_uniform(geo: Geometry, val=0)`
 
 Set a uniform selection. `val=0` selects all sites; `val=-1` deselects all.
 
-#### `set_rand(total_site: Coordinate, n_per_tslice: int, rs: RngState)`
+### `set_rand(total_site: Coordinate, n_per_tslice: int, rs: RngState)`
 
 Randomly select `n_per_tslice` sites per time slice.
 
-#### `set_rand_psel(total_site, n_per_tslice, rs, psel=None)`
+### `set_rand_psel(total_site, n_per_tslice, rs, psel=None)`
 
 Same as `set_rand`, then additionally include all points from `psel`.
 
-#### `add_psel(psel: PointsSelection, rank_psel=...)`
+### `add_psel(psel: PointsSelection, rank_psel=...)`
 
 Add points from a `PointsSelection` to the selection. Points already selected
 with a lower rank keep their existing rank.
 
-#### `add_fsel(fsel: FieldSelection)`
+### `add_fsel(fsel: FieldSelection)`
 
 Add points from another `FieldSelection`. Points already selected with a
 lower rank keep their existing rank.
@@ -332,29 +332,29 @@ lower rank keep their existing rank.
 
 ### <a id="fieldselection-set-operations"></a> Set Operations
 
-#### `intersect_with(fsel: FieldSelection)`
+### `intersect_with(fsel: FieldSelection)`
 
 Modify `self` to contain only sites also selected by `fsel`. More efficient
 if `self` is smaller.
 
-#### `intersect(fsel: FieldSelection) -> FieldSelection`
+### `intersect(fsel: FieldSelection) -> FieldSelection`
 
 Return a new `FieldSelection` containing only sites selected by both.
 Does not modify `self`.
 
-#### `is_containing(sel_small) -> bool`
+### `is_containing(sel_small) -> bool`
 
 Return `True` if every point in `sel_small` is contained in `self`.
 
-#### `is_containing_psel(psel_small) -> bool` / `is_containing_fsel(fsel_small) -> bool`
+### `is_containing_psel(psel_small) -> bool` / `is_containing_fsel(fsel_small) -> bool`
 
 Specialized containment checks.
 
-#### `to_psel() -> PointsSelection`
+### `to_psel() -> PointsSelection`
 
 Convert to a Global-distribution `PointsSelection`.
 
-#### `to_psel_local() -> PointsSelection`
+### `to_psel_local() -> PointsSelection`
 
 Convert to a Local-distribution `PointsSelection`.
 
@@ -362,25 +362,25 @@ Convert to a Local-distribution `PointsSelection`.
 
 ### <a id="fieldselection-indexing-and-iteration"></a> Indexing and Iteration
 
-#### `__getitem__(idx)` / `__setitem__(idx, val)`
+### `__getitem__(idx)` / `__setitem__(idx, val)`
 
 Index into the rank array via `numpy.asarray`. Modifying values requires
 calling `update()` afterwards.
 
-#### `__iter__()`
+### `__iter__()`
 
 Iterate over selected sites, yielding `Coordinate` objects.
 
-#### `__len__()`
+### `__len__()`
 
 Return `n_elems`.
 
-#### `idx_from_coordinate(xg: Coordinate) -> int`
+### `idx_from_coordinate(xg: Coordinate) -> int`
 
 Look up the local index for a global coordinate. Returns the index in the
 selection (not the field index).
 
-#### `coordinate_from_idx(idx: int) -> Coordinate`
+### `coordinate_from_idx(idx: int) -> Coordinate`
 
 Return the global coordinate for the selected element at index `idx`.
 
@@ -388,15 +388,15 @@ Return the global coordinate for the selected element at index `idx`.
 
 ### <a id="fieldselection-io-and-pickle"></a> I/O and Pickle
 
-#### `save(path: str) -> int`
+### `save(path: str) -> int`
 
 Write the selection to a file. Returns total bytes written.
 
-#### `load(path: str) -> int`
+### `load(path: str) -> int`
 
 Read the selection from a file. Returns total bytes read.
 
-#### `__getstate__` / `__setstate__`
+### `__getstate__` / `__setstate__`
 
 Pickle support. Only works on a single node.
 
@@ -410,45 +410,45 @@ can shuffle forward or in reverse.
 
 ### <a id="selectedshuffleplan-constructors"></a> Constructors
 
-#### `SelectedShufflePlan()`
+### `SelectedShufflePlan()`
 
 Create an empty (identity) plan.
 
-#### `SelectedShufflePlan("l_from_g", psel_src, root)`
+### `SelectedShufflePlan("l_from_g", psel_src, root)`
 
 Shuffle from Global to Local distribution. `root` is the node that holds
 the full global point list.
 
-#### `SelectedShufflePlan("l_from_g", psel_src_list, root_list)`
+### `SelectedShufflePlan("l_from_g", psel_src_list, root_list)`
 
 Batch version: multiple point selections with corresponding root nodes.
 
-#### `SelectedShufflePlan("g_from_l", psel_src, root, geo)`
+### `SelectedShufflePlan("g_from_l", psel_src, root, geo)`
 
 Shuffle from Local to Global distribution.
 
-#### `SelectedShufflePlan("g_from_l", psel_src_list, root_list, geo_src_list)`
+### `SelectedShufflePlan("g_from_l", psel_src_list, root_list, geo_src_list)`
 
 Batch version.
 
-#### `SelectedShufflePlan("r_from_l", psel_src, geo, rs)`
+### `SelectedShufflePlan("r_from_l", psel_src, geo, rs)`
 
 Shuffle from Local to Random distribution.
 
-#### `SelectedShufflePlan("r_from_l", psel_src_list, geo_src_list, rs)`
+### `SelectedShufflePlan("r_from_l", psel_src_list, geo_src_list, rs)`
 
 Batch version.
 
-#### `SelectedShufflePlan("dist_r_from_l", psel_src, geo, rs, id_node_list)`
+### `SelectedShufflePlan("dist_r_from_l", psel_src, geo, rs, id_node_list)`
 
 Shuffle from Local to Random, restricted to nodes in `id_node_list`.
 
-#### `SelectedShufflePlan("t_slice_from_l", psel_src_list, geo_src_list)`
+### `SelectedShufflePlan("t_slice_from_l", psel_src_list, geo_src_list)`
 
 Shuffle from Local to Local by time slice (transpose data across time
 slices).
 
-#### `SelectedShufflePlan("dist_t_slice_from_l", psel_src, geo, num_field)`
+### `SelectedShufflePlan("dist_t_slice_from_l", psel_src, geo, num_field)`
 
 Distributed time-slice shuffle. Matches `"t_slice_from_l"` for use cases
 like spatial smearing where propagators and gauge fields need compatible
@@ -458,31 +458,31 @@ shuffles.
 
 ### <a id="selectedshuffleplan-properties"></a> Properties
 
-#### `points_dist_type_send -> str`
+### `points_dist_type_send -> str`
 
 Distribution type of the source data.
 
-#### `points_dist_type_recv -> str`
+### `points_dist_type_recv -> str`
 
 Distribution type of the destination data.
 
-#### `num_selected_points_send -> int`
+### `num_selected_points_send -> int`
 
 Number of points on the send side.
 
-#### `num_selected_points_recv -> int`
+### `num_selected_points_recv -> int`
 
 Number of points on the receive side.
 
-#### `psel_send_list -> list` / `psel_recv_list -> list`
+### `psel_send_list -> list` / `psel_recv_list -> list`
 
 Lists of `PointsSelection` objects for send and receive sides.
 
-#### `geo_send_list -> list` / `geo_recv_list -> list`
+### `geo_send_list -> list` / `geo_recv_list -> list`
 
 Lists of `Geometry` objects for send and receive sides (computed lazily).
 
-#### `fsel_send_list -> list` / `fsel_recv_list -> list`
+### `fsel_send_list -> list` / `fsel_recv_list -> list`
 
 Lists of `FieldSelection` objects derived from the point selections
 (computed lazily; only populated for Local/Full distribution types).
@@ -491,22 +491,22 @@ Lists of `FieldSelection` objects derived from the point selections
 
 ### Shuffle Methods
 
-#### `shuffle(sp_src: SelectedPointsChar, *, is_reverse=False) -> SelectedPointsChar`
+### `shuffle(sp_src: SelectedPointsChar, *, is_reverse=False) -> SelectedPointsChar`
 
 Shuffle a single `SelectedPointsChar` using this plan. If `is_reverse=True`,
 shuffles in the reverse direction.
 
-#### `shuffle_list(sp_src_list, *, is_reverse=False) -> list`
+### `shuffle_list(sp_src_list, *, is_reverse=False) -> list`
 
 Shuffle a list of `SelectedPointsChar` objects.
 
-#### `shuffle_sp(cls, src, *, is_reverse=False)`
+### `shuffle_sp(cls, src, *, is_reverse=False)`
 
 Shuffle a single field object (`SelectedPointsBase`, `SelectedFieldBase`, or
 `FieldBase`). Converts to `SelectedPointsChar` internally, shuffles, and
 converts back to type `cls`.
 
-#### `shuffle_sp_list(cls, src_list, *, is_reverse=False)`
+### `shuffle_sp_list(cls, src_list, *, is_reverse=False)`
 
 Shuffle a list of field objects.
 
@@ -514,22 +514,22 @@ Shuffle a list of field objects.
 
 ## Module-Level Functions
 
-#### `mk_xg_field(geo: Geometry) -> FieldInt`
+### `mk_xg_field(geo: Geometry) -> FieldInt`
 
 Create a `FieldInt` containing the global coordinate index for each local
 site.
 
-#### `get_psel_single(total_site, xg=None) -> PointsSelection`
+### `get_psel_single(total_site, xg=None) -> PointsSelection`
 
 Return a cached single-point selection. If `xg` is `None`, uses
 `[-1, -1, -1, -1]`.
 
-#### `get_psel_tslice(total_site, *, t_dir=3) -> PointsSelection`
+### `get_psel_tslice(total_site, *, t_dir=3) -> PointsSelection`
 
 Return a cached time-slice selection. For `t_dir=3`, selects all spatial
 sites at each time value. For `t_dir=2`, selects along the z-direction.
 
-#### `is_matching_fsel(fsel1, fsel2) -> bool`
+### `is_matching_fsel(fsel1, fsel2) -> bool`
 
 Check if two `FieldSelection` objects have matching selection patterns.
 

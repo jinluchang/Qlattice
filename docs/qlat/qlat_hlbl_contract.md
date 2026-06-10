@@ -60,7 +60,7 @@ q.end_with_mpi()
 
 ## Muon-Line Field
 
-#### `mk_m_z_field_tag(psel_d, xg_x, xg_y, a, tag) -> SelectedPointsRealD`
+### `mk_m_z_field_tag(psel_d, xg_x, xg_y, a, tag) -> SelectedPointsRealD`
 
 Compute the muon-line field at vertex z for sampled source point x and
 sink point y.
@@ -80,7 +80,7 @@ the selected points.
 
 ## Pair Label Generators
 
-#### `contract_four_pair_labels(tags: list[str]) -> list`
+### `contract_four_pair_labels(tags: list[str]) -> list`
 
 Generate the contraction labels for the four-pair HLbL diagram. Each tag
 in `tags` specifies a reference point configuration:
@@ -88,7 +88,7 @@ in `tags` specifies a reference point configuration:
 - `"ref-center"` — reference point at the center
 - `"ref-close"` — reference point close to the interaction region
 
-#### `contract_two_plus_two_pair_labels() -> list`
+### `contract_two_plus_two_pair_labels() -> list`
 
 Generate the contraction labels for the two-plus-two pair HLbL diagram.
 
@@ -96,7 +96,7 @@ Generate the contraction labels for the two-plus-two pair HLbL diagram.
 
 ## Local Current from Propagators
 
-#### `mk_local_current_from_props(sprop1, sprop2) -> SelectedPointsWilsonMatrix`
+### `mk_local_current_from_props(sprop1, sprop2) -> SelectedPointsWilsonMatrix`
 
 Construct the local electromagnetic current from a pair of point-selected
 propagators:
@@ -117,7 +117,7 @@ selected point.
 
 ## Point-Selected Probability Fields
 
-#### `mk_psel_d_prob_xy(psel_prob, psel_d_prob, idx_xg_x, idx_xg_y) -> tuple`
+### `mk_psel_d_prob_xy(psel_prob, psel_d_prob, idx_xg_x, idx_xg_y) -> tuple`
 
 Compute the probability-weighted field for a pair of source/sink points.
 
@@ -141,11 +141,11 @@ distribution, used in the HLbL tensor decomposition.
 
 ### Constructor
 
-#### `CurrentMoments()`
+### `CurrentMoments()`
 
 Create an uninitialized instance.
 
-#### `CurrentMoments(current: SelectedPointsWilsonMatrix, psel_d_prob_xy: SelectedPointsRealD)`
+### `CurrentMoments(current: SelectedPointsWilsonMatrix, psel_d_prob_xy: SelectedPointsRealD)`
 
 Create and compute moments from a local current field weighted by
 detector-point probabilities.
@@ -154,12 +154,12 @@ detector-point probabilities.
 
 ### Copy and Assignment
 
-#### `copy(is_copying_data: bool = True) -> CurrentMoments`
+### `copy(is_copying_data: bool = True) -> CurrentMoments`
 
 Return a copy. If `is_copying_data` is `False`, return an uninitialized
 instance.
 
-#### `__imatmul__(v1: CurrentMoments)`
+### `__imatmul__(v1: CurrentMoments)`
 
 In-place assignment: `self @= v1`.
 
@@ -167,7 +167,7 @@ In-place assignment: `self @= v1`.
 
 ### Compute Moments
 
-#### `set_from_current(current: SelectedPointsWilsonMatrix, psel_d_prob_xy: SelectedPointsRealD)`
+### `set_from_current(current: SelectedPointsWilsonMatrix, psel_d_prob_xy: SelectedPointsRealD)`
 
 Compute moments from the given current and probability fields.
 
@@ -175,7 +175,7 @@ Compute moments from the given current and probability fields.
 
 ### Global Sum
 
-#### `glb_sum() -> CurrentMoments`
+### `glb_sum() -> CurrentMoments`
 
 Return a new `CurrentMoments` with all entries summed across MPI ranks.
 Does not modify `self`.
@@ -184,7 +184,7 @@ Does not modify `self`.
 
 ## Four-Pair Contraction
 
-#### `contract_four_pair_no_glb_sum(coef, psel_prob, psel_d_prob, idx_xg_x, idx_xg_y, smf_d, sc_xy, sc_yx, cm_xy, cm_yx, inv_type, tags, r_sq_limit, muon_mass, z_v) -> numpy.ndarray`
+### `contract_four_pair_no_glb_sum(coef, psel_prob, psel_d_prob, idx_xg_x, idx_xg_y, smf_d, sc_xy, sc_yx, cm_xy, cm_yx, inv_type, tags, r_sq_limit, muon_mass, z_v) -> numpy.ndarray`
 
 Perform the four-pair HLbL contraction for a given (x, y) source/sink pair.
 Returns a 3-D NumPy array of shape `(n_labels, s_limit, l_limit)`.
@@ -214,7 +214,7 @@ must sum across MPI ranks.
 
 ## Two-Plus-Two Pair Contraction
 
-#### `contract_two_plus_two_pair_no_glb_sum(coef, psel_prob, psel_lps_prob, idx_xg_x, lps_hvp_x, edl_list_c, r_sq_limit, muon_mass, z_v) -> tuple`
+### `contract_two_plus_two_pair_no_glb_sum(coef, psel_prob, psel_lps_prob, idx_xg_x, lps_hvp_x, edl_list_c, r_sq_limit, muon_mass, z_v) -> tuple`
 
 Perform the two-plus-two pair HLbL contraction. This diagram involves two
 quark loops connected by two photon propagators.

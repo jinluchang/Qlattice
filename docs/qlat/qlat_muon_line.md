@@ -57,7 +57,7 @@ control CUBA's threading behaviour.
 
 ## CUBA Integration Library
 
-#### `has_cuba() -> bool`
+### `has_cuba() -> bool`
 
 Return `True` if the CUBA integration library is available at runtime.
 
@@ -72,7 +72,7 @@ if q.has_cuba():
 q.end_with_mpi()
 ```
 
-#### `test_integration_multi_dimensional()`
+### `test_integration_multi_dimensional()`
 
 Run a built-in test of the CUBA multi-dimensional integration routines.
 Useful for verifying that the integration library works correctly.

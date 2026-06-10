@@ -97,14 +97,14 @@ A C++ backed scope timer. Each `Timer` accumulates:
 | Wall-clock time | Total elapsed time between `start()` and `stop()` |
 | FLOP count | Optionally incremented externally via `qtimer.flops += n` |
 
-#### Parameters
+### Parameters
 
 | Parameter | Type | Description |
 |---|---|---|
 | `fname` | `str` | Timer label, displayed in timer reports |
 | `is_verbose` | `bool` | If `True`, print start/stop messages when verbose level is high enough |
 
-#### Methods
+### Methods
 
 | Method | Description |
 |---|---|
@@ -215,7 +215,7 @@ class TimerFork:
 
 A context manager that calls `timer_fork()` on entry and `timer_merge()` on exit. The verbose level is always restored to its original value on exit.
 
-#### Parameters
+### Parameters
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
@@ -224,7 +224,7 @@ A context manager that calls `timer_fork()` on entry and `timer_merge()` on exit
 | `verbose` | `int` or `None` | `None` | If set, temporarily change verbose level inside the block |
 | `max_call_times_for_always_show_info` | `int` | `-1` | Passed to `timer_fork` |
 
-#### Usage
+### Usage
 
 ```python
 with q.TimerFork(verbose=5):
@@ -240,7 +240,7 @@ with q.TimerFork(verbose=5):
 
 The main function-timing decorator.
 
-#### Keyword Arguments
+### Keyword Arguments
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|

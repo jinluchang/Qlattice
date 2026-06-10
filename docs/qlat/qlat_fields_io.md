@@ -71,7 +71,7 @@ Writes lattice fields to a shuffled binary directory.
 
 ### <a id="constructor"></a> Constructor
 
-#### `ShuffledFieldsWriter(path: str, new_size_node: Coordinate, is_append=False)`
+### `ShuffledFieldsWriter(path: str, new_size_node: Coordinate, is_append=False)`
 
 Open a writer at `path` with the given I/O node layout.
 
@@ -85,36 +85,36 @@ Open a writer at `path` with the given I/O node layout.
 
 ### <a id="writer-methods"></a> Methods
 
-#### `close()`
+### `close()`
 
 Close the writer and release resources.
 
-#### `path() -> str`
+### `path() -> str`
 
 Return the directory path.
 
-#### `new_size_node() -> Coordinate`
+### `new_size_node() -> Coordinate`
 
 Return the I/O node grid dimensions.
 
-#### `list() -> list`
+### `list() -> list`
 
 Return a list of field names currently stored.
 
-#### `has(fn: str) -> bool`
+### `has(fn: str) -> bool`
 
 Check if a field with name `fn` exists.
 
-#### `flush()`
+### `flush()`
 
 Flush buffered data to disk.
 
-#### `write(fn: str, obj)`
+### `write(fn: str, obj)`
 
 Write a field object (`FieldBase` or `SelectedFieldBase`) under the name `fn`.
 Internally dispatches to `obj.write_sfw_direct(self, fn)`.
 
-#### `get_cache_sbs(fsel: FieldSelection) -> ShuffledBitSet`
+### `get_cache_sbs(fsel: FieldSelection) -> ShuffledBitSet`
 
 Get or create a cached `ShuffledBitSet` for the given `FieldSelection`. Used
 internally for sparse field I/O.
@@ -123,7 +123,7 @@ internally for sparse field I/O.
 
 ### <a id="writer-properties"></a> Properties
 
-#### `__contains__(fn: str) -> bool`
+### `__contains__(fn: str) -> bool`
 
 Check membership via the `in` operator.
 
@@ -135,7 +135,7 @@ Reads lattice fields from a shuffled binary directory.
 
 ### <a id="reader-constructor"></a> Constructor
 
-#### `ShuffledFieldsReader(path: str, new_size_node=None)`
+### `ShuffledFieldsReader(path: str, new_size_node=None)`
 
 Open a reader at `path`.
 
@@ -148,46 +148,46 @@ Open a reader at `path`.
 
 ### <a id="reader-methods"></a> Methods
 
-#### `close()`
+### `close()`
 
 Close the reader and release resources.
 
-#### `path() -> str`
+### `path() -> str`
 
 Return the directory path.
 
-#### `new_size_node() -> Coordinate`
+### `new_size_node() -> Coordinate`
 
 Return the I/O node grid dimensions.
 
-#### `list() -> list`
+### `list() -> list`
 
 Return a list of field names stored in the directory.
 
-#### `has(fn: str) -> bool`
+### `has(fn: str) -> bool`
 
 Check if a field with name `fn` exists.
 
-#### `has_duplicates() -> bool`
+### `has_duplicates() -> bool`
 
 Check if the stored data contains duplicate entries.
 
-#### `is_sparse_field(fn: str) -> bool`
+### `is_sparse_field(fn: str) -> bool`
 
 Return `True` if the named field is stored as a sparse (selected) field.
 
-#### `read_as_char(fn: str)`
+### `read_as_char(fn: str)`
 
 Read a field as raw bytes. Returns `SelectedFieldChar` for sparse fields,
 `FieldChar` for dense fields, or `None` if the field does not exist.
 
-#### `read(fn: str, obj)`
+### `read(fn: str, obj)`
 
 Read a field into `obj` (`FieldBase` or `SelectedFieldBase`). For
 `SelectedField` objects, `obj.fsel` may be `None` before reading and will
 be properly populated afterwards.
 
-#### `get_cache_sbs(fsel: FieldSelection) -> ShuffledBitSet`
+### `get_cache_sbs(fsel: FieldSelection) -> ShuffledBitSet`
 
 Get or create a cached `ShuffledBitSet` for the given `FieldSelection`.
 
@@ -195,7 +195,7 @@ Get or create a cached `ShuffledBitSet` for the given `FieldSelection`.
 
 ### <a id="reader-properties"></a> Properties
 
-#### `__contains__(fn: str) -> bool`
+### `__contains__(fn: str) -> bool`
 
 Check membership via the `in` operator.
 
@@ -207,7 +207,7 @@ Maps a `FieldSelection` to the shuffled I/O node layout. Used internally by
 both `ShuffledFieldsWriter` and `ShuffledFieldsReader` to determine which
 sites each I/O node is responsible for.
 
-#### `ShuffledBitSet(fsel: FieldSelection, new_size_node: Coordinate)`
+### `ShuffledBitSet(fsel: FieldSelection, new_size_node: Coordinate)`
 
 | Parameter | Type | Description |
 |---|---|---|
@@ -218,7 +218,7 @@ sites each I/O node is responsible for.
 
 ## Module-Level Functions
 
-#### `open_fields(path: str, mode: str, new_size_node=None)`
+### `open_fields(path: str, mode: str, new_size_node=None)`
 
 Open a shuffled fields directory. Convenience function that creates a
 `ShuffledFieldsReader` or `ShuffledFieldsWriter` depending on `mode`.
@@ -229,21 +229,21 @@ Open a shuffled fields directory. Convenience function that creates a
 | `mode` | `str` | `"r"` for read, `"w"` for write, `"a"` for append |
 | `new_size_node` | `Coordinate` or `None` | Required for `"w"` mode; optional otherwise |
 
-#### `list_fields(path: str, new_size_node=None) -> list`
+### `list_fields(path: str, new_size_node=None) -> list`
 
 Return a list of field names stored in the directory. Opens and closes a
 reader internally.
 
-#### `fields_build_index(path: str, new_size_node=None)`
+### `fields_build_index(path: str, new_size_node=None)`
 
 Build the internal index for faster field lookup. Opens and closes a reader
 internally.
 
-#### `fields_has_duplicates(path: str, new_size_node=None) -> bool`
+### `fields_has_duplicates(path: str, new_size_node=None) -> bool`
 
 Check whether the stored data contains duplicate entries.
 
-#### `properly_truncate_fields(path, is_check_all=False, is_only_check=False, new_size_node=None)`
+### `properly_truncate_fields(path, is_check_all=False, is_only_check=False, new_size_node=None)`
 
 Check and optionally truncate corrupted trailing data from the shuffled
 files. Returns a list of successfully stored field names.
@@ -255,27 +255,27 @@ files. Returns a list of successfully stored field names.
 | `is_only_check` | `bool` | If `True`, only check without modifying |
 | `new_size_node` | `Coordinate` | I/O node grid |
 
-#### `truncate_fields(path: str, fns_keep: list, new_size_node=None)`
+### `truncate_fields(path: str, fns_keep: list, new_size_node=None)`
 
 Truncate the stored data to keep only the fields listed in `fns_keep`.
 The names must be in the same order as they appear on disk. All names in
 `fns_keep` must already exist in the directory.
 
-#### `check_fields(path: str, is_check_all=True, new_size_node=None) -> list`
+### `check_fields(path: str, is_check_all=True, new_size_node=None) -> list`
 
 Return a list of field names that can be read successfully from the
 directory.
 
-#### `check_compressed_eigen_vectors(path: str) -> bool`
+### `check_compressed_eigen_vectors(path: str) -> bool`
 
 Check whether compressed eigenvector data can be read. Returns `True` if
 there is a problem, `False` if the data is OK.
 
-#### `eigen_system_repartition(new_size_node, path, path_new="")`
+### `eigen_system_repartition(new_size_node, path, path_new="")`
 
 Repartition a stored eigensystem to a new I/O node layout.
 
-#### `show_all_shuffled_fields_writer() -> str`
+### `show_all_shuffled_fields_writer() -> str`
 
 Return debug information about all currently open `ShuffledFieldsWriter`
 instances.

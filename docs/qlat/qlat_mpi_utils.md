@@ -34,7 +34,7 @@ communicator) that other qlat modules use for collective operations.
 
 ## MPI Lifecycle Functions
 
-#### `begin_with_mpi(size_node_list=None)`
+### `begin_with_mpi(size_node_list=None)`
 
 Initialize MPI and the qlat C++ runtime.
 
@@ -55,7 +55,7 @@ begin_with_mpi(size_node_list=None)
 |-----------|------|---------|-------------|
 | `size_node_list` | `list` or `None` | `None` | Candidate 4-D node grids to try before the built-in defaults |
 
-#### `end_with_mpi(is_preserving_cache=False)`
+### `end_with_mpi(is_preserving_cache=False)`
 
 Finalize the qlat C++ runtime (`q.end`) and call `MPI.Finalize()`.
 
@@ -71,15 +71,15 @@ end_with_mpi(is_preserving_cache=False)
 
 ## Communication and Diagnostics
 
-#### `get_comm() -> mpi4py.MPI.Intracomm`
+### `get_comm() -> mpi4py.MPI.Intracomm`
 
 Return the module-level MPI communicator set by `begin_with_mpi`.
 
-#### `set_comm(x)`
+### `set_comm(x)`
 
 Set the module-level MPI communicator. Rarely called directly.
 
-#### `show_machine()`
+### `show_machine()`
 
 Print a diagnostic line showing the current rank ID, total ranks, and
 Cartesian coordinates of this node. Decorated with `@timer_verbose`.
@@ -88,7 +88,7 @@ Cartesian coordinates of this node. Decorated with `@timer_verbose`.
 
 ## Data Distribution
 
-#### `get_mpi_chunk(total_list, *, rng_state=None) -> list`
+### `get_mpi_chunk(total_list, *, rng_state=None) -> list`
 
 Distribute `total_list` across MPI ranks. Each rank receives one chunk of
 the list. The assignment is deterministic when `rng_state` is `None`; pass
