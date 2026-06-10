@@ -1,3 +1,16 @@
+"""
+Module ``qlat.contract_hvp``
+=============================
+
+Contract a conserved-point hadronic vacuum polarization (HVP) on a
+single time slice between two propagators.  Returns the result as a
+``LatData`` object.
+
+Documentation: ``docs/qlat/qlat_contract_hvp.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils import *
 from .c import *
 from . import c

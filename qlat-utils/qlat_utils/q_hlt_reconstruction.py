@@ -1,3 +1,15 @@
+"""
+Module ``qlat_utils.q_hlt_reconstruction``
+===========================================
+
+HLT (Hypercubic Laplacian Transform) spectral reconstruction using JAX-based
+automatic differentiation for fitting spectral densities to correlator data.
+
+Documentation: ``docs/qlat-utils/qlat_q_hlt_reconstruction.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "mk_hlt_params",
     #

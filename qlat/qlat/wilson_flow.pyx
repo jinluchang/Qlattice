@@ -1,5 +1,19 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.wilson_flow``
+============================
+
+Wilson flow and stout smearing utilities for gauge fields.
+
+Provides energy density measurements, Wilson flow evolution (Runge-Kutta and
+Euler integrators), stout smearing, and local tree gauge fixing.
+
+Documentation: ``docs/qlat/qlat_wilson_flow.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .field_types cimport (

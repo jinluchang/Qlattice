@@ -1,5 +1,16 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat_utils.timer``
+=================================
+
+Timing, profiling, verbosity control, and display utilities for qlat.
+
+Documentation: ``docs/qlat-utils/qlat_timer.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 
 import functools

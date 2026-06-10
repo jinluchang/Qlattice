@@ -1,3 +1,15 @@
+"""
+Module ``qlat.fthmc``
+=====================
+
+Flow-time Hamiltonian Monte Carlo (ftHMC) utilities: gradient flow
+evolution, flowed Hamiltonian evaluation, and flowed force computation.
+
+Documentation: ``docs/qlat/qlat_fthmc.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat import *
 
 import qlat.c as c

@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.utils_io``
+=========================
+
+Lock management, graceful shutdown, and time-limit utilities for MPI-aware
+lattice QCD simulations.
+
+Documentation: ``docs/qlat/qlat_utils_io.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 

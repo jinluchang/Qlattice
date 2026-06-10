@@ -1,3 +1,16 @@
+"""
+Module ``qlat_utils.qplot``
+============================
+
+Gnuplot-based plotting utilities for lattice QCD data.  Provides helpers for
+saving, loading, and displaying data tables, and for generating gnuplot-driven
+PNG/PDF plots from within Python or Jupyter notebooks.
+
+Documentation: ``docs/qlat-utils/qlat_qplot.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "show_datatable",
     "read_datatable",

@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.smear``
+======================
+
+Gauge-field smearing (APE, HYP) and propagator/fermion-field smearing
+operations for lattice QCD calculations.
+
+Documentation: ``docs/qlat/qlat_smear.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry

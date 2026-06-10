@@ -1,5 +1,21 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.muon_line``
+==========================
+
+Muon-line integrals for hadronic light-by-light (HLbL) scattering
+computations.  Provides functions to compute, save, load, and query the
+tensor :math:`\mathcal{M}_{i,\rho,\sigma,\lambda}(x,y,z)` defined in
+`arXiv:2304.04423 <https://arxiv.org/abs/2304.04423>`_ Eq.~(9), together
+with interpolation management and extra-weighted variants used for
+subtracted and unsubtracted muon-line contributions.
+
+Documentation: ``docs/qlat/qlat_muon_line.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import os
 
 os.environ['CUBACORES'] = '0'

@@ -1,5 +1,22 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.propagator``
+===========================
+
+Lattice propagator types and utilities for domain-wall fermion QCD
+simulations.  Defines the core propagator containers (`Prop`, `SelProp`,
+`PselProp`, `SpinProp`, `FermionField4d`) together with functions for
+constructing point, wall, and random-U1 sources, performing free and
+conjugate-gradient inversions, converting between Wilson-matrix and
+spin-color layouts, and splitting/reassembling propagators into
+individual fermion fields.
+
+Documentation: ``docs/qlat/qlat_propagator.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry

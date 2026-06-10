@@ -1,3 +1,15 @@
+"""
+Module ``qlat.smear_prop``
+============================
+
+Spatial Jacobi smearing of propagators and fermion fields with MPI-aware
+chunk-based communication plans.
+
+Documentation: ``docs/qlat/qlat_smear_prop.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "prop_spatial_smear",
 ]

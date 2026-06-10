@@ -43,6 +43,19 @@ int_type_name_list = [
     ]
 }}
 
+"""
+Module ``qlat.selected_points_types``
+=======================================
+
+Typed selected-points classes (SelectedPointsColorMatrix, SelectedPointsRealD, ...).
+Each class stores lattice data at a discrete set of points specified by a
+``PointsSelection``.
+
+Documentation: ``docs/qlat/qlat_selected_points_types.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer

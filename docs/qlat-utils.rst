@@ -16,6 +16,38 @@ qlat_utils
 
    qlat-utils/qlat_qar.md
 
+   qlat-utils/qlat_timer.md
+
+   qlat-utils/qlat_types.md
+
+   qlat-utils/qlat_mat.md
+
+   qlat-utils/qlat_cutils.md
+
+   qlat-utils/qlat_utils_utils.md
+
+   qlat-utils/qlat_cache.md
+
+   qlat-utils/qlat_lru_cache.md
+
+   qlat-utils/qlat_c.md
+
+   qlat-utils/qlat_ama.md
+
+   qlat-utils/qlat_q_fit_corr.md
+
+   qlat-utils/qlat_q_fit_corr_2.md
+
+   qlat-utils/qlat_qplot.md
+
+   qlat-utils/qlat_parallel.md
+
+   qlat-utils/qlat_q_hlt_reconstruction.md
+
+   qlat-utils/qlat_load_prop.md
+
+   qlat-utils/qlat_cli.md
+
 .. automodule:: qlat_utils
    :members:
 

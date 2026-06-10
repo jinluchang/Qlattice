@@ -1,3 +1,15 @@
+"""
+Module ``qlat_utils.q_fit_corr``
+=================================
+
+Correlation-matrix fitting via energy/amplitude parameterisation with JAX
+autodiff, scipy minimisation, and HMC sampling.
+
+Documentation: ``docs/qlat-utils/qlat_q_fit_corr.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import numpy as np
 
 from .c import *

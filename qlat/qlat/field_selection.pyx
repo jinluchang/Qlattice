@@ -1,5 +1,18 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.field_selection``
+===============================
+
+Defines ``PointsSelection`` and ``FieldSelection`` for selecting subsets of
+lattice sites, along with ``SelectedShufflePlan`` for redistributing
+selected points across MPI nodes.
+
+Documentation: ``docs/qlat/qlat_field_selection.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer

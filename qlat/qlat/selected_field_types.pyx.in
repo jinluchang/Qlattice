@@ -21,6 +21,19 @@ type_name_list = [
     ]
 }}
 
+"""
+Module ``qlat.selected_field_types``
+======================================
+
+Typed selected-field classes (SelectedFieldColorMatrix, SelectedFieldRealD, ...).
+Each class stores lattice data only on a subset of sites specified by a
+``FieldSelection``.
+
+Documentation: ``docs/qlat/qlat_selected_field_types.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from cpython cimport Py_buffer

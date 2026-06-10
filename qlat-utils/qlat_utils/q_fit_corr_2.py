@@ -1,3 +1,16 @@
+"""
+Module ``qlat_utils.q_fit_corr_2``
+====================================
+
+Correlation-matrix fitting via eigenvalue/coefficient parameterisation with
+JAX autodiff and scipy minimisation.  Variant of ``q_fit_corr`` that uses
+power-law (eigenvalue) propagators instead of exponential (energy) ones.
+
+Documentation: ``docs/qlat-utils/qlat_q_fit_corr_2.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import numpy as np
 
 from .c import *

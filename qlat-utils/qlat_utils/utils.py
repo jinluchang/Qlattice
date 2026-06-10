@@ -1,3 +1,16 @@
+"""
+Module ``qlat_utils.utils``
+=================================
+
+General-purpose utility functions for CLI argument parsing, environment access,
+modular arithmetic, spatial coordinate helpers, lattice physics quantities, and
+test result verification.
+
+Documentation: ``docs/qlat-utils/qlat_utils_utils.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from .timer import *
 from .cache import *
 from .c import *

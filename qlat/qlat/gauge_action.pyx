@@ -1,5 +1,18 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.gauge_action``
+==============================
+
+Defines the ``GaugeAction`` class, which stores the parameters
+(``beta``, ``c1``) of a lattice gauge action (Wilson plaquette with
+optional rectangle improvement).
+
+Documentation: ``docs/qlat/qlat_gauge_action.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 

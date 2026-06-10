@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.qcd``
+====================
+
+Gauge field operations, gauge transformations, Wilson lines, and
+domain-wall fermion (DWF) QED solvers for lattice QCD simulations.
+
+Documentation: ``docs/qlat/qlat_qcd.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry

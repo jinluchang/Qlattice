@@ -1,3 +1,15 @@
+"""
+Module ``qlat_utils.lru_cache``
+=================================
+
+A fixed-capacity Least Recently Used (LRU) cache backed by
+``collections.OrderedDict``. Provides O(1) lookup, insertion, and eviction.
+
+Documentation: ``docs/qlat-utils/qlat_lru_cache.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from collections import OrderedDict
 
 class LRUCache:

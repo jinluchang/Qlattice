@@ -1,3 +1,20 @@
+"""
+Module ``qlat.field_type_dict``
+================================
+
+Registry of field element-type classifications used throughout Qlattice.
+
+Defines lookup dictionaries (``field_type_dict``, ``selected_field_type_dict``,
+``selected_points_type_dict``) and pre-built lists of element-type categories
+(``field_ctypes_complex``, ``field_ctypes_double``, ``field_ctypes_float``,
+``field_ctypes_long``, ``field_ctypes_char``) that other modules use to
+determine which C++ code path to invoke for a given field element type.
+
+Documentation: ``docs/qlat/qlat_field_type_dict.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "field_type_dict",
     "selected_field_type_dict",

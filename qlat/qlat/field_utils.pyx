@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.field_utils``
+============================
+
+Field utility functions: expansion, communication plans, FFT, norms,
+element-wise square root, coordinate shifting, and field shuffling.
+
+Documentation: ``docs/qlat/qlat_field_utils.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry

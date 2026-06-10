@@ -1,3 +1,14 @@
+"""
+Module ``qlat.fermion_action``
+==============================
+
+Fermion action parameterisation for Mobius and ZMobius domain-wall fermions.
+
+Documentation: ``docs/qlat/qlat_fermion_action.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import qlat.c as c
 
 class FermionAction:

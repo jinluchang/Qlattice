@@ -1,5 +1,29 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.hmc``
+=====================
+
+Hybrid Monte Carlo (HMC) machinery for pure-gauge simulations.
+
+Provides:
+
+- ``GaugeMomentum`` — conjugate momentum field (``FieldColorMatrix`` with
+  multiplicity 4, one anti-Hermitian matrix per lattice direction).
+- Force computation (``set_gm_force``, ``set_gm_force_dual``).
+- Molecular-dynamics evolution (``gf_evolve``, ``gf_evolve_dual``, and
+  ``FieldRealD``-weighted variants).
+- Hamiltonian helpers (``gm_hamilton_node``, ``gf_hamilton_node``).
+- Metropolis accept/reject (``metropolis_accept``).
+- A complete pure-gauge HMC driver (``run_hmc_pure_gauge``).
+- Utility functions for anti-Hermitian matrix basis conversions and
+  gauge-transformation momentum projection.
+
+Documentation: ``docs/qlat/qlat_hmc.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .geometry cimport Geometry

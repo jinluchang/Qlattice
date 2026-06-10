@@ -1,5 +1,19 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.topology``
+============================
+
+Topology charge and plaquette action density measurements for gauge fields.
+
+Provides clover-leaf and 5-loop improved topological charge density,
+plaquette action density, and their per-site field versions.
+
+Documentation: ``docs/qlat/qlat_topology.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .field_types cimport FieldRealD

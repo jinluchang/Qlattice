@@ -1,5 +1,16 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat_utils.types``
+=================================
+
+Element type descriptors and buffer protocol support for lattice QCD data types.
+
+Documentation: ``docs/qlat-utils/qlat_types.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT

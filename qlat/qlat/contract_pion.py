@@ -1,3 +1,16 @@
+"""
+Module ``qlat.contract_pion``
+===============================
+
+Compute the pion two-point correlation function from a propagator on a
+single time slice.  Supports both dense ``Prop`` and selected
+``SelProp`` inputs.
+
+Documentation: ``docs/qlat/qlat_contract_pion.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils import *
 from .c import *
 from . import c

@@ -1,5 +1,18 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.hlbl_contract``
+===============================
+
+Hadronic light-by-light (HLbL) contraction routines for computing
+muon g-2 contributions on the lattice, including four-pair and
+two-plus-two pair contractions, muon-line fields, and local currents.
+
+Documentation: ``docs/qlat/qlat_hlbl_contract.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 from qlat_utils.all cimport *
 cimport numpy

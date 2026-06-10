@@ -1,5 +1,16 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat_utils.cutils``
+=============================
+
+Low-level C++ filesystem utilities exposed to Python: path manipulation, directory listing, file/directory creation and removal, cached existence checks, MPI-synchronized variants, and cache management.
+
+Documentation: ``docs/qlat-utils/qlat_cutils.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 
 ### -------------------------------------------------------------------

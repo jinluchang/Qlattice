@@ -1,5 +1,18 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat.fields_io``
+==========================
+
+Provides shuffled binary I/O for lattice fields via ``ShuffledFieldsWriter``
+and ``ShuffledFieldsReader``, along with utility functions for listing,
+truncating, and verifying stored fields.
+
+Documentation: ``docs/qlat/qlat_fields_io.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from qlat_utils.all cimport *
 from . cimport everything as cc
 from .field_base cimport FieldBase, SelectedFieldBase
