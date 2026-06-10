@@ -77,7 +77,7 @@ sf  @= sp                   # SelectedField ← SelectedPoints
 |---|---|
 | `copy(is_copying_data=True)` | Deep copy; returns a new `SelectedField` with same `fsel` |
 | `set_zero()` | Set all elements to zero |
-| `swap(f1)` | Swap contents with another `SelectedField` of the same type <!-- TODO: swap() has a source bug — uses self.psel instead of self.fsel in selected_field_types.pyx.in:142-143 --> |
+| `swap(f1)` | Swap contents with another `SelectedField` of the same type |
 | `swap_cast(f1)` | Swap raw bytes with a `SelectedFieldChar` |
 | `swap_sp_cast(sp, geo)` | Swap raw bytes with a `SelectedPointsChar` (does not affect `psel`/`fsel`) |
 
