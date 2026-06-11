@@ -32,6 +32,7 @@ from .field_selection cimport (
     PointsSelection,
 )
 
+from .geometry import geo_resize
 from .field_utils import (
     field_expanded,
     refresh_expanded_1,
@@ -238,7 +239,7 @@ def gf_wilson_lines_no_comm(gf_ext, path_list):
     return wlf
     """
     multiplicity = len(path_list)
-    geo = q.geo_resize(gf_ext.geo)
+    geo = geo_resize(gf_ext.geo)
     wlf = FieldColorMatrix(geo, multiplicity)
     for m, p in enumerate(path_list):
         if isinstance(p, tuple) and len(p) == 2:

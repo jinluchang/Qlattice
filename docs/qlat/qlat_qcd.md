@@ -497,7 +497,6 @@ print(f"plaq after inverse    = {gf_roundtrip.plaq():.10f}")
 q.end_with_mpi()
 ```
 
-<!-- TODO: gf_wilson_lines_no_comm in qcd.pyx uses q.geo_resize but q is qlat_utils which lacks geo_resize. Fix source: add `from .geometry import geo_resize` to qcd.pyx imports. -->
 ### Wilson Lines
 
 ```python
