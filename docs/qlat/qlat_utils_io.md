@@ -98,12 +98,7 @@ q.qquit("finished all trajectories")
 
 ## Time and Stop Checks
 
-<!-- TODO: The return type is not bool. The C++ cc.check_time_limit() returns
-     None (falsy) when time is available, or calls qquit() to terminate the
-     program when the limit is reached. It never returns True. The doc
-     signature and return-type row should reflect this (e.g. "-> None" or
-     clarify that it terminates on limit). -->
-### `check_time_limit(budget: float = None) -> bool`
+### `check_time_limit(budget: float = None) -> None`
 
 Check whether the simulation is approaching its time limit. Decorated with
 `@q.timer`.
@@ -111,7 +106,7 @@ Check whether the simulation is approaching its time limit. Decorated with
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `budget` | `float` or `None` | `None` | Time budget in seconds. If `None`, read from `q.get_time_budget()` |
-| **Returns** | `bool` | | `True` if the time limit is approaching |
+| **Returns** | `None` | | Returns `None` if time remains; calls `qquit()` to terminate if limit is reached |
 
 When `budget` is `None`, the value is read from environment variables (in
 order of priority):
@@ -122,22 +117,16 @@ order of priority):
 | `q_end_time` | Absolute Unix timestamp, e.g. `export q_end_time="$(($(date +%s) + 12 * 60 * 60))"` or `export q_end_time="$SLURM_JOB_END_TIME"` |
 
 ```python
-# Check with explicit 30-minute budget
-if q.check_time_limit(30 * 60):
-    q.qquit("time limit reached")
+# Check with explicit 30-minute budget (terminates via qquit if limit reached)
+q.check_time_limit(30 * 60)
 
-# Check using environment variable
-if q.check_time_limit():
-    q.qquit("time limit reached")
+# Check using environment variable (terminates via qquit if limit reached)
+q.check_time_limit()
 ```
 
 ---
 
-<!-- TODO: The return type is not bool. The C++ cc.check_stop() returns
-     None (falsy) when the file does not exist, or calls qquit() to terminate
-     the program when the file is found. It never returns True. The doc
-     signature and return-type row should reflect this. -->
-### `check_stop(fn: str = "stop.txt") -> bool`
+### `check_stop(fn: str = "stop.txt") -> None`
 
 Check whether a sentinel file `fn` exists in the current working directory.
 Decorated with `@q.timer`.
@@ -145,7 +134,7 @@ Decorated with `@q.timer`.
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `fn` | `str` | `"stop.txt"` | Filename to check |
-| **Returns** | `bool` | | `True` if the stop file exists |
+| **Returns** | `None` | | Returns `None` if file does not exist; calls `qquit()` to terminate if file is found |
 
 This provides a simple mechanism for an operator or batch script to signal a
 running simulation to stop gracefully by creating a file.
@@ -154,10 +143,8 @@ running simulation to stop gracefully by creating a file.
 # In the main simulation loop
 for traj in range(start_traj, max_traj):
     do_trajectory(traj)
-    if q.check_stop():
-        q.qquit("stop file detected")
-    if q.check_time_limit():
-        q.qquit("time limit reached")
+    q.check_stop()       # terminates via qquit if stop file found
+    q.check_time_limit() # terminates via qquit if limit reached
 ```
 
 ---
@@ -197,10 +184,8 @@ for traj in range(max_traj):
     q.displayln_info(f"Starting trajectory {traj}")
     # ... run trajectory ...
 
-    if q.check_stop():
-        q.qquit(f"stop file detected at trajectory {traj}")
-    if q.check_time_limit():
-        q.qquit(f"time limit reached at trajectory {traj}")
+    q.check_stop()       # terminates via qquit if stop file found
+    q.check_time_limit() # terminates via qquit if limit reached
 
 q.displayln_info("CHECK: finished successfully.")
 q.end_with_mpi()
@@ -223,9 +208,8 @@ size_node_list = [[1, 1, 1, 1]]
 q.begin_with_mpi(size_node_list)
 
 # check_time_limit() automatically reads q_end_time and q_budget
-# from the environment
-if q.check_time_limit():
-    q.qquit("SLURM job ending soon, saving and exiting.")
+# from the environment (terminates via qquit if limit reached)
+q.check_time_limit()
 
 q.end_with_mpi()
 ```
