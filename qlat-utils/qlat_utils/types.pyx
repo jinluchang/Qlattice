@@ -112,6 +112,21 @@ cdef class ElemTypeColorMatrix(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.ColorMatrix)
+    @staticmethod
+    def py_format():
+        return ElemTypeColorMatrix.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeColorMatrix.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeColorMatrix.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeColorMatrix.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeColorMatrix.size()
 
 cdef class ElemTypeWilsonMatrix(ElemType):
     name = "WilsonMatrix"
@@ -132,6 +147,21 @@ cdef class ElemTypeWilsonMatrix(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.WilsonMatrix)
+    @staticmethod
+    def py_format():
+        return ElemTypeWilsonMatrix.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeWilsonMatrix.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeWilsonMatrix.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeWilsonMatrix.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeWilsonMatrix.size()
 
 cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     name = "NonRelWilsonMatrix"
@@ -152,6 +182,21 @@ cdef class ElemTypeNonRelWilsonMatrix(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.NonRelWilsonMatrix)
+    @staticmethod
+    def py_format():
+        return ElemTypeNonRelWilsonMatrix.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeNonRelWilsonMatrix.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeNonRelWilsonMatrix.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeNonRelWilsonMatrix.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeNonRelWilsonMatrix.size()
 
 cdef class ElemTypeIsospinMatrix(ElemType):
     name = "IsospinMatrix"
@@ -172,6 +217,21 @@ cdef class ElemTypeIsospinMatrix(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.IsospinMatrix)
+    @staticmethod
+    def py_format():
+        return ElemTypeIsospinMatrix.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeIsospinMatrix.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeIsospinMatrix.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeIsospinMatrix.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeIsospinMatrix.size()
 
 cdef class ElemTypeSpinMatrix(ElemType):
     name = "SpinMatrix"
@@ -192,6 +252,21 @@ cdef class ElemTypeSpinMatrix(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.SpinMatrix)
+    @staticmethod
+    def py_format():
+        return ElemTypeSpinMatrix.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeSpinMatrix.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeSpinMatrix.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeSpinMatrix.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeSpinMatrix.size()
 
 cdef class ElemTypeWilsonVector(ElemType):
     name = "WilsonVector"
@@ -212,6 +287,21 @@ cdef class ElemTypeWilsonVector(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.WilsonVector)
+    @staticmethod
+    def py_format():
+        return ElemTypeWilsonVector.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeWilsonVector.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeWilsonVector.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeWilsonVector.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeWilsonVector.size()
 
 cdef class ElemTypeComplexD(ElemType):
     name = "ComplexD"
@@ -232,6 +322,21 @@ cdef class ElemTypeComplexD(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.ComplexD)
+    @staticmethod
+    def py_format():
+        return ElemTypeComplexD.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeComplexD.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeComplexD.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeComplexD.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeComplexD.size()
 
 cdef class ElemTypeComplexF(ElemType):
     name = "ComplexF"
@@ -252,6 +357,21 @@ cdef class ElemTypeComplexF(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.ComplexF)
+    @staticmethod
+    def py_format():
+        return ElemTypeComplexF.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeComplexF.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeComplexF.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeComplexF.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeComplexF.size()
 
 cdef class ElemTypeRealD(ElemType):
     name = "RealD"
@@ -272,6 +392,21 @@ cdef class ElemTypeRealD(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.RealD)
+    @staticmethod
+    def py_format():
+        return ElemTypeRealD.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeRealD.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeRealD.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeRealD.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeRealD.size()
 
 cdef class ElemTypeRealF(ElemType):
     name = "RealF"
@@ -292,6 +427,21 @@ cdef class ElemTypeRealF(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.RealF)
+    @staticmethod
+    def py_format():
+        return ElemTypeRealF.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeRealF.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeRealF.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeRealF.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeRealF.size()
 
 cdef class ElemTypeLong(ElemType):
     name = "Long"
@@ -312,6 +462,21 @@ cdef class ElemTypeLong(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Long)
+    @staticmethod
+    def py_format():
+        return ElemTypeLong.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeLong.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeLong.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeLong.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeLong.size()
 
 cdef class ElemTypeInt(ElemType):
     name = "Int"
@@ -332,6 +497,21 @@ cdef class ElemTypeInt(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Int)
+    @staticmethod
+    def py_format():
+        return ElemTypeInt.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeInt.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeInt.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeInt.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeInt.size()
 
 cdef class ElemTypeChar(ElemType):
     name = "Char"
@@ -352,6 +532,21 @@ cdef class ElemTypeChar(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Char)
+    @staticmethod
+    def py_format():
+        return ElemTypeChar.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeChar.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeChar.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeChar.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeChar.size()
 
 cdef class ElemTypeInt64t(ElemType):
     name = "Int64t"
@@ -372,6 +567,21 @@ cdef class ElemTypeInt64t(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Int64t)
+    @staticmethod
+    def py_format():
+        return ElemTypeInt64t.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeInt64t.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeInt64t.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeInt64t.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeInt64t.size()
 
 cdef class ElemTypeInt32t(ElemType):
     name = "Int32t"
@@ -392,6 +602,21 @@ cdef class ElemTypeInt32t(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Int32t)
+    @staticmethod
+    def py_format():
+        return ElemTypeInt32t.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeInt32t.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeInt32t.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeInt32t.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeInt32t.size()
 
 cdef class ElemTypeInt8t(ElemType):
     name = "Int8t"
@@ -412,5 +637,20 @@ cdef class ElemTypeInt8t(ElemType):
     @staticmethod
     cdef Py_ssize_t size():
         return sizeof(cc.Int8t)
+    @staticmethod
+    def py_format():
+        return ElemTypeInt8t.format()
+    @staticmethod
+    def py_itemsize():
+        return ElemTypeInt8t.itemsize()
+    @staticmethod
+    def py_ndim():
+        return ElemTypeInt8t.ndim()
+    @staticmethod
+    def py_shape():
+        return tuple(ElemTypeInt8t.shape())
+    @staticmethod
+    def py_size():
+        return ElemTypeInt8t.size()
 
 ### -------------------------------------------------------------------

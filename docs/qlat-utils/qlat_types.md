@@ -84,7 +84,15 @@ All subclasses provide the following class-level attributes:
 | `name` | `str` | Human-readable type name |
 | `sizeof_m` | `int` | Total byte size of the C++ type |
 
-<!-- TODO: The C++ source also defines cdef methods format(), itemsize(), ndim(), shape(), and size() on each ElemType subclass, but these are Cython cdef methods and are NOT accessible from Python. To expose them to Python, they would need to be declared as cpdef or def, or wrapped with Python-accessible properties. -->
+All subclasses also provide the following Python-accessible static methods (wrappers around the internal `cdef` methods):
+
+| Method | Return Type | Description |
+|---|---|---|
+| `py_format()` | `str` | Buffer protocol format string (e.g., `'Zd'` for complex double) |
+| `py_itemsize()` | `int` | Byte size of one scalar element |
+| `py_ndim()` | `int` | Number of dimensions |
+| `py_shape()` | `tuple` | Dimension sizes |
+| `py_size()` | `int` | Total byte size of the type |
 
 ---
 
@@ -294,7 +302,7 @@ Signed character (`char`).
 
 ## Type Properties Reference
 
-> **Note:** The tables below document the full C++ type metadata. Only `name` and `sizeof_m` are accessible from Python. The `format`, `itemsize`, `ndim`, `shape`, and `size` values are defined as Cython `cdef` methods and are used internally by the buffer protocol implementation.
+> **Note:** The tables below document the full type metadata. `name` and `sizeof_m` are class attributes. `py_format()`, `py_itemsize()`, `py_ndim()`, `py_shape()`, and `py_size()` are Python-accessible static methods (wrappers around internal `cdef` methods).
 
 ### Matrix Types Summary
 
@@ -373,4 +381,141 @@ shape = (3, 3)
 dtype = np.complex128                 # matches 'Zd' format
 mat = np.zeros(shape, dtype=dtype)
 print(mat.nbytes)                     # 144, matches ElemTypeColorMatrix.sizeof_m
+```
+
+### Querying Type Properties via Python-Accessible Methods
+
+All ElemType subclasses expose `py_format()`, `py_itemsize()`, `py_ndim()`,
+`py_shape()`, and `py_size()` as static methods callable from Python:
+
+```python
+from qlat_utils.types import ElemTypeColorMatrix, ElemTypeWilsonMatrix
+from qlat_utils.types import ElemTypeComplexD, ElemTypeRealD, ElemTypeLong
+
+# ColorMatrix: 3x3 complex double
+assert ElemTypeColorMatrix.py_ndim() == 2
+assert ElemTypeColorMatrix.py_shape() == (3, 3)
+assert ElemTypeColorMatrix.py_itemsize() == 16
+assert ElemTypeColorMatrix.py_size() == 144
+assert ElemTypeColorMatrix.py_format() == 'Zd'
+
+# WilsonMatrix: 12x12 complex double
+assert ElemTypeWilsonMatrix.py_ndim() == 2
+assert ElemTypeWilsonMatrix.py_shape() == (12, 12)
+assert ElemTypeWilsonMatrix.py_itemsize() == 16
+assert ElemTypeWilsonMatrix.py_size() == 2304
+
+# Scalar types have ndim == 0 and empty shape
+assert ElemTypeComplexD.py_ndim() == 0
+assert ElemTypeComplexD.py_shape() == ()
+assert ElemTypeComplexD.py_itemsize() == 16
+assert ElemTypeComplexD.py_size() == 16
+
+assert ElemTypeRealD.py_ndim() == 0
+assert ElemTypeRealD.py_format() == 'd'
+assert ElemTypeRealD.py_itemsize() == 8
+
+assert ElemTypeLong.py_ndim() == 0
+assert ElemTypeLong.py_format() == 'q'
+assert ElemTypeLong.py_itemsize() == 8
+```
+
+### Building a NumPy Array from Type Metadata
+
+Use the Python-accessible methods to programmatically construct arrays whose
+layout matches a given ElemType, without hardcoding shape or dtype:
+
+```python
+import numpy as np
+from qlat_utils.types import ElemTypeSpinMatrix, ElemTypeWilsonVector
+
+fmt_to_dtype = {
+    'Zd': np.complex128,
+    'Zf': np.complex64,
+    'd': np.float64,
+    'f': np.float32,
+    'q': np.int64,
+    'i': np.int32,
+    'b': np.int8,
+}
+
+def make_array(elem_type, count):
+    dtype = fmt_to_dtype[elem_type.py_format()]
+    shape = (count,) + elem_type.py_shape()
+    return np.zeros(shape, dtype=dtype)
+
+# 10 SpinMatrix elements: shape (10, 4, 4), dtype complex128
+arr = make_array(ElemTypeSpinMatrix, 10)
+assert arr.shape == (10, 4, 4)
+assert arr.dtype == np.complex128
+assert arr.nbytes == 10 * ElemTypeSpinMatrix.py_size()
+
+# 5 WilsonVector elements: shape (5, 12), dtype complex128
+vec = make_array(ElemTypeWilsonVector, 5)
+assert vec.shape == (5, 12)
+assert vec.nbytes == 5 * ElemTypeWilsonVector.py_size()
+```
+
+### Iterating Over All ElemType Subclasses
+
+```python
+import numpy as np
+from qlat_utils.types import (
+    ElemTypeColorMatrix, ElemTypeWilsonMatrix, ElemTypeNonRelWilsonMatrix,
+    ElemTypeIsospinMatrix, ElemTypeSpinMatrix, ElemTypeWilsonVector,
+    ElemTypeComplexD, ElemTypeComplexF, ElemTypeRealD, ElemTypeRealF,
+    ElemTypeLong, ElemTypeInt, ElemTypeChar, ElemTypeInt64t,
+    ElemTypeInt32t, ElemTypeInt8t,
+)
+
+all_types = [
+    ElemTypeColorMatrix, ElemTypeWilsonMatrix, ElemTypeNonRelWilsonMatrix,
+    ElemTypeIsospinMatrix, ElemTypeSpinMatrix, ElemTypeWilsonVector,
+    ElemTypeComplexD, ElemTypeComplexF, ElemTypeRealD, ElemTypeRealF,
+    ElemTypeLong, ElemTypeInt, ElemTypeChar, ElemTypeInt64t,
+    ElemTypeInt32t, ElemTypeInt8t,
+]
+
+for t in all_types:
+    assert t.py_size() == t.sizeof_m, f"{t.name}: py_size()={t.py_size()} != sizeof_m={t.sizeof_m}"
+    if t.py_ndim() > 0:
+        expected = t.py_itemsize() * int(np.prod(t.py_shape()))
+    else:
+        expected = t.py_itemsize()
+    assert t.py_size() == expected, f"{t.name}: py_size()={t.py_size()} != expected={expected}"
+```
+
+### Verifying Consistency Between Properties
+
+```python
+import numpy as np
+from qlat_utils.types import (
+    ElemTypeColorMatrix, ElemTypeWilsonMatrix, ElemTypeNonRelWilsonMatrix,
+    ElemTypeIsospinMatrix, ElemTypeSpinMatrix, ElemTypeWilsonVector,
+    ElemTypeComplexD, ElemTypeComplexF, ElemTypeRealD, ElemTypeRealF,
+    ElemTypeLong, ElemTypeInt, ElemTypeChar, ElemTypeInt64t,
+    ElemTypeInt32t, ElemTypeInt8t,
+)
+
+all_types = [
+    ElemTypeColorMatrix, ElemTypeWilsonMatrix, ElemTypeNonRelWilsonMatrix,
+    ElemTypeIsospinMatrix, ElemTypeSpinMatrix, ElemTypeWilsonVector,
+    ElemTypeComplexD, ElemTypeComplexF, ElemTypeRealD, ElemTypeRealF,
+    ElemTypeLong, ElemTypeInt, ElemTypeChar, ElemTypeInt64t,
+    ElemTypeInt32t, ElemTypeInt8t,
+]
+
+for t in all_types:
+    assert t.py_size() == t.sizeof_m, f"{t.name}: py_size()={t.py_size()} != sizeof_m={t.sizeof_m}"
+    if t.py_ndim() > 0:
+        expected = t.py_itemsize() * int(np.prod(t.py_shape()))
+    else:
+        expected = t.py_itemsize()
+    assert t.py_size() == expected, f"{t.name}: py_size()={t.py_size()} != expected={expected}"
+    assert isinstance(t.name, str) and len(t.name) > 0
+    assert isinstance(t.py_ndim(), int) and t.py_ndim() >= 0
+    assert isinstance(t.py_shape(), tuple)
+    assert isinstance(t.py_itemsize(), int) and t.py_itemsize() > 0
+    assert isinstance(t.py_size(), int) and t.py_size() > 0
+    assert isinstance(t.py_format(), str) and len(t.py_format()) > 0
 ```
