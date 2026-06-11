@@ -582,6 +582,7 @@ in let
       jq
       nixfmt
       nixfmt-tree
+      sqlite
       icu
       libsodium
       libssh
