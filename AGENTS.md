@@ -29,7 +29,7 @@ name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
 Use the `nixpkgs/run-one-example*.py` scripts — they set up the nix environment and delegate to `make`:
 
 ```bash
-./nixpkgs/run-one-example-py.py utils                    # Python test
+./nixpkgs/run-one-example-py.py utils                   # Python test
 ./nixpkgs/run-one-example-py-gpt.py qtopo-measure-dwf   # GPT test
 ./nixpkgs/run-one-example-cpp.py simple-1               # C++ test
 ./nixpkgs/run-one-example-cpp-grid.py grid-with-qlat    # Grid test
