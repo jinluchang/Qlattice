@@ -10,7 +10,7 @@ EXPORT(mk_fermion_action_mobius, {
     return NULL;
   }
   FermionAction* pfa =
-      new FermionAction(mass, ls, m5, mobius_scale, true, true);
+      new FermionAction(mass, ls, m5, mobius_scale, true, false);
   return py_convert((void*)pfa);
 })
 

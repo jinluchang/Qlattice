@@ -95,10 +95,6 @@ returns the uniform omega values derived from `mobius_scale`.
 
 #### `mobius_scale()`
 
-<!-- TODO: mobius_scale() is currently broken for Mobius actions due to a C++ bug
-     in cqlat/fermion-action.cpp (mk_fermion_action_mobius passes is_using_zmobius_=true
-     instead of false). Fix the C++ call and re-enable the doc example assertion. -->
-
 ```python
 mobius_scale() -> float
 ```
@@ -138,7 +134,7 @@ fa = q.FermionAction(mass=0.01, ls=24, m5=1.8, mobius_scale=2.0)
 print(f"mass = {fa.mass()}")
 print(f"ls   = {fa.ls()}")
 print(f"m5   = {fa.m5()}")
-print(f"mobius_scale = {fa.mobius_scale()}")  # TODO: broken, see note above
+print(f"mobius_scale = {fa.mobius_scale()}")
 
 q.end_with_mpi()
 ```
