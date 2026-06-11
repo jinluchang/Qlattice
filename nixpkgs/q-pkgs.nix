@@ -579,6 +579,9 @@ in let
       bzip2
       curl
       expat
+      jq
+      nixfmt
+      nixfmt-tree
       icu
       libsodium
       libssh
