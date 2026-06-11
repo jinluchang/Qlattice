@@ -100,14 +100,18 @@ import qlat_utils as q
 cache_fields_io = q.mk_cache("fields_io")
 
 # Store a value keyed by object id
-cache_fields_io[id(my_obj)] = (fsel, sbs)
+my_obj = object()
+cache_fields_io[id(my_obj)] = ("fsel_data", "sbs_data")
 
 # Retrieve
-if id(my_obj) in cache_fields_io:
-    c_fsel, c_sbs = cache_fields_io[id(my_obj)]
+assert id(my_obj) in cache_fields_io
+c_fsel, c_sbs = cache_fields_io[id(my_obj)]
+assert c_fsel == "fsel_data"
+assert c_sbs == "sbs_data"
 
 # Remove
 cache_fields_io.pop(id(my_obj), None)
+assert id(my_obj) not in cache_fields_io
 ```
 
 ### Hierarchical Sub-Caches
@@ -119,21 +123,65 @@ cache_gauge = q.mk_cache("fields_io", "gauge_field")
 # Equivalent to:
 #   cache["fields_io"]["gauge_field"]
 # created step by step, reusing existing nodes.
+
+# Store and retrieve a value
+cache_gauge["config_100"] = {"beta": 6.0, "L": 8}
+assert cache_gauge["config_100"]["beta"] == 6.0
+
+# mk_cache reuses existing nodes (does not overwrite)
+cache_gauge2 = q.mk_cache("fields_io", "gauge_field")
+assert cache_gauge is cache_gauge2
 ```
 
-### Cleaning and Removing
+### Removing a Sub-Cache
 
 ```python
 import qlat_utils as q
 
-# Remove all values but keep structure
+# Set up a nested cache
+q.mk_cache("fields_io", "gauge_field")
+q.mk_cache("fields_io", "prop_field")
+
+# Remove one sub-cache (keeps sibling)
+q.rm_cache("fields_io", "gauge_field")
+
+# Verify it is gone
+assert "gauge_field" not in q.cache.get("fields_io", {})
+# Sibling still exists
+assert "prop_field" in q.cache["fields_io"]
+```
+
+### Cleaning Values (Preserving Structure)
+
+```python
+import qlat_utils as q
+
+# Set up cache with values
+cache_io = q.mk_cache("fields_io")
+cache_io["key_a"] = "value_a"
+cache_io["key_b"] = "value_b"
+
+# clean_cache removes leaf values but keeps Cache sub-nodes
 q.clean_cache()
+assert len(cache_io) == 0
+# The Cache node itself still exists in the hierarchy
+assert "fields_io" in q.cache
+```
 
-# Remove a specific sub-cache entirely
-q.rm_cache("fields_io")  # TODO: rm_cache is buggy -- `for key in keys[-1]` iterates over characters of the string instead of traversing the key path, so it silently returns early without removing anything
+### Clearing All Caches
 
-# Nuclear option: clear Python + C++ caches
-q.clear_all_caches()  # TODO: q.clear_all_caches resolves to the Cython binding from c.py (only clears C++ caches), not the Python version from cache.py that also clears the Python-level cache
+```python
+import qlat_utils as q
+
+# Set up some caches with values
+cache_io = q.mk_cache("fields_io")
+cache_io["key"] = "value"
+
+# clear_all_caches clears both Python-level and C++-level caches
+q.clear_all_caches()
+
+# Python cache is empty after clearing
+assert len(q.cache) == 0
 ```
 
 ### Inspecting the Cache
@@ -141,6 +189,49 @@ q.clear_all_caches()  # TODO: q.clear_all_caches resolves to the Cython binding 
 ```python
 import qlat_utils as q
 
+# Create some nested caches
+q.mk_cache("fields_io", "gauge_field")
+q.mk_cache("fields_io", "prop_field")
+
 structure = q.list_cache()
-print(structure)  # nested dict of Cache nodes only
+# Returns a nested dict with Cache sub-nodes only (no leaf values)
+assert "fields_io" in structure
+assert "gauge_field" in structure["fields_io"]
+assert "prop_field" in structure["fields_io"]
+```
+
+### Multiple Independent Cache Trees
+
+```python
+import qlat_utils as q
+
+# You can create independent cache trees under different roots
+root_a = q.Cache()
+root_b = q.Cache()
+
+ca = q.mk_cache("group", "sub", ca=root_a)
+cb = q.mk_cache("group", "sub", ca=root_b)
+
+ca["from_a"] = 1
+cb["from_b"] = 2
+
+assert ca["from_a"] == 1
+assert cb["from_b"] == 2
+# They are independent
+assert "from_b" not in ca
+assert "from_a" not in cb
+```
+
+### Cache Keys Introspection
+
+```python
+import qlat_utils as q
+
+cache_gauge = q.mk_cache("fields_io", "gauge_field")
+# cache_keys records the path from the root
+assert cache_gauge.cache_keys == ("fields_io", "gauge_field")
+
+# show_cache_keys produces a human-readable string
+print(q.show_cache_keys(cache_gauge.cache_keys))
+# Output: ['fields_io']['gauge_field']
 ```

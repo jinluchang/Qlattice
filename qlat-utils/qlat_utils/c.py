@@ -198,7 +198,6 @@ __all__ += [
     "displayln_malloc_stats",
     #
     "get_all_caches_info",
-    "clear_all_caches",
     "clear_mem_cache",
     #
     "get_eigen_type",

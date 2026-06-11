@@ -83,7 +83,7 @@ def rm_cache(*keys, ca=cache):
     remove cache if it exist
     """
     assert keys
-    for key in keys[-1]:
+    for key in keys[:-1]:
         if key not in ca:
             return
         ca = ca[key]
