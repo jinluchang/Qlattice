@@ -489,6 +489,15 @@ inline ManyMagneticMomentsCompressed muonLineSymParamsCompressedInterpolate(
     const Int b_interp = get_default_muonline_interp_idx())
 {
   const MuonLineInterp& interpolation = getMuonLineInterp(b_interp);
+  if (interpolation.dims.size() == 0) {
+    qerr(ssprintf(
+        "muonLineSymParamsCompressedInterpolate: "
+        "interpolation at index %ld has no dimensions loaded. "
+        "Ensure the correct muon-line interpolation table was computed "
+        "or loaded, and that set_muon_line_m_extra_weights uses only "
+        "available indices.",
+        (Long)b_interp));
+  }
   // displayln(ssprintf("muonLineSymParamsCompressedInterpolate: ") +
   // show(params) + " " + show(qnorm(interpolation(params))));
   return interpolation(params);

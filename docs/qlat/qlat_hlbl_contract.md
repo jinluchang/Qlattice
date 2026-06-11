@@ -243,10 +243,10 @@ must sum across MPI ranks.
 
 ### Compute Muon-Line Field
 
-<!-- TODO: mk_m_z_field_tag requires internal interpolation data (InterpolationNd) that is not available in a standalone snippet. This example cannot be run without a full lattice simulation context (e.g., from gpt-qlat-data-gen-hlbl.py). -->
-
 ```python
 import qlat as q
+import os
+import tempfile
 
 size_node_list = [[1, 1, 1, 1]]
 
@@ -263,6 +263,23 @@ xg_x = q.Coordinate([0, 0, 0, 0])
 xg_y = q.Coordinate([2, 0, 0, 0])
 a = 0.1  # lattice spacing in muon-mass units
 tag = 0  # subtraction (preferred)
+
+# Compute muon-line interpolation data (required by mk_m_z_field_tag).
+# In production, use precomputed tables loaded via
+# load_multiple_muonline_interpolations. Here we compute a small test
+# sample for demonstration purposes.
+# Note: compute_save_muonline_interpolation requires at least 2 MPI ranks.
+interp_path = os.path.join(tempfile.gettempdir(), "muon-line-interp")
+q.compute_save_muonline_interpolation(
+    f"{interp_path}/0000000000",
+    [3, 2, 2, 2, 2],
+    (1e-8, 1e-3, 1024 * 16, 1024 * 1024 * 16),
+)
+
+# Set extrapolation weights to use only the single interpolation table
+# at index 0. The default weights reference multiple tables at different
+# grid resolutions that are not available in this standalone example.
+q.set_muon_line_m_extra_weights([[1.0], [1.0]])
 
 smf_d = q.hlbl_contract.mk_m_z_field_tag(psel_d, xg_x, xg_y, a, tag)
 print(f"muon-line field shape: {smf_d.n_points}")

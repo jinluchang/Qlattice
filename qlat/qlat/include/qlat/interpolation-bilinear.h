@@ -121,8 +121,12 @@ struct InterpolationNd {
   // get interpolated value at point x
   {
     if (dims.size() != x.size()) {
-      qerr(ssprintf("InterpolationNd: dims.size=%ld ; x.size()=%ld .",
-                    (Long)dims.size(), (Long)x.size()));
+      qerr(ssprintf(
+          "InterpolationNd: dims.size=%ld ; x.size()=%ld . "
+          "Interpolation data may not have been loaded or initialized. "
+          "Ensure compute_save_muonline_interpolation or "
+          "load_multiple_muonline_interpolations was called before use.",
+          (Long)dims.size(), (Long)x.size()));
     }
     std::vector<Int> il(dims.size());
     std::vector<RealD> vl(dims.size());
