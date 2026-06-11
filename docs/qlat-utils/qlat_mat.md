@@ -188,7 +188,7 @@ Return the gamma matrix for direction `mu` (0, 1, 2, 3, or 5).
 g5 = q.get_gamma_matrix(5)
 ```
 
-<!-- TODO: gamma_matrix_0..3, gamma_matrix_5 are defined in mat.pyx but declared cdef in mat.pxd (C-level only, not accessible from Python). Consider exposing them as Python-level module constants if user access is desired. -->
+Internally, pre-computed gamma matrices (`gamma_matrix_0`..`gamma_matrix_3`, `gamma_matrix_5`) are stored as `cdef` module-level variables in `mat.pxd` for fast C-level access from Cython code. These are not exposed to Python — always use `get_gamma_matrix(mu)` from Python.
 
 ---
 
