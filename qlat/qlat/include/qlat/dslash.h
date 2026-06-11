@@ -481,7 +481,7 @@ Long invert_with_cg(FermionField5d& out, const FermionField5d& in,
     return 0;
   }
   Long total_iter = 0;
-  if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
+  if (inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_o_p, out_e_p, out_o_p;
     set_odd_prec_field_sym2(in_o_p, out_e_p, dm_in, inv);
     out_o_p.init(in_o_p.geo(), in_o_p.multiplicity);
