@@ -1257,6 +1257,10 @@ def gen_test_data():
         "50",
         "--maxiter_exact",
         "100",
+        "--stout_smear_steps",
+        "3",
+        "--stout_smear_step_size",
+        "0.1",
     ]
     assert isinstance(argv, list), f"gen_test_data: argv type={type(argv)}"
     for a in argv:
