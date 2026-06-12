@@ -52,6 +52,8 @@ Optional arguments:
   --maxiter_sloppy INT          Maximum CG iterations for the sloppy inverter. [50]
   --maxiter_exact INT           Maximum CG iterations for the exact inverter (used for AMA correction). [100]
   --ama_prob FLOAT              Probability of applying the AMA correction for each sparse solve. 0.0 disables AMA entirely. [0.1]
+  --stout_smear_steps INT       Number of stout smearing steps applied to the gauge field before measurement. [0]
+  --stout_smear_step_size FLOAT Stout smearing step size (rho). [0.1]
   --mpi IVEC4                   GPT option: MPI decomposition for the grid (e.g. 1.1.1.2).
   --mpi_split IVEC4             GPT option: override MPI split for the CG inverter (e.g. 1.1.1.1).  When set, enables grouped solves.
   --grouped INT                 GPT option: number of grouped right-hand sides for the inverter (default 12 with --mpi_split, 1 otherwise). [12]
@@ -124,6 +126,8 @@ def measure_topo_dwf(
           - maxiter_sloppy (int): max CG iterations for the sloppy solve.
           - maxiter_exact (int): max CG iterations for the exact solve.
           - ama_prob (float): probability of applying the AMA correction.
+          - stout_smear_steps (int): number of stout smearing steps before measurement (0 = no smearing).
+          - stout_smear_step_size (float): stout smearing step size (rho).
           - seed (str or int): random seed.\n
     Returns
     -------
@@ -226,6 +230,13 @@ def measure_topo_dwf(
     gf = gt * gf
     q.json_results_append("after transform gf.plaq()", gf.plaq(), 1e-12)
     q.json_results_append("after transform gf.link_trace()", gf.link_trace(), 1e-12)
+    #
+    stout_smear_steps = params.get("stout_smear_steps", 0)
+    stout_smear_step_size = params.get("stout_smear_step_size", 0.1)
+    if stout_smear_steps > 0:
+        q.gf_stout_smear(gf, stout_smear_step_size, stout_smear_steps)
+        q.json_results_append(f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.plaq()", gf.plaq(), 1e-12)
+        q.json_results_append(f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.link_trace()", gf.link_trace(), 1e-12)
     #
     psel_full = q.PointsSelection(geo)
     #
@@ -1346,6 +1357,8 @@ def run():
         maxiter_sloppy=int(q.get_arg("--maxiter_sloppy", "50", argv=argv)),
         maxiter_exact=int(q.get_arg("--maxiter_exact", "100", argv=argv)),
         ama_prob=float(q.get_arg("--ama_prob", "0.1", argv=argv)),
+        stout_smear_steps=int(q.get_arg("--stout_smear_steps", "0", argv=argv)),
+        stout_smear_step_size=float(q.get_arg("--stout_smear_step_size", "0.1", argv=argv)),
     )
     for (
         fn_gf,
