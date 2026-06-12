@@ -151,16 +151,6 @@ in buildPythonPackage.override { stdenv = stdenv; } {
       #
       echo >>$out/bin/cuda-qlat.sh
       echo '"$@"' >>$out/bin/cuda-qlat.sh
-      #
-      source $out/bin/cuda-qlat.sh echo
-      #
-      echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-      #
-      echo "CXX=$CXX"
-      echo "CXXFLAGS=$CXXFLAGS"
-      echo "LDFLAGS=$LDFLAGS"
-      #
-      echo
     '';
     cpu_extra = ''
       mkdir -pv "$out/bin"
@@ -170,10 +160,19 @@ in buildPythonPackage.override { stdenv = stdenv; } {
         export JAX_PLATFORMS="${if cudaSupportInLibs then "cuda" else "cpu"}"
         ${if cudaSupport || !is-linux then "export q_num_mp_processes=0" else ""}
       EOF
+      #
+      echo >>$out/bin/cuda-qlat.sh
       echo '"$@"' >>$out/bin/cuda-qlat.sh
     '';
     extra = if cudaSupport then gpu_extra else cpu_extra;
   in gl_extra + extra + ''
+    source $out/bin/cuda-qlat.sh echo
+    #
+    echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+    echo "CXX=$CXX"
+    echo "CXXFLAGS=$CXXFLAGS"
+    echo "LDFLAGS=$LDFLAGS"
+    #
     echo
     export
     echo

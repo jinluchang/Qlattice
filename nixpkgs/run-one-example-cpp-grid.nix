@@ -95,7 +95,6 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
   preConfigure = let
     gpu_extra = ''
       pwd
-      source ${qlat}/bin/cuda-mpi-qlat.sh echo
       echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
       echo "CXX=$CXX"
       echo "MPICXX=$MPICXX"
@@ -103,7 +102,9 @@ in (pkgs.python3.pkgs.buildPythonPackage.override { stdenv = pkgs.qlat-stdenv; }
     '';
     cpu_extra = ''
     '';
-    extra = if cudaSupport then gpu_extra else cpu_extra;
+    extra = ''
+      source ${qlat}/bin/cuda-mpi-qlat.sh echo
+    '' + (if cudaSupport then gpu_extra else cpu_extra);
   in extra + ''
     export OMP_NUM_THREADS=2
     export SHELL=${pkgs.bash}/bin/bash

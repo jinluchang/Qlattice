@@ -70,8 +70,6 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
     gpu_extra = ''
       pwd
       #
-      source ${qlat}/bin/cuda-mpi-qlat.sh echo
-      #
       echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
       #
       echo "CXX=$CXX"
@@ -85,7 +83,9 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
     '';
     cpu_extra = ''
     '';
-    extra = (if cudaSupport then gpu_extra else cpu_extra) + (
+    extra = ''
+      source ${qlat}/bin/cuda-mpi-qlat.sh echo
+    '' + (if cudaSupport then gpu_extra else cpu_extra) + (
       if cudaSupport && lib.hasInfix "cuda" qlat-name then ''
         export num_proc=$((NIX_BUILD_CORES / 16 + 1))
       '' else ''
