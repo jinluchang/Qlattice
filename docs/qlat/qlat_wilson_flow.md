@@ -18,6 +18,7 @@ Source: `qlat/qlat/wilson_flow.pyx`
    - [`gf_energy_derivative_density_field`](#gf_energy_derivative_density_field)
    - [`gf_plaq_flow_force`](#gf_plaq_flow_force)
 4. [Stout Smearing](#stout-smearing)
+   - [`gf_stout_smear`](#gf_stout_smear)
    - [`gf_block_stout_smear`](#gf_block_stout_smear)
    - [`gf_local_stout_smear`](#gf_local_stout_smear)
    - [`gf_local_avg_plaq`](#gf_local_avg_plaq)
@@ -195,6 +196,31 @@ spatially varying couplings. `plaq_factor` must have `multiplicity == 6`
 ---
 
 ## Stout Smearing
+
+### `gf_stout_smear`
+
+```python
+gf_stout_smear(
+    gf: GaugeField,
+    step_size: float,
+    num_step: int = 1,
+    *,
+    method: str = None,
+)
+```
+
+Apply stout smearing to `gf` in place for `num_step` steps. `method`
+selects the implementation: `None` or `"stout"` uses `gf_block_stout_smear`
+(default), `"wilson-flow"` uses `gf_wilson_flow_step` with the Euler
+integrator and `c1=0`, `"force"` calls `gf_wilson_flow_force` + `gf_evolve`
+directly. All three are mathematically equivalent.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `gf` | `GaugeField` | — | Gauge field (modified in place) |
+| `step_size` | `float` | — | Smearing strength ρ (typical: 0.1–0.125) |
+| `num_step` | `int` | `1` | Number of smearing iterations |
+| `method` | `str` | `None` | `None`/`"stout"`, `"wilson-flow"`, or `"force"` |
 
 ### `gf_block_stout_smear`
 

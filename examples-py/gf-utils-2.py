@@ -75,6 +75,27 @@ q.json_results_append(
 )
 
 gf @= gf0
+q.gf_stout_smear(gf, 0.1, 3)
+q.json_results_append("gf_stout_smear plaq", gf.plaq(), 1e-8)
+q.json_results_append(
+    "gf_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+)
+
+gf @= gf0
+q.gf_stout_smear(gf, 0.1, 3, method="wilson-flow")
+q.json_results_append("gf_stout_smear wilson-flow plaq", gf.plaq(), 1e-8)
+q.json_results_append(
+    "gf_stout_smear wilson-flow", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+)
+
+gf @= gf0
+q.gf_stout_smear(gf, 0.1, 3, method="force")
+q.json_results_append("gf_stout_smear force plaq", gf.plaq(), 1e-8)
+q.json_results_append(
+    "gf_stout_smear force", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
+)
+
+gf @= gf0
 gf = q.field_shift(
     gf,
     q.Coordinate(

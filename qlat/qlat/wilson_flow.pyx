@@ -126,6 +126,31 @@ def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
     return energy_density_list
 
 @q.timer
+def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Int num_step=1, *, str method=None):
+    """
+    Apply stout smearing to gf in place for num_step steps.
+    method: None or "stout" uses gf_block_stout_smear (default).
+            "wilson-flow" uses gf_wilson_flow_step with euler integrator and c1=0 (equivalent).
+            "force" uses gf_wilson_flow_force + gf_evolve directly (equivalent).
+    """
+    fname = q.get_fname()
+    if method is None:
+        method = "stout"
+    if method == "stout":
+        for step in range(num_step):
+            gf_block_stout_smear(gf, Coordinate(), step_size)
+    elif method == "wilson-flow":
+        for step in range(num_step):
+            gf_wilson_flow_step(gf, step_size, c1=0.0, wilson_flow_integrator_type="euler")
+    elif method == "force":
+        for step in range(num_step):
+            gm = gf_wilson_flow_force(gf, c1=0.0)
+            gf_evolve(gf, gm, step_size)
+    else:
+        raise ValueError(f"{fname}: unknown method={method}")
+    q.displayln_info(f"{fname}: method={method}, num_step={num_step}, step_size={step_size}, plaq={gf.plaq()}")
+
+@q.timer
 def gf_block_stout_smear(GaugeField gf, Coordinate block_site, cc.RealD step_size):
     """
     Stout smear in place.
