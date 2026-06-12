@@ -129,13 +129,13 @@ def gf_wilson_flow(GaugeField gf, cc.RealD flow_time, cc.Long steps,
 def gf_stout_smear(GaugeField gf, cc.RealD step_size, cc.Int num_step=1, *, str method=None):
     """
     Apply stout smearing to gf in place for num_step steps.
-    method: None or "stout" uses gf_block_stout_smear (default).
-            "wilson-flow" uses gf_wilson_flow_step with euler integrator and c1=0 (equivalent).
-            "force" uses gf_wilson_flow_force + gf_evolve directly (equivalent).
+    method: None or "force" uses gf_wilson_flow_force + gf_evolve directly (default, fastest).
+            "stout" uses gf_block_stout_smear.
+            "wilson-flow" uses gf_wilson_flow_step with euler integrator and c1=0.
     """
     fname = q.get_fname()
     if method is None:
-        method = "stout"
+        method = "force"
     if method == "stout":
         for step in range(num_step):
             gf_block_stout_smear(gf, Coordinate(), step_size)

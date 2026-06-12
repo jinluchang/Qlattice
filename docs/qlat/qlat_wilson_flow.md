@@ -210,10 +210,10 @@ gf_stout_smear(
 ```
 
 Apply stout smearing to `gf` in place for `num_step` steps. `method`
-selects the implementation: `None` or `"stout"` uses `gf_block_stout_smear`
-(default), `"wilson-flow"` uses `gf_wilson_flow_step` with the Euler
-integrator and `c1=0`, `"force"` calls `gf_wilson_flow_force` + `gf_evolve`
-directly. All three are mathematically equivalent.
+selects the implementation: `None` or `"force"` calls
+`gf_wilson_flow_force` + `gf_evolve` directly (default), `"stout"` uses
+`gf_block_stout_smear`, `"wilson-flow"` uses `gf_wilson_flow_step` with
+the Euler integrator and `c1=0`. All three are mathematically equivalent.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
