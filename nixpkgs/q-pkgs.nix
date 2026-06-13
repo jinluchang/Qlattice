@@ -630,6 +630,11 @@ in let
       texliveFull
       fontconfig
       freetype
+      wl-clipboard
+      xclip
+      xsel
+      xvfb
+      xvfb-run
       ;
     }
     else {}
