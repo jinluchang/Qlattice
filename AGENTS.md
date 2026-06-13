@@ -48,10 +48,14 @@ nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
 
 ### Run a new program with the nix-built environment
 
+Always run new programs under `<project_root>/tmp/` (or a sub-directory) to keep test artifacts out of the source tree.
+
 Source `setenv-qlat.sh` from the nix result to configure PATH, PYTHONPATH, LD_LIBRARY_PATH, etc.:
 
 ```bash
 source result-py-local/bin/setenv-qlat.sh
+mkdir -p tmp
+cd tmp
 mpiexec -n 2 --oversubscribe --bind-to none bash bind-gpu-qlat.sh python3 -m mpi4py ./your-script.py
 ```
 
