@@ -1,0 +1,584 @@
+[
+ [
+  "total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "gf_flow_topo Wilson plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Iwasaki plaq",
+  0.33166637100239826,
+  1e-10
+ ],
+ [
+  "gf_flow_topo DBW2 plaq",
+  0.002855365211869895,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Freeze plaq",
+  0.3250524053859246,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Shrink plaq",
+  0.44233304345086466,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Localize plaq",
+  0.32506287286040353,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Preserve plaq",
+  0.3250524053859245,
+  1e-10
+ ],
+ [
+  "gf_flow_topo c1=0.0 plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_flow_topo c1=-0.331 plaq",
+  0.33166637100239826,
+  1e-10
+ ],
+ [
+  "gf_flow_topo c1=-1.4008 plaq",
+  0.002855365211869895,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Wilson euler plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_flow_topo Wilson runge-kutta plaq",
+  0.49924181004652396,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow_step runge-kutta plaq",
+  0.18782588728677793,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow_step euler plaq",
+  0.17479230404701862,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow_step c1=0.0 plaq",
+  0.18782588728677793,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow_step c1=-0.331 plaq",
+  0.4715282993894242,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow_step c1=-1.4008 plaq",
+  -0.013483242195642,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow final plaq",
+  0.4992418100465239,
+  1e-10
+ ],
+ [
+  "gf_wilson_flow energy_list",
+  {
+   "value": [
+    2.450904229755502,
+    2.7260975405095396,
+    2.812605134969923
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "gf_flow_scale euler plaq",
+  0.17479230404701862,
+  1e-10
+ ],
+ [
+  "gf_flow_scale runge-kutta plaq",
+  0.1878258872867779,
+  1e-10
+ ],
+ [
+  "gf_flow_scale is_spatial=False plaq",
+  0.1878258872867779,
+  1e-10
+ ],
+ [
+  "gf_flow_scale is_spatial=True plaq",
+  0.09393598314820059,
+  1e-10
+ ],
+ [
+  "gf_flow_scale t_dir=0 plaq",
+  0.1878258872867779,
+  1e-10
+ ],
+ [
+  "gf_flow_scale t_dir=1 plaq",
+  0.1878258872867779,
+  1e-10
+ ],
+ [
+  "gf_flow_scale t_dir=2 plaq",
+  0.1878258872867779,
+  1e-10
+ ],
+ [
+  "gf_flow_scale t_dir=3 plaq",
+  0.1878258872867779,
+  1e-10
+ ],
+ [
+  "gf_ape_smear steps=1 plaq",
+  0.2957670483254694,
+  1e-10
+ ],
+ [
+  "gf_ape_smear steps=3 plaq",
+  0.569293357611929,
+  1e-10
+ ],
+ [
+  "gf_ape_smear steps=5 plaq",
+  0.6963270155623548,
+  1e-10
+ ],
+ [
+  "gf_ape_smear alpha=0.25 plaq",
+  0.2981658567275796,
+  1e-10
+ ],
+ [
+  "gf_ape_smear alpha=0.5 plaq",
+  0.569293357611929,
+  1e-10
+ ],
+ [
+  "gf_ape_smear alpha=0.75 plaq",
+  0.6783262833350886,
+  1e-10
+ ],
+ [
+  "gf_spatial_ape_smear steps=1 plaq",
+  0.21765891674717572,
+  1e-10
+ ],
+ [
+  "gf_spatial_ape_smear steps=3 plaq",
+  0.36577037578140476,
+  1e-10
+ ],
+ [
+  "gf_spatial_ape_smear steps=5 plaq",
+  0.42521811878154603,
+  1e-10
+ ],
+ [
+  "gf_hyp_smear 0.75,0.6,0.3 plaq",
+  0.4352635589066486,
+  1e-10
+ ],
+ [
+  "gf_hyp_smear 0.5,0.5,0.5 plaq",
+  0.28865320246494147,
+  1e-10
+ ],
+ [
+  "gf_hyp_smear 0.9,0.7,0.4 plaq",
+  0.023561333409024117,
+  1e-10
+ ],
+ [
+  "gf_stout_smear force plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_stout_smear stout plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_stout_smear wilson-flow plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_stout_smear steps=1 plaq",
+  0.17479230404701862,
+  1e-10
+ ],
+ [
+  "gf_stout_smear steps=3 plaq",
+  0.4665894330446553,
+  1e-10
+ ],
+ [
+  "gf_stout_smear steps=5 plaq",
+  0.6227729301096022,
+  1e-10
+ ],
+ [
+  "gf_block_stout_smear plaq",
+  0.17479230404701862,
+  1e-10
+ ],
+ [
+  "gf_block_stout_smear block=[2,2,2,2] plaq",
+  0.04135187723046984,
+  1e-10
+ ],
+ [
+  "gf_local_stout_smear plaq",
+  0.09832334888915661,
+  1e-10
+ ],
+ [
+  "smear_field r=1.0 sig",
+  {
+   "real": -4.535360126522909,
+   "imag": -3.8542188352817233,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "smear_field r=2.0 sig",
+  {
+   "real": 1.552402887720591,
+   "imag": 1.3177563211744623,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "smear_field r=3.0 sig",
+  {
+   "real": 6.847808060985846,
+   "imag": 6.7228944135777,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "smear_field spatial sig",
+  {
+   "real": 6.939979885602766,
+   "imag": 5.908189336425773,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "smear_field_step coef=0.5 sig",
+  -2.1628768481745606,
+  1e-10
+ ],
+ [
+  "smear_field_step coef=0.8 sig",
+  6.69115914151881,
+  1e-10
+ ],
+ [
+  "sphere_sum_field r=1.0 sig",
+  {
+   "real": 10.575187341936001,
+   "imag": 0.9334113026112676,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sphere_sum_field r=2.0 sig",
+  {
+   "real": -717.1029843304183,
+   "imag": -630.5240826172208,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sphere_sum_field r=3.0 sig",
+  {
+   "real": -4876.959402044239,
+   "imag": -4797.204409023415,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "sphere_sum_field spatial sig",
+  {
+   "real": -76.0971012185385,
+   "imag": -15.281319429136246,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "prop_smear mode=0 sig",
+  {
+   "value": [
+    {
+     "real": 4.170620140032736,
+     "imag": -2.5753161752540286,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.0532126168724274,
+     "imag": -5.6326330977297765,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.6347470827638582,
+     "imag": -2.184017220603141,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_smear mode=1 sig",
+  {
+   "value": [
+    {
+     "real": 1.6686828189971479,
+     "imag": -4.284317499032865,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.1885768963218946,
+     "imag": -0.8098018194063574,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.2444980341323375,
+     "imag": -5.2106353866637125,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_smear no_mom sig",
+  {
+   "value": [
+    {
+     "real": 5.5009342509039465,
+     "imag": -0.8699356317140343,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 3.429971427113873,
+     "imag": 4.129477634184532,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.2425688305943245,
+     "imag": 1.9396795754252691,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_smear time_dir sig",
+  {
+   "value": [
+    {
+     "real": 0.560109738149458,
+     "imag": -0.08989178991270089,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.012577184263039443,
+     "imag": -0.4306600590481632,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 0.5824452775987212,
+     "imag": 0.5151933488596102,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_spatial_smear Prop sig",
+  {
+   "value": [
+    {
+     "real": 3.5402545105988583,
+     "imag": 0.46657499205790076,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 2.3376339121862904,
+     "imag": 1.0791686928113147,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.7160318601361833,
+     "imag": 2.257635847401846,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_spatial_smear Prop no_mom sig",
+  {
+   "value": [
+    {
+     "real": -3.864194000379539,
+     "imag": 3.06504339355144,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 1.18945140947633,
+     "imag": -0.03993252796106739,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 2.376832308494036,
+     "imag": -0.041595867161080324,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_spatial_smear FF4d sig",
+  {
+   "value": [
+    {
+     "real": -0.6640990920006884,
+     "imag": 1.833050162889668,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.4936174525793928,
+     "imag": 1.0508783611652137,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.9035595222472657,
+     "imag": 0.773690859186264,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_spatial_smear FF4d no_mom sig",
+  {
+   "value": [
+    {
+     "real": -0.6732623806361491,
+     "imag": 1.469614057490372,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.5477944417629539,
+     "imag": -0.027195304016802757,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.4543955874317799,
+     "imag": -0.3362312804741284,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_spatial_smear [Prop,Prop] len",
+  2,
+  1e-10
+ ],
+ [
+  "prop_spatial_smear [Prop,Prop] sig",
+  {
+   "value": [
+    {
+     "real": 0.6307414782267629,
+     "imag": -1.78865402227674,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -1.0278995456481321,
+     "imag": 2.521130895738086,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 5.881830291645938,
+     "imag": -1.7901682524952662,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "prop_spatial_smear [FF4d,FF4d] len",
+  2,
+  1e-10
+ ],
+ [
+  "prop_spatial_smear [FF4d,FF4d] sig",
+  {
+   "value": [
+    {
+     "real": 0.4247462401842897,
+     "imag": 0.17692593931916878,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.3967928032662171,
+     "imag": 1.0308122041147414,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.027631012849506142,
+     "imag": -0.5328285435850717,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ]
+]

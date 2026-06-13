@@ -1,43 +1,64 @@
-r"""\n
-# Plaq dependent flow\n
+"""
+Module ``qlat.instanton_map``
+=============================
+
+Instanton detection and topological charge mapping using plaquette-dependent
+Wilson flow.
+
+Documentation: ``docs/qlat/qlat_instanton_map.md``
+
+.. note:: Update the documentation when updating this source file.
+
+Plaq dependent flow
+--------------------
+
 Standard Wilson flow action:
-$$
-S_\mathrm{Wilson} = \frac{\beta}{2}\sum_{x,\mu,\nu} \Big(1 - \frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\Big)
-$$
-with $\beta = 3$.\n
-Modified flow to make the slope depends on the plaq value:
-$$
-S_f = -\frac{\beta}{2}\sum_{x,\mu,\nu} f\big(\frac{1}{3}\mathrm{Re}\mathrm{Tr} U_{\mu,\nu}\big)
-$$\n
-We can choose the function $f$ that smooths gauge field and therefore fix the total topological charge:
-$$
-\frac{d}{dp}f_\mathrm{Freeze}(p)
-=
-1 - p
-$$
-Note that $f_\mathrm{Freeze}$ suppresses plaq significantly deviate from $1$ and therefore prevent topological charge tunnelling during flow.\n
-We can also choose the function $f$ that shrinks instanton:
-$$
-\frac{d}{dp}f_\mathrm{Shrink}(p)
-=
-\frac{\epsilon}{1 - p + \epsilon} + b
-$$
-with a possible choice of parameters be $\epsilon = 0.005$ and $b=0.5$.
-Note that $f_\mathrm{Shrink}$ tends to shrink the size of instanton therefore enhance topological charge tunnelling during flow.\n
-We can also choose the function $f$ that shrinks large instanton but prevent small instanton from tunnelling:
-$$
-\frac{d}{dp}f_\mathrm{Localize}(p)
-=
-\frac{\epsilon}{1 - p + \epsilon} + b (1 - p)
-$$
-with a possible choice of parameters be $\epsilon = 0.002$ and $b=50$.\n
-We can also choose the function $f$ that mimic Wilson flow but prevent small instanton from tunnelling:
-$$
-\frac{d}{dp}f_\mathrm{Preserve}(p)
-=
-max(1, b (1 - p))
-$$
-with a possible choice of parameters be $b=50$.\n
+
+.. math::
+
+    S_{\\text{Wilson}} = \\frac{\\beta}{2}\\sum_{x,\\mu,\\nu}
+    \\Big(1 - \\frac{1}{3}\\text{Re Tr}\\, U_{\\mu,\\nu}\\Big)
+
+with :math:`\\beta = 3`.
+
+Modified flow to make the slope depend on the plaq value:
+
+.. math::
+
+    S_f = -\\frac{\\beta}{2}\\sum_{x,\\mu,\\nu}
+    f\\Big(\\frac{1}{3}\\text{Re Tr}\\, U_{\\mu,\\nu}\\Big)
+
+Freeze flow (fixes topological charge):
+
+.. math::
+
+    \\frac{d}{dp}f_{\\text{Freeze}}(p) = 1 - p
+
+Shrink flow (enhances topological tunnelling):
+
+.. math::
+
+    \\frac{d}{dp}f_{\\text{Shrink}}(p) =
+    \\frac{\\epsilon}{1 - p + \\epsilon} + b
+
+with :math:`\\epsilon = 0.005`, :math:`b = 0.5`.
+
+Localize flow (shrinks large instantons, prevents small instanton tunnelling):
+
+.. math::
+
+    \\frac{d}{dp}f_{\\text{Localize}}(p) =
+    \\frac{\\epsilon}{1 - p + \\epsilon} + b(1 - p)
+
+with :math:`\\epsilon = 0.002`, :math:`b = 50`.
+
+Preserve flow (mimics Wilson flow, prevents small instanton tunnelling):
+
+.. math::
+
+    \\frac{d}{dp}f_{\\text{Preserve}}(p) = \\max(1,\\, b(1 - p))
+
+with :math:`b = 50`.
 """
 
 # --------------------------------------

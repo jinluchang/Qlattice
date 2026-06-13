@@ -104,6 +104,7 @@ tests = \
 		gf-utils.log \
 		gf-utils-2.log \
 		gf-flow-topo.log \
+		flow-and-smear.log \
 		free-invert.log \
 		fit-corr.log \
 		fit-corr-2.log \
