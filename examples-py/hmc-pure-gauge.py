@@ -417,7 +417,7 @@ for beta in [
                 tt,
             )
         )
-        set_param(job_tag, "hmc", "max_traj")(1000)
+        set_param(job_tag, "hmc", "max_traj")(10000)
         set_param(job_tag, "hmc", "max_traj_always_accept")(100)
         set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
         set_param(job_tag, "hmc", "md_time")(4.0)

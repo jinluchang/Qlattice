@@ -279,397 +279,410 @@ def measure_topo_dwf(
     #
     for rand_vol_u1_idx in range(num_of_rand_vol_u1):
         q.check_time_limit()
-        fu1 = q.mk_rand_vol_u1(
-            geo, rand_vol_u1_multiplicity, rs_rand_u1.split(f"{rand_vol_u1_idx}")
-        )
-        fu1[:, 3:6] = fu1[:, 0:3]
-        fu1[:, 6:12] = fu1[:, 0:6]
-        #
-        q.json_results_append(
-            "fu1 sig",
-            q.get_data_sig_arr(fu1, rs_sig, 3),
-            1e-12,
-        )
-        #
-        def mk_path(idx):
-            """
-            Build the scratch directory path for a given sparse-solve index.\n
-            Parameters
-            ----------
-            idx : int
-                Sparse-solve (grid subset) index.\n
-            Returns
-            -------
-            str
-                Full scratch path.
-            """
-            assert isinstance(idx, int), f"mk_path: idx type={type(idx)}"
-            return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
-        #
-        def check(idx):
-            """
-            Check whether scratch data (psel + sparse propagator) already exists on disk.\n
-            Parameters
-            ----------
-            idx : int
-                Sparse-solve index.\n
-            Returns
-            -------
-            bool
-                True if both ``psel.lati`` and ``sp_prop_sol.lat`` exist.
-            """
-            assert isinstance(idx, int), f"check: idx type={type(idx)}"
-            if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
-                return False
-            if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
-                return False
-            return True
-        #
-        @q.timer(is_verbose=True)
-        def save(idx, sp_prop_sol):
-            """
-            Shuffle the sparse propagator to the root node and save it along with its point selection.\n
-            Only MPI rank 0 actually writes to disk; other ranks assert that their
-            shuffled data is empty.\n
-            Parameters
-            ----------
-            idx : int
-                Sparse-solve index (used to build the output path).
-            sp_prop_sol : q.PselProp
-                Sparse propagator solution in the local (``"l"``) point distribution.
-            """
-            assert isinstance(idx, int), f"save: idx type={type(idx)}"
-            assert isinstance(sp_prop_sol, q.PselProp), (
-                f"save: sp_prop_sol type={type(sp_prop_sol)}"
+        pickle_path = f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/info.pickle"
+        if q.does_file_exist_qar_sync_node(pickle_path):
+            info = q.load_pickle_obj(pickle_path)
+            assert isinstance(info, dict)
+            assert "f_tadpole_loop_sum" in info
+            assert "f_tadpole_loop_imag_sqr_sum" in info
+            q.json_results_append(
+                f"rand_vol_u1_idx-{rand_vol_u1_idx}: loaded from pickle (skipping compute)"
             )
-            root = 0
-            psel = psel_list[idx]
-            assert sp_prop_sol.n_points == psel.n_points
-            ssp = q.SelectedShufflePlan("g_from_l", psel, root, geo)
-            psel_g = ssp.psel_recv_list[0]
-            sp_prop_sol_g = ssp.shuffle_sp(q.PselProp, sp_prop_sol)
-            if root == q.get_id_node():
-                assert sp_prop_sol_g.n_points == psel_g.n_points
-                psel_g.save(
-                    f"{mk_path(idx)}/psel.lati",
-                    is_sync_node=False,
+        else:
+            fu1 = q.mk_rand_vol_u1(
+                geo, rand_vol_u1_multiplicity, rs_rand_u1.split(f"{rand_vol_u1_idx}")
+            )
+            fu1[:, 3:6] = fu1[:, 0:3]
+            fu1[:, 6:12] = fu1[:, 0:6]
+            #
+            q.json_results_append(
+                "fu1 sig",
+                q.get_data_sig_arr(fu1, rs_sig, 3),
+                1e-12,
+            )
+            #
+            def mk_path(idx):
+                """
+                Build the scratch directory path for a given sparse-solve index.\n
+                Parameters
+                ----------
+                idx : int
+                    Sparse-solve (grid subset) index.\n
+                Returns
+                -------
+                str
+                    Full scratch path.
+                """
+                assert isinstance(idx, int), f"mk_path: idx type={type(idx)}"
+                return f"{info_path}/scratch/rand_vol_u1_idx-{rand_vol_u1_idx}/sparse_solve_idx-{idx}"
+            #
+            def check(idx):
+                """
+                Check whether scratch data (psel + sparse propagator) already exists on disk.\n
+                Parameters
+                ----------
+                idx : int
+                    Sparse-solve index.\n
+                Returns
+                -------
+                bool
+                    True if both ``psel.lati`` and ``sp_prop_sol.lat`` exist.
+                """
+                assert isinstance(idx, int), f"check: idx type={type(idx)}"
+                if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
+                    return False
+                if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
+                    return False
+                return True
+            #
+            @q.timer(is_verbose=True)
+            def save(idx, sp_prop_sol):
+                """
+                Shuffle the sparse propagator to the root node and save it along with its point selection.\n
+                Only MPI rank 0 actually writes to disk; other ranks assert that their
+                shuffled data is empty.\n
+                Parameters
+                ----------
+                idx : int
+                    Sparse-solve index (used to build the output path).
+                sp_prop_sol : q.PselProp
+                    Sparse propagator solution in the local (``"l"``) point distribution.
+                """
+                assert isinstance(idx, int), f"save: idx type={type(idx)}"
+                assert isinstance(sp_prop_sol, q.PselProp), (
+                    f"save: sp_prop_sol type={type(sp_prop_sol)}"
                 )
-                sp_prop_sol_g.save(
-                    f"{mk_path(idx)}/sp_prop_sol.lat",
-                    is_sync_node=False,
-                )
-            else:
-                assert len(psel_g) == 0
-                assert sp_prop_sol_g.n_points == 0
-        #
-        @q.timer(is_verbose=True)
-        def load(idx_list):
-            """
-            Load sparse propagator solutions from disk and redistribute across MPI ranks.\n
-            Each index is assigned a root rank via round-robin over the shuffle node list.
-            After reading on the respective root, the data is reverse-shuffled back to
-            the local (``"l"``) point distribution.\n
-            Parameters
-            ----------
-            idx_list : list of int
-                Sparse-solve indices to load.\n
-            Returns
-            -------
-            sp_prop_sol_il : list of q.PselProp
-                List of loaded sparse propagator solutions, one per index.
-            """
-            assert isinstance(idx_list, list), f"load: idx_list type={type(idx_list)}"
-            for i_idx in idx_list:
-                assert isinstance(i_idx, int), (
-                    f"load: idx_list element type={type(i_idx)}"
-                )
-            id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
-            root_il = [
-                id_node_list_for_shuffle[i % len(id_node_list_for_shuffle)]
-                for i, idx in enumerate(idx_list)
-            ]
-            geo_il = [geo for idx in idx_list]
-            psel_il = [psel_list[idx] for idx in idx_list]
-            ssp = q.SelectedShufflePlan("g_from_l", psel_il, root_il, geo_il)
-            psel_g_il = ssp.psel_recv_list
-            sp_prop_sol_g_il = [
-                q.PselProp(psel_g_il[i]) for i, idx in enumerate(idx_list)
-            ]
-            for i, idx in enumerate(idx_list):
-                if root_il[i] == q.get_id_node():
-                    psel_g_l = q.PointsSelection()
-                    psel_g_l.load(
+                root = 0
+                psel = psel_list[idx]
+                assert sp_prop_sol.n_points == psel.n_points
+                ssp = q.SelectedShufflePlan("g_from_l", psel, root, geo)
+                psel_g = ssp.psel_recv_list[0]
+                sp_prop_sol_g = ssp.shuffle_sp(q.PselProp, sp_prop_sol)
+                if root == q.get_id_node():
+                    assert sp_prop_sol_g.n_points == psel_g.n_points
+                    psel_g.save(
                         f"{mk_path(idx)}/psel.lati",
                         is_sync_node=False,
                     )
-                    assert psel_g_il[i] == psel_g_l
-                    sp_prop_sol_g_il[i].load(
+                    sp_prop_sol_g.save(
                         f"{mk_path(idx)}/sp_prop_sol.lat",
                         is_sync_node=False,
                     )
-            sp_prop_sol_il = ssp.shuffle_sp_list(
-                q.PselProp,
-                sp_prop_sol_g_il,
-                is_reverse=True,
-            )
-            assert len(sp_prop_sol_il) == len(idx_list)
-            assert isinstance(sp_prop_sol_il, list), (
-                f"load: sp_prop_sol_il type={type(sp_prop_sol_il)}"
-            )
-            for sp in sp_prop_sol_il:
-                assert isinstance(sp, q.PselProp), (
-                    f"load: sp_prop_sol_il element type={type(sp)}"
-                )
-            return sp_prop_sol_il
-        #
-        @q.timer
-        def benchmark(sp_prop_sol):
-            """
-            Log quality metrics (signal/error ratio) for a sparse propagator solution.\n
-            Uses gamma_5 Hermiticity to separate signal (gamma_5-hermitian part) from
-            noise (anti-hermitian part). Reports:
-              - prop_size: Frobenius-norm signal, error, and error/signal ratio.
-              - topo_sum: trace(gamma_5 * prop), scaled by sqrt(volume).
-              - quark_condensate_avg: trace(prop) averaged over points.\n
-            Parameters
-            ----------
-            sp_prop_sol : q.PselProp
-                Sparse propagator solution to benchmark.
-            """
-            assert isinstance(sp_prop_sol, q.PselProp), (
-                f"benchmark: sp_prop_sol type={type(sp_prop_sol)}"
-            )
-            fname = q.get_fname()
-            n_points = q.glb_sum(sp_prop_sol.n_points)
-            psel = sp_prop_sol.psel
-            total_site = psel.total_site
-            volume = total_site.volume()
-            gamma_5_s = q.get_gamma_matrix(5)[:]
-            gamma_5_sc = np.zeros(
-                (
-                    4,
-                    3,
-                    4,
-                    3,
-                ),
-                dtype=np.complex128,
-            )
-            gamma_5_sc[:, np.arange(3), :, np.arange(3)] = gamma_5_s[None, :, :]
-            gamma_5 = gamma_5_sc.reshape(12, 12).copy()
+                else:
+                    assert len(psel_g) == 0
+                    assert sp_prop_sol_g.n_points == 0
             #
-            arr = sp_prop_sol[:, 0, :, :]
-            arr_t = gamma_5 @ arr.conj().swapaxes(-1, -2) @ gamma_5
-            arr_avg = 0.5 * (arr + arr_t)
-            arr_diff = 0.5 * (arr - arr_t)
-            val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points)
-            err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points)
-            q.json_results_append(
-                f"{fname}: prop_size val,err,err/val",
-                np.array(
-                    [
-                        val,
-                        err,
-                        err / val,
-                    ]
-                ),
-                1e-5,
-            )
-            topo_arr = np.trace(gamma_5 @ arr, axis1=-1, axis2=-2)
-            arr_avg = topo_arr.real
-            arr_diff = topo_arr.imag
-            val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points * volume)
-            err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points * volume)
-            q.json_results_append(
-                f"{fname}: topo_sum val,err,err/val",
-                np.array(
-                    [
-                        val,
-                        err,
-                        err / val,
-                    ]
-                ),
-                1e-5,
-            )
-            quark_condensate_arr = np.trace(arr, axis1=-1, axis2=-2)
-            arr_avg = quark_condensate_arr.real
-            arr_diff = quark_condensate_arr.imag
-            val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points)
-            err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points / volume)
-            q.json_results_append(
-                f"{fname}: quark_condensate_avg val,err,err/val",
-                np.array(
-                    [
-                        val,
-                        err,
-                        err / val,
-                    ]
-                ),
-                1e-5,
-            )
-        #
-        for idx, psel in enumerate(psel_list):
-            q.check_time_limit()
-            q.json_results_append(f"sparse_solve: {idx + 1}/{len(psel_list)}")
-            if check(idx):
-                continue
-            sp_prop_sol = sparse_solve(idx, psel, fu1, inv_qm_f)
-            benchmark(sp_prop_sol)
-            rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
-            r = rs_ama_idx.u_rand_gen()
-            if r <= ama_prob:
-                sp_prop_sol_ama = sparse_solve(idx, psel, fu1, inv_qm)
-                sp_prop_sol_ama -= sp_prop_sol
+            @q.timer(is_verbose=True)
+            def load(idx_list):
+                """
+                Load sparse propagator solutions from disk and redistribute across MPI ranks.\n
+                Each index is assigned a root rank via round-robin over the shuffle node list.
+                After reading on the respective root, the data is reverse-shuffled back to
+                the local (``"l"``) point distribution.\n
+                Parameters
+                ----------
+                idx_list : list of int
+                    Sparse-solve indices to load.\n
+                Returns
+                -------
+                sp_prop_sol_il : list of q.PselProp
+                    List of loaded sparse propagator solutions, one per index.
+                """
+                assert isinstance(idx_list, list), f"load: idx_list type={type(idx_list)}"
+                for i_idx in idx_list:
+                    assert isinstance(i_idx, int), (
+                        f"load: idx_list element type={type(i_idx)}"
+                    )
+                id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
+                root_il = [
+                    id_node_list_for_shuffle[i % len(id_node_list_for_shuffle)]
+                    for i, idx in enumerate(idx_list)
+                ]
+                geo_il = [geo for idx in idx_list]
+                psel_il = [psel_list[idx] for idx in idx_list]
+                ssp = q.SelectedShufflePlan("g_from_l", psel_il, root_il, geo_il)
+                psel_g_il = ssp.psel_recv_list
+                sp_prop_sol_g_il = [
+                    q.PselProp(psel_g_il[i]) for i, idx in enumerate(idx_list)
+                ]
+                for i, idx in enumerate(idx_list):
+                    if root_il[i] == q.get_id_node():
+                        psel_g_l = q.PointsSelection()
+                        psel_g_l.load(
+                            f"{mk_path(idx)}/psel.lati",
+                            is_sync_node=False,
+                        )
+                        assert psel_g_il[i] == psel_g_l
+                        sp_prop_sol_g_il[i].load(
+                            f"{mk_path(idx)}/sp_prop_sol.lat",
+                            is_sync_node=False,
+                        )
+                sp_prop_sol_il = ssp.shuffle_sp_list(
+                    q.PselProp,
+                    sp_prop_sol_g_il,
+                    is_reverse=True,
+                )
+                assert len(sp_prop_sol_il) == len(idx_list)
+                assert isinstance(sp_prop_sol_il, list), (
+                    f"load: sp_prop_sol_il type={type(sp_prop_sol_il)}"
+                )
+                for sp in sp_prop_sol_il:
+                    assert isinstance(sp, q.PselProp), (
+                        f"load: sp_prop_sol_il element type={type(sp)}"
+                    )
+                return sp_prop_sol_il
+            #
+            @q.timer
+            def benchmark(sp_prop_sol):
+                """
+                Log quality metrics (signal/error ratio) for a sparse propagator solution.\n
+                Uses gamma_5 Hermiticity to separate signal (gamma_5-hermitian part) from
+                noise (anti-hermitian part). Reports:
+                  - prop_size: Frobenius-norm signal, error, and error/signal ratio.
+                  - topo_sum: trace(gamma_5 * prop), scaled by sqrt(volume).
+                  - quark_condensate_avg: trace(prop) averaged over points.\n
+                Parameters
+                ----------
+                sp_prop_sol : q.PselProp
+                    Sparse propagator solution to benchmark.
+                """
+                assert isinstance(sp_prop_sol, q.PselProp), (
+                    f"benchmark: sp_prop_sol type={type(sp_prop_sol)}"
+                )
+                fname = q.get_fname()
+                n_points = q.glb_sum(sp_prop_sol.n_points)
+                psel = sp_prop_sol.psel
+                total_site = psel.total_site
+                volume = total_site.volume()
+                gamma_5_s = q.get_gamma_matrix(5)[:]
+                gamma_5_sc = np.zeros(
+                    (
+                        4,
+                        3,
+                        4,
+                        3,
+                    ),
+                    dtype=np.complex128,
+                )
+                gamma_5_sc[:, np.arange(3), :, np.arange(3)] = gamma_5_s[None, :, :]
+                gamma_5 = gamma_5_sc.reshape(12, 12).copy()
+                #
+                arr = sp_prop_sol[:, 0, :, :]
+                arr_t = gamma_5 @ arr.conj().swapaxes(-1, -2) @ gamma_5
+                arr_avg = 0.5 * (arr + arr_t)
+                arr_diff = 0.5 * (arr - arr_t)
+                val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points)
+                err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points)
                 q.json_results_append(
-                    f"sp_prop_sol_ama ratio of sqrt(qnorm) ({idx + 1}/{len(psel_list)}) ({ama_prob=:.4f})",
-                    np.sqrt(
-                        q.glb_sum(q.qnorm(sp_prop_sol_ama))
-                        / q.glb_sum(q.qnorm(sp_prop_sol))
-                    ).item(),
+                    f"{fname}: prop_size val,err,err/val",
+                    np.array(
+                        [
+                            val,
+                            err,
+                            err / val,
+                        ]
+                    ),
                     1e-5,
                 )
-                sp_prop_sol_ama *= 1 / ama_prob
-                sp_prop_sol += sp_prop_sol_ama
+                topo_arr = np.trace(gamma_5 @ arr, axis1=-1, axis2=-2)
+                arr_avg = topo_arr.real
+                arr_diff = topo_arr.imag
+                val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points * volume)
+                err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points * volume)
+                q.json_results_append(
+                    f"{fname}: topo_sum val,err,err/val",
+                    np.array(
+                        [
+                            val,
+                            err,
+                            err / val,
+                        ]
+                    ),
+                    1e-5,
+                )
+                quark_condensate_arr = np.trace(arr, axis1=-1, axis2=-2)
+                arr_avg = quark_condensate_arr.real
+                arr_diff = quark_condensate_arr.imag
+                val = np.sqrt(q.glb_sum(q.qnorm(arr_avg)) / n_points)
+                err = np.sqrt(q.glb_sum(q.qnorm(arr_diff)) / n_points / volume)
+                q.json_results_append(
+                    f"{fname}: quark_condensate_avg val,err,err/val",
+                    np.array(
+                        [
+                            val,
+                            err,
+                            err / val,
+                        ]
+                    ),
+                    1e-5,
+                )
+            #
+            for idx, psel in enumerate(psel_list):
+                q.check_time_limit()
+                q.json_results_append(f"sparse_solve: {idx + 1}/{len(psel_list)}")
+                if check(idx):
+                    continue
+                sp_prop_sol = sparse_solve(idx, psel, fu1, inv_qm_f)
                 benchmark(sp_prop_sol)
-            save(idx, sp_prop_sol)
-            sp_prop_sol_il = load(
-                [
-                    idx,
-                ]
+                rs_ama_idx = rs_ama.split(f"{rand_vol_u1_idx} {idx}")
+                r = rs_ama_idx.u_rand_gen()
+                if r <= ama_prob:
+                    sp_prop_sol_ama = sparse_solve(idx, psel, fu1, inv_qm)
+                    sp_prop_sol_ama -= sp_prop_sol
+                    q.json_results_append(
+                        f"sp_prop_sol_ama ratio of sqrt(qnorm) ({idx + 1}/{len(psel_list)}) ({ama_prob=:.4f})",
+                        np.sqrt(
+                            q.glb_sum(q.qnorm(sp_prop_sol_ama))
+                            / q.glb_sum(q.qnorm(sp_prop_sol))
+                        ).item(),
+                        1e-5,
+                    )
+                    sp_prop_sol_ama *= 1 / ama_prob
+                    sp_prop_sol += sp_prop_sol_ama
+                    benchmark(sp_prop_sol)
+                save(idx, sp_prop_sol)
+                sp_prop_sol_il = load(
+                    [
+                        idx,
+                    ]
+                )
+                assert np.all(
+                    q.get_data_sig_arr(sp_prop_sol, rs_sig, 3)
+                    == q.get_data_sig_arr(sp_prop_sol_il[0], rs_sig, 3)
+                )
+            #
+            sp_prop_sol_list = load([idx for idx in range(len(psel_list))])
+            #
+            prop_sol = q.Prop(geo)
+            prop_sol.set_zero()
+            for sp_prop_sol in sp_prop_sol_list:
+                prop_sol @= sp_prop_sol
+            q.json_results_append(
+                "prop_sol sig",
+                q.get_data_sig_arr(prop_sol, rs_sig, 3),
+                1e-7,
             )
-            assert np.all(
-                q.get_data_sig_arr(sp_prop_sol, rs_sig, 3)
-                == q.get_data_sig_arr(sp_prop_sol_il[0], rs_sig, 3)
+            prop_sol.save_float_from_double(
+                f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/prop_sol.field",
+            )
+            #
+            def get_prop(flavor, p_snk, p_src):
+                """
+                Callback for the contraction expression evaluator: return the propagator element.\n
+                Only the ``"c"`` (connected) flavor is supported.  Sink and source must both
+                be ``"point-snk"`` at the same coordinate.\n
+                Parameters
+                ----------
+                flavor : str
+                    Flavor channel (must be ``"c"``).
+                p_snk : tuple(str, tuple)
+                    Sink specification: ``("point-snk", (x, y, z, t))``.
+                p_src : tuple(str, tuple)
+                    Source specification: ``("point-snk", (x, y, z, t))``.\n
+                Returns
+                -------
+                WilsonMatrix
+                    12x12 Dirac-colour propagator matrix at the given site.
+                """
+                assert isinstance(flavor, str), f"get_prop: flavor type={type(flavor)}"
+                assert flavor == "c", f"get_prop: flavor={flavor} != 'c'"
+                assert isinstance(p_snk, tuple) and isinstance(p_src, tuple), (
+                    f"get_prop: p_snk type={type(p_snk)} p_src type={type(p_src)}"
+                )
+                type_snk, pos_snk = p_snk
+                type_src, pos_src = p_src
+                assert type_snk == "point-snk", f"get_prop: type_snk={type_snk}"
+                assert type_src == "point-snk", f"get_prop: type_src={type_src}"
+                pos_snk = q.Coordinate(pos_snk)
+                pos_src = q.Coordinate(pos_src)
+                assert pos_snk == pos_src, (
+                    f"get_prop: pos_snk={pos_snk} != pos_src={pos_src}"
+                )
+                index = geo.index_from_g_coordinate(pos_snk)
+                val = prop_sol.get_elem_wm(index)
+                assert isinstance(val, q.WilsonMatrix), f"get_prop: type(val)={type(val)}"
+                return val
+            #
+            cexpr = get_cexpr_tadpole_loop()
+            expr_names = get_expr_names(cexpr)
+            chunk_list = q.get_chunk_list(
+                xg_arr_full,
+                chunk_number=max(1, q.get_q_num_mp_processes()),
+            )
+            #
+            @q.timer(is_verbose=True)
+            def eval(chunk_idx):
+                """
+                Evaluate the tadpole-loop contraction over a chunk of grid coordinates.\n
+                For each coordinate in the chunk, builds a position dictionary and calls
+                ``eval_cexpr`` with the tadpole-loop compiled expression and the
+                ``get_prop`` callback.\n
+                Parameters
+                ----------
+                chunk_idx : int
+                    Index into ``chunk_list``, defining the subset of coordinates to process.\n
+                Returns
+                -------
+                val_arr : np.ndarray, complex128
+                    Shape ``(len(chunk), len(expr_names))``.
+                    Column 0 = ``qbar gamma5 q``, column 1 = ``qbar q`` at each site.
+                """
+                assert isinstance(chunk_idx, int), f"eval: chunk_idx type={type(chunk_idx)}"
+                chunk = chunk_list[chunk_idx]
+                val_arr = np.zeros(
+                    (
+                        len(chunk),
+                        len(expr_names),
+                    ),
+                    dtype=np.complex128,
+                )
+                for idx, xg in enumerate(chunk):
+                    pd = {"x_1": ("point-snk", tuple(xg))}
+                    val_arr[idx] = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+                expected_shape = (len(chunk), len(expr_names))
+                assert val_arr.shape == expected_shape, (
+                    f"eval: val_arr.shape={val_arr.shape} != {expected_shape}"
+                )
+                assert val_arr.dtype == np.complex128
+                return val_arr
+            #
+            val_arr_list = q.parallel_map(eval, range(len(chunk_list)))
+            #
+            f_tadpole_loop = q.FieldComplexD(geo, 2)
+            f_tadpole_loop.set_zero()
+            for idx, chunk in enumerate(chunk_list):
+                f_tadpole_loop.set_elems_xg(chunk, val_arr_list[idx])
+            #
+            q.json_results_append(
+                "f_tadpole_loop sig",
+                q.get_data_sig_arr(f_tadpole_loop, rs_sig, 3),
+                1e-7,
+            )
+            f_tadpole_loop.save_double(
+                f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop.field",
+            )
+            #
+            f_tadpole_loop_sum = f_tadpole_loop.glb_sum_tslice()[:].copy()
+            q.json_results_append(
+                "f_tadpole_loop_sum sig",
+                q.get_data_sig_arr(f_tadpole_loop_sum, rs_sig, 3),
+                1e-7,
+            )
+            f_tadpole_loop_imag_sqr = q.FieldRealD(geo, 2)
+            f_tadpole_loop_imag_sqr[:] = f_tadpole_loop[:].imag ** 2
+            f_tadpole_loop_imag_sqr_sum = f_tadpole_loop_imag_sqr.glb_sum_tslice()[:].copy()
+            #
+            info = dict()
+            info["f_tadpole_loop_sum"] = f_tadpole_loop_sum
+            info["f_tadpole_loop_imag_sqr_sum"] = f_tadpole_loop_imag_sqr_sum
+            #
+            q.save_pickle_obj(
+                info,
+                f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/info.pickle",
             )
         #
-        sp_prop_sol_list = load([idx for idx in range(len(psel_list))])
-        #
-        prop_sol = q.Prop(geo)
-        prop_sol.set_zero()
-        for sp_prop_sol in sp_prop_sol_list:
-            prop_sol @= sp_prop_sol
-        q.json_results_append(
-            "prop_sol sig",
-            q.get_data_sig_arr(prop_sol, rs_sig, 3),
-            1e-7,
-        )
-        prop_sol.save_float_from_double(
-            f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/prop_sol.field",
-        )
-        #
-        def get_prop(flavor, p_snk, p_src):
-            """
-            Callback for the contraction expression evaluator: return the propagator element.\n
-            Only the ``"c"`` (connected) flavor is supported.  Sink and source must both
-            be ``"point-snk"`` at the same coordinate.\n
-            Parameters
-            ----------
-            flavor : str
-                Flavor channel (must be ``"c"``).
-            p_snk : tuple(str, tuple)
-                Sink specification: ``("point-snk", (x, y, z, t))``.
-            p_src : tuple(str, tuple)
-                Source specification: ``("point-snk", (x, y, z, t))``.\n
-            Returns
-            -------
-            WilsonMatrix
-                12x12 Dirac-colour propagator matrix at the given site.
-            """
-            assert isinstance(flavor, str), f"get_prop: flavor type={type(flavor)}"
-            assert flavor == "c", f"get_prop: flavor={flavor} != 'c'"
-            assert isinstance(p_snk, tuple) and isinstance(p_src, tuple), (
-                f"get_prop: p_snk type={type(p_snk)} p_src type={type(p_src)}"
-            )
-            type_snk, pos_snk = p_snk
-            type_src, pos_src = p_src
-            assert type_snk == "point-snk", f"get_prop: type_snk={type_snk}"
-            assert type_src == "point-snk", f"get_prop: type_src={type_src}"
-            pos_snk = q.Coordinate(pos_snk)
-            pos_src = q.Coordinate(pos_src)
-            assert pos_snk == pos_src, (
-                f"get_prop: pos_snk={pos_snk} != pos_src={pos_src}"
-            )
-            index = geo.index_from_g_coordinate(pos_snk)
-            val = prop_sol.get_elem_wm(index)
-            assert isinstance(val, q.WilsonMatrix), f"get_prop: type(val)={type(val)}"
-            return val
-        #
-        cexpr = get_cexpr_tadpole_loop()
-        expr_names = get_expr_names(cexpr)
-        chunk_list = q.get_chunk_list(
-            xg_arr_full,
-            chunk_number=max(1, q.get_q_num_mp_processes()),
-        )
-        #
-        @q.timer(is_verbose=True)
-        def eval(chunk_idx):
-            """
-            Evaluate the tadpole-loop contraction over a chunk of grid coordinates.\n
-            For each coordinate in the chunk, builds a position dictionary and calls
-            ``eval_cexpr`` with the tadpole-loop compiled expression and the
-            ``get_prop`` callback.\n
-            Parameters
-            ----------
-            chunk_idx : int
-                Index into ``chunk_list``, defining the subset of coordinates to process.\n
-            Returns
-            -------
-            val_arr : np.ndarray, complex128
-                Shape ``(len(chunk), len(expr_names))``.
-                Column 0 = ``qbar gamma5 q``, column 1 = ``qbar q`` at each site.
-            """
-            assert isinstance(chunk_idx, int), f"eval: chunk_idx type={type(chunk_idx)}"
-            chunk = chunk_list[chunk_idx]
-            val_arr = np.zeros(
-                (
-                    len(chunk),
-                    len(expr_names),
-                ),
-                dtype=np.complex128,
-            )
-            for idx, xg in enumerate(chunk):
-                pd = {"x_1": ("point-snk", tuple(xg))}
-                val_arr[idx] = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
-            expected_shape = (len(chunk), len(expr_names))
-            assert val_arr.shape == expected_shape, (
-                f"eval: val_arr.shape={val_arr.shape} != {expected_shape}"
-            )
-            assert val_arr.dtype == np.complex128
-            return val_arr
-        #
-        val_arr_list = q.parallel_map(eval, range(len(chunk_list)))
-        #
-        f_tadpole_loop = q.FieldComplexD(geo, 2)
-        f_tadpole_loop.set_zero()
-        for idx, chunk in enumerate(chunk_list):
-            f_tadpole_loop.set_elems_xg(chunk, val_arr_list[idx])
-        #
-        q.json_results_append(
-            "f_tadpole_loop sig",
-            q.get_data_sig_arr(f_tadpole_loop, rs_sig, 3),
-            1e-7,
-        )
-        f_tadpole_loop.save_double(
-            f"{info_path}/field/rand_vol_u1_idx-{rand_vol_u1_idx}/f_tadpole_loop.field",
-        )
-        #
-        f_tadpole_loop_sum = f_tadpole_loop.glb_sum_tslice()[:].copy()
-        q.json_results_append(
-            "f_tadpole_loop_sum sig",
-            q.get_data_sig_arr(f_tadpole_loop_sum, rs_sig, 3),
-            1e-7,
-        )
-        f_tadpole_loop_imag_sqr = q.FieldRealD(geo, 2)
-        f_tadpole_loop_imag_sqr[:] = f_tadpole_loop[:].imag ** 2
-        f_tadpole_loop_imag_sqr_sum = f_tadpole_loop_imag_sqr.glb_sum_tslice()[:].copy()
-        #
-        info = dict()
-        info["f_tadpole_loop_sum"] = f_tadpole_loop_sum
-        info["f_tadpole_loop_imag_sqr_sum"] = f_tadpole_loop_imag_sqr_sum
-        #
-        q.save_pickle_obj(
-            info,
-            f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/info.pickle",
-        )
+        f_tadpole_loop_sum = info["f_tadpole_loop_sum"]
+        f_tadpole_loop_imag_sqr_sum = info["f_tadpole_loop_imag_sqr_sum"]
         #
         q.save_json_obj(
             dict(
