@@ -5,7 +5,7 @@ modules in `qlat-utils`, `qlat`, `qlat-scripts-v1`, and `auto-contractor`.
 
 ## Overview
 
-Each Python module (`.py` or `.pyx` file) should have:
+Each Python module (`.py`, `.pyx`, or `.py.in`/`.pyx.in` template) should have:
 
 1. A **module docstring** in the source file that references the documentation location.
 2. A **markdown documentation file** in the appropriate `docs/` subdirectory:
@@ -24,9 +24,15 @@ Each Python module (`.py` or `.pyx` file) should have:
 Locate the source file to document. For example:
 - `qlat-utils/qlat_utils/json.py`
 - `qlat/qlat/field.pyx`
+- `qlat/qlat/field_types.pyx.in` (template that generates `.pyx`)
+- `qlat/qlat/c.py.in` (template that generates `.py`)
 - `qlat/qlat_gpt.py`
 - `qlat/qlat_scripts/v1/gen_data.py`
 - `qlat/auto_contractor/operators.py`
+
+Note: `qlat/qlat/*.py.in` and `qlat/qlat/*.pyx.in` are template files that
+generate the actual `.py`/`.pyx` modules. Document the generated module, not
+the template itself.
 
 ### Step 2: Add a Module Docstring to the Source File
 
@@ -57,6 +63,46 @@ Documentation: ``docs/package/module_name.md``
 
 ```python
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+"""
+Module ``package.module_name``
+==============================
+
+Short description of what this module provides.
+
+Documentation: ``docs/package/module_name.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+```
+
+**Template for `.py.in` files (after the Mako `{{py: ...}}` block):**
+
+```python
+{{py:
+# Mako template definitions ...
+}}
+
+"""
+Module ``package.module_name``
+==============================
+
+Short description of what this module provides.
+
+Documentation: ``docs/package/module_name.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+```
+
+**Template for `.pyx.in` files (after the cython directive and Mako block):**
+
+```python
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
+{{py:
+# Mako template definitions ...
+}}
 
 """
 Module ``package.module_name``
@@ -206,11 +252,21 @@ Check that:
 | `qlat_utils/json.py` | `docs/qlat-utils/qlat_json.md` |
 | `qlat_utils/rng_state.pyx` | `docs/qlat-utils/qlat_rng_state.md` |
 | `qlat/field.pyx` | `docs/qlat/qlat_field.md` |
+| `qlat/field_types.pyx.in` | `docs/qlat/qlat_field_types.md` |
+| `qlat/selected_field_types.pyx.in` | `docs/qlat/qlat_selected_field_types.md` |
+| `qlat/selected_points_types.pyx.in` | `docs/qlat/qlat_selected_points_types.md` |
+| `qlat/c.py.in` | `docs/qlat/qlat_c.md` |
 | `qlat/qlat_gpt.py` | `docs/qlat_gpt.md` |
 | `qlat_scripts/v1/gen_data.py` | `docs/qlat-scripts-v1/qlat_scripts_gen_data.md` |
 | `qlat_scripts/v1/rbc_ukqcd.py` | `docs/qlat-scripts-v1/qlat_scripts_rbc_ukqcd.md` |
 | `auto_contractor/operators.py` | `docs/auto-contractor/auto_contractor_operators.md` |
 | `auto_contractor/auto_contract_compilation.py` | `docs/auto-contractor/auto_contractor_auto_contract_compilation.md` |
+
+Template files (`.py.in`, `.pyx.in`) use Mako templating to generate the
+actual `.py`/`.pyx` modules. Document the **template file** as the source
+(e.g., `Source: qlat/qlat/field_types.pyx.in`) since that is what developers
+edit. The existing docs for `field_types`, `selected_field_types`, and
+`selected_points_types` already follow this convention.
 
 The documentation filename uses the package prefix (e.g., `qlat_`) to avoid
 collisions between packages. For `qlat-scripts-v1` modules, the source lives in
