@@ -1,14 +1,21 @@
 # Coding doc structure
 
 This document describes the standard procedure for adding documentation to Python
-modules in `qlat-utils` and `qlat`.
+modules in `qlat-utils`, `qlat`, `qlat-scripts-v1`, and `auto-contractor`.
 
 ## Overview
 
 Each Python module (`.py` or `.pyx` file) should have:
 
 1. A **module docstring** in the source file that references the documentation location.
-2. A **markdown documentation file** in `docs/qlat-utils/` or `docs/qlat/`.
+2. A **markdown documentation file** in the appropriate `docs/` subdirectory:
+
+| Package | Source | Docs Directory |
+|---------|--------|---------------|
+| qlat-utils | `qlat-utils/qlat_utils/` | `docs/qlat-utils/` |
+| qlat | `qlat/qlat/` | `docs/qlat/` |
+| qlat-scripts-v1 | `qlat/qlat_scripts/v1/` | `docs/qlat-scripts-v1/` |
+| auto-contractor | `qlat/auto_contractor/` | `docs/auto-contractor/` |
 
 ## Procedure
 
@@ -17,6 +24,9 @@ Each Python module (`.py` or `.pyx` file) should have:
 Locate the source file to document. For example:
 - `qlat-utils/qlat_utils/json.py`
 - `qlat/qlat/field.pyx`
+- `qlat/qlat_gpt.py`
+- `qlat/qlat_scripts/v1/gen_data.py`
+- `qlat/auto_contractor/operators.py`
 
 ### Step 2: Add a Module Docstring to the Source File
 
@@ -65,8 +75,13 @@ move them into the docstring as a reference link at the bottom.
 
 ### Step 3: Create or Update the Documentation File
 
-The documentation file lives in `docs/qlat-utils/` or `docs/qlat/` and is named
-after the module (e.g., `qlat_json.md` for `qlat_utils/json.py`).
+The documentation file lives in the appropriate `docs/` subdirectory and is named
+after the module. Examples:
+- `docs/qlat-utils/qlat_json.md` for `qlat_utils/json.py`
+- `docs/qlat/qlat_field.md` for `qlat/field.pyx`
+- `docs/qlat_gpt.md` for `qlat/qlat_gpt.py`
+- `docs/qlat-scripts-v1/qlat_scripts_gen_data.md` for `qlat_scripts/v1/gen_data.py`
+- `docs/auto-contractor/auto_contractor_operators.md` for `auto_contractor/operators.py`
 
 The document must begin with:
 
@@ -91,6 +106,9 @@ Then include:
 > at the end to finalize properly. The `Geometry` constructor requires a
 > `Coordinate` object (e.g., `q.Geometry(q.Coordinate([4, 4, 4, 8]))`).
 > This is not required for `qlat-utils` modules that do not depend on MPI.
+>
+> For `auto-contractor` modules that use GPT, code examples must call
+> `qg.begin_with_gpt()` after imports and `qg.end_with_gpt()` at the end.
 
 ### Step 4: Add a Link in the Package Index
 
@@ -99,6 +117,8 @@ index:
 
 - `docs/qlat-utils.rst` for `qlat-utils` modules
 - `docs/qlat.rst` for `qlat` modules
+- `docs/qlat-scripts-v1.rst` for `qlat-scripts-v1` modules
+- `docs/auto-contractor.rst` for `auto-contractor` modules
 
 Add the entry in the `toctree` directive near the top of the file:
 
@@ -111,6 +131,18 @@ Add the entry in the `toctree` directive near the top of the file:
    qlat-utils/qlat_json.md
 
    qlat-utils/qlat_new_module.md
+```
+
+For `qlat-scripts-v1` or `auto-contractor`, the pattern is the same but with
+the corresponding directory name:
+
+```rst
+.. toctree::
+   :maxdepth: 1
+
+   qlat-scripts-v1/qlat_scripts_gen_data.md
+
+   auto-contractor/auto_contractor_operators.md
 ```
 
 ### Step 5: Verify Examples
@@ -174,7 +206,14 @@ Check that:
 | `qlat_utils/json.py` | `docs/qlat-utils/qlat_json.md` |
 | `qlat_utils/rng_state.pyx` | `docs/qlat-utils/qlat_rng_state.md` |
 | `qlat/field.pyx` | `docs/qlat/qlat_field.md` |
+| `qlat/qlat_gpt.py` | `docs/qlat_gpt.md` |
+| `qlat_scripts/v1/gen_data.py` | `docs/qlat-scripts-v1/qlat_scripts_gen_data.md` |
+| `qlat_scripts/v1/rbc_ukqcd.py` | `docs/qlat-scripts-v1/qlat_scripts_rbc_ukqcd.md` |
+| `auto_contractor/operators.py` | `docs/auto-contractor/auto_contractor_operators.md` |
+| `auto_contractor/auto_contract_compilation.py` | `docs/auto-contractor/auto_contractor_auto_contract_compilation.md` |
 
 The documentation filename uses the package prefix (e.g., `qlat_`) to avoid
-collisions between packages.
+collisions between packages. For `qlat-scripts-v1` modules, the source lives in
+`qlat_scripts/v1/` and documentation uses the `qlat_scripts_` prefix. For
+`auto-contractor` modules, the documentation uses the `auto_contractor_` prefix.
 
