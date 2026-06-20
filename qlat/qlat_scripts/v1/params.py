@@ -1,3 +1,14 @@
+"""
+Module ``qlat_scripts.v1.params``
+==================================
+
+Ensemble-specific simulation parameters: selections, AMA probabilities, smearing, and meson observables.
+
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_params.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from .rbc_ukqcd_params import dict_params
 from .rbc_ukqcd_params import set_param
 

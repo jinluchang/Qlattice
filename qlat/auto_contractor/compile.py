@@ -19,6 +19,19 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.compile``
+===================================
+
+Compiler for auto-contractor expressions.  Transforms Wick-contracted
+``Expr`` objects into an optimised ``CExpr`` representation with common
+sub-expression elimination, then generates Python/Cython evaluation code.
+
+Documentation: ``docs/auto-contractor/auto_contractor_compile.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 try:
     from .wick import *
     from . import auto_fac_funcs as aff

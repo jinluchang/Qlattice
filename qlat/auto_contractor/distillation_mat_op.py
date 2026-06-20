@@ -19,6 +19,19 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.distillation_mat_op``
+===============================================
+
+NumPy-based matrix operations for the distillation framework.  Provides
+einsum-cached multiplication and trace routines for Wilson matrices,
+spin matrices, and colour matrices with optimised contraction paths.
+
+Documentation: ``docs/auto-contractor/auto_contractor_distillation_mat_op.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import numpy as np
 
 import functools

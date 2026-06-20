@@ -1,3 +1,14 @@
+"""
+Module ``qlat_scripts.v1.jobs``
+================================
+
+Core job management: gauge fields, selections, eigenvectors, and parameter access.
+
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_jobs.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "save_path_default",
     "load_path_list",

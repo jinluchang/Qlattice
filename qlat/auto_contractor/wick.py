@@ -19,6 +19,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.wick``
+=================================
+
+Wick contraction engine for quark-level operators into propagator traces.
+
+Documentation: ``docs/auto-contractor/auto_contractor_wick.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import qlat_utils as q
 import copy
 import sympy

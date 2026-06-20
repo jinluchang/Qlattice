@@ -19,6 +19,18 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.auto_fac_funcs``
+==========================================
+
+Re-exports modular arithmetic helper functions from ``qlat_utils`` for use
+in auto-contractor compiled expressions.
+
+Documentation: ``docs/auto-contractor/auto_contractor_auto_fac_funcs.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "rel_mod",
     "rel_mod_sym",

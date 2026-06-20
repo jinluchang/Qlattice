@@ -19,6 +19,19 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.eval``
+================================
+
+Evaluation engine for compiled auto-contractor expressions.  Provides the
+``CCExpr`` wrapper, caching and compilation of ``CExpr`` objects, the main
+``eval_cexpr`` entry point, and benchmarking utilities.
+
+Documentation: ``docs/auto-contractor/auto_contractor_eval.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 try:
     from .compile import *
     from . import auto_fac_funcs as aff

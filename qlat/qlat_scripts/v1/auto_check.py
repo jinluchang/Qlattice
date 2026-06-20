@@ -1,3 +1,14 @@
+"""
+Module ``qlat_scripts.v1.auto_check``
+======================================
+
+Checker routines for wall-source and point-source propagator validation.
+
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_auto_check.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import os
 
 import qlat as q

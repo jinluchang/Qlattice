@@ -46,7 +46,9 @@ qlat_utils
 
    qlat-utils/qlat_load_prop.md
 
-   qlat-utils/qlat_cli.md
+    qlat-utils/qlat_cli.md
+
+    qlat-utils/qlat_tempita.md
 
 .. automodule:: qlat_utils
    :members:

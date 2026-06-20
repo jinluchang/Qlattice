@@ -1,3 +1,14 @@
+"""
+Module ``qlat.qlat_gpt``
+========================
+
+GPT–Qlattice interoperability: field conversion, inverter wrappers, and Coulomb gauge fixing.
+
+Documentation: ``docs/qlat_gpt.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import gpt as g
 import qlat as q
 import math

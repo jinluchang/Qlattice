@@ -19,6 +19,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.operators``
+======================================
+
+Hadronic operator construction for mesons, baryons, and four-quark operators.
+
+Documentation: ``docs/auto-contractor/auto_contractor_operators.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 """\n
 Operators for pi and K follows Eq.(103,122) of the following reference\n
 @article{Christ:2019sah,

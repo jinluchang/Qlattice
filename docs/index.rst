@@ -21,6 +21,8 @@ Qlattice
 
    qlat.rst
 
+   qlat_gpt.md
+
    auto-contractor.rst
 
    qlat-scripts-v1.rst

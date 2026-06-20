@@ -19,6 +19,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.expr_arithmetic``
+===========================================
+
+Symbolic arithmetic for expression coefficients using sympy.
+
+Documentation: ``docs/auto-contractor/auto_contractor_expr_arithmetic.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import qlat_utils as q
 import copy
 import io

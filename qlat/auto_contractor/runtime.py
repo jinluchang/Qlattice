@@ -19,6 +19,17 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.runtime``
+====================================
+
+Runtime imports for compiled expression evaluation (propagators, matrix operations).
+
+Documentation: ``docs/auto-contractor/auto_contractor_runtime.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 __all__ = [
     "np",
     "timer",

@@ -125,9 +125,14 @@ The documentation file lives in the appropriate `docs/` subdirectory and is name
 after the module. Examples:
 - `docs/qlat-utils/qlat_json.md` for `qlat_utils/json.py`
 - `docs/qlat/qlat_field.md` for `qlat/field.pyx`
-- `docs/qlat_gpt.md` for `qlat/qlat_gpt.py`
+- `docs/qlat_gpt.md` for `qlat/qlat_gpt.py` (top-level package module)
 - `docs/qlat-scripts-v1/qlat_scripts_gen_data.md` for `qlat_scripts/v1/gen_data.py`
 - `docs/auto-contractor/auto_contractor_operators.md` for `auto_contractor/operators.py`
+
+Top-level package modules (files directly under `qlat/` such as `qlat_gpt.py`)
+place their documentation at the `docs/` root (e.g., `docs/qlat_gpt.md`) rather
+than under a package subdirectory. Their toctree entry goes in `docs/index.rst`
+rather than `docs/qlat.rst`.
 
 The document must begin with:
 
@@ -162,7 +167,8 @@ Add a `toctree` entry for the new documentation file in the appropriate package
 index:
 
 - `docs/qlat-utils.rst` for `qlat-utils` modules
-- `docs/qlat.rst` for `qlat` modules
+- `docs/qlat.rst` for `qlat` modules (files under `qlat/qlat/`)
+- `docs/index.rst` for top-level `qlat` package modules (e.g., `qlat/qlat_gpt.py`)
 - `docs/qlat-scripts-v1.rst` for `qlat-scripts-v1` modules
 - `docs/auto-contractor.rst` for `auto-contractor` modules
 

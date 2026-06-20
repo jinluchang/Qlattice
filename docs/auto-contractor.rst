@@ -1,6 +1,29 @@
 auto_contractor
 ===============
 
+.. toctree::
+   :maxdepth: 1
+
+   auto-contractor/auto_contractor_auto_fac_funcs.md
+
+   auto-contractor/auto_contractor_benchmark.md
+
+   auto-contractor/auto_contractor_compile.md
+
+   auto-contractor/auto_contractor_distillation_mat_op.md
+
+   auto-contractor/auto_contractor_eval.md
+
+   auto-contractor/auto_contractor_expr_arithmetic.md
+
+   auto-contractor/auto_contractor_operators.md
+
+   auto-contractor/auto_contractor_runtime.md
+
+   auto-contractor/auto_contractor_runtime_distillation.md
+
+   auto-contractor/auto_contractor_wick.md
+
 .. automodule:: auto_contractor
    :members:
 

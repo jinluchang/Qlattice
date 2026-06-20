@@ -19,6 +19,18 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.benchmark``
+=====================================
+
+Benchmarking utilities for measuring the performance of matrix multiplication
+and trace operations used by the auto-contractor evaluation pipeline.
+
+Documentation: ``docs/auto-contractor/auto_contractor_benchmark.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from auto_contractor.eval import *
 
 import qlat as q

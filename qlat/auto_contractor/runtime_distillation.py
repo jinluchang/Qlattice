@@ -50,6 +50,17 @@ __all__ = [
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Module ``auto_contractor.runtime_distillation``
+=================================================
+
+Runtime imports for distillation-operator expression evaluation.
+
+Documentation: ``docs/auto-contractor/auto_contractor_runtime_distillation.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import numpy as np
 
 from qlat import timer, timer_flops
