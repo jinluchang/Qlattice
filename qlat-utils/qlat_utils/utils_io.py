@@ -1,9 +1,12 @@
 """
 Module ``qlat_utils.utils_io``
-===============================\n
+==============================
+
 File I/O utilities: directory creation, JSON/pickle save/load, hashing, and
-caching decorators for lattice QCD workflows.\n
-Documentation: ``docs/qlat-utils/qlat_utils_io.md``\n
+caching decorators for lattice QCD workflows.
+
+Documentation: ``docs/qlat-utils/qlat_utils_io.md``
+
 .. note:: Update the documentation when updating this source file.
 """
 

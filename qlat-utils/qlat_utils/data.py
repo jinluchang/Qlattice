@@ -1,8 +1,11 @@
 """
 Module ``qlat_utils.data``
-==========================\n
-Data analysis utilities: interpolation, jackknife resampling, error estimation, and value display.\n
-Documentation: ``docs/qlat-utils/qlat_data.md``\n
+==========================
+
+Data analysis utilities: interpolation, jackknife resampling, error estimation, and value display.
+
+Documentation: ``docs/qlat-utils/qlat_data.md``
+
 .. note:: Update the documentation when updating this source file.
 """
 

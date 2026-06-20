@@ -14,6 +14,8 @@ qlat_utils
 
    qlat-utils/qlat_data.md
 
+   qlat-utils/qlat_lat_data.md
+
    qlat-utils/qlat_qar.md
 
    qlat-utils/qlat_timer.md
@@ -46,9 +48,9 @@ qlat_utils
 
    qlat-utils/qlat_load_prop.md
 
-    qlat-utils/qlat_cli.md
+   qlat-utils/qlat_cli.md
 
-    qlat-utils/qlat_tempita.md
+   qlat-utils/qlat_tempita.md
 
 .. automodule:: qlat_utils
    :members:
@@ -58,7 +60,7 @@ Message
 
 .. autosummary::
    :toctree: generated
- 
+
    get_verbose_level
    set_verbose_level
 
@@ -131,11 +133,11 @@ Coordinate
    Coordinate.from_index
    Coordinate.to_index
 
-    CoordinateD
-    CoordinateD.to_list
-    CoordinateD.to_tuple
-    CoordinateD.to_numpy
-    CoordinateD.from_list
+   CoordinateD
+   CoordinateD.to_list
+   CoordinateD.to_tuple
+   CoordinateD.to_numpy
+   CoordinateD.from_list
 
 Cache system
 ------------

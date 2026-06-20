@@ -80,12 +80,16 @@ qlat
 
    qlat/qlat_flow_scale.md
 
+   qlat/qlat_tempita.md
+
+   qlat/qlat_c.md
+
 .. automodule:: qlat
    :members:
 
 .. autosummary::
    :toctree: generated
- 
+
    Geometry
 
    FieldSelection

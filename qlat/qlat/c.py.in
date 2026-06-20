@@ -19,6 +19,18 @@ type_name_list = [
     ]
 }}
 
+"""
+Module ``qlat.c``
+=================
+
+Central C extension loader and API aggregator for the qlat package.
+Re-exports all public symbols from the qlat C++ extension modules.
+
+Documentation: ``docs/qlat/qlat_c.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 ### -------------------------------------------------------------------------
 
 __all__ = []

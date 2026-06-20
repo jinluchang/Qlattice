@@ -1,3 +1,14 @@
+"""
+Module ``qlat_scripts.v1.gen_data``
+====================================
+
+Propagator generation and field selection utilities for lattice QCD data production.
+
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_gen_data.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 import numpy as np
 
 import qlat as q

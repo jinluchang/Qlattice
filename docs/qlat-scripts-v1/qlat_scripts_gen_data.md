@@ -1,8 +1,8 @@
-# qlat_scripts.v1.gen_data
-
-Propagator generation and field selection utilities for lattice QCD data production.
+# `qlat_scripts.v1.gen_data` — Propagator Generation and Field Selection Utilities
 
 Source: `qlat/qlat_scripts/v1/gen_data.py`
+
+> **Note:** Update this document when updating the source file.
 
 ## Overview
 

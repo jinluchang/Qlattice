@@ -1,9 +1,13 @@
 """
 Module ``qlat_utils.json``
-==========================\n
-JSON serialization for NumPy and extended numeric types.\n
-Documentation: ``docs/qlat-utils/qlat_json.md``\n
-.. note:: Update the documentation when updating this source file.\n
+==========================
+
+JSON serialization for NumPy and extended numeric types.
+
+Documentation: ``docs/qlat-utils/qlat_json.md``
+
+.. note:: Update the documentation when updating this source file.
+
 Based on `Mathspp Blog <https://mathspp.com/blog/custom-json-encoder-and-decoder>`_
 with modifications to add ``np.ndarray`` support.
 """

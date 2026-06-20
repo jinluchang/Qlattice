@@ -1,5 +1,17 @@
 # cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
 
+"""
+Module ``qlat_utils.lat_data``
+==============================
+
+Lattice data container for multi-dimensional arrays with labeled dimensions and
+coordinate-based element access.
+
+Documentation: ``docs/qlat-utils/qlat_lat_data.md``
+
+.. note:: Update the documentation when updating this source file.
+"""
+
 from . cimport everything as cc
 
 from .types cimport *
