@@ -190,8 +190,9 @@ NumPy array access:
 arr = np.asarray(ld)  # zero-copy view
 ```
 
-The shape is `(dim0_size, dim1_size, ...)` with an additional trailing
-dimension of size 2 for complex data.
+The shape is `(dim0_size, dim1_size, ...)`. For complex data, the dtype is
+`complex128` (or `complex64` for `LatDataRealF`) — the real/imaginary parts
+are encoded in the dtype, not as an extra dimension.
 
 ---
 
@@ -214,8 +215,86 @@ import qlat_utils as q
 ld = q.mk_lat_data([["t", 8], ["mom", 3]], is_complex=True)
 ld.set_dim_name(1, "mom", ["(0,0,0)", "(1,0,0)", "(1,1,0)"])
 ld[0, 0] = 1.0 + 0.5j
-print("shape:", ld.dim_sizes())
-print("value:", ld[0, 0])
+if q.get_id_node() == 0:
+    print("shape:", ld.dim_sizes())
+    print("value:", ld[0, 0])
+```
+
+### Query dimension metadata
+
+```python
+import qlat_utils as q
+
+ld = q.mk_lat_data([["t", 4], ["mom", 3, ["p0", "p1", "p2"]]], is_complex=True)
+if q.get_id_node() == 0:
+    print("ndim:", ld.ndim())               # 2
+    print("dim_names:", ld.dim_names())     # ['t', 'mom']
+    print("dim_sizes:", ld.dim_sizes())     # [4, 3]
+    print("is_complex:", ld.is_complex())   # True
+    print("dim_indices(1):", ld.dim_indices(1))  # ['p0', 'p1', 'p2']
+    print("dim_idx(1, 'p1'):", ld.dim_idx(1, "p1"))  # 1
+```
+
+### Arithmetic operations
+
+```python
+import qlat_utils as q
+
+ld_a = q.mk_lat_data([["t", 4]])
+ld_b = q.mk_lat_data([["t", 4]])
+ld_a[0] = 1.0
+ld_b[0] = 2.0
+
+ld_sum = ld_a + ld_b         # element-wise addition
+ld_diff = ld_a - ld_b        # element-wise subtraction
+ld_scaled = ld_a * 3.0       # scalar multiplication
+ld_neg = -ld_a               # negation
+
+ld_a += ld_b                 # in-place addition
+ld_a *= 0.5                  # in-place scalar multiplication
+if q.get_id_node() == 0:
+    print("qnorm:", ld_a.qnorm())  # squared norm
+```
+
+### NumPy buffer protocol (zero-copy)
+
+```python
+import qlat_utils as q
+import numpy as np
+
+ld = q.mk_lat_data([["t", 4], ["x", 3]])
+ld[0, 0] = 5.0
+arr = np.asarray(ld)    # zero-copy view
+arr[1, 1] = 7.0         # writes through to LatData
+if q.get_id_node() == 0:
+    print("ld[1,1]:", ld[1, 1])  # 7.0
+```
+
+### Pickle round-trip
+
+```python
+import qlat_utils as q
+import pickle
+
+ld = q.mk_lat_data([["t", 4], ["mom", 2, ["p0", "p1"]]])
+ld[0, 0] = 1.0 + 0.5j
+data = pickle.dumps(ld)
+ld_restored = pickle.loads(data)
+if q.get_id_node() == 0:
+    print("dim_names:", ld_restored.dim_names())
+    print("dim_indices(1):", ld_restored.dim_indices(1))
+```
+
+### save_str / load_str round-trip
+
+```python
+import qlat_utils as q
+
+ld = q.mk_lat_data([["t", 4], ["p", 2]])
+ld[0, 0] = 1.5
+content = ld.save_str()     # serialize to bytes
+ld2 = q.LatData()
+ld2.load_str(content)       # deserialize
 ```
 
 ### Load from file and convert to NumPy
@@ -226,7 +305,8 @@ import numpy as np
 
 ld = q.load_lat_data("data/pion_corr.lat")
 arr = np.asarray(ld)
-print("NumPy shape:", arr.shape)
+if q.get_id_node() == 0:
+    print("NumPy shape:", arr.shape)
 ```
 
 ### MPI global sum
@@ -234,10 +314,11 @@ print("NumPy shape:", arr.shape)
 ```python
 import qlat_utils as q
 
-q.begin()
+size_node_list = [[1, 1, 1, 1]]
+q.begin_with_mpi(size_node_list)
 ld = q.mk_lat_data([["t", 8]])
 ld.set_zero()
 # ... accumulate local data ...
 ld.glb_sum_in_place()  # sum across all nodes
-q.end()
+q.end_with_mpi()
 ```

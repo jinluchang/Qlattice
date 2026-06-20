@@ -1,0 +1,173 @@
+[
+ [
+  "test lat_data documentation examples"
+ ],
+ [
+  "construction"
+ ],
+ [
+  "mk_lat_data: ndim=2 dim_sizes=[8, 3]"
+ ],
+ [
+  "mk_lat_data_real_f: ndim=2"
+ ],
+ [
+  "mk_lat_data_int: ndim=1 is_complex=False"
+ ],
+ [
+  "mk_lat_data_long: ndim=1 is_complex=False"
+ ],
+ [
+  "set_info with dim_indices"
+ ],
+ [
+  "set_info: ndim=2 dim_name(1)=mom indices=['(0,0,0)', '(1,0,0)', '(1,1,0)']"
+ ],
+ [
+  "dimension metadata"
+ ],
+ [
+  "metadata: ndim=2 dim_names=['t', 'mom'] dim_sizes=[8, 3]"
+ ],
+ [
+  "metadata: dim_name(0)=t dim_size(0)=8"
+ ],
+ [
+  "metadata: dim_indices(1)=['p0', 'p1', 'p2'] dim_idx(1,'p1')=1"
+ ],
+ [
+  "metadata: is_complex=True"
+ ],
+ [
+  "info(): len=2 dim0_name=t"
+ ],
+ [
+  "info(1): name=mom size=3"
+ ],
+ [
+  "set_dim_name: dim_name(0)=tau"
+ ],
+ [
+  "data access"
+ ],
+ [
+  "get/set item: ld4[0,1]=(3.14+0j)"
+ ],
+ [
+  "complex set/get: ld4[1,2]=(1+2j)"
+ ],
+ [
+  "to_numpy / from_numpy"
+ ],
+ [
+  "to_numpy: shape=(4, 3) dtype=complex128"
+ ],
+ [
+  "from_numpy: ndim=2 match=True"
+ ],
+ [
+  "from_numpy(dim_names): ndim=2 names=['x', 'y']"
+ ],
+ [
+  "to_list / from_list"
+ ],
+ [
+  "to_list: len=12"
+ ],
+ [
+  "from_list: ndim=1 data_match=True"
+ ],
+ [
+  "save_str / load_str round-trip"
+ ],
+ [
+  "save_str/load_str: type=bytes match=True"
+ ],
+ [
+  "arithmetic (LatData)"
+ ],
+ [
+  "add: (ld_a+ld_b)[0,0]=(1.5+0j) [1,1]=(3.5+0j)"
+ ],
+ [
+  "sub: (ld_a-ld_b)[0,0]=(0.5+0j) [1,1]=(0.5+0j)"
+ ],
+ [
+  "mul scalar: (ld_a*3)[0,0]=(3+0j) [1,1]=(6+0j)"
+ ],
+ [
+  "neg: (-ld_a)[0,0]=(-1-0j) [1,1]=(-2-0j)"
+ ],
+ [
+  "iadd: ld_c[0,0]=(1.5+0j)"
+ ],
+ [
+  "isub: ld_c[0,0]=(1+0j)"
+ ],
+ [
+  "imul: ld_c[0,0]=(2+0j)"
+ ],
+ [
+  "qnorm: 5.0"
+ ],
+ [
+  "set_zero: qnorm=0.0"
+ ],
+ [
+  "is_match: True"
+ ],
+ [
+  "buffer protocol"
+ ],
+ [
+  "buffer protocol: view[0,0]=(5+0j) ld[1,1]=(7+0j)"
+ ],
+ [
+  "serialization (pickle)"
+ ],
+ [
+  "pickle: ndim=2 names=['t', 'mom'] match=True"
+ ],
+ [
+  "copy"
+ ],
+ [
+  "copy: orig[0]=(42+0j) copy_modified[0]=(99+0j)"
+ ],
+ [
+  "__copy__: match=True"
+ ],
+ [
+  "__deepcopy__: match=True"
+ ],
+ [
+  "MPI operations"
+ ],
+ [
+  "glb_sum: [0]=(2+0j) num_node=2"
+ ],
+ [
+  "glb_sum_in_place: [0]=(2+0j)"
+ ],
+ [
+  "bcast: [0]=(5+0j)"
+ ],
+ [
+  "complex arithmetic"
+ ],
+ [
+  "complex mul scalar: (2+4j)"
+ ],
+ [
+  "complex mul complex: (-1+3j)"
+ ],
+ [
+  "complex neg: (-1-2j)"
+ ],
+ [
+  "LatDataRealF round-trip"
+ ],
+ [
+  "LatDataRealF: dtype=complex64 round_trip=True"
+ ]
+]

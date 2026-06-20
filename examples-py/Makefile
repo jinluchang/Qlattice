@@ -112,7 +112,8 @@ tests = \
 		mpi-utils.log \
 		data.log \
 		mat-mpi-test.log \
-		test_json.log
+		test_json.log \
+		docs-lat_data.log
 
 all: run
 

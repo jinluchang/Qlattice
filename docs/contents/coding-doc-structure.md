@@ -158,6 +158,11 @@ Then include:
 > `Coordinate` object (e.g., `q.Geometry(q.Coordinate([4, 4, 4, 8]))`).
 > This is not required for `qlat-utils` modules that do not depend on MPI.
 >
+> Code that is intended to run on a single process (e.g., file I/O, printing,
+> or computations that do not involve MPI collectives) should be wrapped in
+> ``if q.get_id_node() == 0:`` to avoid duplicate output or conflicting writes
+> when running under MPI with multiple processes.
+>
 > For `auto-contractor` modules that use GPT, code examples must call
 > `qg.begin_with_gpt()` after imports and `qg.end_with_gpt()` at the end.
 
@@ -214,35 +219,47 @@ that the examples actually work against the compiled module.
     source result-py-local/bin/setenv-qlat.sh
     ```
 
-3. Create a temporary directory for testing:
-    ```bash
-    mkdir -p tmp/qlat-verify
-    ```
+3. Write a verification script in the appropriate examples directory.
 
-4. Write a verification script in
-   `tmp/qlat-verify/verify_doc_examples_<package>_<module>.py` that exercises
-   all the code examples from the documentation, using ``assert`` statements
-   to confirm correct behavior. The script should verify:
+   - For modules that **do not** require GPT/Grid, write to `examples-py/`:
+     `examples-py/docs-<module_name>.py`
+
+   - For modules that **require** GPT/Grid, write to `examples-py-gpt/`:
+     `examples-py-gpt/docs-<module_name>.py`
+
+   The script should exercise all the code examples from the documentation,
+   using ``assert`` statements to confirm correct behavior. The script should
+   verify:
    - Round-trip fidelity for each supported type
    - Type preservation through nested structures
    - Edge cases (compact output, plain types, etc.)
 
-5. Run the verification script:
+4. Run the verification script using the standard test runner:
     ```bash
-    cd tmp/qlat-verify && python3 verify_doc_examples_<package>_<module>.py
+    # For non-GPT scripts:
+    ./nixpkgs/run-one-example-py.py docs-<module_name>
+
+    # For GPT scripts:
+    ./nixpkgs/run-one-example-py-gpt.py docs-<module_name>
     ```
 
 **Example** — verifying ``qlat_utils.json``:
 
 ```bash
-mkdir -p tmp/qlat-verify
-# write tmp/qlat-verify/verify_doc_examples_qlat_utils_json.py
-cd tmp/qlat-verify && python3 verify_doc_examples_qlat_utils_json.py
+# write examples-py/docs-qlat_utils_json.py
+./nixpkgs/run-one-example-py.py docs-qlat_utils_json
 ```
 
-The verification script should print "All tests PASSED." on success. If any
-assertion fails, fix the documentation or the source code, rebuild, and
+The verification script should print "CHECK: finished successfully." at the
+end (this is the standard test completion marker used by the test runner). If
+any assertion fails, fix the documentation or the source code, rebuild, and
 re-run until all examples pass.
+
+5. Add the new test to the `tests` (or `tests_gpt`) list in the corresponding
+   Makefile so it is included in the full test suite:
+
+   - `examples-py/Makefile` — add `docs-<module_name>.log \` to the `tests` list.
+   - `examples-py-gpt/Makefile` — add `docs-<module_name>.log \` to the `tests_gpt` list.
 
 ### Step 6: Final Checks
 
