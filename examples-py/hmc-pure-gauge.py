@@ -405,6 +405,7 @@ for beta in [
         6,
         8,
         12,
+        16,
     ]:
         tt = ll * 2
         job_tag = f"{ll}nt{tt}-b{beta}"
@@ -417,7 +418,7 @@ for beta in [
                 tt,
             )
         )
-        set_param(job_tag, "hmc", "max_traj")(10000)
+        set_param(job_tag, "hmc", "max_traj")(50000)
         set_param(job_tag, "hmc", "max_traj_always_accept")(100)
         set_param(job_tag, "hmc", "max_traj_reverse_test")(2)
         set_param(job_tag, "hmc", "md_time")(4.0)
