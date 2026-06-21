@@ -10,6 +10,9 @@
   "lat-io-test2: v0 dim_sizes=[4, 3, 2, 5]"
  ],
  [
+  "lat-io-test2: v0 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=True"
+ ],
+ [
   "lat-io-test2: v0 data_sig",
   {
    "real": 10.06079422714926,
@@ -28,6 +31,9 @@
   1e-14
  ],
  [
+  "lat-io-test2: v1 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=True"
+ ],
+ [
   "lat-io-test2: v1 data_sig",
   {
    "real": 0.0,
@@ -35,6 +41,9 @@
    "__extended_json_type__": "complex128"
   },
   1e-14
+ ],
+ [
+  "lat-io-test2: v2 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=True"
  ],
  [
   "lat-io-test2: v2 data_sig",
@@ -58,6 +67,9 @@
   "lat-io-test2: v3 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=True"
  ],
  [
+  "lat-io-test2: v4 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=True"
+ ],
+ [
   "lat-io-test2: v4 data_sig",
   {
    "real": 10.06079422714926,
@@ -79,14 +91,23 @@
   "lat-io-test2: v5 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=True"
  ],
  [
+  "lat-io-test2: v6 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=False"
+ ],
+ [
   "lat-io-test2: v6 data_sig",
   0.0,
   1e-14
  ],
  [
+  "lat-io-test2: v7 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=False"
+ ],
+ [
   "lat-io-test2: v7 data_sig",
   0.0,
   1e-14
+ ],
+ [
+  "lat-io-test2: v8 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=False"
  ],
  [
   "lat-io-test2: v8 data_sig",
@@ -102,6 +123,9 @@
   "lat-io-test2: v9 info=[['dim1', 4, []], ['dim2 name', 3, []], ['dim3', 2, ['u', 'd']], ['dim4', 5, []]] is_complex=False"
  ],
  [
+  "lat-io-test2: v10 info=[['dim', 3, ['a', 'b', 'c']]] is_complex=True"
+ ],
+ [
   "lat-io-test2: v10 data_sig",
   {
    "real": 0.0,
@@ -109,6 +133,9 @@
    "__extended_json_type__": "complex128"
   },
   1e-14
+ ],
+ [
+  "lat-io-test2: v11 info=[['dim', 3, ['a', 'b', 'c']]] is_complex=True"
  ],
  [
   "lat-io-test2: v11 data_sig",
@@ -120,6 +147,9 @@
   1e-14
  ],
  [
+  "lat-io-test2: v12 info=[['dim', 3, ['a', 'b', 'c']]] is_complex=True"
+ ],
+ [
   "lat-io-test2: v12 data_sig",
   {
    "real": -0.19371220212477192,
@@ -129,14 +159,23 @@
   1e-14
  ],
  [
+  "lat-io-test2: v13 info=[['dim', 3, ['a', 'b', 'c']]] is_complex=False"
+ ],
+ [
   "lat-io-test2: v13 data_sig",
   0.0,
   1e-14
  ],
  [
+  "lat-io-test2: v14 info=[['dim', 3, ['a', 'b', 'c']]] is_complex=False"
+ ],
+ [
   "lat-io-test2: v14 data_sig",
   0.0,
   1e-14
+ ],
+ [
+  "lat-io-test2: v15 info=[] is_complex=True"
  ],
  [
   "lat-io-test2: v15 data_sig",
@@ -148,6 +187,9 @@
   1e-14
  ],
  [
+  "lat-io-test2: v16 info=[] is_complex=True"
+ ],
+ [
   "lat-io-test2: v16 data_sig",
   {
    "real": -0.4628202755722832,
@@ -155,6 +197,9 @@
    "__extended_json_type__": "complex128"
   },
   1e-14
+ ],
+ [
+  "lat-io-test2: v17 info=[] is_complex=True"
  ],
  [
   "lat-io-test2: v17 data_sig",
@@ -166,9 +211,15 @@
   1e-14
  ],
  [
+  "lat-io-test2: v18 info=[] is_complex=False"
+ ],
+ [
   "lat-io-test2: v18 data_sig",
   0.0,
   1e-14
+ ],
+ [
+  "lat-io-test2: v19 info=[] is_complex=False"
  ],
  [
   "lat-io-test2: v19 data_sig",

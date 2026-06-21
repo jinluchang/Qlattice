@@ -97,6 +97,8 @@ q.displayln_info("CHECK: q.show_all_shuffled_fields_writer()")
 for idx, s in enumerate(sf_list):
     q.displayln_info(f"CHECK: {idx} {s}")
 q.json_results_append("fields-io: show_all_shuffled_fields_writer n", len(sf_list))
+for idx, s in enumerate(sf_list):
+    q.json_results_append(f"fields-io: show_all_shuffled_fields_writer {idx} {s}")
 q.sync_node()
 
 sq_list = sorted(q.show_all_qfile())
@@ -105,6 +107,8 @@ q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
 q.json_results_append("fields-io: show_all_qfile n", len(sq_list))
+for idx, s in enumerate(sq_list):
+    q.json_results_append(f"fields-io: show_all_qfile {idx} {s}")
 q.sync_node()
 
 q.displayln_info("CHECK: sfw.new_size_node()", sfw.new_size_node())
@@ -142,6 +146,8 @@ q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
 q.json_results_append("fields-io: show_all_qfile after read n", len(sq_list))
+for idx, s in enumerate(sq_list):
+    q.json_results_append(f"fields-io: show_all_qfile after read {idx} {s}")
 q.sync_node()
 
 fns = sfr.list()

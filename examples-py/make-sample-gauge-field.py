@@ -57,6 +57,7 @@ gf.show_info()
 
 plaq1 = gf.plaq()
 q.json_results_append(f"{fname}: plaq1", plaq1, 1e-10)
+q.json_results_append(f"{fname}: plaq", plaq, 1e-10)
 
 q.displayln_info(f"CHECK: plaq: {plaq:.12E} {plaq1:.12E}")
 

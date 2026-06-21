@@ -24,6 +24,7 @@ def test_gf(gf):
 @q.timer
 def test_src(xg):
     q.displayln_info(f"CHECK: test_src: xg={xg.to_list()}")
+    q.json_results_append(f"test_src: xg={xg.to_list()}")
     #
     src_q = q.mk_point_src(geo, xg)
     #

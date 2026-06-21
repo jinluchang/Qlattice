@@ -49,5 +49,143 @@
  [
   "test-qar: num_clean_up_qfiles",
   0
+ ],
+ [
+  "test-qar: show_all_qfile n=45"
+ ],
+ [
+  "test-qar: show_all_qfile 0 QFileObj(path='results/data4.qar',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 1 QFileObj(path='results/data4.qar',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 2 QFileObj(path='results/data4.qar.v1',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 3 QFileObj(path='results/data4.qar.v10',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 4 QFileObj(path='results/data4.qar.v10',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 5 QFileObj(path='results/data4.qar.v11',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 6 QFileObj(path='results/data4.qar.v11',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 7 QFileObj(path='results/data4.qar.v12',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 8 QFileObj(path='results/data4.qar.v12',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 9 QFileObj(path='results/data4.qar.v13',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 10 QFileObj(path='results/data4.qar.v13',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 11 QFileObj(path='results/data4.qar.v14',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 12 QFileObj(path='results/data4.qar.v14',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 13 QFileObj(path='results/data4.qar.v15',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 14 QFileObj(path='results/data4.qar.v15',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 15 QFileObj(path='results/data4.qar.v16',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 16 QFileObj(path='results/data4.qar.v16',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 17 QFileObj(path='results/data4.qar.v17',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 18 QFileObj(path='results/data4.qar.v17',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 19 QFileObj(path='results/data4.qar.v18',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 20 QFileObj(path='results/data4.qar.v18',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 21 QFileObj(path='results/data4.qar.v19',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 22 QFileObj(path='results/data4.qar.v19',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 23 QFileObj(path='results/data4.qar.v2',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 24 QFileObj(path='results/data4.qar.v2',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 25 QFileObj(path='results/data4.qar.v20',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 26 QFileObj(path='results/data4.qar.v20',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 27 QFileObj(path='results/data4.qar.v21',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 28 QFileObj(path='results/data4.qar.v22',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 29 QFileObj(path='results/data4.qar.v23',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 30 QFileObj(path='results/data4.qar.v3',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 31 QFileObj(path='results/data4.qar.v3',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 32 QFileObj(path='results/data4.qar.v4',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 33 QFileObj(path='results/data4.qar.v4',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 34 QFileObj(path='results/data4.qar.v5',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 35 QFileObj(path='results/data4.qar.v5',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 36 QFileObj(path='results/data4.qar.v6',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 37 QFileObj(path='results/data4.qar.v6',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 38 QFileObj(path='results/data4.qar.v7',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 39 QFileObj(path='results/data4.qar.v7',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 40 QFileObj(path='results/data4.qar.v8',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 41 QFileObj(path='results/data4.qar.v8',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 42 QFileObj(path='results/data4.qar.v9',mode='r',parent=no,number_of_child=1)"
+ ],
+ [
+  "test-qar: show_all_qfile 43 QFileObj(path='results/data4.qar.v9',mode='r',parent=yes,number_of_child=0)"
+ ],
+ [
+  "test-qar: show_all_qfile 44 QFileObj(path='results/test-qar.qar',mode='r',parent=no,number_of_child=0)"
  ]
 ]

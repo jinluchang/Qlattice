@@ -54,6 +54,8 @@ avg, err = q.g_jk_avg_err(jk_arr)
 q.displayln_info(f"CHECK: {avg}")
 q.displayln_info(f"CHECK: {err}")
 
+q.json_results_append("avg", avg)
+q.json_results_append("err", err)
 for i in range(len(avg)):
     q.json_results_append(f"avg[{i}]", avg[i])
 for i in range(len(avg)):

@@ -192,6 +192,9 @@ q.sync_node()
 q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
+q.json_results_append(f"test-qar: show_all_qfile n={len(sq_list)}")
+for idx, s in enumerate(sq_list):
+    q.json_results_append(f"test-qar: show_all_qfile {idx} {s}")
 q.sync_node()
 
 for fn in [

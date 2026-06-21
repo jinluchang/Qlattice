@@ -16,14 +16,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[0, 2, 2, 1]"
  ],
  [
   "src_q.qnorm()",
@@ -36,14 +29,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[0, 3, 1, 6]"
  ],
  [
   "src_q.qnorm()",
@@ -56,14 +42,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[2, 1, 3, 3]"
  ],
  [
   "src_q.qnorm()",
@@ -76,14 +55,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[2, 3, 2, 3]"
  ],
  [
   "src_q.qnorm()",
@@ -96,14 +68,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[3, 1, 1, 0]"
  ],
  [
   "src_q.qnorm()",
@@ -116,14 +81,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[3, 3, 2, 4]"
  ],
  [
   "src_q.qnorm()",
@@ -136,14 +94,7 @@
   1e-12
  ],
  [
-  "src_q.qnorm()",
-  12.0,
-  1e-12
- ],
- [
-  "src_diff.qnorm()",
-  0.0,
-  1e-12
+  "test_src: xg=[0, 3, 3, 3]"
  ],
  [
   "src_q.qnorm()",
@@ -156,6 +107,9 @@
   1e-12
  ],
  [
+  "test_src: xg=[2, 0, 3, 1]"
+ ],
+ [
   "src_q.qnorm()",
   12.0,
   1e-12
@@ -164,6 +118,100 @@
   "src_diff.qnorm()",
   0.0,
   1e-12
+ ],
+ [
+  "test_src: xg=[3, 1, 0, 7]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[3, 3, 0, 1]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[0, 0, 3, 7]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[3, 3, 3, 5]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[1, 2, 2, 1]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[3, 2, 2, 6]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[0, 0, 0, 2]"
+ ],
+ [
+  "src_q.qnorm()",
+  12.0,
+  1e-12
+ ],
+ [
+  "src_diff.qnorm()",
+  0.0,
+  1e-12
+ ],
+ [
+  "test_src: xg=[0, 3, 3, 6]"
  ],
  [
   "src_q.qnorm()",

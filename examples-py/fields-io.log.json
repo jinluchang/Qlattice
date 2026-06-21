@@ -15,8 +15,26 @@
   1
  ],
  [
+  "fields-io: show_all_shuffled_fields_writer 0 ShuffledFieldsWriter(path='results/prop.fields',new_size_node=1x1x1x8)"
+ ],
+ [
   "fields-io: show_all_qfile n",
   5
+ ],
+ [
+  "fields-io: show_all_qfile 0 QFileObj(path='results/prop.fields/00/0000000000',mode='w',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile 1 QFileObj(path='results/prop.fields/01/0000000001',mode='w',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile 2 QFileObj(path='results/prop.fields/02/0000000002',mode='w',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile 3 QFileObj(path='results/prop.fields/03/0000000003',mode='w',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile 4 QFileObj(path='results/prop.fields/index.qar',mode='w',parent=no,number_of_child=0)"
  ],
  [
   "fields-io: sfw.new_size_node()=Coordinate([1, 1, 1, 8])"
@@ -34,6 +52,18 @@
  [
   "fields-io: show_all_qfile after read n",
   4
+ ],
+ [
+  "fields-io: show_all_qfile after read 0 QFileObj(path='results/prop.fields/00/0000000000',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile after read 1 QFileObj(path='results/prop.fields/01/0000000001',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile after read 2 QFileObj(path='results/prop.fields/02/0000000002',mode='r',parent=no,number_of_child=0)"
+ ],
+ [
+  "fields-io: show_all_qfile after read 3 QFileObj(path='results/prop.fields/03/0000000003',mode='r',parent=no,number_of_child=0)"
  ],
  [
   "fields-io: sfr.list()=['prop.d', 'prop', 's_prop', 'prop1']"
