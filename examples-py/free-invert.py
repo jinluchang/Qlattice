@@ -37,6 +37,9 @@ for src in [src_p, src_r]:
     q.displayln_info(
         f"CHECK: {sol.qnorm():.13E}", f"{sol1.qnorm():.9E}", f"{sol_diff.qnorm():.3E}"
     )
+    q.json_results_append('free-invert: sol qnorm', sol.qnorm(), 1e-10)
+    q.json_results_append('free-invert: sol1 qnorm', sol1.qnorm(), 1e-10)
+    q.json_results_append('free-invert: sol_diff qnorm', sol_diff.qnorm(), 1e-10)
     assert sol_diff.qnorm() < 1e-7
 
     sol2 = q.free_invert(
@@ -81,7 +84,11 @@ for src in [src_p, src_r]:
     q.displayln_info(
         f"CHECK: {sol_free.qnorm():.13E}", f"{sol_z.qnorm():.9E}", f"{sol_z_diff.qnorm():.3E}"
     )
+    q.json_results_append('free-invert: sol_free qnorm', sol_free.qnorm(), 1e-10)
+    q.json_results_append('free-invert: sol_z qnorm', sol_z.qnorm(), 1e-10)
+    q.json_results_append('free-invert: sol_z_diff qnorm', sol_z_diff.qnorm(), 1e-10)
 
+q.check_log_json(__file__)
 q.timer_display()
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

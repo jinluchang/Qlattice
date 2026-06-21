@@ -1,0 +1,31 @@
+[
+ [
+  "fields-io: prop qnorm",
+  49304.10827466952,
+  1e-10
+ ],
+ [
+  "fields-io: prop_d qnorm",
+  49304.10827466952,
+  1e-10
+ ],
+ [
+  "fields-io: prop_d diff qnorm",
+  0.0,
+  1e-10
+ ],
+ [
+  "fields-io: prop_f qnorm",
+  49304.10827993393,
+  1e-10
+ ],
+ [
+  "fields-io: prop_f diff qnorm",
+  2.4915300645954918e-11,
+  1e-10
+ ],
+ [
+  "fields-io: index.qar crc",
+  2504556907
+ ]
+]

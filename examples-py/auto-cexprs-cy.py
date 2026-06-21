@@ -179,6 +179,8 @@ def get_all_cexpr():
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
+        q.json_results_append(f"{name}: check {benchmark_show_check(check)}")
+        q.json_results_append(f"{name}: check_ama {benchmark_show_check(check_ama)}")
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -196,6 +198,8 @@ q.qremove_all_info("cache")
 get_all_cexpr()
 
 q.timer_display()
+
+q.check_log_json(__file__)
 
 q.end_with_mpi()
 

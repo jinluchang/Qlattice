@@ -44,6 +44,8 @@ q.displayln_info("ld:")
 q.displayln_info(ld.show())
 q.displayln_info(f"CHECK: qnorm = {ld.qnorm()}")
 
+q.json_results_append("ld.qnorm", ld.qnorm())
+
 ld[
     (
         0,
@@ -82,6 +84,7 @@ ld1 *= 0.5
 ld1 -= ld
 q.displayln_info(ld1.show())
 q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
+q.json_results_append("lat-io-test1: ld1 qnorm", ld1.qnorm())
 
 q.displayln_info(ld.to_list())
 
@@ -89,9 +92,11 @@ ld1.from_list(ld.to_list())
 
 q.displayln_info(ld1.show())
 q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
+q.json_results_append("lat-io-test1: ld1 from_list qnorm", ld1.qnorm())
 
 q.check_all_files_crc32_info("results")
 
+q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
 
 q.end_with_mpi()

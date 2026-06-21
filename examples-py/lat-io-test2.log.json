@@ -1,0 +1,43 @@
+[
+ [
+  "lat-io-test2: v0 qnorm",
+  223.22720225936774
+ ],
+ [
+  "lat-io-test2: v0 data_sig",
+  {
+   "real": 10.06079422714926,
+   "imag": -5.694442094846222,
+   "__extended_json_type__": "complex128"
+  },
+  1e-14
+ ],
+ [
+  "lat-io-test2: v3 data_sig",
+  {
+   "real": 10.06079422714926,
+   "imag": -5.694442094846222,
+   "__extended_json_type__": "complex128"
+  },
+  1e-14
+ ],
+ [
+  "lat-io-test2: v5 data_sig",
+  {
+   "real": 10.06079422714926,
+   "imag": -5.694442094846222,
+   "__extended_json_type__": "complex128"
+  },
+  1e-14
+ ],
+ [
+  "lat-io-test2: v9 data_sig",
+  -5.153233666085708,
+  1e-14
+ ],
+ [
+  "lat-io-test2: v20 data_sig",
+  -0.4628202755722832,
+  1e-14
+ ]
+]

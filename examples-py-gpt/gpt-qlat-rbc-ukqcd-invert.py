@@ -35,6 +35,7 @@ for i in range(2):
     q.displayln_info(
         f"CHECK: prop src {i} qnorm = {p.qnorm():.12E} crc32 = {p.crc32()}"
     )
+    q.json_results_append(f"prop src {i} qnorm", p.qnorm(), 1e-12)
     srcs.append(p)
 
 sols = inv * srcs
@@ -42,7 +43,10 @@ sols = inv * srcs
 for i in range(2):
     p = sols[i]
     q.displayln_info(f"CHECK: prop sol {i} qnorm = {p.qnorm():.6E}")
+    q.json_results_append(f"prop sol {i} qnorm", p.qnorm(), 1e-6)
     q.displayln_info(f"crc32 = {p.crc32():08X}")
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

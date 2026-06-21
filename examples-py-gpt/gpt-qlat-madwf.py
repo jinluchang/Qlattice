@@ -20,11 +20,15 @@ gpt_gf = g.qcd.gauge.random(grid, rng, scale=0.5)
 
 q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.10f}")
 
+q.json_results_append("g.qcd.gauge.plaquette(double)", g.qcd.gauge.plaquette(gpt_gf), 1e-12)
+
 gpt_gf_f = g.convert(gpt_gf, g.single)
 
 q.displayln_info(
     f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf_f):.4f} single precision"
 )
+
+q.json_results_append("g.qcd.gauge.plaquette(single)", g.qcd.gauge.plaquette(gpt_gf_f), 1e-12)
 
 gf = qg.qlat_from_gpt(gpt_gf)
 
@@ -152,6 +156,7 @@ invs = [inv_qm, inv_qz_f, inv_qm_mp, inv_qm_split, inv_qm_split_sloppy, inv_qm_m
 
 q.displayln_info(f"CHECK: tag={tags[0]} start")
 src, sol, sol1 = test_inv(geo, invs[0])
+q.json_results_append(f"sol.qnorm() tag={tags[0]}", sol.qnorm(), 1e-7)
 
 for tag, inv in zip(tags[1:], invs[1:]):
     q.displayln_info(f"CHECK: tag={tag} start")
@@ -162,6 +167,10 @@ for tag, inv in zip(tags[1:], invs[1:]):
     q.displayln_info(
         f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm():.1E} sol1 {sol1_n.qnorm():.1E}"
     )
+    q.json_results_append(f"sol diff qnorm tag={tag}", sol_n.qnorm(), 1e-7)
+    q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_n.qnorm(), 1e-7)
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

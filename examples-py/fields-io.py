@@ -23,6 +23,7 @@ prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 
 q.displayln_info("CHECK: prop", prop.crc32(), f"{prop.qnorm():.14E}")
+q.json_results_append('fields-io: prop qnorm', prop.qnorm(), 1e-10)
 
 s_prop = q.SelProp(fselc)
 s_prop @= prop
@@ -144,14 +145,18 @@ q.displayln_info("CHECK: sfr.new_size_node()", sfr.new_size_node())
 prop_d = q.Prop()
 prop_d.load_double(sfr, "prop.d")
 q.displayln_info("CHECK: prop_d", prop_d.crc32(), f"{prop_d.qnorm():.14E}")
+q.json_results_append('fields-io: prop_d qnorm', prop_d.qnorm(), 1e-10)
 prop_d -= prop
 q.displayln_info("CHECK: prop_d -= prop", prop_d.crc32(), f"{prop_d.qnorm():.14E}")
+q.json_results_append('fields-io: prop_d diff qnorm', prop_d.qnorm(), 1e-10)
 
 prop_f = q.Prop()
 prop_f.load_double_from_float(sfr, "prop")
 q.displayln_info("CHECK: prop_f", prop_f.crc32(), f"{prop_f.qnorm():.14E}")
+q.json_results_append('fields-io: prop_f qnorm', prop_f.qnorm(), 1e-10)
 prop_f -= prop
 q.displayln_info("CHECK: prop_f -= prop", prop_f.crc32(), f"{prop_f.qnorm():.14E}")
+q.json_results_append('fields-io: prop_f diff qnorm', prop_f.qnorm(), 1e-10)
 
 s_prop_f = q.SelProp(fsel)
 s_prop_f.load_double_from_float(sfr, "s_prop")
@@ -187,6 +192,7 @@ assert index_content == index_content2
 crc = q.compute_crc32("results/prop.fields/index.qar")
 
 q.displayln_info(f"CHECK: index.qar crc={crc:08X}")
+q.json_results_append('fields-io: index.qar crc', crc)
 
 q.displayln_info("CHECK: test read_as_char and write")
 
@@ -246,6 +252,7 @@ q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
 q.displayln_info("CHECK: ", q.qls_all_sync_node("results"))
 
+q.check_log_json(__file__)
 q.timer_display()
 
 q.end_with_mpi()

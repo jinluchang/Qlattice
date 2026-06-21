@@ -2,6 +2,10 @@
 
 import numpy as np
 
+import qlat as q
+
+q.begin_with_mpi()
+
 from qlat.mat_mpi import (
     get_mpi_comm,
     scatter_arr,
@@ -68,6 +72,7 @@ if rank == root:
 tr = d_trace(d_vec3)
 if rank == root:
     print(tr)
+    q.json_results_append("mat-mpi-test: d_trace", float(np.real(tr)))
 
 print("simple demo")
 
@@ -112,8 +117,12 @@ for i in range(nt):
         v = (d_arr_list_div[i] * d_arr_list_tt[j]).sum()
         s += v
 print(s / nt**2)
+q.json_results_append("mat-mpi-test: s_div_nt2", float(np.real(s / nt**2)))
 
 comm.barrier()
 
 if rank == 0:
+    q.check_log_json(__file__)
     print("CHECK: finished successfully.")
+
+q.end_with_mpi()

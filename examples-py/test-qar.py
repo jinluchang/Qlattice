@@ -130,10 +130,12 @@ q.qar_extract_info("results/data2.qar", "results/data2", is_remove_qar_after=Tru
 
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
 q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
+q.json_results_append('test-qar: qar_multi_vol_max_size', int(qar_multi_vol_max_size))
 
 q.set_qar_multi_vol_max_size(16 * 1024)
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
 q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
+q.json_results_append('test-qar: qar_multi_vol_max_size set', int(qar_multi_vol_max_size))
 
 q.qar_create_info(
     "results/data2/ld-1000.qar", "results/data2/ld-1000", is_remove_folder_after=True
@@ -173,6 +175,7 @@ q.sync_node()
 
 num_clean_up_qfiles = q.clean_up_qfile_map()
 q.displayln_info(f"CHECK: clean_up_qfile_map num_clean_up_qfiles={num_clean_up_qfiles}")
+q.json_results_append('test-qar: num_clean_up_qfiles', int(num_clean_up_qfiles))
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
 q.displayln_info("CHECK: q.show_all_qfile()")
@@ -192,6 +195,7 @@ for fn in [
 
 q.check_all_files_crc32_info("results")
 
+q.check_log_json(__file__)
 q.timer_display()
 
 q.end_with_mpi()

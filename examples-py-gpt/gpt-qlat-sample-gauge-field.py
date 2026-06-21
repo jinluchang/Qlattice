@@ -27,6 +27,8 @@ gf.show_info()
 
 plaq = gf.plaq()
 
+q.json_results_append("plaq", plaq, 1e-12)
+
 qg.save_gauge_field(gf, "results/ckpoint_lat.0")
 
 gf.save("results/ckpoint_lat.1")
@@ -48,6 +50,8 @@ gf.show_info()
 plaq1 = gf.plaq()
 
 assert abs(plaq - plaq1) < 1e-12
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

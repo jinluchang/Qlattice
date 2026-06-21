@@ -1,0 +1,62 @@
+[
+ [
+  "free-invert: sol qnorm",
+  9.736817294647487,
+  1e-10
+ ],
+ [
+  "free-invert: sol1 qnorm",
+  9.736817290497456,
+  1e-10
+ ],
+ [
+  "free-invert: sol_diff qnorm",
+  2.4044600910691625e-11,
+  1e-10
+ ],
+ [
+  "free-invert: sol qnorm",
+  14746353.2664898,
+  1e-10
+ ],
+ [
+  "free-invert: sol1 qnorm",
+  14746353.266381986,
+  1e-10
+ ],
+ [
+  "free-invert: sol_diff qnorm",
+  2.5018098016413372e-08,
+  1e-10
+ ],
+ [
+  "free-invert: sol_free qnorm",
+  9.736817294647487,
+  1e-10
+ ],
+ [
+  "free-invert: sol_z qnorm",
+  9.739789986784416,
+  1e-10
+ ],
+ [
+  "free-invert: sol_z_diff qnorm",
+  2.373573326504051e-07,
+  1e-10
+ ],
+ [
+  "free-invert: sol_free qnorm",
+  14746353.2664898,
+  1e-10
+ ],
+ [
+  "free-invert: sol_z qnorm",
+  14751028.745512603,
+  1e-10
+ ],
+ [
+  "free-invert: sol_z_diff qnorm",
+  0.3705540887559328,
+  1e-10
+ ]
+]

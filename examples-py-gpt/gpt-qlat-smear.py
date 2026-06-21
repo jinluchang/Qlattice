@@ -61,21 +61,29 @@ src = q.mk_point_src(geo, xg)
 
 q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src)}")
 
+q.json_results_append("qnorm(src)", q.qnorm(src), 1e-12)
+
 smear_coef = 0.9375
 smear_step = 10
 src = q.prop_smear(src, gf_ape, smear_coef, smear_step)
 
 q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src):.12E} after smear")
 
+q.json_results_append("qnorm(src) after smear", q.qnorm(src), 1e-12)
+
 sol = inv * src
 
 q.displayln_info(f"CHECK: qnorm(sol) = {q.qnorm(sol):.6E}")
+
+q.json_results_append("qnorm(sol)", q.qnorm(sol), 1e-6)
 
 sol_psel = q.PselProp(psel)
 sol_psel @= sol
 sol_psel.save(f"results/{tag} ; psnk.lat")
 
 q.displayln_info(f"CHECK: qnorm(sol_psel) = {q.qnorm(sol_psel):.6E}")
+
+q.json_results_append("qnorm(sol_psel)", q.qnorm(sol_psel), 1e-6)
 
 sfw = q.open_fields(
     "results/prop-smear",
@@ -106,17 +114,25 @@ sol_ws.save(f"results/{tag} ; wsnk.lat")
 
 q.displayln_info(f"CHECK: qnorm(sol_ws) = {q.qnorm(sol_ws):.5E}")
 
+q.json_results_append("qnorm(sol_ws)", q.qnorm(sol_ws), 1e-5)
+
 sol_smear_psel = q.PselProp(psel_smear)
 
 sol_smear = q.prop_smear(sol, gf_ape, smear_coef, smear_step)
 
 q.displayln_info(f"CHECK: qnorm(sol_smear) = {q.qnorm(sol_smear):.5E}")
 
+q.json_results_append("qnorm(sol_smear)", q.qnorm(sol_smear), 1e-5)
+
 sol_smear_psel = q.PselProp(psel_smear)
 sol_smear_psel @= sol_smear
 sol_smear_psel.save(f"results/{tag} ; smear-snk.lat")
 
 q.displayln_info(f"CHECK: qnorm(sol_smear_psel) = {q.qnorm(sol_smear_psel):.5E}")
+
+q.json_results_append("qnorm(sol_smear_psel)", q.qnorm(sol_smear_psel), 1e-5)
+
+q.check_log_json(__file__)
 
 q.check_all_files_crc32_info("results")
 

@@ -16,6 +16,8 @@ def test_gf(gf):
     q.displayln_info(
         f"CHECK: gf.plaq()={plaq:.13E} ; g.qcd.gauge.plaquette(gpt_gf) = {g_plaq:.13F}"
     )
+    q.json_results_append("gf.plaq()", plaq, 1e-12)
+    q.json_results_append("g.qcd.gauge.plaquette(gpt_gf)", g_plaq, 1e-12)
     assert abs(plaq - g_plaq) < 1.0e-10
 
 @q.timer
@@ -35,6 +37,8 @@ def test_src(xg):
     q.displayln_info(
         f"CHECK: {src_q.qnorm():.12E} {src_g.qnorm():.12E} {src_diff.qnorm():.12E}"
     )
+    q.json_results_append("src_q.qnorm()", src_q.qnorm(), 1e-12)
+    q.json_results_append("src_diff.qnorm()", src_diff.qnorm(), 1e-12)
     assert src_diff.qnorm() == 0
 
 qg.begin_with_gpt()
@@ -60,6 +64,8 @@ for i in range(16):
         ]
     )
     test_src(xg)
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

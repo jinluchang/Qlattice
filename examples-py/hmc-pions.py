@@ -1015,12 +1015,16 @@ def main():
     hmc.save_field()
     measurements.save()
     #
+    phi0_vev = np.mean(measurements.phi_list[int(n_traj / 2):], axis=0)[0]
+    phi_sq_vev = np.mean(measurements.psq_list[int(n_traj / 2):])
     q.displayln_info(
-        f"CHECK: The vacuum expectation value of phi_0 is {round(np.mean(measurements.phi_list[int(n_traj / 2) :], axis=0)[0], 2)}."
+        f"CHECK: The vacuum expectation value of phi_0 is {round(phi0_vev, 2)}."
     )
     q.displayln_info(
-        f"CHECK: The vacuum expectation value of phi^2 is {round(np.mean(measurements.psq_list[int(n_traj / 2) :]), 2)}."
+        f"CHECK: The vacuum expectation value of phi^2 is {round(phi_sq_vev, 2)}."
     )
+    q.json_results_append(f"vacuum expectation value of phi_0", phi0_vev, 1e-4)
+    q.json_results_append(f"vacuum expectation value of phi^2", phi_sq_vev, 1e-4)
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -1043,6 +1047,7 @@ main()
 
 q.timer_display()
 
+q.check_log_json(__file__)
 q.end_with_mpi()
 
-q.displayln_info("CHECK: Simulation finished successfully.")
+q.displayln_info("CHECK: finished successfully.")

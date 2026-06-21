@@ -1,0 +1,76 @@
+[
+ [
+  "mpi-utils: glb_sum int",
+  25.0
+ ],
+ [
+  "mpi-utils: glb_sum float",
+  25.8
+ ],
+ [
+  "mpi-utils: glb_sum float_arr",
+  {
+   "value": [
+    3.2,
+    5.2,
+    7.199999999999999
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "mpi-utils: glb_sum complex_arr",
+  {
+   "value": [
+    2.2,
+    4.2,
+    6.2
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "mpi-utils: glb_sum float_mat",
+  {
+   "value": [
+    3.2,
+    5.2,
+    7.199999999999999,
+    9.2,
+    11.2,
+    13.2
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "mpi-utils: glb_sum complex_mat",
+  {
+   "value": [
+    2.2,
+    4.2,
+    6.2,
+    8.2,
+    10.2,
+    12.2
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "mpi-utils: glb_sum mixed",
+  {
+   "value": [
+    3.5999999999999996,
+    3.4000000000000004,
+    5.0
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ]
+]

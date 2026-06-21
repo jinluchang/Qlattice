@@ -1,0 +1,25 @@
+[
+ [
+  "lat-io: ld roundtrip",
+  0.0
+ ],
+ [
+  "lat-io: ld1 roundtrip",
+  0.0
+ ],
+ [
+  "lat-io: ld1f roundtrip",
+  {
+   "value": 0.0,
+   "__extended_json_type__": "float32"
+  }
+ ],
+ [
+  "lat-io: ld2 roundtrip",
+  0.0
+ ],
+ [
+  "lat-io: ld3 roundtrip",
+  0.0
+ ]
+]

@@ -17,6 +17,8 @@ gf = q.GaugeField(geo)
 gf.set_unit()
 gf.show_info()
 
+q.json_results_append("gf.plaq()", gf.plaq(), 1e-12)
+
 mass = 0.05
 
 m5 = 1.0
@@ -57,7 +59,12 @@ for src in [src_p, src_r]:
     sol_diff -= sol
 
     q.displayln_info(f"CHECK: {sol.qnorm():.10E} {sol1.qnorm():.10E}")
+    q.json_results_append("sol.qnorm()", sol.qnorm(), 1e-12)
+    q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-12)
+    q.json_results_append("sol_diff.qnorm()", sol_diff.qnorm(), 1e-12)
     assert sol_diff.qnorm() < 1e-15
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

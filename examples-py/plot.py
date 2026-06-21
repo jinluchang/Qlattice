@@ -8,6 +8,8 @@ q.begin_with_mpi()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
+q.json_results_append("plot")
+
 q.qplot.plot_save_display_width = 500
 
 x = np.arange(31) * (6 / 30) - 3
@@ -34,6 +36,10 @@ if q.get_id_node() == 0:
             "'table.txt' w yerrorb t '$y = \\cos(x)$'",
         ],
     )
+
+q.json_results_append("plot_save")
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

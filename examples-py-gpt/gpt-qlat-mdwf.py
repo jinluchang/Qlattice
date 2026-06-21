@@ -30,6 +30,7 @@ mobius_params = {
 
 gpt_gf = qg.gpt_from_qlat(gf)
 
+q.json_results_append("g.qcd.gauge.plaquette", g.qcd.gauge.plaquette(gpt_gf), 1e-12)
 q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.14f}")
 
 gf1 = qg.qlat_from_gpt(gpt_gf)
@@ -68,16 +69,22 @@ def test_inv(geo, inverter):
     return src, sol, sol1
 
 src, sol, sol1 = test_inv(geo, inv_qm)
+q.json_results_append("src.qnorm()", src.qnorm(), 1e-12)
+q.json_results_append("sol.qnorm()", sol.qnorm(), 1e-12)
 
 ld = q.contract_pion_field(sol, 0)
 
+q.json_results_append("q.qnorm(ld)", q.qnorm(ld), 1e-12)
 q.displayln_info(f"CHECK: q.contract_pion_field(sol) {q.qnorm(ld):.12E}")
 q.displayln_info(q.show(ld))
 
 ld1 = q.contract_pion_field(sol1, 0)
 
+q.json_results_append("q.qnorm(ld1)", q.qnorm(ld1), 1e-12)
 q.displayln_info(f"CHECK: q.contract_pion_field(sol1) {q.qnorm(ld1):.12E}")
 q.displayln_info(q.show(ld1))
+
+q.check_log_json(__file__)
 
 q.timer_display()
 

@@ -36,9 +36,11 @@ info_list = [
 ld = q.mk_lat_data(info_list)
 rs.copy().g_rand_fill(np.asarray(ld).ravel())
 q.displayln_info(f"CHECK: v0 {ld.qnorm()} {ld.ndim()} {ld.dim_sizes()}")
+q.json_results_append("lat-io-test2: v0 qnorm", ld.qnorm())
 q.displayln_info(
     f"CHECK: v0 {ld.info()} {ld.is_complex()} {q.get_data_sig(ld, rs.copy()):.13E} {q.get_data_sig(ld, rs.split('1')):.13E}"
 )
+q.json_results_append("lat-io-test2: v0 data_sig", q.get_data_sig(ld, rs.copy()), 1e-14)
 ld.set_zero()
 q.displayln_info(
     f"CHECK: v1 {ld.info()} {ld.is_complex()} {q.get_data_sig(ld, rs.copy()):.13E}"
@@ -52,6 +54,7 @@ rs.copy().g_rand_fill(np.asarray(ld))
 q.displayln_info(
     f"CHECK: v3 {ld.info()} {ld.is_complex()} {q.get_data_sig(ld, rs.copy()):.13E}"
 )
+q.json_results_append("lat-io-test2: v3 data_sig", q.get_data_sig(ld, rs.copy()), 1e-14)
 ld.save("results/v3.lat")
 ld = q.load_lat_data("results/v3.lat")
 q.displayln_info(
@@ -63,6 +66,7 @@ ld.from_numpy(arr)
 q.displayln_info(
     f"CHECK: v5 {ld.info()} {ld.is_complex()} {q.get_data_sig(ld, rs.copy()):.13E}"
 )
+q.json_results_append("lat-io-test2: v5 data_sig", q.get_data_sig(ld, rs.copy()), 1e-14)
 
 ld = q.mk_lat_data(info_list, is_complex=False)
 q.displayln_info(
@@ -84,6 +88,7 @@ ld.from_numpy(arr, is_complex=False)
 q.displayln_info(
     f"CHECK: v9 {ld.info()} {ld.is_complex()} {q.get_data_sig(ld, rs.copy()):.13E}"
 )
+q.json_results_append("lat-io-test2: v9 data_sig", q.get_data_sig(ld, rs.copy()), 1e-14)
 
 info_list = [
     [
@@ -158,9 +163,11 @@ ld.from_numpy(arr, is_complex=False)
 q.displayln_info(
     f"CHECK: v20 {ld.info()} {ld.is_complex()} {q.get_data_sig(ld, rs.copy()):.13E}"
 )
+q.json_results_append("lat-io-test2: v20 data_sig", q.get_data_sig(ld, rs.copy()), 1e-14)
 
 q.check_all_files_crc32_info("results")
 
+q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
 
 q.end_with_mpi()
