@@ -40,6 +40,7 @@ def test_src(xg):
         f"CHECK: {src_q.qnorm():.12E} {src_g.qnorm():.12E} {src_diff.qnorm():.12E}"
     )
     q.json_results_append("src_q.qnorm()", src_q.qnorm(), 1e-12)
+    q.json_results_append("src_g.qnorm()", src_g.qnorm(), 1e-12)
     q.json_results_append("src_diff.qnorm()", src_diff.qnorm(), 1e-12)
     assert src_diff.qnorm() == 0
 
