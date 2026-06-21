@@ -8,9 +8,15 @@
   1e-12
  ],
  [
+  "prop src 0 crc32 = 2959112452"
+ ],
+ [
   "prop src 1 qnorm",
   786749.6656078274,
   1e-12
+ ],
+ [
+  "prop src 1 crc32 = 1391639106"
  ],
  [
   "prop sol 0 qnorm",

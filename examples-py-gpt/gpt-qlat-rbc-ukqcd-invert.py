@@ -37,6 +37,7 @@ for i in range(2):
         f"CHECK: prop src {i} qnorm = {p.qnorm():.12E} crc32 = {p.crc32()}"
     )
     q.json_results_append(f"prop src {i} qnorm", p.qnorm(), 1e-12)
+    q.json_results_append(f"prop src {i} crc32 = {p.crc32()}")
     srcs.append(p)
 
 sols = inv * srcs
