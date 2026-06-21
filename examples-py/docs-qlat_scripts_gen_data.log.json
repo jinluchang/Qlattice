@@ -1,0 +1,80 @@
+[
+ [
+  "test gen_data documentation examples"
+ ],
+ [
+  "mk_psrc_tag"
+ ],
+ [
+  "mk_psrc_tag: xg=(1,2,3,4) ; type=0 ; accuracy=1"
+ ],
+ [
+  "mk_psrc_tag: xg=(0,0,0,0) ; type=1 ; accuracy=2"
+ ],
+ [
+  "run_f_weight_uniform"
+ ],
+ [
+  "f_weight uniform: avg=1.0"
+ ],
+ [
+  "run_f_weight_load"
+ ],
+ [
+  "f_weight load match: True"
+ ],
+ [
+  "run_f_rand_01"
+ ],
+ [
+  "f_rand_01: min=0.018885 max=0.995804"
+ ],
+ [
+  "run_fsel_prob"
+ ],
+ [
+  "fsel n_elems=50"
+ ],
+ [
+  "run_psel_prob"
+ ],
+ [
+  "psel n_points=5"
+ ],
+ [
+  "run_fsel_from_fsel_prob / run_psel_from_psel_prob"
+ ],
+ [
+  "extracted fsel n_elems=50 psel n_points=5"
+ ],
+ [
+  "run_fsel_prob_sub_sampling"
+ ],
+ [
+  "fsel sub n_elems=20 (original=50)"
+ ],
+ [
+  "run_psel_prob_sub_sampling"
+ ],
+ [
+  "psel sub n_points=3 (original=5)"
+ ],
+ [
+  "run_psel_split"
+ ],
+ [
+  "psel_split: pieces=2 total_points=5"
+ ],
+ [
+  "run_fsel_split"
+ ],
+ [
+  "fsel_split: pieces=2 total_points=50"
+ ],
+ [
+  "calc_hvp_sum_tslice"
+ ],
+ [
+  "hvp_ts shape: [4, 8, 4, 4]"
+ ]
+]

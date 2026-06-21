@@ -4,6 +4,25 @@ Source: `qlat/qlat_scripts/v1/gen_data.py`
 
 > **Note:** Update this document when updating the source file.
 
+## Outline
+
+- [Overview](#overview)
+- [Terminology](#terminology)
+- [Output Data Layout](#output-data-layout)
+- [Inverter Setup](#inverter-setup)
+- [Wall-Source Propagators](#wall-source-propagators)
+- [Field Selection Weight Computation](#field-selection-weight-computation)
+- [Random Field and Selection Probability](#random-field-and-selection-probability)
+- [Sub-Sampling](#sub-sampling)
+- [Selection Splitting](#selection-splitting)
+- [Point-Source Propagators](#point-source-propagators)
+- [HVP Computation](#hvp-computation)
+- [Random U(1) Volume-Source Propagators](#random-u-1-volume-source-propagators)
+- [Smeared-Source Propagators](#smeared-source-propagators)
+- [Typical Workflow](#typical-workflow)
+- [Key Parameters](#key-parameters)
+- [Notes](#notes)
+
 ## Overview
 
 This module provides the core data generation pipeline for RBC/UKQCD lattice QCD calculations. It handles:

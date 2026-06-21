@@ -113,7 +113,9 @@ tests = \
 		data.log \
 		mat-mpi-test.log \
 		test_json.log \
-		docs-lat_data.log
+		docs-lat_data.log \
+		docs-qlat_scripts_gen_data.log \
+		docs-qlat_scripts_load_data.log
 
 all: run
 

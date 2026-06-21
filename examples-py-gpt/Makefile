@@ -58,7 +58,8 @@ tests_gpt = \
 			gpt-qlat-free-invert.log \
 			gpt-qlat-lanc.log \
 			gpt-qlat-rbc-ukqcd-invert.log \
-			gpt-qlat-madwf.log
+			gpt-qlat-madwf.log \
+			docs-rbc_ukqcd.log
 
 all: run-gpt
 

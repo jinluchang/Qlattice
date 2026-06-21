@@ -7,18 +7,20 @@ Source: `qlat/qlat_scripts/v1/load_data.py`
 ## Outline
 
 1. [Overview](#overview)
-2. [AMA Value Construction](#ama-value-construction)
-3. [Wall-Source Propagator Accessors](#wall-source-propagator-accessors)
-4. [Point-Source Propagator Accessors](#point-source-propagator-accessors)
-5. [Random U(1) Propagator Accessors](#random-u1-propagator-accessors)
-6. [Flavor Mapping](#flavor-mapping)
-7. [Generic Element Access](#generic-element-access)
-8. [Cache Population](#cache-population)
-9. [Propagator Lookup](#propagator-lookup)
-10. [Data Loading Functions](#data-loading-functions)
-11. [Gauge Link Access](#gauge-link-access)
-12. [Top-Level Pipeline](#top-level-pipeline)
-13. [Examples](#examples)
+2. [Module-Level Configuration](#module-level-configuration)
+3. [AMA Value Construction](#ama-value-construction)
+4. [Wall-Source Propagator Accessors](#wall-source-propagator-accessors)
+5. [Point-Source Propagator Accessors](#point-source-propagator-accessors)
+6. [Random U(1) Propagator Accessors](#random-u1-propagator-accessors)
+7. [Flavor Mapping](#flavor-mapping)
+8. [Generic Element Access](#generic-element-access)
+9. [Cache Utilities](#cache-utilities)
+10. [Cache Population](#cache-population)
+11. [Propagator Lookup](#propagator-lookup)
+12. [Data Loading Functions](#data-loading-functions)
+13. [Gauge Link Access](#gauge-link-access)
+14. [Top-Level Pipeline](#top-level-pipeline)
+15. [Examples](#examples)
 
 ---
 
@@ -33,6 +35,18 @@ Key responsibilities:
 - Build lookup caches indexed by `(flavor, position, source_type, sink_type)`
 - Handle gauge transformations and boundary condition corrections
 - Provide a top-level `run_get_prop` that orchestrates all loading
+
+---
+
+## Module-Level Configuration
+
+### `is_mira_data`
+
+Boolean flag (default `False`). When `True`, enables special handling for the 48I strange quark wall-source boundary condition flip needed for the MIRA data set (anti-periodic boundary condition differs from other 48I propagators). New Summit data sets have consistent boundary conditions and should leave this as `False`.
+
+### `is_source_specification_include_inv_type`
+
+Boolean flag (default `False`). When `True`, appends `inv_type` to the AMA `source_specification` string for point-source propagators. Added for the 64I-pq2 ensemble where light and strange point-source propagators were sampled with different AMA selections (same point set but different subsets of exact solves). Should normally be `False`.
 
 ---
 
@@ -132,6 +146,14 @@ Returns a `get(pos_snk)` function for extracting propagator norms (square root).
 
 ---
 
+## Cache Utilities
+
+### `check_cache_assign(cache, key, val)`
+
+Asserts that the value in `cache[key]` equals `val` if the key already exists, then assigns `cache[key] = val`. Used to verify consistency when multiple loading functions set the same probability cache entry.
+
+---
+
 ## Cache Population
 
 ### `populate_prop_idx_cache_wsrc_psel(...)`
@@ -162,7 +184,7 @@ Each function creates cache entries keyed by `(flavor, pos_src, type_src, type_s
 
 ### `get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)`
 
-Looks up a propagator element. Falls back to `g5_herm` conjugation if the reverse direction is cached.
+Looks up a propagator element. Falls back to `g5_herm` conjugation if the reverse direction is cached, returning `("g5_herm", val)` in that case.
 
 **Parameters:**
 - `p_snk`, `p_src` — tuples like `("point", xg_tuple)` or `("wall", t_int)`
@@ -213,11 +235,13 @@ Returns a `q.ColorMatrix` for the gauge link at position `p` in direction `mu`. 
 
 ### `run_get_prop(job_tag, traj, *, get_gf=None, get_gf_hyp=None, get_gt=None, get_psel, get_fsel, get_psel_smear=None, prop_types=None)`
 
-Main entry point. Returns a lazy callable `get_prop(flavor, *args)` that:
+Main entry point. Returns a `@q.lazy_call` decorated `get_prop(flavor, *args)` callable that:
 
 1. Loads all required data on first invocation (gauge fields, propagators, gauge links)
 2. Builds position dictionaries for psel and fsel
 3. Populates lookup caches
+
+Returns `None` if any required propagator type is unavailable.
 
 **Default `prop_types`** (load order):
 ```
