@@ -13,11 +13,13 @@ q.qmkdir_info("results")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"selected-field: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
 q.save_pickle_obj(geo, "results/geo.pickle")
 geo_load = q.load_pickle_obj("results/geo.pickle")
 q.displayln_info("CHECK: geo_load.show() =", geo_load.show())
+q.json_results_append(f"selected-field: geo_load.show()={geo_load.show()}")
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
@@ -30,7 +32,9 @@ q.json_results_append("prop init qnorm", prop.qnorm(), check_eps)
 
 prop_arr = np.asarray(prop)
 q.displayln_info(f"CHECK: prop_arr.dtype = {prop_arr.dtype}")
+q.json_results_append(f"prop_arr.dtype={prop_arr.dtype}")
 q.displayln_info(f"CHECK: prop_arr.shape = {prop_arr.shape}")
+q.json_results_append(f"prop_arr.shape={prop_arr.shape}")
 
 prop.save_double("results/prop-double.field")
 prop = q.Prop()
@@ -157,7 +161,9 @@ q.json_results_append("sp_prop from psel qnorm", sp_prop.qnorm(), check_eps)
 
 sp_prop_arr = np.asarray(sp_prop)
 q.displayln_info(f"CHECK: sp_prop_arr.dtype = {sp_prop_arr.dtype}")
+q.json_results_append(f"sp_prop_arr.dtype={sp_prop_arr.dtype}")
 q.displayln_info(f"CHECK: sp_prop_arr.shape = {sp_prop_arr.shape}")
+q.json_results_append(f"sp_prop_arr.shape={sp_prop_arr.shape}")
 
 sp_prop.save("results/prop.lat")
 sp_prop1 = q.PselProp(psel)
@@ -196,7 +202,9 @@ q.json_results_append("s_prop save load diff qnorm", s_prop1.qnorm(), check_eps)
 
 s_prop_arr = np.asarray(s_prop)
 q.displayln_info(f"CHECK: s_prop_arr.dtype = {s_prop_arr.dtype}")
+q.json_results_append(f"s_prop_arr.dtype={s_prop_arr.dtype}")
 q.displayln_info(f"CHECK: s_prop_arr.shape = {s_prop_arr.shape}")
+q.json_results_append(f"s_prop_arr.shape={s_prop_arr.shape}")
 
 prop1 = q.SelProp(fselc)
 prop1 @= prop
@@ -209,6 +217,7 @@ sp_prop1 @= prop1
 sp_prop1 -= sp_prop
 
 q.displayln_info(f"CHECK: sp_prop1 {sp_prop.qnorm():12E} {sp_prop1.qnorm():.12E}")
+q.json_results_append("sp_prop qnorm in sp_prop1 check", sp_prop.qnorm(), check_eps)
 q.json_results_append("sp_prop1 diff qnorm", sp_prop1.qnorm(), check_eps)
 
 s_prop1 = q.SelProp(fsel)
@@ -216,6 +225,7 @@ s_prop1 @= prop1
 s_prop1 -= s_prop
 
 q.displayln_info(f"CHECK: s_prop1 {s_prop.qnorm():12E} {s_prop1.qnorm():.12E}")
+q.json_results_append("s_prop qnorm in s_prop1 check", s_prop.qnorm(), check_eps)
 q.json_results_append("s_prop1 diff qnorm", s_prop1.qnorm(), check_eps)
 
 prop = q.Prop(geo)

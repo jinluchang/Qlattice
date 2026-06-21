@@ -12,6 +12,7 @@ q.qmkdir_info("results")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"gpt-qlat-madwf: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
 grid = qg.mk_grid(geo)
@@ -145,6 +146,7 @@ def test_inv(geo, inverter):
     q.displayln_info(f"CHECK: src info {src.crc32():08X}")
     sol = inverter * src
     q.displayln_info(f"CHECK: sol info {sol.qnorm():.7E}")
+    q.json_results_append("sol.qnorm() in test_inv", sol.qnorm(), 1e-7)
     q.displayln_info(f"sol info {sol.crc32():08X}")
     sol1 = inverter * sol
     q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.4E}")
@@ -170,6 +172,7 @@ for tag, inv in zip(tags[1:], invs[1:]):
     q.displayln_info(
         f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm():.1E} sol1 {sol1_n.qnorm():.1E}"
     )
+    q.json_results_append(f"src diff qnorm tag={tag}", src_n.qnorm(), 1e-7)
     q.json_results_append(f"sol diff qnorm tag={tag}", sol_n.qnorm(), 1e-7)
     q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_n.qnorm(), 1e-7)
 

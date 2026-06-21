@@ -1,5 +1,8 @@
 [
  [
+  "gpt-qlat-mdwf: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "g.qcd.gauge.plaquette",
   0.9745055472546031,
   1e-12

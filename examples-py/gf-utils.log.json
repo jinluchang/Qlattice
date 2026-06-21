@@ -1,5 +1,11 @@
 [
  [
+  "gf-utils: total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "gf-utils: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "f_plaq",
   {
    "value": [

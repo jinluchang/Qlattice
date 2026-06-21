@@ -1,11 +1,17 @@
 [
  [
+  "fields-io: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "fields-io: prop qnorm",
   49304.10827466952,
   1e-10
  ],
  [
   "fields-io: prop crc32 = 4021037301"
+ ],
+ [
+  "fields-io: sfw.new_size_node()=Coordinate([1, 1, 1, 8])"
  ],
  [
   "fields-io: s_prop qnorm",
@@ -16,6 +22,12 @@
   "fields-io: prop1 qnorm",
   12589.607155640306,
   1e-10
+ ],
+ [
+  "fields-io: sfr.list()=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: sfr.new_size_node()=Coordinate([1, 1, 1, 8])"
  ],
  [
   "fields-io: prop_d qnorm",
@@ -82,5 +94,26 @@
  [
   "fields-io: index.qar crc",
   2504556907
+ ],
+ [
+  "fields-io: tags=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: list_fields=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: list_fields=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: list_fields=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: list_fields=['prop.d', 'prop', 's_prop']"
+ ],
+ [
+  "fields-io: list_fields=[]"
+ ],
+ [
+  "fields-io: qls_all_sync_node=['results/prop-copy.fields/00/0000000000', 'results/prop-copy.fields/00', 'results/prop-copy.fields/01/0000000001', 'results/prop-copy.fields/01', 'results/prop-copy.fields/02/0000000002', 'results/prop-copy.fields/02', 'results/prop-copy.fields/03/0000000003', 'results/prop-copy.fields/03', 'results/prop-copy.fields/04/0000000004', 'results/prop-copy.fields/04', 'results/prop-copy.fields/05/0000000005', 'results/prop-copy.fields/05', 'results/prop-copy.fields/06/0000000006', 'results/prop-copy.fields/06', 'results/prop-copy.fields/07/0000000007', 'results/prop-copy.fields/07', 'results/prop-copy.fields/geon-info.txt', 'results/prop-copy.fields/index.qar', 'results/prop-copy.fields/index.qar.idx', 'results/prop-copy.fields', 'results/prop.fields/00/0000000000', 'results/prop.fields/00', 'results/prop.fields/01/0000000001', 'results/prop.fields/01', 'results/prop.fields/02/0000000002', 'results/prop.fields/02', 'results/prop.fields/03/0000000003', 'results/prop.fields/03', 'results/prop.fields/04/0000000004', 'results/prop.fields/04', 'results/prop.fields/05/0000000005', 'results/prop.fields/05', 'results/prop.fields/06/0000000006', 'results/prop.fields/06', 'results/prop.fields/07/0000000007', 'results/prop.fields/07', 'results/prop.fields/geon-info.txt', 'results/prop.fields/index.qar', 'results/prop.fields', 'results/prop1.fields/00/0000000000', 'results/prop1.fields/00', 'results/prop1.fields/geon-info.txt', 'results/prop1.fields/index.qar', 'results/prop1.fields/index.qar.idx', 'results/prop1.fields']"
  ]
 ]

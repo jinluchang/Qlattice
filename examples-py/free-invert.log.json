@@ -1,5 +1,8 @@
 [
  [
+  "free-invert: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "free-invert: sol qnorm",
   9.736817294647487,
   1e-10

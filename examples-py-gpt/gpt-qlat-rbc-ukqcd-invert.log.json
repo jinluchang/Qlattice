@@ -1,0 +1,25 @@
+[
+ [
+  "gpt-qlat-rbc-ukqcd-invert: geo.show()=Geometry([8, 8, 8, 16])"
+ ],
+ [
+  "prop src 0 qnorm",
+  786479.2030816851,
+  1e-12
+ ],
+ [
+  "prop src 1 qnorm",
+  786749.6656078274,
+  1e-12
+ ],
+ [
+  "prop sol 0 qnorm",
+  3658159.6832195343,
+  1e-06
+ ],
+ [
+  "prop sol 1 qnorm",
+  3659446.1299863374,
+  1e-06
+ ]
+]

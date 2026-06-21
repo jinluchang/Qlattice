@@ -1,5 +1,8 @@
 [
  [
+  "gpt-qlat-smear: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "qnorm(src)",
   12.0,
   1e-12

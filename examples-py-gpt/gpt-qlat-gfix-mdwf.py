@@ -10,6 +10,7 @@ rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"gpt-qlat-gfix-mdwf: geo.show()={geo.show()}")
 
 gf = q.GaugeField(geo)
 

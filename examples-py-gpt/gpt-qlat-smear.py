@@ -19,6 +19,7 @@ q.qmkdir_info("results")
 total_site = q.Coordinate(get_param(job_tag, "total_site"))
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"gpt-qlat-smear: geo.show()={geo.show()}")
 rs = q.RngState(f"seed-{get_job_seed(job_tag)}-{traj}")
 
 gf = q.GaugeField(geo)

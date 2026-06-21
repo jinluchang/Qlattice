@@ -1,0 +1,13 @@
+[
+ [
+  "gpt-qlat-sample-gauge-field: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "gpt-qlat-sample-gauge-field: gf.geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "plaq",
+  0.6147333125563311,
+  1e-12
+ ]
+]

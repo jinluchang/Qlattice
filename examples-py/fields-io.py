@@ -10,6 +10,7 @@ rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"fields-io: geo.show()={geo.show()}")
 
 psel = q.PointsSelection(total_site, [[0, 0, 0, 0], [0, 1, 2, 0]])
 n_per_tslice = 16
@@ -105,6 +106,7 @@ for idx, s in enumerate(sq_list):
 q.sync_node()
 
 q.displayln_info("CHECK: sfw.new_size_node()", sfw.new_size_node())
+q.json_results_append(f"fields-io: sfw.new_size_node()={sfw.new_size_node()}")
 
 prop.save_double(sfw, "prop.d")
 
@@ -142,8 +144,10 @@ q.sync_node()
 fns = sfr.list()
 
 q.displayln_info("CHECK: sfr.list()", sfr.list())
+q.json_results_append(f"fields-io: sfr.list()={sfr.list()}")
 
 q.displayln_info("CHECK: sfr.new_size_node()", sfr.new_size_node())
+q.json_results_append(f"fields-io: sfr.new_size_node()={sfr.new_size_node()}")
 
 prop_d = q.Prop()
 prop_d.load_double(sfr, "prop.d")
@@ -212,6 +216,7 @@ q.displayln_info("CHECK: test read_as_char and write")
 sfr = q.open_fields("results/prop.fields", "r")
 tags = sfr.list()
 q.displayln_info(f"CHECK: tags={tags}")
+q.json_results_append(f"fields-io: tags={tags}")
 sfw = q.open_fields(
     "results/prop-copy.fields",
     "w",
@@ -246,24 +251,30 @@ for fn1, fn2 in zip(fn1_list, fn2_list):
         assert crc1 == crc2
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
+q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
 
 q.properly_truncate_fields("results/prop.fields")
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
+q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
 
 q.truncate_fields("results/prop.fields", fns)
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
+q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
 
 q.truncate_fields("results/prop.fields", fns[:-1])
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
+q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
 
 q.truncate_fields("results/prop.fields", [])
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
+q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
 
 q.displayln_info("CHECK: ", q.qls_all_sync_node("results"))
+q.json_results_append(f'fields-io: qls_all_sync_node={q.qls_all_sync_node("results")}')
 
 q.check_log_json(__file__)
 q.timer_display()

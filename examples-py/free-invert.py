@@ -7,6 +7,7 @@ q.begin_with_mpi()
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"free-invert: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)

@@ -1,11 +1,23 @@
 [
  [
+  "selected-field: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "selected-field: geo_load.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "prop init crc32 = 4021037301"
  ],
  [
   "prop init qnorm",
   49304.10827466952,
   1e-05
+ ],
+ [
+  "prop_arr.dtype=complex128"
+ ],
+ [
+  "prop_arr.shape=(256, 1, 12, 12)"
  ],
  [
   "prop load_double crc32 = 4021037301"
@@ -67,6 +79,12 @@
   1e-05
  ],
  [
+  "sp_prop_arr.dtype=complex128"
+ ],
+ [
+  "sp_prop_arr.shape=(2, 1, 12, 12)"
+ ],
+ [
   "sp_prop save load qnorm",
   197.78615635070122,
   1e-05
@@ -97,13 +115,29 @@
   1e-05
  ],
  [
+  "s_prop_arr.dtype=complex128"
+ ],
+ [
+  "s_prop_arr.shape=(64, 1, 12, 12)"
+ ],
+ [
   "prop1 from s_prop qnorm",
   12589.607153844107,
   1e-05
  ],
  [
+  "sp_prop qnorm in sp_prop1 check",
+  197.78615635070122,
+  1e-05
+ ],
+ [
   "sp_prop1 diff qnorm",
   0.0,
+  1e-05
+ ],
+ [
+  "s_prop qnorm in s_prop1 check",
+  12391.820997493403,
   1e-05
  ],
  [

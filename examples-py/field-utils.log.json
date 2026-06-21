@@ -1,5 +1,8 @@
 [
  [
+  "field-utils: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "gf",
   {
    "value": [
@@ -86,6 +89,9 @@
   1e-12
  ],
  [
+  "field-utils: xg1=Coordinate([2, 3, 0, 6])"
+ ],
+ [
   "gf sig12",
   {
    "real": 1.1197806450998322,
@@ -93,6 +99,9 @@
    "__extended_json_type__": "complex128"
   },
   1e-12
+ ],
+ [
+  "field-utils: xg1=Coordinate([2, 3, 0, 6]) xg2=Coordinate([2, 0, 1, 4])"
  ],
  [
   "gf sig2",
@@ -104,6 +113,9 @@
   1e-12
  ],
  [
+  "field-utils: xg1=Coordinate([2, 3, 0, 6]) m=1"
+ ],
+ [
   "gf sig22",
   {
    "real": -0.47586208994086376,
@@ -111,6 +123,9 @@
    "__extended_json_type__": "complex128"
   },
   1e-12
+ ],
+ [
+  "field-utils: xg1=Coordinate([2, 3, 0, 6]) xg2=Coordinate([2, 0, 1, 4]) m=1"
  ],
  [
   "qnorm",
@@ -128,9 +143,21 @@
   1e-12
  ],
  [
+  "field-utils: t_dir=0 n_points=4"
+ ],
+ [
+  "field-utils: t_dir=0 multiplicity=4"
+ ],
+ [
   "t_dir=1 qnorm(gf_sum_tslice)",
   1233.1266773897833,
   1e-12
+ ],
+ [
+  "field-utils: t_dir=1 n_points=4"
+ ],
+ [
+  "field-utils: t_dir=1 multiplicity=4"
  ],
  [
   "t_dir=2 qnorm(gf_sum_tslice)",
@@ -138,9 +165,21 @@
   1e-12
  ],
  [
+  "field-utils: t_dir=2 n_points=4"
+ ],
+ [
+  "field-utils: t_dir=2 multiplicity=4"
+ ],
+ [
   "t_dir=3 qnorm(gf_sum_tslice)",
   1531.2938206619983,
   1e-12
+ ],
+ [
+  "field-utils: t_dir=3 n_points=8"
+ ],
+ [
+  "field-utils: t_dir=3 multiplicity=4"
  ],
  [
   "qnorm",

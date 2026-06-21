@@ -11,11 +11,13 @@ q.qmkdir_info("results")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"gpt-qlat-sample-gauge-field: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
 
 q.displayln_info("CHECK: ", gf.geo.show())
+q.json_results_append(f"gpt-qlat-sample-gauge-field: gf.geo.show()={gf.geo.show()}")
 
 q.set_unit(gf)
 

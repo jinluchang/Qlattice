@@ -1,5 +1,8 @@
 [
  [
+  "gpt-qlat-gfix-mdwf: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "sol.qnorm()",
   3552666.2675750535,
   1e-10

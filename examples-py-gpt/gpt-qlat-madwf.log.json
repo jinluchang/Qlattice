@@ -1,5 +1,8 @@
 [
  [
+  "gpt-qlat-madwf: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "g.qcd.gauge.plaquette(double)",
   0.9451760164858154,
   1e-12
@@ -8,6 +11,11 @@
   "g.qcd.gauge.plaquette(single)",
   0.9451759656270345,
   1e-12
+ ],
+ [
+  "sol.qnorm() in test_inv",
+  1.195616283925891,
+  1e-07
  ],
  [
   "src.qnorm()",
@@ -28,6 +36,11 @@
   1e-07
  ],
  [
+  "sol.qnorm() in test_inv",
+  1.1593942320448907,
+  1e-07
+ ],
+ [
   "src.qnorm()",
   12.0,
   1e-12
@@ -41,6 +54,11 @@
   1e-07
  ],
  [
+  "src diff qnorm tag=qz_f",
+  0.0,
+  1e-07
+ ],
+ [
   "sol diff qnorm tag=qz_f",
   0.0010577192494466369,
   1e-07
@@ -48,6 +66,11 @@
  [
   "sol1 diff qnorm tag=qz_f",
   0.062195494406739354,
+  1e-07
+ ],
+ [
+  "sol.qnorm() in test_inv",
+  1.195616283417512,
   1e-07
  ],
  [
@@ -61,6 +84,11 @@
  [
   "sol1.qnorm()",
   5.803159618352916,
+  1e-07
+ ],
+ [
+  "src diff qnorm tag=qm_mp",
+  0.0,
   1e-07
  ],
  [
@@ -74,6 +102,11 @@
   1e-07
  ],
  [
+  "sol.qnorm() in test_inv",
+  1.195616283417512,
+  1e-07
+ ],
+ [
   "src.qnorm()",
   12.0,
   1e-12
@@ -87,6 +120,11 @@
   1e-07
  ],
  [
+  "src diff qnorm tag=qm_split",
+  0.0,
+  1e-07
+ ],
+ [
   "sol diff qnorm tag=qm_split",
   1.5054846020419845e-13,
   1e-07
@@ -94,6 +132,11 @@
  [
   "sol1 diff qnorm tag=qm_split",
   2.313115425888109e-12,
+  1e-07
+ ],
+ [
+  "sol.qnorm() in test_inv",
+  1.1956122489860164,
   1e-07
  ],
  [
@@ -110,6 +153,11 @@
   1e-07
  ],
  [
+  "src diff qnorm tag=qm_split_sloppy",
+  0.0,
+  1e-07
+ ],
+ [
   "sol diff qnorm tag=qm_split_sloppy",
   9.198541738249442e-09,
   1e-07
@@ -117,6 +165,11 @@
  [
   "sol1 diff qnorm tag=qm_split_sloppy",
   3.859309322051284e-07,
+  1e-07
+ ],
+ [
+  "sol.qnorm() in test_inv",
+  1.1956162833238206,
   1e-07
  ],
  [
@@ -130,6 +183,11 @@
  [
   "sol1.qnorm()",
   5.8031596349094485,
+  1e-07
+ ],
+ [
+  "src diff qnorm tag=inv_qm_madwf",
+  0.0,
   1e-07
  ],
  [

@@ -1,5 +1,11 @@
 [
  [
+  "selected-convert-io: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "selected-convert-io: psel.points_dist_type=g"
+ ],
+ [
   "fsel.n_elems = 21"
  ],
  [
@@ -337,6 +343,78 @@
   "q.get_data_sig(sp4, rs)",
   -4.552211435892828,
   1e-12
+ ],
+ [
+  "f1[:].shape=(256, 3)"
+ ],
+ [
+  "f1[:].dtype=complex128"
+ ],
+ [
+  "f2[:].shape=(256, 3)"
+ ],
+ [
+  "f2[:].dtype=complex64"
+ ],
+ [
+  "f3[:].shape=(256, 3)"
+ ],
+ [
+  "f3[:].dtype=float64"
+ ],
+ [
+  "f4[:].shape=(256, 3)"
+ ],
+ [
+  "f4[:].dtype=float32"
+ ],
+ [
+  "sf1[:].shape=(21, 3)"
+ ],
+ [
+  "sf1[:].dtype=complex128"
+ ],
+ [
+  "sf2[:].shape=(21, 3)"
+ ],
+ [
+  "sf2[:].dtype=complex64"
+ ],
+ [
+  "sf3[:].shape=(21, 3)"
+ ],
+ [
+  "sf3[:].dtype=float64"
+ ],
+ [
+  "sf4[:].shape=(21, 3)"
+ ],
+ [
+  "sf4[:].dtype=float32"
+ ],
+ [
+  "sp1[:].shape=(16, 3)"
+ ],
+ [
+  "sp1[:].dtype=complex128"
+ ],
+ [
+  "sp2[:].shape=(16, 3)"
+ ],
+ [
+  "sp2[:].dtype=complex64"
+ ],
+ [
+  "sp3[:].shape=(16, 3)"
+ ],
+ [
+  "sp3[:].dtype=float64"
+ ],
+ [
+  "sp4[:].shape=(16, 3)"
+ ],
+ [
+  "sp4[:].dtype=float32"
  ],
  [
   "f1r.qnorm()",

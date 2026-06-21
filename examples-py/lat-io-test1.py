@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import qlat as q
+import numpy as np
 
 q.begin_with_mpi()
 
@@ -23,11 +24,14 @@ ld.set_dim_name(2, "index2")
 ld.set_zero()
 
 q.displayln_info(f"CHECK: ld: ndim {ld.ndim()}")
+q.json_results_append(f"lat-io-test1: ld ndim={ld.ndim()}")
 q.displayln_info(f"CHECK: ld: dim_sizes {ld.dim_sizes()}")
+q.json_results_append(f"lat-io-test1: ld dim_sizes={ld.dim_sizes()}")
 for dim in range(ld.ndim()):
     q.displayln_info(
         f"CHECK: ld: dim_name {dim} {ld.dim_name(dim)} {ld.dim_indices(dim)}"
     )
+    q.json_results_append(f"lat-io-test1: ld dim_name {dim} {ld.dim_name(dim)} {ld.dim_indices(dim)}")
 
 for i0 in range(dim_sizes[0]):
     for i1 in range(dim_sizes[1]):
@@ -54,6 +58,7 @@ ld[
 ] = [i * 3 + i * 1j for i in range(3)]
 
 q.displayln_info("CHECK: ", ld[(0,)])
+q.json_results_append("lat-io-test1: ld[(0,)] sig", q.get_data_sig(np.asarray(ld[(0,)]), q.RngState("ld0")))
 q.displayln_info(
     "CHECK: ",
     ld[
@@ -63,6 +68,7 @@ q.displayln_info(
         )
     ],
 )
+q.json_results_append("lat-io-test1: ld[(1,2)] sig", q.get_data_sig(np.asarray(ld[(1,2)]), q.RngState("ld12")))
 
 ld.save("results/test.lat")
 
@@ -77,6 +83,7 @@ q.displayln_info(
         )
     ],
 )
+q.json_results_append("lat-io-test1: ld[(1,3)] sig", q.get_data_sig(np.asarray(ld[(1,3)]), q.RngState("ld13")))
 
 ld1 = ld.copy()
 ld1 += ld1
