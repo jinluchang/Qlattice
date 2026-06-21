@@ -3,7 +3,7 @@
 import qlat_gpt as qg
 import qlat as q
 
-from qlat_scripts.v1 import *
+from qlat_scripts.v1 import get_param, get_job_seed, mk_inverter
 
 qg.begin_with_gpt()
 

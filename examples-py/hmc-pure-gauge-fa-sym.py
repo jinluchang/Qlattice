@@ -6,7 +6,7 @@ from pprint import pformat
 
 import qlat as q
 
-from qlat_scripts.v1 import *
+from qlat_scripts.v1 import load_path_list, get_save_path, get_load_path, get_param, set_param, get_job_seed, run_params
 
 from qlat import (
     FieldRealD,
@@ -159,8 +159,8 @@ def run_hmc_evolve(
         + gf_hamilton_node(gf, ga)
     )
     dt = md_time / n_step
-    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
-    theta = (2.0 - math.sqrt(3.0)) / 48.0
+    lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0))
+    theta = (2.0 - m.sqrt(3.0)) / 48.0
     ttheta = theta * dt * dt * dt
     gf_evolve(gf, gm, gm_dual, mf, mf_dual, lam * dt)
     for i in range(n_step):
