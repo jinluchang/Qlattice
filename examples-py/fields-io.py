@@ -200,7 +200,7 @@ q.displayln_info("CHECK: prop1_ff", f"{prop1_ff.qnorm():.14E}")
 q.json_results_append('fields-io: prop1_ff qnorm', prop1_ff.qnorm(), 1e-10)
 assert q.is_matching_fsel(prop1_ff.fsel, fselc)
 prop1_ff -= prop1
-q.displayln_info("CHECK: prop1_ff -= prop1", f"{prop1_f.qnorm():.14E}")
+q.displayln_info("CHECK: prop1_ff -= prop1", f"{prop1_ff.qnorm():.14E}")
 q.json_results_append('fields-io: prop1_ff diff qnorm', prop1_ff.qnorm(), 1e-10)
 
 sfr.close()

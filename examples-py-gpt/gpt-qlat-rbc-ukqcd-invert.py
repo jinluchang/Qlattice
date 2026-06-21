@@ -45,7 +45,8 @@ for i in range(2):
     p = sols[i]
     q.displayln_info(f"CHECK: prop sol {i} qnorm = {p.qnorm():.6E}")
     q.json_results_append(f"prop sol {i} qnorm", p.qnorm(), 1e-6)
-    q.displayln_info(f"crc32 = {p.crc32():08X}")
+    q.displayln_info(f"CHECK: prop sol {i} crc32 = {p.crc32():08X}")
+    q.json_results_append(f"prop sol {i} crc32 = {p.crc32():08X}")
 
 q.check_log_json(__file__)
 

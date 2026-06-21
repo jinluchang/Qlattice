@@ -146,6 +146,7 @@ assert n4 == n2
 q.displayln_info(f"CHECK: len(sp_prop.psel) = {len(sp_prop.psel)}")
 q.json_results_append("sp_prop psel len", float(len(sp_prop.psel)))
 q.displayln_info(f"CHECK: sp_prop.psel[:].tolist() = {sp_prop.psel[:].tolist()}")
+q.json_results_append("sp_prop psel tolist", np.array(sp_prop.psel[:].tolist()))
 q.json_results_append("sp_prop psel sig", q.get_data_sig(sp_prop.psel[:], q.RngState()))
 
 sig1 = q.get_data_sig(sp_prop[:], q.RngState(f"{q.get_id_node()}"))

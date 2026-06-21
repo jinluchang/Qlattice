@@ -18,8 +18,14 @@
   1e-06
  ],
  [
+  "prop sol 0 crc32 = 6F1D94EB"
+ ],
+ [
   "prop sol 1 qnorm",
   3659446.1299863374,
   1e-06
+ ],
+ [
+  "prop sol 1 crc32 = A383FB81"
  ]
 ]

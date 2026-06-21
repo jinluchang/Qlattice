@@ -42,6 +42,7 @@ param_arr_setup, jk_corr_data, corr_data_sigma = q.q_fit_corr.mk_data_set(
 )
 
 q.displayln_info(f"CHECK: {param_arr_setup[:n_energies]}")
+q.json_results_append("param_arr_setup values", param_arr_setup[:n_energies], 1e-7)
 
 sig1 = q.get_data_sig(param_arr_setup, q.RngState())
 
