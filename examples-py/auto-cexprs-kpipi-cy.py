@@ -496,8 +496,9 @@ def get_all_cexpr():
         for name in names:
             name_str = name.replace("\n", "  ")
             q.displayln_info(f"CHECK: {name_str}")
-            q.json_results_append(f"{name_str}: check {benchmark_show_check(check)}")
-            q.json_results_append(f"{name_str}: check_ama {benchmark_show_check(check_ama)}")
+            q.json_results_append(f"{name_str}")
+        q.json_results_append(f"check {benchmark_show_check(check)}")
+        q.json_results_append(f"check_ama {benchmark_show_check(check_ama)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
 
