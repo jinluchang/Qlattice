@@ -3,6 +3,9 @@
   "gpt-qlat-convert: geo.show()=Geometry([4, 4, 4, 8])"
  ],
  [
+  "test_gf start"
+ ],
+ [
   "gf.plaq()",
   0.6530770926851314,
   1e-12

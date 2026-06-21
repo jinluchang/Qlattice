@@ -61,13 +61,14 @@ def test_inv(geo, inverter):
     src = mk_src(geo)
     q.displayln_info(f"CHECK: src info {src.qnorm()}")
     q.displayln_info(f"CHECK: src info {src.crc32()}")
+    q.json_results_append("src.qnorm()", src.qnorm(), 1e-12)
+    q.json_results_append(f"src.crc32() = {src.crc32()}")
     sol = inverter * src
     q.displayln_info(f"CHECK: sol info {sol.qnorm():.10E}")
     q.displayln_info(f"sol info {sol.crc32()}")
     sol1 = inverter * sol
     q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.10E}")
     q.displayln_info(f"sol1 info {sol1.crc32()}")
-    q.json_results_append(f"src.crc32() = {src.crc32()}")
     q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-12)
     return src, sol, sol1
 

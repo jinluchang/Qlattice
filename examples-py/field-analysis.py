@@ -29,6 +29,7 @@ total_site = q.Coordinate(
 )
 geo = q.Geometry(total_site)
 q.displayln_info("CHECK: geo.show() =", geo.show())
+q.json_results_append(f"field-analysis: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
 f1 = q.FieldComplexD(geo, 3)

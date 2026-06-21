@@ -96,6 +96,7 @@ q.sync_node()
 q.displayln_info("CHECK: q.show_all_shuffled_fields_writer()")
 for idx, s in enumerate(sf_list):
     q.displayln_info(f"CHECK: {idx} {s}")
+q.json_results_append("fields-io: show_all_shuffled_fields_writer n", len(sf_list))
 q.sync_node()
 
 sq_list = sorted(q.show_all_qfile())
@@ -103,6 +104,7 @@ q.sync_node()
 q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
+q.json_results_append("fields-io: show_all_qfile n", len(sq_list))
 q.sync_node()
 
 q.displayln_info("CHECK: sfw.new_size_node()", sfw.new_size_node())
@@ -139,6 +141,7 @@ q.sync_node()
 q.displayln_info("CHECK: q.show_all_qfile()")
 for idx, s in enumerate(sq_list):
     q.displayln_info(f"CHECK: {idx} {s}")
+q.json_results_append("fields-io: show_all_qfile after read n", len(sq_list))
 q.sync_node()
 
 fns = sfr.list()
@@ -209,7 +212,7 @@ assert index_content == index_content2
 crc = q.compute_crc32("results/prop.fields/index.qar")
 
 q.displayln_info(f"CHECK: index.qar crc={crc:08X}")
-q.json_results_append('fields-io: index.qar crc', crc)
+q.json_results_append(f'fields-io: index.qar crc={crc:08X}')
 
 q.displayln_info("CHECK: test read_as_char and write")
 
@@ -233,9 +236,11 @@ for tag in tags:
     q.displayln_info(f"CHECK: tag='{tag}'")
     obj = sfr.read_as_char(tag)
     q.displayln_info(f"CHECK: type='{type(obj)}'")
+    q.json_results_append(f"fields-io: read_as_char tag='{tag}' type='{type(obj).__name__}'")
     obj.save_direct(sfw, tag, skip_if_exist=True)
 tags_sfw = sfw.list()
 q.displayln_info(f"CHECK: tags_sfw={tags_sfw}")
+q.json_results_append(f"fields-io: tags_sfw={tags_sfw}")
 sfw.close()
 sfr.close()
 
@@ -248,6 +253,7 @@ for fn1, fn2 in zip(fn1_list, fn2_list):
         q.displayln_info(f"CHECK: check '{fn1}' and '{fn2}'")
         crc1 = q.compute_crc32(fn1)
         crc2 = q.compute_crc32(fn2)
+        q.json_results_append(f"fields-io: crc check '{fn1}' crc={crc1:08X}")
         assert crc1 == crc2
 
 q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))

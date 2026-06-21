@@ -11,6 +11,14 @@
   "fields-io: prop crc32 = 4021037301"
  ],
  [
+  "fields-io: show_all_shuffled_fields_writer n",
+  1
+ ],
+ [
+  "fields-io: show_all_qfile n",
+  5
+ ],
+ [
   "fields-io: sfw.new_size_node()=Coordinate([1, 1, 1, 8])"
  ],
  [
@@ -22,6 +30,10 @@
   "fields-io: prop1 qnorm",
   12589.607155640306,
   1e-10
+ ],
+ [
+  "fields-io: show_all_qfile after read n",
+  4
  ],
  [
   "fields-io: sfr.list()=['prop.d', 'prop', 's_prop', 'prop1']"
@@ -92,11 +104,58 @@
   1e-10
  ],
  [
-  "fields-io: index.qar crc",
-  2504556907
+  "fields-io: index.qar crc=9548816B"
  ],
  [
   "fields-io: tags=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: read_as_char tag='prop.d' type='FieldChar'"
+ ],
+ [
+  "fields-io: read_as_char tag='prop' type='FieldChar'"
+ ],
+ [
+  "fields-io: read_as_char tag='s_prop' type='SelectedFieldChar'"
+ ],
+ [
+  "fields-io: read_as_char tag='prop1' type='SelectedFieldChar'"
+ ],
+ [
+  "fields-io: tags_sfw=['prop.d', 'prop', 's_prop', 'prop1']"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/00/0000000000' crc=77C69776"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/01/0000000001' crc=E4AA72E9"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/02/0000000002' crc=8B132686"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/03/0000000003' crc=31BCE1AF"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/04/0000000004' crc=1F9555AD"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/05/0000000005' crc=986B95CC"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/06/0000000006' crc=E032DB7C"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/07/0000000007' crc=BBB64B4F"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/geon-info.txt' crc=6F57E1ED"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/index.qar' crc=9548816B"
+ ],
+ [
+  "fields-io: crc check 'results/prop.fields/index.qar.idx' crc=F8677049"
  ],
  [
   "fields-io: list_fields=['prop.d', 'prop', 's_prop', 'prop1']"

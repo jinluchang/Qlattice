@@ -1,5 +1,8 @@
 [
  [
+  "field-analysis: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
   "f1 data sig",
   {
    "real": -11.741240336824971,

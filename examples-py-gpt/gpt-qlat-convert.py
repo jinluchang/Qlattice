@@ -7,6 +7,7 @@ import gpt as g
 @q.timer
 def test_gf(gf):
     q.displayln_info("CHECK: test_gf")
+    q.json_results_append("test_gf start")
     #
     plaq = gf.plaq()
     #

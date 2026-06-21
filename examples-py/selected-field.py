@@ -125,6 +125,7 @@ sp_prop = q.PselProp(
     ),
 )
 q.displayln_info("CHECK: sp_prop from shuffle_selected_field")
+q.json_results_append("sp_prop from shuffle_selected_field qnorm", sp_prop.qnorm(), check_eps)
 
 q.save_pickle_obj(
     sp_prop, f"results/sp_prop-{q.get_id_node()}.pickle", is_sync_node=False
