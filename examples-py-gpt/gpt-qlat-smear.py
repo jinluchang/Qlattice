@@ -103,6 +103,8 @@ sol_s @= sol
 
 q.displayln_info(f"CHECK: qnorm(sol_s) = {q.qnorm(sol_s):.6E}")
 
+q.json_results_append("qnorm(sol_s)", q.qnorm(sol_s), 1e-6)
+
 sol_s.save_float_from_double(sfw, f"{tag}")
 
 sfw.close()

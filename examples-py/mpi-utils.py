@@ -21,6 +21,7 @@ num_node = q.get_num_node()
 id_node = q.get_id_node()
 
 q.displayln_info(f"CHECK: num_node={num_node}")
+q.json_results_append(f"mpi-utils: num_node = {num_node}")
 
 a = 12 + id_node
 gs_a = q.glb_sum(a)

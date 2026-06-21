@@ -66,6 +66,8 @@ def test_inv(geo, inverter):
     sol1 = inverter * sol
     q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.10E}")
     q.displayln_info(f"sol1 info {sol1.crc32()}")
+    q.json_results_append(f"src.crc32() = {src.crc32()}")
+    q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-12)
     return src, sol, sol1
 
 src, sol, sol1 = test_inv(geo, inv_qm)

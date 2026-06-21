@@ -33,6 +33,7 @@ fsel.add_psel(psel)
 q.displayln_info("CHECK: geo.show()=", geo.show())
 q.displayln_info(f"CHECK: psel.points_dist_type={psel.points_dist_type}")
 q.displayln_info(f"CHECK: fsel.n_elems={fsel.n_elems}")
+q.json_results_append(f"fsel.n_elems = {fsel.n_elems}")
 
 f1 = q.FieldComplexD(geo, multiplicity)
 f2 = q.FieldComplexF(geo, multiplicity)

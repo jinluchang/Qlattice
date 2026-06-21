@@ -1,5 +1,8 @@
 [
  [
+  "has_cuba = True"
+ ],
+ [
   "calc_muon_line_m: v0 sig",
   -3.821373973364086e-05
  ],

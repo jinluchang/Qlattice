@@ -1,5 +1,8 @@
 [
  [
+  "mpi-utils: num_node = 2"
+ ],
+ [
   "mpi-utils: glb_sum int",
   25.0
  ],

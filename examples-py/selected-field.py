@@ -25,6 +25,8 @@ prop.set_rand(rs.split("prop-1"))
 q.displayln_info(
     f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}"
 )
+q.json_results_append(f"prop init crc32 = {prop.crc32()}")
+q.json_results_append("prop init qnorm", prop.qnorm(), check_eps)
 
 prop_arr = np.asarray(prop)
 q.displayln_info(f"CHECK: prop_arr.dtype = {prop_arr.dtype}")
@@ -37,6 +39,8 @@ prop.load_double("results/prop-double.field")
 q.displayln_info(
     f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}"
 )
+q.json_results_append(f"prop load_double crc32 = {prop.crc32()}")
+q.json_results_append("prop load_double qnorm", prop.qnorm(), check_eps)
 
 prop.save_float_from_double("results/prop-float.field")
 prop = q.Prop()
@@ -45,6 +49,8 @@ prop.load_double_from_float("results/prop-float.field")
 q.displayln_info(
     f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm():.12E}"
 )
+q.json_results_append(f"prop load_double_from_float crc32 = {prop.crc32()}")
+q.json_results_append("prop load_double_from_float qnorm", prop.qnorm(), check_eps)
 
 q.save_pickle_obj(prop, f"results/prop-{q.get_id_node()}.pickle", is_sync_node=False)
 prop_load = q.load_pickle_obj(
@@ -102,6 +108,8 @@ n1 = s_prop.n_elems
 n2 = q.glb_sum(n1)
 
 q.displayln_info(f"CHECK: s_prop n1={n1} ; n2={n2}")
+q.json_results_append(f"s_prop n_elems = {n1}")
+q.json_results_append(f"s_prop glb_sum n_elems = {n2}")
 
 sp_prop = q.PselProp(
     s_prop,
@@ -125,11 +133,15 @@ assert np.all(sp_prop[:] == sp_prop_load[:])
 n3 = sp_prop.n_points
 n4 = q.glb_sum(n3)
 q.displayln_info(f"CHECK: s_prop n3={n3} ; n4={n4}")
+q.json_results_append(f"sp_prop n_points = {n3}")
+q.json_results_append(f"sp_prop glb_sum n_points = {n4}")
 
 assert n4 == n2
 
 q.displayln_info(f"CHECK: len(sp_prop.psel) = {len(sp_prop.psel)}")
+q.json_results_append("sp_prop psel len", float(len(sp_prop.psel)))
 q.displayln_info(f"CHECK: sp_prop.psel[:].tolist() = {sp_prop.psel[:].tolist()}")
+q.json_results_append("sp_prop psel sig", q.get_data_sig(sp_prop.psel[:], q.RngState()))
 
 sig1 = q.get_data_sig(sp_prop[:], q.RngState(f"{q.get_id_node()}"))
 sig2 = q.glb_sum(sig1)
@@ -141,6 +153,7 @@ sp_prop = q.PselProp(psel)
 sp_prop @= prop
 
 q.displayln_info("CHECK: sp_prop", sp_prop.qnorm())
+q.json_results_append("sp_prop from psel qnorm", sp_prop.qnorm(), check_eps)
 
 sp_prop_arr = np.asarray(sp_prop)
 q.displayln_info(f"CHECK: sp_prop_arr.dtype = {sp_prop_arr.dtype}")
@@ -152,6 +165,8 @@ sp_prop1.load("results/prop.lat")
 sp_prop1 -= sp_prop
 
 q.displayln_info("CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "save load")
+q.json_results_append("sp_prop save load qnorm", sp_prop.qnorm(), check_eps)
+q.json_results_append("sp_prop save load diff qnorm", sp_prop1.qnorm(), check_eps)
 
 ld = sp_prop.to_lat_data()
 sp_prop1 = q.PselProp(psel)
@@ -161,6 +176,8 @@ sp_prop1 -= sp_prop
 q.displayln_info(
     "CHECK: sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion"
 )
+q.json_results_append("sp_prop lat_data qnorm", sp_prop.qnorm(), check_eps)
+q.json_results_append("sp_prop lat_data diff qnorm", sp_prop1.qnorm(), check_eps)
 
 q.save_pickle_obj(sp_prop, "results/sp_prop.pickle")
 sp_prop_load = q.load_pickle_obj("results/sp_prop.pickle")
@@ -174,6 +191,8 @@ s_prop1.load_double("results/prop.sfield")
 s_prop1 -= s_prop
 
 q.displayln_info("CHECK: s_prop", s_prop.qnorm(), s_prop1.qnorm())
+q.json_results_append("s_prop save load qnorm", s_prop.qnorm(), check_eps)
+q.json_results_append("s_prop save load diff qnorm", s_prop1.qnorm(), check_eps)
 
 s_prop_arr = np.asarray(s_prop)
 q.displayln_info(f"CHECK: s_prop_arr.dtype = {s_prop_arr.dtype}")
@@ -183,26 +202,32 @@ prop1 = q.SelProp(fselc)
 prop1 @= prop
 
 q.displayln_info(f"CHECK: prop1 {prop1.qnorm():.12E}")
+q.json_results_append("prop1 from s_prop qnorm", prop1.qnorm(), check_eps)
 
 sp_prop1 = q.PselProp(psel)
 sp_prop1 @= prop1
 sp_prop1 -= sp_prop
 
 q.displayln_info(f"CHECK: sp_prop1 {sp_prop.qnorm():12E} {sp_prop1.qnorm():.12E}")
+q.json_results_append("sp_prop1 diff qnorm", sp_prop1.qnorm(), check_eps)
 
 s_prop1 = q.SelProp(fsel)
 s_prop1 @= prop1
 s_prop1 -= s_prop
 
 q.displayln_info(f"CHECK: s_prop1 {s_prop.qnorm():12E} {s_prop1.qnorm():.12E}")
+q.json_results_append("s_prop1 diff qnorm", s_prop1.qnorm(), check_eps)
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 q.displayln_info(f"CHECK: prop : {prop.crc32()}")
+q.json_results_append(f"prop crc32 = {prop.crc32()}")
 prop_msc = q.convert_mspincolor_from_wm(prop)
 q.displayln_info(f"CHECK: prop_msc : {prop_msc.crc32()}")
+q.json_results_append(f"prop_msc crc32 = {prop_msc.crc32()}")
 prop_wm = q.convert_wm_from_mspincolor(prop_msc)
 q.displayln_info(f"CHECK: prop_wm : {prop_wm.crc32()}")
+q.json_results_append(f"prop_wm crc32 = {prop_wm.crc32()}")
 prop_wm -= prop
 assert prop_wm.qnorm() == 0
 

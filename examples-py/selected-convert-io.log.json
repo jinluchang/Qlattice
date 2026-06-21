@@ -1,5 +1,8 @@
 [
  [
+  "fsel.n_elems = 21"
+ ],
+ [
   "q.get_data_sig(f1, rs)",
   {
    "real": 0.0,

@@ -285,6 +285,7 @@ fsel = q.FieldSelection(geo)
 fsel[q.RngState("seed-fsel-init").u_rand_arr(fsel[:].shape) < 1 / 16] = 0
 fsel.update()
 q.displayln_info(f"CHECK: q.glb_sum(fsel.n_elems) = {q.glb_sum(fsel.n_elems)}")
+q.json_results_append(f"q.glb_sum(fsel.n_elems) = {q.glb_sum(fsel.n_elems)}")
 
 sf = q.SelectedFieldRealD(fsel, 2)
 sf @= f

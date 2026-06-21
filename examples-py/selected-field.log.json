@@ -1,5 +1,49 @@
 [
  [
+  "prop init crc32 = 4021037301"
+ ],
+ [
+  "prop init qnorm",
+  49304.10827466952,
+  1e-05
+ ],
+ [
+  "prop load_double crc32 = 4021037301"
+ ],
+ [
+  "prop load_double qnorm",
+  49304.10827466952,
+  1e-05
+ ],
+ [
+  "prop load_double_from_float crc32 = 3862544378"
+ ],
+ [
+  "prop load_double_from_float qnorm",
+  49304.10827993393,
+  1e-05
+ ],
+ [
+  "s_prop n_elems = 66"
+ ],
+ [
+  "s_prop glb_sum n_elems = 130"
+ ],
+ [
+  "sp_prop n_points = 65"
+ ],
+ [
+  "sp_prop glb_sum n_points = 130"
+ ],
+ [
+  "sp_prop psel len",
+  65.0
+ ],
+ [
+  "sp_prop psel sig",
+  -0.36317328749016653
+ ],
+ [
   "sp_prop from shuffle_selected_field sig1",
   {
    "real": 44.706533644155705,
@@ -16,5 +60,64 @@
    "__extended_json_type__": "complex"
   },
   1e-05
+ ],
+ [
+  "sp_prop from psel qnorm",
+  197.78615635070122,
+  1e-05
+ ],
+ [
+  "sp_prop save load qnorm",
+  197.78615635070122,
+  1e-05
+ ],
+ [
+  "sp_prop save load diff qnorm",
+  0.0,
+  1e-05
+ ],
+ [
+  "sp_prop lat_data qnorm",
+  197.78615635070122,
+  1e-05
+ ],
+ [
+  "sp_prop lat_data diff qnorm",
+  0.0,
+  1e-05
+ ],
+ [
+  "s_prop save load qnorm",
+  12391.820997493403,
+  1e-05
+ ],
+ [
+  "s_prop save load diff qnorm",
+  0.0,
+  1e-05
+ ],
+ [
+  "prop1 from s_prop qnorm",
+  12589.607153844107,
+  1e-05
+ ],
+ [
+  "sp_prop1 diff qnorm",
+  0.0,
+  1e-05
+ ],
+ [
+  "s_prop1 diff qnorm",
+  0.0,
+  1e-05
+ ],
+ [
+  "prop crc32 = 4021037301"
+ ],
+ [
+  "prop_msc crc32 = 2846833498"
+ ],
+ [
+  "prop_wm crc32 = 4021037301"
  ]
 ]
