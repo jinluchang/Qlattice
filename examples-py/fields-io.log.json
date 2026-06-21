@@ -137,6 +137,9 @@
   "fields-io: index.qar crc=9548816B"
  ],
  [
+  "fields-io: test read_as_char and write"
+ ],
+ [
   "fields-io: tags=['prop.d', 'prop', 's_prop', 'prop1']"
  ],
  [

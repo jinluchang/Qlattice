@@ -58,6 +58,7 @@ xg = q.Coordinate(psel_smear[0])
 tag = f"smear ; xg={tuple(xg.to_list())} ; type={inv_type} ; accuracy={inv_acc}"
 
 q.displayln_info("CHECK: ", tag)
+q.json_results_append(f"tag={tag}")
 src = q.mk_point_src(geo, xg)
 
 q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src)}")

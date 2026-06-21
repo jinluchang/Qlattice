@@ -42,6 +42,9 @@
   "s_prop glb_sum n_elems = 130"
  ],
  [
+  "sp_prop from shuffle_selected_field"
+ ],
+ [
   "sp_prop from shuffle_selected_field qnorm",
   6279.140518575913,
   1e-05

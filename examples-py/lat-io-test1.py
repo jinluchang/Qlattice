@@ -58,6 +58,7 @@ ld[
 ] = [i * 3 + i * 1j for i in range(3)]
 
 q.displayln_info("CHECK: ", ld[(0,)])
+q.json_results_append("lat-io-test1: ld[(0,)] values", np.array([x.real for x in np.asarray(ld[(0,)]).ravel()]))
 q.json_results_append("lat-io-test1: ld[(0,)] sig", q.get_data_sig(np.asarray(ld[(0,)]), q.RngState("ld0")))
 q.displayln_info(
     "CHECK: ",
@@ -68,6 +69,7 @@ q.displayln_info(
         )
     ],
 )
+q.json_results_append("lat-io-test1: ld[(1,2)] values", np.array([x.real for x in np.asarray(ld[(1,2)]).ravel()]))
 q.json_results_append("lat-io-test1: ld[(1,2)] sig", q.get_data_sig(np.asarray(ld[(1,2)]), q.RngState("ld12")))
 
 ld.save("results/test.lat")
@@ -83,6 +85,7 @@ q.displayln_info(
         )
     ],
 )
+q.json_results_append("lat-io-test1: ld[(1,3)] values", np.array([x.real for x in np.asarray(ld[(1,3)]).ravel()]))
 q.json_results_append("lat-io-test1: ld[(1,3)] sig", q.get_data_sig(np.asarray(ld[(1,3)]), q.RngState("ld13")))
 
 ld1 = ld.copy()

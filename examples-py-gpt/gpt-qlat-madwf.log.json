@@ -13,6 +13,9 @@
   1e-12
  ],
  [
+  "tag=qm start"
+ ],
+ [
   "sol.qnorm() in test_inv",
   1.195616283925891,
   1e-07
@@ -34,6 +37,9 @@
   "sol.qnorm() tag=qm",
   1.195616283925891,
   1e-07
+ ],
+ [
+  "tag=qz_f start"
  ],
  [
   "sol.qnorm() in test_inv",
@@ -69,6 +75,9 @@
   1e-07
  ],
  [
+  "tag=qm_mp start"
+ ],
+ [
   "sol.qnorm() in test_inv",
   1.195616283417512,
   1e-07
@@ -100,6 +109,9 @@
   "sol1 diff qnorm tag=qm_mp",
   2.313115425888109e-12,
   1e-07
+ ],
+ [
+  "tag=qm_split start"
  ],
  [
   "sol.qnorm() in test_inv",
@@ -135,6 +147,9 @@
   1e-07
  ],
  [
+  "tag=qm_split_sloppy start"
+ ],
+ [
   "sol.qnorm() in test_inv",
   1.1956122489860164,
   1e-07
@@ -166,6 +181,9 @@
   "sol1 diff qnorm tag=qm_split_sloppy",
   3.859309322051284e-07,
   1e-07
+ ],
+ [
+  "tag=inv_qm_madwf start"
  ],
  [
   "sol.qnorm() in test_inv",

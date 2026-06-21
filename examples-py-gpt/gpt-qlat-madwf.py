@@ -160,11 +160,13 @@ tags = ["qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf"]
 invs = [inv_qm, inv_qz_f, inv_qm_mp, inv_qm_split, inv_qm_split_sloppy, inv_qm_madwf]
 
 q.displayln_info(f"CHECK: tag={tags[0]} start")
+q.json_results_append(f"tag={tags[0]} start")
 src, sol, sol1 = test_inv(geo, invs[0])
 q.json_results_append(f"sol.qnorm() tag={tags[0]}", sol.qnorm(), 1e-7)
 
 for tag, inv in zip(tags[1:], invs[1:]):
     q.displayln_info(f"CHECK: tag={tag} start")
+    q.json_results_append(f"tag={tag} start")
     src_n, sol_n, sol1_n = test_inv(geo, inv)
     src_n -= src
     sol_n -= sol

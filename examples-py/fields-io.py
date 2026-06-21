@@ -221,6 +221,7 @@ q.displayln_info(f"CHECK: index.qar crc={crc:08X}")
 q.json_results_append(f'fields-io: index.qar crc={crc:08X}')
 
 q.displayln_info("CHECK: test read_as_char and write")
+q.json_results_append("fields-io: test read_as_char and write")
 
 sfr = q.open_fields("results/prop.fields", "r")
 tags = sfr.list()
