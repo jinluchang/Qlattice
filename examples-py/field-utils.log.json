@@ -149,6 +149,9 @@
   "field-utils: t_dir=0 multiplicity=4"
  ],
  [
+  "field-utils: t_dir=0 psel_list=[[0, -1, -1, -1], [1, -1, -1, -1], [2, -1, -1, -1], [3, -1, -1, -1]]"
+ ],
+ [
   "t_dir=1 qnorm(gf_sum_tslice)",
   1233.1266773897833,
   1e-12
@@ -158,6 +161,9 @@
  ],
  [
   "field-utils: t_dir=1 multiplicity=4"
+ ],
+ [
+  "field-utils: t_dir=1 psel_list=[[-1, 0, -1, -1], [-1, 1, -1, -1], [-1, 2, -1, -1], [-1, 3, -1, -1]]"
  ],
  [
   "t_dir=2 qnorm(gf_sum_tslice)",
@@ -171,6 +177,9 @@
   "field-utils: t_dir=2 multiplicity=4"
  ],
  [
+  "field-utils: t_dir=2 psel_list=[[-1, -1, 0, -1], [-1, -1, 1, -1], [-1, -1, 2, -1], [-1, -1, 3, -1]]"
+ ],
+ [
   "t_dir=3 qnorm(gf_sum_tslice)",
   1531.2938206619983,
   1e-12
@@ -180,6 +189,9 @@
  ],
  [
   "field-utils: t_dir=3 multiplicity=4"
+ ],
+ [
+  "field-utils: t_dir=3 psel_list=[[-1, -1, -1, 0], [-1, -1, -1, 1], [-1, -1, -1, 2], [-1, -1, -1, 3], [-1, -1, -1, 4], [-1, -1, -1, 5], [-1, -1, -1, 6], [-1, -1, -1, 7]]"
  ],
  [
   "qnorm",

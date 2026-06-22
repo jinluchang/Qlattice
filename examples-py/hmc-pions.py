@@ -1017,12 +1017,6 @@ def main():
     #
     phi0_vev = np.mean(measurements.phi_list[int(n_traj / 2):], axis=0)[0]
     phi_sq_vev = np.mean(measurements.psq_list[int(n_traj / 2):])
-    q.displayln_info(
-        f"CHECK: The vacuum expectation value of phi_0 is {round(phi0_vev, 2)}."
-    )
-    q.displayln_info(
-        f"CHECK: The vacuum expectation value of phi^2 is {round(phi_sq_vev, 2)}."
-    )
     q.json_results_append(f"vacuum expectation value of phi_0", phi0_vev, 1e-4)
     q.json_results_append(f"vacuum expectation value of phi^2", phi_sq_vev, 1e-4)
 

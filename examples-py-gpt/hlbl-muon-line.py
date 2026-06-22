@@ -74,7 +74,6 @@ q.begin_with_mpi()
 
 has_cuba = q.has_cuba()
 
-q.displayln_info(f"CHECK: has_cuba={has_cuba}")
 q.json_results_append(f"has_cuba = {has_cuba}")
 
 if not has_cuba:

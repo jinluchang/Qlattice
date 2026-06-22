@@ -1,11 +1,1 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8])
-CHECK:  smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0
-CHECK: qnorm(src) = 12.0
-CHECK: qnorm(src) = 2.007119204319E-01 after smear
-CHECK: qnorm(sol) = 2.888235E-01
-CHECK: qnorm(sol_psel) = 1.363631E-01
-CHECK: qnorm(sol_s) = 1.772959E-01
-CHECK: qnorm(sol_ws) = 1.84128E+01
-CHECK: qnorm(sol_smear) = 2.87135E-01
-CHECK: qnorm(sol_smear_psel) = 3.58798E-02
 CHECK: finished successfully.

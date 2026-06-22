@@ -82,27 +82,22 @@ if q.get_id_node() == 0:
     qar.write("f1", "f1-info", content)
     qar.write("f2", "f2-info", content)
     l0 = qar.list()
-    q.displayln_info(f"CHECK: l0 {l0}")
     q.json_results_append(f"test-qar: l0={l0}")
     qar.close()
     l1 = q.list_qar("results/test-qar.qar")
-    q.displayln_info(f"CHECK: l1 {l1}")
     q.json_results_append(f"test-qar: l1={l1}")
     assert l0 == l1
     qar = q.open_qar("results/test-qar.qar", "w")
     qar.write("f1", "f1-info", content)
     qar.close()
     l2 = q.list_qar("results/test-qar.qar")
-    q.displayln_info(f"CHECK: l2 {l2}")
     q.json_results_append(f"test-qar: l2={l2}")
     qar = q.open_qar("results/test-qar.qar", "a")
     qar.write("f2", "f2-info", content)
     l3 = qar.list()
-    q.displayln_info(f"CHECK: l3 {l3}")
     q.json_results_append(f"test-qar: l3={l3}")
     qar.close()
     l4 = q.list_qar("results/test-qar.qar")
-    q.displayln_info(f"CHECK: l4 {l4}")
     q.json_results_append(f"test-qar: l4={l4}")
     qfile = q.open_qfile("results/test-qar.qar", "a")
     qfile.write("hello")
@@ -110,22 +105,18 @@ if q.get_id_node() == 0:
     qar = q.open_qar("results/test-qar.qar", "a")
     qar.write("f3", "f3-info", content)
     l5 = qar.list()
-    q.displayln_info(f"CHECK: l5 {l5}")
     q.json_results_append(f"test-qar: l5={l5}")
     qar.close()
     l6 = q.list_qar("results/test-qar.qar")
-    q.displayln_info(f"CHECK: l6 {l6}")
     q.json_results_append(f"test-qar: l6={l6}")
     assert l5 == l6
 
 qar = q.open_qar_info("results/test-qar.qar", "r")
 l = qar.list()
 l = q.bcast_py(l)
-q.displayln_info(f"CHECK: open_qar_info l='{l}'")
 q.json_results_append(f"test-qar: open_qar_info l={l}")
 for fn in l:
     data = qar.read_data(fn)
-    q.displayln_info(f"CHECK: open_qar_info fn='{fn}' data='{data!r}'")
     q.json_results_append(f"test-qar: open_qar_info fn={fn} data={data!r}")
 qar.close()
 
@@ -138,12 +129,10 @@ q.qar_create_info("results/data2.qar", "results/data2", is_remove_folder_after=T
 q.qar_extract_info("results/data2.qar", "results/data2", is_remove_qar_after=True)
 
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
-q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
 q.json_results_append('test-qar: qar_multi_vol_max_size', int(qar_multi_vol_max_size))
 
 q.set_qar_multi_vol_max_size(16 * 1024)
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
-q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
 q.json_results_append('test-qar: qar_multi_vol_max_size set', int(qar_multi_vol_max_size))
 
 q.qar_create_info(
@@ -173,25 +162,19 @@ assert (
 l1 = q.list_qar("results/data4.qar")
 
 q.sync_node()
-q.displayln_info("CHECK: ", l1)
 q.json_results_append(f"test-qar: data4 qar list={l1}")
 q.sync_node()
 
 l2 = q.list_qar("results/data4/ld-1000.qar")
 
 q.sync_node()
-q.displayln_info("CHECK: ", l2)
 q.json_results_append(f"test-qar: ld-1000 qar list={l2}")
 q.sync_node()
 
 num_clean_up_qfiles = q.clean_up_qfile_map()
-q.displayln_info(f"CHECK: clean_up_qfile_map num_clean_up_qfiles={num_clean_up_qfiles}")
 q.json_results_append('test-qar: num_clean_up_qfiles', int(num_clean_up_qfiles))
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
-q.displayln_info("CHECK: q.show_all_qfile()")
-for idx, s in enumerate(sq_list):
-    q.displayln_info(f"CHECK: {idx} {s}")
 q.json_results_append(f"test-qar: show_all_qfile n={len(sq_list)}")
 for idx, s in enumerate(sq_list):
     q.json_results_append(f"test-qar: show_all_qfile {idx} {s}")

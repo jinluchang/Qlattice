@@ -37,8 +37,6 @@ q.load_cps_prop_double(prop1, "results/prop-d.cps.field")
 
 prop1 -= prop
 
-q.displayln_info(f"CHECK: diff ratio with double {q.qnorm(prop1) / q.qnorm(prop)}")
-
 q.json_results_append("double diff ratio", q.qnorm(prop1) / q.qnorm(prop), 1e-12)
 q.json_results_append("gf.plaq()", gf.plaq(), 1e-12)
 

@@ -27,13 +27,11 @@ total_site = q.Coordinate(
     ]
 )
 geo = q.Geometry(total_site)
-q.displayln_info("CHECK: geo.show() =", geo.show())
 q.json_results_append(f"make-sample-gauge-field: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
 
-q.displayln_info("CHECK: ", gf.geo.show())
 q.json_results_append(f"make-sample-gauge-field: gf.geo.show()={gf.geo.show()}")
 
 q.set_unit(gf)
@@ -58,8 +56,6 @@ gf.show_info()
 plaq1 = gf.plaq()
 q.json_results_append(f"{fname}: plaq1", plaq1, 1e-10)
 q.json_results_append(f"{fname}: plaq", plaq, 1e-10)
-
-q.displayln_info(f"CHECK: plaq: {plaq:.12E} {plaq1:.12E}")
 
 assert abs(plaq - plaq1) < 1e-12
 

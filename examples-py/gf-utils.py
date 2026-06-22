@@ -36,9 +36,7 @@ else:
     gf = q.GaugeField(geo)
     gf.set_rand(rs.split("gf-init"), 0.5, 10)
 
-q.displayln_info(f"CHECK: total_site = {total_site}")
 q.json_results_append(f"gf-utils: total_site={total_site}")
-q.displayln_info("CHECK: geo.show() =", geo.show())
 q.json_results_append(f"gf-utils: geo.show()={geo.show()}")
 gf.show_info()
 

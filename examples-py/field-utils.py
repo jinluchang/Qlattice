@@ -22,7 +22,6 @@ total_site = q.Coordinate(
     ]
 )
 geo = q.Geometry(total_site)
-q.displayln_info("CHECK: geo.show() =", geo.show())
 q.json_results_append(f"field-utils: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
@@ -94,7 +93,6 @@ xg2 = rs.split("xg2").c_rand_gen(total_site)
 val1 = gf.get_elems_xg(xg1)[:]
 q.displayln_info(f"gf xg={xg1} val1={val1}")
 sig1 = q.get_data_sig(val1, rs.split("sig1"))
-q.displayln_info(f"CHECK: gf xg={xg1}")
 q.json_results_append("gf sig1", sig1, 1e-12)
 q.json_results_append(f"field-utils: xg1={xg1}")
 
@@ -106,7 +104,6 @@ val12 = gf.get_elems_xg(
 )[:]
 q.displayln_info(f"gf xg={xg1, xg2} val12={val12}")
 sig12 = q.get_data_sig(val12, rs.split("sig12"))
-q.displayln_info(f"CHECK: gf xg={xg1, xg2}")
 q.json_results_append("gf sig12", sig12, 1e-12)
 q.json_results_append(f"field-utils: xg1={xg1} xg2={xg2}")
 
@@ -114,7 +111,6 @@ m = 1
 val2 = gf.get_elem_xg(xg1, m)[:]
 q.displayln_info(f"gf xg={xg1} val2={val2}")
 sig2 = q.get_data_sig(val2, rs.split("sig2"))
-q.displayln_info(f"CHECK: gf xg={xg1} m={m}")
 q.json_results_append("gf sig2", sig2, 1e-12)
 q.json_results_append(f"field-utils: xg1={xg1} m={m}")
 
@@ -127,7 +123,6 @@ val22 = gf.get_elem_xg(
 )[:]
 q.displayln_info(f"gf xg={xg1, xg2} val22={val22}")
 sig22 = q.get_data_sig(val22, rs.split("sig22"))
-q.displayln_info(f"CHECK: gf xg={xg1, xg2} m={m}")
 q.json_results_append("gf sig22", sig22, 1e-12)
 q.json_results_append(f"field-utils: xg1={xg1} xg2={xg2} m={m}")
 
@@ -156,13 +151,11 @@ for t_dir in range(4):
     n_points = gf_sum_tslice.n_points
     multiplicity = gf_sum_tslice.multiplicity
     psel_list = gf_sum_tslice.psel.xg_arr.tolist()
-    q.displayln_info(
-        f"CHECK: t_dir={t_dir} n_points={n_points} multiplicity={multiplicity} psel_list={psel_list}"
-    )
     qnorm = q.qnorm(gf_sum_tslice.to_numpy())
     q.json_results_append(f"t_dir={t_dir} qnorm(gf_sum_tslice)", qnorm, 1e-12)
     q.json_results_append(f"field-utils: t_dir={t_dir} n_points={n_points}")
     q.json_results_append(f"field-utils: t_dir={t_dir} multiplicity={multiplicity}")
+    q.json_results_append(f"field-utils: t_dir={t_dir} psel_list={psel_list}")
     gf_sum = gf_sum_initial.copy()[:]
     for t in range(total_site[t_dir]):
         gf_sum -= gf_sum_tslice.get_elems(t)[:]
@@ -291,7 +284,6 @@ q.json_results_append("f4 sig", sig, 1e-7)
 fsel = q.FieldSelection(geo)
 fsel[q.RngState("seed-fsel-init").u_rand_arr(fsel[:].shape) < 1 / 16] = 0
 fsel.update()
-q.displayln_info(f"CHECK: q.glb_sum(fsel.n_elems) = {q.glb_sum(fsel.n_elems)}")
 q.json_results_append(f"q.glb_sum(fsel.n_elems) = {q.glb_sum(fsel.n_elems)}")
 
 sf = q.SelectedFieldRealD(fsel, 2)

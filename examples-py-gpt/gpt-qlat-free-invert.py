@@ -10,7 +10,6 @@ q.qremove_all_info("results")
 q.qmkdir_info("results")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
-q.displayln_info("CHECK: geo.show() =", geo.show())
 q.json_results_append(f"gpt-qlat-free-invert: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
@@ -59,7 +58,6 @@ for src in [src_p, src_r]:
     sol_diff = sol1.copy()
     sol_diff -= sol
 
-    q.displayln_info(f"CHECK: {sol.qnorm():.10E} {sol1.qnorm():.10E}")
     q.json_results_append("sol.qnorm()", sol.qnorm(), 1e-12)
     q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-12)
     q.json_results_append("sol_diff.qnorm()", sol_diff.qnorm(), 1e-12)

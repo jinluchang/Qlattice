@@ -1,2 +1,1 @@
-CHECK: geo.show() = Geometry([4, 4, 4, 8])
 CHECK: finished successfully.

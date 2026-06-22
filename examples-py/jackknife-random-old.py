@@ -37,9 +37,6 @@ jk_idx_list = [
 jk_arr = q.g_rejk(jk_arr, jk_idx_list)
 avg, err = q.g_jk_avg_err(jk_arr)
 
-q.displayln_info(f"CHECK: {avg}")
-q.displayln_info(f"CHECK: {err}")
-
 q.json_results_append("avg", avg)
 q.json_results_append("err", err)
 for i in range(len(avg)):

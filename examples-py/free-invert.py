@@ -6,7 +6,6 @@ q.begin_with_mpi()
 
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
-q.displayln_info("CHECK: geo.show() =", geo.show())
 q.json_results_append(f"free-invert: geo.show()={geo.show()}")
 rs = q.RngState("seed")
 
@@ -35,9 +34,6 @@ for src in [src_p, src_r]:
     sol_diff = sol1.copy()
     sol_diff -= sol
 
-    q.displayln_info(
-        f"CHECK: {sol.qnorm():.13E}", f"{sol1.qnorm():.9E}", f"{sol_diff.qnorm():.3E}"
-    )
     q.json_results_append('free-invert: sol qnorm', sol.qnorm(), 1e-10)
     q.json_results_append('free-invert: sol1 qnorm', sol1.qnorm(), 1e-10)
     q.json_results_append('free-invert: sol_diff qnorm', sol_diff.qnorm(), 1e-10)
@@ -82,9 +78,6 @@ for src in [src_p, src_r]:
     sol_z_diff = sol_z.copy()
     sol_z_diff -= sol_free
 
-    q.displayln_info(
-        f"CHECK: {sol_free.qnorm():.13E}", f"{sol_z.qnorm():.9E}", f"{sol_z_diff.qnorm():.3E}"
-    )
     q.json_results_append('free-invert: sol_free qnorm', sol_free.qnorm(), 1e-10)
     q.json_results_append('free-invert: sol_z qnorm', sol_z.qnorm(), 1e-10)
     q.json_results_append('free-invert: sol_z_diff qnorm', sol_z_diff.qnorm(), 1e-10)

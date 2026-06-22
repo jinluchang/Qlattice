@@ -1,17 +1,1 @@
-CHECK: traj=1 ; plaq_avg=8.200004921196E-01
-CHECK: wilson_loop 8.198257323167E-01
-CHECK: traj=2 ; plaq_avg=7.343152828447E-01
-CHECK: wilson_loop 7.327565755335E-01
-CHECK: traj=3 ; plaq_avg=6.829906172650E-01
-CHECK: wilson_loop 6.841073910717E-01
-CHECK: traj=4 ; plaq_avg=6.441467593928E-01
-CHECK: wilson_loop 6.475088289337E-01
-CHECK: traj=1 ; plaq_avg=8.512558949070E-01
-CHECK: wilson_loop 8.506171389961E-01
-CHECK: traj=2 ; plaq_avg=7.665341292056E-01
-CHECK: wilson_loop 7.649693044513E-01
-CHECK: traj=3 ; plaq_avg=7.067887136881E-01
-CHECK: wilson_loop 7.084343551531E-01
-CHECK: traj=4 ; plaq_avg=6.521938804918E-01
-CHECK: wilson_loop 6.561237827544E-01
 CHECK: finished successfully.

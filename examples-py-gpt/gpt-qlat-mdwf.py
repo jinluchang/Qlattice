@@ -11,7 +11,6 @@ q.qmkdir_info("results")
 rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
-q.displayln_info("CHECK: geo.show() =", geo.show())
 q.json_results_append(f"gpt-qlat-mdwf: geo.show()={geo.show()}")
 
 gf = q.GaugeField(geo)
@@ -32,7 +31,6 @@ mobius_params = {
 gpt_gf = qg.gpt_from_qlat(gf)
 
 q.json_results_append("g.qcd.gauge.plaquette", g.qcd.gauge.plaquette(gpt_gf), 1e-12)
-q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.14f}")
 
 gf1 = qg.qlat_from_gpt(gpt_gf)
 
@@ -59,16 +57,12 @@ def mk_src(geo):
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
-    q.displayln_info(f"CHECK: src info {src.qnorm()}")
-    q.displayln_info(f"CHECK: src info {src.crc32()}")
     q.json_results_append("src.qnorm()", src.qnorm(), 1e-12)
     q.json_results_append(f"src.crc32() = {src.crc32()}")
     sol = inverter * src
-    q.displayln_info(f"CHECK: sol info {sol.qnorm():.10E}")
     q.displayln_info(f"sol info {sol.crc32()}")
     q.json_results_append("sol.qnorm() in test_inv", sol.qnorm(), 1e-12)
     sol1 = inverter * sol
-    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.10E}")
     q.displayln_info(f"sol1 info {sol1.crc32()}")
     q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-12)
     return src, sol, sol1
@@ -80,13 +74,11 @@ q.json_results_append("sol.qnorm()", sol.qnorm(), 1e-12)
 ld = q.contract_pion_field(sol, 0)
 
 q.json_results_append("q.qnorm(ld)", q.qnorm(ld), 1e-12)
-q.displayln_info(f"CHECK: q.contract_pion_field(sol) {q.qnorm(ld):.12E}")
 q.displayln_info(q.show(ld))
 
 ld1 = q.contract_pion_field(sol1, 0)
 
 q.json_results_append("q.qnorm(ld1)", q.qnorm(ld1), 1e-12)
-q.displayln_info(f"CHECK: q.contract_pion_field(sol1) {q.qnorm(ld1):.12E}")
 q.displayln_info(q.show(ld1))
 
 q.check_log_json(__file__)

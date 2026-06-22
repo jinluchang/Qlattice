@@ -30,11 +30,8 @@ fsel = q.FieldSelection(geo)
 fsel.set_rand(total_site, n_per_tslice, rs)
 fsel.add_psel(psel)
 
-q.displayln_info("CHECK: geo.show()=", geo.show())
 q.json_results_append(f"selected-convert-io: geo.show()={geo.show()}")
-q.displayln_info(f"CHECK: psel.points_dist_type={psel.points_dist_type}")
 q.json_results_append(f"selected-convert-io: psel.points_dist_type={psel.points_dist_type}")
-q.displayln_info(f"CHECK: fsel.n_elems={fsel.n_elems}")
 q.json_results_append(f"fsel.n_elems = {fsel.n_elems}")
 
 f1 = q.FieldComplexD(geo, multiplicity)
@@ -205,64 +202,40 @@ q.json_results_append("q.get_data_sig(sp2, rs)", q.get_data_sig(sp2, rs), check_
 q.json_results_append("q.get_data_sig(sp3, rs)", q.get_data_sig(sp3, rs), check_eps)
 q.json_results_append("q.get_data_sig(sp4, rs)", q.get_data_sig(sp4, rs), check_eps)
 
-q.displayln_info(f"CHECK: f1[:].shape={f1[:].shape}")
 q.json_results_append(f"f1[:].shape={f1[:].shape}")
-q.displayln_info(f"CHECK: f1[:].dtype={f1[:].dtype}")
 q.json_results_append(f"f1[:].dtype={f1[:].dtype}")
 
-q.displayln_info(f"CHECK: f2[:].shape={f2[:].shape}")
 q.json_results_append(f"f2[:].shape={f2[:].shape}")
-q.displayln_info(f"CHECK: f2[:].dtype={f2[:].dtype}")
 q.json_results_append(f"f2[:].dtype={f2[:].dtype}")
 
-q.displayln_info(f"CHECK: f3[:].shape={f3[:].shape}")
 q.json_results_append(f"f3[:].shape={f3[:].shape}")
-q.displayln_info(f"CHECK: f3[:].dtype={f3[:].dtype}")
 q.json_results_append(f"f3[:].dtype={f3[:].dtype}")
 
-q.displayln_info(f"CHECK: f4[:].shape={f4[:].shape}")
 q.json_results_append(f"f4[:].shape={f4[:].shape}")
-q.displayln_info(f"CHECK: f4[:].dtype={f4[:].dtype}")
 q.json_results_append(f"f4[:].dtype={f4[:].dtype}")
 
-q.displayln_info(f"CHECK: sf1[:].shape={sf1[:].shape}")
 q.json_results_append(f"sf1[:].shape={sf1[:].shape}")
-q.displayln_info(f"CHECK: sf1[:].dtype={sf1[:].dtype}")
 q.json_results_append(f"sf1[:].dtype={sf1[:].dtype}")
 
-q.displayln_info(f"CHECK: sf2[:].shape={sf2[:].shape}")
 q.json_results_append(f"sf2[:].shape={sf2[:].shape}")
-q.displayln_info(f"CHECK: sf2[:].dtype={sf2[:].dtype}")
 q.json_results_append(f"sf2[:].dtype={sf2[:].dtype}")
 
-q.displayln_info(f"CHECK: sf3[:].shape={sf3[:].shape}")
 q.json_results_append(f"sf3[:].shape={sf3[:].shape}")
-q.displayln_info(f"CHECK: sf3[:].dtype={sf3[:].dtype}")
 q.json_results_append(f"sf3[:].dtype={sf3[:].dtype}")
 
-q.displayln_info(f"CHECK: sf4[:].shape={sf4[:].shape}")
 q.json_results_append(f"sf4[:].shape={sf4[:].shape}")
-q.displayln_info(f"CHECK: sf4[:].dtype={sf4[:].dtype}")
 q.json_results_append(f"sf4[:].dtype={sf4[:].dtype}")
 
-q.displayln_info(f"CHECK: sp1[:].shape={sp1[:].shape}")
 q.json_results_append(f"sp1[:].shape={sp1[:].shape}")
-q.displayln_info(f"CHECK: sp1[:].dtype={sp1[:].dtype}")
 q.json_results_append(f"sp1[:].dtype={sp1[:].dtype}")
 
-q.displayln_info(f"CHECK: sp2[:].shape={sp2[:].shape}")
 q.json_results_append(f"sp2[:].shape={sp2[:].shape}")
-q.displayln_info(f"CHECK: sp2[:].dtype={sp2[:].dtype}")
 q.json_results_append(f"sp2[:].dtype={sp2[:].dtype}")
 
-q.displayln_info(f"CHECK: sp3[:].shape={sp3[:].shape}")
 q.json_results_append(f"sp3[:].shape={sp3[:].shape}")
-q.displayln_info(f"CHECK: sp3[:].dtype={sp3[:].dtype}")
 q.json_results_append(f"sp3[:].dtype={sp3[:].dtype}")
 
-q.displayln_info(f"CHECK: sp4[:].shape={sp4[:].shape}")
 q.json_results_append(f"sp4[:].shape={sp4[:].shape}")
-q.displayln_info(f"CHECK: sp4[:].dtype={sp4[:].dtype}")
 q.json_results_append(f"sp4[:].dtype={sp4[:].dtype}")
 
 f1.save_double("results/f1.field")
