@@ -124,6 +124,8 @@ in (buildPythonPackage.override { stdenv = stdenv; }) rec {
           echo "$i" passed
         else
           echo
+          echo "$i" failed
+          echo
           cat "$i"/log.full.txt
           echo
           echo "$i" failed
