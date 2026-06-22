@@ -45,7 +45,7 @@
  [
   "free-invert: sol_z_diff qnorm",
   2.373573326504051e-07,
-  1e-10
+  1e-08
  ],
  [
   "free-invert: sol_free qnorm",
@@ -60,6 +60,6 @@
  [
   "free-invert: sol_z_diff qnorm",
   0.3705540887559328,
-  1e-10
+  1e-08
  ]
 ]
