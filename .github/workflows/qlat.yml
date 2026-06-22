@@ -162,6 +162,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
+        git diff
         ! git diff | grep '^[+-]CHECK: '
 
   build_qlat_gpt_ubuntu:
@@ -240,6 +241,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
+        git diff
         ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
     - name: Build more packages Grid
       run: |
@@ -376,6 +378,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
+        git diff
         ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
 
   build_nix_mac_clang:
@@ -400,7 +403,7 @@ jobs:
     - name: Check disk space
       run: df -h
     - name: Test qlat with GPT and CPS
-      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 || true
+      run: nix-build nixpkgs/q-pkgs.nix -A pkgs-cpsless-clang-ucxless.qlat-tests -j 1 --cores 3 || echo "Failed to run test on Mac with Nix"
     - name: Check disk space
       run: df -h
     - name: Build qlat with jhub-env
@@ -460,6 +463,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
+        git diff
         ! git diff | grep '^[+-]CHECK: '
 
   build_qlat_gpt_mac:
@@ -536,6 +540,7 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
+        git diff
         ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
     - name: Build more packages Grid
       run: |
@@ -673,4 +678,5 @@ jobs:
         ./scripts/qlat-examples-update-logs.sh
     - name: Check error
       run: |
+        git diff
         ! git diff | grep '^[+-]CHECK: ' # || echo "Check failed!"
