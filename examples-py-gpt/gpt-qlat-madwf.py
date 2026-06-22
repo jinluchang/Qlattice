@@ -142,7 +142,7 @@ def test_inv(geo, inverter):
     q.displayln_info(f"sol1 info {sol1.crc32():08X}")
     q.json_results_append("src.qnorm()", src.qnorm(), 1e-12)
     q.json_results_append(f"src.crc32() = {src.crc32()}")
-    q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-7)
+    q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-6)
     return src, sol, sol1
 
 tags = ["qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf"]

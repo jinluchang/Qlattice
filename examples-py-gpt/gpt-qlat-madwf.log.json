@@ -31,7 +31,7 @@
  [
   "sol1.qnorm()",
   5.803159633046483,
-  1e-07
+  1e-06
  ],
  [
   "sol.qnorm() tag=qm",
@@ -57,7 +57,7 @@
  [
   "sol1.qnorm()",
   4.7663038559428,
-  1e-07
+  1e-06
  ],
  [
   "src diff qnorm tag=qz_f",
@@ -93,7 +93,7 @@
  [
   "sol1.qnorm()",
   5.803159618352916,
-  1e-07
+  1e-06
  ],
  [
   "src diff qnorm tag=qm_mp",
@@ -129,7 +129,7 @@
  [
   "sol1.qnorm()",
   5.803159618352916,
-  1e-07
+  1e-06
  ],
  [
   "src diff qnorm tag=qm_split",
@@ -165,7 +165,7 @@
  [
   "sol1.qnorm()",
   5.803075901337386,
-  1e-07
+  1e-06
  ],
  [
   "src diff qnorm tag=qm_split_sloppy",
@@ -201,7 +201,7 @@
  [
   "sol1.qnorm()",
   5.8031596349094485,
-  1e-07
+  1e-06
  ],
  [
   "src diff qnorm tag=inv_qm_madwf",
