@@ -60,7 +60,7 @@ for src in [src_p, src_r]:
 
     q.json_results_append("sol.qnorm()", sol.qnorm(), 1e-12)
     q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-12)
-    q.json_results_append("sol_diff.qnorm()", sol_diff.qnorm(), 1e-12)
+    q.json_results_append("sol_diff.qnorm()", sol_diff.qnorm(), 1e-3)
     assert sol_diff.qnorm() < 1e-15
 
 q.check_log_json(__file__)

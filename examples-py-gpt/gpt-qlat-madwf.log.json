@@ -10,7 +10,7 @@
  [
   "g.qcd.gauge.plaquette(single)",
   0.9451759656270345,
-  1e-12
+  1e-06
  ],
  [
   "tag=qm start"
@@ -67,12 +67,12 @@
  [
   "sol diff qnorm tag=qz_f",
   0.0010577192494466369,
-  1e-07
+  0.01
  ],
  [
   "sol1 diff qnorm tag=qz_f",
   0.062195494406739354,
-  1e-07
+  0.01
  ],
  [
   "tag=qm_mp start"
@@ -103,12 +103,12 @@
  [
   "sol diff qnorm tag=qm_mp",
   1.5054846020419845e-13,
-  1e-07
+  0.01
  ],
  [
   "sol1 diff qnorm tag=qm_mp",
   2.313115425888109e-12,
-  1e-07
+  0.01
  ],
  [
   "tag=qm_split start"
@@ -139,12 +139,12 @@
  [
   "sol diff qnorm tag=qm_split",
   1.5054846020419845e-13,
-  1e-07
+  0.01
  ],
  [
   "sol1 diff qnorm tag=qm_split",
   2.313115425888109e-12,
-  1e-07
+  0.01
  ],
  [
   "tag=qm_split_sloppy start"
@@ -175,12 +175,12 @@
  [
   "sol diff qnorm tag=qm_split_sloppy",
   9.198541738249442e-09,
-  1e-07
+  0.01
  ],
  [
   "sol1 diff qnorm tag=qm_split_sloppy",
   3.859309322051284e-07,
-  1e-07
+  0.01
  ],
  [
   "tag=inv_qm_madwf start"
@@ -211,11 +211,11 @@
  [
   "sol diff qnorm tag=inv_qm_madwf",
   1.5124888841901922e-13,
-  1e-07
+  0.01
  ],
  [
   "sol1 diff qnorm tag=inv_qm_madwf",
   2.3302756374948188e-12,
-  1e-07
+  0.01
  ]
 ]

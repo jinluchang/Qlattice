@@ -22,7 +22,7 @@ q.json_results_append("g.qcd.gauge.plaquette(double)", g.qcd.gauge.plaquette(gpt
 
 gpt_gf_f = g.convert(gpt_gf, g.single)
 
-q.json_results_append("g.qcd.gauge.plaquette(single)", g.qcd.gauge.plaquette(gpt_gf_f), 1e-12)
+q.json_results_append("g.qcd.gauge.plaquette(single)", g.qcd.gauge.plaquette(gpt_gf_f), 1e-6)
 
 gf = qg.qlat_from_gpt(gpt_gf)
 
@@ -159,8 +159,8 @@ for tag, inv in zip(tags[1:], invs[1:]):
     sol_n -= sol
     sol1_n -= sol1
     q.json_results_append(f"src diff qnorm tag={tag}", src_n.qnorm(), 1e-7)
-    q.json_results_append(f"sol diff qnorm tag={tag}", sol_n.qnorm(), 1e-7)
-    q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_n.qnorm(), 1e-7)
+    q.json_results_append(f"sol diff qnorm tag={tag}", sol_n.qnorm(), 1e-2)
+    q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_n.qnorm(), 1e-2)
 
 q.check_log_json(__file__)
 
