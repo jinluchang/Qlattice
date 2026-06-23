@@ -122,6 +122,7 @@ def mk_field_truncated(field, t_start, t_end):
     if t_size_trunc == 0:
         t_size_trunc = t_size
     assert t_size_trunc <= t_size
+    t_size_trunc_valid = t_size_trunc
     size_node_t = geo.size_node[3]
     t_size_trunc = ((t_size_trunc + size_node_t - 1) // size_node_t) * size_node_t
     total_site_trunc = q.Coordinate(
@@ -141,9 +142,9 @@ def mk_field_truncated(field, t_start, t_end):
         xg_arr = current_xg_field[:]
         for index in range(current_field.geo.local_volume):
             xg = xg_arr[index]
-            t_orig = (xg[3] - i_shift * node_site_t) % t_size
+            t_orig = xg[3] % t_size
             t_local = (t_orig - t_offset) % t_size
-            if t_local >= t_size_trunc:
+            if t_local >= t_size_trunc_valid:
                 continue
             xl = [xg[i] - coor_node[i] * node_site_trunc[i] for i in range(3)]
             xl3 = t_local - coor_node[3] * node_site_trunc[3]
