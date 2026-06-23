@@ -36,6 +36,14 @@ Parameters (via ``set_param``)
   ``2 * half_width + 1`` time slices.
 - ``measurement.wsrc_trunc_acc_list``: List of inversion accuracy levels to
   compute (default ``[0, 2]`` for sloppy and exact)\n
+Test Mode
+---------\n
+With ``--test`` flag, a small ``test-4nt16-checker`` configuration is used
+(lattice 4x4x4x16, 2 MPI ranks along time). The test generates a sample
+gauge field via HMC (5 trajectories, 8 Wilson flow steps), then computes
+truncated wall-source propagators for light and strange quarks with
+``wsrc_trunc_half_width = 3`` (producing a truncated geometry of 4x4x4x8).
+Two source time slices are used per trajectory.\n
 Usage
 -----\n
 ::\n
@@ -242,7 +250,8 @@ def run_prop_wsrc_truncated_save(
     for idx, tslice in enumerate(tslice_list):
         tag_base = f"idx={idx} ; tslice={tslice} ; type={inv_type}"
         tag = f"{tag_base} ; {acc_tag}"
-        if qar_ws.has_regular_file(f"{tag} ; wsnk.lat"):
+        has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
+        if has_file:
             continue
         gf_trunc, t_offset = mk_gf_truncated(gf, tslice, t_half)
         geo_trunc = gf_trunc.geo
@@ -323,7 +332,7 @@ set_param(job_tag, "measurement", "wsrc_trunc_half_width")(16)
 
 # ----
 
-job_tag = "test-4nt8-checker"
+job_tag = "test-4nt16-checker"
 #
 set_param(job_tag, "traj_list")(
     [
@@ -331,13 +340,13 @@ set_param(job_tag, "traj_list")(
     ]
 )
 #
-set_param(job_tag, "seed")("test-4nt8-checker")
+set_param(job_tag, "seed")("test-4nt16-checker")
 set_param(job_tag, "total_site")(
     [
         4,
         4,
         4,
-        8,
+        16,
     ]
 )
 set_param(job_tag, "load_config_params", "twist_boundary_at_boundary")(
@@ -387,14 +396,14 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
 set_param(job_tag, "measurement", "num_wsrc_trunc")(2)
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(2)
+set_param(job_tag, "measurement", "wsrc_trunc_half_width")(3)
 
 # ----
 
 ##################### CMD options #####################
 
 job_tag_list_default = [
-    "test-4nt8-checker",
+    "test-4nt16-checker",
 ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
 job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")

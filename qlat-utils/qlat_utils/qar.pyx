@@ -251,15 +251,45 @@ cdef class QarFile:
         return self.xx.flush()
 
     def list(self):
+        """
+        List entries in this QAR archive.
+        #
+        When the QAR was opened via ``open_qar_info``, this method returns a
+        ``Gobble`` on non-rank-0 nodes.  Broadcast the result from rank 0 with
+        ``q.bcast_py`` to synchronize the listing across MPI ranks.
+        """
         return cc.list(self.xx)
 
     def has_regular_file(self, const cc.std_string& fn):
+        """
+        Check if a regular file entry exists in this QAR archive.
+        #
+        When the QAR was opened via ``open_qar_info``, this method returns a
+        truthy ``Gobble`` on non-rank-0 nodes (because ``open_qar_info`` returns
+        ``Gobble()`` on rank > 0).  To avoid a control-flow desync between MPI
+        ranks, broadcast the result from rank 0 with ``q.bcast_py``::
+            #
+            has_file = q.bcast_py(qar_ws.has_regular_file(fn))
+        """
         return cc.has_regular_file(self.xx, fn)
 
     def has(self, const cc.std_string& fn):
+        """
+        Check if an entry exists in this QAR archive (regular file or otherwise).
+        #
+        When the QAR was opened via ``open_qar_info``, this method returns a
+        truthy ``Gobble`` on non-rank-0 nodes.  Broadcast the result from rank 0
+        with ``q.bcast_py`` to avoid a control-flow desync between MPI ranks::
+            #
+            has_entry = q.bcast_py(qar_ws.has(fn))
+        """
         return cc.has(self.xx, fn)
 
     def __contains__(self, str fn):
+        """
+        ``fn in qar_ws`` — delegates to :meth:`has`.  The same ``Gobble`` / ``bcast_py``
+        caveat applies when the QAR was opened via ``open_qar_info``.
+        """
         return self.has(fn)
 
     def read(self, const cc.std_string& fn):
