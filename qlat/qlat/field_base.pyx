@@ -363,31 +363,51 @@ cdef class FieldBase:
 
     def __setitem__(self, idx, val):
         """
-        Implemented in terms of ``np.asarray``
+        Implemented in terms of ``np.asarray``.
+        #
+        .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         np.asarray(self)[idx] = val
 
     def __getitem__(self, idx):
         """
-        Implemented in terms of ``np.asarray``
+        Implemented in terms of ``np.asarray``.
+        #
+        .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         return np.asarray(self)[idx]
 
     def get_elems(self, idx):
+        """
+        .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
+        """
         return self[idx]
 
     def get_elem(self, idx, m=0):
+        """
+        .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
+        """
         return self[idx, m]
 
     def set_elems(self, idx, val):
         """
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        #
+        .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         self[idx] = val
 
     def set_elem(self, idx, m, val):
         """
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        #
+        .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         self[idx, m] = val
 
@@ -561,31 +581,51 @@ cdef class SelectedFieldBase:
 
     def __setitem__(self, idx, val):
         """
-        Implemented in terms of ``np.asarray``
+        Implemented in terms of ``np.asarray``.
+        #
+        .. note:: For repeated calls, use ``np.asarray(sf)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         np.asarray(self)[idx] = val
 
     def __getitem__(self, idx):
         """
-        Implemented in terms of ``np.asarray``
+        Implemented in terms of ``np.asarray``.
+        #
+        .. note:: For repeated calls, use ``np.asarray(sf)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         return np.asarray(self)[idx]
 
     def get_elems(self, idx):
+        """
+        .. note:: For repeated calls, use ``np.asarray(sf)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
+        """
         return self[idx]
 
     def get_elem(self, idx, m = 0):
+        """
+        .. note:: For repeated calls, use ``np.asarray(sf)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
+        """
         return self[idx, m]
 
     def set_elems(self, idx, val):
         """
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        #
+        .. note:: For repeated calls, use ``np.asarray(sf)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         self[idx] = val
 
     def set_elem(self, idx, m, val):
         """
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        #
+        .. note:: For repeated calls, use ``np.asarray(sf)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         self[idx, m] = val
 
@@ -832,31 +872,51 @@ cdef class SelectedPointsBase:
 
     def __setitem__(self, idx, val):
         """
-        Implemented in terms of ``np.asarray``
+        Implemented in terms of ``np.asarray``.
+        #
+        .. note:: For repeated calls, use ``np.asarray(sp)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         np.asarray(self)[idx] = val
 
     def __getitem__(self, idx):
         """
-        Implemented in terms of ``np.asarray``
+        Implemented in terms of ``np.asarray``.
+        #
+        .. note:: For repeated calls, use ``np.asarray(sp)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         return np.asarray(self)[idx]
 
     def get_elems(self, idx):
+        """
+        .. note:: For repeated calls, use ``np.asarray(sp)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
+        """
         return self[idx]
 
     def get_elem(self, idx, m = 0):
+        """
+        .. note:: For repeated calls, use ``np.asarray(sp)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
+        """
         return self[idx, m]
 
     def set_elems(self, idx, val):
         """
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        #
+        .. note:: For repeated calls, use ``np.asarray(sp)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         self[idx] = val
 
     def set_elem(self, idx, m, val):
         """
         val should be np.ndarray. e.g. np.array([1, 2, 3], dtype=complex)
+        #
+        .. note:: For repeated calls, use ``np.asarray(sp)`` once and index the
+           resulting array directly, to avoid creating a new view each time.
         """
         self[idx, m] = val
 
