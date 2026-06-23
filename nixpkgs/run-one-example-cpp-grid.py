@@ -14,6 +14,11 @@ for variant builds) pointing to the nix store path.  This script sources the
 setenv-qlat.sh from that result directory to configure PATH, PYTHONPATH,
 LD_LIBRARY_PATH, etc., then delegates to make.
 
+The test is run inside ./tmp/examples-cpp-grid/<test-name>/build/.  After the
+run, check that directory for log.full (full output), log.txt (filtered), and
+log.check.txt (CHECK: lines only).  The top-level
+./tmp/examples-cpp-grid/<test-name>/log and log.full are also available.
+
 Usage:
   ./nixpkgs/run-one-example-cpp-grid.py <test-name> [options]
 

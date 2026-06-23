@@ -38,6 +38,8 @@ Use the `nixpkgs/run-one-example*.py` scripts — they set up the nix environmen
 
 See `--help` for build variant options (`--cuda`, `--cudasupport`, `--cu`, `--clang`, `--pypi`).
 
+Each script copies sources into `./tmp/examples-*/` and runs the test there. After a run, check `./tmp/examples-*/<name>.py.p/` (Python/GPT/CPS) or `./tmp/examples-*/<name>/build/` (C++/Grid) for log files (`log.full.txt`, `log.txt`, `log.check.txt`).
+
 Tests use **log-comparison**: each test prints `CHECK:` lines compared against reference `.log` files. See each `examples-*/Makefile` for the full test-running workflow.
 
 ### Run all tests

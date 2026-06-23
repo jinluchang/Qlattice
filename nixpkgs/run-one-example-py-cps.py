@@ -14,6 +14,10 @@ for variant builds) pointing to the nix store path.  This script sources the
 setenv-qlat.sh from that result directory to configure PATH, PYTHONPATH,
 LD_LIBRARY_PATH, etc., then delegates to make.
 
+The test is run inside ./tmp/examples-py-cps/<test-name>.py.p/.  After the run,
+check that directory for log.full.txt (full output), log.txt (filtered), and
+log.check.txt (CHECK: lines only).
+
 Usage:
   ./nixpkgs/run-one-example-py-cps.py <test-name> [options]
 

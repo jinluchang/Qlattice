@@ -94,14 +94,12 @@ def mk_field_truncated(field, t_start, t_end):
     Extracts a sub-volume of the field covering the time range
     ``[t_start, t_end)`` (modulo ``t_size``). The truncated geometry has the
     same spatial extent as the original but with time extent
-    ``t_size_trunc = (t_end - t_start) % t_size``.\n
+    ``t_size_trunc`` (rounded up to be divisible by the number of
+    time-direction MPI nodes).\n
     The field data is copied from the original field (and its time-shifted
     copies) for all sites whose global time coordinate falls within the
-    truncated range. When the lattice is decomposed across MPI nodes in the
-    time direction, each node only holds ``node_site[3]`` time slices locally.
-    The function shifts the field by ``node_site[3]`` repeatedly
-    (``size_node[3] - 1`` times) to bring all time slices to the local node
-    for copying.\n
+    truncated range. Sites that are not local in the truncated geometry
+    are skipped.\n
     Parameters
     ----------
     field : q.FieldBase
@@ -118,12 +116,14 @@ def mk_field_truncated(field, t_start, t_end):
         Field on the truncated geometry with data copied from the original.
     """
     geo = field.geo
-    total_site = geo.total_site()
+    total_site = geo.total_site
     t_size = total_site[3]
     t_size_trunc = (t_end - t_start) % t_size
     if t_size_trunc == 0:
         t_size_trunc = t_size
     assert t_size_trunc <= t_size
+    size_node_t = geo.size_node[3]
+    t_size_trunc = ((t_size_trunc + size_node_t - 1) // size_node_t) * size_node_t
     total_site_trunc = q.Coordinate(
         [total_site[0], total_site[1], total_site[2], t_size_trunc]
     )
@@ -133,17 +133,24 @@ def mk_field_truncated(field, t_start, t_end):
     node_site_t = geo.node_site[3]
     n_shift = geo.size_node[3]
     shift = q.Coordinate([0, 0, 0, node_site_t])
+    node_site_trunc = geo_trunc.node_site
+    coor_node = geo.coor_node
     current_field = field
     current_xg_field = q.mk_xg_field(geo)
     for i_shift in range(n_shift):
         xg_arr = current_xg_field[:]
-        for index in range(current_field.geo.local_volume()):
+        for index in range(current_field.geo.local_volume):
             xg = xg_arr[index]
             t_local = (xg[3] - t_offset) % t_size
             if t_local >= t_size_trunc:
                 continue
-            xg_trunc = q.Coordinate([xg[0], xg[1], xg[2], t_local])
-            index_trunc = geo_trunc.index_from_g_coordinate(xg_trunc)
+            xl = [xg[i] - coor_node[i] * node_site_trunc[i] for i in range(3)]
+            xl3 = t_local - coor_node[3] * node_site_trunc[3]
+            if xl3 < 0 or xl3 >= node_site_trunc[3]:
+                continue
+            index_trunc = xl[0] + node_site_trunc[0] * (
+                xl[1] + node_site_trunc[1] * (xl[2] + node_site_trunc[2] * xl3)
+            )
             field_trunc.get_elems(index_trunc)[:] = current_field.get_elems(index)
         if i_shift < n_shift - 1:
             current_field = q.field_shift(current_field, shift)
@@ -176,7 +183,7 @@ def mk_gf_truncated(gf, t_center, t_half):
         The global time index corresponding to time index 0 of the truncated
         geometry. ``t_offset = (t_center - t_half) % t_size``.
     """
-    total_site = gf.geo.total_site()
+    total_site = gf.geo.total_site
     t_size = total_site[3]
     t_start = (t_center - t_half) % t_size
     t_end = (t_center + t_half + 2) % t_size

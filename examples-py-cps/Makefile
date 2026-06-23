@@ -9,6 +9,10 @@ SHELL=/usr/bin/env bash
 #   nixpkgs/install-py-local-kernel-with-nix.sh, which creates the
 #   ./result-py-local symlink) and then runs make with this Makefile.
 #
+#   The script copies sources into ./tmp/examples-py-cps/ and runs make there.
+#   Logs are in ./tmp/examples-py-cps/<name>.py.p/ — check that directory for
+#   log.full.txt, log.txt, and log.check.txt when debugging a test run.
+#
 # Run tests via make (uses whatever qlat is available in the environment):
 #   make                          Run all CPS tests (same as make run-cps).
 #   make run-cps                  Run all CPS tests.

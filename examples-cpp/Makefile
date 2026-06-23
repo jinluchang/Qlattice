@@ -9,6 +9,11 @@ SHELL=/usr/bin/env bash
 #   nixpkgs/install-py-local-kernel-with-nix.sh, which creates the
 #   ./result-py-local symlink) and then runs make with this Makefile.
 #
+#   The script copies sources into ./tmp/examples-cpp/ and runs make there.
+#   Logs are in ./tmp/examples-cpp/<name>/build/ — check that directory for
+#   log.full, log.txt, and log.check.txt when debugging a test run.
+#   The top-level ./tmp/examples-cpp/<name>/log and log.full are also available.
+#
 # Run tests via make (uses whatever qlat is available in the environment):
 #   make                          Run all C++ tests (same as make run).
 #   make run                      Run all C++ tests.
