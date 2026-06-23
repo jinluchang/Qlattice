@@ -30,7 +30,6 @@ The output data layout is::\n
         wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)\n
 Parameters (via ``set_param``)
 ------------------------------\n
-- ``measurement.num_wsrc_trunc``: Number of source time slices per trajectory
 - ``measurement.wsrc_trunc_half_width``: Half-width of the truncated time
   region (default ``t_size // 4``). The full truncated region spans
   ``2 * half_width + 1`` time slices.
@@ -212,16 +211,16 @@ def mk_gf_truncated(gf, t_center, t_half):
 ### ------
 
 @q.timer_verbose
-def run_truncated_wsrc_prop(job_tag, traj, get_gf, get_gt):
+def run_prop_wsrc_truncated_save(
+    job_tag, traj, *, get_gf, get_gt, inv_type
+):
     """
-    Main driver: generate truncated wall-source propagators for light and
-    strange quarks and save wall-sink data.
+    Compute and save truncated wall-source propagators for one quark flavor.\n
+    Saves wall-sink data as psel in .lat format.
     """
     fname = q.get_fname()
-    fn_checkpoint = f"{job_tag}/truncated-wsrc-prop/traj-{traj}/checkpoint.txt"
-    if get_load_path(fn_checkpoint) is not None:
-        return
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}"):
+    inv_type_name = ["light", "strange"][inv_type]
+    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
         return
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -229,30 +228,8 @@ def run_truncated_wsrc_prop(job_tag, traj, get_gf, get_gt):
         job_tag, "measurement", "wsrc_trunc_half_width", default=t_size // 4
     )
     tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
-    for inv_type in [0, 1]:
-        run_prop_wsrc_truncated_save(
-            job_tag,
-            traj,
-            get_gf=get_gf,
-            get_gt=get_gt,
-            inv_type=inv_type,
-            tslice_list=tslice_list,
-            t_half=t_half,
-        )
-    q.qtouch_info(get_save_path(fn_checkpoint))
-    q.release_lock()
-
-@q.timer_verbose
-def run_prop_wsrc_truncated_save(
-    job_tag, traj, *, get_gf, get_gt, inv_type, tslice_list, t_half
-):
-    """
-    Compute and save truncated wall-source propagators for one quark flavor.\n
-    Saves wall-sink data as psel in .lat format.
-    """
-    inv_type_name = ["light", "strange"][inv_type]
     gf = get_gf()
-    inv_acc = 2
+    inv_acc = 0
     acc_tag = f"accuracy={inv_acc}"
     path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}"
     qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
@@ -275,6 +252,7 @@ def run_prop_wsrc_truncated_save(
     qar_ws.flush()
     qar_ws.close()
     q.clean_cache(q.cache_inv)
+    q.release_lock()
 
 ### ------
 
@@ -284,18 +262,11 @@ def get_truncated_wsrc_tslice_list(job_tag, traj):
     """
     Generate the list of source time slices for truncated wall-source
     propagators.\n
-    The time slices are approximately evenly spaced across the temporal
-    extent of the lattice, with the starting point randomized per
-    trajectory for unbiased sampling.
+    Returns all time slices ``[0, 1, ..., t_size-1]``.
     """
-    num_wsrc = get_param(job_tag, "measurement", "num_wsrc_trunc", default=2)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    rs = q.RngState(f"{get_job_seed(job_tag)}-{traj}-get_truncated_wsrc_tslice_list")
-    t_start = rs.u_rand_gen() * t_size
-    t_sep = t_size / num_wsrc
-    tslice_list = [round(t_start + i * t_sep) % t_size for i in range(num_wsrc)]
-    return tslice_list
+    return list(range(t_size))
 
 ### ------
 
@@ -320,23 +291,27 @@ def run_job(job_tag, traj):
         return
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
-    run_truncated_wsrc_prop(job_tag, traj, get_gf, get_gt)
+    for inv_type in [0, 1]:
+        run_prop_wsrc_truncated_save(
+            job_tag,
+            traj,
+            get_gf=get_gf,
+            get_gt=get_gt,
+            inv_type=inv_type,
+        )
 
 ### ------
 
 job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(1000, 5100, 80)))
-set_param(job_tag, "measurement", "num_wsrc_trunc")(2)
 set_param(job_tag, "measurement", "wsrc_trunc_half_width")(8)
 
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(520, 2600, 40)))
-set_param(job_tag, "measurement", "num_wsrc_trunc")(2)
 set_param(job_tag, "measurement", "wsrc_trunc_half_width")(10)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
-set_param(job_tag, "measurement", "num_wsrc_trunc")(2)
 set_param(job_tag, "measurement", "wsrc_trunc_half_width")(16)
 
 # ----
@@ -404,7 +379,6 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
-set_param(job_tag, "measurement", "num_wsrc_trunc")(2)
 set_param(job_tag, "measurement", "wsrc_trunc_half_width")(3)
 
 # ----

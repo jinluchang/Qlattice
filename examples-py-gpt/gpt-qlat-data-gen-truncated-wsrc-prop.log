@@ -1,0 +1,145 @@
+CHECK: params: test-4nt16-checker: {
+CHECK: params: test-4nt16-checker:   "traj_list": [
+CHECK: params: test-4nt16-checker:     1000
+CHECK: params: test-4nt16-checker:   ],
+CHECK: params: test-4nt16-checker:   "seed": "test-4nt16-checker",
+CHECK: params: test-4nt16-checker:   "total_site": [
+CHECK: params: test-4nt16-checker:     4,
+CHECK: params: test-4nt16-checker:     4,
+CHECK: params: test-4nt16-checker:     4,
+CHECK: params: test-4nt16-checker:     16
+CHECK: params: test-4nt16-checker:   ],
+CHECK: params: test-4nt16-checker:   "load_config_params": {
+CHECK: params: test-4nt16-checker:     "twist_boundary_at_boundary": [
+CHECK: params: test-4nt16-checker:       0.0,
+CHECK: params: test-4nt16-checker:       0.0,
+CHECK: params: test-4nt16-checker:       0.0,
+CHECK: params: test-4nt16-checker:       -0.5
+CHECK: params: test-4nt16-checker:     ]
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "mk_sample_gauge_field": {
+CHECK: params: test-4nt16-checker:     "rand_n_step": 2,
+CHECK: params: test-4nt16-checker:     "flow_n_step": 8,
+CHECK: params: test-4nt16-checker:     "hmc_n_traj": 5
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "quark_flavor_list": [
+CHECK: params: test-4nt16-checker:     "light",
+CHECK: params: test-4nt16-checker:     "strange"
+CHECK: params: test-4nt16-checker:   ],
+CHECK: params: test-4nt16-checker:   "quark_mass_list": [
+CHECK: params: test-4nt16-checker:     0.01,
+CHECK: params: test-4nt16-checker:     0.04
+CHECK: params: test-4nt16-checker:   ],
+CHECK: params: test-4nt16-checker:   "fermion_params": {
+CHECK: params: test-4nt16-checker:     "0": {
+CHECK: params: test-4nt16-checker:       "0": {
+CHECK: params: test-4nt16-checker:         "Ls": 8,
+CHECK: params: test-4nt16-checker:         "M5": 1.8,
+CHECK: params: test-4nt16-checker:         "b": 1.5,
+CHECK: params: test-4nt16-checker:         "c": 0.5,
+CHECK: params: test-4nt16-checker:         "boundary_phases": [
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0
+CHECK: params: test-4nt16-checker:         ],
+CHECK: params: test-4nt16-checker:         "mass": 0.01
+CHECK: params: test-4nt16-checker:       },
+CHECK: params: test-4nt16-checker:       "1": {
+CHECK: params: test-4nt16-checker:         "Ls": 8,
+CHECK: params: test-4nt16-checker:         "M5": 1.8,
+CHECK: params: test-4nt16-checker:         "b": 1.5,
+CHECK: params: test-4nt16-checker:         "c": 0.5,
+CHECK: params: test-4nt16-checker:         "boundary_phases": [
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0
+CHECK: params: test-4nt16-checker:         ],
+CHECK: params: test-4nt16-checker:         "mass": 0.01
+CHECK: params: test-4nt16-checker:       },
+CHECK: params: test-4nt16-checker:       "2": {
+CHECK: params: test-4nt16-checker:         "Ls": 8,
+CHECK: params: test-4nt16-checker:         "M5": 1.8,
+CHECK: params: test-4nt16-checker:         "b": 1.5,
+CHECK: params: test-4nt16-checker:         "c": 0.5,
+CHECK: params: test-4nt16-checker:         "boundary_phases": [
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0
+CHECK: params: test-4nt16-checker:         ],
+CHECK: params: test-4nt16-checker:         "mass": 0.01
+CHECK: params: test-4nt16-checker:       }
+CHECK: params: test-4nt16-checker:     },
+CHECK: params: test-4nt16-checker:     "1": {
+CHECK: params: test-4nt16-checker:       "0": {
+CHECK: params: test-4nt16-checker:         "Ls": 8,
+CHECK: params: test-4nt16-checker:         "M5": 1.8,
+CHECK: params: test-4nt16-checker:         "b": 1.5,
+CHECK: params: test-4nt16-checker:         "c": 0.5,
+CHECK: params: test-4nt16-checker:         "boundary_phases": [
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0
+CHECK: params: test-4nt16-checker:         ],
+CHECK: params: test-4nt16-checker:         "mass": 0.04
+CHECK: params: test-4nt16-checker:       },
+CHECK: params: test-4nt16-checker:       "1": {
+CHECK: params: test-4nt16-checker:         "Ls": 8,
+CHECK: params: test-4nt16-checker:         "M5": 1.8,
+CHECK: params: test-4nt16-checker:         "b": 1.5,
+CHECK: params: test-4nt16-checker:         "c": 0.5,
+CHECK: params: test-4nt16-checker:         "boundary_phases": [
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0
+CHECK: params: test-4nt16-checker:         ],
+CHECK: params: test-4nt16-checker:         "mass": 0.04
+CHECK: params: test-4nt16-checker:       },
+CHECK: params: test-4nt16-checker:       "2": {
+CHECK: params: test-4nt16-checker:         "Ls": 8,
+CHECK: params: test-4nt16-checker:         "M5": 1.8,
+CHECK: params: test-4nt16-checker:         "b": 1.5,
+CHECK: params: test-4nt16-checker:         "c": 0.5,
+CHECK: params: test-4nt16-checker:         "boundary_phases": [
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0,
+CHECK: params: test-4nt16-checker:           1.0
+CHECK: params: test-4nt16-checker:         ],
+CHECK: params: test-4nt16-checker:         "mass": 0.04
+CHECK: params: test-4nt16-checker:       }
+CHECK: params: test-4nt16-checker:     }
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "cg_params-0-0": {
+CHECK: params: test-4nt16-checker:     "maxiter": 10,
+CHECK: params: test-4nt16-checker:     "maxcycle": 1
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "cg_params-0-1": {
+CHECK: params: test-4nt16-checker:     "maxiter": 10,
+CHECK: params: test-4nt16-checker:     "maxcycle": 2
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "cg_params-0-2": {
+CHECK: params: test-4nt16-checker:     "maxiter": 10,
+CHECK: params: test-4nt16-checker:     "maxcycle": 3
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "cg_params-1-0": {
+CHECK: params: test-4nt16-checker:     "maxiter": 10,
+CHECK: params: test-4nt16-checker:     "maxcycle": 1
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "cg_params-1-1": {
+CHECK: params: test-4nt16-checker:     "maxiter": 10,
+CHECK: params: test-4nt16-checker:     "maxcycle": 2
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "cg_params-1-2": {
+CHECK: params: test-4nt16-checker:     "maxiter": 10,
+CHECK: params: test-4nt16-checker:     "maxcycle": 3
+CHECK: params: test-4nt16-checker:   },
+CHECK: params: test-4nt16-checker:   "measurement": {
+CHECK: params: test-4nt16-checker:     "wsrc_trunc_half_width": 3
+CHECK: params: test-4nt16-checker:   }
+CHECK: params: test-4nt16-checker: }
+CHECK: finished successfully.
