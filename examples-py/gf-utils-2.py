@@ -111,6 +111,23 @@ q.json_results_append("field_shift plaq", gf.plaq(), 1e-8)
 q.json_results_append("field_shift", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 
 gf @= gf0
+gf_sig_before = q.get_data_sig_arr(gf, q.RngState(), 3)
+gf_shifted = q.field_shift(
+    gf,
+    q.Coordinate(
+        [
+            1,
+            2,
+            3,
+            4,
+        ]
+    ),
+)
+gf_sig_after = q.get_data_sig_arr(gf, q.RngState(), 3)
+q.json_results_append("field_shift preserves input", np.array([gf_sig_before, gf_sig_after,]))
+assert np.all(gf_sig_before == gf_sig_after)
+
+gf @= gf0
 q.gf_local_stout_smear(
     gf,
     q.Coordinate(

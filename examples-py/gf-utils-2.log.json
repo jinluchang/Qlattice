@@ -232,6 +232,48 @@
   1e-08
  ],
  [
+  "field_shift preserves input",
+  {
+   "value": [
+    [
+     {
+      "real": -42.176066878272195,
+      "imag": 57.36634413504484,
+      "__extended_json_type__": "complex"
+     },
+     {
+      "real": 0.9577188345242451,
+      "imag": -4.831724332543143,
+      "__extended_json_type__": "complex"
+     },
+     {
+      "real": 47.744521494826444,
+      "imag": -17.38819333593171,
+      "__extended_json_type__": "complex"
+     }
+    ],
+    [
+     {
+      "real": -42.176066878272195,
+      "imag": 57.36634413504484,
+      "__extended_json_type__": "complex"
+     },
+     {
+      "real": 0.9577188345242451,
+      "imag": -4.831724332543143,
+      "__extended_json_type__": "complex"
+     },
+     {
+      "real": 47.744521494826444,
+      "imag": -17.38819333593171,
+      "__extended_json_type__": "complex"
+     }
+    ]
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
   "gf_local_stout_smear after block 4 plaq",
   0.09832334888915661,
   1e-08

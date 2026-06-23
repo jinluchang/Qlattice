@@ -219,9 +219,10 @@ def field_char_shift(FieldChar f, Coordinate shift):
 def field_shift(FieldBase f, Coordinate shift):
     cdef FieldChar fc = FieldChar()
     f.swap_cast(fc)
-    fc = field_char_shift(fc, shift)
+    cdef FieldChar fc_shifted = field_char_shift(fc, shift)
     sf = type(f)()
-    sf.swap_cast(fc)
+    sf.swap_cast(fc_shifted)
+    f.swap_cast(fc)
     return sf
 
 @q.timer
