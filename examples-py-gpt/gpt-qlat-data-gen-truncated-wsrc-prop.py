@@ -58,6 +58,7 @@ See Also
 
 import qlat_gpt as qg
 import qlat as q
+import numpy as np
 
 import qlat_scripts.v1 as qs
 
@@ -80,18 +81,15 @@ from qlat_scripts.v1 import (
 load_path_list[:] = [
     "results",
     "qcddata",
-    "/lustre/orion/lgt119/proj-shared/ljin/qcddata4",
-    "/lustre/orion/lgt119/proj-shared/ljin/qcddata5",
-    "/lustre20/volatile/qcdqedta/qcddata",
-    "/lustre20/volatile/decay0n2b/qcddata",
-    "/lustre20/volatile/pqpdf/ljin/qcddata",
-    "/lustre20/volatile/decay0n2b/qcddata/qcddata4",
-    "/lustre20/volatile/decay0n2b/qcddata/qcddata3",
-    "/lustre20/volatile/decay0n2b/qcddata/qcddata1",
-    "/data1/qcddata4",
-    "/data1/qcddata3",
-    "/data2/qcddata3-prop",
-    "/data1/qcddata1",
+    "qcddata1",
+    "qcddata2",
+    "qcddata3",
+    "qcddata4",
+    "qcddata5",
+    "qcddata6",
+    "qcddata7",
+    "qcddata8",
+    "qcddata9",
 ]
 
 ### ------
@@ -146,7 +144,9 @@ def mk_field_truncated(field, t_start, t_end):
     coor_node = geo.coor_node
     current_field = field.copy()
     current_xg_field = q.mk_xg_field(geo)
+    field_trunc_arr = np.asarray(field_trunc)
     for i_shift in range(n_shift):
+        current_field_arr = np.asarray(current_field)
         xg_arr = current_xg_field[:]
         for index in range(current_field.geo.local_volume):
             xg = xg_arr[index]
@@ -161,7 +161,7 @@ def mk_field_truncated(field, t_start, t_end):
             index_trunc = xl[0] + node_site_trunc[0] * (
                 xl[1] + node_site_trunc[1] * (xl[2] + node_site_trunc[2] * xl3)
             )
-            field_trunc.get_elems(index_trunc)[:] = current_field.get_elems(index)
+            field_trunc_arr[index_trunc] = current_field_arr[index]
         if i_shift < n_shift - 1:
             current_field = current_field.shift(shift)
             current_xg_field = current_xg_field.shift(shift)
@@ -198,6 +198,15 @@ def mk_gf_truncated(gf, t_center, t_half):
     t_start = (t_center - t_half) % t_size
     t_end = (t_center + t_half + 2) % t_size
     gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    geo_trunc = gf_trunc.geo
+    tslice_target_list = [2 * t_half, 2 * t_half + 1]
+    gf_arr = np.asarray(gf_trunc)
+    xg_arr = q.mk_xg_field(geo_trunc)[:]
+    for index in range(geo_trunc.local_volume):
+        xg = xg_arr[index]
+        xg_t = xg[3]
+        if xg_t in tslice_target_list:
+            gf_arr[index, 3, :, :] = 0
     return gf_trunc, t_start
 
 ### ------
