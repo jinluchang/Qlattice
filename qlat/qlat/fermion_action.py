@@ -1,11 +1,8 @@
 """
 Module ``qlat.fermion_action``
-==============================
-
-Fermion action parameterisation for Mobius and ZMobius domain-wall fermions.
-
-Documentation: ``docs/qlat/qlat_fermion_action.md``
-
+==============================\n
+Fermion action parameterisation for Mobius and ZMobius domain-wall fermions.\n
+Documentation: ``docs/qlat/qlat_fermion_action.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

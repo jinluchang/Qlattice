@@ -21,12 +21,9 @@
 
 """
 Module ``auto_contractor.runtime_distillation``
-=================================================
-
-Runtime imports for distillation-operator expression evaluation.
-
-Documentation: ``docs/auto-contractor/auto_contractor_runtime_distillation.md``
-
+=================================================\n
+Runtime imports for distillation-operator expression evaluation.\n
+Documentation: ``docs/auto-contractor/auto_contractor_runtime_distillation.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -21,13 +21,10 @@
 
 """
 Module ``auto_contractor.auto_fac_funcs``
-==========================================
-
+==========================================\n
 Re-exports modular arithmetic helper functions from ``qlat_utils`` for use
-in auto-contractor compiled expressions.
-
-Documentation: ``docs/auto-contractor/auto_contractor_auto_fac_funcs.md``
-
+in auto-contractor compiled expressions.\n
+Documentation: ``docs/auto-contractor/auto_contractor_auto_fac_funcs.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -21,14 +21,11 @@
 
 """
 Module ``auto_contractor.compile``
-===================================
-
+===================================\n
 Compiler for auto-contractor expressions.  Transforms Wick-contracted
 ``Expr`` objects into an optimised ``CExpr`` representation with common
-sub-expression elimination, then generates Python/Cython evaluation code.
-
-Documentation: ``docs/auto-contractor/auto_contractor_compile.md``
-
+sub-expression elimination, then generates Python/Cython evaluation code.\n
+Documentation: ``docs/auto-contractor/auto_contractor_compile.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

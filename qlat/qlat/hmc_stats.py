@@ -1,15 +1,11 @@
 """
 Module ``qlat.hmc_stats``
-==========================
-
-HMC diagnostic and analysis utilities.
-
+==========================\n
+HMC diagnostic and analysis utilities.\n
 Provides helpers for inspecting molecular-dynamics force magnitudes during
 HMC trajectories and for generating gauge-field information tables with
-Wilson-flow analysis.
-
-Documentation: ``docs/qlat/qlat_hmc_stats.md``
-
+Wilson-flow analysis.\n
+Documentation: ``docs/qlat/qlat_hmc_stats.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

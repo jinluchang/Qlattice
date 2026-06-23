@@ -1,13 +1,10 @@
 """
 Module ``qlat.field_double``
-==============================
-
+==============================\n
 Element-wise operations on real-double (``ElemTypeRealD``) lattice
 fields, including type conversion, comparison, inversion, and
-multiplication.
-
-Documentation: ``docs/qlat/qlat_field_double.md``
-
+multiplication.\n
+Documentation: ``docs/qlat/qlat_field_double.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

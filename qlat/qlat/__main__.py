@@ -1,13 +1,10 @@
 """
 Module ``qlat.__main__``
-=========================
-
+=========================\n
 Command-line interface entry point for qlat utilities. Dispatches
 subcommands for field inspection, eigen-system management, gauge fixing,
-and topology measurement.
-
-Documentation: ``docs/qlat/qlat_cli.md``
-
+and topology measurement.\n
+Documentation: ``docs/qlat/qlat_cli.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

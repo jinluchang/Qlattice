@@ -1,13 +1,10 @@
 """
 Module ``qlat.mat_mpi``
-============================
-
+============================\n
 Distributed NumPy array operations over MPI, providing a ``DistArray`` class
 that partitions the first dimension across MPI ranks and supports arithmetic,
-transpose, matmul, trace, and scatter/gather primitives.
-
-Documentation: ``docs/qlat/qlat_mat_mpi.md``
-
+transpose, matmul, trace, and scatter/gather primitives.\n
+Documentation: ``docs/qlat/qlat_mat_mpi.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

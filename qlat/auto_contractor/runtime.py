@@ -21,12 +21,9 @@
 
 """
 Module ``auto_contractor.runtime``
-====================================
-
-Runtime imports for compiled expression evaluation (propagators, matrix operations).
-
-Documentation: ``docs/auto-contractor/auto_contractor_runtime.md``
-
+====================================\n
+Runtime imports for compiled expression evaluation (propagators, matrix operations).\n
+Documentation: ``docs/auto-contractor/auto_contractor_runtime.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -1,13 +1,10 @@
 """
 Module ``qlat.qm_action``
-============================
-
+============================\n
 Quantum-mechanical action for Hamiltonian Monte Carlo (HMC) simulations,
 wrapping the C-level ``QMAction`` that defines a confining potential with
-configurable barrier strength and FV (finite-volume) parameters.
-
-Documentation: ``docs/qlat/qlat_qm_action.md``
-
+configurable barrier strength and FV (finite-volume) parameters.\n
+Documentation: ``docs/qlat/qlat_qm_action.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

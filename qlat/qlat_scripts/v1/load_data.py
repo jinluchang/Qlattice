@@ -1,11 +1,8 @@
 """
 Module ``qlat_scripts.v1.load_data``
-=====================================
-
-Propagator data loading and cache management for auto-contractor evaluations.
-
-Documentation: ``docs/qlat-scripts-v1/qlat_scripts_load_data.md``
-
+=====================================\n
+Propagator data loading and cache management for auto-contractor evaluations.\n
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_load_data.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

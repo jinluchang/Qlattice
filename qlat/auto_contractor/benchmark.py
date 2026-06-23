@@ -21,13 +21,10 @@
 
 """
 Module ``auto_contractor.benchmark``
-=====================================
-
+=====================================\n
 Benchmarking utilities for measuring the performance of matrix multiplication
-and trace operations used by the auto-contractor evaluation pipeline.
-
-Documentation: ``docs/auto-contractor/auto_contractor_benchmark.md``
-
+and trace operations used by the auto-contractor evaluation pipeline.\n
+Documentation: ``docs/auto-contractor/auto_contractor_benchmark.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

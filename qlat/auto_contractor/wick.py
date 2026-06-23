@@ -21,12 +21,9 @@
 
 """
 Module ``auto_contractor.wick``
-=================================
-
-Wick contraction engine for quark-level operators into propagator traces.
-
-Documentation: ``docs/auto-contractor/auto_contractor_wick.md``
-
+=================================\n
+Wick contraction engine for quark-level operators into propagator traces.\n
+Documentation: ``docs/auto-contractor/auto_contractor_wick.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

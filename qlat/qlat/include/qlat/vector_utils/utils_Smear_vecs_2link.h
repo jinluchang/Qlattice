@@ -431,8 +431,7 @@ void smear_propagator_gwu_convension_2shift(
   Ty* src = (Ty*)qlat::get_data(prop).data();
   move_index mv_civ;
   Int flag = 0;
-  const Int mem_GPU  =
-      check_mem_type(src) != MemType::Cpu ? 1 : 0;
+  const Int mem_GPU = check_mem_type(src) != MemType::Cpu ? 1 : 0;
   const MemType gmem = mem_GPU == 1 ? MemType::Acc : MemType::Cpu;
   flag = 0;
   mv_civ.dojob(src, src, 1, 12 * 12, Nvol, flag, 1, mem_GPU);

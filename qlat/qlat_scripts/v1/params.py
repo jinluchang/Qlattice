@@ -1,11 +1,8 @@
 """
 Module ``qlat_scripts.v1.params``
-==================================
-
-Ensemble-specific simulation parameters: selections, AMA probabilities, smearing, and meson observables.
-
-Documentation: ``docs/qlat-scripts-v1/qlat_scripts_params.md``
-
+==================================\n
+Ensemble-specific simulation parameters: selections, AMA probabilities, smearing, and meson observables.\n
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_params.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

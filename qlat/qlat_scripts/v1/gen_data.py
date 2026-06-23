@@ -1,11 +1,8 @@
 """
 Module ``qlat_scripts.v1.gen_data``
-====================================
-
-Propagator generation and field selection utilities for lattice QCD data production.
-
-Documentation: ``docs/qlat-scripts-v1/qlat_scripts_gen_data.md``
-
+====================================\n
+Propagator generation and field selection utilities for lattice QCD data production.\n
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_gen_data.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

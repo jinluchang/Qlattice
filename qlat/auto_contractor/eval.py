@@ -21,14 +21,11 @@
 
 """
 Module ``auto_contractor.eval``
-================================
-
+================================\n
 Evaluation engine for compiled auto-contractor expressions.  Provides the
 ``CCExpr`` wrapper, caching and compilation of ``CExpr`` objects, the main
-``eval_cexpr`` entry point, and benchmarking utilities.
-
-Documentation: ``docs/auto-contractor/auto_contractor_eval.md``
-
+``eval_cexpr`` entry point, and benchmarking utilities.\n
+Documentation: ``docs/auto-contractor/auto_contractor_eval.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -21,12 +21,9 @@
 
 """
 Module ``auto_contractor.operators``
-======================================
-
-Hadronic operator construction for mesons, baryons, and four-quark operators.
-
-Documentation: ``docs/auto-contractor/auto_contractor_operators.md``
-
+======================================\n
+Hadronic operator construction for mesons, baryons, and four-quark operators.\n
+Documentation: ``docs/auto-contractor/auto_contractor_operators.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

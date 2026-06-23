@@ -1,16 +1,12 @@
 """
 Module ``qlat.inverter``
-=========================
-
-Fermion-matrix inverter framework for domain-wall fermions.
-
+=========================\n
+Fermion-matrix inverter framework for domain-wall fermions.\n
 Provides a hierarchy of ``Inverter`` classes that apply the inverse of the
 Dirac operator to propagator sources. Concrete implementations include
 analytic free-field inversion, CG-based domain-wall inversion via C/C++
-backends, and a gauge-transform wrapper that inverts in a different gauge.
-
-Documentation: ``docs/qlat/qlat_inverter.md``
-
+backends, and a gauge-transform wrapper that inverts in a different gauge.\n
+Documentation: ``docs/qlat/qlat_inverter.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

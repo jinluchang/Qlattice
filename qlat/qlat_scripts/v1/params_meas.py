@@ -1,11 +1,8 @@
 """
 Module ``qlat_scripts.v1.params_meas``
-=======================================
-
-Physical measurement parameters: lattice spacing, meson masses, and renormalization constants.
-
-Documentation: ``docs/qlat-scripts-v1/qlat_scripts_params_meas.md``
-
+=======================================\n
+Physical measurement parameters: lattice spacing, meson masses, and renormalization constants.\n
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_params_meas.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

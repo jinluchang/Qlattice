@@ -244,7 +244,11 @@ cdef class Field{{name}}(FieldBase):
 
     def get_elems_xg(self, xg_arr):
         """
-        xg_arr can be xg_arr, xg_list, or xg
+        xg_arr can be xg_arr, xg_list, or xg.
+
+        NOTE: ``xg_arr`` must be identical on all MPI processes (collective
+        operation). Passing different values on different ranks produces
+        undefined results.
         """
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
         cdef SelectedPoints{{name}} sp = SelectedPoints{{name}}(psel, self.multiplicity)
@@ -253,7 +257,11 @@ cdef class Field{{name}}(FieldBase):
 
     def set_elems_xg(self, xg_arr, val):
         """
-        xg_arr can be xg_arr, xg_list, or xg
+        xg_arr can be xg_arr, xg_list, or xg.
+
+        NOTE: ``xg_arr`` must be identical on all MPI processes (collective
+        operation). Passing different values on different ranks produces
+        undefined results.
         """
         cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
@@ -263,7 +271,11 @@ cdef class Field{{name}}(FieldBase):
 
     def get_elem_xg(self, xg_arr, cc.Int m):
         """
-        xg_arr can be xg_arr, xg_list, or xg
+        xg_arr can be xg_arr, xg_list, or xg.
+
+        NOTE: ``xg_arr`` must be identical on all MPI processes (collective
+        operation). Passing different values on different ranks produces
+        undefined results.
         """
         cdef Geometry geo = self.geo
         cdef PointsSelection psel = PointsSelection(self.total_site, xg_arr)
@@ -273,7 +285,11 @@ cdef class Field{{name}}(FieldBase):
 
     def set_elem_xg(self, xg_arr, cc.Int m, val):
         """
-        xg_arr can be xg_arr, xg_list, or xg
+        xg_arr can be xg_arr, xg_list, or xg.
+
+        NOTE: ``xg_arr`` must be identical on all MPI processes (collective
+        operation). Passing different values on different ranks produces
+        undefined results.
         """
         cdef Geometry geo = self.geo
         cdef cc.Int multiplicity = self.multiplicity

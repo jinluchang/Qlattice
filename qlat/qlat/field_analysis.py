@@ -1,12 +1,9 @@
 """
 Module ``qlat.field_analysis``
-==============================
-
+==============================\n
 Field analysis utilities: smearing, sphere summation, momentum-space
-convolution, and Fourier-transform-based operations on lattice fields.
-
-Documentation: ``docs/qlat/qlat_field_analysis.md``
-
+convolution, and Fourier-transform-based operations on lattice fields.\n
+Documentation: ``docs/qlat/qlat_field_analysis.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

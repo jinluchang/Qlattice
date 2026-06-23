@@ -1,13 +1,10 @@
 """
 Module ``qlat.mpi_utils``
-==========================
-
+==========================\n
 MPI initialisation, teardown, and data-distribution helpers for qlat.
 Wraps ``mpi4py`` to set up the Cartesian node grid expected by the C++
-runtime and provides ``get_mpi_chunk`` for splitting work across ranks.
-
-Documentation: ``docs/qlat/qlat_mpi_utils.md``
-
+runtime and provides ``get_mpi_chunk`` for splitting work across ranks.\n
+Documentation: ``docs/qlat/qlat_mpi_utils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

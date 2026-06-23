@@ -21,14 +21,11 @@
 
 """
 Module ``auto_contractor.distillation_mat_op``
-===============================================
-
+===============================================\n
 NumPy-based matrix operations for the distillation framework.  Provides
 einsum-cached multiplication and trace routines for Wilson matrices,
-spin matrices, and colour matrices with optimised contraction paths.
-
-Documentation: ``docs/auto-contractor/auto_contractor_distillation_mat_op.md``
-
+spin matrices, and colour matrices with optimised contraction paths.\n
+Documentation: ``docs/auto-contractor/auto_contractor_distillation_mat_op.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

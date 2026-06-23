@@ -135,13 +135,14 @@ def mk_field_truncated(field, t_start, t_end):
     shift = q.Coordinate([0, 0, 0, node_site_t])
     node_site_trunc = geo_trunc.node_site
     coor_node = geo.coor_node
-    current_field = field
+    current_field = field.copy()
     current_xg_field = q.mk_xg_field(geo)
     for i_shift in range(n_shift):
         xg_arr = current_xg_field[:]
         for index in range(current_field.geo.local_volume):
             xg = xg_arr[index]
-            t_local = (xg[3] - t_offset) % t_size
+            t_orig = (xg[3] - i_shift * node_site_t) % t_size
+            t_local = (t_orig - t_offset) % t_size
             if t_local >= t_size_trunc:
                 continue
             xl = [xg[i] - coor_node[i] * node_site_trunc[i] for i in range(3)]
@@ -153,8 +154,8 @@ def mk_field_truncated(field, t_start, t_end):
             )
             field_trunc.get_elems(index_trunc)[:] = current_field.get_elems(index)
         if i_shift < n_shift - 1:
-            current_field = q.field_shift(current_field, shift)
-            current_xg_field = q.field_shift(current_xg_field, shift)
+            current_field = current_field.shift(shift)
+            current_xg_field = current_xg_field.shift(shift)
     return field_trunc
 
 def mk_gf_truncated(gf, t_center, t_half):

@@ -1,13 +1,10 @@
 """
 Module ``qlat.contract_field``
-===============================
-
+===============================\n
 Field-level contraction routines for computing the conserved-point
 hadronic vacuum polarization tensor with all 16 spin-color
-polarization combinations at every lattice site.
-
-Documentation: ``docs/qlat/qlat_contract_field.md``
-
+polarization combinations at every lattice site.\n
+Documentation: ``docs/qlat/qlat_contract_field.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

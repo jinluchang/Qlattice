@@ -1,13 +1,10 @@
 """
 Module ``qlat.scalar_action``
-==============================
-
+==============================\n
 Scalar field action for lattice HMC simulations, providing force evaluation,
 field evolution, and Hamiltonian routines used by the molecular-dynamics
-integrator.
-
-Documentation: ``docs/qlat/qlat_scalar_action.md``
-
+integrator.\n
+Documentation: ``docs/qlat/qlat_scalar_action.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -21,12 +21,9 @@
 
 """
 Module ``auto_contractor.expr_arithmetic``
-===========================================
-
-Symbolic arithmetic for expression coefficients using sympy.
-
-Documentation: ``docs/auto-contractor/auto_contractor_expr_arithmetic.md``
-
+===========================================\n
+Symbolic arithmetic for expression coefficients using sympy.\n
+Documentation: ``docs/auto-contractor/auto_contractor_expr_arithmetic.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

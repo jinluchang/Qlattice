@@ -1,13 +1,10 @@
 """
 Module ``qlat.psel_split``
-===========================
-
+===========================\n
 Split a ``PointsSelection`` into two (or more) subsets while maximising the
 minimum pairwise separation between points that end up in the same subset.
-Uses a spatial tree to accelerate nearest-neighbour queries.
-
-Documentation: ``docs/qlat/qlat_psel_split.md``
-
+Uses a spatial tree to accelerate nearest-neighbour queries.\n
+Documentation: ``docs/qlat/qlat_psel_split.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

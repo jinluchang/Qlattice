@@ -1,11 +1,8 @@
 """
 Module ``qlat_scripts.v1.auto_check``
-======================================
-
-Checker routines for wall-source and point-source propagator validation.
-
-Documentation: ``docs/qlat-scripts-v1/qlat_scripts_auto_check.md``
-
+======================================\n
+Checker routines for wall-source and point-source propagator validation.\n
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_auto_check.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

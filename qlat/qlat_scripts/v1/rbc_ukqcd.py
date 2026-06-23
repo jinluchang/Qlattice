@@ -1,11 +1,8 @@
 """
 Module ``qlat_scripts.v1.rbc_ukqcd``
-=====================================
-
-Fermion action setup, eigensolvers, and inverter construction for RBC/UKQCD ensembles.
-
-Documentation: ``docs/qlat-scripts-v1/qlat_scripts_rbc_ukqcd.md``
-
+=====================================\n
+Fermion action setup, eigensolvers, and inverter construction for RBC/UKQCD ensembles.\n
+Documentation: ``docs/qlat-scripts-v1/qlat_scripts_rbc_ukqcd.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

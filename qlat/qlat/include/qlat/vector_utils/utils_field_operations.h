@@ -119,7 +119,7 @@ void copy_fields(qlat::Field<T1>& pr, const qlat::Field<T2>& p0)
 
 template <class T1, class T2, int c>
 void copy_field_vec(std::vector<qlat::FieldM<T1, c>>& pr,
-                 const std::vector<qlat::FieldM<T2, c>>& p0)
+                    const std::vector<qlat::FieldM<T2, c>>& p0)
 {
   if (pr.size() != p0.size()) {
     pr.resize(0);

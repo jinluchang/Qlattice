@@ -194,7 +194,7 @@ struct quda_inverter {
   // 0 for wilson, clover, 1 for stagger
   Int fermion_type;
   // stag need phase always by default
-  //bool gauge_with_phase;
+  // bool gauge_with_phase;
   // int use_eigen_pc;
   //
   /*  TODO add redeflate for QUDA
@@ -228,7 +228,8 @@ struct quda_inverter {
   //
   quda_inverter();
   inline void init(const Geometry& geo_, QudaTboundary t_boundary);
-  quda_inverter(const Geometry& geo_, QudaTboundary t_boundary){
+  quda_inverter(const Geometry& geo_, QudaTboundary t_boundary)
+  {
     init(geo_, t_boundary);
   };
   //
@@ -236,21 +237,24 @@ struct quda_inverter {
   // control of links, twist, eigens
   inline void setup_link_p(qlat::ComplexD* quda_gf,
                            const Int apply_stag_phase = 0,
-                           const Int force_phase = 0, const QBOOL twist_link = QFALSE);
+                           const Int force_phase = 0,
+                           const QBOOL twist_link = QFALSE);
   inline void setup_link(qlat::vector<qlat::ComplexD>& quda_gf,
                          const Int apply_stag_phase = 0,
-                         const Int force_phase = 0, const QBOOL twist_link = QFALSE);
+                         const Int force_phase = 0,
+                         const QBOOL twist_link = QFALSE);
   inline void gauge_fix(qlat::ComplexD* quda_gf, Int gf_gauge_dir = 3,
                         Int gf_maxiter = 10000, double gf_tolerance = 1e-6,
                         Int fix_type = 0);
   // swap to twist links and eigen if setup
   inline void swap_to_twist(const bool twist);
   //
-  inline bool have_twist(){
-    if(quda_gf_default_twist.size() == 0){
+  inline bool have_twist()
+  {
+    if (quda_gf_default_twist.size() == 0) {
       return false;
-    }else{
-      return true ;
+    } else {
+      return true;
     }
   }
   //
@@ -474,67 +478,67 @@ quda_inverter::quda_inverter()
 {
   initialized = false;
   //
-  //t_boundary_default = QUDA_ANTI_PERIODIC_T;
-  //qinv_twist_link = QFALSE;
-  //qinv_use_recon  = true ;
-  //clover_alloc = false;
-  //gsrc = NULL;
-  //gres = NULL;
-  //gsrcH = NULL;
-  //gresH = NULL;
-  //gtmp1D = NULL;
-  //gtmp2D = NULL;
-  //gtmp3D = NULL;
-  //gtmp4D = NULL;
-  //gtmp5D = NULL;
-  //gtmp1F = NULL;
-  //gtmp2F = NULL;
-  //gadd = NULL;
-  //gtmp0 = NULL;
-  //gtmp1 = NULL;
-  //gtmp2 = NULL;
-  //mat = NULL;
-  //mat_pc = NULL;
-  //mat_Mdag = NULL;
-  //mat_MMdag = NULL;
-  //mat_E = NULL;
-  //mat_MdagM = NULL;
-  //dirac = NULL;
-  //dirac_pc = NULL;
-  //dirac_pc_odd = NULL;
+  // t_boundary_default = QUDA_ANTI_PERIODIC_T;
+  // qinv_twist_link = QFALSE;
+  // qinv_use_recon  = true ;
+  // clover_alloc = false;
+  // gsrc = NULL;
+  // gres = NULL;
+  // gsrcH = NULL;
+  // gresH = NULL;
+  // gtmp1D = NULL;
+  // gtmp2D = NULL;
+  // gtmp3D = NULL;
+  // gtmp4D = NULL;
+  // gtmp5D = NULL;
+  // gtmp1F = NULL;
+  // gtmp2F = NULL;
+  // gadd = NULL;
+  // gtmp0 = NULL;
+  // gtmp1 = NULL;
+  // gtmp2 = NULL;
+  // mat = NULL;
+  // mat_pc = NULL;
+  // mat_Mdag = NULL;
+  // mat_MMdag = NULL;
+  // mat_E = NULL;
+  // mat_MdagM = NULL;
+  // dirac = NULL;
+  // dirac_pc = NULL;
+  // dirac_pc_odd = NULL;
   ////
-  //split_dirac_pc = NULL;
-  //split_comm_buff = false;
-  //split_prec_double = true;
+  // split_dirac_pc = NULL;
+  // split_comm_buff = false;
+  // split_prec_double = true;
   ////
-  //eigen_with_nvec = false;
+  // eigen_with_nvec = false;
   ////
   //// df_preconditioner = NULL;
   //// nvec = 0;
   //// use_eigen_pc = 0;
-  //check_residue = 0;
+  // check_residue = 0;
   ////
-  //spinor_site_size = 0;
-  //max_src_qinv =
-  //    qlat::get_env_long_default(std::string("qlat_quda_stag_mrh"), 9);
+  // spinor_site_size = 0;
+  // max_src_qinv =
+  //     qlat::get_env_long_default(std::string("qlat_quda_stag_mrh"), 9);
   ////gauge_with_phase = false;
-  //io_rotate_bfac = false;
+  // io_rotate_bfac = false;
   ////
-  //mass_mat = -1000000;
+  // mass_mat = -1000000;
   ///// mass_eig = -1000000;
-  //mass_value = -100000;
-  //inv_time = 0.0;
-  //inv_iter = 0;
-  //inv_gflops = 0.0;
+  // mass_value = -100000;
+  // inv_time = 0.0;
+  // inv_iter = 0;
+  // inv_gflops = 0.0;
   ////
-  //quda_verbos = 0;
-  //std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
-  //if (val != "") {
-  //  quda_verbos = stringtonum(val);
-  //}
-  //restart_cg = qlat::get_env_long_default(std::string("qlat_restart_cg"), 0);
-  //restart_cg_iter =
-  //    qlat::get_env_long_default(std::string("qlat_restart_cg_iter"), 200);
+  // quda_verbos = 0;
+  // std::string val = qlat::get_env(std::string("qlat_quda_verbos"));
+  // if (val != "") {
+  //   quda_verbos = stringtonum(val);
+  // }
+  // restart_cg = qlat::get_env_long_default(std::string("qlat_restart_cg"), 0);
+  // restart_cg_iter =
+  //     qlat::get_env_long_default(std::string("qlat_restart_cg_iter"), 200);
 }
 
 inline void quda_inverter::init(const Geometry& geo_, QudaTboundary t_boundary)
@@ -559,7 +563,7 @@ inline void quda_inverter::init(const Geometry& geo_, QudaTboundary t_boundary)
   //
   t_boundary_default = t_boundary;
   qinv_twist_link = QFALSE;
-  qinv_use_recon  = true ;
+  qinv_use_recon = true;
   setup_gauge_param(t_boundary);
   //
   // add_high = 1;
@@ -625,7 +629,7 @@ inline void quda_inverter::init(const Geometry& geo_, QudaTboundary t_boundary)
   spinor_site_size = 0;
   max_src_qinv =
       qlat::get_env_long_default(std::string("qlat_quda_stag_mrh"), 9);
-  //gauge_with_phase = false;
+  // gauge_with_phase = false;
   io_rotate_bfac = false;
   //
   mass_mat = -1000000;
@@ -771,12 +775,12 @@ inline void quda_inverter::setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1)
       eigen_with_nvec = true;
     }
   }
-  if(qinv_twist_link == QTRUE){
+  if (qinv_twist_link == QTRUE) {
     eigenL_twist = eigenL;
     eigen_precL_twist = eigen_precL;
     eigen_with_nvec_twist = eigen_with_nvec;
     eigen_with_nvecL_twist = eigen_with_nvecL;
-  }else{
+  } else {
     eigenL_default = eigenL;
     eigen_precL_default = eigen_precL;
     eigen_with_nvec_default = eigen_with_nvec;
@@ -786,12 +790,13 @@ inline void quda_inverter::setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1)
 
 inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
                                         const Int apply_stag_phase,
-                                        const Int force_phase, const QBOOL twist_link)
+                                        const Int force_phase,
+                                        const QBOOL twist_link)
 {
   TIMER("setup_link");
   /////load gauge to quda GPU default position
   freeGaugeQuda();
-  if(twist_link == QTRUE){
+  if (twist_link == QTRUE) {
     // twisted boundary have not support on RECONSTRUCT yet in QUA
     qinv_twist_link = QTRUE;
     gauge_param.reconstruct = QUDA_RECONSTRUCT_NO;
@@ -801,13 +806,13 @@ inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
     eigen_precL = eigen_precL_twist;
     eigen_with_nvec = eigen_with_nvec_twist;
     eigen_with_nvecL = eigen_with_nvecL_twist;
-  }else{
+  } else {
     qinv_twist_link = QFALSE;
     // in case we want to have all anti-periodic boundary
-    if(qinv_use_recon){
+    if (qinv_use_recon) {
       gauge_param.reconstruct = QUDA_RECONSTRUCT_13;
       gauge_param.reconstruct_sloppy = QUDA_RECONSTRUCT_13;
-    }else{
+    } else {
       gauge_param.reconstruct = QUDA_RECONSTRUCT_NO;
       gauge_param.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
     }
@@ -822,19 +827,19 @@ inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
   // * 9, QMGPU, 64); qmessage("gauge norm %.8e %.8e \n",  res.real(),
   // res.imag());
   //}
-  //if (apply_stag_phase == 1 and
+  // if (apply_stag_phase == 1 and
   //    (gauge_with_phase == false or force_phase == 1))
-  // duplicased 
-  if (apply_stag_phase == 1 or force_phase == 1 ) {
+  // duplicased
+  if (apply_stag_phase == 1 or force_phase == 1) {
     applyGaugeFieldScaling_long((qlat::ComplexD*)quda_gf, V / 2, &gauge_param,
                                 QUDA_STAGGERED_DSLASH);
     loadGaugeQuda((void*)quda_gf, &gauge_param);
-    //gauge_with_phase = true;
+    // gauge_with_phase = true;
   } else {
     loadGaugeQuda((void*)quda_gf, &gauge_param);
     // print_plaq();
   }
-  if (qinv_twist_link == QTRUE){
+  if (qinv_twist_link == QTRUE) {
     if (quda_gf != quda_gf_default_twist.data()) {
       if (quda_gf_default_twist.size() != V * 3 * 3 * 4) {
         quda_gf_default_twist.set_mem_type(MemType::Acc);
@@ -842,7 +847,7 @@ inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
       }
       cpy_mem(&quda_gf_default_twist[0], quda_gf, V * 3 * 3 * 4);
     }
-  }else{
+  } else {
     if (quda_gf != quda_gf_default.data()) {
       if (quda_gf_default.size() != V * 3 * 3 * 4) {
         quda_gf_default.set_mem_type(MemType::Acc);
@@ -852,16 +857,16 @@ inline void quda_inverter::setup_link_p(qlat::ComplexD* quda_gf,
       cpy_mem(&quda_gf_default[0], quda_gf, V * 3 * 3 * 4);
     }
   }
-  //if (gauge_with_phase == false) {
-  //  errorQuda("Quda stagger need link phases! \n");
-  //}
-  // print_plaq();
+  // if (gauge_with_phase == false) {
+  //   errorQuda("Quda stagger need link phases! \n");
+  // }
+  //  print_plaq();
 }
-
 
 inline void quda_inverter::setup_link(qlat::vector<qlat::ComplexD>& quda_gf,
                                       const Int apply_stag_phase,
-                                      const Int force_phase, const QBOOL twist_link)
+                                      const Int force_phase,
+                                      const QBOOL twist_link)
 {
   // to CPU to avoid quda error
   const MemType gmem = quda_gf.mem_type;
@@ -880,23 +885,24 @@ inline void quda_inverter::setup_link(qlat::vector<qlat::ComplexD>& quda_gf,
   }
 }
 
-inline void quda_inverter::swap_to_twist(const bool twist){
-  if(have_twist()){
+inline void quda_inverter::swap_to_twist(const bool twist)
+{
+  if (have_twist()) {
     TIMER("swap_to_twist");
-    if( twist and qinv_twist_link == QFALSE){
+    if (twist and qinv_twist_link == QFALSE) {
       qinv_twist_link = QTRUE;
       setup_inv_param_prec(prec_type_check, true);
-      //setup_link_p(&quda_gf_default_twist[0], 0, 0, QTRUE);
-      //setup_inv_param_prec(prec_type_check, true);
+      // setup_link_p(&quda_gf_default_twist[0], 0, 0, QTRUE);
+      // setup_inv_param_prec(prec_type_check, true);
     }
     //
-    if(!twist and qinv_twist_link == QTRUE ){
+    if (!twist and qinv_twist_link == QTRUE) {
       Qassert(quda_gf_default.size() != 0);
       qinv_twist_link = QFALSE;
       setup_inv_param_prec(prec_type_check, true);
-      //setup_link_p(&quda_gf_default[0], 0, 0, QFALSE);
+      // setup_link_p(&quda_gf_default[0], 0, 0, QFALSE);
     }
-    //setup_inv_param_prec(prec_type_check, true);
+    // setup_inv_param_prec(prec_type_check, true);
   }
   // do nothing if twist not setup
 }
@@ -1814,8 +1820,9 @@ inline void quda_inverter::setup_inv_param_prec(Int prec_type,
   //   inv_param.cuda_prec_refinement_sloppy   = QUDA_HALF_PRECISION;
   // }
   //
-  if (reload_link_default){
-    qlat::vector<qlat::ComplexD>& quda_gf_buf = qinv_twist_link == QTRUE ? quda_gf_default_twist : quda_gf_default;
+  if (reload_link_default) {
+    qlat::vector<qlat::ComplexD>& quda_gf_buf =
+        qinv_twist_link == QTRUE ? quda_gf_default_twist : quda_gf_default;
     if (gauge_param.cuda_prec != inv_param.cuda_prec or
         gauge_param.cuda_prec_sloppy != inv_param.cuda_prec_sloppy or
         force_reload) {

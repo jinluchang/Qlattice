@@ -1,63 +1,37 @@
 """
 Module ``qlat.instanton_map``
-=============================
-
+=============================\n
 Instanton detection and topological charge mapping using plaquette-dependent
-Wilson flow.
-
-Documentation: ``docs/qlat/qlat_instanton_map.md``
-
-.. note:: Update the documentation when updating this source file.
-
+Wilson flow.\n
+Documentation: ``docs/qlat/qlat_instanton_map.md``\n
+.. note:: Update the documentation when updating this source file.\n
 Plaq dependent flow
---------------------
-
-Standard Wilson flow action:
-
-.. math::
-
+--------------------\n
+Standard Wilson flow action:\n
+.. math::\n
     S_{\\text{Wilson}} = \\frac{\\beta}{2}\\sum_{x,\\mu,\\nu}
-    \\Big(1 - \\frac{1}{3}\\text{Re Tr}\\, U_{\\mu,\\nu}\\Big)
-
-with :math:`\\beta = 3`.
-
-Modified flow to make the slope depend on the plaq value:
-
-.. math::
-
+    \\Big(1 - \\frac{1}{3}\\text{Re Tr}\\, U_{\\mu,\\nu}\\Big)\n
+with :math:`\\beta = 3`.\n
+Modified flow to make the slope depend on the plaq value:\n
+.. math::\n
     S_f = -\\frac{\\beta}{2}\\sum_{x,\\mu,\\nu}
-    f\\Big(\\frac{1}{3}\\text{Re Tr}\\, U_{\\mu,\\nu}\\Big)
-
-Freeze flow (fixes topological charge):
-
-.. math::
-
-    \\frac{d}{dp}f_{\\text{Freeze}}(p) = 1 - p
-
-Shrink flow (enhances topological tunnelling):
-
-.. math::
-
+    f\\Big(\\frac{1}{3}\\text{Re Tr}\\, U_{\\mu,\\nu}\\Big)\n
+Freeze flow (fixes topological charge):\n
+.. math::\n
+    \\frac{d}{dp}f_{\\text{Freeze}}(p) = 1 - p\n
+Shrink flow (enhances topological tunnelling):\n
+.. math::\n
     \\frac{d}{dp}f_{\\text{Shrink}}(p) =
-    \\frac{\\epsilon}{1 - p + \\epsilon} + b
-
-with :math:`\\epsilon = 0.005`, :math:`b = 0.5`.
-
-Localize flow (shrinks large instantons, prevents small instanton tunnelling):
-
-.. math::
-
+    \\frac{\\epsilon}{1 - p + \\epsilon} + b\n
+with :math:`\\epsilon = 0.005`, :math:`b = 0.5`.\n
+Localize flow (shrinks large instantons, prevents small instanton tunnelling):\n
+.. math::\n
     \\frac{d}{dp}f_{\\text{Localize}}(p) =
-    \\frac{\\epsilon}{1 - p + \\epsilon} + b(1 - p)
-
-with :math:`\\epsilon = 0.002`, :math:`b = 50`.
-
-Preserve flow (mimics Wilson flow, prevents small instanton tunnelling):
-
-.. math::
-
-    \\frac{d}{dp}f_{\\text{Preserve}}(p) = \\max(1,\\, b(1 - p))
-
+    \\frac{\\epsilon}{1 - p + \\epsilon} + b(1 - p)\n
+with :math:`\\epsilon = 0.002`, :math:`b = 50`.\n
+Preserve flow (mimics Wilson flow, prevents small instanton tunnelling):\n
+.. math::\n
+    \\frac{d}{dp}f_{\\text{Preserve}}(p) = \\max(1,\\, b(1 - p))\n
 with :math:`b = 50`.
 """
 

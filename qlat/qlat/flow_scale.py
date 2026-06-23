@@ -1,11 +1,8 @@
 """
 Module ``qlat.flow_scale``
-==========================
-
-Generalized Wilson flow for spatial flow and additional flow observables for lattice scale determination.
-
-Documentation: ``docs/qlat/qlat_flow_scale.md``
-
+==========================\n
+Generalized Wilson flow for spatial flow and additional flow observables for lattice scale determination.\n
+Documentation: ``docs/qlat/qlat_flow_scale.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
