@@ -93,6 +93,7 @@ load_path_list[:] = [
 
 ### ------
 
+@q.timer
 def mk_field_truncated(field, t_start, t_end):
     """
     Create a field truncated in the time direction.\n
@@ -166,6 +167,7 @@ def mk_field_truncated(field, t_start, t_end):
             current_xg_field = current_xg_field.shift(shift)
     return field_trunc
 
+@q.timer
 def mk_gf_truncated(gf, t_center, t_half):
     """
     Create a gauge field truncated in the time direction.\n
@@ -208,9 +210,39 @@ def mk_gf_truncated(gf, t_center, t_half):
             gf_arr[index, 3, :, :] = 0
     return gf_trunc, t_start
 
+@q.timer
+def mk_gt_truncated(gt, t_center, t_half):
+    """
+    Create a gauge transform field truncated in the time direction.\n
+    Extracts a sub-volume of the gauge transform centered at ``t_center``
+    with half-width ``t_half``. The truncated geometry has the same spatial
+    extent as the original but with time extent ``2 * t_half + 1``.\n
+    Parameters
+    ----------
+    gt : q.GaugeTransform
+        The full gauge transform field.
+    t_center : int
+        Center time slice of the truncated region (in the original geometry).
+    t_half : int
+        Half-width of the truncated region.\n
+    Returns
+    -------
+    gt_trunc : q.GaugeTransform
+        Gauge transform on the truncated geometry.
+    t_offset : int
+        The global time index corresponding to time index 0 of the truncated
+        geometry. ``t_offset = (t_center - t_half) % t_size``.
+    """
+    total_site = gt.geo.total_site
+    t_size = total_site[3]
+    t_start = (t_center - t_half) % t_size
+    t_end = (t_center + t_half + 2) % t_size
+    gt_trunc = mk_field_truncated(gt, t_start, t_end)
+    return gt_trunc, t_start
+
 ### ------
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_prop_wsrc_truncated_save(
     job_tag, traj, *, get_gf, get_gt, inv_type
 ):
@@ -229,6 +261,7 @@ def run_prop_wsrc_truncated_save(
     )
     tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
     gf = get_gf()
+    gt = get_gt()
     inv_acc = 0
     acc_tag = f"accuracy={inv_acc}"
     path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}"
@@ -240,12 +273,18 @@ def run_prop_wsrc_truncated_save(
         if has_file:
             continue
         gf_trunc, t_offset = mk_gf_truncated(gf, tslice, t_half)
+        gt_trunc, t_offset_gt = mk_gt_truncated(gt, tslice, t_half)
+        assert t_offset == t_offset_gt
         geo_trunc = gf_trunc.geo
         t_src_trunc = t_half
-        inv_trunc = qs.get_inv(gf_trunc, job_tag, inv_type, inv_acc, gt=None, eig=None)
+        inv_trunc = qs.get_inv(gf_trunc, job_tag, inv_type, inv_acc, gt=gt_trunc, eig=None)
         src = q.mk_wall_src(geo_trunc, t_src_trunc)
         sol_trunc = inv_trunc * src
         ps_prop_ws = sol_trunc.glb_sum_tslice()
+        q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
+        q.json_results_append(f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState()))
+        q.json_results_append(f"ps_prop_ws qnorm {tag}", ps_prop_ws.qnorm(), 1e-6)
+        q.json_results_append(f"ps_prop_ws sig {tag}", q.get_data_sig(ps_prop_ws, q.RngState()))
         qar_ws.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
         qar_ws.flush()
     qar_ws.write("checkpoint.txt", "", "", skip_if_exist=True)
@@ -257,7 +296,7 @@ def run_prop_wsrc_truncated_save(
 ### ------
 
 @q.cache_call()
-@q.timer_verbose
+@q.timer()
 def get_truncated_wsrc_tslice_list(job_tag, traj):
     """
     Generate the list of source time slices for truncated wall-source
@@ -303,16 +342,16 @@ def run_job(job_tag, traj):
 ### ------
 
 job_tag = "24D"
-set_param(job_tag, "traj_list")(list(range(1000, 5100, 80)))
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(8)
+set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
+set_param(job_tag, "measurement", "wsrc_trunc_half_width")(7)
 
 job_tag = "32Dfine"
-set_param(job_tag, "traj_list")(list(range(520, 2600, 40)))
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(10)
+set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
+set_param(job_tag, "measurement", "wsrc_trunc_half_width")(7)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(16)
+set_param(job_tag, "measurement", "wsrc_trunc_half_width")(15)
 
 # ----
 
