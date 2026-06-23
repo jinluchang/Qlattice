@@ -21,18 +21,13 @@ time range ``[t_src - t_half, t_src + t_half]`` (modulo ``t_size``). The
 source is placed at the center of this truncated region (time index
 ``t_half`` in the truncated geometry).\n
 Two types of propagator sinks are saved:\n
-1. **Wall sink** (``prop-wsrc-trunc-{flavor}``): The propagator summed over
+1. **Wall sink** (``psel-prop-wsrc-trunc-{flavor}``): The propagator summed over
    all spatial sites at each time slice within the truncated region. This is
    stored as a ``PselProp`` with one entry per time slice of the truncated
-   geometry.\n
-2. **Point sink** (``prop-wsrc-trunc-psnk-{flavor}``): The propagator at
-   every spatial point within the truncated region, stored as a full ``Prop``
-   field on the truncated geometry.\n
+   geometry, saved in ``.lat`` format.\n
 The output data layout is::\n
-    {job_tag}/prop-wsrc-trunc-{flavor}/traj-{traj}/
-        fields/       # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)
-    {job_tag}/prop-wsrc-trunc-psnk-{flavor}/traj-{traj}/
-        fields/       # Point-sink Prop data per (idx, tslice, inv_type, inv_acc)\n
+    {job_tag}/psel-prop-wsrc-trunc-{flavor}/traj-{traj}/
+        wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)\n
 Parameters (via ``set_param``)
 ------------------------------\n
 - ``measurement.num_wsrc_trunc``: Number of source time slices per trajectory
@@ -188,106 +183,13 @@ def mk_gf_truncated(gf, t_center, t_half):
     gf_trunc = mk_field_truncated(gf, t_start, t_end)
     return gf_trunc, t_start
 
-def mk_get_prop_point_snk(prop_ps, geo):
-    def get(p_snk):
-        type_snk, pos_snk = p_snk
-        assert type_snk == "point-snk"
-        assert isinstance(pos_snk, tuple)
-        pos_snk = q.Coordinate(pos_snk)
-        index = geo.index_from_g_coordinate(pos_snk)
-        return prop_ps.get_elem_wm(index)
-    #
-    return get
-
-def mk_get_prop_wall_snk(ps_prop_ws):
-    def get(p_snk):
-        type_snk, pos_snk = p_snk
-        assert type_snk == "wall"
-        assert isinstance(pos_snk, int)
-        return ps_prop_ws.get_elem_wm(pos_snk)
-    #
-    return get
-
-@q.timer_verbose
-def mk_get_prop_truncated(prop_dict):
-    """
-    Return ``get_prop`` for the truncated propagator dictionary.\n
-    The ``prop_dict`` keys are
-    ``(flavor, pos_src, type_src, type_snk)`` and values are callables
-    ``get(pos_snk) -> WilsonMatrix``.
-    """
-    #
-    def get_prop(flavor, p_snk, p_src):
-        assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
-        type_snk, pos_snk = p_snk
-        type_src, pos_src = p_src
-        key = (flavor, pos_src, type_src, type_snk)
-        get = prop_dict.get(key)
-        if get is not None:
-            return get(p_snk)
-        key = (flavor, pos_snk, type_snk, type_src)
-        get = prop_dict.get(key)
-        if get is not None:
-            return ("g5_herm", get(p_src))
-        fname = q.get_fname()
-        raise Exception(f"{fname}: {flavor} {p_snk} {p_src}")
-    #
-    return get_prop
-
-@q.timer_verbose
-def run_get_prop_wsrc_truncated(
-    job_tag, traj, *, get_gf, get_gt, inv_type, tslice_list
-):
-    """
-    Compute wall-source propagators on truncated gauge fields.\n
-    For each source time slice in ``tslice_list``, the gauge field is
-    truncated to a window of ``2 * t_half + 1`` time slices centered on
-    the source. The Dirac inversion is performed on this truncated field.
-    Both wall-sink (spatial sum) and point-sink (full spatial) propagators
-    are stored.\n
-    Returns
-    -------
-    get_get_prop : callable
-        A lazy callable that, when invoked, returns ``get_prop(flavor, p_snk, p_src)``.
-    """
-    inv_type_name_list = ["light", "strange"]
-    inv_type_name = inv_type_name_list[inv_type]
-    #
-    @q.timer_verbose
-    def get_get_prop():
-        gf = get_gf()
-        geo = gf.geo
-        total_site = geo.total_site()
-        t_size = total_site[3]
-        t_half = get_param(
-            job_tag, "measurement", "wsrc_trunc_half_width", default=t_size // 4
-        )
-        prop_dict = dict()
-        for tslice in tslice_list:
-            gf_trunc, t_offset = mk_gf_truncated(gf, tslice, t_half)
-            geo_trunc = gf_trunc.geo
-            inv_trunc = qs.get_inv(gf_trunc, job_tag, inv_type, 2, gt=None, eig=None)
-            src = q.mk_wall_src(geo_trunc, t_half)
-            sol_trunc = inv_trunc * src
-            ps_prop_ws = sol_trunc.glb_sum_tslice()
-            prop_dict[(inv_type_name, tslice, "wall", "wall")] = mk_get_prop_wall_snk(
-                ps_prop_ws
-            )
-            prop_dict[(inv_type_name, tslice, "wall", "point-snk")] = (
-                mk_get_prop_point_snk(sol_trunc, geo_trunc)
-            )
-        q.clean_cache(q.cache_inv)
-        return mk_get_prop_truncated(prop_dict)
-    #
-    return q.lazy_call(get_get_prop)
-
 ### ------
 
 @q.timer_verbose
 def run_truncated_wsrc_prop(job_tag, traj, get_gf, get_gt):
     """
     Main driver: generate truncated wall-source propagators for light and
-    strange quarks and save wall-sink and point-sink data.
+    strange quarks and save wall-sink data.
     """
     fname = q.get_fname()
     fn_checkpoint = f"{job_tag}/truncated-wsrc-prop/traj-{traj}/checkpoint.txt"
@@ -320,24 +222,18 @@ def run_prop_wsrc_truncated_save(
 ):
     """
     Compute and save truncated wall-source propagators for one quark flavor.\n
-    Saves both wall-sink and point-sink data as field archives.
+    Saves wall-sink data as psel in .lat format.
     """
     inv_type_name = ["light", "strange"][inv_type]
     gf = get_gf()
     inv_acc = 2
     acc_tag = f"accuracy={inv_acc}"
-    path_ws = f"{job_tag}/prop-wsrc-trunc-{inv_type_name}/traj-{traj}"
-    path_ps = f"{job_tag}/prop-wsrc-trunc-psnk-{inv_type_name}/traj-{traj}"
-    sfw_ws = q.open_fields(
-        get_save_path(path_ws + ".acc"), "a", q.Coordinate([2, 2, 2, 4])
-    )
-    sfw_ps = q.open_fields(
-        get_save_path(path_ps + ".acc"), "a", q.Coordinate([2, 2, 2, 4])
-    )
+    path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}"
+    qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
     for idx, tslice in enumerate(tslice_list):
         tag_base = f"idx={idx} ; tslice={tslice} ; type={inv_type}"
         tag = f"{tag_base} ; {acc_tag}"
-        if tag in sfw_ws:
+        if qar_ws.has_regular_file(f"{tag} ; wsnk.lat"):
             continue
         gf_trunc, t_offset = mk_gf_truncated(gf, tslice, t_half)
         geo_trunc = gf_trunc.geo
@@ -346,14 +242,11 @@ def run_prop_wsrc_truncated_save(
         src = q.mk_wall_src(geo_trunc, t_src_trunc)
         sol_trunc = inv_trunc * src
         ps_prop_ws = sol_trunc.glb_sum_tslice()
-        ps_prop_ws.save_double(sfw_ws, tag, skip_if_exist=True)
-        sfw_ws.flush()
-        sol_trunc.save_double(sfw_ps, tag, skip_if_exist=True)
-        sfw_ps.flush()
-    sfw_ws.close()
-    sfw_ps.close()
-    q.qrename_info(get_save_path(path_ws + ".acc"), get_save_path(path_ws))
-    q.qrename_info(get_save_path(path_ps + ".acc"), get_save_path(path_ps))
+        qar_ws.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
+        qar_ws.flush()
+    qar_ws.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_ws.flush()
+    qar_ws.close()
     q.clean_cache(q.cache_inv)
 
 ### ------
