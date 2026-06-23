@@ -167,12 +167,12 @@ GPT `complex` fields.
 The conversion functions all use GPT's `g.copy_plan` mechanism for efficient
 data transfer. Plans are created once and cached.
 
-#### `mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag) → str`
+### `mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag) → str`
 
 Build a cache key string from element type name, total site, multiplicity, and
 direction tag (`"qlat_from_gpt"` or `"gpt_from_qlat"`).
 
-#### `mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag) → copy_plan`
+### `mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag) → copy_plan`
 
 Create a GPT `copy_plan` that maps between a GPT lattice field (in
 lexicographic order) and a Qlattice `memoryview` buffer. The plan is built by:
@@ -183,11 +183,11 @@ lexicographic order) and a Qlattice `memoryview` buffer. The plan is built by:
 4. Associating source/destination views.
 5. Finalizing with `local_only=True`.
 
-#### `get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag) → copy_plan`
+### `get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag) → copy_plan`
 
 Retrieve a cached plan or create and cache a new one.
 
-#### `mk_gpt_field(ctype, geo) → lattice`
+### `mk_gpt_field(ctype, geo) → lattice`
 
 Create a GPT lattice field matching the given Qlattice element type:
 
@@ -297,7 +297,7 @@ def gauge_fix_coulomb(
     step=0.3,
     step_gd=0.1,
     rng_seed=None,
-) → GaugeTransform
+) -> GaugeTransform
 ```
 
 Fix a gauge field to Coulomb gauge using split-grid optimization.
@@ -334,7 +334,7 @@ Fix a gauge field to Coulomb gauge using split-grid optimization.
 ### `check_gauge_fix_coulomb`
 
 ```python
-def check_gauge_fix_coulomb(gf, gt, eps=1e-12) → bool
+def check_gauge_fix_coulomb(gf, gt, eps=1e-12) -> bool
 ```
 
 Verify that a gauge transformation `gt` fixes `gf` to Coulomb gauge. Computes
