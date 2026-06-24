@@ -11,8 +11,9 @@ time slice, a sub-volume of the gauge field is extracted centered on that
 source. The Dirac inversion is performed on this truncated gauge field, and
 only propagator data within the truncated region is saved.
 The key idea is that instead of inverting on the full lattice gauge field,
-we restrict the gauge field to a window of size ``2 * t_half + 2`` time
-slices centered on the wall-source time slice. This can be useful for:
+we restrict the gauge field to a window of size ``2 * t_half + 1`` time
+slices centered on the wall-source time slice, padded to a multiple of
+``field_trunc_t_size_divisor``. This can be useful for:
 - Studying finite-volume effects in the time direction
 - Reducing computational cost for localized measurements
 - Isolating propagation within a specific time region
@@ -29,18 +30,21 @@ The output data layout is::
         wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)
 Parameters (via ``set_param``)
 ------------------------------\n
-- ``measurement.wsrc_trunc_half_width``: Half-width of the truncated time
+- ``measurement.field_trunc_half_width``: Half-width of the truncated time
   region (default ``t_size // 4``). The full truncated region spans
-  ``2 * half_width + 1`` time slices.
-- ``measurement.wsrc_trunc_acc_list``: List of inversion accuracy levels to
-  compute (default ``[0, 2]`` for sloppy and exact)\n
+  ``2 * half_width + 1`` time slices, padded to a multiple of
+  ``field_trunc_t_size_divisor``.
+- ``measurement.field_trunc_t_size_divisor``: The truncated time extent must
+  be a multiple of this value (default ``1``). Padding slices are added beyond
+  ``2 * half_width + 1`` as needed.\n
 Test Mode
 ---------\n
 With ``--test`` flag, a small ``test-4nt16-checker`` configuration is used
 (lattice 4x4x4x16, 2 MPI ranks along time). The test generates a sample
 gauge field via HMC (5 trajectories, 8 Wilson flow steps), then computes
 truncated wall-source propagators for light and strange quarks with
-``wsrc_trunc_half_width = 3`` (producing a truncated geometry of 4x4x4x8).
+``field_trunc_half_width = 3``, ``field_trunc_t_size_divisor = 8``
+(producing a truncated geometry of 4x4x4x8).
 All time slices are used as source time slices.\n
 Usage
 -----\n
@@ -165,15 +169,16 @@ def mk_field_truncated(field, t_start, t_end):
     return field_trunc
 
 @q.timer
-def mk_gf_truncated(gf, t_center, t_half):
+def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
     """
     Create a gauge field truncated in the time direction.
     Extracts a sub-volume of the gauge field centered at ``t_center`` with
     half-width ``t_half``. The truncated geometry has the same spatial extent
-    as the original but with time extent ``2 * t_half + 2``.
+    as the original but with time extent ``2 * t_half + 1``, padded to be a
+    multiple of ``t_size_divisor``.
     Implemented via :func:`mk_field_truncated` with
     ``t_start = (t_center - t_half) % t_size`` and
-    ``t_end = (t_center + t_half + 2) % t_size``.
+    ``t_end = (t_start + t_size_trunc) % t_size``.
     Parameters
     ----------
     gf : q.GaugeField
@@ -181,8 +186,12 @@ def mk_gf_truncated(gf, t_center, t_half):
     t_center : int
         Center time slice of the truncated region (in the original geometry).
     t_half : int
-        Half-width of the truncated region. The truncated time extent is
-        ``2 * t_half + 2``.
+        Half-width of the truncated region. The needed truncated time extent
+        is ``2 * t_half + 1``, padded to a multiple of
+        ``t_size_divisor``.
+    t_size_divisor : int
+        The truncated time extent must be a multiple of this value. Padding
+        slices are added beyond ``2 * t_half + 1`` as needed.
     Returns
     -------
     gf_trunc : q.GaugeField
@@ -190,14 +199,22 @@ def mk_gf_truncated(gf, t_center, t_half):
     t_offset : int
         The global time index corresponding to time index 0 of the truncated
         geometry. ``t_offset = (t_center - t_half) % t_size``.
+    t_size_trunc : int
+        The actual truncated time extent (padded to a multiple of
+        ``t_size_divisor``).
     """
     total_site = gf.geo.total_site
     t_size = total_site[3]
+    t_size_trunc = 2 * t_half + 1
+    r = t_size_trunc % t_size_divisor
+    if r != 0:
+        t_size_trunc += t_size_divisor - r
+    assert t_size_trunc <= t_size
     t_start = (t_center - t_half) % t_size
-    t_end = (t_center + t_half + 2) % t_size
+    t_end = (t_start + t_size_trunc) % t_size
     gf_trunc = mk_field_truncated(gf, t_start, t_end)
     geo_trunc = gf_trunc.geo
-    tslice_target_list = [2 * t_half, 2 * t_half + 1]
+    tslice_target_list = list(range(2 * t_half, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
     xg_arr = q.mk_xg_field(geo_trunc)[:]
     for index in range(geo_trunc.local_volume):
@@ -205,15 +222,16 @@ def mk_gf_truncated(gf, t_center, t_half):
         xg_t = xg[3]
         if xg_t in tslice_target_list:
             gf_arr[index, 3, :, :] = 0
-    return gf_trunc, t_start
+    return gf_trunc, t_start, t_size_trunc
 
 @q.timer
-def mk_gt_truncated(gt, t_center, t_half):
+def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
     """
     Create a gauge transform field truncated in the time direction.
     Extracts a sub-volume of the gauge transform centered at ``t_center``
     with half-width ``t_half``. The truncated geometry has the same spatial
-    extent as the original but with time extent ``2 * t_half + 2``.
+    extent as the original but with time extent ``2 * t_half + 1``, padded to
+    be a multiple of ``t_size_divisor``.
     Parameters
     ----------
     gt : q.GaugeTransform
@@ -222,6 +240,8 @@ def mk_gt_truncated(gt, t_center, t_half):
         Center time slice of the truncated region (in the original geometry).
     t_half : int
         Half-width of the truncated region.
+    t_size_divisor : int
+        The truncated time extent must be a multiple of this value.
     Returns
     -------
     gt_trunc : q.GaugeTransform
@@ -229,13 +249,21 @@ def mk_gt_truncated(gt, t_center, t_half):
     t_offset : int
         The global time index corresponding to time index 0 of the truncated
         geometry. ``t_offset = (t_center - t_half) % t_size``.
+    t_size_trunc : int
+        The actual truncated time extent (padded to a multiple of
+        ``t_size_divisor``).
     """
     total_site = gt.geo.total_site
     t_size = total_site[3]
+    t_size_trunc = 2 * t_half + 1
+    r = t_size_trunc % t_size_divisor
+    if r != 0:
+        t_size_trunc += t_size_divisor - r
+    assert t_size_trunc <= t_size
     t_start = (t_center - t_half) % t_size
-    t_end = (t_center + t_half + 2) % t_size
+    t_end = (t_start + t_size_trunc) % t_size
     gt_trunc = mk_field_truncated(gt, t_start, t_end)
-    return gt_trunc, t_start
+    return gt_trunc, t_start, t_size_trunc
 
 @q.timer
 def mk_selected_points_truncated(sp, idx_start, idx_end):
@@ -267,7 +295,10 @@ def run_prop_wsrc_truncated_save(
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     t_half = get_param(
-        job_tag, "measurement", "wsrc_trunc_half_width", default=t_size // 4
+        job_tag, "measurement", "field_trunc_half_width", default=t_size // 4
+    )
+    t_size_divisor = get_param(
+        job_tag, "measurement", "field_trunc_t_size_divisor", default=1
     )
     tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
     gf = get_gf()
@@ -282,9 +313,10 @@ def run_prop_wsrc_truncated_save(
         has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
         if has_file:
             continue
-        gf_trunc, t_offset = mk_gf_truncated(gf, tslice, t_half)
-        gt_trunc, t_offset_gt = mk_gt_truncated(gt, tslice, t_half)
+        gf_trunc, t_offset, t_size_trunc = mk_gf_truncated(gf, tslice, t_half, t_size_divisor)
+        gt_trunc, t_offset_gt, t_size_trunc_gt = mk_gt_truncated(gt, tslice, t_half, t_size_divisor)
         assert t_offset == t_offset_gt
+        assert t_size_trunc == t_size_trunc_gt
         geo_trunc = gf_trunc.geo
         t_src_trunc = t_half
         inv_trunc = qs.get_inv(gf_trunc, job_tag, inv_type, inv_acc, gt=gt_trunc, eig=None)
@@ -355,15 +387,18 @@ def run_job(job_tag, traj):
 
 job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(7)
+set_param(job_tag, "measurement", "field_trunc_half_width")(7)
+set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(7)
+set_param(job_tag, "measurement", "field_trunc_half_width")(7)
+set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(15)
+set_param(job_tag, "measurement", "field_trunc_half_width")(15)
+set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 # ----
 
@@ -430,7 +465,8 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
-set_param(job_tag, "measurement", "wsrc_trunc_half_width")(3)
+set_param(job_tag, "measurement", "field_trunc_half_width")(3)
+set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(8)
 
 # ----
 

@@ -177,6 +177,12 @@ def main():
     print()
     #
     rc = run_make(work_dir, args.test_name, env)
+    p_dir = os.path.join(work_dir, f"{args.test_name}.py.p")
+    print()
+    print("NOTE: This run did NOT modify the original .log and .log.json files")
+    print(f"      in {os.path.join(project_root, 'examples-py-gpt')}/")
+    print()
+    print(f"Regenerated files are in: {p_dir}/")
     sys.exit(rc)
 
 if __name__ == "__main__":

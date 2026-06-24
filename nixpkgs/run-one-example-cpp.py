@@ -174,6 +174,12 @@ def main():
     print()
     #
     rc = run_test(work_dir, args.test_name, env)
+    p_dir = os.path.join(work_dir, args.test_name, "build")
+    print()
+    print("NOTE: This run did NOT modify the original source files")
+    print(f"      in {os.path.join(project_root, 'examples-cpp')}/")
+    print()
+    print(f"Regenerated files are in: {p_dir}/")
     sys.exit(rc)
 
 if __name__ == "__main__":
