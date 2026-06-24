@@ -2,32 +2,31 @@
 
 """
 Generate light and strange quark wall-source propagators with time-direction
-truncated gauge fields.\n
+truncated gauge fields.
 Detailed Description
-====================\n
+====================
 This script generates wall-source propagators for light and strange quarks
 using gauge fields that are truncated in the time direction. For each source
 time slice, a sub-volume of the gauge field is extracted centered on that
 source. The Dirac inversion is performed on this truncated gauge field, and
-only propagator data within the truncated region is saved.\n
+only propagator data within the truncated region is saved.
 The key idea is that instead of inverting on the full lattice gauge field,
-we restrict the gauge field to a window of size ``2 * t_half + 1`` time
-slices centered on the wall-source time slice. This can be useful for:\n
+we restrict the gauge field to a window of size ``2 * t_half + 2`` time
+slices centered on the wall-source time slice. This can be useful for:
 - Studying finite-volume effects in the time direction
 - Reducing computational cost for localized measurements
-- Isolating propagation within a specific time region\n
+- Isolating propagation within a specific time region
 For each source time slice ``t_src``, the truncated gauge field covers the
-time range ``[t_src - t_half, t_src + t_half]`` (modulo ``t_size``). The
-source is placed at the center of this truncated region (time index
-``t_half`` in the truncated geometry).\n
-Two types of propagator sinks are saved:\n
+time range ``[t_src - t_half, t_src + t_half + 1]`` (modulo ``t_size``). The
+source is placed at time index ``t_half`` in the truncated geometry.
+One type of propagator sink is saved:
 1. **Wall sink** (``psel-prop-wsrc-trunc-{flavor}``): The propagator summed over
    all spatial sites at each time slice within the truncated region. This is
    stored as a ``PselProp`` with one entry per time slice of the truncated
-   geometry, saved in ``.lat`` format.\n
-The output data layout is::\n
+   geometry, saved in ``.lat`` format.
+The output data layout is::
     {job_tag}/psel-prop-wsrc-trunc-{flavor}/traj-{traj}/
-        wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)\n
+        wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)
 Parameters (via ``set_param``)
 ------------------------------\n
 - ``measurement.wsrc_trunc_half_width``: Half-width of the truncated time
@@ -42,7 +41,7 @@ With ``--test`` flag, a small ``test-4nt16-checker`` configuration is used
 gauge field via HMC (5 trajectories, 8 Wilson flow steps), then computes
 truncated wall-source propagators for light and strange quarks with
 ``wsrc_trunc_half_width = 3`` (producing a truncated geometry of 4x4x4x8).
-Two source time slices are used per trajectory.\n
+All time slices are used as source time slices.\n
 Usage
 -----\n
 ::\n
@@ -65,12 +64,10 @@ from qlat_scripts.v1 import (
     load_path_list,
     get_param,
     set_param,
-    get_job_seed,
     run_params,
     check_job,
     run_gf,
     run_gt,
-    get_load_path,
     get_save_path,
     is_test,
 )
@@ -170,13 +167,13 @@ def mk_field_truncated(field, t_start, t_end):
 @q.timer
 def mk_gf_truncated(gf, t_center, t_half):
     """
-    Create a gauge field truncated in the time direction.\n
+    Create a gauge field truncated in the time direction.
     Extracts a sub-volume of the gauge field centered at ``t_center`` with
     half-width ``t_half``. The truncated geometry has the same spatial extent
-    as the original but with time extent ``2 * t_half + 1``.\n
+    as the original but with time extent ``2 * t_half + 2``.
     Implemented via :func:`mk_field_truncated` with
     ``t_start = (t_center - t_half) % t_size`` and
-    ``t_end = (t_center + t_half + 2) % t_size``.\n
+    ``t_end = (t_center + t_half + 2) % t_size``.
     Parameters
     ----------
     gf : q.GaugeField
@@ -185,7 +182,7 @@ def mk_gf_truncated(gf, t_center, t_half):
         Center time slice of the truncated region (in the original geometry).
     t_half : int
         Half-width of the truncated region. The truncated time extent is
-        ``2 * t_half + 1``.\n
+        ``2 * t_half + 2``.
     Returns
     -------
     gf_trunc : q.GaugeField
@@ -213,10 +210,10 @@ def mk_gf_truncated(gf, t_center, t_half):
 @q.timer
 def mk_gt_truncated(gt, t_center, t_half):
     """
-    Create a gauge transform field truncated in the time direction.\n
+    Create a gauge transform field truncated in the time direction.
     Extracts a sub-volume of the gauge transform centered at ``t_center``
     with half-width ``t_half``. The truncated geometry has the same spatial
-    extent as the original but with time extent ``2 * t_half + 1``.\n
+    extent as the original but with time extent ``2 * t_half + 2``.
     Parameters
     ----------
     gt : q.GaugeTransform
@@ -224,7 +221,7 @@ def mk_gt_truncated(gt, t_center, t_half):
     t_center : int
         Center time slice of the truncated region (in the original geometry).
     t_half : int
-        Half-width of the truncated region.\n
+        Half-width of the truncated region.
     Returns
     -------
     gt_trunc : q.GaugeTransform
@@ -315,7 +312,8 @@ def run_job(job_tag, traj):
     if job_tag[:5] == "test-":
         traj_gf = 1000
     fns_produce = [
-        f"{job_tag}/truncated-wsrc-prop/traj-{traj}/checkpoint.txt",
+        f"{job_tag}/psel-prop-wsrc-trunc-light/traj-{traj}/checkpoint.txt",
+        f"{job_tag}/psel-prop-wsrc-trunc-strange/traj-{traj}/checkpoint.txt",
     ]
     fns_need = [
         f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
