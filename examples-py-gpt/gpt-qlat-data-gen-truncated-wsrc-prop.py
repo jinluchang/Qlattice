@@ -30,13 +30,12 @@ The output data layout is::
         wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)
 Parameters (via ``set_param``)
 ------------------------------\n
-- ``measurement.field_trunc_half_width_list``: List of half-widths of the
-  truncated time region (default ``[t_size // 4]``). The calculation is
-  repeated for each half-width. The full truncated region spans
-  ``2 * half_width + 1`` time slices, padded to a multiple of
-  ``field_trunc_t_size_divisor``.
-- ``measurement.field_trunc_t_size_divisor``: The truncated time extent must
-  be a multiple of this value (default ``1``). Padding slices are added beyond
+- ``measurement.field_trunc_half_width_list``: (Mandatory) List of half-widths
+  of the truncated time region. The calculation is repeated for each
+  half-width. The full truncated region spans ``2 * half_width + 1`` time
+  slices, padded to a multiple of ``field_trunc_t_size_divisor``.
+- ``measurement.field_trunc_t_size_divisor``: (Mandatory) The truncated time
+  extent must be a multiple of this value. Padding slices are added beyond
   ``2 * half_width + 1`` as needed.\n
 Test Mode
 ---------\n
@@ -292,10 +291,10 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     t_half_list = get_param(
-        job_tag, "measurement", "field_trunc_half_width_list", default=[t_size // 4]
+        job_tag, "measurement", "field_trunc_half_width_list"
     )
     t_size_divisor = get_param(
-        job_tag, "measurement", "field_trunc_t_size_divisor", default=1
+        job_tag, "measurement", "field_trunc_t_size_divisor"
     )
     tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
     gf = get_gf()
@@ -376,7 +375,7 @@ def run_job(job_tag, traj):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     t_half_list = get_param(
-        job_tag, "measurement", "field_trunc_half_width_list", default=[t_size // 4]
+        job_tag, "measurement", "field_trunc_half_width_list"
     )
     fns_produce = []
     for inv_type_name in ["light", "strange"]:
@@ -410,17 +409,17 @@ def run_job(job_tag, traj):
 
 job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
-set_param(job_tag, "measurement", "field_trunc_half_width_list")([3, 5, 7])
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
-set_param(job_tag, "measurement", "field_trunc_half_width_list")([3, 5, 7, 9])
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7, 9])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
-set_param(job_tag, "measurement", "field_trunc_half_width_list")([5, 9, 13, 17])
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 5, 9, 13, 17])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 # ----
