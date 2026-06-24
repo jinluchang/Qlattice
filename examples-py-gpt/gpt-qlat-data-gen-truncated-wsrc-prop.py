@@ -261,10 +261,10 @@ def run_prop_wsrc_truncated_save(
     gt = get_gt()
     inv_acc = 0
     acc_tag = f"accuracy={inv_acc}"
-    path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}"
+    path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}"
     qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
     for idx, tslice in enumerate(tslice_list):
-        tag_base = f"idx={idx} ; tslice={tslice} ; type={inv_type}"
+        tag_base = f"idx={idx} ; tslice={tslice} ; t_half={t_half} ; type={inv_type}"
         tag = f"{tag_base} ; {acc_tag}"
         has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
         if has_file:
