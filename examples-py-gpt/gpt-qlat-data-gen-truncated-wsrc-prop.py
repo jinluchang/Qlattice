@@ -81,15 +81,15 @@ from qlat_scripts.v1 import (
 load_path_list[:] = [
     "results",
     "qcddata",
-    "qcddata1",
-    "qcddata2",
-    "qcddata3",
-    "qcddata4",
-    "qcddata5",
-    "qcddata6",
-    "qcddata7",
-    "qcddata8",
-    "qcddata9",
+    "qcddata-1",
+    "qcddata-2",
+    "qcddata-3",
+    "qcddata-4",
+    "qcddata-5",
+    "qcddata-6",
+    "qcddata-7",
+    "qcddata-8",
+    "qcddata-9",
 ]
 
 ### ------
