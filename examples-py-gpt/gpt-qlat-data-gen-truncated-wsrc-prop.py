@@ -237,6 +237,19 @@ def mk_gt_truncated(gt, t_center, t_half):
     gt_trunc = mk_field_truncated(gt, t_start, t_end)
     return gt_trunc, t_start
 
+@q.timer
+def mk_selected_points_truncated(sp, idx_start, idx_end):
+    """
+    Return a copy of ``sp[idx_start:idx_end]`` as a new SelectedPoints.
+    """
+    n_keep = idx_end - idx_start
+    total_site = sp.psel.total_site
+    psel_sub = q.PointsSelection(total_site, n_keep)
+    np.asarray(psel_sub)[:] = np.asarray(sp.psel)[idx_start:idx_end]
+    sp_trunc = type(sp)(psel_sub)
+    sp_trunc @= sp
+    return sp_trunc
+
 ### ------
 
 @q.timer(is_timer_fork=True)
@@ -278,6 +291,7 @@ def run_prop_wsrc_truncated_save(
         src = q.mk_wall_src(geo_trunc, t_src_trunc)
         sol_trunc = inv_trunc * src
         ps_prop_ws = sol_trunc.glb_sum_tslice()
+        ps_prop_ws = mk_selected_points_truncated(ps_prop_ws, 0, 2 * t_half + 1)
         q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
         q.json_results_append(f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState()))
         q.json_results_append(f"ps_prop_ws qnorm {tag}", ps_prop_ws.qnorm(), 1e-6)
