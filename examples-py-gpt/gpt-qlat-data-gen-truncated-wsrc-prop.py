@@ -329,6 +329,7 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             inv_trunc = qs.get_inv(
                 gf_trunc, job_tag, inv_type, inv_acc, gt=gt_trunc, eig=None
             )
+            q.displayln_info(0, f"truncated gf total_site: {gf_trunc.geo.total_site}")
             src = q.mk_wall_src(geo_trunc, t_src_trunc)
             sol_trunc = inv_trunc * src
             ps_prop_ws = sol_trunc.glb_sum_tslice()
@@ -345,11 +346,11 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
                 f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True
             )
             qar_ws.flush()
+            q.clean_cache(q.cache_inv)
         qar_ws.write("checkpoint.txt", "", "", skip_if_exist=True)
         qar_ws.flush()
         qar_ws.close()
         q.release_lock()
-    q.clean_cache(q.cache_inv)
 
 ### ------
 
@@ -389,6 +390,7 @@ def run_job(job_tag, traj):
             f"{job_tag}/configs/ckpoint_lat.{traj_gf}",
             f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj_gf}",
         ),
+        f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",
     ]
     if job_tag[:5] == "test-":
         fns_need = []
@@ -500,6 +502,8 @@ job_tag_list_default = [
 job_tag_list_str_default = ",".join(job_tag_list_default)
 job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
 
+random_order = q.get_arg("--random-order", default=None) is not None
+
 #######################################################
 
 def gracefully_finish():
@@ -537,7 +541,7 @@ if __name__ == "__main__":
                     traj,
                 )
             )
-    if not is_test():
+    if not is_test() and random_order:
         job_tag_traj_list = q.random_permute(
             job_tag_traj_list, q.RngState(f"{q.get_time()}")
         )
