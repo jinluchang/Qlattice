@@ -30,8 +30,9 @@ The output data layout is::
         wsnk.lat      # Wall-sink PselProp data per (idx, tslice, inv_type, inv_acc)
 Parameters (via ``set_param``)
 ------------------------------\n
-- ``measurement.field_trunc_half_width``: Half-width of the truncated time
-  region (default ``t_size // 4``). The full truncated region spans
+- ``measurement.field_trunc_half_width_list``: List of half-widths of the
+  truncated time region (default ``[t_size // 4]``). The calculation is
+  repeated for each half-width. The full truncated region spans
   ``2 * half_width + 1`` time slices, padded to a multiple of
   ``field_trunc_t_size_divisor``.
 - ``measurement.field_trunc_t_size_divisor``: The truncated time extent must
@@ -43,7 +44,7 @@ With ``--test`` flag, a small ``test-4nt16-checker`` configuration is used
 (lattice 4x4x4x16, 2 MPI ranks along time). The test generates a sample
 gauge field via HMC (5 trajectories, 8 Wilson flow steps), then computes
 truncated wall-source propagators for light and strange quarks with
-``field_trunc_half_width = 3``, ``field_trunc_t_size_divisor = 8``
+``field_trunc_half_width_list = [3]``, ``field_trunc_t_size_divisor = 8``
 (producing a truncated geometry of 4x4x4x8).
 All time slices are used as source time slices.\n
 Usage
@@ -281,21 +282,17 @@ def mk_selected_points_truncated(sp, idx_start, idx_end):
 ### ------
 
 @q.timer(is_timer_fork=True)
-def run_prop_wsrc_truncated_save(
-    job_tag, traj, *, get_gf, get_gt, inv_type
-):
+def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
     """
     Compute and save truncated wall-source propagators for one quark flavor.\n
     Saves wall-sink data as psel in .lat format.
     """
     fname = q.get_fname()
     inv_type_name = ["light", "strange"][inv_type]
-    if not q.obtain_lock(f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"):
-        return
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    t_half = get_param(
-        job_tag, "measurement", "field_trunc_half_width", default=t_size // 4
+    t_half_list = get_param(
+        job_tag, "measurement", "field_trunc_half_width_list", default=[t_size // 4]
     )
     t_size_divisor = get_param(
         job_tag, "measurement", "field_trunc_t_size_divisor", default=1
@@ -305,36 +302,55 @@ def run_prop_wsrc_truncated_save(
     gt = get_gt()
     inv_acc = 0
     acc_tag = f"accuracy={inv_acc}"
-    path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}"
-    qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
-    for idx, tslice in enumerate(tslice_list):
-        tag_base = f"idx={idx} ; tslice={tslice} ; t_half={t_half} ; type={inv_type}"
-        tag = f"{tag_base} ; {acc_tag}"
-        has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
-        if has_file:
+    for t_half in t_half_list:
+        if not q.obtain_lock(
+            f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-t_half-{t_half}"
+        ):
             continue
-        gf_trunc, t_offset, t_size_trunc = mk_gf_truncated(gf, tslice, t_half, t_size_divisor)
-        gt_trunc, t_offset_gt, t_size_trunc_gt = mk_gt_truncated(gt, tslice, t_half, t_size_divisor)
-        assert t_offset == t_offset_gt
-        assert t_size_trunc == t_size_trunc_gt
-        geo_trunc = gf_trunc.geo
-        t_src_trunc = t_half
-        inv_trunc = qs.get_inv(gf_trunc, job_tag, inv_type, inv_acc, gt=gt_trunc, eig=None)
-        src = q.mk_wall_src(geo_trunc, t_src_trunc)
-        sol_trunc = inv_trunc * src
-        ps_prop_ws = sol_trunc.glb_sum_tslice()
-        ps_prop_ws = mk_selected_points_truncated(ps_prop_ws, 0, 2 * t_half + 1)
-        q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
-        q.json_results_append(f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState()))
-        q.json_results_append(f"ps_prop_ws qnorm {tag}", ps_prop_ws.qnorm(), 1e-6)
-        q.json_results_append(f"ps_prop_ws sig {tag}", q.get_data_sig(ps_prop_ws, q.RngState()))
-        qar_ws.write(f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True)
+        path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}"
+        qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
+        for idx, tslice in enumerate(tslice_list):
+            tag_base = (
+                f"idx={idx} ; tslice={tslice} ; t_half={t_half} ; type={inv_type}"
+            )
+            tag = f"{tag_base} ; {acc_tag}"
+            has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
+            if has_file:
+                continue
+            gf_trunc, t_offset, t_size_trunc = mk_gf_truncated(
+                gf, tslice, t_half, t_size_divisor
+            )
+            gt_trunc, t_offset_gt, t_size_trunc_gt = mk_gt_truncated(
+                gt, tslice, t_half, t_size_divisor
+            )
+            assert t_offset == t_offset_gt
+            assert t_size_trunc == t_size_trunc_gt
+            geo_trunc = gf_trunc.geo
+            t_src_trunc = t_half
+            inv_trunc = qs.get_inv(
+                gf_trunc, job_tag, inv_type, inv_acc, gt=gt_trunc, eig=None
+            )
+            src = q.mk_wall_src(geo_trunc, t_src_trunc)
+            sol_trunc = inv_trunc * src
+            ps_prop_ws = sol_trunc.glb_sum_tslice()
+            ps_prop_ws = mk_selected_points_truncated(ps_prop_ws, 0, 2 * t_half + 1)
+            q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
+            q.json_results_append(
+                f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState())
+            )
+            q.json_results_append(f"ps_prop_ws qnorm {tag}", ps_prop_ws.qnorm(), 1e-6)
+            q.json_results_append(
+                f"ps_prop_ws sig {tag}", q.get_data_sig(ps_prop_ws, q.RngState())
+            )
+            qar_ws.write(
+                f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True
+            )
+            qar_ws.flush()
+        qar_ws.write("checkpoint.txt", "", "", skip_if_exist=True)
         qar_ws.flush()
-    qar_ws.write("checkpoint.txt", "", "", skip_if_exist=True)
-    qar_ws.flush()
-    qar_ws.close()
+        qar_ws.close()
+        q.release_lock()
     q.clean_cache(q.cache_inv)
-    q.release_lock()
 
 ### ------
 
@@ -357,10 +373,17 @@ def run_job(job_tag, traj):
     traj_gf = traj
     if job_tag[:5] == "test-":
         traj_gf = 1000
-    fns_produce = [
-        f"{job_tag}/psel-prop-wsrc-trunc-light/traj-{traj}/checkpoint.txt",
-        f"{job_tag}/psel-prop-wsrc-trunc-strange/traj-{traj}/checkpoint.txt",
-    ]
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    t_half_list = get_param(
+        job_tag, "measurement", "field_trunc_half_width_list", default=[t_size // 4]
+    )
+    fns_produce = []
+    for inv_type_name in ["light", "strange"]:
+        for t_half in t_half_list:
+            fns_produce.append(
+                f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}/checkpoint.txt"
+            )
     fns_need = [
         f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
         (
@@ -387,17 +410,17 @@ def run_job(job_tag, traj):
 
 job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
-set_param(job_tag, "measurement", "field_trunc_half_width")(7)
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([3, 5, 7])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
-set_param(job_tag, "measurement", "field_trunc_half_width")(7)
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([3, 5, 7, 9])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
-set_param(job_tag, "measurement", "field_trunc_half_width")(15)
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([5, 9, 13, 17])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 
 # ----
@@ -465,7 +488,7 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxiter")(10)
         set_param(job_tag, f"cg_params-{inv_type}-{inv_acc}", "maxcycle")(1 + inv_acc)
 #
-set_param(job_tag, "measurement", "field_trunc_half_width")(3)
+set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 2, 3])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(8)
 
 # ----
