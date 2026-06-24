@@ -302,11 +302,13 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
     inv_acc = 0
     acc_tag = f"accuracy={inv_acc}"
     for t_half in t_half_list:
+        path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}"
+        if q.does_file_exist_qar_sync_node(get_save_path(path_ws + "/checkpoint.txt")):
+            continue
         if not q.obtain_lock(
             f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}-t_half-{t_half}"
         ):
             continue
-        path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}"
         qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
         for idx, tslice in enumerate(tslice_list):
             tag_base = (
