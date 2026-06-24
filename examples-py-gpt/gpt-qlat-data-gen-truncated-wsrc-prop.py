@@ -316,6 +316,7 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
             if has_file:
                 continue
+            q.check_time_limit()
             gf_trunc, t_offset, t_size_trunc = mk_gf_truncated(
                 gf, tslice, t_half, t_size_divisor
             )
