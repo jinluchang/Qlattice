@@ -77,9 +77,7 @@ q.json_results_append(
 gf @= gf0
 q.gf_stout_smear(gf, 0.1, 3)
 q.json_results_append("gf_stout_smear plaq", gf.plaq(), 1e-8)
-q.json_results_append(
-    "gf_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8
-)
+q.json_results_append("gf_stout_smear", q.get_data_sig_arr(gf, q.RngState(), 3), 1e-8)
 
 gf @= gf0
 q.gf_stout_smear(gf, 0.1, 3, method="wilson-flow")
@@ -124,7 +122,15 @@ gf_shifted = q.field_shift(
     ),
 )
 gf_sig_after = q.get_data_sig_arr(gf, q.RngState(), 3)
-q.json_results_append("field_shift preserves input", np.array([gf_sig_before, gf_sig_after,]))
+q.json_results_append(
+    "field_shift preserves input",
+    np.array(
+        [
+            gf_sig_before,
+            gf_sig_after,
+        ]
+    ),
+)
 assert np.all(gf_sig_before == gf_sig_after)
 
 gf @= gf0

@@ -235,8 +235,16 @@ def measure_topo_dwf(
     stout_smear_step_size = params.get("stout_smear_step_size", 0.1)
     if stout_smear_steps > 0:
         q.gf_stout_smear(gf, stout_smear_step_size, stout_smear_steps)
-        q.json_results_append(f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.plaq()", gf.plaq(), 1e-12)
-        q.json_results_append(f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.link_trace()", gf.link_trace(), 1e-12)
+        q.json_results_append(
+            f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.plaq()",
+            gf.plaq(),
+            1e-12,
+        )
+        q.json_results_append(
+            f"after {stout_smear_steps} stout smearing steps (rho={stout_smear_step_size}) gf.link_trace()",
+            gf.link_trace(),
+            1e-12,
+        )
     #
     psel_full = q.PointsSelection(geo)
     #
@@ -279,7 +287,9 @@ def measure_topo_dwf(
     #
     for rand_vol_u1_idx in range(num_of_rand_vol_u1):
         q.check_time_limit()
-        pickle_path = f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/info.pickle"
+        pickle_path = (
+            f"{info_path}/pickle/rand_vol_u1_idx-{rand_vol_u1_idx}/info.pickle"
+        )
         if q.does_file_exist_qar_sync_node(pickle_path):
             info = q.load_pickle_obj(pickle_path)
             assert isinstance(info, dict)
@@ -331,7 +341,9 @@ def measure_topo_dwf(
                 assert isinstance(idx, int), f"check: idx type={type(idx)}"
                 if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/psel.lati"):
                     return False
-                if not q.does_file_exist_qar_sync_node(f"{mk_path(idx)}/sp_prop_sol.lat"):
+                if not q.does_file_exist_qar_sync_node(
+                    f"{mk_path(idx)}/sp_prop_sol.lat"
+                ):
                     return False
                 return True
             #
@@ -388,7 +400,9 @@ def measure_topo_dwf(
                 sp_prop_sol_il : list of q.PselProp
                     List of loaded sparse propagator solutions, one per index.
                 """
-                assert isinstance(idx_list, list), f"load: idx_list type={type(idx_list)}"
+                assert isinstance(idx_list, list), (
+                    f"load: idx_list type={type(idx_list)}"
+                )
                 for i_idx in idx_list:
                     assert isinstance(i_idx, int), (
                         f"load: idx_list element type={type(i_idx)}"
@@ -600,7 +614,9 @@ def measure_topo_dwf(
                 )
                 index = geo.index_from_g_coordinate(pos_snk)
                 val = prop_sol.get_elem_wm(index)
-                assert isinstance(val, q.WilsonMatrix), f"get_prop: type(val)={type(val)}"
+                assert isinstance(val, q.WilsonMatrix), (
+                    f"get_prop: type(val)={type(val)}"
+                )
                 return val
             #
             cexpr = get_cexpr_tadpole_loop()
@@ -627,7 +643,9 @@ def measure_topo_dwf(
                     Shape ``(len(chunk), len(expr_names))``.
                     Column 0 = ``qbar gamma5 q``, column 1 = ``qbar q`` at each site.
                 """
-                assert isinstance(chunk_idx, int), f"eval: chunk_idx type={type(chunk_idx)}"
+                assert isinstance(chunk_idx, int), (
+                    f"eval: chunk_idx type={type(chunk_idx)}"
+                )
                 chunk = chunk_list[chunk_idx]
                 val_arr = np.zeros(
                     (
@@ -638,7 +656,9 @@ def measure_topo_dwf(
                 )
                 for idx, xg in enumerate(chunk):
                     pd = {"x_1": ("point-snk", tuple(xg))}
-                    val_arr[idx] = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+                    val_arr[idx] = eval_cexpr(
+                        cexpr, positions_dict=pd, get_prop=get_prop
+                    )
                 expected_shape = (len(chunk), len(expr_names))
                 assert val_arr.shape == expected_shape, (
                     f"eval: val_arr.shape={val_arr.shape} != {expected_shape}"
@@ -670,7 +690,9 @@ def measure_topo_dwf(
             )
             f_tadpole_loop_imag_sqr = q.FieldRealD(geo, 2)
             f_tadpole_loop_imag_sqr[:] = f_tadpole_loop[:].imag ** 2
-            f_tadpole_loop_imag_sqr_sum = f_tadpole_loop_imag_sqr.glb_sum_tslice()[:].copy()
+            f_tadpole_loop_imag_sqr_sum = f_tadpole_loop_imag_sqr.glb_sum_tslice()[
+                :
+            ].copy()
             #
             info = dict()
             info["f_tadpole_loop_sum"] = f_tadpole_loop_sum
@@ -1375,7 +1397,9 @@ def run():
         maxiter_exact=int(q.get_arg("--maxiter_exact", "100", argv=argv)),
         ama_prob=float(q.get_arg("--ama_prob", "0.1", argv=argv)),
         stout_smear_steps=int(q.get_arg("--stout_smear_steps", "0", argv=argv)),
-        stout_smear_step_size=float(q.get_arg("--stout_smear_step_size", "0.1", argv=argv)),
+        stout_smear_step_size=float(
+            q.get_arg("--stout_smear_step_size", "0.1", argv=argv)
+        ),
     )
     for (
         fn_gf,

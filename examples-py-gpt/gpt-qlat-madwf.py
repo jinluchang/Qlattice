@@ -18,11 +18,15 @@ grid = qg.mk_grid(geo)
 rng = g.random("test")
 gpt_gf = g.qcd.gauge.random(grid, rng, scale=0.5)
 
-q.json_results_append("g.qcd.gauge.plaquette(double)", g.qcd.gauge.plaquette(gpt_gf), 1e-12)
+q.json_results_append(
+    "g.qcd.gauge.plaquette(double)", g.qcd.gauge.plaquette(gpt_gf), 1e-12
+)
 
 gpt_gf_f = g.convert(gpt_gf, g.single)
 
-q.json_results_append("g.qcd.gauge.plaquette(single)", g.qcd.gauge.plaquette(gpt_gf_f), 1e-6)
+q.json_results_append(
+    "g.qcd.gauge.plaquette(single)", g.qcd.gauge.plaquette(gpt_gf_f), 1e-6
+)
 
 gf = qg.qlat_from_gpt(gpt_gf)
 

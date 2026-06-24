@@ -50,12 +50,12 @@ ld = q.LatData()
 ld.load("results/ld.lat")
 
 assert q.qnorm(np.asarray(ld) - arr) == 0
-q.json_results_append('lat-io: ld roundtrip', q.qnorm(np.asarray(ld) - arr))
+q.json_results_append("lat-io: ld roundtrip", q.qnorm(np.asarray(ld) - arr))
 
 ld1 = q.load_lat_data("results/ld.lat")
 
 assert q.qnorm(np.asarray(ld1) - arr) == 0
-q.json_results_append('lat-io: ld1 roundtrip', q.qnorm(np.asarray(ld1) - arr))
+q.json_results_append("lat-io: ld1 roundtrip", q.qnorm(np.asarray(ld1) - arr))
 
 ld1 = q.mk_lat_data_real_f(info_list)
 
@@ -74,7 +74,7 @@ ld1 = q.LatDataRealF()
 ld1.load("results/ld1.latf")
 
 assert q.qnorm(np.asarray(ld1) - arr1) == 0
-q.json_results_append('lat-io: ld1f roundtrip', q.qnorm(np.asarray(ld1) - arr1))
+q.json_results_append("lat-io: ld1f roundtrip", q.qnorm(np.asarray(ld1) - arr1))
 
 ld2 = q.mk_lat_data_long(info_list)
 arr2 = ld2[:]
@@ -88,7 +88,7 @@ ld2 = q.LatDataLong()
 ld2.load("results/ld2.latl")
 
 assert q.qnorm(ld2[:] - arr2) == 0
-q.json_results_append('lat-io: ld2 roundtrip', float(q.qnorm(ld2[:] - arr2)))
+q.json_results_append("lat-io: ld2 roundtrip", float(q.qnorm(ld2[:] - arr2)))
 
 ld3 = q.mk_lat_data_int(info_list)
 arr3 = ld3[:]
@@ -102,7 +102,7 @@ ld3 = q.LatDataInt()
 ld3.load("results/ld3.latl")
 
 assert q.qnorm(ld3[:] - arr3) == 0
-q.json_results_append('lat-io: ld3 roundtrip', float(q.qnorm(ld3[:] - arr3)))
+q.json_results_append("lat-io: ld3 roundtrip", float(q.qnorm(ld3[:] - arr3)))
 
 q.check_all_files_crc32_info("results")
 

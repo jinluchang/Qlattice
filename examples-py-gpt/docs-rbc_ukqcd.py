@@ -27,9 +27,13 @@ inv_acc = 0
 
 # get_ls_from_fermion_params
 fp_Ls = {"Ls": 12, "M5": 1.8}
-q.json_results_append("get_ls_from_fermion_params(Ls)", get_ls_from_fermion_params(fp_Ls))
+q.json_results_append(
+    "get_ls_from_fermion_params(Ls)", get_ls_from_fermion_params(fp_Ls)
+)
 fp_omega = {"omega": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]}
-q.json_results_append("get_ls_from_fermion_params(omega)", get_ls_from_fermion_params(fp_omega))
+q.json_results_append(
+    "get_ls_from_fermion_params(omega)", get_ls_from_fermion_params(fp_omega)
+)
 
 # get_param_fermion
 fp = get_param_fermion(job_tag, inv_type, inv_acc)

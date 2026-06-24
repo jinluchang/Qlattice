@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import qlat as q
-import numpy as np
 
 from qlat_scripts.v1.load_data import (
     dict_flavor_inv_type,
@@ -48,7 +47,7 @@ assert cache["key1"] == 42
 cache["key2"] = "existing"
 check_cache_assign(cache, "key2", "existing")
 assert cache["key2"] == "existing"
-q.json_results_append(f"check_cache_assign passed")
+q.json_results_append("check_cache_assign passed")
 
 q.json_results_append("get_prop_lookup_snk_src direct lookup")
 
@@ -58,9 +57,7 @@ def mock_get(pos_snk):
     return f"val_at_{pos_snk}"
 
 prop_lookup_cache[("l", 0, "wall", "wall")] = mock_get
-result = get_prop_lookup_snk_src(
-    prop_lookup_cache, "l", ("wall", 3), ("wall", 0)
-)
+result = get_prop_lookup_snk_src(prop_lookup_cache, "l", ("wall", 3), ("wall", 0))
 assert result == "val_at_3"
 q.json_results_append(f"direct lookup: {result}")
 

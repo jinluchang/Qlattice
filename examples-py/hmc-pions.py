@@ -1015,10 +1015,10 @@ def main():
     hmc.save_field()
     measurements.save()
     #
-    phi0_vev = np.mean(measurements.phi_list[int(n_traj / 2):], axis=0)[0]
-    phi_sq_vev = np.mean(measurements.psq_list[int(n_traj / 2):])
-    q.json_results_append(f"vacuum expectation value of phi_0", phi0_vev, 1e-2)
-    q.json_results_append(f"vacuum expectation value of phi^2", phi_sq_vev, 1e-2)
+    phi0_vev = np.mean(measurements.phi_list[int(n_traj / 2) :], axis=0)[0]
+    phi_sq_vev = np.mean(measurements.psq_list[int(n_traj / 2) :])
+    q.json_results_append("vacuum expectation value of phi_0", phi0_vev, 1e-2)
+    q.json_results_append("vacuum expectation value of phi^2", phi_sq_vev, 1e-2)
 
 size_node_list = [
     [1, 1, 1, 1],

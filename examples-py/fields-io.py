@@ -22,8 +22,8 @@ fselc.add_psel(psel)
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 
-q.json_results_append('fields-io: prop qnorm', prop.qnorm(), 1e-10)
-q.json_results_append(f'fields-io: prop crc32 = {prop.crc32()}')
+q.json_results_append("fields-io: prop qnorm", prop.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop crc32 = {prop.crc32()}")
 
 s_prop = q.SelProp(fselc)
 s_prop @= prop
@@ -113,12 +113,12 @@ sfw.flush()
 
 s_prop = q.SelProp(fsel)
 s_prop @= prop
-q.json_results_append('fields-io: s_prop qnorm', s_prop.qnorm(), 1e-10)
+q.json_results_append("fields-io: s_prop qnorm", s_prop.qnorm(), 1e-10)
 s_prop.save_float_from_double(sfw, "s_prop")
 
 prop1 = q.SelProp(fselc)
 prop1 @= prop
-q.json_results_append('fields-io: prop1 qnorm', prop1.qnorm(), 1e-10)
+q.json_results_append("fields-io: prop1 qnorm", prop1.qnorm(), 1e-10)
 prop1.save_float_from_double(sfw, "prop1")
 
 sfw.close()
@@ -140,38 +140,38 @@ q.json_results_append(f"fields-io: sfr.new_size_node()={sfr.new_size_node()}")
 
 prop_d = q.Prop()
 prop_d.load_double(sfr, "prop.d")
-q.json_results_append('fields-io: prop_d qnorm', prop_d.qnorm(), 1e-10)
-q.json_results_append(f'fields-io: prop_d crc32 = {prop_d.crc32()}')
+q.json_results_append("fields-io: prop_d qnorm", prop_d.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop_d crc32 = {prop_d.crc32()}")
 prop_d -= prop
-q.json_results_append('fields-io: prop_d diff qnorm', prop_d.qnorm(), 1e-10)
-q.json_results_append(f'fields-io: prop_d diff crc32 = {prop_d.crc32()}')
+q.json_results_append("fields-io: prop_d diff qnorm", prop_d.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop_d diff crc32 = {prop_d.crc32()}")
 
 prop_f = q.Prop()
 prop_f.load_double_from_float(sfr, "prop")
-q.json_results_append('fields-io: prop_f qnorm', prop_f.qnorm(), 1e-10)
-q.json_results_append(f'fields-io: prop_f crc32 = {prop_f.crc32()}')
+q.json_results_append("fields-io: prop_f qnorm", prop_f.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop_f crc32 = {prop_f.crc32()}")
 prop_f -= prop
-q.json_results_append('fields-io: prop_f diff qnorm', prop_f.qnorm(), 1e-10)
-q.json_results_append(f'fields-io: prop_f diff crc32 = {prop_f.crc32()}')
+q.json_results_append("fields-io: prop_f diff qnorm", prop_f.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop_f diff crc32 = {prop_f.crc32()}")
 
 s_prop_f = q.SelProp(fsel)
 s_prop_f.load_double_from_float(sfr, "s_prop")
-q.json_results_append('fields-io: s_prop_f qnorm', s_prop_f.qnorm(), 1e-10)
+q.json_results_append("fields-io: s_prop_f qnorm", s_prop_f.qnorm(), 1e-10)
 s_prop_f -= s_prop
-q.json_results_append('fields-io: s_prop_f diff qnorm', s_prop_f.qnorm(), 1e-10)
+q.json_results_append("fields-io: s_prop_f diff qnorm", s_prop_f.qnorm(), 1e-10)
 
 prop1_f = q.SelProp(fselc)
 prop1_f.load_double_from_float(sfr, "prop1")
-q.json_results_append('fields-io: prop1_f qnorm', prop1_f.qnorm(), 1e-10)
+q.json_results_append("fields-io: prop1_f qnorm", prop1_f.qnorm(), 1e-10)
 prop1_f -= prop1
-q.json_results_append('fields-io: prop1_f diff qnorm', prop1_f.qnorm(), 1e-10)
+q.json_results_append("fields-io: prop1_f diff qnorm", prop1_f.qnorm(), 1e-10)
 
 prop1_ff = q.SelProp(None)
 prop1_ff.load_double_from_float(sfr, "prop1")
-q.json_results_append('fields-io: prop1_ff qnorm', prop1_ff.qnorm(), 1e-10)
+q.json_results_append("fields-io: prop1_ff qnorm", prop1_ff.qnorm(), 1e-10)
 assert q.is_matching_fsel(prop1_ff.fsel, fselc)
 prop1_ff -= prop1
-q.json_results_append('fields-io: prop1_ff diff qnorm', prop1_ff.qnorm(), 1e-10)
+q.json_results_append("fields-io: prop1_ff diff qnorm", prop1_ff.qnorm(), 1e-10)
 
 sfr.close()
 
@@ -187,7 +187,7 @@ assert index_content == index_content2
 
 crc = q.compute_crc32("results/prop.fields/index.qar")
 
-q.json_results_append(f'fields-io: index.qar crc={crc:08X}')
+q.json_results_append(f"fields-io: index.qar crc={crc:08X}")
 
 q.json_results_append("fields-io: test read_as_char and write")
 
@@ -208,7 +208,9 @@ sfw = q.open_fields(
 )
 for tag in tags:
     obj = sfr.read_as_char(tag)
-    q.json_results_append(f"fields-io: read_as_char tag='{tag}' type='{type(obj).__name__}'")
+    q.json_results_append(
+        f"fields-io: read_as_char tag='{tag}' type='{type(obj).__name__}'"
+    )
     obj.save_direct(sfw, tag, skip_if_exist=True)
 tags_sfw = sfw.list()
 q.json_results_append(f"fields-io: tags_sfw={tags_sfw}")
@@ -227,25 +229,25 @@ for fn1, fn2 in zip(fn1_list, fn2_list):
         q.json_results_append(f"fields-io: crc check '{fn2}' crc={crc2:08X}")
         assert crc1 == crc2
 
-q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
+q.json_results_append(f"fields-io: list_fields={q.list_fields('results/prop.fields')}")
 
 q.properly_truncate_fields("results/prop.fields")
 
-q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
+q.json_results_append(f"fields-io: list_fields={q.list_fields('results/prop.fields')}")
 
 q.truncate_fields("results/prop.fields", fns)
 
-q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
+q.json_results_append(f"fields-io: list_fields={q.list_fields('results/prop.fields')}")
 
 q.truncate_fields("results/prop.fields", fns[:-1])
 
-q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
+q.json_results_append(f"fields-io: list_fields={q.list_fields('results/prop.fields')}")
 
 q.truncate_fields("results/prop.fields", [])
 
-q.json_results_append(f'fields-io: list_fields={q.list_fields("results/prop.fields")}')
+q.json_results_append(f"fields-io: list_fields={q.list_fields('results/prop.fields')}")
 
-q.json_results_append(f'fields-io: qls_all_sync_node={q.qls_all_sync_node("results")}')
+q.json_results_append(f"fields-io: qls_all_sync_node={q.qls_all_sync_node('results')}")
 
 q.check_log_json(__file__)
 q.timer_display()

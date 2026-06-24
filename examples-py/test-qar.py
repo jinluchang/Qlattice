@@ -129,11 +129,13 @@ q.qar_create_info("results/data2.qar", "results/data2", is_remove_folder_after=T
 q.qar_extract_info("results/data2.qar", "results/data2", is_remove_qar_after=True)
 
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
-q.json_results_append('test-qar: qar_multi_vol_max_size', int(qar_multi_vol_max_size))
+q.json_results_append("test-qar: qar_multi_vol_max_size", int(qar_multi_vol_max_size))
 
 q.set_qar_multi_vol_max_size(16 * 1024)
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size()
-q.json_results_append('test-qar: qar_multi_vol_max_size set', int(qar_multi_vol_max_size))
+q.json_results_append(
+    "test-qar: qar_multi_vol_max_size set", int(qar_multi_vol_max_size)
+)
 
 q.qar_create_info(
     "results/data2/ld-1000.qar", "results/data2/ld-1000", is_remove_folder_after=True
@@ -172,7 +174,7 @@ q.json_results_append(f"test-qar: ld-1000 qar list={l2}")
 q.sync_node()
 
 num_clean_up_qfiles = q.clean_up_qfile_map()
-q.json_results_append('test-qar: num_clean_up_qfiles', int(num_clean_up_qfiles))
+q.json_results_append("test-qar: num_clean_up_qfiles", int(num_clean_up_qfiles))
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
 q.json_results_append(f"test-qar: show_all_qfile n={len(sq_list)}")

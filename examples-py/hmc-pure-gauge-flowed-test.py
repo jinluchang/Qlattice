@@ -132,8 +132,12 @@ def test_hmc(total_site, ga):
         plaq_avg = q.gf_avg_plaq(gf)
         geo.total_volume * 6.0 * (1.0 - plaq_avg)
         wilson_loop = q.gf_avg_wilson_loop_normalized_tr(gf, 1, 1)
-        q.json_results_append(f"beta={ga.beta()}_c1={ga.c1()} traj={traj} plaq", plaq_avg, 1e-10)
-        q.json_results_append(f"beta={ga.beta()}_c1={ga.c1()} traj={traj} wilson_loop", wilson_loop, 1e-10)
+        q.json_results_append(
+            f"beta={ga.beta()}_c1={ga.c1()} traj={traj} plaq", plaq_avg, 1e-10
+        )
+        q.json_results_append(
+            f"beta={ga.beta()}_c1={ga.c1()} traj={traj} wilson_loop", wilson_loop, 1e-10
+        )
         q.displayln_info("test_hmc: traj={} ; plaq_avg={}".format(traj, plaq_avg))
         if traj % 1 == 0:
             q.display_gauge_field_info_table_with_wilson_flow(

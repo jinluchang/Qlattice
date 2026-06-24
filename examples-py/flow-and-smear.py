@@ -85,7 +85,9 @@ for int_type in ["euler", "runge-kutta"]:
 for is_spatial in [False, True]:
     gf_test = gf.copy()
     q.gf_flow_scale(gf_test, 0.1, is_spatial=is_spatial)
-    q.json_results_append(f"gf_flow_scale is_spatial={is_spatial} plaq", gf_test.plaq(), 1e-10)
+    q.json_results_append(
+        f"gf_flow_scale is_spatial={is_spatial} plaq", gf_test.plaq(), 1e-10
+    )
 
 for t_dir in [0, 1, 2, 3]:
     gf_test = gf.copy()
@@ -106,7 +108,9 @@ for alpha in [0.25, 0.5, 0.75]:
 
 for steps in [1, 3, 5]:
     gf_test = q.gf_spatial_ape_smear(gf, 0.5, steps)
-    q.json_results_append(f"gf_spatial_ape_smear steps={steps} plaq", gf_test.plaq(), 1e-10)
+    q.json_results_append(
+        f"gf_spatial_ape_smear steps={steps} plaq", gf_test.plaq(), 1e-10
+    )
 
 # ---- gf_hyp_smear ----
 
@@ -129,7 +133,9 @@ for method in ["force", "stout", "wilson-flow"]:
 for num_step in [1, 3, 5]:
     gf_test = gf.copy()
     q.gf_stout_smear(gf_test, 0.1, num_step)
-    q.json_results_append(f"gf_stout_smear steps={num_step} plaq", gf_test.plaq(), 1e-10)
+    q.json_results_append(
+        f"gf_stout_smear steps={num_step} plaq", gf_test.plaq(), 1e-10
+    )
 
 # ---- gf_block_stout_smear ----
 
@@ -153,10 +159,16 @@ f1 = q.FieldComplexD(geo, 3)
 f1.set_rand(rs.split("f1"))
 for radius in [1.0, 2.0, 3.0]:
     sf = q.smear_field(f1, radius)
-    q.json_results_append(f"smear_field r={radius} sig", q.get_data_sig(sf, rs.split(f"sf{radius}")), 1e-10)
+    q.json_results_append(
+        f"smear_field r={radius} sig",
+        q.get_data_sig(sf, rs.split(f"sf{radius}")),
+        1e-10,
+    )
 
 sf_sp = q.smear_field(f1, 2.0, is_only_spatial=True)
-q.json_results_append("smear_field spatial sig", q.get_data_sig(sf_sp, rs.split("sfsp")), 1e-10)
+q.json_results_append(
+    "smear_field spatial sig", q.get_data_sig(sf_sp, rs.split("sfsp")), 1e-10
+)
 
 # ---- smear_field_step (density field smearing) ----
 
@@ -164,16 +176,26 @@ f_real = q.FieldRealD(geo, 1)
 f_real.set_rand(rs.split("f_real"))
 for coef in [0.5, 0.8]:
     sf_step = q.smear_field_step(f_real, coef, 3)
-    q.json_results_append(f"smear_field_step coef={coef} sig", q.get_data_sig(sf_step, rs.split(f"sfs{coef}")), 1e-10)
+    q.json_results_append(
+        f"smear_field_step coef={coef} sig",
+        q.get_data_sig(sf_step, rs.split(f"sfs{coef}")),
+        1e-10,
+    )
 
 # ---- sphere_sum_field ----
 
 for radius in [1.0, 2.0, 3.0]:
     ss = q.sphere_sum_field(f1, radius)
-    q.json_results_append(f"sphere_sum_field r={radius} sig", q.get_data_sig(ss, rs.split(f"ss{radius}")), 1e-10)
+    q.json_results_append(
+        f"sphere_sum_field r={radius} sig",
+        q.get_data_sig(ss, rs.split(f"ss{radius}")),
+        1e-10,
+    )
 
 ss_sp = q.sphere_sum_field(f1, 2.0, is_only_spatial=True)
-q.json_results_append("sphere_sum_field spatial sig", q.get_data_sig(ss_sp, rs.split("sssp")), 1e-10)
+q.json_results_append(
+    "sphere_sum_field spatial sig", q.get_data_sig(ss_sp, rs.split("sssp")), 1e-10
+)
 
 # ---- prop_smear ----
 
@@ -187,21 +209,37 @@ step = 10
 
 for mode in [0, 1]:
     sp = q.prop_smear(prop, gf1, coef, step, mom, mode_smear=mode)
-    q.json_results_append(f"prop_smear mode={mode} sig", q.get_data_sig_arr(sp, rs.split(f"psm{mode}"), 3), 1e-10)
+    q.json_results_append(
+        f"prop_smear mode={mode} sig",
+        q.get_data_sig_arr(sp, rs.split(f"psm{mode}"), 3),
+        1e-10,
+    )
 
 sp_no_mom = q.prop_smear(prop, gf1, coef, step)
-q.json_results_append("prop_smear no_mom sig", q.get_data_sig_arr(sp_no_mom, rs.split("psnm"), 3), 1e-10)
+q.json_results_append(
+    "prop_smear no_mom sig", q.get_data_sig_arr(sp_no_mom, rs.split("psnm"), 3), 1e-10
+)
 
 sp_time = q.prop_smear(prop, gf1, coef, step, mom, smear_in_time_dir=True)
-q.json_results_append("prop_smear time_dir sig", q.get_data_sig_arr(sp_time, rs.split("psmt"), 3), 1e-10)
+q.json_results_append(
+    "prop_smear time_dir sig", q.get_data_sig_arr(sp_time, rs.split("psmt"), 3), 1e-10
+)
 
 # ---- prop_spatial_smear with Prop ----
 
 sp_spatial = q.prop_spatial_smear(prop, gf_ape, coef, step, mom)
-q.json_results_append("prop_spatial_smear Prop sig", q.get_data_sig_arr(sp_spatial, rs.split("pss"), 3), 1e-10)
+q.json_results_append(
+    "prop_spatial_smear Prop sig",
+    q.get_data_sig_arr(sp_spatial, rs.split("pss"), 3),
+    1e-10,
+)
 
 sp_spatial_nomom = q.prop_spatial_smear(prop, gf_ape, coef, step)
-q.json_results_append("prop_spatial_smear Prop no_mom sig", q.get_data_sig_arr(sp_spatial_nomom, rs.split("pssnm"), 3), 1e-10)
+q.json_results_append(
+    "prop_spatial_smear Prop no_mom sig",
+    q.get_data_sig_arr(sp_spatial_nomom, rs.split("pssnm"), 3),
+    1e-10,
+)
 
 # ---- prop_spatial_smear with FermionField4d ----
 
@@ -209,10 +247,16 @@ ff = q.FermionField4d(geo)
 ff.set_rand(rs.split("ff-init"))
 
 sp_ff = q.prop_spatial_smear(ff, gf_ape, coef, step, mom)
-q.json_results_append("prop_spatial_smear FF4d sig", q.get_data_sig_arr(sp_ff, rs.split("pssf"), 3), 1e-10)
+q.json_results_append(
+    "prop_spatial_smear FF4d sig", q.get_data_sig_arr(sp_ff, rs.split("pssf"), 3), 1e-10
+)
 
 sp_ff_nomom = q.prop_spatial_smear(ff, gf_ape, coef, step)
-q.json_results_append("prop_spatial_smear FF4d no_mom sig", q.get_data_sig_arr(sp_ff_nomom, rs.split("pssfnm"), 3), 1e-10)
+q.json_results_append(
+    "prop_spatial_smear FF4d no_mom sig",
+    q.get_data_sig_arr(sp_ff_nomom, rs.split("pssfnm"), 3),
+    1e-10,
+)
 
 # ---- prop_spatial_smear with list of Prop ----
 
@@ -220,7 +264,11 @@ prop2 = q.Prop(geo)
 prop2.set_rand(rs.split("prop2-init"))
 sp_list_prop = q.prop_spatial_smear([prop, prop2], gf_ape, coef, step, mom)
 q.json_results_append("prop_spatial_smear [Prop,Prop] len", len(sp_list_prop), 1e-10)
-q.json_results_append("prop_spatial_smear [Prop,Prop] sig", q.get_data_sig_arr(sp_list_prop[0], rs.split("pssp0"), 3), 1e-10)
+q.json_results_append(
+    "prop_spatial_smear [Prop,Prop] sig",
+    q.get_data_sig_arr(sp_list_prop[0], rs.split("pssp0"), 3),
+    1e-10,
+)
 
 # ---- prop_spatial_smear with list of FermionField4d ----
 
@@ -228,7 +276,11 @@ ff2 = q.FermionField4d(geo)
 ff2.set_rand(rs.split("ff2-init"))
 sp_list_ff = q.prop_spatial_smear([ff, ff2], gf_ape, coef, step, mom)
 q.json_results_append("prop_spatial_smear [FF4d,FF4d] len", len(sp_list_ff), 1e-10)
-q.json_results_append("prop_spatial_smear [FF4d,FF4d] sig", q.get_data_sig_arr(sp_list_ff[0], rs.split("pssf0"), 3), 1e-10)
+q.json_results_append(
+    "prop_spatial_smear [FF4d,FF4d] sig",
+    q.get_data_sig_arr(sp_list_ff[0], rs.split("pssf0"), 3),
+    1e-10,
+)
 
 q.timer_display()
 q.check_log_json(__file__, check_eps=1e-0)

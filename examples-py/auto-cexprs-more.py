@@ -3,12 +3,27 @@
 import qlat as q
 
 from auto_contractor.operators import (
-    mk_vec_mu, mk_vec5_mu, mk_meson, mk_sym, mk_pi_p, mk_pi_m, mk_k_p,
-    mk_k_m, mk_j_mu, mk_pi_0, mk_k_0, mk_k_0_bar, mk_fac,
-    contract_simplify_compile, contract_simplify, sympy,
+    mk_vec_mu,
+    mk_vec5_mu,
+    mk_meson,
+    mk_sym,
+    mk_pi_p,
+    mk_pi_m,
+    mk_k_p,
+    mk_k_m,
+    mk_j_mu,
+    mk_pi_0,
+    mk_k_0,
+    mk_k_0_bar,
+    mk_fac,
+    contract_simplify_compile,
+    contract_simplify,
 )
 from auto_contractor.eval import (
-    cache_compiled_cexpr, benchmark_eval_cexpr, get_expr_names, benchmark_show_check,
+    cache_compiled_cexpr,
+    benchmark_eval_cexpr,
+    get_expr_names,
+    benchmark_show_check,
 )
 
 is_cython = False

@@ -6,15 +6,9 @@ import numpy as np
 from qlat_scripts.v1 import (
     set_param,
     get_param,
-    get_save_path,
-    get_load_path,
-    get_job_seed,
 )
 from qlat_scripts.v1.gen_data import (
     mk_psrc_tag,
-    make_fsel_from_weight,
-    make_psel_from_weight,
-    run_get_inverter,
     run_f_weight_uniform,
     run_f_weight_load,
     run_f_rand_01,
@@ -70,7 +64,9 @@ get_f_weight_loaded = run_f_weight_load(job_tag, traj)
 assert get_f_weight_loaded is not None
 f_weight_loaded = get_f_weight_loaded()
 assert np.allclose(f_weight[:], f_weight_loaded[:])
-q.json_results_append(f"f_weight load match: {np.allclose(f_weight[:], f_weight_loaded[:])}")
+q.json_results_append(
+    f"f_weight load match: {np.allclose(f_weight[:], f_weight_loaded[:])}"
+)
 
 q.json_results_append("run_f_rand_01")
 
@@ -115,7 +111,9 @@ fsel_extracted = get_fsel()
 psel_extracted = get_psel()
 assert q.glb_sum(fsel_extracted.n_elems) == n_elems
 assert psel_extracted.n_points == psel.n_points
-q.json_results_append(f"extracted fsel n_elems={q.glb_sum(fsel_extracted.n_elems)} psel n_points={psel_extracted.n_points}")
+q.json_results_append(
+    f"extracted fsel n_elems={q.glb_sum(fsel_extracted.n_elems)} psel n_points={psel_extracted.n_points}"
+)
 
 q.json_results_append("run_fsel_prob_sub_sampling")
 
@@ -144,7 +142,9 @@ get_psel_prob_sub = run_psel_prob_sub_sampling(
 )
 assert get_psel_prob_sub is not None
 psel_prob_sub = get_psel_prob_sub()
-q.json_results_append(f"psel sub n_points={psel_prob_sub.psel.n_points} (original={psel.n_points})")
+q.json_results_append(
+    f"psel sub n_points={psel_prob_sub.psel.n_points} (original={psel.n_points})"
+)
 
 q.json_results_append("run_psel_split")
 
@@ -162,7 +162,9 @@ assert get_fsel_list is not None
 fsel_list = get_fsel_list()
 assert len(fsel_list) == 2
 total_fsel_split = sum(f.n_points for f in fsel_list)
-q.json_results_append(f"fsel_split: pieces={len(fsel_list)} total_points={total_fsel_split}")
+q.json_results_append(
+    f"fsel_split: pieces={len(fsel_list)} total_points={total_fsel_split}"
+)
 
 q.json_results_append("calc_hvp_sum_tslice")
 

@@ -25,38 +25,58 @@ q.json_results_append(f"mpi-utils: num_node = {num_node}")
 a = 12 + id_node
 gs_a = q.glb_sum(a)
 
-q.json_results_append(f"mpi-utils: glb_sum int input", float(a))
-q.json_results_append(f"mpi-utils: glb_sum int", float(gs_a))
+q.json_results_append("mpi-utils: glb_sum int input", float(a))
+q.json_results_append("mpi-utils: glb_sum int", float(gs_a))
 
 b = 12.4 + id_node
 gs_b = q.glb_sum(b)
 
-q.json_results_append(f"mpi-utils: glb_sum float input", b)
-q.json_results_append(f"mpi-utils: glb_sum float", gs_b)
+q.json_results_append("mpi-utils: glb_sum float input", b)
+q.json_results_append("mpi-utils: glb_sum float", gs_b)
 
 c = np.arange(3.0) + 1.1 + id_node
 gs_c = q.glb_sum(c)
 
-q.json_results_append(f"mpi-utils: glb_sum float_arr input", np.array(c.tolist()), 1e-10)
-q.json_results_append(f"mpi-utils: glb_sum float_arr", np.array(gs_c.tolist()), 1e-10)
+q.json_results_append(
+    "mpi-utils: glb_sum float_arr input", np.array(c.tolist()), 1e-10
+)
+q.json_results_append("mpi-utils: glb_sum float_arr", np.array(gs_c.tolist()), 1e-10)
 
 d = np.arange(3.0) + 1.1 + id_node * 1.0j
 gs_d = q.glb_sum(d)
 
-q.json_results_append(f"mpi-utils: glb_sum complex_arr input", np.array([x.real for x in d.tolist()]), 1e-10)
-q.json_results_append(f"mpi-utils: glb_sum complex_arr", np.array([x.real for x in gs_d.tolist()]), 1e-10)
+q.json_results_append(
+    "mpi-utils: glb_sum complex_arr input",
+    np.array([x.real for x in d.tolist()]),
+    1e-10,
+)
+q.json_results_append(
+    "mpi-utils: glb_sum complex_arr", np.array([x.real for x in gs_d.tolist()]), 1e-10
+)
 
 e = (np.arange(6.0) + 1.1 + id_node).reshape(3, 2)
 gs_e = q.glb_sum(e)
 
-q.json_results_append(f"mpi-utils: glb_sum float_mat input", np.array(e.ravel().tolist()), 1e-10)
-q.json_results_append(f"mpi-utils: glb_sum float_mat", np.array(gs_e.ravel().tolist()), 1e-10)
+q.json_results_append(
+    "mpi-utils: glb_sum float_mat input", np.array(e.ravel().tolist()), 1e-10
+)
+q.json_results_append(
+    "mpi-utils: glb_sum float_mat", np.array(gs_e.ravel().tolist()), 1e-10
+)
 
 f = (np.arange(6.0) + 1.1 + id_node * 1.0j).reshape(3, 2)
 gs_f = q.glb_sum(f)
 
-q.json_results_append(f"mpi-utils: glb_sum complex_mat input", np.array([x.real for x in f.ravel().tolist()]), 1e-10)
-q.json_results_append(f"mpi-utils: glb_sum complex_mat", np.array([x.real for x in gs_f.ravel().tolist()]), 1e-10)
+q.json_results_append(
+    "mpi-utils: glb_sum complex_mat input",
+    np.array([x.real for x in f.ravel().tolist()]),
+    1e-10,
+)
+q.json_results_append(
+    "mpi-utils: glb_sum complex_mat",
+    np.array([x.real for x in gs_f.ravel().tolist()]),
+    1e-10,
+)
 
 g = [
     1.3 + id_node,
@@ -71,8 +91,16 @@ g = [
 ]
 gs_g = q.glb_sum(g)
 
-q.json_results_append(f"mpi-utils: glb_sum mixed input", np.array([float(g[0]), float(g[1].real), float(g[2])]), 1e-10)
-q.json_results_append(f"mpi-utils: glb_sum mixed", np.array([float(gs_g[0]), float(gs_g[1].real), float(gs_g[2])]), 1e-10)
+q.json_results_append(
+    "mpi-utils: glb_sum mixed input",
+    np.array([float(g[0]), float(g[1].real), float(g[2])]),
+    1e-10,
+)
+q.json_results_append(
+    "mpi-utils: glb_sum mixed",
+    np.array([float(gs_g[0]), float(gs_g[1].real), float(gs_g[2])]),
+    1e-10,
+)
 
 q.check_log_json(__file__)
 q.timer_display()

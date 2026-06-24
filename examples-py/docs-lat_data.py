@@ -28,12 +28,16 @@ q.json_results_append(f"mk_lat_data_real_f: ndim={ld_rf.ndim()}")
 ld_int = q.mk_lat_data_int([["a", 3]])
 assert ld_int.ndim() == 1
 assert not ld_int.is_complex()
-q.json_results_append(f"mk_lat_data_int: ndim={ld_int.ndim()} is_complex={ld_int.is_complex()}")
+q.json_results_append(
+    f"mk_lat_data_int: ndim={ld_int.ndim()} is_complex={ld_int.is_complex()}"
+)
 
 ld_long = q.mk_lat_data_long([["b", 5]])
 assert ld_long.ndim() == 1
 assert not ld_long.is_complex()
-q.json_results_append(f"mk_lat_data_long: ndim={ld_long.ndim()} is_complex={ld_long.is_complex()}")
+q.json_results_append(
+    f"mk_lat_data_long: ndim={ld_long.ndim()} is_complex={ld_long.is_complex()}"
+)
 
 q.json_results_append("set_info with dim_indices")
 
@@ -42,7 +46,9 @@ ld2.set_info([["t", 8], ["mom", 3, ["(0,0,0)", "(1,0,0)", "(1,1,0)"]]])
 assert ld2.ndim() == 2
 assert ld2.dim_name(1) == "mom"
 assert ld2.dim_indices(1) == ["(0,0,0)", "(1,0,0)", "(1,1,0)"]
-q.json_results_append(f"set_info: ndim={ld2.ndim()} dim_name(1)={ld2.dim_name(1)} indices={ld2.dim_indices(1)}")
+q.json_results_append(
+    f"set_info: ndim={ld2.ndim()} dim_name(1)={ld2.dim_name(1)} indices={ld2.dim_indices(1)}"
+)
 
 q.json_results_append("dimension metadata")
 
@@ -64,7 +70,7 @@ q.json_results_append(
     f"metadata: dim_name(0)={ld3.dim_name(0)} dim_size(0)={ld3.dim_size(0)}"
 )
 q.json_results_append(
-    f"metadata: dim_indices(1)={ld3.dim_indices(1)} dim_idx(1,'p1')={ld3.dim_idx(1,'p1')}"
+    f"metadata: dim_indices(1)={ld3.dim_indices(1)} dim_idx(1,'p1')={ld3.dim_idx(1, 'p1')}"
 )
 q.json_results_append(f"metadata: is_complex={ld3.is_complex()}")
 
@@ -109,7 +115,9 @@ ld5 = q.LatData()
 ld5.from_numpy(arr)
 assert ld5.ndim() == 2
 assert np.allclose(np.asarray(ld5), arr)
-q.json_results_append(f"from_numpy: ndim={ld5.ndim()} match={np.allclose(np.asarray(ld5), arr)}")
+q.json_results_append(
+    f"from_numpy: ndim={ld5.ndim()} match={np.allclose(np.asarray(ld5), arr)}"
+)
 
 arr_f = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float64)
 ld5b = q.LatData()
@@ -117,7 +125,9 @@ ld5b.from_numpy(arr_f, dim_names=["x", "y"], is_complex=False)
 assert ld5b.ndim() == 2
 assert ld5b.dim_names() == ["x", "y"]
 assert not ld5b.is_complex()
-q.json_results_append(f"from_numpy(dim_names): ndim={ld5b.ndim()} names={ld5b.dim_names()}")
+q.json_results_append(
+    f"from_numpy(dim_names): ndim={ld5b.ndim()} names={ld5b.dim_names()}"
+)
 
 q.json_results_append("to_list / from_list")
 
@@ -130,7 +140,9 @@ ld6.from_list(lst)
 assert ld6.ndim() == 1
 assert ld6.dim_sizes() == [12]
 assert np.allclose(np.asarray(ld6).ravel(), np.asarray(ld4).ravel())
-q.json_results_append(f"from_list: ndim={ld6.ndim()} data_match={np.allclose(np.asarray(ld6).ravel(), np.asarray(ld4).ravel())}")
+q.json_results_append(
+    f"from_list: ndim={ld6.ndim()} data_match={np.allclose(np.asarray(ld6).ravel(), np.asarray(ld4).ravel())}"
+)
 
 q.json_results_append("save_str / load_str round-trip")
 
@@ -142,7 +154,9 @@ assert isinstance(content, bytes)
 ld8 = q.LatData()
 ld8.load_str(content)
 assert np.allclose(np.asarray(ld8), np.asarray(ld7))
-q.json_results_append(f"save_str/load_str: type={type(content).__name__} match={np.allclose(np.asarray(ld8), np.asarray(ld7))}")
+q.json_results_append(
+    f"save_str/load_str: type={type(content).__name__} match={np.allclose(np.asarray(ld8), np.asarray(ld7))}"
+)
 
 q.json_results_append("arithmetic (LatData)")
 
@@ -157,35 +171,37 @@ ld_b[1, 1] = 1.5
 ld_sum = ld_a + ld_b
 assert ld_sum[0, 0] == 1.5
 assert ld_sum[1, 1] == 3.5
-q.json_results_append(f"add: (ld_a+ld_b)[0,0]={ld_sum[0,0]} [1,1]={ld_sum[1,1]}")
+q.json_results_append(f"add: (ld_a+ld_b)[0,0]={ld_sum[0, 0]} [1,1]={ld_sum[1, 1]}")
 
 ld_diff = ld_a - ld_b
 assert ld_diff[0, 0] == 0.5
 assert ld_diff[1, 1] == 0.5
-q.json_results_append(f"sub: (ld_a-ld_b)[0,0]={ld_diff[0,0]} [1,1]={ld_diff[1,1]}")
+q.json_results_append(f"sub: (ld_a-ld_b)[0,0]={ld_diff[0, 0]} [1,1]={ld_diff[1, 1]}")
 
 ld_scaled = ld_a * 3.0
 assert ld_scaled[0, 0] == 3.0
 assert ld_scaled[1, 1] == 6.0
-q.json_results_append(f"mul scalar: (ld_a*3)[0,0]={ld_scaled[0,0]} [1,1]={ld_scaled[1,1]}")
+q.json_results_append(
+    f"mul scalar: (ld_a*3)[0,0]={ld_scaled[0, 0]} [1,1]={ld_scaled[1, 1]}"
+)
 
 ld_neg = -ld_a
 assert ld_neg[0, 0] == -1.0
 assert ld_neg[1, 1] == -2.0
-q.json_results_append(f"neg: (-ld_a)[0,0]={ld_neg[0,0]} [1,1]={ld_neg[1,1]}")
+q.json_results_append(f"neg: (-ld_a)[0,0]={ld_neg[0, 0]} [1,1]={ld_neg[1, 1]}")
 
 ld_c = ld_a.copy()
 ld_c += ld_b
 assert ld_c[0, 0] == 1.5
-q.json_results_append(f"iadd: ld_c[0,0]={ld_c[0,0]}")
+q.json_results_append(f"iadd: ld_c[0,0]={ld_c[0, 0]}")
 
 ld_c -= ld_b
 assert ld_c[0, 0] == 1.0
-q.json_results_append(f"isub: ld_c[0,0]={ld_c[0,0]}")
+q.json_results_append(f"isub: ld_c[0,0]={ld_c[0, 0]}")
 
 ld_c *= 2.0
 assert ld_c[0, 0] == 2.0
-q.json_results_append(f"imul: ld_c[0,0]={ld_c[0,0]}")
+q.json_results_append(f"imul: ld_c[0,0]={ld_c[0, 0]}")
 
 qn = ld_a.qnorm()
 assert qn == 1.0 + 4.0
@@ -207,7 +223,9 @@ arr_view = np.asarray(ld_buf)
 assert arr_view[0, 0] == 5.0
 arr_view[1, 1] = 7.0
 assert ld_buf[1, 1] == 7.0
-q.json_results_append(f"buffer protocol: view[0,0]={arr_view[0,0]} ld[1,1]={ld_buf[1,1]}")
+q.json_results_append(
+    f"buffer protocol: view[0,0]={arr_view[0, 0]} ld[1,1]={ld_buf[1, 1]}"
+)
 
 q.json_results_append("serialization (pickle)")
 
@@ -237,11 +255,15 @@ q.json_results_append(f"copy: orig[0]={ld_orig[0]} copy_modified[0]={ld_copy[0]}
 
 ld_shallow = copy.copy(ld_orig)
 assert np.allclose(np.asarray(ld_shallow), np.asarray(ld_orig))
-q.json_results_append(f"__copy__: match={np.allclose(np.asarray(ld_shallow), np.asarray(ld_orig))}")
+q.json_results_append(
+    f"__copy__: match={np.allclose(np.asarray(ld_shallow), np.asarray(ld_orig))}"
+)
 
 ld_deep = copy.deepcopy(ld_orig)
 assert np.allclose(np.asarray(ld_deep), np.asarray(ld_orig))
-q.json_results_append(f"__deepcopy__: match={np.allclose(np.asarray(ld_deep), np.asarray(ld_orig))}")
+q.json_results_append(
+    f"__deepcopy__: match={np.allclose(np.asarray(ld_deep), np.asarray(ld_orig))}"
+)
 
 q.json_results_append("MPI operations")
 
@@ -295,7 +317,9 @@ content_rf = ld_rf.save_str()
 ld_rf2 = q.LatDataRealF()
 ld_rf2.load_str(content_rf)
 assert np.allclose(np.asarray(ld_rf2), np.asarray(ld_rf))
-q.json_results_append(f"LatDataRealF: dtype={arr_rf.dtype} round_trip={np.allclose(np.asarray(ld_rf2), np.asarray(ld_rf))}")
+q.json_results_append(
+    f"LatDataRealF: dtype={arr_rf.dtype} round_trip={np.allclose(np.asarray(ld_rf2), np.asarray(ld_rf))}"
+)
 
 q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
