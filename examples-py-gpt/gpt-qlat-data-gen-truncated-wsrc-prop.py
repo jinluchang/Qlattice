@@ -312,9 +312,12 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
         qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
         for idx, tslice in enumerate(tslice_list):
             tag_base = (
-                f"idx={idx} ; tslice={tslice} ; t_half={t_half} ; type={inv_type}"
+                f"tslice={tslice} ; t_half={t_half} ; type={inv_type}"
             )
             tag = f"{tag_base} ; {acc_tag}"
+            if q.bcast_py(qar_ws.has_regular_file(f"idx={idx} ; {tag} ; wsnk.lat")):
+                q.displayln_info(f"WARNING: qar_ws has: old tag {tag}")
+                continue
             has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
             if has_file:
                 continue
