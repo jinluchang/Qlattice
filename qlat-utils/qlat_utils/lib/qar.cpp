@@ -1806,6 +1806,9 @@ std::string read_info(const QarFileVol& qar, const QarSegmentInfo& qsinfo)
   TIMER("read_info(qar_v,qsinfo)");
   Qassert(not qar.null());
   Qassert(qar.mode() == QFileMode::Read);
+  if (qsinfo.info_len == 0) {
+    return "";
+  }
   std::vector<Char> data(qsinfo.info_len);
   const Int code = qfseek(qar.qfile(), qsinfo.offset_info, SEEK_SET);
   Qassert(code == 0);

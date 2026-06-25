@@ -289,7 +289,10 @@ def transform_file(source, is_cython=False, is_cpp=False):
         comment_marker = "//"
     elif is_cython:
         body_lines = get_function_body_lines_cython(lines)
-        string_lines = set()
+        try:
+            string_lines = get_string_lines(source)
+        except tokenize.TokenError:
+            string_lines = set()
         comment_marker = "#"
     else:
         body_lines = get_function_body_lines(lines)

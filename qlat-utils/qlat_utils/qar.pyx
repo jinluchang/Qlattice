@@ -2,12 +2,9 @@
 
 """
 Module ``qlat_utils.qar``
-=========================
-
-QAR archive format, QFile abstraction, and file I/O utilities.
-
-Documentation: ``docs/qlat-utils/qlat_qar.md``
-
+=========================\n
+QAR archive format, QFile abstraction, and file I/O utilities.\n
+Documentation: ``docs/qlat-utils/qlat_qar.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
@@ -211,7 +208,10 @@ cdef class QarFile:
 
     def __init__(self, *, str path=None, str mode=None):
         """
-        QarFile(path=path, mode=mode)
+        QarFile(path=path, mode=mode)\n
+        Parameters are keyword-only.  Use::\n
+            QarFile(path="/path/to/file.qar", mode="w")\n
+        or the ``open_qar()`` convenience wrapper which accepts positional args.
         """
         if path is not None:
             self.xx.init(path, cc.read_qfile_mode(mode))
@@ -301,9 +301,20 @@ cdef class QarFile:
         return qfile
 
     def read_data(self, const cc.std_string& fn):
+        """
+        Read entry data as a Python ``str`` (UTF-8 decoded).\n
+        Only suitable for text content.  For binary data use
+        :meth:`read_data_bytes` instead — this method will raise
+        ``UnicodeDecodeError`` on non-UTF-8 bytes.
+        """
         return <str>cc.read_data(self.xx, fn)
 
     def read_data_bytes(self, const cc.std_string& fn):
+        """
+        Read entry data as raw ``bytes``.\n
+        Safe for both text and binary content.  Prefer this over
+        :meth:`read_data` unless you know the entry is plain text.
+        """
         return <bytes>cc.read_data(self.xx, fn)
 
     def read_info(self, const cc.std_string& fn):
