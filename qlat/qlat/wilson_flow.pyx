@@ -2,15 +2,11 @@
 
 """
 Module ``qlat.wilson_flow``
-============================
-
-Wilson flow and stout smearing utilities for gauge fields.
-
+============================\n
+Wilson flow and stout smearing utilities for gauge fields.\n
 Provides energy density measurements, Wilson flow evolution (Runge-Kutta and
-Euler integrators), stout smearing, and local tree gauge fixing.
-
-Documentation: ``docs/qlat/qlat_wilson_flow.md``
-
+Euler integrators), stout smearing, and local tree gauge fixing.\n
+Documentation: ``docs/qlat/qlat_wilson_flow.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

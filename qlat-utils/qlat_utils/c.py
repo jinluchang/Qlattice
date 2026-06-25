@@ -1,14 +1,10 @@
 """
 Module ``qlat_utils.c``
-=======================
-
-Central C extension loader and public API aggregator for qlat-utils.
-
+=======================\n
+Central C extension loader and public API aggregator for qlat-utils.\n
 Loads the native shared library and re-exports symbols from submodules
-(timer, cutils, types, coordinate, lat_data, rng_state, qar, mat).
-
-Documentation: ``docs/qlat-utils/qlat_c.md``
-
+(timer, cutils, types, coordinate, lat_data, rng_state, qar, mat).\n
+Documentation: ``docs/qlat-utils/qlat_c.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

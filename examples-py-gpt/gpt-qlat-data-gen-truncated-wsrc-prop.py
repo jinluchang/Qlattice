@@ -289,13 +289,9 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
     fname = q.get_fname()
     inv_type_name = ["light", "strange"][inv_type]
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    t_size = total_site[3]
-    t_half_list = get_param(
-        job_tag, "measurement", "field_trunc_half_width_list"
-    )
-    t_size_divisor = get_param(
-        job_tag, "measurement", "field_trunc_t_size_divisor"
-    )
+    total_site[3]
+    t_half_list = get_param(job_tag, "measurement", "field_trunc_half_width_list")
+    t_size_divisor = get_param(job_tag, "measurement", "field_trunc_t_size_divisor")
     tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
     gf = get_gf()
     gt = get_gt()
@@ -311,9 +307,7 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             continue
         qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
         for idx, tslice in enumerate(tslice_list):
-            tag_base = (
-                f"tslice={tslice} ; t_half={t_half} ; type={inv_type}"
-            )
+            tag_base = f"tslice={tslice} ; t_half={t_half} ; type={inv_type}"
             tag = f"{tag_base} ; {acc_tag}"
             if q.bcast_py(qar_ws.has_regular_file(f"idx={idx} ; {tag} ; wsnk.lat")):
                 q.displayln_info(f"WARNING: qar_ws has: old tag {tag}")
@@ -380,10 +374,8 @@ def run_job(job_tag, traj):
     if job_tag[:5] == "test-":
         traj_gf = 1000
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    t_size = total_site[3]
-    t_half_list = get_param(
-        job_tag, "measurement", "field_trunc_half_width_list"
-    )
+    total_site[3]
+    t_half_list = get_param(job_tag, "measurement", "field_trunc_half_width_list")
     fns_produce = []
     for inv_type_name in ["light", "strange"]:
         for t_half in t_half_list:

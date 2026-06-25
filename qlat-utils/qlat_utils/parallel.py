@@ -1,14 +1,11 @@
 """
 Module ``qlat_utils.parallel``
-===============================
-
+===============================\n
 Multiprocessing helpers for embarrassingly parallel workloads.  Provides
 ``parallel_map`` and ``parallel_map_sum`` that dispatch work across a pool of
 worker processes with automatic garbage-collection management, plus a
-lightweight iteration tracer.
-
-Documentation: ``docs/qlat-utils/qlat_parallel.md``
-
+lightweight iteration tracer.\n
+Documentation: ``docs/qlat-utils/qlat_parallel.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

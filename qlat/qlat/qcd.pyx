@@ -2,13 +2,10 @@
 
 """
 Module ``qlat.qcd``
-====================
-
+====================\n
 Gauge field operations, gauge transformations, Wilson lines, and
-domain-wall fermion (DWF) QED solvers for lattice QCD simulations.
-
-Documentation: ``docs/qlat/qlat_qcd.md``
-
+domain-wall fermion (DWF) QED solvers for lattice QCD simulations.\n
+Documentation: ``docs/qlat/qlat_qcd.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

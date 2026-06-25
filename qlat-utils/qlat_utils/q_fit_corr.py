@@ -1,12 +1,9 @@
 """
 Module ``qlat_utils.q_fit_corr``
-=================================
-
+=================================\n
 Correlation-matrix fitting via energy/amplitude parameterisation with JAX
-autodiff, scipy minimisation, and HMC sampling.
-
-Documentation: ``docs/qlat-utils/qlat_q_fit_corr.md``
-
+autodiff, scipy minimisation, and HMC sampling.\n
+Documentation: ``docs/qlat-utils/qlat_q_fit_corr.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

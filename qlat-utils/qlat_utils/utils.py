@@ -1,13 +1,10 @@
 """
 Module ``qlat_utils.utils``
-=================================
-
+=================================\n
 General-purpose utility functions for CLI argument parsing, environment access,
 modular arithmetic, spatial coordinate helpers, lattice physics quantities, and
-test result verification.
-
-Documentation: ``docs/qlat-utils/qlat_utils_utils.md``
-
+test result verification.\n
+Documentation: ``docs/qlat-utils/qlat_utils_utils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
@@ -487,7 +484,9 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
     if 0 == get_id_node():
         qtouch(json_fn_name + ".new", json_dumps(json_results, indent=1))
         if not does_file_exist_qar(json_fn_name):
-            displayln(-1, f"CHECK: ERROR: Reference file '{json_fn_name}' does not exist.")
+            displayln(
+                -1, f"CHECK: ERROR: Reference file '{json_fn_name}' does not exist."
+            )
             mismatch = True
         else:
             json_results_load = json_loads(qcat(json_fn_name))
@@ -557,9 +556,13 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                 displayln(-1, "CHECK: ERROR: JSON results len does not match.")
                 mismatch = True
     if mismatch:
-        displayln(-1, f'CHECK: finished with mismatch in "{json_fn_name}". This suggest that the program may have changed, and need to update the reference "{json_fn_name}" file.')
+        displayln(
+            -1,
+            f'CHECK: finished with mismatch in "{json_fn_name}". This suggest that the program may have changed, and need to update the reference "{json_fn_name}" file.',
+        )
     try:
         from mpi4py import MPI
+        #
         mismatch = MPI.COMM_WORLD.bcast(mismatch, root=0)
     except ImportError:
         pass

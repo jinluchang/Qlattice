@@ -2,12 +2,9 @@
 
 """
 Module ``qlat_utils.cutils``
-=============================
-
-Low-level C++ filesystem utilities exposed to Python: path manipulation, directory listing, file/directory creation and removal, cached existence checks, MPI-synchronized variants, and cache management.
-
-Documentation: ``docs/qlat-utils/qlat_cutils.md``
-
+=============================\n
+Low-level C++ filesystem utilities exposed to Python: path manipulation, directory listing, file/directory creation and removal, cached existence checks, MPI-synchronized variants, and cache management.\n
+Documentation: ``docs/qlat-utils/qlat_cutils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

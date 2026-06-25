@@ -1,13 +1,10 @@
 """
 Module ``qlat_utils.__main__``
-==============================
-
+==============================\n
 Command-line interface entry point for ``python3 -m qlat_utils``.
 Dispatches to subcommands for CRC32 hashing, lattice data inspection,
-QAR archive management, and other utilities.
-
-Documentation: ``docs/qlat-utils/qlat_cli.md``
-
+QAR archive management, and other utilities.\n
+Documentation: ``docs/qlat-utils/qlat_cli.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

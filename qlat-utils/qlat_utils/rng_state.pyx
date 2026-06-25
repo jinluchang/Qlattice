@@ -2,12 +2,9 @@
 
 """
 Module ``qlat_utils.rng_state``
-===============================
-
-Deterministic SHA-256-based random number generator and data signature utilities.
-
-Documentation: ``docs/qlat-utils/qlat_rng_state.md``
-
+===============================\n
+Deterministic SHA-256-based random number generator and data signature utilities.\n
+Documentation: ``docs/qlat-utils/qlat_rng_state.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

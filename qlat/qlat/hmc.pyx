@@ -2,12 +2,9 @@
 
 """
 Module ``qlat.hmc``
-=====================
-
-Hybrid Monte Carlo (HMC) machinery for pure-gauge simulations.
-
-Provides:
-
+=====================\n
+Hybrid Monte Carlo (HMC) machinery for pure-gauge simulations.\n
+Provides:\n
 - ``GaugeMomentum`` — conjugate momentum field (``FieldColorMatrix`` with
   multiplicity 4, one anti-Hermitian matrix per lattice direction).
 - Force computation (``set_gm_force``, ``set_gm_force_dual``).
@@ -17,10 +14,8 @@ Provides:
 - Metropolis accept/reject (``metropolis_accept``).
 - A complete pure-gauge HMC driver (``run_hmc_pure_gauge``).
 - Utility functions for anti-Hermitian matrix basis conversions and
-  gauge-transformation momentum projection.
-
-Documentation: ``docs/qlat/qlat_hmc.md``
-
+  gauge-transformation momentum projection.\n
+Documentation: ``docs/qlat/qlat_hmc.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

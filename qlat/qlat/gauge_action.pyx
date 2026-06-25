@@ -2,14 +2,11 @@
 
 """
 Module ``qlat.gauge_action``
-==============================
-
+==============================\n
 Defines the ``GaugeAction`` class, which stores the parameters
 (``beta``, ``c1``) of a lattice gauge action (Wilson plaquette with
-optional rectangle improvement).
-
-Documentation: ``docs/qlat/qlat_gauge_action.md``
-
+optional rectangle improvement).\n
+Documentation: ``docs/qlat/qlat_gauge_action.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

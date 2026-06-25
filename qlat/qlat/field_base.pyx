@@ -2,13 +2,10 @@
 
 """
 Module ``qlat.field_base``
-==========================
-
+==========================\n
 Base classes and factory functions for lattice field types, selected fields,
-and selected points — the core data containers in qlat.
-
-Documentation: ``docs/qlat/qlat_field_base.md``
-
+and selected points — the core data containers in qlat.\n
+Documentation: ``docs/qlat/qlat_field_base.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

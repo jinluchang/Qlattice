@@ -2,14 +2,11 @@
 
 """
 Module ``qlat.fields_io``
-==========================
-
+==========================\n
 Provides shuffled binary I/O for lattice fields via ``ShuffledFieldsWriter``
 and ``ShuffledFieldsReader``, along with utility functions for listing,
-truncating, and verifying stored fields.
-
-Documentation: ``docs/qlat/qlat_fields_io.md``
-
+truncating, and verifying stored fields.\n
+Documentation: ``docs/qlat/qlat_fields_io.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

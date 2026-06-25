@@ -1,15 +1,11 @@
 """
 Module ``qlat_utils.load_prop``
-===============================
-
-Propagator loader for lattice QCD measurements.
-
+===============================\n
+Propagator loader for lattice QCD measurements.\n
 Converts raw propagator data (NumPy arrays or AMA-wrapped arrays) into
 ``WilsonMatrix`` form, handling the g5-hermitian conjugate convention
-commonly used in DWF and domain-wall fermion calculations.
-
-Documentation: ``docs/qlat-utils/qlat_load_prop.md``
-
+commonly used in DWF and domain-wall fermion calculations.\n
+Documentation: ``docs/qlat-utils/qlat_load_prop.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

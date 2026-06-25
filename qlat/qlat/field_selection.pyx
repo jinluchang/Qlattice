@@ -2,14 +2,11 @@
 
 """
 Module ``qlat.field_selection``
-===============================
-
+===============================\n
 Defines ``PointsSelection`` and ``FieldSelection`` for selecting subsets of
 lattice sites, along with ``SelectedShufflePlan`` for redistributing
-selected points across MPI nodes.
-
-Documentation: ``docs/qlat/qlat_field_selection.md``
-
+selected points across MPI nodes.\n
+Documentation: ``docs/qlat/qlat_field_selection.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

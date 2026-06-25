@@ -2,15 +2,11 @@
 
 """
 Module ``qlat_utils.coordinate``
-================================
-
-4-component coordinate types for lattice QCD.
-
+================================\n
+4-component coordinate types for lattice QCD.\n
 Provides ``Coordinate`` (integer) and ``CoordinateD`` (double) with
-element-wise arithmetic, modular operations, and index↔coordinate conversion.
-
-Documentation: ``docs/qlat-utils/qlat_coordinate.md``
-
+element-wise arithmetic, modular operations, and index↔coordinate conversion.\n
+Documentation: ``docs/qlat-utils/qlat_coordinate.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

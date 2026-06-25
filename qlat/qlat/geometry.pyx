@@ -2,14 +2,11 @@
 
 """
 Module ``qlat.geometry``
-========================
-
+========================\n
 Lattice geometry — describes the decomposition of a 4-D lattice across MPI
 nodes, including local site dimensions, halo expansion, and even/odd
-partitioning.
-
-Documentation: ``docs/qlat/qlat_geometry.md``
-
+partitioning.\n
+Documentation: ``docs/qlat/qlat_geometry.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

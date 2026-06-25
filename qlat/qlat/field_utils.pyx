@@ -2,13 +2,10 @@
 
 """
 Module ``qlat.field_utils``
-============================
-
+============================\n
 Field utility functions: expansion, communication plans, FFT, norms,
-element-wise square root, coordinate shifting, and field shuffling.
-
-Documentation: ``docs/qlat/qlat_field_utils.md``
-
+element-wise square root, coordinate shifting, and field shuffling.\n
+Documentation: ``docs/qlat/qlat_field_utils.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

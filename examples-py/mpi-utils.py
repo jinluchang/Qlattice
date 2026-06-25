@@ -37,9 +37,7 @@ q.json_results_append("mpi-utils: glb_sum float", gs_b)
 c = np.arange(3.0) + 1.1 + id_node
 gs_c = q.glb_sum(c)
 
-q.json_results_append(
-    "mpi-utils: glb_sum float_arr input", np.array(c.tolist()), 1e-10
-)
+q.json_results_append("mpi-utils: glb_sum float_arr input", np.array(c.tolist()), 1e-10)
 q.json_results_append("mpi-utils: glb_sum float_arr", np.array(gs_c.tolist()), 1e-10)
 
 d = np.arange(3.0) + 1.1 + id_node * 1.0j

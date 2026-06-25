@@ -2,13 +2,10 @@
 
 """
 Module ``qlat.utils_io``
-=========================
-
+=========================\n
 Lock management, graceful shutdown, and time-limit utilities for MPI-aware
-lattice QCD simulations.
-
-Documentation: ``docs/qlat/qlat_utils_io.md``
-
+lattice QCD simulations.\n
+Documentation: ``docs/qlat/qlat_utils_io.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -2,13 +2,10 @@
 
 """
 Module ``qlat.mpi``
-===================
-
+===================\n
 Low-level MPI utilities for lattice QCD simulations: MPI communicator begin/end,
-node layout queries, broadcasting, and global sum reductions.
-
-Documentation: ``docs/qlat/qlat_mpi.md``
-
+node layout queries, broadcasting, and global sum reductions.\n
+Documentation: ``docs/qlat/qlat_mpi.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

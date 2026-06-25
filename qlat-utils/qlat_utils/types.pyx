@@ -2,12 +2,9 @@
 
 """
 Module ``qlat_utils.types``
-=================================
-
-Element type descriptors and buffer protocol support for lattice QCD data types.
-
-Documentation: ``docs/qlat-utils/qlat_types.md``
-
+=================================\n
+Element type descriptors and buffer protocol support for lattice QCD data types.\n
+Documentation: ``docs/qlat-utils/qlat_types.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

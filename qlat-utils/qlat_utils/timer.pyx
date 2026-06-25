@@ -2,12 +2,9 @@
 
 """
 Module ``qlat_utils.timer``
-=================================
-
-Timing, profiling, verbosity control, and display utilities for qlat.
-
-Documentation: ``docs/qlat-utils/qlat_timer.md``
-
+=================================\n
+Timing, profiling, verbosity control, and display utilities for qlat.\n
+Documentation: ``docs/qlat-utils/qlat_timer.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

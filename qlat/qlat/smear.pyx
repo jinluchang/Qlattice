@@ -2,13 +2,10 @@
 
 """
 Module ``qlat.smear``
-======================
-
+======================\n
 Gauge-field smearing (APE, HYP) and propagator/fermion-field smearing
-operations for lattice QCD calculations.
-
-Documentation: ``docs/qlat/qlat_smear.md``
-
+operations for lattice QCD calculations.\n
+Documentation: ``docs/qlat/qlat_smear.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -1,13 +1,10 @@
 """
 Module ``qlat_utils.cache``
-=================================
-
+=================================\n
 Hierarchical in-memory cache with nested ``Cache`` (dict subclass) containers.
 Provides creation, traversal, cleaning, and removal of caches at both the
-Python and C++ levels.
-
-Documentation: ``docs/qlat-utils/qlat_cache.md``
-
+Python and C++ levels.\n
+Documentation: ``docs/qlat-utils/qlat_cache.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

@@ -2,12 +2,9 @@
 
 """
 Module ``qlat_utils.mat``
-=========================
-
-Matrix types and operations for lattice QCD: WilsonMatrix (12x12), SpinMatrix (4x4), ColorMatrix (3x3), along with trace, multiplication, addition, gamma-matrix, and epsilon-contraction utilities.
-
-Documentation: ``docs/qlat-utils/qlat_mat.md``
-
+=========================\n
+Matrix types and operations for lattice QCD: WilsonMatrix (12x12), SpinMatrix (4x4), ColorMatrix (3x3), along with trace, multiplication, addition, gamma-matrix, and epsilon-contraction utilities.\n
+Documentation: ``docs/qlat-utils/qlat_mat.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

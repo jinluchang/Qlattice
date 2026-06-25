@@ -2,15 +2,11 @@
 
 """
 Module ``qlat.topology``
-============================
-
-Topology charge and plaquette action density measurements for gauge fields.
-
+============================\n
+Topology charge and plaquette action density measurements for gauge fields.\n
 Provides clover-leaf and 5-loop improved topological charge density,
-plaquette action density, and their per-site field versions.
-
-Documentation: ``docs/qlat/qlat_topology.md``
-
+plaquette action density, and their per-site field versions.\n
+Documentation: ``docs/qlat/qlat_topology.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 

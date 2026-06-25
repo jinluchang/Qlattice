@@ -1,16 +1,12 @@
 """
 Module ``qlat_utils.ama``
-=========================
-
-All-mode Averaging (AMA) for multi-accuracy lattice QCD measurements.
-
+=========================\n
+All-mode Averaging (AMA) for multi-accuracy lattice QCD measurements.\n
 Implements the ``AmaVal`` container that stores sloppy results together with
 corrections at multiple accuracy levels and their probabilities.  Arithmetic
 operations propagate through all correction pairs, and ``ama_extract``
-produces the variance-reduced final estimate.
-
-Documentation: ``docs/qlat-utils/qlat_ama.md``
-
+produces the variance-reduced final estimate.\n
+Documentation: ``docs/qlat-utils/qlat_ama.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
