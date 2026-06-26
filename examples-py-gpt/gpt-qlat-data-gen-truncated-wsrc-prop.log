@@ -124,7 +124,7 @@ CHECK: params: test-4nt16-checker:     "maxcycle": 2
 CHECK: params: test-4nt16-checker:   },
 CHECK: params: test-4nt16-checker:   "cg_params-0-2": {
 CHECK: params: test-4nt16-checker:     "maxiter": 10,
-CHECK: params: test-4nt16-checker:     "maxcycle": 3
+CHECK: params: test-4nt16-checker:     "maxcycle": 1
 CHECK: params: test-4nt16-checker:   },
 CHECK: params: test-4nt16-checker:   "cg_params-1-0": {
 CHECK: params: test-4nt16-checker:     "maxiter": 10,
@@ -136,7 +136,7 @@ CHECK: params: test-4nt16-checker:     "maxcycle": 2
 CHECK: params: test-4nt16-checker:   },
 CHECK: params: test-4nt16-checker:   "cg_params-1-2": {
 CHECK: params: test-4nt16-checker:     "maxiter": 10,
-CHECK: params: test-4nt16-checker:     "maxcycle": 3
+CHECK: params: test-4nt16-checker:     "maxcycle": 1
 CHECK: params: test-4nt16-checker:   },
 CHECK: params: test-4nt16-checker:   "measurement": {
 CHECK: params: test-4nt16-checker:     "field_trunc_half_width_list": [
@@ -144,7 +144,11 @@ CHECK: params: test-4nt16-checker:       1,
 CHECK: params: test-4nt16-checker:       2,
 CHECK: params: test-4nt16-checker:       3
 CHECK: params: test-4nt16-checker:     ],
-CHECK: params: test-4nt16-checker:     "field_trunc_t_size_divisor": 8
+CHECK: params: test-4nt16-checker:     "field_trunc_t_size_divisor": 8,
+CHECK: params: test-4nt16-checker:     "field_trunc_inv_acc_list": [
+CHECK: params: test-4nt16-checker:       2,
+CHECK: params: test-4nt16-checker:       2
+CHECK: params: test-4nt16-checker:     ]
 CHECK: params: test-4nt16-checker:   }
 CHECK: params: test-4nt16-checker: }
 CHECK: finished successfully.

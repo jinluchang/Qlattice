@@ -295,7 +295,7 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
     tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
     gf = get_gf()
     gt = get_gt()
-    inv_acc = 0
+    inv_acc = get_param(job_tag, "measurement", "field_trunc_inv_acc_list")[inv_type]
     acc_tag = f"accuracy={inv_acc}"
     for t_half in t_half_list:
         path_ws = f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}"
@@ -411,16 +411,31 @@ job_tag = "24D"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
+set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "cg_params-0-2", "maxiter")(300)
+set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
+set_param(job_tag, "cg_params-1-2", "maxiter")(300)
+set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
 job_tag = "32Dfine"
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7, 9])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
+set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "cg_params-0-2", "maxiter")(300)
+set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
+set_param(job_tag, "cg_params-1-2", "maxiter")(300)
+set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 5, 9, 13, 17])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
+set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "cg_params-0-2", "maxiter")(300)
+set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
+set_param(job_tag, "cg_params-1-2", "maxiter")(300)
+set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
 # ----
 
@@ -489,6 +504,9 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
 #
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 2, 3])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(8)
+set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "cg_params-0-2", "maxcycle")(1)
+set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
 # ----
 
