@@ -26,7 +26,7 @@ name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
 
 ### Run a single test
 
-Use the `nixpkgs/run-one-example*.py` scripts — they set up the nix environment and delegate to `make`:
+**REQUIREMENT**: All single tests MUST be run via the `nixpkgs/run-one-example*.py` scripts. Do NOT run tests manually or via `make` directly — these scripts set up the nix environment correctly and delegate to `make`:
 
 ```bash
 ./nixpkgs/run-one-example-py.py utils                   # Python test
@@ -37,6 +37,11 @@ Use the `nixpkgs/run-one-example*.py` scripts — they set up the nix environmen
 ```
 
 See `--help` for build variant options (`--cuda`, `--cudasupport`, `--cu`, `--clang`, `--pypi`).
+
+**Build requirement**: Before running a test, ensure qlat is built with nix. If `./result-py-local` does not exist, or if source code has changed since the last build (check `git status` or file timestamps), build/rebuild first:
+```bash
+name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
+```
 
 Each script copies sources into `./tmp/examples-*/` and runs the test there. After a run, check `./tmp/examples-*/<name>.py.p/` (Python/GPT/CPS) or `./tmp/examples-*/<name>/build/` (C++/Grid) for log files (`log.full.txt`, `log.txt`, `log.check.txt`).
 
