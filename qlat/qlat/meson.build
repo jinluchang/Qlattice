@@ -23,6 +23,7 @@ py_files = files(
   'qm_action.py',
   'scalar_action.py',
   'field_analysis.py',
+  'hmc_utils.py',
   'mat_mpi.py',
   'psel_split.py',
   'smear_prop.py',

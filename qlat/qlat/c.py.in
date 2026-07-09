@@ -322,6 +322,7 @@ from .qcd import *
 from .propagator import *
 from .smear import *
 from .hmc import *
+from .hmc_utils import *
 from .gauge_action import *
 from .topology import *
 from .wilson_flow import *

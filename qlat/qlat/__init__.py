@@ -11,6 +11,8 @@ set_verbose_level(-1)
 
 from .c import *
 
+from .hmc_utils import *
+
 from .mpi_utils import *
 
 from .scalar_action import *
