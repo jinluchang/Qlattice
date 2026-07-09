@@ -1,13 +1,1 @@
-CHECK: test1 t_start=5 t_size_trunc=8
-CHECK: test2 t_start=5 t_size_trunc=12
-CHECK: test3 pad=0/0 valid_not_identity=384/384
-CHECK: test4 plaq_trunc=0.7397639142440181
-CHECK: test5 t_start=15 t_size_trunc=6
-CHECK: test6 t_start=15 t_size_trunc=8 pad=0/0
-CHECK: test7 t_start=5 t_size_trunc=7 plaq=0.49545764475570503
-CHECK: test8 t_start=5 t_size_trunc=8
-CHECK: test9 pad_zero_temporal=0/0
-CHECK: test10 t_start=5 t_size_trunc=8
-CHECK: test11 data_match=192/192
-CHECK: test12 n_total=16 n_trunc=4
 CHECK: finished successfully.

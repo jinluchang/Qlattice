@@ -21,6 +21,22 @@
   12
  ],
  [
+  "test3 pad_ok",
+  0
+ ],
+ [
+  "test3 pad_total",
+  0
+ ],
+ [
+  "test3 valid_not_identity",
+  384
+ ],
+ [
+  "test3 valid_total",
+  384
+ ],
+ [
   "test4 plaq_trunc",
   0.7397639142440181,
   1e-12
@@ -32,6 +48,22 @@
  [
   "test5 t_size_trunc",
   6
+ ],
+ [
+  "test6 t_start",
+  15
+ ],
+ [
+  "test6 t_size_trunc",
+  8
+ ],
+ [
+  "test6 pad_ok",
+  0
+ ],
+ [
+  "test6 pad_total",
+  0
  ],
  [
   "test7 t_start",
@@ -55,12 +87,28 @@
   8
  ],
  [
+  "test9 pad_zero_temporal_ok",
+  0
+ ],
+ [
+  "test9 pad_zero_temporal_total",
+  0
+ ],
+ [
   "test10 t_start",
   5
  ],
  [
   "test10 t_size_trunc",
   8
+ ],
+ [
+  "test11 data_match",
+  192
+ ],
+ [
+  "test11 data_total",
+  192
  ],
  [
   "test12 ps qnorm",
@@ -71,5 +119,13 @@
   "test12 ps_trunc qnorm",
   1175672.4007121138,
   1e-12
+ ],
+ [
+  "test12 n_total",
+  16
+ ],
+ [
+  "test12 n_trunc",
+  4
  ]
 ]

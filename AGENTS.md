@@ -120,12 +120,18 @@ import qlat_utils as qu   # if needed
 
 ### Test Script Pattern
 ```python
+# Global function definitions BEFORE q.begin_with_mpi()
+def my_helper():
+    ...
+
 q.begin_with_mpi(size_node_list)
-q.json_results_append(f"test description")
-# ... test logic ...
+q.json_results_append("test description", result)
+# ... test logic with assert for correctness ...
 q.json_results_append(f"{result}")
 ```
-Every test must end with a `CHECK: finished successfully.` line (via `q.displayln_info`).
+- **Functions first**: Define all helper functions before `q.begin_with_mpi()`.
+- **No intermediate CHECK lines**: Use `q.json_results_append` to record test results. Do NOT use `q.displayln_info("CHECK: ...")` for intermediate test output — those lines are compared against reference `.log` files and make tests brittle.
+- **Only one CHECK line**: Every test must end with `q.displayln_info("CHECK: finished successfully.")` as the final line.
 
 ## Code Style — Cython
 
