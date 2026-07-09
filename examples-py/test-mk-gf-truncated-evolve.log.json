@@ -32,5 +32,44 @@
  [
   "test5 t_size_trunc",
   6
+ ],
+ [
+  "test7 t_start",
+  5
+ ],
+ [
+  "test7 t_size_trunc",
+  7
+ ],
+ [
+  "test7 plaq_trunc",
+  0.49545764475570503,
+  1e-12
+ ],
+ [
+  "test8 t_start",
+  5
+ ],
+ [
+  "test8 t_size_trunc",
+  8
+ ],
+ [
+  "test10 t_start",
+  5
+ ],
+ [
+  "test10 t_size_trunc",
+  8
+ ],
+ [
+  "test12 ps qnorm",
+  4731298.483026241,
+  1e-12
+ ],
+ [
+  "test12 ps_trunc qnorm",
+  1175672.4007121138,
+  1e-12
  ]
 ]

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
 """
-Test mk_gf_truncated_evolve: asymmetric time-direction truncation of a gauge
-field with padding set to unity links.
+Test time-direction truncation utilities:
+- mk_field_truncated: generic field truncation
+- mk_gf_truncated: symmetric gauge field truncation with divisor padding
+- mk_gt_truncated: gauge transform truncation
+- mk_gf_truncated_evolve: asymmetric truncation with unity-link padding
+- mk_selected_points_truncated: point selection truncation
 """
 
 import qlat as q
@@ -92,6 +96,53 @@ def mk_field_truncated(field, t_start, t_end):
             current_xg_field = current_xg_field.shift(shift)
     return field_trunc
 
+@q.timer
+def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
+    total_site = gf.geo.total_site
+    t_size = total_site[3]
+    t_size_trunc = 2 * t_half + 1
+    r = t_size_trunc % t_size_divisor
+    if r != 0:
+        t_size_trunc += t_size_divisor - r
+    assert t_size_trunc <= t_size
+    t_start = (t_center - t_half) % t_size
+    t_end = (t_start + t_size_trunc) % t_size
+    gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    geo_trunc = gf_trunc.geo
+    tslice_target_list = list(range(2 * t_half, t_size_trunc))
+    gf_arr = np.asarray(gf_trunc)
+    xg_arr = q.mk_xg_field(geo_trunc)[:]
+    for index in range(geo_trunc.local_volume):
+        xg = xg_arr[index]
+        xg_t = xg[3]
+        if xg_t in tslice_target_list:
+            gf_arr[index, 3, :, :] = 0
+    return gf_trunc, t_start, t_size_trunc
+
+@q.timer
+def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
+    total_site = gt.geo.total_site
+    t_size = total_site[3]
+    t_size_trunc = 2 * t_half + 1
+    r = t_size_trunc % t_size_divisor
+    if r != 0:
+        t_size_trunc += t_size_divisor - r
+    assert t_size_trunc <= t_size
+    t_start = (t_center - t_half) % t_size
+    t_end = (t_start + t_size_trunc) % t_size
+    gt_trunc = mk_field_truncated(gt, t_start, t_end)
+    return gt_trunc, t_start, t_size_trunc
+
+@q.timer
+def mk_selected_points_truncated(sp, idx_start, idx_end):
+    n_keep = idx_end - idx_start
+    total_site = sp.psel.total_site
+    psel_sub = q.PointsSelection(total_site, n_keep)
+    np.asarray(psel_sub)[:] = np.asarray(sp.psel)[idx_start:idx_end]
+    sp_trunc = type(sp)(psel_sub)
+    sp_trunc @= sp
+    return sp_trunc
+
 ### ------
 
 # Test 1: basic truncation, no padding
@@ -180,6 +231,85 @@ for index in range(geo_trunc.local_volume):
             n_pad_ok += 1
 assert n_pad_ok == n_pad_total, f"padded sites should be unity (wrap): {n_pad_ok}/{n_pad_total}"
 q.displayln_info(f"CHECK: test6 t_start={t_start} t_size_trunc={t_size_trunc} pad={n_pad_ok}/{n_pad_total}")
+
+# Test 7: mk_gf_truncated symmetric, no divisor
+t_center = 8
+t_half = 3
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center, t_half)
+q.json_results_append("test7 t_start", t_start)
+q.json_results_append("test7 t_size_trunc", t_size_trunc)
+assert t_size_trunc == 7  # 2 * 3 + 1
+assert t_start == (t_center - t_half) % 16
+plaq_trunc = gf_trunc.plaq()
+q.json_results_append("test7 plaq_trunc", plaq_trunc, 1e-12)
+assert 0.0 < plaq_trunc < 1.0
+q.displayln_info(f"CHECK: test7 t_start={t_start} t_size_trunc={t_size_trunc} plaq={plaq_trunc}")
+
+# Test 8: mk_gf_truncated with divisor padding
+t_size_divisor = 4
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center, t_half, t_size_divisor)
+q.json_results_append("test8 t_start", t_start)
+q.json_results_append("test8 t_size_trunc", t_size_trunc)
+assert t_size_trunc == 8  # ceil(7 / 4) * 4
+q.displayln_info(f"CHECK: test8 t_start={t_start} t_size_trunc={t_size_trunc}")
+
+# Test 9: mk_gf_truncated padding slices have zero temporal links
+geo_trunc = gf_trunc.geo
+gf_arr = np.asarray(gf_trunc)
+xg_arr = q.mk_xg_field(geo_trunc)[:]
+n_pad_ok = 0
+n_pad_total = 0
+for index in range(geo_trunc.local_volume):
+    xg = xg_arr[index]
+    if xg[3] >= 2 * t_half:
+        n_pad_total += 1
+        if np.allclose(gf_arr[index, 3, :, :], 0):
+            n_pad_ok += 1
+q.displayln_info(f"CHECK: test9 pad_zero_temporal={n_pad_ok}/{n_pad_total}")
+assert n_pad_ok == n_pad_total, f"padded slices should have zero temporal links: {n_pad_ok}/{n_pad_total}"
+
+# Test 10: mk_gt_truncated
+gt = q.GaugeTransform(geo)
+gt.set_rand(rs.split("gt-init"))
+gt_trunc, t_start, t_size_trunc = mk_gt_truncated(gt, t_center, t_half, t_size_divisor)
+q.json_results_append("test10 t_start", t_start)
+q.json_results_append("test10 t_size_trunc", t_size_trunc)
+assert t_size_trunc == 8
+assert gt_trunc.geo.total_site[3] == t_size_trunc
+q.displayln_info(f"CHECK: test10 t_start={t_start} t_size_trunc={t_size_trunc}")
+
+# Test 11: mk_gt_truncated data matches original for valid region
+gt_trunc_arr = np.asarray(gt_trunc)
+gt_arr = np.asarray(gt)
+xg_trunc_arr = q.mk_xg_field(gt_trunc.geo)[:]
+xg_full_arr = q.mk_xg_field(geo)[:]
+n_match = 0
+n_total = 0
+for index in range(gt_trunc.geo.local_volume):
+    xg = xg_trunc_arr[index]
+    t_local = xg[3]
+    if t_local >= 2 * t_half:
+        continue
+    t_orig = (t_local + (t_center - t_half)) % 16
+    for full_idx in range(geo.local_volume):
+        xg_full = xg_full_arr[full_idx]
+        if xg_full[3] == t_orig and all(xg_full[i] == xg[i] for i in range(3)):
+            n_total += 1
+            if np.allclose(gt_trunc_arr[index], gt_arr[full_idx]):
+                n_match += 1
+            break
+q.displayln_info(f"CHECK: test11 data_match={n_match}/{n_total}")
+
+# Test 12: mk_selected_points_truncated
+prop = q.Prop(geo)
+prop.set_rand(rs.split("prop-init"))
+ps = prop.glb_sum_tslice()
+q.json_results_append("test12 ps qnorm", ps.qnorm(), 1e-12)
+n_total_ps = len(ps)
+ps_trunc = mk_selected_points_truncated(ps, 2, 6)
+q.json_results_append("test12 ps_trunc qnorm", ps_trunc.qnorm(), 1e-12)
+assert len(ps_trunc) == 4
+q.displayln_info(f"CHECK: test12 n_total={n_total_ps} n_trunc={len(ps_trunc)}")
 
 ### ------
 
