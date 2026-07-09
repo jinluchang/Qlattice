@@ -7,7 +7,11 @@ Test time-direction truncation utilities:
 - mk_gt_truncated: gauge transform truncation
 - mk_gf_truncated_evolve: asymmetric truncation with unity-link padding
 - mk_selected_points_truncated: point selection truncation
+- gf_evolve_masked / gm_evolve_fg_pure_gauge_masked / run_hmc_evolve_pure_gauge_masked:
+    masked HMC evolution that only updates links where mask is True
 """
+
+import math
 
 import qlat as q
 import numpy as np
@@ -112,17 +116,14 @@ def mk_gf_truncated_evolve(gf, *, t_center, t_left, t_right, t_pad):
     t_end = (t_start + t_size_trunc) % t_size
     gf_trunc = mk_field_truncated(gf, t_start=t_start, t_end=t_end)
     geo_trunc = gf_trunc.geo
-    tslice_pad_list = list(range(t_size_trunc_valid, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
     assert gf_arr.shape == (geo_trunc.local_volume, 4, 3, 3)
     xg_arr = q.mk_xg_field(geo_trunc)[:]
     eye3 = np.eye(3, dtype=gf_arr.dtype)
-    for index in range(geo_trunc.local_volume):
-        xg = xg_arr[index]
-        if xg[3] in tslice_pad_list:
-            gf_arr[index, :] = eye3
-        elif xg[3] == t_size_trunc_valid - 1:
-            gf_arr[index, 3] = eye3
+    mask = np.zeros((geo_trunc.local_volume, 4), dtype=bool)
+    mask[xg_arr[:, 3] >= t_size_trunc_valid, :] = True
+    mask[xg_arr[:, 3] == t_size_trunc_valid - 1, 3] = True
+    gf_arr[mask] = eye3
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
@@ -134,6 +135,96 @@ def mk_selected_points_truncated(sp, *, idx_start, idx_end):
     sp_trunc = type(sp)(psel_sub)
     sp_trunc @= sp
     return sp_trunc
+
+### ------
+### Masked HMC evolution functions
+### ------
+
+@q.timer
+def gf_evolve_masked(gf, gm, dt, mask):
+    gf_saved = q.GaugeField(gf.geo)
+    gf_saved @= gf
+    q.gf_evolve(gf, gm, dt)
+    gf_arr = np.asarray(gf)
+    gf_saved_arr = np.asarray(gf_saved)
+    gf_arr[~mask] = gf_saved_arr[~mask]
+
+@q.timer
+def gf_unitarize_masked(gf, mask):
+    gf_saved = q.GaugeField(gf.geo)
+    gf_saved @= gf
+    gf.unitarize()
+    gf_arr = np.asarray(gf)
+    gf_saved_arr = np.asarray(gf_saved)
+    gf_arr[~mask] = gf_saved_arr[~mask]
+
+@q.timer
+def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
+    geo = gf_init.geo
+    gf = q.GaugeField(geo)
+    gf @= gf_init
+    gm_force = q.GaugeMomentum(geo)
+    q.set_gm_force(gm_force, gf, ga)
+    gf_evolve_masked(gf, gm_force, fg_dt, mask)
+    q.set_gm_force(gm_force, gf, ga)
+    gm_force *= dt
+    gm_arr = np.asarray(gm)
+    gm_force_arr = np.asarray(gm_force)
+    gm_arr[mask] += gm_force_arr[mask]
+
+@q.timer(is_timer_fork=True)
+def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, rs, n_step, mask, md_time=1.0):
+    energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga)
+    dt = md_time / n_step
+    lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
+    theta = (2.0 - math.sqrt(3.0)) / 48.0
+    ttheta = theta * dt * dt * dt
+    gf_evolve_masked(gf, gm, lam * dt, mask)
+    for i in range(n_step):
+        gm_evolve_fg_pure_gauge_masked(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt, mask)
+        gf_evolve_masked(gf, gm, (1.0 - 2.0 * lam) * dt, mask)
+        gm_evolve_fg_pure_gauge_masked(gm, gf, ga, 4.0 * ttheta / dt, 0.5 * dt, mask)
+        if i < n_step - 1:
+            gf_evolve_masked(gf, gm, 2.0 * lam * dt, mask)
+        else:
+            gf_evolve_masked(gf, gm, lam * dt, mask)
+    gf_unitarize_masked(gf, mask)
+    delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) - energy
+    delta_h = q.glb_sum_double(delta_h)
+    return delta_h
+
+@q.timer(is_timer_fork=True)
+def run_hmc_pure_gauge_masked(
+    gf,
+    ga,
+    traj,
+    rs,
+    mask,
+    *,
+    n_step=6,
+    md_time=1.0,
+):
+    fname = q.get_fname()
+    rs = rs.split(f"{traj}")
+    geo = gf.geo
+    gf_orig = q.GaugeField(geo)
+    gf_orig @= gf
+    gf0 = q.GaugeField(geo)
+    gf0 @= gf
+    gm = q.GaugeMomentum(geo)
+    gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
+    gm_arr = np.asarray(gm)
+    gm_arr[~mask] = 0.0
+    delta_h = run_hmc_evolve_pure_gauge_masked(gm, gf0, ga, rs, n_step, mask, md_time)
+    q.metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
+    gf0_arr = np.asarray(gf0)
+    gf_orig_arr = np.asarray(gf_orig)
+    assert (gf0_arr[~mask] == gf_orig_arr[~mask]).all(), (
+        "non-masked gf links should be unchanged"
+    )
+    q.displayln_info(f"{fname}: update gf (traj={traj})")
+    gf @= gf0
+    return delta_h
 
 ### ------
 
@@ -333,6 +424,176 @@ q.json_results_append("test12 ps_trunc qnorm", ps_trunc.qnorm(), 1e-12)
 assert len(ps_trunc) == 4
 q.json_results_append("test12 n_total", n_total_ps)
 q.json_results_append("test12 n_trunc", len(ps_trunc))
+
+### ------
+
+# Test 13: gf_evolve_masked — verify ~mask links unchanged
+rs13 = rs.split("test13")
+gm13 = q.GaugeMomentum(geo)
+gm13.set_rand(rs13.split("set_rand_gauge_momentum"), 1.0)
+gf13 = q.GaugeField(geo)
+gf13 @= gf
+mask13 = np.ones((geo.local_volume, 4), dtype=bool)
+mask13[:, 3] = False  # freeze temporal links
+gf13_copy = q.GaugeField(geo)
+gf13_copy @= gf13
+gf_evolve_masked(gf13, gm13, 0.1, mask13)
+gf13_arr = np.asarray(gf13)
+gf13_copy_arr = np.asarray(gf13_copy)
+assert np.allclose(gf13_arr[~mask13], gf13_copy_arr[~mask13]), (
+    "non-masked (frozen) links should be unchanged"
+)
+assert not np.allclose(gf13_arr[mask13], gf13_copy_arr[mask13]), (
+    "masked links should have changed"
+)
+q.json_results_append("test13 gf_evolve_masked", 1)
+
+# Test 14: run_hmc_evolve_pure_gauge_masked — freeze temporal links
+ga = q.GaugeAction(5.5, 0.0)
+rs14 = rs.split("test14")
+gf14 = q.GaugeField(geo)
+gf14 @= gf
+gm14 = q.GaugeMomentum(geo)
+gm14.set_rand(rs14.split("set_rand_gauge_momentum"), 1.0)
+mask14 = np.ones((geo.local_volume, 4), dtype=bool)
+mask14[:, 3] = False
+gf14_copy = q.GaugeField(geo)
+gf14_copy @= gf14
+delta_h14 = run_hmc_evolve_pure_gauge_masked(
+    gm14, gf14, ga, rs14, n_step=6, mask=mask14
+)
+q.json_results_append("test14 delta_h", delta_h14, 1e-12)
+gf14_arr = np.asarray(gf14)
+gf14_copy_arr = np.asarray(gf14_copy)
+assert np.allclose(gf14_arr[:, 3], gf14_copy_arr[:, 3]), (
+    "frozen temporal links should be unchanged"
+)
+assert abs(delta_h14) > 1e-12, "delta_h should be non-zero"
+
+# Test 15: mask all-True — full evolution
+rs15 = rs.split("test15")
+gm15 = q.GaugeMomentum(geo)
+gm15.set_rand(rs15.split("set_rand_gauge_momentum"), 1.0)
+gf15 = q.GaugeField(geo)
+gf15 @= gf
+mask15 = np.ones((geo.local_volume, 4), dtype=bool)
+delta_h15 = run_hmc_evolve_pure_gauge_masked(
+    gm15, gf15, ga, rs15, n_step=6, mask=mask15
+)
+q.json_results_append("test15 delta_h", delta_h15, 1e-12)
+assert abs(delta_h15) > 1e-12, "all-True mask should give non-zero delta_h"
+
+# Test 16: mask all-False — no evolution
+rs16 = rs.split("test16")
+gm16 = q.GaugeMomentum(geo)
+gm16.set_rand(rs16.split("set_rand_gauge_momentum"), 1.0)
+gf16 = q.GaugeField(geo)
+gf16 @= gf
+gf16_copy = q.GaugeField(geo)
+gf16_copy @= gf16
+mask16 = np.zeros((geo.local_volume, 4), dtype=bool)
+delta_h16 = run_hmc_evolve_pure_gauge_masked(
+    gm16, gf16, ga, rs16, n_step=6, mask=mask16
+)
+q.json_results_append("test16 delta_h", delta_h16, 1e-12)
+assert abs(delta_h16) < 1e-12, f"all-False mask should give zero delta_h: {delta_h16}"
+gf16_arr = np.asarray(gf16)
+gf16_copy_arr = np.asarray(gf16_copy)
+assert np.allclose(gf16_arr, gf16_copy_arr), (
+    "all-False mask should leave field unchanged"
+)
+
+# Test 17: masked evolution on truncated geometry
+rs17 = rs.split("test17")
+t_center = 8
+t_left = 3
+t_right = 4
+t_pad = 4
+gf_trunc17, t_start, t_size_trunc = mk_gf_truncated_evolve(
+    gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad
+)
+geo_trunc17 = gf_trunc17.geo
+t_size_trunc_valid17 = t_left + t_right + 1
+xg_arr17 = q.mk_xg_field(geo_trunc17)[:]
+mask17 = np.ones((geo_trunc17.local_volume, 4), dtype=bool)
+mask17[xg_arr17[:, 3] >= t_size_trunc_valid17, :] = False
+mask17[xg_arr17[:, 3] == t_size_trunc_valid17 - 1, 3] = False
+gm17 = q.GaugeMomentum(geo_trunc17)
+gm17.set_rand(rs17.split("set_rand_gauge_momentum"), 1.0)
+gf17 = q.GaugeField(geo_trunc17)
+gf17 @= gf_trunc17
+gf17_copy = q.GaugeField(geo_trunc17)
+gf17_copy @= gf17
+delta_h17 = run_hmc_evolve_pure_gauge_masked(
+    gm17, gf17, ga, rs17, n_step=6, mask=mask17
+)
+q.json_results_append("test17 delta_h", delta_h17, 1e-12)
+gf17_arr = np.asarray(gf17)
+gf17_copy_arr = np.asarray(gf17_copy)
+assert np.allclose(gf17_arr[~mask17], gf17_copy_arr[~mask17]), (
+    "frozen links should be unchanged"
+)
+assert not np.allclose(gf17_arr[mask17], gf17_copy_arr[mask17]), (
+    "active links should have changed"
+)
+
+# Test 18: run_hmc_pure_gauge_masked — freeze temporal links
+rs18 = rs.split("test18")
+gf18 = q.GaugeField(geo)
+gf18 @= gf
+mask18 = np.ones((geo.local_volume, 4), dtype=bool)
+mask18[:, 3] = False  # freeze temporal links
+gf18_copy = q.GaugeField(geo)
+gf18_copy @= gf18
+delta_h18 = run_hmc_pure_gauge_masked(gf18, ga, 18, rs18, mask18, n_step=6)
+q.json_results_append("test18 delta_h", delta_h18, 1e-12)
+gf18_arr = np.asarray(gf18)
+gf18_copy_arr = np.asarray(gf18_copy)
+assert np.allclose(gf18_arr[:, 3], gf18_copy_arr[:, 3]), (
+    "frozen temporal links should be unchanged"
+)
+assert abs(delta_h18) > 1e-12, "delta_h should be non-zero"
+
+# Test 19: run_hmc_pure_gauge_masked — mask all-False
+rs19 = rs.split("test19")
+gf19 = q.GaugeField(geo)
+gf19 @= gf
+mask19 = np.zeros((geo.local_volume, 4), dtype=bool)
+gf19_copy = q.GaugeField(geo)
+gf19_copy @= gf19
+delta_h19 = run_hmc_pure_gauge_masked(gf19, ga, 19, rs19, mask19, n_step=6)
+q.json_results_append("test19 delta_h", delta_h19, 1e-12)
+assert abs(delta_h19) < 1e-12, f"all-False mask should give zero delta_h: {delta_h19}"
+gf19_arr = np.asarray(gf19)
+gf19_copy_arr = np.asarray(gf19_copy)
+assert np.allclose(gf19_arr, gf19_copy_arr), (
+    "all-False mask should leave field unchanged"
+)
+
+# Test 20: run_hmc_pure_gauge_masked — mask all-True
+rs20 = rs.split("test20")
+gf20 = q.GaugeField(geo)
+gf20 @= gf
+mask20 = np.ones((geo.local_volume, 4), dtype=bool)
+delta_h20 = run_hmc_pure_gauge_masked(gf20, ga, 20, rs20, mask20, n_step=6)
+q.json_results_append("test20 delta_h", delta_h20, 1e-12)
+assert abs(delta_h20) > 1e-12, "all-True mask should give non-zero delta_h"
+
+# Test 21: delta_h decreases as n_step increases (same initial field, same RNG → same momentum)
+rs21 = rs.split("test21")
+mask21 = np.ones((geo.local_volume, 4), dtype=bool)
+gf21_low = q.GaugeField(geo)
+gf21_low @= gf
+gf21_high = q.GaugeField(geo)
+gf21_high @= gf
+dh21_low = run_hmc_pure_gauge_masked(gf21_low, ga, 21, rs21, mask21, n_step=6)
+dh21_high = run_hmc_pure_gauge_masked(gf21_high, ga, 21, rs21, mask21, n_step=24)
+q.json_results_append("test21 dh_low_n6", dh21_low, 1e-12)
+q.json_results_append("test21 dh_high_n24", dh21_high, 1e-12)
+assert abs(dh21_high) < abs(dh21_low), (
+    f"higher n_step should give smaller |delta_h|: "
+    f"|dh_low(n6)|={abs(dh21_low):.4g} vs |dh_high(n24)|={abs(dh21_high):.4g}"
+)
 
 ### ------
 

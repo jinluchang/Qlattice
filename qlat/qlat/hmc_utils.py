@@ -1,5 +1,31 @@
 """
-Utility functions for HMC that do not call C++ functions directly.
+Utility functions for HMC that do not call C++ functions directly.\n
+MD Integrator
+=============\n
+The molecular dynamics step uses the **force-gradient integrator** (a.k.a.
+the "minimum norm" or "Omelyan" integrator).  Key parameters::\n
+    lam = (1 - 1 / sqrt(3)) / 2
+    theta = (2 - sqrt(3)) / 48\n
+The algorithm, in terms of :math:`dt = md\_time / n\_step`::\n
+    U += lam * dt * P                                       # half position update
+    for i in range(n_step):
+        P += dt/2 * F( evolve(U, 4*theta*dt^2 * F(U)) )    # force-gradient step
+        U += (1 - 2*lam) * dt * P                           # main position step
+        P += dt/2 * F( evolve(U, 4*theta*dt^2 * F(U)) )    # force-gradient step
+        if i < n_step - 1:
+            U += 2*lam * dt * P
+        else:
+            U += lam * dt * P                               # half position update (last)\n
+``evolve(U, fg_dt)`` evolves the gauge field forward by ``fg_dt`` using
+*the force* as the momentum (one step along the force direction).  The
+force is then re-evaluated at this intermediate point, and the averaged
+force is applied to :math:`P`.\n
+Error scaling::\n
+    single-step error   ~ O(dt^5)
+    trajectory error    ~ O(dt^4)    (fixed md_time, n_step = md_time / dt)\n
+The force-gradient term adds an O(dt^3) correction to the momentum update,
+raising the effective order from the standard leapfrog O(dt^2) trajectory
+error to O(dt^4).
 """
 
 import math
@@ -18,6 +44,11 @@ from .hmc import (
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
+    """Metropolis accept/reject step.\n
+    Accept with probability min(1, exp(-delta_h)).  ``delta_h`` is the
+    energy violation from the MD trajectory (already MPI-summed via
+    :func:`run_hmc_evolve_pure_gauge`).  Returns ``(flag, accept_prob)``.
+    """
     flag_d = 0.0
     accept_prob = 0.0
     if q.get_id_node() == 0:
@@ -39,6 +70,11 @@ def metropolis_accept(delta_h, traj, rs):
 
 @q.timer
 def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
+    """Force-gradient momentum update (one ``gm_update`` in the pseudo-code above).\n
+    Evaluate the force at :math:`U`, evolve :math:`U` forward by ``fg_dt``
+    along the force direction, re-evaluate the force at the intermediate
+    point, and add ``dt * F_intermediate`` to :math:`P`.
+    """
     geo = gf_init.geo
     gf = GaugeField(geo)
     gf @= gf_init
@@ -51,6 +87,12 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
+    """Run the MD evolution (force-gradient integrator).\n
+    Evolve ``gf`` and ``gm`` in-place for ``n_step`` steps of size
+    ``md_time / n_step``.  Returns the energy violation ``delta_h``
+    (already MPI-summed).  ``rs`` is not used (accepted for interface
+    compatibility).
+    """
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
@@ -82,6 +124,31 @@ def run_hmc_pure_gauge(
     md_time=1.0,
     is_always_accept=False,
 ):
+    """Run a single HMC trajectory for pure gauge theory.\n
+    Generates random momentum, runs the force-gradient MD evolution,
+    and applies the Metropolis accept/reject step.  On accept the input
+    ``gf`` is updated in-place.\n
+    Parameters
+    ----------
+    gf : GaugeField
+        Input/output gauge field.
+    ga : GaugeAction
+    traj : int
+        Trajectory number (used to split the RNG).
+    rs : RngState
+    is_reverse_test : bool
+        If True, run the reverse trajectory and verify reversibility.
+    n_step : int
+        Number of MD steps per trajectory (default 6).
+    md_time : float
+        Total molecular dynamics time (default 1.0).
+    is_always_accept : bool
+        If True, skip the Metropolis test and always update.\n
+    Returns
+    -------
+    (flag, delta_h)
+        ``flag`` is True if the trajectory was accepted.
+    """
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo
