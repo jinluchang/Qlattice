@@ -14,6 +14,7 @@ import numpy as np
 
 ### ------
 
+@q.timer
 def mk_field_truncated(field, t_start, t_end):
     geo = field.geo
     total_site = geo.total_site
@@ -61,6 +62,7 @@ def mk_field_truncated(field, t_start, t_end):
             current_xg_field = current_xg_field.shift(shift)
     return field_trunc
 
+@q.timer
 def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
     total_site = gf.geo.total_site
     t_size = total_site[3]
@@ -83,6 +85,7 @@ def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
             gf_arr[index, 3, :, :] = 0
     return gf_trunc, t_start, t_size_trunc
 
+@q.timer
 def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
     total_site = gt.geo.total_site
     t_size = total_site[3]
@@ -96,6 +99,7 @@ def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
     gt_trunc = mk_field_truncated(gt, t_start, t_end)
     return gt_trunc, t_start, t_size_trunc
 
+@q.timer(is_verbose=True)
 def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     total_site = gf.geo.total_site
     t_size = total_site[3]
@@ -116,9 +120,12 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     for index in range(geo_trunc.local_volume):
         xg = xg_arr[index]
         if xg[3] in tslice_pad_list:
-            gf_arr[index] = eye3
+            gf_arr[index, :] = eye3
+        elif xg[3] == t_size_trunc_valid - 1:
+            gf_arr[index, 3] = eye3
     return gf_trunc, t_start, t_size_trunc
 
+@q.timer
 def mk_selected_points_truncated(sp, idx_start, idx_end):
     n_keep = idx_end - idx_start
     total_site = sp.psel.total_site
