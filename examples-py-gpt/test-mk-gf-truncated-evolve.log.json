@@ -1,0 +1,36 @@
+[
+ [
+  "plaq",
+  0.6138494890301296,
+  1e-12
+ ],
+ [
+  "test1 t_start",
+  5
+ ],
+ [
+  "test1 t_size_trunc",
+  8
+ ],
+ [
+  "test2 t_start",
+  5
+ ],
+ [
+  "test2 t_size_trunc",
+  12
+ ],
+ [
+  "test4 plaq_trunc",
+  0.7397639142440181,
+  1e-12
+ ],
+ [
+  "test5 t_start",
+  15
+ ],
+ [
+  "test5 t_size_trunc",
+  6
+ ]
+]

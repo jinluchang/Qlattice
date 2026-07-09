@@ -15,8 +15,6 @@ q.begin_with_mpi(size_node_list)
 
 fname = q.get_fname()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 total_site = q.Coordinate(
     [

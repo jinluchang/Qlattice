@@ -7,8 +7,6 @@ import numpy as np
 
 q.begin_with_mpi()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)

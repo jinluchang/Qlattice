@@ -104,6 +104,7 @@ tests = \
 		hmc-pure-gauge-flowed-test.log \
 		hmc-pure-gauge-symmetric.log \
 		hmc-pure-gauge-fa-sym.log \
+		hmc-pure-gauge-fgf.log \
 		hmc-pions.log \
 		gf-utils.log \
 		gf-utils-2.log \

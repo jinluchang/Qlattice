@@ -5,7 +5,6 @@ import qlat as q
 @q.timer_verbose
 def test_hmc(total_site, ga):
     #
-    q.qmkdir_info("results")
     q.qmkdir_info("results/gf_info")
     q.qmkdir_info("results/wilson_flow_energy_info")
     #
@@ -65,8 +64,6 @@ size_node_list = [
 q.begin_with_mpi(size_node_list)
 
 # q.show_machine()
-
-q.qremove_all_info("results")
 
 main()
 

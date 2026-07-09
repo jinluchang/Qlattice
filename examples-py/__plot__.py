@@ -5,8 +5,6 @@ import qlat as q
 
 q.begin_with_mpi()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 q.json_results_append("plot")
 

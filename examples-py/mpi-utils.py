@@ -14,8 +14,6 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 num_node = q.get_num_node()
 id_node = q.get_id_node()

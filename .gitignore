@@ -3,6 +3,7 @@
 /.path
 /.clangd
 /.transfer
+/.mimocode
 /cmd-*
 /TODO
 /applications/false-vacuum-decay/.ipynb_checkpoints/

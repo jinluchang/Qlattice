@@ -24,8 +24,6 @@ from auto_contractor.runtime_distillation import (
 )
 
 q.begin_with_mpi()
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 nn_s = 4
 
@@ -163,8 +161,6 @@ assert abs(mat_tr_wm(mat_mul_cm_wm(cm1, wm1)) - mat_tr_cm_wm(cm1, wm1)) <= 1e-10
 v1 = q.get_data_sig(wilson_matrix_g5_herm(wm1), q.RngState("seed-sig-mul"))
 v2 = q.get_data_sig(wilson_matrix_g5_herm(wm2), q.RngState("seed-sig-mul"))
 q.json_results_append("wilson_matrix_g5_herm", np.array([v1, v2]))
-
-q.check_all_files_crc32_info("results")
 
 q.check_log_json(__file__)
 

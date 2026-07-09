@@ -1,0 +1,7 @@
+CHECK: test1 t_start=5 t_size_trunc=8
+CHECK: test2 t_start=5 t_size_trunc=12
+CHECK: test3 pad=0/0 valid_not_identity=384/384
+CHECK: test4 plaq_trunc=0.7397639142440181
+CHECK: test5 t_start=15 t_size_trunc=6
+CHECK: test6 t_start=15 t_size_trunc=8 pad=0/0
+CHECK: finished successfully.

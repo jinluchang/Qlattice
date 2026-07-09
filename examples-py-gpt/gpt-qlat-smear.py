@@ -13,8 +13,6 @@ qg.begin_with_gpt()
 job_tag = "test-4nt8"
 traj = 1000
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 total_site = q.Coordinate(get_param(job_tag, "total_site"))
 geo = q.Geometry(total_site)

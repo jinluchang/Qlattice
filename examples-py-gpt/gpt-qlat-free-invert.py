@@ -6,8 +6,6 @@ import gpt as g
 
 qg.begin_with_gpt()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.json_results_append(f"gpt-qlat-free-invert: geo.show()={geo.show()}")

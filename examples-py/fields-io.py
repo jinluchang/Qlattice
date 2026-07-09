@@ -4,8 +4,6 @@ import qlat as q
 
 q.begin_with_mpi()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 rs = q.RngState("seed")
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)

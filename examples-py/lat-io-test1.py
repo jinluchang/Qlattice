@@ -5,8 +5,6 @@ import numpy as np
 
 q.begin_with_mpi()
 
-q.qremove_all_info("results")
-q.qmkdir_info("results")
 
 ld = q.LatData()
 

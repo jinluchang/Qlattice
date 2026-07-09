@@ -266,6 +266,59 @@ def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
     return gt_trunc, t_start, t_size_trunc
 
 @q.timer
+def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
+    """
+    Create a gauge field truncated in the time direction with
+    asymmetric left/right extents and padding.
+    Extracts a sub-volume centered at ``t_center`` covering
+    ``[t_center - t_left, t_center + t_right]`` (inclusive), then adds
+    ``t_pad`` extra time slices on the right. Padded time slices are set to
+    the identity (unity) gauge links.
+    Parameters
+    ----------
+    gf : q.GaugeField
+        The full gauge field.
+    t_center : int
+        Center time slice of the truncated region.
+    t_left : int
+        Number of time slices to the left of (and including) ``t_center``.
+    t_right : int
+        Number of time slices to the right of (and including) ``t_center``.
+    t_pad : int
+        Number of padding time slices added after the valid region.
+    Returns
+    -------
+    gf_trunc : q.GaugeField
+        Gauge field on the truncated geometry with padded slices set
+        to identity.
+    t_offset : int
+        The global time index corresponding to time index 0 of the truncated
+        geometry.
+    t_size_trunc : int
+        The actual truncated time extent (valid + padding).
+    """
+    total_site = gf.geo.total_site
+    t_size = total_site[3]
+    t_size_trunc_valid = t_left + t_right + 1
+    t_size_trunc = t_size_trunc_valid + t_pad
+    size_node_t = gf.geo.size_node[3]
+    t_size_trunc = ((t_size_trunc + size_node_t - 1) // size_node_t) * size_node_t
+    assert t_size_trunc <= t_size
+    t_start = (t_center - t_left) % t_size
+    t_end = (t_start + t_size_trunc) % t_size
+    gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    geo_trunc = gf_trunc.geo
+    tslice_pad_list = list(range(t_size_trunc_valid, t_size_trunc))
+    gf_arr = np.asarray(gf_trunc)
+    xg_arr = q.mk_xg_field(geo_trunc)[:]
+    eye3 = np.eye(3, dtype=gf_arr.dtype)
+    for index in range(geo_trunc.local_volume):
+        xg = xg_arr[index]
+        if xg[3] in tslice_pad_list:
+            gf_arr[index, :, :] = eye3
+    return gf_trunc, t_start, t_size_trunc
+
+@q.timer
 def mk_selected_points_truncated(sp, idx_start, idx_end):
     """
     Return a copy of ``sp[idx_start:idx_end]`` as a new SelectedPoints.
