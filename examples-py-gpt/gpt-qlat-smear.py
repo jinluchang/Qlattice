@@ -13,7 +13,6 @@ qg.begin_with_gpt()
 job_tag = "test-4nt8"
 traj = 1000
 
-
 total_site = q.Coordinate(get_param(job_tag, "total_site"))
 geo = q.Geometry(total_site)
 q.json_results_append(f"gpt-qlat-smear: geo.show()={geo.show()}")

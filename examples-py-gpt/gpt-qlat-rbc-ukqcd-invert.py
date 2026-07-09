@@ -10,7 +10,6 @@ qg.begin_with_gpt()
 job_tag = "test-8nt16"
 traj = 1000
 
-
 total_site = q.Coordinate(get_param(job_tag, "total_site"))
 geo = q.Geometry(total_site)
 q.json_results_append(f"gpt-qlat-rbc-ukqcd-invert: geo.show()={geo.show()}")

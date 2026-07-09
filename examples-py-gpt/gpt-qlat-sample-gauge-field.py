@@ -5,7 +5,6 @@ import qlat as q
 
 qg.begin_with_gpt()
 
-
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.json_results_append(f"gpt-qlat-sample-gauge-field: geo.show()={geo.show()}")

@@ -5,7 +5,6 @@ import numpy as np
 
 q.begin_with_mpi()
 
-
 ld = q.LatData()
 
 dim_sizes = [

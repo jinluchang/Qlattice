@@ -5,7 +5,6 @@ import qlat as q
 
 q.begin_with_mpi()
 
-
 q.json_results_append("plot")
 
 q.qplot.plot_save_display_width = 500

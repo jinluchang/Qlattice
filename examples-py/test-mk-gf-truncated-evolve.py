@@ -157,7 +157,9 @@ t_center = 8
 t_left = 3
 t_right = 4
 t_pad = 0
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+    gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad
+)
 q.json_results_append("test1 t_start", t_start)
 q.json_results_append("test1 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 8  # 3 + 4 + 1
@@ -165,7 +167,9 @@ assert t_start == (t_center - t_left) % 16
 
 # Test 2: truncation with padding
 t_pad = 4
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+    gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad
+)
 q.json_results_append("test2 t_start", t_start)
 q.json_results_append("test2 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 12  # 3 + 4 + 1 + 4
@@ -194,7 +198,9 @@ q.json_results_append("test3 pad_ok", n_pad_ok)
 q.json_results_append("test3 pad_total", n_pad_total)
 q.json_results_append("test3 valid_not_identity", n_valid_ok)
 q.json_results_append("test3 valid_total", n_valid_total)
-assert n_pad_ok == n_pad_total, f"padded sites should be unity: {n_pad_ok}/{n_pad_total}"
+assert n_pad_ok == n_pad_total, (
+    f"padded sites should be unity: {n_pad_ok}/{n_pad_total}"
+)
 if n_valid_total > 0:
     assert n_valid_ok > 0, "valid sites should not all be identity"
 
@@ -208,7 +214,9 @@ t_center_wrap = 2
 t_left = 3
 t_right = 2
 t_pad = 0
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+    gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad
+)
 q.json_results_append("test5 t_start", t_start)
 q.json_results_append("test5 t_size_trunc", t_size_trunc)
 assert t_start == 15  # (2 - 3) % 16 = 15
@@ -216,7 +224,9 @@ assert t_size_trunc == 6  # 3 + 2 + 1
 
 # Test 6: verify unity padding with wrap-around
 t_pad = 2
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+    gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad
+)
 assert t_size_trunc == 8  # 3 + 2 + 1 + 2, already divisible by 2
 t_size_trunc_valid = t_left + t_right + 1  # 6
 geo_trunc = gf_trunc.geo
@@ -231,7 +241,9 @@ for index in range(geo_trunc.local_volume):
         n_pad_total += 1
         if np.allclose(gf_arr[index], eye3):
             n_pad_ok += 1
-assert n_pad_ok == n_pad_total, f"padded sites should be unity (wrap): {n_pad_ok}/{n_pad_total}"
+assert n_pad_ok == n_pad_total, (
+    f"padded sites should be unity (wrap): {n_pad_ok}/{n_pad_total}"
+)
 q.json_results_append("test6 t_start", t_start)
 q.json_results_append("test6 t_size_trunc", t_size_trunc)
 q.json_results_append("test6 pad_ok", n_pad_ok)
@@ -251,7 +263,9 @@ assert 0.0 < plaq_trunc < 1.0
 
 # Test 8: mk_gf_truncated with divisor padding
 t_size_divisor = 4
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated(
+    gf, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor
+)
 q.json_results_append("test8 t_start", t_start)
 q.json_results_append("test8 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 8  # ceil(7 / 4) * 4
@@ -270,12 +284,16 @@ for index in range(geo_trunc.local_volume):
             n_pad_ok += 1
 q.json_results_append("test9 pad_zero_temporal_ok", n_pad_ok)
 q.json_results_append("test9 pad_zero_temporal_total", n_pad_total)
-assert n_pad_ok == n_pad_total, f"padded slices should have zero temporal links: {n_pad_ok}/{n_pad_total}"
+assert n_pad_ok == n_pad_total, (
+    f"padded slices should have zero temporal links: {n_pad_ok}/{n_pad_total}"
+)
 
 # Test 10: mk_gt_truncated
 gt = q.GaugeTransform(geo)
 gt.set_rand(rs.split("gt-init"))
-gt_trunc, t_start, t_size_trunc = mk_gt_truncated(gt, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor)
+gt_trunc, t_start, t_size_trunc = mk_gt_truncated(
+    gt, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor
+)
 q.json_results_append("test10 t_start", t_start)
 q.json_results_append("test10 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 8

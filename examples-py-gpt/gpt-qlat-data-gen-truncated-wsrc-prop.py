@@ -386,7 +386,9 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             src = q.mk_wall_src(geo_trunc, t_src_trunc)
             sol_trunc = inv_trunc * src
             ps_prop_ws = sol_trunc.glb_sum_tslice()
-            ps_prop_ws = mk_selected_points_truncated(ps_prop_ws, idx_start=0, idx_end=2 * t_half + 1)
+            ps_prop_ws = mk_selected_points_truncated(
+                ps_prop_ws, idx_start=0, idx_end=2 * t_half + 1
+            )
             q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
             q.json_results_append(
                 f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState())

@@ -16,7 +16,6 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-
 total_site = q.Coordinate(
     [
         4,

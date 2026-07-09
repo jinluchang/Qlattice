@@ -5,7 +5,6 @@ import numpy as np
 
 q.begin_with_mpi()
 
-
 content = b"hello world!\n"
 
 if q.get_id_node() == 0:

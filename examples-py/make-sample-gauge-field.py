@@ -15,7 +15,6 @@ q.begin_with_mpi(size_node_list)
 
 fname = q.get_fname()
 
-
 total_site = q.Coordinate(
     [
         4,

@@ -4,7 +4,6 @@ import qlat as q
 
 q.begin_with_mpi()
 
-
 q.benchmark_matrix_functions(16 * 1024)
 
 q.json_results_append("benchmark-matrix-functions")

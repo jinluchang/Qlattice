@@ -16,7 +16,6 @@ from .hmc import (
     gf_hamilton_node,
 )
 
-
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
     flag_d = 0.0
@@ -33,9 +32,10 @@ def metropolis_accept(delta_h, traj, rs):
     flag_d = glb_sum_double(flag_d)
     accept_prob = glb_sum_double(accept_prob)
     flag = flag_d > 0.5
-    q.displayln_info(f"metropolis_accept: flag={flag:d} with accept_prob={accept_prob * 100.0:.1f}% delta_h={delta_h:.16f} traj={traj}")
+    q.displayln_info(
+        f"metropolis_accept: flag={flag:d} with accept_prob={accept_prob * 100.0:.1f}% delta_h={delta_h:.16f} traj={traj}"
+    )
     return flag, accept_prob
-
 
 @q.timer
 def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
@@ -48,7 +48,6 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     set_gm_force(gm_force, gf, ga)
     gm_force *= dt
     gm += gm_force
-
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
@@ -71,9 +70,18 @@ def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
     delta_h = glb_sum_double(delta_h)
     return delta_h
 
-
 @q.timer(is_timer_fork=True)
-def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_time=1.0, is_always_accept=False):
+def run_hmc_pure_gauge(
+    gf,
+    ga,
+    traj,
+    rs,
+    *,
+    is_reverse_test=False,
+    n_step=6,
+    md_time=1.0,
+    is_always_accept=False,
+):
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo
@@ -89,7 +97,9 @@ def run_hmc_pure_gauge(gf, ga, traj, rs, *, is_reverse_test=False, n_step=6, md_
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_step, -md_time)
         gf0_r -= gf
-        q.displayln_info(f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}")
+        q.displayln_info(
+            f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}"
+        )
         gf_diff_norm = q.qnorm(gf0_r)
         gf_norm = q.qnorm(gf0)
         q.displayln_info(f"{fname}: reversed gf_diff: {gf_diff_norm} / {gf_norm}")

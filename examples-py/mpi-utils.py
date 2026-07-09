@@ -14,7 +14,6 @@ size_node_list = [
 
 q.begin_with_mpi(size_node_list)
 
-
 num_node = q.get_num_node()
 id_node = q.get_id_node()
 

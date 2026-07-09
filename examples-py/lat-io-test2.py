@@ -5,7 +5,6 @@ import numpy as np
 
 q.begin_with_mpi()
 
-
 rs = q.RngState("test")
 
 info_list = [

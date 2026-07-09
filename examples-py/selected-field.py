@@ -7,7 +7,6 @@ import numpy as np
 
 q.begin_with_mpi()
 
-
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.json_results_append(f"selected-field: geo.show()={geo.show()}")

@@ -29,7 +29,6 @@ prop1 = prop.copy()
 
 prop.set_rand(rs)
 
-
 q.save_grid_prop_float(prop, "results/prop.grid.field")
 
 q.load_grid_prop_float(prop1, "results/prop.grid.field")

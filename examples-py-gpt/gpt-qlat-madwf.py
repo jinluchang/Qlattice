@@ -6,7 +6,6 @@ import gpt as g
 
 qg.begin_with_gpt()
 
-
 total_site = q.Coordinate([4, 4, 4, 8])
 geo = q.Geometry(total_site)
 q.json_results_append(f"gpt-qlat-madwf: geo.show()={geo.show()}")
