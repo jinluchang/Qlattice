@@ -116,7 +116,7 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     for index in range(geo_trunc.local_volume):
         xg = xg_arr[index]
         if xg[3] in tslice_pad_list:
-            gf_arr[index, :, :] = eye3
+            gf_arr[index] = eye3
     return gf_trunc, t_start, t_size_trunc
 
 def mk_selected_points_truncated(sp, idx_start, idx_end):
