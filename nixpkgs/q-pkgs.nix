@@ -564,6 +564,7 @@ in let
       wget
       which
       gnugrep
+      ripgrep
       rsync
       automake
       autoconf
