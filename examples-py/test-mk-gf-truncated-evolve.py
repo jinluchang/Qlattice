@@ -15,7 +15,7 @@ import numpy as np
 ### ------
 
 @q.timer
-def mk_field_truncated(field, t_start, t_end):
+def mk_field_truncated(field, *, t_start, t_end):
     geo = field.geo
     total_site = geo.total_site
     t_size = total_site[3]
@@ -63,7 +63,7 @@ def mk_field_truncated(field, t_start, t_end):
     return field_trunc
 
 @q.timer
-def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
+def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
     total_site = gf.geo.total_site
     t_size = total_site[3]
     t_size_trunc = 2 * t_half + 1
@@ -73,7 +73,7 @@ def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
     assert t_size_trunc <= t_size
     t_start = (t_center - t_half) % t_size
     t_end = (t_start + t_size_trunc) % t_size
-    gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    gf_trunc = mk_field_truncated(gf, t_start=t_start, t_end=t_end)
     geo_trunc = gf_trunc.geo
     tslice_target_list = list(range(2 * t_half, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
@@ -86,7 +86,7 @@ def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
-def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
+def mk_gt_truncated(gt, *, t_center, t_half, t_size_divisor=1):
     total_site = gt.geo.total_site
     t_size = total_site[3]
     t_size_trunc = 2 * t_half + 1
@@ -96,11 +96,11 @@ def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
     assert t_size_trunc <= t_size
     t_start = (t_center - t_half) % t_size
     t_end = (t_start + t_size_trunc) % t_size
-    gt_trunc = mk_field_truncated(gt, t_start, t_end)
+    gt_trunc = mk_field_truncated(gt, t_start=t_start, t_end=t_end)
     return gt_trunc, t_start, t_size_trunc
 
 @q.timer(is_verbose=True)
-def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
+def mk_gf_truncated_evolve(gf, *, t_center, t_left, t_right, t_pad):
     total_site = gf.geo.total_site
     t_size = total_site[3]
     t_size_trunc_valid = t_left + t_right + 1
@@ -110,7 +110,7 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     assert t_size_trunc <= t_size
     t_start = (t_center - t_left) % t_size
     t_end = (t_start + t_size_trunc) % t_size
-    gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    gf_trunc = mk_field_truncated(gf, t_start=t_start, t_end=t_end)
     geo_trunc = gf_trunc.geo
     tslice_pad_list = list(range(t_size_trunc_valid, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
@@ -126,7 +126,7 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
-def mk_selected_points_truncated(sp, idx_start, idx_end):
+def mk_selected_points_truncated(sp, *, idx_start, idx_end):
     n_keep = idx_end - idx_start
     total_site = sp.psel.total_site
     psel_sub = q.PointsSelection(total_site, n_keep)
@@ -157,7 +157,7 @@ t_center = 8
 t_left = 3
 t_right = 4
 t_pad = 0
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad)
 q.json_results_append("test1 t_start", t_start)
 q.json_results_append("test1 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 8  # 3 + 4 + 1
@@ -165,7 +165,7 @@ assert t_start == (t_center - t_left) % 16
 
 # Test 2: truncation with padding
 t_pad = 4
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad)
 q.json_results_append("test2 t_start", t_start)
 q.json_results_append("test2 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 12  # 3 + 4 + 1 + 4
@@ -208,7 +208,7 @@ t_center_wrap = 2
 t_left = 3
 t_right = 2
 t_pad = 0
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center_wrap, t_left, t_right, t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad)
 q.json_results_append("test5 t_start", t_start)
 q.json_results_append("test5 t_size_trunc", t_size_trunc)
 assert t_start == 15  # (2 - 3) % 16 = 15
@@ -216,7 +216,7 @@ assert t_size_trunc == 6  # 3 + 2 + 1
 
 # Test 6: verify unity padding with wrap-around
 t_pad = 2
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center_wrap, t_left, t_right, t_pad)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad)
 assert t_size_trunc == 8  # 3 + 2 + 1 + 2, already divisible by 2
 t_size_trunc_valid = t_left + t_right + 1  # 6
 geo_trunc = gf_trunc.geo
@@ -240,7 +240,7 @@ q.json_results_append("test6 pad_total", n_pad_total)
 # Test 7: mk_gf_truncated symmetric, no divisor
 t_center = 8
 t_half = 3
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center, t_half)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center=t_center, t_half=t_half)
 q.json_results_append("test7 t_start", t_start)
 q.json_results_append("test7 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 7  # 2 * 3 + 1
@@ -251,7 +251,7 @@ assert 0.0 < plaq_trunc < 1.0
 
 # Test 8: mk_gf_truncated with divisor padding
 t_size_divisor = 4
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center, t_half, t_size_divisor)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor)
 q.json_results_append("test8 t_start", t_start)
 q.json_results_append("test8 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 8  # ceil(7 / 4) * 4
@@ -275,7 +275,7 @@ assert n_pad_ok == n_pad_total, f"padded slices should have zero temporal links:
 # Test 10: mk_gt_truncated
 gt = q.GaugeTransform(geo)
 gt.set_rand(rs.split("gt-init"))
-gt_trunc, t_start, t_size_trunc = mk_gt_truncated(gt, t_center, t_half, t_size_divisor)
+gt_trunc, t_start, t_size_trunc = mk_gt_truncated(gt, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor)
 q.json_results_append("test10 t_start", t_start)
 q.json_results_append("test10 t_size_trunc", t_size_trunc)
 assert t_size_trunc == 8
@@ -310,7 +310,7 @@ prop.set_rand(rs.split("prop-init"))
 ps = prop.glb_sum_tslice()
 q.json_results_append("test12 ps qnorm", ps.qnorm(), 1e-12)
 n_total_ps = len(ps)
-ps_trunc = mk_selected_points_truncated(ps, 2, 6)
+ps_trunc = mk_selected_points_truncated(ps, idx_start=2, idx_end=6)
 q.json_results_append("test12 ps_trunc qnorm", ps_trunc.qnorm(), 1e-12)
 assert len(ps_trunc) == 4
 q.json_results_append("test12 n_total", n_total_ps)

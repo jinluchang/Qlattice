@@ -95,7 +95,7 @@ load_path_list[:] = [
 ### ------
 
 @q.timer
-def mk_field_truncated(field, t_start, t_end):
+def mk_field_truncated(field, *, t_start, t_end):
     """
     Create a field truncated in the time direction.\n
     Extracts a sub-volume of the field covering the time range
@@ -169,7 +169,7 @@ def mk_field_truncated(field, t_start, t_end):
     return field_trunc
 
 @q.timer
-def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
+def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
     """
     Create a gauge field truncated in the time direction.
     Extracts a sub-volume of the gauge field centered at ``t_center`` with
@@ -212,7 +212,7 @@ def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
     assert t_size_trunc <= t_size
     t_start = (t_center - t_half) % t_size
     t_end = (t_start + t_size_trunc) % t_size
-    gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    gf_trunc = mk_field_truncated(gf, t_start=t_start, t_end=t_end)
     geo_trunc = gf_trunc.geo
     tslice_target_list = list(range(2 * t_half, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
@@ -225,7 +225,7 @@ def mk_gf_truncated(gf, t_center, t_half, t_size_divisor=1):
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
-def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
+def mk_gt_truncated(gt, *, t_center, t_half, t_size_divisor=1):
     """
     Create a gauge transform field truncated in the time direction.
     Extracts a sub-volume of the gauge transform centered at ``t_center``
@@ -262,11 +262,11 @@ def mk_gt_truncated(gt, t_center, t_half, t_size_divisor=1):
     assert t_size_trunc <= t_size
     t_start = (t_center - t_half) % t_size
     t_end = (t_start + t_size_trunc) % t_size
-    gt_trunc = mk_field_truncated(gt, t_start, t_end)
+    gt_trunc = mk_field_truncated(gt, t_start=t_start, t_end=t_end)
     return gt_trunc, t_start, t_size_trunc
 
 @q.timer
-def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
+def mk_gf_truncated_evolve(gf, *, t_center, t_left, t_right, t_pad):
     """
     Create a gauge field truncated in the time direction with
     asymmetric left/right extents and padding.
@@ -306,7 +306,7 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     assert t_size_trunc <= t_size
     t_start = (t_center - t_left) % t_size
     t_end = (t_start + t_size_trunc) % t_size
-    gf_trunc = mk_field_truncated(gf, t_start, t_end)
+    gf_trunc = mk_field_truncated(gf, t_start=t_start, t_end=t_end)
     geo_trunc = gf_trunc.geo
     tslice_pad_list = list(range(t_size_trunc_valid, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
@@ -319,7 +319,7 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
-def mk_selected_points_truncated(sp, idx_start, idx_end):
+def mk_selected_points_truncated(sp, *, idx_start, idx_end):
     """
     Return a copy of ``sp[idx_start:idx_end]`` as a new SelectedPoints.
     """
@@ -370,10 +370,10 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
                 continue
             q.check_time_limit()
             gf_trunc, t_offset, t_size_trunc = mk_gf_truncated(
-                gf, tslice, t_half, t_size_divisor
+                gf, t_center=tslice, t_half=t_half, t_size_divisor=t_size_divisor
             )
             gt_trunc, t_offset_gt, t_size_trunc_gt = mk_gt_truncated(
-                gt, tslice, t_half, t_size_divisor
+                gt, t_center=tslice, t_half=t_half, t_size_divisor=t_size_divisor
             )
             assert t_offset == t_offset_gt
             assert t_size_trunc == t_size_trunc_gt
@@ -386,7 +386,7 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             src = q.mk_wall_src(geo_trunc, t_src_trunc)
             sol_trunc = inv_trunc * src
             ps_prop_ws = sol_trunc.glb_sum_tslice()
-            ps_prop_ws = mk_selected_points_truncated(ps_prop_ws, 0, 2 * t_half + 1)
+            ps_prop_ws = mk_selected_points_truncated(ps_prop_ws, idx_start=0, idx_end=2 * t_half + 1)
             q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
             q.json_results_append(
                 f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState())
