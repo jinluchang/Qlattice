@@ -110,6 +110,7 @@ def mk_gf_truncated_evolve(gf, t_center, t_left, t_right, t_pad):
     geo_trunc = gf_trunc.geo
     tslice_pad_list = list(range(t_size_trunc_valid, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
+    assert gf_arr.shape == (geo_trunc.local_volume, 4, 3, 3)
     xg_arr = q.mk_xg_field(geo_trunc)[:]
     eye3 = np.eye(3, dtype=gf_arr.dtype)
     for index in range(geo_trunc.local_volume):
@@ -311,9 +312,6 @@ q.json_results_append("test12 n_trunc", len(ps_trunc))
 ### ------
 
 q.check_log_json(__file__)
-
 q.timer_display()
-
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")
