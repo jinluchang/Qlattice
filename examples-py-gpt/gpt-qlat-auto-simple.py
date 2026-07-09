@@ -594,10 +594,8 @@ if __name__ == "__main__":
         for traj in get_param(job_tag, "traj_list"):
             run_job(job_tag, traj)
 
-    q.check_log_json(__file__)
-
     q.timer_display()
-
+    if q.is_test():
+        q.check_log_json(__file__)
     qg.end_with_gpt()
-
     q.displayln_info("CHECK: finished successfully.")

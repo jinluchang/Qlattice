@@ -283,6 +283,7 @@ q.json_results_append(
 )
 
 q.timer_display()
-q.check_log_json(__file__, check_eps=1e-0)
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-0)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

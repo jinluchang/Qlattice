@@ -44,6 +44,7 @@ with q.ShowKwargs(is_latex=True, exponent=-10):
     q.json_results_append(q.show_val_err((10.12e-10, 1.322e-10), is_latex=False))
 
 q.timer_display()
-q.check_log_json(__file__, check_eps=1e-5)
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

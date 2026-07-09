@@ -344,6 +344,7 @@ sig = q.glb_sum(q.get_data_sig(sf4[:], q.RngState(f"seed-sf4-sig-{q.get_id_node(
 q.json_results_append("sf4 sig", sig, 1e-7)
 
 q.timer_display()
-q.check_log_json(__file__)
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

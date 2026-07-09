@@ -116,10 +116,8 @@ q.begin_with_mpi()
 for traj in get_param(job_tag, "traj_list"):
     run_job(job_tag, traj)
 
-q.check_log_json(__file__, check_eps=1e-10)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

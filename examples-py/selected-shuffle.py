@@ -592,6 +592,7 @@ for total_site in total_site_list:
             test_prop_spatial_smear(total_site, multiplicity, seed)
 
 q.timer_display()
-q.check_log_json(__file__)
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

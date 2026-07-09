@@ -104,9 +104,8 @@ q.json_results_append("lat-io: ld3 roundtrip", float(q.qnorm(ld3[:] - arr3)))
 
 q.check_all_files_crc32_info("results")
 
-q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-14)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

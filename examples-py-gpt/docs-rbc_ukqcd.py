@@ -102,10 +102,8 @@ inv3 = get_inv(gf, job_tag, inv_type, inv_acc, n_grouped=q.get_num_node())
 inv4 = get_inv(gf, job_tag, inv_type, inv_acc, n_grouped=q.get_num_node())
 assert inv3 is inv4
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 qg.end_with_gpt()
-
 q.displayln_info("CHECK: finished successfully.")

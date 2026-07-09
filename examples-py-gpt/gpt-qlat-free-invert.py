@@ -61,10 +61,8 @@ for src in [src_p, src_r]:
     q.json_results_append("sol_diff.qnorm()", sol_diff.qnorm(), 1e-3)
     assert sol_diff.qnorm() < 1e-15
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 qg.end_with_gpt()
-
 q.displayln_info("CHECK: finished successfully.")

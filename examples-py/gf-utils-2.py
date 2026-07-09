@@ -586,6 +586,7 @@ q.set_anti_hermitian_matrix_from_basis(gm, basis)
 q.json_results_append("gm", q.get_data_sig_arr(gm, q.RngState(), 3), 1e-8)
 
 q.timer_display()
-q.check_log_json(__file__, check_eps=1e-5)
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

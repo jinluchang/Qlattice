@@ -40,10 +40,8 @@ for i in range(2):
     p = sols[i]
     q.json_results_append(f"prop sol {i} qnorm", p.qnorm(), 1e-6)
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 qg.end_with_gpt()
-
 q.displayln_info("CHECK: finished successfully.")

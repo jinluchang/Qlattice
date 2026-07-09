@@ -122,10 +122,8 @@ for i in range(4):
     check_convolution_4d(f1, f2, idx1, idx2, ff, xg_rel)
     check_convolution_3d(f1, f2, idx1, idx2, ff3d, xg_rel)
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

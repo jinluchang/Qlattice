@@ -318,7 +318,8 @@ q.json_results_append("test12 n_trunc", len(ps_trunc))
 
 ### ------
 
-q.check_log_json(__file__)
 q.timer_display()
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

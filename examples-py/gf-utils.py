@@ -278,6 +278,7 @@ q.save_pickle_obj(energy_list, f"{density_field_path}/energy-list.pickle")
 check_topo_energy_list("smear_measure_topo wilson-flow", topo_list, energy_list)
 
 q.timer_display()
-q.check_log_json(__file__, check_eps=1e-5)
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-5)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

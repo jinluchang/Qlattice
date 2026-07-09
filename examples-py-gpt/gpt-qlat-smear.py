@@ -116,12 +116,10 @@ sol_smear_psel.save(f"results/{tag} ; smear-snk.lat")
 
 q.json_results_append("qnorm(sol_smear_psel)", q.qnorm(sol_smear_psel), 1e-5)
 
-q.check_log_json(__file__)
-
 q.check_all_files_crc32_info("results")
 
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 qg.end_with_gpt()
-
 q.displayln_info("CHECK: finished successfully.")

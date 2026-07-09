@@ -79,10 +79,8 @@ ld1 = q.contract_pion_field(sol1, 0)
 q.json_results_append("q.qnorm(ld1)", q.qnorm(ld1), 1e-12)
 q.displayln_info(q.show(ld1))
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 qg.end_with_gpt()
-
 q.displayln_info("CHECK: finished successfully.")

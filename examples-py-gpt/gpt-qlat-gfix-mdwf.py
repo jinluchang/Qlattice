@@ -67,7 +67,8 @@ q.json_results_append("sol1.qnorm()", sol1.qnorm(), 1e-10)
 
 assert sol_diff.qnorm() < sol.qnorm() * 1e-16
 
-q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-14)
 qg.end_with_gpt()
 q.displayln_info("CHECK: finished successfully.")

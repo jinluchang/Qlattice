@@ -164,10 +164,8 @@ for tag, inv in zip(tags[1:], invs[1:]):
     q.json_results_append(f"sol diff qnorm tag={tag}", sol_n.qnorm(), 1e-2)
     q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_n.qnorm(), 1e-2)
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 qg.end_with_gpt()
-
 q.displayln_info("CHECK: finished successfully.")

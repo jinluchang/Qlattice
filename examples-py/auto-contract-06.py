@@ -159,10 +159,8 @@ for idx, v in enumerate(res):
     q.json_results_append(f"eval_cexpr res[{idx}]", q.get_data_sig(v, q.RngState()))
     q.displayln_info(-1, f"{v}")
 
-q.check_log_json(__file__, check_eps=1e-14)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-14)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

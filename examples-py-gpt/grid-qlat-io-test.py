@@ -51,10 +51,8 @@ prop1 -= prop
 q.json_results_append("double diff ratio", q.qnorm(prop1) / q.qnorm(prop), 1e-12)
 q.json_results_append("gf.plaq()", gf.plaq(), 1e-12)
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_grid()
-
 q.displayln_info("CHECK: finished successfully.")

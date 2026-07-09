@@ -82,6 +82,8 @@ x2_arr = q.get_threshold_x_arr(data_arr, data_x_arr, threshold_arr)
 q.json_results_append("x2_arr", x2_arr)
 assert np.allclose(q.interp(data_x_arr, i2_arr), x2_arr, rtol=1e-08, atol=1e-08)
 
-q.check_log_json(__file__, check_eps=1e-10)
+q.timer_display()
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")

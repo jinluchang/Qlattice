@@ -182,10 +182,8 @@ t_size = max(total_site.to_list())
 assert ld_hvp_ts.dim_size(1) == t_size
 q.json_results_append(f"hvp_ts shape: {ld_hvp_ts.dim_sizes()}")
 
-q.check_log_json(__file__, check_eps=1e-10)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

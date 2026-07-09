@@ -154,10 +154,8 @@ sig9 = q.get_data_sig(abs(res["jk_param_arr"]), q.RngState())
 
 q.json_results_append("jk_param_arr sig9", sig9, 1e-4)
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

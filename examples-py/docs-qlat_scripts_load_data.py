@@ -120,10 +120,8 @@ result_load = load_prop_wsrc_psel(job_tag, traj, "l", psel=psel, fsel=fsel, gt=g
 assert result_load is None
 q.json_results_append(f"load_prop_wsrc_psel with no data: {result_load}")
 
-q.check_log_json(__file__, check_eps=1e-10)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__, check_eps=1e-10)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")

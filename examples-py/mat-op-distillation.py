@@ -162,10 +162,8 @@ v1 = q.get_data_sig(wilson_matrix_g5_herm(wm1), q.RngState("seed-sig-mul"))
 v2 = q.get_data_sig(wilson_matrix_g5_herm(wm2), q.RngState("seed-sig-mul"))
 q.json_results_append("wilson_matrix_g5_herm", np.array([v1, v2]))
 
-q.check_log_json(__file__)
-
 q.timer_display()
-
+if q.is_test():
+    q.check_log_json(__file__)
 q.end_with_mpi()
-
 q.displayln_info("CHECK: finished successfully.")
