@@ -64,7 +64,6 @@ tests_gpt = \
 			gpt-qlat-lanc.log \
 			gpt-qlat-rbc-ukqcd-invert.log \
 			gpt-qlat-madwf.log \
-			test-mk-gf-truncated-evolve.log \
 			docs-rbc_ukqcd.log
 
 all: run-gpt

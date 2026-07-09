@@ -5,12 +5,10 @@ Test mk_gf_truncated_evolve: asymmetric time-direction truncation of a gauge
 field with padding set to unity links.
 """
 
-import qlat_gpt as qg
 import qlat as q
 import numpy as np
 
-qg.begin_with_gpt()
-
+q.begin_with_mpi()
 
 total_site = q.Coordinate([4, 4, 4, 16])
 geo = q.Geometry(total_site)
@@ -189,6 +187,6 @@ q.check_log_json(__file__)
 
 q.timer_display()
 
-qg.end_with_gpt()
+q.end_with_mpi()
 
 q.displayln_info("CHECK: finished successfully.")

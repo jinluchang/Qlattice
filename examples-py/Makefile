@@ -109,6 +109,7 @@ tests = \
 		gf-utils.log \
 		gf-utils-2.log \
 		gf-flow-topo.log \
+		test-mk-gf-truncated-evolve.log \
 		flow-and-smear.log \
 		free-invert.log \
 		fit-corr.log \
