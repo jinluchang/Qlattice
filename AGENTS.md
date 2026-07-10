@@ -49,9 +49,13 @@ Tests use **log-comparison**: each test prints `CHECK:` lines compared against r
 
 ### Run all tests
 
+**REQUIREMENT**: All tests MUST be run via the nix-build command below. Do NOT loop through individual tests manually — the nix-build command handles the full test suite correctly:
+
 ```bash
 nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
 ```
+
+**DO NOT** use shell loops like `for test in ... ; do ./nixpkgs/run-one-example-py.py $test ; done` — this is incorrect and bypasses the proper test orchestration.
 
 ### Run a new program with the nix-built environment
 
