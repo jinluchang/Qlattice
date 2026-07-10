@@ -150,6 +150,7 @@ def mk_gf_truncated_evolve(
         (suggested default: q.GaugeAction(6.0, 0.0))
     rs : RngState
         Random state; split internally before use.
+        (suggested default: q.RngState(f"{get_job_seed(job_tag)}-{traj}-{t_center}-{t_left}-{t_right}-{t_pad}"))
     num_traj : int
         Number of HMC trajectories to run (each starts from the previous state).
         (suggested default: 1)
