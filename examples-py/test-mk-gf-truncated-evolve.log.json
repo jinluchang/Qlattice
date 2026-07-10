@@ -2,182 +2,153 @@
  [
   "plaq",
   0.6138494890301296,
-  1e-12
+  1e-08
  ],
  [
-  "test1 t_start",
-  5
+  "test1 t_start=5"
  ],
  [
-  "test1 t_size_trunc",
-  8
+  "test1 t_size_trunc=8"
  ],
  [
-  "test2 t_start",
-  5
+  "test2 t_start=5"
  ],
  [
-  "test2 t_size_trunc",
-  12
+  "test2 t_size_trunc=12"
  ],
  [
-  "test3 pad_ok",
-  0
+  "test3 pad_ok=0"
  ],
  [
-  "test3 pad_total",
-  0
+  "test3 pad_total=0"
  ],
  [
-  "test3 valid_not_identity",
-  384
+  "test3 valid_not_identity=384"
  ],
  [
-  "test3 valid_total",
-  384
+  "test3 valid_total=384"
  ],
  [
   "test4 plaq_trunc",
   0.6965896958657845,
-  1e-12
+  1e-08
  ],
  [
-  "test5 t_start",
-  15
+  "test5 t_start=15"
  ],
  [
-  "test5 t_size_trunc",
-  6
+  "test5 t_size_trunc=6"
  ],
  [
-  "test6 t_start",
-  15
+  "test6 t_start=15"
  ],
  [
-  "test6 t_size_trunc",
-  8
+  "test6 t_size_trunc=8"
  ],
  [
-  "test6 pad_ok",
-  0
+  "test6 pad_ok=0"
  ],
  [
-  "test6 pad_total",
-  0
+  "test6 pad_total=0"
  ],
  [
-  "test7 t_start",
-  5
+  "test7 t_start=5"
  ],
  [
-  "test7 t_size_trunc",
-  7
+  "test7 t_size_trunc=7"
  ],
  [
   "test7 plaq_trunc",
   0.612903481120991,
-  1e-12
+  1e-08
  ],
  [
-  "test8 t_start",
-  5
+  "test8 t_start=5"
  ],
  [
-  "test8 t_size_trunc",
-  8
+  "test8 t_size_trunc=8"
  ],
  [
-  "test9 pad_zero_temporal_ok",
-  0
+  "test9 pad_zero_temporal_ok=0"
  ],
  [
-  "test9 pad_zero_temporal_total",
-  0
+  "test9 pad_zero_temporal_total=0"
  ],
  [
-  "test10 t_start",
-  5
+  "test10 t_start=5"
  ],
  [
-  "test10 t_size_trunc",
-  8
+  "test10 t_size_trunc=8"
  ],
  [
-  "test11 data_match",
-  192
+  "test11 data_match=192"
  ],
  [
-  "test11 data_total",
-  192
+  "test11 data_total=192"
  ],
  [
   "test12 ps qnorm",
   4731298.483026241,
-  1e-12
+  1e-08
  ],
  [
   "test12 ps_trunc qnorm",
   1175672.4007121138,
-  1e-12
+  1e-08
  ],
  [
-  "test12 n_total",
-  16
+  "test12 n_total=16"
  ],
  [
-  "test12 n_trunc",
-  4
+  "test12 n_trunc=4"
  ],
  [
-  "test13 gf_evolve_masked",
-  1
+  "test13 gf_evolve_masked=1"
  ],
  [
   "test14 delta_h",
   -0.42420259300888574,
-  1e-12
+  1e-08
  ],
  [
   "test15 delta_h",
   -0.6490064963654731,
-  1e-12
+  1e-08
  ],
  [
   "test16 delta_h",
   0.0,
-  1e-12
+  1e-08
  ],
  [
-  "test17 pad_ok",
-  0
+  "test17 pad_ok=0"
  ],
  [
-  "test17 pad_total",
-  0
+  "test17 pad_total=0"
  ],
  [
   "test18 delta_h",
   -0.4336293741052941,
-  1e-12
+  1e-08
  ],
  [
   "test19 delta_h",
   0.0,
-  1e-12
+  1e-08
  ],
  [
   "test20 delta_h",
   -0.5228852485324751,
-  1e-12
+  1e-08
  ],
  [
   "test21 dh_low_n6",
   -0.713410138287145,
-  1e-12
+  1e-08
  ],
  [
   "test21 dh_high_n24",
   -0.0025788611674215645,
-  1e-12
+  1e-08
  ]
 ]

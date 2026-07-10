@@ -453,8 +453,59 @@ def get_data_sig_arr(x, rs, sig_len):
 global_json_results = []  # Default value for param ``json_results`` in functions ``check_log_json`` and ``json_results_append``
 
 def json_results_append(*args, json_results=None):
+    """
+    Append a result entry to a JSON results list and display it.\n
+    Each call records one entry — a tuple of ``args`` — into the list
+    referenced by ``json_results`` (defaulting to the module-level
+    ``global_json_results``).  The entry is also printed to stdout with
+    decorative separator lines, making results visible both in the console
+    log and in the structured list consumed by ``check_log_json``.\n
+    Parameters
+    ----------
+    *args
+        Positional arguments forming the result entry.  The tuple is stored
+        as-is.  Typical formats understood by ``check_log_json``:\n
+        - ``(name,)``                                          — marker without a value
+        - ``(name, value)``                                    — named value using the default epsilon
+        - ``(name, value, check_eps)``                         — named value with custom tolerance
+        - ``(name, value, check_eps, ...)``                    — extra trailing elements are stored but ignored\n
+        ``name`` must be a ``str`` (it is compared directly against the
+        reference file entry).\n
+        ``value`` can be any type that ``numpy.linalg.norm`` accepts and
+        that supports subtraction (``v - vl``): typically ``float``,
+        ``complex``, or a ``numpy.ndarray``.
+        ``int`` is **not** valid — encode integer values as part of
+        ``name`` instead (e.g. ``json_results_append(f"val {i}")``).
+        A plain Python ``list`` is **not** valid because ``list - list``
+        raises ``TypeError`` in ``check_log_json``.\n
+        ``check_eps`` must be a ``float`` (the relative tolerance for
+        the comparison; default 1e-5).\n
+    json_results : list | None
+        Mutable list to which the entry is appended.  When ``None`` (default),
+        the module-level ``global_json_results`` list is used.  Pass an
+        explicit list to isolate results from other tests.\n
+    Example
+    -------
+    >>> json_results_append("plaq", plaq_value)
+    >>> json_results_append("polyakov", poly_value, 1e-8)\n
+    See Also
+    --------
+    check_log_json : Compare accumulated results against a reference file.
+    """
     if json_results is None:
         json_results = global_json_results
+    if len(args) >= 1:
+        assert isinstance(args[0], str), (
+            f"name must be a str, got {type(args[0]).__name__}"
+        )
+    if len(args) >= 2:
+        assert isinstance(args[1], (float, complex, np.ndarray)), (
+            f"value must be float, complex, or np.ndarray, got {type(args[1]).__name__}"
+        )
+    if len(args) >= 3:
+        assert isinstance(args[2], float), (
+            f"check_eps must be a float, got {type(args[2]).__name__}"
+        )
     displayln_info(
         0, r"//------------------------------------------------------------\\"
     )
@@ -467,15 +518,51 @@ def json_results_append(*args, json_results=None):
 @timer_verbose
 def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
     """
-    q.check_log_json(__file__, json_results=json_results, check_eps=check_eps)
-    #
-    json_results = [ (name, value, check_eps,), (name, value,), (name,), ... ]
-    #
-    default:
-    check_eps=1e-5
-    json_results=q.global_json_results
-    #
+    Compare accumulated JSON results against a reference file and exit on mismatch.\n
+    This function serialises the current ``json_results`` list to a ``.log.json.new``
+    file (next to the test script), then loads the reference ``.log.json`` file and
+    compares each entry element-wise.  If any entry differs beyond the allowed
+    tolerance the process exits with status 1 via ``sys.exit``.\n
+    The comparison logic supports three entry formats (see ``json_results_append``):\n
+    - ``(name,)``                — marker; only name is checked
+    - ``(name, value)``          — compared with the default ``check_eps``
+    - ``(name, value, eps)``     — compared with the entry-specific ``eps``\n
+    The relative difference is computed as:\n
+    .. code-block:: python\n
+        actual_eps = 2 * ||v - vl|| / (||v|| + ||vl||)\n
+    where ``||·||`` is the L2 norm.  A mismatch is declared when
+    ``actual_eps > eps``.\n
+    On root MPI rank (``get_id_node() == 0``) the comparison is performed,
+    then the ``mismatch`` flag is broadcast to all ranks via
+    ``MPI.COMM_WORLD.bcast``.  If ``mpi4py`` is unavailable the check runs
+    without MPI synchronisation.\n
+    Parameters
+    ----------
+    script_file : str
+        Path to the test script (typically ``__file__``).  The reference file
+        is derived by replacing the extension with ``.log.json``.\n
+    json_results : list | None
+        List of result entries to compare.  When ``None`` (default), uses the
+        module-level ``global_json_results``.\n
+    check_eps : float, default 1e-5
+        Default relative tolerance used for entries without an explicit
+        ``eps`` field.\n
+    Notes
+    -----
+    This function calls ``sys.exit(1)`` when mismatches are found, so it
+    should be invoked at the very end of a test script (after all results are
+    appended).  The ``.log.json.new`` file is written so that developers can
+    inspect the current output and, if the changes are intentional, replace
+    the reference file with it.\n
+    Example
+    -------
+    >>> json_results_append("plaq", 0.618034)
+    >>> check_log_json(__file__)\n
+    See Also
+    --------
+    json_results_append : Append results for later verification.
     """
+    #
     fname = get_fname()
     if json_results is None:
         json_results = global_json_results
