@@ -89,14 +89,14 @@ sfw = q.open_fields(
 
 sf_list = sorted(q.show_all_shuffled_fields_writer())
 q.sync_node()
-q.json_results_append("fields-io: show_all_shuffled_fields_writer n", len(sf_list))
+q.json_results_append(f"fields-io: show_all_shuffled_fields_writer n={len(sf_list)}")
 for idx, s in enumerate(sf_list):
     q.json_results_append(f"fields-io: show_all_shuffled_fields_writer {idx} {s}")
 q.sync_node()
 
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
-q.json_results_append("fields-io: show_all_qfile n", len(sq_list))
+q.json_results_append(f"fields-io: show_all_qfile n={len(sq_list)}")
 for idx, s in enumerate(sq_list):
     q.json_results_append(f"fields-io: show_all_qfile {idx} {s}")
 q.sync_node()
@@ -125,7 +125,7 @@ sfr = q.open_fields("results/prop.fields", "r")
 
 sq_list = sorted(q.show_all_qfile())
 q.sync_node()
-q.json_results_append("fields-io: show_all_qfile after read n", len(sq_list))
+q.json_results_append(f"fields-io: show_all_qfile after read n={len(sq_list)}")
 for idx, s in enumerate(sq_list):
     q.json_results_append(f"fields-io: show_all_qfile after read {idx} {s}")
 q.sync_node()

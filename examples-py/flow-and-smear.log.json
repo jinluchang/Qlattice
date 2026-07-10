@@ -524,9 +524,7 @@
   1e-10
  ],
  [
-  "prop_spatial_smear [Prop,Prop] len",
-  2,
-  1e-10
+  "prop_spatial_smear [Prop,Prop] len=2"
  ],
  [
   "prop_spatial_smear [Prop,Prop] sig",
@@ -553,9 +551,7 @@
   1e-10
  ],
  [
-  "prop_spatial_smear [FF4d,FF4d] len",
-  2,
-  1e-10
+  "prop_spatial_smear [FF4d,FF4d] len=2"
  ],
  [
   "prop_spatial_smear [FF4d,FF4d] sig",

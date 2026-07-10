@@ -263,7 +263,7 @@ q.json_results_append(
 prop2 = q.Prop(geo)
 prop2.set_rand(rs.split("prop2-init"))
 sp_list_prop = q.prop_spatial_smear([prop, prop2], gf_ape, coef, step, mom)
-q.json_results_append("prop_spatial_smear [Prop,Prop] len", len(sp_list_prop), 1e-10)
+q.json_results_append(f"prop_spatial_smear [Prop,Prop] len={len(sp_list_prop)}")
 q.json_results_append(
     "prop_spatial_smear [Prop,Prop] sig",
     q.get_data_sig_arr(sp_list_prop[0], rs.split("pssp0"), 3),
@@ -275,7 +275,7 @@ q.json_results_append(
 ff2 = q.FermionField4d(geo)
 ff2.set_rand(rs.split("ff2-init"))
 sp_list_ff = q.prop_spatial_smear([ff, ff2], gf_ape, coef, step, mom)
-q.json_results_append("prop_spatial_smear [FF4d,FF4d] len", len(sp_list_ff), 1e-10)
+q.json_results_append(f"prop_spatial_smear [FF4d,FF4d] len={len(sp_list_ff)}")
 q.json_results_append(
     "prop_spatial_smear [FF4d,FF4d] sig",
     q.get_data_sig_arr(sp_list_ff[0], rs.split("pssf0"), 3),
