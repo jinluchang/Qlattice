@@ -6,7 +6,7 @@ The molecular dynamics step uses the **force-gradient integrator** (a.k.a.
 the "minimum norm" or "Omelyan" integrator).  Key parameters::\n
     lam = (1 - 1 / sqrt(3)) / 2
     theta = (2 - sqrt(3)) / 48\n
-The algorithm, in terms of :math:`dt = md\_time / n\_step`::\n
+The algorithm, in terms of :math:`dt = md\\_time / n\\_step`::\n
     U += lam * dt * P                                       # half position update
     for i in range(n_step):
         P += dt/2 * F( evolve(U, 4*theta*dt^2 * F(U)) )    # force-gradient step

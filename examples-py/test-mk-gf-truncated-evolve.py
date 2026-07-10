@@ -5,7 +5,7 @@ Test time-direction truncation utilities:
 - mk_field_truncated: generic field truncation
 - mk_gf_truncated: symmetric gauge field truncation with divisor padding
 - mk_gt_truncated: gauge transform truncation
-- mk_gf_truncated_evolve: asymmetric truncation with unity-link padding
+- mk_gf_truncated_evolve: asymmetric truncation with unity-link padding and masked HMC
 - mk_selected_points_truncated: point selection truncation
 - gf_evolve_masked / gm_evolve_fg_pure_gauge_masked / run_hmc_evolve_pure_gauge_masked:
     masked HMC evolution that only updates links where mask is True
@@ -20,6 +20,7 @@ import numpy as np
 
 @q.timer
 def mk_field_truncated(field, *, t_start, t_end):
+    """Truncate field to time range [t_start, t_end)."""
     geo = field.geo
     total_site = geo.total_site
     t_size = total_site[3]
@@ -68,6 +69,7 @@ def mk_field_truncated(field, *, t_start, t_end):
 
 @q.timer
 def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
+    """Truncate gauge field symmetrically around t_center with divisor padding."""
     total_site = gf.geo.total_site
     t_size = total_site[3]
     t_size_trunc = 2 * t_half + 1
@@ -91,6 +93,7 @@ def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
 
 @q.timer
 def mk_gt_truncated(gt, *, t_center, t_half, t_size_divisor=1):
+    """Truncate gauge transform symmetrically around t_center."""
     total_site = gt.geo.total_site
     t_size = total_site[3]
     t_size_trunc = 2 * t_half + 1
@@ -104,7 +107,63 @@ def mk_gt_truncated(gt, *, t_center, t_half, t_size_divisor=1):
     return gt_trunc, t_start, t_size_trunc
 
 @q.timer(is_verbose=True)
-def mk_gf_truncated_evolve(gf, *, t_center, t_left, t_right, t_pad):
+def mk_gf_truncated_evolve(
+    gf,
+    *,
+    t_center,
+    t_left,
+    t_right,
+    t_pad,
+    ga,
+    rs,
+    num_traj,
+    n_step,
+    md_time,
+):
+    """Truncate a gauge field in the time direction, fill the padding/gap with
+    identity links, then evolve those links via num_traj masked HMC trajectories.\n
+    The result has total time extent ``t_left + t_right + 1 + t_pad`` (rounded
+    up to the nearest multiple of ``size_node[3]``).  The valid region
+    ``[0, t_left + t_right]`` is a copy of the original field *gf* and is
+    frozen during HMC.  The padding region ``[t_left + t_right + 1, ...]`` is
+    filled with identity links and then evolved — the boundary temporal link
+    (``dir=3`` at slice ``t_left + t_right``) is also identity-initialised and
+    evolved, creating a smooth transition between the physical and padding
+    regions.\n
+    Parameters
+    ----------
+    gf : GaugeField
+        Source gauge field to truncate.
+    t_center : int
+        Reference time coordinate for centering the valid region.
+    t_left : int
+        Number of time slices to include before (and including) *t_center*.
+        (suggested default: 3)
+    t_right : int
+        Number of time slices to include after (and including) *t_center*.
+        (suggested default: 7)
+    t_pad : int
+        Number of additional padding slices beyond the valid region.
+        (suggested default: 5)
+    ga : GaugeAction
+        Gauge action used for the HMC force computation.
+        (suggested default: q.GaugeAction(6.0, 0.0))
+    rs : RngState
+        Random state; split internally before use.
+    num_traj : int
+        Number of HMC trajectories to run (each starts from the previous state).
+        (suggested default: 1)
+    n_step : int
+        Number of molecular-dynamics steps per trajectory.
+        (suggested default: 6)
+    md_time : float
+        Total molecular-dynamics time per trajectory.
+        (suggested default: 1.0)\n
+    Returns
+    -------
+    (gf_trunc, t_start, t_size_trunc)
+        The truncated-and-evolved gauge field, the starting time slice, and the
+        total time extent of the result."""
     total_site = gf.geo.total_site
     t_size = total_site[3]
     t_size_trunc_valid = t_left + t_right + 1
@@ -124,10 +183,22 @@ def mk_gf_truncated_evolve(gf, *, t_center, t_left, t_right, t_pad):
     mask[xg_arr[:, 3] >= t_size_trunc_valid, :] = True
     mask[xg_arr[:, 3] == t_size_trunc_valid - 1, 3] = True
     gf_arr[mask] = eye3
+    rs_hmc = rs.split("mk_gf_truncated_evolve-hmc")
+    for traj in range(num_traj):
+        run_hmc_pure_gauge_masked(
+            gf_trunc,
+            ga,
+            traj,
+            rs_hmc,
+            mask,
+            n_step=n_step,
+            md_time=md_time,
+        )
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
 def mk_selected_points_truncated(sp, *, idx_start, idx_end):
+    """Truncate SelectedPoints to index range [idx_start, idx_end)."""
     n_keep = idx_end - idx_start
     total_site = sp.psel.total_site
     psel_sub = q.PointsSelection(total_site, n_keep)
@@ -138,10 +209,12 @@ def mk_selected_points_truncated(sp, *, idx_start, idx_end):
 
 ### ------
 ### Masked HMC evolution functions
+### Convention: mask=True means the link IS evolved/updated; mask=False means the link is frozen (restored to original after each operation).
 ### ------
 
 @q.timer
 def gf_evolve_masked(gf, gm, dt, mask):
+    """Evolve gf by dt along gm, restore links where mask is False."""
     gf_saved = q.GaugeField(gf.geo)
     gf_saved @= gf
     q.gf_evolve(gf, gm, dt)
@@ -151,6 +224,7 @@ def gf_evolve_masked(gf, gm, dt, mask):
 
 @q.timer
 def gf_unitarize_masked(gf, mask):
+    """Unitarize gf, restore links where mask is False."""
     gf_saved = q.GaugeField(gf.geo)
     gf_saved @= gf
     gf.unitarize()
@@ -160,6 +234,7 @@ def gf_unitarize_masked(gf, mask):
 
 @q.timer
 def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
+    """Accumulate gauge force onto gm for links where mask is True."""
     geo = gf_init.geo
     gf = q.GaugeField(geo)
     gf @= gf_init
@@ -174,6 +249,7 @@ def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, n_step, mask, md_time=1.0):
+    """Run masked HMC evolution (lower-level, takes momentum as argument). mask=True links are evolved; mask=False links are frozen."""
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
@@ -204,6 +280,7 @@ def run_hmc_pure_gauge_masked(
     n_step=6,
     md_time=1.0,
 ):
+    """Run masked HMC evolution with Metropolis test (higher-level). mask=True links are evolved; mask=False links are frozen."""
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo
@@ -241,6 +318,9 @@ gf.set_rand(rs.split("gf-init"), 0.3, 1)
 plaq = gf.plaq()
 q.json_results_append("plaq", plaq, 1e-12)
 
+ga = q.GaugeAction(5.5, 0.0)
+rs_evolve = rs.split("mk_gf_truncated_evolve")
+
 ### ------
 
 # Test 1: basic truncation, no padding
@@ -249,7 +329,16 @@ t_left = 3
 t_right = 4
 t_pad = 0
 gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
-    gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad
+    gf,
+    t_center=t_center,
+    t_left=t_left,
+    t_right=t_right,
+    t_pad=t_pad,
+    ga=ga,
+    rs=rs_evolve,
+    num_traj=1,
+    n_step=6,
+    md_time=1.0,
 )
 q.json_results_append("test1 t_start", t_start)
 q.json_results_append("test1 t_size_trunc", t_size_trunc)
@@ -259,7 +348,16 @@ assert t_start == (t_center - t_left) % 16
 # Test 2: truncation with padding
 t_pad = 4
 gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
-    gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad
+    gf,
+    t_center=t_center,
+    t_left=t_left,
+    t_right=t_right,
+    t_pad=t_pad,
+    ga=ga,
+    rs=rs_evolve,
+    num_traj=1,
+    n_step=6,
+    md_time=1.0,
 )
 q.json_results_append("test2 t_start", t_start)
 q.json_results_append("test2 t_size_trunc", t_size_trunc)
@@ -289,8 +387,8 @@ q.json_results_append("test3 pad_ok", n_pad_ok)
 q.json_results_append("test3 pad_total", n_pad_total)
 q.json_results_append("test3 valid_not_identity", n_valid_ok)
 q.json_results_append("test3 valid_total", n_valid_total)
-assert n_pad_ok == n_pad_total, (
-    f"padded sites should be unity: {n_pad_ok}/{n_pad_total}"
+assert n_pad_ok == 0, (
+    f"padded sites should have evolved (not identity): {n_pad_ok}/{n_pad_total}"
 )
 if n_valid_total > 0:
     assert n_valid_ok > 0, "valid sites should not all be identity"
@@ -306,7 +404,16 @@ t_left = 3
 t_right = 2
 t_pad = 0
 gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
-    gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad
+    gf,
+    t_center=t_center_wrap,
+    t_left=t_left,
+    t_right=t_right,
+    t_pad=t_pad,
+    ga=ga,
+    rs=rs_evolve,
+    num_traj=1,
+    n_step=6,
+    md_time=1.0,
 )
 q.json_results_append("test5 t_start", t_start)
 q.json_results_append("test5 t_size_trunc", t_size_trunc)
@@ -316,7 +423,16 @@ assert t_size_trunc == 6  # 3 + 2 + 1
 # Test 6: verify unity padding with wrap-around
 t_pad = 2
 gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
-    gf, t_center=t_center_wrap, t_left=t_left, t_right=t_right, t_pad=t_pad
+    gf,
+    t_center=t_center_wrap,
+    t_left=t_left,
+    t_right=t_right,
+    t_pad=t_pad,
+    ga=ga,
+    rs=rs_evolve,
+    num_traj=1,
+    n_step=6,
+    md_time=1.0,
 )
 assert t_size_trunc == 8  # 3 + 2 + 1 + 2, already divisible by 2
 t_size_trunc_valid = t_left + t_right + 1  # 6
@@ -332,8 +448,8 @@ for index in range(geo_trunc.local_volume):
         n_pad_total += 1
         if np.allclose(gf_arr[index], eye3):
             n_pad_ok += 1
-assert n_pad_ok == n_pad_total, (
-    f"padded sites should be unity (wrap): {n_pad_ok}/{n_pad_total}"
+assert n_pad_ok == 0, (
+    f"padded sites should have evolved (not identity, wrap): {n_pad_ok}/{n_pad_total}"
 )
 q.json_results_append("test6 t_start", t_start)
 q.json_results_append("test6 t_size_trunc", t_size_trunc)
@@ -449,7 +565,6 @@ assert not np.allclose(gf13_arr[mask13], gf13_copy_arr[mask13]), (
 q.json_results_append("test13 gf_evolve_masked", 1)
 
 # Test 14: run_hmc_evolve_pure_gauge_masked — freeze temporal links
-ga = q.GaugeAction(5.5, 0.0)
 rs14 = rs.split("test14")
 gf14 = q.GaugeField(geo)
 gf14 @= gf
@@ -497,36 +612,41 @@ assert np.allclose(gf16_arr, gf16_copy_arr), (
     "all-False mask should leave field unchanged"
 )
 
-# Test 17: masked evolution on truncated geometry
-rs17 = rs.split("test17")
+# Test 17: mk_gf_truncated_evolve with HMC
 t_center = 8
 t_left = 3
 t_right = 4
 t_pad = 4
+rs17 = rs.split("test17")
 gf_trunc17, t_start, t_size_trunc = mk_gf_truncated_evolve(
-    gf, t_center=t_center, t_left=t_left, t_right=t_right, t_pad=t_pad
+    gf,
+    t_center=t_center,
+    t_left=t_left,
+    t_right=t_right,
+    t_pad=t_pad,
+    ga=ga,
+    rs=rs17,
+    num_traj=1,
+    n_step=6,
+    md_time=1.0,
 )
 geo_trunc17 = gf_trunc17.geo
 t_size_trunc_valid17 = t_left + t_right + 1
+gf_arr17 = np.asarray(gf_trunc17)
 xg_arr17 = q.mk_xg_field(geo_trunc17)[:]
-mask17 = np.ones((geo_trunc17.local_volume, 4), dtype=bool)
-mask17[xg_arr17[:, 3] >= t_size_trunc_valid17, :] = False
-mask17[xg_arr17[:, 3] == t_size_trunc_valid17 - 1, 3] = False
-gm17 = q.GaugeMomentum(geo_trunc17)
-gm17.set_rand(rs17.split("set_rand_gauge_momentum"), 1.0)
-gf17 = q.GaugeField(geo_trunc17)
-gf17 @= gf_trunc17
-gf17_copy = q.GaugeField(geo_trunc17)
-gf17_copy @= gf17
-delta_h17 = run_hmc_evolve_pure_gauge_masked(gm17, gf17, ga, n_step=6, mask=mask17)
-q.json_results_append("test17 delta_h", delta_h17, 1e-12)
-gf17_arr = np.asarray(gf17)
-gf17_copy_arr = np.asarray(gf17_copy)
-assert np.allclose(gf17_arr[~mask17], gf17_copy_arr[~mask17]), (
-    "frozen links should be unchanged"
-)
-assert not np.allclose(gf17_arr[mask17], gf17_copy_arr[mask17]), (
-    "active links should have changed"
+eye3 = np.eye(3, dtype=gf_arr17.dtype)
+n_pad_ok = 0
+n_pad_total = 0
+for index in range(geo_trunc17.local_volume):
+    xg = xg_arr17[index]
+    if xg[3] >= t_size_trunc_valid17:
+        n_pad_total += 1
+        if np.allclose(gf_arr17[index], eye3):
+            n_pad_ok += 1
+q.json_results_append("test17 pad_ok", n_pad_ok)
+q.json_results_append("test17 pad_total", n_pad_total)
+assert n_pad_ok == 0, (
+    f"padded sites should have evolved (not identity): {n_pad_ok}/{n_pad_total}"
 )
 
 # Test 18: run_hmc_pure_gauge_masked — freeze temporal links
