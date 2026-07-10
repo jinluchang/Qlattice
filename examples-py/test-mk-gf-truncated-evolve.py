@@ -153,13 +153,13 @@ def mk_gf_truncated_evolve(
         (suggested default: q.RngState(f"{get_job_seed(job_tag)}-{traj}-{t_center}-{t_left}-{t_right}-{t_pad}"))
     num_traj : int
         Number of HMC trajectories to run (each starts from the previous state).
-        (suggested default: 1)
+        (suggested default: 64)
     n_step : int
         Number of molecular-dynamics steps per trajectory.
-        (suggested default: 6)
+        (suggested default: 12)
     md_time : float
         Total molecular-dynamics time per trajectory.
-        (suggested default: 1.0)\n
+        (suggested default: 4.0)\n
     Returns
     -------
     (gf_trunc, t_start, t_size_trunc)
