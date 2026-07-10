@@ -1,11 +1,9 @@
 [
  [
-  "get_ls_from_fermion_params(Ls)",
-  12
+  "get_ls_from_fermion_params(Ls)=12"
  ],
  [
-  "get_ls_from_fermion_params(omega)",
-  6
+  "get_ls_from_fermion_params(omega)=6"
  ],
  [
   "get_param_fermion mass",
@@ -20,16 +18,13 @@
   0.01
  ],
  [
-  "get_param_lanc Nstop",
-  20
+  "get_param_lanc Nstop=20"
  ],
  [
-  "get_param_clanc nbasis",
-  20
+  "get_param_clanc nbasis=20"
  ],
  [
-  "get_param_cg_mp_maxiter",
-  50
+  "get_param_cg_mp_maxiter=50"
  ],
  [
   "gf.plaq()",

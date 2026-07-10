@@ -28,11 +28,11 @@ inv_acc = 0
 # get_ls_from_fermion_params
 fp_Ls = {"Ls": 12, "M5": 1.8}
 q.json_results_append(
-    "get_ls_from_fermion_params(Ls)", get_ls_from_fermion_params(fp_Ls)
+    f"get_ls_from_fermion_params(Ls)={get_ls_from_fermion_params(fp_Ls)}"
 )
 fp_omega = {"omega": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]}
 q.json_results_append(
-    "get_ls_from_fermion_params(omega)", get_ls_from_fermion_params(fp_omega)
+    f"get_ls_from_fermion_params(omega)={get_ls_from_fermion_params(fp_omega)}"
 )
 
 # get_param_fermion
@@ -51,18 +51,18 @@ assert lanc is not None
 assert "fermion_params" in lanc
 assert "irl_params" in lanc
 assert lanc["fermion_params"] == fp
-q.json_results_append("get_param_lanc Nstop", lanc["irl_params"]["Nstop"])
+q.json_results_append(f"get_param_lanc Nstop={lanc['irl_params']['Nstop']}")
 
 # get_param_clanc
 clanc = get_param_clanc(job_tag, inv_type, inv_acc)
 assert clanc is not None
 assert clanc["nbasis"] <= lanc["irl_params"]["Nstop"]
-q.json_results_append("get_param_clanc nbasis", clanc["nbasis"])
+q.json_results_append(f"get_param_clanc nbasis={clanc['nbasis']}")
 
 # get_param_cg_mp_maxiter
 maxiter = get_param_cg_mp_maxiter(job_tag, inv_type, inv_acc)
 assert maxiter > 0
-q.json_results_append("get_param_cg_mp_maxiter", maxiter)
+q.json_results_append(f"get_param_cg_mp_maxiter={maxiter}")
 
 # GPT fermion setup
 total_site = q.Coordinate(get_param(job_tag, "total_site"))
