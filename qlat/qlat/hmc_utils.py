@@ -86,12 +86,11 @@ def gm_evolve_fg_pure_gauge(gm, gf_init, ga, fg_dt, dt):
     gm += gm_force
 
 @q.timer(is_timer_fork=True)
-def run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0):
+def run_hmc_evolve_pure_gauge(gm, gf, ga, n_step, md_time=1.0):
     """Run the MD evolution (force-gradient integrator).\n
     Evolve ``gf`` and ``gm`` in-place for ``n_step`` steps of size
     ``md_time / n_step``.  Returns the energy violation ``delta_h``
-    (already MPI-summed).  ``rs`` is not used (accepted for interface
-    compatibility).
+    (already MPI-summed).
     """
     energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga)
     dt = md_time / n_step
@@ -156,13 +155,13 @@ def run_hmc_pure_gauge(
     gf0 @= gf
     gm = GaugeMomentum(geo)
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
-    delta_h = run_hmc_evolve_pure_gauge(gm, gf0, ga, rs, n_step, md_time)
+    delta_h = run_hmc_evolve_pure_gauge(gm, gf0, ga, n_step, md_time)
     if is_reverse_test:
         gm_r = GaugeMomentum(geo)
         gm_r @= gm
         gf0_r = GaugeField(geo)
         gf0_r @= gf0
-        delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, rs, n_step, -md_time)
+        delta_h_rev = run_hmc_evolve_pure_gauge(gm_r, gf0_r, ga, n_step, -md_time)
         gf0_r -= gf
         q.displayln_info(
             f"{fname}: reversed delta_diff: {delta_h + delta_h_rev} / {delta_h}"

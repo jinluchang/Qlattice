@@ -173,7 +173,7 @@ def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
     gm_arr[mask] += gm_force_arr[mask]
 
 @q.timer(is_timer_fork=True)
-def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, rs, n_step, mask, md_time=1.0):
+def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, n_step, mask, md_time=1.0):
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
@@ -215,7 +215,7 @@ def run_hmc_pure_gauge_masked(
     gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
     gm_arr = np.asarray(gm)
     gm_arr[~mask] = 0.0
-    delta_h = run_hmc_evolve_pure_gauge_masked(gm, gf0, ga, rs, n_step, mask, md_time)
+    delta_h = run_hmc_evolve_pure_gauge_masked(gm, gf0, ga, n_step, mask, md_time)
     q.metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     gf0_arr = np.asarray(gf0)
     gf_orig_arr = np.asarray(gf_orig)
@@ -459,9 +459,7 @@ mask14 = np.ones((geo.local_volume, 4), dtype=bool)
 mask14[:, 3] = False
 gf14_copy = q.GaugeField(geo)
 gf14_copy @= gf14
-delta_h14 = run_hmc_evolve_pure_gauge_masked(
-    gm14, gf14, ga, rs14, n_step=6, mask=mask14
-)
+delta_h14 = run_hmc_evolve_pure_gauge_masked(gm14, gf14, ga, n_step=6, mask=mask14)
 q.json_results_append("test14 delta_h", delta_h14, 1e-12)
 gf14_arr = np.asarray(gf14)
 gf14_copy_arr = np.asarray(gf14_copy)
@@ -477,9 +475,7 @@ gm15.set_rand(rs15.split("set_rand_gauge_momentum"), 1.0)
 gf15 = q.GaugeField(geo)
 gf15 @= gf
 mask15 = np.ones((geo.local_volume, 4), dtype=bool)
-delta_h15 = run_hmc_evolve_pure_gauge_masked(
-    gm15, gf15, ga, rs15, n_step=6, mask=mask15
-)
+delta_h15 = run_hmc_evolve_pure_gauge_masked(gm15, gf15, ga, n_step=6, mask=mask15)
 q.json_results_append("test15 delta_h", delta_h15, 1e-12)
 assert abs(delta_h15) > 1e-12, "all-True mask should give non-zero delta_h"
 
@@ -492,9 +488,7 @@ gf16 @= gf
 gf16_copy = q.GaugeField(geo)
 gf16_copy @= gf16
 mask16 = np.zeros((geo.local_volume, 4), dtype=bool)
-delta_h16 = run_hmc_evolve_pure_gauge_masked(
-    gm16, gf16, ga, rs16, n_step=6, mask=mask16
-)
+delta_h16 = run_hmc_evolve_pure_gauge_masked(gm16, gf16, ga, n_step=6, mask=mask16)
 q.json_results_append("test16 delta_h", delta_h16, 1e-12)
 assert abs(delta_h16) < 1e-12, f"all-False mask should give zero delta_h: {delta_h16}"
 gf16_arr = np.asarray(gf16)
@@ -524,9 +518,7 @@ gf17 = q.GaugeField(geo_trunc17)
 gf17 @= gf_trunc17
 gf17_copy = q.GaugeField(geo_trunc17)
 gf17_copy @= gf17
-delta_h17 = run_hmc_evolve_pure_gauge_masked(
-    gm17, gf17, ga, rs17, n_step=6, mask=mask17
-)
+delta_h17 = run_hmc_evolve_pure_gauge_masked(gm17, gf17, ga, n_step=6, mask=mask17)
 q.json_results_append("test17 delta_h", delta_h17, 1e-12)
 gf17_arr = np.asarray(gf17)
 gf17_copy_arr = np.asarray(gf17_copy)

@@ -283,10 +283,10 @@ internally by `run_hmc_evolve_pure_gauge`.
 | `fg_dt` | `float` | Force-gradient step size |
 | `dt` | `float` | Leapfrog step size |
 
-#### `run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0) -> float`
+#### `run_hmc_evolve_pure_gauge(gm, gf, ga, n_step, md_time=1.0) -> float`
 
 ```python
-run_hmc_evolve_pure_gauge(gm, gf, ga, rs, n_step, md_time=1.0) -> float
+run_hmc_evolve_pure_gauge(gm, gf, ga, n_step, md_time=1.0) -> float
 ```
 
 Run the molecular-dynamics trajectory for pure-gauge HMC using a
@@ -298,7 +298,6 @@ and `gf` are modified in-place.
 | `gm` | `GaugeMomentum` | — | Conjugate momentum field |
 | `gf` | `GaugeField` | — | Gauge field to evolve |
 | `ga` | `GaugeAction` | — | Gauge action parameters |
-| `rs` | `RngState` | — | Random state |
 | `n_step` | `int` | — | Number of MD steps |
 | `md_time` | `float` | `1.0` | Total molecular-dynamics time |
 
