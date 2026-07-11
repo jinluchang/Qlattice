@@ -203,11 +203,11 @@ q.json_results_append(f"test8 t_start={t_start}")
 q.json_results_append(f"test8 t_size_trunc={t_size_trunc}")
 assert t_size_trunc == 8  # ceil(7 / 4) * 4
 
-# Test 9: mk_gf_truncated padding slices have identity links, boundary has identity temporal link
+# Test 9: mk_gf_truncated padding slices have zero links, boundary has zero temporal link
 geo_trunc = gf_trunc.geo
 gf_arr = np.asarray(gf_trunc)
 xg_arr = q.mk_xg_field(geo_trunc)[:]
-eye3 = np.eye(3, dtype=gf_arr.dtype)
+zero3 = np.zeros((3, 3), dtype=gf_arr.dtype)
 n_pad_ok = 0
 n_pad_total = 0
 n_boundary_ok = 0
@@ -216,21 +216,21 @@ for index in range(geo_trunc.local_volume):
     xg = xg_arr[index]
     if xg[3] >= 2 * t_half:
         n_pad_total += 1
-        if np.allclose(gf_arr[index], eye3):
+        if np.allclose(gf_arr[index], 0):
             n_pad_ok += 1
     elif xg[3] == 2 * t_half - 1:
         n_boundary_total += 1
-        if np.allclose(gf_arr[index, 3, :, :], eye3):
+        if np.allclose(gf_arr[index, 3, :, :], 0):
             n_boundary_ok += 1
-q.json_results_append(f"test9 pad_identity_ok={n_pad_ok}")
-q.json_results_append(f"test9 pad_identity_total={n_pad_total}")
-q.json_results_append(f"test9 boundary_identity_ok={n_boundary_ok}")
-q.json_results_append(f"test9 boundary_identity_total={n_boundary_total}")
+q.json_results_append(f"test9 pad_zero_ok={n_pad_ok}")
+q.json_results_append(f"test9 pad_zero_total={n_pad_total}")
+q.json_results_append(f"test9 boundary_zero_ok={n_boundary_ok}")
+q.json_results_append(f"test9 boundary_zero_total={n_boundary_total}")
 assert n_pad_ok == n_pad_total, (
-    f"padded slices should have identity links: {n_pad_ok}/{n_pad_total}"
+    f"padded slices should have zero links: {n_pad_ok}/{n_pad_total}"
 )
 assert n_boundary_ok == n_boundary_total, (
-    f"boundary slice temporal links should be identity: {n_boundary_ok}/{n_boundary_total}"
+    f"boundary slice temporal links should be zero: {n_boundary_ok}/{n_boundary_total}"
 )
 
 # Test 10: mk_gt_truncated
