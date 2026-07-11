@@ -45,4 +45,6 @@ from .flow_scale import *
 
 from . import field_double as field_double
 
+from . import field_truncation as field_truncation
+
 set_verbose_level()
