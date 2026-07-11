@@ -15,6 +15,7 @@ py_files = files(
   'fermion_action.py',
   'field_double.py',
   'field_type_dict.py',
+  'field_truncation.py',
   'fthmc.py',
   'hmc_stats.py',
   'inverter.py',
