@@ -92,8 +92,8 @@ def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
     gf_arr = np.asarray(gf_trunc)
     xg_arr = q.mk_xg_field(geo_trunc)[:]
     mask = np.zeros((geo_trunc.local_volume, 4), dtype=bool)
-    mask[xg_arr[:, 3] >= 2 * t_half, :] = True
-    mask[xg_arr[:, 3] == 2 * t_half - 1, 3] = True
+    mask[xg_arr[:, 3] >= 2 * t_half + 1, :] = True
+    mask[xg_arr[:, 3] == 2 * t_half, 3] = True
     gf_arr[mask] = 0
     return gf_trunc, t_start, t_size_trunc
 

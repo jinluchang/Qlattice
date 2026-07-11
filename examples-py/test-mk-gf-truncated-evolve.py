@@ -201,11 +201,13 @@ n_boundary_ok = 0
 n_boundary_total = 0
 for index in range(geo_trunc.local_volume):
     xg = xg_arr[index]
-    if xg[3] >= 2 * t_half:
+    if xg[3] >= 2 * t_half + 1:
+        # Fully padded slice: all links zero
         n_pad_total += 1
         if np.allclose(gf_arr[index], 0):
             n_pad_ok += 1
-    elif xg[3] == 2 * t_half - 1:
+    elif xg[3] == 2 * t_half:
+        # Boundary slice: only temporal link zero
         n_boundary_total += 1
         if np.allclose(gf_arr[index, 3, :, :], 0):
             n_boundary_ok += 1
