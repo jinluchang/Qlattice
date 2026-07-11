@@ -76,14 +76,6 @@ from qlat_scripts.v1 import (
     is_test,
 )
 
-from qlat.field_truncation import (
-    mk_field_truncated,
-    mk_gf_truncated,
-    mk_gt_truncated,
-    mk_gf_truncated_evolve,
-    mk_selected_points_truncated,
-)
-
 ### ------
 
 load_path_list[:] = [
@@ -138,10 +130,10 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             if has_file:
                 continue
             q.check_time_limit()
-            gf_trunc, t_offset, t_size_trunc = mk_gf_truncated(
+            gf_trunc, t_offset, t_size_trunc = q.mk_gf_truncated(
                 gf, t_center=tslice, t_half=t_half, t_size_divisor=t_size_divisor
             )
-            gt_trunc, t_offset_gt, t_size_trunc_gt = mk_gt_truncated(
+            gt_trunc, t_offset_gt, t_size_trunc_gt = q.mk_gt_truncated(
                 gt, t_center=tslice, t_half=t_half, t_size_divisor=t_size_divisor
             )
             assert t_offset == t_offset_gt
@@ -155,7 +147,7 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
             src = q.mk_wall_src(geo_trunc, t_src_trunc)
             sol_trunc = inv_trunc * src
             ps_prop_ws = sol_trunc.glb_sum_tslice()
-            ps_prop_ws = mk_selected_points_truncated(
+            ps_prop_ws = q.mk_selected_points_truncated(
                 ps_prop_ws, idx_start=0, idx_end=2 * t_half + 1
             )
             q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)

@@ -14,19 +14,6 @@ Test time-direction truncation utilities:
 import qlat as q
 import numpy as np
 
-from qlat.field_truncation import (
-    mk_field_truncated,
-    mk_gf_truncated,
-    mk_gt_truncated,
-    mk_gf_truncated_evolve,
-    mk_selected_points_truncated,
-    gf_evolve_masked,
-    gf_unitarize_masked,
-    gm_evolve_fg_pure_gauge_masked,
-    run_hmc_evolve_pure_gauge_masked,
-    run_hmc_pure_gauge_masked,
-)
-
 ### ------
 
 q.begin_with_mpi()
@@ -52,7 +39,7 @@ t_center = 8
 t_left = 3
 t_right = 4
 t_pad = 0
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
     gf,
     t_center=t_center,
     t_left=t_left,
@@ -71,7 +58,7 @@ assert t_start == (t_center - t_left) % 16
 
 # Test 2: truncation with padding
 t_pad = 4
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
     gf,
     t_center=t_center,
     t_left=t_left,
@@ -127,7 +114,7 @@ t_center_wrap = 2
 t_left = 3
 t_right = 2
 t_pad = 0
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
     gf,
     t_center=t_center_wrap,
     t_left=t_left,
@@ -146,7 +133,7 @@ assert t_size_trunc == 6  # 3 + 2 + 1
 
 # Test 6: verify unity padding with wrap-around
 t_pad = 2
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated_evolve(
+gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
     gf,
     t_center=t_center_wrap,
     t_left=t_left,
@@ -183,7 +170,7 @@ q.json_results_append(f"test6 pad_total={n_pad_total}")
 # Test 7: mk_gf_truncated symmetric, divisor=2 for MPI time-rank compatibility
 t_center = 8
 t_half = 3
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated(
+gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated(
     gf, t_center=t_center, t_half=t_half, t_size_divisor=2
 )
 q.json_results_append(f"test7 t_start={t_start}")
@@ -196,7 +183,7 @@ assert 0.0 < plaq_trunc < 1.0
 
 # Test 8: mk_gf_truncated with divisor padding
 t_size_divisor = 4
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated(
+gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated(
     gf, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor
 )
 q.json_results_append(f"test8 t_start={t_start}")
@@ -236,7 +223,7 @@ assert n_boundary_ok == n_boundary_total, (
 # Test 10: mk_gt_truncated
 gt = q.GaugeTransform(geo)
 gt.set_rand(rs.split("gt-init"))
-gt_trunc, t_start, t_size_trunc = mk_gt_truncated(
+gt_trunc, t_start, t_size_trunc = q.mk_gt_truncated(
     gt, t_center=t_center, t_half=t_half, t_size_divisor=t_size_divisor
 )
 q.json_results_append(f"test10 t_start={t_start}")
@@ -273,7 +260,7 @@ prop.set_rand(rs.split("prop-init"))
 ps = prop.glb_sum_tslice()
 q.json_results_append("test12 ps qnorm", ps.qnorm(), 1e-8)
 n_total_ps = len(ps)
-ps_trunc = mk_selected_points_truncated(ps, idx_start=2, idx_end=6)
+ps_trunc = q.mk_selected_points_truncated(ps, idx_start=2, idx_end=6)
 q.json_results_append("test12 ps_trunc qnorm", ps_trunc.qnorm(), 1e-8)
 assert len(ps_trunc) == 4
 q.json_results_append(f"test12 n_total={n_total_ps}")
@@ -291,7 +278,7 @@ mask13 = np.ones((geo.local_volume, 4), dtype=bool)
 mask13[:, 3] = False  # freeze temporal links
 gf13_copy = q.GaugeField(geo)
 gf13_copy @= gf13
-gf_evolve_masked(gf13, gm13, 0.1, mask13)
+q.gf_evolve_masked(gf13, gm13, 0.1, mask13)
 gf13_arr = np.asarray(gf13)
 gf13_copy_arr = np.asarray(gf13_copy)
 assert np.allclose(gf13_arr[~mask13], gf13_copy_arr[~mask13]), (
@@ -312,7 +299,7 @@ mask14 = np.ones((geo.local_volume, 4), dtype=bool)
 mask14[:, 3] = False
 gf14_copy = q.GaugeField(geo)
 gf14_copy @= gf14
-delta_h14 = run_hmc_evolve_pure_gauge_masked(gm14, gf14, ga, n_step=6, mask=mask14)
+delta_h14 = q.run_hmc_evolve_pure_gauge_masked(gm14, gf14, ga, n_step=6, mask=mask14)
 q.json_results_append("test14 delta_h", delta_h14, 1e-8)
 gf14_arr = np.asarray(gf14)
 gf14_copy_arr = np.asarray(gf14_copy)
@@ -328,7 +315,7 @@ gm15.set_rand(rs15.split("set_rand_gauge_momentum"), 1.0)
 gf15 = q.GaugeField(geo)
 gf15 @= gf
 mask15 = np.ones((geo.local_volume, 4), dtype=bool)
-delta_h15 = run_hmc_evolve_pure_gauge_masked(gm15, gf15, ga, n_step=6, mask=mask15)
+delta_h15 = q.run_hmc_evolve_pure_gauge_masked(gm15, gf15, ga, n_step=6, mask=mask15)
 q.json_results_append("test15 delta_h", delta_h15, 1e-8)
 assert abs(delta_h15) > 1e-8, "all-True mask should give non-zero delta_h"
 
@@ -341,7 +328,7 @@ gf16 @= gf
 gf16_copy = q.GaugeField(geo)
 gf16_copy @= gf16
 mask16 = np.zeros((geo.local_volume, 4), dtype=bool)
-delta_h16 = run_hmc_evolve_pure_gauge_masked(gm16, gf16, ga, n_step=6, mask=mask16)
+delta_h16 = q.run_hmc_evolve_pure_gauge_masked(gm16, gf16, ga, n_step=6, mask=mask16)
 q.json_results_append("test16 delta_h", delta_h16, 1e-8)
 assert abs(delta_h16) < 1e-8, f"all-False mask should give zero delta_h: {delta_h16}"
 gf16_arr = np.asarray(gf16)
@@ -356,7 +343,7 @@ t_left = 3
 t_right = 4
 t_pad = 4
 rs17 = rs.split("test17")
-gf_trunc17, t_start, t_size_trunc = mk_gf_truncated_evolve(
+gf_trunc17, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
     gf,
     t_center=t_center,
     t_left=t_left,
@@ -395,7 +382,7 @@ mask18 = np.ones((geo.local_volume, 4), dtype=bool)
 mask18[:, 3] = False  # freeze temporal links
 gf18_copy = q.GaugeField(geo)
 gf18_copy @= gf18
-delta_h18 = run_hmc_pure_gauge_masked(gf18, ga, 18, rs18, mask18, n_step=6)
+delta_h18 = q.run_hmc_pure_gauge_masked(gf18, ga, 18, rs18, mask18, n_step=6)
 q.json_results_append("test18 delta_h", delta_h18, 1e-8)
 gf18_arr = np.asarray(gf18)
 gf18_copy_arr = np.asarray(gf18_copy)
@@ -411,7 +398,7 @@ gf19 @= gf
 mask19 = np.zeros((geo.local_volume, 4), dtype=bool)
 gf19_copy = q.GaugeField(geo)
 gf19_copy @= gf19
-delta_h19 = run_hmc_pure_gauge_masked(gf19, ga, 19, rs19, mask19, n_step=6)
+delta_h19 = q.run_hmc_pure_gauge_masked(gf19, ga, 19, rs19, mask19, n_step=6)
 q.json_results_append("test19 delta_h", delta_h19, 1e-8)
 assert abs(delta_h19) < 1e-8, f"all-False mask should give zero delta_h: {delta_h19}"
 gf19_arr = np.asarray(gf19)
@@ -425,7 +412,7 @@ rs20 = rs.split("test20")
 gf20 = q.GaugeField(geo)
 gf20 @= gf
 mask20 = np.ones((geo.local_volume, 4), dtype=bool)
-delta_h20 = run_hmc_pure_gauge_masked(gf20, ga, 20, rs20, mask20, n_step=6)
+delta_h20 = q.run_hmc_pure_gauge_masked(gf20, ga, 20, rs20, mask20, n_step=6)
 q.json_results_append("test20 delta_h", delta_h20, 1e-8)
 assert abs(delta_h20) > 1e-8, "all-True mask should give non-zero delta_h"
 
@@ -436,8 +423,8 @@ gf21_low = q.GaugeField(geo)
 gf21_low @= gf
 gf21_high = q.GaugeField(geo)
 gf21_high @= gf
-dh21_low = run_hmc_pure_gauge_masked(gf21_low, ga, 21, rs21, mask21, n_step=6)
-dh21_high = run_hmc_pure_gauge_masked(gf21_high, ga, 21, rs21, mask21, n_step=24)
+dh21_low = q.run_hmc_pure_gauge_masked(gf21_low, ga, 21, rs21, mask21, n_step=6)
+dh21_high = q.run_hmc_pure_gauge_masked(gf21_high, ga, 21, rs21, mask21, n_step=24)
 q.json_results_append("test21 dh_low_n6", dh21_low, 1e-8)
 q.json_results_append("test21 dh_high_n24", dh21_high, 1e-8)
 assert abs(dh21_high) < abs(dh21_low), (
