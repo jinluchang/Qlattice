@@ -30,6 +30,7 @@ import qlat as q
 ### -------------------------------------------------------------------
 
 
+@q.timer
 def mk_field_truncated(field, *, t_start, t_end):
     """Truncate field to time range [t_start, t_end)."""
     geo = field.geo
@@ -274,10 +275,7 @@ def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, n_step, mask, md_time=1.0):
-    """Run masked HMC evolution (lower-level, takes momentum as argument).
-
-    mask=True links are evolved; mask=False links are frozen.
-    """
+    """Run masked HMC evolution (lower-level, takes momentum as argument). mask=True links are evolved; mask=False links are frozen."""
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga)
     dt = md_time / n_step
     lam = 0.5 * (1.0 - 1.0 / math.sqrt(3.0))
@@ -309,10 +307,7 @@ def run_hmc_pure_gauge_masked(
     n_step=6,
     md_time=1.0,
 ):
-    """Run masked HMC evolution with Metropolis test (higher-level).
-
-    mask=True links are evolved; mask=False links are frozen.
-    """
+    """Run masked HMC evolution with Metropolis test (higher-level). mask=True links are evolved; mask=False links are frozen."""
     fname = q.get_fname()
     rs = rs.split(f"{traj}")
     geo = gf.geo
