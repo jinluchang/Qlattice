@@ -81,14 +81,13 @@ def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
     t_end = (t_start + t_size_trunc) % t_size
     gf_trunc = mk_field_truncated(gf, t_start=t_start, t_end=t_end)
     geo_trunc = gf_trunc.geo
-    tslice_target_list = list(range(2 * t_half, t_size_trunc))
     gf_arr = np.asarray(gf_trunc)
     xg_arr = q.mk_xg_field(geo_trunc)[:]
-    for index in range(geo_trunc.local_volume):
-        xg = xg_arr[index]
-        xg_t = xg[3]
-        if xg_t in tslice_target_list:
-            gf_arr[index, 3, :, :] = 0
+    eye3 = np.eye(3, dtype=gf_arr.dtype)
+    mask = np.zeros((geo_trunc.local_volume, 4), dtype=bool)
+    mask[xg_arr[:, 3] >= 2 * t_half, :] = True
+    mask[xg_arr[:, 3] == 2 * t_half - 1, 3] = True
+    gf_arr[mask] = eye3
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
@@ -457,13 +456,15 @@ q.json_results_append(f"test6 t_size_trunc={t_size_trunc}")
 q.json_results_append(f"test6 pad_ok={n_pad_ok}")
 q.json_results_append(f"test6 pad_total={n_pad_total}")
 
-# Test 7: mk_gf_truncated symmetric, no divisor
+# Test 7: mk_gf_truncated symmetric, divisor=2 for MPI time-rank compatibility
 t_center = 8
 t_half = 3
-gf_trunc, t_start, t_size_trunc = mk_gf_truncated(gf, t_center=t_center, t_half=t_half)
+gf_trunc, t_start, t_size_trunc = mk_gf_truncated(
+    gf, t_center=t_center, t_half=t_half, t_size_divisor=2
+)
 q.json_results_append(f"test7 t_start={t_start}")
 q.json_results_append(f"test7 t_size_trunc={t_size_trunc}")
-assert t_size_trunc == 7  # 2 * 3 + 1
+assert t_size_trunc == 8  # ceil((2 * 3 + 1) / 2) * 2
 assert t_start == (t_center - t_half) % 16
 plaq_trunc = gf_trunc.plaq()
 q.json_results_append("test7 plaq_trunc", plaq_trunc, 1e-8)
@@ -478,22 +479,34 @@ q.json_results_append(f"test8 t_start={t_start}")
 q.json_results_append(f"test8 t_size_trunc={t_size_trunc}")
 assert t_size_trunc == 8  # ceil(7 / 4) * 4
 
-# Test 9: mk_gf_truncated padding slices have zero temporal links
+# Test 9: mk_gf_truncated padding slices have identity links, boundary has identity temporal link
 geo_trunc = gf_trunc.geo
 gf_arr = np.asarray(gf_trunc)
 xg_arr = q.mk_xg_field(geo_trunc)[:]
+eye3 = np.eye(3, dtype=gf_arr.dtype)
 n_pad_ok = 0
 n_pad_total = 0
+n_boundary_ok = 0
+n_boundary_total = 0
 for index in range(geo_trunc.local_volume):
     xg = xg_arr[index]
     if xg[3] >= 2 * t_half:
         n_pad_total += 1
-        if np.allclose(gf_arr[index, 3, :, :], 0):
+        if np.allclose(gf_arr[index], eye3):
             n_pad_ok += 1
-q.json_results_append(f"test9 pad_zero_temporal_ok={n_pad_ok}")
-q.json_results_append(f"test9 pad_zero_temporal_total={n_pad_total}")
+    elif xg[3] == 2 * t_half - 1:
+        n_boundary_total += 1
+        if np.allclose(gf_arr[index, 3, :, :], eye3):
+            n_boundary_ok += 1
+q.json_results_append(f"test9 pad_identity_ok={n_pad_ok}")
+q.json_results_append(f"test9 pad_identity_total={n_pad_total}")
+q.json_results_append(f"test9 boundary_identity_ok={n_boundary_ok}")
+q.json_results_append(f"test9 boundary_identity_total={n_boundary_total}")
 assert n_pad_ok == n_pad_total, (
-    f"padded slices should have zero temporal links: {n_pad_ok}/{n_pad_total}"
+    f"padded slices should have identity links: {n_pad_ok}/{n_pad_total}"
+)
+assert n_boundary_ok == n_boundary_total, (
+    f"boundary slice temporal links should be identity: {n_boundary_ok}/{n_boundary_total}"
 )
 
 # Test 10: mk_gt_truncated

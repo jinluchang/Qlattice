@@ -55,11 +55,11 @@
   "test7 t_start=5"
  ],
  [
-  "test7 t_size_trunc=7"
+  "test7 t_size_trunc=8"
  ],
  [
   "test7 plaq_trunc",
-  0.612903481120991,
+  0.7180514884135687,
   1e-08
  ],
  [
@@ -69,10 +69,16 @@
   "test8 t_size_trunc=8"
  ],
  [
-  "test9 pad_zero_temporal_ok=0"
+  "test9 pad_identity_ok=0"
  ],
  [
-  "test9 pad_zero_temporal_total=0"
+  "test9 pad_identity_total=0"
+ ],
+ [
+  "test9 boundary_identity_ok=0"
+ ],
+ [
+  "test9 boundary_identity_total=0"
  ],
  [
   "test10 t_start=5"
