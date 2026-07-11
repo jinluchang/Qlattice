@@ -1,35 +1,29 @@
 #!/usr/bin/env python3
 
 """
-Run a single qlat C++ Grid example test using a pre-built nix environment.
-
+Run a single qlat C++ Grid example test using a pre-built nix environment.\n
 This script sets up the environment from a qlat build produced by nix and then
 runs the test via make with the examples-cpp-grid/Makefile.  The Makefile itself
 is standalone — it runs tests using whatever qlat is available in the current
-environment.
-
+environment.\n
 The nix build is created by nixpkgs/install-py-local-kernel-with-nix.sh, which
 runs nix-build and creates a ./result-py-local symlink (or ./result-py-local-*
 for variant builds) pointing to the nix store path.  This script sources the
 setenv-qlat.sh from that result directory to configure PATH, PYTHONPATH,
-LD_LIBRARY_PATH, etc., then delegates to make.
-
+LD_LIBRARY_PATH, etc., then delegates to make.\n
 The test is run inside ./tmp/examples-cpp-grid/<test-name>/build/.  After the
 run, check that directory for log.full (full output), log.txt (filtered), and
 log.check.txt (CHECK: lines only).  The top-level
-./tmp/examples-cpp-grid/<test-name>/log and log.full are also available.
-
+./tmp/examples-cpp-grid/<test-name>/log and log.full are also available.\n
 Usage:
-  ./nixpkgs/run-one-example-cpp-grid.py <test-name> [options]
-
+  ./nixpkgs/run-one-example-cpp-grid.py <test-name> [options]\n
 Options:
   --cuda          Use CUDA-enabled build (result-py-local-cuda)
   --cudasupport   Use CUDA support build (result-py-local-cudasupport)
   --cu            Use CUDA utilities build (result-py-local-cu)
   --clang         Use clang build (result-py-local-clang)
   --pypi          Use PyPI build (result-py-local-pypi)
-  --help          Show this help message
-
+  --help          Show this help message\n
 Examples:
   ./nixpkgs/run-one-example-cpp-grid.py grid-with-qlat
 """
@@ -61,7 +55,11 @@ def get_project_root():
 
 def list_available_tests(project_root):
     examples_dir = os.path.join(project_root, "examples-cpp-grid")
-    tests = sorted(f for f in os.listdir(examples_dir) if os.path.isdir(os.path.join(examples_dir, f)) and not f.startswith('.'))
+    tests = sorted(
+        f
+        for f in os.listdir(examples_dir)
+        if os.path.isdir(os.path.join(examples_dir, f)) and not f.startswith(".")
+    )
     print(
         f"Usage: {sys.argv[0]} <test-name> [--cuda|--cudasupport|--cu|--clang|--pypi]"
     )

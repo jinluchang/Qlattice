@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """
-Field truncation and masked HMC utilities for lattice QCD.
-
+Field truncation and masked HMC utilities for lattice QCD.\n
 This module provides functions to truncate fields in the time direction
-and perform masked HMC evolution where only selected links are updated.
-
+and perform masked HMC evolution where only selected links are updated.\n
 Functions:
     mk_field_truncated: generic field truncation to a time range
     mk_gf_truncated: symmetric gauge field truncation with divisor padding
@@ -24,11 +22,9 @@ import math
 import numpy as np
 import qlat as q
 
-
 ### -------------------------------------------------------------------
 ### Field truncation functions
 ### -------------------------------------------------------------------
-
 
 @q.timer
 def mk_field_truncated(field, *, t_start, t_end):
@@ -79,7 +75,6 @@ def mk_field_truncated(field, *, t_start, t_end):
             current_xg_field = current_xg_field.shift(shift)
     return field_trunc
 
-
 @q.timer
 def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
     """Truncate gauge field symmetrically around t_center with divisor padding."""
@@ -102,7 +97,6 @@ def mk_gf_truncated(gf, *, t_center, t_half, t_size_divisor=1):
     gf_arr[mask] = 0
     return gf_trunc, t_start, t_size_trunc
 
-
 @q.timer
 def mk_gt_truncated(gt, *, t_center, t_half, t_size_divisor=1):
     """Truncate gauge transform symmetrically around t_center."""
@@ -117,7 +111,6 @@ def mk_gt_truncated(gt, *, t_center, t_half, t_size_divisor=1):
     t_end = (t_start + t_size_trunc) % t_size
     gt_trunc = mk_field_truncated(gt, t_start=t_start, t_end=t_end)
     return gt_trunc, t_start, t_size_trunc
-
 
 @q.timer(is_verbose=True)
 def mk_gf_truncated_evolve(
@@ -134,8 +127,7 @@ def mk_gf_truncated_evolve(
     md_time,
 ):
     """Truncate a gauge field in the time direction, fill the padding/gap with
-    identity links, then evolve those links via num_traj masked HMC trajectories.
-
+    identity links, then evolve those links via num_traj masked HMC trajectories.\n
     The result has total time extent ``t_left + t_right + 1 + t_pad`` (rounded
     up to the nearest multiple of ``size_node[3]``).  The valid region
     ``[0, t_left + t_right]`` is a copy of the original field *gf* and is
@@ -143,8 +135,7 @@ def mk_gf_truncated_evolve(
     filled with identity links and then evolved — the boundary temporal link
     (``dir=3`` at slice ``t_left + t_right``) is also identity-initialised and
     evolved, creating a smooth transition between the physical and padding
-    regions.
-
+    regions.\n
     Parameters
     ----------
     gf : GaugeField
@@ -174,8 +165,7 @@ def mk_gf_truncated_evolve(
         (suggested default: 12)
     md_time : float
         Total molecular-dynamics time per trajectory.
-        (suggested default: 4.0)
-
+        (suggested default: 4.0)\n
     Returns
     -------
     (gf_trunc, t_start, t_size_trunc)
@@ -213,7 +203,6 @@ def mk_gf_truncated_evolve(
         )
     return gf_trunc, t_start, t_size_trunc
 
-
 @q.timer
 def mk_selected_points_truncated(sp, *, idx_start, idx_end):
     """Truncate SelectedPoints to index range [idx_start, idx_end)."""
@@ -225,14 +214,12 @@ def mk_selected_points_truncated(sp, *, idx_start, idx_end):
     sp_trunc @= sp
     return sp_trunc
 
-
 ### -------------------------------------------------------------------
 ### Masked HMC evolution functions
 ### Convention: mask=True means the link IS evolved/updated;
 ###            mask=False means the link is frozen (restored to original
 ###            after each operation).
 ### -------------------------------------------------------------------
-
 
 @q.timer
 def gf_evolve_masked(gf, gm, dt, mask):
@@ -244,7 +231,6 @@ def gf_evolve_masked(gf, gm, dt, mask):
     gf_saved_arr = np.asarray(gf_saved)
     gf_arr[~mask] = gf_saved_arr[~mask]
 
-
 @q.timer
 def gf_unitarize_masked(gf, mask):
     """Unitarize gf, restore links where mask is False."""
@@ -254,7 +240,6 @@ def gf_unitarize_masked(gf, mask):
     gf_arr = np.asarray(gf)
     gf_saved_arr = np.asarray(gf_saved)
     gf_arr[~mask] = gf_saved_arr[~mask]
-
 
 @q.timer
 def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
@@ -270,7 +255,6 @@ def gm_evolve_fg_pure_gauge_masked(gm, gf_init, ga, fg_dt, dt, mask):
     gm_arr = np.asarray(gm)
     gm_force_arr = np.asarray(gm_force)
     gm_arr[mask] += gm_force_arr[mask]
-
 
 @q.timer(is_timer_fork=True)
 def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, n_step, mask, md_time=1.0):
@@ -293,7 +277,6 @@ def run_hmc_evolve_pure_gauge_masked(gm, gf, ga, n_step, mask, md_time=1.0):
     delta_h = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga) - energy
     delta_h = q.glb_sum_double(delta_h)
     return delta_h
-
 
 @q.timer(is_timer_fork=True)
 def run_hmc_pure_gauge_masked(

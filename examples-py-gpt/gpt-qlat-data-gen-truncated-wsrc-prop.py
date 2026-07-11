@@ -60,7 +60,6 @@ See Also
 
 import qlat_gpt as qg
 import qlat as q
-import numpy as np
 
 import qlat_scripts.v1 as qs
 
