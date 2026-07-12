@@ -100,7 +100,8 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
     Saves wall-sink data as psel in .lat format.
     """
     fname = q.get_fname()
-    inv_type_name = ["light", "strange"][inv_type]
+    inv_type_name_list = ["light", "strange"]
+    inv_type_name = inv_type_name_list[inv_type]
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_site[3]
     t_half_list = get_param(job_tag, "measurement", "field_trunc_half_width_list")
@@ -169,6 +170,94 @@ def run_prop_wsrc_truncated_save(job_tag, traj, *, get_gf, get_gt, inv_type):
 
 ### ------
 
+@q.timer(is_timer_fork=True)
+def run_prop_wsrc_truncated_evolve_save(job_tag, traj, *, get_gf, get_gt, inv_type):
+    """
+    Compute and save truncated wall-source propagators using asymmetric truncation
+    with padding and HMC evolution.\n
+    Uses mk_gf_truncated_evolve for gauge field truncation: the valid region
+    [t_center - t_left, t_center + t_right] is frozen, the padding region
+    [t_size_trunc_valid, ...] is filled with identity links and evolved via
+    masked HMC. The gauge transform is truncated to the same time range.\n
+    Saves wall-sink data as psel in .lat format.
+    """
+    fname = q.get_fname()
+    inv_type_name_list = ["light", "strange"]
+    inv_type_name = inv_type_name_list[inv_type]
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    t_size = total_site[3]
+    evolve_param_list = get_param(job_tag, "measurement", "field_trunc_evolve", "param_list")
+    tslice_list = get_truncated_wsrc_tslice_list(job_tag, traj)
+    gf = get_gf()
+    gt = get_gt()
+    inv_acc = get_param(job_tag, "measurement", "field_trunc_inv_acc_list")[inv_type]
+    acc_tag = f"accuracy={inv_acc}"
+    num_traj = get_param(job_tag, "measurement", "field_trunc_evolve", "num_traj")
+    n_step = get_param(job_tag, "measurement", "field_trunc_evolve", "n_step")
+    md_time = get_param(job_tag, "measurement", "field_trunc_evolve", "md_time")
+    ga_beta = get_param(job_tag, "measurement", "field_trunc_evolve", "ga", "beta")
+    ga_c1 = get_param(job_tag, "measurement", "field_trunc_evolve", "ga", "c1")
+    path_ws = f"{job_tag}/psel-prop-wsrc-trunc-evolve-{inv_type_name}/traj-{traj}"
+    if q.does_file_exist_qar_sync_node(get_save_path(path_ws + "/checkpoint.txt")):
+        return
+    if not q.obtain_lock(
+        f"locks/{job_tag}-{traj}-{fname}-{inv_type_name}"
+    ):
+        return
+    qar_ws = q.open_qar_info(get_save_path(path_ws + ".qar"), "a")
+    for idx, tslice in enumerate(tslice_list):
+        for evolve_param in evolve_param_list:
+            t_left = evolve_param["t_left"]
+            t_right = evolve_param["t_right"]
+            t_pad = evolve_param["t_pad"]
+            t_size_trunc_valid = t_left + t_right + 1
+            tag_suffix = f"t_left={t_left} ; t_right={t_right} ; t_pad={t_pad}"
+            tag_base = f"tslice={tslice} ; {tag_suffix} ; type={inv_type}"
+            tag = f"{tag_base} ; {acc_tag}"
+            has_file = q.bcast_py(qar_ws.has_regular_file(f"{tag} ; wsnk.lat"))
+            if has_file:
+                continue
+            q.check_time_limit()
+            ga = q.GaugeAction(ga_beta, ga_c1)
+            rs = q.RngState(f"{job_tag}-{traj}-{tslice}-{t_left}-{t_right}-{t_pad}")
+            gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
+                gf, t_center=tslice, t_left=t_left, t_right=t_right, t_pad=t_pad,
+                ga=ga, rs=rs, num_traj=num_traj, n_step=n_step, md_time=md_time,
+            )
+            t_end = (t_start + t_size_trunc) % t_size
+            gt_trunc = q.mk_field_truncated(gt, t_start=t_start, t_end=t_end)
+            geo_trunc = gf_trunc.geo
+            t_src_trunc = t_left
+            inv_trunc = qs.get_inv(
+                gf_trunc, job_tag, inv_type, inv_acc, gt=gt_trunc, eig=None
+            )
+            q.displayln_info(0, f"truncated evolve gf total_site: {gf_trunc.geo.total_site}")
+            src = q.mk_wall_src(geo_trunc, t_src_trunc)
+            sol_trunc = inv_trunc * src
+            ps_prop_ws = sol_trunc.glb_sum_tslice()
+            ps_prop_ws = q.mk_selected_points_truncated(
+                ps_prop_ws, idx_start=0, idx_end=t_size_trunc_valid
+            )
+            q.json_results_append(f"sol_trunc qnorm {tag}", sol_trunc.qnorm(), 1e-6)
+            q.json_results_append(
+                f"sol_trunc sig {tag}", q.get_data_sig(sol_trunc, q.RngState())
+            )
+            q.json_results_append(f"ps_prop_ws qnorm {tag}", ps_prop_ws.qnorm(), 1e-6)
+            q.json_results_append(
+                f"ps_prop_ws sig {tag}", q.get_data_sig(ps_prop_ws, q.RngState())
+            )
+            qar_ws.write(
+                f"{tag} ; wsnk.lat", "", ps_prop_ws.save_str(), skip_if_exist=True
+            )
+            qar_ws.flush()
+            q.clean_cache(q.cache_inv)
+    qar_ws.write("checkpoint.txt", "", "", skip_if_exist=True)
+    qar_ws.flush()
+    qar_ws.close()
+    q.release_lock()
+
+### ------
+
 @q.cache_call()
 @q.timer()
 def get_truncated_wsrc_tslice_list(job_tag, traj):
@@ -191,12 +280,19 @@ def run_job(job_tag, traj):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_site[3]
     t_half_list = get_param(job_tag, "measurement", "field_trunc_half_width_list")
+    evolve_param_list = get_param(job_tag, "measurement", "field_trunc_evolve", "param_list")
+    inv_type_list = get_param(job_tag, "measurement", "inv_type_list")
+    inv_type_name_list = ["light", "strange"]
     fns_produce = []
-    for inv_type_name in ["light", "strange"]:
+    for inv_type in inv_type_list:
+        inv_type_name = inv_type_name_list[inv_type]
         for t_half in t_half_list:
             fns_produce.append(
                 f"{job_tag}/psel-prop-wsrc-trunc-{inv_type_name}/traj-{traj}/t_half-{t_half}/checkpoint.txt"
             )
+        fns_produce.append(
+            f"{job_tag}/psel-prop-wsrc-trunc-evolve-{inv_type_name}/traj-{traj}/checkpoint.txt"
+        )
     fns_need = [
         f"{job_tag}/gauge-transform/traj-{traj_gf}.field",
         (
@@ -211,8 +307,16 @@ def run_job(job_tag, traj):
         return
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
-    for inv_type in [0, 1]:
+    for inv_type in inv_type_list:
         run_prop_wsrc_truncated_save(
+            job_tag,
+            traj,
+            get_gf=get_gf,
+            get_gt=get_gt,
+            inv_type=inv_type,
+        )
+    for inv_type in inv_type_list:
+        run_prop_wsrc_truncated_evolve_save(
             job_tag,
             traj,
             get_gf=get_gf,
@@ -223,20 +327,48 @@ def run_job(job_tag, traj):
 ### ------
 
 job_tag = "24D"
+set_param(job_tag, "ga", "beta")(1.633)
+set_param(job_tag, "ga", "c1")(-0.331)
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "measurement", "inv_type_list")([1])
+set_param(job_tag, "measurement", "field_trunc_evolve", "param_list")([
+    {"t_left": 3, "t_right": 7, "t_pad": 5},
+    {"t_left": 7, "t_right": 3, "t_pad": 5},
+])
+set_param(job_tag, "measurement", "field_trunc_evolve", "num_traj")(16)
+set_param(job_tag, "measurement", "field_trunc_evolve", "n_step")(32)
+set_param(job_tag, "measurement", "field_trunc_evolve", "md_time")(4.0)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "beta")(
+    get_param(job_tag, "ga", "beta") * (1 - 8 * get_param(job_tag, "ga", "c1"))
+)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "c1")(0.0)
 set_param(job_tag, "cg_params-0-2", "maxiter")(300)
 set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
 set_param(job_tag, "cg_params-1-2", "maxiter")(300)
 set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
 job_tag = "32Dfine"
+set_param(job_tag, "ga", "beta")(1.75)
+set_param(job_tag, "ga", "c1")(-0.331)
 set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7, 9])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "measurement", "inv_type_list")([1])
+set_param(job_tag, "measurement", "field_trunc_evolve", "param_list")([
+    {"t_left": 3, "t_right": 7, "t_pad": 5},
+    {"t_left": 7, "t_right": 3, "t_pad": 5},
+])
+set_param(job_tag, "measurement", "field_trunc_evolve", "num_traj")(16)
+set_param(job_tag, "measurement", "field_trunc_evolve", "n_step")(32)
+set_param(job_tag, "measurement", "field_trunc_evolve", "md_time")(4.0)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "beta")(
+    get_param(job_tag, "ga", "beta") * (1 - 8 * get_param(job_tag, "ga", "c1"))
+)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "c1")(0.0)
 set_param(job_tag, "cg_params-0-2", "maxiter")(300)
 set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
 set_param(job_tag, "cg_params-1-2", "maxiter")(300)
@@ -244,9 +376,23 @@ set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
 job_tag = "64I"
 set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
+set_param(job_tag, "ga", "beta")(2.25)
+set_param(job_tag, "ga", "c1")(-0.331)
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 5, 9, 13, 17])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "measurement", "inv_type_list")([1])
+set_param(job_tag, "measurement", "field_trunc_evolve", "param_list")([
+    {"t_left": 3, "t_right": 7, "t_pad": 5},
+    {"t_left": 7, "t_right": 3, "t_pad": 5},
+])
+set_param(job_tag, "measurement", "field_trunc_evolve", "num_traj")(16)
+set_param(job_tag, "measurement", "field_trunc_evolve", "n_step")(32)
+set_param(job_tag, "measurement", "field_trunc_evolve", "md_time")(4.0)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "beta")(
+    get_param(job_tag, "ga", "beta") * (1 - 8 * get_param(job_tag, "ga", "c1"))
+)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "c1")(0.0)
 set_param(job_tag, "cg_params-0-2", "maxiter")(300)
 set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
 set_param(job_tag, "cg_params-1-2", "maxiter")(300)
@@ -320,6 +466,16 @@ for inv_type, mass in enumerate(get_param(job_tag, "quark_mass_list")):
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 2, 3])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(8)
 set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
+set_param(job_tag, "measurement", "inv_type_list")([0, 1])
+set_param(job_tag, "measurement", "field_trunc_evolve", "param_list")([
+    {"t_left": 1, "t_right": 3, "t_pad": 3},
+    {"t_left": 3, "t_right": 1, "t_pad": 3},
+])
+set_param(job_tag, "measurement", "field_trunc_evolve", "num_traj")(4)
+set_param(job_tag, "measurement", "field_trunc_evolve", "n_step")(8)
+set_param(job_tag, "measurement", "field_trunc_evolve", "md_time")(2.0)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "beta")(6.0)
+set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "c1")(0.0)
 set_param(job_tag, "cg_params-0-2", "maxcycle")(1)
 set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 

@@ -148,7 +148,32 @@ CHECK: params: test-4nt16-checker:     "field_trunc_t_size_divisor": 8,
 CHECK: params: test-4nt16-checker:     "field_trunc_inv_acc_list": [
 CHECK: params: test-4nt16-checker:       2,
 CHECK: params: test-4nt16-checker:       2
-CHECK: params: test-4nt16-checker:     ]
+CHECK: params: test-4nt16-checker:     ],
+CHECK: params: test-4nt16-checker:     "inv_type_list": [
+CHECK: params: test-4nt16-checker:       0,
+CHECK: params: test-4nt16-checker:       1
+CHECK: params: test-4nt16-checker:     ],
+CHECK: params: test-4nt16-checker:     "field_trunc_evolve": {
+CHECK: params: test-4nt16-checker:       "param_list": [
+CHECK: params: test-4nt16-checker:         {
+CHECK: params: test-4nt16-checker:           "t_left": 1,
+CHECK: params: test-4nt16-checker:           "t_right": 3,
+CHECK: params: test-4nt16-checker:           "t_pad": 3
+CHECK: params: test-4nt16-checker:         },
+CHECK: params: test-4nt16-checker:         {
+CHECK: params: test-4nt16-checker:           "t_left": 3,
+CHECK: params: test-4nt16-checker:           "t_right": 1,
+CHECK: params: test-4nt16-checker:           "t_pad": 3
+CHECK: params: test-4nt16-checker:         }
+CHECK: params: test-4nt16-checker:       ],
+CHECK: params: test-4nt16-checker:       "num_traj": 4,
+CHECK: params: test-4nt16-checker:       "n_step": 8,
+CHECK: params: test-4nt16-checker:       "md_time": 2.0,
+CHECK: params: test-4nt16-checker:       "ga": {
+CHECK: params: test-4nt16-checker:         "beta": 6.0,
+CHECK: params: test-4nt16-checker:         "c1": 0.0
+CHECK: params: test-4nt16-checker:       }
+CHECK: params: test-4nt16-checker:     }
 CHECK: params: test-4nt16-checker:   }
 CHECK: params: test-4nt16-checker: }
 CHECK: finished successfully.
