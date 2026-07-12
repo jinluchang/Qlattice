@@ -329,7 +329,7 @@ def run_job(job_tag, traj):
 job_tag = "24D"
 set_param(job_tag, "ga", "beta")(1.633)
 set_param(job_tag, "ga", "c1")(-0.331)
-set_param(job_tag, "traj_list")(list(range(500, 5000, 10)))
+set_param(job_tag, "traj_list")(list(range(500, 5500, 10)))
 set_param(job_tag, "measurement", "field_trunc_half_width_list")([1, 3, 5, 7])
 set_param(job_tag, "measurement", "field_trunc_t_size_divisor")(4)
 set_param(job_tag, "measurement", "field_trunc_inv_acc_list")([2, 2])
@@ -345,8 +345,8 @@ set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "beta")(
     get_param(job_tag, "ga", "beta") * (1 - 8 * get_param(job_tag, "ga", "c1"))
 )
 set_param(job_tag, "measurement", "field_trunc_evolve", "ga", "c1")(0.0)
-set_param(job_tag, "cg_params-0-2", "maxiter")(300)
-set_param(job_tag, "cg_params-0-2", "maxcycle")(3)
+set_param(job_tag, "cg_params-0-2", "maxiter")(1500)
+set_param(job_tag, "cg_params-0-2", "maxcycle")(2)
 set_param(job_tag, "cg_params-1-2", "maxiter")(300)
 set_param(job_tag, "cg_params-1-2", "maxcycle")(1)
 
