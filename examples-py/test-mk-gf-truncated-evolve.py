@@ -53,6 +53,7 @@ gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
 )
 q.json_results_append(f"test1 t_start={t_start}")
 q.json_results_append(f"test1 t_size_trunc={t_size_trunc}")
+q.json_results_append("test1 gf_trunc sig", q.get_data_sig(gf_trunc, rs.split("test1-sig")), 1e-8)
 assert t_size_trunc == 8  # 3 + 4 + 1
 assert t_start == (t_center - t_left) % 16
 
@@ -72,6 +73,7 @@ gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
 )
 q.json_results_append(f"test2 t_start={t_start}")
 q.json_results_append(f"test2 t_size_trunc={t_size_trunc}")
+q.json_results_append("test2 gf_trunc sig", q.get_data_sig(gf_trunc, rs.split("test2-sig")), 1e-8)
 assert t_size_trunc == 12  # 3 + 4 + 1 + 4
 
 # Test 3: verify padded slices are unity and valid slices are not
@@ -128,6 +130,7 @@ gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated_evolve(
 )
 q.json_results_append(f"test5 t_start={t_start}")
 q.json_results_append(f"test5 t_size_trunc={t_size_trunc}")
+q.json_results_append("test5 gf_trunc sig", q.get_data_sig(gf_trunc, rs.split("test5-sig")), 1e-8)
 assert t_start == 15  # (2 - 3) % 16 = 15
 assert t_size_trunc == 6  # 3 + 2 + 1
 
@@ -164,6 +167,7 @@ assert n_pad_ok == 0, (
 )
 q.json_results_append(f"test6 t_start={t_start}")
 q.json_results_append(f"test6 t_size_trunc={t_size_trunc}")
+q.json_results_append("test6 gf_trunc sig", q.get_data_sig(gf_trunc, rs.split("test6-sig")), 1e-8)
 q.json_results_append(f"test6 pad_ok={n_pad_ok}")
 q.json_results_append(f"test6 pad_total={n_pad_total}")
 
@@ -175,6 +179,7 @@ gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated(
 )
 q.json_results_append(f"test7 t_start={t_start}")
 q.json_results_append(f"test7 t_size_trunc={t_size_trunc}")
+q.json_results_append("test7 gf_trunc sig", q.get_data_sig(gf_trunc, rs.split("test7-sig")), 1e-8)
 assert t_size_trunc == 8  # ceil((2 * 3 + 1) / 2) * 2
 assert t_start == (t_center - t_half) % 16
 plaq_trunc = gf_trunc.plaq()
@@ -188,6 +193,7 @@ gf_trunc, t_start, t_size_trunc = q.mk_gf_truncated(
 )
 q.json_results_append(f"test8 t_start={t_start}")
 q.json_results_append(f"test8 t_size_trunc={t_size_trunc}")
+q.json_results_append("test8 gf_trunc sig", q.get_data_sig(gf_trunc, rs.split("test8-sig")), 1e-8)
 assert t_size_trunc == 8  # ceil(7 / 4) * 4
 
 # Test 9: mk_gf_truncated padding slices have zero links, boundary has zero temporal link
@@ -372,6 +378,7 @@ for index in range(geo_trunc17.local_volume):
             n_pad_ok += 1
 q.json_results_append(f"test17 pad_ok={n_pad_ok}")
 q.json_results_append(f"test17 pad_total={n_pad_total}")
+q.json_results_append("test17 gf_trunc sig", q.get_data_sig(gf_trunc17, rs.split("test17-sig")), 1e-8)
 assert n_pad_ok == 0, (
     f"padded sites should have evolved (not identity): {n_pad_ok}/{n_pad_total}"
 )

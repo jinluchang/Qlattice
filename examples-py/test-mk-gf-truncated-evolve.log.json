@@ -11,10 +11,28 @@
   "test1 t_size_trunc=8"
  ],
  [
+  "test1 gf_trunc sig",
+  {
+   "real": 1.7744675437335893,
+   "imag": 26.656689099551535,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
+ ],
+ [
   "test2 t_start=5"
  ],
  [
   "test2 t_size_trunc=12"
+ ],
+ [
+  "test2 gf_trunc sig",
+  {
+   "real": -96.5384035739234,
+   "imag": -7.877322727711739,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
  ],
  [
   "test3 pad_ok=0"
@@ -40,10 +58,28 @@
   "test5 t_size_trunc=6"
  ],
  [
+  "test5 gf_trunc sig",
+  {
+   "real": -4.627837825961986,
+   "imag": -14.807145871090297,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
+ ],
+ [
   "test6 t_start=15"
  ],
  [
   "test6 t_size_trunc=8"
+ ],
+ [
+  "test6 gf_trunc sig",
+  {
+   "real": -3.465918614468306,
+   "imag": 29.014898726380665,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
  ],
  [
   "test6 pad_ok=0"
@@ -58,6 +94,15 @@
   "test7 t_size_trunc=8"
  ],
  [
+  "test7 gf_trunc sig",
+  {
+   "real": 2.6072483086682645,
+   "imag": -6.454472844924272,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
+ ],
+ [
   "test7 plaq_trunc",
   0.49545764475570503,
   1e-08
@@ -67,6 +112,15 @@
  ],
  [
   "test8 t_size_trunc=8"
+ ],
+ [
+  "test8 gf_trunc sig",
+  {
+   "real": 22.571347324891818,
+   "imag": 1.1831265104549509,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
  ],
  [
   "test9 pad_zero_ok=0"
@@ -131,6 +185,15 @@
  ],
  [
   "test17 pad_total=0"
+ ],
+ [
+  "test17 gf_trunc sig",
+  {
+   "real": -67.76579443686438,
+   "imag": 15.28414424389819,
+   "__extended_json_type__": "complex"
+  },
+  1e-08
  ],
  [
   "test18 delta_h",

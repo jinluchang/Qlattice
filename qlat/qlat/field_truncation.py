@@ -128,8 +128,8 @@ def mk_gf_truncated_evolve(
 ):
     """Truncate a gauge field in the time direction, fill the padding/gap with
     identity links, then evolve those links via num_traj masked HMC trajectories.\n
-    The result has total time extent ``t_left + t_right + 1 + t_pad`` (rounded
-    up to the nearest multiple of ``size_node[3]``).  The valid region
+    The result has total time extent ``t_left + t_right + 1 + t_pad`` which must
+    be divisible by ``size_node[3]``.  The valid region
     ``[0, t_left + t_right]`` is a copy of the original field *gf* and is
     frozen during HMC.  The padding region ``[t_left + t_right + 1, ...]`` is
     filled with identity links and then evolved — the boundary temporal link
@@ -176,7 +176,9 @@ def mk_gf_truncated_evolve(
     t_size_trunc_valid = t_left + t_right + 1
     t_size_trunc = t_size_trunc_valid + t_pad
     size_node_t = gf.geo.size_node[3]
-    t_size_trunc = ((t_size_trunc + size_node_t - 1) // size_node_t) * size_node_t
+    assert t_size_trunc % size_node_t == 0, (
+        f"t_size_trunc ({t_size_trunc}) must be divisible by size_node_t ({size_node_t})"
+    )
     assert t_size_trunc <= t_size
     t_start = (t_center - t_left) % t_size
     t_end = (t_start + t_size_trunc) % t_size
@@ -201,6 +203,8 @@ def mk_gf_truncated_evolve(
             n_step=n_step,
             md_time=md_time,
         )
+    # Anti-periodic boundary condition: multiply -1 to the last time slice time direction links
+    gf_arr[xg_arr[:, 3] == t_size_trunc - 1, 3] *= -1
     return gf_trunc, t_start, t_size_trunc
 
 @q.timer
