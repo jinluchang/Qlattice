@@ -1,6 +1,561 @@
 [
  [
-  "{\"seed\": \"test-4nt8\", \"traj_list\": [1000, 2000], \"total_site\": [4, 4, 4, 8], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 1}, \"quark_flavor_list\": [\"light\", \"strange\", \"charm-1\"], \"quark_mass_list\": [0.01, 0.04, 0.2], \"fermion_params\": {\"0\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}, \"1\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}}, \"2\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}}}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-2-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-2-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-2-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"lanc_params\": {\"0\": {\"0\": {\"fermion_params\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"cheby_params\": {\"low\": 0.3, \"high\": 5.5, \"order\": 40}, \"irl_params\": {\"Nstop\": 50, \"Nk\": 80, \"Nm\": 100, \"resid\": 1e-08, \"betastp\": 0.0, \"maxiter\": 20, \"Nminres\": 0}, \"pit_params\": {\"eps\": 0.01, \"maxiter\": 500, \"real\": true}}}}, \"field_selection_psel_rate\": 0.03125, \"field_selection_psel_rate_median\": 0.0625, \"field_selection_fsel_rate\": 0.125, \"field_selection_fsel_psrc_prop_norm_threshold\": 0.001, \"prob_exact_wsrc\": 0.25, \"prob_acc_1_psrc\": 0.25, \"prob_acc_2_psrc\": 0.0625, \"n_per_tslice_smear\": 2, \"n_per_tslice_smear_median\": 8, \"gf_ape_smear_coef\": 0.5, \"gf_ape_smear_step\": 30, \"prop_smear_coef\": 0.9375, \"prop_smear_step\": 10, \"prob_acc_1_smear\": 0.25, \"prob_acc_2_smear\": 0.0625, \"measurement\": {\"psel_split_num_piece\": 2, \"fsel_psel_split_num_piece\": 4}, \"prob_acc_1_rand_u1_sparse\": 0.25, \"prob_acc_2_rand_u1_sparse\": 0.0625, \"a_inv_gev\": 1.73, \"zz_vv\": 0.71, \"hlbl_four_prob_scaling_factor\": 1.0, \"hlbl_four_prob_scaling_factor_strange\": 1.0, \"hlbl_four_num_chunk\": 3, \"hlbl_four_contract_sparse_ratio\": 2.0, \"hlbl_two_plus_two_num_hvp_sel_threshold\": 0.005, \"hlbl_two_plus_two_num_chunk\": 3}"
+  "params: test-4nt8-checker: {"
+ ],
+ [
+  "params: test-4nt8-checker:   \"seed\": \"test-4nt8\","
+ ],
+ [
+  "params: test-4nt8-checker:   \"traj_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     1000,"
+ ],
+ [
+  "params: test-4nt8-checker:     2000"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"total_site\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     8"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"load_config_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"twist_boundary_at_boundary\": ["
+ ],
+ [
+  "params: test-4nt8-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:       -0.5"
+ ],
+ [
+  "params: test-4nt8-checker:     ]"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"mk_sample_gauge_field\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"rand_n_step\": 2,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"flow_n_step\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"hmc_n_traj\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"quark_flavor_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     \"light\","
+ ],
+ [
+  "params: test-4nt8-checker:     \"strange\","
+ ],
+ [
+  "params: test-4nt8-checker:     \"charm-1\""
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"quark_mass_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     0.01,"
+ ],
+ [
+  "params: test-4nt8-checker:     0.04,"
+ ],
+ [
+  "params: test-4nt8-checker:     0.2"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"fermion_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     },"
+ ],
+ [
+  "params: test-4nt8-checker:     \"1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     },"
+ ],
+ [
+  "params: test-4nt8-checker:     \"2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.2"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     }"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-0-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-0-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-0-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-1-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-1-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-1-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-2-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-2-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-2-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"lanc_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"fermion_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:           \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:             1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:             1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:             1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:             1.0"
+ ],
+ [
+  "params: test-4nt8-checker:           ],"
+ ],
+ [
+  "params: test-4nt8-checker:           \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt8-checker:         },"
+ ],
+ [
+  "params: test-4nt8-checker:         \"cheby_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:           \"low\": 0.3,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"high\": 5.5,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"order\": 40"
+ ],
+ [
+  "params: test-4nt8-checker:         },"
+ ],
+ [
+  "params: test-4nt8-checker:         \"irl_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:           \"Nstop\": 50,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"Nk\": 80,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"Nm\": 100,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"resid\": 1e-08,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"betastp\": 0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"maxiter\": 20,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"Nminres\": 0"
+ ],
+ [
+  "params: test-4nt8-checker:         },"
+ ],
+ [
+  "params: test-4nt8-checker:         \"pit_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:           \"eps\": 0.01,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"maxiter\": 500,"
+ ],
+ [
+  "params: test-4nt8-checker:           \"real\": true"
+ ],
+ [
+  "params: test-4nt8-checker:         }"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     }"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"field_selection_psel_rate\": 0.03125,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"field_selection_psel_rate_median\": 0.0625,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"field_selection_fsel_rate\": 0.125,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"field_selection_fsel_psrc_prop_norm_threshold\": 0.001,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_exact_wsrc\": 0.25,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_acc_1_psrc\": 0.25,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_acc_2_psrc\": 0.0625,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"n_per_tslice_smear\": 2,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"n_per_tslice_smear_median\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"gf_ape_smear_coef\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"gf_ape_smear_step\": 30,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prop_smear_coef\": 0.9375,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prop_smear_step\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_acc_1_smear\": 0.25,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_acc_2_smear\": 0.0625,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"measurement\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"psel_split_num_piece\": 2,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"fsel_psel_split_num_piece\": 4"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_acc_1_rand_u1_sparse\": 0.25,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"prob_acc_2_rand_u1_sparse\": 0.0625,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"a_inv_gev\": 1.73,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"zz_vv\": 0.71,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"hlbl_four_prob_scaling_factor\": 1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"hlbl_four_prob_scaling_factor_strange\": 1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"hlbl_four_num_chunk\": 3,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"hlbl_four_contract_sparse_ratio\": 2.0,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"hlbl_two_plus_two_num_hvp_sel_threshold\": 0.005,"
+ ],
+ [
+  "params: test-4nt8-checker:   \"hlbl_two_plus_two_num_chunk\": 3"
+ ],
+ [
+  "params: test-4nt8-checker: }"
  ],
  [
   "src norm",
@@ -7726,8 +8281,8 @@
  [
   "run_check_hvp_avg: test-4nt8-checker 2000 light hvp_sum_tslice",
   {
-   "real": 2.670913823954922,
-   "imag": -2.65474726425778e-16,
+   "real": 2.6709138239549244,
+   "imag": -2.654747264257779e-16,
    "__extended_json_type__": "complex128"
   },
   0.0001

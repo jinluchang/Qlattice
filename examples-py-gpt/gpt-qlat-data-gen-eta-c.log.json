@@ -1,6 +1,768 @@
 [
  [
-  "{\"traj_list\": [1000], \"seed\": \"test-4nt8-checker\", \"total_site\": [4, 4, 4, 8], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 5}, \"quark_flavor_list\": [\"light\", \"strange\", \"charm-1\", \"charm-2\"], \"quark_mass_list\": [0.01, 0.04, 0.1, 0.2], \"fermion_params\": {\"0\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}, \"1\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}}, \"2\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.1}}, \"3\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.2}}}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-2-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-2-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-2-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"cg_params-3-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-3-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-3-2\": {\"maxiter\": 10, \"maxcycle\": 3}, \"measurement\": {\"auto_contractor_chunk_size\": 2, \"num_charm_wall_src\": 2}}"
+  "params: test-4nt8-checker: {"
+ ],
+ [
+  "params: test-4nt8-checker:   \"traj_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     1000"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"seed\": \"test-4nt8-checker\","
+ ],
+ [
+  "params: test-4nt8-checker:   \"total_site\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     8"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"load_config_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"twist_boundary_at_boundary\": ["
+ ],
+ [
+  "params: test-4nt8-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt8-checker:       -0.5"
+ ],
+ [
+  "params: test-4nt8-checker:     ]"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"mk_sample_gauge_field\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"rand_n_step\": 2,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"flow_n_step\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"hmc_n_traj\": 5"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"quark_flavor_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     \"light\","
+ ],
+ [
+  "params: test-4nt8-checker:     \"strange\","
+ ],
+ [
+  "params: test-4nt8-checker:     \"charm-1\","
+ ],
+ [
+  "params: test-4nt8-checker:     \"charm-2\""
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"quark_mass_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     0.01,"
+ ],
+ [
+  "params: test-4nt8-checker:     0.04,"
+ ],
+ [
+  "params: test-4nt8-checker:     0.1,"
+ ],
+ [
+  "params: test-4nt8-checker:     0.2"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"fermion_params\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     },"
+ ],
+ [
+  "params: test-4nt8-checker:     \"1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     },"
+ ],
+ [
+  "params: test-4nt8-checker:     \"2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.1"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.1"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.1"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     },"
+ ],
+ [
+  "params: test-4nt8-checker:     \"3\": {"
+ ],
+ [
+  "params: test-4nt8-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.2"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.2"
+ ],
+ [
+  "params: test-4nt8-checker:       },"
+ ],
+ [
+  "params: test-4nt8-checker:       \"2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt8-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt8-checker:           1.0"
+ ],
+ [
+  "params: test-4nt8-checker:         ],"
+ ],
+ [
+  "params: test-4nt8-checker:         \"mass\": 0.2"
+ ],
+ [
+  "params: test-4nt8-checker:       }"
+ ],
+ [
+  "params: test-4nt8-checker:     }"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-0-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-0-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-0-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-1-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-1-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-1-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-2-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-2-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-2-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-3-0\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-3-1\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"cg_params-3-2\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"maxcycle\": 3"
+ ],
+ [
+  "params: test-4nt8-checker:   },"
+ ],
+ [
+  "params: test-4nt8-checker:   \"measurement\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"auto_contractor_chunk_size\": 2,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"num_charm_wall_src\": 2"
+ ],
+ [
+  "params: test-4nt8-checker:   }"
+ ],
+ [
+  "params: test-4nt8-checker: }"
  ],
  [
   "auto_contract_eta_c_corr: ld sig",

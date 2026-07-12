@@ -1,9 +1,120 @@
 [
  [
-  "{\"traj_list\": [1000, 1100, 1200, 1300], \"total_site\": [4, 4, 4, 8], \"mk_sample_gauge_field\": {\"rand_n_step\": 20, \"rand_sigma\": 0.25, \"flow_n_step\": 4, \"hmc_n_traj\": 1, \"hmc_beta\": 3.0}}"
+  "params: test-4nt8-checker: {"
  ],
  [
-  "{\"traj_list\": [1000], \"total_site\": [8, 8, 8, 16], \"mk_sample_gauge_field\": {\"rand_n_step\": 10, \"rand_sigma\": 0.25, \"flow_n_step\": 4, \"hmc_n_traj\": 1, \"hmc_beta\": 5.0}}"
+  "params: test-4nt8-checker:   \"traj_list\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     1000,"
+ ],
+ [
+  "params: test-4nt8-checker:     1100,"
+ ],
+ [
+  "params: test-4nt8-checker:     1200,"
+ ],
+ [
+  "params: test-4nt8-checker:     1300"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"total_site\": ["
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     4,"
+ ],
+ [
+  "params: test-4nt8-checker:     8"
+ ],
+ [
+  "params: test-4nt8-checker:   ],"
+ ],
+ [
+  "params: test-4nt8-checker:   \"mk_sample_gauge_field\": {"
+ ],
+ [
+  "params: test-4nt8-checker:     \"rand_n_step\": 20,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"rand_sigma\": 0.25,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"flow_n_step\": 4,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"hmc_n_traj\": 1,"
+ ],
+ [
+  "params: test-4nt8-checker:     \"hmc_beta\": 3.0"
+ ],
+ [
+  "params: test-4nt8-checker:   }"
+ ],
+ [
+  "params: test-4nt8-checker: }"
+ ],
+ [
+  "params: test-8nt16-checker: {"
+ ],
+ [
+  "params: test-8nt16-checker:   \"traj_list\": ["
+ ],
+ [
+  "params: test-8nt16-checker:     1000"
+ ],
+ [
+  "params: test-8nt16-checker:   ],"
+ ],
+ [
+  "params: test-8nt16-checker:   \"total_site\": ["
+ ],
+ [
+  "params: test-8nt16-checker:     8,"
+ ],
+ [
+  "params: test-8nt16-checker:     8,"
+ ],
+ [
+  "params: test-8nt16-checker:     8,"
+ ],
+ [
+  "params: test-8nt16-checker:     16"
+ ],
+ [
+  "params: test-8nt16-checker:   ],"
+ ],
+ [
+  "params: test-8nt16-checker:   \"mk_sample_gauge_field\": {"
+ ],
+ [
+  "params: test-8nt16-checker:     \"rand_n_step\": 10,"
+ ],
+ [
+  "params: test-8nt16-checker:     \"rand_sigma\": 0.25,"
+ ],
+ [
+  "params: test-8nt16-checker:     \"flow_n_step\": 4,"
+ ],
+ [
+  "params: test-8nt16-checker:     \"hmc_n_traj\": 1,"
+ ],
+ [
+  "params: test-8nt16-checker:     \"hmc_beta\": 5.0"
+ ],
+ [
+  "params: test-8nt16-checker:   }"
+ ],
+ [
+  "params: test-8nt16-checker: }"
  ],
  [
   "run_flow_scale: Start compute flow scale info fn='results/test-4nt8-checker/gf-flow-record/traj-1000.pickle' for 'results/test-4nt8-checker/configs/ckpoint_lat.1000'"

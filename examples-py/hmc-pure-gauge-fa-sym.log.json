@@ -1,6 +1,78 @@
 [
  [
-  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"is_project_gauge_transform\": true}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+  "params: test0-4nt8: {"
+ ],
+ [
+  "params: test0-4nt8:   \"total_site\": ["
+ ],
+ [
+  "params: test0-4nt8:     4,"
+ ],
+ [
+  "params: test0-4nt8:     4,"
+ ],
+ [
+  "params: test0-4nt8:     4,"
+ ],
+ [
+  "params: test0-4nt8:     8"
+ ],
+ [
+  "params: test0-4nt8:   ],"
+ ],
+ [
+  "params: test0-4nt8:   \"hmc\": {"
+ ],
+ [
+  "params: test0-4nt8:     \"max_traj\": 8,"
+ ],
+ [
+  "params: test0-4nt8:     \"max_traj_always_accept\": 4,"
+ ],
+ [
+  "params: test0-4nt8:     \"max_traj_reverse_test\": 2,"
+ ],
+ [
+  "params: test0-4nt8:     \"md_time\": 1.0,"
+ ],
+ [
+  "params: test0-4nt8:     \"n_step\": 10,"
+ ],
+ [
+  "params: test0-4nt8:     \"beta\": 2.13,"
+ ],
+ [
+  "params: test0-4nt8:     \"c1\": -0.331,"
+ ],
+ [
+  "params: test0-4nt8:     \"save_traj_interval\": 4,"
+ ],
+ [
+  "params: test0-4nt8:     \"is_saving_topo_info\": true,"
+ ],
+ [
+  "params: test0-4nt8:     \"fa\": {"
+ ],
+ [
+  "params: test0-4nt8:       \"is_project_gauge_transform\": true"
+ ],
+ [
+  "params: test0-4nt8:     }"
+ ],
+ [
+  "params: test0-4nt8:   },"
+ ],
+ [
+  "params: test0-4nt8:   \"analysis\": {"
+ ],
+ [
+  "params: test0-4nt8:     \"md_time_factor\": 1.4142135623730951"
+ ],
+ [
+  "params: test0-4nt8:   }"
+ ],
+ [
+  "params: test0-4nt8: }"
  ],
  [
   "run_hmc: 1 plaq",
@@ -35,7 +107,97 @@
   0.5881418797219358
  ],
  [
-  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"random\", \"interval_list\": [1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+  "params: test1-4nt8: {"
+ ],
+ [
+  "params: test1-4nt8:   \"total_site\": ["
+ ],
+ [
+  "params: test1-4nt8:     4,"
+ ],
+ [
+  "params: test1-4nt8:     4,"
+ ],
+ [
+  "params: test1-4nt8:     4,"
+ ],
+ [
+  "params: test1-4nt8:     8"
+ ],
+ [
+  "params: test1-4nt8:   ],"
+ ],
+ [
+  "params: test1-4nt8:   \"hmc\": {"
+ ],
+ [
+  "params: test1-4nt8:     \"max_traj\": 8,"
+ ],
+ [
+  "params: test1-4nt8:     \"max_traj_always_accept\": 4,"
+ ],
+ [
+  "params: test1-4nt8:     \"max_traj_reverse_test\": 2,"
+ ],
+ [
+  "params: test1-4nt8:     \"md_time\": 1.0,"
+ ],
+ [
+  "params: test1-4nt8:     \"n_step\": 10,"
+ ],
+ [
+  "params: test1-4nt8:     \"beta\": 2.13,"
+ ],
+ [
+  "params: test1-4nt8:     \"c1\": -0.331,"
+ ],
+ [
+  "params: test1-4nt8:     \"save_traj_interval\": 4,"
+ ],
+ [
+  "params: test1-4nt8:     \"is_saving_topo_info\": true,"
+ ],
+ [
+  "params: test1-4nt8:     \"fa\": {"
+ ],
+ [
+  "params: test1-4nt8:       \"complete_refresh_interval\": 2,"
+ ],
+ [
+  "params: test1-4nt8:       \"is_project_gauge_transform\": true,"
+ ],
+ [
+  "params: test1-4nt8:       \"mass_type\": \"random\","
+ ],
+ [
+  "params: test1-4nt8:       \"interval_list\": ["
+ ],
+ [
+  "params: test1-4nt8:         1,"
+ ],
+ [
+  "params: test1-4nt8:         2"
+ ],
+ [
+  "params: test1-4nt8:       ]"
+ ],
+ [
+  "params: test1-4nt8:     }"
+ ],
+ [
+  "params: test1-4nt8:   },"
+ ],
+ [
+  "params: test1-4nt8:   \"analysis\": {"
+ ],
+ [
+  "params: test1-4nt8:     \"md_time_factor\": 1.4142135623730951"
+ ],
+ [
+  "params: test1-4nt8:   }"
+ ],
+ [
+  "params: test1-4nt8: }"
  ],
  [
   "run_hmc: 1 plaq",
@@ -70,7 +232,97 @@
   0.5978031451860212
  ],
  [
-  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": false, \"mass_type\": \"random\", \"interval_list\": [1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+  "params: test2-4nt8: {"
+ ],
+ [
+  "params: test2-4nt8:   \"total_site\": ["
+ ],
+ [
+  "params: test2-4nt8:     4,"
+ ],
+ [
+  "params: test2-4nt8:     4,"
+ ],
+ [
+  "params: test2-4nt8:     4,"
+ ],
+ [
+  "params: test2-4nt8:     8"
+ ],
+ [
+  "params: test2-4nt8:   ],"
+ ],
+ [
+  "params: test2-4nt8:   \"hmc\": {"
+ ],
+ [
+  "params: test2-4nt8:     \"max_traj\": 8,"
+ ],
+ [
+  "params: test2-4nt8:     \"max_traj_always_accept\": 4,"
+ ],
+ [
+  "params: test2-4nt8:     \"max_traj_reverse_test\": 2,"
+ ],
+ [
+  "params: test2-4nt8:     \"md_time\": 1.0,"
+ ],
+ [
+  "params: test2-4nt8:     \"n_step\": 10,"
+ ],
+ [
+  "params: test2-4nt8:     \"beta\": 2.13,"
+ ],
+ [
+  "params: test2-4nt8:     \"c1\": -0.331,"
+ ],
+ [
+  "params: test2-4nt8:     \"save_traj_interval\": 4,"
+ ],
+ [
+  "params: test2-4nt8:     \"is_saving_topo_info\": true,"
+ ],
+ [
+  "params: test2-4nt8:     \"fa\": {"
+ ],
+ [
+  "params: test2-4nt8:       \"complete_refresh_interval\": 2,"
+ ],
+ [
+  "params: test2-4nt8:       \"is_project_gauge_transform\": false,"
+ ],
+ [
+  "params: test2-4nt8:       \"mass_type\": \"random\","
+ ],
+ [
+  "params: test2-4nt8:       \"interval_list\": ["
+ ],
+ [
+  "params: test2-4nt8:         1,"
+ ],
+ [
+  "params: test2-4nt8:         2"
+ ],
+ [
+  "params: test2-4nt8:       ]"
+ ],
+ [
+  "params: test2-4nt8:     }"
+ ],
+ [
+  "params: test2-4nt8:   },"
+ ],
+ [
+  "params: test2-4nt8:   \"analysis\": {"
+ ],
+ [
+  "params: test2-4nt8:     \"md_time_factor\": 1.4142135623730951"
+ ],
+ [
+  "params: test2-4nt8:   }"
+ ],
+ [
+  "params: test2-4nt8: }"
  ],
  [
   "run_hmc: 1 plaq",
@@ -105,7 +357,121 @@
   0.5905986666701912
  ],
  [
-  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"grid-2\", \"mass_list\": [1.0, 1.25, 1.5, 4.0], \"interval_list\": [1, 1, 1, 2]}}, \"analysis\": {\"md_time_factor\": 1.4142135623730951}}"
+  "params: test3-4nt8: {"
+ ],
+ [
+  "params: test3-4nt8:   \"total_site\": ["
+ ],
+ [
+  "params: test3-4nt8:     4,"
+ ],
+ [
+  "params: test3-4nt8:     4,"
+ ],
+ [
+  "params: test3-4nt8:     4,"
+ ],
+ [
+  "params: test3-4nt8:     8"
+ ],
+ [
+  "params: test3-4nt8:   ],"
+ ],
+ [
+  "params: test3-4nt8:   \"hmc\": {"
+ ],
+ [
+  "params: test3-4nt8:     \"max_traj\": 8,"
+ ],
+ [
+  "params: test3-4nt8:     \"max_traj_always_accept\": 4,"
+ ],
+ [
+  "params: test3-4nt8:     \"max_traj_reverse_test\": 2,"
+ ],
+ [
+  "params: test3-4nt8:     \"md_time\": 1.0,"
+ ],
+ [
+  "params: test3-4nt8:     \"n_step\": 10,"
+ ],
+ [
+  "params: test3-4nt8:     \"beta\": 2.13,"
+ ],
+ [
+  "params: test3-4nt8:     \"c1\": -0.331,"
+ ],
+ [
+  "params: test3-4nt8:     \"save_traj_interval\": 4,"
+ ],
+ [
+  "params: test3-4nt8:     \"is_saving_topo_info\": true,"
+ ],
+ [
+  "params: test3-4nt8:     \"fa\": {"
+ ],
+ [
+  "params: test3-4nt8:       \"complete_refresh_interval\": 2,"
+ ],
+ [
+  "params: test3-4nt8:       \"is_project_gauge_transform\": true,"
+ ],
+ [
+  "params: test3-4nt8:       \"mass_type\": \"grid-2\","
+ ],
+ [
+  "params: test3-4nt8:       \"mass_list\": ["
+ ],
+ [
+  "params: test3-4nt8:         1.0,"
+ ],
+ [
+  "params: test3-4nt8:         1.25,"
+ ],
+ [
+  "params: test3-4nt8:         1.5,"
+ ],
+ [
+  "params: test3-4nt8:         4.0"
+ ],
+ [
+  "params: test3-4nt8:       ],"
+ ],
+ [
+  "params: test3-4nt8:       \"interval_list\": ["
+ ],
+ [
+  "params: test3-4nt8:         1,"
+ ],
+ [
+  "params: test3-4nt8:         1,"
+ ],
+ [
+  "params: test3-4nt8:         1,"
+ ],
+ [
+  "params: test3-4nt8:         2"
+ ],
+ [
+  "params: test3-4nt8:       ]"
+ ],
+ [
+  "params: test3-4nt8:     }"
+ ],
+ [
+  "params: test3-4nt8:   },"
+ ],
+ [
+  "params: test3-4nt8:   \"analysis\": {"
+ ],
+ [
+  "params: test3-4nt8:     \"md_time_factor\": 1.4142135623730951"
+ ],
+ [
+  "params: test3-4nt8:   }"
+ ],
+ [
+  "params: test3-4nt8: }"
  ],
  [
   "run_hmc: 1 plaq",
@@ -140,7 +506,136 @@
   0.5904677295132266
  ],
  [
-  "{\"total_site\": [4, 4, 4, 8], \"hmc\": {\"max_traj\": 8, \"max_traj_always_accept\": 4, \"max_traj_reverse_test\": 2, \"md_time\": 1.0, \"n_step\": 10, \"beta\": 2.13, \"c1\": -0.331, \"save_traj_interval\": 4, \"is_saving_topo_info\": true, \"fa\": {\"complete_refresh_interval\": 2, \"is_project_gauge_transform\": true, \"mass_type\": \"grid-2-eo\", \"mass_list\": [1.0, 1.25, 1.5, 4.0, Infinity, Infinity, Infinity, Infinity], \"interval_list\": [1, 1, 1, 2, 1, 1, 1, 1]}}}"
+  "params: test4-4nt8: {"
+ ],
+ [
+  "params: test4-4nt8:   \"total_site\": ["
+ ],
+ [
+  "params: test4-4nt8:     4,"
+ ],
+ [
+  "params: test4-4nt8:     4,"
+ ],
+ [
+  "params: test4-4nt8:     4,"
+ ],
+ [
+  "params: test4-4nt8:     8"
+ ],
+ [
+  "params: test4-4nt8:   ],"
+ ],
+ [
+  "params: test4-4nt8:   \"hmc\": {"
+ ],
+ [
+  "params: test4-4nt8:     \"max_traj\": 8,"
+ ],
+ [
+  "params: test4-4nt8:     \"max_traj_always_accept\": 4,"
+ ],
+ [
+  "params: test4-4nt8:     \"max_traj_reverse_test\": 2,"
+ ],
+ [
+  "params: test4-4nt8:     \"md_time\": 1.0,"
+ ],
+ [
+  "params: test4-4nt8:     \"n_step\": 10,"
+ ],
+ [
+  "params: test4-4nt8:     \"beta\": 2.13,"
+ ],
+ [
+  "params: test4-4nt8:     \"c1\": -0.331,"
+ ],
+ [
+  "params: test4-4nt8:     \"save_traj_interval\": 4,"
+ ],
+ [
+  "params: test4-4nt8:     \"is_saving_topo_info\": true,"
+ ],
+ [
+  "params: test4-4nt8:     \"fa\": {"
+ ],
+ [
+  "params: test4-4nt8:       \"complete_refresh_interval\": 2,"
+ ],
+ [
+  "params: test4-4nt8:       \"is_project_gauge_transform\": true,"
+ ],
+ [
+  "params: test4-4nt8:       \"mass_type\": \"grid-2-eo\","
+ ],
+ [
+  "params: test4-4nt8:       \"mass_list\": ["
+ ],
+ [
+  "params: test4-4nt8:         1.0,"
+ ],
+ [
+  "params: test4-4nt8:         1.25,"
+ ],
+ [
+  "params: test4-4nt8:         1.5,"
+ ],
+ [
+  "params: test4-4nt8:         4.0,"
+ ],
+ [
+  "params: test4-4nt8:         Infinity,"
+ ],
+ [
+  "params: test4-4nt8:         Infinity,"
+ ],
+ [
+  "params: test4-4nt8:         Infinity,"
+ ],
+ [
+  "params: test4-4nt8:         Infinity"
+ ],
+ [
+  "params: test4-4nt8:       ],"
+ ],
+ [
+  "params: test4-4nt8:       \"interval_list\": ["
+ ],
+ [
+  "params: test4-4nt8:         1,"
+ ],
+ [
+  "params: test4-4nt8:         1,"
+ ],
+ [
+  "params: test4-4nt8:         1,"
+ ],
+ [
+  "params: test4-4nt8:         2,"
+ ],
+ [
+  "params: test4-4nt8:         1,"
+ ],
+ [
+  "params: test4-4nt8:         1,"
+ ],
+ [
+  "params: test4-4nt8:         1,"
+ ],
+ [
+  "params: test4-4nt8:         1"
+ ],
+ [
+  "params: test4-4nt8:       ]"
+ ],
+ [
+  "params: test4-4nt8:     }"
+ ],
+ [
+  "params: test4-4nt8:   }"
+ ],
+ [
+  "params: test4-4nt8: }"
  ],
  [
   "run_hmc: 1 plaq",

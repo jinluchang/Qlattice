@@ -1,6 +1,537 @@
 [
  [
-  "{\"traj_list\": [1000], \"seed\": \"test-4nt16-checker\", \"total_site\": [4, 4, 4, 16], \"load_config_params\": {\"twist_boundary_at_boundary\": [0.0, 0.0, 0.0, -0.5]}, \"mk_sample_gauge_field\": {\"rand_n_step\": 2, \"flow_n_step\": 8, \"hmc_n_traj\": 5}, \"quark_flavor_list\": [\"light\", \"strange\"], \"quark_mass_list\": [0.01, 0.04], \"fermion_params\": {\"0\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.01}}, \"1\": {\"0\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"1\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}, \"2\": {\"Ls\": 8, \"M5\": 1.8, \"b\": 1.5, \"c\": 0.5, \"boundary_phases\": [1.0, 1.0, 1.0, 1.0], \"mass\": 0.04}}}, \"cg_params-0-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-0-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-0-2\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-0\": {\"maxiter\": 10, \"maxcycle\": 1}, \"cg_params-1-1\": {\"maxiter\": 10, \"maxcycle\": 2}, \"cg_params-1-2\": {\"maxiter\": 10, \"maxcycle\": 1}, \"measurement\": {\"field_trunc_half_width_list\": [1, 2, 3], \"field_trunc_t_size_divisor\": 8, \"field_trunc_inv_acc_list\": [2, 2], \"inv_type_list\": [0, 1], \"field_trunc_evolve\": {\"param_list\": [{\"t_left\": 1, \"t_right\": 3, \"t_pad\": 3}, {\"t_left\": 3, \"t_right\": 1, \"t_pad\": 3}], \"num_traj\": 4, \"n_step\": 8, \"md_time\": 2.0, \"ga\": {\"beta\": 6.0, \"c1\": 0.0}}}}"
+  "params: test-4nt16-checker: {"
+ ],
+ [
+  "params: test-4nt16-checker:   \"traj_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:     1000"
+ ],
+ [
+  "params: test-4nt16-checker:   ],"
+ ],
+ [
+  "params: test-4nt16-checker:   \"seed\": \"test-4nt16-checker\","
+ ],
+ [
+  "params: test-4nt16-checker:   \"total_site\": ["
+ ],
+ [
+  "params: test-4nt16-checker:     4,"
+ ],
+ [
+  "params: test-4nt16-checker:     4,"
+ ],
+ [
+  "params: test-4nt16-checker:     4,"
+ ],
+ [
+  "params: test-4nt16-checker:     16"
+ ],
+ [
+  "params: test-4nt16-checker:   ],"
+ ],
+ [
+  "params: test-4nt16-checker:   \"load_config_params\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"twist_boundary_at_boundary\": ["
+ ],
+ [
+  "params: test-4nt16-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt16-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt16-checker:       0.0,"
+ ],
+ [
+  "params: test-4nt16-checker:       -0.5"
+ ],
+ [
+  "params: test-4nt16-checker:     ]"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"mk_sample_gauge_field\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"rand_n_step\": 2,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"flow_n_step\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"hmc_n_traj\": 5"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"quark_flavor_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:     \"light\","
+ ],
+ [
+  "params: test-4nt16-checker:     \"strange\""
+ ],
+ [
+  "params: test-4nt16-checker:   ],"
+ ],
+ [
+  "params: test-4nt16-checker:   \"quark_mass_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:     0.01,"
+ ],
+ [
+  "params: test-4nt16-checker:     0.04"
+ ],
+ [
+  "params: test-4nt16-checker:   ],"
+ ],
+ [
+  "params: test-4nt16-checker:   \"fermion_params\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"0\": {"
+ ],
+ [
+  "params: test-4nt16-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0"
+ ],
+ [
+  "params: test-4nt16-checker:         ],"
+ ],
+ [
+  "params: test-4nt16-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt16-checker:       },"
+ ],
+ [
+  "params: test-4nt16-checker:       \"1\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0"
+ ],
+ [
+  "params: test-4nt16-checker:         ],"
+ ],
+ [
+  "params: test-4nt16-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt16-checker:       },"
+ ],
+ [
+  "params: test-4nt16-checker:       \"2\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0"
+ ],
+ [
+  "params: test-4nt16-checker:         ],"
+ ],
+ [
+  "params: test-4nt16-checker:         \"mass\": 0.01"
+ ],
+ [
+  "params: test-4nt16-checker:       }"
+ ],
+ [
+  "params: test-4nt16-checker:     },"
+ ],
+ [
+  "params: test-4nt16-checker:     \"1\": {"
+ ],
+ [
+  "params: test-4nt16-checker:       \"0\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0"
+ ],
+ [
+  "params: test-4nt16-checker:         ],"
+ ],
+ [
+  "params: test-4nt16-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt16-checker:       },"
+ ],
+ [
+  "params: test-4nt16-checker:       \"1\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0"
+ ],
+ [
+  "params: test-4nt16-checker:         ],"
+ ],
+ [
+  "params: test-4nt16-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt16-checker:       },"
+ ],
+ [
+  "params: test-4nt16-checker:       \"2\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"Ls\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"M5\": 1.8,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"b\": 1.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c\": 0.5,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"boundary_phases\": ["
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0,"
+ ],
+ [
+  "params: test-4nt16-checker:           1.0"
+ ],
+ [
+  "params: test-4nt16-checker:         ],"
+ ],
+ [
+  "params: test-4nt16-checker:         \"mass\": 0.04"
+ ],
+ [
+  "params: test-4nt16-checker:       }"
+ ],
+ [
+  "params: test-4nt16-checker:     }"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"cg_params-0-0\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"cg_params-0-1\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"cg_params-0-2\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"cg_params-1-0\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"cg_params-1-1\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxcycle\": 2"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"cg_params-1-2\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxiter\": 10,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"maxcycle\": 1"
+ ],
+ [
+  "params: test-4nt16-checker:   },"
+ ],
+ [
+  "params: test-4nt16-checker:   \"measurement\": {"
+ ],
+ [
+  "params: test-4nt16-checker:     \"field_trunc_half_width_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:       1,"
+ ],
+ [
+  "params: test-4nt16-checker:       2,"
+ ],
+ [
+  "params: test-4nt16-checker:       3"
+ ],
+ [
+  "params: test-4nt16-checker:     ],"
+ ],
+ [
+  "params: test-4nt16-checker:     \"field_trunc_t_size_divisor\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:     \"field_trunc_inv_acc_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:       2,"
+ ],
+ [
+  "params: test-4nt16-checker:       2"
+ ],
+ [
+  "params: test-4nt16-checker:     ],"
+ ],
+ [
+  "params: test-4nt16-checker:     \"inv_type_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:       0,"
+ ],
+ [
+  "params: test-4nt16-checker:       1"
+ ],
+ [
+  "params: test-4nt16-checker:     ],"
+ ],
+ [
+  "params: test-4nt16-checker:     \"field_trunc_evolve\": {"
+ ],
+ [
+  "params: test-4nt16-checker:       \"param_list\": ["
+ ],
+ [
+  "params: test-4nt16-checker:         {"
+ ],
+ [
+  "params: test-4nt16-checker:           \"t_left\": 1,"
+ ],
+ [
+  "params: test-4nt16-checker:           \"t_right\": 3,"
+ ],
+ [
+  "params: test-4nt16-checker:           \"t_pad\": 3"
+ ],
+ [
+  "params: test-4nt16-checker:         },"
+ ],
+ [
+  "params: test-4nt16-checker:         {"
+ ],
+ [
+  "params: test-4nt16-checker:           \"t_left\": 3,"
+ ],
+ [
+  "params: test-4nt16-checker:           \"t_right\": 1,"
+ ],
+ [
+  "params: test-4nt16-checker:           \"t_pad\": 3"
+ ],
+ [
+  "params: test-4nt16-checker:         }"
+ ],
+ [
+  "params: test-4nt16-checker:       ],"
+ ],
+ [
+  "params: test-4nt16-checker:       \"num_traj\": 4,"
+ ],
+ [
+  "params: test-4nt16-checker:       \"n_step\": 8,"
+ ],
+ [
+  "params: test-4nt16-checker:       \"md_time\": 2.0,"
+ ],
+ [
+  "params: test-4nt16-checker:       \"ga\": {"
+ ],
+ [
+  "params: test-4nt16-checker:         \"beta\": 6.0,"
+ ],
+ [
+  "params: test-4nt16-checker:         \"c1\": 0.0"
+ ],
+ [
+  "params: test-4nt16-checker:       }"
+ ],
+ [
+  "params: test-4nt16-checker:     }"
+ ],
+ [
+  "params: test-4nt16-checker:   }"
+ ],
+ [
+  "params: test-4nt16-checker: }"
  ],
  [
   "sol_trunc qnorm tslice=0 ; t_half=1 ; type=0 ; accuracy=2",
