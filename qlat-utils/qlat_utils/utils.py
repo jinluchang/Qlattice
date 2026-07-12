@@ -572,7 +572,7 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
         qtouch(json_fn_name + ".new", json_dumps(json_results, indent=1))
         if not does_file_exist_qar(json_fn_name):
             displayln(
-                -1, f"CHECK: ERROR: Reference file '{json_fn_name}' does not exist."
+                -1, f"{fname}: ERROR: Reference file '{json_fn_name}' does not exist."
             )
             mismatch = True
         else:
@@ -582,8 +582,8 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                 pl,
             ) in enumerate(zip(json_results, json_results_load)):
                 if len(p) != len(pl):
-                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
-                    displayln(-1, "CHECK: ERROR: JSON results length does not match.")
+                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    displayln(-1, f"{fname}: ERROR: JSON results length does not match.")
                     mismatch = True
                     continue
                 if len(p) == 1:
@@ -602,18 +602,18 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                     n, v, eps = p
                     nl, vl, epsl = pl
                 else:
-                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
-                    displayln(-1, "CHECK: ERROR: JSON results length not 2 or 3.")
+                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    displayln(-1, f"{fname}: ERROR: JSON results length not 2 or 3.")
                     mismatch = True
                     continue
                 if n != nl:
-                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
-                    displayln(-1, "CHECK: ERROR: JSON results item does not match.")
+                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    displayln(-1, f"{fname}: ERROR: JSON results item does not match.")
                     mismatch = True
                     continue
                 if eps != epsl:
-                    displayln(-1, f"CHECK: {i} {p} load:{pl}")
-                    displayln(-1, "CHECK: ERROR: JSON results eps does not match.")
+                    displayln(-1, f"{fname}: {i} {p} load:{pl}")
+                    displayln(-1, f"{fname}: ERROR: JSON results eps does not match.")
                     mismatch = True
                     continue
                 actual_eps = 0.0
@@ -623,11 +623,11 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                 if (v_norm + vl_norm) > 0:
                     actual_eps = 2 * diff_norm / (v_norm + vl_norm)
                 if actual_eps > eps:
-                    displayln(-1, f"CHECK: {i} '{n}' actual: {v} ; load: {vl} .")
+                    displayln(-1, f"{fname}: {i} '{n}' actual: {v} ; load: {vl} .")
                     displayln(
-                        -1, f"CHECK: target eps: {eps} ; actual eps: {actual_eps} ."
+                        -1, f"{fname}: target eps: {eps} ; actual eps: {actual_eps} ."
                     )
-                    displayln(-1, "CHECK: ERROR: JSON results value does not match.")
+                    displayln(-1, f"{fname}: ERROR: JSON results value does not match.")
                     mismatch = True
                 elif actual_eps != 0.0:
                     displayln(-1, f"INFO: {fname}: {i} '{n}'")
@@ -638,14 +638,14 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
             if len(json_results) != len(json_results_load):
                 displayln(
                     -1,
-                    f"CHECK: len(json_results)={len(json_results)} load:{len(json_results_load)}",
+                    f"{fname}: len(json_results)={len(json_results)} load:{len(json_results_load)}",
                 )
-                displayln(-1, "CHECK: ERROR: JSON results len does not match.")
+                displayln(-1, f"{fname}: ERROR: JSON results len does not match.")
                 mismatch = True
     if mismatch:
         displayln(
             -1,
-            f'CHECK: finished with mismatch in "{json_fn_name}". This suggest that the program may have changed, and need to update the reference "{json_fn_name}" file.',
+            f'{fname}: finished with mismatch in "{json_fn_name}". This suggest that the program may have changed, and need to update the reference "{json_fn_name}" file.',
         )
     try:
         from mpi4py import MPI
