@@ -1757,7 +1757,7 @@ struct vector_cs {
   inline void orthogonalize_group(int repeat = 2, const int i0 = 0,
                                   const int i1 = -1, const int ngroup = 12)
   {
-    TIMERA("orthogonalize");
+    TIMERA("orthogonalize_group");
     if (nvec == 0) {
       return;
     }
@@ -1925,7 +1925,7 @@ template <typename Ty, typename Tb>
 void vector_cs_append(vector_cs<Ty>& A, vector_cs<Tb>& B, Int b0, Int b1,
                       bool clearB = false, Int GPU = 0)
 {
-  TIMERA("vector_cs_append");
+  TIMER("vector_cs_append");
   const Long NB = b1 - b0;
   const Long NA = A.nvec;
   const Long Nstop = NA + NB;
@@ -2022,6 +2022,22 @@ void vector_cs_append(vector_cs<Ty>& A, vector_cs<Tb>& B, Int b0, Int b1,
     A.resize(Nstop, nsum, A.GPU, b_size, bfac_group, true);
   }
   buf_V.resize(0);
+}
+
+/*
+  A = A append nadd
+*/
+template <typename Ty>
+void vector_cs_resize(vector_cs<Ty>& A, const Int nadd)
+{
+  TIMER("vector_cs_resize");
+  if(nadd == 0){return ;}
+  if(nadd > 0){
+    vector_cs<Ty> B;
+    B.resize(nadd, A);
+    const Int GPU = A.GPU == QMGPU ? 1 : 0;
+    vector_cs_append(A, B, 0, nadd, true, GPU);
+  }
 }
 
 template <typename Ty>

@@ -620,6 +620,14 @@ inline void quda_inverter::init(const Geometry& geo_, QudaTboundary t_boundary)
   split_prec_double = true;
   //
   eigen_with_nvec = false;
+  eigen_with_nvec_default = false;
+  eigen_with_nvec_twist = false;
+  eigenL_default.resize(0);
+  eigen_precL_default.resize(0);
+  eigen_with_nvecL_default.resize(0);
+  eigenL_twist.resize(0);
+  eigen_precL_twist.resize(0);
+  eigen_with_nvecL_twist.resize(0);
   //
   // df_preconditioner = NULL;
   // nvec = 0;
@@ -746,6 +754,7 @@ inline void quda_inverter::setup_eigen(eigen_cs<T1>* e0, eigen_cs<T2>* e1)
   eigenL.resize(2);
   eigen_precL.resize(2);
   eigen_with_nvecL.resize(2);
+  eigen_with_nvec = false;
   // double precision eigen first
   Qassert(sizeof(T1) >= sizeof(T2));
   //

@@ -82,7 +82,7 @@ inline std::string listtostring(const std::vector<std::string> src)
   return buf;
 }
 
-inline double stringtodouble(std::string& tem_string)
+inline double stringtodouble(const std::string& tem_string)
 {
   // double use = atof(tem_string.c_str());
   double use = 0.0;
@@ -92,7 +92,7 @@ inline double stringtodouble(std::string& tem_string)
   return use;
 }
 
-inline Int stringtonum(std::string& tem_string)
+inline Int stringtonum(const std::string& tem_string)
 {
   // int t_Total = 0;
   // if(tem_string!="_NONE_")

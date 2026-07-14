@@ -576,9 +576,10 @@ inline void read_kentucky_vector(FILE* file, char* props, Int Nvec, io_vec& io,
   int ionum = io.ionum;
   size_t noden = io.noden;
   //
-  if (io.do_checksum) {
+  if (io.do_checksum and read == true) {
     if (io.end_of_file == 0) {
-      abort_r("io_vec need end of file for check sum! \n ");
+      qmessage("io_vec need end of file for check sum! \n ");
+      Qassert(false);
     }
   }
   //
@@ -3561,7 +3562,8 @@ inline void load_gwu_cs_evecs(const char* filename, vector_cs<Ty>& eigen,
                               const bool read = true)
 {
   TIMERB("load_gwu_cs_evecs");
-  io_vec& io_use = get_io_vec_plan(geo);
+  // gwu vectors have no checksum
+  io_vec& io_use = get_io_vec_plan_no_checksum(geo);
   int n0 = N0;
   int n1 = eigen.nvec - n0;
   if (N1 != -1) {

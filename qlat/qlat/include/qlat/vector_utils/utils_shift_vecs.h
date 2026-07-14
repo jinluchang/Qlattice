@@ -100,6 +100,7 @@ struct shift_vec {
   int gd0;
   bool Conj;
   bool src_gauge;
+  Int do_copy_asyn;
   //
   inline void init(fft_desc_basic& fds, bool GPU_set = true);
   inline void init(const Geometry& geo, bool GPU_set);
@@ -112,6 +113,7 @@ struct shift_vec {
     civ = 0;
     GPU = true;
     gauge = NULL;
+    do_copy_asyn = 1;
   }
   shift_vec(fft_desc_basic& fds, bool GPU_set = true) { init(fds, GPU_set); }
   shift_vec(const Geometry& geo, bool GPU_set = true) { init(geo, GPU_set); }
@@ -325,6 +327,10 @@ inline void shift_vec::init(fft_desc_basic& fds, bool GPU_set)
   Conj = false;
   src_gauge = false;
   initialized = true;
+  // hack for AMD machines
+  do_copy_asyn = qlat::get_env_long_default(
+    std::string("qlat_field_shift_asyn"), 1);
+  Qassert(do_copy_asyn == 0 or do_copy_asyn == 1);
 }
 
 inline void shift_vec::init(const Geometry& geo, bool GPU_set)
@@ -897,10 +903,15 @@ void shift_vec::call_MPI(Ty* src, Ty* res, Int dir_or)
     MPI_Irecv(r_tem, MPI_size[dir_cur] * MPI_off, MPI_curr, rank_sr[dir_cur][1],
               tagr, get_comm(), &recv_req);
     //
-    write_send_recv<Ty, 2>(src, res);  // Write same node
+    if(do_copy_asyn == 1){
+      write_send_recv<Ty, 2>(src, res);  // Write same node
+    }
     //
     MPI_Wait(&recv_req, MPI_STATUS_IGNORE);
     MPI_Wait(&send_req, MPI_STATUS_IGNORE);
+    if(do_copy_asyn == 0){
+      write_send_recv<Ty, 2>(src, res);  // Write same node
+    }
     ////qmessage("SIZE! MPI_off %d, MPI_size %d \n", int(MPI_off), int(M_size));
     //
     // MPI_Wait(&request, &status);
@@ -1080,7 +1091,8 @@ void shift_vec::shift_vecs(std::vector<Ty*>& src, std::vector<Ty*>& res,
       for (Int si = 0; si < dir_numl[di]; si++) {
         call_MPI((Ty*)&vec_s[0], (Ty*)&vec_r[0], dir_curl[di]);
         /// memcpy(&vec_s[0],&vec_r[0],sizeof(Ty)*(biva*Ng*civ));
-        cpy_data_thread(&vec_s[0], &vec_r[0], (biva * Ng * civ), GPU, QFALSE);
+        //cpy_data_thread(&vec_s[0], &vec_r[0], (biva * Ng * civ), GPU, QFALSE);
+        cpy_data_thread(&vec_s[0], &vec_r[0], (biva * Ng * civ), GPU, QTRUE);
       }
     }
     /////Shift direction kernal
