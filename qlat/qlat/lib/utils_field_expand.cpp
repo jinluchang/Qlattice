@@ -80,9 +80,13 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
   if (tag == std::string("dirR")) {
     set_tag = 501;
   }
-  //
-  if (tag == std::string("")) {
-    set_tag = -100;
+  //// full corner
+  //if (tag == std::string("")) {
+  //  set_tag = -1000;
+  //}
+  // no corner
+  if (tag == std::string("no_corner")) {
+    set_tag = -100 ;
   }
   if (tag == std::string("dirx")) {
     set_tag = 0;
