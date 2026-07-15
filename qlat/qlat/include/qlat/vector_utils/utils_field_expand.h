@@ -606,7 +606,7 @@ void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI,
   }
   // without corner
   if (dir == -100) {
-    refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, std::string(""),
+    refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, std::string("no_corner"),
                           GPU, dummy);
   }
   //
