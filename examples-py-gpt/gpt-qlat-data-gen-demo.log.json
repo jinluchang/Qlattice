@@ -791,7 +791,7 @@
   "run_job_load_data_demo: loaded psel with 15 points"
  ],
  [
-  "run_job_load_data_demo: loaded fsel with 38 selected sites"
+  "run_job_load_data_demo: loaded fsel with 38 selected sites (including psel)"
  ],
  [
   "run_job_load_data_demo: wsrc psel entries = 8"

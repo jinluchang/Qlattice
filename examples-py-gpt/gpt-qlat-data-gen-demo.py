@@ -329,13 +329,14 @@ def run_job_load_data_demo(job_tag, traj):
     psel.load(path_psel)
     q.json_results_append(f"{fname}: loaded psel with {psel.n_points} points")
     #
-    # Load field selection directly
+    # Load field selection directly and add psel to make union set
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(fn_fsel)
     assert path_fsel is not None, f"{fname}: fsel file not found: {fn_fsel}"
     fsel = q.FieldSelection()
     fsel.load(path_fsel)
-    q.json_results_append(f"{fname}: loaded fsel with {fsel.n_elems} selected sites")
+    fsel.add_psel(psel)
+    q.json_results_append(f"{fname}: loaded fsel with {fsel.n_elems} selected sites (including psel)")
     #
     inv_type = 0
     flavor_tag = "light"
@@ -415,8 +416,7 @@ def run_job_load_data_demo(job_tag, traj):
         sfr.close()
         arr = np.asarray(sc_prop)
         q.json_results_append(f"{fname}: wsrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
-        psel_common = psel.intersect(fsel)
-        sp_check = q.PselProp(psel_common)
+        sp_check = q.PselProp(psel)
         sp_check @= sc_prop
         q.json_results_append(f"{fname}: wsrc fsel sample norm", sp_check.qnorm(), 1e-8)
     #
@@ -441,8 +441,7 @@ def run_job_load_data_demo(job_tag, traj):
         sfr.close()
         arr = np.asarray(sc_prop)
         q.json_results_append(f"{fname}: psrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
-        psel_common = psel.intersect(fsel)
-        sp_check = q.PselProp(psel_common)
+        sp_check = q.PselProp(psel)
         sp_check @= sc_prop
         q.json_results_append(f"{fname}: psrc fsel sample norm", sp_check.qnorm(), 1e-8)
     #
