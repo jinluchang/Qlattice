@@ -785,6 +785,63 @@
   1e-15
  ],
  [
+  "run_job_load_data_demo: loaded gauge transform from results/test-4nt8-checker/gauge-transform/traj-1000.field"
+ ],
+ [
+  "run_job_load_data_demo: loaded psel with 15 points"
+ ],
+ [
+  "run_job_load_data_demo: loaded fsel with 38 selected sites"
+ ],
+ [
+  "run_job_load_data_demo: wsrc psel entries = 8"
+ ],
+ [
+  "run_job_load_data_demo: wsrc fsel total entries = 12"
+ ],
+ [
+  "run_job_load_data_demo: wsrc fsel prop entries = 12"
+ ],
+ [
+  "run_job_load_data_demo: psrc psel entries = 4"
+ ],
+ [
+  "run_job_load_data_demo: psrc fsel total entries = 42"
+ ],
+ [
+  "run_job_load_data_demo: psrc fsel prop entries = 21"
+ ],
+ [
+  "run_job_load_data_demo: psrc fsel prob entries = 21"
+ ],
+ [
+  "run_job_load_data_demo: wsrc psel numpy shape = (15, 1, 12, 12), dtype = complex128"
+ ],
+ [
+  "run_job_load_data_demo: wsrc psel sample norm = 1.4471542217045228"
+ ],
+ [
+  "run_job_load_data_demo: wsrc fsel numpy shape = (38, 1, 12, 12), dtype = complex128"
+ ],
+ [
+  "run_job_load_data_demo: wsrc fsel sample norm = 52.67839346084049"
+ ],
+ [
+  "run_job_load_data_demo: psrc psel numpy shape = (15, 1, 12, 12), dtype = complex128"
+ ],
+ [
+  "run_job_load_data_demo: psrc psel sample norm = 0.000348800323717185"
+ ],
+ [
+  "run_job_load_data_demo: psrc fsel numpy shape = (38, 1, 12, 12), dtype = complex128"
+ ],
+ [
+  "run_job_load_data_demo: psrc fsel sample norm = 0.017239309803878528"
+ ],
+ [
+  "run_job_load_data_demo: completed successfully"
+ ],
+ [
   "q.obtained_lock_history_list=['locks/test-4nt8-checker-1000-gauge_field', 'locks/test-4nt8-checker-1000-gauge_fix_coulomb', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-wi', 'locks/test-4nt8-checker-1000-run-eig', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_full-strange', 'locks/test-4nt8-checker-1000-run_f_weight_from_wsrc_prop_full', 'locks/test-4nt8-checker-1000-run_f_rand_01', 'locks/test-4nt8-checker-1000-run_fsel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob', 'locks/test-4nt8-checker-1000-run_psel_prob-median', 'locks/test-4nt8-checker-1000-run_psel_split', 'locks/test-4nt8-checker-1000-run_fsel_split', 'locks/test-4nt8-checker-1000-psel-smear', 'locks/test-4nt8-checker-1000-run_psel_smear_median', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-light', 'locks/test-4nt8-checker-1000-run_prop_wsrc_sparse-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-light', 'locks/test-4nt8-checker-1000-run_prop_psrc-light', 'locks/test-4nt8-checker-1000-run_prop_smear-light', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-strange', 'locks/test-4nt8-checker-1000-run_prop_psrc-strange', 'locks/test-4nt8-checker-1000-run_prop_smear-strange', 'locks/test-4nt8-checker-1000-run_prop_rand_u1-charm-1']"
  ]
 ]

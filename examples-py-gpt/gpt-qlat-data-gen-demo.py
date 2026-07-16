@@ -319,7 +319,7 @@ def run_job_load_data_demo(job_tag, traj):
     gt = q.GaugeTransform()
     gt.load(path_gt)
     gt_inv = gt.inv()
-    q.displayln_info(f"{fname}: loaded gauge transform from {path_gt}")
+    q.json_results_append(f"{fname}: loaded gauge transform from {path_gt}")
     #
     # Load point selection directly
     fn_psel = f"{job_tag}/points-selection/traj-{traj}.lati"
@@ -327,7 +327,7 @@ def run_job_load_data_demo(job_tag, traj):
     assert path_psel is not None, f"{fname}: psel file not found: {fn_psel}"
     psel = q.PointsSelection()
     psel.load(path_psel)
-    q.displayln_info(f"{fname}: loaded psel with {psel.n_points} points")
+    q.json_results_append(f"{fname}: loaded psel with {psel.n_points} points")
     #
     # Load field selection directly
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
@@ -335,10 +335,11 @@ def run_job_load_data_demo(job_tag, traj):
     assert path_fsel is not None, f"{fname}: fsel file not found: {fn_fsel}"
     fsel = q.FieldSelection()
     fsel.load(path_fsel)
-    q.displayln_info(f"{fname}: loaded fsel with {fsel.n_elems} selected sites")
+    q.json_results_append(f"{fname}: loaded fsel with {fsel.n_elems} selected sites")
     #
     inv_type = 0
     flavor_tag = "light"
+    prob_suffix = " ; fsel-prob-psrc-prop"
     #
     # List wall source psel propagator content
     path_sp = f"{job_tag}/psel-prop-wsrc-{flavor_tag}/traj-{traj}"
@@ -349,16 +350,19 @@ def run_job_load_data_demo(job_tag, traj):
             fn_sp = os.path.join(path_sp, f"{tag}.lat")
             if get_load_path(fn_sp) is not None:
                 wsrc_psel_entries.append(tag)
-    q.displayln_info(f"{fname}: wsrc psel entries: {len(wsrc_psel_entries)}")
+    q.json_results_append(f"{fname}: wsrc psel entries = {len(wsrc_psel_entries)}")
     #
     # List wall source fsel propagator content
     path_s = f"{job_tag}/prop-wsrc-{flavor_tag}/traj-{traj}"
+    wsrc_fsel_all = []
     wsrc_fsel_entries = []
     if get_load_path(f"{path_s}.qar", f"{path_s}/geon-info.txt") is not None:
         sfr = q.open_fields(get_load_path(path_s + "/geon-info.txt"), "r")
-        wsrc_fsel_entries = [tag for tag in sfr.list() if f"type={inv_type}" in tag]
+        wsrc_fsel_all = [tag for tag in sfr.list() if f"type={inv_type}" in tag]
+        wsrc_fsel_entries = [tag for tag in wsrc_fsel_all if not tag.endswith(prob_suffix)]
         sfr.close()
-    q.displayln_info(f"{fname}: wsrc fsel entries: {len(wsrc_fsel_entries)}")
+    q.json_results_append(f"{fname}: wsrc fsel total entries = {len(wsrc_fsel_all)}")
+    q.json_results_append(f"{fname}: wsrc fsel prop entries = {len(wsrc_fsel_entries)}")
     #
     # List point source psel propagator content
     path_sp_psrc = f"{job_tag}/psel-prop-psrc-{flavor_tag}/traj-{traj}"
@@ -370,16 +374,24 @@ def run_job_load_data_demo(job_tag, traj):
             fn_sp = os.path.join(path_sp_psrc, f"{tag}.lat")
             if get_load_path(fn_sp) is not None:
                 psrc_psel_entries.append(tag)
-    q.displayln_info(f"{fname}: psrc psel entries: {len(psrc_psel_entries)}")
+    q.json_results_append(f"{fname}: psrc psel entries = {len(psrc_psel_entries)}")
     #
     # List point source fsel propagator content
+    # Note: psrc fsel dataset contains both propagator entries and probability entries
+    # (with " ; fsel-prob-psrc-prop" suffix). Only propagator entries can be loaded as SelProp.
     path_s_psrc = f"{job_tag}/prop-psrc-{flavor_tag}/traj-{traj}"
+    psrc_fsel_all = []
     psrc_fsel_entries = []
+    psrc_fsel_prob_entries = []
     if get_load_path(f"{path_s_psrc}.qar", f"{path_s_psrc}/geon-info.txt") is not None:
         sfr = q.open_fields(get_load_path(path_s_psrc + "/geon-info.txt"), "r")
-        psrc_fsel_entries = [tag for tag in sfr.list() if f"type={inv_type}" in tag]
+        psrc_fsel_all = [tag for tag in sfr.list() if f"type={inv_type}" in tag]
+        psrc_fsel_entries = [tag for tag in psrc_fsel_all if not tag.endswith(prob_suffix)]
+        psrc_fsel_prob_entries = [tag for tag in psrc_fsel_all if tag.endswith(prob_suffix)]
         sfr.close()
-    q.displayln_info(f"{fname}: psrc fsel entries: {len(psrc_fsel_entries)}")
+    q.json_results_append(f"{fname}: psrc fsel total entries = {len(psrc_fsel_all)}")
+    q.json_results_append(f"{fname}: psrc fsel prop entries = {len(psrc_fsel_entries)}")
+    q.json_results_append(f"{fname}: psrc fsel prob entries = {len(psrc_fsel_prob_entries)}")
     #
     # Load one wsrc psel propagator and verify numpy view
     if wsrc_psel_entries:
@@ -389,9 +401,9 @@ def run_job_load_data_demo(job_tag, traj):
         sp_prop.load(get_load_path(fn_sp))
         sp_prop = gt_inv * sp_prop
         arr = np.asarray(sp_prop)
-        q.displayln_info(f"{fname}: wsrc psel numpy: shape={arr.shape}, dtype={arr.dtype}")
+        q.json_results_append(f"{fname}: wsrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
         elem = sp_prop.get_elem_wm(0)
-        q.displayln_info(f"{fname}: wsrc psel sample norm = {elem.qnorm()}")
+        q.json_results_append(f"{fname}: wsrc psel sample norm = {elem.qnorm()}")
     #
     # Load one wsrc fsel propagator and verify numpy view
     if wsrc_fsel_entries:
@@ -402,11 +414,11 @@ def run_job_load_data_demo(job_tag, traj):
         sc_prop = gt_inv * sc_prop
         sfr.close()
         arr = np.asarray(sc_prop)
-        q.displayln_info(f"{fname}: wsrc fsel numpy: shape={arr.shape}, dtype={arr.dtype}")
+        q.json_results_append(f"{fname}: wsrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
         psel_common = psel.intersect(fsel)
         sp_check = q.PselProp(psel_common)
         sp_check @= sc_prop
-        q.displayln_info(f"{fname}: wsrc fsel sample norm = {sp_check.qnorm()}")
+        q.json_results_append(f"{fname}: wsrc fsel sample norm = {sp_check.qnorm()}")
     #
     # Load one psrc psel propagator and verify numpy view
     if psrc_psel_entries:
@@ -415,16 +427,27 @@ def run_job_load_data_demo(job_tag, traj):
         sp_prop = q.PselProp(psel)
         sp_prop.load(get_load_path(fn_sp))
         arr = np.asarray(sp_prop)
-        q.displayln_info(f"{fname}: psrc psel numpy: shape={arr.shape}, dtype={arr.dtype}")
+        q.json_results_append(f"{fname}: psrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
         elem = sp_prop.get_elem_wm(0)
-        q.displayln_info(f"{fname}: psrc psel sample norm = {elem.qnorm()}")
+        q.json_results_append(f"{fname}: psrc psel sample norm = {elem.qnorm()}")
     #
-    # Note: psrc fsel propagator uses fsel_combine (original fsel + probabilistically
-    # selected sites) which requires special field selection handling.
-    # See load_prop_psrc_fsel in qlat_scripts.v1.load_data for the full implementation.
+    # Load one psrc fsel propagator and verify numpy view
+    # psrc fsel uses fsel_combine (original fsel + probabilistically selected sites)
+    if psrc_fsel_entries:
+        tag = psrc_fsel_entries[0]
+        sfr = q.open_fields(get_load_path(path_s_psrc + "/geon-info.txt"), "r")
+        sc_prop = q.SelProp(fsel)
+        sc_prop.load_double_from_float(sfr, tag)
+        sfr.close()
+        arr = np.asarray(sc_prop)
+        q.json_results_append(f"{fname}: psrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        psel_common = psel.intersect(fsel)
+        sp_check = q.PselProp(psel_common)
+        sp_check @= sc_prop
+        q.json_results_append(f"{fname}: psrc fsel sample norm = {sp_check.qnorm()}")
     #
     q.clean_cache()
-    q.displayln_info(f"{fname}: completed successfully")
+    q.json_results_append(f"{fname}: completed successfully")
 
 ### ------
 
