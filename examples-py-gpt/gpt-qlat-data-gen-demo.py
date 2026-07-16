@@ -376,6 +376,49 @@ def run_job_load_data_demo(job_tag, traj):
     else:
         q.displayln_info(f"{fname}: wsrc fsel propagator not available")
     #
+    # Load point source psel propagator directly (light quark, inv_type=0)
+    path_sp_psrc = f"{job_tag}/psel-prop-psrc-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_sp_psrc}.qar", f"{path_sp_psrc}/checkpoint.txt") is not None:
+        psrc_count = 0
+        for xg in psel:
+            xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
+            tag = f"xg={xg_str} ; type={inv_type} ; accuracy=1"
+            fn_sp = os.path.join(path_sp_psrc, f"{tag}.lat")
+            if get_load_path(fn_sp) is None:
+                continue
+            sp_prop = q.PselProp(psel)
+            sp_prop.load(get_load_path(fn_sp))
+            if psrc_count == 0:
+                elem = sp_prop.get_elem_wm(0)
+                q.displayln_info(f"{fname}: loaded psrc psel prop {tag}, sample norm = {elem.qnorm()}")
+            psrc_count += 1
+        q.displayln_info(f"{fname}: loaded psrc psel propagator (light), {psrc_count} sources")
+    else:
+        q.displayln_info(f"{fname}: psrc psel propagator not available")
+    #
+    # Load point source fsel propagator directly (light quark, inv_type=0)
+    path_s_psrc = f"{job_tag}/prop-psrc-{flavor_tag}/traj-{traj}"
+    if get_load_path(f"{path_s_psrc}.qar", f"{path_s_psrc}/geon-info.txt") is not None:
+        sfr = q.open_fields(get_load_path(path_s_psrc + "/geon-info.txt"), "r")
+        psrc_fsel_count = 0
+        for xg in psel:
+            xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
+            tag = f"xg={xg_str} ; type={inv_type} ; accuracy=1"
+            if tag not in sfr:
+                continue
+            sc_prop = q.SelProp(fsel)
+            sc_prop.load_double_from_float(sfr, tag)
+            if psrc_fsel_count == 0:
+                psel_common = psel.intersect(fsel)
+                sp_check = q.PselProp(psel_common)
+                sp_check @= sc_prop
+                q.displayln_info(f"{fname}: loaded psrc fsel prop {tag}, sample norm = {sp_check.qnorm()}")
+            psrc_fsel_count += 1
+        sfr.close()
+        q.displayln_info(f"{fname}: loaded psrc fsel propagator (light), {psrc_fsel_count} sources")
+    else:
+        q.displayln_info(f"{fname}: psrc fsel propagator not available")
+    #
     q.clean_cache()
     q.displayln_info(f"{fname}: completed successfully")
 
