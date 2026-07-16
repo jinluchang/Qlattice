@@ -630,10 +630,10 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
                     displayln(-1, f"{fname}: ERROR: JSON results value does not match.")
                     mismatch = True
                 elif actual_eps != 0.0:
-                    displayln(-1, f"INFO: {fname}: {i} '{n}'")
+                    displayln(-1, f"{fname}: INFO: {i} '{n}'")
                     displayln(
                         -1,
-                        f"INFO: {fname}: target eps: {eps} ; actual eps: {actual_eps} .",
+                        f"{fname}: INFO: target eps: {eps} ; actual eps: {actual_eps} .",
                     )
             if len(json_results) != len(json_results_load):
                 displayln(
