@@ -791,7 +791,19 @@
   "run_job_load_data_demo: loaded psel with 15 points"
  ],
  [
+  "run_job_load_data_demo: psel xg_arr shape = (15, 4), dtype = int32"
+ ],
+ [
+  "run_job_load_data_demo: psel n_points = 15"
+ ],
+ [
   "run_job_load_data_demo: loaded fsel with 38 selected sites (including psel)"
+ ],
+ [
+  "run_job_load_data_demo: fsel xg_arr shape = (38, 4), dtype = int32"
+ ],
+ [
+  "run_job_load_data_demo: fsel n_elems = 38"
  ],
  [
   "run_job_load_data_demo: wsrc psel entries = 8"

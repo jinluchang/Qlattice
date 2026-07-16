@@ -329,6 +329,13 @@ def run_job_load_data_demo(job_tag, traj):
     psel.load(path_psel)
     q.json_results_append(f"{fname}: loaded psel with {psel.n_points} points")
     #
+    # Get xg_arr from psel and verify shape
+    psel_xg_arr = psel.xg_arr
+    q.json_results_append(f"{fname}: psel xg_arr shape = {psel_xg_arr.shape}, dtype = {psel_xg_arr.dtype}")
+    q.json_results_append(f"{fname}: psel n_points = {psel.n_points}")
+    assert psel_xg_arr.shape[0] == psel.n_points
+    assert psel_xg_arr.shape[1] == 4
+    #
     # Load field selection directly and add psel to make union set
     fn_fsel = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(fn_fsel)
@@ -337,6 +344,13 @@ def run_job_load_data_demo(job_tag, traj):
     fsel.load(path_fsel)
     fsel.add_psel(psel)
     q.json_results_append(f"{fname}: loaded fsel with {fsel.n_elems} selected sites (including psel)")
+    #
+    # Get xg_arr from fsel and verify shape
+    fsel_xg_arr = np.array([xg.to_tuple() for xg in fsel], dtype=np.int32)
+    q.json_results_append(f"{fname}: fsel xg_arr shape = {fsel_xg_arr.shape}, dtype = {fsel_xg_arr.dtype}")
+    q.json_results_append(f"{fname}: fsel n_elems = {fsel.n_elems}")
+    assert fsel_xg_arr.shape[0] == fsel.n_elems
+    assert fsel_xg_arr.shape[1] == 4
     #
     inv_type = 0
     flavor_tag = "light"
@@ -403,6 +417,7 @@ def run_job_load_data_demo(job_tag, traj):
         sp_prop = gt_inv * sp_prop
         arr = np.asarray(sp_prop)
         q.json_results_append(f"{fname}: wsrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        assert arr.shape[0] == psel_xg_arr.shape[0]
         elem = sp_prop.get_elem_wm(0)
         q.json_results_append(f"{fname}: wsrc psel sample norm", elem.qnorm(), 1e-8)
     #
@@ -416,6 +431,7 @@ def run_job_load_data_demo(job_tag, traj):
         sfr.close()
         arr = np.asarray(sc_prop)
         q.json_results_append(f"{fname}: wsrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        assert arr.shape[0] == fsel_xg_arr.shape[0]
         sp_check = q.PselProp(psel)
         sp_check @= sc_prop
         q.json_results_append(f"{fname}: wsrc fsel sample norm", sp_check.qnorm(), 1e-8)
@@ -428,6 +444,7 @@ def run_job_load_data_demo(job_tag, traj):
         sp_prop.load(get_load_path(fn_sp))
         arr = np.asarray(sp_prop)
         q.json_results_append(f"{fname}: psrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        assert arr.shape[0] == psel_xg_arr.shape[0]
         elem = sp_prop.get_elem_wm(0)
         q.json_results_append(f"{fname}: psrc psel sample norm", elem.qnorm(), 1e-8)
     #
@@ -441,6 +458,7 @@ def run_job_load_data_demo(job_tag, traj):
         sfr.close()
         arr = np.asarray(sc_prop)
         q.json_results_append(f"{fname}: psrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        assert arr.shape[0] == fsel_xg_arr.shape[0]
         sp_check = q.PselProp(psel)
         sp_check @= sc_prop
         q.json_results_append(f"{fname}: psrc fsel sample norm", sp_check.qnorm(), 1e-8)
