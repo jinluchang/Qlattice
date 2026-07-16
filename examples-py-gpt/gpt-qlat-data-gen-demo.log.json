@@ -818,25 +818,33 @@
   "run_job_load_data_demo: wsrc psel numpy shape = (15, 1, 12, 12), dtype = complex128"
  ],
  [
-  "run_job_load_data_demo: wsrc psel sample norm = 1.4471542217045228"
+  "run_job_load_data_demo: wsrc psel sample norm",
+  1.4471542217045228,
+  1e-08
  ],
  [
   "run_job_load_data_demo: wsrc fsel numpy shape = (38, 1, 12, 12), dtype = complex128"
  ],
  [
-  "run_job_load_data_demo: wsrc fsel sample norm = 52.67839346084049"
+  "run_job_load_data_demo: wsrc fsel sample norm",
+  52.67839346084049,
+  1e-08
  ],
  [
   "run_job_load_data_demo: psrc psel numpy shape = (15, 1, 12, 12), dtype = complex128"
  ],
  [
-  "run_job_load_data_demo: psrc psel sample norm = 0.000348800323717185"
+  "run_job_load_data_demo: psrc psel sample norm",
+  0.000348800323717185,
+  1e-08
  ],
  [
   "run_job_load_data_demo: psrc fsel numpy shape = (38, 1, 12, 12), dtype = complex128"
  ],
  [
-  "run_job_load_data_demo: psrc fsel sample norm = 0.017239309803878528"
+  "run_job_load_data_demo: psrc fsel sample norm",
+  0.017239309803878528,
+  1e-08
  ],
  [
   "run_job_load_data_demo: completed successfully"

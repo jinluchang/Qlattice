@@ -403,7 +403,7 @@ def run_job_load_data_demo(job_tag, traj):
         arr = np.asarray(sp_prop)
         q.json_results_append(f"{fname}: wsrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
         elem = sp_prop.get_elem_wm(0)
-        q.json_results_append(f"{fname}: wsrc psel sample norm = {elem.qnorm()}")
+        q.json_results_append(f"{fname}: wsrc psel sample norm", elem.qnorm(), 1e-8)
     #
     # Load one wsrc fsel propagator and verify numpy view
     if wsrc_fsel_entries:
@@ -418,7 +418,7 @@ def run_job_load_data_demo(job_tag, traj):
         psel_common = psel.intersect(fsel)
         sp_check = q.PselProp(psel_common)
         sp_check @= sc_prop
-        q.json_results_append(f"{fname}: wsrc fsel sample norm = {sp_check.qnorm()}")
+        q.json_results_append(f"{fname}: wsrc fsel sample norm", sp_check.qnorm(), 1e-8)
     #
     # Load one psrc psel propagator and verify numpy view
     if psrc_psel_entries:
@@ -429,7 +429,7 @@ def run_job_load_data_demo(job_tag, traj):
         arr = np.asarray(sp_prop)
         q.json_results_append(f"{fname}: psrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
         elem = sp_prop.get_elem_wm(0)
-        q.json_results_append(f"{fname}: psrc psel sample norm = {elem.qnorm()}")
+        q.json_results_append(f"{fname}: psrc psel sample norm", elem.qnorm(), 1e-8)
     #
     # Load one psrc fsel propagator and verify numpy view
     # psrc fsel uses fsel_combine (original fsel + probabilistically selected sites)
@@ -444,7 +444,7 @@ def run_job_load_data_demo(job_tag, traj):
         psel_common = psel.intersect(fsel)
         sp_check = q.PselProp(psel_common)
         sp_check @= sc_prop
-        q.json_results_append(f"{fname}: psrc fsel sample norm = {sp_check.qnorm()}")
+        q.json_results_append(f"{fname}: psrc fsel sample norm", sp_check.qnorm(), 1e-8)
     #
     q.clean_cache()
     q.json_results_append(f"{fname}: completed successfully")
