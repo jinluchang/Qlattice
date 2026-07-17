@@ -1196,7 +1196,7 @@ void shift_vec::shift_Evec(std::vector<qlat::vector<Ty>>& srcE,
   res.resize(biva_or);
   for (Int bi = 0; bi < biva_or; bi++) {
     src[bi] = (Ty*)qlat::get_data(srcE[bi]).data();
-    res[bi] = (Ty*)qlat::get_data(srcE[bi]).data();
+    res[bi] = (Ty*)qlat::get_data(srcEf[bi]).data();
   }
   //
   shift_vecs(src, res, iDir, civ_or);
@@ -1525,6 +1525,7 @@ void shift_vecs_cov_fieldG(std::vector<std::vector<FieldG<Ty>>>& res,
                            std::vector<FieldG<Ty>>& s0, shift_vec& svec,
                            std::vector<std::vector<FieldG<Ty>>>& buf)
 {
+  TIMER("shift_vecs_cov");
   if (res.size() != 5) {
     res.resize(5);
   }
@@ -1540,21 +1541,33 @@ void shift_vecs_cov_fieldG(std::vector<std::vector<FieldG<Ty>>>& res,
       switch_orders(s0[si], QLAT_DEFAULT);
     }
   //
-  init_fieldsG(buf[0], s0[0], s0.size());
-  init_fieldsG(buf[1], s0[0], s0.size());
-  for (unsigned int i = 0; i < res.size(); i++) {
-    init_fieldsG(res[i], s0[0], s0.size());
+  {
+    TIMER("shift_vecs_cov setup");
+    init_fieldsG(buf[0], s0[0], s0.size());
+    init_fieldsG(buf[1], s0[0], s0.size());
+    for (unsigned int i = 0; i < res.size(); i++) {
+      init_fieldsG(res[i], s0[0], s0.size());
+    }
   }
   //
-  fields_operations(res[0], res[0], s0, Ty(0.0, 0.0), Ty(0.0, 0.0),
-                    Ty(1.0, 0.0));  // equal
+  {
+    TIMER("shift_vecs_cov write src");
+    fields_operations(res[0], res[0], s0, Ty(0.0, 0.0), Ty(0.0, 0.0),
+                      Ty(1.0, 0.0));  // equal
+  }
   //
   for (Int nu = 0; nu < 4; nu++) {
-    svec.shift_vecs_dirG(s0, buf[0], nu, +1);
-    svec.shift_vecs_dirG(s0, buf[1], nu, -1);
+    {
+      TIMER("shift_vecs_cov shift");
+      svec.shift_vecs_dirG(s0, buf[0], nu, +1);
+      svec.shift_vecs_dirG(s0, buf[1], nu, -1);
+    }
     // r = 0.5 * (b0 - b1)
-    fields_operations(res[1 + nu], buf[0], buf[1], Ty(0.0, 0.0), Ty(0.5, 0.0),
-                      Ty(-0.5, 0.0));
+    {
+      TIMER("shift_vecs_cov combine");
+      fields_operations(res[1 + nu], buf[0], buf[1], Ty(0.0, 0.0),
+                        Ty(0.5, 0.0), Ty(-0.5, 0.0));
+    }
   }
   //
   // swap src back to orginal layout and res to correct layout

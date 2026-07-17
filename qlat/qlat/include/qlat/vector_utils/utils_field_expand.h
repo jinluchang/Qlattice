@@ -32,6 +32,146 @@ void setup_expand(const Geometry& geo, const Int multiplicity,
 void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
                          const Int multiplicity, const std::string& tag);
 
+enum QEXPAND_DIR {
+  dirFULL = -1000,  // Full expansion with corners.
+  dirmt = -4,      // Negative t direction only.
+  dirmz = -3,      // Negative z direction only.
+  dirmy = -2,      // Negative y direction only.
+  dirmx = -1,      // Negative x direction only.
+  dirx = 0,        // Positive x direction only.
+  diry = 1,        // Positive y direction only.
+  dirz = 2,        // Positive z direction only.
+  dirt = 3,        // Positive t direction only.
+  dirL = 500,      // All negative directions: -x, -y, -z, -t.
+  dirR = 501,      // All positive directions: +x, +y, +z, +t.
+  dirXY = 600,     // Positive and negative x/y directions.
+  dirYZ = 601,     // Positive and negative y/z directions.
+  dirXZ = 602,     // Positive and negative x/z directions.
+  dirXYZ = 603,    // Positive and negative x/y/z directions.
+  dirX = 604,      // Positive and negative x directions.
+  dirY = 605,      // Positive and negative y directions.
+  dirZ = 606,      // Positive and negative z directions.
+  dirT = 607,      // Positive and negative t directions.
+  dirxy = 608,     // Positive x/y directions only.
+  diryz = 609,     // Positive y/z directions only.
+  dirxz = 610,     // Positive x/z directions only.
+  dirxyz = 611,    // Positive x/y/z directions only.
+  dirmxy = 612,    // Negative x/y directions only.
+  dirmyz = 613,    // Negative y/z directions only.
+  dirmxz = 614,    // Negative x/z directions only.
+  dirmxyz = 615,   // Negative x/y/z directions only.
+  dirXYZT = 616,   // Positive and negative x/y/z/t directions, no corners.
+};
+
+inline bool is_expand_plane_dir(const Int dir)
+{
+  return (dirmt <= dir and dir <= dirt) or dir == dirL or dir == dirR or
+         dir == dirXY or dir == dirYZ or dir == dirXZ or dir == dirXYZ or
+         dir == dirX or dir == dirY or dir == dirZ or dir == dirT or
+         dir == dirxy or dir == diryz or dir == dirxz or dir == dirxyz or
+         dir == dirmxy or dir == dirmyz or dir == dirmxz or
+         dir == dirmxyz or dir == dirXYZT;
+}
+
+inline std::string expand_plane_dir_tag(const Int dir)
+{
+  if (dir == dirmt) {
+    return std::string("dirmt");
+  }
+  if (dir == dirmz) {
+    return std::string("dirmz");
+  }
+  if (dir == dirmy) {
+    return std::string("dirmy");
+  }
+  if (dir == dirmx) {
+    return std::string("dirmx");
+  }
+  if (dir == dirx) {
+    return std::string("dirx");
+  }
+  if (dir == diry) {
+    return std::string("diry");
+  }
+  if (dir == dirz) {
+    return std::string("dirz");
+  }
+  if (dir == dirt) {
+    return std::string("dirt");
+  }
+  if (dir == dirL) {
+    return std::string("dirL");
+  }
+  if (dir == dirR) {
+    return std::string("dirR");
+  }
+  if (dir == dirXY) {
+    return std::string("dirXY");
+  }
+  if (dir == dirYZ) {
+    return std::string("dirYZ");
+  }
+  if (dir == dirXZ) {
+    return std::string("dirXZ");
+  }
+  if (dir == dirXYZ) {
+    return std::string("dirXYZ");
+  }
+  if (dir == dirX) {
+    return std::string("dirX");
+  }
+  if (dir == dirY) {
+    return std::string("dirY");
+  }
+  if (dir == dirZ) {
+    return std::string("dirZ");
+  }
+  if (dir == dirT) {
+    return std::string("dirT");
+  }
+  if (dir == dirXYZT) {
+    return std::string("dirXYZT");
+  }
+  if (dir == dirxy) {
+    return std::string("dirxy");
+  }
+  if (dir == diryz) {
+    return std::string("diryz");
+  }
+  if (dir == dirxz) {
+    return std::string("dirxz");
+  }
+  if (dir == dirxyz) {
+    return std::string("dirxyz");
+  }
+  if (dir == dirmxy) {
+    return std::string("dirmxy");
+  }
+  if (dir == dirmyz) {
+    return std::string("dirmyz");
+  }
+  if (dir == dirmxz) {
+    return std::string("dirmxz");
+  }
+  if (dir == dirmxyz) {
+    return std::string("dirmxyz");
+  }
+  Qassert(false);
+  return std::string("");
+}
+
+inline std::vector<std::string>& expand_tags()
+{
+  static std::vector<std::string> tagL = {
+      "dirmt",  "dirmz", "dirmy",  "dirmx",  "dirx",   "diry",
+      "dirz",   "dirt",  "dirL",   "dirR",   "dirT",   "dirZ",
+      "dirY",   "dirX",  "dirxy",  "diryz",  "dirxz",  "dirxyz",
+      "dirmxy", "dirmyz",
+      "dirmxz", "dirmxyz", "dirXY", "dirYZ",  "dirXZ",  "dirXYZ",
+      "dirXYZT"};
+  return tagL;
+}
+
 struct expand_index_buf {
   qlat::vector<Long> pack_send;
   qlat::vector<Long> pack_recv;
@@ -586,53 +726,51 @@ void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI,
   }
 }
 
-inline std::vector<std::string> expand_tags()
-{
-  std::vector<std::string> tagL = {"dirmt", "dirmz", "dirmy", "dirmx",
-                                   "dirx",  "diry",  "dirz",  "dirt"};
-  return tagL;
-}
 
 template <class M>
 void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI,
-                          Int dir = -1000, const Int GPU = 1,
+                          Int dir = dirFULL, const Int GPU = 1,
                           const QBOOL dummy = QTRUE)
 {
-  Qassert(dir == -1000 or dir == -100 or (dir >= -3 - 1 and dir <= 3));
-  // with corner
-  if (dir == -1000) {
+  Qassert(dir == dirFULL or is_expand_plane_dir(dir));
+  // full expansion with corners
+  if (dir == dirFULL) {
     refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_all, std::string(""),
                           GPU, dummy);
   }
-  // without corner
-  if (dir == -100) {
-    refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, std::string("no_corner"),
-                          GPU, dummy);
-  }
   //
-  if (dir >= -3 - 1 and dir <= 3) {
-    // std::string tagL[8] = {"dirmt", "dirmz", "dirmy", "dirmx", "dirx",
-    // "diry", "dirz", "dirt"};
-    std::vector<std::string> tagL = expand_tags();
+  if (is_expand_plane_dir(dir)) {
     refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir,
-                          tagL[dir + 3 + 1], GPU, dummy);
-  }
-  //
-  // left or right expand
-  if (dir == 500 or dir == 501) {
-    std::string tagL[2] = {"dirL", "dirR"};
-    refresh_expanded_GPUT(res, geo, MULTI, set_marks_field_dir, tagL[dir % 500],
-                          GPU, dummy);
+                          expand_plane_dir_tag(dir), GPU, dummy);
   }
 }
 
 template <class M>
-void refresh_expanded_GPU(Field<M>& f, Int dir = -1000, const Int GPU = 1,
+void refresh_expanded_GPU(Field<M>& f, Int dir = dirFULL, const Int GPU = 1,
                           const QBOOL dummy = QTRUE)
 {
   M* res = (M*)qlat::get_data(f).data();
   refresh_expanded_GPU(res, f.geo(), f.multiplicity, dir, GPU, dummy);
 }
+
+/*
+  Refresh halo/expanded regions for each FieldG in a vector using the integer
+  direction mode accepted by refresh_expanded_GPU.
+*/
+template <typename Ty>
+void refresh_expanded_fieldG(std::vector<FieldG<Ty>>& fields,
+                             const std::string& tag = "", const QBOOL dummy = QTRUE)
+{
+  for (unsigned int si = 0; si < fields.size(); si++) {
+    Qassert(fields[si].initialized);
+    Ty* res = (Ty*) get_data(fields[si]).data();
+    refresh_expanded_GPU(res, fields[si].geo(), fields[si].multiplicity, tag, fields[si].field_gpu.GPU, QFALSE);
+  }
+  if(dummy == QTRUE){
+    expand_buffer_wait_mpi();
+  }
+}
+
 
 }  // namespace qlat
 

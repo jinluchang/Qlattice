@@ -74,46 +74,151 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 {
   TIMER_VERBOSE("set_marks_field_dir");
   Int set_tag = -10000;
+  bool has_dir_mask = false;
+  Int dir_skip[8] = {1, 1, 1, 1, 1, 1, 1, 1};
+
+  const auto enable_dir = [&](const Int dir) {
+    Qassert(dirmt <= dir and dir <= dirt);
+    dir_skip[dir - dirmt] = 0;
+  };
+  const auto enable_pos_dir = [&](const Int mu) { enable_dir(mu); };
+  const auto enable_neg_dir = [&](const Int mu) { enable_dir(-mu - 1); };
+  const auto enable_pm_dir = [&](const Int mu) {
+    enable_pos_dir(mu);
+    enable_neg_dir(mu);
+  };
+  const auto enable_single_dir = [&](const Int dir) {
+    set_tag = dir;
+    enable_dir(dir);
+  };
+
   if (tag == std::string("dirL")) {
-    set_tag = 500;
+    set_tag = dirL;
+    enable_dir(dirmx);
+    enable_dir(dirmy);
+    enable_dir(dirmz);
+    enable_dir(dirmt);
   }
   if (tag == std::string("dirR")) {
-    set_tag = 501;
-  }
-  //// full corner
-  //if (tag == std::string("")) {
-  //  set_tag = -1000;
-  //}
-  // no corner
-  if (tag == std::string("no_corner")) {
-    set_tag = -100 ;
+    set_tag = dirR;
+    enable_dir(dirx);
+    enable_dir(diry);
+    enable_dir(dirz);
+    enable_dir(dirt);
   }
   if (tag == std::string("dirx")) {
-    set_tag = 0;
+    enable_single_dir(dirx);
   }
   if (tag == std::string("diry")) {
-    set_tag = 1;
+    enable_single_dir(diry);
   }
   if (tag == std::string("dirz")) {
-    set_tag = 2;
+    enable_single_dir(dirz);
   }
   if (tag == std::string("dirt")) {
-    set_tag = 3;
+    enable_single_dir(dirt);
   }
   if (tag == std::string("dirmx")) {
-    set_tag = -0 - 1;
+    enable_single_dir(dirmx);
   }
   if (tag == std::string("dirmy")) {
-    set_tag = -1 - 1;
+    enable_single_dir(dirmy);
   }
   if (tag == std::string("dirmz")) {
-    set_tag = -2 - 1;
+    enable_single_dir(dirmz);
   }
   if (tag == std::string("dirmt")) {
-    set_tag = -3 - 1;
+    enable_single_dir(dirmt);
+  }
+  if (tag == std::string("dirX")) {
+    has_dir_mask = true;
+    enable_pm_dir(0);
+  }
+  if (tag == std::string("dirY")) {
+    has_dir_mask = true;
+    enable_pm_dir(1);
+  }
+  if (tag == std::string("dirZ")) {
+    has_dir_mask = true;
+    enable_pm_dir(2);
+  }
+  if (tag == std::string("dirT")) {
+    has_dir_mask = true;
+    enable_pm_dir(3);
+  }
+  if (tag == std::string("dirXYZT")) {
+    has_dir_mask = true;
+    enable_pm_dir(0);
+    enable_pm_dir(1);
+    enable_pm_dir(2);
+    enable_pm_dir(3);
+  }
+  if (tag == std::string("dirxy")) {
+    has_dir_mask = true;
+    enable_pos_dir(0);
+    enable_pos_dir(1);
+  }
+  if (tag == std::string("diryz")) {
+    has_dir_mask = true;
+    enable_pos_dir(1);
+    enable_pos_dir(2);
+  }
+  if (tag == std::string("dirxz")) {
+    has_dir_mask = true;
+    enable_pos_dir(0);
+    enable_pos_dir(2);
+  }
+  if (tag == std::string("dirxyz")) {
+    has_dir_mask = true;
+    enable_pos_dir(0);
+    enable_pos_dir(1);
+    enable_pos_dir(2);
+  }
+  if (tag == std::string("dirmxy")) {
+    has_dir_mask = true;
+    enable_neg_dir(0);
+    enable_neg_dir(1);
+  }
+  if (tag == std::string("dirmyz")) {
+    has_dir_mask = true;
+    enable_neg_dir(1);
+    enable_neg_dir(2);
+  }
+  if (tag == std::string("dirmxz")) {
+    has_dir_mask = true;
+    enable_neg_dir(0);
+    enable_neg_dir(2);
+  }
+  if (tag == std::string("dirmxyz")) {
+    has_dir_mask = true;
+    enable_neg_dir(0);
+    enable_neg_dir(1);
+    enable_neg_dir(2);
+  }
+  if (tag == std::string("dirXY")) {
+    has_dir_mask = true;
+    enable_pm_dir(0);
+    enable_pm_dir(1);
+  }
+  if (tag == std::string("dirYZ")) {
+    has_dir_mask = true;
+    enable_pm_dir(1);
+    enable_pm_dir(2);
+  }
+  if (tag == std::string("dirXZ")) {
+    has_dir_mask = true;
+    enable_pm_dir(0);
+    enable_pm_dir(2);
+  }
+  if (tag == std::string("dirXYZ")) {
+    has_dir_mask = true;
+    enable_pm_dir(0);
+    enable_pm_dir(1);
+    enable_pm_dir(2);
   }
   //
-  Qassert(set_tag != -10000);
+  const bool check_on_node = set_tag >= -3 - 1 or has_dir_mask;
+  Qassert(check_on_node);
   marks.init();
   marks.init(geo, multiplicity);
   set_zero(marks);
@@ -124,19 +229,13 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
   for (Long index = 0; index < geo_full.local_volume(); ++index) {
     const Coordinate xl = geo_full.coordinate_from_index(index);
     for (Int dir = -4; dir < 4; ++dir) {
-      if ((set_tag >= -3 - 1 and set_tag < 4) and dir != set_tag) {
+      if (dir_skip[dir - dirmt] != 0) {
         continue;
       }
-      if (set_tag == 500 and dir >= 0) {
-        continue;
-      }  // only do left
-      if (set_tag == 501 and dir < 0) {
-        continue;
-      }  // only do right
       //
       const Coordinate xl1 = coordinate_shifts(xl, dir);
       //
-      if (set_tag >= -3 - 1) {
+      if (check_on_node) {
         Qassert(geo.is_on_node(xl1));
       }  // always need to be found on geo
       //
