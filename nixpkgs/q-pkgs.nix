@@ -472,6 +472,7 @@ in let
       lz4
       soundfile
       pypdf
+      pypdfium2
       reportlab
       pdfminer-six
       awkward
