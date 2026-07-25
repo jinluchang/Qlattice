@@ -200,7 +200,7 @@ def mk_fcn(
     corr_data.shape == (n_ops, n_ops, t_size,)
     corr_data_sigma.shape == (n_ops, n_ops, t_size,)
     t_start_arr is the start tslice of the corr_data (energy dependent array, t_start_arr for negative_energy ~ -t_size)
-    atw_t_start_arr is the start tslice of the ATW (around the world effects) corr_data (be default atw_t_start_arr = t_start_arr)
+    atw_t_start_arr is the start tslice of the ATW (around the world effects) corr_data (by default atw_t_start_arr = t_start_arr)
     atw_factor_arr is the additional factor needs to be multiplied to the ATW term (by default ``atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)``)
     return fcn
     fcn(param_arr) => chisq, param_grad_arr
@@ -683,6 +683,8 @@ def fit_energy_amplitude(
     energy_minimum_arr=None,
     e_arr=None,
     c_arr=None,
+    op_norm_fac=None,
+    op_norm_fac_tslice_arr=None,
     free_energy_idx_arr=None,
     fixed_coef_energy_idx_arr=None,
     n_step_mini_avg=10,
@@ -798,7 +800,17 @@ def fit_energy_amplitude(
         atw_factor_arr[:] = atw_factor
     #
     op_idx_arr = np.arange(n_ops)
-    op_norm_fac = 1 / np.sqrt(jk_corr_data[0, op_idx_arr, op_idx_arr, 0])
+    if op_norm_fac_tslice_arr is None:
+        op_norm_fac_tslice_arr = np.zeros(n_ops, dtype=np.int32)
+    else:
+        op_norm_fac_tslice_arr = np.array(op_norm_fac_tslice_arr, dtype=np.int32)
+    assert op_norm_fac_tslice_arr.shape == (n_ops,)
+    if op_norm_fac is None:
+        op_norm_fac = 1 / np.sqrt(
+            abs(jk_corr_data[0, op_idx_arr, op_idx_arr, op_norm_fac_tslice_arr])
+        )
+    else:
+        op_norm_fac = np.array(op_norm_fac, dtype=np.float64)
     jk_corr_data = (
         op_norm_fac[:, None, None] * op_norm_fac[None, :, None] * jk_corr_data
     )

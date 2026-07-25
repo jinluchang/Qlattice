@@ -523,6 +523,7 @@ def fit_eig_coef(
     eig_maximum_arr=None,
     c_arr=None,
     op_norm_fac_arr=None,
+    op_norm_fac_tslice_arr=None,
     free_eig_idx_arr=None,
     fixed_coef_eig_idx_arr=None,
     n_step_mini_avg=10,
@@ -640,10 +641,17 @@ def fit_eig_coef(
         atw_factor_arr[:] = atw_factor_arr_ini
     #
     op_idx_arr = np.arange(n_ops)
-    op_norm_fac_arr_ini = op_norm_fac_arr
-    op_norm_fac_arr = 1 / np.sqrt(abs(jk_corr_data[0, op_idx_arr, op_idx_arr, 0]))
-    if op_norm_fac_arr_ini is not None:
-        op_norm_fac_arr[:] = op_norm_fac_arr_ini
+    if op_norm_fac_tslice_arr is None:
+        op_norm_fac_tslice_arr = np.zeros(n_ops, dtype=np.int32)
+    else:
+        op_norm_fac_tslice_arr = np.array(op_norm_fac_tslice_arr, dtype=np.int32)
+    assert op_norm_fac_tslice_arr.shape == (n_ops,)
+    if op_norm_fac_arr is None:
+        op_norm_fac_arr = 1 / np.sqrt(
+            abs(jk_corr_data[0, op_idx_arr, op_idx_arr, op_norm_fac_tslice_arr])
+        )
+    else:
+        op_norm_fac_arr = np.array(op_norm_fac_arr, dtype=np.float64)
     #
     jk_corr_data = (
         op_norm_fac_arr[:, None, None] * op_norm_fac_arr[None, :, None] * jk_corr_data
