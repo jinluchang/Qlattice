@@ -306,11 +306,13 @@ def mk_fcn(
     extra_state_sign_arr_ini = extra_state_sign_arr
     extra_state_sign_arr = jnp.ones(n_eigs, dtype=jnp.float64)
     if extra_state_sign_arr_ini is not None:
-        extra_state_sign_arr[:] = extra_state_sign_arr_ini
+        extra_state_sign_arr = jnp.array(extra_state_sign_arr_ini, dtype=jnp.float64)
     extra_state_sign_t_start_arr_ini = extra_state_sign_t_start_arr
     extra_state_sign_t_start_arr = jnp.zeros(n_eigs, dtype=jnp.int32)
     if extra_state_sign_t_start_arr_ini is not None:
-        extra_state_sign_t_start_arr[:] = extra_state_sign_t_start_arr_ini
+        extra_state_sign_t_start_arr = jnp.array(
+            extra_state_sign_t_start_arr_ini, dtype=jnp.int32
+        )
     if atw_factor_arr is None:
         atw_factor_arr = jnp.ones(n_ops, dtype=jnp.float64)
     else:
