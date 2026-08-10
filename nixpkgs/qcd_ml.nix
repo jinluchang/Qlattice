@@ -14,14 +14,14 @@ let
 in buildPythonPackage rec {
 
   pname = "qcd_ml";
-  version = "0.5.1";
+  version = "1.0.1";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "daknuett";
     repo = "qcd_ml";
     rev = "v${version}";
-    hash = "sha256-LGX9PLchtcEa9f8WhG2BuiDYxvi9q0V8SCGVhtJp3oo=";
+    hash = "sha256-gofVim9oC13o7Q1Va/S+5MBv51AfkZBSRSrvc3S7Ou4=";
   };
 
   build-system = [

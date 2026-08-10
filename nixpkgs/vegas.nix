@@ -20,7 +20,7 @@ let
 in buildPythonPackage rec {
 
   pname = "vegas";
-  version = "6.3";
+  version = "6.4.1";
   pyproject = true;
 
   src = builtins.fetchGit {

@@ -25,7 +25,7 @@ in buildPythonPackage rec {
     ];
 
   pname = "gvar";
-  version = "13.1.6";
+  version = "13.1.9";
   pyproject = true;
 
   src = builtins.fetchGit {

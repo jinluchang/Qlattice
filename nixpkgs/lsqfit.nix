@@ -21,7 +21,7 @@ let
 in buildPythonPackage rec {
 
   pname = "lsqfit";
-  version = "13.2.2";
+  version = "13.3.1";
   pyproject = true;
 
   src = builtins.fetchGit {

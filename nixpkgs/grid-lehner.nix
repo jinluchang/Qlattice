@@ -35,7 +35,8 @@ let
   # version = "afd4423bef303fd176bcdb9f3ea89255cba06d53"; # 2026/03/11
   # version = "e13370f81f553b06b62dd7c2aaf20677b5d16ede"; # 2026/04/18
   # version = "f62689d905a5fe3445b93eadcf9e3b33aaf1b298"; # 2026/05/22
-  version = "25035275741cedf372a7c6ab2fe2d5a8b8a0aceb"; # 2026/05/31
+  # version = "25035275741cedf372a7c6ab2fe2d5a8b8a0aceb"; # 2026/05/31
+  version = "b11c58b58d1c59afa9949273dbe54fdb438cb58b"; # 2026/07/25
   #
   src-remote = builtins.fetchGit {
     url = if use-gitee-wd then "https://gitee.com/jinluchang/Grid-clehner" else "https://github.com/jinluchang/Grid-clehner";
