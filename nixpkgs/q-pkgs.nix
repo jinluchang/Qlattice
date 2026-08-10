@@ -473,6 +473,16 @@ in let
       soundfile
       pypdf
       pypdfium2
+      pymupdf
+      pikepdf
+      pdfrw
+      pdfplumber
+      pdf2docx
+      pdf2image
+      fpdf2
+      img2pdf
+      weasyprint
+      pyhanko
       reportlab
       pdfminer-six
       awkward
