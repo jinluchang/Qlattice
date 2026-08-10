@@ -20,6 +20,12 @@ let
   use-gitee-wd = if use-gitee == null then false else use-gitee;
 in buildPythonPackage rec {
 
+  env.NIX_CFLAGS_COMPILE = lib.concatStringsSep " " [
+    "-Wno-error=int-conversion"
+    "-Wno-error=incompatible-pointer-types"
+    "-Wno-error=implicit-function-declaration"
+    ];
+
   pname = "lsqfit";
   version = "13.3.1";
   pyproject = true;
