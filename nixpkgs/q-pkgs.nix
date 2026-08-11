@@ -481,7 +481,6 @@ in let
       pdf2image
       fpdf2
       img2pdf
-      weasyprint
       pyhanko
       reportlab
       pdfminer-six
@@ -510,6 +509,7 @@ in let
     // (if is-linux then {
       inherit (ps)
       xarray
+      weasyprint
       numba
       torch
       flax
