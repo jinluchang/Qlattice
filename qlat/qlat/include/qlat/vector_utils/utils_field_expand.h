@@ -753,20 +753,38 @@ void refresh_expanded_GPU(Field<M>& f, Int dir = dirFULL, const Int GPU = 1,
   refresh_expanded_GPU(res, f.geo(), f.multiplicity, dir, GPU, dummy);
 }
 
-/*
-  Refresh halo/expanded regions for each FieldG in a vector using the integer
-  direction mode accepted by refresh_expanded_GPU.
-*/
+/* Refresh halo/expanded regions for each FieldG using refresh tags. */
 template <typename Ty>
 void refresh_expanded_fieldG(std::vector<FieldG<Ty>>& fields,
-                             const std::string& tag = "", const QBOOL dummy = QTRUE)
+                             const std::string& tag = "",
+                             const QBOOL dummy = QTRUE)
 {
   for (unsigned int si = 0; si < fields.size(); si++) {
     Qassert(fields[si].initialized);
-    Ty* res = (Ty*) get_data(fields[si]).data();
-    refresh_expanded_GPU(res, fields[si].geo(), fields[si].multiplicity, tag, fields[si].field_gpu.GPU, QFALSE);
+    Ty* res = (Ty*)get_data(fields[si]).data();
+    refresh_expanded_GPU(res, fields[si].geo(), fields[si].multiplicity, tag,
+                         fields[si].field_gpu.GPU, QFALSE);
   }
-  if(dummy == QTRUE){
+  if (dummy == QTRUE) {
+    expand_buffer_wait_mpi();
+  }
+}
+
+/*
+  Refresh halo/expanded regions for each FieldG using the explicit integer
+  direction modes accepted by refresh_expanded_GPU.
+*/
+template <typename Ty>
+void refresh_expanded_fieldG(std::vector<FieldG<Ty>>& fields, const Int dir,
+                             const QBOOL dummy = QTRUE)
+{
+  for (unsigned int si = 0; si < fields.size(); si++) {
+    Qassert(fields[si].initialized);
+    Ty* res = (Ty*)get_data(fields[si]).data();
+    refresh_expanded_GPU(res, fields[si].geo(), fields[si].multiplicity, dir,
+                         fields[si].field_gpu.GPU, QFALSE);
+  }
+  if (dummy == QTRUE) {
     expand_buffer_wait_mpi();
   }
 }

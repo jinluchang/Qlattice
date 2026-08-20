@@ -1618,6 +1618,20 @@ void shift_fields_qlat(Ty* src, Ta* res, const std::vector<Int>& iDir,
   cpy_GPU(res, p1, V * Nvec);
 }
 
+/*
+  Fallback shift plan. Candidate shift grids are tried coarse to fine:
+    total_siteL[0]: block grid, total_site / local_site;
+    total_siteL[1]: intermediate grid, total_site / 2, / 3, or / 4;
+    total_siteL[2]: original grid, total_site.
+
+  For each candidate lat1, compute
+    fac = total_site / lat1, residual = d % fac, coarse_shift = d / fac.
+  When coarse_shift is nonzero, reshape to lat1 and shift by coarse_shift;
+  the next stage only sees residual.
+
+    d = 16:  L/8 shift, residual 0 -> done.
+    d = 15:  L/8 shift, residual 3; L/2 shift, residual 1; L shift.
+*/
 template <class Ty>
 void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<Int>& iDir,
                          const Int biva, const Int civ, const Geometry& geo,
@@ -1638,48 +1652,66 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<Int>& iDir,
     std::vector<Field<Ty>> br;
     bs.resize(biva);
     br.resize(biva);
-    for (unsigned int iv = 0; iv < bs.size(); iv++) {
-      set_field(bs[iv], src[iv], V * civ, geo);
-      set_field(br[iv], res[iv], V * civ, geo);
+    {
+      TIMERB("shift_fields_grid fast field setup");
+      for (unsigned int iv = 0; iv < bs.size(); iv++) {
+        set_field(bs[iv], src[iv], V * civ, geo);
+        set_field(br[iv], res[iv], V * civ, geo);
+      }
     }
     //
     const size_t Nd = size_t(V) * civ * sizeof(Ty);
     VectorGPUKey gkey(0, ssprintf("shift_vec_buf"), GPU);
     qlat::vector_gpu<char>& tem = get_vector_gpu_plan<char>(gkey);
     //
-    tem.resizeL(2 * biva * Nd);
+    {
+      TIMERB("shift_fields_grid fast buffer resize");
+      tem.resizeL(2 * biva * Nd);
+    }
     std::vector<vector<Ty>> to_bufL;
     to_bufL.resize(2 * biva);
-    for (size_t i = 0; i < to_bufL.size(); i++) {
-      Vector<Ty> v((Ty*)&tem[i * Nd], Nd / sizeof(Ty));
-      to_bufL[i].set_mem_type(MemType::Acc);
-      to_bufL[i].set_view(v);
+    {
+      TIMERB("shift_fields_grid fast temp view setup");
+      for (size_t i = 0; i < to_bufL.size(); i++) {
+        Vector<Ty> v((Ty*)&tem[i * Nd], Nd / sizeof(Ty));
+        to_bufL[i].set_mem_type(MemType::Acc);
+        to_bufL[i].set_view(v);
+      }
     }
     //
     Coordinate shift;
     for (Int i = 0; i < 4; i++) {
       shift[i] = 1.0 * iDir[i];
     }
-    field_shift_directT(br, bs, shift, to_bufL);
+    {
+      TIMERB("shift_fields_grid fast shift dispatch");
+      field_shift_directT(br, bs, shift, to_bufL);
+    }
     return;
   }
   //
   fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
   const Coordinate local_site(fd.Nx, fd.Ny, fd.Nz, fd.Nt);
   //
-  for (Int bi = 0; bi < biva; bi++) {
-    if (res[bi] != src[bi]) {
-      cpy_GPU(res[bi], src[bi], V * civ);
+  {
+    TIMERB("shift_fields_grid fallback initial copy");
+    for (Int bi = 0; bi < biva; bi++) {
+      if (res[bi] != src[bi]) {
+        cpy_GPU(res[bi], src[bi], V * civ);
+      }
     }
   }
   //
   qlat::vector<Ty*> sP;
-  sP.resize(biva, MemType::Uvm);
   std::vector<Ty*> sPd;
-  sPd.resize(biva);
-  for (Int bi = 0; bi < biva; bi++) {
-    sP[bi] = res[bi];
-    sPd[bi] = res[bi];
+  {
+    TIMERB("shift_fields_grid fallback pointer setup");
+    sP.resize(biva, MemType::Uvm);
+    sPd.resize(biva);
+    for (Int bi = 0; bi < biva; bi++) {
+      sP[bi] = res[bi];
+      sPd[bi] = res[bi];
+    }
   }
   //
   // three step scale
@@ -1756,14 +1788,23 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<Int>& iDir,
     // qmessage("biva %d small vol %d, civ %d, shift %3d %3d %3d %3d \n",
     //   int(biva), int(small_vol), int(civ), d0[0], d0[1], d0[2], d0[3]);
     //
-    grid_memory_reshape(sP, sP, civ, lat1, lat0, total_site);
+    {
+      TIMERB("shift_fields_grid fallback reshape");
+      grid_memory_reshape(sP, sP, civ, lat1, lat0, total_site);
+    }
     //
     shift_vec& svec_m = get_shift_vec_plan(lat1);
-    svec_m.set_MPI_size<Ty>(biva, small_vol * civ);
+    {
+      TIMERB("shift_fields_grid fallback set mpi");
+      svec_m.set_MPI_size<Ty>(biva, small_vol * civ);
+    }
     //
     // void shift_fields(shift_vec& svec, Ty* src, Ty* res, std::vector<Int >&
     // iDir, const Int biva, const Int civ)
-    svec_m.shift_vecs(sPd, sPd, d1, small_vol * civ);
+    {
+      TIMERB("shift_fields_grid fallback shift_vecs");
+      svec_m.shift_vecs(sPd, sPd, d1, small_vol * civ);
+    }
     // shift_fields(svec_m, res, res, d1, biva, small_vol * civ);
     //
     d1 = d0;
@@ -1776,7 +1817,10 @@ void shift_fields_gridPT(Ty** src, Ty** res, const std::vector<Int>& iDir,
   // reorder to ori layout if needed
   if (lat0 != total_site) {
     lat1 = total_site;
-    grid_memory_reshape(sP, sP, civ, lat1, lat0, total_site);
+    {
+      TIMERB("shift_fields_grid fallback final reshape");
+      grid_memory_reshape(sP, sP, civ, lat1, lat0, total_site);
+    }
   }
 }
 
@@ -1826,7 +1870,8 @@ void shift_fields_grid(Ty* src, Ty* res, const std::vector<Int>& iDir,
 template <class Ty>
 void shift_fields_grid(std::vector<FieldG<Ty>>& src,
                        std::vector<FieldG<Ty>>& res, const Coordinate& sp,
-                       const Int sign = 1, const Int max_group = -1)
+                       const Int sign = 1, const Int mode = 0,
+                       const Int max_group = -1)
 {
   if (src.size() == 0) {
     res.resize(0);
@@ -1846,7 +1891,9 @@ void shift_fields_grid(std::vector<FieldG<Ty>>& src,
   vector<Ty*> sP;
   vector<Ty*> rP;
   //
-  for (Long si = 0; si < Nsrc; si++) {
+  {
+    TIMERB("shift_fields_grid field pointer setup");
+    for (Long si = 0; si < Nsrc; si++) {
     Qassert(src[si].initialized);
     Qassert(res[si].initialized);
     Ty* stmp = (Ty*)get_data(src[si]).data();
@@ -1878,8 +1925,10 @@ void shift_fields_grid(std::vector<FieldG<Ty>>& src,
       sP[si] = &stmp[0];
       rP[si] = &rtmp[0];
     }
+    }
   }
-  shift_fields_gridP(sP.data(), rP.data(), iDir, biva, civ, geo, max_group);
+  shift_fields_gridP(sP.data(), rP.data(), iDir, biva, civ, geo, mode,
+                     max_group);
 }
 
 inline void clear_shift_plan_cache() { get_shift_vec_cache().clear(); }

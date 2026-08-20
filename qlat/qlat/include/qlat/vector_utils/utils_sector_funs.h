@@ -607,7 +607,7 @@ void shift_results_with_phases(
         shift_res[j].set_pointer(curr_res[si * Nops + j]);
       }
       shift_fields_grid(shift_res, shift_res, pos_new[si][0], -1,
-                        max_shift_grid);
+                        0, max_shift_grid);
     } else {
       Qassert(false);
       // for(Long j=0;j<Nops;j++){
@@ -630,7 +630,7 @@ void shift_results_with_phases(
       // for(int srci=0;srci<Nsrc_perT;srci++){
       //   Coordinate sp_curr = pos_new[si][srci];sp_curr[3] = stime;
       //   shift_fields_grid(curr_shift_buf[0], curr_shift_buf[1], sp_curr, -1,
-      //   max_shift_grid);
+      //   0, max_shift_grid);
       //   //const int nt = fd.nt;
       //   qacc_for(isp, Nvol, {
       //     const Coordinate xl = geo.coordinate_from_index(isp);
