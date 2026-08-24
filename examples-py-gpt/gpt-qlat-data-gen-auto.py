@@ -75,22 +75,22 @@ from auto_contractor.eval import (
     ama_extract,
 )
 
-is_cython = False
-
 # ----
 
 load_path_list[:] = [
     "results",
     "qcddata",
-    "qcddata1",
-    "qcddata2",
-    "qcddata3",
-    "qcddata4",
-    "qcddata5",
+    "qcddata-1",
+    "qcddata-2",
+    "qcddata-3",
+    "qcddata-4",
+    "qcddata-5",
+    "qcddata-6",
 ]
 
 is_cython = not is_test()
 
+pname = "auto_contract"
 # ----
 
 @q.timer
@@ -135,10 +135,10 @@ def get_cexpr_meson_corr():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -242,12 +242,12 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -352,7 +352,7 @@ def auto_contract_meson_corr_psrc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -467,7 +467,7 @@ def auto_contract_meson_corr_psnk_psrc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -633,7 +633,7 @@ def get_cexpr_meson_jt():
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jt.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_jt.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_jt()
@@ -765,7 +765,7 @@ def get_cexpr_meson_m():
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_m.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_m()
@@ -1267,7 +1267,7 @@ def get_cexpr_meson_jj():
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jj.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_jj.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_jj()
@@ -1553,7 +1553,7 @@ def get_cexpr_meson_jwjj():
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_jwjj.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_jwjj()
@@ -1591,7 +1591,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         q.RngState(f"auto_contract_meson_jwjj,{get_job_seed(job_tag)},{traj}"), 1.0, 0.0
     )
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
-    fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
+    fn_meson_corr = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
         q.displayln_info(f"{fname}: '{fn_meson_corr}' does not exist. Skipping.")
         return
@@ -1950,7 +1950,7 @@ def auto_contract_meson_jwjj2(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_jwjj2.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/meson_jwjj2.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_jwjj()
@@ -2000,7 +2000,7 @@ def auto_contract_meson_jwjj2(
         0.0,
     )
     u_rand_prob_arr = np.asarray(u_rand_prob).ravel()
-    fn_meson_corr = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
+    fn_meson_corr = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn_meson_corr) is None:
         q.displayln_info(f"{fname}: '{fn_meson_corr}' does not exist. Skipping.")
         return
@@ -2514,12 +2514,12 @@ def get_cexpr_pi0_current():
         #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_tadpole_current(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/tadpole-current/traj-{traj}/tadpole-current.sfield"
+    fn = f"{job_tag}/{pname}/traj-{traj}/tadpole-current.sfield"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_tadpole_current()
@@ -2615,12 +2615,12 @@ def auto_contract_tadpole_current(
             q.glb_sum(q.get_data_sig(sf_tadpole_current[:, i], q.RngState())),
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pi0_current(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/pi0-current/traj-{traj}/pi0-current"
+    fn = f"{job_tag}/{pname}/traj-{traj}/pi0-current"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_pi0_current()
@@ -2746,18 +2746,18 @@ def auto_contract_pi0_current(
             f"{fname}: sf_pi0_current '{en}' sig", sig_arr[:, i].sum()
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_pi0_gg_disc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
     fname = q.get_fname()
-    fn = f"{job_tag}/auto-contract/traj-{traj}/pi0-gg-disc.lat"
+    fn = f"{job_tag}/{pname}/traj-{traj}/pi0-gg-disc.lat"
     if get_load_path(fn) is not None:
         return
     fn_tadpole_current = get_load_path(
-        f"{job_tag}/tadpole-current/traj-{traj}/tadpole-current.sfield"
+        f"{job_tag}/{pname}/traj-{traj}/tadpole-current.sfield"
     )
-    fn_pi0_current = get_load_path(f"{job_tag}/pi0-current/traj-{traj}/pi0-current")
+    fn_pi0_current = get_load_path(f"{job_tag}/{pname}/traj-{traj}/pi0-current")
     if fn_tadpole_current is None or fn_pi0_current is None:
         return
     tadpole_current_expr_names = get_expr_names(get_cexpr_tadpole_current())
@@ -3222,7 +3222,7 @@ def run_job_contract(job_tag, traj):
         traj_gf = 1000
         #
     fns_produce = [
-        f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
+        f"{job_tag}/{pname}/traj-{traj}/checkpoint.txt",
         #
     ]
     fns_need = [
@@ -3312,9 +3312,9 @@ def run_job_contract(job_tag, traj):
     #
     run_r_list(job_tag)
     #
-    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
+    fn_checkpoint = f"{job_tag}/{pname}/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-{pname}"):
             get_prop = get_get_prop()
             if get_prop is not None:
                 q.timer_fork()
@@ -3397,29 +3397,341 @@ set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
 
 job_tag = "48I"
 set_param(job_tag, "seed")("48I")
-set_param(job_tag, "traj_list")(list(range(1000, 2000, 20)))
-set_param(job_tag, "meson_tensor_tsep")(12)
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
+set_param(job_tag, "meson_tensor_tsep")(13)  # Previously set to 12 in old runs
 set_param(job_tag, "meson_jwjj_threshold")(0.01)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "traj_list")(
+    [
+        2055,
+        1025,
+        1222,
+        2085,
+        1815,
+        1715,
+        1865,
+        1102,
+        1472,
+        1845,
+        2165,
+        1352,
+        1212,
+        1312,
+        2005,
+        1242,
+        1765,
+        1885,
+        1302,
+        1015,
+        1975,
+        1432,
+        2105,
+        1095,
+        1705,
+        1595,
+        1005,
+        1505,
+        1422,
+        2135,
+        1075,
+        1402,
+        1262,
+        1492,
+        1515,
+        1985,
+        1875,
+        1322,
+        1995,
+        1585,
+        1122,
+        1555,
+        1162,
+        1452,
+        1725,
+        1342,
+        1132,
+        1855,
+        1935,
+        2065,
+        1775,
+        1412,
+        2115,
+        995,
+        1382,
+        1272,
+        1392,
+        2175,
+        1055,
+        1142,
+        1482,
+        1172,
+        1202,
+        1755,
+        1152,
+        1525,
+        975,
+        1605,
+        1735,
+        2045,
+        1805,
+        1065,
+        1925,
+        1192,
+        1955,
+        1085,
+        1635,
+        1292,
+        2025,
+        1565,
+        1182,
+        1945,
+        1282,
+        1252,
+        985,
+        1332,
+        1625,
+        1035,
+        2095,
+        1462,
+        2015,
+        1232,
+        1905,
+        1112,
+        1045,
+        2155,
+        1965,
+        1895,
+        1615,
+        1362,
+        1745,
+        1795,
+        1785,
+        1372,
+        1545,
+        2145,
+        2125,
+        1915,
+        1575,
+        1835,
+        1825,
+        1535,
+        1442,
+    ]
+)
 
 job_tag = "64I"
 set_param(job_tag, "seed")("64I")
-set_param(job_tag, "traj_list")(list(range(1200, 3680, 20)))
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "meson_jwjj_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "traj_list")(
+    [
+        2880,
+        3600,
+        1520,
+        2000,
+        3120,
+        2800,
+        3280,
+        1440,
+        2400,
+        3360,
+        3200,
+        2560,
+        2160,
+        1600,
+        1200,
+        1280,
+        1360,
+        2080,
+        3040,
+        2320,
+        2960,
+        2240,
+        2720,
+        1840,
+        2480,
+        1920,
+        3440,
+        1680,
+        2640,
+        1760,
+        3520,
+    ]
+    + [
+        1740,
+        2520,
+        2060,
+        2400,
+        2580,
+        3100,
+        2880,
+        3420,
+        2140,
+        1420,
+        1860,
+        2000,
+        2640,
+        2340,
+        3320,
+        1780,
+        1200,
+        3460,
+        2660,
+        1880,
+        1480,
+        3180,
+        1620,
+        2020,
+        1800,
+        2440,
+        1920,
+        3140,
+        2280,
+        1580,
+        3200,
+        2860,
+        3160,
+        3080,
+        1540,
+        3120,
+        1720,
+        3040,
+        2200,
+        2040,
+        1380,
+        1680,
+        2320,
+        1240,
+        3360,
+        1520,
+        1560,
+        1700,
+        2120,
+        2080,
+        2720,
+        1320,
+        1960,
+        3280,
+        3340,
+        2780,
+        3500,
+        2560,
+        1980,
+        2420,
+        3220,
+        3440,
+        2460,
+        1460,
+        1220,
+        3560,
+        1360,
+        2740,
+        3300,
+        2100,
+        2900,
+        3000,
+        1940,
+        3240,
+        1760,
+        2960,
+        1500,
+        1300,
+        2500,
+        2760,
+        2480,
+        3520,
+        1640,
+        2820,
+        2380,
+        3400,
+        2220,
+        1440,
+        1340,
+        1900,
+        2620,
+        3060,
+        3020,
+        2700,
+        2980,
+        1400,
+        2360,
+        2940,
+        2800,
+        2680,
+        1280,
+        2840,
+        2300,
+        1260,
+        2260,
+        2540,
+        1820,
+        1840,
+        1600,
+        3380,
+        1660,
+        3260,
+        3480,
+        2180,
+        2600,
+        3600,
+        2160,
+        2240,
+        2920,
+    ]
+)
 
 job_tag = "64I-pq"
 set_param(job_tag, "seed")("64I")
-set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "meson_jwjj_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "traj_list")(
+    [
+        2880,
+        3600,
+        1520,
+        2000,
+        3120,
+        2800,
+        3280,
+        1440,
+        2400,
+        3360,
+        3200,
+        2560,
+        2160,
+        1600,
+        1200,
+        1280,
+        1360,
+        2080,
+        3040,
+        2320,
+        2960,
+        2240,
+        2720,
+        1840,
+        2480,
+        1920,
+        3440,
+        1680,
+        2640,
+        1760,
+        3520,
+    ]
+)
 
 job_tag = "64I-pq2"
 set_param(job_tag, "job_tag")("64I-pq2")
 set_param(job_tag, "seed")("64I")
-set_param(job_tag, "traj_list")(list(range(1200, 3680, 80)))
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
 set_param(job_tag, "meson_tensor_tsep")(18)
 set_param(job_tag, "meson_jwjj_threshold")(0.0005)
 set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
@@ -3541,6 +3853,41 @@ set_param(job_tag, "zz_m_h")(
 )  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeVset_param(job_tag, "zz_ss_l")()
 set_param(job_tag, "zz_ss_l")(1 / get_param(job_tag, "zz_m_l"))
 set_param(job_tag, "zz_ss_h")(1 / get_param(job_tag, "zz_m_h"))
+set_param(job_tag, "traj_list")(
+    [
+        2880,
+        3600,
+        1520,
+        2000,
+        3120,
+        2800,
+        3280,
+        1440,
+        2400,
+        3360,
+        3200,
+        2560,
+        2160,
+        1600,
+        1200,
+        1280,
+        1360,
+        2080,
+        3040,
+        2320,
+        2960,
+        2240,
+        2720,
+        1840,
+        2480,
+        1920,
+        3440,
+        1680,
+        2640,
+        1760,
+        3520,
+    ]
+)
 
 # ----
 
@@ -3724,6 +4071,11 @@ if "64I-pq2" in job_tag_list:
 #######################################################
 
 def gracefully_finish():
+    """
+    Clean up and finalize the script execution.\n
+    Displays timer information, checks log JSON for test mode, and
+    terminates GPT/qlat MPI environment.
+    """
     q.displayln_info("Begin to gracefully_finish.")
     q.timer_display()
     if is_test():
@@ -3758,11 +4110,12 @@ if __name__ == "__main__":
                     traj,
                 )
             )
-    if not is_test():
-        # job_tag_traj_list = q.random_permute(
-        #     job_tag_traj_list, q.RngState(f"{q.get_time()}")
-        # )
-        job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
+    if q.get_option("--random-permute-job_tag-traj-list"):
+        if not is_test():
+            job_tag_traj_list = q.random_permute(
+                job_tag_traj_list, q.RngState(f"{q.get_time()}")
+            )
+            job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:
         if is_performing_inversion:
             q.check_time_limit()

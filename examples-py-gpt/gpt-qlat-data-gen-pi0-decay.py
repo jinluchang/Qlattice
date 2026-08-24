@@ -109,17 +109,15 @@ from auto_contractor.eval import (
 load_path_list[:] = [
     "results",
     "qcddata",
-    "qcddata1",
-    "qcddata2",
-    "qcddata3",
-    "qcddata4",
-    "qcddata5",
-    "qcddata6",
+    "qcddata-1",
+    "qcddata-2",
+    "qcddata-3",
+    "qcddata-4",
+    "qcddata-5",
+    "qcddata-6",
 ]
 
 is_cython = not is_test()
-
-# is_cython = True
 
 pname = "pi0_decay"
 
@@ -3355,6 +3353,168 @@ set_param(job_tag, "traj_list")(
     ]
 )
 
+job_tag = "64I-pq2"
+set_param(job_tag, "job_tag")("64I-pq2")
+set_param(job_tag, "seed")("64I")
+set_param(job_tag, "n_per_tslice_smear_median")(512)
+set_param(job_tag, "field_selection_psel_rate_median")(1 / 16)
+set_param(job_tag, "meson_tensor_tsep")(18)
+set_param(job_tag, "pi0_jjp_threshold")(0.0005)
+set_param(job_tag, "measurement", "auto_contractor_chunk_size")(128)
+set_param(job_tag, "total_site")([64, 64, 64, 128])
+set_param(job_tag, "load_config_params")(
+    {"twist_boundary_at_boundary": [0.0, 0.0, 0.0, 0.0]}
+)
+set_param(job_tag, "fermion_params")(
+    {
+        0: {
+            0: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.0006203,
+                "Ls": 12,
+            },
+            1: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.0006203,
+                "Ls": 12,
+            },
+            2: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.0006203,
+                "Ls": 12,
+            },
+        },
+        1: {
+            0: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.02539,
+                "Ls": 12,
+            },
+            1: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.02539,
+                "Ls": 12,
+            },
+            2: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.02539,
+                "Ls": 12,
+            },
+        },
+        2: {
+            0: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.31,
+                "Ls": 12,
+            },
+            1: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.31,
+                "Ls": 12,
+            },
+            2: {
+                "M5": 1.8,
+                "boundary_phases": [1.0, 1.0, 1.0, 1.0],
+                "b": 1.5,
+                "c": 0.5,
+                "mass": 0.31,
+                "Ls": 12,
+            },
+        },
+    }
+)
+set_param(job_tag, "field_selection_fsel_rate")(1 / 32)
+set_param(job_tag, "field_selection_psel_rate")(2048 / (64**3 * 128))
+set_param(job_tag, "field_selection_fsel_psrc_prop_norm_threshold")(2e-5)
+set_param(job_tag, "n_points_psel")(1024)
+set_param(job_tag, "prob_exact_wsrc")(0.015625)
+set_param(job_tag, "n_per_tslice_smear")(8)
+set_param(job_tag, "prob_acc_1_smear")(0.03125)
+set_param(job_tag, "prob_acc_2_smear")(0.0078125)
+set_param(job_tag, "prob_acc_1_psrc")(0.03125)
+set_param(job_tag, "prob_acc_2_psrc")(0.0078125)
+set_param(job_tag, "n_rand_u1_fsel")(64)
+set_param(job_tag, "prob_acc_1_rand_u1")(0.03125)
+set_param(job_tag, "prob_acc_2_rand_u1")(0.0078125)
+set_param(job_tag, "prop_smear_coef")(0.9375)
+set_param(job_tag, "prop_smear_step")(54)
+set_param(job_tag, "gf_ape_smear_coef")(0.5)
+set_param(job_tag, "gf_ape_smear_step")(30)
+set_param(job_tag, "meson_tsep_list")(list(range(6, 128, 4)))
+set_param(job_tag, "a_inv_gev")(2.359)
+set_param(job_tag, "zz_vv")(0.74293)
+set_param(job_tag, "zz_aa")(0.74341)
+set_param(job_tag, "m_res")(0.0003116)
+set_param(job_tag, "m_l")(0.000678)
+set_param(job_tag, "m_h")(0.02539)
+set_param(job_tag, "zz_m_l")(
+    2.997 / 2.198
+)  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeV
+set_param(job_tag, "zz_m_h")(
+    81.64 / 60.62 * 0.9628
+)  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeVset_param(job_tag, "zz_ss_l")()
+set_param(job_tag, "zz_ss_l")(1 / get_param(job_tag, "zz_m_l"))
+set_param(job_tag, "zz_ss_h")(1 / get_param(job_tag, "zz_m_h"))
+set_param(job_tag, "traj_list")(
+    [
+        2880,
+        3600,
+        1520,
+        2000,
+        3120,
+        2800,
+        3280,
+        1440,
+        2400,
+        3360,
+        3200,
+        2560,
+        2160,
+        1600,
+        1200,
+        1280,
+        1360,
+        2080,
+        3040,
+        2320,
+        2960,
+        2240,
+        2720,
+        1840,
+        2480,
+        1920,
+        3440,
+        1680,
+        2640,
+        1760,
+        3520,
+    ]
+)
+
 # ----
 
 job_tag = "test-4nt8-checker"
@@ -3527,6 +3687,12 @@ job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).spl
 is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
 
 is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+
+if "64I-pq2" in job_tag_list:
+    assert job_tag_list == [
+        "64I-pq2",
+    ]
+    qlat_scripts.v1.load_data.is_source_specification_include_inv_type = True
 
 #######################################################
 

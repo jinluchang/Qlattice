@@ -3,14 +3,11 @@
 import qlat_gpt as qg
 import qlat as q
 
-import qlat_scripts
 from qlat_scripts.v1 import (
     load_path_list,
-    get_save_path,
     get_load_path,
     get_param,
     set_param,
-    get_job_seed,
     is_test,
     check_job,
     run_params,
@@ -54,7 +51,7 @@ load_path_list[:] = [
 
 @q.timer_verbose
 def run_job_inversion(job_tag, traj):
-    fname = q.get_fname()
+    q.get_fname()
     #
     psel_split_num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
     fsel_psel_split_num_piece = get_param(
@@ -307,10 +304,11 @@ def run_job_load_data_demo(job_tag, traj):
     """
     import os
     import numpy as np
+    #
     fname = q.get_fname()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    geo = q.Geometry(total_site)
+    q.Geometry(total_site)
     #
     # Load gauge transform directly
     fn_gt = f"{job_tag}/gauge-transform/traj-{traj}.field"
@@ -331,7 +329,9 @@ def run_job_load_data_demo(job_tag, traj):
     #
     # Get xg_arr from psel and verify shape
     psel_xg_arr = psel.xg_arr
-    q.json_results_append(f"{fname}: psel xg_arr shape = {psel_xg_arr.shape}, dtype = {psel_xg_arr.dtype}")
+    q.json_results_append(
+        f"{fname}: psel xg_arr shape = {psel_xg_arr.shape}, dtype = {psel_xg_arr.dtype}"
+    )
     q.json_results_append(f"{fname}: psel n_points = {psel.n_points}")
     assert psel_xg_arr.shape[0] == psel.n_points
     assert psel_xg_arr.shape[1] == 4
@@ -343,11 +343,15 @@ def run_job_load_data_demo(job_tag, traj):
     fsel = q.FieldSelection()
     fsel.load(path_fsel)
     fsel.add_psel(psel)
-    q.json_results_append(f"{fname}: loaded fsel with {fsel.n_elems} selected sites (including psel)")
+    q.json_results_append(
+        f"{fname}: loaded fsel with {fsel.n_elems} selected sites (including psel)"
+    )
     #
     # Get xg_arr from fsel and verify shape
     fsel_xg_arr = np.array([xg.to_tuple() for xg in fsel], dtype=np.int32)
-    q.json_results_append(f"{fname}: fsel xg_arr shape = {fsel_xg_arr.shape}, dtype = {fsel_xg_arr.dtype}")
+    q.json_results_append(
+        f"{fname}: fsel xg_arr shape = {fsel_xg_arr.shape}, dtype = {fsel_xg_arr.dtype}"
+    )
     q.json_results_append(f"{fname}: fsel n_elems = {fsel.n_elems}")
     assert fsel_xg_arr.shape[0] == fsel.n_elems
     assert fsel_xg_arr.shape[1] == 4
@@ -374,7 +378,9 @@ def run_job_load_data_demo(job_tag, traj):
     if get_load_path(f"{path_s}.qar", f"{path_s}/geon-info.txt") is not None:
         sfr = q.open_fields(get_load_path(path_s + "/geon-info.txt"), "r")
         wsrc_fsel_all = [tag for tag in sfr.list() if f"type={inv_type}" in tag]
-        wsrc_fsel_entries = [tag for tag in wsrc_fsel_all if not tag.endswith(prob_suffix)]
+        wsrc_fsel_entries = [
+            tag for tag in wsrc_fsel_all if not tag.endswith(prob_suffix)
+        ]
         sfr.close()
     q.json_results_append(f"{fname}: wsrc fsel total entries = {len(wsrc_fsel_all)}")
     q.json_results_append(f"{fname}: wsrc fsel prop entries = {len(wsrc_fsel_entries)}")
@@ -382,7 +388,10 @@ def run_job_load_data_demo(job_tag, traj):
     # List point source psel propagator content
     path_sp_psrc = f"{job_tag}/psel-prop-psrc-{flavor_tag}/traj-{traj}"
     psrc_psel_entries = []
-    if get_load_path(f"{path_sp_psrc}.qar", f"{path_sp_psrc}/checkpoint.txt") is not None:
+    if (
+        get_load_path(f"{path_sp_psrc}.qar", f"{path_sp_psrc}/checkpoint.txt")
+        is not None
+    ):
         for xg in psel:
             xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
             tag = f"xg={xg_str} ; type={inv_type} ; accuracy=1"
@@ -401,12 +410,18 @@ def run_job_load_data_demo(job_tag, traj):
     if get_load_path(f"{path_s_psrc}.qar", f"{path_s_psrc}/geon-info.txt") is not None:
         sfr = q.open_fields(get_load_path(path_s_psrc + "/geon-info.txt"), "r")
         psrc_fsel_all = [tag for tag in sfr.list() if f"type={inv_type}" in tag]
-        psrc_fsel_entries = [tag for tag in psrc_fsel_all if not tag.endswith(prob_suffix)]
-        psrc_fsel_prob_entries = [tag for tag in psrc_fsel_all if tag.endswith(prob_suffix)]
+        psrc_fsel_entries = [
+            tag for tag in psrc_fsel_all if not tag.endswith(prob_suffix)
+        ]
+        psrc_fsel_prob_entries = [
+            tag for tag in psrc_fsel_all if tag.endswith(prob_suffix)
+        ]
         sfr.close()
     q.json_results_append(f"{fname}: psrc fsel total entries = {len(psrc_fsel_all)}")
     q.json_results_append(f"{fname}: psrc fsel prop entries = {len(psrc_fsel_entries)}")
-    q.json_results_append(f"{fname}: psrc fsel prob entries = {len(psrc_fsel_prob_entries)}")
+    q.json_results_append(
+        f"{fname}: psrc fsel prob entries = {len(psrc_fsel_prob_entries)}"
+    )
     #
     # Load one wsrc psel propagator and verify numpy view
     if wsrc_psel_entries:
@@ -416,7 +431,9 @@ def run_job_load_data_demo(job_tag, traj):
         sp_prop.load(get_load_path(fn_sp))
         sp_prop = gt_inv * sp_prop
         arr = np.asarray(sp_prop)
-        q.json_results_append(f"{fname}: wsrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        q.json_results_append(
+            f"{fname}: wsrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}"
+        )
         assert arr.shape[0] == psel_xg_arr.shape[0]
         elem = sp_prop.get_elem_wm(0)
         q.json_results_append(f"{fname}: wsrc psel sample norm", elem.qnorm(), 1e-8)
@@ -430,7 +447,9 @@ def run_job_load_data_demo(job_tag, traj):
         sc_prop = gt_inv * sc_prop
         sfr.close()
         arr = np.asarray(sc_prop)
-        q.json_results_append(f"{fname}: wsrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        q.json_results_append(
+            f"{fname}: wsrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}"
+        )
         assert arr.shape[0] == fsel_xg_arr.shape[0]
         sp_check = q.PselProp(psel)
         sp_check @= sc_prop
@@ -443,7 +462,9 @@ def run_job_load_data_demo(job_tag, traj):
         sp_prop = q.PselProp(psel)
         sp_prop.load(get_load_path(fn_sp))
         arr = np.asarray(sp_prop)
-        q.json_results_append(f"{fname}: psrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        q.json_results_append(
+            f"{fname}: psrc psel numpy shape = {arr.shape}, dtype = {arr.dtype}"
+        )
         assert arr.shape[0] == psel_xg_arr.shape[0]
         elem = sp_prop.get_elem_wm(0)
         q.json_results_append(f"{fname}: psrc psel sample norm", elem.qnorm(), 1e-8)
@@ -457,7 +478,9 @@ def run_job_load_data_demo(job_tag, traj):
         sc_prop.load_double_from_float(sfr, tag)
         sfr.close()
         arr = np.asarray(sc_prop)
-        q.json_results_append(f"{fname}: psrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}")
+        q.json_results_append(
+            f"{fname}: psrc fsel numpy shape = {arr.shape}, dtype = {arr.dtype}"
+        )
         assert arr.shape[0] == fsel_xg_arr.shape[0]
         sp_check = q.PselProp(psel)
         sp_check @= sc_prop
