@@ -27,6 +27,7 @@ import qlat as q
 
 from qlat_scripts.v1 import (
     ama_extract,
+    benchmark_eval_cexpr,
     check_job,
     get_expr_names,
     get_job_seed,
@@ -99,7 +100,6 @@ from auto_contractor.operators import (
     mk_vec_mu,
 )
 from auto_contractor.eval import (
-    benchmark_eval_cexpr,
     cache_compiled_cexpr,
     eval_cexpr,
 )

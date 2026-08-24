@@ -25,8 +25,10 @@ import numpy as np
 import qlat as q
 
 from qlat_scripts.v1 import (
+    ama_extract,
     benchmark_eval_cexpr,
     check_job,
+    get_expr_names,
     get_job_seed,
     get_load_path,
     get_param,
@@ -66,32 +68,42 @@ from qlat_scripts.v1 import (
 from auto_contractor.operators import (
     contract_simplify_compile,
     mk_a0_p,
+    mk_eta_l,
+    mk_eta_s,
     mk_expr,
     mk_fac,
+    mk_j5eta_l_mu,
+    mk_j5eta_s_mu,
     mk_j5k_mu,
     mk_j5pi_mu,
     mk_j_mu,
     mk_jw_a_mu,
     mk_jw_v_mu,
+    mk_jk_mu,
+    mk_jl_mu,
+    mk_js_mu,
     mk_k_0,
     mk_k_0_bar,
     mk_k_m,
     mk_k_p,
+    mk_k_p_star_mu,
     mk_kappa_p,
     mk_m,
+    mk_meson,
+    mk_omega,
     mk_pi_0,
     mk_pi_m,
     mk_pi_p,
+    mk_proton,
     mk_scalar,
     mk_sym,
     mk_sw5,
+    mk_vec5_mu,
     mk_vec_mu,
 )
 from auto_contractor.eval import (
-    ama_extract,
     cache_compiled_cexpr,
     eval_cexpr,
-    get_expr_names,
 )
 
 # ----
@@ -114,7 +126,7 @@ pname = "auto_contract"
 # ----
 
 @q.timer
-def get_cexpr_meson_corr():
+def get_cexpr_meson_corr(is_both_prop=True):
     """
     Build compiled expressions for meson two-point correlation functions.\n
     Computes correlators of the form <O2(0) O1(-tsep)> with various meson
@@ -302,7 +314,7 @@ def auto_contract_meson_corr_psnk(
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_meson_corr()
+    cexpr = get_cexpr_meson_corr(False)
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -399,7 +411,7 @@ def auto_contract_meson_corr_psnk(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psrc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
@@ -525,7 +537,7 @@ def auto_contract_meson_corr_psrc(
             f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_corr_psnk_psrc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
@@ -545,7 +557,7 @@ def auto_contract_meson_corr_psnk_psrc(
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_meson_corr()
+    cexpr = get_cexpr_meson_corr(False)
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
@@ -674,6 +686,7 @@ def get_cexpr_meson_jt():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             ((("t_1", "t_2"), 1), (("t_2", "x"), 1), (("x", "t_1"), 1))
         ] = "Type1"
@@ -713,7 +726,7 @@ def get_cexpr_meson_jt():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     """
     Compute meson tensor current correlators with point-sink.\n
@@ -836,6 +849,7 @@ def get_cexpr_meson_m():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             ((("t_1", "t_2"), 1), (("t_2", "t_1"), 1), (("x", "x"), 1))
         ] = None
@@ -864,7 +878,7 @@ def get_cexpr_meson_m():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     """
     Compute meson mass insertion correlators with point-sink.\n
@@ -992,6 +1006,7 @@ def get_cexpr_meson_jj():
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[
             (
                 (("t_1", "x_1"), 1),
@@ -1387,7 +1402,7 @@ def get_cexpr_meson_jj():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     """
     Compute meson two-current correlators with point-source/point-sink.\n
@@ -1693,7 +1708,7 @@ def get_cexpr_meson_jwjj():
     #
     return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
     """
     Compute meson weak-current correlators with point-source/point-sink.\n
@@ -2100,7 +2115,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             f"{fname}: ld_sum '{en}' sig", q.get_data_sig(ld_sum[i], q.RngState())
         )
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def auto_contract_meson_jwjj2(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
@@ -3191,7 +3206,7 @@ def auto_contract_pi0_gg_disc(
 
 ### ------
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_inversion(job_tag, traj):
     """
     Run all quark propagator inversions for a given job_tag and trajectory.\n
@@ -3453,7 +3468,7 @@ def run_job_inversion(job_tag, traj):
     if q.obtained_lock_history_list:
         q.timer_display()
 
-@q.timer_verbose
+@q.timer(is_timer_fork=True)
 def run_job_contract(job_tag, traj):
     """
     Run all contraction measurements for a given job_tag and trajectory.\n
@@ -3629,6 +3644,7 @@ def get_all_cexpr():
     and runs benchmark evaluations to ensure they are cached for later use.
     """
     benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_corr(False))
     benchmark_eval_cexpr(get_cexpr_meson_m())
     benchmark_eval_cexpr(get_cexpr_meson_jt())
     benchmark_eval_cexpr(get_cexpr_meson_jj())
