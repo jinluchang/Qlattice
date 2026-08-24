@@ -1,78 +1,97 @@
 #!/usr/bin/env python3
+"""
+Auto-contractor lattice QCD data generation script.\n
+This script computes meson correlation functions and related observables
+using lattice QCD propagators. It generates data for auto-contractor
+measurements including:\n
+- Meson two-point correlators (wall-wall, wall-point, point-wall, point-point)
+- Meson tensor currents (J_mu * M)
+- Meson mass insertions (m_q * M)
+- Meson two-current correlators (J * J * M)
+- Meson weak-current correlators (J_w * J * M)
+- Tadpole current correlators (disconnected contributions)
+- Pi0 current correlators (connected contributions)
+- Pi0 gamma-gamma disconnected diagrams\n
+The script supports multiple gauge ensembles (24D, 48I, 64I, 64I-pq, 64I-pq2) and
+test configurations. It uses adaptive sampling for point-source/point-sink
+measurements with probability-weighted estimators.\n
+Usage:
+    python gpt-qlat-data-gen-auto.py [--job_tag_list tag1,tag2] [--no-inversion] [--no-contract]
+"""
 
 import qlat_gpt as qg
+
+import numpy as np
 import qlat as q
 
-import qlat_scripts
 from qlat_scripts.v1 import (
-    load_path_list,
-    get_save_path,
+    benchmark_eval_cexpr,
+    check_job,
+    get_job_seed,
     get_load_path,
     get_param,
-    set_param,
-    get_job_seed,
+    get_r_list,
+    get_r_sq_interp_idx_coef_list,
+    get_save_path,
     is_test,
-    check_job,
-    run_params,
-    run_gf,
-    run_gt,
-    run_wi,
+    load_path_list,
+    load_point_distribution,
     run_eig,
     run_eig_strange,
-    run_prop_wsrc_full,
-    run_f_weight_from_wsrc_prop_full,
     run_f_rand_01,
-    run_fsel_prob,
-    run_psel_prob,
+    run_f_weight_from_wsrc_prop_full,
     run_fsel_from_fsel_prob,
-    run_psel_from_psel_prob,
-    run_prop_wsrc_sparse,
-    run_prop_psrc,
-    run_get_prop,
-    run_r_list,
-    get_r_sq_interp_idx_coef_list,
-    get_r_list,
-    run_gf_ape,
-    run_psel_split,
+    run_fsel_prob,
     run_fsel_split,
     run_field_rand_u1_dict,
-    run_psel_smear,
-    run_psel_smear_median,
+    run_gf,
+    run_gf_ape,
+    run_get_prop,
+    run_gt,
+    run_params,
+    run_prop_psrc,
     run_prop_rand_u1,
     run_prop_smear,
-    load_point_distribution,
-    benchmark_eval_cexpr,
+    run_prop_wsrc_full,
+    run_prop_wsrc_sparse,
+    run_psel_from_psel_prob,
+    run_psel_prob,
+    run_psel_smear,
+    run_psel_smear_median,
+    run_psel_split,
+    run_r_list,
+    run_wi,
+    set_param,
 )
 from auto_contractor.operators import (
+    contract_simplify_compile,
+    mk_a0_p,
+    mk_expr,
     mk_fac,
-    mk_pi_p,
-    mk_pi_0,
-    mk_pi_m,
-    mk_k_p,
-    mk_k_m,
-    mk_k_0,
-    mk_k_0_bar,
-    mk_sw5,
-    mk_j5pi_mu,
     mk_j5k_mu,
+    mk_j5pi_mu,
+    mk_j_mu,
     mk_jw_a_mu,
     mk_jw_v_mu,
-    mk_a0_p,
+    mk_k_0,
+    mk_k_0_bar,
+    mk_k_m,
+    mk_k_p,
     mk_kappa_p,
-    mk_j_mu,
     mk_m,
-    mk_vec_mu,
-    mk_sym,
-    mk_expr,
+    mk_pi_0,
+    mk_pi_m,
+    mk_pi_p,
     mk_scalar,
-    contract_simplify_compile,
+    mk_sym,
+    mk_sw5,
+    mk_vec_mu,
 )
 from auto_contractor.eval import (
+    ama_extract,
+    cache_compiled_cexpr,
     eval_cexpr,
     get_expr_names,
-    cache_compiled_cexpr,
-    np,
-    ama_extract,
 )
 
 # ----
@@ -91,10 +110,19 @@ load_path_list[:] = [
 is_cython = not is_test()
 
 pname = "auto_contract"
+
 # ----
 
 @q.timer
 def get_cexpr_meson_corr():
+    """
+    Build compiled expressions for meson two-point correlation functions.\n
+    Computes correlators of the form <O2(0) O1(-tsep)> with various meson
+    operators including pi+, K+, and vector/axial currents
+    (j_mu, j5pi_mu, j5k_mu, jw_a_mu).\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
     #
     def calc_cexpr():
@@ -137,6 +165,18 @@ def get_cexpr_meson_corr():
 
 @q.timer(is_timer_fork=True)
 def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    """
+    Compute meson two-point correlators with wall-source/wall-sink.\n
+    Evaluates all meson correlation functions defined by get_cexpr_meson_corr()
+    using wall-source and wall-sink propagators. Results are saved as lat data
+    with dimensions (expr_name, t_sep).\n
+    Args:
+        job_tag: Gauge ensemble identifier (e.g., "24D", "48I").
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
@@ -246,6 +286,18 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
 def auto_contract_meson_corr_psnk(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute meson two-point correlators with wall-source/point-sink.\n
+    Similar to auto_contract_meson_corr but uses point-sink propagators
+    for the sink operator. Applies probability weighting by dividing
+    by fsel_prob for each sink point. Results normalized by total volume.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
@@ -351,6 +403,17 @@ def auto_contract_meson_corr_psnk(
 def auto_contract_meson_corr_psrc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute meson two-point correlators with point-source/wall-sink.\n
+    Uses point-source propagators for the source operator with probability
+    weighting. Results normalized by total volume.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
@@ -466,6 +529,18 @@ def auto_contract_meson_corr_psrc(
 def auto_contract_meson_corr_psnk_psrc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute meson two-point correlators with point-source/point-sink.\n
+    Uses both point-source and point-sink propagators with probability
+    weighting. Results are binned by spatial distance r for analysis of
+    position-dependent correlators. Normalized by total_volume^2/t_size.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
@@ -587,6 +662,14 @@ def auto_contract_meson_corr_psnk_psrc(
 
 @q.timer
 def get_cexpr_meson_jt():
+    """
+    Build compiled expressions for meson tensor current correlators.\n
+    Computes <J_mu(x) M(t1) M^dag(t2)> where M is a meson operator
+    (pi+, K+) and J_mu is a vector current (ubar*gamma_mu*u, sbar*gamma_mu*s).
+    Uses wall-source/wall-sink meson operators at time slices tsep apart.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jt"
     #
     def calc_cexpr():
@@ -632,6 +715,17 @@ def get_cexpr_meson_jt():
 
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    """
+    Compute meson tensor current correlators with point-sink.\n
+    Evaluates <J_mu(x) M(t1) M^dag(t2)> using point-sink propagators.
+    Results are scalar values (not position-dependent) normalized by volume.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_jt.lat"
     if get_load_path(fn) is not None:
@@ -730,6 +824,14 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
 
 @q.timer
 def get_cexpr_meson_m():
+    """
+    Build compiled expressions for meson mass insertion correlators.\n
+    Computes <m_q(x) M(t1) M^dag(t2)> where M is a meson (pi0, pi+, K0, K+)
+    and m_q is a scalar density (ubar*u, dbar*d, sbar*s). These correlators
+    are needed for computing matrix elements of the axial vector current.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_m"
     #
     def calc_cexpr():
@@ -764,6 +866,17 @@ def get_cexpr_meson_m():
 
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    """
+    Compute meson mass insertion correlators with point-sink.\n
+    Evaluates <m_q(x) M(t1) M^dag(t2)> using point-sink propagators.
+    Results are scalar values normalized by volume.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_m.lat"
     if get_load_path(fn) is not None:
@@ -865,6 +978,16 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
 
 @q.timer
 def get_cexpr_meson_jj():
+    """
+    Build compiled expressions for meson two-current correlators.\n
+    Computes <J_mu(x) J_nu(0) M(t1) M^dag(t2)> with various current
+    combinations (j_mu*j_mu, j_t*j_t, j_i*j_i, x_i*x_j*j_i*j_j, etc.)
+    and mass insertions (m_u*m_u, m_u*m_d, etc.). Also includes OPE
+    operator product expansion terms with u, d, s quark currents.\n
+    Used for computing the pi0 -> gamma gamma transition form factor.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jj"
     #
     def calc_cexpr():
@@ -1266,6 +1389,18 @@ def get_cexpr_meson_jj():
 
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    """
+    Compute meson two-current correlators with point-source/point-sink.\n
+    Evaluates <J(x) J(0) M(t1) M^dag(t2)> using point-source and point-sink
+    propagators. Results are binned by spatial separation r and time
+    difference t. Uses adaptive probability weighting.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_jj.lat"
     if get_load_path(fn) is not None:
@@ -1403,6 +1538,14 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
 
 @q.timer
 def get_cexpr_meson_jwjj():
+    """
+    Build compiled expressions for meson weak-current correlators.\n
+    Computes <J_w(x) J_mu(y) M(t1) M^dag(t2)> where J_w is the weak
+    axial/vector current and J_mu is the electromagnetic current.
+    Used for computing weak decay observables.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_jwjj"
     #
     def calc_cexpr():
@@ -1552,6 +1695,18 @@ def get_cexpr_meson_jwjj():
 
 @q.timer_verbose
 def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob):
+    """
+    Compute meson weak-current correlators with point-source/point-sink.\n
+    Evaluates <J_w J M M> using adaptive importance sampling with
+    threshold-based probability weighting. Results are binned by
+    (t1, t2, r).\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_jwjj.lat"
     if get_load_path(fn) is not None:
@@ -1949,6 +2104,17 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
 def auto_contract_meson_jwjj2(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute meson weak-current correlators (variant 2) with point-source/point-sink.\n
+    Similar to auto_contract_meson_jwjj but with different source/sink
+    point assignments. Uses adaptive importance sampling.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/meson_jwjj2.lat"
     if get_load_path(fn) is not None:
@@ -2369,6 +2535,14 @@ def auto_contract_meson_jwjj2(
 
 @q.timer
 def get_cexpr_pi0_gg():
+    """
+    Build compiled expressions for pi0 -> gamma gamma correlators.\n
+    Computes the parity-violating correlator
+    <epsilon_{ijk} x_i J_j(x) J_k(0) pi0(t)> with connected and
+    disconnected diagram types.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_gg"
     #
     def calc_cexpr():
@@ -2437,6 +2611,15 @@ def get_cexpr_pi0_gg():
 @q.timer
 def get_cexpr_tadpole_current():
     """
+    Build compiled expressions for tadpole (disconnected) current correlators.\n
+    Computes <J_mu(x_1)> with various quark flavor combinations (ls, sl, ll, ss).
+    Results must be multiplied by (m_s - m_l) and summed over x_2 (space-time
+    volume) to get the full tadpole contribution. The 1/3 charge factor is
+    already included.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
+    """
     Intend to calculating < J_mu(x_1) >
     !!! Results needs to be multiplied by (m_s - m_l) and sum over "x_2" over the entire space-time volume !!!
     After summing over "x_2", the first and second expr should be same (and so is the following exprs). (We can average these two.)
@@ -2483,6 +2666,13 @@ def get_cexpr_tadpole_current():
 @q.timer
 def get_cexpr_pi0_current():
     """
+    Build compiled expressions for pi0 current correlators.\n
+    Computes <J_mu(x_1) pi0(t_1)> where J is the electromagnetic current
+    and pi0 is represented by pseudoscalar density.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
+    """
     Intend to calculating < J_mu(x_1) pi0(t_1) >
     """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_pi0_current"
@@ -2518,6 +2708,18 @@ def get_cexpr_pi0_current():
 def auto_contract_tadpole_current(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute tadpole (disconnected) current correlators.\n
+    Evaluates <J_mu(x_1)> summed over x_2 for each field-selection point.
+    Results are stored as a SelectedField with shape (n_elems, n_exprs).
+    The first expression is the normalization factor.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/tadpole-current.sfield"
     if get_load_path(fn) is not None:
@@ -2619,6 +2821,18 @@ def auto_contract_tadpole_current(
 def auto_contract_pi0_current(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute pi0 current correlators <J_mu(x_1) pi0(t_1)>.\n
+    Evaluates the correlator for each source time slice t_src, storing
+    results as separate SelectedFields. Output is saved as a multi-field
+    archive file indexed by t_src.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/pi0-current"
     if get_load_path(fn) is not None:
@@ -2750,6 +2964,19 @@ def auto_contract_pi0_current(
 def auto_contract_pi0_gg_disc(
     job_tag, traj, get_get_prop, get_psel_prob, get_fsel_prob
 ):
+    """
+    Compute pi0 -> gamma gamma disconnected diagrams.\n
+    Combines the tadpole current and pi0 current correlators to compute
+    the disconnected contribution to pi0 -> gamma gamma decay. Uses field
+    convolution to evaluate the spatial integral. Results are binned by
+    (t, r) where t is the time difference and r is the spatial distance.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+        get_fsel_prob: Callable returning field selection probability object.
+    """
     fname = q.get_fname()
     fn = f"{job_tag}/{pname}/traj-{traj}/pi0-gg-disc.lat"
     if get_load_path(fn) is not None:
@@ -2966,6 +3193,19 @@ def auto_contract_pi0_gg_disc(
 
 @q.timer_verbose
 def run_job_inversion(job_tag, traj):
+    """
+    Run all quark propagator inversions for a given job_tag and trajectory.\n
+    Performs the following steps:
+    1. Load gauge field and compute gauge transformation
+    2. Compute eigenvalues for deflated inversions (light and strange)
+    3. Compute wall-source propagators (full time-slice)
+    4. Compute field selection weights and probabilities
+    5. Compute point-source, wall-source sparse, and smeared propagators
+    6. Compute random U(1) propagators for all quark flavors\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+    """
     q.get_fname()
     #
     psel_split_num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
@@ -3215,6 +3455,20 @@ def run_job_inversion(job_tag, traj):
 
 @q.timer_verbose
 def run_job_contract(job_tag, traj):
+    """
+    Run all contraction measurements for a given job_tag and trajectory.\n
+    Loads pre-computed propagators and performs all auto-contractor
+    measurements including:
+    - Meson correlation functions (wall-wall, wall-point, point-wall, point-point)
+    - Meson two-current and tensor current correlators
+    - Meson mass insertion correlators
+    - Meson weak-current correlators
+    - Tadpole current and pi0 current correlators
+    - Pi0 gamma-gamma disconnected diagrams\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+    """
     #
     traj_gf = traj
     if job_tag[:5] == "test-":
@@ -3367,7 +3621,13 @@ def run_job_contract(job_tag, traj):
 
 ### ------
 
+@q.timer(is_timer_fork=True)
 def get_all_cexpr():
+    """
+    Pre-compile and benchmark all contraction expressions.\n
+    Builds all compiled expressions used by the measurement functions
+    and runs benchmark evaluations to ensure they are cached for later use.
+    """
     benchmark_eval_cexpr(get_cexpr_meson_corr())
     benchmark_eval_cexpr(get_cexpr_meson_m())
     benchmark_eval_cexpr(get_cexpr_meson_jt())
