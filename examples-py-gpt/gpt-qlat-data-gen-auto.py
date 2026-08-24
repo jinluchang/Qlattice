@@ -130,44 +130,179 @@ def get_cexpr_meson_corr(is_both_prop=True):
     """
     Build compiled expressions for meson two-point correlation functions.\n
     Computes correlators of the form <O2(0) O1(-tsep)> with various meson
-    operators including pi+, K+, and vector/axial currents
-    (j_mu, j5pi_mu, j5k_mu, jw_a_mu).\n
+    operators including pi+, K+, eta_l, eta_s, kappa, omega, proton, and
+    vector/axial currents (j_mu, jl_mu, js_mu, jk_mu, j5pi_mu, j5k_mu).\n
+    Args:
+        is_both_prop: If True, uses wall-source/wall-sink propagators for
+            both operators (Type1 + Type2 diagrams). If False, uses
+            wall-source/point-sink (Type1 only).\n
     Returns:
         Compiled expression object for use with eval_cexpr.
     """
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr"
+    if is_both_prop:
+        fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_src_src"
+    else:
+        fn_base = "cache/auto_contract_cexpr/get_cexpr_meson_corr_snk_src"
     #
     def calc_cexpr():
         diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
         diagram_type_dict[((("x_1", "x_2"), 1), (("x_2", "x_1"), 1))] = "Type1"
-        diagram_type_dict[((("x_1", "x_1"), 1), (("x_2", "x_2"), 1))] = None
-        exprs = [
+        diagram_type_dict[((("x_1", "x_1"), 1), (("x_2", "x_2"), 1))] = "Type2"
+        diagram_type_dict[((("x_1", "x_2"), 3),)] = "TypeB1"
+        exprs_1_list = [
             mk_fac(1) + "1",
-            mk_pi_p("x_2", True) * mk_pi_p("x_1") + "pi+^dag(0) * pi+(-tsep)",
-            mk_k_p("x_2", True) * mk_k_p("x_1") + "K+^dag(0) * K+(-tsep)",
-            mk_sw5("x_2") * mk_pi_p("x_1") + "sw5(0) * pi+(-tsep)",
-            mk_sw5("x_2") * mk_k_p("x_1") + "sw5(0) * K+(-tsep)",
-            mk_sw5("x_2") * mk_j5pi_mu("x_1", 3, True) + "sw5(0) * j5pi_t^dag(-tsep)",
-            mk_sw5("x_2") * mk_j5k_mu("x_1", 3, True) + "sw5(0) * j5k_t^dag(-tsep)",
-            mk_jw_a_mu("x_2", 3) * mk_pi_p("x_1") + "jw_a_t(0) * pi+(-tsep)",
-            mk_jw_a_mu("x_2", 3) * mk_k_p("x_1") + "jw_a_t(0) * K+(-tsep)",
-            mk_jw_a_mu("x_2", 3) * mk_j5pi_mu("x_1", 3, True)
-            + "jw_a_t(0) * j5pi_t^dag(-tsep)",
-            mk_jw_a_mu("x_2", 3) * mk_j5k_mu("x_1", 3, True)
-            + "jw_a_t(0) * j5k_t^dag(-tsep)",
-            mk_a0_p("x_2", True) * mk_a0_p("x_1") + "a0+^dag(0) * a0+(-tsep)",
-            mk_kappa_p("x_2", True) * mk_kappa_p("x_1")
-            + "kappa+^dag(0) * kappa+(-tsep)",
-            mk_j_mu("x_2", 3) * mk_j_mu("x_1", 3) + "j_t(0) * j_t(-tsep)",
-            sum([mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(4)])
-            + "j_mu(0) * j_mu(-tsep)",
-            sum(
-                [mk_jw_a_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(4)]
-            )
-            + "jw_a_mu(0) * j5pi_mu^dag(-tsep)",
-            sum([mk_jw_a_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(4)])
-            + "jw_a_mu(0) * j5k_mu^dag(-tsep)",
         ]
+        exprs_12_corr_list = []
+        exprs_corr_list = []
+        exprs_b_corr_list = []
+        exprs_12_corr_list += [
+            mk_j_mu("x_2", 3) * mk_j_mu("x_1", 3) + "j_t(0) * j_t(-tsep)",
+            mk_jl_mu("x_2", 3) * mk_jl_mu("x_1", 3) + "jl_t(0) * jl_t(-tsep)",
+            mk_js_mu("x_2", 3) * mk_js_mu("x_1", 3) + "js_t(0) * js_t(-tsep)",
+            sum([mk_j_mu("x_2", mu) * mk_j_mu("x_1", mu) for mu in range(3)])
+            + "j_i(0) * j_i(-tsep)",
+            sum([mk_jl_mu("x_2", mu) * mk_jl_mu("x_1", mu) for mu in range(3)])
+            + "jl_i(0) * jl_i(-tsep)",
+            sum([mk_js_mu("x_2", mu) * mk_js_mu("x_1", mu) for mu in range(3)])
+            + "js_i(0) * js_i(-tsep)",
+        ]
+        exprs_corr_list += [
+            mk_a0_p("x_2", True) * mk_a0_p("x_1") + "a0+^dag(0) * a0+(-tsep)",
+            mk_jk_mu("x_2", 3, True) * mk_jk_mu("x_1", 3) + "jk_t^dag(0) * jk_t(-tsep)",
+            sum([mk_jk_mu("x_2", mu, True) * mk_jk_mu("x_1", mu) for mu in range(3)])
+            + "jk_i^dag(0) * jk_i(-tsep)",
+            sum(
+                [mk_j5pi_mu("x_2", mu) * mk_j5pi_mu("x_1", mu, True) for mu in range(3)]
+            )
+            + "j5pi_i(0) * j5pi_i^dag(-tsep)",
+            sum([mk_j5k_mu("x_2", mu) * mk_j5k_mu("x_1", mu, True) for mu in range(3)])
+            + "j5k_i(0) * j5k_i^dag(-tsep)",
+        ]
+        pi_1_list = [
+            mk_pi_p("x_1") + "pi+(-tsep)",
+            mk_j5pi_mu("x_1", 3, True) + "j5pi_t^dag(-tsep)",
+        ]
+        pi_2_list = [
+            mk_pi_p("x_2", True) + "pi+^dag(0)",
+            mk_j5pi_mu("x_2", 3) + "j5pi_t(0)",
+        ]
+        exprs_corr_list += [pi_2 * pi_1 for pi_1 in pi_1_list for pi_2 in pi_2_list]
+        kk_1_list = [
+            mk_k_p("x_1") + "k+(-tsep)",
+            mk_j5k_mu("x_1", 3, True) + "j5k_t^dag(-tsep)",
+        ]
+        kk_2_list = [
+            mk_k_p("x_2", True) + "k+^dag(0)",
+            mk_j5k_mu("x_2", 3) + "j5k_t(0)",
+        ]
+        exprs_corr_list += [kk_2 * kk_1 for kk_1 in kk_1_list for kk_2 in kk_2_list]
+        eta_1_list = [
+            mk_eta_l("x_1") + "eta_l(-tsep)",
+            mk_eta_s("x_1") + "eta_s(-tsep)",
+            mk_j5eta_l_mu("x_1", 3, True) + "j5eta_l_t^dag(-tsep)",
+            mk_j5eta_s_mu("x_1", 3, True) + "j5eta_s_t^dag(-tsep)",
+        ]
+        eta_2_list = [
+            mk_eta_l("x_2", True) + "eta_l^dag(0)",
+            mk_eta_s("x_2", True) + "eta_s^dag(0)",
+            mk_j5eta_l_mu("x_2", 3) + "j5eta_l_t(0)",
+            mk_j5eta_s_mu("x_2", 3) + "j5eta_s_t(0)",
+        ]
+        exprs_12_corr_list += [
+            eta_2 * eta_1 for eta_1 in eta_1_list for eta_2 in eta_2_list
+        ]
+        kappa_1_list = [
+            mk_kappa_p("x_1") + "kappa+(-tsep)",
+            mk_k_p_star_mu("x_1", 3) + "k_p_star_t+(-tsep)",
+        ]
+        kappa_2_list = [
+            mk_kappa_p("x_2", True) + "kappa+^dag(0)",
+            mk_k_p_star_mu("x_2", 3, True) + "k_p_star_t+^dag(0)",
+        ]
+        exprs_corr_list += [
+            kappa_2 * kappa_1 for kappa_1 in kappa_1_list for kappa_2 in kappa_2_list
+        ]
+        for spin in [
+            "u3",
+            "u1",
+            "d1",
+            "d3",
+        ]:
+            omega_1_list = []
+            omega_2_list = []
+            for baryon_type in [
+                "std3",
+                "pos3",
+            ]:
+                omega_1_list += [
+                    mk_omega("x_1", spin, baryon_type)
+                    + f"omega[{baryon_type},{spin}](-tsep)",
+                ]
+                omega_2_list += [
+                    mk_omega("x_2", spin, baryon_type, True)
+                    + f"omega[{baryon_type},{spin}]^dag(0)",
+                ]
+            exprs_b_corr_list += [
+                omega_2 * omega_1
+                for omega_1 in omega_1_list
+                for omega_2 in omega_2_list
+            ]
+        for spin in [
+            "u",
+            "d",
+        ]:
+            proton_1_list = []
+            proton_2_list = []
+            for baryon_type in [
+                "std",
+                "pos",
+            ]:
+                proton_1_list += [
+                    mk_proton("x_1", spin, baryon_type)
+                    + f"proton[{baryon_type},{spin}](-tsep)",
+                ]
+                proton_2_list += [
+                    mk_proton("x_2", spin, baryon_type, True)
+                    + f"proton[{baryon_type},{spin}]^dag(0)",
+                ]
+            exprs_b_corr_list += [
+                proton_2 * proton_1
+                for proton_1 in proton_1_list
+                for proton_2 in proton_2_list
+            ]
+        if is_both_prop:
+            exprs_12_corr_list = [
+                (
+                    expr,
+                    "Type1",
+                    "Type2",
+                )
+                for expr in exprs_12_corr_list
+            ]
+        else:
+            exprs_12_corr_list = [
+                (
+                    expr,
+                    "Type1",
+                )
+                for expr in exprs_12_corr_list
+            ]
+        exprs_corr_list = [
+            (
+                expr,
+                None,
+            )
+            for expr in exprs_corr_list
+        ]
+        exprs_b_corr_list = [
+            (
+                expr,
+                None,
+            )
+            for expr in exprs_b_corr_list
+        ]
+        exprs = exprs_1_list + exprs_12_corr_list + exprs_corr_list + exprs_b_corr_list
         cexpr = contract_simplify_compile(
             *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
         )
@@ -1153,54 +1288,83 @@ def get_cexpr_meson_jj():
         exprs_self_energy = [op * mm for mm in mm_list for op in op_list]
         assert len(exprs_self_energy) == 60
         #
-        op_l_ope_list = [
+        op_u_ope_list = [
             sum(
                 [
-                    mk_vec_mu("d", "d", "x_2", mu) * mk_vec_mu("d", "d", "x_1", mu)
+                    mk_vec_mu("u", "u'", "x_2", mu) * mk_vec_mu("u'", "u", "x_1", mu)
                     for mu in range(4)
                 ]
             )
-            + "jd_mu(x) * jd_mu(0)",
-            mk_vec_mu("d", "d", "x_2", 3) * mk_vec_mu("d", "d", "x_1", 3)
-            + "jd_t(x) * jd_t(0)",
+            + "juu'_mu(x) * ju'u_mu(0)",
+            #
+            mk_vec_mu("u", "u'", "x_2", 3) * mk_vec_mu("u'", "u", "x_1", 3)
+            + "juu'_t(x) * ju'u_t(0)",
+            #
+            sum(
+                [
+                    mk_vec_mu("u", "u'", "x_2", mu) * mk_vec_mu("u'", "u", "x_1", mu)
+                    for mu in range(3)
+                ]
+            )
+            + "juu'_i(x) * ju'u_i(0)",
         ]
-        assert len(op_l_ope_list) == 2
+        assert len(op_u_ope_list) == 3
+        op_d_ope_list = [
+            sum(
+                [
+                    mk_vec_mu("d", "d'", "x_2", mu) * mk_vec_mu("d'", "d", "x_1", mu)
+                    for mu in range(4)
+                ]
+            )
+            + "jdd'_mu(x) * jd'd_mu(0)",
+            #
+            mk_vec_mu("d", "d'", "x_2", 3) * mk_vec_mu("d'", "d", "x_1", 3)
+            + "jdd'_t(x) * jd'd_t(0)",
+            #
+            sum(
+                [
+                    mk_vec_mu("d", "d'", "x_2", mu) * mk_vec_mu("d'", "d", "x_1", mu)
+                    for mu in range(3)
+                ]
+            )
+            + "jdd'_i(x) * jd'd_i(0)",
+        ]
+        assert len(op_d_ope_list) == 3
         op_s_ope_list = [
             sum(
                 [
-                    mk_vec_mu("s", "s", "x_2", mu) * mk_vec_mu("s", "s", "x_1", mu)
+                    mk_vec_mu("s", "s'", "x_2", mu) * mk_vec_mu("s'", "s", "x_1", mu)
                     for mu in range(4)
                 ]
             )
-            + "js_mu(x) * js_mu(0)",
-            mk_vec_mu("s", "s", "x_2", 3) * mk_vec_mu("s", "s", "x_1", 3)
-            + "js_t(x) * js_t(0)",
-        ]
-        assert len(op_s_ope_list) == 2
-        mm_l_ope_list = [
-            mk_sym(1)
-            / 2
-            * (
-                mk_pi_p("t_2", True) * mk_pi_p("t_1")
-                + mk_pi_m("t_2", True) * mk_pi_m("t_1")
+            + "jss'_mu(x) * js's_mu(0)",
+            #
+            mk_vec_mu("s", "s'", "x_2", 3) * mk_vec_mu("s'", "s", "x_1", 3)
+            + "jss'_t(x) * js's_t(0)",
+            #
+            sum(
+                [
+                    mk_vec_mu("s", "s'", "x_2", mu) * mk_vec_mu("s'", "s", "x_1", mu)
+                    for mu in range(3)
+                ]
             )
-            + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
+            + "jss'_i(x) * js's_i(0)",
         ]
-        assert len(mm_l_ope_list) == 1
-        mm_s_ope_list = [
-            mk_sym(1)
-            / 2
-            * (
-                mk_k_p("t_2", True) * mk_k_p("t_1")
-                + mk_k_m("t_2", True) * mk_k_m("t_1")
-            )
-            + "K+^dag(x[t]+tsep) * K+(-tsep)",
+        assert len(op_s_ope_list) == 3
+        mm_pi_ope_list = [
+            mk_pi_p("t_2", True) * mk_pi_p("t_1") + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
         ]
-        assert len(mm_s_ope_list) == 1
-        exprs_ope = [op * mm for mm in mm_l_ope_list for op in op_l_ope_list] + [
-            op * mm for mm in mm_s_ope_list for op in op_s_ope_list
+        assert len(mm_pi_ope_list) == 1
+        mm_kk_ope_list = [
+            mk_k_p("t_2", True) * mk_k_p("t_1") + "K+^dag(x[t]+tsep) * K+(-tsep)",
         ]
-        assert len(exprs_ope) == 4
+        assert len(mm_kk_ope_list) == 1
+        exprs_ope = []
+        exprs_ope += [op * mm for mm in mm_pi_ope_list for op in op_u_ope_list]
+        exprs_ope += [op * mm for mm in mm_pi_ope_list for op in op_d_ope_list]
+        exprs_ope += [op * mm for mm in mm_kk_ope_list for op in op_u_ope_list]
+        exprs_ope += [op * mm for mm in mm_kk_ope_list for op in op_s_ope_list]
+        assert len(exprs_ope) == 12
         #
         jwj_list = [
             mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", 3) + "jw_a_t(0) * j_t(x)",
@@ -1386,15 +1550,13 @@ def get_cexpr_meson_jj():
         exprs = [
             mk_expr(1) + "1",
         ]
-        exprs += (
-            exprs_self_energy
-            + exprs_ope
-            + exprs_decay1
-            + exprs_decay2
-            + exprs_decay_m
-            + exprs_pi0_decay
-        )
-        assert len(exprs) == 179
+        exprs += exprs_self_energy
+        exprs += exprs_ope
+        exprs += exprs_decay1
+        exprs += exprs_decay2
+        exprs += exprs_decay_m
+        exprs += exprs_pi0_decay
+        assert len(exprs) == 1 + 60 + 12 + 32 + 32 + 48 + 2
         cexpr = contract_simplify_compile(
             *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
         )
