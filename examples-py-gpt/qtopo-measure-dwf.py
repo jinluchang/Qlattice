@@ -388,9 +388,9 @@ def measure_topo_dwf(
             def load(idx_list):
                 """
                 Load sparse propagator solutions from disk and redistribute across MPI ranks.\n
-                Each index is assigned a root rank via round-robin over the shuffle node list.
-                After reading on the respective root, the data is reverse-shuffled back to
-                the local (``"l"``) point distribution.\n
+                Each index is loaded by one MPI rank (round-robin), then a collective
+                ``"l_from_g"`` shuffle redistributes the data so every node holds only
+                its locally-owned points.\n
                 Parameters
                 ----------
                 idx_list : list of int
@@ -407,34 +407,17 @@ def measure_topo_dwf(
                     assert isinstance(i_idx, int), (
                         f"load: idx_list element type={type(i_idx)}"
                     )
-                id_node_list_for_shuffle = q.get_id_node_list_for_shuffle()
-                root_il = [
-                    id_node_list_for_shuffle[i % len(id_node_list_for_shuffle)]
-                    for i, idx in enumerate(idx_list)
-                ]
-                geo_il = [geo for idx in idx_list]
-                psel_il = [psel_list[idx] for idx in idx_list]
-                ssp = q.SelectedShufflePlan("g_from_l", psel_il, root_il, geo_il)
-                psel_g_il = ssp.psel_recv_list
-                sp_prop_sol_g_il = [
-                    q.PselProp(psel_g_il[i]) for i, idx in enumerate(idx_list)
-                ]
-                for i, idx in enumerate(idx_list):
-                    if root_il[i] == q.get_id_node():
-                        psel_g_l = q.PointsSelection()
-                        psel_g_l.load(
-                            f"{mk_path(idx)}/psel.lati",
-                            is_sync_node=False,
-                        )
-                        assert psel_g_il[i] == psel_g_l
-                        sp_prop_sol_g_il[i].load(
-                            f"{mk_path(idx)}/sp_prop_sol.lat",
-                            is_sync_node=False,
-                        )
-                sp_prop_sol_il = ssp.shuffle_sp_list(
-                    q.PselProp,
-                    sp_prop_sol_g_il,
-                    is_reverse=True,
+                # Ensure all nodes see files written by save() with is_sync_node=False
+                q.sync_node()
+                # Load Global psels from disk (all nodes read independently)
+                psel_il = []
+                for idx in idx_list:
+                    psel_g = q.PointsSelection()
+                    psel_g.load(f"{mk_path(idx)}/psel.lati", is_sync_node=False)
+                    psel_il.append(psel_g)
+                path_il = [f"{mk_path(idx)}/sp_prop_sol.lat" for idx in idx_list]
+                sp_prop_sol_il = q.load_selected_points_list(
+                    q.PselProp, psel_il, path_il
                 )
                 assert len(sp_prop_sol_il) == len(idx_list)
                 assert isinstance(sp_prop_sol_il, list), (

@@ -40,7 +40,7 @@ def load_selected_points_list(cls, psel_list, path_list):
             sp = cls(psel_list[i])
             sp.load(path, is_sync_node=False)
         else:
-            sp = cls(None)
+            sp = cls()
         sp_list.append(sp)
     sp_dst_list = ssp.shuffle_sp_list(cls, sp_list)
     return sp_dst_list
