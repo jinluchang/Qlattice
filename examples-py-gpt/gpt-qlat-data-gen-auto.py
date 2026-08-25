@@ -342,9 +342,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             -1,
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
-    fsel_prob[:].ravel()
-    psel_prob[:].ravel()
-    fsel.to_psel_local()[:]
     q.Geometry(total_site)
     #
     def load_data():
@@ -465,7 +462,6 @@ def auto_contract_meson_corr_psnk(
         )
     fsel_n_elems = fsel.n_elems
     fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
@@ -579,9 +575,7 @@ def auto_contract_meson_corr_psrc(
             -1,
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
-    fsel_prob[:].ravel()
     psel_prob_arr = psel_prob[:].ravel()
-    fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
@@ -881,7 +875,6 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
     cexpr = get_cexpr_meson_jt()
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    total_site[3]
     get_prop = get_get_prop()
     psel_prob = get_psel_prob()
     fsel_prob = get_fsel_prob()
@@ -893,9 +886,7 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
     fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    psel[:]
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
@@ -1033,7 +1024,6 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
     cexpr = get_cexpr_meson_m()
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    total_site[3]
     get_prop = get_get_prop()
     psel_prob = get_psel_prob()
     fsel_prob = get_fsel_prob()
@@ -1045,9 +1035,7 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
     fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    psel[:]
     tsep = get_param(job_tag, "meson_tensor_tsep")
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
@@ -2214,7 +2202,6 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             if xg_snk != xg1_src and xg_snk != xg2_src:
                 weight = weight / prob_snk
             #
-            xg_t_arr[idx_snk]
             xg1_xg_t = xg1_xg_t_arr[idx_snk]
             xg2_xg_t = xg2_xg_t_arr[idx_snk]
             t_1 = t_1_arr[idx_snk]
@@ -2358,7 +2345,6 @@ def auto_contract_meson_jwjj2(
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
     load_point_distribution(job_tag)
-    np.array(total_site.to_list())
     get_prop = get_get_prop()
     psel_prob = get_psel_prob()
     fsel_prob = get_fsel_prob()
@@ -2961,7 +2947,6 @@ def auto_contract_tadpole_current(
     cexpr = get_cexpr_tadpole_current()
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    total_site[3]
     get_prop = get_get_prop()
     psel_prob = get_psel_prob()
     fsel_prob = get_fsel_prob()
@@ -3086,9 +3071,7 @@ def auto_contract_pi0_current(
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
     fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    psel[:]
     q.Geometry(total_site)
     sf_pi0_current_list = []
     sf_pi0_current_arr_list = []
@@ -3133,10 +3116,10 @@ def auto_contract_pi0_current(
         for idx, res in enumerate(val_list):
             (
                 fidx,
-                val_list,
+                per_field_vals,
             ) = res
             for t_src in range(t_size):
-                sf_pi0_current_arr_list[t_src][fidx] = val_list[t_src]
+                sf_pi0_current_arr_list[t_src][fidx] = per_field_vals[t_src]
             if (idx + 1) % (len(xg_fsel_arr) // 128 + 16) == 0:
                 q.displayln_info(f"{fname}: {idx + 1}/{len(xg_fsel_arr)}")
         return None
@@ -3237,9 +3220,6 @@ def auto_contract_pi0_gg_disc(
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
     fsel_prob_arr = fsel_prob[:].ravel()
-    psel_prob[:].ravel()
-    fsel.to_psel_local()[:]
-    psel[:]
     tsep = get_param(job_tag, "meson_tensor_tsep")
     m_l = get_param(job_tag, "m_l")
     m_h = get_param(job_tag, "m_h")
@@ -4345,7 +4325,7 @@ set_param(job_tag, "zz_m_l")(
 )  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeV
 set_param(job_tag, "zz_m_h")(
     81.64 / 60.62 * 0.9628
-)  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_l * m_l => m_l in MSbar scheme 3 GeVset_param(job_tag, "zz_ss_l")()
+)  # PHYSICAL REVIEW D 93, 074505 (2016) zz_m_h * m_h => m_h in MSbar scheme 3 GeV
 set_param(job_tag, "zz_ss_l")(1 / get_param(job_tag, "zz_m_l"))
 set_param(job_tag, "zz_ss_h")(1 / get_param(job_tag, "zz_m_h"))
 set_param(job_tag, "traj_list")(
