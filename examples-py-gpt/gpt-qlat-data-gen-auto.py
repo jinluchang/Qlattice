@@ -1307,8 +1307,27 @@ def get_cexpr_meson_jj():
                 ]
             )
             + "juu'_i(x) * ju'u_i(0)",
+        ] + [
+            sum(
+                [
+                    mk_vec_mu("u", "u'", "x_1", mu) * mk_vec_mu("u'", "u", "x_2", mu)
+                    for mu in range(4)
+                ]
+            )
+            + "juu'_mu(-x) * ju'u_mu(0)",
+            #
+            mk_vec_mu("u", "u'", "x_1", 3) * mk_vec_mu("u'", "u", "x_2", 3)
+            + "juu'_t(-x) * ju'u_t(0)",
+            #
+            sum(
+                [
+                    mk_vec_mu("u", "u'", "x_1", mu) * mk_vec_mu("u'", "u", "x_2", mu)
+                    for mu in range(3)
+                ]
+            )
+            + "juu'_i(-x) * ju'u_i(0)",
         ]
-        assert len(op_u_ope_list) == 3
+        assert len(op_u_ope_list) == 6
         op_d_ope_list = [
             sum(
                 [
@@ -1328,8 +1347,27 @@ def get_cexpr_meson_jj():
                 ]
             )
             + "jdd'_i(x) * jd'd_i(0)",
+        ] + [
+            sum(
+                [
+                    mk_vec_mu("d", "d'", "x_1", mu) * mk_vec_mu("d'", "d", "x_2", mu)
+                    for mu in range(4)
+                ]
+            )
+            + "jdd'_mu(-x) * jd'd_mu(0)",
+            #
+            mk_vec_mu("d", "d'", "x_1", 3) * mk_vec_mu("d'", "d", "x_2", 3)
+            + "jdd'_t(-x) * jd'd_t(0)",
+            #
+            sum(
+                [
+                    mk_vec_mu("d", "d'", "x_1", mu) * mk_vec_mu("d'", "d", "x_2", mu)
+                    for mu in range(3)
+                ]
+            )
+            + "jdd'_i(-x) * jd'd_i(0)",
         ]
-        assert len(op_d_ope_list) == 3
+        assert len(op_d_ope_list) == 6
         op_s_ope_list = [
             sum(
                 [
@@ -1349,8 +1387,27 @@ def get_cexpr_meson_jj():
                 ]
             )
             + "jss'_i(x) * js's_i(0)",
+        ] + [
+            sum(
+                [
+                    mk_vec_mu("s", "s'", "x_1", mu) * mk_vec_mu("s'", "s", "x_2", mu)
+                    for mu in range(4)
+                ]
+            )
+            + "jss'_mu(-x) * js's_mu(0)",
+            #
+            mk_vec_mu("s", "s'", "x_1", 3) * mk_vec_mu("s'", "s", "x_2", 3)
+            + "jss'_t(-x) * js's_t(0)",
+            #
+            sum(
+                [
+                    mk_vec_mu("s", "s'", "x_1", mu) * mk_vec_mu("s'", "s", "x_2", mu)
+                    for mu in range(3)
+                ]
+            )
+            + "jss'_i(-x) * js's_i(0)",
         ]
-        assert len(op_s_ope_list) == 3
+        assert len(op_s_ope_list) == 6
         mm_pi_ope_list = [
             mk_pi_p("t_2", True) * mk_pi_p("t_1") + "pi+^dag(x[t]+tsep) * pi+(-tsep)",
         ]
@@ -1364,7 +1421,7 @@ def get_cexpr_meson_jj():
         exprs_ope += [op * mm for mm in mm_pi_ope_list for op in op_d_ope_list]
         exprs_ope += [op * mm for mm in mm_kk_ope_list for op in op_u_ope_list]
         exprs_ope += [op * mm for mm in mm_kk_ope_list for op in op_s_ope_list]
-        assert len(exprs_ope) == 12
+        assert len(exprs_ope) == 24
         #
         jwj_list = [
             mk_jw_a_mu("x_1", 3) * mk_j_mu("x_2", 3) + "jw_a_t(0) * j_t(x)",
@@ -1556,7 +1613,7 @@ def get_cexpr_meson_jj():
         exprs += exprs_decay2
         exprs += exprs_decay_m
         exprs += exprs_pi0_decay
-        assert len(exprs) == 1 + 60 + 12 + 32 + 32 + 48 + 2
+        assert len(exprs) == 1 + 60 + 24 + 32 + 32 + 48 + 2
         cexpr = contract_simplify_compile(
             *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
         )
