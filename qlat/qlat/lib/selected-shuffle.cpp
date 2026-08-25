@@ -54,6 +54,35 @@ void SelectedShufflePlan::init()
 
 // ------------------------------
 
+Int get_multiplicity_from_selected_points(
+    const std::vector<SelectedPoints<Char>>& spc0_vec)
+// Extract multiplicity from a vector of SelectedPoints<Char>.
+// Only considers non-empty entries (n_points > 0) for the multiplicity value.
+// Asserts that all non-empty entries have the same multiplicity.
+// Returns the multiplicity, or 0 if all entries are empty.
+// This is a collective operation (calls glb_sum).
+{
+  Int multiplicity = 0;
+  bool found = false;
+  for (Int i = 0; i < (Int)spc0_vec.size(); ++i) {
+    if (spc0_vec[i].n_points > 0) {
+      if (not found) {
+        multiplicity = spc0_vec[i].multiplicity;
+        found = true;
+      } else {
+        qassert(spc0_vec[i].multiplicity == multiplicity);
+      }
+    }
+  }
+  const bool has_data = found;
+  // Broadcast the multiplicity from any node that has data.
+  const Int multiplicity_out =
+      f_bcast_any(has_data ? multiplicity : 0, has_data);
+  return multiplicity_out;
+}
+
+// ------------------------------
+
 void shuffle_selected_points_char(
     std::vector<SelectedPoints<Char>>& spc_vec,
     const std::vector<SelectedPoints<Char>>& spc0_vec,
@@ -62,17 +91,15 @@ void shuffle_selected_points_char(
 // spc_vec is the dest to be filled by received data.
 // The size of the `std::vector`s and the size of `SelectedPoints`s (both send
 // and recv) should be set (matching `ssp`) before calling this function.
-// All `multiplicity` should be the same.
+// All non-empty entries (n_points > 0) should have the same `multiplicity`.
+// Empty entries (n_points == 0) are skipped.
 {
   TIMER_FLOPS("shuffle_selected_points_char(spc_vec,spc0_vec,ssp)");
   const Int num_selected_points_send = ssp.num_selected_points_send;
   const Int num_selected_points_recv = ssp.num_selected_points_recv;
   qassert(num_selected_points_send == (Long)spc0_vec.size());
   qassert(f_glb_sum(num_selected_points_send) > 0);
-  const bool b_has_send = (num_selected_points_send > 0) and
-                          (ssp.n_points_selected_points_send[0] > 0);
-  const Int multiplicity =
-      f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
+  const Int multiplicity = get_multiplicity_from_selected_points(spc0_vec);
   vector<SelectedPoints<Char>> view0_vec(num_selected_points_send,
                                          MemType::Comm);
   vector<SelectedPoints<Char>> view_vec(num_selected_points_recv,
@@ -206,7 +233,8 @@ void shuffle_selected_points_back_char(
 // spc_vec is the dest to be filled by received data.
 // The size of the `std::vector`s and the size of `SelectedPoints`s (both send
 // and recv) should be set (matching `ssp`) before calling this function.
-// All `multiplicity` should be the same.
+// All non-empty entries (n_points > 0) should have the same `multiplicity`.
+// Empty entries (n_points == 0) are skipped.
 // The shuffle direction is opposite to `shuffle_selected_points_char` (or the
 // direction suggested by `ssp`).
 {
@@ -215,9 +243,7 @@ void shuffle_selected_points_back_char(
   const Int num_selected_points_recv = ssp.num_selected_points_recv;
   qassert(num_selected_points_recv == (Long)spc0_vec.size());
   qassert(f_glb_sum(num_selected_points_recv) > 0);
-  const bool b_has_send = num_selected_points_recv > 0;
-  const Int multiplicity =
-      f_bcast_any(b_has_send ? spc0_vec[0].multiplicity : 0, b_has_send);
+  const Int multiplicity = get_multiplicity_from_selected_points(spc0_vec);
   vector<SelectedPoints<Char>> view0_vec(num_selected_points_recv,
                                          MemType::Comm);
   vector<SelectedPoints<Char>> view_vec(num_selected_points_send,

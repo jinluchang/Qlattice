@@ -47,4 +47,9 @@ from . import field_double as field_double
 
 from .field_truncation import *
 
+try:
+    from .selected_points_io import *
+except ImportError:
+    pass
+
 set_verbose_level()

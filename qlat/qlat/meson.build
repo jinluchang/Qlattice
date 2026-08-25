@@ -27,6 +27,7 @@ py_files = files(
   'hmc_utils.py',
   'mat_mpi.py',
   'psel_split.py',
+  'selected_points_io.py',
   'smear_prop.py',
   'instanton_map.py',
   'flow_scale.py',
