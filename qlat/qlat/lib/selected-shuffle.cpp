@@ -251,6 +251,9 @@ void shuffle_selected_points_back_char(
   set_zero(view0_vec);
   set_zero(view_vec);
   for (Int i = 0; i < num_selected_points_recv; ++i) {
+    if (0 == ssp.n_points_selected_points_recv[i]) {
+      continue;
+    }
     qassert(ssp.n_points_selected_points_recv[i] == spc0_vec[i].n_points);
     qassert(spc0_vec[i].initialized == true);
     qassert(spc0_vec[i].points_dist_type == ssp.points_dist_type_recv);
