@@ -682,13 +682,12 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
     path_sp = f"{job_tag}/psel-prop-psrc-{flavor_tag}/traj-{traj}"
     if get_load_path(f"{path_sp}.qar", f"{path_sp}/checkpoint.txt") is None:
         return None
-    count = {
-        0: 0,
-        1: 0,
-        2: 0,
-    }
     inv_type = flavor_inv_type
-    idx = 0
+    # Collect all existing file paths for psel props and wsnk props.
+    sp_tag_list = []
+    sp_path_list = []
+    spw_tag_list = []
+    spw_path_list = []
     for xg, inv_acc in [
         (xg, inv_acc)
         for xg in psel
@@ -702,23 +701,37 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
         tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
         fn_sp = os.path.join(path_sp, f"{tag}.lat")
         fn_sp_load = get_load_path(fn_sp)
-        if fn_sp_load is None:
-            continue
-        q.displayln_info(
-            0, f"load_prop_psrc_psel: idx={idx} ; {tag} ; path_sp={path_sp}"
-        )
-        idx += 1
-        # load psel psnk prop
-        sp_prop = q.PselProp(psel)
-        sp_prop.load(fn_sp_load)
-        cache_psel[f"{tag} ; psrc ; psel"] = sp_prop
-        # load wsnk prop
+        if fn_sp_load is not None:
+            sp_tag_list.append((tag, inv_acc))
+            sp_path_list.append(fn_sp_load)
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
         fn_spw_load = get_load_path(fn_spw)
         if fn_spw_load is not None:
-            spw_prop = q.PselProp(psel_ts)
-            spw_prop.load(fn_spw_load)
-            cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = spw_prop
+            spw_tag_list.append(tag)
+            spw_path_list.append(fn_spw_load)
+    # Batch load psel props via distributed read + shuffle to local, then convert to global.
+    # Use independent copies of psel for each entry (qswap moves data out of the object).
+    if sp_path_list:
+        psel_list_for_load = [q.PointsSelection(psel) for _ in sp_path_list]
+        sp_loaded_list = q.load_selected_points_list(
+            q.PselProp, psel_list_for_load, sp_path_list,
+        )
+        for i, (tag, inv_acc) in enumerate(sp_tag_list):
+            cache_psel[f"{tag} ; psrc ; psel"] = q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
+    # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
+    if spw_path_list:
+        psel_ts_list_for_load = [q.PointsSelection(psel_ts) for _ in spw_path_list]
+        spw_loaded_list = q.load_selected_points_list(
+            q.PselProp, psel_ts_list_for_load, spw_path_list,
+        )
+        for i, tag in enumerate(spw_tag_list):
+            cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
+    count = {
+        0: 0,
+        1: 0,
+        2: 0,
+    }
+    for tag, inv_acc in sp_tag_list:
         count[inv_acc] += 1
     check_cache_assign(
         cache_prob,
