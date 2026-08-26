@@ -521,6 +521,8 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
         )
         for i, (tag, tslice, inv_acc) in enumerate(sp_tag_list):
             sp_prop = gt_inv * q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
+            assert sp_prop.psel == psel
+            sp_prop.psel = psel
             cache_psel[f"{tag} ; wsrc ; psel"] = sp_prop
     # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
     if spw_path_list:
@@ -528,7 +530,10 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
             q.PselProp, psel_ts, spw_path_list,
         )
         for i, (tag, tslice) in enumerate(spw_tag_list):
-            cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
+            sp_prop = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
+            assert sp_prop.psel == psel_ts
+            sp_prop.psel = psel_ts
+            cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = sp_prop
     # ADJUST ME
     if job_tag == "48I" and flavor == "s" and is_mira_data:
         # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
@@ -722,14 +727,20 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
             q.PselProp, psel, sp_path_list,
         )
         for i, (tag, inv_acc) in enumerate(sp_tag_list):
-            cache_psel[f"{tag} ; psrc ; psel"] = q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
+            sp_prop = q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
+            assert sp_prop.psel == psel
+            sp_prop.psel = psel
+            cache_psel[f"{tag} ; psrc ; psel"] = sp_prop
     # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
     if spw_path_list:
         spw_loaded_list = q.load_selected_points_list(
             q.PselProp, psel_ts, spw_path_list,
         )
         for i, tag in enumerate(spw_tag_list):
-            cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
+            sp_prop = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
+            assert sp_prop.psel == psel_ts
+            sp_prop.psel = psel_ts
+            cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = sp_prop
     count = {
         0: 0,
         1: 0,

@@ -47,11 +47,17 @@ def load_selected_points_list(cls, psel_list, path_list):
                 sp.load(path, is_sync_node=False)
             sp_list.append(sp)
         sp_dst_list = []
+        psel_l = None
         for i, path in enumerate(path_list):
             root = root_list[i]
             sp = sp_list[i]
             ssp = SelectedShufflePlan("l_from_g", psel, root)
             sp_dst = ssp.shuffle_sp(cls, sp)
+            if psel_l is None:
+                psel_l = sp_dst.psel
+            else:
+                assert psel_l == sp_dst.psel
+            sp_dst.psel = psel_l
             sp_dst_list.append(sp_dst)
         return sp_dst_list
     # List of psels: use batch shuffle.
