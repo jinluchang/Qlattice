@@ -491,60 +491,67 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
     if get_load_path(f"{path_sp}.qar", f"{path_sp}/checkpoint.txt") is None:
         return None
     gt_inv = gt.inv()
-    count = {
-        1: 0,
-        2: 0,
-    }
     inv_type = flavor_inv_type
-    wi_list = []
+    # Collect all existing file paths for psel props and wsnk props.
+    sp_tag_list = []
+    sp_path_list = []
+    spw_tag_list = []
+    spw_path_list = []
     for inv_acc in [
         2,
         1,
         0,
     ]:
         for tslice in range(total_site[3]):
-            wi = (
-                tslice,
-                inv_acc,
-            )
-            wi_list.append(wi)
-    idx = 0
-    for tslice, inv_acc in wi_list:
-        tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-        if get_load_path(f"{path_sp}/{tag}.lat") is None:
-            continue
-        q.displayln_info(
-            0,
-            f"load_prop_wsrc_psel: idx={idx} ; tslice={tslice} ; inv_type={inv_type} ; path_sp='{path_sp}'",
+            tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+            fn_sp = os.path.join(path_sp, f"{tag}.lat")
+            fn_sp_load = get_load_path(fn_sp)
+            if fn_sp_load is not None:
+                sp_tag_list.append((tag, tslice, inv_acc))
+                sp_path_list.append(fn_sp_load)
+            fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+            fn_spw_load = get_load_path(fn_spw)
+            if fn_spw_load is not None:
+                spw_tag_list.append((tag, tslice))
+                spw_path_list.append(fn_spw_load)
+    # Batch load psel props via distributed read + shuffle to local, then convert to global.
+    if sp_path_list:
+        sp_loaded_list = q.load_selected_points_list(
+            q.PselProp, psel, sp_path_list,
         )
-        idx += 1
-        # load psel psnk prop
-        fn_sp = os.path.join(path_sp, f"{tag}.lat")
-        sp_prop = q.PselProp(psel)
-        sp_prop.load(get_load_path(fn_sp))
-        sp_prop = gt_inv * sp_prop
-        cache_psel[f"{tag} ; wsrc ; psel"] = sp_prop
-        # load wsnk prop
-        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-        spw_prop = q.PselProp(psel_ts)
-        spw_prop.load(get_load_path(fn_spw))
-        cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = spw_prop
-        # ADJUST ME
-        if job_tag == "48I" and flavor == "s" and is_mira_data:
-            # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
-            # only need this for the MIRA data set (new summit data set have consistent boundary condition).
+        for i, (tag, tslice, inv_acc) in enumerate(sp_tag_list):
+            sp_prop = gt_inv * q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
+            cache_psel[f"{tag} ; wsrc ; psel"] = sp_prop
+    # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
+    if spw_path_list:
+        spw_loaded_list = q.load_selected_points_list(
+            q.PselProp, psel_ts, spw_path_list,
+        )
+        for i, (tag, tslice) in enumerate(spw_tag_list):
+            cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
+    # ADJUST ME
+    if job_tag == "48I" and flavor == "s" and is_mira_data:
+        # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
+        # only need this for the MIRA data set (new summit data set have consistent boundary condition).
+        for tag, tslice, inv_acc in sp_tag_list:
             q.displayln_info(
                 f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc ; psel"
             )
             q.flip_tpbc_with_tslice(cache_psel[f"{tag} ; wsrc ; psel"], tslice)
+        for tag, tslice in spw_tag_list:
             q.displayln_info(
                 f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc_wsnk ; psel_ts"
             )
             q.flip_tpbc_with_tslice(
                 cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"], tslice
             )
-        #
-        # increase count
+    #
+    # count
+    count = {
+        1: 0,
+        2: 0,
+    }
+    for tag, tslice, inv_acc in sp_tag_list:
         count[inv_acc] += 1
     assert count[1] == total_site[3]
     check_cache_assign(cache_prob, f"type={inv_type} ; accuracy=1 ; wsrc ; prob", 1)
