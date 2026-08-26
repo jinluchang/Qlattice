@@ -1,0 +1,154 @@
+[
+ [
+  "test_l_to_g: total_site=Coordinate([4, 4, 4, 8]), multiplicity=3"
+ ],
+ [
+  "psel_l.points_dist_type=l"
+ ],
+ [
+  "sp_l.points_dist_type=l"
+ ],
+ [
+  "sp_g.points_dist_type=g"
+ ],
+ [
+  "l->g conversion: PASS"
+ ],
+ [
+  "test_g_to_l: total_site=Coordinate([4, 4, 4, 8]), multiplicity=3"
+ ],
+ [
+  "psel_g.points_dist_type=g"
+ ],
+ [
+  "sp_g.points_dist_type=g"
+ ],
+ [
+  "sp_l.points_dist_type=l"
+ ],
+ [
+  "g->l conversion: PASS"
+ ],
+ [
+  "test_l_to_g_roundtrip: total_site=Coordinate([4, 4, 4, 8]), multiplicity=3"
+ ],
+ [
+  "sp_l.points_dist_type=l"
+ ],
+ [
+  "sp_g2.points_dist_type=g"
+ ],
+ [
+  "l->g->l round-trip: PASS"
+ ],
+ [
+  "test_g_to_l_roundtrip: total_site=Coordinate([4, 4, 4, 8]), multiplicity=3"
+ ],
+ [
+  "g sig",
+  {
+   "value": [
+    {
+     "real": 1.7217209138997855,
+     "imag": 1.5297433960449907,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.8474723520581116,
+     "imag": 1.450211912530837,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "g2 sig",
+  {
+   "value": [
+    {
+     "real": 1.7217209138997853,
+     "imag": 1.5297433960449909,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -0.8474723520581118,
+     "imag": 1.4502119125308366,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "g->l->g round-trip: PASS"
+ ],
+ [
+  "test_types_and_multiplicity: total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "SelectedPointsRealD(mult=1): PASS"
+ ],
+ [
+  "SelectedPointsRealD(mult=2): PASS"
+ ],
+ [
+  "SelectedPointsRealD(mult=5): PASS"
+ ],
+ [
+  "SelectedPointsRealF(mult=1): PASS"
+ ],
+ [
+  "SelectedPointsRealF(mult=2): PASS"
+ ],
+ [
+  "SelectedPointsRealF(mult=5): PASS"
+ ],
+ [
+  "SelectedPointsComplexD(mult=1): PASS"
+ ],
+ [
+  "SelectedPointsComplexD(mult=2): PASS"
+ ],
+ [
+  "SelectedPointsComplexD(mult=5): PASS"
+ ],
+ [
+  "SelectedPointsComplexF(mult=1): PASS"
+ ],
+ [
+  "SelectedPointsComplexF(mult=2): PASS"
+ ],
+ [
+  "SelectedPointsComplexF(mult=5): PASS"
+ ],
+ [
+  "test_sp_points_dist_type_assertion: total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "sp_points_dist_type assertion (correct): PASS"
+ ],
+ [
+  "sp_points_dist_type assertion (wrong): PASS (raised AssertionError)"
+ ],
+ [
+  "test_root_parameter: total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "root parameter round-trip: PASS"
+ ],
+ [
+  "test_invalid_conversion: total_site=Coordinate([4, 4, 4, 8])"
+ ],
+ [
+  "l->l invalid: PASS (raised exception)"
+ ],
+ [
+  "g->g invalid: PASS (raised exception)"
+ ],
+ [
+  "convert_selected_points_dist_type: all tests passed"
+ ]
+]
