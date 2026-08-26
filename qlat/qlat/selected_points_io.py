@@ -19,18 +19,43 @@ def load_selected_points_list(cls, psel_list, path_list):
     contribute no data. The ``"l_from_g"`` shuffle plan then redistributes
     the data so every node holds only its locally-owned points.\n
     - ``cls``: a SelectedPoints type, e.g. ``q.SelectedPointsRealD``.
-    - ``psel_list``: list of PointsSelection (Global) or file paths (str).
+    - ``psel_list``: list of PointsSelection (Global) or file paths (str),
+      or a single PointsSelection / file path string.
       If a string, the psel is loaded from the path on the owning node only.
       If a PointsSelection, it is used directly (must be Global type).
+      If a single value (not a list), it is applied to all entries in path_list.
     - ``path_list``: list of sp file paths, each saved by ``sp.save(path)``.\n
     Returns a list of locally-distributed SelectedPoints objects.
     """
     id_node = get_id_node()
     num_node = get_num_node()
     n_paths = len(path_list)
-    assert len(psel_list) == n_paths
     sync_node()
     root_list = [i % num_node for i in range(n_paths)]
+    if isinstance(psel_list, (str, PointsSelection)):
+        # Single psel for all paths: resolve once, shuffle one-by-one.
+        if isinstance(psel_list, str):
+            psel = PointsSelection()
+            psel.load(psel_list, is_sync_node=False)
+        else:
+            psel = psel_list
+        sp_list = []
+        for i, path in enumerate(path_list):
+            root = root_list[i]
+            sp = cls(psel)
+            if root == id_node:
+                sp.load(path, is_sync_node=False)
+            sp_list.append(sp)
+        sp_dst_list = []
+        for i, path in enumerate(path_list):
+            root = root_list[i]
+            sp = sp_list[i]
+            ssp = SelectedShufflePlan("l_from_g", psel, root)
+            sp_dst = ssp.shuffle_sp(cls, sp)
+            sp_dst_list.append(sp_dst)
+        return sp_dst_list
+    # List of psels: use batch shuffle.
+    assert len(psel_list) == n_paths
     psel_empty = PointsSelection()
     # Load psel and sp from file only on the owning node
     psel_list_resolved = []

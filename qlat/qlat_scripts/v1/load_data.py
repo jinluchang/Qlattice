@@ -710,19 +710,16 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
             spw_tag_list.append(tag)
             spw_path_list.append(fn_spw_load)
     # Batch load psel props via distributed read + shuffle to local, then convert to global.
-    # Use independent copies of psel for each entry (qswap moves data out of the object).
     if sp_path_list:
-        psel_list_for_load = [q.PointsSelection(psel) for _ in sp_path_list]
         sp_loaded_list = q.load_selected_points_list(
-            q.PselProp, psel_list_for_load, sp_path_list,
+            q.PselProp, psel, sp_path_list,
         )
         for i, (tag, inv_acc) in enumerate(sp_tag_list):
             cache_psel[f"{tag} ; psrc ; psel"] = q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
     # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
     if spw_path_list:
-        psel_ts_list_for_load = [q.PointsSelection(psel_ts) for _ in spw_path_list]
         spw_loaded_list = q.load_selected_points_list(
-            q.PselProp, psel_ts_list_for_load, spw_path_list,
+            q.PselProp, psel_ts, spw_path_list,
         )
         for i, tag in enumerate(spw_tag_list):
             cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
