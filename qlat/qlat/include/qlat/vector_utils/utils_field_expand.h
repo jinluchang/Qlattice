@@ -34,33 +34,33 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
 
 enum QEXPAND_DIR {
   dirFULL = -1000,  // Full expansion with corners.
-  dirmt = -4,      // Negative t direction only.
-  dirmz = -3,      // Negative z direction only.
-  dirmy = -2,      // Negative y direction only.
-  dirmx = -1,      // Negative x direction only.
-  dirx = 0,        // Positive x direction only.
-  diry = 1,        // Positive y direction only.
-  dirz = 2,        // Positive z direction only.
-  dirt = 3,        // Positive t direction only.
-  dirL = 500,      // All negative directions: -x, -y, -z, -t.
-  dirR = 501,      // All positive directions: +x, +y, +z, +t.
-  dirXY = 600,     // Positive and negative x/y directions.
-  dirYZ = 601,     // Positive and negative y/z directions.
-  dirXZ = 602,     // Positive and negative x/z directions.
-  dirXYZ = 603,    // Positive and negative x/y/z directions.
-  dirX = 604,      // Positive and negative x directions.
-  dirY = 605,      // Positive and negative y directions.
-  dirZ = 606,      // Positive and negative z directions.
-  dirT = 607,      // Positive and negative t directions.
-  dirxy = 608,     // Positive x/y directions only.
-  diryz = 609,     // Positive y/z directions only.
-  dirxz = 610,     // Positive x/z directions only.
-  dirxyz = 611,    // Positive x/y/z directions only.
-  dirmxy = 612,    // Negative x/y directions only.
-  dirmyz = 613,    // Negative y/z directions only.
-  dirmxz = 614,    // Negative x/z directions only.
-  dirmxyz = 615,   // Negative x/y/z directions only.
-  dirXYZT = 616,   // Positive and negative x/y/z/t directions, no corners.
+  dirmt = -4,       // Negative t direction only.
+  dirmz = -3,       // Negative z direction only.
+  dirmy = -2,       // Negative y direction only.
+  dirmx = -1,       // Negative x direction only.
+  dirx = 0,         // Positive x direction only.
+  diry = 1,         // Positive y direction only.
+  dirz = 2,         // Positive z direction only.
+  dirt = 3,         // Positive t direction only.
+  dirL = 500,       // All negative directions: -x, -y, -z, -t.
+  dirR = 501,       // All positive directions: +x, +y, +z, +t.
+  dirXY = 600,      // Positive and negative x/y directions.
+  dirYZ = 601,      // Positive and negative y/z directions.
+  dirXZ = 602,      // Positive and negative x/z directions.
+  dirXYZ = 603,     // Positive and negative x/y/z directions.
+  dirX = 604,       // Positive and negative x directions.
+  dirY = 605,       // Positive and negative y directions.
+  dirZ = 606,       // Positive and negative z directions.
+  dirT = 607,       // Positive and negative t directions.
+  dirxy = 608,      // Positive x/y directions only.
+  diryz = 609,      // Positive y/z directions only.
+  dirxz = 610,      // Positive x/z directions only.
+  dirxyz = 611,     // Positive x/y/z directions only.
+  dirmxy = 612,     // Negative x/y directions only.
+  dirmyz = 613,     // Negative y/z directions only.
+  dirmxz = 614,     // Negative x/z directions only.
+  dirmxyz = 615,    // Negative x/y/z directions only.
+  dirXYZT = 616,    // Positive and negative x/y/z/t directions, no corners.
 };
 
 inline bool is_expand_plane_dir(const Int dir)
@@ -69,8 +69,8 @@ inline bool is_expand_plane_dir(const Int dir)
          dir == dirXY or dir == dirYZ or dir == dirXZ or dir == dirXYZ or
          dir == dirX or dir == dirY or dir == dirZ or dir == dirT or
          dir == dirxy or dir == diryz or dir == dirxz or dir == dirxyz or
-         dir == dirmxy or dir == dirmyz or dir == dirmxz or
-         dir == dirmxyz or dir == dirXYZT;
+         dir == dirmxy or dir == dirmyz or dir == dirmxz or dir == dirmxyz or
+         dir == dirXYZT;
 }
 
 inline std::string expand_plane_dir_tag(const Int dir)
@@ -163,12 +163,10 @@ inline std::string expand_plane_dir_tag(const Int dir)
 inline std::vector<std::string>& expand_tags()
 {
   static std::vector<std::string> tagL = {
-      "dirmt",  "dirmz", "dirmy",  "dirmx",  "dirx",   "diry",
-      "dirz",   "dirt",  "dirL",   "dirR",   "dirT",   "dirZ",
-      "dirY",   "dirX",  "dirxy",  "diryz",  "dirxz",  "dirxyz",
-      "dirmxy", "dirmyz",
-      "dirmxz", "dirmxyz", "dirXY", "dirYZ",  "dirXZ",  "dirXYZ",
-      "dirXYZT"};
+      "dirmt",   "dirmz", "dirmy", "dirmx",  "dirx",   "diry",   "dirz",
+      "dirt",    "dirL",  "dirR",  "dirT",   "dirZ",   "dirY",   "dirX",
+      "dirxy",   "diryz", "dirxz", "dirxyz", "dirmxy", "dirmyz", "dirmxz",
+      "dirmxyz", "dirXY", "dirYZ", "dirXZ",  "dirXYZ", "dirXYZT"};
   return tagL;
 }
 
@@ -726,7 +724,6 @@ void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI,
   }
 }
 
-
 template <class M>
 void refresh_expanded_GPU(M* res, const Geometry& geo, const Int MULTI,
                           Int dir = dirFULL, const Int GPU = 1,
@@ -788,7 +785,6 @@ void refresh_expanded_fieldG(std::vector<FieldG<Ty>>& fields, const Int dir,
     expand_buffer_wait_mpi();
   }
 }
-
 
 }  // namespace qlat
 

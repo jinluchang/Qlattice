@@ -328,8 +328,8 @@ inline void shift_vec::init(fft_desc_basic& fds, bool GPU_set)
   src_gauge = false;
   initialized = true;
   // hack for AMD machines
-  do_copy_asyn = qlat::get_env_long_default(
-    std::string("qlat_field_shift_asyn"), 1);
+  do_copy_asyn =
+      qlat::get_env_long_default(std::string("qlat_field_shift_asyn"), 1);
   Qassert(do_copy_asyn == 0 or do_copy_asyn == 1);
 }
 
@@ -903,13 +903,13 @@ void shift_vec::call_MPI(Ty* src, Ty* res, Int dir_or)
     MPI_Irecv(r_tem, MPI_size[dir_cur] * MPI_off, MPI_curr, rank_sr[dir_cur][1],
               tagr, get_comm(), &recv_req);
     //
-    if(do_copy_asyn == 1){
+    if (do_copy_asyn == 1) {
       write_send_recv<Ty, 2>(src, res);  // Write same node
     }
     //
     MPI_Wait(&recv_req, MPI_STATUS_IGNORE);
     MPI_Wait(&send_req, MPI_STATUS_IGNORE);
-    if(do_copy_asyn == 0){
+    if (do_copy_asyn == 0) {
       write_send_recv<Ty, 2>(src, res);  // Write same node
     }
     ////qmessage("SIZE! MPI_off %d, MPI_size %d \n", int(MPI_off), int(M_size));
@@ -1091,7 +1091,8 @@ void shift_vec::shift_vecs(std::vector<Ty*>& src, std::vector<Ty*>& res,
       for (Int si = 0; si < dir_numl[di]; si++) {
         call_MPI((Ty*)&vec_s[0], (Ty*)&vec_r[0], dir_curl[di]);
         /// memcpy(&vec_s[0],&vec_r[0],sizeof(Ty)*(biva*Ng*civ));
-        //cpy_data_thread(&vec_s[0], &vec_r[0], (biva * Ng * civ), GPU, QFALSE);
+        // cpy_data_thread(&vec_s[0], &vec_r[0], (biva * Ng * civ), GPU,
+        // QFALSE);
         cpy_data_thread(&vec_s[0], &vec_r[0], (biva * Ng * civ), GPU, QTRUE);
       }
     }
@@ -1565,8 +1566,8 @@ void shift_vecs_cov_fieldG(std::vector<std::vector<FieldG<Ty>>>& res,
     // r = 0.5 * (b0 - b1)
     {
       TIMER("shift_vecs_cov combine");
-      fields_operations(res[1 + nu], buf[0], buf[1], Ty(0.0, 0.0),
-                        Ty(0.5, 0.0), Ty(-0.5, 0.0));
+      fields_operations(res[1 + nu], buf[0], buf[1], Ty(0.0, 0.0), Ty(0.5, 0.0),
+                        Ty(-0.5, 0.0));
     }
   }
   //
@@ -1894,37 +1895,37 @@ void shift_fields_grid(std::vector<FieldG<Ty>>& src,
   {
     TIMERB("shift_fields_grid field pointer setup");
     for (Long si = 0; si < Nsrc; si++) {
-    Qassert(src[si].initialized);
-    Qassert(res[si].initialized);
-    Ty* stmp = (Ty*)get_data(src[si]).data();
-    Ty* rtmp = (Ty*)get_data(res[si]).data();
-    if (src[si].mem_order == QLAT_OUTTER) {
-      if (civ != 0) {
-        Qassert(civ == 1 and biva == Nsrc * src[si].multiplicity);
-      } else {
-        civ = 1;
-        biva = Nsrc * src[si].multiplicity;
-        sP.resize(biva);
-        rP.resize(biva);
+      Qassert(src[si].initialized);
+      Qassert(res[si].initialized);
+      Ty* stmp = (Ty*)get_data(src[si]).data();
+      Ty* rtmp = (Ty*)get_data(res[si]).data();
+      if (src[si].mem_order == QLAT_OUTTER) {
+        if (civ != 0) {
+          Qassert(civ == 1 and biva == Nsrc * src[si].multiplicity);
+        } else {
+          civ = 1;
+          biva = Nsrc * src[si].multiplicity;
+          sP.resize(biva);
+          rP.resize(biva);
+        }
+        for (Int ci = 0; ci < src[si].multiplicity; ci++) {
+          const Int bi = si * src[si].multiplicity + ci;
+          sP[bi] = &stmp[ci * V];
+          rP[bi] = &rtmp[ci * V];
+        }
       }
-      for (Int ci = 0; ci < src[si].multiplicity; ci++) {
-        const Int bi = si * src[si].multiplicity + ci;
-        sP[bi] = &stmp[ci * V];
-        rP[bi] = &rtmp[ci * V];
+      if (src[si].mem_order == QLAT_DEFAULT) {
+        if (civ != 0) {
+          Qassert(civ == src[si].multiplicity and biva == Nsrc);
+        } else {
+          civ = src[si].multiplicity;
+          biva = Nsrc;
+          sP.resize(biva);
+          rP.resize(biva);
+        }
+        sP[si] = &stmp[0];
+        rP[si] = &rtmp[0];
       }
-    }
-    if (src[si].mem_order == QLAT_DEFAULT) {
-      if (civ != 0) {
-        Qassert(civ == src[si].multiplicity and biva == Nsrc);
-      } else {
-        civ = src[si].multiplicity;
-        biva = Nsrc;
-        sP.resize(biva);
-        rP.resize(biva);
-      }
-      sP[si] = &stmp[0];
-      rP[si] = &rtmp[0];
-    }
     }
   }
   shift_fields_gridP(sP.data(), rP.data(), iDir, biva, civ, geo, mode,

@@ -606,8 +606,8 @@ void shift_results_with_phases(
       for (Long j = 0; j < Nops; j++) {
         shift_res[j].set_pointer(curr_res[si * Nops + j]);
       }
-      shift_fields_grid(shift_res, shift_res, pos_new[si][0], -1,
-                        0, max_shift_grid);
+      shift_fields_grid(shift_res, shift_res, pos_new[si][0], -1, 0,
+                        max_shift_grid);
     } else {
       Qassert(false);
       // for(Long j=0;j<Nops;j++){

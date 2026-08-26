@@ -329,19 +329,19 @@ void prop_full_copy_to_prop_8(std::vector<qlat::vector_gpu<Ty>>& propL,
 // dup_off try to create new smf buffers for different moms
 template <class Ty, class Td>
 void smear_propagator_wuppertal_convension(
-    qlat::FieldM<Ty, 3>& prop, GaugeFieldT<Td>& gf,
-    const double width, const Int step,
-    const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    qlat::FieldM<Ty, 3>& prop, GaugeFieldT<Td>& gf, const double width,
+    const Int step, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   if (width == 0 or step == 0) {
     return;
   }
   Qassert(prop.initialized);
-  //const Geometry& geo = gf.geo();
+  // const Geometry& geo = gf.geo();
   //
   double factor_sigma = width;  // width can be negative for normalization
   factor_sigma = std::sqrt(2 * step * width / 3.0);
-  Ty* propP = (Ty*) get_data(prop).data();
+  Ty* propP = (Ty*)get_data(prop).data();
   smear_propagator_gwu_convension_inner<Ty, 1, 1, Td>(
       propP, gf, factor_sigma, step, mom, false, 1, dup_off);
 }
@@ -353,7 +353,8 @@ void smear_propagator_gwu_convension_2shift_modi(
     std::vector<qlat::vector_gpu<Ty>>& propL, const Geometry& geo,
     std::vector<GaugeFieldT<Td>>& gfL, const double width, const Int step,
     const Int even = -1, const Int force_update = -1,
-    const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   (void)geo;
   if (width == 0 or step == 0) {
@@ -380,7 +381,8 @@ void smear_propagator_gwu_convension_2shift_modi(
     Qassert(Long(propL[writei].size()) >= geoh.local_volume() * Ndata);
     Ty* proph = (Ty*)propL[writei].data();
     smear_propagator_gwu_convension_inner<Ty, c0, d0, Td>(
-        proph, gfL[i], factor_sigma, step, mom, false, 1, i + dup_off, force_update);
+        proph, gfL[i], factor_sigma, step, mom, false, 1, i + dup_off,
+        force_update);
   }
 }
 
@@ -389,7 +391,8 @@ void smear_propagator_gwu_convension_2shift_modi(
     Ty* prop, const Geometry& geo, std::vector<GaugeFieldT<Td>>& gfL,
     const double width, const Int step,
     std::vector<qlat::vector_gpu<Ty>>& propL, const Int even = -1,
-    const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   Qassert(gfL.size() == 8);
   const Geometry& geoh = gfL[0].geo();
@@ -421,7 +424,8 @@ void smear_propagator_wuppertal_convension_2shift(
   qlat::ComplexT<Td>* src = (qlat::ComplexT<Td>*)qlat::get_data(prop).data();
   smear_propagator_gwu_convension_2shift_modi<qlat::ComplexT<Td>, Td, 1,
                                               12 * 4>(
-      src, prop.geo(), gfL, width, step, propL, even, wuppertal_conv, mom, dup_off);
+      src, prop.geo(), gfL, width, step, propL, even, wuppertal_conv, mom,
+      dup_off);
   rotate_prop(prop, 1);
 }
 
@@ -431,18 +435,20 @@ void smear_propagator_gwu_convension_2shift(
     Propagator4dT<Td>& prop, std::vector<GaugeFieldT<Td>>& gfL,
     const double width, const Int step,
     std::vector<qlat::vector_gpu<qlat::ComplexT<Td>>>& propL,
-    const Int even = -1, const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    const Int even = -1, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   const Int wuppertal_conv = 0;
-  smear_propagator_wuppertal_convension_2shift(prop, gfL, width, step, propL,
-                                               even, wuppertal_conv, mom, dup_off);
+  smear_propagator_wuppertal_convension_2shift(
+      prop, gfL, width, step, propL, even, wuppertal_conv, mom, dup_off);
 }
 
 template <class Ty, class Td>
 void smear_propagator_gwu_convension_2shift(
     FieldG<Ty>& prop, std::vector<GaugeFieldT<Td>>& gfL, const double width,
     const Int step, std::vector<qlat::vector_gpu<qlat::ComplexT<Td>>>& propL,
-    const Int even = -1, const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    const Int even = -1, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   if (0 == step) {
     return;
@@ -491,7 +497,8 @@ template <class Ty, class Td>
 void smear_propagator_gwu_convension_2shift(
     qpropT& prop, std::vector<GaugeFieldT<Td>>& gfL, const double width,
     const Int step, std::vector<qlat::vector_gpu<qlat::ComplexT<Td>>>& propL,
-    const Int even = -1, const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    const Int even = -1, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   if (0 == step) {
     return;
@@ -515,7 +522,8 @@ void smear_propagator_gwu_convension_2shift_modi(
   Qassert(prop.initialized);
   Ty* src = (Ty*)qlat::get_data(prop).data();
   smear_propagator_gwu_convension_2shift_modi<Ty, Td, 1, 1>(
-      src, prop.geo(), gfL, width, step, propL, even, wuppertal_conv, mom, dup_off);
+      src, prop.geo(), gfL, width, step, propL, even, wuppertal_conv, mom,
+      dup_off);
 }
 
 template <typename Ty, typename Td>
@@ -523,7 +531,8 @@ void smear_propagator_gwu_convension_2shift_modi(
     std::vector<colorFT>& prop, std::vector<GaugeFieldT<Td>>& gfL,
     const double width, const Int step,
     std::vector<qlat::vector_gpu<Ty>>& propL, const Int even = -1,
-    const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD(), const Int dup_off = 0)
+    const Int wuppertal_conv = 1, const CoordinateD& mom = CoordinateD(),
+    const Int dup_off = 0)
 {
   for (unsigned int i = 0; i < prop.size(); i++) {
     smear_propagator_gwu_convension_2shift_modi(

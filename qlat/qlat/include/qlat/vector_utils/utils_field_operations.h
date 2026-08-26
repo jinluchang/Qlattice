@@ -46,7 +46,8 @@ void init_fields(std::vector<Fieldy>& res, Fieldy& src, const unsigned int size)
     res.resize(size);
   }
   for (unsigned int i = 0; i < res.size(); i++) {
-    if (!res[i].initialized or res[i].geo() != src.geo() or res[i].multiplicity != src.multiplicity) {
+    if (!res[i].initialized or res[i].geo() != src.geo() or
+        res[i].multiplicity != src.multiplicity) {
       res[i].init(src.geo(), src.multiplicity);
     }
   }

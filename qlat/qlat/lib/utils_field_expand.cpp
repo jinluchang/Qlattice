@@ -76,7 +76,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
   Int set_tag = -10000;
   bool has_dir_mask = false;
   Int dir_skip[8] = {1, 1, 1, 1, 1, 1, 1, 1};
-
+  //
   const auto enable_dir = [&](const Int dir) {
     Qassert(dirmt <= dir and dir <= dirt);
     dir_skip[dir - dirmt] = 0;
@@ -91,7 +91,7 @@ void set_marks_field_dir(CommMarks& marks, const Geometry& geo,
     set_tag = dir;
     enable_dir(dir);
   };
-
+  //
   if (tag == std::string("dirL")) {
     set_tag = dirL;
     enable_dir(dirmx);

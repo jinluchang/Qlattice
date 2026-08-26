@@ -2031,8 +2031,10 @@ template <typename Ty>
 void vector_cs_resize(vector_cs<Ty>& A, const Int nadd)
 {
   TIMER("vector_cs_resize");
-  if(nadd == 0){return ;}
-  if(nadd > 0){
+  if (nadd == 0) {
+    return;
+  }
+  if (nadd > 0) {
     vector_cs<Ty> B;
     B.resize(nadd, A);
     const Int GPU = A.GPU == QMGPU ? 1 : 0;
