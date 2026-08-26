@@ -68,34 +68,6 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
-def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
-    sp_prop = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc_wsnk ; psel_ts")
-    #
-    def f(x):
-        return x.get_elem_wm(t_snk)
-    #
-    return ama_apply1(f, sp_prop)
-
-def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fsel_pos_dict):
-    assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
-    idx_snk = fsel_pos_dict[xg_snk]
-    #
-    def f(x):
-        return x.get_elem_wm(idx_snk)
-    #
-    return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fsel"))
-
-def get_prop_psnk_wsrc_psel(prop_cache, inv_type, xg_snk, t_src, psel_pos_dict):
-    assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
-    idx_snk = psel_pos_dict[xg_snk]
-    #
-    def f(x):
-        return x.get_elem_wm(idx_snk)
-    #
-    return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; psel"))
-
-### -------
-
 def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     cache_type_dict = {
         "psrc_wsnk ; psel_ts": "psel_ts",
@@ -163,60 +135,10 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
-def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
-    assert isinstance(xg_src, tuple) and len(xg_src) == 4
-    sp_prop = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc_wsnk ; psel_ts")
-    #
-    def f(x):
-        if isinstance(x, int) and x == 0:
-            return 0
-        return x.get_elem_wm(t_snk)
-    #
-    return ama_apply1(f, sp_prop)
-
-def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict):
-    assert isinstance(xg_src, tuple) and len(xg_src) == 4
-    assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
-    idx_snk = fsel_pos_dict[xg_snk]
-    #
-    def f(x):
-        if isinstance(x, int) and x == 0:
-            return 0
-        return x.get_elem_wm(idx_snk)
-    #
-    return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel"))
-
-def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict):
-    assert isinstance(xg_src, tuple) and len(xg_src) == 4
-    assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
-    idx_snk = psel_pos_dict[xg_snk]
-    #
-    def f(x):
-        if isinstance(x, int) and x == 0:
-            return 0
-        return x.get_elem_wm(idx_snk)
-    #
-    return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; psel"))
-
-### -------
-
 def get_prop_rand_u1_fsel(prop_cache, inv_type):
     inv_acc = 2
     tag = f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"
     return prop_cache["fsel"].get(tag)
-
-def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict):
-    assert xg_snk == xg_src
-    if isinstance(xg_snk, tuple) and len(xg_snk) == 4:
-        idx_snk = fsel_pos_dict[xg_snk]
-    else:
-        assert isinstance(xg_snk, int)
-        idx_snk = xg_snk
-    #
-    def f(x):
-        return x.get_elem_wm(idx_snk)
-    #
-    return ama_apply1(f, get_prop_rand_u1_fsel(prop_cache, inv_type))
 
 ### -------
 
