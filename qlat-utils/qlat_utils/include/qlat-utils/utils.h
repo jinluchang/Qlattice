@@ -306,18 +306,26 @@ qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
 #ifndef QLAT_IN_ACC
   std::memcpy((void*)xx.data(), (void*)yy.data(), xx.size());
 #else
-  const Long num = xx.size() / sizeof(Long);
-  const Long offset = num * sizeof(Long);
-  const Long rem = xx.size() - offset;
-  Long* px = (Long*)xx.data();
-  const Long* py = (Long*)yy.data();
-  for (Long i = 0; i < num; ++i) {
-    px[i] = py[i];
-  }
-  if (rem > 0) {
-    Char* px = xx.data();
-    const Char* py = yy.data();
-    for (Long i = offset; i < xx.size(); ++i) {
+  const Long n = xx.size();
+  Char* px = xx.data();
+  const Char* py = yy.data();
+  const bool aligned =
+      ((uintptr_t)px % sizeof(Long) == 0) &&
+      ((uintptr_t)py % sizeof(Long) == 0);
+  if (aligned) {
+    const Long num = n / sizeof(Long);
+    const Long offset = num * sizeof(Long);
+    const Long rem = n - offset;
+    Long* lpx = (Long*)px;
+    const Long* lpy = (Long*)py;
+    for (Long i = 0; i < num; ++i) {
+      lpx[i] = lpy[i];
+    }
+    for (Long i = offset; i < n; ++i) {
+      px[i] = py[i];
+    }
+  } else {
+    for (Long i = 0; i < n; ++i) {
       px[i] = py[i];
     }
   }
