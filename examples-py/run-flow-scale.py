@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import qlat as q
 
 from qlat import (
@@ -455,8 +456,20 @@ set_param(job_tag, "flow_scale")(
 job_tag_list_default = [
     "test-4nt8-checker",
 ]
-job_tag_list_str_default = ",".join(job_tag_list_default)
-job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Run flow scale."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default=",".join(job_tag_list_default),
+        help="Comma-separated list of job tags (default: 'test-4nt8-checker')",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 # ----
 
@@ -501,8 +514,11 @@ size_node_list = [
 ]
 
 if __name__ == "__main__":
+    sys_args = parse_args()
     q.begin_with_mpi(size_node_list)
     q.check_time_limit()
+
+    job_tag_list = sys_args.job_tag_list
 
     job_tag_traj_list = []
     for job_tag in job_tag_list:

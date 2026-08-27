@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import qlat as q
 
 from qlat_scripts.v1 import (
@@ -173,28 +174,44 @@ set_param(job_tag, "field_selection_psel_rate")(2048 / (64**3 * 128))
 
 # --------------------------------------------
 
-job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="PSel split."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default="",
+        help="Comma-separated list of job tags",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
-q.begin_with_mpi()
+if __name__ == "__main__":
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
 
-job_tag_list_default = [
-    "test-4nt8-checker",
-    "test-8nt16-checker",
-    # "test-48nt96-checker",
-    # "test-64nt128-checker",
-]
+    q.begin_with_mpi()
 
-if job_tag_list == [
-    "",
-]:
-    job_tag_list = job_tag_list_default
+    job_tag_list_default = [
+        "test-4nt8-checker",
+        "test-8nt16-checker",
+        # "test-48nt96-checker",
+        # "test-64nt128-checker",
+    ]
 
-for job_tag in job_tag_list:
-    for traj in get_param(job_tag, "traj_list"):
-        run_job(job_tag, traj)
+    if job_tag_list == [
+        "",
+    ]:
+        job_tag_list = job_tag_list_default
 
-q.timer_display()
-if q.is_test():
-    q.check_log_json(__file__, check_eps=1e-10)
-q.end_with_mpi()
-q.displayln_info("CHECK: finished successfully.")
+    for job_tag in job_tag_list:
+        for traj in get_param(job_tag, "traj_list"):
+            run_job(job_tag, traj)
+
+    q.timer_display()
+    if q.is_test():
+        q.check_log_json(__file__, check_eps=1e-10)
+    q.end_with_mpi()
+    q.displayln_info("CHECK: finished successfully.")

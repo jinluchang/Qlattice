@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+
 """
 Topological charge measurement based on Wilson/Localize flow with Qlattice.\n
 Measures topological charge on gauge field configurations by applying Wilson
@@ -299,24 +301,93 @@ def run_topo_measure(fn_gf, fn_out, fn_out_df, smear_info_list):
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
 
+class ExtendAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest, None) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Topological charge measurement based on Wilson/Localize flow."
+    )
+    parser.add_argument(
+        "--usage",
+        action="store_true",
+        default=False,
+        help="Show usage",
+    )
+    parser.add_argument(
+        "--gf",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Gauge field paths",
+    )
+    parser.add_argument(
+        "--out",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Output info paths",
+    )
+    parser.add_argument(
+        "--out_df",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Output density field paths",
+    )
+    parser.add_argument(
+        "--step_size",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Flow step sizes",
+    )
+    parser.add_argument(
+        "--n_step",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Number of flow steps",
+    )
+    parser.add_argument(
+        "--flow_type",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Flow types",
+    )
+    parser.add_argument(
+        "--integrator_type",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Integrator types",
+    )
+    args, _ = parser.parse_known_args(args=argv)
+    return args
+
 @q.timer(is_timer_fork=True)
 def run():
     if is_test():
         q.displayln_info("Will now generate test data and run topo measure.")
         argv = gen_test_data()
     else:
-        argv = sys.argv
-    fn_gf_list = q.get_arg_list("--gf", argv=argv)
-    fn_out_list = q.get_arg_list("--out", argv=argv)
-    fn_out_df_list = q.get_arg_list("--out_df", argv=argv)
+        argv = sys.argv[1:]
+    sys_args = parse_args(argv)
+    fn_gf_list = sys_args.gf
+    fn_out_list = sys_args.out
+    fn_out_df_list = sys_args.out_df
     assert len(fn_gf_list) == len(fn_out_list)
     if len(fn_out_df_list) == 0:
         fn_out_df_list = fn_out_list
     assert len(fn_out_df_list) == len(fn_out_list)
-    p_step_size_list = q.get_arg_list("--step_size", argv=argv)
-    p_n_step_list = q.get_arg_list("--n_step", argv=argv)
-    flow_type_list = q.get_arg_list("--flow_type", argv=argv)
-    integrator_type_list = q.get_arg_list("--integrator_type", argv=argv)
+    p_step_size_list = sys_args.step_size
+    p_n_step_list = sys_args.n_step
+    flow_type_list = sys_args.flow_type
+    integrator_type_list = sys_args.integrator_type
     assert len(p_step_size_list) == len(p_n_step_list)
     assert len(p_step_size_list) == len(flow_type_list)
     assert len(p_step_size_list) == len(integrator_type_list)
@@ -445,8 +516,8 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 # --------------------------------------------
 
 if __name__ == "__main__":
-    is_show_usage = q.get_option("--usage")
-    if is_show_usage:
+    sys_args = parse_args()
+    if sys_args.usage:
         show_usage()
         exit()
     q.begin_with_mpi(size_node_list)

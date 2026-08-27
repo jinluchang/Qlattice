@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import qlat as q
 
 from qlat_scripts.v1 import (
@@ -120,14 +121,33 @@ def run_psel_closest_dis_sqr(fn_list):
         )
     return ret
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Calculate psel closest distance squared."
+    )
+    parser.add_argument(
+        "--usage",
+        action="store_true",
+        default=False,
+        help="Show usage",
+    )
+    parser.add_argument(
+        "--src",
+        nargs="*",
+        default=None,
+        help="Source paths for psel files",
+    )
+    args, _ = parser.parse_known_args()
+    return args
+
 @q.timer(is_timer_fork=True)
-def run():
+def run(sys_args):
     if is_test():
         q.displayln_info(f"Usage:{usage}")
         q.displayln_info("Will now generate test data and run conversion.")
         fn_list = gen_test_data()
     else:
-        fn_list = q.get_all_arg_list("--src")
+        fn_list = sys_args.src
         if fn_list is None:
             q.displayln_info(f"Usage:{usage}")
             return
@@ -226,12 +246,12 @@ set_param(job_tag, "field_selection_psel_rate")(2048 / (64**3 * 128))
 # --------------------------------------------
 
 if __name__ == "__main__":
-    is_show_usage = q.get_option("--usage")
-    if is_show_usage:
+    sys_args = parse_args()
+    if sys_args.usage:
         q.displayln_info(f"Usage:{usage}")
         exit()
     q.begin_with_mpi()
-    run()
+    run(sys_args)
     q.timer_display()
     if is_test():
         q.check_log_json(__file__, check_eps=1e-10)

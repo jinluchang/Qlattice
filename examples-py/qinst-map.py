@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys
 import qlat as q
 
@@ -131,16 +132,56 @@ def run_inst_map(fn_out, fn_gf=None):
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
 
+class ExtendAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest, None) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Instanton map computation."
+    )
+    parser.add_argument(
+        "--usage",
+        action="store_true",
+        default=False,
+        help="Show usage",
+    )
+    parser.add_argument(
+        "--gf",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Gauge field paths",
+    )
+    parser.add_argument(
+        "--out",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Output paths",
+    )
+    parser.add_argument(
+        "--info",
+        nargs="*",
+        default=[],
+        help="Info paths to display",
+    )
+    args, _ = parser.parse_known_args(args=argv)
+    return args
+
 @q.timer(is_timer_fork=True)
 def run():
     if is_test():
         q.displayln_info("Will now generate test data and run instanton map.")
         argv = gen_test_data()
     else:
-        argv = sys.argv
-    fn_gf_list = q.get_arg_list("--gf", argv=argv)
-    fn_out_list = q.get_arg_list("--out", argv=argv)
-    fn_info_list = q.get_all_arg_list("--info", argv=argv)
+        argv = sys.argv[1:]
+    sys_args = parse_args(argv)
+    fn_gf_list = sys_args.gf
+    fn_out_list = sys_args.out
+    fn_info_list = sys_args.info
     assert len(fn_gf_list) == len(fn_out_list)
     for fn_gf, fn_out in zip(fn_gf_list, fn_out_list):
         run_inst_map(fn_out, fn_gf)
@@ -254,8 +295,8 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 # --------------------------------------------
 
 if __name__ == "__main__":
-    is_show_usage = q.get_option("--usage")
-    if is_show_usage:
+    sys_args = parse_args()
+    if sys_args.usage:
         show_usage()
         exit()
     q.begin_with_mpi()

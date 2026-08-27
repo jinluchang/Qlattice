@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import glob
 import pickle
 import qlat as q
@@ -67,10 +68,10 @@ def run_conversion(total_site, path_dst, path_src):
             q.displayln_info(f"psel: {psel_str}")
 
 @q.timer(is_timer_fork=True)
-def run():
-    total_site_str = q.get_arg("--grid")
-    path_src = q.get_arg("--src")
-    path_dst = q.get_arg("--dst")
+def run(sys_args):
+    total_site_str = sys_args.grid
+    path_src = sys_args.src
+    path_dst = sys_args.dst
     if is_test():
         assert total_site_str is None
         assert path_src is None
@@ -85,13 +86,44 @@ def run():
     total_site = q.parse_grid_coordinate_str(total_site_str)
     run_conversion(total_site, path_dst, path_src)
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Convert psel txt to lati."
+    )
+    parser.add_argument(
+        "--usage",
+        action="store_true",
+        default=False,
+        help="Show usage",
+    )
+    parser.add_argument(
+        "--grid",
+        type=str,
+        default=None,
+        help="Grid size (e.g. '4.4.4.8')",
+    )
+    parser.add_argument(
+        "--src",
+        type=str,
+        default=None,
+        help="Source directory for psel txt files",
+    )
+    parser.add_argument(
+        "--dst",
+        type=str,
+        default=None,
+        help="Destination directory for psel lati files",
+    )
+    args, _ = parser.parse_known_args()
+    return args
+
 if __name__ == "__main__":
-    is_show_usage = q.get_option("--usage")
-    if is_show_usage:
+    sys_args = parse_args()
+    if sys_args.usage:
         q.displayln_info(f"Usage:{usage}")
         exit()
     q.begin_with_mpi()
-    run()
+    run(sys_args)
     q.timer_display()
     if is_test():
         q.check_log_json(__file__, check_eps=1e-10)

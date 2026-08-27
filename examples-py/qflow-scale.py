@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys
 import qlat as q
 
@@ -118,26 +119,20 @@ def gen_test_data():
     return argv_list
 
 def parse_params(argv):
+    sys_args = parse_args(argv)
     params = dict()
-    params["step_size"] = float(
-        q.get_arg("--step_size", f"{default_params['step_size']}", argv=argv)
-    )
-    params["num_step"] = int(
-        q.get_arg("--num_step", f"{default_params['num_step']}", argv=argv)
-    )
-    params["is_spatial"] = q.get_arg(
-        "--is_spatial", f"{default_params['is_spatial']}", argv=argv
-    ).lower() in ["true", "t", "yes", "y"]
-    params["t_dir"] = int(q.get_arg("--t_dir", f"{default_params['t_dir']}", argv=argv))
-    params["integrator_type"] = q.get_arg(
-        "--integrator_type", default_params["integrator_type"], argv=argv
-    )
+    params["step_size"] = sys_args.step_size
+    params["num_step"] = sys_args.num_step
+    params["is_spatial"] = sys_args.is_spatial.lower() in ["true", "t", "yes", "y"]
+    params["t_dir"] = sys_args.t_dir
+    params["integrator_type"] = sys_args.integrator_type
     return params
 
 @q.timer(is_timer_fork=True)
 def run_job(argv):
-    fn_gf_list = q.get_arg_list("--gf", argv=argv)
-    fn_out_list = q.get_arg_list("--out", argv=argv)
+    sys_args = parse_args(argv)
+    fn_gf_list = sys_args.gf
+    fn_out_list = sys_args.out
     assert len(fn_gf_list) == len(fn_out_list)
     params = parse_params(argv)
     for fn_gf, fn_out in zip(fn_gf_list, fn_out_list):
@@ -150,13 +145,76 @@ def run():
         argv_list = gen_test_data()
     else:
         argv_list = [
-            sys.argv,
+            sys.argv[1:],
         ]
     for argv in argv_list:
         run_job(argv)
 
 def show_usage():
     q.displayln_info(f"Usage:{usage}")
+
+class ExtendAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest, None) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Scale flow (Wilson flow or Spatial flow)."
+    )
+    parser.add_argument(
+        "--usage",
+        action="store_true",
+        default=False,
+        help="Show usage",
+    )
+    parser.add_argument(
+        "--step_size",
+        type=float,
+        default=default_params["step_size"],
+        help=f"Step size (default: {default_params['step_size']})",
+    )
+    parser.add_argument(
+        "--num_step",
+        type=int,
+        default=default_params["num_step"],
+        help=f"Number of steps (default: {default_params['num_step']})",
+    )
+    parser.add_argument(
+        "--is_spatial",
+        type=str,
+        default=f"{default_params['is_spatial']}",
+        help=f"Whether to perform spatial flow (default: {default_params['is_spatial']})",
+    )
+    parser.add_argument(
+        "--t_dir",
+        type=int,
+        default=default_params["t_dir"],
+        help=f"Time direction (default: {default_params['t_dir']})",
+    )
+    parser.add_argument(
+        "--integrator_type",
+        type=str,
+        default=default_params["integrator_type"],
+        help=f"Integrator type (default: {default_params['integrator_type']})",
+    )
+    parser.add_argument(
+        "--gf",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Gauge field paths",
+    )
+    parser.add_argument(
+        "--out",
+        action=ExtendAction,
+        nargs="+",
+        default=[],
+        help="Output paths",
+    )
+    args, _ = parser.parse_known_args(args=argv)
+    return args
 
 # --------------------------------------------
 
@@ -266,8 +324,8 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 # --------------------------------------------
 
 if __name__ == "__main__":
-    is_show_usage = q.get_option("--usage")
-    if is_show_usage:
+    sys_args = parse_args()
+    if sys_args.usage:
         show_usage()
         exit()
     q.begin_with_mpi()
