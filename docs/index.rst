@@ -17,6 +17,8 @@ Qlattice
 
    contents/env-vars.md
 
+   contents/cmd-args.md
+
    qlat-utils.rst
 
    qlat.rst
