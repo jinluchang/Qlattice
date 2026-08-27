@@ -89,7 +89,6 @@ from auto_contractor.operators import (
     mk_k_p_star_mu,
     mk_kappa_p,
     mk_m,
-    mk_meson,
     mk_omega,
     mk_pi_0,
     mk_pi_m,
@@ -98,7 +97,6 @@ from auto_contractor.operators import (
     mk_scalar,
     mk_sym,
     mk_sw5,
-    mk_vec5_mu,
     mk_vec_mu,
 )
 from auto_contractor.eval import (
@@ -342,7 +340,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
             -1,
             "WARNING: fsel is not containing psel. The probability weighting may be wrong.",
         )
-    q.Geometry(total_site)
     #
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -387,7 +384,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         )
         for val, t in val_list:
             values[t] += val
-        return q.glb_sum(values.transpose(1, 0))
+        return values.transpose(1, 0)
     #
     auto_contractor_chunk_size = get_param(
         job_tag, "measurement", "auto_contractor_chunk_size", default=128
@@ -399,6 +396,7 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         sum_function=sum_function,
         chunksize=auto_contractor_chunk_size,
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -507,14 +505,13 @@ def auto_contract_meson_corr_psnk(
         job_tag, "measurement", "auto_contractor_chunk_size", default=128
     )
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-        q.parallel_map_sum(
-            feval,
-            load_data(),
-            sum_function=sum_function,
-            chunksize=auto_contractor_chunk_size,
-        )
+    res_sum = q.parallel_map_sum(
+        feval,
+        load_data(),
+        sum_function=sum_function,
+        chunksize=auto_contractor_chunk_size,
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -600,6 +597,7 @@ def auto_contract_meson_corr_psrc(
         pidx, t_snk = args
         xg_src = tuple(xg_psel_arr[pidx])
         prob_src = psel_prob_arr[pidx]
+        # define t as (x_2)_t - (x_1)_t, so this contraction should agree with ``auto_contract_meson_corr_psnk``.
         t = (xg_src[3] - t_snk) % total_site[3]
         pd = {
             "x_2": (
@@ -631,14 +629,13 @@ def auto_contract_meson_corr_psrc(
         job_tag, "measurement", "auto_contractor_chunk_size", default=128
     )
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-        q.parallel_map_sum(
-            feval,
-            load_data(),
-            sum_function=sum_function,
-            chunksize=auto_contractor_chunk_size,
-        )
+    res_sum = q.parallel_map_sum(
+        feval,
+        load_data(),
+        sum_function=sum_function,
+        chunksize=auto_contractor_chunk_size,
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -764,9 +761,10 @@ def auto_contract_meson_corr_psnk_psrc(
         return values.transpose(2, 0, 1)
     #
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-        q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.parallel_map_sum(
+        feval, load_data(), sum_function=sum_function, chunksize=1
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -929,14 +927,13 @@ def auto_contract_meson_jt(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
         job_tag, "measurement", "auto_contractor_chunk_size", default=128
     )
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-        q.parallel_map_sum(
-            feval,
-            load_data(),
-            sum_function=sum_function,
-            chunksize=auto_contractor_chunk_size,
-        )
+    res_sum = q.parallel_map_sum(
+        feval,
+        load_data(),
+        sum_function=sum_function,
+        chunksize=auto_contractor_chunk_size,
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -1080,14 +1077,13 @@ def auto_contract_meson_m(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_p
         job_tag, "measurement", "auto_contractor_chunk_size", default=128
     )
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-        q.parallel_map_sum(
-            feval,
-            load_data(),
-            sum_function=sum_function,
-            chunksize=auto_contractor_chunk_size,
-        )
+    res_sum = q.parallel_map_sum(
+        feval,
+        load_data(),
+        sum_function=sum_function,
+        chunksize=auto_contractor_chunk_size,
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -1674,8 +1670,8 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
             r_sq = q.get_r_sq(x_rel)
             r_idx_low, r_idx_high, coef_low, coef_high = r_sq_interp_idx_coef_list[r_sq]
             x_rel_t = x_rel[3]
-            x_2_t = xg_src[3]
-            x_1_t = x_2_t + x_rel_t
+            x_1_t = xg_src[3]
+            x_2_t = x_1_t + x_rel_t
             t_2 = (max(x_1_t, x_2_t) + tsep) % total_site[3]
             t_1 = (min(x_1_t, x_2_t) - tsep) % total_site[3]
             pd = {
@@ -1719,12 +1715,13 @@ def auto_contract_meson_jj(job_tag, traj, get_get_prop, get_psel_prob, get_fsel_
                 values[t, r_idx_low] += coef_low * val
                 values[t, r_idx_high] += coef_high * val
             q.displayln_info(f"{fname}: {idx + 1}/{len(xg_psel_arr)}")
-        return q.glb_sum(values.transpose(2, 0, 1))
+        return values.transpose(2, 0, 1)
     #
     q.timer_fork(0)
     res_sum = q.parallel_map_sum(
         feval, load_data(), sum_function=sum_function, chunksize=1
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
@@ -2150,9 +2147,7 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     def load_data():
         idx_pair = 0
         for idx1, xg1_src in enumerate(xg_psel_arr):
-            xg1_src = tuple(xg1_src.tolist())
             for idx2, xg2_src in enumerate(xg_psel_arr):
-                xg2_src = tuple(xg2_src.tolist())
                 if idx2 > idx1:
                     continue
                 idx_pair += 1
@@ -2280,9 +2275,10 @@ def auto_contract_meson_jwjj(job_tag, traj, get_get_prop, get_psel_prob, get_fse
         return values.transpose(3, 0, 1, 2)
     #
     q.timer_fork(0)
-    res_sum = q.glb_sum(
-        q.parallel_map_sum(feval, load_data(), sum_function=sum_function, chunksize=1)
+    res_sum = q.parallel_map_sum(
+        feval, load_data(), sum_function=sum_function, chunksize=1
     )
+    res_sum = q.glb_sum(res_sum)
     q.displayln_info(f"{fname}: timer_display")
     q.timer_display()
     q.timer_merge()
@@ -2652,7 +2648,7 @@ def auto_contract_meson_jwjj2(
                     "wall",
                     t_2,
                 ),
-                "size": total_site.to_list(),
+                "size": total_site,
             }
             t_1 = xg_1_xg_t
             t_2 = xg_2_xg_t
@@ -2834,16 +2830,11 @@ def get_cexpr_tadpole_current():
     Build compiled expressions for tadpole (disconnected) current correlators.\n
     Computes <J_mu(x_1)> with various quark flavor combinations (ls, sl, ll, ss).
     Results must be multiplied by (m_s - m_l) and summed over x_2 (space-time
-    volume) to get the full tadpole contribution. The 1/3 charge factor is
-    already included.\n
-    Returns:
-        Compiled expression object for use with eval_cexpr.
-    """
-    """
-    Intend to calculating < J_mu(x_1) >
-    !!! Results needs to be multiplied by (m_s - m_l) and sum over "x_2" over the entire space-time volume !!!
+    volume) to get the full tadpole contribution.
     After summing over "x_2", the first and second expr should be same (and so is the following exprs). (We can average these two.)
-    1/3 charge factor is already multiplied.
+    The 1/3 charge factor is already multiplied.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.\n
     """
     fn_base = "cache/auto_contract_cexpr/get_cexpr_tadpole_current"
     #
@@ -2961,7 +2952,6 @@ def auto_contract_tadpole_current(
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    q.Geometry(total_site)
     sf_tadpole_current = q.SelectedFieldComplexD(fsel, len(expr_names))
     q.set_zero(sf_tadpole_current)
     sf_tadpole_current_arr = sf_tadpole_current[:]
@@ -3072,7 +3062,6 @@ def auto_contract_pi0_current(
         )
     fsel_prob_arr = fsel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
-    q.Geometry(total_site)
     sf_pi0_current_list = []
     sf_pi0_current_arr_list = []
     for t_src in range(t_size):
@@ -3280,7 +3269,7 @@ def auto_contract_pi0_gg_disc(
     t_arr = xg_arr[:, 3]
     f_pi0_current_sep_list = []
     for pi0_current_sep in range(t_size):
-        f = q.FieldComplexD(geo, sf.multiplicity)
+        f = q.FieldComplexD(geo, len(pi0_current_expr_names))
         q.set_zero(f)
         for t_src in range(t_size):
             f_src = f_pi0_current_list[t_src]
@@ -3420,8 +3409,6 @@ def run_job_inversion(job_tag, traj):
         job_tag: Gauge ensemble identifier.
         traj: Trajectory number.
     """
-    q.get_fname()
-    #
     psel_split_num_piece = get_param(job_tag, "measurement", "psel_split_num_piece")
     fsel_psel_split_num_piece = get_param(
         job_tag, "measurement", "fsel_psel_split_num_piece"
@@ -3468,7 +3455,7 @@ def run_job_inversion(job_tag, traj):
             ),
             (
                 f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}.qar",
-                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt.txt",
+                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt",
             ),
             f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
             f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
@@ -4560,7 +4547,7 @@ def gracefully_finish():
         q.check_log_json(__file__, check_eps=5e-5)
     qg.end_with_gpt()
     q.displayln_info("CHECK: finished successfully.")
-    exit()
+    sys.exit(0)
 
 def try_gracefully_finish():
     """

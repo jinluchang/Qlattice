@@ -144,7 +144,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob[:].ravel()
     psel_prob[:].ravel()
     fsel.to_psel_local()[:]
-    q.Geometry(total_site)
     #
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -989,7 +988,6 @@ def get_hlbl_four_total_prob(job_tag, inv_type):
 @q.timer
 def mk_hlbl_four_point_pairs(job_tag, traj, *, inv_type, get_psel_prob):
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    q.Geometry(total_site)
     inv_type_name_list = [
         "light",
         "strange",
@@ -1189,8 +1187,7 @@ def run_hlbl_four_chunk(
         return
     #
     q.sync_node()
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    q.Geometry(total_site)
+    q.Coordinate(get_param(job_tag, "total_site"))
     #
     # larger value means less computation
     hlbl_four_contract_sparse_ratio = get_param(
@@ -2145,8 +2142,7 @@ def run_hlbl_two_plus_two_chunk(
     ):
         return
     #
-    total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    q.Geometry(total_site)
+    q.Coordinate(get_param(job_tag, "total_site"))
     #
     r_sq_limit = get_r_sq_limit(job_tag)
     muon_mass = get_muon_mass(job_tag)
@@ -2519,7 +2515,7 @@ def run_job_inversion(job_tag, traj):
             ),
             (
                 f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}.qar",
-                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt.txt",
+                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt",
             ),
             f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
             f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",

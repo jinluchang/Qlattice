@@ -91,57 +91,6 @@ rs_sig = q.RngState("rs_sig")
 
 # ------------------------------
 
-@q.timer
-def load_selected_points_list(cls, psel_list, path_list):
-    """
-    Load SelectedPoints from disk and shuffle to Local distribution.
-
-    Distributed read: each file is assigned to one MPI rank (round-robin).
-    That rank loads both the psel and sp from disk. Non-loading ranks
-    contribute no data. The ``"l_from_g"`` shuffle plan then redistributes
-    the data so every node holds only its locally-owned points.
-
-    - ``cls``: a SelectedPoints type, e.g. ``q.SelectedPointsComplexD``.
-    - ``psel_list``: list of PointsSelection (Global) or file paths (str).
-      If a string, the psel is loaded from the path on the owning node only.
-      If a PointsSelection, it is used directly (must be Global type).
-    - ``path_list``: list of sp file paths, each saved by ``sp.save(path)``.
-
-    Returns a list of locally-distributed SelectedPoints objects.
-    """
-    fname = q.get_fname()
-    id_node = q.get_id_node()
-    num_node = q.get_num_node()
-    n_paths = len(path_list)
-    assert len(psel_list) == n_paths
-    root_list = [i % num_node for i in range(n_paths)]
-    # Load psel from file only on the owning node (where sp will also be loaded)
-    psel_resolved = []
-    psel_empty = q.PointsSelection()
-    for i in range(n_paths):
-        if root_list[i] == id_node:
-            if isinstance(psel_list[i], str):
-                psel_g = q.PointsSelection()
-                psel_g.load(psel_list[i], is_sync_node=False)
-                psel_resolved.append(psel_g)
-            else:
-                psel_resolved.append(psel_list[i])
-        else:
-            psel_resolved.append(psel_empty)
-    ssp = q.SelectedShufflePlan("l_from_g", psel_resolved, root_list)
-    sp_list = []
-    for i, path in enumerate(path_list):
-        if root_list[i] == id_node:
-            sp = cls(psel_resolved[i])
-            sp.load(path, is_sync_node=False)
-        else:
-            sp = cls()
-        sp_list.append(sp)
-    sp_dst_list = ssp.shuffle_sp_list(cls, sp_list)
-    return sp_dst_list
-
-# ------------------------------
-
 @q.timer(is_verbose=True)
 def measure_topo_dwf(
     gf,
@@ -461,7 +410,7 @@ def measure_topo_dwf(
                 psel_list = [f"{mk_path(idx)}/psel.lati" for idx in idx_list]
                 path_list = [f"{mk_path(idx)}/sp_prop_sol.lat" for idx in idx_list]
                 q.sync_node()
-                sp_prop_sol_il = load_selected_points_list(
+                sp_prop_sol_il = q.load_selected_points_list(
                     q.PselProp, psel_list, path_list
                 )
                 assert len(sp_prop_sol_il) == len(idx_list)

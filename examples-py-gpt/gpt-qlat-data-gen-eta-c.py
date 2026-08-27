@@ -103,7 +103,6 @@ def auto_contract_eta_c_corr(job_tag, traj, get_get_prop, inv_type, tslice_list)
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    q.Geometry(total_site)
     get_prop = get_get_prop()
     #
     def load_data():

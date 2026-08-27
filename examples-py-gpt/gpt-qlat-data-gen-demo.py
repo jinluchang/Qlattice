@@ -99,7 +99,7 @@ def run_job_inversion(job_tag, traj):
             ),
             (
                 f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}.qar",
-                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt.txt",
+                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt",
             ),
             f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
             f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
@@ -308,7 +308,6 @@ def run_job_load_data_demo(job_tag, traj):
     fname = q.get_fname()
     #
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    q.Geometry(total_site)
     #
     # Load gauge transform directly
     fn_gt = f"{job_tag}/gauge-transform/traj-{traj}.field"

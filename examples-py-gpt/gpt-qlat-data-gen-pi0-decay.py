@@ -343,7 +343,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob[:].ravel()
     psel_prob[:].ravel()
     fsel.to_psel_local()[:]
-    q.Geometry(total_site)
     #
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -2084,7 +2083,6 @@ def auto_contract_tadpole_current(
     psel_prob_arr = psel_prob[:].ravel()
     xg_fsel_arr = fsel.to_psel_local()[:]
     xg_psel_arr = psel[:]
-    q.Geometry(total_site)
     sf_tadpole_current = q.SelectedFieldComplexD(fsel, len(expr_names))
     q.set_zero(sf_tadpole_current)
     sf_tadpole_current_arr = sf_tadpole_current[:]
@@ -2619,7 +2617,7 @@ def run_job_inversion(job_tag, traj):
             ),
             (
                 f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}.qar",
-                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt.txt",
+                f"{job_tag}/psel_smear_median-prop-smear-strange/traj-{traj}/geon-info.txt",
             ),
             f"{job_tag}/psel-prop-psrc-{quark_flavor}/traj-{traj}/checkpoint.txt",
             f"{job_tag}/psel-prop-wsrc-{quark_flavor}/traj-{traj}/checkpoint.txt",

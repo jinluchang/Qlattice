@@ -131,7 +131,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fse
     fsel_prob[:].ravel()
     psel_prob[:].ravel()
     fsel.to_psel_local()[:]
-    q.Geometry(total_site)
     #
     def load_data():
         t_t_list = q.get_mpi_chunk(
@@ -595,7 +594,6 @@ def auto_contract_pipi_corr(job_tag, traj, get_get_prop, get_psel_prob, get_fsel
     fsel_prob[:].ravel()
     psel_prob[:].ravel()
     fsel.to_psel_local()[:]
-    q.Geometry(total_site)
     pipi_op_t_sep = get_param(job_tag, "measurement", "pipi_op_t_sep")
     pipi_corr_t_sep_list = get_param(job_tag, "measurement", "pipi_corr_t_sep_list")
     #

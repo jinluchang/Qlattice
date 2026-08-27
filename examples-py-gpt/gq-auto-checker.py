@@ -123,7 +123,6 @@ def auto_contract_meson_corr(job_tag, traj, get_get_prop):
     get_prop = get_get_prop()
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     t_size = total_site[3]
-    q.Geometry(total_site)
     #
     def load_data():
         t_t_list = q.get_mpi_chunk(
