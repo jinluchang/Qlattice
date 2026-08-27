@@ -583,7 +583,9 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
             ) in enumerate(zip(json_results, json_results_load)):
                 if len(p) != len(pl):
                     displayln(-1, f"{fname}: {i} {p} load:{pl}")
-                    displayln(-1, f"{fname}: ERROR: JSON results length does not match.")
+                    displayln(
+                        -1, f"{fname}: ERROR: JSON results length does not match."
+                    )
                     mismatch = True
                     continue
                 if len(p) == 1:

@@ -309,9 +309,8 @@ qacc void assign(Vector<Char> xx, const Vector<Char>& yy)
   const Long n = xx.size();
   Char* px = xx.data();
   const Char* py = yy.data();
-  const bool aligned =
-      ((uintptr_t)px % sizeof(Long) == 0) &&
-      ((uintptr_t)py % sizeof(Long) == 0);
+  const bool aligned = ((uintptr_t)px % sizeof(Long) == 0) &&
+                       ((uintptr_t)py % sizeof(Long) == 0);
   if (aligned) {
     const Long num = n / sizeof(Long);
     const Long offset = num * sizeof(Long);

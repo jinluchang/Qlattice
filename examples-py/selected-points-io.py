@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 
 """
-Test for ``qlat.selected_points_io.load_selected_points_list``.
-
+Test for ``qlat.selected_points_io.load_selected_points_list``.\n
 Distributed read: each file is read by one MPI rank (no duplication).
-Shuffle: l_from_g plan redistributes to Local distribution.
-
+Shuffle: l_from_g plan redistributes to Local distribution.\n
 Verifies:
   1. Single-file: save → load → shuffle to local → check qnorm preservation.
   2. Batch (multi-file): same verification for multiple files with varying sizes.
 """
 
 import qlat as q
-import numpy as np
 
 size_node_list = [
     [1, 1, 1, 1],
@@ -22,7 +19,6 @@ size_node_list = [
     [2, 2, 2, 2],
     [2, 2, 2, 4],
 ]
-
 
 def verify_local_sp(sp_orig, sp_local):
     """
@@ -36,7 +32,6 @@ def verify_local_sp(sp_orig, sp_local):
     assert abs(total_norm_sq - orig_norm_sq) < 1e-10, (
         f"qnorm mismatch: total_norm_sq={total_norm_sq} orig_norm_sq={orig_norm_sq}"
     )
-
 
 def test_single(total_site, multiplicity, seed):
     fname = q.get_fname()
@@ -58,16 +53,13 @@ def test_single(total_site, multiplicity, seed):
     psel_load = q.PointsSelection()
     psel_load.load(path_psel, is_sync_node=False)
     # Load and shuffle to local
-    sp_list = q.load_selected_points_list(
-        q.SelectedPointsRealD, [psel_load], [path_sp]
-    )
+    sp_list = q.load_selected_points_list(q.SelectedPointsRealD, [psel_load], [path_sp])
     assert len(sp_list) == 1
     sp_local = sp_list[0]
     q.json_results_append(f"sp_local.n_points={sp_local.n_points}")
     q.json_results_append(f"sp_local.qnorm()={sp_local.qnorm()}")
     # Verify correctness
     verify_local_sp(sp, sp_local)
-
 
 def test_batch(total_site, multiplicity, seed):
     fname = q.get_fname()
@@ -110,7 +102,6 @@ def test_batch(total_site, multiplicity, seed):
         q.json_results_append(f"sp_local[{k}].n_points={sp_local.n_points}")
         q.json_results_append(f"sp_local[{k}].qnorm()={sp_local.qnorm()}")
         verify_local_sp(sp_orig, sp_local)
-
 
 # --- test harness below (must be AFTER function definitions) ---
 
