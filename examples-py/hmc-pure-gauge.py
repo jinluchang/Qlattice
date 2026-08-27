@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 from pprint import pformat
 
 import qlat as q
@@ -17,6 +18,20 @@ from qlat_scripts.v1 import (
 load_path_list[:] = [
     "results",
 ]
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Pure gauge HMC."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default="",
+        help="Comma-separated list of job tags",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 @q.timer(is_timer_fork=True)
 def run_topo_info(job_tag, traj, gf):
@@ -451,11 +466,12 @@ size_node_list = [
 ]
 
 if __name__ == "__main__":
+    sys_args = parse_args()
     q.begin_with_mpi(size_node_list)
 
     ##################### CMD options #####################
 
-    job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
+    job_tag_list = sys_args.job_tag_list
 
     #######################################################
 

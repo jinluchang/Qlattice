@@ -4,6 +4,7 @@
 Flexible gauge fixed HMC
 """
 
+import argparse
 import math
 import numpy as np
 from pprint import pformat
@@ -1496,12 +1497,27 @@ size_node_list = [
     [2, 2, 2, 4],
 ]
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Flexible gauge fixed HMC."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default="",
+        help="Comma-separated list of job tags",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
+
 if __name__ == "__main__":
+    sys_args = parse_args()
     q.begin_with_mpi(size_node_list)
 
     ##################### CMD options #####################
 
-    job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
+    job_tag_list = sys_args.job_tag_list
 
     #######################################################
 

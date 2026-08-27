@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import sys
 import numpy as np
 import pickle
@@ -901,76 +902,132 @@ class Measurements:
                     for i in range(len(self.theta_dist))
                 ]
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="HMC for pions with Fourier acceleration."
+    )
+    parser.add_argument(
+        "--total_site",
+        type=str,
+        default="4x4x4x8",
+        help="Lattice dimensions as WxXxYxZ (default: '4x4x4x8')",
+    )
+    parser.add_argument(
+        "--mult",
+        type=int,
+        default=4,
+        help="Multiplicity of the scalar field (default: 4)",
+    )
+    parser.add_argument(
+        "--n_traj",
+        type=int,
+        default=1000,
+        help="Number of trajectories to calculate (default: 1000)",
+    )
+    parser.add_argument(
+        "--m_sq",
+        type=float,
+        default=-8.0,
+        help="Mass squared parameter (default: -8.0)",
+    )
+    parser.add_argument(
+        "--lmbd",
+        type=float,
+        default=32.0,
+        help="Lambda parameter (default: 32.0)",
+    )
+    parser.add_argument(
+        "--alpha",
+        type=float,
+        default=0.1,
+        help="Alpha parameter (default: 0.1)",
+    )
+    parser.add_argument(
+        "--steps",
+        type=int,
+        default=20,
+        help="Number of steps per trajectory (default: 20)",
+    )
+    parser.add_argument(
+        "--mass_force_coef",
+        type=float,
+        default=1000.0,
+        help="Factor to scale down the force for Fourier acceleration (default: 1000.0)",
+    )
+    parser.add_argument(
+        "--recalculate_masses",
+        action="store_true",
+        default=False,
+        help="Force recalculating the masses",
+    )
+    parser.add_argument(
+        "--fresh_start",
+        action="store_true",
+        default=False,
+        help="Force recalculating the masses and the initial field",
+    )
+    parser.add_argument(
+        "--init_length",
+        type=int,
+        default=20,
+        help="Trajectories at the beginning without a Metropolis step (default: 20)",
+    )
+    parser.add_argument(
+        "--block_init_length",
+        type=int,
+        default=20,
+        help="Trajectories to omit from the start of each mass estimation block (default: 20)",
+    )
+    parser.add_argument(
+        "--block_length",
+        type=int,
+        default=95,
+        help="Trajectories in one mass estimation block (default: 95)",
+    )
+    parser.add_argument(
+        "--num_blocks",
+        type=int,
+        default=4,
+        help="Number of mass estimation blocks (excluding final) (default: 4)",
+    )
+    parser.add_argument(
+        "--final_block_length",
+        type=int,
+        default=200,
+        help="Trajectories in the final mass estimation block (default: 200)",
+    )
+    parser.add_argument(
+        "--save_frequency",
+        type=int,
+        default=50,
+        help="Number of trajectories between each save (default: 50)",
+    )
+    args, _ = parser.parse_known_args()
+    args.total_site = q.Coordinate([int(x) for x in args.total_site.split("x")])
+    return args
+
 @q.timer_verbose
 def main():
-    # The lattice dimensions
-    total_site = q.Coordinate([4, 4, 4, 8])
-    # The multiplicity of the scalar field
-    mult = 4
-    # Use action for a Euclidean scalar field. The Lagrangian will be:
-    # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
-    #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-    m_sq = -8.0
-    lmbd = 32.0
-    alpha = 0.1
-    # The number of trajectories to calculate
-    n_traj = 1000
+    sys_args = parse_args()
+    #
+    total_site = sys_args.total_site
+    mult = sys_args.mult
+    m_sq = sys_args.m_sq
+    lmbd = sys_args.lmbd
+    alpha = sys_args.alpha
+    n_traj = sys_args.n_traj
+    steps = sys_args.steps
+    mass_force_coef = sys_args.mass_force_coef
+    recalculate_masses = sys_args.recalculate_masses
+    fresh_start = sys_args.fresh_start
+    init_length = sys_args.init_length
+    block_init_length = sys_args.block_init_length
+    block_length = sys_args.block_length
+    num_blocks = sys_args.num_blocks
+    final_block_length = sys_args.final_block_length
     #
     version = "3-1"
     date = datetime.datetime.now().date()
-    # The number of steps to take in a single trajectory
-    steps = 20
-    # The factor by which to scale down the force when setting a lower limit
-    # on Fourier acceleration masses
-    mass_force_coef = 1000.0
-    #
-    init_length = 20
-    block_init_length = 20
-    block_length = 95
-    num_blocks = 4
-    final_block_length = 200
-    recalculate_masses = False
-    fresh_start = False
-    #
-    for i in range(1, len(sys.argv)):
-        try:
-            if sys.argv[i] == "-d":
-                a = sys.argv[i + 1].split("x")
-                total_site = q.Coordinate([int(a[j]) for j in range(4)])
-            elif sys.argv[i] == "-n":
-                mult = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-t":
-                n_traj = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-m":
-                m_sq = float(sys.argv[i + 1])
-            elif sys.argv[i] == "-l":
-                lmbd = float(sys.argv[i + 1])
-            elif sys.argv[i] == "-a":
-                alpha = float(sys.argv[i + 1])
-            elif sys.argv[i] == "-s":
-                steps = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-f":
-                mass_force_coef = float(sys.argv[i + 1])
-            elif sys.argv[i] == "-r":
-                recalculate_masses = True
-            elif sys.argv[i] == "-R":
-                fresh_start = True
-            elif sys.argv[i] == "-i":
-                init_length = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-I":
-                block_init_length = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-b":
-                block_length = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-N":
-                num_blocks = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-B":
-                final_block_length = int(sys.argv[i + 1])
-            elif sys.argv[i] == "-S":
-                save_frequency = int(sys.argv[i + 1])
-        except:
-            raise Exception(
-                "Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -f for the factor by which to scale down the force when setting a lower limit for Fourier acceleration masses, -r to force recalculating the masses, -R to force recalculating the masses and the initial field, -i for the number of trajectories to do at the beginning without a Metropolis step, -I for the number of trajectories to omit from the start of each HMC mass estimation block, -b for the number of trajectories in one HMC mass estimation block, -N for the number of HMC mass estimation blocks (excluding the final block), -B for the number of trajectories in the final mass estimation block, and -S for the number of trajectories between each save. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1 -f 100.0"
-            )
     #
     hmc = HMC(
         m_sq,
@@ -997,7 +1054,6 @@ def main():
     # same day), then load that file first
     measurements.load()
     #
-    save_frequency = 50
     while hmc.traj <= n_traj:
         # Run the HMC algorithm to update the field configuration
         hmc.run_traj()
@@ -1006,7 +1062,7 @@ def main():
         q.displayln_info(hmc.vev)
         measurements.measure(hmc)
         #
-        if hmc.traj % save_frequency == 0:
+        if hmc.traj % sys_args.save_frequency == 0:
             hmc.save_field()
             measurements.save()
     #
@@ -1020,25 +1076,26 @@ def main():
     q.json_results_append("vacuum expectation value of phi_0", phi0_vev, 1e-2)
     q.json_results_append("vacuum expectation value of phi^2", phi_sq_vev, 1e-2)
 
-size_node_list = [
-    [1, 1, 1, 1],
-    [1, 1, 1, 2],
-    [1, 1, 1, 4],
-    [1, 2, 2, 2],
-    [2, 2, 2, 2],
-    [2, 2, 2, 4],
-    [2, 2, 2, 8],
-    [2, 4, 4, 4],
-]
+if __name__ == "__main__":
+    size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 4],
+        [1, 2, 2, 2],
+        [2, 2, 2, 2],
+        [2, 2, 2, 4],
+        [2, 2, 2, 8],
+        [2, 4, 4, 4],
+    ]
 
-q.begin_with_mpi(size_node_list)
+    q.begin_with_mpi(size_node_list)
 
-q.show_machine()
+    q.show_machine()
 
-main()
+    main()
 
-q.timer_display()
-if q.is_test():
-    q.check_log_json(__file__)
-q.end_with_mpi()
-q.displayln_info("CHECK: finished successfully.")
+    q.timer_display()
+    if q.is_test():
+        q.check_log_json(__file__)
+    q.end_with_mpi()
+    q.displayln_info("CHECK: finished successfully.")
