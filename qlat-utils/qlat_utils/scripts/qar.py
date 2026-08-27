@@ -56,7 +56,7 @@ if len(sys.argv) < 2:
     q.displayln_info("       Remove folders after qar files created")
     q.displayln_info("Usage: qar xr path1.qar path2.qar ...")
     q.displayln_info("       Remove qar files after folder extracted")
-    exit(1)
+    sys.exit(1)
 
 assert len(sys.argv) >= 2
 
@@ -144,4 +144,4 @@ else:
 
 q.clear_all_caches()
 
-exit()
+sys.exit()

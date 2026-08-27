@@ -5,7 +5,7 @@ import sys
 
 if len(sys.argv) < 2:
     q.displayln_info("Usage: fields-list path1 path2 ...")
-    exit()
+    sys.exit()
 
 q.begin_with_mpi()
 
@@ -24,4 +24,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-exit()
+sys.exit()

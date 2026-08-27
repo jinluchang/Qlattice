@@ -20,7 +20,7 @@ def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
 
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar-glimpse path1.qar path2.qar ... path1 path2 ...")
-    exit(1)
+    sys.exit(1)
 
 assert len(sys.argv) >= 2
 
@@ -35,4 +35,4 @@ for path in sys.argv[1:]:
 
 q.clear_all_caches()
 
-exit()
+sys.exit()

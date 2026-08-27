@@ -7,7 +7,7 @@ if len(sys.argv) < 2:
     q.displayln_info(
         "Usage: fields-properly-truncate [--check-all] [--only-check] path1 path2 ..."
     )
-    exit()
+    sys.exit()
 
 q.begin_with_mpi()
 
@@ -29,4 +29,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-exit()
+sys.exit()

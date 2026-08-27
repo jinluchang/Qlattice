@@ -1,3 +1,5 @@
+import sys
+
 import gpt as g
 import numpy as np
 
@@ -78,4 +80,4 @@ for nsmear, epsilon, c1 in smear_info_list:
     fE.write("%g %.15g\n" % (tau, E))
     fE.flush()
 
-exit()
+sys.exit()

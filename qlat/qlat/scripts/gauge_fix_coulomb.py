@@ -141,4 +141,4 @@ q.timer_display()
 
 qg.end_with_gpt()
 
-exit()
+sys.exit()

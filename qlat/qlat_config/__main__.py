@@ -7,7 +7,7 @@ Usage:
 
 if len(sys.argv) < 2:
     print(usage_message)
-    exit()
+    sys.exit()
 
 from qlat_config import (
     get_include_list,
@@ -39,4 +39,4 @@ for arg in sys.argv[1:]:
 
 print(" ".join(output_args))
 
-exit()
+sys.exit()

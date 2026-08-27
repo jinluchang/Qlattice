@@ -6,7 +6,7 @@ import sys
 if len(sys.argv) < 2:
     q.displayln_info("Usage: fields-rewrite [--force] path1 path2 ...")
     q.displayln_info("Only rewrite if there is duplicates unless --force is given.")
-    exit()
+    sys.exit()
 
 q.begin_with_mpi()
 
@@ -53,4 +53,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-exit()
+sys.exit()

@@ -9,7 +9,7 @@ if len(sys.argv) not in [
 ]:
     q.displayln_info("Usage: eigen-system-repartition 1.1.1.8 path [path_new]")
     q.displayln_info("Default path_new is the same as the old path.")
-    exit()
+    sys.exit()
 
 q.begin_with_mpi()
 
@@ -26,4 +26,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-exit()
+sys.exit()

@@ -23,7 +23,7 @@ Usage:
 
 if len(sys.argv) < 2:
     print(usage_message)
-    exit()
+    sys.exit()
 
 action = sys.argv[1]
 sys.argv = sys.argv[1:]
@@ -44,4 +44,4 @@ elif action == "qar":
     from .scripts import qar as qar
 else:
     print(usage_message)
-    exit()
+    sys.exit()

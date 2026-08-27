@@ -10,4 +10,4 @@ for fn in filenames:
     sys.stdout.write(pprint.pformat(obj))
     sys.stdout.write("\n")
 
-exit()
+sys.exit()

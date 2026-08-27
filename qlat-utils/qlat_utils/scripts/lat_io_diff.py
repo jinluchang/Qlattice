@@ -12,4 +12,4 @@ print(f"{q.qnorm(ld1 - ld2)}")
 print(f"{q.qnorm(ld1)}")
 print(f"{q.qnorm(ld2)}")
 
-exit()
+sys.exit()

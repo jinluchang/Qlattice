@@ -51,6 +51,8 @@ except:
     from wick import *
     from compile import *
 
+import sys
+
 import sympy
 
 spin_index_counter = 0
@@ -2163,7 +2165,7 @@ def test_meson_jj_all():
 
 if __name__ == "__main__":
     test_meson_jj_all()
-    exit()
+    sys.exit()
     # test()
     # test1()
     # test_pipi()
@@ -2177,7 +2179,7 @@ if __name__ == "__main__":
     test_meson_jt()
     test_meson_jj()
     test_meson_fj()
-    exit()
+    sys.exit()
     #
     print("pi+(x1):\n", mk_pi_p("x1"))
     print("pi+(x2)^dag pi+(x1):\n", mk_pi_p("x2", True) * mk_pi_p("x1"))

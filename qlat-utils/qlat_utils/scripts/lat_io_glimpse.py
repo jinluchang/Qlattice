@@ -9,4 +9,4 @@ for fn in filenames:
     sys.stdout.write(f"# '{fn}'\n")
     sys.stdout.write(ld.show())
 
-exit()
+sys.exit()

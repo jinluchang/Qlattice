@@ -28,7 +28,7 @@ Usage:
 
 if len(sys.argv) < 2:
     print(usage_message)
-    exit()
+    sys.exit()
 
 action = sys.argv[1]
 sys.argv = sys.argv[1:]
@@ -59,4 +59,4 @@ elif action == "topo-measure-gpt":
     from .scripts import topo_measure_gpt as topo_measure_gpt
 else:
     print(usage_message)
-    exit()
+    sys.exit()

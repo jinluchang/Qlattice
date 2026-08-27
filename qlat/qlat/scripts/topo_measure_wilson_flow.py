@@ -105,4 +105,4 @@ q.timer_display()
 
 q.end_with_mpi()
 
-exit()
+sys.exit()
