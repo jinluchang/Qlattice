@@ -58,6 +58,8 @@ See Also
 - ``qlat_scripts.v1.gen_data``: Core propagator generation utilities
 """
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 
@@ -505,9 +507,26 @@ job_tag_list_default = [
     "test-4nt16-checker",
 ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
-job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
 
-random_order = q.get_arg("--random-order", default=None) is not None
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Truncated wall-source propagator generation script."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default=job_tag_list_str_default,
+        help="Comma-separated list of job tags",
+    )
+    parser.add_argument(
+        "--random_order",
+        action="store_true",
+        default=False,
+        help="Randomly permute the job_tag/traj list",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 #######################################################
 
@@ -532,6 +551,10 @@ def try_gracefully_finish():
         gracefully_finish()
 
 if __name__ == "__main__":
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
+    random_order = sys_args.random_order
+
     qg.begin_with_gpt()
     q.check_time_limit()
     #

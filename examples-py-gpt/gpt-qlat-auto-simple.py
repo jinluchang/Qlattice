@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 
@@ -566,10 +568,25 @@ set_param("test-4nt8", "fermion_params", 0, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 1, 2, "Ls")(8)
 set_param("test-4nt8", "fermion_params", 2, 2, "Ls")(8)
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Auto-contractor simple data generation script."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default="",
+        help="Comma-separated list of job tags",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
+
 if __name__ == "__main__":
     qg.begin_with_gpt()
 
-    job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
 
     job_tag_list_default = [
         "test-4nt8",

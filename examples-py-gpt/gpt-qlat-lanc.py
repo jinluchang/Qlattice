@@ -2,6 +2,8 @@
 
 # Need --mpi X.X.X.X runtime option
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 
@@ -323,7 +325,20 @@ job_tag_list_default = [
     "test-4nt8-checker2",
 ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
-job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Lanczos eigenvector generation script."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default=job_tag_list_str_default,
+        help="Comma-separated list of job tags",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 # ----
 
@@ -347,6 +362,9 @@ def try_gracefully_finish():
         gracefully_finish()
 
 if __name__ == "__main__":
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
+
     qg.begin_with_gpt()
     q.check_time_limit()
 
