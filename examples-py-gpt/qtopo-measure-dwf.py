@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 import gpt as g
@@ -25,6 +27,137 @@ from qlat_scripts.v1 import (
     get_load_path,
     get_save_path,
 )
+
+def parse_args(argv=None):
+    """
+    Parse command-line arguments using standard argparse.\n
+    Parameters
+    ----------
+    argv : list of str or None
+        Argument list to parse. If None, uses ``sys.argv[1:]``.\n
+    Returns
+    -------
+    argparse.Namespace
+        Parsed arguments with the following attributes:
+            gf: list of gauge field paths
+            out: list of output directories
+            mass: DWF fermion mass
+            M5: DWF fifth-dimension mass parameter
+            sparse_ratio: sparse-grid decomposition factor
+            num_of_rand_vol_u1: number of random volume U(1) sources
+            ls: exact Mobius Ls
+            ls_sloppy: sloppy Mobius Ls
+            b_plus_c: exact Mobius b+c
+            b_plus_c_sloppy: sloppy Mobius b+c
+            maxiter_sloppy: max CG iterations for sloppy inverter
+            maxiter_exact: max CG iterations for exact inverter
+            ama_prob: AMA correction probability
+            stout_smear_steps: number of stout smearing steps
+            stout_smear_step_size: stout smearing step size
+    """
+    parser = argparse.ArgumentParser(
+        description="Topological charge measurement via DWF fifth-dimension vector current."
+    )
+    parser.add_argument(
+        "--usage",
+        action="store_true",
+        default=False,
+        help="Show usage message and exit",
+    )
+    parser.add_argument(
+        "--gf",
+        type=str,
+        action="append",
+        default=[],
+        help="Input gauge field file path (can be specified multiple times)",
+    )
+    parser.add_argument(
+        "--out",
+        type=str,
+        action="append",
+        default=[],
+        help="Output directory for results (one per --gf)",
+    )
+    parser.add_argument(
+        "--mass",
+        type=float,
+        default=1.0,
+        help="DWF fermion mass (default: 1.0)",
+    )
+    parser.add_argument(
+        "--M5",
+        type=float,
+        default=1.8,
+        help="DWF fifth-dimension mass parameter M5 (default: 1.8)",
+    )
+    parser.add_argument(
+        "--sparse_ratio",
+        type=int,
+        default=32,
+        help="Sparse-grid decomposition factor (default: 32)",
+    )
+    parser.add_argument(
+        "--num_of_rand_vol_u1",
+        type=int,
+        default=2,
+        help="Number of random volume U(1) sources (default: 2)",
+    )
+    parser.add_argument(
+        "--ls",
+        type=int,
+        default=16,
+        help="Exact Mobius fifth-dimension length Ls (default: 16)",
+    )
+    parser.add_argument(
+        "--ls_sloppy",
+        type=int,
+        default=12,
+        help="Sloppy Mobius fifth-dimension length Ls (default: 12)",
+    )
+    parser.add_argument(
+        "--b_plus_c",
+        type=float,
+        default=3.0,
+        help="Exact Mobius parameter b + c (default: 3.0)",
+    )
+    parser.add_argument(
+        "--b_plus_c_sloppy",
+        type=float,
+        default=3.0,
+        help="Sloppy Mobius parameter b + c (default: 3.0)",
+    )
+    parser.add_argument(
+        "--maxiter_sloppy",
+        type=int,
+        default=50,
+        help="Maximum CG iterations for the sloppy inverter (default: 50)",
+    )
+    parser.add_argument(
+        "--maxiter_exact",
+        type=int,
+        default=100,
+        help="Maximum CG iterations for the exact inverter (default: 100)",
+    )
+    parser.add_argument(
+        "--ama_prob",
+        type=float,
+        default=0.1,
+        help="Probability of applying AMA correction (default: 0.1)",
+    )
+    parser.add_argument(
+        "--stout_smear_steps",
+        type=int,
+        default=0,
+        help="Number of stout smearing steps (default: 0)",
+    )
+    parser.add_argument(
+        "--stout_smear_step_size",
+        type=float,
+        default=0.1,
+        help="Stout smearing step size (default: 0.1)",
+    )
+    args, _ = parser.parse_known_args(argv)
+    return args
 
 usage = f"""
 Topological charge measurement based on DWF vector current in the fifth dimension with Qlattice and GPT/Grid
@@ -1357,26 +1490,25 @@ def run():
         q.displayln_info("Will now generate test data and run topo measure.")
         argv = gen_test_data()
     else:
-        argv = sys.argv
-    fn_gf_list = q.get_arg_list("--gf", argv=argv)
-    fn_out_list = q.get_arg_list("--out", argv=argv)
+        argv = None
+    sys_args = parse_args(argv)
+    fn_gf_list = sys_args.gf
+    fn_out_list = sys_args.out
     assert len(fn_gf_list) == len(fn_out_list)
     params = dict(
-        mass=float(q.get_arg("--mass", "1.0", argv=argv)),
-        M5=float(q.get_arg("--M5", "1.8", argv=argv)),
-        sparse_ratio=int(q.get_arg("--sparse_ratio", "32", argv=argv)),
-        num_of_rand_vol_u1=int(q.get_arg("--num_of_rand_vol_u1", "2", argv=argv)),
-        ls=int(q.get_arg("--ls", "16", argv=argv)),
-        ls_sloppy=int(q.get_arg("--ls_sloppy", "12", argv=argv)),
-        b_plus_c=float(q.get_arg("--b_plus_c", "3.0", argv=argv)),
-        b_plus_c_sloppy=float(q.get_arg("--b_plus_c_sloppy", "3.0", argv=argv)),
-        maxiter_sloppy=int(q.get_arg("--maxiter_sloppy", "50", argv=argv)),
-        maxiter_exact=int(q.get_arg("--maxiter_exact", "100", argv=argv)),
-        ama_prob=float(q.get_arg("--ama_prob", "0.1", argv=argv)),
-        stout_smear_steps=int(q.get_arg("--stout_smear_steps", "0", argv=argv)),
-        stout_smear_step_size=float(
-            q.get_arg("--stout_smear_step_size", "0.1", argv=argv)
-        ),
+        mass=sys_args.mass,
+        M5=sys_args.M5,
+        sparse_ratio=sys_args.sparse_ratio,
+        num_of_rand_vol_u1=sys_args.num_of_rand_vol_u1,
+        ls=sys_args.ls,
+        ls_sloppy=sys_args.ls_sloppy,
+        b_plus_c=sys_args.b_plus_c,
+        b_plus_c_sloppy=sys_args.b_plus_c_sloppy,
+        maxiter_sloppy=sys_args.maxiter_sloppy,
+        maxiter_exact=sys_args.maxiter_exact,
+        ama_prob=sys_args.ama_prob,
+        stout_smear_steps=sys_args.stout_smear_steps,
+        stout_smear_step_size=sys_args.stout_smear_step_size,
     )
     for (
         fn_gf,
@@ -1495,8 +1627,8 @@ set_param(job_tag, "mk_sample_gauge_field", "hmc_beta")(5.0)
 
 if __name__ == "__main__":
     q.check_time_limit()
-    is_show_usage = q.get_option("--usage")
-    if is_show_usage:
+    sys_args = parse_args()
+    if sys_args.usage:
         show_usage()
         exit()
     qg.begin_with_gpt()
