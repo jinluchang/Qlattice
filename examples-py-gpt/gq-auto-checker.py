@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 
@@ -2772,16 +2774,39 @@ def gracefully_finish():
     q.displayln_info("CHECK: finished successfully.")
     exit()
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Auto-checker script for quark propagator data generation."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default="",
+        help="Comma-separated list of job tags",
+    )
+    parser.add_argument(
+        "--no_inversion",
+        action="store_true",
+        default=False,
+        help="Skip the inversion step",
+    )
+    parser.add_argument(
+        "--no_contract",
+        action="store_true",
+        default=False,
+        help="Skip the contraction step",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
+
 if __name__ == "__main__":
     qg.begin_with_gpt()
 
     ##################### CMD options #####################
 
-    job_tag_list = q.get_arg("--job_tag_list", default="").split(",")
-
-    is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
-
-    is_performing_contraction = q.get_arg("--no-contract", default=None) is None
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
 
     #######################################################
 
@@ -2803,11 +2828,11 @@ if __name__ == "__main__":
     for job_tag in job_tag_list:
         run_params(job_tag)
         for traj in get_param(job_tag, "traj_list"):
-            if is_performing_inversion:
+            if not sys_args.no_inversion:
                 q.check_time_limit()
                 run_job(job_tag, traj)
         for traj in get_param(job_tag, "traj_list"):
-            if is_performing_contraction:
+            if not sys_args.no_contract:
                 q.check_time_limit()
                 run_job_contract(job_tag, traj)
 

@@ -16,8 +16,10 @@ The script supports multiple gauge ensembles (24D, 48I, 64I, 64I-pq) and
 test configurations. It uses adaptive sampling for point-source/point-sink
 measurements with probability-weighted estimators.\n
 Usage:
-    python gpt-qlat-data-gen-pi0-decay.py [--job_tag_list tag1,tag2] [--no-inversion] [--no-contract]
+    python gpt-qlat-data-gen-pi0-decay.py [--job_tag_list tag1,tag2] [--no_inversion] [--no_contract]
 """
+
+import argparse
 
 import qlat_gpt as qg
 
@@ -3680,17 +3682,38 @@ job_tag_list_default = [
     "test-4nt8-checker",
 ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
-job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
 
-is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
-
-is_performing_contraction = q.get_arg("--no-contract", default=None) is None
-
-if "64I-pq2" in job_tag_list:
-    assert job_tag_list == [
-        "64I-pq2",
-    ]
-    qlat_scripts.v1.load_data.is_source_specification_include_inv_type = True
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Pi0 decay data generation script."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default=job_tag_list_str_default,
+        help="Comma-separated list of job tags",
+    )
+    parser.add_argument(
+        "--no_inversion",
+        action="store_true",
+        default=False,
+        help="Skip the inversion step",
+    )
+    parser.add_argument(
+        "--no_contract",
+        action="store_true",
+        default=False,
+        help="Skip the contraction step",
+    )
+    parser.add_argument(
+        "--random_permute_job_tag_traj_list",
+        action="store_true",
+        default=False,
+        help="Randomly permute the job_tag/traj list before processing",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 #######################################################
 
@@ -3719,6 +3742,15 @@ def try_gracefully_finish():
         gracefully_finish()
 
 if __name__ == "__main__":
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
+
+    if "64I-pq2" in job_tag_list:
+        assert job_tag_list == [
+            "64I-pq2",
+        ]
+        qlat_scripts.v1.load_data.is_source_specification_include_inv_type = True
+
     qg.begin_with_gpt()
     q.check_time_limit()
     get_all_cexpr()
@@ -3734,20 +3766,20 @@ if __name__ == "__main__":
                     traj,
                 )
             )
-    if q.get_option("--random-permute-job_tag-traj-list"):
+    if sys_args.random_permute_job_tag_traj_list:
         if not is_test():
             job_tag_traj_list = q.random_permute(
                 job_tag_traj_list, q.RngState(f"{q.get_time()}")
             )
             job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:
-        if is_performing_inversion:
+        if not sys_args.no_inversion:
             q.check_time_limit()
             run_job_inversion(job_tag, traj)
             q.clean_cache()
             try_gracefully_finish()
     for job_tag, traj in job_tag_traj_list:
-        if is_performing_contraction:
+        if not sys_args.no_contract:
             q.check_time_limit()
             run_job_contract(job_tag, traj)
             q.clean_cache()

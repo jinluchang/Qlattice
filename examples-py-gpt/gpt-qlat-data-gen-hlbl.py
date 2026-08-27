@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 
@@ -2820,7 +2822,7 @@ def run_job_inversion(job_tag, traj):
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
 @q.timer(is_timer_fork=True)
-def run_job_contract(job_tag, traj):
+def run_job_contract(job_tag, traj, *, no_contract, no_global_hvp_average, no_hlbl_contract):
     fname = q.get_fname()
     #
     is_performing_auto_contraction = get_param(
@@ -2898,14 +2900,14 @@ def run_job_contract(job_tag, traj):
         # (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
         # (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar.idx", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
     ]
-    if is_performing_contraction:
+    if not no_contract:
         fns_produce += [
             f"{job_tag}/hlbl/edl/traj-{traj}/edl-light.lat",
             f"{job_tag}/hlbl/edl/traj-{traj}/edl-strange.lat",
             f"{job_tag}/hlbl/check-hvp-avg-light/traj-{traj}.txt",
             f"{job_tag}/hlbl/check-hvp-avg-strange/traj-{traj}.txt",
         ]
-    if is_performing_global_hvp_average:
+    if not no_global_hvp_average:
         fns_produce += [
             f"{job_tag}/hlbl/sub-hvp-light/traj-{traj}/geon-info.txt",
             f"{job_tag}/hlbl/sub-hvp-strange/traj-{traj}/geon-info.txt",
@@ -2922,12 +2924,12 @@ def run_job_contract(job_tag, traj):
         fns_produce += [
             f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
         ]
-    if is_performing_hlbl_contraction:
+    if not no_hlbl_contract:
         fns_produce += [
             f"{job_tag}/hlbl/clbl-light/traj-{traj}/results-brief.pickle",
             f"{job_tag}/hlbl/clbl-strange/traj-{traj}/results-brief.pickle",
         ]
-    if is_performing_hlbl_contraction and is_performing_global_hvp_average:
+    if not no_hlbl_contract and not no_global_hvp_average:
         fns_produce += [
             f"{job_tag}/hlbl/dlbl-light-light/traj-{traj}/results-brief.pickle",
             f"{job_tag}/hlbl/dlbl-light-strange/traj-{traj}/results-brief.pickle",
@@ -3002,7 +3004,7 @@ def run_job_contract(job_tag, traj):
             get_hvp_sum_tslice=get_hvp_sum_tslice,
             get_hvp_average=get_hvp_average,
         )
-        if is_performing_global_hvp_average:
+        if not no_global_hvp_average:
             get_glb_hvp_avg = run_job_global_hvp_average(job_tag, inv_type=inv_type)
             get_glb_hvp_avg_for_sub = run_job_global_hvp_average_for_subtract(
                 job_tag,
@@ -3030,7 +3032,7 @@ def run_job_contract(job_tag, traj):
             else:
                 raise Exception(f"{fname}: inv_type={inv_type} wrong.")
     #
-    if is_performing_hlbl_contraction:
+    if not no_hlbl_contract:
         #
         if is_test():
             force_load_muon_line_interpolation()
@@ -3055,7 +3057,7 @@ def run_job_contract(job_tag, traj):
             )
             add_to_run_ret_list(v)
         #
-        if is_performing_global_hvp_average:
+        if not no_global_hvp_average:
             for inv_type in [
                 0,
                 1,
@@ -3520,17 +3522,44 @@ job_tag_list_default = [
     # "64I",
 ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
-job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
 
-is_performing_inversion = q.get_arg("--no-inversion", default=None) is None
-
-is_performing_contraction = q.get_arg("--no-contract", default=None) is None
-
-is_performing_global_hvp_average = (
-    q.get_arg("--no-global-hvp-average", default=None) is None
-)
-
-is_performing_hlbl_contraction = q.get_arg("--no-hlbl-contract", default=None) is None
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="HLBL data generation script."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default=job_tag_list_str_default,
+        help="Comma-separated list of job tags",
+    )
+    parser.add_argument(
+        "--no_inversion",
+        action="store_true",
+        default=False,
+        help="Skip the inversion step",
+    )
+    parser.add_argument(
+        "--no_contract",
+        action="store_true",
+        default=False,
+        help="Skip the contraction step",
+    )
+    parser.add_argument(
+        "--no_global_hvp_average",
+        action="store_true",
+        default=False,
+        help="Skip the global HVP average step",
+    )
+    parser.add_argument(
+        "--no_hlbl_contract",
+        action="store_true",
+        default=False,
+        help="Skip the HLBL contraction step",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 #######################################################
 
@@ -3554,6 +3583,9 @@ def try_gracefully_finish():
         gracefully_finish()
 
 if __name__ == "__main__":
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
+
     qg.begin_with_gpt()
     q.check_time_limit()
     get_all_cexpr()
@@ -3575,13 +3607,13 @@ if __name__ == "__main__":
         )
         job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:
-        if is_performing_inversion:
+        if not sys_args.no_inversion:
             q.check_time_limit()
             run_job_inversion(job_tag, traj)
             q.clean_cache()
             try_gracefully_finish()
     for job_tag in job_tag_list:
-        if is_performing_global_hvp_average:
+        if not sys_args.no_global_hvp_average:
             for inv_type in [
                 0,
                 1,
@@ -3591,9 +3623,14 @@ if __name__ == "__main__":
                 q.clean_cache()
                 try_gracefully_finish()
     for job_tag, traj in job_tag_traj_list:
-        if is_performing_contraction:
+        if not sys_args.no_contract:
             q.check_time_limit()
-            run_job_contract(job_tag, traj)
+            run_job_contract(
+                job_tag, traj,
+                no_contract=sys_args.no_contract,
+                no_global_hvp_average=sys_args.no_global_hvp_average,
+                no_hlbl_contract=sys_args.no_hlbl_contract,
+            )
             q.clean_cache()
             try_gracefully_finish()
 

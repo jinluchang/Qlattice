@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+
 import qlat_gpt as qg
 import qlat as q
 
@@ -2466,11 +2468,32 @@ job_tag_list_default = [
     "test-4nt8-checker",
 ]
 job_tag_list_str_default = ",".join(job_tag_list_default)
-job_tag_list = q.get_arg("--job_tag_list", default=job_tag_list_str_default).split(",")
 
-is_performing_inversion = not q.get_option("--no-inversion")
-
-is_performing_contraction = not q.get_option("--no-contraction")
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="PiPi QED data generation script."
+    )
+    parser.add_argument(
+        "--job_tag_list",
+        type=str,
+        default=job_tag_list_str_default,
+        help="Comma-separated list of job tags",
+    )
+    parser.add_argument(
+        "--no_inversion",
+        action="store_true",
+        default=False,
+        help="Skip the inversion step",
+    )
+    parser.add_argument(
+        "--no_contraction",
+        action="store_true",
+        default=False,
+        help="Skip the contraction step",
+    )
+    args, _ = parser.parse_known_args()
+    args.job_tag_list = args.job_tag_list.split(",")
+    return args
 
 #######################################################
 
@@ -2494,6 +2517,9 @@ def try_gracefully_finish():
         gracefully_finish()
 
 if __name__ == "__main__":
+    sys_args = parse_args()
+    job_tag_list = sys_args.job_tag_list
+
     qg.begin_with_gpt()
     q.check_time_limit()
     get_all_cexpr()
@@ -2513,13 +2539,13 @@ if __name__ == "__main__":
         # job_tag_traj_list = q.random_permute(job_tag_traj_list, q.RngState(f"{q.get_time()}"))
         job_tag_traj_list = q.get_comm().bcast(job_tag_traj_list)
     for job_tag, traj in job_tag_traj_list:
-        if is_performing_inversion:
+        if not sys_args.no_inversion:
             q.check_time_limit()
             run_job_inversion(job_tag, traj)
             q.clean_cache()
             try_gracefully_finish()
     for job_tag, traj in job_tag_traj_list:
-        if is_performing_contraction:
+        if not sys_args.no_contraction:
             q.check_time_limit()
             run_job_contraction(job_tag, traj)
             q.clean_cache()
