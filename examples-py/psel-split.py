@@ -175,9 +175,7 @@ set_param(job_tag, "field_selection_psel_rate")(2048 / (64**3 * 128))
 # --------------------------------------------
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="PSel split."
-    )
+    parser = argparse.ArgumentParser(description="PSel split.")
     parser.add_argument(
         "--job_tag_list",
         type=str,

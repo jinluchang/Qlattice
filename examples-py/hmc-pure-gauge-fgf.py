@@ -1498,9 +1498,7 @@ size_node_list = [
 ]
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Flexible gauge fixed HMC."
-    )
+    parser = argparse.ArgumentParser(description="Flexible gauge fixed HMC.")
     parser.add_argument(
         "--job_tag_list",
         type=str,

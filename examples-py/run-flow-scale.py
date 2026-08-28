@@ -458,9 +458,7 @@ job_tag_list_default = [
 ]
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Run flow scale."
-    )
+    parser = argparse.ArgumentParser(description="Run flow scale.")
     parser.add_argument(
         "--job_tag_list",
         type=str,

@@ -87,9 +87,7 @@ def run(sys_args):
     run_conversion(total_site, path_dst, path_src)
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Convert psel txt to lati."
-    )
+    parser = argparse.ArgumentParser(description="Convert psel txt to lati.")
     parser.add_argument(
         "--usage",
         action="store_true",

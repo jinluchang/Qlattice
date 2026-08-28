@@ -139,9 +139,7 @@ class ExtendAction(argparse.Action):
         setattr(namespace, self.dest, items)
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(
-        description="Instanton map computation."
-    )
+    parser = argparse.ArgumentParser(description="Instanton map computation.")
     parser.add_argument(
         "--usage",
         action="store_true",

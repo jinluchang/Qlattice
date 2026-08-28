@@ -20,9 +20,7 @@ load_path_list[:] = [
 ]
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Pure gauge HMC."
-    )
+    parser = argparse.ArgumentParser(description="Pure gauge HMC.")
     parser.add_argument(
         "--job_tag_list",
         type=str,

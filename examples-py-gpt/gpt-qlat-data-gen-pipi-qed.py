@@ -2470,9 +2470,7 @@ job_tag_list_default = [
 job_tag_list_str_default = ",".join(job_tag_list_default)
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="PiPi QED data generation script."
-    )
+    parser = argparse.ArgumentParser(description="PiPi QED data generation script.")
     parser.add_argument(
         "--job_tag_list",
         type=str,
