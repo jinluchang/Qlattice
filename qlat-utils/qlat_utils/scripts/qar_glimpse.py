@@ -1,7 +1,9 @@
 # Author: Luchang Jin 2022
 
-import qlat_utils as q
+import argparse
 import sys
+
+import qlat_utils as q
 
 def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
     assert path_qar[-4:] == ".qar"
@@ -18,21 +20,35 @@ def show_list_qar(path_qar, idx=0, is_recursive=True, drop_prefix=""):
             )
     return idx
 
-if len(sys.argv) < 2:
-    q.displayln_info("Usage: qar-glimpse path1.qar path2.qar ... path1 path2 ...")
-    sys.exit(1)
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="List contents of qar archives or display file contents."
+    )
+    parser.add_argument(
+        "paths",
+        nargs="+",
+        help="Qar archives (.qar) or files to display",
+    )
+    args, _ = parser.parse_known_args()
+    return args
 
-assert len(sys.argv) >= 2
+if __name__ == "__main__":
+    sys_args = parse_args()
 
-idx = 0
-for path in sys.argv[1:]:
-    if path[-4:] == ".qar":
-        idx = show_list_qar(path, idx, is_recursive=True, drop_prefix=path[:-4] + "/")
-    else:
-        assert q.does_file_exist_qar(path)
-        content = q.qcat_bytes(path)
-        sys.stdout.buffer.write(content)
+    if len(sys_args.paths) < 1:
+        q.displayln_info("Usage: qar-glimpse path1.qar path2.qar ... path1 path2 ...")
+        sys.exit(1)
 
-q.clear_all_caches()
+    idx = 0
+    for path in sys_args.paths:
+        if path[-4:] == ".qar":
+            idx = show_list_qar(
+                path, idx, is_recursive=True, drop_prefix=path[:-4] + "/"
+            )
+        else:
+            assert q.does_file_exist_qar(path)
+            content = q.qcat_bytes(path)
+            sys.stdout.buffer.write(content)
 
-sys.exit()
+    q.clear_all_caches()
+    sys.exit()

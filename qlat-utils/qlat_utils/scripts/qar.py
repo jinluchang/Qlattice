@@ -1,7 +1,9 @@
 # Author: Luchang Jin 2024
 
-import qlat_utils as q
+import argparse
 import sys
+
+import qlat_utils as q
 
 def remove_trailing_slashes(path):
     while True:
@@ -39,109 +41,171 @@ def build_index_qar(path_qar, is_recursive=True):
             pfn_full = path_qar[:-4] + "/" + fn
             build_index_qar(pfn_full, is_recursive=is_recursive)
 
-if len(sys.argv) < 2:
-    q.displayln_info("Usage: qar list path.qar")
-    q.displayln_info("Usage: qar build-idx path.qar")
-    q.displayln_info("Usage: qar create path.qar path")
-    q.displayln_info("Usage: qar extract path.qar path")
-    q.displayln_info("Usage: qar cp path_src path_dst")
-    q.displayln_info("Usage: qar cat path1 path2 ...")
-    q.displayln_info("Usage: qar l path1.qar path2.qar ...")
-    q.displayln_info("Usage: qar lr path1.qar path2.qar ...")
-    q.displayln_info("Usage: qar b path1.qar path2.qar ...")
-    q.displayln_info("Usage: qar br path1.qar path2.qar ...")
-    q.displayln_info("Usage: qar c path1 path2 ...")
-    q.displayln_info("Usage: qar x path1.qar path2.qar ...")
-    q.displayln_info("Usage: qar cr path1 path2 ...")
-    q.displayln_info("       Remove folders after qar files created")
-    q.displayln_info("Usage: qar xr path1.qar path2.qar ...")
-    q.displayln_info("       Remove qar files after folder extracted")
-    sys.exit(1)
+def parse_args():
+    parser = argparse.ArgumentParser(description="Manage qar archive files.")
+    subparsers = parser.add_subparsers(dest="action", help="Action to perform")
+    #
+    # list: exactly 1 path, non-recursive
+    subparsers.add_parser(
+        "list", help="List contents of a qar archive (non-recursive, single path)"
+    )
+    # l: multiple paths, non-recursive (cumulative index)
+    subparsers.add_parser(
+        "l", help="List contents of qar archives (non-recursive, multiple paths)"
+    )
+    # lr: multiple paths, recursive (cumulative index)
+    subparsers.add_parser("lr", help="List contents of qar archives (recursive)")
+    # build-idx: exactly 1 path, non-recursive
+    subparsers.add_parser(
+        "build-idx", help="Build index for a qar archive (non-recursive, single path)"
+    )
+    # b: multiple paths, non-recursive
+    subparsers.add_parser(
+        "b", help="Build index for qar archives (non-recursive, multiple paths)"
+    )
+    # br: multiple paths, recursive
+    subparsers.add_parser("br", help="Build index for qar archives (recursive)")
+    # create: 2 explicit args (qar_path, dir_path)
+    subparsers.add_parser(
+        "create", help="Create a qar archive from a directory (explicit qar path + dir)"
+    )
+    # c: multiple dirs, auto-appends .qar
+    subparsers.add_parser(
+        "c", help="Create qar archives from directories (auto-appends .qar)"
+    )
+    # cr: multiple dirs, auto-appends .qar, remove dirs after
+    subparsers.add_parser(
+        "cr", help="Create qar archives and remove source directories"
+    )
+    # extract: 2 explicit args (qar_path, dest_path)
+    subparsers.add_parser(
+        "extract", help="Extract a qar archive to a destination (explicit qar + dest)"
+    )
+    # x: multiple qars, auto-derives dest by stripping .qar
+    subparsers.add_parser(
+        "x", help="Extract qar archives (auto-derives destination from .qar name)"
+    )
+    # xr: multiple qars, auto-derives dest, remove qars after
+    subparsers.add_parser("xr", help="Extract qar archives and remove archive files")
+    # cp: 2 args (src, dst)
+    subparsers.add_parser("cp", help="Copy a qar archive file")
+    # cat: multiple qars, concatenate
+    subparsers.add_parser("cat", help="Concatenate and display qar archive contents")
+    #
+    args, remaining = parser.parse_known_args()
+    #
+    if args.action is None:
+        parser.print_help()
+        sys.exit(1)
+    #
+    # Store remaining args for manual processing
+    args.paths = remaining
+    return args
 
-assert len(sys.argv) >= 2
+if __name__ == "__main__":
+    sys_args = parse_args()
+    action = sys_args.action
+    paths = sys_args.paths
 
-action = sys.argv[1]
-
-if action == "list":
-    assert len(sys.argv) == 3
-    path_qar = sys.argv[2]
-    show_list_qar(path_qar, 0, is_recursive=False)
-elif action == "build-idx":
-    assert len(sys.argv) == 3
-    path_qar = sys.argv[2]
-    build_index_qar(path_qar, is_recursive=False)
-elif action == "create":
-    assert len(sys.argv) == 4
-    path_qar = sys.argv[2]
-    path = sys.argv[3]
-    assert not q.does_file_exist(path_qar)
-    assert q.is_directory(path)
-    q.qar_create_info(path_qar, path)
-elif action == "extract":
-    assert len(sys.argv) == 4
-    path_qar = sys.argv[2]
-    path = sys.argv[3]
-    assert q.does_file_exist_qar(path_qar)
-    assert not q.does_file_exist(path)
-    q.qar_extract_info(path_qar, path)
-elif action == "cp":
-    assert len(sys.argv) == 4
-    path_src = sys.argv[2]
-    path_dst = sys.argv[3]
-    assert q.does_file_exist_qar(path_src)
-    assert not q.does_file_exist(path_dst)
-    q.qcopy_file_info(path_src, path_dst)
-elif action == "cat":
-    assert len(sys.argv) >= 2
-    for path in sys.argv[2:]:
-        assert q.does_file_exist_qar(path)
-        content = q.qcat_bytes(path)
-        sys.stdout.buffer.write(content)
-elif action == "l":
-    idx = 0
-    for path_qar in sys.argv[2:]:
-        idx = show_list_qar(path_qar, idx, is_recursive=False)
-elif action == "lr":
-    idx = 0
-    for path_qar in sys.argv[2:]:
-        idx = show_list_qar(path_qar, idx, is_recursive=True)
-elif action == "b":
-    for path_qar in sys.argv[2:]:
-        build_index_qar(path_qar, is_recursive=False)
-elif action == "br":
-    for path_qar in sys.argv[2:]:
-        build_index_qar(path_qar, is_recursive=True)
-elif action in ["c", "cr"]:
-    path_list = sys.argv[2:]
-    for path in path_list:
-        path = remove_trailing_slashes(path)
-        path_qar = path + ".qar"
+    if action == "list":
+        assert len(paths) == 1, f"list requires exactly 1 path, got {len(paths)}"
+        show_list_qar(paths[0], 0, is_recursive=False)
+    elif action == "l":
+        idx = 0
+        for path_qar in paths:
+            idx = show_list_qar(path_qar, idx, is_recursive=False)
+    elif action == "lr":
+        idx = 0
+        for path_qar in paths:
+            idx = show_list_qar(path_qar, idx, is_recursive=True)
+    elif action == "build-idx":
+        assert len(paths) == 1, f"build-idx requires exactly 1 path, got {len(paths)}"
+        build_index_qar(paths[0], is_recursive=False)
+    elif action == "b":
+        for path_qar in paths:
+            build_index_qar(path_qar, is_recursive=False)
+    elif action == "br":
+        for path_qar in paths:
+            build_index_qar(path_qar, is_recursive=True)
+    elif action == "create":
+        assert len(paths) == 2, (
+            f"create requires exactly 2 paths (qar_path, dir_path), got {len(paths)}"
+        )
+        path_qar = paths[0]
+        path = paths[1]
         assert not q.does_file_exist(path_qar)
         assert q.is_directory(path)
-    for path in path_list:
-        path = remove_trailing_slashes(path)
-        path_qar = path + ".qar"
-        if action == "c":
+        q.qar_create_info(path_qar, path)
+    elif action == "c":
+        path_list = paths
+        for path in path_list:
+            path = remove_trailing_slashes(path)
+            path_qar = path + ".qar"
+            assert not q.does_file_exist(path_qar)
+            assert q.is_directory(path)
+        for path in path_list:
+            path = remove_trailing_slashes(path)
+            path_qar = path + ".qar"
             q.qar_create_info(path_qar, path)
-        elif action == "cr":
+    elif action == "cr":
+        path_list = paths
+        for path in path_list:
+            path = remove_trailing_slashes(path)
+            path_qar = path + ".qar"
+            assert not q.does_file_exist(path_qar)
+            assert q.is_directory(path)
+        for path in path_list:
+            path = remove_trailing_slashes(path)
+            path_qar = path + ".qar"
             q.qar_create_info(path_qar, path, is_remove_folder_after=True)
-elif action in ["x", "xr"]:
-    path_qar_list = sys.argv[2:]
-    for path_qar in path_qar_list:
-        assert path_qar[-4:] == ".qar"
-        path = path_qar[:-4]
-        assert path != ""
+    elif action == "extract":
+        assert len(paths) == 2, (
+            f"extract requires exactly 2 paths (qar_path, dest_path), got {len(paths)}"
+        )
+        path_qar = paths[0]
+        path = paths[1]
         assert q.does_file_exist_qar(path_qar)
         assert not q.does_file_exist(path)
-    for path_qar in path_qar_list:
-        path = path_qar[:-4]
-        if action == "x":
+        q.qar_extract_info(path_qar, path)
+    elif action == "x":
+        path_qar_list = paths
+        for path_qar in path_qar_list:
+            assert path_qar[-4:] == ".qar"
+            path = path_qar[:-4]
+            assert path != ""
+            assert q.does_file_exist_qar(path_qar)
+            assert not q.does_file_exist(path)
+        for path_qar in path_qar_list:
+            path = path_qar[:-4]
             q.qar_extract_info(path_qar, path)
-        elif action == "xr":
+    elif action == "xr":
+        path_qar_list = paths
+        for path_qar in path_qar_list:
+            assert path_qar[-4:] == ".qar"
+            path = path_qar[:-4]
+            assert path != ""
+            assert q.does_file_exist_qar(path_qar)
+            assert not q.does_file_exist(path)
+        for path_qar in path_qar_list:
+            path = path_qar[:-4]
             q.qar_extract_info(path_qar, path, is_remove_qar_after=True)
-else:
-    assert False
+    elif action == "cp":
+        assert len(paths) == 2, (
+            f"cp requires exactly 2 paths (src, dst), got {len(paths)}"
+        )
+        path_src = paths[0]
+        path_dst = paths[1]
+        assert q.does_file_exist_qar(path_src)
+        assert not q.does_file_exist(path_dst)
+        q.qcopy_file_info(path_src, path_dst)
+    elif action == "cat":
+        for path in paths:
+            assert q.does_file_exist_qar(path)
+            content = q.qcat_bytes(path)
+            sys.stdout.buffer.write(content)
+    else:
+        assert False, f"Unknown action: {action}"
 
-q.clear_all_caches()
+    q.clear_all_caches()
 
-sys.exit()
+    sys.exit()
