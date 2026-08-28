@@ -1,32 +1,45 @@
 # Author: Luchang Jin 2023
 
+import argparse
+
 import qlat as q
-import sys
 
-if len(sys.argv) < 2:
-    q.displayln_info(
-        "Usage: fields-properly-truncate [--check-all] [--only-check] path1 path2 ..."
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Properly truncate fields and remove duplicates."
     )
-    sys.exit()
-
-q.begin_with_mpi()
-
-argv = sys.argv[1:]
-
-is_check_all = q.get_option("--check-all", argv=argv, is_removing_from_argv=True)
-is_only_check = q.get_option("--only-check", argv=argv, is_removing_from_argv=True)
-
-path_list = argv
-
-for path in path_list:
-    tags = q.properly_truncate_fields(
-        path, is_check_all=is_check_all, is_only_check=is_only_check
+    parser.add_argument(
+        "--check_all",
+        action="store_true",
+        default=False,
+        help="Check all fields",
     )
-    for tag in tags:
-        q.displayln_info(tag)
+    parser.add_argument(
+        "--only_check",
+        action="store_true",
+        default=False,
+        help="Only check, do not truncate",
+    )
+    parser.add_argument(
+        "path_list",
+        nargs="+",
+        help="Paths to fields to truncate",
+    )
+    args, _ = parser.parse_known_args()
+    return args
 
-q.timer_display()
+if __name__ == "__main__":
+    sys_args = parse_args()
 
-q.end_with_mpi()
+    q.begin_with_mpi()
 
-sys.exit()
+    for path in sys_args.path_list:
+        tags = q.properly_truncate_fields(
+            path, is_check_all=sys_args.check_all, is_only_check=sys_args.only_check
+        )
+        for tag in tags:
+            q.displayln_info(tag)
+
+    q.timer_display()
+
+    q.end_with_mpi()
