@@ -1,3 +1,4 @@
+import argparse
 import sys
 import zlib
 
@@ -11,7 +12,18 @@ def crc32(fileName):
             hash = zlib.crc32(s, hash)
         return "%08x" % (hash & 0xFFFFFFFF)
 
-for v in sys.argv[1:]:
-    print(f"{crc32(v)} '{v}'")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Compute CRC32 checksums for files.")
+    parser.add_argument(
+        "filenames",
+        nargs="+",
+        help="Files to compute checksums for",
+    )
+    args, _ = parser.parse_known_args()
+    return args
 
-sys.exit()
+if __name__ == "__main__":
+    sys_args = parse_args()
+    for v in sys_args.filenames:
+        print(f"{crc32(v)} '{v}'")
+    sys.exit()

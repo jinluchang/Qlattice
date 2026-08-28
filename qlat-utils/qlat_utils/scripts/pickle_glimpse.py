@@ -1,13 +1,24 @@
-import qlat_utils as q
-import sys
+import argparse
 import pprint
+import sys
 
-filenames = sys.argv[1:]
+import qlat_utils as q
 
-for fn in filenames:
-    obj = q.load_pickle_obj(fn)
-    sys.stdout.write(f"# '{fn}'\n")
-    sys.stdout.write(pprint.pformat(obj))
-    sys.stdout.write("\n")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Display contents of pickle files.")
+    parser.add_argument(
+        "filenames",
+        nargs="+",
+        help="Pickle files to display",
+    )
+    args, _ = parser.parse_known_args()
+    return args
 
-sys.exit()
+if __name__ == "__main__":
+    sys_args = parse_args()
+    for fn in sys_args.filenames:
+        obj = q.load_pickle_obj(fn)
+        sys.stdout.write(f"# '{fn}'\n")
+        sys.stdout.write(pprint.pformat(obj))
+        sys.stdout.write("\n")
+    sys.exit()
