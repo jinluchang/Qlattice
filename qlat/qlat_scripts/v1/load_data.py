@@ -525,8 +525,12 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
             sp_prop = gt_inv * q.convert_selected_points_dist_type(
                 sp_loaded_list[i], "g"
             )
-            assert sp_prop.psel == psel
-            sp_prop.psel = psel
+            if sp_prop.psel == psel:
+                sp_prop.psel = psel
+            else:
+                sp_prop_old = sp_prop
+                sp_prop = q.PselProp(psel)
+                sp_prop @= sp_prop_old
             cache_psel[f"{tag} ; wsrc ; psel"] = sp_prop
     # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
     if spw_path_list:
@@ -537,8 +541,12 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, psel, fsel, gt):
         )
         for i, (tag, tslice) in enumerate(spw_tag_list):
             sp_prop = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
-            assert sp_prop.psel == psel_ts
-            sp_prop.psel = psel_ts
+            if sp_prop.psel == psel_ts:
+                sp_prop.psel = psel_ts
+            else:
+                sp_prop_old = sp_prop
+                sp_prop = q.PselProp(psel_ts)
+                sp_prop @= sp_prop_old
             cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = sp_prop
     # ADJUST ME
     if job_tag == "48I" and flavor == "s" and is_mira_data:
@@ -736,8 +744,12 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
         )
         for i, (tag, inv_acc) in enumerate(sp_tag_list):
             sp_prop = q.convert_selected_points_dist_type(sp_loaded_list[i], "g")
-            assert sp_prop.psel == psel
-            sp_prop.psel = psel
+            if sp_prop.psel == psel:
+                sp_prop.psel = psel
+            else:
+                sp_prop_old = sp_prop
+                sp_prop = q.PselProp(psel)
+                sp_prop @= sp_prop_old
             cache_psel[f"{tag} ; psrc ; psel"] = sp_prop
     # Batch load wsnk props via distributed read + shuffle to local, then convert to global.
     if spw_path_list:
@@ -748,8 +760,12 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel):
         )
         for i, tag in enumerate(spw_tag_list):
             sp_prop = q.convert_selected_points_dist_type(spw_loaded_list[i], "g")
-            assert sp_prop.psel == psel_ts
-            sp_prop.psel = psel_ts
+            if sp_prop.psel == psel_ts:
+                sp_prop.psel = psel_ts
+            else:
+                sp_prop_old = sp_prop
+                sp_prop = q.PselProp(psel_ts)
+                sp_prop @= sp_prop_old
             cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = sp_prop
     count = {
         0: 0,
