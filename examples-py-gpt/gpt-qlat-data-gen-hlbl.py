@@ -2822,7 +2822,9 @@ def run_job_inversion(job_tag, traj):
             q.qquit(f"{fname} {job_tag} {traj} (partly) done.")
 
 @q.timer(is_timer_fork=True)
-def run_job_contract(job_tag, traj, *, no_contract, no_global_hvp_average, no_hlbl_contract):
+def run_job_contract(
+    job_tag, traj, *, no_contract, no_global_hvp_average, no_hlbl_contract
+):
     fname = q.get_fname()
     #
     is_performing_auto_contraction = get_param(
@@ -3524,9 +3526,7 @@ job_tag_list_default = [
 job_tag_list_str_default = ",".join(job_tag_list_default)
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="HLBL data generation script."
-    )
+    parser = argparse.ArgumentParser(description="HLBL data generation script.")
     parser.add_argument(
         "--job_tag_list",
         type=str,
@@ -3626,7 +3626,8 @@ if __name__ == "__main__":
         if not sys_args.no_contract:
             q.check_time_limit()
             run_job_contract(
-                job_tag, traj,
+                job_tag,
+                traj,
                 no_contract=sys_args.no_contract,
                 no_global_hvp_average=sys_args.no_global_hvp_average,
                 no_hlbl_contract=sys_args.no_hlbl_contract,
