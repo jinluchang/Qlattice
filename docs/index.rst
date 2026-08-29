@@ -35,6 +35,8 @@ Qlattice
 
    contents/coding-assert-shape.md
 
+   contents/how_to_analysis.md
+
 Indices and tables
 ==================
 
