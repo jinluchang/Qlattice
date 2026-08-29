@@ -7,7 +7,6 @@ Documentation: ``docs/qlat/qlat_selected_points_io.md``
 """
 
 from qlat_utils import timer, get_id_node, get_num_node, get_fname
-from qlat_utils import sync_node
 from .field_selection import PointsSelection, SelectedShufflePlan
 
 @timer
@@ -30,8 +29,7 @@ def load_selected_points_list(cls, psel_list, path_list):
     id_node = get_id_node()
     num_node = get_num_node()
     n_paths = len(path_list)
-    sync_node()
-    root_list = [i % num_node for i in range(n_paths)]
+    root_list = [i * num_node // n_paths for i in range(n_paths)]
     if isinstance(psel_list, (str, PointsSelection)):
         # Single psel for all paths: resolve once, shuffle one-by-one.
         if isinstance(psel_list, str):
