@@ -787,15 +787,15 @@
  [
   "auto_contract_topo_corr: ld sig",
   {
-   "real": 0.24006496958499926,
-   "imag": -1.0339354106475672e-05,
+   "real": 15.364158053439953,
+   "imag": -0.000661718662814443,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_topo_corr: ld '< 1 >  exprs[0]' sig",
   {
-   "real": 0.24238305854719566,
+   "real": 15.512515747020522,
    "imag": 0.0,
    "__extended_json_type__": "complex128"
   }
@@ -803,32 +803,32 @@
  [
   "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) >  exprs[1]' sig",
   {
-   "real": 0.0017755387418094026,
-   "imag": 1.960675850277162e-06,
+   "real": 0.11363447947580177,
+   "imag": 0.00012548325441773836,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * (sbar g5 s)(x_1) >  exprs[2]' sig",
   {
-   "real": 0.0010830435820700542,
-   "imag": -4.756950152372174e-06,
+   "real": 0.06931478925248347,
+   "imag": -0.00030444480975181916,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * (sbar g5 s)(x_1) >  exprs[3]' sig",
   {
-   "real": -5.173404342067106e-06,
-   "imag": 1.1950300391575433e-08,
+   "real": -0.0003310978778922948,
+   "imag": 7.648192250608277e-07,
    "__extended_json_type__": "complex128"
   }
  ],
  [
   "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) >  exprs[4]' sig",
   {
-   "real": -5.173404342067108e-06,
-   "imag": 1.1950300391575426e-08,
+   "real": -0.0003310978778922949,
+   "imag": 7.648192250608273e-07,
    "__extended_json_type__": "complex128"
   }
  ],

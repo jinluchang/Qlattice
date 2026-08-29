@@ -233,7 +233,7 @@ def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
     q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
     q.timer_display()
     q.timer_merge()
-    res_sum *= 1.0 / (total_volume**2 / total_site[3])
+    res_sum *= 1.0 / total_volume
     q.displayln_info(res_sum[0].sum(1))
     ld = q.mk_lat_data(
         [
