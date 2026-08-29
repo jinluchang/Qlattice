@@ -185,9 +185,10 @@ def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
     get_r_sq_interp_idx_coef_list(job_tag)
+    mpi_chunk = q.get_mpi_chunk(range(len(xg_psel_arr)), rng_state=None)
     #
     def load_data():
-        for pidx in q.get_mpi_chunk(range(len(xg_psel_arr)), rng_state=None):
+        for pidx in mpi_chunk:
             yield pidx
     #
     @q.timer
@@ -238,7 +239,7 @@ def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
             for val, x_rel_abs in res_list:
                 x, y, z, t = x_rel_abs
                 values[t, z, y, x] += val
-            q.displayln_info(f"{fname}: {idx + 1}/{len(xg_psel_arr)}")
+            q.displayln_info(f"{fname}: {idx + 1}/{len(mpi_chunk)}")
         return values.transpose(4, 0, 1, 2, 3)
     #
     q.timer_fork(0)
