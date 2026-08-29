@@ -787,8 +787,8 @@
  [
   "auto_contract_topo_corr: ld sig",
   {
-   "real": 15.364158053439953,
-   "imag": -0.000661718662814443,
+   "real": 15.509650448254806,
+   "imag": -0.00028835751027075186,
    "__extended_json_type__": "complex128"
   }
  ],
@@ -801,23 +801,47 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) >  exprs[1]' sig",
+  "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type1)  exprs[1]' sig",
   {
-   "real": 0.11363447947580177,
-   "imag": 0.00012548325441773836,
+   "real": 0.11391564782759622,
+   "imag": 0.00012405655007573482,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * (sbar g5 s)(x_1) >  exprs[2]' sig",
+  "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type2)  exprs[2]' sig",
   {
-   "real": 0.06931478925248347,
-   "imag": -0.00030444480975181916,
+   "real": -0.0002811683517948745,
+   "imag": 1.4267043420036364e-06,
    "__extended_json_type__": "complex128"
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * (sbar g5 s)(x_1) >  exprs[3]' sig",
+  "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * (sbar g5 s)(x_1) > (Type1)  exprs[3]' sig",
+  {
+   "real": 0.06949702115177872,
+   "imag": -0.00030431859133175405,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * (sbar g5 s)(x_1) > (Type2)  exprs[4]' sig",
+  {
+   "real": -0.00018223189929548295,
+   "imag": -1.2621842006575891e-07,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * (sbar g5 s)(x_1) > (Type1)  exprs[5]' sig",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_corr: ld '< ( (ubar g5 u)(x_2) + (dbar g5 d)(x_2) ) * (sbar g5 s)(x_1) > (Type2)  exprs[6]' sig",
   {
    "real": -0.0003310978778922948,
    "imag": 7.648192250608277e-07,
@@ -825,7 +849,15 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) >  exprs[4]' sig",
+  "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type1)  exprs[7]' sig",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_corr: ld '< (sbar g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type2)  exprs[8]' sig",
   {
    "real": -0.0003310978778922949,
    "imag": 7.648192250608273e-07,

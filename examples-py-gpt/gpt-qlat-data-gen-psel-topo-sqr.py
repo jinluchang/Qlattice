@@ -126,10 +126,26 @@ def get_cexpr_corr():
             return mk_scalar5("s", "s", p)
         #
         exprs_corr_list += [
-            mk_op_light("x_2") * mk_op_light("x_1"),
-            mk_op_strange("x_2") * mk_op_strange("x_1"),
-            mk_op_light("x_2") * mk_op_strange("x_1"),
-            mk_op_strange("x_2") * mk_op_light("x_1"),
+            (
+                mk_op_light("x_2") * mk_op_light("x_1"),
+                "Type1",
+                "Type2",
+            ),
+            (
+                mk_op_strange("x_2") * mk_op_strange("x_1"),
+                "Type1",
+                "Type2",
+            ),
+            (
+                mk_op_light("x_2") * mk_op_strange("x_1"),
+                "Type1",
+                "Type2",
+            ),
+            (
+                mk_op_strange("x_2") * mk_op_light("x_1"),
+                "Type1",
+                "Type2",
+            ),
         ]
         #
         exprs = exprs_1_list + exprs_corr_list
@@ -623,9 +639,7 @@ def run_job_contract(job_tag, traj):
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
-                auto_contract_topo_corr(
-                    job_tag, traj, get_get_prop, get_psel_prob
-                )
+                auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob)
                 #
                 q.qtouch_info(get_save_path(fn_checkpoint))
                 q.displayln_info("timer_display for runjob")
