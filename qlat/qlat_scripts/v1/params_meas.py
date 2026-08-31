@@ -24,6 +24,7 @@ set_param("24D", tag, value=0.13975)
 set_param("32D", tag, value=0.13975)
 set_param("48D", tag, value=0.13975)
 set_param("48I", tag, value=0.08049)
+set_param("64I", tag, value=0.05903)
 set_param("32IfineH", tag, value=0.11790)
 
 tag = "m_kk"
