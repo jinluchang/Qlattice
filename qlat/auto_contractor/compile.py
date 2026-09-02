@@ -475,7 +475,7 @@ def collect_factor_coef_in_cexpr(
         assert isinstance(ea_coef, ea.Expr)
         for t in ea_coef.terms:
             x = t.coef
-            if x == 1 or x == -1:
+            if x == 1:
                 continue
             code = ea.compile_py_complex(x)
             if code in var_dataset:
