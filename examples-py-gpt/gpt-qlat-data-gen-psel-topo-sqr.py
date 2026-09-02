@@ -68,6 +68,7 @@ from auto_contractor.operators import (
     contract_simplify_compile,
     mk_fac,
     mk_scalar5,
+    mk_vec5_mu,
 )
 from auto_contractor.eval import (
     cache_compiled_cexpr,
@@ -114,10 +115,10 @@ def get_cexpr_corr():
         diagram_type_dict[()] = "T1"
         diagram_type_dict[((("x_1", "x_2"), 1), (("x_2", "x_1"), 1))] = "Type1"
         diagram_type_dict[((("x_1", "x_1"), 1), (("x_2", "x_2"), 1))] = "Type2"
+        #
         exprs_1_list = [
             mk_fac(1) + "1",
         ]
-        exprs_corr_list = []
         #
         def mk_op_light(p):
             return mk_scalar5("u", "u", p) + mk_scalar5("d", "d", p)
@@ -125,27 +126,81 @@ def get_cexpr_corr():
         def mk_op_strange(p):
             return mk_scalar5("s", "s", p)
         #
-        exprs_corr_list += [
+        def mk_op_light_mu(p):
+            def mk_op(mu):
+                return mk_vec5_mu("u", "u", p, mu) + mk_vec5_mu("d", "d", p, mu)
+            #
+            return mk_op
+        #
+        def mk_op_strange_mu(p):
+            def mk_op(mu):
+                return mk_vec5_mu("s", "s", p, mu)
+            #
+            return mk_op
+        #
+        def mk_x_mu(p2, p1, mu):
+            return mk_fac(f"rel_mod_sym({p2}[1][{mu}] - {p1}[1][{mu}], size[{mu}])")
+        #
+        def mk_x_sqr(p2, p1):
+            return sum([mk_x_mu(p2, p1, mu) * mk_x_mu(p2, p1, mu) for mu in range(4)])
+        #
+        exprs_corr_list = []
+        #
+        for e1 in [
+            mk_op_light("x_1"),
+            mk_op_strange("x_1"),
+        ]:
+            for e2 in [
+                mk_op_light("x_2"),
+                mk_op_strange("x_2"),
+            ]:
+                exprs_corr_list += [
+                    e2 * e1,
+                ]
+        #
+        for e1 in [
+            mk_op_light("x_1"),
+            mk_op_strange("x_1"),
+        ]:
+            for e2 in [
+                mk_op_light_mu("x_2"),
+                mk_op_strange_mu("x_2"),
+            ]:
+                exprs_corr_list += [
+                    sum([mk_x_mu("x_2", "x_1", mu) * e2(mu) * e1 for mu in range(4)]),
+                ]
+        #
+        for e1 in [
+            mk_op_light_mu("x_1"),
+            mk_op_strange_mu("x_1"),
+        ]:
+            for e2 in [
+                mk_op_light_mu("x_2"),
+                mk_op_strange_mu("x_2"),
+            ]:
+                v1 = sum(
+                    [
+                        mk_x_mu("x_2", "x_1", mu)
+                        * mk_x_mu("x_1", "x_2", nu)
+                        * e2(mu)
+                        * e1(nu)
+                        for mu in range(4)
+                        for nu in range(4)
+                    ]
+                )
+                v2 = sum([mk_x_sqr("x_2", "x_1") * e2(mu) * e1(mu) for mu in range(4)]) + v1
+                exprs_corr_list += [
+                    v1,
+                    v2,
+                ]
+        #
+        exprs_corr_list = [
             (
-                mk_op_light("x_2") * mk_op_light("x_1"),
+                e,
                 "Type1",
                 "Type2",
-            ),
-            (
-                mk_op_strange("x_2") * mk_op_strange("x_1"),
-                "Type1",
-                "Type2",
-            ),
-            (
-                mk_op_light("x_2") * mk_op_strange("x_1"),
-                "Type1",
-                "Type2",
-            ),
-            (
-                mk_op_strange("x_2") * mk_op_light("x_1"),
-                "Type1",
-                "Type2",
-            ),
+            )
+            for e in exprs_corr_list
         ]
         #
         exprs = exprs_1_list + exprs_corr_list
