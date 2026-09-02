@@ -295,20 +295,26 @@ def find_common_sum_in_factors(variables_factor):
     """
     subexpr_count = {}
     for _, ea_coef in variables_factor:
-        assert isinstance(ea_coef, ea.Expr)
+        assert isinstance(ea_coef, ea.Expr), (
+            f"ea_coef={ea_coef!r}, type={type(ea_coef)}"
+        )
         x = ea_coef.terms
         if len(x) < 1:
             continue
         for i, t in enumerate(x[:-1]):
             t1 = x[i + 1]
-            assert t.coef == 1
-            assert len(t.factors) == 1
-            assert t1.coef == 1
-            assert len(t1.factors) == 1
+            assert t.coef == 1, f"t.coef={t.coef!r}, t={t!r}"
+            assert len(t.factors) == 1, (
+                f"len(t.factors)={len(t.factors)}, t.factors={t.factors!r}"
+            )
+            assert t1.coef == 1, f"t1.coef={t1.coef!r}, t1={t1!r}"
+            assert len(t1.factors) == 1, (
+                f"len(t1.factors)={len(t1.factors)}, t1.factors={t1.factors!r}"
+            )
             f = t.factors[0]
             f1 = t1.factors[0]
-            assert f.otype == "Var"
-            assert f1.otype == "Var"
+            assert f.otype == "Var", f"f.otype={f.otype!r}, f={f!r}"
+            assert f1.otype == "Var", f"f1.otype={f1.otype!r}, f1={f1!r}"
             pair = (
                 f.code,
                 f1.code,
