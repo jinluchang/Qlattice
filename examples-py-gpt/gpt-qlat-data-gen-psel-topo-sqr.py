@@ -33,7 +33,6 @@ from qlat_scripts.v1 import (
     get_expr_names,
     get_load_path,
     get_param,
-    get_r_sq_interp_idx_coef_list,
     get_save_path,
     is_test,
     load_path_list,
@@ -97,14 +96,11 @@ pname = "topo_sqr"
 @q.timer
 def get_cexpr_topo_corr():
     """
-    Build compiled expressions for meson two-point correlation functions.\n
-    Computes correlators of the form <O2(0) O1(-tsep)> with various meson
-    operators including pi+, K+, eta_l, eta_s, kappa, omega, proton, and
-    vector/axial currents (j_mu, jl_mu, js_mu, jk_mu, j5pi_mu, j5k_mu).\n
-    Args:
-        is_both_prop: If True, uses wall-source/wall-sink propagators for
-            both operators (Type1 + Type2 diagrams). If False, uses
-            wall-source/point-sink (Type1 only).\n
+    Build compiled expressions for topological density correlation functions.\n
+    Computes correlators of the form <O2(x_2) O1(x_1)> with various meson
+    operators including pseudoscalar densities and vector currents for
+    light and strange quark flavors. Correlators are binned by spatial
+    distance using both Type1 and Type2 diagram types.\n
     Returns:
         Compiled expression object for use with eval_cexpr.
     """
@@ -139,10 +135,16 @@ def get_cexpr_topo_corr():
             return mk_op
         #
         def mk_x_mu(p2, p1, mu):
-            return mk_fac(f"rel_mod_sym({p2}[1][{mu}] - {p1}[1][{mu}], size[{mu}])")
+            return (
+                mk_fac(f"rel_mod_sym({p2}[1][{mu}] - {p1}[1][{mu}], size[{mu}])")
+                + f"({p2}-{p1})[{mu}]"
+            )
         #
         def mk_x_sqr(p2, p1):
-            return sum([mk_x_mu(p2, p1, mu) * mk_x_mu(p2, p1, mu) for mu in range(4)])
+            return (
+                sum([mk_x_mu(p2, p1, mu) * mk_x_mu(p2, p1, mu) for mu in range(4)])
+                + f"({p2}-{p1})**2"
+            )
         #
         exprs_corr_list = []
         #
@@ -167,7 +169,12 @@ def get_cexpr_topo_corr():
                 mk_op_strange_mu("x_2"),
             ]:
                 exprs_corr_list += [
-                    sum([mk_x_mu("x_2", "x_1", mu) * e2(mu) * e1 for mu in range(4)]),
+                    (
+                        sum(
+                            [mk_x_mu("x_2", "x_1", mu) * e2(mu) * e1 for mu in range(4)]
+                        )
+                        + (mk_x_mu("x_2", "x_1", "mu") * e2("mu") * e1).show()
+                    )
                 ]
         #
         for e1 in [
@@ -178,17 +185,28 @@ def get_cexpr_topo_corr():
                 mk_op_light_mu("x_2"),
                 mk_op_strange_mu("x_2"),
             ]:
-                v1 = sum(
-                    [
-                        mk_x_mu("x_2", "x_1", mu)
-                        * mk_x_mu("x_1", "x_2", nu)
-                        * e2(mu)
-                        * e1(nu)
-                        for mu in range(4)
-                        for nu in range(4)
-                    ]
+                v1 = (
+                    sum(
+                        [
+                            mk_x_mu("x_2", "x_1", mu)
+                            * mk_x_mu("x_1", "x_2", nu)
+                            * e2(mu)
+                            * e1(nu)
+                            for mu in range(4)
+                            for nu in range(4)
+                        ]
+                    )
+                    + (
+                        mk_x_mu("x_2", "x_1", "mu")
+                        * mk_x_mu("x_1", "x_2", "nu")
+                        * e2("mu")
+                        * e1("nu")
+                    ).show()
                 )
-                v2 = sum([mk_x_sqr("x_2", "x_1") * e2(mu) * e1(mu) for mu in range(4)]) + v1
+                v2 = (
+                    sum([mk_x_sqr("x_2", "x_1") * e2(mu) * e1(mu) for mu in range(4)])
+                    + (mk_x_sqr("x_2", "x_1") * e2("mu") * e1("mu")).show()
+                ) + v1
                 exprs_corr_list += [
                     v1,
                     v2,
@@ -214,10 +232,10 @@ def get_cexpr_topo_corr():
 @q.timer(is_timer_fork=True)
 def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
     """
-    Compute meson two-point correlators with point-source/point-sink.\n
+    Compute topological density two-point correlators with point-source/point-sink.\n
     Uses both point-source and point-sink propagators with probability
     weighting. Results are binned by spatial distance r for analysis of
-    position-dependent correlators. Normalized by total_volume^2/t_size.\n
+    position-dependent correlators. Normalized by total_volume.\n
     Args:
         job_tag: Gauge ensemble identifier.
         traj: Trajectory number.
@@ -231,7 +249,6 @@ def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
     cexpr = get_cexpr_topo_corr()
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
-    total_site[3]
     get_prop = get_get_prop()
     psel_prob = get_psel_prob()
     psel = psel_prob.psel
@@ -239,7 +256,6 @@ def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
     xg_psel_arr = psel[:]
     geo = q.Geometry(total_site)
     total_volume = geo.total_volume
-    get_r_sq_interp_idx_coef_list(job_tag)
     mpi_chunk = q.get_mpi_chunk(range(len(xg_psel_arr)), rng_state=None)
     #
     def load_data():
