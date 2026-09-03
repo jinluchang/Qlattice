@@ -785,6 +785,182 @@
   1e-15
  ],
  [
+  "auto_contract_topo_density: ld sig",
+  {
+   "real": -97.72044979576016,
+   "imag": 0.33104752151530215,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< 1 >  exprs[0]' sig",
+  {
+   "real": -110.08718793201501,
+   "imag": 0.0,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g5 u)(x) + (dbar g5 d)(x) ) >  exprs[1]' sig",
+  {
+   "real": -0.06741371564057792,
+   "imag": 0.001231745957840348,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g5 s)(x) >  exprs[2]' sig",
+  {
+   "real": -0.21982403341517773,
+   "imag": 0.00310603923952284,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar u)(x) + (dbar d)(x) ) >  exprs[3]' sig",
+  {
+   "real": 3.2576326225058594,
+   "imag": -0.000764430087103263,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar s)(x) >  exprs[4]' sig",
+  {
+   "real": 9.071273949510115,
+   "imag": 0.002674230977553097,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g0 g5 u)(x) + (dbar g0 g5 d)(x) ) >  exprs[5]' sig",
+  {
+   "real": -0.006864416632456349,
+   "imag": -0.00344758215651101,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g0 g5 s)(x) >  exprs[6]' sig",
+  {
+   "real": -1.521610492303115,
+   "imag": -0.03991408438829028,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g0 u)(x) + (dbar g0 d)(x) ) >  exprs[7]' sig",
+  {
+   "real": 0.01921123159574218,
+   "imag": -0.19896262695786518,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g0 s)(x) >  exprs[8]' sig",
+  {
+   "real": 0.08494470349473189,
+   "imag": 0.03883470397744648,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g1 g5 u)(x) + (dbar g1 g5 d)(x) ) >  exprs[9]' sig",
+  {
+   "real": 0.3321381280947016,
+   "imag": 0.009208778733827428,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g1 g5 s)(x) >  exprs[10]' sig",
+  {
+   "real": 1.0164974849599981,
+   "imag": 0.017588315324503643,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g1 u)(x) + (dbar g1 d)(x) ) >  exprs[11]' sig",
+  {
+   "real": 0.005112368735765538,
+   "imag": 0.06630412365834037,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g1 s)(x) >  exprs[12]' sig",
+  {
+   "real": 0.08880073704506943,
+   "imag": -0.18159320774272764,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g2 g5 u)(x) + (dbar g2 g5 d)(x) ) >  exprs[13]' sig",
+  {
+   "real": 0.09163583974443747,
+   "imag": -0.0006682746372638715,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g2 g5 s)(x) >  exprs[14]' sig",
+  {
+   "real": 0.29996131681673094,
+   "imag": -0.012033858328517364,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g2 u)(x) + (dbar g2 d)(x) ) >  exprs[15]' sig",
+  {
+   "real": 0.014572496567401727,
+   "imag": -0.1912402890589167,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g2 s)(x) >  exprs[16]' sig",
+  {
+   "real": -0.025611346921316308,
+   "imag": -0.11606241187519921,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g3 g5 u)(x) + (dbar g3 g5 d)(x) ) >  exprs[17]' sig",
+  {
+   "real": -0.5740315046465859,
+   "imag": -0.001081389971508967,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g3 g5 s)(x) >  exprs[18]' sig",
+  {
+   "real": -0.4664951527743519,
+   "imag": 0.03780933908742095,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< ((0.5+0j)) * ( (ubar g3 u)(x) + (dbar g3 d)(x) ) >  exprs[19]' sig",
+  {
+   "real": 0.010253002524733981,
+   "imag": 0.12221034660346672,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
+  "auto_contract_topo_density: ld '< (sbar g3 s)(x) >  exprs[20]' sig",
+  {
+   "real": 0.011882476412653168,
+   "imag": 0.0605349833436484,
+   "__extended_json_type__": "complex128"
+  }
+ ],
+ [
   "auto_contract_topo_corr: ld sig",
   {
    "real": 17.088839871795273,
@@ -865,7 +1041,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type1)  exprs[9]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type1)  exprs[9]' sig",
   {
    "real": -0.03728172810949948,
    "imag": -5.5190758272933435e-06,
@@ -873,7 +1049,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type2)  exprs[10]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type2)  exprs[10]' sig",
   {
    "real": 0.0008343683824176941,
    "imag": 1.2871094304656399e-06,
@@ -881,7 +1057,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type1)  exprs[11]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (sbar gmu g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type1)  exprs[11]' sig",
   {
    "real": 0.0,
    "imag": 0.0,
@@ -889,7 +1065,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type2)  exprs[12]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (sbar gmu g5 s)(x_2) * ( (ubar g5 u)(x_1) + (dbar g5 d)(x_1) ) > (Type2)  exprs[12]' sig",
   {
    "real": 0.00045802661501253574,
    "imag": 7.636679082375825e-05,
@@ -897,7 +1073,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g5 s)(x_1) > (Type1)  exprs[13]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar g5 s)(x_1) > (Type1)  exprs[13]' sig",
   {
    "real": 0.0,
    "imag": 0.0,
@@ -905,7 +1081,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g5 s)(x_1) > (Type2)  exprs[14]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar g5 s)(x_1) > (Type2)  exprs[14]' sig",
   {
    "real": 0.0007103520022911955,
    "imag": 1.4129971599079298e-05,
@@ -913,7 +1089,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * (sbar g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * (sbar g5 s)(x_1) > (Type1)  exprs[15]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (sbar gmu g5 s)(x_2) * (sbar g5 s)(x_1) > (Type1)  exprs[15]' sig",
   {
    "real": -0.03951399968227472,
    "imag": 0.0002791591525771769,
@@ -921,7 +1097,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * (sbar g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * (sbar g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * (sbar g5 s)(x_1) > (Type2)  exprs[16]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (sbar gmu g5 s)(x_2) * (sbar g5 s)(x_1) > (Type2)  exprs[16]' sig",
   {
    "real": 0.0006625040965737619,
    "imag": 2.207766687101904e-05,
@@ -929,7 +1105,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type1)  exprs[17]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type1)  exprs[17]' sig",
   {
    "real": 0.36935033636724723,
    "imag": -7.494300517246871e-05,
@@ -937,7 +1113,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type2)  exprs[18]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type2)  exprs[18]' sig",
   {
    "real": 0.01099988103190477,
    "imag": 2.1735214612569298e-05,
@@ -945,7 +1121,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type1)  exprs[19]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar gmu g5 u)(x_1) + (dbar gmu g5 d)(x_1) ) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type1)  exprs[19]' sig",
   {
    "real": 1.0575728125830557,
    "imag": 0.00021765793833002523,
@@ -953,7 +1129,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type2)  exprs[20]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar gmu g5 u)(x_1) + (dbar gmu g5 d)(x_1) ) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type2)  exprs[20]' sig",
   {
    "real": 0.001354504808626679,
    "imag": -0.0004248135661364703,
@@ -961,7 +1137,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type1)  exprs[21]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type1)  exprs[21]' sig",
   {
    "real": 0.0,
    "imag": 0.0,
@@ -969,7 +1145,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type2)  exprs[22]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type2)  exprs[22]' sig",
   {
    "real": 0.0016149763060550977,
    "imag": -0.00015141654745767823,
@@ -977,7 +1153,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g0 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g1 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g2 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g3 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type1)  exprs[23]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * (sbar gmu g5 s)(x_2) * ( (ubar gmu g5 u)(x_1) + (dbar gmu g5 d)(x_1) ) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type1)  exprs[23]' sig",
   {
    "real": 0.0,
    "imag": 0.0,
@@ -985,7 +1161,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g0 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g1 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g2 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g3 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * ( (ubar g0 g5 u)(x_1) + (dbar g0 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * ( (ubar g1 g5 u)(x_1) + (dbar g1 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * ( (ubar g2 g5 u)(x_1) + (dbar g2 g5 d)(x_1) ) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * ( (ubar g3 g5 u)(x_1) + (dbar g3 g5 d)(x_1) ) > (Type2)  exprs[24]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * (sbar gmu g5 s)(x_2) * ( (ubar gmu g5 u)(x_1) + (dbar gmu g5 d)(x_1) ) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * ( (ubar gnu g5 u)(x_1) + (dbar gnu g5 d)(x_1) ) > (Type2)  exprs[24]' sig",
   {
    "real": -0.008583476422106225,
    "imag": -0.00018155167290064749,
@@ -993,7 +1169,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) > (Type1)  exprs[25]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar gnu g5 s)(x_1) > (Type1)  exprs[25]' sig",
   {
    "real": 0.0,
    "imag": 0.0,
@@ -1001,7 +1177,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) > (Type2)  exprs[26]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar gnu g5 s)(x_1) > (Type2)  exprs[26]' sig",
   {
    "real": 0.0016149763060550977,
    "imag": -0.00015141654745767823,
@@ -1009,7 +1185,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) > (Type1)  exprs[27]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar gmu g5 s)(x_1) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar gnu g5 s)(x_1) > (Type1)  exprs[27]' sig",
   {
    "real": 0.0,
    "imag": 0.0,
@@ -1017,7 +1193,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g0 g5 u)(x_2) + (dbar g0 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g1 g5 u)(x_2) + (dbar g1 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g2 g5 u)(x_2) + (dbar g2 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * ( (ubar g3 g5 u)(x_2) + (dbar g3 g5 d)(x_2) ) * (sbar g3 g5 s)(x_1) > (Type2)  exprs[28]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar gmu g5 s)(x_1) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * ( (ubar gmu g5 u)(x_2) + (dbar gmu g5 d)(x_2) ) * (sbar gnu g5 s)(x_1) > (Type2)  exprs[28]' sig",
   {
    "real": -0.008583476422106226,
    "imag": -0.00018155167290064738,
@@ -1025,7 +1201,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * (sbar g3 g5 s)(x_1) > (Type1)  exprs[29]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * (sbar gnu g5 s)(x_1) > (Type1)  exprs[29]' sig",
   {
    "real": 0.1592517805554616,
    "imag": -0.00020263409140173008,
@@ -1033,7 +1209,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * (sbar g3 g5 s)(x_1) > (Type2)  exprs[30]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * (sbar gnu g5 s)(x_1) > (Type2)  exprs[30]' sig",
   {
    "real": 0.0010023288305743784,
    "imag": -0.0001730329444662524,
@@ -1041,7 +1217,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g0 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g1 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g2 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g3 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * (sbar g3 g5 s)(x_1) > (Type1)  exprs[31]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * (sbar gmu g5 s)(x_2) * (sbar gmu g5 s)(x_1) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * (sbar gnu g5 s)(x_1) > (Type1)  exprs[31]' sig",
   {
    "real": 0.5243241390340694,
    "imag": -0.00074575854641279,
@@ -1049,7 +1225,7 @@
   }
  ],
  [
-  "auto_contract_topo_corr: ld '< ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g0 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + (0) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g1 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g2 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ( ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) + (0) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) ) * (sbar g3 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g0 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + (0) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g0 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g0 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][0] - x_1[1][0], size[0]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g0 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g1 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g1 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g1 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][1] - x_1[1][1], size[1]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g1 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g2 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g2 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g2 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][2] - x_1[1][2], size[2]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g2 g5 s)(x_2) * (sbar g3 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][0] - x_2[1][0], size[0]))) * (sbar g3 g5 s)(x_2) * (sbar g0 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][1] - x_2[1][1], size[1]))) * (sbar g3 g5 s)(x_2) * (sbar g1 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][2] - x_2[1][2], size[2]))) * (sbar g3 g5 s)(x_2) * (sbar g2 g5 s)(x_1) + ((rel_mod_sym(x_2[1][3] - x_1[1][3], size[3]))) * ((rel_mod_sym(x_1[1][3] - x_2[1][3], size[3]))) * (sbar g3 g5 s)(x_2) * (sbar g3 g5 s)(x_1) > (Type2)  exprs[32]' sig",
+  "auto_contract_topo_corr: ld '< (x_2-x_1)**2 * (sbar gmu g5 s)(x_2) * (sbar gmu g5 s)(x_1) + (x_2-x_1)[mu] * (x_1-x_2)[nu] * (sbar gmu g5 s)(x_2) * (sbar gnu g5 s)(x_1) > (Type2)  exprs[32]' sig",
   {
    "real": -0.002679966661897756,
    "imag": -0.00010495431068599653,
