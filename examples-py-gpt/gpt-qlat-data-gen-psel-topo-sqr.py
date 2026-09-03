@@ -95,7 +95,7 @@ pname = "topo_sqr"
 # ----
 
 @q.timer
-def get_cexpr_corr():
+def get_cexpr_topo_corr():
     """
     Build compiled expressions for meson two-point correlation functions.\n
     Computes correlators of the form <O2(0) O1(-tsep)> with various meson
@@ -108,7 +108,7 @@ def get_cexpr_corr():
     Returns:
         Compiled expression object for use with eval_cexpr.
     """
-    fn_base = "cache/auto_contract_cexpr/get_cexpr_corr"
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_topo_corr"
     #
     def calc_cexpr():
         diagram_type_dict = dict()
@@ -228,7 +228,7 @@ def auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob):
     fn = f"{job_tag}/{pname}/traj-{traj}/topo_corr.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_corr()
+    cexpr = get_cexpr_topo_corr()
     expr_names = get_expr_names(cexpr)
     total_site = q.Coordinate(get_param(job_tag, "total_site"))
     total_site[3]
@@ -715,7 +715,7 @@ def get_all_cexpr():
     Builds all compiled expressions used by the measurement functions
     and runs benchmark evaluations to ensure they are cached for later use.
     """
-    benchmark_eval_cexpr(get_cexpr_corr())
+    benchmark_eval_cexpr(get_cexpr_topo_corr())
 
 ### ------
 
