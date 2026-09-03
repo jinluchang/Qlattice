@@ -16,7 +16,7 @@ The script supports multiple gauge ensembles (24D, 48I, 64I, 64I-pq, 64I-pq2) an
 test configurations. It uses adaptive sampling for point-source/point-sink
 measurements with probability-weighted estimators.\n
 Usage:
-    python gpt-qlat-data-gen-auto.py [--job_tag_list tag1,tag2] [--no_inversion] [--no_contract]
+    python gpt-qlat-data-gen-psel-topo-sqr.py [--job_tag_list tag1,tag2] [--no_inversion] [--no_contract]
 """
 
 import argparse
@@ -63,6 +63,7 @@ from qlat_scripts.v1 import (
     run_wi,
     set_param,
 )
+import qlat_scripts.v1.load_data
 from auto_contractor.operators import (
     contract_simplify_compile,
     mk_sym,
@@ -764,14 +765,10 @@ def run_job_inversion(job_tag, traj):
 def run_job_contract(job_tag, traj):
     """
     Run all contraction measurements for a given job_tag and trajectory.\n
-    Loads pre-computed propagators and performs all auto-contractor
+    Loads pre-computed propagators and performs topological density
     measurements including:
-    - Meson correlation functions (wall-wall, wall-point, point-wall, point-point)
-    - Meson two-current and tensor current correlators
-    - Meson mass insertion correlators
-    - Meson weak-current correlators
-    - Tadpole current and pi0 current correlators
-    - Pi0 gamma-gamma disconnected diagrams\n
+    - Topological density at point-source positions
+    - Topological density two-point correlators\n
     Args:
         job_tag: Gauge ensemble identifier.
         traj: Trajectory number.
