@@ -65,8 +65,11 @@ from qlat_scripts.v1 import (
 )
 from auto_contractor.operators import (
     contract_simplify_compile,
+    mk_sym,
     mk_fac,
+    mk_scalar,
     mk_scalar5,
+    mk_vec_mu,
     mk_vec5_mu,
 )
 from auto_contractor.eval import (
@@ -92,6 +95,145 @@ is_cython = not is_test()
 pname = "topo_sqr"
 
 # ----
+
+@q.timer
+def get_cexpr_topo_density():
+    """
+    Build compiled expressions for topological density measurements.\n
+    Computes local operator expectation values at single points including
+    pseudoscalar densities (scalar5) and vector currents (vec5_mu, vec_mu)
+    for light (u+d)/2 and strange quark flavors. These operators are used
+    to estimate the topological charge density on gauge configurations.\n
+    Returns:
+        Compiled expression object for use with eval_cexpr.
+    """
+    fn_base = "cache/auto_contract_cexpr/get_cexpr_topo_density"
+    #
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[()] = "T1"
+        #
+        exprs_1_list = [
+            mk_fac(1) + "1",
+        ]
+        #
+        exprs_corr_list = [
+            mk_fac(mk_sym(1) / 2)
+            * (mk_scalar5("u", "u", "x") + mk_scalar5("d", "d", "x")),
+            mk_scalar5("s", "s", "x"),
+            mk_fac(mk_sym(1) / 2)
+            * (mk_scalar("u", "u", "x") + mk_scalar("d", "d", "x")),
+            mk_scalar("s", "s", "x"),
+        ]
+        for mu in range(4):
+            exprs_corr_list += [
+                mk_fac(mk_sym(1) / 2)
+                * (mk_vec5_mu("u", "u", "x", mu) + mk_vec5_mu("d", "d", "x", mu)),
+                mk_vec5_mu("s", "s", "x", mu),
+                mk_fac(mk_sym(1) / 2)
+                * (mk_vec_mu("u", "u", "x", mu) + mk_vec_mu("d", "d", "x", mu)),
+                mk_vec_mu("s", "s", "x", mu),
+            ]
+        #
+        exprs = exprs_1_list + exprs_corr_list
+        cexpr = contract_simplify_compile(
+            *exprs, is_isospin_symmetric_limit=True, diagram_type_dict=diagram_type_dict
+        )
+        return cexpr
+    #
+    return cache_compiled_cexpr(calc_cexpr, fn_base, is_cython=is_cython)
+
+@q.timer(is_timer_fork=True)
+def auto_contract_topo_density(job_tag, traj, get_get_prop, get_psel_prob):
+    """
+    Compute topological density at point-source positions using auto-contractor.\n
+    Evaluates the compiled topological density expressions at each selected
+    point source position, weighted by the inverse selection probability
+    (probability-weighted estimator). Results are stored as a LatData file
+    indexed by expression name and point index.\n
+    Args:
+        job_tag: Gauge ensemble identifier.
+        traj: Trajectory number.
+        get_get_prop: Callable returning propagator accessor function.
+        get_psel_prob: Callable returning point selection probability object.
+    """
+    fname = q.get_fname()
+    fn = f"{job_tag}/{pname}/traj-{traj}/topo_density.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_topo_density()
+    expr_names = get_expr_names(cexpr)
+    total_site = q.Coordinate(get_param(job_tag, "total_site"))
+    get_prop = get_get_prop()
+    psel_prob = get_psel_prob()
+    psel = psel_prob.psel
+    psel_prob_arr = psel_prob[:].ravel()
+    xg_psel_arr = psel[:]
+    mpi_chunk = q.get_mpi_chunk(range(len(xg_psel_arr)), rng_state=None)
+    #
+    def load_data():
+        for pidx in mpi_chunk:
+            yield pidx
+    #
+    @q.timer
+    def feval(args):
+        pidx = args
+        xg_src = tuple(xg_psel_arr[pidx])
+        prob_src = psel_prob_arr[pidx]
+        pd = {
+            "x": (
+                "point",
+                xg_src,
+            ),
+            "size": total_site,
+        }
+        val = eval_cexpr(cexpr, positions_dict=pd, get_prop=get_prop)
+        return val / prob_src, pidx
+    #
+    def sum_function(val_list):
+        values = np.zeros(
+            (
+                len(xg_psel_arr),
+                len(expr_names),
+            ),
+            dtype=complex,
+        )
+        for idx, (val, pidx) in enumerate(val_list):
+            values[pidx] += val
+            q.displayln_info(f"{fname}: {idx + 1}/{len(mpi_chunk)}")
+        return values.transpose(1, 0)
+    #
+    q.timer_fork(0)
+    res_sum = q.parallel_map_sum(
+        feval, load_data(), sum_function=sum_function, chunksize=1
+    )
+    res_sum = q.glb_sum(res_sum)
+    q.displayln_info(f"{fname}: timer_display for parallel_map_sum")
+    q.timer_display()
+    q.timer_merge()
+    q.displayln_info(res_sum[0].sum())
+    ld = q.mk_lat_data(
+        [
+            [
+                "expr_name",
+                len(expr_names),
+                expr_names,
+            ],
+            [
+                "pidx",
+                len(xg_psel_arr),
+            ],
+        ]
+    )
+    ld.from_numpy(res_sum)
+    ld.save(get_save_path(fn))
+    q.json_results_append(f"{fname}: ld sig", q.get_data_sig(ld, q.RngState()))
+    for i, en in enumerate(expr_names):
+        q.json_results_append(
+            f"{fname}: ld '{en}' sig", q.get_data_sig(ld[i], q.RngState())
+        )
+
+### ------
 
 @q.timer
 def get_cexpr_topo_corr():
@@ -711,6 +853,7 @@ def run_job_contract(job_tag, traj):
             if get_prop is not None:
                 q.timer_fork()
                 # ADJUST ME
+                auto_contract_topo_density(job_tag, traj, get_get_prop, get_psel_prob)
                 auto_contract_topo_corr(job_tag, traj, get_get_prop, get_psel_prob)
                 #
                 q.qtouch_info(get_save_path(fn_checkpoint))
@@ -731,6 +874,7 @@ def get_all_cexpr():
     Builds all compiled expressions used by the measurement functions
     and runs benchmark evaluations to ensure they are cached for later use.
     """
+    benchmark_eval_cexpr(get_cexpr_topo_density())
     benchmark_eval_cexpr(get_cexpr_topo_corr())
 
 ### ------
