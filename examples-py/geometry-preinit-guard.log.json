@@ -1,0 +1,42 @@
+[
+ [
+  "pre-init Geometry(total_site) outcome",
+  1.0
+ ],
+ [
+  "pre-init Geometry(total_site) ok",
+  1.0
+ ],
+ [
+  "pre-init child exit code",
+  0.0
+ ],
+ [
+  "initialised Geometry(total_site)",
+  {
+   "value": [
+    4.0,
+    4.0,
+    4.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "Geometry() total_volume",
+  0.0
+ ],
+ [
+  "explicit Geometry(id, size, node)",
+  {
+   "value": [
+    4.0,
+    4.0,
+    4.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ]
+]

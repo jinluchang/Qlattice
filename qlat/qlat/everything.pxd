@@ -100,6 +100,7 @@ cdef extern from "qlat/utils-io.h" namespace "qlat":
 
 cdef extern from "qlat/core.h" namespace "qlat":
 
+    const GeometryNode& get_geometry_node()
     cdef cppclass PointsDistType:
         pass
     std_string show(const PointsDistType points_dist_type) except +

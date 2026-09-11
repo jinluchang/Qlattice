@@ -35,6 +35,14 @@ def end(cc.Bool is_preserving_cache=False):
 
 ### -------------------------------------------------------------------
 
+def is_initialized():
+    """
+    Return whether the global geometry node (`geon`) is initialized, i.e.
+    whether `q.begin_with_mpi()` or `q.begin(id_node, size_node)` has been
+    called.
+    """
+    return cc.get_geometry_node().initialized
+
 def get_size_node():
     cdef Coordinate x = Coordinate()
     # cc.assign_direct(x.xx, cc.get_size_node())

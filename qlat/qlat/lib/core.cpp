@@ -22,9 +22,20 @@ Geometry::Geometry(const Coordinate& total_site) { init(total_site); }
 void Geometry::init(const Coordinate& total_site)
 {
   const GeometryNode& geon_ = get_geometry_node();
+  if (not geon_.initialized) {
+    Qerr(
+        "Geometry::init(total_site): qlat is not initialized, so the global "
+        "geometry node (and thus size_node) is unknown; call q.begin_with_mpi() "
+        "(or q.begin(id_node, size_node)) first");
+  }
   Coordinate node_site_;
   for (Int i = 0; i < DIMN; ++i) {
-    Qassert(0 == total_site[i] % geon_.size_node[i]);
+    Qassert_info(0 == total_site[i] % geon_.size_node[i], {
+      qerr(ssprintf("Geometry::init(total_site=%s): total_site[%d]=%d is not "
+                    "divisible by size_node[%d]=%d",
+                    show(total_site).c_str(), i, total_site[i], i,
+                    geon_.size_node[i]));
+    });
     node_site_[i] = total_site[i] / geon_.size_node[i];
   }
   init(geon_, node_site_);

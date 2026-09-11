@@ -19,6 +19,7 @@ class q:
         displayln,
     )
     from .c import (
+        is_initialized,
         get_size_node,
         get_coor_node,
         begin,
@@ -203,6 +204,14 @@ def set_comm(x):
 
 def get_comm():
     return comm
+
+def is_initialized():
+    """
+    Return whether the global geometry node (`geon`) is initialized, i.e.
+    whether `q.begin_with_mpi()` or `q.begin(id_node, size_node)` has been
+    called.
+    """
+    return q.is_initialized()
 
 def begin_with_mpi(size_node_list=None):
     global comm

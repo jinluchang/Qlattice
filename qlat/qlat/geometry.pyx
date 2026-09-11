@@ -58,7 +58,16 @@ cdef class Geometry:
         """
         Use `total_site` to initialize `Geometry`.
         Will use the global `geon` to determine `id_node` and `size_node`.
+        #
+        `qlat` must be initialized first, i.e. `q.begin_with_mpi()` (or
+        `q.begin(id_node, size_node)`) must have been called, because the
+        global `geon` (and thus `size_node`) is not known before that.
         """
+        if not cc.get_geometry_node().initialized:
+            raise RuntimeError(
+                "q.Geometry(total_site): qlat is not initialized, so the global "
+                "geometry node (and thus size_node) is unknown; call "
+                "q.begin_with_mpi() (or q.begin(id_node, size_node)) first")
         self.xx.init(total_site.xx)
 
     def init_from_id_node_site(self, int id_node, Coordinate size_node, Coordinate node_site):
