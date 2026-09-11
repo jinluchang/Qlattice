@@ -84,9 +84,48 @@ def SelectedPoints(type ctype, PointsSelection psel, int multiplicity=0):
     field = FieldType(psel, multiplicity)
     return field
 
+def field_check_key(idx):
+    """
+    Validate a field index and return the NumPy index to use.
+
+    Field buffers are ``(local_volume, multiplicity, *elem_shape)``,
+    C-contiguous, indexed by the **flat local site index** with the first
+    coordinate varying fastest, matching ``geo.coordinate_from_index``.
+
+    A ``Coordinate`` (or a tuple/list containing one) is a common mistake
+    because it looks like the C++ ``get_elem`` API; reject it with an
+    actionable message instead of silently doing the wrong thing.
+    """
+    if isinstance(idx, (q.Coordinate, q.CoordinateD)):
+        raise TypeError(
+            f"field indices are flat local site indices, not {type(idx).__name__}"
+            "; use get_elem_xg(xg, m) for global coordinates, or "
+            "geo.index_from_coordinate(xl) to convert a local coordinate to a "
+            "flat local index")
+    if isinstance(idx, (tuple, list)):
+        for key in idx:
+            if isinstance(key, (q.Coordinate, q.CoordinateD)):
+                raise TypeError(
+                    "field indices are flat local site indices; a tuple "
+                    "containing a Coordinate would be interpreted by NumPy as a "
+                    "fancy index over the site axis. Use "
+                    "get_elem_xg(xg, m) for global coordinates, or "
+                    "geo.index_from_coordinate(xl)")
+    return idx
+
 ### -------------------------------------------------------------------
 
 cdef class FieldBase:
+    """
+    Base class of lattice fields defined on every site of a ``Geometry``.
+    #
+    The NumPy buffer interface (``np.asarray(f)``, equivalently ``f[:]``)
+    exposes a writeable, zero-copy view with shape
+    ``(local_volume, multiplicity, *elem_shape)``, C-contiguous. Axis 0 is the
+    **flat local site index**, with the first coordinate varying fastest
+    (matching ``geo.coordinate_from_index``); a ``Coordinate`` is not an
+    accepted index. See ``docs/qlat/qlat_field_indexing.md``.
+    """
 
     ctype = ElemType
 
@@ -362,19 +401,29 @@ cdef class FieldBase:
         """
         Implemented in terms of ``np.asarray``.
         #
+        The index is a NumPy index into the buffer
+        ``(local_volume, multiplicity, *elem_shape)``, which is C-contiguous
+        with the flat local site index as axis 0; see the class docstring.
+        #
         .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
            resulting array directly, to avoid creating a new view each time.
         """
-        np.asarray(self)[idx] = val
+        cdef object arr = np.asarray(self)
+        arr[field_check_key(idx)] = val
 
     def __getitem__(self, idx):
         """
         Implemented in terms of ``np.asarray``.
         #
+        The index is a NumPy index into the buffer
+        ``(local_volume, multiplicity, *elem_shape)``, which is C-contiguous
+        with the flat local site index as axis 0; see the class docstring.
+        #
         .. note:: For repeated calls, use ``np.asarray(f)`` once and index the
            resulting array directly, to avoid creating a new view each time.
         """
-        return np.asarray(self)[idx]
+        cdef object arr = np.asarray(self)
+        return arr[field_check_key(idx)]
 
     def get_elems(self, idx):
         """

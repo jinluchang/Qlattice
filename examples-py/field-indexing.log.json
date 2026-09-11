@@ -1,0 +1,207 @@
+[
+ [
+  "getitem Coordinate",
+  2.0
+ ],
+ [
+  "getitem CoordinateD",
+  2.0
+ ],
+ [
+  "getitem tuple with Coordinate",
+  2.0
+ ],
+ [
+  "setitem Coordinate",
+  2.0
+ ],
+ [
+  "setitem CoordinateD",
+  2.0
+ ],
+ [
+  "setitem tuple with Coordinate",
+  2.0
+ ],
+ [
+  "message mentions get_elem_xg",
+  1.0
+ ],
+ [
+  "message mentions index_from_coordinate",
+  1.0
+ ],
+ [
+  "f[:] shape",
+  {
+   "value": [
+    30.0,
+    2.0,
+    3.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "f[:] writeable",
+  1.0
+ ],
+ [
+  "f[:] equals np.asarray",
+  1.0
+ ],
+ [
+  "f[0:2] shape",
+  {
+   "value": [
+    2.0,
+    2.0,
+    3.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "f[...,0].shape",
+  {
+   "value": [
+    30.0,
+    2.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "f[None].shape",
+  {
+   "value": [
+    1.0,
+    30.0,
+    2.0,
+    3.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "f[0,0].shape",
+  {
+   "value": [
+    3.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "buffer shape",
+  {
+   "value": [
+    30.0,
+    2.0,
+    3.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "V - local_volume",
+  0.0
+ ],
+ [
+  "buffer C-contiguous",
+  1.0
+ ],
+ [
+  "local site",
+  {
+   "value": [
+    2.0,
+    3.0,
+    5.0,
+    1.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "V - prod(local_site)",
+  0.0
+ ],
+ [
+  "flat index = coordinate_from_index (first coord fastest)",
+  1.0
+ ],
+ [
+  "arr axes are local (x,y,z,t,...)",
+  {
+   "value": [
+    2.0,
+    3.0,
+    5.0,
+    1.0,
+    2.0,
+    3.0,
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "arr[xl] matches flat index",
+  1.0
+ ],
+ [
+  "arr[local coord] == get_elem_xg(global coord)",
+  0.0
+ ],
+ [
+  "inverse recipe round-trips",
+  1.0
+ ],
+ [
+  "write-back lands at index_from_coordinate",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "view_count before",
+  1.0
+ ],
+ [
+  "view_count with one view",
+  2.0
+ ],
+ [
+  "view_count after del",
+  1.0
+ ],
+ [
+  "re-init while viewed",
+  3.0
+ ],
+ [
+  "view_count after del 2",
+  1.0
+ ],
+ [
+  "write through view reaches field",
+  {
+   "real": 0.0,
+   "imag": 0.0,
+   "__extended_json_type__": "complex"
+  }
+ ],
+ [
+  "view_count at end",
+  1.0
+ ]
+]

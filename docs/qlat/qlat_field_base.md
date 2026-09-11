@@ -184,17 +184,101 @@ field *= other_field                # element-wise (other must be ComplexD or Re
 
 ### Element Access
 
-Elements are accessed via NumPy array view (`np.asarray(self)`).
+Elements are accessed through the NumPy buffer interface. `np.asarray(f)` and
+`f[:]` return the **same writeable, zero-copy view** of the field data; writes
+through it change the field, and the view keeps the field's buffer alive.
+
+#### Buffer layout
+
+The buffer shape is
+
+```
+(local_volume, multiplicity, *elem_shape)
+```
+
+C-contiguous, where `local_volume` is the number of sites **on this MPI rank**
+(`prod(geo.node_site)`, so `local_volume == total_volume` on a single rank),
+`*elem_shape` is the element shape (`()` for scalar elements, `(3, 3)` for
+`ColorMatrix`, `(12, 12)` for `WilsonMatrix`, ...). Axis 0 is the **flat local
+site index**: the first coordinate varies fastest, matching
+`geo.coordinate_from_index`. For a single-rank `4x4x4x4` lattice the site index
+of local coordinate `(x, y, z, t)` is `x + 4*(y + 4*(z + 4*t))`.
+
+```python
+import qlat as q
+
+geo = q.Geometry(q.Coordinate([4, 4, 4, 4]))
+f = q.Field(q.ElemTypeColorMatrix, geo, 3)
+
+a = np.asarray(f)              # (local_volume, 3, 3, 3), writeable, zero copy
+a.shape[1] == f.multiplicity   # True
+f[0, 0] = q.ColorMatrix()      # flat site 0, multiplicity 0
+```
+
+> **Note:** the coordinate components are in the same order as
+> `q.Coordinate`, i.e. `(x, y, z, t)` — not `(t, z, y, x)`.
 
 #### `__getitem__(idx)` / `__setitem__(idx, val)`
 
-Index into the field as a NumPy array. Typical shapes:
-- `(n_sites, multiplicity, ...)` where `...` depends on the element type.
+Index into the field as a NumPy array. Any valid NumPy index works, including
+slices, `...`, `None` (newaxis), and boolean masks:
 
 ```python
-arr = f[:]            # full array view
-val = f[0, 0]         # site 0, multiplicity 0
-f[0, 0] = np.array([1.0, 2.0, 3.0])
+arr = f[:]            # full array view (same as np.asarray(f))
+v = f[0, 0]           # view of the element at flat site 0, multiplicity 0
+f[0, 0] = np.eye(3)   # writes through to the field
+f[0:2].shape          # (2, multiplicity, *elem_shape)
+```
+
+A `Coordinate` is **not** accepted as an index (it is a common mistake because
+it looks like the C++ `get_elem` API). Use the flat local site index, or
+`get_elem_xg(xg, m)` / `geo.index_from_coordinate(xl)`:
+
+```python
+xl = geo.coordinate_from_index(3)
+i = geo.index_from_coordinate(xl)
+f[i, 0]                       # correct: i == 3
+f.get_elem_xg([0, 0, 0, 0], 0)  # global coordinate, collective
+```
+
+#### View lifetime
+
+The array holds the field's buffer, so:
+
+- Writing through the array changes the field; reading sees live data.
+- Re-initializing the field while an array view is alive raises `ValueError`
+  (`f.init_from_geo(...)`), because the buffer would be reallocated.
+- Deleting the field while the array is alive is safe — the array keeps the
+  data alive.
+
+```python
+a = np.asarray(f)
+f.init_from_geo(geo)   # ValueError: can't re-init while being viewed
+del a
+f.init_from_geo(geo)   # ok now
+```
+
+#### Coordinate-ordered arrays
+
+The buffer is flat over sites; to get an array indexed by `[x, y, z, t]`, see
+[`docs/qlat/qlat_field_indexing.md`](qlat_field_indexing.md). In short, with
+`loc = geo.node_site.to_list()` (the **local** dimensions) and `rev = loc[::-1]`:
+
+```python
+arr = a.reshape(*rev, f.multiplicity, *elem_shape).transpose(3, 2, 1, 0, 4, 5, 6)
+# inverse (write back into the live field), no transpose after the reshape:
+a[:] = arr.transpose(3, 2, 1, 0, 4, 5, 6).reshape(a.shape)
+```
+
+#### Efficiency
+
+Creating a view has a cost per call. For repeated access, bind the array once
+and index that:
+
+```python
+a = np.asarray(f)
+for i in range(a.shape[0]):
+    ... a[i, 0] ...
 ```
 
 #### `get_elems(idx)` / `set_elems(idx, val)`
