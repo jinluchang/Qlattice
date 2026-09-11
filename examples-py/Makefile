@@ -89,6 +89,9 @@ tests = \
 		field-utils.log \
 		field-analysis.log \
 		field-multi-size.log \
+		field-indexing.log \
+		coordinate-utils.log \
+		geometry-preinit-guard.log \
 		field-selection.log \
 		fields-io.log \
 		fsel-psel.log \

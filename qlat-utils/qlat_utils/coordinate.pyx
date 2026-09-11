@@ -6,6 +6,9 @@ Module ``qlat_utils.coordinate``
 4-component coordinate types for lattice QCD.\n
 Provides ``Coordinate`` (integer) and ``CoordinateD`` (double) with
 element-wise arithmetic, modular operations, and index↔coordinate conversion.\n
+Both are sized sequences (``len(c) == 4``, indexing, iteration) that convert
+numerically with NumPy, are always truthy, and are hashable consistently with
+their element-wise ``==``.\n
 Documentation: ``docs/qlat-utils/qlat_coordinate.md``\n
 .. note:: Update the documentation when updating this source file.
 """
@@ -13,6 +16,34 @@ Documentation: ``docs/qlat-utils/qlat_coordinate.md``\n
 from . cimport everything as cc
 
 import numpy as np
+
+### -------------------------------------------------------------------
+
+cdef Py_ssize_t coordinate_dim = 4
+
+cdef Py_ssize_t coordinate_key_index(key):
+    """
+    Normalize a component index for the 4-component coordinate types.
+
+    Accepts integers (including numpy integers, via ``__index__``), supports
+    Python-style negative indexing, and raises ``TypeError`` for non-integers
+    and ``IndexError`` for out-of-range keys.
+    """
+    cdef Py_ssize_t i
+    try:
+        i = key.__index__()
+    except AttributeError:
+        raise TypeError(
+            f"coordinate indices must be integers, not {type(key).__name__}")
+    if i < 0:
+        i += coordinate_dim
+    if i < 0 or coordinate_dim <= i:
+        raise IndexError(
+            f"coordinate index {key} is out of range (coordinate has "
+            f"{coordinate_dim} components)")
+    return i
+
+### -------------------------------------------------------------------
 
 cdef class Coordinate:
 
@@ -121,13 +152,42 @@ cdef class Coordinate:
         svol *= self.xx[2]
         return svol
 
-    def __getitem__(self, size_t key):
-        assert key < 4
-        return self.xx[key]
+    def __getitem__(self, key):
+        """
+        Get component ``key`` of the coordinate.
+        #
+        Supports Python-style negative indexing, e.g. ``c[-1]`` is ``c[3]``.
+        """
+        cdef Py_ssize_t i = coordinate_key_index(key)
+        return self.xx[i]
 
-    def __setitem__(self, size_t key, cc.Int val):
-        assert key < 4
-        self.xx[key] = val
+    def __setitem__(self, key, cc.Int val):
+        """
+        Set component ``key`` of the coordinate.
+        #
+        Supports Python-style negative indexing, e.g. ``c[-1] = 3``.
+        """
+        cdef Py_ssize_t i = coordinate_key_index(key)
+        self.xx[i] = val
+
+    def __len__(self):
+        """
+        Return the number of components (always 4).
+
+        This makes ``Coordinate`` a proper sized sequence, so that
+        ``np.asarray(c)`` returns the numeric components, and
+        ``len(c) == 4``.
+        """
+        return coordinate_dim
+
+    def __bool__(self):
+        """
+        A ``Coordinate`` is always truthy, even ``Coordinate([0, 0, 0, 0])``,
+        so that ``if c:`` does not silently mean "non-zero coordinate".
+
+        Test for the origin explicitly, e.g. ``c == Coordinate()``.
+        """
+        return True
 
     def __add__(Coordinate c1, Coordinate c2):
         cdef Coordinate x = Coordinate()
@@ -172,6 +232,15 @@ cdef class Coordinate:
 
     def __eq__(self, other):
         return isinstance(other, Coordinate) and self.xx == (<Coordinate>other).xx
+
+    def __hash__(self):
+        """
+        Return a hash consistent with ``__eq__``, so that ``Coordinate`` can be
+        used as a ``dict`` key or a ``set`` member.
+        #
+        Defining ``__eq__`` alone would make the class unhashable.
+        """
+        return hash((self.xx[0], self.xx[1], self.xx[2], self.xx[3]))
 
     def from_index(self, cc.Long index, Coordinate size):
         cc.assign_direct(self.xx, cc.coordinate_from_index(index, size.xx))
@@ -318,13 +387,42 @@ cdef class CoordinateD:
         """
         return cc.sqr(self.xx)
 
-    def __getitem__(self, size_t key):
-        assert key < 4
-        return self.xx[key]
+    def __getitem__(self, key):
+        """
+        Get component ``key`` of the coordinate.
+        #
+        Supports Python-style negative indexing, e.g. ``c[-1]`` is ``c[3]``.
+        """
+        cdef Py_ssize_t i = coordinate_key_index(key)
+        return self.xx[i]
 
-    def __setitem__(self, size_t key, cc.RealD val):
-        assert key < 4
-        self.xx[key] = val
+    def __setitem__(self, key, cc.RealD val):
+        """
+        Set component ``key`` of the coordinate.
+        #
+        Supports Python-style negative indexing, e.g. ``c[-1] = 3.0``.
+        """
+        cdef Py_ssize_t i = coordinate_key_index(key)
+        self.xx[i] = val
+
+    def __len__(self):
+        """
+        Return the number of components (always 4).
+
+        This makes ``CoordinateD`` a proper sized sequence, so that
+        ``np.asarray(c)`` returns the numeric components, and
+        ``len(c) == 4``.
+        """
+        return coordinate_dim
+
+    def __bool__(self):
+        """
+        A ``CoordinateD`` is always truthy, even ``CoordinateD([0, 0, 0, 0])``,
+        so that ``if c:`` does not silently mean "non-zero coordinate".
+
+        Test for the origin explicitly, e.g. ``c == CoordinateD()``.
+        """
+        return True
 
     def __add__(CoordinateD c1, CoordinateD c2):
         cdef CoordinateD x = CoordinateD()
@@ -369,6 +467,15 @@ cdef class CoordinateD:
 
     def __eq__(self, other):
         return isinstance(other, CoordinateD) and self.xx == (<CoordinateD>other).xx
+
+    def __hash__(self):
+        """
+        Return a hash consistent with ``__eq__``, so that ``CoordinateD`` can be
+        used as a ``dict`` key or a ``set`` member.
+        #
+        Defining ``__eq__`` alone would make the class unhashable.
+        """
+        return hash((self.xx[0], self.xx[1], self.xx[2], self.xx[3]))
 
 ### ------------------------------------------------
 

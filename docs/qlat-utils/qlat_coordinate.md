@@ -218,27 +218,53 @@ assert (b // q.Coordinate([2, 2, 2, 2])).to_list() == [2, 3, 3, 4]
 c[k]           # get component k (0 ≤ k < 4)
 c[k] = val     # set component k
 for x in c:    # iterate over 4 components
+len(c)         # 4
+bool(c)        # always True
 ```
+
+Keys accept anything implementing `__index__` (including NumPy integers) and
+support Python-style negative indexing. A non-integer key raises `TypeError`
+and an out-of-range key raises `IndexError`. Slices are not supported.
 
 ```python
 c = q.Coordinate([3, 5, 2, 7])
 assert c[0] == 3
 assert c[3] == 7
+assert c[-1] == 7          # negative indexing
 
 c[2] = 99
 assert c[2] == 99
 
 vals = list(c)
 assert vals == [3, 5, 99, 7]
+
+assert len(c) == 4
+assert bool(c) is True
+assert bool(q.Coordinate([0, 0, 0, 0])) is True   # a coordinate is always truthy
+
+c[1.5]      # TypeError
+c[4]        # IndexError
+```
+
+Because the class is a sized sequence, NumPy converts it numerically:
+
+```python
+import numpy as np
+np.asarray(q.Coordinate([1, 2, 3, 4]))   # array([1, 2, 3, 4])
+c.to_numpy()                             # array([1, 2, 3, 4], dtype=int32)
 ```
 
 ### Comparison
 
 ```python
 c1 == c2     # element-wise equality
+c1 != c2     # element-wise inequality
+hash(c)      # consistent with ==
 ```
 
-Only `==` is supported. `!=`, `<`, `>`, etc. are not exposed in Python.
+Only `==` and `!=` are supported; ordering comparisons (`<`, `<=`, `>`, `>=`)
+raise `TypeError`. `hash` is consistent with `==`, so coordinates can be used as
+`dict` keys and `set` members.
 
 ```python
 a = q.Coordinate([1, 2, 3, 4])
@@ -246,7 +272,13 @@ b = q.Coordinate([1, 2, 3, 4])
 c = q.Coordinate([0, 0, 0, 0])
 
 assert a == b
+assert a != c
 assert not (a == c)
+
+assert hash(a) == hash(b)
+assert len({a, b, c}) == 2
+d = {a: "origin-ish"}
+assert d[b] == "origin-ish"
 ```
 
 ---
@@ -335,13 +367,19 @@ assert (a / q.CoordinateD([2.0, 2.0, 2.0, 2.0])).to_list() == [0.5, 1.0, 1.5, 2.
 
 ### Indexing and Comparison
 
-Same as `Coordinate`: `d[k]`, `d[k] = val`, `for x in d`, `d1 == d2`.
+Same sequence protocol as `Coordinate`: `d[k]`, `d[k] = val`, `for x in d`,
+`len(d) == 4`, `bool(d) is True`, plus `d1 == d2` and `d1 != d2`. Ordering
+comparisons raise `TypeError`, and `hash` is consistent with `==`.
 
 ```python
 d = q.CoordinateD([1.0, 2.0, 3.0, 4.0])
 d[0] = 9.0
 assert d[0] == 9.0
 assert d == q.CoordinateD([9.0, 2.0, 3.0, 4.0])
+assert d != q.CoordinateD([0.0, 0.0, 0.0, 0.0])
+
+assert len(d) == 4
+assert hash(d) == hash(q.CoordinateD([9.0, 2.0, 3.0, 4.0]))
 ```
 
 ---

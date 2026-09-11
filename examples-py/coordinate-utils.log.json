@@ -1,0 +1,267 @@
+[
+ [
+  "Coordinate component access",
+  {
+   "value": [
+    1.0,
+    2.0,
+    3.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "Coordinate negative index",
+  {
+   "value": [
+    4.0,
+    3.0,
+    2.0,
+    1.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "Coordinate numpy int key",
+  {
+   "value": [
+    3.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "Coordinate c[4]",
+  1.0
+ ],
+ [
+  "Coordinate c[5]",
+  1.0
+ ],
+ [
+  "Coordinate c[-5]",
+  1.0
+ ],
+ [
+  "Coordinate c[100]",
+  1.0
+ ],
+ [
+  "Coordinate c[1.5]",
+  2.0
+ ],
+ [
+  "Coordinate c[1.0]",
+  2.0
+ ],
+ [
+  "Coordinate c['1']",
+  2.0
+ ],
+ [
+  "Coordinate c[None]",
+  2.0
+ ],
+ [
+  "Coordinate slice",
+  2.0
+ ],
+ [
+  "Coordinate setitem",
+  {
+   "value": [
+    10.0,
+    2.0,
+    3.0,
+    40.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "Coordinate setitem key=1.5",
+  2.0
+ ],
+ [
+  "Coordinate setitem key=4",
+  1.0
+ ],
+ [
+  "CoordinateD access",
+  {
+   "value": [
+    1.5,
+    4.5
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "CoordinateD d[4]",
+  1.0
+ ],
+ [
+  "CoordinateD d[-5]",
+  1.0
+ ],
+ [
+  "CoordinateD d[1.5]",
+  2.0
+ ],
+ [
+  "to_list",
+  {
+   "value": [
+    1.0,
+    2.0,
+    3.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "to_tuple",
+  {
+   "value": [
+    1.0,
+    2.0,
+    3.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "to_numpy",
+  {
+   "value": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "iter",
+  {
+   "value": [
+    1.0,
+    2.0,
+    3.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "len(Coordinate)",
+  4.0
+ ],
+ [
+  "len(CoordinateD)",
+  4.0
+ ],
+ [
+  "np.array(Coordinate) dtype is not object",
+  1.0
+ ],
+ [
+  "np.array(Coordinate)",
+  {
+   "value": [
+    1.0,
+    2.0,
+    3.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "np.asarray(Coordinate) dtype is not object",
+  1.0
+ ],
+ [
+  "np.asarray(Coordinate)",
+  {
+   "value": [
+    1.0,
+    2.0,
+    3.0,
+    4.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "np.asarray(CoordinateD)",
+  {
+   "value": [
+    1.5,
+    2.5,
+    3.5,
+    4.5
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "bool(non-zero Coordinate)",
+  1.0
+ ],
+ [
+  "bool(Coordinate())",
+  1.0
+ ],
+ [
+  "bool(CoordinateD())",
+  1.0
+ ],
+ [
+  "Coordinate() == Coordinate()",
+  1.0
+ ],
+ [
+  "hash(Coordinate) is int",
+  1.0
+ ],
+ [
+  "equal Coordinates hash equal",
+  1.0
+ ],
+ [
+  "equal CoordinateD hash equal",
+  1.0
+ ],
+ [
+  "unequal Coordinates hash differently",
+  1.0
+ ],
+ [
+  "Coordinate as set member",
+  1.0
+ ],
+ [
+  "CoordinateD as set member",
+  1.0
+ ],
+ [
+  "Coordinate as dict key",
+  {
+   "value": [
+    1.0,
+    2.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "CoordinateD as dict key",
+  1.0
+ ]
+]
