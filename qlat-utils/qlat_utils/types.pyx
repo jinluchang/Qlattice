@@ -11,6 +11,8 @@ Documentation: ``docs/qlat-utils/qlat_types.md``\n
 from . cimport everything as cc
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
+from cpython.exc cimport PyErr_GetRaisedException, PyErr_SetRaisedException
+from cpython.object cimport PyObject
 
 from .timer cimport *
 
@@ -59,7 +61,11 @@ cdef class Buffer:
         self.set_buffer(buffer, flags)
 
     def __releasebuffer__(self, Py_buffer *buffer):
+        # MUST be exception-neutral: an exception may already be set here, and
+        # running Python code would clobber the interpreter's error state.
+        cdef PyObject* et = PyErr_GetRaisedException()
         self.obj.release_buffer(self)
+        PyErr_SetRaisedException(et)
 
     cdef void set_dim_size(self, int dim, Py_ssize_t dim_size):
         self.shape_strides[dim] = dim_size

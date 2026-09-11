@@ -108,7 +108,13 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         self.view_count += 1
 
     def release_buffer(self, Buffer buf):
-        assert buf.obj is self
+        """
+        Called from ``Buffer.__releasebuffer__``, which MUST stay
+        exception-neutral: an exception may already be set here, and raising
+        from ``bf_releasebuffer`` clobbers the interpreter's error state.
+        ``__getbuffer__`` always builds ``Buffer(self, ...)``, so ``buf.obj is
+        self`` holds by construction and needs no check here.
+        """
         self.view_count -= 1
 
     def __imatmul__(self, other):
