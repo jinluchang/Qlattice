@@ -116,6 +116,7 @@ tests = \
 		test-mk-gf-truncated-evolve.log \
 		flow-and-smear.log \
 		free-invert.log \
+		free-scalar-invert.log \
 		fit-corr.log \
 		fit-corr-2.log \
 		hlt-reconstruction.log \

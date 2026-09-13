@@ -1,0 +1,61 @@
+[
+ [
+  "free-scalar-invert: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "free-scalar-invert: delta matches DFT reference",
+  1.0
+ ],
+ [
+  "free-scalar-invert: delta sol(xg=0)",
+  0.1703288688267317,
+  1e-10
+ ],
+ [
+  "free-scalar-invert: delta G(3)/G(4)",
+  1.0453385141288605,
+  1e-10
+ ],
+ [
+  "free-scalar-invert: rand matches DFT reference",
+  1.0
+ ],
+ [
+  "free-scalar-invert: rand leaves src unchanged",
+  1.0
+ ],
+ [
+  "free-scalar-invert: operator residual",
+  1.0
+ ],
+ [
+  "free-scalar-invert: rand sol(xg=(1,2,3,4))",
+  {
+   "value": [
+    0.12630430835704395,
+    0.04562489280390949
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "free-scalar-invert: mode_fft=0 vs mode_fft=1",
+  1.0
+ ],
+ [
+  "free-scalar-invert: mom matches DFT reference",
+  1.0
+ ],
+ [
+  "free-scalar-invert: mom sol(k=(1,2,3,4))",
+  {
+   "value": [
+    0.007590191798855804,
+    -0.059707925641905114
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ]
+]
