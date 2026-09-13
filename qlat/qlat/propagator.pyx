@@ -408,8 +408,9 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
 
 @q.timer
 def free_scalar_invert_mom_cfield(FieldComplexD f, mass):
-    assert isinstance(f, FieldComplexD)
-    c.free_scalar_invert_mom_cfield(f, mass)
+    cdef cc.CoordinateD momtwist
+    # the momentum twist is not exposed, so it is always zero here
+    cc.prop_free_scalar_invert(f.xx, mass, momtwist)
 
 @q.timer
 def free_scalar_invert_cfield(src, mass, *, mode_fft=1):

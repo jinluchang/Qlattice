@@ -625,6 +625,10 @@ cdef extern from "qlat/qed.h" namespace "qlat":
         const RealD mass, const RealD m5,
         const CoordinateD& momtwist) except +
     #
+    void prop_free_scalar_invert(
+        Field[ComplexD]& f, const RealD mass,
+        const CoordinateD& momtwist) except +
+    #
     void invert_qed(
         SpinProp& sp_sol, const SpinProp& sp_src, const Field[ComplexD]& gf1,
         const RealD mass, const RealD m5, const Int ls,

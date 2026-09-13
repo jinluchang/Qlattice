@@ -222,20 +222,6 @@ EXPORT(convert_mspincolor_from_wm_s_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(free_scalar_invert_mom_cfield, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  RealD mass = 0.0;
-  if (!PyArg_ParseTuple(args, "Od", &p_field, &mass)) {
-    return NULL;
-  }
-  qassert("ComplexD" == py_get_ctype(p_field));
-  Field<ComplexD>& f = py_convert_type_field<ComplexD>(p_field);
-  const CoordinateD momtwist;
-  prop_free_scalar_invert(f, mass, momtwist);
-  Py_RETURN_NONE;
-})
-
 EXPORT(flip_tpbc_with_tslice_sp_prop, {
   using namespace qlat;
   PyObject* p_sp_prop = NULL;
