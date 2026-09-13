@@ -10,6 +10,10 @@ Qlattice is a lattice QCD simulation library. The monorepo contains four Python/
 
 Primary languages: **C++17**, **Cython**, **Python**, **Bash**.
 
+> **Note**: The `applications/` directory contains old code that may be outdated or no longer correct. Do NOT reference it as a source of truth or as an example to follow.
+>
+> **Note**: The `examples-*` directories (`examples-py/`, `examples-py-gpt/`, `examples-py-cps/`, `examples-cpp/`, `examples-cpp-grid/`) ARE the canonical reference for current API usage and are safe to reference. Keep them up to date when APIs change, and run their tests routinely to catch regressions.
+
 ## Build System
 
 Build system: **Nix** which calls **Meson** to build the packages (via `meson-python` for pip packaging). No CMake or npm.
@@ -158,9 +162,13 @@ q.json_results_append(f"{result}")
 | `qlat/qlat/include/qlat/` | C++ core library headers |
 | `qlat/qlat/lib/` | C++ source files |
 | `qlat/cqlat/` | Cython bindings |
-| `examples-py/` | Python test/example scripts |
-| `examples-cpp/` | C++ test/example programs |
+| `examples-py/` | Python test/example scripts — canonical reference; keep up to date |
+| `examples-py-gpt/` | Python examples using the GPT/Grid interface — canonical reference; keep up to date |
+| `examples-py-cps/` | Python examples using the CPS interface — canonical reference; keep up to date |
+| `examples-cpp/` | C++ test/example programs — canonical reference; keep up to date |
+| `examples-cpp-grid/` | C++ examples using the Grid interface — canonical reference; keep up to date |
 | `scripts/` | Build and test shell scripts |
+| `applications/` | **Old, possibly outdated code — do not reference** |
 
 ## Important Notes
 
@@ -169,3 +177,4 @@ q.json_results_append(f"{result}")
 - CI (`.github/workflows/qlat.yml`) runs on push/PR to `master` and verifies no `CHECK:` lines changed
 - Nix is available for reproducible builds (`nix-build` in `nixpkgs/`)
 - Custom macros are prefixed `QLAT_` or `qacc_`
+- Keep the `examples-*` directories up to date with API changes and run their tests routinely; they are the canonical, trustworthy reference for current usage
