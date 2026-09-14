@@ -53,11 +53,13 @@ Tests use **log-comparison**: each test prints `CHECK:` lines compared against r
 
 ### Run all tests
 
-**REQUIREMENT**: All tests MUST be run via the nix-build command below. Do NOT loop through individual tests manually — the nix-build command handles the full test suite correctly:
+**REQUIREMENT**: All tests MUST be run via the `nixpkgs/build-many-qlat-pkgs.py` script below. Do NOT loop through individual tests manually — the `tests` package set builds the `qlat-tests` package for the default version and name, which runs the whole test suite (Python, GPT, CPS, C++ and Grid examples) and fails when any `log.check.txt` differs:
 
 ```bash
-nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
+./nixpkgs/build-many-qlat-pkgs.py --group tests
 ```
+
+The script sets up the nix and nom caches (falling back to `<repo>/tmp/` when the user directories are not writable) and writes the test package to `$HOME/qlat-build/nix/tests/result` (`<repo>/tmp/qlat-build/nix/tests/result` when `$HOME` is not writable). `--group` may be repeated and combined with `-j`/`--cores`, and `./nixpkgs/build-many-qlat-pkgs.py --list-groups` shows every package set.
 
 **DO NOT** use shell loops like `for test in ... ; do ./nixpkgs/run-one-example-py.py $test ; done` — this is incorrect and bypasses the proper test orchestration.
 

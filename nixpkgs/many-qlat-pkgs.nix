@@ -6,9 +6,13 @@
   # null means build all variants from q-pkgs.
   qlat-name-list ? null,
 
-  # Controls which CUDA-related test variants are built.
-  # null (default): build all. "none": exclude CUDA. "only": only CUDA (no env).
-  qlat-cuda-tests ? null,
+  # Which test packages to build, per selected qlat name:
+  #   null         build the env and the test packages (no filter)
+  #   "none"       build no test package (env packages only)
+  #   "none-cuda"  build the test packages of every name but the '-cuda*' ones
+  #   "only"       build only the test packages (no env packages)
+  #   "only-cuda"  build only the test packages of the '-cuda*' names (no env)
+  qlat-tests ? null,
 
   # Number of GPUs to target (passed to q-pkgs). null uses the q-pkgs default.
   ngpu ? null,
@@ -26,16 +30,18 @@ let
 
 in
 
-  assert builtins.elem qlat-cuda-tests [ null "none" "only" ];
+  assert builtins.elem qlat-tests [ null "none" "none-cuda" "only" "only-cuda" ];
 
   let
 
   is-cuda-name = name: builtins.match ".*-cuda.*" name != null;
-  include-tests = if qlat-cuda-tests == null then (name: true)
-    else if qlat-cuda-tests == "none" then (name: ! is-cuda-name name)
-    else if qlat-cuda-tests == "only" then (name: is-cuda-name name)
-    else builtins.throw "qlat-cuda-tests must be null, \"none\", or \"only\", got: ${builtins.toString qlat-cuda-tests}";
-  include-env = qlat-cuda-tests != "only";
+  include-tests = if qlat-tests == null then (name: true)
+    else if qlat-tests == "none" then (name: false)
+    else if qlat-tests == "none-cuda" then (name: ! is-cuda-name name)
+    else if qlat-tests == "only" then (name: true)
+    else if qlat-tests == "only-cuda" then (name: is-cuda-name name)
+    else builtins.throw "qlat-tests must be null, \"none\", \"none-cuda\", \"only\" or \"only-cuda\", got: ${builtins.toString qlat-tests}";
+  include-env = qlat-tests != "only" && qlat-tests != "only-cuda";
 
   version-list = if version-list-ini != null
   then version-list-ini

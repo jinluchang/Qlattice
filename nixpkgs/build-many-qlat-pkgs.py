@@ -66,63 +66,73 @@ ALL_NAMES = [
 ]
 
 # The package sets the old scripts built.  Every group spells out every field,
-# so reading this table is enough to know what a group builds.  'qlat_cuda_tests'
-# is 'all' (no filter at all), 'none' (drop the '-cuda*' names) or 'only' (build
-# only their test packages), and 'jobs'/'cores' are the '-j'/'--cores' defaults.
+# so reading this table is enough to know what a group builds.  'qlat_tests' is
+# 'all' (no test filter), 'none' (no test packages), 'none-cuda' (every test
+# package but the '-cuda*' ones), 'only' (only test packages) or 'only-cuda'
+# (only the '-cuda*' test packages), and 'jobs'/'cores' are the '-j'/'--cores'
+# defaults.
 GROUPS = {
     "all": {
         "description": "all qlat packages (skip cuda tests)",
+        "qlat_tests": "none-cuda",
         "version_list": ALL_VERSIONS,
         "qlat_name_list": ALL_NAMES,
-        "qlat_cuda_tests": "none",
         "jobs": 8,
         "cores": 7,
     },
     "all-cuda-tests": {
         "description": "all qlat packages (cuda tests only)",
+        "qlat_tests": "only-cuda",
         "version_list": ALL_VERSIONS,
         "qlat_name_list": ALL_NAMES,
-        "qlat_cuda_tests": "only",
         "jobs": 2,
         "cores": 15,
     },
     "core": {
         "description": "core packages only",
+        "qlat_tests": "all",
         "version_list": [""],
         "qlat_name_list": ["", "-pypi"],
-        "qlat_cuda_tests": "all",
         "jobs": 4,
         "cores": 15,
     },
+    "tests": {
+        "description": "all tests (default version and name)",
+        "qlat_tests": "only",
+        "version_list": [""],
+        "qlat_name_list": [""],
+        "jobs": 4,
+        "cores": 31,
+    },
     "cuda-core": {
         "description": "cuda core packages",
+        "qlat_tests": "all",
         "version_list": [""],
         "qlat_name_list": ["", "-clang", "-cudasupport", "-pypi"],
-        "qlat_cuda_tests": "all",
         "jobs": 6,
         "cores": 15,
     },
     "cuda": {
         "description": "cuda packages (skip cuda tests)",
+        "qlat_tests": "none-cuda",
         "version_list": ALL_VERSIONS,
         "qlat_name_list": ["", "-clang", "-cu", "-cudasupport", "-ucxless", "-pypi"],
-        "qlat_cuda_tests": "none",
         "jobs": 4,
         "cores": 15,
     },
     "cuda-tests": {
         "description": "cuda packages (cuda tests only)",
+        "qlat_tests": "only-cuda",
         "version_list": ALL_VERSIONS,
         "qlat_name_list": ["", "-clang", "-cu", "-cudasupport", "-ucxless", "-pypi"],
-        "qlat_cuda_tests": "only",
         "jobs": 2,
         "cores": 15,
     },
     "small": {
         "description": "small package set",
+        "qlat_tests": "all",
         "version_list": ALL_VERSIONS,
         "qlat_name_list": ["", "-clang", "-ucxless", "-pypi"],
-        "qlat_cuda_tests": "all",
         "jobs": 4,
         "cores": 15,
     },
@@ -136,17 +146,21 @@ groups ({", ".join(GROUPS)}), '{DEFAULT_GROUP}' is built when '--group' is omitt
   --group all             {GROUPS["all"]["description"]}
   --group all-cuda-tests  {GROUPS["all-cuda-tests"]["description"]}
   --group core            {GROUPS["core"]["description"]}
+  --group tests           {GROUPS["tests"]["description"]}
   --group cuda-core       {GROUPS["cuda-core"]["description"]}
   --group cuda            {GROUPS["cuda"]["description"]}
   --group cuda-tests      {GROUPS["cuda-tests"]["description"]}
   --group small           {GROUPS["small"]["description"]}
 
 '--group' may be repeated to build several sets one after another, and
-'--version-list', '--qlat-name-list' and '--qlat-cuda-tests' override what the
-group passes to many-qlat-pkgs.nix:
-  --group small --qlat-name-list '["" "-cuda"]' --qlat-cuda-tests all
-'--qlat-cuda-tests all' omits the argument, which is the many-qlat-pkgs.nix
-default of building everything.  Other arguments of many-qlat-pkgs.nix ('ngpu',
+'--version-list', '--qlat-name-list' and '--qlat-tests' override what the group
+passes to many-qlat-pkgs.nix:
+  --group small --qlat-name-list '["" "-cuda"]' --qlat-tests only
+'--qlat-tests all' omits the argument, which is the many-qlat-pkgs.nix default
+of building the env and test packages of every selected name.  The other values
+select test packages: 'none' (none), 'none-cuda' (all but the '-cuda*' ones),
+'only' (all, and no env packages) and 'only-cuda' (just the '-cuda*' ones, and
+no env packages).  Other arguments of many-qlat-pkgs.nix ('ngpu',
 'cudaCapability', ...) can be passed on to nix-build directly, since arguments
 that are not recognised here are forwarded:
   --group small --argstr ngpu 2
@@ -184,11 +198,11 @@ def check_groups():
                     f"GROUPS['{group}']['{name}'] must be a list of strings, "
                     f"got: {value!r}"
                 )
-        value = preset["qlat_cuda_tests"]
-        if value not in ("all", "none", "only"):
+        value = preset["qlat_tests"]
+        if value not in ("all", "none", "none-cuda", "only", "only-cuda"):
             die(
-                f"GROUPS['{group}']['qlat_cuda_tests'] must be 'all', 'none' or "
-                f"'only', got: {value!r}"
+                f"GROUPS['{group}']['qlat_tests'] must be 'all', 'none', "
+                f"'none-cuda', 'only' or 'only-cuda', got: {value!r}"
             )
         for name in ("jobs", "cores"):
             if not isinstance(preset[name], int):
@@ -366,10 +380,11 @@ def parse_args(argv):
         help="override the group's '--arg qlat-name-list', e.g. '[\"\" \"-cuda\"]'",
     )
     parser.add_argument(
-        "--qlat-cuda-tests",
-        choices=["all", "none", "only"],
-        help="override the group's '--argstr qlat-cuda-tests'; 'all' omits the "
-        "argument, which is the many-qlat-pkgs.nix default",
+        "--qlat-tests",
+        choices=["all", "none", "none-cuda", "only", "only-cuda"],
+        help="override the group's '--argstr qlat-tests'; 'all' omits the "
+        "argument, which is the many-qlat-pkgs.nix default of building the env "
+        "and test packages of every selected name",
     )
     parser.add_argument(
         "--out-dir",
@@ -418,14 +433,16 @@ def describe_group(group):
     return [
         ("version-list", nix_list(preset["version_list"])),
         ("qlat-name-list", nix_list(preset["qlat_name_list"])),
-        ("qlat-cuda-tests", preset["qlat_cuda_tests"]),
+        ("qlat-tests", preset["qlat_tests"]),
         ("jobs/cores", f"-j {preset['jobs']} --cores {preset['cores']}"),
     ]
 
 def print_groups():
     print("groups (use --group NAME, which may be repeated):")
-    print("'qlat-cuda-tests: all' means no cuda filter, in which case that argument")
-    print("is not passed (many-qlat-pkgs.nix accepts only null, 'none' or 'only').")
+    print("'qlat-tests: all' means no test filter, in which case that argument is")
+    print("not passed (many-qlat-pkgs.nix accepts null, 'none', 'none-cuda', 'only'")
+    print("or 'only-cuda').  'none'/'none-cuda' leave out test packages,")
+    print("'only'/'only-cuda' leave out the env packages and keep only tests.")
     for group in GROUPS:
         print()
         print(f"  {group}" + (" (default)" if group == DEFAULT_GROUP else ""))
@@ -472,9 +489,9 @@ def remove_stale_out_link(out_link):
 def group_nix_args(args, group):
     """The '--arg'/'--argstr' arguments for a group, with the overrides applied.\n
     'None' on the parsed arguments means the option was not given on the command
-    line, in which case the group's own value is used.  A 'qlat_cuda_tests' of
-    'all' means no filter, and many-qlat-pkgs.nix accepts only null, 'none' or
-    'only', so the argument is left out for it.
+    line, in which case the group's own value is used.  A 'qlat_tests' of 'all'
+    means no test filter, and many-qlat-pkgs.nix accepts only null, 'none',
+    'none-cuda', 'only' or 'only-cuda', so the argument is left out for it.
     """
     preset = GROUPS[group]
     #
@@ -486,9 +503,9 @@ def group_nix_args(args, group):
     if qlat_name_list is None:
         qlat_name_list = preset["qlat_name_list"]
     #
-    qlat_cuda_tests = args.qlat_cuda_tests
-    if qlat_cuda_tests is None:
-        qlat_cuda_tests = preset["qlat_cuda_tests"]
+    qlat_tests = args.qlat_tests
+    if qlat_tests is None:
+        qlat_tests = preset["qlat_tests"]
     #
     result = [
         "--arg",
@@ -498,8 +515,8 @@ def group_nix_args(args, group):
         "qlat-name-list",
         nix_list(qlat_name_list),
     ]
-    if qlat_cuda_tests != "all":
-        result += ["--argstr", "qlat-cuda-tests", qlat_cuda_tests]
+    if qlat_tests != "all":
+        result += ["--argstr", "qlat-tests", qlat_tests]
     return result
 
 def build_group(args, group, env):
