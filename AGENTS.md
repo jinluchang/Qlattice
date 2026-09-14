@@ -22,10 +22,10 @@ Build system: **Nix** which calls **Meson** to build the packages (via `meson-py
 
 ### Build qlat with nix
 
-Use `nixpkgs/install-py-local-kernel-with-nix.sh` to build qlat via nix. It creates a `./result-py-local` symlink to the nix store path. Build variants: `name='-cuda'`, `name='-cudasupport'`, `name='-cu'`, `name='-clang'`, `name='-pypi'`. See the script for details.
+Use `nixpkgs/install-py-local-kernel-with-nix.py` to build qlat via nix. It creates a `./result-py-local` symlink to the nix store path. Build variants: `--variant cuda`, `--variant cudasupport`, `--variant cu`, `--variant clang`, `--variant pypi`, or `--all-variants` for every variant. See `--help` for details.
 
 ```bash
-name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
+./nixpkgs/install-py-local-kernel-with-nix.py
 ```
 
 ### Run a single test
@@ -44,7 +44,7 @@ See `--help` for build variant options (`--cuda`, `--cudasupport`, `--cu`, `--cl
 
 **Build requirement**: Before running a test, ensure qlat is built with nix. If `./result-py-local` does not exist, or if source code has changed since the last build (check `git status` or file timestamps), build/rebuild first:
 ```bash
-name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
+./nixpkgs/install-py-local-kernel-with-nix.py
 ```
 
 Each script copies sources into `./tmp/examples-*/` and runs the test there. After a run, check `./tmp/examples-*/<name>.py.p/` (Python/GPT/CPS) or `./tmp/examples-*/<name>/build/` (C++/Grid) for log files (`log.full.txt`, `log.txt`, `log.check.txt`).

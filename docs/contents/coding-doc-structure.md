@@ -211,7 +211,7 @@ that the examples actually work against the compiled module.
 
 1. Build the environment with nix:
     ```bash
-    cd nixpkgs && name='' ./install-py-local-kernel-with-nix.sh
+    cd nixpkgs && ./install-py-local-kernel-with-nix.py
     ```
 
 2. Source the environment:

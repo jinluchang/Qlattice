@@ -6,7 +6,7 @@ SHELL=/usr/bin/env bash
 #       See --help for build variant options (--cuda, --cudasupport, --cu, --clang, --pypi).
 #
 #   The script sets up the environment from a qlat built by nix (via
-#   nixpkgs/install-py-local-kernel-with-nix.sh, which creates the
+#   nixpkgs/install-py-local-kernel-with-nix.py, which creates the
 #   ./result-py-local symlink) and then runs make with this Makefile.
 #
 #   The script copies sources into ./tmp/examples-py-cps/ and runs make there.

@@ -6,7 +6,7 @@ This script sets up the environment from a qlat build produced by nix and then
 runs the test via make with the examples-cpp/Makefile.  The Makefile itself is
 standalone — it runs tests using whatever qlat is available in the current
 environment.\n
-The nix build is created by nixpkgs/install-py-local-kernel-with-nix.sh, which
+The nix build is created by nixpkgs/install-py-local-kernel-with-nix.py, which
 runs nix-build and creates a ./result-py-local symlink (or ./result-py-local-*
 for variant builds) pointing to the nix store path.  This script sources the
 setenv-qlat.sh from that result directory to configure PATH, PYTHONPATH,

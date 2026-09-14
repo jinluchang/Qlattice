@@ -14,7 +14,7 @@ How to upgrade:
   3. Review the changes:
        git diff nixpkgs/
   4. Rebuild qlat with the new versions (this refetches the upgraded sources):
-       name='' ./nixpkgs/install-py-local-kernel-with-nix.sh
+       ./nixpkgs/install-py-local-kernel-with-nix.py
   5. Run the test suite to make sure the new versions work:
        nix-build nixpkgs/q-pkgs.nix -A pkgs.qlat-tests -j 4 --cores 31
   6. Commit the updated .nix files.
@@ -328,7 +328,7 @@ def main():
     if updated:
         print()
         print(f"updated: {', '.join(updated)}")
-        print("rebuild with: name='' ./nixpkgs/install-py-local-kernel-with-nix.sh")
+        print("rebuild with: ./nixpkgs/install-py-local-kernel-with-nix.py")
     else:
         print("nothing to update")
 
