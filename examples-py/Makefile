@@ -117,6 +117,17 @@ tests = \
 		flow-and-smear.log \
 		free-invert.log \
 		free-scalar-invert.log \
+		cqlat-qm-action.log \
+		cqlat-action-params.log \
+		cqlat-dwf-inverter.log \
+		cqlat-fields.log \
+		cqlat-selected-field.log \
+		cqlat-propagator.log \
+		cqlat-qcd.log \
+		cqlat-vec-props.log \
+		cqlat-contraction.log \
+		cqlat-fthmc.log \
+		cqlat-begin-end.log \
 		fit-corr.log \
 		fit-corr-2.log \
 		hlt-reconstruction.log \

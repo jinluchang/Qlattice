@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(contract_chvp_16_field, {
+EXPORT(contract_chvp_16_field, {  // tested: cqlat-contraction
   using namespace qlat;
   PyObject* p_chvp_16 = NULL;
   PyObject* p_prop1 = NULL;

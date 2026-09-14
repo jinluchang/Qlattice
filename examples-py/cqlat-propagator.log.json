@@ -1,0 +1,202 @@
+[
+ [
+  "cqlat-propagator: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-propagator: fsel glb n_elems",
+  128.0
+ ],
+ [
+  "cqlat-propagator: psel n_points",
+  32.0
+ ],
+ [
+  "cqlat-propagator: fsel prop_src shape",
+  {
+   "value": [
+    256.0,
+    1.0,
+    12.0,
+    12.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "cqlat-propagator: fsel fu1 shape",
+  {
+   "value": [
+    256.0,
+    1.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "cqlat-propagator: fsel fu1 phases",
+  62.0
+ ],
+ [
+  "cqlat-propagator: fsel src = fu1 * 1 max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: fsel sol = src * conj(fu1) max err",
+  1.133675097384567e-16,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: fsel sol = 1 max err",
+  2.220446049250313e-16,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: fsel sol sig",
+  {
+   "value": [
+    {
+     "real": 35.957806202857554,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 6.327619035991976,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 8.544303224333635,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-propagator: psel prop_src shape",
+  {
+   "value": [
+    256.0,
+    1.0,
+    12.0,
+    12.0
+   ],
+   "__extended_json_type__": "ndarray"
+  }
+ ],
+ [
+  "cqlat-propagator: psel fu1 phases",
+  19.0
+ ],
+ [
+  "cqlat-propagator: psel src = fu1 * 1 max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: psel sol = src * conj(fu1) max err",
+  2.2220579611107537e-16,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: psel sol = 1 max err",
+  2.220446049250313e-16,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: psel sol sig",
+  {
+   "value": [
+    {
+     "real": 17.31866278596582,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 8.581206050967,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 5.202906329848783,
+     "imag": 0.0,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=7 glb n flipped",
+  48.0
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=7 sign flip max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=0 glb n flipped",
+  64.0
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=0 sign flip max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=5 glb n flipped",
+  16.0
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=5 sign flip max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: s_prop tslice=-1 no-op",
+  1.0
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=7 glb n flipped",
+  24.0
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=7 sign flip max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=0 glb n flipped",
+  30.0
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=0 sign flip max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=5 glb n flipped",
+  10.0
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=5 sign flip max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-propagator: sp_prop tslice=-1 no-op",
+  1.0
+ ],
+ [
+  "cqlat-propagator: gc.collect() done",
+  1.0
+ ],
+ [
+  "cqlat-propagator: cwd=cqlat-propagator.py.p"
+ ]
+]

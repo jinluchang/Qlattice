@@ -226,7 +226,7 @@ PyObject* qnorm_field_field_ctype(FieldM<RealD, 1>& f, PyObject* p_field1)
 
 }  // namespace qlat
 
-EXPORT(make_field_expand_comm_plan, {
+EXPORT(make_field_expand_comm_plan, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_comm_plan = NULL;
   PyObject* p_comm_marks = NULL;
@@ -239,7 +239,7 @@ EXPORT(make_field_expand_comm_plan, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_marks_field_all, {
+EXPORT(set_marks_field_all, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_comm_marks = NULL;
   PyObject* p_geo = NULL;
@@ -256,7 +256,7 @@ EXPORT(set_marks_field_all, {
   Py_RETURN_NONE;
 })
 
-EXPORT(refresh_expanded_field, {
+EXPORT(refresh_expanded_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_comm_plan = NULL;
@@ -270,7 +270,7 @@ EXPORT(refresh_expanded_field, {
   return p_ret;
 })
 
-EXPORT(refresh_expanded_1_field, {
+EXPORT(refresh_expanded_1_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
@@ -282,7 +282,7 @@ EXPORT(refresh_expanded_1_field, {
   return p_ret;
 })
 
-EXPORT(reflect_field, {
+EXPORT(reflect_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
@@ -294,7 +294,7 @@ EXPORT(reflect_field, {
   return p_ret;
 })
 
-EXPORT(merge_fields_ms_field, {
+EXPORT(merge_fields_ms_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field_vec = NULL;
@@ -311,7 +311,7 @@ EXPORT(merge_fields_ms_field, {
   return p_ret;
 })
 
-EXPORT(set_sqrt_field, {
+EXPORT(set_sqrt_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field1 = NULL;

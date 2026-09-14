@@ -1,0 +1,121 @@
+[
+ [
+  "cqlat-action-params: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-action-params: get_m_sq_scalar_action",
+  0.7,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: get_lmbd_scalar_action",
+  1.1,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: get_alpha_scalar_action",
+  0.03,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: set_scalar_action",
+  0.0,
+  0.0
+ ],
+ [
+  "cqlat-action-params: to_mass_factor max error",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: to_mass_factor sum",
+  1196.627244811726,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: hmc_estimate_mass max error",
+  8.881784197001252e-16,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: hmc_estimate_mass origin value",
+  0.24195208770289195,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: hmc_estimate_mass sum",
+  512.6561089159587,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: hmc_estimate_mass wrapper vs direct cqlat",
+  0.0,
+  0.0
+ ],
+ [
+  "cqlat-action-params: set_complex_from_double max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: set_complex_from_double sum",
+  504.2689884861388,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: set_double_from_complex max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: set_double_from_complex sum",
+  504.2689884861388,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: free_scalar_action (via __del__)",
+  1.0
+ ],
+ [
+  "cqlat-action-params: get_ls_fermion_action",
+  6.0,
+  0.0
+ ],
+ [
+  "cqlat-action-params: get_mobius_scale_fermion_action (mobius)",
+  1.7,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: get_omega_fermion_action (mobius) is None",
+  1.0
+ ],
+ [
+  "cqlat-action-params: set_fermion_action",
+  1.0
+ ],
+ [
+  "cqlat-action-params: get_omega_fermion_action max error",
+  1.5700924586837752e-16,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: get_omega_fermion_action real sum",
+  2.85,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: get_omega_fermion_action imag sum",
+  0.5499999999999998,
+  1e-10
+ ],
+ [
+  "cqlat-action-params: get_mobius_scale_fermion_action (zmobius)",
+  0.0,
+  0.0
+ ],
+ [
+  "cqlat-action-params: free_fermion_action (via __del__)",
+  1.0
+ ]
+]

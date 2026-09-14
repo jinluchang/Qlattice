@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(gf_wilson_line_no_comm, {
+EXPORT(gf_wilson_line_no_comm, {  // tested: cqlat-qcd
   using namespace qlat;
   PyObject* p_wilson_line_field = NULL;
   Int wilson_line_field_m = 0;
@@ -26,7 +26,7 @@ EXPORT(gf_wilson_line_no_comm, {
   Py_RETURN_NONE;
 })
 
-EXPORT(gf_twist_boundary_at_boundary, {
+EXPORT(gf_twist_boundary_at_boundary, {  // tested: cqlat-qcd
   using namespace qlat;
   PyObject* p_gf = NULL;
   RealD lmom = 0.0;
@@ -40,7 +40,7 @@ EXPORT(gf_twist_boundary_at_boundary, {
   Py_RETURN_NONE;
 })
 
-EXPORT(save_gauge_transform_cps, {
+EXPORT(save_gauge_transform_cps, {  // tested: cqlat-qcd
   using namespace qlat;
   PyObject* p_gt = NULL;
   PyObject* p_path = NULL;
@@ -53,7 +53,7 @@ EXPORT(save_gauge_transform_cps, {
   return py_convert(ret);
 })
 
-EXPORT(load_gauge_transform_cps, {
+EXPORT(load_gauge_transform_cps, {  // tested: cqlat-qcd
   using namespace qlat;
   PyObject* p_gt = NULL;
   PyObject* p_path = NULL;
@@ -66,7 +66,7 @@ EXPORT(load_gauge_transform_cps, {
   return py_convert(ret);
 })
 
-EXPORT(gt_invert, {
+EXPORT(gt_invert, {  // tested: cqlat-qcd
   using namespace qlat;
   PyObject* p_gt = NULL;
   PyObject* p_gt0 = NULL;

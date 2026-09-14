@@ -1,0 +1,221 @@
+[
+ [
+  "cqlat-qcd: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-qcd: gf plaq",
+  -0.0036528939968335705,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf link_trace",
+  0.025279577725452113,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_wilson_line_no_comm path_a max err",
+  4.0029660424867215e-16,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_wilson_line_no_comm path_a sum",
+  7.6385624745339245,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_wilson_line_no_comm path_b max err",
+  3.7238012298709097e-16,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_wilson_line_no_comm path_n max err",
+  5.23691153334427e-16,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_wilson_lines_no_comm vs single max err",
+  0.0,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_wilson_lines_no_comm sig",
+  {
+   "value": [
+    {
+     "real": -18.643672043804898,
+     "imag": -19.21771501946344,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 70.12945523775348,
+     "imag": 42.08655350841461,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 15.478347037226087,
+     "imag": 35.331285326501344,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 glb n links",
+  64.0
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 max err",
+  0.0,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 plaq",
+  -0.00365289399683357,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 plaq diff",
+  4.336808689942018e-19,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 n changed",
+  64.0
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 glb n links",
+  128.0
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 max err",
+  0.0,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 plaq",
+  -0.0036528939968335705,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 plaq diff",
+  0.0,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 n changed",
+  128.0
+ ],
+ [
+  "cqlat-qcd: gt unitary max err",
+  8.881784197001252e-16,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gt sig",
+  {
+   "value": [
+    {
+     "real": -6.94616807623817,
+     "imag": 2.843401320717028,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 8.405608335830209,
+     "imag": -22.31591522247579,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -5.55458779596141,
+     "imag": -14.2373949604057,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-09
+ ],
+ [
+  "cqlat-qcd: save_gauge_transform_cps bytes",
+  73728.0
+ ],
+ [
+  "cqlat-qcd: load_gauge_transform_cps bytes",
+  73728.0
+ ],
+ [
+  "cqlat-qcd: save_gauge_transform_cps file size",
+  73961.0
+ ],
+ [
+  "cqlat-qcd: cps round trip sig",
+  {
+   "value": [
+    {
+     "real": 3.2384510435760028,
+     "imag": -41.118334321546484,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": -22.059783196442197,
+     "imag": -14.151846955230084,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 3.8834275023240794,
+     "imag": 13.54134210314939,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gt_invert vs adjoint max err",
+  0.0,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gt_invert sig",
+  {
+   "value": [
+    {
+     "real": -9.822346130137323,
+     "imag": 2.4266663846491294,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 31.108700044573016,
+     "imag": 10.367360664358692,
+     "__extended_json_type__": "complex"
+    },
+    {
+     "real": 9.130064771695455,
+     "imag": -12.380904930898282,
+     "__extended_json_type__": "complex"
+    }
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gt * gt.inv() vs 1 max err",
+  8.881784197001252e-16,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gt.inv() * gt vs 1 max err",
+  8.881784197001252e-16,
+  1e-09
+ ],
+ [
+  "cqlat-qcd: gc.collect() done",
+  1.0
+ ],
+ [
+  "cqlat-qcd: cwd=cqlat-qcd.py.p"
+ ]
+]

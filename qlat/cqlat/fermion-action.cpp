@@ -1,16 +1,16 @@
 #include "lib.h"
 
-EXPORT(free_fermion_action, {
+EXPORT(free_fermion_action, {  // tested: cqlat-action-params
   using namespace qlat;
   return free_obj<FermionAction>(args);
 })
 
-EXPORT(set_fermion_action, {
+EXPORT(set_fermion_action, {  // tested: cqlat-action-params
   using namespace qlat;
   return set_obj<FermionAction>(args);
 })
 
-EXPORT(get_ls_fermion_action, {
+EXPORT(get_ls_fermion_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -20,7 +20,7 @@ EXPORT(get_ls_fermion_action, {
   return py_convert(fa.ls);
 })
 
-EXPORT(get_omega_fermion_action, {
+EXPORT(get_omega_fermion_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -38,7 +38,7 @@ EXPORT(get_omega_fermion_action, {
   }
 })
 
-EXPORT(get_mobius_scale_fermion_action, {
+EXPORT(get_mobius_scale_fermion_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {

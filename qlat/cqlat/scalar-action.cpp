@@ -1,16 +1,16 @@
 #include "lib.h"
 
-EXPORT(free_scalar_action, {
+EXPORT(free_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   return free_obj<ScalarAction>(args);
 })
 
-EXPORT(set_scalar_action, {
+EXPORT(set_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   return set_obj<ScalarAction>(args);
 })
 
-EXPORT(get_m_sq_scalar_action, {
+EXPORT(get_m_sq_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_sa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_sa)) {
@@ -20,7 +20,7 @@ EXPORT(get_m_sq_scalar_action, {
   return py_convert(sa.m_sq);
 })
 
-EXPORT(get_lmbd_scalar_action, {
+EXPORT(get_lmbd_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_sa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_sa)) {
@@ -30,7 +30,7 @@ EXPORT(get_lmbd_scalar_action, {
   return py_convert(sa.lmbd);
 })
 
-EXPORT(get_alpha_scalar_action, {
+EXPORT(get_alpha_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_sa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_sa)) {
@@ -40,7 +40,7 @@ EXPORT(get_alpha_scalar_action, {
   return py_convert(sa.alpha);
 })
 
-EXPORT(hmc_estimate_mass_scalar_action, {
+EXPORT(hmc_estimate_mass_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_masses = NULL;
@@ -61,7 +61,7 @@ EXPORT(hmc_estimate_mass_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(to_mass_factor_scalar_action, {
+EXPORT(to_mass_factor_scalar_action, {  // tested: cqlat-action-params
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sin_domega = NULL;

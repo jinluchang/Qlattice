@@ -81,7 +81,7 @@ PyObject* invert_double_field_ctype(PyObject* p_sf)
 
 }  // namespace qlat
 
-EXPORT(set_checkers_double_field, {
+EXPORT(set_checkers_double_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
@@ -93,7 +93,7 @@ EXPORT(set_checkers_double_field, {
   return p_ret;
 })
 
-EXPORT(multiply_double_field, {
+EXPORT(multiply_double_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_sf = NULL;
   PyObject* p_factor = NULL;
@@ -106,7 +106,7 @@ EXPORT(multiply_double_field, {
   return p_ret;
 })
 
-EXPORT(invert_double_field, {
+EXPORT(invert_double_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_sf = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_sf)) {

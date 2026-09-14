@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(get_gm_force_magnitudes, {
+EXPORT(get_gm_force_magnitudes, {  // tested: cqlat-fthmc
   using namespace qlat;
   PyObject* p_gm_force = NULL;
   Int n_elems = 0;

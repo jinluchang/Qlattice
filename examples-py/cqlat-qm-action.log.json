@@ -1,0 +1,154 @@
+[
+ [
+  "cqlat-qm-action: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-qm-action: alpha",
+  2.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: beta",
+  0.9,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: barrier_strength",
+  0.5,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: M",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: L",
+  1.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: t_FV_out",
+  3.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: t_FV",
+  8.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: dt",
+  0.25,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: set_qm_action",
+  1.0
+ ],
+ [
+  "cqlat-qm-action: V vs reference",
+  1.0
+ ],
+ [
+  "cqlat-qm-action: V max error",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: V((1.0,0.6), 1)",
+  2.2241999999999997,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: V((0.35,0.3), 5)",
+  0.245575,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: V((2.0,1.5), 20)",
+  11.6875,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: dV vs finite difference",
+  1.0
+ ],
+ [
+  "cqlat-qm-action: dV max error",
+  3.7144460840465854e-08,
+  1e-07
+ ],
+ [
+  "cqlat-qm-action: dV((0.2,0.3), 1, 0)",
+  0.396,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: dV((0.2,0.3), 1, 1)",
+  0.18000000000000002,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: dV((2.0,1.5), 20, 1)",
+  4.5,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: sum_sq",
+  1484.0076864258413,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: hmc_m_hamilton_node - sum_sq/2",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-qm-action: action_node",
+  1600.5061902494417,
+  1e-09
+ ],
+ [
+  "cqlat-qm-action: action_node vs reference",
+  9.094947017729282e-13,
+  1e-09
+ ],
+ [
+  "cqlat-qm-action: hmc_set_force vs dS/dh",
+  1.2319748526727365e-12,
+  1e-08
+ ],
+ [
+  "cqlat-qm-action: hmc_set_force sum",
+  2296.6058019181714,
+  1e-08
+ ],
+ [
+  "cqlat-qm-action: hmc_field_evolve",
+  1.0
+ ],
+ [
+  "cqlat-qm-action: hmc_field_evolve sum",
+  1213.6198190477062,
+  1e-08
+ ],
+ [
+  "cqlat-qm-action: hmc_set_rand_momentum reproducible",
+  1.0
+ ],
+ [
+  "cqlat-qm-action: hmc_set_rand_momentum mean",
+  -0.009706791299097461,
+  0.001
+ ],
+ [
+  "cqlat-qm-action: hmc_set_rand_momentum std",
+  0.9879673826935843,
+  0.001
+ ],
+ [
+  "cqlat-qm-action: free_qm_action (via __del__)",
+  1.0
+ ]
+]

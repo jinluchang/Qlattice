@@ -1,0 +1,87 @@
+[
+ [
+  "cqlat-contraction: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-contraction: contract_chvp_16 vs numpy",
+  1.0
+ ],
+ [
+  "cqlat-contraction: contract_chvp_16 max error",
+  1.897149936107019e-15,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: contract_chvp_16 sum(mu=0,nu=0)",
+  {
+   "real": 5.753255946293829,
+   "imag": -10.128577266469009,
+   "__extended_json_type__": "complex"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-contraction: c.contract_chvp_16_field direct vs wrapper",
+  1.0
+ ],
+ [
+  "cqlat-contraction: contract_chvp_16 linearity",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: fsel prob",
+  0.25,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: contract_chvp3_field vs numpy",
+  1.0
+ ],
+ [
+  "cqlat-contraction: contract_chvp3_field max error",
+  1.5888218580782548e-14,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: contract_chvp3_field tsep=0 mu=0",
+  -31.08636265608112,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper",
+  1.0
+ ],
+ [
+  "cqlat-contraction: contract_pion_field(Prop) vs numpy",
+  1.0
+ ],
+ [
+  "cqlat-contraction: contract_pion_field(Prop) max error",
+  6.821210263296962e-13,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: contract_pion_field(Prop) tsep=0",
+  1536.2082524041843,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: contract_pion_field(SelProp) vs numpy",
+  1.0
+ ],
+ [
+  "cqlat-contraction: contract_pion_field(SelProp) max error",
+  2.2737367544323206e-13,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: contract_pion_field(SelProp) tsep=0",
+  1523.3474183228077,
+  1e-10
+ ],
+ [
+  "cqlat-contraction: c.contract_pion_sfield direct vs wrapper",
+  1.0
+ ]
+]

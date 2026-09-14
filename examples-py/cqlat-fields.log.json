@@ -1,0 +1,193 @@
+[
+ [
+  "cqlat-fields: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-fields: field_expanded n_halo",
+  256.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_marks_field_all n_marks",
+  1024.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: refresh_expanded_field(f, comm_plan) max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: refresh_expanded_field(f, comm_plan) halo sum",
+  521.5075300621147,
+  1e-12
+ ],
+ [
+  "cqlat-fields: refresh_expanded_field(f) max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: refresh_expanded_1_field(f) max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: refresh_expanded_1 == refresh_expanded (1D halo)",
+  1.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: reflect_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: reflect_field twice is identity",
+  1.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: reflect_field qnorm",
+  165.49141469980526,
+  1e-12
+ ],
+ [
+  "cqlat-fields: merge_fields_ms_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: merge_fields_ms_field sum",
+  1009.0018223943163,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_sqrt_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_sqrt_field sum",
+  945.0876761693249,
+  1e-12
+ ],
+ [
+  "cqlat-fields: q.sqrt_field == c.set_sqrt_field",
+  1.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_checkers_double_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_checkers_double_field sum",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: multiply_double_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: multiply_double_field sum",
+  248.05260256000557,
+  1e-12
+ ],
+ [
+  "cqlat-fields: invert_double_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: invert_double_field twice max err",
+  2.220446049250313e-16,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_mul_complex_field (*=) vs c call max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: set_mul_complex_field vs numpy max err",
+  2.482534153247273e-16,
+  1e-10
+ ],
+ [
+  "cqlat-fields: set_mul_complex_field qnorm",
+  443.1771960402647,
+  1e-12
+ ],
+ [
+  "cqlat-fields: real field *= complex factor rejected",
+  1.0
+ ],
+ [
+  "cqlat-fields: real field *= complex(2.0, 0.0) max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fields: get_mview_field nbytes",
+  4096.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: get_mview_field write/read max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: get_mview_field qnorm",
+  12751.514830410852,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field bytes",
+  8192.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: load_field bytes",
+  8192.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field/load_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field(new_size_node) bytes",
+  8192.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field(new_size_node)/load_field max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field(new_size_node=q.Coordinate) bytes",
+  8192.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field(new_size_node=q.Coordinate) max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field(new_size_node=numpy array) bytes",
+  8192.0,
+  1e-12
+ ],
+ [
+  "cqlat-fields: save_field(new_size_node=object()) rejected",
+  1.0
+ ]
+]

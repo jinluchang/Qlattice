@@ -1,0 +1,178 @@
+[
+ [
+  "cqlat-vec-props: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-vec-props: diff_gauge perturbed diff",
+  2.000000026702864e-09,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: diff_prop perturbed diff",
+  6.500395360875544e-10,
+  1e-08
+ ],
+ [
+  "cqlat-vec-props: save/load_gwu_prop rel err",
+  2.0787605162019874e-07,
+  1e-05
+ ],
+ [
+  "cqlat-vec-props: save/load_gwu_noiP max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: load_gwu_link [0,0,0,0].real",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: load_gwu_link [0,0,0,0].imag",
+  1.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: load_gwu_link sum abs",
+  925692.4962944055,
+  1e-08
+ ],
+ [
+  "cqlat-vec-props: random_point_src nonzero count",
+  12.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: random_point_src sum abs",
+  12.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: random_point_src site = (1, 3, 3, 4)"
+ ],
+ [
+  "cqlat-vec-props: make_point_prop nonzero count",
+  12.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: make_point_prop sum abs",
+  12.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: make_volume_src(-1) max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: make_volume_src(-1, tini=3) nonzero",
+  768.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: make_volume_src(777) nonzero",
+  6144.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: make_volume_src(777) sum abs",
+  6144.0,
+  1e-06
+ ],
+ [
+  "cqlat-vec-props: make_volume_src mix_color nonzero",
+  18432.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: make_volume_src mix_color+spin nonzero",
+  36864.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: local_sequential_source max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: local_sequential_source gammai=4 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_src_gamma g0=0 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_src_gamma g0=1 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_src_gamma g0=4 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_src_gamma g0=1 conj max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_sink_gamma g0=1 conj=0 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_sink_gamma g0=1 conj=1 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_sink_gamma g0=4 conj=0 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_sink_gamma g0=4 conj=1 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_conj rotate=0 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: prop4d_conj rotate=1 max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: meson_corr file size",
+  423.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: corr_dat_create size",
+  412.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: corr_dat_info size",
+  452.0,
+  1e-09
+ ],
+ [
+  "cqlat-vec-props: save_qlat_prop/load_qlat_link max err",
+  0.0,
+  1e-12
+ ],
+ [
+  "cqlat-vec-props: load_qlat_link sum abs",
+  9245.534294563462,
+  1e-08
+ ]
+]

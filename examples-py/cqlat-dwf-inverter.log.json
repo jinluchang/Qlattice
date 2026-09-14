@@ -1,0 +1,84 @@
+[
+ [
+  "cqlat-dwf-inverter: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-dwf-inverter: default stop_rsd",
+  1e-08,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: default max_num_iter",
+  200.0,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: default max_mixed_precision_cycle",
+  300.0,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: set_stop_rsd(1e-3)",
+  0.001,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: set_max_num_iter(3)",
+  3.0,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: set_max_mixed_precision_cycle(7)",
+  7.0,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: qc.set_stop_rsd(1e-6)",
+  1e-06,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: qc.set_max_num_iter(11)",
+  11.0,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: qc.set_max_mixed_precision_cycle(13)",
+  13.0,
+  1e-10
+ ],
+ [
+  "cqlat-dwf-inverter: setters do not clamp",
+  1.0
+ ],
+ [
+  "cqlat-dwf-inverter: set_max_num_iter(-5) stored",
+  -5.0
+ ],
+ [
+  "cqlat-dwf-inverter: set_max_mixed_precision_cycle(-9) stored",
+  -9.0
+ ],
+ [
+  "cqlat-dwf-inverter: 1 iteration is not converged",
+  1.0
+ ],
+ [
+  "cqlat-dwf-inverter: sol qnorm",
+  2.704130410139734,
+  1e-06
+ ],
+ [
+  "cqlat-dwf-inverter: sol_free qnorm",
+  2.704143960615374,
+  1e-06
+ ],
+ [
+  "cqlat-dwf-inverter: inversion matches free field",
+  1.0
+ ],
+ [
+  "cqlat-dwf-inverter: free_inverter_domain_wall (__del__)",
+  1.0
+ ]
+]

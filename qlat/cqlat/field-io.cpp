@@ -61,7 +61,7 @@ PyObject* to_from_endianness_field_ctype(PyField& pf,
 
 }  // namespace qlat
 
-EXPORT(save_field, {
+EXPORT(save_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_path = NULL;
@@ -81,7 +81,7 @@ EXPORT(save_field, {
   return p_ret;
 })
 
-EXPORT(load_field, {
+EXPORT(load_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_path = NULL;

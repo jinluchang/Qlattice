@@ -1,0 +1,153 @@
+[
+ [
+  "cqlat-selected-field: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-selected-field: fsel glb n_elems",
+  128.0
+ ],
+ [
+  "cqlat-selected-field: selected data sig",
+  {
+   "value": [
+    2.0635382135525897,
+    0.9781458835887766,
+    0.27716999705528145
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: set_add_sfield max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: set_add_sfield sum",
+  66.3373199380587,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: set_mul_double_sfield max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: set_mul_double_sfield (-1.5) max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: set_mul_double_sfield sum",
+  -199.0119598141761
+ ],
+ [
+  "cqlat-selected-field: acc_field_sfield max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_sfield n changed sites",
+  128.0
+ ],
+ [
+  "cqlat-selected-field: acc_field_sfield sum",
+  -67.52359099935912,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: field -= selected_field max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: field -= selected_field sum",
+  330.5003286289931,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_spfield (+=) max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_spfield (+=) sum",
+  163.65444628226115,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_spfield (-=) max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_spfield (-=) sum",
+  99.32229134737284,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_spfield (empty field) max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_spfield (empty field) sum",
+  32.166077467444154,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: acc_field_sfield init from empty sum",
+  68.34248494122909,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=3 max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=3 total",
+  55426.0
+ ],
+ [
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=3 sig",
+  {
+   "value": [
+    -10486.575818879553,
+    4870.857917259301,
+    -3505.2598647308105
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=0 max err",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=0 total",
+  55426.0
+ ],
+ [
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=0 sig",
+  {
+   "value": [
+    -4189.1598266455985,
+    12419.352016197234,
+    2116.132958201979
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-selected-field: gc.collect() done",
+  1.0
+ ],
+ [
+  "cqlat-selected-field: cwd=cqlat-selected-field.py.p"
+ ]
+]

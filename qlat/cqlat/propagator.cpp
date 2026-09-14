@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(set_rand_u1_src_psel, {
+EXPORT(set_rand_u1_src_psel, {  // tested: cqlat-propagator
   using namespace qlat;
   PyObject* p_prop = NULL;
   PyObject* p_fu1 = NULL;
@@ -22,7 +22,7 @@ EXPORT(set_rand_u1_src_psel, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_rand_u1_sol_psel, {
+EXPORT(set_rand_u1_sol_psel, {  // tested: cqlat-propagator
   using namespace qlat;
   PyObject* p_sp_prop = NULL;
   PyObject* p_prop = NULL;
@@ -41,7 +41,7 @@ EXPORT(set_rand_u1_sol_psel, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_rand_u1_src_fsel, {
+EXPORT(set_rand_u1_src_fsel, {  // tested: cqlat-propagator
   using namespace qlat;
   PyObject* p_prop = NULL;
   PyObject* p_fu1 = NULL;
@@ -62,7 +62,7 @@ EXPORT(set_rand_u1_src_fsel, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_rand_u1_sol_fsel, {
+EXPORT(set_rand_u1_sol_fsel, {  // tested: cqlat-propagator
   using namespace qlat;
   PyObject* p_sf_prop = NULL;
   PyObject* p_prop = NULL;
@@ -83,7 +83,7 @@ EXPORT(set_rand_u1_sol_fsel, {
   Py_RETURN_NONE;
 })
 
-EXPORT(flip_tpbc_with_tslice_sp_prop, {
+EXPORT(flip_tpbc_with_tslice_sp_prop, {  // tested: cqlat-propagator
   using namespace qlat;
   PyObject* p_sp_prop = NULL;
   Int tslice_flip_tpbc = -1;
@@ -102,7 +102,7 @@ EXPORT(flip_tpbc_with_tslice_sp_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(flip_tpbc_with_tslice_s_prop, {
+EXPORT(flip_tpbc_with_tslice_s_prop, {  // tested: cqlat-propagator
   using namespace qlat;
   PyObject* p_s_prop = NULL;
   Int tslice_flip_tpbc = -1;

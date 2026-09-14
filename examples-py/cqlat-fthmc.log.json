@@ -1,0 +1,136 @@
+[
+ [
+  "cqlat-fthmc: geo.show()=Geometry([4, 4, 4, 8])"
+ ],
+ [
+  "cqlat-fthmc: gf0 avg plaq",
+  0.002294701375240264,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: gm_pre qnorm",
+  2716.1887858045507,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: empty FlowInfo step count",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: trivial FlowInfo step count",
+  8.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: set_gm_force_flowed_no_det (empty flow)",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: set_gm_force_flowed_no_det (trivial flow)",
+  2.220446049250313e-16,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: gf_flow (trivial flow)",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: flow FlowInfo step count",
+  8.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: flowed force is anti-Hermitian",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: flowed force is finite",
+  1.0
+ ],
+ [
+  "cqlat-fthmc: flowed force differs from input",
+  1.0
+ ],
+ [
+  "cqlat-fthmc: gf_flow changes the gauge field",
+  1.0
+ ],
+ [
+  "cqlat-fthmc: flowed gf avg plaq",
+  0.09719783339344142,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: get_gm_force_magnitudes all non-negative",
+  1.0
+ ],
+ [
+  "cqlat-fthmc: get_gm_force_magnitudes(gm_pre)",
+  {
+   "value": [
+    1.13765836714594,
+    1.1516353830829569,
+    1.1772717526593708,
+    1.2216516766963832,
+    1.7065703116646456
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: get_gm_force_magnitudes n_elems=2 rejected",
+  1.0
+ ],
+ [
+  "cqlat-fthmc: magnitude 0 vs numpy mean",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: magnitude 1 vs numpy l2",
+  2.220446049250313e-16,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: magnitude n_elems-1 vs numpy max",
+  2.220446049250313e-16,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: magnitude n_elems-1 equals largest magnitude",
+  1.0
+ ],
+ [
+  "cqlat-fthmc: c.get_gm_force_magnitudes direct max diff",
+  0.0,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: get_gm_force_magnitudes(gm_flow)",
+  {
+   "value": [
+    1.1483889178356317,
+    1.1644169209350967,
+    1.1940074722185414,
+    1.2460365541966347,
+    1.7634740984871506
+   ],
+   "__extended_json_type__": "ndarray"
+  },
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: flowed magnitude 0 vs numpy mean",
+  4.440892098500626e-16,
+  1e-10
+ ],
+ [
+  "cqlat-fthmc: free_flow_info (FlowInfo.__del__)",
+  1.0
+ ]
+]

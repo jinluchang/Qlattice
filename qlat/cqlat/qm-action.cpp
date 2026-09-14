@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(mk_qm_action, {
+EXPORT(mk_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   RealD alpha = 0.0;
   RealD beta = 0.0;
@@ -29,17 +29,17 @@ EXPORT(mk_qm_action, {
   return py_convert((void*)pqma);
 })
 
-EXPORT(free_qm_action, {
+EXPORT(free_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   return free_obj<QMAction>(args);
 })
 
-EXPORT(set_qm_action, {
+EXPORT(set_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   return set_obj<QMAction>(args);
 })
 
-EXPORT(get_alpha_qm_action, {
+EXPORT(get_alpha_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -49,7 +49,7 @@ EXPORT(get_alpha_qm_action, {
   return py_convert(qma.alpha);
 })
 
-EXPORT(get_beta_qm_action, {
+EXPORT(get_beta_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -59,7 +59,7 @@ EXPORT(get_beta_qm_action, {
   return py_convert(qma.beta);
 })
 
-EXPORT(get_barrier_strength_qm_action, {
+EXPORT(get_barrier_strength_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -69,7 +69,7 @@ EXPORT(get_barrier_strength_qm_action, {
   return py_convert(qma.barrier_strength);
 })
 
-EXPORT(get_M_qm_action, {
+EXPORT(get_M_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -79,7 +79,7 @@ EXPORT(get_M_qm_action, {
   return py_convert(qma.M);
 })
 
-EXPORT(get_L_qm_action, {
+EXPORT(get_L_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -89,7 +89,7 @@ EXPORT(get_L_qm_action, {
   return py_convert(qma.L);
 })
 
-EXPORT(get_t_FV_out_qm_action, {
+EXPORT(get_t_FV_out_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -99,7 +99,7 @@ EXPORT(get_t_FV_out_qm_action, {
   return py_convert(qma.t_FV_out);
 })
 
-EXPORT(get_t_FV_mid_qm_action, {
+EXPORT(get_t_FV_mid_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -109,7 +109,7 @@ EXPORT(get_t_FV_mid_qm_action, {
   return py_convert(qma.t_FV_mid);
 })
 
-EXPORT(get_dt_qm_action, {
+EXPORT(get_dt_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_qma)) {
@@ -119,7 +119,7 @@ EXPORT(get_dt_qm_action, {
   return py_convert(qma.dt);
 })
 
-EXPORT(V_qm_action, {
+EXPORT(V_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   RealD x[2];
@@ -134,7 +134,7 @@ EXPORT(V_qm_action, {
   return py_convert(qma.V(x_v, t));
 })
 
-EXPORT(dV_qm_action, {
+EXPORT(dV_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   RealD x[2];
@@ -150,7 +150,7 @@ EXPORT(dV_qm_action, {
   return py_convert(qma.dV(x_v, t, idx));
 })
 
-EXPORT(action_node_qm_action, {
+EXPORT(action_node_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   PyObject* p_f = NULL;
@@ -163,7 +163,7 @@ EXPORT(action_node_qm_action, {
   return py_convert(ret);
 })
 
-EXPORT(hmc_m_hamilton_node_qm_action, {
+EXPORT(hmc_m_hamilton_node_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   PyObject* p_m = NULL;
@@ -176,7 +176,7 @@ EXPORT(hmc_m_hamilton_node_qm_action, {
   return py_convert(ret);
 })
 
-EXPORT(sum_sq_qm_action, {
+EXPORT(sum_sq_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   PyObject* p_f = NULL;
@@ -189,7 +189,7 @@ EXPORT(sum_sq_qm_action, {
   return py_convert(ret);
 })
 
-EXPORT(hmc_set_force_qm_action, {
+EXPORT(hmc_set_force_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   PyObject* p_force = NULL;
@@ -204,7 +204,7 @@ EXPORT(hmc_set_force_qm_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(hmc_field_evolve_qm_action, {
+EXPORT(hmc_field_evolve_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   PyObject* p_f = NULL;
@@ -220,7 +220,7 @@ EXPORT(hmc_field_evolve_qm_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(hmc_set_rand_momentum_qm_action, {
+EXPORT(hmc_set_rand_momentum_qm_action, {  // tested: cqlat-qm-action
   using namespace qlat;
   PyObject* p_qma = NULL;
   PyObject* p_m = NULL;

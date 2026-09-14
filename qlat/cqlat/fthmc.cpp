@@ -2,7 +2,7 @@
 
 #include "lib.h"
 
-EXPORT(free_flow_info, {
+EXPORT(free_flow_info, {  // tested: cqlat-fthmc
   using namespace qlat;
   PyObject* p_fi = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fi)) {
@@ -13,7 +13,7 @@ EXPORT(free_flow_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(add_flow_flow_info, {
+EXPORT(add_flow_flow_info, {  // tested: cqlat-fthmc
   using namespace qlat;
   PyObject* p_fi = NULL;
   Int eo = 0;
@@ -29,7 +29,7 @@ EXPORT(add_flow_flow_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_gm_force_flowed_no_det, {
+EXPORT(set_gm_force_flowed_no_det, {  // tested: cqlat-fthmc
   using namespace qlat;
   PyObject* p_gm_force = NULL;
   PyObject* p_gm_force_pre = NULL;

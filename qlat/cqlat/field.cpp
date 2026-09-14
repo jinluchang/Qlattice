@@ -151,7 +151,7 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
 
 }  // namespace qlat
 
-EXPORT(set_mul_complex_field, {
+EXPORT(set_mul_complex_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   ComplexD factor = 0.0;
@@ -164,7 +164,7 @@ EXPORT(set_mul_complex_field, {
   return p_ret;
 })
 
-EXPORT(get_mview_field, {
+EXPORT(get_mview_field, {  // tested: cqlat-fields
   using namespace qlat;
   PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
