@@ -193,7 +193,7 @@ cdef class FieldBase:
         """
         if isinstance(f1, FieldBase):
             assert f1.ctype is self.ctype
-            c.set_add_field(self, f1)
+            self._cc_iadd(f1)
         else:
             if isinstance(f1, SelectedFieldBase):
                 c.acc_field_sfield(self, f1)
@@ -210,7 +210,7 @@ cdef class FieldBase:
         """
         if isinstance(f1, FieldBase):
             assert f1.ctype is self.ctype
-            c.set_sub_field(self, f1)
+            self._cc_isub(f1)
         else:
             if isinstance(f1, SelectedFieldBase):
                 assert f1.ctype is self.ctype
@@ -232,18 +232,21 @@ cdef class FieldBase:
 		factor can be int, float, complex, FieldM<ComplexD,1>
         """
         if isinstance(factor, (int, float,)):
-            c.set_mul_double_field(self, float(factor))
+            self._cc_imul_double(float(factor))
         elif isinstance(factor, complex):
-            c.set_mul_complex_field(self, factor)
+            self._cc_imul_complex(factor)
         elif isinstance(factor, FieldBase):
             assert factor.ctype in [ ElemTypeComplexD, ElemTypeRealD, ]
-            c.set_mul_cfield_field(self, factor)
+            if factor.ctype is ElemTypeComplexD:
+                self._cc_imul_complex_field(factor)
+            else:
+                self._cc_imul_real_field(factor)
         else:
             assert False
         return self
 
     def crc32(self):
-        return c.crc32_field(self)
+        return self._cc_crc32()
 
     def save_direct(self, path, *args, **kwargs):
         """
@@ -366,13 +369,13 @@ cdef class FieldBase:
         self needs to be FieldRealF
         """
         assert isinstance(self, FieldRealF)
-        c.convert_float_from_double_field(self, f)
+        f._cc_to_realf(self)
 
     def double_from_float(self, FieldRealF ff):
         """
         self can be any FieldBase subtype but need to be actually contains double precision numbers
         """
-        c.convert_double_from_float_field(self, ff)
+        self._cc_convert_double_from_float(ff)
 
     def to_from_endianness(self, tag):
         """
@@ -380,21 +383,21 @@ cdef class FieldBase:
         tag can be ``"big_32", "big_64", "little_32", "little_64"``
         """
         assert isinstance(tag, str)
-        c.to_from_endianness_field(self, tag)
+        self._cc_to_from_endianness(tag)
 
     def as_field(self, ctype=ElemTypeComplexD):
         """
 		return new Field(ctype) with the same content
         """
         f = Field(ctype)
-        c.assign_as_field(f, self)
+        f.cast_from(self)
         return f
 
     def from_field(self, f):
         """
 		assign from f with the same content but possibly different type
         """
-        c.assign_from_field(self, f)
+        self.cast_from(f)
         return f
 
     def __setitem__(self, idx, val):
@@ -508,14 +511,14 @@ def split_fields(fs, f):
             fs[i] = Field(ctype)
         else:
             assert fs[i].ctype is ctype
-    c.split_fields_field(fs, f)
+    f._cc_split_fields(fs)
 
 def merge_fields(f, fs):
     nf = len(fs)
     assert nf >= 1
     assert isinstance(f, FieldBase)
     assert f.ctype is fs[0].ctype
-    c.merge_fields_field(f, fs)
+    f._cc_merge_fields(fs)
 
 def merge_fields_ms(f, fms):
     """
@@ -617,7 +620,7 @@ cdef class SelectedFieldBase:
     def __isub__(self, f1):
         assert isinstance(f1, SelectedFieldBase)
         assert f1.ctype is self.ctype
-        c.set_sub_sfield(self, f1)
+        self._cc_isub(f1)
         return self
 
     def __imul__(self, factor):
@@ -786,15 +789,15 @@ cdef class SelectedFieldBase:
     def float_from_double(self, SelectedFieldBase f):
         assert isinstance(self, SelectedFieldRealF)
         self.fsel = f.fsel
-        c.convert_float_from_double_sfield(self, f)
+        f._cc_to_realf(self)
 
     def double_from_float(self, SelectedFieldRealF ff):
         self.fsel = ff.fsel
-        c.convert_double_from_float_sfield(self, ff)
+        self._cc_convert_double_from_float(ff)
 
     def to_from_endianness(self, tag):
         assert isinstance(tag, str)
-        c.to_from_endianness_sfield(self, tag)
+        self._cc_to_from_endianness(tag)
 
     def glb_sum_tslice(self, *, t_dir=3):
         """
@@ -804,7 +807,7 @@ cdef class SelectedFieldBase:
         cdef PointsSelection psel = get_psel_tslice(self.total_site, t_dir=t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
-            c.glb_sum_tslice_double_sfield(sp, self, t_dir)
+            self._cc_glb_sum_tslice(sp, self.fsel, t_dir)
         elif self.ctype in field_ctypes_long:
             c.glb_sum_tslice_long_sfield(sp, self, t_dir)
         else:

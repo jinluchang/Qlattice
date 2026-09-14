@@ -57,14 +57,14 @@ cdef class GaugeField(FieldColorMatrix):
         """
         Save with the standard NERSC format
         """
-        return c.save_gauge_field(self, path)
+        return cc.save_gauge_field(self.xxx().val(), path)
 
     @q.timer
     def load(self, path):
         """
         Load with the standard NERSC format
         """
-        return c.load_gauge_field(self, path)
+        return cc.load_gauge_field(self.xxx().val(), path)
 
     def set_rand(self, RngState rng, cc.RealD sigma=0.5, cc.Int n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
@@ -247,16 +247,14 @@ def gf_wilson_lines_no_comm(gf_ext, path_list):
             gf_wilson_line_no_comm(wlf, m, gf_ext, path)
     return wlf
 
-def gf_avg_wilson_loop_normalized_tr(gf, l, t):
-    assert isinstance(gf, GaugeField)
-    assert isinstance(l, int)
-    assert isinstance(t, int)
-    return c.gf_avg_wilson_loop_normalized_tr(gf, l, t)
+def gf_avg_wilson_loop_normalized_tr(GaugeField gf, int l, int t):
+    cdef cc.PyComplexD tr = cc.pycc_d(
+        cc.matrix_trace(cc.gf_avg_wilson_loop(gf.xxx().val(), l, t)))
+    return tr.real / 3.0
 
-def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps=1):
-    assert isinstance(fc, FieldColorMatrix)
-    assert isinstance(rng, RngState)
-    return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
+def set_g_rand_color_matrix_field(FieldColorMatrix fc, RngState rng,
+                                  cc.RealD sigma, cc.Int n_steps=1):
+    cc.set_g_rand_color_matrix_field(fc.xx, rng.xx, sigma, n_steps)
 
 def gf_twist_boundary_at_boundary(GaugeField gf, cc.RealD lmom=-0.5, int mu=3):
     """

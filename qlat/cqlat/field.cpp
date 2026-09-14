@@ -151,47 +151,6 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
 
 }  // namespace qlat
 
-EXPORT(set_add_field, {  // tested: hmc-pions
-  using namespace qlat;
-  PyObject* p_field_new = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  qassert(py_get_ctype(p_field_new) == ctype);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_add_field_ctype, ctype, p_field_new, p_field);
-  return p_ret;
-})
-
-EXPORT(set_sub_field, {  // tested: free-invert
-  using namespace qlat;
-  PyObject* p_field_new = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  qassert(py_get_ctype(p_field_new) == ctype);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_sub_field_ctype, ctype, p_field_new, p_field);
-  return p_ret;
-})
-
-EXPORT(set_mul_double_field, {  // tested: hmc-pions
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  RealD factor = 0.0;
-  if (!PyArg_ParseTuple(args, "Od", &p_field, &factor)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, factor);
-  return p_ret;
-})
-
 EXPORT(set_mul_complex_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
@@ -202,52 +161,6 @@ EXPORT(set_mul_complex_field, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, factor);
-  return p_ret;
-})
-
-EXPORT(set_mul_cfield_field, {  // tested: hmc-pions
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_cfield = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_cfield)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  const std::string ctype_c = py_get_ctype(p_cfield);
-  PyObject* p_ret = NULL;
-  if (ctype_c == "ComplexD") {
-    Field<ComplexD>& f_factor = py_convert_type_field<ComplexD>(p_cfield);
-    FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
-  } else if (ctype_c == "RealD") {
-    Field<RealD>& f_factor = py_convert_type_field<RealD>(p_cfield);
-    FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
-  } else {
-    qassert(false);
-  }
-  return p_ret;
-})
-
-EXPORT(qnorm_field, {  // tested: set-rand
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, qnorm_field_ctype, ctype, p_field);
-  return p_ret;
-})
-
-EXPORT(crc32_field, {  // tested: fields-io
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, crc32_field_ctype, ctype, p_field);
   return p_ret;
 })
 

@@ -1,3 +1,5 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
 """
 Module ``qlat.contract_pion``
 ===============================\n
@@ -8,17 +10,22 @@ Documentation: ``docs/qlat/qlat_contract_pion.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from qlat_utils import *
-from .c import *
-from . import c
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .propagator cimport Prop
+from .propagator cimport SelProp
 
-@timer
+import qlat_utils as q
+import cqlat as c
+
+@q.timer
 def contract_pion_field(prop, tslice):
-    ld = LatData()
+    cdef LatData ld = LatData()
     if isinstance(prop, Prop):
-        c.contract_pion_field(ld, prop, tslice)
+        ld.xx = cc.contract_pion((<Prop>prop).xxx().val(), tslice)
+        return ld
     elif isinstance(prop, SelProp):
         c.contract_pion_sfield(ld, prop, tslice)
+        return ld
     else:
         raise Exception("contract_pion_field")
-    return ld

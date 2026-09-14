@@ -280,6 +280,31 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         """
         super().__setstate__(state)
 
+    ### -----------------------------------------------------------------
+    ### low-level Cython bindings (ported from cqlat)
+
+    def _cc_isub(self, SelectedField{{name}} f1):
+        cc.py_sfield_isub(self.xx, f1.xx)
+
+    def _cc_convert_double_from_float(self, SelectedFieldRealF f1):
+        cc.convert_field_double_from_float(self.xx, f1.xx)
+
+    def _cc_to_realf(self, SelectedFieldRealF f_new):
+        cc.convert_field_float_from_double(f_new.xx, self.xx)
+
+    def _cc_to_from_endianness(self, tag):
+        cdef cc.Vector[cc.{{name}}] v = cc.get_data(self.xx)
+        if tag == "big_32" or tag == "big_64":
+            cc.to_from_big_endian(v, False)
+        elif tag == "little_32" or tag == "little_64":
+            cc.to_from_little_endian(v, False)
+        else:
+            assert False
+
+    def _cc_glb_sum_tslice(self, sp, FieldSelection fsel, cc.Int t_dir):
+        cc.field_glb_sum_tslice(
+            (<SelectedPoints{{name}}>sp).xx, self.xx, fsel.xx, t_dir)
+
 selected_field_type_dict[ElemType{{name}}] = SelectedField{{name}}
 
 {{endfor}}

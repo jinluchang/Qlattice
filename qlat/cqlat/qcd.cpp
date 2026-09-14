@@ -1,51 +1,5 @@
 #include "lib.h"
 
-EXPORT(gf_show_info, {  // tested: make-sample-gauge-field
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_gf)) {
-    return NULL;
-  }
-  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  gf_show_info(gf);
-  Py_RETURN_NONE;
-})
-
-EXPORT(gf_avg_plaq, {  // tested: gf-utils
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_gf)) {
-    return NULL;
-  }
-  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const RealD ret = gf_avg_plaq(gf);
-  return py_convert(ret);
-})
-
-EXPORT(gf_avg_link_trace, {  // tested: gf-utils
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_gf)) {
-    return NULL;
-  }
-  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const RealD ret = gf_avg_link_trace(gf);
-  return py_convert(ret);
-})
-
-EXPORT(gf_avg_wilson_loop_normalized_tr, {  // tested: hmc-pure-gauge-test
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  Int l = 0;
-  Int t = 0;
-  if (!PyArg_ParseTuple(args, "Oii", &p_gf, &l, &t)) {
-    return NULL;
-  }
-  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const RealD ret = matrix_trace(gf_avg_wilson_loop(gf, l, t)).real() / 3.0;
-  return py_convert(ret);
-})
-
 EXPORT(gf_wilson_line_no_comm, {
   using namespace qlat;
   PyObject* p_wilson_line_field = NULL;
@@ -70,48 +24,6 @@ EXPORT(gf_wilson_line_no_comm, {
                            path);
   }
   Py_RETURN_NONE;
-})
-
-EXPORT(set_g_rand_color_matrix_field, {  // tested: hmc-pure-gauge-flowed-test
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_rng = NULL;
-  RealD sigma = 1.0;
-  Int n_step = 1;
-  if (!PyArg_ParseTuple(args, "OOd|i", &p_field, &p_rng, &sigma, &n_step)) {
-    return NULL;
-  }
-  Field<ColorMatrix>& field = py_convert_type<Field<ColorMatrix>>(p_field);
-  const RngState& rng = py_convert_type<RngState>(p_rng);
-  set_g_rand_color_matrix_field(field, rng, sigma, n_step);
-  Py_RETURN_NONE;
-})
-
-EXPORT(save_gauge_field, {  // tested: make-sample-gauge-field
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_gf, &p_path)) {
-    return NULL;
-  }
-  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  std::string path;
-  py_convert(path, p_path);
-  const Long ret = save_gauge_field(gf, path);
-  return py_convert(ret);
-})
-
-EXPORT(load_gauge_field, {  // tested: make-sample-gauge-field
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  PyObject* p_path = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_gf, &p_path)) {
-    return NULL;
-  }
-  GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const std::string path = py_convert_data<std::string>(p_path);
-  const Long ret = load_gauge_field(gf, path);
-  return py_convert(ret);
 })
 
 EXPORT(gf_twist_boundary_at_boundary, {

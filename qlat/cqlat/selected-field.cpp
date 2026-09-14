@@ -323,20 +323,6 @@ EXPORT(set_add_sfield, {
   return p_ret;
 })
 
-EXPORT(set_sub_sfield, {  // tested: set-rand
-  using namespace qlat;
-  PyObject* p_field_new = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  qassert(py_get_ctype(p_field_new) == ctype);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_sub_sfield_ctype, ctype, p_field_new, p_field);
-  return p_ret;
-})
-
 EXPORT(set_mul_double_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
@@ -368,25 +354,6 @@ EXPORT(acc_field_sfield, {
   return p_ret;
 })
 
-EXPORT(glb_sum_tslice_double_sfield, {  // tested: field-utils
-  using namespace qlat;
-  PyObject* p_spfield = NULL;
-  PyObject* p_field = NULL;
-  Int t_dir = 3;
-  if (!PyArg_ParseTuple(args, "OO|i", &p_spfield, &p_field, &t_dir)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  qassert(py_get_ctype(p_spfield) == ctype);
-  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
-  QLAT_DIAGNOSTIC_POP;
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, glb_sum_tslice_double_sfield_ctype, ctype, p_spfield,
-                 p_field, fsel, t_dir);
-  return p_ret;
-})
-
 EXPORT(glb_sum_tslice_long_sfield, {
   using namespace qlat;
   PyObject* p_spfield = NULL;
@@ -406,46 +373,3 @@ EXPORT(glb_sum_tslice_long_sfield, {
   return p_ret;
 })
 
-EXPORT(convert_float_from_double_sfield, {  // tested: fields-io
-  using namespace qlat;
-  PyObject* p_field_new = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, convert_float_from_double_sfield_ctype, ctype,
-                 p_field_new, p_field);
-  return p_ret;
-})
-
-EXPORT(convert_double_from_float_sfield, {  // tested: fields-io
-  using namespace qlat;
-  PyObject* p_field_new = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field_new);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, convert_double_from_float_sfield_ctype, ctype,
-                 p_field_new, p_field);
-  return p_ret;
-})
-
-EXPORT(to_from_endianness_sfield, {  // tested: fields-io
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_endianness_tag = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_endianness_tag)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  const std::string endianness_tag =
-      py_convert_data<std::string>(p_endianness_tag);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, to_from_endianness_sfield_ctype, ctype, p_field,
-                 endianness_tag);
-  return p_ret;
-})

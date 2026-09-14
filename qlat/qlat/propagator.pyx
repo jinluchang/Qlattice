@@ -333,25 +333,43 @@ def invert_qed(
     return sp_sol
 
 def convert_mspincolor_from_wm(prop_wm):
+    cdef Prop prop_msc_prop
+    cdef SelProp prop_msc_s_prop
+    cdef PselProp prop_msc_sp_prop
     prop_msc = prop_wm.copy(False)
     if isinstance(prop_wm, Prop):
-        c.convert_mspincolor_from_wm_prop(prop_msc, prop_wm)
+        prop_msc_prop = prop_msc
+        cc.convert_mspincolor_from_wm(
+            prop_msc_prop.xxx().val(), (<Prop>prop_wm).xxx().val())
     elif isinstance(prop_wm, SelProp):
-        c.convert_mspincolor_from_wm_s_prop(prop_msc, prop_wm)
+        prop_msc_s_prop = prop_msc
+        cc.convert_mspincolor_from_wm(
+            prop_msc_s_prop.xxx().val(), (<SelProp>prop_wm).xxx().val())
     elif isinstance(prop_wm, PselProp):
-        c.convert_mspincolor_from_wm_sp_prop(prop_msc, prop_wm)
+        prop_msc_sp_prop = prop_msc
+        cc.convert_mspincolor_from_wm(
+            prop_msc_sp_prop.xxx().val(), (<PselProp>prop_wm).xxx().val())
     else:
         raise Exception("prop type match failed")
     return prop_msc
 
 def convert_wm_from_mspincolor(prop_msc):
+    cdef Prop prop_wm_prop
+    cdef SelProp prop_wm_s_prop
+    cdef PselProp prop_wm_sp_prop
     prop_wm = prop_msc.copy(False)
     if isinstance(prop_msc, Prop):
-        c.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
+        prop_wm_prop = prop_wm
+        cc.convert_wm_from_mspincolor(
+            prop_wm_prop.xxx().val(), (<Prop>prop_msc).xxx().val())
     elif isinstance(prop_msc, SelProp):
-        c.convert_wm_from_mspincolor_s_prop(prop_wm, prop_msc)
+        prop_wm_s_prop = prop_wm
+        cc.convert_wm_from_mspincolor(
+            prop_wm_s_prop.xxx().val(), (<SelProp>prop_msc).xxx().val())
     elif isinstance(prop_msc, PselProp):
-        c.convert_wm_from_mspincolor_sp_prop(prop_wm, prop_msc)
+        prop_wm_sp_prop = prop_wm
+        cc.convert_wm_from_mspincolor(
+            prop_wm_sp_prop.xxx().val(), (<PselProp>prop_msc).xxx().val())
     else:
         raise Exception("prop type match failed")
     return prop_wm

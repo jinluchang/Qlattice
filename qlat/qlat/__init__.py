@@ -17,6 +17,8 @@ from .mpi_utils import *
 
 from .scalar_action import *
 
+from .fermion_action import *
+
 from .qm_action import *
 
 from .fthmc import *

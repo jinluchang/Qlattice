@@ -1,3 +1,5 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
 """
 Module ``qlat.field_double``
 ==============================\n
@@ -8,48 +10,46 @@ Documentation: ``docs/qlat/qlat_field_double.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from qlat_utils import *
-from .c import *
-from . import c
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .field_base cimport FieldBase
+from .field_types cimport FieldRealD
+from .field_types cimport FieldComplexD
+
+import cqlat as c
 
 def set_checkers(field):
     # no longer needed?
     assert field.ctype == ElemTypeRealD
     c.set_checkers_double_field(field)
 
-def set_double_from_complex(field, cf):
-    assert isinstance(cf, FieldBase)
+def set_double_from_complex(field, FieldComplexD cf):
+    assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeRealD
     assert cf.ctype == ElemTypeComplexD
-    c.set_double_from_complex_field(field, cf)
+    field._cc_set_double_from_complex(cf)
 
-def set_complex_from_double(field, sf):
-    assert isinstance(sf, FieldBase)
+def set_complex_from_double(field, FieldRealD sf):
+    assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeComplexD
     assert sf.ctype == ElemTypeRealD
-    c.set_complex_from_double_field(field, sf)
+    field._cc_set_complex_from_double(sf)
 
-def set_abs_from_complex(field, cf):
-    assert isinstance(cf, FieldBase)
+def set_abs_from_complex(field, FieldComplexD cf):
+    assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeRealD
     assert cf.ctype == ElemTypeComplexD
-    c.set_abs_from_complex_field(field, cf)
+    field._cc_set_abs_from_complex(cf)
 
-def set_ratio_double(field, sf1, sf2):
-    assert isinstance(sf1, FieldBase)
-    assert isinstance(sf2, FieldBase)
+def set_ratio_double(field, FieldRealD sf1, FieldRealD sf2):
+    assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeRealD
-    assert sf1.ctype == ElemTypeRealD
-    assert sf2.ctype == ElemTypeRealD
-    c.set_ratio_double_field(field, sf1, sf2)
+    field._cc_set_ratio_double(sf1, sf2)
 
-def less_than_double(field, sf2, mask):
-    assert isinstance(sf2, FieldBase)
-    assert isinstance(mask, FieldBase)
+def less_than_double(field, FieldRealD sf2, FieldRealD mask):
+    assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeRealD
-    assert sf2.ctype == ElemTypeRealD
-    assert mask.ctype == ElemTypeRealD
-    c.less_than_double_field(field, sf2, mask)
+    field._cc_less_than_double(sf2, mask)
 
 def invert_double(field):
     assert field.ctype == ElemTypeRealD

@@ -20,6 +20,7 @@ from .field_base cimport (
 from .field_types cimport (
         FieldInt8t,
         FieldRealD,
+        FieldComplexD,
         FieldChar,
         )
 from .selected_field_types cimport SelectedFieldRealD
@@ -100,8 +101,9 @@ def mk_phase_field(Geometry geo, lmom):
     lmom is in lattice momentum unit
     exp(i * 2*pi/L * lmom \cdot xg )
     """
-    f = Field(ElemTypeComplexD, geo, 1)
-    c.set_phase_field(f, lmom)
+    cdef CoordinateD lmom_d = CoordinateD(lmom)
+    cdef FieldComplexD f = Field(ElemTypeComplexD, geo, 1)
+    cc.py_set_phase_field(f.xx, lmom_d.xx)
     return f
 
 class FastFourierTransform:
@@ -124,7 +126,7 @@ class FastFourierTransform:
             assert isinstance(f, FieldBase)
         fields = [ f.copy() for f in fields ]
         fft_dirs, fft_is_forwards = zip(*self.fft_infos)
-        c.fft_fields(fields, fft_dirs, fft_is_forwards, self.mode_fft)
+        fields[0]._cc_fft(fields, fft_dirs, fft_is_forwards, self.mode_fft)
         if self.is_normalizing and self.fft_infos:
             for field in fields:
                 total_site = field.total_site

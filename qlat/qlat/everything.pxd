@@ -229,6 +229,8 @@ cdef extern from "qlat/field-io.h" namespace "qlat":
     crc32_t field_crc32[M](const Field[M]& f) except +
     Long write_field[M](const Field[M]& f, const std_string& path, const Coordinate& new_size_node) except +
     Long read_field[M](Field[M]& f, const std_string& path, const Coordinate& new_size_node) except +
+    void convert_field_float_from_double[M, N](Field[N]& ff, const Field[M]& f) except +
+    void convert_field_double_from_float[M, N](Field[N]& ff, const Field[M]& f) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
@@ -342,10 +344,16 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void field_glb_min[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +
 
+cdef extern from "qlat/selected-field.h" namespace "qlat":
+
+    void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const FieldSelection& fsel, const Int t_dir) except +
+
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
     RealD qnorm[M](const SelectedField[M]& sf) except +
     void qnorm_field[M](SelectedField[RealD]& f, const SelectedField[M]& f1) except +
+    void convert_field_float_from_double[M, N](SelectedField[N]& ff, const SelectedField[M]& f) except +
+    void convert_field_double_from_float[M, N](SelectedField[N]& ff, const SelectedField[M]& f) except +
     void set_u_rand[M](SelectedField[M]& sp, const FieldSelection& fsel, const RngState& rs, const RealD upper, const RealD lower) except +
     void set_g_rand[M](SelectedField[M]& sp, const FieldSelection& fsel, const RngState& rs, const RealD center, const RealD sigma) except +
     void set_selected_field[t](SelectedField[t]& sf, const Field[t]& f,
@@ -404,6 +412,18 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
         Prop& p_sol, const Prop& p_src,
         const RealD mass, const RealD m5,
         const CoordinateD& momtwist) except +
+    void convert_wm_from_mspincolor(Prop& prop_wm,
+            const Prop& prop_msc) except +
+    void convert_mspincolor_from_wm(Prop& prop_msc,
+            const Prop& prop_wm) except +
+    void convert_wm_from_mspincolor(SelectedField[WilsonMatrix]& prop_wm,
+            const SelectedField[WilsonMatrix]& prop_msc) except +
+    void convert_mspincolor_from_wm(SelectedField[WilsonMatrix]& prop_msc,
+            const SelectedField[WilsonMatrix]& prop_wm) except +
+    void convert_wm_from_mspincolor(SelectedPoints[WilsonMatrix]& prop_wm,
+            const SelectedPoints[WilsonMatrix]& prop_msc) except +
+    void convert_mspincolor_from_wm(SelectedPoints[WilsonMatrix]& prop_msc,
+            const SelectedPoints[WilsonMatrix]& prop_wm) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
@@ -424,10 +444,16 @@ cdef extern from "qlat/qcd.h" namespace "qlat":
     RealD gf_local_avg_plaq(const GaugeField& gf, const Coordinate& block_site) except +
     void unitarize(Field[ColorMatrix]& gf) except +
     void make_tr_less_anti_herm_matrix(Field[ColorMatrix]& fc) except +
+    Long save_gauge_field "qlat::save_gauge_field<qlat::RealD>"(
+            const GaugeField& gf, const std_string& path) except +
+    Long load_gauge_field "qlat::load_gauge_field<qlat::RealD>"(
+            GaugeField& gf, const std_string& path) except +
 
 cdef extern from "qlat/qcd-utils.h" namespace "qlat":
 
     void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf) except +
+    ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Int l, const Int t) except +
+    void set_g_rand_color_matrix_field(Field[ColorMatrix]& fc, const RngState& rs, const RealD sigma, const Int n_step) except +
 
 cdef extern from "qlat/qcd-gauge-transformation.h" namespace "qlat":
 
@@ -658,4 +684,192 @@ cdef extern from "qlat/qed.h" namespace "qlat":
         const RealD mass, const RealD m5, const Int ls,
         const vector[ComplexD]& t_wick_phase_factor_vec,
         const bool is_dagger) except +
+
+cdef extern from "qlat/flowed-hmc.h" namespace "qlat":
+
+    cdef cppclass FlowStepInfo:
+        Int mask
+        Int mu
+        RealD epsilon
+        Int flow_size
+        FlowStepInfo()
+    cdef cppclass FlowInfo:
+        std_vector[FlowStepInfo] v
+        FlowInfo()
+        FlowInfo(const FlowInfo&) except +
+    std_string show(const FlowInfo& fi) except +
+    FlowInfo mk_flow_info_step(const RngState& rs, const RealD epsilon) except +
+    FlowInfo mk_flow_info_step(const RngState& rs, const RealD epsilon,
+            const RealD epsilon2) except +
+    void gf_flow(GaugeField& gf, const GaugeField& gf0, const FlowInfo& fi) except +
+    void gf_flow_inv(GaugeField& gf, const GaugeField& gf1, const FlowInfo& fi) except +
+    RealD gf_hamilton_flowed_node(const GaugeField& gf0, const GaugeAction& ga,
+            const FlowInfo& fi) except +
+    void set_gm_force_flowed(GaugeMomentum& gm_force, const GaugeField& gf0,
+            const GaugeAction& ga, const FlowInfo& fi) except +
+
+cdef extern from "qlat/scalar-action.h" namespace "qlat":
+
+    cdef cppclass ScalarAction:
+        bool initialized
+        RealD m_sq
+        RealD lmbd
+        RealD alpha
+        ScalarAction() except +
+        ScalarAction(const RealD m_sq_, const RealD lmbd_,
+                const RealD alpha_) except +
+        RealD action_node(const Field[RealD]& sf) except +
+        RealD hmc_m_hamilton_node(const Field[ComplexD]& sm_complex,
+                const Field[RealD]& masses) except +
+        void hmc_set_force(Field[RealD]& sm_force,
+                const Field[RealD]& sf) except +
+        void hmc_field_evolve(Field[ComplexD]& sf_complex,
+                const Field[ComplexD]& sm_complex,
+                const Field[RealD]& masses, const RealD step_size) except +
+        RealD sum_sq(const Field[RealD]& f) except +
+        void axial_current_node(Field[RealD]& axial_current,
+                const Field[RealD]& sf) except +
+        void hmc_set_rand_momentum(Field[ComplexD]& sm_complex,
+                const Field[RealD]& masses, const RngState& rs) except +
+        void hmc_predict_field(Field[ComplexD]& field_ft,
+                const Field[ComplexD]& momentum_ft,
+                const Field[RealD]& masses, const RealD vev_sigma) except +
+        void get_polar_field(Field[RealD]& polar_fields,
+                const Field[RealD]& sf) except +
+
+cdef extern from "qlat/fermion-action.h" namespace "qlat":
+
+    cdef cppclass FermionAction:
+        bool initialized
+        RealD mass
+        Int ls
+        RealD m5
+        RealD mobius_scale
+        bool is_multiplying_dminus
+        bool is_using_zmobius
+        Int cg_diagonal_mee
+        std_vector[ComplexD] bs
+        std_vector[ComplexD] cs
+        FermionAction() except +
+        FermionAction(const RealD mass_, const Int ls_, const RealD m5_,
+                const RealD mobius_scale_,
+                const bool is_multiplying_dminus_,
+                const bool is_using_zmobius_) except +
+
+cdef extern from "qlat/dslash.h" namespace "qlat":
+
+    cdef cppclass InverterDomainWall:
+        InverterDomainWall() except +
+        void setup() except +
+        void setup(const GaugeField& gf_, const FermionAction& fa_) except +
+        RealD& stop_rsd() except +
+        Long& max_num_iter() except +
+        Long& max_mixed_precision_cycle() except +
+    void setup_inverter(InverterDomainWall& inv, const GaugeField& gf,
+            const FermionAction& fa) except +
+    void invert_prop_dw "qlat::invert<qlat::InverterDomainWall, qlat::RealD>"(
+            Prop& sol, const Prop& src,
+            const InverterDomainWall& inv) except +
+
+cdef extern from "qlat/hmc-stats.h" namespace "qlat":
+
+    void display_gm_force_magnitudes(const GaugeMomentum& gm_force,
+            const Int n_elems) except +
+    void save_gm_force_magnitudes_list(const std_string& fn) except +
+    void display_gauge_field_info_table_with_wilson_flow(
+            const std_string& fn_gf_info,
+            const std_string& fn_wilson_flow_energy,
+            const GaugeField& gf, const RealD flow_time,
+            const Int flow_steps, const Int steps, const RealD c1) except +
+
+cdef extern from "qlat/contract-pion.h" namespace "qlat":
+
+    LatData contract_pion(const Prop& prop, const Int tslice_src) except +
+
+cdef extern from "qlat/field-double.h" namespace "qlat":
+
+    void set_complex_from_double[M](Field[M]& cf,
+            const Field[RealD]& sf) except +
+    void set_double_from_complex[M](Field[M]& sf,
+            const Field[ComplexD]& cf) except +
+    void set_abs_from_complex[M](Field[M]& sf,
+            const Field[ComplexD]& cf) except +
+    void set_ratio_double[M](Field[M]& sf, const Field[RealD]& sf1,
+            const Field[RealD]& sf2) except +
+    void less_than_double[M](Field[M]& sf1, const Field[RealD]& sf2,
+            const Field[RealD]& mask) except +
+
+cdef extern from "qlat-utils/qendian.h" namespace "qlat":
+
+    void to_from_big_endian[M](Vector[M] v, const bool is_par) except +
+    void to_from_little_endian[M](Vector[M] v, const bool is_par) except +
+
+cdef extern from "qlat-utils/handle.h" namespace "qlat":
+
+    cdef cppclass ConstHandle[T]:
+        ConstHandle()
+        ConstHandle(const T& obj)
+        void init()
+        void init(const T& obj)
+        const T& val() except +
+
+cdef extern from "qlat/field.h" namespace "qlat":
+
+    void split_fields[M](std_vector[Handle[Field[M]]]& vec,
+            const Field[M]& f) except +
+    void merge_fields[M](Field[M]& f,
+            const std_vector[ConstHandle[Field[M]]]& vec) except +
+
+cdef extern from *:
+    """
+    #include <qlat/field-fft.h>
+    template <class M>
+    inline void py_fft_complex_fields(
+        std::vector<qlat::Handle<qlat::Field<M>>>& vec,
+        const std::vector<int>& fft_dirs,
+        const std::vector<int>& fft_is_forwards, const qlat::Int mode_fft)
+    {
+      std::vector<bool> forwards(fft_is_forwards.size());
+      for (std::size_t i = 0; i < fft_is_forwards.size(); ++i) {
+        forwards[i] = (fft_is_forwards[i] != 0);
+      }
+      qlat::fft_complex_fields(vec, fft_dirs, forwards, mode_fft);
+    }
+    template <class M>
+    inline void py_field_iadd(qlat::Field<M>& f0, const qlat::Field<M>& f1)
+    { f0 += f1; }
+    template <class M>
+    inline void py_field_isub(qlat::Field<M>& f0, const qlat::Field<M>& f1)
+    { f0 -= f1; }
+    template <class M>
+    inline void py_field_imul_double(qlat::Field<M>& f, const qlat::RealD factor)
+    { f *= factor; }
+    template <class M>
+    inline void py_field_imul_complex(qlat::Field<M>& f, const qlat::ComplexD& factor)
+    { f *= factor; }
+    template <class M>
+    inline void py_field_imul_real_field(qlat::Field<M>& f, const qlat::Field<qlat::RealD>& f1)
+    { f *= f1; }
+    template <class M>
+    inline void py_field_imul_complex_field(qlat::Field<M>& f, const qlat::Field<qlat::ComplexD>& f1)
+    { f *= f1; }
+    template <class M>
+    inline void py_sfield_isub(qlat::SelectedField<M>& f0, const qlat::SelectedField<M>& f1)
+    { f0 -= f1; }
+    template <class M>
+    inline void py_set_phase_field(qlat::Field<M>& f, const qlat::CoordinateD& lmom)
+    { qlat::set_phase_field(*(qlat::FieldM<M, 1>*)&f, lmom); }
+    """
+    void py_field_iadd[M](Field[M]& f0, const Field[M]& f1) except +
+    void py_field_isub[M](Field[M]& f0, const Field[M]& f1) except +
+    void py_field_imul_double[M](Field[M]& f, const RealD factor) except +
+    void py_field_imul_complex[M](Field[M]& f, const ComplexD& factor) except +
+    void py_field_imul_real_field[M](Field[M]& f, const Field[RealD]& f1) except +
+    void py_field_imul_complex_field[M](Field[M]& f, const Field[ComplexD]& f1) except +
+    void py_sfield_isub[M](SelectedField[M]& f0, const SelectedField[M]& f1) except +
+    void py_set_phase_field[M](Field[M]& f, const CoordinateD& lmom) except +
+    void py_fft_complex_fields[M](std_vector[Handle[Field[M]]]& vec,
+            std_vector[int]& fft_dirs,
+            std_vector[int]& fft_is_forwards,
+            const Int mode_fft) except +
 

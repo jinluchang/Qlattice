@@ -1,3 +1,5 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
 """
 Module ``qlat.inverter``
 =========================\n
@@ -10,13 +12,38 @@ Documentation: ``docs/qlat/qlat_inverter.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from qlat_utils import *
-from qlat.fermion_action import *
+from qlat_utils.all cimport *
+from qlat_utils import mk_cache
+from . cimport everything as cc
+from .qcd cimport GaugeField
+from .qcd cimport GaugeTransform
+from .propagator cimport Prop
+from .propagator cimport FermionField4d
+from .propagator import free_invert
 
-from .c import *
-from . import c
+from cpython.long cimport PyLong_FromVoidPtr
+from cpython.long cimport PyLong_AsVoidPtr
+
+import cqlat as c
 
 cache_inv = mk_cache("inv")
+
+cdef inline cc.InverterDomainWall* get_inverter_domain_wall_ptr(
+        object inv) except? NULL:
+    return <cc.InverterDomainWall*>PyLong_AsVoidPtr(inv.cdata)
+
+cdef inline cc.FermionAction* get_fermion_action_ptr(object fa) except? NULL:
+    return <cc.FermionAction*>PyLong_AsVoidPtr(fa.cdata)
+
+def mk_inverter_domain_wall(GaugeField gf, fa):
+    cdef cc.InverterDomainWall* pinv = new cc.InverterDomainWall()
+    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
+    cc.setup_inverter(pinv[0], gf.xxx().val(), pfa[0])
+    return PyLong_FromVoidPtr(<void*>pinv)
+
+def invert_inverter_domain_wall(Prop prop_sol, Prop prop_src, inv):
+    cdef cc.InverterDomainWall* pinv = get_inverter_domain_wall_ptr(inv)
+    cc.invert_prop_dw(prop_sol.xxx().val(), prop_src.xxx().val(), pinv[0])
 
 class Inverter:
     pass
@@ -33,14 +60,7 @@ class InverterDwfFreeField(Inverter):
 
     def __init__(self, *, mass, m5=1.0, momtwist=None, qtimer=TimerNone()):
         if momtwist is None:
-            momtwist = CoordinateD(
-                [
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                ]
-            )
+            momtwist = CoordinateD([ 0.0, 0.0, 0.0, 0.0, ])
         self.mass = mass
         self.m5 = m5
         self.momtwist = momtwist
@@ -48,13 +68,7 @@ class InverterDwfFreeField(Inverter):
         assert isinstance(self.mass, float)
         assert isinstance(self.m5, float)
         assert isinstance(self.momtwist, CoordinateD)
-        assert isinstance(
-            self.timer,
-            (
-                Timer,
-                TimerNone,
-            ),
-        )
+        assert isinstance(self.timer, (Timer, TimerNone,))
 
     def __mul__(self, prop_src):
         """
@@ -79,15 +93,9 @@ class InverterDomainWall(Inverter):
     """
 
     def __init__(self, *, gf, fa, qtimer=TimerNone()):
-        self.cdata = c.mk_inverter_domain_wall(gf, fa)
+        self.cdata = mk_inverter_domain_wall(gf, fa)
         self.timer = qtimer
-        assert isinstance(
-            self.timer,
-            (
-                Timer,
-                TimerNone,
-            ),
-        )
+        assert isinstance(self.timer, (Timer, TimerNone,))
 
     def __del__(self):
         assert isinstance(self.cdata, int)
@@ -100,7 +108,7 @@ class InverterDomainWall(Inverter):
         if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = Prop()
-            c.invert_inverter_domain_wall(prop_sol, prop_src, self)
+            invert_inverter_domain_wall(prop_sol, prop_src, self)
             self.timer.stop()
             return prop_sol
         elif isinstance(prop_src, list):
@@ -150,24 +158,11 @@ class InverterGaugeTransform(Inverter):
         self.timer = qtimer
         assert isinstance(self.inverter, Inverter)
         assert isinstance(self.gt, GaugeTransform)
-        assert isinstance(
-            self.timer,
-            (
-                Timer,
-                TimerNone,
-            ),
-        )
+        assert isinstance(self.timer, (Timer, TimerNone,))
         self.gt_inv = self.gt.inv()
 
     def __mul__(self, prop_src):
-        assert isinstance(
-            prop_src,
-            (
-                Prop,
-                FermionField4d,
-                list,
-            ),
-        )
+        assert isinstance(prop_src, (Prop, FermionField4d, list,))
         self.timer.start()
         src = self.gt_inv * prop_src
         sol = self.inverter * src

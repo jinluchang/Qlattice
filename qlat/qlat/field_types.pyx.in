@@ -354,6 +354,97 @@ cdef class Field{{name}}(FieldBase):
         """
         super().__setstate__(state)
 
+    ### -----------------------------------------------------------------
+    ### low-level Cython bindings (ported from cqlat)
+
+    def _cc_iadd(self, Field{{name}} f1):
+        cc.py_field_iadd(self.xx, f1.xx)
+
+    def _cc_isub(self, Field{{name}} f1):
+        cc.py_field_isub(self.xx, f1.xx)
+
+    def _cc_imul_double(self, cc.RealD factor):
+        cc.py_field_imul_double(self.xx, factor)
+
+    def _cc_imul_complex(self, object factor):
+        cdef cc.PyComplexD pz = <cc.PyComplexD>factor
+        cc.py_field_imul_complex(self.xx, (<cc.ComplexD*>(&pz))[0])
+
+    def _cc_imul_real_field(self, FieldRealD f1):
+        cc.py_field_imul_real_field(self.xx, f1.xx)
+
+    def _cc_imul_complex_field(self, FieldComplexD f1):
+        cc.py_field_imul_complex_field(self.xx, f1.xx)
+
+    def _cc_crc32(self):
+        return cc.field_crc32(self.xx)
+
+    def _cc_to_from_endianness(self, tag):
+        cdef cc.Vector[cc.{{name}}] v = cc.get_data(self.xx)
+        if tag == "big_32" or tag == "big_64":
+            cc.to_from_big_endian(v, False)
+        elif tag == "little_32" or tag == "little_64":
+            cc.to_from_little_endian(v, False)
+        else:
+            assert False
+
+    def _cc_convert_double_from_float(self, FieldRealF f1):
+        cc.convert_field_double_from_float(self.xx, f1.xx)
+
+    def _cc_to_realf(self, FieldRealF f_new):
+        cc.convert_field_float_from_double(f_new.xx, self.xx)
+
+    def _cc_set_double_from_complex(self, FieldComplexD cf):
+        cc.set_double_from_complex(self.xx, cf.xx)
+
+    def _cc_set_complex_from_double(self, FieldRealD sf):
+        cc.set_complex_from_double(self.xx, sf.xx)
+
+    def _cc_set_abs_from_complex(self, FieldComplexD cf):
+        cc.set_abs_from_complex(self.xx, cf.xx)
+
+    def _cc_set_ratio_double(self, FieldRealD sf1, FieldRealD sf2):
+        cc.set_ratio_double(self.xx, sf1.xx, sf2.xx)
+
+    def _cc_less_than_double(self, FieldRealD sf2, FieldRealD mask):
+        cc.less_than_double(self.xx, sf2.xx, mask.xx)
+
+    def _cc_fft(self, fields, fft_dirs, fft_is_forwards, mode_fft):
+        cdef cc.std_vector[cc.Handle[cc.Field[cc.{{name}}]]] vec
+        cdef cc.Handle[cc.Field[cc.{{name}}]] h
+        cdef cc.std_vector[int] dirs
+        cdef cc.std_vector[int] forwards
+        cdef Py_ssize_t i
+        for i in range(len(fields)):
+            h = cc.Handle[cc.Field[cc.{{name}}]]()
+            h.init((<Field{{name}}>fields[i]).xx)
+            vec.push_back(h)
+        for d in fft_dirs:
+            dirs.push_back(d)
+        for b in fft_is_forwards:
+            forwards.push_back(b)
+        cc.py_fft_complex_fields(vec, dirs, forwards, mode_fft)
+
+    def _cc_split_fields(self, fields):
+        cdef cc.std_vector[cc.Handle[cc.Field[cc.{{name}}]]] vec
+        cdef cc.Handle[cc.Field[cc.{{name}}]] h
+        cdef Py_ssize_t i
+        for i in range(len(fields)):
+            h = cc.Handle[cc.Field[cc.{{name}}]]()
+            h.init((<Field{{name}}>fields[i]).xx)
+            vec.push_back(h)
+        cc.split_fields(vec, self.xx)
+
+    def _cc_merge_fields(self, fields):
+        cdef cc.std_vector[cc.ConstHandle[cc.Field[cc.{{name}}]]] vec
+        cdef cc.ConstHandle[cc.Field[cc.{{name}}]] h
+        cdef Py_ssize_t i
+        for i in range(len(fields)):
+            h = cc.ConstHandle[cc.Field[cc.{{name}}]]()
+            h.init((<Field{{name}}>fields[i]).xx)
+            vec.push_back(h)
+        cc.merge_fields(self.xx, vec)
+
 field_type_dict[ElemType{{name}}] = Field{{name}}
 
 {{endfor}}
