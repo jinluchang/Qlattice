@@ -15,7 +15,6 @@ cpp_files = files(
   'init.cpp',
   'inverter.cpp',
   'lib.cpp',
-  'mat.cpp',
   'propagator.cpp',
   'qcd.cpp',
   'qm-action.cpp',

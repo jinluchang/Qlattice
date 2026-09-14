@@ -359,87 +359,6 @@ EXPORT(assign_from_field, {
   return p_ret;
 })
 
-// EXPORT(get_elems_field, {
-//   using namespace qlat;
-//   PyObject* p_field = NULL;
-//   PyObject* p_index = NULL;
-//   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_index)) {
-//     return NULL;
-//   }
-//   const std::string ctype = py_get_ctype(p_field);
-//   PyObject* p_ret = NULL;
-//   if (PyLong_Check(p_index)) {
-//     const Long index = py_convert_data<Long>(p_index);
-//     FIELD_DISPATCH(p_ret, get_elems_field_ctype, ctype, p_field, index);
-//   } else {
-//     const Coordinate xg = py_convert_data<Coordinate>(p_index);
-//     FIELD_DISPATCH(p_ret, get_elems_field_ctype, ctype, p_field, xg);
-//   }
-//   return p_ret;
-// })
-
-// EXPORT(get_elem_field, {
-//   using namespace qlat;
-//   PyObject* p_field = NULL;
-//   PyObject* p_index = NULL;
-//   Long m = -1;
-//   if (!PyArg_ParseTuple(args, "OO|l", &p_field, &p_index, &m)) {
-//     return NULL;
-//   }
-//   const std::string ctype = py_get_ctype(p_field);
-//   PyObject* p_ret = NULL;
-//   if (PyLong_Check(p_index)) {
-//     const Long index = py_convert_data<Long>(p_index);
-//     FIELD_DISPATCH(p_ret, get_elem_field_ctype, ctype, p_field, index, m);
-//   } else {
-//     const Coordinate xg = py_convert_data<Coordinate>(p_index);
-//     FIELD_DISPATCH(p_ret, get_elem_field_ctype, ctype, p_field, xg, m);
-//   }
-//   return p_ret;
-// })
-
-// EXPORT(set_elems_field, {
-//   using namespace qlat;
-//   PyObject* p_field = NULL;
-//   PyObject* p_index = NULL;
-//   PyObject* p_val = NULL;
-//   if (!PyArg_ParseTuple(args, "OOO", &p_field, &p_index, &p_val)) {
-//     return NULL;
-//   }
-//   const std::string ctype = py_get_ctype(p_field);
-//   PyObject* p_ret = NULL;
-//   if (PyLong_Check(p_index)) {
-//     const Long index = py_convert_data<Long>(p_index);
-//     FIELD_DISPATCH(p_ret, set_elems_field_ctype, ctype, p_field, index, p_val);
-//   } else {
-//     const Coordinate xg = py_convert_data<Coordinate>(p_index);
-//     FIELD_DISPATCH(p_ret, set_elems_field_ctype, ctype, p_field, xg, p_val);
-//   }
-//   return p_ret;
-// })
-
-// EXPORT(set_elem_field, {
-//   using namespace qlat;
-//   PyObject* p_field = NULL;
-//   PyObject* p_index = NULL;
-//   Long m = -1;
-//   PyObject* p_val = NULL;
-//   if (!PyArg_ParseTuple(args, "OOlO", &p_field, &p_index, &m, &p_val)) {
-//     return NULL;
-//   }
-//   const std::string ctype = py_get_ctype(p_field);
-//   PyObject* p_ret = NULL;
-//   if (PyLong_Check(p_index)) {
-//     const Long index = py_convert_data<Long>(p_index);
-//     FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, index, m,
-//                    p_val);
-//   } else {
-//     const Coordinate xg = py_convert_data<Coordinate>(p_index);
-//     FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, xg, m, p_val);
-//   }
-//   return p_ret;
-// })
-
 EXPORT(fft_fields, {
   // forward compute
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
@@ -471,23 +390,6 @@ EXPORT(fft_fields, {
                  fft_is_forwards, mode_fft);
   return p_ret;
 })
-
-// EXPORT(field_shift_field, {
-//   using namespace qlat;
-//   PyObject* p_field_new = NULL;
-//   PyObject* p_field = NULL;
-//   PyObject* p_shift = NULL;
-//   if (!PyArg_ParseTuple(args, "OOO", &p_field_new, &p_field, &p_shift)) {
-//     return NULL;
-//   }
-//   const std::string ctype = py_get_ctype(p_field);
-//   qassert(py_get_ctype(p_field_new) == py_get_ctype(p_field));
-//   const Coordinate shift = py_convert_data<Coordinate>(p_shift);
-//   PyObject* p_ret = NULL;
-//   FIELD_DISPATCH(p_ret, field_shift_field_ctype, ctype, p_field_new, p_field,
-//                  shift);
-//   return p_ret;
-// })
 
 EXPORT(reflect_field, {
   using namespace qlat;
@@ -547,20 +449,6 @@ EXPORT(merge_fields_ms_field, {
   FIELD_DISPATCH(p_ret, merge_fields_ms_ctype, ctype, p_field, p_f_vec, m_vec);
   return p_ret;
 })
-
-// EXPORT(qnorm_field_field, {
-//   using namespace qlat;
-//   PyObject* p_field = NULL;
-//   PyObject* p_field1 = NULL;
-//   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
-//     return NULL;
-//   }
-//   FieldM<RealD, 1>& f = py_convert_type_field<RealD, 1>(p_field);
-//   const std::string ctype = py_get_ctype(p_field1);
-//   PyObject* p_ret = NULL;
-//   FIELD_DISPATCH(p_ret, qnorm_field_field_ctype, ctype, f, p_field1);
-//   return p_ret;
-// })
 
 EXPORT(set_sqrt_field, {
   using namespace qlat;
