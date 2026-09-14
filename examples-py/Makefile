@@ -127,7 +127,6 @@ tests = \
 		cqlat-vec-props.log \
 		cqlat-contraction.log \
 		cqlat-fthmc.log \
-		cqlat-begin-end.log \
 		fit-corr.log \
 		fit-corr-2.log \
 		hlt-reconstruction.log \

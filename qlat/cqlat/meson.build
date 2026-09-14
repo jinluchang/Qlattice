@@ -12,7 +12,6 @@ cpp_files = files(
   'fthmc.cpp',
   'hmc.cpp',
   'hmc-stats.cpp',
-  'init.cpp',
   'inverter.cpp',
   'lib.cpp',
   'propagator.cpp',
