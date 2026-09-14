@@ -78,6 +78,12 @@ def SelectedField(type ctype, FieldSelection fsel, int multiplicity=0):
     *empty*, uninitialized field that keeps fsel: it is meant to be filled
     later, e.g. with load_double / float_from_double (see examples-py
     selected-convert-io.py).  Pass a positive multiplicity to allocate now.
+
+    TODO: consider rejecting (or at least warning about) a non-empty fsel
+    combined with multiplicity <= 0, since the resulting object has
+    n_elems == 0 and silently uses nothing; this is kept as an empty
+    placeholder for now because selected-convert-io.py and field_base.pyx
+    rely on it.
     """
     assert ctype in field_type_dict
     FieldType = selected_field_type_dict[ctype]
@@ -89,6 +95,9 @@ def SelectedPoints(type ctype, PointsSelection psel, int multiplicity=0):
     SelectedPoints(ctype, psel) with the default multiplicity == 0 creates an
     *empty*, uninitialized field that keeps psel; pass a positive multiplicity
     to allocate now.
+
+    TODO: consider rejecting (or at least warning about) a non-empty psel
+    combined with multiplicity <= 0 (see SelectedField above).
     """
     assert ctype in field_type_dict
     FieldType = selected_points_type_dict[ctype]

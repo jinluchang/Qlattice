@@ -48,6 +48,10 @@ void prop4d_conj(Propagator4dT<Td>& prop, Int rotate = 1)
   TIMERA("prop4d_conj");
   ////Rowmajor (a,b), b is continues in memory
   //
+  // TODO: write all 144 entries of each WilsonMatrix (use ``c1`` for the sink
+  // color index of the destination in both branches below) and update the
+  // reference checks in examples-py/cqlat-vec-props.py, which currently pin the
+  // incomplete result.
   // KNOWN BUG (kept unchanged for now, see git history / examples-py
   // cqlat-vec-props.py which pins the current behavior): the destination index
   // uses the color index ``c0`` for the sink column instead of ``c1``, so the

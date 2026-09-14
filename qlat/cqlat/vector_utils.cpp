@@ -17,6 +17,10 @@ EXPORT(diff_gauge, {  // tested: cqlat-vec-props
   Py_RETURN_NONE;
 })
 
+// TODO: export save_gwu_link (utils_io_vec.h defines it as the read=false
+// counterpart of load_gwu_link); without it a GaugeField cannot be written in
+// the gwu link format from Python, and examples-py cqlat-vec-props.py has to
+// hand-build the file with numpy to test the reader.
 EXPORT(load_gwu_link, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
@@ -361,6 +365,11 @@ EXPORT(load_qlat_link, {  // tested: cqlat-vec-props
   Py_RETURN_NONE;
 })
 
+// TODO: rename this export to save_qlat_link (it is the counterpart of the
+// load_qlat_link export above) and export the Propagator4d readers/writers
+// save_qlat_prop / load_qlat_prop (utils_io_vec.h) under their own names; the
+// test reference in examples-py/cqlat-vec-props.py has to be updated together
+// with the rename.
 // KNOWN MISNOMER (kept unchanged for compatibility, see git history and
 // examples-py cqlat-vec-props.py which pins the current behavior):
 // save_qlat_prop takes a GaugeField and writes a *link* file via

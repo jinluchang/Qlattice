@@ -1668,6 +1668,9 @@ void load_gwu_prop(const char* filename,
 
 template <typename Td>
 void save_gwu_prop(const char* filename, Propagator4dT<Td>& prop)
+// TODO: make the stored precision explicit, e.g. a save_gwu_prop(..., bool
+// single = true) overload (the underlying load_gwu_prop already takes a
+// ``single`` argument) plus a cqlat export for the double precision variant.
 // The gwu propagator file format stores single precision (RealF/ComplexT<RealF>)
 // values, whatever the precision of ``prop``: the writer goes through
 // load_gwu_prop(..., read=false) whose ``single`` argument defaults to true, and
@@ -1977,6 +1980,10 @@ void save_gwu_noi(const char* filename, qlat::FieldM<Ty, 1>& noi)
 
 template <typename Td>
 void save_gwu_noiP(const char* filename, Propagator4dT<Td>& prop)
+// TODO: decide (with the gwu side) whether the saved noise must be a unit
+// modulus phase; if so, store phase / |phase| gated on |phase| > 1e-8 instead
+// of the raw element below, and update the reference checks in
+// examples-py/cqlat-vec-props.py.
 // KNOWN QUIRK (kept unchanged, see examples-py cqlat-vec-props.py which pins
 // the current behavior): the saved "noise" is the raw prop(x)(0,0) matrix
 // element, not a unit modulus phase (the variable is named phase and the

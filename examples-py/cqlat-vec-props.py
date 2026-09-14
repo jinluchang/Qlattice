@@ -16,11 +16,13 @@
 #   * diff_gauge / diff_prop (which only print a comparison) are called on
 #     equal copies and on a slightly perturbed copy,
 #   * save_gwu_prop / load_gwu_prop are round tripped (the gwu writer only
-#     stores single precision),
+#     stores single precision; TODO: expose the precision, see the TODO on
+#     save_gwu_prop in utils_io_vec.h),
 #   * save_gwu_noiP / load_gwu_noiP are round tripped exactly against a numpy
-#     re-implementation of the saved phase,
-#   * load_gwu_link reads a hand-built big-endian file (there is no exported
-#     gwu link writer),
+#     re-implementation of the saved phase (TODO: revisit the missing
+#     normalisation, see utils_io_vec.h),
+#   * load_gwu_link reads a hand-built big-endian file (TODO: there is no
+#     exported gwu link writer),
 #   * random_point_src / make_point_prop / make_volume_src are checked with a
 #     global gather of the local buffers,
 #   * local_sequential_source is checked against a numpy time-slice mask,
@@ -146,6 +148,8 @@ def ref_sink_gamma(arr, gm, conj):
     return out
 
 def ref_prop4d_conj(arr, rotate):
+    # TODO: replace this bug-for-bug reference (and regenerate the .log.json)
+    # when the incomplete write in utils_corr_prop.h prop4d_conj is fixed.
     # utils_corr_prop.h prop4d_conj, reproduced bug-for-bug: the C++ writes the
     # same destination entry for every c1 (the sink column index uses c0 instead
     # of c1), so the last c1 == 2 wins and only 48 of the 144 entries per site
@@ -229,6 +233,8 @@ assert err > 0.0
 q.json_results_append("cqlat-vec-props: diff_prop perturbed diff", err, 1e-8)
 
 # --- save_gwu_prop / load_gwu_prop (single precision round trip) ------------
+# TODO: the gwu format is single precision, so this check only pins ~1e-7; add a
+# double precision round trip once the stored precision can be selected.
 gwu_prop_path = "vec-props-tmp.gwu-prop"
 qc.save_gwu_prop(p_a, gwu_prop_path)
 p_gwu = q.Prop(geo)
@@ -246,6 +252,8 @@ p_noi = q.Prop(geo)
 qc.load_gwu_noiP(p_noi, gwu_noi_path)
 arr_a = np.asarray(p_a)[:, 0]
 arr_noi = np.asarray(p_noi)[:, 0]
+# TODO: update this reference (and regenerate the .log.json) if save_gwu_noiP
+# is changed to store a unit modulus phase.
 # The saved value is the raw prop(x)(0,0) element gated by the 1-norm of the
 # whole 12x12 matrix -- it is deliberately *not* normalised to a unit modulus
 # phase (see the KNOWN QUIRK note on save_gwu_noiP in utils_io_vec.h), so the
@@ -263,6 +271,8 @@ assert err_noi == 0.0, err_noi
 q.json_results_append("cqlat-vec-props: save/load_gwu_noiP max err", err_noi, 1e-12)
 
 # --- load_gwu_link ----------------------------------------------------------
+# TODO: use an exported save_gwu_link instead of building the file by hand below
+# (see the TODO on the load_gwu_link export in qlat/cqlat/vector_utils.cpp).
 # There is no exported gwu link writer, so build the file with numpy.  The
 # reader (read_kentucky_vector, Nvec = 4*9*2 = 72, gN = 18, dsize = 8) reads
 # 72 consecutive blocks of vol = prod(total_site) = 512 big-endian float64.
@@ -495,6 +505,9 @@ q.json_results_append("cqlat-vec-props: corr_dat_create size", size1, 1e-9)
 q.json_results_append("cqlat-vec-props: corr_dat_info size", size2, 1e-9)
 
 # --- save_qlat_prop / load_qlat_link ----------------------------------------
+# TODO: when the export is renamed to save_qlat_link (and save_qlat_prop /
+# load_qlat_prop are exported for Propagator4d), update this call and the
+# corresponding json entries.
 # save_qlat_prop is a misnomer: it forwards to save_qlat_link and writes a
 # gauge field (double precision, multiplicity 4), not a propagator.  The
 # matching propagate writes/reads (C++ save_qlat_prop / load_qlat_prop for
