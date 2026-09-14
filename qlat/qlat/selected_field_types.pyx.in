@@ -82,10 +82,6 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         that keeps self.fsel: it is meant to be filled later, e.g. with
         load_double / float_from_double (see examples-py selected-convert-io.py).
         Use SelectedField(fsel, multiplicity) to allocate the storage now.
-        #
-        TODO: consider rejecting (or at least warning about) a non-empty fsel
-        combined with multiplicity <= 0; see the SelectedField factory in
-        field_base.pyx.
         """
         self.init_from_fsel(*args)
 
@@ -93,8 +89,6 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         """
         multiplicity <= 0 (the default) leaves the field uninitialized while
         fsel is still stored; pass a positive multiplicity to allocate.
-        #
-        TODO: see the note in __init__ above.
         """
         self.fsel = fsel
         if multiplicity > 0 and self.fsel is not None:
