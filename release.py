@@ -44,6 +44,17 @@ import traceback
 # Global constant: path to the nix build result symlink
 RESULT_LINK = Path.home() / "qlat-build" / "nix" / "core" / "result-3"
 
+# Global constant: command that builds the core packages into RESULT_LINK
+BUILD_CORE_CMD = [
+    "./nixpkgs/build-many-qlat-pkgs.py",
+    "--group",
+    "core",
+    "-j",
+    "4",
+    "--cores",
+    "16",
+]
+
 def print_step(n: int, description: str) -> None:
     """Print step number and description for user feedback."""
     print(f"Step {n}: {description}")
@@ -121,10 +132,7 @@ def build_pull_loop() -> None:
         #
         # Step A: build
         try:
-            subprocess.run(
-                ["./nixpkgs/build-many-qlat-pkgs-core.sh", "-j", "4", "--cores", "16"],
-                check=True,
-            )
+            subprocess.run(BUILD_CORE_CMD, check=True)
         except subprocess.CalledProcessError:
             print("ERROR: Build script failed.")
             sys.exit(1)
@@ -338,7 +346,7 @@ def bump_version() -> None:
     v0.99 → v1.00, v1.99 → v2.00, etc.
         - ./VERSION file (format: vX.Y)
         - Source files via ./scripts/update-sources.sh
-        - version-pypi in nixpkgs/q-pkgs.nix (format: X.Y, no 'v' prefix)\n
+        - version-pypi in nixpkgs/options.nix (format: X.Y, no 'v' prefix)\n
     Exits with error if VERSION format is not recognized.
     """
     print_step(7, "Bump minor version, update sources and nix q-pkgs")
@@ -387,10 +395,7 @@ def verify_new_build() -> None:
     result_link = RESULT_LINK
     print_step(9, "Verify new build by rebuilding packages")
     mtime_before = result_link.lstat().st_mtime if result_link.exists() else 0
-    subprocess.run(
-        ["./nixpkgs/build-many-qlat-pkgs-core.sh", "-j", "4", "--cores", "16"],
-        check=True,
-    )
+    subprocess.run(BUILD_CORE_CMD, check=True)
     if not result_link.exists():
         print(f"ERROR: {result_link} does not exist after build.")
         sys.exit(1)
