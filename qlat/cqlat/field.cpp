@@ -227,55 +227,55 @@ EXPORT(set_mul_cfield_field, {
   return p_ret;
 })
 
-EXPORT(get_total_site_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_total_site_field_ctype, ctype, p_field);
-  return p_ret;
-})
+// EXPORT(get_total_site_field, {
+//   using namespace qlat;
+//   PyObject* p_field = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_field)) {
+//     return NULL;
+//   }
+//   const std::string ctype = py_get_ctype(p_field);
+//   PyObject* p_ret = NULL;
+//   FIELD_DISPATCH(p_ret, get_total_site_field_ctype, ctype, p_field);
+//   return p_ret;
+// })
 
-EXPORT(get_multiplicity_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, ctype, p_field);
-  return p_ret;
-})
+// EXPORT(get_multiplicity_field, {
+//   using namespace qlat;
+//   PyObject* p_field = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_field)) {
+//     return NULL;
+//   }
+//   const std::string ctype = py_get_ctype(p_field);
+//   PyObject* p_ret = NULL;
+//   FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, ctype, p_field);
+//   return p_ret;
+// })
 
-EXPORT(get_sizeof_m_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_sizeof_m_field_ctype, ctype, p_field);
-  return p_ret;
-})
+// EXPORT(get_sizeof_m_field, {
+//   using namespace qlat;
+//   PyObject* p_field = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_field)) {
+//     return NULL;
+//   }
+//   const std::string ctype = py_get_ctype(p_field);
+//   PyObject* p_ret = NULL;
+//   FIELD_DISPATCH(p_ret, get_sizeof_m_field_ctype, ctype, p_field);
+//   return p_ret;
+// })
 
-EXPORT(set_geo_field, {
-  using namespace qlat;
-  PyObject* p_geo = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  Geometry& geo = py_convert_type<Geometry>(p_geo);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_geo_field_ctype, ctype, geo, p_field);
-  return p_ret;
-})
+// EXPORT(set_geo_field, {
+//   using namespace qlat;
+//   PyObject* p_geo = NULL;
+//   PyObject* p_field = NULL;
+//   if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_field)) {
+//     return NULL;
+//   }
+//   const std::string ctype = py_get_ctype(p_field);
+//   Geometry& geo = py_convert_type<Geometry>(p_geo);
+//   PyObject* p_ret = NULL;
+//   FIELD_DISPATCH(p_ret, set_geo_field_ctype, ctype, geo, p_field);
+//   return p_ret;
+// })
 
 EXPORT(qnorm_field, {
   using namespace qlat;

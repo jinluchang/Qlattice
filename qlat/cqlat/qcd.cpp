@@ -87,16 +87,16 @@ EXPORT(set_g_rand_color_matrix_field, {
   Py_RETURN_NONE;
 })
 
-EXPORT(unitarize_color_matrix_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  Field<ColorMatrix>& field = py_convert_type<Field<ColorMatrix>>(p_field);
-  unitarize(field);
-  Py_RETURN_NONE;
-})
+// EXPORT(unitarize_color_matrix_field, {
+//   using namespace qlat;
+//   PyObject* p_field = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_field)) {
+//     return NULL;
+//   }
+//   Field<ColorMatrix>& field = py_convert_type<Field<ColorMatrix>>(p_field);
+//   unitarize(field);
+//   Py_RETURN_NONE;
+// })
 
 EXPORT(save_gauge_field, {
   using namespace qlat;
@@ -165,96 +165,96 @@ EXPORT(load_gauge_transform_cps, {
   return py_convert(ret);
 })
 
-EXPORT(apply_gt_gt, {
-  using namespace qlat;
-  PyObject* p_gt = NULL;
-  PyObject* p_gt1 = NULL;
-  PyObject* p_gt0 = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_gt, &p_gt1, &p_gt0)) {
-    return NULL;
-  }
-  // p_gt <- p_gt1 * p_gt0
-  GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
-  const GaugeTransform& gt1 = py_convert_type<GaugeTransform>(p_gt1);
-  const GaugeTransform& gt0 = py_convert_type<GaugeTransform>(p_gt0);
-  gt_apply_gauge_transformation(gt, gt0, gt1);
-  Py_RETURN_NONE;
-})
+// EXPORT(apply_gt_gt, {
+//   using namespace qlat;
+//   PyObject* p_gt = NULL;
+//   PyObject* p_gt1 = NULL;
+//   PyObject* p_gt0 = NULL;
+//   if (!PyArg_ParseTuple(args, "OOO", &p_gt, &p_gt1, &p_gt0)) {
+//     return NULL;
+//   }
+//   // p_gt <- p_gt1 * p_gt0
+//   GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+//   const GaugeTransform& gt1 = py_convert_type<GaugeTransform>(p_gt1);
+//   const GaugeTransform& gt0 = py_convert_type<GaugeTransform>(p_gt0);
+//   gt_apply_gauge_transformation(gt, gt0, gt1);
+//   Py_RETURN_NONE;
+// })
 
-EXPORT(apply_gt_gf, {
-  using namespace qlat;
-  PyObject* p_gf = NULL;
-  PyObject* p_gt = NULL;
-  PyObject* p_gf0 = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_gf, &p_gt, &p_gf0)) {
-    return NULL;
-  }
-  // p_gf <- p_gt * p_gf0
-  GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
-  const GaugeField& gf0 = py_convert_type<GaugeField>(p_gf0);
-  gf_apply_gauge_transformation(gf, gf0, gt);
-  Py_RETURN_NONE;
-})
+// EXPORT(apply_gt_gf, {
+//   using namespace qlat;
+//   PyObject* p_gf = NULL;
+//   PyObject* p_gt = NULL;
+//   PyObject* p_gf0 = NULL;
+//   if (!PyArg_ParseTuple(args, "OOO", &p_gf, &p_gt, &p_gf0)) {
+//     return NULL;
+//   }
+//   // p_gf <- p_gt * p_gf0
+//   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
+//   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+//   const GaugeField& gf0 = py_convert_type<GaugeField>(p_gf0);
+//   gf_apply_gauge_transformation(gf, gf0, gt);
+//   Py_RETURN_NONE;
+// })
 
-EXPORT(apply_gt_prop, {
-  using namespace qlat;
-  PyObject* p_prop = NULL;
-  PyObject* p_gt = NULL;
-  PyObject* p_prop0 = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_prop, &p_gt, &p_prop0)) {
-    return NULL;
-  }
-  // p_prop <- p_gt * p_prop0
-  Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
-  const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
-  const Propagator4d& prop0 = py_convert_type<Propagator4d>(p_prop0);
-  prop_apply_gauge_transformation(prop, prop0, gt);
-  Py_RETURN_NONE;
-})
+// EXPORT(apply_gt_prop, {
+//   using namespace qlat;
+//   PyObject* p_prop = NULL;
+//   PyObject* p_gt = NULL;
+//   PyObject* p_prop0 = NULL;
+//   if (!PyArg_ParseTuple(args, "OOO", &p_prop, &p_gt, &p_prop0)) {
+//     return NULL;
+//   }
+//   // p_prop <- p_gt * p_prop0
+//   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
+//   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+//   const Propagator4d& prop0 = py_convert_type<Propagator4d>(p_prop0);
+//   prop_apply_gauge_transformation(prop, prop0, gt);
+//   Py_RETURN_NONE;
+// })
 
-EXPORT(apply_gt_sprop, {
-  using namespace qlat;
-  PyObject* p_prop = NULL;
-  PyObject* p_gt = NULL;
-  PyObject* p_prop0 = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_prop, &p_gt, &p_prop0)) {
-    return NULL;
-  }
-  // p_prop <- p_gt * p_prop0
-  SelectedField<WilsonMatrix>& prop =
-      py_convert_type<SelectedField<WilsonMatrix>>(p_prop);
-  const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
-  const SelectedField<WilsonMatrix>& prop0 =
-      py_convert_type<SelectedField<WilsonMatrix>>(p_prop0);
-  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop0, "fsel");
-  QLAT_DIAGNOSTIC_POP;
-  prop_apply_gauge_transformation(prop, prop0, gt, fsel);
-  Py_RETURN_NONE;
-})
+// EXPORT(apply_gt_sprop, {
+//   using namespace qlat;
+//   PyObject* p_prop = NULL;
+//   PyObject* p_gt = NULL;
+//   PyObject* p_prop0 = NULL;
+//   if (!PyArg_ParseTuple(args, "OOO", &p_prop, &p_gt, &p_prop0)) {
+//     return NULL;
+//   }
+//   // p_prop <- p_gt * p_prop0
+//   SelectedField<WilsonMatrix>& prop =
+//       py_convert_type<SelectedField<WilsonMatrix>>(p_prop);
+//   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+//   const SelectedField<WilsonMatrix>& prop0 =
+//       py_convert_type<SelectedField<WilsonMatrix>>(p_prop0);
+//   QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
+//   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop0, "fsel");
+//   QLAT_DIAGNOSTIC_POP;
+//   prop_apply_gauge_transformation(prop, prop0, gt, fsel);
+//   Py_RETURN_NONE;
+// })
 
-EXPORT(apply_gt_psprop, {
-  using namespace qlat;
-  PyObject* p_prop = NULL;
-  PyObject* p_gt = NULL;
-  PyObject* p_prop0 = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_prop, &p_gt, &p_prop0)) {
-    return NULL;
-  }
-  // p_prop <- p_gt * p_prop0
-  SelectedPoints<WilsonMatrix>& prop =
-      py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop);
-  const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
-  const SelectedPoints<WilsonMatrix>& prop0 =
-      py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop0);
-  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
-  const PointsSelection& psel =
-      py_convert_type<PointsSelection>(p_prop0, "psel");
-  QLAT_DIAGNOSTIC_POP;
-  prop_apply_gauge_transformation(prop, prop0, gt, psel);
-  Py_RETURN_NONE;
-})
+// EXPORT(apply_gt_psprop, {
+//   using namespace qlat;
+//   PyObject* p_prop = NULL;
+//   PyObject* p_gt = NULL;
+//   PyObject* p_prop0 = NULL;
+//   if (!PyArg_ParseTuple(args, "OOO", &p_prop, &p_gt, &p_prop0)) {
+//     return NULL;
+//   }
+//   // p_prop <- p_gt * p_prop0
+//   SelectedPoints<WilsonMatrix>& prop =
+//       py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop);
+//   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+//   const SelectedPoints<WilsonMatrix>& prop0 =
+//       py_convert_type<SelectedPoints<WilsonMatrix>>(p_prop0);
+//   QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
+//   const PointsSelection& psel =
+//       py_convert_type<PointsSelection>(p_prop0, "psel");
+//   QLAT_DIAGNOSTIC_POP;
+//   prop_apply_gauge_transformation(prop, prop0, gt, psel);
+//   Py_RETURN_NONE;
+// })
 
 EXPORT(gt_invert, {
   using namespace qlat;

@@ -116,70 +116,70 @@ EXPORT(load_gwu_noiP, {
   Py_RETURN_NONE;
 })
 
-EXPORT(mk_output, {
-  using namespace qlat;
-  PyObject* p_0 = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_0)) {
-    return NULL;
-  }
+// EXPORT(mk_output, {
+//   using namespace qlat;
+//   PyObject* p_0 = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_0)) {
+//     return NULL;
+//   }
+// 
+//   std::vector<int> key_T;
+//   py_convert(key_T, p_0);
+//   long size = 1;
+//   for (unsigned int i = 0; i < key_T.size(); i++) {
+//     Int li = key_T[i];
+//     qassert(li > 0);
+//     size = size * li;
+//   }
+// 
+//   std::vector<RealD>* write = new std::vector<RealD>(size);
+//   return py_convert((void*)write);
+// })
 
-  std::vector<int> key_T;
-  py_convert(key_T, p_0);
-  long size = 1;
-  for (unsigned int i = 0; i < key_T.size(); i++) {
-    Int li = key_T[i];
-    qassert(li > 0);
-    size = size * li;
-  }
+// EXPORT(free_output, {
+//   using namespace qlat;
+//   PyObject* p_0 = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_0)) {
+//     return NULL;
+//   }
+//   std::vector<RealD>* write = (std::vector<RealD>*)PyLong_AsVoidPtr(p_0);
+//   delete write;
+//   Py_RETURN_NONE;
+// })
 
-  std::vector<RealD>* write = new std::vector<RealD>(size);
-  return py_convert((void*)write);
-})
+// EXPORT(clear_output, {
+//   using namespace qlat;
+//   PyObject* p_0 = NULL;
+//   if (!PyArg_ParseTuple(args, "O", &p_0)) {
+//     return NULL;
+//   }
+// 
+//   std::vector<RealD>& write = *((std::vector<RealD>*)PyLong_AsVoidPtr(p_0));
+//   qmessage("size of write %d \n", int(write.size()));
+//   for (unsigned int i = 0; i < write.size(); i++) {
+//     write[i] = 0;
+//   }
+// 
+//   Py_RETURN_NONE;
+// })
 
-EXPORT(free_output, {
-  using namespace qlat;
-  PyObject* p_0 = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_0)) {
-    return NULL;
-  }
-  std::vector<RealD>* write = (std::vector<RealD>*)PyLong_AsVoidPtr(p_0);
-  delete write;
-  Py_RETURN_NONE;
-})
-
-EXPORT(clear_output, {
-  using namespace qlat;
-  PyObject* p_0 = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_0)) {
-    return NULL;
-  }
-
-  std::vector<RealD>& write = *((std::vector<RealD>*)PyLong_AsVoidPtr(p_0));
-  qmessage("size of write %d \n", int(write.size()));
-  for (unsigned int i = 0; i < write.size(); i++) {
-    write[i] = 0;
-  }
-
-  Py_RETURN_NONE;
-})
-
-EXPORT(write_output, {
-  using namespace qlat;
-  PyObject* p_0 = NULL;
-  PyObject* p_1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_0, &p_1)) {
-    return NULL;
-  }
-
-  std::vector<RealD>& write = *((std::vector<RealD>*)PyLong_AsVoidPtr(p_0));
-
-  std::string output;
-  py_convert(output, p_1);
-
-  write_data(write, output.c_str());
-
-  Py_RETURN_NONE;
-})
+// EXPORT(write_output, {
+//   using namespace qlat;
+//   PyObject* p_0 = NULL;
+//   PyObject* p_1 = NULL;
+//   if (!PyArg_ParseTuple(args, "OO", &p_0, &p_1)) {
+//     return NULL;
+//   }
+// 
+//   std::vector<RealD>& write = *((std::vector<RealD>*)PyLong_AsVoidPtr(p_0));
+// 
+//   std::string output;
+//   py_convert(output, p_1);
+// 
+//   write_data(write, output.c_str());
+// 
+//   Py_RETURN_NONE;
+// })
 
 EXPORT(make_point_prop, {
   using namespace qlat;
@@ -272,36 +272,36 @@ EXPORT(meson_corr, {
   Py_RETURN_NONE;
 })
 
-EXPORT(prop_corr, {
-  using namespace qlat;
-  PyObject* p_v0 = NULL;
-  PyObject* p_v2 = NULL;
-  PyObject* p_v4 = NULL;
-  PyObject* p_v3 = NULL;
-
-  Int tini = 0;
-  Int shift_end = 1;
-  if (!PyArg_ParseTuple(args, "OO|iOiO", &p_v0, &p_v2, &tini, &p_v4, &shift_end,
-                        &p_v3)) {
-    return NULL;
-  }
-
-  Propagator4d& p0 = py_convert_type<Propagator4d>(p_v0);
-  std::string filename;
-  std::string info = std::string("NONE");
-  py_convert(filename, p_v2);
-
-  Coordinate mom = Coordinate(0, 0, 0, 0);
-  if (p_v3 != NULL) {
-    py_convert(mom, p_v3);
-  }
-  if (p_v4 != NULL) {
-    py_convert(info, p_v4);
-  }
-
-  prop_corrE(p0, filename, mom, tini, info, shift_end);
-  Py_RETURN_NONE;
-})
+// EXPORT(prop_corr, {
+//   using namespace qlat;
+//   PyObject* p_v0 = NULL;
+//   PyObject* p_v2 = NULL;
+//   PyObject* p_v4 = NULL;
+//   PyObject* p_v3 = NULL;
+// 
+//   Int tini = 0;
+//   Int shift_end = 1;
+//   if (!PyArg_ParseTuple(args, "OO|iOiO", &p_v0, &p_v2, &tini, &p_v4, &shift_end,
+//                         &p_v3)) {
+//     return NULL;
+//   }
+// 
+//   Propagator4d& p0 = py_convert_type<Propagator4d>(p_v0);
+//   std::string filename;
+//   std::string info = std::string("NONE");
+//   py_convert(filename, p_v2);
+// 
+//   Coordinate mom = Coordinate(0, 0, 0, 0);
+//   if (p_v3 != NULL) {
+//     py_convert(mom, p_v3);
+//   }
+//   if (p_v4 != NULL) {
+//     py_convert(info, p_v4);
+//   }
+// 
+//   prop_corrE(p0, filename, mom, tini, info, shift_end);
+//   Py_RETURN_NONE;
+// })
 
 EXPORT(corr_dat_create, {
   using namespace qlat;
