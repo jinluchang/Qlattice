@@ -12,7 +12,7 @@ EXPORT(get_gm_force_magnitudes, {
   return py_convert(ret);
 })
 
-EXPORT(display_gm_force_magnitudes, {
+EXPORT(display_gm_force_magnitudes, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_gm_force = NULL;
   Int n_elems = 0;
@@ -24,7 +24,7 @@ EXPORT(display_gm_force_magnitudes, {
   Py_RETURN_NONE;
 })
 
-EXPORT(save_gm_force_magnitudes_list, {
+EXPORT(save_gm_force_magnitudes_list, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_fn = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fn)) {
@@ -36,7 +36,7 @@ EXPORT(save_gm_force_magnitudes_list, {
   Py_RETURN_NONE;
 })
 
-EXPORT(display_gauge_field_info_table_with_wilson_flow, {
+EXPORT(display_gauge_field_info_table_with_wilson_flow, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_fn_gf_info = NULL;
   PyObject* p_fn_wilson_flow_energy = NULL;

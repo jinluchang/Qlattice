@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(set_rand_gauge_momentum, {
+EXPORT(set_rand_gauge_momentum, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_gm = NULL;
   RealD sigma = 1.0;
@@ -14,7 +14,7 @@ EXPORT(set_rand_gauge_momentum, {
   Py_RETURN_NONE;
 })
 
-EXPORT(gm_hamilton_node, {
+EXPORT(gm_hamilton_node, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_gm = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_gm)) {
@@ -25,7 +25,7 @@ EXPORT(gm_hamilton_node, {
   return py_convert(ret);
 })
 
-EXPORT(gf_hamilton_node, {
+EXPORT(gf_hamilton_node, {  // tested: hmc-pure-gauge-symmetric
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_ga = NULL;
@@ -38,7 +38,7 @@ EXPORT(gf_hamilton_node, {
   return py_convert(ret);
 })
 
-EXPORT(gf_evolve, {
+EXPORT(gf_evolve, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_gm = NULL;
@@ -52,7 +52,7 @@ EXPORT(gf_evolve, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_gm_force, {
+EXPORT(set_gm_force, {  // tested: gf-utils
   using namespace qlat;
   PyObject* p_gm_force = NULL;
   PyObject* p_gf = NULL;

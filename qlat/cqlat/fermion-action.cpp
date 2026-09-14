@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(mk_fermion_action_mobius, {
+EXPORT(mk_fermion_action_mobius, {  // tested: free-invert
   using namespace qlat;
   RealD mass = 0.0;
   Int ls = 0;
@@ -14,7 +14,7 @@ EXPORT(mk_fermion_action_mobius, {
   return py_convert((void*)pfa);
 })
 
-EXPORT(mk_fermion_action_zmobius, {
+EXPORT(mk_fermion_action_zmobius, {  // tested: free-invert
   using namespace qlat;
   RealD mass = 0.0;
   RealD m5 = 0.0;
@@ -46,7 +46,7 @@ EXPORT(set_fermion_action, {
   return set_obj<FermionAction>(args);
 })
 
-EXPORT(get_mass_fermion_action, {
+EXPORT(get_mass_fermion_action, {  // tested: free-invert
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -66,7 +66,7 @@ EXPORT(get_ls_fermion_action, {
   return py_convert(fa.ls);
 })
 
-EXPORT(get_m5_fermion_action, {
+EXPORT(get_m5_fermion_action, {  // tested: free-invert
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {

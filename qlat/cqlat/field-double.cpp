@@ -93,7 +93,7 @@ EXPORT(set_checkers_double_field, {
   return p_ret;
 })
 
-EXPORT(set_complex_from_double_field, {
+EXPORT(set_complex_from_double_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_sf = NULL;
@@ -107,7 +107,7 @@ EXPORT(set_complex_from_double_field, {
   return p_ret;
 })
 
-EXPORT(set_double_from_complex_field, {
+EXPORT(set_double_from_complex_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_cf = NULL;
@@ -121,7 +121,7 @@ EXPORT(set_double_from_complex_field, {
   return p_ret;
 })
 
-EXPORT(set_abs_from_complex_field, {
+EXPORT(set_abs_from_complex_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_cf = NULL;
@@ -134,7 +134,7 @@ EXPORT(set_abs_from_complex_field, {
   return p_ret;
 })
 
-EXPORT(set_ratio_double_field, {
+EXPORT(set_ratio_double_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_sf1 = NULL;
@@ -149,7 +149,7 @@ EXPORT(set_ratio_double_field, {
   return p_ret;
 })
 
-EXPORT(less_than_double_field, {
+EXPORT(less_than_double_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sf1 = NULL;
   PyObject* p_sf2 = NULL;

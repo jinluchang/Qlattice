@@ -282,7 +282,7 @@ EXPORT(refresh_expanded_1_field, {
   return p_ret;
 })
 
-EXPORT(set_phase_field, {
+EXPORT(set_phase_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_lmom = NULL;
@@ -295,7 +295,7 @@ EXPORT(set_phase_field, {
   Py_RETURN_NONE;
 })
 
-EXPORT(assign_as_field, {
+EXPORT(assign_as_field, {  // tested: field-utils
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field1 = NULL;
@@ -327,7 +327,7 @@ EXPORT(assign_as_field, {
   return p_ret;
 })
 
-EXPORT(assign_from_field, {
+EXPORT(assign_from_field, {  // tested: field-utils
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field1 = NULL;
@@ -359,7 +359,7 @@ EXPORT(assign_from_field, {
   return p_ret;
 })
 
-EXPORT(fft_fields, {
+EXPORT(fft_fields, {  // tested: field-utils
   // forward compute
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
@@ -403,7 +403,7 @@ EXPORT(reflect_field, {
   return p_ret;
 })
 
-EXPORT(split_fields_field, {
+EXPORT(split_fields_field, {  // tested: gpt-qlat-mdwf
   using namespace qlat;
   PyObject* p_field_vec = NULL;
   PyObject* p_field = NULL;
@@ -418,7 +418,7 @@ EXPORT(split_fields_field, {
   return p_ret;
 })
 
-EXPORT(merge_fields_field, {
+EXPORT(merge_fields_field, {  // tested: gpt-qlat-mdwf
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field_vec = NULL;

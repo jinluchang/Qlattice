@@ -323,7 +323,7 @@ EXPORT(set_add_sfield, {
   return p_ret;
 })
 
-EXPORT(set_sub_sfield, {
+EXPORT(set_sub_sfield, {  // tested: set-rand
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -368,7 +368,7 @@ EXPORT(acc_field_sfield, {
   return p_ret;
 })
 
-EXPORT(glb_sum_tslice_double_sfield, {
+EXPORT(glb_sum_tslice_double_sfield, {  // tested: field-utils
   using namespace qlat;
   PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;
@@ -406,7 +406,7 @@ EXPORT(glb_sum_tslice_long_sfield, {
   return p_ret;
 })
 
-EXPORT(convert_float_from_double_sfield, {
+EXPORT(convert_float_from_double_sfield, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -420,7 +420,7 @@ EXPORT(convert_float_from_double_sfield, {
   return p_ret;
 })
 
-EXPORT(convert_double_from_float_sfield, {
+EXPORT(convert_double_from_float_sfield, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -434,7 +434,7 @@ EXPORT(convert_double_from_float_sfield, {
   return p_ret;
 })
 
-EXPORT(to_from_endianness_sfield, {
+EXPORT(to_from_endianness_sfield, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_endianness_tag = NULL;

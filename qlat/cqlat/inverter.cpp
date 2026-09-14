@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(mk_inverter_domain_wall, {
+EXPORT(mk_inverter_domain_wall, {  // tested: free-invert
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_fa = NULL;
@@ -20,7 +20,7 @@ EXPORT(free_inverter_domain_wall, {
   return free_obj<InverterDomainWall>(args);
 })
 
-EXPORT(invert_inverter_domain_wall, {
+EXPORT(invert_inverter_domain_wall, {  // tested: free-invert
   using namespace qlat;
   PyObject* p_prop_sol = NULL;
   PyObject* p_prop_src = NULL;

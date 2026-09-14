@@ -2,7 +2,7 @@
 
 #include "lib.h"
 
-EXPORT(mk_flow_info, {
+EXPORT(mk_flow_info, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   FlowInfo* pfi = new FlowInfo();
   return py_convert((void*)pfi);
@@ -19,7 +19,7 @@ EXPORT(free_flow_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(show_flow_info, {
+EXPORT(show_flow_info, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_fi = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fi)) {
@@ -45,7 +45,7 @@ EXPORT(add_flow_flow_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(add_rand_order_flow2_flow_info, {
+EXPORT(add_rand_order_flow2_flow_info, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_fi = NULL;
   PyObject* p_rs = NULL;
@@ -60,7 +60,7 @@ EXPORT(add_rand_order_flow2_flow_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(add_rand_order_flow_flow_info, {
+EXPORT(add_rand_order_flow_flow_info, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_fi = NULL;
   PyObject* p_rs = NULL;
@@ -74,7 +74,7 @@ EXPORT(add_rand_order_flow_flow_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(gf_flow, {
+EXPORT(gf_flow, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_gf0 = NULL;
@@ -89,7 +89,7 @@ EXPORT(gf_flow, {
   Py_RETURN_NONE;
 })
 
-EXPORT(gf_flow_inv, {
+EXPORT(gf_flow_inv, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_gf1 = NULL;
@@ -104,7 +104,7 @@ EXPORT(gf_flow_inv, {
   Py_RETURN_NONE;
 })
 
-EXPORT(gf_hamilton_flowed_node, {
+EXPORT(gf_hamilton_flowed_node, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_gf0 = NULL;
   PyObject* p_ga = NULL;
@@ -119,7 +119,7 @@ EXPORT(gf_hamilton_flowed_node, {
   return py_convert(ret);
 })
 
-EXPORT(set_gm_force_flowed, {
+EXPORT(set_gm_force_flowed, {  // tested: hmc-pure-gauge-flowed
   using namespace qlat;
   PyObject* p_gm_force = NULL;
   PyObject* p_gf0 = NULL;

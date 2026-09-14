@@ -83,7 +83,7 @@ EXPORT(set_rand_u1_sol_fsel, {
   Py_RETURN_NONE;
 })
 
-EXPORT(convert_wm_from_mspincolor_prop, {
+EXPORT(convert_wm_from_mspincolor_prop, {  // tested: selected-field
   using namespace qlat;
   PyObject* p_prop_wm = NULL;
   PyObject* p_prop_msc = NULL;
@@ -96,7 +96,7 @@ EXPORT(convert_wm_from_mspincolor_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(convert_mspincolor_from_wm_prop, {
+EXPORT(convert_mspincolor_from_wm_prop, {  // tested: selected-field
   using namespace qlat;
   PyObject* p_prop_msc = NULL;
   PyObject* p_prop_wm = NULL;
@@ -109,7 +109,7 @@ EXPORT(convert_mspincolor_from_wm_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(convert_wm_from_mspincolor_sp_prop, {
+EXPORT(convert_wm_from_mspincolor_sp_prop, {  // tested: selected-field
   using namespace qlat;
   PyObject* p_prop_wm = NULL;
   PyObject* p_prop_msc = NULL;
@@ -124,7 +124,7 @@ EXPORT(convert_wm_from_mspincolor_sp_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(convert_mspincolor_from_wm_sp_prop, {
+EXPORT(convert_mspincolor_from_wm_sp_prop, {  // tested: selected-field
   using namespace qlat;
   PyObject* p_prop_msc = NULL;
   PyObject* p_prop_wm = NULL;
@@ -139,7 +139,7 @@ EXPORT(convert_mspincolor_from_wm_sp_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(convert_wm_from_mspincolor_s_prop, {
+EXPORT(convert_wm_from_mspincolor_s_prop, {  // tested: selected-field
   using namespace qlat;
   PyObject* p_prop_wm = NULL;
   PyObject* p_prop_msc = NULL;
@@ -154,7 +154,7 @@ EXPORT(convert_wm_from_mspincolor_s_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(convert_mspincolor_from_wm_s_prop, {
+EXPORT(convert_mspincolor_from_wm_s_prop, {  // tested: selected-field
   using namespace qlat;
   PyObject* p_prop_msc = NULL;
   PyObject* p_prop_wm = NULL;

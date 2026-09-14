@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(gf_show_info, {
+EXPORT(gf_show_info, {  // tested: make-sample-gauge-field
   using namespace qlat;
   PyObject* p_gf = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_gf)) {
@@ -11,7 +11,7 @@ EXPORT(gf_show_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(gf_avg_plaq, {
+EXPORT(gf_avg_plaq, {  // tested: gf-utils
   using namespace qlat;
   PyObject* p_gf = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_gf)) {
@@ -22,7 +22,7 @@ EXPORT(gf_avg_plaq, {
   return py_convert(ret);
 })
 
-EXPORT(gf_avg_link_trace, {
+EXPORT(gf_avg_link_trace, {  // tested: gf-utils
   using namespace qlat;
   PyObject* p_gf = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_gf)) {
@@ -33,7 +33,7 @@ EXPORT(gf_avg_link_trace, {
   return py_convert(ret);
 })
 
-EXPORT(gf_avg_wilson_loop_normalized_tr, {
+EXPORT(gf_avg_wilson_loop_normalized_tr, {  // tested: hmc-pure-gauge-test
   using namespace qlat;
   PyObject* p_gf = NULL;
   Int l = 0;
@@ -72,7 +72,7 @@ EXPORT(gf_wilson_line_no_comm, {
   Py_RETURN_NONE;
 })
 
-EXPORT(set_g_rand_color_matrix_field, {
+EXPORT(set_g_rand_color_matrix_field, {  // tested: hmc-pure-gauge-flowed-test
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_rng = NULL;
@@ -87,7 +87,7 @@ EXPORT(set_g_rand_color_matrix_field, {
   Py_RETURN_NONE;
 })
 
-EXPORT(save_gauge_field, {
+EXPORT(save_gauge_field, {  // tested: make-sample-gauge-field
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_path = NULL;
@@ -101,7 +101,7 @@ EXPORT(save_gauge_field, {
   return py_convert(ret);
 })
 
-EXPORT(load_gauge_field, {
+EXPORT(load_gauge_field, {  // tested: make-sample-gauge-field
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_path = NULL;

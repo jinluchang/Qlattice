@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(contract_pion_field, {
+EXPORT(contract_pion_field, {  // tested: gpt-qlat-mdwf
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_prop = NULL;

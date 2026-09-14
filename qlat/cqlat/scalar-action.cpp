@@ -1,6 +1,6 @@
 #include "lib.h"
 
-EXPORT(mk_scalar_action, {
+EXPORT(mk_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   RealD m_sq = 1.0;
   RealD lmbd = 1.0;
@@ -52,7 +52,7 @@ EXPORT(get_alpha_scalar_action, {
   return py_convert(sa.alpha);
 })
 
-EXPORT(action_node_scalar_action, {
+EXPORT(action_node_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sf = NULL;
@@ -99,7 +99,7 @@ EXPORT(to_mass_factor_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(hmc_m_hamilton_node_scalar_action, {
+EXPORT(hmc_m_hamilton_node_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sm = NULL;
@@ -114,7 +114,7 @@ EXPORT(hmc_m_hamilton_node_scalar_action, {
   return py_convert(ret);
 })
 
-EXPORT(hmc_set_force_scalar_action, {
+EXPORT(hmc_set_force_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sm_force = NULL;
@@ -129,7 +129,7 @@ EXPORT(hmc_set_force_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(hmc_field_evolve_scalar_action, {
+EXPORT(hmc_field_evolve_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sf = NULL;
@@ -148,7 +148,7 @@ EXPORT(hmc_field_evolve_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(axial_current_node_scalar_action, {
+EXPORT(axial_current_node_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_axial_cur = NULL;
@@ -163,7 +163,7 @@ EXPORT(axial_current_node_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(sum_sq_scalar_action, {
+EXPORT(sum_sq_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_f = NULL;
@@ -176,7 +176,7 @@ EXPORT(sum_sq_scalar_action, {
   return py_convert(ret);
 })
 
-EXPORT(hmc_set_rand_momentum_scalar_action, {
+EXPORT(hmc_set_rand_momentum_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sm = NULL;
@@ -193,7 +193,7 @@ EXPORT(hmc_set_rand_momentum_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(hmc_predict_field_scalar_action, {
+EXPORT(hmc_predict_field_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sf_ft = NULL;
@@ -212,7 +212,7 @@ EXPORT(hmc_predict_field_scalar_action, {
   Py_RETURN_NONE;
 })
 
-EXPORT(get_polar_field_scalar_action, {
+EXPORT(get_polar_field_scalar_action, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_pf = NULL;

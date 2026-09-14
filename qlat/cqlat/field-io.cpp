@@ -96,7 +96,7 @@ EXPORT(load_field, {
   return p_ret;
 })
 
-EXPORT(convert_float_from_double_field, {
+EXPORT(convert_float_from_double_field, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -111,7 +111,7 @@ EXPORT(convert_float_from_double_field, {
   return p_ret;
 })
 
-EXPORT(convert_double_from_float_field, {
+EXPORT(convert_double_from_float_field, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -126,7 +126,7 @@ EXPORT(convert_double_from_float_field, {
   return p_ret;
 })
 
-EXPORT(to_from_endianness_field, {
+EXPORT(to_from_endianness_field, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_endianness_tag = NULL;

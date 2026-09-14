@@ -151,7 +151,7 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
 
 }  // namespace qlat
 
-EXPORT(set_add_field, {
+EXPORT(set_add_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -165,7 +165,7 @@ EXPORT(set_add_field, {
   return p_ret;
 })
 
-EXPORT(set_sub_field, {
+EXPORT(set_sub_field, {  // tested: free-invert
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -179,7 +179,7 @@ EXPORT(set_sub_field, {
   return p_ret;
 })
 
-EXPORT(set_mul_double_field, {
+EXPORT(set_mul_double_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   RealD factor = 0.0;
@@ -205,7 +205,7 @@ EXPORT(set_mul_complex_field, {
   return p_ret;
 })
 
-EXPORT(set_mul_cfield_field, {
+EXPORT(set_mul_cfield_field, {  // tested: hmc-pions
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_cfield = NULL;
@@ -227,7 +227,7 @@ EXPORT(set_mul_cfield_field, {
   return p_ret;
 })
 
-EXPORT(qnorm_field, {
+EXPORT(qnorm_field, {  // tested: set-rand
   using namespace qlat;
   PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
@@ -239,7 +239,7 @@ EXPORT(qnorm_field, {
   return p_ret;
 })
 
-EXPORT(crc32_field, {
+EXPORT(crc32_field, {  // tested: fields-io
   using namespace qlat;
   PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
