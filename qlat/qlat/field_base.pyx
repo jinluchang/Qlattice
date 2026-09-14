@@ -73,12 +73,23 @@ def Field(type ctype, Geometry geo=None, int multiplicity=0):
     return field
 
 def SelectedField(type ctype, FieldSelection fsel, int multiplicity=0):
+    """
+    SelectedField(ctype, fsel) with the default multiplicity == 0 creates an
+    *empty*, uninitialized field that keeps fsel: it is meant to be filled
+    later, e.g. with load_double / float_from_double (see examples-py
+    selected-convert-io.py).  Pass a positive multiplicity to allocate now.
+    """
     assert ctype in field_type_dict
     FieldType = selected_field_type_dict[ctype]
     field = FieldType(fsel, multiplicity)
     return field
 
 def SelectedPoints(type ctype, PointsSelection psel, int multiplicity=0):
+    """
+    SelectedPoints(ctype, psel) with the default multiplicity == 0 creates an
+    *empty*, uninitialized field that keeps psel; pass a positive multiplicity
+    to allocate now.
+    """
     assert ctype in field_type_dict
     FieldType = selected_points_type_dict[ctype]
     field = FieldType(psel, multiplicity)
@@ -199,7 +210,7 @@ cdef class FieldBase:
                 c.acc_field_sfield(self, f1)
             elif isinstance(f1, SelectedPointsBase):
                 assert f1.ctype is self.ctype
-                c.acc_field_spfield(self, f1)
+                c.acc_field_spfield(self, f1, f1.psel.geo, f1.psel)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
         return self
@@ -221,10 +232,9 @@ cdef class FieldBase:
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1.0
-                c.acc_field_spfield(self, f1n)
+                c.acc_field_spfield(self, f1n, f1n.psel.geo, f1n.psel)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
-            assert False
         return self
 
     def __imul__(self, factor):
@@ -234,7 +244,16 @@ cdef class FieldBase:
         if isinstance(factor, (int, float,)):
             self._cc_imul_double(float(factor))
         elif isinstance(factor, complex):
-            self._cc_imul_complex(factor)
+            if self.ctype in field_ctypes_complex:
+                self._cc_imul_complex(factor)
+            elif factor.imag == 0.0:
+                # a real valued factor is well defined for any ctype
+                self._cc_imul_double(float(factor.real))
+            else:
+                raise ValueError(
+                        f"Field.__imul__: cannot multiply {self.ctype}"
+                        f" by the complex factor {factor}"
+                        )
         elif isinstance(factor, FieldBase):
             assert factor.ctype in [ ElemTypeComplexD, ElemTypeRealD, ]
             if factor.ctype is ElemTypeComplexD:

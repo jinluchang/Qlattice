@@ -114,6 +114,7 @@ __all__ += [
 
 __all__ += [
         'field_expanded',
+        'CommMarks',
         'refresh_expanded',
         'refresh_expanded_1',
         'CommPlan',

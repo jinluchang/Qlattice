@@ -4,7 +4,7 @@
 
 #include "lib.h"
 
-EXPORT(diff_gauge, {
+EXPORT(diff_gauge, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p0 = NULL;
   PyObject* p1 = NULL;
@@ -17,7 +17,7 @@ EXPORT(diff_gauge, {
   Py_RETURN_NONE;
 })
 
-EXPORT(load_gwu_link, {
+EXPORT(load_gwu_link, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;
@@ -31,7 +31,7 @@ EXPORT(load_gwu_link, {
   Py_RETURN_NONE;
 })
 
-EXPORT(save_gwu_prop, {
+EXPORT(save_gwu_prop, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;
@@ -45,7 +45,7 @@ EXPORT(save_gwu_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(load_gwu_prop, {
+EXPORT(load_gwu_prop, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;
@@ -59,7 +59,7 @@ EXPORT(load_gwu_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(save_gwu_noiP, {
+EXPORT(save_gwu_noiP, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;
@@ -73,7 +73,7 @@ EXPORT(save_gwu_noiP, {
   Py_RETURN_NONE;
 })
 
-EXPORT(diff_prop, {
+EXPORT(diff_prop, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_0 = NULL;
   PyObject* p_1 = NULL;
@@ -86,7 +86,7 @@ EXPORT(diff_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(random_point_src, {
+EXPORT(random_point_src, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_prop = NULL;
   PyObject* p_seed = NULL;
@@ -102,7 +102,7 @@ EXPORT(random_point_src, {
   Py_RETURN_NONE;
 })
 
-EXPORT(load_gwu_noiP, {
+EXPORT(load_gwu_noiP, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;
@@ -116,7 +116,7 @@ EXPORT(load_gwu_noiP, {
   Py_RETURN_NONE;
 })
 
-EXPORT(make_point_prop, {
+EXPORT(make_point_prop, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
@@ -131,7 +131,7 @@ EXPORT(make_point_prop, {
   Py_RETURN_NONE;
 })
 
-EXPORT(make_volume_src, {
+EXPORT(make_volume_src, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   Int seed = 0;
@@ -148,7 +148,7 @@ EXPORT(make_volume_src, {
   Py_RETURN_NONE;
 })
 
-EXPORT(local_sequential_source, {
+EXPORT(local_sequential_source, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
@@ -171,7 +171,7 @@ EXPORT(local_sequential_source, {
   Py_RETURN_NONE;
 })
 
-EXPORT(meson_corr, {
+EXPORT(meson_corr, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
@@ -207,7 +207,7 @@ EXPORT(meson_corr, {
   Py_RETURN_NONE;
 })
 
-EXPORT(corr_dat_create, {
+EXPORT(corr_dat_create, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
@@ -234,7 +234,7 @@ EXPORT(corr_dat_create, {
   Py_RETURN_NONE;
 })
 
-EXPORT(corr_dat_info, {
+EXPORT(corr_dat_info, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   PyObject* p_v1 = NULL;
@@ -253,7 +253,7 @@ EXPORT(corr_dat_info, {
   Py_RETURN_NONE;
 })
 
-EXPORT(prop4d_conj, {
+EXPORT(prop4d_conj, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   Int rotate = 1;
@@ -265,7 +265,7 @@ EXPORT(prop4d_conj, {
   Py_RETURN_NONE;
 })
 
-EXPORT(prop4d_src_gamma, {
+EXPORT(prop4d_src_gamma, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   Int g0 = 0;
@@ -306,7 +306,7 @@ EXPORT(prop4d_src_gamma, {
   Py_RETURN_NONE;
 })
 
-EXPORT(prop4d_sink_gamma, {
+EXPORT(prop4d_sink_gamma, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_v0 = NULL;
   Int g0 = 0;
@@ -347,7 +347,7 @@ EXPORT(prop4d_sink_gamma, {
   Py_RETURN_NONE;
 })
 
-EXPORT(load_qlat_link, {
+EXPORT(load_qlat_link, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;
@@ -361,7 +361,14 @@ EXPORT(load_qlat_link, {
   Py_RETURN_NONE;
 })
 
-EXPORT(save_qlat_prop, {
+// KNOWN MISNOMER (kept unchanged for compatibility, see git history and
+// examples-py cqlat-vec-props.py which pins the current behavior):
+// save_qlat_prop takes a GaugeField and writes a *link* file via
+// save_qlat_link (the counterpart of the load_qlat_link export).  The C++
+// Propagator4d overloads save_qlat_prop / load_qlat_prop (utils_io_vec.h) are
+// not exported, so there is currently no cqlat binding to write a Propagator
+// with the qlat format.
+EXPORT(save_qlat_prop, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;

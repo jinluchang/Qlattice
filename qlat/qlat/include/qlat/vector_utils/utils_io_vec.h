@@ -1668,6 +1668,12 @@ void load_gwu_prop(const char* filename,
 
 template <typename Td>
 void save_gwu_prop(const char* filename, Propagator4dT<Td>& prop)
+// The gwu propagator file format stores single precision (RealF/ComplexT<RealF>)
+// values, whatever the precision of ``prop``: the writer goes through
+// load_gwu_prop(..., read=false) whose ``single`` argument defaults to true, and
+// the reader keys the record size off sizeof(RealF).  A save/load round trip is
+// therefore only accurate to about 1e-7 relative (see examples-py
+// cqlat-vec-props.py, which pins err < 1e-5).
 {
   Qassert(prop.initialized);
   // gwu prop no checksum
@@ -1971,6 +1977,15 @@ void save_gwu_noi(const char* filename, qlat::FieldM<Ty, 1>& noi)
 
 template <typename Td>
 void save_gwu_noiP(const char* filename, Propagator4dT<Td>& prop)
+// KNOWN QUIRK (kept unchanged, see examples-py cqlat-vec-props.py which pins
+// the current behavior): the saved "noise" is the raw prop(x)(0,0) matrix
+// element, not a unit modulus phase (the variable is named phase and the
+// "1.0 *" factor looks like a placeholder for a normalisation).  The gate uses
+// the 1-norm of the whole 12x12 matrix, so a site whose matrix has a large
+// norm but prop(x)(0,0) == 0 stores 0, while a site with norm <= 1e-8 stores 0
+// even if prop(x)(0,0) != 0.  load_gwu_noiP only rebuilds diag(noi), so the
+// save/load pair is self consistent, but external readers that expect a unit
+// modulus noise vector would need |noi| == 1.
 {
   qlat::FieldM<qlat::ComplexD, 1> noi;
   noi.init(prop.geo());

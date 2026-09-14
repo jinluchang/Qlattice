@@ -1,6 +1,11 @@
 #include "lib.h"
 
-EXPORT(cbegin, {
+// Low level qlat bootstrap: initialize qlat (and MPI, unless an id_node and a
+// size_node are given) and hand the process over to qlat.  q.begin_with_mpi
+// does NOT use this entry point (it goes through the mpi4py communicator), so
+// this is only for callers that manage MPI themselves; covered by
+// examples-py/cqlat-begin-end.py.
+EXPORT(cbegin, {  // tested: cqlat-begin-end
   // id_node, size_node, color = 0
   // sys.argv, node_size_list = []
   using namespace qlat;
@@ -51,7 +56,8 @@ EXPORT(cbegin, {
   Py_RETURN_NONE;
 })
 
-EXPORT(cend, {
+// Low level counterpart of cbegin; q.end_with_mpi does NOT use it.
+EXPORT(cend, {  // tested: cqlat-begin-end
   using namespace qlat;
   bool is_preserving_cache = false;
   if (!PyArg_ParseTuple(args, "|b", &is_preserving_cache)) {

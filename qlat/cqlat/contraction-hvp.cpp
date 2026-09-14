@@ -1,14 +1,18 @@
 #include "lib.h"
 
-EXPORT(contract_chvp3_sfield, {
+EXPORT(contract_chvp3_sfield, {  // tested: cqlat-contraction
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_prop1 = NULL;
   PyObject* p_prop2 = NULL;
+  // Long is parsed with "L" (a C long is only 32-bit on LLP64 platforms);
+  // contract_chvp3 takes an Int, so reject out of range values instead of
+  // silently truncating them
   Long tslice_src = -1;
-  if (!PyArg_ParseTuple(args, "OOOi", &p_ld, &p_prop1, &p_prop2, &tslice_src)) {
+  if (!PyArg_ParseTuple(args, "OOOL", &p_ld, &p_prop1, &p_prop2, &tslice_src)) {
     return NULL;
   }
+  qassert((Long)(Int)tslice_src == tslice_src);
   LatData& ld = py_convert_type<LatData>(p_ld);
   const SelProp& prop1 = py_convert_type<SelProp>(p_prop1);
   const SelProp& prop2 = py_convert_type<SelProp>(p_prop2);

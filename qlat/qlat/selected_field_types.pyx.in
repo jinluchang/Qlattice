@@ -77,10 +77,19 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
         SelectedField()
         SelectedField(fsel)
         SelectedField(fsel, multiplicity)
+        #
+        SelectedField(fsel) (no multiplicity) is an *empty*, uninitialized field
+        that keeps self.fsel: it is meant to be filled later, e.g. with
+        load_double / float_from_double (see examples-py selected-convert-io.py).
+        Use SelectedField(fsel, multiplicity) to allocate the storage now.
         """
         self.init_from_fsel(*args)
 
     def init_from_fsel(self, FieldSelection fsel=None, cc.Int multiplicity=0):
+        """
+        multiplicity <= 0 (the default) leaves the field uninitialized while
+        fsel is still stored; pass a positive multiplicity to allocate.
+        """
         self.fsel = fsel
         if multiplicity > 0 and self.fsel is not None:
             if self.view_count > 0:

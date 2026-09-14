@@ -1483,7 +1483,8 @@ void set_gm_force_propagated_no_det_from_flow(
 // Propagate the force act on the flowed (physical) gauge field to the unflowed
 // gauge field.
 //
-// Force from the determinant is included.
+// Force from the determinant is not included (see
+// set_gm_force_propagated_det_from_flow for the variant that adds it).
 //
 // Call set_flowed_gauge_fields(gf_ext_vec, gf0, fi) to obtain gf_ext_vec.
 {

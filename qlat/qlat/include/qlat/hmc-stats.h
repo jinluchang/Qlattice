@@ -28,10 +28,11 @@ inline std::vector<RealD> get_gm_force_magnitudes(const GaugeMomentum& gm_force,
                                                   const Int n_elems)
 // return the l1, l2, ..., linf norm of the gm_force magnitudes
 // n_elems == mag_vec.size();
-// n_elems >= 3
+// n_elems >= 3 (mag_vec[0] = mean, mag_vec[1] = l2, ..., mag_vec[n_elems-1] =
+// linf)
 {
   TIMER("get_gm_force_magnitudes");
-  qassert(n_elems >= 2);
+  qassert(n_elems >= 3);
   const Geometry geo = geo_resize(gm_force.geo());
   Field<RealD> fd;
   fd.init(geo, n_elems - 1);

@@ -21,6 +21,8 @@ from cpython.long cimport PyLong_AsVoidPtr
 
 import cqlat as c
 
+from . import field_double as field_double
+
 cdef inline cc.ScalarAction* get_scalar_action_ptr(object sa) except? NULL:
     return <cc.ScalarAction*>PyLong_AsVoidPtr(sa.cdata)
 
@@ -68,12 +70,12 @@ class ScalarAction:
     def set_complex_from_double(self, cf, sf):
         assert isinstance(cf, FieldBase)
         assert isinstance(sf, FieldBase)
-        return c.set_complex_from_double_scalar_action(self, cf, sf)
+        return field_double.set_complex_from_double(cf, sf)
 
     def set_double_from_complex(self, sf, cf):
         assert isinstance(cf, FieldBase)
         assert isinstance(sf, FieldBase)
-        return c.set_double_from_complex_scalar_action(self, sf, cf)
+        return field_double.set_double_from_complex(sf, cf)
 
     def sum_sq(self, FieldRealD sf):
         cdef cc.ScalarAction* psa = get_scalar_action_ptr(self)

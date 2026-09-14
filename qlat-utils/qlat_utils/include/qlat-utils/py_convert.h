@@ -213,13 +213,34 @@ T py_convert_data(PyObject* in)
   return x;
 }
 
+inline PyObject* py_convert_get_attr(PyObject* in, const std::string& attr)
+// interface
+// py_convert_data<std::string>(in, "ctype")
+// py_convert_data<Long>(in, "cdata")
+// explicit error instead of dereferencing NULL when the attribute is missing
+{
+  if (in == NULL) {
+    qerr(ssprintf("py_convert_data: the object is NULL while reading '%s'.",
+                  attr.c_str()));
+  }
+  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  if (p_obj == NULL) {
+    const std::string type_name = Py_TYPE(in)->tp_name;
+    PyErr_Clear();
+    qerr(ssprintf(
+        "py_convert_data: the object of type '%s' has no attribute '%s'.",
+        type_name.c_str(), attr.c_str()));
+  }
+  return p_obj;
+}
+
 template <class T>
 T py_convert_data(PyObject* in, const std::string& attr)
 // interface
 // py_convert_data<std::string>(in, "ctype")
 // py_convert_data<Long>(in, "cdata")
 {
-  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  PyObject* p_obj = py_convert_get_attr(in, attr);
   T x = py_convert_data<T>(p_obj);
   Py_DECREF(p_obj);
   return x;
@@ -230,7 +251,7 @@ T py_convert_data(PyObject* in, const std::string& attr,
                   const std::string& attr1)
 // interface
 {
-  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  PyObject* p_obj = py_convert_get_attr(in, attr);
   T x = py_convert_data<T>(p_obj, attr1);
   Py_DECREF(p_obj);
   return x;

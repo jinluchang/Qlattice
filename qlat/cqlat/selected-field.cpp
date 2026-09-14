@@ -123,6 +123,17 @@ PyObject* acc_field_sfield_ctype(PyObject* p_field, PyObject* p_sfield,
 }
 
 template <class M>
+PyObject* acc_field_spfield_ctype(PyObject* p_field, PyObject* p_spfield,
+                                  const Geometry& geo,
+                                  const PointsSelection& psel)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  const SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
+  acc_field(f, sp, geo, psel);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* field_shift_sfield_ctype(PyObject* p_sfield_new, PyObject* p_sfield,
                                    const Coordinate& shift,
                                    const bool is_reflect)
@@ -309,7 +320,7 @@ PyObject* to_from_endianness_sfield_ctype(PyObject* pf,
 
 }  // namespace qlat
 
-EXPORT(set_add_sfield, {
+EXPORT(set_add_sfield, {  // tested: cqlat-selected-field
   using namespace qlat;
   PyObject* p_field_new = NULL;
   PyObject* p_field = NULL;
@@ -323,7 +334,7 @@ EXPORT(set_add_sfield, {
   return p_ret;
 })
 
-EXPORT(set_mul_double_sfield, {
+EXPORT(set_mul_double_sfield, {  // tested: cqlat-selected-field
   using namespace qlat;
   PyObject* p_field = NULL;
   RealD factor = 0.0;
@@ -336,7 +347,7 @@ EXPORT(set_mul_double_sfield, {
   return p_ret;
 })
 
-EXPORT(acc_field_sfield, {
+EXPORT(acc_field_sfield, {  // tested: cqlat-selected-field
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_sfield = NULL;
@@ -354,7 +365,26 @@ EXPORT(acc_field_sfield, {
   return p_ret;
 })
 
-EXPORT(glb_sum_tslice_long_sfield, {
+EXPORT(acc_field_spfield, {  // tested: cqlat-selected-field
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_spfield = NULL;
+  PyObject* p_geo = NULL;
+  PyObject* p_psel = NULL;
+  if (!PyArg_ParseTuple(args, "OOOO", &p_field, &p_spfield, &p_geo, &p_psel)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_spfield);
+  qassert(py_get_ctype(p_field) == ctype);
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  const PointsSelection& psel = py_convert_type<PointsSelection>(p_psel);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, acc_field_spfield_ctype, ctype, p_field, p_spfield,
+                 geo, psel);
+  return p_ret;
+})
+
+EXPORT(glb_sum_tslice_long_sfield, {  // tested: cqlat-selected-field
   using namespace qlat;
   PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;

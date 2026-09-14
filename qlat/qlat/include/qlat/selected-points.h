@@ -328,7 +328,11 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo,
   Qassert(geo.is_only_local);
   const Long n_points = sp.n_points;
   Qassert(n_points == (Long)psel.size());
+  const bool is_new = not is_initialized(f);
   f.init(geo, sp.multiplicity);
+  if (is_new) {
+    set_zero(f);
+  }
   qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);

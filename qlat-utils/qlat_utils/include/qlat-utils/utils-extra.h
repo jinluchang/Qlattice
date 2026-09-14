@@ -13,7 +13,7 @@ qacc int8_t& operator*=(int8_t& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
-  assert(false);
+  qassert(false);
   return x;
 }
 
@@ -21,7 +21,7 @@ qacc Int& operator*=(Int& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
-  assert(false);
+  qassert(false);
   return x;
 }
 
@@ -29,7 +29,7 @@ qacc Long& operator*=(Long& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
-  assert(false);
+  qassert(false);
   return x;
 }
 
@@ -37,7 +37,7 @@ qacc RealD& operator*=(RealD& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
-  assert(false);
+  qassert(false);
   return x;
 }
 
@@ -45,7 +45,7 @@ qacc RealF& operator*=(RealF& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
-  assert(false);
+  qassert(false);
   return x;
 }
 
@@ -53,7 +53,7 @@ qacc char& operator*=(char& x, const ComplexD& factor)
 {
   (void)x;
   (void)factor;
-  assert(false);
+  qassert(false);
   return x;
 }
 

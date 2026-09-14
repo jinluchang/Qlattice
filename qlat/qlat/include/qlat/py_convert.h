@@ -96,8 +96,22 @@ inline void py_convert(Coordinate& out, PyObject* in)
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
+  } else if (PyObject_HasAttrString(in, "to_list") or
+             PyObject_HasAttrString(in, "tolist")) {
+    // a qlat_utils Coordinate/CoordinateD python object (to_list) or a numpy
+    // array (tolist)
+    const char* fname =
+        PyObject_HasAttrString(in, "to_list") ? "to_list" : "tolist";
+    PyObject* p_list = PyObject_CallMethod(in, fname, NULL);
+    if (p_list == NULL) {
+      PyErr_Clear();
+      qerr(ssprintf("py_convert(Coordinate&): %s() failed.", fname));
+    }
+    py_convert(out, p_list);
+    Py_DECREF(p_list);
   } else {
-    qassert(false);
+    qerr("py_convert(Coordinate&): expected a list/tuple/Coordinate of 4 "
+         "integers.");
   }
 }
 
@@ -113,8 +127,22 @@ inline void py_convert(CoordinateD& out, PyObject* in)
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
+  } else if (PyObject_HasAttrString(in, "to_list") or
+             PyObject_HasAttrString(in, "tolist")) {
+    // a qlat_utils Coordinate/CoordinateD python object (to_list) or a numpy
+    // array (tolist)
+    const char* fname =
+        PyObject_HasAttrString(in, "to_list") ? "to_list" : "tolist";
+    PyObject* p_list = PyObject_CallMethod(in, fname, NULL);
+    if (p_list == NULL) {
+      PyErr_Clear();
+      qerr(ssprintf("py_convert(CoordinateD&): %s() failed.", fname));
+    }
+    py_convert(out, p_list);
+    Py_DECREF(p_list);
   } else {
-    qassert(false);
+    qerr("py_convert(CoordinateD&): expected a list/tuple/Coordinate of 4 "
+         "reals.");
   }
 }
 
