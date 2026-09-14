@@ -5,7 +5,7 @@
 #   save_gwu_noiP, load_gwu_noiP, diff_prop, random_point_src,
 #   make_point_prop, make_volume_src, local_sequential_source, meson_corr,
 #   corr_dat_create, corr_dat_info, prop4d_conj, prop4d_src_gamma,
-#   prop4d_sink_gamma, load_qlat_link, save_qlat_prop
+#   prop4d_sink_gamma, load_qlat_link, save_qlat_link
 #
 # None of these functions has a Python wrapper, so they are called through the
 # cqlat module: ``import qlat.c as qc`` then ``qc.<name>(...)``.  ``q.Prop``
@@ -30,8 +30,8 @@
 #     files they write,
 #   * prop4d_conj / prop4d_src_gamma / prop4d_sink_gamma are checked against an
 #     independent numpy re-implementation of utils_corr_prop.h,
-#   * save_qlat_prop (which actually writes a gauge field) / load_qlat_link are
-#     round tripped.
+#   * save_qlat_link / load_qlat_link are round tripped (the Propagator4d
+#     counterparts are not exported yet, see the TODO in the test below).
 
 import gc
 import os
@@ -504,25 +504,20 @@ assert size2 >= size1
 q.json_results_append("cqlat-vec-props: corr_dat_create size", size1, 1e-9)
 q.json_results_append("cqlat-vec-props: corr_dat_info size", size2, 1e-9)
 
-# --- save_qlat_prop / load_qlat_link ----------------------------------------
-# TODO: when the export is renamed to save_qlat_link (and save_qlat_prop /
-# load_qlat_prop are exported for Propagator4d), update this call and the
-# corresponding json entries.
-# save_qlat_prop is a misnomer: it forwards to save_qlat_link and writes a
-# gauge field (double precision, multiplicity 4), not a propagator.  The
-# matching propagate writes/reads (C++ save_qlat_prop / load_qlat_prop for
-# Propagator4d) are not exported, so a Propagator cannot be written with the
-# qlat format from Python; the cqlat export carries the same note.
+# --- save_qlat_link / load_qlat_link ----------------------------------------
+# TODO: export the Propagator4d counterparts (C++ save_qlat_prop /
+# load_qlat_prop), so that a Propagator can be written with the qlat format from
+# Python; the cqlat export carries the same note.
 qlat_path = "vec-props-tmp.qlat-link"
 gf_q = mk_gauge(geo, xs, gf_g)
-qc.save_qlat_prop(gf_q, qlat_path)
+qc.save_qlat_link(gf_q, qlat_path)
 q.sync_node()
 gf_q2 = q.GaugeField(geo)
 qc.load_qlat_link(gf_q2, qlat_path)
 err_ql = float(np.abs(np.asarray(gf_q) - np.asarray(gf_q2)).max())
 assert err_ql == 0.0, err_ql
 q.json_results_append(
-    "cqlat-vec-props: save_qlat_prop/load_qlat_link max err", err_ql, 1e-12
+    "cqlat-vec-props: save_qlat_link/load_qlat_link max err", err_ql, 1e-12
 )
 q.json_results_append(
     "cqlat-vec-props: load_qlat_link sum abs",

@@ -365,19 +365,10 @@ EXPORT(load_qlat_link, {  // tested: cqlat-vec-props
   Py_RETURN_NONE;
 })
 
-// TODO: rename this export to save_qlat_link (it is the counterpart of the
-// load_qlat_link export above) and export the Propagator4d readers/writers
-// save_qlat_prop / load_qlat_prop (utils_io_vec.h) under their own names; the
-// test reference in examples-py/cqlat-vec-props.py has to be updated together
-// with the rename.
-// KNOWN MISNOMER (kept unchanged for compatibility, see git history and
-// examples-py cqlat-vec-props.py which pins the current behavior):
-// save_qlat_prop takes a GaugeField and writes a *link* file via
-// save_qlat_link (the counterpart of the load_qlat_link export).  The C++
-// Propagator4d overloads save_qlat_prop / load_qlat_prop (utils_io_vec.h) are
-// not exported, so there is currently no cqlat binding to write a Propagator
-// with the qlat format.
-EXPORT(save_qlat_prop, {  // tested: cqlat-vec-props
+// TODO: export the Propagator4d readers/writers save_qlat_prop / load_qlat_prop
+// (utils_io_vec.h) under their own names; without them a Propagator cannot be
+// written or read in the qlat format from Python.
+EXPORT(save_qlat_link, {  // tested: cqlat-vec-props
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_path = NULL;

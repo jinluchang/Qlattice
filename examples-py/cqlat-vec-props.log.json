@@ -166,7 +166,7 @@
   1e-09
  ],
  [
-  "cqlat-vec-props: save_qlat_prop/load_qlat_link max err",
+  "cqlat-vec-props: save_qlat_link/load_qlat_link max err",
   0.0,
   1e-12
  ],
