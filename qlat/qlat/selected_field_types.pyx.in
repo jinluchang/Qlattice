@@ -295,6 +295,12 @@ cdef class SelectedField{{name}}(SelectedFieldBase):
     def _cc_isub(self, SelectedField{{name}} f1):
         cc.py_sfield_isub(self.xx, f1.xx)
 
+    def _cc_iadd(self, SelectedField{{name}} f1):
+        cc.py_sfield_iadd(self.xx, f1.xx)
+
+    def _cc_imul_double(self, cc.RealD factor):
+        cc.py_sfield_imul_double(self.xx, factor)
+
     def _cc_convert_double_from_float(self, SelectedFieldRealF f1):
         cc.convert_field_double_from_float(self.xx, f1.xx)
 

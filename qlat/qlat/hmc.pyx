@@ -29,7 +29,6 @@ from .field_types cimport (
         )
 from .qcd cimport GaugeField
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 

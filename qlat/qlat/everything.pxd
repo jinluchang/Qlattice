@@ -220,6 +220,20 @@ cdef extern from "qlat/field-expand.h" namespace "qlat":
 
     cdef cppclass CommPlan:
         CommPlan()
+    void refresh_expanded[M](Field[M]& f, const CommPlan& plan) except +
+    void refresh_expanded_1[M](Field[M]& f) except +
+
+cdef extern from *:
+    """
+    #include <qlat/field-expand.h>
+    template <class M>
+    inline void py_refresh_expanded_field(qlat::Field<M>& f)
+    { qlat::refresh_expanded(f); }
+    inline qlat::CommPlan py_make_comm_plan(const qlat::Field<int8_t>& marks)
+    { return qlat::make_comm_plan(*(const qlat::CommMarks*)&marks); }
+    """
+    void py_refresh_expanded_field[M](Field[M]& f) except +
+    CommPlan py_make_comm_plan(const Field[Int8t]& marks) except +
 
 cdef extern from "qlat/field-io.h" namespace "qlat":
 
@@ -343,10 +357,14 @@ cdef extern from "qlat/selected-points.h" namespace "qlat":
     void field_glb_max[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void field_glb_min[M](SelectedPoints[M]& sp, const Field[M]& f) except +
     void set_sqrt_field(SelectedPoints[RealD]& sp, const SelectedPoints[RealD]& sp1) except +
+    void acc_field[M](Field[M]& f, const SelectedPoints[M]& sp,
+            const Geometry& geo, const PointsSelection& psel) except +
 
 cdef extern from "qlat/selected-field.h" namespace "qlat":
 
     void field_glb_sum_tslice[M](SelectedPoints[M]& sp, const SelectedField[M]& sf, const FieldSelection& fsel, const Int t_dir) except +
+    void acc_field[M](Field[M]& f, const SelectedField[M]& sf,
+            const FieldSelection& fsel) except +
 
 cdef extern from "qlat/selected-field-io.h" namespace "qlat":
 
@@ -428,6 +446,59 @@ cdef extern from "qlat/qcd-prop.h" namespace "qlat":
             const SelectedPoints[WilsonMatrix]& prop_msc) except +
     void convert_mspincolor_from_wm(SelectedPoints[WilsonMatrix]& prop_msc,
             const SelectedPoints[WilsonMatrix]& prop_wm) except +
+    void flip_tpbc_with_tslice(SelectedPoints[WilsonMatrix]& ps_prop,
+            const PointsSelection& psel, const Int tslice_flip_tpbc,
+            const Int t_size) except +
+    void flip_tpbc_with_tslice(SelectedField[WilsonMatrix]& s_prop,
+            const FieldSelection& fsel, const Int tslice_flip_tpbc) except +
+
+cdef extern from *:
+    """
+    #include <qlat/qcd-prop.h>
+    inline void py_set_rand_u1_src_psel(qlat::Propagator4d& prop,
+        qlat::Field<qlat::ComplexD>& fu1, const qlat::PointsSelection& psel,
+        const qlat::Geometry& geo, const qlat::RngState& rs)
+    {
+      prop.init();
+      fu1.init();
+      qlat::set_rand_u1_src_psel(prop,
+          *(qlat::FieldM<qlat::ComplexD, 1>*)&fu1, psel, geo, rs);
+    }
+    inline void py_set_rand_u1_sol_psel(
+        qlat::SelectedPoints<qlat::WilsonMatrix>& sp_prop,
+        const qlat::Propagator4d& prop, const qlat::Field<qlat::ComplexD>& fu1,
+        const qlat::PointsSelection& psel)
+    {
+      qlat::set_rand_u1_sol_psel(sp_prop, prop,
+          *(const qlat::FieldM<qlat::ComplexD, 1>*)&fu1, psel);
+    }
+    inline void py_set_rand_u1_src_fsel(qlat::Propagator4d& prop,
+        qlat::Field<qlat::ComplexD>& fu1, const qlat::FieldSelection& fsel,
+        const qlat::RngState& rs)
+    {
+      prop.init();
+      fu1.init();
+      qlat::set_rand_u1_src_fsel(prop,
+          *(qlat::FieldM<qlat::ComplexD, 1>*)&fu1, fsel, rs);
+    }
+    inline void py_set_rand_u1_sol_fsel(
+        qlat::SelectedField<qlat::WilsonMatrix>& sf_prop,
+        const qlat::Propagator4d& prop, const qlat::Field<qlat::ComplexD>& fu1,
+        const qlat::FieldSelection& fsel)
+    {
+      qlat::set_rand_u1_sol_fsel(sf_prop, prop,
+          *(const qlat::FieldM<qlat::ComplexD, 1>*)&fu1, fsel);
+    }
+    """
+    void py_set_rand_u1_src_psel(Prop& prop, Field[ComplexD]& fu1,
+            const PointsSelection& psel, const Geometry& geo,
+            const RngState& rs) except +
+    void py_set_rand_u1_sol_psel(PselProp& sp_prop, const Prop& prop,
+            const Field[ComplexD]& fu1, const PointsSelection& psel) except +
+    void py_set_rand_u1_src_fsel(Prop& prop, Field[ComplexD]& fu1,
+            const FieldSelection& fsel, const RngState& rs) except +
+    void py_set_rand_u1_sol_fsel(SelProp& sf_prop, const Prop& prop,
+            const Field[ComplexD]& fu1, const FieldSelection& fsel) except +
 
 cdef extern from "qlat/qcd-smear.h" namespace "qlat":
 
@@ -452,12 +523,35 @@ cdef extern from "qlat/qcd.h" namespace "qlat":
             const GaugeField& gf, const std_string& path) except +
     Long load_gauge_field "qlat::load_gauge_field<qlat::RealD>"(
             GaugeField& gf, const std_string& path) except +
+    Long save_gauge_transform_cps(const GaugeTransform& gt,
+            const std_string& path) except +
+    Long load_gauge_transform_cps(GaugeTransform& gt,
+            const std_string& path) except +
+    void twist_boundary_at_boundary(GaugeField& gf, const RealD lmom,
+            const Int mu) except +
+
+cdef extern from *:
+    """
+    #include <qlat/qcd.h>
+    inline void py_twist_boundary_at_boundary(qlat::GaugeField& gf,
+        const double lmom, const qlat::Int mu)
+    { qlat::twist_boundary_at_boundary(gf, lmom, mu); }
+    """
+    void py_twist_boundary_at_boundary(GaugeField& gf, const RealD lmom,
+            const Int mu) except +
 
 cdef extern from "qlat/qcd-utils.h" namespace "qlat":
 
     void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf) except +
     ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Int l, const Int t) except +
     void set_g_rand_color_matrix_field(Field[ColorMatrix]& fc, const RngState& rs, const RealD sigma, const Int n_step) except +
+    void gf_wilson_line_no_comm(Field[ColorMatrix]& wilson_line_field,
+            const Int wilson_line_field_m, const GaugeField& gf_ext,
+            const std_vector[Int]& path) except +
+    void gf_wilson_line_no_comm(Field[ColorMatrix]& wilson_line_field,
+            const Int wilson_line_field_m, const GaugeField& gf_ext,
+            const std_vector[Int]& path,
+            const std_vector[Int]& path_n) except +
 
 cdef extern from "qlat/qcd-gauge-transformation.h" namespace "qlat":
 
@@ -950,6 +1044,9 @@ cdef extern from "qlat/field.h" namespace "qlat":
             const Field[M]& f) except +
     void merge_fields[M](Field[M]& f,
             const std_vector[ConstHandle[Field[M]]]& vec) except +
+    void merge_fields_ms[M](Field[M]& f,
+            const std_vector[ConstHandle[Field[M]]]& vec,
+            const std_vector[Int]& m_vec) except +
 
 cdef extern from *:
     """
@@ -988,6 +1085,12 @@ cdef extern from *:
     inline void py_sfield_isub(qlat::SelectedField<M>& f0, const qlat::SelectedField<M>& f1)
     { f0 -= f1; }
     template <class M>
+    inline void py_sfield_iadd(qlat::SelectedField<M>& f0, const qlat::SelectedField<M>& f1)
+    { f0 += f1; }
+    template <class M>
+    inline void py_sfield_imul_double(qlat::SelectedField<M>& f, const qlat::RealD factor)
+    { f *= factor; }
+    template <class M>
     inline void py_set_phase_field(qlat::Field<M>& f, const qlat::CoordinateD& lmom)
     { qlat::set_phase_field(*(qlat::FieldM<M, 1>*)&f, lmom); }
     """
@@ -998,6 +1101,9 @@ cdef extern from *:
     void py_field_imul_real_field[M](Field[M]& f, const Field[RealD]& f1) except +
     void py_field_imul_complex_field[M](Field[M]& f, const Field[ComplexD]& f1) except +
     void py_sfield_isub[M](SelectedField[M]& f0, const SelectedField[M]& f1) except +
+    void py_sfield_iadd[M](SelectedField[M]& f0, const SelectedField[M]& f1) except +
+    void py_sfield_imul_double[M](SelectedField[M]& f,
+            const RealD factor) except +
     void py_set_phase_field[M](Field[M]& f, const CoordinateD& lmom) except +
     void py_fft_complex_fields[M](std_vector[Handle[Field[M]]]& vec,
             std_vector[int]& fft_dirs,

@@ -29,7 +29,6 @@ from .selected_points_types cimport SelectedPointsRealD
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 import math
@@ -51,12 +50,12 @@ def field_expanded(f, expansion_left, expansion_right):
 
 def refresh_expanded(field, comm_plan=None):
     if comm_plan is None:
-        return c.refresh_expanded_field(field)
+        field._cc_refresh_expanded()
     else:
-        return c.refresh_expanded_field(field, comm_plan)
+        field._cc_refresh_expanded_plan(comm_plan.cdata)
 
 def refresh_expanded_1(field):
-    return c.refresh_expanded_1_field(field)
+    field._cc_refresh_expanded_1()
 
 cdef class CommMarks(FieldInt8t):
 
@@ -92,8 +91,8 @@ def make_field_expand_comm_plan(CommMarks comm_marks):
     """
     comm_marks is of type Field(ElemTypeInt8t)
     """
-    cp = CommPlan()
-    c.make_field_expand_comm_plan(cp, comm_marks)
+    cdef CommPlan cp = CommPlan()
+    cp.xx = cc.py_make_comm_plan(comm_marks.xx)
     return cp
 
 def mk_phase_field(Geometry geo, lmom):

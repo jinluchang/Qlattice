@@ -26,7 +26,6 @@ from .selected_points_types cimport (
         SelectedPointsChar,
         )
 
-import cqlat as c
 import numpy as np
 
 class q:

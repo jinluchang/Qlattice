@@ -15,7 +15,6 @@ from .geometry cimport Geometry
 from .qcd cimport GaugeField
 from .propagator cimport Prop, FermionField4d
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 

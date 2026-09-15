@@ -415,6 +415,36 @@ cdef class Field{{name}}(FieldBase):
     def _cc_multiply_double(self, FieldRealD factor):
         cc.multiply_double(self.xx, factor.xx)
 
+    def _cc_refresh_expanded(self):
+        cc.py_refresh_expanded_field(self.xx)
+
+    def _cc_refresh_expanded_plan(self, cc.Long cdata):
+        cc.refresh_expanded(self.xx, (<cc.CommPlan*>cdata)[0])
+
+    def _cc_refresh_expanded_1(self):
+        cc.refresh_expanded_1(self.xx)
+
+    def _cc_acc_field_sfield(self, SelectedField{{name}} sf,
+                             FieldSelection fsel):
+        cc.acc_field(self.xx, sf.xx, fsel.xx)
+
+    def _cc_acc_field_spfield(self, SelectedPoints{{name}} sp, Geometry geo,
+                              PointsSelection psel):
+        cc.acc_field(self.xx, sp.xx, geo.xx, psel.xx)
+
+    def _cc_merge_fields_ms(self, fields, ms):
+        cdef cc.std_vector[cc.ConstHandle[cc.Field[cc.{{name}}]]] vec
+        cdef cc.ConstHandle[cc.Field[cc.{{name}}]] h
+        cdef cc.std_vector[cc.Int] m_vec
+        cdef Py_ssize_t i
+        for i in range(len(fields)):
+            h = cc.ConstHandle[cc.Field[cc.{{name}}]]()
+            h.init((<Field{{name}}>fields[i]).xx)
+            vec.push_back(h)
+        for i in range(len(ms)):
+            m_vec.push_back(ms[i])
+        cc.merge_fields_ms(self.xx, vec, m_vec)
+
     def _cc_fft(self, fields, fft_dirs, fft_is_forwards, mode_fft):
         cdef cc.std_vector[cc.Handle[cc.Field[cc.{{name}}]]] vec
         cdef cc.Handle[cc.Field[cc.{{name}}]] h

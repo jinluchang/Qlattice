@@ -47,7 +47,6 @@ from .selected_points_types cimport (
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 
@@ -196,7 +195,7 @@ cdef class FieldBase:
         return glb_sum(sig)
 
     def mview(self):
-        return c.get_mview_field(self)
+        return memoryview(np.asarray(self).reshape(-1))
 
     def __iadd__(self, f1):
         """
@@ -207,10 +206,10 @@ cdef class FieldBase:
             self._cc_iadd(f1)
         else:
             if isinstance(f1, SelectedFieldBase):
-                c.acc_field_sfield(self, f1)
+                self._cc_acc_field_sfield(f1, f1.fsel)
             elif isinstance(f1, SelectedPointsBase):
                 assert f1.ctype is self.ctype
-                c.acc_field_spfield(self, f1, f1.psel.geo, f1.psel)
+                self._cc_acc_field_spfield(f1, f1.psel.geo, f1.psel)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
         return self
@@ -227,12 +226,12 @@ cdef class FieldBase:
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1.0
-                c.acc_field_sfield(self, f1n)
+                self._cc_acc_field_sfield(f1n, f1n.fsel)
             elif isinstance(f1, SelectedPointsBase):
                 assert f1.ctype is self.ctype
                 f1n = f1.copy()
                 f1n *= -1.0
-                c.acc_field_spfield(self, f1n, f1n.psel.geo, f1n.psel)
+                self._cc_acc_field_spfield(f1n, f1n.psel.geo, f1n.psel)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
         return self
@@ -549,7 +548,7 @@ def merge_fields_ms(f, fms):
     assert isinstance(f, FieldBase)
     assert f.ctype is fms[0][0].ctype
     fs, ms = zip(*fms)
-    c.merge_fields_ms_field(f, fs, ms)
+    f._cc_merge_fields_ms(fs, ms)
 
 def mk_merged_fields_ms(fms):
     """
@@ -633,7 +632,7 @@ cdef class SelectedFieldBase:
     def __iadd__(self, f1):
         assert isinstance(f1, SelectedFieldBase)
         assert f1.ctype is self.ctype
-        c.set_add_sfield(self, f1)
+        self._cc_iadd(f1)
         return self
 
     def __isub__(self, f1):
@@ -644,7 +643,7 @@ cdef class SelectedFieldBase:
 
     def __imul__(self, factor):
         assert isinstance(factor, (int, float))
-        c.set_mul_double_sfield(self, float(factor))
+        self._cc_imul_double(float(factor))
         return self
 
     def __setitem__(self, idx, val):
@@ -828,7 +827,7 @@ cdef class SelectedFieldBase:
         if self.ctype in field_ctypes_double:
             self._cc_glb_sum_tslice(sp, self.fsel, t_dir)
         elif self.ctype in field_ctypes_long:
-            c.glb_sum_tslice_long_sfield(sp, self, t_dir)
+            self._cc_glb_sum_tslice(sp, self.fsel, t_dir)
         else:
             assert False
         return sp

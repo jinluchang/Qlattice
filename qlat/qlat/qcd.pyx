@@ -38,7 +38,6 @@ from .field_utils import (
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 
@@ -118,14 +117,14 @@ cdef class GaugeTransform(FieldColorMatrix):
         """
         Save with the format used in CPS
         """
-        return c.save_gauge_transform_cps(self, path)
+        return cc.save_gauge_transform_cps(self.xxx().val(), path)
 
     @q.timer
     def load_cps(self, path):
         """
         Load with the format used in CPS
         """
-        return c.load_gauge_transform_cps(self, path)
+        return cc.load_gauge_transform_cps(self.xxx().val(), path)
 
     def set_rand(self, RngState rng, cc.RealD sigma=0.5, cc.Int n_step=1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
@@ -223,10 +222,20 @@ def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None):
     e.g. path = [ mu, mu, nu, -mu-1, -mu-1, ]
     e.g. path = [ mu, nu, -mu-1, ], path_n = [ 2, 1, 2, ]
     """
+    cdef cc.std_vector[cc.Int] path_v = cc.std_vector[cc.Int]()
+    cdef cc.std_vector[cc.Int] path_n_v = cc.std_vector[cc.Int]()
+    cdef Py_ssize_t i
+    for i in range(len(path)):
+        path_v.push_back(path[i])
     if path_n is None:
-        c.gf_wilson_line_no_comm(wlf, m, gf_ext, path)
+        cc.gf_wilson_line_no_comm((<FieldColorMatrix>wlf).xx, m,
+                                  (<GaugeField>gf_ext).xxx().val(), path_v)
     else:
-        c.gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n)
+        for i in range(len(path_n)):
+            path_n_v.push_back(path_n[i])
+        cc.gf_wilson_line_no_comm((<FieldColorMatrix>wlf).xx, m,
+                                  (<GaugeField>gf_ext).xxx().val(), path_v,
+                                  path_n_v)
 
 def gf_wilson_lines_no_comm(gf_ext, path_list):
     """
@@ -260,7 +269,7 @@ def gf_twist_boundary_at_boundary(GaugeField gf, cc.RealD lmom=-0.5, int mu=3):
     """
     modify gf in place
     """
-    c.gf_twist_boundary_at_boundary(gf, lmom, mu)
+    cc.py_twist_boundary_at_boundary(gf.xxx().val(), lmom, mu)
 
 def mk_left_expanded_field(gf):
     """

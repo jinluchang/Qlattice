@@ -28,7 +28,6 @@ from .field_selection cimport (
 from cpython cimport Py_buffer
 from cpython.buffer cimport PyBUF_FORMAT
 
-import cqlat as c
 import qlat_utils as q
 import numpy as np
 
@@ -242,16 +241,22 @@ def mk_rand_u1_src(sel, rs):
     fu1 stores the random u1 numbers (fu1.multiplicity == 1)
     sel can be psel or fsel
     """
-    prop_src = Prop()
-    fu1 = FieldComplexD()
+    cdef Prop prop_src = Prop()
+    cdef FieldComplexD fu1 = FieldComplexD()
+    cdef FieldSelection fsel
+    cdef PointsSelection psel
+    cdef Geometry geo
+    cdef RngState rs_c = <RngState>rs
     if isinstance(sel, FieldSelection):
-        fsel = sel
-        c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
+        fsel = <FieldSelection>sel
+        cc.py_set_rand_u1_src_fsel(
+            prop_src.xxx().val(), fu1.xx, fsel.xx, rs_c.xx)
     elif isinstance(sel, PointsSelection):
-        psel = sel
+        psel = <PointsSelection>sel
         geo = psel.geo
         assert isinstance(geo, Geometry)
-        c.set_rand_u1_src_psel(prop_src, fu1, psel, geo, rs)
+        cc.py_set_rand_u1_src_psel(
+            prop_src.xxx().val(), fu1.xx, psel.xx, geo.xx, rs_c.xx)
     else:
         raise Exception(f"mk_rand_u1_src {type(sel)}")
     return (prop_src, fu1,)
@@ -260,15 +265,21 @@ def mk_rand_u1_src(sel, rs):
 def get_rand_u1_sol(Prop prop_sol, FieldComplexD fu1, sel):
     assert isinstance(prop_sol, Prop)
     assert isinstance(fu1, FieldComplexD)
+    cdef SelProp s_prop
+    cdef PselProp sp_prop
+    cdef FieldSelection fsel
+    cdef PointsSelection psel
     if isinstance(sel, FieldSelection):
-        fsel = sel
+        fsel = <FieldSelection>sel
         s_prop = SelProp(fsel)
-        c.set_rand_u1_sol_fsel(s_prop, prop_sol, fu1, fsel)
+        cc.py_set_rand_u1_sol_fsel(
+            s_prop.xxx().val(), prop_sol.xxx().val(), fu1.xx, fsel.xx)
         return s_prop
     elif isinstance(sel, PointsSelection):
-        psel = sel
+        psel = <PointsSelection>sel
         sp_prop = PselProp(psel)
-        c.set_rand_u1_sol_psel(sp_prop, prop_sol, fu1, psel)
+        cc.py_set_rand_u1_sol_psel(
+            sp_prop.xxx().val(), prop_sol.xxx().val(), fu1.xx, psel.xx)
         return sp_prop
     else:
         raise Exception(f"get_rand_u1_sol {type(sel)}")
@@ -450,10 +461,17 @@ def mk_prop_from_ff_list(list ff_list):
 
 @q.timer
 def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
+    cdef PselProp ps
+    cdef Geometry geo
     if isinstance(prop, SelProp):
-        c.flip_tpbc_with_tslice_s_prop(prop, tslice_flip_tpbc)
+        cc.flip_tpbc_with_tslice((<SelProp>prop).xxx().val(),
+                                 (<SelProp>prop).fsel.xx,
+                                 tslice_flip_tpbc)
     elif isinstance(prop, PselProp):
-        c.flip_tpbc_with_tslice_sp_prop(prop, tslice_flip_tpbc)
+        ps = <PselProp>prop
+        geo = ps.psel.geo
+        cc.flip_tpbc_with_tslice(ps.xxx().val(), ps.psel.xx,
+                                 tslice_flip_tpbc, geo.total_site[3])
     else:
         print(type(prop))
         assert False
