@@ -78,7 +78,7 @@ def check_flip_prop(prop, t_arr, arr0, tag):
     # a negative tslice is a documented no-op
     q.flip_tpbc_with_tslice(prop, -1)
     assert np.array_equal(np.asarray(prop), arr0)
-    q.json_results_append(f"{tag} tslice=-1 no-op", 1.0)
+    q.json_results_append(f"{tag} tslice=-1 no-op")
 
 q.begin_with_mpi(size_node_list)
 
@@ -100,19 +100,13 @@ xg_f = np.array(psel_l.xg_arr, dtype=np.int64)
 psel = q.PointsSelection()
 psel.set_rand(total_site, 32, rs.split("psel"))
 n_points = int(psel.n_points)
-q.json_results_append("cqlat-propagator: psel n_points", float(n_points))
+q.json_results_append(f"cqlat-propagator: psel n_points = {n_points}")
 xg_p = np.array(psel.xg_arr, dtype=np.int64)
 
 # --- set_rand_u1_src_fsel / set_rand_u1_sol_fsel
 prop_src_f, fu1_f = q.mk_rand_u1_src(fsel, rs.split("u1-fsel"))
-q.json_results_append(
-    "cqlat-propagator: fsel prop_src shape",
-    np.array(np.asarray(prop_src_f).shape, dtype=float),
-)
-q.json_results_append(
-    "cqlat-propagator: fsel fu1 shape",
-    np.array(np.asarray(fu1_f).shape, dtype=float),
-)
+q.json_results_append(f"cqlat-propagator: fsel prop_src shape = {np.asarray(prop_src_f).shape}")
+q.json_results_append(f"cqlat-propagator: fsel fu1 shape = {np.asarray(fu1_f).shape}")
 
 arr_fu1_f = np.asarray(fu1_f)[:, 0]
 loc_idx_f = np.array(
@@ -165,10 +159,7 @@ q.json_results_append(
 
 # --- set_rand_u1_src_psel / set_rand_u1_sol_psel
 prop_src_p, fu1_p = q.mk_rand_u1_src(psel, rs.split("u1-psel"))
-q.json_results_append(
-    "cqlat-propagator: psel prop_src shape",
-    np.array(np.asarray(prop_src_p).shape, dtype=float),
-)
+q.json_results_append(f"cqlat-propagator: psel prop_src shape = {np.asarray(prop_src_p).shape}")
 arr_fu1_p = np.asarray(fu1_p)[:, 0]
 # only the points owned by this rank are stored in the local fu1 field
 loc_idx_p = np.array(
@@ -235,7 +226,7 @@ check_flip_prop(sp_prop, xg_p[:, 3], sp_flip0, "cqlat-propagator: sp_prop")
 
 del prop_src_f, prop_src_p, fu1_f, fu1_p, s_prop, sp_prop, sol_f, sol_p
 gc.collect()
-q.json_results_append("cqlat-propagator: gc.collect() done", 1.0)
+q.json_results_append("cqlat-propagator: gc.collect() done")
 q.json_results_append(f"cqlat-propagator: cwd={os.path.basename(os.getcwd())}")
 
 q.timer_display()

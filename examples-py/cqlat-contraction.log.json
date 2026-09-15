@@ -3,8 +3,7 @@
   "cqlat-contraction: geo.show()=Geometry([4, 4, 4, 8])"
  ],
  [
-  "cqlat-contraction: contract_chvp_16 vs numpy",
-  1.0
+  "cqlat-contraction: contract_chvp_16 vs numpy = True"
  ],
  [
   "cqlat-contraction: contract_chvp_16 max error",
@@ -21,8 +20,7 @@
   1e-10
  ],
  [
-  "cqlat-contraction: c.contract_chvp_16_field direct vs wrapper",
-  1.0
+  "cqlat-contraction: c.contract_chvp_16_field direct vs wrapper = True"
  ],
  [
   "cqlat-contraction: contract_chvp_16 linearity",
@@ -35,8 +33,7 @@
   1e-10
  ],
  [
-  "cqlat-contraction: contract_chvp3_field vs numpy",
-  1.0
+  "cqlat-contraction: contract_chvp3_field vs numpy = True"
  ],
  [
   "cqlat-contraction: contract_chvp3_field max error",
@@ -49,12 +46,10 @@
   1e-10
  ],
  [
-  "cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper",
-  1.0
+  "cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper = True"
  ],
  [
-  "cqlat-contraction: contract_pion_field(Prop) vs numpy",
-  1.0
+  "cqlat-contraction: contract_pion_field(Prop) vs numpy = True"
  ],
  [
   "cqlat-contraction: contract_pion_field(Prop) max error",
@@ -67,8 +62,7 @@
   1e-10
  ],
  [
-  "cqlat-contraction: contract_pion_field(SelProp) vs numpy",
-  1.0
+  "cqlat-contraction: contract_pion_field(SelProp) vs numpy = True"
  ],
  [
   "cqlat-contraction: contract_pion_field(SelProp) max error",
@@ -81,7 +75,6 @@
   1e-10
  ],
  [
-  "cqlat-contraction: c.contract_pion_sfield direct vs wrapper",
-  1.0
+  "cqlat-contraction: c.contract_pion_sfield direct vs wrapper = True"
  ]
 ]

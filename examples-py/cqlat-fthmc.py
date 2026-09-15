@@ -93,14 +93,15 @@ q.json_results_append("cqlat-fthmc: gm_pre qnorm", q.qnorm(gm_pre), check_eps)
 # --- zero and trivial flows built with add_flow_flow_info
 fi_empty = q.FlowInfo()
 assert fi_empty.show() == ""
-q.json_results_append("cqlat-fthmc: empty FlowInfo step count", 0.0, check_eps)
+q.json_results_append("cqlat-fthmc: empty FlowInfo step count")
 
 fi_trivial = q.FlowInfo()
 for mu in range(4):
     for eo in [1, 2]:
         fi_trivial.add_flow(eo, mu, 0.0, 1)
-assert len(fi_trivial.show().strip().split("\n")) == 8
-q.json_results_append("cqlat-fthmc: trivial FlowInfo step count", 8.0, check_eps)
+n_steps_trivial = len(fi_trivial.show().strip().split("\n"))
+assert n_steps_trivial == 8
+q.json_results_append(f"cqlat-fthmc: trivial FlowInfo step count = {n_steps_trivial}")
 
 # --- set_gm_force_flowed_no_det: an empty flow is the identity
 gm_empty = q.GaugeMomentum(geo)
@@ -133,8 +134,9 @@ fi_flow = q.FlowInfo()
 for mu in range(4):
     for eo in [1, 2]:
         fi_flow.add_flow(eo, mu, flow_eps, 1)
-assert len(fi_flow.show().strip().split("\n")) == 8
-q.json_results_append("cqlat-fthmc: flow FlowInfo step count", 8.0, check_eps)
+n_steps_flow = len(fi_flow.show().strip().split("\n"))
+assert n_steps_flow == 8
+q.json_results_append(f"cqlat-fthmc: flow FlowInfo step count = {n_steps_flow}")
 
 gm_flow = q.GaugeMomentum(geo)
 qc.set_gm_force_flowed_no_det(gm_flow, gm_pre, gf0, fi_flow)
@@ -145,19 +147,15 @@ assert err_antiherm < check_eps, err_antiherm
 q.json_results_append(
     "cqlat-fthmc: flowed force is anti-Hermitian", err_antiherm, check_eps
 )
+q.json_results_append(f"cqlat-fthmc: flowed force is finite = {np.all(np.isfinite(gm_flow_arr))}")
 q.json_results_append(
-    "cqlat-fthmc: flowed force is finite", float(np.all(np.isfinite(gm_flow_arr)))
-)
-q.json_results_append(
-    "cqlat-fthmc: flowed force differs from input",
-    float(max_diff(gm_flow, gm_pre) > 0.0),
+    f"cqlat-fthmc: flowed force differs from input = {max_diff(gm_flow, gm_pre) > 0.0}"
 )
 
 gf_flowed = q.GaugeField(geo)
 q.gf_flow(gf_flowed, gf0, fi_flow)
 q.json_results_append(
-    "cqlat-fthmc: gf_flow changes the gauge field",
-    float(max_diff(gf_flowed, gf0) > 0.0),
+    f"cqlat-fthmc: gf_flow changes the gauge field = {max_diff(gf_flowed, gf0) > 0.0}"
 )
 q.json_results_append(
     "cqlat-fthmc: flowed gf avg plaq", q.gf_avg_plaq(gf_flowed), check_eps
@@ -169,8 +167,8 @@ mag_pre = q.get_gm_force_magnitudes(gm_pre, n_elems)
 assert len(mag_pre) == n_elems
 assert all(float(v) >= 0.0 for v in mag_pre)
 q.json_results_append(
-    "cqlat-fthmc: get_gm_force_magnitudes all non-negative",
-    float(all(float(v) >= 0.0 for v in mag_pre)),
+    f"cqlat-fthmc: get_gm_force_magnitudes all non-negative = "
+    f"{all(float(v) >= 0.0 for v in mag_pre)}"
 )
 q.json_results_append(
     "cqlat-fthmc: get_gm_force_magnitudes(gm_pre)",
@@ -217,8 +215,8 @@ q.json_results_append(
     check_eps,
 )
 q.json_results_append(
-    "cqlat-fthmc: magnitude n_elems-1 equals largest magnitude",
-    float(abs(float(mag_pre[n_elems - 1]) - ref_max) < check_eps * max(1.0, ref_max)),
+    f"cqlat-fthmc: magnitude n_elems-1 equals largest magnitude = "
+    f"{abs(float(mag_pre[n_elems - 1]) - ref_max) < check_eps * max(1.0, ref_max)}"
 )
 
 # --- the cqlat export directly
@@ -257,7 +255,7 @@ fi_tmp.add_flow(1, 0, 0.1, 1)
 assert len(fi_tmp.show().strip().split("\n")) == 1
 del fi_tmp
 gc.collect()
-q.json_results_append("cqlat-fthmc: free_flow_info (FlowInfo.__del__)", 1.0)
+q.json_results_append("cqlat-fthmc: free_flow_info (FlowInfo.__del__)")
 
 del fi_empty, fi_trivial, fi_flow, basis, gm_pre, gm_empty, gm_trivial, gm_flow
 gc.collect()

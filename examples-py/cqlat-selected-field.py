@@ -155,9 +155,7 @@ assert err_acc == 0.0
 # only the selected sites may change
 n_changed = int(np.sum(got_local != mk_local_field_values(geo, a1_g)))
 n_changed = int(q.glb_sum(float(n_changed)))
-q.json_results_append(
-    "cqlat-selected-field: acc_field_sfield n changed sites", float(n_changed)
-)
+q.json_results_append(f"cqlat-selected-field: acc_field_sfield n changed sites = {n_changed}")
 assert n_changed == int(n_elems_glb)
 q.json_results_append(
     "cqlat-selected-field: acc_field_sfield sum", float(got_local.sum()), check_eps
@@ -303,7 +301,7 @@ for t_dir in [3, 0]:
 
 del sf_a, sf_b, sf_c, sf_d, sf_long, sp_a, f_a, f_b, f_c, f_d, f_e, f_f, f_g, f_empty
 gc.collect()
-q.json_results_append("cqlat-selected-field: gc.collect() done", 1.0)
+q.json_results_append("cqlat-selected-field: gc.collect() done")
 q.json_results_append(f"cqlat-selected-field: cwd={os.path.basename(os.getcwd())}")
 
 q.timer_display()

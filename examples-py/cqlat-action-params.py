@@ -118,8 +118,16 @@ sa.to_mass_factor(sin_domega)
 sd_ref = ref_to_mass_factor(sd_arr)
 err_mf = float(np.max(np.abs(np.asarray(sin_domega) - sd_ref)))
 assert err_mf < check_eps, err_mf
+# ``np.arcsin`` on an array dispatches to numpy's AVX-512 SVML kernel
+# (``DOUBLE_arcsin_X86_V4``) when the host CPU supports AVX-512; that kernel
+# can differ from the scalar libm ``std::asin`` used by
+# ``ScalarAction::to_mass_factor`` by a few ulps, while on CPUs without
+# AVX-512 numpy falls back to the same libm and matches bit for bit.  The raw
+# error is therefore host dependent (0.0 on AVX2 hosts, ~8.9e-16 on AVX-512
+# hosts), so record whether the numpy reference is reproduced within
+# ``check_eps`` instead of the raw value (same style as cqlat-qm-action.py).
 q.json_results_append(
-    "cqlat-action-params: to_mass_factor max error", err_mf, check_eps
+    f"cqlat-action-params: to_mass_factor vs numpy reference = {err_mf < check_eps}"
 )
 q.json_results_append(
     "cqlat-action-params: to_mass_factor sum",
@@ -213,7 +221,7 @@ q.json_results_append(
 # --- free_scalar_action, exercised by __del__
 del sa
 gc.collect()
-q.json_results_append("cqlat-action-params: free_scalar_action (via __del__)", 1.0)
+q.json_results_append("cqlat-action-params: free_scalar_action (via __del__)")
 
 # =====================================================================
 # FermionAction
@@ -227,7 +235,7 @@ fa = q.FermionAction(
 assert fa.mass() == fa_args["mass"]
 assert fa.ls() == fa_args["ls"]
 assert fa.m5() == fa_args["m5"]
-q.json_results_append("cqlat-action-params: get_ls_fermion_action", float(fa.ls()), 0.0)
+q.json_results_append(f"cqlat-action-params: get_ls_fermion_action = {fa.ls()}")
 q.json_results_append(
     "cqlat-action-params: get_mobius_scale_fermion_action (mobius)",
     fa.mobius_scale(),
@@ -235,9 +243,7 @@ q.json_results_append(
 )
 # a Mobius action has no omega list
 assert fa.omega() is None
-q.json_results_append(
-    "cqlat-action-params: get_omega_fermion_action (mobius) is None", 1.0
-)
+q.json_results_append("cqlat-action-params: get_omega_fermion_action (mobius) is None")
 
 fa2 = q.FermionAction(mass=0.5, ls=4, m5=1.0)
 fa2 @= fa
@@ -245,7 +251,7 @@ assert fa2.mass() == fa.mass()
 assert fa2.ls() == fa.ls()
 assert fa2.m5() == fa.m5()
 assert fa2.mobius_scale() == fa.mobius_scale()
-q.json_results_append("cqlat-action-params: set_fermion_action", 1.0)
+q.json_results_append("cqlat-action-params: set_fermion_action")
 del fa2
 gc.collect()
 
@@ -281,7 +287,7 @@ del fa_z
 gc.collect()
 del fa
 gc.collect()
-q.json_results_append("cqlat-action-params: free_fermion_action (via __del__)", 1.0)
+q.json_results_append("cqlat-action-params: free_fermion_action (via __del__)")
 
 q.timer_display()
 if q.is_test():

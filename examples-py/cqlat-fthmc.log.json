@@ -13,14 +13,10 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: empty FlowInfo step count",
-  0.0,
-  1e-10
+  "cqlat-fthmc: empty FlowInfo step count"
  ],
  [
-  "cqlat-fthmc: trivial FlowInfo step count",
-  8.0,
-  1e-10
+  "cqlat-fthmc: trivial FlowInfo step count = 8"
  ],
  [
   "cqlat-fthmc: set_gm_force_flowed_no_det (empty flow)",
@@ -38,9 +34,7 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: flow FlowInfo step count",
-  8.0,
-  1e-10
+  "cqlat-fthmc: flow FlowInfo step count = 8"
  ],
  [
   "cqlat-fthmc: flowed force is anti-Hermitian",
@@ -48,16 +42,13 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: flowed force is finite",
-  1.0
+  "cqlat-fthmc: flowed force is finite = True"
  ],
  [
-  "cqlat-fthmc: flowed force differs from input",
-  1.0
+  "cqlat-fthmc: flowed force differs from input = True"
  ],
  [
-  "cqlat-fthmc: gf_flow changes the gauge field",
-  1.0
+  "cqlat-fthmc: gf_flow changes the gauge field = True"
  ],
  [
   "cqlat-fthmc: flowed gf avg plaq",
@@ -65,8 +56,7 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: get_gm_force_magnitudes all non-negative",
-  1.0
+  "cqlat-fthmc: get_gm_force_magnitudes all non-negative = True"
  ],
  [
   "cqlat-fthmc: get_gm_force_magnitudes(gm_pre)",
@@ -102,8 +92,7 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: magnitude n_elems-1 equals largest magnitude",
-  1.0
+  "cqlat-fthmc: magnitude n_elems-1 equals largest magnitude = True"
  ],
  [
   "cqlat-fthmc: c.get_gm_force_magnitudes direct max diff",
@@ -130,7 +119,6 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: free_flow_info (FlowInfo.__del__)",
-  1.0
+  "cqlat-fthmc: free_flow_info (FlowInfo.__del__)"
  ]
 ]

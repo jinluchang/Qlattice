@@ -48,8 +48,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: acc_field_sfield n changed sites",
-  128.0
+  "cqlat-selected-field: acc_field_sfield n changed sites = 128"
  ],
  [
   "cqlat-selected-field: acc_field_sfield sum",
@@ -144,8 +143,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: gc.collect() done",
-  1.0
+  "cqlat-selected-field: gc.collect() done"
  ],
  [
   "cqlat-selected-field: cwd=cqlat-selected-field.py.p"

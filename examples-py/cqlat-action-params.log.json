@@ -23,9 +23,7 @@
   0.0
  ],
  [
-  "cqlat-action-params: to_mass_factor max error",
-  0.0,
-  1e-10
+  "cqlat-action-params: to_mass_factor vs numpy reference = True"
  ],
  [
   "cqlat-action-params: to_mass_factor sum",
@@ -73,13 +71,10 @@
   1e-10
  ],
  [
-  "cqlat-action-params: free_scalar_action (via __del__)",
-  1.0
+  "cqlat-action-params: free_scalar_action (via __del__)"
  ],
  [
-  "cqlat-action-params: get_ls_fermion_action",
-  6.0,
-  0.0
+  "cqlat-action-params: get_ls_fermion_action = 6"
  ],
  [
   "cqlat-action-params: get_mobius_scale_fermion_action (mobius)",
@@ -87,12 +82,10 @@
   1e-10
  ],
  [
-  "cqlat-action-params: get_omega_fermion_action (mobius) is None",
-  1.0
+  "cqlat-action-params: get_omega_fermion_action (mobius) is None"
  ],
  [
-  "cqlat-action-params: set_fermion_action",
-  1.0
+  "cqlat-action-params: set_fermion_action"
  ],
  [
   "cqlat-action-params: get_omega_fermion_action max error",
@@ -115,7 +108,6 @@
   0.0
  ],
  [
-  "cqlat-action-params: free_fermion_action (via __del__)",
-  1.0
+  "cqlat-action-params: free_fermion_action (via __del__)"
  ]
 ]

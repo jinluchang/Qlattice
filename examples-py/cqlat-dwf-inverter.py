@@ -70,13 +70,9 @@ assert (
 q.json_results_append(
     "cqlat-dwf-inverter: default stop_rsd", float(inv.stop_rsd()), check_eps
 )
+q.json_results_append(f"cqlat-dwf-inverter: default max_num_iter = {inv.max_num_iter()}")
 q.json_results_append(
-    "cqlat-dwf-inverter: default max_num_iter", float(inv.max_num_iter()), check_eps
-)
-q.json_results_append(
-    "cqlat-dwf-inverter: default max_mixed_precision_cycle",
-    float(inv.max_mixed_precision_cycle()),
-    check_eps,
+    f"cqlat-dwf-inverter: default max_mixed_precision_cycle = {inv.max_mixed_precision_cycle()}"
 )
 
 # --- Python wrapper setters round-trip through the cqlat setters/getters
@@ -92,13 +88,9 @@ assert qc.get_max_mixed_precision_cycle_inverter_domain_wall(inv) == 7
 q.json_results_append(
     "cqlat-dwf-inverter: set_stop_rsd(1e-3)", float(inv.stop_rsd()), check_eps
 )
+q.json_results_append(f"cqlat-dwf-inverter: set_max_num_iter(3) = {inv.max_num_iter()}")
 q.json_results_append(
-    "cqlat-dwf-inverter: set_max_num_iter(3)", float(inv.max_num_iter()), check_eps
-)
-q.json_results_append(
-    "cqlat-dwf-inverter: set_max_mixed_precision_cycle(7)",
-    float(inv.max_mixed_precision_cycle()),
-    check_eps,
+    f"cqlat-dwf-inverter: set_max_mixed_precision_cycle(7) = {inv.max_mixed_precision_cycle()}"
 )
 
 # --- direct cqlat setters behave identically
@@ -111,13 +103,9 @@ assert inv.max_mixed_precision_cycle() == 13
 q.json_results_append(
     "cqlat-dwf-inverter: qc.set_stop_rsd(1e-6)", float(inv.stop_rsd()), check_eps
 )
+q.json_results_append(f"cqlat-dwf-inverter: qc.set_max_num_iter(11) = {inv.max_num_iter()}")
 q.json_results_append(
-    "cqlat-dwf-inverter: qc.set_max_num_iter(11)", float(inv.max_num_iter()), check_eps
-)
-q.json_results_append(
-    "cqlat-dwf-inverter: qc.set_max_mixed_precision_cycle(13)",
-    float(inv.max_mixed_precision_cycle()),
-    check_eps,
+    f"cqlat-dwf-inverter: qc.set_max_mixed_precision_cycle(13) = {inv.max_mixed_precision_cycle()}"
 )
 
 # --- no clamping and no range assertion: out-of-range values are stored as-is
@@ -133,15 +121,11 @@ inv.set_max_mixed_precision_cycle(0)
 assert inv.max_mixed_precision_cycle() == 0
 inv.set_max_mixed_precision_cycle(-9)
 assert inv.max_mixed_precision_cycle() == -9
+q.json_results_append(f"cqlat-dwf-inverter: setters do not clamp = {inv.stop_rsd() == -1.0}")
+q.json_results_append(f"cqlat-dwf-inverter: set_max_num_iter(-5) stored = {inv.max_num_iter()}")
 q.json_results_append(
-    "cqlat-dwf-inverter: setters do not clamp", float(inv.stop_rsd() == -1.0)
-)
-q.json_results_append(
-    "cqlat-dwf-inverter: set_max_num_iter(-5) stored", float(inv.max_num_iter())
-)
-q.json_results_append(
-    "cqlat-dwf-inverter: set_max_mixed_precision_cycle(-9) stored",
-    float(inv.max_mixed_precision_cycle()),
+    f"cqlat-dwf-inverter: set_max_mixed_precision_cycle(-9) stored = "
+    f"{inv.max_mixed_precision_cycle()}"
 )
 
 # --- restore the defaults
@@ -163,9 +147,7 @@ inv.set_max_mixed_precision_cycle(1)
 sol_coarse = inv * src
 err_coarse = sol_diff_qnorm(sol_coarse, qinv_free * src)
 assert np.isfinite(err_coarse) and err_coarse > 1e-3, err_coarse
-q.json_results_append(
-    "cqlat-dwf-inverter: 1 iteration is not converged", float(err_coarse > 1e-3)
-)
+q.json_results_append(f"cqlat-dwf-inverter: 1 iteration is not converged = {err_coarse > 1e-3}")
 
 inv.set_max_num_iter(default_max_num_iter)
 inv.set_max_mixed_precision_cycle(default_max_mixed_precision_cycle)
@@ -182,9 +164,7 @@ q.json_results_append(
 )
 err_inv = sol_diff_qnorm(sol, sol_free)
 assert np.isfinite(err_inv) and err_inv < 1e-5, err_inv
-q.json_results_append(
-    "cqlat-dwf-inverter: inversion matches free field", float(err_inv < 1e-5)
-)
+q.json_results_append(f"cqlat-dwf-inverter: inversion matches free field = {err_inv < 1e-5}")
 
 # --- free_inverter_domain_wall: exercised by __del__ + gc.collect()
 inv_tmp = q.InverterDomainWall(gf=gf, fa=fa)
@@ -192,7 +172,7 @@ inv_tmp.set_stop_rsd(1e-4)
 assert inv_tmp.stop_rsd() == 1e-4
 del inv_tmp
 gc.collect()
-q.json_results_append("cqlat-dwf-inverter: free_inverter_domain_wall (__del__)", 1.0)
+q.json_results_append("cqlat-dwf-inverter: free_inverter_domain_wall (__del__)")
 
 del inv
 gc.collect()

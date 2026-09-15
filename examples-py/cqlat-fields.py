@@ -137,7 +137,7 @@ arr_e = np.asarray(f_e)
 is_halo = arr_e[:, 0] < sentinel * 0.5
 assert int(is_halo.sum()) == n_halo, (int(is_halo.sum()), n_halo)
 assert np.array_equal(arr_e[~is_halo], g_expand_e[~is_halo])
-q.json_results_append("cqlat-fields: field_expanded n_halo", float(n_halo), 1e-12)
+q.json_results_append(f"cqlat-fields: field_expanded n_halo = {n_halo}")
 
 cm = q.CommMarks(geo_e, 2)
 qc.set_marks_field_all(cm, geo_e, 2, "cqlat-fields")
@@ -154,9 +154,7 @@ q.json_results_append(
 cp = q.make_field_expand_comm_plan(cm)
 q.refresh_expanded(f_e, cp)
 assert np.array_equal(np.asarray(f_e), g_expand_e)
-q.json_results_append(
-    "cqlat-fields: refresh_expanded_field(f, comm_plan) max err", 0.0, 1e-12
-)
+q.json_results_append("cqlat-fields: refresh_expanded_field(f, comm_plan) max err")
 q.json_results_append(
     "cqlat-fields: refresh_expanded_field(f, comm_plan) halo sum",
     q.glb_sum(float(np.asarray(f_e)[is_halo].sum())),
@@ -166,16 +164,14 @@ q.json_results_append(
 f_e2 = q.field_expanded(f_expand, expansion_left, expansion_right)
 q.refresh_expanded(f_e2)
 assert np.array_equal(np.asarray(f_e2), g_expand_e)
-q.json_results_append("cqlat-fields: refresh_expanded_field(f) max err", 0.0, 1e-12)
+q.json_results_append("cqlat-fields: refresh_expanded_field(f) max err")
 
 f_e3 = q.field_expanded(f_expand, expansion_left, expansion_right)
 q.refresh_expanded_1(f_e3)
 assert np.array_equal(np.asarray(f_e3), g_expand_e)
 assert np.array_equal(np.asarray(f_e3), np.asarray(f_e))
-q.json_results_append("cqlat-fields: refresh_expanded_1_field(f) max err", 0.0, 1e-12)
-q.json_results_append(
-    "cqlat-fields: refresh_expanded_1 == refresh_expanded (1D halo)", 1.0, 1e-12
-)
+q.json_results_append("cqlat-fields: refresh_expanded_1_field(f) max err")
+q.json_results_append("cqlat-fields: refresh_expanded_1 == refresh_expanded (1D halo)")
 
 del f_e3
 gc.collect()
@@ -196,7 +192,7 @@ f_refl2 = f_refl.shift(is_reflect=True)
 assert np.array_equal(np.asarray(f_refl2), np.asarray(f_reflect))
 
 q.json_results_append("cqlat-fields: reflect_field max err", err_refl, 1e-12)
-q.json_results_append("cqlat-fields: reflect_field twice is identity", 1.0, 1e-12)
+q.json_results_append("cqlat-fields: reflect_field twice is identity")
 q.json_results_append("cqlat-fields: reflect_field qnorm", f_refl.qnorm(), 1e-12)
 
 # --- merge_fields_ms_field -------------------------------------------------
@@ -319,12 +315,16 @@ arr_rej = np.asarray(f_rej).copy()
 try:
     f_rej *= z_mulc
 except ValueError:
-    rejected = 1.0
-    q.json_results_append("cqlat-fields: real field *= complex factor rejected", 1.0)
+    rejected = True
+    q.json_results_append(
+        "cqlat-fields: real field *= complex factor rejected = True"
+    )
 else:
-    rejected = 0.0
-    q.json_results_append("cqlat-fields: real field *= complex factor rejected", 0.0)
-assert rejected == 1.0
+    rejected = False
+    q.json_results_append(
+        "cqlat-fields: real field *= complex factor rejected = False"
+    )
+assert rejected
 assert np.array_equal(np.asarray(f_rej), arr_rej), "rejected factor must not modify"
 # a real valued complex factor is still accepted for a real field
 f_rej *= complex(2.0, 0.0)
@@ -357,10 +357,8 @@ assert vals_mview.size == int(geo.local_volume) * 2, vals_mview.size
 vals_mview[:] = target_mview.reshape(-1)
 back_mview = np.asarray(f_mview)
 assert np.array_equal(back_mview, target_mview)
-q.json_results_append(
-    "cqlat-fields: get_mview_field nbytes", float(raw_mv.nbytes), 1e-12
-)
-q.json_results_append("cqlat-fields: get_mview_field write/read max err", 0.0, 1e-12)
+q.json_results_append(f"cqlat-fields: get_mview_field nbytes = {raw_mv.nbytes}")
+q.json_results_append("cqlat-fields: get_mview_field write/read max err")
 q.json_results_append("cqlat-fields: get_mview_field qnorm", f_mview.qnorm(), 1e-12)
 
 # --- Field.write_direct / read_direct (qlat distributed field IO) ----------
@@ -388,8 +386,8 @@ assert f_load.geo == f_save.geo
 assert f_load.multiplicity == f_save.multiplicity
 err_load = float(np.max(np.abs(np.asarray(f_load) - arr_save)))
 assert err_load == 0.0, err_load
-q.json_results_append("cqlat-fields: write_direct bytes", float(n_bytes), 1e-12)
-q.json_results_append("cqlat-fields: read_direct bytes", float(n_read), 1e-12)
+q.json_results_append(f"cqlat-fields: write_direct bytes = {n_bytes}")
+q.json_results_append(f"cqlat-fields: read_direct bytes = {n_read}")
 q.json_results_append("cqlat-fields: write_direct/read_direct max err", err_load, 1e-12)
 
 # a non-trivial new_size_node repartitions the field on disk and must load back
@@ -402,9 +400,7 @@ assert float(n_read_nsn) == n_bytes_expected, (n_read_nsn, n_bytes_expected)
 assert f_load_nsn.geo == f_save.geo
 err_load_nsn = float(np.max(np.abs(np.asarray(f_load_nsn) - arr_save)))
 assert err_load_nsn == 0.0, err_load_nsn
-q.json_results_append(
-    "cqlat-fields: write_direct(new_size_node) bytes", float(n_bytes_nsn), 1e-12
-)
+q.json_results_append(f"cqlat-fields: write_direct(new_size_node) bytes = {n_bytes_nsn}")
 q.json_results_append(
     "cqlat-fields: write_direct(new_size_node)/read_direct max err",
     err_load_nsn,

@@ -188,7 +188,7 @@ for mu, lmom in [(3, -0.5), (0, 0.25)]:
     n_changed = int(np.sum(np.any(arr_t != arr_base, axis=(2, 3))))
     n_changed = int(q.glb_sum(float(n_changed)))
     q.json_results_append(
-        f"cqlat-qcd: gf_twist_boundary_at_boundary mu={mu} n changed", float(n_changed)
+        f"cqlat-qcd: gf_twist_boundary_at_boundary mu={mu} n changed = {n_changed}"
     )
     assert float(n_changed) == n_mask
 
@@ -218,10 +218,10 @@ path_cps = "cqlat-qcd-gt-cps.tmp"
 n_bytes = int(gt.save_cps(path_cps))
 gt_load = q.GaugeTransform()
 n_bytes_load = int(gt_load.load_cps(path_cps))
-q.json_results_append("cqlat-qcd: save_gauge_transform_cps bytes", float(n_bytes))
-q.json_results_append("cqlat-qcd: load_gauge_transform_cps bytes", float(n_bytes_load))
+q.json_results_append(f"cqlat-qcd: save_gauge_transform_cps bytes = {n_bytes}")
+q.json_results_append(f"cqlat-qcd: load_gauge_transform_cps bytes = {n_bytes_load}")
 q.json_results_append(
-    "cqlat-qcd: save_gauge_transform_cps file size", float(os.path.getsize(path_cps))
+    f"cqlat-qcd: save_gauge_transform_cps file size = {os.path.getsize(path_cps)}"
 )
 assert n_bytes == n_bytes_load
 assert n_bytes > 0
@@ -255,7 +255,7 @@ assert err_prod2 < 1e-14
 del gf, gf_t, gf_t_m, gf_t_d, gt, gt_load, gt_inv, gt_prod, gt_prod2
 del wlf_a, wlf_b, wlf_n, wlf_all
 gc.collect()
-q.json_results_append("cqlat-qcd: gc.collect() done", 1.0)
+q.json_results_append("cqlat-qcd: gc.collect() done")
 q.json_results_append(f"cqlat-qcd: cwd={os.path.basename(os.getcwd())}")
 
 q.timer_display()

@@ -108,9 +108,7 @@ for mu in range(4):
         ref_chvp[:, mu * 4 + nu] = np.trace(wm, axis1=-2, axis2=-1)
 err_chvp = float(np.max(np.abs(chvp_arr - ref_chvp)))
 assert err_chvp < check_eps, err_chvp
-q.json_results_append(
-    "cqlat-contraction: contract_chvp_16 vs numpy", float(err_chvp < check_eps)
-)
+q.json_results_append(f"cqlat-contraction: contract_chvp_16 vs numpy = {err_chvp < check_eps}")
 q.json_results_append(
     "cqlat-contraction: contract_chvp_16 max error", err_chvp, check_eps
 )
@@ -126,8 +124,7 @@ qc.contract_chvp_16_field(chvp_direct, prop1, prop2)
 err_chvp_direct = max_diff(chvp_direct, chvp)
 assert err_chvp_direct == 0.0, err_chvp_direct
 q.json_results_append(
-    "cqlat-contraction: c.contract_chvp_16_field direct vs wrapper",
-    float(err_chvp_direct == 0.0),
+    f"cqlat-contraction: c.contract_chvp_16_field direct vs wrapper = {err_chvp_direct == 0.0}"
 )
 
 # --- contract_chvp_16 is linear in each propagator
@@ -170,9 +167,7 @@ for idx in range(fsel.n_elems):
 ref_hvp = q.glb_sum(ref_hvp) / fsel_prob
 err_hvp = float(np.max(np.abs(hvp_arr - ref_hvp)))
 assert err_hvp < check_eps, err_hvp
-q.json_results_append(
-    "cqlat-contraction: contract_chvp3_field vs numpy", float(err_hvp < check_eps)
-)
+q.json_results_append(f"cqlat-contraction: contract_chvp3_field vs numpy = {err_hvp < check_eps}")
 q.json_results_append(
     "cqlat-contraction: contract_chvp3_field max error", err_hvp, check_eps
 )
@@ -188,8 +183,7 @@ qc.contract_chvp3_sfield(ld_hvp_direct, sp1, sp2, t_slice_src)
 err_hvp_direct = float(np.max(np.abs(np.asarray(ld_hvp_direct) - hvp_arr)))
 assert err_hvp_direct == 0.0, err_hvp_direct
 q.json_results_append(
-    "cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper",
-    float(err_hvp_direct == 0.0),
+    f"cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper = {err_hvp_direct == 0.0}"
 )
 
 # --- contract_pion_field, dense Prop path (cc.contract_pion)
@@ -205,8 +199,7 @@ ref_pion_prop = q.glb_sum(ref_pion_prop)
 err_pion_prop = float(np.max(np.abs(pion_prop_arr - ref_pion_prop)))
 assert err_pion_prop < check_eps, err_pion_prop
 q.json_results_append(
-    "cqlat-contraction: contract_pion_field(Prop) vs numpy",
-    float(err_pion_prop < check_eps),
+    f"cqlat-contraction: contract_pion_field(Prop) vs numpy = {err_pion_prop < check_eps}"
 )
 q.json_results_append(
     "cqlat-contraction: contract_pion_field(Prop) max error", err_pion_prop, check_eps
@@ -230,8 +223,7 @@ ref_pion_sel = q.glb_sum(ref_pion_sel) / fsel_prob
 err_pion_sel = float(np.max(np.abs(pion_sel_arr - ref_pion_sel)))
 assert err_pion_sel < check_eps, err_pion_sel
 q.json_results_append(
-    "cqlat-contraction: contract_pion_field(SelProp) vs numpy",
-    float(err_pion_sel < check_eps),
+    f"cqlat-contraction: contract_pion_field(SelProp) vs numpy = {err_pion_sel < check_eps}"
 )
 q.json_results_append(
     "cqlat-contraction: contract_pion_field(SelProp) max error", err_pion_sel, check_eps
@@ -250,8 +242,7 @@ err_pion_sel_direct = float(
 )
 assert err_pion_sel_direct == 0.0, err_pion_sel_direct
 q.json_results_append(
-    "cqlat-contraction: c.contract_pion_sfield direct vs wrapper",
-    float(err_pion_sel_direct == 0.0),
+    f"cqlat-contraction: c.contract_pion_sfield direct vs wrapper = {err_pion_sel_direct == 0.0}"
 )
 
 del prop1, prop2, prop1x2, sp1, sp2, fsel

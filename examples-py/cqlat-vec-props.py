@@ -314,9 +314,7 @@ assert abs(sum_abs - 12.0) < 1e-12, sum_abs
 site = int(np.argmax(np.abs(rnd_g).sum(axis=(1, 2))))
 assert np.array_equal(rnd_g[site], eye12)
 coord = tuple(int(v) for v in np.unravel_index(site, latt_size))
-q.json_results_append(
-    "cqlat-vec-props: random_point_src nonzero count", float(nz), 1e-9
-)
+q.json_results_append(f"cqlat-vec-props: random_point_src nonzero count = {nz}")
 q.json_results_append("cqlat-vec-props: random_point_src sum abs", sum_abs, 1e-9)
 q.json_results_append(f"cqlat-vec-props: random_point_src site = {coord}")
 
@@ -330,7 +328,7 @@ assert nz == 12, nz
 site = int(np.argmax(np.abs(pt_g).sum(axis=(1, 2))))
 assert tuple(int(v) for v in np.unravel_index(site, latt_size)) == tuple(sp)
 assert np.array_equal(pt_g[site], eye12)
-q.json_results_append("cqlat-vec-props: make_point_prop nonzero count", float(nz), 1e-9)
+q.json_results_append(f"cqlat-vec-props: make_point_prop nonzero count = {nz}")
 q.json_results_append(
     "cqlat-vec-props: make_point_prop sum abs", float(np.abs(pt_g).sum()), 1e-9
 )
@@ -353,9 +351,7 @@ nz = int(np.count_nonzero(np.abs(vt_g) > 1e-12))
 assert nz == int(np.sum(mask_t)) * 12, nz
 assert np.array_equal(vt_g[mask_t], np.broadcast_to(eye12, vt_g[mask_t].shape))
 assert np.count_nonzero(vt_g[~mask_t]) == 0
-q.json_results_append(
-    "cqlat-vec-props: make_volume_src(-1, tini=3) nonzero", float(nz), 1e-9
-)
+q.json_results_append(f"cqlat-vec-props: make_volume_src(-1, tini=3) nonzero = {nz}")
 
 # a random source is a diagonal matrix with a unit modulus phase per site
 p_vol_r = q.Prop(geo)
@@ -371,9 +367,7 @@ for d0 in range(12):
 assert np.count_nonzero(off) == 0
 nz_r = int(np.count_nonzero(np.abs(vr_g) > 1e-12))
 assert nz_r == n_site * 12, nz_r
-q.json_results_append(
-    "cqlat-vec-props: make_volume_src(777) nonzero", float(nz_r), 1e-9
-)
+q.json_results_append(f"cqlat-vec-props: make_volume_src(777) nonzero = {nz_r}")
 q.json_results_append(
     "cqlat-vec-props: make_volume_src(777) sum abs", float(np.abs(vr_g).sum()), 1e-6
 )
@@ -387,12 +381,8 @@ p_vol_m2 = q.Prop(geo)
 qc.make_volume_src(p_vol_m2, 777, 1, 1)
 nz_m2 = int(np.count_nonzero(np.abs(prop_global(p_vol_m2, idx_l, n_site)) > 1e-12))
 assert nz_m2 == n_site * 72, nz_m2
-q.json_results_append(
-    "cqlat-vec-props: make_volume_src mix_color nonzero", float(nz_m1), 1e-9
-)
-q.json_results_append(
-    "cqlat-vec-props: make_volume_src mix_color+spin nonzero", float(nz_m2), 1e-9
-)
+q.json_results_append(f"cqlat-vec-props: make_volume_src mix_color nonzero = {nz_m1}")
+q.json_results_append(f"cqlat-vec-props: make_volume_src mix_color+spin nonzero = {nz_m2}")
 
 # --- local_sequential_source ------------------------------------------------
 p_seq = mk_prop(geo, xs, seq_g)
@@ -403,7 +393,7 @@ qc.local_sequential_source(res_seq, p_seq, tseq, -1)
 res_g = prop_global(res_seq, idx_l, n_site)
 assert np.array_equal(res_g[mask_seq], seq_gf[mask_seq])
 assert np.count_nonzero(res_g[~mask_seq]) == 0
-q.json_results_append("cqlat-vec-props: local_sequential_source max err", 0.0, 1e-12)
+q.json_results_append("cqlat-vec-props: local_sequential_source max err")
 
 # gammai = 4 is gL[4] = ga_cps.ga[0][4]; the res is multiplied on the sink by
 # that gamma (utils_corr_prop.h prop4d_sink_gamma)
@@ -412,9 +402,7 @@ qc.local_sequential_source(res_seq4, p_seq, tseq, 4)
 r4_g = prop_global(res_seq4, idx_l, n_site)
 exp_seq4 = ref_sink_gamma(res_g, gL[4], False)
 assert np.array_equal(r4_g, exp_seq4)
-q.json_results_append(
-    "cqlat-vec-props: local_sequential_source gammai=4 max err", 0.0, 1e-12
-)
+q.json_results_append("cqlat-vec-props: local_sequential_source gammai=4 max err")
 
 # --- prop4d_conj / prop4d_src_gamma / prop4d_sink_gamma ---------------------
 # check that g0 == 0 is the identity (ga[0][0] == unit)
@@ -422,7 +410,7 @@ p_gam = mk_prop(geo, xs, prop2_g)
 qc.prop4d_src_gamma(p_gam, 0)
 got = prop_global(p_gam, idx_l, n_site)
 assert np.array_equal(got, prop2_gf)
-q.json_results_append("cqlat-vec-props: prop4d_src_gamma g0=0 max err", 0.0, 1e-12)
+q.json_results_append("cqlat-vec-props: prop4d_src_gamma g0=0 max err")
 
 for g0 in [1, 4]:
     p_gam = mk_prop(geo, xs, prop2_g)

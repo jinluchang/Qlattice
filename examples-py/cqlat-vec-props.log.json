@@ -38,9 +38,7 @@
   1e-08
  ],
  [
-  "cqlat-vec-props: random_point_src nonzero count",
-  12.0,
-  1e-09
+  "cqlat-vec-props: random_point_src nonzero count = 12"
  ],
  [
   "cqlat-vec-props: random_point_src sum abs",
@@ -51,9 +49,7 @@
   "cqlat-vec-props: random_point_src site = (1, 3, 3, 4)"
  ],
  [
-  "cqlat-vec-props: make_point_prop nonzero count",
-  12.0,
-  1e-09
+  "cqlat-vec-props: make_point_prop nonzero count = 12"
  ],
  [
   "cqlat-vec-props: make_point_prop sum abs",
@@ -66,14 +62,10 @@
   1e-12
  ],
  [
-  "cqlat-vec-props: make_volume_src(-1, tini=3) nonzero",
-  768.0,
-  1e-09
+  "cqlat-vec-props: make_volume_src(-1, tini=3) nonzero = 768"
  ],
  [
-  "cqlat-vec-props: make_volume_src(777) nonzero",
-  6144.0,
-  1e-09
+  "cqlat-vec-props: make_volume_src(777) nonzero = 6144"
  ],
  [
   "cqlat-vec-props: make_volume_src(777) sum abs",
@@ -81,29 +73,19 @@
   1e-06
  ],
  [
-  "cqlat-vec-props: make_volume_src mix_color nonzero",
-  18432.0,
-  1e-09
+  "cqlat-vec-props: make_volume_src mix_color nonzero = 18432"
  ],
  [
-  "cqlat-vec-props: make_volume_src mix_color+spin nonzero",
-  36864.0,
-  1e-09
+  "cqlat-vec-props: make_volume_src mix_color+spin nonzero = 36864"
  ],
  [
-  "cqlat-vec-props: local_sequential_source max err",
-  0.0,
-  1e-12
+  "cqlat-vec-props: local_sequential_source max err"
  ],
  [
-  "cqlat-vec-props: local_sequential_source gammai=4 max err",
-  0.0,
-  1e-12
+  "cqlat-vec-props: local_sequential_source gammai=4 max err"
  ],
  [
-  "cqlat-vec-props: prop4d_src_gamma g0=0 max err",
-  0.0,
-  1e-12
+  "cqlat-vec-props: prop4d_src_gamma g0=0 max err"
  ],
  [
   "cqlat-vec-props: prop4d_src_gamma g0=1 max err",

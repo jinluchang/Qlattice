@@ -81,8 +81,7 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 n changed",
-  64.0
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 n changed = 64"
  ],
  [
   "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 glb n links",
@@ -104,8 +103,7 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 n changed",
-  128.0
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 n changed = 128"
  ],
  [
   "cqlat-qcd: gt unitary max err",
@@ -137,16 +135,13 @@
   1e-09
  ],
  [
-  "cqlat-qcd: save_gauge_transform_cps bytes",
-  73728.0
+  "cqlat-qcd: save_gauge_transform_cps bytes = 73728"
  ],
  [
-  "cqlat-qcd: load_gauge_transform_cps bytes",
-  73728.0
+  "cqlat-qcd: load_gauge_transform_cps bytes = 73728"
  ],
  [
-  "cqlat-qcd: save_gauge_transform_cps file size",
-  73961.0
+  "cqlat-qcd: save_gauge_transform_cps file size = 73961"
  ],
  [
   "cqlat-qcd: cps round trip sig",
@@ -212,8 +207,7 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gc.collect() done",
-  1.0
+  "cqlat-qcd: gc.collect() done"
  ],
  [
   "cqlat-qcd: cwd=cqlat-qcd.py.p"

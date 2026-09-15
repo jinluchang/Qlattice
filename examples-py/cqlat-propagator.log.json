@@ -7,30 +7,13 @@
   128.0
  ],
  [
-  "cqlat-propagator: psel n_points",
-  32.0
+  "cqlat-propagator: psel n_points = 32"
  ],
  [
-  "cqlat-propagator: fsel prop_src shape",
-  {
-   "value": [
-    256.0,
-    1.0,
-    12.0,
-    12.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "cqlat-propagator: fsel prop_src shape = (256, 1, 12, 12)"
  ],
  [
-  "cqlat-propagator: fsel fu1 shape",
-  {
-   "value": [
-    256.0,
-    1.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "cqlat-propagator: fsel fu1 shape = (256, 1)"
  ],
  [
   "cqlat-propagator: fsel fu1 phases",
@@ -76,16 +59,7 @@
   1e-10
  ],
  [
-  "cqlat-propagator: psel prop_src shape",
-  {
-   "value": [
-    256.0,
-    1.0,
-    12.0,
-    12.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "cqlat-propagator: psel prop_src shape = (256, 1, 12, 12)"
  ],
  [
   "cqlat-propagator: psel fu1 phases",
@@ -158,8 +132,7 @@
   1e-10
  ],
  [
-  "cqlat-propagator: s_prop tslice=-1 no-op",
-  1.0
+  "cqlat-propagator: s_prop tslice=-1 no-op"
  ],
  [
   "cqlat-propagator: sp_prop tslice=7 glb n flipped",
@@ -189,12 +162,10 @@
   1e-10
  ],
  [
-  "cqlat-propagator: sp_prop tslice=-1 no-op",
-  1.0
+  "cqlat-propagator: sp_prop tslice=-1 no-op"
  ],
  [
-  "cqlat-propagator: gc.collect() done",
-  1.0
+  "cqlat-propagator: gc.collect() done"
  ],
  [
   "cqlat-propagator: cwd=cqlat-propagator.py.p"

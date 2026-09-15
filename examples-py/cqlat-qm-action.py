@@ -195,8 +195,8 @@ q.json_results_append(
 )
 q.json_results_append("cqlat-qm-action: M", qma.M(), check_eps)
 q.json_results_append("cqlat-qm-action: L", qma.L(), check_eps)
-q.json_results_append("cqlat-qm-action: t_FV_out", float(qma.t_FV_out()), check_eps)
-q.json_results_append("cqlat-qm-action: t_FV", float(qma.t_FV()), check_eps)
+q.json_results_append(f"cqlat-qm-action: t_FV_out = {qma.t_FV_out()}")
+q.json_results_append(f"cqlat-qm-action: t_FV = {qma.t_FV()}")
 q.json_results_append("cqlat-qm-action: dt", qma.dt(), check_eps)
 assert qma.alpha() == qm_args["alpha"]
 assert qma.beta() == qm_args["beta"]
@@ -215,7 +215,7 @@ err_set = 0.0
 for f in ["alpha", "beta", "barrier_strength", "M", "L", "t_FV_out", "t_FV_mid", "dt"]:
     err_set = max(err_set, abs(float(getattr(qma2, f)()) - float(getattr(qma, f)())))
 assert err_set == 0.0, err_set
-q.json_results_append("cqlat-qm-action: set_qm_action", float(err_set == 0.0))
+q.json_results_append(f"cqlat-qm-action: set_qm_action = {err_set == 0.0}")
 del qma2
 import gc
 
@@ -238,7 +238,7 @@ for x, t in check_points:
     assert np.isfinite(v), (x, t, v)
     err_V = max(err_V, float(abs(v - vl)))
 assert err_V < check_eps, err_V
-q.json_results_append("cqlat-qm-action: V vs reference", float(err_V < check_eps))
+q.json_results_append(f"cqlat-qm-action: V vs reference = {err_V < check_eps}")
 q.json_results_append("cqlat-qm-action: V max error", err_V, check_eps)
 q.json_results_append(
     "cqlat-qm-action: V((1.0,0.6), 1)", qma.V((1.0, 0.6), 1), check_eps
@@ -263,7 +263,7 @@ for x, t in check_points:
         dv0 = qma.dV(x, t) if idx == 0 else qc.dV_qm_action(qma, x[0], x[1], t, idx)
         err_dV = max(err_dV, float(abs(fd - dv0)))
 assert err_dV < 1e-7, err_dV
-q.json_results_append("cqlat-qm-action: dV vs finite difference", float(err_dV < 1e-7))
+q.json_results_append(f"cqlat-qm-action: dV vs finite difference = {err_dV < 1e-7}")
 q.json_results_append("cqlat-qm-action: dV max error", err_dV, 1e-7)
 q.json_results_append(
     "cqlat-qm-action: dV((0.2,0.3), 1, 0)", qma.dV((0.2, 0.3), 1), check_eps
@@ -357,7 +357,7 @@ err_ev = float(
     np.max(np.abs(np.asarray(f_ev) - (np.asarray(f) + np.asarray(m_field) * step_size)))
 )
 assert err_ev < check_eps * max(1.0, float(np.max(np.abs(psi_arr)))), err_ev
-q.json_results_append("cqlat-qm-action: hmc_field_evolve", float(err_ev < check_eps))
+q.json_results_append(f"cqlat-qm-action: hmc_field_evolve = {err_ev < check_eps}")
 q.json_results_append(
     "cqlat-qm-action: hmc_field_evolve sum",
     q.glb_sum(float(np.asarray(f_ev).sum())),
@@ -370,7 +370,7 @@ m2 = mk_field_from_global(geo, np.zeros(latt_size), np.zeros(latt_size))
 qma.hmc_set_rand_momentum(m1, q.RngState("cqlat-qm-action-rs"))
 qma.hmc_set_rand_momentum(m2, q.RngState("cqlat-qm-action-rs"))
 assert np.array_equal(np.asarray(m1), np.asarray(m2))
-q.json_results_append("cqlat-qm-action: hmc_set_rand_momentum reproducible", 1.0)
+q.json_results_append("cqlat-qm-action: hmc_set_rand_momentum reproducible")
 m1_arr = np.asarray(m1)
 mean_g = q.glb_sum(float(m1_arr.sum())) / (n_site * 2)
 var_g = q.glb_sum(float((m1_arr**2).sum())) / (n_site * 2) - mean_g**2
@@ -403,7 +403,7 @@ qma_tmp = q.QMAction(
 qma_tmp @= qma
 del qma_tmp
 gc.collect()
-q.json_results_append("cqlat-qm-action: free_qm_action (via __del__)", 1.0)
+q.json_results_append("cqlat-qm-action: free_qm_action (via __del__)")
 
 del qma
 gc.collect()
