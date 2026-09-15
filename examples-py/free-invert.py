@@ -99,15 +99,18 @@ for name, src in [("src_p", src_p), ("src_r", src_r), ("spin_src", spin_src)]:
     sol_mom = q.free_mom_invert(
         fft_f * src, mass=fa.mass(), m5=fa.m5(), momtwist=momtwist
     )
+    q.json_results_append(
+        f"free-invert: free_mom_invert {name} qnorm", sol_mom.qnorm(), 1e-10
+    )
     sol_rt = fft_b * sol_mom
     sol_rt_diff = sol_rt.copy()
     sol_rt_diff -= sol
-    q.json_results_append(
-        f"free-invert: free_mom_invert {name} diff qnorm",
-        sol_rt_diff.qnorm(),
-        1e-12,
-    )
-    assert sol_rt_diff.qnorm() < 1e-9
+    # the round-trip difference is pure round-off, so only its outcome is
+    # recorded: a value of order 1e-31 has no backend-independent relative
+    # tolerance (CPU and GPU builds disagree in the last few digits)
+    ok = bool(sol_rt_diff.qnorm() < 1e-9)
+    assert ok
+    q.json_results_append(f"free-invert: free_mom_invert {name} roundtrip = {ok}")
 
 q.timer_display()
 if q.is_test():

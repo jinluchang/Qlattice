@@ -63,18 +63,27 @@
   1e-08
  ],
  [
-  "free-invert: free_mom_invert src_p diff qnorm",
-  4.8191732496706514e-31,
-  1e-12
+  "free-invert: free_mom_invert src_p qnorm",
+  9.736817294647473,
+  1e-10
  ],
  [
-  "free-invert: free_mom_invert src_r diff qnorm",
-  1.025011150364353e-24,
-  1e-12
+  "free-invert: free_mom_invert src_p roundtrip = True"
  ],
  [
-  "free-invert: free_mom_invert spin_src diff qnorm",
-  1.1275031146142878e-25,
-  1e-12
+  "free-invert: free_mom_invert src_r qnorm",
+  14746353.2664898,
+  1e-10
+ ],
+ [
+  "free-invert: free_mom_invert src_r roundtrip = True"
+ ],
+ [
+  "free-invert: free_mom_invert spin_src qnorm",
+  1616132.4568069098,
+  1e-10
+ ],
+ [
+  "free-invert: free_mom_invert spin_src roundtrip = True"
  ]
 ]
