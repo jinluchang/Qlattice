@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat InverterDomainWall interface (qlat/cqlat/inverter.cpp):
+# Tests for the cqlat InverterDomainWall interface (qlat/qlat/inverter.pyx):
 #     free_inverter_domain_wall,
 #     get_stop_rsd_inverter_domain_wall, set_stop_rsd_inverter_domain_wall,
 #     get_max_num_iter_inverter_domain_wall, set_max_num_iter_inverter_domain_wall,
@@ -10,7 +10,7 @@
 # These are reached both directly through ``qlat.c`` (``qc.<name>(...)``) and
 # through the Python class ``q.InverterDomainWall`` (qlat/qlat/inverter.pyx).
 #
-# The setters in inverter.cpp assign the requested value verbatim: there is no
+# The setters in ``qlat/qlat/inverter.pyx`` assign the requested value verbatim: there is no
 # clamping and no range assertion, so every value must round-trip exactly.
 # The defaults come from ``InverterParams::init()`` in
 # qlat/qlat/include/qlat/dslash.h.

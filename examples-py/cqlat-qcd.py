@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat QCD interface (qlat/cqlat/qcd.cpp):
+# Tests for the cqlat QCD interface (qlat/qlat/qcd.pyx):
 #     gf_wilson_line_no_comm, gf_twist_boundary_at_boundary,
 #     save_gauge_transform_cps, load_gauge_transform_cps
 #

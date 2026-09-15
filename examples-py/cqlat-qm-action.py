@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat QMAction interface (qlat/cqlat/qm-action.cpp):
+# Tests for the cqlat QMAction interface (qlat/qlat/qm_action.pyx):
 #     mk_qm_action, free_qm_action, set_qm_action,
 #     get_alpha_qm_action, get_beta_qm_action, get_barrier_strength_qm_action,
 #     get_M_qm_action, get_L_qm_action, get_t_FV_out_qm_action,

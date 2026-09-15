@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 # Tests for the cqlat ScalarAction and FermionAction interfaces:
-#   qlat/cqlat/scalar-action.cpp:
+#   qlat/qlat/scalar_action.pyx:
 #     free_scalar_action, set_scalar_action, get_m_sq_scalar_action,
 #     get_lmbd_scalar_action, get_alpha_scalar_action,
 #     hmc_estimate_mass_scalar_action, to_mass_factor_scalar_action
-#   qlat/cqlat/fermion-action.cpp:
+#   qlat/qlat/fermion_action.pyx:
 #     free_fermion_action, set_fermion_action, get_ls_fermion_action,
 #     get_omega_fermion_action, get_mobius_scale_fermion_action
 #

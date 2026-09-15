@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Tests for the cqlat propagator random-U1 interface
-# (qlat/cqlat/propagator.cpp):
+# (qlat/qlat/propagator.pyx):
 #     set_rand_u1_src_psel, set_rand_u1_sol_psel,
 #     set_rand_u1_src_fsel, set_rand_u1_sol_fsel,
 #     flip_tpbc_with_tslice_sp_prop, flip_tpbc_with_tslice_s_prop

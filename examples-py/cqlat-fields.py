@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 # Tests for the field helpers that the qlat Python API still relies on
-# through the cqlat extension, covering:
-#   qlat/cqlat/field-utils.cpp:
+# through ``qlat.c``, covering:
+#   qlat/qlat/field_utils.pyx:
 #       make_field_expand_comm_plan, set_marks_field_all,
 #       refresh_expanded_field, refresh_expanded_1_field,
 #       merge_fields_ms_field
-#   qlat/cqlat/field-double.cpp:
+#   qlat/qlat/field_double.pyx:
 #       multiply_double_field, invert_double_field
-#   qlat/cqlat/field.cpp:
+#   qlat/qlat/field_base.pyx:
 #       get_mview_field
 #
 # The checks use real content wherever possible:

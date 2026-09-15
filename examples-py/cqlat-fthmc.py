@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 # Tests for the cqlat ftHMC interface:
-#     qlat/cqlat/fthmc.cpp:     add_flow_flow_info, free_flow_info,
+#     qlat/qlat/fthmc.pyx:     add_flow_flow_info, free_flow_info,
 #                               set_gm_force_flowed_no_det
-#     qlat/cqlat/hmc-stats.cpp: get_gm_force_magnitudes
+#     qlat/qlat/hmc_stats.pyx: get_gm_force_magnitudes
 #
 # They are reached through
-#     q.FlowInfo().add_flow(...)         -> c.add_flow_flow_info
-#     q.FlowInfo.__del__ (via gc.collect) -> c.free_flow_info
+#     q.FlowInfo().add_flow(...)         -> fthmc.pyx add_flow_flow_info
+#     q.FlowInfo.__del__ (via gc.collect) -> fthmc.pyx free_flow_info
 #     q.c.set_gm_force_flowed_no_det      (no Python wrapper exists)
 #     q.get_gm_force_magnitudes           (qlat.hmc_stats wrapper)
 #

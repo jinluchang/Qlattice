@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat vector_utils interface (qlat/cqlat/vector_utils.cpp):
+# Tests for the cqlat vector_utils interface (qlat/qlat/vector_utils.pyx):
 #   diff_gauge, load_gwu_link, save_gwu_prop, load_gwu_prop,
 #   save_gwu_noiP, load_gwu_noiP, diff_prop, random_point_src,
 #   make_point_prop, make_volume_src, local_sequential_source, meson_corr,
@@ -8,7 +8,7 @@
 #   prop4d_sink_gamma, load_qlat_link, save_qlat_link
 #
 # None of these functions has a Python wrapper, so they are called through the
-# cqlat module: ``import qlat.c as qc`` then ``qc.<name>(...)``.  ``q.Prop``
+# ``qlat.c`` re-export module: ``import qlat.c as qc`` then ``qc.<name>(...)``.  ``q.Prop``
 # (a WilsonMatrix field), ``q.GaugeField``, ``q.FieldRealD`` and
 # ``q.FieldComplexD`` are passed as the corresponding C++ arguments.
 #
@@ -273,9 +273,9 @@ q.json_results_append(
 )
 
 # --- load_gwu_link ----------------------------------------------------------
-# TODO: use an exported save_gwu_link instead of building the file by hand below
-# (see the TODO on the load_gwu_link export in qlat/cqlat/vector_utils.cpp).
-# There is no exported gwu link writer, so build the file with numpy.  The
+# TODO: export a gwu link writer (save_gwu_link) so the file can be written
+# through the API instead of by hand.  There is no exported gwu link writer,
+# so build the file with numpy below.  The
 # reader (read_kentucky_vector, Nvec = 4*9*2 = 72, gN = 18, dsize = 8) reads
 # 72 consecutive blocks of vol = prod(total_site) = 512 big-endian float64.
 gwu_link_path = "vec-props-tmp.gwu-link"

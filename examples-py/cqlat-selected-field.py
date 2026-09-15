@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat SelectedField interface (qlat/cqlat/selected-field.cpp):
+# Tests for the cqlat SelectedField interface (qlat/qlat/field_base.pyx):
 #     set_add_sfield, set_mul_double_sfield, acc_field_sfield,
 #     glb_sum_tslice_long_sfield
 #
