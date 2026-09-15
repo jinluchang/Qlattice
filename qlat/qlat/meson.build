@@ -113,6 +113,7 @@ name_pyx_list = [
   'contract_pion',
   'contract_field',
   'contract_hvp',
+  'vector_utils',
   'field_double',
   'gauge_action',
   'muon_line',

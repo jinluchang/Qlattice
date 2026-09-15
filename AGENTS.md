@@ -165,7 +165,7 @@ q.json_results_append(f"n_marks = {n_marks}")     # int/bool -> name only
 | `qlat-utils/qlat_utils/include/qlat-utils/` | C++ utility headers |
 | `qlat/qlat/include/qlat/` | C++ core library headers |
 | `qlat/qlat/lib/` | C++ source files |
-| `qlat/cqlat/` | Cython bindings |
+| `qlat/qlat/*.pyx` | Cython bindings for the C++ core |
 | `examples-py/` | Python test/example scripts — canonical reference; keep up to date |
 | `examples-py-gpt/` | Python examples using the GPT/Grid interface — canonical reference; keep up to date |
 | `examples-py-cps/` | Python examples using the CPS interface — canonical reference; keep up to date |

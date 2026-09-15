@@ -4,16 +4,6 @@ source qcore/conf.sh
 
 (
 
-echo "Update cqlat export."
-
-cd "$wd/qlat/cqlat"
-
-bash update.sh
-
-) || echo "Update cqlat export not successful."
-
-(
-
 echo "Update version."
 
 version="$(cat VERSION)"

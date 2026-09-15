@@ -53,3 +53,15 @@ def multiply_double(field, factor):
     assert isinstance(factor, FieldBase)
     assert factor.ctype is ElemTypeRealD
     field._cc_multiply_double(factor)
+
+def invert_double_field(field):
+    """
+    cqlat-compatible name for ``invert_double``.
+    """
+    invert_double(field)
+
+def multiply_double_field(field, factor):
+    """
+    cqlat-compatible name for ``multiply_double``.
+    """
+    multiply_double(field, factor)

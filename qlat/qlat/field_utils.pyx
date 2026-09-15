@@ -95,6 +95,32 @@ def make_field_expand_comm_plan(CommMarks comm_marks):
     cp.xx = cc.py_make_comm_plan(comm_marks.xx)
     return cp
 
+def set_marks_field_all(CommMarks comm_marks, Geometry geo, int multiplicity,
+                        tag):
+    """
+    Set the standard expansion marks for ``comm_marks``.
+    """
+    cc.py_set_marks_field_all(comm_marks.xx, geo.xx, multiplicity, tag)
+
+def refresh_expanded_field(field, comm_plan=None):
+    """
+    cqlat-compatible name for ``refresh_expanded``.
+    """
+    refresh_expanded(field, comm_plan)
+
+def refresh_expanded_1_field(field):
+    """
+    cqlat-compatible name for ``refresh_expanded_1``.
+    """
+    refresh_expanded_1(field)
+
+def merge_fields_ms_field(f, fs, ms):
+    """
+    cqlat-compatible name for ``Field._cc_merge_fields_ms``.
+    """
+    assert isinstance(f, FieldBase)
+    f._cc_merge_fields_ms(fs, ms)
+
 def mk_phase_field(Geometry geo, lmom):
     """
     lmom is in lattice momentum unit

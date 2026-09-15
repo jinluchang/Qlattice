@@ -34,6 +34,31 @@ def free_inverter_domain_wall(inv):
     cdef cc.InverterDomainWall* pinv = get_inverter_domain_wall_ptr(inv)
     del pinv
 
+### -------------------------------------------------------------------
+### cqlat-compatible entry points
+
+def get_stop_rsd_inverter_domain_wall(inv):
+    return get_inverter_domain_wall_ptr(inv).stop_rsd()
+
+def set_stop_rsd_inverter_domain_wall(inv, stop_rsd):
+    cc.py_set_stop_rsd_inverter_domain_wall(
+        get_inverter_domain_wall_ptr(inv)[0], stop_rsd)
+
+def get_max_num_iter_inverter_domain_wall(inv):
+    return get_inverter_domain_wall_ptr(inv).max_num_iter()
+
+def set_max_num_iter_inverter_domain_wall(inv, max_num_iter):
+    cc.py_set_max_num_iter_inverter_domain_wall(
+        get_inverter_domain_wall_ptr(inv)[0], max_num_iter)
+
+def get_max_mixed_precision_cycle_inverter_domain_wall(inv):
+    return get_inverter_domain_wall_ptr(inv).max_mixed_precision_cycle()
+
+def set_max_mixed_precision_cycle_inverter_domain_wall(
+        inv, max_mixed_precision_cycle):
+    cc.py_set_max_mixed_precision_cycle_inverter_domain_wall(
+        get_inverter_domain_wall_ptr(inv)[0], max_mixed_precision_cycle)
+
 cdef inline cc.FermionAction* get_fermion_action_ptr(object fa) except? NULL:
     return <cc.FermionAction*>PyLong_AsVoidPtr(fa.cdata)
 

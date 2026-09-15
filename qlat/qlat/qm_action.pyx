@@ -23,19 +23,19 @@ cdef inline cc.QMAction* get_qm_action_ptr(object qma) except? NULL:
 
 def mk_qm_action(
     alpha,
-    beta,
-    V_FV_min,
-    FV_offset,
-    TV_offset,
-    barrier_strength,
-    L,
-    M,
-    epsilon,
-    t_FV_out,
-    t_FV_mid,
-    dt,
-    measure_offset_L,
-    measure_offset_M,
+    beta=0.0,
+    V_FV_min=0.0,
+    FV_offset=0.0,
+    TV_offset=0.0,
+    barrier_strength=1.0,
+    L=1.0,
+    M=0.0,
+    epsilon=0.0,
+    t_FV_out=10,
+    t_FV_mid=5,
+    dt=1.0,
+    measure_offset_L=False,
+    measure_offset_M=False,
 ):
     cdef cc.QMAction* pqma = new cc.QMAction(
         alpha,
@@ -64,19 +64,66 @@ def set_qm_action(qma_new, qma):
     cdef cc.QMAction* p_qma = get_qm_action_ptr(qma)
     p_qma_new[0] = p_qma[0]
 
-def V_qm_action(qma, x0, x1, t):
+def V_qm_action(qma, x0=0.0, x1=0.0, t=0):
     cdef cc.vector[cc.RealD] x_v = cc.vector[cc.RealD]()
     x_v.resize(2)
     x_v[0] = x0
     x_v[1] = x1
     return get_qm_action_ptr(qma).V(x_v.v, t)
 
-def dV_qm_action(qma, x0, x1, t, idx=0):
+def dV_qm_action(qma, x0=0.0, x1=0.0, t=0, idx=0):
     cdef cc.vector[cc.RealD] x_v = cc.vector[cc.RealD]()
     x_v.resize(2)
     x_v[0] = x0
     x_v[1] = x1
     return get_qm_action_ptr(qma).dV(x_v.v, t, idx)
+
+### -------------------------------------------------------------------
+### cqlat-compatible entry points
+
+def get_alpha_qm_action(qma):
+    return get_qm_action_ptr(qma).alpha
+
+def get_beta_qm_action(qma):
+    return get_qm_action_ptr(qma).beta
+
+def get_barrier_strength_qm_action(qma):
+    return get_qm_action_ptr(qma).barrier_strength
+
+def get_M_qm_action(qma):
+    return get_qm_action_ptr(qma).M
+
+def get_L_qm_action(qma):
+    return get_qm_action_ptr(qma).L
+
+def get_t_FV_out_qm_action(qma):
+    return get_qm_action_ptr(qma).t_FV_out
+
+def get_t_FV_mid_qm_action(qma):
+    return get_qm_action_ptr(qma).t_FV_mid
+
+def get_dt_qm_action(qma):
+    return get_qm_action_ptr(qma).dt
+
+def action_node_qm_action(qma, f):
+    return get_qm_action_ptr(qma).action_node((<FieldRealD>f).xx)
+
+def hmc_m_hamilton_node_qm_action(qma, m):
+    return get_qm_action_ptr(qma).hmc_m_hamilton_node((<FieldRealD>m).xx)
+
+def sum_sq_qm_action(qma, f):
+    return get_qm_action_ptr(qma).sum_sq((<FieldRealD>f).xx)
+
+def hmc_set_force_qm_action(qma, force, f):
+    get_qm_action_ptr(qma).hmc_set_force(
+        (<FieldRealD>force).xx, (<FieldRealD>f).xx)
+
+def hmc_field_evolve_qm_action(qma, f, m, step_size):
+    get_qm_action_ptr(qma).hmc_field_evolve(
+        (<FieldRealD>f).xx, (<FieldRealD>m).xx, step_size)
+
+def hmc_set_rand_momentum_qm_action(qma, m, RngState rs):
+    get_qm_action_ptr(qma).hmc_set_rand_momentum((<FieldRealD>m).xx, rs.xx)
 
 class QMAction:
     def __init__(

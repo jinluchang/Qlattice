@@ -476,6 +476,38 @@ def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
         print(type(prop))
         assert False
 
+### -------------------------------------------------------------------
+### cqlat-compatible entry points
+
+def set_rand_u1_src_psel(Prop prop, FieldComplexD fu1, PointsSelection psel,
+                         Geometry geo, RngState rs):
+    cc.py_set_rand_u1_src_psel(prop.xxx().val(), fu1.xx, psel.xx, geo.xx,
+                               rs.xx)
+
+def set_rand_u1_sol_psel(PselProp sp_prop, Prop prop, FieldComplexD fu1,
+                         PointsSelection psel):
+    cc.py_set_rand_u1_sol_psel(sp_prop.xxx().val(), prop.xxx().val(), fu1.xx,
+                               psel.xx)
+
+def set_rand_u1_src_fsel(Prop prop, FieldComplexD fu1, FieldSelection fsel,
+                         RngState rs):
+    cc.py_set_rand_u1_src_fsel(prop.xxx().val(), fu1.xx, fsel.xx, rs.xx)
+
+def set_rand_u1_sol_fsel(SelProp sf_prop, Prop prop, FieldComplexD fu1,
+                         FieldSelection fsel):
+    cc.py_set_rand_u1_sol_fsel(sf_prop.xxx().val(), prop.xxx().val(), fu1.xx,
+                               fsel.xx)
+
+def flip_tpbc_with_tslice_sp_prop(PselProp sp_prop,
+                                  cc.Int tslice_flip_tpbc):
+    cdef Geometry geo = sp_prop.psel.geo
+    cc.flip_tpbc_with_tslice(sp_prop.xxx().val(), sp_prop.psel.xx,
+                             tslice_flip_tpbc, geo.total_site[3])
+
+def flip_tpbc_with_tslice_s_prop(SelProp s_prop, cc.Int tslice_flip_tpbc):
+    cc.flip_tpbc_with_tslice(s_prop.xxx().val(), s_prop.fsel.xx,
+                             tslice_flip_tpbc)
+
 @q.timer
 def free_scalar_mom_invert(FieldComplexD f, mass, CoordinateD momtwist=None):
     """

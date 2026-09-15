@@ -77,7 +77,6 @@ from these internal submodules:
 | Submodule | Domain |
 |-----------|--------|
 | `qlat_utils.c` | All qlat-utils low-level symbols |
-| `cqlat` | CPython C-API extension exposing the qlat C++ core |
 | `utils_io` | File I/O utilities |
 | `mpi` | MPI communication |
 | `geometry` | Lattice geometry |
@@ -87,8 +86,10 @@ from these internal submodules:
 | `selected_field_types` | Selected field classes |
 | `selected_points_types` | Selected points classes |
 | `field_utils` | Field utility operations |
+| `field_double` | Real-double field operations |
 | `qcd` | QCD-specific operations |
 | `propagator` | Propagator types and operations |
+| `vector_utils` | Legacy vector utilities (gwu/qlat I/O, sources, corr) |
 | `smear` | Smearing operations |
 | `hmc` | Hybrid Monte Carlo |
 | `gauge_action` | Gauge action |
@@ -97,6 +98,15 @@ from these internal submodules:
 | `muon_line` | Muon line integrals |
 | `hlbl_contract` | HLBL contractions |
 | `fields_io` | Shuffled fields I/O |
+| `qm_action` | Quantum-mechanical action |
+| `fermion_action` | Domain-wall fermion action |
+| `scalar_action` | Scalar field action |
+| `fthmc` | Flow-time HMC |
+| `hmc_stats` | HMC diagnostics |
+| `contract_pion` | Pion contraction |
+| `contract_field` | Conservative-point HVP field contraction |
+| `contract_hvp` | Conservative-point HVP |
+| `inverter` | Fermion inverters |
 
 ---
 

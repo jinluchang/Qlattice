@@ -74,6 +74,8 @@ qlat
 
    qlat/qlat_field_double.md
 
+   qlat/qlat_vector_utils.md
+
    qlat/qlat_contract_pion.md
 
    qlat/qlat_contract_field.md

@@ -817,6 +817,9 @@ cdef extern from "qlat/flowed-hmc.h" namespace "qlat":
             const FlowInfo& fi) except +
     void set_gm_force_flowed(GaugeMomentum& gm_force, const GaugeField& gf0,
             const GaugeAction& ga, const FlowInfo& fi) except +
+    void set_gm_force_flowed_no_det(GaugeMomentum& gm_force,
+            const GaugeMomentum& gm_force_pre, const GaugeField& gf0,
+            const FlowInfo& fi) except +
 
 cdef extern from "qlat/scalar-action.h" namespace "qlat":
 
@@ -1047,6 +1050,132 @@ cdef extern from "qlat/field.h" namespace "qlat":
     void merge_fields_ms[M](Field[M]& f,
             const std_vector[ConstHandle[Field[M]]]& vec,
             const std_vector[Int]& m_vec) except +
+
+cdef extern from *:
+    """
+    #include <qlat/vector_utils/utils_check_fun.h>
+    #include <qlat/vector_utils/utils_construction.h>
+    #include <qlat/vector_utils/utils_read_txt.h>
+    #include <qlat/vector_utils/utils_io_vec.h>
+    inline double py_diff_gauge(qlat::GaugeField& g0, qlat::GaugeField& g1)
+    { return qlat::diff_gauge(g0, g1); }
+    inline void py_diff_prop(qlat::Propagator4d& p0, qlat::Propagator4d& p1)
+    { qlat::diff_prop(p0, p1); }
+    inline void py_load_gwu_link(const char* filename, qlat::GaugeField& gf,
+        const bool read)
+    { qlat::load_gwu_link(filename, gf, read); }
+    inline void py_save_gwu_prop(const char* filename, qlat::Propagator4d& prop)
+    { qlat::save_gwu_prop(filename, prop); }
+    inline void py_load_gwu_prop(const char* filename, qlat::Propagator4d& prop)
+    { qlat::load_gwu_prop(filename, prop); }
+    inline void py_save_gwu_noiP(const char* filename, qlat::Propagator4d& prop)
+    { qlat::save_gwu_noiP(filename, prop); }
+    inline void py_load_gwu_noiP(const char* filename, qlat::Propagator4d& prop)
+    { qlat::load_gwu_noiP(filename, prop); }
+    inline void py_load_qlat_link(const std::string& filename,
+        qlat::GaugeField& gf)
+    { qlat::load_qlat_link(filename, gf); }
+    inline void py_save_qlat_link(const std::string& filename,
+        qlat::GaugeField& gf)
+    { qlat::save_qlat_link(filename, gf); }
+    inline void py_random_point_src(qlat::Propagator4d& prop,
+        const qlat::Int seed)
+    { qlat::random_point_src(prop, seed); }
+    inline void py_make_point_prop(qlat::Propagator4d& prop,
+        const qlat::Coordinate& sp)
+    { qlat::make_point_prop(prop, sp); }
+    inline void py_make_volume_src(qlat::Propagator4d& src,
+        const qlat::Int seed, const qlat::Int mix_color,
+        const qlat::Int mix_spin, const qlat::Int tini)
+    { qlat::make_volume_src(src, seed, mix_color, mix_spin, tini); }
+    inline void py_local_sequential_source(qlat::Propagator4d& res,
+        qlat::Propagator4d& src, const qlat::vector<qlat::Int>& tseq,
+        const qlat::Int gammai)
+    { qlat::local_sequential_source(res, src, tseq, gammai); }
+    inline void py_meson_corrE(qlat::Propagator4d& p1, qlat::Propagator4d& p2,
+        const qlat::Int ga, const qlat::Int gb, const std::string& filename,
+        const qlat::Coordinate& mom, const qlat::Int invmode,
+        const qlat::Int tini, const std::string& info,
+        const qlat::Int shift_end)
+    {
+      qlat::meson_corrE(p1, p2, ga, gb, filename, mom, invmode, tini, info,
+          shift_end);
+    }
+    inline void py_prop4d_conj(qlat::Propagator4d& prop,
+        const qlat::Int rotate)
+    { qlat::prop4d_conj(prop, rotate); }
+    inline void py_prop4d_src_gamma(qlat::Propagator4d& src,
+        const qlat::Int g0, const qlat::Int Conj)
+    {
+      qlat::ga_matrices_cps ga_cps;
+      std::vector<qlat::ga_M> gL;
+      gL.resize(16);
+      {
+        qlat::Int o = 0;
+        for (qlat::Int i = 0; i < 6; i++) { gL[o] = ga_cps.ga[0][i]; o += 1; }
+        for (qlat::Int i = 2; i < 6; i++) { gL[o] = ga_cps.ga[1][i]; o += 1; }
+        for (qlat::Int i = 3; i < 6; i++) { gL[o] = ga_cps.ga[2][i]; o += 1; }
+        for (qlat::Int i = 4; i < 6; i++) { gL[o] = ga_cps.ga[3][i]; o += 1; }
+        for (qlat::Int i = 5; i < 6; i++) { gL[o] = ga_cps.ga[4][i]; o += 1; }
+      }
+      qlat::prop4d_src_gamma(src, gL[g0], Conj);
+    }
+    inline void py_prop4d_sink_gamma(qlat::Propagator4d& src,
+        const qlat::Int g0, const qlat::Int Conj)
+    {
+      qlat::ga_matrices_cps ga_cps;
+      std::vector<qlat::ga_M> gL;
+      gL.resize(16);
+      {
+        qlat::Int o = 0;
+        for (qlat::Int i = 0; i < 6; i++) { gL[o] = ga_cps.ga[0][i]; o += 1; }
+        for (qlat::Int i = 2; i < 6; i++) { gL[o] = ga_cps.ga[1][i]; o += 1; }
+        for (qlat::Int i = 3; i < 6; i++) { gL[o] = ga_cps.ga[2][i]; o += 1; }
+        for (qlat::Int i = 4; i < 6; i++) { gL[o] = ga_cps.ga[3][i]; o += 1; }
+        for (qlat::Int i = 5; i < 6; i++) { gL[o] = ga_cps.ga[4][i]; o += 1; }
+      }
+      qlat::prop4d_sink_gamma(src, gL[g0], Conj);
+    }
+    inline void py_set_marks_field_all(qlat::Field<int8_t>& marks,
+        const qlat::Geometry& geo, const qlat::Int multiplicity,
+        const std::string& tag)
+    { qlat::set_marks_field_all(*(qlat::CommMarks*)&marks, geo, multiplicity,
+        tag); }
+    """
+    RealD py_diff_gauge(GaugeField& g0, GaugeField& g1) except +
+    void py_diff_prop(Prop& p0, Prop& p1) except +
+    void py_load_gwu_link(const char* filename, GaugeField& gf,
+            const bool read) except +
+    void py_save_gwu_prop(const char* filename, Prop& prop) except +
+    void py_load_gwu_prop(const char* filename, Prop& prop) except +
+    void py_save_gwu_noiP(const char* filename, Prop& prop) except +
+    void py_load_gwu_noiP(const char* filename, Prop& prop) except +
+    void py_load_qlat_link(const std_string& filename, GaugeField& gf) except +
+    void py_save_qlat_link(const std_string& filename, GaugeField& gf) except +
+    void py_random_point_src(Prop& prop, const Int seed) except +
+    void py_make_point_prop(Prop& prop, const Coordinate& sp) except +
+    void py_make_volume_src(Prop& src, const Int seed, const Int mix_color,
+            const Int mix_spin, const Int tini) except +
+    void py_local_sequential_source(Prop& res, Prop& src,
+            const vector[Int]& tseq, const Int gammai) except +
+    void py_meson_corrE(Prop& p1, Prop& p2, const Int ga, const Int gb,
+            const std_string& filename, const Coordinate& mom,
+            const Int invmode, const Int tini, const std_string& info,
+            const Int shift_end) except +
+    void py_prop4d_conj(Prop& prop, const Int rotate) except +
+    void py_prop4d_src_gamma(Prop& src, const Int g0,
+            const Int Conj) except +
+    void py_prop4d_sink_gamma(Prop& src, const Int g0,
+            const Int Conj) except +
+    void py_set_marks_field_all(Field[Int8t]& marks, const Geometry& geo,
+            const Int multiplicity, const std_string& tag) except +
+
+cdef extern from "qlat/vector_utils/utils_read_txt.h" namespace "qlat":
+
+    void corr_dat_create(const std_string& filename, const std_string& key_T,
+            const std_string& dimN, const std_string& info) except +
+    void corr_dat_info(const std_string& filename,
+            const std_string& info) except +
 
 cdef extern from *:
     """

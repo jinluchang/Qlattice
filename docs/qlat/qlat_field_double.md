@@ -1,6 +1,6 @@
 # `qlat.field_double` — Real-Double Field Operations
 
-Source: `qlat/qlat/field_double.py`
+Source: `qlat/qlat/field_double.pyx`
 
 > **Note:** Update this document when updating the source file.
 

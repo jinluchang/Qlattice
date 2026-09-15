@@ -271,6 +271,21 @@ def gf_twist_boundary_at_boundary(GaugeField gf, cc.RealD lmom=-0.5, int mu=3):
     """
     cc.py_twist_boundary_at_boundary(gf.xxx().val(), lmom, mu)
 
+### -------------------------------------------------------------------
+### cqlat-compatible entry points
+
+def save_gauge_transform_cps(GaugeTransform gt, path):
+    """
+    Save a GaugeTransform with the format used in CPS.
+    """
+    return cc.save_gauge_transform_cps(gt.xxx().val(), path)
+
+def load_gauge_transform_cps(GaugeTransform gt, path):
+    """
+    Load a GaugeTransform with the format used in CPS.
+    """
+    return cc.load_gauge_transform_cps(gt.xxx().val(), path)
+
 def mk_left_expanded_field(gf):
     """
     Return left expanded field.

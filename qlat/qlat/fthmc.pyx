@@ -96,3 +96,11 @@ def set_gm_force_flowed(
     assert isinstance(fi, FlowInfo)
     cc.set_gm_force_flowed(
         gm_force.xxx().val(), gf0.xxx().val(), ga.xx, pfi[0])
+
+def set_gm_force_flowed_no_det(
+        GaugeMomentum gm_force, GaugeMomentum gm_force_pre, GaugeField gf0, fi):
+    cdef cc.FlowInfo* pfi = get_flow_info_ptr(fi)
+    assert isinstance(fi, FlowInfo)
+    cc.set_gm_force_flowed_no_det(
+        gm_force.xxx().val(), gm_force_pre.xxx().val(), gf0.xxx().val(),
+        pfi[0])

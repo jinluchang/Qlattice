@@ -569,6 +569,61 @@ def mk_merged_fields_ms(fms):
     return f
 
 ### -------------------------------------------------------------------
+### low-level cqlat-compatible entry points
+
+def get_mview_field(field):
+    """
+    Return a flat, writable memoryview of the field data.
+    """
+    assert isinstance(field, FieldBase)
+    return field.mview()
+
+def set_add_sfield(f_new, f):
+    """
+    ``f_new += f`` for two SelectedField objects with the same FieldSelection.
+    """
+    assert isinstance(f_new, SelectedFieldBase)
+    assert isinstance(f, SelectedFieldBase)
+    f_new._cc_iadd(f)
+
+def set_mul_double_sfield(f, factor):
+    """
+    ``f *= factor`` for a SelectedField.
+    """
+    assert isinstance(f, SelectedFieldBase)
+    f._cc_imul_double(float(factor))
+
+def acc_field_sfield(f, f1):
+    """
+    Accumulate a SelectedField into a Field: ``f += f1``.
+    """
+    assert isinstance(f, FieldBase)
+    assert isinstance(f1, SelectedFieldBase)
+    assert f1.ctype is f.ctype
+    f._cc_acc_field_sfield(f1, f1.fsel)
+
+def acc_field_spfield(f, f1, geo=None, psel=None):
+    """
+    Accumulate a SelectedPoints into a Field: ``f += f1``.
+    """
+    assert isinstance(f, FieldBase)
+    assert isinstance(f1, SelectedPointsBase)
+    assert f1.ctype is f.ctype
+    if psel is None:
+        psel = f1.psel
+    if geo is None:
+        geo = psel.geo
+    f._cc_acc_field_spfield(f1, geo, psel)
+
+def glb_sum_tslice_long_sfield(sp, f, t_dir=3):
+    """
+    Global-sum a SelectedField over the spatial sites of each time slice
+    into the SelectedPoints ``sp``.
+    """
+    assert isinstance(f, SelectedFieldBase)
+    f._cc_glb_sum_tslice(sp, f.fsel, t_dir)
+
+### -------------------------------------------------------------------
 
 cdef class SelectedFieldBase:
 
