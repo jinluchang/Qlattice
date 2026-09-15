@@ -15,27 +15,17 @@ import qlat as q
 
 
 def jr_int(label, *vals):
-    """json_results_append with integer values (which must be passed as floats)."""
-    q.json_results_append(label, np.array([float(v) for v in vals]))
-
-
-# probes must record numeric values; encode the outcome instead of a string
-OUTCOME_CODE = {
-    "IndexError": 1.0,
-    "TypeError": 2.0,
-    "OverflowError": 3.0,
-    "AssertionError": 4.0,
-    "no-exception": 0.0,
-}
+    """Record integer values in the entry name (they are not floats)."""
+    q.json_results_append(f"{label} = {list(vals)}")
 
 
 def probe(fn):
-    """Return a numeric code for the outcome of calling fn()."""
+    """Return the outcome of calling fn() as a string."""
     try:
         fn()
-        return OUTCOME_CODE["no-exception"]
+        return "no-exception"
     except BaseException as e:
-        return OUTCOME_CODE.get(type(e).__name__, 9.0)
+        return type(e).__name__
 
 q.begin_with_mpi()
 
@@ -52,62 +42,72 @@ jr_int("Coordinate numpy int key", int(c[np.int64(2)]))
 
 # out of range
 for key in (4, 5, -5, 100):
-    q.json_results_append(f"Coordinate c[{key}]", probe(lambda k=key: c[k]))
+    q.json_results_append(f"Coordinate c[{key}] = {probe(lambda k=key: c[k])}")
 
 # non-integers
 for key in (1.5, 1.0, "1", None):
-    q.json_results_append(f"Coordinate c[{key!r}]", probe(lambda k=key: c[k]))
+    q.json_results_append(f"Coordinate c[{key!r}] = {probe(lambda k=key: c[k])}")
 
 # slices are not part of the protocol
-q.json_results_append("Coordinate slice", probe(lambda: c[1:3]))
+q.json_results_append(f"Coordinate slice = {probe(lambda: c[1:3])}")
 
 # assignment
 c2 = q.Coordinate([1, 2, 3, 4])
 c2[0] = 10
 c2[-1] = 40
-q.json_results_append("Coordinate setitem", np.array([float(v) for v in c2.to_list()]))
+q.json_results_append(f"Coordinate setitem = {c2.to_list()}")
 
 for key, val in ((1.5, 7), (4, 7)):
-    q.json_results_append(f"Coordinate setitem key={key!r}", probe(lambda k=key, v=val: c2.__setitem__(k, v)))
+    q.json_results_append(
+        f"Coordinate setitem key={key!r} = {probe(lambda k=key, v=val: c2.__setitem__(k, v))}"
+    )
 
 # CoordinateD behaves the same
 q.json_results_append("CoordinateD access", np.array([float(d[0]), float(d[-1])]))
 for key in (4, -5, 1.5):
-    q.json_results_append(f"CoordinateD d[{key!r}]", probe(lambda k=key: d[k]))
+    q.json_results_append(f"CoordinateD d[{key!r}] = {probe(lambda k=key: d[k])}")
 
 # conversions are unaffected
-q.json_results_append("to_list", np.array([float(v) for v in c.to_list()]))
-q.json_results_append("to_tuple", np.array([float(v) for v in c.to_tuple()]))
-q.json_results_append("to_numpy", c.to_numpy())
-q.json_results_append("iter", np.array([float(v) for v in c]))
+q.json_results_append(f"to_list = {c.to_list()}")
+q.json_results_append(f"to_tuple = {list(c.to_tuple())}")
+q.json_results_append(f"to_numpy = {c.to_numpy().tolist()}")
+q.json_results_append(f"iter = {list(c)}")
 
 # __len__ makes Coordinate a sized sequence, so NumPy converts it numerically
 # instead of wrapping it in a 0-d object array
 a_np = np.array(c)
 a_as = np.asarray(c)
-q.json_results_append("len(Coordinate)", float(len(c)))
-q.json_results_append("len(CoordinateD)", float(len(d)))
-q.json_results_append("np.array(Coordinate) dtype is not object", float(a_np.dtype != np.dtype(object)))
-q.json_results_append("np.array(Coordinate)", np.array([float(v) for v in a_np]))
-q.json_results_append("np.asarray(Coordinate) dtype is not object", float(a_as.dtype != np.dtype(object)))
-q.json_results_append("np.asarray(Coordinate)", np.array([float(v) for v in a_as]))
+q.json_results_append(f"len(Coordinate) = {len(c)}")
+q.json_results_append(f"len(CoordinateD) = {len(d)}")
+q.json_results_append(
+    f"np.array(Coordinate) dtype is not object = {a_np.dtype != np.dtype(object)}"
+)
+q.json_results_append(f"np.array(Coordinate) = {a_np.tolist()}")
+q.json_results_append(
+    f"np.asarray(Coordinate) dtype is not object = {a_as.dtype != np.dtype(object)}"
+)
+q.json_results_append(f"np.asarray(Coordinate) = {a_as.tolist()}")
 q.json_results_append("np.asarray(CoordinateD)", np.array([float(v) for v in np.asarray(d)]))
 
 # __bool__ is always True, so ``if c:`` never means "non-zero coordinate"
-q.json_results_append("bool(non-zero Coordinate)", float(bool(c)))
-q.json_results_append("bool(Coordinate())", float(bool(q.Coordinate())))
-q.json_results_append("bool(CoordinateD())", float(bool(q.CoordinateD())))
-q.json_results_append("Coordinate() == Coordinate()", float(q.Coordinate() == q.Coordinate()))
+q.json_results_append(f"bool(non-zero Coordinate) = {bool(c)}")
+q.json_results_append(f"bool(Coordinate()) = {bool(q.Coordinate())}")
+q.json_results_append(f"bool(CoordinateD()) = {bool(q.CoordinateD())}")
+q.json_results_append(f"Coordinate() == Coordinate() = {q.Coordinate() == q.Coordinate()}")
 
 # __hash__ is consistent with __eq__, so coordinates can be dict keys / set members
 c_same = q.Coordinate([1, 2, 3, 4])
 d_same = q.CoordinateD([1.5, 2.5, 3.5, 4.5])
-q.json_results_append("hash(Coordinate) is int", float(isinstance(hash(c), int)))
-q.json_results_append("equal Coordinates hash equal", float(hash(c) == hash(c_same)))
-q.json_results_append("equal CoordinateD hash equal", float(hash(d) == hash(d_same)))
-q.json_results_append("unequal Coordinates hash differently", float(hash(c) != hash(q.Coordinate([0, 0, 0, 0]))))
-q.json_results_append("Coordinate as set member", float(len({c, c_same, q.Coordinate([0, 0, 0, 0])}) == 2))
-q.json_results_append("CoordinateD as set member", float(len({d, d_same, q.CoordinateD()}) == 2))
+q.json_results_append(f"hash(Coordinate) is int = {isinstance(hash(c), int)}")
+q.json_results_append(f"equal Coordinates hash equal = {hash(c) == hash(c_same)}")
+q.json_results_append(f"equal CoordinateD hash equal = {hash(d) == hash(d_same)}")
+q.json_results_append(
+    f"unequal Coordinates hash differently = {hash(c) != hash(q.Coordinate([0, 0, 0, 0]))}"
+)
+q.json_results_append(
+    f"Coordinate as set member = {len({c, c_same, q.Coordinate([0, 0, 0, 0])}) == 2}"
+)
+q.json_results_append(f"CoordinateD as set member = {len({d, d_same, q.CoordinateD()}) == 2}")
 c_dict = {c: 1.0, q.Coordinate([0, 0, 0, 0]): 2.0}
 q.json_results_append("Coordinate as dict key", np.array([c_dict[c_same], c_dict[q.Coordinate([0, 0, 0, 0])]]))
 d_dict = {d: 1.0}

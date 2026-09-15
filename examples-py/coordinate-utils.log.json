@@ -1,92 +1,48 @@
 [
  [
-  "Coordinate component access",
-  {
-   "value": [
-    1.0,
-    2.0,
-    3.0,
-    4.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "Coordinate component access = [1, 2, 3, 4]"
  ],
  [
-  "Coordinate negative index",
-  {
-   "value": [
-    4.0,
-    3.0,
-    2.0,
-    1.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "Coordinate negative index = [4, 3, 2, 1]"
  ],
  [
-  "Coordinate numpy int key",
-  {
-   "value": [
-    3.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "Coordinate numpy int key = [3]"
  ],
  [
-  "Coordinate c[4]",
-  1.0
+  "Coordinate c[4] = IndexError"
  ],
  [
-  "Coordinate c[5]",
-  1.0
+  "Coordinate c[5] = IndexError"
  ],
  [
-  "Coordinate c[-5]",
-  1.0
+  "Coordinate c[-5] = IndexError"
  ],
  [
-  "Coordinate c[100]",
-  1.0
+  "Coordinate c[100] = IndexError"
  ],
  [
-  "Coordinate c[1.5]",
-  2.0
+  "Coordinate c[1.5] = TypeError"
  ],
  [
-  "Coordinate c[1.0]",
-  2.0
+  "Coordinate c[1.0] = TypeError"
  ],
  [
-  "Coordinate c['1']",
-  2.0
+  "Coordinate c['1'] = TypeError"
  ],
  [
-  "Coordinate c[None]",
-  2.0
+  "Coordinate c[None] = TypeError"
  ],
  [
-  "Coordinate slice",
-  2.0
+  "Coordinate slice = TypeError"
  ],
  [
-  "Coordinate setitem",
-  {
-   "value": [
-    10.0,
-    2.0,
-    3.0,
-    40.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "Coordinate setitem = [10, 2, 3, 40]"
  ],
  [
-  "Coordinate setitem key=1.5",
-  2.0
+  "Coordinate setitem key=1.5 = TypeError"
  ],
  [
-  "Coordinate setitem key=4",
-  1.0
+  "Coordinate setitem key=4 = IndexError"
  ],
  [
   "CoordinateD access",
@@ -99,104 +55,43 @@
   }
  ],
  [
-  "CoordinateD d[4]",
-  1.0
+  "CoordinateD d[4] = IndexError"
  ],
  [
-  "CoordinateD d[-5]",
-  1.0
+  "CoordinateD d[-5] = IndexError"
  ],
  [
-  "CoordinateD d[1.5]",
-  2.0
+  "CoordinateD d[1.5] = TypeError"
  ],
  [
-  "to_list",
-  {
-   "value": [
-    1.0,
-    2.0,
-    3.0,
-    4.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "to_list = [1, 2, 3, 4]"
  ],
  [
-  "to_tuple",
-  {
-   "value": [
-    1.0,
-    2.0,
-    3.0,
-    4.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "to_tuple = [1, 2, 3, 4]"
  ],
  [
-  "to_numpy",
-  {
-   "value": [
-    1,
-    2,
-    3,
-    4
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "to_numpy = [1, 2, 3, 4]"
  ],
  [
-  "iter",
-  {
-   "value": [
-    1.0,
-    2.0,
-    3.0,
-    4.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "iter = [1, 2, 3, 4]"
  ],
  [
-  "len(Coordinate)",
-  4.0
+  "len(Coordinate) = 4"
  ],
  [
-  "len(CoordinateD)",
-  4.0
+  "len(CoordinateD) = 4"
  ],
  [
-  "np.array(Coordinate) dtype is not object",
-  1.0
+  "np.array(Coordinate) dtype is not object = True"
  ],
  [
-  "np.array(Coordinate)",
-  {
-   "value": [
-    1.0,
-    2.0,
-    3.0,
-    4.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "np.array(Coordinate) = [1, 2, 3, 4]"
  ],
  [
-  "np.asarray(Coordinate) dtype is not object",
-  1.0
+  "np.asarray(Coordinate) dtype is not object = True"
  ],
  [
-  "np.asarray(Coordinate)",
-  {
-   "value": [
-    1.0,
-    2.0,
-    3.0,
-    4.0
-   ],
-   "__extended_json_type__": "ndarray"
-  }
+  "np.asarray(Coordinate) = [1, 2, 3, 4]"
  ],
  [
   "np.asarray(CoordinateD)",
@@ -211,44 +106,34 @@
   }
  ],
  [
-  "bool(non-zero Coordinate)",
-  1.0
+  "bool(non-zero Coordinate) = True"
  ],
  [
-  "bool(Coordinate())",
-  1.0
+  "bool(Coordinate()) = True"
  ],
  [
-  "bool(CoordinateD())",
-  1.0
+  "bool(CoordinateD()) = True"
  ],
  [
-  "Coordinate() == Coordinate()",
-  1.0
+  "Coordinate() == Coordinate() = True"
  ],
  [
-  "hash(Coordinate) is int",
-  1.0
+  "hash(Coordinate) is int = True"
  ],
  [
-  "equal Coordinates hash equal",
-  1.0
+  "equal Coordinates hash equal = True"
  ],
  [
-  "equal CoordinateD hash equal",
-  1.0
+  "equal CoordinateD hash equal = True"
  ],
  [
-  "unequal Coordinates hash differently",
-  1.0
+  "unequal Coordinates hash differently = True"
  ],
  [
-  "Coordinate as set member",
-  1.0
+  "Coordinate as set member = True"
  ],
  [
-  "CoordinateD as set member",
-  1.0
+  "CoordinateD as set member = True"
  ],
  [
   "Coordinate as dict key",
