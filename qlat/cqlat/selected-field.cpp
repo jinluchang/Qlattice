@@ -4,73 +4,6 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_sfield_ctype(Int dummy)
-{
-  (void)dummy;
-  SelectedField<M>* pf = new SelectedField<M>();
-  return py_convert((void*)pf);
-}
-
-template <class M>
-PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel,
-                               const Int multiplicity)
-{
-  SelectedField<M>* pf = new SelectedField<M>();
-  SelectedField<M>& f = *pf;
-  qassert(multiplicity > 0);
-  f.init(fsel, multiplicity);
-  return py_convert((void*)pf);
-}
-
-template <class M>
-PyObject* free_sfield_ctype(PyObject* p_field)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  delete &f;
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_sfield_ctype(PyObject* pf_new, PyObject* pf)
-{
-  SelectedField<M>& f_new = py_convert_type_sfield<M>(pf_new);
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  f_new = f;
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_sfield_field_ctype(PyObject* psf, PyObject* pf,
-                                 const FieldSelection& fsel)
-{
-  SelectedField<M>& sf = py_convert_type_sfield<M>(psf);
-  const Field<M>& f = py_convert_type_field<M>(pf);
-  set_selected_field(sf, f, fsel);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_sfield_sfield_ctype(PyObject* psf, PyObject* psf0,
-                                  const FieldSelection& fsel,
-                                  const FieldSelection& fsel0)
-{
-  SelectedField<M>& sf = py_convert_type_sfield<M>(psf);
-  const SelectedField<M>& sf0 = py_convert_type_sfield<M>(psf0);
-  set_selected_field(sf, sf0, fsel, fsel0);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_field_sfield_ctype(PyObject* pf, PyObject* psf,
-                                 const FieldSelection& fsel)
-{
-  Field<M>& f = py_convert_type_field<M>(pf);
-  const SelectedField<M>& sf = py_convert_type_sfield<M>(psf);
-  set_field_selected(f, sf, fsel);
-  Py_RETURN_NONE;
-}
-
-template <class M>
 PyObject* set_add_sfield_ctype(PyObject* pf_new, PyObject* pf)
 {
   SelectedField<M>& f_new = py_convert_type_sfield<M>(pf_new);
@@ -80,35 +13,10 @@ PyObject* set_add_sfield_ctype(PyObject* pf_new, PyObject* pf)
 }
 
 template <class M>
-PyObject* set_sub_sfield_ctype(PyObject* pf_new, PyObject* pf)
-{
-  SelectedField<M>& f_new = py_convert_type_sfield<M>(pf_new);
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  f_new -= f;
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_mul_sfield_ctype(PyObject* pf, const ComplexD& factor)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  f *= factor;
-  Py_RETURN_NONE;
-}
-
-template <class M>
 PyObject* set_mul_sfield_ctype(PyObject* pf, const RealD& factor)
 {
   SelectedField<M>& f = py_convert_type_sfield<M>(pf);
   f *= factor;
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_zero_sfield_ctype(PyObject* pf)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  set_zero(f);
   Py_RETURN_NONE;
 }
 
@@ -134,124 +42,6 @@ PyObject* acc_field_spfield_ctype(PyObject* p_field, PyObject* p_spfield,
 }
 
 template <class M>
-PyObject* field_shift_sfield_ctype(PyObject* p_sfield_new, PyObject* p_sfield,
-                                   const Coordinate& shift,
-                                   const bool is_reflect)
-{
-  QLAT_PUSH_DIAGNOSTIC_DISABLE_DANGLING_REF;
-  FieldSelection& fsel_new =
-      py_convert_type<FieldSelection>(p_sfield_new, "fsel");
-  const FieldSelection& fsel =
-      py_convert_type<FieldSelection>(p_sfield, "fsel");
-  QLAT_DIAGNOSTIC_POP;
-  SelectedField<M>& sf_new = py_convert_type_sfield<M>(p_sfield_new);
-  const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
-  field_shift(sf_new, fsel_new, sf, fsel, shift, is_reflect);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* get_n_elems_sfield_ctype(PyObject* pf)
-{
-  SelectedField<M>& sf = py_convert_type_sfield<M>(pf);
-  const Long ret = sf.n_elems;
-  return py_convert(ret);
-}
-
-template <class M>
-PyObject* get_total_site_sfield_ctype(PyObject* pf)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const Coordinate ret = f.geo().total_site();
-  return py_convert(ret);
-}
-
-template <class M>
-PyObject* get_multiplicity_sfield_ctype(PyObject* pf)
-{
-  SelectedField<M>& sf = py_convert_type_sfield<M>(pf);
-  const Long ret = sf.multiplicity;
-  return py_convert(ret);
-}
-
-template <class M>
-PyObject* set_geo_sfield_ctype(Geometry& geo, PyObject* pf)
-{
-  const SelectedField<M>& sf = py_convert_type_sfield<M>(pf);
-  geo = sf.geo();
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* qnorm_sfield_ctype(PyObject* pf)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const RealD ret = qnorm(f);
-  return py_convert(ret);
-}
-
-template <class M>
-PyObject* qnorm_field_sfield_ctype(SelectedField<RealD>& f, PyObject* p_field1)
-{
-  const SelectedField<M>& f1 = py_convert_type_sfield<M>(p_field1);
-  qnorm_field(f, f1);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* get_elems_sfield_ctype(PyObject* p_sfield, const Long idx)
-{
-  const SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
-  return py_convert(f.get_elems_const(idx));
-}
-
-template <class M>
-PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const Long idx, const Int m)
-{
-  const SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
-  if (m >= 0) {
-    return py_convert(f.get_elem(idx, m));
-  } else {
-    return py_convert(f.get_elem(idx));
-  }
-}
-
-template <class M>
-PyObject* set_elems_sfield_ctype(PyObject* p_field, const Long idx,
-                                 PyObject* p_val)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  const Int multiplicity = f.multiplicity;
-  qassert((Long)PyBytes_Size(p_val) == (Long)multiplicity * (Long)sizeof(M));
-  const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
-  assign(f.get_elems(idx), val);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_elem_sfield_ctype(PyObject* p_field, const Long idx, const Int m,
-                                PyObject* p_val)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  qassert(PyBytes_Size(p_val) == sizeof(M));
-  const M& val = *(M*)PyBytes_AsString(p_val);
-  f.get_elem(idx, m) = val;
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* glb_sum_tslice_double_sfield_ctype(PyObject* p_spfield,
-                                             PyObject* p_field,
-                                             const FieldSelection& fsel,
-                                             const Int t_dir)
-{
-  SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
-  const SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
-  field_glb_sum_tslice(sp, f, fsel, t_dir);
-  Py_RETURN_NONE;
-}
-
-template <class M>
 PyObject* glb_sum_tslice_long_sfield_ctype(PyObject* p_spfield,
                                            PyObject* p_field,
                                            const FieldSelection& fsel,
@@ -260,61 +50,6 @@ PyObject* glb_sum_tslice_long_sfield_ctype(PyObject* p_spfield,
   SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
   const SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
   field_glb_sum_tslice(sp, f, fsel, t_dir);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* save_sfield_ctype(PyObject* pf, const std::string& path,
-                            const FieldSelection& fsel)
-{
-  const SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const Long ret = write_selected_field(f, path, fsel);
-  return py_convert(ret);
-}
-
-template <class M>
-PyObject* load_sfield_ctype(PyObject* pf, const std::string& path,
-                            const FieldSelection& fsel)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  const Long ret = read_selected_field(f, path, fsel);
-  return py_convert(ret);
-}
-
-template <class M>
-PyObject* convert_float_from_double_sfield_ctype(PyObject* pf_new, PyObject* pf)
-{
-  SelectedField<RealF>& f_new = py_convert_type_sfield<RealF>(pf_new);
-  const SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  convert_field_float_from_double(f_new, f);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* convert_double_from_float_sfield_ctype(PyObject* pf_new, PyObject* pf)
-{
-  const SelectedField<RealF>& f = py_convert_type_sfield<RealF>(pf);
-  SelectedField<M>& f_new = py_convert_type_sfield<M>(pf_new);
-  convert_field_double_from_float(f_new, f);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* to_from_endianness_sfield_ctype(PyObject* pf,
-                                          const std::string& endianness_tag)
-{
-  SelectedField<M>& f = py_convert_type_sfield<M>(pf);
-  if ("big_32" == endianness_tag) {
-    to_from_big_endian(get_data(f));
-  } else if ("big_64" == endianness_tag) {
-    to_from_big_endian(get_data(f));
-  } else if ("little_32" == endianness_tag) {
-    to_from_little_endian(get_data(f));
-  } else if ("little_64" == endianness_tag) {
-    to_from_little_endian(get_data(f));
-  } else {
-    qassert(false);
-  }
   Py_RETURN_NONE;
 }
 
@@ -402,4 +137,3 @@ EXPORT(glb_sum_tslice_long_sfield, {  // tested: cqlat-selected-field
                  p_field, fsel, t_dir);
   return p_ret;
 })
-

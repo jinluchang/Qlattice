@@ -6,7 +6,6 @@ Source: `qlat/qlat/field_double.py`
 
 ## Outline
 
-- `set_checkers(field)` — set checkerboard pattern on a real-double field.
 - `set_double_from_complex(field, cf)` — real part of complex field.
 - `set_complex_from_double(field, sf)` — promote real field to complex.
 - `set_abs_from_complex(field, cf)` — element-wise absolute value.
@@ -26,15 +25,6 @@ These utilities are typically used for scalar observable fields such as
 plaquette densities, topological charge densities, or mask/weight fields.
 
 ## API Reference
-
-### `set_checkers(field)`
-
-Fill `field` with a checkerboard pattern (±1 on alternating sites).
-Marks as possibly unnecessary in the source.
-
-**Raises:** `AssertionError` if `field.ctype` is not `ElemTypeRealD`.
-
----
 
 ### `set_double_from_complex(field, cf)`
 

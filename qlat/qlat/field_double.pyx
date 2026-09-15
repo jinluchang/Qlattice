@@ -18,11 +18,6 @@ from .field_types cimport FieldComplexD
 
 import cqlat as c
 
-def set_checkers(field):
-    # no longer needed?
-    assert field.ctype == ElemTypeRealD
-    c.set_checkers_double_field(field)
-
 def set_double_from_complex(field, FieldComplexD cf):
     assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeRealD

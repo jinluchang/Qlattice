@@ -2,14 +2,15 @@
 
 # Tests for the cqlat QCD interface (qlat/cqlat/qcd.cpp):
 #     gf_wilson_line_no_comm, gf_twist_boundary_at_boundary,
-#     save_gauge_transform_cps, load_gauge_transform_cps, gt_invert
+#     save_gauge_transform_cps, load_gauge_transform_cps
 #
 # They are reached through the public Python wrappers:
 #     q.gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n=None)
 #     q.gf_wilson_lines_no_comm(gf_ext, path_list)
 #     q.gf_twist_boundary_at_boundary(gf, lmom, mu) / gf.twist_boundary_at_boundary
 #     q.GaugeTransform.save_cps(path) / load_cps(path)
-#     q.GaugeTransform.inv()
+#     q.GaugeTransform.inv()   (the former cqlat ``gt_invert`` export is gone;
+#                               inv() calls the Cython ``cc.gt_invert`` binding)
 #
 # ``gf_wilson_line_no_comm`` is checked against an independent numpy
 # re-implementation of the path-ordered product of links (all paths used here

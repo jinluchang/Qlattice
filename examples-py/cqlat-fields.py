@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat field helpers (the C++ extension), covering:
+# Tests for the field helpers that the qlat Python API still relies on
+# through the cqlat extension, covering:
 #   qlat/cqlat/field-utils.cpp:
 #       make_field_expand_comm_plan, set_marks_field_all,
-#       refresh_expanded_field, refresh_expanded_1_field, reflect_field,
-#       merge_fields_ms_field, set_sqrt_field
+#       refresh_expanded_field, refresh_expanded_1_field,
+#       merge_fields_ms_field
 #   qlat/cqlat/field-double.cpp:
-#       set_checkers_double_field, multiply_double_field, invert_double_field
+#       multiply_double_field, invert_double_field
 #   qlat/cqlat/field.cpp:
-#       set_mul_complex_field, get_mview_field
-#   qlat/cqlat/field-io.cpp:
-#       save_field, load_field
+#       get_mview_field
 #
 # The checks use real content wherever possible:
 #   * the expanded halo is filled with a *global* periodic pattern, so the two
@@ -19,21 +18,16 @@
 #     CommPlan are all compared against that pattern,
 #   * set_marks_field_all is compared against a numpy reimplementation of the
 #     marking rule (mark expanded offsets which are not local),
-#   * reflect_field is compared against a numpy reflection
-#     new_f[xg] == f[mod(-xg, total_site)] and against Field.shift(is_reflect=True),
-#   * merge_fields_ms_field / set_sqrt_field / set_checkers_double_field /
-#     multiply_double_field / invert_double_field / set_mul_complex_field are
-#     compared against numpy reimplementations of the elementwise operations,
+#   * Field.shift(is_reflect=True) is compared against a numpy reflection
+#     new_f[xg] == f[mod(-xg, total_site)],
+#   * merge_fields_ms_field / q.sqrt_field / multiply_double_field /
+#     invert_double_field are compared against numpy reimplementations of the
+#     elementwise operations,
 #   * get_mview_field is exercised by writing through the returned writable
 #     memoryview and reading the field back,
-#   * save_field / load_field are checked with a round trip (including the
-#     optional new_size_node third argument of save_field) and the returned
-#     byte counts.
+#   * Field.write_direct / read_direct are checked with a round trip (including
+#     a Coordinate new_size_node) and the returned byte counts.
 #
-# NOTE: the ``new_size_node`` argument of ``save_field`` accepts a python
-# list/tuple, a ``q.Coordinate``/``q.CoordinateD`` or a numpy array (the cqlat
-# wrapper converts it through ``py_convert(Coordinate&)``, which accepts
-# anything exposing ``to_list()``/``tolist()``).
 # ``CommMarks`` is re-exported as ``q.CommMarks`` (it used to be missing from
 # the ``__all__`` of ``qlat/qlat/c.py.in``).
 
@@ -186,25 +180,20 @@ q.json_results_append(
 del f_e3
 gc.collect()
 
-# --- reflect_field: new_f[xg] == f[mod(-xg, total_site)] --------------------
+# --- reflection: new_f[xg] == f[mod(-xg, total_site)] -----------------------
 
 g_reflect = rs.split("reflect").u_rand_arr(latt_size)
 f_reflect = mk_field_from_global(geo, g_reflect[..., None], 1)
 reflect_idx = tuple((-np.arange(n)) % n for n in latt_size)
 g_reflect_r = g_reflect[np.ix_(*reflect_idx)]
 
-f_refl = f_reflect.copy()
-qc.reflect_field(f_refl)
+f_refl = f_reflect.shift(is_reflect=True)
 exp_refl = pattern_at(g_reflect_r, coords_l)
 err_refl = float(np.max(np.abs(np.asarray(f_refl)[:, 0] - exp_refl)))
 assert err_refl == 0.0, err_refl
 
-f_refl2 = f_refl.copy()
-qc.reflect_field(f_refl2)
+f_refl2 = f_refl.shift(is_reflect=True)
 assert np.array_equal(np.asarray(f_refl2), np.asarray(f_reflect))
-
-f_refl_shift = f_reflect.shift(is_reflect=True)
-assert np.array_equal(np.asarray(f_refl_shift), np.asarray(f_refl))
 
 q.json_results_append("cqlat-fields: reflect_field max err", err_refl, 1e-12)
 q.json_results_append("cqlat-fields: reflect_field twice is identity", 1.0, 1e-12)
@@ -239,14 +228,13 @@ q.json_results_append(
     1e-12,
 )
 
-# --- set_sqrt_field: f = sqrt(f1), elementwise (f is re-initialized) -------
+# --- q.sqrt_field: f = sqrt(f1), elementwise -------------------------------
 
 g_sqrt0 = 0.25 + rs.split("sqrt-0").u_rand_arr(latt_size)
 g_sqrt1 = 0.50 + rs.split("sqrt-1").u_rand_arr(latt_size)
 f_sqrt_in = mk_field_from_global(geo, np.stack([g_sqrt0, g_sqrt1], axis=-1), 2)
 
-f_sqrt = q.FieldRealD()
-qc.set_sqrt_field(f_sqrt, f_sqrt_in)
+f_sqrt = q.sqrt_field(f_sqrt_in)
 assert np.asarray(f_sqrt).shape == np.asarray(f_sqrt_in).shape
 assert f_sqrt.multiplicity == f_sqrt_in.multiplicity
 err_sqrt = float(np.max(np.abs(np.asarray(f_sqrt) - np.sqrt(np.asarray(f_sqrt_in)))))
@@ -255,30 +243,6 @@ q.json_results_append("cqlat-fields: set_sqrt_field max err", err_sqrt, 1e-12)
 q.json_results_append(
     "cqlat-fields: set_sqrt_field sum",
     q.glb_sum(float(np.asarray(f_sqrt).sum())),
-    1e-12,
-)
-
-f_sqrt2 = q.sqrt_field(f_sqrt_in)
-assert np.array_equal(np.asarray(f_sqrt2), np.asarray(f_sqrt))
-q.json_results_append("cqlat-fields: q.sqrt_field == c.set_sqrt_field", 1.0, 1e-12)
-
-# --- set_checkers_double_field: +1 / -1 checkerboard -----------------------
-
-f_checkers = q.FieldRealD(geo, 3)
-q.field_double.set_checkers(f_checkers)
-exp_checkers = np.where(
-    (coords_l.sum(axis=1) % 2 == 0)[:, None],
-    np.float64(1.0),
-    np.float64(-1.0),
-) * np.ones((1, 3), dtype=np.float64)
-err_checkers = float(np.max(np.abs(np.asarray(f_checkers) - exp_checkers)))
-assert err_checkers == 0.0, err_checkers
-q.json_results_append(
-    "cqlat-fields: set_checkers_double_field max err", err_checkers, 1e-12
-)
-q.json_results_append(
-    "cqlat-fields: set_checkers_double_field sum",
-    q.glb_sum(float(np.asarray(f_checkers).sum())),
     1e-12,
 )
 
@@ -327,7 +291,7 @@ q.json_results_append(
     "cqlat-fields: invert_double_field twice max err", err_inv2, 1e-12
 )
 
-# --- set_mul_complex_field: f *= complex factor ----------------------------
+# --- complex field *= complex factor ---------------------------------------
 
 g_mulc = (0.2 + rs.split("mulc-re").u_rand_arr(latt_size)) + 1j * (
     0.3 + rs.split("mulc-im").u_rand_arr(latt_size)
@@ -338,19 +302,13 @@ z_mulc = 0.7 - 0.4j
 
 f_mulc_1 = f_mulc.copy()
 f_mulc_1 *= z_mulc
-f_mulc_2 = f_mulc.copy()
-qc.set_mul_complex_field(f_mulc_2, z_mulc)
-assert np.array_equal(np.asarray(f_mulc_1), np.asarray(f_mulc_2))
 err_mulc = float(np.max(np.abs(np.asarray(f_mulc_1) - arr_mulc * z_mulc)))
 assert err_mulc < 1e-14, err_mulc
 q.json_results_append(
-    "cqlat-fields: set_mul_complex_field (*=) vs c call max err", 0.0, 1e-12
+    "cqlat-fields: complex field *= factor max err", err_mulc, check_eps
 )
 q.json_results_append(
-    "cqlat-fields: set_mul_complex_field vs numpy max err", err_mulc, check_eps
-)
-q.json_results_append(
-    "cqlat-fields: set_mul_complex_field qnorm", f_mulc_1.qnorm(), 1e-12
+    "cqlat-fields: complex field *= factor qnorm", f_mulc_1.qnorm(), 1e-12
 )
 
 # --- a real field rejects a genuinely complex factor -----------------------
@@ -405,7 +363,7 @@ q.json_results_append(
 q.json_results_append("cqlat-fields: get_mview_field write/read max err", 0.0, 1e-12)
 q.json_results_append("cqlat-fields: get_mview_field qnorm", f_mview.qnorm(), 1e-12)
 
-# --- save_field / load_field -----------------------------------------------
+# --- Field.write_direct / read_direct (qlat distributed field IO) ----------
 
 g_save = np.stack(
     [
@@ -421,77 +379,39 @@ n_bytes_expected = float(int(geo.total_volume) * 2 * 8)
 path_plain = os.path.join(".", "cqlat-fields-save.field")
 if os.path.isfile(path_plain):
     os.remove(path_plain)
-n_bytes = qc.save_field(f_save, path_plain)
+n_bytes = f_save.write_direct(path_plain)
 assert float(n_bytes) == n_bytes_expected, (n_bytes, n_bytes_expected)
 f_load = q.FieldRealD()
-n_read = qc.load_field(f_load, path_plain)
+n_read = f_load.read_direct(path_plain)
 assert float(n_read) == n_bytes_expected, (n_read, n_bytes_expected)
 assert f_load.geo == f_save.geo
 assert f_load.multiplicity == f_save.multiplicity
 err_load = float(np.max(np.abs(np.asarray(f_load) - arr_save)))
 assert err_load == 0.0, err_load
-q.json_results_append("cqlat-fields: save_field bytes", float(n_bytes), 1e-12)
-q.json_results_append("cqlat-fields: load_field bytes", float(n_read), 1e-12)
-q.json_results_append("cqlat-fields: save_field/load_field max err", err_load, 1e-12)
+q.json_results_append("cqlat-fields: write_direct bytes", float(n_bytes), 1e-12)
+q.json_results_append("cqlat-fields: read_direct bytes", float(n_read), 1e-12)
+q.json_results_append("cqlat-fields: write_direct/read_direct max err", err_load, 1e-12)
 
-# optional new_size_node third argument (a python list, see the note above)
+# a non-trivial new_size_node repartitions the field on disk and must load back
 path_nsn = os.path.join(".", "cqlat-fields-save-nsn.field")
-n_bytes_nsn = qc.save_field(f_save, path_nsn, [1, 1, 1, 8])
+n_bytes_nsn = f_save.write_direct(path_nsn, q.Coordinate([1, 1, 1, 8]))
 assert float(n_bytes_nsn) == n_bytes_expected, (n_bytes_nsn, n_bytes_expected)
 f_load_nsn = q.FieldRealD()
-n_read_nsn = qc.load_field(f_load_nsn, path_nsn)
+n_read_nsn = f_load_nsn.read_direct(path_nsn)
 assert float(n_read_nsn) == n_bytes_expected, (n_read_nsn, n_bytes_expected)
 assert f_load_nsn.geo == f_save.geo
 err_load_nsn = float(np.max(np.abs(np.asarray(f_load_nsn) - arr_save)))
 assert err_load_nsn == 0.0, err_load_nsn
 q.json_results_append(
-    "cqlat-fields: save_field(new_size_node) bytes", float(n_bytes_nsn), 1e-12
+    "cqlat-fields: write_direct(new_size_node) bytes", float(n_bytes_nsn), 1e-12
 )
 q.json_results_append(
-    "cqlat-fields: save_field(new_size_node)/load_field max err", err_load_nsn, 1e-12
+    "cqlat-fields: write_direct(new_size_node)/read_direct max err",
+    err_load_nsn,
+    1e-12,
 )
 
-# new_size_node also accepts a q.Coordinate (and a numpy array, via to_list()/
-# tolist() in py_convert(Coordinate&)); the result must be identical
-path_nsn2 = os.path.join(".", "cqlat-fields-save-nsn-coor.field")
-n_bytes_nsn2 = qc.save_field(f_save, path_nsn2, q.Coordinate([1, 1, 1, 8]))
-assert float(n_bytes_nsn2) == n_bytes_expected, (n_bytes_nsn2, n_bytes_expected)
-f_load_nsn2 = q.FieldRealD()
-n_read_nsn2 = qc.load_field(f_load_nsn2, path_nsn2)
-assert float(n_read_nsn2) == n_bytes_expected, (n_read_nsn2, n_bytes_expected)
-err_load_nsn2 = float(np.max(np.abs(np.asarray(f_load_nsn2) - arr_save)))
-assert err_load_nsn2 == 0.0, err_load_nsn2
-q.json_results_append(
-    "cqlat-fields: save_field(new_size_node=q.Coordinate) bytes",
-    float(n_bytes_nsn2),
-    1e-12,
-)
-q.json_results_append(
-    "cqlat-fields: save_field(new_size_node=q.Coordinate) max err",
-    err_load_nsn2,
-    1e-12,
-)
-path_nsn3 = os.path.join(".", "cqlat-fields-save-nsn-np.field")
-n_bytes_nsn3 = qc.save_field(f_save, path_nsn3, np.array([1, 1, 1, 8], dtype=np.int64))
-assert float(n_bytes_nsn3) == n_bytes_expected, (n_bytes_nsn3, n_bytes_expected)
-q.json_results_append(
-    "cqlat-fields: save_field(new_size_node=numpy array) bytes",
-    float(n_bytes_nsn3),
-    1e-12,
-)
-# an object without to_list()/tolist() is rejected with a clear error
-try:
-    qc.save_field(f_save, path_nsn3, object())
-except RuntimeError:
-    nsn_rejected = 1.0
-else:
-    nsn_rejected = 0.0
-assert nsn_rejected == 1.0
-q.json_results_append(
-    "cqlat-fields: save_field(new_size_node=object()) rejected", nsn_rejected
-)
-
-del f_load, f_load_nsn, f_load_nsn2
+del f_load, f_load_nsn
 gc.collect()
 
 q.timer_display()

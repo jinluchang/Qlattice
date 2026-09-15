@@ -65,17 +65,3 @@ EXPORT(load_gauge_transform_cps, {  // tested: cqlat-qcd
   const Long ret = load_gauge_transform_cps(gt, path);
   return py_convert(ret);
 })
-
-EXPORT(gt_invert, {  // tested: cqlat-qcd
-  using namespace qlat;
-  PyObject* p_gt = NULL;
-  PyObject* p_gt0 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_gt, &p_gt0)) {
-    return NULL;
-  }
-  // p_gt <- p_gt0^{-1}
-  GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
-  const GaugeTransform& gt0 = py_convert_type<GaugeTransform>(p_gt0);
-  gt_invert(gt, gt0);
-  Py_RETURN_NONE;
-})

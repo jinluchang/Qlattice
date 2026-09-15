@@ -6,63 +6,6 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* set_checkers_double_field_ctype(PyObject* p_field)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  set_checkers_double(f);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_complex_from_double_field_ctype(PyObject* p_field, PyObject* p_sf)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<RealD>& sf = py_convert_type_field<RealD>(p_sf);
-  set_complex_from_double(f, sf);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_double_from_complex_field_ctype(PyObject* p_field, PyObject* p_cf)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<ComplexD>& cf = py_convert_type_field<ComplexD>(p_cf);
-  set_double_from_complex(f, cf);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_abs_from_complex_field_ctype(PyObject* p_field, PyObject* p_cf)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<ComplexD>& cf = py_convert_type_field<ComplexD>(p_cf);
-  set_abs_from_complex(f, cf);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* set_ratio_double_field_ctype(PyObject* p_field, PyObject* p_sf1,
-                                       PyObject* p_sf2)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  Field<RealD>& sf1 = py_convert_type_field<RealD>(p_sf1);
-  Field<RealD>& sf2 = py_convert_type_field<RealD>(p_sf2);
-  set_ratio_double(f, sf1, sf2);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* less_than_double_field_ctype(PyObject* p_sf1, PyObject* p_sf2,
-                                       PyObject* p_mask)
-{
-  Field<M>& sf1 = py_convert_type_field<M>(p_sf1);
-  Field<RealD>& sf2 = py_convert_type_field<RealD>(p_sf2);
-  Field<RealD>& mask = py_convert_type_field<RealD>(p_mask);
-  less_than_double(sf1, sf2, mask);
-  Py_RETURN_NONE;
-}
-
-template <class M>
 PyObject* multiply_double_field_ctype(PyObject* p_sf, PyObject* p_factor)
 {
   Field<M>& sf = py_convert_type_field<M>(p_sf);
@@ -80,18 +23,6 @@ PyObject* invert_double_field_ctype(PyObject* p_sf)
 }
 
 }  // namespace qlat
-
-EXPORT(set_checkers_double_field, {  // tested: cqlat-fields
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_checkers_double_field_ctype, ctype, p_field);
-  return p_ret;
-})
 
 EXPORT(multiply_double_field, {  // tested: cqlat-fields
   using namespace qlat;

@@ -73,21 +73,6 @@
   1e-12
  ],
  [
-  "cqlat-fields: q.sqrt_field == c.set_sqrt_field",
-  1.0,
-  1e-12
- ],
- [
-  "cqlat-fields: set_checkers_double_field max err",
-  0.0,
-  1e-12
- ],
- [
-  "cqlat-fields: set_checkers_double_field sum",
-  0.0,
-  1e-12
- ],
- [
   "cqlat-fields: multiply_double_field max err",
   0.0,
   1e-12
@@ -108,17 +93,12 @@
   1e-12
  ],
  [
-  "cqlat-fields: set_mul_complex_field (*=) vs c call max err",
-  0.0,
-  1e-12
- ],
- [
-  "cqlat-fields: set_mul_complex_field vs numpy max err",
+  "cqlat-fields: complex field *= factor max err",
   2.482534153247273e-16,
   1e-10
  ],
  [
-  "cqlat-fields: set_mul_complex_field qnorm",
+  "cqlat-fields: complex field *= factor qnorm",
   443.1771960402647,
   1e-12
  ],
@@ -147,47 +127,28 @@
   1e-12
  ],
  [
-  "cqlat-fields: save_field bytes",
+  "cqlat-fields: write_direct bytes",
   8192.0,
   1e-12
  ],
  [
-  "cqlat-fields: load_field bytes",
+  "cqlat-fields: read_direct bytes",
   8192.0,
   1e-12
  ],
  [
-  "cqlat-fields: save_field/load_field max err",
+  "cqlat-fields: write_direct/read_direct max err",
   0.0,
   1e-12
  ],
  [
-  "cqlat-fields: save_field(new_size_node) bytes",
+  "cqlat-fields: write_direct(new_size_node) bytes",
   8192.0,
   1e-12
  ],
  [
-  "cqlat-fields: save_field(new_size_node)/load_field max err",
+  "cqlat-fields: write_direct(new_size_node)/read_direct max err",
   0.0,
   1e-12
- ],
- [
-  "cqlat-fields: save_field(new_size_node=q.Coordinate) bytes",
-  8192.0,
-  1e-12
- ],
- [
-  "cqlat-fields: save_field(new_size_node=q.Coordinate) max err",
-  0.0,
-  1e-12
- ],
- [
-  "cqlat-fields: save_field(new_size_node=numpy array) bytes",
-  8192.0,
-  1e-12
- ],
- [
-  "cqlat-fields: save_field(new_size_node=object()) rejected",
-  1.0
  ]
 ]
