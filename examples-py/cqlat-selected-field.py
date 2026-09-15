@@ -113,7 +113,7 @@ sf_c += sf_b
 ref_sum = ref_a + ref_b
 err_add = float(np.max(np.abs(np.asarray(sf_c)[:, 0] - ref_sum)))
 q.json_results_append(
-    "cqlat-selected-field: set_add_sfield max err", err_add, check_eps
+    f"cqlat-selected-field: set_add_sfield max err = {err_add < check_eps}"
 )
 assert err_add < 1e-15
 q.json_results_append(
@@ -125,14 +125,15 @@ sf_c *= 2.0
 ref_mul = 2.0 * ref_sum
 err_mul = float(np.max(np.abs(np.asarray(sf_c)[:, 0] - ref_mul)))
 q.json_results_append(
-    "cqlat-selected-field: set_mul_double_sfield max err", err_mul, check_eps
+    f"cqlat-selected-field: set_mul_double_sfield max err = {err_mul < check_eps}"
 )
 assert err_mul == 0.0
 sf_c *= -1.5
 ref_mul2 = -1.5 * ref_mul
 err_mul2 = float(np.max(np.abs(np.asarray(sf_c)[:, 0] - ref_mul2)))
 q.json_results_append(
-    "cqlat-selected-field: set_mul_double_sfield (-1.5) max err", err_mul2, check_eps
+    f"cqlat-selected-field: set_mul_double_sfield (-1.5) max err"
+    f" = {err_mul2 < check_eps}"
 )
 assert err_mul2 < 1e-15
 q.json_results_append(
@@ -149,7 +150,7 @@ exp_local = mk_local_field_values(geo, exp_full)
 got_local = np.asarray(f_c)[:, 0]
 err_acc = float(np.max(np.abs(got_local - exp_local)))
 q.json_results_append(
-    "cqlat-selected-field: acc_field_sfield max err", err_acc, check_eps
+    f"cqlat-selected-field: acc_field_sfield max err = {err_acc < check_eps}"
 )
 assert err_acc == 0.0
 # only the selected sites may change
@@ -174,7 +175,7 @@ err_sub = float(
 )
 assert err_sub == 0.0, err_sub
 q.json_results_append(
-    "cqlat-selected-field: field -= selected_field max err", err_sub, check_eps
+    f"cqlat-selected-field: field -= selected_field max err = {err_sub < check_eps}"
 )
 q.json_results_append(
     "cqlat-selected-field: field -= selected_field sum",
@@ -198,7 +199,8 @@ err_sp_add = float(
 )
 assert err_sp_add == 0.0, err_sp_add
 q.json_results_append(
-    "cqlat-selected-field: acc_field_spfield (+=) max err", err_sp_add, check_eps
+    f"cqlat-selected-field: acc_field_spfield (+=) max err"
+    f" = {err_sp_add < check_eps}"
 )
 q.json_results_append(
     "cqlat-selected-field: acc_field_spfield (+=) sum",
@@ -215,7 +217,8 @@ err_sp_sub = float(
 )
 assert err_sp_sub == 0.0, err_sp_sub
 q.json_results_append(
-    "cqlat-selected-field: acc_field_spfield (-=) max err", err_sp_sub, check_eps
+    f"cqlat-selected-field: acc_field_spfield (-=) max err"
+    f" = {err_sp_sub < check_eps}"
 )
 q.json_results_append(
     "cqlat-selected-field: acc_field_spfield (-=) sum",
@@ -233,9 +236,8 @@ err_sp_empty = float(
 )
 assert err_sp_empty == 0.0, err_sp_empty
 q.json_results_append(
-    "cqlat-selected-field: acc_field_spfield (empty field) max err",
-    err_sp_empty,
-    check_eps,
+    f"cqlat-selected-field: acc_field_spfield (empty field) max err"
+    f" = {err_sp_empty < check_eps}"
 )
 q.json_results_append(
     "cqlat-selected-field: acc_field_spfield (empty field) sum",
@@ -282,9 +284,8 @@ for t_dir in [3, 0]:
     exp_t = glb_tslice_sums(xg_all, t_dir, v_sel_all, t_size)
     err_tslice = float(np.max(np.abs(got_t - exp_t)))
     q.json_results_append(
-        f"cqlat-selected-field: glb_sum_tslice_long_sfield t_dir={t_dir} max err",
-        err_tslice,
-        check_eps,
+        f"cqlat-selected-field: glb_sum_tslice_long_sfield t_dir={t_dir} max err"
+        f" = {err_tslice < check_eps}"
     )
     assert err_tslice == 0.0
     q.json_results_append(

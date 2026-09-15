@@ -37,7 +37,7 @@ prop1 -= prop
 
 q.displayln_info(f"diff ratio {q.qnorm(prop1) / q.qnorm(prop)}")
 
-q.json_results_append("float diff ratio", q.qnorm(prop1) / q.qnorm(prop), 1e-12)
+q.json_results_append(f"float diff ratio = {q.qnorm(prop1) / q.qnorm(prop) < 1e-12}")
 
 assert q.qnorm(prop1) / q.qnorm(prop) < 1e-15
 
@@ -47,7 +47,7 @@ q.load_grid_prop_double(prop1, "results/prop-d.grid.field")
 
 prop1 -= prop
 
-q.json_results_append("double diff ratio", q.qnorm(prop1) / q.qnorm(prop), 1e-12)
+q.json_results_append(f"double diff ratio = {q.qnorm(prop1) / q.qnorm(prop) < 1e-12}")
 q.json_results_append("gf.plaq()", gf.plaq(), 1e-12)
 
 q.timer_display()

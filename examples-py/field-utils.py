@@ -192,7 +192,7 @@ gf1.from_field(f)
 
 gf1 -= gf
 
-q.json_results_append("diff norm", gf1.qnorm(), 1e-12)
+q.json_results_append(f"diff norm = {gf1.qnorm() < 1e-12}")
 
 n_per_tslice = 16
 fsel = q.FieldSelection()
@@ -214,7 +214,7 @@ sum_tslice -= sum_tslice2
 
 q.json_results_append("sum_tslice1.qnorm()", sum_tslice1.qnorm(), 1e-12)
 q.json_results_append("sum_tslice2.qnorm()", sum_tslice2.qnorm(), 1e-12)
-q.json_results_append("sum_tslice.qnorm()", sum_tslice.qnorm(), 1e-12)
+q.json_results_append(f"sum_tslice.qnorm() = {sum_tslice.qnorm() < 1e-12}")
 
 gf_vec = [
     q.mk_merged_fields_ms(

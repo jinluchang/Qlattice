@@ -103,7 +103,7 @@ err_set = (
     + abs(sa2.lmbd() - sa.lmbd())
     + abs(sa2.alpha() - sa.alpha())
 )
-q.json_results_append("cqlat-action-params: set_scalar_action", float(err_set), 0.0)
+q.json_results_append(f"cqlat-action-params: set_scalar_action = {err_set == 0.0}")
 del sa2
 import gc
 
@@ -155,7 +155,7 @@ mas_ref = ref_hmc_estimate_mass(
 err_hem = float(np.max(np.abs(np.asarray(masses) - mas_ref)))
 assert err_hem < check_eps, err_hem
 q.json_results_append(
-    "cqlat-action-params: hmc_estimate_mass max error", err_hem, check_eps
+    f"cqlat-action-params: hmc_estimate_mass max error = {err_hem < check_eps}"
 )
 mas0_g = np.where(orig_loc, np.asarray(masses)[:, 0], 0.0)
 q.json_results_append(
@@ -175,9 +175,8 @@ qc.hmc_estimate_mass_scalar_action(sa, masses_direct, field_ft, force_ft, phi0)
 err_hem_direct = float(np.max(np.abs(np.asarray(masses_direct) - np.asarray(masses))))
 assert err_hem_direct == 0.0, err_hem_direct
 q.json_results_append(
-    "cqlat-action-params: hmc_estimate_mass wrapper vs direct cqlat",
-    err_hem_direct,
-    0.0,
+    f"cqlat-action-params: hmc_estimate_mass wrapper vs direct cqlat"
+    f" = {err_hem_direct == 0.0}"
 )
 
 # --- set_complex_from_double / set_double_from_complex
@@ -193,7 +192,7 @@ sa.set_complex_from_double(cf_conv, sf_real)
 err_cfd = float(np.max(np.abs(np.asarray(cf_conv) - sf_real_arr)))
 assert err_cfd == 0.0, err_cfd
 q.json_results_append(
-    "cqlat-action-params: set_complex_from_double max err", err_cfd, check_eps
+    f"cqlat-action-params: set_complex_from_double max err = {err_cfd < check_eps}"
 )
 q.json_results_append(
     "cqlat-action-params: set_complex_from_double sum",
@@ -210,7 +209,7 @@ sa.set_double_from_complex(sf_back, cf_conv2)
 err_dfc = float(np.max(np.abs(np.asarray(sf_back) - cf_conv2_arr.real)))
 assert err_dfc == 0.0, err_dfc
 q.json_results_append(
-    "cqlat-action-params: set_double_from_complex max err", err_dfc, check_eps
+    f"cqlat-action-params: set_double_from_complex max err = {err_dfc < check_eps}"
 )
 q.json_results_append(
     "cqlat-action-params: set_double_from_complex sum",
@@ -263,7 +262,7 @@ omega_arr = np.asarray(fa_z.omega())
 err_omega = float(np.max(np.abs(omega_arr - np.array(zm_omega))))
 assert err_omega < check_eps, (omega_arr, zm_omega)
 q.json_results_append(
-    "cqlat-action-params: get_omega_fermion_action max error", err_omega, check_eps
+    f"cqlat-action-params: get_omega_fermion_action max error = {err_omega < check_eps}"
 )
 q.json_results_append(
     "cqlat-action-params: get_omega_fermion_action real sum",
@@ -277,9 +276,8 @@ q.json_results_append(
 )
 assert fa_z.mobius_scale() == 0.0
 q.json_results_append(
-    "cqlat-action-params: get_mobius_scale_fermion_action (zmobius)",
-    fa_z.mobius_scale(),
-    0.0,
+    f"cqlat-action-params: get_mobius_scale_fermion_action (zmobius)"
+    f" = {fa_z.mobius_scale() == 0.0}"
 )
 
 # --- free_fermion_action, exercised by __del__

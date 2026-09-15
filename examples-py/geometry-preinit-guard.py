@@ -45,22 +45,22 @@ r = subprocess.run(
     text=True,
     timeout=300,
 )
-child_outcome = 9.0
+child_outcome = "unexpected"
 child_ok = False
 for line in r.stdout.splitlines():
     if line.startswith("CHILD: "):
         word = line[7:]
         if word == "RuntimeError":
-            child_outcome = 1.0
+            child_outcome = "RuntimeError"
             child_ok = True
         elif word == "NO-EXCEPTION":
-            child_outcome = 0.0
+            child_outcome = "NO-EXCEPTION"
         else:
-            child_outcome = 9.0
-q.json_results_append("pre-init Geometry(total_site) outcome", child_outcome)
+            child_outcome = f"unexpected:{word}"
+q.json_results_append(f"pre-init Geometry(total_site) outcome = {child_outcome}")
 q.json_results_append(f"pre-init Geometry(total_site) ok = {child_ok}")
 q.json_results_append(f"pre-init child exit code = {r.returncode}")
-if child_outcome != 1.0:
+if not child_ok:
     print("CHILD-STDOUT:", r.stdout)
     print("CHILD-STDERR:", r.stderr)
 

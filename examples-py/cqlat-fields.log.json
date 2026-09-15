@@ -28,9 +28,7 @@
   "cqlat-fields: refresh_expanded_1 == refresh_expanded (1D halo)"
  ],
  [
-  "cqlat-fields: reflect_field max err",
-  0.0,
-  1e-12
+  "cqlat-fields: reflect_field max err = True"
  ],
  [
   "cqlat-fields: reflect_field twice is identity"
@@ -41,9 +39,7 @@
   1e-12
  ],
  [
-  "cqlat-fields: merge_fields_ms_field max err",
-  0.0,
-  1e-12
+  "cqlat-fields: merge_fields_ms_field max err = True"
  ],
  [
   "cqlat-fields: merge_fields_ms_field sum",
@@ -51,9 +47,7 @@
   1e-12
  ],
  [
-  "cqlat-fields: set_sqrt_field max err",
-  0.0,
-  1e-12
+  "cqlat-fields: set_sqrt_field max err = True"
  ],
  [
   "cqlat-fields: set_sqrt_field sum",
@@ -61,9 +55,7 @@
   1e-12
  ],
  [
-  "cqlat-fields: multiply_double_field max err",
-  0.0,
-  1e-12
+  "cqlat-fields: multiply_double_field max err = True"
  ],
  [
   "cqlat-fields: multiply_double_field sum",
@@ -71,19 +63,13 @@
   1e-12
  ],
  [
-  "cqlat-fields: invert_double_field max err",
-  0.0,
-  1e-12
+  "cqlat-fields: invert_double_field max err = True"
  ],
  [
-  "cqlat-fields: invert_double_field twice max err",
-  2.220446049250313e-16,
-  1e-12
+  "cqlat-fields: invert_double_field twice max err = True"
  ],
  [
-  "cqlat-fields: complex field *= factor max err",
-  2.482534153247273e-16,
-  1e-10
+  "cqlat-fields: complex field *= factor max err = True"
  ],
  [
   "cqlat-fields: complex field *= factor qnorm",
@@ -94,9 +80,7 @@
   "cqlat-fields: real field *= complex factor rejected = True"
  ],
  [
-  "cqlat-fields: real field *= complex(2.0, 0.0) max err",
-  0.0,
-  1e-10
+  "cqlat-fields: real field *= complex(2.0, 0.0) max err = True"
  ],
  [
   "cqlat-fields: get_mview_field nbytes = 4096"
@@ -116,16 +100,12 @@
   "cqlat-fields: read_direct bytes = 8192"
  ],
  [
-  "cqlat-fields: write_direct/read_direct max err",
-  0.0,
-  1e-12
+  "cqlat-fields: write_direct/read_direct max err = True"
  ],
  [
   "cqlat-fields: write_direct(new_size_node) bytes = 8192"
  ],
  [
-  "cqlat-fields: write_direct(new_size_node)/read_direct max err",
-  0.0,
-  1e-12
+  "cqlat-fields: write_direct(new_size_node)/read_direct max err = True"
  ]
 ]

@@ -60,9 +60,7 @@
   1e-06
  ],
  [
-  "src diff qnorm tag=qz_f",
-  0.0,
-  1e-07
+  "src diff qnorm tag=qz_f = True"
  ],
  [
   "sol diff qnorm tag=qz_f",
@@ -96,19 +94,13 @@
   1e-06
  ],
  [
-  "src diff qnorm tag=qm_mp",
-  0.0,
-  1e-07
+  "src diff qnorm tag=qm_mp = True"
  ],
  [
-  "sol diff qnorm tag=qm_mp",
-  1.5054846020419845e-13,
-  0.01
+  "sol diff qnorm tag=qm_mp = True"
  ],
  [
-  "sol1 diff qnorm tag=qm_mp",
-  2.313115425888109e-12,
-  0.01
+  "sol1 diff qnorm tag=qm_mp = True"
  ],
  [
   "tag=qm_split start"
@@ -132,19 +124,13 @@
   1e-06
  ],
  [
-  "src diff qnorm tag=qm_split",
-  0.0,
-  1e-07
+  "src diff qnorm tag=qm_split = True"
  ],
  [
-  "sol diff qnorm tag=qm_split",
-  1.5054846020419845e-13,
-  0.01
+  "sol diff qnorm tag=qm_split = True"
  ],
  [
-  "sol1 diff qnorm tag=qm_split",
-  2.313115425888109e-12,
-  0.01
+  "sol1 diff qnorm tag=qm_split = True"
  ],
  [
   "tag=qm_split_sloppy start"
@@ -168,9 +154,7 @@
   1e-06
  ],
  [
-  "src diff qnorm tag=qm_split_sloppy",
-  0.0,
-  1e-07
+  "src diff qnorm tag=qm_split_sloppy = True"
  ],
  [
   "sol diff qnorm tag=qm_split_sloppy",
@@ -204,18 +188,12 @@
   1e-06
  ],
  [
-  "src diff qnorm tag=inv_qm_madwf",
-  0.0,
-  1e-07
+  "src diff qnorm tag=inv_qm_madwf = True"
  ],
  [
-  "sol diff qnorm tag=inv_qm_madwf",
-  1.5124888841901922e-13,
-  0.01
+  "sol diff qnorm tag=inv_qm_madwf = True"
  ],
  [
-  "sol1 diff qnorm tag=inv_qm_madwf",
-  2.3302756374948188e-12,
-  0.01
+  "sol1 diff qnorm tag=inv_qm_madwf = True"
  ]
 ]

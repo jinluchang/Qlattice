@@ -19,27 +19,19 @@
   "cqlat-fthmc: trivial FlowInfo step count = 8"
  ],
  [
-  "cqlat-fthmc: set_gm_force_flowed_no_det (empty flow)",
-  0.0,
-  1e-10
+  "cqlat-fthmc: set_gm_force_flowed_no_det (empty flow) = True"
  ],
  [
-  "cqlat-fthmc: set_gm_force_flowed_no_det (trivial flow)",
-  2.220446049250313e-16,
-  1e-10
+  "cqlat-fthmc: set_gm_force_flowed_no_det (trivial flow) = True"
  ],
  [
-  "cqlat-fthmc: gf_flow (trivial flow)",
-  0.0,
-  1e-10
+  "cqlat-fthmc: gf_flow (trivial flow) = True"
  ],
  [
   "cqlat-fthmc: flow FlowInfo step count = 8"
  ],
  [
-  "cqlat-fthmc: flowed force is anti-Hermitian",
-  0.0,
-  1e-10
+  "cqlat-fthmc: flowed force is anti-Hermitian = True"
  ],
  [
   "cqlat-fthmc: flowed force is finite = True"
@@ -73,31 +65,22 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: get_gm_force_magnitudes n_elems=2 rejected",
-  1.0
+  "cqlat-fthmc: get_gm_force_magnitudes n_elems=2 rejected = True"
  ],
  [
-  "cqlat-fthmc: magnitude 0 vs numpy mean",
-  0.0,
-  1e-10
+  "cqlat-fthmc: magnitude 0 vs numpy mean = True"
  ],
  [
-  "cqlat-fthmc: magnitude 1 vs numpy l2",
-  2.220446049250313e-16,
-  1e-10
+  "cqlat-fthmc: magnitude 1 vs numpy l2 = True"
  ],
  [
-  "cqlat-fthmc: magnitude n_elems-1 vs numpy max",
-  2.220446049250313e-16,
-  1e-10
+  "cqlat-fthmc: magnitude n_elems-1 vs numpy max = True"
  ],
  [
   "cqlat-fthmc: magnitude n_elems-1 equals largest magnitude = True"
  ],
  [
-  "cqlat-fthmc: c.get_gm_force_magnitudes direct max diff",
-  0.0,
-  1e-10
+  "cqlat-fthmc: c.get_gm_force_magnitudes direct max diff = True"
  ],
  [
   "cqlat-fthmc: get_gm_force_magnitudes(gm_flow)",
@@ -114,9 +97,7 @@
   1e-10
  ],
  [
-  "cqlat-fthmc: flowed magnitude 0 vs numpy mean",
-  4.440892098500626e-16,
-  1e-10
+  "cqlat-fthmc: flowed magnitude 0 vs numpy mean = True"
  ],
  [
   "cqlat-fthmc: free_flow_info (FlowInfo.__del__)"

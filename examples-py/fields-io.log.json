@@ -77,9 +77,7 @@
   "fields-io: prop_d crc32 = 4021037301"
  ],
  [
-  "fields-io: prop_d diff qnorm",
-  0.0,
-  1e-10
+  "fields-io: prop_d diff qnorm = True"
  ],
  [
   "fields-io: prop_d diff crc32 = 4103169609"
@@ -93,9 +91,7 @@
   "fields-io: prop_f crc32 = 3862544378"
  ],
  [
-  "fields-io: prop_f diff qnorm",
-  2.4915300645954918e-11,
-  1e-10
+  "fields-io: prop_f diff qnorm = True"
  ],
  [
   "fields-io: prop_f diff crc32 = 412417133"
@@ -106,9 +102,7 @@
   1e-10
  ],
  [
-  "fields-io: s_prop_f diff qnorm",
-  6.256200246927719e-12,
-  1e-10
+  "fields-io: s_prop_f diff qnorm = True"
  ],
  [
   "fields-io: prop1_f qnorm",
@@ -116,9 +110,7 @@
   1e-10
  ],
  [
-  "fields-io: prop1_f diff qnorm",
-  6.356573470801079e-12,
-  1e-10
+  "fields-io: prop1_f diff qnorm = True"
  ],
  [
   "fields-io: prop1_ff qnorm",
@@ -126,9 +118,7 @@
   1e-10
  ],
  [
-  "fields-io: prop1_ff diff qnorm",
-  6.356573470801079e-12,
-  1e-10
+  "fields-io: prop1_ff diff qnorm = True"
  ],
  [
   "fields-io: index.qar crc=9548816B"

@@ -191,7 +191,7 @@ assert err_refl == 0.0, err_refl
 f_refl2 = f_refl.shift(is_reflect=True)
 assert np.array_equal(np.asarray(f_refl2), np.asarray(f_reflect))
 
-q.json_results_append("cqlat-fields: reflect_field max err", err_refl, 1e-12)
+q.json_results_append(f"cqlat-fields: reflect_field max err = {err_refl < 1e-12}")
 q.json_results_append("cqlat-fields: reflect_field twice is identity")
 q.json_results_append("cqlat-fields: reflect_field qnorm", f_refl.qnorm(), 1e-12)
 
@@ -217,7 +217,7 @@ exp_merge = np.stack(
 )
 err_merge = float(np.max(np.abs(np.asarray(f_merge) - exp_merge)))
 assert err_merge == 0.0, err_merge
-q.json_results_append("cqlat-fields: merge_fields_ms_field max err", err_merge, 1e-12)
+q.json_results_append(f"cqlat-fields: merge_fields_ms_field max err = {err_merge < 1e-12}")
 q.json_results_append(
     "cqlat-fields: merge_fields_ms_field sum",
     q.glb_sum(float(np.asarray(f_merge).sum())),
@@ -235,7 +235,7 @@ assert np.asarray(f_sqrt).shape == np.asarray(f_sqrt_in).shape
 assert f_sqrt.multiplicity == f_sqrt_in.multiplicity
 err_sqrt = float(np.max(np.abs(np.asarray(f_sqrt) - np.sqrt(np.asarray(f_sqrt_in)))))
 assert err_sqrt == 0.0, err_sqrt
-q.json_results_append("cqlat-fields: set_sqrt_field max err", err_sqrt, 1e-12)
+q.json_results_append(f"cqlat-fields: set_sqrt_field max err = {err_sqrt < 1e-12}")
 q.json_results_append(
     "cqlat-fields: set_sqrt_field sum",
     q.glb_sum(float(np.asarray(f_sqrt).sum())),
@@ -265,7 +265,7 @@ arr_mul_b = np.asarray(f_mul_b).copy()
 q.field_double.multiply_double(f_mul_a, f_mul_b)
 err_mul = float(np.max(np.abs(np.asarray(f_mul_a) - arr_mul_a * arr_mul_b)))
 assert err_mul == 0.0, err_mul
-q.json_results_append("cqlat-fields: multiply_double_field max err", err_mul, 1e-12)
+q.json_results_append(f"cqlat-fields: multiply_double_field max err = {err_mul < 1e-12}")
 q.json_results_append(
     "cqlat-fields: multiply_double_field sum",
     q.glb_sum(float(np.asarray(f_mul_a).sum())),
@@ -282,9 +282,9 @@ assert err_inv == 0.0, err_inv
 q.field_double.invert_double(f_inv)
 err_inv2 = float(np.max(np.abs(np.asarray(f_inv) - arr_inv)))
 assert err_inv2 < 1e-12, err_inv2
-q.json_results_append("cqlat-fields: invert_double_field max err", err_inv, 1e-12)
+q.json_results_append(f"cqlat-fields: invert_double_field max err = {err_inv < 1e-12}")
 q.json_results_append(
-    "cqlat-fields: invert_double_field twice max err", err_inv2, 1e-12
+    f"cqlat-fields: invert_double_field twice max err = {err_inv2 < 1e-12}"
 )
 
 # --- complex field *= complex factor ---------------------------------------
@@ -301,7 +301,7 @@ f_mulc_1 *= z_mulc
 err_mulc = float(np.max(np.abs(np.asarray(f_mulc_1) - arr_mulc * z_mulc)))
 assert err_mulc < 1e-14, err_mulc
 q.json_results_append(
-    "cqlat-fields: complex field *= factor max err", err_mulc, check_eps
+    f"cqlat-fields: complex field *= factor max err = {err_mulc < check_eps}"
 )
 q.json_results_append(
     "cqlat-fields: complex field *= factor qnorm", f_mulc_1.qnorm(), 1e-12
@@ -331,7 +331,7 @@ f_rej *= complex(2.0, 0.0)
 err_rej = float(np.max(np.abs(np.asarray(f_rej) - arr_rej * 2.0)))
 assert err_rej == 0.0, err_rej
 q.json_results_append(
-    "cqlat-fields: real field *= complex(2.0, 0.0) max err", err_rej, check_eps
+    f"cqlat-fields: real field *= complex(2.0, 0.0) max err = {err_rej < check_eps}"
 )
 
 # --- get_mview_field: writable memoryview of the field data ----------------
@@ -388,7 +388,7 @@ err_load = float(np.max(np.abs(np.asarray(f_load) - arr_save)))
 assert err_load == 0.0, err_load
 q.json_results_append(f"cqlat-fields: write_direct bytes = {n_bytes}")
 q.json_results_append(f"cqlat-fields: read_direct bytes = {n_read}")
-q.json_results_append("cqlat-fields: write_direct/read_direct max err", err_load, 1e-12)
+q.json_results_append(f"cqlat-fields: write_direct/read_direct max err = {err_load < 1e-12}")
 
 # a non-trivial new_size_node repartitions the field on disk and must load back
 path_nsn = os.path.join(".", "cqlat-fields-save-nsn.field")
@@ -402,9 +402,7 @@ err_load_nsn = float(np.max(np.abs(np.asarray(f_load_nsn) - arr_save)))
 assert err_load_nsn == 0.0, err_load_nsn
 q.json_results_append(f"cqlat-fields: write_direct(new_size_node) bytes = {n_bytes_nsn}")
 q.json_results_append(
-    "cqlat-fields: write_direct(new_size_node)/read_direct max err",
-    err_load_nsn,
-    1e-12,
+    f"cqlat-fields: write_direct(new_size_node)/read_direct max err = {err_load_nsn < 1e-12}"
 )
 
 del f_load, f_load_nsn

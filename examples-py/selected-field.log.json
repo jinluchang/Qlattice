@@ -495,9 +495,7 @@
   1e-05
  ],
  [
-  "sp_prop save load diff qnorm",
-  0.0,
-  1e-05
+  "sp_prop save load diff qnorm = True"
  ],
  [
   "sp_prop lat_data qnorm",
@@ -505,9 +503,7 @@
   1e-05
  ],
  [
-  "sp_prop lat_data diff qnorm",
-  0.0,
-  1e-05
+  "sp_prop lat_data diff qnorm = True"
  ],
  [
   "s_prop save load qnorm",
@@ -515,9 +511,7 @@
   1e-05
  ],
  [
-  "s_prop save load diff qnorm",
-  0.0,
-  1e-05
+  "s_prop save load diff qnorm = True"
  ],
  [
   "s_prop_arr.dtype=complex128"
@@ -536,9 +530,7 @@
   1e-05
  ],
  [
-  "sp_prop1 diff qnorm",
-  0.0,
-  1e-05
+  "sp_prop1 diff qnorm = True"
  ],
  [
   "s_prop qnorm in s_prop1 check",
@@ -546,9 +538,7 @@
   1e-05
  ],
  [
-  "s_prop1 diff qnorm",
-  0.0,
-  1e-05
+  "s_prop1 diff qnorm = True"
  ],
  [
   "prop crc32 = 4021037301"

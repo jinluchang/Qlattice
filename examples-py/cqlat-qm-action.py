@@ -193,7 +193,7 @@ q.json_results_append("cqlat-qm-action: beta", qma.beta(), check_eps)
 q.json_results_append(
     "cqlat-qm-action: barrier_strength", qma.barrier_strength(), check_eps
 )
-q.json_results_append("cqlat-qm-action: M", qma.M(), check_eps)
+q.json_results_append(f"cqlat-qm-action: M = {qma.M() < check_eps}")
 q.json_results_append("cqlat-qm-action: L", qma.L(), check_eps)
 q.json_results_append(f"cqlat-qm-action: t_FV_out = {qma.t_FV_out()}")
 q.json_results_append(f"cqlat-qm-action: t_FV = {qma.t_FV()}")
@@ -239,7 +239,7 @@ for x, t in check_points:
     err_V = max(err_V, float(abs(v - vl)))
 assert err_V < check_eps, err_V
 q.json_results_append(f"cqlat-qm-action: V vs reference = {err_V < check_eps}")
-q.json_results_append("cqlat-qm-action: V max error", err_V, check_eps)
+q.json_results_append(f"cqlat-qm-action: V max error = {err_V < check_eps}")
 q.json_results_append(
     "cqlat-qm-action: V((1.0,0.6), 1)", qma.V((1.0, 0.6), 1), check_eps
 )
@@ -305,7 +305,7 @@ q.json_results_append("cqlat-qm-action: sum_sq", sum_sq, 1e-10)
 err_ham = abs(qma.hmc_m_hamilton_node(f) - 0.5 * qma.sum_sq(f))
 assert err_ham < check_eps * max(1.0, abs(sum_sq_ref))
 q.json_results_append(
-    "cqlat-qm-action: hmc_m_hamilton_node - sum_sq/2", float(err_ham), 1e-10
+    f"cqlat-qm-action: hmc_m_hamilton_node - sum_sq/2 = {err_ham < 1e-10}"
 )
 
 # --- action_node: glb_sum(action_node(f)) equals the global action built from V
@@ -328,7 +328,7 @@ S = q.glb_sum(qma.action_node(f))
 assert abs(S - S_ref) < 1e-9 * max(1.0, abs(S_ref)), (S, S_ref)
 q.json_results_append("cqlat-qm-action: action_node", S, 1e-9)
 q.json_results_append(
-    "cqlat-qm-action: action_node vs reference", float(abs(S - S_ref)), 1e-9
+    f"cqlat-qm-action: action_node vs reference = {abs(S - S_ref) < 1e-9}"
 )
 
 # --- hmc_set_force: the force is the gradient of the action
@@ -341,7 +341,9 @@ dS = q.glb_sum(qma.action_node(f_p)) - q.glb_sum(qma.action_node(f_m))
 pred = 2.0 * q.glb_sum(float(np.sum(np.asarray(force) * np.asarray(h_field))))
 err_force = abs(dS - pred) / max(1.0, abs(pred))
 assert err_force < 1e-8, (dS, pred, err_force)
-q.json_results_append("cqlat-qm-action: hmc_set_force vs dS/dh", float(err_force), 1e-8)
+q.json_results_append(
+    f"cqlat-qm-action: hmc_set_force vs dS/dh = {err_force < 1e-8}"
+)
 q.json_results_append(
     "cqlat-qm-action: hmc_set_force sum",
     q.glb_sum(float(np.asarray(force).sum())),

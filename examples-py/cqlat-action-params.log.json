@@ -18,9 +18,7 @@
   1e-10
  ],
  [
-  "cqlat-action-params: set_scalar_action",
-  0.0,
-  0.0
+  "cqlat-action-params: set_scalar_action = True"
  ],
  [
   "cqlat-action-params: to_mass_factor vs numpy reference = True"
@@ -31,9 +29,7 @@
   1e-10
  ],
  [
-  "cqlat-action-params: hmc_estimate_mass max error",
-  8.881784197001252e-16,
-  1e-10
+  "cqlat-action-params: hmc_estimate_mass max error = True"
  ],
  [
   "cqlat-action-params: hmc_estimate_mass origin value",
@@ -46,14 +42,10 @@
   1e-10
  ],
  [
-  "cqlat-action-params: hmc_estimate_mass wrapper vs direct cqlat",
-  0.0,
-  0.0
+  "cqlat-action-params: hmc_estimate_mass wrapper vs direct cqlat = True"
  ],
  [
-  "cqlat-action-params: set_complex_from_double max err",
-  0.0,
-  1e-10
+  "cqlat-action-params: set_complex_from_double max err = True"
  ],
  [
   "cqlat-action-params: set_complex_from_double sum",
@@ -61,9 +53,7 @@
   1e-10
  ],
  [
-  "cqlat-action-params: set_double_from_complex max err",
-  0.0,
-  1e-10
+  "cqlat-action-params: set_double_from_complex max err = True"
  ],
  [
   "cqlat-action-params: set_double_from_complex sum",
@@ -88,9 +78,7 @@
   "cqlat-action-params: set_fermion_action"
  ],
  [
-  "cqlat-action-params: get_omega_fermion_action max error",
-  1.5700924586837752e-16,
-  1e-10
+  "cqlat-action-params: get_omega_fermion_action max error = True"
  ],
  [
   "cqlat-action-params: get_omega_fermion_action real sum",
@@ -103,9 +91,7 @@
   1e-10
  ],
  [
-  "cqlat-action-params: get_mobius_scale_fermion_action (zmobius)",
-  0.0,
-  0.0
+  "cqlat-action-params: get_mobius_scale_fermion_action (zmobius) = True"
  ],
  [
   "cqlat-action-params: free_fermion_action (via __del__)"

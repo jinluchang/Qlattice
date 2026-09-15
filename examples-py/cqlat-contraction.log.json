@@ -6,9 +6,7 @@
   "cqlat-contraction: contract_chvp_16 vs numpy = True"
  ],
  [
-  "cqlat-contraction: contract_chvp_16 max error",
-  1.897149936107019e-15,
-  1e-10
+  "cqlat-contraction: contract_chvp_16 max error = True"
  ],
  [
   "cqlat-contraction: contract_chvp_16 sum(mu=0,nu=0)",
@@ -23,9 +21,7 @@
   "cqlat-contraction: c.contract_chvp_16_field direct vs wrapper = True"
  ],
  [
-  "cqlat-contraction: contract_chvp_16 linearity",
-  0.0,
-  1e-10
+  "cqlat-contraction: contract_chvp_16 linearity = True"
  ],
  [
   "cqlat-contraction: fsel prob",
@@ -36,9 +32,7 @@
   "cqlat-contraction: contract_chvp3_field vs numpy = True"
  ],
  [
-  "cqlat-contraction: contract_chvp3_field max error",
-  1.5888218580782548e-14,
-  1e-10
+  "cqlat-contraction: contract_chvp3_field max error = True"
  ],
  [
   "cqlat-contraction: contract_chvp3_field tsep=0 mu=0",
@@ -52,9 +46,7 @@
   "cqlat-contraction: contract_pion_field(Prop) vs numpy = True"
  ],
  [
-  "cqlat-contraction: contract_pion_field(Prop) max error",
-  6.821210263296962e-13,
-  1e-10
+  "cqlat-contraction: contract_pion_field(Prop) max error = True"
  ],
  [
   "cqlat-contraction: contract_pion_field(Prop) tsep=0",
@@ -65,9 +57,7 @@
   "cqlat-contraction: contract_pion_field(SelProp) vs numpy = True"
  ],
  [
-  "cqlat-contraction: contract_pion_field(SelProp) max error",
-  2.2737367544323206e-13,
-  1e-10
+  "cqlat-contraction: contract_pion_field(SelProp) max error = True"
  ],
  [
   "cqlat-contraction: contract_pion_field(SelProp) tsep=0",

@@ -20,19 +20,13 @@
   62.0
  ],
  [
-  "cqlat-propagator: fsel src = fu1 * 1 max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: fsel src = fu1 * 1 max err = True"
  ],
  [
-  "cqlat-propagator: fsel sol = src * conj(fu1) max err",
-  1.133675097384567e-16,
-  1e-10
+  "cqlat-propagator: fsel sol = src * conj(fu1) max err = True"
  ],
  [
-  "cqlat-propagator: fsel sol = 1 max err",
-  2.220446049250313e-16,
-  1e-10
+  "cqlat-propagator: fsel sol = 1 max err = True"
  ],
  [
   "cqlat-propagator: fsel sol sig",
@@ -66,19 +60,13 @@
   19.0
  ],
  [
-  "cqlat-propagator: psel src = fu1 * 1 max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: psel src = fu1 * 1 max err = True"
  ],
  [
-  "cqlat-propagator: psel sol = src * conj(fu1) max err",
-  2.2220579611107537e-16,
-  1e-10
+  "cqlat-propagator: psel sol = src * conj(fu1) max err = True"
  ],
  [
-  "cqlat-propagator: psel sol = 1 max err",
-  2.220446049250313e-16,
-  1e-10
+  "cqlat-propagator: psel sol = 1 max err = True"
  ],
  [
   "cqlat-propagator: psel sol sig",
@@ -109,27 +97,21 @@
   48.0
  ],
  [
-  "cqlat-propagator: s_prop tslice=7 sign flip max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: s_prop tslice=7 sign flip max err = True"
  ],
  [
   "cqlat-propagator: s_prop tslice=0 glb n flipped",
   64.0
  ],
  [
-  "cqlat-propagator: s_prop tslice=0 sign flip max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: s_prop tslice=0 sign flip max err = True"
  ],
  [
   "cqlat-propagator: s_prop tslice=5 glb n flipped",
   16.0
  ],
  [
-  "cqlat-propagator: s_prop tslice=5 sign flip max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: s_prop tslice=5 sign flip max err = True"
  ],
  [
   "cqlat-propagator: s_prop tslice=-1 no-op"
@@ -139,27 +121,21 @@
   24.0
  ],
  [
-  "cqlat-propagator: sp_prop tslice=7 sign flip max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: sp_prop tslice=7 sign flip max err = True"
  ],
  [
   "cqlat-propagator: sp_prop tslice=0 glb n flipped",
   30.0
  ],
  [
-  "cqlat-propagator: sp_prop tslice=0 sign flip max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: sp_prop tslice=0 sign flip max err = True"
  ],
  [
   "cqlat-propagator: sp_prop tslice=5 glb n flipped",
   10.0
  ],
  [
-  "cqlat-propagator: sp_prop tslice=5 sign flip max err",
-  0.0,
-  1e-10
+  "cqlat-propagator: sp_prop tslice=5 sign flip max err = True"
  ],
  [
   "cqlat-propagator: sp_prop tslice=-1 no-op"

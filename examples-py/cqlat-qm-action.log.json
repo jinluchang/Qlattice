@@ -18,9 +18,7 @@
   1e-10
  ],
  [
-  "cqlat-qm-action: M",
-  0.0,
-  1e-10
+  "cqlat-qm-action: M = True"
  ],
  [
   "cqlat-qm-action: L",
@@ -45,9 +43,7 @@
   "cqlat-qm-action: V vs reference = True"
  ],
  [
-  "cqlat-qm-action: V max error",
-  0.0,
-  1e-10
+  "cqlat-qm-action: V max error = True"
  ],
  [
   "cqlat-qm-action: V((1.0,0.6), 1)",
@@ -93,9 +89,7 @@
   1e-10
  ],
  [
-  "cqlat-qm-action: hmc_m_hamilton_node - sum_sq/2",
-  0.0,
-  1e-10
+  "cqlat-qm-action: hmc_m_hamilton_node - sum_sq/2 = True"
  ],
  [
   "cqlat-qm-action: action_node",
@@ -103,14 +97,10 @@
   1e-09
  ],
  [
-  "cqlat-qm-action: action_node vs reference",
-  9.094947017729282e-13,
-  1e-09
+  "cqlat-qm-action: action_node vs reference = True"
  ],
  [
-  "cqlat-qm-action: hmc_set_force vs dS/dh",
-  1.2319748526727365e-12,
-  1e-08
+  "cqlat-qm-action: hmc_set_force vs dS/dh = True"
  ],
  [
   "cqlat-qm-action: hmc_set_force sum",

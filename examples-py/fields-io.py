@@ -141,7 +141,7 @@ prop_d.load_double(sfr, "prop.d")
 q.json_results_append("fields-io: prop_d qnorm", prop_d.qnorm(), 1e-10)
 q.json_results_append(f"fields-io: prop_d crc32 = {prop_d.crc32()}")
 prop_d -= prop
-q.json_results_append("fields-io: prop_d diff qnorm", prop_d.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop_d diff qnorm = {prop_d.qnorm() < 1e-10}")
 q.json_results_append(f"fields-io: prop_d diff crc32 = {prop_d.crc32()}")
 
 prop_f = q.Prop()
@@ -149,27 +149,27 @@ prop_f.load_double_from_float(sfr, "prop")
 q.json_results_append("fields-io: prop_f qnorm", prop_f.qnorm(), 1e-10)
 q.json_results_append(f"fields-io: prop_f crc32 = {prop_f.crc32()}")
 prop_f -= prop
-q.json_results_append("fields-io: prop_f diff qnorm", prop_f.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop_f diff qnorm = {prop_f.qnorm() < 1e-10}")
 q.json_results_append(f"fields-io: prop_f diff crc32 = {prop_f.crc32()}")
 
 s_prop_f = q.SelProp(fsel)
 s_prop_f.load_double_from_float(sfr, "s_prop")
 q.json_results_append("fields-io: s_prop_f qnorm", s_prop_f.qnorm(), 1e-10)
 s_prop_f -= s_prop
-q.json_results_append("fields-io: s_prop_f diff qnorm", s_prop_f.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: s_prop_f diff qnorm = {s_prop_f.qnorm() < 1e-10}")
 
 prop1_f = q.SelProp(fselc)
 prop1_f.load_double_from_float(sfr, "prop1")
 q.json_results_append("fields-io: prop1_f qnorm", prop1_f.qnorm(), 1e-10)
 prop1_f -= prop1
-q.json_results_append("fields-io: prop1_f diff qnorm", prop1_f.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop1_f diff qnorm = {prop1_f.qnorm() < 1e-10}")
 
 prop1_ff = q.SelProp(None)
 prop1_ff.load_double_from_float(sfr, "prop1")
 q.json_results_append("fields-io: prop1_ff qnorm", prop1_ff.qnorm(), 1e-10)
 assert q.is_matching_fsel(prop1_ff.fsel, fselc)
 prop1_ff -= prop1
-q.json_results_append("fields-io: prop1_ff diff qnorm", prop1_ff.qnorm(), 1e-10)
+q.json_results_append(f"fields-io: prop1_ff diff qnorm = {prop1_ff.qnorm() < 1e-10}")
 
 sfr.close()
 

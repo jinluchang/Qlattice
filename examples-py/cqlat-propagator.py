@@ -70,7 +70,7 @@ def check_flip_prop(prop, t_arr, arr0, tag):
             np.max(np.abs(np.asarray(prop) - arr0 * signs[:, None, None, None]))
         )
         q.json_results_append(
-            f"{tag} tslice={tslice_flip_tpbc} sign flip max err", err, check_eps
+            f"{tag} tslice={tslice_flip_tpbc} sign flip max err = {err < check_eps}"
         )
         assert err == 0.0
         q.flip_tpbc_with_tslice(prop, tslice_flip_tpbc)
@@ -134,7 +134,7 @@ err_src_f = float(
     np.max(np.abs(src_f - fu1_sel_f[:, :, None, None] * eye_wm[None, None, :, :]))
 )
 q.json_results_append(
-    "cqlat-propagator: fsel src = fu1 * 1 max err", err_src_f, check_eps
+    f"cqlat-propagator: fsel src = fu1 * 1 max err = {err_src_f < check_eps}"
 )
 assert err_src_f == 0.0
 
@@ -146,9 +146,11 @@ err_sol_f = float(
 )
 err_sol_id_f = float(np.max(np.abs(sol_arr_f - eye_wm[None, None, :, :])))
 q.json_results_append(
-    "cqlat-propagator: fsel sol = src * conj(fu1) max err", err_sol_f, check_eps
+    f"cqlat-propagator: fsel sol = src * conj(fu1) max err = {err_sol_f < check_eps}"
 )
-q.json_results_append("cqlat-propagator: fsel sol = 1 max err", err_sol_id_f, check_eps)
+q.json_results_append(
+    f"cqlat-propagator: fsel sol = 1 max err = {err_sol_id_f < check_eps}"
+)
 assert err_sol_f < 1e-14
 assert err_sol_id_f < 1e-14
 q.json_results_append(
@@ -189,7 +191,7 @@ err_src_p = float(
     np.max(np.abs(src_p - fu1_sel_p[:, :, None, None] * eye_wm[None, None, :, :]))
 )
 q.json_results_append(
-    "cqlat-propagator: psel src = fu1 * 1 max err", err_src_p, check_eps
+    f"cqlat-propagator: psel src = fu1 * 1 max err = {err_src_p < check_eps}"
 )
 assert err_src_p == 0.0
 
@@ -201,9 +203,11 @@ err_sol_p = float(
 )
 err_sol_id_p = float(np.max(np.abs(sol_arr_p - eye_wm[None, None, :, :])))
 q.json_results_append(
-    "cqlat-propagator: psel sol = src * conj(fu1) max err", err_sol_p, check_eps
+    f"cqlat-propagator: psel sol = src * conj(fu1) max err = {err_sol_p < check_eps}"
 )
-q.json_results_append("cqlat-propagator: psel sol = 1 max err", err_sol_id_p, check_eps)
+q.json_results_append(
+    f"cqlat-propagator: psel sol = 1 max err = {err_sol_id_p < check_eps}"
+)
 assert err_sol_p < 1e-14
 assert err_sol_id_p < 1e-14
 q.json_results_append(

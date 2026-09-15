@@ -110,7 +110,7 @@ err_chvp = float(np.max(np.abs(chvp_arr - ref_chvp)))
 assert err_chvp < check_eps, err_chvp
 q.json_results_append(f"cqlat-contraction: contract_chvp_16 vs numpy = {err_chvp < check_eps}")
 q.json_results_append(
-    "cqlat-contraction: contract_chvp_16 max error", err_chvp, check_eps
+    f"cqlat-contraction: contract_chvp_16 max error = {err_chvp < check_eps}"
 )
 q.json_results_append(
     "cqlat-contraction: contract_chvp_16 sum(mu=0,nu=0)",
@@ -134,7 +134,7 @@ chvp_x2 = np.asarray(q.contract_chvp_16(prop1x2, prop2)).reshape(local_volume, 1
 err_lin = float(np.max(np.abs(chvp_x2 - 2.0 * chvp_arr)))
 assert err_lin < check_eps, err_lin
 q.json_results_append(
-    "cqlat-contraction: contract_chvp_16 linearity", err_lin, check_eps
+    f"cqlat-contraction: contract_chvp_16 linearity = {err_lin < check_eps}"
 )
 
 # --- field selection and selected propagators
@@ -169,7 +169,7 @@ err_hvp = float(np.max(np.abs(hvp_arr - ref_hvp)))
 assert err_hvp < check_eps, err_hvp
 q.json_results_append(f"cqlat-contraction: contract_chvp3_field vs numpy = {err_hvp < check_eps}")
 q.json_results_append(
-    "cqlat-contraction: contract_chvp3_field max error", err_hvp, check_eps
+    f"cqlat-contraction: contract_chvp3_field max error = {err_hvp < check_eps}"
 )
 q.json_results_append(
     "cqlat-contraction: contract_chvp3_field tsep=0 mu=0",
@@ -202,7 +202,8 @@ q.json_results_append(
     f"cqlat-contraction: contract_pion_field(Prop) vs numpy = {err_pion_prop < check_eps}"
 )
 q.json_results_append(
-    "cqlat-contraction: contract_pion_field(Prop) max error", err_pion_prop, check_eps
+    f"cqlat-contraction: contract_pion_field(Prop) max error"
+    f" = {err_pion_prop < check_eps}"
 )
 q.json_results_append(
     "cqlat-contraction: contract_pion_field(Prop) tsep=0",
@@ -226,7 +227,8 @@ q.json_results_append(
     f"cqlat-contraction: contract_pion_field(SelProp) vs numpy = {err_pion_sel < check_eps}"
 )
 q.json_results_append(
-    "cqlat-contraction: contract_pion_field(SelProp) max error", err_pion_sel, check_eps
+    f"cqlat-contraction: contract_pion_field(SelProp) max error"
+    f" = {err_pion_sel < check_eps}"
 )
 q.json_results_append(
     "cqlat-contraction: contract_pion_field(SelProp) tsep=0",

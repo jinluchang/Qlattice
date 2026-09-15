@@ -152,7 +152,9 @@ sp_prop1.load("results/prop.lat")
 sp_prop1 -= sp_prop
 
 q.json_results_append("sp_prop save load qnorm", sp_prop.qnorm(), check_eps)
-q.json_results_append("sp_prop save load diff qnorm", sp_prop1.qnorm(), check_eps)
+q.json_results_append(
+    f"sp_prop save load diff qnorm = {sp_prop1.qnorm() < check_eps}"
+)
 
 ld = sp_prop.to_lat_data()
 sp_prop1 = q.PselProp(psel)
@@ -160,7 +162,9 @@ sp_prop1.from_lat_data(ld)
 sp_prop1 -= sp_prop
 
 q.json_results_append("sp_prop lat_data qnorm", sp_prop.qnorm(), check_eps)
-q.json_results_append("sp_prop lat_data diff qnorm", sp_prop1.qnorm(), check_eps)
+q.json_results_append(
+    f"sp_prop lat_data diff qnorm = {sp_prop1.qnorm() < check_eps}"
+)
 
 q.save_pickle_obj(sp_prop, "results/sp_prop.pickle")
 sp_prop_load = q.load_pickle_obj("results/sp_prop.pickle")
@@ -174,7 +178,9 @@ s_prop1.load_double("results/prop.sfield")
 s_prop1 -= s_prop
 
 q.json_results_append("s_prop save load qnorm", s_prop.qnorm(), check_eps)
-q.json_results_append("s_prop save load diff qnorm", s_prop1.qnorm(), check_eps)
+q.json_results_append(
+    f"s_prop save load diff qnorm = {s_prop1.qnorm() < check_eps}"
+)
 
 s_prop_arr = np.asarray(s_prop)
 q.json_results_append(f"s_prop_arr.dtype={s_prop_arr.dtype}")
@@ -190,14 +196,14 @@ sp_prop1 @= prop1
 sp_prop1 -= sp_prop
 
 q.json_results_append("sp_prop qnorm in sp_prop1 check", sp_prop.qnorm(), check_eps)
-q.json_results_append("sp_prop1 diff qnorm", sp_prop1.qnorm(), check_eps)
+q.json_results_append(f"sp_prop1 diff qnorm = {sp_prop1.qnorm() < check_eps}")
 
 s_prop1 = q.SelProp(fsel)
 s_prop1 @= prop1
 s_prop1 -= s_prop
 
 q.json_results_append("s_prop qnorm in s_prop1 check", s_prop.qnorm(), check_eps)
-q.json_results_append("s_prop1 diff qnorm", s_prop1.qnorm(), check_eps)
+q.json_results_append(f"s_prop1 diff qnorm = {s_prop1.qnorm() < check_eps}")
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))

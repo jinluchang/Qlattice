@@ -268,7 +268,9 @@ for i in range(geo.local_volume):
 err_noi = float(np.abs(arr_noi - exp_noi).max())
 assert n_noi == geo.local_volume, n_noi
 assert err_noi == 0.0, err_noi
-q.json_results_append("cqlat-vec-props: save/load_gwu_noiP max err", err_noi, 1e-12)
+q.json_results_append(
+    f"cqlat-vec-props: save/load_gwu_noiP max err = {err_noi < 1e-12}"
+)
 
 # --- load_gwu_link ----------------------------------------------------------
 # TODO: use an exported save_gwu_link instead of building the file by hand below
@@ -288,9 +290,8 @@ arr_link = np.asarray(gf_link)
 exp_link = ref_gwu_link()
 assert np.array_equal(arr_link, np.broadcast_to(exp_link, arr_link.shape))
 q.json_results_append(
-    "cqlat-vec-props: load_gwu_link [0,0,0,0].real",
-    float(arr_link[0, 0, 0, 0].real),
-    1e-12,
+    f"cqlat-vec-props: load_gwu_link [0,0,0,0].real"
+    f" = {float(arr_link[0, 0, 0, 0].real) < 1e-12}"
 )
 q.json_results_append(
     "cqlat-vec-props: load_gwu_link [0,0,0,0].imag",
@@ -340,7 +341,9 @@ qc.make_volume_src(p_vol, -1)
 vol_g = prop_global(p_vol, idx_l, n_site)
 err_vol = float(np.abs(vol_g - np.broadcast_to(eye12, vol_g.shape)).max())
 assert err_vol == 0.0, err_vol
-q.json_results_append("cqlat-vec-props: make_volume_src(-1) max err", err_vol, 1e-12)
+q.json_results_append(
+    f"cqlat-vec-props: make_volume_src(-1) max err = {err_vol < 1e-12}"
+)
 
 # tini restricts the source to one time slice
 p_vol_t = q.Prop(geo)
@@ -420,7 +423,7 @@ for g0 in [1, 4]:
     err = float(np.abs(got - exp).max())
     assert err == 0.0, (g0, err)
     q.json_results_append(
-        f"cqlat-vec-props: prop4d_src_gamma g0={g0} max err", err, 1e-12
+        f"cqlat-vec-props: prop4d_src_gamma g0={g0} max err = {err < 1e-12}"
     )
 
 p_gam = mk_prop(geo, xs, prop2_g)
@@ -428,7 +431,9 @@ qc.prop4d_src_gamma(p_gam, 1, 1)
 got = prop_global(p_gam, idx_l, n_site)
 err = float(np.abs(got - ref_src_gamma(prop2_gf, gL[1], True)).max())
 assert err == 0.0, err
-q.json_results_append("cqlat-vec-props: prop4d_src_gamma g0=1 conj max err", err, 1e-12)
+q.json_results_append(
+    f"cqlat-vec-props: prop4d_src_gamma g0=1 conj max err = {err < 1e-12}"
+)
 
 for g0 in [1, 4]:
     for conj in [0, 1]:
@@ -439,9 +444,8 @@ for g0 in [1, 4]:
         err = float(np.abs(got - exp).max())
         assert err == 0.0, (g0, conj, err)
         q.json_results_append(
-            f"cqlat-vec-props: prop4d_sink_gamma g0={g0} conj={conj} max err",
-            err,
-            1e-12,
+            f"cqlat-vec-props: prop4d_sink_gamma g0={g0} conj={conj} max err"
+            f" = {err < 1e-12}"
         )
 
 for rotate in [0, 1]:
@@ -452,7 +456,7 @@ for rotate in [0, 1]:
     err = float(np.abs(got - exp).max())
     assert err == 0.0, (rotate, err)
     q.json_results_append(
-        f"cqlat-vec-props: prop4d_conj rotate={rotate} max err", err, 1e-12
+        f"cqlat-vec-props: prop4d_conj rotate={rotate} max err = {err < 1e-12}"
     )
 
 # --- meson_corr -------------------------------------------------------------
@@ -505,7 +509,7 @@ qc.load_qlat_link(gf_q2, qlat_path)
 err_ql = float(np.abs(np.asarray(gf_q) - np.asarray(gf_q2)).max())
 assert err_ql == 0.0, err_ql
 q.json_results_append(
-    "cqlat-vec-props: save_qlat_link/load_qlat_link max err", err_ql, 1e-12
+    f"cqlat-vec-props: save_qlat_link/load_qlat_link max err = {err_ql < 1e-12}"
 )
 q.json_results_append(
     "cqlat-vec-props: load_qlat_link sum abs",

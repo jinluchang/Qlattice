@@ -1,13 +1,9 @@
 [
  [
-  "float diff ratio",
-  5.077809028234741e-16,
-  1e-12
+  "float diff ratio = True"
  ],
  [
-  "double diff ratio",
-  0.0,
-  1e-12
+  "double diff ratio = True"
  ],
  [
   "gf.plaq()",

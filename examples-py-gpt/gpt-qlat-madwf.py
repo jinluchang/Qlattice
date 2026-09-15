@@ -148,6 +148,9 @@ def test_inv(geo, inverter):
 
 tags = ["qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf"]
 invs = [inv_qm, inv_qz_f, inv_qm_mp, inv_qm_split, inv_qm_split_sloppy, inv_qm_madwf]
+# the sol/sol1 diffs are round-off level for these tags and genuinely nonzero
+# for the others, so only these use the marker form
+roundoff_tags = {"qm_mp", "qm_split", "inv_qm_madwf"}
 
 q.json_results_append(f"tag={tags[0]} start")
 src, sol, sol1 = test_inv(geo, invs[0])
@@ -159,9 +162,18 @@ for tag, inv in zip(tags[1:], invs[1:]):
     src_n -= src
     sol_n -= sol
     sol1_n -= sol1
-    q.json_results_append(f"src diff qnorm tag={tag}", src_n.qnorm(), 1e-7)
-    q.json_results_append(f"sol diff qnorm tag={tag}", sol_n.qnorm(), 1e-2)
-    q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_n.qnorm(), 1e-2)
+    src_diff_qnorm = src_n.qnorm()
+    q.json_results_append(f"src diff qnorm tag={tag} = {src_diff_qnorm < 1e-7}")
+    sol_diff_qnorm = sol_n.qnorm()
+    if tag in roundoff_tags:
+        q.json_results_append(f"sol diff qnorm tag={tag} = {sol_diff_qnorm < 1e-2}")
+    else:
+        q.json_results_append(f"sol diff qnorm tag={tag}", sol_diff_qnorm, 1e-2)
+    sol1_diff_qnorm = sol1_n.qnorm()
+    if tag in roundoff_tags:
+        q.json_results_append(f"sol1 diff qnorm tag={tag} = {sol1_diff_qnorm < 1e-2}")
+    else:
+        q.json_results_append(f"sol1 diff qnorm tag={tag}", sol1_diff_qnorm, 1e-2)
 
 q.timer_display()
 if q.is_test():

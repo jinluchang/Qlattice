@@ -1,7 +1,6 @@
 [
  [
-  "pre-init Geometry(total_site) outcome",
-  1.0
+  "pre-init Geometry(total_site) outcome = RuntimeError"
  ],
  [
   "pre-init Geometry(total_site) ok = True"

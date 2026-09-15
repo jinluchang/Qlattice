@@ -13,9 +13,7 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gf_wilson_line_no_comm path_a max err",
-  4.0029660424867215e-16,
-  1e-09
+  "cqlat-qcd: gf_wilson_line_no_comm path_a max err = True"
  ],
  [
   "cqlat-qcd: gf_wilson_line_no_comm path_a sum",
@@ -23,19 +21,13 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gf_wilson_line_no_comm path_b max err",
-  3.7238012298709097e-16,
-  1e-09
+  "cqlat-qcd: gf_wilson_line_no_comm path_b max err = True"
  ],
  [
-  "cqlat-qcd: gf_wilson_line_no_comm path_n max err",
-  5.23691153334427e-16,
-  1e-09
+  "cqlat-qcd: gf_wilson_line_no_comm path_n max err = True"
  ],
  [
-  "cqlat-qcd: gf_wilson_lines_no_comm vs single max err",
-  0.0,
-  1e-09
+  "cqlat-qcd: gf_wilson_lines_no_comm vs single max err = True"
  ],
  [
   "cqlat-qcd: gf_wilson_lines_no_comm sig",
@@ -66,9 +58,7 @@
   64.0
  ],
  [
-  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 max err",
-  0.0,
-  1e-09
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 max err = True"
  ],
  [
   "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 plaq",
@@ -76,9 +66,7 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 plaq diff",
-  4.336808689942018e-19,
-  1e-09
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 plaq diff = True"
  ],
  [
   "cqlat-qcd: gf_twist_boundary_at_boundary mu=3 n changed = 64"
@@ -88,9 +76,7 @@
   128.0
  ],
  [
-  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 max err",
-  0.0,
-  1e-09
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 max err = True"
  ],
  [
   "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 plaq",
@@ -98,17 +84,13 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 plaq diff",
-  0.0,
-  1e-09
+  "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 plaq diff = True"
  ],
  [
   "cqlat-qcd: gf_twist_boundary_at_boundary mu=0 n changed = 128"
  ],
  [
-  "cqlat-qcd: gt unitary max err",
-  8.881784197001252e-16,
-  1e-09
+  "cqlat-qcd: gt unitary max err = True"
  ],
  [
   "cqlat-qcd: gt sig",
@@ -168,9 +150,7 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gt_invert vs adjoint max err",
-  0.0,
-  1e-09
+  "cqlat-qcd: gt_invert vs adjoint max err = True"
  ],
  [
   "cqlat-qcd: gt_invert sig",
@@ -197,14 +177,10 @@
   1e-09
  ],
  [
-  "cqlat-qcd: gt * gt.inv() vs 1 max err",
-  8.881784197001252e-16,
-  1e-09
+  "cqlat-qcd: gt * gt.inv() vs 1 max err = True"
  ],
  [
-  "cqlat-qcd: gt.inv() * gt vs 1 max err",
-  8.881784197001252e-16,
-  1e-09
+  "cqlat-qcd: gt.inv() * gt vs 1 max err = True"
  ],
  [
   "cqlat-qcd: gc.collect() done"

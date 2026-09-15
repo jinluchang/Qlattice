@@ -109,7 +109,7 @@ qc.set_gm_force_flowed_no_det(gm_empty, gm_pre, gf0, fi_empty)
 err_empty = max_diff(gm_empty, gm_pre)
 assert err_empty == 0.0, err_empty
 q.json_results_append(
-    "cqlat-fthmc: set_gm_force_flowed_no_det (empty flow)", err_empty, check_eps
+    f"cqlat-fthmc: set_gm_force_flowed_no_det (empty flow) = {err_empty < check_eps}"
 )
 
 # --- set_gm_force_flowed_no_det: a trivial (epsilon = 0) flow is the identity
@@ -118,7 +118,8 @@ qc.set_gm_force_flowed_no_det(gm_trivial, gm_pre, gf0, fi_trivial)
 err_trivial = max_diff(gm_trivial, gm_pre)
 assert err_trivial < check_eps, err_trivial
 q.json_results_append(
-    "cqlat-fthmc: set_gm_force_flowed_no_det (trivial flow)", err_trivial, check_eps
+    f"cqlat-fthmc: set_gm_force_flowed_no_det (trivial flow)"
+    f" = {err_trivial < check_eps}"
 )
 
 # --- q.gf_flow with the trivial flow leaves the gauge field unchanged
@@ -126,7 +127,7 @@ gf_trivial = q.GaugeField(geo)
 q.gf_flow(gf_trivial, gf0, fi_trivial)
 err_gf_trivial = max_diff(gf_trivial, gf0)
 assert err_gf_trivial == 0.0, err_gf_trivial
-q.json_results_append("cqlat-fthmc: gf_flow (trivial flow)", err_gf_trivial, check_eps)
+q.json_results_append(f"cqlat-fthmc: gf_flow (trivial flow) = {err_gf_trivial < check_eps}")
 
 # --- a genuine flow
 flow_eps = 0.05
@@ -145,7 +146,7 @@ assert np.all(np.isfinite(gm_flow_arr))
 err_antiherm = float(np.max(np.abs(gm_flow_arr + gm_flow_arr.conj().swapaxes(-1, -2))))
 assert err_antiherm < check_eps, err_antiherm
 q.json_results_append(
-    "cqlat-fthmc: flowed force is anti-Hermitian", err_antiherm, check_eps
+    f"cqlat-fthmc: flowed force is anti-Hermitian = {err_antiherm < check_eps}"
 )
 q.json_results_append(f"cqlat-fthmc: flowed force is finite = {np.all(np.isfinite(gm_flow_arr))}")
 q.json_results_append(
@@ -182,12 +183,12 @@ q.json_results_append(
 try:
     q.get_gm_force_magnitudes(gm_pre, 2)
 except RuntimeError:
-    n2_rejected = 1.0
+    n2_rejected = True
 else:
-    n2_rejected = 0.0
-assert n2_rejected == 1.0
+    n2_rejected = False
+assert n2_rejected
 q.json_results_append(
-    "cqlat-fthmc: get_gm_force_magnitudes n_elems=2 rejected", n2_rejected
+    f"cqlat-fthmc: get_gm_force_magnitudes n_elems=2 rejected = {n2_rejected}"
 )
 
 # --- independent reference from the global basis coefficients:
@@ -202,17 +203,16 @@ assert abs(float(mag_pre[0]) - ref_mean) < check_eps * max(1.0, ref_mean)
 assert abs(float(mag_pre[1]) - ref_l2) < check_eps * max(1.0, ref_l2)
 assert abs(float(mag_pre[n_elems - 1]) - ref_max) < check_eps * max(1.0, ref_max)
 q.json_results_append(
-    "cqlat-fthmc: magnitude 0 vs numpy mean",
-    abs(float(mag_pre[0]) - ref_mean),
-    check_eps,
+    f"cqlat-fthmc: magnitude 0 vs numpy mean"
+    f" = {abs(float(mag_pre[0]) - ref_mean) < check_eps}"
 )
 q.json_results_append(
-    "cqlat-fthmc: magnitude 1 vs numpy l2", abs(float(mag_pre[1]) - ref_l2), check_eps
+    f"cqlat-fthmc: magnitude 1 vs numpy l2"
+    f" = {abs(float(mag_pre[1]) - ref_l2) < check_eps}"
 )
 q.json_results_append(
-    "cqlat-fthmc: magnitude n_elems-1 vs numpy max",
-    abs(float(mag_pre[n_elems - 1]) - ref_max),
-    check_eps,
+    f"cqlat-fthmc: magnitude n_elems-1 vs numpy max"
+    f" = {abs(float(mag_pre[n_elems - 1]) - ref_max) < check_eps}"
 )
 q.json_results_append(
     f"cqlat-fthmc: magnitude n_elems-1 equals largest magnitude = "
@@ -223,9 +223,8 @@ q.json_results_append(
 mag_pre_direct = qc.get_gm_force_magnitudes(gm_pre, n_elems)
 assert len(mag_pre_direct) == n_elems
 q.json_results_append(
-    "cqlat-fthmc: c.get_gm_force_magnitudes direct max diff",
-    float(np.max(np.abs(np.array(mag_pre_direct) - np.array(mag_pre)))),
-    check_eps,
+    f"cqlat-fthmc: c.get_gm_force_magnitudes direct max diff"
+    f" = {float(np.max(np.abs(np.array(mag_pre_direct) - np.array(mag_pre)))) < check_eps}"
 )
 
 # --- magnitudes of the flowed force (checked against the field itself)
@@ -244,9 +243,8 @@ q.json_results_append(
     check_eps,
 )
 q.json_results_append(
-    "cqlat-fthmc: flowed magnitude 0 vs numpy mean",
-    abs(float(mag_flow[0]) - mean_flow_ref),
-    check_eps,
+    f"cqlat-fthmc: flowed magnitude 0 vs numpy mean"
+    f" = {abs(float(mag_flow[0]) - mean_flow_ref) < check_eps}"
 )
 
 # --- free_flow_info is exercised by FlowInfo.__del__ (explicit gc.collect())

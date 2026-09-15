@@ -100,7 +100,7 @@ q.gf_wilson_line_no_comm(wlf_a, 0, gf, path_a)
 ref_a = ref_wilson_line_arr(geo, gf_arr, latt_size, path_a)
 err_a = float(np.max(np.abs(np.asarray(wlf_a)[:, 0] - ref_a)))
 q.json_results_append(
-    "cqlat-qcd: gf_wilson_line_no_comm path_a max err", err_a, check_eps
+    f"cqlat-qcd: gf_wilson_line_no_comm path_a max err = {err_a < check_eps}"
 )
 assert err_a < 1e-14
 q.json_results_append(
@@ -114,7 +114,7 @@ q.gf_wilson_line_no_comm(wlf_b, 0, gf, path_b)
 ref_b = ref_wilson_line_arr(geo, gf_arr, latt_size, path_b)
 err_b = float(np.max(np.abs(np.asarray(wlf_b)[:, 0] - ref_b)))
 q.json_results_append(
-    "cqlat-qcd: gf_wilson_line_no_comm path_b max err", err_b, check_eps
+    f"cqlat-qcd: gf_wilson_line_no_comm path_b max err = {err_b < check_eps}"
 )
 assert err_b < 1e-14
 
@@ -123,7 +123,7 @@ q.gf_wilson_line_no_comm(wlf_n, 0, gf, path_n, path_n_n)
 ref_n = ref_wilson_line_arr(geo, gf_arr, latt_size, path_n, path_n_n)
 err_n = float(np.max(np.abs(np.asarray(wlf_n)[:, 0] - ref_n)))
 q.json_results_append(
-    "cqlat-qcd: gf_wilson_line_no_comm path_n max err", err_n, check_eps
+    f"cqlat-qcd: gf_wilson_line_no_comm path_n max err = {err_n < check_eps}"
 )
 assert err_n < 1e-14
 
@@ -138,7 +138,7 @@ err_all = max(
     float(np.max(np.abs(wlf_all_arr[:, 2] - np.asarray(wlf_n)[:, 0]))),
 )
 q.json_results_append(
-    "cqlat-qcd: gf_wilson_lines_no_comm vs single max err", err_all, check_eps
+    f"cqlat-qcd: gf_wilson_lines_no_comm vs single max err = {err_all < check_eps}"
 )
 assert err_all == 0.0
 q.json_results_append(
@@ -171,7 +171,8 @@ for mu, lmom in [(3, -0.5), (0, 0.25)]:
     exp_t[mask, mu] *= phase
     err_t = float(np.max(np.abs(arr_t - exp_t)))
     q.json_results_append(
-        f"cqlat-qcd: gf_twist_boundary_at_boundary mu={mu} max err", err_t, check_eps
+        f"cqlat-qcd: gf_twist_boundary_at_boundary mu={mu} max err"
+        f" = {err_t < check_eps}"
     )
     assert err_t < 1e-14
     q.json_results_append(
@@ -179,9 +180,8 @@ for mu, lmom in [(3, -0.5), (0, 0.25)]:
     )
     err_plaq = abs(gf_t.plaq() - gf.plaq())
     q.json_results_append(
-        f"cqlat-qcd: gf_twist_boundary_at_boundary mu={mu} plaq diff",
-        float(err_plaq),
-        check_eps,
+        f"cqlat-qcd: gf_twist_boundary_at_boundary mu={mu} plaq diff"
+        f" = {err_plaq < check_eps}"
     )
     assert err_plaq < 1e-12
     # the number of changed links equals the number of boundary links
@@ -198,16 +198,13 @@ gt.set_rand(rs.split("gt"), 0.5, 10)
 gt.unitarize()
 gt_arr = np.asarray(gt)
 assert gt_arr.shape == (geo.local_volume, 1, 3, 3)
-q.json_results_append(
-    "cqlat-qcd: gt unitary max err",
-    float(
-        np.max(
-            np.abs(gt_arr @ np.conj(gt_arr.transpose(0, 1, 3, 2)))
-            - eye_cm[None, None, :, :]
-        )
-    ),
-    check_eps,
+err_unitary = float(
+    np.max(
+        np.abs(gt_arr @ np.conj(gt_arr.transpose(0, 1, 3, 2)))
+        - eye_cm[None, None, :, :]
+    )
 )
+q.json_results_append(f"cqlat-qcd: gt unitary max err = {err_unitary < check_eps}")
 q.json_results_append(
     "cqlat-qcd: gt sig",
     q.get_data_sig_arr(gt, q.RngState("cqlat-qcd-gt"), 3),
@@ -235,7 +232,7 @@ q.json_results_append(
 gt_inv = gt.inv()
 gt_inv_arr = np.asarray(gt_inv)
 err_inv = float(np.max(np.abs(gt_inv_arr - np.conj(gt_arr.transpose(0, 1, 3, 2)))))
-q.json_results_append("cqlat-qcd: gt_invert vs adjoint max err", err_inv, check_eps)
+q.json_results_append(f"cqlat-qcd: gt_invert vs adjoint max err = {err_inv < check_eps}")
 assert err_inv == 0.0
 q.json_results_append(
     "cqlat-qcd: gt_invert sig",
@@ -245,11 +242,11 @@ q.json_results_append(
 
 gt_prod = gt * gt_inv
 err_prod = float(np.max(np.abs(np.asarray(gt_prod) - eye_cm[None, None, :, :])))
-q.json_results_append("cqlat-qcd: gt * gt.inv() vs 1 max err", err_prod, check_eps)
+q.json_results_append(f"cqlat-qcd: gt * gt.inv() vs 1 max err = {err_prod < check_eps}")
 assert err_prod < 1e-14
 gt_prod2 = gt_inv * gt
 err_prod2 = float(np.max(np.abs(np.asarray(gt_prod2) - eye_cm[None, None, :, :])))
-q.json_results_append("cqlat-qcd: gt.inv() * gt vs 1 max err", err_prod2, check_eps)
+q.json_results_append(f"cqlat-qcd: gt.inv() * gt vs 1 max err = {err_prod2 < check_eps}")
 assert err_prod2 < 1e-14
 
 del gf, gf_t, gf_t_m, gf_t_d, gt, gt_load, gt_inv, gt_prod, gt_prod2

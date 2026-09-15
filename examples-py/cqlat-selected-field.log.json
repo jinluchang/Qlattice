@@ -19,9 +19,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: set_add_sfield max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: set_add_sfield max err = True"
  ],
  [
   "cqlat-selected-field: set_add_sfield sum",
@@ -29,23 +27,17 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: set_mul_double_sfield max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: set_mul_double_sfield max err = True"
  ],
  [
-  "cqlat-selected-field: set_mul_double_sfield (-1.5) max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: set_mul_double_sfield (-1.5) max err = True"
  ],
  [
   "cqlat-selected-field: set_mul_double_sfield sum",
   -199.0119598141761
  ],
  [
-  "cqlat-selected-field: acc_field_sfield max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: acc_field_sfield max err = True"
  ],
  [
   "cqlat-selected-field: acc_field_sfield n changed sites = 128"
@@ -56,9 +48,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: field -= selected_field max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: field -= selected_field max err = True"
  ],
  [
   "cqlat-selected-field: field -= selected_field sum",
@@ -66,9 +56,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: acc_field_spfield (+=) max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: acc_field_spfield (+=) max err = True"
  ],
  [
   "cqlat-selected-field: acc_field_spfield (+=) sum",
@@ -76,9 +64,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: acc_field_spfield (-=) max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: acc_field_spfield (-=) max err = True"
  ],
  [
   "cqlat-selected-field: acc_field_spfield (-=) sum",
@@ -86,9 +72,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: acc_field_spfield (empty field) max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: acc_field_spfield (empty field) max err = True"
  ],
  [
   "cqlat-selected-field: acc_field_spfield (empty field) sum",
@@ -101,9 +85,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=3 max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=3 max err = True"
  ],
  [
   "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=3 total",
@@ -122,9 +104,7 @@
   1e-10
  ],
  [
-  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=0 max err",
-  0.0,
-  1e-10
+  "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=0 max err = True"
  ],
  [
   "cqlat-selected-field: glb_sum_tslice_long_sfield t_dir=0 total",
