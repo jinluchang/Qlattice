@@ -135,11 +135,13 @@ def my_helper():
     ...
 
 q.begin_with_mpi(size_node_list)
-q.json_results_append("test description", result)
+q.json_results_append("test description")
 # ... test logic with assert for correctness ...
-q.json_results_append(f"{result}")
+q.json_results_append("plaq", plaq_value, 1e-10)  # floating-point result
+q.json_results_append(f"n_marks = {n_marks}")     # int/bool -> name only
 ```
 - **Functions first**: Define all helper functions before `q.begin_with_mpi()`.
+- **Results**: `q.json_results_append(name, value[, eps])` is only for floating-point results (`float`, `complex`, a numeric `numpy.ndarray`). For any non-float result (boolean/flag, integer count, string, exception outcome, plain marker) pass a single string and encode the outcome in it, e.g. `q.json_results_append(f"match = {ok}")`. Never fabricate a float (`float(ok)`, `float(len(x))`, `1.0` for `True`).
 - **No intermediate CHECK lines**: Use `q.json_results_append` to record test results. Do NOT use `q.displayln_info("CHECK: ...")` for intermediate test output — those lines are compared against reference `.log` files and make tests brittle.
 - **Only one CHECK line**: Every test must end with `q.displayln_info("CHECK: finished successfully.")` as the final line.
 

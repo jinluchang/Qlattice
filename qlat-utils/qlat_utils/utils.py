@@ -465,19 +465,28 @@ def json_results_append(*args, json_results=None):
     *args
         Positional arguments forming the result entry.  The tuple is stored
         as-is.  Typical formats understood by ``check_log_json``:\n
-        - ``(name,)``                                          — marker without a value
-        - ``(name, value)``                                    — named value using the default epsilon
-        - ``(name, value, check_eps)``                         — named value with custom tolerance
-        - ``(name, value, check_eps, ...)``                    — extra trailing elements are stored but ignored\n
+        - ``(name, value)`` — floating-point result using the default epsilon
+        - ``(name, value, check_eps)`` — floating-point result with custom tolerance
+        - ``(name,)`` — non-floating-point result; only ``name`` is checked
+        - ``(name, value, check_eps, ...)`` — extra trailing elements are stored but ignored\n
         ``name`` must be a ``str`` (it is compared directly against the
         reference file entry).\n
-        ``value`` can be any type that ``numpy.linalg.norm`` accepts and
-        that supports subtraction (``v - vl``): typically ``float``,
-        ``complex``, or a ``numpy.ndarray``.
-        ``int`` is **not** valid — encode integer values as part of
-        ``name`` instead (e.g. ``json_results_append(f"val {i}")``).
-        A plain Python ``list`` is **not** valid because ``list - list``
-        raises ``TypeError`` in ``check_log_json``.\n
+        Use the ``(name, value[, check_eps])`` form **only** when ``value``
+        really is a floating-point quantity to compare: ``value`` must be a
+        ``float``, ``complex`` or a numeric ``numpy.ndarray``.  ``int`` and
+        ``bool`` are rejected, and a plain Python ``list`` is invalid because
+        ``list - list`` raises ``TypeError`` in ``check_log_json``.\n
+        For every other result — booleans/flags, integer counts, strings,
+        caught exception types, "reached this point" markers — pass only the
+        string, encoding the outcome in ``name`` itself, e.g.
+        ``json_results_append(f"val {i}")``,
+        ``json_results_append(f"match = {ok}")`` or
+        ``json_results_append("all sites refreshed")``.\n
+        Do **not** fabricate a float (``float(ok)``, ``float(len(x))``,
+        numeric outcome codes such as ``1.0`` for ``True``) to force such a
+        result into a ``value``: the comparison is relative, so a boolean or
+        a zero reference cannot be compared with any tolerance (see
+        ``check_log_json``).\n
         ``check_eps`` must be a ``float`` (the relative tolerance for
         the comparison; default 1e-5).\n
     json_results : list | None
@@ -487,7 +496,9 @@ def json_results_append(*args, json_results=None):
     Example
     -------
     >>> json_results_append("plaq", plaq_value)
-    >>> json_results_append("polyakov", poly_value, 1e-8)\n
+    >>> json_results_append("polyakov", poly_value, 1e-8)
+    >>> json_results_append(f"inverter converged = {conv}")  # bool -> name only
+    >>> json_results_append(f"n_marks = {n_marks}")          # int  -> name only\n
     See Also
     --------
     check_log_json : Compare accumulated results against a reference file.
@@ -524,7 +535,7 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
     compares each entry element-wise.  If any entry differs beyond the allowed
     tolerance the process exits with status 1 via ``sys.exit``.\n
     The comparison logic supports three entry formats (see ``json_results_append``):\n
-    - ``(name,)``                — marker; only name is checked
+    - ``(name,)``                — marker; only the string ``name`` is checked
     - ``(name, value)``          — compared with the default ``check_eps``
     - ``(name, value, eps)``     — compared with the entry-specific ``eps``\n
     The relative difference is computed as:\n
@@ -532,6 +543,11 @@ def check_log_json(script_file, *, json_results=None, check_eps=1e-5):
         actual_eps = 2 * ||v - vl|| / (||v|| + ||vl||)\n
     where ``||·||`` is the L2 norm.  A mismatch is declared when
     ``actual_eps > eps``.\n
+    Because the difference is relative, a reference ``value`` of exactly
+    ``0.0`` can only be matched by an exactly zero result (``actual_eps`` is
+    ``2`` for any nonzero ``v``).  Non-floating-point results must therefore
+    use the ``(name,)`` form with the outcome encoded in ``name`` instead of
+    a fabricated ``float`` (see ``json_results_append``).\n
     On root MPI rank (``get_id_node() == 0``) the comparison is performed,
     then the ``mismatch`` flag is broadcast to all ranks via
     ``MPI.COMM_WORLD.bcast``.  If ``mpi4py`` is unavailable the check runs

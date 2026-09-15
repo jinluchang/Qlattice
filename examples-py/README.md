@@ -16,7 +16,9 @@ size_node_list = [
 q.begin_with_mpi(size_node_list)
 
 q.json_results_append("test description")
-# ... test logic using q.json_results_append(...) to record results ...
+# ... test logic with assert for correctness ...
+q.json_results_append("plaq", plaq_value, 1e-10)  # floating-point result
+q.json_results_append(f"n_marks = {n_marks}")     # int/bool -> name only
 
 q.check_log_json(__file__, check_eps=1e-14)
 q.timer_display()
@@ -24,7 +26,8 @@ q.end_with_mpi()
 q.displayln_info("CHECK: finished successfully.")
 ```
 
-- Use `q.json_results_append(str)` to record test output for log comparison.
+- Record a value with `q.json_results_append(name, value[, eps])` **only** for floating-point results (`float`, `complex`, a numeric `numpy.ndarray`).
+- For every other result (booleans/flags, integer counts, strings, exception outcomes, plain markers) pass a single string and encode the outcome in it, e.g. `q.json_results_append(f"match = {ok}")`. Do not fabricate a float (`float(ok)`, `float(len(x))`, `1.0` for `True`).
 - End with `q.displayln_info("CHECK: finished successfully.")` — the trailing dot is required.
 
 ## 2. Register in the Makefile

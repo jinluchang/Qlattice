@@ -205,11 +205,27 @@ deterministic for a given data value and `rs`.
 Append a result tuple to `json_results` (defaults to `global_json_results`).
 Used to collect test output for later comparison.
 
+Two forms are supported:
+
+- `(name, value[, check_eps])` — only for genuine floating-point results
+  (`float`, `complex` or a numeric `numpy.ndarray`) that are compared with a
+  relative tolerance.
+- `(name,)` — for every non-floating-point result (booleans/flags, integer
+  counts, strings, exception outcomes, plain markers). The outcome is encoded
+  in the `name` string itself, e.g. `f"match = {ok}"` or `f"n_marks = {n}"`.
+
+Never fabricate a float (`float(ok)`, `float(len(x))`, `1.0` for `True`) to
+pass a non-float result as a value.
+
 ### `check_log_json(script_file, *, json_results=None, check_eps=1e-5)`
 
 Compare the current `json_results` against a previously saved `.log.json` file.
 Used by the CI system to detect regressions. Each result entry is
-`(name, value, [check_eps])`.
+`(name, value, [check_eps])`, or `(name,)` when only the string is checked.
+
+The value comparison is the relative difference
+`2 * ||v - vl|| / (||v|| + ||vl||)`, so a reference value of `0.0` can only be
+matched by an exactly zero result.
 
 ### `global_json_results`
 
