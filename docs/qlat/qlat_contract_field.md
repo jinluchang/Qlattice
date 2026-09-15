@@ -1,6 +1,6 @@
 # `qlat.contract_field` — Site-Level HVP Tensor Contraction
 
-Source: `qlat/qlat/contract_field.py`
+Source: `qlat/qlat/contract_field.pyx`
 
 > **Note:** Update this document when updating the source file.
 

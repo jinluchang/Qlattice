@@ -18,10 +18,16 @@ from .gauge_action cimport GaugeAction
 from cpython.long cimport PyLong_FromVoidPtr
 from cpython.long cimport PyLong_AsVoidPtr
 
-import cqlat as c
-
 cdef inline cc.FlowInfo* get_flow_info_ptr(object fi) except? NULL:
     return <cc.FlowInfo*>PyLong_AsVoidPtr(fi.cdata)
+
+def free_flow_info(fi):
+    cdef cc.FlowInfo* pfi = get_flow_info_ptr(fi)
+    del pfi
+
+def add_flow_flow_info(fi, eo, mu, epsilon, flow_size=1):
+    cdef cc.FlowInfo* pfi = get_flow_info_ptr(fi)
+    pfi.v.push_back(cc.FlowStepInfo(eo, mu, epsilon, flow_size))
 
 class FlowInfo:
 
@@ -29,10 +35,10 @@ class FlowInfo:
         self.cdata = mk_flow_info()
 
     def __del__(self):
-        c.free_flow_info(self)
+        free_flow_info(self)
 
     def add_flow(self, eo, mu, epsilon, flow_size=1):
-        c.add_flow_flow_info(self, eo, mu, epsilon, flow_size)
+        add_flow_flow_info(self, eo, mu, epsilon, flow_size)
 
     def add_rand_order_flow(self, rng, epsilon, *args):
         if len(args) == 0:

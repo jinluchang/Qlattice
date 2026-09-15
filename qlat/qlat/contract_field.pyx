@@ -1,3 +1,5 @@
+# cython: binding=True, embedsignature=True, c_string_type=unicode, c_string_encoding=utf8
+
 """
 Module ``qlat.contract_field``
 ===============================\n
@@ -8,11 +10,14 @@ Documentation: ``docs/qlat/qlat_contract_field.md``\n
 .. note:: Update the documentation when updating this source file.
 """
 
-from qlat_utils import *
-from .c import *
-from . import c
+from qlat_utils.all cimport *
+from . cimport everything as cc
+from .field_types cimport FieldComplexD
+from .propagator cimport Prop
 
-@timer
+import qlat_utils as q
+
+@q.timer
 def contract_chvp_16(prop1, prop2):
     """
     return chvp_16
@@ -29,6 +34,7 @@ def contract_chvp_16(prop1, prop2):
     mu: polarization at sink location x
     nu: polarization at source location y
     """
-    chvp_16 = Field(ElemTypeComplexD)
-    c.contract_chvp_16_field(chvp_16, prop1, prop2)
+    cdef FieldComplexD chvp_16 = FieldComplexD()
+    cc.py_contract_chvp_16(chvp_16.xx, (<Prop>prop1).xxx().val(),
+                           (<Prop>prop2).xxx().val())
     return chvp_16

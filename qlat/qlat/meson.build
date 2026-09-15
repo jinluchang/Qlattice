@@ -9,13 +9,10 @@ init_files = files(
   )
 
 py_files = files(
-  'contract_field.py',
-  'contract_hvp.py',
   'field_type_dict.py',
   'field_truncation.py',
   '__main__.py',
   'mpi_utils.py',
-  'qm_action.py',
   'field_analysis.py',
   'hmc_utils.py',
   'mat_mpi.py',
@@ -110,9 +107,12 @@ name_pyx_list = [
   'fthmc',
   'scalar_action',
   'fermion_action',
+  'qm_action',
   'inverter',
   'hmc_stats',
   'contract_pion',
+  'contract_field',
+  'contract_hvp',
   'field_double',
   'gauge_action',
   'muon_line',

@@ -1,6 +1,6 @@
 # `qlat.qm_action` — Quantum-Mechanical Action for HMC
 
-Source: `qlat/qlat/qm_action.py`
+Source: `qlat/qlat/qm_action.pyx`
 
 > **Note:** Update this document when updating the source file.
 

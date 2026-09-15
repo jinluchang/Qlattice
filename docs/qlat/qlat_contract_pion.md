@@ -1,6 +1,6 @@
 # `qlat.contract_pion` — Pion Two-Point Contraction
 
-Source: `qlat/qlat/contract_pion.py`
+Source: `qlat/qlat/contract_pion.pyx`
 
 > **Note:** Update this document when updating the source file.
 

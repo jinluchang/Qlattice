@@ -409,6 +409,12 @@ cdef class Field{{name}}(FieldBase):
     def _cc_less_than_double(self, FieldRealD sf2, FieldRealD mask):
         cc.less_than_double(self.xx, sf2.xx, mask.xx)
 
+    def _cc_invert_double(self):
+        cc.invert_double(self.xx)
+
+    def _cc_multiply_double(self, FieldRealD factor):
+        cc.multiply_double(self.xx, factor.xx)
+
     def _cc_fft(self, fields, fft_dirs, fft_is_forwards, mode_fft):
         cdef cc.std_vector[cc.Handle[cc.Field[cc.{{name}}]]] vec
         cdef cc.Handle[cc.Field[cc.{{name}}]] h

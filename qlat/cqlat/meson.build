@@ -1,9 +1,6 @@
 # Need to update `exports.h` by running `bash update.sh` manually.
 
 cpp_files = files(
-  'contraction-field.cpp',
-  'contraction-hvp.cpp',
-  'contraction-pion.cpp',
   'fermion-action.cpp',
   'field.cpp',
   'field-double.cpp',

@@ -14,8 +14,6 @@ from . cimport everything as cc
 from cpython.long cimport PyLong_FromVoidPtr
 from cpython.long cimport PyLong_AsVoidPtr
 
-import cqlat as c
-
 cdef inline cc.FermionAction* get_fermion_action_ptr(object fa) except? NULL:
     return <cc.FermionAction*>PyLong_AsVoidPtr(fa.cdata)
 
@@ -51,6 +49,39 @@ def get_m5_fermion_action(fa):
     cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
     return pfa.m5
 
+def free_fermion_action(fa):
+    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
+    del pfa
+
+def set_fermion_action(fa_new, fa):
+    cdef cc.FermionAction* p_fa_new = get_fermion_action_ptr(fa_new)
+    cdef cc.FermionAction* p_fa = get_fermion_action_ptr(fa)
+    p_fa_new[0] = p_fa[0]
+
+def get_ls_fermion_action(fa):
+    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
+    return pfa.ls
+
+def get_omega_fermion_action(fa):
+    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
+    if not pfa.is_using_zmobius:
+        return None
+    cdef cc.Long i
+    cdef cc.std_vector[cc.RealD] re = cc.py_get_omega_fermion_action_re(pfa[0])
+    cdef cc.std_vector[cc.RealD] im = cc.py_get_omega_fermion_action_im(pfa[0])
+    cdef list omega = []
+    for i in range(re.size()):
+        omega.append(complex(re[i], im[i]))
+    return omega
+
+def get_mobius_scale_fermion_action(fa):
+    cdef cc.FermionAction* pfa = get_fermion_action_ptr(fa)
+    if pfa.is_using_zmobius:
+        assert pfa.mobius_scale == 0.0
+    else:
+        assert pfa.mobius_scale != 0.0
+    return pfa.mobius_scale
+
 class FermionAction:
     def __init__(self, *, mass, ls, m5, mobius_scale=1.0, omega=None):
         assert isinstance(mass, float)
@@ -65,24 +96,24 @@ class FermionAction:
 
     def __del__(self):
         assert isinstance(self.cdata, int)
-        c.free_fermion_action(self)
+        free_fermion_action(self)
 
     def __imatmul__(self, v1):
         assert isinstance(v1, FermionAction)
-        c.set_fermion_action(self, v1)
+        set_fermion_action(self, v1)
         return self
 
     def mass(self):
         return get_mass_fermion_action(self)
 
     def ls(self):
-        return c.get_ls_fermion_action(self)
+        return get_ls_fermion_action(self)
 
     def m5(self):
         return get_m5_fermion_action(self)
 
     def omega(self):
-        return c.get_omega_fermion_action(self)
+        return get_omega_fermion_action(self)
 
     def mobius_scale(self):
-        return c.get_mobius_scale_fermion_action(self)
+        return get_mobius_scale_fermion_action(self)

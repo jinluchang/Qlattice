@@ -17,10 +17,15 @@ from .hmc cimport GaugeMomentum
 from .qcd cimport GaugeField
 
 import qlat_utils as q
-import cqlat as c
 
-def get_gm_force_magnitudes(gm_force, n_elems):
-    return c.get_gm_force_magnitudes(gm_force, n_elems)
+def get_gm_force_magnitudes(GaugeMomentum gm_force, cc.Int n_elems):
+    cdef cc.std_vector[cc.RealD] mag_vec = cc.get_gm_force_magnitudes(
+        gm_force.xxx().val(), n_elems)
+    cdef cc.Long i
+    cdef list ret = []
+    for i in range(mag_vec.size()):
+        ret.append(mag_vec[i])
+    return ret
 
 def display_gm_force_magnitudes(GaugeMomentum gm_force, cc.Int n_elems):
     cc.display_gm_force_magnitudes(gm_force.xxx().val(), n_elems)

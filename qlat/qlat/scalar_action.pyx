@@ -19,8 +19,6 @@ from .field_types cimport FieldComplexD
 from cpython.long cimport PyLong_FromVoidPtr
 from cpython.long cimport PyLong_AsVoidPtr
 
-import cqlat as c
-
 from . import field_double as field_double
 
 cdef inline cc.ScalarAction* get_scalar_action_ptr(object sa) except? NULL:
@@ -30,27 +28,36 @@ def mk_scalar_action(cc.RealD m_sq, cc.RealD lmbd, cc.RealD alpha):
     cdef cc.ScalarAction* psa = new cc.ScalarAction(m_sq, lmbd, alpha)
     return PyLong_FromVoidPtr(<void*>psa)
 
+def free_scalar_action(sa):
+    cdef cc.ScalarAction* psa = get_scalar_action_ptr(sa)
+    del psa
+
+def set_scalar_action(sa_new, sa):
+    cdef cc.ScalarAction* p_sa_new = get_scalar_action_ptr(sa_new)
+    cdef cc.ScalarAction* p_sa = get_scalar_action_ptr(sa)
+    p_sa_new[0] = p_sa[0]
+
 class ScalarAction:
     def __init__(self, m_sq, lmbd, alpha):
         self.cdata = mk_scalar_action(m_sq, lmbd, alpha)
 
     def __del__(self):
         assert isinstance(self.cdata, int)
-        c.free_scalar_action(self)
+        free_scalar_action(self)
 
     def __imatmul__(self, v1):
         assert isinstance(v1, ScalarAction)
-        c.set_scalar_action(self, v1)
+        set_scalar_action(self, v1)
         return self
 
     def m_sq(self):
-        return c.get_m_sq_scalar_action(self)
+        return get_scalar_action_ptr(self).m_sq
 
     def lmbd(self):
-        return c.get_lmbd_scalar_action(self)
+        return get_scalar_action_ptr(self).lmbd
 
     def alpha(self):
-        return c.get_alpha_scalar_action(self)
+        return get_scalar_action_ptr(self).alpha
 
     def action_node(self, FieldRealD sf):
         cdef cc.ScalarAction* psa = get_scalar_action_ptr(self)
@@ -60,12 +67,15 @@ class ScalarAction:
         assert isinstance(masses, FieldBase)
         assert isinstance(field_ft, FieldBase)
         assert isinstance(force_ft, FieldBase)
-        return c.hmc_estimate_mass_scalar_action(
-            self, masses, field_ft, force_ft, phi0)
+        cdef cc.ScalarAction* psa = get_scalar_action_ptr(self)
+        psa.hmc_estimate_mass((<FieldRealD>masses).xx,
+                              (<FieldComplexD>field_ft).xx,
+                              (<FieldComplexD>force_ft).xx, phi0)
 
     def to_mass_factor(self, sin_domega):
         assert isinstance(sin_domega, FieldBase)
-        return c.to_mass_factor_scalar_action(self, sin_domega)
+        cdef cc.ScalarAction* psa = get_scalar_action_ptr(self)
+        psa.to_mass_factor((<FieldRealD>sin_domega).xx)
 
     def set_complex_from_double(self, cf, sf):
         assert isinstance(cf, FieldBase)

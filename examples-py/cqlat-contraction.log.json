@@ -18,9 +18,6 @@
   1e-10
  ],
  [
-  "cqlat-contraction: c.contract_chvp_16_field direct vs wrapper = True"
- ],
- [
   "cqlat-contraction: contract_chvp_16 linearity = True"
  ],
  [
@@ -38,9 +35,6 @@
   "cqlat-contraction: contract_chvp3_field tsep=0 mu=0",
   -31.08636265608112,
   1e-10
- ],
- [
-  "cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper = True"
  ],
  [
   "cqlat-contraction: contract_pion_field(Prop) vs numpy = True"
@@ -63,8 +57,5 @@
   "cqlat-contraction: contract_pion_field(SelProp) tsep=0",
   1523.3474183228077,
   1e-10
- ],
- [
-  "cqlat-contraction: c.contract_pion_sfield direct vs wrapper = True"
  ]
 ]

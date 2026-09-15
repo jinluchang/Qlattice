@@ -24,13 +24,15 @@ from .propagator import free_invert
 from cpython.long cimport PyLong_FromVoidPtr
 from cpython.long cimport PyLong_AsVoidPtr
 
-import cqlat as c
-
 cache_inv = mk_cache("inv")
 
 cdef inline cc.InverterDomainWall* get_inverter_domain_wall_ptr(
         object inv) except? NULL:
     return <cc.InverterDomainWall*>PyLong_AsVoidPtr(inv.cdata)
+
+def free_inverter_domain_wall(inv):
+    cdef cc.InverterDomainWall* pinv = get_inverter_domain_wall_ptr(inv)
+    del pinv
 
 cdef inline cc.FermionAction* get_fermion_action_ptr(object fa) except? NULL:
     return <cc.FermionAction*>PyLong_AsVoidPtr(fa.cdata)
@@ -99,7 +101,7 @@ class InverterDomainWall(Inverter):
 
     def __del__(self):
         assert isinstance(self.cdata, int)
-        c.free_inverter_domain_wall(self)
+        free_inverter_domain_wall(self)
 
     def __mul__(self, prop_src):
         """
@@ -117,24 +119,25 @@ class InverterDomainWall(Inverter):
             raise Exception("InverterDomainWall")
 
     def stop_rsd(self):
-        return c.get_stop_rsd_inverter_domain_wall(self)
+        return get_inverter_domain_wall_ptr(self).stop_rsd()
 
     def set_stop_rsd(self, stop_rsd):
-        return c.set_stop_rsd_inverter_domain_wall(self, stop_rsd)
+        cc.py_set_stop_rsd_inverter_domain_wall(
+            get_inverter_domain_wall_ptr(self)[0], stop_rsd)
 
     def max_num_iter(self):
-        return c.get_max_num_iter_inverter_domain_wall(self)
+        return get_inverter_domain_wall_ptr(self).max_num_iter()
 
     def set_max_num_iter(self, max_num_iter):
-        return c.set_max_num_iter_inverter_domain_wall(self, max_num_iter)
+        cc.py_set_max_num_iter_inverter_domain_wall(
+            get_inverter_domain_wall_ptr(self)[0], max_num_iter)
 
     def max_mixed_precision_cycle(self):
-        return c.get_max_mixed_precision_cycle_inverter_domain_wall(self)
+        return get_inverter_domain_wall_ptr(self).max_mixed_precision_cycle()
 
     def set_max_mixed_precision_cycle(self, max_mixed_precision_cycle):
-        return c.set_max_mixed_precision_cycle_inverter_domain_wall(
-            self, max_mixed_precision_cycle
-        )
+        cc.py_set_max_mixed_precision_cycle_inverter_domain_wall(
+            get_inverter_domain_wall_ptr(self)[0], max_mixed_precision_cycle)
 
 ## -----
 

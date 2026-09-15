@@ -16,8 +16,6 @@ from .field_base cimport FieldBase
 from .field_types cimport FieldRealD
 from .field_types cimport FieldComplexD
 
-import cqlat as c
-
 def set_double_from_complex(field, FieldComplexD cf):
     assert isinstance(field, FieldBase)
     assert field.ctype == ElemTypeRealD
@@ -48,10 +46,10 @@ def less_than_double(field, FieldRealD sf2, FieldRealD mask):
 
 def invert_double(field):
     assert field.ctype == ElemTypeRealD
-    c.invert_double_field(field)
+    field._cc_invert_double()
 
 def multiply_double(field, factor):
     assert isinstance(field, FieldBase)
     assert isinstance(factor, FieldBase)
     assert factor.ctype is ElemTypeRealD
-    c.multiply_double_field(field, factor)
+    field._cc_multiply_double(factor)

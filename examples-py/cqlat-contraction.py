@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-# Tests for the cqlat contraction interface:
-#     qlat/cqlat/contraction-field.cpp: contract_chvp_16_field
-#     qlat/cqlat/contraction-hvp.cpp:   contract_chvp3_sfield
-#     qlat/cqlat/contraction-pion.cpp:  contract_pion_sfield
+# Tests for the contraction interface implemented in Cython:
+#     qlat/qlat/contract_field.pyx: contract_chvp_16
+#     qlat/qlat/contract_hvp.pyx:   contract_chvp3_field
+#     qlat/qlat/contract_pion.pyx:  contract_pion_field
 #
 # They are reached through the Python wrappers
-#     q.contract_chvp_16       -> c.contract_chvp_16_field
-#     q.contract_chvp3_field   -> c.contract_chvp3_sfield
+#     q.contract_chvp_16       -> cc.contract_chvp_16
+#     q.contract_chvp3_field   -> cc.contract_chvp3
 #     q.contract_pion_field    -> cc.contract_pion (dense Prop) or
-#                                 c.contract_pion_sfield (SelProp)
-# and the cqlat exports are also invoked directly as ``qc.<name>``.
+#                                 cc.contract_pion (SelProp, with fsel)
 #
 # The checks are analytic: each result is compared against a numpy
 # re-implementation of the corresponding C++ header.
@@ -30,7 +29,6 @@ import gc
 import numpy as np
 
 import qlat as q
-import qlat.c as qc
 
 check_eps = 1e-10
 
@@ -62,9 +60,6 @@ def fill_prop_from_global(prop, geo, arr_g):
         xg = geo.coordinate_g_from_l(geo.coordinate_from_index(index))
         arr[index, 0] = arr_g[xg[0], xg[1], xg[2], xg[3]]
 
-def max_diff(a, b):
-    return float(np.max(np.abs(np.asarray(a) - np.asarray(b))))
-
 size_node_list = [
     [2, 1, 1, 1],
     [1, 1, 1, 1],
@@ -95,7 +90,7 @@ prop1_arr = np.asarray(prop1)[:, 0]
 prop2_arr = np.asarray(prop2)[:, 0]
 local_volume = geo.local_volume
 
-# --- contract_chvp_16_field (via q.contract_chvp_16)
+# --- contract_chvp_16 (via q.contract_chvp_16)
 chvp = q.contract_chvp_16(prop1, prop2)
 chvp_arr = np.asarray(chvp).reshape(local_volume, 16)
 assert np.asarray(chvp).shape == (local_volume, 16)
@@ -116,15 +111,6 @@ q.json_results_append(
     "cqlat-contraction: contract_chvp_16 sum(mu=0,nu=0)",
     q.glb_sum(complex(np.sum(chvp_arr[:, 0]))),
     check_eps,
-)
-
-# --- contract_chvp_16_field invoked directly as a cqlat export
-chvp_direct = q.FieldComplexD(geo, 16)
-qc.contract_chvp_16_field(chvp_direct, prop1, prop2)
-err_chvp_direct = max_diff(chvp_direct, chvp)
-assert err_chvp_direct == 0.0, err_chvp_direct
-q.json_results_append(
-    f"cqlat-contraction: c.contract_chvp_16_field direct vs wrapper = {err_chvp_direct == 0.0}"
 )
 
 # --- contract_chvp_16 is linear in each propagator
@@ -152,7 +138,7 @@ sp2 @= prop2
 sp1_arr = np.asarray(sp1)[:, 0]
 sp2_arr = np.asarray(sp2)[:, 0]
 
-# --- contract_chvp3_sfield (via q.contract_chvp3_field)
+# --- contract_chvp3 (via q.contract_chvp3_field)
 ld_hvp = q.contract_chvp3_field(sp1, sp2, t_slice_src)
 hvp_arr = np.asarray(ld_hvp)
 assert hvp_arr.shape == (t_size, 3)
@@ -175,15 +161,6 @@ q.json_results_append(
     "cqlat-contraction: contract_chvp3_field tsep=0 mu=0",
     float(np.real(hvp_arr[0, 0])),
     check_eps,
-)
-
-# --- contract_chvp3_sfield invoked directly as a cqlat export
-ld_hvp_direct = q.LatData()
-qc.contract_chvp3_sfield(ld_hvp_direct, sp1, sp2, t_slice_src)
-err_hvp_direct = float(np.max(np.abs(np.asarray(ld_hvp_direct) - hvp_arr)))
-assert err_hvp_direct == 0.0, err_hvp_direct
-q.json_results_append(
-    f"cqlat-contraction: c.contract_chvp3_sfield direct vs wrapper = {err_hvp_direct == 0.0}"
 )
 
 # --- contract_pion_field, dense Prop path (cc.contract_pion)
@@ -211,7 +188,7 @@ q.json_results_append(
     check_eps,
 )
 
-# --- contract_pion_field, SelProp path (c.contract_pion_sfield)
+# --- contract_pion_field, SelProp path (cc.contract_pion with fsel)
 ld_pion_sel = q.contract_pion_field(sp1, t_slice_src)
 pion_sel_arr = np.asarray(ld_pion_sel)
 assert pion_sel_arr.shape == (t_size,)
@@ -234,17 +211,6 @@ q.json_results_append(
     "cqlat-contraction: contract_pion_field(SelProp) tsep=0",
     float(np.real(pion_sel_arr[0])),
     check_eps,
-)
-
-# --- contract_pion_sfield invoked directly as a cqlat export
-ld_pion_sel_direct = q.LatData()
-qc.contract_pion_sfield(ld_pion_sel_direct, sp1, t_slice_src)
-err_pion_sel_direct = float(
-    np.max(np.abs(np.asarray(ld_pion_sel_direct) - pion_sel_arr))
-)
-assert err_pion_sel_direct == 0.0, err_pion_sel_direct
-q.json_results_append(
-    f"cqlat-contraction: c.contract_pion_sfield direct vs wrapper = {err_pion_sel_direct == 0.0}"
 )
 
 del prop1, prop2, prop1x2, sp1, sp2, fsel

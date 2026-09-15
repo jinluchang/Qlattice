@@ -16,7 +16,6 @@ from .propagator cimport Prop
 from .propagator cimport SelProp
 
 import qlat_utils as q
-import cqlat as c
 
 @q.timer
 def contract_pion_field(prop, tslice):
@@ -25,7 +24,8 @@ def contract_pion_field(prop, tslice):
         ld.xx = cc.contract_pion((<Prop>prop).xxx().val(), tslice)
         return ld
     elif isinstance(prop, SelProp):
-        c.contract_pion_sfield(ld, prop, tslice)
+        ld.xx = cc.contract_pion((<SelProp>prop).xxx().val(), tslice,
+                                 (<SelProp>prop).fsel.xx)
         return ld
     else:
         raise Exception("contract_pion_field")

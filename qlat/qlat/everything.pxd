@@ -707,6 +707,8 @@ cdef extern from "qlat/flowed-hmc.h" namespace "qlat":
         RealD epsilon
         Int flow_size
         FlowStepInfo()
+        FlowStepInfo(const Int mask_, const Int mu_, const RealD epsilon_,
+                const Int flow_size_) except +
     cdef cppclass FlowInfo:
         std_vector[FlowStepInfo] v
         FlowInfo()
@@ -750,6 +752,48 @@ cdef extern from "qlat/scalar-action.h" namespace "qlat":
                 const Field[RealD]& masses, const RealD vev_sigma) except +
         void get_polar_field(Field[RealD]& polar_fields,
                 const Field[RealD]& sf) except +
+        void hmc_estimate_mass(Field[RealD]& masses,
+                const Field[ComplexD]& field_ft,
+                const Field[ComplexD]& force_ft, const RealD phi0) except +
+        void to_mass_factor(Field[RealD]& sin_domega) except +
+
+cdef extern from "qlat/qm-action.h" namespace "qlat":
+
+    cdef cppclass QMAction:
+        bool initialized
+        RealD alpha
+        RealD beta
+        RealD FV_offset
+        RealD TV_offset
+        RealD center_bar
+        RealD V_FV_min
+        RealD barrier_strength
+        RealD L
+        RealD M
+        RealD epsilon
+        Long t_FV_out
+        Long t_FV_mid
+        RealD dt
+        bool measure_offset_L
+        bool measure_offset_M
+        QMAction() except +
+        QMAction(const RealD alpha_, const RealD beta_,
+                const RealD V_FV_min_, const RealD FV_offset_,
+                const RealD TV_offset_, const RealD barrier_strength_,
+                const RealD L_, const RealD M_, const RealD epsilon_,
+                const Long t_FV_out_, const Long t_FV_mid_, const RealD dt_,
+                const bool measure_offset_L_,
+                const bool measure_offset_M_) except +
+        RealD V(const Vector[RealD]& x, const Long t) except +
+        RealD dV(const Vector[RealD]& x, const Long t, const int idx) except +
+        RealD action_node(Field[RealD]& f) except +
+        RealD hmc_m_hamilton_node(const Field[RealD]& mf) except +
+        RealD sum_sq(const Field[RealD]& f) except +
+        void hmc_set_force(Field[RealD]& force, Field[RealD]& f) except +
+        void hmc_field_evolve(Field[RealD]& f, const Field[RealD]& mf,
+                const RealD step_size) except +
+        void hmc_set_rand_momentum(Field[RealD]& mf,
+                const RngState& rs) except +
 
 cdef extern from "qlat/fermion-action.h" namespace "qlat":
 
@@ -770,6 +814,33 @@ cdef extern from "qlat/fermion-action.h" namespace "qlat":
                 const bool is_multiplying_dminus_,
                 const bool is_using_zmobius_) except +
 
+cdef extern from *:
+    """
+    #include <qlat/fermion-action.h>
+    inline std::vector<double> py_get_omega_fermion_action_re(
+        const qlat::FermionAction& fa)
+    {
+      std::vector<double> re(fa.bs.size());
+      for (std::size_t i = 0; i < re.size(); ++i) {
+        re[i] = (1.0 / (fa.bs[i] + fa.cs[i])).real();
+      }
+      return re;
+    }
+    inline std::vector<double> py_get_omega_fermion_action_im(
+        const qlat::FermionAction& fa)
+    {
+      std::vector<double> im(fa.bs.size());
+      for (std::size_t i = 0; i < im.size(); ++i) {
+        im[i] = (1.0 / (fa.bs[i] + fa.cs[i])).imag();
+      }
+      return im;
+    }
+    """
+    std_vector[RealD] py_get_omega_fermion_action_re(
+            const FermionAction& fa) except +
+    std_vector[RealD] py_get_omega_fermion_action_im(
+            const FermionAction& fa) except +
+
 cdef extern from "qlat/dslash.h" namespace "qlat":
 
     cdef cppclass InverterDomainWall:
@@ -785,9 +856,33 @@ cdef extern from "qlat/dslash.h" namespace "qlat":
             Prop& sol, const Prop& src,
             const InverterDomainWall& inv) except +
 
+cdef extern from *:
+    """
+    #include <qlat/dslash.h>
+    inline void py_set_stop_rsd_inverter_domain_wall(
+        qlat::InverterDomainWall& inv, const qlat::RealD stop_rsd)
+    { inv.stop_rsd() = stop_rsd; }
+    inline void py_set_max_num_iter_inverter_domain_wall(
+        qlat::InverterDomainWall& inv, const qlat::Long max_num_iter)
+    { inv.max_num_iter() = max_num_iter; }
+    inline void py_set_max_mixed_precision_cycle_inverter_domain_wall(
+        qlat::InverterDomainWall& inv,
+        const qlat::Long max_mixed_precision_cycle)
+    { inv.max_mixed_precision_cycle() = max_mixed_precision_cycle; }
+    """
+    void py_set_stop_rsd_inverter_domain_wall(InverterDomainWall& inv,
+            const RealD stop_rsd) except +
+    void py_set_max_num_iter_inverter_domain_wall(InverterDomainWall& inv,
+            const Long max_num_iter) except +
+    void py_set_max_mixed_precision_cycle_inverter_domain_wall(
+            InverterDomainWall& inv,
+            const Long max_mixed_precision_cycle) except +
+
 cdef extern from "qlat/hmc-stats.h" namespace "qlat":
 
     void display_gm_force_magnitudes(const GaugeMomentum& gm_force,
+            const Int n_elems) except +
+    std_vector[RealD] get_gm_force_magnitudes(const GaugeMomentum& gm_force,
             const Int n_elems) except +
     void save_gm_force_magnitudes_list(const std_string& fn) except +
     void display_gauge_field_info_table_with_wilson_flow(
@@ -799,6 +894,26 @@ cdef extern from "qlat/hmc-stats.h" namespace "qlat":
 cdef extern from "qlat/contract-pion.h" namespace "qlat":
 
     LatData contract_pion(const Prop& prop, const Int tslice_src) except +
+    LatData contract_pion(const SelProp& prop, const Int tslice_src,
+            const FieldSelection& fsel) except +
+
+cdef extern from "qlat/contract-hvp.h" namespace "qlat":
+
+    LatData contract_chvp3(const SelProp& prop1, const SelProp& prop2,
+            const Int tslice_src, const FieldSelection& fsel) except +
+
+cdef extern from *:
+    """
+    #include <qlat/contract-field.h>
+    inline void py_contract_chvp_16(qlat::Field<qlat::ComplexD>& chvp,
+        const qlat::Prop& prop1, const qlat::Prop& prop2)
+    {
+      qlat::contract_chvp_16(*(qlat::FieldM<qlat::ComplexD, 16>*)&chvp,
+          prop1, prop2);
+    }
+    """
+    void py_contract_chvp_16(Field[ComplexD]& chvp, const Prop& prop1,
+            const Prop& prop2) except +
 
 cdef extern from "qlat/field-double.h" namespace "qlat":
 
@@ -812,6 +927,8 @@ cdef extern from "qlat/field-double.h" namespace "qlat":
             const Field[RealD]& sf2) except +
     void less_than_double[M](Field[M]& sf1, const Field[RealD]& sf2,
             const Field[RealD]& mask) except +
+    void invert_double[M](Field[M]& sf) except +
+    void multiply_double[M](Field[M]& sf, const Field[RealD]& factor) except +
 
 cdef extern from "qlat-utils/qendian.h" namespace "qlat":
 

@@ -1,6 +1,6 @@
 # `qlat.contract_hvp` — Conserved-Point HVP Contraction (Single Time Slice)
 
-Source: `qlat/qlat/contract_hvp.py`
+Source: `qlat/qlat/contract_hvp.pyx`
 
 > **Note:** Update this document when updating the source file.
 
@@ -11,7 +11,7 @@ Source: `qlat/qlat/contract_hvp.py`
 ## Overview
 
 This module provides a single high-level wrapper around the C++ routine
-`contract_chvp3_sfield`.  It computes the conserved-point hadronic vacuum
+`contract_chvp3`.  It computes the conserved-point hadronic vacuum
 polarization (HVP) correlator between two propagators on a specified
 lattice time slice and returns the result as a `LatData` object.
 
