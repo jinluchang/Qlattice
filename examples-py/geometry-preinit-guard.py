@@ -58,8 +58,8 @@ for line in r.stdout.splitlines():
         else:
             child_outcome = 9.0
 q.json_results_append("pre-init Geometry(total_site) outcome", child_outcome)
-q.json_results_append("pre-init Geometry(total_site) ok", float(child_ok))
-q.json_results_append("pre-init child exit code", float(r.returncode))
+q.json_results_append(f"pre-init Geometry(total_site) ok = {child_ok}")
+q.json_results_append(f"pre-init child exit code = {r.returncode}")
 if child_outcome != 1.0:
     print("CHILD-STDOUT:", r.stdout)
     print("CHILD-STDERR:", r.stderr)
@@ -67,14 +67,14 @@ if child_outcome != 1.0:
 # the guard must not fire once qlat is initialised
 q.begin_with_mpi([q.Coordinate([1, 1, 1, 1])])
 geo = q.Geometry(q.Coordinate([4, 4, 4, 4]))
-q.json_results_append("initialised Geometry(total_site)", np.array(geo.total_site.to_list(), dtype=float))
+q.json_results_append(f"initialised Geometry(total_site) = {geo.total_site.to_list()}")
 
 # Geometry() stays usable without initialisation, and so does the explicit
 # (id_node, size_node, node_site) form, which does not consult the global geon
 geo0 = q.Geometry()
-q.json_results_append("Geometry() total_volume", float(geo0.total_volume))
+q.json_results_append(f"Geometry() total_volume = {geo0.total_volume}")
 geo1 = q.Geometry(0, q.Coordinate([1, 1, 1, 1]), q.Coordinate([4, 4, 4, 4]))
-q.json_results_append("explicit Geometry(id, size, node)", np.array(geo1.total_site.to_list(), dtype=float))
+q.json_results_append(f"explicit Geometry(id, size, node) = {geo1.total_site.to_list()}")
 
 q.timer_display()
 if q.is_test():

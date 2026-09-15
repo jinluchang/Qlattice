@@ -56,8 +56,7 @@
   "sp_prop glb_sum n_points = 130"
  ],
  [
-  "sp_prop psel len",
-  65.0
+  "sp_prop psel len = 65"
  ],
  [
   "sp_prop psel tolist",

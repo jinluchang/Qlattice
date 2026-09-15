@@ -3,8 +3,7 @@
   "free-scalar-invert: geo.show()=Geometry([4, 4, 4, 8])"
  ],
  [
-  "free-scalar-invert: delta matches DFT reference",
-  1.0
+  "free-scalar-invert: delta matches DFT reference = True"
  ],
  [
   "free-scalar-invert: delta sol(xg=0)",
@@ -17,16 +16,13 @@
   1e-10
  ],
  [
-  "free-scalar-invert: rand matches DFT reference",
-  1.0
+  "free-scalar-invert: rand matches DFT reference = True"
  ],
  [
-  "free-scalar-invert: rand leaves src unchanged",
-  1.0
+  "free-scalar-invert: rand leaves src unchanged = True"
  ],
  [
-  "free-scalar-invert: operator residual",
-  1.0
+  "free-scalar-invert: operator residual = True"
  ],
  [
   "free-scalar-invert: rand sol(xg=(1,2,3,4))",
@@ -40,12 +36,10 @@
   1e-10
  ],
  [
-  "free-scalar-invert: mode_fft=0 vs mode_fft=1",
-  1.0
+  "free-scalar-invert: mode_fft=0 vs mode_fft=1 = True"
  ],
  [
-  "free-scalar-invert: mom matches DFT reference",
-  1.0
+  "free-scalar-invert: mom matches DFT reference = True"
  ],
  [
   "free-scalar-invert: mom sol(k=(1,2,3,4))",
@@ -59,8 +53,7 @@
   1e-10
  ],
  [
-  "free-scalar-invert: mom momtwist matches DFT reference",
-  1.0
+  "free-scalar-invert: mom momtwist matches DFT reference = True"
  ],
  [
   "free-scalar-invert: mom momtwist sol(k=(1,2,3,4))",

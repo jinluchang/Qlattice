@@ -3,12 +3,10 @@
   "mpi-utils: num_node = 2"
  ],
  [
-  "mpi-utils: glb_sum int input",
-  12.0
+  "mpi-utils: glb_sum int input = 12"
  ],
  [
-  "mpi-utils: glb_sum int",
-  25.0
+  "mpi-utils: glb_sum int = 25"
  ],
  [
   "mpi-utils: glb_sum float input",

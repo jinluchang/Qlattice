@@ -22,8 +22,8 @@ q.json_results_append(f"mpi-utils: num_node = {num_node}")
 a = 12 + id_node
 gs_a = q.glb_sum(a)
 
-q.json_results_append("mpi-utils: glb_sum int input", float(a))
-q.json_results_append("mpi-utils: glb_sum int", float(gs_a))
+q.json_results_append(f"mpi-utils: glb_sum int input = {a}")
+q.json_results_append(f"mpi-utils: glb_sum int = {gs_a}")
 
 b = 12.4 + id_node
 gs_b = q.glb_sum(b)

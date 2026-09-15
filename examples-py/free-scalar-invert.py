@@ -127,9 +127,7 @@ delta_sol_arr = get_global_arr(geo, delta_sol)
 delta_ref_arr = ref_free_scalar_invert(mk_delta_src(latt_size), latt_size, mass)
 err_delta = float(np.max(np.abs(delta_sol_arr - delta_ref_arr)))
 assert err_delta < check_eps, err_delta
-q.json_results_append(
-    "free-scalar-invert: delta matches DFT reference", float(err_delta < check_eps)
-)
+q.json_results_append(f"free-scalar-invert: delta matches DFT reference = {err_delta < check_eps}")
 q.json_results_append(
     "free-scalar-invert: delta sol(xg=0)",
     float(delta_sol_arr[0, 0, 0, 0].real),
@@ -154,20 +152,14 @@ err_ref = float(np.max(np.abs(sol_arr - ref_arr)))
 assert err_ref < check_eps, err_ref
 err_src = float(np.max(np.abs(get_global_arr(geo, src) - src_before)))
 assert err_src == 0.0, err_src
-q.json_results_append(
-    "free-scalar-invert: rand matches DFT reference", float(err_ref < check_eps)
-)
-q.json_results_append(
-    "free-scalar-invert: rand leaves src unchanged", float(err_src == 0.0)
-)
+q.json_results_append(f"free-scalar-invert: rand matches DFT reference = {err_ref < check_eps}")
+q.json_results_append(f"free-scalar-invert: rand leaves src unchanged = {err_src == 0.0}")
 
 # --- (4 sinh^2(mass/2) - laplacian) sol = src, i.e. the mass convention
 res_arr = get_m_pi_sq(mass) * sol_arr + get_neg_lap(sol_arr) - src_arr
 err_op = float(np.max(np.abs(res_arr)))
 assert err_op < check_eps, err_op
-q.json_results_append(
-    "free-scalar-invert: operator residual", float(err_op < check_eps)
-)
+q.json_results_append(f"free-scalar-invert: operator residual = {err_op < check_eps}")
 q.json_results_append(
     "free-scalar-invert: rand sol(xg=(1,2,3,4))",
     np.array([sol_arr[1, 2, 3, 4].real, sol_arr[1, 2, 3, 4].imag]),
@@ -178,9 +170,7 @@ q.json_results_append(
 sol0 = q.free_scalar_invert(src, mass, mode_fft=0)
 err_mode = float(np.max(np.abs(get_global_arr(geo, sol0) - sol_arr)))
 assert err_mode < check_eps, err_mode
-q.json_results_append(
-    "free-scalar-invert: mode_fft=0 vs mode_fft=1", float(err_mode < check_eps)
-)
+q.json_results_append(f"free-scalar-invert: mode_fft=0 vs mode_fft=1 = {err_mode < check_eps}")
 
 # --- free_scalar_mom_invert applies 1 / D(k) in momentum space
 fft_f = q.mk_fft(is_forward=True, is_normalizing=True)
@@ -192,9 +182,7 @@ mom_ref_arr = (
 )
 err_mom = float(np.max(np.abs(mom_arr - mom_ref_arr)))
 assert err_mom < check_eps, err_mom
-q.json_results_append(
-    "free-scalar-invert: mom matches DFT reference", float(err_mom < check_eps)
-)
+q.json_results_append(f"free-scalar-invert: mom matches DFT reference = {err_mom < check_eps}")
 q.json_results_append(
     "free-scalar-invert: mom sol(k=(1,2,3,4))",
     np.array([mom_arr[1, 2, 3, 4].real, mom_arr[1, 2, 3, 4].imag]),
@@ -215,8 +203,7 @@ mom_tw_ref_arr = (
 err_mom_tw = float(np.max(np.abs(mom_tw_arr - mom_tw_ref_arr)))
 assert err_mom_tw < check_eps, err_mom_tw
 q.json_results_append(
-    "free-scalar-invert: mom momtwist matches DFT reference",
-    float(err_mom_tw < check_eps),
+    f"free-scalar-invert: mom momtwist matches DFT reference = {err_mom_tw < check_eps}"
 )
 q.json_results_append(
     "free-scalar-invert: mom momtwist sol(k=(1,2,3,4))",
